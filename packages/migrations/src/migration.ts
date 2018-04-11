@@ -1,9 +1,7 @@
 import { Deployer } from '@0xproject/deployer';
-import { BigNumber } from '@0xproject/utils';
+import { BigNumber, NULL_BYTES } from '@0xproject/utils';
 import { Web3Wrapper } from '@0xproject/web3-wrapper';
 import * as _ from 'lodash';
-
-import { constants } from './utils/constants';
 
 import { ContractName } from './types';
 import { tokenInfo } from './utils/token_info';
@@ -51,8 +49,8 @@ export const runMigrationsAsync = async (deployer: Deployer) => {
         '0x Protocol Token',
         'ZRX',
         18,
-        constants.NULL_BYTES,
-        constants.NULL_BYTES,
+        NULL_BYTES,
+        NULL_BYTES,
         {
             from: owner,
             gas: addTokenGasEstimate,
@@ -63,8 +61,8 @@ export const runMigrationsAsync = async (deployer: Deployer) => {
         'Ether Token',
         'WETH',
         18,
-        constants.NULL_BYTES,
-        constants.NULL_BYTES,
+        NULL_BYTES,
+        NULL_BYTES,
         {
             from: owner,
             gas: addTokenGasEstimate,
