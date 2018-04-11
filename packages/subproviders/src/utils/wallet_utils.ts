@@ -52,9 +52,9 @@ class DerivedHDKeyIterator implements IterableIterator<DerivedHDKey> {
 export const walletUtils = {
     DEFAULT_ADDRESS_SEARCH_LIMIT,
     DEFAULT_NUM_ADDRESSES_TO_FETCH: 10,
-    calculateDerivedHDKeys(initialDerivedKey: DerivedHDKey, searchLimit: number): DerivedHDKey[] {
+    calculateDerivedHDKeys(initialDerivedKey: DerivedHDKey, numberOfKeys: number): DerivedHDKey[] {
         const derivedKeys: DerivedHDKey[] = [];
-        const derivedKeyIterator = new DerivedHDKeyIterator(initialDerivedKey, searchLimit);
+        const derivedKeyIterator = new DerivedHDKeyIterator(initialDerivedKey, numberOfKeys);
         for (const key of derivedKeyIterator) {
             derivedKeys.push(key);
         }

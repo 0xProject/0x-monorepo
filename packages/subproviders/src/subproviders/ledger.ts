@@ -140,8 +140,8 @@ export class LedgerSubprovider extends BaseWalletSubprovider {
         }
     }
     /**
-     * Sign a personal Ethereum signed message. The signing address will be the one
-     * the provided address.
+     * Sign a personal Ethereum signed message. The signing account will be the account
+     * associated with the provided address.
      * The Ledger adds the Ethereum signed message prefix on-device.  If you've added
      * the LedgerSubprovider to your app's provider, you can simply send an `eth_sign`
      * or `personal_sign` JSON RPC request, and this method will be called auto-magically.
@@ -217,7 +217,7 @@ export class LedgerSubprovider extends BaseWalletSubprovider {
             address: ledgerResponse.address,
             isChildKey: true,
             derivationBasePath: this._derivationBasePath,
-            derivationPath: `${this._derivationBasePath}/${0}`,
+            derivationPath: `${this._derivationBasePath}/0`,
             derivationIndex: 0,
         };
     }

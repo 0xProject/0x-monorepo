@@ -85,7 +85,7 @@ export class MnemonicWalletSubprovider extends BaseWalletSubprovider {
     }
 
     /**
-     * Signs a transaction with the from account (if specificed in txParams) or the first account.
+     * Signs a transaction with the from account specificed in txParams.
      * If you've added this Subprovider to your  app's provider, you can simply send
      * an `eth_sendTransaction` JSON RPC request, and * this method will be called auto-magically.
      * If you are not using this via a ProviderEngine instance, you can call it directly.
@@ -93,13 +93,13 @@ export class MnemonicWalletSubprovider extends BaseWalletSubprovider {
      * @return Signed transaction hex string
      */
     public async signTransactionAsync(txParams: PartialTxParams): Promise<string> {
-        const privateKeyWallet = this._privateKeyWalletFromAddress(txParams.from);
+        const privateKeyWallet = this._privateKeyWalletForAddress(txParams.from);
         const signedTx = privateKeyWallet.signTransactionAsync(txParams);
         return signedTx;
     }
     /**
-     * Sign a personal Ethereum signed message. The signing address used will be
-     * address provided or the first address derived from the set path.
+     * Sign a personal Ethereum signed message. The signing account will be the account
+     * associated with the provided address.
      * If you've added the MnemonicWalletSubprovider to your app's provider, you can simply send an `eth_sign`
      * or `personal_sign` JSON RPC request, and this method will be called auto-magically.
      * If you are not using this via a ProviderEngine instance, you can call it directly.
@@ -108,11 +108,11 @@ export class MnemonicWalletSubprovider extends BaseWalletSubprovider {
      * @return Signature hex string (order: rsv)
      */
     public async signPersonalMessageAsync(data: string, address: string): Promise<string> {
-        const privateKeyWallet = this._privateKeyWalletFromAddress(address);
+        const privateKeyWallet = this._privateKeyWalletForAddress(address);
         const sig = await privateKeyWallet.signPersonalMessageAsync(data, address);
         return sig;
     }
-    private _privateKeyWalletFromAddress(address: string): PrivateKeyWalletSubprovider {
+    private _privateKeyWalletForAddress(address: string): PrivateKeyWalletSubprovider {
         const derivedKey = this._findDerivedKeyByPublicAddress(address);
         const privateKeyHex = derivedKey.hdKey.privateKey.toString('hex');
         const privateKeyWallet = new PrivateKeyWalletSubprovider(privateKeyHex);
