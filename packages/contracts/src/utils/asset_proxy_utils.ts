@@ -2,7 +2,6 @@ import { BigNumber } from '@0xproject/utils';
 import * as Web3 from 'web3';
 
 import { AssetProxyId } from './types';
-const ethersUtils = require('ethers-utils');
 
 export function zeroPad(value: string, width: number): string {
     return '0'.repeat(width - value.length) + value;
