@@ -20,19 +20,19 @@ pragma solidity ^0.4.21;
 
 import "../IAssetProxy.sol";
 import "../../../utils/LibBytes/LibBytes.sol";
-import "../../TokenTransferProxy/ITokenTransferProxy.sol";
 import "../../../utils/Authorizable/Authorizable.sol";
+import { ITokenTransferProxy as ITokenTransferProxy_v1 } from "../../TokenTransferProxy/ITokenTransferProxy.sol";
 
 contract ERC20TransferProxy_v1 is
     LibBytes,
     Authorizable,
     IAssetProxy
 {
-    ITokenTransferProxy TRANSFER_PROXY;
+    ITokenTransferProxy_v1 TRANSFER_PROXY;
 
     /// @dev Contract constructor.
     /// @param tokenTransferProxyContract erc20 token transfer proxy contract.
-    function ERC20TransferProxy_v1(ITokenTransferProxy tokenTransferProxyContract)
+    function ERC20TransferProxy_v1(ITokenTransferProxy_v1 tokenTransferProxyContract)
         public
     {
         TRANSFER_PROXY = tokenTransferProxyContract;
