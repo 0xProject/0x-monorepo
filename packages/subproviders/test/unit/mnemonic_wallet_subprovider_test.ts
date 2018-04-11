@@ -55,10 +55,16 @@ describe('MnemonicWalletSubprovider', () => {
             });
         });
         describe('failure cases', () => {
-            it('throws an error if account cannot be found', async () => {
+            it('throws an error if address is invalid ', async () => {
                 const txData = { ...fixtureData.TX_DATA, from: '0x0' };
                 return expect(subprovider.signTransactionAsync(txData)).to.be.rejectedWith(
-                    WalletSubproviderErrors.AddressNotFound,
+                    WalletSubproviderErrors.FromAddressMissingOrInvalid,
+                );
+            });
+            it('throws an error if address is valid format but not found', async () => {
+                const txData = { ...fixtureData.TX_DATA, from: fixtureData.NULL_ADDRESS };
+                return expect(subprovider.signTransactionAsync(txData)).to.be.rejectedWith(
+                    `${WalletSubproviderErrors.AddressNotFound}: ${fixtureData.NULL_ADDRESS}`,
                 );
             });
         });
@@ -155,12 +161,14 @@ describe('MnemonicWalletSubprovider', () => {
                 const payload = {
                     jsonrpc: '2.0',
                     method: 'personal_sign',
-                    params: [nonHexMessage, '0x0'],
+                    params: [nonHexMessage, fixtureData.NULL_ADDRESS],
                     id: 1,
                 };
                 const callback = reportCallbackErrors(done)((err: Error, response: JSONRPCResponsePayload) => {
                     expect(err).to.not.be.a('null');
-                    expect(err.message).to.be.equal(`${WalletSubproviderErrors.AddressNotFound}: 0x0`);
+                    expect(err.message).to.be.equal(
+                        `${WalletSubproviderErrors.AddressNotFound}: ${fixtureData.NULL_ADDRESS}`,
+                    );
                     done();
                 });
                 provider.sendAsync(payload, callback);

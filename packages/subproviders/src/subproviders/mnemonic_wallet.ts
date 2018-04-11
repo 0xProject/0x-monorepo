@@ -1,4 +1,5 @@
 import { assert } from '@0xproject/assert';
+import { addressUtils } from '@0xproject/utils';
 import * as bip39 from 'bip39';
 import ethUtil = require('ethereumjs-util');
 import HDNode = require('hdkey');
@@ -43,8 +44,10 @@ export class MnemonicWalletSubprovider extends BaseWalletSubprovider {
         this._derivationBasePath = derivationBasePath;
         this._derivedKey = {
             address: walletUtils.addressOfHDKey(hdKey),
+            // HACK this isn't the base path for this root key, but is is the base path
+            // we want all of the derived children to spawn from
             derivationBasePath: this._derivationBasePath,
-            derivationPath: `${this._derivationBasePath}/${0}`,
+            derivationPath: 'm/0',
             derivationIndex: 0,
             hdKey,
             isChildKey: false,
@@ -119,7 +122,7 @@ export class MnemonicWalletSubprovider extends BaseWalletSubprovider {
         return privateKeyWallet;
     }
     private _findDerivedKeyByPublicAddress(address: string): DerivedHDKey {
-        if (_.isUndefined(address)) {
+        if (_.isUndefined(address) || !addressUtils.isAddress(address)) {
             throw new Error(WalletSubproviderErrors.FromAddressMissingOrInvalid);
         }
         const matchedDerivedKey = walletUtils.findDerivedKeyByAddress(

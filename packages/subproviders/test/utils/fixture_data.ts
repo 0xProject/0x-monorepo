@@ -1,7 +1,9 @@
 const TEST_RPC_ACCOUNT_0 = '0x5409ed021d9299bf6814279a6a1411a7e866a631';
 const TEST_RPC_ACCOUNT_1 = '0x6ecbe1db9ef729cbe972c83fb886247691fb6beb';
+const NULL_ADDRESS = '0x0000000000000000000000000000000000000000';
 const networkId = 42;
 export const fixtureData = {
+    NULL_ADDRESS,
     TEST_RPC_ACCOUNT_0,
     TEST_RPC_ACCOUNT_0_ACCOUNT_PRIVATE_KEY: 'F2F48EE19680706196E2E339E5DA3491186E0C4C5030670656B0E0164837257D',
     TEST_RPC_ACCOUNT_1,
@@ -18,7 +20,7 @@ export const fixtureData = {
         nonce: '0x00',
         gasPrice: '0x0',
         gas: '0x2710',
-        to: '0x0000000000000000000000000000000000000000',
+        to: NULL_ADDRESS,
         value: '0x00',
         chainId: networkId,
         from: TEST_RPC_ACCOUNT_0,

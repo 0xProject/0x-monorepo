@@ -222,7 +222,7 @@ export class LedgerSubprovider extends BaseWalletSubprovider {
         };
     }
     private _findDerivedKeyByPublicAddress(initalHDKey: DerivedHDKey, address: string): DerivedHDKey {
-        if (_.isUndefined(address)) {
+        if (_.isUndefined(address) || !addressUtils.isAddress(address)) {
             throw new Error(WalletSubproviderErrors.FromAddressMissingOrInvalid);
         }
         const matchedDerivedKey = walletUtils.findDerivedKeyByAddress(address, initalHDKey, this._addressSearchLimit);
