@@ -42,6 +42,9 @@ contract ERC721Proxy is
         public
         onlyAuthorized
     {
+        // No work to do
+        if (amount == 0) return;
+
         // Decode metadata
         address token;
         uint256 tokenId;
