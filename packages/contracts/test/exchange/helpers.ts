@@ -88,8 +88,8 @@ describe('Exchange', () => {
             takerTokenAmount: ZeroEx.toBaseUnitAmount(new BigNumber(200), 18),
             makerFee: ZeroEx.toBaseUnitAmount(new BigNumber(1), 18),
             takerFee: ZeroEx.toBaseUnitAmount(new BigNumber(1), 18),
-            makerAssetProxyData: encodeERC20ProxyMetadata(rep.address),
-            takerAssetProxyData: encodeERC20ProxyMetadata(dgd.address),
+            makerAssetData: encodeERC20ProxyMetadata(rep.address),
+            takerAssetData: encodeERC20ProxyMetadata(dgd.address),
         };
         const privateKey = constants.TESTRPC_PRIVATE_KEYS[0];
         orderFactory = new OrderFactory(privateKey, defaultOrderParams);
