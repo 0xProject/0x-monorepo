@@ -40,10 +40,10 @@ describe('Exchange', () => {
         const tokenRegistry = await deployer.deployAsync(ContractName.TokenRegistry);
         const tokenTransferProxy = await deployer.deployAsync(ContractName.TokenTransferProxy);
         const assetProxyDispatcher = await deployer.deployAsync(ContractName.AssetProxyDispatcher);
-        const erc20TransferProxyV1 = await deployer.deployAsync(ContractName.ERC20TransferProxy_V1, [
+        const erc20TransferProxyV1 = await deployer.deployAsync(ContractName.ERC20Proxy_V1, [
             tokenTransferProxy.address,
         ]);
-        const erc20TransferProxy = await deployer.deployAsync(ContractName.ERC20TransferProxy);
+        const erc20TransferProxy = await deployer.deployAsync(ContractName.ERC20Proxy);
         const [rep, dgd, zrx] = await Promise.all([
             deployer.deployAsync(ContractName.DummyToken, constants.DUMMY_TOKEN_ARGS),
             deployer.deployAsync(ContractName.DummyToken, constants.DUMMY_TOKEN_ARGS),
