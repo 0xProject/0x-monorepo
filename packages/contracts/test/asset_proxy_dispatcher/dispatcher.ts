@@ -31,7 +31,7 @@ const blockchainLifecycle = new BlockchainLifecycle(web3Wrapper);
 describe('AssetProxyDispatcher', () => {
     let owner: string;
     let notOwner: string;
-    let assetProxyManagerAddress: string;
+    let exchangeAddress: string;
     let tokenOwner: string;
     let makerAddress: string;
     let takerAddress: string;
@@ -49,7 +49,7 @@ describe('AssetProxyDispatcher', () => {
         const accounts = await web3Wrapper.getAvailableAddressesAsync();
         owner = tokenOwner = accounts[0];
         notOwner = accounts[1];
-        assetProxyManagerAddress = accounts[2];
+        exchangeAddress = accounts[2];
         makerAddress = accounts[3];
         takerAddress = accounts[4];
         const tokenTransferProxyInstance = await deployer.deployAsync(ContractName.TokenTransferProxy);
@@ -101,7 +101,7 @@ describe('AssetProxyDispatcher', () => {
             from: makerAddress,
         });
 
-        await assetProxyDispatcher.addAuthorizedAddress.sendTransactionAsync(assetProxyManagerAddress, {
+        await assetProxyDispatcher.addAuthorizedAddress.sendTransactionAsync(exchangeAddress, {
             from: accounts[0],
         });
         await erc20TransferProxyV1.addAuthorizedAddress.sendTransactionAsync(assetProxyDispatcher.address, {
@@ -259,7 +259,7 @@ describe('AssetProxyDispatcher', () => {
     });
 
     describe('transferFrom', () => {
-        it('should dispatch  transfer to registered proxy', async () => {
+        it('should dispatch transfer to registered proxy', async () => {
             // Register ERC20 proxy
             await assetProxyDispatcher.addAssetProxy.sendTransactionAsync(
                 AssetProxyId.ERC20,
@@ -279,7 +279,7 @@ describe('AssetProxyDispatcher', () => {
                 makerAddress,
                 takerAddress,
                 amount,
-                { from: assetProxyManagerAddress },
+                { from: exchangeAddress },
             );
 
             // Verify transfer was successful

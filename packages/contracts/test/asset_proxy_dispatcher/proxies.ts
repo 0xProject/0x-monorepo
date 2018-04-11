@@ -31,7 +31,7 @@ const blockchainLifecycle = new BlockchainLifecycle(web3Wrapper);
 describe('Asset Transfer Proxies', () => {
     let owner: string;
     let notOwner: string;
-    let assetProxyManagerAddress: string;
+    let exchangeAddress: string;
     let tokenOwner: string;
     let makerAddress: string;
     let takerAddress: string;
@@ -51,7 +51,7 @@ describe('Asset Transfer Proxies', () => {
         const accounts = await web3Wrapper.getAvailableAddressesAsync();
         owner = tokenOwner = accounts[0];
         notOwner = accounts[1];
-        assetProxyManagerAddress = accounts[2];
+        exchangeAddress = accounts[2];
         makerAddress = accounts[3];
         takerAddress = accounts[4];
         const tokenTransferProxyInstance = await deployer.deployAsync(ContractName.TokenTransferProxy);
@@ -114,16 +114,16 @@ describe('Asset Transfer Proxies', () => {
         await ck.setApprovalForAll.sendTransactionAsync(erc721TransferProxy.address, true, { from: makerAddress });
         await ck.setApprovalForAll.sendTransactionAsync(erc721TransferProxy.address, true, { from: takerAddress });
         await ck.mint.sendTransactionAsync(makerAddress, makerTokenId, { from: tokenOwner });
-        await assetProxyDispatcher.addAuthorizedAddress.sendTransactionAsync(assetProxyManagerAddress, {
+        await assetProxyDispatcher.addAuthorizedAddress.sendTransactionAsync(exchangeAddress, {
             from: accounts[0],
         });
-        await erc20TransferProxyV1.addAuthorizedAddress.sendTransactionAsync(assetProxyManagerAddress, {
+        await erc20TransferProxyV1.addAuthorizedAddress.sendTransactionAsync(exchangeAddress, {
             from: accounts[0],
         });
-        await erc20TransferProxy.addAuthorizedAddress.sendTransactionAsync(assetProxyManagerAddress, {
+        await erc20TransferProxy.addAuthorizedAddress.sendTransactionAsync(exchangeAddress, {
             from: accounts[0],
         });
-        await erc721TransferProxy.addAuthorizedAddress.sendTransactionAsync(assetProxyManagerAddress, {
+        await erc721TransferProxy.addAuthorizedAddress.sendTransactionAsync(exchangeAddress, {
             from: accounts[0],
         });
         await tokenTransferProxy.addAuthorizedAddress.sendTransactionAsync(erc20TransferProxyV1.address, {
@@ -176,7 +176,7 @@ describe('Asset Transfer Proxies', () => {
                 makerAddress,
                 takerAddress,
                 amount,
-                { from: assetProxyManagerAddress },
+                { from: exchangeAddress },
             );
 
             // Verify transfer was successful
@@ -247,7 +247,7 @@ describe('Asset Transfer Proxies', () => {
                 makerAddress,
                 takerAddress,
                 amount,
-                { from: assetProxyManagerAddress },
+                { from: exchangeAddress },
             );
 
             // Verify transfer was successful
@@ -334,7 +334,7 @@ describe('Asset Transfer Proxies', () => {
                 makerAddress,
                 takerAddress,
                 amount,
-                { from: assetProxyManagerAddress },
+                { from: exchangeAddress },
             );
 
             // Verify transfer was successful
