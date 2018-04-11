@@ -73,8 +73,8 @@ contract ERC721TransferProxy is
         // Encode fields into a byte array
         assetMetadata = new bytes(53);
         assetMetadata[0] = byte(assetProxyId);
-        writeAddress(tokenAddress, assetMetadata, 1);
-        writeUint256(tokenId, assetMetadata, 21);
+        writeAddress(assetMetadata, 1, tokenAddress);
+        writeUint256(assetMetadata, 21, tokenId);
         return assetMetadata;
     }
 
