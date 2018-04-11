@@ -93,6 +93,7 @@ package.ts. Please add an entry for it and try again.`,
             );
         }
         const link = `${constants.stagingWebsite}/docs/${docSegmentIfExists}`;
+        // tslint:disable-next-line:no-floating-promises
         opn(link);
     });
 
