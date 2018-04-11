@@ -1,7 +1,6 @@
 import { BigNumber } from '@0xproject/utils';
 import BN = require('bn.js');
 import ethUtil = require('ethereumjs-util');
-import * as Web3 from 'web3';
 
 import { AssetProxyId } from './types';
 
@@ -25,33 +24,27 @@ export function encodeUint256(value: BigNumber): Buffer {
     return encodedValue;
 }
 
-export function encodeERC20ProxyMetadata_V1(tokenAddress: string) {
-    // Encode metadata
+export function encodeERC20V1ProxyData(tokenAddress: string): string {
     const encodedAssetProxyId = encodeAssetProxyId(AssetProxyId.ERC20_V1);
     const encodedAddress = encodeAddress(tokenAddress);
     const encodedMetadata = Buffer.concat([encodedAssetProxyId, encodedAddress]);
     const encodedMetadataHex = ethUtil.bufferToHex(encodedMetadata);
-
     return encodedMetadataHex;
 }
 
-export function encodeERC20ProxyMetadata(tokenAddress: string) {
-    // Encode metadata
+export function encodeERC20ProxyData(tokenAddress: string): string {
     const encodedAssetProxyId = encodeAssetProxyId(AssetProxyId.ERC20);
     const encodedAddress = encodeAddress(tokenAddress);
     const encodedMetadata = Buffer.concat([encodedAssetProxyId, encodedAddress]);
     const encodedMetadataHex = ethUtil.bufferToHex(encodedMetadata);
-
     return encodedMetadataHex;
 }
 
-export function encodeERC721ProxyMetadata(tokenAddress: string, tokenId: BigNumber) {
-    // Encode metadata
+export function encodeERC721ProxyData(tokenAddress: string, tokenId: BigNumber): string {
     const encodedAssetProxyId = encodeAssetProxyId(AssetProxyId.ERC721);
     const encodedAddress = encodeAddress(tokenAddress);
     const encodedTokenId = encodeUint256(tokenId);
     const encodedMetadata = Buffer.concat([encodedAssetProxyId, encodedAddress, encodedTokenId]);
     const encodedMetadataHex = ethUtil.bufferToHex(encodedMetadata);
-
     return encodedMetadataHex;
 }

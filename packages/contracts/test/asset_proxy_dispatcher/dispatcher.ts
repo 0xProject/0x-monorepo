@@ -13,9 +13,9 @@ import { ERC721ProxyContract } from '../../src/contract_wrappers/generated/e_r_c
 import { ERC20Proxy_v1Contract } from '../../src/contract_wrappers/generated/erc20proxy_v1';
 import { TokenTransferProxyContract } from '../../src/contract_wrappers/generated/token_transfer_proxy';
 import {
-    encodeERC20ProxyMetadata,
-    encodeERC20ProxyMetadata_V1,
-    encodeERC721ProxyMetadata,
+    encodeERC20ProxyData,
+    encodeERC20V1ProxyData,
+    encodeERC721ProxyData,
 } from '../../src/utils/asset_proxy_utils';
 import { Balances } from '../../src/utils/balances';
 import { constants } from '../../src/utils/constants';
@@ -268,7 +268,7 @@ describe('AssetProxyDispatcher', () => {
             );
 
             // Construct metadata for ERC20 proxy
-            const encodedProxyMetadata = encodeERC20ProxyMetadata(zrx.address);
+            const encodedProxyMetadata = encodeERC20ProxyData(zrx.address);
 
             // Perform a transfer from makerAddress to takerAddress
             const balances = await dmyBalances.getAsync();
@@ -293,7 +293,7 @@ describe('AssetProxyDispatcher', () => {
 
         it('should throw if delegating to unregistered proxy', async () => {
             // Construct metadata for ERC20 proxy
-            const encodedProxyMetadata = encodeERC20ProxyMetadata(zrx.address);
+            const encodedProxyMetadata = encodeERC20ProxyData(zrx.address);
 
             // Perform a transfer from makerAddress to takerAddress
             const balances = await dmyBalances.getAsync();
@@ -319,7 +319,7 @@ describe('AssetProxyDispatcher', () => {
             );
 
             // Construct metadata for ERC20 proxy
-            const encodedProxyMetadata = encodeERC20ProxyMetadata(zrx.address);
+            const encodedProxyMetadata = encodeERC20ProxyData(zrx.address);
 
             // Perform a transfer from makerAddress to takerAddress
             const balances = await dmyBalances.getAsync();
