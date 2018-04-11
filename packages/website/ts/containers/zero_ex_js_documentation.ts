@@ -168,6 +168,9 @@ const docsInfoConfig: DocsInfoConfig = {
             'OrderStateWatcherConfig',
             'FilterObject',
             'OrderRelevantState',
+            'JSONRPCRequestPayload',
+            'JSONRPCResponsePayload',
+            'JSONRPCErrorCallback',
         ],
         typeNameToPrefix: {
             Provider: 'Web3',
