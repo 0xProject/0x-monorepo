@@ -39,7 +39,7 @@ export interface CancelOrdersBefore {
 
 export enum AssetProxyId {
     INVALID,
-    ERC20_V1,
+    ERC20V1,
     ERC20,
     ERC721,
 }
@@ -111,7 +111,7 @@ export enum ContractName {
     Arbitrage = 'Arbitrage',
     AssetProxyDispatcher = 'AssetProxyDispatcher',
     ERC20Proxy = 'ERC20Proxy',
-    ERC20Proxy_V1 = 'ERC20Proxy_v1',
+    ERC20V1Proxy = 'ERC20Proxy_v1',
     ERC721Proxy = 'ERC721Proxy',
     DummyERC721Token = 'DummyERC721Token',
 }

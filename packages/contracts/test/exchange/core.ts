@@ -100,7 +100,7 @@ describe('Exchange', () => {
             provider,
         );
         // Deploy ERC20 V1 Proxy
-        const erc20TransferProxyV1Instance = await deployer.deployAsync(ContractName.ERC20Proxy_V1, [
+        const erc20TransferProxyV1Instance = await deployer.deployAsync(ContractName.ERC20V1Proxy, [
             tokenTransferProxy.address,
         ]);
         erc20TransferProxyV1 = new ERC20Proxy_v1Contract(
@@ -115,7 +115,7 @@ describe('Exchange', () => {
             from: accounts[0],
         });
         await assetProxyDispatcher.addAssetProxy.sendTransactionAsync(
-            AssetProxyId.ERC20_V1,
+            AssetProxyId.ERC20V1,
             erc20TransferProxyV1.address,
             ZeroEx.NULL_ADDRESS,
             { from: accounts[0] },
