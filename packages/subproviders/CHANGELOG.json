@@ -6,7 +6,8 @@
                 "note": "Add private key subprovider and refactor shared functionality into a base wallet subprovider",
                 "pr": 506
             }
-        ]
+        ],
+        "timestamp": 1523462196
     },
     {
         "timestamp": 1522673609,

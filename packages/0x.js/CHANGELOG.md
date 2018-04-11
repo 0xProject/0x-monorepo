@@ -5,6 +5,10 @@ Edit the package's CHANGELOG.json file only.
 
 CHANGELOG
 
+## v0.36.0 - _April 11, 2018_
+
+    * Moved Web3.Provider to `@0xproject/types:Provider` (#501)
+
 ## v0.35.0 - _April 2, 2018_
 
     * Removed `ZeroExError.TransactionMiningTimeout` and moved it to '@0xproject/web3_wrapper' `Web3WrapperErrors.TransactionMiningTimeout` (#485)

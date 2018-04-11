@@ -6,7 +6,8 @@
                 "note": "Moved Web3.Provider to `@0xproject/types:Provider`",
                 "pr": 501
             }
-        ]
+        ],
+        "timestamp": 1523462196
     },
     {
         "version": "0.35.0",
