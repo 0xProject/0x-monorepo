@@ -341,17 +341,22 @@ export enum Docs {
     SmartContracts,
 }
 
+export enum WebsiteLegacyPaths {
+    ZeroExJs = '/docs/0xjs',
+    Web3Wrapper = '/docs/web3_wrapper',
+}
+
 export enum WebsitePaths {
     Portal = '/portal',
     Wiki = '/wiki',
-    ZeroExJs = '/docs/0xjs',
+    ZeroExJs = '/docs/0x.js',
     Home = '/',
     FAQ = '/faq',
     About = '/about',
     Whitepaper = '/pdfs/0x_white_paper.pdf',
     SmartContracts = '/docs/contracts',
     Connect = '/docs/connect',
-    Web3Wrapper = '/docs/web3_wrapper',
+    Web3Wrapper = '/docs/web3-wrapper',
     Deployer = '/docs/deployer',
     JSONSchemas = '/docs/json-schemas',
     SolCov = '/docs/sol-cov',

@@ -13,7 +13,7 @@
         "changes": [
             {
                 "note":
-                    "Removed `ZeroExError.TransactionMiningTimeout` and moved it to '@0xproject/web3_wrapper' `Web3WrapperErrors.TransactionMiningTimeout`",
+                    "Removed `ZeroExError.TransactionMiningTimeout` and moved it to '@0xproject/web3-wrapper' `Web3WrapperErrors.TransactionMiningTimeout`",
                 "pr": 485
             }
         ],

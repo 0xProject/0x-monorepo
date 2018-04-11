@@ -15,7 +15,7 @@ import { TopBarMenuItem } from 'ts/components/top_bar/top_bar_menu_item';
 import { DropDown } from 'ts/components/ui/drop_down';
 import { Identicon } from 'ts/components/ui/identicon';
 import { Dispatcher } from 'ts/redux/dispatcher';
-import { Deco, Key, ProviderType, WebsitePaths } from 'ts/types';
+import { Deco, Key, ProviderType, WebsiteLegacyPaths, WebsitePaths } from 'ts/types';
 import { constants } from 'ts/utils/constants';
 import { Translate } from 'ts/utils/translate';
 
@@ -462,7 +462,10 @@ export class TopBar extends React.Component<TopBarProps, TopBarState> {
         return _.includes(this.props.location.pathname, WebsitePaths.FAQ);
     }
     private _isViewing0xjsDocs() {
-        return _.includes(this.props.location.pathname, WebsitePaths.ZeroExJs);
+        return (
+            _.includes(this.props.location.pathname, WebsitePaths.ZeroExJs) ||
+            _.includes(this.props.location.pathname, WebsiteLegacyPaths.ZeroExJs)
+        );
     }
     private _isViewingConnectDocs() {
         return _.includes(this.props.location.pathname, WebsitePaths.Connect);
@@ -471,7 +474,10 @@ export class TopBar extends React.Component<TopBarProps, TopBarState> {
         return _.includes(this.props.location.pathname, WebsitePaths.SmartContracts);
     }
     private _isViewingWeb3WrapperDocs() {
-        return _.includes(this.props.location.pathname, WebsitePaths.Web3Wrapper);
+        return (
+            _.includes(this.props.location.pathname, WebsitePaths.Web3Wrapper) ||
+            _.includes(this.props.location.pathname, WebsiteLegacyPaths.Web3Wrapper)
+        );
     }
     private _isViewingDeployerDocs() {
         return _.includes(this.props.location.pathname, WebsitePaths.Deployer);

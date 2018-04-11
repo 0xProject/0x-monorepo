@@ -24,7 +24,7 @@
                 "note": "Reduce npm package size by adding an `.npmignore` file."
             },
             {
-                "note": "Move `@0xproject/web3_wrapper` to dependencies from devDependencies."
+                "note": "Move `@0xproject/web3-wrapper` to dependencies from devDependencies."
             }
         ],
         "timestamp": 1521298800

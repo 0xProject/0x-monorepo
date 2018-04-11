@@ -15,7 +15,7 @@ import { createLazyComponent } from 'ts/lazy_component';
 import { trackedTokenStorage } from 'ts/local_storage/tracked_token_storage';
 import { tradeHistoryStorage } from 'ts/local_storage/trade_history_storage';
 import { reducer, State } from 'ts/redux/reducer';
-import { WebsitePaths } from 'ts/types';
+import { WebsiteLegacyPaths, WebsitePaths } from 'ts/types';
 import { analytics } from 'ts/utils/analytics';
 import { muiTheme } from 'ts/utils/mui_theme';
 import { utils } from 'ts/utils/utils';
@@ -98,6 +98,17 @@ render(
                                 path={`${WebsitePaths.SmartContracts}/:version?`}
                                 component={LazySmartContractsDocumentation}
                             />
+
+                            {/* Legacy endpoints */}
+                            <Route
+                                path={`${WebsiteLegacyPaths.ZeroExJs}/:version?`}
+                                component={LazyZeroExJSDocumentation}
+                            />
+                            <Route
+                                path={`${WebsiteLegacyPaths.Web3Wrapper}/:version?`}
+                                component={LazyWeb3WrapperDocumentation}
+                            />
+
                             <Route component={NotFound as any} />
                         </Switch>
                     </div>

@@ -16,7 +16,7 @@ CHANGELOG
 ## v0.3.1 - _March 17, 2018_
 
     * Reduce npm package size by adding an `.npmignore` file.
-    * Move `@0xproject/web3_wrapper` to dependencies from devDependencies.
+    * Move `@0xproject/web3-wrapper` to dependencies from devDependencies.
 
 ## v0.3.0 - _March 17, 2018_
 
