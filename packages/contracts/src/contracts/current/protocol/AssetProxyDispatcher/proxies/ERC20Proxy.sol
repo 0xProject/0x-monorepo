@@ -39,7 +39,7 @@ contract ERC20Proxy is
         address from,
         address to,
         uint256 amount)
-        public
+        external
         onlyAuthorized
     {
         address token = decodeMetadata(assetMetadata);

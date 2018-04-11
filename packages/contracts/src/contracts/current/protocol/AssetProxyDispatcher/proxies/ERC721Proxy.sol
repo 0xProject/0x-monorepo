@@ -39,7 +39,7 @@ contract ERC721Proxy is
         address from,
         address to,
         uint256 amount)
-        public
+        external
         onlyAuthorized
     {
         // No work to do
