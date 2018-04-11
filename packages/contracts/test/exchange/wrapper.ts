@@ -45,7 +45,6 @@ describe('Exchange', () => {
     let tokenRegistry: TokenRegistryContract;
     let tokenTransferProxy: TokenTransferProxyContract;
     let assetProxyDispatcher: AssetProxyDispatcherContract;
-    let erc20TransferProxyV1: ERC20Proxy_v1Contract;
     let erc20TransferProxy: ERC20ProxyContract;
 
     let balances: BalancesByOwner;
