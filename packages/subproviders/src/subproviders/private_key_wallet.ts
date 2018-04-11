@@ -17,7 +17,7 @@ export class PrivateKeyWalletSubprovider extends BaseWalletSubprovider {
     private _privateKeyBuffer: Buffer;
     /**
      * Instantiates a PrivateKeyWalletSubprovider.
-     * @param privateKey The private key of the ethereum address
+     * @param privateKey The corresponding private key to an Ethereum address
      * @return PrivateKeyWalletSubprovider instance
      */
     constructor(privateKey: string) {
@@ -46,7 +46,11 @@ export class PrivateKeyWalletSubprovider extends BaseWalletSubprovider {
     public async signTransactionAsync(txParams: PartialTxParams): Promise<string> {
         PrivateKeyWalletSubprovider._validateTxParams(txParams);
         if (!_.isUndefined(txParams.from) && txParams.from !== this._address) {
-            throw new Error(`${WalletSubproviderErrors.AddressNotFound}: ${txParams.from}`);
+            throw new Error(
+                `Requested to sign transaction with address: ${txParams.from}, instantiated with address: ${
+                    this._address
+                }`,
+            );
         }
         const tx = new EthereumTx(txParams);
         tx.sign(this._privateKeyBuffer);
@@ -54,8 +58,8 @@ export class PrivateKeyWalletSubprovider extends BaseWalletSubprovider {
         return rawTx;
     }
     /**
-     * Sign a personal Ethereum signed message. The signing address will be
-     * calculated from the private key, if an address is provided it must match the address calculated from the private key.
+     * Sign a personal Ethereum signed message. The signing address will be calculated from the private key.
+     * if an address is provided it must match the address calculated from the private key.
      * If you've added this Subprovider to your app's provider, you can simply send an `eth_sign`
      * or `personal_sign` JSON RPC request, and this method will be called auto-magically.
      * If you are not using this via a ProviderEngine instance, you can call it directly.
@@ -67,10 +71,13 @@ export class PrivateKeyWalletSubprovider extends BaseWalletSubprovider {
         if (_.isUndefined(data)) {
             throw new Error(WalletSubproviderErrors.DataMissingForSignPersonalMessage);
         }
-        if (_.isUndefined(address) || address !== this._address) {
-            throw new Error(`${WalletSubproviderErrors.FromAddressMissingOrInvalid}: ${address}`);
-        }
         assert.isHexString('data', data);
+        assert.isETHAddressHex('address', address);
+        if (address !== this._address) {
+            throw new Error(
+                `Requested to sign message with address: ${address}, instantiated with address: ${this._address}`,
+            );
+        }
         const dataBuff = ethUtil.toBuffer(data);
         const msgHashBuff = ethUtil.hashPersonalMessage(dataBuff);
         const sig = ethUtil.ecsign(msgHashBuff, this._privateKeyBuffer);

@@ -21,10 +21,10 @@ const expect = chai.expect;
 describe('MnemonicWalletSubprovider', () => {
     let subprovider: MnemonicWalletSubprovider;
     before(async () => {
-        subprovider = new MnemonicWalletSubprovider(
-            fixtureData.TEST_RPC_MNEMONIC,
-            fixtureData.TEST_RPC_MNEMONIC_DERIVATION_PATH,
-        );
+        subprovider = new MnemonicWalletSubprovider({
+            mnemonic: fixtureData.TEST_RPC_MNEMONIC,
+            baseDerivationPath: fixtureData.TEST_RPC_MNEMONIC_BASE_DERIVATION_PATH,
+        });
     });
     describe('direct method calls', () => {
         describe('success cases', () => {
@@ -157,11 +157,11 @@ describe('MnemonicWalletSubprovider', () => {
                 provider.sendAsync(payload, callback);
             });
             it('should throw if `address` param not found when calling personal_sign', (done: DoneCallback) => {
-                const nonHexMessage = 'hello world';
+                const messageHex = ethUtils.bufferToHex(ethUtils.toBuffer(fixtureData.PERSONAL_MESSAGE_STRING));
                 const payload = {
                     jsonrpc: '2.0',
                     method: 'personal_sign',
-                    params: [nonHexMessage, fixtureData.NULL_ADDRESS],
+                    params: [messageHex, fixtureData.NULL_ADDRESS],
                     id: 1,
                 };
                 const callback = reportCallbackErrors(done)((err: Error, response: JSONRPCResponsePayload) => {

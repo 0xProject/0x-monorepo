@@ -128,18 +128,20 @@ describe('PrivateKeyWalletSubprovider', () => {
                 });
                 provider.sendAsync(payload, callback);
             });
-            it('should throw if `address` param is not an address from private key when calling personal_sign', (done: DoneCallback) => {
-                const nonHexMessage = 'hello world';
+            it('should throw if `address` param is not the address from private key when calling personal_sign', (done: DoneCallback) => {
+                const messageHex = ethUtils.bufferToHex(ethUtils.toBuffer(fixtureData.PERSONAL_MESSAGE_STRING));
                 const payload = {
                     jsonrpc: '2.0',
                     method: 'personal_sign',
-                    params: [nonHexMessage, fixtureData.TEST_RPC_ACCOUNT_1],
+                    params: [messageHex, fixtureData.TEST_RPC_ACCOUNT_1],
                     id: 1,
                 };
                 const callback = reportCallbackErrors(done)((err: Error, response: JSONRPCResponsePayload) => {
                     expect(err).to.not.be.a('null');
                     expect(err.message).to.be.equal(
-                        `${WalletSubproviderErrors.FromAddressMissingOrInvalid}: ${fixtureData.TEST_RPC_ACCOUNT_1}`,
+                        `Requested to sign message with address: ${
+                            fixtureData.TEST_RPC_ACCOUNT_1
+                        }, instantiated with address: ${fixtureData.TEST_RPC_ACCOUNT_0}`,
                     );
                     done();
                 });
@@ -183,16 +185,16 @@ describe('PrivateKeyWalletSubprovider', () => {
                 provider.sendAsync(payload, callback);
             });
             it('should throw if `address` param not found when calling personal_sign', (done: DoneCallback) => {
-                const nonHexMessage = 'hello world';
+                const messageHex = ethUtils.bufferToHex(ethUtils.toBuffer(fixtureData.PERSONAL_MESSAGE_STRING));
                 const payload = {
                     jsonrpc: '2.0',
                     method: 'personal_sign',
-                    params: [nonHexMessage, '0x0'],
+                    params: [messageHex, '0x0'],
                     id: 1,
                 };
                 const callback = reportCallbackErrors(done)((err: Error, response: JSONRPCResponsePayload) => {
                     expect(err).to.not.be.a('null');
-                    expect(err.message).to.be.equal(`${WalletSubproviderErrors.FromAddressMissingOrInvalid}: 0x0`);
+                    expect(err.message).to.be.equal(`Expected address to be of type ETHAddressHex, encountered: 0x0`);
                     done();
                 });
                 provider.sendAsync(payload, callback);

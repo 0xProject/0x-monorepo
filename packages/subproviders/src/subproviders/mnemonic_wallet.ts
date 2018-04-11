@@ -5,13 +5,17 @@ import ethUtil = require('ethereumjs-util');
 import HDNode = require('hdkey');
 import * as _ from 'lodash';
 
-import { DerivedHDKey, PartialTxParams, WalletSubproviderErrors } from '../types';
+import { DerivedHDKeyInfo, MnemonicWalletSubproviderConfigs, PartialTxParams, WalletSubproviderErrors } from '../types';
 import { walletUtils } from '../utils/wallet_utils';
 
 import { BaseWalletSubprovider } from './base_wallet_subprovider';
 import { PrivateKeyWalletSubprovider } from './private_key_wallet';
 
-const DEFAULT_DERIVATION_PATH = `44'/60'/0'/0`;
+const DEFAULT_BASE_DERIVATION_PATH = `44'/60'/0'/0`;
+const DEFAULT_NUM_ADDRESSES_TO_FETCH = 10;
+const DEFAULT_ADDRESS_SEARCH_LIMIT = 1000;
+const ROOT_KEY_DERIVATION_PATH = 'm/';
+const ROOT_KEY_DERIVATION_INDEX = 0;
 
 /**
  * This class implements the [web3-provider-engine](https://github.com/MetaMask/provider-engine) subprovider interface.
@@ -20,35 +24,33 @@ const DEFAULT_DERIVATION_PATH = `44'/60'/0'/0`;
  */
 export class MnemonicWalletSubprovider extends BaseWalletSubprovider {
     private _addressSearchLimit: number;
-    private _derivationBasePath: string;
-    private _derivedKey: DerivedHDKey;
+    private _baseDerivationPath: string;
+    private _derivedKeyInfo: DerivedHDKeyInfo;
     /**
-     * Instantiates a MnemonicWalletSubprovider. Defaults to derivationPath set to `44'/60'/0'/0`.
-     * This is the default in TestRPC/Ganache, this can be overridden if desired.
-     * @param mnemonic The mnemonic seed
-     * @param derivationBasePath The derivation path, defaults to `44'/60'/0'/0`
-     * @param addressSearchLimit The limit on address search attempts before raising `WalletSubproviderErrors.AddressNotFound`
+     * Instantiates a MnemonicWalletSubprovider. Defaults to baseDerivationPath set to `44'/60'/0'/0`.
+     * This is the default in TestRPC/Ganache, it can be overridden if desired.
+     * @param config Several available configurations
      * @return MnemonicWalletSubprovider instance
      */
-    constructor(
-        mnemonic: string,
-        derivationBasePath: string = DEFAULT_DERIVATION_PATH,
-        addressSearchLimit: number = walletUtils.DEFAULT_ADDRESS_SEARCH_LIMIT,
-    ) {
+    constructor(config: MnemonicWalletSubproviderConfigs) {
+        const mnemonic = config.mnemonic;
         assert.isString('mnemonic', mnemonic);
-        assert.isString('derivationPath', derivationBasePath);
+        const baseDerivationPath = config.baseDerivationPath || DEFAULT_BASE_DERIVATION_PATH;
+        assert.isString('baseDerivationPath', baseDerivationPath);
+        const addressSearchLimit = config.addressSearchLimit || DEFAULT_ADDRESS_SEARCH_LIMIT;
         assert.isNumber('addressSearchLimit', addressSearchLimit);
         super();
+
         const seed = bip39.mnemonicToSeed(mnemonic);
         const hdKey = HDNode.fromMasterSeed(seed);
-        this._derivationBasePath = derivationBasePath;
-        this._derivedKey = {
+        this._baseDerivationPath = baseDerivationPath;
+        this._derivedKeyInfo = {
             address: walletUtils.addressOfHDKey(hdKey),
             // HACK this isn't the base path for this root key, but is is the base path
-            // we want all of the derived children to spawn from
-            derivationBasePath: this._derivationBasePath,
-            derivationPath: 'm/0',
-            derivationIndex: 0,
+            // we want all of the derived children to branched from
+            baseDerivationPath: this._baseDerivationPath,
+            derivationPath: ROOT_KEY_DERIVATION_PATH,
+            derivationIndex: ROOT_KEY_DERIVATION_INDEX,
             hdKey,
             isChildKey: false,
         };
@@ -59,17 +61,17 @@ export class MnemonicWalletSubprovider extends BaseWalletSubprovider {
      * @returns derivation path
      */
     public getPath(): string {
-        return this._derivationBasePath;
+        return this._baseDerivationPath;
     }
     /**
      * Set a desired derivation path when computing the available user addresses
-     * @param derivationPath The desired derivation path (e.g `44'/60'/0'`)
+     * @param baseDerivationPath The desired derivation path (e.g `44'/60'/0'`)
      */
-    public setPath(derivationPath: string) {
-        this._derivationBasePath = derivationPath;
-        this._derivedKey = {
-            ...this._derivedKey,
-            derivationBasePath: this._derivationBasePath,
+    public setPath(baseDerivationPath: string) {
+        this._baseDerivationPath = baseDerivationPath;
+        this._derivedKeyInfo = {
+            ...this._derivedKeyInfo,
+            baseDerivationPath,
         };
     }
     /**
@@ -79,11 +81,9 @@ export class MnemonicWalletSubprovider extends BaseWalletSubprovider {
      * @param numberOfAccounts Number of accounts to retrieve (default: 10)
      * @return An array of accounts
      */
-    public async getAccountsAsync(
-        numberOfAccounts: number = walletUtils.DEFAULT_NUM_ADDRESSES_TO_FETCH,
-    ): Promise<string[]> {
-        const derivedKeys = walletUtils.calculateDerivedHDKeys(this._derivedKey, numberOfAccounts);
-        const accounts = _.map(derivedKeys, 'address');
+    public async getAccountsAsync(numberOfAccounts: number = DEFAULT_NUM_ADDRESSES_TO_FETCH): Promise<string[]> {
+        const derivedKeys = walletUtils.calculateDerivedHDKeyInfos(this._derivedKeyInfo, numberOfAccounts);
+        const accounts = _.map(derivedKeys, k => k.address);
         return accounts;
     }
 
@@ -96,6 +96,9 @@ export class MnemonicWalletSubprovider extends BaseWalletSubprovider {
      * @return Signed transaction hex string
      */
     public async signTransactionAsync(txParams: PartialTxParams): Promise<string> {
+        if (_.isUndefined(txParams.from) || !addressUtils.isAddress(txParams.from)) {
+            throw new Error(WalletSubproviderErrors.FromAddressMissingOrInvalid);
+        }
         const privateKeyWallet = this._privateKeyWalletForAddress(txParams.from);
         const signedTx = privateKeyWallet.signTransactionAsync(txParams);
         return signedTx;
@@ -111,28 +114,30 @@ export class MnemonicWalletSubprovider extends BaseWalletSubprovider {
      * @return Signature hex string (order: rsv)
      */
     public async signPersonalMessageAsync(data: string, address: string): Promise<string> {
+        if (_.isUndefined(data)) {
+            throw new Error(WalletSubproviderErrors.DataMissingForSignPersonalMessage);
+        }
+        assert.isHexString('data', data);
+        assert.isETHAddressHex('address', address);
         const privateKeyWallet = this._privateKeyWalletForAddress(address);
         const sig = await privateKeyWallet.signPersonalMessageAsync(data, address);
         return sig;
     }
     private _privateKeyWalletForAddress(address: string): PrivateKeyWalletSubprovider {
-        const derivedKey = this._findDerivedKeyByPublicAddress(address);
-        const privateKeyHex = derivedKey.hdKey.privateKey.toString('hex');
+        const derivedKeyInfo = this._findDerivedKeyInfoForAddress(address);
+        const privateKeyHex = derivedKeyInfo.hdKey.privateKey.toString('hex');
         const privateKeyWallet = new PrivateKeyWalletSubprovider(privateKeyHex);
         return privateKeyWallet;
     }
-    private _findDerivedKeyByPublicAddress(address: string): DerivedHDKey {
-        if (_.isUndefined(address) || !addressUtils.isAddress(address)) {
-            throw new Error(WalletSubproviderErrors.FromAddressMissingOrInvalid);
-        }
-        const matchedDerivedKey = walletUtils.findDerivedKeyByAddress(
+    private _findDerivedKeyInfoForAddress(address: string): DerivedHDKeyInfo {
+        const matchedDerivedKeyInfo = walletUtils.findDerivedKeyInfoForAddressIfExists(
             address,
-            this._derivedKey,
+            this._derivedKeyInfo,
             this._addressSearchLimit,
         );
-        if (_.isUndefined(matchedDerivedKey)) {
+        if (_.isUndefined(matchedDerivedKeyInfo)) {
             throw new Error(`${WalletSubproviderErrors.AddressNotFound}: ${address}`);
         }
-        return matchedDerivedKey;
+        return matchedDerivedKeyInfo;
     }
 }

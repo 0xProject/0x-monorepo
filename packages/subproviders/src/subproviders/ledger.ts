@@ -8,7 +8,7 @@ import { Lock } from 'semaphore-async-await';
 
 import {
     Callback,
-    DerivedHDKey,
+    DerivedHDKeyInfo,
     LedgerEthereumClient,
     LedgerEthereumClientFactoryAsync,
     LedgerSubproviderConfigs,
@@ -21,9 +21,11 @@ import { walletUtils } from '../utils/wallet_utils';
 
 import { BaseWalletSubprovider } from './base_wallet_subprovider';
 
-const DEFAULT_DERIVATION_PATH = `44'/60'/0'`;
+const DEFAULT_BASE_DERIVATION_PATH = `44'/60'/0'`;
 const ASK_FOR_ON_DEVICE_CONFIRMATION = false;
 const SHOULD_GET_CHAIN_CODE = true;
+const DEFAULT_NUM_ADDRESSES_TO_FETCH = 10;
+const DEFAULT_ADDRESS_SEARCH_LIMIT = 1000;
 
 /**
  * Subprovider for interfacing with a user's [Ledger Nano S](https://www.ledgerwallet.com/products/ledger-nano-s).
@@ -34,7 +36,7 @@ export class LedgerSubprovider extends BaseWalletSubprovider {
     private _nonceLock = new Lock();
     private _connectionLock = new Lock();
     private _networkId: number;
-    private _derivationBasePath: string;
+    private _baseDerivationPath: string;
     private _ledgerEthereumClientFactoryAsync: LedgerEthereumClientFactoryAsync;
     private _ledgerClientIfExists?: LedgerEthereumClient;
     private _shouldAlwaysAskForConfirmation: boolean;
@@ -49,7 +51,7 @@ export class LedgerSubprovider extends BaseWalletSubprovider {
         super();
         this._networkId = config.networkId;
         this._ledgerEthereumClientFactoryAsync = config.ledgerEthereumClientFactoryAsync;
-        this._derivationBasePath = config.derivationPath || DEFAULT_DERIVATION_PATH;
+        this._baseDerivationPath = config.baseDerivationPath || DEFAULT_BASE_DERIVATION_PATH;
         this._shouldAlwaysAskForConfirmation =
             !_.isUndefined(config.accountFetchingConfigs) &&
             !_.isUndefined(config.accountFetchingConfigs.shouldAskForOnDeviceConfirmation)
@@ -59,21 +61,21 @@ export class LedgerSubprovider extends BaseWalletSubprovider {
             !_.isUndefined(config.accountFetchingConfigs) &&
             !_.isUndefined(config.accountFetchingConfigs.addressSearchLimit)
                 ? config.accountFetchingConfigs.addressSearchLimit
-                : walletUtils.DEFAULT_ADDRESS_SEARCH_LIMIT;
+                : DEFAULT_ADDRESS_SEARCH_LIMIT;
     }
     /**
      * Retrieve the set derivation path
      * @returns derivation path
      */
     public getPath(): string {
-        return this._derivationBasePath;
+        return this._baseDerivationPath;
     }
     /**
      * Set a desired derivation path when computing the available user addresses
-     * @param derivationPath The desired derivation path (e.g `44'/60'/0'`)
+     * @param basDerivationPath The desired derivation path (e.g `44'/60'/0'`)
      */
-    public setPath(derivationPath: string) {
-        this._derivationBasePath = derivationPath;
+    public setPath(basDerivationPath: string) {
+        this._baseDerivationPath = basDerivationPath;
     }
     /**
      * Retrieve a users Ledger accounts. The accounts are derived from the derivationPath,
@@ -84,12 +86,10 @@ export class LedgerSubprovider extends BaseWalletSubprovider {
      * @param numberOfAccounts Number of accounts to retrieve (default: 10)
      * @return An array of accounts
      */
-    public async getAccountsAsync(
-        numberOfAccounts: number = walletUtils.DEFAULT_NUM_ADDRESSES_TO_FETCH,
-    ): Promise<string[]> {
-        const initialDerivedKey = await this._initialDerivedKeyAsync();
-        const derivedKeys = walletUtils.calculateDerivedHDKeys(initialDerivedKey, numberOfAccounts);
-        const accounts = _.map(derivedKeys, 'address');
+    public async getAccountsAsync(numberOfAccounts: number = DEFAULT_NUM_ADDRESSES_TO_FETCH): Promise<string[]> {
+        const initialDerivedKeyInfo = await this._initialDerivedKeyInfoAsync();
+        const derivedKeyInfos = walletUtils.calculateDerivedHDKeyInfos(initialDerivedKeyInfo, numberOfAccounts);
+        const accounts = _.map(derivedKeyInfos, k => k.address);
         return accounts;
     }
     /**
@@ -102,8 +102,11 @@ export class LedgerSubprovider extends BaseWalletSubprovider {
      */
     public async signTransactionAsync(txParams: PartialTxParams): Promise<string> {
         LedgerSubprovider._validateTxParams(txParams);
-        const initialDerivedKey = await this._initialDerivedKeyAsync();
-        const derivedKey = this._findDerivedKeyByPublicAddress(initialDerivedKey, txParams.from);
+        if (_.isUndefined(txParams.from) || !addressUtils.isAddress(txParams.from)) {
+            throw new Error(WalletSubproviderErrors.FromAddressMissingOrInvalid);
+        }
+        const initialDerivedKeyInfo = await this._initialDerivedKeyInfoAsync();
+        const derivedKeyInfo = this._findDerivedKeyInfoForAddress(initialDerivedKeyInfo, txParams.from);
 
         const ledgerClient = await this._createLedgerClientAsync();
 
@@ -116,7 +119,7 @@ export class LedgerSubprovider extends BaseWalletSubprovider {
 
         const txHex = tx.serialize().toString('hex');
         try {
-            const fullDerivationPath = derivedKey.derivationPath;
+            const fullDerivationPath = derivedKeyInfo.derivationPath;
             const result = await ledgerClient.signTransaction(fullDerivationPath, txHex);
             // Store signature in transaction
             tx.r = Buffer.from(result.r, 'hex');
@@ -155,12 +158,13 @@ export class LedgerSubprovider extends BaseWalletSubprovider {
             throw new Error(WalletSubproviderErrors.DataMissingForSignPersonalMessage);
         }
         assert.isHexString('data', data);
-        const initialDerivedKey = await this._initialDerivedKeyAsync();
-        const derivedKey = this._findDerivedKeyByPublicAddress(initialDerivedKey, address);
+        assert.isETHAddressHex('address', address);
+        const initialDerivedKeyInfo = await this._initialDerivedKeyInfoAsync();
+        const derivedKeyInfo = this._findDerivedKeyInfoForAddress(initialDerivedKeyInfo, address);
 
         const ledgerClient = await this._createLedgerClientAsync();
         try {
-            const fullDerivationPath = derivedKey.derivationPath;
+            const fullDerivationPath = derivedKeyInfo.derivationPath;
             const result = await ledgerClient.signPersonalMessage(fullDerivationPath, ethUtil.stripHexPrefix(data));
             const v = result.v - 27;
             let vHex = v.toString(16);
@@ -196,13 +200,13 @@ export class LedgerSubprovider extends BaseWalletSubprovider {
         this._ledgerClientIfExists = undefined;
         this._connectionLock.release();
     }
-    private async _initialDerivedKeyAsync(): Promise<DerivedHDKey> {
+    private async _initialDerivedKeyInfoAsync(): Promise<DerivedHDKeyInfo> {
         const ledgerClient = await this._createLedgerClientAsync();
 
         let ledgerResponse;
         try {
             ledgerResponse = await ledgerClient.getAddress(
-                this._derivationBasePath,
+                this._baseDerivationPath,
                 this._shouldAlwaysAskForConfirmation,
                 SHOULD_GET_CHAIN_CODE,
             );
@@ -212,23 +216,26 @@ export class LedgerSubprovider extends BaseWalletSubprovider {
         const hdKey = new HDNode();
         hdKey.publicKey = new Buffer(ledgerResponse.publicKey, 'hex');
         hdKey.chainCode = new Buffer(ledgerResponse.chainCode, 'hex');
+        const derivationPath = `${this._baseDerivationPath}/0`;
+        const derivationIndex = 0;
         return {
             hdKey,
             address: ledgerResponse.address,
             isChildKey: true,
-            derivationBasePath: this._derivationBasePath,
-            derivationPath: `${this._derivationBasePath}/0`,
-            derivationIndex: 0,
+            baseDerivationPath: this._baseDerivationPath,
+            derivationPath,
+            derivationIndex,
         };
     }
-    private _findDerivedKeyByPublicAddress(initalHDKey: DerivedHDKey, address: string): DerivedHDKey {
-        if (_.isUndefined(address) || !addressUtils.isAddress(address)) {
-            throw new Error(WalletSubproviderErrors.FromAddressMissingOrInvalid);
-        }
-        const matchedDerivedKey = walletUtils.findDerivedKeyByAddress(address, initalHDKey, this._addressSearchLimit);
-        if (_.isUndefined(matchedDerivedKey)) {
+    private _findDerivedKeyInfoForAddress(initalHDKey: DerivedHDKeyInfo, address: string): DerivedHDKeyInfo {
+        const matchedDerivedKeyInfo = walletUtils.findDerivedKeyInfoForAddressIfExists(
+            address,
+            initalHDKey,
+            this._addressSearchLimit,
+        );
+        if (_.isUndefined(matchedDerivedKeyInfo)) {
             throw new Error(`${WalletSubproviderErrors.AddressNotFound}: ${address}`);
         }
-        return matchedDerivedKey;
+        return matchedDerivedKeyInfo;
     }
 }
