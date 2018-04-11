@@ -38,7 +38,6 @@ describe('Exchange', () => {
     let tokenOwner: string;
     let takerAddress: string;
     let feeRecipientAddress: string;
-    let assetProxyManagerAddress: string;
 
     const INITIAL_BALANCE = ZeroEx.toBaseUnitAmount(new BigNumber(10000), 18);
     const INITIAL_ALLOWANCE = ZeroEx.toBaseUnitAmount(new BigNumber(10000), 18);
@@ -62,7 +61,7 @@ describe('Exchange', () => {
     before(async () => {
         const accounts = await web3Wrapper.getAvailableAddressesAsync();
         tokenOwner = accounts[0];
-        [makerAddress, takerAddress, feeRecipientAddress, assetProxyManagerAddress] = accounts;
+        [makerAddress, takerAddress, feeRecipientAddress] = accounts;
         const [repInstance, dgdInstance, zrxInstance] = await Promise.all([
             deployer.deployAsync(ContractName.DummyToken, constants.DUMMY_TOKEN_ARGS),
             deployer.deployAsync(ContractName.DummyToken, constants.DUMMY_TOKEN_ARGS),
@@ -105,9 +104,6 @@ describe('Exchange', () => {
             assetProxyDispatcher.address,
         ]);
         exchange = new ExchangeContract(exchangeInstance.abi, exchangeInstance.address, provider);
-        await assetProxyDispatcher.addAuthorizedAddress.sendTransactionAsync(assetProxyManagerAddress, {
-            from: accounts[0],
-        });
         await assetProxyDispatcher.addAuthorizedAddress.sendTransactionAsync(exchange.address, { from: accounts[0] });
         await erc20TransferProxyV1.addAuthorizedAddress.sendTransactionAsync(assetProxyDispatcher.address, {
             from: accounts[0],

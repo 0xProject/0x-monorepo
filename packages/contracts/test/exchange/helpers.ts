@@ -28,7 +28,6 @@ const blockchainLifecycle = new BlockchainLifecycle(web3Wrapper);
 describe('Exchange', () => {
     let makerAddress: string;
     let feeRecipientAddress: string;
-    let assetProxyManagerAddress: string;
 
     let signedOrder: SignedOrder;
     let exchangeWrapper: ExchangeWrapper;
@@ -36,7 +35,7 @@ describe('Exchange', () => {
 
     before(async () => {
         const accounts = await web3Wrapper.getAvailableAddressesAsync();
-        [makerAddress, feeRecipientAddress, assetProxyManagerAddress] = accounts;
+        [makerAddress, feeRecipientAddress] = accounts;
         const tokenRegistry = await deployer.deployAsync(ContractName.TokenRegistry);
         const tokenTransferProxy = await deployer.deployAsync(ContractName.TokenTransferProxy);
         const assetProxyDispatcher = await deployer.deployAsync(ContractName.AssetProxyDispatcher);
@@ -55,9 +54,6 @@ describe('Exchange', () => {
             assetProxyDispatcher.address,
         ]);
         const exchange = new ExchangeContract(exchangeInstance.abi, exchangeInstance.address, provider);
-        await assetProxyDispatcher.addAuthorizedAddress.sendTransactionAsync(assetProxyManagerAddress, {
-            from: accounts[0],
-        });
         await assetProxyDispatcher.addAuthorizedAddress.sendTransactionAsync(exchange.address, { from: accounts[0] });
         await erc20TransferProxyV1.addAuthorizedAddress.sendTransactionAsync(assetProxyDispatcher.address, {
             from: accounts[0],
