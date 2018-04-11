@@ -81,36 +81,36 @@ contract LibBytes {
         }
     }
 
-    /// @dev Reads a uint256 value from a position in a byte array.
-    /// @param b Byte array containing a uint256 value.
-    /// @param index Index in byte array of uint256 value.
-    /// @return uint256 value from byte array.
-    function readUint256(
+    /// @dev Reads a bytes32 value from a position in a byte array.
+    /// @param b Byte array containing a bytes32 value.
+    /// @param index Index in byte array of bytes32 value.
+    /// @return bytes32 value from byte array.
+    function readBytes32(
         bytes b,
         uint256 index)
         public pure
-        returns (uint256 result)
+        returns (bytes32 result)
     {
         require(b.length >= index + 32);
 
         // Arrays are prefixed by a 256 bit length parameter
         index += 32;
 
-        // Read the uint256 from array memory
+        // Read the bytes32 from array memory
         assembly {
             result := mload(add(b, index))
         }
         return result;
     }
 
-    /// @dev Writes a uint256 into a specific position in a byte array.
+    /// @dev Writes a bytes32 into a specific position in a byte array.
     /// @param b Byte array to insert <input> into.
     /// @param index Index in byte array of <input>.
-    /// @param input uint256 to put into byte array.
-    function writeUint256(
+    /// @param input bytes32 to put into byte array.
+    function writeBytes32(
         bytes b,
         uint256 index,
-        uint256 input)
+        bytes32 input)
         public pure
     {
         require(b.length >= index + 32);
@@ -118,7 +118,7 @@ contract LibBytes {
         // Arrays are prefixed by a 256 bit length parameter
         index += 32;
 
-        // Read the uint256 from array memory
+        // Read the bytes32 from array memory
         assembly {
             mstore(add(b, index), input)
         }
