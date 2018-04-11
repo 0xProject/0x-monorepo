@@ -222,25 +222,32 @@ contract MixinWrapperFunctions is
         uint256 takerTokenFillAmount,
         bytes[] memory signatures)
         public
-        returns (FillResults memory fillResults)
+        returns (FillResults memory totalFillResults)
     {
         for (uint256 i = 0; i < orders.length; i++) {
+
+            // Token being sold by taker must be the same for each order
             require(orders[i].takerTokenAddress == orders[0].takerTokenAddress);
-            uint256 remainingTakerTokenFillAmount = safeSub(takerTokenFillAmount, fillResults.takerTokenFilledAmount);
-            FillResults memory currentFillResults = fillOrder(
+            
+            // Calculate the remaining amount of takerToken to sell
+            uint256 remainingTakerTokenFillAmount = safeSub(takerTokenFillAmount, totalFillResults.takerTokenFilledAmount);
+            
+            // Attempt to sell the remaining amount of takerToken
+            FillResults memory singleFillResults = fillOrder(
                 orders[i],
                 remainingTakerTokenFillAmount,
                 signatures[i]
             );
-            fillResults.makerTokenFilledAmount = safeAdd(fillResults.makerTokenFilledAmount, currentFillResults.makerTokenFilledAmount);
-            fillResults.takerTokenFilledAmount = safeAdd(fillResults.takerTokenFilledAmount, currentFillResults.takerTokenFilledAmount);
-            fillResults.makerFeePaid = safeAdd(fillResults.makerFeePaid, currentFillResults.makerFeePaid);
-            fillResults.takerFeePaid = safeAdd(fillResults.takerFeePaid, currentFillResults.takerFeePaid);
-            if (fillResults.takerTokenFilledAmount == takerTokenFillAmount) {
+
+            // Update amounts filled and fees paid by maker and taker
+            addFillResults(totalFillResults, singleFillResults);
+
+            // Stop execution if the entire amount of takerToken has been sold
+            if (totalFillResults.takerTokenFilledAmount == takerTokenFillAmount) {
                 break;
             }
         }
-        return fillResults;
+        return totalFillResults;
     }
 
     /// @dev Synchronously executes multiple calls of fillOrder until total amount of takerToken is sold by taker.
@@ -254,25 +261,32 @@ contract MixinWrapperFunctions is
         uint256 takerTokenFillAmount,
         bytes[] memory signatures)
         public
-        returns (FillResults memory fillResults)
+        returns (FillResults memory totalFillResults)
     {
         for (uint256 i = 0; i < orders.length; i++) {
+
+            // Token being sold by taker must be the same for each order
             require(orders[i].takerTokenAddress == orders[0].takerTokenAddress);
-            uint256 remainingTakerTokenFillAmount = safeSub(takerTokenFillAmount, fillResults.takerTokenFilledAmount);
-            FillResults memory currentFillResults = fillOrderNoThrow(
+
+            // Calculate the remaining amount of takerToken to sell
+            uint256 remainingTakerTokenFillAmount = safeSub(takerTokenFillAmount, totalFillResults.takerTokenFilledAmount);
+            
+            // Attempt to sell the remaining amount of takerToken
+            FillResults memory singleFillResults = fillOrderNoThrow(
                 orders[i],
                 remainingTakerTokenFillAmount,
                 signatures[i]
             );
-            fillResults.makerTokenFilledAmount = safeAdd(fillResults.makerTokenFilledAmount, currentFillResults.makerTokenFilledAmount);
-            fillResults.takerTokenFilledAmount = safeAdd(fillResults.takerTokenFilledAmount, currentFillResults.takerTokenFilledAmount);
-            fillResults.makerFeePaid = safeAdd(fillResults.makerFeePaid, currentFillResults.makerFeePaid);
-            fillResults.takerFeePaid = safeAdd(fillResults.takerFeePaid, currentFillResults.takerFeePaid);
-            if (fillResults.takerTokenFilledAmount == takerTokenFillAmount) {
+
+            // Update amounts filled and fees paid by maker and taker
+            addFillResults(totalFillResults, singleFillResults);
+
+            // Stop execution if the entire amount of takerToken has been sold
+            if (totalFillResults.takerTokenFilledAmount == takerTokenFillAmount) {
                 break;
             }
         }
-        return fillResults;
+        return totalFillResults;
     }
 
     /// @dev Synchronously executes multiple calls of fillOrder until total amount of makerToken is bought by taker.
@@ -285,30 +299,40 @@ contract MixinWrapperFunctions is
         uint256 makerTokenFillAmount,
         bytes[] memory signatures)
         public
-        returns (FillResults memory fillResults)
+        returns (FillResults memory totalFillResults)
     {
         for (uint256 i = 0; i < orders.length; i++) {
+
+            // Token being bought by taker must be the same for each order
             require(orders[i].makerTokenAddress == orders[0].makerTokenAddress);
-            uint256 remainingMakerTokenFillAmount = safeSub(makerTokenFillAmount, fillResults.makerTokenFilledAmount);
+
+            // Calculate the remaining amount of makerToken to buy
+            uint256 remainingMakerTokenFillAmount = safeSub(makerTokenFillAmount, totalFillResults.makerTokenFilledAmount);
+            
+            // Convert the remaining amount of makerToken to buy into remaining amount
+            // of takerToken to sell, assuming entire amount can be sold in the current order
             uint256 remainingTakerTokenFillAmount = getPartialAmount(
                 orders[i].takerTokenAmount,
                 orders[i].makerTokenAmount,
                 remainingMakerTokenFillAmount
             );
-            FillResults memory currentFillResults = fillOrder(
+
+            // Attempt to sell the remaining amount of takerToken
+            FillResults memory singleFillResults = fillOrder(
                 orders[i],
                 remainingTakerTokenFillAmount,
                 signatures[i]
             );
-            fillResults.makerTokenFilledAmount = safeAdd(fillResults.makerTokenFilledAmount, currentFillResults.makerTokenFilledAmount);
-            fillResults.takerTokenFilledAmount = safeAdd(fillResults.takerTokenFilledAmount, currentFillResults.takerTokenFilledAmount);
-            fillResults.makerFeePaid = safeAdd(fillResults.makerFeePaid, currentFillResults.makerFeePaid);
-            fillResults.takerFeePaid = safeAdd(fillResults.takerFeePaid, currentFillResults.takerFeePaid);
-            if (fillResults.makerTokenFilledAmount == makerTokenFillAmount) {
+
+            // Update amounts filled and fees paid by maker and taker
+            addFillResults(totalFillResults, singleFillResults);
+
+            // Stop execution if the entire amount of makerToken has been bought
+            if (totalFillResults.makerTokenFilledAmount == makerTokenFillAmount) {
                 break;
             }
         }
-        return fillResults;
+        return totalFillResults;
     }
 
     /// @dev Synchronously executes multiple fill orders in a single transaction until total amount is bought by taker.
@@ -322,30 +346,40 @@ contract MixinWrapperFunctions is
         uint256 makerTokenFillAmount,
         bytes[] memory signatures)
         public
-        returns (FillResults memory fillResults)
+        returns (FillResults memory totalFillResults)
     {
         for (uint256 i = 0; i < orders.length; i++) {
+
+            // Token being bought by taker must be the same for each order
             require(orders[i].makerTokenAddress == orders[0].makerTokenAddress);
-            uint256 remainingMakerTokenFillAmount = safeSub(makerTokenFillAmount, fillResults.makerTokenFilledAmount);
+
+            // Calculate the remaining amount of makerToken to buy
+            uint256 remainingMakerTokenFillAmount = safeSub(makerTokenFillAmount, totalFillResults.makerTokenFilledAmount);
+
+            // Convert the remaining amount of makerToken to buy into remaining amount
+            // of takerToken to sell, assuming entire amount can be sold in the current order
             uint256 remainingTakerTokenFillAmount = getPartialAmount(
                 orders[i].takerTokenAmount,
                 orders[i].makerTokenAmount,
                 remainingMakerTokenFillAmount
             );
-            FillResults memory currentFillResults = fillOrderNoThrow(
+
+            // Attempt to sell the remaining amount of takerToken
+            FillResults memory singleFillResults = fillOrderNoThrow(
                 orders[i],
                 remainingTakerTokenFillAmount,
                 signatures[i]
             );
-            fillResults.makerTokenFilledAmount = safeAdd(fillResults.makerTokenFilledAmount, currentFillResults.makerTokenFilledAmount);
-            fillResults.takerTokenFilledAmount = safeAdd(fillResults.takerTokenFilledAmount, currentFillResults.takerTokenFilledAmount);
-            fillResults.makerFeePaid = safeAdd(fillResults.makerFeePaid, currentFillResults.makerFeePaid);
-            fillResults.takerFeePaid = safeAdd(fillResults.takerFeePaid, currentFillResults.takerFeePaid);
-            if (fillResults.makerTokenFilledAmount == makerTokenFillAmount) {
+
+            // Update amounts filled and fees paid by maker and taker
+            addFillResults(totalFillResults, singleFillResults);
+
+            // Stop execution if the entire amount of makerToken has been bought
+            if (totalFillResults.makerTokenFilledAmount == makerTokenFillAmount) {
                 break;
             }
         }
-        return fillResults;
+        return totalFillResults;
     }
 
     /// @dev Synchronously cancels multiple orders in a single transaction.
@@ -356,6 +390,20 @@ contract MixinWrapperFunctions is
         for (uint256 i = 0; i < orders.length; i++) {
             cancelOrder(orders[i]);
         }
+    }
+
+    /// @dev Adds properties of both FillResults instances.
+    ///      Modifies the first FillResults instance specified.
+    /// @param totalFillResults Fill results instance that will be added onto.
+    /// @param singleFillResults Fill results instance that will be added to totalFillResults.
+    function addFillResults(FillResults memory totalFillResults, FillResults memory singleFillResults)
+        internal
+        pure
+    {
+        totalFillResults.makerTokenFilledAmount = safeAdd(totalFillResults.makerTokenFilledAmount, singleFillResults.makerTokenFilledAmount);
+        totalFillResults.takerTokenFilledAmount = safeAdd(totalFillResults.takerTokenFilledAmount, singleFillResults.takerTokenFilledAmount);
+        totalFillResults.makerFeePaid = safeAdd(totalFillResults.makerFeePaid, singleFillResults.makerFeePaid);
+        totalFillResults.takerFeePaid = safeAdd(totalFillResults.takerFeePaid, singleFillResults.takerFeePaid);
     }
     
 }
