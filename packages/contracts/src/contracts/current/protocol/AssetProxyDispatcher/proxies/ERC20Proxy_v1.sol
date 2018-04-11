@@ -79,7 +79,7 @@ contract ERC20Proxy_v1 is
     /// @dev Decodes ERC20-encoded byte array for the ERC20 asset proxy.
     /// @param assetMetadata Byte array encoded for the ERC20 asset proxy.
     /// @return tokenAddress Address of ERC20 token.
-    function decodeMetadata(bytes assetMetadata)
+    function decodeMetadata(bytes memory assetMetadata)
         public pure
         returns (address tokenAddress)
     {

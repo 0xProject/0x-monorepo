@@ -84,7 +84,7 @@ contract ERC721Proxy is
     /// @param assetMetadata Byte array encoded for the ERC721 asset proxy.
     /// @return tokenAddress Address of ERC721 token.
     /// @return tokenId Id of ERC721 token.
-    function decodeMetadata(bytes assetMetadata)
+    function decodeMetadata(bytes memory assetMetadata)
         public pure
         returns (address tokenAddress, uint256 tokenId)
     {
