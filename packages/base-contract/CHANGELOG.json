@@ -6,7 +6,8 @@
                 "note": "Contract wrappers now accept Provider and defaults instead of Web3Wrapper",
                 "pr": 501
             }
-        ]
+        ],
+        "timestamp": 1523462196
     },
     {
         "version": "0.1.0",

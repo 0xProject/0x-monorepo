@@ -74,7 +74,7 @@ You can include those by prepending @0xproject/typescript-typings package to you
 
 We strongly recommend that the community help us make improvements and determine the future direction of the protocol. To report bugs within this package, please create an issue in this repository.
 
-Please read our [contribution guidelines](./CONTRIBUTING.md) before getting started.
+#### Read our [contribution guidelines](./CONTRIBUTING.md).
 
 ### Install dependencies
 
@@ -118,24 +118,6 @@ yarn lerna:run lint
 
 ### Run Tests
 
-Before running the tests, you will need to spin up a [TestRPC](https://www.npmjs.com/package/ethereumjs-testrpc) instance and deploy all the 0x smart contracts.
-
-In a separate terminal, start TestRPC (a convenience command is provided as part of this repo)
-
 ```bash
-yarn testrpc
-```
-
-Then in your main terminal run
-
-```
-cd packages/contracts
-yarn migrate
-cd ..
-```
-
-And finally from the root project directory run
-
-```bash
-yarn lerna:run test
+yarn lerna:test
 ```

@@ -1,6 +1,6 @@
 [
     {
-        "version": "0.0.7",
+        "version": "0.0.8",
         "changes": [
             {
                 "note": "Added support for rendering default param values",
@@ -9,6 +9,15 @@
             {
                 "note": "Added support for rendering nested function types within interface types",
                 "pr": 519
+            }
+        ]
+    },
+    {
+        "timestamp": 1523462196,
+        "version": "0.0.7",
+        "changes": [
+            {
+                "note": "Dependencies updated"
             }
         ]
     },
