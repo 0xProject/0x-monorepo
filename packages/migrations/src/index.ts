@@ -1,3 +1,1 @@
-import { runMigrationsAsync } from './migration';
-
-export { runMigrationsAsync };
+export { runMigrationsAsync } from './migration';
