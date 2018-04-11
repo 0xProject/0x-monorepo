@@ -35,7 +35,6 @@ describe('Asset Transfer Proxies', () => {
     let ck: DummyERC721TokenContract;
     let dmyBalances: Balances;
     let tokenTransferProxy: TokenTransferProxyContract;
-    let assetProxyDispatcher: AssetProxyDispatcherContract;
     let erc20TransferProxyV1: ERC20Proxy_v1Contract;
     let erc20TransferProxy: ERC20ProxyContract;
     let erc721TransferProxy: ERC721ProxyContract;
