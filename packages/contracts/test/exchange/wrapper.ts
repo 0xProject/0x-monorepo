@@ -7,9 +7,11 @@ import * as _ from 'lodash';
 import * as Web3 from 'web3';
 
 import { AssetProxyDispatcherContract } from '../../src/contract_wrappers/generated/asset_proxy_dispatcher';
+import { DummyERC721TokenContract } from '../../src/contract_wrappers/generated/dummy_e_r_c721_token';
 import { DummyTokenContract } from '../../src/contract_wrappers/generated/dummy_token';
-import { ERC20ProxyContract } from '../../src/contract_wrappers/generated/e_r_c20_transfer_proxy';
-import { ERC20Proxy_v1Contract } from '../../src/contract_wrappers/generated/erc20transferproxy_v1';
+import { ERC20ProxyContract } from '../../src/contract_wrappers/generated/e_r_c20_proxy';
+import { ERC721ProxyContract } from '../../src/contract_wrappers/generated/e_r_c721_proxy';
+import { ERC20Proxy_v1Contract } from '../../src/contract_wrappers/generated/erc20proxy_v1';
 import { ExchangeContract } from '../../src/contract_wrappers/generated/exchange';
 import { TokenRegistryContract } from '../../src/contract_wrappers/generated/token_registry';
 import { TokenTransferProxyContract } from '../../src/contract_wrappers/generated/token_transfer_proxy';
