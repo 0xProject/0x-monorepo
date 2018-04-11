@@ -23,7 +23,7 @@ import "../../../utils/LibBytes/LibBytes.sol";
 import "../../../utils/Authorizable/Authorizable.sol";
 import { ITokenTransferProxy as ITokenTransferProxy_v1 } from "../../TokenTransferProxy/ITokenTransferProxy.sol";
 
-contract ERC20TransferProxy_v1 is
+contract ERC20Proxy_v1 is
     LibBytes,
     Authorizable,
     IAssetProxy
@@ -32,7 +32,7 @@ contract ERC20TransferProxy_v1 is
 
     /// @dev Contract constructor.
     /// @param tokenTransferProxyContract erc20 token transfer proxy contract.
-    function ERC20TransferProxy_v1(ITokenTransferProxy_v1 tokenTransferProxyContract)
+    function ERC20Proxy_v1(ITokenTransferProxy_v1 tokenTransferProxyContract)
         public
     {
         TRANSFER_PROXY = tokenTransferProxyContract;
