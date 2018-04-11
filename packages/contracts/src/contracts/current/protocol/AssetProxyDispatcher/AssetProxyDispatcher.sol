@@ -24,14 +24,14 @@ import "../../utils/Ownable/Ownable.sol";
 import "../../utils/Authorizable/Authorizable.sol";
 
 contract AssetProxyDispatcher is
+    IAssetProxyDispatcher,
     Ownable,
-    Authorizable,
-    IAssetProxyDispatcher
+    Authorizable
 {
     // Mapping from Asset Proxy Id's to their respective Asset Proxy
     mapping (uint8 => IAssetProxy) public assetProxies;
 
-    /// @dev Delegates transfer to the corresponding asset proxy.
+    /// @dev Transfers assets. Either succeeds or throws.
     /// @param assetMetadata Byte array encoded for the respective asset proxy.
     /// @param from Address to transfer token from.
     /// @param to Address to transfer token to.
@@ -49,14 +49,13 @@ contract AssetProxyDispatcher is
         uint8 assetProxyId = uint8(assetMetadata[0]);
         IAssetProxy assetProxy = assetProxies[assetProxyId];
 
-        // Dispatch transfer to asset proxy
         // transferFrom will either succeed or throw.
         assetProxy.transferFrom(assetMetadata, from, to, amount);
     }
 
     /// @dev Adds a new asset proxy.
     /// @param assetProxyId Id of the asset proxy.
-    /// @param newAssetProxyAddress Address of the asset proxy contract to register.
+    /// @param newAssetProxyAddress Address of the asset proxy contract to add.
     /// @param currentAssetProxyAddress Address of existing asset proxy to overwrite.
     function addAssetProxy(
         uint8 assetProxyId,
@@ -65,10 +64,10 @@ contract AssetProxyDispatcher is
         external
         onlyOwner
     {
-        // Ensure any existing asset proxy is not unintentionally overwritten
+        // Ensure the existing asset proxy is not unintentionally overwritten
         require(currentAssetProxyAddress == address(assetProxies[assetProxyId]));
 
-        // Store asset proxy and log registration
+        // Add asset proxy and log registration
         assetProxies[assetProxyId] = IAssetProxy(newAssetProxyAddress);
         emit AssetProxyChanged(assetProxyId, newAssetProxyAddress, currentAssetProxyAddress);
     }

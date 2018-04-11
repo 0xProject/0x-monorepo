@@ -20,9 +20,8 @@ pragma solidity ^0.4.21;
 
 import "./IAssetProxy.sol";
 
-contract IAssetProxyDispatcher is
-    IAssetProxy
-{
+contract IAssetProxyDispatcher  {
+    
     // Logs registration of new asset proxy
     event AssetProxyChanged(
         uint8 id,
@@ -32,7 +31,7 @@ contract IAssetProxyDispatcher is
 
     /// @dev Adds a new asset proxy.
     /// @param assetProxyId Id of the asset proxy.
-    /// @param newAssetProxyAddress Address of the asset proxy contract to register.
+    /// @param newAssetProxyAddress Address of the asset proxy contract to add.
     /// @param currentAssetProxyAddress Address of existing asset proxy to overwrite.
     function addAssetProxy(
         uint8 assetProxyId,
