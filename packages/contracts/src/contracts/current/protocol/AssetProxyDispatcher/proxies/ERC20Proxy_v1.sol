@@ -35,6 +35,7 @@ contract ERC20Proxy_v1 is
     function ERC20Proxy_v1(ITokenTransferProxy_v1 tokenTransferProxyContract)
         public
     {
+        // TODO: Hardcode this address for production.
         TRANSFER_PROXY = tokenTransferProxyContract;
     }
 
