@@ -69,7 +69,7 @@ contract AssetProxyDispatcher is
 
         // Add asset proxy and log registration
         assetProxies[assetProxyId] = IAssetProxy(newAssetProxyAddress);
-        emit AssetProxyChanged(assetProxyId, newAssetProxyAddress, currentAssetProxyAddress);
+        emit AssetProxySet(assetProxyId, newAssetProxyAddress, currentAssetProxyAddress);
     }
 
     /// @dev Gets an asset proxy.

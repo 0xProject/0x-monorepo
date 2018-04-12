@@ -21,9 +21,9 @@ pragma solidity ^0.4.21;
 import "./IAssetProxy.sol";
 
 contract IAssetProxyDispatcher  {
-    
+
     // Logs registration of new asset proxy
-    event AssetProxyChanged(
+    event AssetProxySet(
         uint8 id,
         address newAssetClassAddress,
         address oldAssetClassAddress
