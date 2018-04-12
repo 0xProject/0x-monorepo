@@ -26,6 +26,7 @@ const ASK_FOR_ON_DEVICE_CONFIRMATION = false;
 const SHOULD_GET_CHAIN_CODE = true;
 const DEFAULT_NUM_ADDRESSES_TO_FETCH = 10;
 const DEFAULT_ADDRESS_SEARCH_LIMIT = 1000;
+const INITIAL_KEY_DERIVATION_INDEX = 0;
 
 /**
  * Subprovider for interfacing with a user's [Ledger Nano S](https://www.ledgerwallet.com/products/ledger-nano-s).
@@ -203,10 +204,11 @@ export class LedgerSubprovider extends BaseWalletSubprovider {
     private async _initialDerivedKeyInfoAsync(): Promise<DerivedHDKeyInfo> {
         const ledgerClient = await this._createLedgerClientAsync();
 
+        const parentKeyDerivationPath = `m/${this._baseDerivationPath}`;
         let ledgerResponse;
         try {
             ledgerResponse = await ledgerClient.getAddress(
-                this._baseDerivationPath,
+                parentKeyDerivationPath,
                 this._shouldAlwaysAskForConfirmation,
                 SHOULD_GET_CHAIN_CODE,
             );
@@ -216,16 +218,14 @@ export class LedgerSubprovider extends BaseWalletSubprovider {
         const hdKey = new HDNode();
         hdKey.publicKey = new Buffer(ledgerResponse.publicKey, 'hex');
         hdKey.chainCode = new Buffer(ledgerResponse.chainCode, 'hex');
-        const derivationPath = `${this._baseDerivationPath}/0`;
-        const derivationIndex = 0;
-        return {
+        const address = walletUtils.addressOfHDKey(hdKey);
+        const initialDerivedKeyInfo = {
             hdKey,
-            address: ledgerResponse.address,
-            isChildKey: true,
+            address,
+            derivationPath: parentKeyDerivationPath,
             baseDerivationPath: this._baseDerivationPath,
-            derivationPath,
-            derivationIndex,
         };
+        return initialDerivedKeyInfo;
     }
     private _findDerivedKeyInfoForAddress(initalHDKey: DerivedHDKeyInfo, address: string): DerivedHDKeyInfo {
         const matchedDerivedKeyInfo = walletUtils.findDerivedKeyInfoForAddressIfExists(

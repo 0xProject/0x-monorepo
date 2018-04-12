@@ -120,11 +120,9 @@ export enum NonceSubproviderErrors {
 }
 export interface DerivedHDKeyInfo {
     address: string;
-    derivationIndex: number;
     baseDerivationPath: string;
     derivationPath: string;
     hdKey: HDNode;
-    isChildKey: boolean;
 }
 
 export type ErrorCallback = (err: Error | null, data?: any) => void;

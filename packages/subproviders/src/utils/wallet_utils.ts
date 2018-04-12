@@ -20,20 +20,15 @@ class DerivedHDKeyInfoIterator implements IterableIterator<DerivedHDKeyInfo> {
     public next(): IteratorResult<DerivedHDKeyInfo> {
         const baseDerivationPath = this._initialDerivedKey.baseDerivationPath;
         const derivationIndex = this._index;
-        const isChildKey = this._initialDerivedKey.isChildKey;
-        // If the DerivedHDKey is a child then we walk relative, if not we walk the full derivation path
         const fullDerivationPath = `m/${baseDerivationPath}/${derivationIndex}`;
-        const relativeDerivationPath = `m/${derivationIndex}`;
-        const path = isChildKey ? relativeDerivationPath : fullDerivationPath;
+        const path = `m/${derivationIndex}`;
         const hdKey = this._initialDerivedKey.hdKey.derive(path);
         const address = walletUtils.addressOfHDKey(hdKey);
         const derivedKey: DerivedHDKeyInfo = {
             address,
             hdKey,
             baseDerivationPath,
-            derivationIndex,
             derivationPath: fullDerivationPath,
-            isChildKey,
         };
         const done = this._index === this._searchLimit;
         this._index++;
@@ -78,7 +73,7 @@ export const walletUtils = {
         const ethereumAddressUnprefixed = ethUtil
             .publicToAddress(derivedPublicKey, shouldSanitizePublicKey)
             .toString('hex');
-        const address = ethUtil.addHexPrefix(ethereumAddressUnprefixed);
+        const address = ethUtil.addHexPrefix(ethereumAddressUnprefixed).toLowerCase();
         return address;
     },
 };

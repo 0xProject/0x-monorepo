@@ -14,8 +14,7 @@ import { PrivateKeyWalletSubprovider } from './private_key_wallet';
 const DEFAULT_BASE_DERIVATION_PATH = `44'/60'/0'/0`;
 const DEFAULT_NUM_ADDRESSES_TO_FETCH = 10;
 const DEFAULT_ADDRESS_SEARCH_LIMIT = 1000;
-const ROOT_KEY_DERIVATION_PATH = 'm/';
-const ROOT_KEY_DERIVATION_INDEX = 0;
+const INITIAL_KEY_DERIVATION_INDEX = 0;
 
 /**
  * This class implements the [web3-provider-engine](https://github.com/MetaMask/provider-engine) subprovider interface.
@@ -26,6 +25,8 @@ export class MnemonicWalletSubprovider extends BaseWalletSubprovider {
     private _addressSearchLimit: number;
     private _baseDerivationPath: string;
     private _derivedKeyInfo: DerivedHDKeyInfo;
+    private _mnemonic: string;
+
     /**
      * Instantiates a MnemonicWalletSubprovider. Defaults to baseDerivationPath set to `44'/60'/0'/0`.
      * This is the default in TestRPC/Ganache, it can be overridden if desired.
@@ -41,20 +42,10 @@ export class MnemonicWalletSubprovider extends BaseWalletSubprovider {
         assert.isNumber('addressSearchLimit', addressSearchLimit);
         super();
 
-        const seed = bip39.mnemonicToSeed(mnemonic);
-        const hdKey = HDNode.fromMasterSeed(seed);
+        this._mnemonic = mnemonic;
         this._baseDerivationPath = baseDerivationPath;
-        this._derivedKeyInfo = {
-            address: walletUtils.addressOfHDKey(hdKey),
-            // HACK this isn't the base path for this root key, but is is the base path
-            // we want all of the derived children to branched from
-            baseDerivationPath: this._baseDerivationPath,
-            derivationPath: ROOT_KEY_DERIVATION_PATH,
-            derivationIndex: ROOT_KEY_DERIVATION_INDEX,
-            hdKey,
-            isChildKey: false,
-        };
         this._addressSearchLimit = addressSearchLimit;
+        this._derivedKeyInfo = this._initialDerivedKeyInfo(this._baseDerivationPath);
     }
     /**
      * Retrieve the set derivation path
@@ -69,10 +60,7 @@ export class MnemonicWalletSubprovider extends BaseWalletSubprovider {
      */
     public setPath(baseDerivationPath: string) {
         this._baseDerivationPath = baseDerivationPath;
-        this._derivedKeyInfo = {
-            ...this._derivedKeyInfo,
-            baseDerivationPath,
-        };
+        this._derivedKeyInfo = this._initialDerivedKeyInfo(this._baseDerivationPath);
     }
     /**
      * Retrieve the accounts associated with the mnemonic.
@@ -139,5 +127,21 @@ export class MnemonicWalletSubprovider extends BaseWalletSubprovider {
             throw new Error(`${WalletSubproviderErrors.AddressNotFound}: ${address}`);
         }
         return matchedDerivedKeyInfo;
+    }
+    private _initialDerivedKeyInfo(baseDerivationPath: string): DerivedHDKeyInfo {
+        const seed = bip39.mnemonicToSeed(this._mnemonic);
+        const hdKey = HDNode.fromMasterSeed(seed);
+        // Walk down to base derivation level (i.e m/44'/60'/0') and create an initial key at that level
+        // all children will then be walked relative (i.e m/0)
+        const parentKeyDerivationPath = `m/${baseDerivationPath}`;
+        const parentHDKeyAtDerivationPath = hdKey.derive(parentKeyDerivationPath);
+        const address = walletUtils.addressOfHDKey(parentHDKeyAtDerivationPath);
+        const derivedKeyInfo = {
+            address,
+            baseDerivationPath,
+            derivationPath: parentKeyDerivationPath,
+            hdKey: parentHDKeyAtDerivationPath,
+        };
+        return derivedKeyInfo;
     }
 }
