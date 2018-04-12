@@ -57,6 +57,17 @@ contract ERC20Proxy_v1 is
         require(success == true);
     }
 
+    /// @dev Decodes ERC20-encoded byte array.
+    /// @param assetMetadata ERC20-encoded byte array.
+    /// @return tokenAddress Address of ERC20 token.
+    function decodeMetadata(bytes memory assetMetadata)
+        public pure
+        returns (address tokenAddress)
+    {
+        require(assetMetadata.length == 21);
+        return readAddress(assetMetadata, 1);
+    }
+
     /// @dev Encodes ERC20 byte array.
     /// @param assetProxyId Id of the asset proxy.
     /// @param tokenAddress Address of the asset.
@@ -75,16 +86,5 @@ contract ERC20Proxy_v1 is
         assetMetadata[0] = byte(assetProxyId);
         writeAddress(assetMetadata, 1, tokenAddress);
         return assetMetadata;
-    }
-
-    /// @dev Decodes ERC20-encoded byte array.
-    /// @param assetMetadata ERC20-encoded byte array.
-    /// @return tokenAddress Address of ERC20 token.
-    function decodeMetadata(bytes memory assetMetadata)
-        public pure
-        returns (address tokenAddress)
-    {
-        require(assetMetadata.length == 21);
-        return readAddress(assetMetadata, 1);
     }
 }

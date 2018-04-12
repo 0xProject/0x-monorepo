@@ -57,6 +57,20 @@ contract ERC721Proxy is
         ERC721Token(token).transferFrom(from, to, tokenId);
     }
 
+    /// @dev Decodes ERC721-encoded byte array.
+    /// @param assetMetadata ERC721-encoded byte array.
+    /// @return tokenAddress Address of ERC721 token.
+    /// @return tokenId Id of ERC721 token.
+    function decodeMetadata(bytes memory assetMetadata)
+        public pure
+        returns (address tokenAddress, uint256 tokenId)
+    {
+        require(assetMetadata.length == 53);
+        tokenAddress = readAddress(assetMetadata, 1);
+        tokenId = uint256(readBytes32(assetMetadata, 21));
+        return (tokenAddress, tokenId);
+    }
+
     /// @dev Encodes ERC721 byte array.
     /// @param assetProxyId Id of the asset proxy.
     /// @param tokenAddress Address of the asset.
@@ -78,19 +92,5 @@ contract ERC721Proxy is
         writeAddress(assetMetadata, 1, tokenAddress);
         writeBytes32(assetMetadata, 21, bytes32(tokenId));
         return assetMetadata;
-    }
-
-    /// @dev Decodes ERC721-encoded byte array.
-    /// @param assetMetadata ERC721-encoded byte array.
-    /// @return tokenAddress Address of ERC721 token.
-    /// @return tokenId Id of ERC721 token.
-    function decodeMetadata(bytes memory assetMetadata)
-        public pure
-        returns (address tokenAddress, uint256 tokenId)
-    {
-        require(assetMetadata.length == 53);
-        tokenAddress = readAddress(assetMetadata, 1);
-        tokenId = uint256(readBytes32(assetMetadata, 21));
-        return (tokenAddress, tokenId);
     }
 }
