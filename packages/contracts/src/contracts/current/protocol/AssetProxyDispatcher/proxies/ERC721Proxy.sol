@@ -67,7 +67,7 @@ contract ERC721Proxy is
         address tokenAddress,
         uint256 tokenId)
         public pure
-        returns (bytes assetMetadata)
+        returns (bytes memory assetMetadata)
     {
         // 0 is reserved as invalid proxy id
         require(assetProxyId != 0);
