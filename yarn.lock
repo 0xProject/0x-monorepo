@@ -55,6 +55,12 @@
   version "1.0.2"
   resolved "https://registry.yarnpkg.com/@types/bintrees/-/bintrees-1.0.2.tgz#0dfdce4eeebdf90427bd35b0e79dc248b3d157a6"
 
+"@types/bip39@^2.4.0":
+  version "2.4.0"
+  resolved "https://registry.yarnpkg.com/@types/bip39/-/bip39-2.4.0.tgz#eee31a14abc8ebbb41a1ff14575c447b18346cbc"
+  dependencies:
+    "@types/node" "*"
+
 "@types/body-parser@*", "@types/body-parser@^1.16.1":
   version "1.16.8"
   resolved "https://registry.yarnpkg.com/@types/body-parser/-/body-parser-1.16.8.tgz#687ec34140624a3bec2b1a8ea9268478ae8f3be3"
@@ -1408,7 +1414,7 @@ bintrees@^1.0.2:
   version "1.0.2"
   resolved "https://registry.yarnpkg.com/bintrees/-/bintrees-1.0.2.tgz#49f896d6e858a4a499df85c38fb399b9aff840f8"
 
-bip39@^2.2.0:
+bip39@^2.2.0, bip39@^2.5.0:
   version "2.5.0"
   resolved "https://registry.yarnpkg.com/bip39/-/bip39-2.5.0.tgz#51cbd5179460504a63ea3c000db3f787ca051235"
   dependencies:
@@ -5108,7 +5114,7 @@ i@0.3.x:
   version "0.3.6"
   resolved "https://registry.yarnpkg.com/i/-/i-0.3.6.tgz#d96c92732076f072711b6b10fd7d4f65ad8ee23d"
 
-iconv-lite@0.4.19, iconv-lite@^0.4.17, iconv-lite@~0.4.13:
+iconv-lite@0.4.19:
   version "0.4.19"
   resolved "https://registry.yarnpkg.com/iconv-lite/-/iconv-lite-0.4.19.tgz#f7468f60135f5e5dad3399c0a81be9a1603a082b"
 
