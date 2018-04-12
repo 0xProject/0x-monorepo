@@ -32,7 +32,7 @@ This repository is a monorepo including the 0x protocol smart contracts and nume
 | [`@0xproject/react-docs`](/packages/react-docs)                 | [![npm](https://img.shields.io/npm/v/@0xproject/react-docs.svg)](https://www.npmjs.com/package/@0xproject/react-docs)                 | React documentation component for rendering TypeDoc & Doxity generated JSON |
 | [`@0xproject/react-shared`](/packages/react-shared)             | [![npm](https://img.shields.io/npm/v/@0xproject/react-shared.svg)](https://www.npmjs.com/package/@0xproject/react-shared)             | 0x shared react components                                                  |
 | [`@0xproject/sra-report`](/packages/sra-report)                 | [![npm](https://img.shields.io/npm/v/@0xproject/sra-report.svg)](https://www.npmjs.com/package/@0xproject/sra-report)                 | Generate reports for standard relayer API compliance                        |
-| [`@0xproject/sol-cov`](/packages/sol-cov)                       | [![npm](https://img.shields.io/npm/v/@0xproject/sol-cov.svg)](https://www.npmjs.com/package/@0xproject/sol-cov)                       | Solidity test coverage tool tool                                            |
+| [`@0xproject/sol-cov`](/packages/sol-cov)                       | [![npm](https://img.shields.io/npm/v/@0xproject/sol-cov.svg)](https://www.npmjs.com/package/@0xproject/sol-cov)                       | Solidity test coverage tool                                                 |
 | [`@0xproject/subproviders`](/packages/subproviders)             | [![npm](https://img.shields.io/npm/v/@0xproject/subproviders.svg)](https://www.npmjs.com/package/@0xproject/subproviders)             | Useful web3 subproviders (e.g LedgerSubprovider)                            |
 | [`@0xproject/tslint-config`](/packages/tslint-config)           | [![npm](https://img.shields.io/npm/v/@0xproject/tslint-config.svg)](https://www.npmjs.com/package/@0xproject/tslint-config)           | Custom 0x development TSLint rules                                          |
 | [`@0xproject/types`](/packages/types)                           | [![npm](https://img.shields.io/npm/v/@0xproject/types.svg)](https://www.npmjs.com/package/@0xproject/types)                           | Shared type declarations                                                    |
@@ -74,7 +74,7 @@ You can include those by prepending @0xproject/typescript-typings package to you
 
 We strongly recommend that the community help us make improvements and determine the future direction of the protocol. To report bugs within this package, please create an issue in this repository.
 
-Please read our [contribution guidelines](./CONTRIBUTING.md) before getting started.
+#### Read our [contribution guidelines](./CONTRIBUTING.md).
 
 ### Install dependencies
 
@@ -118,24 +118,6 @@ yarn lerna:run lint
 
 ### Run Tests
 
-Before running the tests, you will need to spin up a [TestRPC](https://www.npmjs.com/package/ethereumjs-testrpc) instance and deploy all the 0x smart contracts.
-
-In a separate terminal, start TestRPC (a convenience command is provided as part of this repo)
-
 ```bash
-yarn testrpc
-```
-
-Then in your main terminal run
-
-```
-cd packages/contracts
-yarn migrate
-cd ..
-```
-
-And finally from the root project directory run
-
-```bash
-yarn lerna:run test
+yarn lerna:test
 ```

@@ -2,7 +2,7 @@
 
 This repository contains a CLI tool that facilitates compiling and deployment of smart contracts.
 
-### Read the [Documentation](0xproject.com/docs/deployer).
+### Read the [Documentation](https://0xproject.com/docs/deployer).
 
 ## Installation
 

@@ -4,20 +4,31 @@ import 'mocha';
 import { Compiler } from '../src/compiler';
 import { Deployer } from '../src/deployer';
 import { fsWrapper } from '../src/utils/fs_wrapper';
-import { CompilerOptions, ContractArtifact, ContractNetworkData, DoneCallback } from '../src/utils/types';
+import {
+    CompilerOptions,
+    ContractArtifact,
+    ContractDirectory,
+    ContractNetworkData,
+    DoneCallback,
+} from '../src/utils/types';
 
 import { constructor_args, exchange_binary } from './fixtures/exchange_bin';
 import { constants } from './util/constants';
+import { provider } from './util/provider';
 
 const expect = chai.expect;
 
 describe('#Deployer', () => {
     const artifactsDir = `${__dirname}/fixtures/artifacts`;
-    const contractsDir = `${__dirname}/fixtures/contracts`;
     const exchangeArtifactPath = `${artifactsDir}/Exchange.json`;
+    const mainContractDir: ContractDirectory = { path: `${__dirname}/fixtures/contracts/main`, namespace: '' };
+    const baseContractDir: ContractDirectory = { path: `${__dirname}/fixtures/contracts/base`, namespace: 'base' };
+    const contractDirs: Set<ContractDirectory> = new Set();
+    contractDirs.add(mainContractDir);
+    contractDirs.add(baseContractDir);
     const compilerOpts: CompilerOptions = {
         artifactsDir,
-        contractsDir,
+        contractDirs,
         networkId: constants.networkId,
         optimizerEnabled: constants.optimizerEnabled,
         specifiedContracts: new Set(constants.specifiedContracts),
@@ -26,7 +37,7 @@ describe('#Deployer', () => {
     const deployerOpts = {
         artifactsDir,
         networkId: constants.networkId,
-        jsonrpcUrl: constants.jsonrpcUrl,
+        provider,
         defaults: {
             gasPrice: constants.gasPrice,
         },

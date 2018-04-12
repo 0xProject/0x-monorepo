@@ -46,7 +46,7 @@ describe('MultiSigWalletWithTimeLock', () => {
 
     describe('changeTimeLock', () => {
         describe('initially non-time-locked', async () => {
-            before('deploy a walet', async () => {
+            before('deploy a wallet', async () => {
                 const multiSigInstance = await deployer.deployAsync(ContractName.MultiSigWalletWithTimeLock, [
                     owners,
                     SIGNATURES_REQUIRED,
@@ -143,7 +143,7 @@ describe('MultiSigWalletWithTimeLock', () => {
             });
         });
         describe('initially time-locked', async () => {
-            before('deploy a walet', async () => {
+            before('deploy a wallet', async () => {
                 const multiSigInstance = await deployer.deployAsync(ContractName.MultiSigWalletWithTimeLock, [
                     owners,
                     SIGNATURES_REQUIRED,

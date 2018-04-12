@@ -2,7 +2,7 @@
 
 A Solidity code coverage tool.
 
-### Read the [Documentation](0xproject.com/docs/sol-cov).
+### Read the [Documentation](https://0xproject.com/docs/sol-cov).
 
 ## Installation
 

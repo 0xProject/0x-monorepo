@@ -5,6 +5,10 @@ Edit the package's CHANGELOG.json file only.
 
 CHANGELOG
 
+## v0.5.1 - _April 11, 2018_
+
+    * Dependencies updated
+
 ## v0.5.0 - _April 2, 2018_
 
     * Make `AbiDecoder.addABI` public (#485)

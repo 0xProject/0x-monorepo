@@ -44,7 +44,7 @@ const docsInfoConfig: DocsInfoConfig = {
     },
     sectionNameToModulePath: {
         [docSections.coverageSubprovider]: ['"sol-cov/src/coverage_subprovider"'],
-        [docSections.types]: ['"subproviders/src/types"'],
+        [docSections.types]: ['"subproviders/src/types"', '"types/src/index"'],
     },
     menuSubsectionToVersionWhenIntroduced: {},
     sections: docSections,
@@ -52,11 +52,9 @@ const docsInfoConfig: DocsInfoConfig = {
     typeConfigs: {
         // Note: This needs to be kept in sync with the types exported in index.ts. Unfortunately there is
         // currently no way to extract the re-exported types from index.ts via TypeDoc :(
-        publicTypes: ['NextCallback', 'OnNextCompleted', 'ErrorCallback'],
+        publicTypes: ['NextCallback', 'OnNextCompleted', 'ErrorCallback', 'JSONRPCRequestPayload'],
         typeNameToExternalLink: {},
-        typeNameToPrefix: {
-            JSONRPCRequestPayload: 'Web3',
-        },
+        typeNameToPrefix: {},
         typeNameToDocSection: {},
     },
 };

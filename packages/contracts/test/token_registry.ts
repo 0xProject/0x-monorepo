@@ -1,6 +1,6 @@
 import { ZeroEx } from '0x.js';
 import { BlockchainLifecycle, devConstants, web3Factory } from '@0xproject/dev-utils';
-import { BigNumber } from '@0xproject/utils';
+import { BigNumber, NULL_BYTES } from '@0xproject/utils';
 import { Web3Wrapper } from '@0xproject/web3-wrapper';
 import * as chai from 'chai';
 import ethUtil = require('ethereumjs-util');
@@ -66,8 +66,8 @@ describe('TokenRegistry', () => {
         name: '',
         symbol: '',
         decimals: 0,
-        ipfsHash: constants.NULL_BYTES,
-        swarmHash: constants.NULL_BYTES,
+        ipfsHash: NULL_BYTES,
+        swarmHash: NULL_BYTES,
     };
 
     describe('addToken', () => {

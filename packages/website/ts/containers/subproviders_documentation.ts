@@ -99,6 +99,7 @@ const docsInfoConfig: DocsInfoConfig = {
             'ErrorCallback',
             'ECSignature',
             'JSONRPCRequestPayloadWithMethod',
+            'JSONRPCRequestPayload',
             'JSONRPCResponsePayload',
             'AccountFetchingConfigs',
             'LedgerEthereumClientFactoryAsync',
@@ -106,19 +107,14 @@ const docsInfoConfig: DocsInfoConfig = {
             'LedgerEthereumClient',
             'LedgerSubproviderConfigs',
             'MnemonicWalletSubproviderConfigs',
+            'OnNextCompleted',
+            'Provider',
         ],
         typeNameToExternalLink: {
             Web3: 'https://github.com/ethereum/wiki/wiki/JavaScript-API',
             BigNumber: 'https://github.com/0xProject/web3-typescript-typings/blob/f5bcb96/index.d.ts#L127',
-            JSONRPCRequestPayload: 'https://github.com/0xProject/web3-typescript-typings/blob/f5bcb96/index.d.ts#L137',
-            JSONRPCResponsePayload: 'https://github.com/0xProject/web3-typescript-typings/blob/f5bcb96/index.d.ts#L144',
-            Provider: 'https://github.com/0xProject/web3-typescript-typings/blob/f5bcb96/index.d.ts#L150',
         },
-        typeNameToPrefix: {
-            JSONRPCRequestPayload: 'Web3',
-            JSONRPCResponsePayload: 'Web3',
-            Provider: 'Web3',
-        },
+        typeNameToPrefix: {},
     },
 };
 const docsInfo = new DocsInfo(docsInfoConfig);

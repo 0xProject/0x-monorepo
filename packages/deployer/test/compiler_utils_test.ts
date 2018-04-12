@@ -47,28 +47,34 @@ describe('Compiler utils', () => {
     });
     describe('#parseDependencies', () => {
         it('correctly parses Exchange dependencies', async () => {
-            const exchangeSource = await fsWrapper.readFileAsync(`${__dirname}/fixtures/contracts/Exchange.sol`, {
+            const exchangeSource = await fsWrapper.readFileAsync(`${__dirname}/fixtures/contracts/main/Exchange.sol`, {
                 encoding: 'utf8',
             });
-            expect(parseDependencies(exchangeSource)).to.be.deep.equal([
-                'TokenTransferProxy.sol',
-                'Token.sol',
-                'SafeMath.sol',
+            const sourceFileId = '/main/Exchange.sol';
+            expect(parseDependencies(exchangeSource, sourceFileId)).to.be.deep.equal([
+                '/main/TokenTransferProxy.sol',
+                '/base/Token.sol',
+                '/base/SafeMath.sol',
             ]);
         });
         it('correctly parses TokenTransferProxy dependencies', async () => {
             const exchangeSource = await fsWrapper.readFileAsync(
-                `${__dirname}/fixtures/contracts/TokenTransferProxy.sol`,
+                `${__dirname}/fixtures/contracts/main/TokenTransferProxy.sol`,
                 {
                     encoding: 'utf8',
                 },
             );
-            expect(parseDependencies(exchangeSource)).to.be.deep.equal(['Token.sol', 'Ownable.sol']);
+            const sourceFileId = '/main/TokenTransferProxy.sol';
+            expect(parseDependencies(exchangeSource, sourceFileId)).to.be.deep.equal([
+                '/base/Token.sol',
+                '/base/Ownable.sol',
+            ]);
         });
         // TODO: For now that doesn't work. This will work after we switch to a grammar-based parser
         it.skip('correctly parses commented out dependencies', async () => {
             const contractWithCommentedOutDependencies = `// import "./TokenTransferProxy.sol";`;
-            expect(parseDependencies(contractWithCommentedOutDependencies)).to.be.deep.equal([]);
+            const sourceFileId = '/main/TokenTransferProxy.sol';
+            expect(parseDependencies(contractWithCommentedOutDependencies, sourceFileId)).to.be.deep.equal([]);
         });
     });
 });

@@ -5,7 +5,7 @@ import { BigNumber } from '@0xproject/utils';
 import deepEqual = require('deep-equal');
 import * as _ from 'lodash';
 import * as moment from 'moment';
-import { Order, Providers, ScreenWidths, Side, SideToAssetToken, Token, TokenByAddress } from 'ts/types';
+import { Environments, Order, Providers, ScreenWidths, Side, SideToAssetToken, Token, TokenByAddress } from 'ts/types';
 import { configs } from 'ts/utils/configs';
 import { constants } from 'ts/utils/constants';
 import * as u2f from 'ts/vendor/u2f_api';
@@ -291,5 +291,11 @@ export const utils = {
             parsedProviderName = Providers.Metamask;
         }
         return parsedProviderName;
+    },
+    isDevelopment() {
+        return configs.ENVIRONMENT === Environments.DEVELOPMENT;
+    },
+    isStaging() {
+        return _.includes(window.location.href, configs.DOMAIN_STAGING);
     },
 };

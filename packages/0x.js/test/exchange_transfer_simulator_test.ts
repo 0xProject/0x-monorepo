@@ -9,7 +9,7 @@ import { ExchangeTransferSimulator } from '../src/utils/exchange_transfer_simula
 
 import { chaiSetup } from './utils/chai_setup';
 import { constants } from './utils/constants';
-import { web3, web3Wrapper } from './utils/web3_wrapper';
+import { provider, web3Wrapper } from './utils/web3_wrapper';
 
 chaiSetup.configure();
 const expect = chai.expect;
@@ -19,7 +19,7 @@ describe('ExchangeTransferSimulator', () => {
     const config = {
         networkId: constants.TESTRPC_NETWORK_ID,
     };
-    const zeroEx = new ZeroEx(web3.currentProvider, config);
+    const zeroEx = new ZeroEx(provider, config);
     const transferAmount = new BigNumber(5);
     let userAddresses: string[];
     let tokens: Token[];

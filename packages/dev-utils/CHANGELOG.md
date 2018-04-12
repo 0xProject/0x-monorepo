@@ -5,6 +5,10 @@ Edit the package's CHANGELOG.json file only.
 
 CHANGELOG
 
+## v0.3.5 - _April 11, 2018_
+
+    * Dependencies updated
+
 ## v0.3.4 - _April 2, 2018_
 
     * Dependencies updated
@@ -16,7 +20,7 @@ CHANGELOG
 ## v0.3.1 - _March 17, 2018_
 
     * Reduce npm package size by adding an `.npmignore` file.
-    * Move `@0xproject/web3_wrapper` to dependencies from devDependencies.
+    * Move `@0xproject/web3-wrapper` to dependencies from devDependencies.
 
 ## v0.3.0 - _March 17, 2018_
 

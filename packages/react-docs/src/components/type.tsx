@@ -109,7 +109,6 @@ export function Type(props: TypeProps): any {
                     returnType={type.method.returnType}
                     parameters={type.method.parameters}
                     typeParameter={type.method.typeParameter}
-                    callPath={type.method.callPath}
                     sectionName={props.sectionName}
                     shouldHideMethodName={true}
                     shouldUseArrowSyntax={true}

@@ -5,9 +5,9 @@ async callAsync(
     defaultBlock?: BlockParam,
 ): Promise<{{> return_type outputs=outputs}}> {
     const self = this as any as {{contractName}}Contract;
-    const inputAbi = (_.find(self.abi, {name: '{{this.name}}'}) as MethodAbi).inputs;
+    const inputAbi = self._lookupAbi('{{this.functionSignature}}').inputs;
     [{{> params inputs=inputs}}] = BaseContract._formatABIDataItemList(inputAbi, [{{> params inputs=inputs}}], BaseContract._bigNumberToString.bind(self));
-    const encodedData = self._ethersInterface.functions.{{this.name}}(
+    const encodedData = self._lookupEthersInterface('{{this.functionSignature}}').functions.{{this.name}}(
         {{> params inputs=inputs}}
     ).data;
     const callDataWithDefaults = await self._applyDefaultsToTxDataAsync(

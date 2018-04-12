@@ -1,7 +1,6 @@
 import { JSONRPCRequestPayload } from '@0xproject/types';
 import { promisify } from '@0xproject/utils';
 import * as _ from 'lodash';
-import RpcSubprovider = require('web3-provider-engine/subproviders/rpc');
 
 import { Callback } from '../types';
 
@@ -12,17 +11,17 @@ import { Subprovider } from './subprovider';
  * It attempts to handle each JSON RPC request by sequentially attempting to receive a valid response from one of a
  * set of JSON RPC endpoints.
  */
-export class RedundantRPCSubprovider extends Subprovider {
-    private _rpcs: RpcSubprovider[];
+export class RedundantSubprovider extends Subprovider {
+    private _subproviders: Subprovider[];
     private static async _firstSuccessAsync(
-        rpcs: RpcSubprovider[],
+        subproviders: Subprovider[],
         payload: JSONRPCRequestPayload,
         next: Callback,
     ): Promise<any> {
         let lastErr: Error | undefined;
-        for (const rpc of rpcs) {
+        for (const subprovider of subproviders) {
             try {
-                const data = await promisify(rpc.handleRequest.bind(rpc))(payload, next);
+                const data = await promisify(subprovider.handleRequest.bind(subprovider))(payload, next);
                 return data;
             } catch (err) {
                 lastErr = err;
@@ -34,16 +33,12 @@ export class RedundantRPCSubprovider extends Subprovider {
         }
     }
     /**
-     * Instantiates a new RedundantRPCSubprovider
+     * Instantiates a new RedundantSubprovider
      * @param endpoints JSON RPC endpoints to attempt. Attempts are made in the order of the endpoints.
      */
-    constructor(endpoints: string[]) {
+    constructor(subproviders: Subprovider[]) {
         super();
-        this._rpcs = _.map(endpoints, endpoint => {
-            return new RpcSubprovider({
-                rpcUrl: endpoint,
-            });
-        });
+        this._subproviders = subproviders;
     }
     /**
      * This method conforms to the web3-provider-engine interface.
@@ -59,9 +54,9 @@ export class RedundantRPCSubprovider extends Subprovider {
         next: Callback,
         end: (err: Error | null, data?: any) => void,
     ): Promise<void> {
-        const rpcsCopy = this._rpcs.slice();
+        const subprovidersCopy = this._subproviders.slice();
         try {
-            const data = await RedundantRPCSubprovider._firstSuccessAsync(rpcsCopy, payload, next);
+            const data = await RedundantSubprovider._firstSuccessAsync(subprovidersCopy, payload, next);
             end(null, data);
         } catch (err) {
             end(err);

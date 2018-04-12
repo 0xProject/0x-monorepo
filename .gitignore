@@ -74,7 +74,8 @@ packages/react-docs/example/public/bundle*
 bin/
 
 # generated contract artifacts
-packages/contracts/src/artifacts
+packages/0x.js/test/artifacts
+packages/migrations/src/artifacts
 
 # generated contract wrappers
 packages/0x.js/src/contract_wrappers/generated/
