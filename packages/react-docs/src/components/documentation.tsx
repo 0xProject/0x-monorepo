@@ -337,7 +337,7 @@ export class Documentation extends React.Component<DocumentationProps, Documenta
         return (
             <div key={`property-${property.name}-${property.type.name}`} className="pb3">
                 <code className={`hljs ${constants.TYPE_TO_SYNTAX[this.props.docsInfo.type]}`}>
-                    {property.name}:
+                    {property.name}:{' '}
                     <Type type={property.type} sectionName={sectionName} docsInfo={this.props.docsInfo} />
                 </code>
                 {property.source && (

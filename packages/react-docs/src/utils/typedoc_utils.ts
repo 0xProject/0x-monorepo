@@ -14,6 +14,7 @@ import {
     Type,
     TypeDocNode,
     TypeDocType,
+    TypeDocTypes,
     TypeParameter,
     TypescriptFunction,
     TypescriptMethod,
@@ -221,9 +222,16 @@ export const typeDocUtils = {
 
         const childrenIfExist = !_.isUndefined(entity.children)
             ? _.map(entity.children, (child: TypeDocNode) => {
-                  const childTypeIfExists = !_.isUndefined(child.type)
+                  let childTypeIfExists = !_.isUndefined(child.type)
                       ? typeDocUtils._convertType(child.type, sections, sectionName, docId)
                       : undefined;
+                  if (child.kindString === KindString.Method) {
+                      childTypeIfExists = {
+                          name: child.name,
+                          typeDocType: TypeDocTypes.Reflection,
+                          method: this._convertMethod(child, isConstructor, sections, sectionName, docId),
+                      };
+                  }
                   const c: CustomTypeChild = {
                       name: child.name,
                       type: childTypeIfExists,
@@ -387,6 +395,7 @@ export const typeDocUtils = {
             name: entity.name,
             comment,
             isOptional,
+            defaultValue: entity.defaultValue,
             type,
         };
         return parameter;

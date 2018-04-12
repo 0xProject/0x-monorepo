@@ -140,6 +140,7 @@ export interface Parameter {
     comment: string;
     isOptional: boolean;
     type: Type;
+    defaultValue?: string;
 }
 
 export interface TypeParameter {

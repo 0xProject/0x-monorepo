@@ -38,17 +38,17 @@ export class Deployer {
         this._artifactsDir = opts.artifactsDir;
         this._networkId = opts.networkId;
         this._defaults = opts.defaults;
-        let web3Provider: Provider;
+        let provider: Provider;
         if (_.isUndefined((opts as ProviderDeployerOptions).provider)) {
             const jsonrpcUrl = (opts as UrlDeployerOptions).jsonrpcUrl;
             if (_.isUndefined(jsonrpcUrl)) {
-                throw new Error(`Deployer options don't contain web3Provider nor jsonrpcUrl. Please pass one of them`);
+                throw new Error(`Deployer options don't contain provider nor jsonrpcUrl. Please pass one of them`);
             }
-            web3Provider = new Web3.providers.HttpProvider(jsonrpcUrl);
+            provider = new Web3.providers.HttpProvider(jsonrpcUrl);
         } else {
-            web3Provider = (opts as ProviderDeployerOptions).provider;
+            provider = (opts as ProviderDeployerOptions).provider;
         }
-        this.web3Wrapper = new Web3Wrapper(web3Provider, this._defaults);
+        this.web3Wrapper = new Web3Wrapper(provider, this._defaults);
     }
     /**
      * Loads a contract's corresponding artifacts and deploys it with the supplied constructor arguments.
@@ -170,7 +170,7 @@ export class Deployer {
             const contractArtifact: ContractArtifact = require(artifactPath);
             return contractArtifact;
         } catch (err) {
-            throw new Error(`Artifact not found for contract: ${contractName}`);
+            throw new Error(`Artifact not found for contract: ${contractName} at ${artifactPath}`);
         }
     }
     /**

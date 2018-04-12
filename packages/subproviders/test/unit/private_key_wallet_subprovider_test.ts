@@ -32,7 +32,7 @@ describe('PrivateKeyWalletSubprovider', () => {
             });
             it('signs a personal message', async () => {
                 const data = ethUtils.bufferToHex(ethUtils.toBuffer(fixtureData.PERSONAL_MESSAGE_STRING));
-                const ecSignatureHex = await subprovider.signPersonalMessageAsync(data);
+                const ecSignatureHex = await subprovider.signPersonalMessageAsync(data, fixtureData.TEST_RPC_ACCOUNT_0);
                 expect(ecSignatureHex).to.be.equal(fixtureData.PERSONAL_MESSAGE_SIGNED_RESULT);
             });
             it('signs a transaction', async () => {
@@ -71,7 +71,7 @@ describe('PrivateKeyWalletSubprovider', () => {
                 const payload = {
                     jsonrpc: '2.0',
                     method: 'eth_sign',
-                    params: ['0x0000000000000000000000000000000000000000', messageHex],
+                    params: [fixtureData.TEST_RPC_ACCOUNT_0, messageHex],
                     id: 1,
                 };
                 const callback = reportCallbackErrors(done)((err: Error, response: JSONRPCResponsePayload) => {
@@ -86,7 +86,7 @@ describe('PrivateKeyWalletSubprovider', () => {
                 const payload = {
                     jsonrpc: '2.0',
                     method: 'personal_sign',
-                    params: [messageHex, '0x0000000000000000000000000000000000000000'],
+                    params: [messageHex, fixtureData.TEST_RPC_ACCOUNT_0],
                     id: 1,
                 };
                 const callback = reportCallbackErrors(done)((err: Error, response: JSONRPCResponsePayload) => {
@@ -103,7 +103,7 @@ describe('PrivateKeyWalletSubprovider', () => {
                 const payload = {
                     jsonrpc: '2.0',
                     method: 'eth_sign',
-                    params: ['0x0000000000000000000000000000000000000000', nonHexMessage],
+                    params: [fixtureData.TEST_RPC_ACCOUNT_0, nonHexMessage],
                     id: 1,
                 };
                 const callback = reportCallbackErrors(done)((err: Error, response: JSONRPCResponsePayload) => {
@@ -118,12 +118,31 @@ describe('PrivateKeyWalletSubprovider', () => {
                 const payload = {
                     jsonrpc: '2.0',
                     method: 'personal_sign',
-                    params: [nonHexMessage, '0x0000000000000000000000000000000000000000'],
+                    params: [nonHexMessage, fixtureData.TEST_RPC_ACCOUNT_0],
                     id: 1,
                 };
                 const callback = reportCallbackErrors(done)((err: Error, response: JSONRPCResponsePayload) => {
                     expect(err).to.not.be.a('null');
                     expect(err.message).to.be.equal('Expected data to be of type HexString, encountered: hello world');
+                    done();
+                });
+                provider.sendAsync(payload, callback);
+            });
+            it('should throw if `address` param is not the address from private key when calling personal_sign', (done: DoneCallback) => {
+                const messageHex = ethUtils.bufferToHex(ethUtils.toBuffer(fixtureData.PERSONAL_MESSAGE_STRING));
+                const payload = {
+                    jsonrpc: '2.0',
+                    method: 'personal_sign',
+                    params: [messageHex, fixtureData.TEST_RPC_ACCOUNT_1],
+                    id: 1,
+                };
+                const callback = reportCallbackErrors(done)((err: Error, response: JSONRPCResponsePayload) => {
+                    expect(err).to.not.be.a('null');
+                    expect(err.message).to.be.equal(
+                        `Requested to sign message with address: ${
+                            fixtureData.TEST_RPC_ACCOUNT_1
+                        }, instantiated with address: ${fixtureData.TEST_RPC_ACCOUNT_0}`,
+                    );
                     done();
                 });
                 provider.sendAsync(payload, callback);
@@ -161,6 +180,21 @@ describe('PrivateKeyWalletSubprovider', () => {
                 const callback = reportCallbackErrors(done)((err: Error, response: JSONRPCResponsePayload) => {
                     expect(err).to.not.be.a('null');
                     expect(err.message).to.be.equal(WalletSubproviderErrors.SenderInvalidOrNotSupplied);
+                    done();
+                });
+                provider.sendAsync(payload, callback);
+            });
+            it('should throw if `address` param not found when calling personal_sign', (done: DoneCallback) => {
+                const messageHex = ethUtils.bufferToHex(ethUtils.toBuffer(fixtureData.PERSONAL_MESSAGE_STRING));
+                const payload = {
+                    jsonrpc: '2.0',
+                    method: 'personal_sign',
+                    params: [messageHex, '0x0'],
+                    id: 1,
+                };
+                const callback = reportCallbackErrors(done)((err: Error, response: JSONRPCResponsePayload) => {
+                    expect(err).to.not.be.a('null');
+                    expect(err.message).to.be.equal(`Expected address to be of type ETHAddressHex, encountered: 0x0`);
                     done();
                 });
                 provider.sendAsync(payload, callback);

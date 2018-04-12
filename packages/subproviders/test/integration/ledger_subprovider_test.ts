@@ -1,7 +1,7 @@
 import { JSONRPCResponsePayload } from '@0xproject/types';
 import { promisify } from '@0xproject/utils';
 import Eth from '@ledgerhq/hw-app-eth';
-// HACK: This depdency is optional and tslint skips optional depdencies
+// HACK: This dependency is optional and tslint skips optional dependencies
 // tslint:disable-next-line:no-implicit-dependencies
 import TransportNodeHid from '@ledgerhq/hw-transport-node-hid';
 import * as chai from 'chai';
@@ -33,7 +33,7 @@ describe('LedgerSubprovider', () => {
         ledgerSubprovider = new LedgerSubprovider({
             networkId,
             ledgerEthereumClientFactoryAsync: ledgerEthereumNodeJsClientFactoryAsync,
-            derivationPath: fixtureData.TESTRPC_DERIVATION_PATH,
+            baseDerivationPath: fixtureData.TESTRPC_BASE_DERIVATION_PATH,
         });
     });
     describe('direct method calls', () => {
@@ -42,9 +42,10 @@ describe('LedgerSubprovider', () => {
             expect(accounts[0]).to.not.be.an('undefined');
             expect(accounts.length).to.be.equal(10);
         });
-        it('returns the expected first account from a ledger set up with the test mnemonic', async () => {
+        it('returns the expected accounts from a ledger set up with the test mnemonic', async () => {
             const accounts = await ledgerSubprovider.getAccountsAsync();
             expect(accounts[0]).to.be.equal(fixtureData.TEST_RPC_ACCOUNT_0);
+            expect(accounts[1]).to.be.equal(fixtureData.TEST_RPC_ACCOUNT_1);
         });
         it('returns requested number of accounts', async () => {
             const numberOfAccounts = 20;
@@ -54,13 +55,28 @@ describe('LedgerSubprovider', () => {
         });
         it('signs a personal message', async () => {
             const data = ethUtils.bufferToHex(ethUtils.toBuffer(fixtureData.PERSONAL_MESSAGE_STRING));
-            const ecSignatureHex = await ledgerSubprovider.signPersonalMessageAsync(data);
-            expect(ecSignatureHex.length).to.be.equal(132);
+            const ecSignatureHex = await ledgerSubprovider.signPersonalMessageAsync(
+                data,
+                fixtureData.TEST_RPC_ACCOUNT_0,
+            );
             expect(ecSignatureHex).to.be.equal(fixtureData.PERSONAL_MESSAGE_SIGNED_RESULT);
+        });
+        it('signs a personal message with second address', async () => {
+            const data = ethUtils.bufferToHex(ethUtils.toBuffer(fixtureData.PERSONAL_MESSAGE_STRING));
+            const ecSignatureHex = await ledgerSubprovider.signPersonalMessageAsync(
+                data,
+                fixtureData.TEST_RPC_ACCOUNT_1,
+            );
+            expect(ecSignatureHex).to.be.equal(fixtureData.PERSONAL_MESSAGE_ACCOUNT_1_SIGNED_RESULT);
         });
         it('signs a transaction', async () => {
             const txHex = await ledgerSubprovider.signTransactionAsync(fixtureData.TX_DATA);
             expect(txHex).to.be.equal(fixtureData.TX_DATA_SIGNED_RESULT);
+        });
+        it('signs a transaction with the second address', async () => {
+            const txData = { ...fixtureData.TX_DATA, from: fixtureData.TEST_RPC_ACCOUNT_1 };
+            const txHex = await ledgerSubprovider.signTransactionAsync(txData);
+            expect(txHex).to.be.equal(fixtureData.TX_DATA_ACCOUNT_1_SIGNED_RESULT);
         });
     });
     describe('calls through a provider', () => {

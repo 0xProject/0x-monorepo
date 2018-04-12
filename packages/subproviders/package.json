@@ -1,6 +1,6 @@
 {
     "name": "@0xproject/subproviders",
-    "version": "0.8.4",
+    "version": "0.8.5",
     "main": "lib/src/index.js",
     "types": "lib/src/index.d.ts",
     "license": "Apache-2.0",
@@ -21,31 +21,31 @@
         "manual:postpublish": "yarn build; node ./scripts/postpublish.js",
         "docs:stage": "yarn build && node ./scripts/stage_docs.js",
         "docs:json": "typedoc --excludePrivate --excludeExternals --target ES5 --json $JSON_FILE_PATH $PROJECT_FILES",
-        "upload_docs_json": "aws s3 cp generated_docs/index.json $S3_URL --profile 0xproject --grants read=uri=http://acs.amazonaws.com/groups/global/AllUsers --content-type application/json"
+        "upload_docs_json":
+            "aws s3 cp generated_docs/index.json $S3_URL --profile 0xproject --grants read=uri=http://acs.amazonaws.com/groups/global/AllUsers --content-type application/json"
     },
     "config": {
         "postpublish": {
             "assets": [],
             "docPublishConfigs": {
-                "extraFileIncludes": [
-                    "../types/src/index.ts"
-                ],
+                "extraFileIncludes": ["../types/src/index.ts"],
                 "s3BucketPath": "s3://doc-jsons/subproviders/",
                 "s3StagingBucketPath": "s3://staging-doc-jsons/subproviders/"
             }
         }
     },
     "dependencies": {
-        "@0xproject/assert": "^0.2.5",
-        "@0xproject/types": "^0.5.0",
-        "@0xproject/typescript-typings": "^0.0.3",
-        "@0xproject/utils": "^0.5.0",
+        "@0xproject/assert": "^0.2.6",
+        "@0xproject/types": "^0.6.0",
+        "@0xproject/typescript-typings": "^0.1.0",
+        "@0xproject/utils": "^0.5.1",
         "@ledgerhq/hw-app-eth": "^4.3.0",
         "@ledgerhq/hw-transport-u2f": "^4.3.0",
         "bn.js": "^4.11.8",
         "ethereumjs-tx": "^1.3.3",
         "ethereumjs-util": "^5.1.1",
         "ganache-core": "0xProject/ganache-core",
+        "bip39": "^2.5.0",
         "hdkey": "^0.7.1",
         "lodash": "^4.17.4",
         "semaphore-async-await": "^1.5.1",
@@ -53,9 +53,10 @@
         "web3-provider-engine": "^13.0.1"
     },
     "devDependencies": {
-        "@0xproject/monorepo-scripts": "^0.1.16",
-        "@0xproject/tslint-config": "^0.4.14",
-        "@0xproject/utils": "^0.5.0",
+        "@0xproject/monorepo-scripts": "^0.1.17",
+        "@0xproject/tslint-config": "^0.4.15",
+        "@0xproject/utils": "^0.5.1",
+        "@types/bip39": "^2.4.0",
         "@types/lodash": "4.14.104",
         "@types/mocha": "^2.2.42",
         "@types/node": "^8.0.53",

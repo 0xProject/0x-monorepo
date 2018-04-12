@@ -5,6 +5,10 @@ Edit the package's CHANGELOG.json file only.
 
 CHANGELOG
 
+## v0.6.0 - _April 11, 2018_
+
+    * Add Provider type (#501)
+
 ## v0.5.0 - _April 2, 2018_
 
     * Make `DataItem.components` optional (#485)

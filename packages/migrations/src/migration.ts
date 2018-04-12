@@ -1,12 +1,10 @@
 import { Deployer } from '@0xproject/deployer';
-import { BigNumber } from '@0xproject/utils';
+import { BigNumber, NULL_BYTES } from '@0xproject/utils';
 import { Web3Wrapper } from '@0xproject/web3-wrapper';
 import * as _ from 'lodash';
 
-import { constants } from '../src/utils/constants';
-import { ContractName } from '../src/utils/types';
-
-import { tokenInfo } from './config/token_info';
+import { ContractName } from './types';
+import { tokenInfo } from './utils/token_info';
 
 /**
  * Custom migrations should be defined in this function. This will be called with the CLI 'migrate' command.
@@ -20,7 +18,7 @@ export const runMigrationsAsync = async (deployer: Deployer) => {
 
     const tokenTransferProxy = await deployer.deployAndSaveAsync(ContractName.TokenTransferProxy);
     const zrxToken = await deployer.deployAndSaveAsync(ContractName.ZRXToken);
-    const etherToken = await deployer.deployAndSaveAsync(ContractName.EtherToken);
+    const etherToken = await deployer.deployAndSaveAsync(ContractName.WETH9);
     const tokenReg = await deployer.deployAndSaveAsync(ContractName.TokenRegistry);
 
     const exchangeArgs = [zrxToken.address, tokenTransferProxy.address];
@@ -51,8 +49,8 @@ export const runMigrationsAsync = async (deployer: Deployer) => {
         '0x Protocol Token',
         'ZRX',
         18,
-        constants.NULL_BYTES,
-        constants.NULL_BYTES,
+        NULL_BYTES,
+        NULL_BYTES,
         {
             from: owner,
             gas: addTokenGasEstimate,
@@ -63,8 +61,8 @@ export const runMigrationsAsync = async (deployer: Deployer) => {
         'Ether Token',
         'WETH',
         18,
-        constants.NULL_BYTES,
-        constants.NULL_BYTES,
+        NULL_BYTES,
+        NULL_BYTES,
         {
             from: owner,
             gas: addTokenGasEstimate,

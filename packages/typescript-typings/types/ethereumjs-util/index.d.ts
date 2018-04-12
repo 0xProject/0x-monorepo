@@ -1,5 +1,4 @@
 declare module 'ethereumjs-util' {
-    import { Buffer } from 'buffer';
     import BN = require('bn.js');
 
     interface Signature {

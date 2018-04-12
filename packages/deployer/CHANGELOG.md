@@ -5,6 +5,10 @@ Edit the package's CHANGELOG.json file only.
 
 CHANGELOG
 
+## v0.4.0 - _April 11, 2018_
+
+    * Changed the config key `web3Provider` to `provider` to be consistent with other tools (#501)
+
 ## v0.3.5 - _April 2, 2018_
 
     * Don't try to write contract artifact if an error occured (#485)

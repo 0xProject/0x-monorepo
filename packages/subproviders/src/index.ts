@@ -7,17 +7,17 @@ import { LedgerEthereumClient } from './types';
 export { EmptyWalletSubprovider } from './subproviders/empty_wallet_subprovider';
 export { FakeGasEstimateSubprovider } from './subproviders/fake_gas_estimate_subprovider';
 export { InjectedWeb3Subprovider } from './subproviders/injected_web3';
-export { RedundantRPCSubprovider } from './subproviders/redundant_rpc';
+export { RedundantSubprovider } from './subproviders/redundant_subprovider';
 export { LedgerSubprovider } from './subproviders/ledger';
 export { GanacheSubprovider } from './subproviders/ganache';
 export { Subprovider } from './subproviders/subprovider';
 export { NonceTrackerSubprovider } from './subproviders/nonce_tracker';
-export { PrivateKeyWalletSubprovider } from './subproviders/private_key_wallet_subprovider';
+export { PrivateKeyWalletSubprovider } from './subproviders/private_key_wallet';
+export { MnemonicWalletSubprovider } from './subproviders/mnemonic_wallet';
 export {
     Callback,
     ErrorCallback,
     NextCallback,
-    LedgerWalletSubprovider,
     LedgerCommunicationClient,
     NonceSubproviderErrors,
     LedgerSubproviderConfigs,

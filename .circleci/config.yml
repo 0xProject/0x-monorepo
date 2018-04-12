@@ -183,9 +183,9 @@ workflows:
   main:
     jobs:
       - build
-      # - test-installation:
-      #     requires:
-      #       - build
+      - test-installation:
+          requires:
+            - build
       - test-0xjs:
           requires:
             - build
