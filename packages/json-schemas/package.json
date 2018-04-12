@@ -43,6 +43,7 @@
     "homepage": "https://github.com/0xProject/0x-monorepo/packages/json-schemas/README.md",
     "dependencies": {
         "@0xproject/typescript-typings": "^0.1.0",
+        "@types/node": "^8.0.53",
         "jsonschema": "^1.2.0",
         "lodash.values": "^4.3.0"
     },

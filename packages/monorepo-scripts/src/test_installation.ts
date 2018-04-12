@@ -31,7 +31,7 @@ import { utils } from './utils';
         utils.log(`Installing ${packedPackageFileName}`);
         result = await execAsync(`yarn add ${packagePath}/${packedPackageFileName}`, { cwd: testDirectory });
         const indexFilePath = path.join(testDirectory, 'index.ts');
-        fs.writeFileSync(indexFilePath, `import * as Package from '${packageName}'`);
+        fs.writeFileSync(indexFilePath, `import * as Package from '${packageName}';\n`);
         const tsConfig = {
             compilerOptions: {
                 typeRoots: ['node_modules/@0xproject/typescript-typings/types', 'node_modules/@types'],
@@ -48,11 +48,13 @@ import { utils } from './utils';
         const tsconfigFilePath = path.join(testDirectory, 'tsconfig.json');
         fs.writeFileSync(tsconfigFilePath, JSON.stringify(tsConfig, null, 4));
         utils.log(`Compiling ${packageName}`);
-        await execAsync('../node_modules/typescript/bin/tsc', { cwd: testDirectory });
+        const tscBinaryPath = path.join(monorepoRootPath, './node_modules/typescript/bin/tsc');
+        await execAsync(tscBinaryPath, { cwd: testDirectory });
         utils.log(`Successfully compiled with ${packageName} as a dependency`);
         rimraf.sync(testDirectory);
     }
 })().catch(err => {
+    utils.log(err.stderr);
     utils.log(err.stdout);
     process.exit(1);
 });
