@@ -78,7 +78,7 @@ export class Blockchain {
     private _userAddressIfExists: string;
     private _cachedProvider: Provider;
     private _cachedProviderNetworkId: number;
-    private _ledgerSubprovider: LedgerWalletSubprovider;
+    private _ledgerSubprovider: LedgerSubprovider;
     private _defaultGasPrice: BigNumber;
     private static _getNameGivenProvider(provider: Provider): string {
         const providerType = utils.getProviderType(provider);
@@ -179,12 +179,6 @@ export class Blockchain {
             return; // noop
         }
         this._ledgerSubprovider.setPath(path);
-    }
-    public updateLedgerDerivationIndex(pathIndex: number) {
-        if (_.isUndefined(this._ledgerSubprovider)) {
-            return; // noop
-        }
-        this._ledgerSubprovider.setPathIndex(pathIndex);
     }
     public async updateProviderToLedgerAsync(networkId: number) {
         utils.assert(!_.isUndefined(this._zeroEx), 'ZeroEx must be instantiated.');

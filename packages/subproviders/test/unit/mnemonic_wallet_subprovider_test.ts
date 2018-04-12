@@ -4,7 +4,7 @@ import * as ethUtils from 'ethereumjs-util';
 import * as _ from 'lodash';
 import Web3ProviderEngine = require('web3-provider-engine');
 
-import { GanacheSubprovider, PrivateKeyWalletSubprovider } from '../../src/';
+import { GanacheSubprovider, MnemonicWalletSubprovider } from '../../src/';
 import {
     DoneCallback,
     LedgerCommunicationClient,
@@ -18,26 +18,54 @@ import { reportCallbackErrors } from '../utils/report_callback_errors';
 chaiSetup.configure();
 const expect = chai.expect;
 
-describe('PrivateKeyWalletSubprovider', () => {
-    let subprovider: PrivateKeyWalletSubprovider;
+describe('MnemonicWalletSubprovider', () => {
+    let subprovider: MnemonicWalletSubprovider;
     before(async () => {
-        subprovider = new PrivateKeyWalletSubprovider(fixtureData.TEST_RPC_ACCOUNT_0_ACCOUNT_PRIVATE_KEY);
+        subprovider = new MnemonicWalletSubprovider({
+            mnemonic: fixtureData.TEST_RPC_MNEMONIC,
+            baseDerivationPath: fixtureData.TEST_RPC_MNEMONIC_BASE_DERIVATION_PATH,
+        });
     });
     describe('direct method calls', () => {
         describe('success cases', () => {
-            it('returns the account', async () => {
+            it('returns the accounts', async () => {
                 const accounts = await subprovider.getAccountsAsync();
                 expect(accounts[0]).to.be.equal(fixtureData.TEST_RPC_ACCOUNT_0);
-                expect(accounts.length).to.be.equal(1);
+                expect(accounts[1]).to.be.equal(fixtureData.TEST_RPC_ACCOUNT_1);
+                expect(accounts.length).to.be.equal(10);
             });
             it('signs a personal message', async () => {
                 const data = ethUtils.bufferToHex(ethUtils.toBuffer(fixtureData.PERSONAL_MESSAGE_STRING));
                 const ecSignatureHex = await subprovider.signPersonalMessageAsync(data, fixtureData.TEST_RPC_ACCOUNT_0);
                 expect(ecSignatureHex).to.be.equal(fixtureData.PERSONAL_MESSAGE_SIGNED_RESULT);
             });
+            it('signs a personal message with second address', async () => {
+                const data = ethUtils.bufferToHex(ethUtils.toBuffer(fixtureData.PERSONAL_MESSAGE_STRING));
+                const ecSignatureHex = await subprovider.signPersonalMessageAsync(data, fixtureData.TEST_RPC_ACCOUNT_1);
+                expect(ecSignatureHex).to.be.equal(fixtureData.PERSONAL_MESSAGE_ACCOUNT_1_SIGNED_RESULT);
+            });
             it('signs a transaction', async () => {
                 const txHex = await subprovider.signTransactionAsync(fixtureData.TX_DATA);
                 expect(txHex).to.be.equal(fixtureData.TX_DATA_SIGNED_RESULT);
+            });
+            it('signs a transaction with the second address', async () => {
+                const txData = { ...fixtureData.TX_DATA, from: fixtureData.TEST_RPC_ACCOUNT_1 };
+                const txHex = await subprovider.signTransactionAsync(txData);
+                expect(txHex).to.be.equal(fixtureData.TX_DATA_ACCOUNT_1_SIGNED_RESULT);
+            });
+        });
+        describe('failure cases', () => {
+            it('throws an error if address is invalid ', async () => {
+                const txData = { ...fixtureData.TX_DATA, from: '0x0' };
+                return expect(subprovider.signTransactionAsync(txData)).to.be.rejectedWith(
+                    WalletSubproviderErrors.FromAddressMissingOrInvalid,
+                );
+            });
+            it('throws an error if address is valid format but not found', async () => {
+                const txData = { ...fixtureData.TX_DATA, from: fixtureData.NULL_ADDRESS };
+                return expect(subprovider.signTransactionAsync(txData)).to.be.rejectedWith(
+                    `${WalletSubproviderErrors.AddressNotFound}: ${fixtureData.NULL_ADDRESS}`,
+                );
             });
         });
     });
@@ -61,7 +89,7 @@ describe('PrivateKeyWalletSubprovider', () => {
                 const callback = reportCallbackErrors(done)((err: Error, response: JSONRPCResponsePayload) => {
                     expect(err).to.be.a('null');
                     expect(response.result[0]).to.be.equal(fixtureData.TEST_RPC_ACCOUNT_0);
-                    expect(response.result.length).to.be.equal(1);
+                    expect(response.result.length).to.be.equal(10);
                     done();
                 });
                 provider.sendAsync(payload, callback);
@@ -128,20 +156,18 @@ describe('PrivateKeyWalletSubprovider', () => {
                 });
                 provider.sendAsync(payload, callback);
             });
-            it('should throw if `address` param is not the address from private key when calling personal_sign', (done: DoneCallback) => {
+            it('should throw if `address` param not found when calling personal_sign', (done: DoneCallback) => {
                 const messageHex = ethUtils.bufferToHex(ethUtils.toBuffer(fixtureData.PERSONAL_MESSAGE_STRING));
                 const payload = {
                     jsonrpc: '2.0',
                     method: 'personal_sign',
-                    params: [messageHex, fixtureData.TEST_RPC_ACCOUNT_1],
+                    params: [messageHex, fixtureData.NULL_ADDRESS],
                     id: 1,
                 };
                 const callback = reportCallbackErrors(done)((err: Error, response: JSONRPCResponsePayload) => {
                     expect(err).to.not.be.a('null');
                     expect(err.message).to.be.equal(
-                        `Requested to sign message with address: ${
-                            fixtureData.TEST_RPC_ACCOUNT_1
-                        }, instantiated with address: ${fixtureData.TEST_RPC_ACCOUNT_0}`,
+                        `${WalletSubproviderErrors.AddressNotFound}: ${fixtureData.NULL_ADDRESS}`,
                     );
                     done();
                 });
@@ -180,21 +206,6 @@ describe('PrivateKeyWalletSubprovider', () => {
                 const callback = reportCallbackErrors(done)((err: Error, response: JSONRPCResponsePayload) => {
                     expect(err).to.not.be.a('null');
                     expect(err.message).to.be.equal(WalletSubproviderErrors.SenderInvalidOrNotSupplied);
-                    done();
-                });
-                provider.sendAsync(payload, callback);
-            });
-            it('should throw if `address` param not found when calling personal_sign', (done: DoneCallback) => {
-                const messageHex = ethUtils.bufferToHex(ethUtils.toBuffer(fixtureData.PERSONAL_MESSAGE_STRING));
-                const payload = {
-                    jsonrpc: '2.0',
-                    method: 'personal_sign',
-                    params: [messageHex, '0x0'],
-                    id: 1,
-                };
-                const callback = reportCallbackErrors(done)((err: Error, response: JSONRPCResponsePayload) => {
-                    expect(err).to.not.be.a('null');
-                    expect(err.message).to.be.equal(`Expected address to be of type ETHAddressHex, encountered: 0x0`);
                     done();
                 });
                 provider.sendAsync(payload, callback);

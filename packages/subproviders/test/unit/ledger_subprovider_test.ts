@@ -82,7 +82,7 @@ describe('LedgerSubprovider', () => {
             });
             it('signs a personal message', async () => {
                 const data = ethUtils.bufferToHex(ethUtils.toBuffer(fixtureData.PERSONAL_MESSAGE_STRING));
-                const ecSignatureHex = await ledgerSubprovider.signPersonalMessageAsync(data);
+                const ecSignatureHex = await ledgerSubprovider.signPersonalMessageAsync(data, FAKE_ADDRESS);
                 expect(ecSignatureHex).to.be.equal(
                     '0xa6cc284bff14b42bdf5e9286730c152be91719d478605ec46b3bebcd0ae491480652a1a7b742ceb0213d1e744316e285f41f878d8af0b8e632cbca4c279132d001',
                 );
@@ -94,7 +94,7 @@ describe('LedgerSubprovider', () => {
                 return expect(
                     Promise.all([
                         ledgerSubprovider.getAccountsAsync(),
-                        ledgerSubprovider.signPersonalMessageAsync(data),
+                        ledgerSubprovider.signPersonalMessageAsync(data, FAKE_ADDRESS),
                     ]),
                 ).to.be.rejectedWith(LedgerSubproviderErrors.MultipleOpenConnectionsDisallowed);
             });
@@ -129,7 +129,7 @@ describe('LedgerSubprovider', () => {
                 const payload = {
                     jsonrpc: '2.0',
                     method: 'eth_sign',
-                    params: ['0x0000000000000000000000000000000000000000', messageHex],
+                    params: [FAKE_ADDRESS, messageHex],
                     id: 1,
                 };
                 const callback = reportCallbackErrors(done)((err: Error, response: JSONRPCResponsePayload) => {
@@ -146,7 +146,7 @@ describe('LedgerSubprovider', () => {
                 const payload = {
                     jsonrpc: '2.0',
                     method: 'personal_sign',
-                    params: [messageHex, '0x0000000000000000000000000000000000000000'],
+                    params: [messageHex, FAKE_ADDRESS],
                     id: 1,
                 };
                 const callback = reportCallbackErrors(done)((err: Error, response: JSONRPCResponsePayload) => {
@@ -165,6 +165,7 @@ describe('LedgerSubprovider', () => {
                     gasPrice: '0x00',
                     nonce: '0x00',
                     gas: '0x00',
+                    from: FAKE_ADDRESS,
                 };
                 const payload = {
                     jsonrpc: '2.0',
@@ -187,7 +188,7 @@ describe('LedgerSubprovider', () => {
                 const payload = {
                     jsonrpc: '2.0',
                     method: 'eth_sign',
-                    params: ['0x0000000000000000000000000000000000000000', nonHexMessage],
+                    params: [FAKE_ADDRESS, nonHexMessage],
                     id: 1,
                 };
                 const callback = reportCallbackErrors(done)((err: Error, response: JSONRPCResponsePayload) => {
@@ -202,7 +203,7 @@ describe('LedgerSubprovider', () => {
                 const payload = {
                     jsonrpc: '2.0',
                     method: 'personal_sign',
-                    params: [nonHexMessage, '0x0000000000000000000000000000000000000000'],
+                    params: [nonHexMessage, FAKE_ADDRESS],
                     id: 1,
                 };
                 const callback = reportCallbackErrors(done)((err: Error, response: JSONRPCResponsePayload) => {

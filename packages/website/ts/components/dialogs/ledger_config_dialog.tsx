@@ -199,7 +199,6 @@ export class LedgerConfigDialog extends React.Component<LedgerConfigDialogProps,
     }
     private _onAddressSelected(selectedRowIndexes: number[]) {
         const selectedRowIndex = selectedRowIndexes[0];
-        this.props.blockchain.updateLedgerDerivationIndex(selectedRowIndex);
         const selectedAddress = this.state.userAddresses[selectedRowIndex];
         const selectAddressBalance = this.state.addressBalances[selectedRowIndex];
         this.props.dispatcher.updateUserAddress(selectedAddress);
