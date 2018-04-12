@@ -14,7 +14,6 @@ This repository is a monorepo including the 0x protocol smart contracts and nume
 [![Discord](https://img.shields.io/badge/chat-rocket.chat-yellow.svg?style=flat)](https://chat.0xproject.com)
 [![Join the chat at https://gitter.im/0xProject/Lobby](https://badges.gitter.im/0xProject/Lobby.svg)](https://gitter.im/0xProject/Lobby?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
 [![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
-[![Greenkeeper badge](https://badges.greenkeeper.io/0xProject/0x-monorepo.svg?token=7c22e5c72acf39d3ead8d29c5d9bb38f9096df3e643024dcedd53ab732847be1&ts=1496426342666)](https://greenkeeper.io/)
 
 ### Published Packages
 
