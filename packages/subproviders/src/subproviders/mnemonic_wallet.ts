@@ -14,7 +14,6 @@ import { PrivateKeyWalletSubprovider } from './private_key_wallet';
 const DEFAULT_BASE_DERIVATION_PATH = `44'/60'/0'/0`;
 const DEFAULT_NUM_ADDRESSES_TO_FETCH = 10;
 const DEFAULT_ADDRESS_SEARCH_LIMIT = 1000;
-const INITIAL_KEY_DERIVATION_INDEX = 0;
 
 /**
  * This class implements the [web3-provider-engine](https://github.com/MetaMask/provider-engine) subprovider interface.
@@ -34,15 +33,14 @@ export class MnemonicWalletSubprovider extends BaseWalletSubprovider {
      * @return MnemonicWalletSubprovider instance
      */
     constructor(config: MnemonicWalletSubproviderConfigs) {
-        const mnemonic = config.mnemonic;
-        assert.isString('mnemonic', mnemonic);
+        assert.isString('mnemonic', config.mnemonic);
         const baseDerivationPath = config.baseDerivationPath || DEFAULT_BASE_DERIVATION_PATH;
         assert.isString('baseDerivationPath', baseDerivationPath);
         const addressSearchLimit = config.addressSearchLimit || DEFAULT_ADDRESS_SEARCH_LIMIT;
         assert.isNumber('addressSearchLimit', addressSearchLimit);
         super();
 
-        this._mnemonic = mnemonic;
+        this._mnemonic = config.mnemonic;
         this._baseDerivationPath = baseDerivationPath;
         this._addressSearchLimit = addressSearchLimit;
         this._derivedKeyInfo = this._initialDerivedKeyInfo(this._baseDerivationPath);

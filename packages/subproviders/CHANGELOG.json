@@ -8,16 +8,24 @@
                 "pr": 500
             },
             {
-                "note": "Add private key subprovider and refactor shared functionality into a base wallet subprovider",
+                "note": "Add PrivateKeySubprovider and refactor shared functionality into a base wallet subprovider",
                 "pr": 506
             },
             {
-                "note": "Add mnemonic wallet subprovider, deprecating our truffle-hdwallet-provider fork.",
+                "note": "Add MnemonicWalletsubprovider, deprecating our truffle-hdwallet-provider fork",
+                "pr": 507
+            },
+            {
+                "note": "Support multiple addresses in ledger and mnemonic wallets",
                 "pr": 507
             },
             {
                 "note":
-                    "Support multiple addresses in ledger and mnemonic wallets. Renamed derivationPath to baseDerivationPath.",
+                    "Refactors LedgerSubprovider such that explicitly setting the `pathIndex` is no longer required. Simply set the request `from` address as desired",
+                "pr": 507
+            },
+            {
+                "note": "Renamed derivationPath to baseDerivationPath.",
                 "pr": 507
             }
         ],

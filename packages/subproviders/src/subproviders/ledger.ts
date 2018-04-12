@@ -26,7 +26,6 @@ const ASK_FOR_ON_DEVICE_CONFIRMATION = false;
 const SHOULD_GET_CHAIN_CODE = true;
 const DEFAULT_NUM_ADDRESSES_TO_FETCH = 10;
 const DEFAULT_ADDRESS_SEARCH_LIMIT = 1000;
-const INITIAL_KEY_DERIVATION_INDEX = 0;
 
 /**
  * Subprovider for interfacing with a user's [Ledger Nano S](https://www.ledgerwallet.com/products/ledger-nano-s).
@@ -109,7 +108,7 @@ export class LedgerSubprovider extends BaseWalletSubprovider {
         const initialDerivedKeyInfo = await this._initialDerivedKeyInfoAsync();
         const derivedKeyInfo = this._findDerivedKeyInfoForAddress(initialDerivedKeyInfo, txParams.from);
 
-        const ledgerClient = await this._createLedgerClientAsync();
+        this._ledgerClientIfExists = await this._createLedgerClientAsync();
 
         const tx = new EthereumTx(txParams);
 
@@ -121,7 +120,7 @@ export class LedgerSubprovider extends BaseWalletSubprovider {
         const txHex = tx.serialize().toString('hex');
         try {
             const fullDerivationPath = derivedKeyInfo.derivationPath;
-            const result = await ledgerClient.signTransaction(fullDerivationPath, txHex);
+            const result = await this._ledgerClientIfExists.signTransaction(fullDerivationPath, txHex);
             // Store signature in transaction
             tx.r = Buffer.from(result.r, 'hex');
             tx.s = Buffer.from(result.s, 'hex');
@@ -163,10 +162,13 @@ export class LedgerSubprovider extends BaseWalletSubprovider {
         const initialDerivedKeyInfo = await this._initialDerivedKeyInfoAsync();
         const derivedKeyInfo = this._findDerivedKeyInfoForAddress(initialDerivedKeyInfo, address);
 
-        const ledgerClient = await this._createLedgerClientAsync();
+        this._ledgerClientIfExists = await this._createLedgerClientAsync();
         try {
             const fullDerivationPath = derivedKeyInfo.derivationPath;
-            const result = await ledgerClient.signPersonalMessage(fullDerivationPath, ethUtil.stripHexPrefix(data));
+            const result = await this._ledgerClientIfExists.signPersonalMessage(
+                fullDerivationPath,
+                ethUtil.stripHexPrefix(data),
+            );
             const v = result.v - 27;
             let vHex = v.toString(16);
             if (vHex.length < 2) {
@@ -188,7 +190,6 @@ export class LedgerSubprovider extends BaseWalletSubprovider {
         }
         const ledgerEthereumClient = await this._ledgerEthereumClientFactoryAsync();
         this._connectionLock.release();
-        this._ledgerClientIfExists = ledgerEthereumClient;
         return ledgerEthereumClient;
     }
     private async _destroyLedgerClientAsync() {
@@ -202,12 +203,12 @@ export class LedgerSubprovider extends BaseWalletSubprovider {
         this._connectionLock.release();
     }
     private async _initialDerivedKeyInfoAsync(): Promise<DerivedHDKeyInfo> {
-        const ledgerClient = await this._createLedgerClientAsync();
+        this._ledgerClientIfExists = await this._createLedgerClientAsync();
 
         const parentKeyDerivationPath = `m/${this._baseDerivationPath}`;
         let ledgerResponse;
         try {
-            ledgerResponse = await ledgerClient.getAddress(
+            ledgerResponse = await this._ledgerClientIfExists.getAddress(
                 parentKeyDerivationPath,
                 this._shouldAlwaysAskForConfirmation,
                 SHOULD_GET_CHAIN_CODE,
