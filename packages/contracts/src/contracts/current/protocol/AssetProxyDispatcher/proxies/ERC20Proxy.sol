@@ -55,7 +55,7 @@ contract ERC20Proxy is
         uint8 assetProxyId,
         address tokenAddress)
         public pure
-        returns (bytes assetMetadata)
+        returns (bytes memory assetMetadata)
     {
         // 0 is reserved as invalid proxy id
         require(assetProxyId != 0);
@@ -70,7 +70,7 @@ contract ERC20Proxy is
     /// @dev Decodes ERC20-encoded byte array.
     /// @param assetMetadata ERC20-encoded byte array.
     /// @return tokenAddress Address of ERC20 token.
-    function decodeMetadata(bytes assetMetadata)
+    function decodeMetadata(bytes memory assetMetadata)
         public pure
         returns (address tokenAddress)
     {
