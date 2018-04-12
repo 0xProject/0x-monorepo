@@ -45,13 +45,13 @@ contract ERC721Proxy is
         // No work to do if amount is zero
         if (amount == 0) return;
 
+        // There exists only 1 of each token.
+        require(amount == 1);
+
         // Decode metadata
         address token;
         uint256 tokenId;
         (token, tokenId) = decodeMetadata(assetMetadata);
-
-        // There exists only 1 of each token.
-        require(amount == 1);
 
         // Either succeeds or throws.
         ERC721Token(token).transferFrom(from, to, tokenId);
