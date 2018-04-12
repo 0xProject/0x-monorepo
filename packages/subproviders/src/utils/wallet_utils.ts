@@ -7,22 +7,22 @@ import { DerivedHDKeyInfo, WalletSubproviderErrors } from '../types';
 const DEFAULT_ADDRESS_SEARCH_LIMIT = 1000;
 
 class DerivedHDKeyInfoIterator implements IterableIterator<DerivedHDKeyInfo> {
-    private _initialDerivedKey: DerivedHDKeyInfo;
+    private _parentDerivedKeyInfo: DerivedHDKeyInfo;
     private _searchLimit: number;
     private _index: number;
 
     constructor(initialDerivedKey: DerivedHDKeyInfo, searchLimit: number = DEFAULT_ADDRESS_SEARCH_LIMIT) {
         this._searchLimit = searchLimit;
-        this._initialDerivedKey = initialDerivedKey;
+        this._parentDerivedKeyInfo = initialDerivedKey;
         this._index = 0;
     }
 
     public next(): IteratorResult<DerivedHDKeyInfo> {
-        const baseDerivationPath = this._initialDerivedKey.baseDerivationPath;
+        const baseDerivationPath = this._parentDerivedKeyInfo.baseDerivationPath;
         const derivationIndex = this._index;
         const fullDerivationPath = `m/${baseDerivationPath}/${derivationIndex}`;
         const path = `m/${derivationIndex}`;
-        const hdKey = this._initialDerivedKey.hdKey.derive(path);
+        const hdKey = this._parentDerivedKeyInfo.hdKey.derive(path);
         const address = walletUtils.addressOfHDKey(hdKey);
         const derivedKey: DerivedHDKeyInfo = {
             address,
@@ -44,9 +44,9 @@ class DerivedHDKeyInfoIterator implements IterableIterator<DerivedHDKeyInfo> {
 }
 
 export const walletUtils = {
-    calculateDerivedHDKeyInfos(initialDerivedKey: DerivedHDKeyInfo, numberOfKeys: number): DerivedHDKeyInfo[] {
+    calculateDerivedHDKeyInfos(parentDerivedKeyInfo: DerivedHDKeyInfo, numberOfKeys: number): DerivedHDKeyInfo[] {
         const derivedKeys: DerivedHDKeyInfo[] = [];
-        const derivedKeyIterator = new DerivedHDKeyInfoIterator(initialDerivedKey, numberOfKeys);
+        const derivedKeyIterator = new DerivedHDKeyInfoIterator(parentDerivedKeyInfo, numberOfKeys);
         for (const key of derivedKeyIterator) {
             derivedKeys.push(key);
         }
@@ -54,11 +54,11 @@ export const walletUtils = {
     },
     findDerivedKeyInfoForAddressIfExists(
         address: string,
-        initialDerivedKey: DerivedHDKeyInfo,
+        parentDerivedKeyInfo: DerivedHDKeyInfo,
         searchLimit: number,
     ): DerivedHDKeyInfo | undefined {
         let matchedKey: DerivedHDKeyInfo | undefined;
-        const derivedKeyIterator = new DerivedHDKeyInfoIterator(initialDerivedKey, searchLimit);
+        const derivedKeyIterator = new DerivedHDKeyInfoIterator(parentDerivedKeyInfo, searchLimit);
         for (const key of derivedKeyIterator) {
             if (key.address === address) {
                 matchedKey = key;
