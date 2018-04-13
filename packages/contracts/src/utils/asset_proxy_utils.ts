@@ -5,9 +5,7 @@ import ethUtil = require('ethereumjs-util');
 import { AssetProxyId } from './types';
 
 export function encodeAssetProxyId(assetProxyId: AssetProxyId): Buffer {
-    const formattedAssetProxyId = new BN(assetProxyId);
-    const encodedAssetProxyId = ethUtil.toUnsigned(formattedAssetProxyId);
-    return encodedAssetProxyId;
+    return ethUtil.toBuffer(assetProxyId);
 }
 
 export function encodeAddress(address: string): Buffer {

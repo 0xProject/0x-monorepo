@@ -31,7 +31,7 @@ export const crypto = {
                 argTypes.push('address');
             } else if (_.isString(arg)) {
                 argTypes.push('string');
-            } else if (arg instanceof Buffer) {
+            } else if (_.isBuffer(arg)) {
                 argTypes.push('bytes');
             } else if (_.isBoolean(arg)) {
                 argTypes.push('bool');
