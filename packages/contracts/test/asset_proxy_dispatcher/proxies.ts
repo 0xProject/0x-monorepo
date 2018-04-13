@@ -159,7 +159,7 @@ describe('Asset Transfer Proxies', () => {
         });
 
         it('should successfully transfer tokens', async () => {
-            // Construct metadata for ERC20 proxy
+            // Construct metadata for ERC20V1 proxy
             const encodedProxyMetadata = encodeERC20V1ProxyData(zrx.address);
             // Perform a transfer from makerAddress to takerAddress
             const balances = await dmyBalances.getAsync();
@@ -181,13 +181,32 @@ describe('Asset Transfer Proxies', () => {
             );
         });
 
+        it('should do nothing if transferring 0 amount of a token', async () => {
+            // Construct metadata for ERC20V1 proxy
+            const encodedProxyMetadata = encodeERC20V1ProxyData(zrx.address);
+            // Perform a transfer from makerAddress to takerAddress
+            const balances = await dmyBalances.getAsync();
+            const amount = new BigNumber(0);
+            await erc20TransferProxyV1.transferFrom.sendTransactionAsync(
+                encodedProxyMetadata,
+                makerAddress,
+                takerAddress,
+                amount,
+                { from: assetProxyDispatcherAddress },
+            );
+            // Verify transfer was successful
+            const newBalances = await dmyBalances.getAsync();
+            expect(newBalances[makerAddress][zrx.address]).to.be.bignumber.equal(balances[makerAddress][zrx.address]);
+            expect(newBalances[takerAddress][zrx.address]).to.be.bignumber.equal(balances[takerAddress][zrx.address]);
+        });
+
         it('should throw if requesting address is not authorized', async () => {
-            // Construct metadata for ERC20 proxy
+            // Construct metadata for ERC20V1 proxy
             const encodedProxyMetadata = encodeERC20V1ProxyData(zrx.address);
             // Perform a transfer from makerAddress to takerAddress
             const balances = await dmyBalances.getAsync();
             const amount = new BigNumber(10);
-            expect(
+            return expect(
                 erc20TransferProxyV1.transferFrom.sendTransactionAsync(
                     encodedProxyMetadata,
                     makerAddress,
@@ -250,13 +269,32 @@ describe('Asset Transfer Proxies', () => {
             );
         });
 
+        it('should do nothing if transferring 0 amount of a token', async () => {
+            // Construct metadata for ERC20 proxy
+            const encodedProxyMetadata = encodeERC20ProxyData(zrx.address);
+            // Perform a transfer from makerAddress to takerAddress
+            const balances = await dmyBalances.getAsync();
+            const amount = new BigNumber(0);
+            await erc20TransferProxy.transferFrom.sendTransactionAsync(
+                encodedProxyMetadata,
+                makerAddress,
+                takerAddress,
+                amount,
+                { from: assetProxyDispatcherAddress },
+            );
+            // Verify transfer was successful
+            const newBalances = await dmyBalances.getAsync();
+            expect(newBalances[makerAddress][zrx.address]).to.be.bignumber.equal(balances[makerAddress][zrx.address]);
+            expect(newBalances[takerAddress][zrx.address]).to.be.bignumber.equal(balances[takerAddress][zrx.address]);
+        });
+
         it('should throw if requesting address is not authorized', async () => {
             // Construct metadata for ERC20 proxy
             const encodedProxyMetadata = encodeERC20ProxyData(zrx.address);
             // Perform a transfer from makerAddress to takerAddress
             const balances = await dmyBalances.getAsync();
             const amount = new BigNumber(10);
-            expect(
+            return expect(
                 erc20TransferProxy.transferFrom.sendTransactionAsync(
                     encodedProxyMetadata,
                     makerAddress,
@@ -306,7 +344,7 @@ describe('Asset Transfer Proxies', () => {
         });
 
         it('should successfully transfer tokens', async () => {
-            // Construct metadata for ERC20 proxy
+            // Construct metadata for ERC721 proxy
             const encodedProxyMetadata = encodeERC721ProxyData(erc721Token.address, makerTokenId);
             // Verify pre-condition
             const ownerMakerToken = await erc721Token.ownerOf.callAsync(makerTokenId);
@@ -327,7 +365,7 @@ describe('Asset Transfer Proxies', () => {
         });
 
         it('should do nothing if transferring 0 amount of a token', async () => {
-            // Construct metadata for ERC20 proxy
+            // Construct metadata for ERC721 proxy
             const encodedProxyMetadata = encodeERC721ProxyData(erc721Token.address, makerTokenId);
             // Verify pre-condition
             const ownerMakerToken = await erc721Token.ownerOf.callAsync(makerTokenId);
@@ -335,19 +373,20 @@ describe('Asset Transfer Proxies', () => {
             // Perform a transfer from makerAddress to takerAddress
             const balances = await dmyBalances.getAsync();
             const amount = new BigNumber(0);
-            expect(
-                erc721TransferProxy.transferFrom.sendTransactionAsync(
-                    encodedProxyMetadata,
-                    makerAddress,
-                    takerAddress,
-                    amount,
-                    { from: assetProxyDispatcherAddress },
-                ),
-            ).to.be.rejectedWith(constants.REVERT);
+            await erc721TransferProxy.transferFrom.sendTransactionAsync(
+                encodedProxyMetadata,
+                makerAddress,
+                takerAddress,
+                amount,
+                { from: assetProxyDispatcherAddress },
+            );
+            // Verify transfer was successful
+            const newOwnerMakerToken = await erc721Token.ownerOf.callAsync(makerTokenId);
+            expect(newOwnerMakerToken).to.be.bignumber.equal(makerAddress);
         });
 
         it('should throw if transferring > 1 amount of a token', async () => {
-            // Construct metadata for ERC20 proxy
+            // Construct metadata for ERC721 proxy
             const encodedProxyMetadata = encodeERC721ProxyData(erc721Token.address, makerTokenId);
             // Verify pre-condition
             const ownerMakerToken = await erc721Token.ownerOf.callAsync(makerTokenId);
@@ -355,7 +394,7 @@ describe('Asset Transfer Proxies', () => {
             // Perform a transfer from makerAddress to takerAddress
             const balances = await dmyBalances.getAsync();
             const amount = new BigNumber(500);
-            expect(
+            return expect(
                 erc721TransferProxy.transferFrom.sendTransactionAsync(
                     encodedProxyMetadata,
                     makerAddress,
@@ -367,12 +406,12 @@ describe('Asset Transfer Proxies', () => {
         });
 
         it('should throw if requesting address is not authorized', async () => {
-            // Construct metadata for ERC20 proxy
+            // Construct metadata for ERC721 proxy
             const encodedProxyMetadata = encodeERC721ProxyData(zrx.address, makerTokenId);
             // Perform a transfer from makerAddress to takerAddress
             const balances = await dmyBalances.getAsync();
             const amount = new BigNumber(1);
-            expect(
+            return expect(
                 erc721TransferProxy.transferFrom.sendTransactionAsync(
                     encodedProxyMetadata,
                     makerAddress,
