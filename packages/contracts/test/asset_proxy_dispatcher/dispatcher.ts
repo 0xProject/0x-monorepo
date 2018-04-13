@@ -27,6 +27,7 @@ const blockchainLifecycle = new BlockchainLifecycle(web3Wrapper);
 describe('AssetProxyDispatcher', () => {
     let owner: string;
     let notOwner: string;
+    let notAuthorized: string;
     let exchangeAddress: string;
     let tokenOwner: string;
     let makerAddress: string;
@@ -44,7 +45,7 @@ describe('AssetProxyDispatcher', () => {
         // Setup accounts & addresses
         const accounts = await web3Wrapper.getAvailableAddressesAsync();
         owner = tokenOwner = accounts[0];
-        notOwner = accounts[1];
+        notOwner = notAuthorized = accounts[1];
         exchangeAddress = accounts[2];
         makerAddress = accounts[3];
         takerAddress = accounts[4];
@@ -303,7 +304,7 @@ describe('AssetProxyDispatcher', () => {
             ).to.be.rejectedWith(constants.REVERT);
         });
 
-        it('should throw if requesting address is not authorized', async () => {
+        it('should throw on transfer if requesting address is not authorized', async () => {
             // Register ERC20 proxy
             await assetProxyDispatcher.addAssetProxy.sendTransactionAsync(
                 AssetProxyId.ERC20,
@@ -322,7 +323,7 @@ describe('AssetProxyDispatcher', () => {
                     makerAddress,
                     takerAddress,
                     amount,
-                    { from: notOwner },
+                    { from: notAuthorized },
                 ),
             ).to.be.rejectedWith(constants.REVERT);
         });
