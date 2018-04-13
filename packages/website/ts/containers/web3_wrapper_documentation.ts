@@ -85,8 +85,8 @@ const docsInfoConfig: DocsInfoConfig = {
             'ContractEventArg',
         ],
         typeNameToExternalLink: {
-            Web3: 'https://github.com/ethereum/wiki/wiki/JavaScript-API',
-            BigNumber: 'http://mikemcl.github.io/bignumber.js',
+            Web3: constants.URL_WEB3_DOCS,
+            BigNumber: constants.URL_BIGNUMBERJS_GITHUB,
         },
         typeNameToPrefix: {},
         typeNameToDocSection: {
