@@ -2,11 +2,12 @@ import { colors, Styles } from '@0xproject/react-shared';
 import * as _ from 'lodash';
 import * as React from 'react';
 import * as DocumentTitle from 'react-document-title';
+import { Link } from 'react-router-dom';
 import { Footer } from 'ts/components/footer';
 import { TopBar } from 'ts/components/top_bar/top_bar';
 import { Profile } from 'ts/pages/about/profile';
 import { Dispatcher } from 'ts/redux/dispatcher';
-import { ProfileInfo } from 'ts/types';
+import { ProfileInfo, WebsitePaths } from 'ts/types';
 import { constants } from 'ts/utils/constants';
 import { Translate } from 'ts/utils/translate';
 import { utils } from 'ts/utils/utils';
@@ -250,9 +251,9 @@ export class About extends React.Component<AboutProps, AboutState> {
                             }}
                         >
                             We are seeking outstanding candidates to{' '}
-                            <a href={constants.URL_ANGELLIST} target="_blank" style={{ color: 'black' }}>
+                            <Link to={WebsitePaths.Jobs} style={{ color: 'black' }}>
                                 join our team
-                            </a>
+                            </Link>
                             . We value passion, diversity and unique perspectives.
                         </div>
                     </div>

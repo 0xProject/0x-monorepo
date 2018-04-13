@@ -361,6 +361,7 @@ export enum WebsitePaths {
     JSONSchemas = '/docs/json-schemas',
     SolCov = '/docs/sol-cov',
     Subproviders = '/docs/subproviders',
+    Jobs = '/jobs',
 }
 
 export enum DocPackages {
