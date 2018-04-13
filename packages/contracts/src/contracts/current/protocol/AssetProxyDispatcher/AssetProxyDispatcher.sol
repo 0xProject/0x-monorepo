@@ -55,21 +55,21 @@ contract AssetProxyDispatcher is
 
     /// @dev Adds a new asset proxy.
     /// @param assetProxyId Id of the asset proxy.
-    /// @param newAssetProxyAddress Address of the asset proxy contract to add.
-    /// @param currentAssetProxyAddress Address of existing asset proxy to overwrite.
+    /// @param newAssetProxy Asset proxy contract to add.
+    /// @param currentAssetProxy Existing asset proxy to overwrite.
     function addAssetProxy(
         uint8 assetProxyId,
-        address newAssetProxyAddress,
-        address currentAssetProxyAddress)
+        IAssetProxy newAssetProxy,
+        IAssetProxy currentAssetProxy)
         external
         onlyOwner
     {
         // Ensure the existing asset proxy is not unintentionally overwritten
-        require(currentAssetProxyAddress == address(assetProxies[assetProxyId]));
+        require(currentAssetProxy == assetProxies[assetProxyId]);
 
         // Add asset proxy and log registration
-        assetProxies[assetProxyId] = IAssetProxy(newAssetProxyAddress);
-        emit AssetProxySet(assetProxyId, newAssetProxyAddress, currentAssetProxyAddress);
+        assetProxies[assetProxyId] = newAssetProxy;
+        emit AssetProxySet(assetProxyId, newAssetProxy, currentAssetProxy);
     }
 
     /// @dev Gets an asset proxy.
