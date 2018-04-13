@@ -1,5 +1,5 @@
+import { web3Factory } from '@0xproject/dev-utils';
 import * as fs from 'fs';
-import HDWalletProvider = require('truffle-hdwallet-provider');
 
 import { ZeroEx } from '../src';
 
@@ -14,10 +14,7 @@ const TIMEOUT = 10000;
 describe('Artifacts', () => {
     describe('contracts are deployed on kovan', () => {
         const kovanRpcUrl = constants.KOVAN_RPC_URL;
-        const packageJSONContent = fs.readFileSync('package.json', 'utf-8');
-        const packageJSON = JSON.parse(packageJSONContent);
-        const mnemonic = packageJSON.config.mnemonic;
-        const provider = new HDWalletProvider(mnemonic, kovanRpcUrl);
+        const provider = web3Factory.create({ rpcUrl: kovanRpcUrl }).currentProvider;
         const config = {
             networkId: constants.KOVAN_NETWORK_ID,
         };
@@ -34,10 +31,7 @@ describe('Artifacts', () => {
     });
     describe('contracts are deployed on ropsten', () => {
         const ropstenRpcUrl = constants.ROPSTEN_RPC_URL;
-        const packageJSONContent = fs.readFileSync('package.json', 'utf-8');
-        const packageJSON = JSON.parse(packageJSONContent);
-        const mnemonic = packageJSON.config.mnemonic;
-        const provider = new HDWalletProvider(mnemonic, ropstenRpcUrl);
+        const provider = web3Factory.create({ rpcUrl: ropstenRpcUrl }).currentProvider;
         const config = {
             networkId: constants.ROPSTEN_NETWORK_ID,
         };
