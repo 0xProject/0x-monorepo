@@ -67,7 +67,7 @@ contract ERC721Proxy is
     {
         require(assetMetadata.length == 53);
         tokenAddress = readAddress(assetMetadata, 1);
-        tokenId = uint256(readBytes32(assetMetadata, 21));
+        tokenId = readUint256(assetMetadata, 21);
         return (tokenAddress, tokenId);
     }
 
@@ -90,7 +90,7 @@ contract ERC721Proxy is
         assetMetadata = new bytes(53);
         assetMetadata[0] = byte(assetProxyId);
         writeAddress(assetMetadata, 1, tokenAddress);
-        writeBytes32(assetMetadata, 21, bytes32(tokenId));
+        writeUint256(assetMetadata, 21, tokenId);
         return assetMetadata;
     }
 }

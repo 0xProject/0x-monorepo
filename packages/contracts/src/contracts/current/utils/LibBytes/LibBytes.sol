@@ -123,4 +123,30 @@ contract LibBytes {
             mstore(add(b, index), input)
         }
     }
+
+    /// @dev Reads a uint256 value from a position in a byte array.
+    /// @param b Byte array containing a uint256 value.
+    /// @param index Index in byte array of uint256 value.
+    /// @return uint256 value from byte array.
+    function readUint256(
+        bytes memory b,
+        uint256 index)
+        public pure
+        returns (uint256 result)
+    {
+        return uint256(readBytes32(b, index));
+    }
+
+    /// @dev Writes a uint256 into a specific position in a byte array.
+    /// @param b Byte array to insert <input> into.
+    /// @param index Index in byte array of <input>.
+    /// @param input uint256 to put into byte array.
+    function writeUint256(
+        bytes memory b,
+        uint256 index,
+        uint256 input)
+        public pure
+    {
+        writeBytes32(b, index, bytes32(input));
+    }
 }
