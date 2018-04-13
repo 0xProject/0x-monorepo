@@ -18,7 +18,7 @@ export function encodeAddress(address: string): Buffer {
 
 export function encodeUint256(value: BigNumber): Buffer {
     const formattedValue = new BN(value.toString(10));
-    const encodedValue = ethUtil.toUnsigned(formattedValue);
+    const encodedValue = ethUtil.toBuffer(formattedValue);
     return encodedValue;
 }
 
