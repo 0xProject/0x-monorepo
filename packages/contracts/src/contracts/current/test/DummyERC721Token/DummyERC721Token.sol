@@ -41,6 +41,7 @@ contract DummyERC721Token is
         public
         onlyOwner
     {
-        super._mint(to, tokenId);
+        require(!exists(tokenId));
+        _mint(to, tokenId);
     }
 }

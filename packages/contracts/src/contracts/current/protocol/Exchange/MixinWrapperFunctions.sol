@@ -86,7 +86,7 @@ contract MixinWrapperFunctions is
         // |          | 0x120  |         |   10. expirationTimeSeconds                 |
         // |          | 0x140  |         |   11. salt                                  |
         // |          | 0x160  |         |   12. Offset to makerAssetProxyMetadata (*) |
-        // |          | 0x180  |         |   13. Offset to takerAssetProxyMetadata (*  |
+        // |          | 0x180  |         |   13. Offset to takerAssetProxyMetadata (*) |
         // |          | 0x1A0  | 32      | makerAssetProxyMetadata Length              |
         // |          | 0x1C0  | **      | makerAssetProxyMetadata Contents            |
         // |          | 0x1E0  | 32      | takerAssetProxyMetadata Length              |
