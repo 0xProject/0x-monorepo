@@ -66,10 +66,10 @@ describe('Asset Transfer Proxies', () => {
             provider,
         );
         await erc20TransferProxyV1.addAuthorizedAddress.sendTransactionAsync(assetProxyDispatcherAddress, {
-            from: accounts[0],
+            from: owner,
         });
         await tokenTransferProxy.addAuthorizedAddress.sendTransactionAsync(erc20TransferProxyV1.address, {
-            from: accounts[0],
+            from: owner,
         });
         // Deploy ERC20 Proxy
         const erc20TransferProxyInstance = await deployer.deployAsync(ContractName.ERC20Proxy);
@@ -79,7 +79,7 @@ describe('Asset Transfer Proxies', () => {
             provider,
         );
         await erc20TransferProxy.addAuthorizedAddress.sendTransactionAsync(assetProxyDispatcherAddress, {
-            from: accounts[0],
+            from: owner,
         });
         // Deploy ERC721 Proxy
         const erc721TransferProxyInstance = await deployer.deployAsync(ContractName.ERC721Proxy);
@@ -89,7 +89,7 @@ describe('Asset Transfer Proxies', () => {
             provider,
         );
         await erc721TransferProxy.addAuthorizedAddress.sendTransactionAsync(assetProxyDispatcherAddress, {
-            from: accounts[0],
+            from: owner,
         });
         // Deploy zrx and set initial balances
         const zrxInstance = await deployer.deployAsync(ContractName.DummyToken, constants.DUMMY_TOKEN_ARGS);
