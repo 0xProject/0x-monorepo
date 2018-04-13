@@ -54,7 +54,7 @@ export const web3Factory = {
         };
         const shouldUseInProcessGanache = !!config.shouldUseInProcessGanache;
         if (shouldUseInProcessGanache) {
-            if (_.isUndefined(config.rpcUrl)) {
+            if (!_.isUndefined(config.rpcUrl)) {
                 throw new Error('Cannot use both GanacheSubrovider and RPCSubprovider');
             }
             provider.addProvider(
