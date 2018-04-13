@@ -183,7 +183,7 @@ describe('AssetProxyDispatcher', () => {
             expect(proxyAddress).to.be.equal(newAddress);
         });
 
-        it('should throw if registering with incorrect "old_address" field', async () => {
+        it('should throw if registering with incorrect "currentAssetProxyAddress" field', async () => {
             // Initial registration
             await assetProxyDispatcher.addAssetProxy.sendTransactionAsync(
                 AssetProxyId.ERC20,
@@ -225,7 +225,7 @@ describe('AssetProxyDispatcher', () => {
             expect(newProxyAddress).to.be.equal(ZeroEx.NULL_ADDRESS);
         });
 
-        it('should throw if requesting address is not authorized', async () => {
+        it('should throw if requesting address is not owner', async () => {
             return expect(
                 assetProxyDispatcher.addAssetProxy.sendTransactionAsync(
                     AssetProxyId.ERC20,
@@ -286,7 +286,7 @@ describe('AssetProxyDispatcher', () => {
             );
         });
 
-        it('should throw if delegating to unregistered proxy', async () => {
+        it('should throw if dispatching to unregistered proxy', async () => {
             // Construct metadata for ERC20 proxy
             const encodedProxyMetadata = encodeERC20ProxyData(zrx.address);
             // Perform a transfer from makerAddress to takerAddress
@@ -298,7 +298,7 @@ describe('AssetProxyDispatcher', () => {
                     makerAddress,
                     takerAddress,
                     amount,
-                    { from: notOwner },
+                    { from: exchangeAddress },
                 ),
             ).to.be.rejectedWith(constants.REVERT);
         });
