@@ -30,7 +30,7 @@ export class NameResolver extends EnumerableResolver {
         this._traverseContractsDir(this._contractsDir, onFile);
         return contractSource;
     }
-    public getAllContracts(): ContractSource[] {
+    public getAll(): ContractSource[] {
         const SOLIDITY_FILE_EXTENSION = '.sol';
         const contractSources: ContractSource[] = [];
         const onFile = (filePath: string) => {

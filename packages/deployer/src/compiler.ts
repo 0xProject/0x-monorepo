@@ -84,7 +84,7 @@ export class Compiler {
         await createDirIfDoesNotExistAsync(SOLC_BIN_DIR);
         let contractNamesToCompile: string[] = [];
         if (this._specifiedContracts.has(ALL_CONTRACTS_IDENTIFIER)) {
-            const allContracts = this._nameResolver.getAllContracts();
+            const allContracts = this._nameResolver.getAll();
             contractNamesToCompile = _.map(allContracts, contractSource =>
                 path.basename(contractSource.path, constants.SOLIDITY_FILE_EXTENSION),
             );
