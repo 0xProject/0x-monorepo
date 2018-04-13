@@ -102,7 +102,7 @@ export class Compiler {
     private async _compileContractAsync(contractName: string): Promise<void> {
         const contractSource = this._resolver.resolve(contractName);
         const currentArtifactIfExists = await getContractArtifactIfExistsAsync(this._artifactsDir, contractName);
-        const sourceTreeHash = `0x${this._getSourceTreeHash(contractSource.path).toString('hex')}`;
+        const sourceTreeHashHex = `0x${this._getSourceTreeHash(contractSource.path).toString('hex')}`;
 
         let shouldCompile = false;
         if (_.isUndefined(currentArtifactIfExists)) {
@@ -111,7 +111,7 @@ export class Compiler {
             const currentArtifact = currentArtifactIfExists as ContractArtifact;
             shouldCompile =
                 currentArtifact.networks[this._networkId].optimizer_enabled !== this._optimizerEnabled ||
-                currentArtifact.networks[this._networkId].source_tree_hash !== sourceTreeHash;
+                currentArtifact.networks[this._networkId].source_tree_hash !== sourceTreeHashHex;
         }
         if (!shouldCompile) {
             return;
@@ -138,9 +138,6 @@ export class Compiler {
         const solcInstance = solc.setupMethods(requireFromString(solcjs, compilerBinFilename));
 
         logUtils.log(`Compiling ${contractName} with Solidity v${solcVersion}...`);
-        if (_.isUndefined(contractSource)) {
-            throw new Error(`Failed to resolve ${contractName}`);
-        }
         const source = contractSource.source;
         const absoluteFilePath = contractSource.path;
         const standardInput: solc.StandardInput = {
@@ -210,7 +207,7 @@ export class Compiler {
         const updated_at = Date.now();
         const contractNetworkData: ContractNetworkData = {
             solc_version: solcVersion,
-            source_tree_hash: sourceTreeHash,
+            source_tree_hash: sourceTreeHashHex,
             optimizer_enabled: this._optimizerEnabled,
             abi,
             bytecode,
