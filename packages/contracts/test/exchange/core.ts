@@ -90,7 +90,6 @@ describe('Exchange', () => {
             deployer.deployAsync(ContractName.DummyToken, constants.DUMMY_TOKEN_ARGS),
             deployer.deployAsync(ContractName.DummyToken, constants.DUMMY_TOKEN_ARGS),
             deployer.deployAsync(ContractName.DummyERC721Token, constants.DUMMY_ERC721TOKEN_ARGS),
-            deployer.deployAsync(ContractName.DummyERC721Token, constants.DUMMY_ERC721TOKEN_ARGS),
         ]);
         rep = new DummyTokenContract(repInstance.abi, repInstance.address, provider);
         dgd = new DummyTokenContract(dgdInstance.abi, dgdInstance.address, provider);
@@ -896,33 +895,6 @@ describe('Exchange', () => {
             // Call Exchange
             const takerTokenFillAmount = signedOrder.takerTokenAmount;
             const res = await exWrapper.fillOrderAsync(signedOrder, takerAddress, { takerTokenFillAmount });
-            // Verify post-conditions
-            const newOwnerMakerToken = await erc721Token.ownerOf.callAsync(makerTokenId);
-            expect(newOwnerMakerToken).to.be.bignumber.equal(takerAddress);
-            const newOwnerTakerToken = await erc721Token.ownerOf.callAsync(takerTokenId);
-            expect(newOwnerTakerToken).to.be.bignumber.equal(makerAddress);
-        });
-
-        it('should successfully exchange a single token between the maker and taker (via filleOrderNoThrow)', async () => {
-            // Construct Exchange parameters
-            const makerTokenId = erc721MakerTokenIds[0];
-            const takerTokenId = erc721TakerTokenIds[1];
-            signedOrder = orderFactory.newSignedOrder({
-                makerTokenAddress: erc721Token.address,
-                takerTokenAddress: erc721Token.address,
-                makerTokenAmount: new BigNumber(1),
-                takerTokenAmount: new BigNumber(1),
-                makerAssetData: encodeERC721ProxyData(erc721Token.address, makerTokenId),
-                takerAssetData: encodeERC721ProxyData(erc721Token.address, takerTokenId),
-            });
-            // Verify pre-conditions
-            const initialOwnerMakerToken = await erc721Token.ownerOf.callAsync(makerTokenId);
-            expect(initialOwnerMakerToken).to.be.bignumber.equal(makerAddress);
-            const initialOwnerTakerToken = await erc721Token.ownerOf.callAsync(takerTokenId);
-            expect(initialOwnerTakerToken).to.be.bignumber.equal(takerAddress);
-            // Call Exchange
-            const takerTokenFillAmount = signedOrder.takerTokenAmount;
-            await exWrapper.fillOrderNoThrowAsync(signedOrder, takerAddress, { takerTokenFillAmount });
             // Verify post-conditions
             const newOwnerMakerToken = await erc721Token.ownerOf.callAsync(makerTokenId);
             expect(newOwnerMakerToken).to.be.bignumber.equal(takerAddress);
