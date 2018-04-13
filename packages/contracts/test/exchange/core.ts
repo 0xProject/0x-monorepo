@@ -74,6 +74,7 @@ describe('Exchange', () => {
         const accounts = await web3Wrapper.getAvailableAddressesAsync();
         makerAddress = accounts[0];
         [tokenOwner, takerAddress, feeRecipientAddress] = accounts;
+        const owner = tokenOwner;
         const [repInstance, dgdInstance, zrxInstance, ckInstance] = await Promise.all([
             deployer.deployAsync(ContractName.DummyToken, constants.DUMMY_TOKEN_ARGS),
             deployer.deployAsync(ContractName.DummyToken, constants.DUMMY_TOKEN_ARGS),
@@ -109,16 +110,16 @@ describe('Exchange', () => {
             provider,
         );
         await erc20TransferProxyV1.addAuthorizedAddress.sendTransactionAsync(assetProxyDispatcher.address, {
-            from: accounts[0],
+            from: owner,
         });
         await tokenTransferProxy.addAuthorizedAddress.sendTransactionAsync(erc20TransferProxyV1.address, {
-            from: accounts[0],
+            from: owner,
         });
         await assetProxyDispatcher.addAssetProxy.sendTransactionAsync(
             AssetProxyId.ERC20V1,
             erc20TransferProxyV1.address,
             ZeroEx.NULL_ADDRESS,
-            { from: accounts[0] },
+            { from: owner },
         );
         // Deploy ERC20 Proxy
         const erc20TransferProxyInstance = await deployer.deployAsync(ContractName.ERC20Proxy);
@@ -128,13 +129,13 @@ describe('Exchange', () => {
             provider,
         );
         await erc20TransferProxy.addAuthorizedAddress.sendTransactionAsync(assetProxyDispatcher.address, {
-            from: accounts[0],
+            from: owner,
         });
         await assetProxyDispatcher.addAssetProxy.sendTransactionAsync(
             AssetProxyId.ERC20,
             erc20TransferProxy.address,
             ZeroEx.NULL_ADDRESS,
-            { from: accounts[0] },
+            { from: owner },
         );
         // Deploy ERC721 Proxy
         const erc721TransferProxyInstance = await deployer.deployAsync(ContractName.ERC721Proxy);
@@ -144,13 +145,13 @@ describe('Exchange', () => {
             provider,
         );
         await erc721TransferProxy.addAuthorizedAddress.sendTransactionAsync(assetProxyDispatcher.address, {
-            from: accounts[0],
+            from: owner,
         });
         await assetProxyDispatcher.addAssetProxy.sendTransactionAsync(
             AssetProxyId.ERC721,
             erc721TransferProxy.address,
             ZeroEx.NULL_ADDRESS,
-            { from: accounts[0] },
+            { from: owner },
         );
         // Deploy and configure Exchange
         const exchangeInstance = await deployer.deployAsync(ContractName.Exchange, [
@@ -159,7 +160,7 @@ describe('Exchange', () => {
             assetProxyDispatcher.address,
         ]);
         exchange = new ExchangeContract(exchangeInstance.abi, exchangeInstance.address, provider);
-        await assetProxyDispatcher.addAuthorizedAddress.sendTransactionAsync(exchange.address, { from: accounts[0] });
+        await assetProxyDispatcher.addAuthorizedAddress.sendTransactionAsync(exchange.address, { from: owner });
         zeroEx = new ZeroEx(provider, {
             exchangeContractAddress: exchange.address,
             networkId: constants.TESTRPC_NETWORK_ID,
