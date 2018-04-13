@@ -4,8 +4,8 @@ import * as _ from 'lodash';
 
 import { ZeroEx } from '../0x';
 import { ExchangeWrapper } from '../contract_wrappers/exchange_wrapper';
-import { BalanceAndAllowanceFetcher } from '../fetchers/balance_and_allowance_fetcher';
-import { OrderFilledCancelledFetcher } from '../fetchers/order_filled_cancelled_fetcher';
+import { BalanceAndAllowanceFetcher } from '../abstract/balance_and_allowance_fetcher';
+import { OrderFilledCancelledFetcher } from '../abstract/order_filled_cancelled_fetcher';
 import { RemainingFillableCalculator } from '../order_watcher/remaining_fillable_calculator';
 import { ExchangeContractErrs, OrderRelevantState, OrderState, OrderStateInvalid, OrderStateValid } from '../types';
 

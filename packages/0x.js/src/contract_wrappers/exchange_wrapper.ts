@@ -13,8 +13,8 @@ import { Web3Wrapper } from '@0xproject/web3-wrapper';
 import * as _ from 'lodash';
 
 import { artifacts } from '../artifacts';
-import { BalanceAndProxyAllowanceLazyStore } from '../stores/balance_proxy_allowance_lazy_store';
-import { OrderFilledCancelledLazyStore } from '../stores/order_filled_cancelled_lazy_store';
+import { SimpleBalanceAndAllowanceFetcher } from '../fetchers/simple_balance_and_allowance_fetcher';
+import { SimpleOrderFilledCancelledFetcher } from '../fetchers/simple_order_filled_cancelled_fetcher';
 import {
     BlockRange,
     EventCallback,
@@ -881,11 +881,11 @@ export class ExchangeWrapper extends ContractWrapper {
      * @param   signedOrder   The signedOrder
      */
     public async getOrderStateAsync(signedOrder: SignedOrder): Promise<OrderState> {
-        const balanceAndProxyAllowanceLazyStore = new BalanceAndProxyAllowanceLazyStore(
+        const balanceAndProxyAllowanceLazyStore = new SimpleBalanceAndAllowanceFetcher(
             this._tokenWrapper,
             BlockParamLiteral.Latest,
         );
-        const orderFilledCancelledLazyStore = new OrderFilledCancelledLazyStore(this);
+        const orderFilledCancelledLazyStore = new SimpleOrderFilledCancelledFetcher(this);
         const orderStateUtils = new OrderStateUtils(balanceAndProxyAllowanceLazyStore, orderFilledCancelledLazyStore);
         return orderStateUtils.getOrderStateAsync(signedOrder);
     }

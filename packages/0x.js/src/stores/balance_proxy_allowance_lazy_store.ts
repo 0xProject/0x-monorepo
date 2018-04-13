@@ -3,7 +3,7 @@ import { BigNumber } from '@0xproject/utils';
 import * as _ from 'lodash';
 
 import { TokenWrapper } from '../contract_wrappers/token_wrapper';
-import { BalanceAndAllowanceFetcher } from '../fetchers/balance_and_allowance_fetcher';
+import { BalanceAndAllowanceFetcher } from '../abstract/balance_and_allowance_fetcher';
 
 /**
  * Copy on read store for balances/proxyAllowances of tokens/accounts
