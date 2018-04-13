@@ -7,7 +7,7 @@ import ethUtil = require('ethereumjs-util');
 
 import { ERC20ProxyContract } from '../../src/contract_wrappers/generated/e_r_c20_proxy';
 import { ExchangeContract } from '../../src/contract_wrappers/generated/exchange';
-import { encodeERC20ProxyData, encodeERC20V1ProxyData, encodeERC721ProxyData } from '../../src/utils/asset_proxy_utils';
+import { encodeERC20ProxyData } from '../../src/utils/asset_proxy_utils';
 import { constants } from '../../src/utils/constants';
 import { ExchangeWrapper } from '../../src/utils/exchange_wrapper';
 import { OrderFactory } from '../../src/utils/order_factory';
@@ -42,22 +42,6 @@ describe('Exchange', () => {
             deployer.deployAsync(ContractName.DummyToken, constants.DUMMY_TOKEN_ARGS),
         ]);
         const assetProxyDispatcher = await deployer.deployAsync(ContractName.AssetProxyDispatcher);
-        // Deploy ERC20 Proxy
-        const erc20TransferProxyInstance = await deployer.deployAsync(ContractName.ERC20Proxy);
-        const erc20TransferProxy = new ERC20ProxyContract(
-            erc20TransferProxyInstance.abi,
-            erc20TransferProxyInstance.address,
-            provider,
-        );
-        await erc20TransferProxy.addAuthorizedAddress.sendTransactionAsync(assetProxyDispatcher.address, {
-            from: owner,
-        });
-        await assetProxyDispatcher.addAssetProxy.sendTransactionAsync(
-            AssetProxyId.ERC20,
-            erc20TransferProxy.address,
-            ZeroEx.NULL_ADDRESS,
-            { from: owner },
-        );
         // Deploy and configure Exchange
         const exchangeInstance = await deployer.deployAsync(ContractName.Exchange, [
             zrx.address,
