@@ -70,7 +70,8 @@ export class Compiler {
         this._nameResolver = new NameResolver(path.resolve(this._contractsDir));
         const resolver = new FallthroughResolver();
         resolver.appendResolver(new URLResolver());
-        resolver.appendResolver(new NPMResolver(path.resolve('')));
+        const packagePath = path.resolve('');
+        resolver.appendResolver(new NPMResolver(packagePath));
         resolver.appendResolver(new FSResolver());
         resolver.appendResolver(this._nameResolver);
         this._resolver = resolver;
