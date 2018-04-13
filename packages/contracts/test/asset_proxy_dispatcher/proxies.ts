@@ -181,7 +181,7 @@ describe('Asset Transfer Proxies', () => {
             );
         });
 
-        it('should throw if requesting address is not authorized', async () => {
+        it('should throw if requesting address is not owner', async () => {
             // Construct metadata for ERC20 proxy
             const encodedProxyMetadata = encodeERC20V1ProxyData(zrx.address);
             // Perform a transfer from makerAddress to takerAddress
@@ -250,7 +250,7 @@ describe('Asset Transfer Proxies', () => {
             );
         });
 
-        it('should throw if requesting address is not authorized', async () => {
+        it('should throw if requesting address is not owner', async () => {
             // Construct metadata for ERC20 proxy
             const encodedProxyMetadata = encodeERC20ProxyData(zrx.address);
             // Perform a transfer from makerAddress to takerAddress
@@ -366,7 +366,7 @@ describe('Asset Transfer Proxies', () => {
             ).to.be.rejectedWith(constants.REVERT);
         });
 
-        it('should throw if requesting address is not authorized', async () => {
+        it('should throw if requesting address is not owner', async () => {
             // Construct metadata for ERC20 proxy
             const encodedProxyMetadata = encodeERC721ProxyData(zrx.address, makerTokenId);
             // Perform a transfer from makerAddress to takerAddress
