@@ -43,7 +43,7 @@ const docsInfoConfig: DocsInfoConfig = {
     sectionNameToModulePath: {
         [connectDocSections.httpClient]: ['"src/http_client"'],
         [connectDocSections.webSocketOrderbookChannel]: ['"src/ws_orderbook_channel"'],
-        [connectDocSections.types]: ['"src/types"'],
+        [connectDocSections.types]: ['"src/types"', '"types/src/index"'],
     },
     menuSubsectionToVersionWhenIntroduced: {},
     sections: connectDocSections,
