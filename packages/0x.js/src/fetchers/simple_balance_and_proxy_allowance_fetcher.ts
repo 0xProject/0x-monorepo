@@ -1,10 +1,10 @@
 import { BlockParamLiteral } from '@0xproject/types';
 import { BigNumber } from '@0xproject/utils';
 
-import {BalanceAndAllowanceFetcher} from '../abstract/balance_and_allowance_fetcher';
+import {BalanceAndProxyAllowanceFetcher} from '../abstract/balance_and_proxy_allowance_fetcher';
 import {TokenWrapper} from '../contract_wrappers/token_wrapper';
 
-export class SimpleBalanceAndAllowanceFetcher implements BalanceAndAllowanceFetcher {
+export class SimpleBalanceAndProxyAllowanceFetcher implements BalanceAndProxyAllowanceFetcher {
     private _token: TokenWrapper;
     private _defaultBlock: BlockParamLiteral;
     constructor(token: TokenWrapper, defaultBlock: BlockParamLiteral) {

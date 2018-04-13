@@ -3,12 +3,12 @@ import { BigNumber } from '@0xproject/utils';
 import * as _ from 'lodash';
 
 import { TokenWrapper } from '../contract_wrappers/token_wrapper';
-import { BalanceAndAllowanceFetcher } from '../abstract/balance_and_allowance_fetcher';
+import { BalanceAndProxyAllowanceFetcher } from '../abstract/balance_and_proxy_allowance_fetcher';
 
 /**
  * Copy on read store for balances/proxyAllowances of tokens/accounts
  */
-export class BalanceAndProxyAllowanceLazyStore implements BalanceAndAllowanceFetcher {
+export class BalanceAndProxyAllowanceLazyStore implements BalanceAndProxyAllowanceFetcher {
     private _token: TokenWrapper;
     private _defaultBlock: BlockParamLiteral;
     private _balance: {

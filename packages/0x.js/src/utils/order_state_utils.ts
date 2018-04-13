@@ -4,7 +4,7 @@ import * as _ from 'lodash';
 
 import { ZeroEx } from '../0x';
 import { ExchangeWrapper } from '../contract_wrappers/exchange_wrapper';
-import { BalanceAndAllowanceFetcher } from '../abstract/balance_and_allowance_fetcher';
+import { BalanceAndProxyAllowanceFetcher } from '../abstract/balance_and_proxy_allowance_fetcher';
 import { OrderFilledCancelledFetcher } from '../abstract/order_filled_cancelled_fetcher';
 import { RemainingFillableCalculator } from '../order_watcher/remaining_fillable_calculator';
 import { ExchangeContractErrs, OrderRelevantState, OrderState, OrderStateInvalid, OrderStateValid } from '../types';
@@ -12,7 +12,7 @@ import { ExchangeContractErrs, OrderRelevantState, OrderState, OrderStateInvalid
 const ACCEPTABLE_RELATIVE_ROUNDING_ERROR = 0.0001;
 
 export class OrderStateUtils {
-    private _balanceAndAllowanceFetcher: BalanceAndAllowanceFetcher;
+    private _balanceAndProxyAllowanceFetcher: BalanceAndProxyAllowanceFetcher;
     private _orderFilledCancelledFetcher: OrderFilledCancelledFetcher;
     private static _validateIfOrderIsValid(signedOrder: SignedOrder, orderRelevantState: OrderRelevantState): void {
         const unavailableTakerTokenAmount = orderRelevantState.cancelledTakerTokenAmount.add(
@@ -49,10 +49,10 @@ export class OrderStateUtils {
         }
     }
     constructor(
-        balanceAndProxyAllowanceFetcher: BalanceAndAllowanceFetcher,
+        balanceAndProxyAllowanceFetcher: BalanceAndProxyAllowanceFetcher,
         orderFilledCancelledFetcher: OrderFilledCancelledFetcher,
     ) {
-        this._balanceAndAllowanceFetcher = balanceAndProxyAllowanceFetcher;
+        this._balanceAndProxyAllowanceFetcher = balanceAndProxyAllowanceFetcher;
         this._orderFilledCancelledFetcher = orderFilledCancelledFetcher;
     }
     public async getOrderStateAsync(signedOrder: SignedOrder): Promise<OrderState> {
@@ -83,19 +83,19 @@ export class OrderStateUtils {
         const exchange = (this._orderFilledCancelledFetcher as any)._exchange as ExchangeWrapper;
         const zrxTokenAddress = exchange.getZRXTokenAddress();
         const orderHash = ZeroEx.getOrderHashHex(signedOrder);
-        const makerBalance = await this._balanceAndAllowanceFetcher.getBalanceAsync(
+        const makerBalance = await this._balanceAndProxyAllowanceFetcher.getBalanceAsync(
             signedOrder.makerTokenAddress,
             signedOrder.maker,
         );
-        const makerProxyAllowance = await this._balanceAndAllowanceFetcher.getProxyAllowanceAsync(
+        const makerProxyAllowance = await this._balanceAndProxyAllowanceFetcher.getProxyAllowanceAsync(
             signedOrder.makerTokenAddress,
             signedOrder.maker,
         );
-        const makerFeeBalance = await this._balanceAndAllowanceFetcher.getBalanceAsync(
+        const makerFeeBalance = await this._balanceAndProxyAllowanceFetcher.getBalanceAsync(
             zrxTokenAddress,
             signedOrder.maker,
         );
-        const makerFeeProxyAllowance = await this._balanceAndAllowanceFetcher.getProxyAllowanceAsync(
+        const makerFeeProxyAllowance = await this._balanceAndProxyAllowanceFetcher.getProxyAllowanceAsync(
             zrxTokenAddress,
             signedOrder.maker,
         );
