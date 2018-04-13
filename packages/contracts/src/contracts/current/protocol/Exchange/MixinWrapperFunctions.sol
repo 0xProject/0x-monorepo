@@ -145,11 +145,23 @@ contract MixinWrapperFunctions is
             paramsAreaOffset := add(paramsAreaOffset, 0x20)
 
             // Write values for each field in the order
-            for{let i := 0} lt(i, 13) {i := add(i, 1)} {
-                mstore(dataAreaEnd, mload(sourceOffset))
-                dataAreaEnd := add(dataAreaEnd, 0x20)
-                sourceOffset := add(sourceOffset, 0x20)
-            }
+            // It would be nice to use a loop, but we save on gas by writing
+            // the stores sequentially.
+            mstore(dataAreaEnd, mload(sourceOffset))                            // makerAddress
+            mstore(add(dataAreaEnd, 0x20), mload(add(sourceOffset, 0x20)))      // takerAddress
+            mstore(add(dataAreaEnd, 0x40), mload(add(sourceOffset, 0x40)))      // makerTokenAddress
+            mstore(add(dataAreaEnd, 0x60), mload(add(sourceOffset, 0x60)))      // takerTokenAddress
+            mstore(add(dataAreaEnd, 0x80), mload(add(sourceOffset, 0x80)))      // feeRecipientAddress
+            mstore(add(dataAreaEnd, 0xA0), mload(add(sourceOffset, 0xA0)))      // makerTokenAmount
+            mstore(add(dataAreaEnd, 0xC0), mload(add(sourceOffset, 0xC0)))      // takerTokenAmount
+            mstore(add(dataAreaEnd, 0xE0), mload(add(sourceOffset, 0xE0)))      // makerFeeAmount
+            mstore(add(dataAreaEnd, 0x100), mload(add(sourceOffset, 0x100)))    // takerFeeAmount
+            mstore(add(dataAreaEnd, 0x120), mload(add(sourceOffset, 0x120)))    // expirationTimeSeconds
+            mstore(add(dataAreaEnd, 0x140), mload(add(sourceOffset, 0x140)))    // salt
+            mstore(add(dataAreaEnd, 0x160), mload(add(sourceOffset, 0x160)))    // Offset to makerAssetProxyMetadata
+            mstore(add(dataAreaEnd, 0x180), mload(add(sourceOffset, 0x180)))    // Offset to takerAssetProxyMetadata
+            dataAreaEnd := add(dataAreaEnd, 0x1A0)
+            sourceOffset := add(sourceOffset, 0x1A0)
 
             // Write offset to <order.makerAssetProxyMetadata>
             mstore(add(dataAreaStart, mul(11, 0x20)), sub(dataAreaEnd, dataAreaStart))
