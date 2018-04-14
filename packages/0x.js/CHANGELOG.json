@@ -6,7 +6,7 @@
                 "note": "Remove truffle-hdwallet from artifact tests",
                 "pr": 524
             }
-        ],
+        ]
     },
     {
         "version": "0.36.0",
