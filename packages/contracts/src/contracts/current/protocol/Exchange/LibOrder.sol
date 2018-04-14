@@ -25,8 +25,6 @@ contract LibOrder {
         "address exchangeAddress",
         "address makerAddress",
         "address takerAddress",
-        "address makerTokenAddress",
-        "address takerTokenAddress",
         "address feeRecipientAddress",
         "uint256 makerTokenAmount",
         "uint256 takerTokenAmount",
@@ -41,8 +39,6 @@ contract LibOrder {
     struct Order {
         address makerAddress;
         address takerAddress;
-        address makerTokenAddress;
-        address takerTokenAddress;
         address feeRecipientAddress;
         uint256 makerTokenAmount;
         uint256 takerTokenAmount;
@@ -69,8 +65,6 @@ contract LibOrder {
                 address(this),
                 order.makerAddress,
                 order.takerAddress,
-                order.makerTokenAddress,
-                order.takerTokenAddress,
                 order.feeRecipientAddress,
                 order.makerTokenAmount,
                 order.takerTokenAmount,

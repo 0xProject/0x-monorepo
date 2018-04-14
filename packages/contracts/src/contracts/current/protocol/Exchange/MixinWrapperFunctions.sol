@@ -22,11 +22,13 @@ pragma experimental ABIEncoderV2;
 import "./mixins/MExchangeCore.sol";
 import "./LibPartialAmount.sol";
 import "../../utils/SafeMath/SafeMath.sol";
+import "../../utils/LibBytes/LibBytes.sol";
 
 /// @dev Consumes MExchangeCore
 contract MixinWrapperFunctions is
     MExchangeCore,
     SafeMath,
+    LibBytes,
     LibPartialAmount
 {
     /// @dev Fills the input order. Reverts if exact takerTokenFillAmount not filled.
@@ -73,26 +75,24 @@ contract MixinWrapperFunctions is
         // |          | 0x00   |         |   1. offset to order (*)                    |
         // |          | 0x20   |         |   2. takerTokenFillAmount                   |
         // |          | 0x40   |         |   3. offset to signature (*)                |
-        // | Data     |        | 13 * 32 | order:                                      |
+        // | Data     |        | 11 * 32 | order:                                      |
         // |          | 0x000  |         |   1.  makerAddress                          |
         // |          | 0x020  |         |   2.  takerAddress                          |
-        // |          | 0x040  |         |   3.  makerTokenAddress                     |
-        // |          | 0x060  |         |   4.  takerTokenAddress                     |
-        // |          | 0x080  |         |   5.  feeRecipientAddress                   |
-        // |          | 0x0A0  |         |   6.  makerTokenAmount                      |
-        // |          | 0x0C0  |         |   7.  takerTokenAmount                      |
-        // |          | 0x0E0  |         |   8.  makerFeeAmount                        |
-        // |          | 0x100  |         |   9.  takerFeeAmount                        |
-        // |          | 0x120  |         |   10. expirationTimeSeconds                 |
-        // |          | 0x140  |         |   11. salt                                  |
-        // |          | 0x160  |         |   12. Offset to makerAssetProxyMetadata (*) |
-        // |          | 0x180  |         |   13. Offset to takerAssetProxyMetadata (*) |
-        // |          | 0x1A0  | 32      | makerAssetProxyMetadata Length              |
-        // |          | 0x1C0  | **      | makerAssetProxyMetadata Contents            |
-        // |          | 0x1E0  | 32      | takerAssetProxyMetadata Length              |
-        // |          | 0x200  | **      | takerAssetProxyMetadata Contents            |
-        // |          | 0x220  | 32      | signature Length                            |
-        // |          | 0x240  | **      | signature Contents                          |
+        // |          | 0x040  |         |   3.  feeRecipientAddress                   |
+        // |          | 0x060  |         |   4.  makerTokenAmount                      |
+        // |          | 0x080  |         |   5.  takerTokenAmount                      |
+        // |          | 0x0A0  |         |   6.  makerFeeAmount                        |
+        // |          | 0x0C0  |         |   7.  takerFeeAmount                        |
+        // |          | 0x0E0  |         |   8.  expirationTimeSeconds                 |
+        // |          | 0x100  |         |   9.  salt                                  |
+        // |          | 0x120  |         |   10. Offset to makerAssetProxyMetadata (*) |
+        // |          | 0x140  |         |   11. Offset to takerAssetProxyMetadata (*) |
+        // |          | 0x160  | 32      | makerAssetProxyMetadata Length              |
+        // |          | 0x180  | **      | makerAssetProxyMetadata Contents            |
+        // |          | 0x1A0  | 32      | takerAssetProxyMetadata Length              |
+        // |          | 0x1C0  | **      | takerAssetProxyMetadata Contents            |
+        // |          | 0x1E0  | 32      | signature Length                            |
+        // |          | 0x200  | **      | signature Contents                          |
 
         // * Offsets are calculated from the beginning of the current area: Header, Params, Data:
         //     An offset stored in the Params area is calculated from the beginning of the Params section.
@@ -149,22 +149,20 @@ contract MixinWrapperFunctions is
             // the stores sequentially.
             mstore(dataAreaEnd, mload(sourceOffset))                            // makerAddress
             mstore(add(dataAreaEnd, 0x20), mload(add(sourceOffset, 0x20)))      // takerAddress
-            mstore(add(dataAreaEnd, 0x40), mload(add(sourceOffset, 0x40)))      // makerTokenAddress
-            mstore(add(dataAreaEnd, 0x60), mload(add(sourceOffset, 0x60)))      // takerTokenAddress
-            mstore(add(dataAreaEnd, 0x80), mload(add(sourceOffset, 0x80)))      // feeRecipientAddress
-            mstore(add(dataAreaEnd, 0xA0), mload(add(sourceOffset, 0xA0)))      // makerTokenAmount
-            mstore(add(dataAreaEnd, 0xC0), mload(add(sourceOffset, 0xC0)))      // takerTokenAmount
-            mstore(add(dataAreaEnd, 0xE0), mload(add(sourceOffset, 0xE0)))      // makerFeeAmount
-            mstore(add(dataAreaEnd, 0x100), mload(add(sourceOffset, 0x100)))    // takerFeeAmount
-            mstore(add(dataAreaEnd, 0x120), mload(add(sourceOffset, 0x120)))    // expirationTimeSeconds
-            mstore(add(dataAreaEnd, 0x140), mload(add(sourceOffset, 0x140)))    // salt
-            mstore(add(dataAreaEnd, 0x160), mload(add(sourceOffset, 0x160)))    // Offset to makerAssetProxyMetadata
-            mstore(add(dataAreaEnd, 0x180), mload(add(sourceOffset, 0x180)))    // Offset to takerAssetProxyMetadata
-            dataAreaEnd := add(dataAreaEnd, 0x1A0)
-            sourceOffset := add(sourceOffset, 0x1A0)
+            mstore(add(dataAreaEnd, 0x40), mload(add(sourceOffset, 0x40)))      // feeRecipientAddress
+            mstore(add(dataAreaEnd, 0x60), mload(add(sourceOffset, 0x60)))      // makerTokenAmount
+            mstore(add(dataAreaEnd, 0x80), mload(add(sourceOffset, 0x80)))      // takerTokenAmount
+            mstore(add(dataAreaEnd, 0xA0), mload(add(sourceOffset, 0xA0)))      // makerFeeAmount
+            mstore(add(dataAreaEnd, 0xC0), mload(add(sourceOffset, 0xC0)))      // takerFeeAmount
+            mstore(add(dataAreaEnd, 0xE0), mload(add(sourceOffset, 0xE0)))      // expirationTimeSeconds
+            mstore(add(dataAreaEnd, 0x100), mload(add(sourceOffset, 0x100)))    // salt
+            mstore(add(dataAreaEnd, 0x120), mload(add(sourceOffset, 0x120)))    // Offset to makerAssetProxyMetadata
+            mstore(add(dataAreaEnd, 0x140), mload(add(sourceOffset, 0x140)))    // Offset to takerAssetProxyMetadata
+            dataAreaEnd := add(dataAreaEnd, 0x160)
+            sourceOffset := add(sourceOffset, 0x160)
 
             // Write offset to <order.makerAssetProxyMetadata>
-            mstore(add(dataAreaStart, mul(11, 0x20)), sub(dataAreaEnd, dataAreaStart))
+            mstore(add(dataAreaStart, mul(9, 0x20)), sub(dataAreaEnd, dataAreaStart))
 
             // Calculate length of <order.makerAssetProxyMetadata>
             arrayLenBytes := mload(sourceOffset)
@@ -183,7 +181,7 @@ contract MixinWrapperFunctions is
             }
 
             // Write offset to <order.takerAssetProxyMetadata>
-            mstore(add(dataAreaStart, mul(12, 0x20)), sub(dataAreaEnd, dataAreaStart))
+            mstore(add(dataAreaStart, mul(10, 0x20)), sub(dataAreaEnd, dataAreaStart))
 
             // Calculate length of <order.takerAssetProxyMetadata>
             arrayLenBytes := mload(sourceOffset)
@@ -325,7 +323,7 @@ contract MixinWrapperFunctions is
         for (uint256 i = 0; i < orders.length; i++) {
 
             // Token being sold by taker must be the same for each order
-            require(orders[i].takerTokenAddress == orders[0].takerTokenAddress);
+            require(areBytesEqual(orders[i].takerAssetData, orders[0].takerAssetData));
 
             // Calculate the remaining amount of takerToken to sell
             uint256 remainingTakerTokenFillAmount = safeSub(takerTokenFillAmount, totalFillResults.takerTokenFilledAmount);
@@ -364,7 +362,7 @@ contract MixinWrapperFunctions is
         for (uint256 i = 0; i < orders.length; i++) {
 
             // Token being sold by taker must be the same for each order
-            require(orders[i].takerTokenAddress == orders[0].takerTokenAddress);
+            require(areBytesEqual(orders[i].takerAssetData, orders[0].takerAssetData));
 
             // Calculate the remaining amount of takerToken to sell
             uint256 remainingTakerTokenFillAmount = safeSub(takerTokenFillAmount, totalFillResults.takerTokenFilledAmount);
@@ -402,7 +400,7 @@ contract MixinWrapperFunctions is
         for (uint256 i = 0; i < orders.length; i++) {
 
             // Token being bought by taker must be the same for each order
-            require(orders[i].makerTokenAddress == orders[0].makerTokenAddress);
+            require(areBytesEqual(orders[i].makerAssetData, orders[0].makerAssetData));
 
             // Calculate the remaining amount of makerToken to buy
             uint256 remainingMakerTokenFillAmount = safeSub(makerTokenFillAmount, totalFillResults.makerTokenFilledAmount);
@@ -449,7 +447,7 @@ contract MixinWrapperFunctions is
         for (uint256 i = 0; i < orders.length; i++) {
 
             // Token being bought by taker must be the same for each order
-            require(orders[i].makerTokenAddress == orders[0].makerTokenAddress);
+            require(areBytesEqual(orders[i].makerAssetData, orders[0].makerAssetData));
 
             // Calculate the remaining amount of makerToken to buy
             uint256 remainingMakerTokenFillAmount = safeSub(makerTokenFillAmount, totalFillResults.makerTokenFilledAmount);

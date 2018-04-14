@@ -139,8 +139,6 @@ export interface SignedOrder extends UnsignedOrder {
 export interface OrderStruct {
     makerAddress: string;
     takerAddress: string;
-    makerTokenAddress: string;
-    takerTokenAddress: string;
     feeRecipientAddress: string;
     makerTokenAmount: BigNumber;
     takerTokenAmount: BigNumber;
