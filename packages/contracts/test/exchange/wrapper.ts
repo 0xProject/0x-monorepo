@@ -136,8 +136,8 @@ describe('Exchange', () => {
             takerTokenAmount: ZeroEx.toBaseUnitAmount(new BigNumber(200), 18),
             makerFee: ZeroEx.toBaseUnitAmount(new BigNumber(1), 18),
             takerFee: ZeroEx.toBaseUnitAmount(new BigNumber(1), 18),
-            makerAssetData: encodeERC20ProxyData(rep.address),
-            takerAssetData: encodeERC20ProxyData(dgd.address),
+            makerAssetData: encodeERC20ProxyData(defaultMakerTokenAddress),
+            takerAssetData: encodeERC20ProxyData(defaultTakerTokenAddress),
         };
 
         const privateKey = constants.TESTRPC_PRIVATE_KEYS[0];
