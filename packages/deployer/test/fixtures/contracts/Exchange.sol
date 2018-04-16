@@ -16,11 +16,12 @@
 
 */
 
-pragma solidity 0.4.14;
+pragma solidity ^0.4.14;
+
+import {ERC20 as Token} from "zeppelin-solidity/contracts/token/ERC20/ERC20.sol";
 
 import "./TokenTransferProxy.sol";
-import "/base/Token.sol";
-import "/base/SafeMath.sol";
+import "./base/SafeMath.sol";
 
 /// @title Exchange - Facilitates exchange of ERC20 tokens.
 /// @author Amir Bandeali - <amir@0xProject.com>, Will Warren - <will@0xProject.com>

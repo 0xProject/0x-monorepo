@@ -74,6 +74,8 @@ packages/react-docs/example/public/bundle*
 bin/
 
 # generated contract artifacts
+packages/sol-cov/test/fixtures/artifacts
+packages/metacoin/artifacts
 packages/0x.js/test/artifacts
 packages/migrations/src/artifacts
 

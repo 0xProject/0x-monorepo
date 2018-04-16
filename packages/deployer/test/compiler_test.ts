@@ -3,13 +3,7 @@ import 'mocha';
 
 import { Compiler } from '../src/compiler';
 import { fsWrapper } from '../src/utils/fs_wrapper';
-import {
-    CompilerOptions,
-    ContractArtifact,
-    ContractDirectory,
-    ContractNetworkData,
-    DoneCallback,
-} from '../src/utils/types';
+import { CompilerOptions, ContractArtifact, ContractNetworkData, DoneCallback } from '../src/utils/types';
 
 import { exchange_binary } from './fixtures/exchange_bin';
 import { constants } from './util/constants';
@@ -19,15 +13,11 @@ const expect = chai.expect;
 describe('#Compiler', function() {
     this.timeout(constants.timeoutMs);
     const artifactsDir = `${__dirname}/fixtures/artifacts`;
-    const mainContractDir: ContractDirectory = { path: `${__dirname}/fixtures/contracts/main`, namespace: 'main' };
-    const baseContractDir: ContractDirectory = { path: `${__dirname}/fixtures/contracts/base`, namespace: 'base' };
-    const contractDirs: Set<ContractDirectory> = new Set();
-    contractDirs.add(mainContractDir);
-    contractDirs.add(baseContractDir);
+    const contractsDir = `${__dirname}/fixtures/contracts`;
     const exchangeArtifactPath = `${artifactsDir}/Exchange.json`;
     const compilerOpts: CompilerOptions = {
         artifactsDir,
-        contractDirs,
+        contractsDir,
         networkId: constants.networkId,
         optimizerEnabled: constants.optimizerEnabled,
         specifiedContracts: new Set(constants.specifiedContracts),

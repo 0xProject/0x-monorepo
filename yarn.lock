@@ -6,6 +6,25 @@
   version "0.3.9"
   resolved "https://registry.yarnpkg.com/8fold-marked/-/8fold-marked-0.3.9.tgz#bb89c645612f8ccfaffac1ca6e3c11f168c9cf59"
 
+"@0xproject/deployer@^0.3.5":
+  version "0.3.5"
+  resolved "https://registry.yarnpkg.com/@0xproject/deployer/-/deployer-0.3.5.tgz#3b4144ac62cfbbe4fc7174cbf92f29594f411973"
+  dependencies:
+    "@0xproject/json-schemas" "^0.7.19"
+    "@0xproject/types" "^0.5.0"
+    "@0xproject/typescript-typings" "^0.0.3"
+    "@0xproject/utils" "^0.5.0"
+    "@0xproject/web3-wrapper" "^0.5.0"
+    ethereumjs-util "^5.1.1"
+    isomorphic-fetch "^2.2.1"
+    lodash "^4.17.4"
+    require-from-string "^2.0.1"
+    semver "^5.5.0"
+    solc "^0.4.18"
+    web3 "^0.20.0"
+    web3-eth-abi "^1.0.0-beta.24"
+    yargs "^10.0.3"
+
 "@0xproject/tslint-config@0.4.13":
   version "0.4.13"
   resolved "https://registry.yarnpkg.com/@0xproject/tslint-config/-/tslint-config-0.4.13.tgz#98c71c5ae5e80315a23eda0134cc9f6f4438cac2"
@@ -14,6 +33,30 @@
     tslint "5.8.0"
     tslint-eslint-rules "^4.1.1"
     tslint-react "^3.2.0"
+
+"@0xproject/types@^0.5.0":
+  version "0.5.0"
+  resolved "https://registry.yarnpkg.com/@0xproject/types/-/types-0.5.0.tgz#ba3cfbc11a8c6344b57c9680aa7df2ea84b9bf05"
+  dependencies:
+    bignumber.js "~4.1.0"
+
+"@0xproject/typescript-typings@^0.0.3":
+  version "0.0.3"
+  resolved "https://registry.yarnpkg.com/@0xproject/typescript-typings/-/typescript-typings-0.0.3.tgz#3272080bde00ade0a970b0d236686b483b08a1d0"
+  dependencies:
+    "@0xproject/types" "^0.5.0"
+    bignumber.js "~4.1.0"
+
+"@0xproject/web3-wrapper@^0.5.0":
+  version "0.5.0"
+  resolved "https://registry.yarnpkg.com/@0xproject/web3-wrapper/-/web3-wrapper-0.5.0.tgz#99a1acea60a5c3163ac0be28f4c0577c3d43dec4"
+  dependencies:
+    "@0xproject/types" "^0.5.0"
+    "@0xproject/typescript-typings" "^0.0.3"
+    "@0xproject/utils" "^0.5.0"
+    ethers-contracts "^2.2.1"
+    lodash "^4.17.4"
+    web3 "^0.20.0"
 
 "@ledgerhq/hw-app-eth@^4.3.0":
   version "4.7.3"
@@ -54,6 +97,12 @@
 "@types/bintrees@^1.0.2":
   version "1.0.2"
   resolved "https://registry.yarnpkg.com/@types/bintrees/-/bintrees-1.0.2.tgz#0dfdce4eeebdf90427bd35b0e79dc248b3d157a6"
+
+"@types/bip39@^2.4.0":
+  version "2.4.0"
+  resolved "https://registry.yarnpkg.com/@types/bip39/-/bip39-2.4.0.tgz#eee31a14abc8ebbb41a1ff14575c447b18346cbc"
+  dependencies:
+    "@types/node" "*"
 
 "@types/body-parser@*", "@types/body-parser@^1.16.1":
   version "1.16.8"
@@ -1402,7 +1451,7 @@ bintrees@^1.0.2:
   version "1.0.2"
   resolved "https://registry.yarnpkg.com/bintrees/-/bintrees-1.0.2.tgz#49f896d6e858a4a499df85c38fb399b9aff840f8"
 
-bip39@^2.2.0:
+bip39@^2.2.0, bip39@^2.5.0:
   version "2.5.0"
   resolved "https://registry.yarnpkg.com/bip39/-/bip39-2.5.0.tgz#51cbd5179460504a63ea3c000db3f787ca051235"
   dependencies:
@@ -3185,6 +3234,10 @@ dot-prop@^4.1.0:
   dependencies:
     is-obj "^1.0.0"
 
+dotenv@^4.0.0:
+  version "4.0.0"
+  resolved "https://registry.yarnpkg.com/dotenv/-/dotenv-4.0.0.tgz#864ef1379aced55ce6f95debecdce179f7a0cd1d"
+
 drbg.js@^1.0.1:
   version "1.0.1"
   resolved "https://registry.yarnpkg.com/drbg.js/-/drbg.js-1.0.1.tgz#3e36b6c42b37043823cdbc332d58f31e2445480b"
@@ -3642,6 +3695,14 @@ ethers-utils@^2.1.0:
 ethjs-abi@0.1.8:
   version "0.1.8"
   resolved "https://registry.yarnpkg.com/ethjs-abi/-/ethjs-abi-0.1.8.tgz#cd288583ed628cdfadaf8adefa3ba1dbcbca6c18"
+  dependencies:
+    bn.js "4.11.6"
+    js-sha3 "0.5.5"
+    number-to-bn "1.7.0"
+
+ethjs-abi@^0.2.1:
+  version "0.2.1"
+  resolved "https://registry.yarnpkg.com/ethjs-abi/-/ethjs-abi-0.2.1.tgz#e0a7a93a7e81163a94477bad56ede524ab6de533"
   dependencies:
     bn.js "4.11.6"
     js-sha3 "0.5.5"
@@ -11872,3 +11933,10 @@ yauzl@^2.4.2:
   dependencies:
     buffer-crc32 "~0.2.3"
     fd-slicer "~1.0.1"
+
+zeppelin-solidity@1.8.0:
+  version "1.8.0"
+  resolved "https://registry.yarnpkg.com/zeppelin-solidity/-/zeppelin-solidity-1.8.0.tgz#049fcde7daea9fc85210f8c6db9f8cd1ab8a853a"
+  dependencies:
+    dotenv "^4.0.0"
+    ethjs-abi "^0.2.1"
