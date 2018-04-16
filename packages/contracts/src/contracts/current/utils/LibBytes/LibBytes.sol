@@ -20,10 +20,10 @@ pragma solidity ^0.4.21;
 
 contract LibBytes {
 
-    /// @dev Compares two byte arrays.
+    /// @dev Tests equality of two byte arrays.
     /// @param lhs First byte array to compare.
-    /// @param rhs Second byte array.
-    /// @return True if arrays are the same.
+    /// @param rhs Second byte array to compare.
+    /// @return True if arrays are the same. False otherwise.
     function areBytesEqual(bytes memory lhs, bytes memory rhs)
         public
         returns (bool equal)
@@ -35,7 +35,7 @@ contract LibBytes {
             // Add 1 to the number of words, to account for the length field
             lenFullWords := add(lenFullWords, 0x1)
 
-            // Verify equality word-by-word.
+            // Test equality word-by-word.
             // Terminates early if there is a mismatch.
             for {let i := 0} lt(i, lenFullWords) {i := add(i, 1)} {
                 let lhsWord := mload(add(lhs, mul(i, 0x20)))

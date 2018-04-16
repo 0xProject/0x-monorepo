@@ -29,7 +29,7 @@ contract ERC20Proxy is
     IAssetProxy
 {
 
-    /// @dev Transfers ERC20 tokens.
+    /// @dev Transfers ERC20 tokens. Either succeeds or throws.
     /// @param assetMetadata ERC20-encoded byte array.
     /// @param from Address to transfer token from.
     /// @param to Address to transfer token to.
