@@ -20,7 +20,6 @@ import {
     InjectedWeb3Subprovider,
     ledgerEthereumBrowserClientFactoryAsync,
     LedgerSubprovider,
-    LedgerWalletSubprovider,
     RedundantSubprovider,
     Subprovider,
 } from '@0xproject/subproviders';
