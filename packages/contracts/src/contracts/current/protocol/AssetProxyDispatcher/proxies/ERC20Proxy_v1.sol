@@ -39,7 +39,7 @@ contract ERC20Proxy_v1 is
         TRANSFER_PROXY = tokenTransferProxyContract;
     }
 
-    /// @dev Transfers ERC20 tokens.
+    /// @dev Transfers ERC20 tokens via the v1 TokenTransferProxy. Either succeeds or throws.
     /// @param assetMetadata Byte array encoded for the respective asset proxy.
     /// @param from Address to transfer token from.
     /// @param to Address to transfer token to.
