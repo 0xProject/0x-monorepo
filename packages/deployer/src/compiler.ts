@@ -8,7 +8,7 @@ import {
     NPMResolver,
     Resolver,
     URLResolver,
-} from '@0xproject/resolver';
+} from '@0xproject/sol-resolver';
 import { ContractAbi } from '@0xproject/types';
 import { logUtils, promisify } from '@0xproject/utils';
 import chalk from 'chalk';

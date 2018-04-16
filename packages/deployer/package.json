@@ -68,7 +68,7 @@
         "zeppelin-solidity": "1.8.0"
     },
     "dependencies": {
-        "@0xproject/resolver": "^0.0.1",
+        "@0xproject/sol-resolver": "^0.0.1",
         "@0xproject/json-schemas": "^0.7.20",
         "@0xproject/types": "^0.6.0",
         "@0xproject/typescript-typings": "^0.1.0",

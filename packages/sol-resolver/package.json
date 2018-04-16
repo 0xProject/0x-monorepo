@@ -1,5 +1,5 @@
 {
-    "name": "@0xproject/resolver",
+    "name": "@0xproject/sol-resolver",
     "version": "0.0.1",
     "description": "Import resolver for smart contracts dependencies",
     "main": "lib/index.js",

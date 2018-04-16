@@ -12,6 +12,7 @@ export const collectContractsData = (artifactsPath: string, sourcesPath: string,
         const artifact = JSON.parse(fs.readFileSync(artifactFileName).toString());
         const sources = artifact.networks[networkId].sources;
         const contractName = artifact.contract_name;
+        // We don't compute coverage for dependencies
         const sourceCodes = _.map(sources, (source: string) => fs.readFileSync(source).toString());
         if (_.isUndefined(artifact.networks[networkId])) {
             throw new Error(`No ${contractName} artifacts found for networkId ${networkId}`);
