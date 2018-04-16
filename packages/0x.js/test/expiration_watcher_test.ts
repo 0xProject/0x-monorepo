@@ -153,4 +153,43 @@ describe('ExpirationWatcher', () => {
             timer.tick(order2Lifetime * 1000);
         })().catch(done);
     });
+    it('emits events in correct order when expirations are equal', (done: DoneCallback) => {
+        (async () => {
+            const order1Lifetime = 60;
+            const order2Lifetime = 60;
+            const order1ExpirationUnixTimestampSec = currentUnixTimestampSec.plus(order1Lifetime);
+            const order2ExpirationUnixTimestampSec = currentUnixTimestampSec.plus(order2Lifetime);
+            const signedOrder1 = await fillScenarios.createFillableSignedOrderAsync(
+                makerTokenAddress,
+                takerTokenAddress,
+                makerAddress,
+                takerAddress,
+                fillableAmount,
+                order1ExpirationUnixTimestampSec,
+            );
+            const signedOrder2 = await fillScenarios.createFillableSignedOrderAsync(
+                makerTokenAddress,
+                takerTokenAddress,
+                makerAddress,
+                takerAddress,
+                fillableAmount,
+                order2ExpirationUnixTimestampSec,
+            );
+            const orderHash1 = ZeroEx.getOrderHashHex(signedOrder1);
+            const orderHash2 = ZeroEx.getOrderHashHex(signedOrder2);
+            expirationWatcher.addOrder(orderHash1, signedOrder1.expirationUnixTimestampSec.times(1000));
+            expirationWatcher.addOrder(orderHash2, signedOrder2.expirationUnixTimestampSec.times(1000));
+            const expirationOrder = orderHash1 < orderHash2 ? [orderHash1, orderHash2] : [orderHash2, orderHash1];
+            const expectToBeCalledOnce = false;
+            const callbackAsync = reportNoErrorCallbackErrors(done, expectToBeCalledOnce)((hash: string) => {
+                const orderHash = expirationOrder.shift();
+                expect(hash).to.be.equal(orderHash);
+                if (_.isEmpty(expirationOrder)) {
+                    done();
+                }
+            });
+            expirationWatcher.subscribe(callbackAsync);
+            timer.tick(order2Lifetime * 1000);
+        })().catch(done);
+    });
 });

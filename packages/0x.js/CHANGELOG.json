@@ -1,5 +1,14 @@
 [
     {
+        "version": "0.36.2",
+        "changes": [
+            {
+                "note": "Fixed expiration watcher comparator to handle orders with equal expiration times",
+                "pr": 526
+            }
+        ]
+    },
+    {
         "version": "0.36.1",
         "changes": [
             {

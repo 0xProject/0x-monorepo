@@ -1,9 +1,4 @@
-import { Deployer } from '@0xproject/deployer';
 import { BlockchainLifecycle, devConstants, web3Factory } from '@0xproject/dev-utils';
-// HACK: This dependency is optional since it is only available when run from within
-// the monorepo. tslint doesn't handle optional dependencies
-// tslint:disable-next-line:no-implicit-dependencies
-import { runMigrationsAsync } from '@0xproject/migrations';
 import { BigNumber } from '@0xproject/utils';
 import * as chai from 'chai';
 import * as _ from 'lodash';
@@ -15,7 +10,6 @@ import { ApprovalContractEventArgs, LogWithDecodedArgs, Order, TokenEvents, Zero
 
 import { chaiSetup } from './utils/chai_setup';
 import { constants } from './utils/constants';
-import { deployer } from './utils/deployer';
 import { TokenUtils } from './utils/token_utils';
 import { provider, web3Wrapper } from './utils/web3_wrapper';
 
@@ -28,7 +22,6 @@ const SHOULD_ADD_PERSONAL_MESSAGE_PREFIX = false;
 describe('ZeroEx library', () => {
     let zeroEx: ZeroEx;
     before(async () => {
-        await runMigrationsAsync(deployer);
         const config = {
             networkId: constants.TESTRPC_NETWORK_ID,
         };
