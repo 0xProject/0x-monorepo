@@ -879,15 +879,18 @@ export class ExchangeWrapper extends ContractWrapper {
     /**
      * Gets the latest OrderState of a signedOrder
      * @param   signedOrder   The signedOrder
+     * @param   stateLayer    Optional, desired blockchain state layer (defaults to latest).
+     * @return  OrderState of the signedOrder
      */
-    public async getOrderStateAsync(signedOrder: SignedOrder): Promise<OrderState> {
+    public async getOrderStateAsync(signedOrder: SignedOrder, stateLayer: BlockParamLiteral = BlockParamLiteral.Latest): Promise<OrderState> {
         const simpleBalanceAndProxyAllowanceFetcher = new SimpleBalanceAndProxyAllowanceFetcher(
             this._tokenWrapper,
-            BlockParamLiteral.Latest,
+            stateLayer,
         );
-        const simpleOrderFilledCancelledFetcher = new SimpleOrderFilledCancelledFetcher(this);
+        const simpleOrderFilledCancelledFetcher = new SimpleOrderFilledCancelledFetcher(this, stateLayer);
         const orderStateUtils = new OrderStateUtils(simpleBalanceAndProxyAllowanceFetcher, simpleOrderFilledCancelledFetcher);
-        return orderStateUtils.getOrderStateAsync(signedOrder);
+        const orderState = orderStateUtils.getOrderStateAsync(signedOrder);
+        return orderState;
     }
     /**
      * Returns the ZRX token address used by the exchange contract.

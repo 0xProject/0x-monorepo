@@ -87,7 +87,7 @@ export class OrderStateWatcher {
             _.isUndefined(config) || _.isUndefined(config.stateLayer) ? BlockParamLiteral.Latest : config.stateLayer;
         this._eventWatcher = new EventWatcher(web3Wrapper, pollingIntervalIfExistsMs, stateLayer);
         this._balanceAndProxyAllowanceLazyStore = new BalanceAndProxyAllowanceLazyStore(token, stateLayer);
-        this._orderFilledCancelledLazyStore = new OrderFilledCancelledLazyStore(exchange);
+        this._orderFilledCancelledLazyStore = new OrderFilledCancelledLazyStore(exchange, stateLayer);
         this._orderStateUtils = new OrderStateUtils(
             this._balanceAndProxyAllowanceLazyStore,
             this._orderFilledCancelledLazyStore,
@@ -131,7 +131,7 @@ export class OrderStateWatcher {
         }
         delete this._orderByOrderHash[orderHash];
         delete this._orderStateByOrderHashCache[orderHash];
-        const exchange = (this._orderFilledCancelledLazyStore as any)._exchange as ExchangeWrapper;
+        const exchange = (this._orderFilledCancelledLazyStore as any)._exchangeWrapper as ExchangeWrapper;
         const zrxTokenAddress = exchange.getZRXTokenAddress();
 
         this._removeFromDependentOrderHashes(signedOrder.maker, zrxTokenAddress, orderHash);
@@ -374,7 +374,7 @@ export class OrderStateWatcher {
         }
     }
     private _getZRXTokenAddress(): string {
-        const exchange = (this._orderFilledCancelledLazyStore as any)._exchange as ExchangeWrapper;
+        const exchange = (this._orderFilledCancelledLazyStore as any)._exchangeWrapper as ExchangeWrapper;
         const zrxTokenAddress = exchange.getZRXTokenAddress();
         return zrxTokenAddress;
     }

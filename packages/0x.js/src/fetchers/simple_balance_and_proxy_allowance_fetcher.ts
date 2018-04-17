@@ -5,22 +5,24 @@ import {BalanceAndProxyAllowanceFetcher} from '../abstract/balance_and_proxy_all
 import {TokenWrapper} from '../contract_wrappers/token_wrapper';
 
 export class SimpleBalanceAndProxyAllowanceFetcher implements BalanceAndProxyAllowanceFetcher {
-    private _token: TokenWrapper;
+    private _tokenWrapper: TokenWrapper;
     private _defaultBlock: BlockParamLiteral;
     constructor(token: TokenWrapper, defaultBlock: BlockParamLiteral) {
-        this._token = token;
+        this._tokenWrapper = token;
         this._defaultBlock = defaultBlock;
     }
     public async getBalanceAsync(tokenAddress: string, userAddress: string): Promise<BigNumber> {
         const methodOpts = {
             defaultBlock: this._defaultBlock,
         };
-        return this._token.getBalanceAsync(tokenAddress, userAddress, methodOpts);
+        const balance = this._tokenWrapper.getBalanceAsync(tokenAddress, userAddress, methodOpts);
+        return balance;
     }
     public async getProxyAllowanceAsync(tokenAddress: string, userAddress: string): Promise<BigNumber> {
         const methodOpts = {
             defaultBlock: this._defaultBlock,
         };
-        return this._token.getProxyAllowanceAsync(tokenAddress, userAddress, methodOpts);
+        const proxyAllowance = this._tokenWrapper.getProxyAllowanceAsync(tokenAddress, userAddress, methodOpts);
+        return proxyAllowance;
     }
 }

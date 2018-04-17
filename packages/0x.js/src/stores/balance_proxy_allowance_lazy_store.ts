@@ -9,7 +9,7 @@ import { BalanceAndProxyAllowanceFetcher } from '../abstract/balance_and_proxy_a
  * Copy on read store for balances/proxyAllowances of tokens/accounts
  */
 export class BalanceAndProxyAllowanceLazyStore implements BalanceAndProxyAllowanceFetcher {
-    private _token: TokenWrapper;
+    private _tokenWrapper: TokenWrapper;
     private _defaultBlock: BlockParamLiteral;
     private _balance: {
         [tokenAddress: string]: {
@@ -22,7 +22,7 @@ export class BalanceAndProxyAllowanceLazyStore implements BalanceAndProxyAllowan
         };
     };
     constructor(token: TokenWrapper, defaultBlock: BlockParamLiteral) {
-        this._token = token;
+        this._tokenWrapper = token;
         this._defaultBlock = defaultBlock;
         this._balance = {};
         this._proxyAllowance = {};
@@ -32,7 +32,7 @@ export class BalanceAndProxyAllowanceLazyStore implements BalanceAndProxyAllowan
             const methodOpts = {
                 defaultBlock: this._defaultBlock,
             };
-            const balance = await this._token.getBalanceAsync(tokenAddress, userAddress, methodOpts);
+            const balance = await this._tokenWrapper.getBalanceAsync(tokenAddress, userAddress, methodOpts);
             this.setBalance(tokenAddress, userAddress, balance);
         }
         const cachedBalance = this._balance[tokenAddress][userAddress];
@@ -60,7 +60,7 @@ export class BalanceAndProxyAllowanceLazyStore implements BalanceAndProxyAllowan
             const methodOpts = {
                 defaultBlock: this._defaultBlock,
             };
-            const proxyAllowance = await this._token.getProxyAllowanceAsync(tokenAddress, userAddress, methodOpts);
+            const proxyAllowance = await this._tokenWrapper.getProxyAllowanceAsync(tokenAddress, userAddress, methodOpts);
             this.setProxyAllowance(tokenAddress, userAddress, proxyAllowance);
         }
         const cachedProxyAllowance = this._proxyAllowance[tokenAddress][userAddress];
