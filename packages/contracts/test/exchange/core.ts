@@ -55,8 +55,8 @@ describe('Exchange', () => {
     let erc721Token: DummyERC721TokenContract;
     let exchange: ExchangeContract;
     let assetProxyDispatcher: AssetProxyDispatcherContract;
-    let erc20TransferProxy: ERC20ProxyContract;
-    let erc721TransferProxy: ERC721ProxyContract;
+    let erc20Proxy: ERC20ProxyContract;
+    let erc721Proxy: ERC721ProxyContract;
 
     let signedOrder: SignedOrder;
     let balances: BalancesByOwner;
@@ -102,34 +102,34 @@ describe('Exchange', () => {
             provider,
         );
         // Deploy ERC20 Proxy
-        const erc20TransferProxyInstance = await deployer.deployAsync(ContractName.ERC20Proxy);
-        erc20TransferProxy = new ERC20ProxyContract(
-            erc20TransferProxyInstance.abi,
-            erc20TransferProxyInstance.address,
+        const erc20ProxyInstance = await deployer.deployAsync(ContractName.ERC20Proxy);
+        erc20Proxy = new ERC20ProxyContract(
+            erc20ProxyInstance.abi,
+            erc20ProxyInstance.address,
             provider,
         );
-        await erc20TransferProxy.addAuthorizedAddress.sendTransactionAsync(assetProxyDispatcher.address, {
+        await erc20Proxy.addAuthorizedAddress.sendTransactionAsync(assetProxyDispatcher.address, {
             from: owner,
         });
         await assetProxyDispatcher.addAssetProxy.sendTransactionAsync(
             AssetProxyId.ERC20,
-            erc20TransferProxy.address,
+            erc20Proxy.address,
             ZeroEx.NULL_ADDRESS,
             { from: owner },
         );
         // Deploy ERC721 Proxy
-        const erc721TransferProxyInstance = await deployer.deployAsync(ContractName.ERC721Proxy);
-        erc721TransferProxy = new ERC721ProxyContract(
-            erc721TransferProxyInstance.abi,
-            erc721TransferProxyInstance.address,
+        const erc721ProxyInstance = await deployer.deployAsync(ContractName.ERC721Proxy);
+        erc721Proxy = new ERC721ProxyContract(
+            erc721ProxyInstance.abi,
+            erc721ProxyInstance.address,
             provider,
         );
-        await erc721TransferProxy.addAuthorizedAddress.sendTransactionAsync(assetProxyDispatcher.address, {
+        await erc721Proxy.addAuthorizedAddress.sendTransactionAsync(assetProxyDispatcher.address, {
             from: owner,
         });
         await assetProxyDispatcher.addAssetProxy.sendTransactionAsync(
             AssetProxyId.ERC721,
-            erc721TransferProxy.address,
+            erc721Proxy.address,
             ZeroEx.NULL_ADDRESS,
             { from: owner },
         );
@@ -165,34 +165,34 @@ describe('Exchange', () => {
         orderFactory = new OrderFactory(privateKey, defaultOrderParams);
         dmyBalances = new Balances([rep, dgd, zrx], [makerAddress, takerAddress, feeRecipientAddress]);
         await Promise.all([
-            rep.approve.sendTransactionAsync(erc20TransferProxy.address, INITIAL_ALLOWANCE, {
+            rep.approve.sendTransactionAsync(erc20Proxy.address, INITIAL_ALLOWANCE, {
                 from: makerAddress,
             }),
-            rep.approve.sendTransactionAsync(erc20TransferProxy.address, INITIAL_ALLOWANCE, {
+            rep.approve.sendTransactionAsync(erc20Proxy.address, INITIAL_ALLOWANCE, {
                 from: takerAddress,
             }),
             rep.setBalance.sendTransactionAsync(makerAddress, INITIAL_BALANCE, { from: tokenOwner }),
             rep.setBalance.sendTransactionAsync(takerAddress, INITIAL_BALANCE, { from: tokenOwner }),
-            dgd.approve.sendTransactionAsync(erc20TransferProxy.address, INITIAL_ALLOWANCE, {
+            dgd.approve.sendTransactionAsync(erc20Proxy.address, INITIAL_ALLOWANCE, {
                 from: makerAddress,
             }),
-            dgd.approve.sendTransactionAsync(erc20TransferProxy.address, INITIAL_ALLOWANCE, {
+            dgd.approve.sendTransactionAsync(erc20Proxy.address, INITIAL_ALLOWANCE, {
                 from: takerAddress,
             }),
             dgd.setBalance.sendTransactionAsync(makerAddress, INITIAL_BALANCE, { from: tokenOwner }),
             dgd.setBalance.sendTransactionAsync(takerAddress, INITIAL_BALANCE, { from: tokenOwner }),
-            zrx.approve.sendTransactionAsync(erc20TransferProxy.address, INITIAL_ALLOWANCE, {
+            zrx.approve.sendTransactionAsync(erc20Proxy.address, INITIAL_ALLOWANCE, {
                 from: makerAddress,
             }),
-            zrx.approve.sendTransactionAsync(erc20TransferProxy.address, INITIAL_ALLOWANCE, {
+            zrx.approve.sendTransactionAsync(erc20Proxy.address, INITIAL_ALLOWANCE, {
                 from: takerAddress,
             }),
             zrx.setBalance.sendTransactionAsync(makerAddress, INITIAL_BALANCE, { from: tokenOwner }),
             zrx.setBalance.sendTransactionAsync(takerAddress, INITIAL_BALANCE, { from: tokenOwner }),
-            erc721Token.setApprovalForAll.sendTransactionAsync(erc721TransferProxy.address, true, {
+            erc721Token.setApprovalForAll.sendTransactionAsync(erc721Proxy.address, true, {
                 from: makerAddress,
             }),
-            erc721Token.setApprovalForAll.sendTransactionAsync(erc721TransferProxy.address, true, {
+            erc721Token.setApprovalForAll.sendTransactionAsync(erc721Proxy.address, true, {
                 from: takerAddress,
             }),
             erc721Token.mint.sendTransactionAsync(makerAddress, erc721MakerTokenIds[0], { from: tokenOwner }),
@@ -622,21 +622,21 @@ describe('Exchange', () => {
         });
 
         it('should throw if maker allowances are too low to fill order', async () => {
-            await rep.approve.sendTransactionAsync(erc20TransferProxy.address, new BigNumber(0), {
+            await rep.approve.sendTransactionAsync(erc20Proxy.address, new BigNumber(0), {
                 from: makerAddress,
             });
             expect(exWrapper.fillOrderAsync(signedOrder, takerAddress)).to.be.rejectedWith(constants.REVERT);
-            await rep.approve.sendTransactionAsync(erc20TransferProxy.address, INITIAL_ALLOWANCE, {
+            await rep.approve.sendTransactionAsync(erc20Proxy.address, INITIAL_ALLOWANCE, {
                 from: makerAddress,
             });
         });
 
         it('should throw if taker allowances are too low to fill order', async () => {
-            await dgd.approve.sendTransactionAsync(erc20TransferProxy.address, new BigNumber(0), {
+            await dgd.approve.sendTransactionAsync(erc20Proxy.address, new BigNumber(0), {
                 from: takerAddress,
             });
             expect(exWrapper.fillOrderAsync(signedOrder, takerAddress)).to.be.rejectedWith(constants.REVERT);
-            await dgd.approve.sendTransactionAsync(erc20TransferProxy.address, INITIAL_ALLOWANCE, {
+            await dgd.approve.sendTransactionAsync(erc20Proxy.address, INITIAL_ALLOWANCE, {
                 from: takerAddress,
             });
         });
