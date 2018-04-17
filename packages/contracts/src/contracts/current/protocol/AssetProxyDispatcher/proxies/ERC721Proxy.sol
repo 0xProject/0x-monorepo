@@ -46,50 +46,13 @@ contract ERC721Proxy is
         require(amount == 1);
 
         // Decode metadata
-        address token;
-        uint256 tokenId;
-        (token, tokenId) = decodeMetadata(assetMetadata);
+        require(assetMetadata.length == 53);
+        address token = readAddress(assetMetadata, 1);
+        uint256 tokenId = readUint256(assetMetadata, 21);
 
         // Either succeeds or throws.
         // @TODO: Call safeTransferFrom if there is additional
         //        data stored in `assetMetadata`.
         ERC721Token(token).transferFrom(from, to, tokenId);
-    }
-
-    /// @dev Decodes ERC721-encoded byte array.
-    /// @param assetMetadata ERC721-encoded byte array.
-    /// @return tokenAddress Address of ERC721 token.
-    /// @return tokenId Id of ERC721 token.
-    function decodeMetadata(bytes memory assetMetadata)
-        public pure
-        returns (address tokenAddress, uint256 tokenId)
-    {
-        require(assetMetadata.length == 53);
-        tokenAddress = readAddress(assetMetadata, 1);
-        tokenId = readUint256(assetMetadata, 21);
-        return (tokenAddress, tokenId);
-    }
-
-    /// @dev Encodes ERC721 byte array.
-    /// @param assetProxyId Id of the asset proxy.
-    /// @param tokenAddress Address of the asset.
-    /// @param tokenId Id of ERC721 token.
-    /// @return assetMetadata ERC721-encoded byte array.
-    function encodeMetadata(
-        uint8 assetProxyId,
-        address tokenAddress,
-        uint256 tokenId)
-        public pure
-        returns (bytes memory assetMetadata)
-    {
-        // 0 is reserved as invalid proxy id
-        require(assetProxyId != 0);
-
-        // Encode fields into a byte array
-        assetMetadata = new bytes(53);
-        assetMetadata[0] = byte(assetProxyId);
-        writeAddress(assetMetadata, 1, tokenAddress);
-        writeUint256(assetMetadata, 21, tokenId);
-        return assetMetadata;
     }
 }
