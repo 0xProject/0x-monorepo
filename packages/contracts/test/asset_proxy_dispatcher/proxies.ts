@@ -48,21 +48,13 @@ describe('Asset Transfer Proxies', () => {
         takerAddress = accounts[4];
         // Deploy ERC20 Proxy
         const erc20ProxyInstance = await deployer.deployAsync(ContractName.ERC20Proxy);
-        erc20Proxy = new ERC20ProxyContract(
-            erc20ProxyInstance.abi,
-            erc20ProxyInstance.address,
-            provider,
-        );
+        erc20Proxy = new ERC20ProxyContract(erc20ProxyInstance.abi, erc20ProxyInstance.address, provider);
         await erc20Proxy.addAuthorizedAddress.sendTransactionAsync(assetProxyDispatcherAddress, {
             from: owner,
         });
         // Deploy ERC721 Proxy
         const erc721ProxyInstance = await deployer.deployAsync(ContractName.ERC721Proxy);
-        erc721Proxy = new ERC721ProxyContract(
-            erc721ProxyInstance.abi,
-            erc721ProxyInstance.address,
-            provider,
-        );
+        erc721Proxy = new ERC721ProxyContract(erc721ProxyInstance.abi, erc721ProxyInstance.address, provider);
         await erc721Proxy.addAuthorizedAddress.sendTransactionAsync(assetProxyDispatcherAddress, {
             from: owner,
         });
@@ -112,10 +104,7 @@ describe('Asset Transfer Proxies', () => {
         });
 
         it('should successfully encode/decode metadata padded with zeros', async () => {
-            const metadata = await erc20Proxy.encodeMetadata.callAsync(
-                AssetProxyId.ERC20,
-                testAddressPaddedWithZeros,
-            );
+            const metadata = await erc20Proxy.encodeMetadata.callAsync(AssetProxyId.ERC20, testAddressPaddedWithZeros);
             const address = await erc20Proxy.decodeMetadata.callAsync(metadata);
             expect(address).to.be.equal(testAddressPaddedWithZeros);
         });
@@ -195,13 +184,9 @@ describe('Asset Transfer Proxies', () => {
             // Perform a transfer from makerAddress to takerAddress
             const amount = new BigNumber(10);
             return expect(
-                erc20Proxy.transferFrom.sendTransactionAsync(
-                    encodedProxyMetadata,
-                    makerAddress,
-                    takerAddress,
-                    amount,
-                    { from: notAuthorized },
-                ),
+                erc20Proxy.transferFrom.sendTransactionAsync(encodedProxyMetadata, makerAddress, takerAddress, amount, {
+                    from: notAuthorized,
+                }),
             ).to.be.rejectedWith(constants.REVERT);
         });
     });
@@ -314,13 +299,9 @@ describe('Asset Transfer Proxies', () => {
             // Perform a transfer; expect this to fail.
             const amount = new BigNumber(1);
             return expect(
-                erc20Proxy.transferFrom.sendTransactionAsync(
-                    encodedProxyMetadata,
-                    makerAddress,
-                    takerAddress,
-                    amount,
-                    { from: notAuthorized },
-                ),
+                erc20Proxy.transferFrom.sendTransactionAsync(encodedProxyMetadata, makerAddress, takerAddress, amount, {
+                    from: notAuthorized,
+                }),
             ).to.be.rejectedWith(constants.REVERT);
         });
 
