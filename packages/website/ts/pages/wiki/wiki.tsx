@@ -194,10 +194,7 @@ export class Wiki extends React.Component<WikiProps, WikiState> {
             );
         });
         return (
-            <div key={`section-${sectionName}`} className="py2 md-px1 sm-px2">
-                {/* <div className="pl2">
-                    <SectionHeader sectionName={sectionName} headerSize={HeaderSizes.H1} />
-                </div> */}
+            <div key={`section-${sectionName}`} className="py2 md-px1 sm-px0">
                 {renderedArticles}
             </div>
         );
