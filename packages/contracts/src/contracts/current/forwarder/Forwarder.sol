@@ -24,8 +24,7 @@ contract Forwarder is
         zrxToken = _zrxToken;
     }
 
-    /// @dev Initializes this contract, setting the allowances for 
-    ///      the ZRX fee token and WETH.
+    /// @dev Initializes this contract, setting the allowances for the ZRX fee token and WETH.
     function initialize()
         external
     {
@@ -51,8 +50,8 @@ contract Forwarder is
         public
         returns (FillResults memory totalFillResult)
     {
-        require(msg.value > 0);
-        require(orders[0].takerTokenAddress == address(etherToken));
+        require(msg.value > 0, ERROR_INVALID_INPUT);
+        require(orders[0].takerTokenAddress == address(etherToken), ERROR_INVALID_INPUT);
 
         etherToken.deposit.value(msg.value)();
         FillResults memory fillTokensFillResult = marketBuyTokens(orders, signatures, feeOrders, feeSignatures, msg.value);
@@ -62,8 +61,8 @@ contract Forwarder is
 
     /// @dev Buys the tokens, performing fee abstraction if required. This function is payable
     ///      and will convert all incoming ETH into WETH and perform the trade on behalf of the caller.
-    ///      This function allows for a deduction of a proportion of incoming ETH send to the feeRecipient.
-    ///      The caller is sent all funds from the marketBuy of orders (less any fees required to be paid in ZRX)
+    ///      This function allows for a deduction of a proportion of incoming ETH sent to the feeRecipient.
+    ///      The caller is sent all tokens from the marketBuy of orders (less any fees required to be paid in ZRX)
     ///      If the purchased token amount does not meet some threshold (98%) then this function reverts.
     /// @param orders An array of Order struct containing order specifications.
     /// @param signatures An array of Proof that order has been created by maker.
@@ -84,9 +83,9 @@ contract Forwarder is
         public
         returns (FillResults memory totalFillResult)
     {
-        require(msg.value > 0);
-        require(orders[0].takerTokenAddress == address(etherToken));
-        require(feeProportion <= MAX_FEE);
+        require(msg.value > 0, ERROR_INVALID_INPUT);
+        require(orders[0].takerTokenAddress == address(etherToken), ERROR_INVALID_INPUT);
+        require(feeProportion <= MAX_FEE, ERROR_INVALID_INPUT);
 
         uint256 remainingEthAmount = msg.value;
         if (feeProportion > 0 && feeRecipient != address(0x0)) {
@@ -129,7 +128,7 @@ contract Forwarder is
         // Make our market sell to buy the requested tokens with the remaining balance
         FillResults memory requestedTokensResult = exchange.marketSellOrders(orders, takerTokenBalance, signatures);
         // Ensure the token abstraction was fair 
-        require(isAcceptableThreshold(sellTokenAmount, requestedTokensResult.takerTokenFilledAmount));
+        require(isAcceptableThreshold(sellTokenAmount, requestedTokensResult.takerTokenFilledAmount), ERROR_UNACCEPTABLE_THRESHOLD);
         // Update our return FillResult with the market sell
         addFillResults(totalFillResult, requestedTokensResult);
         // Transfer all tokens to msg.sender
@@ -164,7 +163,7 @@ contract Forwarder is
             );
             // Fail it it wasn't filled otherwise we will keep WETH
             // There is no acceptible threshold here as it is either buy it or nothing
-            require(fillOrderResults.takerTokenFilledAmount == orders[n].takerTokenAmount);
+            require(fillOrderResults.takerTokenFilledAmount == orders[n].takerTokenAmount, ERROR_FAILED_TO_FILL_ALL_ORDERS);
             // TODO read this through metadata
             transferNFTToken(orders[n].makerTokenAddress, msg.sender, tokenIds[n]);
         }
@@ -184,7 +183,7 @@ contract Forwarder is
         private
         returns (FillResults memory totalFillResult)
     {
-        require(feeOrders[0].makerTokenAddress == address(zrxToken));
+        require(feeOrders[0].makerTokenAddress == address(zrxToken), ERROR_INVALID_INPUT);
         // Quote the fees
         FillResults memory marketBuyFeeQuote = marketBuyOrdersQuote(feeOrders, feeAmount);
         // Buy enough ZRX to cover the future market sell as well as this market buy
@@ -202,7 +201,7 @@ contract Forwarder is
         uint amount)
         internal
     {
-        require(IToken(token).transfer(account, amount));
+        require(IToken(token).transfer(account, amount), ERROR_TRANSFER_FAILED);
     }
     function transferNFTToken(
         address token,
@@ -210,6 +209,6 @@ contract Forwarder is
         uint tokenId)
         internal
     {
-        require(IToken(token).transfer(account, tokenId));
+        require(IToken(token).transfer(account, tokenId), ERROR_TRANSFER_FAILED);
     }
 }

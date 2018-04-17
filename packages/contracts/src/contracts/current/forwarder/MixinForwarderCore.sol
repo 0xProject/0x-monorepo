@@ -15,6 +15,12 @@ contract MixinForwarderCore is
     uint16  constant ALLOWABLE_EXCHANGE_PERCENTAGE = 9800; // 98%
     uint256 constant MAX_UINT = 2 ** 256 - 1;
 
+    // Revert Strings
+    string constant ERROR_FAILED_TO_FILL_ALL_ORDERS = "FAILED_TO_FILL_ALL_ORDERS";
+    string constant ERROR_UNACCEPTABLE_THRESHOLD = "UNACCEPTABLE_THRESHOLD";
+    string constant ERROR_INVALID_INPUT = "INVALID_INPUT";
+    string constant ERROR_TRANSFER_FAILED = "TRANSFER_FAILED";
+
     Exchange exchange;
     TokenTransferProxy tokenProxy;
     EtherToken etherToken;
