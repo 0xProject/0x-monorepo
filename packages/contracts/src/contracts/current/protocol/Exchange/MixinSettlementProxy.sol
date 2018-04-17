@@ -30,8 +30,6 @@ contract MixinSettlementProxy is
     LibPartialAmount
 {
     IAssetProxy TRANSFER_PROXY;
-    // TODO: Is there a way to encode ZRX_PROXY_DATA into takerAssetData/makerAssetData?
-    //       As it stands, only one of the ERC20 proxies can be used.
     bytes ZRX_PROXY_DATA;
     IToken ZRX_TOKEN;
 
