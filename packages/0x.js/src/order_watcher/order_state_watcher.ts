@@ -123,7 +123,7 @@ export class OrderStateWatcher {
      * Removes an order from the orderStateWatcher
      * @param   orderHash     The orderHash of the order you wish to stop watching.
      */
-    public removeOrder(orderHash: string, removeFromExpirationWatcher: boolean = true): void {
+    public removeOrder(orderHash: string): void {
         assert.doesConformToSchema('orderHash', orderHash, schemas.orderHashSchema);
         const signedOrder = this._orderByOrderHash[orderHash];
         if (_.isUndefined(signedOrder)) {
@@ -139,9 +139,7 @@ export class OrderStateWatcher {
             this._removeFromDependentOrderHashes(signedOrder.maker, signedOrder.makerTokenAddress, orderHash);
         }
 
-        if (removeFromExpirationWatcher) {
-            this._expirationWatcher.removeOrder(orderHash);
-        }
+        this._expirationWatcher.removeOrder(orderHash);
     }
     /**
      * Starts an orderStateWatcher subscription. The callback will be called every time a watched order's
@@ -214,7 +212,7 @@ export class OrderStateWatcher {
             error: ExchangeContractErrs.OrderFillExpired,
         };
         if (!_.isUndefined(this._orderByOrderHash[orderHash])) {
-            this.removeOrder(orderHash, false);
+            this.removeOrder(orderHash);
             if (!_.isUndefined(this._callbackIfExists)) {
                 this._callbackIfExists(null, orderState);
             }
