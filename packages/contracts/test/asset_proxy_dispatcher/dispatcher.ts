@@ -10,9 +10,7 @@ import { DummyERC721TokenContract } from '../../src/contract_wrappers/generated/
 import { DummyTokenContract } from '../../src/contract_wrappers/generated/dummy_token';
 import { ERC20ProxyContract } from '../../src/contract_wrappers/generated/e_r_c20_proxy';
 import { ERC721ProxyContract } from '../../src/contract_wrappers/generated/e_r_c721_proxy';
-import { ERC20Proxy_v1Contract } from '../../src/contract_wrappers/generated/erc20proxy_v1';
-import { TokenTransferProxyContract } from '../../src/contract_wrappers/generated/token_transfer_proxy';
-import { encodeERC20ProxyData, encodeERC20V1ProxyData, encodeERC721ProxyData } from '../../src/utils/asset_proxy_utils';
+import { encodeERC20ProxyData, encodeERC721ProxyData } from '../../src/utils/asset_proxy_utils';
 import { Balances } from '../../src/utils/balances';
 import { constants } from '../../src/utils/constants';
 import { AssetProxyId, ContractName } from '../../src/utils/types';
@@ -34,9 +32,7 @@ describe('AssetProxyDispatcher', () => {
     let takerAddress: string;
     let zrx: DummyTokenContract;
     let dmyBalances: Balances;
-    let tokenTransferProxy: TokenTransferProxyContract;
     let assetProxyDispatcher: AssetProxyDispatcherContract;
-    let erc20TransferProxyV1: ERC20Proxy_v1Contract;
     let erc20TransferProxy: ERC20ProxyContract;
     let erc721TransferProxy: ERC721ProxyContract;
     const INITIAL_BALANCE = new BigNumber(10000);
@@ -57,28 +53,6 @@ describe('AssetProxyDispatcher', () => {
             provider,
         );
         await assetProxyDispatcher.addAuthorizedAddress.sendTransactionAsync(exchangeAddress, {
-            from: owner,
-        });
-        // Deploy TokenTransferProxy
-        const tokenTransferProxyInstance = await deployer.deployAsync(ContractName.TokenTransferProxy);
-        tokenTransferProxy = new TokenTransferProxyContract(
-            tokenTransferProxyInstance.abi,
-            tokenTransferProxyInstance.address,
-            provider,
-        );
-        // Deploy ERC20 V1 Proxy
-        const erc20TransferProxyV1Instance = await deployer.deployAsync(ContractName.ERC20V1Proxy, [
-            tokenTransferProxy.address,
-        ]);
-        erc20TransferProxyV1 = new ERC20Proxy_v1Contract(
-            erc20TransferProxyV1Instance.abi,
-            erc20TransferProxyV1Instance.address,
-            provider,
-        );
-        await erc20TransferProxyV1.addAuthorizedAddress.sendTransactionAsync(assetProxyDispatcher.address, {
-            from: owner,
-        });
-        await tokenTransferProxy.addAuthorizedAddress.sendTransactionAsync(erc20TransferProxyV1.address, {
             from: owner,
         });
         // Deploy ERC20 Proxy

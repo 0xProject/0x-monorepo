@@ -24,7 +24,6 @@ import "./MixinSignatureValidator.sol";
 import "./MixinSettlementProxy.sol";
 import "./MixinWrapperFunctions.sol";
 import "../AssetProxyDispatcher/IAssetProxyDispatcher.sol";
-import "../TokenTransferProxy/ITokenTransferProxy.sol";
 
 contract Exchange is
     MixinExchangeCore,
