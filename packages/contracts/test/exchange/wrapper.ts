@@ -84,11 +84,7 @@ describe('Exchange', () => {
         );
         // Deploy ERC20 Proxy
         const erc20ProxyInstance = await deployer.deployAsync(ContractName.ERC20Proxy);
-        erc20Proxy = new ERC20ProxyContract(
-            erc20ProxyInstance.abi,
-            erc20ProxyInstance.address,
-            provider,
-        );
+        erc20Proxy = new ERC20ProxyContract(erc20ProxyInstance.abi, erc20ProxyInstance.address, provider);
         await erc20Proxy.addAuthorizedAddress.sendTransactionAsync(assetProxyDispatcher.address, {
             from: owner,
         });
@@ -100,11 +96,7 @@ describe('Exchange', () => {
         );
         // Deploy ERC721 Proxy
         const erc721ProxyInstance = await deployer.deployAsync(ContractName.ERC721Proxy);
-        erc721Proxy = new ERC721ProxyContract(
-            erc721ProxyInstance.abi,
-            erc721ProxyInstance.address,
-            provider,
-        );
+        erc721Proxy = new ERC721ProxyContract(erc721ProxyInstance.abi, erc721ProxyInstance.address, provider);
         await erc721Proxy.addAuthorizedAddress.sendTransactionAsync(assetProxyDispatcher.address, {
             from: owner,
         });
