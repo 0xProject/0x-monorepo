@@ -35,7 +35,6 @@ describe('Exchange', () => {
         [makerAddress, feeRecipientAddress] = accounts;
         const owner = accounts[0];
         const tokenRegistry = await deployer.deployAsync(ContractName.TokenRegistry);
-        const tokenTransferProxy = await deployer.deployAsync(ContractName.TokenTransferProxy);
         const [rep, dgd, zrx] = await Promise.all([
             deployer.deployAsync(ContractName.DummyToken, constants.DUMMY_TOKEN_ARGS),
             deployer.deployAsync(ContractName.DummyToken, constants.DUMMY_TOKEN_ARGS),

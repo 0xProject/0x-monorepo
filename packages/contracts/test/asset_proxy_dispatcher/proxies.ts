@@ -10,9 +10,7 @@ import { DummyERC721TokenContract } from '../../src/contract_wrappers/generated/
 import { DummyTokenContract } from '../../src/contract_wrappers/generated/dummy_token';
 import { ERC20ProxyContract } from '../../src/contract_wrappers/generated/e_r_c20_proxy';
 import { ERC721ProxyContract } from '../../src/contract_wrappers/generated/e_r_c721_proxy';
-import { ERC20Proxy_v1Contract } from '../../src/contract_wrappers/generated/erc20proxy_v1';
-import { TokenTransferProxyContract } from '../../src/contract_wrappers/generated/token_transfer_proxy';
-import { encodeERC20ProxyData, encodeERC20V1ProxyData, encodeERC721ProxyData } from '../../src/utils/asset_proxy_utils';
+import { encodeERC20ProxyData, encodeERC721ProxyData } from '../../src/utils/asset_proxy_utils';
 import { Balances } from '../../src/utils/balances';
 import { constants } from '../../src/utils/constants';
 import { AssetProxyId, ContractName } from '../../src/utils/types';
@@ -34,8 +32,6 @@ describe('Asset Transfer Proxies', () => {
     let zrx: DummyTokenContract;
     let erc721Token: DummyERC721TokenContract;
     let dmyBalances: Balances;
-    let tokenTransferProxy: TokenTransferProxyContract;
-    let erc20TransferProxyV1: ERC20Proxy_v1Contract;
     let erc20TransferProxy: ERC20ProxyContract;
     let erc721TransferProxy: ERC721ProxyContract;
     const makerTokenId = new BigNumber('0x1010101010101010101010101010101010101010101010101010101010101010');
@@ -50,28 +46,6 @@ describe('Asset Transfer Proxies', () => {
         assetProxyDispatcherAddress = accounts[2];
         makerAddress = accounts[3];
         takerAddress = accounts[4];
-        // Deploy TokenTransferProxy
-        const tokenTransferProxyInstance = await deployer.deployAsync(ContractName.TokenTransferProxy);
-        tokenTransferProxy = new TokenTransferProxyContract(
-            tokenTransferProxyInstance.abi,
-            tokenTransferProxyInstance.address,
-            provider,
-        );
-        // Deploy ERC20 V1 Proxy
-        const erc20TransferProxyV1Instance = await deployer.deployAsync(ContractName.ERC20V1Proxy, [
-            tokenTransferProxy.address,
-        ]);
-        erc20TransferProxyV1 = new ERC20Proxy_v1Contract(
-            erc20TransferProxyV1Instance.abi,
-            erc20TransferProxyV1Instance.address,
-            provider,
-        );
-        await erc20TransferProxyV1.addAuthorizedAddress.sendTransactionAsync(assetProxyDispatcherAddress, {
-            from: owner,
-        });
-        await tokenTransferProxy.addAuthorizedAddress.sendTransactionAsync(erc20TransferProxyV1.address, {
-            from: owner,
-        });
         // Deploy ERC20 Proxy
         const erc20TransferProxyInstance = await deployer.deployAsync(ContractName.ERC20Proxy);
         erc20TransferProxy = new ERC20ProxyContract(
@@ -98,12 +72,6 @@ describe('Asset Transfer Proxies', () => {
         await zrx.setBalance.sendTransactionAsync(makerAddress, INITIAL_BALANCE, { from: tokenOwner });
         await zrx.setBalance.sendTransactionAsync(takerAddress, INITIAL_BALANCE, { from: tokenOwner });
         dmyBalances = new Balances([zrx], [makerAddress, takerAddress]);
-        await zrx.approve.sendTransactionAsync(tokenTransferProxy.address, INITIAL_BALANCE, {
-            from: takerAddress,
-        });
-        await zrx.approve.sendTransactionAsync(tokenTransferProxy.address, INITIAL_BALANCE, {
-            from: makerAddress,
-        });
         await zrx.approve.sendTransactionAsync(erc20TransferProxy.address, INITIAL_BALANCE, {
             from: takerAddress,
         });
@@ -130,94 +98,6 @@ describe('Asset Transfer Proxies', () => {
     afterEach(async () => {
         await blockchainLifecycle.revertAsync();
     });
-    describe('Transfer Proxy - ERC20V1', () => {
-        it('should successfully encode/decode metadata', async () => {
-            const metadata = await erc20TransferProxyV1.encodeMetadata.callAsync(AssetProxyId.ERC20V1, zrx.address);
-            const address = await erc20TransferProxyV1.decodeMetadata.callAsync(metadata);
-            expect(address).to.be.equal(zrx.address);
-        });
-
-        it('should successfully decode metadata encoded by typescript helpers', async () => {
-            const metadata = encodeERC20V1ProxyData(zrx.address);
-            const address = await erc20TransferProxyV1.decodeMetadata.callAsync(metadata);
-            expect(address).to.be.equal(zrx.address);
-        });
-
-        it('should successfully encode/decode metadata padded with zeros', async () => {
-            const metadata = await erc20TransferProxyV1.encodeMetadata.callAsync(
-                AssetProxyId.ERC20V1,
-                testAddressPaddedWithZeros,
-            );
-            const address = await erc20TransferProxyV1.decodeMetadata.callAsync(metadata);
-            expect(address).to.be.equal(testAddressPaddedWithZeros);
-        });
-
-        it('should successfully decode metadata padded with zeros and encoded by typescript helpers', async () => {
-            const metadata = encodeERC20V1ProxyData(testAddressPaddedWithZeros);
-            const address = await erc20TransferProxyV1.decodeMetadata.callAsync(metadata);
-            expect(address).to.be.equal(testAddressPaddedWithZeros);
-        });
-
-        it('should successfully transfer tokens', async () => {
-            // Construct metadata for ERC20V1 proxy
-            const encodedProxyMetadata = encodeERC20V1ProxyData(zrx.address);
-            // Perform a transfer from makerAddress to takerAddress
-            const balances = await dmyBalances.getAsync();
-            const amount = new BigNumber(10);
-            await erc20TransferProxyV1.transferFrom.sendTransactionAsync(
-                encodedProxyMetadata,
-                makerAddress,
-                takerAddress,
-                amount,
-                { from: assetProxyDispatcherAddress },
-            );
-            // Verify transfer was successful
-            const newBalances = await dmyBalances.getAsync();
-            expect(newBalances[makerAddress][zrx.address]).to.be.bignumber.equal(
-                balances[makerAddress][zrx.address].minus(amount),
-            );
-            expect(newBalances[takerAddress][zrx.address]).to.be.bignumber.equal(
-                balances[takerAddress][zrx.address].add(amount),
-            );
-        });
-
-        it('should do nothing if transferring 0 amount of a token', async () => {
-            // Construct metadata for ERC20V1 proxy
-            const encodedProxyMetadata = encodeERC20V1ProxyData(zrx.address);
-            // Perform a transfer from makerAddress to takerAddress
-            const balances = await dmyBalances.getAsync();
-            const amount = new BigNumber(0);
-            await erc20TransferProxyV1.transferFrom.sendTransactionAsync(
-                encodedProxyMetadata,
-                makerAddress,
-                takerAddress,
-                amount,
-                { from: assetProxyDispatcherAddress },
-            );
-            // Verify transfer was successful
-            const newBalances = await dmyBalances.getAsync();
-            expect(newBalances[makerAddress][zrx.address]).to.be.bignumber.equal(balances[makerAddress][zrx.address]);
-            expect(newBalances[takerAddress][zrx.address]).to.be.bignumber.equal(balances[takerAddress][zrx.address]);
-        });
-
-        it('should throw if requesting address is not authorized', async () => {
-            // Construct metadata for ERC20V1 proxy
-            const encodedProxyMetadata = encodeERC20V1ProxyData(zrx.address);
-            // Perform a transfer from makerAddress to takerAddress
-            const balances = await dmyBalances.getAsync();
-            const amount = new BigNumber(10);
-            return expect(
-                erc20TransferProxyV1.transferFrom.sendTransactionAsync(
-                    encodedProxyMetadata,
-                    makerAddress,
-                    takerAddress,
-                    amount,
-                    { from: notAuthorized },
-                ),
-            ).to.be.rejectedWith(constants.REVERT);
-        });
-    });
-
     describe('Transfer Proxy - ERC20', () => {
         it('should successfully encode/decode metadata', async () => {
             const metadata = await erc20TransferProxy.encodeMetadata.callAsync(AssetProxyId.ERC20, zrx.address);
@@ -288,11 +168,31 @@ describe('Asset Transfer Proxies', () => {
             expect(newBalances[takerAddress][zrx.address]).to.be.bignumber.equal(balances[takerAddress][zrx.address]);
         });
 
+        it('should throw if allowances are too low', async () => {
+            // Construct metadata for ERC20 proxy
+            const encodedProxyMetadata = encodeERC20ProxyData(zrx.address);
+            // Create allowance less than transfer amount. Set allowance on proxy.
+            const allowance = new BigNumber(0);
+            const transferAmount = new BigNumber(10);
+            await zrx.approve.sendTransactionAsync(erc20TransferProxy.address, allowance, {
+                from: makerAddress,
+            });
+            // Perform a transfer; expect this to fail.
+            return expect(
+                erc20TransferProxy.transferFrom.sendTransactionAsync(
+                    encodedProxyMetadata,
+                    makerAddress,
+                    takerAddress,
+                    transferAmount,
+                    { from: notAuthorized },
+                ),
+            ).to.be.rejectedWith(constants.REVERT);
+        });
+
         it('should throw if requesting address is not authorized', async () => {
             // Construct metadata for ERC20 proxy
             const encodedProxyMetadata = encodeERC20ProxyData(zrx.address);
             // Perform a transfer from makerAddress to takerAddress
-            const balances = await dmyBalances.getAsync();
             const amount = new BigNumber(10);
             return expect(
                 erc20TransferProxy.transferFrom.sendTransactionAsync(
@@ -404,11 +304,30 @@ describe('Asset Transfer Proxies', () => {
             ).to.be.rejectedWith(constants.REVERT);
         });
 
+        it('should throw if allowances are too low', async () => {
+            // Construct metadata for ERC721 proxy
+            const encodedProxyMetadata = encodeERC721ProxyData(erc721Token.address, makerTokenId);
+            // Remove transfer approval for makerAddress.
+            await erc721Token.setApprovalForAll.sendTransactionAsync(erc721TransferProxy.address, false, {
+                from: makerAddress,
+            });
+            // Perform a transfer; expect this to fail.
+            const amount = new BigNumber(1);
+            return expect(
+                erc20TransferProxy.transferFrom.sendTransactionAsync(
+                    encodedProxyMetadata,
+                    makerAddress,
+                    takerAddress,
+                    amount,
+                    { from: notAuthorized },
+                ),
+            ).to.be.rejectedWith(constants.REVERT);
+        });
+
         it('should throw if requesting address is not authorized', async () => {
             // Construct metadata for ERC721 proxy
-            const encodedProxyMetadata = encodeERC721ProxyData(zrx.address, makerTokenId);
+            const encodedProxyMetadata = encodeERC721ProxyData(erc721Token.address, makerTokenId);
             // Perform a transfer from makerAddress to takerAddress
-            const balances = await dmyBalances.getAsync();
             const amount = new BigNumber(1);
             return expect(
                 erc721TransferProxy.transferFrom.sendTransactionAsync(
