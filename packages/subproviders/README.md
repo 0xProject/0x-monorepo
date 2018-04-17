@@ -4,6 +4,8 @@ A few useful web3 subproviders including a LedgerSubprovider useful for adding L
 
 We have written up a [Wiki](https://0xproject.com/wiki#Web3-Provider-Examples) article detailing some use cases of this subprovider package.
 
+### Read the [Documentation](https://0xproject.com/docs/subproviders).
+
 ## Installation
 
 ```
@@ -12,73 +14,19 @@ yarn add @0xproject/subproviders
 
 If your project is in [TypeScript](https://www.typescriptlang.org/), add the following to your `tsconfig.json`:
 
-```
-"include": [
-    "./node_modules/web3-typescript-typings/index.d.ts",
-]
-```
-
-## Usage
-
-Simply import the subprovider you are interested in using:
-
-```javascript
-import {
-    ledgerEthereumBrowserClientFactoryAsync as ledgerEthereumClientFactoryAsync,
-    LedgerSubprovider,
-} from '@0xproject/subproviders';
-
-const ledgerSubprovider = new LedgerSubprovider({
-    networkId,
-    ledgerEthereumClientFactoryAsync,
-});
-
-const accounts = await ledgerSubprovider.getAccountsAsync();
-```
-
-### Subproviders
-
-#### Ledger Nano S subprovider
-
-A subprovider that enables your dApp to send signing requests to a user's Ledger Nano S hardware wallet. These can be requests to sign transactions or messages.
-
-Ledger Nano (and this library) by default uses a derivation path of `44'/60'/0'`. This is different to TestRPC which by default uses `m/44'/60'/0'/0`. This is a configuration option in the Ledger Subprovider package.
-
-##### Ledger Nano S + Node-hid (usb)
-
-By default, node-hid transport support is an optional dependency. This is due to the requirement of native usb developer packages on the host system. If these aren't installed the entire `npm install` fails. We also no longer export node-hid transport client factories. To re-create this see our integration tests or follow the example below:
-
-```typescript
-import Eth from '@ledgerhq/hw-app-eth';
-import TransportNodeHid from '@ledgerhq/hw-transport-node-hid';
-async function ledgerEthereumNodeJsClientFactoryAsync(): Promise<LedgerEthereumClient> {
-    const ledgerConnection = await TransportNodeHid.create();
-    const ledgerEthClient = new Eth(ledgerConnection);
-    return ledgerEthClient;
+```json
+"compilerOptions": {
+    "typeRoots": ["node_modules/@0xproject/typescript-typings/types", "node_modules/@types"],
 }
-
-// Create a LedgerSubprovider with the node-hid transport
-ledgerSubprovider = new LedgerSubprovider({
-    networkId,
-    ledgerEthereumClientFactoryAsync: ledgerEthereumNodeJsClientFactoryAsync,
-});
 ```
-
-#### Redundant RPC subprovider
-
-A subprovider which attempts to send an RPC call to a list of RPC endpoints sequentially, until one of them returns a successful response.
-
-#### Injected Web3 subprovider
-
-A subprovider that relays all signing related requests to a particular provider (in our case the provider injected onto the web page), while sending all other requests to a different provider (perhaps your own backing Ethereum node or Infura).
 
 ## Contributing
 
-We strongly recommend that the community help us make improvements and determine the future direction of the protocol. To report bugs within this package, please create an issue in this repository.
+We welcome improvements and fixes from the wider community! To report bugs within this package, please create an issue in this repository.
 
 Please read our [contribution guidelines](../../CONTRIBUTING.md) before getting started.
 
-### Install Dependencies
+### Install dependencies
 
 If you don't have yarn workspaces enabled (Yarn < v1.0) - enable them:
 
@@ -86,17 +34,33 @@ If you don't have yarn workspaces enabled (Yarn < v1.0) - enable them:
 yarn config set workspaces-experimental true
 ```
 
+Then install dependencies
+
 ```bash
 yarn install
 ```
 
 ### Build
 
+If this is your **first** time building this package, you must first build **all** packages within the monorepo. This is because packages that depend on other packages located inside this monorepo are symlinked when run from **within** the monorepo. This allows you to make changes across multiple packages without first publishing dependent packages to NPM. To build all packages, run the following from the monorepo root directory:
+
+```bash
+yarn lerna:rebuild
+```
+
+Or continuously rebuild on change:
+
+```bash
+yarn dev
+```
+
+You can also build this specific package by running the following from within its directory:
+
 ```bash
 yarn build
 ```
 
-or
+or continuously rebuild on change:
 
 ```bash
 yarn build:watch

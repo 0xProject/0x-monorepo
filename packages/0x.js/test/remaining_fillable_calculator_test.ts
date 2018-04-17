@@ -1,10 +1,10 @@
+import { ECSignature, SignedOrder } from '@0xproject/types';
 import { BigNumber } from '@0xproject/utils';
 import * as chai from 'chai';
 import 'mocha';
 
 import { ZeroEx } from '../src/0x';
 import { RemainingFillableCalculator } from '../src/order_watcher/remaining_fillable_calculator';
-import { ECSignature, SignedOrder } from '../src/types';
 
 import { chaiSetup } from './utils/chai_setup';
 

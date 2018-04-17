@@ -22,13 +22,8 @@ export class TokenWrapper extends ContractWrapper {
     public UNLIMITED_ALLOWANCE_IN_BASE_UNITS = constants.UNLIMITED_ALLOWANCE_IN_BASE_UNITS;
     private _tokenContractsByAddress: { [address: string]: TokenContract };
     private _tokenTransferProxyWrapper: TokenTransferProxyWrapper;
-    constructor(
-        web3Wrapper: Web3Wrapper,
-        networkId: number,
-        abiDecoder: AbiDecoder,
-        tokenTransferProxyWrapper: TokenTransferProxyWrapper,
-    ) {
-        super(web3Wrapper, networkId, abiDecoder);
+    constructor(web3Wrapper: Web3Wrapper, networkId: number, tokenTransferProxyWrapper: TokenTransferProxyWrapper) {
+        super(web3Wrapper, networkId);
         this._tokenContractsByAddress = {};
         this._tokenTransferProxyWrapper = tokenTransferProxyWrapper;
     }
@@ -385,7 +380,7 @@ export class TokenWrapper extends ContractWrapper {
     }
     /**
      * Gets historical logs without creating a subscription
-     * @param   tokenAddress        An address of the token that emmited the logs.
+     * @param   tokenAddress        An address of the token that emitted the logs.
      * @param   eventName           The token contract event you would like to subscribe to.
      * @param   blockRange          Block range to get logs from.
      * @param   indexFilterValues   An object where the keys are indexed args returned by the event and
@@ -426,7 +421,12 @@ export class TokenWrapper extends ContractWrapper {
             artifacts.TokenArtifact,
             normalizedTokenAddress,
         );
-        const contractInstance = new TokenContract(this._web3Wrapper, abi, address);
+        const contractInstance = new TokenContract(
+            abi,
+            address,
+            this._web3Wrapper.getProvider(),
+            this._web3Wrapper.getContractDefaults(),
+        );
         tokenContract = contractInstance;
         this._tokenContractsByAddress[normalizedTokenAddress] = tokenContract;
         return tokenContract;

@@ -1,5 +1,5 @@
 import { ECSignature } from '0x.js';
-import { BigNumber } from '@0xproject/utils';
+import { BigNumber, logUtils } from '@0xproject/utils';
 import * as _ from 'lodash';
 import Paper from 'material-ui/Paper';
 import TextField from 'material-ui/TextField';
@@ -153,7 +153,7 @@ You can see and fill it here: ${this.state.shareLink}`);
         const bodyObj = JSON.parse(responseBody);
         if (response.status !== 200 || bodyObj.status_code !== 200) {
             // TODO: Show error message in UI
-            utils.consoleLog(`Unexpected status code: ${response.status} -> ${responseBody}`);
+            logUtils.log(`Unexpected status code: ${response.status} -> ${responseBody}`);
             await errorReporter.reportAsync(new Error(`Bitly returned non-200: ${JSON.stringify(response)}`));
             return '';
         }

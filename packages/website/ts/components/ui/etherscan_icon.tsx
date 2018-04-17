@@ -14,7 +14,7 @@ export const EtherScanIcon = (props: EtherScanIconProps) => {
     const etherscanLinkIfExists = sharedUtils.getEtherScanLinkIfExists(
         props.addressOrTxHash,
         props.networkId,
-        EtherscanLinkSuffixes.Address,
+        props.etherscanLinkSuffixes,
     );
     const transactionTooltipId = `${props.addressOrTxHash}-etherscan-icon-tooltip`;
     return (

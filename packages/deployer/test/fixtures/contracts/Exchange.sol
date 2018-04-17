@@ -1,6 +1,6 @@
 /*
 
-  Copyright 2017 ZeroEx Intl.
+  Copyright 2018 ZeroEx Intl.
 
   Licensed under the Apache License, Version 2.0 (the "License");
   you may not use this file except in compliance with the License.
@@ -16,10 +16,11 @@
 
 */
 
-pragma solidity 0.4.14;
+pragma solidity ^0.4.14;
+
+import {ERC20 as Token} from "zeppelin-solidity/contracts/token/ERC20/ERC20.sol";
 
 import "./TokenTransferProxy.sol";
-import "./base/Token.sol";
 import "./base/SafeMath.sol";
 
 /// @title Exchange - Facilitates exchange of ERC20 tokens.

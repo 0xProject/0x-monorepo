@@ -7,8 +7,7 @@ import {
     Styles,
     utils as sharedUtils,
 } from '@0xproject/react-shared';
-import { BigNumber } from '@0xproject/utils';
-import DharmaLoanFrame from 'dharma-loan-frame';
+import { BigNumber, logUtils } from '@0xproject/utils';
 import * as _ from 'lodash';
 import Dialog from 'material-ui/Dialog';
 import Divider from 'material-ui/Divider';
@@ -37,6 +36,7 @@ import {
     ScreenWidths,
     Token,
     TokenByAddress,
+    TokenStateByAddress,
     TokenVisibility,
 } from 'ts/types';
 import { configs } from 'ts/utils/configs';
@@ -48,7 +48,6 @@ const ETHER_ICON_PATH = '/images/ether.png';
 const ETHER_TOKEN_SYMBOL = 'WETH';
 const ZRX_TOKEN_SYMBOL = 'ZRX';
 
-const PRECISION = 5;
 const ICON_DIMENSION = 40;
 const ARTIFICIAL_FAUCET_REQUEST_DELAY = 1000;
 const TOKEN_TABLE_ROW_HEIGHT = 60;
@@ -62,14 +61,6 @@ const styles: Styles = {
     },
 };
 
-interface TokenStateByAddress {
-    [address: string]: {
-        balance: BigNumber;
-        allowance: BigNumber;
-        isLoaded: boolean;
-    };
-}
-
 interface TokenBalancesProps {
     blockchain: Blockchain;
     blockchainErr: BlockchainErrs;
@@ -79,7 +70,7 @@ interface TokenBalancesProps {
     tokenByAddress: TokenByAddress;
     trackedTokens: Token[];
     userAddress: string;
-    userEtherBalance: BigNumber;
+    userEtherBalanceInWei: BigNumber;
     networkId: number;
     lastForceTokenStateRefetch: number;
 }
@@ -87,7 +78,6 @@ interface TokenBalancesProps {
 interface TokenBalancesState {
     errorType: BalanceErrs;
     isBalanceSpinnerVisible: boolean;
-    isDharmaDialogVisible: boolean;
     isZRXSpinnerVisible: boolean;
     isTokenPickerOpen: boolean;
     isAddingToken: boolean;
@@ -104,7 +94,6 @@ export class TokenBalances extends React.Component<TokenBalancesProps, TokenBala
             errorType: undefined,
             isBalanceSpinnerVisible: false,
             isZRXSpinnerVisible: false,
-            isDharmaDialogVisible: DharmaLoanFrame.isAuthTokenPresent(),
             isTokenPickerOpen: false,
             isAddingToken: false,
             trackedTokenStateByAddress: initialTrackedTokenStateByAddress,
@@ -119,11 +108,14 @@ export class TokenBalances extends React.Component<TokenBalancesProps, TokenBala
         this._isUnmounted = true;
     }
     public componentWillReceiveProps(nextProps: TokenBalancesProps) {
-        if (nextProps.userEtherBalance !== this.props.userEtherBalance) {
+        if (nextProps.userEtherBalanceInWei !== this.props.userEtherBalanceInWei) {
             if (this.state.isBalanceSpinnerVisible) {
-                const receivedAmount = nextProps.userEtherBalance.minus(this.props.userEtherBalance);
+                const receivedAmountInWei = nextProps.userEtherBalanceInWei.minus(this.props.userEtherBalanceInWei);
+                const receivedAmountInEth = ZeroEx.toUnitAmount(receivedAmountInWei, constants.DECIMAL_PLACES_ETH);
                 const networkName = sharedConstants.NETWORK_NAME_BY_ID[this.props.networkId];
-                this.props.dispatcher.showFlashMessage(`Received ${receivedAmount.toString(10)} ${networkName} Ether`);
+                this.props.dispatcher.showFlashMessage(
+                    `Received ${receivedAmountInEth.toString(10)} ${networkName} Ether`,
+                );
             }
             this.setState({
                 isBalanceSpinnerVisible: false,
@@ -173,20 +165,8 @@ export class TokenBalances extends React.Component<TokenBalancesProps, TokenBala
                 onTouchTap={this._onErrorDialogToggle.bind(this, false)}
             />,
         ];
-        const dharmaDialogActions = [
-            <FlatButton
-                key="dharmaCloseBtn"
-                label="Close"
-                primary={true}
-                onTouchTap={this._onDharmaDialogToggle.bind(this, false)}
-            />,
-        ];
         const isTestNetwork = utils.isTestNetwork(this.props.networkId);
         const isKovanTestNetwork = this.props.networkId === constants.NETWORK_ID_KOVAN;
-        const dharmaButtonColumnStyle = {
-            paddingLeft: 3,
-            display: isKovanTestNetwork ? 'table-cell' : 'none',
-        };
         const stubColumnStyle = {
             display: isTestNetwork ? 'none' : 'table-cell',
         };
@@ -195,16 +175,15 @@ export class TokenBalances extends React.Component<TokenBalancesProps, TokenBala
             allTokenRowHeight < MAX_TOKEN_TABLE_HEIGHT ? allTokenRowHeight : MAX_TOKEN_TABLE_HEIGHT;
         const isSmallScreen = this.props.screenWidth === ScreenWidths.Sm;
         const tokenColSpan = isSmallScreen ? TOKEN_COL_SPAN_SM : TOKEN_COL_SPAN_LG;
-        const dharmaLoanExplanation =
-            'If you need access to larger amounts of ether,<br> \
-                                     you can request a loan from the Dharma Loan<br> \
-                                     network.  Your loan should be funded in 5<br>  \
-                                     minutes or less.';
         const allowanceExplanation =
             '0x smart contracts require access to your<br> \
                                   token balances in order to execute trades.<br> \
                                   Toggling sets an allowance for the<br> \
                                   smart contract so you can start trading that token.';
+        const userEtherBalanceInEth = ZeroEx.toUnitAmount(
+            this.props.userEtherBalanceInWei,
+            constants.DECIMAL_PLACES_ETH,
+        );
         return (
             <div className="lg-px4 md-px4 sm-px1 pb2">
                 <h3>{isTestNetwork ? 'Test ether' : 'Ether'}</h3>
@@ -227,12 +206,6 @@ export class TokenBalances extends React.Component<TokenBalancesProps, TokenBala
                                     {isSmallScreen ? 'Faucet' : 'Request from faucet'}
                                 </TableHeaderColumn>
                             )}
-                            {isKovanTestNetwork && (
-                                <TableHeaderColumn style={dharmaButtonColumnStyle}>
-                                    {isSmallScreen ? 'Loan' : 'Request Dharma loan'}
-                                    <HelpTooltip style={{ paddingLeft: 4 }} explanation={dharmaLoanExplanation} />
-                                </TableHeaderColumn>
-                            )}
                         </TableRow>
                     </TableHeader>
                     <TableBody displayRowCheckbox={false}>
@@ -241,7 +214,7 @@ export class TokenBalances extends React.Component<TokenBalancesProps, TokenBala
                                 <img style={{ width: ICON_DIMENSION, height: ICON_DIMENSION }} src={ETHER_ICON_PATH} />
                             </TableRowColumn>
                             <TableRowColumn>
-                                {this.props.userEtherBalance.toFixed(PRECISION)} ETH
+                                {userEtherBalanceInEth.toFixed(configs.AMOUNT_DISPLAY_PRECSION)} ETH
                                 {this.state.isBalanceSpinnerVisible && (
                                     <span className="pl1">
                                         <i className="zmdi zmdi-spinner zmdi-hc-spin" />
@@ -256,15 +229,6 @@ export class TokenBalances extends React.Component<TokenBalancesProps, TokenBala
                                         labelLoading="Sending..."
                                         labelComplete="Sent!"
                                         onClickAsyncFn={this._faucetRequestAsync.bind(this, true)}
-                                    />
-                                </TableRowColumn>
-                            )}
-                            {isKovanTestNetwork && (
-                                <TableRowColumn style={dharmaButtonColumnStyle}>
-                                    <RaisedButton
-                                        label="Request"
-                                        style={{ width: '100%' }}
-                                        onTouchTap={this._onDharmaDialogToggle.bind(this)}
                                     />
                                 </TableRowColumn>
                             )}
@@ -315,17 +279,6 @@ export class TokenBalances extends React.Component<TokenBalancesProps, TokenBala
                     onRequestClose={this._onErrorDialogToggle.bind(this, false)}
                 >
                     {this._renderErrorDialogBody()}
-                </Dialog>
-                <Dialog
-                    title="Request Dharma Loan"
-                    titleStyle={{ fontWeight: 100, backgroundColor: colors.white }}
-                    bodyStyle={{ backgroundColor: colors.dharmaDarkGrey }}
-                    actionsContainerStyle={{ backgroundColor: colors.white }}
-                    autoScrollBodyContent={true}
-                    actions={dharmaDialogActions}
-                    open={this.state.isDharmaDialogVisible}
-                >
-                    {this._renderDharmaLoanFrame()}
                 </Dialog>
                 <AssetPicker
                     userAddress={this.props.userAddress}
@@ -493,7 +446,7 @@ export class TokenBalances extends React.Component<TokenBalancesProps, TokenBala
     }
     private _renderAmount(amount: BigNumber, decimals: number) {
         const unitAmount = ZeroEx.toUnitAmount(amount, decimals);
-        return unitAmount.toNumber().toFixed(PRECISION);
+        return unitAmount.toNumber().toFixed(configs.AMOUNT_DISPLAY_PRECSION);
     }
     private _renderTokenName(token: Token) {
         const tooltipId = `tooltip-${token.address}`;
@@ -546,24 +499,6 @@ export class TokenBalances extends React.Component<TokenBalancesProps, TokenBala
                 throw utils.spawnSwitchErr('errorType', this.state.errorType);
         }
     }
-    private _renderDharmaLoanFrame() {
-        if (sharedUtils.isUserOnMobile()) {
-            return (
-                <h4 style={{ textAlign: 'center' }}>
-                    We apologize -- Dharma loan requests are not available on mobile yet. Please try again through your
-                    desktop browser.
-                </h4>
-            );
-        } else {
-            return (
-                <DharmaLoanFrame
-                    partner="0x"
-                    env={utils.getCurrentEnvironment()}
-                    screenWidth={this.props.screenWidth}
-                />
-            );
-        }
-    }
     private _onErrorOccurred(errorType: BalanceErrs) {
         this.setState({
             errorType,
@@ -585,8 +520,8 @@ export class TokenBalances extends React.Component<TokenBalancesProps, TokenBala
             if (utils.didUserDenyWeb3Request(errMsg)) {
                 return false;
             }
-            utils.consoleLog(`Unexpected error encountered: ${err}`);
-            utils.consoleLog(err.stack);
+            logUtils.log(`Unexpected error encountered: ${err}`);
+            logUtils.log(err.stack);
             this.setState({
                 errorType: BalanceErrs.mintingFailed,
             });
@@ -617,7 +552,7 @@ export class TokenBalances extends React.Component<TokenBalancesProps, TokenBala
         );
         const responseBody = await response.text();
         if (response.status !== constants.SUCCESS_STATUS) {
-            utils.consoleLog(`Unexpected status code: ${response.status} -> ${responseBody}`);
+            logUtils.log(`Unexpected status code: ${response.status} -> ${responseBody}`);
             const errorType =
                 response.status === constants.UNAVAILABLE_STATUS
                     ? BalanceErrs.faucetQueueIsFull
@@ -645,11 +580,6 @@ export class TokenBalances extends React.Component<TokenBalancesProps, TokenBala
     private _onErrorDialogToggle(isOpen: boolean) {
         this.setState({
             errorType: undefined,
-        });
-    }
-    private _onDharmaDialogToggle() {
-        this.setState({
-            isDharmaDialogVisible: !this.state.isDharmaDialogVisible,
         });
     }
     private _onAddTokenClicked() {
@@ -681,9 +611,10 @@ export class TokenBalances extends React.Component<TokenBalancesProps, TokenBala
     }
     private async _fetchBalancesAndAllowancesAsync(tokenAddresses: string[]) {
         const trackedTokenStateByAddress = this.state.trackedTokenStateByAddress;
+        const userAddressIfExists = _.isEmpty(this.props.userAddress) ? undefined : this.props.userAddress;
         for (const tokenAddress of tokenAddresses) {
             const [balance, allowance] = await this.props.blockchain.getTokenBalanceAndAllowanceAsync(
-                this.props.userAddress,
+                userAddressIfExists,
                 tokenAddress,
             );
             trackedTokenStateByAddress[tokenAddress] = {
@@ -710,8 +641,9 @@ export class TokenBalances extends React.Component<TokenBalancesProps, TokenBala
         return trackedTokenStateByAddress;
     }
     private async _refetchTokenStateAsync(tokenAddress: string) {
+        const userAddressIfExists = _.isEmpty(this.props.userAddress) ? undefined : this.props.userAddress;
         const [balance, allowance] = await this.props.blockchain.getTokenBalanceAndAllowanceAsync(
-            this.props.userAddress,
+            userAddressIfExists,
             tokenAddress,
         );
         this.setState({

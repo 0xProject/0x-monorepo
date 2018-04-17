@@ -1,6 +1,6 @@
 {
     "name": "@0xproject/json-schemas",
-    "version": "0.7.14",
+    "version": "0.7.20",
     "description": "0x-related json schemas",
     "main": "lib/src/index.js",
     "types": "lib/src/index.d.ts",
@@ -8,10 +8,28 @@
         "build:watch": "tsc -w",
         "lint": "tslint --project . 'src/**/*.ts' 'test/**/*.ts'",
         "test": "run-s clean build run_mocha",
-        "test:circleci": "yarn test",
-        "run_mocha": "mocha lib/test/**/*_test.js",
-        "clean": "shx rm -rf _bundles lib test_temp",
-        "build": "tsc"
+        "test:coverage": "nyc npm run test --all && yarn coverage:report:lcov",
+        "coverage:report:lcov": "nyc report --reporter=text-lcov > coverage/lcov.info",
+        "test:circleci": "yarn test:coverage",
+        "run_mocha": "mocha lib/test/**/*_test.js --exit",
+        "clean": "shx rm -rf lib test_temp scripts",
+        "build": "tsc && copyfiles -u 3 './lib/src/monorepo_scripts/**/*' ./scripts",
+        "manual:postpublish": "yarn build; node ./scripts/postpublish.js",
+        "docs:stage": "yarn build && node ./scripts/stage_docs.js",
+        "docs:json": "typedoc --excludePrivate --excludeExternals --target ES5 --json $JSON_FILE_PATH $PROJECT_FILES",
+        "upload_docs_json": "aws s3 cp generated_docs/index.json $S3_URL --profile 0xproject --grants read=uri=http://acs.amazonaws.com/groups/global/AllUsers --content-type application/json"
+    },
+    "config": {
+        "postpublish": {
+            "assets": [],
+            "docPublishConfigs": {
+                "extraFileIncludes": [
+                    "../types/src/index.ts"
+                ],
+                "s3BucketPath": "s3://doc-jsons/json-schemas/",
+                "s3StagingBucketPath": "s3://staging-doc-jsons/json-schemas/"
+            }
+        }
     },
     "repository": {
         "type": "git",
@@ -24,23 +42,31 @@
     },
     "homepage": "https://github.com/0xProject/0x-monorepo/packages/json-schemas/README.md",
     "dependencies": {
+        "@0xproject/typescript-typings": "^0.1.0",
+        "@types/node": "^8.0.53",
         "jsonschema": "^1.2.0",
         "lodash.values": "^4.3.0"
     },
     "devDependencies": {
-        "@0xproject/tslint-config": "^0.4.10",
-        "@0xproject/utils": "^0.4.1",
+        "@0xproject/monorepo-scripts": "^0.1.17",
+        "@0xproject/tslint-config": "^0.4.15",
+        "@0xproject/utils": "^0.5.1",
         "@types/lodash.foreach": "^4.5.3",
         "@types/lodash.values": "^4.3.3",
         "@types/mocha": "^2.2.42",
         "chai": "^4.0.1",
-        "chai-typescript-typings": "^0.0.4",
+        "copyfiles": "^1.2.0",
         "dirty-chai": "^2.0.1",
         "lodash.foreach": "^4.5.0",
         "mocha": "^4.0.1",
         "npm-run-all": "^4.1.2",
+        "nyc": "^11.0.1",
         "shx": "^0.2.2",
         "tslint": "5.8.0",
+        "typedoc": "0xProject/typedoc",
         "typescript": "2.7.1"
+    },
+    "publishConfig": {
+        "access": "public"
     }
 }

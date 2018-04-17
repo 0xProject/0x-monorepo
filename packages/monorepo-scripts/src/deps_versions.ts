@@ -5,6 +5,8 @@ import * as fs from 'fs';
 import { sync as globSync } from 'glob';
 import * as _ from 'lodash';
 
+import { utils } from './utils';
+
 interface Dependencies {
     [depName: string]: string;
 }
@@ -16,10 +18,6 @@ interface VersionsByDependency {
 }
 
 const PACKAGE_JSON_GLOB = '../*/package.json';
-
-function log(...args: any[]) {
-    console.log(...args); // tslint:disable-line:no-console
-}
 
 function getDependencies(path: string): Dependencies {
     const file = fs.readFileSync(path).toString();
@@ -48,9 +46,9 @@ _.map(versionsByDependency, (versions: Versions, depName: string) => {
     if (_.uniq(_.values(versions)).length === 1) {
         delete versionsByDependency[depName];
     } else {
-        log(chalk.bold(depName));
+        utils.log(chalk.bold(depName));
         _.map(versions, (version: string, packageName: string) => {
-            log(`├── ${packageName} -> ${version}`);
+            utils.log(`├── ${packageName} -> ${version}`);
         });
     }
 });

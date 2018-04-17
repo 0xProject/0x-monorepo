@@ -1,6 +1,5 @@
+import { SignedOrder } from '@0xproject/types';
 import { BigNumber } from '@0xproject/utils';
-
-import { SignedOrder } from '../types';
 
 export class RemainingFillableCalculator {
     private _signedOrder: SignedOrder;

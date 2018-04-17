@@ -1,4 +1,5 @@
-import { AbiType, TxData } from '@0xproject/types';
+import { AbiType, ConstructorAbi, ContractAbi, Provider, TxData } from '@0xproject/types';
+import { logUtils } from '@0xproject/utils';
 import { Web3Wrapper } from '@0xproject/web3-wrapper';
 import * as _ from 'lodash';
 import * as Web3 from 'web3';
@@ -6,31 +7,52 @@ import * as Web3 from 'web3';
 import { Contract } from './utils/contract';
 import { encoder } from './utils/encoder';
 import { fsWrapper } from './utils/fs_wrapper';
-import { ContractArtifact, ContractNetworkData, DeployerOptions } from './utils/types';
+import {
+    ContractArtifact,
+    ContractNetworkData,
+    DeployerOptions,
+    ProviderDeployerOptions,
+    UrlDeployerOptions,
+} from './utils/types';
 import { utils } from './utils/utils';
 
 // Gas added to gas estimate to make sure there is sufficient gas for deployment.
 const EXTRA_GAS = 200000;
 
+/**
+ * The Deployer facilitates deploying Solidity smart contracts to the blockchain.
+ * It can be used to build custom migration scripts.
+ */
 export class Deployer {
     public web3Wrapper: Web3Wrapper;
     private _artifactsDir: string;
-    private _jsonrpcPort: number;
     private _networkId: number;
     private _defaults: Partial<TxData>;
 
+    /**
+     * Instantiate a new instance of the Deployer class.
+     * @param opts Deployer options, including either an RPC url or Provider instance.
+     * @returns A Deployer instance
+     */
     constructor(opts: DeployerOptions) {
         this._artifactsDir = opts.artifactsDir;
-        this._jsonrpcPort = opts.jsonrpcPort;
         this._networkId = opts.networkId;
-        const jsonrpcUrl = `http://localhost:${this._jsonrpcPort}`;
-        const web3Provider = new Web3.providers.HttpProvider(jsonrpcUrl);
         this._defaults = opts.defaults;
-        this.web3Wrapper = new Web3Wrapper(web3Provider, this._defaults);
+        let provider: Provider;
+        if (_.isUndefined((opts as ProviderDeployerOptions).provider)) {
+            const jsonrpcUrl = (opts as UrlDeployerOptions).jsonrpcUrl;
+            if (_.isUndefined(jsonrpcUrl)) {
+                throw new Error(`Deployer options don't contain provider nor jsonrpcUrl. Please pass one of them`);
+            }
+            provider = new Web3.providers.HttpProvider(jsonrpcUrl);
+        } else {
+            provider = (opts as ProviderDeployerOptions).provider;
+        }
+        this.web3Wrapper = new Web3Wrapper(provider, this._defaults);
     }
     /**
-     * Loads contract artifact and deploys contract with given arguments.
-     * @param contractName Name of the contract to deploy. Must match name of an artifact in artifacts directory.
+     * Loads a contract's corresponding artifacts and deploys it with the supplied constructor arguments.
+     * @param contractName Name of the contract to deploy. Must match name of an artifact in supplied artifacts directory.
      * @param args Array of contract constructor arguments.
      * @return Deployed contract instance.
      */
@@ -39,7 +61,7 @@ export class Deployer {
         const contractNetworkDataIfExists: ContractNetworkData = this._getContractNetworkDataFromArtifactIfExists(
             contractArtifactIfExists,
         );
-        const data = contractNetworkDataIfExists.unlinked_binary;
+        const data = contractNetworkDataIfExists.bytecode;
         const from = await this._getFromAddressAsync();
         const gas = await this._getAllowableGasEstimateAsync(data);
         const txData = {
@@ -49,7 +71,7 @@ export class Deployer {
             gas,
         };
         const abi = contractNetworkDataIfExists.abi;
-        const constructorAbi = _.find(abi, { type: AbiType.Constructor }) as Web3.ConstructorAbi;
+        const constructorAbi = _.find(abi, { type: AbiType.Constructor }) as ConstructorAbi;
         const constructorArgs = _.isUndefined(constructorAbi) ? [] : constructorAbi.inputs;
         if (constructorArgs.length !== args.length) {
             const constructorSignature = `constructor(${_.map(constructorArgs, arg => `${arg.type} ${arg.name}`).join(
@@ -62,12 +84,13 @@ export class Deployer {
             );
         }
         const web3ContractInstance = await this._deployFromAbiAsync(abi, args, txData);
-        utils.consoleLog(`${contractName}.sol successfully deployed at ${web3ContractInstance.address}`);
+        logUtils.log(`${contractName}.sol successfully deployed at ${web3ContractInstance.address}`);
         const contractInstance = new Contract(web3ContractInstance, this._defaults);
         return contractInstance;
     }
     /**
-     * Loads contract artifact, deploys with given arguments, and saves updated data to artifact.
+     * Loads a contract's artifact, deploys it with supplied constructor arguments, and saves the updated data
+     * back to the artifact file.
      * @param contractName Name of the contract to deploy. Must match name of an artifact in artifacts directory.
      * @param args Array of contract constructor arguments.
      * @return Deployed contract instance.
@@ -84,7 +107,7 @@ export class Deployer {
      * @param txData Tx options used for deployment.
      * @return Promise that resolves to a web3 contract instance.
      */
-    private async _deployFromAbiAsync(abi: Web3.ContractAbi, args: any[], txData: Web3.TxData): Promise<any> {
+    private async _deployFromAbiAsync(abi: ContractAbi, args: any[], txData: TxData): Promise<any> {
         const contract: Web3.Contract<Web3.ContractInstance> = this.web3Wrapper.getContractFromAbi(abi);
         const deployPromise = new Promise((resolve, reject) => {
             /**
@@ -95,7 +118,7 @@ export class Deployer {
                 if (err) {
                     reject(err);
                 } else if (_.isUndefined(res.address) && !_.isUndefined(res.transactionHash)) {
-                    utils.consoleLog(`transactionHash: ${res.transactionHash}`);
+                    logUtils.log(`transactionHash: ${res.transactionHash}`);
                 } else {
                     resolve(res);
                 }
@@ -147,7 +170,7 @@ export class Deployer {
             const contractArtifact: ContractArtifact = require(artifactPath);
             return contractArtifact;
         } catch (err) {
-            throw new Error(`Artifact not found for contract: ${contractName}`);
+            throw new Error(`Artifact not found for contract: ${contractName} at ${artifactPath}`);
         }
     }
     /**

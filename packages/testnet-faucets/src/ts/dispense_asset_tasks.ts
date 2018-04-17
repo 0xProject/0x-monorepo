@@ -1,11 +1,10 @@
 import { ZeroEx } from '0x.js';
-import { BigNumber, promisify } from '@0xproject/utils';
+import { BigNumber, logUtils, promisify } from '@0xproject/utils';
 import * as _ from 'lodash';
 import * as Web3 from 'web3';
 
 import { configs } from './configs';
 import { errorReporter } from './error_reporter';
-import { utils } from './utils';
 
 const DISPENSE_AMOUNT_ETHER = 0.1;
 const DISPENSE_AMOUNT_TOKEN = 0.1;
@@ -15,11 +14,11 @@ const DISPENSE_MAX_AMOUNT_ETHER = 2;
 export const dispenseAssetTasks = {
     dispenseEtherTask(recipientAddress: string, web3: Web3) {
         return async () => {
-            utils.consoleLog(`Processing ETH ${recipientAddress}`);
+            logUtils.log(`Processing ETH ${recipientAddress}`);
             const userBalance = await promisify<BigNumber>(web3.eth.getBalance)(recipientAddress);
             const maxAmountInWei = new BigNumber(web3.toWei(DISPENSE_MAX_AMOUNT_ETHER, 'ether'));
             if (userBalance.greaterThanOrEqualTo(maxAmountInWei)) {
-                utils.consoleLog(
+                logUtils.log(
                     `User exceeded ETH balance maximum (${maxAmountInWei}) ${recipientAddress} ${userBalance} `,
                 );
                 return;
@@ -30,12 +29,12 @@ export const dispenseAssetTasks = {
                 to: recipientAddress,
                 value: web3.toWei(DISPENSE_AMOUNT_ETHER, 'ether'),
             });
-            utils.consoleLog(`Sent ${DISPENSE_AMOUNT_ETHER} ETH to ${recipientAddress} tx: ${txHash}`);
+            logUtils.log(`Sent ${DISPENSE_AMOUNT_ETHER} ETH to ${recipientAddress} tx: ${txHash}`);
         };
     },
     dispenseTokenTask(recipientAddress: string, tokenSymbol: string, zeroEx: ZeroEx) {
         return async () => {
-            utils.consoleLog(`Processing ${tokenSymbol} ${recipientAddress}`);
+            logUtils.log(`Processing ${tokenSymbol} ${recipientAddress}`);
             const amountToDispense = new BigNumber(DISPENSE_AMOUNT_TOKEN);
             const token = await zeroEx.tokenRegistry.getTokenBySymbolIfExistsAsync(tokenSymbol);
             if (_.isUndefined(token)) {
@@ -48,7 +47,7 @@ export const dispenseAssetTasks = {
                 token.decimals,
             );
             if (userBalanceBaseUnits.greaterThanOrEqualTo(maxAmountBaseUnits)) {
-                utils.consoleLog(
+                logUtils.log(
                     `User exceeded token balance maximum (${maxAmountBaseUnits}) ${recipientAddress} ${userBalanceBaseUnits} `,
                 );
                 return;
@@ -59,7 +58,7 @@ export const dispenseAssetTasks = {
                 recipientAddress,
                 baseUnitAmount,
             );
-            utils.consoleLog(`Sent ${amountToDispense} ZRX to ${recipientAddress} tx: ${txHash}`);
+            logUtils.log(`Sent ${amountToDispense} ZRX to ${recipientAddress} tx: ${txHash}`);
         };
     },
 };

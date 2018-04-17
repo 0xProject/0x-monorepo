@@ -1,8 +1,16 @@
+import {
+    ConstructorAbi,
+    ContractAbi,
+    EventAbi,
+    FallbackAbi,
+    FilterObject,
+    LogEntry,
+    MethodAbi,
+} from '@0xproject/types';
 import * as ethUtil from 'ethereumjs-util';
 import * as jsSHA3 from 'js-sha3';
 import * as _ from 'lodash';
 import * as uuid from 'uuid/v4';
-import * as Web3 from 'web3';
 
 import { BlockRange, ContractEvents, IndexedFilterValues } from '../types';
 
@@ -16,15 +24,15 @@ export const filterUtils = {
         address: string,
         eventName: ContractEvents,
         indexFilterValues: IndexedFilterValues,
-        abi: Web3.ContractAbi,
+        abi: ContractAbi,
         blockRange?: BlockRange,
-    ): Web3.FilterObject {
-        const eventAbi = _.find(abi, { name: eventName }) as Web3.EventAbi;
+    ): FilterObject {
+        const eventAbi = _.find(abi, { name: eventName }) as EventAbi;
         const eventSignature = filterUtils.getEventSignatureFromAbiByName(eventAbi, eventName);
         const topicForEventSignature = ethUtil.addHexPrefix(jsSHA3.keccak256(eventSignature));
         const topicsForIndexedArgs = filterUtils.getTopicsForIndexedArgs(eventAbi, indexFilterValues);
         const topics = [topicForEventSignature, ...topicsForIndexedArgs];
-        let filter: Web3.FilterObject = {
+        let filter: FilterObject = {
             address,
             topics,
         };
@@ -36,12 +44,12 @@ export const filterUtils = {
         }
         return filter;
     },
-    getEventSignatureFromAbiByName(eventAbi: Web3.EventAbi, eventName: ContractEvents): string {
+    getEventSignatureFromAbiByName(eventAbi: EventAbi, eventName: ContractEvents): string {
         const types = _.map(eventAbi.inputs, 'type');
         const signature = `${eventAbi.name}(${types.join(',')})`;
         return signature;
     },
-    getTopicsForIndexedArgs(abi: Web3.EventAbi, indexFilterValues: IndexedFilterValues): Array<string | null> {
+    getTopicsForIndexedArgs(abi: EventAbi, indexFilterValues: IndexedFilterValues): Array<string | null> {
         const topics: Array<string | null> = [];
         for (const eventInput of abi.inputs) {
             if (!eventInput.indexed) {
@@ -60,7 +68,7 @@ export const filterUtils = {
         }
         return topics;
     },
-    matchesFilter(log: Web3.LogEntry, filter: Web3.FilterObject): boolean {
+    matchesFilter(log: LogEntry, filter: FilterObject): boolean {
         if (!_.isUndefined(filter.address) && log.address !== filter.address) {
             return false;
         }

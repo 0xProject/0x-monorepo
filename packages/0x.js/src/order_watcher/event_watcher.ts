@@ -1,9 +1,7 @@
+import { BlockParamLiteral, LogEntry } from '@0xproject/types';
 import { intervalUtils } from '@0xproject/utils';
 import { Web3Wrapper } from '@0xproject/web3-wrapper';
 import * as _ from 'lodash';
-import * as Web3 from 'web3';
-
-import { BlockParamLiteral } from '@0xproject/types';
 
 import { EventWatcherCallback, ZeroExError } from '../types';
 import { assert } from '../utils/assert';
@@ -23,9 +21,15 @@ export class EventWatcher {
     private _web3Wrapper: Web3Wrapper;
     private _pollingIntervalMs: number;
     private _intervalIdIfExists?: NodeJS.Timer;
-    private _lastEvents: Web3.LogEntry[] = [];
-    constructor(web3Wrapper: Web3Wrapper, pollingIntervalIfExistsMs: undefined | number) {
+    private _lastEvents: LogEntry[] = [];
+    private _stateLayer: BlockParamLiteral;
+    constructor(
+        web3Wrapper: Web3Wrapper,
+        pollingIntervalIfExistsMs: undefined | number,
+        stateLayer: BlockParamLiteral = BlockParamLiteral.Latest,
+    ) {
         this._web3Wrapper = web3Wrapper;
+        this._stateLayer = stateLayer;
         this._pollingIntervalMs = _.isUndefined(pollingIntervalIfExistsMs)
             ? DEFAULT_EVENT_POLLING_INTERVAL_MS
             : pollingIntervalIfExistsMs;
@@ -69,16 +73,16 @@ export class EventWatcher {
         await this._emitDifferencesAsync(newEvents, LogEventState.Added, callback);
         this._lastEvents = pendingEvents;
     }
-    private async _getEventsAsync(): Promise<Web3.LogEntry[]> {
+    private async _getEventsAsync(): Promise<LogEntry[]> {
         const eventFilter = {
-            fromBlock: BlockParamLiteral.Pending,
-            toBlock: BlockParamLiteral.Pending,
+            fromBlock: this._stateLayer,
+            toBlock: this._stateLayer,
         };
         const events = await this._web3Wrapper.getLogsAsync(eventFilter);
         return events;
     }
     private async _emitDifferencesAsync(
-        logs: Web3.LogEntry[],
+        logs: LogEntry[],
         logEventState: LogEventState,
         callback: EventWatcherCallback,
     ): Promise<void> {

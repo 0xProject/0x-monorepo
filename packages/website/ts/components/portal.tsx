@@ -1,5 +1,5 @@
 import { colors } from '@0xproject/react-shared';
-import { BigNumber } from '@0xproject/utils';
+import { BigNumber, logUtils } from '@0xproject/utils';
 import * as _ from 'lodash';
 import CircularProgress from 'material-ui/CircularProgress';
 import Paper from 'material-ui/Paper';
@@ -15,16 +15,27 @@ import { EthWrappers } from 'ts/components/eth_wrappers';
 import { FillOrder } from 'ts/components/fill_order';
 import { Footer } from 'ts/components/footer';
 import { PortalMenu } from 'ts/components/portal_menu';
+import { RelayerIndex } from 'ts/components/relayer_index/relayer_index';
 import { TokenBalances } from 'ts/components/token_balances';
 import { TopBar } from 'ts/components/top_bar/top_bar';
 import { TradeHistory } from 'ts/components/trade_history/trade_history';
 import { FlashMessage } from 'ts/components/ui/flash_message';
+import { Wallet } from 'ts/components/wallet/wallet';
 import { GenerateOrderForm } from 'ts/containers/generate_order_form';
 import { localStorage } from 'ts/local_storage/local_storage';
 import { Dispatcher } from 'ts/redux/dispatcher';
 import { portalOrderSchema } from 'ts/schemas/portal_order_schema';
 import { validator } from 'ts/schemas/validator';
-import { BlockchainErrs, HashData, Order, ProviderType, ScreenWidths, TokenByAddress, WebsitePaths } from 'ts/types';
+import {
+    BlockchainErrs,
+    Environments,
+    HashData,
+    Order,
+    ProviderType,
+    ScreenWidths,
+    TokenByAddress,
+    WebsitePaths,
+} from 'ts/types';
 import { configs } from 'ts/utils/configs';
 import { constants } from 'ts/utils/constants';
 import { Translate } from 'ts/utils/translate';
@@ -46,7 +57,7 @@ export interface PortalAllProps {
     providerType: ProviderType;
     screenWidth: ScreenWidths;
     tokenByAddress: TokenByAddress;
-    userEtherBalance: BigNumber;
+    userEtherBalanceInWei: BigNumber;
     userAddress: string;
     shouldBlockchainErrDialogBeOpen: boolean;
     userSuppliedOrderCache: Order;
@@ -121,8 +132,9 @@ export class Portal extends React.Component<PortalAllProps, PortalAllState> {
             });
         }
         if (nextProps.userAddress !== this.state.prevUserAddress) {
+            const newUserAddress = _.isEmpty(nextProps.userAddress) ? undefined : nextProps.userAddress;
             // tslint:disable-next-line:no-floating-promises
-            this._blockchain.userAddressUpdatedFireAndForgetAsync(nextProps.userAddress);
+            this._blockchain.userAddressUpdatedFireAndForgetAsync(newUserAddress);
             this.setState({
                 prevUserAddress: nextProps.userAddress,
             });
@@ -144,6 +156,7 @@ export class Portal extends React.Component<PortalAllProps, PortalAllState> {
         const updateShouldBlockchainErrDialogBeOpen = this.props.dispatcher.updateShouldBlockchainErrDialogBeOpen.bind(
             this.props.dispatcher,
         );
+        const isDevelopment = configs.ENVIRONMENT === Environments.DEVELOPMENT;
         const portalStyle: React.CSSProperties = {
             minHeight: '100vh',
             display: 'flex',
@@ -193,6 +206,18 @@ export class Portal extends React.Component<PortalAllProps, PortalAllState> {
                                     <div className="py2" style={{ backgroundColor: colors.grey50 }}>
                                         {this.props.blockchainIsLoaded ? (
                                             <Switch>
+                                                {isDevelopment && (
+                                                    <Route
+                                                        path={`${WebsitePaths.Portal}/wallet`}
+                                                        render={this._renderWallet.bind(this)}
+                                                    />
+                                                )}
+                                                {isDevelopment && (
+                                                    <Route
+                                                        path={`${WebsitePaths.Portal}/relayers`}
+                                                        render={this._renderRelayers.bind(this)}
+                                                    />
+                                                )}
                                                 <Route
                                                     path={`${WebsitePaths.Portal}/weth`}
                                                     render={this._renderEthWrapper.bind(this)}
@@ -271,6 +296,40 @@ export class Portal extends React.Component<PortalAllProps, PortalAllState> {
             isLedgerDialogOpen: !this.state.isLedgerDialogOpen,
         });
     }
+    private _renderWallet() {
+        const allTokens = _.values(this.props.tokenByAddress);
+        const trackedTokens = _.filter(allTokens, t => t.isTracked);
+        return (
+            <div className="flex flex-center">
+                <div className="mx-auto">
+                    <Wallet
+                        userAddress={this.props.userAddress}
+                        networkId={this.props.networkId}
+                        blockchain={this._blockchain}
+                        blockchainIsLoaded={this.props.blockchainIsLoaded}
+                        blockchainErr={this.props.blockchainErr}
+                        dispatcher={this.props.dispatcher}
+                        tokenByAddress={this.props.tokenByAddress}
+                        trackedTokens={trackedTokens}
+                        userEtherBalanceInWei={this.props.userEtherBalanceInWei}
+                        lastForceTokenStateRefetch={this.props.lastForceTokenStateRefetch}
+                        injectedProviderName={this.props.injectedProviderName}
+                        providerType={this.props.providerType}
+                        onToggleLedgerDialog={this.onToggleLedgerDialog.bind(this)}
+                    />
+                </div>
+            </div>
+        );
+    }
+    private _renderRelayers() {
+        return (
+            <div className="flex flex-center">
+                <div className="mx-auto" style={{ width: 800 }}>
+                    <RelayerIndex networkId={this.props.networkId} />
+                </div>
+            </div>
+        );
+    }
     private _renderEthWrapper() {
         return (
             <EthWrappers
@@ -279,7 +338,7 @@ export class Portal extends React.Component<PortalAllProps, PortalAllState> {
                 dispatcher={this.props.dispatcher}
                 tokenByAddress={this.props.tokenByAddress}
                 userAddress={this.props.userAddress}
-                userEtherBalance={this.props.userEtherBalance}
+                userEtherBalanceInWei={this.props.userEtherBalanceInWei}
                 lastForceTokenStateRefetch={this.props.lastForceTokenStateRefetch}
             />
         );
@@ -306,7 +365,7 @@ export class Portal extends React.Component<PortalAllProps, PortalAllState> {
                 tokenByAddress={this.props.tokenByAddress}
                 trackedTokens={trackedTokens}
                 userAddress={this.props.userAddress}
-                userEtherBalance={this.props.userEtherBalance}
+                userEtherBalanceInWei={this.props.userEtherBalanceInWei}
                 networkId={this.props.networkId}
                 lastForceTokenStateRefetch={this.props.lastForceTokenStateRefetch}
             />
@@ -373,7 +432,7 @@ export class Portal extends React.Component<PortalAllProps, PortalAllState> {
         const order = JSON.parse(decodeURIComponent(orderPair[1]));
         const validationResult = validator.validate(order, portalOrderSchema);
         if (validationResult.errors.length > 0) {
-            utils.consoleLog(`Invalid shared order: ${validationResult.errors}`);
+            logUtils.log(`Invalid shared order: ${validationResult.errors}`);
             return undefined;
         }
         return order;

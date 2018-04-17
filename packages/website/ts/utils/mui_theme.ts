@@ -9,15 +9,15 @@ export const muiTheme = getMuiTheme({
     },
     palette: {
         accent1Color: colors.lightBlueA700,
-        pickerHeaderColor: colors.lightBlue,
-        primary1Color: colors.lightBlue,
-        primary2Color: colors.lightBlue,
+        pickerHeaderColor: colors.mediumBlue,
+        primary1Color: colors.mediumBlue,
+        primary2Color: colors.mediumBlue,
         textColor: colors.grey700,
     },
     datePicker: {
         color: colors.grey700,
         textColor: colors.white,
-        calendarTextColor: colors.white,
+        calendarTextColor: colors.grey,
         selectColor: colors.darkestGrey,
         selectTextColor: colors.white,
     },
@@ -28,9 +28,5 @@ export const muiTheme = getMuiTheme({
         headerColor: colors.darkestGrey,
         selectColor: colors.darkestGrey,
         selectTextColor: colors.darkestGrey,
-    },
-    toggle: {
-        thumbOnColor: colors.limeGreen,
-        trackOnColor: colors.lightGreen,
     },
 });

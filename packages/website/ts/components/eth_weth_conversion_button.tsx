@@ -1,5 +1,5 @@
 import { ZeroEx } from '0x.js';
-import { BigNumber } from '@0xproject/utils';
+import { BigNumber, logUtils } from '@0xproject/utils';
 import * as _ from 'lodash';
 import RaisedButton from 'material-ui/RaisedButton';
 import * as React from 'react';
@@ -18,7 +18,7 @@ interface EthWethConversionButtonProps {
     ethToken: Token;
     dispatcher: Dispatcher;
     blockchain: Blockchain;
-    userEtherBalance: BigNumber;
+    userEtherBalanceInWei: BigNumber;
     isOutdatedWrappedEther: boolean;
     onConversionSuccessful?: () => void;
     isDisabled?: boolean;
@@ -74,7 +74,7 @@ export class EthWethConversionButton extends React.Component<
                     isOpen={this.state.isEthConversionDialogVisible}
                     onComplete={this._onConversionAmountSelectedAsync.bind(this)}
                     onCancelled={this._toggleConversionDialog.bind(this)}
-                    etherBalance={this.props.userEtherBalance}
+                    etherBalanceInWei={this.props.userEtherBalanceInWei}
                     token={this.props.ethToken}
                     lastForceTokenStateRefetch={this.props.lastForceTokenStateRefetch}
                 />
@@ -111,8 +111,8 @@ export class EthWethConversionButton extends React.Component<
             if (_.includes(errMsg, BlockchainCallErrs.UserHasNoAssociatedAddresses)) {
                 this.props.dispatcher.updateShouldBlockchainErrDialogBeOpen(true);
             } else if (!utils.didUserDenyWeb3Request(errMsg)) {
-                utils.consoleLog(`Unexpected error encountered: ${err}`);
-                utils.consoleLog(err.stack);
+                logUtils.log(`Unexpected error encountered: ${err}`);
+                logUtils.log(err.stack);
                 const errorMsg =
                     direction === Side.Deposit
                         ? 'Failed to wrap your ETH. Please try again.'

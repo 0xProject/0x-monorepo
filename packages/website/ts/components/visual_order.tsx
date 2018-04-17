@@ -3,9 +3,8 @@ import * as _ from 'lodash';
 import * as React from 'react';
 import { Party } from 'ts/components/ui/party';
 import { AssetToken, Token, TokenByAddress } from 'ts/types';
+import { configs } from 'ts/utils/configs';
 import { utils } from 'ts/utils/utils';
-
-const PRECISION = 5;
 
 interface VisualOrderProps {
     makerAssetToken: AssetToken;
@@ -67,7 +66,7 @@ export class VisualOrder extends React.Component<VisualOrderProps, VisualOrderSt
         const unitAmount = ZeroEx.toUnitAmount(assetToken.amount, token.decimals);
         return (
             <div style={{ fontSize: 13 }}>
-                {unitAmount.toNumber().toFixed(PRECISION)} {token.symbol}
+                {unitAmount.toNumber().toFixed(configs.AMOUNT_DISPLAY_PRECSION)} {token.symbol}
             </div>
         );
     }

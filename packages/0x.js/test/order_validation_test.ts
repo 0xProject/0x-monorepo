@@ -1,9 +1,8 @@
-import { BlockchainLifecycle, devConstants, web3Factory } from '@0xproject/dev-utils';
+import { BlockchainLifecycle, devConstants } from '@0xproject/dev-utils';
 import { BlockParamLiteral } from '@0xproject/types';
 import { BigNumber } from '@0xproject/utils';
 import * as chai from 'chai';
 import * as Sinon from 'sinon';
-import * as Web3 from 'web3';
 
 import { ExchangeContractErrs, SignedOrder, Token, ZeroEx, ZeroExError } from '../src';
 import { TradeSide, TransferType } from '../src/types';
@@ -14,13 +13,13 @@ import { chaiSetup } from './utils/chai_setup';
 import { constants } from './utils/constants';
 import { FillScenarios } from './utils/fill_scenarios';
 import { TokenUtils } from './utils/token_utils';
+import { provider, web3Wrapper } from './utils/web3_wrapper';
 
 chaiSetup.configure();
 const expect = chai.expect;
-const blockchainLifecycle = new BlockchainLifecycle();
+const blockchainLifecycle = new BlockchainLifecycle(web3Wrapper);
 
 describe('OrderValidation', () => {
-    let web3: Web3;
     let zeroEx: ZeroEx;
     let userAddresses: string[];
     let tokens: Token[];
@@ -40,8 +39,7 @@ describe('OrderValidation', () => {
         networkId: constants.TESTRPC_NETWORK_ID,
     };
     before(async () => {
-        web3 = web3Factory.create();
-        zeroEx = new ZeroEx(web3.currentProvider, config);
+        zeroEx = new ZeroEx(provider, config);
         exchangeContractAddress = zeroEx.exchange.getContractAddress();
         userAddresses = await zeroEx.getAvailableAddressesAsync();
         [coinbase, makerAddress, takerAddress, feeRecipient] = userAddresses;

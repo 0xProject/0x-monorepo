@@ -1,3 +1,5 @@
+import { ECSignature, JSONRPCRequestPayload } from '@0xproject/types';
+import HDNode = require('hdkey');
 import * as _ from 'lodash';
 
 export interface LedgerCommunicationClient {
@@ -28,12 +30,6 @@ export interface ECSignatureString {
     s: string;
 }
 
-export interface ECSignature {
-    v: number;
-    r: string;
-    s: string;
-}
-
 export type LedgerEthereumClientFactoryAsync = () => Promise<LedgerEthereumClient>;
 
 /*
@@ -45,18 +41,31 @@ export type LedgerEthereumClientFactoryAsync = () => Promise<LedgerEthereumClien
 export interface LedgerSubproviderConfigs {
     networkId: number;
     ledgerEthereumClientFactoryAsync: LedgerEthereumClientFactoryAsync;
-    derivationPath?: string;
+    baseDerivationPath?: string;
     accountFetchingConfigs?: AccountFetchingConfigs;
 }
 
 /*
+ * addressSearchLimit: The maximum number of addresses to search through, defaults to 1000
  * numAddressesToReturn: Number of addresses to return from 'eth_accounts' call
  * shouldAskForOnDeviceConfirmation: Whether you wish to prompt the user on their Ledger
  *                                   before fetching their addresses
  */
 export interface AccountFetchingConfigs {
+    addressSearchLimit?: number;
     numAddressesToReturn?: number;
     shouldAskForOnDeviceConfirmation?: boolean;
+}
+
+/*
+ * mnemonic: The string mnemonic seed
+ * addressSearchLimit: The maximum number of addresses to search through, defaults to 1000
+ * baseDerivationPath: The base derivation path (e.g 44'/60'/0'/0)
+ */
+export interface MnemonicWalletSubproviderConfigs {
+    mnemonic: string;
+    addressSearchLimit?: number;
+    baseDerivationPath?: string;
 }
 
 export interface SignatureData {
@@ -72,29 +81,18 @@ export interface LedgerGetAddressResult {
     chainCode: string;
 }
 
-export interface LedgerWalletSubprovider {
-    getPath: () => string;
-    setPath: (path: string) => void;
-    setPathIndex: (pathIndex: number) => void;
-}
-
 export interface PartialTxParams {
     nonce: string;
     gasPrice?: string;
     gas: string;
     to: string;
-    from?: string;
+    from: string;
     value?: string;
     data?: string;
     chainId: number; // EIP 155 chainId - mainnet: 1, ropsten: 3
 }
 
 export type DoneCallback = (err?: Error) => void;
-
-export interface JSONRPCPayload {
-    params: any[];
-    method: string;
-}
 
 export interface LedgerCommunication {
     close_async: () => Promise<void>;
@@ -105,11 +103,14 @@ export interface ResponseWithTxParams {
     tx: PartialTxParams;
 }
 
-export enum LedgerSubproviderErrors {
-    TooOldLedgerFirmware = 'TOO_OLD_LEDGER_FIRMWARE',
-    FromAddressMissingOrInvalid = 'FROM_ADDRESS_MISSING_OR_INVALID',
+export enum WalletSubproviderErrors {
+    AddressNotFound = 'ADDRESS_NOT_FOUND',
     DataMissingForSignPersonalMessage = 'DATA_MISSING_FOR_SIGN_PERSONAL_MESSAGE',
     SenderInvalidOrNotSupplied = 'SENDER_INVALID_OR_NOT_SUPPLIED',
+    FromAddressMissingOrInvalid = 'FROM_ADDRESS_MISSING_OR_INVALID',
+}
+export enum LedgerSubproviderErrors {
+    TooOldLedgerFirmware = 'TOO_OLD_LEDGER_FIRMWARE',
     MultipleOpenConnectionsDisallowed = 'MULTIPLE_OPEN_CONNECTIONS_DISALLOWED',
 }
 
@@ -117,6 +118,18 @@ export enum NonceSubproviderErrors {
     EmptyParametersFound = 'EMPTY_PARAMETERS_FOUND',
     CannotDetermineAddressFromPayload = 'CANNOT_DETERMINE_ADDRESS_FROM_PAYLOAD',
 }
+export interface DerivedHDKeyInfo {
+    address: string;
+    baseDerivationPath: string;
+    derivationPath: string;
+    hdKey: HDNode;
+}
 
-export type OptionalNextCallback = (callback?: (err: Error | null, result: any, cb: any) => void) => void;
 export type ErrorCallback = (err: Error | null, data?: any) => void;
+export type Callback = () => void;
+export type OnNextCompleted = (err: Error | null, result: any, cb: Callback) => void;
+export type NextCallback = (callback?: OnNextCompleted) => void;
+
+export interface JSONRPCRequestPayloadWithMethod extends JSONRPCRequestPayload {
+    method: string;
+}

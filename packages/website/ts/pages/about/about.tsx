@@ -2,11 +2,12 @@ import { colors, Styles } from '@0xproject/react-shared';
 import * as _ from 'lodash';
 import * as React from 'react';
 import * as DocumentTitle from 'react-document-title';
+import { Link } from 'react-router-dom';
 import { Footer } from 'ts/components/footer';
 import { TopBar } from 'ts/components/top_bar/top_bar';
 import { Profile } from 'ts/pages/about/profile';
 import { Dispatcher } from 'ts/redux/dispatcher';
-import { ProfileInfo } from 'ts/types';
+import { ProfileInfo, WebsitePaths } from 'ts/types';
 import { constants } from 'ts/utils/constants';
 import { Translate } from 'ts/utils/translate';
 import { utils } from 'ts/utils/utils';
@@ -108,6 +109,27 @@ const teamRow3: ProfileInfo[] = [
     },
 ];
 
+const teamRow4: ProfileInfo[] = [
+    {
+        name: 'Blake Henderson',
+        title: 'Operations Associate',
+        description: `Operations and Analytics. Previously analytics at LinkedIn. Economics at UC San Diego. `,
+        image: '/images/team/blake.jpg',
+        linkedIn: 'https://www.linkedin.com/in/blakerhenderson/',
+        github: '',
+        medium: '',
+    },
+    {
+        name: 'Zack Skelly',
+        title: 'Lead Recruiter',
+        description: `Talent. Previously first recruiter at Heap, recruiting at Dropbox and Google. English Rhetoric and Composition at Pepperdine.`,
+        image: '/images/team/zach.png',
+        linkedIn: 'https://www.linkedin.com/in/zackaryskelly/',
+        github: '',
+        medium: '',
+    },
+];
+
 const advisors: ProfileInfo[] = [
     {
         name: 'Fred Ehrsam',
@@ -200,6 +222,7 @@ export class About extends React.Component<AboutProps, AboutState> {
                         <div className="clearfix pb3">{this._renderProfiles(teamRow1)}</div>
                         <div className="clearfix">{this._renderProfiles(teamRow2)}</div>
                         <div className="clearfix">{this._renderProfiles(teamRow3)}</div>
+                        <div className="clearfix">{this._renderProfiles(teamRow4)}</div>
                     </div>
                     <div className="pt3 pb2">
                         <div
@@ -228,9 +251,9 @@ export class About extends React.Component<AboutProps, AboutState> {
                             }}
                         >
                             We are seeking outstanding candidates to{' '}
-                            <a href={constants.URL_ANGELLIST} target="_blank" style={{ color: 'black' }}>
+                            <Link to={WebsitePaths.Jobs} style={{ color: 'black' }}>
                                 join our team
-                            </a>
+                            </Link>
                             . We value passion, diversity and unique perspectives.
                         </div>
                     </div>

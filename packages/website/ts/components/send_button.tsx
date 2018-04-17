@@ -1,4 +1,4 @@
-import { BigNumber } from '@0xproject/utils';
+import { BigNumber, logUtils } from '@0xproject/utils';
 import * as _ from 'lodash';
 import RaisedButton from 'material-ui/RaisedButton';
 import * as React from 'react';
@@ -77,8 +77,8 @@ export class SendButton extends React.Component<SendButtonProps, SendButtonState
                 this.props.dispatcher.updateShouldBlockchainErrDialogBeOpen(true);
                 return;
             } else if (!utils.didUserDenyWeb3Request(errMsg)) {
-                utils.consoleLog(`Unexpected error encountered: ${err}`);
-                utils.consoleLog(err.stack);
+                logUtils.log(`Unexpected error encountered: ${err}`);
+                logUtils.log(err.stack);
                 this.props.onError();
                 await errorReporter.reportAsync(err);
             }

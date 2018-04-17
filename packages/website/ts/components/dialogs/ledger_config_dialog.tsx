@@ -1,5 +1,6 @@
+import { ZeroEx } from '0x.js';
 import { colors, constants as sharedConstants } from '@0xproject/react-shared';
-import { BigNumber } from '@0xproject/utils';
+import { BigNumber, logUtils } from '@0xproject/utils';
 import * as _ from 'lodash';
 import Dialog from 'material-ui/Dialog';
 import FlatButton from 'material-ui/FlatButton';
@@ -160,14 +161,15 @@ export class LedgerConfigDialog extends React.Component<LedgerConfigDialogProps,
     }
     private _renderAddressTableRows() {
         const rows = _.map(this.state.userAddresses, (userAddress: string, i: number) => {
-            const balance = this.state.addressBalances[i];
+            const balanceInWei = this.state.addressBalances[i];
             const addressTooltipId = `address-${userAddress}`;
             const balanceTooltipId = `balance-${userAddress}`;
             const networkName = sharedConstants.NETWORK_NAME_BY_ID[this.props.networkId];
             // We specifically prefix kovan ETH.
             // TODO: We should probably add prefixes for all networks
             const isKovanNetwork = networkName === 'Kovan';
-            const balanceString = `${balance.toString()} ${isKovanNetwork ? 'Kovan ' : ''}ETH`;
+            const balanceInEth = ZeroEx.toUnitAmount(balanceInWei, constants.DECIMAL_PLACES_ETH);
+            const balanceString = `${balanceInEth.toString()} ${isKovanNetwork ? 'Kovan ' : ''}ETH`;
             return (
                 <TableRow key={userAddress} style={{ height: 40 }}>
                     <TableRowColumn colSpan={2}>
@@ -197,14 +199,13 @@ export class LedgerConfigDialog extends React.Component<LedgerConfigDialogProps,
     }
     private _onAddressSelected(selectedRowIndexes: number[]) {
         const selectedRowIndex = selectedRowIndexes[0];
-        this.props.blockchain.updateLedgerDerivationIndex(selectedRowIndex);
         const selectedAddress = this.state.userAddresses[selectedRowIndex];
         const selectAddressBalance = this.state.addressBalances[selectedRowIndex];
         this.props.dispatcher.updateUserAddress(selectedAddress);
         this.props.blockchain.updateWeb3WrapperPrevUserAddress(selectedAddress);
         // tslint:disable-next-line:no-floating-promises
         this.props.blockchain.fetchTokenInformationAsync();
-        this.props.dispatcher.updateUserEtherBalance(selectAddressBalance);
+        this.props.dispatcher.updateUserWeiBalance(selectAddressBalance);
         this.setState({
             stepIndex: LedgerSteps.CONNECT,
         });
@@ -233,11 +234,11 @@ export class LedgerConfigDialog extends React.Component<LedgerConfigDialogProps,
         try {
             userAddresses = await this._getUserAddressesAsync();
             for (const address of userAddresses) {
-                const balance = await this.props.blockchain.getBalanceInEthAsync(address);
-                addressBalances.push(balance);
+                const balanceInWei = await this.props.blockchain.getBalanceInWeiAsync(address);
+                addressBalances.push(balanceInWei);
             }
         } catch (err) {
-            utils.consoleLog(`Ledger error: ${JSON.stringify(err)}`);
+            logUtils.log(`Ledger error: ${JSON.stringify(err)}`);
             this.setState({
                 connectionErrMsg: 'Failed to connect. Follow the instructions and try again.',
             });
@@ -263,7 +264,7 @@ export class LedgerConfigDialog extends React.Component<LedgerConfigDialogProps,
     private async _onConnectLedgerClickAsync() {
         const isU2FSupported = await utils.isU2FSupportedAsync();
         if (!isU2FSupported) {
-            utils.consoleLog(`U2F not supported in this browser`);
+            logUtils.log(`U2F not supported in this browser`);
             this.setState({
                 connectionErrMsg: 'U2F not supported by this browser. Try using Chrome.',
             });

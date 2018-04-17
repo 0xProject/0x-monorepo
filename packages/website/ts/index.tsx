@@ -2,11 +2,11 @@
 import { MuiThemeProvider } from 'material-ui/styles';
 import * as React from 'react';
 import { render } from 'react-dom';
-import * as ReactGA from 'react-ga';
 import { Provider } from 'react-redux';
 import { BrowserRouter as Router, Redirect, Route, Switch } from 'react-router-dom';
 import * as injectTapEventPlugin from 'react-tap-event-plugin';
 import { createStore, Store as ReduxStore } from 'redux';
+import { Redirecter } from 'ts/components/redirecter';
 import { About } from 'ts/containers/about';
 import { FAQ } from 'ts/containers/faq';
 import { Landing } from 'ts/containers/landing';
@@ -16,8 +16,10 @@ import { createLazyComponent } from 'ts/lazy_component';
 import { trackedTokenStorage } from 'ts/local_storage/tracked_token_storage';
 import { tradeHistoryStorage } from 'ts/local_storage/trade_history_storage';
 import { reducer, State } from 'ts/redux/reducer';
-import { WebsitePaths } from 'ts/types';
+import { WebsiteLegacyPaths, WebsitePaths } from 'ts/types';
+import { analytics } from 'ts/utils/analytics';
 import { muiTheme } from 'ts/utils/mui_theme';
+import { utils } from 'ts/utils/utils';
 import 'whatwg-fetch';
 injectTapEventPlugin();
 
@@ -44,8 +46,25 @@ const LazySmartContractsDocumentation = createLazyComponent('Documentation', asy
 const LazyConnectDocumentation = createLazyComponent('Documentation', async () =>
     System.import<any>(/* webpackChunkName: "connectDocs" */ 'ts/containers/connect_documentation'),
 );
+const LazyWeb3WrapperDocumentation = createLazyComponent('Documentation', async () =>
+    System.import<any>(/* webpackChunkName: "web3WrapperDocs" */ 'ts/containers/web3_wrapper_documentation'),
+);
+const LazyDeployerDocumentation = createLazyComponent('Documentation', async () =>
+    System.import<any>(/* webpackChunkName: "deployerDocs" */ 'ts/containers/deployer_documentation'),
+);
+const LazyJSONSchemasDocumentation = createLazyComponent('Documentation', async () =>
+    System.import<any>(/* webpackChunkName: "jsonSchemasDocs" */ 'ts/containers/json_schemas_documentation'),
+);
+const LazySolCovDocumentation = createLazyComponent('Documentation', async () =>
+    System.import<any>(/* webpackChunkName: "solCovDocs" */ 'ts/containers/sol_cov_documentation'),
+);
+const LazySubprovidersDocumentation = createLazyComponent('Documentation', async () =>
+    System.import<any>(/* webpackChunkName: "subproviderDocs" */ 'ts/containers/subproviders_documentation'),
+);
 
-ReactGA.initialize('UA-98720122-1');
+analytics.init();
+// tslint:disable-next-line:no-floating-promises
+analytics.logProviderAsync((window as any).web3);
 const store: ReduxStore<State> = createStore(reducer);
 render(
     <Router>
@@ -56,16 +75,43 @@ render(
                         <Switch>
                             <Route exact={true} path="/" component={Landing as any} />
                             <Redirect from="/otc" to={`${WebsitePaths.Portal}`} />
-                            <Route path={`${WebsitePaths.Portal}`} component={LazyPortal} />
-                            <Route path={`${WebsitePaths.FAQ}`} component={FAQ as any} />
-                            <Route path={`${WebsitePaths.About}`} component={About as any} />
-                            <Route path={`${WebsitePaths.Wiki}`} component={Wiki as any} />
+
+                            <Route path={WebsitePaths.Jobs} component={Redirecter as any} />
+                            <Route path={WebsitePaths.Portal} component={LazyPortal} />
+                            <Route path={WebsitePaths.FAQ} component={FAQ as any} />
+                            <Route path={WebsitePaths.About} component={About as any} />
+                            <Route path={WebsitePaths.Wiki} component={Wiki as any} />
                             <Route path={`${WebsitePaths.ZeroExJs}/:version?`} component={LazyZeroExJSDocumentation} />
                             <Route path={`${WebsitePaths.Connect}/:version?`} component={LazyConnectDocumentation} />
+                            <Route path={`${WebsitePaths.Deployer}/:version?`} component={LazyDeployerDocumentation} />
+                            <Route path={`${WebsitePaths.SolCov}/:version?`} component={LazySolCovDocumentation} />
+                            <Route
+                                path={`${WebsitePaths.JSONSchemas}/:version?`}
+                                component={LazyJSONSchemasDocumentation}
+                            />
+                            <Route
+                                path={`${WebsitePaths.Subproviders}/:version?`}
+                                component={LazySubprovidersDocumentation}
+                            />
+                            <Route
+                                path={`${WebsitePaths.Web3Wrapper}/:version?`}
+                                component={LazyWeb3WrapperDocumentation}
+                            />
                             <Route
                                 path={`${WebsitePaths.SmartContracts}/:version?`}
                                 component={LazySmartContractsDocumentation}
                             />
+
+                            {/* Legacy endpoints */}
+                            <Route
+                                path={`${WebsiteLegacyPaths.ZeroExJs}/:version?`}
+                                component={LazyZeroExJSDocumentation}
+                            />
+                            <Route
+                                path={`${WebsiteLegacyPaths.Web3Wrapper}/:version?`}
+                                component={LazyWeb3WrapperDocumentation}
+                            />
+
                             <Route component={NotFound as any} />
                         </Switch>
                     </div>

@@ -22,12 +22,11 @@ import { OrderFactory } from '../../util/order_factory';
 import { BalancesByOwner, ContractName } from '../../util/types';
 import { chaiSetup } from '../utils/chai_setup';
 import { deployer } from '../utils/deployer';
+import { provider, web3Wrapper } from '../utils/web3_wrapper';
 
 chaiSetup.configure();
 const expect = chai.expect;
-const web3 = web3Factory.create();
-const web3Wrapper = new Web3Wrapper(web3.currentProvider);
-const blockchainLifecycle = new BlockchainLifecycle();
+const blockchainLifecycle = new BlockchainLifecycle(web3Wrapper);
 
 describe('Exchange', () => {
     let maker: string;
@@ -60,28 +59,24 @@ describe('Exchange', () => {
             deployer.deployAsync(ContractName.DummyToken, constants.DUMMY_TOKEN_ARGS),
             deployer.deployAsync(ContractName.DummyToken, constants.DUMMY_TOKEN_ARGS),
         ]);
-        rep = new DummyTokenContract(web3Wrapper, repInstance.abi, repInstance.address);
-        dgd = new DummyTokenContract(web3Wrapper, dgdInstance.abi, dgdInstance.address);
-        zrx = new DummyTokenContract(web3Wrapper, zrxInstance.abi, zrxInstance.address);
+        rep = new DummyTokenContract(repInstance.abi, repInstance.address, provider);
+        dgd = new DummyTokenContract(dgdInstance.abi, dgdInstance.address, provider);
+        zrx = new DummyTokenContract(zrxInstance.abi, zrxInstance.address, provider);
         const tokenRegistryInstance = await deployer.deployAsync(ContractName.TokenRegistry);
-        tokenRegistry = new TokenRegistryContract(
-            web3Wrapper,
-            tokenRegistryInstance.abi,
-            tokenRegistryInstance.address,
-        );
+        tokenRegistry = new TokenRegistryContract(tokenRegistryInstance.abi, tokenRegistryInstance.address, provider);
         const tokenTransferProxyInstance = await deployer.deployAsync(ContractName.TokenTransferProxy);
         tokenTransferProxy = new TokenTransferProxyContract(
-            web3Wrapper,
             tokenTransferProxyInstance.abi,
             tokenTransferProxyInstance.address,
+            provider,
         );
         const exchangeInstance = await deployer.deployAsync(ContractName.Exchange, [
             zrx.address,
             tokenTransferProxy.address,
         ]);
-        exchange = new ExchangeContract(web3Wrapper, exchangeInstance.abi, exchangeInstance.address);
+        exchange = new ExchangeContract(exchangeInstance.abi, exchangeInstance.address, provider);
         await tokenTransferProxy.addAuthorizedAddress.sendTransactionAsync(exchange.address, { from: accounts[0] });
-        const zeroEx = new ZeroEx(web3.currentProvider, { networkId: constants.TESTRPC_NETWORK_ID });
+        const zeroEx = new ZeroEx(provider, { networkId: constants.TESTRPC_NETWORK_ID });
         exWrapper = new ExchangeWrapper(exchange, zeroEx);
 
         const defaultOrderParams = {

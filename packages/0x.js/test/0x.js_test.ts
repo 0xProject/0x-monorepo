@@ -1,28 +1,39 @@
+import { Deployer } from '@0xproject/deployer';
 import { BlockchainLifecycle, devConstants, web3Factory } from '@0xproject/dev-utils';
+// HACK: This dependency is optional since it is only available when run from within
+// the monorepo. tslint doesn't handle optional dependencies
+// tslint:disable-next-line:no-implicit-dependencies
+import { runMigrationsAsync } from '@0xproject/migrations';
 import { BigNumber } from '@0xproject/utils';
 import * as chai from 'chai';
 import * as _ from 'lodash';
 import 'mocha';
+import * as path from 'path';
 import * as Sinon from 'sinon';
 
 import { ApprovalContractEventArgs, LogWithDecodedArgs, Order, TokenEvents, ZeroEx } from '../src';
 
 import { chaiSetup } from './utils/chai_setup';
 import { constants } from './utils/constants';
+import { deployer } from './utils/deployer';
 import { TokenUtils } from './utils/token_utils';
+import { provider, web3Wrapper } from './utils/web3_wrapper';
 
-const blockchainLifecycle = new BlockchainLifecycle();
+const blockchainLifecycle = new BlockchainLifecycle(web3Wrapper);
 chaiSetup.configure();
 const expect = chai.expect;
 
 const SHOULD_ADD_PERSONAL_MESSAGE_PREFIX = false;
 
 describe('ZeroEx library', () => {
-    const web3 = web3Factory.create();
-    const config = {
-        networkId: constants.TESTRPC_NETWORK_ID,
-    };
-    const zeroEx = new ZeroEx(web3.currentProvider, config);
+    let zeroEx: ZeroEx;
+    before(async () => {
+        await runMigrationsAsync(deployer);
+        const config = {
+            networkId: constants.TESTRPC_NETWORK_ID,
+        };
+        zeroEx = new ZeroEx(provider, config);
+    });
     describe('#setProvider', () => {
         it('overrides provider in nested web3s and invalidates contractInstances', async () => {
             // Instantiate the contract instances with the current provider
@@ -31,21 +42,20 @@ describe('ZeroEx library', () => {
             expect((zeroEx.exchange as any)._exchangeContractIfExists).to.not.be.undefined();
             expect((zeroEx.tokenRegistry as any)._tokenRegistryContractIfExists).to.not.be.undefined();
 
-            const newProvider = web3Factory.getRpcProvider();
             // Add property to newProvider so that we can differentiate it from old provider
-            (newProvider as any).zeroExTestId = 1;
-            zeroEx.setProvider(newProvider, constants.TESTRPC_NETWORK_ID);
+            (provider as any).zeroExTestId = 1;
+            zeroEx.setProvider(provider, constants.TESTRPC_NETWORK_ID);
 
             // Check that contractInstances with old provider are removed after provider update
             expect((zeroEx.exchange as any)._exchangeContractIfExists).to.be.undefined();
             expect((zeroEx.tokenRegistry as any)._tokenRegistryContractIfExists).to.be.undefined();
 
             // Check that all nested web3 wrapper instances return the updated provider
-            const nestedWeb3WrapperProvider = (zeroEx as any)._web3Wrapper.getCurrentProvider();
+            const nestedWeb3WrapperProvider = (zeroEx as any)._web3Wrapper.getProvider();
             expect(nestedWeb3WrapperProvider.zeroExTestId).to.be.a('number');
-            const exchangeWeb3WrapperProvider = (zeroEx.exchange as any)._web3Wrapper.getCurrentProvider();
+            const exchangeWeb3WrapperProvider = (zeroEx.exchange as any)._web3Wrapper.getProvider();
             expect(exchangeWeb3WrapperProvider.zeroExTestId).to.be.a('number');
-            const tokenRegistryWeb3WrapperProvider = (zeroEx.tokenRegistry as any)._web3Wrapper.getCurrentProvider();
+            const tokenRegistryWeb3WrapperProvider = (zeroEx.tokenRegistry as any)._web3Wrapper.getProvider();
             expect(tokenRegistryWeb3WrapperProvider.zeroExTestId).to.be.a('number');
         });
     });
@@ -216,7 +226,7 @@ describe('ZeroEx library', () => {
                 s: '0x050aa3cc1f2c435e67e114cdce54b9527b4f50548342401bc5d2b77adbdacb02',
             };
             stubs = [
-                Sinon.stub((zeroEx as any)._web3Wrapper, 'signTransactionAsync').returns(Promise.resolve(signature)),
+                Sinon.stub((zeroEx as any)._web3Wrapper, 'signMessageAsync').returns(Promise.resolve(signature)),
                 Sinon.stub(ZeroEx, 'isValidSignature').returns(true),
             ];
 
@@ -237,7 +247,7 @@ describe('ZeroEx library', () => {
                 s: '0x2dea66f25a608bbae457e020fb6decb763deb8b7192abab624997242da248960',
             };
             stubs = [
-                Sinon.stub((zeroEx as any)._web3Wrapper, 'signTransactionAsync').returns(Promise.resolve(signature)),
+                Sinon.stub((zeroEx as any)._web3Wrapper, 'signMessageAsync').returns(Promise.resolve(signature)),
                 Sinon.stub(ZeroEx, 'isValidSignature').returns(true),
             ];
 
@@ -278,7 +288,7 @@ describe('ZeroEx library', () => {
                 exchangeContractAddress: ZeroEx.NULL_ADDRESS,
                 networkId: constants.TESTRPC_NETWORK_ID,
             };
-            const zeroExWithWrongExchangeAddress = new ZeroEx(web3.currentProvider, zeroExConfig);
+            const zeroExWithWrongExchangeAddress = new ZeroEx(provider, zeroExConfig);
             expect(zeroExWithWrongExchangeAddress.exchange.getContractAddress()).to.be.equal(ZeroEx.NULL_ADDRESS);
         });
         it('allows to specify token registry token contract address', async () => {
@@ -286,7 +296,7 @@ describe('ZeroEx library', () => {
                 tokenRegistryContractAddress: ZeroEx.NULL_ADDRESS,
                 networkId: constants.TESTRPC_NETWORK_ID,
             };
-            const zeroExWithWrongTokenRegistryAddress = new ZeroEx(web3.currentProvider, zeroExConfig);
+            const zeroExWithWrongTokenRegistryAddress = new ZeroEx(provider, zeroExConfig);
             expect(zeroExWithWrongTokenRegistryAddress.tokenRegistry.getContractAddress()).to.be.equal(
                 ZeroEx.NULL_ADDRESS,
             );

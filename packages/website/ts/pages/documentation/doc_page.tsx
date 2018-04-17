@@ -8,26 +8,32 @@ import semverSort = require('semver-sort');
 import { SidebarHeader } from 'ts/components/sidebar_header';
 import { TopBar } from 'ts/components/top_bar/top_bar';
 import { Dispatcher } from 'ts/redux/dispatcher';
-import { DocPackages, Environments } from 'ts/types';
+import { DocPackages } from 'ts/types';
 import { configs } from 'ts/utils/configs';
 import { constants } from 'ts/utils/constants';
 import { docUtils } from 'ts/utils/doc_utils';
 import { Translate } from 'ts/utils/translate';
 import { utils } from 'ts/utils/utils';
 
+const isDevelopmentOrStaging = utils.isDevelopment() || utils.isStaging();
+const DEFAULT_ICON = 'docs.png';
 const ZERO_EX_JS_VERSION_MISSING_TOPLEVEL_PATH = '0.32.4';
 
-const isDevelopment = configs.ENVIRONMENT === Environments.DEVELOPMENT;
-const docIdToS3BucketName: { [id: string]: string } = {
-    [DocPackages.ZeroExJs]: isDevelopment ? 'staging-0xjs-docs-jsons' : '0xjs-docs-jsons',
-    [DocPackages.SmartContracts]: 'smart-contracts-docs-json',
-    [DocPackages.Connect]: isDevelopment ? 'staging-connect-docs-jsons' : 'connect-docs-jsons',
+const idToIcon: { [id: string]: string } = {
+    [DocPackages.ZeroExJs]: 'zeroExJs.png',
+    [DocPackages.Connect]: 'connect.png',
+    [DocPackages.SmartContracts]: 'contracts.png',
 };
 
 const docIdToSubpackageName: { [id: string]: string } = {
     [DocPackages.ZeroExJs]: '0x.js',
     [DocPackages.Connect]: 'connect',
     [DocPackages.SmartContracts]: 'contracts',
+    [DocPackages.Web3Wrapper]: 'web3-wrapper',
+    [DocPackages.Deployer]: 'deployer',
+    [DocPackages.JSONSchemas]: 'json-schemas',
+    [DocPackages.SolCov]: 'sol-cov',
+    [DocPackages.Subproviders]: 'subproviders',
 };
 
 export interface DocPageProps {
@@ -63,12 +69,13 @@ export class DocPage extends React.Component<DocPageProps, DocPageState> {
     public componentWillUnmount() {
         this._isUnmounted = true;
     }
-
     public render() {
         const menuSubsectionsBySection = _.isUndefined(this.state.docAgnosticFormat)
             ? {}
             : this.props.docsInfo.getMenuSubsectionsBySection(this.state.docAgnosticFormat);
         const sourceUrl = this._getSourceUrl();
+        const iconFileName = idToIcon[this.props.docsInfo.id] || DEFAULT_ICON;
+        const iconUrl = `/images/doc_icons/${iconFileName}`;
         return (
             <div>
                 <DocumentTitle title={`${this.props.docsInfo.displayName} Documentation`} />
@@ -82,13 +89,14 @@ export class DocPage extends React.Component<DocPageProps, DocPageState> {
                     docsInfo={this.props.docsInfo}
                     translate={this.props.translate}
                     onVersionSelected={this._onVersionSelected.bind(this)}
+                    sidebarHeader={<SidebarHeader title={this.props.docsInfo.displayName} iconUrl={iconUrl} />}
                 />
                 <Documentation
                     selectedVersion={this.props.docsVersion}
                     availableVersions={this.props.availableDocVersions}
                     docsInfo={this.props.docsInfo}
                     docAgnosticFormat={this.state.docAgnosticFormat}
-                    sidebarHeader={<SidebarHeader title={this.props.docsInfo.displayName} />}
+                    sidebarHeader={<SidebarHeader title={this.props.docsInfo.displayName} iconUrl={iconUrl} />}
                     sourceUrl={sourceUrl}
                     topBarHeight={60}
                     onVersionSelected={this._onVersionSelected.bind(this)}
@@ -97,25 +105,27 @@ export class DocPage extends React.Component<DocPageProps, DocPageState> {
         );
     }
     private async _fetchJSONDocsFireAndForgetAsync(preferredVersionIfExists?: string): Promise<void> {
-        const s3BucketName = docIdToS3BucketName[this.props.docsInfo.id];
-        const docsJsonRoot = `${constants.S3_BUCKET_ROOT}/${s3BucketName}`;
-        const versionToFileName = await docUtils.getVersionToFileNameAsync(docsJsonRoot);
-        const versions = _.keys(versionToFileName);
+        const folderName = docIdToSubpackageName[this.props.docsInfo.id];
+        const docBucketRoot = isDevelopmentOrStaging
+            ? constants.S3_STAGING_DOC_BUCKET_ROOT
+            : constants.S3_DOC_BUCKET_ROOT;
+        const versionToFilePath = await docUtils.getVersionToFilePathAsync(docBucketRoot, folderName);
+        const versions = _.keys(versionToFilePath);
         this.props.dispatcher.updateAvailableDocVersions(versions);
         const sortedVersions = semverSort.desc(versions);
         const latestVersion = sortedVersions[0];
 
         let versionToFetch = latestVersion;
         if (!_.isUndefined(preferredVersionIfExists)) {
-            const preferredVersionFileNameIfExists = versionToFileName[preferredVersionIfExists];
+            const preferredVersionFileNameIfExists = versionToFilePath[preferredVersionIfExists];
             if (!_.isUndefined(preferredVersionFileNameIfExists)) {
                 versionToFetch = preferredVersionIfExists;
             }
         }
         this.props.dispatcher.updateCurrentDocsVersion(versionToFetch);
 
-        const versionFileNameToFetch = versionToFileName[versionToFetch];
-        const versionDocObj = await docUtils.getJSONDocFileAsync(versionFileNameToFetch, docsJsonRoot);
+        const versionFilePathToFetch = versionToFilePath[versionToFetch];
+        const versionDocObj = await docUtils.getJSONDocFileAsync(versionFilePathToFetch, docBucketRoot);
         const docAgnosticFormat = this.props.docsInfo.convertToDocAgnosticFormat(versionDocObj);
 
         if (!this._isUnmounted) {

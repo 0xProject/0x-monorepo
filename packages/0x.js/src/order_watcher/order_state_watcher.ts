@@ -1,5 +1,5 @@
 import { schemas } from '@0xproject/json-schemas';
-import { BlockParamLiteral, LogWithDecodedArgs } from '@0xproject/types';
+import { BlockParamLiteral, LogWithDecodedArgs, SignedOrder } from '@0xproject/types';
 import { AbiDecoder, intervalUtils } from '@0xproject/utils';
 import { Web3Wrapper } from '@0xproject/web3-wrapper';
 import * as _ from 'lodash';
@@ -31,7 +31,6 @@ import {
     OnOrderStateChangeCallback,
     OrderState,
     OrderStateWatcherConfig,
-    SignedOrder,
     ZeroExError,
 } from '../types';
 import { assert } from '../utils/assert';
@@ -60,7 +59,7 @@ const DEFAULT_CLEANUP_JOB_INTERVAL_MS = 1000 * 60 * 60; // 1h
 /**
  * This class includes all the functionality related to watching a set of orders
  * for potential changes in order validity/fillability. The orderWatcher notifies
- * the subscriber of these changes so that a final decison can be made on whether
+ * the subscriber of these changes so that a final decision can be made on whether
  * the order should be deemed invalid.
  */
 export class OrderStateWatcher {
@@ -70,7 +69,6 @@ export class OrderStateWatcher {
     private _callbackIfExists?: OnOrderStateChangeCallback;
     private _eventWatcher: EventWatcher;
     private _web3Wrapper: Web3Wrapper;
-    private _abiDecoder: AbiDecoder;
     private _expirationWatcher: ExpirationWatcher;
     private _orderStateUtils: OrderStateUtils;
     private _orderFilledCancelledLazyStore: OrderFilledCancelledLazyStore;
@@ -79,19 +77,16 @@ export class OrderStateWatcher {
     private _cleanupJobIntervalIdIfExists?: NodeJS.Timer;
     constructor(
         web3Wrapper: Web3Wrapper,
-        abiDecoder: AbiDecoder,
         token: TokenWrapper,
         exchange: ExchangeWrapper,
         config?: OrderStateWatcherConfig,
     ) {
-        this._abiDecoder = abiDecoder;
         this._web3Wrapper = web3Wrapper;
         const pollingIntervalIfExistsMs = _.isUndefined(config) ? undefined : config.eventPollingIntervalMs;
-        this._eventWatcher = new EventWatcher(web3Wrapper, pollingIntervalIfExistsMs);
-        this._balanceAndProxyAllowanceLazyStore = new BalanceAndProxyAllowanceLazyStore(
-            token,
-            BlockParamLiteral.Pending,
-        );
+        const stateLayer =
+            _.isUndefined(config) || _.isUndefined(config.stateLayer) ? BlockParamLiteral.Latest : config.stateLayer;
+        this._eventWatcher = new EventWatcher(web3Wrapper, pollingIntervalIfExistsMs, stateLayer);
+        this._balanceAndProxyAllowanceLazyStore = new BalanceAndProxyAllowanceLazyStore(token, stateLayer);
         this._orderFilledCancelledLazyStore = new OrderFilledCancelledLazyStore(exchange);
         this._orderStateUtils = new OrderStateUtils(
             this._balanceAndProxyAllowanceLazyStore,
@@ -232,7 +227,7 @@ export class OrderStateWatcher {
             return;
         }
         const log = logIfExists as LogEvent; // At this moment we are sure that no error occured and log is defined.
-        const maybeDecodedLog = this._abiDecoder.tryToDecodeLogOrNoop<ContractEventArgs>(log);
+        const maybeDecodedLog = this._web3Wrapper.abiDecoder.tryToDecodeLogOrNoop<ContractEventArgs>(log);
         const isLogDecoded = !_.isUndefined(((maybeDecodedLog as any) as LogWithDecodedArgs<ContractEventArgs>).event);
         if (!isLogDecoded) {
             return; // noop

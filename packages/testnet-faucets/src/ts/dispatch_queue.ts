@@ -1,8 +1,7 @@
-import { intervalUtils } from '@0xproject/utils';
+import { intervalUtils, logUtils } from '@0xproject/utils';
 import * as _ from 'lodash';
 
 import { errorReporter } from './error_reporter';
-import { utils } from './utils';
 
 const MAX_QUEUE_SIZE = 500;
 const DEFAULT_QUEUE_INTERVAL_MS = 1000;
@@ -45,7 +44,7 @@ export class DispatchQueue {
             },
             this._queueIntervalMs,
             (err: Error) => {
-                utils.consoleLog(`Unexpected err: ${err} - ${JSON.stringify(err)}`);
+                logUtils.log(`Unexpected err: ${err} - ${JSON.stringify(err)}`);
                 // tslint:disable-next-line:no-floating-promises
                 errorReporter.reportAsync(err);
             },

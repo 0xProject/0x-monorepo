@@ -1,0 +1,96 @@
+[
+    {
+        "version": "0.6.0",
+        "changes": [
+            {
+                "note": "Make `isAddress` and `toWei` static",
+                "pr": 501
+            },
+            {
+                "note": "Add static methods `toUnitAmount` and `toBaseUnitAmount`",
+                "pr": 501
+            }
+        ],
+        "timestamp": 1523462196
+    },
+    {
+        "version": "0.5.0",
+        "changes": [
+            {
+                "note": "Add `web3Wrapper.awaitTransactionMinedAsync`",
+                "pr": 485
+            },
+            {
+                "note":
+                    "Add a public field `abiDecoder: AbiDecoder` which allows you to add your ABIs that are later used to decode logs",
+                "pr": 485
+            },
+            {
+                "note": "Export enum `Web3WrapperErrors` with a single value so far: `TransactionMiningTimeout`",
+                "pr": 485
+            }
+        ],
+        "timestamp": 1522673609
+    },
+    {
+        "version": "0.4.0",
+        "changes": [
+            {
+                "note": "Rename `signTransactionAsync` to `signMessageAsync` for clarity",
+                "pr": 465
+            }
+        ],
+        "timestamp": 1522658513
+    },
+    {
+        "version": "0.3.0",
+        "changes": [
+            {
+                "note":
+                    "Add `web3Wrapper.takeSnapshotAsync`, `web3Wrapper.revertSnapshotAsync`, `web3Wrapper.mineBlockAsync`, `web3Wrapper.increaseTimeAsync`",
+                "pr": 426
+            },
+            {
+                "note": "Add `web3Wrapper.isZeroExWeb3Wrapper` for runtime instanceOf checks",
+                "pr": 426
+            },
+            {
+                "note": "Add a `getProvider` method",
+                "pr": 444
+            }
+        ],
+        "timestamp": 1521298800
+    },
+    {
+        "version": "0.2.0",
+        "changes": [
+            {
+                "note": "Ensure all returned user addresses are lowercase",
+                "pr": 373
+            },
+            {
+                "note": "Add `web3Wrapper.callAsync`",
+                "pr": 413
+            },
+            {
+                "note": "Make `web3Wrapper.estimateGas` accept whole `txData` instead of `data`",
+                "pr": 413
+            },
+            {
+                "note": "Remove `web3Wrapper.getContractInstance`",
+                "pr": 413
+            }
+        ],
+        "timestamp": 1520089200
+    },
+    {
+        "version": "0.1.12",
+        "changes": [
+            {
+                "note": "Fix publishing issue where .npmignore was not properly excluding undesired content",
+                "pr": 389
+            }
+        ],
+        "timestamp": 1518102000
+    }
+]

@@ -1,10 +1,9 @@
-import { BlockchainLifecycle, devConstants, web3Factory } from '@0xproject/dev-utils';
+import { BlockchainLifecycle, devConstants } from '@0xproject/dev-utils';
 import { BigNumber } from '@0xproject/utils';
 import * as chai from 'chai';
 import * as _ from 'lodash';
 import 'mocha';
 import * as Sinon from 'sinon';
-import * as Web3 from 'web3';
 
 import { ZeroEx } from '../src/0x';
 import { ExpirationWatcher } from '../src/order_watcher/expiration_watcher';
@@ -16,13 +15,13 @@ import { constants } from './utils/constants';
 import { FillScenarios } from './utils/fill_scenarios';
 import { reportNoErrorCallbackErrors } from './utils/report_callback_errors';
 import { TokenUtils } from './utils/token_utils';
+import { provider, web3Wrapper } from './utils/web3_wrapper';
 
 chaiSetup.configure();
 const expect = chai.expect;
-const blockchainLifecycle = new BlockchainLifecycle();
+const blockchainLifecycle = new BlockchainLifecycle(web3Wrapper);
 
 describe('ExpirationWatcher', () => {
-    let web3: Web3;
     let zeroEx: ZeroEx;
     let tokenUtils: TokenUtils;
     let tokens: Token[];
@@ -41,11 +40,10 @@ describe('ExpirationWatcher', () => {
     let timer: Sinon.SinonFakeTimers;
     let expirationWatcher: ExpirationWatcher;
     before(async () => {
-        web3 = web3Factory.create();
         const config = {
             networkId: constants.TESTRPC_NETWORK_ID,
         };
-        zeroEx = new ZeroEx(web3.currentProvider, config);
+        zeroEx = new ZeroEx(provider, config);
         exchangeContractAddress = zeroEx.exchange.getContractAddress();
         userAddresses = await zeroEx.getAvailableAddressesAsync();
         tokens = await zeroEx.tokenRegistry.getTokensAsync();

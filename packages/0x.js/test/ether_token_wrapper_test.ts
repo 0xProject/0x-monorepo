@@ -1,8 +1,8 @@
 import { BlockchainLifecycle, devConstants, web3Factory } from '@0xproject/dev-utils';
 import { BigNumber } from '@0xproject/utils';
+import { Web3Wrapper } from '@0xproject/web3-wrapper';
 import * as chai from 'chai';
 import 'mocha';
-import * as Web3 from 'web3';
 
 import {
     ApprovalContractEventArgs,
@@ -23,10 +23,11 @@ import { chaiSetup } from './utils/chai_setup';
 import { constants } from './utils/constants';
 import { reportNodeCallbackErrors } from './utils/report_callback_errors';
 import { TokenUtils } from './utils/token_utils';
+import { provider, web3Wrapper } from './utils/web3_wrapper';
 
 chaiSetup.configure();
 const expect = chai.expect;
-const blockchainLifecycle = new BlockchainLifecycle();
+const blockchainLifecycle = new BlockchainLifecycle(web3Wrapper);
 
 // Since the address depositing/withdrawing ETH/WETH also needs to pay gas costs for the transaction,
 // a small amount of ETH will be used to pay this gas cost. We therefore check that the difference between
@@ -35,7 +36,6 @@ const blockchainLifecycle = new BlockchainLifecycle();
 const MAX_REASONABLE_GAS_COST_IN_WEI = 62517;
 
 describe('EtherTokenWrapper', () => {
-    let web3: Web3;
     let zeroEx: ZeroEx;
     let tokens: Token[];
     let userAddresses: string[];
@@ -54,13 +54,12 @@ describe('EtherTokenWrapper', () => {
     const depositAmount = new BigNumber(42);
     const withdrawalAmount = new BigNumber(42);
     before(async () => {
-        web3 = web3Factory.create();
-        zeroEx = new ZeroEx(web3.currentProvider, zeroExConfig);
+        zeroEx = new ZeroEx(provider, zeroExConfig);
         tokens = await zeroEx.tokenRegistry.getTokensAsync();
         userAddresses = await zeroEx.getAvailableAddressesAsync();
         addressWithETH = userAddresses[0];
         wethContractAddress = zeroEx.etherToken.getContractAddressIfExists() as string;
-        depositWeiAmount = (zeroEx as any)._web3Wrapper.toWei(new BigNumber(5));
+        depositWeiAmount = Web3Wrapper.toWei(new BigNumber(5));
         decimalPlaces = 7;
         addressWithoutFunds = userAddresses[1];
     });
@@ -79,7 +78,7 @@ describe('EtherTokenWrapper', () => {
             const UNKNOWN_NETWORK_NETWORK_ID = 10;
             expect(
                 () =>
-                    new ZeroEx(web3.currentProvider, {
+                    new ZeroEx(provider, {
                         networkId: UNKNOWN_NETWORK_NETWORK_ID,
                     } as any),
             ).to.throw();
@@ -106,7 +105,7 @@ describe('EtherTokenWrapper', () => {
         it('should throw if user has insufficient ETH balance for deposit', async () => {
             const preETHBalance = await (zeroEx as any)._web3Wrapper.getBalanceInWeiAsync(addressWithETH);
 
-            const extraETHBalance = (zeroEx as any)._web3Wrapper.toWei(5, 'ether');
+            const extraETHBalance = Web3Wrapper.toWei(new BigNumber(5));
             const overETHBalanceinWei = preETHBalance.add(extraETHBalance);
 
             return expect(
@@ -138,7 +137,7 @@ describe('EtherTokenWrapper', () => {
             gasCost = expectedETHBalance.minus(postETHBalance);
             expect(gasCost).to.be.bignumber.lte(MAX_REASONABLE_GAS_COST_IN_WEI);
         });
-        it('should throw if user has insufficient WETH balance for withdrawl', async () => {
+        it('should throw if user has insufficient WETH balance for withdrawal', async () => {
             const preWETHBalance = await zeroEx.token.getBalanceAsync(wethContractAddress, addressWithETH);
             expect(preWETHBalance).to.be.bignumber.equal(0);
 
@@ -261,8 +260,7 @@ describe('EtherTokenWrapper', () => {
                     callbackNeverToBeCalled,
                 );
                 const callbackToBeCalled = reportNodeCallbackErrors(done)();
-                const newProvider = web3Factory.getRpcProvider();
-                zeroEx.setProvider(newProvider, constants.TESTRPC_NETWORK_ID);
+                zeroEx.setProvider(provider, constants.TESTRPC_NETWORK_ID);
                 await zeroEx.etherToken.depositAsync(etherTokenAddress, transferAmount, addressWithETH);
                 zeroEx.etherToken.subscribe(
                     etherTokenAddress,

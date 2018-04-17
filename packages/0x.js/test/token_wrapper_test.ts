@@ -1,9 +1,10 @@
-import { BlockchainLifecycle, devConstants, web3Factory } from '@0xproject/dev-utils';
+import { BlockchainLifecycle, devConstants } from '@0xproject/dev-utils';
+import { EmptyWalletSubprovider } from '@0xproject/subproviders';
+import { Provider } from '@0xproject/types';
 import { BigNumber } from '@0xproject/utils';
-import { Web3Wrapper } from '@0xproject/web3-wrapper';
 import * as chai from 'chai';
 import 'mocha';
-import * as Web3 from 'web3';
+import Web3ProviderEngine = require('web3-provider-engine');
 
 import {
     ApprovalContractEventArgs,
@@ -22,27 +23,24 @@ import { chaiSetup } from './utils/chai_setup';
 import { constants } from './utils/constants';
 import { reportNodeCallbackErrors } from './utils/report_callback_errors';
 import { TokenUtils } from './utils/token_utils';
+import { provider, web3Wrapper } from './utils/web3_wrapper';
 
 chaiSetup.configure();
 const expect = chai.expect;
-const blockchainLifecycle = new BlockchainLifecycle();
+const blockchainLifecycle = new BlockchainLifecycle(web3Wrapper);
 
 describe('TokenWrapper', () => {
-    let web3: Web3;
     let zeroEx: ZeroEx;
     let userAddresses: string[];
     let tokens: Token[];
     let tokenUtils: TokenUtils;
     let coinbase: string;
     let addressWithoutFunds: string;
-    let web3Wrapper: Web3Wrapper;
     const config = {
         networkId: constants.TESTRPC_NETWORK_ID,
     };
     before(async () => {
-        web3 = web3Factory.create();
-        zeroEx = new ZeroEx(web3.currentProvider, config);
-        web3Wrapper = new Web3Wrapper(web3.currentProvider);
+        zeroEx = new ZeroEx(provider, config);
         userAddresses = await zeroEx.getAvailableAddressesAsync();
         tokens = await zeroEx.tokenRegistry.getTokensAsync();
         tokenUtils = new TokenUtils(tokens);
@@ -167,7 +165,7 @@ describe('TokenWrapper', () => {
         });
     });
     describe('#getBalanceAsync', () => {
-        describe('With web3 provider with accounts', () => {
+        describe('With provider with accounts', () => {
             it('should return the balance for an existing ERC20 token', async () => {
                 const token = tokens[0];
                 const ownerAddress = coinbase;
@@ -190,14 +188,14 @@ describe('TokenWrapper', () => {
                 return expect(balance).to.be.bignumber.equal(expectedBalance);
             });
         });
-        describe('With web3 provider without accounts', () => {
+        describe('With provider without accounts', () => {
             let zeroExWithoutAccounts: ZeroEx;
             before(async () => {
                 const hasAddresses = false;
-                const web3WithoutAccounts = web3Factory.create(hasAddresses);
-                zeroExWithoutAccounts = new ZeroEx(web3WithoutAccounts.currentProvider, config);
+                const emptyWalletProvider = addEmptyWalletSubprovider(provider);
+                zeroExWithoutAccounts = new ZeroEx(emptyWalletProvider, config);
             });
-            it('should return balance even when called with Web3 provider instance without addresses', async () => {
+            it('should return balance even when called with provider instance without addresses', async () => {
                 const token = tokens[0];
                 const ownerAddress = coinbase;
                 const balance = await zeroExWithoutAccounts.token.getBalanceAsync(token.address, ownerAddress);
@@ -280,7 +278,7 @@ describe('TokenWrapper', () => {
         });
     });
     describe('#getAllowanceAsync', () => {
-        describe('With web3 provider with accounts', () => {
+        describe('With provider with accounts', () => {
             it('should get the proxy allowance', async () => {
                 const token = tokens[0];
                 const ownerAddress = coinbase;
@@ -302,12 +300,12 @@ describe('TokenWrapper', () => {
                 return expect(allowance).to.be.bignumber.equal(expectedAllowance);
             });
         });
-        describe('With web3 provider without accounts', () => {
+        describe('With provider without accounts', () => {
             let zeroExWithoutAccounts: ZeroEx;
             before(async () => {
                 const hasAddresses = false;
-                const web3WithoutAccounts = web3Factory.create(hasAddresses);
-                zeroExWithoutAccounts = new ZeroEx(web3WithoutAccounts.currentProvider, config);
+                const emptyWalletProvider = addEmptyWalletSubprovider(provider);
+                zeroExWithoutAccounts = new ZeroEx(emptyWalletProvider, config);
             });
             it('should get the proxy allowance', async () => {
                 const token = tokens[0];
@@ -427,8 +425,7 @@ describe('TokenWrapper', () => {
                 );
                 zeroEx.token.subscribe(tokenAddress, TokenEvents.Transfer, indexFilterValues, callbackNeverToBeCalled);
                 const callbackToBeCalled = reportNodeCallbackErrors(done)();
-                const newProvider = web3Factory.getRpcProvider();
-                zeroEx.setProvider(newProvider, constants.TESTRPC_NETWORK_ID);
+                zeroEx.setProvider(provider, constants.TESTRPC_NETWORK_ID);
                 zeroEx.token.subscribe(tokenAddress, TokenEvents.Transfer, indexFilterValues, callbackToBeCalled);
                 await zeroEx.token.transferAsync(tokenAddress, coinbase, addressWithoutFunds, transferAmount);
             })().catch(done);
@@ -518,3 +515,14 @@ describe('TokenWrapper', () => {
     });
 });
 // tslint:disable:max-file-line-count
+
+function addEmptyWalletSubprovider(p: Provider): Provider {
+    const providerEngine = new Web3ProviderEngine();
+    providerEngine.addProvider(new EmptyWalletSubprovider());
+    const currentSubproviders = (p as any)._providers;
+    for (const subprovider of currentSubproviders) {
+        providerEngine.addProvider(subprovider);
+    }
+    providerEngine.start();
+    return providerEngine;
+}

@@ -1,6 +1,6 @@
 import { ZeroEx } from '0x.js';
 import { BlockchainLifecycle, devConstants, web3Factory } from '@0xproject/dev-utils';
-import { BigNumber } from '@0xproject/utils';
+import { BigNumber, NULL_BYTES } from '@0xproject/utils';
 import { Web3Wrapper } from '@0xproject/web3-wrapper';
 import * as chai from 'chai';
 import ethUtil = require('ethereumjs-util');
@@ -14,12 +14,11 @@ import { ContractName } from '../util/types';
 
 import { chaiSetup } from './utils/chai_setup';
 import { deployer } from './utils/deployer';
+import { provider, web3Wrapper } from './utils/web3_wrapper';
 
 chaiSetup.configure();
 const expect = chai.expect;
-const web3 = web3Factory.create();
-const web3Wrapper = new Web3Wrapper(web3.currentProvider);
-const blockchainLifecycle = new BlockchainLifecycle();
+const blockchainLifecycle = new BlockchainLifecycle(web3Wrapper);
 
 describe('TokenRegistry', () => {
     let owner: string;
@@ -31,7 +30,7 @@ describe('TokenRegistry', () => {
         owner = accounts[0];
         notOwner = accounts[1];
         const tokenRegInstance = await deployer.deployAsync(ContractName.TokenRegistry);
-        tokenReg = new TokenRegistryContract(web3Wrapper, tokenRegInstance.abi, tokenRegInstance.address);
+        tokenReg = new TokenRegistryContract(tokenRegInstance.abi, tokenRegInstance.address, provider);
         tokenRegWrapper = new TokenRegWrapper(tokenReg);
     });
     beforeEach(async () => {
@@ -67,8 +66,8 @@ describe('TokenRegistry', () => {
         name: '',
         symbol: '',
         decimals: 0,
-        ipfsHash: constants.NULL_BYTES,
-        swarmHash: constants.NULL_BYTES,
+        ipfsHash: NULL_BYTES,
+        swarmHash: NULL_BYTES,
     };
 
     describe('addToken', () => {

@@ -10,23 +10,22 @@ import ReactTooltip = require('react-tooltip');
 import { Blockchain } from 'ts/blockchain';
 import { EthWethConversionButton } from 'ts/components/eth_weth_conversion_button';
 import { Dispatcher } from 'ts/redux/dispatcher';
-import { OutdatedWrappedEtherByNetworkId, Side, Token, TokenByAddress, TokenState } from 'ts/types';
+import {
+    OutdatedWrappedEtherByNetworkId,
+    Side,
+    Token,
+    TokenByAddress,
+    TokenState,
+    TokenStateByAddress,
+} from 'ts/types';
 import { configs } from 'ts/utils/configs';
 import { constants } from 'ts/utils/constants';
 import { utils } from 'ts/utils/utils';
 
-const PRECISION = 5;
 const DATE_FORMAT = 'D/M/YY';
 const ICON_DIMENSION = 40;
 const ETHER_ICON_PATH = '/images/ether.png';
 const OUTDATED_WETH_ICON_PATH = '/images/wrapped_eth_gray.png';
-
-interface OutdatedWETHAddressToIsStateLoaded {
-    [address: string]: boolean;
-}
-interface OutdatedWETHStateByAddress {
-    [address: string]: TokenState;
-}
 
 interface EthWrappersProps {
     networkId: number;
@@ -34,15 +33,13 @@ interface EthWrappersProps {
     dispatcher: Dispatcher;
     tokenByAddress: TokenByAddress;
     userAddress: string;
-    userEtherBalance: BigNumber;
+    userEtherBalanceInWei: BigNumber;
     lastForceTokenStateRefetch: number;
 }
 
 interface EthWrappersState {
     ethTokenState: TokenState;
-    isWethStateLoaded: boolean;
-    outdatedWETHAddressToIsStateLoaded: OutdatedWETHAddressToIsStateLoaded;
-    outdatedWETHStateByAddress: OutdatedWETHStateByAddress;
+    outdatedWETHStateByAddress: TokenStateByAddress;
 }
 
 export class EthWrappers extends React.Component<EthWrappersProps, EthWrappersState> {
@@ -51,22 +48,20 @@ export class EthWrappers extends React.Component<EthWrappersProps, EthWrappersSt
         super(props);
         this._isUnmounted = false;
         const outdatedWETHAddresses = this._getOutdatedWETHAddresses();
-        const outdatedWETHAddressToIsStateLoaded: OutdatedWETHAddressToIsStateLoaded = {};
-        const outdatedWETHStateByAddress: OutdatedWETHStateByAddress = {};
+        const outdatedWETHStateByAddress: TokenStateByAddress = {};
         _.each(outdatedWETHAddresses, outdatedWETHAddress => {
-            outdatedWETHAddressToIsStateLoaded[outdatedWETHAddress] = false;
             outdatedWETHStateByAddress[outdatedWETHAddress] = {
                 balance: new BigNumber(0),
                 allowance: new BigNumber(0),
+                isLoaded: false,
             };
         });
         this.state = {
-            outdatedWETHAddressToIsStateLoaded,
             outdatedWETHStateByAddress,
-            isWethStateLoaded: false,
             ethTokenState: {
                 balance: new BigNumber(0),
                 allowance: new BigNumber(0),
+                isLoaded: false,
             },
         };
     }
@@ -98,6 +93,10 @@ export class EthWrappers extends React.Component<EthWrappersProps, EthWrappersSt
             EtherscanLinkSuffixes.Address,
         );
         const tokenLabel = this._renderToken('Wrapped Ether', etherToken.address, configs.ICON_URL_BY_SYMBOL.WETH);
+        const userEtherBalanceInEth = ZeroEx.toUnitAmount(
+            this.props.userEtherBalanceInWei,
+            constants.DECIMAL_PLACES_ETH,
+        );
         return (
             <div className="clearfix lg-px4 md-px4 sm-px2" style={{ minHeight: 600 }}>
                 <div className="relative">
@@ -144,7 +143,7 @@ export class EthWrappers extends React.Component<EthWrappersProps, EthWrappersSt
                                         </div>
                                     </TableRowColumn>
                                     <TableRowColumn>
-                                        {this.props.userEtherBalance.toFixed(PRECISION)} ETH
+                                        {userEtherBalanceInEth.toFixed(configs.AMOUNT_DISPLAY_PRECSION)} ETH
                                     </TableRowColumn>
                                     <TableRowColumn>
                                         <EthWethConversionButton
@@ -157,7 +156,7 @@ export class EthWrappers extends React.Component<EthWrappersProps, EthWrappersSt
                                             ethToken={etherToken}
                                             dispatcher={this.props.dispatcher}
                                             blockchain={this.props.blockchain}
-                                            userEtherBalance={this.props.userEtherBalance}
+                                            userEtherBalanceInWei={this.props.userEtherBalanceInWei}
                                         />
                                     </TableRowColumn>
                                 </TableRow>
@@ -166,8 +165,8 @@ export class EthWrappers extends React.Component<EthWrappersProps, EthWrappersSt
                                         {this._renderTokenLink(tokenLabel, etherscanUrl)}
                                     </TableRowColumn>
                                     <TableRowColumn>
-                                        {this.state.isWethStateLoaded ? (
-                                            `${wethBalance.toFixed(PRECISION)} WETH`
+                                        {this.state.ethTokenState.isLoaded ? (
+                                            `${wethBalance.toFixed(configs.AMOUNT_DISPLAY_PRECSION)} WETH`
                                         ) : (
                                             <i className="zmdi zmdi-spinner zmdi-hc-spin" />
                                         )}
@@ -180,11 +179,11 @@ export class EthWrappers extends React.Component<EthWrappersProps, EthWrappersSt
                                             networkId={this.props.networkId}
                                             isOutdatedWrappedEther={false}
                                             direction={Side.Receive}
-                                            isDisabled={!this.state.isWethStateLoaded}
+                                            isDisabled={!this.state.ethTokenState.isLoaded}
                                             ethToken={etherToken}
                                             dispatcher={this.props.dispatcher}
                                             blockchain={this.props.blockchain}
-                                            userEtherBalance={this.props.userEtherBalance}
+                                            userEtherBalanceInWei={this.props.userEtherBalanceInWei}
                                         />
                                     </TableRowColumn>
                                 </TableRow>
@@ -263,11 +262,11 @@ export class EthWrappers extends React.Component<EthWrappersProps, EthWrappersSt
                     ...etherToken,
                     address: outdatedWETHIfExists.address,
                 };
-                const isStateLoaded = this.state.outdatedWETHAddressToIsStateLoaded[outdatedWETHIfExists.address];
                 const outdatedEtherTokenState = this.state.outdatedWETHStateByAddress[outdatedWETHIfExists.address];
+                const isStateLoaded = outdatedEtherTokenState.isLoaded;
                 const balanceInEthIfExists = isStateLoaded
                     ? ZeroEx.toUnitAmount(outdatedEtherTokenState.balance, constants.DECIMAL_PLACES_ETH).toFixed(
-                          PRECISION,
+                          configs.AMOUNT_DISPLAY_PRECSION,
                       )
                     : undefined;
                 const onConversionSuccessful = this._onOutdatedConversionSuccessfulAsync.bind(
@@ -304,7 +303,7 @@ export class EthWrappers extends React.Component<EthWrappersProps, EthWrappersSt
                                 ethToken={outdatedEtherToken}
                                 dispatcher={this.props.dispatcher}
                                 blockchain={this.props.blockchain}
-                                userEtherBalance={this.props.userEtherBalance}
+                                userEtherBalanceInWei={this.props.userEtherBalanceInWei}
                                 onConversionSuccessful={onConversionSuccessful}
                             />
                         </TableRowColumn>
@@ -342,26 +341,29 @@ export class EthWrappers extends React.Component<EthWrappersProps, EthWrappersSt
         );
     }
     private async _onOutdatedConversionSuccessfulAsync(outdatedWETHAddress: string) {
+        const currentOutdatedWETHState = this.state.outdatedWETHStateByAddress[outdatedWETHAddress];
         this.setState({
-            outdatedWETHAddressToIsStateLoaded: {
-                ...this.state.outdatedWETHAddressToIsStateLoaded,
-                [outdatedWETHAddress]: false,
+            outdatedWETHStateByAddress: {
+                ...this.state.outdatedWETHStateByAddress,
+                [outdatedWETHAddress]: {
+                    balance: currentOutdatedWETHState.balance,
+                    allowance: currentOutdatedWETHState.allowance,
+                    isLoaded: false,
+                },
             },
         });
+        const userAddressIfExists = _.isEmpty(this.props.userAddress) ? undefined : this.props.userAddress;
         const [balance, allowance] = await this.props.blockchain.getTokenBalanceAndAllowanceAsync(
-            this.props.userAddress,
+            userAddressIfExists,
             outdatedWETHAddress,
         );
         this.setState({
-            outdatedWETHAddressToIsStateLoaded: {
-                ...this.state.outdatedWETHAddressToIsStateLoaded,
-                [outdatedWETHAddress]: true,
-            },
             outdatedWETHStateByAddress: {
                 ...this.state.outdatedWETHStateByAddress,
                 [outdatedWETHAddress]: {
                     balance,
                     allowance,
+                    isLoaded: true,
                 },
             },
         });
@@ -369,34 +371,33 @@ export class EthWrappers extends React.Component<EthWrappersProps, EthWrappersSt
     private async _fetchWETHStateAsync() {
         const tokens = _.values(this.props.tokenByAddress);
         const wethToken = _.find(tokens, token => token.symbol === 'WETH');
+        const userAddressIfExists = _.isEmpty(this.props.userAddress) ? undefined : this.props.userAddress;
         const [wethBalance, wethAllowance] = await this.props.blockchain.getTokenBalanceAndAllowanceAsync(
-            this.props.userAddress,
+            userAddressIfExists,
             wethToken.address,
         );
 
         const outdatedWETHAddresses = this._getOutdatedWETHAddresses();
-        const outdatedWETHAddressToIsStateLoaded: OutdatedWETHAddressToIsStateLoaded = {};
-        const outdatedWETHStateByAddress: OutdatedWETHStateByAddress = {};
+        const outdatedWETHStateByAddress: TokenStateByAddress = {};
         for (const address of outdatedWETHAddresses) {
             const [balance, allowance] = await this.props.blockchain.getTokenBalanceAndAllowanceAsync(
-                this.props.userAddress,
+                userAddressIfExists,
                 address,
             );
             outdatedWETHStateByAddress[address] = {
                 balance,
                 allowance,
+                isLoaded: true,
             };
-            outdatedWETHAddressToIsStateLoaded[address] = true;
         }
         if (!this._isUnmounted) {
             this.setState({
                 outdatedWETHStateByAddress,
-                outdatedWETHAddressToIsStateLoaded,
                 ethTokenState: {
                     balance: wethBalance,
                     allowance: wethAllowance,
+                    isLoaded: true,
                 },
-                isWethStateLoaded: true,
             });
         }
     }
@@ -420,14 +421,16 @@ export class EthWrappers extends React.Component<EthWrappersProps, EthWrappersSt
     }
     private async _refetchEthTokenStateAsync() {
         const etherToken = this._getEthToken();
+        const userAddressIfExists = _.isEmpty(this.props.userAddress) ? undefined : this.props.userAddress;
         const [balance, allowance] = await this.props.blockchain.getTokenBalanceAndAllowanceAsync(
-            this.props.userAddress,
+            userAddressIfExists,
             etherToken.address,
         );
         this.setState({
             ethTokenState: {
                 balance,
                 allowance,
+                isLoaded: true,
             },
         });
     }

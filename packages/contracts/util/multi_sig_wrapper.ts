@@ -1,3 +1,4 @@
+import { AbiDefinition, MethodAbi } from '@0xproject/types';
 import { BigNumber } from '@0xproject/utils';
 import ABI = require('ethereumjs-abi');
 import ethUtil = require('ethereumjs-util');
@@ -10,8 +11,8 @@ import { TransactionDataParams } from './types';
 
 export class MultiSigWrapper {
     private _multiSig: MultiSigWalletContract;
-    public static encodeFnArgs(name: string, abi: Web3.AbiDefinition[], args: any[]) {
-        const abiEntity = _.find(abi, { name }) as Web3.MethodAbi;
+    public static encodeFnArgs(name: string, abi: AbiDefinition[], args: any[]) {
+        const abiEntity = _.find(abi, { name }) as MethodAbi;
         if (_.isUndefined(abiEntity)) {
             throw new Error(`Did not find abi entry for name: ${name}`);
         }

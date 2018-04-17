@@ -16,23 +16,32 @@ For an example of the generated [wrapper files](https://github.com/0xProject/0x-
 ```
 abi-gen
 Options:
-  --help           Show help                                           [boolean]
-  --version        Show version number                                 [boolean]
-  --abiGlob        Glob pattern to search for ABI JSON files [string] [required]
-  --templates      Folder where to search for templates      [string] [required]
-  --output         Folder where to put the output files      [string] [required]
+  --help               Show help                                       [boolean]
+  --version            Show version number                             [boolean]
+  --abis               Glob pattern to search for ABI JSON files
+                                                             [string] [required]
+  --output, -o, --out  Folder where to put the output files  [string] [required]
+  --partials           Glob pattern for the partial template files      [string]
+  --template           Path for the main template file that will be used to
+                       generate each contract                [string] [required]
+  --backend            The backing Ethereum library your app uses. Either 'web3'
+                       or 'ethers'. Ethers auto-converts small ints to numbers
+                       whereas Web3 doesn't.
+                          [string] [choices: "web3", "ethers"] [default: "web3"]
+  --network-id         ID of the network where contract ABIs are nested in
+                       artifacts                          [number] [default: 50]
 ```
-
-## ABI files
 
 You're required to pass a [glob](<https://en.wikipedia.org/wiki/Glob_(programming)>) template where your abi files are located.
 TL;DR - here is the example from 0x.js.
 
-`--abiGlob 'src/artifacts/@(Exchange|Token|TokenTransferProxy|EtherToken|TokenRegistry).json`
+`--abis 'src/artifacts/@(Exchange|Token|TokenTransferProxy|EtherToken|TokenRegistry).json`
 
-We could've just used `--abiGlob 'src/artifacts/*.json` but we wanted to exclude some of the abi files.
+We could've just used `--abis 'src/artifacts/*.json` but we wanted to exclude some of the abi files.
 
 The abi file should be either a [Truffle](http://truffleframework.com/) contract artifact (a JSON object with an abi key) or a JSON abi array.
+
+You need to also specify the location of your main template used for every contract `--template` as well as the partial templates `--partials` that can later be used from the main one.
 
 ## How to write custom templates?
 
@@ -48,3 +57,61 @@ See the [type definition](https://github.com/0xProject/0x-monorepo/tree/developm
 ## Output files
 
 Output files will be generated within an output folder with names converted to camel case and taken from abi file names. If you already have some files in that folder they will be overwritten.
+
+## Contributing
+
+We welcome improvements and fixes from the wider community! To report bugs within this package, please create an issue in this repository.
+
+Please read our [contribution guidelines](../../CONTRIBUTING.md) before getting started.
+
+### Install dependencies
+
+If you don't have yarn workspaces enabled (Yarn < v1.0) - enable them:
+
+```bash
+yarn config set workspaces-experimental true
+```
+
+Then install dependencies
+
+```bash
+yarn install
+```
+
+### Build
+
+If this is your **first** time building this package, you must first build **all** packages within the monorepo. This is because packages that depend on other packages located inside this monorepo are symlinked when run from **within** the monorepo. This allows you to make changes across multiple packages without first publishing dependent packages to NPM. To build all packages, run the following from the monorepo root directory:
+
+```bash
+yarn lerna:rebuild
+```
+
+Or continuously rebuild on change:
+
+```bash
+yarn dev
+```
+
+You can also build this specific package by running the following from within its directory:
+
+```bash
+yarn build
+```
+
+or continuously rebuild on change:
+
+```bash
+yarn build:watch
+```
+
+### Clean
+
+```bash
+yarn clean
+```
+
+### Lint
+
+```bash
+yarn lint
+```

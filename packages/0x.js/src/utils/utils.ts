@@ -1,11 +1,9 @@
-import { SolidityTypes } from '@0xproject/types';
+import { Order, SignedOrder, SolidityTypes } from '@0xproject/types';
 import { BigNumber } from '@0xproject/utils';
 import BN = require('bn.js');
 import * as ethABI from 'ethereumjs-abi';
 import * as ethUtil from 'ethereumjs-util';
 import * as _ from 'lodash';
-
-import { Order, SignedOrder } from '../types';
 
 export const utils = {
     /**
@@ -16,10 +14,6 @@ export const utils = {
      */
     bigNumberToBN(value: BigNumber) {
         return new BN(value.toString(), 10);
-    },
-    consoleLog(message: string): void {
-        // tslint:disable-next-line: no-console
-        console.log(message);
     },
     spawnSwitchErr(name: string, value: any): Error {
         return new Error(`Unexpected switch value: ${value} encountered for ${name}`);

@@ -1,9 +1,8 @@
-import { BlockchainLifecycle, devConstants, web3Factory } from '@0xproject/dev-utils';
+import { BlockchainLifecycle, devConstants } from '@0xproject/dev-utils';
 import { BigNumber } from '@0xproject/utils';
 import * as _ from 'lodash';
 import 'mocha';
 import * as Sinon from 'sinon';
-import * as Web3 from 'web3';
 
 import { ApprovalContractEventArgs, DecodedLogEvent, Token, TokenEvents, ZeroEx } from '../src';
 import { DoneCallback } from '../src/types';
@@ -11,12 +10,12 @@ import { DoneCallback } from '../src/types';
 import { chaiSetup } from './utils/chai_setup';
 import { constants } from './utils/constants';
 import { assertNodeCallbackError } from './utils/report_callback_errors';
+import { provider, web3Wrapper } from './utils/web3_wrapper';
 
 chaiSetup.configure();
-const blockchainLifecycle = new BlockchainLifecycle();
+const blockchainLifecycle = new BlockchainLifecycle(web3Wrapper);
 
 describe('SubscriptionTest', () => {
-    let web3: Web3;
     let zeroEx: ZeroEx;
     let userAddresses: string[];
     let tokens: Token[];
@@ -26,8 +25,7 @@ describe('SubscriptionTest', () => {
         networkId: constants.TESTRPC_NETWORK_ID,
     };
     before(async () => {
-        web3 = web3Factory.create();
-        zeroEx = new ZeroEx(web3.currentProvider, config);
+        zeroEx = new ZeroEx(provider, config);
         userAddresses = await zeroEx.getAvailableAddressesAsync();
         tokens = await zeroEx.tokenRegistry.getTokensAsync();
         coinbase = userAddresses[0];

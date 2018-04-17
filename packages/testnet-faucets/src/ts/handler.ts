@@ -1,5 +1,5 @@
 import { Order, SignedOrder, ZeroEx } from '0x.js';
-import { BigNumber } from '@0xproject/utils';
+import { BigNumber, logUtils } from '@0xproject/utils';
 import * as express from 'express';
 import * as _ from 'lodash';
 import * as Web3 from 'web3';
@@ -9,17 +9,14 @@ import * as Web3 from 'web3';
 // we are not running in a browser env.
 // Filed issue: https://github.com/ethereum/web3.js/issues/844
 (global as any).XMLHttpRequest = undefined;
-import { NonceTrackerSubprovider } from '@0xproject/subproviders';
+import { NonceTrackerSubprovider, PrivateKeyWalletSubprovider } from '@0xproject/subproviders';
 import ProviderEngine = require('web3-provider-engine');
-import HookedWalletSubprovider = require('web3-provider-engine/subproviders/hooked-wallet');
 import RpcSubprovider = require('web3-provider-engine/subproviders/rpc');
 
 import { configs } from './configs';
 import { DispatchQueue } from './dispatch_queue';
 import { dispenseAssetTasks } from './dispense_asset_tasks';
-import { idManagement } from './id_management';
 import { rpcUrls } from './rpc_urls';
-import { utils } from './utils';
 
 interface NetworkConfig {
     dispatchQueue: DispatchQueue;
@@ -42,9 +39,12 @@ const FIVE_DAYS_IN_MS = 4.32e8; // TODO: make this configurable
 export class Handler {
     private _networkConfigByNetworkId: ItemByNetworkId<NetworkConfig> = {};
     private static _createProviderEngine(rpcUrl: string) {
+        if (_.isUndefined(configs.DISPENSER_PRIVATE_KEY)) {
+            throw new Error('Dispenser Private key not found');
+        }
         const engine = new ProviderEngine();
         engine.addProvider(new NonceTrackerSubprovider());
-        engine.addProvider(new HookedWalletSubprovider(idManagement));
+        engine.addProvider(new PrivateKeyWalletSubprovider(configs.DISPENSER_PRIVATE_KEY));
         engine.addProvider(
             new RpcSubprovider({
                 rpcUrl,
@@ -118,7 +118,7 @@ export class Handler {
             res.status(503).send('QUEUE_IS_FULL');
             return;
         }
-        utils.consoleLog(`Added ${recipient} to queue: ${requestedAssetType} networkId: ${networkId}`);
+        logUtils.log(`Added ${recipient} to queue: ${requestedAssetType} networkId: ${networkId}`);
         res.status(200).end();
     }
     private async _dispenseOrder(req: express.Request, res: express.Response, requestedAssetType: RequestedAssetType) {
@@ -163,7 +163,7 @@ export class Handler {
         };
         const signedOrderHash = ZeroEx.getOrderHashHex(signedOrder);
         const payload = JSON.stringify(signedOrder);
-        utils.consoleLog(`Dispensed signed order: ${payload}`);
+        logUtils.log(`Dispensed signed order: ${payload}`);
         res.status(200).send(payload);
     }
 }

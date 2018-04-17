@@ -21,11 +21,6 @@ export interface TokenByAddress {
     [address: string]: Token;
 }
 
-export interface TokenState {
-    allowance: BigNumber;
-    balance: BigNumber;
-}
-
 export interface AssetToken {
     address?: string;
     amount?: BigNumber;
@@ -228,6 +223,7 @@ export enum AlertTypes {
 export enum BlockchainErrs {
     AContractNotDeployedOnNetwork = 'A_CONTRACT_NOT_DEPLOYED_ON_NETWORK',
     DisconnectedFromEthereumNode = 'DISCONNECTED_FROM_ETHEREUM_NODE',
+    DefaultTokensNotInTokenRegistry = 'DEFAULT_TOKENS_NOT_IN_TOKEN_REGISTRY',
     NoError = 'NO_ERROR',
 }
 
@@ -336,7 +332,7 @@ export enum TokenVisibility {
     TRACKED = 'TRACKED',
 }
 
-export interface VersionToFileName {
+export interface VersionToFilePath {
     [version: string]: string;
 }
 
@@ -345,55 +341,38 @@ export enum Docs {
     SmartContracts,
 }
 
+export enum WebsiteLegacyPaths {
+    ZeroExJs = '/docs/0xjs',
+    Web3Wrapper = '/docs/web3_wrapper',
+}
+
 export enum WebsitePaths {
     Portal = '/portal',
     Wiki = '/wiki',
-    ZeroExJs = '/docs/0xjs',
+    ZeroExJs = '/docs/0x.js',
     Home = '/',
     FAQ = '/faq',
     About = '/about',
     Whitepaper = '/pdfs/0x_white_paper.pdf',
     SmartContracts = '/docs/contracts',
     Connect = '/docs/connect',
+    Web3Wrapper = '/docs/web3-wrapper',
+    Deployer = '/docs/deployer',
+    JSONSchemas = '/docs/json-schemas',
+    SolCov = '/docs/sol-cov',
+    Subproviders = '/docs/subproviders',
+    Jobs = '/jobs',
 }
 
 export enum DocPackages {
     Connect = 'CONNECT',
     ZeroExJs = 'ZERO_EX_JS',
     SmartContracts = 'SMART_CONTRACTS',
-}
-
-export interface TimestampMsRange {
-    startTimestampMs: number;
-    endTimestampMs: number;
-}
-
-export interface OutdatedWrappedEtherByNetworkId {
-    [networkId: number]: {
-        address: string;
-        timestampMsRange: TimestampMsRange;
-    };
-}
-
-export enum SmartContractDocSections {
-    Introduction = 'Introduction',
-    Exchange = 'Exchange',
-    TokenTransferProxy = 'TokenTransferProxy',
-    TokenRegistry = 'TokenRegistry',
-    ZRXToken = 'ZRXToken',
-}
-
-export interface MaterialUIPosition {
-    vertical: 'bottom' | 'top' | 'center';
-    horizontal: 'left' | 'middle' | 'right';
-}
-
-export enum Language {
-    English = 'EN',
-    Spanish = 'ES',
-    Chinese = 'ZH',
-    Korean = 'KO',
-    Russian = 'RU',
+    Web3Wrapper = 'WEB3_WRAPPER',
+    Deployer = 'DEPLOYER',
+    JSONSchemas = 'JSON_SCHEMAS',
+    SolCov = 'SOL_COV',
+    Subproviders = 'SUBPROVIDERS',
 }
 
 export enum Key {
@@ -442,11 +421,16 @@ export enum Key {
     About = 'ABOUT',
     Careers = 'CAREERS',
     Contact = 'CONTACT',
+    Deployer = 'DEPLOYER',
+    JsonSchemas = 'JSON_SCHEMAS',
+    SolCov = 'SOL_COV',
+    Subproviders = 'SUBPROVIDERS',
     Blog = 'BLOG',
     Forum = 'FORUM',
     Connect = 'CONNECT',
     Whitepaper = 'WHITEPAPER',
     Wiki = 'WIKI',
+    Web3Wrapper = 'WEB3_WRAPPER',
     And = 'AND',
     Faq = 'FAQ',
     SmartContracts = 'SMART_CONTRACTS',
@@ -458,9 +442,66 @@ export enum Key {
     RocketChat = 'ROCKETCHAT',
 }
 
+export enum SmartContractDocSections {
+    Introduction = 'Introduction',
+    Exchange = 'Exchange',
+    TokenTransferProxy = 'TokenTransferProxy',
+    TokenRegistry = 'TokenRegistry',
+    ZRXToken = 'ZRXToken',
+}
+
+export enum Language {
+    English = 'EN',
+    Spanish = 'ES',
+    Chinese = 'ZH',
+    Korean = 'KO',
+    Russian = 'RU',
+}
+
 export enum Deco {
     Cap,
     CapWords,
     Upper,
+}
+
+export interface MaterialUIPosition {
+    vertical: 'bottom' | 'top' | 'center';
+    horizontal: 'left' | 'middle' | 'right';
+}
+
+export enum Providers {
+    Parity = 'PARITY',
+    Metamask = 'METAMASK',
+    Mist = 'MIST',
+}
+
+export interface TimestampMsRange {
+    startTimestampMs: number;
+    endTimestampMs: number;
+}
+
+export interface OutdatedWrappedEtherByNetworkId {
+    [networkId: number]: {
+        address: string;
+        timestampMsRange: TimestampMsRange;
+    };
+}
+
+export interface TokenStateByAddress {
+    [address: string]: TokenState;
+}
+
+export interface TokenState {
+    balance: BigNumber;
+    allowance: BigNumber;
+    isLoaded: boolean;
+}
+
+export interface RelayerInfo {
+    headerUrl: string;
+    id: string;
+    name: string;
+    marketShare: number;
+    topTokens: Token[];
 }
 // tslint:disable:max-file-line-count

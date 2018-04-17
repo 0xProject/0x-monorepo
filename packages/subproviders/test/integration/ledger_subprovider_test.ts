@@ -1,9 +1,10 @@
+import { JSONRPCResponsePayload } from '@0xproject/types';
+import { promisify } from '@0xproject/utils';
 import Eth from '@ledgerhq/hw-app-eth';
-// HACK: This depdency is optional and tslint skips optional depdencies
+// HACK: This dependency is optional and tslint skips optional dependencies
 // tslint:disable-next-line:no-implicit-dependencies
 import TransportNodeHid from '@ledgerhq/hw-transport-node-hid';
 import * as chai from 'chai';
-import promisify = require('es6-promisify');
 import * as ethUtils from 'ethereumjs-util';
 import * as _ from 'lodash';
 import Web3 = require('web3');
@@ -13,6 +14,7 @@ import RpcSubprovider = require('web3-provider-engine/subproviders/rpc');
 import { LedgerSubprovider } from '../../src';
 import { DoneCallback, LedgerEthereumClient } from '../../src/types';
 import { chaiSetup } from '../chai_setup';
+import { fixtureData } from '../utils/fixture_data';
 import { reportCallbackErrors } from '../utils/report_callback_errors';
 
 chaiSetup.configure();
@@ -24,17 +26,14 @@ async function ledgerEthereumNodeJsClientFactoryAsync(): Promise<LedgerEthereumC
     return ledgerEthClient;
 }
 
-const TESTRPC_DERIVATION_PATH = `m/44'/60'/0'/0`;
-const TEST_RPC_ACCOUNT_0 = '0x5409ed021d9299bf6814279a6a1411a7e866a631';
-
 describe('LedgerSubprovider', () => {
     let ledgerSubprovider: LedgerSubprovider;
-    const networkId: number = 42;
+    const networkId: number = fixtureData.NETWORK_ID;
     before(async () => {
         ledgerSubprovider = new LedgerSubprovider({
             networkId,
             ledgerEthereumClientFactoryAsync: ledgerEthereumNodeJsClientFactoryAsync,
-            derivationPath: TESTRPC_DERIVATION_PATH,
+            baseDerivationPath: fixtureData.TESTRPC_BASE_DERIVATION_PATH,
         });
     });
     describe('direct method calls', () => {
@@ -43,9 +42,10 @@ describe('LedgerSubprovider', () => {
             expect(accounts[0]).to.not.be.an('undefined');
             expect(accounts.length).to.be.equal(10);
         });
-        it('returns the expected first account from a ledger set up with the test mnemonic', async () => {
+        it('returns the expected accounts from a ledger set up with the test mnemonic', async () => {
             const accounts = await ledgerSubprovider.getAccountsAsync();
-            expect(accounts[0]).to.be.equal(TEST_RPC_ACCOUNT_0);
+            expect(accounts[0]).to.be.equal(fixtureData.TEST_RPC_ACCOUNT_0);
+            expect(accounts[1]).to.be.equal(fixtureData.TEST_RPC_ACCOUNT_1);
         });
         it('returns requested number of accounts', async () => {
             const numberOfAccounts = 20;
@@ -54,24 +54,29 @@ describe('LedgerSubprovider', () => {
             expect(accounts.length).to.be.equal(numberOfAccounts);
         });
         it('signs a personal message', async () => {
-            const data = ethUtils.bufferToHex(ethUtils.toBuffer('hello world'));
-            const ecSignatureHex = await ledgerSubprovider.signPersonalMessageAsync(data);
-            expect(ecSignatureHex.length).to.be.equal(132);
-            expect(ecSignatureHex.substr(0, 2)).to.be.equal('0x');
+            const data = ethUtils.bufferToHex(ethUtils.toBuffer(fixtureData.PERSONAL_MESSAGE_STRING));
+            const ecSignatureHex = await ledgerSubprovider.signPersonalMessageAsync(
+                data,
+                fixtureData.TEST_RPC_ACCOUNT_0,
+            );
+            expect(ecSignatureHex).to.be.equal(fixtureData.PERSONAL_MESSAGE_SIGNED_RESULT);
+        });
+        it('signs a personal message with second address', async () => {
+            const data = ethUtils.bufferToHex(ethUtils.toBuffer(fixtureData.PERSONAL_MESSAGE_STRING));
+            const ecSignatureHex = await ledgerSubprovider.signPersonalMessageAsync(
+                data,
+                fixtureData.TEST_RPC_ACCOUNT_1,
+            );
+            expect(ecSignatureHex).to.be.equal(fixtureData.PERSONAL_MESSAGE_ACCOUNT_1_SIGNED_RESULT);
         });
         it('signs a transaction', async () => {
-            const tx = {
-                nonce: '0x00',
-                gas: '0x2710',
-                to: '0x0000000000000000000000000000000000000000',
-                value: '0x00',
-                chainId: 3,
-                from: TEST_RPC_ACCOUNT_0,
-            };
-            const txHex = await ledgerSubprovider.signTransactionAsync(tx);
-            expect(txHex).to.be.equal(
-                '0xf85f8080822710940000000000000000000000000000000000000000808078a0712854c73c69445cc1b22a7c3d7312ff9a97fe4ffba35fd636e8236b211b6e7ca0647cee031615e52d916c7c707025bc64ad525d8f1b9876c3435a863b42743178',
-            );
+            const txHex = await ledgerSubprovider.signTransactionAsync(fixtureData.TX_DATA);
+            expect(txHex).to.be.equal(fixtureData.TX_DATA_SIGNED_RESULT);
+        });
+        it('signs a transaction with the second address', async () => {
+            const txData = { ...fixtureData.TX_DATA, from: fixtureData.TEST_RPC_ACCOUNT_1 };
+            const txHex = await ledgerSubprovider.signTransactionAsync(txData);
+            expect(txHex).to.be.equal(fixtureData.TX_DATA_ACCOUNT_1_SIGNED_RESULT);
         });
     });
     describe('calls through a provider', () => {
@@ -97,7 +102,7 @@ describe('LedgerSubprovider', () => {
                 params: [],
                 id: 1,
             };
-            const callback = reportCallbackErrors(done)((err: Error, response: Web3.JSONRPCResponsePayload) => {
+            const callback = reportCallbackErrors(done)((err: Error, response: JSONRPCResponsePayload) => {
                 expect(err).to.be.a('null');
                 expect(response.result.length).to.be.equal(10);
                 done();
@@ -115,7 +120,7 @@ describe('LedgerSubprovider', () => {
                     params: [signer, messageHex],
                     id: 1,
                 };
-                const callback = reportCallbackErrors(done)((err: Error, response: Web3.JSONRPCResponsePayload) => {
+                const callback = reportCallbackErrors(done)((err: Error, response: JSONRPCResponsePayload) => {
                     expect(err).to.be.a('null');
                     expect(response.result.length).to.be.equal(132);
                     expect(response.result.substr(0, 2)).to.be.equal('0x');
@@ -135,7 +140,7 @@ describe('LedgerSubprovider', () => {
                     params: [messageHex, signer],
                     id: 1,
                 };
-                const callback = reportCallbackErrors(done)((err: Error, response: Web3.JSONRPCResponsePayload) => {
+                const callback = reportCallbackErrors(done)((err: Error, response: JSONRPCResponsePayload) => {
                     expect(err).to.be.a('null');
                     expect(response.result.length).to.be.equal(132);
                     expect(response.result.substr(0, 2)).to.be.equal('0x');
@@ -145,20 +150,15 @@ describe('LedgerSubprovider', () => {
             })().catch(done);
         });
         it('signs a transaction', (done: DoneCallback) => {
-            const tx = {
-                to: '0xafa3f8684e54059998bc3a7b0d2b0da075154d66',
-                value: '0x00',
-            };
             const payload = {
                 jsonrpc: '2.0',
                 method: 'eth_signTransaction',
-                params: [tx],
+                params: [fixtureData.TX_DATA],
                 id: 1,
             };
-            const callback = reportCallbackErrors(done)((err: Error, response: Web3.JSONRPCResponsePayload) => {
+            const callback = reportCallbackErrors(done)((err: Error, response: JSONRPCResponsePayload) => {
                 expect(err).to.be.a('null');
-                expect(response.result.raw.length).to.be.equal(206);
-                expect(response.result.raw.substr(0, 2)).to.be.equal('0x');
+                expect(response.result.raw).to.be.equal(fixtureData.TX_DATA_SIGNED_RESULT);
                 done();
             });
             ledgerProvider.sendAsync(payload, callback);
@@ -170,7 +170,7 @@ describe('LedgerSubprovider', () => {
                 // Give first account on Ledger sufficient ETH to complete tx send
                 let tx = {
                     to: accounts[0],
-                    from: TEST_RPC_ACCOUNT_0,
+                    from: fixtureData.TEST_RPC_ACCOUNT_0,
                     value: '0x8ac7230489e80000', // 10 ETH
                 };
                 let payload = {
@@ -193,7 +193,7 @@ describe('LedgerSubprovider', () => {
                     params: [tx],
                     id: 1,
                 };
-                const callback = reportCallbackErrors(done)((err: Error, response: Web3.JSONRPCResponsePayload) => {
+                const callback = reportCallbackErrors(done)((err: Error, response: JSONRPCResponsePayload) => {
                     expect(err).to.be.a('null');
                     const result = response.result;
                     expect(result.length).to.be.equal(66);

@@ -9,12 +9,11 @@ import { ContractName } from '../util/types';
 
 import { chaiSetup } from './utils/chai_setup';
 import { deployer } from './utils/deployer';
+import { provider, web3Wrapper } from './utils/web3_wrapper';
 
 chaiSetup.configure();
 const expect = chai.expect;
-const web3 = web3Factory.create();
-const web3Wrapper = new Web3Wrapper(web3.currentProvider);
-const blockchainLifecycle = new BlockchainLifecycle();
+const blockchainLifecycle = new BlockchainLifecycle(web3Wrapper);
 
 describe('EtherToken', () => {
     let account: string;
@@ -27,7 +26,7 @@ describe('EtherToken', () => {
 
         const etherToken = await deployer.deployAsync(ContractName.EtherToken);
         etherTokenAddress = etherToken.address;
-        zeroEx = new ZeroEx(web3.currentProvider, {
+        zeroEx = new ZeroEx(provider, {
             gasPrice,
             networkId: constants.TESTRPC_NETWORK_ID,
         });
@@ -52,7 +51,7 @@ describe('EtherToken', () => {
             const initEthBalance = await web3Wrapper.getBalanceInWeiAsync(account);
             const initEthTokenBalance = await zeroEx.token.getBalanceAsync(etherTokenAddress, account);
 
-            const ethToDeposit = new BigNumber(web3.toWei(1, 'ether'));
+            const ethToDeposit = new BigNumber(Web3Wrapper.toWei(new BigNumber(1)));
 
             const txHash = await zeroEx.etherToken.depositAsync(etherTokenAddress, ethToDeposit, account);
             const receipt = await zeroEx.awaitTransactionMinedAsync(txHash);
@@ -77,7 +76,7 @@ describe('EtherToken', () => {
         });
 
         it('should convert ether tokens to ether with sufficient balance', async () => {
-            const ethToDeposit = new BigNumber(web3.toWei(1, 'ether'));
+            const ethToDeposit = new BigNumber(Web3Wrapper.toWei(new BigNumber(1)));
             await zeroEx.etherToken.depositAsync(etherTokenAddress, ethToDeposit, account);
             const initEthTokenBalance = await zeroEx.token.getBalanceAsync(etherTokenAddress, account);
             const initEthBalance = await web3Wrapper.getBalanceInWeiAsync(account);

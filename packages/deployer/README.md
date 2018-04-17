@@ -2,45 +2,50 @@
 
 This repository contains a CLI tool that facilitates compiling and deployment of smart contracts.
 
+### Read the [Documentation](https://0xproject.com/docs/deployer).
+
 ## Installation
+
+#### CLI Installation
+
+```bash
+yarn global add @0xproject/deployer
+```
+
+#### API Installation
 
 ```bash
 yarn add @0xproject/deployer
 ```
 
-## Usage
+If your project is in [TypeScript](https://www.typescriptlang.org/), add the following to your `tsconfig.json`:
 
-```bash
-node ./node_modules/@0xproject/deployer/lib/cli.js --help
-cli.js [command]
+```json
+"compilerOptions": {
+    "typeRoots": ["node_modules/@0xproject/typescript-typings/types", "node_modules/@types"],
+}
+```
 
-Commands:
-  cli.js compile  compile contracts
-  cli.js migrate  compile and deploy contracts using migration scripts
-  cli.js deploy   deploy a single contract with provided arguments
+**Import**
 
-Options:
-  --version          Show version number                               [boolean]
-  --contracts-dir    path of contracts directory to compile
-              [string] [default: "/Users/leonidlogvinov/Dev/0x/contracts"]
-  --network-id       mainnet=1, kovan=42, testrpc=50      [number] [default: 50]
-  --should-optimize  enable optimizer                 [boolean] [default: false]
-  --artifacts-dir    path to write contracts artifacts to
-       [string] [default: "/Users/leonidlogvinov/Dev/0x/build/artifacts/"]
-  --jsonrpc-port     port connected to JSON RPC         [number] [default: 8545]
-  --gas-price        gasPrice to be used for transactions
-                                                [string] [default: "2000000000"]
-  --account          account to use for deploying contracts             [string]
-  --help             Show help                                         [boolean]
+```typescript
+import { Deployer, Compiler } from '@0xproject/deployer';
+```
+
+or
+
+```javascript
+var Deployer = require('@0xproject/deployer').Deployer;
+var Compiler = require('@0xproject/deployer').Compiler;
 ```
 
 ## Contributing
 
-We strongly recommend that the community help us make improvements and determine the future direction of the protocol. To report bugs within this package, please create an issue in this repository.
+We welcome improvements and fixes from the wider community! To report bugs within this package, please create an issue in this repository.
 
 Please read our [contribution guidelines](../../CONTRIBUTING.md) before getting started.
 
-### Install Dependencies
+### Install dependencies
 
 If you don't have yarn workspaces enabled (Yarn < v1.0) - enable them:
 
@@ -56,14 +61,34 @@ yarn install
 
 ### Build
 
+If this is your **first** time building this package, you must first build **all** packages within the monorepo. This is because packages that depend on other packages located inside this monorepo are symlinked when run from **within** the monorepo. This allows you to make changes across multiple packages without first publishing dependent packages to NPM. To build all packages, run the following from the monorepo root directory:
+
+```bash
+yarn lerna:rebuild
+```
+
+Or continuously rebuild on change:
+
+```bash
+yarn dev
+```
+
+You can also build this specific package by running the following from within its directory:
+
 ```bash
 yarn build
 ```
 
-or
+or continuously rebuild on change:
 
 ```bash
 yarn build:watch
+```
+
+### Clean
+
+```bash
+yarn clean
 ```
 
 ### Lint

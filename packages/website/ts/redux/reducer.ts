@@ -38,7 +38,7 @@ export interface State {
     tokenByAddress: TokenByAddress;
     lastForceTokenStateRefetch: number;
     userAddress: string;
-    userEtherBalance: BigNumber;
+    userEtherBalanceInWei: BigNumber;
     // Note: cache of supplied orderJSON in fill order step. Do not use for anything else.
     userSuppliedOrderCache: Order;
 
@@ -77,7 +77,7 @@ const INITIAL_STATE: State = {
     tokenByAddress: {},
     lastForceTokenStateRefetch: moment().unix(),
     userAddress: '',
-    userEtherBalance: new BigNumber(0),
+    userEtherBalanceInWei: new BigNumber(0),
     userSuppliedOrderCache: undefined,
 
     // Docs
@@ -138,7 +138,7 @@ export function reducer(state: State = INITIAL_STATE, action: Action) {
         case ActionTypes.UpdateUserEtherBalance: {
             return {
                 ...state,
-                userEtherBalance: action.data,
+                userEtherBalanceInWei: action.data,
             };
         }
 
@@ -184,10 +184,11 @@ export function reducer(state: State = INITIAL_STATE, action: Action) {
         }
 
         case ActionTypes.BatchDispatch: {
+            const userAddress = _.isUndefined(action.data.userAddressIfExists) ? '' : action.data.userAddressIfExists;
             return {
                 ...state,
                 networkId: action.data.networkId,
-                userAddress: action.data.userAddress,
+                userAddress,
                 sideToAssetToken: action.data.sideToAssetToken,
                 tokenByAddress: action.data.tokenByAddress,
             };
@@ -284,9 +285,10 @@ export function reducer(state: State = INITIAL_STATE, action: Action) {
         }
 
         case ActionTypes.UpdateUserAddress: {
+            const userAddress = _.isUndefined(action.data) ? '' : action.data;
             return {
                 ...state,
-                userAddress: action.data,
+                userAddress,
             };
         }
 

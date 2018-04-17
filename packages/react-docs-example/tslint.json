@@ -1,0 +1,8 @@
+{
+    "extends": ["@0xproject/tslint-config"],
+    "rules": {
+        "no-object-literal-type-assertion": false,
+        "completed-docs": false,
+        "prefer-function-over-method": false
+    }
+}

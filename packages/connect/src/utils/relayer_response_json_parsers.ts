@@ -1,8 +1,9 @@
 import { assert } from '@0xproject/assert';
 import { schemas } from '@0xproject/json-schemas';
+import { SignedOrder } from '@0xproject/types';
 import * as _ from 'lodash';
 
-import { FeesResponse, OrderbookResponse, SignedOrder, TokenPairsItem } from '../types';
+import { FeesResponse, OrderbookResponse, TokenPairsItem } from '../types';
 
 import { typeConverters } from './type_converters';
 

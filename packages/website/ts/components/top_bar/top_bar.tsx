@@ -15,7 +15,7 @@ import { TopBarMenuItem } from 'ts/components/top_bar/top_bar_menu_item';
 import { DropDown } from 'ts/components/ui/drop_down';
 import { Identicon } from 'ts/components/ui/identicon';
 import { Dispatcher } from 'ts/redux/dispatcher';
-import { Deco, Key, ProviderType, WebsitePaths } from 'ts/types';
+import { Deco, Key, ProviderType, WebsiteLegacyPaths, WebsitePaths } from 'ts/types';
 import { constants } from 'ts/utils/constants';
 import { Translate } from 'ts/utils/translate';
 
@@ -39,6 +39,7 @@ interface TopBarProps {
     style?: React.CSSProperties;
     isNightVersion?: boolean;
     onVersionSelected?: (semver: string) => void;
+    sidebarHeader?: React.ReactNode;
 }
 
 interface TopBarState {
@@ -120,14 +121,36 @@ export class TopBar extends React.Component<TopBarProps, TopBarState> {
                     primaryText={this.props.translate.get(Key.StandardRelayerApi, Deco.CapWords)}
                 />
             </a>,
-            <a
-                key="subMenuItem-github"
-                target="_blank"
-                className="text-decoration-none"
-                href={constants.URL_GITHUB_ORG}
-            >
-                <MenuItem style={{ fontSize: styles.menuItem.fontSize }} primaryText="GitHub" />
-            </a>,
+            <Link key="subMenuItem-jsonSchema" to={WebsitePaths.JSONSchemas} className="text-decoration-none">
+                <MenuItem
+                    style={{ fontSize: styles.menuItem.fontSize }}
+                    primaryText={this.props.translate.get(Key.JsonSchemas, Deco.CapWords)}
+                />
+            </Link>,
+            <Link key="subMenuItem-subproviders" to={WebsitePaths.Subproviders} className="text-decoration-none">
+                <MenuItem
+                    style={{ fontSize: styles.menuItem.fontSize }}
+                    primaryText={this.props.translate.get(Key.Subproviders, Deco.CapWords)}
+                />
+            </Link>,
+            <Link key="subMenuItem-web3Wrapper" to={WebsitePaths.Web3Wrapper} className="text-decoration-none">
+                <MenuItem
+                    style={{ fontSize: styles.menuItem.fontSize }}
+                    primaryText={this.props.translate.get(Key.Web3Wrapper, Deco.CapWords)}
+                />
+            </Link>,
+            <Link key="subMenuItem-deployer" to={WebsitePaths.Deployer} className="text-decoration-none">
+                <MenuItem
+                    style={{ fontSize: styles.menuItem.fontSize }}
+                    primaryText={this.props.translate.get(Key.Deployer, Deco.CapWords)}
+                />
+            </Link>,
+            <Link key="subMenuItem-sol-cov" to={WebsitePaths.SolCov} className="text-decoration-none">
+                <MenuItem
+                    style={{ fontSize: styles.menuItem.fontSize }}
+                    primaryText={this.props.translate.get(Key.SolCov, Deco.CapWords)}
+                />
+            </Link>,
             <a
                 key="subMenuItem-whitePaper"
                 target="_blank"
@@ -138,6 +161,14 @@ export class TopBar extends React.Component<TopBarProps, TopBarState> {
                     style={{ fontSize: styles.menuItem.fontSize }}
                     primaryText={this.props.translate.get(Key.Whitepaper, Deco.CapWords)}
                 />
+            </a>,
+            <a
+                key="subMenuItem-github"
+                target="_blank"
+                className="text-decoration-none"
+                href={constants.URL_GITHUB_ORG}
+            >
+                <MenuItem style={{ fontSize: styles.menuItem.fontSize }} primaryText="GitHub" />
             </a>,
         ];
         const bottomBorderStyle = this._shouldDisplayBottomBar() ? styles.bottomBar : {};
@@ -277,6 +308,46 @@ export class TopBar extends React.Component<TopBarProps, TopBarState> {
                             </MenuItem>
                         </Link>
                     )}
+                    {!this._isViewingWeb3WrapperDocs() && (
+                        <Link to={WebsitePaths.Web3Wrapper} className="text-decoration-none">
+                            <MenuItem className="py2">
+                                {this.props.translate.get(Key.Web3Wrapper, Deco.Cap)}{' '}
+                                {this.props.translate.get(Key.Docs, Deco.Cap)}
+                            </MenuItem>
+                        </Link>
+                    )}
+                    {!this._isViewingDeployerDocs() && (
+                        <Link to={WebsitePaths.Deployer} className="text-decoration-none">
+                            <MenuItem className="py2">
+                                {this.props.translate.get(Key.Deployer, Deco.Cap)}{' '}
+                                {this.props.translate.get(Key.Docs, Deco.Cap)}
+                            </MenuItem>
+                        </Link>
+                    )}
+                    {!this._isViewingJsonSchemasDocs() && (
+                        <Link to={WebsitePaths.JSONSchemas} className="text-decoration-none">
+                            <MenuItem className="py2">
+                                {this.props.translate.get(Key.JsonSchemas, Deco.Cap)}{' '}
+                                {this.props.translate.get(Key.Docs, Deco.Cap)}
+                            </MenuItem>
+                        </Link>
+                    )}
+                    {!this._isViewingSolCovDocs() && (
+                        <Link to={WebsitePaths.SolCov} className="text-decoration-none">
+                            <MenuItem className="py2">
+                                {this.props.translate.get(Key.SolCov, Deco.Cap)}{' '}
+                                {this.props.translate.get(Key.Docs, Deco.Cap)}
+                            </MenuItem>
+                        </Link>
+                    )}
+                    {!this._isViewingSubprovidersDocs() && (
+                        <Link to={WebsitePaths.Subproviders} className="text-decoration-none">
+                            <MenuItem className="py2">
+                                {this.props.translate.get(Key.Subproviders, Deco.Cap)}{' '}
+                                {this.props.translate.get(Key.Docs, Deco.Cap)}
+                            </MenuItem>
+                        </Link>
+                    )}
                     {!this._isViewingPortal() && (
                         <Link to={`${WebsitePaths.Portal}`} className="text-decoration-none">
                             <MenuItem className="py2">
@@ -304,7 +375,14 @@ export class TopBar extends React.Component<TopBarProps, TopBarState> {
     }
     private _renderDocsMenu(): React.ReactNode {
         if (
-            (!this._isViewing0xjsDocs() && !this._isViewingSmartContractsDocs() && !this._isViewingConnectDocs()) ||
+            (!this._isViewing0xjsDocs() &&
+                !this._isViewingSmartContractsDocs() &&
+                !this._isViewingWeb3WrapperDocs() &&
+                !this._isViewingDeployerDocs() &&
+                !this._isViewingJsonSchemasDocs() &&
+                !this._isViewingSolCovDocs() &&
+                !this._isViewingSubprovidersDocs() &&
+                !this._isViewingConnectDocs()) ||
             _.isUndefined(this.props.menu)
         ) {
             return undefined;
@@ -316,7 +394,7 @@ export class TopBar extends React.Component<TopBarProps, TopBarState> {
                 <NestedSidebarMenu
                     topLevelMenu={this.props.menu}
                     menuSubsectionsBySection={this.props.menuSubsectionsBySection}
-                    sidebarHeader={<SidebarHeader title={this.props.docsInfo.displayName} />}
+                    sidebarHeader={this.props.sidebarHeader}
                     shouldDisplaySectionHeaders={false}
                     onMenuItemClick={this._onMenuButtonClick.bind(this)}
                     selectedVersion={this.props.docsVersion}
@@ -336,7 +414,7 @@ export class TopBar extends React.Component<TopBarProps, TopBarState> {
                 <NestedSidebarMenu
                     topLevelMenu={this.props.menuSubsectionsBySection}
                     menuSubsectionsBySection={this.props.menuSubsectionsBySection}
-                    sidebarHeader={<SidebarHeader title="Wiki" />}
+                    sidebarHeader={this.props.sidebarHeader}
                     shouldDisplaySectionHeaders={false}
                     onMenuItemClick={this._onMenuButtonClick.bind(this)}
                 />
@@ -384,13 +462,34 @@ export class TopBar extends React.Component<TopBarProps, TopBarState> {
         return _.includes(this.props.location.pathname, WebsitePaths.FAQ);
     }
     private _isViewing0xjsDocs() {
-        return _.includes(this.props.location.pathname, WebsitePaths.ZeroExJs);
+        return (
+            _.includes(this.props.location.pathname, WebsitePaths.ZeroExJs) ||
+            _.includes(this.props.location.pathname, WebsiteLegacyPaths.ZeroExJs)
+        );
     }
     private _isViewingConnectDocs() {
         return _.includes(this.props.location.pathname, WebsitePaths.Connect);
     }
     private _isViewingSmartContractsDocs() {
         return _.includes(this.props.location.pathname, WebsitePaths.SmartContracts);
+    }
+    private _isViewingWeb3WrapperDocs() {
+        return (
+            _.includes(this.props.location.pathname, WebsitePaths.Web3Wrapper) ||
+            _.includes(this.props.location.pathname, WebsiteLegacyPaths.Web3Wrapper)
+        );
+    }
+    private _isViewingDeployerDocs() {
+        return _.includes(this.props.location.pathname, WebsitePaths.Deployer);
+    }
+    private _isViewingJsonSchemasDocs() {
+        return _.includes(this.props.location.pathname, WebsitePaths.JSONSchemas);
+    }
+    private _isViewingSolCovDocs() {
+        return _.includes(this.props.location.pathname, WebsitePaths.SolCov);
+    }
+    private _isViewingSubprovidersDocs() {
+        return _.includes(this.props.location.pathname, WebsitePaths.Subproviders);
     }
     private _isViewingWiki() {
         return _.includes(this.props.location.pathname, WebsitePaths.Wiki);
@@ -401,7 +500,12 @@ export class TopBar extends React.Component<TopBarProps, TopBarState> {
             this._isViewing0xjsDocs() ||
             this._isViewingFAQ() ||
             this._isViewingSmartContractsDocs() ||
+            this._isViewingWeb3WrapperDocs() ||
+            this._isViewingDeployerDocs() ||
+            this._isViewingJsonSchemasDocs() ||
+            this._isViewingSolCovDocs() ||
+            this._isViewingSubprovidersDocs() ||
             this._isViewingConnectDocs()
         );
     }
-}
+} // tslint:disable:max-file-line-count

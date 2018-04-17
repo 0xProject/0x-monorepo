@@ -1,8 +1,8 @@
+import { logUtils } from '@0xproject/utils';
 import * as express from 'express';
 import rollbar = require('rollbar');
 
 import { configs } from './configs';
-import { utils } from './utils';
 
 export const errorReporter = {
     setup() {
@@ -11,7 +11,7 @@ export const errorReporter = {
         });
         rollbar.handleUncaughtExceptions(configs.ROLLBAR_ACCESS_KEY);
         process.on('unhandledRejection', async (err: Error) => {
-            utils.consoleLog(`Uncaught exception ${err}. Stack: ${err.stack}`);
+            logUtils.log(`Uncaught exception ${err}. Stack: ${err.stack}`);
             await this.reportAsync(err);
             process.exit(1);
         });
@@ -23,7 +23,7 @@ export const errorReporter = {
         return new Promise((resolve, reject) => {
             rollbar.handleError(err, req, (rollbarErr: Error) => {
                 if (rollbarErr) {
-                    utils.consoleLog(`Error reporting to rollbar, ignoring: ${rollbarErr}`);
+                    logUtils.log(`Error reporting to rollbar, ignoring: ${rollbarErr}`);
                     reject(rollbarErr);
                 } else {
                     resolve();

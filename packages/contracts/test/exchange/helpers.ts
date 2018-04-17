@@ -17,13 +17,12 @@ import { OrderFactory } from '../../util/order_factory';
 import { ContractName } from '../../util/types';
 import { chaiSetup } from '../utils/chai_setup';
 import { deployer } from '../utils/deployer';
+import { provider, web3Wrapper } from '../utils/web3_wrapper';
 
 chaiSetup.configure();
 const expect = chai.expect;
 
-const web3 = web3Factory.create();
-const web3Wrapper = new Web3Wrapper(web3.currentProvider);
-const blockchainLifecycle = new BlockchainLifecycle();
+const blockchainLifecycle = new BlockchainLifecycle(web3Wrapper);
 
 describe('Exchange', () => {
     let maker: string;
@@ -47,9 +46,9 @@ describe('Exchange', () => {
             zrx.address,
             tokenTransferProxy.address,
         ]);
-        const exchange = new ExchangeContract(web3Wrapper, exchangeInstance.abi, exchangeInstance.address);
+        const exchange = new ExchangeContract(exchangeInstance.abi, exchangeInstance.address, provider);
         await tokenTransferProxy.addAuthorizedAddress(exchange.address, { from: accounts[0] });
-        const zeroEx = new ZeroEx(web3.currentProvider, { networkId: constants.TESTRPC_NETWORK_ID });
+        const zeroEx = new ZeroEx(provider, { networkId: constants.TESTRPC_NETWORK_ID });
         exchangeWrapper = new ExchangeWrapper(exchange, zeroEx);
         const defaultOrderParams = {
             exchangeContractAddress: exchange.address,

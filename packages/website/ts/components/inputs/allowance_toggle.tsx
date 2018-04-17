@@ -1,12 +1,12 @@
-import { constants as sharedConstants } from '@0xproject/react-shared';
-import { BigNumber } from '@0xproject/utils';
+import { colors, constants as sharedConstants, Styles } from '@0xproject/react-shared';
+import { BigNumber, logUtils } from '@0xproject/utils';
 import * as _ from 'lodash';
 import Toggle from 'material-ui/Toggle';
 import * as React from 'react';
-import * as ReactGA from 'react-ga';
 import { Blockchain } from 'ts/blockchain';
 import { Dispatcher } from 'ts/redux/dispatcher';
 import { BalanceErrs, Token, TokenState } from 'ts/types';
+import { analytics } from 'ts/utils/analytics';
 import { constants } from 'ts/utils/constants';
 import { errorReporter } from 'ts/utils/error_reporter';
 import { utils } from 'ts/utils/utils';
@@ -29,6 +29,31 @@ interface AllowanceToggleState {
     isSpinnerVisible: boolean;
     prevAllowance: BigNumber;
 }
+
+const styles: Styles = {
+    baseThumbStyle: {
+        height: 10,
+        width: 10,
+        top: 6,
+        backgroundColor: colors.white,
+        boxShadow: `0px 0px 0px ${colors.allowanceToggleShadow}`,
+    },
+    offThumbStyle: {
+        left: 4,
+    },
+    onThumbStyle: {
+        left: 25,
+    },
+    baseTrackStyle: {
+        width: 25,
+    },
+    offTrackStyle: {
+        backgroundColor: colors.allowanceToggleOffTrack,
+    },
+    onTrackStyle: {
+        backgroundColor: colors.allowanceToggleOnTrack,
+    },
+};
 
 export class AllowanceToggle extends React.Component<AllowanceToggleProps, AllowanceToggleState> {
     constructor(props: AllowanceToggleProps) {
@@ -54,6 +79,10 @@ export class AllowanceToggle extends React.Component<AllowanceToggleProps, Allow
                         disabled={this.state.isSpinnerVisible || this.props.isDisabled}
                         toggled={this._isAllowanceSet()}
                         onToggle={this._onToggleAllowanceAsync.bind(this)}
+                        thumbStyle={{ ...styles.baseThumbStyle, ...styles.offThumbStyle }}
+                        thumbSwitchedStyle={{ ...styles.baseThumbStyle, ...styles.onThumbStyle }}
+                        trackStyle={{ ...styles.baseTrackStyle, ...styles.offTrackStyle }}
+                        trackSwitchedStyle={{ ...styles.baseTrackStyle, ...styles.onTrackStyle }}
                     />
                 </div>
                 {this.state.isSpinnerVisible && (
@@ -67,6 +96,7 @@ export class AllowanceToggle extends React.Component<AllowanceToggleProps, Allow
     private async _onToggleAllowanceAsync(): Promise<void> {
         if (this.props.userAddress === '') {
             this.props.dispatcher.updateShouldBlockchainErrDialogBeOpen(true);
+            return;
         }
 
         this.setState({
@@ -81,20 +111,10 @@ export class AllowanceToggle extends React.Component<AllowanceToggleProps, Allow
         const eventLabel = `${this.props.token.symbol}-${networkName}`;
         try {
             await this.props.blockchain.setProxyAllowanceAsync(this.props.token, newAllowanceAmountInBaseUnits);
-            ReactGA.event({
-                category: 'Portal',
-                action: 'Set Allowance Success',
-                label: eventLabel,
-                value: newAllowanceAmountInBaseUnits.toNumber(),
-            });
+            analytics.logEvent('Portal', 'Set Allowance Success', eventLabel, newAllowanceAmountInBaseUnits.toNumber());
             await this.props.refetchTokenStateAsync();
         } catch (err) {
-            ReactGA.event({
-                category: 'Portal',
-                action: 'Set Allowance Failure',
-                label: eventLabel,
-                value: newAllowanceAmountInBaseUnits.toNumber(),
-            });
+            analytics.logEvent('Portal', 'Set Allowance Failure', eventLabel, newAllowanceAmountInBaseUnits.toNumber());
             this.setState({
                 isSpinnerVisible: false,
             });
@@ -102,8 +122,8 @@ export class AllowanceToggle extends React.Component<AllowanceToggleProps, Allow
             if (utils.didUserDenyWeb3Request(errMsg)) {
                 return;
             }
-            utils.consoleLog(`Unexpected error encountered: ${err}`);
-            utils.consoleLog(err.stack);
+            logUtils.log(`Unexpected error encountered: ${err}`);
+            logUtils.log(err.stack);
             this.props.onErrorOccurred(BalanceErrs.allowanceSettingFailed);
             await errorReporter.reportAsync(err);
         }
