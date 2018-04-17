@@ -42,39 +42,9 @@ contract ERC20Proxy is
         external
         onlyAuthorized
     {
-        address token = decodeMetadata(assetMetadata);
+        require(assetMetadata.length == 21);
+        address token = readAddress(assetMetadata, 1);
         bool success = ERC20Token(token).transferFrom(from, to, amount);
         require(success == true);
-    }
-
-    /// @dev Decodes ERC20-encoded byte array.
-    /// @param assetMetadata ERC20-encoded byte array.
-    /// @return tokenAddress Address of ERC20 token.
-    function decodeMetadata(bytes memory assetMetadata)
-        public pure
-        returns (address tokenAddress)
-    {
-        require(assetMetadata.length == 21);
-        return readAddress(assetMetadata, 1);
-    }
-
-    /// @dev Encodes ERC20 byte array.
-    /// @param assetProxyId Id of the asset proxy.
-    /// @param tokenAddress Address of the asset.
-    /// @return assetMetadata ERC20-encoded byte.
-    function encodeMetadata(
-        uint8 assetProxyId,
-        address tokenAddress)
-        public pure
-        returns (bytes memory assetMetadata)
-    {
-        // 0 is reserved as invalid proxy id
-        require(assetProxyId != 0);
-
-        // Encode fields into a byte array
-        assetMetadata = new bytes(21);
-        assetMetadata[0] = byte(assetProxyId);
-        writeAddress(assetMetadata, 1, tokenAddress);
-        return assetMetadata;
     }
 }
