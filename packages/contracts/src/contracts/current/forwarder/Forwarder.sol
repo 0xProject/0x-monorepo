@@ -104,7 +104,7 @@ contract Forwarder is
         }
 
         // Make our market sell to buy the requested tokens with the remaining balance
-        Exchange.FillResults memory requestedTokensResult = exchange.marketSellOrders(orders, takerTokenBalance, signatures);
+        FillResults memory requestedTokensResult = exchange.marketSellOrders(orders, takerTokenBalance, signatures);
         // Ensure the token abstraction was fair 
         require(isAcceptableThreshold(sellTokenAmount, requestedTokensResult.takerTokenFilledAmount));
         // Update our return FillResult with the market sell

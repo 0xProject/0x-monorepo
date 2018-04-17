@@ -10,10 +10,9 @@ contract MixinForwarderCore is
     LibOrder,
     SafeMath
 {
-    uint16  constant public EXTERNAL_QUERY_GAS_LIMIT = 4999;    // Changes to state require at least 5000 gas
+    uint16  constant PERCENTAGE_DENOMINATOR = 10000; // 9800 == 98%, 10000 == 100%
     uint16  constant public MAX_FEE = 1000; // 10%
     uint16  constant ALLOWABLE_EXCHANGE_PERCENTAGE = 9800; // 98%
-    uint16  constant PERCENTAGE_DENOMINATOR = 1000; // 9800 == 98%
     uint256 constant MAX_UINT = 2 ** 256 - 1;
 
     Exchange exchange;
@@ -26,8 +25,8 @@ contract MixinForwarderCore is
         pure
         returns (bool)
     {
-        uint256 exchangedProportion = safeDiv(safeMul(requestedTokenAmount, ALLOWABLE_EXCHANGE_PERCENTAGE), PERCENTAGE_DENOMINATOR);
-        return soldTokenAmount >= exchangedProportion;
+        uint256 acceptableProportion = safeDiv(safeMul(requestedTokenAmount, ALLOWABLE_EXCHANGE_PERCENTAGE), PERCENTAGE_DENOMINATOR);
+        return soldTokenAmount >= acceptableProportion;
     }
     function addFillResults(FillResults memory totalFillResults, FillResults memory singleFillResults)
         internal
