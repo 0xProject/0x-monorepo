@@ -91,30 +91,6 @@ describe('Asset Transfer Proxies', () => {
         await blockchainLifecycle.revertAsync();
     });
     describe('Transfer Proxy - ERC20', () => {
-        it('should successfully encode/decode metadata', async () => {
-            const metadata = await erc20Proxy.encodeMetadata.callAsync(AssetProxyId.ERC20, zrx.address);
-            const address = await erc20Proxy.decodeMetadata.callAsync(metadata);
-            expect(address).to.be.equal(zrx.address);
-        });
-
-        it('should successfully decode metadata encoded by typescript helpers', async () => {
-            const metadata = encodeERC20ProxyData(zrx.address);
-            const address = await erc20Proxy.decodeMetadata.callAsync(metadata);
-            expect(address).to.be.equal(zrx.address);
-        });
-
-        it('should successfully encode/decode metadata padded with zeros', async () => {
-            const metadata = await erc20Proxy.encodeMetadata.callAsync(AssetProxyId.ERC20, testAddressPaddedWithZeros);
-            const address = await erc20Proxy.decodeMetadata.callAsync(metadata);
-            expect(address).to.be.equal(testAddressPaddedWithZeros);
-        });
-
-        it('should successfully decode metadata encoded padded with zeros by typescript helpers', async () => {
-            const metadata = encodeERC20ProxyData(testAddressPaddedWithZeros);
-            const address = await erc20Proxy.decodeMetadata.callAsync(metadata);
-            expect(address).to.be.equal(testAddressPaddedWithZeros);
-        });
-
         it('should successfully transfer tokens', async () => {
             // Construct metadata for ERC20 proxy
             const encodedProxyMetadata = encodeERC20ProxyData(zrx.address);
@@ -192,42 +168,6 @@ describe('Asset Transfer Proxies', () => {
     });
 
     describe('Transfer Proxy - ERC721', () => {
-        it('should successfully encode/decode metadata', async () => {
-            const metadata = await erc721Proxy.encodeMetadata.callAsync(
-                AssetProxyId.ERC721,
-                erc721Token.address,
-                makerTokenId,
-            );
-            const [address, tokenId] = await erc721Proxy.decodeMetadata.callAsync(metadata);
-            expect(address).to.be.equal(erc721Token.address);
-            expect(tokenId).to.be.bignumber.equal(makerTokenId);
-        });
-
-        it('should successfully decode metadata encoded by typescript helpers', async () => {
-            const metadata = encodeERC721ProxyData(erc721Token.address, makerTokenId);
-            const [address, tokenId] = await erc721Proxy.decodeMetadata.callAsync(metadata);
-            expect(address).to.be.equal(erc721Token.address);
-            expect(tokenId).to.be.bignumber.equal(makerTokenId);
-        });
-
-        it('should successfully encode/decode metadata padded with zeros', async () => {
-            const metadata = await erc721Proxy.encodeMetadata.callAsync(
-                AssetProxyId.ERC721,
-                testAddressPaddedWithZeros,
-                makerTokenId,
-            );
-            const [address, tokenId] = await erc721Proxy.decodeMetadata.callAsync(metadata);
-            expect(address).to.be.equal(testAddressPaddedWithZeros);
-            expect(tokenId).to.be.bignumber.equal(makerTokenId);
-        });
-
-        it('should successfully decode metadata encoded padded with zeros by typescript helpers', async () => {
-            const metadata = encodeERC721ProxyData(testAddressPaddedWithZeros, makerTokenId);
-            const [address, tokenId] = await erc721Proxy.decodeMetadata.callAsync(metadata);
-            expect(address).to.be.equal(testAddressPaddedWithZeros);
-            expect(tokenId).to.be.bignumber.equal(makerTokenId);
-        });
-
         it('should successfully transfer tokens', async () => {
             // Construct metadata for ERC721 proxy
             const encodedProxyMetadata = encodeERC721ProxyData(erc721Token.address, makerTokenId);
