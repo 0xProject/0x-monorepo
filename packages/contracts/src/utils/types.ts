@@ -51,8 +51,8 @@ export interface DefaultOrderParams {
     takerTokenAddress: string;
     makerTokenAmount: BigNumber;
     takerTokenAmount: BigNumber;
-    makerFeeAmount: BigNumber;
-    takerFeeAmount: BigNumber;
+    makerFee: BigNumber;
+    takerFee: BigNumber;
     makerAssetData: string;
     takerAssetData: string;
 }

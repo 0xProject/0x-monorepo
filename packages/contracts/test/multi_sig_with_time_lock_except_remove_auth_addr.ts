@@ -1,7 +1,7 @@
 /*
  *
  * @TODO:   Before deploying, the MultiSigWalletWithTimeLockExceptRemoveAuthorizedAddress contract must be updated
- *          to have a mapping of all approved addresses. These tests muts be updated appropriately.
+ *          to have a mapping of all approved addresses. These tests must be updated appropriately.
  *          For now, these tests have been commented out by @hysz (greg@0xproject.com).
  *
 import { LogWithDecodedArgs, ZeroEx } from '0x.js';
