@@ -16,7 +16,6 @@ describe('Collect contracts data', () => {
             const contractsData = collectContractsData(artifactsPath, sourcesPath, networkId);
             _.forEach(contractsData, contractData => {
                 expect(contractData).to.have.keys([
-                    'baseName',
                     'sourceCodes',
                     'sources',
                     'sourceMap',

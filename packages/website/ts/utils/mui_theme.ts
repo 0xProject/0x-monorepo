@@ -17,7 +17,7 @@ export const muiTheme = getMuiTheme({
     datePicker: {
         color: colors.grey700,
         textColor: colors.white,
-        calendarTextColor: colors.white,
+        calendarTextColor: colors.grey,
         selectColor: colors.darkestGrey,
         selectTextColor: colors.white,
     },

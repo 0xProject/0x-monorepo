@@ -111,8 +111,8 @@ const docsInfoConfig: DocsInfoConfig = {
             'Provider',
         ],
         typeNameToExternalLink: {
-            Web3: 'https://github.com/ethereum/wiki/wiki/JavaScript-API',
-            BigNumber: 'https://github.com/0xProject/web3-typescript-typings/blob/f5bcb96/index.d.ts#L127',
+            Web3: constants.URL_WEB3_DOCS,
+            BigNumber: constants.URL_BIGNUMBERJS_GITHUB,
         },
         typeNameToPrefix: {},
     },

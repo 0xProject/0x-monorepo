@@ -7,7 +7,7 @@
         "build:watch": "tsc -w",
         "lint": "tslint --project .",
         "clean": "shx rm -rf lib",
-        "prebuild": "run-s clean generate_contract_wrappers copy_artifacts",
+        "prebuild": "run-s clean compile generate_contract_wrappers copy_artifacts",
         "copy_artifacts": "copyfiles './artifacts/**/*' './contracts/**/*' ./lib",
         "build": "tsc",
         "test": "run-s build run_mocha",
@@ -18,7 +18,7 @@
         "coverage:report:html": "istanbul report html && open coverage/index.html",
         "coverage:report:lcov": "istanbul report lcov",
         "test:circleci": "yarn test:coverage",
-        "compile": "node ../deployer/lib/src/cli.js compile --contracts Metacoin --contract-dirs contracts --artifacts-dir artifacts"
+        "compile": "node ../deployer/lib/src/cli.js compile --contracts Metacoin --contracts-dir contracts --artifacts-dir artifacts"
     },
     "author": "",
     "license": "Apache-2.0",

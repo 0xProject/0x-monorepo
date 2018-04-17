@@ -79,7 +79,6 @@ export interface ContractData {
     runtimeBytecode: string;
     sourceMapRuntime: string;
     sourceCodes: string[];
-    baseName: string;
     sources: string[];
 }
 
