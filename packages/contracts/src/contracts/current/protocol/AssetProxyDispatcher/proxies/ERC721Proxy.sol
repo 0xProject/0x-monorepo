@@ -51,6 +51,8 @@ contract ERC721Proxy is
         (token, tokenId) = decodeMetadata(assetMetadata);
 
         // Either succeeds or throws.
+        // @TODO: Call safeTransferFrom if there is additional
+        //        data stored in `assetMetadata`.
         ERC721Token(token).transferFrom(from, to, tokenId);
     }
 
