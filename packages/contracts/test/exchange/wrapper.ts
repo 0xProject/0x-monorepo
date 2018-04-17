@@ -88,10 +88,11 @@ describe('Exchange', () => {
         await erc20Proxy.addAuthorizedAddress.sendTransactionAsync(assetProxyDispatcher.address, {
             from: owner,
         });
+        const prevERC20ProxyAddress = ZeroEx.NULL_ADDRESS;
         await assetProxyDispatcher.addAssetProxy.sendTransactionAsync(
             AssetProxyId.ERC20,
             erc20Proxy.address,
-            ZeroEx.NULL_ADDRESS,
+            prevERC20ProxyAddress,
             { from: owner },
         );
         // Deploy ERC721 Proxy
@@ -100,10 +101,11 @@ describe('Exchange', () => {
         await erc721Proxy.addAuthorizedAddress.sendTransactionAsync(assetProxyDispatcher.address, {
             from: owner,
         });
+        const prevERC721ProxyAddress = ZeroEx.NULL_ADDRESS;
         await assetProxyDispatcher.addAssetProxy.sendTransactionAsync(
             AssetProxyId.ERC721,
             erc721Proxy.address,
-            ZeroEx.NULL_ADDRESS,
+            prevERC721ProxyAddress,
             { from: owner },
         );
         // Deploy and configure Exchange

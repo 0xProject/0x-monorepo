@@ -70,7 +70,7 @@ contract LibBytes {
 
         // Read address from array memory
         assembly {
-            // 1. Add index to to address of bytes array
+            // 1. Add index to address of bytes array
             // 2. Load 32-byte word from memory
             // 3. Apply 20-byte mask to obtain address
             result := and(mload(add(b, index)), 0xffffffffffffffffffffffffffffffffffffffff)
