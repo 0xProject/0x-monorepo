@@ -5,19 +5,18 @@ import "./MixinForwarderCore.sol";
 
 contract MixinForwarderQuote is MixinForwarderCore {
 
-    function fillOrderQuote(
-        Order order,
-        uint256 takerTokenFillAmount,
-        bytes signature)
+    /// @dev Performs the 0x Exchange validation and calculations, without performing any state changes.
+    /// @param order An Order struct containing order specifications.
+    /// @param takerTokenFillAmount A number representing the amount of this order to fill.
+    /// @return Amounts filled and fees paid by maker and taker.
+    function fillOrderQuote(Order order, uint256 takerTokenFillAmount)
         public
         view
         returns (FillResults memory fillResults)
     {
         // Compute the order hash
         bytes32 orderHash = exchange.getOrderHash(order);
-        uint256 remainingTakerTokenAmount = safeSub(
-            order.takerTokenAmount,
-            exchange.getUnavailableTakerTokenAmount(orderHash));
+        uint256 remainingTakerTokenAmount = safeSub(order.takerTokenAmount, exchange.getUnavailableTakerTokenAmount(orderHash));
 
         // Validate order expiration
         if (block.timestamp >= order.expirationTimeSeconds) {
@@ -55,21 +54,21 @@ contract MixinForwarderQuote is MixinForwarderCore {
         return fillResults;
     }
 
-    function marketSellOrdersQuote(
-        Order[] orders,
-        uint256 takerTokenFillAmount,
-        bytes[] signatures)
-        internal
+    /// @dev Calculates a total for selling takerTokenFillAmount across all orders. Including the fees
+    ///      required to be paid. 
+    /// @param orders An array of Order struct containing order specifications.
+    /// @param takerTokenFillAmount A number representing the amount of this order to fill.
+    /// @return Amounts filled and fees paid by maker and taker.
+    function marketSellOrdersQuote(Order[] orders, uint256 takerTokenFillAmount)
+        public
         view
         returns (FillResults memory fillResult)
     {
         for (uint256 i = 0; i < orders.length; i++) {
             require(orders[i].takerTokenAddress == orders[0].takerTokenAddress);
             uint256 remainingTakerTokenFillAmount = safeSub(takerTokenFillAmount, fillResult.takerTokenFilledAmount);
-            FillResults memory quoteFillResult = fillOrderQuote(
-                orders[i],
-                remainingTakerTokenFillAmount,
-                signatures[i]);
+
+            FillResults memory quoteFillResult = fillOrderQuote(orders[i], remainingTakerTokenFillAmount);
 
             addFillResults(fillResult, quoteFillResult);
             if (fillResult.takerTokenFilledAmount == takerTokenFillAmount) {
@@ -79,11 +78,13 @@ contract MixinForwarderQuote is MixinForwarderCore {
         return fillResult;
     }
 
-    function marketBuyOrdersQuote(
-        Order[] orders,
-        uint256 makerTokenFillAmount,
-        bytes[] signatures)
-        internal
+    /// @dev Calculates a total for buying makerTokenFillAmount across all orders. Including the fees
+    ///      required to be paid. 
+    /// @param orders An array of Order struct containing order specifications.
+    /// @param makerTokenFillAmount A number representing the amount of this order to fill.
+    /// @return Amounts filled and fees paid by maker and taker.
+    function marketBuyOrdersQuote(Order[] orders, uint256 makerTokenFillAmount)
+        public
         view
         returns (FillResults memory fillResult)
     {
@@ -95,10 +96,8 @@ contract MixinForwarderQuote is MixinForwarderCore {
                 orders[i].takerTokenAmount,
                 orders[i].makerTokenAmount
             );
-            FillResults memory quoteFillResult = fillOrderQuote(
-                orders[i],
-                remainingTakerSellAmount,
-                signatures[i]);
+
+            FillResults memory quoteFillResult = fillOrderQuote(orders[i], remainingTakerSellAmount);
 
             addFillResults(fillResult, quoteFillResult);
             if (fillResult.makerTokenFilledAmount == makerTokenFillAmount) {

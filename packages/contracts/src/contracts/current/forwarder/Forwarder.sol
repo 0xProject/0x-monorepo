@@ -24,6 +24,8 @@ contract Forwarder is
         zrxToken = _zrxToken;
     }
 
+    /// @dev Initializes this contract, setting the allowances for 
+    ///      the ZRX fee token and WETH.
     function initialize()
         external
     {
@@ -31,6 +33,15 @@ contract Forwarder is
         zrxToken.approve(address(tokenProxy), MAX_UINT);
     }
 
+    /// @dev Buys the tokens, performing fee abstraction if required. This function is payable
+    ///      and will convert all incoming ETH into WETH and perform the trade on behalf of the caller.
+    ///      The caller is sent all funds from the marketBuy of orders (less any fees required to be paid in ZRX)
+    ///      If the purchased token amount does not meet some threshold (98%) then this function reverts.
+    /// @param orders An array of Order struct containing order specifications.
+    /// @param signatures An array of Proof that order has been created by maker.
+    /// @param feeOrders An array of Order struct containing order specifications for fees.
+    /// @param feeSignatures An array of Proof that order has been created by maker for the fee orders.
+    /// @return Amounts filled and fees paid by maker and taker.
     function buyTokens(
         Order[] orders,
         bytes[] signatures,
@@ -49,6 +60,19 @@ contract Forwarder is
         return totalFillResult;
     }
 
+    /// @dev Buys the tokens, performing fee abstraction if required. This function is payable
+    ///      and will convert all incoming ETH into WETH and perform the trade on behalf of the caller.
+    ///      This function allows for a deduction of a proportion of incoming ETH send to the feeRecipient.
+    ///      The caller is sent all funds from the marketBuy of orders (less any fees required to be paid in ZRX)
+    ///      If the purchased token amount does not meet some threshold (98%) then this function reverts.
+    /// @param orders An array of Order struct containing order specifications.
+    /// @param signatures An array of Proof that order has been created by maker.
+    /// @param feeOrders An array of Order struct containing order specifications for fees.
+    /// @param feeSignatures An array of Proof that order has been created by maker for the fee orders.
+    /// @param feeProportion A proportion deducted off the incoming ETH and sent to feeRecipient. The maximum value for this
+    ///        is 1000, aka 10%. Supports up to 2 decimal places. I.e 0.59% is 59.
+    /// @param feeRecipient An address of the fee recipient whom receives feeProportion of ETH.
+    /// @return Amounts filled and fees paid by maker and taker.
     function buyTokensFee(
         Order[] orders,
         bytes[] signatures,
@@ -91,8 +115,7 @@ contract Forwarder is
     {
         uint256 takerTokenBalance = sellTokenAmount;
 
-        FillResults memory tokensSellQuote = 
-            marketSellOrdersQuote(orders, sellTokenAmount, signatures);
+        FillResults memory tokensSellQuote = marketSellOrdersQuote(orders, sellTokenAmount);
 
         if (tokensSellQuote.takerFeePaid > 0) {
             // Fees are required for these orders
@@ -140,12 +163,20 @@ contract Forwarder is
                 signatures[n]
             );
             // Fail it it wasn't filled otherwise we will keep WETH
+            // There is no acceptible threshold here as it is either buy it or nothing
             require(fillOrderResults.takerTokenFilledAmount == orders[n].takerTokenAmount);
             // TODO read this through metadata
             transferNFTToken(orders[n].makerTokenAddress, msg.sender, tokenIds[n]);
         }
     }
 
+    /// @dev Buys the fee tokens as well as any fees required to buy the requested fee tokens.
+    ///      It is possible that a request to buy 200 ZRX fee tokens will require purchasing 202 ZRX tokens
+    ///      As 2 ZRX is required to purchase the 200 ZRX fee tokens.
+    /// @param feeOrders An array of Order struct containing order specifications for fees.
+    /// @param feeSignatures An array of Proof that order has been created by maker for the fee orders.
+    /// @param feeAmount The number of requested ZRX fee tokens.
+    /// @return Amounts filled and fees paid by maker and taker.
     function buyFeeTokens(
         Order[] feeOrders,
         bytes[] feeSignatures,
@@ -155,7 +186,7 @@ contract Forwarder is
     {
         require(feeOrders[0].makerTokenAddress == address(zrxToken));
         // Quote the fees
-        FillResults memory marketBuyFeeQuote = marketBuyOrdersQuote(feeOrders, feeAmount, feeSignatures);
+        FillResults memory marketBuyFeeQuote = marketBuyOrdersQuote(feeOrders, feeAmount);
         // Buy enough ZRX to cover the future market sell as well as this market buy
         Exchange.FillResults memory marketBuyFillResult = exchange.marketBuyOrders(
             feeOrders,

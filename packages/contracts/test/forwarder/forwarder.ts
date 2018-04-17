@@ -30,7 +30,7 @@ const expect = chai.expect;
 const blockchainLifecycle = new BlockchainLifecycle(web3Wrapper);
 const DECIMALS_DEFAULT = 18;
 
-describe.only('Forwarder', () => {
+describe('Forwarder', () => {
     let makerAddress: string;
     let tokenOwner: string;
     let takerAddress: string;
