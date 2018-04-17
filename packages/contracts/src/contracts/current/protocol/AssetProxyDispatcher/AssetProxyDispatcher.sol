@@ -55,8 +55,8 @@ contract AssetProxyDispatcher is
 
     /// @dev Adds a new asset proxy.
     /// @param assetProxyId Id of the asset proxy.
-    /// @param newAssetProxy Asset proxy contract to add.
-    /// @param currentAssetProxy Existing asset proxy to overwrite.
+    /// @param newAssetProxy Asset proxy contract to add, or 0x0 to unset assetProxyId.
+    /// @param currentAssetProxy Existing asset proxy to overwrite, or 0x0 if assetProxyId is currently unused.
     function addAssetProxy(
         uint8 assetProxyId,
         IAssetProxy newAssetProxy,
