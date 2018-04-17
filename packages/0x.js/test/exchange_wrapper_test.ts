@@ -14,6 +14,7 @@ import {
     LogFillContractEventArgs,
     OrderCancellationRequest,
     OrderFillRequest,
+    OrderState,
     SignedOrder,
     Token,
     ZeroEx,
@@ -1152,6 +1153,43 @@ describe('ExchangeWrapper', () => {
             expect(logs).to.have.length(1);
             const args = logs[0].args;
             expect(args.maker).to.be.equal(differentMakerAddress);
+        });
+    });
+    describe('#getOrderStateAsync', () => {
+        let maker: string;
+        let taker: string;
+        let makerToken: Token;
+        let takerToken: Token;
+        let signedOrder: SignedOrder;
+        let orderState: OrderState;
+        const fillableAmount = ZeroEx.toBaseUnitAmount(new BigNumber(5), constants.ZRX_DECIMALS);
+        before(async () => {
+            [, maker, taker] = userAddresses;
+            tokens = await zeroEx.tokenRegistry.getTokensAsync();
+            [makerToken, takerToken] = tokenUtils.getDummyTokens();
+        });
+        it('should report orderStateValid when order is fillable', async () => {
+            signedOrder = await fillScenarios.createFillableSignedOrderAsync(
+                makerToken.address,
+                takerToken.address,
+                maker,
+                taker,
+                fillableAmount,
+            );
+            orderState = await zeroEx.exchange.getOrderStateAsync(signedOrder);
+            expect(orderState.isValid).to.be.true();
+        });
+        it('should report orderStateInvalid when maker allowance set to 0', async () => {
+            signedOrder = await fillScenarios.createFillableSignedOrderAsync(
+                makerToken.address,
+                takerToken.address,
+                maker,
+                taker,
+                fillableAmount,
+            );
+            await zeroEx.token.setProxyAllowanceAsync(makerToken.address, maker, new BigNumber(0));
+            orderState = await zeroEx.exchange.getOrderStateAsync(signedOrder);
+            expect(orderState.isValid).to.be.false();
         });
     });
 }); // tslint:disable:max-file-line-count

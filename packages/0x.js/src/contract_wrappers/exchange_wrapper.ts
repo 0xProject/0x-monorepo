@@ -13,6 +13,8 @@ import { Web3Wrapper } from '@0xproject/web3-wrapper';
 import * as _ from 'lodash';
 
 import { artifacts } from '../artifacts';
+import { SimpleBalanceAndProxyAllowanceFetcher } from '../fetchers/simple_balance_and_proxy_allowance_fetcher';
+import { SimpleOrderFilledCancelledFetcher } from '../fetchers/simple_order_filled_cancelled_fetcher';
 import {
     BlockRange,
     EventCallback,
@@ -23,6 +25,7 @@ import {
     OrderAddresses,
     OrderCancellationRequest,
     OrderFillRequest,
+    OrderState,
     OrderTransactionOpts,
     OrderValues,
     ValidateOrderFillableOpts,
@@ -30,6 +33,7 @@ import {
 import { assert } from '../utils/assert';
 import { decorators } from '../utils/decorators';
 import { ExchangeTransferSimulator } from '../utils/exchange_transfer_simulator';
+import { OrderStateUtils } from '../utils/order_state_utils';
 import { OrderValidationUtils } from '../utils/order_validation_utils';
 import { utils } from '../utils/utils';
 
@@ -41,7 +45,6 @@ import {
     LogErrorContractEventArgs,
 } from './generated/exchange';
 import { TokenWrapper } from './token_wrapper';
-
 const SHOULD_VALIDATE_BY_DEFAULT = true;
 
 interface ExchangeContractErrCodesToMsgs {
@@ -872,6 +875,22 @@ export class ExchangeWrapper extends ContractWrapper {
             const errMessage = this._exchangeContractErrCodesToMsg[errCode];
             throw new Error(errMessage);
         }
+    }
+    /**
+     * Gets the latest OrderState of a signedOrder
+     * @param   signedOrder   The signedOrder
+     * @param   stateLayer    Optional, desired blockchain state layer (defaults to latest).
+     * @return  OrderState of the signedOrder
+     */
+    public async getOrderStateAsync(signedOrder: SignedOrder, stateLayer: BlockParamLiteral = BlockParamLiteral.Latest): Promise<OrderState> {
+        const simpleBalanceAndProxyAllowanceFetcher = new SimpleBalanceAndProxyAllowanceFetcher(
+            this._tokenWrapper,
+            stateLayer,
+        );
+        const simpleOrderFilledCancelledFetcher = new SimpleOrderFilledCancelledFetcher(this, stateLayer);
+        const orderStateUtils = new OrderStateUtils(simpleBalanceAndProxyAllowanceFetcher, simpleOrderFilledCancelledFetcher);
+        const orderState = orderStateUtils.getOrderStateAsync(signedOrder);
+        return orderState;
     }
     /**
      * Returns the ZRX token address used by the exchange contract.
