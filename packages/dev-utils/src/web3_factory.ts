@@ -26,6 +26,7 @@ import * as Web3 from 'web3';
 export interface Web3Config {
     hasAddresses?: boolean; // default: true
     shouldUseInProcessGanache?: boolean; // default: false
+    rpcUrl?: string; // default: localhost:8545
 }
 
 export const web3Factory = {
@@ -53,6 +54,9 @@ export const web3Factory = {
         };
         const shouldUseInProcessGanache = !!config.shouldUseInProcessGanache;
         if (shouldUseInProcessGanache) {
+            if (!_.isUndefined(config.rpcUrl)) {
+                throw new Error('Cannot use both GanacheSubrovider and RPCSubprovider');
+            }
             provider.addProvider(
                 new GanacheSubprovider({
                     logger,
@@ -65,7 +69,7 @@ export const web3Factory = {
         } else {
             provider.addProvider(
                 new RpcSubprovider({
-                    rpcUrl: constants.RPC_URL,
+                    rpcUrl: config.rpcUrl || constants.RPC_URL,
                 }),
             );
         }
