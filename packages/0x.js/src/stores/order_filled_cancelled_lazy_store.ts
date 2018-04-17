@@ -26,7 +26,7 @@ export class OrderFilledCancelledLazyStore implements OrderFilledCancelledFetche
     public async getFilledTakerAmountAsync(orderHash: string): Promise<BigNumber> {
         if (_.isUndefined(this._filledTakerAmount[orderHash])) {
             const methodOpts = {
-                defaultBlock: BlockParamLiteral.Pending,
+                defaultBlock: this._defaultBlock,
             };
             const filledTakerAmount = await this._exchangeWrapper.getFilledTakerAmountAsync(orderHash, methodOpts);
             this.setFilledTakerAmount(orderHash, filledTakerAmount);
@@ -43,7 +43,7 @@ export class OrderFilledCancelledLazyStore implements OrderFilledCancelledFetche
     public async getCancelledTakerAmountAsync(orderHash: string): Promise<BigNumber> {
         if (_.isUndefined(this._cancelledTakerAmount[orderHash])) {
             const methodOpts = {
-                defaultBlock: BlockParamLiteral.Pending,
+                defaultBlock: this._defaultBlock,
             };
             const cancelledTakerAmount = await this._exchangeWrapper.getCancelledTakerAmountAsync(orderHash, methodOpts);
             this.setCancelledTakerAmount(orderHash, cancelledTakerAmount);
