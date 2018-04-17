@@ -18,9 +18,15 @@
 
 pragma solidity ^0.4.21;
 
+import "../../utils/Ownable/IOwnable.sol";
+import "../../utils/Authorizable/IAuthorizable.sol";
 import "./IAssetProxy.sol";
 
-contract IAssetProxyDispatcher  {
+contract IAssetProxyDispatcher is
+    IOwnable,
+    IAuthorizable,
+    IAssetProxy
+{
 
     // Logs registration of new asset proxy
     event AssetProxySet(
