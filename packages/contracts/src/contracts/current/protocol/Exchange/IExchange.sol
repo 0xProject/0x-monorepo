@@ -58,10 +58,6 @@ contract IExchange {
       public view
       returns (address);
 
-    function TOKEN_TRANSFER_PROXY_CONTRACT()
-      public view
-      returns (address);
-
     function EXTERNAL_QUERY_GAS_LIMIT()
       public view
       returns (uint16);

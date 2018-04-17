@@ -18,7 +18,6 @@
 
 pragma solidity ^0.4.21;
 
-/// @title TokenTransferProxy - Transfers tokens on behalf of contracts that have been approved via decentralized governance.
 contract IAuthorizable {
 
     /// @dev Gets all authorized addresses.

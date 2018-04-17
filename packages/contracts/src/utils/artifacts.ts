@@ -5,7 +5,6 @@ import * as MultiSigWalletWithTimeLockArtifact from '../artifacts/MultiSigWallet
 import * as MultiSigWalletWithTimeLockExceptRemoveAuthorizedAddressArtifact from '../artifacts/MultiSigWalletWithTimeLockExceptRemoveAuthorizedAddress.json';
 import * as TokenArtifact from '../artifacts/Token.json';
 import * as TokenRegistryArtifact from '../artifacts/TokenRegistry.json';
-import * as TokenTransferProxyArtifact from '../artifacts/TokenTransferProxy.json';
 import * as EtherTokenArtifact from '../artifacts/WETH9.json';
 import * as ZRXArtifact from '../artifacts/ZRXToken.json';
 
@@ -19,7 +18,6 @@ export const artifacts = {
     EtherTokenArtifact: (EtherTokenArtifact as any) as Artifact,
     TokenRegistryArtifact: (TokenRegistryArtifact as any) as Artifact,
     MaliciousTokenArtifact: (MaliciousTokenArtifact as any) as Artifact,
-    TokenTransferProxyArtifact: (TokenTransferProxyArtifact as any) as Artifact,
     MultiSigWalletWithTimeLockArtifact: (MultiSigWalletWithTimeLockArtifact as any) as Artifact,
     MultiSigWalletWithTimeLockExceptRemoveAuthorizedAddressArtifact: (MultiSigWalletWithTimeLockExceptRemoveAuthorizedAddressArtifact as any) as Artifact,
 };
