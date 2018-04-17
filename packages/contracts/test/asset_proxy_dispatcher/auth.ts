@@ -14,7 +14,7 @@ chaiSetup.configure();
 const expect = chai.expect;
 const blockchainLifecycle = new BlockchainLifecycle(web3Wrapper);
 
-describe('AssetProxyDispatcher - Auth', () => {
+describe('AssetProxyDispatcher (Authorization Methods)', () => {
     let owner: string;
     let notOwner: string;
     let address: string;
