@@ -159,12 +159,15 @@ export class TypeDefinition extends React.Component<TypeDefinitionProps, TypeDef
         }
         const segments = sanitizedText.split(PROPERTY_DESCRIPTION_DIVIDER);
         _.each(segments, (s: string, i: number) => {
-            if (i === 0 || i === segments.length - 1) {
+            if (i === 0) {
+                segments[i] = `**${s}**`;
+                return;
+            } else if (i === segments.length - 1) {
                 return;
             }
             const words = s.split(' ');
             const property = words[words.length - 1];
-            words[words.length - 1] = `\n\n${property}`;
+            words[words.length - 1] = `\n\n**${property}**`;
             segments[i] = words.join(' ');
         });
         const final = segments.join(PROPERTY_DESCRIPTION_DIVIDER);
