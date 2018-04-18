@@ -5,6 +5,10 @@ Edit the package's CHANGELOG.json file only.
 
 CHANGELOG
 
+## v0.36.3 - _April 18, 2018_
+
+    * Move @0xproject/migrations to devDependencies
+
 ## v0.36.2 - _April 18, 2018_
 
     * Dependencies updated

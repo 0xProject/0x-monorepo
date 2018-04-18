@@ -5,7 +5,8 @@
             {
                 "note": "Move @0xproject/migrations to devDependencies"
             }
-        ]
+        ],
+        "timestamp": 1524079658
     },
     {
         "timestamp": 1524073495,
