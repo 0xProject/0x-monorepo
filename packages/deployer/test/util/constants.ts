@@ -7,5 +7,5 @@ export const constants = {
     timeoutMs: 30000,
     zrxTokenAddress: '0xe41d2489571d322189246dafa5ebde1f4699f498',
     tokenTransferProxyAddress: '0x8da0d80f5007ef1e431dd2127178d224e32c2ef4',
-    specifiedContracts: '*',
+    contracts: '*' as '*',
 };
