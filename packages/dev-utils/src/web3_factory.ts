@@ -21,7 +21,7 @@ import { env, EnvVars } from './env';
 // importing web3 after subproviders fixes this issue
 // Filed issue: https://github.com/ethereum/web3.js/issues/844
 // tslint:disable-next-line:ordered-imports
-import * as Web3 from 'web3';
+import Web3 from 'web3';
 
 export interface Web3Config {
     hasAddresses?: boolean; // default: true

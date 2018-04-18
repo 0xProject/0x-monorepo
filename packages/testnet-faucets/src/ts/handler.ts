@@ -2,7 +2,7 @@ import { Order, SignedOrder, ZeroEx } from '0x.js';
 import { BigNumber, logUtils } from '@0xproject/utils';
 import * as express from 'express';
 import * as _ from 'lodash';
-import * as Web3 from 'web3';
+import Web3 from 'web3';
 
 // HACK: web3 injects XMLHttpRequest into the global scope and ProviderEngine checks XMLHttpRequest
 // to know whether it is running in a browser or node environment. We need it to be undefined since

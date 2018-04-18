@@ -2,7 +2,7 @@ import * as _ from 'lodash';
 import * as ReactGA from 'react-ga';
 import { configs } from 'ts/utils/configs';
 import { utils } from 'ts/utils/utils';
-import * as Web3 from 'web3';
+import Web3 from 'web3';
 
 export const analytics = {
     init() {

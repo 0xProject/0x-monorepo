@@ -115,7 +115,7 @@
         "web3": "^0.20.0"
     },
     "optionalDependencies": {
-        "@0xproject/migrations": "^0.0.1"
+        "@0xproject/migrations": "^0.0.2"
     },
     "publishConfig": {
         "access": "public"

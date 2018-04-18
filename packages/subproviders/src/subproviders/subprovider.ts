@@ -1,6 +1,6 @@
 import { JSONRPCRequestPayload, JSONRPCResponsePayload } from '@0xproject/types';
 import { promisify } from '@0xproject/utils';
-import * as Web3 from 'web3';
+import Web3 from 'web3';
 
 import { Callback, ErrorCallback, JSONRPCRequestPayloadWithMethod } from '../types';
 /**

@@ -2,7 +2,7 @@ import { schemas, SchemaValidator } from '@0xproject/json-schemas';
 import { AbiType, ContractAbi, EventAbi, FunctionAbi, MethodAbi, TxData } from '@0xproject/types';
 import { promisify } from '@0xproject/utils';
 import * as _ from 'lodash';
-import * as Web3 from 'web3';
+import Web3 from 'web3';
 
 export class Contract implements Web3.ContractInstance {
     public address: string;

@@ -1,6 +1,6 @@
 import { JSONRPCRequestPayload, Provider } from '@0xproject/types';
 import * as _ from 'lodash';
-import * as Web3 from 'web3';
+import Web3 from 'web3';
 
 import { Callback, ErrorCallback } from '../types';
 

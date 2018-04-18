@@ -3,7 +3,7 @@ import { BlockchainLifecycle, devConstants, web3Factory } from '@0xproject/dev-u
 import { AbiDecoder } from '@0xproject/utils';
 import { Web3Wrapper } from '@0xproject/web3-wrapper';
 import * as chai from 'chai';
-import * as Web3 from 'web3';
+import Web3 from 'web3';
 
 import { MultiSigWalletContract } from '../src/contract_wrappers/generated/multi_sig_wallet';
 import { MultiSigWalletWithTimeLockExceptRemoveAuthorizedAddressContract } from '../src/contract_wrappers/generated/multi_sig_wallet_with_time_lock_except_remove_authorized_address';
