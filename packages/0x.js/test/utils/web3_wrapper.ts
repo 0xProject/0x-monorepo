@@ -1,7 +1,7 @@
 import { devConstants, web3Factory } from '@0xproject/dev-utils';
 import { Provider } from '@0xproject/types';
 import { Web3Wrapper } from '@0xproject/web3-wrapper';
-import * as Web3 from 'web3';
+import Web3 from 'web3';
 
 import { constants } from './constants';
 

@@ -1,5 +1,5 @@
 import { ContractAbi, Provider, TxData } from '@0xproject/types';
-import * as Web3 from 'web3';
+import Web3 from 'web3';
 import * as yargs from 'yargs';
 
 export enum AbiType {

@@ -12,7 +12,7 @@ import {
     SignedOrder,
 } from '@0xproject/types';
 
-import * as Web3 from 'web3';
+import Web3 from 'web3';
 
 import { EtherTokenContractEventArgs, EtherTokenEvents } from './contract_wrappers/generated/ether_token';
 import { ExchangeContractEventArgs, ExchangeEvents } from './contract_wrappers/generated/exchange';

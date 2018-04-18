@@ -1,7 +1,7 @@
 import { ZeroEx } from '0x.js';
 import { BigNumber, logUtils, promisify } from '@0xproject/utils';
 import * as _ from 'lodash';
-import * as Web3 from 'web3';
+import Web3 from 'web3';
 
 import { configs } from './configs';
 import { errorReporter } from './error_reporter';

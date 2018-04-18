@@ -1,4 +1,4 @@
-import * as Web3 from 'web3';
+import Web3 from 'web3';
 
 import { TokenRegistryContract } from '../src/contract_wrappers/generated/token_registry';
 

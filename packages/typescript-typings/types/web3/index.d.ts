@@ -17,6 +17,23 @@ declare module 'web3' {
         JSONRPCRequestPayload,
         JSONRPCResponsePayload,
     } from '@0xproject/types';
+    export {
+        AbiDefinition,
+        BlockWithTransactionData,
+        BlockWithoutTransactionData,
+        BlockParam,
+        CallData,
+        Provider,
+        Unit,
+        TxData,
+        Transaction,
+        ContractAbi,
+        TransactionReceipt,
+        FilterObject,
+        LogEntryEvent,
+        JSONRPCRequestPayload,
+        JSONRPCResponsePayload,
+    } from '@0xproject/types';
 
     type MixedData = string | number | object | any[] | BigNumber.BigNumber;
 
@@ -225,7 +242,5 @@ declare module 'web3' {
             stopWatching(): void;
         }
     }
-    /* tslint:disable */
-    export = Web3;
-    /* tslint:enable */
+    export default Web3;
 }

@@ -1,7 +1,7 @@
 import { SignedOrder, TransactionReceiptWithDecodedLogs, ZeroEx } from '0x.js';
 import { BigNumber } from '@0xproject/utils';
 import * as _ from 'lodash';
-import * as Web3 from 'web3';
+import Web3 from 'web3';
 
 import { ExchangeContract } from '../src/contract_wrappers/generated/exchange';
 

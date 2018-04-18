@@ -2,7 +2,7 @@ import { AbiType, ConstructorAbi, ContractAbi, Provider, TxData } from '@0xproje
 import { logUtils } from '@0xproject/utils';
 import { Web3Wrapper } from '@0xproject/web3-wrapper';
 import * as _ from 'lodash';
-import * as Web3 from 'web3';
+import Web3 from 'web3';
 
 import { Contract } from './utils/contract';
 import { encoder } from './utils/encoder';

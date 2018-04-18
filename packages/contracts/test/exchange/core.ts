@@ -4,7 +4,7 @@ import { BigNumber } from '@0xproject/utils';
 import { Web3Wrapper } from '@0xproject/web3-wrapper';
 import * as chai from 'chai';
 import ethUtil = require('ethereumjs-util');
-import * as Web3 from 'web3';
+import Web3 from 'web3';
 
 import { DummyTokenContract } from '../../src/contract_wrappers/generated/dummy_token';
 import {
