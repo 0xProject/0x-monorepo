@@ -26,8 +26,8 @@
         "test:circleci": "yarn test:coverage"
     },
     "config": {
-        "abis": "../migrations/src/artifacts/@(DummyToken|Exchange|TokenRegistry|MultiSigWallet|MultiSigWalletWithTimeLock|MultiSigWalletWithTimeLockExceptRemoveAuthorizedAddress|TokenRegistry|ZRXToken|AssetProxyDispatcher|ERC20Proxy|ERC721Proxy|DummyERC721Token).json",
-        "contracts": "Exchange,DummyToken,ZRXToken,Token,WETH9,MultiSigWallet,MultiSigWalletWithTimeLock,MultiSigWalletWithTimeLockExceptRemoveAuthorizedAddress,MaliciousToken,TokenRegistry,AssetProxyDispatcher,ERC20Proxy,ERC721Proxy,DummyERC721Token",
+        "abis": "../migrations/src/artifacts/@(DummyToken|Exchange|TokenRegistry|MultiSigWallet|MultiSigWalletWithTimeLock|MultiSigWalletWithTimeLockExceptRemoveAuthorizedAddress|TokenRegistry|ZRXToken|AssetProxyDispatcher|ERC20Proxy|ERC721Proxy|DummyERC721Token|LibBytes).json",
+        "contracts": "Exchange,DummyToken,ZRXToken,Token,WETH9,MultiSigWallet,MultiSigWalletWithTimeLock,MultiSigWalletWithTimeLockExceptRemoveAuthorizedAddress,MaliciousToken,TokenRegistry,AssetProxyDispatcher,ERC20Proxy,ERC721Proxy,DummyERC721Token,LibBytes",
         "contract_dirs": "src/contracts,zeppelin:../../node_modules/zeppelin-solidity"
     },
     "repository": {
