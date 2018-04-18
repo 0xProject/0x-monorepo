@@ -5,7 +5,11 @@ Edit the package's CHANGELOG.json file only.
 
 CHANGELOG
 
-## v0.0.8 - _April 11, 2018_
+## v0.0.9 - _April 18, 2018_
+
+    * Dependencies updated
+
+## v0.0.8 - _April 12, 2018_
 
     * Dependencies updated
 
@@ -17,8 +21,8 @@ CHANGELOG
 
     * Added postman collection unit tests (#451)
 
-## v0.0.2 - _March 17, 2018_
+## v0.0.2 - _March 18, 2018_
 
     * Consolidate all `console.log` calls into `logUtils` in the `@0xproject/utils` package (#452)
 
-## v0.0.1 - _March 7, 2018_
+## v0.0.1 - _March 8, 2018_

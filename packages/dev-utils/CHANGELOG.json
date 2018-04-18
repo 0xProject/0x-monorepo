@@ -6,7 +6,8 @@
                 "note": "Allow an rpcURL to be set in Web3Config (for testnet RPC endpoints)",
                 "pr": 524
             }
-        ]
+        ],
+        "timestamp": 1524044013
     },
     {
         "timestamp": 1523462196,

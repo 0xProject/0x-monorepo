@@ -6,7 +6,8 @@
                 "note": "Add types for `solc.compileStandardWrapper`",
                 "pr": 509
             }
-        ]
+        ],
+        "timestamp": 1524044013
     },
     {
         "version": "0.1.0",
