@@ -1,8 +1,8 @@
 import { BlockParamLiteral } from '@0xproject/types';
 import { BigNumber } from '@0xproject/utils';
 
-import {OrderFilledCancelledFetcher} from '../abstract/order_filled_cancelled_fetcher';
-import {ExchangeWrapper} from '../contract_wrappers/exchange_wrapper';
+import { OrderFilledCancelledFetcher } from '../abstract/order_filled_cancelled_fetcher';
+import { ExchangeWrapper } from '../contract_wrappers/exchange_wrapper';
 
 export class SimpleOrderFilledCancelledFetcher implements OrderFilledCancelledFetcher {
     private _exchangeWrapper: ExchangeWrapper;

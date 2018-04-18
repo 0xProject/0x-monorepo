@@ -3,9 +3,9 @@ import { BigNumber } from '@0xproject/utils';
 import * as _ from 'lodash';
 
 import { ZeroEx } from '../0x';
-import { ExchangeWrapper } from '../contract_wrappers/exchange_wrapper';
 import { BalanceAndProxyAllowanceFetcher } from '../abstract/balance_and_proxy_allowance_fetcher';
 import { OrderFilledCancelledFetcher } from '../abstract/order_filled_cancelled_fetcher';
+import { ExchangeWrapper } from '../contract_wrappers/exchange_wrapper';
 import { RemainingFillableCalculator } from '../order_watcher/remaining_fillable_calculator';
 import { ExchangeContractErrs, OrderRelevantState, OrderState, OrderStateInvalid, OrderStateValid } from '../types';
 

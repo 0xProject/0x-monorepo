@@ -882,13 +882,19 @@ export class ExchangeWrapper extends ContractWrapper {
      * @param   stateLayer    Optional, desired blockchain state layer (defaults to latest).
      * @return  OrderState of the signedOrder
      */
-    public async getOrderStateAsync(signedOrder: SignedOrder, stateLayer: BlockParamLiteral = BlockParamLiteral.Latest): Promise<OrderState> {
+    public async getOrderStateAsync(
+        signedOrder: SignedOrder,
+        stateLayer: BlockParamLiteral = BlockParamLiteral.Latest,
+    ): Promise<OrderState> {
         const simpleBalanceAndProxyAllowanceFetcher = new SimpleBalanceAndProxyAllowanceFetcher(
             this._tokenWrapper,
             stateLayer,
         );
         const simpleOrderFilledCancelledFetcher = new SimpleOrderFilledCancelledFetcher(this, stateLayer);
-        const orderStateUtils = new OrderStateUtils(simpleBalanceAndProxyAllowanceFetcher, simpleOrderFilledCancelledFetcher);
+        const orderStateUtils = new OrderStateUtils(
+            simpleBalanceAndProxyAllowanceFetcher,
+            simpleOrderFilledCancelledFetcher,
+        );
         const orderState = orderStateUtils.getOrderStateAsync(signedOrder);
         return orderState;
     }

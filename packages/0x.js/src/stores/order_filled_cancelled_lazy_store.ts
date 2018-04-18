@@ -2,8 +2,8 @@ import { BlockParamLiteral } from '@0xproject/types';
 import { BigNumber } from '@0xproject/utils';
 import * as _ from 'lodash';
 
-import { ExchangeWrapper } from '../contract_wrappers/exchange_wrapper';
 import { OrderFilledCancelledFetcher } from '../abstract/order_filled_cancelled_fetcher';
+import { ExchangeWrapper } from '../contract_wrappers/exchange_wrapper';
 
 /**
  * Copy on read store for filled/cancelled taker amounts
@@ -45,7 +45,10 @@ export class OrderFilledCancelledLazyStore implements OrderFilledCancelledFetche
             const methodOpts = {
                 defaultBlock: this._defaultBlock,
             };
-            const cancelledTakerAmount = await this._exchangeWrapper.getCancelledTakerAmountAsync(orderHash, methodOpts);
+            const cancelledTakerAmount = await this._exchangeWrapper.getCancelledTakerAmountAsync(
+                orderHash,
+                methodOpts,
+            );
             this.setCancelledTakerAmount(orderHash, cancelledTakerAmount);
         }
         const cachedCancelled = this._cancelledTakerAmount[orderHash];
