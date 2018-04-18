@@ -24,6 +24,12 @@ contract DummyERC721Token is
     Ownable,
     ERC721Token
 {
+
+    /**
+    * @dev Constructor passes its arguments to the base ERC721Token constructor
+    * @param name of token
+    * @param symbol of token
+    */
     function DummyERC721Token(
         string name,
         string symbol)
