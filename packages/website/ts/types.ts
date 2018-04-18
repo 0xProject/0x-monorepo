@@ -507,4 +507,13 @@ export interface RelayerInfo {
     marketShare: number;
     topTokens: Token[];
 }
+
+export interface WebsiteBackendPriceInfo {
+    price: string;
+    address: string;
+}
+
+export interface WebsiteBackendGasInfo {
+    average: number;
+}
 // tslint:disable:max-file-line-count

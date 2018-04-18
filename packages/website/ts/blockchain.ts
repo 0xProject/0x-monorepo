@@ -47,6 +47,7 @@ import {
     Token,
     TokenByAddress,
 } from 'ts/types';
+import { backendClient } from 'ts/utils/backend_client';
 import { configs } from 'ts/utils/configs';
 import { constants } from 'ts/utils/constants';
 import { errorReporter } from 'ts/utils/error_reporter';
@@ -854,14 +855,13 @@ export class Blockchain {
         }
     }
     private async _updateDefaultGasPriceAsync() {
-        const endpoint = `${configs.BACKEND_BASE_URL}/eth_gas_station`;
-        const response = await fetch(endpoint);
-        if (response.status !== 200) {
-            return; // noop and we keep hard-coded default
+        try {
+            const gasInfo = await backendClient.getGasInfoAsync();
+            const gasPriceInGwei = new BigNumber(gasInfo.average / 10);
+            const gasPriceInWei = gasPriceInGwei.mul(1000000000);
+            this._defaultGasPrice = gasPriceInWei;
+        } catch (err) {
+            return;
         }
-        const gasInfo = await response.json();
-        const gasPriceInGwei = new BigNumber(gasInfo.average / 10);
-        const gasPriceInWei = gasPriceInGwei.mul(1000000000);
-        this._defaultGasPrice = gasPriceInWei;
     }
 } // tslint:disable:max-file-line-count
