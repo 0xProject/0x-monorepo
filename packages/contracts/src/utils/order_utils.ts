@@ -26,8 +26,6 @@ export const orderUtils = {
         const orderStruct = {
             makerAddress: signedOrder.makerAddress,
             takerAddress: signedOrder.takerAddress,
-            makerTokenAddress: signedOrder.makerTokenAddress,
-            takerTokenAddress: signedOrder.takerTokenAddress,
             feeRecipientAddress: signedOrder.feeRecipientAddress,
             makerTokenAmount: signedOrder.makerTokenAmount,
             takerTokenAmount: signedOrder.takerTokenAmount,
@@ -35,6 +33,8 @@ export const orderUtils = {
             takerFee: signedOrder.takerFee,
             expirationTimeSeconds: signedOrder.expirationTimeSeconds,
             salt: signedOrder.salt,
+            makerAssetData: signedOrder.makerAssetData,
+            takerAssetData: signedOrder.takerAssetData,
         };
         return orderStruct;
     },
@@ -43,8 +43,6 @@ export const orderUtils = {
             'address exchangeAddress',
             'address makerAddress',
             'address takerAddress',
-            'address makerTokenAddress',
-            'address takerTokenAddress',
             'address feeRecipientAddress',
             'uint256 makerTokenAmount',
             'uint256 takerTokenAmount',
@@ -52,13 +50,13 @@ export const orderUtils = {
             'uint256 takerFee',
             'uint256 expirationTimeSeconds',
             'uint256 salt',
+            'bytes makerAssetData',
+            'bytes takerAssetData',
         ]);
         const orderParamsHashBuff = crypto.solSHA3([
             order.exchangeAddress,
             order.makerAddress,
             order.takerAddress,
-            order.makerTokenAddress,
-            order.takerTokenAddress,
             order.feeRecipientAddress,
             order.makerTokenAmount,
             order.takerTokenAmount,
@@ -66,6 +64,8 @@ export const orderUtils = {
             order.takerFee,
             order.expirationTimeSeconds,
             order.salt,
+            ethUtil.toBuffer(order.makerAssetData),
+            ethUtil.toBuffer(order.takerAssetData),
         ]);
         const orderSchemaHashHex = `0x${orderSchemaHashBuff.toString('hex')}`;
         const orderParamsHashHex = `0x${orderParamsHashBuff.toString('hex')}`;

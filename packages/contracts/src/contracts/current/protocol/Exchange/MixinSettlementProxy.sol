@@ -20,22 +20,22 @@ pragma solidity ^0.4.21;
 pragma experimental ABIEncoderV2;
 
 import "./mixins/MSettlement.sol";
-import "../TokenTransferProxy/ITokenTransferProxy.sol";
 import "../../tokens/Token/IToken.sol";
 import "./LibPartialAmount.sol";
+import "../AssetProxyDispatcher/IAssetProxy.sol";
 
 /// @dev Provides MixinSettlement
 contract MixinSettlementProxy is
     MSettlement,
     LibPartialAmount
 {
-
-    ITokenTransferProxy TRANSFER_PROXY;
+    IAssetProxy TRANSFER_PROXY;
+    bytes ZRX_PROXY_DATA;
     IToken ZRX_TOKEN;
 
     function transferProxy()
-        external view
-        returns (ITokenTransferProxy)
+        public view
+        returns (IAssetProxy)
     {
         return TRANSFER_PROXY;
     }
@@ -47,13 +47,22 @@ contract MixinSettlementProxy is
         return ZRX_TOKEN;
     }
 
+    function zrxProxyData()
+        external view
+        returns (bytes)
+    {
+        return ZRX_PROXY_DATA;
+    }
+
     function MixinSettlementProxy(
-        ITokenTransferProxy _proxyContract,
-        IToken _zrxToken)
+        IAssetProxy assetProxyDispatcherContract,
+        IToken zrxToken,
+        bytes zrxProxyData)
         public
     {
-        ZRX_TOKEN = _zrxToken;
-        TRANSFER_PROXY = _proxyContract;
+        ZRX_TOKEN = zrxToken;
+        TRANSFER_PROXY = assetProxyDispatcherContract;
+        ZRX_PROXY_DATA = zrxProxyData;
     }
 
     function settleOrder(
@@ -68,43 +77,35 @@ contract MixinSettlementProxy is
         )
     {
         makerTokenFilledAmount = getPartialAmount(takerTokenFilledAmount, order.takerTokenAmount, order.makerTokenAmount);
-        require(
-            TRANSFER_PROXY.transferFrom(
-                order.makerTokenAddress,
-                order.makerAddress,
-                takerAddress,
-                makerTokenFilledAmount
-            )
+        TRANSFER_PROXY.transferFrom(
+            order.makerAssetData,
+            order.makerAddress,
+            takerAddress,
+            makerTokenFilledAmount
         );
-        require(
-            TRANSFER_PROXY.transferFrom(
-                order.takerTokenAddress,
-                takerAddress,
-                order.makerAddress,
-                takerTokenFilledAmount
-            )
+        TRANSFER_PROXY.transferFrom(
+            order.takerAssetData,
+            takerAddress,
+            order.makerAddress,
+            takerTokenFilledAmount
         );
         if (order.feeRecipientAddress != address(0)) {
             if (order.makerFee > 0) {
                 makerFeePaid = getPartialAmount(takerTokenFilledAmount, order.takerTokenAmount, order.makerFee);
-                require(
-                    TRANSFER_PROXY.transferFrom(
-                        ZRX_TOKEN,
-                        order.makerAddress,
-                        order.feeRecipientAddress,
-                        makerFeePaid
-                    )
+                TRANSFER_PROXY.transferFrom(
+                    ZRX_PROXY_DATA,
+                    order.makerAddress,
+                    order.feeRecipientAddress,
+                    makerFeePaid
                 );
             }
             if (order.takerFee > 0) {
                 takerFeePaid = getPartialAmount(takerTokenFilledAmount, order.takerTokenAmount, order.takerFee);
-                require(
-                    TRANSFER_PROXY.transferFrom(
-                        ZRX_TOKEN,
-                        takerAddress,
-                        order.feeRecipientAddress,
-                        takerFeePaid
-                    )
+                TRANSFER_PROXY.transferFrom(
+                    ZRX_PROXY_DATA,
+                    takerAddress,
+                    order.feeRecipientAddress,
+                    takerFeePaid
                 );
             }
         }

@@ -18,20 +18,8 @@
 
 pragma solidity ^0.4.21;
 
-import { IOwnable_v1 as IOwnable } from "../../../previous/Ownable/IOwnable_v1.sol";
+contract IAuthorizable {
 
-/// @title TokenTransferProxy - Transfers tokens on behalf of contracts that have been approved via decentralized governance.
-/// @author Amir Bandeali - <amir@0xProject.com>, Will Warren - <will@0xProject.com>
-contract ITokenTransferProxy is IOwnable {
-  
-    function authorized(address addr)
-        public view
-        returns (bool);
-    
-    function authorities(uint256 index)
-        public view
-        returns (address);
-    
     /// @dev Gets all authorized addresses.
     /// @return Array of authorized addresses.
     function getAuthorizedAddresses()
@@ -48,25 +36,17 @@ contract ITokenTransferProxy is IOwnable {
     function removeAuthorizedAddress(address target)
         public;
 
-    /// @dev Calls into ERC20 Token contract, invoking transferFrom.
-    /// @param token Address of token to transfer.
-    /// @param from Address to transfer token from.
-    /// @param to Address to transfer token to.
-    /// @param value Amount of token to transfer.
-    /// @return Success of transfer.
-    function transferFrom(
-        address token,
-        address from,
-        address to,
-        uint value)
-        public
-        returns (bool);
-    
-    event LogAuthorizedAddressAdded(
+    /// @dev Removes authorizion of an address.
+    /// @param target Address to remove authorization from.
+    /// @param index Index of target in authorities array.
+    function removeAuthorizedAddressAtIndex(address target, uint256 index)
+        public;
+
+    event AuthorizedAddressAdded(
         address indexed target,
         address indexed caller);
-    
-    event LogAuthorizedAddressRemoved(
+
+    event AuthorizedAddressRemoved(
         address indexed target,
         address indexed caller);
 }
