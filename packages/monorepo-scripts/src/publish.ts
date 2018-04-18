@@ -219,6 +219,10 @@ async function lernaPublishAsync(packageToVersionChange: { [name: string]: strin
             );
         }
     });
+    child.stderr.on('data', (data: Buffer) => {
+        const output = data.toString('utf8');
+        utils.log('Stderr:', output);
+    });
 }
 
 async function getPublicLernaUpdatedPackagesAsync(): Promise<UpdatedPackage[]> {
