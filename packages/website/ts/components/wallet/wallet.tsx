@@ -28,6 +28,7 @@ import { Dispatcher } from 'ts/redux/dispatcher';
 import {
     BalanceErrs,
     BlockchainErrs,
+    ItemByAddress,
     ProviderType,
     Side,
     Token,
@@ -35,6 +36,7 @@ import {
     TokenState,
     TokenStateByAddress,
 } from 'ts/types';
+import { configs } from 'ts/utils/configs';
 import { constants } from 'ts/utils/constants';
 import { utils } from 'ts/utils/utils';
 import { styles as walletItemStyles } from 'ts/utils/wallet_item_styles';
@@ -68,6 +70,11 @@ interface AllowanceToggleConfig {
 interface AccessoryItemConfig {
     wrappedEtherDirection?: Side;
     allowanceToggleConfig?: AllowanceToggleConfig;
+}
+
+interface WebsiteBackendPriceInfo {
+    price: string;
+    address: string;
 }
 
 const styles: Styles = {
@@ -125,13 +132,15 @@ const HEADER_ITEM_KEY = 'HEADER';
 const FOOTER_ITEM_KEY = 'FOOTER';
 const DISCONNECTED_ITEM_KEY = 'DISCONNECTED';
 const ETHER_ITEM_KEY = 'ETHER';
+const USD_DECIMAL_PLACES = 2;
 
 export class Wallet extends React.Component<WalletProps, WalletState> {
     private _isUnmounted: boolean;
     constructor(props: WalletProps) {
         super(props);
         this._isUnmounted = false;
-        const initialTrackedTokenStateByAddress = this._getInitialTrackedTokenStateByAddress(props.trackedTokens);
+        const trackedTokenAddresses = _.map(props.trackedTokens, token => token.address);
+        const initialTrackedTokenStateByAddress = this._getInitialTrackedTokenStateByAddress(trackedTokenAddresses);
         this.state = {
             trackedTokenStateByAddress: initialTrackedTokenStateByAddress,
             wrappedEtherDirection: undefined,
@@ -161,13 +170,8 @@ export class Wallet extends React.Component<WalletProps, WalletState> {
             // Add placeholder entry for this token to the state, since fetching the
             // balance/allowance is asynchronous
             const trackedTokenStateByAddress = this.state.trackedTokenStateByAddress;
-            _.each(newTokenAddresses, (tokenAddress: string) => {
-                trackedTokenStateByAddress[tokenAddress] = {
-                    balance: new BigNumber(0),
-                    allowance: new BigNumber(0),
-                    isLoaded: false,
-                };
-            });
+            const initialTrackedTokenStateByAddress = this._getInitialTrackedTokenStateByAddress(newTokenAddresses);
+            _.assign(trackedTokenStateByAddress, initialTrackedTokenStateByAddress);
             this.setState({
                 trackedTokenStateByAddress,
             });
@@ -241,6 +245,13 @@ export class Wallet extends React.Component<WalletProps, WalletState> {
             constants.DECIMAL_PLACES_ETH,
             ETHER_SYMBOL,
         );
+        const etherToken = this._getEthToken();
+        const etherPrice = this.state.trackedTokenStateByAddress[etherToken.address].price;
+        const secondaryText = this._renderValue(
+            this.props.userEtherBalanceInWei,
+            constants.DECIMAL_PLACES_ETH,
+            etherPrice,
+        );
         const accessoryItemConfig = {
             wrappedEtherDirection: Side.Deposit,
         };
@@ -250,11 +261,11 @@ export class Wallet extends React.Component<WalletProps, WalletState> {
         const style = isInWrappedEtherState
             ? { ...walletItemStyles.focusedItem, ...styles.paddedItem }
             : { ...styles.tokenItem, ...styles.borderedItem, ...styles.paddedItem };
-        const etherToken = this._getEthToken();
         return (
             <div key={ETHER_ITEM_KEY}>
                 <ListItem
                     primaryText={primaryText}
+                    secondaryText={secondaryText}
                     leftIcon={<img style={{ width: ICON_DIMENSION, height: ICON_DIMENSION }} src={ETHER_ICON_PATH} />}
                     rightAvatar={this._renderAccessoryItems(accessoryItemConfig)}
                     disableTouchRipple={true}
@@ -294,7 +305,8 @@ export class Wallet extends React.Component<WalletProps, WalletState> {
             this.props.networkId,
             EtherscanLinkSuffixes.Address,
         );
-        const amount = this._renderAmount(tokenState.balance, token.decimals, token.symbol);
+        const primaryText = this._renderAmount(tokenState.balance, token.decimals, token.symbol);
+        const secondaryText = this._renderValue(tokenState.balance, token.decimals, tokenState.price);
         const wrappedEtherDirection = token.symbol === ETHER_TOKEN_SYMBOL ? Side.Receive : undefined;
         const accessoryItemConfig: AccessoryItemConfig = {
             wrappedEtherDirection,
@@ -313,7 +325,8 @@ export class Wallet extends React.Component<WalletProps, WalletState> {
         return (
             <div key={token.address}>
                 <ListItem
-                    primaryText={amount}
+                    primaryText={primaryText}
+                    secondaryText={secondaryText}
                     leftIcon={this._renderTokenIcon(token, tokenLink)}
                     rightAvatar={this._renderAccessoryItems(accessoryItemConfig)}
                     disableTouchRipple={true}
@@ -374,6 +387,16 @@ export class Wallet extends React.Component<WalletProps, WalletState> {
         const result = `${formattedAmount} ${symbol}`;
         return <div style={styles.amountLabel}>{result}</div>;
     }
+    private _renderValue(amount: BigNumber, decimals: number, price?: BigNumber) {
+        if (_.isUndefined(price)) {
+            return null;
+        }
+        const unitAmount = ZeroEx.toUnitAmount(amount, decimals);
+        const value = unitAmount.mul(price);
+        const formattedAmount = value.toFixed(USD_DECIMAL_PLACES);
+        const result = `$${formattedAmount}`;
+        return result;
+    }
     private _renderTokenIcon(token: Token, tokenLink?: string) {
         const tooltipId = `tooltip-${token.address}`;
         const tokenIcon = <TokenIcon token={token} diameter={ICON_DIMENSION} />;
@@ -422,10 +445,10 @@ export class Wallet extends React.Component<WalletProps, WalletState> {
             />
         );
     }
-    private _getInitialTrackedTokenStateByAddress(trackedTokens: Token[]) {
+    private _getInitialTrackedTokenStateByAddress(tokenAddresses: string[]) {
         const trackedTokenStateByAddress: TokenStateByAddress = {};
-        _.each(trackedTokens, token => {
-            trackedTokenStateByAddress[token.address] = {
+        _.each(tokenAddresses, tokenAddress => {
+            trackedTokenStateByAddress[tokenAddress] = {
                 balance: new BigNumber(0),
                 allowance: new BigNumber(0),
                 isLoaded: false,
@@ -434,19 +457,32 @@ export class Wallet extends React.Component<WalletProps, WalletState> {
         return trackedTokenStateByAddress;
     }
     private async _fetchBalancesAndAllowancesAsync(tokenAddresses: string[]) {
-        const trackedTokenStateByAddress = this.state.trackedTokenStateByAddress;
+        const balanceAndAllowanceTupleByAddress: ItemByAddress<BigNumber[]> = {};
         const userAddressIfExists = _.isEmpty(this.props.userAddress) ? undefined : this.props.userAddress;
         for (const tokenAddress of tokenAddresses) {
-            const [balance, allowance] = await this.props.blockchain.getTokenBalanceAndAllowanceAsync(
+            const balanceAndAllowanceTuple = await this.props.blockchain.getTokenBalanceAndAllowanceAsync(
                 userAddressIfExists,
                 tokenAddress,
             );
-            trackedTokenStateByAddress[tokenAddress] = {
-                balance,
-                allowance,
-                isLoaded: true,
-            };
+            balanceAndAllowanceTupleByAddress[tokenAddress] = balanceAndAllowanceTuple;
         }
+        const pricesByAddress = await this._getPricesByAddressAsync(tokenAddresses);
+        const trackedTokenStateByAddress = _.reduce(
+            tokenAddresses,
+            (acc, address) => {
+                const [balance, allowance] = balanceAndAllowanceTupleByAddress[address];
+                const price = pricesByAddress[address];
+                acc[address] = {
+                    balance,
+                    allowance,
+                    price,
+                    isLoaded: true,
+                };
+                return acc;
+            },
+            this.state.trackedTokenStateByAddress,
+        );
+
         if (!this._isUnmounted) {
             this.setState({
                 trackedTokenStateByAddress,
@@ -454,21 +490,23 @@ export class Wallet extends React.Component<WalletProps, WalletState> {
         }
     }
     private async _refetchTokenStateAsync(tokenAddress: string) {
-        const userAddressIfExists = _.isEmpty(this.props.userAddress) ? undefined : this.props.userAddress;
-        const [balance, allowance] = await this.props.blockchain.getTokenBalanceAndAllowanceAsync(
-            userAddressIfExists,
-            tokenAddress,
-        );
-        this.setState({
-            trackedTokenStateByAddress: {
-                ...this.state.trackedTokenStateByAddress,
-                [tokenAddress]: {
-                    balance,
-                    allowance,
-                    isLoaded: true,
-                },
-            },
-        });
+        await this._fetchBalancesAndAllowancesAsync([tokenAddress]);
+    }
+    private async _getPricesByAddressAsync(tokenAddresses: string[]): Promise<ItemByAddress<BigNumber>> {
+        if (_.isEmpty(tokenAddresses)) {
+            return {};
+        }
+        const tokenAddressesQueryString = tokenAddresses.join(',');
+        const endpoint = `${configs.BACKEND_BASE_URL}/prices?tokens=${tokenAddressesQueryString}`;
+        const response = await fetch(endpoint);
+        if (response.status !== 200) {
+            return {};
+        }
+        const websiteBackendPriceInfos: WebsiteBackendPriceInfo[] = await response.json();
+        const addresses = _.map(websiteBackendPriceInfos, info => info.address);
+        const prices = _.map(websiteBackendPriceInfos, info => new BigNumber(info.price));
+        const pricesByAddress = _.zipObject(addresses, prices);
+        return pricesByAddress;
     }
     private _openWrappedEtherActionRow(wrappedEtherDirection: Side) {
         this.setState({
@@ -485,4 +523,4 @@ export class Wallet extends React.Component<WalletProps, WalletState> {
         const etherToken = _.find(tokens, { symbol: ETHER_TOKEN_SYMBOL });
         return etherToken;
     }
-}
+} // tslint:disable:max-file-line-count
