@@ -24,9 +24,9 @@ import "../../utils/Ownable/Ownable.sol";
 import "../../utils/Authorizable/Authorizable.sol";
 
 contract AssetProxyDispatcher is
-    IAssetProxyDispatcher,
     Ownable,
-    Authorizable
+    Authorizable,
+    IAssetProxyDispatcher
 {
     // Mapping from Asset Proxy Id's to their respective Asset Proxy
     mapping (uint8 => IAssetProxy) public assetProxies;
@@ -53,11 +53,13 @@ contract AssetProxyDispatcher is
         assetProxy.transferFrom(assetMetadata, from, to, amount);
     }
 
-    /// @dev Adds a new asset proxy.
-    /// @param assetProxyId Id of the asset proxy.
-    /// @param newAssetProxy Asset proxy contract to add, or 0x0 to unset assetProxyId.
+    /// @dev Registers an asset proxy to an asset proxy id.
+    ///      An id can only be assigned to a single proxy at a given time,
+    ///      however, an asset proxy may be registered to multiple ids.
+    /// @param assetProxyId Id to register`newAssetProxy` under.
+    /// @param newAssetProxy asset proxy to register, or 0x0 to unset assetProxyId.
     /// @param currentAssetProxy Existing asset proxy to overwrite, or 0x0 if assetProxyId is currently unused.
-    function addAssetProxy(
+    function registerAssetProxy(
         uint8 assetProxyId,
         IAssetProxy newAssetProxy,
         IAssetProxy currentAssetProxy)
