@@ -1,5 +1,13 @@
 [
     {
+        "version": "0.36.3",
+        "changes": [
+            {
+                "note": "Move @0xproject/migrations to devDependencies"
+            }
+        ]
+    },
+    {
         "timestamp": 1524073495,
         "version": "0.36.2",
         "changes": [

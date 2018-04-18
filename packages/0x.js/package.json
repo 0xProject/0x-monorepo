@@ -66,6 +66,7 @@
         "@0xproject/monorepo-scripts": "^0.1.18",
         "@0xproject/subproviders": "^0.9.0",
         "@0xproject/tslint-config": "^0.4.16",
+        "@0xproject/migrations": "^0.0.3",
         "@types/bintrees": "^1.0.2",
         "@types/lodash": "4.14.104",
         "@types/mocha": "^2.2.42",
@@ -113,9 +114,6 @@
         "lodash": "^4.17.4",
         "uuid": "^3.1.0",
         "web3": "^0.20.0"
-    },
-    "optionalDependencies": {
-        "@0xproject/migrations": "^0.0.2"
     },
     "publishConfig": {
         "access": "public"
