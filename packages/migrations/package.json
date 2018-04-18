@@ -1,6 +1,6 @@
 {
     "name": "@0xproject/migrations",
-    "version": "0.0.2",
+    "version": "0.0.3",
     "description": "0x smart contract migrations",
     "main": "lib/index.js",
     "types": "lib/index.d.ts",

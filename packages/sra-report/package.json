@@ -1,6 +1,6 @@
 {
     "name": "@0xproject/sra-report",
-    "version": "0.0.9",
+    "version": "0.0.10",
     "description": "Generate reports for standard relayer API compliance",
     "main": "lib/src/index.js",
     "types": "lib/src/index.d.ts",
@@ -28,7 +28,7 @@
     },
     "homepage": "https://github.com/0xProject/0x-monorepo/packages/sra-report/README.md",
     "dependencies": {
-        "0x.js": "^0.36.1",
+        "0x.js": "^0.36.2",
         "@0xproject/assert": "^0.2.7",
         "@0xproject/connect": "^0.6.10",
         "@0xproject/json-schemas": "^0.7.21",
