@@ -1,6 +1,6 @@
 {
     "name": "@0xproject/web3-wrapper",
-    "version": "0.6.0",
+    "version": "0.6.1",
     "description": "Wraps around web3 and gives a nicer interface",
     "main": "lib/src/index.js",
     "types": "lib/src/index.d.ts",
@@ -40,8 +40,8 @@
     },
     "homepage": "https://github.com/0xProject/0x-monorepo/packages/web3-wrapper/README.md",
     "devDependencies": {
-        "@0xproject/monorepo-scripts": "^0.1.17",
-        "@0xproject/tslint-config": "^0.4.15",
+        "@0xproject/monorepo-scripts": "^0.1.18",
+        "@0xproject/tslint-config": "^0.4.16",
         "@types/lodash": "4.14.104",
         "chai": "^4.0.1",
         "chai-as-promised": "^7.1.0",
@@ -58,9 +58,9 @@
         "typescript": "2.7.1"
     },
     "dependencies": {
-        "@0xproject/types": "^0.6.0",
-        "@0xproject/typescript-typings": "^0.1.0",
-        "@0xproject/utils": "^0.5.1",
+        "@0xproject/types": "^0.6.1",
+        "@0xproject/typescript-typings": "^0.2.0",
+        "@0xproject/utils": "^0.5.2",
         "ethers-contracts": "^2.2.1",
         "lodash": "^4.17.4",
         "web3": "^0.20.0"
