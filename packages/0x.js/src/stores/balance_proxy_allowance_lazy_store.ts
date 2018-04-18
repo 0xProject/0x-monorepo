@@ -2,8 +2,8 @@ import { BlockParamLiteral } from '@0xproject/types';
 import { BigNumber } from '@0xproject/utils';
 import * as _ from 'lodash';
 
-import { TokenWrapper } from '../contract_wrappers/token_wrapper';
 import { BalanceAndProxyAllowanceFetcher } from '../abstract/balance_and_proxy_allowance_fetcher';
+import { TokenWrapper } from '../contract_wrappers/token_wrapper';
 
 /**
  * Copy on read store for balances/proxyAllowances of tokens/accounts
@@ -60,7 +60,11 @@ export class BalanceAndProxyAllowanceLazyStore implements BalanceAndProxyAllowan
             const methodOpts = {
                 defaultBlock: this._defaultBlock,
             };
-            const proxyAllowance = await this._tokenWrapper.getProxyAllowanceAsync(tokenAddress, userAddress, methodOpts);
+            const proxyAllowance = await this._tokenWrapper.getProxyAllowanceAsync(
+                tokenAddress,
+                userAddress,
+                methodOpts,
+            );
             this.setProxyAllowance(tokenAddress, userAddress, proxyAllowance);
         }
         const cachedProxyAllowance = this._proxyAllowance[tokenAddress][userAddress];
