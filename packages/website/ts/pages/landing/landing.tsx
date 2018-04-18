@@ -92,8 +92,8 @@ const relayersAndDappProjects: Project[] = [
         projectUrl: constants.PROJECT_URL_BLOCKNET,
     },
     {
-        logoFileName: 'status.png',
-        projectUrl: constants.PROJECT_URL_STATUS,
+        logoFileName: 'tokenlon.png',
+        projectUrl: constants.PROJECT_URL_TOKENLON,
     },
     {
         logoFileName: 'augur.png',
