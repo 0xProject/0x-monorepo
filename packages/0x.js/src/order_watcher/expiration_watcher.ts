@@ -48,6 +48,9 @@ export class ExpirationWatcher {
         this._orderHashByExpirationRBTree.insert(orderHash);
     }
     public removeOrder(orderHash: string): void {
+        if (_.isUndefined(this._expiration[orderHash])) {
+            return; // noop since order already removed
+        }
         this._orderHashByExpirationRBTree.remove(orderHash);
         delete this._expiration[orderHash];
     }

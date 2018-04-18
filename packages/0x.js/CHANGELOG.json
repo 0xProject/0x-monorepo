@@ -4,6 +4,10 @@
         "changes": [
             {
                 "note": "Internal changes and refactoring"
+            },
+            {
+                "note": "Fix redundant expired order removal bug",
+                "pr": 527
             }
         ]
     },
