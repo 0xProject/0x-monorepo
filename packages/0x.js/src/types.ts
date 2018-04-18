@@ -154,13 +154,13 @@ export interface OrderFillRequest {
 export type AsyncMethod = (...args: any[]) => Promise<any>;
 export type SyncMethod = (...args: any[]) => any;
 
-/*
- * orderExpirationCheckingIntervalMs: How often to check for expired orders. Default: 50
- * eventPollingIntervalMs: How often to poll the Ethereum node for new events. Default: 200
+/**
+ * orderExpirationCheckingIntervalMs: How often to check for expired orders. Default=50.
+ * eventPollingIntervalMs: How often to poll the Ethereum node for new events. Default=200.
  * expirationMarginMs: Amount of time before order expiry that you'd like to be notified
- * of an orders expiration. Default: 0
- * cleanupJobIntervalMs: How often to run a cleanup job which revalidates all the orders. Defaults: 1h
- * stateLayer: Optional blockchain state layer OrderWatcher will monitor for new events. Default: latest
+ * of an orders expiration. Default=0.
+ * cleanupJobIntervalMs: How often to run a cleanup job which revalidates all the orders. Default=1hr.
+ * stateLayer: Optional blockchain state layer OrderWatcher will monitor for new events. Default=latest.
  */
 export interface OrderStateWatcherConfig {
     orderExpirationCheckingIntervalMs?: number;
@@ -170,7 +170,7 @@ export interface OrderStateWatcherConfig {
     stateLayer: BlockParamLiteral;
 }
 
-/*
+/**
  * networkId: The id of the underlying ethereum network your provider is connected to. (1-mainnet, 3-ropsten, 4-rinkeby, 42-kovan, 50-testrpc)
  * gasPrice: Gas price to use with every transaction
  * exchangeContractAddress: The address of an exchange contract to use
@@ -201,7 +201,7 @@ export interface Artifact {
     };
 }
 
-/*
+/**
  * expectedFillTakerTokenAmount: If specified, the validation method will ensure that the
  * supplied order maker has a sufficient allowance/balance to fill this amount of the order's
  * takerTokenAmount. If not specified, the validation method ensures that the maker has a sufficient
@@ -211,7 +211,7 @@ export interface ValidateOrderFillableOpts {
     expectedFillTakerTokenAmount?: BigNumber;
 }
 
-/*
+/**
  * defaultBlock: The block up to which to query the blockchain state. Setting this to a historical block number
  * let's the user query the blockchain's state at an arbitrary point in time. In order for this to work, the
  * backing  Ethereum node must keep the entire historical state of the chain (e.g setting `--pruning=archive`
@@ -221,7 +221,7 @@ export interface MethodOpts {
     defaultBlock?: BlockParam;
 }
 
-/*
+/**
  * gasPrice: Gas price in Wei to use for a transaction
  * gasLimit: The amount of gas to send with a transaction
  */
@@ -230,9 +230,9 @@ export interface TransactionOpts {
     gasLimit?: number;
 }
 
-/*
+/**
  * shouldValidate: Flag indicating whether the library should make attempts to validate a transaction before
- * broadcasting it. For example, order has a valid signature, maker has sufficient funds, etc. Default: true
+ * broadcasting it. For example, order has a valid signature, maker has sufficient funds, etc. Default=true.
  */
 export interface OrderTransactionOpts extends TransactionOpts {
     shouldValidate?: boolean;
