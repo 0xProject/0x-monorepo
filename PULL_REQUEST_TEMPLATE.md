@@ -36,7 +36,6 @@
 
 *   [ ] Change requires a change to the documentation.
 *   [ ] Added tests to cover my changes.
-*   [ ] Added new entries to the relevant CHANGELOGs.
-*   [ ] Updated the new versions of the changed packages in the relevant CHANGELOGs.
+*   [ ] Added new entries to the relevant CHANGELOG.jsons.
 *   [ ] Labeled this PR with the 'WIP' label if it is a work in progress.
 *   [ ] Labeled this PR with the labels corresponding to the changed package.
