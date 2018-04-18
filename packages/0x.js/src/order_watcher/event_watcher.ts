@@ -13,7 +13,7 @@ enum LogEventState {
     Added,
 }
 
-/*
+/**
  * The EventWatcher watches for blockchain events at the specified block confirmation
  * depth.
  */

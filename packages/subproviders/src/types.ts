@@ -6,7 +6,8 @@ export interface LedgerCommunicationClient {
     close: () => Promise<void>;
 }
 
-/*
+/**
+ * Elliptic Curve signature
  * The LedgerEthereumClient sends Ethereum-specific requests to the Ledger Nano S
  * It uses an internal LedgerCommunicationClient to relay these requests. Currently
  * NodeJs and Browser communication are supported.
@@ -32,7 +33,7 @@ export interface ECSignatureString {
 
 export type LedgerEthereumClientFactoryAsync = () => Promise<LedgerEthereumClient>;
 
-/*
+/**
  * networkId: The ethereum networkId to set as the chainId from EIP155
  * ledgerConnectionType: Environment in which you wish to connect to Ledger (nodejs or browser)
  * derivationPath: Initial derivation path to use e.g 44'/60'/0'
@@ -45,7 +46,7 @@ export interface LedgerSubproviderConfigs {
     accountFetchingConfigs?: AccountFetchingConfigs;
 }
 
-/*
+/**
  * addressSearchLimit: The maximum number of addresses to search through, defaults to 1000
  * numAddressesToReturn: Number of addresses to return from 'eth_accounts' call
  * shouldAskForOnDeviceConfirmation: Whether you wish to prompt the user on their Ledger
@@ -57,7 +58,7 @@ export interface AccountFetchingConfigs {
     shouldAskForOnDeviceConfirmation?: boolean;
 }
 
-/*
+/**
  * mnemonic: The string mnemonic seed
  * addressSearchLimit: The maximum number of addresses to search through, defaults to 1000
  * baseDerivationPath: The base derivation path (e.g 44'/60'/0'/0)

@@ -4,14 +4,14 @@ import ethUtil = require('ethereumjs-util');
 import * as _ from 'lodash';
 
 export const crypto = {
-    /*
-   * We convert types from JS to Solidity as follows:
-   * BigNumber -> uint256
-   * number -> uint8
-   * string -> string
-   * boolean -> bool
-   * valid Ethereum address -> address
-   */
+    /**
+     * We convert types from JS to Solidity as follows:
+     * BigNumber -> uint256
+     * number -> uint8
+     * string -> string
+     * boolean -> bool
+     * valid Ethereum address -> address
+     */
     solSHA3(args: any[]): Buffer {
         return crypto._solHash(args, ABI.soliditySHA3);
     },

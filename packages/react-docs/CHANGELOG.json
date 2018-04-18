@@ -9,6 +9,10 @@
             {
                 "note": "Added support for rendering nested function types within interface types",
                 "pr": 519
+            },
+            {
+                "note": "Improve type comment rendering",
+                "pr": 535
             }
         ]
     },
