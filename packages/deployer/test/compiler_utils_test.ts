@@ -1,5 +1,6 @@
 import * as chai from 'chai';
 import * as dirtyChai from 'dirty-chai';
+import * as _ from 'lodash';
 import 'mocha';
 
 import {
@@ -51,11 +52,16 @@ describe('Compiler utils', () => {
             const source = await fsWrapper.readFileAsync(path, {
                 encoding: 'utf8',
             });
-            expect(parseDependencies({ source, path })).to.be.deep.equal([
+            const dependencies = parseDependencies({ source, path });
+            const expectedDependencies = [
                 'zeppelin-solidity/contracts/token/ERC20/ERC20.sol',
-                '/home/circleci/repo/packages/deployer/lib/test/fixtures/contracts/TokenTransferProxy.sol',
-                '/home/circleci/repo/packages/deployer/lib/test/fixtures/contracts/base/SafeMath.sol',
-            ]);
+                'packages/deployer/lib/test/fixtures/contracts/TokenTransferProxy.sol',
+                'packages/deployer/lib/test/fixtures/contracts/base/SafeMath.sol',
+            ];
+            _.each(expectedDependencies, expectedDepdency => {
+                const foundDependency = _.find(dependencies, dependency => _.endsWith(dependency, expectedDepdency));
+                expect(foundDependency, `${expectedDepdency} not found`).to.not.be.undefined();
+            });
         });
         it('correctly parses TokenTransferProxy dependencies', async () => {
             const path = `${__dirname}/fixtures/contracts/TokenTransferProxy.sol`;
