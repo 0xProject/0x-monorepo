@@ -280,7 +280,6 @@ contract MixinExchangeCore is
             fillResults.takerTokenFilledAmount,
             fillResults.makerFeePaid,
             fillResults.takerFeePaid);
-
         return fillResults;
     }
 

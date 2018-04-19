@@ -35,4 +35,5 @@ contract LibErrors {
     }
 
     event ExchangeError(uint8 indexed errorId, bytes32 indexed orderHash);
+
 }
