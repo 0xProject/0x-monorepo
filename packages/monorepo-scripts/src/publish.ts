@@ -113,7 +113,7 @@ package.ts. Please add an entry for it and try again.`,
 }
 
 async function checkPublishRequiredSetupAsync(): Promise<boolean> {
-    // check to see if logged into npm before publishing (npm whoami)
+    // check to see if logged into npm before publishing
     try {
         await execAsync(`sudo npm whoami`);
     } catch (err) {
@@ -121,13 +121,14 @@ async function checkPublishRequiredSetupAsync(): Promise<boolean> {
         return false;
     }
 
-    // Check to see if Git creds setup (check for ENV 'GITHUB_PERSONAL_ACCESS_TOKEN_0X_JS')
+    // Check to see if Git personal token setup
     if (_.isUndefined(process.env.GITHUB_PERSONAL_ACCESS_TOKEN_0X_JS)) {
         utils.log(
             'You must have a Github personal access token set to an envVar named `GITHUB_PERSONAL_ACCESS_TOKEN_0X_JS`. Add it then try again.',
         );
         return false;
     }
+
     // Check NPM version is 5.X
     const result = await execAsync(`npm --version`);
     const version = result.stdout;
@@ -138,7 +139,7 @@ async function checkPublishRequiredSetupAsync(): Promise<boolean> {
         return false;
     }
 
-    // Check that `aws` commandline is installed
+    // Check that `aws` commandline tool is installed
     try {
         await execAsync(`aws help`);
     } catch (err) {
@@ -146,7 +147,7 @@ async function checkPublishRequiredSetupAsync(): Promise<boolean> {
         return false;
     }
 
-    // Check that `aws` creds are setup
+    // Check that `aws` credentials are setup
     try {
         await execAsync(`aws sts get-caller-identity`);
     } catch (err) {
