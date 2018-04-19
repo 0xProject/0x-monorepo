@@ -977,7 +977,7 @@ describe('Exchange', () => {
             ).to.be.rejectedWith(constants.REVERT);
         });
 
-        it('should emit error event if takerTokenAmount is 0', async () => {
+        it('should log error event if takerTokenAmount is 0', async () => {
             // Construct Exchange parameters
             const makerTokenId = erc721MakerTokenIds[0];
             const takerTokenId = erc721TakerTokenIds[0];
