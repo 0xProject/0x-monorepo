@@ -1,4 +1,4 @@
-declare module 'ethers-contracts' {
+declare module 'ethers' {
     export interface TransactionDescription {
         name: string;
         signature: string;
@@ -12,17 +12,20 @@ declare module 'ethers-contracts' {
         (...params: any[]): TransactionDescription | CallDescription;
         inputs: { names: string[]; types: string[] };
         outputs: { names: string[]; types: string[] };
+        type: string;
     }
     export interface EventDescription {
         parse: (...args: any[]) => any;
         inputs: { names: string[]; types: string[] };
         signature: string;
-        topic: string;
+        topics: string[];
     }
     export class Interface {
         public functions: { [functionName: string]: FunctionDescription };
         public events: { [eventName: string]: EventDescription };
-        public static decodeParams(types: string[], data: string): any[];
         constructor(abi: any);
+    }
+    export class Contract {
+        constructor(address: string, abi: any, provider: any);
     }
 }

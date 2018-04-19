@@ -35,7 +35,7 @@
         "@0xproject/typescript-typings": "^0.2.0",
         "@types/node": "^8.0.53",
         "bignumber.js": "~4.1.0",
-        "ethers-contracts": "^2.2.1",
+        "ethers": "^3.0.15",
         "js-sha3": "^0.7.0",
         "lodash": "^4.17.4",
         "web3": "^0.20.0"

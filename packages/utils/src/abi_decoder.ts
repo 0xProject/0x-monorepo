@@ -9,7 +9,7 @@ import {
     RawLog,
     SolidityTypes,
 } from '@0xproject/types';
-import * as ethersContracts from 'ethers-contracts';
+import * as ethers from 'ethers';
 import * as _ from 'lodash';
 
 import { BigNumber } from './configured_bignumber';
@@ -36,7 +36,7 @@ export class AbiDecoder {
         if (_.isUndefined(event)) {
             return log;
         }
-        const ethersInterface = new ethersContracts.Interface([event]);
+        const ethersInterface = new ethers.Interface([event]);
         const logData = log.data;
         const decodedParams: DecodedLogArgs = {};
         let topicsIndex = 1;
@@ -77,10 +77,10 @@ export class AbiDecoder {
         if (_.isUndefined(abiArray)) {
             return;
         }
-        const ethersInterface = new ethersContracts.Interface(abiArray);
+        const ethersInterface = new ethers.Interface(abiArray);
         _.map(abiArray, (abi: AbiDefinition) => {
             if (abi.type === AbiType.Event) {
-                const topic = ethersInterface.events[abi.name].topic;
+                const topic = ethersInterface.events[abi.name].topics[0];
                 this._methodIds[topic] = abi;
             }
         });
