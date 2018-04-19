@@ -175,7 +175,7 @@ contract MixinExchangeCore is
 
         // Validate fill order rounding
         if (isRoundingError(
-            takerTokenFilledAmount,
+            fillResults.takerTokenFilledAmount,
             order.takerTokenAmount,
             order.makerTokenAmount))
         {
@@ -187,17 +187,17 @@ contract MixinExchangeCore is
         // TODO: All three are multiplied by the same fraction. This can
         // potentially be optimized.
         fillResults.makerTokenFilledAmount = getPartialAmount(
-            takerTokenFilledAmount,
+            fillResults.takerTokenFilledAmount,
             order.takerTokenAmount,
             order.makerTokenAmount);
-        fillResults.makerFeeAmountPaid = getPartialAmount(
-            takerTokenFilledAmount,
+        fillResults.makerFeePaid = getPartialAmount(
+            fillResults.takerTokenFilledAmount,
             order.takerTokenAmount,
-            order.makerFeeAmount);
-        fillResults.takerFeeAmountPaid = getPartialAmount(
-            takerTokenFilledAmount,
+            order.makerFee);
+        fillResults.takerFeePaid = getPartialAmount(
+            fillResults.takerTokenFilledAmount,
             order.takerTokenAmount,
-            order.takerFeeAmount);
+            order.takerFee);
 
         status = uint8(Errors.SUCCESS);
         return;
@@ -208,24 +208,24 @@ contract MixinExchangeCore is
         bytes32 orderHash,
         uint256 makerTokenFilledAmount,
         uint256 takerTokenFilledAmount,
-        uint256 makerFeeAmountPaid,
-        uint256 takerFeeAmountPaid)
+        uint256 makerFeePaid,
+        uint256 takerFeePaid)
         private
     {
         // Update state
         filled[orderHash] = safeAdd(filled[orderHash], takerTokenFilledAmount);
 
         // Log order
-        emit LogFill(
+        emit Fill(
             order.makerAddress,
             msg.sender,
             order.feeRecipientAddress,
-            order.makerTokenAddress,
-            order.takerTokenAddress,
+            order.makerAssetData,
+            order.takerAssetData,
             makerTokenFilledAmount,
             takerTokenFilledAmount,
-            makerFeeAmountPaid,
-            takerFeeAmountPaid,
+            makerFeePaid,
+            takerFeePaid,
             orderHash
         );
     }
@@ -254,8 +254,8 @@ contract MixinExchangeCore is
 
         // Compute proportional fill amounts
         uint256 makerTokenFilledAmount;
-        uint256 makerFeeAmountPaid;
-        uint256 takerFeeAmountPaid;
+        uint256 makerFeePaid;
+        uint256 takerFeePaid;
         (   status,
             fillResults
         ) = getFillAmounts(
@@ -268,32 +268,19 @@ contract MixinExchangeCore is
             return fillResults;
         }
 
+        // Settle order
+        (fillResults.makerTokenFilledAmount, fillResults.makerFeePaid, fillResults.takerFeePaid) =
+            settleOrder(order, msg.sender, fillResults.takerTokenFilledAmount);
+
         // Update exchange internal state
         updateState(
             order,
             orderHash,
             fillResults.makerTokenFilledAmount,
             fillResults.takerTokenFilledAmount,
-            fillResults.makerFeeAmountPaid,
-            fillResults.takerFeeAmountPaid);
+            fillResults.makerFeePaid,
+            fillResults.takerFeePaid);
 
-        // Settle order
-        (fillResults.makerTokenFilledAmount, fillResults.makerFeePaid, fillResults.takerFeePaid) =
-            settleOrder(order, msg.sender, fillResults.takerTokenFilledAmount);
-
-        // Log order
-        emit Fill(
-            order.makerAddress,
-            msg.sender,
-            order.feeRecipientAddress,
-            order.makerAssetData,
-            order.takerAssetData,
-            fillResults.makerTokenFilledAmount,
-            fillResults.takerTokenFilledAmount,
-            fillResults.makerFeeAmountPaid,
-            fillResults.takerFeeAmountPaid,
-            orderHash
-        );
         return fillResults;
     }
 
