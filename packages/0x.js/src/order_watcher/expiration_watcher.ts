@@ -22,8 +22,17 @@ export class ExpirationWatcher {
         this._expirationMarginMs = expirationMarginIfExistsMs || DEFAULT_EXPIRATION_MARGIN_MS;
         this._orderExpirationCheckingIntervalMs =
             expirationMarginIfExistsMs || DEFAULT_ORDER_EXPIRATION_CHECKING_INTERVAL_MS;
-        const scoreFunction = (orderHash: string) => this._expiration[orderHash].toNumber();
-        const comparator = (lhs: string, rhs: string) => scoreFunction(lhs) - scoreFunction(rhs);
+        const comparator = (lhsOrderHash: string, rhsOrderHash: string) => {
+            const lhsExpiration = this._expiration[lhsOrderHash].toNumber();
+            const rhsExpiration = this._expiration[rhsOrderHash].toNumber();
+            if (lhsExpiration !== rhsExpiration) {
+                return lhsExpiration - rhsExpiration;
+            } else {
+                // HACK: If two orders have identical expirations, the order in which they are emitted by the
+                // ExpirationWatcher does not matter, so we emit them in alphabetical order by orderHash.
+                return lhsOrderHash.localeCompare(rhsOrderHash);
+            }
+        };
         this._orderHashByExpirationRBTree = new RBTree(comparator);
     }
     public subscribe(callback: (orderHash: string) => void): void {

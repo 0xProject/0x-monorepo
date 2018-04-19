@@ -69,7 +69,7 @@ export const runMigrationsAsync = async (deployer: Deployer) => {
         },
     );
     for (const token of tokenInfo) {
-        const totalSupply = new BigNumber(0);
+        const totalSupply = new BigNumber(100000000000000000000);
         const args = [token.name, token.symbol, token.decimals, totalSupply];
         const dummyToken = await deployer.deployAsync(ContractName.DummyToken, args);
         await tokenReg.addToken.sendTransactionAsync(
