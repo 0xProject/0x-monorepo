@@ -487,14 +487,17 @@ export interface OutdatedWrappedEtherByNetworkId {
     };
 }
 
-export interface TokenStateByAddress {
-    [address: string]: TokenState;
+export interface ItemByAddress<T> {
+    [address: string]: T;
 }
+
+export type TokenStateByAddress = ItemByAddress<TokenState>;
 
 export interface TokenState {
     balance: BigNumber;
     allowance: BigNumber;
     isLoaded: boolean;
+    price?: BigNumber;
 }
 
 export interface RelayerInfo {
