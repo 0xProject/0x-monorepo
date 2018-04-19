@@ -784,7 +784,9 @@ export class Blockchain {
         const provider = await Blockchain._getProviderAsync(injectedWeb3, networkIdIfExists);
         this.networkId = !_.isUndefined(networkIdIfExists)
             ? networkIdIfExists
-            : configs.IS_MAINNET_ENABLED ? constants.NETWORK_ID_MAINNET : constants.NETWORK_ID_KOVAN;
+            : configs.IS_MAINNET_ENABLED
+                ? constants.NETWORK_ID_MAINNET
+                : constants.NETWORK_ID_KOVAN;
         this._dispatcher.updateNetworkId(this.networkId);
         const zeroExConfigs = {
             networkId: this.networkId,
