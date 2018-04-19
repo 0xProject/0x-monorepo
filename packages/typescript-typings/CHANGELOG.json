@@ -3,7 +3,7 @@
         "version": "0.3.0",
         "changes": [
             {
-                "note": "Add types for `ethers.js`",
+                "note": "Add types for `ethers.js`, removing `ethers-contracts`",
                 "pr": 540
             }
         ]
