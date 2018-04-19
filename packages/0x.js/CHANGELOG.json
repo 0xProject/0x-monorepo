@@ -1,10 +1,28 @@
 [
     {
-        "version": "0.36.2",
+        "version": "0.36.4",
         "changes": [
             {
                 "note": "Fixed expiration watcher comparator to handle orders with equal expiration times",
                 "pr": 526
+            }
+        ]
+    },
+    {
+        "version": "0.36.3",
+        "changes": [
+            {
+                "note": "Move @0xproject/migrations to devDependencies"
+            }
+        ],
+        "timestamp": 1524079658
+    },
+    {
+        "timestamp": 1524073495,
+        "version": "0.36.2",
+        "changes": [
+            {
+                "note": "Dependencies updated"
             }
         ]
     },
