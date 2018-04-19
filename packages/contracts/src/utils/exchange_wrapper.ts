@@ -115,13 +115,13 @@ export class ExchangeWrapper {
         const tx = await this._getTxWithDecodedExchangeLogsAsync(txHash);
         return tx;
     }
-    public async marketFillOrdersAsync(
+    public async marketSellOrdersAsync(
         orders: SignedOrder[],
         from: string,
         opts: { takerTokenFillAmount: BigNumber },
     ): Promise<TransactionReceiptWithDecodedLogs> {
-        const params = formatters.createMarketFillOrders(orders, opts.takerTokenFillAmount);
-        const txHash = await this._exchange.marketFillOrders.sendTransactionAsync(
+        const params = formatters.createMarketSellOrders(orders, opts.takerTokenFillAmount);
+        const txHash = await this._exchange.marketSellOrders.sendTransactionAsync(
             params.orders,
             params.takerTokenFillAmount,
             params.signatures,
@@ -130,15 +130,45 @@ export class ExchangeWrapper {
         const tx = await this._getTxWithDecodedExchangeLogsAsync(txHash);
         return tx;
     }
-    public async marketFillOrdersNoThrowAsync(
+    public async marketSellOrdersNoThrowAsync(
         orders: SignedOrder[],
         from: string,
         opts: { takerTokenFillAmount: BigNumber },
     ): Promise<TransactionReceiptWithDecodedLogs> {
-        const params = formatters.createMarketFillOrders(orders, opts.takerTokenFillAmount);
-        const txHash = await this._exchange.marketFillOrdersNoThrow.sendTransactionAsync(
+        const params = formatters.createMarketSellOrders(orders, opts.takerTokenFillAmount);
+        const txHash = await this._exchange.marketSellOrdersNoThrow.sendTransactionAsync(
             params.orders,
             params.takerTokenFillAmount,
+            params.signatures,
+            { from },
+        );
+        const tx = await this._getTxWithDecodedExchangeLogsAsync(txHash);
+        return tx;
+    }
+    public async marketBuyOrdersAsync(
+        orders: SignedOrder[],
+        from: string,
+        opts: { makerTokenFillAmount: BigNumber },
+    ): Promise<TransactionReceiptWithDecodedLogs> {
+        const params = formatters.createMarketBuyOrders(orders, opts.makerTokenFillAmount);
+        const txHash = await this._exchange.marketBuyOrders.sendTransactionAsync(
+            params.orders,
+            params.makerTokenFillAmount,
+            params.signatures,
+            { from },
+        );
+        const tx = await this._getTxWithDecodedExchangeLogsAsync(txHash);
+        return tx;
+    }
+    public async marketBuyOrdersNoThrowAsync(
+        orders: SignedOrder[],
+        from: string,
+        opts: { makerTokenFillAmount: BigNumber },
+    ): Promise<TransactionReceiptWithDecodedLogs> {
+        const params = formatters.createMarketBuyOrders(orders, opts.makerTokenFillAmount);
+        const txHash = await this._exchange.marketBuyOrdersNoThrow.sendTransactionAsync(
+            params.orders,
+            params.makerTokenFillAmount,
             params.signatures,
             { from },
         );
@@ -154,18 +184,11 @@ export class ExchangeWrapper {
         const tx = await this._getTxWithDecodedExchangeLogsAsync(txHash);
         return tx;
     }
-    public async cancelOrdersUpToAsync(
-        salt: BigNumber,
-        from: string,
-    ): Promise<TransactionReceiptWithDecodedLogs> {
-        const txHash = await this._exchange.cancelOrdersUpTo.sendTransactionAsync(
-            salt,
-            { from },
-        );
+    public async cancelOrdersUpToAsync(salt: BigNumber, from: string): Promise<TransactionReceiptWithDecodedLogs> {
+        const txHash = await this._exchange.cancelOrdersUpTo.sendTransactionAsync(salt, { from });
         const tx = await this._getTxWithDecodedExchangeLogsAsync(txHash);
         return tx;
     }
-
     public async getOrderHashAsync(signedOrder: SignedOrder): Promise<string> {
         const order = orderUtils.getOrderStruct(signedOrder);
         const orderHash = await this._exchange.getOrderHash.callAsync(order);
@@ -197,7 +220,7 @@ export class ExchangeWrapper {
         );
         return partialAmount;
     }
-    public async getFilledTakerTokenAmountAsync(orderHashHex: string): Promise<BigNumber> {
+    public async getTakerTokenFilledAmountAsync(orderHashHex: string): Promise<BigNumber> {
         const filledAmount = new BigNumber(await this._exchange.filled.callAsync(orderHashHex));
         return filledAmount;
     }

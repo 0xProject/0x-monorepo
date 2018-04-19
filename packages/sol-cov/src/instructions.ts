@@ -1,9 +1,8 @@
-// tslint:disable:number-literal-format
-const PUSH1 = 0x60;
-const PUSH32 = 0x7f;
-const isPush = (inst: number) => inst >= PUSH1 && inst <= PUSH32;
+import { constants } from './constants';
 
-const pushDataLength = (inst: number) => inst - PUSH1 + 1;
+const isPush = (inst: number) => inst >= constants.PUSH1 && inst <= constants.PUSH32;
+
+const pushDataLength = (inst: number) => inst - constants.PUSH1 + 1;
 
 const instructionLength = (inst: number) => (isPush(inst) ? pushDataLength(inst) + 1 : 1);
 

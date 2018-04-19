@@ -1,5 +1,5 @@
+import { AbiDefinition, ContractAbi } from '@0xproject/types';
 import { BigNumber } from '@0xproject/utils';
-import * as Web3 from 'web3';
 
 export interface BalancesByOwner {
     [ownerAddress: string]: {
@@ -17,10 +17,16 @@ export interface BatchFillOrders {
     takerTokenFillAmounts: BigNumber[];
 }
 
-export interface MarketFillOrders {
+export interface MarketSellOrders {
     orders: OrderStruct[];
     signatures: string[];
     takerTokenFillAmount: BigNumber;
+}
+
+export interface MarketBuyOrders {
+    orders: OrderStruct[];
+    signatures: string[];
+    makerTokenFillAmount: BigNumber;
 }
 
 export interface BatchCancelOrders {
@@ -31,6 +37,12 @@ export interface CancelOrdersBefore {
     salt: BigNumber;
 }
 
+export enum AssetProxyId {
+    INVALID,
+    ERC20,
+    ERC721,
+}
+
 export interface DefaultOrderParams {
     exchangeAddress: string;
     makerAddress: string;
@@ -39,13 +51,15 @@ export interface DefaultOrderParams {
     takerTokenAddress: string;
     makerTokenAmount: BigNumber;
     takerTokenAmount: BigNumber;
-    makerFeeAmount: BigNumber;
-    takerFeeAmount: BigNumber;
+    makerFee: BigNumber;
+    takerFee: BigNumber;
+    makerAssetData: string;
+    takerAssetData: string;
 }
 
 export interface TransactionDataParams {
     name: string;
-    abi: Web3.AbiDefinition[];
+    abi: AbiDefinition[];
     args: any[];
 }
 
@@ -81,12 +95,10 @@ export enum ExchangeContractErrs {
     ERROR_ORDER_EXPIRED,
     ERROR_ORDER_FULLY_FILLED,
     ERROR_ORDER_CANCELLED,
-    ERROR_INVALID_TAKER,
-    ERROR_ROUNDING_ERROR_TOO_LARGE
+    ERROR_ROUNDING_ERROR_TOO_LARGE,
 }
 
 export enum ContractName {
-    TokenTransferProxy = 'TokenTransferProxy',
     TokenRegistry = 'TokenRegistry',
     MultiSigWalletWithTimeLock = 'MultiSigWalletWithTimeLock',
     Exchange = 'Exchange',
@@ -98,13 +110,18 @@ export enum ContractName {
     AccountLevels = 'AccountLevels',
     EtherDelta = 'EtherDelta',
     Arbitrage = 'Arbitrage',
+    AssetProxyDispatcher = 'AssetProxyDispatcher',
+    ERC20Proxy = 'ERC20Proxy',
+    ERC721Proxy = 'ERC721Proxy',
+    DummyERC721Token = 'DummyERC721Token',
+    LibBytes = 'LibBytes',
 }
 
 export interface Artifact {
     contract_name: ContractName;
     networks: {
         [networkId: number]: {
-            abi: Web3.ContractAbi;
+            abi: ContractAbi;
             solc_version: string;
             keccak256: string;
             optimizer_enabled: number;
@@ -123,15 +140,15 @@ export interface SignedOrder extends UnsignedOrder {
 export interface OrderStruct {
     makerAddress: string;
     takerAddress: string;
-    makerTokenAddress: string;
-    takerTokenAddress: string;
     feeRecipientAddress: string;
     makerTokenAmount: BigNumber;
     takerTokenAmount: BigNumber;
-    makerFeeAmount: BigNumber;
-    takerFeeAmount: BigNumber;
+    makerFee: BigNumber;
+    takerFee: BigNumber;
     expirationTimeSeconds: BigNumber;
     salt: BigNumber;
+    makerAssetData: string;
+    takerAssetData: string;
 }
 
 export interface UnsignedOrder extends OrderStruct {

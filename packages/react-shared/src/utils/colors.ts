@@ -1,7 +1,6 @@
 import { colors as materialUiColors } from 'material-ui/styles';
 
-export const colors = {
-    ...materialUiColors,
+const baseColors = {
     gray40: '#F8F8F8',
     grey50: '#FAFAFA',
     grey100: '#F5F5F5',
@@ -27,6 +26,7 @@ export const colors = {
     lightBlue: '#60A4F4',
     lightBlueA700: '#0091EA',
     linkBlue: '#1D5CDE',
+    mediumBlue: '#488AEA',
     darkBlue: '#4D5481',
     turquois: '#058789',
     lightPurple: '#A81CA6',
@@ -45,4 +45,22 @@ export const colors = {
     orange: '#E69D00',
     amber800: '#FF8F00',
     darkYellow: '#caca03',
+};
+
+const appColors = {
+    // wallet specific colors
+    walletBoxShadow: 'rgba(56, 59, 137, 0.2)',
+    walletBorder: '#ededee',
+    walletDefaultItemBackground: '#fbfbfc',
+    walletFocusedItemBackground: '#f0f1f4',
+    allowanceToggleShadow: 'rgba(0, 0, 0, 0)',
+    allowanceToggleOffTrack: '#adadad',
+    allowanceToggleOnTrack: baseColors.mediumBlue,
+    wrapEtherConfirmationButton: baseColors.mediumBlue,
+};
+
+export const colors = {
+    ...materialUiColors,
+    ...baseColors,
+    ...appColors,
 };

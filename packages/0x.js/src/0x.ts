@@ -1,5 +1,5 @@
 import { schemas, SchemaValidator } from '@0xproject/json-schemas';
-import { TransactionReceiptWithDecodedLogs } from '@0xproject/types';
+import { ECSignature, Order, Provider, SignedOrder, TransactionReceiptWithDecodedLogs } from '@0xproject/types';
 import { AbiDecoder, BigNumber, intervalUtils } from '@0xproject/utils';
 import { Web3Wrapper } from '@0xproject/web3-wrapper';
 import * as ethUtil from 'ethereumjs-util';
@@ -15,7 +15,7 @@ import { OrderStateWatcher } from './order_watcher/order_state_watcher';
 import { zeroExConfigSchema } from './schemas/zero_ex_config_schema';
 import { zeroExPrivateNetworkConfigSchema } from './schemas/zero_ex_private_network_config_schema';
 import { zeroExPublicNetworkConfigSchema } from './schemas/zero_ex_public_network_config_schema';
-import { ECSignature, Order, SignedOrder, Web3Provider, ZeroExConfig, ZeroExError } from './types';
+import { OrderStateWatcherConfig, ZeroExConfig, ZeroExError } from './types';
 import { assert } from './utils/assert';
 import { constants } from './utils/constants';
 import { decorators } from './utils/decorators';
@@ -57,13 +57,7 @@ export class ZeroEx {
      * tokenTransferProxy smart contract.
      */
     public proxy: TokenTransferProxyWrapper;
-    /**
-     * An instance of the OrderStateWatcher class containing methods for watching a set of orders for relevant
-     * blockchain state changes.
-     */
-    public orderStateWatcher: OrderStateWatcher;
     private _web3Wrapper: Web3Wrapper;
-    private _abiDecoder: AbiDecoder;
     /**
      * Verifies that the elliptic curve signature `signature` was generated
      * by signing `data` with the private key corresponding to the `signerAddress` address.
@@ -83,7 +77,7 @@ export class ZeroEx {
     }
     /**
      * Generates a pseudo-random 256-bit salt.
-     * The salt can be included in an 0x order, ensuring that the order generates a unique orderHash
+     * The salt can be included in a 0x order, ensuring that the order generates a unique orderHash
      * and will not collide with other outstanding orders that are identical in all other parameters.
      * @return  A pseudo-random 256-bit number that can be used as a salt.
      */
@@ -121,10 +115,8 @@ export class ZeroEx {
     public static toUnitAmount(amount: BigNumber, decimals: number): BigNumber {
         assert.isValidBaseUnitAmount('amount', amount);
         assert.isNumber('decimals', decimals);
-
-        const aUnit = new BigNumber(10).pow(decimals);
-        const unit = amount.div(aUnit);
-        return unit;
+        const unitAmount = Web3Wrapper.toUnitAmount(amount, decimals);
+        return unitAmount;
     }
     /**
      * A baseUnit is defined as the smallest denomination of a token. An amount expressed in baseUnits
@@ -137,13 +129,7 @@ export class ZeroEx {
     public static toBaseUnitAmount(amount: BigNumber, decimals: number): BigNumber {
         assert.isBigNumber('amount', amount);
         assert.isNumber('decimals', decimals);
-
-        const unit = new BigNumber(10).pow(decimals);
-        const baseUnitAmount = amount.times(unit);
-        const hasDecimals = baseUnitAmount.decimalPlaces() !== 0;
-        if (hasDecimals) {
-            throw new Error(`Invalid unit amount: ${amount.toString()} - Too many decimal places`);
-        }
+        const baseUnitAmount = Web3Wrapper.toBaseUnitAmount(amount, decimals);
         return baseUnitAmount;
     }
     /**
@@ -159,12 +145,12 @@ export class ZeroEx {
     }
     /**
      * Instantiates a new ZeroEx instance that provides the public interface to the 0x.js library.
-     * @param   provider    The Web3.js Provider instance you would like the 0x.js library to use for interacting with
+     * @param   provider    The Provider instance you would like the 0x.js library to use for interacting with
      *                      the Ethereum network.
      * @param   config      The configuration object. Look up the type for the description.
      * @return  An instance of the 0x.js ZeroEx class.
      */
-    constructor(provider: Web3Provider, config: ZeroExConfig) {
+    constructor(provider: Provider, config: ZeroExConfig) {
         assert.isWeb3Provider('provider', provider);
         assert.doesConformToSchema('config', config, zeroExConfigSchema, [
             zeroExPrivateNetworkConfigSchema,
@@ -172,21 +158,22 @@ export class ZeroEx {
         ]);
         const artifactJSONs = _.values(artifacts);
         const abiArrays = _.map(artifactJSONs, artifact => artifact.abi);
-        this._abiDecoder = new AbiDecoder(abiArrays);
         const defaults = {
             gasPrice: config.gasPrice,
         };
         this._web3Wrapper = new Web3Wrapper(provider, defaults);
+        _.forEach(abiArrays, abi => {
+            this._web3Wrapper.abiDecoder.addABI(abi);
+        });
         this.proxy = new TokenTransferProxyWrapper(
             this._web3Wrapper,
             config.networkId,
             config.tokenTransferProxyContractAddress,
         );
-        this.token = new TokenWrapper(this._web3Wrapper, config.networkId, this._abiDecoder, this.proxy);
+        this.token = new TokenWrapper(this._web3Wrapper, config.networkId, this.proxy);
         this.exchange = new ExchangeWrapper(
             this._web3Wrapper,
             config.networkId,
-            this._abiDecoder,
             this.token,
             config.exchangeContractAddress,
             config.zrxContractAddress,
@@ -196,14 +183,7 @@ export class ZeroEx {
             config.networkId,
             config.tokenRegistryContractAddress,
         );
-        this.etherToken = new EtherTokenWrapper(this._web3Wrapper, config.networkId, this._abiDecoder, this.token);
-        this.orderStateWatcher = new OrderStateWatcher(
-            this._web3Wrapper,
-            this._abiDecoder,
-            this.token,
-            this.exchange,
-            config.orderWatcherConfig,
-        );
+        this.etherToken = new EtherTokenWrapper(this._web3Wrapper, config.networkId, this.token);
     }
     /**
      * Sets a new web3 provider for 0x.js. Updating the provider will stop all
@@ -211,7 +191,7 @@ export class ZeroEx {
      * @param   provider    The Web3Provider you would like the 0x.js library to use from now on.
      * @param   networkId   The id of the network your provider is connected to
      */
-    public setProvider(provider: Web3Provider, networkId: number): void {
+    public setProvider(provider: Provider, networkId: number): void {
         this._web3Wrapper.setProvider(provider);
         (this.exchange as any)._invalidateContractInstances();
         (this.exchange as any)._setNetworkId(networkId);
@@ -237,7 +217,7 @@ export class ZeroEx {
      * This method currently supports TestRPC, Geth and Parity above and below V1.6.6
      * @param   orderHash       Hex encoded orderHash to sign.
      * @param   signerAddress   The hex encoded Ethereum address you wish to sign it with. This address
-     *          must be available via the Web3.Provider supplied to 0x.js.
+     *          must be available via the Provider supplied to 0x.js.
      * @param   shouldAddPersonalMessagePrefix  Some signers add the personal message prefix `\x19Ethereum Signed Message`
      *          themselves (e.g Parity Signer, Ledger, TestRPC) and others expect it to already be done by the client
      *          (e.g Metamask). Depending on which signer this request is going to, decide on whether to add the prefix
@@ -260,7 +240,7 @@ export class ZeroEx {
             msgHashHex = ethUtil.bufferToHex(msgHashBuff);
         }
 
-        const signature = await this._web3Wrapper.signTransactionAsync(normalizedSignerAddress, msgHashHex);
+        const signature = await this._web3Wrapper.signMessageAsync(normalizedSignerAddress, msgHashHex);
 
         // HACK: There is no consensus on whether the signatureHex string should be formatted as
         // v + r + s OR r + s + v, and different clients (even different versions of the same client)
@@ -297,44 +277,21 @@ export class ZeroEx {
         pollingIntervalMs = 1000,
         timeoutMs?: number,
     ): Promise<TransactionReceiptWithDecodedLogs> {
-        let timeoutExceeded = false;
-        if (timeoutMs) {
-            setTimeout(() => (timeoutExceeded = true), timeoutMs);
-        }
-
-        const txReceiptPromise = new Promise(
-            (resolve: (receipt: TransactionReceiptWithDecodedLogs) => void, reject) => {
-                const intervalId = intervalUtils.setAsyncExcludingInterval(
-                    async () => {
-                        if (timeoutExceeded) {
-                            intervalUtils.clearAsyncExcludingInterval(intervalId);
-                            return reject(ZeroExError.TransactionMiningTimeout);
-                        }
-
-                        const transactionReceipt = await this._web3Wrapper.getTransactionReceiptAsync(txHash);
-                        if (!_.isNull(transactionReceipt)) {
-                            intervalUtils.clearAsyncExcludingInterval(intervalId);
-                            const logsWithDecodedArgs = _.map(
-                                transactionReceipt.logs,
-                                this._abiDecoder.tryToDecodeLogOrNoop.bind(this._abiDecoder),
-                            );
-                            const transactionReceiptWithDecodedLogArgs: TransactionReceiptWithDecodedLogs = {
-                                ...transactionReceipt,
-                                logs: logsWithDecodedArgs,
-                            };
-                            resolve(transactionReceiptWithDecodedLogArgs);
-                        }
-                    },
-                    pollingIntervalMs,
-                    (err: Error) => {
-                        intervalUtils.clearAsyncExcludingInterval(intervalId);
-                        reject(err);
-                    },
-                );
-            },
+        const transactionReceiptWithDecodedLogs = await this._web3Wrapper.awaitTransactionMinedAsync(
+            txHash,
+            pollingIntervalMs,
+            timeoutMs,
         );
-        const txReceipt = await txReceiptPromise;
-        return txReceipt;
+        return transactionReceiptWithDecodedLogs;
+    }
+    /**
+     * Instantiates and returns a new OrderStateWatcher instance.
+     * Defaults to watching the pending state.
+     * @param   config      The configuration object. Look up the type for the description.
+     * @return  An instance of the 0x.js OrderStateWatcher class.
+     */
+    public createOrderStateWatcher(config?: OrderStateWatcherConfig) {
+        return new OrderStateWatcher(this._web3Wrapper, this.token, this.exchange, config);
     }
     /*
      * HACK: `TokenWrapper` needs a token transfer proxy address. `TokenTransferProxy` address is fetched from

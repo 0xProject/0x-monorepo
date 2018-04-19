@@ -36,5 +36,3 @@ contract LibPartialAmount is SafeMath {
         return partialAmount;
     }
 }
-
-

@@ -14,7 +14,9 @@ import {
     Type,
     TypeDocNode,
     TypeDocType,
+    TypeDocTypes,
     TypeParameter,
+    TypescriptFunction,
     TypescriptMethod,
 } from '../types';
 import { utils } from '../utils/utils';
@@ -81,17 +83,22 @@ export const typeDocUtils = {
                 }
             }
 
-            // Since the `types.ts` file is the only file that does not export a module/class but
-            // instead has each type export itself, we do not need to go down two levels of nesting
-            // for it.
             let entities;
             let packageComment = '';
-            if (sectionName === docsInfo.sections.types) {
-                entities = packageDefinitionWithMergedChildren.children;
-            } else {
+            // HACK: We assume 1 exported class per file
+            const classChildren = _.filter(packageDefinitionWithMergedChildren.children, (child: TypeDocNode) => {
+                return child.kindString === KindString.Class;
+            });
+            if (classChildren.length > 1 && sectionName !== 'types') {
+                throw new Error('`react-docs` only supports projects with 1 exported class per file');
+            }
+            const isClassExport = packageDefinitionWithMergedChildren.children[0].kindString === KindString.Class;
+            if (isClassExport) {
                 entities = packageDefinitionWithMergedChildren.children[0].children;
                 const commentObj = packageDefinitionWithMergedChildren.children[0].comment;
                 packageComment = !_.isUndefined(commentObj) ? commentObj.shortText : packageComment;
+            } else {
+                entities = packageDefinitionWithMergedChildren.children;
             }
 
             const docSection = typeDocUtils._convertEntitiesToDocSection(entities, docsInfo, sectionName);
@@ -105,6 +112,7 @@ export const typeDocUtils = {
             comment: '',
             constructors: [],
             methods: [],
+            functions: [],
             properties: [],
             types: [],
         };
@@ -122,6 +130,13 @@ export const typeDocUtils = {
                         docsInfo.id,
                     );
                     docSection.constructors.push(constructor);
+                    break;
+
+                case KindString.Function:
+                    if (entity.flags.isExported) {
+                        const func = typeDocUtils._convertFunction(entity, docsInfo.sections, sectionName, docsInfo.id);
+                        docSection.functions.push(func);
+                    }
                     break;
 
                 case KindString.Method:
@@ -151,7 +166,6 @@ export const typeDocUtils = {
                     break;
 
                 case KindString.Interface:
-                case KindString.Function:
                 case KindString.Variable:
                 case KindString.Enumeration:
                 case KindString.TypeAlias:
@@ -162,8 +176,18 @@ export const typeDocUtils = {
                             sectionName,
                             docsInfo.id,
                         );
-                        docSection.types.push(customType);
+                        const seenTypeNames = _.map(docSection.types, t => t.name);
+                        const isUnseen = !_.includes(seenTypeNames, customType.name);
+                        if (isUnseen) {
+                            docSection.types.push(customType);
+                        }
                     }
+                    break;
+
+                case KindString.Class:
+                    // We currently do not support more then a single class per file
+                    // except for the types section, where we ignore classes since we
+                    // only want to render type definitions.
                     break;
 
                 default:
@@ -198,9 +222,16 @@ export const typeDocUtils = {
 
         const childrenIfExist = !_.isUndefined(entity.children)
             ? _.map(entity.children, (child: TypeDocNode) => {
-                  const childTypeIfExists = !_.isUndefined(child.type)
+                  let childTypeIfExists = !_.isUndefined(child.type)
                       ? typeDocUtils._convertType(child.type, sections, sectionName, docId)
                       : undefined;
+                  if (child.kindString === KindString.Method) {
+                      childTypeIfExists = {
+                          name: child.name,
+                          typeDocType: TypeDocTypes.Reflection,
+                          method: this._convertMethod(child, isConstructor, sections, sectionName, docId),
+                      };
+                  }
                   const c: CustomTypeChild = {
                       name: child.name,
                       type: childTypeIfExists,
@@ -303,6 +334,38 @@ export const typeDocUtils = {
         };
         return method;
     },
+    _convertFunction(
+        entity: TypeDocNode,
+        sections: SectionsMap,
+        sectionName: string,
+        docId: string,
+    ): TypescriptFunction {
+        const signature = entity.signatures[0];
+        const source = entity.sources[0];
+        const hasComment = !_.isUndefined(signature.comment);
+
+        const parameters = _.map(signature.parameters, param => {
+            return typeDocUtils._convertParameter(param, sections, sectionName, docId);
+        });
+        const returnType = typeDocUtils._convertType(signature.type, sections, sectionName, docId);
+        const typeParameter = _.isUndefined(signature.typeParameter)
+            ? undefined
+            : typeDocUtils._convertTypeParameter(signature.typeParameter[0], sections, sectionName, docId);
+
+        const func = {
+            name: signature.name,
+            comment: hasComment ? signature.comment.shortText : undefined,
+            returnComment: hasComment && signature.comment.returns ? signature.comment.returns : undefined,
+            source: {
+                fileName: source.fileName,
+                line: source.line,
+            },
+            parameters,
+            returnType,
+            typeParameter,
+        };
+        return func;
+    },
     _convertTypeParameter(
         entity: TypeDocNode,
         sections: SectionsMap,
@@ -332,6 +395,7 @@ export const typeDocUtils = {
             name: entity.name,
             comment,
             isOptional,
+            defaultValue: entity.defaultValue,
             type,
         };
         return parameter;

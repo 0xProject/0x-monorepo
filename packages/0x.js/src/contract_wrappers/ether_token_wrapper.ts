@@ -21,8 +21,8 @@ export class EtherTokenWrapper extends ContractWrapper {
         [address: string]: EtherTokenContract;
     } = {};
     private _tokenWrapper: TokenWrapper;
-    constructor(web3Wrapper: Web3Wrapper, networkId: number, abiDecoder: AbiDecoder, tokenWrapper: TokenWrapper) {
-        super(web3Wrapper, networkId, abiDecoder);
+    constructor(web3Wrapper: Web3Wrapper, networkId: number, tokenWrapper: TokenWrapper) {
+        super(web3Wrapper, networkId);
         this._tokenWrapper = tokenWrapper;
     }
     /**
@@ -64,7 +64,7 @@ export class EtherTokenWrapper extends ContractWrapper {
      * equivalent number of wrapped ETH tokens.
      * @param   etherTokenAddress   EtherToken address you wish to withdraw from.
      * @param   amountInWei  Amount of ETH in Wei the caller wishes to withdraw.
-     * @param   withdrawer   The hex encoded user Ethereum address that would like to make the withdrawl.
+     * @param   withdrawer   The hex encoded user Ethereum address that would like to make the withdrawal.
      * @param   txOpts       Transaction parameters.
      * @return Transaction hash.
      */
@@ -96,7 +96,7 @@ export class EtherTokenWrapper extends ContractWrapper {
     }
     /**
      * Gets historical logs without creating a subscription
-     * @param   etherTokenAddress   An address of the ether token that emmited the logs.
+     * @param   etherTokenAddress   An address of the ether token that emitted the logs.
      * @param   eventName           The ether token contract event you would like to subscribe to.
      * @param   blockRange          Block range to get logs from.
      * @param   indexFilterValues   An object where the keys are indexed args returned by the event and
@@ -191,7 +191,12 @@ export class EtherTokenWrapper extends ContractWrapper {
             artifacts.EtherTokenArtifact,
             etherTokenAddress,
         );
-        const contractInstance = new EtherTokenContract(this._web3Wrapper, abi, address);
+        const contractInstance = new EtherTokenContract(
+            abi,
+            address,
+            this._web3Wrapper.getProvider(),
+            this._web3Wrapper.getContractDefaults(),
+        );
         etherTokenContract = contractInstance;
         this._etherTokenContractsByAddress[etherTokenAddress] = etherTokenContract;
         return etherTokenContract;

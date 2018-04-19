@@ -40,8 +40,8 @@ const THROTTLE_TIMEOUT = 100;
 
 const relayersAndDappProjects: Project[] = [
     {
-        logoFileName: 'ethfinex.png',
-        projectUrl: constants.PROJECT_URL_ETHFINEX,
+        logoFileName: 'ercdex.png',
+        projectUrl: constants.PROJECT_URL_ERC_DEX,
     },
     {
         logoFileName: 'radar_relay.png',
@@ -58,6 +58,10 @@ const relayersAndDappProjects: Project[] = [
     {
         logoFileName: 'dydx.png',
         projectUrl: constants.PROJECT_URL_DYDX,
+    },
+    {
+        logoFileName: 'ethfinex.png',
+        projectUrl: constants.PROJECT_URL_ETHFINEX,
     },
     {
         logoFileName: 'melonport.png',
@@ -98,10 +102,6 @@ const relayersAndDappProjects: Project[] = [
     {
         logoFileName: 'anx.png',
         projectUrl: constants.PROJECT_URL_OPEN_ANX,
-    },
-    {
-        logoFileName: 'auctus.png',
-        projectUrl: constants.PROJECT_URL_AUCTUS,
     },
 ];
 

@@ -2,48 +2,33 @@
 
 A Solidity code coverage tool.
 
+### Read the [Documentation](https://0xproject.com/docs/sol-cov).
+
 ## Installation
 
 ```bash
-yarn add -D @0xproject/sol-cov
+yarn add @0xproject/sol-cov
 ```
 
-## Usage
+**Import**
 
-Sol-cov uses transaction traces in order to figure out which lines of Solidity source code have been covered by your tests. In order for it to gather these traces, you must add the `CoverageSubprovider` to the [ProviderEngine](https://github.com/MetaMask/provider-engine) instance you use when running your Solidity tests. If you're unfamiliar with ProviderEngine, please read the [Web3 Provider explained](https://0xproject.com/wiki#Web3-Provider-Explained) wiki article.
-
-The CoverageSubprovider eavesdrops on the `eth_sendTransaction` and `eth_call` RPC calls and collects traces after each call using `debug_traceTransaction`. `eth_call`'s' don't generate traces - so we take a snapshot, re-submit it as a transaction, get the trace and then revert the snapshot.
-
-```typescript
+```javascript
 import { CoverageSubprovider } from '@0xproject/sol-cov';
-
-const provider = new ProviderEngine();
-
-const artifactsPath = 'src/artifacts';
-const contractsPath = 'src/contracts';
-const networkId = 50;
-// Some calls might not have `from` address specified. Nevertheless - transactions need to be submitted from an address with at least some funds. defaultFromAddress is the address that will be used to submit those calls as transactions from.
-const defaultFromAddress = '0x5409ed021d9299bf6814279a6a1411a7e866a631';
-const coverageSubprovider = new CoverageSubprovider(artifactsPath, contractsPath, networkId, defaultFromAddress);
-
-provider.addProvider(coverageSubprovider);
 ```
 
-After your test suite is complete (e.g global `after` hook), you'll need to call:
+or
 
-```typescript
-await coverageSubprovider.writeCoverageAsync();
+```javascript
+var CoverageSubprovider = require('@0xproject/sol-cov').CoverageSubprovider;
 ```
-
-This will create a `coverage.json` file in the `coverage` directory. This file has an [Istanbul format](https://github.com/gotwarlost/istanbul/blob/master/coverage.json.md) - so you can use any of the existing Instanbul reporters.
 
 ## Contributing
 
-We strongly encourage the community to help us make improvements. To report bugs within this package, please create an issue in this repository.
+We welcome improvements and fixes from the wider community! To report bugs within this package, please create an issue in this repository.
 
 Please read our [contribution guidelines](../../CONTRIBUTING.md) before getting started.
 
-### Install Dependencies
+### Install dependencies
 
 If you don't have yarn workspaces enabled (Yarn < v1.0) - enable them:
 
@@ -57,8 +42,46 @@ Then install dependencies
 yarn install
 ```
 
+### Build
+
+If this is your **first** time building this package, you must first build **all** packages within the monorepo. This is because packages that depend on other packages located inside this monorepo are symlinked when run from **within** the monorepo. This allows you to make changes across multiple packages without first publishing dependent packages to NPM. To build all packages, run the following from the monorepo root directory:
+
+```bash
+yarn lerna:rebuild
+```
+
+Or continuously rebuild on change:
+
+```bash
+yarn dev
+```
+
+You can also build this specific package by running the following from within its directory:
+
+```bash
+yarn build
+```
+
+or continuously rebuild on change:
+
+```bash
+yarn build:watch
+```
+
+### Clean
+
+```bash
+yarn clean
+```
+
 ### Lint
 
 ```bash
 yarn lint
+```
+
+### Run Tests
+
+```bash
+yarn test
 ```

@@ -52,6 +52,8 @@ export class BlockchainErrDialog extends React.Component<BlockchainErrDialogProp
             return 'Enable wallet communication';
         } else if (this.props.blockchainErr === BlockchainErrs.DisconnectedFromEthereumNode) {
             return 'Disconnected from Ethereum network';
+        } else if (this.props.blockchainErr === BlockchainErrs.DefaultTokensNotInTokenRegistry) {
+            return 'Default TokenRegistry tokens missing';
         } else {
             return 'Unexpected error';
         }
@@ -63,6 +65,8 @@ export class BlockchainErrDialog extends React.Component<BlockchainErrDialogProp
             return this._renderNoWalletFoundExplanation();
         } else if (this.props.blockchainErr === BlockchainErrs.DisconnectedFromEthereumNode) {
             return this._renderDisconnectedFromNode();
+        } else if (this.props.blockchainErr === BlockchainErrs.DefaultTokensNotInTokenRegistry) {
+            return this._renderDefaultTokenNotInTokenRegistry();
         } else {
             return this._renderUnexpectedErrorExplanation();
         }
@@ -79,6 +83,16 @@ export class BlockchainErrDialog extends React.Component<BlockchainErrDialogProp
                     Mist
                 </a>{' '}
                 try refreshing the page. If using a locally hosted Ethereum node, make sure it's still running.
+            </div>
+        );
+    }
+    private _renderDefaultTokenNotInTokenRegistry() {
+        return (
+            <div>
+                The TokenRegistry deployed on your network does not contain the needed default tokens for 0x Portal to
+                operate. Please try one of the supported networks (Mainnet, Kovan, Ropsten, Rinkeby). If on a local
+                Testnet, make sure the TokenRegistry contract is deployed and loaded with some default tokens (i.e WETH
+                & ZRX).
             </div>
         );
     }

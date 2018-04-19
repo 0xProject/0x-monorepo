@@ -1,0 +1,167 @@
+[
+    {
+        "version": "0.9.0",
+        "changes": [
+            {
+                "note":
+                    "Refactor RedundantRPCSubprovider into RedundantSubprovider where it now accepts an array of subproviders rather then an array of RPC endpoints",
+                "pr": 500
+            },
+            {
+                "note": "Add PrivateKeySubprovider and refactor shared functionality into a base wallet subprovider",
+                "pr": 506
+            },
+            {
+                "note": "Add MnemonicWalletsubprovider, deprecating our truffle-hdwallet-provider fork",
+                "pr": 507
+            },
+            {
+                "note": "Support multiple addresses in ledger and mnemonic wallets",
+                "pr": 507
+            },
+            {
+                "note":
+                    "Refactors LedgerSubprovider such that explicitly setting the `pathIndex` is no longer required. Simply set the request `from` address as desired",
+                "pr": 507
+            },
+            {
+                "note": "Renamed derivationPath to baseDerivationPath.",
+                "pr": 507
+            }
+        ],
+        "timestamp": 1523462196
+    },
+    {
+        "timestamp": 1522673609,
+        "version": "0.8.4",
+        "changes": [
+            {
+                "note": "Dependencies updated"
+            }
+        ]
+    },
+    {
+        "version": "0.8.3",
+        "changes": [
+            {
+                "note": "Introduce `JSONRPCRequestPayloadWithMethod` type",
+                "pr": 465
+            },
+            {
+                "note": "Export `ErrorCallback` type.",
+                "pr": 465
+            }
+        ],
+        "timestamp": 1522658513
+    },
+    {
+        "version": "0.8.0",
+        "changes": [
+            {
+                "note": "Export `GanacheSubprovider` and `Subprovider`",
+                "pr": 426
+            },
+            {
+                "note": "Make all subproviders to derive from `Subprovider`",
+                "pr": 426
+            },
+            {
+                "note": "Add types for `NextCallback`, `OnNextCompleted`",
+                "pr": 426
+            },
+            {
+                "note": "Ignore `ganache-core` dependency when using package in a browser environment."
+            }
+        ],
+        "timestamp": 1521298800
+    },
+    {
+        "version": "0.7.0",
+        "changes": [
+            {
+                "note":
+                    "Updated legerco packages. Removed node-hid package as a dependency and make it an optional dependency. It is still used in integration tests but is causing problems for users on Linux distros.",
+                "pr": 437
+            }
+        ],
+        "timestamp": 1520434800
+    },
+    {
+        "version": "0.6.0",
+        "changes": [
+            {
+                "note": "Move web3 types from being a devDep to a dep since one cannot use this package without it",
+                "pr": 429
+            },
+            {
+                "note": "Add `numberOfAccounts` param to `LedgerSubprovider` method `getAccountsAsync`",
+                "pr": 432
+            }
+        ],
+        "timestamp": 1520089200
+    },
+    {
+        "version": "0.5.0",
+        "changes": [
+            {
+                "note": "Add EmptyWalletSubprovider and FakeGasEstimateSubprovider",
+                "pr": 392
+            }
+        ],
+        "timestamp": 1518706800
+    },
+    {
+        "version": "0.4.1",
+        "changes": [
+            {
+                "note": "Fix publishing issue where .npmignore was not properly excluding undesired content",
+                "pr": 389
+            }
+        ],
+        "timestamp": 1518102000
+    },
+    {
+        "version": "0.4.0",
+        "changes": [
+            {
+                "note": "Added NonceTrackerSubprovider",
+                "pr": 355
+            },
+            {
+                "note":
+                    "InjectedWeb3Subprovider accepts a Provider in the constructor, previously it was a Web3 object",
+                "pr": 363
+            }
+        ],
+        "timestamp": 1517929200
+    },
+    {
+        "version": "0.3.6",
+        "changes": [
+            {
+                "note": "Return a transaction hash from `_sendTransactionAsync`",
+                "pr": 303
+            }
+        ],
+        "timestamp": 1517065200
+    },
+    {
+        "version": "0.3.0",
+        "changes": [
+            {
+                "note": "Allow LedgerSubprovider to handle `eth_sign` in addition to `personal_sign` RPC requests"
+            }
+        ],
+        "timestamp": 1514386800
+    },
+    {
+        "version": "0.2.0",
+        "changes": [
+            {
+                "note": "Improve the performance of address fetching",
+                "pr": 271
+            }
+        ],
+        "timestamp": 1513695600
+    }
+]

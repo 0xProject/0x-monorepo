@@ -1,0 +1,3698 @@
+[
+    {
+        "tokenA": {
+            "address": "0x89d24a6b4ccb1b6faa2625fe562bdd9a23260359",
+            "minAmount": "1",
+            "maxAmount": "999999999999999999999",
+            "precision": 8
+        },
+        "tokenB": {
+            "address": "0x01b3ec4aae1b8729529beb4965f27d008788b0eb",
+            "minAmount": "1",
+            "maxAmount": "999999999999999999999",
+            "precision": 8
+        }
+    },
+    {
+        "tokenA": {
+            "address": "0x89d24a6b4ccb1b6faa2625fe562bdd9a23260359",
+            "minAmount": "1",
+            "maxAmount": "999999999999999999999",
+            "precision": 8
+        },
+        "tokenB": {
+            "address": "0x0371a82e4a9d0a4312f3ee2ac9c6958512891372",
+            "minAmount": "1",
+            "maxAmount": "999999999999999999999",
+            "precision": 8
+        }
+    },
+    {
+        "tokenA": {
+            "address": "0x89d24a6b4ccb1b6faa2625fe562bdd9a23260359",
+            "minAmount": "1",
+            "maxAmount": "999999999999999999999",
+            "precision": 8
+        },
+        "tokenB": {
+            "address": "0x05f4a42e251f2d52b8ed15e9fedaacfcef1fad27",
+            "minAmount": "1",
+            "maxAmount": "999999999999999999999",
+            "precision": 8
+        }
+    },
+    {
+        "tokenA": {
+            "address": "0x89d24a6b4ccb1b6faa2625fe562bdd9a23260359",
+            "minAmount": "1",
+            "maxAmount": "999999999999999999999",
+            "precision": 8
+        },
+        "tokenB": {
+            "address": "0x076c97e1c869072ee22f8c91978c99b4bcb02591",
+            "minAmount": "1",
+            "maxAmount": "999999999999999999999",
+            "precision": 8
+        }
+    },
+    {
+        "tokenA": {
+            "address": "0x89d24a6b4ccb1b6faa2625fe562bdd9a23260359",
+            "minAmount": "1",
+            "maxAmount": "999999999999999999999",
+            "precision": 8
+        },
+        "tokenB": {
+            "address": "0x09d8b66c48424324b25754a873e290cae5dca439",
+            "minAmount": "1",
+            "maxAmount": "999999999999999999999",
+            "precision": 8
+        }
+    },
+    {
+        "tokenA": {
+            "address": "0x89d24a6b4ccb1b6faa2625fe562bdd9a23260359",
+            "minAmount": "1",
+            "maxAmount": "999999999999999999999",
+            "precision": 8
+        },
+        "tokenB": {
+            "address": "0x0abdace70d3790235af448c88547603b945604ea",
+            "minAmount": "1",
+            "maxAmount": "999999999999999999999",
+            "precision": 8
+        }
+    },
+    {
+        "tokenA": {
+            "address": "0x89d24a6b4ccb1b6faa2625fe562bdd9a23260359",
+            "minAmount": "1",
+            "maxAmount": "999999999999999999999",
+            "precision": 8
+        },
+        "tokenB": {
+            "address": "0x0cf0ee63788a0849fe5297f3407f701e122cc023",
+            "minAmount": "1",
+            "maxAmount": "999999999999999999999",
+            "precision": 8
+        }
+    },
+    {
+        "tokenA": {
+            "address": "0x89d24a6b4ccb1b6faa2625fe562bdd9a23260359",
+            "minAmount": "1",
+            "maxAmount": "999999999999999999999",
+            "precision": 8
+        },
+        "tokenB": {
+            "address": "0x0d8775f648430679a709e98d2b0cb6250d2887ef",
+            "minAmount": "1",
+            "maxAmount": "999999999999999999999",
+            "precision": 8
+        }
+    },
+    {
+        "tokenA": {
+            "address": "0x89d24a6b4ccb1b6faa2625fe562bdd9a23260359",
+            "minAmount": "1",
+            "maxAmount": "999999999999999999999",
+            "precision": 8
+        },
+        "tokenB": {
+            "address": "0x0e0989b1f9b8a38983c2ba8053269ca62ec9b195",
+            "minAmount": "1",
+            "maxAmount": "999999999999999999999",
+            "precision": 8
+        }
+    },
+    {
+        "tokenA": {
+            "address": "0x89d24a6b4ccb1b6faa2625fe562bdd9a23260359",
+            "minAmount": "1",
+            "maxAmount": "999999999999999999999",
+            "precision": 8
+        },
+        "tokenB": {
+            "address": "0x0f513ffb4926ff82d7f60a05069047aca295c413",
+            "minAmount": "1",
+            "maxAmount": "999999999999999999999",
+            "precision": 8
+        }
+    },
+    {
+        "tokenA": {
+            "address": "0x89d24a6b4ccb1b6faa2625fe562bdd9a23260359",
+            "minAmount": "1",
+            "maxAmount": "999999999999999999999",
+            "precision": 8
+        },
+        "tokenB": {
+            "address": "0x0f5d2fb29fb7d3cfee444a200298f468908cc942",
+            "minAmount": "1",
+            "maxAmount": "999999999999999999999",
+            "precision": 8
+        }
+    },
+    {
+        "tokenA": {
+            "address": "0x89d24a6b4ccb1b6faa2625fe562bdd9a23260359",
+            "minAmount": "1",
+            "maxAmount": "999999999999999999999",
+            "precision": 8
+        },
+        "tokenB": {
+            "address": "0x1063ce524265d5a3a624f4914acd573dd89ce988",
+            "minAmount": "1",
+            "maxAmount": "999999999999999999999",
+            "precision": 8
+        }
+    },
+    {
+        "tokenA": {
+            "address": "0x89d24a6b4ccb1b6faa2625fe562bdd9a23260359",
+            "minAmount": "1",
+            "maxAmount": "999999999999999999999",
+            "precision": 8
+        },
+        "tokenB": {
+            "address": "0x106aa49295b525fcf959aa75ec3f7dcbf5352f1c",
+            "minAmount": "1",
+            "maxAmount": "999999999999999999999",
+            "precision": 8
+        }
+    },
+    {
+        "tokenA": {
+            "address": "0x89d24a6b4ccb1b6faa2625fe562bdd9a23260359",
+            "minAmount": "1",
+            "maxAmount": "999999999999999999999",
+            "precision": 8
+        },
+        "tokenB": {
+            "address": "0x107c4504cd79c5d2696ea0030a8dd4e92601b82e",
+            "minAmount": "1",
+            "maxAmount": "999999999999999999999",
+            "precision": 8
+        }
+    },
+    {
+        "tokenA": {
+            "address": "0x89d24a6b4ccb1b6faa2625fe562bdd9a23260359",
+            "minAmount": "1",
+            "maxAmount": "999999999999999999999",
+            "precision": 8
+        },
+        "tokenB": {
+            "address": "0x1183f92a5624d68e85ffb9170f16bf0443b4c242",
+            "minAmount": "1",
+            "maxAmount": "999999999999999999999",
+            "precision": 8
+        }
+    },
+    {
+        "tokenA": {
+            "address": "0x89d24a6b4ccb1b6faa2625fe562bdd9a23260359",
+            "minAmount": "1",
+            "maxAmount": "999999999999999999999",
+            "precision": 8
+        },
+        "tokenB": {
+            "address": "0x12480e24eb5bec1a9d4369cab6a80cad3c0a377a",
+            "minAmount": "1",
+            "maxAmount": "999999999999999999999",
+            "precision": 8
+        }
+    },
+    {
+        "tokenA": {
+            "address": "0x89d24a6b4ccb1b6faa2625fe562bdd9a23260359",
+            "minAmount": "1",
+            "maxAmount": "999999999999999999999",
+            "precision": 8
+        },
+        "tokenB": {
+            "address": "0x12b19d3e2ccc14da04fae33e63652ce469b3f2fd",
+            "minAmount": "1",
+            "maxAmount": "999999999999999999999",
+            "precision": 8
+        }
+    },
+    {
+        "tokenA": {
+            "address": "0x89d24a6b4ccb1b6faa2625fe562bdd9a23260359",
+            "minAmount": "1",
+            "maxAmount": "999999999999999999999",
+            "precision": 8
+        },
+        "tokenB": {
+            "address": "0x12fef5e57bf45873cd9b62e9dbd7bfb99e32d73e",
+            "minAmount": "1",
+            "maxAmount": "999999999999999999999",
+            "precision": 8
+        }
+    },
+    {
+        "tokenA": {
+            "address": "0x89d24a6b4ccb1b6faa2625fe562bdd9a23260359",
+            "minAmount": "1",
+            "maxAmount": "999999999999999999999",
+            "precision": 8
+        },
+        "tokenB": {
+            "address": "0x168296bb09e24a88805cb9c33356536b980d3fc5",
+            "minAmount": "1",
+            "maxAmount": "999999999999999999999",
+            "precision": 8
+        }
+    },
+    {
+        "tokenA": {
+            "address": "0x89d24a6b4ccb1b6faa2625fe562bdd9a23260359",
+            "minAmount": "1",
+            "maxAmount": "999999999999999999999",
+            "precision": 8
+        },
+        "tokenB": {
+            "address": "0x1776e1f26f98b1a5df9cd347953a26dd3cb46671",
+            "minAmount": "1",
+            "maxAmount": "999999999999999999999",
+            "precision": 8
+        }
+    },
+    {
+        "tokenA": {
+            "address": "0x89d24a6b4ccb1b6faa2625fe562bdd9a23260359",
+            "minAmount": "1",
+            "maxAmount": "999999999999999999999",
+            "precision": 8
+        },
+        "tokenB": {
+            "address": "0x177d39ac676ed1c67a2b268ad7f1e58826e5b0af",
+            "minAmount": "1",
+            "maxAmount": "999999999999999999999",
+            "precision": 8
+        }
+    },
+    {
+        "tokenA": {
+            "address": "0x89d24a6b4ccb1b6faa2625fe562bdd9a23260359",
+            "minAmount": "1",
+            "maxAmount": "999999999999999999999",
+            "precision": 8
+        },
+        "tokenB": {
+            "address": "0x1d462414fe14cf489c7a21cac78509f4bf8cd7c0",
+            "minAmount": "1",
+            "maxAmount": "999999999999999999999",
+            "precision": 8
+        }
+    },
+    {
+        "tokenA": {
+            "address": "0x89d24a6b4ccb1b6faa2625fe562bdd9a23260359",
+            "minAmount": "1",
+            "maxAmount": "999999999999999999999",
+            "precision": 8
+        },
+        "tokenB": {
+            "address": "0x24692791bc444c5cd0b81e3cbcaba4b04acd1f3b",
+            "minAmount": "1",
+            "maxAmount": "999999999999999999999",
+            "precision": 8
+        }
+    },
+    {
+        "tokenA": {
+            "address": "0x89d24a6b4ccb1b6faa2625fe562bdd9a23260359",
+            "minAmount": "1",
+            "maxAmount": "999999999999999999999",
+            "precision": 8
+        },
+        "tokenB": {
+            "address": "0x255aa6df07540cb5d3d297f0d0d4d84cb52bc8e6",
+            "minAmount": "1",
+            "maxAmount": "999999999999999999999",
+            "precision": 8
+        }
+    },
+    {
+        "tokenA": {
+            "address": "0x89d24a6b4ccb1b6faa2625fe562bdd9a23260359",
+            "minAmount": "1",
+            "maxAmount": "999999999999999999999",
+            "precision": 8
+        },
+        "tokenB": {
+            "address": "0x27054b13b1b798b345b591a4d22e6562d47ea75a",
+            "minAmount": "1",
+            "maxAmount": "999999999999999999999",
+            "precision": 8
+        }
+    },
+    {
+        "tokenA": {
+            "address": "0x89d24a6b4ccb1b6faa2625fe562bdd9a23260359",
+            "minAmount": "1",
+            "maxAmount": "999999999999999999999",
+            "precision": 8
+        },
+        "tokenB": {
+            "address": "0x27695e09149adc738a978e9a678f99e4c39e9eb9",
+            "minAmount": "1",
+            "maxAmount": "999999999999999999999",
+            "precision": 8
+        }
+    },
+    {
+        "tokenA": {
+            "address": "0x89d24a6b4ccb1b6faa2625fe562bdd9a23260359",
+            "minAmount": "1",
+            "maxAmount": "999999999999999999999",
+            "precision": 8
+        },
+        "tokenB": {
+            "address": "0x27dce1ec4d3f72c3e457cc50354f1f975ddef488",
+            "minAmount": "1",
+            "maxAmount": "999999999999999999999",
+            "precision": 8
+        }
+    },
+    {
+        "tokenA": {
+            "address": "0x89d24a6b4ccb1b6faa2625fe562bdd9a23260359",
+            "minAmount": "1",
+            "maxAmount": "999999999999999999999",
+            "precision": 8
+        },
+        "tokenB": {
+            "address": "0x27f610bf36eca0939093343ac28b1534a721dbb4",
+            "minAmount": "1",
+            "maxAmount": "999999999999999999999",
+            "precision": 8
+        }
+    },
+    {
+        "tokenA": {
+            "address": "0x89d24a6b4ccb1b6faa2625fe562bdd9a23260359",
+            "minAmount": "1",
+            "maxAmount": "999999999999999999999",
+            "precision": 8
+        },
+        "tokenB": {
+            "address": "0x2956356cd2a2bf3202f771f50d3d14a367b48070",
+            "minAmount": "1",
+            "maxAmount": "999999999999999999999",
+            "precision": 8
+        }
+    },
+    {
+        "tokenA": {
+            "address": "0x89d24a6b4ccb1b6faa2625fe562bdd9a23260359",
+            "minAmount": "1",
+            "maxAmount": "999999999999999999999",
+            "precision": 8
+        },
+        "tokenB": {
+            "address": "0x340d2bde5eb28c1eed91b2f790723e3b160613b7",
+            "minAmount": "1",
+            "maxAmount": "999999999999999999999",
+            "precision": 8
+        }
+    },
+    {
+        "tokenA": {
+            "address": "0x89d24a6b4ccb1b6faa2625fe562bdd9a23260359",
+            "minAmount": "1",
+            "maxAmount": "999999999999999999999",
+            "precision": 8
+        },
+        "tokenB": {
+            "address": "0x3597bfd533a99c9aa083587b074434e61eb0a258",
+            "minAmount": "1",
+            "maxAmount": "999999999999999999999",
+            "precision": 8
+        }
+    },
+    {
+        "tokenA": {
+            "address": "0x89d24a6b4ccb1b6faa2625fe562bdd9a23260359",
+            "minAmount": "1",
+            "maxAmount": "999999999999999999999",
+            "precision": 8
+        },
+        "tokenB": {
+            "address": "0x3618516f45cd3c913f81f9987af41077932bc40d",
+            "minAmount": "1",
+            "maxAmount": "999999999999999999999",
+            "precision": 8
+        }
+    },
+    {
+        "tokenA": {
+            "address": "0x89d24a6b4ccb1b6faa2625fe562bdd9a23260359",
+            "minAmount": "1",
+            "maxAmount": "999999999999999999999",
+            "precision": 8
+        },
+        "tokenB": {
+            "address": "0x386467f1f3ddbe832448650418311a479eecfc57",
+            "minAmount": "1",
+            "maxAmount": "999999999999999999999",
+            "precision": 8
+        }
+    },
+    {
+        "tokenA": {
+            "address": "0x89d24a6b4ccb1b6faa2625fe562bdd9a23260359",
+            "minAmount": "1",
+            "maxAmount": "999999999999999999999",
+            "precision": 8
+        },
+        "tokenB": {
+            "address": "0x3883f5e181fccaf8410fa61e12b59bad963fb645",
+            "minAmount": "1",
+            "maxAmount": "999999999999999999999",
+            "precision": 8
+        }
+    },
+    {
+        "tokenA": {
+            "address": "0x89d24a6b4ccb1b6faa2625fe562bdd9a23260359",
+            "minAmount": "1",
+            "maxAmount": "999999999999999999999",
+            "precision": 8
+        },
+        "tokenB": {
+            "address": "0x399a0e6fbeb3d74c85357439f4c8aed9678a5cbf",
+            "minAmount": "1",
+            "maxAmount": "999999999999999999999",
+            "precision": 8
+        }
+    },
+    {
+        "tokenA": {
+            "address": "0x89d24a6b4ccb1b6faa2625fe562bdd9a23260359",
+            "minAmount": "1",
+            "maxAmount": "999999999999999999999",
+            "precision": 8
+        },
+        "tokenB": {
+            "address": "0x39bb259f66e1c59d5abef88375979b4d20d98022",
+            "minAmount": "1",
+            "maxAmount": "999999999999999999999",
+            "precision": 8
+        }
+    },
+    {
+        "tokenA": {
+            "address": "0x89d24a6b4ccb1b6faa2625fe562bdd9a23260359",
+            "minAmount": "1",
+            "maxAmount": "999999999999999999999",
+            "precision": 8
+        },
+        "tokenB": {
+            "address": "0x3d1ba9be9f66b8ee101911bc36d3fb562eac2244",
+            "minAmount": "1",
+            "maxAmount": "999999999999999999999",
+            "precision": 8
+        }
+    },
+    {
+        "tokenA": {
+            "address": "0x89d24a6b4ccb1b6faa2625fe562bdd9a23260359",
+            "minAmount": "1",
+            "maxAmount": "999999999999999999999",
+            "precision": 8
+        },
+        "tokenB": {
+            "address": "0x4156d3342d5c385a87d264f90653733592000581",
+            "minAmount": "1",
+            "maxAmount": "999999999999999999999",
+            "precision": 8
+        }
+    },
+    {
+        "tokenA": {
+            "address": "0x89d24a6b4ccb1b6faa2625fe562bdd9a23260359",
+            "minAmount": "1",
+            "maxAmount": "999999999999999999999",
+            "precision": 8
+        },
+        "tokenB": {
+            "address": "0x419d0d8bdd9af5e606ae2232ed285aff190e711b",
+            "minAmount": "1",
+            "maxAmount": "999999999999999999999",
+            "precision": 8
+        }
+    },
+    {
+        "tokenA": {
+            "address": "0x89d24a6b4ccb1b6faa2625fe562bdd9a23260359",
+            "minAmount": "1",
+            "maxAmount": "999999999999999999999",
+            "precision": 8
+        },
+        "tokenB": {
+            "address": "0x41e5560054824ea6b0732e656e3ad64e20e94e45",
+            "minAmount": "1",
+            "maxAmount": "999999999999999999999",
+            "precision": 8
+        }
+    },
+    {
+        "tokenA": {
+            "address": "0x89d24a6b4ccb1b6faa2625fe562bdd9a23260359",
+            "minAmount": "1",
+            "maxAmount": "999999999999999999999",
+            "precision": 8
+        },
+        "tokenB": {
+            "address": "0x42d6622dece394b54999fbd73d108123806f6a18",
+            "minAmount": "1",
+            "maxAmount": "999999999999999999999",
+            "precision": 8
+        }
+    },
+    {
+        "tokenA": {
+            "address": "0x89d24a6b4ccb1b6faa2625fe562bdd9a23260359",
+            "minAmount": "1",
+            "maxAmount": "999999999999999999999",
+            "precision": 8
+        },
+        "tokenB": {
+            "address": "0x44f588aeeb8c44471439d1270b3603c66a9262f1",
+            "minAmount": "1",
+            "maxAmount": "999999999999999999999",
+            "precision": 8
+        }
+    },
+    {
+        "tokenA": {
+            "address": "0x89d24a6b4ccb1b6faa2625fe562bdd9a23260359",
+            "minAmount": "1",
+            "maxAmount": "999999999999999999999",
+            "precision": 8
+        },
+        "tokenB": {
+            "address": "0x4ceda7906a5ed2179785cd3a40a69ee8bc99c466",
+            "minAmount": "1",
+            "maxAmount": "999999999999999999999",
+            "precision": 8
+        }
+    },
+    {
+        "tokenA": {
+            "address": "0x89d24a6b4ccb1b6faa2625fe562bdd9a23260359",
+            "minAmount": "1",
+            "maxAmount": "999999999999999999999",
+            "precision": 8
+        },
+        "tokenB": {
+            "address": "0x4d8fc1453a0f359e99c9675954e656d80d996fbf",
+            "minAmount": "1",
+            "maxAmount": "999999999999999999999",
+            "precision": 8
+        }
+    },
+    {
+        "tokenA": {
+            "address": "0x89d24a6b4ccb1b6faa2625fe562bdd9a23260359",
+            "minAmount": "1",
+            "maxAmount": "999999999999999999999",
+            "precision": 8
+        },
+        "tokenB": {
+            "address": "0x4df47b4969b2911c966506e3592c41389493953b",
+            "minAmount": "1",
+            "maxAmount": "999999999999999999999",
+            "precision": 8
+        }
+    },
+    {
+        "tokenA": {
+            "address": "0x89d24a6b4ccb1b6faa2625fe562bdd9a23260359",
+            "minAmount": "1",
+            "maxAmount": "999999999999999999999",
+            "precision": 8
+        },
+        "tokenB": {
+            "address": "0x4df812f6064def1e5e029f1ca858777cc98d2d81",
+            "minAmount": "1",
+            "maxAmount": "999999999999999999999",
+            "precision": 8
+        }
+    },
+    {
+        "tokenA": {
+            "address": "0x89d24a6b4ccb1b6faa2625fe562bdd9a23260359",
+            "minAmount": "1",
+            "maxAmount": "999999999999999999999",
+            "precision": 8
+        },
+        "tokenB": {
+            "address": "0x514910771af9ca656af840dff83e8264ecf986ca",
+            "minAmount": "1",
+            "maxAmount": "999999999999999999999",
+            "precision": 8
+        }
+    },
+    {
+        "tokenA": {
+            "address": "0x89d24a6b4ccb1b6faa2625fe562bdd9a23260359",
+            "minAmount": "1",
+            "maxAmount": "999999999999999999999",
+            "precision": 8
+        },
+        "tokenB": {
+            "address": "0x52a7cb918c11a16958be40cba7e31e32a499a465",
+            "minAmount": "1",
+            "maxAmount": "999999999999999999999",
+            "precision": 8
+        }
+    },
+    {
+        "tokenA": {
+            "address": "0x89d24a6b4ccb1b6faa2625fe562bdd9a23260359",
+            "minAmount": "1",
+            "maxAmount": "999999999999999999999",
+            "precision": 8
+        },
+        "tokenB": {
+            "address": "0x533ef0984b2faa227acc620c67cce12aa39cd8cd",
+            "minAmount": "1",
+            "maxAmount": "999999999999999999999",
+            "precision": 8
+        }
+    },
+    {
+        "tokenA": {
+            "address": "0x89d24a6b4ccb1b6faa2625fe562bdd9a23260359",
+            "minAmount": "1",
+            "maxAmount": "999999999999999999999",
+            "precision": 8
+        },
+        "tokenB": {
+            "address": "0x554c20b7c486beee439277b4540a434566dc4c02",
+            "minAmount": "1",
+            "maxAmount": "999999999999999999999",
+            "precision": 8
+        }
+    },
+    {
+        "tokenA": {
+            "address": "0x89d24a6b4ccb1b6faa2625fe562bdd9a23260359",
+            "minAmount": "1",
+            "maxAmount": "999999999999999999999",
+            "precision": 8
+        },
+        "tokenB": {
+            "address": "0x56ba2ee7890461f463f7be02aac3099f6d5811a8",
+            "minAmount": "1",
+            "maxAmount": "999999999999999999999",
+            "precision": 8
+        }
+    },
+    {
+        "tokenA": {
+            "address": "0x89d24a6b4ccb1b6faa2625fe562bdd9a23260359",
+            "minAmount": "1",
+            "maxAmount": "999999999999999999999",
+            "precision": 8
+        },
+        "tokenB": {
+            "address": "0x5732046a883704404f284ce41ffadd5b007fd668",
+            "minAmount": "1",
+            "maxAmount": "999999999999999999999",
+            "precision": 8
+        }
+    },
+    {
+        "tokenA": {
+            "address": "0x89d24a6b4ccb1b6faa2625fe562bdd9a23260359",
+            "minAmount": "1",
+            "maxAmount": "999999999999999999999",
+            "precision": 8
+        },
+        "tokenB": {
+            "address": "0x595832f8fc6bf59c85c527fec3740a1b7a361269",
+            "minAmount": "1",
+            "maxAmount": "999999999999999999999",
+            "precision": 8
+        }
+    },
+    {
+        "tokenA": {
+            "address": "0x89d24a6b4ccb1b6faa2625fe562bdd9a23260359",
+            "minAmount": "1",
+            "maxAmount": "999999999999999999999",
+            "precision": 8
+        },
+        "tokenB": {
+            "address": "0x5af2be193a6abca9c8817001f45744777db30756",
+            "minAmount": "1",
+            "maxAmount": "999999999999999999999",
+            "precision": 8
+        }
+    },
+    {
+        "tokenA": {
+            "address": "0x89d24a6b4ccb1b6faa2625fe562bdd9a23260359",
+            "minAmount": "1",
+            "maxAmount": "999999999999999999999",
+            "precision": 8
+        },
+        "tokenB": {
+            "address": "0x5b2e4a700dfbc560061e957edec8f6eeeb74a320",
+            "minAmount": "1",
+            "maxAmount": "999999999999999999999",
+            "precision": 8
+        }
+    },
+    {
+        "tokenA": {
+            "address": "0x89d24a6b4ccb1b6faa2625fe562bdd9a23260359",
+            "minAmount": "1",
+            "maxAmount": "999999999999999999999",
+            "precision": 8
+        },
+        "tokenB": {
+            "address": "0x5bc7e5f0ab8b2e10d2d0a3f21739fce62459aef3",
+            "minAmount": "1",
+            "maxAmount": "999999999999999999999",
+            "precision": 8
+        }
+    },
+    {
+        "tokenA": {
+            "address": "0x89d24a6b4ccb1b6faa2625fe562bdd9a23260359",
+            "minAmount": "1",
+            "maxAmount": "999999999999999999999",
+            "precision": 8
+        },
+        "tokenB": {
+            "address": "0x5ca9a71b1d01849c0a95490cc00559717fcf0d1d",
+            "minAmount": "1",
+            "maxAmount": "999999999999999999999",
+            "precision": 8
+        }
+    },
+    {
+        "tokenA": {
+            "address": "0x89d24a6b4ccb1b6faa2625fe562bdd9a23260359",
+            "minAmount": "1",
+            "maxAmount": "999999999999999999999",
+            "precision": 8
+        },
+        "tokenB": {
+            "address": "0x5e3346444010135322268a4630d2ed5f8d09446c",
+            "minAmount": "1",
+            "maxAmount": "999999999999999999999",
+            "precision": 8
+        }
+    },
+    {
+        "tokenA": {
+            "address": "0x89d24a6b4ccb1b6faa2625fe562bdd9a23260359",
+            "minAmount": "1",
+            "maxAmount": "999999999999999999999",
+            "precision": 8
+        },
+        "tokenB": {
+            "address": "0x607f4c5bb672230e8672085532f7e901544a7375",
+            "minAmount": "1",
+            "maxAmount": "999999999999999999999",
+            "precision": 8
+        }
+    },
+    {
+        "tokenA": {
+            "address": "0x89d24a6b4ccb1b6faa2625fe562bdd9a23260359",
+            "minAmount": "1",
+            "maxAmount": "999999999999999999999",
+            "precision": 8
+        },
+        "tokenB": {
+            "address": "0x614ea929892ea43d3ea2c5e3311b01cc589bad6c",
+            "minAmount": "1",
+            "maxAmount": "999999999999999999999",
+            "precision": 8
+        }
+    },
+    {
+        "tokenA": {
+            "address": "0x89d24a6b4ccb1b6faa2625fe562bdd9a23260359",
+            "minAmount": "1",
+            "maxAmount": "999999999999999999999",
+            "precision": 8
+        },
+        "tokenB": {
+            "address": "0x6425c6be902d692ae2db752b3c268afadb099d3b",
+            "minAmount": "1",
+            "maxAmount": "999999999999999999999",
+            "precision": 8
+        }
+    },
+    {
+        "tokenA": {
+            "address": "0x89d24a6b4ccb1b6faa2625fe562bdd9a23260359",
+            "minAmount": "1",
+            "maxAmount": "999999999999999999999",
+            "precision": 8
+        },
+        "tokenB": {
+            "address": "0x672a1ad4f667fb18a333af13667aa0af1f5b5bdd",
+            "minAmount": "1",
+            "maxAmount": "999999999999999999999",
+            "precision": 8
+        }
+    },
+    {
+        "tokenA": {
+            "address": "0x89d24a6b4ccb1b6faa2625fe562bdd9a23260359",
+            "minAmount": "1",
+            "maxAmount": "999999999999999999999",
+            "precision": 8
+        },
+        "tokenB": {
+            "address": "0x6781a0f84c7e9e846dcb84a9a5bd49333067b104",
+            "minAmount": "1",
+            "maxAmount": "999999999999999999999",
+            "precision": 8
+        }
+    },
+    {
+        "tokenA": {
+            "address": "0x89d24a6b4ccb1b6faa2625fe562bdd9a23260359",
+            "minAmount": "1",
+            "maxAmount": "999999999999999999999",
+            "precision": 8
+        },
+        "tokenB": {
+            "address": "0x6810e776880c02933d47db1b9fc05908e5386b96",
+            "minAmount": "1",
+            "maxAmount": "999999999999999999999",
+            "precision": 8
+        }
+    },
+    {
+        "tokenA": {
+            "address": "0x89d24a6b4ccb1b6faa2625fe562bdd9a23260359",
+            "minAmount": "1",
+            "maxAmount": "999999999999999999999",
+            "precision": 8
+        },
+        "tokenB": {
+            "address": "0x744d70fdbe2ba4cf95131626614a1763df805b9e",
+            "minAmount": "1",
+            "maxAmount": "999999999999999999999",
+            "precision": 8
+        }
+    },
+    {
+        "tokenA": {
+            "address": "0x89d24a6b4ccb1b6faa2625fe562bdd9a23260359",
+            "minAmount": "1",
+            "maxAmount": "999999999999999999999",
+            "precision": 8
+        },
+        "tokenB": {
+            "address": "0x7654915a1b82d6d2d0afc37c52af556ea8983c7e",
+            "minAmount": "1",
+            "maxAmount": "999999999999999999999",
+            "precision": 8
+        }
+    },
+    {
+        "tokenA": {
+            "address": "0x89d24a6b4ccb1b6faa2625fe562bdd9a23260359",
+            "minAmount": "1",
+            "maxAmount": "999999999999999999999",
+            "precision": 8
+        },
+        "tokenB": {
+            "address": "0x7b69b78cc7fee48202c208609ae6d1f78ce42e13",
+            "minAmount": "1",
+            "maxAmount": "999999999999999999999",
+            "precision": 8
+        }
+    },
+    {
+        "tokenA": {
+            "address": "0x89d24a6b4ccb1b6faa2625fe562bdd9a23260359",
+            "minAmount": "1",
+            "maxAmount": "999999999999999999999",
+            "precision": 8
+        },
+        "tokenB": {
+            "address": "0x7d4b8cce0591c9044a22ee543533b72e976e36c3",
+            "minAmount": "1",
+            "maxAmount": "999999999999999999999",
+            "precision": 8
+        }
+    },
+    {
+        "tokenA": {
+            "address": "0x89d24a6b4ccb1b6faa2625fe562bdd9a23260359",
+            "minAmount": "1",
+            "maxAmount": "999999999999999999999",
+            "precision": 8
+        },
+        "tokenB": {
+            "address": "0x80fb784b7ed66730e8b1dbd9820afd29931aab03",
+            "minAmount": "1",
+            "maxAmount": "999999999999999999999",
+            "precision": 8
+        }
+    },
+    {
+        "tokenA": {
+            "address": "0x89d24a6b4ccb1b6faa2625fe562bdd9a23260359",
+            "minAmount": "1",
+            "maxAmount": "999999999999999999999",
+            "precision": 8
+        },
+        "tokenB": {
+            "address": "0x814964b1bceaf24e26296d031eadf134a2ca4105",
+            "minAmount": "1",
+            "maxAmount": "999999999999999999999",
+            "precision": 8
+        }
+    },
+    {
+        "tokenA": {
+            "address": "0x89d24a6b4ccb1b6faa2625fe562bdd9a23260359",
+            "minAmount": "1",
+            "maxAmount": "999999999999999999999",
+            "precision": 8
+        },
+        "tokenB": {
+            "address": "0x865e3707a580f9db89304005cddd050ade8873eb",
+            "minAmount": "1",
+            "maxAmount": "999999999999999999999",
+            "precision": 8
+        }
+    },
+    {
+        "tokenA": {
+            "address": "0x89d24a6b4ccb1b6faa2625fe562bdd9a23260359",
+            "minAmount": "1",
+            "maxAmount": "999999999999999999999",
+            "precision": 8
+        },
+        "tokenB": {
+            "address": "0x88fcfbc22c6d3dbaa25af478c578978339bde77a",
+            "minAmount": "1",
+            "maxAmount": "999999999999999999999",
+            "precision": 8
+        }
+    },
+    {
+        "tokenA": {
+            "address": "0x89d24a6b4ccb1b6faa2625fe562bdd9a23260359",
+            "minAmount": "1",
+            "maxAmount": "999999999999999999999",
+            "precision": 8
+        },
+        "tokenB": {
+            "address": "0x8a854288a5976036a725879164ca3e91d30c6a1b",
+            "minAmount": "1",
+            "maxAmount": "999999999999999999999",
+            "precision": 8
+        }
+    },
+    {
+        "tokenA": {
+            "address": "0x89d24a6b4ccb1b6faa2625fe562bdd9a23260359",
+            "minAmount": "1",
+            "maxAmount": "999999999999999999999",
+            "precision": 8
+        },
+        "tokenB": {
+            "address": "0x8ae4bf2c33a8e667de34b54938b0ccd03eb8cc06",
+            "minAmount": "1",
+            "maxAmount": "999999999999999999999",
+            "precision": 8
+        }
+    },
+    {
+        "tokenA": {
+            "address": "0x89d24a6b4ccb1b6faa2625fe562bdd9a23260359",
+            "minAmount": "1",
+            "maxAmount": "999999999999999999999",
+            "precision": 8
+        },
+        "tokenB": {
+            "address": "0x8eb24319393716668d768dcec29356ae9cffe285",
+            "minAmount": "1",
+            "maxAmount": "999999999999999999999",
+            "precision": 8
+        }
+    },
+    {
+        "tokenA": {
+            "address": "0x89d24a6b4ccb1b6faa2625fe562bdd9a23260359",
+            "minAmount": "1",
+            "maxAmount": "999999999999999999999",
+            "precision": 8
+        },
+        "tokenB": {
+            "address": "0x8f8221afbb33998d8584a2b05749ba73c37a938a",
+            "minAmount": "1",
+            "maxAmount": "999999999999999999999",
+            "precision": 8
+        }
+    },
+    {
+        "tokenA": {
+            "address": "0x89d24a6b4ccb1b6faa2625fe562bdd9a23260359",
+            "minAmount": "1",
+            "maxAmount": "999999999999999999999",
+            "precision": 8
+        },
+        "tokenB": {
+            "address": "0x9214ec02cb71cba0ada6896b8da260736a67ab10",
+            "minAmount": "1",
+            "maxAmount": "999999999999999999999",
+            "precision": 8
+        }
+    },
+    {
+        "tokenA": {
+            "address": "0x89d24a6b4ccb1b6faa2625fe562bdd9a23260359",
+            "minAmount": "1",
+            "maxAmount": "999999999999999999999",
+            "precision": 8
+        },
+        "tokenB": {
+            "address": "0x923108a439c4e8c2315c4f6521e5ce95b44e9b4c",
+            "minAmount": "1",
+            "maxAmount": "999999999999999999999",
+            "precision": 8
+        }
+    },
+    {
+        "tokenA": {
+            "address": "0x89d24a6b4ccb1b6faa2625fe562bdd9a23260359",
+            "minAmount": "1",
+            "maxAmount": "999999999999999999999",
+            "precision": 8
+        },
+        "tokenB": {
+            "address": "0x960b236a07cf122663c4303350609a66a7b288c0",
+            "minAmount": "1",
+            "maxAmount": "999999999999999999999",
+            "precision": 8
+        }
+    },
+    {
+        "tokenA": {
+            "address": "0x89d24a6b4ccb1b6faa2625fe562bdd9a23260359",
+            "minAmount": "1",
+            "maxAmount": "999999999999999999999",
+            "precision": 8
+        },
+        "tokenB": {
+            "address": "0x983f6d60db79ea8ca4eb9968c6aff8cfa04b3c63",
+            "minAmount": "1",
+            "maxAmount": "999999999999999999999",
+            "precision": 8
+        }
+    },
+    {
+        "tokenA": {
+            "address": "0x89d24a6b4ccb1b6faa2625fe562bdd9a23260359",
+            "minAmount": "1",
+            "maxAmount": "999999999999999999999",
+            "precision": 8
+        },
+        "tokenB": {
+            "address": "0x9992ec3cf6a55b00978cddf2b27bc6882d88d1ec",
+            "minAmount": "1",
+            "maxAmount": "999999999999999999999",
+            "precision": 8
+        }
+    },
+    {
+        "tokenA": {
+            "address": "0x89d24a6b4ccb1b6faa2625fe562bdd9a23260359",
+            "minAmount": "1",
+            "maxAmount": "999999999999999999999",
+            "precision": 8
+        },
+        "tokenB": {
+            "address": "0x99ea4db9ee77acd40b119bd1dc4e33e1c070b80d",
+            "minAmount": "1",
+            "maxAmount": "999999999999999999999",
+            "precision": 8
+        }
+    },
+    {
+        "tokenA": {
+            "address": "0x89d24a6b4ccb1b6faa2625fe562bdd9a23260359",
+            "minAmount": "1",
+            "maxAmount": "999999999999999999999",
+            "precision": 8
+        },
+        "tokenB": {
+            "address": "0x9a005c9a89bd72a4bd27721e7a09a3c11d2b03c4",
+            "minAmount": "1",
+            "maxAmount": "999999999999999999999",
+            "precision": 8
+        }
+    },
+    {
+        "tokenA": {
+            "address": "0x89d24a6b4ccb1b6faa2625fe562bdd9a23260359",
+            "minAmount": "1",
+            "maxAmount": "999999999999999999999",
+            "precision": 8
+        },
+        "tokenB": {
+            "address": "0x9f8f72aa9304c8b593d555f12ef6589cc3a579a2",
+            "minAmount": "1",
+            "maxAmount": "999999999999999999999",
+            "precision": 8
+        }
+    },
+    {
+        "tokenA": {
+            "address": "0x89d24a6b4ccb1b6faa2625fe562bdd9a23260359",
+            "minAmount": "1",
+            "maxAmount": "999999999999999999999",
+            "precision": 8
+        },
+        "tokenB": {
+            "address": "0xa5fd1a791c4dfcaacc963d4f73c6ae5824149ea7",
+            "minAmount": "1",
+            "maxAmount": "999999999999999999999",
+            "precision": 8
+        }
+    },
+    {
+        "tokenA": {
+            "address": "0x89d24a6b4ccb1b6faa2625fe562bdd9a23260359",
+            "minAmount": "1",
+            "maxAmount": "999999999999999999999",
+            "precision": 8
+        },
+        "tokenB": {
+            "address": "0xa8006c4ca56f24d6836727d106349320db7fef82",
+            "minAmount": "1",
+            "maxAmount": "999999999999999999999",
+            "precision": 8
+        }
+    },
+    {
+        "tokenA": {
+            "address": "0x89d24a6b4ccb1b6faa2625fe562bdd9a23260359",
+            "minAmount": "1",
+            "maxAmount": "999999999999999999999",
+            "precision": 8
+        },
+        "tokenB": {
+            "address": "0xa87c3ec87eb802aad080df0adb331e504d327e5d",
+            "minAmount": "1",
+            "maxAmount": "999999999999999999999",
+            "precision": 8
+        }
+    },
+    {
+        "tokenA": {
+            "address": "0x89d24a6b4ccb1b6faa2625fe562bdd9a23260359",
+            "minAmount": "1",
+            "maxAmount": "999999999999999999999",
+            "precision": 8
+        },
+        "tokenB": {
+            "address": "0xab16e0d25c06cb376259cc18c1de4aca57605589",
+            "minAmount": "1",
+            "maxAmount": "999999999999999999999",
+            "precision": 8
+        }
+    },
+    {
+        "tokenA": {
+            "address": "0x89d24a6b4ccb1b6faa2625fe562bdd9a23260359",
+            "minAmount": "1",
+            "maxAmount": "999999999999999999999",
+            "precision": 8
+        },
+        "tokenB": {
+            "address": "0xac3211a5025414af2866ff09c23fc18bc97e79b1",
+            "minAmount": "1",
+            "maxAmount": "999999999999999999999",
+            "precision": 8
+        }
+    },
+    {
+        "tokenA": {
+            "address": "0x89d24a6b4ccb1b6faa2625fe562bdd9a23260359",
+            "minAmount": "1",
+            "maxAmount": "999999999999999999999",
+            "precision": 8
+        },
+        "tokenB": {
+            "address": "0xacfa209fb73bf3dd5bbfb1101b9bc999c49062a5",
+            "minAmount": "1",
+            "maxAmount": "999999999999999999999",
+            "precision": 8
+        }
+    },
+    {
+        "tokenA": {
+            "address": "0x89d24a6b4ccb1b6faa2625fe562bdd9a23260359",
+            "minAmount": "1",
+            "maxAmount": "999999999999999999999",
+            "precision": 8
+        },
+        "tokenB": {
+            "address": "0xb24754be79281553dc1adc160ddf5cd9b74361a4",
+            "minAmount": "1",
+            "maxAmount": "999999999999999999999",
+            "precision": 8
+        }
+    },
+    {
+        "tokenA": {
+            "address": "0x89d24a6b4ccb1b6faa2625fe562bdd9a23260359",
+            "minAmount": "1",
+            "maxAmount": "999999999999999999999",
+            "precision": 8
+        },
+        "tokenB": {
+            "address": "0xb3bd49e28f8f832b8d1e246106991e546c323502",
+            "minAmount": "1",
+            "maxAmount": "999999999999999999999",
+            "precision": 8
+        }
+    },
+    {
+        "tokenA": {
+            "address": "0x89d24a6b4ccb1b6faa2625fe562bdd9a23260359",
+            "minAmount": "1",
+            "maxAmount": "999999999999999999999",
+            "precision": 8
+        },
+        "tokenB": {
+            "address": "0xb45a50545beeab73f38f31e5973768c421805e5e",
+            "minAmount": "1",
+            "maxAmount": "999999999999999999999",
+            "precision": 8
+        }
+    },
+    {
+        "tokenA": {
+            "address": "0x89d24a6b4ccb1b6faa2625fe562bdd9a23260359",
+            "minAmount": "1",
+            "maxAmount": "999999999999999999999",
+            "precision": 8
+        },
+        "tokenB": {
+            "address": "0xb4efd85c19999d84251304bda99e90b92300bd93",
+            "minAmount": "1",
+            "maxAmount": "999999999999999999999",
+            "precision": 8
+        }
+    },
+    {
+        "tokenA": {
+            "address": "0x89d24a6b4ccb1b6faa2625fe562bdd9a23260359",
+            "minAmount": "1",
+            "maxAmount": "999999999999999999999",
+            "precision": 8
+        },
+        "tokenB": {
+            "address": "0xb5a5f22694352c15b00323844ad545abb2b11028",
+            "minAmount": "1",
+            "maxAmount": "999999999999999999999",
+            "precision": 8
+        }
+    },
+    {
+        "tokenA": {
+            "address": "0x89d24a6b4ccb1b6faa2625fe562bdd9a23260359",
+            "minAmount": "1",
+            "maxAmount": "999999999999999999999",
+            "precision": 8
+        },
+        "tokenB": {
+            "address": "0xb5c0e43a6330b9eb904ec57ea24d70269ae4652e",
+            "minAmount": "1",
+            "maxAmount": "999999999999999999999",
+            "precision": 8
+        }
+    },
+    {
+        "tokenA": {
+            "address": "0x89d24a6b4ccb1b6faa2625fe562bdd9a23260359",
+            "minAmount": "1",
+            "maxAmount": "999999999999999999999",
+            "precision": 8
+        },
+        "tokenB": {
+            "address": "0xb62d18dea74045e822352ce4b3ee77319dc5ff2f",
+            "minAmount": "1",
+            "maxAmount": "999999999999999999999",
+            "precision": 8
+        }
+    },
+    {
+        "tokenA": {
+            "address": "0x89d24a6b4ccb1b6faa2625fe562bdd9a23260359",
+            "minAmount": "1",
+            "maxAmount": "999999999999999999999",
+            "precision": 8
+        },
+        "tokenB": {
+            "address": "0xb64ef51c888972c908cfacf59b47c1afbc0ab8ac",
+            "minAmount": "1",
+            "maxAmount": "999999999999999999999",
+            "precision": 8
+        }
+    },
+    {
+        "tokenA": {
+            "address": "0x89d24a6b4ccb1b6faa2625fe562bdd9a23260359",
+            "minAmount": "1",
+            "maxAmount": "999999999999999999999",
+            "precision": 8
+        },
+        "tokenB": {
+            "address": "0xb98d4c97425d9908e66e53a6fdf673acca0be986",
+            "minAmount": "1",
+            "maxAmount": "999999999999999999999",
+            "precision": 8
+        }
+    },
+    {
+        "tokenA": {
+            "address": "0x89d24a6b4ccb1b6faa2625fe562bdd9a23260359",
+            "minAmount": "1",
+            "maxAmount": "999999999999999999999",
+            "precision": 8
+        },
+        "tokenB": {
+            "address": "0xba2184520a1cc49a6159c57e61e1844e085615b6",
+            "minAmount": "1",
+            "maxAmount": "999999999999999999999",
+            "precision": 8
+        }
+    },
+    {
+        "tokenA": {
+            "address": "0x89d24a6b4ccb1b6faa2625fe562bdd9a23260359",
+            "minAmount": "1",
+            "maxAmount": "999999999999999999999",
+            "precision": 8
+        },
+        "tokenB": {
+            "address": "0xba5f11b16b155792cf3b2e6880e8706859a8aeb6",
+            "minAmount": "1",
+            "maxAmount": "999999999999999999999",
+            "precision": 8
+        }
+    },
+    {
+        "tokenA": {
+            "address": "0x89d24a6b4ccb1b6faa2625fe562bdd9a23260359",
+            "minAmount": "1",
+            "maxAmount": "999999999999999999999",
+            "precision": 8
+        },
+        "tokenB": {
+            "address": "0xbdc5bac39dbe132b1e030e898ae3830017d7d969",
+            "minAmount": "1",
+            "maxAmount": "999999999999999999999",
+            "precision": 8
+        }
+    },
+    {
+        "tokenA": {
+            "address": "0x89d24a6b4ccb1b6faa2625fe562bdd9a23260359",
+            "minAmount": "1",
+            "maxAmount": "999999999999999999999",
+            "precision": 8
+        },
+        "tokenB": {
+            "address": "0xbeb9ef514a379b997e0798fdcc901ee474b6d9a1",
+            "minAmount": "1",
+            "maxAmount": "999999999999999999999",
+            "precision": 8
+        }
+    },
+    {
+        "tokenA": {
+            "address": "0x89d24a6b4ccb1b6faa2625fe562bdd9a23260359",
+            "minAmount": "1",
+            "maxAmount": "999999999999999999999",
+            "precision": 8
+        },
+        "tokenB": {
+            "address": "0xbf2179859fc6d5bee9bf9158632dc51678a4100e",
+            "minAmount": "1",
+            "maxAmount": "999999999999999999999",
+            "precision": 8
+        }
+    },
+    {
+        "tokenA": {
+            "address": "0x89d24a6b4ccb1b6faa2625fe562bdd9a23260359",
+            "minAmount": "1",
+            "maxAmount": "999999999999999999999",
+            "precision": 8
+        },
+        "tokenB": {
+            "address": "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2",
+            "minAmount": "1",
+            "maxAmount": "999999999999999999999",
+            "precision": 8
+        }
+    },
+    {
+        "tokenA": {
+            "address": "0x89d24a6b4ccb1b6faa2625fe562bdd9a23260359",
+            "minAmount": "1",
+            "maxAmount": "999999999999999999999",
+            "precision": 8
+        },
+        "tokenB": {
+            "address": "0xc27a2f05fa577a83ba0fdb4c38443c0718356501",
+            "minAmount": "1",
+            "maxAmount": "999999999999999999999",
+            "precision": 8
+        }
+    },
+    {
+        "tokenA": {
+            "address": "0x89d24a6b4ccb1b6faa2625fe562bdd9a23260359",
+            "minAmount": "1",
+            "maxAmount": "999999999999999999999",
+            "precision": 8
+        },
+        "tokenB": {
+            "address": "0xc438b4c0dfbb1593be6dee03bbd1a84bb3aa6213",
+            "minAmount": "1",
+            "maxAmount": "999999999999999999999",
+            "precision": 8
+        }
+    },
+    {
+        "tokenA": {
+            "address": "0x89d24a6b4ccb1b6faa2625fe562bdd9a23260359",
+            "minAmount": "1",
+            "maxAmount": "999999999999999999999",
+            "precision": 8
+        },
+        "tokenB": {
+            "address": "0xc66ea802717bfb9833400264dd12c2bceaa34a6d",
+            "minAmount": "1",
+            "maxAmount": "999999999999999999999",
+            "precision": 8
+        }
+    },
+    {
+        "tokenA": {
+            "address": "0x89d24a6b4ccb1b6faa2625fe562bdd9a23260359",
+            "minAmount": "1",
+            "maxAmount": "999999999999999999999",
+            "precision": 8
+        },
+        "tokenB": {
+            "address": "0xc997d07b0bc607b6d1bcb6fb9d4a5579c466c3e5",
+            "minAmount": "1",
+            "maxAmount": "999999999999999999999",
+            "precision": 8
+        }
+    },
+    {
+        "tokenA": {
+            "address": "0x89d24a6b4ccb1b6faa2625fe562bdd9a23260359",
+            "minAmount": "1",
+            "maxAmount": "999999999999999999999",
+            "precision": 8
+        },
+        "tokenB": {
+            "address": "0xd0a4b8946cb52f0661273bfbc6fd0e0c75fc6433",
+            "minAmount": "1",
+            "maxAmount": "999999999999999999999",
+            "precision": 8
+        }
+    },
+    {
+        "tokenA": {
+            "address": "0x89d24a6b4ccb1b6faa2625fe562bdd9a23260359",
+            "minAmount": "1",
+            "maxAmount": "999999999999999999999",
+            "precision": 8
+        },
+        "tokenB": {
+            "address": "0xd26114cd6ee289accf82350c8d8487fedb8a0c07",
+            "minAmount": "1",
+            "maxAmount": "999999999999999999999",
+            "precision": 8
+        }
+    },
+    {
+        "tokenA": {
+            "address": "0x89d24a6b4ccb1b6faa2625fe562bdd9a23260359",
+            "minAmount": "1",
+            "maxAmount": "999999999999999999999",
+            "precision": 8
+        },
+        "tokenB": {
+            "address": "0xd2d6158683aee4cc838067727209a0aaf4359de3",
+            "minAmount": "1",
+            "maxAmount": "999999999999999999999",
+            "precision": 8
+        }
+    },
+    {
+        "tokenA": {
+            "address": "0x89d24a6b4ccb1b6faa2625fe562bdd9a23260359",
+            "minAmount": "1",
+            "maxAmount": "999999999999999999999",
+            "precision": 8
+        },
+        "tokenB": {
+            "address": "0xd4c435f5b09f855c3317c8524cb1f586e42795fa",
+            "minAmount": "1",
+            "maxAmount": "999999999999999999999",
+            "precision": 8
+        }
+    },
+    {
+        "tokenA": {
+            "address": "0x89d24a6b4ccb1b6faa2625fe562bdd9a23260359",
+            "minAmount": "1",
+            "maxAmount": "999999999999999999999",
+            "precision": 8
+        },
+        "tokenB": {
+            "address": "0xd4fa1460f537bb9085d22c7bccb5dd450ef28e3a",
+            "minAmount": "1",
+            "maxAmount": "999999999999999999999",
+            "precision": 8
+        }
+    },
+    {
+        "tokenA": {
+            "address": "0x89d24a6b4ccb1b6faa2625fe562bdd9a23260359",
+            "minAmount": "1",
+            "maxAmount": "999999999999999999999",
+            "precision": 8
+        },
+        "tokenB": {
+            "address": "0xd8912c10681d8b21fd3742244f44658dba12264e",
+            "minAmount": "1",
+            "maxAmount": "999999999999999999999",
+            "precision": 8
+        }
+    },
+    {
+        "tokenA": {
+            "address": "0x89d24a6b4ccb1b6faa2625fe562bdd9a23260359",
+            "minAmount": "1",
+            "maxAmount": "999999999999999999999",
+            "precision": 8
+        },
+        "tokenB": {
+            "address": "0xe0b7927c4af23765cb51314a0e0521a9645f0e2a",
+            "minAmount": "1",
+            "maxAmount": "999999999999999999999",
+            "precision": 8
+        }
+    },
+    {
+        "tokenA": {
+            "address": "0x89d24a6b4ccb1b6faa2625fe562bdd9a23260359",
+            "minAmount": "1",
+            "maxAmount": "999999999999999999999",
+            "precision": 8
+        },
+        "tokenB": {
+            "address": "0xe2e6d4be086c6938b53b22144855eef674281639",
+            "minAmount": "1",
+            "maxAmount": "999999999999999999999",
+            "precision": 8
+        }
+    },
+    {
+        "tokenA": {
+            "address": "0x89d24a6b4ccb1b6faa2625fe562bdd9a23260359",
+            "minAmount": "1",
+            "maxAmount": "999999999999999999999",
+            "precision": 8
+        },
+        "tokenB": {
+            "address": "0xe41d2489571d322189246dafa5ebde1f4699f498",
+            "minAmount": "1",
+            "maxAmount": "999999999999999999999",
+            "precision": 8
+        }
+    },
+    {
+        "tokenA": {
+            "address": "0x89d24a6b4ccb1b6faa2625fe562bdd9a23260359",
+            "minAmount": "1",
+            "maxAmount": "999999999999999999999",
+            "precision": 8
+        },
+        "tokenB": {
+            "address": "0xe94327d07fc17907b4db788e5adf2ed424addff6",
+            "minAmount": "1",
+            "maxAmount": "999999999999999999999",
+            "precision": 8
+        }
+    },
+    {
+        "tokenA": {
+            "address": "0x89d24a6b4ccb1b6faa2625fe562bdd9a23260359",
+            "minAmount": "1",
+            "maxAmount": "999999999999999999999",
+            "precision": 8
+        },
+        "tokenB": {
+            "address": "0xea097a2b1db00627b2fa17460ad260c016016977",
+            "minAmount": "1",
+            "maxAmount": "999999999999999999999",
+            "precision": 8
+        }
+    },
+    {
+        "tokenA": {
+            "address": "0x89d24a6b4ccb1b6faa2625fe562bdd9a23260359",
+            "minAmount": "1",
+            "maxAmount": "999999999999999999999",
+            "precision": 8
+        },
+        "tokenB": {
+            "address": "0xea1f346faf023f974eb5adaf088bbcdf02d761f4",
+            "minAmount": "1",
+            "maxAmount": "999999999999999999999",
+            "precision": 8
+        }
+    },
+    {
+        "tokenA": {
+            "address": "0x89d24a6b4ccb1b6faa2625fe562bdd9a23260359",
+            "minAmount": "1",
+            "maxAmount": "999999999999999999999",
+            "precision": 8
+        },
+        "tokenB": {
+            "address": "0xea38eaa3c86c8f9b751533ba2e562deb9acded40",
+            "minAmount": "1",
+            "maxAmount": "999999999999999999999",
+            "precision": 8
+        }
+    },
+    {
+        "tokenA": {
+            "address": "0x89d24a6b4ccb1b6faa2625fe562bdd9a23260359",
+            "minAmount": "1",
+            "maxAmount": "999999999999999999999",
+            "precision": 8
+        },
+        "tokenB": {
+            "address": "0xeab43193cf0623073ca89db9b712796356fa7414",
+            "minAmount": "1",
+            "maxAmount": "999999999999999999999",
+            "precision": 8
+        }
+    },
+    {
+        "tokenA": {
+            "address": "0x89d24a6b4ccb1b6faa2625fe562bdd9a23260359",
+            "minAmount": "1",
+            "maxAmount": "999999999999999999999",
+            "precision": 8
+        },
+        "tokenB": {
+            "address": "0xeb2da9fac54284cea731d1f10bb34eecb3c00c14",
+            "minAmount": "1",
+            "maxAmount": "999999999999999999999",
+            "precision": 8
+        }
+    },
+    {
+        "tokenA": {
+            "address": "0x89d24a6b4ccb1b6faa2625fe562bdd9a23260359",
+            "minAmount": "1",
+            "maxAmount": "999999999999999999999",
+            "precision": 8
+        },
+        "tokenB": {
+            "address": "0xeb7c20027172e5d143fb030d50f91cece2d1485d",
+            "minAmount": "1",
+            "maxAmount": "999999999999999999999",
+            "precision": 8
+        }
+    },
+    {
+        "tokenA": {
+            "address": "0x89d24a6b4ccb1b6faa2625fe562bdd9a23260359",
+            "minAmount": "1",
+            "maxAmount": "999999999999999999999",
+            "precision": 8
+        },
+        "tokenB": {
+            "address": "0xef2463099360a085f1f10b076ed72ef625497a06",
+            "minAmount": "1",
+            "maxAmount": "999999999999999999999",
+            "precision": 8
+        }
+    },
+    {
+        "tokenA": {
+            "address": "0x89d24a6b4ccb1b6faa2625fe562bdd9a23260359",
+            "minAmount": "1",
+            "maxAmount": "999999999999999999999",
+            "precision": 8
+        },
+        "tokenB": {
+            "address": "0xf433089366899d83a9f26a773d59ec7ecf30355e",
+            "minAmount": "1",
+            "maxAmount": "999999999999999999999",
+            "precision": 8
+        }
+    },
+    {
+        "tokenA": {
+            "address": "0x89d24a6b4ccb1b6faa2625fe562bdd9a23260359",
+            "minAmount": "1",
+            "maxAmount": "999999999999999999999",
+            "precision": 8
+        },
+        "tokenB": {
+            "address": "0xf6b55acbbc49f4524aa48d19281a9a77c54de10f",
+            "minAmount": "1",
+            "maxAmount": "999999999999999999999",
+            "precision": 8
+        }
+    },
+    {
+        "tokenA": {
+            "address": "0x89d24a6b4ccb1b6faa2625fe562bdd9a23260359",
+            "minAmount": "1",
+            "maxAmount": "999999999999999999999",
+            "precision": 8
+        },
+        "tokenB": {
+            "address": "0xf6cfe53d6febaeea051f400ff5fc14f0cbbdaca1",
+            "minAmount": "1",
+            "maxAmount": "999999999999999999999",
+            "precision": 8
+        }
+    },
+    {
+        "tokenA": {
+            "address": "0x89d24a6b4ccb1b6faa2625fe562bdd9a23260359",
+            "minAmount": "1",
+            "maxAmount": "999999999999999999999",
+            "precision": 8
+        },
+        "tokenB": {
+            "address": "0xf7b098298f7c69fc14610bf71d5e02c60792894c",
+            "minAmount": "1",
+            "maxAmount": "999999999999999999999",
+            "precision": 8
+        }
+    },
+    {
+        "tokenA": {
+            "address": "0x89d24a6b4ccb1b6faa2625fe562bdd9a23260359",
+            "minAmount": "1",
+            "maxAmount": "999999999999999999999",
+            "precision": 8
+        },
+        "tokenB": {
+            "address": "0xf970b8e36e23f7fc3fd752eea86f8be8d83375a6",
+            "minAmount": "1",
+            "maxAmount": "999999999999999999999",
+            "precision": 8
+        }
+    },
+    {
+        "tokenA": {
+            "address": "0x89d24a6b4ccb1b6faa2625fe562bdd9a23260359",
+            "minAmount": "1",
+            "maxAmount": "999999999999999999999",
+            "precision": 8
+        },
+        "tokenB": {
+            "address": "0xfec0cf7fe078a500abf15f1284958f22049c2c7e",
+            "minAmount": "1",
+            "maxAmount": "999999999999999999999",
+            "precision": 8
+        }
+    },
+    {
+        "tokenA": {
+            "address": "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2",
+            "minAmount": "1",
+            "maxAmount": "999999999999999999999",
+            "precision": 8
+        },
+        "tokenB": {
+            "address": "0x01b3ec4aae1b8729529beb4965f27d008788b0eb",
+            "minAmount": "1",
+            "maxAmount": "999999999999999999999",
+            "precision": 8
+        }
+    },
+    {
+        "tokenA": {
+            "address": "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2",
+            "minAmount": "1",
+            "maxAmount": "999999999999999999999",
+            "precision": 8
+        },
+        "tokenB": {
+            "address": "0x0371a82e4a9d0a4312f3ee2ac9c6958512891372",
+            "minAmount": "1",
+            "maxAmount": "999999999999999999999",
+            "precision": 8
+        }
+    },
+    {
+        "tokenA": {
+            "address": "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2",
+            "minAmount": "1",
+            "maxAmount": "999999999999999999999",
+            "precision": 8
+        },
+        "tokenB": {
+            "address": "0x05f4a42e251f2d52b8ed15e9fedaacfcef1fad27",
+            "minAmount": "1",
+            "maxAmount": "999999999999999999999",
+            "precision": 8
+        }
+    },
+    {
+        "tokenA": {
+            "address": "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2",
+            "minAmount": "1",
+            "maxAmount": "999999999999999999999",
+            "precision": 8
+        },
+        "tokenB": {
+            "address": "0x076c97e1c869072ee22f8c91978c99b4bcb02591",
+            "minAmount": "1",
+            "maxAmount": "999999999999999999999",
+            "precision": 8
+        }
+    },
+    {
+        "tokenA": {
+            "address": "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2",
+            "minAmount": "1",
+            "maxAmount": "999999999999999999999",
+            "precision": 8
+        },
+        "tokenB": {
+            "address": "0x09d8b66c48424324b25754a873e290cae5dca439",
+            "minAmount": "1",
+            "maxAmount": "999999999999999999999",
+            "precision": 8
+        }
+    },
+    {
+        "tokenA": {
+            "address": "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2",
+            "minAmount": "1",
+            "maxAmount": "999999999999999999999",
+            "precision": 8
+        },
+        "tokenB": {
+            "address": "0x0abdace70d3790235af448c88547603b945604ea",
+            "minAmount": "1",
+            "maxAmount": "999999999999999999999",
+            "precision": 8
+        }
+    },
+    {
+        "tokenA": {
+            "address": "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2",
+            "minAmount": "1",
+            "maxAmount": "999999999999999999999",
+            "precision": 8
+        },
+        "tokenB": {
+            "address": "0x0cf0ee63788a0849fe5297f3407f701e122cc023",
+            "minAmount": "1",
+            "maxAmount": "999999999999999999999",
+            "precision": 8
+        }
+    },
+    {
+        "tokenA": {
+            "address": "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2",
+            "minAmount": "1",
+            "maxAmount": "999999999999999999999",
+            "precision": 8
+        },
+        "tokenB": {
+            "address": "0x0d8775f648430679a709e98d2b0cb6250d2887ef",
+            "minAmount": "1",
+            "maxAmount": "999999999999999999999",
+            "precision": 8
+        }
+    },
+    {
+        "tokenA": {
+            "address": "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2",
+            "minAmount": "1",
+            "maxAmount": "999999999999999999999",
+            "precision": 8
+        },
+        "tokenB": {
+            "address": "0x0e0989b1f9b8a38983c2ba8053269ca62ec9b195",
+            "minAmount": "1",
+            "maxAmount": "999999999999999999999",
+            "precision": 8
+        }
+    },
+    {
+        "tokenA": {
+            "address": "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2",
+            "minAmount": "1",
+            "maxAmount": "999999999999999999999",
+            "precision": 8
+        },
+        "tokenB": {
+            "address": "0x0f513ffb4926ff82d7f60a05069047aca295c413",
+            "minAmount": "1",
+            "maxAmount": "999999999999999999999",
+            "precision": 8
+        }
+    },
+    {
+        "tokenA": {
+            "address": "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2",
+            "minAmount": "1",
+            "maxAmount": "999999999999999999999",
+            "precision": 8
+        },
+        "tokenB": {
+            "address": "0x0f5d2fb29fb7d3cfee444a200298f468908cc942",
+            "minAmount": "1",
+            "maxAmount": "999999999999999999999",
+            "precision": 8
+        }
+    },
+    {
+        "tokenA": {
+            "address": "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2",
+            "minAmount": "1",
+            "maxAmount": "999999999999999999999",
+            "precision": 8
+        },
+        "tokenB": {
+            "address": "0x1063ce524265d5a3a624f4914acd573dd89ce988",
+            "minAmount": "1",
+            "maxAmount": "999999999999999999999",
+            "precision": 8
+        }
+    },
+    {
+        "tokenA": {
+            "address": "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2",
+            "minAmount": "1",
+            "maxAmount": "999999999999999999999",
+            "precision": 8
+        },
+        "tokenB": {
+            "address": "0x106aa49295b525fcf959aa75ec3f7dcbf5352f1c",
+            "minAmount": "1",
+            "maxAmount": "999999999999999999999",
+            "precision": 8
+        }
+    },
+    {
+        "tokenA": {
+            "address": "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2",
+            "minAmount": "1",
+            "maxAmount": "999999999999999999999",
+            "precision": 8
+        },
+        "tokenB": {
+            "address": "0x107c4504cd79c5d2696ea0030a8dd4e92601b82e",
+            "minAmount": "1",
+            "maxAmount": "999999999999999999999",
+            "precision": 8
+        }
+    },
+    {
+        "tokenA": {
+            "address": "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2",
+            "minAmount": "1",
+            "maxAmount": "999999999999999999999",
+            "precision": 8
+        },
+        "tokenB": {
+            "address": "0x1183f92a5624d68e85ffb9170f16bf0443b4c242",
+            "minAmount": "1",
+            "maxAmount": "999999999999999999999",
+            "precision": 8
+        }
+    },
+    {
+        "tokenA": {
+            "address": "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2",
+            "minAmount": "1",
+            "maxAmount": "999999999999999999999",
+            "precision": 8
+        },
+        "tokenB": {
+            "address": "0x12480e24eb5bec1a9d4369cab6a80cad3c0a377a",
+            "minAmount": "1",
+            "maxAmount": "999999999999999999999",
+            "precision": 8
+        }
+    },
+    {
+        "tokenA": {
+            "address": "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2",
+            "minAmount": "1",
+            "maxAmount": "999999999999999999999",
+            "precision": 8
+        },
+        "tokenB": {
+            "address": "0x12b19d3e2ccc14da04fae33e63652ce469b3f2fd",
+            "minAmount": "1",
+            "maxAmount": "999999999999999999999",
+            "precision": 8
+        }
+    },
+    {
+        "tokenA": {
+            "address": "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2",
+            "minAmount": "1",
+            "maxAmount": "999999999999999999999",
+            "precision": 8
+        },
+        "tokenB": {
+            "address": "0x12fef5e57bf45873cd9b62e9dbd7bfb99e32d73e",
+            "minAmount": "1",
+            "maxAmount": "999999999999999999999",
+            "precision": 8
+        }
+    },
+    {
+        "tokenA": {
+            "address": "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2",
+            "minAmount": "1",
+            "maxAmount": "999999999999999999999",
+            "precision": 8
+        },
+        "tokenB": {
+            "address": "0x168296bb09e24a88805cb9c33356536b980d3fc5",
+            "minAmount": "1",
+            "maxAmount": "999999999999999999999",
+            "precision": 8
+        }
+    },
+    {
+        "tokenA": {
+            "address": "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2",
+            "minAmount": "1",
+            "maxAmount": "999999999999999999999",
+            "precision": 8
+        },
+        "tokenB": {
+            "address": "0x1776e1f26f98b1a5df9cd347953a26dd3cb46671",
+            "minAmount": "1",
+            "maxAmount": "999999999999999999999",
+            "precision": 8
+        }
+    },
+    {
+        "tokenA": {
+            "address": "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2",
+            "minAmount": "1",
+            "maxAmount": "999999999999999999999",
+            "precision": 8
+        },
+        "tokenB": {
+            "address": "0x177d39ac676ed1c67a2b268ad7f1e58826e5b0af",
+            "minAmount": "1",
+            "maxAmount": "999999999999999999999",
+            "precision": 8
+        }
+    },
+    {
+        "tokenA": {
+            "address": "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2",
+            "minAmount": "1",
+            "maxAmount": "999999999999999999999",
+            "precision": 8
+        },
+        "tokenB": {
+            "address": "0x1d462414fe14cf489c7a21cac78509f4bf8cd7c0",
+            "minAmount": "1",
+            "maxAmount": "999999999999999999999",
+            "precision": 8
+        }
+    },
+    {
+        "tokenA": {
+            "address": "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2",
+            "minAmount": "1",
+            "maxAmount": "999999999999999999999",
+            "precision": 8
+        },
+        "tokenB": {
+            "address": "0x24692791bc444c5cd0b81e3cbcaba4b04acd1f3b",
+            "minAmount": "1",
+            "maxAmount": "999999999999999999999",
+            "precision": 8
+        }
+    },
+    {
+        "tokenA": {
+            "address": "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2",
+            "minAmount": "1",
+            "maxAmount": "999999999999999999999",
+            "precision": 8
+        },
+        "tokenB": {
+            "address": "0x255aa6df07540cb5d3d297f0d0d4d84cb52bc8e6",
+            "minAmount": "1",
+            "maxAmount": "999999999999999999999",
+            "precision": 8
+        }
+    },
+    {
+        "tokenA": {
+            "address": "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2",
+            "minAmount": "1",
+            "maxAmount": "999999999999999999999",
+            "precision": 8
+        },
+        "tokenB": {
+            "address": "0x27054b13b1b798b345b591a4d22e6562d47ea75a",
+            "minAmount": "1",
+            "maxAmount": "999999999999999999999",
+            "precision": 8
+        }
+    },
+    {
+        "tokenA": {
+            "address": "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2",
+            "minAmount": "1",
+            "maxAmount": "999999999999999999999",
+            "precision": 8
+        },
+        "tokenB": {
+            "address": "0x27695e09149adc738a978e9a678f99e4c39e9eb9",
+            "minAmount": "1",
+            "maxAmount": "999999999999999999999",
+            "precision": 8
+        }
+    },
+    {
+        "tokenA": {
+            "address": "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2",
+            "minAmount": "1",
+            "maxAmount": "999999999999999999999",
+            "precision": 8
+        },
+        "tokenB": {
+            "address": "0x27dce1ec4d3f72c3e457cc50354f1f975ddef488",
+            "minAmount": "1",
+            "maxAmount": "999999999999999999999",
+            "precision": 8
+        }
+    },
+    {
+        "tokenA": {
+            "address": "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2",
+            "minAmount": "1",
+            "maxAmount": "999999999999999999999",
+            "precision": 8
+        },
+        "tokenB": {
+            "address": "0x27f610bf36eca0939093343ac28b1534a721dbb4",
+            "minAmount": "1",
+            "maxAmount": "999999999999999999999",
+            "precision": 8
+        }
+    },
+    {
+        "tokenA": {
+            "address": "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2",
+            "minAmount": "1",
+            "maxAmount": "999999999999999999999",
+            "precision": 8
+        },
+        "tokenB": {
+            "address": "0x2956356cd2a2bf3202f771f50d3d14a367b48070",
+            "minAmount": "1",
+            "maxAmount": "999999999999999999999",
+            "precision": 8
+        }
+    },
+    {
+        "tokenA": {
+            "address": "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2",
+            "minAmount": "1",
+            "maxAmount": "999999999999999999999",
+            "precision": 8
+        },
+        "tokenB": {
+            "address": "0x340d2bde5eb28c1eed91b2f790723e3b160613b7",
+            "minAmount": "1",
+            "maxAmount": "999999999999999999999",
+            "precision": 8
+        }
+    },
+    {
+        "tokenA": {
+            "address": "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2",
+            "minAmount": "1",
+            "maxAmount": "999999999999999999999",
+            "precision": 8
+        },
+        "tokenB": {
+            "address": "0x3597bfd533a99c9aa083587b074434e61eb0a258",
+            "minAmount": "1",
+            "maxAmount": "999999999999999999999",
+            "precision": 8
+        }
+    },
+    {
+        "tokenA": {
+            "address": "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2",
+            "minAmount": "1",
+            "maxAmount": "999999999999999999999",
+            "precision": 8
+        },
+        "tokenB": {
+            "address": "0x3618516f45cd3c913f81f9987af41077932bc40d",
+            "minAmount": "1",
+            "maxAmount": "999999999999999999999",
+            "precision": 8
+        }
+    },
+    {
+        "tokenA": {
+            "address": "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2",
+            "minAmount": "1",
+            "maxAmount": "999999999999999999999",
+            "precision": 8
+        },
+        "tokenB": {
+            "address": "0x386467f1f3ddbe832448650418311a479eecfc57",
+            "minAmount": "1",
+            "maxAmount": "999999999999999999999",
+            "precision": 8
+        }
+    },
+    {
+        "tokenA": {
+            "address": "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2",
+            "minAmount": "1",
+            "maxAmount": "999999999999999999999",
+            "precision": 8
+        },
+        "tokenB": {
+            "address": "0x3883f5e181fccaf8410fa61e12b59bad963fb645",
+            "minAmount": "1",
+            "maxAmount": "999999999999999999999",
+            "precision": 8
+        }
+    },
+    {
+        "tokenA": {
+            "address": "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2",
+            "minAmount": "1",
+            "maxAmount": "999999999999999999999",
+            "precision": 8
+        },
+        "tokenB": {
+            "address": "0x399a0e6fbeb3d74c85357439f4c8aed9678a5cbf",
+            "minAmount": "1",
+            "maxAmount": "999999999999999999999",
+            "precision": 8
+        }
+    },
+    {
+        "tokenA": {
+            "address": "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2",
+            "minAmount": "1",
+            "maxAmount": "999999999999999999999",
+            "precision": 8
+        },
+        "tokenB": {
+            "address": "0x39bb259f66e1c59d5abef88375979b4d20d98022",
+            "minAmount": "1",
+            "maxAmount": "999999999999999999999",
+            "precision": 8
+        }
+    },
+    {
+        "tokenA": {
+            "address": "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2",
+            "minAmount": "1",
+            "maxAmount": "999999999999999999999",
+            "precision": 8
+        },
+        "tokenB": {
+            "address": "0x3d1ba9be9f66b8ee101911bc36d3fb562eac2244",
+            "minAmount": "1",
+            "maxAmount": "999999999999999999999",
+            "precision": 8
+        }
+    },
+    {
+        "tokenA": {
+            "address": "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2",
+            "minAmount": "1",
+            "maxAmount": "999999999999999999999",
+            "precision": 8
+        },
+        "tokenB": {
+            "address": "0x4156d3342d5c385a87d264f90653733592000581",
+            "minAmount": "1",
+            "maxAmount": "999999999999999999999",
+            "precision": 8
+        }
+    },
+    {
+        "tokenA": {
+            "address": "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2",
+            "minAmount": "1",
+            "maxAmount": "999999999999999999999",
+            "precision": 8
+        },
+        "tokenB": {
+            "address": "0x419d0d8bdd9af5e606ae2232ed285aff190e711b",
+            "minAmount": "1",
+            "maxAmount": "999999999999999999999",
+            "precision": 8
+        }
+    },
+    {
+        "tokenA": {
+            "address": "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2",
+            "minAmount": "1",
+            "maxAmount": "999999999999999999999",
+            "precision": 8
+        },
+        "tokenB": {
+            "address": "0x41e5560054824ea6b0732e656e3ad64e20e94e45",
+            "minAmount": "1",
+            "maxAmount": "999999999999999999999",
+            "precision": 8
+        }
+    },
+    {
+        "tokenA": {
+            "address": "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2",
+            "minAmount": "1",
+            "maxAmount": "999999999999999999999",
+            "precision": 8
+        },
+        "tokenB": {
+            "address": "0x42d6622dece394b54999fbd73d108123806f6a18",
+            "minAmount": "1",
+            "maxAmount": "999999999999999999999",
+            "precision": 8
+        }
+    },
+    {
+        "tokenA": {
+            "address": "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2",
+            "minAmount": "1",
+            "maxAmount": "999999999999999999999",
+            "precision": 8
+        },
+        "tokenB": {
+            "address": "0x44f588aeeb8c44471439d1270b3603c66a9262f1",
+            "minAmount": "1",
+            "maxAmount": "999999999999999999999",
+            "precision": 8
+        }
+    },
+    {
+        "tokenA": {
+            "address": "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2",
+            "minAmount": "1",
+            "maxAmount": "999999999999999999999",
+            "precision": 8
+        },
+        "tokenB": {
+            "address": "0x4ceda7906a5ed2179785cd3a40a69ee8bc99c466",
+            "minAmount": "1",
+            "maxAmount": "999999999999999999999",
+            "precision": 8
+        }
+    },
+    {
+        "tokenA": {
+            "address": "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2",
+            "minAmount": "1",
+            "maxAmount": "999999999999999999999",
+            "precision": 8
+        },
+        "tokenB": {
+            "address": "0x4d8fc1453a0f359e99c9675954e656d80d996fbf",
+            "minAmount": "1",
+            "maxAmount": "999999999999999999999",
+            "precision": 8
+        }
+    },
+    {
+        "tokenA": {
+            "address": "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2",
+            "minAmount": "1",
+            "maxAmount": "999999999999999999999",
+            "precision": 8
+        },
+        "tokenB": {
+            "address": "0x4df47b4969b2911c966506e3592c41389493953b",
+            "minAmount": "1",
+            "maxAmount": "999999999999999999999",
+            "precision": 8
+        }
+    },
+    {
+        "tokenA": {
+            "address": "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2",
+            "minAmount": "1",
+            "maxAmount": "999999999999999999999",
+            "precision": 8
+        },
+        "tokenB": {
+            "address": "0x4df812f6064def1e5e029f1ca858777cc98d2d81",
+            "minAmount": "1",
+            "maxAmount": "999999999999999999999",
+            "precision": 8
+        }
+    },
+    {
+        "tokenA": {
+            "address": "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2",
+            "minAmount": "1",
+            "maxAmount": "999999999999999999999",
+            "precision": 8
+        },
+        "tokenB": {
+            "address": "0x514910771af9ca656af840dff83e8264ecf986ca",
+            "minAmount": "1",
+            "maxAmount": "999999999999999999999",
+            "precision": 8
+        }
+    },
+    {
+        "tokenA": {
+            "address": "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2",
+            "minAmount": "1",
+            "maxAmount": "999999999999999999999",
+            "precision": 8
+        },
+        "tokenB": {
+            "address": "0x52a7cb918c11a16958be40cba7e31e32a499a465",
+            "minAmount": "1",
+            "maxAmount": "999999999999999999999",
+            "precision": 8
+        }
+    },
+    {
+        "tokenA": {
+            "address": "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2",
+            "minAmount": "1",
+            "maxAmount": "999999999999999999999",
+            "precision": 8
+        },
+        "tokenB": {
+            "address": "0x533ef0984b2faa227acc620c67cce12aa39cd8cd",
+            "minAmount": "1",
+            "maxAmount": "999999999999999999999",
+            "precision": 8
+        }
+    },
+    {
+        "tokenA": {
+            "address": "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2",
+            "minAmount": "1",
+            "maxAmount": "999999999999999999999",
+            "precision": 8
+        },
+        "tokenB": {
+            "address": "0x554c20b7c486beee439277b4540a434566dc4c02",
+            "minAmount": "1",
+            "maxAmount": "999999999999999999999",
+            "precision": 8
+        }
+    },
+    {
+        "tokenA": {
+            "address": "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2",
+            "minAmount": "1",
+            "maxAmount": "999999999999999999999",
+            "precision": 8
+        },
+        "tokenB": {
+            "address": "0x56ba2ee7890461f463f7be02aac3099f6d5811a8",
+            "minAmount": "1",
+            "maxAmount": "999999999999999999999",
+            "precision": 8
+        }
+    },
+    {
+        "tokenA": {
+            "address": "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2",
+            "minAmount": "1",
+            "maxAmount": "999999999999999999999",
+            "precision": 8
+        },
+        "tokenB": {
+            "address": "0x5732046a883704404f284ce41ffadd5b007fd668",
+            "minAmount": "1",
+            "maxAmount": "999999999999999999999",
+            "precision": 8
+        }
+    },
+    {
+        "tokenA": {
+            "address": "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2",
+            "minAmount": "1",
+            "maxAmount": "999999999999999999999",
+            "precision": 8
+        },
+        "tokenB": {
+            "address": "0x595832f8fc6bf59c85c527fec3740a1b7a361269",
+            "minAmount": "1",
+            "maxAmount": "999999999999999999999",
+            "precision": 8
+        }
+    },
+    {
+        "tokenA": {
+            "address": "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2",
+            "minAmount": "1",
+            "maxAmount": "999999999999999999999",
+            "precision": 8
+        },
+        "tokenB": {
+            "address": "0x5af2be193a6abca9c8817001f45744777db30756",
+            "minAmount": "1",
+            "maxAmount": "999999999999999999999",
+            "precision": 8
+        }
+    },
+    {
+        "tokenA": {
+            "address": "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2",
+            "minAmount": "1",
+            "maxAmount": "999999999999999999999",
+            "precision": 8
+        },
+        "tokenB": {
+            "address": "0x5b2e4a700dfbc560061e957edec8f6eeeb74a320",
+            "minAmount": "1",
+            "maxAmount": "999999999999999999999",
+            "precision": 8
+        }
+    },
+    {
+        "tokenA": {
+            "address": "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2",
+            "minAmount": "1",
+            "maxAmount": "999999999999999999999",
+            "precision": 8
+        },
+        "tokenB": {
+            "address": "0x5bc7e5f0ab8b2e10d2d0a3f21739fce62459aef3",
+            "minAmount": "1",
+            "maxAmount": "999999999999999999999",
+            "precision": 8
+        }
+    },
+    {
+        "tokenA": {
+            "address": "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2",
+            "minAmount": "1",
+            "maxAmount": "999999999999999999999",
+            "precision": 8
+        },
+        "tokenB": {
+            "address": "0x5ca9a71b1d01849c0a95490cc00559717fcf0d1d",
+            "minAmount": "1",
+            "maxAmount": "999999999999999999999",
+            "precision": 8
+        }
+    },
+    {
+        "tokenA": {
+            "address": "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2",
+            "minAmount": "1",
+            "maxAmount": "999999999999999999999",
+            "precision": 8
+        },
+        "tokenB": {
+            "address": "0x5e3346444010135322268a4630d2ed5f8d09446c",
+            "minAmount": "1",
+            "maxAmount": "999999999999999999999",
+            "precision": 8
+        }
+    },
+    {
+        "tokenA": {
+            "address": "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2",
+            "minAmount": "1",
+            "maxAmount": "999999999999999999999",
+            "precision": 8
+        },
+        "tokenB": {
+            "address": "0x607f4c5bb672230e8672085532f7e901544a7375",
+            "minAmount": "1",
+            "maxAmount": "999999999999999999999",
+            "precision": 8
+        }
+    },
+    {
+        "tokenA": {
+            "address": "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2",
+            "minAmount": "1",
+            "maxAmount": "999999999999999999999",
+            "precision": 8
+        },
+        "tokenB": {
+            "address": "0x614ea929892ea43d3ea2c5e3311b01cc589bad6c",
+            "minAmount": "1",
+            "maxAmount": "999999999999999999999",
+            "precision": 8
+        }
+    },
+    {
+        "tokenA": {
+            "address": "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2",
+            "minAmount": "1",
+            "maxAmount": "999999999999999999999",
+            "precision": 8
+        },
+        "tokenB": {
+            "address": "0x6425c6be902d692ae2db752b3c268afadb099d3b",
+            "minAmount": "1",
+            "maxAmount": "999999999999999999999",
+            "precision": 8
+        }
+    },
+    {
+        "tokenA": {
+            "address": "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2",
+            "minAmount": "1",
+            "maxAmount": "999999999999999999999",
+            "precision": 8
+        },
+        "tokenB": {
+            "address": "0x672a1ad4f667fb18a333af13667aa0af1f5b5bdd",
+            "minAmount": "1",
+            "maxAmount": "999999999999999999999",
+            "precision": 8
+        }
+    },
+    {
+        "tokenA": {
+            "address": "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2",
+            "minAmount": "1",
+            "maxAmount": "999999999999999999999",
+            "precision": 8
+        },
+        "tokenB": {
+            "address": "0x6781a0f84c7e9e846dcb84a9a5bd49333067b104",
+            "minAmount": "1",
+            "maxAmount": "999999999999999999999",
+            "precision": 8
+        }
+    },
+    {
+        "tokenA": {
+            "address": "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2",
+            "minAmount": "1",
+            "maxAmount": "999999999999999999999",
+            "precision": 8
+        },
+        "tokenB": {
+            "address": "0x6810e776880c02933d47db1b9fc05908e5386b96",
+            "minAmount": "1",
+            "maxAmount": "999999999999999999999",
+            "precision": 8
+        }
+    },
+    {
+        "tokenA": {
+            "address": "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2",
+            "minAmount": "1",
+            "maxAmount": "999999999999999999999",
+            "precision": 8
+        },
+        "tokenB": {
+            "address": "0x744d70fdbe2ba4cf95131626614a1763df805b9e",
+            "minAmount": "1",
+            "maxAmount": "999999999999999999999",
+            "precision": 8
+        }
+    },
+    {
+        "tokenA": {
+            "address": "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2",
+            "minAmount": "1",
+            "maxAmount": "999999999999999999999",
+            "precision": 8
+        },
+        "tokenB": {
+            "address": "0x7654915a1b82d6d2d0afc37c52af556ea8983c7e",
+            "minAmount": "1",
+            "maxAmount": "999999999999999999999",
+            "precision": 8
+        }
+    },
+    {
+        "tokenA": {
+            "address": "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2",
+            "minAmount": "1",
+            "maxAmount": "999999999999999999999",
+            "precision": 8
+        },
+        "tokenB": {
+            "address": "0x7b69b78cc7fee48202c208609ae6d1f78ce42e13",
+            "minAmount": "1",
+            "maxAmount": "999999999999999999999",
+            "precision": 8
+        }
+    },
+    {
+        "tokenA": {
+            "address": "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2",
+            "minAmount": "1",
+            "maxAmount": "999999999999999999999",
+            "precision": 8
+        },
+        "tokenB": {
+            "address": "0x7d4b8cce0591c9044a22ee543533b72e976e36c3",
+            "minAmount": "1",
+            "maxAmount": "999999999999999999999",
+            "precision": 8
+        }
+    },
+    {
+        "tokenA": {
+            "address": "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2",
+            "minAmount": "1",
+            "maxAmount": "999999999999999999999",
+            "precision": 8
+        },
+        "tokenB": {
+            "address": "0x80fb784b7ed66730e8b1dbd9820afd29931aab03",
+            "minAmount": "1",
+            "maxAmount": "999999999999999999999",
+            "precision": 8
+        }
+    },
+    {
+        "tokenA": {
+            "address": "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2",
+            "minAmount": "1",
+            "maxAmount": "999999999999999999999",
+            "precision": 8
+        },
+        "tokenB": {
+            "address": "0x814964b1bceaf24e26296d031eadf134a2ca4105",
+            "minAmount": "1",
+            "maxAmount": "999999999999999999999",
+            "precision": 8
+        }
+    },
+    {
+        "tokenA": {
+            "address": "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2",
+            "minAmount": "1",
+            "maxAmount": "999999999999999999999",
+            "precision": 8
+        },
+        "tokenB": {
+            "address": "0x865e3707a580f9db89304005cddd050ade8873eb",
+            "minAmount": "1",
+            "maxAmount": "999999999999999999999",
+            "precision": 8
+        }
+    },
+    {
+        "tokenA": {
+            "address": "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2",
+            "minAmount": "1",
+            "maxAmount": "999999999999999999999",
+            "precision": 8
+        },
+        "tokenB": {
+            "address": "0x88fcfbc22c6d3dbaa25af478c578978339bde77a",
+            "minAmount": "1",
+            "maxAmount": "999999999999999999999",
+            "precision": 8
+        }
+    },
+    {
+        "tokenA": {
+            "address": "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2",
+            "minAmount": "1",
+            "maxAmount": "999999999999999999999",
+            "precision": 8
+        },
+        "tokenB": {
+            "address": "0x89d24a6b4ccb1b6faa2625fe562bdd9a23260359",
+            "minAmount": "1",
+            "maxAmount": "999999999999999999999",
+            "precision": 8
+        }
+    },
+    {
+        "tokenA": {
+            "address": "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2",
+            "minAmount": "1",
+            "maxAmount": "999999999999999999999",
+            "precision": 8
+        },
+        "tokenB": {
+            "address": "0x8a854288a5976036a725879164ca3e91d30c6a1b",
+            "minAmount": "1",
+            "maxAmount": "999999999999999999999",
+            "precision": 8
+        }
+    },
+    {
+        "tokenA": {
+            "address": "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2",
+            "minAmount": "1",
+            "maxAmount": "999999999999999999999",
+            "precision": 8
+        },
+        "tokenB": {
+            "address": "0x8ae4bf2c33a8e667de34b54938b0ccd03eb8cc06",
+            "minAmount": "1",
+            "maxAmount": "999999999999999999999",
+            "precision": 8
+        }
+    },
+    {
+        "tokenA": {
+            "address": "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2",
+            "minAmount": "1",
+            "maxAmount": "999999999999999999999",
+            "precision": 8
+        },
+        "tokenB": {
+            "address": "0x8eb24319393716668d768dcec29356ae9cffe285",
+            "minAmount": "1",
+            "maxAmount": "999999999999999999999",
+            "precision": 8
+        }
+    },
+    {
+        "tokenA": {
+            "address": "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2",
+            "minAmount": "1",
+            "maxAmount": "999999999999999999999",
+            "precision": 8
+        },
+        "tokenB": {
+            "address": "0x8f8221afbb33998d8584a2b05749ba73c37a938a",
+            "minAmount": "1",
+            "maxAmount": "999999999999999999999",
+            "precision": 8
+        }
+    },
+    {
+        "tokenA": {
+            "address": "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2",
+            "minAmount": "1",
+            "maxAmount": "999999999999999999999",
+            "precision": 8
+        },
+        "tokenB": {
+            "address": "0x9214ec02cb71cba0ada6896b8da260736a67ab10",
+            "minAmount": "1",
+            "maxAmount": "999999999999999999999",
+            "precision": 8
+        }
+    },
+    {
+        "tokenA": {
+            "address": "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2",
+            "minAmount": "1",
+            "maxAmount": "999999999999999999999",
+            "precision": 8
+        },
+        "tokenB": {
+            "address": "0x923108a439c4e8c2315c4f6521e5ce95b44e9b4c",
+            "minAmount": "1",
+            "maxAmount": "999999999999999999999",
+            "precision": 8
+        }
+    },
+    {
+        "tokenA": {
+            "address": "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2",
+            "minAmount": "1",
+            "maxAmount": "999999999999999999999",
+            "precision": 8
+        },
+        "tokenB": {
+            "address": "0x960b236a07cf122663c4303350609a66a7b288c0",
+            "minAmount": "1",
+            "maxAmount": "999999999999999999999",
+            "precision": 8
+        }
+    },
+    {
+        "tokenA": {
+            "address": "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2",
+            "minAmount": "1",
+            "maxAmount": "999999999999999999999",
+            "precision": 8
+        },
+        "tokenB": {
+            "address": "0x983f6d60db79ea8ca4eb9968c6aff8cfa04b3c63",
+            "minAmount": "1",
+            "maxAmount": "999999999999999999999",
+            "precision": 8
+        }
+    },
+    {
+        "tokenA": {
+            "address": "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2",
+            "minAmount": "1",
+            "maxAmount": "999999999999999999999",
+            "precision": 8
+        },
+        "tokenB": {
+            "address": "0x9992ec3cf6a55b00978cddf2b27bc6882d88d1ec",
+            "minAmount": "1",
+            "maxAmount": "999999999999999999999",
+            "precision": 8
+        }
+    },
+    {
+        "tokenA": {
+            "address": "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2",
+            "minAmount": "1",
+            "maxAmount": "999999999999999999999",
+            "precision": 8
+        },
+        "tokenB": {
+            "address": "0x99ea4db9ee77acd40b119bd1dc4e33e1c070b80d",
+            "minAmount": "1",
+            "maxAmount": "999999999999999999999",
+            "precision": 8
+        }
+    },
+    {
+        "tokenA": {
+            "address": "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2",
+            "minAmount": "1",
+            "maxAmount": "999999999999999999999",
+            "precision": 8
+        },
+        "tokenB": {
+            "address": "0x9a005c9a89bd72a4bd27721e7a09a3c11d2b03c4",
+            "minAmount": "1",
+            "maxAmount": "999999999999999999999",
+            "precision": 8
+        }
+    },
+    {
+        "tokenA": {
+            "address": "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2",
+            "minAmount": "1",
+            "maxAmount": "999999999999999999999",
+            "precision": 8
+        },
+        "tokenB": {
+            "address": "0x9f8f72aa9304c8b593d555f12ef6589cc3a579a2",
+            "minAmount": "1",
+            "maxAmount": "999999999999999999999",
+            "precision": 8
+        }
+    },
+    {
+        "tokenA": {
+            "address": "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2",
+            "minAmount": "1",
+            "maxAmount": "999999999999999999999",
+            "precision": 8
+        },
+        "tokenB": {
+            "address": "0xa5fd1a791c4dfcaacc963d4f73c6ae5824149ea7",
+            "minAmount": "1",
+            "maxAmount": "999999999999999999999",
+            "precision": 8
+        }
+    },
+    {
+        "tokenA": {
+            "address": "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2",
+            "minAmount": "1",
+            "maxAmount": "999999999999999999999",
+            "precision": 8
+        },
+        "tokenB": {
+            "address": "0xa8006c4ca56f24d6836727d106349320db7fef82",
+            "minAmount": "1",
+            "maxAmount": "999999999999999999999",
+            "precision": 8
+        }
+    },
+    {
+        "tokenA": {
+            "address": "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2",
+            "minAmount": "1",
+            "maxAmount": "999999999999999999999",
+            "precision": 8
+        },
+        "tokenB": {
+            "address": "0xa87c3ec87eb802aad080df0adb331e504d327e5d",
+            "minAmount": "1",
+            "maxAmount": "999999999999999999999",
+            "precision": 8
+        }
+    },
+    {
+        "tokenA": {
+            "address": "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2",
+            "minAmount": "1",
+            "maxAmount": "999999999999999999999",
+            "precision": 8
+        },
+        "tokenB": {
+            "address": "0xab16e0d25c06cb376259cc18c1de4aca57605589",
+            "minAmount": "1",
+            "maxAmount": "999999999999999999999",
+            "precision": 8
+        }
+    },
+    {
+        "tokenA": {
+            "address": "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2",
+            "minAmount": "1",
+            "maxAmount": "999999999999999999999",
+            "precision": 8
+        },
+        "tokenB": {
+            "address": "0xac3211a5025414af2866ff09c23fc18bc97e79b1",
+            "minAmount": "1",
+            "maxAmount": "999999999999999999999",
+            "precision": 8
+        }
+    },
+    {
+        "tokenA": {
+            "address": "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2",
+            "minAmount": "1",
+            "maxAmount": "999999999999999999999",
+            "precision": 8
+        },
+        "tokenB": {
+            "address": "0xacfa209fb73bf3dd5bbfb1101b9bc999c49062a5",
+            "minAmount": "1",
+            "maxAmount": "999999999999999999999",
+            "precision": 8
+        }
+    },
+    {
+        "tokenA": {
+            "address": "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2",
+            "minAmount": "1",
+            "maxAmount": "999999999999999999999",
+            "precision": 8
+        },
+        "tokenB": {
+            "address": "0xb24754be79281553dc1adc160ddf5cd9b74361a4",
+            "minAmount": "1",
+            "maxAmount": "999999999999999999999",
+            "precision": 8
+        }
+    },
+    {
+        "tokenA": {
+            "address": "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2",
+            "minAmount": "1",
+            "maxAmount": "999999999999999999999",
+            "precision": 8
+        },
+        "tokenB": {
+            "address": "0xb3bd49e28f8f832b8d1e246106991e546c323502",
+            "minAmount": "1",
+            "maxAmount": "999999999999999999999",
+            "precision": 8
+        }
+    },
+    {
+        "tokenA": {
+            "address": "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2",
+            "minAmount": "1",
+            "maxAmount": "999999999999999999999",
+            "precision": 8
+        },
+        "tokenB": {
+            "address": "0xb45a50545beeab73f38f31e5973768c421805e5e",
+            "minAmount": "1",
+            "maxAmount": "999999999999999999999",
+            "precision": 8
+        }
+    },
+    {
+        "tokenA": {
+            "address": "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2",
+            "minAmount": "1",
+            "maxAmount": "999999999999999999999",
+            "precision": 8
+        },
+        "tokenB": {
+            "address": "0xb4efd85c19999d84251304bda99e90b92300bd93",
+            "minAmount": "1",
+            "maxAmount": "999999999999999999999",
+            "precision": 8
+        }
+    },
+    {
+        "tokenA": {
+            "address": "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2",
+            "minAmount": "1",
+            "maxAmount": "999999999999999999999",
+            "precision": 8
+        },
+        "tokenB": {
+            "address": "0xb5a5f22694352c15b00323844ad545abb2b11028",
+            "minAmount": "1",
+            "maxAmount": "999999999999999999999",
+            "precision": 8
+        }
+    },
+    {
+        "tokenA": {
+            "address": "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2",
+            "minAmount": "1",
+            "maxAmount": "999999999999999999999",
+            "precision": 8
+        },
+        "tokenB": {
+            "address": "0xb5c0e43a6330b9eb904ec57ea24d70269ae4652e",
+            "minAmount": "1",
+            "maxAmount": "999999999999999999999",
+            "precision": 8
+        }
+    },
+    {
+        "tokenA": {
+            "address": "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2",
+            "minAmount": "1",
+            "maxAmount": "999999999999999999999",
+            "precision": 8
+        },
+        "tokenB": {
+            "address": "0xb62d18dea74045e822352ce4b3ee77319dc5ff2f",
+            "minAmount": "1",
+            "maxAmount": "999999999999999999999",
+            "precision": 8
+        }
+    },
+    {
+        "tokenA": {
+            "address": "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2",
+            "minAmount": "1",
+            "maxAmount": "999999999999999999999",
+            "precision": 8
+        },
+        "tokenB": {
+            "address": "0xb64ef51c888972c908cfacf59b47c1afbc0ab8ac",
+            "minAmount": "1",
+            "maxAmount": "999999999999999999999",
+            "precision": 8
+        }
+    },
+    {
+        "tokenA": {
+            "address": "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2",
+            "minAmount": "1",
+            "maxAmount": "999999999999999999999",
+            "precision": 8
+        },
+        "tokenB": {
+            "address": "0xb98d4c97425d9908e66e53a6fdf673acca0be986",
+            "minAmount": "1",
+            "maxAmount": "999999999999999999999",
+            "precision": 8
+        }
+    },
+    {
+        "tokenA": {
+            "address": "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2",
+            "minAmount": "1",
+            "maxAmount": "999999999999999999999",
+            "precision": 8
+        },
+        "tokenB": {
+            "address": "0xba2184520a1cc49a6159c57e61e1844e085615b6",
+            "minAmount": "1",
+            "maxAmount": "999999999999999999999",
+            "precision": 8
+        }
+    },
+    {
+        "tokenA": {
+            "address": "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2",
+            "minAmount": "1",
+            "maxAmount": "999999999999999999999",
+            "precision": 8
+        },
+        "tokenB": {
+            "address": "0xba5f11b16b155792cf3b2e6880e8706859a8aeb6",
+            "minAmount": "1",
+            "maxAmount": "999999999999999999999",
+            "precision": 8
+        }
+    },
+    {
+        "tokenA": {
+            "address": "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2",
+            "minAmount": "1",
+            "maxAmount": "999999999999999999999",
+            "precision": 8
+        },
+        "tokenB": {
+            "address": "0xbdc5bac39dbe132b1e030e898ae3830017d7d969",
+            "minAmount": "1",
+            "maxAmount": "999999999999999999999",
+            "precision": 8
+        }
+    },
+    {
+        "tokenA": {
+            "address": "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2",
+            "minAmount": "1",
+            "maxAmount": "999999999999999999999",
+            "precision": 8
+        },
+        "tokenB": {
+            "address": "0xbeb9ef514a379b997e0798fdcc901ee474b6d9a1",
+            "minAmount": "1",
+            "maxAmount": "999999999999999999999",
+            "precision": 8
+        }
+    },
+    {
+        "tokenA": {
+            "address": "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2",
+            "minAmount": "1",
+            "maxAmount": "999999999999999999999",
+            "precision": 8
+        },
+        "tokenB": {
+            "address": "0xbf2179859fc6d5bee9bf9158632dc51678a4100e",
+            "minAmount": "1",
+            "maxAmount": "999999999999999999999",
+            "precision": 8
+        }
+    },
+    {
+        "tokenA": {
+            "address": "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2",
+            "minAmount": "1",
+            "maxAmount": "999999999999999999999",
+            "precision": 8
+        },
+        "tokenB": {
+            "address": "0xc27a2f05fa577a83ba0fdb4c38443c0718356501",
+            "minAmount": "1",
+            "maxAmount": "999999999999999999999",
+            "precision": 8
+        }
+    },
+    {
+        "tokenA": {
+            "address": "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2",
+            "minAmount": "1",
+            "maxAmount": "999999999999999999999",
+            "precision": 8
+        },
+        "tokenB": {
+            "address": "0xc438b4c0dfbb1593be6dee03bbd1a84bb3aa6213",
+            "minAmount": "1",
+            "maxAmount": "999999999999999999999",
+            "precision": 8
+        }
+    },
+    {
+        "tokenA": {
+            "address": "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2",
+            "minAmount": "1",
+            "maxAmount": "999999999999999999999",
+            "precision": 8
+        },
+        "tokenB": {
+            "address": "0xc66ea802717bfb9833400264dd12c2bceaa34a6d",
+            "minAmount": "1",
+            "maxAmount": "999999999999999999999",
+            "precision": 8
+        }
+    },
+    {
+        "tokenA": {
+            "address": "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2",
+            "minAmount": "1",
+            "maxAmount": "999999999999999999999",
+            "precision": 8
+        },
+        "tokenB": {
+            "address": "0xc997d07b0bc607b6d1bcb6fb9d4a5579c466c3e5",
+            "minAmount": "1",
+            "maxAmount": "999999999999999999999",
+            "precision": 8
+        }
+    },
+    {
+        "tokenA": {
+            "address": "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2",
+            "minAmount": "1",
+            "maxAmount": "999999999999999999999",
+            "precision": 8
+        },
+        "tokenB": {
+            "address": "0xd0a4b8946cb52f0661273bfbc6fd0e0c75fc6433",
+            "minAmount": "1",
+            "maxAmount": "999999999999999999999",
+            "precision": 8
+        }
+    },
+    {
+        "tokenA": {
+            "address": "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2",
+            "minAmount": "1",
+            "maxAmount": "999999999999999999999",
+            "precision": 8
+        },
+        "tokenB": {
+            "address": "0xd26114cd6ee289accf82350c8d8487fedb8a0c07",
+            "minAmount": "1",
+            "maxAmount": "999999999999999999999",
+            "precision": 8
+        }
+    },
+    {
+        "tokenA": {
+            "address": "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2",
+            "minAmount": "1",
+            "maxAmount": "999999999999999999999",
+            "precision": 8
+        },
+        "tokenB": {
+            "address": "0xd2d6158683aee4cc838067727209a0aaf4359de3",
+            "minAmount": "1",
+            "maxAmount": "999999999999999999999",
+            "precision": 8
+        }
+    },
+    {
+        "tokenA": {
+            "address": "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2",
+            "minAmount": "1",
+            "maxAmount": "999999999999999999999",
+            "precision": 8
+        },
+        "tokenB": {
+            "address": "0xd4c435f5b09f855c3317c8524cb1f586e42795fa",
+            "minAmount": "1",
+            "maxAmount": "999999999999999999999",
+            "precision": 8
+        }
+    },
+    {
+        "tokenA": {
+            "address": "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2",
+            "minAmount": "1",
+            "maxAmount": "999999999999999999999",
+            "precision": 8
+        },
+        "tokenB": {
+            "address": "0xd4fa1460f537bb9085d22c7bccb5dd450ef28e3a",
+            "minAmount": "1",
+            "maxAmount": "999999999999999999999",
+            "precision": 8
+        }
+    },
+    {
+        "tokenA": {
+            "address": "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2",
+            "minAmount": "1",
+            "maxAmount": "999999999999999999999",
+            "precision": 8
+        },
+        "tokenB": {
+            "address": "0xd8912c10681d8b21fd3742244f44658dba12264e",
+            "minAmount": "1",
+            "maxAmount": "999999999999999999999",
+            "precision": 8
+        }
+    },
+    {
+        "tokenA": {
+            "address": "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2",
+            "minAmount": "1",
+            "maxAmount": "999999999999999999999",
+            "precision": 8
+        },
+        "tokenB": {
+            "address": "0xe0b7927c4af23765cb51314a0e0521a9645f0e2a",
+            "minAmount": "1",
+            "maxAmount": "999999999999999999999",
+            "precision": 8
+        }
+    },
+    {
+        "tokenA": {
+            "address": "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2",
+            "minAmount": "1",
+            "maxAmount": "999999999999999999999",
+            "precision": 8
+        },
+        "tokenB": {
+            "address": "0xe2e6d4be086c6938b53b22144855eef674281639",
+            "minAmount": "1",
+            "maxAmount": "999999999999999999999",
+            "precision": 8
+        }
+    },
+    {
+        "tokenA": {
+            "address": "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2",
+            "minAmount": "1",
+            "maxAmount": "999999999999999999999",
+            "precision": 8
+        },
+        "tokenB": {
+            "address": "0xe41d2489571d322189246dafa5ebde1f4699f498",
+            "minAmount": "1",
+            "maxAmount": "999999999999999999999",
+            "precision": 8
+        }
+    },
+    {
+        "tokenA": {
+            "address": "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2",
+            "minAmount": "1",
+            "maxAmount": "999999999999999999999",
+            "precision": 8
+        },
+        "tokenB": {
+            "address": "0xe94327d07fc17907b4db788e5adf2ed424addff6",
+            "minAmount": "1",
+            "maxAmount": "999999999999999999999",
+            "precision": 8
+        }
+    },
+    {
+        "tokenA": {
+            "address": "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2",
+            "minAmount": "1",
+            "maxAmount": "999999999999999999999",
+            "precision": 8
+        },
+        "tokenB": {
+            "address": "0xea097a2b1db00627b2fa17460ad260c016016977",
+            "minAmount": "1",
+            "maxAmount": "999999999999999999999",
+            "precision": 8
+        }
+    },
+    {
+        "tokenA": {
+            "address": "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2",
+            "minAmount": "1",
+            "maxAmount": "999999999999999999999",
+            "precision": 8
+        },
+        "tokenB": {
+            "address": "0xea1f346faf023f974eb5adaf088bbcdf02d761f4",
+            "minAmount": "1",
+            "maxAmount": "999999999999999999999",
+            "precision": 8
+        }
+    },
+    {
+        "tokenA": {
+            "address": "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2",
+            "minAmount": "1",
+            "maxAmount": "999999999999999999999",
+            "precision": 8
+        },
+        "tokenB": {
+            "address": "0xea38eaa3c86c8f9b751533ba2e562deb9acded40",
+            "minAmount": "1",
+            "maxAmount": "999999999999999999999",
+            "precision": 8
+        }
+    },
+    {
+        "tokenA": {
+            "address": "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2",
+            "minAmount": "1",
+            "maxAmount": "999999999999999999999",
+            "precision": 8
+        },
+        "tokenB": {
+            "address": "0xeab43193cf0623073ca89db9b712796356fa7414",
+            "minAmount": "1",
+            "maxAmount": "999999999999999999999",
+            "precision": 8
+        }
+    },
+    {
+        "tokenA": {
+            "address": "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2",
+            "minAmount": "1",
+            "maxAmount": "999999999999999999999",
+            "precision": 8
+        },
+        "tokenB": {
+            "address": "0xeb2da9fac54284cea731d1f10bb34eecb3c00c14",
+            "minAmount": "1",
+            "maxAmount": "999999999999999999999",
+            "precision": 8
+        }
+    },
+    {
+        "tokenA": {
+            "address": "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2",
+            "minAmount": "1",
+            "maxAmount": "999999999999999999999",
+            "precision": 8
+        },
+        "tokenB": {
+            "address": "0xeb7c20027172e5d143fb030d50f91cece2d1485d",
+            "minAmount": "1",
+            "maxAmount": "999999999999999999999",
+            "precision": 8
+        }
+    },
+    {
+        "tokenA": {
+            "address": "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2",
+            "minAmount": "1",
+            "maxAmount": "999999999999999999999",
+            "precision": 8
+        },
+        "tokenB": {
+            "address": "0xef2463099360a085f1f10b076ed72ef625497a06",
+            "minAmount": "1",
+            "maxAmount": "999999999999999999999",
+            "precision": 8
+        }
+    },
+    {
+        "tokenA": {
+            "address": "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2",
+            "minAmount": "1",
+            "maxAmount": "999999999999999999999",
+            "precision": 8
+        },
+        "tokenB": {
+            "address": "0xf433089366899d83a9f26a773d59ec7ecf30355e",
+            "minAmount": "1",
+            "maxAmount": "999999999999999999999",
+            "precision": 8
+        }
+    },
+    {
+        "tokenA": {
+            "address": "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2",
+            "minAmount": "1",
+            "maxAmount": "999999999999999999999",
+            "precision": 8
+        },
+        "tokenB": {
+            "address": "0xf6b55acbbc49f4524aa48d19281a9a77c54de10f",
+            "minAmount": "1",
+            "maxAmount": "999999999999999999999",
+            "precision": 8
+        }
+    },
+    {
+        "tokenA": {
+            "address": "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2",
+            "minAmount": "1",
+            "maxAmount": "999999999999999999999",
+            "precision": 8
+        },
+        "tokenB": {
+            "address": "0xf6cfe53d6febaeea051f400ff5fc14f0cbbdaca1",
+            "minAmount": "1",
+            "maxAmount": "999999999999999999999",
+            "precision": 8
+        }
+    },
+    {
+        "tokenA": {
+            "address": "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2",
+            "minAmount": "1",
+            "maxAmount": "999999999999999999999",
+            "precision": 8
+        },
+        "tokenB": {
+            "address": "0xf7b098298f7c69fc14610bf71d5e02c60792894c",
+            "minAmount": "1",
+            "maxAmount": "999999999999999999999",
+            "precision": 8
+        }
+    },
+    {
+        "tokenA": {
+            "address": "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2",
+            "minAmount": "1",
+            "maxAmount": "999999999999999999999",
+            "precision": 8
+        },
+        "tokenB": {
+            "address": "0xf970b8e36e23f7fc3fd752eea86f8be8d83375a6",
+            "minAmount": "1",
+            "maxAmount": "999999999999999999999",
+            "precision": 8
+        }
+    },
+    {
+        "tokenA": {
+            "address": "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2",
+            "minAmount": "1",
+            "maxAmount": "999999999999999999999",
+            "precision": 8
+        },
+        "tokenB": {
+            "address": "0xfec0cf7fe078a500abf15f1284958f22049c2c7e",
+            "minAmount": "1",
+            "maxAmount": "999999999999999999999",
+            "precision": 8
+        }
+    }
+]

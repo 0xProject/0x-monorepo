@@ -1,0 +1,45 @@
+[
+    {
+        "timestamp": 1523462196,
+        "version": "0.0.8",
+        "changes": [
+            {
+                "note": "Dependencies updated"
+            }
+        ]
+    },
+    {
+        "timestamp": 1522673609,
+        "version": "0.0.7",
+        "changes": [
+            {
+                "note": "Dependencies updated"
+            }
+        ]
+    },
+    {
+        "version": "0.0.6",
+        "changes": [
+            {
+                "note": "Added postman collection unit tests",
+                "pr": 451
+            }
+        ],
+        "timestamp": 1522658513
+    },
+    {
+        "version": "0.0.2",
+        "changes": [
+            {
+                "note": "Consolidate all `console.log` calls into `logUtils` in the `@0xproject/utils` package",
+                "pr": 452
+            }
+        ],
+        "timestamp": 1521298800
+    },
+    {
+        "version": "0.0.1",
+        "changes": [],
+        "timestamp": 1520434800
+    }
+]

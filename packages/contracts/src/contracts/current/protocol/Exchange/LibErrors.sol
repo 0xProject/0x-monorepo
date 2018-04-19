@@ -21,7 +21,7 @@ pragma experimental ABIEncoderV2;
 
 contract LibErrors {
 
-    // Status Codes
+    // Error Codes
     enum Errors {
         INVALID,                           // The first (default) value is invalid
         SUCCESS,                           // Operation executed normaly
@@ -34,6 +34,5 @@ contract LibErrors {
         ROUNDING_ERROR_TOO_LARGE           // Rounding error too large
     }
 
-    event LogError(uint8 indexed errorId, bytes32 indexed orderHash);
-
+    event ExchangeError(uint8 indexed errorId, bytes32 indexed orderHash);
 }

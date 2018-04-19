@@ -1,4 +1,4 @@
-import { BlockParamLiteral, LogWithDecodedArgs, RawLog } from '@0xproject/types';
+import { BlockParamLiteral, ContractAbi, FilterObject, LogEntry, LogWithDecodedArgs, RawLog } from '@0xproject/types';
 import { AbiDecoder, intervalUtils } from '@0xproject/utils';
 import { Web3Wrapper } from '@0xproject/web3-wrapper';
 import { Block, BlockAndLogStreamer } from 'ethereumjs-blockstream';
@@ -32,19 +32,17 @@ const CONTRACT_NAME_TO_NOT_FOUND_ERROR: {
 export class ContractWrapper {
     protected _web3Wrapper: Web3Wrapper;
     protected _networkId: number;
-    private _abiDecoder?: AbiDecoder;
     private _blockAndLogStreamerIfExists?: BlockAndLogStreamer;
     private _blockAndLogStreamIntervalIfExists?: NodeJS.Timer;
-    private _filters: { [filterToken: string]: Web3.FilterObject };
+    private _filters: { [filterToken: string]: FilterObject };
     private _filterCallbacks: {
         [filterToken: string]: EventCallback<ContractEventArgs>;
     };
     private _onLogAddedSubscriptionToken: string | undefined;
     private _onLogRemovedSubscriptionToken: string | undefined;
-    constructor(web3Wrapper: Web3Wrapper, networkId: number, abiDecoder?: AbiDecoder) {
+    constructor(web3Wrapper: Web3Wrapper, networkId: number) {
         this._web3Wrapper = web3Wrapper;
         this._networkId = networkId;
-        this._abiDecoder = abiDecoder;
         this._filters = {};
         this._filterCallbacks = {};
         this._blockAndLogStreamerIfExists = undefined;
@@ -75,7 +73,7 @@ export class ContractWrapper {
         address: string,
         eventName: ContractEvents,
         indexFilterValues: IndexedFilterValues,
-        abi: Web3.ContractAbi,
+        abi: ContractAbi,
         callback: EventCallback<ArgsType>,
     ): string {
         const filter = filterUtils.getFilter(address, eventName, indexFilterValues, abi);
@@ -92,7 +90,7 @@ export class ContractWrapper {
         eventName: ContractEvents,
         blockRange: BlockRange,
         indexFilterValues: IndexedFilterValues,
-        abi: Web3.ContractAbi,
+        abi: ContractAbi,
     ): Promise<Array<LogWithDecodedArgs<ArgsType>>> {
         const filter = filterUtils.getFilter(address, eventName, indexFilterValues, abi, blockRange);
         const logs = await this._web3Wrapper.getLogsAsync(filter);
@@ -100,18 +98,18 @@ export class ContractWrapper {
         return logsWithDecodedArguments;
     }
     protected _tryToDecodeLogOrNoop<ArgsType extends ContractEventArgs>(
-        log: Web3.LogEntry,
+        log: LogEntry,
     ): LogWithDecodedArgs<ArgsType> | RawLog {
-        if (_.isUndefined(this._abiDecoder)) {
+        if (_.isUndefined(this._web3Wrapper.abiDecoder)) {
             throw new Error(InternalZeroExError.NoAbiDecoder);
         }
-        const logWithDecodedArgs = this._abiDecoder.tryToDecodeLogOrNoop(log);
+        const logWithDecodedArgs = this._web3Wrapper.abiDecoder.tryToDecodeLogOrNoop(log);
         return logWithDecodedArgs;
     }
     protected async _getContractAbiAndAddressFromArtifactsAsync(
         artifact: Artifact,
         addressIfExists?: string,
-    ): Promise<[Web3.ContractAbi, string]> {
+    ): Promise<[ContractAbi, string]> {
         let contractAddress: string;
         if (_.isUndefined(addressIfExists)) {
             if (_.isUndefined(artifact.networks[this._networkId])) {
@@ -125,7 +123,7 @@ export class ContractWrapper {
         if (!doesContractExist) {
             throw new Error(CONTRACT_NAME_TO_NOT_FOUND_ERROR[artifact.contract_name]);
         }
-        const abiAndAddress: [Web3.ContractAbi, string] = [artifact.abi, contractAddress];
+        const abiAndAddress: [ContractAbi, string] = [artifact.abi, contractAddress];
         return abiAndAddress;
     }
     protected _getContractAddress(artifact: Artifact, addressIfExists?: string): string {
@@ -139,8 +137,8 @@ export class ContractWrapper {
             return addressIfExists;
         }
     }
-    private _onLogStateChanged<ArgsType extends ContractEventArgs>(isRemoved: boolean, log: Web3.LogEntry): void {
-        _.forEach(this._filters, (filter: Web3.FilterObject, filterToken: string) => {
+    private _onLogStateChanged<ArgsType extends ContractEventArgs>(isRemoved: boolean, log: LogEntry): void {
+        _.forEach(this._filters, (filter: FilterObject, filterToken: string) => {
             if (filterUtils.matchesFilter(log, filter)) {
                 const decodedLog = this._tryToDecodeLogOrNoop(log) as LogWithDecodedArgs<ArgsType>;
                 const logEvent = {

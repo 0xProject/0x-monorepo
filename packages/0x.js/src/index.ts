@@ -1,9 +1,6 @@
 export { ZeroEx } from './0x';
 
 export {
-    Order,
-    SignedOrder,
-    ECSignature,
     ZeroExError,
     EventCallback,
     ExchangeContractErrs,
@@ -14,12 +11,10 @@ export {
     OrderCancellationRequest,
     OrderFillRequest,
     ContractEventArgs,
-    Web3Provider,
     ZeroExConfig,
     MethodOpts,
     OrderTransactionOpts,
     TransactionOpts,
-    FilterObject,
     LogEvent,
     DecodedLogEvent,
     EventWatcherCallback,
@@ -31,9 +26,14 @@ export {
 
 export {
     BlockParamLiteral,
+    FilterObject,
     BlockParam,
     ContractEventArg,
     LogWithDecodedArgs,
+    Order,
+    Provider,
+    SignedOrder,
+    ECSignature,
     TransactionReceipt,
     TransactionReceiptWithDecodedLogs,
 } from '@0xproject/types';

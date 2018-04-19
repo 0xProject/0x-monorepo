@@ -1,4 +1,4 @@
-import { TxData } from '@0xproject/types';
+import { ContractAbi, Provider, TxData } from '@0xproject/types';
 import * as Web3 from 'web3';
 import * as yargs from 'yargs';
 
@@ -18,12 +18,17 @@ export interface ContractNetworks {
     [key: number]: ContractNetworkData;
 }
 
+export interface ContractDirectory {
+    path: string;
+    namespace: string;
+}
+
 export interface ContractNetworkData {
     solc_version: string;
-    optimizer_enabled: number;
+    optimizer_enabled: boolean;
     keccak256: string;
     source_tree_hash: string;
-    abi: Web3.ContractAbi;
+    abi: ContractAbi;
     bytecode: string;
     runtime_bytecode: string;
     address?: string;
@@ -40,7 +45,7 @@ export interface SolcErrors {
 
 export interface CliOptions extends yargs.Arguments {
     artifactsDir: string;
-    contractsDir: string;
+    contractDirs: string;
     jsonrpcUrl: string;
     networkId: number;
     shouldOptimize: boolean;
@@ -51,9 +56,9 @@ export interface CliOptions extends yargs.Arguments {
 }
 
 export interface CompilerOptions {
-    contractsDir: string;
+    contractDirs: Set<ContractDirectory>;
     networkId: number;
-    optimizerEnabled: number;
+    optimizerEnabled: boolean;
     artifactsDir: string;
     specifiedContracts: Set<string>;
 }
@@ -65,7 +70,7 @@ export interface BaseDeployerOptions {
 }
 
 export interface ProviderDeployerOptions extends BaseDeployerOptions {
-    web3Provider: Web3.Provider;
+    provider: Provider;
 }
 
 export interface UrlDeployerOptions extends BaseDeployerOptions {
@@ -78,33 +83,19 @@ export interface ContractSources {
     [key: string]: string;
 }
 
-export interface ContractSourceData {
+export interface ContractIdToSourceFileId {
+    [key: string]: string;
+}
+
+export interface ContractSourceDataByFileId {
     [key: string]: ContractSpecificSourceData;
 }
 
 export interface ContractSpecificSourceData {
     dependencies: string[];
-    solcVersion: string;
+    solcVersionRange: string;
     sourceHash: Buffer;
-    sourceTreeHashIfExists?: Buffer;
-}
-
-// TODO: Consolidate with 0x.js definitions once types are moved into a separate package.
-export enum ZeroExError {
-    ContractDoesNotExist = 'CONTRACT_DOES_NOT_EXIST',
-    ExchangeContractDoesNotExist = 'EXCHANGE_CONTRACT_DOES_NOT_EXIST',
-    UnhandledError = 'UNHANDLED_ERROR',
-    UserHasNoAssociatedAddress = 'USER_HAS_NO_ASSOCIATED_ADDRESSES',
-    InvalidSignature = 'INVALID_SIGNATURE',
-    ContractNotDeployedOnNetwork = 'CONTRACT_NOT_DEPLOYED_ON_NETWORK',
-    InsufficientAllowanceForTransfer = 'INSUFFICIENT_ALLOWANCE_FOR_TRANSFER',
-    InsufficientBalanceForTransfer = 'INSUFFICIENT_BALANCE_FOR_TRANSFER',
-    InsufficientEthBalanceForDeposit = 'INSUFFICIENT_ETH_BALANCE_FOR_DEPOSIT',
-    InsufficientWEthBalanceForWithdrawal = 'INSUFFICIENT_WETH_BALANCE_FOR_WITHDRAWAL',
-    InvalidJump = 'INVALID_JUMP',
-    OutOfGas = 'OUT_OF_GAS',
-    NoNetworkId = 'NO_NETWORK_ID',
-    SubscriptionNotFound = 'SUBSCRIPTION_NOT_FOUND',
+    sourceTreeHash: Buffer;
 }
 
 export interface Token {
@@ -114,6 +105,10 @@ export interface Token {
     decimals: number;
     ipfsHash: string;
     swarmHash: string;
+}
+
+export interface FunctionNameToSeenCount {
+    [key: string]: number;
 }
 
 export type DoneCallback = (err?: Error) => void;

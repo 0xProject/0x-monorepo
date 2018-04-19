@@ -1,5 +1,3 @@
-declare module 'dirty-chai';
-
 declare module '*.json' {
     const json: any;
     /* tslint:disable */

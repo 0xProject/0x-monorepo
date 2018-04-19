@@ -10,7 +10,7 @@ import { getLocationByOffset } from './source_maps';
 // Parsing source code for each transaction/code is slow and therefore we cache it
 const coverageEntriesBySourceHash: { [sourceHash: string]: CoverageEntriesDescription } = {};
 
-export const collectCoverageEntries = (contractSource: string, fileName: string) => {
+export const collectCoverageEntries = (contractSource: string) => {
     const sourceHash = ethUtil.sha3(contractSource).toString('hex');
     if (_.isUndefined(coverageEntriesBySourceHash[sourceHash])) {
         const ast = parser.parse(contractSource, { range: true });

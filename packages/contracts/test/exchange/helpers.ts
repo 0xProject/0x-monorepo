@@ -5,15 +5,17 @@ import { Web3Wrapper } from '@0xproject/web3-wrapper';
 import * as chai from 'chai';
 import ethUtil = require('ethereumjs-util');
 
+import { ERC20ProxyContract } from '../../src/contract_wrappers/generated/e_r_c20_proxy';
 import { ExchangeContract } from '../../src/contract_wrappers/generated/exchange';
+import { encodeERC20ProxyData } from '../../src/utils/asset_proxy_utils';
 import { constants } from '../../src/utils/constants';
 import { ExchangeWrapper } from '../../src/utils/exchange_wrapper';
 import { OrderFactory } from '../../src/utils/order_factory';
 import { orderUtils } from '../../src/utils/order_utils';
-import { ContractName, SignedOrder } from '../../src/utils/types';
+import { AssetProxyId, ContractName, SignedOrder } from '../../src/utils/types';
 import { chaiSetup } from '../utils/chai_setup';
 import { deployer } from '../utils/deployer';
-import { web3, web3Wrapper } from '../utils/web3_wrapper';
+import { provider, web3Wrapper } from '../utils/web3_wrapper';
 
 chaiSetup.configure();
 const expect = chai.expect;
@@ -31,31 +33,34 @@ describe('Exchange', () => {
     before(async () => {
         const accounts = await web3Wrapper.getAvailableAddressesAsync();
         [makerAddress, feeRecipientAddress] = accounts;
+        const owner = accounts[0];
         const tokenRegistry = await deployer.deployAsync(ContractName.TokenRegistry);
-        const tokenTransferProxy = await deployer.deployAsync(ContractName.TokenTransferProxy);
         const [rep, dgd, zrx] = await Promise.all([
             deployer.deployAsync(ContractName.DummyToken, constants.DUMMY_TOKEN_ARGS),
             deployer.deployAsync(ContractName.DummyToken, constants.DUMMY_TOKEN_ARGS),
             deployer.deployAsync(ContractName.DummyToken, constants.DUMMY_TOKEN_ARGS),
         ]);
+        const assetProxyDispatcher = await deployer.deployAsync(ContractName.AssetProxyDispatcher);
+        // Deploy and configure Exchange
         const exchangeInstance = await deployer.deployAsync(ContractName.Exchange, [
             zrx.address,
-            tokenTransferProxy.address,
+            AssetProxyId.ERC20,
+            assetProxyDispatcher.address,
         ]);
-        const exchange = new ExchangeContract(web3Wrapper, exchangeInstance.abi, exchangeInstance.address);
-        await tokenTransferProxy.addAuthorizedAddress(exchange.address, { from: accounts[0] });
-        const zeroEx = new ZeroEx(web3.currentProvider, { networkId: constants.TESTRPC_NETWORK_ID });
+        const exchange = new ExchangeContract(exchangeInstance.abi, exchangeInstance.address, provider);
+        await assetProxyDispatcher.addAuthorizedAddress.sendTransactionAsync(exchange.address, { from: owner });
+        const zeroEx = new ZeroEx(provider, { networkId: constants.TESTRPC_NETWORK_ID });
         exchangeWrapper = new ExchangeWrapper(exchange, zeroEx);
         const defaultOrderParams = {
             exchangeAddress: exchange.address,
             makerAddress,
             feeRecipientAddress,
-            makerTokenAddress: rep.address,
-            takerTokenAddress: dgd.address,
             makerTokenAmount: ZeroEx.toBaseUnitAmount(new BigNumber(100), 18),
             takerTokenAmount: ZeroEx.toBaseUnitAmount(new BigNumber(200), 18),
-            makerFeeAmount: ZeroEx.toBaseUnitAmount(new BigNumber(1), 18),
-            takerFeeAmount: ZeroEx.toBaseUnitAmount(new BigNumber(1), 18),
+            makerFee: ZeroEx.toBaseUnitAmount(new BigNumber(1), 18),
+            takerFee: ZeroEx.toBaseUnitAmount(new BigNumber(1), 18),
+            makerAssetData: encodeERC20ProxyData(rep.address),
+            takerAssetData: encodeERC20ProxyData(dgd.address),
         };
         const privateKey = constants.TESTRPC_PRIVATE_KEYS[0];
         orderFactory = new OrderFactory(privateKey, defaultOrderParams);

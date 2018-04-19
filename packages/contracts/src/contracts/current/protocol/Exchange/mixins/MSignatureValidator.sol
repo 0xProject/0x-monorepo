@@ -29,7 +29,7 @@ contract MSignatureValidator {
     function isValidSignature(
         bytes32 hash,
         address signer,
-        bytes signature)
+        bytes memory signature)
         public view
         returns (bool isValid);
 }

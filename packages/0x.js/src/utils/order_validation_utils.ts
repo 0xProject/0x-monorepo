@@ -1,9 +1,10 @@
+import { Order, SignedOrder } from '@0xproject/types';
 import { BigNumber } from '@0xproject/utils';
 import * as _ from 'lodash';
 
 import { ZeroEx } from '../0x';
 import { ExchangeWrapper } from '../contract_wrappers/exchange_wrapper';
-import { ExchangeContractErrs, Order, SignedOrder, TradeSide, TransferType, ZeroExError } from '../types';
+import { ExchangeContractErrs, TradeSide, TransferType, ZeroExError } from '../types';
 import { constants } from '../utils/constants';
 import { utils } from '../utils/utils';
 

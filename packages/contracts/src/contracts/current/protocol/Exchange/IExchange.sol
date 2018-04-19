@@ -35,8 +35,8 @@ contract IExchange {
         address indexed maker,
         address taker,
         address indexed feeRecipient,
-        address makerToken,
-        address takerToken,
+        bytes makerAssetData,
+        bytes takerAssetData,
         uint256 makerTokenFilledAmount,
         uint256 takerTokenFilledAmount,
         uint256 makerFeePaid,
@@ -47,23 +47,14 @@ contract IExchange {
     event LogCancel(
         address indexed maker,
         address indexed feeRecipient,
-        address makerToken,
-        address takerToken,
+        bytes makerAssetData,
+        bytes takerAssetData,
         uint256 makerTokenCancelledAmount,
         uint256 takerTokenCancelledAmount,
         bytes32 indexed orderHash
     );
 
-    event LogCancelBefore(
-        address indexed maker,
-        uint256 salt
-    );
-
     function ZRX_TOKEN_CONTRACT()
-      public view
-      returns (address);
-
-    function TOKEN_TRANSFER_PROXY_CONTRACT()
       public view
       returns (address);
 

@@ -10,11 +10,10 @@ yarn add @0xproject/base-contract
 
 If your project is in [TypeScript](https://www.typescriptlang.org/), add the following to your `tsconfig.json`:
 
-```
-"include": [
-    "./node_modules/web3-typescript-typings/index.d.ts",
-    "./node_modules/ethers-typescript-typings/index.d.ts"
-]
+```json
+"compilerOptions": {
+    "typeRoots": ["node_modules/@0xproject/typescript-typings/types", "node_modules/@types"],
+}
 ```
 
 ## Usage

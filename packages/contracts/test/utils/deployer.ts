@@ -7,9 +7,8 @@ import { constants } from '../../src/utils/constants';
 import { web3 } from './web3_wrapper';
 
 const deployerOpts = {
-    web3Provider: web3.currentProvider,
-    artifactsDir: path.resolve('src', 'artifacts'),
-    jsonrpcUrl: devConstants.RPC_URL,
+    provider: web3.currentProvider,
+    artifactsDir: path.resolve('lib', 'src', 'artifacts'),
     networkId: constants.TESTRPC_NETWORK_ID,
     defaults: {
         gas: devConstants.GAS_ESTIMATE,

@@ -25,29 +25,29 @@ contract LibOrder {
         "address exchangeAddress",
         "address makerAddress",
         "address takerAddress",
-        "address makerTokenAddress",
-        "address takerTokenAddress",
         "address feeRecipientAddress",
         "uint256 makerTokenAmount",
         "uint256 takerTokenAmount",
-        "uint256 makerFeeAmount",
-        "uint256 takerFeeAmount",
+        "uint256 makerFee",
+        "uint256 takerFee",
         "uint256 expirationTimeSeconds",
-        "uint256 salt"
+        "uint256 salt",
+        "bytes makerAssetData",
+        "bytes takerAssetData"
     );
 
     struct Order {
         address makerAddress;
         address takerAddress;
-        address makerTokenAddress;
-        address takerTokenAddress;
         address feeRecipientAddress;
         uint256 makerTokenAmount;
         uint256 takerTokenAmount;
-        uint256 makerFeeAmount;
-        uint256 takerFeeAmount;
+        uint256 makerFee;
+        uint256 takerFee;
         uint256 expirationTimeSeconds;
         uint256 salt;
+        bytes makerAssetData;
+        bytes takerAssetData;
     }
 
     /// @dev Calculates Keccak-256 hash of the order.
@@ -65,15 +65,15 @@ contract LibOrder {
                 address(this),
                 order.makerAddress,
                 order.takerAddress,
-                order.makerTokenAddress,
-                order.takerTokenAddress,
                 order.feeRecipientAddress,
                 order.makerTokenAmount,
                 order.takerTokenAmount,
-                order.makerFeeAmount,
-                order.takerFeeAmount,
+                order.makerFee,
+                order.takerFee,
                 order.expirationTimeSeconds,
-                order.salt
+                order.salt,
+                order.makerAssetData,
+                order.takerAssetData
             )
         );
         return orderHash;

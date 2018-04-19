@@ -4,7 +4,6 @@ import * as chai from 'chai';
 import * as _ from 'lodash';
 import 'mocha';
 import * as Sinon from 'sinon';
-import * as Web3 from 'web3';
 
 import { ZeroEx } from '../src/0x';
 import { ExpirationWatcher } from '../src/order_watcher/expiration_watcher';
@@ -16,7 +15,7 @@ import { constants } from './utils/constants';
 import { FillScenarios } from './utils/fill_scenarios';
 import { reportNoErrorCallbackErrors } from './utils/report_callback_errors';
 import { TokenUtils } from './utils/token_utils';
-import { web3, web3Wrapper } from './utils/web3_wrapper';
+import { provider, web3Wrapper } from './utils/web3_wrapper';
 
 chaiSetup.configure();
 const expect = chai.expect;
@@ -44,7 +43,7 @@ describe('ExpirationWatcher', () => {
         const config = {
             networkId: constants.TESTRPC_NETWORK_ID,
         };
-        zeroEx = new ZeroEx(web3.currentProvider, config);
+        zeroEx = new ZeroEx(provider, config);
         exchangeContractAddress = zeroEx.exchange.getContractAddress();
         userAddresses = await zeroEx.getAvailableAddressesAsync();
         tokens = await zeroEx.tokenRegistry.getTokensAsync();

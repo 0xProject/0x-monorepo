@@ -23,17 +23,24 @@ import "../LibOrder.sol";
 
 contract MExchangeCore is LibOrder {
 
-    function fillOrder(
-        Order order,
-        uint256 takerTokenFillAmount,
-        bytes signature)
-        public
-        returns (uint256 takerTokenFilledAmount);
+    struct FillResults {
+        uint256 makerTokenFilledAmount;
+        uint256 takerTokenFilledAmount;
+        uint256 makerFeePaid;
+        uint256 takerFeePaid;
+    }
 
-    function cancelOrder(Order order)
+    function fillOrder(
+        Order memory order,
+        uint256 takerTokenFillAmount,
+        bytes memory signature)
+        public
+        returns (FillResults memory fillResults);
+
+    function cancelOrder(Order memory order)
         public
         returns (bool);
 
- function cancelOrdersUpTo(uint256 salt)
+    function cancelOrdersUpTo(uint256 salt)
         external;
 }

@@ -1,14 +1,14 @@
-import { ECSignature, ExchangeContractErrs, Web3Provider, ZeroEx, ZeroExError } from '0x.js';
+import { ECSignature, ExchangeContractErrs, ZeroEx, ZeroExError } from '0x.js';
 import { constants as sharedConstants, EtherscanLinkSuffixes, Networks } from '@0xproject/react-shared';
+import { Provider } from '@0xproject/types';
 import { BigNumber } from '@0xproject/utils';
 import deepEqual = require('deep-equal');
 import * as _ from 'lodash';
 import * as moment from 'moment';
-import { Order, Providers, ScreenWidths, Side, SideToAssetToken, Token, TokenByAddress } from 'ts/types';
+import { Environments, Order, Providers, ScreenWidths, Side, SideToAssetToken, Token, TokenByAddress } from 'ts/types';
 import { configs } from 'ts/utils/configs';
 import { constants } from 'ts/utils/constants';
 import * as u2f from 'ts/vendor/u2f_api';
-import Web3 = require('web3');
 
 const LG_MIN_EM = 64;
 const MD_MIN_EM = 52;
@@ -219,7 +219,8 @@ export const utils = {
             [ExchangeContractErrs.OrderFillAmountZero]: "Order fill amount can't be 0",
             [ExchangeContractErrs.OrderRemainingFillAmountZero]:
                 'This order has already been completely filled or cancelled',
-            [ExchangeContractErrs.OrderFillRoundingError]: 'Rounding error will occur when filling this order',
+            [ExchangeContractErrs.OrderFillRoundingError]:
+                'Rounding error will occur when filling this order. Please try filling a different amount.',
             [ExchangeContractErrs.InsufficientTakerBalance]:
                 'Taker no longer has a sufficient balance to complete this order',
             [ExchangeContractErrs.InsufficientTakerAllowance]:
@@ -272,7 +273,7 @@ export const utils = {
             window.onload = () => resolve();
         });
     },
-    getProviderType(provider: Web3.Provider): Providers | string {
+    getProviderType(provider: Provider): Providers | string {
         const constructorName = provider.constructor.name;
         let parsedProviderName = constructorName;
         switch (constructorName) {
@@ -290,5 +291,11 @@ export const utils = {
             parsedProviderName = Providers.Metamask;
         }
         return parsedProviderName;
+    },
+    isDevelopment() {
+        return configs.ENVIRONMENT === Environments.DEVELOPMENT;
+    },
+    isStaging() {
+        return _.includes(window.location.href, configs.DOMAIN_STAGING);
     },
 };

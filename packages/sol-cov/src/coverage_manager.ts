@@ -39,7 +39,7 @@ export class CoverageManager {
         fileIndex: number,
     ): Coverage {
         const fileName = contractData.sources[fileIndex];
-        const coverageEntriesDescription = collectCoverageEntries(contractData.sourceCodes[fileIndex], fileName);
+        const coverageEntriesDescription = collectCoverageEntries(contractData.sourceCodes[fileIndex]);
         let sourceRanges = _.map(coveredPcs, coveredPc => pcToSourceRange[coveredPc]);
         sourceRanges = _.compact(sourceRanges); // Some PC's don't map to a source range and we just ignore them.
         // By default lodash does a shallow object comparasion. We JSON.stringify them and compare as strings.

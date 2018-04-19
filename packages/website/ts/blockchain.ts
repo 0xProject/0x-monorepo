@@ -20,9 +20,10 @@ import {
     InjectedWeb3Subprovider,
     ledgerEthereumBrowserClientFactoryAsync,
     LedgerSubprovider,
-    LedgerWalletSubprovider,
-    RedundantRPCSubprovider,
+    RedundantSubprovider,
+    Subprovider,
 } from '@0xproject/subproviders';
+import { Provider } from '@0xproject/types';
 import { BigNumber, intervalUtils, logUtils, promisify } from '@0xproject/utils';
 import { Web3Wrapper } from '@0xproject/web3-wrapper';
 import * as _ from 'lodash';
@@ -53,6 +54,7 @@ import { utils } from 'ts/utils/utils';
 import Web3 = require('web3');
 import ProviderEngine = require('web3-provider-engine');
 import FilterSubprovider = require('web3-provider-engine/subproviders/filters');
+import RpcSubprovider = require('web3-provider-engine/subproviders/rpc');
 
 import * as MintableArtifacts from '../contracts/Mintable.json';
 
@@ -73,11 +75,11 @@ export class Blockchain {
     private _web3Wrapper?: Web3Wrapper;
     private _blockchainWatcher?: BlockchainWatcher;
     private _userAddressIfExists: string;
-    private _cachedProvider: Web3.Provider;
+    private _cachedProvider: Provider;
     private _cachedProviderNetworkId: number;
-    private _ledgerSubprovider: LedgerWalletSubprovider;
+    private _ledgerSubprovider: LedgerSubprovider;
     private _defaultGasPrice: BigNumber;
-    private static _getNameGivenProvider(provider: Web3.Provider): string {
+    private static _getNameGivenProvider(provider: Provider): string {
         const providerType = utils.getProviderType(provider);
         const providerNameIfExists = providerToName[providerType];
         if (_.isUndefined(providerNameIfExists)) {
@@ -97,7 +99,12 @@ export class Blockchain {
             provider = new ProviderEngine();
             provider.addProvider(new InjectedWeb3Subprovider(injectedWeb3.currentProvider));
             provider.addProvider(new FilterSubprovider());
-            provider.addProvider(new RedundantRPCSubprovider(publicNodeUrlsIfExistsForNetworkId));
+            const rpcSubproviders = _.map(publicNodeUrlsIfExistsForNetworkId, publicNodeUrl => {
+                return new RpcSubprovider({
+                    rpcUrl: publicNodeUrl,
+                });
+            });
+            provider.addProvider(new RedundantSubprovider(rpcSubproviders as Subprovider[]));
             provider.start();
         } else if (doesInjectedWeb3Exist) {
             // Since no public node for this network, all requests go to injectedWeb3 instance
@@ -109,7 +116,12 @@ export class Blockchain {
             provider = new ProviderEngine();
             provider.addProvider(new FilterSubprovider());
             const networkId = configs.IS_MAINNET_ENABLED ? constants.NETWORK_ID_MAINNET : constants.NETWORK_ID_KOVAN;
-            provider.addProvider(new RedundantRPCSubprovider(configs.PUBLIC_NODE_URLS_BY_NETWORK_ID[networkId]));
+            const rpcSubproviders = _.map(configs.PUBLIC_NODE_URLS_BY_NETWORK_ID[networkId], publicNodeUrl => {
+                return new RpcSubprovider({
+                    rpcUrl: publicNodeUrl,
+                });
+            });
+            provider.addProvider(new RedundantSubprovider(rpcSubproviders as Subprovider[]));
             provider.start();
         }
 
@@ -151,13 +163,6 @@ export class Blockchain {
     }
     public async isAddressInTokenRegistryAsync(tokenAddress: string): Promise<boolean> {
         utils.assert(!_.isUndefined(this._zeroEx), 'ZeroEx must be instantiated.');
-        // HACK: temporarily whitelist the new WETH token address `as if` they were
-        // already in the tokenRegistry.
-        // TODO: Remove this hack once we've updated the TokenRegistries
-        // Airtable task: https://airtable.com/tblFe0Q9JuKJPYbTn/viwsOG2Y97qdIeCIO/recv3VGmIorFzHBVz
-        if (configs.SHOULD_DEPRECATE_OLD_WETH_TOKEN && tokenAddress === configs.NEW_WRAPPED_ETHERS[this.networkId]) {
-            return true;
-        }
         const tokenIfExists = await this._zeroEx.tokenRegistry.getTokenIfExistsAsync(tokenAddress);
         return !_.isUndefined(tokenIfExists);
     }
@@ -173,12 +178,6 @@ export class Blockchain {
             return; // noop
         }
         this._ledgerSubprovider.setPath(path);
-    }
-    public updateLedgerDerivationIndex(pathIndex: number) {
-        if (_.isUndefined(this._ledgerSubprovider)) {
-            return; // noop
-        }
-        this._ledgerSubprovider.setPathIndex(pathIndex);
     }
     public async updateProviderToLedgerAsync(networkId: number) {
         utils.assert(!_.isUndefined(this._zeroEx), 'ZeroEx must be instantiated.');
@@ -207,7 +206,12 @@ export class Blockchain {
         this._ledgerSubprovider = new LedgerSubprovider(ledgerWalletConfigs);
         provider.addProvider(this._ledgerSubprovider);
         provider.addProvider(new FilterSubprovider());
-        provider.addProvider(new RedundantRPCSubprovider(configs.PUBLIC_NODE_URLS_BY_NETWORK_ID[networkId]));
+        const rpcSubproviders = _.map(configs.PUBLIC_NODE_URLS_BY_NETWORK_ID[networkId], publicNodeUrl => {
+            return new RpcSubprovider({
+                rpcUrl: publicNodeUrl,
+            });
+        });
+        provider.addProvider(new RedundantSubprovider(rpcSubproviders as Subprovider[]));
         provider.start();
         this.networkId = networkId;
         this._dispatcher.updateNetworkId(this.networkId);
@@ -384,7 +388,7 @@ export class Blockchain {
     }
     public isValidAddress(address: string): boolean {
         const lowercaseAddress = address.toLowerCase();
-        return this._web3Wrapper.isAddress(lowercaseAddress);
+        return Web3Wrapper.isAddress(lowercaseAddress);
     }
     public async pollTokenBalanceAsync(token: Token) {
         utils.assert(this._doesUserAddressExist(), BlockchainCallErrs.UserHasNoAssociatedAddresses);
@@ -544,6 +548,22 @@ export class Blockchain {
             ? {}
             : trackedTokenStorage.getTrackedTokensByAddress(this._userAddressIfExists, this.networkId);
         const tokenRegistryTokens = _.values(tokenRegistryTokensByAddress);
+        const tokenRegistryTokenSymbols = _.map(tokenRegistryTokens, t => t.symbol);
+        const defaultTrackedTokensInRegistry = _.intersection(
+            tokenRegistryTokenSymbols,
+            configs.DEFAULT_TRACKED_TOKEN_SYMBOLS,
+        );
+        if (defaultTrackedTokensInRegistry.length !== configs.DEFAULT_TRACKED_TOKEN_SYMBOLS.length) {
+            this._dispatcher.updateShouldBlockchainErrDialogBeOpen(true);
+            this._dispatcher.encounteredBlockchainError(BlockchainErrs.DefaultTokensNotInTokenRegistry);
+            const err = new Error(
+                `Default tracked tokens (${JSON.stringify(
+                    configs.DEFAULT_TRACKED_TOKEN_SYMBOLS,
+                )}) not found in tokenRegistry: ${JSON.stringify(tokenRegistryTokens)}`,
+            );
+            await errorReporter.reportAsync(err);
+            return;
+        }
         if (_.isEmpty(trackedTokensByAddress)) {
             _.each(configs.DEFAULT_TRACKED_TOKEN_SYMBOLS, symbol => {
                 const token = _.find(tokenRegistryTokens, t => t.symbol === symbol);
@@ -728,22 +748,9 @@ export class Blockchain {
             // HACK: For now we have a hard-coded list of iconUrls for the dummyTokens
             // TODO: Refactor this out and pull the iconUrl directly from the TokenRegistry
             const iconUrl = configs.ICON_URL_BY_SYMBOL[t.symbol];
-            // HACK: Temporarily we hijack the WETH addresses fetched from the tokenRegistry
-            // so that we can take our time with actually updating it. This ensures that when
-            // we deploy the new WETH page, everyone will re-fill their trackedTokens with the
-            // new canonical WETH.
-            // TODO: Remove this hack once we've updated the TokenRegistries
-            // Airtable task: https://airtable.com/tblFe0Q9JuKJPYbTn/viwsOG2Y97qdIeCIO/recv3VGmIorFzHBVz
-            let address = t.address;
-            if (configs.SHOULD_DEPRECATE_OLD_WETH_TOKEN && t.symbol === 'WETH') {
-                const newEtherTokenAddressIfExists = configs.NEW_WRAPPED_ETHERS[this.networkId];
-                if (!_.isUndefined(newEtherTokenAddressIfExists)) {
-                    address = newEtherTokenAddressIfExists;
-                }
-            }
             const token: Token = {
                 iconUrl,
-                address,
+                address: t.address,
                 name: t.name,
                 symbol: t.symbol,
                 decimals: t.decimals,

@@ -1,0 +1,89 @@
+[
+    {
+        "timestamp": 1523462196,
+        "version": "0.3.5",
+        "changes": [
+            {
+                "note": "Dependencies updated"
+            }
+        ]
+    },
+    {
+        "timestamp": 1522673609,
+        "version": "0.3.4",
+        "changes": [
+            {
+                "note": "Dependencies updated"
+            }
+        ]
+    },
+    {
+        "timestamp": 1522658513,
+        "version": "0.3.3",
+        "changes": [
+            {
+                "note": "Dependencies updated"
+            }
+        ]
+    },
+    {
+        "version": "0.3.1",
+        "changes": [
+            {
+                "note": "Reduce npm package size by adding an `.npmignore` file."
+            },
+            {
+                "note": "Move `@0xproject/web3-wrapper` to dependencies from devDependencies."
+            }
+        ],
+        "timestamp": 1521298800
+    },
+    {
+        "version": "0.3.0",
+        "changes": [
+            {
+                "note": "Add coverage subprovider if SOLIDITY_COVERAGE env variable is true",
+                "pr": 426
+            },
+            {
+                "note": "Refactor `BlockchainLifecycle` to work with in-process ganache",
+                "pr": 426
+            },
+            {
+                "note": "Remove `RPC` class and move it's logic to `Web3Wrapper`",
+                "pr": 426
+            }
+        ],
+        "timestamp": 1521298800
+    },
+    {
+        "version": "0.2.0",
+        "changes": [
+            {
+                "note": "Remove subproviders",
+                "pr": 392
+            }
+        ],
+        "timestamp": 1518706800
+    },
+    {
+        "version": "0.0.12",
+        "changes": [
+            {
+                "note": "Fix publishing issue where .npmignore was not properly excluding undesired content",
+                "pr": 389
+            }
+        ],
+        "timestamp": 1518102000
+    },
+    {
+        "version": "0.0.11",
+        "changes": [
+            {
+                "note": "Updated `types-ethereumjs-util` dev dependency",
+                "pr": 352
+            }
+        ],
+        "timestamp": 1517929200
+    }
+]

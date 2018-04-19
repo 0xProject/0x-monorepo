@@ -4,7 +4,6 @@ import { BigNumber } from '@0xproject/utils';
 import * as chai from 'chai';
 import * as _ from 'lodash';
 import 'mocha';
-import * as Web3 from 'web3';
 
 import {
     BlockRange,
@@ -26,7 +25,7 @@ import { constants } from './utils/constants';
 import { FillScenarios } from './utils/fill_scenarios';
 import { reportNodeCallbackErrors } from './utils/report_callback_errors';
 import { TokenUtils } from './utils/token_utils';
-import { web3, web3Wrapper } from './utils/web3_wrapper';
+import { provider, web3Wrapper } from './utils/web3_wrapper';
 
 chaiSetup.configure();
 const expect = chai.expect;
@@ -46,7 +45,7 @@ describe('ExchangeWrapper', () => {
         networkId: constants.TESTRPC_NETWORK_ID,
     };
     before(async () => {
-        zeroEx = new ZeroEx(web3.currentProvider, config);
+        zeroEx = new ZeroEx(provider, config);
         exchangeContractAddress = zeroEx.exchange.getContractAddress();
         userAddresses = await zeroEx.getAvailableAddressesAsync();
         tokens = await zeroEx.tokenRegistry.getTokensAsync();
@@ -596,6 +595,19 @@ describe('ExchangeWrapper', () => {
                     const remainingFillAmount = fillableAmount.minus(1);
                     expect(anotherFilledAmount).to.be.bignumber.equal(remainingFillAmount);
                 });
+                it('should successfully fill up to specified amount and leave the rest of the orders untouched', async () => {
+                    const txHash = await zeroEx.exchange.fillOrdersUpToAsync(
+                        signedOrders,
+                        fillableAmount,
+                        shouldThrowOnInsufficientBalanceOrAllowance,
+                        takerAddress,
+                    );
+                    await zeroEx.awaitTransactionMinedAsync(txHash);
+                    const filledAmount = await zeroEx.exchange.getFilledTakerAmountAsync(signedOrderHashHex);
+                    const zeroAmount = await zeroEx.exchange.getFilledTakerAmountAsync(anotherOrderHashHex);
+                    expect(filledAmount).to.be.bignumber.equal(fillableAmount);
+                    expect(zeroAmount).to.be.bignumber.equal(0);
+                });
                 it('should successfully fill up to specified amount even if filling all orders would fail', async () => {
                     const missingBalance = new BigNumber(1); // User will still have enough balance to fill up to 9,
                     // but won't have 10 to fully fill all orders in a batch.
@@ -964,8 +976,7 @@ describe('ExchangeWrapper', () => {
                 );
                 zeroEx.exchange.subscribe(ExchangeEvents.LogFill, indexFilterValues, callbackNeverToBeCalled);
 
-                const newProvider = web3Factory.getRpcProvider();
-                zeroEx.setProvider(newProvider, constants.TESTRPC_NETWORK_ID);
+                zeroEx.setProvider(provider, constants.TESTRPC_NETWORK_ID);
 
                 const callback = reportNodeCallbackErrors(done)(
                     (logEvent: DecodedLogEvent<LogFillContractEventArgs>) => {

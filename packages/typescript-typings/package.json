@@ -1,0 +1,35 @@
+{
+    "name": "@0xproject/typescript-typings",
+    "version": "0.1.0",
+    "description": "0x project typescript type definitions",
+    "scripts": {
+        "build": "tsc && copyfiles -u 1 './lib/**/*' ./scripts",
+        "clean": "shx rm -rf scripts",
+        "manual:postpublish": "yarn build; node ./scripts/postpublish.js"
+    },
+    "repository": {
+        "type": "git",
+        "url": "git+https://github.com/0xProject/0x-monorepo.git"
+    },
+    "author": "Fabio Berger",
+    "contributors": [
+        "Leonid Logvinov <logvinov.leon@gmail.com>"
+    ],
+    "license": "Apache-2.0",
+    "bugs": {
+        "url": "https://github.com/0xProject/0x-monorepo/issues"
+    },
+    "homepage": "https://github.com/0xProject/0x-monorepo/packages/typescript-typings#readme",
+    "dependencies": {
+        "@0xproject/types": "^0.6.0",
+        "bignumber.js": "~4.1.0"
+    },
+    "devDependencies": {
+        "@0xproject/monorepo-scripts": "^0.1.17",
+        "copyfiles": "^1.2.0",
+        "shx": "^0.2.2"
+    },
+    "publishConfig": {
+        "access": "public"
+    }
+}

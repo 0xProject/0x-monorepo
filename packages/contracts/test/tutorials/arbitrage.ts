@@ -17,7 +17,7 @@
 // import { BalancesByOwner, ContractName, ExchangeContractErrs } from '../../src/utils/types';
 // import { chaiSetup } from '../utils/chai_setup';
 // import { deployer } from '../utils/deployer';
-// import { web3, web3Wrapper } from '../utils/web3_wrapper';
+// import { provider, web3Wrapper } from '../utils/web3_wrapper';
 
 // chaiSetup.configure();
 // const expect = chai.expect;
@@ -47,65 +47,65 @@
 
 //     let zeroEx: ZeroEx;
 
-//     // From a bird's eye view - we create two orders.
-//     // 0x order of 1 ZRX (maker) for 1 WETH (taker)
-//     // ED order of 2 WETH (tokenGive) for 1 ZRX (tokenGet)
-//     // And then we do an atomic arbitrage between them which gives us 1 WETH.
-//     before(async () => {
-//         const accounts = await web3Wrapper.getAvailableAddressesAsync();
-//         [coinbase, maker, edMaker, edFrontRunner] = accounts;
-//         weth = await deployer.deployAsync(ContractName.DummyToken);
-//         zrx = await deployer.deployAsync(ContractName.DummyToken);
-//         const accountLevels = await deployer.deployAsync(ContractName.AccountLevels);
-//         const edAdminAddress = accounts[0];
-//         const edMakerFee = 0;
-//         const edTakerFee = 0;
-//         const edFeeRebate = 0;
-//         const etherDeltaInstance = await deployer.deployAsync(ContractName.EtherDelta, [
-//             edAdminAddress,
-//             feeRecipient,
-//             accountLevels.address,
-//             edMakerFee,
-//             edTakerFee,
-//             edFeeRebate,
-//         ]);
-//         etherDelta = new EtherDeltaContract(web3Wrapper, etherDeltaInstance.abi, etherDeltaInstance.address);
-//         const tokenTransferProxy = await deployer.deployAsync(ContractName.TokenTransferProxy);
-//         const exchangeInstance = await deployer.deployAsync(ContractName.Exchange, [
-//             zrx.address,
-//             tokenTransferProxy.address,
-//         ]);
-//         await tokenTransferProxy.addAuthorizedAddress(exchangeInstance.address, { from: accounts[0] });
-//         zeroEx = new ZeroEx(web3.currentProvider, {
-//             exchangeContractAddress: exchangeInstance.address,
-//             networkId: constants.TESTRPC_NETWORK_ID,
-//         });
-//         const exchange = new ExchangeContract(web3Wrapper, exchangeInstance.abi, exchangeInstance.address);
-//         exWrapper = new ExchangeWrapper(exchange, zeroEx);
+// From a bird's eye view - we create two orders.
+// 0x order of 1 ZRX (maker) for 1 WETH (taker)
+// ED order of 2 WETH (tokenGive) for 1 ZRX (tokenGet)
+// And then we do an atomic arbitrage between them which gives us 1 WETH.
+// before(async () => {
+//     const accounts = await web3Wrapper.getAvailableAddressesAsync();
+//     [coinbase, maker, edMaker, edFrontRunner] = accounts;
+//     weth = await deployer.deployAsync(ContractName.DummyToken, constants.DUMMY_TOKEN_ARGS);
+//     zrx = await deployer.deployAsync(ContractName.DummyToken, constants.DUMMY_TOKEN_ARGS);
+//     const accountLevels = await deployer.deployAsync(ContractName.AccountLevels);
+//     const edAdminAddress = accounts[0];
+//     const edMakerFee = 0;
+//     const edTakerFee = 0;
+//     const edFeeRebate = 0;
+//     const etherDeltaInstance = await deployer.deployAsync(ContractName.EtherDelta, [
+//         edAdminAddress,
+//         feeRecipient,
+//         accountLevels.address,
+//         edMakerFee,
+//         edTakerFee,
+//         edFeeRebate,
+//     ]);
+//     etherDelta = new EtherDeltaContract(etherDeltaInstance.abi, etherDeltaInstance.address, provider);
+//     const tokenTransferProxy = await deployer.deployAsync(ContractName.TokenTransferProxy);
+//     const exchangeInstance = await deployer.deployAsync(ContractName.Exchange, [
+//         zrx.address,
+//         tokenTransferProxy.address,
+//     ]);
+//     await tokenTransferProxy.addAuthorizedAddress(exchangeInstance.address, { from: accounts[0] });
+//     zeroEx = new ZeroEx(provider, {
+//         exchangeContractAddress: exchangeInstance.address,
+//         networkId: constants.TESTRPC_NETWORK_ID,
+//     });
+//     const exchange = new ExchangeContract(exchangeInstance.abi, exchangeInstance.address, provider);
+//     exWrapper = new ExchangeWrapper(exchange, zeroEx);
 
-//         makerTokenAmount = ZeroEx.toBaseUnitAmount(new BigNumber(1), 18);
-//         takerTokenAmount = makerTokenAmount;
-//         const defaultOrderParams = {
-//             exchangeContractAddress: exchange.address,
-//             maker,
-//             feeRecipient,
-//             makerTokenAddress: zrx.address,
-//             takerTokenAddress: weth.address,
-//             makerTokenAmount,
-//             takerTokenAmount,
-//             makerFee: new BigNumber(0),
-//             takerFee: new BigNumber(0),
-//         };
-//         orderFactory = new OrderFactory(zeroEx, defaultOrderParams);
-//         const arbitrageInstance = await deployer.deployAsync(ContractName.Arbitrage, [
-//             exchange.address,
-//             etherDelta.address,
-//             tokenTransferProxy.address,
-//         ]);
-//         arbitrage = new ArbitrageContract(web3Wrapper, arbitrageInstance.abi, arbitrageInstance.address);
-//         // Enable arbitrage and withdrawals of tokens
-//         await arbitrage.setAllowances.sendTransactionAsync(weth.address, { from: coinbase });
-//         await arbitrage.setAllowances.sendTransactionAsync(zrx.address, { from: coinbase });
+//     makerTokenAmount = ZeroEx.toBaseUnitAmount(new BigNumber(1), 18);
+//     takerTokenAmount = makerTokenAmount;
+//     const defaultOrderParams = {
+//         exchangeContractAddress: exchange.address,
+//         maker,
+//         feeRecipient,
+//         makerTokenAddress: zrx.address,
+//         takerTokenAddress: weth.address,
+//         makerTokenAmount,
+//         takerTokenAmount,
+//         makerFee: new BigNumber(0),
+//         takerFee: new BigNumber(0),
+//     };
+//     orderFactory = new OrderFactory(zeroEx, defaultOrderParams);
+//     const arbitrageInstance = await deployer.deployAsync(ContractName.Arbitrage, [
+//         exchange.address,
+//         etherDelta.address,
+//         tokenTransferProxy.address,
+//     ]);
+//     arbitrage = new ArbitrageContract(arbitrageInstance.abi, arbitrageInstance.address, provider);
+//     // Enable arbitrage and withdrawals of tokens
+//     await arbitrage.setAllowances.sendTransactionAsync(weth.address, { from: coinbase });
+//     await arbitrage.setAllowances.sendTransactionAsync(zrx.address, { from: coinbase });
 
 //         // Give some tokens to arbitrage contract
 //         await weth.setBalance(arbitrage.address, takerTokenAmount, { from: coinbase });

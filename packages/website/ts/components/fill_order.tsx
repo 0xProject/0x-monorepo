@@ -198,11 +198,13 @@ export class FillOrder extends React.Component<FillOrderProps, FillOrderState> {
             symbol: takerToken.symbol,
         };
         const parsedOrderExpiration = new BigNumber(this.state.parsedOrder.signedOrder.expirationUnixTimestampSec);
-        const exchangeRate = orderMakerAmount.div(orderTakerAmount);
 
         let orderReceiveAmount = 0;
         if (!_.isUndefined(this.props.orderFillAmount)) {
-            const orderReceiveAmountBigNumber = exchangeRate.mul(this.props.orderFillAmount);
+            const orderReceiveAmountBigNumber = orderMakerAmount
+                .times(this.props.orderFillAmount)
+                .dividedBy(orderTakerAmount)
+                .floor();
             orderReceiveAmount = this._formatCurrencyAmount(orderReceiveAmountBigNumber, makerToken.decimals);
         }
         const isUserMaker =

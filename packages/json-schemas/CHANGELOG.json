@@ -1,0 +1,58 @@
+[
+    {
+        "timestamp": 1523462196,
+        "version": "0.7.20",
+        "changes": [
+            {
+                "note": "Dependencies updated"
+            }
+        ]
+    },
+    {
+        "timestamp": 1522673609,
+        "version": "0.7.19",
+        "changes": [
+            {
+                "note": "Dependencies updated"
+            }
+        ]
+    },
+    {
+        "timestamp": 1522658513,
+        "version": "0.7.18",
+        "changes": [
+            {
+                "note": "Dependencies updated"
+            }
+        ]
+    },
+    {
+        "version": "0.7.13",
+        "changes": [
+            {
+                "note": "  Fix publishing issue where .npmignore was not properly excluding undesired content",
+                "pr": 389
+            }
+        ],
+        "timestamp": 1518102000
+    },
+    {
+        "version": "0.7.0",
+        "changes": [
+            {
+                "note": "Rename `subscriptionOptsSchema` to `blockRangeSchema`",
+                "pr": 272
+            }
+        ],
+        "timestamp": 1513695600
+    },
+    {
+        "version": "0.6.7",
+        "changes": [
+            {
+                "note": "Re-publish JSON-schema previously published under NPM package 0x-json-schemas"
+            }
+        ],
+        "timestamp": 1510585200
+    }
+]

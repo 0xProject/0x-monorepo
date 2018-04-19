@@ -1,17 +1,12 @@
+import { AbiType, ConstructorAbi, DataItem } from '@0xproject/types';
 import * as fs from 'fs';
 import * as _ from 'lodash';
 import * as path from 'path';
-import * as Web3 from 'web3';
 
-import { AbiType, ContractsBackend, ParamKind } from './types';
+import { ContractsBackend, ParamKind } from './types';
 
 export const utils = {
-    solTypeToTsType(
-        paramKind: ParamKind,
-        backend: ContractsBackend,
-        solType: string,
-        components?: Web3.DataItem[],
-    ): string {
+    solTypeToTsType(paramKind: ParamKind, backend: ContractsBackend, solType: string, components?: DataItem[]): string {
         const trailingArrayRegex = /\[\d*\]$/;
         if (solType.match(trailingArrayRegex)) {
             const arrayItemSolType = solType.replace(trailingArrayRegex, '');
@@ -89,7 +84,7 @@ export const utils = {
             throw new Error(`Failed to read ${filename}: ${err}`);
         }
     },
-    getEmptyConstructor(): Web3.ConstructorAbi {
+    getEmptyConstructor(): ConstructorAbi {
         return {
             type: AbiType.Constructor,
             stateMutability: 'nonpayable',

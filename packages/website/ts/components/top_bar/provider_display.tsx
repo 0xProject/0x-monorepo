@@ -28,7 +28,8 @@ interface ProviderDisplayState {}
 export class ProviderDisplay extends React.Component<ProviderDisplayProps, ProviderDisplayState> {
     public render() {
         const isAddressAvailable = !_.isEmpty(this.props.userAddress);
-        const isExternallyInjectedProvider = ProviderType.Injected && this.props.injectedProviderName !== '0x Public';
+        const isExternallyInjectedProvider =
+            this.props.providerType === ProviderType.Injected && this.props.injectedProviderName !== '0x Public';
         const displayAddress = isAddressAvailable
             ? utils.getAddressBeginAndEnd(this.props.userAddress)
             : isExternallyInjectedProvider ? 'Account locked' : '0x0000...0000';
