@@ -16,14 +16,15 @@
 
 */
 
-pragma solidity ^0.4.11;
+pragma solidity ^0.4.21;
 
-import { Token_v1 as Token } from "../../../previous/Token/Token_v1.sol";
-import { Ownable_v1 as Ownable } from "../../../previous/Ownable/Ownable_v1.sol";
+import "./IAuthorizable.sol";
+import "../Ownable/Ownable.sol";
 
-/// @title TokenTransferProxy - Transfers tokens on behalf of contracts that have been approved via decentralized governance.
-/// @author Amir Bandeali - <amir@0xProject.com>, Will Warren - <will@0xProject.com>
-contract TokenTransferProxy is Ownable {
+contract Authorizable is
+    Ownable,
+    IAuthorizable
+{
 
     /// @dev Only authorized addresses can invoke functions with this modifier.
     modifier onlyAuthorized {
@@ -44,9 +45,6 @@ contract TokenTransferProxy is Ownable {
     mapping (address => bool) public authorized;
     address[] public authorities;
 
-    event LogAuthorizedAddressAdded(address indexed target, address indexed caller);
-    event LogAuthorizedAddressRemoved(address indexed target, address indexed caller);
-
     /*
      * Public functions
      */
@@ -60,7 +58,7 @@ contract TokenTransferProxy is Ownable {
     {
         authorized[target] = true;
         authorities.push(target);
-        LogAuthorizedAddressAdded(target, msg.sender);
+        emit AuthorizedAddressAdded(target, msg.sender);
     }
 
     /// @dev Removes authorizion of an address.
@@ -78,25 +76,21 @@ contract TokenTransferProxy is Ownable {
                 break;
             }
         }
-        LogAuthorizedAddressRemoved(target, msg.sender);
+        emit AuthorizedAddressRemoved(target, msg.sender);
     }
 
-    /// @dev Calls into ERC20 Token contract, invoking transferFrom.
-    /// @param token Address of token to transfer.
-    /// @param from Address to transfer token from.
-    /// @param to Address to transfer token to.
-    /// @param value Amount of token to transfer.
-    /// @return Success of transfer.
-    function transferFrom(
-        address token,
-        address from,
-        address to,
-        uint value)
+    /// @dev Removes authorizion of an address.
+    /// @param target Address to remove authorization from.
+    /// @param index Index of target in authorities array.
+    function removeAuthorizedAddressAtIndex(address target, uint256 index)
         public
-        onlyAuthorized
-        returns (bool)
     {
-        return Token(token).transferFrom(from, to, value);
+        require(index < authorities.length);
+        require(authorities[index] == target);
+        delete authorized[target];
+        authorities[index] = authorities[authorities.length - 1];
+        authorities.length -= 1;
+        emit AuthorizedAddressRemoved(target, msg.sender);
     }
 
     /*

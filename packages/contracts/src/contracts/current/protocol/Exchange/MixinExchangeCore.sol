@@ -53,8 +53,8 @@ contract MixinExchangeCore is
         address indexed makerAddress,
         address takerAddress,
         address indexed feeRecipientAddress,
-        address makerTokenAddress,
-        address takerTokenAddress,
+        bytes makerAssetData,
+        bytes takerAssetData,
         uint256 makerTokenFilledAmount,
         uint256 takerTokenFilledAmount,
         uint256 makerFeePaid,
@@ -65,8 +65,8 @@ contract MixinExchangeCore is
     event Cancel(
         address indexed makerAddress,
         address indexed feeRecipientAddress,
-        address makerTokenAddress,
-        address takerTokenAddress,
+        bytes makerAssetData,
+        bytes takerAssetData,
         bytes32 indexed orderHash
     );
 
@@ -153,8 +153,8 @@ contract MixinExchangeCore is
             order.makerAddress,
             msg.sender,
             order.feeRecipientAddress,
-            order.makerTokenAddress,
-            order.takerTokenAddress,
+            order.makerAssetData,
+            order.takerAssetData,
             fillResults.makerTokenFilledAmount,
             fillResults.takerTokenFilledAmount,
             fillResults.makerFeePaid,
@@ -195,8 +195,8 @@ contract MixinExchangeCore is
         emit Cancel(
             order.makerAddress,
             order.feeRecipientAddress,
-            order.makerTokenAddress,
-            order.takerTokenAddress,
+            order.makerAssetData,
+            order.takerAssetData,
             orderHash
         );
         return true;
