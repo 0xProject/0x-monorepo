@@ -18,12 +18,10 @@ async callAsync(
         }
     )
     const rawCallResult = await self._web3Wrapper.callAsync(callDataWithDefaults, defaultBlock);
-    let result = ethersFunction.parse(rawCallResult);
-
+    let resultArray = ethersFunction.parse(rawCallResult);
     const outputAbi = (_.find(self.abi, {name: '{{this.name}}'}) as MethodAbi).outputs;
-    result = BaseContract._formatABIDataItemList(outputAbi, result, BaseContract._lowercaseAddress.bind(this));
-    result = BaseContract._formatABIDataItemList(outputAbi, result, BaseContract._bnToBigNumber.bind(this));
-
-    return result{{#singleReturnValue}}[0]{{/singleReturnValue}};
+    resultArray = BaseContract._formatABIDataItemList(outputAbi, resultArray, BaseContract._lowercaseAddress.bind(this));
+    resultArray = BaseContract._formatABIDataItemList(outputAbi, resultArray, BaseContract._bnToBigNumber.bind(this));
+    return resultArray{{#singleReturnValue}}[0]{{/singleReturnValue}};
 },
 {{/hasReturnValue}}

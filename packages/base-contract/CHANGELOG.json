@@ -1,5 +1,14 @@
 [
     {
+        "version": "0.3.0",
+        "changes": [
+            {
+                "note": "Update ethers-contracts to ethers.js",
+                "pr": 540
+            }
+        ]
+    },
+    {
         "timestamp": 1524044013,
         "version": "0.2.1",
         "changes": [

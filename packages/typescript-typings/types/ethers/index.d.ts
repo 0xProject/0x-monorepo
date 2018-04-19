@@ -23,17 +23,9 @@ declare module 'ethers' {
     export class Interface {
         public functions: { [functionName: string]: FunctionDescription };
         public events: { [eventName: string]: EventDescription };
-        // public static decodeParams(types: string[], data: string): any[];
         constructor(abi: any);
     }
     export class Contract {
         constructor(address: string, abi: any, provider: any);
-    }
-}
-
-declare module 'ethers/utils/abi-coder' {
-    export class Coder {
-        public decode(names: any[], types: any[], data?: any[]): any[];
-        defaultCoder: Coder;
     }
 }
