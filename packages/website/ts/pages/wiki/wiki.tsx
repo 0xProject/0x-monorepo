@@ -19,6 +19,7 @@ import { SidebarHeader } from 'ts/components/sidebar_header';
 import { TopBar } from 'ts/components/top_bar/top_bar';
 import { Dispatcher } from 'ts/redux/dispatcher';
 import { Article, ArticlesBySection, WebsitePaths } from 'ts/types';
+import { backendClient } from 'ts/utils/backend_client';
 import { configs } from 'ts/utils/configs';
 import { constants } from 'ts/utils/constants';
 import { Translate } from 'ts/utils/translate';
@@ -200,34 +201,30 @@ export class Wiki extends React.Component<WikiProps, WikiState> {
         );
     }
     private async _fetchArticlesBySectionAsync(): Promise<void> {
-        const endpoint = `${configs.BACKEND_BASE_URL}${WebsitePaths.Wiki}`;
-        const response = await fetch(endpoint);
-        if (response.status === constants.HTTP_NO_CONTENT_STATUS_CODE) {
-            // We need to backoff and try fetching again later
-            this._wikiBackoffTimeoutId = window.setTimeout(() => {
-                // tslint:disable-next-line:no-floating-promises
-                this._fetchArticlesBySectionAsync();
-            }, WIKI_NOT_READY_BACKOUT_TIMEOUT_MS);
-            return;
-        }
-        if (response.status !== 200) {
-            // TODO: Show the user an error message when the wiki fail to load
-            const errMsg = await response.text();
-            logUtils.log(`Failed to load wiki: ${response.status} ${errMsg}`);
-            return;
-        }
-        const articlesBySection = await response.json();
-        if (!this._isUnmounted) {
-            this.setState(
-                {
-                    articlesBySection,
-                },
-                async () => {
-                    await utils.onPageLoadAsync();
-                    const hash = this.props.location.hash.slice(1);
-                    sharedUtils.scrollToHash(hash, sharedConstants.SCROLL_CONTAINER_ID);
-                },
-            );
+        try {
+            const articlesBySection = await backendClient.getWikiArticlesBySectionAsync();
+            if (!this._isUnmounted) {
+                this.setState(
+                    {
+                        articlesBySection,
+                    },
+                    async () => {
+                        await utils.onPageLoadAsync();
+                        const hash = this.props.location.hash.slice(1);
+                        sharedUtils.scrollToHash(hash, sharedConstants.SCROLL_CONTAINER_ID);
+                    },
+                );
+            }
+        } catch (err) {
+            const errMsg = `${err}`;
+            if (_.includes(errMsg, `${constants.HTTP_NO_CONTENT_STATUS_CODE}`)) {
+                // We need to backoff and try fetching again later
+                this._wikiBackoffTimeoutId = window.setTimeout(() => {
+                    // tslint:disable-next-line:no-floating-promises
+                    this._fetchArticlesBySectionAsync();
+                }, WIKI_NOT_READY_BACKOUT_TIMEOUT_MS);
+                return;
+            }
         }
     }
     private _getMenuSubsectionsBySection(articlesBySection: ArticlesBySection) {

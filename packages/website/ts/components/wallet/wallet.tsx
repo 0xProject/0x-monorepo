@@ -36,7 +36,7 @@ import {
     TokenState,
     TokenStateByAddress,
 } from 'ts/types';
-import { configs } from 'ts/utils/configs';
+import { backendClient } from 'ts/utils/backend_client';
 import { constants } from 'ts/utils/constants';
 import { utils } from 'ts/utils/utils';
 import { styles as walletItemStyles } from 'ts/utils/wallet_item_styles';
@@ -70,11 +70,6 @@ interface AllowanceToggleConfig {
 interface AccessoryItemConfig {
     wrappedEtherDirection?: Side;
     allowanceToggleConfig?: AllowanceToggleConfig;
-}
-
-interface WebsiteBackendPriceInfo {
-    price: string;
-    address: string;
 }
 
 const styles: Styles = {
@@ -496,17 +491,15 @@ export class Wallet extends React.Component<WalletProps, WalletState> {
         if (_.isEmpty(tokenAddresses)) {
             return {};
         }
-        const tokenAddressesQueryString = tokenAddresses.join(',');
-        const endpoint = `${configs.BACKEND_BASE_URL}/prices?tokens=${tokenAddressesQueryString}`;
-        const response = await fetch(endpoint);
-        if (response.status !== 200) {
+        try {
+            const websiteBackendPriceInfos = await backendClient.getPriceInfosAsync(tokenAddresses);
+            const addresses = _.map(websiteBackendPriceInfos, info => info.address);
+            const prices = _.map(websiteBackendPriceInfos, info => new BigNumber(info.price));
+            const pricesByAddress = _.zipObject(addresses, prices);
+            return pricesByAddress;
+        } catch (err) {
             return {};
         }
-        const websiteBackendPriceInfos: WebsiteBackendPriceInfo[] = await response.json();
-        const addresses = _.map(websiteBackendPriceInfos, info => info.address);
-        const prices = _.map(websiteBackendPriceInfos, info => new BigNumber(info.price));
-        const pricesByAddress = _.zipObject(addresses, prices);
-        return pricesByAddress;
     }
     private _openWrappedEtherActionRow(wrappedEtherDirection: Side) {
         this.setState({
