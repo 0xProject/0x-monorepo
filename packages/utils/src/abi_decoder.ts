@@ -80,7 +80,7 @@ export class AbiDecoder {
         const ethersInterface = new ethers.Interface(abiArray);
         _.map(abiArray, (abi: AbiDefinition) => {
             if (abi.type === AbiType.Event) {
-                const topic = ethersInterface.events[abi.name].topic;
+                const topic = ethersInterface.events[abi.name].topics[0];
                 this._methodIds[topic] = abi;
             }
         });

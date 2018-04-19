@@ -18,7 +18,7 @@ declare module 'ethers' {
         parse: (...args: any[]) => any;
         inputs: { names: string[]; types: string[] };
         signature: string;
-        topic: string;
+        topics: string[];
     }
     export class Interface {
         public functions: { [functionName: string]: FunctionDescription };
