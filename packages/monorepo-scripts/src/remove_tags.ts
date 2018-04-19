@@ -18,6 +18,8 @@ import { utils } from './utils';
         const packageName = lernaPackage.package.name;
         const currentVersion = lernaPackage.package.version;
         const changelogJSONPath = path.join(lernaPackage.location, 'CHANGELOG.json');
+        // Private packages don't have changelogs, and their versions are always incremented
+        // by a patch version.
         const changelogJSONIfExists = utils.getChangelogJSONIfExists(changelogJSONPath);
 
         let latestChangelogVersion: string;
