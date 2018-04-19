@@ -33,9 +33,18 @@ contract MixinSignatureValidator is
         Ecrecover,
         EIP712,
         Trezor,
-        Contract
+        Contract,
+        PreSigned
     }
 
+    // Mapping of hash => signer => signed
+    mapping(bytes32 => mapping(address => bool)) preSigned;
+
+    /// @dev Verifies that a hash has been signed by the given signer.
+    /// @param hash Any 32 byte hash.
+    /// @param signer Address that should have signed the given hash.
+    /// @param signature Proof that the hash has been signed by signer.
+    /// @return True if the address recovered from the provided signature matches the input signer address.
     function isValidSignature(
         bytes32 hash,
         address signer,
@@ -135,6 +144,11 @@ contract MixinSignatureValidator is
         } else if (signatureType == SignatureType.Contract) {
             isValid = ISigner(signer).isValidSignature(hash, signature);
             return isValid;
+
+        // Signer signed hash previously using the preSign function
+        } else if (signatureType == SignatureType.PreSigned) {
+            isValid = preSigned[hash][signer];
+            return isValid;
         }
 
         // Anything else is illegal (We do not return false because
@@ -143,6 +157,20 @@ contract MixinSignatureValidator is
         // may lead the caller to incorrectly believe that the
         // signature was invalid.)
         revert();
+    }
+
+    /// @dev Approves a hash on-chain using any valid signature type.
+    ///      After presigning a hash, the preSign signature type will become valid for that hash and signer.
+    /// @param signer Address that should have signed the given hash.
+    /// @param signature Proof that the hash has been signed by signer.
+    function preSign(
+        bytes32 hash,
+        address signer,
+        bytes memory signature)
+        public
+    {
+        require(isValidSignature(hash, signer, signature));
+        preSigned[hash][signer] = true;
     }
 
     function get32(bytes memory b, uint256 index)
