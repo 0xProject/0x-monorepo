@@ -92,8 +92,8 @@ const relayersAndDappProjects: Project[] = [
         projectUrl: constants.PROJECT_URL_BLOCKNET,
     },
     {
-        logoFileName: 'status.png',
-        projectUrl: constants.PROJECT_URL_STATUS,
+        logoFileName: 'imtoken.png',
+        projectUrl: constants.PROJECT_URL_IMTOKEN,
     },
     {
         logoFileName: 'augur.png',
@@ -123,10 +123,6 @@ const relayerProjects: Project[] = [
         projectUrl: constants.PROJECT_URL_0CEAN,
     },
     {
-        logoFileName: 'dydx.png',
-        projectUrl: constants.PROJECT_URL_DYDX,
-    },
-    {
         logoFileName: 'amadeus.png',
         projectUrl: constants.PROJECT_URL_AMADEUS,
     },
@@ -153,6 +149,10 @@ const relayerProjects: Project[] = [
     {
         logoFileName: 'idt.png',
         projectUrl: constants.PROJECT_URL_IDT,
+    },
+    {
+        logoFileName: 'imtoken.png',
+        projectUrl: constants.PROJECT_URL_IMTOKEN,
     },
 ];
 
