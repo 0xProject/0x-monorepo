@@ -10,13 +10,13 @@ import {
 } from '@0xproject/types';
 import { abiUtils, BigNumber } from '@0xproject/utils';
 import { Web3Wrapper } from '@0xproject/web3-wrapper';
-import * as ethersContracts from 'ethers-contracts';
+import * as ethers from 'ethers';
 import * as _ from 'lodash';
 
 import { formatABIDataItem } from './utils';
 
 export interface EthersInterfaceByFunctionSignature {
-    [key: string]: ethersContracts.Interface;
+    [key: string]: ethers.Interface;
 }
 
 export class BaseContract {
@@ -62,7 +62,7 @@ export class BaseContract {
         }
         return txDataWithDefaults;
     }
-    protected _lookupEthersInterface(functionSignature: string): ethersContracts.Interface {
+    protected _lookupEthersInterface(functionSignature: string): ethers.Interface {
         const ethersInterface = this._ethersInterfacesByFunctionSignature[functionSignature];
         if (_.isUndefined(ethersInterface)) {
             throw new Error(`Failed to lookup method with function signature '${functionSignature}'`);
@@ -92,7 +92,7 @@ export class BaseContract {
         this._ethersInterfacesByFunctionSignature = {};
         _.each(methodAbis, methodAbi => {
             const functionSignature = abiUtils.getFunctionSignature(methodAbi);
-            this._ethersInterfacesByFunctionSignature[functionSignature] = new ethersContracts.Interface([methodAbi]);
+            this._ethersInterfacesByFunctionSignature[functionSignature] = new ethers.Interface([methodAbi]);
         });
     }
 }
