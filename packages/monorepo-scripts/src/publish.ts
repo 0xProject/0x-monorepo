@@ -38,6 +38,11 @@ const packageNameToWebsitePath: { [name: string]: string } = {
 };
 
 (async () => {
+    const hasRequiredSetup = await checkPublishRequiredSetupAsync();
+    if (!hasRequiredSetup) {
+        return; // abort
+    }
+
     // Fetch public, updated Lerna packages
     const updatedPublicLernaPackages = await getUpdatedPublicLernaPackagesAsync();
 
@@ -105,6 +110,51 @@ package.ts. Please add an entry for it and try again.`,
         utils.log('Publish process aborted.');
         process.exit(0);
     }
+}
+
+async function checkPublishRequiredSetupAsync(): Promise<boolean> {
+    // check to see if logged into npm before publishing (npm whoami)
+    try {
+        await execAsync(`sudo npm whoami`);
+    } catch (err) {
+        utils.log('You must be logged into npm in the commandline to publish. Run `npm login` and try again.');
+        return false;
+    }
+
+    // Check to see if Git creds setup (check for ENV 'GITHUB_PERSONAL_ACCESS_TOKEN_0X_JS')
+    if (_.isUndefined(process.env.GITHUB_PERSONAL_ACCESS_TOKEN_0X_JS)) {
+        utils.log(
+            'You must have a Github personal access token set to an envVar named `GITHUB_PERSONAL_ACCESS_TOKEN_0X_JS`. Add it then try again.',
+        );
+        return false;
+    }
+    // Check NPM version is 5.X
+    const result = await execAsync(`npm --version`);
+    const version = result.stdout;
+    const versionSegments = version.split('.');
+    const majorVersion = _.parseInt(versionSegments[0]);
+    if (majorVersion < 5) {
+        utils.log('You npm version must be v5.x or higher. Upgrade your npm and try again.');
+        return false;
+    }
+
+    // Check that `aws` commandline is installed
+    try {
+        await execAsync(`aws help`);
+    } catch (err) {
+        utils.log('You must have `awscli` commandline tool installed. Install it and try again.');
+        return false;
+    }
+
+    // Check that `aws` creds are setup
+    try {
+        await execAsync(`aws sts get-caller-identity`);
+    } catch (err) {
+        utils.log('You must setup your AWS credentials by running `aws configure`. Do this and try again.');
+        return false;
+    }
+
+    return true;
 }
 
 async function pushChangelogsToGithubAsync() {
