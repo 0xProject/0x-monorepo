@@ -44,7 +44,8 @@ const packageNameToWebsitePath: { [name: string]: string } = {
     }
 
     // Fetch public, updated Lerna packages
-    const updatedPublicLernaPackages = await getUpdatedPublicLernaPackagesAsync();
+    const shouldIncludePrivate = false;
+    const updatedPublicLernaPackages = await utils.getUpdatedLernaPackagesAsync(shouldIncludePrivate);
 
     await confirmDocPagesRenderAsync(updatedPublicLernaPackages);
 
@@ -165,23 +166,12 @@ async function pushChangelogsToGithubAsync() {
     utils.log(`Pushed CHANGELOG updates to Github`);
 }
 
-async function getUpdatedPublicLernaPackagesAsync(): Promise<LernaPackage[]> {
-    const updatedPublicPackages = await getPublicLernaUpdatedPackagesAsync();
-    const updatedPackageNames = _.map(updatedPublicPackages, pkg => pkg.name);
-
-    const allLernaPackages = lernaGetPackages(constants.monorepoRootPath);
-    const updatedPublicLernaPackages = _.filter(allLernaPackages, pkg => {
-        return _.includes(updatedPackageNames, pkg.package.name);
-    });
-    return updatedPublicLernaPackages;
-}
-
 async function updateChangeLogsAsync(updatedPublicLernaPackages: LernaPackage[]): Promise<PackageToVersionChange> {
     const packageToVersionChange: PackageToVersionChange = {};
     for (const lernaPackage of updatedPublicLernaPackages) {
         const packageName = lernaPackage.package.name;
         const changelogJSONPath = path.join(lernaPackage.location, 'CHANGELOG.json');
-        const changelogJSON = getChangelogJSONOrCreateIfMissing(lernaPackage.package.name, changelogJSONPath);
+        const changelogJSON = utils.getChangelogJSONOrCreateIfMissing(changelogJSONPath);
         let changelogs: Changelog[];
         try {
             changelogs = JSON.parse(changelogJSON);
@@ -276,13 +266,6 @@ async function lernaPublishAsync(packageToVersionChange: { [name: string]: strin
     });
 }
 
-async function getPublicLernaUpdatedPackagesAsync(): Promise<UpdatedPackage[]> {
-    const result = await execAsync(`${LERNA_EXECUTABLE} updated --json`, { cwd: constants.monorepoRootPath });
-    const updatedPackages = JSON.parse(result.stdout);
-    const updatedPublicPackages = _.filter(updatedPackages, updatedPackage => !updatedPackage.private);
-    return updatedPublicPackages;
-}
-
 function updateVersionNumberIfNeeded(currentVersion: string, proposedNextVersion: string) {
     if (proposedNextVersion === currentVersion) {
         return utils.getNextPatchVersion(currentVersion);
@@ -292,19 +275,6 @@ function updateVersionNumberIfNeeded(currentVersion: string, proposedNextVersion
         return utils.getNextPatchVersion(currentVersion);
     }
     return proposedNextVersion;
-}
-
-function getChangelogJSONOrCreateIfMissing(packageName: string, changelogPath: string): string {
-    let changelogJSON: string;
-    try {
-        changelogJSON = fs.readFileSync(changelogPath, 'utf-8');
-        return changelogJSON;
-    } catch (err) {
-        // If none exists, create new, empty one.
-        const emptyChangelogJSON = JSON.stringify([], null, 4);
-        fs.writeFileSync(changelogPath, emptyChangelogJSON);
-        return emptyChangelogJSON;
-    }
 }
 
 function shouldAddNewChangelogEntry(currentVersion: string, changelogs: Changelog[]): boolean {
