@@ -123,7 +123,7 @@ async function checkPublishRequiredSetupAsync(): Promise<boolean> {
     }
 
     // Check to see if Git personal token setup
-    if (_.isUndefined(process.env.GITHUB_PERSONAL_ACCESS_TOKEN_0X_JS)) {
+    if (_.isUndefined(constants.githubPersonalAccessToken)) {
         utils.log(
             'You must have a Github personal access token set to an envVar named `GITHUB_PERSONAL_ACCESS_TOKEN_0X_JS`. Add it then try again.',
         );
