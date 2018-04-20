@@ -54,10 +54,9 @@ export class RelayerIndex extends React.Component<RelayerIndexProps, RelayerInde
         this._isUnmounted = true;
     }
     public render() {
-        // TODO: loading and error states with a scrolling container
         const readyToRender = _.isUndefined(this.state.error) && !_.isUndefined(this.state.relayerInfos);
-        return (
-            readyToRender && (
+        if (readyToRender) {
+            return (
                 <div style={styles.root}>
                     <GridList
                         cellHeight={CELL_HEIGHT}
@@ -74,8 +73,11 @@ export class RelayerIndex extends React.Component<RelayerIndexProps, RelayerInde
                         ))}
                     </GridList>
                 </div>
-            )
-        );
+            );
+        } else {
+            // TODO: loading and error states with a scrolling container
+            return null;
+        }
     }
     private async _fetchRelayerInfosAsync(): Promise<void> {
         try {
