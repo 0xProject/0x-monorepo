@@ -55,7 +55,7 @@ export const utils = {
         const changelogIfExists = this.getChangelogJSONIfExists(changelogPath);
         if (_.isUndefined(changelogIfExists)) {
             // If none exists, create new, empty one.
-            const emptyChangelogJSON = JSON.stringify([], null, 4);
+            const emptyChangelogJSON = JSON.stringify([]);
             fs.writeFileSync(changelogPath, emptyChangelogJSON);
             return emptyChangelogJSON;
         }
