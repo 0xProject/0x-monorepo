@@ -11,7 +11,7 @@ import { orderUtils } from '../../src/utils/order_utils';
 import { ForwarderContract } from '../contract_wrappers/generated/forwarder';
 // import { artifacts } from '../ts/artifacts';
 
-import { Artifact, DefaultOrderParams, OrderStruct, SignatureType, SignedOrder, UnsignedOrder } from './types';
+import { Artifact, DefaultOrderParams, SignatureType, SignedOrder, UnsignedOrder } from './types';
 
 export class ForwarderWrapper {
     private _forwarderContract: ForwarderContract;
@@ -55,7 +55,7 @@ export class ForwarderWrapper {
     constructor(contractInstance: ForwarderContract) {
         this._forwarderContract = contractInstance;
     }
-    public async fillOrdersAsync(
+    public async buyTokensAsync(
         orders: SignedOrder[],
         feeOrders: SignedOrder[],
         fillAmountWei: BigNumber,
@@ -76,7 +76,7 @@ export class ForwarderWrapper {
         );
         return txHash;
     }
-    public async fillOrdersFeeAsync(
+    public async buyTokensFeeAsync(
         orders: SignedOrder[],
         feeOrders: SignedOrder[],
         fillAmountWei: BigNumber,

@@ -2,12 +2,16 @@ pragma solidity ^0.4.21;
 pragma experimental ABIEncoderV2;
 
 import "../protocol/Exchange/Exchange.sol";
-import "../protocol/TokenTransferProxy/TokenTransferProxy.sol";
+import "../protocol/AssetProxyDispatcher/IAssetProxy.sol";
+import "../protocol/AssetProxyDispatcher/IAssetProxyDispatcher.sol";
 import "../utils/SafeMath/SafeMath.sol";
 import { WETH9 as EtherToken } from "../tokens/WETH9/WETH9.sol";
+import "../tokens/ZrxToken/ZrxToken.sol";
+import "../utils/LibBytes/LibBytes.sol";
 
 contract MixinForwarderCore is
     LibOrder,
+    LibBytes,
     SafeMath
 {
     uint16  constant PERCENTAGE_DENOMINATOR = 10000; // 9800 == 98%, 10000 == 100%
@@ -21,10 +25,10 @@ contract MixinForwarderCore is
     string constant ERROR_INVALID_INPUT = "INVALID_INPUT";
     string constant ERROR_TRANSFER_FAILED = "TRANSFER_FAILED";
 
-    Exchange exchange;
-    TokenTransferProxy tokenProxy;
-    EtherToken etherToken;
-    Token zrxToken;
+    Exchange EXCHANGE;
+    IAssetProxyDispatcher TRANSFER_PROXY;
+    EtherToken ETHER_TOKEN;
+    ZRXToken ZRX_TOKEN;
 
     function isAcceptableThreshold(uint256 requestedTokenAmount, uint256 soldTokenAmount)
         internal
@@ -34,7 +38,7 @@ contract MixinForwarderCore is
         uint256 acceptableProportion = safeDiv(safeMul(requestedTokenAmount, ALLOWABLE_EXCHANGE_PERCENTAGE), PERCENTAGE_DENOMINATOR);
         return soldTokenAmount >= acceptableProportion;
     }
-    function addFillResults(FillResults memory totalFillResults, FillResults memory singleFillResults)
+    function addFillResults(Exchange.FillResults memory totalFillResults, Exchange.FillResults memory singleFillResults)
         internal
         pure
     {

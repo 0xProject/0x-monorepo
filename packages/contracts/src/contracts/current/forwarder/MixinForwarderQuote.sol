@@ -12,11 +12,11 @@ contract MixinForwarderQuote is MixinForwarderCore {
     function fillOrderQuote(Order order, uint256 takerTokenFillAmount)
         public
         view
-        returns (FillResults memory fillResults)
+        returns (Exchange.FillResults memory fillResults)
     {
         // Compute the order hash
-        bytes32 orderHash = exchange.getOrderHash(order);
-        uint256 remainingTakerTokenAmount = safeSub(order.takerTokenAmount, exchange.getUnavailableTakerTokenAmount(orderHash));
+        bytes32 orderHash = EXCHANGE.getOrderHash(order);
+        uint256 remainingTakerTokenAmount = safeSub(order.takerTokenAmount, EXCHANGE.getUnavailableTakerTokenAmount(orderHash));
 
         // Validate order expiration
         if (block.timestamp >= order.expirationTimeSeconds) {
@@ -40,14 +40,14 @@ contract MixinForwarderQuote is MixinForwarderCore {
         //     return fillResults;
         // }
 
-        fillResults.makerTokenFilledAmount = exchange.getPartialAmount(fillResults.takerTokenFilledAmount, order.takerTokenAmount, order.makerTokenAmount);
+        fillResults.makerTokenFilledAmount = EXCHANGE.getPartialAmount(fillResults.takerTokenFilledAmount, order.takerTokenAmount, order.makerTokenAmount);
 
         if (order.feeRecipientAddress != address(0)) {
             if (order.makerFee > 0) {
-                fillResults.makerFeePaid = exchange.getPartialAmount(fillResults.takerTokenFilledAmount, order.takerTokenAmount, order.makerFee);
+                fillResults.makerFeePaid = EXCHANGE.getPartialAmount(fillResults.takerTokenFilledAmount, order.takerTokenAmount, order.makerFee);
             }
             if (order.takerFee > 0) {
-                fillResults.takerFeePaid = exchange.getPartialAmount(fillResults.takerTokenFilledAmount, order.takerTokenAmount, order.takerFee);
+                fillResults.takerFeePaid = EXCHANGE.getPartialAmount(fillResults.takerTokenFilledAmount, order.takerTokenAmount, order.takerFee);
             }
         }
 
@@ -62,13 +62,13 @@ contract MixinForwarderQuote is MixinForwarderCore {
     function marketSellOrdersQuote(Order[] orders, uint256 takerTokenFillAmount)
         public
         view
-        returns (FillResults memory fillResult)
+        returns (Exchange.FillResults memory fillResult)
     {
         for (uint256 i = 0; i < orders.length; i++) {
-            require(orders[i].takerTokenAddress == orders[0].takerTokenAddress);
+            require(areBytesEqual(orders[i].takerAssetData, orders[0].takerAssetData));
             uint256 remainingTakerTokenFillAmount = safeSub(takerTokenFillAmount, fillResult.takerTokenFilledAmount);
 
-            FillResults memory quoteFillResult = fillOrderQuote(orders[i], remainingTakerTokenFillAmount);
+            Exchange.FillResults memory quoteFillResult = fillOrderQuote(orders[i], remainingTakerTokenFillAmount);
 
             addFillResults(fillResult, quoteFillResult);
             if (fillResult.takerTokenFilledAmount == takerTokenFillAmount) {
@@ -86,18 +86,18 @@ contract MixinForwarderQuote is MixinForwarderCore {
     function marketBuyOrdersQuote(Order[] orders, uint256 makerTokenFillAmount)
         public
         view
-        returns (FillResults memory fillResult)
+        returns (Exchange.FillResults memory fillResult)
     {
         for (uint256 i = 0; i < orders.length; i++) {
-            require(orders[i].takerTokenAddress == orders[0].takerTokenAddress);
+            require(areBytesEqual(orders[i].takerAssetData, orders[0].takerAssetData));
             uint256 remainingTakerBuyAmount = safeSub(makerTokenFillAmount, fillResult.takerTokenFilledAmount);
-            uint256 remainingTakerSellAmount = exchange.getPartialAmount(
+            uint256 remainingTakerSellAmount = EXCHANGE.getPartialAmount(
                 remainingTakerBuyAmount,
                 orders[i].takerTokenAmount,
                 orders[i].makerTokenAmount
             );
 
-            FillResults memory quoteFillResult = fillOrderQuote(orders[i], remainingTakerSellAmount);
+            Exchange.FillResults memory quoteFillResult = fillOrderQuote(orders[i], remainingTakerSellAmount);
 
             addFillResults(fillResult, quoteFillResult);
             if (fillResult.makerTokenFilledAmount == makerTokenFillAmount) {
