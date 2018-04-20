@@ -1,5 +1,14 @@
 [
     {
+        "version": "0.4.2",
+        "changes": [
+            {
+                "note": "Add support for solidity 0.4.23",
+                "pr": 545
+            }
+        ]
+    },
+    {
         "version": "0.4.1",
         "changes": [
             {
