@@ -2,12 +2,19 @@ import { BigNumber, logUtils } from '@0xproject/utils';
 import * as _ from 'lodash';
 import * as queryString from 'query-string';
 
-import { ArticlesBySection, ItemByAddress, WebsiteBackendGasInfo, WebsiteBackendPriceInfo } from 'ts/types';
+import {
+    ArticlesBySection,
+    ItemByAddress,
+    WebsiteBackendGasInfo,
+    WebsiteBackendPriceInfo,
+    WebsiteBackendRelayerInfo,
+} from 'ts/types';
 import { configs } from 'ts/utils/configs';
 import { errorReporter } from 'ts/utils/error_reporter';
 
 const ETH_GAS_STATION_ENDPOINT = '/eth_gas_station';
 const PRICES_ENDPOINT = '/prices';
+const RELAYERS_ENDPOINT = '/relayers';
 const WIKI_ENDPOINT = '/wiki';
 
 export const backendClient = {
@@ -24,6 +31,10 @@ export const backendClient = {
             tokens: joinedTokenAddresses,
         };
         const result = await requestAsync(PRICES_ENDPOINT, queryParams);
+        return result;
+    },
+    async getRelayerInfosAsync(): Promise<WebsiteBackendRelayerInfo[]> {
+        const result = await requestAsync(RELAYERS_ENDPOINT);
         return result;
     },
     async getWikiArticlesBySectionAsync(): Promise<ArticlesBySection> {

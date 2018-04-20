@@ -500,12 +500,12 @@ export interface TokenState {
     price?: BigNumber;
 }
 
-export interface RelayerInfo {
-    headerUrl: string;
+// TODO: Add topTokens and headerUrl properties once available from backend
+export interface WebsiteBackendRelayerInfo {
     id: string;
     name: string;
-    marketShare: number;
-    topTokens: Token[];
+    dailyTxnVolume: string;
+    url: string;
 }
 
 export interface WebsiteBackendPriceInfo {
