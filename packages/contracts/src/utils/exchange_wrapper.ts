@@ -221,7 +221,7 @@ export class ExchangeWrapper {
         );
         return partialAmount;
     }
-    public async getTakerTokenFilledAmount(orderHashHex: string): Promise<BigNumber> {
+    public async getTakerTokenFilledAmountAsync(orderHashHex: string): Promise<BigNumber> {
         const filledAmount = new BigNumber(await this._exchange.filled.callAsync(orderHashHex));
         return filledAmount;
     }
