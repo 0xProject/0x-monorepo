@@ -43,9 +43,8 @@ describe('Exchange', () => {
         const assetProxyDispatcher = await deployer.deployAsync(ContractName.AssetProxyDispatcher);
         // Deploy and configure Exchange
         const exchangeInstance = await deployer.deployAsync(ContractName.Exchange, [
-            zrx.address,
-            AssetProxyId.ERC20,
             assetProxyDispatcher.address,
+            AssetProxyId.ERC20,
         ]);
         const exchange = new ExchangeContract(exchangeInstance.abi, exchangeInstance.address, provider);
         await assetProxyDispatcher.addAuthorizedAddress.sendTransactionAsync(exchange.address, { from: owner });

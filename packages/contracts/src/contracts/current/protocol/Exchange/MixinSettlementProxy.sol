@@ -20,7 +20,6 @@ pragma solidity ^0.4.21;
 pragma experimental ABIEncoderV2;
 
 import "./mixins/MSettlement.sol";
-import "../../tokens/Token/IToken.sol";
 import "./LibPartialAmount.sol";
 import "../AssetProxyDispatcher/IAssetProxy.sol";
 
@@ -29,40 +28,30 @@ contract MixinSettlementProxy is
     MSettlement,
     LibPartialAmount
 {
-    IAssetProxy TRANSFER_PROXY;
+    IAssetProxy ASSET_PROXY_DISPATCHER;
     bytes ZRX_PROXY_DATA;
-    IToken ZRX_TOKEN;
 
-    function transferProxy()
+    function assetProxyDispatcher()
         public view
         returns (IAssetProxy)
     {
-        return TRANSFER_PROXY;
-    }
-
-    function zrxToken()
-        external view
-        returns (IToken)
-    {
-        return ZRX_TOKEN;
+        return ASSET_PROXY_DISPATCHER;
     }
 
     function zrxProxyData()
         external view
-        returns (bytes)
+        returns (bytes memory)
     {
         return ZRX_PROXY_DATA;
     }
 
     function MixinSettlementProxy(
-        IAssetProxy assetProxyDispatcherContract,
-        IToken zrxToken,
-        bytes zrxProxyData)
+        address _assetProxyDispatcher,
+        bytes memory _zrxProxyData)
         public
     {
-        ZRX_TOKEN = zrxToken;
-        TRANSFER_PROXY = assetProxyDispatcherContract;
-        ZRX_PROXY_DATA = zrxProxyData;
+        ASSET_PROXY_DISPATCHER = IAssetProxy(_assetProxyDispatcher);
+        ZRX_PROXY_DATA = _zrxProxyData;
     }
 
     function settleOrder(
@@ -77,13 +66,13 @@ contract MixinSettlementProxy is
         )
     {
         makerTokenFilledAmount = getPartialAmount(takerTokenFilledAmount, order.takerTokenAmount, order.makerTokenAmount);
-        TRANSFER_PROXY.transferFrom(
+        ASSET_PROXY_DISPATCHER.transferFrom(
             order.makerAssetData,
             order.makerAddress,
             takerAddress,
             makerTokenFilledAmount
         );
-        TRANSFER_PROXY.transferFrom(
+        ASSET_PROXY_DISPATCHER.transferFrom(
             order.takerAssetData,
             takerAddress,
             order.makerAddress,
@@ -92,7 +81,7 @@ contract MixinSettlementProxy is
         if (order.feeRecipientAddress != address(0)) {
             if (order.makerFee > 0) {
                 makerFeePaid = getPartialAmount(takerTokenFilledAmount, order.takerTokenAmount, order.makerFee);
-                TRANSFER_PROXY.transferFrom(
+                ASSET_PROXY_DISPATCHER.transferFrom(
                     ZRX_PROXY_DATA,
                     order.makerAddress,
                     order.feeRecipientAddress,
@@ -101,7 +90,7 @@ contract MixinSettlementProxy is
             }
             if (order.takerFee > 0) {
                 takerFeePaid = getPartialAmount(takerTokenFilledAmount, order.takerTokenAmount, order.takerFee);
-                TRANSFER_PROXY.transferFrom(
+                ASSET_PROXY_DISPATCHER.transferFrom(
                     ZRX_PROXY_DATA,
                     takerAddress,
                     order.feeRecipientAddress,
