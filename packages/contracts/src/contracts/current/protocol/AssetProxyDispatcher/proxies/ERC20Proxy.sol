@@ -21,7 +21,7 @@ pragma solidity ^0.4.21;
 import "../IAssetProxy.sol";
 import "../../../utils/LibBytes/LibBytes.sol";
 import "../../../utils/Authorizable/Authorizable.sol";
-import { Token_v1 as ERC20Token } from "../../../../previous/Token/Token_v1.sol";
+import "../../../tokens/ERC20Token/IERC20Token.sol";
 
 contract ERC20Proxy is
     LibBytes,
@@ -44,7 +44,7 @@ contract ERC20Proxy is
     {
         require(assetMetadata.length == 21);
         address token = readAddress(assetMetadata, 1);
-        bool success = ERC20Token(token).transferFrom(from, to, amount);
+        bool success = IERC20Token(token).transferFrom(from, to, amount);
         require(success == true);
     }
 }

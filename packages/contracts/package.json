@@ -32,7 +32,7 @@
         "abis":
             "../migrations/src/artifacts/@(DummyERC20Token|Exchange|TokenRegistry|MultiSigWallet|MultiSigWalletWithTimeLock|MultiSigWalletWithTimeLockExceptRemoveAuthorizedAddress|TokenRegistry|ZRXToken|AssetProxyDispatcher|ERC20Proxy|ERC721Proxy|DummyERC721Token|LibBytes).json",
         "contracts":
-            "Exchange,DummyERC20Token,ZRXToken,Token,WETH9,MultiSigWallet,MultiSigWalletWithTimeLock,MultiSigWalletWithTimeLockExceptRemoveAuthorizedAddress,MaliciousToken,TokenRegistry,AssetProxyDispatcher,ERC20Proxy,ERC721Proxy,DummyERC721Token,LibBytes"
+            "Exchange,DummyERC20Token,ZRXToken,WETH9,MultiSigWallet,MultiSigWalletWithTimeLock,MultiSigWalletWithTimeLockExceptRemoveAuthorizedAddress,TokenRegistry,AssetProxyDispatcher,ERC20Proxy,ERC721Proxy,DummyERC721Token,LibBytes"
     },
     "repository": {
         "type": "git",
