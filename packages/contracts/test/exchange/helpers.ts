@@ -7,7 +7,7 @@ import ethUtil = require('ethereumjs-util');
 
 import { ERC20ProxyContract } from '../../src/contract_wrappers/generated/e_r_c20_proxy';
 import { ExchangeContract } from '../../src/contract_wrappers/generated/exchange';
-import { encodeERC20ProxyData } from '../../src/utils/asset_proxy_utils';
+import { proxyUtils } from '../../src/utils/asset_proxy_utils';
 import { constants } from '../../src/utils/constants';
 import { ExchangeWrapper } from '../../src/utils/exchange_wrapper';
 import { OrderFactory } from '../../src/utils/order_factory';
@@ -58,8 +58,8 @@ describe('Exchange', () => {
             takerTokenAmount: ZeroEx.toBaseUnitAmount(new BigNumber(200), 18),
             makerFee: ZeroEx.toBaseUnitAmount(new BigNumber(1), 18),
             takerFee: ZeroEx.toBaseUnitAmount(new BigNumber(1), 18),
-            makerAssetData: encodeERC20ProxyData(rep.address),
-            takerAssetData: encodeERC20ProxyData(dgd.address),
+            makerAssetData: proxyUtils.encodeERC20ProxyData(rep.address),
+            takerAssetData: proxyUtils.encodeERC20ProxyData(dgd.address),
         };
         const privateKey = constants.TESTRPC_PRIVATE_KEYS[0];
         orderFactory = new OrderFactory(privateKey, defaultOrderParams);

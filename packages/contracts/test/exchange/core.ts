@@ -18,7 +18,7 @@ import {
     ExchangeErrorContractEventArgs,
     FillContractEventArgs,
 } from '../../src/contract_wrappers/generated/exchange';
-import { encodeERC20ProxyData, encodeERC721ProxyData } from '../../src/utils/asset_proxy_utils';
+import { proxyUtils } from '../../src/utils/asset_proxy_utils';
 import { Balances } from '../../src/utils/balances';
 import { constants } from '../../src/utils/constants';
 import { crypto } from '../../src/utils/crypto';
@@ -130,7 +130,7 @@ describe('Exchange', () => {
         // Deploy and configure Exchange
         const exchangeInstance = await deployer.deployAsync(ContractName.Exchange, [
             assetProxyDispatcher.address,
-            encodeERC20ProxyData(zrx.address),
+            proxyUtils.encodeERC20ProxyData(zrx.address),
         ]);
         exchange = new ExchangeContract(exchangeInstance.abi, exchangeInstance.address, provider);
         await assetProxyDispatcher.addAuthorizedAddress.sendTransactionAsync(exchange.address, { from: owner });
@@ -151,8 +151,8 @@ describe('Exchange', () => {
             takerTokenAmount: ZeroEx.toBaseUnitAmount(new BigNumber(200), 18),
             makerFee: ZeroEx.toBaseUnitAmount(new BigNumber(1), 18),
             takerFee: ZeroEx.toBaseUnitAmount(new BigNumber(1), 18),
-            makerAssetData: encodeERC20ProxyData(defaultMakerTokenAddress),
-            takerAssetData: encodeERC20ProxyData(defaultTakerTokenAddress),
+            makerAssetData: proxyUtils.encodeERC20ProxyData(defaultMakerTokenAddress),
+            takerAssetData: proxyUtils.encodeERC20ProxyData(defaultTakerTokenAddress),
         };
         const privateKey = constants.TESTRPC_PRIVATE_KEYS[0];
         orderFactory = new OrderFactory(privateKey, defaultOrderParams);
@@ -829,8 +829,8 @@ describe('Exchange', () => {
             signedOrder = orderFactory.newSignedOrder({
                 makerTokenAmount: new BigNumber(1),
                 takerTokenAmount: new BigNumber(1),
-                makerAssetData: encodeERC721ProxyData(erc721Token.address, makerTokenId),
-                takerAssetData: encodeERC721ProxyData(erc721Token.address, takerTokenId),
+                makerAssetData: proxyUtils.encodeERC721ProxyData(erc721Token.address, makerTokenId),
+                takerAssetData: proxyUtils.encodeERC721ProxyData(erc721Token.address, takerTokenId),
             });
             // Verify pre-conditions
             const initialOwnerMakerToken = await erc721Token.ownerOf.callAsync(makerTokenId);
@@ -854,8 +854,8 @@ describe('Exchange', () => {
             signedOrder = orderFactory.newSignedOrder({
                 makerTokenAmount: new BigNumber(1),
                 takerTokenAmount: new BigNumber(1),
-                makerAssetData: encodeERC721ProxyData(erc721Token.address, makerTokenId),
-                takerAssetData: encodeERC721ProxyData(erc721Token.address, takerTokenId),
+                makerAssetData: proxyUtils.encodeERC721ProxyData(erc721Token.address, makerTokenId),
+                takerAssetData: proxyUtils.encodeERC721ProxyData(erc721Token.address, takerTokenId),
             });
             // Verify pre-conditions
             const initialOwnerMakerToken = await erc721Token.ownerOf.callAsync(makerTokenId);
@@ -876,8 +876,8 @@ describe('Exchange', () => {
             signedOrder = orderFactory.newSignedOrder({
                 makerTokenAmount: new BigNumber(1),
                 takerTokenAmount: new BigNumber(1),
-                makerAssetData: encodeERC721ProxyData(erc721Token.address, makerTokenId),
-                takerAssetData: encodeERC721ProxyData(erc721Token.address, takerTokenId),
+                makerAssetData: proxyUtils.encodeERC721ProxyData(erc721Token.address, makerTokenId),
+                takerAssetData: proxyUtils.encodeERC721ProxyData(erc721Token.address, takerTokenId),
             });
             // Verify pre-conditions
             const initialOwnerMakerToken = await erc721Token.ownerOf.callAsync(makerTokenId);
@@ -898,8 +898,8 @@ describe('Exchange', () => {
             signedOrder = orderFactory.newSignedOrder({
                 makerTokenAmount: new BigNumber(2),
                 takerTokenAmount: new BigNumber(1),
-                makerAssetData: encodeERC721ProxyData(erc721Token.address, makerTokenId),
-                takerAssetData: encodeERC721ProxyData(erc721Token.address, takerTokenId),
+                makerAssetData: proxyUtils.encodeERC721ProxyData(erc721Token.address, makerTokenId),
+                takerAssetData: proxyUtils.encodeERC721ProxyData(erc721Token.address, takerTokenId),
             });
             // Verify pre-conditions
             const initialOwnerMakerToken = await erc721Token.ownerOf.callAsync(makerTokenId);
@@ -920,8 +920,8 @@ describe('Exchange', () => {
             signedOrder = orderFactory.newSignedOrder({
                 makerTokenAmount: new BigNumber(1),
                 takerTokenAmount: new BigNumber(500),
-                makerAssetData: encodeERC721ProxyData(erc721Token.address, makerTokenId),
-                takerAssetData: encodeERC721ProxyData(erc721Token.address, takerTokenId),
+                makerAssetData: proxyUtils.encodeERC721ProxyData(erc721Token.address, makerTokenId),
+                takerAssetData: proxyUtils.encodeERC721ProxyData(erc721Token.address, takerTokenId),
             });
             // Verify pre-conditions
             const initialOwnerMakerToken = await erc721Token.ownerOf.callAsync(makerTokenId);
@@ -942,8 +942,8 @@ describe('Exchange', () => {
             signedOrder = orderFactory.newSignedOrder({
                 makerTokenAmount: new BigNumber(1),
                 takerTokenAmount: new BigNumber(0),
-                makerAssetData: encodeERC721ProxyData(erc721Token.address, makerTokenId),
-                takerAssetData: encodeERC721ProxyData(erc721Token.address, takerTokenId),
+                makerAssetData: proxyUtils.encodeERC721ProxyData(erc721Token.address, makerTokenId),
+                takerAssetData: proxyUtils.encodeERC721ProxyData(erc721Token.address, takerTokenId),
             });
             // Verify pre-conditions
             const initialOwnerMakerToken = await erc721Token.ownerOf.callAsync(makerTokenId);
@@ -963,8 +963,8 @@ describe('Exchange', () => {
             signedOrder = orderFactory.newSignedOrder({
                 makerTokenAmount: new BigNumber(1),
                 takerTokenAmount: ZeroEx.toBaseUnitAmount(new BigNumber(100), 18),
-                makerAssetData: encodeERC721ProxyData(erc721Token.address, makerTokenId),
-                takerAssetData: encodeERC20ProxyData(defaultTakerTokenAddress),
+                makerAssetData: proxyUtils.encodeERC721ProxyData(erc721Token.address, makerTokenId),
+                takerAssetData: proxyUtils.encodeERC20ProxyData(defaultTakerTokenAddress),
             });
             // Verify pre-conditions
             const initialOwnerMakerToken = await erc721Token.ownerOf.callAsync(makerTokenId);
@@ -1001,8 +1001,8 @@ describe('Exchange', () => {
             signedOrder = orderFactory.newSignedOrder({
                 takerTokenAmount: new BigNumber(1),
                 makerTokenAmount: ZeroEx.toBaseUnitAmount(new BigNumber(100), 18),
-                takerAssetData: encodeERC721ProxyData(erc721Token.address, takerTokenId),
-                makerAssetData: encodeERC20ProxyData(defaultMakerTokenAddress),
+                takerAssetData: proxyUtils.encodeERC721ProxyData(erc721Token.address, takerTokenId),
+                makerAssetData: proxyUtils.encodeERC20ProxyData(defaultMakerTokenAddress),
             });
             // Verify pre-conditions
             const initialOwnerTakerToken = await erc721Token.ownerOf.callAsync(takerTokenId);
