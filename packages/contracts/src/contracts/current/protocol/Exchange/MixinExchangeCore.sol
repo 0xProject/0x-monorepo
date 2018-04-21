@@ -39,7 +39,7 @@ contract MixinExchangeCore is
     LibErrors,
     LibPartialAmount
 {
-    // Mapping of orderHash => amount of takerToken already bought by maker
+    // Mapping of orderHash => amount of takerAsset already bought by maker
     mapping (bytes32 => uint256) public filled;
 
     // Mapping of orderHash => cancelled
@@ -55,8 +55,8 @@ contract MixinExchangeCore is
         address indexed feeRecipientAddress,
         bytes makerAssetData,
         bytes takerAssetData,
-        uint256 makerTokenFilledAmount,
-        uint256 takerTokenFilledAmount,
+        uint256 makerAssetFilledAmount,
+        uint256 takerAssetFilledAmount,
         uint256 makerFeePaid,
         uint256 takerFeePaid,
         bytes32 indexed orderHash
@@ -81,12 +81,12 @@ contract MixinExchangeCore is
 
     /// @dev Fills the input order.
     /// @param order Order struct containing order specifications.
-    /// @param takerTokenFillAmount Desired amount of takerToken to sell.
+    /// @param takerAssetFillAmount Desired amount of takerAsset to sell.
     /// @param signature Proof that order has been created by maker.
     /// @return Amounts filled and fees paid by maker and taker.
     function fillOrder(
         Order memory order,
-        uint256 takerTokenFillAmount,
+        uint256 takerAssetFillAmount,
         bytes memory signature)
         public
         returns (FillResults memory fillResults)
@@ -109,8 +109,8 @@ contract MixinExchangeCore is
         // Validate order and maker only if first time seen
         // TODO: Read filled and cancelled only once
         if (filled[orderHash] == 0) {
-            require(order.makerTokenAmount > 0);
-            require(order.takerTokenAmount > 0);
+            require(order.makerAssetAmount > 0);
+            require(order.takerAssetAmount > 0);
             require(isValidSignature(orderHash, order.makerAddress, signature));
         }
 
@@ -118,7 +118,7 @@ contract MixinExchangeCore is
         if (order.takerAddress != address(0)) {
             require(order.takerAddress == msg.sender);
         }
-        require(takerTokenFillAmount > 0);
+        require(takerAssetFillAmount > 0);
 
         // Validate order expiration
         if (block.timestamp >= order.expirationTimeSeconds) {
@@ -127,26 +127,26 @@ contract MixinExchangeCore is
         }
 
         // Validate order availability
-        uint256 remainingTakerTokenFillAmount = safeSub(order.takerTokenAmount, filled[orderHash]);
+        uint256 remainingTakerTokenFillAmount = safeSub(order.takerAssetAmount, filled[orderHash]);
         if (remainingTakerTokenFillAmount == 0) {
             emit ExchangeError(uint8(Errors.ORDER_FULLY_FILLED), orderHash);
             return fillResults;
         }
 
         // Validate fill order rounding
-        fillResults.takerTokenFilledAmount = min256(takerTokenFillAmount, remainingTakerTokenFillAmount);
-        if (isRoundingError(fillResults.takerTokenFilledAmount, order.takerTokenAmount, order.makerTokenAmount)) {
+        fillResults.takerAssetFilledAmount = min256(takerAssetFillAmount, remainingTakerTokenFillAmount);
+        if (isRoundingError(fillResults.takerAssetFilledAmount, order.takerAssetAmount, order.makerAssetAmount)) {
             emit ExchangeError(uint8(Errors.ROUNDING_ERROR_TOO_LARGE), orderHash);
-            fillResults.takerTokenFilledAmount = 0;
+            fillResults.takerAssetFilledAmount = 0;
             return fillResults;
         }
 
         // Update state
-        filled[orderHash] = safeAdd(filled[orderHash], fillResults.takerTokenFilledAmount);
+        filled[orderHash] = safeAdd(filled[orderHash], fillResults.takerAssetFilledAmount);
 
         // Settle order
-        (fillResults.makerTokenFilledAmount, fillResults.makerFeePaid, fillResults.takerFeePaid) =
-            settleOrder(order, msg.sender, fillResults.takerTokenFilledAmount);
+        (fillResults.makerAssetFilledAmount, fillResults.makerFeePaid, fillResults.takerFeePaid) =
+            settleOrder(order, msg.sender, fillResults.takerAssetFilledAmount);
 
         // Log order
         emit Fill(
@@ -155,8 +155,8 @@ contract MixinExchangeCore is
             order.feeRecipientAddress,
             order.makerAssetData,
             order.takerAssetData,
-            fillResults.makerTokenFilledAmount,
-            fillResults.takerTokenFilledAmount,
+            fillResults.makerAssetFilledAmount,
+            fillResults.takerAssetFilledAmount,
             fillResults.makerFeePaid,
             fillResults.takerFeePaid,
             orderHash
@@ -176,8 +176,8 @@ contract MixinExchangeCore is
         bytes32 orderHash = getOrderHash(order);
 
         // Validate the order
-        require(order.makerTokenAmount > 0);
-        require(order.takerTokenAmount > 0);
+        require(order.makerAssetAmount > 0);
+        require(order.takerAssetAmount > 0);
         require(order.makerAddress == msg.sender);
 
         if (block.timestamp >= order.expirationTimeSeconds) {

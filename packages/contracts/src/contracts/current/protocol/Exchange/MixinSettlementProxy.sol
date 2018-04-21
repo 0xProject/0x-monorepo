@@ -57,30 +57,30 @@ contract MixinSettlementProxy is
     function settleOrder(
         Order memory order,
         address takerAddress,
-        uint256 takerTokenFilledAmount)
+        uint256 takerAssetFilledAmount)
         internal
         returns (
-            uint256 makerTokenFilledAmount,
+            uint256 makerAssetFilledAmount,
             uint256 makerFeePaid,
             uint256 takerFeePaid
         )
     {
-        makerTokenFilledAmount = getPartialAmount(takerTokenFilledAmount, order.takerTokenAmount, order.makerTokenAmount);
+        makerAssetFilledAmount = getPartialAmount(takerAssetFilledAmount, order.takerAssetAmount, order.makerAssetAmount);
         ASSET_PROXY_DISPATCHER.transferFrom(
             order.makerAssetData,
             order.makerAddress,
             takerAddress,
-            makerTokenFilledAmount
+            makerAssetFilledAmount
         );
         ASSET_PROXY_DISPATCHER.transferFrom(
             order.takerAssetData,
             takerAddress,
             order.makerAddress,
-            takerTokenFilledAmount
+            takerAssetFilledAmount
         );
         if (order.feeRecipientAddress != address(0)) {
             if (order.makerFee > 0) {
-                makerFeePaid = getPartialAmount(takerTokenFilledAmount, order.takerTokenAmount, order.makerFee);
+                makerFeePaid = getPartialAmount(takerAssetFilledAmount, order.takerAssetAmount, order.makerFee);
                 ASSET_PROXY_DISPATCHER.transferFrom(
                     ZRX_PROXY_DATA,
                     order.makerAddress,
@@ -89,7 +89,7 @@ contract MixinSettlementProxy is
                 );
             }
             if (order.takerFee > 0) {
-                takerFeePaid = getPartialAmount(takerTokenFilledAmount, order.takerTokenAmount, order.takerFee);
+                takerFeePaid = getPartialAmount(takerAssetFilledAmount, order.takerAssetAmount, order.takerFee);
                 ASSET_PROXY_DISPATCHER.transferFrom(
                     ZRX_PROXY_DATA,
                     takerAddress,
@@ -98,6 +98,6 @@ contract MixinSettlementProxy is
                 );
             }
         }
-        return (makerTokenFilledAmount, makerFeePaid, takerFeePaid);
+        return (makerAssetFilledAmount, makerFeePaid, takerFeePaid);
     }
 }

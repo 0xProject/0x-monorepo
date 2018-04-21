@@ -147,8 +147,8 @@ describe('Exchange', () => {
             exchangeAddress: exchange.address,
             makerAddress,
             feeRecipientAddress,
-            makerTokenAmount: ZeroEx.toBaseUnitAmount(new BigNumber(100), 18),
-            takerTokenAmount: ZeroEx.toBaseUnitAmount(new BigNumber(200), 18),
+            makerAssetAmount: ZeroEx.toBaseUnitAmount(new BigNumber(100), 18),
+            takerAssetAmount: ZeroEx.toBaseUnitAmount(new BigNumber(200), 18),
             makerFee: ZeroEx.toBaseUnitAmount(new BigNumber(1), 18),
             takerFee: ZeroEx.toBaseUnitAmount(new BigNumber(1), 18),
             makerAssetData: proxyUtils.encodeERC20ProxyData(defaultMakerTokenAddress),
@@ -214,80 +214,80 @@ describe('Exchange', () => {
 
         it('should create an unfillable order', async () => {
             signedOrder = orderFactory.newSignedOrder({
-                makerTokenAmount: new BigNumber(1001),
-                takerTokenAmount: new BigNumber(3),
+                makerAssetAmount: new BigNumber(1001),
+                takerAssetAmount: new BigNumber(3),
             });
 
-            const takerTokenFilledAmountBefore = await exWrapper.getTakerTokenFilledAmount(
+            const takerAssetFilledAmountBefore = await exWrapper.getTakerTokenFilledAmount(
                 orderUtils.getOrderHashHex(signedOrder),
             );
-            expect(takerTokenFilledAmountBefore).to.be.bignumber.equal(0);
+            expect(takerAssetFilledAmountBefore).to.be.bignumber.equal(0);
 
             const fillTakerTokenAmount1 = new BigNumber(2);
             await exWrapper.fillOrderAsync(signedOrder, takerAddress, {
-                takerTokenFillAmount: fillTakerTokenAmount1,
+                takerAssetFillAmount: fillTakerTokenAmount1,
             });
 
-            const takerTokenFilledAmountAfter1 = await exWrapper.getTakerTokenFilledAmount(
+            const takerAssetFilledAmountAfter1 = await exWrapper.getTakerTokenFilledAmount(
                 orderUtils.getOrderHashHex(signedOrder),
             );
-            expect(takerTokenFilledAmountAfter1).to.be.bignumber.equal(fillTakerTokenAmount1);
+            expect(takerAssetFilledAmountAfter1).to.be.bignumber.equal(fillTakerTokenAmount1);
 
             const fillTakerTokenAmount2 = new BigNumber(1);
             await exWrapper.fillOrderAsync(signedOrder, takerAddress, {
-                takerTokenFillAmount: fillTakerTokenAmount2,
+                takerAssetFillAmount: fillTakerTokenAmount2,
             });
 
-            const takerTokenFilledAmountAfter2 = await exWrapper.getTakerTokenFilledAmount(
+            const takerAssetFilledAmountAfter2 = await exWrapper.getTakerTokenFilledAmount(
                 orderUtils.getOrderHashHex(signedOrder),
             );
-            expect(takerTokenFilledAmountAfter2).to.be.bignumber.equal(takerTokenFilledAmountAfter1);
+            expect(takerAssetFilledAmountAfter2).to.be.bignumber.equal(takerAssetFilledAmountAfter1);
         });
 
-        it('should transfer the correct amounts when makerTokenAmount === takerTokenAmount', async () => {
+        it('should transfer the correct amounts when makerAssetAmount === takerAssetAmount', async () => {
             signedOrder = orderFactory.newSignedOrder({
-                makerTokenAmount: ZeroEx.toBaseUnitAmount(new BigNumber(100), 18),
-                takerTokenAmount: ZeroEx.toBaseUnitAmount(new BigNumber(100), 18),
+                makerAssetAmount: ZeroEx.toBaseUnitAmount(new BigNumber(100), 18),
+                takerAssetAmount: ZeroEx.toBaseUnitAmount(new BigNumber(100), 18),
             });
 
-            const takerTokenFilledAmountBefore = await exWrapper.getTakerTokenFilledAmount(
+            const takerAssetFilledAmountBefore = await exWrapper.getTakerTokenFilledAmount(
                 orderUtils.getOrderHashHex(signedOrder),
             );
-            expect(takerTokenFilledAmountBefore).to.be.bignumber.equal(0);
+            expect(takerAssetFilledAmountBefore).to.be.bignumber.equal(0);
 
-            const takerTokenFillAmount = signedOrder.takerTokenAmount.div(2);
-            await exWrapper.fillOrderAsync(signedOrder, takerAddress, { takerTokenFillAmount });
+            const takerAssetFillAmount = signedOrder.takerAssetAmount.div(2);
+            await exWrapper.fillOrderAsync(signedOrder, takerAddress, { takerAssetFillAmount });
 
             const makerAmountBoughtAfter = await exWrapper.getTakerTokenFilledAmount(
                 orderUtils.getOrderHashHex(signedOrder),
             );
-            expect(makerAmountBoughtAfter).to.be.bignumber.equal(takerTokenFillAmount);
+            expect(makerAmountBoughtAfter).to.be.bignumber.equal(takerAssetFillAmount);
 
             const newBalances = await dmyBalances.getAsync();
 
-            const makerTokenFilledAmount = takerTokenFillAmount
-                .times(signedOrder.makerTokenAmount)
-                .dividedToIntegerBy(signedOrder.takerTokenAmount);
+            const makerAssetFilledAmount = takerAssetFillAmount
+                .times(signedOrder.makerAssetAmount)
+                .dividedToIntegerBy(signedOrder.takerAssetAmount);
             const makerFeePaid = signedOrder.makerFee
-                .times(makerTokenFilledAmount)
-                .dividedToIntegerBy(signedOrder.makerTokenAmount);
+                .times(makerAssetFilledAmount)
+                .dividedToIntegerBy(signedOrder.makerAssetAmount);
             const takerFeePaid = signedOrder.takerFee
-                .times(makerTokenFilledAmount)
-                .dividedToIntegerBy(signedOrder.makerTokenAmount);
+                .times(makerAssetFilledAmount)
+                .dividedToIntegerBy(signedOrder.makerAssetAmount);
             expect(newBalances[makerAddress][defaultMakerTokenAddress]).to.be.bignumber.equal(
-                balances[makerAddress][defaultMakerTokenAddress].minus(makerTokenFilledAmount),
+                balances[makerAddress][defaultMakerTokenAddress].minus(makerAssetFilledAmount),
             );
             expect(newBalances[makerAddress][defaultTakerTokenAddress]).to.be.bignumber.equal(
-                balances[makerAddress][defaultTakerTokenAddress].add(takerTokenFillAmount),
+                balances[makerAddress][defaultTakerTokenAddress].add(takerAssetFillAmount),
             );
             expect(newBalances[makerAddress][zrx.address]).to.be.bignumber.equal(
                 balances[makerAddress][zrx.address].minus(makerFeePaid),
             );
             expect(newBalances[takerAddress][defaultTakerTokenAddress]).to.be.bignumber.equal(
-                balances[takerAddress][defaultTakerTokenAddress].minus(takerTokenFillAmount),
+                balances[takerAddress][defaultTakerTokenAddress].minus(takerAssetFillAmount),
             );
             expect(newBalances[takerAddress][defaultMakerTokenAddress]).to.be.bignumber.equal(
-                balances[takerAddress][defaultMakerTokenAddress].add(makerTokenFilledAmount),
+                balances[takerAddress][defaultMakerTokenAddress].add(makerAssetFilledAmount),
             );
             expect(newBalances[takerAddress][zrx.address]).to.be.bignumber.equal(
                 balances[takerAddress][zrx.address].minus(takerFeePaid),
@@ -297,50 +297,50 @@ describe('Exchange', () => {
             );
         });
 
-        it('should transfer the correct amounts when makerTokenAmount > takerTokenAmount', async () => {
+        it('should transfer the correct amounts when makerAssetAmount > takerAssetAmount', async () => {
             signedOrder = orderFactory.newSignedOrder({
-                makerTokenAmount: ZeroEx.toBaseUnitAmount(new BigNumber(200), 18),
-                takerTokenAmount: ZeroEx.toBaseUnitAmount(new BigNumber(100), 18),
+                makerAssetAmount: ZeroEx.toBaseUnitAmount(new BigNumber(200), 18),
+                takerAssetAmount: ZeroEx.toBaseUnitAmount(new BigNumber(100), 18),
             });
 
-            const takerTokenFilledAmountBefore = await exWrapper.getTakerTokenFilledAmount(
+            const takerAssetFilledAmountBefore = await exWrapper.getTakerTokenFilledAmount(
                 orderUtils.getOrderHashHex(signedOrder),
             );
-            expect(takerTokenFilledAmountBefore).to.be.bignumber.equal(0);
+            expect(takerAssetFilledAmountBefore).to.be.bignumber.equal(0);
 
-            const takerTokenFillAmount = signedOrder.takerTokenAmount.div(2);
-            await exWrapper.fillOrderAsync(signedOrder, takerAddress, { takerTokenFillAmount });
+            const takerAssetFillAmount = signedOrder.takerAssetAmount.div(2);
+            await exWrapper.fillOrderAsync(signedOrder, takerAddress, { takerAssetFillAmount });
 
             const makerAmountBoughtAfter = await exWrapper.getTakerTokenFilledAmount(
                 orderUtils.getOrderHashHex(signedOrder),
             );
-            expect(makerAmountBoughtAfter).to.be.bignumber.equal(takerTokenFillAmount);
+            expect(makerAmountBoughtAfter).to.be.bignumber.equal(takerAssetFillAmount);
 
             const newBalances = await dmyBalances.getAsync();
 
-            const makerTokenFilledAmount = takerTokenFillAmount
-                .times(signedOrder.makerTokenAmount)
-                .dividedToIntegerBy(signedOrder.takerTokenAmount);
+            const makerAssetFilledAmount = takerAssetFillAmount
+                .times(signedOrder.makerAssetAmount)
+                .dividedToIntegerBy(signedOrder.takerAssetAmount);
             const makerFeePaid = signedOrder.makerFee
-                .times(makerTokenFilledAmount)
-                .dividedToIntegerBy(signedOrder.makerTokenAmount);
+                .times(makerAssetFilledAmount)
+                .dividedToIntegerBy(signedOrder.makerAssetAmount);
             const takerFeePaid = signedOrder.takerFee
-                .times(makerTokenFilledAmount)
-                .dividedToIntegerBy(signedOrder.makerTokenAmount);
+                .times(makerAssetFilledAmount)
+                .dividedToIntegerBy(signedOrder.makerAssetAmount);
             expect(newBalances[makerAddress][defaultMakerTokenAddress]).to.be.bignumber.equal(
-                balances[makerAddress][defaultMakerTokenAddress].minus(makerTokenFilledAmount),
+                balances[makerAddress][defaultMakerTokenAddress].minus(makerAssetFilledAmount),
             );
             expect(newBalances[makerAddress][defaultTakerTokenAddress]).to.be.bignumber.equal(
-                balances[makerAddress][defaultTakerTokenAddress].add(takerTokenFillAmount),
+                balances[makerAddress][defaultTakerTokenAddress].add(takerAssetFillAmount),
             );
             expect(newBalances[makerAddress][zrx.address]).to.be.bignumber.equal(
                 balances[makerAddress][zrx.address].minus(makerFeePaid),
             );
             expect(newBalances[takerAddress][defaultTakerTokenAddress]).to.be.bignumber.equal(
-                balances[takerAddress][defaultTakerTokenAddress].minus(takerTokenFillAmount),
+                balances[takerAddress][defaultTakerTokenAddress].minus(takerAssetFillAmount),
             );
             expect(newBalances[takerAddress][defaultMakerTokenAddress]).to.be.bignumber.equal(
-                balances[takerAddress][defaultMakerTokenAddress].add(makerTokenFilledAmount),
+                balances[takerAddress][defaultMakerTokenAddress].add(makerAssetFilledAmount),
             );
             expect(newBalances[takerAddress][zrx.address]).to.be.bignumber.equal(
                 balances[takerAddress][zrx.address].minus(takerFeePaid),
@@ -350,50 +350,50 @@ describe('Exchange', () => {
             );
         });
 
-        it('should transfer the correct amounts when makerTokenAmount < takerTokenAmount', async () => {
+        it('should transfer the correct amounts when makerAssetAmount < takerAssetAmount', async () => {
             signedOrder = orderFactory.newSignedOrder({
-                makerTokenAmount: ZeroEx.toBaseUnitAmount(new BigNumber(100), 18),
-                takerTokenAmount: ZeroEx.toBaseUnitAmount(new BigNumber(200), 18),
+                makerAssetAmount: ZeroEx.toBaseUnitAmount(new BigNumber(100), 18),
+                takerAssetAmount: ZeroEx.toBaseUnitAmount(new BigNumber(200), 18),
             });
 
-            const takerTokenFilledAmountBefore = await exWrapper.getTakerTokenFilledAmount(
+            const takerAssetFilledAmountBefore = await exWrapper.getTakerTokenFilledAmount(
                 orderUtils.getOrderHashHex(signedOrder),
             );
-            expect(takerTokenFilledAmountBefore).to.be.bignumber.equal(0);
+            expect(takerAssetFilledAmountBefore).to.be.bignumber.equal(0);
 
-            const takerTokenFillAmount = signedOrder.takerTokenAmount.div(2);
-            await exWrapper.fillOrderAsync(signedOrder, takerAddress, { takerTokenFillAmount });
+            const takerAssetFillAmount = signedOrder.takerAssetAmount.div(2);
+            await exWrapper.fillOrderAsync(signedOrder, takerAddress, { takerAssetFillAmount });
 
             const makerAmountBoughtAfter = await exWrapper.getTakerTokenFilledAmount(
                 orderUtils.getOrderHashHex(signedOrder),
             );
-            expect(makerAmountBoughtAfter).to.be.bignumber.equal(takerTokenFillAmount);
+            expect(makerAmountBoughtAfter).to.be.bignumber.equal(takerAssetFillAmount);
 
             const newBalances = await dmyBalances.getAsync();
 
-            const makerTokenFilledAmount = takerTokenFillAmount
-                .times(signedOrder.makerTokenAmount)
-                .dividedToIntegerBy(signedOrder.takerTokenAmount);
+            const makerAssetFilledAmount = takerAssetFillAmount
+                .times(signedOrder.makerAssetAmount)
+                .dividedToIntegerBy(signedOrder.takerAssetAmount);
             const makerFeePaid = signedOrder.makerFee
-                .times(makerTokenFilledAmount)
-                .dividedToIntegerBy(signedOrder.makerTokenAmount);
+                .times(makerAssetFilledAmount)
+                .dividedToIntegerBy(signedOrder.makerAssetAmount);
             const takerFeePaid = signedOrder.takerFee
-                .times(makerTokenFilledAmount)
-                .dividedToIntegerBy(signedOrder.makerTokenAmount);
+                .times(makerAssetFilledAmount)
+                .dividedToIntegerBy(signedOrder.makerAssetAmount);
             expect(newBalances[makerAddress][defaultMakerTokenAddress]).to.be.bignumber.equal(
-                balances[makerAddress][defaultMakerTokenAddress].minus(makerTokenFilledAmount),
+                balances[makerAddress][defaultMakerTokenAddress].minus(makerAssetFilledAmount),
             );
             expect(newBalances[makerAddress][defaultTakerTokenAddress]).to.be.bignumber.equal(
-                balances[makerAddress][defaultTakerTokenAddress].add(takerTokenFillAmount),
+                balances[makerAddress][defaultTakerTokenAddress].add(takerAssetFillAmount),
             );
             expect(newBalances[makerAddress][zrx.address]).to.be.bignumber.equal(
                 balances[makerAddress][zrx.address].minus(makerFeePaid),
             );
             expect(newBalances[takerAddress][defaultTakerTokenAddress]).to.be.bignumber.equal(
-                balances[takerAddress][defaultTakerTokenAddress].minus(takerTokenFillAmount),
+                balances[takerAddress][defaultTakerTokenAddress].minus(takerAssetFillAmount),
             );
             expect(newBalances[takerAddress][defaultMakerTokenAddress]).to.be.bignumber.equal(
-                balances[takerAddress][defaultMakerTokenAddress].add(makerTokenFilledAmount),
+                balances[takerAddress][defaultMakerTokenAddress].add(makerAssetFilledAmount),
             );
             expect(newBalances[takerAddress][zrx.address]).to.be.bignumber.equal(
                 balances[takerAddress][zrx.address].minus(takerFeePaid),
@@ -406,49 +406,49 @@ describe('Exchange', () => {
         it('should transfer the correct amounts when taker is specified and order is claimed by taker', async () => {
             signedOrder = orderFactory.newSignedOrder({
                 takerAddress,
-                makerTokenAmount: ZeroEx.toBaseUnitAmount(new BigNumber(100), 18),
-                takerTokenAmount: ZeroEx.toBaseUnitAmount(new BigNumber(200), 18),
+                makerAssetAmount: ZeroEx.toBaseUnitAmount(new BigNumber(100), 18),
+                takerAssetAmount: ZeroEx.toBaseUnitAmount(new BigNumber(200), 18),
             });
 
-            const takerTokenFilledAmountBefore = await exWrapper.getTakerTokenFilledAmount(
+            const takerAssetFilledAmountBefore = await exWrapper.getTakerTokenFilledAmount(
                 orderUtils.getOrderHashHex(signedOrder),
             );
-            expect(takerTokenFilledAmountBefore).to.be.bignumber.equal(0);
+            expect(takerAssetFilledAmountBefore).to.be.bignumber.equal(0);
 
-            const takerTokenFillAmount = signedOrder.takerTokenAmount.div(2);
-            await exWrapper.fillOrderAsync(signedOrder, takerAddress, { takerTokenFillAmount });
+            const takerAssetFillAmount = signedOrder.takerAssetAmount.div(2);
+            await exWrapper.fillOrderAsync(signedOrder, takerAddress, { takerAssetFillAmount });
 
             const makerAmountBoughtAfter = await exWrapper.getTakerTokenFilledAmount(
                 orderUtils.getOrderHashHex(signedOrder),
             );
-            const expectedMakerAmountBoughtAfter = takerTokenFillAmount.add(takerTokenFilledAmountBefore);
+            const expectedMakerAmountBoughtAfter = takerAssetFillAmount.add(takerAssetFilledAmountBefore);
             expect(makerAmountBoughtAfter).to.be.bignumber.equal(expectedMakerAmountBoughtAfter);
 
             const newBalances = await dmyBalances.getAsync();
 
-            const makerTokenFilledAmount = takerTokenFillAmount
-                .times(signedOrder.makerTokenAmount)
-                .dividedToIntegerBy(signedOrder.takerTokenAmount);
+            const makerAssetFilledAmount = takerAssetFillAmount
+                .times(signedOrder.makerAssetAmount)
+                .dividedToIntegerBy(signedOrder.takerAssetAmount);
             const makerFeePaid = signedOrder.makerFee
-                .times(makerTokenFilledAmount)
-                .dividedToIntegerBy(signedOrder.makerTokenAmount);
+                .times(makerAssetFilledAmount)
+                .dividedToIntegerBy(signedOrder.makerAssetAmount);
             const takerFeePaid = signedOrder.takerFee
-                .times(makerTokenFilledAmount)
-                .dividedToIntegerBy(signedOrder.makerTokenAmount);
+                .times(makerAssetFilledAmount)
+                .dividedToIntegerBy(signedOrder.makerAssetAmount);
             expect(newBalances[makerAddress][defaultMakerTokenAddress]).to.be.bignumber.equal(
-                balances[makerAddress][defaultMakerTokenAddress].minus(makerTokenFilledAmount),
+                balances[makerAddress][defaultMakerTokenAddress].minus(makerAssetFilledAmount),
             );
             expect(newBalances[makerAddress][defaultTakerTokenAddress]).to.be.bignumber.equal(
-                balances[makerAddress][defaultTakerTokenAddress].add(takerTokenFillAmount),
+                balances[makerAddress][defaultTakerTokenAddress].add(takerAssetFillAmount),
             );
             expect(newBalances[makerAddress][zrx.address]).to.be.bignumber.equal(
                 balances[makerAddress][zrx.address].minus(makerFeePaid),
             );
             expect(newBalances[takerAddress][defaultTakerTokenAddress]).to.be.bignumber.equal(
-                balances[takerAddress][defaultTakerTokenAddress].minus(takerTokenFillAmount),
+                balances[takerAddress][defaultTakerTokenAddress].minus(takerAssetFillAmount),
             );
             expect(newBalances[takerAddress][defaultMakerTokenAddress]).to.be.bignumber.equal(
-                balances[takerAddress][defaultMakerTokenAddress].add(makerTokenFilledAmount),
+                balances[takerAddress][defaultMakerTokenAddress].add(makerAssetFilledAmount),
             );
             expect(newBalances[takerAddress][zrx.address]).to.be.bignumber.equal(
                 balances[takerAddress][zrx.address].minus(takerFeePaid),
@@ -458,33 +458,33 @@ describe('Exchange', () => {
             );
         });
 
-        it('should fill remaining value if takerTokenFillAmount > remaining takerTokenAmount', async () => {
-            const takerTokenFillAmount = signedOrder.takerTokenAmount.div(2);
-            await exWrapper.fillOrderAsync(signedOrder, takerAddress, { takerTokenFillAmount });
+        it('should fill remaining value if takerAssetFillAmount > remaining takerAssetAmount', async () => {
+            const takerAssetFillAmount = signedOrder.takerAssetAmount.div(2);
+            await exWrapper.fillOrderAsync(signedOrder, takerAddress, { takerAssetFillAmount });
 
             const res = await exWrapper.fillOrderAsync(signedOrder, takerAddress, {
-                takerTokenFillAmount: signedOrder.takerTokenAmount,
+                takerAssetFillAmount: signedOrder.takerAssetAmount,
             });
             const log = res.logs[0] as LogWithDecodedArgs<FillContractEventArgs>;
-            expect(log.args.takerTokenFilledAmount).to.be.bignumber.equal(
-                signedOrder.takerTokenAmount.minus(takerTokenFillAmount),
+            expect(log.args.takerAssetFilledAmount).to.be.bignumber.equal(
+                signedOrder.takerAssetAmount.minus(takerAssetFillAmount),
             );
             const newBalances = await dmyBalances.getAsync();
 
             expect(newBalances[makerAddress][defaultMakerTokenAddress]).to.be.bignumber.equal(
-                balances[makerAddress][defaultMakerTokenAddress].minus(signedOrder.makerTokenAmount),
+                balances[makerAddress][defaultMakerTokenAddress].minus(signedOrder.makerAssetAmount),
             );
             expect(newBalances[makerAddress][defaultTakerTokenAddress]).to.be.bignumber.equal(
-                balances[makerAddress][defaultTakerTokenAddress].add(signedOrder.takerTokenAmount),
+                balances[makerAddress][defaultTakerTokenAddress].add(signedOrder.takerAssetAmount),
             );
             expect(newBalances[makerAddress][zrx.address]).to.be.bignumber.equal(
                 balances[makerAddress][zrx.address].minus(signedOrder.makerFee),
             );
             expect(newBalances[takerAddress][defaultTakerTokenAddress]).to.be.bignumber.equal(
-                balances[takerAddress][defaultTakerTokenAddress].minus(signedOrder.takerTokenAmount),
+                balances[takerAddress][defaultTakerTokenAddress].minus(signedOrder.takerAssetAmount),
             );
             expect(newBalances[takerAddress][defaultMakerTokenAddress]).to.be.bignumber.equal(
-                balances[takerAddress][defaultMakerTokenAddress].add(signedOrder.makerTokenAmount),
+                balances[takerAddress][defaultMakerTokenAddress].add(signedOrder.makerAssetAmount),
             );
             expect(newBalances[takerAddress][zrx.address]).to.be.bignumber.equal(
                 balances[takerAddress][zrx.address].minus(signedOrder.takerFee),
@@ -497,14 +497,14 @@ describe('Exchange', () => {
         it('should log 1 event with the correct arguments when order has a feeRecipient', async () => {
             const divisor = 2;
             const res = await exWrapper.fillOrderAsync(signedOrder, takerAddress, {
-                takerTokenFillAmount: signedOrder.takerTokenAmount.div(divisor),
+                takerAssetFillAmount: signedOrder.takerAssetAmount.div(divisor),
             });
             expect(res.logs).to.have.length(1);
 
             const log = res.logs[0] as LogWithDecodedArgs<FillContractEventArgs>;
             const logArgs = log.args;
-            const expectedFilledMakerTokenAmount = signedOrder.makerTokenAmount.div(divisor);
-            const expectedFilledTakerTokenAmount = signedOrder.takerTokenAmount.div(divisor);
+            const expectedFilledMakerTokenAmount = signedOrder.makerAssetAmount.div(divisor);
+            const expectedFilledTakerTokenAmount = signedOrder.takerAssetAmount.div(divisor);
             const expectedFeeMPaid = signedOrder.makerFee.div(divisor);
             const expectedFeeTPaid = signedOrder.takerFee.div(divisor);
 
@@ -513,8 +513,8 @@ describe('Exchange', () => {
             expect(signedOrder.feeRecipientAddress).to.be.equal(logArgs.feeRecipientAddress);
             expect(signedOrder.makerAssetData).to.be.equal(logArgs.makerAssetData);
             expect(signedOrder.takerAssetData).to.be.equal(logArgs.takerAssetData);
-            expect(expectedFilledMakerTokenAmount).to.be.bignumber.equal(logArgs.makerTokenFilledAmount);
-            expect(expectedFilledTakerTokenAmount).to.be.bignumber.equal(logArgs.takerTokenFilledAmount);
+            expect(expectedFilledMakerTokenAmount).to.be.bignumber.equal(logArgs.makerAssetFilledAmount);
+            expect(expectedFilledTakerTokenAmount).to.be.bignumber.equal(logArgs.takerAssetFilledAmount);
             expect(expectedFeeMPaid).to.be.bignumber.equal(logArgs.makerFeePaid);
             expect(expectedFeeTPaid).to.be.bignumber.equal(logArgs.takerFeePaid);
             expect(orderUtils.getOrderHashHex(signedOrder)).to.be.equal(logArgs.orderHash);
@@ -526,14 +526,14 @@ describe('Exchange', () => {
             });
             const divisor = 2;
             const res = await exWrapper.fillOrderAsync(signedOrder, takerAddress, {
-                takerTokenFillAmount: signedOrder.takerTokenAmount.div(divisor),
+                takerAssetFillAmount: signedOrder.takerAssetAmount.div(divisor),
             });
             expect(res.logs).to.have.length(1);
 
             const log = res.logs[0] as LogWithDecodedArgs<FillContractEventArgs>;
             const logArgs = log.args;
-            const expectedFilledMakerTokenAmount = signedOrder.makerTokenAmount.div(divisor);
-            const expectedFilledTakerTokenAmount = signedOrder.takerTokenAmount.div(divisor);
+            const expectedFilledMakerTokenAmount = signedOrder.makerAssetAmount.div(divisor);
+            const expectedFilledTakerTokenAmount = signedOrder.takerAssetAmount.div(divisor);
             const expectedFeeMPaid = new BigNumber(0);
             const expectedFeeTPaid = new BigNumber(0);
 
@@ -542,8 +542,8 @@ describe('Exchange', () => {
             expect(signedOrder.feeRecipientAddress).to.be.equal(logArgs.feeRecipientAddress);
             expect(signedOrder.makerAssetData).to.be.equal(logArgs.makerAssetData);
             expect(signedOrder.takerAssetData).to.be.equal(logArgs.takerAssetData);
-            expect(expectedFilledMakerTokenAmount).to.be.bignumber.equal(logArgs.makerTokenFilledAmount);
-            expect(expectedFilledTakerTokenAmount).to.be.bignumber.equal(logArgs.takerTokenFilledAmount);
+            expect(expectedFilledMakerTokenAmount).to.be.bignumber.equal(logArgs.makerAssetFilledAmount);
+            expect(expectedFilledTakerTokenAmount).to.be.bignumber.equal(logArgs.takerAssetFilledAmount);
             expect(expectedFeeMPaid).to.be.bignumber.equal(logArgs.makerFeePaid);
             expect(expectedFeeTPaid).to.be.bignumber.equal(logArgs.takerFeePaid);
             expect(orderUtils.getOrderHashHex(signedOrder)).to.be.equal(logArgs.orderHash);
@@ -552,15 +552,15 @@ describe('Exchange', () => {
         it('should throw when taker is specified and order is claimed by other', async () => {
             signedOrder = orderFactory.newSignedOrder({
                 takerAddress: feeRecipientAddress,
-                makerTokenAmount: ZeroEx.toBaseUnitAmount(new BigNumber(100), 18),
-                takerTokenAmount: ZeroEx.toBaseUnitAmount(new BigNumber(200), 18),
+                makerAssetAmount: ZeroEx.toBaseUnitAmount(new BigNumber(100), 18),
+                takerAssetAmount: ZeroEx.toBaseUnitAmount(new BigNumber(200), 18),
             });
             return expect(exWrapper.fillOrderAsync(signedOrder, takerAddress)).to.be.rejectedWith(constants.REVERT);
         });
 
         it('should throw if signature is invalid', async () => {
             signedOrder = orderFactory.newSignedOrder({
-                makerTokenAmount: ZeroEx.toBaseUnitAmount(new BigNumber(10), 18),
+                makerAssetAmount: ZeroEx.toBaseUnitAmount(new BigNumber(10), 18),
             });
 
             const invalidR = ethUtil.sha3('invalidR');
@@ -572,35 +572,35 @@ describe('Exchange', () => {
             return expect(exWrapper.fillOrderAsync(signedOrder, takerAddress)).to.be.rejectedWith(constants.REVERT);
         });
 
-        it('should throw if makerTokenAmount is 0', async () => {
+        it('should throw if makerAssetAmount is 0', async () => {
             signedOrder = orderFactory.newSignedOrder({
-                makerTokenAmount: new BigNumber(0),
+                makerAssetAmount: new BigNumber(0),
             });
 
             return expect(exWrapper.fillOrderAsync(signedOrder, takerAddress)).to.be.rejectedWith(constants.REVERT);
         });
 
-        it('should throw if takerTokenAmount is 0', async () => {
+        it('should throw if takerAssetAmount is 0', async () => {
             signedOrder = orderFactory.newSignedOrder({
-                takerTokenAmount: new BigNumber(0),
+                takerAssetAmount: new BigNumber(0),
             });
 
             return expect(exWrapper.fillOrderAsync(signedOrder, takerAddress)).to.be.rejectedWith(constants.REVERT);
         });
 
-        it('should throw if takerTokenFillAmount is 0', async () => {
+        it('should throw if takerAssetFillAmount is 0', async () => {
             signedOrder = orderFactory.newSignedOrder();
 
             return expect(
                 exWrapper.fillOrderAsync(signedOrder, takerAddress, {
-                    takerTokenFillAmount: new BigNumber(0),
+                    takerAssetFillAmount: new BigNumber(0),
                 }),
             ).to.be.rejectedWith(constants.REVERT);
         });
 
         it('should throw if maker balances are too low to fill order', async () => {
             signedOrder = orderFactory.newSignedOrder({
-                makerTokenAmount: ZeroEx.toBaseUnitAmount(new BigNumber(100000), 18),
+                makerAssetAmount: ZeroEx.toBaseUnitAmount(new BigNumber(100000), 18),
             });
 
             return expect(exWrapper.fillOrderAsync(signedOrder, takerAddress)).to.be.rejectedWith(constants.REVERT);
@@ -608,7 +608,7 @@ describe('Exchange', () => {
 
         it('should throw if taker balances are too low to fill order', async () => {
             signedOrder = orderFactory.newSignedOrder({
-                takerTokenAmount: ZeroEx.toBaseUnitAmount(new BigNumber(100000), 18),
+                takerAssetAmount: ZeroEx.toBaseUnitAmount(new BigNumber(100000), 18),
             });
 
             return expect(exWrapper.fillOrderAsync(signedOrder, takerAddress)).to.be.rejectedWith(constants.REVERT);
@@ -678,17 +678,17 @@ describe('Exchange', () => {
             return expect(exWrapper.cancelOrderAsync(signedOrder, takerAddress)).to.be.rejectedWith(constants.REVERT);
         });
 
-        it('should throw if makerTokenAmount is 0', async () => {
+        it('should throw if makerAssetAmount is 0', async () => {
             signedOrder = orderFactory.newSignedOrder({
-                makerTokenAmount: new BigNumber(0),
+                makerAssetAmount: new BigNumber(0),
             });
 
             return expect(exWrapper.cancelOrderAsync(signedOrder, makerAddress)).to.be.rejectedWith(constants.REVERT);
         });
 
-        it('should throw if takerTokenAmount is 0', async () => {
+        it('should throw if takerAssetAmount is 0', async () => {
             signedOrder = orderFactory.newSignedOrder({
-                takerTokenAmount: new BigNumber(0),
+                takerAssetAmount: new BigNumber(0),
             });
 
             return expect(exWrapper.cancelOrderAsync(signedOrder, makerAddress)).to.be.rejectedWith(constants.REVERT);
@@ -697,7 +697,7 @@ describe('Exchange', () => {
         it('should be able to cancel a full order', async () => {
             await exWrapper.cancelOrderAsync(signedOrder, makerAddress);
             await exWrapper.fillOrderAsync(signedOrder, takerAddress, {
-                takerTokenFillAmount: signedOrder.takerTokenAmount.div(2),
+                takerAssetFillAmount: signedOrder.takerAssetAmount.div(2),
             });
 
             const newBalances = await dmyBalances.getAsync();
@@ -770,31 +770,31 @@ describe('Exchange', () => {
             balances = await dmyBalances.getAsync();
             const signedOrders = await Promise.all([
                 orderFactory.newSignedOrder({
-                    makerTokenAmount: ZeroEx.toBaseUnitAmount(new BigNumber(9), 18),
-                    takerTokenAmount: ZeroEx.toBaseUnitAmount(new BigNumber(9), 18),
+                    makerAssetAmount: ZeroEx.toBaseUnitAmount(new BigNumber(9), 18),
+                    takerAssetAmount: ZeroEx.toBaseUnitAmount(new BigNumber(9), 18),
                     salt: new BigNumber(0),
                 }),
                 orderFactory.newSignedOrder({
-                    makerTokenAmount: ZeroEx.toBaseUnitAmount(new BigNumber(79), 18),
-                    takerTokenAmount: ZeroEx.toBaseUnitAmount(new BigNumber(79), 18),
+                    makerAssetAmount: ZeroEx.toBaseUnitAmount(new BigNumber(79), 18),
+                    takerAssetAmount: ZeroEx.toBaseUnitAmount(new BigNumber(79), 18),
                     salt: new BigNumber(1),
                 }),
                 orderFactory.newSignedOrder({
-                    makerTokenAmount: ZeroEx.toBaseUnitAmount(new BigNumber(979), 18),
-                    takerTokenAmount: ZeroEx.toBaseUnitAmount(new BigNumber(979), 18),
+                    makerAssetAmount: ZeroEx.toBaseUnitAmount(new BigNumber(979), 18),
+                    takerAssetAmount: ZeroEx.toBaseUnitAmount(new BigNumber(979), 18),
                     salt: new BigNumber(2),
                 }),
                 orderFactory.newSignedOrder({
-                    makerTokenAmount: ZeroEx.toBaseUnitAmount(new BigNumber(7979), 18),
-                    takerTokenAmount: ZeroEx.toBaseUnitAmount(new BigNumber(7979), 18),
+                    makerAssetAmount: ZeroEx.toBaseUnitAmount(new BigNumber(7979), 18),
+                    takerAssetAmount: ZeroEx.toBaseUnitAmount(new BigNumber(7979), 18),
                     salt: new BigNumber(3),
                 }),
             ]);
             await exWrapper.batchFillOrdersNoThrowAsync(signedOrders, takerAddress);
 
             const newBalances = await dmyBalances.getAsync();
-            const fillMakerTokenAmount = signedOrders[2].makerTokenAmount.add(signedOrders[3].makerTokenAmount);
-            const fillTakerTokenAmount = signedOrders[2].takerTokenAmount.add(signedOrders[3].takerTokenAmount);
+            const fillMakerTokenAmount = signedOrders[2].makerAssetAmount.add(signedOrders[3].makerAssetAmount);
+            const fillTakerTokenAmount = signedOrders[2].takerAssetAmount.add(signedOrders[3].takerAssetAmount);
             const makerFee = signedOrders[2].makerFee.add(signedOrders[3].makerFee);
             const takerFee = signedOrders[2].takerFee.add(signedOrders[3].takerFee);
             expect(newBalances[makerAddress][defaultMakerTokenAddress]).to.be.bignumber.equal(
@@ -824,165 +824,165 @@ describe('Exchange', () => {
     describe('Testing Exchange of ERC721 Tokens', () => {
         it('should successfully exchange a single token between the maker and taker (via fillOrder)', async () => {
             // Construct Exchange parameters
-            const makerTokenId = erc721MakerTokenIds[0];
-            const takerTokenId = erc721TakerTokenIds[1];
+            const makerAssetId = erc721MakerTokenIds[0];
+            const takerAssetId = erc721TakerTokenIds[1];
             signedOrder = orderFactory.newSignedOrder({
-                makerTokenAmount: new BigNumber(1),
-                takerTokenAmount: new BigNumber(1),
-                makerAssetData: proxyUtils.encodeERC721ProxyData(erc721Token.address, makerTokenId),
-                takerAssetData: proxyUtils.encodeERC721ProxyData(erc721Token.address, takerTokenId),
+                makerAssetAmount: new BigNumber(1),
+                takerAssetAmount: new BigNumber(1),
+                makerAssetData: proxyUtils.encodeERC721ProxyData(erc721Token.address, makerAssetId),
+                takerAssetData: proxyUtils.encodeERC721ProxyData(erc721Token.address, takerAssetId),
             });
             // Verify pre-conditions
-            const initialOwnerMakerToken = await erc721Token.ownerOf.callAsync(makerTokenId);
+            const initialOwnerMakerToken = await erc721Token.ownerOf.callAsync(makerAssetId);
             expect(initialOwnerMakerToken).to.be.bignumber.equal(makerAddress);
-            const initialOwnerTakerToken = await erc721Token.ownerOf.callAsync(takerTokenId);
+            const initialOwnerTakerToken = await erc721Token.ownerOf.callAsync(takerAssetId);
             expect(initialOwnerTakerToken).to.be.bignumber.equal(takerAddress);
             // Call Exchange
-            const takerTokenFillAmount = signedOrder.takerTokenAmount;
-            const res = await exWrapper.fillOrderAsync(signedOrder, takerAddress, { takerTokenFillAmount });
+            const takerAssetFillAmount = signedOrder.takerAssetAmount;
+            const res = await exWrapper.fillOrderAsync(signedOrder, takerAddress, { takerAssetFillAmount });
             // Verify post-conditions
-            const newOwnerMakerToken = await erc721Token.ownerOf.callAsync(makerTokenId);
+            const newOwnerMakerToken = await erc721Token.ownerOf.callAsync(makerAssetId);
             expect(newOwnerMakerToken).to.be.bignumber.equal(takerAddress);
-            const newOwnerTakerToken = await erc721Token.ownerOf.callAsync(takerTokenId);
+            const newOwnerTakerToken = await erc721Token.ownerOf.callAsync(takerAssetId);
             expect(newOwnerTakerToken).to.be.bignumber.equal(makerAddress);
         });
 
-        it('should throw when maker does not own the token with id makerTokenId', async () => {
+        it('should throw when maker does not own the token with id makerAssetId', async () => {
             // Construct Exchange parameters
-            const makerTokenId = erc721TakerTokenIds[0];
-            const takerTokenId = erc721TakerTokenIds[1];
+            const makerAssetId = erc721TakerTokenIds[0];
+            const takerAssetId = erc721TakerTokenIds[1];
             signedOrder = orderFactory.newSignedOrder({
-                makerTokenAmount: new BigNumber(1),
-                takerTokenAmount: new BigNumber(1),
-                makerAssetData: proxyUtils.encodeERC721ProxyData(erc721Token.address, makerTokenId),
-                takerAssetData: proxyUtils.encodeERC721ProxyData(erc721Token.address, takerTokenId),
+                makerAssetAmount: new BigNumber(1),
+                takerAssetAmount: new BigNumber(1),
+                makerAssetData: proxyUtils.encodeERC721ProxyData(erc721Token.address, makerAssetId),
+                takerAssetData: proxyUtils.encodeERC721ProxyData(erc721Token.address, takerAssetId),
             });
             // Verify pre-conditions
-            const initialOwnerMakerToken = await erc721Token.ownerOf.callAsync(makerTokenId);
+            const initialOwnerMakerToken = await erc721Token.ownerOf.callAsync(makerAssetId);
             expect(initialOwnerMakerToken).to.be.bignumber.not.equal(makerAddress);
-            const initialOwnerTakerToken = await erc721Token.ownerOf.callAsync(takerTokenId);
+            const initialOwnerTakerToken = await erc721Token.ownerOf.callAsync(takerAssetId);
             expect(initialOwnerTakerToken).to.be.bignumber.equal(takerAddress);
             // Call Exchange
-            const takerTokenFillAmount = signedOrder.takerTokenAmount;
+            const takerAssetFillAmount = signedOrder.takerAssetAmount;
             return expect(
-                exWrapper.fillOrderAsync(signedOrder, takerAddress, { takerTokenFillAmount }),
+                exWrapper.fillOrderAsync(signedOrder, takerAddress, { takerAssetFillAmount }),
             ).to.be.rejectedWith(constants.REVERT);
         });
 
-        it('should throw when taker does not own the token with id takerTokenId', async () => {
+        it('should throw when taker does not own the token with id takerAssetId', async () => {
             // Construct Exchange parameters
-            const makerTokenId = erc721MakerTokenIds[0];
-            const takerTokenId = erc721MakerTokenIds[1];
+            const makerAssetId = erc721MakerTokenIds[0];
+            const takerAssetId = erc721MakerTokenIds[1];
             signedOrder = orderFactory.newSignedOrder({
-                makerTokenAmount: new BigNumber(1),
-                takerTokenAmount: new BigNumber(1),
-                makerAssetData: proxyUtils.encodeERC721ProxyData(erc721Token.address, makerTokenId),
-                takerAssetData: proxyUtils.encodeERC721ProxyData(erc721Token.address, takerTokenId),
+                makerAssetAmount: new BigNumber(1),
+                takerAssetAmount: new BigNumber(1),
+                makerAssetData: proxyUtils.encodeERC721ProxyData(erc721Token.address, makerAssetId),
+                takerAssetData: proxyUtils.encodeERC721ProxyData(erc721Token.address, takerAssetId),
             });
             // Verify pre-conditions
-            const initialOwnerMakerToken = await erc721Token.ownerOf.callAsync(makerTokenId);
+            const initialOwnerMakerToken = await erc721Token.ownerOf.callAsync(makerAssetId);
             expect(initialOwnerMakerToken).to.be.bignumber.equal(makerAddress);
-            const initialOwnerTakerToken = await erc721Token.ownerOf.callAsync(takerTokenId);
+            const initialOwnerTakerToken = await erc721Token.ownerOf.callAsync(takerAssetId);
             expect(initialOwnerTakerToken).to.be.bignumber.not.equal(takerAddress);
             // Call Exchange
-            const takerTokenFillAmount = signedOrder.takerTokenAmount;
+            const takerAssetFillAmount = signedOrder.takerAssetAmount;
             return expect(
-                exWrapper.fillOrderAsync(signedOrder, takerAddress, { takerTokenFillAmount }),
+                exWrapper.fillOrderAsync(signedOrder, takerAddress, { takerAssetFillAmount }),
             ).to.be.rejectedWith(constants.REVERT);
         });
 
-        it('should throw when makerTokenAmount is greater than 1', async () => {
+        it('should throw when makerAssetAmount is greater than 1', async () => {
             // Construct Exchange parameters
-            const makerTokenId = erc721MakerTokenIds[0];
-            const takerTokenId = erc721TakerTokenIds[0];
+            const makerAssetId = erc721MakerTokenIds[0];
+            const takerAssetId = erc721TakerTokenIds[0];
             signedOrder = orderFactory.newSignedOrder({
-                makerTokenAmount: new BigNumber(2),
-                takerTokenAmount: new BigNumber(1),
-                makerAssetData: proxyUtils.encodeERC721ProxyData(erc721Token.address, makerTokenId),
-                takerAssetData: proxyUtils.encodeERC721ProxyData(erc721Token.address, takerTokenId),
+                makerAssetAmount: new BigNumber(2),
+                takerAssetAmount: new BigNumber(1),
+                makerAssetData: proxyUtils.encodeERC721ProxyData(erc721Token.address, makerAssetId),
+                takerAssetData: proxyUtils.encodeERC721ProxyData(erc721Token.address, takerAssetId),
             });
             // Verify pre-conditions
-            const initialOwnerMakerToken = await erc721Token.ownerOf.callAsync(makerTokenId);
+            const initialOwnerMakerToken = await erc721Token.ownerOf.callAsync(makerAssetId);
             expect(initialOwnerMakerToken).to.be.bignumber.equal(makerAddress);
-            const initialOwnerTakerToken = await erc721Token.ownerOf.callAsync(takerTokenId);
+            const initialOwnerTakerToken = await erc721Token.ownerOf.callAsync(takerAssetId);
             expect(initialOwnerTakerToken).to.be.bignumber.equal(takerAddress);
             // Call Exchange
-            const takerTokenFillAmount = signedOrder.takerTokenAmount;
+            const takerAssetFillAmount = signedOrder.takerAssetAmount;
             return expect(
-                exWrapper.fillOrderAsync(signedOrder, takerAddress, { takerTokenFillAmount }),
+                exWrapper.fillOrderAsync(signedOrder, takerAddress, { takerAssetFillAmount }),
             ).to.be.rejectedWith(constants.REVERT);
         });
 
-        it('should throw when takerTokenAmount is greater than 1', async () => {
+        it('should throw when takerAssetAmount is greater than 1', async () => {
             // Construct Exchange parameters
-            const makerTokenId = erc721MakerTokenIds[0];
-            const takerTokenId = erc721TakerTokenIds[0];
+            const makerAssetId = erc721MakerTokenIds[0];
+            const takerAssetId = erc721TakerTokenIds[0];
             signedOrder = orderFactory.newSignedOrder({
-                makerTokenAmount: new BigNumber(1),
-                takerTokenAmount: new BigNumber(500),
-                makerAssetData: proxyUtils.encodeERC721ProxyData(erc721Token.address, makerTokenId),
-                takerAssetData: proxyUtils.encodeERC721ProxyData(erc721Token.address, takerTokenId),
+                makerAssetAmount: new BigNumber(1),
+                takerAssetAmount: new BigNumber(500),
+                makerAssetData: proxyUtils.encodeERC721ProxyData(erc721Token.address, makerAssetId),
+                takerAssetData: proxyUtils.encodeERC721ProxyData(erc721Token.address, takerAssetId),
             });
             // Verify pre-conditions
-            const initialOwnerMakerToken = await erc721Token.ownerOf.callAsync(makerTokenId);
+            const initialOwnerMakerToken = await erc721Token.ownerOf.callAsync(makerAssetId);
             expect(initialOwnerMakerToken).to.be.bignumber.equal(makerAddress);
-            const initialOwnerTakerToken = await erc721Token.ownerOf.callAsync(takerTokenId);
+            const initialOwnerTakerToken = await erc721Token.ownerOf.callAsync(takerAssetId);
             expect(initialOwnerTakerToken).to.be.bignumber.equal(takerAddress);
             // Call Exchange
-            const takerTokenFillAmount = signedOrder.takerTokenAmount;
+            const takerAssetFillAmount = signedOrder.takerAssetAmount;
             return expect(
-                exWrapper.fillOrderAsync(signedOrder, takerAddress, { takerTokenFillAmount }),
+                exWrapper.fillOrderAsync(signedOrder, takerAddress, { takerAssetFillAmount }),
             ).to.be.rejectedWith(constants.REVERT);
         });
 
         it('should throw on partial fill', async () => {
             // Construct Exchange parameters
-            const makerTokenId = erc721MakerTokenIds[0];
-            const takerTokenId = erc721TakerTokenIds[0];
+            const makerAssetId = erc721MakerTokenIds[0];
+            const takerAssetId = erc721TakerTokenIds[0];
             signedOrder = orderFactory.newSignedOrder({
-                makerTokenAmount: new BigNumber(1),
-                takerTokenAmount: new BigNumber(0),
-                makerAssetData: proxyUtils.encodeERC721ProxyData(erc721Token.address, makerTokenId),
-                takerAssetData: proxyUtils.encodeERC721ProxyData(erc721Token.address, takerTokenId),
+                makerAssetAmount: new BigNumber(1),
+                takerAssetAmount: new BigNumber(0),
+                makerAssetData: proxyUtils.encodeERC721ProxyData(erc721Token.address, makerAssetId),
+                takerAssetData: proxyUtils.encodeERC721ProxyData(erc721Token.address, takerAssetId),
             });
             // Verify pre-conditions
-            const initialOwnerMakerToken = await erc721Token.ownerOf.callAsync(makerTokenId);
+            const initialOwnerMakerToken = await erc721Token.ownerOf.callAsync(makerAssetId);
             expect(initialOwnerMakerToken).to.be.bignumber.equal(makerAddress);
-            const initialOwnerTakerToken = await erc721Token.ownerOf.callAsync(takerTokenId);
+            const initialOwnerTakerToken = await erc721Token.ownerOf.callAsync(takerAssetId);
             expect(initialOwnerTakerToken).to.be.bignumber.equal(takerAddress);
             // Call Exchange
-            const takerTokenFillAmount = signedOrder.takerTokenAmount;
+            const takerAssetFillAmount = signedOrder.takerAssetAmount;
             return expect(
-                exWrapper.fillOrderAsync(signedOrder, takerAddress, { takerTokenFillAmount }),
+                exWrapper.fillOrderAsync(signedOrder, takerAddress, { takerAssetFillAmount }),
             ).to.be.rejectedWith(constants.REVERT);
         });
 
-        it('should successfully fill order when makerToken is ERC721 and takerToken is ERC20', async () => {
+        it('should successfully fill order when makerAsset is ERC721 and takerAsset is ERC20', async () => {
             // Construct Exchange parameters
-            const makerTokenId = erc721MakerTokenIds[0];
+            const makerAssetId = erc721MakerTokenIds[0];
             signedOrder = orderFactory.newSignedOrder({
-                makerTokenAmount: new BigNumber(1),
-                takerTokenAmount: ZeroEx.toBaseUnitAmount(new BigNumber(100), 18),
-                makerAssetData: proxyUtils.encodeERC721ProxyData(erc721Token.address, makerTokenId),
+                makerAssetAmount: new BigNumber(1),
+                takerAssetAmount: ZeroEx.toBaseUnitAmount(new BigNumber(100), 18),
+                makerAssetData: proxyUtils.encodeERC721ProxyData(erc721Token.address, makerAssetId),
                 takerAssetData: proxyUtils.encodeERC20ProxyData(defaultTakerTokenAddress),
             });
             // Verify pre-conditions
-            const initialOwnerMakerToken = await erc721Token.ownerOf.callAsync(makerTokenId);
+            const initialOwnerMakerToken = await erc721Token.ownerOf.callAsync(makerAssetId);
             expect(initialOwnerMakerToken).to.be.bignumber.equal(makerAddress);
             // Call Exchange
             balances = await dmyBalances.getAsync();
-            const takerTokenFillAmount = signedOrder.takerTokenAmount;
-            await exWrapper.fillOrderAsync(signedOrder, takerAddress, { takerTokenFillAmount });
+            const takerAssetFillAmount = signedOrder.takerAssetAmount;
+            await exWrapper.fillOrderAsync(signedOrder, takerAddress, { takerAssetFillAmount });
             // Verify ERC721 token was transferred from Maker to Taker
-            const newOwnerMakerToken = await erc721Token.ownerOf.callAsync(makerTokenId);
+            const newOwnerMakerToken = await erc721Token.ownerOf.callAsync(makerAssetId);
             expect(newOwnerMakerToken).to.be.bignumber.equal(takerAddress);
             // Verify ERC20 tokens were transferred from Taker to Maker & fees were paid correctly
             const newBalances = await dmyBalances.getAsync();
             expect(newBalances[makerAddress][defaultTakerTokenAddress]).to.be.bignumber.equal(
-                balances[makerAddress][defaultTakerTokenAddress].add(takerTokenFillAmount),
+                balances[makerAddress][defaultTakerTokenAddress].add(takerAssetFillAmount),
             );
             expect(newBalances[takerAddress][defaultTakerTokenAddress]).to.be.bignumber.equal(
-                balances[takerAddress][defaultTakerTokenAddress].minus(takerTokenFillAmount),
+                balances[takerAddress][defaultTakerTokenAddress].minus(takerAssetFillAmount),
             );
             expect(newBalances[makerAddress][zrx.address]).to.be.bignumber.equal(
                 balances[makerAddress][zrx.address].minus(signedOrder.makerFee),
@@ -995,32 +995,32 @@ describe('Exchange', () => {
             );
         });
 
-        it('should successfully fill order when makerToken is ERC20 and takerToken is ERC721', async () => {
+        it('should successfully fill order when makerAsset is ERC20 and takerAsset is ERC721', async () => {
             // Construct Exchange parameters
-            const takerTokenId = erc721TakerTokenIds[0];
+            const takerAssetId = erc721TakerTokenIds[0];
             signedOrder = orderFactory.newSignedOrder({
-                takerTokenAmount: new BigNumber(1),
-                makerTokenAmount: ZeroEx.toBaseUnitAmount(new BigNumber(100), 18),
-                takerAssetData: proxyUtils.encodeERC721ProxyData(erc721Token.address, takerTokenId),
+                takerAssetAmount: new BigNumber(1),
+                makerAssetAmount: ZeroEx.toBaseUnitAmount(new BigNumber(100), 18),
+                takerAssetData: proxyUtils.encodeERC721ProxyData(erc721Token.address, takerAssetId),
                 makerAssetData: proxyUtils.encodeERC20ProxyData(defaultMakerTokenAddress),
             });
             // Verify pre-conditions
-            const initialOwnerTakerToken = await erc721Token.ownerOf.callAsync(takerTokenId);
+            const initialOwnerTakerToken = await erc721Token.ownerOf.callAsync(takerAssetId);
             expect(initialOwnerTakerToken).to.be.bignumber.equal(takerAddress);
             // Call Exchange
             balances = await dmyBalances.getAsync();
-            const takerTokenFillAmount = signedOrder.takerTokenAmount;
-            await exWrapper.fillOrderAsync(signedOrder, takerAddress, { takerTokenFillAmount });
+            const takerAssetFillAmount = signedOrder.takerAssetAmount;
+            await exWrapper.fillOrderAsync(signedOrder, takerAddress, { takerAssetFillAmount });
             // Verify ERC721 token was transferred from Taker to Maker
-            const newOwnerTakerToken = await erc721Token.ownerOf.callAsync(takerTokenId);
+            const newOwnerTakerToken = await erc721Token.ownerOf.callAsync(takerAssetId);
             expect(newOwnerTakerToken).to.be.bignumber.equal(makerAddress);
             // Verify ERC20 tokens were transferred from Maker to Taker & fees were paid correctly
             const newBalances = await dmyBalances.getAsync();
             expect(newBalances[takerAddress][defaultMakerTokenAddress]).to.be.bignumber.equal(
-                balances[takerAddress][defaultMakerTokenAddress].add(signedOrder.makerTokenAmount),
+                balances[takerAddress][defaultMakerTokenAddress].add(signedOrder.makerAssetAmount),
             );
             expect(newBalances[makerAddress][defaultMakerTokenAddress]).to.be.bignumber.equal(
-                balances[makerAddress][defaultMakerTokenAddress].minus(signedOrder.makerTokenAmount),
+                balances[makerAddress][defaultMakerTokenAddress].minus(signedOrder.makerAssetAmount),
             );
             expect(newBalances[makerAddress][zrx.address]).to.be.bignumber.equal(
                 balances[makerAddress][zrx.address].minus(signedOrder.makerFee),
