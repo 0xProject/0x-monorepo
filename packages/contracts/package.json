@@ -15,10 +15,13 @@
         "test": "run-s build run_mocha",
         "test:coverage": "SOLIDITY_COVERAGE=true run-s build run_mocha coverage:report:text coverage:report:lcov",
         "run_mocha": "mocha 'lib/test/**/*.js' --timeout 100000 --bail --exit",
-        "compile:comment": "Yarn workspaces do not link binaries correctly so we need to reference them directly https://github.com/yarnpkg/yarn/issues/3846",
-        "compile": "node ../deployer/lib/src/cli.js compile --contracts ${npm_package_config_contracts} --contracts-dir src/contracts --artifacts-dir ../migrations/src/artifacts",
+        "compile:comment":
+            "Yarn workspaces do not link binaries correctly so we need to reference them directly https://github.com/yarnpkg/yarn/issues/3846",
+        "compile":
+            "node ../deployer/lib/src/cli.js compile --contracts ${npm_package_config_contracts} --contracts-dir src/contracts --artifacts-dir ../migrations/src/artifacts",
         "clean": "shx rm -rf ./lib",
-        "generate_contract_wrappers": "node ../abi-gen/lib/index.js --abis  ${npm_package_config_abis} --template ../contract_templates/contract.handlebars --partials '../contract_templates/partials/**/*.handlebars' --output src/contract_wrappers/generated --backend ethers && prettier --write 'src/contract_wrappers/generated/**.ts'",
+        "generate_contract_wrappers":
+            "node ../abi-gen/lib/index.js --abis  ${npm_package_config_abis} --template ../contract_templates/contract.handlebars --partials '../contract_templates/partials/**/*.handlebars' --output src/contract_wrappers/generated --backend ethers && prettier --write 'src/contract_wrappers/generated/**.ts'",
         "lint": "tslint --project . 'migrations/**/*.ts' 'test/**/*.ts' 'util/**/*.ts' 'deploy/**/*.ts'",
         "coverage:report:text": "istanbul report text",
         "coverage:report:html": "istanbul report html && open coverage/index.html",
@@ -26,8 +29,10 @@
         "test:circleci": "yarn test:coverage"
     },
     "config": {
-        "abis": "../migrations/src/artifacts/@(DummyToken|Exchange|TokenRegistry|MultiSigWallet|MultiSigWalletWithTimeLock|MultiSigWalletWithTimeLockExceptRemoveAuthorizedAddress|TokenRegistry|ZRXToken|AssetProxyDispatcher|ERC20Proxy|ERC721Proxy|DummyERC721Token|LibBytes).json",
-        "contracts": "Exchange,DummyToken,ZRXToken,Token,WETH9,MultiSigWallet,MultiSigWalletWithTimeLock,MultiSigWalletWithTimeLockExceptRemoveAuthorizedAddress,MaliciousToken,TokenRegistry,AssetProxyDispatcher,ERC20Proxy,ERC721Proxy,DummyERC721Token,LibBytes"
+        "abis":
+            "../migrations/src/artifacts/@(DummyERC20Token|Exchange|TokenRegistry|MultiSigWallet|MultiSigWalletWithTimeLock|MultiSigWalletWithTimeLockExceptRemoveAuthorizedAddress|TokenRegistry|ZRXToken|AssetProxyDispatcher|ERC20Proxy|ERC721Proxy|DummyERC721Token|LibBytes).json",
+        "contracts":
+            "Exchange,DummyERC20Token,ZRXToken,Token,WETH9,MultiSigWallet,MultiSigWalletWithTimeLock,MultiSigWalletWithTimeLockExceptRemoveAuthorizedAddress,MaliciousToken,TokenRegistry,AssetProxyDispatcher,ERC20Proxy,ERC721Proxy,DummyERC721Token,LibBytes"
     },
     "repository": {
         "type": "git",

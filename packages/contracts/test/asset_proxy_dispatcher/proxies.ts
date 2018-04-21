@@ -6,8 +6,8 @@ import * as chai from 'chai';
 import * as Web3 from 'web3';
 
 import { AssetProxyDispatcherContract } from '../../src/contract_wrappers/generated/asset_proxy_dispatcher';
+import { DummyERC20TokenContract } from '../../src/contract_wrappers/generated/dummy_e_r_c20_token';
 import { DummyERC721TokenContract } from '../../src/contract_wrappers/generated/dummy_e_r_c721_token';
-import { DummyTokenContract } from '../../src/contract_wrappers/generated/dummy_token';
 import { ERC20ProxyContract } from '../../src/contract_wrappers/generated/e_r_c20_proxy';
 import { ERC721ProxyContract } from '../../src/contract_wrappers/generated/e_r_c721_proxy';
 import { proxyUtils } from '../../src/utils/asset_proxy_utils';
@@ -29,7 +29,7 @@ describe('Asset Transfer Proxies', () => {
     let tokenOwner: string;
     let makerAddress: string;
     let takerAddress: string;
-    let zrx: DummyTokenContract;
+    let zrx: DummyERC20TokenContract;
     let erc721Token: DummyERC721TokenContract;
     let dmyBalances: Balances;
     let erc20Proxy: ERC20ProxyContract;
@@ -59,8 +59,8 @@ describe('Asset Transfer Proxies', () => {
             from: owner,
         });
         // Deploy zrx and set initial balances
-        const zrxInstance = await deployer.deployAsync(ContractName.DummyToken, constants.DUMMY_TOKEN_ARGS);
-        zrx = new DummyTokenContract(zrxInstance.abi, zrxInstance.address, provider);
+        const zrxInstance = await deployer.deployAsync(ContractName.DummyERC20Token, constants.DUMMY_TOKEN_ARGS);
+        zrx = new DummyERC20TokenContract(zrxInstance.abi, zrxInstance.address, provider);
         await zrx.setBalance.sendTransactionAsync(makerAddress, INITIAL_BALANCE, { from: tokenOwner });
         await zrx.setBalance.sendTransactionAsync(takerAddress, INITIAL_BALANCE, { from: tokenOwner });
         dmyBalances = new Balances([zrx], [makerAddress, takerAddress]);

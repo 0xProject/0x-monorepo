@@ -8,8 +8,8 @@ import * as _ from 'lodash';
 import * as Web3 from 'web3';
 
 import { AssetProxyDispatcherContract } from '../../src/contract_wrappers/generated/asset_proxy_dispatcher';
+import { DummyERC20TokenContract } from '../../src/contract_wrappers/generated/dummy_e_r_c20_token';
 import { DummyERC721TokenContract } from '../../src/contract_wrappers/generated/dummy_e_r_c721_token';
-import { DummyTokenContract } from '../../src/contract_wrappers/generated/dummy_token';
 import { ERC20ProxyContract } from '../../src/contract_wrappers/generated/e_r_c20_proxy';
 import { ERC721ProxyContract } from '../../src/contract_wrappers/generated/e_r_c721_proxy';
 import {
@@ -49,9 +49,9 @@ describe('Exchange', () => {
     const INITIAL_BALANCE = ZeroEx.toBaseUnitAmount(new BigNumber(10000), 18);
     const INITIAL_ALLOWANCE = ZeroEx.toBaseUnitAmount(new BigNumber(10000), 18);
 
-    let rep: DummyTokenContract;
-    let dgd: DummyTokenContract;
-    let zrx: DummyTokenContract;
+    let rep: DummyERC20TokenContract;
+    let dgd: DummyERC20TokenContract;
+    let zrx: DummyERC20TokenContract;
     let erc721Token: DummyERC721TokenContract;
     let exchange: ExchangeContract;
     let assetProxyDispatcher: AssetProxyDispatcherContract;
@@ -85,14 +85,14 @@ describe('Exchange', () => {
         [tokenOwner, takerAddress, feeRecipientAddress] = accounts;
         const owner = tokenOwner;
         const [repInstance, dgdInstance, zrxInstance, erc721TokenInstance] = await Promise.all([
-            deployer.deployAsync(ContractName.DummyToken, constants.DUMMY_TOKEN_ARGS),
-            deployer.deployAsync(ContractName.DummyToken, constants.DUMMY_TOKEN_ARGS),
-            deployer.deployAsync(ContractName.DummyToken, constants.DUMMY_TOKEN_ARGS),
+            deployer.deployAsync(ContractName.DummyERC20Token, constants.DUMMY_TOKEN_ARGS),
+            deployer.deployAsync(ContractName.DummyERC20Token, constants.DUMMY_TOKEN_ARGS),
+            deployer.deployAsync(ContractName.DummyERC20Token, constants.DUMMY_TOKEN_ARGS),
             deployer.deployAsync(ContractName.DummyERC721Token, constants.DUMMY_ERC721TOKEN_ARGS),
         ]);
-        rep = new DummyTokenContract(repInstance.abi, repInstance.address, provider);
-        dgd = new DummyTokenContract(dgdInstance.abi, dgdInstance.address, provider);
-        zrx = new DummyTokenContract(zrxInstance.abi, zrxInstance.address, provider);
+        rep = new DummyERC20TokenContract(repInstance.abi, repInstance.address, provider);
+        dgd = new DummyERC20TokenContract(dgdInstance.abi, dgdInstance.address, provider);
+        zrx = new DummyERC20TokenContract(zrxInstance.abi, zrxInstance.address, provider);
         erc721Token = new DummyERC721TokenContract(erc721TokenInstance.abi, erc721TokenInstance.address, provider);
         // Deploy Asset Proxy Dispatcher
         const assetProxyDispatcherInstance = await deployer.deployAsync(ContractName.AssetProxyDispatcher);

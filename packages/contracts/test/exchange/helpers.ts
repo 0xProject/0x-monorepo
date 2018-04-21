@@ -36,9 +36,9 @@ describe('Exchange', () => {
         const owner = accounts[0];
         const tokenRegistry = await deployer.deployAsync(ContractName.TokenRegistry);
         const [rep, dgd, zrx] = await Promise.all([
-            deployer.deployAsync(ContractName.DummyToken, constants.DUMMY_TOKEN_ARGS),
-            deployer.deployAsync(ContractName.DummyToken, constants.DUMMY_TOKEN_ARGS),
-            deployer.deployAsync(ContractName.DummyToken, constants.DUMMY_TOKEN_ARGS),
+            deployer.deployAsync(ContractName.DummyERC20Token, constants.DUMMY_TOKEN_ARGS),
+            deployer.deployAsync(ContractName.DummyERC20Token, constants.DUMMY_TOKEN_ARGS),
+            deployer.deployAsync(ContractName.DummyERC20Token, constants.DUMMY_TOKEN_ARGS),
         ]);
         const assetProxyDispatcher = await deployer.deployAsync(ContractName.AssetProxyDispatcher);
         // Deploy and configure Exchange
