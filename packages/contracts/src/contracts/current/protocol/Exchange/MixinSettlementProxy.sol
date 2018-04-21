@@ -33,9 +33,9 @@ contract MixinSettlementProxy is
 
     function assetProxyDispatcher()
         public view
-        returns (IAssetProxy)
+        returns (address)
     {
-        return ASSET_PROXY_DISPATCHER;
+        return address(ASSET_PROXY_DISPATCHER);
     }
 
     function zrxProxyData()

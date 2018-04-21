@@ -100,9 +100,8 @@ contract Authorizable is
     /// @dev Gets all authorized addresses.
     /// @return Array of authorized addresses.
     function getAuthorizedAddresses()
-        public
-        constant
-        returns (address[])
+        public view
+        returns (address[] memory)
     {
         return authorities;
     }
