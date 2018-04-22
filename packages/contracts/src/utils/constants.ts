@@ -1,3 +1,5 @@
+import { ZeroEx } from '0x.js';
+import { BigNumber } from '@0xproject/utils';
 import * as ethUtil from 'ethereumjs-util';
 import * as _ from 'lodash';
 
@@ -25,7 +27,16 @@ export const constants = {
     MAX_ETHERTOKEN_WITHDRAW_GAS: 43000,
     MAX_TOKEN_TRANSFERFROM_GAS: 80000,
     MAX_TOKEN_APPROVE_GAS: 60000,
-    DUMMY_TOKEN_ARGS: [DUMMY_TOKEN_NAME, DUMMY_TOKEN_SYMBOL, DUMMY_TOKEN_DECIMALS, DUMMY_TOKEN_TOTAL_SUPPLY],
-    DUMMY_ERC721TOKEN_ARGS: [DUMMY_TOKEN_NAME, DUMMY_TOKEN_SYMBOL],
+    DUMMY_ERC20_TOKEN_ARGS: [DUMMY_TOKEN_NAME, DUMMY_TOKEN_SYMBOL, DUMMY_TOKEN_DECIMALS, DUMMY_TOKEN_TOTAL_SUPPLY],
+    DUMMY_ERC721_TOKEN_ARGS: [DUMMY_TOKEN_NAME, DUMMY_TOKEN_SYMBOL],
+    NUM_ERC721_TOKENS_TO_MINT: 2,
     TESTRPC_PRIVATE_KEYS: _.map(TESTRPC_PRIVATE_KEYS_STRINGS, privateKeyString => ethUtil.toBuffer(privateKeyString)),
+    INITIAL_ERC20_BALANCE: ZeroEx.toBaseUnitAmount(new BigNumber(10000), 18),
+    INITIAL_ERC20_ALLOWANCE: ZeroEx.toBaseUnitAmount(new BigNumber(10000), 18),
+    STATIC_ORDER_PARAMS: {
+        makerAssetAmount: ZeroEx.toBaseUnitAmount(new BigNumber(100), 18),
+        takerAssetAmount: ZeroEx.toBaseUnitAmount(new BigNumber(200), 18),
+        makerFee: ZeroEx.toBaseUnitAmount(new BigNumber(1), 18),
+        takerFee: ZeroEx.toBaseUnitAmount(new BigNumber(1), 18),
+    },
 };
