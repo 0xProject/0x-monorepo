@@ -53,21 +53,21 @@ contract MixinExchangeCore is
         address indexed makerAddress,
         address takerAddress,
         address indexed feeRecipientAddress,
-        bytes makerAssetData,
-        bytes takerAssetData,
         uint256 makerAssetFilledAmount,
         uint256 takerAssetFilledAmount,
         uint256 makerFeePaid,
         uint256 takerFeePaid,
-        bytes32 indexed orderHash
+        bytes32 indexed orderHash,
+        bytes makerAssetData,
+        bytes takerAssetData
     );
 
     event Cancel(
         address indexed makerAddress,
         address indexed feeRecipientAddress,
+        bytes32 indexed orderHash,
         bytes makerAssetData,
-        bytes takerAssetData,
-        bytes32 indexed orderHash
+        bytes takerAssetData
     );
 
     event CancelUpTo(
@@ -153,13 +153,13 @@ contract MixinExchangeCore is
             order.makerAddress,
             msg.sender,
             order.feeRecipientAddress,
-            order.makerAssetData,
-            order.takerAssetData,
             fillResults.makerAssetFilledAmount,
             fillResults.takerAssetFilledAmount,
             fillResults.makerFeePaid,
             fillResults.takerFeePaid,
-            orderHash
+            orderHash,
+            order.makerAssetData,
+            order.takerAssetData
         );
         return fillResults;
     }
@@ -195,9 +195,9 @@ contract MixinExchangeCore is
         emit Cancel(
             order.makerAddress,
             order.feeRecipientAddress,
+            orderHash,
             order.makerAssetData,
-            order.takerAssetData,
-            orderHash
+            order.takerAssetData
         );
         return true;
     }
