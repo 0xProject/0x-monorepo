@@ -21,24 +21,26 @@ pragma experimental ABIEncoderV2;
 
 import "./MixinExchangeCore.sol";
 import "./MixinSignatureValidator.sol";
-import "./MixinSettlementProxy.sol";
+import "./MixinSettlement.sol";
 import "./MixinWrapperFunctions.sol";
+import "./MixinAssetProxyDispatcher.sol";
 
 contract Exchange is
     MixinExchangeCore,
     MixinSignatureValidator,
-    MixinSettlementProxy,
-    MixinWrapperFunctions
+    MixinSettlement,
+    MixinWrapperFunctions,
+    MixinAssetProxyDispatcher
 {
     string constant public VERSION = "2.0.1-alpha";
 
     function Exchange(
-        address _assetProxyDispatcher,
         bytes memory _zrxProxyData)
         public
         MixinExchangeCore()
         MixinSignatureValidator()
-        MixinSettlementProxy(_assetProxyDispatcher, _zrxProxyData)
+        MixinSettlement(_zrxProxyData)
         MixinWrapperFunctions()
+        MixinAssetProxyDispatcher()
     {}
 }
