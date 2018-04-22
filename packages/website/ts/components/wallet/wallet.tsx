@@ -6,7 +6,7 @@ import {
     Styles,
     utils as sharedUtils,
 } from '@0xproject/react-shared';
-import { BigNumber } from '@0xproject/utils';
+import { BigNumber, logUtils } from '@0xproject/utils';
 import * as _ from 'lodash';
 import FlatButton from 'material-ui/FlatButton';
 import { List, ListItem } from 'material-ui/List';
@@ -37,7 +37,9 @@ import {
     TokenStateByAddress,
 } from 'ts/types';
 import { backendClient } from 'ts/utils/backend_client';
+import { configs } from 'ts/utils/configs';
 import { constants } from 'ts/utils/constants';
+import { errorReporter } from 'ts/utils/error_reporter';
 import { utils } from 'ts/utils/utils';
 import { styles as walletItemStyles } from 'ts/utils/wallet_item_styles';
 
@@ -491,15 +493,42 @@ export class Wallet extends React.Component<WalletProps, WalletState> {
         if (_.isEmpty(tokenAddresses)) {
             return {};
         }
-        try {
-            const websiteBackendPriceInfos = await backendClient.getPriceInfosAsync(tokenAddresses);
-            const addresses = _.map(websiteBackendPriceInfos, info => info.address);
-            const prices = _.map(websiteBackendPriceInfos, info => new BigNumber(info.price));
-            const pricesByAddress = _.zipObject(addresses, prices);
-            return pricesByAddress;
-        } catch (err) {
+        // for each input token address, search for the corresponding symbol in this.props.tokenByAddress, if it exists
+        // create a mapping from existing symbols -> address
+        const tokenAddressBySymbol = _.fromPairs(
+            _.compact(
+                _.map(tokenAddresses, address => {
+                    const tokenIfExists = _.get(this.props.tokenByAddress, address);
+                    if (!_.isUndefined(tokenIfExists)) {
+                        const symbol = tokenIfExists.symbol;
+                        // the crypto compare api doesn't understand 'WETH' so we need to replace it with 'ETH'
+                        const key = symbol === ETHER_TOKEN_SYMBOL ? ETHER_SYMBOL : symbol;
+                        return [key, address];
+                    } else {
+                        return undefined;
+                    }
+                }),
+            ),
+        );
+        const joinedTokenSymbols = _.keys(tokenAddressBySymbol).join(',');
+        const url = `${configs.CRYPTO_COMPARE_BASE_URL}/pricemulti?fsyms=${joinedTokenSymbols}&tsyms=USD`;
+        const response = await fetch(url);
+        if (response.status !== 200) {
+            const errorText = `Error requesting url: ${url}, ${response.status}: ${response.statusText}`;
+            logUtils.log(errorText);
+            const error = Error(errorText);
+            // tslint:disable-next-line:no-floating-promises
+            errorReporter.reportAsync(error);
             return {};
         }
+        const priceInfoBySymbol = await response.json();
+        const priceInfoByAddress = _.mapKeys(priceInfoBySymbol, (value, symbol) => _.get(tokenAddressBySymbol, symbol));
+        const result = _.mapValues(priceInfoByAddress, priceInfo => {
+            const price = _.get(priceInfo, 'USD');
+            const priceBigNumber = new BigNumber(price);
+            return priceBigNumber;
+        });
+        return result;
     }
     private _openWrappedEtherActionRow(wrappedEtherDirection: Side) {
         this.setState({

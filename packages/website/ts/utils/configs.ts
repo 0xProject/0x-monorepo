@@ -13,6 +13,7 @@ export const configs = {
     BACKEND_BASE_URL: 'https://website-api.0xproject.com',
     BASE_URL,
     BITLY_ACCESS_TOKEN: 'ffc4c1a31e5143848fb7c523b39f91b9b213d208',
+    CRYPTO_COMPARE_BASE_URL: 'https://min-api.cryptocompare.com/data',
     DEFAULT_DERIVATION_PATH: `44'/60'/0'`,
     // WARNING: ZRX & WETH MUST always be default trackedTokens
     DEFAULT_TRACKED_TOKEN_SYMBOLS: ['WETH', 'ZRX'],
