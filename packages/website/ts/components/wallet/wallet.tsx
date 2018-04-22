@@ -132,9 +132,12 @@ const DISCONNECTED_ITEM_KEY = 'DISCONNECTED';
 const ETHER_ITEM_KEY = 'ETHER';
 const USD_DECIMAL_PLACES = 2;
 const CRYPTO_COMPARE_MULTI_ENDPOINT = '/pricemulti';
+// Crypto compare recommends requesting no more than once every 10s: https://www.cryptocompare.com/api/?javascript#requests
+const CRYPTO_COMPARE_UPDATE_INTERVAL_MS = 10 * 1000;
 
 export class Wallet extends React.Component<WalletProps, WalletState> {
     private _isUnmounted: boolean;
+    private _cryptoCompareLastFetchTimestampMs?: number;
     constructor(props: WalletProps) {
         super(props);
         this._isUnmounted = false;
@@ -465,16 +468,27 @@ export class Wallet extends React.Component<WalletProps, WalletState> {
             );
             balanceAndAllowanceTupleByAddress[tokenAddress] = balanceAndAllowanceTuple;
         }
-        const pricesByAddress = await this._getPricesByAddressAsync(tokenAddresses);
+        // if we are allowed to fetch prices do so, if not, keep the old price state
+        const canFetchPrices = this._canGetPrice();
+        let priceByAddress: ItemByAddress<BigNumber> = {};
+        if (canFetchPrices) {
+            priceByAddress = await this._getPricesByAddressAsync(tokenAddresses);
+        } else {
+            const cachedPricesByAddress = _.mapValues(
+                this.state.trackedTokenStateByAddress,
+                tokenState => tokenState.price,
+            );
+            priceByAddress = cachedPricesByAddress;
+        }
         const trackedTokenStateByAddress = _.reduce(
             tokenAddresses,
             (acc, address) => {
                 const [balance, allowance] = balanceAndAllowanceTupleByAddress[address];
-                const price = pricesByAddress[address];
+                const priceIfExists = _.get(priceByAddress, address);
                 acc[address] = {
                     balance,
                     allowance,
-                    price,
+                    price: priceIfExists,
                     isLoaded: true,
                 };
                 return acc;
@@ -519,6 +533,7 @@ export class Wallet extends React.Component<WalletProps, WalletState> {
             tsyms: baseCurrency,
         };
         try {
+            this._cryptoCompareLastFetchTimestampMs = Date.now();
             const priceInfoBySymbol = await fetchUtils.requestAsync(
                 configs.CRYPTO_COMPARE_BASE_URL,
                 CRYPTO_COMPARE_MULTI_ENDPOINT,
@@ -536,6 +551,13 @@ export class Wallet extends React.Component<WalletProps, WalletState> {
         } catch (err) {
             return {};
         }
+    }
+    private _canGetPrice() {
+        const currentTimeStamp = Date.now();
+        const result =
+            _.isUndefined(this._cryptoCompareLastFetchTimestampMs) ||
+            this._cryptoCompareLastFetchTimestampMs + CRYPTO_COMPARE_UPDATE_INTERVAL_MS < currentTimeStamp;
+        return result;
     }
     private _openWrappedEtherActionRow(wrappedEtherDirection: Side) {
         this.setState({
