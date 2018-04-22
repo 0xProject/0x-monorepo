@@ -40,6 +40,7 @@ import { backendClient } from 'ts/utils/backend_client';
 import { configs } from 'ts/utils/configs';
 import { constants } from 'ts/utils/constants';
 import { errorReporter } from 'ts/utils/error_reporter';
+import { fetchUtils } from 'ts/utils/fetch_utils';
 import { utils } from 'ts/utils/utils';
 import { styles as walletItemStyles } from 'ts/utils/wallet_item_styles';
 
@@ -130,6 +131,7 @@ const FOOTER_ITEM_KEY = 'FOOTER';
 const DISCONNECTED_ITEM_KEY = 'DISCONNECTED';
 const ETHER_ITEM_KEY = 'ETHER';
 const USD_DECIMAL_PLACES = 2;
+const CRYPTO_COMPARE_MULTI_ENDPOINT = '/pricemulti';
 
 export class Wallet extends React.Component<WalletProps, WalletState> {
     private _isUnmounted: boolean;
@@ -511,24 +513,29 @@ export class Wallet extends React.Component<WalletProps, WalletState> {
             ),
         );
         const joinedTokenSymbols = _.keys(tokenAddressBySymbol).join(',');
-        const url = `${configs.CRYPTO_COMPARE_BASE_URL}/pricemulti?fsyms=${joinedTokenSymbols}&tsyms=USD`;
-        const response = await fetch(url);
-        if (response.status !== 200) {
-            const errorText = `Error requesting url: ${url}, ${response.status}: ${response.statusText}`;
-            logUtils.log(errorText);
-            const error = Error(errorText);
-            // tslint:disable-next-line:no-floating-promises
-            errorReporter.reportAsync(error);
+        const baseCurrency = 'USD';
+        const queryParams = {
+            fsyms: joinedTokenSymbols,
+            tsyms: baseCurrency,
+        };
+        try {
+            const priceInfoBySymbol = await fetchUtils.requestAsync(
+                configs.CRYPTO_COMPARE_BASE_URL,
+                CRYPTO_COMPARE_MULTI_ENDPOINT,
+                queryParams,
+            );
+            const priceInfoByAddress = _.mapKeys(priceInfoBySymbol, (value, symbol) =>
+                _.get(tokenAddressBySymbol, symbol),
+            );
+            const result = _.mapValues(priceInfoByAddress, priceInfo => {
+                const price = _.get(priceInfo, baseCurrency);
+                const priceBigNumber = new BigNumber(price);
+                return priceBigNumber;
+            });
+            return result;
+        } catch (err) {
             return {};
         }
-        const priceInfoBySymbol = await response.json();
-        const priceInfoByAddress = _.mapKeys(priceInfoBySymbol, (value, symbol) => _.get(tokenAddressBySymbol, symbol));
-        const result = _.mapValues(priceInfoByAddress, priceInfo => {
-            const price = _.get(priceInfo, 'USD');
-            const priceBigNumber = new BigNumber(price);
-            return priceBigNumber;
-        });
-        return result;
     }
     private _openWrappedEtherActionRow(wrappedEtherDirection: Side) {
         this.setState({
