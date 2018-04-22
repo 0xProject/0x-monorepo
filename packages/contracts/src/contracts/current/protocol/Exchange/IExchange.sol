@@ -77,9 +77,9 @@ contract IExchange {
     /// @dev Calculates the sum of values already filled and cancelled for a given order.
     /// @param orderHash The Keccak-256 hash of the given order.
     /// @return Sum of values already filled and cancelled.
-    function getUnavailableTakerTokenAmount(bytes32 orderHash)
+    function getUnavailableTakerAssetAmount(bytes32 orderHash)
         public view
-        returns (uint256 unavailableTakerTokenAmount);
+        returns (uint256 unavailableTakerAssetAmount);
 
     /// @dev Calculates partial value given a numerator and denominator.
     /// @param numerator Numerator.
@@ -257,7 +257,7 @@ contract IExchange {
         bytes32[] r,
         bytes32[] s)
         external
-        returns (uint256 totalTakerTokenFilledAmount);
+        returns (uint256 totalTakerAssetFilledAmount);
 
     /// @dev Synchronously executes multiple calls of fillOrderNoThrow in a single transaction until total takerAssetFillAmount filled.
     /// @param orderAddresses Array of address arrays containing individual order addresses.
@@ -275,7 +275,7 @@ contract IExchange {
         bytes32[] r,
         bytes32[] s)
         external
-        returns (uint256 totalTakerTokenFilledAmount);
+        returns (uint256 totalTakerAssetFilledAmount);
 
     /// @dev Synchronously cancels multiple orders in a single transaction.
     /// @param orderAddresses Array of address arrays containing individual order addresses.

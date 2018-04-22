@@ -172,8 +172,8 @@ describe('Asset Transfer Proxies', () => {
             // Construct metadata for ERC721 proxy
             const encodedProxyMetadata = proxyUtils.encodeERC721ProxyData(erc721Token.address, makerAssetId);
             // Verify pre-condition
-            const ownerMakerToken = await erc721Token.ownerOf.callAsync(makerAssetId);
-            expect(ownerMakerToken).to.be.bignumber.equal(makerAddress);
+            const ownerMakerAsset = await erc721Token.ownerOf.callAsync(makerAssetId);
+            expect(ownerMakerAsset).to.be.bignumber.equal(makerAddress);
             // Perform a transfer from makerAddress to takerAddress
             const balances = await dmyBalances.getAsync();
             const amount = new BigNumber(1);
@@ -185,16 +185,16 @@ describe('Asset Transfer Proxies', () => {
                 { from: assetProxyDispatcherAddress },
             );
             // Verify transfer was successful
-            const newOwnerMakerToken = await erc721Token.ownerOf.callAsync(makerAssetId);
-            expect(newOwnerMakerToken).to.be.bignumber.equal(takerAddress);
+            const newOwnerMakerAsset = await erc721Token.ownerOf.callAsync(makerAssetId);
+            expect(newOwnerMakerAsset).to.be.bignumber.equal(takerAddress);
         });
 
         it('should throw if transferring 0 amount of a token', async () => {
             // Construct metadata for ERC721 proxy
             const encodedProxyMetadata = proxyUtils.encodeERC721ProxyData(erc721Token.address, makerAssetId);
             // Verify pre-condition
-            const ownerMakerToken = await erc721Token.ownerOf.callAsync(makerAssetId);
-            expect(ownerMakerToken).to.be.bignumber.equal(makerAddress);
+            const ownerMakerAsset = await erc721Token.ownerOf.callAsync(makerAssetId);
+            expect(ownerMakerAsset).to.be.bignumber.equal(makerAddress);
             // Perform a transfer from makerAddress to takerAddress
             const balances = await dmyBalances.getAsync();
             const amount = new BigNumber(0);
@@ -213,8 +213,8 @@ describe('Asset Transfer Proxies', () => {
             // Construct metadata for ERC721 proxy
             const encodedProxyMetadata = proxyUtils.encodeERC721ProxyData(erc721Token.address, makerAssetId);
             // Verify pre-condition
-            const ownerMakerToken = await erc721Token.ownerOf.callAsync(makerAssetId);
-            expect(ownerMakerToken).to.be.bignumber.equal(makerAddress);
+            const ownerMakerAsset = await erc721Token.ownerOf.callAsync(makerAssetId);
+            expect(ownerMakerAsset).to.be.bignumber.equal(makerAddress);
             // Perform a transfer from makerAddress to takerAddress
             const balances = await dmyBalances.getAsync();
             const amount = new BigNumber(500);

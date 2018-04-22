@@ -52,11 +52,11 @@ describe('Exchange', () => {
     let dmyBalances: Balances;
     let orderFactory: OrderFactory;
 
-    const erc721MakerTokenId = new BigNumber('0x1010101010101010101010101010101010101010101010101010101010101010');
-    const erc721TakerTokenId = new BigNumber('0x3030303030303030303030303030303030303030303030303030303030303030');
+    const erc721MakerAssetId = new BigNumber('0x1010101010101010101010101010101010101010101010101010101010101010');
+    const erc721TakerAssetId = new BigNumber('0x3030303030303030303030303030303030303030303030303030303030303030');
 
-    let defaultMakerTokenAddress: string;
-    let defaultTakerTokenAddress: string;
+    let defaultMakerAssetAddress: string;
+    let defaultTakerAssetAddress: string;
 
     before(async () => {
         const accounts = await web3Wrapper.getAvailableAddressesAsync();
@@ -119,8 +119,8 @@ describe('Exchange', () => {
         const zeroEx = new ZeroEx(provider, { networkId: constants.TESTRPC_NETWORK_ID });
         exWrapper = new ExchangeWrapper(exchange, zeroEx);
 
-        defaultMakerTokenAddress = rep.address;
-        defaultTakerTokenAddress = dgd.address;
+        defaultMakerAssetAddress = rep.address;
+        defaultTakerAssetAddress = dgd.address;
         const defaultOrderParams = {
             exchangeAddress: exchange.address,
             makerAddress,
@@ -129,8 +129,8 @@ describe('Exchange', () => {
             takerAssetAmount: ZeroEx.toBaseUnitAmount(new BigNumber(200), 18),
             makerFee: ZeroEx.toBaseUnitAmount(new BigNumber(1), 18),
             takerFee: ZeroEx.toBaseUnitAmount(new BigNumber(1), 18),
-            makerAssetData: proxyUtils.encodeERC20ProxyData(defaultMakerTokenAddress),
-            takerAssetData: proxyUtils.encodeERC20ProxyData(defaultTakerTokenAddress),
+            makerAssetData: proxyUtils.encodeERC20ProxyData(defaultMakerAssetAddress),
+            takerAssetData: proxyUtils.encodeERC20ProxyData(defaultTakerAssetAddress),
         };
 
         const privateKey = constants.TESTRPC_PRIVATE_KEYS[0];
@@ -155,8 +155,8 @@ describe('Exchange', () => {
             erc721Token.setApprovalForAll.sendTransactionAsync(erc721Proxy.address, true, {
                 from: takerAddress,
             }),
-            erc721Token.mint.sendTransactionAsync(makerAddress, erc721MakerTokenId, { from: tokenOwner }),
-            erc721Token.mint.sendTransactionAsync(takerAddress, erc721TakerTokenId, { from: tokenOwner }),
+            erc721Token.mint.sendTransactionAsync(makerAddress, erc721MakerAssetId, { from: tokenOwner }),
+            erc721Token.mint.sendTransactionAsync(takerAddress, erc721TakerAssetId, { from: tokenOwner }),
         ]);
     });
     beforeEach(async () => {
@@ -188,20 +188,20 @@ describe('Exchange', () => {
             const takerFee = signedOrder.takerFee
                 .times(makerAssetFilledAmount)
                 .dividedToIntegerBy(signedOrder.makerAssetAmount);
-            expect(newBalances[makerAddress][defaultMakerTokenAddress]).to.be.bignumber.equal(
-                balances[makerAddress][defaultMakerTokenAddress].minus(makerAssetFilledAmount),
+            expect(newBalances[makerAddress][defaultMakerAssetAddress]).to.be.bignumber.equal(
+                balances[makerAddress][defaultMakerAssetAddress].minus(makerAssetFilledAmount),
             );
-            expect(newBalances[makerAddress][defaultTakerTokenAddress]).to.be.bignumber.equal(
-                balances[makerAddress][defaultTakerTokenAddress].add(takerAssetFillAmount),
+            expect(newBalances[makerAddress][defaultTakerAssetAddress]).to.be.bignumber.equal(
+                balances[makerAddress][defaultTakerAssetAddress].add(takerAssetFillAmount),
             );
             expect(newBalances[makerAddress][zrx.address]).to.be.bignumber.equal(
                 balances[makerAddress][zrx.address].minus(makerFee),
             );
-            expect(newBalances[takerAddress][defaultTakerTokenAddress]).to.be.bignumber.equal(
-                balances[takerAddress][defaultTakerTokenAddress].minus(takerAssetFillAmount),
+            expect(newBalances[takerAddress][defaultTakerAssetAddress]).to.be.bignumber.equal(
+                balances[takerAddress][defaultTakerAssetAddress].minus(takerAssetFillAmount),
             );
-            expect(newBalances[takerAddress][defaultMakerTokenAddress]).to.be.bignumber.equal(
-                balances[takerAddress][defaultMakerTokenAddress].add(makerAssetFilledAmount),
+            expect(newBalances[takerAddress][defaultMakerAssetAddress]).to.be.bignumber.equal(
+                balances[takerAddress][defaultMakerAssetAddress].add(makerAssetFilledAmount),
             );
             expect(newBalances[takerAddress][zrx.address]).to.be.bignumber.equal(
                 balances[takerAddress][zrx.address].minus(takerFee),
@@ -256,20 +256,20 @@ describe('Exchange', () => {
             const takerFee = signedOrder.takerFee
                 .times(makerAssetFilledAmount)
                 .dividedToIntegerBy(signedOrder.makerAssetAmount);
-            expect(newBalances[makerAddress][defaultMakerTokenAddress]).to.be.bignumber.equal(
-                balances[makerAddress][defaultMakerTokenAddress].minus(makerAssetFilledAmount),
+            expect(newBalances[makerAddress][defaultMakerAssetAddress]).to.be.bignumber.equal(
+                balances[makerAddress][defaultMakerAssetAddress].minus(makerAssetFilledAmount),
             );
-            expect(newBalances[makerAddress][defaultTakerTokenAddress]).to.be.bignumber.equal(
-                balances[makerAddress][defaultTakerTokenAddress].add(takerAssetFillAmount),
+            expect(newBalances[makerAddress][defaultTakerAssetAddress]).to.be.bignumber.equal(
+                balances[makerAddress][defaultTakerAssetAddress].add(takerAssetFillAmount),
             );
             expect(newBalances[makerAddress][zrx.address]).to.be.bignumber.equal(
                 balances[makerAddress][zrx.address].minus(makerFee),
             );
-            expect(newBalances[takerAddress][defaultTakerTokenAddress]).to.be.bignumber.equal(
-                balances[takerAddress][defaultTakerTokenAddress].minus(takerAssetFillAmount),
+            expect(newBalances[takerAddress][defaultTakerAssetAddress]).to.be.bignumber.equal(
+                balances[takerAddress][defaultTakerAssetAddress].minus(takerAssetFillAmount),
             );
-            expect(newBalances[takerAddress][defaultMakerTokenAddress]).to.be.bignumber.equal(
-                balances[takerAddress][defaultMakerTokenAddress].add(makerAssetFilledAmount),
+            expect(newBalances[takerAddress][defaultMakerAssetAddress]).to.be.bignumber.equal(
+                balances[takerAddress][defaultMakerAssetAddress].add(makerAssetFilledAmount),
             );
             expect(newBalances[takerAddress][zrx.address]).to.be.bignumber.equal(
                 balances[takerAddress][zrx.address].minus(takerFee),
@@ -377,8 +377,8 @@ describe('Exchange', () => {
 
         it('should successfully exchange ERC721 tokens', async () => {
             // Construct Exchange parameters
-            const makerAssetId = erc721MakerTokenId;
-            const takerAssetId = erc721TakerTokenId;
+            const makerAssetId = erc721MakerAssetId;
+            const takerAssetId = erc721TakerAssetId;
             const signedOrder = orderFactory.newSignedOrder({
                 makerAssetAmount: new BigNumber(1),
                 takerAssetAmount: new BigNumber(1),
@@ -386,18 +386,18 @@ describe('Exchange', () => {
                 takerAssetData: proxyUtils.encodeERC721ProxyData(erc721Token.address, takerAssetId),
             });
             // Verify pre-conditions
-            const initialOwnerMakerToken = await erc721Token.ownerOf.callAsync(makerAssetId);
-            expect(initialOwnerMakerToken).to.be.bignumber.equal(makerAddress);
-            const initialOwnerTakerToken = await erc721Token.ownerOf.callAsync(takerAssetId);
-            expect(initialOwnerTakerToken).to.be.bignumber.equal(takerAddress);
+            const initialOwnerMakerAsset = await erc721Token.ownerOf.callAsync(makerAssetId);
+            expect(initialOwnerMakerAsset).to.be.bignumber.equal(makerAddress);
+            const initialOwnerTakerAsset = await erc721Token.ownerOf.callAsync(takerAssetId);
+            expect(initialOwnerTakerAsset).to.be.bignumber.equal(takerAddress);
             // Call Exchange
             const takerAssetFillAmount = signedOrder.takerAssetAmount;
             await exWrapper.fillOrderNoThrowAsync(signedOrder, takerAddress, { takerAssetFillAmount });
             // Verify post-conditions
-            const newOwnerMakerToken = await erc721Token.ownerOf.callAsync(makerAssetId);
-            expect(newOwnerMakerToken).to.be.bignumber.equal(takerAddress);
-            const newOwnerTakerToken = await erc721Token.ownerOf.callAsync(takerAssetId);
-            expect(newOwnerTakerToken).to.be.bignumber.equal(makerAddress);
+            const newOwnerMakerAsset = await erc721Token.ownerOf.callAsync(makerAssetId);
+            expect(newOwnerMakerAsset).to.be.bignumber.equal(takerAddress);
+            const newOwnerTakerAsset = await erc721Token.ownerOf.callAsync(takerAssetId);
+            expect(newOwnerTakerAsset).to.be.bignumber.equal(makerAddress);
         });
     });
 
@@ -630,20 +630,20 @@ describe('Exchange', () => {
                 );
                 const makerFee = signedOrders[0].makerFee.add(signedOrders[1].makerFee.dividedToIntegerBy(2));
                 const takerFee = signedOrders[0].takerFee.add(signedOrders[1].takerFee.dividedToIntegerBy(2));
-                expect(newBalances[makerAddress][defaultMakerTokenAddress]).to.be.bignumber.equal(
-                    balances[makerAddress][defaultMakerTokenAddress].minus(makerAssetFilledAmount),
+                expect(newBalances[makerAddress][defaultMakerAssetAddress]).to.be.bignumber.equal(
+                    balances[makerAddress][defaultMakerAssetAddress].minus(makerAssetFilledAmount),
                 );
-                expect(newBalances[makerAddress][defaultTakerTokenAddress]).to.be.bignumber.equal(
-                    balances[makerAddress][defaultTakerTokenAddress].add(takerAssetFillAmount),
+                expect(newBalances[makerAddress][defaultTakerAssetAddress]).to.be.bignumber.equal(
+                    balances[makerAddress][defaultTakerAssetAddress].add(takerAssetFillAmount),
                 );
                 expect(newBalances[makerAddress][zrx.address]).to.be.bignumber.equal(
                     balances[makerAddress][zrx.address].minus(makerFee),
                 );
-                expect(newBalances[takerAddress][defaultTakerTokenAddress]).to.be.bignumber.equal(
-                    balances[takerAddress][defaultTakerTokenAddress].minus(takerAssetFillAmount),
+                expect(newBalances[takerAddress][defaultTakerAssetAddress]).to.be.bignumber.equal(
+                    balances[takerAddress][defaultTakerAssetAddress].minus(takerAssetFillAmount),
                 );
-                expect(newBalances[takerAddress][defaultMakerTokenAddress]).to.be.bignumber.equal(
-                    balances[takerAddress][defaultMakerTokenAddress].add(makerAssetFilledAmount),
+                expect(newBalances[takerAddress][defaultMakerAssetAddress]).to.be.bignumber.equal(
+                    balances[takerAddress][defaultMakerAssetAddress].add(makerAssetFilledAmount),
                 );
                 expect(newBalances[takerAddress][zrx.address]).to.be.bignumber.equal(
                     balances[takerAddress][zrx.address].minus(takerFee),
@@ -656,20 +656,20 @@ describe('Exchange', () => {
             it('should fill all signedOrders if cannot fill entire takerAssetFillAmount', async () => {
                 const takerAssetFillAmount = ZeroEx.toBaseUnitAmount(new BigNumber(100000), 18);
                 _.forEach(signedOrders, signedOrder => {
-                    balances[makerAddress][defaultMakerTokenAddress] = balances[makerAddress][
-                        defaultMakerTokenAddress
+                    balances[makerAddress][defaultMakerAssetAddress] = balances[makerAddress][
+                        defaultMakerAssetAddress
                     ].minus(signedOrder.makerAssetAmount);
-                    balances[makerAddress][defaultTakerTokenAddress] = balances[makerAddress][
-                        defaultTakerTokenAddress
+                    balances[makerAddress][defaultTakerAssetAddress] = balances[makerAddress][
+                        defaultTakerAssetAddress
                     ].add(signedOrder.takerAssetAmount);
                     balances[makerAddress][zrx.address] = balances[makerAddress][zrx.address].minus(
                         signedOrder.makerFee,
                     );
-                    balances[takerAddress][defaultMakerTokenAddress] = balances[takerAddress][
-                        defaultMakerTokenAddress
+                    balances[takerAddress][defaultMakerAssetAddress] = balances[takerAddress][
+                        defaultMakerAssetAddress
                     ].add(signedOrder.makerAssetAmount);
-                    balances[takerAddress][defaultTakerTokenAddress] = balances[takerAddress][
-                        defaultTakerTokenAddress
+                    balances[takerAddress][defaultTakerAssetAddress] = balances[takerAddress][
+                        defaultTakerAssetAddress
                     ].minus(signedOrder.takerAssetAmount);
                     balances[takerAddress][zrx.address] = balances[takerAddress][zrx.address].minus(
                         signedOrder.takerFee,
@@ -717,20 +717,20 @@ describe('Exchange', () => {
                 );
                 const makerFee = signedOrders[0].makerFee.add(signedOrders[1].makerFee.dividedToIntegerBy(2));
                 const takerFee = signedOrders[0].takerFee.add(signedOrders[1].takerFee.dividedToIntegerBy(2));
-                expect(newBalances[makerAddress][defaultMakerTokenAddress]).to.be.bignumber.equal(
-                    balances[makerAddress][defaultMakerTokenAddress].minus(makerAssetFilledAmount),
+                expect(newBalances[makerAddress][defaultMakerAssetAddress]).to.be.bignumber.equal(
+                    balances[makerAddress][defaultMakerAssetAddress].minus(makerAssetFilledAmount),
                 );
-                expect(newBalances[makerAddress][defaultTakerTokenAddress]).to.be.bignumber.equal(
-                    balances[makerAddress][defaultTakerTokenAddress].add(takerAssetFillAmount),
+                expect(newBalances[makerAddress][defaultTakerAssetAddress]).to.be.bignumber.equal(
+                    balances[makerAddress][defaultTakerAssetAddress].add(takerAssetFillAmount),
                 );
                 expect(newBalances[makerAddress][zrx.address]).to.be.bignumber.equal(
                     balances[makerAddress][zrx.address].minus(makerFee),
                 );
-                expect(newBalances[takerAddress][defaultTakerTokenAddress]).to.be.bignumber.equal(
-                    balances[takerAddress][defaultTakerTokenAddress].minus(takerAssetFillAmount),
+                expect(newBalances[takerAddress][defaultTakerAssetAddress]).to.be.bignumber.equal(
+                    balances[takerAddress][defaultTakerAssetAddress].minus(takerAssetFillAmount),
                 );
-                expect(newBalances[takerAddress][defaultMakerTokenAddress]).to.be.bignumber.equal(
-                    balances[takerAddress][defaultMakerTokenAddress].add(makerAssetFilledAmount),
+                expect(newBalances[takerAddress][defaultMakerAssetAddress]).to.be.bignumber.equal(
+                    balances[takerAddress][defaultMakerAssetAddress].add(makerAssetFilledAmount),
                 );
                 expect(newBalances[takerAddress][zrx.address]).to.be.bignumber.equal(
                     balances[takerAddress][zrx.address].minus(takerFee),
@@ -743,20 +743,20 @@ describe('Exchange', () => {
             it('should fill all signedOrders if cannot fill entire takerAssetFillAmount', async () => {
                 const takerAssetFillAmount = ZeroEx.toBaseUnitAmount(new BigNumber(100000), 18);
                 _.forEach(signedOrders, signedOrder => {
-                    balances[makerAddress][defaultMakerTokenAddress] = balances[makerAddress][
-                        defaultMakerTokenAddress
+                    balances[makerAddress][defaultMakerAssetAddress] = balances[makerAddress][
+                        defaultMakerAssetAddress
                     ].minus(signedOrder.makerAssetAmount);
-                    balances[makerAddress][defaultTakerTokenAddress] = balances[makerAddress][
-                        defaultTakerTokenAddress
+                    balances[makerAddress][defaultTakerAssetAddress] = balances[makerAddress][
+                        defaultTakerAssetAddress
                     ].add(signedOrder.takerAssetAmount);
                     balances[makerAddress][zrx.address] = balances[makerAddress][zrx.address].minus(
                         signedOrder.makerFee,
                     );
-                    balances[takerAddress][defaultMakerTokenAddress] = balances[takerAddress][
-                        defaultMakerTokenAddress
+                    balances[takerAddress][defaultMakerAssetAddress] = balances[takerAddress][
+                        defaultMakerAssetAddress
                     ].add(signedOrder.makerAssetAmount);
-                    balances[takerAddress][defaultTakerTokenAddress] = balances[takerAddress][
-                        defaultTakerTokenAddress
+                    balances[takerAddress][defaultTakerAssetAddress] = balances[takerAddress][
+                        defaultTakerAssetAddress
                     ].minus(signedOrder.takerAssetAmount);
                     balances[takerAddress][zrx.address] = balances[takerAddress][zrx.address].minus(
                         signedOrder.takerFee,
@@ -804,20 +804,20 @@ describe('Exchange', () => {
                 );
                 const makerFee = signedOrders[0].makerFee.add(signedOrders[1].makerFee.dividedToIntegerBy(2));
                 const takerFee = signedOrders[0].takerFee.add(signedOrders[1].takerFee.dividedToIntegerBy(2));
-                expect(newBalances[makerAddress][defaultMakerTokenAddress]).to.be.bignumber.equal(
-                    balances[makerAddress][defaultMakerTokenAddress].minus(makerAssetFillAmount),
+                expect(newBalances[makerAddress][defaultMakerAssetAddress]).to.be.bignumber.equal(
+                    balances[makerAddress][defaultMakerAssetAddress].minus(makerAssetFillAmount),
                 );
-                expect(newBalances[makerAddress][defaultTakerTokenAddress]).to.be.bignumber.equal(
-                    balances[makerAddress][defaultTakerTokenAddress].add(makerAmountBought),
+                expect(newBalances[makerAddress][defaultTakerAssetAddress]).to.be.bignumber.equal(
+                    balances[makerAddress][defaultTakerAssetAddress].add(makerAmountBought),
                 );
                 expect(newBalances[makerAddress][zrx.address]).to.be.bignumber.equal(
                     balances[makerAddress][zrx.address].minus(makerFee),
                 );
-                expect(newBalances[takerAddress][defaultTakerTokenAddress]).to.be.bignumber.equal(
-                    balances[takerAddress][defaultTakerTokenAddress].minus(makerAmountBought),
+                expect(newBalances[takerAddress][defaultTakerAssetAddress]).to.be.bignumber.equal(
+                    balances[takerAddress][defaultTakerAssetAddress].minus(makerAmountBought),
                 );
-                expect(newBalances[takerAddress][defaultMakerTokenAddress]).to.be.bignumber.equal(
-                    balances[takerAddress][defaultMakerTokenAddress].add(makerAssetFillAmount),
+                expect(newBalances[takerAddress][defaultMakerAssetAddress]).to.be.bignumber.equal(
+                    balances[takerAddress][defaultMakerAssetAddress].add(makerAssetFillAmount),
                 );
                 expect(newBalances[takerAddress][zrx.address]).to.be.bignumber.equal(
                     balances[takerAddress][zrx.address].minus(takerFee),
@@ -830,20 +830,20 @@ describe('Exchange', () => {
             it('should fill all signedOrders if cannot fill entire makerAssetFillAmount', async () => {
                 const makerAssetFillAmount = ZeroEx.toBaseUnitAmount(new BigNumber(100000), 18);
                 _.forEach(signedOrders, signedOrder => {
-                    balances[makerAddress][defaultMakerTokenAddress] = balances[makerAddress][
-                        defaultMakerTokenAddress
+                    balances[makerAddress][defaultMakerAssetAddress] = balances[makerAddress][
+                        defaultMakerAssetAddress
                     ].minus(signedOrder.makerAssetAmount);
-                    balances[makerAddress][defaultTakerTokenAddress] = balances[makerAddress][
-                        defaultTakerTokenAddress
+                    balances[makerAddress][defaultTakerAssetAddress] = balances[makerAddress][
+                        defaultTakerAssetAddress
                     ].add(signedOrder.takerAssetAmount);
                     balances[makerAddress][zrx.address] = balances[makerAddress][zrx.address].minus(
                         signedOrder.makerFee,
                     );
-                    balances[takerAddress][defaultMakerTokenAddress] = balances[takerAddress][
-                        defaultMakerTokenAddress
+                    balances[takerAddress][defaultMakerAssetAddress] = balances[takerAddress][
+                        defaultMakerAssetAddress
                     ].add(signedOrder.makerAssetAmount);
-                    balances[takerAddress][defaultTakerTokenAddress] = balances[takerAddress][
-                        defaultTakerTokenAddress
+                    balances[takerAddress][defaultTakerAssetAddress] = balances[takerAddress][
+                        defaultTakerAssetAddress
                     ].minus(signedOrder.takerAssetAmount);
                     balances[takerAddress][zrx.address] = balances[takerAddress][zrx.address].minus(
                         signedOrder.takerFee,
@@ -891,20 +891,20 @@ describe('Exchange', () => {
                 );
                 const makerFee = signedOrders[0].makerFee.add(signedOrders[1].makerFee.dividedToIntegerBy(2));
                 const takerFee = signedOrders[0].takerFee.add(signedOrders[1].takerFee.dividedToIntegerBy(2));
-                expect(newBalances[makerAddress][defaultMakerTokenAddress]).to.be.bignumber.equal(
-                    balances[makerAddress][defaultMakerTokenAddress].minus(makerAssetFillAmount),
+                expect(newBalances[makerAddress][defaultMakerAssetAddress]).to.be.bignumber.equal(
+                    balances[makerAddress][defaultMakerAssetAddress].minus(makerAssetFillAmount),
                 );
-                expect(newBalances[makerAddress][defaultTakerTokenAddress]).to.be.bignumber.equal(
-                    balances[makerAddress][defaultTakerTokenAddress].add(makerAmountBought),
+                expect(newBalances[makerAddress][defaultTakerAssetAddress]).to.be.bignumber.equal(
+                    balances[makerAddress][defaultTakerAssetAddress].add(makerAmountBought),
                 );
                 expect(newBalances[makerAddress][zrx.address]).to.be.bignumber.equal(
                     balances[makerAddress][zrx.address].minus(makerFee),
                 );
-                expect(newBalances[takerAddress][defaultTakerTokenAddress]).to.be.bignumber.equal(
-                    balances[takerAddress][defaultTakerTokenAddress].minus(makerAmountBought),
+                expect(newBalances[takerAddress][defaultTakerAssetAddress]).to.be.bignumber.equal(
+                    balances[takerAddress][defaultTakerAssetAddress].minus(makerAmountBought),
                 );
-                expect(newBalances[takerAddress][defaultMakerTokenAddress]).to.be.bignumber.equal(
-                    balances[takerAddress][defaultMakerTokenAddress].add(makerAssetFillAmount),
+                expect(newBalances[takerAddress][defaultMakerAssetAddress]).to.be.bignumber.equal(
+                    balances[takerAddress][defaultMakerAssetAddress].add(makerAssetFillAmount),
                 );
                 expect(newBalances[takerAddress][zrx.address]).to.be.bignumber.equal(
                     balances[takerAddress][zrx.address].minus(takerFee),
@@ -917,20 +917,20 @@ describe('Exchange', () => {
             it('should fill all signedOrders if cannot fill entire takerAssetFillAmount', async () => {
                 const takerAssetFillAmount = ZeroEx.toBaseUnitAmount(new BigNumber(100000), 18);
                 _.forEach(signedOrders, signedOrder => {
-                    balances[makerAddress][defaultMakerTokenAddress] = balances[makerAddress][
-                        defaultMakerTokenAddress
+                    balances[makerAddress][defaultMakerAssetAddress] = balances[makerAddress][
+                        defaultMakerAssetAddress
                     ].minus(signedOrder.makerAssetAmount);
-                    balances[makerAddress][defaultTakerTokenAddress] = balances[makerAddress][
-                        defaultTakerTokenAddress
+                    balances[makerAddress][defaultTakerAssetAddress] = balances[makerAddress][
+                        defaultTakerAssetAddress
                     ].add(signedOrder.takerAssetAmount);
                     balances[makerAddress][zrx.address] = balances[makerAddress][zrx.address].minus(
                         signedOrder.makerFee,
                     );
-                    balances[takerAddress][defaultMakerTokenAddress] = balances[takerAddress][
-                        defaultMakerTokenAddress
+                    balances[takerAddress][defaultMakerAssetAddress] = balances[takerAddress][
+                        defaultMakerAssetAddress
                     ].add(signedOrder.makerAssetAmount);
-                    balances[takerAddress][defaultTakerTokenAddress] = balances[takerAddress][
-                        defaultTakerTokenAddress
+                    balances[takerAddress][defaultTakerAssetAddress] = balances[takerAddress][
+                        defaultTakerAssetAddress
                     ].minus(signedOrder.takerAssetAmount);
                     balances[takerAddress][zrx.address] = balances[takerAddress][zrx.address].minus(
                         signedOrder.takerFee,

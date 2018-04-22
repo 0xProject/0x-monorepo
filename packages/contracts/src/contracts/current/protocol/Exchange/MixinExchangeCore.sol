@@ -127,14 +127,14 @@ contract MixinExchangeCore is
         }
 
         // Validate order availability
-        uint256 remainingTakerTokenFillAmount = safeSub(order.takerAssetAmount, filled[orderHash]);
-        if (remainingTakerTokenFillAmount == 0) {
+        uint256 remainingTakerAssetFillAmount = safeSub(order.takerAssetAmount, filled[orderHash]);
+        if (remainingTakerAssetFillAmount == 0) {
             emit ExchangeError(uint8(Errors.ORDER_FULLY_FILLED), orderHash);
             return fillResults;
         }
 
         // Validate fill order rounding
-        fillResults.takerAssetFilledAmount = min256(takerAssetFillAmount, remainingTakerTokenFillAmount);
+        fillResults.takerAssetFilledAmount = min256(takerAssetFillAmount, remainingTakerAssetFillAmount);
         if (isRoundingError(fillResults.takerAssetFilledAmount, order.takerAssetAmount, order.makerAssetAmount)) {
             emit ExchangeError(uint8(Errors.ROUNDING_ERROR_TOO_LARGE), orderHash);
             fillResults.takerAssetFilledAmount = 0;

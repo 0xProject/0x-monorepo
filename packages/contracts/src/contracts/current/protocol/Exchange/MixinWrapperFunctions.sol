@@ -326,12 +326,12 @@ contract MixinWrapperFunctions is
             require(areBytesEqual(orders[i].takerAssetData, orders[0].takerAssetData));
 
             // Calculate the remaining amount of takerAsset to sell
-            uint256 remainingTakerTokenFillAmount = safeSub(takerAssetFillAmount, totalFillResults.takerAssetFilledAmount);
+            uint256 remainingTakerAssetFillAmount = safeSub(takerAssetFillAmount, totalFillResults.takerAssetFilledAmount);
 
             // Attempt to sell the remaining amount of takerAsset
             FillResults memory singleFillResults = fillOrder(
                 orders[i],
-                remainingTakerTokenFillAmount,
+                remainingTakerAssetFillAmount,
                 signatures[i]
             );
 
@@ -365,12 +365,12 @@ contract MixinWrapperFunctions is
             require(areBytesEqual(orders[i].takerAssetData, orders[0].takerAssetData));
 
             // Calculate the remaining amount of takerAsset to sell
-            uint256 remainingTakerTokenFillAmount = safeSub(takerAssetFillAmount, totalFillResults.takerAssetFilledAmount);
+            uint256 remainingTakerAssetFillAmount = safeSub(takerAssetFillAmount, totalFillResults.takerAssetFilledAmount);
 
             // Attempt to sell the remaining amount of takerAsset
             FillResults memory singleFillResults = fillOrderNoThrow(
                 orders[i],
-                remainingTakerTokenFillAmount,
+                remainingTakerAssetFillAmount,
                 signatures[i]
             );
 
@@ -403,20 +403,20 @@ contract MixinWrapperFunctions is
             require(areBytesEqual(orders[i].makerAssetData, orders[0].makerAssetData));
 
             // Calculate the remaining amount of makerAsset to buy
-            uint256 remainingMakerTokenFillAmount = safeSub(makerAssetFillAmount, totalFillResults.makerAssetFilledAmount);
+            uint256 remainingMakerAssetFillAmount = safeSub(makerAssetFillAmount, totalFillResults.makerAssetFilledAmount);
 
             // Convert the remaining amount of makerAsset to buy into remaining amount
             // of takerAsset to sell, assuming entire amount can be sold in the current order
-            uint256 remainingTakerTokenFillAmount = getPartialAmount(
+            uint256 remainingTakerAssetFillAmount = getPartialAmount(
                 orders[i].takerAssetAmount,
                 orders[i].makerAssetAmount,
-                remainingMakerTokenFillAmount
+                remainingMakerAssetFillAmount
             );
 
             // Attempt to sell the remaining amount of takerAsset
             FillResults memory singleFillResults = fillOrder(
                 orders[i],
-                remainingTakerTokenFillAmount,
+                remainingTakerAssetFillAmount,
                 signatures[i]
             );
 
@@ -450,20 +450,20 @@ contract MixinWrapperFunctions is
             require(areBytesEqual(orders[i].makerAssetData, orders[0].makerAssetData));
 
             // Calculate the remaining amount of makerAsset to buy
-            uint256 remainingMakerTokenFillAmount = safeSub(makerAssetFillAmount, totalFillResults.makerAssetFilledAmount);
+            uint256 remainingMakerAssetFillAmount = safeSub(makerAssetFillAmount, totalFillResults.makerAssetFilledAmount);
 
             // Convert the remaining amount of makerAsset to buy into remaining amount
             // of takerAsset to sell, assuming entire amount can be sold in the current order
-            uint256 remainingTakerTokenFillAmount = getPartialAmount(
+            uint256 remainingTakerAssetFillAmount = getPartialAmount(
                 orders[i].takerAssetAmount,
                 orders[i].makerAssetAmount,
-                remainingMakerTokenFillAmount
+                remainingMakerAssetFillAmount
             );
 
             // Attempt to sell the remaining amount of takerAsset
             FillResults memory singleFillResults = fillOrderNoThrow(
                 orders[i],
-                remainingTakerTokenFillAmount,
+                remainingTakerAssetFillAmount,
                 signatures[i]
             );
 
