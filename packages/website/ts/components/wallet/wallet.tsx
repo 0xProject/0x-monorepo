@@ -526,10 +526,10 @@ export class Wallet extends React.Component<WalletProps, WalletState> {
             ),
         );
         const joinedTokenSymbols = _.keys(tokenAddressBySymbol).join(',');
-        const baseCurrency = 'USD';
+        const quoteCurrency = 'USD';
         const queryParams = {
             fsyms: joinedTokenSymbols,
-            tsyms: baseCurrency,
+            tsyms: quoteCurrency,
         };
         try {
             this._cryptoCompareLastFetchTimestampMs = Date.now();
@@ -542,7 +542,7 @@ export class Wallet extends React.Component<WalletProps, WalletState> {
                 _.get(tokenAddressBySymbol, symbol),
             );
             const result = _.mapValues(priceInfoByAddress, priceInfo => {
-                const price = _.get(priceInfo, baseCurrency);
+                const price = _.get(priceInfo, quoteCurrency);
                 const priceBigNumber = new BigNumber(price);
                 return priceBigNumber;
             });
