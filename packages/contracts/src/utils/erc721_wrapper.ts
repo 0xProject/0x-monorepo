@@ -17,7 +17,7 @@ export class ERC721Wrapper {
     private _provider: Provider;
     private _dummyERC721TokenContracts?: DummyERC721TokenContract[];
     private _erc721ProxyContract?: ERC721ProxyContract;
-    private _initialERC721BalancesByOwner?: ERC721BalancesByOwner;
+    private _initialERC721BalancesByOwner: ERC721BalancesByOwner = {};
     constructor(deployer: Deployer, provider: Provider, tokenOwnerAddresses: string[], contractOwnerAddress: string) {
         this._deployer = deployer;
         this._provider = provider;
@@ -65,27 +65,21 @@ export class ERC721Wrapper {
                             from: this._contractOwnerAddress,
                         }),
                     );
-                    if (
-                        _.isUndefined((this._initialERC721BalancesByOwner as ERC721BalancesByOwner)[tokenOwnerAddress])
-                    ) {
-                        (this._initialERC721BalancesByOwner as ERC721BalancesByOwner)[tokenOwnerAddress] = {
+                    if (_.isUndefined(this._initialERC721BalancesByOwner[tokenOwnerAddress])) {
+                        this._initialERC721BalancesByOwner[tokenOwnerAddress] = {
                             [dummyERC721TokenContract.address]: [],
                         };
                     }
                     if (
                         _.isUndefined(
-                            (this._initialERC721BalancesByOwner as ERC721BalancesByOwner)[tokenOwnerAddress][
-                                dummyERC721TokenContract.address
-                            ],
+                            this._initialERC721BalancesByOwner[tokenOwnerAddress][dummyERC721TokenContract.address],
                         )
                     ) {
-                        (this._initialERC721BalancesByOwner as ERC721BalancesByOwner)[tokenOwnerAddress][
-                            dummyERC721TokenContract.address
-                        ] = [];
+                        this._initialERC721BalancesByOwner[tokenOwnerAddress][dummyERC721TokenContract.address] = [];
                     }
-                    (this._initialERC721BalancesByOwner as ERC721BalancesByOwner)[tokenOwnerAddress][
-                        dummyERC721TokenContract.address
-                    ].push(tokenId);
+                    this._initialERC721BalancesByOwner[tokenOwnerAddress][dummyERC721TokenContract.address].push(
+                        tokenId,
+                    );
                 });
                 const approval = true;
                 setAllowancePromises.push(
@@ -103,7 +97,7 @@ export class ERC721Wrapper {
         if (_.isUndefined(this._dummyERC721TokenContracts)) {
             throw new Error('Dummy ERC721 tokens not yet deployed, please call "deployDummyERC721TokensAsync"');
         }
-        if (_.isUndefined(this._initialERC721BalancesByOwner)) {
+        if (_.keys(this._initialERC721BalancesByOwner).length === 0) {
             throw new Error(
                 'Dummy ERC721 balances and allowances not yet set, please call "setBalancesAndAllowancesAsync"',
             );
@@ -113,9 +107,9 @@ export class ERC721Wrapper {
         const tokenInfo: Array<{ tokenId: BigNumber; tokenAddress: string }> = [];
         _.forEach(this._dummyERC721TokenContracts, dummyERC721TokenContract => {
             _.forEach(this._tokenOwnerAddresses, tokenOwnerAddress => {
-                const initialTokenOwnerIds = (this._initialERC721BalancesByOwner as ERC721BalancesByOwner)[
-                    tokenOwnerAddress
-                ][dummyERC721TokenContract.address];
+                const initialTokenOwnerIds = this._initialERC721BalancesByOwner[tokenOwnerAddress][
+                    dummyERC721TokenContract.address
+                ];
                 _.forEach(initialTokenOwnerIds, tokenId => {
                     tokenOwnerPromises.push(dummyERC721TokenContract.ownerOf.callAsync(tokenId));
                     tokenInfo.push({
