@@ -10,7 +10,7 @@ import { DummyERC20TokenContract } from '../../src/contract_wrappers/generated/d
 import { DummyERC721TokenContract } from '../../src/contract_wrappers/generated/dummy_e_r_c721_token';
 import { ERC20ProxyContract } from '../../src/contract_wrappers/generated/e_r_c20_proxy';
 import { ERC721ProxyContract } from '../../src/contract_wrappers/generated/e_r_c721_proxy';
-import { proxyUtils } from '../../src/utils/asset_proxy_utils';
+import { assetProxyUtils } from '../../src/utils/asset_proxy_utils';
 import { Balances } from '../../src/utils/balances';
 import { constants } from '../../src/utils/constants';
 import { AssetProxyId, ContractName } from '../../src/utils/types';
@@ -242,7 +242,7 @@ describe('AssetProxyDispatcher', () => {
                 { from: owner },
             );
             // Construct metadata for ERC20 proxy
-            const encodedProxyMetadata = proxyUtils.encodeERC20ProxyData(zrx.address);
+            const encodedProxyMetadata = assetProxyUtils.encodeERC20ProxyData(zrx.address);
             // Perform a transfer from makerAddress to takerAddress
             const balances = await dmyBalances.getAsync();
             const amount = new BigNumber(10);
@@ -265,7 +265,7 @@ describe('AssetProxyDispatcher', () => {
 
         it('should throw if dispatching to unregistered proxy', async () => {
             // Construct metadata for ERC20 proxy
-            const encodedProxyMetadata = proxyUtils.encodeERC20ProxyData(zrx.address);
+            const encodedProxyMetadata = assetProxyUtils.encodeERC20ProxyData(zrx.address);
             // Perform a transfer from makerAddress to takerAddress
             const balances = await dmyBalances.getAsync();
             const amount = new BigNumber(10);
@@ -290,7 +290,7 @@ describe('AssetProxyDispatcher', () => {
                 { from: owner },
             );
             // Construct metadata for ERC20 proxy
-            const encodedProxyMetadata = proxyUtils.encodeERC20ProxyData(zrx.address);
+            const encodedProxyMetadata = assetProxyUtils.encodeERC20ProxyData(zrx.address);
             // Perform a transfer from makerAddress to takerAddress
             const balances = await dmyBalances.getAsync();
             const amount = new BigNumber(10);
