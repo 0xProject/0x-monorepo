@@ -35,7 +35,7 @@ import 'less/all.less';
 // At the same time webpack statically parses for System.import() to determine bundle chunk split points
 // so each lazy import needs it's own `System.import()` declaration.
 const LazyPortal = createLazyComponent('Portal', async () =>
-    System.import<any>(/* webpackChunkName: "portal" */ 'ts/containers/portal'),
+    System.import<any>(/* webpackChunkName: "portal" */ 'ts/containers/legacy_portal'),
 );
 const LazyZeroExJSDocumentation = createLazyComponent('Documentation', async () =>
     System.import<any>(/* webpackChunkName: "zeroExDocs" */ 'ts/containers/zero_ex_js_documentation'),
