@@ -6,7 +6,6 @@ import * as chai from 'chai';
 import * as _ from 'lodash';
 import * as Web3 from 'web3';
 
-import { AssetProxyDispatcherContract } from '../../src/contract_wrappers/generated/asset_proxy_dispatcher';
 import { DummyERC20TokenContract } from '../../src/contract_wrappers/generated/dummy_e_r_c20_token';
 import { DummyERC721TokenContract } from '../../src/contract_wrappers/generated/dummy_e_r_c721_token';
 import { ERC20ProxyContract } from '../../src/contract_wrappers/generated/e_r_c20_proxy';
@@ -45,7 +44,6 @@ describe('Exchange wrappers', () => {
     let zrx: DummyERC20TokenContract;
     let erc721Token: DummyERC721TokenContract;
     let exchange: ExchangeContract;
-    let assetProxyDispatcher: AssetProxyDispatcherContract;
     let erc20Proxy: ERC20ProxyContract;
     let erc721Proxy: ERC721ProxyContract;
 
@@ -81,44 +79,24 @@ describe('Exchange wrappers', () => {
         erc721MakerAssetId = erc721Balances[makerAddress][erc721Token.address][0];
         erc721TakerAssetId = erc721Balances[takerAddress][erc721Token.address][0];
 
-        const assetProxyDispatcherInstance = await deployer.deployAsync(ContractName.AssetProxyDispatcher);
-        assetProxyDispatcher = new AssetProxyDispatcherContract(
-            assetProxyDispatcherInstance.abi,
-            assetProxyDispatcherInstance.address,
-            provider,
-        );
-        const prevERC20ProxyAddress = ZeroEx.NULL_ADDRESS;
-        await assetProxyDispatcher.registerAssetProxy.sendTransactionAsync(
-            AssetProxyId.ERC20,
-            erc20Proxy.address,
-            prevERC20ProxyAddress,
-            { from: owner },
-        );
-        const prevERC721ProxyAddress = ZeroEx.NULL_ADDRESS;
-        await assetProxyDispatcher.registerAssetProxy.sendTransactionAsync(
-            AssetProxyId.ERC721,
-            erc721Proxy.address,
-            prevERC721ProxyAddress,
-            { from: owner },
-        );
-        await erc20Proxy.addAuthorizedAddress.sendTransactionAsync(assetProxyDispatcher.address, {
-            from: owner,
-        });
-        await erc721Proxy.addAuthorizedAddress.sendTransactionAsync(assetProxyDispatcher.address, {
-            from: owner,
-        });
-
         const exchangeInstance = await deployer.deployAsync(ContractName.Exchange, [
-            assetProxyDispatcher.address,
             assetProxyUtils.encodeERC20ProxyData(zrx.address),
         ]);
         exchange = new ExchangeContract(exchangeInstance.abi, exchangeInstance.address, provider);
-        await assetProxyDispatcher.addAuthorizedAddress.sendTransactionAsync(exchange.address, { from: owner });
         zeroEx = new ZeroEx(provider, {
             exchangeContractAddress: exchange.address,
             networkId: constants.TESTRPC_NETWORK_ID,
         });
         exchangeWrapper = new ExchangeWrapper(exchange, zeroEx);
+        await exchangeWrapper.registerAssetProxyAsync(AssetProxyId.ERC20, erc20Proxy.address, owner);
+        await exchangeWrapper.registerAssetProxyAsync(AssetProxyId.ERC721, erc721Proxy.address, owner);
+
+        await erc20Proxy.addAuthorizedAddress.sendTransactionAsync(exchange.address, {
+            from: owner,
+        });
+        await erc721Proxy.addAuthorizedAddress.sendTransactionAsync(exchange.address, {
+            from: owner,
+        });
 
         defaultMakerAssetAddress = erc20TokenA.address;
         defaultTakerAssetAddress = erc20TokenB.address;
