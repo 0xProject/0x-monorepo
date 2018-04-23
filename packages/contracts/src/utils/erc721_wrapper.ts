@@ -26,7 +26,7 @@ export class ERC721Wrapper {
     }
     public async deployDummyERC721TokensAsync(): Promise<DummyERC721TokenContract[]> {
         const tokenContractInstances = await Promise.all(
-            _.map(this._tokenOwnerAddresses, tokenOwnerAddress =>
+            _.map(_.range(constants.NUM_DUMMY_ERC721_TO_DEPLOY), () =>
                 this._deployer.deployAsync(ContractName.DummyERC721Token, constants.DUMMY_ERC721_TOKEN_ARGS),
             ),
         );

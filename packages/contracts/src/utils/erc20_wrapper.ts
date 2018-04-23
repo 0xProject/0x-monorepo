@@ -24,7 +24,7 @@ export class ERC20Wrapper {
     }
     public async deployDummyERC20TokensAsync(): Promise<DummyERC20TokenContract[]> {
         const tokenContractInstances = await Promise.all(
-            _.map(this._tokenOwnerAddresses, tokenOwnerAddress =>
+            _.map(_.range(constants.NUM_DUMMY_ERC20_TO_DEPLOY), () =>
                 this._deployer.deployAsync(ContractName.DummyERC20Token, constants.DUMMY_ERC20_TOKEN_ARGS),
             ),
         );
