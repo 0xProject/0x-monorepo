@@ -26,7 +26,7 @@ import "../../utils/SafeMath/SafeMath.sol";
  * Base contract that creates a mintable UnlimitedAllowanceToken
  */
 contract Mintable is UnlimitedAllowanceToken, SafeMath {
-    function mint(uint _value)
+    function mint(uint256 _value)
         public
     {
         require(_value <= 100000000000000000000);

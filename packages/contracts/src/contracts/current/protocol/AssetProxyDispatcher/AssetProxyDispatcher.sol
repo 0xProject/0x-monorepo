@@ -57,21 +57,21 @@ contract AssetProxyDispatcher is
     ///      An id can only be assigned to a single proxy at a given time,
     ///      however, an asset proxy may be registered to multiple ids.
     /// @param assetProxyId Id to register`newAssetProxy` under.
-    /// @param newAssetProxy asset proxy to register, or 0x0 to unset assetProxyId.
-    /// @param currentAssetProxy Existing asset proxy to overwrite, or 0x0 if assetProxyId is currently unused.
+    /// @param newAssetProxy Address of new asset proxy to register, or 0x0 to unset assetProxyId.
+    /// @param oldAssetProxy Existing asset proxy to overwrite, or 0x0 if assetProxyId is currently unused.
     function registerAssetProxy(
         uint8 assetProxyId,
-        IAssetProxy newAssetProxy,
-        IAssetProxy currentAssetProxy)
+        address newAssetProxy,
+        address oldAssetProxy)
         external
         onlyOwner
     {
         // Ensure the existing asset proxy is not unintentionally overwritten
-        require(currentAssetProxy == assetProxies[assetProxyId]);
+        require(oldAssetProxy == address(assetProxies[assetProxyId]));
 
         // Add asset proxy and log registration
-        assetProxies[assetProxyId] = newAssetProxy;
-        emit AssetProxySet(assetProxyId, newAssetProxy, currentAssetProxy);
+        assetProxies[assetProxyId] = IAssetProxy(newAssetProxy);
+        emit AssetProxySet(assetProxyId, newAssetProxy, oldAssetProxy);
     }
 
     /// @dev Gets an asset proxy.
@@ -79,9 +79,9 @@ contract AssetProxyDispatcher is
     /// @return The asset proxy registered to assetProxyId. Returns 0x0 if no proxy is registered.
     function getAssetProxy(uint8 assetProxyId)
         external view
-        returns (IAssetProxy)
+        returns (address)
     {
         IAssetProxy assetProxy = assetProxies[assetProxyId];
-        return assetProxy;
+        return address(assetProxy);
     }
 }

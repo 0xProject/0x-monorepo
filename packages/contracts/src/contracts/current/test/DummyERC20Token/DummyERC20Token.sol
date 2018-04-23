@@ -21,16 +21,16 @@ pragma solidity ^0.4.21;
 import "../Mintable/Mintable.sol";
 import "../../utils/Ownable/Ownable.sol";
 
-contract DummyToken is Mintable, Ownable {
+contract DummyERC20Token is Mintable, Ownable {
     string public name;
     string public symbol;
-    uint public decimals;
+    uint256 public decimals;
 
-    function DummyToken(
+    function DummyERC20Token(
         string _name,
         string _symbol,
-        uint _decimals,
-        uint _totalSupply)
+        uint256 _decimals,
+        uint256 _totalSupply)
         public
     {
         name = _name;
@@ -40,11 +40,11 @@ contract DummyToken is Mintable, Ownable {
         balances[msg.sender] = _totalSupply;
     }
 
-    function setBalance(address _target, uint _value)
+    function setBalance(address _target, uint256 _value)
         public
         onlyOwner
     {
-        uint currBalance = balanceOf(_target);
+        uint256 currBalance = balanceOf(_target);
         if (_value < currBalance) {
             totalSupply = safeSub(totalSupply, safeSub(currBalance, _value));
         } else {

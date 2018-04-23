@@ -37,8 +37,8 @@ contract IExchange {
         address indexed feeRecipient,
         bytes makerAssetData,
         bytes takerAssetData,
-        uint256 makerTokenFilledAmount,
-        uint256 takerTokenFilledAmount,
+        uint256 makerAssetFilledAmount,
+        uint256 takerAssetFilledAmount,
         uint256 makerFeePaid,
         uint256 takerFeePaid,
         bytes32 indexed orderHash
@@ -49,8 +49,8 @@ contract IExchange {
         address indexed feeRecipient,
         bytes makerAssetData,
         bytes takerAssetData,
-        uint256 makerTokenCancelledAmount,
-        uint256 takerTokenCancelledAmount,
+        uint256 makerAssetCancelledAmount,
+        uint256 takerAssetCancelledAmount,
         bytes32 indexed orderHash
     );
 
@@ -77,9 +77,9 @@ contract IExchange {
     /// @dev Calculates the sum of values already filled and cancelled for a given order.
     /// @param orderHash The Keccak-256 hash of the given order.
     /// @return Sum of values already filled and cancelled.
-    function getUnavailableTakerTokenAmount(bytes32 orderHash)
+    function getUnavailableTakerAssetAmount(bytes32 orderHash)
         public view
-        returns (uint256 unavailableTakerTokenAmount);
+        returns (uint256 unavailableTakerAssetAmount);
 
     /// @dev Calculates partial value given a numerator and denominator.
     /// @param numerator Numerator.
@@ -100,8 +100,8 @@ contract IExchange {
         returns (bool isError);
 
     /// @dev Calculates Keccak-256 hash of order with specified parameters.
-    /// @param orderAddresses Array of order's maker, taker, makerToken, takerToken, and feeRecipient.
-    /// @param orderValues Array of order's makerTokenAmount, takerTokenAmount, makerFee, takerFee, expirationTimestampInSec, and salt.
+    /// @param orderAddresses Array of order's maker, taker, makerAsset, takerAsset, and feeRecipient.
+    /// @param orderValues Array of order's makerAssetAmount, takerAssetAmount, makerFee, takerFee, expirationTimestampInSec, and salt.
     /// @return Keccak-256 hash of order.
     function getOrderHash(address[5] orderAddresses, uint256[6] orderValues)
         public view
@@ -124,34 +124,34 @@ contract IExchange {
         returns (bool isValid);
 
     /// @dev Fills the input order.
-    /// @param orderAddresses Array of order's maker, taker, makerToken, takerToken, and feeRecipient.
-    /// @param orderValues Array of order's makerTokenAmount, takerTokenAmount, makerFee, takerFee, expirationTimestampInSec, and salt.
-    /// @param takerTokenFillAmount Desired amount of takerToken to fill.
+    /// @param orderAddresses Array of order's maker, taker, makerAsset, takerAsset, and feeRecipient.
+    /// @param orderValues Array of order's makerAssetAmount, takerAssetAmount, makerFee, takerFee, expirationTimestampInSec, and salt.
+    /// @param takerAssetFillAmount Desired amount of takerAsset to fill.
     /// @param v ECDSA signature parameter v.
     /// @param r ECDSA signature parameters r.
     /// @param s ECDSA signature parameters s.
-    /// @return Total amount of takerToken filled in trade.
+    /// @return Total amount of takerAsset filled in trade.
     function fillOrder(
           address[5] orderAddresses,
           uint256[6] orderValues,
-          uint256 takerTokenFillAmount,
+          uint256 takerAssetFillAmount,
           uint8 v,
           bytes32 r,
           bytes32 s)
           public
-          returns (uint256 takerTokenFilledAmount);
+          returns (uint256 takerAssetFilledAmount);
 
     /// @dev Cancels the input order.
-    /// @param orderAddresses Array of order's maker, taker, makerToken, takerToken, and feeRecipient.
-    /// @param orderValues Array of order's makerTokenAmount, takerTokenAmount, makerFee, takerFee, expirationTimestampInSec, and salt.
-    /// @param takerTokenCancelAmount Desired amount of takerToken to cancel in order.
-    /// @return Amount of takerToken cancelled.
+    /// @param orderAddresses Array of order's maker, taker, makerAsset, takerAsset, and feeRecipient.
+    /// @param orderValues Array of order's makerAssetAmount, takerAssetAmount, makerFee, takerFee, expirationTimestampInSec, and salt.
+    /// @param takerAssetCancelAmount Desired amount of takerAsset to cancel in order.
+    /// @return Amount of takerAsset cancelled.
     function cancelOrder(
         address[5] orderAddresses,
         uint256[6] orderValues,
-        uint256 takerTokenCancelAmount)
+        uint256 takerAssetCancelAmount)
         public
-        returns (uint256 takerTokenCancelledAmount);
+        returns (uint256 takerAssetCancelledAmount);
 
     /// @dev Cancels all orders for a specified maker up to a certain time.
     /// @param salt Orders created with a salt less or equal to this value will be cancelled.
@@ -159,51 +159,51 @@ contract IExchange {
         external;
 
     /// @dev Fills an order with specified parameters and ECDSA signature. Throws if specified amount not filled entirely.
-    /// @param orderAddresses Array of order's maker, taker, makerToken, takerToken, and feeRecipient.
-    /// @param orderValues Array of order's makerTokenAmount, takerTokenAmount, makerFee, takerFee, expirationTimestampInSec, and salt.
-    /// @param takerTokenFillAmount Desired amount of takerToken to fill.
+    /// @param orderAddresses Array of order's maker, taker, makerAsset, takerAsset, and feeRecipient.
+    /// @param orderValues Array of order's makerAssetAmount, takerAssetAmount, makerFee, takerFee, expirationTimestampInSec, and salt.
+    /// @param takerAssetFillAmount Desired amount of takerAsset to fill.
     /// @param v ECDSA signature parameter v.
     /// @param r ECDSA signature parameters r.
     /// @param s ECDSA signature parameters s.
     function fillOrKillOrder(
         address[5] orderAddresses,
         uint256[6] orderValues,
-        uint256 takerTokenFillAmount,
+        uint256 takerAssetFillAmount,
         uint8 v,
         bytes32 r,
         bytes32 s)
         public;
 
     /// @dev Fills an order with specified parameters and ECDSA signature. Returns false if the transaction would otherwise revert.
-    /// @param orderAddresses Array of order's maker, taker, makerToken, takerToken, and feeRecipient.
-    /// @param orderValues Array of order's makerTokenAmount, takerTokenAmount, makerFee, takerFee, expirationTimestampInSec, and salt.
-    /// @param takerTokenFillAmount Desired amount of takerToken to fill.
+    /// @param orderAddresses Array of order's maker, taker, makerAsset, takerAsset, and feeRecipient.
+    /// @param orderValues Array of order's makerAssetAmount, takerAssetAmount, makerFee, takerFee, expirationTimestampInSec, and salt.
+    /// @param takerAssetFillAmount Desired amount of takerAsset to fill.
     /// @param v ECDSA signature parameter v.
     /// @param r ECDSA signature parameters r.
     /// @param s ECDSA signature parameters s.
     /// @return Success if the transaction did not revert.
-    /// @return Total amount of takerToken filled in trade.
+    /// @return Total amount of takerAsset filled in trade.
     function fillOrderNoThrow(
         address[5] orderAddresses,
         uint256[6] orderValues,
-        uint256 takerTokenFillAmount,
+        uint256 takerAssetFillAmount,
         uint8 v,
         bytes32 r,
         bytes32 s)
         public
-        returns (bool success, uint256 takerTokenFilledAmount);
+        returns (bool success, uint256 takerAssetFilledAmount);
 
     /// @dev Synchronously executes multiple calls of fillOrder in a single transaction.
     /// @param orderAddresses Array of address arrays containing individual order addresses.
     /// @param orderValues Array of uint256 arrays containing individual order values.
-    /// @param takerTokenFillAmounts Array of desired amounts of takerToken to fill in orders.
+    /// @param takerAssetFillAmounts Array of desired amounts of takerAsset to fill in orders.
     /// @param v Array ECDSA signature v parameters.
     /// @param r Array of ECDSA signature r parameters.
     /// @param s Array of ECDSA signature s parameters.
     function batchFillOrders(
         address[5][] orderAddresses,
         uint256[6][] orderValues,
-        uint256[] takerTokenFillAmounts,
+        uint256[] takerAssetFillAmounts,
         uint8[] v,
         bytes32[] r,
         bytes32[] s)
@@ -212,14 +212,14 @@ contract IExchange {
     /// @dev Synchronously executes multiple calls of fillOrKill in a single transaction.
     /// @param orderAddresses Array of address arrays containing individual order addresses.
     /// @param orderValues Array of uint256 arrays containing individual order values.
-    /// @param takerTokenFillAmounts Array of desired amounts of takerToken to fill in orders.
+    /// @param takerAssetFillAmounts Array of desired amounts of takerAsset to fill in orders.
     /// @param v Array ECDSA signature v parameters.
     /// @param r Array of ECDSA signature r parameters.
     /// @param s Array of ECDSA signature s parameters.
     function batchFillOrKillOrders(
         address[5][] orderAddresses,
         uint256[6][] orderValues,
-        uint256[] takerTokenFillAmounts,
+        uint256[] takerAssetFillAmounts,
         uint8[] v,
         bytes32[] r,
         bytes32[] s)
@@ -228,62 +228,62 @@ contract IExchange {
     /// @dev Synchronously executes multiple calls of fillOrderNoThrow in a single transaction.
     /// @param orderAddresses Array of address arrays containing individual order addresses.
     /// @param orderValues Array of uint256 arrays containing individual order values.
-    /// @param takerTokenFillAmounts Array of desired amounts of takerToken to fill in orders.
+    /// @param takerAssetFillAmounts Array of desired amounts of takerAsset to fill in orders.
     /// @param v Array ECDSA signature v parameters.
     /// @param r Array of ECDSA signature r parameters.
     /// @param s Array of ECDSA signature s parameters.
     function batchFillOrdersNoThrow(
         address[5][] orderAddresses,
         uint256[6][] orderValues,
-        uint256[] takerTokenFillAmounts,
+        uint256[] takerAssetFillAmounts,
         uint8[] v,
         bytes32[] r,
         bytes32[] s)
         external;
 
-    /// @dev Synchronously executes multiple fill orders in a single transaction until total takerTokenFillAmount filled.
+    /// @dev Synchronously executes multiple fill orders in a single transaction until total takerAssetFillAmount filled.
     /// @param orderAddresses Array of address arrays containing individual order addresses.
     /// @param orderValues Array of uint256 arrays containing individual order values.
-    /// @param takerTokenFillAmount Desired total amount of takerToken to fill in orders.
+    /// @param takerAssetFillAmount Desired total amount of takerAsset to fill in orders.
     /// @param v Array ECDSA signature v parameters.
     /// @param r Array of ECDSA signature r parameters.
     /// @param s Array of ECDSA signature s parameters.
-    /// @return Total amount of takerTokenFillAmount filled in orders.
+    /// @return Total amount of takerAssetFillAmount filled in orders.
     function marketFillOrders(
         address[5][] orderAddresses,
         uint256[6][] orderValues,
-        uint256 takerTokenFillAmount,
+        uint256 takerAssetFillAmount,
         uint8[] v,
         bytes32[] r,
         bytes32[] s)
         external
-        returns (uint256 totalTakerTokenFilledAmount);
+        returns (uint256 totalTakerAssetFilledAmount);
 
-    /// @dev Synchronously executes multiple calls of fillOrderNoThrow in a single transaction until total takerTokenFillAmount filled.
+    /// @dev Synchronously executes multiple calls of fillOrderNoThrow in a single transaction until total takerAssetFillAmount filled.
     /// @param orderAddresses Array of address arrays containing individual order addresses.
     /// @param orderValues Array of uint256 arrays containing individual order values.
-    /// @param takerTokenFillAmount Desired total amount of takerToken to fill in orders.
+    /// @param takerAssetFillAmount Desired total amount of takerAsset to fill in orders.
     /// @param v Array ECDSA signature v parameters.
     /// @param r Array of ECDSA signature r parameters.
     /// @param s Array of ECDSA signature s parameters.
-    /// @return Total amount of takerTokenFillAmount filled in orders.
+    /// @return Total amount of takerAssetFillAmount filled in orders.
     function marketFillOrdersNoThrow(
         address[5][] orderAddresses,
         uint256[6][] orderValues,
-        uint256 takerTokenFillAmount,
+        uint256 takerAssetFillAmount,
         uint8[] v,
         bytes32[] r,
         bytes32[] s)
         external
-        returns (uint256 totalTakerTokenFilledAmount);
+        returns (uint256 totalTakerAssetFilledAmount);
 
     /// @dev Synchronously cancels multiple orders in a single transaction.
     /// @param orderAddresses Array of address arrays containing individual order addresses.
     /// @param orderValues Array of uint256 arrays containing individual order values.
-    /// @param takerTokenCancelAmounts Array of desired amounts of takerToken to cancel in orders.
+    /// @param takerAssetCancelAmounts Array of desired amounts of takerAsset to cancel in orders.
     function batchCancelOrders(
         address[5][] orderAddresses,
         uint256[6][] orderValues,
-        uint256[] takerTokenCancelAmounts)
+        uint256[] takerAssetCancelAmounts)
         external;
 }

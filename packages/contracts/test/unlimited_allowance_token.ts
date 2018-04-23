@@ -5,7 +5,7 @@ import { Web3Wrapper } from '@0xproject/web3-wrapper';
 import * as chai from 'chai';
 import * as Web3 from 'web3';
 
-import { DummyTokenContract } from '../src/contract_wrappers/generated/dummy_token';
+import { DummyERC20TokenContract } from '../src/contract_wrappers/generated/dummy_e_r_c20_token';
 import { constants } from '../src/utils/constants';
 import { ContractName } from '../src/utils/types';
 
@@ -27,14 +27,14 @@ describe('UnlimitedAllowanceToken', () => {
 
     const MAX_MINT_VALUE = new BigNumber(100000000000000000000);
     let tokenAddress: string;
-    let token: DummyTokenContract;
+    let token: DummyERC20TokenContract;
 
     before(async () => {
         const accounts = await web3Wrapper.getAvailableAddressesAsync();
         owner = accounts[0];
         spender = accounts[1];
-        const tokenInstance = await deployer.deployAsync(ContractName.DummyToken, constants.DUMMY_TOKEN_ARGS);
-        token = new DummyTokenContract(tokenInstance.abi, tokenInstance.address, provider);
+        const tokenInstance = await deployer.deployAsync(ContractName.DummyERC20Token, constants.DUMMY_TOKEN_ARGS);
+        token = new DummyERC20TokenContract(tokenInstance.abi, tokenInstance.address, provider);
         await token.mint.sendTransactionAsync(MAX_MINT_VALUE, { from: owner });
         tokenAddress = token.address;
     });

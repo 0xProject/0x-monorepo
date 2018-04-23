@@ -22,12 +22,12 @@ export class ExchangeWrapper {
     public async fillOrderAsync(
         signedOrder: SignedOrder,
         from: string,
-        opts: { takerTokenFillAmount?: BigNumber } = {},
+        opts: { takerAssetFillAmount?: BigNumber } = {},
     ): Promise<TransactionReceiptWithDecodedLogs> {
-        const params = orderUtils.createFill(signedOrder, opts.takerTokenFillAmount);
+        const params = orderUtils.createFill(signedOrder, opts.takerAssetFillAmount);
         const txHash = await this._exchange.fillOrder.sendTransactionAsync(
             params.order,
-            params.takerTokenFillAmount,
+            params.takerAssetFillAmount,
             params.signature,
             { from },
         );
@@ -43,12 +43,12 @@ export class ExchangeWrapper {
     public async fillOrKillOrderAsync(
         signedOrder: SignedOrder,
         from: string,
-        opts: { takerTokenFillAmount?: BigNumber } = {},
+        opts: { takerAssetFillAmount?: BigNumber } = {},
     ): Promise<TransactionReceiptWithDecodedLogs> {
-        const params = orderUtils.createFill(signedOrder, opts.takerTokenFillAmount);
+        const params = orderUtils.createFill(signedOrder, opts.takerAssetFillAmount);
         const txHash = await this._exchange.fillOrKillOrder.sendTransactionAsync(
             params.order,
-            params.takerTokenFillAmount,
+            params.takerAssetFillAmount,
             params.signature,
             { from },
         );
@@ -58,12 +58,12 @@ export class ExchangeWrapper {
     public async fillOrderNoThrowAsync(
         signedOrder: SignedOrder,
         from: string,
-        opts: { takerTokenFillAmount?: BigNumber } = {},
+        opts: { takerAssetFillAmount?: BigNumber } = {},
     ): Promise<TransactionReceiptWithDecodedLogs> {
-        const params = orderUtils.createFill(signedOrder, opts.takerTokenFillAmount);
+        const params = orderUtils.createFill(signedOrder, opts.takerAssetFillAmount);
         const txHash = await this._exchange.fillOrderNoThrow.sendTransactionAsync(
             params.order,
-            params.takerTokenFillAmount,
+            params.takerAssetFillAmount,
             params.signature,
             { from },
         );
@@ -73,12 +73,12 @@ export class ExchangeWrapper {
     public async batchFillOrdersAsync(
         orders: SignedOrder[],
         from: string,
-        opts: { takerTokenFillAmounts?: BigNumber[] } = {},
+        opts: { takerAssetFillAmounts?: BigNumber[] } = {},
     ): Promise<TransactionReceiptWithDecodedLogs> {
-        const params = formatters.createBatchFill(orders, opts.takerTokenFillAmounts);
+        const params = formatters.createBatchFill(orders, opts.takerAssetFillAmounts);
         const txHash = await this._exchange.batchFillOrders.sendTransactionAsync(
             params.orders,
-            params.takerTokenFillAmounts,
+            params.takerAssetFillAmounts,
             params.signatures,
             { from },
         );
@@ -88,12 +88,12 @@ export class ExchangeWrapper {
     public async batchFillOrKillOrdersAsync(
         orders: SignedOrder[],
         from: string,
-        opts: { takerTokenFillAmounts?: BigNumber[] } = {},
+        opts: { takerAssetFillAmounts?: BigNumber[] } = {},
     ): Promise<TransactionReceiptWithDecodedLogs> {
-        const params = formatters.createBatchFill(orders, opts.takerTokenFillAmounts);
+        const params = formatters.createBatchFill(orders, opts.takerAssetFillAmounts);
         const txHash = await this._exchange.batchFillOrKillOrders.sendTransactionAsync(
             params.orders,
-            params.takerTokenFillAmounts,
+            params.takerAssetFillAmounts,
             params.signatures,
             { from },
         );
@@ -103,12 +103,12 @@ export class ExchangeWrapper {
     public async batchFillOrdersNoThrowAsync(
         orders: SignedOrder[],
         from: string,
-        opts: { takerTokenFillAmounts?: BigNumber[] } = {},
+        opts: { takerAssetFillAmounts?: BigNumber[] } = {},
     ): Promise<TransactionReceiptWithDecodedLogs> {
-        const params = formatters.createBatchFill(orders, opts.takerTokenFillAmounts);
+        const params = formatters.createBatchFill(orders, opts.takerAssetFillAmounts);
         const txHash = await this._exchange.batchFillOrdersNoThrow.sendTransactionAsync(
             params.orders,
-            params.takerTokenFillAmounts,
+            params.takerAssetFillAmounts,
             params.signatures,
             { from },
         );
@@ -118,12 +118,12 @@ export class ExchangeWrapper {
     public async marketSellOrdersAsync(
         orders: SignedOrder[],
         from: string,
-        opts: { takerTokenFillAmount: BigNumber },
+        opts: { takerAssetFillAmount: BigNumber },
     ): Promise<TransactionReceiptWithDecodedLogs> {
-        const params = formatters.createMarketSellOrders(orders, opts.takerTokenFillAmount);
+        const params = formatters.createMarketSellOrders(orders, opts.takerAssetFillAmount);
         const txHash = await this._exchange.marketSellOrders.sendTransactionAsync(
             params.orders,
-            params.takerTokenFillAmount,
+            params.takerAssetFillAmount,
             params.signatures,
             { from },
         );
@@ -133,12 +133,12 @@ export class ExchangeWrapper {
     public async marketSellOrdersNoThrowAsync(
         orders: SignedOrder[],
         from: string,
-        opts: { takerTokenFillAmount: BigNumber },
+        opts: { takerAssetFillAmount: BigNumber },
     ): Promise<TransactionReceiptWithDecodedLogs> {
-        const params = formatters.createMarketSellOrders(orders, opts.takerTokenFillAmount);
+        const params = formatters.createMarketSellOrders(orders, opts.takerAssetFillAmount);
         const txHash = await this._exchange.marketSellOrdersNoThrow.sendTransactionAsync(
             params.orders,
-            params.takerTokenFillAmount,
+            params.takerAssetFillAmount,
             params.signatures,
             { from },
         );
@@ -148,12 +148,12 @@ export class ExchangeWrapper {
     public async marketBuyOrdersAsync(
         orders: SignedOrder[],
         from: string,
-        opts: { makerTokenFillAmount: BigNumber },
+        opts: { makerAssetFillAmount: BigNumber },
     ): Promise<TransactionReceiptWithDecodedLogs> {
-        const params = formatters.createMarketBuyOrders(orders, opts.makerTokenFillAmount);
+        const params = formatters.createMarketBuyOrders(orders, opts.makerAssetFillAmount);
         const txHash = await this._exchange.marketBuyOrders.sendTransactionAsync(
             params.orders,
-            params.makerTokenFillAmount,
+            params.makerAssetFillAmount,
             params.signatures,
             { from },
         );
@@ -163,12 +163,12 @@ export class ExchangeWrapper {
     public async marketBuyOrdersNoThrowAsync(
         orders: SignedOrder[],
         from: string,
-        opts: { makerTokenFillAmount: BigNumber },
+        opts: { makerAssetFillAmount: BigNumber },
     ): Promise<TransactionReceiptWithDecodedLogs> {
-        const params = formatters.createMarketBuyOrders(orders, opts.makerTokenFillAmount);
+        const params = formatters.createMarketBuyOrders(orders, opts.makerAssetFillAmount);
         const txHash = await this._exchange.marketBuyOrdersNoThrow.sendTransactionAsync(
             params.orders,
-            params.makerTokenFillAmount,
+            params.makerAssetFillAmount,
             params.signatures,
             { from },
         );
@@ -221,7 +221,7 @@ export class ExchangeWrapper {
         );
         return partialAmount;
     }
-    public async getTakerTokenFilledAmount(orderHashHex: string): Promise<BigNumber> {
+    public async getTakerAssetFilledAmountAsync(orderHashHex: string): Promise<BigNumber> {
         const filledAmount = new BigNumber(await this._exchange.filled.callAsync(orderHashHex));
         return filledAmount;
     }

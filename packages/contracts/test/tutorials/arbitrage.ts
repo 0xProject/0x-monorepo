@@ -54,8 +54,8 @@
 // before(async () => {
 //     const accounts = await web3Wrapper.getAvailableAddressesAsync();
 //     [coinbase, maker, edMaker, edFrontRunner] = accounts;
-//     weth = await deployer.deployAsync(ContractName.DummyToken, constants.DUMMY_TOKEN_ARGS);
-//     zrx = await deployer.deployAsync(ContractName.DummyToken, constants.DUMMY_TOKEN_ARGS);
+//     weth = await deployer.deployAsync(ContractName.DummyERC20Token, constants.DUMMY_TOKEN_ARGS);
+//     zrx = await deployer.deployAsync(ContractName.DummyERC20Token, constants.DUMMY_TOKEN_ARGS);
 //     const accountLevels = await deployer.deployAsync(ContractName.AccountLevels);
 //     const edAdminAddress = accounts[0];
 //     const edMakerFee = 0;

@@ -25,7 +25,7 @@ contract LibBytes {
     /// @param rhs Second byte array to compare.
     /// @return True if arrays are the same. False otherwise.
     function areBytesEqual(bytes memory lhs, bytes memory rhs)
-        public
+        public pure
         returns (bool equal)
     {
         assembly {

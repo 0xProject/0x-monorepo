@@ -18,22 +18,22 @@
 
 pragma solidity ^0.4.18;
 
-import "../Token/Token.sol";
+import "./IERC20Token.sol";
 
-contract ERC20Token is Token {
+contract ERC20Token is IERC20Token {
 
-    function transfer(address _to, uint _value)
+    function transfer(address _to, uint256 _value)
         public
         returns (bool)
     {
         require(balances[msg.sender] >= _value && balances[_to] + _value >= balances[_to]);
         balances[msg.sender] -= _value;
         balances[_to] += _value;
-        Transfer(msg.sender, _to, _value);
+        emit Transfer(msg.sender, _to, _value);
         return true;
     }
 
-    function transferFrom(address _from, address _to, uint _value)
+    function transferFrom(address _from, address _to, uint256 _value)
         public
         returns (bool)
     {
@@ -41,23 +41,22 @@ contract ERC20Token is Token {
         balances[_to] += _value;
         balances[_from] -= _value;
         allowed[_from][msg.sender] -= _value;
-        Transfer(_from, _to, _value);
+        emit Transfer(_from, _to, _value);
         return true;
     }
 
-    function approve(address _spender, uint _value)
+    function approve(address _spender, uint256 _value)
         public
         returns (bool)
     {
         allowed[msg.sender][_spender] = _value;
-        Approval(msg.sender, _spender, _value);
+        emit Approval(msg.sender, _spender, _value);
         return true;
     }
 
     function balanceOf(address _owner)
-        public
-        view
-        returns (uint)
+        public view
+        returns (uint256)
     {
         return balances[_owner];
     }
@@ -65,12 +64,12 @@ contract ERC20Token is Token {
     function allowance(address _owner, address _spender)
         public
         view
-        returns (uint)
+        returns (uint256)
     {
         return allowed[_owner][_spender];
     }
 
-    mapping (address => uint) balances;
-    mapping (address => mapping (address => uint)) allowed;
-    uint public totalSupply;
+    mapping (address => uint256) balances;
+    mapping (address => mapping (address => uint256)) allowed;
+    uint256 public totalSupply;
 }

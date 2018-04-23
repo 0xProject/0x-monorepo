@@ -7,18 +7,18 @@ import { crypto } from './crypto';
 import { OrderStruct, SignatureType, SignedOrder, UnsignedOrder } from './types';
 
 export const orderUtils = {
-    createFill: (signedOrder: SignedOrder, takerTokenFillAmount?: BigNumber) => {
+    createFill: (signedOrder: SignedOrder, takerAssetFillAmount?: BigNumber) => {
         const fill = {
             order: orderUtils.getOrderStruct(signedOrder),
-            takerTokenFillAmount: takerTokenFillAmount || signedOrder.takerTokenAmount,
+            takerAssetFillAmount: takerAssetFillAmount || signedOrder.takerAssetAmount,
             signature: signedOrder.signature,
         };
         return fill;
     },
-    createCancel(signedOrder: SignedOrder, takerTokenCancelAmount?: BigNumber) {
+    createCancel(signedOrder: SignedOrder, takerAssetCancelAmount?: BigNumber) {
         const cancel = {
             order: orderUtils.getOrderStruct(signedOrder),
-            takerTokenCancelAmount: takerTokenCancelAmount || signedOrder.takerTokenAmount,
+            takerAssetCancelAmount: takerAssetCancelAmount || signedOrder.takerAssetAmount,
         };
         return cancel;
     },
@@ -27,8 +27,8 @@ export const orderUtils = {
             makerAddress: signedOrder.makerAddress,
             takerAddress: signedOrder.takerAddress,
             feeRecipientAddress: signedOrder.feeRecipientAddress,
-            makerTokenAmount: signedOrder.makerTokenAmount,
-            takerTokenAmount: signedOrder.takerTokenAmount,
+            makerAssetAmount: signedOrder.makerAssetAmount,
+            takerAssetAmount: signedOrder.takerAssetAmount,
             makerFee: signedOrder.makerFee,
             takerFee: signedOrder.takerFee,
             expirationTimeSeconds: signedOrder.expirationTimeSeconds,
@@ -44,8 +44,8 @@ export const orderUtils = {
             'address makerAddress',
             'address takerAddress',
             'address feeRecipientAddress',
-            'uint256 makerTokenAmount',
-            'uint256 takerTokenAmount',
+            'uint256 makerAssetAmount',
+            'uint256 takerAssetAmount',
             'uint256 makerFee',
             'uint256 takerFee',
             'uint256 expirationTimeSeconds',
@@ -58,8 +58,8 @@ export const orderUtils = {
             order.makerAddress,
             order.takerAddress,
             order.feeRecipientAddress,
-            order.makerTokenAmount,
-            order.takerTokenAmount,
+            order.makerAssetAmount,
+            order.takerAssetAmount,
             order.makerFee,
             order.takerFee,
             order.expirationTimeSeconds,

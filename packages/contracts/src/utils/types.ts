@@ -14,19 +14,19 @@ export interface SubmissionContractEventArgs {
 export interface BatchFillOrders {
     orders: OrderStruct[];
     signatures: string[];
-    takerTokenFillAmounts: BigNumber[];
+    takerAssetFillAmounts: BigNumber[];
 }
 
 export interface MarketSellOrders {
     orders: OrderStruct[];
     signatures: string[];
-    takerTokenFillAmount: BigNumber;
+    takerAssetFillAmount: BigNumber;
 }
 
 export interface MarketBuyOrders {
     orders: OrderStruct[];
     signatures: string[];
-    makerTokenFillAmount: BigNumber;
+    makerAssetFillAmount: BigNumber;
 }
 
 export interface BatchCancelOrders {
@@ -47,10 +47,10 @@ export interface DefaultOrderParams {
     exchangeAddress: string;
     makerAddress: string;
     feeRecipientAddress: string;
-    makerTokenAddress: string;
-    takerTokenAddress: string;
-    makerTokenAmount: BigNumber;
-    takerTokenAmount: BigNumber;
+    makerAssetAddress: string;
+    takerAssetAddress: string;
+    makerAssetAmount: BigNumber;
+    takerAssetAmount: BigNumber;
     makerFee: BigNumber;
     takerFee: BigNumber;
     makerAssetData: string;
@@ -100,10 +100,9 @@ export enum ContractName {
     MultiSigWalletWithTimeLock = 'MultiSigWalletWithTimeLock',
     Exchange = 'Exchange',
     ZRXToken = 'ZRXToken',
-    DummyToken = 'DummyToken',
+    DummyERC20Token = 'DummyERC20Token',
     EtherToken = 'WETH9',
     MultiSigWalletWithTimeLockExceptRemoveAuthorizedAddress = 'MultiSigWalletWithTimeLockExceptRemoveAuthorizedAddress',
-    MaliciousToken = 'MaliciousToken',
     AccountLevels = 'AccountLevels',
     EtherDelta = 'EtherDelta',
     Arbitrage = 'Arbitrage',
@@ -138,8 +137,8 @@ export interface OrderStruct {
     makerAddress: string;
     takerAddress: string;
     feeRecipientAddress: string;
-    makerTokenAmount: BigNumber;
-    takerTokenAmount: BigNumber;
+    makerAssetAmount: BigNumber;
+    takerAssetAmount: BigNumber;
     makerFee: BigNumber;
     takerFee: BigNumber;
     expirationTimeSeconds: BigNumber;

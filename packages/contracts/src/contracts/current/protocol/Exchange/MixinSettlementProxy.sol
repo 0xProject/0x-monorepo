@@ -20,7 +20,6 @@ pragma solidity ^0.4.21;
 pragma experimental ABIEncoderV2;
 
 import "./mixins/MSettlement.sol";
-import "../../tokens/Token/IToken.sol";
 import "./LibPartialAmount.sol";
 import "../AssetProxyDispatcher/IAssetProxy.sol";
 
@@ -29,70 +28,60 @@ contract MixinSettlementProxy is
     MSettlement,
     LibPartialAmount
 {
-    IAssetProxy TRANSFER_PROXY;
+    IAssetProxy ASSET_PROXY_DISPATCHER;
     bytes ZRX_PROXY_DATA;
-    IToken ZRX_TOKEN;
 
-    function transferProxy()
+    function assetProxyDispatcher()
         public view
-        returns (IAssetProxy)
+        returns (address)
     {
-        return TRANSFER_PROXY;
-    }
-
-    function zrxToken()
-        external view
-        returns (IToken)
-    {
-        return ZRX_TOKEN;
+        return address(ASSET_PROXY_DISPATCHER);
     }
 
     function zrxProxyData()
         external view
-        returns (bytes)
+        returns (bytes memory)
     {
         return ZRX_PROXY_DATA;
     }
 
     function MixinSettlementProxy(
-        IAssetProxy assetProxyDispatcherContract,
-        IToken zrxToken,
-        bytes zrxProxyData)
+        address _assetProxyDispatcher,
+        bytes memory _zrxProxyData)
         public
     {
-        ZRX_TOKEN = zrxToken;
-        TRANSFER_PROXY = assetProxyDispatcherContract;
-        ZRX_PROXY_DATA = zrxProxyData;
+        ASSET_PROXY_DISPATCHER = IAssetProxy(_assetProxyDispatcher);
+        ZRX_PROXY_DATA = _zrxProxyData;
     }
 
     function settleOrder(
         Order memory order,
         address takerAddress,
-        uint256 takerTokenFilledAmount)
+        uint256 takerAssetFilledAmount)
         internal
         returns (
-            uint256 makerTokenFilledAmount,
+            uint256 makerAssetFilledAmount,
             uint256 makerFeePaid,
             uint256 takerFeePaid
         )
     {
-        makerTokenFilledAmount = getPartialAmount(takerTokenFilledAmount, order.takerTokenAmount, order.makerTokenAmount);
-        TRANSFER_PROXY.transferFrom(
+        makerAssetFilledAmount = getPartialAmount(takerAssetFilledAmount, order.takerAssetAmount, order.makerAssetAmount);
+        ASSET_PROXY_DISPATCHER.transferFrom(
             order.makerAssetData,
             order.makerAddress,
             takerAddress,
-            makerTokenFilledAmount
+            makerAssetFilledAmount
         );
-        TRANSFER_PROXY.transferFrom(
+        ASSET_PROXY_DISPATCHER.transferFrom(
             order.takerAssetData,
             takerAddress,
             order.makerAddress,
-            takerTokenFilledAmount
+            takerAssetFilledAmount
         );
         if (order.feeRecipientAddress != address(0)) {
             if (order.makerFee > 0) {
-                makerFeePaid = getPartialAmount(takerTokenFilledAmount, order.takerTokenAmount, order.makerFee);
-                TRANSFER_PROXY.transferFrom(
+                makerFeePaid = getPartialAmount(takerAssetFilledAmount, order.takerAssetAmount, order.makerFee);
+                ASSET_PROXY_DISPATCHER.transferFrom(
                     ZRX_PROXY_DATA,
                     order.makerAddress,
                     order.feeRecipientAddress,
@@ -100,8 +89,8 @@ contract MixinSettlementProxy is
                 );
             }
             if (order.takerFee > 0) {
-                takerFeePaid = getPartialAmount(takerTokenFilledAmount, order.takerTokenAmount, order.takerFee);
-                TRANSFER_PROXY.transferFrom(
+                takerFeePaid = getPartialAmount(takerAssetFilledAmount, order.takerAssetAmount, order.takerFee);
+                ASSET_PROXY_DISPATCHER.transferFrom(
                     ZRX_PROXY_DATA,
                     takerAddress,
                     order.feeRecipientAddress,
@@ -109,6 +98,6 @@ contract MixinSettlementProxy is
                 );
             }
         }
-        return (makerTokenFilledAmount, makerFeePaid, takerFeePaid);
+        return (makerAssetFilledAmount, makerFeePaid, takerFeePaid);
     }
 }

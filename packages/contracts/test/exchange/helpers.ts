@@ -7,7 +7,7 @@ import ethUtil = require('ethereumjs-util');
 
 import { ERC20ProxyContract } from '../../src/contract_wrappers/generated/e_r_c20_proxy';
 import { ExchangeContract } from '../../src/contract_wrappers/generated/exchange';
-import { encodeERC20ProxyData } from '../../src/utils/asset_proxy_utils';
+import { assetProxyUtils } from '../../src/utils/asset_proxy_utils';
 import { constants } from '../../src/utils/constants';
 import { ExchangeWrapper } from '../../src/utils/exchange_wrapper';
 import { OrderFactory } from '../../src/utils/order_factory';
@@ -36,16 +36,15 @@ describe('Exchange', () => {
         const owner = accounts[0];
         const tokenRegistry = await deployer.deployAsync(ContractName.TokenRegistry);
         const [rep, dgd, zrx] = await Promise.all([
-            deployer.deployAsync(ContractName.DummyToken, constants.DUMMY_TOKEN_ARGS),
-            deployer.deployAsync(ContractName.DummyToken, constants.DUMMY_TOKEN_ARGS),
-            deployer.deployAsync(ContractName.DummyToken, constants.DUMMY_TOKEN_ARGS),
+            deployer.deployAsync(ContractName.DummyERC20Token, constants.DUMMY_TOKEN_ARGS),
+            deployer.deployAsync(ContractName.DummyERC20Token, constants.DUMMY_TOKEN_ARGS),
+            deployer.deployAsync(ContractName.DummyERC20Token, constants.DUMMY_TOKEN_ARGS),
         ]);
         const assetProxyDispatcher = await deployer.deployAsync(ContractName.AssetProxyDispatcher);
         // Deploy and configure Exchange
         const exchangeInstance = await deployer.deployAsync(ContractName.Exchange, [
-            zrx.address,
-            AssetProxyId.ERC20,
             assetProxyDispatcher.address,
+            AssetProxyId.ERC20,
         ]);
         const exchange = new ExchangeContract(exchangeInstance.abi, exchangeInstance.address, provider);
         await assetProxyDispatcher.addAuthorizedAddress.sendTransactionAsync(exchange.address, { from: owner });
@@ -55,12 +54,12 @@ describe('Exchange', () => {
             exchangeAddress: exchange.address,
             makerAddress,
             feeRecipientAddress,
-            makerTokenAmount: ZeroEx.toBaseUnitAmount(new BigNumber(100), 18),
-            takerTokenAmount: ZeroEx.toBaseUnitAmount(new BigNumber(200), 18),
+            makerAssetAmount: ZeroEx.toBaseUnitAmount(new BigNumber(100), 18),
+            takerAssetAmount: ZeroEx.toBaseUnitAmount(new BigNumber(200), 18),
             makerFee: ZeroEx.toBaseUnitAmount(new BigNumber(1), 18),
             takerFee: ZeroEx.toBaseUnitAmount(new BigNumber(1), 18),
-            makerAssetData: encodeERC20ProxyData(rep.address),
-            takerAssetData: encodeERC20ProxyData(dgd.address),
+            makerAssetData: assetProxyUtils.encodeERC20ProxyData(rep.address),
+            takerAssetData: assetProxyUtils.encodeERC20ProxyData(dgd.address),
         };
         const privateKey = constants.TESTRPC_PRIVATE_KEYS[0];
         orderFactory = new OrderFactory(privateKey, defaultOrderParams);

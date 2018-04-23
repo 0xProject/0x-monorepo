@@ -6,11 +6,11 @@ import * as chai from 'chai';
 import * as Web3 from 'web3';
 
 import { AssetProxyDispatcherContract } from '../../src/contract_wrappers/generated/asset_proxy_dispatcher';
+import { DummyERC20TokenContract } from '../../src/contract_wrappers/generated/dummy_e_r_c20_token';
 import { DummyERC721TokenContract } from '../../src/contract_wrappers/generated/dummy_e_r_c721_token';
-import { DummyTokenContract } from '../../src/contract_wrappers/generated/dummy_token';
 import { ERC20ProxyContract } from '../../src/contract_wrappers/generated/e_r_c20_proxy';
 import { ERC721ProxyContract } from '../../src/contract_wrappers/generated/e_r_c721_proxy';
-import { encodeERC20ProxyData, encodeERC721ProxyData } from '../../src/utils/asset_proxy_utils';
+import { assetProxyUtils } from '../../src/utils/asset_proxy_utils';
 import { Balances } from '../../src/utils/balances';
 import { constants } from '../../src/utils/constants';
 import { AssetProxyId, ContractName } from '../../src/utils/types';
@@ -30,7 +30,7 @@ describe('AssetProxyDispatcher', () => {
     let tokenOwner: string;
     let makerAddress: string;
     let takerAddress: string;
-    let zrx: DummyTokenContract;
+    let zrx: DummyERC20TokenContract;
     let dmyBalances: Balances;
     let assetProxyDispatcher: AssetProxyDispatcherContract;
     let erc20Proxy: ERC20ProxyContract;
@@ -68,8 +68,8 @@ describe('AssetProxyDispatcher', () => {
             from: owner,
         });
         // Deploy zrx and set initial balances
-        const zrxInstance = await deployer.deployAsync(ContractName.DummyToken, constants.DUMMY_TOKEN_ARGS);
-        zrx = new DummyTokenContract(zrxInstance.abi, zrxInstance.address, provider);
+        const zrxInstance = await deployer.deployAsync(ContractName.DummyERC20Token, constants.DUMMY_TOKEN_ARGS);
+        zrx = new DummyERC20TokenContract(zrxInstance.abi, zrxInstance.address, provider);
         await zrx.setBalance.sendTransactionAsync(makerAddress, INITIAL_BALANCE, { from: tokenOwner });
         await zrx.setBalance.sendTransactionAsync(takerAddress, INITIAL_BALANCE, { from: tokenOwner });
         dmyBalances = new Balances([zrx], [makerAddress, takerAddress]);
@@ -242,7 +242,7 @@ describe('AssetProxyDispatcher', () => {
                 { from: owner },
             );
             // Construct metadata for ERC20 proxy
-            const encodedProxyMetadata = encodeERC20ProxyData(zrx.address);
+            const encodedProxyMetadata = assetProxyUtils.encodeERC20ProxyData(zrx.address);
             // Perform a transfer from makerAddress to takerAddress
             const balances = await dmyBalances.getAsync();
             const amount = new BigNumber(10);
@@ -265,7 +265,7 @@ describe('AssetProxyDispatcher', () => {
 
         it('should throw if dispatching to unregistered proxy', async () => {
             // Construct metadata for ERC20 proxy
-            const encodedProxyMetadata = encodeERC20ProxyData(zrx.address);
+            const encodedProxyMetadata = assetProxyUtils.encodeERC20ProxyData(zrx.address);
             // Perform a transfer from makerAddress to takerAddress
             const balances = await dmyBalances.getAsync();
             const amount = new BigNumber(10);
@@ -290,7 +290,7 @@ describe('AssetProxyDispatcher', () => {
                 { from: owner },
             );
             // Construct metadata for ERC20 proxy
-            const encodedProxyMetadata = encodeERC20ProxyData(zrx.address);
+            const encodedProxyMetadata = assetProxyUtils.encodeERC20ProxyData(zrx.address);
             // Perform a transfer from makerAddress to takerAddress
             const balances = await dmyBalances.getAsync();
             const amount = new BigNumber(10);
