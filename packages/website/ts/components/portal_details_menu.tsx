@@ -4,15 +4,15 @@ import { MenuItem } from 'ts/components/ui/menu_item';
 import { Environments, WebsitePaths } from 'ts/types';
 import { configs } from 'ts/utils/configs';
 
-export interface PortalMenuProps {
+export interface PortalDetailsMenuProps {
     menuItemStyle: React.CSSProperties;
     onClick?: () => void;
 }
 
-interface PortalMenuState {}
+interface PortalDetailsMenuState {}
 
-export class PortalMenu extends React.Component<PortalMenuProps, PortalMenuState> {
-    public static defaultProps: Partial<PortalMenuProps> = {
+export class PortalDetailsMenu extends React.Component<PortalDetailsMenuProps, PortalDetailsMenuState> {
+    public static defaultProps: Partial<PortalDetailsMenuProps> = {
         onClick: _.noop,
     };
     public render() {
