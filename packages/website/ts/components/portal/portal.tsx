@@ -62,6 +62,12 @@ const styles: Styles = {
     body: {
         height: `calc(100vh - ${TOP_BAR_HEIGHT}px)`,
     },
+    scrollContainer: {
+        overflowZ: 'hidden',
+        height: `calc(100vh - ${TOP_BAR_HEIGHT}px)`,
+        WebkitOverflowScrolling: 'touch',
+        overflow: 'auto',
+    },
 };
 
 export class Portal extends React.Component<PortalProps, PortalState> {
@@ -165,7 +171,7 @@ export class Portal extends React.Component<PortalProps, PortalState> {
                                 onToggleLedgerDialog={this._onToggleLedgerDialog.bind(this)}
                             />
                         </div>
-                        <div className="flex-auto p3">
+                        <div className="flex-auto px3" style={styles.scrollContainer}>
                             <RelayerIndex networkId={this.props.networkId} />
                         </div>
                     </div>
