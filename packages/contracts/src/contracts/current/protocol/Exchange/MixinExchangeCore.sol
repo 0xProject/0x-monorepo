@@ -18,10 +18,12 @@
 
 pragma solidity ^0.4.21;
 pragma experimental ABIEncoderV2;
+pragma experimental "v0.5.0";
 
 import "./mixins/MExchangeCore.sol";
 import "./mixins/MSettlement.sol";
 import "./mixins/MSignatureValidator.sol";
+import "./mixins/MTransactions.sol";
 import "./LibOrder.sol";
 import "./LibErrors.sol";
 import "./LibPartialAmount.sol";
@@ -35,6 +37,7 @@ contract MixinExchangeCore is
     MExchangeCore,
     MSettlement,
     MSignatureValidator,
+    MTransactions,
     SafeMath,
     LibErrors,
     LibPartialAmount
@@ -113,10 +116,16 @@ contract MixinExchangeCore is
             require(order.takerAssetAmount > 0);
             require(isValidSignature(orderHash, order.makerAddress, signature));
         }
+        
+        // Validate sender
+        if (order.senderAddress != address(0)) {
+            require(order.senderAddress == msg.sender);
+        }
 
-        // Validate taker
+        // Validate transaction signed by taker
+        address takerAddress = getSignerAddress();
         if (order.takerAddress != address(0)) {
-            require(order.takerAddress == msg.sender);
+            require(order.takerAddress == takerAddress);
         }
         require(takerAssetFillAmount > 0);
 
@@ -146,21 +155,10 @@ contract MixinExchangeCore is
 
         // Settle order
         (fillResults.makerAssetFilledAmount, fillResults.makerFeePaid, fillResults.takerFeePaid) =
-            settleOrder(order, msg.sender, fillResults.takerAssetFilledAmount);
+            settleOrder(order, takerAddress, fillResults.takerAssetFilledAmount);
 
         // Log order
-        emit Fill(
-            order.makerAddress,
-            msg.sender,
-            order.feeRecipientAddress,
-            fillResults.makerAssetFilledAmount,
-            fillResults.takerAssetFilledAmount,
-            fillResults.makerFeePaid,
-            fillResults.takerFeePaid,
-            orderHash,
-            order.makerAssetData,
-            order.takerAssetData
-        );
+        emitFillEvent(order, takerAddress, orderHash, fillResults);
         return fillResults;
     }
 
@@ -178,8 +176,16 @@ contract MixinExchangeCore is
         // Validate the order
         require(order.makerAssetAmount > 0);
         require(order.takerAssetAmount > 0);
-        require(order.makerAddress == msg.sender);
 
+        // Validate sender
+        if (order.senderAddress != address(0)) {
+            require(order.senderAddress == msg.sender);
+        }
+        
+        // Validate transaction signed by maker
+        address makerAddress = getSignerAddress();
+        require(order.makerAddress == makerAddress);
+        
         if (block.timestamp >= order.expirationTimeSeconds) {
             emit ExchangeError(uint8(Errors.ORDER_EXPIRED), orderHash);
             return false;
@@ -232,5 +238,28 @@ contract MixinExchangeCore is
         );
         isError = errPercentageTimes1000000 > 1000;
         return isError;
+    }
+
+    /// @dev Logs a Fill event with the given arguments.
+    ///      The sole purpose of this function is to get around the stack variable limit.
+    function emitFillEvent(
+        Order memory order,
+        address takerAddress,
+        bytes32 orderHash,
+        FillResults memory fillResults)
+        internal
+    {
+        emit Fill(
+            order.makerAddress,
+            takerAddress,
+            order.feeRecipientAddress,
+            fillResults.makerAssetFilledAmount,
+            fillResults.takerAssetFilledAmount,
+            fillResults.makerFeePaid,
+            fillResults.takerFeePaid,
+            orderHash,
+            order.makerAssetData,
+            order.takerAssetData
+        );
     }
 }
