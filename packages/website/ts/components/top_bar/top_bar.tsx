@@ -52,14 +52,6 @@ interface TopBarState {
 }
 
 const styles: Styles = {
-    address: {
-        marginRight: 12,
-        overflow: 'hidden',
-        paddingTop: 4,
-        textOverflow: 'ellipsis',
-        whiteSpace: 'nowrap',
-        width: 70,
-    },
     topBar: {
         backgroundColor: colors.white,
         width: '100%',
@@ -258,7 +250,7 @@ export class TopBar extends React.Component<TopBarProps, TopBarState> {
                         </div>
                     )}
                     {this.props.blockchainIsLoaded && (
-                        <div className="sm-hide xs-hide col col-5">
+                        <div className="sm-hide xs-hide col col-5" style={{ paddingTop: 8, marginRight: 36 }}>
                             <ProviderDisplay
                                 dispatcher={this.props.dispatcher}
                                 userAddress={this.props.userAddress}
@@ -446,21 +438,6 @@ export class TopBar extends React.Component<TopBarProps, TopBarState> {
                     {this.props.translate.get(Key.PortalDApp, Deco.CapWords)}
                 </div>
                 <LegacyPortalMenu menuItemStyle={{ color: 'black' }} onClick={this._onMenuButtonClick.bind(this)} />
-            </div>
-        );
-    }
-    private _renderUser() {
-        const userAddress = this.props.userAddress;
-        const identiconDiameter = 26;
-        return (
-            <div className="flex right lg-pr0 md-pr2 sm-pr2" style={{ paddingTop: 16 }}>
-                <div style={styles.address} data-tip={true} data-for="userAddressTooltip">
-                    {!_.isEmpty(userAddress) ? userAddress : ''}
-                </div>
-                <ReactTooltip id="userAddressTooltip">{userAddress}</ReactTooltip>
-                <div>
-                    <Identicon address={userAddress} diameter={identiconDiameter} />
-                </div>
             </div>
         );
     }
