@@ -93,11 +93,12 @@ export enum ContractName {
     AccountLevels = 'AccountLevels',
     EtherDelta = 'EtherDelta',
     Arbitrage = 'Arbitrage',
-    AssetProxyDispatcher = 'AssetProxyDispatcher',
+    TestAssetProxyDispatcher = 'TestAssetProxyDispatcher',
     ERC20Proxy = 'ERC20Proxy',
     ERC721Proxy = 'ERC721Proxy',
     DummyERC721Token = 'DummyERC721Token',
     LibBytes = 'LibBytes',
+    Authorizable = 'Authorizable',
 }
 
 export interface Artifact {

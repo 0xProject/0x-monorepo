@@ -18,40 +18,26 @@
 
 pragma solidity ^0.4.21;
 
-import "./IAssetProxyDispatcher.sol";
-import "./IAssetProxy.sol";
-import "../../utils/Ownable/Ownable.sol";
-import "../../utils/Authorizable/Authorizable.sol";
+contract MAssetProxyDispatcher {
 
-contract AssetProxyDispatcher is
-    Ownable,
-    Authorizable,
-    IAssetProxyDispatcher
-{
-    // Mapping from Asset Proxy Id's to their respective Asset Proxy
-    mapping (uint8 => IAssetProxy) public assetProxies;
+    // Logs registration of new asset proxy
+    event AssetProxySet(
+        uint8 id,
+        address newAssetProxy,
+        address oldAssetProxy
+    );
 
-    /// @dev Transfers assets. Either succeeds or throws.
+    /// @dev Forwards arguments to assetProxy and calls `transferFrom`. Either succeeds or throws.
     /// @param assetMetadata Byte array encoded for the respective asset proxy.
     /// @param from Address to transfer token from.
     /// @param to Address to transfer token to.
     /// @param amount Amount of token to transfer.
-    function transferFrom(
-        bytes assetMetadata,
+    function dispatchTransferFrom(
+        bytes memory assetMetadata,
         address from,
         address to,
         uint256 amount)
-        external
-        onlyAuthorized
-    {
-        // Lookup asset proxy
-        require(assetMetadata.length >= 1);
-        uint8 assetProxyId = uint8(assetMetadata[0]);
-        IAssetProxy assetProxy = assetProxies[assetProxyId];
-
-        // transferFrom will either succeed or throw.
-        assetProxy.transferFrom(assetMetadata, from, to, amount);
-    }
+        internal;
 
     /// @dev Registers an asset proxy to an asset proxy id.
     ///      An id can only be assigned to a single proxy at a given time,
@@ -63,25 +49,12 @@ contract AssetProxyDispatcher is
         uint8 assetProxyId,
         address newAssetProxy,
         address oldAssetProxy)
-        external
-        onlyOwner
-    {
-        // Ensure the existing asset proxy is not unintentionally overwritten
-        require(oldAssetProxy == address(assetProxies[assetProxyId]));
-
-        // Add asset proxy and log registration
-        assetProxies[assetProxyId] = IAssetProxy(newAssetProxy);
-        emit AssetProxySet(assetProxyId, newAssetProxy, oldAssetProxy);
-    }
+        external;
 
     /// @dev Gets an asset proxy.
     /// @param assetProxyId Id of the asset proxy.
     /// @return The asset proxy registered to assetProxyId. Returns 0x0 if no proxy is registered.
     function getAssetProxy(uint8 assetProxyId)
         external view
-        returns (address)
-    {
-        IAssetProxy assetProxy = assetProxies[assetProxyId];
-        return address(assetProxy);
-    }
+        returns (address);
 }

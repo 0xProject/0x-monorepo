@@ -5,7 +5,6 @@ import * as chai from 'chai';
 import ethUtil = require('ethereumjs-util');
 import * as _ from 'lodash';
 
-import { AssetProxyDispatcherContract } from '../../src/contract_wrappers/generated/asset_proxy_dispatcher';
 import { DummyERC20TokenContract } from '../../src/contract_wrappers/generated/dummy_e_r_c20_token';
 import { DummyERC721TokenContract } from '../../src/contract_wrappers/generated/dummy_e_r_c721_token';
 import { ERC20ProxyContract } from '../../src/contract_wrappers/generated/e_r_c20_proxy';
@@ -50,7 +49,6 @@ describe('Exchange core', () => {
     let zrxToken: DummyERC20TokenContract;
     let erc721Token: DummyERC721TokenContract;
     let exchange: ExchangeContract;
-    let assetProxyDispatcher: AssetProxyDispatcherContract;
     let erc20Proxy: ERC20ProxyContract;
     let erc721Proxy: ERC721ProxyContract;
 
@@ -87,44 +85,25 @@ describe('Exchange core', () => {
         erc721MakerAssetIds = erc721Balances[makerAddress][erc721Token.address];
         erc721TakerAssetIds = erc721Balances[takerAddress][erc721Token.address];
 
-        const assetProxyDispatcherInstance = await deployer.deployAsync(ContractName.AssetProxyDispatcher);
-        assetProxyDispatcher = new AssetProxyDispatcherContract(
-            assetProxyDispatcherInstance.abi,
-            assetProxyDispatcherInstance.address,
-            provider,
-        );
-        const prevERC20ProxyAddress = ZeroEx.NULL_ADDRESS;
-        await assetProxyDispatcher.registerAssetProxy.sendTransactionAsync(
-            AssetProxyId.ERC20,
-            erc20Proxy.address,
-            prevERC20ProxyAddress,
-            { from: owner },
-        );
-        const prevERC721ProxyAddress = ZeroEx.NULL_ADDRESS;
-        await assetProxyDispatcher.registerAssetProxy.sendTransactionAsync(
-            AssetProxyId.ERC721,
-            erc721Proxy.address,
-            prevERC721ProxyAddress,
-            { from: owner },
-        );
-        await erc20Proxy.addAuthorizedAddress.sendTransactionAsync(assetProxyDispatcher.address, {
-            from: owner,
-        });
-        await erc721Proxy.addAuthorizedAddress.sendTransactionAsync(assetProxyDispatcher.address, {
-            from: owner,
-        });
-
         const exchangeInstance = await deployer.deployAsync(ContractName.Exchange, [
             assetProxyDispatcher.address,
             assetProxyUtils.encodeERC20ProxyData(zrxToken.address),
         ]);
         exchange = new ExchangeContract(exchangeInstance.abi, exchangeInstance.address, provider);
-        await assetProxyDispatcher.addAuthorizedAddress.sendTransactionAsync(exchange.address, { from: owner });
         zeroEx = new ZeroEx(provider, {
             exchangeContractAddress: exchange.address,
             networkId: constants.TESTRPC_NETWORK_ID,
         });
         exchangeWrapper = new ExchangeWrapper(exchange, zeroEx);
+        await exchangeWrapper.registerAssetProxyAsync(AssetProxyId.ERC20, erc20Proxy.address, owner);
+        await exchangeWrapper.registerAssetProxyAsync(AssetProxyId.ERC721, erc721Proxy.address, owner);
+
+        await erc20Proxy.addAuthorizedAddress.sendTransactionAsync(exchange.address, {
+            from: owner,
+        });
+        await erc721Proxy.addAuthorizedAddress.sendTransactionAsync(exchange.address, {
+            from: owner,
+        });
 
         defaultMakerAssetAddress = erc20TokenA.address;
         defaultTakerAssetAddress = erc20TokenB.address;
@@ -455,35 +434,6 @@ describe('Exchange core', () => {
             const expectedFilledTakerAssetAmount = signedOrder.takerAssetAmount.div(divisor);
             const expectedFeeMPaid = signedOrder.makerFee.div(divisor);
             const expectedFeeTPaid = signedOrder.takerFee.div(divisor);
-
-            expect(signedOrder.makerAddress).to.be.equal(logArgs.makerAddress);
-            expect(takerAddress).to.be.equal(logArgs.takerAddress);
-            expect(signedOrder.feeRecipientAddress).to.be.equal(logArgs.feeRecipientAddress);
-            expect(signedOrder.makerAssetData).to.be.equal(logArgs.makerAssetData);
-            expect(signedOrder.takerAssetData).to.be.equal(logArgs.takerAssetData);
-            expect(expectedFilledMakerAssetAmount).to.be.bignumber.equal(logArgs.makerAssetFilledAmount);
-            expect(expectedFilledTakerAssetAmount).to.be.bignumber.equal(logArgs.takerAssetFilledAmount);
-            expect(expectedFeeMPaid).to.be.bignumber.equal(logArgs.makerFeePaid);
-            expect(expectedFeeTPaid).to.be.bignumber.equal(logArgs.takerFeePaid);
-            expect(orderUtils.getOrderHashHex(signedOrder)).to.be.equal(logArgs.orderHash);
-        });
-
-        it('should log 1 event with the correct arguments when order has no feeRecipient', async () => {
-            signedOrder = orderFactory.newSignedOrder({
-                feeRecipientAddress: ZeroEx.NULL_ADDRESS,
-            });
-            const divisor = 2;
-            const res = await exchangeWrapper.fillOrderAsync(signedOrder, takerAddress, {
-                takerAssetFillAmount: signedOrder.takerAssetAmount.div(divisor),
-            });
-            expect(res.logs).to.have.length(1);
-
-            const log = res.logs[0] as LogWithDecodedArgs<FillContractEventArgs>;
-            const logArgs = log.args;
-            const expectedFilledMakerAssetAmount = signedOrder.makerAssetAmount.div(divisor);
-            const expectedFilledTakerAssetAmount = signedOrder.takerAssetAmount.div(divisor);
-            const expectedFeeMPaid = new BigNumber(0);
-            const expectedFeeTPaid = new BigNumber(0);
 
             expect(signedOrder.makerAddress).to.be.equal(logArgs.makerAddress);
             expect(takerAddress).to.be.equal(logArgs.takerAddress);

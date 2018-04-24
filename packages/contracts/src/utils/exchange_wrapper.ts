@@ -9,7 +9,7 @@ import { constants } from './constants';
 import { formatters } from './formatters';
 import { LogDecoder } from './log_decoder';
 import { orderUtils } from './order_utils';
-import { SignedOrder } from './types';
+import { AssetProxyId, SignedOrder } from './types';
 
 export class ExchangeWrapper {
     private _exchange: ExchangeContract;
@@ -189,7 +189,24 @@ export class ExchangeWrapper {
         const tx = await this._getTxWithDecodedExchangeLogsAsync(txHash);
         return tx;
     }
-
+    public async registerAssetProxyAsync(
+        assetProxyId: AssetProxyId,
+        assetProxyAddress: string,
+        from: string,
+        opts: { oldAssetProxyAddressIfExists?: string } = {},
+    ): Promise<TransactionReceiptWithDecodedLogs> {
+        const oldAssetProxyAddress = _.isUndefined(opts.oldAssetProxyAddressIfExists)
+            ? ZeroEx.NULL_ADDRESS
+            : opts.oldAssetProxyAddressIfExists;
+        const txHash = await this._exchange.registerAssetProxy.sendTransactionAsync(
+            assetProxyId,
+            assetProxyAddress,
+            oldAssetProxyAddress,
+            { from },
+        );
+        const tx = await this._getTxWithDecodedExchangeLogsAsync(txHash);
+        return tx;
+    }
     public async getOrderHashAsync(signedOrder: SignedOrder): Promise<string> {
         const order = orderUtils.getOrderStruct(signedOrder);
         const orderHash = await this._exchange.getOrderHash.callAsync(order);

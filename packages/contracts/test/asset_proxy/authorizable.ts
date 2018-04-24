@@ -3,7 +3,7 @@ import { Web3Wrapper } from '@0xproject/web3-wrapper';
 import * as chai from 'chai';
 import * as Web3 from 'web3';
 
-import { AssetProxyDispatcherContract } from '../../src/contract_wrappers/generated/asset_proxy_dispatcher';
+import { AuthorizableContract } from '../../src/contract_wrappers/generated/authorizable';
 import { constants } from '../../src/utils/constants';
 import { ContractName } from '../../src/utils/types';
 import { chaiSetup } from '../utils/chai_setup';
@@ -14,21 +14,17 @@ chaiSetup.configure();
 const expect = chai.expect;
 const blockchainLifecycle = new BlockchainLifecycle(web3Wrapper);
 
-describe('AssetProxyDispatcher (Authorization Methods)', () => {
+describe('Authorizable', () => {
     let owner: string;
     let notOwner: string;
     let address: string;
-    let assetProxyDispatcher: AssetProxyDispatcherContract;
+    let authorizable: AuthorizableContract;
     before(async () => {
         const accounts = await web3Wrapper.getAvailableAddressesAsync();
         owner = address = accounts[0];
         notOwner = accounts[1];
-        const assetProxyDispatcherInstance = await deployer.deployAsync(ContractName.AssetProxyDispatcher);
-        assetProxyDispatcher = new AssetProxyDispatcherContract(
-            assetProxyDispatcherInstance.abi,
-            assetProxyDispatcherInstance.address,
-            provider,
-        );
+        const authorizableInstance = await deployer.deployAsync(ContractName.Authorizable);
+        authorizable = new AuthorizableContract(authorizableInstance.abi, authorizableInstance.address, provider);
     });
     beforeEach(async () => {
         await blockchainLifecycle.startAsync();
@@ -39,44 +35,44 @@ describe('AssetProxyDispatcher (Authorization Methods)', () => {
     describe('addAuthorizedAddress', () => {
         it('should throw if not called by owner', async () => {
             return expect(
-                assetProxyDispatcher.addAuthorizedAddress.sendTransactionAsync(notOwner, { from: notOwner }),
+                authorizable.addAuthorizedAddress.sendTransactionAsync(notOwner, { from: notOwner }),
             ).to.be.rejectedWith(constants.REVERT);
         });
         it('should allow owner to add an authorized address', async () => {
-            await assetProxyDispatcher.addAuthorizedAddress.sendTransactionAsync(address, { from: owner });
-            const isAuthorized = await assetProxyDispatcher.authorized.callAsync(address);
+            await authorizable.addAuthorizedAddress.sendTransactionAsync(address, { from: owner });
+            const isAuthorized = await authorizable.authorized.callAsync(address);
             expect(isAuthorized).to.be.true();
         });
         it('should throw if owner attempts to authorize a duplicate address', async () => {
-            await assetProxyDispatcher.addAuthorizedAddress.sendTransactionAsync(address, { from: owner });
+            await authorizable.addAuthorizedAddress.sendTransactionAsync(address, { from: owner });
             return expect(
-                assetProxyDispatcher.addAuthorizedAddress.sendTransactionAsync(address, { from: owner }),
+                authorizable.addAuthorizedAddress.sendTransactionAsync(address, { from: owner }),
             ).to.be.rejectedWith(constants.REVERT);
         });
     });
 
     describe('removeAuthorizedAddress', () => {
         it('should throw if not called by owner', async () => {
-            await assetProxyDispatcher.addAuthorizedAddress.sendTransactionAsync(address, { from: owner });
+            await authorizable.addAuthorizedAddress.sendTransactionAsync(address, { from: owner });
             return expect(
-                assetProxyDispatcher.removeAuthorizedAddress.sendTransactionAsync(address, {
+                authorizable.removeAuthorizedAddress.sendTransactionAsync(address, {
                     from: notOwner,
                 }),
             ).to.be.rejectedWith(constants.REVERT);
         });
 
         it('should allow owner to remove an authorized address', async () => {
-            await assetProxyDispatcher.addAuthorizedAddress.sendTransactionAsync(address, { from: owner });
-            await assetProxyDispatcher.removeAuthorizedAddress.sendTransactionAsync(address, {
+            await authorizable.addAuthorizedAddress.sendTransactionAsync(address, { from: owner });
+            await authorizable.removeAuthorizedAddress.sendTransactionAsync(address, {
                 from: owner,
             });
-            const isAuthorized = await assetProxyDispatcher.authorized.callAsync(address);
+            const isAuthorized = await authorizable.authorized.callAsync(address);
             expect(isAuthorized).to.be.false();
         });
 
         it('should throw if owner attempts to remove an address that is not authorized', async () => {
             return expect(
-                assetProxyDispatcher.removeAuthorizedAddress.sendTransactionAsync(address, {
+                authorizable.removeAuthorizedAddress.sendTransactionAsync(address, {
                     from: owner,
                 }),
             ).to.be.rejectedWith(constants.REVERT);
@@ -85,19 +81,19 @@ describe('AssetProxyDispatcher (Authorization Methods)', () => {
 
     describe('getAuthorizedAddresses', () => {
         it('should return all authorized addresses', async () => {
-            const initial = await assetProxyDispatcher.getAuthorizedAddresses.callAsync();
+            const initial = await authorizable.getAuthorizedAddresses.callAsync();
             expect(initial).to.have.length(0);
-            await assetProxyDispatcher.addAuthorizedAddress.sendTransactionAsync(address, {
+            await authorizable.addAuthorizedAddress.sendTransactionAsync(address, {
                 from: owner,
             });
-            const afterAdd = await assetProxyDispatcher.getAuthorizedAddresses.callAsync();
+            const afterAdd = await authorizable.getAuthorizedAddresses.callAsync();
             expect(afterAdd).to.have.length(1);
             expect(afterAdd).to.include(address);
 
-            await assetProxyDispatcher.removeAuthorizedAddress.sendTransactionAsync(address, {
+            await authorizable.removeAuthorizedAddress.sendTransactionAsync(address, {
                 from: owner,
             });
-            const afterRemove = await assetProxyDispatcher.getAuthorizedAddresses.callAsync();
+            const afterRemove = await authorizable.getAuthorizedAddresses.callAsync();
             expect(afterRemove).to.have.length(0);
         });
     });

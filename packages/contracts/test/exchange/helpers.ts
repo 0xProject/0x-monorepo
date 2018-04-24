@@ -29,10 +29,7 @@ describe('Exchange helpers', () => {
     before(async () => {
         const accounts = await web3Wrapper.getAvailableAddressesAsync();
         const makerAddress = accounts[0];
-        const exchangeInstance = await deployer.deployAsync(ContractName.Exchange, [
-            ZeroEx.NULL_ADDRESS,
-            AssetProxyId.ERC20,
-        ]);
+        const exchangeInstance = await deployer.deployAsync(ContractName.Exchange, [AssetProxyId.ERC20]);
         const exchange = new ExchangeContract(exchangeInstance.abi, exchangeInstance.address, provider);
         const zeroEx = new ZeroEx(provider, { networkId: constants.TESTRPC_NETWORK_ID });
         exchangeWrapper = new ExchangeWrapper(exchange, zeroEx);

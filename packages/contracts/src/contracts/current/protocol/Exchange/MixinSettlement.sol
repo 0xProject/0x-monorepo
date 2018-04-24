@@ -20,23 +20,17 @@ pragma solidity ^0.4.21;
 pragma experimental ABIEncoderV2;
 
 import "./mixins/MSettlement.sol";
+import "./mixins/MAssetProxyDispatcher.sol";
 import "./LibPartialAmount.sol";
-import "../AssetProxyDispatcher/IAssetProxy.sol";
+import "../AssetProxy/IAssetProxy.sol";
 
 /// @dev Provides MixinSettlement
-contract MixinSettlementProxy is
+contract MixinSettlement is
     MSettlement,
+    MAssetProxyDispatcher,
     LibPartialAmount
 {
-    IAssetProxy ASSET_PROXY_DISPATCHER;
     bytes ZRX_PROXY_DATA;
-
-    function assetProxyDispatcher()
-        public view
-        returns (address)
-    {
-        return address(ASSET_PROXY_DISPATCHER);
-    }
 
     function zrxProxyData()
         external view
@@ -45,12 +39,9 @@ contract MixinSettlementProxy is
         return ZRX_PROXY_DATA;
     }
 
-    function MixinSettlementProxy(
-        address _assetProxyDispatcher,
-        bytes memory _zrxProxyData)
+    function MixinSettlement(bytes memory _zrxProxyData)
         public
     {
-        ASSET_PROXY_DISPATCHER = IAssetProxy(_assetProxyDispatcher);
         ZRX_PROXY_DATA = _zrxProxyData;
     }
 
@@ -66,38 +57,32 @@ contract MixinSettlementProxy is
         )
     {
         makerAssetFilledAmount = getPartialAmount(takerAssetFilledAmount, order.takerAssetAmount, order.makerAssetAmount);
-        ASSET_PROXY_DISPATCHER.transferFrom(
+        dispatchTransferFrom(
             order.makerAssetData,
             order.makerAddress,
             takerAddress,
             makerAssetFilledAmount
         );
-        ASSET_PROXY_DISPATCHER.transferFrom(
+        dispatchTransferFrom(
             order.takerAssetData,
             takerAddress,
             order.makerAddress,
             takerAssetFilledAmount
         );
-        if (order.feeRecipientAddress != address(0)) {
-            if (order.makerFee > 0) {
-                makerFeePaid = getPartialAmount(takerAssetFilledAmount, order.takerAssetAmount, order.makerFee);
-                ASSET_PROXY_DISPATCHER.transferFrom(
-                    ZRX_PROXY_DATA,
-                    order.makerAddress,
-                    order.feeRecipientAddress,
-                    makerFeePaid
-                );
-            }
-            if (order.takerFee > 0) {
-                takerFeePaid = getPartialAmount(takerAssetFilledAmount, order.takerAssetAmount, order.takerFee);
-                ASSET_PROXY_DISPATCHER.transferFrom(
-                    ZRX_PROXY_DATA,
-                    takerAddress,
-                    order.feeRecipientAddress,
-                    takerFeePaid
-                );
-            }
-        }
+        makerFeePaid = getPartialAmount(takerAssetFilledAmount, order.takerAssetAmount, order.makerFee);
+        dispatchTransferFrom(
+            ZRX_PROXY_DATA,
+            order.makerAddress,
+            order.feeRecipientAddress,
+            makerFeePaid
+        );
+        takerFeePaid = getPartialAmount(takerAssetFilledAmount, order.takerAssetAmount, order.takerFee);
+        dispatchTransferFrom(
+            ZRX_PROXY_DATA,
+            takerAddress,
+            order.feeRecipientAddress,
+            takerFeePaid
+        );
         return (makerAssetFilledAmount, makerFeePaid, takerFeePaid);
     }
 }

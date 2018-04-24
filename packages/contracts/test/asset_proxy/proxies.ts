@@ -4,7 +4,6 @@ import { BigNumber } from '@0xproject/utils';
 import * as chai from 'chai';
 import * as Web3 from 'web3';
 
-import { AssetProxyDispatcherContract } from '../../src/contract_wrappers/generated/asset_proxy_dispatcher';
 import { DummyERC20TokenContract } from '../../src/contract_wrappers/generated/dummy_e_r_c20_token';
 import { DummyERC721TokenContract } from '../../src/contract_wrappers/generated/dummy_e_r_c721_token';
 import { ERC20ProxyContract } from '../../src/contract_wrappers/generated/e_r_c20_proxy';
@@ -25,7 +24,7 @@ const blockchainLifecycle = new BlockchainLifecycle(web3Wrapper);
 describe('Asset Transfer Proxies', () => {
     let owner: string;
     let notAuthorized: string;
-    let assetProxyDispatcherAddress: string;
+    let exchangeAddress: string;
     let makerAddress: string;
     let takerAddress: string;
 
@@ -40,13 +39,7 @@ describe('Asset Transfer Proxies', () => {
 
     before(async () => {
         const accounts = await web3Wrapper.getAvailableAddressesAsync();
-        const usedAddresses = ([
-            owner,
-            notAuthorized,
-            assetProxyDispatcherAddress,
-            makerAddress,
-            takerAddress,
-        ] = accounts);
+        const usedAddresses = ([owner, notAuthorized, exchangeAddress, makerAddress, takerAddress] = accounts);
 
         erc20Wrapper = new ERC20Wrapper(deployer, provider, usedAddresses, owner);
         erc721Wrapper = new ERC721Wrapper(deployer, provider, usedAddresses, owner);
@@ -54,7 +47,7 @@ describe('Asset Transfer Proxies', () => {
         [zrxToken] = await erc20Wrapper.deployDummyTokensAsync();
         erc20Proxy = await erc20Wrapper.deployProxyAsync();
         await erc20Wrapper.setBalancesAndAllowancesAsync();
-        await erc20Proxy.addAuthorizedAddress.sendTransactionAsync(assetProxyDispatcherAddress, {
+        await erc20Proxy.addAuthorizedAddress.sendTransactionAsync(exchangeAddress, {
             from: owner,
         });
 
@@ -63,7 +56,7 @@ describe('Asset Transfer Proxies', () => {
         await erc721Wrapper.setBalancesAndAllowancesAsync();
         const erc721Balances = await erc721Wrapper.getBalancesAsync();
         erc721MakerTokenId = erc721Balances[makerAddress][erc721Token.address][0];
-        await erc721Proxy.addAuthorizedAddress.sendTransactionAsync(assetProxyDispatcherAddress, {
+        await erc721Proxy.addAuthorizedAddress.sendTransactionAsync(exchangeAddress, {
             from: owner,
         });
     });
@@ -85,7 +78,7 @@ describe('Asset Transfer Proxies', () => {
                 makerAddress,
                 takerAddress,
                 amount,
-                { from: assetProxyDispatcherAddress },
+                { from: exchangeAddress },
             );
             // Verify transfer was successful
             const newBalances = await erc20Wrapper.getBalancesAsync();
@@ -108,7 +101,7 @@ describe('Asset Transfer Proxies', () => {
                 makerAddress,
                 takerAddress,
                 amount,
-                { from: assetProxyDispatcherAddress },
+                { from: exchangeAddress },
             );
             // Verify transfer was successful
             const newBalances = await erc20Wrapper.getBalancesAsync();
@@ -169,7 +162,7 @@ describe('Asset Transfer Proxies', () => {
                 makerAddress,
                 takerAddress,
                 amount,
-                { from: assetProxyDispatcherAddress },
+                { from: exchangeAddress },
             );
             // Verify transfer was successful
             const newOwnerMakerAsset = await erc721Token.ownerOf.callAsync(erc721MakerTokenId);
@@ -191,7 +184,7 @@ describe('Asset Transfer Proxies', () => {
                     makerAddress,
                     takerAddress,
                     amount,
-                    { from: assetProxyDispatcherAddress },
+                    { from: exchangeAddress },
                 ),
             ).to.be.rejectedWith(constants.REVERT);
         });
@@ -211,7 +204,7 @@ describe('Asset Transfer Proxies', () => {
                     makerAddress,
                     takerAddress,
                     amount,
-                    { from: assetProxyDispatcherAddress },
+                    { from: exchangeAddress },
                 ),
             ).to.be.rejectedWith(constants.REVERT);
         });
