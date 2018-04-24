@@ -1,12 +1,11 @@
 import { ZeroEx } from '0x.js';
-import { BlockchainLifecycle, devConstants, web3Factory } from '@0xproject/dev-utils';
+import { BlockchainLifecycle } from '@0xproject/dev-utils';
 import { BigNumber } from '@0xproject/utils';
-import { Web3Wrapper } from '@0xproject/web3-wrapper';
 import * as chai from 'chai';
 import ethUtil = require('ethereumjs-util');
 
-import { ERC20ProxyContract } from '../../src/contract_wrappers/generated/e_r_c20_proxy';
 import { ExchangeContract } from '../../src/contract_wrappers/generated/exchange';
+import { addressUtils } from '../../src/utils/address_utils';
 import { assetProxyUtils } from '../../src/utils/asset_proxy_utils';
 import { constants } from '../../src/utils/constants';
 import { ExchangeWrapper } from '../../src/utils/exchange_wrapper';
@@ -22,56 +21,42 @@ const expect = chai.expect;
 
 const blockchainLifecycle = new BlockchainLifecycle(web3Wrapper);
 
-describe('Exchange', () => {
-    let makerAddress: string;
-    let feeRecipientAddress: string;
-
+describe('Exchange helpers', () => {
     let signedOrder: SignedOrder;
     let exchangeWrapper: ExchangeWrapper;
     let orderFactory: OrderFactory;
 
     before(async () => {
         const accounts = await web3Wrapper.getAvailableAddressesAsync();
-        [makerAddress, feeRecipientAddress] = accounts;
-        const owner = accounts[0];
-        const tokenRegistry = await deployer.deployAsync(ContractName.TokenRegistry);
-        const [rep, dgd, zrx] = await Promise.all([
-            deployer.deployAsync(ContractName.DummyERC20Token, constants.DUMMY_TOKEN_ARGS),
-            deployer.deployAsync(ContractName.DummyERC20Token, constants.DUMMY_TOKEN_ARGS),
-            deployer.deployAsync(ContractName.DummyERC20Token, constants.DUMMY_TOKEN_ARGS),
-        ]);
-        const assetProxyDispatcher = await deployer.deployAsync(ContractName.AssetProxyDispatcher);
-        // Deploy and configure Exchange
+        const makerAddress = accounts[0];
         const exchangeInstance = await deployer.deployAsync(ContractName.Exchange, [
-            assetProxyDispatcher.address,
+            ZeroEx.NULL_ADDRESS,
             AssetProxyId.ERC20,
         ]);
         const exchange = new ExchangeContract(exchangeInstance.abi, exchangeInstance.address, provider);
-        await assetProxyDispatcher.addAuthorizedAddress.sendTransactionAsync(exchange.address, { from: owner });
         const zeroEx = new ZeroEx(provider, { networkId: constants.TESTRPC_NETWORK_ID });
         exchangeWrapper = new ExchangeWrapper(exchange, zeroEx);
+
         const defaultOrderParams = {
+            ...constants.STATIC_ORDER_PARAMS,
             exchangeAddress: exchange.address,
             makerAddress,
-            feeRecipientAddress,
-            makerAssetAmount: ZeroEx.toBaseUnitAmount(new BigNumber(100), 18),
-            takerAssetAmount: ZeroEx.toBaseUnitAmount(new BigNumber(200), 18),
-            makerFee: ZeroEx.toBaseUnitAmount(new BigNumber(1), 18),
-            takerFee: ZeroEx.toBaseUnitAmount(new BigNumber(1), 18),
-            makerAssetData: assetProxyUtils.encodeERC20ProxyData(rep.address),
-            takerAssetData: assetProxyUtils.encodeERC20ProxyData(dgd.address),
+            feeRecipientAddress: addressUtils.generatePseudoRandomAddress(),
+            makerAssetData: assetProxyUtils.encodeERC20ProxyData(addressUtils.generatePseudoRandomAddress()),
+            takerAssetData: assetProxyUtils.encodeERC20ProxyData(addressUtils.generatePseudoRandomAddress()),
         };
-        const privateKey = constants.TESTRPC_PRIVATE_KEYS[0];
+        const privateKey = constants.TESTRPC_PRIVATE_KEYS[accounts.indexOf(makerAddress)];
         orderFactory = new OrderFactory(privateKey, defaultOrderParams);
-        signedOrder = orderFactory.newSignedOrder();
     });
 
     beforeEach(async () => {
         await blockchainLifecycle.startAsync();
+        signedOrder = orderFactory.newSignedOrder();
     });
     afterEach(async () => {
         await blockchainLifecycle.revertAsync();
     });
+
     describe('getOrderHash', () => {
         it('should output the correct orderHash', async () => {
             const orderHashHex = await exchangeWrapper.getOrderHashAsync(signedOrder);

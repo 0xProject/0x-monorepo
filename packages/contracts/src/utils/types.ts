@@ -1,9 +1,15 @@
 import { AbiDefinition, ContractAbi } from '@0xproject/types';
 import { BigNumber } from '@0xproject/utils';
 
-export interface BalancesByOwner {
+export interface ERC20BalancesByOwner {
     [ownerAddress: string]: {
         [tokenAddress: string]: BigNumber;
+    };
+}
+
+export interface ERC721TokenIdsByOwner {
+    [ownerAddress: string]: {
+        [tokenAddress: string]: BigNumber[];
     };
 }
 
@@ -43,20 +49,6 @@ export enum AssetProxyId {
     ERC721,
 }
 
-export interface DefaultOrderParams {
-    exchangeAddress: string;
-    makerAddress: string;
-    feeRecipientAddress: string;
-    makerAssetAddress: string;
-    takerAssetAddress: string;
-    makerAssetAmount: BigNumber;
-    takerAssetAmount: BigNumber;
-    makerFee: BigNumber;
-    takerFee: BigNumber;
-    makerAssetData: string;
-    takerAssetData: string;
-}
-
 export interface TransactionDataParams {
     name: string;
     abi: AbiDefinition[];
@@ -80,11 +72,6 @@ export interface Token {
     decimals: number;
     ipfsHash: string;
     swarmHash: string;
-}
-
-export interface TokenInfoByNetwork {
-    development: Token[];
-    live: Token[];
 }
 
 export enum ExchangeContractErrs {

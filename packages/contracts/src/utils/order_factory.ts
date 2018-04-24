@@ -4,7 +4,7 @@ import * as _ from 'lodash';
 
 import { orderUtils } from './order_utils';
 import { signingUtils } from './signing_utils';
-import { DefaultOrderParams, SignatureType, SignedOrder, UnsignedOrder } from './types';
+import { SignatureType, SignedOrder, UnsignedOrder } from './types';
 
 export class OrderFactory {
     private _defaultOrderParams: Partial<UnsignedOrder>;
