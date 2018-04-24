@@ -7,7 +7,7 @@ export interface ERC20BalancesByOwner {
     };
 }
 
-export interface ERC721BalancesByOwner {
+export interface ERC721TokenIdsByOwner {
     [ownerAddress: string]: {
         [tokenAddress: string]: BigNumber[];
     };

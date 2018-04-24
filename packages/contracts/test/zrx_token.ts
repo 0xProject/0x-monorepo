@@ -24,7 +24,7 @@ describe('ZRXToken', () => {
 
     let MAX_UINT: BigNumber;
 
-    let zrx: ZRXTokenContract;
+    let zrxToken: ZRXTokenContract;
     let zrxAddress: string;
 
     before(async () => {
@@ -35,8 +35,8 @@ describe('ZRXToken', () => {
             networkId: constants.TESTRPC_NETWORK_ID,
         });
         const zrxInstance = await deployer.deployAsync(ContractName.ZRXToken);
-        zrx = new ZRXTokenContract(zrxInstance.abi, zrxInstance.address, provider);
-        zrxAddress = zrx.address;
+        zrxToken = new ZRXTokenContract(zrxInstance.abi, zrxInstance.address, provider);
+        zrxAddress = zrxToken.address;
         MAX_UINT = zeroEx.token.UNLIMITED_ALLOWANCE_IN_BASE_UNITS;
     });
     beforeEach(async () => {
@@ -47,25 +47,25 @@ describe('ZRXToken', () => {
     });
     describe('constants', () => {
         it('should have 18 decimals', async () => {
-            const decimals = new BigNumber(await zrx.decimals.callAsync());
+            const decimals = new BigNumber(await zrxToken.decimals.callAsync());
             const expectedDecimals = 18;
             expect(decimals).to.be.bignumber.equal(expectedDecimals);
         });
 
         it('should have a total supply of 1 billion tokens', async () => {
-            const totalSupply = new BigNumber(await zrx.totalSupply.callAsync());
+            const totalSupply = new BigNumber(await zrxToken.totalSupply.callAsync());
             const expectedTotalSupply = 1000000000;
             expect(ZeroEx.toUnitAmount(totalSupply, 18)).to.be.bignumber.equal(expectedTotalSupply);
         });
 
         it('should be named 0x Protocol Token', async () => {
-            const name = await zrx.name.callAsync();
+            const name = await zrxToken.name.callAsync();
             const expectedName = '0x Protocol Token';
             expect(name).to.be.equal(expectedName);
         });
 
         it('should have the symbol ZRX', async () => {
-            const symbol = await zrx.symbol.callAsync();
+            const symbol = await zrxToken.symbol.callAsync();
             const expectedSymbol = 'ZRX';
             expect(symbol).to.be.equal(expectedSymbol);
         });
@@ -74,7 +74,7 @@ describe('ZRXToken', () => {
     describe('constructor', () => {
         it('should initialize owner balance to totalSupply', async () => {
             const ownerBalance = await zeroEx.token.getBalanceAsync(zrxAddress, owner);
-            const totalSupply = new BigNumber(await zrx.totalSupply.callAsync());
+            const totalSupply = new BigNumber(await zrxToken.totalSupply.callAsync());
             expect(totalSupply).to.be.bignumber.equal(ownerBalance);
         });
     });
@@ -95,7 +95,7 @@ describe('ZRXToken', () => {
         });
 
         it('should return true on a 0 value transfer', async () => {
-            const didReturnTrue = await zrx.transfer.callAsync(spender, new BigNumber(0), {
+            const didReturnTrue = await zrxToken.transfer.callAsync(spender, new BigNumber(0), {
                 from: owner,
             });
             expect(didReturnTrue).to.be.true();
@@ -109,7 +109,7 @@ describe('ZRXToken', () => {
             await zeroEx.token.setAllowanceAsync(zrxAddress, owner, spender, amountToTransfer, {
                 gasLimit: constants.MAX_TOKEN_APPROVE_GAS,
             });
-            const didReturnTrue = await zrx.transferFrom.callAsync(owner, spender, amountToTransfer, { from: spender });
+            const didReturnTrue = await zrxToken.transferFrom.callAsync(owner, spender, amountToTransfer, { from: spender });
             expect(didReturnTrue).to.be.false();
         });
 
@@ -121,13 +121,13 @@ describe('ZRXToken', () => {
             const spenderAllowanceIsInsufficient = spenderAllowance.cmp(amountToTransfer) < 0;
             expect(spenderAllowanceIsInsufficient).to.be.true();
 
-            const didReturnTrue = await zrx.transferFrom.callAsync(owner, spender, amountToTransfer, { from: spender });
+            const didReturnTrue = await zrxToken.transferFrom.callAsync(owner, spender, amountToTransfer, { from: spender });
             expect(didReturnTrue).to.be.false();
         });
 
         it('should return true on a 0 value transfer', async () => {
             const amountToTransfer = new BigNumber(0);
-            const didReturnTrue = await zrx.transferFrom.callAsync(owner, spender, amountToTransfer, { from: spender });
+            const didReturnTrue = await zrxToken.transferFrom.callAsync(owner, spender, amountToTransfer, { from: spender });
             expect(didReturnTrue).to.be.true();
         });
 

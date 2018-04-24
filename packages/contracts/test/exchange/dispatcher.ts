@@ -28,7 +28,7 @@ describe('AssetProxyDispatcher', () => {
     let makerAddress: string;
     let takerAddress: string;
 
-    let zrx: DummyERC20TokenContract;
+    let zrxToken: DummyERC20TokenContract;
     let erc20Proxy: ERC20ProxyContract;
     let erc721Proxy: ERC721ProxyContract;
     let assetProxyDispatcher: TestAssetProxyDispatcherContract;
@@ -45,11 +45,11 @@ describe('AssetProxyDispatcher', () => {
         erc20Wrapper = new ERC20Wrapper(deployer, provider, usedAddresses, owner);
         erc721Wrapper = new ERC721Wrapper(deployer, provider, usedAddresses, owner);
 
-        [zrx] = await erc20Wrapper.deployDummyERC20TokensAsync();
-        erc20Proxy = await erc20Wrapper.deployERC20ProxyAsync();
+        [zrxToken] = await erc20Wrapper.deployDummyTokensAsync();
+        erc20Proxy = await erc20Wrapper.deployProxyAsync();
         await erc20Wrapper.setBalancesAndAllowancesAsync();
 
-        erc721Proxy = await erc721Wrapper.deployERC721ProxyAsync();
+        erc721Proxy = await erc721Wrapper.deployProxyAsync();
 
         const assetProxyDispatcherInstance = await deployer.deployAsync(ContractName.TestAssetProxyDispatcher);
         assetProxyDispatcher = new TestAssetProxyDispatcherContract(
@@ -226,7 +226,7 @@ describe('AssetProxyDispatcher', () => {
                 { from: owner },
             );
             // Construct metadata for ERC20 proxy
-            const encodedProxyMetadata = assetProxyUtils.encodeERC20ProxyData(zrx.address);
+            const encodedProxyMetadata = assetProxyUtils.encodeERC20ProxyData(zrxToken.address);
             // Perform a transfer from makerAddress to takerAddress
             const erc20Balances = await erc20Wrapper.getBalancesAsync();
             const amount = new BigNumber(10);
@@ -239,17 +239,17 @@ describe('AssetProxyDispatcher', () => {
             );
             // Verify transfer was successful
             const newBalances = await erc20Wrapper.getBalancesAsync();
-            expect(newBalances[makerAddress][zrx.address]).to.be.bignumber.equal(
-                erc20Balances[makerAddress][zrx.address].minus(amount),
+            expect(newBalances[makerAddress][zrxToken.address]).to.be.bignumber.equal(
+                erc20Balances[makerAddress][zrxToken.address].minus(amount),
             );
-            expect(newBalances[takerAddress][zrx.address]).to.be.bignumber.equal(
-                erc20Balances[takerAddress][zrx.address].add(amount),
+            expect(newBalances[takerAddress][zrxToken.address]).to.be.bignumber.equal(
+                erc20Balances[takerAddress][zrxToken.address].add(amount),
             );
         });
 
         it('should throw if dispatching to unregistered proxy', async () => {
             // Construct metadata for ERC20 proxy
-            const encodedProxyMetadata = assetProxyUtils.encodeERC20ProxyData(zrx.address);
+            const encodedProxyMetadata = assetProxyUtils.encodeERC20ProxyData(zrxToken.address);
             // Perform a transfer from makerAddress to takerAddress
             const erc20Balances = await erc20Wrapper.getBalancesAsync();
             const amount = new BigNumber(10);
