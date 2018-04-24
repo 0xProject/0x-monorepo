@@ -74,7 +74,6 @@ describe('Exchange wrappers', () => {
         erc721TakerAssetId = erc721Balances[takerAddress][erc721Token.address][0];
 
         const exchangeInstance = await deployer.deployAsync(ContractName.Exchange, [
-            assetProxyDispatcher.address,
             assetProxyUtils.encodeERC20ProxyData(zrxToken.address),
         ]);
         exchange = new ExchangeContract(exchangeInstance.abi, exchangeInstance.address, provider);
