@@ -8,84 +8,74 @@ import { DummyERC721TokenContract } from '../contract_wrappers/generated/dummy_e
 import { ERC721ProxyContract } from '../contract_wrappers/generated/e_r_c721_proxy';
 
 import { constants } from './constants';
-import { ContractName, ERC721BalancesByOwner } from './types';
+import { ContractName, ERC721TokenIdsByOwner } from './types';
 
 export class ERC721Wrapper {
     private _tokenOwnerAddresses: string[];
     private _contractOwnerAddress: string;
     private _deployer: Deployer;
     private _provider: Provider;
-    private _dummyERC721TokenContracts?: DummyERC721TokenContract[];
-    private _erc721ProxyContract?: ERC721ProxyContract;
-    private _initialERC721BalancesByOwner: ERC721BalancesByOwner = {};
+    private _dummyTokenContracts?: DummyERC721TokenContract[];
+    private _proxyContract?: ERC721ProxyContract;
+    private _initialTokenIdsByOwner: ERC721TokenIdsByOwner = {};
     constructor(deployer: Deployer, provider: Provider, tokenOwnerAddresses: string[], contractOwnerAddress: string) {
         this._deployer = deployer;
         this._provider = provider;
         this._tokenOwnerAddresses = tokenOwnerAddresses;
         this._contractOwnerAddress = contractOwnerAddress;
     }
-    public async deployDummyERC721TokensAsync(): Promise<DummyERC721TokenContract[]> {
+    public async deployDummyTokensAsync(): Promise<DummyERC721TokenContract[]> {
         const tokenContractInstances = await Promise.all(
-            _.map(_.range(constants.NUM_DUMMY_ERC721_TO_DEPLOY), () =>
+            _.times(constants.NUM_DUMMY_ERC721_TO_DEPLOY, () =>
                 this._deployer.deployAsync(ContractName.DummyERC721Token, constants.DUMMY_ERC721_TOKEN_ARGS),
             ),
         );
-        this._dummyERC721TokenContracts = _.map(
+        this._dummyTokenContracts = _.map(
             tokenContractInstances,
             tokenContractInstance =>
                 new DummyERC721TokenContract(tokenContractInstance.abi, tokenContractInstance.address, this._provider),
         );
-        return this._dummyERC721TokenContracts;
+        return this._dummyTokenContracts;
     }
-    public async deployERC721ProxyAsync(): Promise<ERC721ProxyContract> {
+    public async deployProxyAsync(): Promise<ERC721ProxyContract> {
         const proxyContractInstance = await this._deployer.deployAsync(ContractName.ERC721Proxy);
-        this._erc721ProxyContract = new ERC721ProxyContract(
+        this._proxyContract = new ERC721ProxyContract(
             proxyContractInstance.abi,
             proxyContractInstance.address,
             this._provider,
         );
-        return this._erc721ProxyContract;
+        return this._proxyContract;
     }
     public async setBalancesAndAllowancesAsync() {
-        if (_.isUndefined(this._dummyERC721TokenContracts)) {
-            throw new Error('Dummy ERC721 tokens not yet deployed, please call "deployDummyERC721TokensAsync"');
-        }
-        if (_.isUndefined(this._erc721ProxyContract)) {
-            throw new Error('ERC721 proxy contract not yet deployed, please call "deployERC721ProxyAsync"');
-        }
-        const setBalancePromises: any[] = [];
-        const setAllowancePromises: any[] = [];
-        this._initialERC721BalancesByOwner = {};
-        _.forEach(this._dummyERC721TokenContracts, dummyERC721TokenContract => {
+        this._validateDummyTokenContractsExistOrThrow();
+        this._validateProxyContractExistsOrThrow();
+        const setBalancePromises: Array<Promise<string>> = [];
+        const setAllowancePromises: Array<Promise<string>> = [];
+        this._initialTokenIdsByOwner = {};
+        _.forEach(this._dummyTokenContracts, dummyTokenContract => {
             _.forEach(this._tokenOwnerAddresses, tokenOwnerAddress => {
                 _.forEach(_.range(constants.NUM_ERC721_TOKENS_TO_MINT), () => {
                     const tokenId = ZeroEx.generatePseudoRandomSalt();
                     setBalancePromises.push(
-                        dummyERC721TokenContract.mint.sendTransactionAsync(tokenOwnerAddress, tokenId, {
+                        dummyTokenContract.mint.sendTransactionAsync(tokenOwnerAddress, tokenId, {
                             from: this._contractOwnerAddress,
                         }),
                     );
-                    if (_.isUndefined(this._initialERC721BalancesByOwner[tokenOwnerAddress])) {
-                        this._initialERC721BalancesByOwner[tokenOwnerAddress] = {
-                            [dummyERC721TokenContract.address]: [],
+                    if (_.isUndefined(this._initialTokenIdsByOwner[tokenOwnerAddress])) {
+                        this._initialTokenIdsByOwner[tokenOwnerAddress] = {
+                            [dummyTokenContract.address]: [],
                         };
                     }
-                    if (
-                        _.isUndefined(
-                            this._initialERC721BalancesByOwner[tokenOwnerAddress][dummyERC721TokenContract.address],
-                        )
-                    ) {
-                        this._initialERC721BalancesByOwner[tokenOwnerAddress][dummyERC721TokenContract.address] = [];
+                    if (_.isUndefined(this._initialTokenIdsByOwner[tokenOwnerAddress][dummyTokenContract.address])) {
+                        this._initialTokenIdsByOwner[tokenOwnerAddress][dummyTokenContract.address] = [];
                     }
-                    this._initialERC721BalancesByOwner[tokenOwnerAddress][dummyERC721TokenContract.address].push(
-                        tokenId,
-                    );
+                    this._initialTokenIdsByOwner[tokenOwnerAddress][dummyTokenContract.address].push(tokenId);
                 });
-                const approval = true;
+                const shouldApprove = true;
                 setAllowancePromises.push(
-                    dummyERC721TokenContract.setApprovalForAll.sendTransactionAsync(
-                        (this._erc721ProxyContract as ERC721ProxyContract).address,
-                        approval,
+                    dummyTokenContract.setApprovalForAll.sendTransactionAsync(
+                        (this._proxyContract as ERC721ProxyContract).address,
+                        shouldApprove,
                         { from: tokenOwnerAddress },
                     ),
                 );
@@ -93,28 +83,22 @@ export class ERC721Wrapper {
         });
         await Promise.all([...setBalancePromises, ...setAllowancePromises]);
     }
-    public async getBalancesAsync(): Promise<ERC721BalancesByOwner> {
-        if (_.isUndefined(this._dummyERC721TokenContracts)) {
-            throw new Error('Dummy ERC721 tokens not yet deployed, please call "deployDummyERC721TokensAsync"');
-        }
-        if (_.keys(this._initialERC721BalancesByOwner).length === 0) {
-            throw new Error(
-                'Dummy ERC721 balances and allowances not yet set, please call "setBalancesAndAllowancesAsync"',
-            );
-        }
-        const balancesByOwner: ERC721BalancesByOwner = {};
-        const tokenOwnerPromises: any[] = [];
+    public async getBalancesAsync(): Promise<ERC721TokenIdsByOwner> {
+        this._validateDummyTokenContractsExistOrThrow();
+        this._validateBalancesAndAllowancesSetOrThrow();
+        const tokenIdsByOwner: ERC721TokenIdsByOwner = {};
+        const tokenOwnerPromises: Array<Promise<string>> = [];
         const tokenInfo: Array<{ tokenId: BigNumber; tokenAddress: string }> = [];
-        _.forEach(this._dummyERC721TokenContracts, dummyERC721TokenContract => {
+        _.forEach(this._dummyTokenContracts, dummyTokenContract => {
             _.forEach(this._tokenOwnerAddresses, tokenOwnerAddress => {
-                const initialTokenOwnerIds = this._initialERC721BalancesByOwner[tokenOwnerAddress][
-                    dummyERC721TokenContract.address
+                const initialTokenOwnerIds = this._initialTokenIdsByOwner[tokenOwnerAddress][
+                    dummyTokenContract.address
                 ];
                 _.forEach(initialTokenOwnerIds, tokenId => {
-                    tokenOwnerPromises.push(dummyERC721TokenContract.ownerOf.callAsync(tokenId));
+                    tokenOwnerPromises.push(dummyTokenContract.ownerOf.callAsync(tokenId));
                     tokenInfo.push({
                         tokenId,
-                        tokenAddress: dummyERC721TokenContract.address,
+                        tokenAddress: dummyTokenContract.address,
                     });
                 });
             });
@@ -123,26 +107,40 @@ export class ERC721Wrapper {
         _.forEach(tokenOwnerAddresses, (tokenOwnerAddress, ownerIndex) => {
             const tokenAddress = tokenInfo[ownerIndex].tokenAddress;
             const tokenId = tokenInfo[ownerIndex].tokenId;
-            if (_.isUndefined(balancesByOwner[tokenOwnerAddress])) {
-                balancesByOwner[tokenOwnerAddress] = {
+            if (_.isUndefined(tokenIdsByOwner[tokenOwnerAddress])) {
+                tokenIdsByOwner[tokenOwnerAddress] = {
                     [tokenAddress]: [],
                 };
             }
-            if (_.isUndefined(balancesByOwner[tokenOwnerAddress][tokenAddress])) {
-                balancesByOwner[tokenOwnerAddress][tokenAddress] = [];
+            if (_.isUndefined(tokenIdsByOwner[tokenOwnerAddress][tokenAddress])) {
+                tokenIdsByOwner[tokenOwnerAddress][tokenAddress] = [];
             }
-            balancesByOwner[tokenOwnerAddress][tokenAddress].push(tokenId);
+            tokenIdsByOwner[tokenOwnerAddress][tokenAddress].push(tokenId);
         });
-        return balancesByOwner;
+        return tokenIdsByOwner;
     }
     public getTokenOwnerAddresses(): string[] {
         return this._tokenOwnerAddresses;
     }
     public getTokenAddresses(): string[] {
-        const tokenAddresses = _.map(
-            this._dummyERC721TokenContracts,
-            dummyERC721TokenContract => dummyERC721TokenContract.address,
-        );
+        const tokenAddresses = _.map(this._dummyTokenContracts, dummyTokenContract => dummyTokenContract.address);
         return tokenAddresses;
+    }
+    private _validateDummyTokenContractsExistOrThrow() {
+        if (_.isUndefined(this._dummyTokenContracts)) {
+            throw new Error('Dummy ERC721 tokens not yet deployed, please call "deployDummyTokensAsync"');
+        }
+    }
+    private _validateProxyContractExistsOrThrow() {
+        if (_.isUndefined(this._proxyContract)) {
+            throw new Error('ERC721 proxy contract not yet deployed, please call "deployProxyAsync"');
+        }
+    }
+    private _validateBalancesAndAllowancesSetOrThrow() {
+        if (_.keys(this._initialTokenIdsByOwner).length === 0) {
+            throw new Error(
+                'Dummy ERC721 balances and allowances not yet set, please call "setBalancesAndAllowancesAsync"',
+            );
+        }
     }
 }
