@@ -116,6 +116,8 @@ package.ts. Please add an entry for it and try again.`,
 async function checkPublishRequiredSetupAsync(): Promise<boolean> {
     // check to see if logged into npm before publishing
     try {
+        // HACK: for some reason on some setups, the `npm whoami` will not recognize a logged-in user
+        // unless run with `sudo` (i.e Fabio's NVM setup) but is fine for others (Jacob's N setup).
         await execAsync(`sudo npm whoami`);
     } catch (err) {
         utils.log('You must be logged into npm in the commandline to publish. Run `npm login` and try again.');
