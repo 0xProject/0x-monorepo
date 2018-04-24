@@ -19,6 +19,7 @@ export class OrderFactory {
     ): SignedOrder {
         const randomExpiration = new BigNumber(Math.floor((Date.now() + Math.random() * 100000000000) / 1000));
         const order = ({
+            senderAddress: ZeroEx.NULL_ADDRESS,
             expirationTimeSeconds: randomExpiration,
             salt: ZeroEx.generatePseudoRandomSalt(),
             takerAddress: ZeroEx.NULL_ADDRESS,

@@ -24,6 +24,7 @@ export const orderUtils = {
     },
     getOrderStruct(signedOrder: SignedOrder): OrderStruct {
         const orderStruct = {
+            senderAddress: signedOrder.senderAddress,
             makerAddress: signedOrder.makerAddress,
             takerAddress: signedOrder.takerAddress,
             feeRecipientAddress: signedOrder.feeRecipientAddress,
@@ -44,6 +45,7 @@ export const orderUtils = {
             'address makerAddress',
             'address takerAddress',
             'address feeRecipientAddress',
+            'address senderAddress',
             'uint256 makerAssetAmount',
             'uint256 takerAssetAmount',
             'uint256 makerFee',
@@ -58,6 +60,7 @@ export const orderUtils = {
             order.makerAddress,
             order.takerAddress,
             order.feeRecipientAddress,
+            order.senderAddress,
             order.makerAssetAmount,
             order.takerAssetAmount,
             order.makerFee,
