@@ -132,13 +132,13 @@ async function checkPublishRequiredSetupAsync(): Promise<boolean> {
         return false;
     }
 
-    // Check NPM version is 5.X
-    const result = await execAsync(`npm --version`);
+    // Check Yarn version is 1.X
+    const result = await execAsync(`yarn --version`);
     const version = result.stdout;
     const versionSegments = version.split('.');
     const majorVersion = _.parseInt(versionSegments[0]);
-    if (majorVersion < 5) {
-        utils.log('You npm version must be v5.x or higher. Upgrade your npm and try again.');
+    if (majorVersion < 1) {
+        utils.log('Your yarn version must be v1.x or higher. Upgrade yarn and try again.');
         return false;
     }
 
