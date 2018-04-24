@@ -8,7 +8,7 @@ import * as React from 'react';
 import { Link } from 'react-router-dom';
 import ReactTooltip = require('react-tooltip');
 import { Blockchain } from 'ts/blockchain';
-import { PortalMenu } from 'ts/components/portal_menu';
+import { LegacyPortalMenu } from 'ts/components/legacy_portal/legacy_portal_menu';
 import { SidebarHeader } from 'ts/components/sidebar_header';
 import { ProviderDisplay } from 'ts/components/top_bar/provider_display';
 import { TopBarMenuItem } from 'ts/components/top_bar/top_bar_menu_item';
@@ -431,7 +431,7 @@ export class TopBar extends React.Component<TopBarProps, TopBarState> {
                 <div className="pl1 py1" style={{ backgroundColor: colors.lightGrey }}>
                     {this.props.translate.get(Key.PortalDApp, Deco.CapWords)}
                 </div>
-                <PortalMenu menuItemStyle={{ color: 'black' }} onClick={this._onMenuButtonClick.bind(this)} />
+                <LegacyPortalMenu menuItemStyle={{ color: 'black' }} onClick={this._onMenuButtonClick.bind(this)} />
             </div>
         );
     }

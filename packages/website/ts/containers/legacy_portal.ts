@@ -3,7 +3,10 @@ import * as _ from 'lodash';
 import * as React from 'react';
 import { connect } from 'react-redux';
 import { Dispatch } from 'redux';
-import { Portal as PortalComponent, PortalAllProps as PortalComponentAllProps } from 'ts/components/portal';
+import {
+    LegacyPortal as LegacyPortalComponent,
+    LegacyPortalProps as LegacyPortalComponentProps,
+} from 'ts/components/legacy_portal/legacy_portal';
 import { Dispatcher } from 'ts/redux/dispatcher';
 import { State } from 'ts/redux/reducer';
 import { BlockchainErrs, HashData, Order, ProviderType, ScreenWidths, Side, TokenByAddress } from 'ts/types';
@@ -34,7 +37,7 @@ interface ConnectedDispatch {
     dispatcher: Dispatcher;
 }
 
-const mapStateToProps = (state: State, ownProps: PortalComponentAllProps): ConnectedState => {
+const mapStateToProps = (state: State, ownProps: LegacyPortalComponentProps): ConnectedState => {
     const receiveAssetToken = state.sideToAssetToken[Side.Receive];
     const depositAssetToken = state.sideToAssetToken[Side.Deposit];
     const receiveAddress = !_.isUndefined(receiveAssetToken.address)
@@ -83,6 +86,7 @@ const mapDispatchToProps = (dispatch: Dispatch<State>): ConnectedDispatch => ({
     dispatcher: new Dispatcher(dispatch),
 });
 
-export const Portal: React.ComponentClass<PortalComponentAllProps> = connect(mapStateToProps, mapDispatchToProps)(
-    PortalComponent,
-);
+export const LegacyPortal: React.ComponentClass<LegacyPortalComponentProps> = connect(
+    mapStateToProps,
+    mapDispatchToProps,
+)(LegacyPortalComponent);
