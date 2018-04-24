@@ -1,10 +1,10 @@
+import { assert } from '@0xproject/order-utils';
 import { BlockParamLiteral, LogEntry } from '@0xproject/types';
 import { intervalUtils } from '@0xproject/utils';
 import { Web3Wrapper } from '@0xproject/web3-wrapper';
 import * as _ from 'lodash';
 
 import { EventWatcherCallback, ZeroExError } from '../types';
-import { assert } from '../utils/assert';
 
 const DEFAULT_EVENT_POLLING_INTERVAL_MS = 200;
 

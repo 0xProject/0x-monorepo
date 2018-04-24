@@ -1,5 +1,18 @@
 [
     {
+        "version": "0.38.0",
+        "changes": [
+            {
+                "note": "Add `zeroEx.getProvider()`",
+                "pr": 559
+            },
+            {
+                "note": "Move `ZeroExError.InvalidSignature` to `@0xproject/order-utils` `OrderError.InvalidSignature`",
+                "pr": 559
+            }
+        ]
+    },
+    {
         "version": "0.37.0",
         "changes": [
             {

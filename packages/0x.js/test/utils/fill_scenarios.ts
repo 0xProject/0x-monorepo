@@ -1,10 +1,10 @@
+import { orderFactory } from '@0xproject/order-utils';
 import { BigNumber } from '@0xproject/utils';
 import { Web3Wrapper } from '@0xproject/web3-wrapper';
 
 import { SignedOrder, Token, ZeroEx } from '../../src';
 import { artifacts } from '../../src/artifacts';
 import { DummyTokenContract } from '../../src/contract_wrappers/generated/dummy_token';
-import { orderFactory } from '../utils/order_factory';
 
 import { constants } from './constants';
 
@@ -164,7 +164,7 @@ export class FillScenarios {
         ]);
 
         const signedOrder = await orderFactory.createSignedOrderAsync(
-            this._zeroEx,
+            this._zeroEx.getProvider(),
             makerAddress,
             takerAddress,
             makerFee,

@@ -1,4 +1,5 @@
 import { ECSignature, ExchangeContractErrs, ZeroEx, ZeroExError } from '0x.js';
+import { OrderError } from '@0xproject/order-utils';
 import { constants as sharedConstants, EtherscanLinkSuffixes, Networks } from '@0xproject/react-shared';
 import { Provider } from '@0xproject/types';
 import { BigNumber } from '@0xproject/utils';
@@ -202,7 +203,7 @@ export const utils = {
             [ZeroExError.ZRXContractDoesNotExist]: 'ZRX contract does not exist',
             [ZeroExError.UnhandledError]: 'Unhandled error occured',
             [ZeroExError.UserHasNoAssociatedAddress]: 'User has no addresses available',
-            [ZeroExError.InvalidSignature]: 'Order signature is not valid',
+            [OrderError.InvalidSignature]: 'Order signature is not valid',
             [ZeroExError.ContractNotDeployedOnNetwork]: 'Contract is not deployed on the detected network',
             [ZeroExError.InvalidJump]: 'Invalid jump occured while executing the transaction',
             [ZeroExError.OutOfGas]: 'Transaction ran out of gas',

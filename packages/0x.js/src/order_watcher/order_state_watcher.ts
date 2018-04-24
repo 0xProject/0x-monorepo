@@ -1,4 +1,5 @@
 import { schemas } from '@0xproject/json-schemas';
+import { assert } from '@0xproject/order-utils';
 import { BlockParamLiteral, LogWithDecodedArgs, SignedOrder } from '@0xproject/types';
 import { AbiDecoder, intervalUtils } from '@0xproject/utils';
 import { Web3Wrapper } from '@0xproject/web3-wrapper';
@@ -33,7 +34,6 @@ import {
     OrderStateWatcherConfig,
     ZeroExError,
 } from '../types';
-import { assert } from '../utils/assert';
 import { OrderStateUtils } from '../utils/order_state_utils';
 import { utils } from '../utils/utils';
 

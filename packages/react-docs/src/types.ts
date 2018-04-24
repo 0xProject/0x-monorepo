@@ -94,6 +94,7 @@ export enum KindString {
     Method = 'Method',
     Interface = 'Interface',
     TypeAlias = 'Type alias',
+    ObjectLiteral = 'Object literal',
     Variable = 'Variable',
     Function = 'Function',
     Enumeration = 'Enumeration',

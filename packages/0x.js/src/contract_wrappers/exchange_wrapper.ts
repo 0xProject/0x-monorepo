@@ -1,4 +1,5 @@
 import { schemas } from '@0xproject/json-schemas';
+import { assert, getOrderHashHex } from '@0xproject/order-utils';
 import {
     BlockParamLiteral,
     DecodedLogArgs,
@@ -30,7 +31,6 @@ import {
     OrderValues,
     ValidateOrderFillableOpts,
 } from '../types';
-import { assert } from '../utils/assert';
 import { decorators } from '../utils/decorators';
 import { ExchangeTransferSimulator } from '../utils/exchange_transfer_simulator';
 import { OrderStateUtils } from '../utils/order_state_utils';
@@ -570,7 +570,7 @@ export class ExchangeWrapper extends ContractWrapper {
             ? SHOULD_VALIDATE_BY_DEFAULT
             : orderTransactionOpts.shouldValidate;
         if (shouldValidate) {
-            const orderHash = utils.getOrderHashHex(order);
+            const orderHash = getOrderHashHex(order);
             const unavailableTakerTokenAmount = await this.getUnavailableTakerAmountAsync(orderHash);
             OrderValidationUtils.validateCancelOrderThrowIfInvalid(
                 order,
@@ -629,7 +629,7 @@ export class ExchangeWrapper extends ContractWrapper {
             : orderTransactionOpts.shouldValidate;
         if (shouldValidate) {
             for (const orderCancellationRequest of orderCancellationRequests) {
-                const orderHash = utils.getOrderHashHex(orderCancellationRequest.order);
+                const orderHash = getOrderHashHex(orderCancellationRequest.order);
                 const unavailableTakerTokenAmount = await this.getUnavailableTakerAmountAsync(orderHash);
                 OrderValidationUtils.validateCancelOrderThrowIfInvalid(
                     orderCancellationRequest.order,
@@ -801,7 +801,7 @@ export class ExchangeWrapper extends ContractWrapper {
     ): Promise<void> {
         assert.doesConformToSchema('order', order, schemas.orderSchema);
         assert.isValidBaseUnitAmount('cancelTakerTokenAmount', cancelTakerTokenAmount);
-        const orderHash = utils.getOrderHashHex(order);
+        const orderHash = getOrderHashHex(order);
         const unavailableTakerTokenAmount = await this.getUnavailableTakerAmountAsync(orderHash);
         OrderValidationUtils.validateCancelOrderThrowIfInvalid(
             order,
