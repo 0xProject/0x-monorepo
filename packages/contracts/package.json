@@ -25,7 +25,8 @@
         "coverage:report:text": "istanbul report text",
         "coverage:report:html": "istanbul report html && open coverage/index.html",
         "coverage:report:lcov": "istanbul report lcov",
-        "test:circleci": "yarn test:coverage"
+        "test:circleci": "yarn test:coverage",
+        "run_live": "mocha 'lib/test/test_live/**/*.js' --timeout 1000000 --bail --exit"
     },
     "config": {
         "abis":

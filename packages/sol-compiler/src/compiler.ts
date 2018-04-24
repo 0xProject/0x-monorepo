@@ -200,7 +200,7 @@ export class Compiler {
         if (_.isUndefined(compiledData)) {
             throw new Error(
                 `Contract ${contractName} not found in ${
-                    contractSource.path
+                contractSource.path
                 }. Please make sure your contract has the same name as it's file name`,
             );
         }
