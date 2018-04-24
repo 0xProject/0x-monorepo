@@ -57,7 +57,7 @@ export class RelayerIndex extends React.Component<RelayerIndexProps, RelayerInde
         const readyToRender = _.isUndefined(this.state.error) && !_.isUndefined(this.state.relayerInfos);
         if (readyToRender) {
             return (
-                <div className="py3" style={styles.root}>
+                <div style={styles.root}>
                     <GridList
                         cellHeight={CELL_HEIGHT}
                         cols={NUMBER_OF_COLUMNS}

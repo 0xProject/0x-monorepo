@@ -68,6 +68,10 @@ const styles: Styles = {
         WebkitOverflowScrolling: 'touch',
         overflow: 'auto',
     },
+    title: {
+        fontWeight: 'bold',
+        fontSize: 20,
+    },
 };
 
 export class Portal extends React.Component<PortalProps, PortalState> {
@@ -154,7 +158,10 @@ export class Portal extends React.Component<PortalProps, PortalState> {
                 />
                 <div id="portal" style={styles.body}>
                     <div className="sm-flex flex-center">
-                        <div className="flex-last p3">
+                        <div className="flex-last px3">
+                            <div className="py3" style={styles.title}>
+                                Your Account
+                            </div>
                             <Wallet
                                 userAddress={this.props.userAddress}
                                 networkId={this.props.networkId}
@@ -172,6 +179,9 @@ export class Portal extends React.Component<PortalProps, PortalState> {
                             />
                         </div>
                         <div className="flex-auto px3" style={styles.scrollContainer}>
+                            <div className="py3" style={styles.title}>
+                                Explore 0x Ecosystem
+                            </div>
                             <RelayerIndex networkId={this.props.networkId} />
                         </div>
                     </div>
