@@ -14,7 +14,7 @@ import { WrappedEthSectionNoticeDialog } from 'ts/components/dialogs/wrapped_eth
 import { EthWrappers } from 'ts/components/eth_wrappers';
 import { FillOrder } from 'ts/components/fill_order';
 import { Footer } from 'ts/components/footer';
-import { PortalMenu } from 'ts/components/portal_menu';
+import { LegacyPortalMenu } from 'ts/components/legacy_portal/legacy_portal_menu';
 import { RelayerIndex } from 'ts/components/relayer_index/relayer_index';
 import { TokenBalances } from 'ts/components/token_balances';
 import { TopBar } from 'ts/components/top_bar/top_bar';
@@ -43,9 +43,7 @@ import { utils } from 'ts/utils/utils';
 
 const THROTTLE_TIMEOUT = 100;
 
-export interface PortalPassedProps {}
-
-export interface PortalAllProps {
+export interface LegacyPortalProps {
     blockchainErr: BlockchainErrs;
     blockchainIsLoaded: boolean;
     dispatcher: Dispatcher;
@@ -67,7 +65,7 @@ export interface PortalAllProps {
     translate: Translate;
 }
 
-interface PortalAllState {
+interface LegacyPortalState {
     prevNetworkId: number;
     prevNodeVersion: string;
     prevUserAddress: string;
@@ -77,7 +75,7 @@ interface PortalAllState {
     isLedgerDialogOpen: boolean;
 }
 
-export class Portal extends React.Component<PortalAllProps, PortalAllState> {
+export class LegacyPortal extends React.Component<LegacyPortalProps, LegacyPortalState> {
     private _blockchain: Blockchain;
     private _sharedOrderIfExists: Order;
     private _throttledScreenWidthUpdate: () => void;
@@ -86,13 +84,13 @@ export class Portal extends React.Component<PortalAllProps, PortalAllState> {
         const hasAlreadyDismissedWethNotice = !_.isUndefined(didDismissWethNotice) && !_.isEmpty(didDismissWethNotice);
         return hasAlreadyDismissedWethNotice;
     }
-    constructor(props: PortalAllProps) {
+    constructor(props: LegacyPortalProps) {
         super(props);
         this._sharedOrderIfExists = this._getSharedOrderIfExists();
         this._throttledScreenWidthUpdate = _.throttle(this._updateScreenWidth.bind(this), THROTTLE_TIMEOUT);
 
         const isViewingBalances = _.includes(props.location.pathname, `${WebsitePaths.Portal}/balances`);
-        const hasAlreadyDismissedWethNotice = Portal.hasAlreadyDismissedWethNotice();
+        const hasAlreadyDismissedWethNotice = LegacyPortal.hasAlreadyDismissedWethNotice();
 
         const didAcceptPortalDisclaimer = localStorage.getItemIfExists(constants.LOCAL_STORAGE_KEY_ACCEPT_DISCLAIMER);
         const hasAcceptedDisclaimer =
@@ -123,7 +121,7 @@ export class Portal extends React.Component<PortalAllProps, PortalAllState> {
         // become disconnected from their backing Ethereum node, changes user accounts, etc...)
         this.props.dispatcher.resetState();
     }
-    public componentWillReceiveProps(nextProps: PortalAllProps) {
+    public componentWillReceiveProps(nextProps: LegacyPortalProps) {
         if (nextProps.networkId !== this.state.prevNetworkId) {
             // tslint:disable-next-line:no-floating-promises
             this._blockchain.networkIdUpdatedFireAndForgetAsync(nextProps.networkId);
@@ -145,7 +143,7 @@ export class Portal extends React.Component<PortalAllProps, PortalAllState> {
         }
         if (nextProps.location.pathname !== this.state.prevPathname) {
             const isViewingBalances = _.includes(nextProps.location.pathname, `${WebsitePaths.Portal}/balances`);
-            const hasAlreadyDismissedWethNotice = Portal.hasAlreadyDismissedWethNotice();
+            const hasAlreadyDismissedWethNotice = LegacyPortal.hasAlreadyDismissedWethNotice();
             this.setState({
                 prevPathname: nextProps.location.pathname,
                 isWethNoticeDialogOpen: !hasAlreadyDismissedWethNotice && isViewingBalances,
@@ -200,7 +198,7 @@ export class Portal extends React.Component<PortalAllProps, PortalAllState> {
                         ) : (
                             <div className="mx-auto flex">
                                 <div className="col col-2 pr2 pt1 sm-hide xs-hide" style={portalMenuContainerStyle}>
-                                    <PortalMenu menuItemStyle={{ color: colors.white }} />
+                                    <LegacyPortalMenu menuItemStyle={{ color: colors.white }} />
                                 </div>
                                 <div className="col col-12 lg-col-10 md-col-10 sm-col sm-col-12">
                                     <div className="py2" style={{ backgroundColor: colors.grey50 }}>
