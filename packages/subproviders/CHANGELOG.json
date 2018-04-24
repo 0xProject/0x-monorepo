@@ -1,5 +1,18 @@
 [
     {
+        "version": "0.10.0",
+        "changes": [
+            {
+                "note": "Upgrade web3-provider-engine to 14.0.4",
+                "pr": 555
+            },
+            {
+                "note": "Relax `to` validation in base wallet subprovider for transactions that deploy contracts",
+                "pr": 555
+            }
+        ]
+    },
+    {
         "version": "0.9.0",
         "changes": [
             {
