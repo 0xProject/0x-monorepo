@@ -51,7 +51,8 @@ describe('Exchange transactions', () => {
     let signedOrder: SignedOrder;
     let order: OrderStruct;
     let orderFactory: OrderFactory;
-    let transactionFactory: TransactionFactory;
+    let makerTransactionFactory: TransactionFactory;
+    let takerTransactionFactory: TransactionFactory;
     let exchangeWrapper: ExchangeWrapper;
     let erc20Wrapper: ERC20Wrapper;
 
@@ -98,7 +99,8 @@ describe('Exchange transactions', () => {
         const makerPrivateKey = constants.TESTRPC_PRIVATE_KEYS[accounts.indexOf(makerAddress)];
         const takerPrivateKey = constants.TESTRPC_PRIVATE_KEYS[accounts.indexOf(takerAddress)];
         orderFactory = new OrderFactory(makerPrivateKey, defaultOrderParams);
-        transactionFactory = new TransactionFactory(takerPrivateKey, exchange.address);
+        makerTransactionFactory = new TransactionFactory(makerPrivateKey, exchange.address);
+        takerTransactionFactory = new TransactionFactory(takerPrivateKey, exchange.address);
     });
     beforeEach(async () => {
         await blockchainLifecycle.startAsync();
@@ -115,6 +117,19 @@ describe('Exchange transactions', () => {
                 order = orderUtils.getOrderStruct(signedOrder);
             });
 
+            it('should throw if not called by specified sender', async () => {
+                const takerAssetFillAmount = signedOrder.takerAssetAmount.div(2);
+                const data = exchange.fillOrder.getABIEncodedTransactionData(
+                    order,
+                    takerAssetFillAmount,
+                    signedOrder.signature,
+                );
+                const signedTx = takerTransactionFactory.newSignedTransaction(data);
+                return expect(exchangeWrapper.executeTransactionAsync(signedTx, takerAddress)).to.be.rejectedWith(
+                    constants.REVERT,
+                );
+            });
+
             it('should transfer the correct amounts when signed by taker and called by sender', async () => {
                 const takerAssetFillAmount = signedOrder.takerAssetAmount.div(2);
                 const data = exchange.fillOrder.getABIEncodedTransactionData(
@@ -122,8 +137,8 @@ describe('Exchange transactions', () => {
                     takerAssetFillAmount,
                     signedOrder.signature,
                 );
-                const signedTx = transactionFactory.newSignedTransaction(data);
-                const res = await exchangeWrapper.executeTransactionAsync(signedTx, senderAddress);
+                const signedTx = takerTransactionFactory.newSignedTransaction(data);
+                await exchangeWrapper.executeTransactionAsync(signedTx, senderAddress);
                 const newBalances = await erc20Wrapper.getBalancesAsync();
                 const makerAssetFillAmount = takerAssetFillAmount
                     .times(signedOrder.makerAssetAmount)
@@ -155,6 +170,25 @@ describe('Exchange transactions', () => {
                 expect(newBalances[feeRecipientAddress][zrxToken.address]).to.be.bignumber.equal(
                     erc20Balances[feeRecipientAddress][zrxToken.address].add(makerFeePaid.add(takerFeePaid)),
                 );
+            });
+        });
+
+        describe('cancelOrder', () => {
+            it('should throw if not called by specified sender', async () => {
+                const data = exchange.cancelOrder.getABIEncodedTransactionData(order);
+                const signedTx = makerTransactionFactory.newSignedTransaction(data);
+                return expect(exchangeWrapper.executeTransactionAsync(signedTx, makerAddress)).to.be.rejectedWith(
+                    constants.REVERT,
+                );
+            });
+
+            it('should cancel the order when signed by maker and called by sender', async () => {
+                const data = exchange.cancelOrder.getABIEncodedTransactionData(order);
+                const signedTx = makerTransactionFactory.newSignedTransaction(data);
+                await exchangeWrapper.executeTransactionAsync(signedTx, senderAddress);
+                const res = await exchangeWrapper.fillOrderAsync(signedOrder, takerAddress);
+                const newBalances = await erc20Wrapper.getBalancesAsync();
+                expect(newBalances).to.deep.equal(erc20Balances);
             });
         });
     });
