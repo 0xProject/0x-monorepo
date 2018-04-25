@@ -109,7 +109,9 @@ describe('ZRXToken', () => {
             await zeroEx.token.setAllowanceAsync(zrxAddress, owner, spender, amountToTransfer, {
                 gasLimit: constants.MAX_TOKEN_APPROVE_GAS,
             });
-            const didReturnTrue = await zrxToken.transferFrom.callAsync(owner, spender, amountToTransfer, { from: spender });
+            const didReturnTrue = await zrxToken.transferFrom.callAsync(owner, spender, amountToTransfer, {
+                from: spender,
+            });
             expect(didReturnTrue).to.be.false();
         });
 
@@ -121,13 +123,17 @@ describe('ZRXToken', () => {
             const spenderAllowanceIsInsufficient = spenderAllowance.cmp(amountToTransfer) < 0;
             expect(spenderAllowanceIsInsufficient).to.be.true();
 
-            const didReturnTrue = await zrxToken.transferFrom.callAsync(owner, spender, amountToTransfer, { from: spender });
+            const didReturnTrue = await zrxToken.transferFrom.callAsync(owner, spender, amountToTransfer, {
+                from: spender,
+            });
             expect(didReturnTrue).to.be.false();
         });
 
         it('should return true on a 0 value transfer', async () => {
             const amountToTransfer = new BigNumber(0);
-            const didReturnTrue = await zrxToken.transferFrom.callAsync(owner, spender, amountToTransfer, { from: spender });
+            const didReturnTrue = await zrxToken.transferFrom.callAsync(owner, spender, amountToTransfer, {
+                from: spender,
+            });
             expect(didReturnTrue).to.be.true();
         });
 
