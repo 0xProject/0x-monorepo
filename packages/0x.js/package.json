@@ -36,7 +36,7 @@
     },
     "config": {
         "compact_artifacts": "Exchange DummyToken ZRXToken Token EtherToken TokenTransferProxy TokenRegistry",
-        "contracts": "Exchange DummyToken ZRXToken Token WETH9 TokenTransferProxy MultiSigWallet MultiSigWalletWithTimeLock MultiSigWalletWithTimeLockExceptRemoveAuthorizedAddress MaliciousToken TokenRegistry Arbitrage EtherDelta AccountLevels",
+        "contracts": "Exchange DummyToken ZRXToken Token WETH9 TokenTransferProxy MultiSigWallet MultiSigWalletWithTimeLock MultiSigWalletWithTimeLockExceptRemoveAuthorizedAddress TokenRegistry Arbitrage EtherDelta AccountLevels",
         "postpublish": {
             "assets": [
                 "packages/0x.js/_bundles/index.js",

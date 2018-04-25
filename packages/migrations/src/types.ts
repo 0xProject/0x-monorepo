@@ -31,7 +31,6 @@ export enum ContractName {
     DummyToken = 'DummyToken',
     WETH9 = 'WETH9',
     MultiSigWalletWithTimeLockExceptRemoveAuthorizedAddress = 'MultiSigWalletWithTimeLockExceptRemoveAuthorizedAddress',
-    MaliciousToken = 'MaliciousToken',
     AccountLevels = 'AccountLevels',
     EtherDelta = 'EtherDelta',
     Arbitrage = 'Arbitrage',
