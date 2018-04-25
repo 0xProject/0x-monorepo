@@ -18,7 +18,6 @@
 
 pragma solidity ^0.4.21;
 pragma experimental ABIEncoderV2;
-pragma experimental "v0.5.0";
 
 import "./mixins/MExchangeCore.sol";
 import "./mixins/MSettlement.sol";
@@ -117,13 +116,13 @@ contract MixinExchangeCore is
             require(isValidSignature(orderHash, order.makerAddress, signature));
         }
         
-        // Validate sender
+        // Validate sender is allowed to fill this order
         if (order.senderAddress != address(0)) {
             require(order.senderAddress == msg.sender);
         }
 
-        // Validate transaction signed by taker
-        address takerAddress = getSignerAddress();
+        // Validate taker is allowed to fill this order
+        address takerAddress = getCurrentContextAddress();
         if (order.takerAddress != address(0)) {
             require(order.takerAddress == takerAddress);
         }
@@ -177,13 +176,13 @@ contract MixinExchangeCore is
         require(order.makerAssetAmount > 0);
         require(order.takerAssetAmount > 0);
 
-        // Validate sender
+        // Validate sender is allowed to cancel this order
         if (order.senderAddress != address(0)) {
             require(order.senderAddress == msg.sender);
         }
         
         // Validate transaction signed by maker
-        address makerAddress = getSignerAddress();
+        address makerAddress = getCurrentContextAddress();
         require(order.makerAddress == makerAddress);
         
         if (block.timestamp >= order.expirationTimeSeconds) {

@@ -49,6 +49,7 @@ describe('Exchange transactions', () => {
 
     let erc20Balances: ERC20BalancesByOwner;
     let signedOrder: SignedOrder;
+    let signedTx: SignedTransaction;
     let order: OrderStruct;
     let orderFactory: OrderFactory;
     let makerTransactionFactory: TransactionFactory;
@@ -111,33 +112,28 @@ describe('Exchange transactions', () => {
 
     describe('executeTransaction', () => {
         describe('fillOrder', () => {
+            let takerAssetFillAmount: BigNumber;
             beforeEach(async () => {
                 erc20Balances = await erc20Wrapper.getBalancesAsync();
                 signedOrder = orderFactory.newSignedOrder();
                 order = orderUtils.getOrderStruct(signedOrder);
-            });
 
-            it('should throw if not called by specified sender', async () => {
-                const takerAssetFillAmount = signedOrder.takerAssetAmount.div(2);
+                takerAssetFillAmount = signedOrder.takerAssetAmount.div(2);
                 const data = exchange.fillOrder.getABIEncodedTransactionData(
                     order,
                     takerAssetFillAmount,
                     signedOrder.signature,
                 );
-                const signedTx = takerTransactionFactory.newSignedTransaction(data);
+                signedTx = takerTransactionFactory.newSignedTransaction(data);
+            });
+
+            it('should throw if not called by specified sender', async () => {
                 return expect(exchangeWrapper.executeTransactionAsync(signedTx, takerAddress)).to.be.rejectedWith(
                     constants.REVERT,
                 );
             });
 
             it('should transfer the correct amounts when signed by taker and called by sender', async () => {
-                const takerAssetFillAmount = signedOrder.takerAssetAmount.div(2);
-                const data = exchange.fillOrder.getABIEncodedTransactionData(
-                    order,
-                    takerAssetFillAmount,
-                    signedOrder.signature,
-                );
-                const signedTx = takerTransactionFactory.newSignedTransaction(data);
                 await exchangeWrapper.executeTransactionAsync(signedTx, senderAddress);
                 const newBalances = await erc20Wrapper.getBalancesAsync();
                 const makerAssetFillAmount = takerAssetFillAmount
@@ -171,20 +167,34 @@ describe('Exchange transactions', () => {
                     erc20Balances[feeRecipientAddress][zrxToken.address].add(makerFeePaid.add(takerFeePaid)),
                 );
             });
+
+            it('should throw if the a 0x transaction with the same transactionHash has already been executed', async () => {
+                await exchangeWrapper.executeTransactionAsync(signedTx, senderAddress);
+                return expect(exchangeWrapper.executeTransactionAsync(signedTx, senderAddress)).to.be.rejectedWith(
+                    constants.REVERT,
+                );
+            });
+
+            it('should reset the currentContextAddress', async () => {
+                await exchangeWrapper.executeTransactionAsync(signedTx, senderAddress);
+                const currentContextAddress = await exchange.currentContextAddress.callAsync();
+                expect(currentContextAddress).to.equal(ZeroEx.NULL_ADDRESS);
+            });
         });
 
         describe('cancelOrder', () => {
-            it('should throw if not called by specified sender', async () => {
+            beforeEach(async () => {
                 const data = exchange.cancelOrder.getABIEncodedTransactionData(order);
-                const signedTx = makerTransactionFactory.newSignedTransaction(data);
+                signedTx = makerTransactionFactory.newSignedTransaction(data);
+            });
+
+            it('should throw if not called by specified sender', async () => {
                 return expect(exchangeWrapper.executeTransactionAsync(signedTx, makerAddress)).to.be.rejectedWith(
                     constants.REVERT,
                 );
             });
 
             it('should cancel the order when signed by maker and called by sender', async () => {
-                const data = exchange.cancelOrder.getABIEncodedTransactionData(order);
-                const signedTx = makerTransactionFactory.newSignedTransaction(data);
                 await exchangeWrapper.executeTransactionAsync(signedTx, senderAddress);
                 const res = await exchangeWrapper.fillOrderAsync(signedOrder, takerAddress);
                 const newBalances = await erc20Wrapper.getBalancesAsync();

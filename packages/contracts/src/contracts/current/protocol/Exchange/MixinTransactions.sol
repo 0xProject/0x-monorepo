@@ -27,10 +27,11 @@ contract MixinTransactions is
 {
 
     // Mapping of transaction hash => executed
+    // This prevents transactions from being executed more than once.
     mapping (bytes32 => bool) public transactions;
 
     // Address of current transaction signer
-    address currentSigner;
+    address public currentContextAddress;
 
     /// @dev Executes an exchange method call in the context of signer.
     /// @param salt Arbitrary number to ensure uniqueness of transaction hash.
@@ -45,7 +46,7 @@ contract MixinTransactions is
         external
     {
         // Prevent reentrancy
-        require(currentSigner == address(0));
+        require(currentContextAddress == address(0));
 
         // Calculate transaction hash
         bytes32 transactionHash = keccak256(
@@ -63,7 +64,7 @@ contract MixinTransactions is
             require(isValidSignature(transactionHash, signer, signature));
 
             // Set the current transaction signer
-            currentSigner = signer;
+            currentContextAddress = signer;
         }
 
         // Execute transaction
@@ -71,15 +72,21 @@ contract MixinTransactions is
         require(address(this).delegatecall(data));
 
         // Reset current transaction signer
-        currentSigner = address(0);
+        // TODO: Check if gas is paid when currentContextAddress is already 0.
+        currentContextAddress = address(0);
     }
 
-    function getSignerAddress()
+    /// @dev The current function will be called in the context of this address (either 0x transaction signer or `msg.sender`).
+    ///      If calling a fill function, this address will represent the taker.
+    ///      If calling a cancel function, this address will represent the maker.
+    /// @return Signer of 0x transaction if entry point is `executeTransaction`.
+    ///         `msg.sender` if entry point is any other function.
+    function getCurrentContextAddress()
         internal
         view
         returns (address)
     {
-        address signerAddress = currentSigner == address(0) ? msg.sender : currentSigner;
-        return signerAddress;
+        address contextAddress = currentContextAddress == address(0) ? msg.sender : currentContextAddress;
+        return contextAddress;
     }
 }
