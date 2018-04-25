@@ -55,6 +55,7 @@ export interface WalletProps {
     injectedProviderName: string;
     providerType: ProviderType;
     onToggleLedgerDialog: () => void;
+    onAddToken: () => void;
 }
 
 interface WalletState {
@@ -232,7 +233,14 @@ export class Wallet extends React.Component<WalletProps, WalletState> {
     }
     private _renderFooterRows() {
         const primaryText = '+ other tokens';
-        return <ListItem key={FOOTER_ITEM_KEY} primaryText={primaryText} innerDivStyle={styles.footerItemInnerDiv} />;
+        return (
+            <ListItem
+                key={FOOTER_ITEM_KEY}
+                primaryText={primaryText}
+                innerDivStyle={styles.footerItemInnerDiv}
+                onClick={this.props.onAddToken}
+            />
+        );
     }
     private _renderEthRows() {
         const primaryText = this._renderAmount(

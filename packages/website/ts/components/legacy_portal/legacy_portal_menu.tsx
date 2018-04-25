@@ -58,26 +58,6 @@ export class LegacyPortalMenu extends React.Component<LegacyPortalMenuProps, Leg
                 >
                     {this._renderMenuItemWithIcon('Wrap ETH', 'zmdi-circle-o')}
                 </MenuItem>
-                {configs.ENVIRONMENT === Environments.DEVELOPMENT && (
-                    <div>
-                        <MenuItem
-                            style={this.props.menuItemStyle}
-                            className="py2"
-                            to={`${WebsitePaths.Portal}/wallet`}
-                            onClick={this.props.onClick.bind(this)}
-                        >
-                            {this._renderMenuItemWithIcon('Wallet', 'zmdi-balance-wallet')}
-                        </MenuItem>
-                        <MenuItem
-                            style={this.props.menuItemStyle}
-                            className="py2"
-                            to={`${WebsitePaths.Portal}/relayers`}
-                            onClick={this.props.onClick.bind(this)}
-                        >
-                            {this._renderMenuItemWithIcon('Relayers', 'zmdi-input-antenna')}
-                        </MenuItem>
-                    </div>
-                )}
             </div>
         );
     }
