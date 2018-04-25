@@ -1,5 +1,5 @@
 import { Order, OrderTransactionOpts } from '0x.js';
-import { ContractAbi } from '@0xproject/types';
+import { ContractAbi, TransactionReceiptWithDecodedLogs } from '@0xproject/types';
 import { AbiDecoder, BigNumber } from '@0xproject/utils';
 import { Web3Wrapper } from '@0xproject/web3-wrapper';
 import * as ethUtil from 'ethereumjs-util';
@@ -14,6 +14,7 @@ import { ForwarderContract } from '../contract_wrappers/generated/forwarder';
 import { Artifact, DefaultOrderParams, SignatureType, SignedOrder, UnsignedOrder } from './types';
 
 export class ForwarderWrapper {
+    private _web3Wrapper: Web3Wrapper;
     private _forwarderContract: ForwarderContract;
     // TODO remove this
     // public static async getForwarderContractAsync(web3Wrapper: Web3Wrapper): Promise<ForwarderContract> {
@@ -52,15 +53,17 @@ export class ForwarderWrapper {
         return contractAddress;
     }
 
-    constructor(contractInstance: ForwarderContract) {
+    constructor(contractInstance: ForwarderContract, web3Wrapper: Web3Wrapper) {
         this._forwarderContract = contractInstance;
+        this._web3Wrapper = web3Wrapper;
+        this._web3Wrapper.abiDecoder.addABI(contractInstance.abi);
     }
     public async buyTokensAsync(
         orders: SignedOrder[],
         feeOrders: SignedOrder[],
         fillAmountWei: BigNumber,
         from: string,
-    ): Promise<string> {
+    ): Promise<TransactionReceiptWithDecodedLogs> {
         const txOpts = {
             from,
             value: fillAmountWei,
@@ -74,7 +77,8 @@ export class ForwarderWrapper {
             feeParams.signatures,
             txOpts,
         );
-        return txHash;
+        const tx = await this._getTxWithDecodedLogsAsync(txHash);
+        return tx;
     }
     public async buyTokensFeeAsync(
         orders: SignedOrder[],
@@ -83,7 +87,7 @@ export class ForwarderWrapper {
         feeProportion: number,
         feeRecipient: string,
         from: string,
-    ): Promise<string> {
+    ): Promise<TransactionReceiptWithDecodedLogs> {
         const txOpts = {
             from,
             value: fillAmountWei,
@@ -99,6 +103,96 @@ export class ForwarderWrapper {
             feeRecipient,
             txOpts,
         );
-        return txHash;
+        const tx = await this._getTxWithDecodedLogsAsync(txHash);
+        return tx;
+    }
+    public async marketSellOrdersQuoteAsync(
+        orders: SignedOrder[],
+        fillAmountWei: BigNumber,
+    ): Promise<{
+        makerTokenFilledAmount: BigNumber;
+        takerTokenFilledAmount: BigNumber;
+        makerFeePaid: BigNumber;
+        takerFeePaid: BigNumber;
+    }> {
+        const params = formatters.createMarketSellOrders(orders, fillAmountWei);
+        const quote = await this._forwarderContract.marketSellOrdersQuote.callAsync(params.orders, fillAmountWei);
+        return quote;
+    }
+    public async marketBuyOrdersQuoteAsync(
+        orders: SignedOrder[],
+        buyAmountWei: BigNumber,
+    ): Promise<{
+        makerTokenFilledAmount: BigNumber;
+        takerTokenFilledAmount: BigNumber;
+        makerFeePaid: BigNumber;
+        takerFeePaid: BigNumber;
+    }> {
+        const params = formatters.createMarketBuyOrders(orders, buyAmountWei);
+        const quote = await this._forwarderContract.marketBuyOrdersQuote.callAsync(params.orders, buyAmountWei);
+        return quote;
+    }
+    public async buyTokensQuoteAsync(
+        orders: SignedOrder[],
+        feeOrders: SignedOrder[],
+        buyAmountWei: BigNumber,
+    ): Promise<{
+        makerTokenFilledAmount: BigNumber;
+        takerTokenFilledAmount: BigNumber;
+        makerFeePaid: BigNumber;
+        takerFeePaid: BigNumber;
+    }> {
+        const params = formatters.createMarketBuyOrders(orders, buyAmountWei);
+        const feeParams = formatters.createMarketBuyOrders(feeOrders, buyAmountWei);
+        const quote = await this._forwarderContract.buyTokensQuote.callAsync(
+            params.orders,
+            feeParams.orders,
+            buyAmountWei,
+        );
+        return quote;
+    }
+    public async buyNFTTokensAsync(
+        orders: SignedOrder[],
+        feeOrders: SignedOrder[],
+        from: string,
+    ): Promise<TransactionReceiptWithDecodedLogs> {
+        let fillAmountWei = _.reduce(
+            orders,
+            (prev: BigNumber, order: SignedOrder) => {
+                return prev.plus(order.takerTokenAmount);
+            },
+            new BigNumber(0),
+        );
+        const totalFees = _.reduce(
+            orders,
+            (prev: BigNumber, order: SignedOrder) => {
+                return prev.plus(order.takerFee);
+            },
+            new BigNumber(0),
+        );
+        const feeParams = formatters.createMarketSellOrders(feeOrders, new BigNumber(0));
+        const params = formatters.createMarketSellOrders(orders, fillAmountWei);
+        if (totalFees.greaterThan(0)) {
+            const feeQuote = await this._forwarderContract.buyFeeTokensQuote.callAsync(feeParams.orders, totalFees);
+            fillAmountWei = fillAmountWei.plus(feeQuote.takerTokenFilledAmount.times(1.5));
+        }
+        const txOpts = {
+            from,
+            value: fillAmountWei,
+        };
+        const txHash: string = await this._forwarderContract.buyNFTTokens.sendTransactionAsync(
+            params.orders,
+            params.signatures,
+            feeParams.orders,
+            feeParams.signatures,
+            txOpts,
+        );
+        const tx = await this._getTxWithDecodedLogsAsync(txHash);
+        return tx;
+    }
+    private async _getTxWithDecodedLogsAsync(txHash: string) {
+        const tx = await this._web3Wrapper.awaitTransactionMinedAsync(txHash);
+        tx.logs = _.filter(tx.logs, log => log.address === this._forwarderContract.address);
+        return tx;
     }
 }

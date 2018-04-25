@@ -9,7 +9,7 @@ contract MixinForwarderQuote is MixinForwarderCore {
     /// @param order An Order struct containing order specifications.
     /// @param takerTokenFillAmount A number representing the amount of this order to fill.
     /// @return Amounts filled and fees paid by maker and taker.
-    function fillOrderQuote(Order order, uint256 takerTokenFillAmount)
+    function fillOrderQuote(Order memory order, uint256 takerTokenFillAmount)
         public
         view
         returns (Exchange.FillResults memory fillResults)
@@ -31,6 +31,7 @@ contract MixinForwarderQuote is MixinForwarderCore {
 
         // Validate fill order rounding
         if (isRoundingError(fillResults.takerTokenFilledAmount, order.takerTokenAmount, order.makerTokenAmount)) {
+            fillResults.takerTokenFilledAmount = 0;
             return fillResults;
         }
 
@@ -40,14 +41,14 @@ contract MixinForwarderQuote is MixinForwarderCore {
         //     return fillResults;
         // }
 
-        fillResults.makerTokenFilledAmount = EXCHANGE.getPartialAmount(fillResults.takerTokenFilledAmount, order.takerTokenAmount, order.makerTokenAmount);
+        fillResults.makerTokenFilledAmount = getPartialAmount(fillResults.takerTokenFilledAmount, order.takerTokenAmount, order.makerTokenAmount);
 
         if (order.feeRecipientAddress != address(0)) {
             if (order.makerFee > 0) {
-                fillResults.makerFeePaid = EXCHANGE.getPartialAmount(fillResults.takerTokenFilledAmount, order.takerTokenAmount, order.makerFee);
+                fillResults.makerFeePaid = getPartialAmount(fillResults.takerTokenFilledAmount, order.takerTokenAmount, order.makerFee);
             }
             if (order.takerFee > 0) {
-                fillResults.takerFeePaid = EXCHANGE.getPartialAmount(fillResults.takerTokenFilledAmount, order.takerTokenAmount, order.takerFee);
+                fillResults.takerFeePaid = getPartialAmount(fillResults.takerTokenFilledAmount, order.takerTokenAmount, order.takerFee);
             }
         }
 
@@ -59,13 +60,13 @@ contract MixinForwarderQuote is MixinForwarderCore {
     /// @param orders An array of Order struct containing order specifications.
     /// @param takerTokenFillAmount A number representing the amount of this order to fill.
     /// @return Amounts filled and fees paid by maker and taker.
-    function marketSellOrdersQuote(Order[] orders, uint256 takerTokenFillAmount)
+    function marketSellOrdersQuote(Order[] memory orders, uint256 takerTokenFillAmount)
         public
         view
         returns (Exchange.FillResults memory fillResult)
     {
         for (uint256 i = 0; i < orders.length; i++) {
-            require(areBytesEqual(orders[i].takerAssetData, orders[0].takerAssetData));
+            require(areBytesEqual(orders[i].makerAssetData, orders[0].makerAssetData));
             uint256 remainingTakerTokenFillAmount = safeSub(takerTokenFillAmount, fillResult.takerTokenFilledAmount);
 
             Exchange.FillResults memory quoteFillResult = fillOrderQuote(orders[i], remainingTakerTokenFillAmount);
@@ -83,21 +84,21 @@ contract MixinForwarderQuote is MixinForwarderCore {
     /// @param orders An array of Order struct containing order specifications.
     /// @param makerTokenFillAmount A number representing the amount of this order to fill.
     /// @return Amounts filled and fees paid by maker and taker.
-    function marketBuyOrdersQuote(Order[] orders, uint256 makerTokenFillAmount)
+    function marketBuyOrdersQuote(Order[] memory orders, uint256 makerTokenFillAmount)
         public
         view
         returns (Exchange.FillResults memory fillResult)
     {
         for (uint256 i = 0; i < orders.length; i++) {
-            require(areBytesEqual(orders[i].takerAssetData, orders[0].takerAssetData));
-            uint256 remainingTakerBuyAmount = safeSub(makerTokenFillAmount, fillResult.takerTokenFilledAmount);
-            uint256 remainingTakerSellAmount = EXCHANGE.getPartialAmount(
-                remainingTakerBuyAmount,
+            require(areBytesEqual(orders[i].makerAssetData, orders[0].makerAssetData));
+            uint256 remainingMakerTokenFillAmount = safeSub(makerTokenFillAmount, fillResult.takerTokenFilledAmount);
+            uint256 remainingTakerTokenFillAmount = getPartialAmount(
                 orders[i].takerTokenAmount,
-                orders[i].makerTokenAmount
-            );
+                orders[i].makerTokenAmount,
+                remainingMakerTokenFillAmount
+            );  
 
-            Exchange.FillResults memory quoteFillResult = fillOrderQuote(orders[i], remainingTakerSellAmount);
+            Exchange.FillResults memory quoteFillResult = fillOrderQuote(orders[i], remainingTakerTokenFillAmount);
 
             addFillResults(fillResult, quoteFillResult);
             if (fillResult.makerTokenFilledAmount == makerTokenFillAmount) {
@@ -107,6 +108,61 @@ contract MixinForwarderQuote is MixinForwarderCore {
         return fillResult;
     }
 
+    /// @dev Calculates a quote total for buyTokens. This is useful for off-chain queries to 
+    ///      ensure all calculations are performed atomically for consistent results
+    /// @param orders An array of Order struct containing order specifications.
+    /// @param feeOrders An array of Order struct containing order specifications.
+    /// @param sellTokenAmount A number representing the amount of this order to fill.
+    /// @return Quoted amounts which will be filled
+    function buyTokensQuote(
+        Order[] memory orders,
+        Order[] memory feeOrders,
+        uint256 sellTokenAmount)
+        public
+        view
+        returns (Exchange.FillResults memory totalFillResult)
+    {
+        uint256 takerTokenBalance = sellTokenAmount;
+
+        Exchange.FillResults memory tokensSellQuote = marketSellOrdersQuote(orders, sellTokenAmount);
+        Exchange.FillResults memory requestedTokensResult;
+        if (tokensSellQuote.takerFeePaid > 0) {
+            // Fees are required for these orders
+            // Buy enough ZRX to cover the future market sell
+            Exchange.FillResults memory feeTokensResult = buyFeeTokensQuote(feeOrders, tokensSellQuote.takerFeePaid);
+            takerTokenBalance = safeSub(takerTokenBalance, feeTokensResult.takerTokenFilledAmount);
+            // Make our market sell to buy the requested tokens with the remaining balance
+            requestedTokensResult = marketSellOrdersQuote(orders, takerTokenBalance);
+            // Update our return FillResult with the additional fees
+            totalFillResult.takerFeePaid = feeTokensResult.takerFeePaid;
+        } else {
+            // Make our market sell to buy the requested tokens with the remaining balance
+            requestedTokensResult = marketSellOrdersQuote(orders, takerTokenBalance);
+        }
+        // Update our return FillResult with the market sell
+        addFillResults(totalFillResult, requestedTokensResult);
+        // Ensure the token abstraction was fair if fees were proportionally too high, we fail
+        // require(isAcceptableThreshold(sellTokenAmount, requestedTokensResult.takerTokenFilledAmount), ERROR_UNACCEPTABLE_THRESHOLD);
+        return totalFillResult;
+    }
+    function buyFeeTokensQuote(
+        Order[] memory feeOrders,
+        uint256 feeAmount)
+        public
+        view
+        returns (Exchange.FillResults memory totalFillResult)
+    {
+        address token = readAddress(feeOrders[0].makerAssetData, 1);
+        require(token == address(ZRX_TOKEN), ERROR_INVALID_INPUT);
+        // Quote the fees
+        Exchange.FillResults memory marketBuyFeeQuote = marketBuyOrdersQuote(feeOrders, feeAmount);
+        // Buy enough ZRX to cover the future market sell as well as this market buy
+        Exchange.FillResults memory marketBuyFillResult = marketBuyOrdersQuote(
+            feeOrders,
+            safeAdd(feeAmount, marketBuyFeeQuote.takerFeePaid));
+        addFillResults(totalFillResult, marketBuyFillResult);
+        return totalFillResult;
+    }
     function isRoundingError(uint256 numerator, uint256 denominator, uint256 target)
         public
         pure
