@@ -435,10 +435,7 @@ describe('Exchange core', () => {
             const expectedFeeTPaid = signedOrder.takerFee.div(divisor);
 
             expect(signedOrder.makerAddress).to.be.equal(logArgs.makerAddress);
-            expect(takerAddress).to.be.equal(logArgs.takerAddress);
             expect(signedOrder.feeRecipientAddress).to.be.equal(logArgs.feeRecipientAddress);
-            expect(signedOrder.makerAssetData).to.be.equal(logArgs.makerAssetData);
-            expect(signedOrder.takerAssetData).to.be.equal(logArgs.takerAssetData);
             expect(expectedFilledMakerAssetAmount).to.be.bignumber.equal(logArgs.makerAssetFilledAmount);
             expect(expectedFilledTakerAssetAmount).to.be.bignumber.equal(logArgs.takerAssetFilledAmount);
             expect(expectedFeeMPaid).to.be.bignumber.equal(logArgs.makerFeePaid);
@@ -629,8 +626,6 @@ describe('Exchange core', () => {
 
             expect(signedOrder.makerAddress).to.be.equal(logArgs.makerAddress);
             expect(signedOrder.feeRecipientAddress).to.be.equal(logArgs.feeRecipientAddress);
-            expect(signedOrder.makerAssetData).to.be.equal(logArgs.makerAssetData);
-            expect(signedOrder.takerAssetData).to.be.equal(logArgs.takerAssetData);
             expect(orderUtils.getOrderHashHex(signedOrder)).to.be.equal(logArgs.orderHash);
         });
 

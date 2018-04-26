@@ -53,23 +53,18 @@ contract MixinExchangeCore is
 
     event Fill(
         address indexed makerAddress,
-        address takerAddress,
         address indexed feeRecipientAddress,
+        bytes32 indexed orderHash,
         uint256 makerAssetFilledAmount,
         uint256 takerAssetFilledAmount,
         uint256 makerFeePaid,
-        uint256 takerFeePaid,
-        bytes32 indexed orderHash,
-        bytes makerAssetData,
-        bytes takerAssetData
+        uint256 takerFeePaid
     );
 
     event Cancel(
         address indexed makerAddress,
         address indexed feeRecipientAddress,
-        bytes32 indexed orderHash,
-        bytes makerAssetData,
-        bytes takerAssetData
+        bytes32 indexed orderHash
     );
 
     event CancelUpTo(
@@ -157,7 +152,15 @@ contract MixinExchangeCore is
             settleOrder(order, takerAddress, fillResults.takerAssetFilledAmount);
 
         // Log order
-        emitFillEvent(order, takerAddress, orderHash, fillResults);
+        emit Fill(
+            order.makerAddress,
+            order.feeRecipientAddress,
+            orderHash,
+            fillResults.makerAssetFilledAmount,
+            fillResults.takerAssetFilledAmount,
+            fillResults.makerFeePaid,
+            fillResults.takerFeePaid
+        );
         return fillResults;
     }
 
@@ -200,9 +203,7 @@ contract MixinExchangeCore is
         emit Cancel(
             order.makerAddress,
             order.feeRecipientAddress,
-            orderHash,
-            order.makerAssetData,
-            order.takerAssetData
+            orderHash
         );
         return true;
     }
@@ -237,28 +238,5 @@ contract MixinExchangeCore is
         );
         isError = errPercentageTimes1000000 > 1000;
         return isError;
-    }
-
-    /// @dev Logs a Fill event with the given arguments.
-    ///      The sole purpose of this function is to get around the stack variable limit.
-    function emitFillEvent(
-        Order memory order,
-        address takerAddress,
-        bytes32 orderHash,
-        FillResults memory fillResults)
-        internal
-    {
-        emit Fill(
-            order.makerAddress,
-            takerAddress,
-            order.feeRecipientAddress,
-            fillResults.makerAssetFilledAmount,
-            fillResults.takerAssetFilledAmount,
-            fillResults.makerFeePaid,
-            fillResults.takerFeePaid,
-            orderHash,
-            order.makerAssetData,
-            order.takerAssetData
-        );
     }
 }
