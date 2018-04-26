@@ -111,6 +111,7 @@ export enum ContractName {
     DummyERC721Token = 'DummyERC721Token',
     TestLibBytes = 'TestLibBytes',
     Authorizable = 'Authorizable',
+    Whitelist = 'Whitelist',
 }
 
 export enum SignatureType {

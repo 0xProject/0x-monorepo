@@ -8,6 +8,7 @@ import * as Web3 from 'web3';
 import { DummyERC20TokenContract } from '../../src/contract_wrappers/generated/dummy_e_r_c20_token';
 import { ERC20ProxyContract } from '../../src/contract_wrappers/generated/e_r_c20_proxy';
 import { ExchangeContract } from '../../src/contract_wrappers/generated/exchange';
+import { WhitelistContract } from '../../src/contract_wrappers/generated/whitelist';
 import { artifacts } from '../../src/utils/artifacts';
 import { assetProxyUtils } from '../../src/utils/asset_proxy_utils';
 import { chaiSetup } from '../../src/utils/chai_setup';
@@ -55,6 +56,8 @@ describe('Exchange transactions', () => {
 
     let defaultMakerTokenAddress: string;
     let defaultTakerTokenAddress: string;
+    let makerPrivateKey: Buffer;
+    let takerPrivateKey: Buffer;
 
     before(async () => {
         await blockchainLifecycle.startAsync();
@@ -98,8 +101,8 @@ describe('Exchange transactions', () => {
             makerAssetData: assetProxyUtils.encodeERC20ProxyData(defaultMakerTokenAddress),
             takerAssetData: assetProxyUtils.encodeERC20ProxyData(defaultTakerTokenAddress),
         };
-        const makerPrivateKey = constants.TESTRPC_PRIVATE_KEYS[accounts.indexOf(makerAddress)];
-        const takerPrivateKey = constants.TESTRPC_PRIVATE_KEYS[accounts.indexOf(takerAddress)];
+        makerPrivateKey = constants.TESTRPC_PRIVATE_KEYS[accounts.indexOf(makerAddress)];
+        takerPrivateKey = constants.TESTRPC_PRIVATE_KEYS[accounts.indexOf(takerAddress)];
         orderFactory = new OrderFactory(makerPrivateKey, defaultOrderParams);
         makerTransactionFactory = new TransactionFactory(makerPrivateKey, exchange.address);
         takerTransactionFactory = new TransactionFactory(takerPrivateKey, exchange.address);
@@ -201,6 +204,90 @@ describe('Exchange transactions', () => {
                 const newBalances = await erc20Wrapper.getBalancesAsync();
                 expect(newBalances).to.deep.equal(erc20Balances);
             });
+        });
+    });
+
+    describe('Whitelist', () => {
+        let whitelist: WhitelistContract;
+        let whitelistOrderFactory: OrderFactory;
+
+        before(async () => {
+            const whitelistInstance = await deployer.deployAsync(ContractName.Whitelist, [exchange.address]);
+            whitelist = new WhitelistContract(whitelistInstance.abi, whitelistInstance.address, provider);
+            const defaultOrderParams = {
+                ...constants.STATIC_ORDER_PARAMS,
+                senderAddress: whitelist.address,
+                exchangeAddress: exchange.address,
+                makerAddress,
+                feeRecipientAddress,
+                makerAssetData: assetProxyUtils.encodeERC20ProxyData(defaultMakerTokenAddress),
+                takerAssetData: assetProxyUtils.encodeERC20ProxyData(defaultTakerTokenAddress),
+            };
+            whitelistOrderFactory = new OrderFactory(makerPrivateKey, defaultOrderParams);
+        });
+
+        beforeEach(async () => {
+            signedOrder = whitelistOrderFactory.newSignedOrder();
+            erc20Balances = await erc20Wrapper.getBalancesAsync();
+        });
+
+        it('should revert if taker has not been whitelisted', async () => {
+            const orderStruct = orderUtils.getOrderStruct(signedOrder);
+            const takerAssetFillAmount = signedOrder.takerAssetAmount;
+            const salt = ZeroEx.generatePseudoRandomSalt();
+            return expect(
+                whitelist.fillOrderIfWhitelisted.sendTransactionAsync(
+                    orderStruct,
+                    takerAssetFillAmount,
+                    salt,
+                    signedOrder.signature,
+                    { from: takerAddress },
+                ),
+            ).to.be.rejectedWith(constants.REVERT);
+        });
+
+        it('should fill the order if taker has been whitelisted', async () => {
+            const isApproved = true;
+            await whitelist.updateWhitelistStatus.sendTransactionAsync(takerAddress, isApproved, { from: owner });
+
+            const orderStruct = orderUtils.getOrderStruct(signedOrder);
+            const takerAssetFillAmount = signedOrder.takerAssetAmount;
+            const salt = ZeroEx.generatePseudoRandomSalt();
+            await whitelist.fillOrderIfWhitelisted.sendTransactionAsync(
+                orderStruct,
+                takerAssetFillAmount,
+                salt,
+                signedOrder.signature,
+                { from: takerAddress },
+            );
+
+            const newBalances = await erc20Wrapper.getBalancesAsync();
+
+            const makerAssetFillAmount = signedOrder.makerAssetAmount;
+            const makerFeePaid = signedOrder.makerFee;
+            const takerFeePaid = signedOrder.takerFee;
+
+            expect(newBalances[makerAddress][defaultMakerTokenAddress]).to.be.bignumber.equal(
+                erc20Balances[makerAddress][defaultMakerTokenAddress].minus(makerAssetFillAmount),
+            );
+            expect(newBalances[makerAddress][defaultTakerTokenAddress]).to.be.bignumber.equal(
+                erc20Balances[makerAddress][defaultTakerTokenAddress].add(takerAssetFillAmount),
+            );
+            expect(newBalances[makerAddress][zrxToken.address]).to.be.bignumber.equal(
+                erc20Balances[makerAddress][zrxToken.address].minus(makerFeePaid),
+            );
+            expect(newBalances[takerAddress][defaultTakerTokenAddress]).to.be.bignumber.equal(
+                erc20Balances[takerAddress][defaultTakerTokenAddress].minus(takerAssetFillAmount),
+            );
+            expect(newBalances[takerAddress][defaultMakerTokenAddress]).to.be.bignumber.equal(
+                erc20Balances[takerAddress][defaultMakerTokenAddress].add(makerAssetFillAmount),
+            );
+            expect(newBalances[takerAddress][zrxToken.address]).to.be.bignumber.equal(
+                erc20Balances[takerAddress][zrxToken.address].minus(takerFeePaid),
+            );
+            expect(newBalances[feeRecipientAddress][zrxToken.address]).to.be.bignumber.equal(
+                erc20Balances[feeRecipientAddress][zrxToken.address].add(makerFeePaid.add(takerFeePaid)),
+            );
         });
     });
 });

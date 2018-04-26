@@ -19,22 +19,24 @@
 pragma solidity ^0.4.21;
 pragma experimental ABIEncoderV2;
 
-import "../../protocol/Exchange/mixins/MTransactions.sol";
+import "../../protocol/Exchange/Exchange.sol";
 import "../../protocol/Exchange/LibOrder.sol";
 import "../../utils/Ownable/Ownable.sol";
 
 contract Whitelist is Ownable {
 
     mapping (address => bool) public isWhitelisted;
-    MTransactions EXCHANGE;
+    Exchange EXCHANGE;
 
-    bytes txOriginSignatureType = new bytes(1);
+    bytes txOriginSignature = new bytes(1);
+    bytes4 fillOrderFunctionSelector;
 
     function Whitelist(address _exchange)
         public
     {
-        EXCHANGE = MTransactions(_exchange);
-        txOriginSignatureType[0] = 0x04;
+        EXCHANGE = Exchange(_exchange);
+        txOriginSignature[0] = 0x04;
+        fillOrderFunctionSelector = EXCHANGE.fillOrder.selector;
     }
 
     function updateWhitelistStatus(address target, bool isApproved)
@@ -48,11 +50,31 @@ contract Whitelist is Ownable {
         LibOrder.Order memory order,
         uint256 takerAssetFillAmount,
         uint256 salt,
-        bytes memory signature)
+        bytes memory orderSignature)
         public
     {
-        require(isWhitelisted[msg.sender]);
-        bytes memory data = abi.encode(order, takerAssetFillAmount, signature);
-        EXCHANGE.executeTransaction(salt, msg.sender, data, txOriginSignatureType);
+        address takerAddress = msg.sender;
+    
+        // This contract must be the entry point for the transaction.
+        require(takerAddress == tx.origin);
+
+        // Check if sender is on the whitelist.
+        require(isWhitelisted[takerAddress]);
+
+        // Encode arguments into byte array.
+        bytes memory data = abi.encodeWithSelector(
+            fillOrderFunctionSelector,
+            order,
+            takerAssetFillAmount,
+            orderSignature
+        );
+
+        // Call `fillOrder`via `executeTransaction`.
+        EXCHANGE.executeTransaction(
+            salt,
+            takerAddress,
+            data,
+            txOriginSignature
+        );
     }
 }
