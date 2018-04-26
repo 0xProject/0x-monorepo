@@ -26,6 +26,7 @@ contract LibOrder {
         "address makerAddress",
         "address takerAddress",
         "address feeRecipientAddress",
+        "address senderAddress",
         "uint256 makerAssetAmount",
         "uint256 takerAssetAmount",
         "uint256 makerFee",
@@ -40,6 +41,7 @@ contract LibOrder {
         address makerAddress;
         address takerAddress;
         address feeRecipientAddress;
+        address senderAddress;
         uint256 makerAssetAmount;
         uint256 takerAssetAmount;
         uint256 makerFee;
@@ -66,6 +68,7 @@ contract LibOrder {
                 order.makerAddress,
                 order.takerAddress,
                 order.feeRecipientAddress,
+                order.senderAddress,
                 order.makerAssetAmount,
                 order.takerAssetAmount,
                 order.makerFee,

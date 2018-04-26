@@ -75,24 +75,25 @@ contract MixinWrapperFunctions is
         // |          | 0x00   |         |   1. offset to order (*)                    |
         // |          | 0x20   |         |   2. takerAssetFillAmount                   |
         // |          | 0x40   |         |   3. offset to signature (*)                |
-        // | Data     |        | 11 * 32 | order:                                      |
-        // |          | 0x000  |         |   1.  makerAddress                          |
-        // |          | 0x020  |         |   2.  takerAddress                          |
-        // |          | 0x040  |         |   3.  feeRecipientAddress                   |
-        // |          | 0x060  |         |   4.  makerAssetAmount                      |
-        // |          | 0x080  |         |   5.  takerAssetAmount                      |
-        // |          | 0x0A0  |         |   6.  makerFeeAmount                        |
-        // |          | 0x0C0  |         |   7.  takerFeeAmount                        |
-        // |          | 0x0E0  |         |   8.  expirationTimeSeconds                 |
-        // |          | 0x100  |         |   9.  salt                                  |
-        // |          | 0x120  |         |   10. Offset to makerAssetProxyMetadata (*) |
-        // |          | 0x140  |         |   11. Offset to takerAssetProxyMetadata (*) |
-        // |          | 0x160  | 32      | makerAssetProxyMetadata Length              |
-        // |          | 0x180  | **      | makerAssetProxyMetadata Contents            |
-        // |          | 0x1A0  | 32      | takerAssetProxyMetadata Length              |
-        // |          | 0x1C0  | **      | takerAssetProxyMetadata Contents            |
-        // |          | 0x1E0  | 32      | signature Length                            |
-        // |          | 0x200  | **      | signature Contents                          |
+        // | Data     |        | 12 * 32 | order:                                      |
+        // |          | 0x000  |         |   1.  senderAddress                         |
+        // |          | 0x020  |         |   2.  makerAddress                          |
+        // |          | 0x040  |         |   3.  takerAddress                          |
+        // |          | 0x060  |         |   4.  feeRecipientAddress                   |
+        // |          | 0x080  |         |   5.  makerAssetAmount                      |
+        // |          | 0x0A0  |         |   6.  takerAssetAmount                      |
+        // |          | 0x0C0  |         |   7.  makerFeeAmount                        |
+        // |          | 0x0E0  |         |   8.  takerFeeAmount                        |
+        // |          | 0x100  |         |   9.  expirationTimeSeconds                 |
+        // |          | 0x120  |         |   10. salt                                  |
+        // |          | 0x140  |         |   11. Offset to makerAssetProxyMetadata (*) |
+        // |          | 0x160  |         |   12. Offset to takerAssetProxyMetadata (*) |
+        // |          | 0x180  | 32      | makerAssetProxyMetadata Length              |
+        // |          | 0x1A0  | **      | makerAssetProxyMetadata Contents            |
+        // |          | 0x1C0  | 32      | takerAssetProxyMetadata Length              |
+        // |          | 0x1E0  | **      | takerAssetProxyMetadata Contents            |
+        // |          | 0x200  | 32      | signature Length                            |
+        // |          | 0x220  | **      | signature Contents                          |
 
         // * Offsets are calculated from the beginning of the current area: Header, Params, Data:
         //     An offset stored in the Params area is calculated from the beginning of the Params section.
@@ -150,19 +151,20 @@ contract MixinWrapperFunctions is
             mstore(dataAreaEnd, mload(sourceOffset))                            // makerAddress
             mstore(add(dataAreaEnd, 0x20), mload(add(sourceOffset, 0x20)))      // takerAddress
             mstore(add(dataAreaEnd, 0x40), mload(add(sourceOffset, 0x40)))      // feeRecipientAddress
-            mstore(add(dataAreaEnd, 0x60), mload(add(sourceOffset, 0x60)))      // makerAssetAmount
-            mstore(add(dataAreaEnd, 0x80), mload(add(sourceOffset, 0x80)))      // takerAssetAmount
-            mstore(add(dataAreaEnd, 0xA0), mload(add(sourceOffset, 0xA0)))      // makerFeeAmount
-            mstore(add(dataAreaEnd, 0xC0), mload(add(sourceOffset, 0xC0)))      // takerFeeAmount
-            mstore(add(dataAreaEnd, 0xE0), mload(add(sourceOffset, 0xE0)))      // expirationTimeSeconds
-            mstore(add(dataAreaEnd, 0x100), mload(add(sourceOffset, 0x100)))    // salt
-            mstore(add(dataAreaEnd, 0x120), mload(add(sourceOffset, 0x120)))    // Offset to makerAssetProxyMetadata
-            mstore(add(dataAreaEnd, 0x140), mload(add(sourceOffset, 0x140)))    // Offset to takerAssetProxyMetadata
-            dataAreaEnd := add(dataAreaEnd, 0x160)
-            sourceOffset := add(sourceOffset, 0x160)
+            mstore(add(dataAreaEnd, 0x60), mload(add(sourceOffset, 0x60)))      // senderAddress
+            mstore(add(dataAreaEnd, 0x80), mload(add(sourceOffset, 0x80)))      // makerAssetAmount
+            mstore(add(dataAreaEnd, 0xA0), mload(add(sourceOffset, 0xA0)))      // takerAssetAmount
+            mstore(add(dataAreaEnd, 0xC0), mload(add(sourceOffset, 0xC0)))      // makerFeeAmount
+            mstore(add(dataAreaEnd, 0xE0), mload(add(sourceOffset, 0xE0)))      // takerFeeAmount
+            mstore(add(dataAreaEnd, 0x100), mload(add(sourceOffset, 0x100)))    // expirationTimeSeconds
+            mstore(add(dataAreaEnd, 0x120), mload(add(sourceOffset, 0x120)))    // salt
+            mstore(add(dataAreaEnd, 0x140), mload(add(sourceOffset, 0x140)))    // Offset to makerAssetProxyMetadata
+            mstore(add(dataAreaEnd, 0x160), mload(add(sourceOffset, 0x160)))    // Offset to takerAssetProxyMetadata
+            dataAreaEnd := add(dataAreaEnd, 0x180)
+            sourceOffset := add(sourceOffset, 0x180)
 
             // Write offset to <order.makerAssetProxyMetadata>
-            mstore(add(dataAreaStart, mul(9, 0x20)), sub(dataAreaEnd, dataAreaStart))
+            mstore(add(dataAreaStart, mul(10, 0x20)), sub(dataAreaEnd, dataAreaStart))
 
             // Calculate length of <order.makerAssetProxyMetadata>
             arrayLenBytes := mload(sourceOffset)
@@ -181,7 +183,7 @@ contract MixinWrapperFunctions is
             }
 
             // Write offset to <order.takerAssetProxyMetadata>
-            mstore(add(dataAreaStart, mul(10, 0x20)), sub(dataAreaEnd, dataAreaStart))
+            mstore(add(dataAreaStart, mul(11, 0x20)), sub(dataAreaEnd, dataAreaStart))
 
             // Calculate length of <order.takerAssetProxyMetadata>
             arrayLenBytes := mload(sourceOffset)

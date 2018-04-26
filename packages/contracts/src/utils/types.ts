@@ -122,6 +122,7 @@ export interface SignedOrder extends UnsignedOrder {
 }
 
 export interface OrderStruct {
+    senderAddress: string;
     makerAddress: string;
     takerAddress: string;
     feeRecipientAddress: string;
@@ -147,4 +148,12 @@ export enum SignatureType {
     EIP712,
     Trezor,
     Contract,
+}
+
+export interface SignedTransaction {
+    exchangeAddress: string;
+    salt: BigNumber;
+    signer: string;
+    data: string;
+    signature: string;
 }
