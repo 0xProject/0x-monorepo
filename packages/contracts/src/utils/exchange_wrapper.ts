@@ -221,37 +221,6 @@ export class ExchangeWrapper {
         const tx = await this._getTxWithDecodedExchangeLogsAsync(txHash);
         return tx;
     }
-    public async getOrderHashAsync(signedOrder: SignedOrder): Promise<string> {
-        const order = orderUtils.getOrderStruct(signedOrder);
-        const orderHash = await this._exchange.getOrderHash.callAsync(order);
-        return orderHash;
-    }
-    public async isValidSignatureAsync(signedOrder: SignedOrder): Promise<boolean> {
-        const isValidSignature = await this._exchange.isValidSignature.callAsync(
-            orderUtils.getOrderHashHex(signedOrder),
-            signedOrder.makerAddress,
-            signedOrder.signature,
-        );
-        return isValidSignature;
-    }
-    public async isRoundingErrorAsync(
-        numerator: BigNumber,
-        denominator: BigNumber,
-        target: BigNumber,
-    ): Promise<boolean> {
-        const isRoundingError = await this._exchange.isRoundingError.callAsync(numerator, denominator, target);
-        return isRoundingError;
-    }
-    public async getPartialAmountAsync(
-        numerator: BigNumber,
-        denominator: BigNumber,
-        target: BigNumber,
-    ): Promise<BigNumber> {
-        const partialAmount = new BigNumber(
-            await this._exchange.getPartialAmount.callAsync(numerator, denominator, target),
-        );
-        return partialAmount;
-    }
     public async getTakerAssetFilledAmountAsync(orderHashHex: string): Promise<BigNumber> {
         const filledAmount = new BigNumber(await this._exchange.filled.callAsync(orderHashHex));
         return filledAmount;

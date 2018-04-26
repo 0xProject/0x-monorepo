@@ -22,19 +22,20 @@ pragma experimental ABIEncoderV2;
 import "./mixins/MSettlement.sol";
 import "./mixins/MAssetProxyDispatcher.sol";
 import "./LibOrder.sol";
-import "./LibPartialAmount.sol";
+import "./LibMath.sol";
 import "../AssetProxy/IAssetProxy.sol";
 
 /// @dev Provides MixinSettlement
 contract MixinSettlement is
-    LibPartialAmount,
+    LibMath,
     MSettlement,
     MAssetProxyDispatcher
 {
-    bytes ZRX_PROXY_DATA;
+    bytes internal ZRX_PROXY_DATA;
 
     function zrxProxyData()
-        external view
+        external
+        view
         returns (bytes memory)
     {
         return ZRX_PROXY_DATA;

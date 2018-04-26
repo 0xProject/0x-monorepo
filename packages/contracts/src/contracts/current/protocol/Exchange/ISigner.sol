@@ -23,7 +23,8 @@ contract ISigner {
 
     function isValidSignature(
         bytes32 hash,
-        bytes memory signature)
-        public view
+        bytes signature)
+        external
+        view
         returns (bool isValid);
 }

@@ -19,19 +19,17 @@
 pragma solidity ^0.4.21;
 pragma experimental ABIEncoderV2;
 
-import "../../utils/SafeMath/SafeMath.sol";
 import "../../utils/LibBytes/LibBytes.sol";
 import "./mixins/MExchangeCore.sol";
-import "./LibPartialAmount.sol";
+import "./LibMath.sol";
 import "./LibOrder.sol";
 import "./LibFillResults.sol";
 
 /// @dev Consumes MExchangeCore
 contract MixinWrapperFunctions is
-    SafeMath,
     LibOrder,
     LibFillResults,
-    LibPartialAmount,
+    LibMath,
     LibBytes,
     MExchangeCore
 {
