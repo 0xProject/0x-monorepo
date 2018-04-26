@@ -25,15 +25,16 @@ contract MSignatureValidator is
 {
     // Allowed signature types.
     enum SignatureType {
-        Illegal,  // Default value
-        Invalid,
-        Caller,
-        Ecrecover,
-        EIP712,
-        Trezor,
-        Signer,
-        Validator,
-        PreSigned
+        Illegal,    // 0x00, default value
+        Invalid,    // 0x01
+        EIP712,     // 0x02
+        Ecrecover,  // 0x03
+        TxOrigin,   // 0x04
+        Caller,     // 0x05
+        Signer,     // 0x06
+        Validator,  // 0x07
+        PreSigned,  // 0x08
+        Trezor      // 0x09
     }
 
     /// @dev Verifies that a signature is valid.
