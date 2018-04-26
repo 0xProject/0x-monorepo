@@ -76,7 +76,6 @@
         "ethereumjs-util": "^5.1.1",
         "ethers-contracts": "^2.2.1",
         "lodash": "^4.17.4",
-        "web3": "^0.20.0",
-        "zeppelin-solidity": "^1.8.0"
+        "web3": "^0.20.0"
     }
 }
