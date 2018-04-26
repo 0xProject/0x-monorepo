@@ -29,6 +29,8 @@ contract ERC721Proxy is
     IAssetProxy
 {
 
+    uint8 constant PROXY_ID = 2;
+
     /// @dev Transfers ERC721 tokens. Either succeeds or throws.
     /// @param assetMetadata ERC721-encoded byte array
     /// @param from Address to transfer token from.
@@ -42,17 +44,31 @@ contract ERC721Proxy is
         external
         onlyAuthorized
     {
+        // Data must be intended for this proxy.
+        require(uint8(assetMetadata[0]) == PROXY_ID);
+
         // There exists only 1 of each token.
         require(amount == 1);
 
-        // Decode metadata
+        // Decode metadata.
         require(assetMetadata.length == 53);
         address token = readAddress(assetMetadata, 1);
         uint256 tokenId = readUint256(assetMetadata, 21);
 
+        // Transfer token.
         // Either succeeds or throws.
         // @TODO: Call safeTransferFrom if there is additional
         //        data stored in `assetMetadata`.
         ERC721Token(token).transferFrom(from, to, tokenId);
+    }
+
+    /// @dev Gets the proxy id associated with the proxy address.
+    /// @return Proxy id.
+    function getProxyId()
+        external
+        view
+        returns (uint8)
+    {
+        return PROXY_ID;
     }
 }

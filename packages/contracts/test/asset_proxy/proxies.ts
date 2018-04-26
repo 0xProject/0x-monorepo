@@ -145,6 +145,11 @@ describe('Asset Transfer Proxies', () => {
                 }),
             ).to.be.rejectedWith(constants.REVERT);
         });
+
+        it('should have an id of 1', async () => {
+            const proxyId = await erc20Proxy.getProxyId.callAsync();
+            expect(proxyId).to.equal(1);
+        });
     });
 
     describe('Transfer Proxy - ERC721', () => {
@@ -239,6 +244,11 @@ describe('Asset Transfer Proxies', () => {
                     { from: notAuthorized },
                 ),
             ).to.be.rejectedWith(constants.REVERT);
+        });
+
+        it('should have an id of 2', async () => {
+            const proxyId = await erc721Proxy.getProxyId.callAsync();
+            expect(proxyId).to.equal(2);
         });
     });
 });

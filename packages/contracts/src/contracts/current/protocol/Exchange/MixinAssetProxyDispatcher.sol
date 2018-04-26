@@ -43,7 +43,7 @@ contract MixinAssetProxyDispatcher is
     {
         // Do nothing if no amount should be transferred.
         if (amount > 0) {
-            // Lookup asset proxy
+            // Lookup asset proxy.
             require(assetMetadata.length >= 1);
             uint8 assetProxyId = uint8(assetMetadata[0]);
             IAssetProxy assetProxy = assetProxies[assetProxyId];
@@ -66,11 +66,19 @@ contract MixinAssetProxyDispatcher is
         external
         onlyOwner
     {
-        // Ensure the existing asset proxy is not unintentionally overwritten
+        // Ensure the existing asset proxy is not unintentionally overwritten.
         require(oldAssetProxy == address(assetProxies[assetProxyId]));
 
-        // Add asset proxy and log registration
-        assetProxies[assetProxyId] = IAssetProxy(newAssetProxy);
+        IAssetProxy assetProxy = IAssetProxy(newAssetProxy);
+
+        // Ensure that the id of newAssetProxy matches the passed in assetProxyId, unless it is being reset to 0.
+        if (newAssetProxy != address(0)) {
+            uint8 newAssetProxyId = assetProxy.getProxyId();
+            require(newAssetProxyId == assetProxyId);
+        }
+
+        // Add asset proxy and log registration.
+        assetProxies[assetProxyId] = assetProxy;
         emit AssetProxySet(assetProxyId, newAssetProxy, oldAssetProxy);
     }
 
