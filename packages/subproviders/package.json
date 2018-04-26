@@ -51,7 +51,7 @@
         "lodash": "^4.17.4",
         "semaphore-async-await": "^1.5.1",
         "web3": "^0.20.0",
-        "web3-provider-engine": "^13.0.1"
+        "web3-provider-engine": "^14.0.4"
     },
     "devDependencies": {
         "@0xproject/monorepo-scripts": "^0.1.18",
