@@ -181,10 +181,11 @@ describe.only('Forwarder', () => {
             assetProxyDispatcher.address,
             etherTokenInstance.address,
             zrx.address,
+            AssetProxyId.ERC20,
         ];
         const forwarderInstance = await deployer.deployAndSaveAsync('Forwarder', forwarderArgs);
         forwarderContract = new ForwarderContract(forwarderInstance.abi, forwarderInstance.address, provider);
-        await forwarderContract.setERC20ProxyApproval.sendTransactionAsync(AssetProxyId.ERC20, { from: tokenOwner });
+        // await forwarderContract.setERC20ProxyApproval.sendTransactionAsync(AssetProxyId.ERC20, { from: tokenOwner });
         forwarderWrapper = new ForwarderWrapper(forwarderContract, web3Wrapper);
 
         const wethDmmy = new DummyTokenContract(etherTokenInstance.abi, etherTokenInstance.address, provider);
@@ -317,33 +318,15 @@ describe.only('Forwarder', () => {
         });
     });
     describe('quote', () => {
-        it('quote result is the same as buy results', async () => {
+        it('buyTokensQuote - no fees', async () => {
             const fillAmount = signedOrder.takerTokenAmount.div(4);
-            const sellQuote = await forwarderWrapper.marketSellOrdersQuoteAsync([signedOrder], fillAmount);
+            const sellQuote = await forwarderWrapper.buyTokensQuoteAsync([signedOrder], [], fillAmount);
             const tx = await forwarderWrapper.buyTokensAsync([signedOrder], [], fillAmount, takerAddress);
             const newBalances = await dmyBalances.getAsync();
             const takerBalanceAfter = newBalances[takerAddress][defaultMakerTokenAddress];
             expect(takerBalanceAfter).to.be.bignumber.eq(sellQuote.makerTokenFilledAmount);
         });
-        it('quote result is the same as buy results with fees', async () => {
-            const fillAmount = signedOrder.takerTokenAmount.div(4);
-            const sellQuote = await forwarderWrapper.marketSellOrdersQuoteAsync([orderWithFees], fillAmount);
-            const buyFeesQuote = await forwarderWrapper.marketBuyOrdersQuoteAsync([feeOrder], sellQuote.takerFeePaid);
-            const totalFees = sellQuote.takerFeePaid.plus(buyFeesQuote.takerFeePaid);
-            const tx = await forwarderWrapper.buyTokensAsync([orderWithFees], [feeOrder], fillAmount, takerAddress);
-            const newBalances = await dmyBalances.getAsync();
-            const takerBalanceAfter = newBalances[takerAddress][defaultMakerTokenAddress];
-            expect(takerBalanceAfter).to.be.bignumber.eq(sellQuote.makerTokenFilledAmount.minus(totalFees));
-        });
-        it('buyTokensQuote', async () => {
-            const fillAmount = signedOrder.takerTokenAmount.div(2);
-            const buyTokensQuote = await forwarderWrapper.buyTokensQuoteAsync([signedOrder], [feeOrder], fillAmount);
-            const tx = await forwarderWrapper.buyTokensAsync([signedOrder], [feeOrder], fillAmount, takerAddress);
-            const newBalances = await dmyBalances.getAsync();
-            const takerBalanceAfter = newBalances[takerAddress][defaultMakerTokenAddress];
-            expect(takerBalanceAfter).to.be.bignumber.eq(buyTokensQuote.makerTokenFilledAmount);
-        });
-        it('buyTokensQuote with fee abstraction', async () => {
+        it('buyTokensQuote - fee abstraction', async () => {
             const fillAmount = signedOrder.takerTokenAmount.div(2);
             const buyTokensQuote = await forwarderWrapper.buyTokensQuoteAsync([orderWithFees], [feeOrder], fillAmount);
             const tx = await forwarderWrapper.buyTokensAsync([orderWithFees], [feeOrder], fillAmount, takerAddress);

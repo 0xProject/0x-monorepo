@@ -79,35 +79,6 @@ contract MixinForwarderQuote is MixinForwarderCore {
         return fillResult;
     }
 
-    /// @dev Calculates a total for buying makerTokenFillAmount across all orders. Including the fees
-    ///      required to be paid. 
-    /// @param orders An array of Order struct containing order specifications.
-    /// @param makerTokenFillAmount A number representing the amount of this order to fill.
-    /// @return Amounts filled and fees paid by maker and taker.
-    function marketBuyOrdersQuote(Order[] memory orders, uint256 makerTokenFillAmount)
-        public
-        view
-        returns (Exchange.FillResults memory fillResult)
-    {
-        for (uint256 i = 0; i < orders.length; i++) {
-            require(areBytesEqual(orders[i].makerAssetData, orders[0].makerAssetData));
-            uint256 remainingMakerTokenFillAmount = safeSub(makerTokenFillAmount, fillResult.takerTokenFilledAmount);
-            uint256 remainingTakerTokenFillAmount = getPartialAmount(
-                orders[i].takerTokenAmount,
-                orders[i].makerTokenAmount,
-                remainingMakerTokenFillAmount
-            );  
-
-            Exchange.FillResults memory quoteFillResult = fillOrderQuote(orders[i], remainingTakerTokenFillAmount);
-
-            addFillResults(fillResult, quoteFillResult);
-            if (fillResult.makerTokenFilledAmount == makerTokenFillAmount) {
-                break;
-            }
-        }
-        return fillResult;
-    }
-
     /// @dev Calculates a quote total for buyTokens. This is useful for off-chain queries to 
     ///      ensure all calculations are performed atomically for consistent results
     /// @param orders An array of Order struct containing order specifications.
@@ -142,42 +113,42 @@ contract MixinForwarderQuote is MixinForwarderCore {
         // Update our return FillResult with the market sell
         addFillResults(totalFillResult, requestedTokensResult);
         // Ensure the token abstraction was fair if fees were proportionally too high, we fail
-        // require(isAcceptableThreshold(sellTokenAmount, requestedTokensResult.takerTokenFilledAmount), ERROR_UNACCEPTABLE_THRESHOLD);
+        require(isAcceptableThreshold(sellTokenAmount, requestedTokensResult.takerTokenFilledAmount), ERROR_UNACCEPTABLE_THRESHOLD);
         return totalFillResult;
     }
+
     function buyFeeTokensQuote(
-        Order[] memory feeOrders,
-        uint256 feeAmount)
+        Order[] memory orders,
+        uint256 zrxAmount)
         public
         view
         returns (Exchange.FillResults memory totalFillResult)
     {
-        address token = readAddress(feeOrders[0].makerAssetData, 1);
+        address token = readAddress(orders[0].makerAssetData, 1);
         require(token == address(ZRX_TOKEN), ERROR_INVALID_INPUT);
-        // Quote the fees
-        Exchange.FillResults memory marketBuyFeeQuote = marketBuyOrdersQuote(feeOrders, feeAmount);
-        // Buy enough ZRX to cover the future market sell as well as this market buy
-        Exchange.FillResults memory marketBuyFillResult = marketBuyOrdersQuote(
-            feeOrders,
-            safeAdd(feeAmount, marketBuyFeeQuote.takerFeePaid));
-        addFillResults(totalFillResult, marketBuyFillResult);
+        for (uint256 i = 0; i < orders.length; i++) {
+            // Token being bought by taker must be the same for each order
+            require(areBytesEqual(orders[i].makerAssetData, orders[0].makerAssetData));
+            // Calculate the remaining amount of makerToken to buy
+            uint256 remainingMakerTokenFillAmount = safeSub(zrxAmount, totalFillResult.makerTokenFilledAmount);
+            // Convert the remaining amount of makerToken to buy into remaining amount
+            // of takerToken to sell, assuming entire amount can be sold in the current order
+            uint256 remainingTakerTokenFillAmount = getPartialAmount(
+                orders[i].takerTokenAmount,
+                safeSub(orders[i].makerTokenAmount, orders[i].takerFee), // our exchange rate after fees 
+                remainingMakerTokenFillAmount);
+            // Attempt to sell the remaining amount of takerToken
+            Exchange.FillResults memory singleFillResult = fillOrderQuote(orders[i], safeAdd(remainingTakerTokenFillAmount, 1));
+            // We didn't buy the full amount when buying ZRX as some were taken for fees
+            singleFillResult.makerTokenFilledAmount = safeSub(singleFillResult.makerTokenFilledAmount, singleFillResult.takerFeePaid);
+            // Update amounts filled and fees paid by maker and taker
+            addFillResults(totalFillResult, singleFillResult);
+            // Stop execution if the entire amount of makerToken has been bought
+            if (totalFillResult.makerTokenFilledAmount == zrxAmount) {
+                break;
+            }
+        }
         return totalFillResult;
     }
-    function isRoundingError(uint256 numerator, uint256 denominator, uint256 target)
-        public
-        pure
-        returns (bool isError)
-    {
-        uint256 remainder = mulmod(target, numerator, denominator);
-        if (remainder == 0) {
-            return false; // No rounding error.
-        }
 
-        uint256 errPercentageTimes1000000 = safeDiv(
-            safeMul(remainder, 1000000),
-            safeMul(numerator, target)
-        );
-        isError = errPercentageTimes1000000 > 1000;
-        return isError;
-    }
 }

@@ -106,32 +106,6 @@ export class ForwarderWrapper {
         const tx = await this._getTxWithDecodedLogsAsync(txHash);
         return tx;
     }
-    public async marketSellOrdersQuoteAsync(
-        orders: SignedOrder[],
-        fillAmountWei: BigNumber,
-    ): Promise<{
-        makerTokenFilledAmount: BigNumber;
-        takerTokenFilledAmount: BigNumber;
-        makerFeePaid: BigNumber;
-        takerFeePaid: BigNumber;
-    }> {
-        const params = formatters.createMarketSellOrders(orders, fillAmountWei);
-        const quote = await this._forwarderContract.marketSellOrdersQuote.callAsync(params.orders, fillAmountWei);
-        return quote;
-    }
-    public async marketBuyOrdersQuoteAsync(
-        orders: SignedOrder[],
-        buyAmountWei: BigNumber,
-    ): Promise<{
-        makerTokenFilledAmount: BigNumber;
-        takerTokenFilledAmount: BigNumber;
-        makerFeePaid: BigNumber;
-        takerFeePaid: BigNumber;
-    }> {
-        const params = formatters.createMarketBuyOrders(orders, buyAmountWei);
-        const quote = await this._forwarderContract.marketBuyOrdersQuote.callAsync(params.orders, buyAmountWei);
-        return quote;
-    }
     public async buyTokensQuoteAsync(
         orders: SignedOrder[],
         feeOrders: SignedOrder[],
@@ -163,6 +137,8 @@ export class ForwarderWrapper {
             },
             new BigNumber(0),
         );
+        const feeParams = formatters.createMarketSellOrders(feeOrders, new BigNumber(0));
+        const params = formatters.createMarketSellOrders(orders, fillAmountWei);
         const totalFees = _.reduce(
             orders,
             (prev: BigNumber, order: SignedOrder) => {
@@ -170,11 +146,9 @@ export class ForwarderWrapper {
             },
             new BigNumber(0),
         );
-        const feeParams = formatters.createMarketSellOrders(feeOrders, new BigNumber(0));
-        const params = formatters.createMarketSellOrders(orders, fillAmountWei);
         if (totalFees.greaterThan(0)) {
             const feeQuote = await this._forwarderContract.buyFeeTokensQuote.callAsync(feeParams.orders, totalFees);
-            fillAmountWei = fillAmountWei.plus(feeQuote.takerTokenFilledAmount.times(1.5));
+            fillAmountWei = fillAmountWei.plus(feeQuote.takerTokenFilledAmount);
         }
         const txOpts = {
             from,

@@ -29,7 +29,7 @@ contract MixinForwarderCore is
     IAssetProxyDispatcher TRANSFER_PROXY;
     EtherToken ETHER_TOKEN;
     ZRXToken ZRX_TOKEN;
-    mapping (address => uint256) public balanceOf;
+    mapping (address => uint256) public balanceOf; // Balance of ZRX tokens
 
     /// @dev Checks whether the amount of tokens sold against the amount of tokens requested
     ///      is within a certain threshold. This ensures the caller gets a fair deal when
@@ -46,6 +46,7 @@ contract MixinForwarderCore is
         uint256 acceptableProportion = safeDiv(safeMul(requestedTokenAmount, ALLOWABLE_EXCHANGE_PERCENTAGE), PERCENTAGE_DENOMINATOR);
         return soldTokenAmount >= acceptableProportion;
     }
+
     function addFillResults(Exchange.FillResults memory totalFillResults, Exchange.FillResults memory singleFillResults)
         internal
         pure
@@ -62,10 +63,29 @@ contract MixinForwarderCore is
     /// @param target Value to calculate partial of.
     /// @return Partial value of target.
     function getPartialAmount(uint256 numerator, uint256 denominator, uint256 target)
-        public pure
+        internal
+        pure
         returns (uint256 partialAmount)
     {
         partialAmount = safeDiv(safeMul(numerator, target), denominator);
         return partialAmount;
+    }
+
+    function isRoundingError(uint256 numerator, uint256 denominator, uint256 target)
+        internal
+        pure
+        returns (bool isError)
+    {
+        uint256 remainder = mulmod(target, numerator, denominator);
+        if (remainder == 0) {
+            return false; // No rounding error.
+        }
+
+        uint256 errPercentageTimes1000000 = safeDiv(
+            safeMul(remainder, 1000000),
+            safeMul(numerator, target)
+        );
+        isError = errPercentageTimes1000000 > 1000;
+        return isError;
     }
 }
