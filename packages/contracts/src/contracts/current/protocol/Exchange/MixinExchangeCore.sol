@@ -19,27 +19,29 @@
 pragma solidity ^0.4.21;
 pragma experimental ABIEncoderV2;
 
+import "../../utils/SafeMath/SafeMath.sol";
+import "./LibFillResults.sol";
+import "./LibOrder.sol";
+import "./LibErrors.sol";
+import "./LibPartialAmount.sol";
 import "./mixins/MExchangeCore.sol";
 import "./mixins/MSettlement.sol";
 import "./mixins/MSignatureValidator.sol";
 import "./mixins/MTransactions.sol";
-import "./LibOrder.sol";
-import "./LibErrors.sol";
-import "./LibPartialAmount.sol";
-import "../../utils/SafeMath/SafeMath.sol";
 
 /// @dev Provides MExchangeCore
 /// @dev Consumes MSettlement
 /// @dev Consumes MSignatureValidator
 contract MixinExchangeCore is
+    SafeMath,
     LibOrder,
+    LibFillResults,
+    LibErrors,
+    LibPartialAmount,
     MExchangeCore,
     MSettlement,
     MSignatureValidator,
-    MTransactions,
-    SafeMath,
-    LibErrors,
-    LibPartialAmount
+    MTransactions
 {
     // Mapping of orderHash => amount of takerAsset already bought by maker
     mapping (bytes32 => uint256) public filled;

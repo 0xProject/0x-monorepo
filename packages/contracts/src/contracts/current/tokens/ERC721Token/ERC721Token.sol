@@ -402,5 +402,5 @@ contract ERC721Token is
         // contracts then.
         assembly { size := extcodesize(addr) }  // solium-disable-line security/no-inline-assembly
         return size > 0;
-  }
+    }
 }

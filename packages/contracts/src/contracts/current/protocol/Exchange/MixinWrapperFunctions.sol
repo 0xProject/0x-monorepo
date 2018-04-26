@@ -19,17 +19,21 @@
 pragma solidity ^0.4.21;
 pragma experimental ABIEncoderV2;
 
-import "./mixins/MExchangeCore.sol";
-import "./LibPartialAmount.sol";
 import "../../utils/SafeMath/SafeMath.sol";
 import "../../utils/LibBytes/LibBytes.sol";
+import "./mixins/MExchangeCore.sol";
+import "./LibPartialAmount.sol";
+import "./LibOrder.sol";
+import "./LibFillResults.sol";
 
 /// @dev Consumes MExchangeCore
 contract MixinWrapperFunctions is
-    MExchangeCore,
     SafeMath,
+    LibOrder,
+    LibFillResults,
+    LibPartialAmount,
     LibBytes,
-    LibPartialAmount
+    MExchangeCore
 {
     /// @dev Fills the input order. Reverts if exact takerAssetFillAmount not filled.
     /// @param order Order struct containing order specifications.
@@ -489,19 +493,4 @@ contract MixinWrapperFunctions is
             cancelOrder(orders[i]);
         }
     }
-
-    /// @dev Adds properties of both FillResults instances.
-    ///      Modifies the first FillResults instance specified.
-    /// @param totalFillResults Fill results instance that will be added onto.
-    /// @param singleFillResults Fill results instance that will be added to totalFillResults.
-    function addFillResults(FillResults memory totalFillResults, FillResults memory singleFillResults)
-        internal
-        pure
-    {
-        totalFillResults.makerAssetFilledAmount = safeAdd(totalFillResults.makerAssetFilledAmount, singleFillResults.makerAssetFilledAmount);
-        totalFillResults.takerAssetFilledAmount = safeAdd(totalFillResults.takerAssetFilledAmount, singleFillResults.takerAssetFilledAmount);
-        totalFillResults.makerFeePaid = safeAdd(totalFillResults.makerFeePaid, singleFillResults.makerFeePaid);
-        totalFillResults.takerFeePaid = safeAdd(totalFillResults.takerFeePaid, singleFillResults.takerFeePaid);
-    }
-
 }

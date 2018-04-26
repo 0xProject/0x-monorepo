@@ -23,9 +23,7 @@ import "./mixins/MSignatureValidator.sol";
 import "./ISigner.sol";
 
 /// @dev Provides MSignatureValidator
-contract MixinSignatureValidator is
-    MSignatureValidator
-{
+contract MixinSignatureValidator is MSignatureValidator {
     enum SignatureType {
         Illegal, // Default value
         Invalid,

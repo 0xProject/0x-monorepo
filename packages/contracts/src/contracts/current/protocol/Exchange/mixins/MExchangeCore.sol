@@ -20,24 +20,18 @@ pragma solidity ^0.4.21;
 pragma experimental ABIEncoderV2;
 
 import "../LibOrder.sol";
+import "../LibFillResults.sol";
 
-contract MExchangeCore is LibOrder {
-
-    struct FillResults {
-        uint256 makerAssetFilledAmount;
-        uint256 takerAssetFilledAmount;
-        uint256 makerFeePaid;
-        uint256 takerFeePaid;
-    }
+contract MExchangeCore {
 
     function fillOrder(
-        Order memory order,
+        LibOrder.Order memory order,
         uint256 takerAssetFillAmount,
         bytes memory signature)
         public
-        returns (FillResults memory fillResults);
+        returns (LibFillResults.FillResults memory fillResults);
 
-    function cancelOrder(Order memory order)
+    function cancelOrder(LibOrder.Order memory order)
         public
         returns (bool);
 
