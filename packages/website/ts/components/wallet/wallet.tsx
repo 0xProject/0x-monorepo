@@ -510,21 +510,16 @@ export class Wallet extends React.Component<WalletProps, WalletState> {
         }
         // for each input token address, search for the corresponding symbol in this.props.tokenByAddress, if it exists
         // create a mapping from existing symbols -> address
-        const tokenAddressBySymbol = _.fromPairs(
-            _.compact(
-                _.map(tokenAddresses, address => {
-                    const tokenIfExists = _.get(this.props.tokenByAddress, address);
-                    if (!_.isUndefined(tokenIfExists)) {
-                        const symbol = tokenIfExists.symbol;
-                        // the crypto compare api doesn't understand 'WETH' so we need to replace it with 'ETH'
-                        const key = symbol === ETHER_TOKEN_SYMBOL ? ETHER_SYMBOL : symbol;
-                        return [key, address];
-                    } else {
-                        return undefined;
-                    }
-                }),
-            ),
-        );
+        const tokenAddressBySymbol: { [symbol: string]: string } = {};
+        _.each(tokenAddresses, address => {
+            const tokenIfExists = _.get(this.props.tokenByAddress, address);
+            if (!_.isUndefined(tokenIfExists)) {
+                const symbol = tokenIfExists.symbol;
+                // the crypto compare api doesn't understand 'WETH' so we need to replace it with 'ETH'
+                const key = symbol === ETHER_TOKEN_SYMBOL ? ETHER_SYMBOL : symbol;
+                tokenAddressBySymbol[key] = address;
+            }
+        });
         const joinedTokenSymbols = _.keys(tokenAddressBySymbol).join(',');
         const queryParams = {
             fsyms: joinedTokenSymbols,
