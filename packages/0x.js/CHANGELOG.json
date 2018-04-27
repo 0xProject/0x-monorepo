@@ -1,10 +1,14 @@
 [
     {
-        "version": "0.36.4",
+        "version": "0.37.0",
         "changes": [
             {
                 "note": "Fixed expiration watcher comparator to handle orders with equal expiration times",
                 "pr": 526
+            },
+            {
+                "note": "Update Web3 Provider Engine to 14.0.4",
+                "pr": 555
             }
         ]
     },
