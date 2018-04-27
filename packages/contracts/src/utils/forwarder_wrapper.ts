@@ -11,7 +11,7 @@ import { orderUtils } from '../../src/utils/order_utils';
 import { ForwarderContract } from '../contract_wrappers/generated/forwarder';
 // import { artifacts } from '../ts/artifacts';
 
-import { Artifact, DefaultOrderParams, SignatureType, SignedOrder, UnsignedOrder } from './types';
+import { Artifact, SignatureType, SignedOrder, UnsignedOrder } from './types';
 
 export class ForwarderWrapper {
     private _web3Wrapper: Web3Wrapper;
@@ -111,8 +111,8 @@ export class ForwarderWrapper {
         feeOrders: SignedOrder[],
         buyAmountWei: BigNumber,
     ): Promise<{
-        makerTokenFilledAmount: BigNumber;
-        takerTokenFilledAmount: BigNumber;
+        makerAssetFilledAmount: BigNumber;
+        takerAssetFilledAmount: BigNumber;
         makerFeePaid: BigNumber;
         takerFeePaid: BigNumber;
     }> {
@@ -133,7 +133,7 @@ export class ForwarderWrapper {
         let fillAmountWei = _.reduce(
             orders,
             (prev: BigNumber, order: SignedOrder) => {
-                return prev.plus(order.takerTokenAmount);
+                return prev.plus(order.takerAssetAmount);
             },
             new BigNumber(0),
         );
@@ -148,7 +148,7 @@ export class ForwarderWrapper {
         );
         if (totalFees.greaterThan(0)) {
             const feeQuote = await this._forwarderContract.buyFeeTokensQuote.callAsync(feeParams.orders, totalFees);
-            fillAmountWei = fillAmountWei.plus(feeQuote.takerTokenFilledAmount);
+            fillAmountWei = fillAmountWei.plus(feeQuote.takerAssetFilledAmount);
         }
         const txOpts = {
             from,

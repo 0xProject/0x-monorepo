@@ -102,6 +102,7 @@ export enum ContractName {
     TestWallet = 'TestWallet',
     Authorizable = 'Authorizable',
     Whitelist = 'Whitelist',
+    Forwarder = 'Forwarder',
 }
 
 export interface SignedTransaction {

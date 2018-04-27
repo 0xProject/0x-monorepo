@@ -2,24 +2,27 @@ pragma solidity ^0.4.22;
 pragma experimental ABIEncoderV2;
 
 import "./MixinERC721.sol";
+import "./MixinERC20.sol";
 import "./MixinForwarderCore.sol";
 import "./MixinForwarderQuote.sol";
+import "../utils/Ownable/Ownable.sol";
 
 contract Forwarder is
     MixinForwarderCore,
     MixinForwarderQuote,
-    MixinERC721
+    MixinERC721,
+    MixinERC20,
+    Ownable
 {
     function Forwarder(
         Exchange _exchange,
-        IAssetProxyDispatcher _tokenProxy,
         EtherToken _etherToken,
         ZRXToken _zrxToken,
         uint8 assetProxyId)
         public
+        Ownable()
     {
         EXCHANGE = _exchange;
-        TRANSFER_PROXY = _tokenProxy;
         ETHER_TOKEN = _etherToken;
         ZRX_TOKEN = _zrxToken;
         setERC20ProxyApproval(assetProxyId);
@@ -48,7 +51,7 @@ contract Forwarder is
         require(token == address(ETHER_TOKEN), ERROR_INVALID_INPUT);
 
         ETHER_TOKEN.deposit.value(msg.value)();
-        Exchange.FillResults memory fillTokensFillResult = marketBuyTokens(orders, signatures, feeOrders, feeSignatures, msg.value);
+        Exchange.FillResults memory fillTokensFillResult = marketSellTokens(orders, signatures, feeOrders, feeSignatures, msg.value);
         addFillResults(totalFillResult, fillTokensFillResult);
         return totalFillResult;
     }
@@ -56,7 +59,7 @@ contract Forwarder is
     /// @dev Buys the tokens, performing fee abstraction if required. This function is payable
     ///      and will convert all incoming ETH into WETH and perform the trade on behalf of the caller.
     ///      This function allows for a deduction of a proportion of incoming ETH sent to the feeRecipient.
-    ///      The caller is sent all tokens from the marketBuy of orders (less any fees required to be paid in ZRX)
+    ///      The caller is sent all tokens from the marketSell of orders (less any fees required to be paid in ZRX)
     ///      If the purchased token amount does not meet some threshold (98%) then this function reverts.
     /// @param orders An array of Order struct containing order specifications.
     /// @param signatures An array of Proof that order has been created by maker.
@@ -83,7 +86,7 @@ contract Forwarder is
 
         uint256 remainingTakerTokenAmount = deductFees(msg.value, feeProportion, feeRecipient);
         ETHER_TOKEN.deposit.value(remainingTakerTokenAmount)();
-        Exchange.FillResults memory fillTokensFillResult = marketBuyTokens(orders, signatures, feeOrders, feeSignatures, remainingTakerTokenAmount);
+        Exchange.FillResults memory fillTokensFillResult = marketSellTokens(orders, signatures, feeOrders, feeSignatures, remainingTakerTokenAmount);
         addFillResults(totalFillResult, fillTokensFillResult);
         return totalFillResult;
     }
@@ -177,20 +180,19 @@ contract Forwarder is
         if (totalFeeAmount > 0) {
             // Fees are required for these orders. Buy enough ZRX to cover the future fill
             Exchange.FillResults memory feeTokensResult = buyFeeTokens(feeOrders, feeSignatures, totalFeeAmount);
-            totalTakerAmountSpent = safeAdd(totalTakerAmountSpent, feeTokensResult.takerTokenFilledAmount);
+            totalTakerAmountSpent = safeAdd(totalTakerAmountSpent, feeTokensResult.takerAssetFilledAmount);
         }
         address makerTokenAddress;
         uint256 tokenId;
         for (uint256 n = 0; n < orders.length; n++) {
             Exchange.FillResults memory fillOrderResults = EXCHANGE.fillOrder(
                 orders[n],
-                orders[n].takerTokenAmount,
+                orders[n].takerAssetAmount,
                 signatures[n]
             );
-            // Fail it it wasn't filled otherwise we will keep WETH
-            // There is no acceptable threshold here as it is either buy it or nothing
-            require(fillOrderResults.takerTokenFilledAmount == orders[n].takerTokenAmount, ERROR_FAILED_TO_FILL_ALL_ORDERS);
-            totalTakerAmountSpent = safeAdd(totalTakerAmountSpent, fillOrderResults.takerTokenFilledAmount);
+            // Fail if it wasn't fully filled otherwise we will keep WETH
+            require(fillOrderResults.takerAssetFilledAmount == orders[n].takerAssetAmount, ERROR_FAILED_TO_FILL_ALL_ORDERS);
+            totalTakerAmountSpent = safeAdd(totalTakerAmountSpent, fillOrderResults.takerAssetFilledAmount);
             makerTokenAddress = readAddress(orders[n].makerAssetData, 1);
             tokenId = readUint256(orders[n].makerAssetData, 21);
             transferNFTToken(makerTokenAddress, msg.sender, tokenId);
@@ -199,7 +201,7 @@ contract Forwarder is
         require(isAcceptableThreshold(msg.value, totalTakerAmountSpent), ERROR_UNACCEPTABLE_THRESHOLD);
     }
 
-    function marketBuyTokens(
+    function marketSellTokens(
         Order[] memory orders,
         bytes[] memory signatures,
         Order[] memory feeOrders,
@@ -217,12 +219,12 @@ contract Forwarder is
             // Fees are required for these orders
             // Buy enough ZRX to cover the future market sell
             Exchange.FillResults memory feeTokensResult = buyFeeTokens(feeOrders, feeSignatures, tokensSellQuote.takerFeePaid);
-            takerTokenBalance = safeSub(takerTokenBalance, feeTokensResult.takerTokenFilledAmount);
+            takerTokenBalance = safeSub(takerTokenBalance, feeTokensResult.takerAssetFilledAmount);
             // Make our market sell to buy the requested tokens with the remaining balance
             requestedTokensResult = EXCHANGE.marketSellOrders(orders, takerTokenBalance, signatures);
             // It's possibile to over-buy fees by a small amount as the marketSellQuote was based on 100% of ETH
             // and marketSell (after fee abstraction) less than 100%. If a user uses this enough it may be worth withdrawing
-            balanceOf[msg.sender] += safeSub(feeTokensResult.makerTokenFilledAmount, requestedTokensResult.takerFeePaid);
+            balanceOf[msg.sender] += safeSub(feeTokensResult.makerAssetFilledAmount, requestedTokensResult.takerFeePaid);
             require(balanceOf[msg.sender] >= 0);
             // Update our return FillResult with the additional fees
             totalFillResult.takerFeePaid = feeTokensResult.takerFeePaid;
@@ -233,9 +235,9 @@ contract Forwarder is
         // Update our return FillResult with the market sell
         addFillResults(totalFillResult, requestedTokensResult);
         // Ensure the token abstraction was fair if fees were proportionally too high, we fail
-        require(isAcceptableThreshold(sellTokenAmount, requestedTokensResult.takerTokenFilledAmount), ERROR_UNACCEPTABLE_THRESHOLD);
+        require(isAcceptableThreshold(sellTokenAmount, requestedTokensResult.takerAssetFilledAmount), ERROR_UNACCEPTABLE_THRESHOLD);
         // Transfer all tokens to msg.sender
-        transferToken(makerTokenAddress, msg.sender, requestedTokensResult.makerTokenFilledAmount);
+        transferToken(makerTokenAddress, msg.sender, requestedTokensResult.makerAssetFilledAmount);
         return totalFillResult;
     }
 
@@ -268,13 +270,13 @@ contract Forwarder is
             require(areBytesEqual(orders[i].makerAssetData, orders[0].makerAssetData));
 
             // Calculate the remaining amount of makerToken to buy
-            uint256 remainingMakerTokenFillAmount = safeSub(feeAmount, totalFillResult.makerTokenFilledAmount);
+            uint256 remainingMakerTokenFillAmount = safeSub(feeAmount, totalFillResult.makerAssetFilledAmount);
 
             // Convert the remaining amount of makerToken to buy into remaining amount
             // of takerToken to sell, assuming entire amount can be sold in the current order
             uint256 remainingTakerTokenFillAmount = getPartialAmount(
-                orders[i].takerTokenAmount,
-                safeSub(orders[i].makerTokenAmount, orders[i].takerFee), // our exchange rate after fees 
+                orders[i].takerAssetAmount,
+                safeSub(orders[i].makerAssetAmount, orders[i].takerFee), // our exchange rate after fees 
                 remainingMakerTokenFillAmount);
 
             // Attempt to sell the remaining amount of takerToken
@@ -286,12 +288,12 @@ contract Forwarder is
             );
 
             // We didn't buy the full amount when buying ZRX as some were taken for fees
-            singleFillResult.makerTokenFilledAmount = safeSub(singleFillResult.makerTokenFilledAmount, singleFillResult.takerFeePaid);
+            singleFillResult.makerAssetFilledAmount = safeSub(singleFillResult.makerAssetFilledAmount, singleFillResult.takerFeePaid);
             // Update amounts filled and fees paid by maker and taker
             addFillResults(totalFillResult, singleFillResult);
 
             // Stop execution if the entire amount of makerToken has been bought
-            if (totalFillResult.makerTokenFilledAmount == feeAmount) {
+            if (totalFillResult.makerAssetFilledAmount == feeAmount) {
                 break;
             }
         }
@@ -300,19 +302,14 @@ contract Forwarder is
 
     /// @dev Sets the allowances on the proxy for this contract
     function setERC20ProxyApproval(uint8 assetProxyId)
-        internal
+        public
+        onlyOwner
     {
-        address proxyAddress = TRANSFER_PROXY.getAssetProxy(assetProxyId);
-        ETHER_TOKEN.approve(proxyAddress, MAX_UINT);
-        ZRX_TOKEN.approve(proxyAddress, MAX_UINT);
+        address proxyAddress = EXCHANGE.getAssetProxy(assetProxyId);
+        if (proxyAddress != address(0)) {
+            ETHER_TOKEN.approve(proxyAddress, MAX_UINT);
+            ZRX_TOKEN.approve(proxyAddress, MAX_UINT);
+        }
     }
 
-    function transferToken(
-        address token,
-        address account,
-        uint amount)
-        internal
-    {
-        require(IToken(token).transfer(account, amount), ERROR_TRANSFER_FAILED);
-    }
 }
