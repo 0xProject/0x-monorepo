@@ -21,19 +21,21 @@ pragma experimental ABIEncoderV2;
 
 import "./mixins/MSettlement.sol";
 import "./mixins/MAssetProxyDispatcher.sol";
-import "./LibPartialAmount.sol";
+import "./LibOrder.sol";
+import "./LibMath.sol";
 import "../AssetProxy/IAssetProxy.sol";
 
 /// @dev Provides MixinSettlement
 contract MixinSettlement is
+    LibMath,
     MSettlement,
-    MAssetProxyDispatcher,
-    LibPartialAmount
+    MAssetProxyDispatcher
 {
-    bytes ZRX_PROXY_DATA;
+    bytes internal ZRX_PROXY_DATA;
 
     function zrxProxyData()
-        external view
+        external
+        view
         returns (bytes memory)
     {
         return ZRX_PROXY_DATA;
@@ -46,7 +48,7 @@ contract MixinSettlement is
     }
 
     function settleOrder(
-        Order memory order,
+        LibOrder.Order memory order,
         address takerAddress,
         uint256 takerAssetFilledAmount)
         internal

@@ -30,6 +30,7 @@ contract MSignatureValidator {
         bytes32 hash,
         address signer,
         bytes memory signature)
-        public view
+        internal
+        view
         returns (bool isValid);
 }

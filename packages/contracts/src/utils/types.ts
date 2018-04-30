@@ -94,6 +94,8 @@ export enum ContractName {
     EtherDelta = 'EtherDelta',
     Arbitrage = 'Arbitrage',
     TestAssetProxyDispatcher = 'TestAssetProxyDispatcher',
+    TestLibs = 'TestLibs',
+    TestSignatureValidator = 'TestSignatureValidator',
     ERC20Proxy = 'ERC20Proxy',
     ERC721Proxy = 'ERC721Proxy',
     DummyERC721Token = 'DummyERC721Token',

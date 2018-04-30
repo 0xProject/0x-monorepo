@@ -27,17 +27,16 @@ import "./MixinAssetProxyDispatcher.sol";
 import "./MixinTransactions.sol";
 
 contract Exchange is
-    MixinExchangeCore,
-    MixinSignatureValidator,
-    MixinSettlement,
     MixinWrapperFunctions,
-    MixinAssetProxyDispatcher,
-    MixinTransactions
+    MixinExchangeCore,
+    MixinSettlement,
+    MixinSignatureValidator,
+    MixinTransactions,
+    MixinAssetProxyDispatcher
 {
     string constant public VERSION = "2.0.1-alpha";
 
-    function Exchange(
-        bytes memory _zrxProxyData)
+    function Exchange(bytes memory _zrxProxyData)
         public
         MixinExchangeCore()
         MixinSignatureValidator()

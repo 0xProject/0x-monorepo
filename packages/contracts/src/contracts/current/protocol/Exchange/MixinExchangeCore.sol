@@ -19,27 +19,27 @@
 pragma solidity ^0.4.21;
 pragma experimental ABIEncoderV2;
 
+import "./LibFillResults.sol";
+import "./LibOrder.sol";
+import "./LibErrors.sol";
+import "./LibMath.sol";
 import "./mixins/MExchangeCore.sol";
 import "./mixins/MSettlement.sol";
 import "./mixins/MSignatureValidator.sol";
 import "./mixins/MTransactions.sol";
-import "./LibOrder.sol";
-import "./LibErrors.sol";
-import "./LibPartialAmount.sol";
-import "../../utils/SafeMath/SafeMath.sol";
 
 /// @dev Provides MExchangeCore
 /// @dev Consumes MSettlement
 /// @dev Consumes MSignatureValidator
 contract MixinExchangeCore is
     LibOrder,
+    LibFillResults,
+    LibErrors,
+    LibMath,
     MExchangeCore,
     MSettlement,
     MSignatureValidator,
-    MTransactions,
-    SafeMath,
-    LibErrors,
-    LibPartialAmount
+    MTransactions
 {
     // Mapping of orderHash => amount of takerAsset already bought by maker
     mapping (bytes32 => uint256) public filled;
@@ -215,28 +215,6 @@ contract MixinExchangeCore is
         require(newMakerEpoch > makerEpoch[msg.sender]); // epoch must be monotonically increasing
         makerEpoch[msg.sender] = newMakerEpoch;
         emit CancelUpTo(msg.sender, newMakerEpoch);
-    }
-
-    /// @dev Checks if rounding error > 0.1%.
-    /// @param numerator Numerator.
-    /// @param denominator Denominator.
-    /// @param target Value to multiply with numerator/denominator.
-    /// @return Rounding error is present.
-    function isRoundingError(uint256 numerator, uint256 denominator, uint256 target)
-        public pure
-        returns (bool isError)
-    {
-        uint256 remainder = mulmod(target, numerator, denominator);
-        if (remainder == 0) {
-            return false; // No rounding error.
-        }
-
-        uint256 errPercentageTimes1000000 = safeDiv(
-            safeMul(remainder, 1000000),
-            safeMul(numerator, target)
-        );
-        isError = errPercentageTimes1000000 > 1000;
-        return isError;
     }
 
     /// @dev Logs a Fill event with the given arguments.

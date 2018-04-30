@@ -21,10 +21,10 @@ pragma experimental ABIEncoderV2;
 
 import "../LibOrder.sol";
 
-contract MSettlement is LibOrder {
+contract MSettlement {
 
     function settleOrder(
-        Order memory order,
+        LibOrder.Order memory order,
         address takerAddress,
         uint256 takerAssetFilledAmount)
         internal

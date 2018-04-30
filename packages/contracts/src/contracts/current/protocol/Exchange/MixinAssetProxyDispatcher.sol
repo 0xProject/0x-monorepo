@@ -18,9 +18,9 @@
 
 pragma solidity ^0.4.21;
 
-import "./mixins/MAssetProxyDispatcher.sol";
-import "../AssetProxy/IAssetProxy.sol";
 import "../../utils/Ownable/Ownable.sol";
+import "../AssetProxy/IAssetProxy.sol";
+import "./mixins/MAssetProxyDispatcher.sol";
 
 contract MixinAssetProxyDispatcher is
     Ownable,
@@ -78,7 +78,8 @@ contract MixinAssetProxyDispatcher is
     /// @param assetProxyId Id of the asset proxy.
     /// @return The asset proxy registered to assetProxyId. Returns 0x0 if no proxy is registered.
     function getAssetProxy(uint8 assetProxyId)
-        external view
+        external
+        view
         returns (address)
     {
         IAssetProxy assetProxy = assetProxies[assetProxyId];

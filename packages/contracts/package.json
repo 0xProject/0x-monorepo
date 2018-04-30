@@ -30,9 +30,9 @@
     },
     "config": {
         "abis":
-            "../migrations/src/artifacts/@(DummyERC20Token|Exchange|TokenRegistry|MultiSigWallet|MultiSigWalletWithTimeLock|MultiSigWalletWithTimeLockExceptRemoveAuthorizedAddress|TokenRegistry|ZRXToken|TestAssetProxyDispatcher|ERC20Proxy|ERC721Proxy|DummyERC721Token|LibBytes|Authorizable).json",
+            "../migrations/src/artifacts/@(DummyERC20Token|Exchange|TokenRegistry|MultiSigWallet|MultiSigWalletWithTimeLock|MultiSigWalletWithTimeLockExceptRemoveAuthorizedAddress|TokenRegistry|ZRXToken|TestAssetProxyDispatcher|TestLibs|TestSignatureValidator|ERC20Proxy|ERC721Proxy|DummyERC721Token|LibBytes|Authorizable).json",
         "contracts":
-            "Exchange,DummyERC20Token,ZRXToken,WETH9,MultiSigWallet,MultiSigWalletWithTimeLock,MultiSigWalletWithTimeLockExceptRemoveAuthorizedAddress,TokenRegistry,TestAssetProxyDispatcher,ERC20Proxy,ERC721Proxy,DummyERC721Token,LibBytes,Authorizable"
+            "Exchange,DummyERC20Token,ZRXToken,WETH9,MultiSigWallet,MultiSigWalletWithTimeLock,MultiSigWalletWithTimeLockExceptRemoveAuthorizedAddress,TokenRegistry,TestAssetProxyDispatcher,TestLibs,TestSignatureValidator,ERC20Proxy,ERC721Proxy,DummyERC721Token,LibBytes,Authorizable"
     },
     "repository": {
         "type": "git",
@@ -76,7 +76,6 @@
         "ethereumjs-util": "^5.1.1",
         "ethers-contracts": "^2.2.1",
         "lodash": "^4.17.4",
-        "web3": "^0.20.0",
-        "zeppelin-solidity": "^1.8.0"
+        "web3": "^0.20.0"
     }
 }

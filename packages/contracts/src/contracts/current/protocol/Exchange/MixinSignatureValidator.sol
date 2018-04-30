@@ -23,9 +23,8 @@ import "./mixins/MSignatureValidator.sol";
 import "./ISigner.sol";
 
 /// @dev Provides MSignatureValidator
-contract MixinSignatureValidator is
-    MSignatureValidator
-{
+contract MixinSignatureValidator is MSignatureValidator {
+
     enum SignatureType {
         Illegal, // Default value
         Invalid,
@@ -49,7 +48,8 @@ contract MixinSignatureValidator is
         bytes32 hash,
         address signer,
         bytes memory signature)
-        public view
+        internal
+        view
         returns (bool isValid)
     {
         // TODO: Domain separation: make hash depend on role. (Taker sig should not be valid as maker sig, etc.)
@@ -166,8 +166,8 @@ contract MixinSignatureValidator is
     function preSign(
         bytes32 hash,
         address signer,
-        bytes memory signature)
-        public
+        bytes signature)
+        external
     {
         require(isValidSignature(hash, signer, signature));
         preSigned[hash][signer] = true;

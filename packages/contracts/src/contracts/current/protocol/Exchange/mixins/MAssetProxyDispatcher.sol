@@ -55,6 +55,7 @@ contract MAssetProxyDispatcher {
     /// @param assetProxyId Id of the asset proxy.
     /// @return The asset proxy registered to assetProxyId. Returns 0x0 if no proxy is registered.
     function getAssetProxy(uint8 assetProxyId)
-        external view
+        external
+        view
         returns (address);
 }

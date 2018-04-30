@@ -21,7 +21,7 @@ pragma solidity ^0.4.21;
 import "../IAssetProxy.sol";
 import "../../../utils/LibBytes/LibBytes.sol";
 import "../../../utils/Authorizable/Authorizable.sol";
-import "zeppelin-solidity/contracts/token/ERC721/ERC721Token.sol";
+import "../../../tokens/ERC721Token/ERC721Token.sol";
 
 contract ERC721Proxy is
     LibBytes,

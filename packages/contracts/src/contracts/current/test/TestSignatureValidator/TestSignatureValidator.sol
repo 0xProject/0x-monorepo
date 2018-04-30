@@ -19,20 +19,23 @@
 pragma solidity ^0.4.21;
 pragma experimental ABIEncoderV2;
 
-import "../../utils/SafeMath/SafeMath.sol";
+import "../../protocol/Exchange/MixinSignatureValidator.sol";
 
-contract LibPartialAmount is SafeMath {
+contract TestSignatureValidator is MixinSignatureValidator {
 
-    /// @dev Calculates partial value given a numerator and denominator.
-    /// @param numerator Numerator.
-    /// @param denominator Denominator.
-    /// @param target Value to calculate partial of.
-    /// @return Partial value of target.
-    function getPartialAmount(uint256 numerator, uint256 denominator, uint256 target)
-        public pure
-        returns (uint256 partialAmount)
+    function publicIsValidSignature(
+        bytes32 hash,
+        address signer,
+        bytes memory signature)
+        public
+        view
+        returns (bool isValid)
     {
-        partialAmount = safeDiv(safeMul(numerator, target), denominator);
-        return partialAmount;
+        isValid = isValidSignature(
+            hash,
+            signer,
+            signature
+        );
+        return isValid;
     }
 }
