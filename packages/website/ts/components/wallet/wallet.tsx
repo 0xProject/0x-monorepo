@@ -498,17 +498,13 @@ export class Wallet extends React.Component<WalletProps, WalletState> {
             const tokenIfExists = _.get(this.props.tokenByAddress, address);
             if (!_.isUndefined(tokenIfExists)) {
                 const symbol = tokenIfExists.symbol;
-                // the crypto compare api doesn't understand 'WETH' so we need to replace it with 'ETH'
-                const key = symbol === ETHER_TOKEN_SYMBOL ? ETHER_SYMBOL : symbol;
-                tokenAddressBySymbol[key] = address;
+                tokenAddressBySymbol[symbol] = address;
             }
         });
         const tokenSymbols = _.keys(tokenAddressBySymbol);
         try {
             const priceBySymbol = await backendClient.getPriceInfoAsync(tokenSymbols);
-            const priceByAddress = _.mapKeys(priceBySymbol, (value, symbol) =>
-                _.get(tokenAddressBySymbol, symbol),
-            );
+            const priceByAddress = _.mapKeys(priceBySymbol, (value, symbol) => _.get(tokenAddressBySymbol, symbol));
             const result = _.mapValues(priceByAddress, price => {
                 const priceBigNumber = new BigNumber(price);
                 return priceBigNumber;
