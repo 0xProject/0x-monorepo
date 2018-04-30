@@ -161,6 +161,7 @@ export type SyncMethod = (...args: any[]) => any;
  * of an orders expiration. Default=0.
  * cleanupJobIntervalMs: How often to run a cleanup job which revalidates all the orders. Default=1hr.
  * stateLayer: Optional blockchain state layer OrderWatcher will monitor for new events. Default=latest.
+ * validateOnAddOrder: Optional validate the order when the order is added. Default=false.
  */
 export interface OrderStateWatcherConfig {
     orderExpirationCheckingIntervalMs?: number;
@@ -168,6 +169,7 @@ export interface OrderStateWatcherConfig {
     expirationMarginMs?: number;
     cleanupJobIntervalMs?: number;
     stateLayer: BlockParamLiteral;
+    validateOnAddOrder?: boolean;
 }
 
 /**
