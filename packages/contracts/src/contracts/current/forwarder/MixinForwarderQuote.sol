@@ -128,7 +128,7 @@ contract MixinForwarderQuote is MixinForwarderCore {
 
             singleFillResult.makerAssetFilledAmount = safeSub(singleFillResult.makerAssetFilledAmount, singleFillResult.takerFeePaid);
             addFillResults(totalFillResult, singleFillResult);
-            if (totalFillResult.makerAssetFilledAmount == zrxAmount) {
+            if (totalFillResult.makerAssetFilledAmount >= zrxAmount) {
                 break;
             }
         }

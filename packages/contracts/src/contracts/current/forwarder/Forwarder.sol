@@ -293,7 +293,7 @@ contract Forwarder is
             addFillResults(totalFillResult, singleFillResult);
 
             // Stop execution if the entire amount of makerToken has been bought
-            if (totalFillResult.makerAssetFilledAmount == feeAmount) {
+            if (totalFillResult.makerAssetFilledAmount >= feeAmount) {
                 break;
             }
         }
