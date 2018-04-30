@@ -14,13 +14,13 @@ export const backendClient = {
         const result = await fetchUtils.requestAsync(configs.BACKEND_BASE_URL, ETH_GAS_STATION_ENDPOINT);
         return result;
     },
-    async getPriceInfosAsync(tokenAddresses: string[]): Promise<WebsiteBackendPriceInfo[]> {
-        if (_.isEmpty(tokenAddresses)) {
-            return [];
+    async getPriceInfoAsync(tokenSymbols: string[]): Promise<WebsiteBackendPriceInfo> {
+        if (_.isEmpty(tokenSymbols)) {
+            return {};
         }
-        const joinedTokenAddresses = tokenAddresses.join(',');
+        const joinedTokenSymbols = tokenSymbols.join(',');
         const queryParams = {
-            tokens: joinedTokenAddresses,
+            tokens: joinedTokenSymbols,
         };
         const result = await fetchUtils.requestAsync(configs.BACKEND_BASE_URL, PRICES_ENDPOINT, queryParams);
         return result;
