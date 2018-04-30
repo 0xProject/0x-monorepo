@@ -40,8 +40,7 @@ contract MAssetProxyDispatcher {
         internal;
 
     /// @dev Registers an asset proxy to an asset proxy id.
-    ///      An id can only be assigned to a single proxy at a given time,
-    ///      however, an asset proxy may be registered to multiple ids.
+    ///      An id can only be assigned to a single proxy at a given time.
     /// @param assetProxyId Id to register`newAssetProxy` under.
     /// @param newAssetProxy Address of new asset proxy to register, or 0x0 to unset assetProxyId.
     /// @param oldAssetProxy Existing asset proxy to overwrite, or 0x0 if assetProxyId is currently unused.
