@@ -33,4 +33,11 @@ contract IAssetProxy is IAuthorizable {
         address to,
         uint256 amount)
         external;
+    
+    /// @dev Gets the proxy id associated with the proxy address.
+    /// @return Proxy id.
+    function getProxyId()
+        external
+        view
+        returns (uint8);
 }

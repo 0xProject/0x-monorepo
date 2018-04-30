@@ -29,6 +29,8 @@ contract ERC20Proxy is
     IAssetProxy
 {
 
+    uint8 constant PROXY_ID = 1;
+
     /// @dev Transfers ERC20 tokens. Either succeeds or throws.
     /// @param assetMetadata ERC20-encoded byte array.
     /// @param from Address to transfer token from.
@@ -42,9 +44,25 @@ contract ERC20Proxy is
         external
         onlyAuthorized
     {
+        // Data must be intended for this proxy.
+        require(uint8(assetMetadata[0]) == PROXY_ID);
+
+        // Decode metadata.
         require(assetMetadata.length == 21);
         address token = readAddress(assetMetadata, 1);
+
+        // Transfer tokens.
         bool success = IERC20Token(token).transferFrom(from, to, amount);
         require(success == true);
+    }
+
+    /// @dev Gets the proxy id associated with the proxy address.
+    /// @return Proxy id.
+    function getProxyId()
+        external
+        view
+        returns (uint8)
+    {
+        return PROXY_ID;
     }
 }

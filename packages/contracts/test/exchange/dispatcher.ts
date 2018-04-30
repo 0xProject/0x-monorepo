@@ -194,6 +194,18 @@ describe('AssetProxyDispatcher', () => {
                 ),
             ).to.be.rejectedWith(constants.REVERT);
         });
+
+        it('should throw if attempting to register a proxy to the incorrect id', async () => {
+            const prevProxyAddress = ZeroEx.NULL_ADDRESS;
+            return expect(
+                assetProxyDispatcher.registerAssetProxy.sendTransactionAsync(
+                    AssetProxyId.ERC721,
+                    erc20Proxy.address,
+                    prevProxyAddress,
+                    { from: owner },
+                ),
+            ).to.be.rejectedWith(constants.REVERT);
+        });
     });
 
     describe('getAssetProxy', () => {
