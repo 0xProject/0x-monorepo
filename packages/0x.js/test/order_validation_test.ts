@@ -68,6 +68,40 @@ describe('OrderValidation', () => {
             );
             await zeroEx.exchange.validateOrderFillableOrThrowAsync(signedOrder);
         });
+        it('should succeed if the maker is buying ZRX and has no ZRX balance', async () => {
+            const makerFee = new BigNumber(2);
+            const takerFee = new BigNumber(2);
+            const signedOrder = await fillScenarios.createFillableSignedOrderWithFeesAsync(
+                makerTokenAddress,
+                zrxTokenAddress,
+                makerFee,
+                takerFee,
+                makerAddress,
+                takerAddress,
+                fillableAmount,
+                feeRecipient,
+            );
+            const zrxMakerBalance = await zeroEx.token.getBalanceAsync(zrxTokenAddress, makerAddress);
+            await zeroEx.token.transferAsync(zrxTokenAddress, makerAddress, takerAddress, zrxMakerBalance);
+            await zeroEx.exchange.validateOrderFillableOrThrowAsync(signedOrder);
+        });
+        it('should succeed if the maker is buying ZRX and has no ZRX balance and there is no specified taker', async () => {
+            const makerFee = new BigNumber(2);
+            const takerFee = new BigNumber(2);
+            const signedOrder = await fillScenarios.createFillableSignedOrderWithFeesAsync(
+                makerTokenAddress,
+                zrxTokenAddress,
+                makerFee,
+                takerFee,
+                makerAddress,
+                constants.NULL_ADDRESS,
+                fillableAmount,
+                feeRecipient,
+            );
+            const zrxMakerBalance = await zeroEx.token.getBalanceAsync(zrxTokenAddress, makerAddress);
+            await zeroEx.token.transferAsync(zrxTokenAddress, makerAddress, takerAddress, zrxMakerBalance);
+            await zeroEx.exchange.validateOrderFillableOrThrowAsync(signedOrder);
+        });
         it('should succeed if the order is asymmetric and fillable', async () => {
             const makerFillableAmount = fillableAmount;
             const takerFillableAmount = fillableAmount.minus(4);
@@ -469,4 +503,4 @@ describe('OrderValidation', () => {
             expect(partialTakerFee).to.be.bignumber.equal(takerPartialFee);
         });
     });
-});
+}); // tslint:disable-line:max-file-line-count

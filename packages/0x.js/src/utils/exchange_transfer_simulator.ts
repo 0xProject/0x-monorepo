@@ -5,6 +5,7 @@ import * as _ from 'lodash';
 import { TokenWrapper } from '../contract_wrappers/token_wrapper';
 import { BalanceAndProxyAllowanceLazyStore } from '../stores/balance_proxy_allowance_lazy_store';
 import { ExchangeContractErrs, TradeSide, TransferType } from '../types';
+import { constants } from '../utils/constants';
 
 enum FailureReason {
     Balance = 'balance',
@@ -66,6 +67,11 @@ export class ExchangeTransferSimulator {
         tradeSide: TradeSide,
         transferType: TransferType,
     ): Promise<void> {
+        // If we are simulating an open order then 0x0 will have no balance or allowance
+        if (from === constants.NULL_ADDRESS && tradeSide === TradeSide.Taker) {
+            await this._increaseBalanceAsync(tokenAddress, to, amountInBaseUnits);
+            return;
+        }
         const balance = await this._store.getBalanceAsync(tokenAddress, from);
         const proxyAllowance = await this._store.getProxyAllowanceAsync(tokenAddress, from);
         if (proxyAllowance.lessThan(amountInBaseUnits)) {
