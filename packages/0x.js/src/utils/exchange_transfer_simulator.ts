@@ -5,6 +5,7 @@ import * as _ from 'lodash';
 import { TokenWrapper } from '../contract_wrappers/token_wrapper';
 import { BalanceAndProxyAllowanceLazyStore } from '../stores/balance_proxy_allowance_lazy_store';
 import { ExchangeContractErrs, TradeSide, TransferType } from '../types';
+import { constants } from '../utils/constants';
 
 enum FailureReason {
     Balance = 'balance',
@@ -66,6 +67,13 @@ export class ExchangeTransferSimulator {
         tradeSide: TradeSide,
         transferType: TransferType,
     ): Promise<void> {
+        // HACK: When simulating an open order (e.g taker is NULL_ADDRESS), we don't want to adjust balances/
+        // allowances for the taker. We do however, want to increase the balance of the maker since the maker
+        // might be relying on those funds to fill subsequent orders or pay the order's fees.
+        if (from === constants.NULL_ADDRESS && tradeSide === TradeSide.Taker) {
+            await this._increaseBalanceAsync(tokenAddress, to, amountInBaseUnits);
+            return;
+        }
         const balance = await this._store.getBalanceAsync(tokenAddress, from);
         const proxyAllowance = await this._store.getProxyAllowanceAsync(tokenAddress, from);
         if (proxyAllowance.lessThan(amountInBaseUnits)) {

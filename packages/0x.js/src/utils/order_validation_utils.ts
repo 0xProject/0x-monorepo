@@ -124,31 +124,12 @@ export class OrderValidationUtils {
         if (!_.isUndefined(expectedFillTakerTokenAmount)) {
             fillTakerTokenAmount = expectedFillTakerTokenAmount;
         }
-        const fillMakerTokenAmount = OrderValidationUtils._getPartialAmount(
+        await OrderValidationUtils.validateFillOrderBalancesAllowancesThrowIfInvalidAsync(
+            exchangeTradeEmulator,
+            signedOrder,
             fillTakerTokenAmount,
-            signedOrder.takerTokenAmount,
-            signedOrder.makerTokenAmount,
-        );
-        await exchangeTradeEmulator.transferFromAsync(
-            signedOrder.makerTokenAddress,
-            signedOrder.maker,
             signedOrder.taker,
-            fillMakerTokenAmount,
-            TradeSide.Maker,
-            TransferType.Trade,
-        );
-        const makerFeeAmount = OrderValidationUtils._getPartialAmount(
-            fillTakerTokenAmount,
-            signedOrder.takerTokenAmount,
-            signedOrder.makerFee,
-        );
-        await exchangeTradeEmulator.transferFromAsync(
             zrxTokenAddress,
-            signedOrder.maker,
-            signedOrder.feeRecipient,
-            makerFeeAmount,
-            TradeSide.Maker,
-            TransferType.Fee,
         );
     }
     public async validateFillOrderThrowIfInvalidAsync(
