@@ -67,7 +67,9 @@ export class ExchangeTransferSimulator {
         tradeSide: TradeSide,
         transferType: TransferType,
     ): Promise<void> {
-        // If we are simulating an open order then 0x0 will have no balance or allowance
+        // HACK: When simulating an open order (e.g taker is NULL_ADDRESS), we don't want to adjust balances/
+        // allowances for the taker. We do however, want to increase the balance of the maker since the maker
+        // might be relying on those funds to fill subsequent orders or pay the order's fees.
         if (from === constants.NULL_ADDRESS && tradeSide === TradeSide.Taker) {
             await this._increaseBalanceAsync(tokenAddress, to, amountInBaseUnits);
             return;
