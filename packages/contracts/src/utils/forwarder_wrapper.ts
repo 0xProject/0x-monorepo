@@ -147,7 +147,10 @@ export class ForwarderWrapper {
             new BigNumber(0),
         );
         if (totalFees.greaterThan(0)) {
-            const feeQuote = await this._forwarderContract.buyFeeTokensQuote.callAsync(feeParams.orders, totalFees);
+            const feeQuote = await this._forwarderContract.computeBuyFeesFillResult.callAsync(
+                feeParams.orders,
+                totalFees,
+            );
             fillAmountWei = fillAmountWei.plus(feeQuote.takerAssetFilledAmount);
         }
         const txOpts = {
@@ -161,6 +164,16 @@ export class ForwarderWrapper {
             feeParams.signatures,
             txOpts,
         );
+        const tx = await this._getTxWithDecodedLogsAsync(txHash);
+        return tx;
+    }
+    public async withdrawAllZRXAsync(from: string): Promise<TransactionReceiptWithDecodedLogs> {
+        const balanceOfZRX = await this._forwarderContract.balanceOf.callAsync(from);
+        const tx = await this.withdrawZRXAsync(from, balanceOfZRX);
+        return tx;
+    }
+    public async withdrawZRXAsync(from: string, amount: BigNumber): Promise<TransactionReceiptWithDecodedLogs> {
+        const txHash = await this._forwarderContract.withdrawZRX.sendTransactionAsync(amount);
         const tx = await this._getTxWithDecodedLogsAsync(txHash);
         return tx;
     }

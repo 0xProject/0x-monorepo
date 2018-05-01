@@ -48,13 +48,13 @@ contract MixinForwarderQuote is MixinForwarderCore {
     /// @param orders An array of Order struct containing order specifications.
     /// @param takerAssetFillAmount A number representing the amount of this order to fill.
     /// @return Amounts filled and fees paid by maker and taker.
-    function marketSellOrdersQuote(Order[] memory orders, uint256 takerAssetFillAmount)
+    function expectedMaketSellFillResults(Order[] memory orders, uint256 takerAssetFillAmount)
         public
         view
         returns (Exchange.FillResults memory fillResult)
     {
         for (uint256 i = 0; i < orders.length; i++) {
-            require(areBytesEqual(orders[i].makerAssetData, orders[0].makerAssetData));
+            require(areBytesEqual(orders[i].makerAssetData, orders[0].makerAssetData), "all orders must be the same token pair");
             uint256 remainingTakerAssetFillAmount = safeSub(takerAssetFillAmount, fillResult.takerAssetFilledAmount);
 
             Exchange.FillResults memory quoteFillResult = fillOrderQuote(orders[i], remainingTakerAssetFillAmount);
@@ -83,21 +83,22 @@ contract MixinForwarderQuote is MixinForwarderCore {
     {
         uint256 takerAssetBalance = sellAssetAmount;
 
-        Exchange.FillResults memory tokensSellQuote = marketSellOrdersQuote(orders, sellAssetAmount);
+        Exchange.FillResults memory expectedMarketSellFillResults = expectedMaketSellFillResults(orders, sellAssetAmount);
         Exchange.FillResults memory requestedTokensResult;
-        if (tokensSellQuote.takerFeePaid > 0) {
-            Exchange.FillResults memory feeTokensResult = buyFeeTokensQuote(feeOrders, tokensSellQuote.takerFeePaid);
-            takerAssetBalance = safeSub(takerAssetBalance, feeTokensResult.takerAssetFilledAmount);
-            requestedTokensResult = marketSellOrdersQuote(orders, takerAssetBalance);
+        if (expectedMarketSellFillResults.takerFeePaid > 0) {
+            Exchange.FillResults memory expectedBuyFeesFillResults = computeBuyFeesFillResult(feeOrders, expectedMarketSellFillResults.takerFeePaid);
+            takerAssetBalance = safeSub(takerAssetBalance, expectedBuyFeesFillResults.takerAssetFilledAmount);
+            requestedTokensResult = expectedMaketSellFillResults(orders, takerAssetBalance);
             // Update our return FillResult with the additional fees
-            totalFillResult.takerFeePaid = feeTokensResult.takerFeePaid;
+            totalFillResult.takerFeePaid = expectedBuyFeesFillResults.takerFeePaid;
         } else {
             // Quote our market sell to buy the requested tokens with the remaining balance
-            requestedTokensResult = marketSellOrdersQuote(orders, takerAssetBalance);
+            requestedTokensResult = expectedMaketSellFillResults(orders, takerAssetBalance);
         }
         addFillResults(totalFillResult, requestedTokensResult);
         // Ensure the token abstraction was fair if fees were proportionally too high, we fail
-        require(isAcceptableThreshold(sellAssetAmount, requestedTokensResult.takerAssetFilledAmount), ERROR_UNACCEPTABLE_THRESHOLD);
+        require(isAcceptableThreshold(sellAssetAmount, requestedTokensResult.takerAssetFilledAmount),
+            "traded amount does not meet acceptable threshold");
         return totalFillResult;
     }
 
@@ -106,7 +107,7 @@ contract MixinForwarderQuote is MixinForwarderCore {
     /// @param orders An array of Order struct containing order specifications.
     /// @param zrxAmount A number representing the amount zrx to buy
     /// @return Quoted amounts which will be filled
-    function buyFeeTokensQuote(
+    function computeBuyFeesFillResult(
         Order[] memory orders,
         uint256 zrxAmount)
         public
@@ -114,9 +115,9 @@ contract MixinForwarderQuote is MixinForwarderCore {
         returns (Exchange.FillResults memory totalFillResult)
     {
         address token = readAddress(orders[0].makerAssetData, 1);
-        require(token == address(ZRX_TOKEN), ERROR_INVALID_INPUT);
+        require(token == address(ZRX_TOKEN), "order taker asset must be ZRX");
         for (uint256 i = 0; i < orders.length; i++) {
-            require(areBytesEqual(orders[i].makerAssetData, orders[0].makerAssetData));
+            require(areBytesEqual(orders[i].makerAssetData, orders[0].makerAssetData), "all orders must be the same token pair");
             uint256 remainingMakerAssetFillAmount = safeSub(zrxAmount, totalFillResult.makerAssetFilledAmount);
             // Convert the remaining amount of makerToken to buy into remaining amount
             // of takerToken to sell, assuming entire amount can be sold in the current order

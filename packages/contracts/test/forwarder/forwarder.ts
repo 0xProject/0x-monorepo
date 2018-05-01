@@ -250,7 +250,7 @@ describe(ContractName.Forwarder, () => {
             const afterBuyBalances = await erc20Wrapper.getBalancesAsync();
             const takerZRXBalanceBeforeWithdraw = afterBuyBalances[takerAddress][zrxToken.address];
             const takerForwarderBalance = await forwarderContract.balanceOf.callAsync(takerAddress);
-            const txHash = await forwarderContract.withdraw.sendTransactionAsync(takerForwarderBalance, {
+            const txHash = await forwarderContract.withdrawZRX.sendTransactionAsync(takerForwarderBalance, {
                 from: takerAddress,
             });
             const newBalances = await erc20Wrapper.getBalancesAsync();
