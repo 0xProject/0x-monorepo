@@ -509,8 +509,7 @@ export interface WebsiteBackendRelayerInfo {
 }
 
 export interface WebsiteBackendPriceInfo {
-    price: string;
-    address: string;
+    [symbol: string]: string;
 }
 
 export interface WebsiteBackendGasInfo {

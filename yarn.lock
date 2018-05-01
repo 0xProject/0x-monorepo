@@ -11448,9 +11448,9 @@ web3-net@1.0.0-beta.33:
     web3-core-method "1.0.0-beta.33"
     web3-utils "1.0.0-beta.33"
 
-web3-provider-engine@^13.0.1, web3-provider-engine@^13.6.5:
-  version "13.6.6"
-  resolved "https://registry.yarnpkg.com/web3-provider-engine/-/web3-provider-engine-13.6.6.tgz#7d8972ffcd31e103bd2ce8a521b1b7da08cb173f"
+web3-provider-engine@^13.3.2:
+  version "13.8.0"
+  resolved "https://registry.yarnpkg.com/web3-provider-engine/-/web3-provider-engine-13.8.0.tgz#4c7c1ad2af5f1fe10343b8a65495879a2f9c00df"
   dependencies:
     async "^2.5.0"
     clone "^2.0.0"
@@ -11472,9 +11472,9 @@ web3-provider-engine@^13.0.1, web3-provider-engine@^13.6.5:
     xhr "^2.2.0"
     xtend "^4.0.1"
 
-web3-provider-engine@^13.3.2:
-  version "13.8.0"
-  resolved "https://registry.yarnpkg.com/web3-provider-engine/-/web3-provider-engine-13.8.0.tgz#4c7c1ad2af5f1fe10343b8a65495879a2f9c00df"
+web3-provider-engine@^13.6.5:
+  version "13.6.6"
+  resolved "https://registry.yarnpkg.com/web3-provider-engine/-/web3-provider-engine-13.6.6.tgz#7d8972ffcd31e103bd2ce8a521b1b7da08cb173f"
   dependencies:
     async "^2.5.0"
     clone "^2.0.0"

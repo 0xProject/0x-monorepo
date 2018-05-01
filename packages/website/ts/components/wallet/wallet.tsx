@@ -461,16 +461,16 @@ export class Wallet extends React.Component<WalletProps, WalletState> {
             );
             balanceAndAllowanceTupleByAddress[tokenAddress] = balanceAndAllowanceTuple;
         }
-        const pricesByAddress = await this._getPricesByAddressAsync(tokenAddresses);
+        const priceByAddress = await this._getPriceByAddressAsync(tokenAddresses);
         const trackedTokenStateByAddress = _.reduce(
             tokenAddresses,
             (acc, address) => {
                 const [balance, allowance] = balanceAndAllowanceTupleByAddress[address];
-                const price = pricesByAddress[address];
+                const priceIfExists = _.get(priceByAddress, address);
                 acc[address] = {
                     balance,
                     allowance,
-                    price,
+                    price: priceIfExists,
                     isLoaded: true,
                 };
                 return acc;
@@ -487,16 +487,29 @@ export class Wallet extends React.Component<WalletProps, WalletState> {
     private async _refetchTokenStateAsync(tokenAddress: string) {
         await this._fetchBalancesAndAllowancesAsync([tokenAddress]);
     }
-    private async _getPricesByAddressAsync(tokenAddresses: string[]): Promise<ItemByAddress<BigNumber>> {
+    private async _getPriceByAddressAsync(tokenAddresses: string[]): Promise<ItemByAddress<BigNumber>> {
         if (_.isEmpty(tokenAddresses)) {
             return {};
         }
+        // for each input token address, search for the corresponding symbol in this.props.tokenByAddress, if it exists
+        // create a mapping from existing symbols -> address
+        const tokenAddressBySymbol: { [symbol: string]: string } = {};
+        _.each(tokenAddresses, address => {
+            const tokenIfExists = _.get(this.props.tokenByAddress, address);
+            if (!_.isUndefined(tokenIfExists)) {
+                const symbol = tokenIfExists.symbol;
+                tokenAddressBySymbol[symbol] = address;
+            }
+        });
+        const tokenSymbols = _.keys(tokenAddressBySymbol);
         try {
-            const websiteBackendPriceInfos = await backendClient.getPriceInfosAsync(tokenAddresses);
-            const addresses = _.map(websiteBackendPriceInfos, info => info.address);
-            const prices = _.map(websiteBackendPriceInfos, info => new BigNumber(info.price));
-            const pricesByAddress = _.zipObject(addresses, prices);
-            return pricesByAddress;
+            const priceBySymbol = await backendClient.getPriceInfoAsync(tokenSymbols);
+            const priceByAddress = _.mapKeys(priceBySymbol, (value, symbol) => _.get(tokenAddressBySymbol, symbol));
+            const result = _.mapValues(priceByAddress, price => {
+                const priceBigNumber = new BigNumber(price);
+                return priceBigNumber;
+            });
+            return result;
         } catch (err) {
             return {};
         }
