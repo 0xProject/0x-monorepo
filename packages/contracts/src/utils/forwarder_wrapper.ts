@@ -2,31 +2,18 @@ import { Order, OrderTransactionOpts } from '0x.js';
 import { ContractAbi, TransactionReceiptWithDecodedLogs } from '@0xproject/types';
 import { AbiDecoder, BigNumber } from '@0xproject/utils';
 import { Web3Wrapper } from '@0xproject/web3-wrapper';
-import * as ethUtil from 'ethereumjs-util';
 import * as _ from 'lodash';
 import * as Web3 from 'web3';
 
 import { formatters } from '../../src/utils/formatters';
 import { orderUtils } from '../../src/utils/order_utils';
 import { ForwarderContract } from '../contract_wrappers/generated/forwarder';
-// import { artifacts } from '../ts/artifacts';
 
 import { Artifact, SignatureType, SignedOrder, UnsignedOrder } from './types';
 
 export class ForwarderWrapper {
     private _web3Wrapper: Web3Wrapper;
     private _forwarderContract: ForwarderContract;
-    // TODO remove this
-    // public static async getForwarderContractAsync(web3Wrapper: Web3Wrapper): Promise<ForwarderContract> {
-    //     const networkId = await web3Wrapper.getNetworkIdAsync();
-    //     const [abi, address] = await this._getContractAbiAndAddressFromArtifactsAsync(
-    //         artifacts.Forwarder,
-    //         web3Wrapper,
-    //         networkId,
-    //     );
-    //     const contractInstance = new ForwarderContract(web3Wrapper, abi, address);
-    //     return contractInstance;
-    // }
     protected static async _getContractAbiAndAddressFromArtifactsAsync(
         artifact: Artifact,
         web3Wrapper: Web3Wrapper,
@@ -52,7 +39,6 @@ export class ForwarderWrapper {
         }
         return contractAddress;
     }
-
     constructor(contractInstance: ForwarderContract, web3Wrapper: Web3Wrapper) {
         this._forwarderContract = contractInstance;
         this._web3Wrapper = web3Wrapper;
@@ -132,8 +118,8 @@ export class ForwarderWrapper {
     ): Promise<TransactionReceiptWithDecodedLogs> {
         let fillAmountWei = _.reduce(
             orders,
-            (prev: BigNumber, order: SignedOrder) => {
-                return prev.plus(order.takerAssetAmount);
+            (totalAmount: BigNumber, order: SignedOrder) => {
+                return totalAmount.plus(order.takerAssetAmount);
             },
             new BigNumber(0),
         );
@@ -141,8 +127,8 @@ export class ForwarderWrapper {
         const params = formatters.createMarketSellOrders(orders, fillAmountWei);
         const totalFees = _.reduce(
             orders,
-            (prev: BigNumber, order: SignedOrder) => {
-                return prev.plus(order.takerFee);
+            (totalAmount: BigNumber, order: SignedOrder) => {
+                return totalAmount.plus(order.takerFee);
             },
             new BigNumber(0),
         );
