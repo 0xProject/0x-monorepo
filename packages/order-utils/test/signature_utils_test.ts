@@ -7,6 +7,7 @@ import 'mocha';
 import * as Sinon from 'sinon';
 
 import { generatePseudoRandomSalt, isValidOrderHash, isValidSignature, signOrderHashAsync } from '../src';
+import * as signatureUtils from '../src/signature_utils';
 
 import { chaiSetup } from './utils/chai_setup';
 import { provider, web3Wrapper } from './utils/web3_wrapper';
@@ -98,19 +99,22 @@ describe('Signature utils', () => {
         });
         it('should return the correct ECSignature for signatureHex concatenated as R + S + V', async () => {
             const orderHash = '0x34decbedc118904df65f379a175bb39ca18209d6ce41d5ed549d54e6e0a95004';
-            const signature =
-                '0x22109d11d79cb8bf96ed88625e1cd9558800c4073332a9a02857499883ee5ce3050aa3cc1f2c435e67e114cdce54b9527b4f50548342401bc5d2b77adbdacb021b';
             const expectedECSignature = {
                 v: 27,
-                r: '0x22109d11d79cb8bf96ed88625e1cd9558800c4073332a9a02857499883ee5ce3',
-                s: '0x050aa3cc1f2c435e67e114cdce54b9527b4f50548342401bc5d2b77adbdacb02',
+                r: '0x117902c86dfb95fe0d1badd983ee166ad259b27acb220174cbb4460d87287113',
+                s: '0x7feabdfe76e05924b484789f79af4ee7fa29ec006cedce1bbf369320d034e10b',
             };
-            stubs = [Sinon.stub('isValidSignature').returns(true)];
 
             const fakeProvider = {
-                sendAsync(payload: JSONRPCRequestPayload, callback: JSONRPCErrorCallback) {
+                async sendAsync(payload: JSONRPCRequestPayload, callback: JSONRPCErrorCallback) {
                     if (payload.method === 'eth_sign') {
-                        callback(null, { id: 42, jsonrpc: '2.0', result: signature });
+                        const [address, message] = payload.params;
+                        const signature = await web3Wrapper.signMessageAsync(address, message);
+                        callback(null, {
+                            id: 42,
+                            jsonrpc: '2.0',
+                            result: `0x${signature.substr(130)}${signature.substr(2, 128)}`,
+                        });
                     } else {
                         callback(null, { id: 42, jsonrpc: '2.0', result: [makerAddress] });
                     }
@@ -126,19 +130,22 @@ describe('Signature utils', () => {
             expect(ecSignature).to.deep.equal(expectedECSignature);
         });
         it('should return the correct ECSignature for signatureHex concatenated as V + R + S', async () => {
-            const orderHash = '0xc793e33ffded933b76f2f48d9aa3339fc090399d5e7f5dec8d3660f5480793f7';
-            const signature =
-                '0x1bc80bedc6756722672753413efdd749b5adbd4fd552595f59c13427407ee9aee02dea66f25a608bbae457e020fb6decb763deb8b7192abab624997242da248960';
+            const orderHash = '0x34decbedc118904df65f379a175bb39ca18209d6ce41d5ed549d54e6e0a95004';
             const expectedECSignature = {
                 v: 27,
-                r: '0xc80bedc6756722672753413efdd749b5adbd4fd552595f59c13427407ee9aee0',
-                s: '0x2dea66f25a608bbae457e020fb6decb763deb8b7192abab624997242da248960',
+                r: '0x117902c86dfb95fe0d1badd983ee166ad259b27acb220174cbb4460d87287113',
+                s: '0x7feabdfe76e05924b484789f79af4ee7fa29ec006cedce1bbf369320d034e10b',
             };
-            stubs = [Sinon.stub('isValidSignature').returns(true)];
             const fakeProvider = {
-                sendAsync(payload: JSONRPCRequestPayload, callback: JSONRPCErrorCallback) {
+                async sendAsync(payload: JSONRPCRequestPayload, callback: JSONRPCErrorCallback) {
                     if (payload.method === 'eth_sign') {
-                        callback(null, { id: 42, jsonrpc: '2.0', result: signature });
+                        const [address, message] = payload.params;
+                        const signature = await web3Wrapper.signMessageAsync(address, message);
+                        callback(null, {
+                            id: 42,
+                            jsonrpc: '2.0',
+                            result: signature,
+                        });
                     } else {
                         callback(null, { id: 42, jsonrpc: '2.0', result: [makerAddress] });
                     }
