@@ -40,37 +40,6 @@ export class ZeroEx {
      */
     public static NULL_ADDRESS = constants.NULL_ADDRESS;
     /**
-     * Generates a pseudo-random 256-bit salt.
-     * The salt can be included in a 0x order, ensuring that the order generates a unique orderHash
-     * and will not collide with other outstanding orders that are identical in all other parameters.
-     * @return  A pseudo-random 256-bit number that can be used as a salt.
-     */
-    public static generatePseudoRandomSalt = generatePseudoRandomSalt;
-    /**
-     * Verifies that the elliptic curve signature `signature` was generated
-     * by signing `data` with the private key corresponding to the `signerAddress` address.
-     * @param   data          The hex encoded data signed by the supplied signature.
-     * @param   signature     An object containing the elliptic curve signature parameters.
-     * @param   signerAddress The hex encoded address that signed the data, producing the supplied signature.
-     * @return  Whether the signature is valid for the supplied signerAddress and data.
-     */
-    public static isValidSignature = isValidSignature;
-    /**
-     * Computes the orderHash for a supplied order.
-     * @param   order   An object that conforms to the Order or SignedOrder interface definitions.
-     * @return  The resulting orderHash from hashing the supplied order.
-     */
-    public static getOrderHashHex = getOrderHashHex;
-    /**
-     * Checks if the supplied hex encoded order hash is valid.
-     * Note: Valid means it has the expected format, not that an order with the orderHash exists.
-     * Use this method when processing orderHashes submitted as user input.
-     * @param   orderHash    Hex encoded orderHash.
-     * @return  Whether the supplied orderHash has the expected format.
-     */
-    public static isValidOrderHash = isValidOrderHash;
-
-    /**
      * An instance of the ExchangeWrapper class containing methods for interacting with the 0x Exchange smart contract.
      */
     public exchange: ExchangeWrapper;
@@ -94,6 +63,44 @@ export class ZeroEx {
      */
     public proxy: TokenTransferProxyWrapper;
     private _web3Wrapper: Web3Wrapper;
+    /**
+     * Generates a pseudo-random 256-bit salt.
+     * The salt can be included in a 0x order, ensuring that the order generates a unique orderHash
+     * and will not collide with other outstanding orders that are identical in all other parameters.
+     * @return  A pseudo-random 256-bit number that can be used as a salt.
+     */
+    public static generatePseudoRandomSalt(): BigNumber {
+        return generatePseudoRandomSalt();
+    }
+    /**
+     * Verifies that the elliptic curve signature `signature` was generated
+     * by signing `data` with the private key corresponding to the `signerAddress` address.
+     * @param   data          The hex encoded data signed by the supplied signature.
+     * @param   signature     An object containing the elliptic curve signature parameters.
+     * @param   signerAddress The hex encoded address that signed the data, producing the supplied signature.
+     * @return  Whether the signature is valid for the supplied signerAddress and data.
+     */
+    public static isValidSignature(data: string, signature: ECSignature, signerAddress: string): boolean {
+        return isValidSignature(data, signature, signerAddress);
+    }
+    /**
+     * Computes the orderHash for a supplied order.
+     * @param   order   An object that conforms to the Order or SignedOrder interface definitions.
+     * @return  The resulting orderHash from hashing the supplied order.
+     */
+    public static getOrderHashHex(order: Order | SignedOrder): string {
+        return getOrderHashHex(order);
+    }
+    /**
+     * Checks if the supplied hex encoded order hash is valid.
+     * Note: Valid means it has the expected format, not that an order with the orderHash exists.
+     * Use this method when processing orderHashes submitted as user input.
+     * @param   orderHash    Hex encoded orderHash.
+     * @return  Whether the supplied orderHash has the expected format.
+     */
+    public static isValidOrderHash(orderHash: string): boolean {
+        return isValidOrderHash(orderHash);
+    }
     /**
      * A unit amount is defined as the amount of a token above the specified decimal places (integer part).
      * E.g: If a currency has 18 decimal places, 1e18 or one quintillion of the currency is equivalent
@@ -185,6 +192,7 @@ export class ZeroEx {
     }
     /**
      * Get the provider instance currently used by 0x.js
+     * @return  Web3 provider instance
      */
     public getProvider(): Provider {
         return this._web3Wrapper.getProvider();
