@@ -1,5 +1,4 @@
 import { schemas } from '@0xproject/json-schemas';
-import { assert } from '@0xproject/order-utils';
 import { LogWithDecodedArgs } from '@0xproject/types';
 import { AbiDecoder, BigNumber } from '@0xproject/utils';
 import { Web3Wrapper } from '@0xproject/web3-wrapper';
@@ -7,6 +6,7 @@ import * as _ from 'lodash';
 
 import { artifacts } from '../artifacts';
 import { BlockRange, EventCallback, IndexedFilterValues, MethodOpts, TransactionOpts, ZeroExError } from '../types';
+import { assert } from '../utils/assert';
 import { constants } from '../utils/constants';
 
 import { ContractWrapper } from './contract_wrapper';

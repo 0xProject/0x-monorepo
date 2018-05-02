@@ -1,5 +1,5 @@
 import { schemas } from '@0xproject/json-schemas';
-import { assert, getOrderHashHex } from '@0xproject/order-utils';
+import { getOrderHashHex } from '@0xproject/order-utils';
 import {
     BlockParamLiteral,
     DecodedLogArgs,
@@ -31,6 +31,7 @@ import {
     OrderValues,
     ValidateOrderFillableOpts,
 } from '../types';
+import { assert } from '../utils/assert';
 import { decorators } from '../utils/decorators';
 import { ExchangeTransferSimulator } from '../utils/exchange_transfer_simulator';
 import { OrderStateUtils } from '../utils/order_state_utils';

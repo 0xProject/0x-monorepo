@@ -1,8 +1,8 @@
-import { assert } from '@0xproject/order-utils';
 import { Web3Wrapper } from '@0xproject/web3-wrapper';
 import * as _ from 'lodash';
 
 import { artifacts } from '../artifacts';
+import { assert } from '../utils/assert';
 
 import { ContractWrapper } from './contract_wrapper';
 import { TokenTransferProxyContract } from './generated/token_transfer_proxy';

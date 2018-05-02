@@ -1,6 +1,5 @@
 import { schemas, SchemaValidator } from '@0xproject/json-schemas';
 import {
-    assert,
     generatePseudoRandomSalt,
     getOrderHashHex,
     isValidOrderHash,
@@ -24,6 +23,7 @@ import { zeroExConfigSchema } from './schemas/zero_ex_config_schema';
 import { zeroExPrivateNetworkConfigSchema } from './schemas/zero_ex_private_network_config_schema';
 import { zeroExPublicNetworkConfigSchema } from './schemas/zero_ex_public_network_config_schema';
 import { OrderStateWatcherConfig, ZeroExConfig, ZeroExError } from './types';
+import { assert } from './utils/assert';
 import { constants } from './utils/constants';
 import { decorators } from './utils/decorators';
 import { utils } from './utils/utils';
