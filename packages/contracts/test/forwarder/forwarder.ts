@@ -240,34 +240,6 @@ describe(ContractName.Forwarder, () => {
             }
         });
     });
-    describe('withdraw', () => {
-        it('attributes any left over zrx from fee abstraction to the caller', async () => {
-            const fillAmount = signedOrder.takerAssetAmount.div(2);
-            await forwarderWrapper.buyTokensAsync(signedOrdersWithFee, feeOrders, fillAmount, takerAddress);
-            const newBalances = await erc20Wrapper.getBalancesAsync();
-            const forwarderBalanceAfter = newBalances[forwarderContract.address][zrxToken.address];
-            const takerForwarderBalance = await forwarderContract.balanceOf.callAsync(takerAddress);
-            expect(forwarderBalanceAfter).to.be.bignumber.greaterThan(new BigNumber(0));
-            expect(takerForwarderBalance).to.be.bignumber.equal(forwarderBalanceAfter);
-        });
-        it('allows the user to withdraw left over fees', async () => {
-            const fillAmount = signedOrder.takerAssetAmount.div(2);
-            await forwarderWrapper.buyTokensAsync(signedOrdersWithFee, feeOrders, fillAmount, takerAddress);
-            const afterBuyBalances = await erc20Wrapper.getBalancesAsync();
-            const takerZRXBalanceBeforeWithdraw = afterBuyBalances[takerAddress][zrxToken.address];
-            const takerForwarderBalance = await forwarderContract.balanceOf.callAsync(takerAddress);
-            const txHash = await forwarderContract.withdrawZRX.sendTransactionAsync(takerForwarderBalance, {
-                from: takerAddress,
-            });
-            const newBalances = await erc20Wrapper.getBalancesAsync();
-            const takerZRXBalanceAfterWithdraw = newBalances[takerAddress][zrxToken.address];
-            expect(takerZRXBalanceAfterWithdraw).to.be.bignumber.eq(
-                takerZRXBalanceBeforeWithdraw.plus(takerForwarderBalance),
-            );
-            const takerForwarderBalanceAfterWidthdraw = await forwarderContract.balanceOf.callAsync(takerAddress);
-            expect(takerForwarderBalanceAfterWidthdraw).to.be.bignumber.eq(new BigNumber(0));
-        });
-    });
     describe('quote', () => {
         it('buyTokensQuote - no fees', async () => {
             const fillAmount = signedOrder.takerAssetAmount.div(4);

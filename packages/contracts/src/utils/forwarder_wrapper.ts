@@ -132,16 +132,6 @@ export class ForwarderWrapper {
         const tx = await this._getTxWithDecodedLogsAsync(txHash);
         return tx;
     }
-    public async withdrawAllZRXAsync(from: string): Promise<TransactionReceiptWithDecodedLogs> {
-        const balanceOfZRX = await this._forwarderContract.balanceOf.callAsync(from);
-        const tx = await this.withdrawZRXAsync(from, balanceOfZRX);
-        return tx;
-    }
-    public async withdrawZRXAsync(from: string, amount: BigNumber): Promise<TransactionReceiptWithDecodedLogs> {
-        const txHash = await this._forwarderContract.withdrawZRX.sendTransactionAsync(amount);
-        const tx = await this._getTxWithDecodedLogsAsync(txHash);
-        return tx;
-    }
     private async _getTxWithDecodedLogsAsync(txHash: string) {
         const tx = await this._web3Wrapper.awaitTransactionMinedAsync(txHash);
         tx.logs = _.filter(tx.logs, log => log.address === this._forwarderContract.address);

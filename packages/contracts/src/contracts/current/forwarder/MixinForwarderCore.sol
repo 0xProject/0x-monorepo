@@ -20,7 +20,6 @@ contract MixinForwarderCore is
     Exchange EXCHANGE;
     EtherToken ETHER_TOKEN;
     ZRXToken ZRX_TOKEN;
-    mapping (address => uint256) public balanceOf; // Balance of ZRX tokens
 
     /// @dev Checks whether the amount of tokens sold against the amount of tokens requested
     ///      is within a certain threshold. This ensures the caller gets a fair deal when

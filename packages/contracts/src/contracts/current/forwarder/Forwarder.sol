@@ -140,7 +140,7 @@ contract Forwarder is
             uint256 tokenId = readUint256(orders[n].makerAssetData, 21);
             transferNFTToken(makerTokenAddress, msg.sender, tokenId);
         }
-        // Prevent a user from over estimating the amount of ETH required
+        // Prevent a user from overestimating the amount of ETH required
         require(isAcceptableThreshold(msg.value, totalTakerAmountSpent), "traded amount does not meet acceptable threshold");
     }
 
@@ -163,18 +163,10 @@ contract Forwarder is
             // Buy enough ZRX to cover the future market sell
             Exchange.FillResults memory feeTokensResult = buyFeeTokens(feeOrders, feeSignatures, expectedMarketSellFillResults.takerFeePaid);
             takerTokenBalance = safeSub(takerTokenBalance, feeTokensResult.takerAssetFilledAmount);
-            // Make our market sell to buy the requested tokens with the remaining balance
-            requestedTokensResult = EXCHANGE.marketSellOrders(orders, takerTokenBalance, signatures);
-            // It's possibile to over-buy fees by a small amount as the marketSellQuote was based on 100% of ETH
-            // and marketSell (after fee abstraction) less than 100%. If a user uses this enough it may be worth withdrawing
-            balanceOf[msg.sender] += safeSub(feeTokensResult.makerAssetFilledAmount, requestedTokensResult.takerFeePaid);
-            require(balanceOf[msg.sender] >= 0, "negative user ZRX balance");
-            // Update our return FillResult with the additional fees
             totalFillResult.takerFeePaid = feeTokensResult.takerFeePaid;
-        } else {
-            // Make our market sell to buy the requested tokens with the remaining balance
-            requestedTokensResult = EXCHANGE.marketSellOrders(orders, takerTokenBalance, signatures);
         }
+        // Make our market sell to buy the requested tokens with the remaining balance
+        requestedTokensResult = EXCHANGE.marketSellOrders(orders, takerTokenBalance, signatures);
         // Update our return FillResult with the market sell
         addFillResults(totalFillResult, requestedTokensResult);
         // Ensure the token abstraction was fair if fees were proportionally too high, we fail
@@ -183,14 +175,6 @@ contract Forwarder is
         // Transfer all tokens to msg.sender
         transferToken(makerTokenAddress, msg.sender, requestedTokensResult.makerAssetFilledAmount);
         return totalFillResult;
-    }
-
-    /// @dev Withdraws an amount of ZRX tokens from using this contract.
-    /// @param amount The amount of ZRX to withdraw.
-    function withdrawZRX(uint amount) public {
-        require(balanceOf[msg.sender] >= amount, "withdraw amount is larger than user balance");
-        balanceOf[msg.sender] -= amount;
-        ZRX_TOKEN.transfer(msg.sender, amount);
     }
 
     /// @dev Buys the fee tokens as well as any fees required to buy the requested fee tokens.
