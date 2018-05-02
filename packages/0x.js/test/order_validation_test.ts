@@ -1,4 +1,5 @@
 import { BlockchainLifecycle, devConstants } from '@0xproject/dev-utils';
+import { OrderError } from '@0xproject/order-utils';
 import { BlockParamLiteral } from '@0xproject/types';
 import { BigNumber } from '@0xproject/utils';
 import * as chai from 'chai';
@@ -169,7 +170,7 @@ describe('OrderValidation', () => {
             signedOrder.ecSignature.v = 28 - signedOrder.ecSignature.v + 27;
             return expect(
                 zeroEx.exchange.validateFillOrderThrowIfInvalidAsync(signedOrder, fillableAmount, takerAddress),
-            ).to.be.rejectedWith(ZeroExError.InvalidSignature);
+            ).to.be.rejectedWith(OrderError.InvalidSignature);
         });
         it('should throw when the order is fully filled or cancelled', async () => {
             const signedOrder = await fillScenarios.createFillableSignedOrderAsync(

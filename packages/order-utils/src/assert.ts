@@ -8,14 +8,10 @@ import { BigNumber } from '@0xproject/utils';
 import { Web3Wrapper } from '@0xproject/web3-wrapper';
 import * as _ from 'lodash';
 
-import { isValidSignature } from '@0xproject/order-utils';
+import { isValidSignature } from './signature_utils';
 
 export const assert = {
     ...sharedAssert,
-    isValidSignature(orderHash: string, ecSignature: ECSignature, signerAddress: string) {
-        const isValid = isValidSignature(orderHash, ecSignature, signerAddress);
-        this.assert(isValid, `Expected order with hash '${orderHash}' to have a valid signature`);
-    },
     async isSenderAddressAsync(
         variableName: string,
         senderAddressHex: string,

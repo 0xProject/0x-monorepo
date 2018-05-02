@@ -1,13 +1,16 @@
+import { Provider, SignedOrder } from '@0xproject/types';
 import { BigNumber } from '@0xproject/utils';
 import * as _ from 'lodash';
 
-import { SignedOrder, ZeroEx } from '../../src';
+import { getOrderHashHex } from './order_hash';
+import { generatePseudoRandomSalt } from './salt';
+import { signOrderHashAsync } from './signature_utils';
 
 const SHOULD_ADD_PERSONAL_MESSAGE_PREFIX = false;
 
 export const orderFactory = {
     async createSignedOrderAsync(
-        zeroEx: ZeroEx,
+        provider: Provider,
         maker: string,
         taker: string,
         makerFee: BigNumber,
@@ -33,13 +36,13 @@ export const orderFactory = {
             takerTokenAmount,
             makerTokenAddress,
             takerTokenAddress,
-            salt: ZeroEx.generatePseudoRandomSalt(),
+            salt: generatePseudoRandomSalt(),
             exchangeContractAddress,
             feeRecipient,
             expirationUnixTimestampSec,
         };
-        const orderHash = ZeroEx.getOrderHashHex(order);
-        const ecSignature = await zeroEx.signOrderHashAsync(orderHash, maker, SHOULD_ADD_PERSONAL_MESSAGE_PREFIX);
+        const orderHash = getOrderHashHex(order);
+        const ecSignature = await signOrderHashAsync(provider, orderHash, maker, SHOULD_ADD_PERSONAL_MESSAGE_PREFIX);
         const signedOrder: SignedOrder = _.assign(order, { ecSignature });
         return signedOrder;
     },

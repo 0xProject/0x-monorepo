@@ -1,3 +1,4 @@
+import { getOrderHashHex, OrderError } from '@0xproject/order-utils';
 import { Order, SignedOrder } from '@0xproject/types';
 import { BigNumber } from '@0xproject/utils';
 import * as _ from 'lodash';
@@ -113,7 +114,7 @@ export class OrderValidationUtils {
         zrxTokenAddress: string,
         expectedFillTakerTokenAmount?: BigNumber,
     ): Promise<void> {
-        const orderHash = utils.getOrderHashHex(signedOrder);
+        const orderHash = getOrderHashHex(signedOrder);
         const unavailableTakerTokenAmount = await this._exchangeWrapper.getUnavailableTakerAmountAsync(orderHash);
         OrderValidationUtils._validateRemainingFillAmountNotZeroOrThrow(
             signedOrder.takerTokenAmount,
@@ -142,9 +143,9 @@ export class OrderValidationUtils {
         if (fillTakerTokenAmount.eq(0)) {
             throw new Error(ExchangeContractErrs.OrderFillAmountZero);
         }
-        const orderHash = utils.getOrderHashHex(signedOrder);
+        const orderHash = getOrderHashHex(signedOrder);
         if (!ZeroEx.isValidSignature(orderHash, signedOrder.ecSignature, signedOrder.maker)) {
-            throw new Error(ZeroExError.InvalidSignature);
+            throw new Error(OrderError.InvalidSignature);
         }
         const unavailableTakerTokenAmount = await this._exchangeWrapper.getUnavailableTakerAmountAsync(orderHash);
         OrderValidationUtils._validateRemainingFillAmountNotZeroOrThrow(
