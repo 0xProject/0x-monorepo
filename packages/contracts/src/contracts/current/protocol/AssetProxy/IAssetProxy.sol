@@ -16,12 +16,14 @@
 
 */
 
-pragma solidity ^0.4.21;
+pragma solidity ^0.4.23;
 pragma experimental ABIEncoderV2;
 
 import "../../utils/Authorizable/IAuthorizable.sol";
 
-contract IAssetProxy is IAuthorizable {
+contract IAssetProxy is
+    IAuthorizable
+{
 
     /// @dev Transfers assets. Either succeeds or throws.
     /// @param assetMetadata Byte array encoded for the respective asset proxy.

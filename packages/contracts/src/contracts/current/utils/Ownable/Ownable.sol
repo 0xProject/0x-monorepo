@@ -1,4 +1,5 @@
-pragma solidity ^0.4.21;
+pragma solidity ^0.4.23;
+pragma experimental ABIEncoderV2;
 
 /*
  * Ownable
@@ -12,14 +13,17 @@ import "../Ownable/IOwnable.sol";
 contract Ownable is IOwnable {
     address public owner;
 
-    function Ownable()
+    constructor ()
         public
     {
         owner = msg.sender;
     }
 
     modifier onlyOwner() {
-        require(msg.sender == owner);
+        require(
+            msg.sender == owner,
+            "Only contract owner is allowed to call this method."
+        );
         _;
     }
 

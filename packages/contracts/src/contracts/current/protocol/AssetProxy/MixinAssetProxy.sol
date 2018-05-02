@@ -16,7 +16,7 @@
 
 */
 
-pragma solidity ^0.4.21;
+pragma solidity ^0.4.23;
 pragma experimental ABIEncoderV2;
 
 import "./mixins/MAssetProxy.sol";
@@ -25,8 +25,8 @@ import "../../utils/Authorizable/Authorizable.sol";
 
 contract MixinAssetProxy is 
     IAssetProxy,
-    MAssetProxy,
-    Authorizable
+    Authorizable,
+    MAssetProxy
 {
 
     /// @dev Transfers assets. Either succeeds or throws.

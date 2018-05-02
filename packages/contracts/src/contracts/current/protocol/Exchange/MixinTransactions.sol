@@ -20,8 +20,10 @@ pragma experimental ABIEncoderV2;
 
 import "./mixins/MSignatureValidator.sol";
 import "./mixins/MTransactions.sol";
+import "./LibExchangeErrors.sol";
 
 contract MixinTransactions is
+    LibExchangeErrors,
     MSignatureValidator,
     MTransactions
 {
@@ -56,12 +58,18 @@ contract MixinTransactions is
         );
 
         // Validate transaction has not been executed
-        require(!transactions[transactionHash]);
+        require(
+            !transactions[transactionHash],
+            DUPLICATE_TRANSACTION_HASH
+        );
 
         // TODO: is SignatureType.Caller necessary if we make this check?
         if (signer != msg.sender) {
             // Validate signature
-            require(isValidSignature(transactionHash, signer, signature));
+            require(
+                isValidSignature(transactionHash, signer, signature),
+                SIGNATURE_VALIDATION_FAILED
+            );
 
             // Set the current transaction signer
             currentContextAddress = signer;
@@ -69,7 +77,10 @@ contract MixinTransactions is
 
         // Execute transaction
         transactions[transactionHash] = true;
-        require(address(this).delegatecall(data));
+        require(
+            address(this).delegatecall(data),
+            TRANSACTION_EXECUTION_FAILED
+        );
 
         // Reset current transaction signer
         // TODO: Check if gas is paid when currentContextAddress is already 0.

@@ -16,12 +16,14 @@
 
 */
 
-pragma solidity ^0.4.21;
+pragma solidity ^0.4.23;
 pragma experimental ABIEncoderV2;
 
 import "../../utils/SafeMath/SafeMath.sol";
 
-contract LibFillResults is SafeMath {
+contract LibFillResults is
+    SafeMath
+{
 
     struct FillResults {
         uint256 makerAssetFilledAmount;

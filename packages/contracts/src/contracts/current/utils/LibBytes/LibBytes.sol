@@ -16,7 +16,8 @@
 
 */
 
-pragma solidity ^0.4.21;
+pragma solidity ^0.4.23;
+pragma experimental ABIEncoderV2;
 
 contract LibBytes {
 
@@ -61,7 +62,10 @@ contract LibBytes {
         public pure
         returns (address result)
     {
-        require(b.length >= index + 20); // 20 is length of address
+        require(
+            b.length >= index + 20,  // 20 is length of address
+            "Cannot read address from byte array shorter than 20 bytes."
+        ); 
 
         // Add offset to index:
         // 1. Arrays are prefixed by 32-byte length parameter (add 32 to index)
@@ -88,7 +92,10 @@ contract LibBytes {
         address input)
         public pure
     {
-        require(b.length >= index + 20); // 20 is length of address
+        require(
+            b.length >= index + 20,  // 20 is length of address
+            "Cannot write address to byte array shorter than 20 bytes."
+        ); 
 
         // Add offset to index:
         // 1. Arrays are prefixed by 32-byte length parameter (add 32 to index)
@@ -122,7 +129,10 @@ contract LibBytes {
         public pure
         returns (bytes32 result)
     {
-        require(b.length >= index + 32);
+        require(
+            b.length >= index + 32,
+            "Cannot read 32 bytes from byte array shorter than 32 bytes."
+        );
 
         // Arrays are prefixed by a 256 bit length parameter
         index += 32;
@@ -144,7 +154,10 @@ contract LibBytes {
         bytes32 input)
         public pure
     {
-        require(b.length >= index + 32);
+        require(
+            b.length >= index + 32,
+            "Cannot write 32 bytes to byte array shorter than 32 bytes."
+        );
 
         // Arrays are prefixed by a 256 bit length parameter
         index += 32;

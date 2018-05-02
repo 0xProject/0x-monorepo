@@ -16,7 +16,8 @@
 
 */
 
-pragma solidity ^0.4.21;
+pragma solidity ^0.4.23;
+pragma experimental ABIEncoderV2;
 
 contract IAuthorizable {
 
@@ -44,9 +45,11 @@ contract IAuthorizable {
 
     event AuthorizedAddressAdded(
         address indexed target,
-        address indexed caller);
+        address indexed caller
+    );
 
     event AuthorizedAddressRemoved(
         address indexed target,
-        address indexed caller);
+        address indexed caller
+    );
 }

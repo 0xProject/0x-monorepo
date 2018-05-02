@@ -16,11 +16,12 @@
 
 */
 
-pragma solidity ^0.4.18;
+pragma solidity ^0.4.23;
+pragma experimental ABIEncoderV2;
 
 contract IERC20Token {
 
-    /// @notice send `_value` token to `_to` from `msg.sender`
+    /// @notice send `value` token to `to` from `msg.sender`
     /// @param _to The address of the recipient
     /// @param _value The amount of token to be transferred
     /// @return Whether the transfer was successful or not
@@ -28,7 +29,7 @@ contract IERC20Token {
         public
         returns (bool);
 
-    /// @notice send `_value` token to `_to` from `_from` on the condition it is approved by `_from`
+    /// @notice send `value` token to `to` from `from` on the condition it is approved by `from`
     /// @param _from The address of the sender
     /// @param _to The address of the recipient
     /// @param _value The amount of token to be transferred
@@ -61,10 +62,12 @@ contract IERC20Token {
     event Transfer(
         address indexed _from,
         address indexed _to,
-        uint256 _value);
+        uint256 _value
+    );
     
     event Approval(
         address indexed _owner,
         address indexed _spender,
-        uint256 _value);
+        uint256 _value
+    );
 }

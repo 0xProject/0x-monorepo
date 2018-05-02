@@ -16,7 +16,7 @@
 
 */
 
-pragma solidity ^0.4.21;
+pragma solidity ^0.4.23;
 pragma experimental ABIEncoderV2;
 
 import "./mixins/MSettlement.sol";
@@ -41,7 +41,7 @@ contract MixinSettlement is
         return ZRX_PROXY_DATA;
     }
 
-    function MixinSettlement(bytes memory _zrxProxyData)
+    constructor (bytes memory _zrxProxyData)
         public
     {
         ZRX_PROXY_DATA = _zrxProxyData;

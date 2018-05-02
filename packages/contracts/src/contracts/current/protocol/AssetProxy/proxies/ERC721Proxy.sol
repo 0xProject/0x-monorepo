@@ -16,7 +16,7 @@
 
 */
 
-pragma solidity ^0.4.21;
+pragma solidity ^0.4.23;
 pragma experimental ABIEncoderV2;
 
 import "../../../utils/LibBytes/LibBytes.sol";
@@ -28,7 +28,13 @@ contract ERC721Proxy is
     MixinAssetProxy
 {
 
+    // Id of this proxy.
     uint8 constant PROXY_ID = 2;
+
+    // Revert reasons
+    string constant INVALID_TRANSFER_AMOUNT = "Transfer amount must equal 1.";
+    string constant INVALID_METADATA_LENGTH = "Metadata must have a length of 53.";
+    string constant PROXY_ID_MISMATCH = "Proxy id in metadata does not match this proxy id.";
 
     /// @dev Internal version of `transferFrom`.
     /// @param assetMetadata Encoded byte array.
@@ -43,13 +49,22 @@ contract ERC721Proxy is
         internal
     {
         // Data must be intended for this proxy.
-        require(uint8(assetMetadata[0]) == PROXY_ID);
+        require(
+            uint8(assetMetadata[0]) == PROXY_ID,
+            PROXY_ID_MISMATCH
+        );
 
         // There exists only 1 of each token.
-        require(amount == 1);
+        require(
+            amount == 1,
+            INVALID_TRANSFER_AMOUNT
+        );
 
-        // Decode metadata.
-        require(assetMetadata.length == 53);
+        // Decode metadata
+        require(
+            assetMetadata.length == 53,
+            INVALID_METADATA_LENGTH
+        );
         address token = readAddress(assetMetadata, 1);
         uint256 tokenId = readUint256(assetMetadata, 21);
 

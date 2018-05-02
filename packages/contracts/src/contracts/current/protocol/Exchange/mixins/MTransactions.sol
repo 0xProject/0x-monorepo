@@ -15,12 +15,10 @@
   limitations under the License.
 
 */
-pragma solidity ^0.4.21;
+pragma solidity ^0.4.23;
 pragma experimental ABIEncoderV2;
 
-import "./MSignatureValidator.sol";
-
-contract MTransactions is MSignatureValidator {
+contract MTransactions {
 
     /// @dev Executes an exchange method call in the context of signer.
     /// @param salt Arbitrary number to ensure uniqueness of transaction hash.

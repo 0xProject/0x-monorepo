@@ -16,7 +16,8 @@
 
 */
 
-pragma solidity ^0.4.18;
+pragma solidity ^0.4.23;
+pragma experimental ABIEncoderV2;
 
 import "./IERC20Token.sol";
 
@@ -26,7 +27,14 @@ contract ERC20Token is IERC20Token {
         public
         returns (bool)
     {
-        require(balances[msg.sender] >= _value && balances[_to] + _value >= balances[_to]);
+        require(
+            balances[msg.sender] >= _value,
+            "Insufficient balance to complete transfer."
+        );
+        require(
+            balances[_to] + _value >= balances[_to],
+            "Transfer would result in an overflow."
+        );
         balances[msg.sender] -= _value;
         balances[_to] += _value;
         emit Transfer(msg.sender, _to, _value);
@@ -37,7 +45,18 @@ contract ERC20Token is IERC20Token {
         public
         returns (bool)
     {
-        require(balances[_from] >= _value && allowed[_from][msg.sender] >= _value && balances[_to] + _value >= balances[_to]);
+        require(
+            balances[_from] >= _value,
+            "Insufficient balance to complete transfer."
+        );
+        require(
+            allowed[_from][msg.sender] >= _value,
+            "Insufficient allowance to complete transfer."
+        );
+        require(
+            balances[_to] + _value >= balances[_to],
+            "Transfer would result in an overflow."
+        );
         balances[_to] += _value;
         balances[_from] -= _value;
         allowed[_from][msg.sender] -= _value;

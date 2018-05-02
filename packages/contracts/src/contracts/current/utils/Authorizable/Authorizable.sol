@@ -16,7 +16,8 @@
 
 */
 
-pragma solidity ^0.4.21;
+pragma solidity ^0.4.23;
+pragma experimental ABIEncoderV2;
 
 import "./IAuthorizable.sol";
 import "../Ownable/Ownable.sol";
@@ -28,17 +29,26 @@ contract Authorizable is
 
     /// @dev Only authorized addresses can invoke functions with this modifier.
     modifier onlyAuthorized {
-        require(authorized[msg.sender]);
+        require(
+            authorized[msg.sender],
+            "Sender not authorized to call this method."
+        );
         _;
     }
 
     modifier targetAuthorized(address target) {
-        require(authorized[target]);
+        require(
+            authorized[target],
+            "Target address not authorized to call this method."
+        );
         _;
     }
 
     modifier targetNotAuthorized(address target) {
-        require(!authorized[target]);
+        require(
+            !authorized[target],
+            "Target must not already be authorized to call this method."
+        );
         _;
     }
 
@@ -85,8 +95,14 @@ contract Authorizable is
     function removeAuthorizedAddressAtIndex(address target, uint256 index)
         public
     {
-        require(index < authorities.length);
-        require(authorities[index] == target);
+        require(
+            index < authorities.length,
+            "Specified index is out of bounds."
+        );
+        require(
+            authorities[index] == target,
+            "Address found at index does not match target address."
+        );
         delete authorized[target];
         authorities[index] = authorities[authorities.length - 1];
         authorities.length -= 1;

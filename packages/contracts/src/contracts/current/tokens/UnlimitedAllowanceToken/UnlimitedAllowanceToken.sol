@@ -16,9 +16,10 @@
 
 */
 
-pragma solidity ^0.4.18;
+pragma solidity ^0.4.23;
+pragma experimental ABIEncoderV2;
 
-import { ERC20Token } from "../ERC20Token/ERC20Token.sol";
+import "../ERC20Token/ERC20Token.sol";
 
 contract UnlimitedAllowanceToken is ERC20Token {
 
@@ -34,7 +35,18 @@ contract UnlimitedAllowanceToken is ERC20Token {
         returns (bool)
     {
         uint256 allowance = allowed[_from][msg.sender];
-        require(balances[_from] >= _value && allowance >= _value && balances[_to] + _value >= balances[_to]);
+        require(
+            balances[_from] >= _value,
+            "Insufficient balance to complete transfer."
+        );
+        require(
+            allowance >= _value,
+            "Insufficient allowance to complete transfer."
+        );
+        require(
+            balances[_to] + _value >= balances[_to],
+            "Transfer would result in an overflow."
+        );
         balances[_to] += _value;
         balances[_from] -= _value;
         if (allowance < MAX_UINT) {

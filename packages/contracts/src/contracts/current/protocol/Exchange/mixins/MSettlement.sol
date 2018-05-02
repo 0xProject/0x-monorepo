@@ -16,7 +16,7 @@
 
 */
 
-pragma solidity ^0.4.21;
+pragma solidity ^0.4.23;
 pragma experimental ABIEncoderV2;
 
 import "../LibOrder.sol";
@@ -33,5 +33,5 @@ contract MSettlement {
             uint256 makerFeePaid,
             uint256 takerFeePaid
         );
-
 }
+
