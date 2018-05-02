@@ -62,6 +62,22 @@ export const typeConverters = {
         }
         return newTransaction;
     },
+    // convertRelayerToRelayerObject(logRelayer: any): any {
+    //     const newRelayer: any = {};
+    //     for (const key in logToRelayerSchemaMapping) {
+    //         if (_.has(logRelayer, key)) {
+    //             newRelayer[logToRelayerSchemaMapping[key]] = _.get(logRelayer, key);
+    //             if (newRelayer[logToRelayerSchemaMapping[key]].constructor.name === 'BigNumber') {
+    //                 newRelayer[logToRelayerSchemaMapping[key]] = newRelayer[logToRelayerSchemaMapping[key]].toString();
+    //             }
+    //         } else if((logToRelayerSchemaMapping[key] === 'known_fee_addresses' || logToRelayerSchemaMapping[key] === 'known_taker_addresses')) {
+    //             newRelayer[logToRelayerSchemaMapping[key]] = '{}';
+    //         } else {
+    //             newRelayer[logToRelayerSchemaMapping[key]] = '';
+    //         }
+    //     }
+    //     return newRelayer;
+    // },
     convertRelayerToRelayerObject(logRelayer: any): any {
         const newRelayer: any = {};
         for (const key in logToRelayerSchemaMapping) {
@@ -74,6 +90,26 @@ export const typeConverters = {
                 newRelayer[logToRelayerSchemaMapping[key]] = '{}';
             } else {
                 newRelayer[logToRelayerSchemaMapping[key]] = '';
+            }
+        }
+        if(_.has(logRelayer, "networks")) {
+            for(const network of logRelayer.networks) {
+                if(network.networkId === 1) {
+                    if(_.has(network, "sra_http_endpoint")) {
+                        newRelayer.sra_http_endpoint = network.sra_http_endpoint;
+                    }
+                    if(_.has(network, "sra_ws_endpoint")) {
+                        newRelayer.sra_ws_endpoint = network.sra_ws_endpoint;
+                    }
+                    if(_.has(network, "static_order_fields")) {
+                        if(_.has(network, "static_order_fields.fee_recipient_addresses")) {
+                            newRelayer.fee_recipient_addresses = network.static_order_fields.fee_recipient_addresses;
+                        }
+                        if(_.has(network, "static_order_fields.taker_addresses")) {
+                            newRelayer.taker_addresses = network.static_order_fields.taker_addresses;
+                        }
+                    }
+                }
             }
         }
         return newRelayer;

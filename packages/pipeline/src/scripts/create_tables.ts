@@ -126,17 +126,13 @@ const tableQueries: any = {
         PRIMARY KEY (address, timestamp)
     )`,
     relayers: `CREATE TABLE IF NOT EXISTS relayers (
-        id VARCHAR UNIQUE,
-        name VARCHAR,
+        name VARCHAR UNIQUE,
         url VARCHAR DEFAULT '',
-        model VARCHAR DEFAULT '',
-        status VARCHAR DEFAULT '',
-        sra_status VARCHAR DEFAULT '',
-        sra_http_url VARCHAR DEFAULT '',
-        known_fee_addresses CHAR(42)[] DEFAULT '{}',
-        known_taker_addresses CHAR(42)[] DEFAULT '{}',
-        relayer_type VARCHAR DEFAULT '',
-        PRIMARY KEY(id)`,
+        sra_http_endpoint VARCHAR DEFAULT '',
+        sra_ws_endpoint VARCHAR DEFAULT '',
+        fee_recipient_addresses CHAR(42)[] DEFAULT '{}',
+        taker_addresses CHAR(42)[] DEFAULT '{}',
+        PRIMARY KEY(name)`,
     historical_prices: `CREATE TABLE IF NOT EXISTS historical_prices (
         token VARCHAR,
         base VARCHAR,

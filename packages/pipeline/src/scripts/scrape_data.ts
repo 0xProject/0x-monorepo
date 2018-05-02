@@ -34,6 +34,7 @@ const BASE_SYMBOL = 'USD'; // use USD as base currency against
 const API_HIST_LIMIT = 2000; //cryptocompare API limits histoday price query to 2000 days
 const SECONDS_PER_DAY = 86400;
 const PRICE_API_ENDPOINT = 'https://min-api.cryptocompare.com/data/pricehistorical';
+const RELAYER_REGISTRY_JSON = 'https://raw.githubusercontent.com/0xProject/0x-relayer-registry/master/relayers.json';
 // const HIST_PRICE_API_ENDPOINT = 'https://min-api.cryptocompare.com/data/histoday';
 
 const AIRTABLE_RELAYER_INFO = 'Relayer Info';
@@ -123,6 +124,17 @@ export const pullDataScripts = {
                     }
                 });
             }, timeDelay);
+        });
+    },
+    getRelayers(): any {
+        return new Promise((resolve, reject) => {
+            request(RELAYER_REGISTRY_JSON, (error, response, body) => {
+                if (error) {
+                    reject(error);
+                } else {
+                    resolve(JSON.parse(body));
+                }
+            })
         });
     },
     async getOrderBook(sraEndpoint: string): Promise<Object> {
@@ -258,27 +270,54 @@ function _scrapeBlockToDB(block: number): any {
     };
 }
 
+// function _scrapeAllRelayersToDB(): any {
+//     return (cb: () => void) => {
+//         airtableBase(AIRTABLE_RELAYER_INFO)
+//         .select()
+//         .eachPage((records: any, fetchNextPage: () => void) => {
+//             const parsedRelayers: any[] = [];
+//             for(const record of records) {
+//                 parsedRelayers.push(typeConverters.convertRelayerToRelayerObject(record));
+//             }
+//             insertDataScripts.insertMultipleRows('relayers', parsedRelayers, Object.keys(parsedRelayers[0]))
+//             .then((result: any) => {
+//                 cb();
+//             })
+//             .catch((err: any) => {
+//                 cb();
+//             });
+//         })
+//         .catch((err: any) => {
+//             cb();
+//         });
+//     };
+// }
+
 function _scrapeAllRelayersToDB(): any {
     return (cb: () => void) => {
-        airtableBase(AIRTABLE_RELAYER_INFO)
-        .select()
-        .eachPage((records: any, fetchNextPage: () => void) => {
-            const parsedRelayers: any[] = [];
-            for(const record of records) {
-                parsedRelayers.push(typeConverters.convertRelayerToRelayerObject(record));
-            }
-            insertDataScripts.insertMultipleRows('relayers', parsedRelayers, Object.keys(parsedRelayers[0]))
-            .then((result: any) => {
-                cb();
+        pullDataScripts
+            .getRelayers()
+            .then((relayers: any[]) => {
+                console.log(relayers);
+                const parsedRelayers: any[] = [];
+                for(const relayer of relayers) {
+                    parsedRelayers.push(typeConverters.convertRelayerToRelayerObject(relayer));
+                }
+                console.log(parsedRelayers);
+                insertDataScripts.insertMultipleRows('relayers', parsedRelayers, Object.keys(relayer.tableProperties))
+                .then((result: any) => {
+                    console.log(result)
+                    cb();
+                })
+                .catch((err: any) => {
+                    console.log(err);
+                    cb();
+                });
             })
             .catch((err: any) => {
                 cb();
             });
-        })
-        .catch((err: any) => {
-            cb();
-        });
-    };
+        };
 }
 
 function _scrapeTransactionToDB(transactionHash: string): any {
