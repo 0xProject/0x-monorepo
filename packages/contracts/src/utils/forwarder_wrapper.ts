@@ -1,4 +1,4 @@
-import { Order, OrderTransactionOpts } from '0x.js';
+import { Order, OrderTransactionOpts, ZeroEx } from '0x.js';
 import { ContractAbi, TransactionReceiptWithDecodedLogs } from '@0xproject/types';
 import { AbiDecoder, BigNumber } from '@0xproject/utils';
 import { Web3Wrapper } from '@0xproject/web3-wrapper';
@@ -11,34 +11,11 @@ import { ForwarderContract } from '../contract_wrappers/generated/forwarder';
 
 import { Artifact, SignatureType, SignedOrder, UnsignedOrder } from './types';
 
+const DEFAULT_FEE_PROPORTION = 0;
+
 export class ForwarderWrapper {
     private _web3Wrapper: Web3Wrapper;
     private _forwarderContract: ForwarderContract;
-    protected static async _getContractAbiAndAddressFromArtifactsAsync(
-        artifact: Artifact,
-        web3Wrapper: Web3Wrapper,
-        networkId: number,
-    ): Promise<[ContractAbi, string]> {
-        const contractAddress = this._getContractAddress(artifact, networkId);
-        const doesContractExist = await web3Wrapper.doesContractExistAtAddressAsync(contractAddress);
-        if (!doesContractExist) {
-            throw new Error(`Forwarder Contract ${contractAddress} Not Found on network ${networkId}`);
-        }
-        const abiAndAddress: [ContractAbi, string] = [artifact.networks[networkId].abi, contractAddress];
-        return abiAndAddress;
-    }
-    protected static _getContractAddress(artifact: Artifact, networkId: number, addressIfExists?: string): string {
-        let contractAddress;
-        if (_.isUndefined(addressIfExists)) {
-            contractAddress = artifact.networks[networkId].address;
-            if (_.isUndefined(contractAddress)) {
-                throw new Error('ContractDoesNotExist');
-            }
-        } else {
-            contractAddress = addressIfExists;
-        }
-        return contractAddress;
-    }
     constructor(contractInstance: ForwarderContract, web3Wrapper: Web3Wrapper) {
         this._forwarderContract = contractInstance;
         this._web3Wrapper = web3Wrapper;
@@ -56,14 +33,14 @@ export class ForwarderWrapper {
         };
         const params = formatters.createMarketSellOrders(orders, fillAmountWei);
         const feeParams = formatters.createMarketSellOrders(feeOrders, new BigNumber(0));
-        const txHash: string = await this._forwarderContract.buyTokens.sendTransactionAsync(
-            params.orders,
-            params.signatures,
-            feeParams.orders,
-            feeParams.signatures,
-            txOpts,
+        const tx = await this.buyTokensFeeAsync(
+            orders,
+            feeOrders,
+            fillAmountWei,
+            DEFAULT_FEE_PROPORTION,
+            ZeroEx.NULL_ADDRESS,
+            from,
         );
-        const tx = await this._getTxWithDecodedLogsAsync(txHash);
         return tx;
     }
     public async buyTokensFeeAsync(
@@ -80,7 +57,7 @@ export class ForwarderWrapper {
         };
         const params = formatters.createMarketSellOrders(orders, fillAmountWei);
         const feeParams = formatters.createMarketSellOrders(feeOrders, new BigNumber(0));
-        const txHash: string = await this._forwarderContract.buyTokensFee.sendTransactionAsync(
+        const txHash: string = await this._forwarderContract.buyTokens.sendTransactionAsync(
             params.orders,
             params.signatures,
             feeParams.orders,
@@ -148,6 +125,8 @@ export class ForwarderWrapper {
             params.signatures,
             feeParams.orders,
             feeParams.signatures,
+            DEFAULT_FEE_PROPORTION,
+            ZeroEx.NULL_ADDRESS,
             txOpts,
         );
         const tx = await this._getTxWithDecodedLogsAsync(txHash);

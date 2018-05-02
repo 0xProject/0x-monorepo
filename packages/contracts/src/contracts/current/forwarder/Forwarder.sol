@@ -30,32 +30,6 @@ contract Forwarder is
 
     /// @dev Buys the tokens, performing fee abstraction if required. This function is payable
     ///      and will convert all incoming ETH into WETH and perform the trade on behalf of the caller.
-    ///      The caller is sent all funds from the buy of orders (less any fees required to be paid in ZRX)
-    ///      If the purchased token amount does not meet some threshold (98%) then this function reverts.
-    /// @param orders An array of Order structs containing order specifications.
-    /// @param signatures An array of Proof that order has been created by maker.
-    /// @param feeOrders An array of Order structs containing order specifications for fees.
-    /// @param feeSignatures An array of Proof that order has been created by maker for the fee orders.
-    /// @return FillResults amounts filled and fees paid by maker and taker.
-    function buyTokens(
-        Order[] memory orders,
-        bytes[] memory signatures,
-        Order[] memory feeOrders,
-        bytes[] memory feeSignatures)
-        payable
-        public
-        returns (Exchange.FillResults)
-    {
-        require(msg.value > 0, "msg.value must be greater than 0");
-        address token = readAddress(orders[0].takerAssetData, 1);
-        require(token == address(ETHER_TOKEN), "order taker asset must be Wrapped ETH");
-
-        ETHER_TOKEN.deposit.value(msg.value)();
-        return marketSellTokens(orders, signatures, feeOrders, feeSignatures, msg.value);
-    }
-
-    /// @dev Buys the tokens, performing fee abstraction if required. This function is payable
-    ///      and will convert all incoming ETH into WETH and perform the trade on behalf of the caller.
     ///      This function allows for a deduction of a proportion of incoming ETH sent to the feeRecipient.
     ///      The caller is sent all tokens from the marketSell of orders (less any fees required to be paid in ZRX)
     ///      If the purchased token amount does not meet some threshold (98%) then this function reverts.
@@ -67,7 +41,7 @@ contract Forwarder is
     ///        is 1000, aka 10%. Supports up to 2 decimal places. I.e 0.59% is 59.
     /// @param feeRecipient An address of the fee recipient whom receives feeProportion of ETH.
     /// @return FillResults amounts filled and fees paid by maker and taker.
-    function buyTokensFee(
+    function buyTokens(
         Order[] memory orders,
         bytes[] memory signatures,
         Order[] memory feeOrders,
@@ -87,31 +61,6 @@ contract Forwarder is
         return marketSellTokens(orders, signatures, feeOrders, feeSignatures, remainingTakerTokenAmount);
     }
 
-    /// @dev Buys the NFT tokens, performing fee abstraction if required. This function is payable
-    ///      and will convert all incoming ETH into WETH and perform the trade on behalf of the caller.
-    ///      The caller is sent all NFT's from the fill of orders
-    ///      This function will revert unless all NFT's are purchased.
-    /// @param orders An array of Order struct containing order specifications.
-    /// @param signatures An array of Proof that order has been created by maker.
-    /// @param feeOrders An array of Order struct containing order specifications for fees.
-    /// @param feeSignatures An array of Proof that order has been created by maker for the fee orders.
-    /// @return FillResults amounts filled and fees paid by maker and taker.
-    function buyNFTTokens(
-        Order[] memory orders,
-        bytes[] memory signatures,
-        Order[] memory feeOrders,
-        bytes[] memory feeSignatures)
-        payable
-        public
-    {
-        require(msg.value > 0, "msg.value must be greater than 0");
-        address token = readAddress(orders[0].takerAssetData, 1);
-        require(token == address(ETHER_TOKEN), "order taker asset must be Wrapped ETH");
-
-        ETHER_TOKEN.deposit.value(msg.value)();
-        marketBuyNFTTokens(orders, signatures, feeOrders, feeSignatures, msg.value);
-    }
-
     /// @dev Buys the NFT tokens, performing fee abstraction if required and deducts a proportional fee to fee recipient.
     ///      This function is payable and will convert all incoming ETH into WETH and perform the trade on behalf of the caller.
     ///      The caller is sent all NFT's from the fill of orders. This function will revert unless all NFT's are purchased.
@@ -123,7 +72,7 @@ contract Forwarder is
     ///        is 1000, aka 10%. Supports up to 2 decimal places. I.e 0.59% is 59.
     /// @param feeRecipient An address of the fee recipient whom receives feeProportion of ETH.
     /// @return FillResults amounts filled and fees paid by maker and taker.
-    function buyNFTTokensFee(
+    function buyNFTTokens(
         Order[] memory orders,
         bytes[] memory signatures,
         Order[] memory feeOrders,

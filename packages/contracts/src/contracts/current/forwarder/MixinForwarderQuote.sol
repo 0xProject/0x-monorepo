@@ -32,13 +32,11 @@ contract MixinForwarderQuote is MixinForwarderCore {
             return fillResults;
         }
         fillResults.makerAssetFilledAmount = getPartialAmount(fillResults.takerAssetFilledAmount, order.takerAssetAmount, order.makerAssetAmount);
-        if (order.feeRecipientAddress != address(0)) {
-            if (order.makerFee > 0) {
-                fillResults.makerFeePaid = getPartialAmount(fillResults.takerAssetFilledAmount, order.takerAssetAmount, order.makerFee);
-            }
-            if (order.takerFee > 0) {
-                fillResults.takerFeePaid = getPartialAmount(fillResults.takerAssetFilledAmount, order.takerAssetAmount, order.takerFee);
-            }
+        if (order.makerFee > 0) {
+            fillResults.makerFeePaid = getPartialAmount(fillResults.takerAssetFilledAmount, order.takerAssetAmount, order.makerFee);
+        }
+        if (order.takerFee > 0) {
+            fillResults.takerFeePaid = getPartialAmount(fillResults.takerAssetFilledAmount, order.takerAssetAmount, order.takerFee);
         }
         return fillResults;
     }
