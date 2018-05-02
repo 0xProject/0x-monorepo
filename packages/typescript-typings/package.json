@@ -22,6 +22,7 @@
     "homepage": "https://github.com/0xProject/0x-monorepo/packages/typescript-typings#readme",
     "dependencies": {
         "@0xproject/types": "^0.6.1",
+        "@types/node": "*",
         "bignumber.js": "~4.1.0"
     },
     "devDependencies": {

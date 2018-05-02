@@ -67,7 +67,6 @@
         "@types/lodash": "4.14.104",
         "@types/mocha": "^2.2.42",
         "@types/query-string": "^5.0.1",
-        "@types/websocket": "^0.0.34",
         "async-child-process": "^1.1.1",
         "chai": "^4.0.1",
         "chai-as-promised": "^7.1.0",
