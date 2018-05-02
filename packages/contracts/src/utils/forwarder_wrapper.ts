@@ -12,6 +12,7 @@ import { ForwarderContract } from '../contract_wrappers/generated/forwarder';
 import { Artifact, SignatureType, SignedOrder, UnsignedOrder } from './types';
 
 const DEFAULT_FEE_PROPORTION = 0;
+const PERCENTAGE_DENOMINATOR = 10000;
 
 export class ForwarderWrapper {
     private _web3Wrapper: Web3Wrapper;
@@ -93,6 +94,22 @@ export class ForwarderWrapper {
         feeOrders: SignedOrder[],
         from: string,
     ): Promise<TransactionReceiptWithDecodedLogs> {
+        const tx = await this.buyNFTTokensFeeAsync(
+            orders,
+            feeOrders,
+            DEFAULT_FEE_PROPORTION,
+            ZeroEx.NULL_ADDRESS,
+            from,
+        );
+        return tx;
+    }
+    public async buyNFTTokensFeeAsync(
+        orders: SignedOrder[],
+        feeOrders: SignedOrder[],
+        feeProportion: number,
+        feeRecipient: string,
+        from: string,
+    ): Promise<TransactionReceiptWithDecodedLogs> {
         let fillAmountWei = _.reduce(
             orders,
             (totalAmount: BigNumber, order: SignedOrder) => {
@@ -116,6 +133,12 @@ export class ForwarderWrapper {
             );
             fillAmountWei = fillAmountWei.plus(feeQuote.takerAssetFilledAmount);
         }
+        if (feeProportion > 0) {
+            // Add to the total ETH transaction to ensure all NFTs can be filled after fees
+            // 150 = 1.5% = 0.015
+            const denominator = new BigNumber(1).minus(new BigNumber(feeProportion).dividedBy(PERCENTAGE_DENOMINATOR));
+            fillAmountWei = fillAmountWei.dividedBy(denominator).round(0, BigNumber.ROUND_UP);
+        }
         const txOpts = {
             from,
             value: fillAmountWei,
@@ -125,8 +148,8 @@ export class ForwarderWrapper {
             params.signatures,
             feeParams.orders,
             feeParams.signatures,
-            DEFAULT_FEE_PROPORTION,
-            ZeroEx.NULL_ADDRESS,
+            feeProportion,
+            feeRecipient,
             txOpts,
         );
         const tx = await this._getTxWithDecodedLogsAsync(txHash);

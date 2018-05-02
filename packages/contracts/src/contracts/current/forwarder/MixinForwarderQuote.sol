@@ -45,7 +45,7 @@ contract MixinForwarderQuote is MixinForwarderCore {
     ///      required to be paid. 
     /// @param orders An array of Order struct containing order specifications.
     /// @param takerAssetFillAmount A number representing the amount of this order to fill.
-    /// @return Amounts filled and fees paid by maker and taker.
+    /// @return FillResult amounts filled and fees paid by maker and taker.
     function expectedMaketSellFillResults(Order[] memory orders, uint256 takerAssetFillAmount)
         public
         view
@@ -59,6 +59,34 @@ contract MixinForwarderQuote is MixinForwarderCore {
 
             addFillResults(fillResult, quoteFillResult);
             if (fillResult.takerAssetFilledAmount == takerAssetFillAmount) {
+                break;
+            }
+        }
+        return fillResult;
+    }
+
+    /// @dev Calculates a total for buying makerTokenFillAmount across all orders. Including the fees
+    ///      required to be paid. 
+    /// @param orders An array of Order struct containing order specifications.
+    /// @param makerAssetFillAmount A number representing the amount of this order to fill.
+    /// @return FillResult amounts filled and fees paid by maker and taker.
+    function expectedMaketBuyFillResults(Order[] memory orders, uint256 makerAssetFillAmount)
+        public
+        view
+        returns (Exchange.FillResults memory fillResult)
+    {
+        for (uint256 i = 0; i < orders.length; i++) {
+            require(areBytesEqual(orders[i].makerAssetData, orders[0].makerAssetData), "all orders must be the same token pair");
+            uint256 remainingMakerAssetFillAmount = safeSub(makerAssetFillAmount, fillResult.makerAssetFilledAmount);
+            uint256 remainingTakerAssetFillAmount = getPartialAmount(
+                orders[i].takerAssetAmount,
+                orders[i].makerAssetAmount,
+                remainingMakerAssetFillAmount);
+
+            Exchange.FillResults memory quoteFillResult = fillOrderQuote(orders[i], remainingTakerAssetFillAmount);
+
+            addFillResults(fillResult, quoteFillResult);
+            if (fillResult.makerAssetFilledAmount == makerAssetFillAmount) {
                 break;
             }
         }

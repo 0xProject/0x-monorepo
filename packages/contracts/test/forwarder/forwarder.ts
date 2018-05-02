@@ -294,5 +294,25 @@ describe(ContractName.Forwarder, () => {
             const newOwnerTakerAsset = await erc721Token.ownerOf.callAsync(makerAssetId);
             expect(newOwnerTakerAsset).to.be.bignumber.equal(takerAddress);
         });
+        it('buys non fungible tokens with fee abstraction and pays fee to fee recipient', async () => {
+            const makerAssetId = erc721MakerAssetIds[0];
+            signedOrder = orderFactory.newSignedOrder({
+                makerAssetAmount: new BigNumber(1),
+                takerFee: ZeroEx.toBaseUnitAmount(new BigNumber(1), DECIMALS_DEFAULT),
+                makerAssetData: assetProxyUtils.encodeERC721ProxyData(erc721Token.address, makerAssetId),
+            });
+            signedOrders = [signedOrder];
+            const feeProportion = 10;
+            const tx = await forwarderWrapper.buyNFTTokensFeeAsync(
+                signedOrders,
+                feeOrders,
+                feeProportion,
+                feeRecipientAddress,
+                takerAddress,
+            );
+            expect(tx.status).to.be.eq(1);
+            const newOwnerTakerAsset = await erc721Token.ownerOf.callAsync(makerAssetId);
+            expect(newOwnerTakerAsset).to.be.bignumber.equal(takerAddress);
+        });
     });
 });
