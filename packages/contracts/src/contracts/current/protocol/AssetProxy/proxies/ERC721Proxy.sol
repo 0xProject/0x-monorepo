@@ -17,32 +17,30 @@
 */
 
 pragma solidity ^0.4.21;
+pragma experimental ABIEncoderV2;
 
-import "../IAssetProxy.sol";
 import "../../../utils/LibBytes/LibBytes.sol";
-import "../../../utils/Authorizable/Authorizable.sol";
 import "../../../tokens/ERC721Token/ERC721Token.sol";
+import "../MixinAssetProxy.sol";
 
 contract ERC721Proxy is
     LibBytes,
-    Authorizable,
-    IAssetProxy
+    MixinAssetProxy
 {
 
     uint8 constant PROXY_ID = 2;
 
-    /// @dev Transfers ERC721 tokens. Either succeeds or throws.
-    /// @param assetMetadata ERC721-encoded byte array
-    /// @param from Address to transfer token from.
-    /// @param to Address to transfer token to.
-    /// @param amount Amount of token to transfer.
-    function transferFrom(
-        bytes assetMetadata,
+    /// @dev Internal version of `transferFrom`.
+    /// @param assetMetadata Encoded byte array.
+    /// @param from Address to transfer asset from.
+    /// @param to Address to transfer asset to.
+    /// @param amount Amount of asset to transfer.
+    function transferFromInternal(
+        bytes memory assetMetadata,
         address from,
         address to,
         uint256 amount)
-        external
-        onlyAuthorized
+        internal
     {
         // Data must be intended for this proxy.
         require(uint8(assetMetadata[0]) == PROXY_ID);
