@@ -502,11 +502,12 @@ export interface TokenState {
     price?: BigNumber;
 }
 
-// TODO: Add topTokens and headerUrl properties once available from backend
+// TODO: Add topTokens property once available from backend
 export interface WebsiteBackendRelayerInfo {
     name: string;
     dailyTxnVolume: string;
     url: string;
+    headerImgUrl: string;
 }
 
 export interface WebsiteBackendPriceInfo {
