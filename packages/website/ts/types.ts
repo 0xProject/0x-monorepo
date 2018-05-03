@@ -504,7 +504,6 @@ export interface TokenState {
 
 // TODO: Add topTokens and headerUrl properties once available from backend
 export interface WebsiteBackendRelayerInfo {
-    id: string;
     name: string;
     dailyTxnVolume: string;
     url: string;
