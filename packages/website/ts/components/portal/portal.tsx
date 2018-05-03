@@ -221,7 +221,7 @@ export class Portal extends React.Component<PortalProps, PortalState> {
                         currentTokenAddress={''}
                         onTokenChosen={this._onTokenChosen.bind(this)}
                         tokenByAddress={this.props.tokenByAddress}
-                        tokenVisibility={TokenVisibility.ALL}
+                        tokenVisibility={TokenVisibility.UNTRACKED}
                     />
                 </div>
             </div>
