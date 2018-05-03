@@ -507,6 +507,7 @@ export interface WebsiteBackendRelayerInfo {
     name: string;
     dailyTxnVolume: string;
     url: string;
+    appUrl?: string;
     headerImgUrl: string;
 }
 
