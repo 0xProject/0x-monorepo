@@ -37,6 +37,8 @@ interface Project {
 }
 
 const THROTTLE_TIMEOUT = 100;
+const WHATS_NEW_TITLE = '18 ideas for 0x relayers in 2018';
+const WHATS_NEW_URL = 'https://blog.0xproject.com/18-ideas-for-0x-relayers-in-2018-80a1498b955f';
 
 const relayersAndDappProjects: Project[] = [
     {
@@ -233,6 +235,7 @@ export class Landing extends React.Component<LandingProps, LandingState> {
         return (
             <div className="clearfix py4" style={{ backgroundColor: colors.heroGrey }}>
                 <div className="mx-auto max-width-4 clearfix">
+                    {this._renderWhatsNew()}
                     <div className="lg-pt4 md-pt4 sm-pt2 lg-pb4 md-pb4 lg-my4 md-my4 sm-mt2 sm-mb4 clearfix">
                         <div className="col lg-col-5 md-col-5 col-12 sm-center">
                             <img src="/images/landing/hero_chip_image.png" height={isSmallScreen ? 300 : 395} />
@@ -299,6 +302,28 @@ export class Landing extends React.Component<LandingProps, LandingState> {
                         </div>
                     </div>
                 </div>
+            </div>
+        );
+    }
+    private _renderWhatsNew() {
+        return (
+            <div className="sm-center sm-px1">
+                <a href={WHATS_NEW_URL} target="_blank" className="inline-block text-decoration-none">
+                    <div className="flex sm-pl0 md-pl2 lg-pl0" style={{ fontFamily: 'Roboto Mono', fontWeight: 600 }}>
+                        <div
+                            className="mr1 px1"
+                            style={{
+                                backgroundColor: colors.lightTurquois,
+                                borderRadius: 3,
+                                color: colors.heroGrey,
+                                height: 23,
+                            }}
+                        >
+                            New
+                        </div>
+                        <div style={{ color: colors.darkGrey }}>{WHATS_NEW_TITLE}</div>
+                    </div>
+                </a>
             </div>
         );
     }
