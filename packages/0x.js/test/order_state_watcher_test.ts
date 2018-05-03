@@ -5,6 +5,7 @@ import * as _ from 'lodash';
 import 'mocha';
 
 import {
+    BlockParamLiteral,
     ExchangeContractErrs,
     OrderState,
     OrderStateInvalid,
@@ -116,6 +117,32 @@ describe('OrderStateWatcher', () => {
             orderStateWatcher.subscribe(_.noop);
             expect(() => orderStateWatcher.subscribe(_.noop)).to.throw(ZeroExError.SubscriptionAlreadyPresent);
         });
+    });
+    it('should validate the order on addOrder when configured', (done: DoneCallback) => {
+        (async () => {
+            signedOrder = await fillScenarios.createFillableSignedOrderAsync(
+                makerToken.address,
+                takerToken.address,
+                maker,
+                taker,
+                fillableAmount,
+            );
+
+            const validateOrderStateWatcher = zeroEx.createOrderStateWatcher({
+                validateOnAddOrder: true,
+                stateLayer: BlockParamLiteral.Latest,
+            });
+            const orderHash = ZeroEx.getOrderHashHex(signedOrder);
+            const callback = reportNodeCallbackErrors(done)((orderState: OrderState) => {
+                expect(orderState.isValid).to.be.true();
+                const validOrderState = orderState as OrderStateValid;
+                expect(validOrderState.orderHash).to.be.equal(orderHash);
+                validateOrderStateWatcher.removeOrder(orderHash);
+                validateOrderStateWatcher.unsubscribe();
+            });
+            validateOrderStateWatcher.subscribe(callback);
+            validateOrderStateWatcher.addOrder(signedOrder);
+        })().catch(done);
     });
     describe('tests with cleanup', async () => {
         afterEach(async () => {

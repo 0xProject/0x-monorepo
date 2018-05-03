@@ -75,6 +75,7 @@ export class OrderStateWatcher {
     private _balanceAndProxyAllowanceLazyStore: BalanceAndProxyAllowanceLazyStore;
     private _cleanupJobInterval: number;
     private _cleanupJobIntervalIdIfExists?: NodeJS.Timer;
+    private _validateOnAddOrder: boolean;
     constructor(
         web3Wrapper: Web3Wrapper,
         token: TokenWrapper,
@@ -104,6 +105,8 @@ export class OrderStateWatcher {
             _.isUndefined(config) || _.isUndefined(config.cleanupJobIntervalMs)
                 ? DEFAULT_CLEANUP_JOB_INTERVAL_MS
                 : config.cleanupJobIntervalMs;
+        this._validateOnAddOrder =
+            _.isUndefined(config) || _.isUndefined(config.validateOnAddOrder) ? false : config.validateOnAddOrder;
     }
     /**
      * Add an order to the orderStateWatcher. Before the order is added, it's
@@ -118,6 +121,9 @@ export class OrderStateWatcher {
         this._addToDependentOrderHashes(signedOrder, orderHash);
         const expirationUnixTimestampMs = signedOrder.expirationUnixTimestampSec.times(1000);
         this._expirationWatcher.addOrder(orderHash, expirationUnixTimestampMs);
+        if (this._validateOnAddOrder) {
+            void this._emitRevalidateOrdersAsync([orderHash]);
+        }
     }
     /**
      * Removes an order from the orderStateWatcher

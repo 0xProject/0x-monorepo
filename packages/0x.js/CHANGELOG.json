@@ -22,6 +22,10 @@
             {
                 "note": "Update Web3 Provider Engine to 14.0.4",
                 "pr": 555
+            },
+            {
+                "note": "Order Watcher config to validate order when calling addOrder",
+                "pr": 566
             }
         ]
     },
