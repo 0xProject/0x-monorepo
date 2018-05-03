@@ -22,6 +22,32 @@ export class ForwarderWrapper {
         this._web3Wrapper = web3Wrapper;
         this._web3Wrapper.abiDecoder.addABI(contractInstance.abi);
     }
+    public async buyExactTokensAsync(
+        orders: SignedOrder[],
+        feeOrders: SignedOrder[],
+        tokenAmount: BigNumber,
+        fillAmountWei: BigNumber,
+        from: string,
+    ): Promise<TransactionReceiptWithDecodedLogs> {
+        const txOpts = {
+            from,
+            value: fillAmountWei,
+        };
+        const params = formatters.createMarketBuyOrders(orders, fillAmountWei);
+        const feeParams = formatters.createMarketBuyOrders(feeOrders, new BigNumber(0));
+        const txHash: string = await this._forwarderContract.buyExactTokens.sendTransactionAsync(
+            params.orders,
+            params.signatures,
+            feeParams.orders,
+            feeParams.signatures,
+            tokenAmount,
+            DEFAULT_FEE_PROPORTION,
+            ZeroEx.NULL_ADDRESS,
+            txOpts,
+        );
+        const tx = await this._getTxWithDecodedLogsAsync(txHash);
+        return tx;
+    }
     public async buyTokensAsync(
         orders: SignedOrder[],
         feeOrders: SignedOrder[],

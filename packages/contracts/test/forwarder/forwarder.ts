@@ -36,6 +36,22 @@ const expect = chai.expect;
 const blockchainLifecycle = new BlockchainLifecycle(web3Wrapper);
 const DECIMALS_DEFAULT = 18;
 
+function debugLogs(tx: TransactionReceiptWithDecodedLogs) {
+    _.each(tx.logs, log => {
+        // tslint:disable-next-line:no-console
+        // console.log((log as any).event);
+        if (_.isObject((log as any).args)) {
+            _.each((log as any).args, (v: any, k: any) => {
+                // tslint:disable-next-line:no-console
+                console.log(k.toString(), v.toString());
+            });
+        } else {
+            // tslint:disable-next-line:no-console
+            console.log((log as any).args);
+        }
+    });
+}
+
 describe(ContractName.Forwarder, () => {
     let makerAddress: string;
     let owner: string;
@@ -265,6 +281,87 @@ describe(ContractName.Forwarder, () => {
             expect(takerBalanceAfter).to.be.bignumber.eq(
                 takerBalanceBefore.plus(buyTokensQuote.makerAssetFilledAmount),
             );
+        });
+    });
+    describe.only('buyExactTokens', () => {
+        it('should buy the exact amount of tokens', async () => {
+            const buyTokenAmount = signedOrder.makerAssetAmount.div(2);
+            const initEthBalance = await web3Wrapper.getBalanceInWeiAsync(takerAddress);
+            const balancesBefore = await erc20Wrapper.getBalancesAsync();
+            const rate = signedOrder.makerAssetAmount.dividedBy(signedOrder.takerAssetAmount);
+            const fillAmount = buyTokenAmount.dividedToIntegerBy(rate);
+            feeOrders = [];
+            const tx = await forwarderWrapper.buyExactTokensAsync(
+                signedOrders,
+                feeOrders,
+                buyTokenAmount,
+                fillAmount,
+                takerAddress,
+            );
+            const newBalances = await erc20Wrapper.getBalancesAsync();
+            const takerBalanceBefore = balancesBefore[takerAddress][defaultMakerAssetAddress];
+            const takerBalanceAfter = newBalances[takerAddress][defaultMakerAssetAddress];
+            const afterEthBalance = await web3Wrapper.getBalanceInWeiAsync(takerAddress);
+            const expectedEthBalanceAfterGasCosts = initEthBalance.minus(fillAmount).minus(tx.gasUsed);
+            expect(takerBalanceAfter).to.be.bignumber.eq(takerBalanceBefore.plus(buyTokenAmount));
+            expect(afterEthBalance).to.be.bignumber.eq(expectedEthBalanceAfterGasCosts);
+        });
+        it('should buy the exact amount of tokens and return excess ETH', async () => {
+            const buyTokenAmount = signedOrder.makerAssetAmount.div(2);
+            const initEthBalance = await web3Wrapper.getBalanceInWeiAsync(takerAddress);
+            const balancesBefore = await erc20Wrapper.getBalancesAsync();
+            const rate = signedOrder.makerAssetAmount.dividedBy(signedOrder.takerAssetAmount);
+            const fillAmount = buyTokenAmount.dividedToIntegerBy(rate);
+            const excessFillAmount = fillAmount.times(2);
+            feeOrders = [];
+            const tx = await forwarderWrapper.buyExactTokensAsync(
+                signedOrders,
+                feeOrders,
+                buyTokenAmount,
+                excessFillAmount,
+                takerAddress,
+            );
+            const newBalances = await erc20Wrapper.getBalancesAsync();
+            const takerBalanceBefore = balancesBefore[takerAddress][defaultMakerAssetAddress];
+            const takerBalanceAfter = newBalances[takerAddress][defaultMakerAssetAddress];
+            const afterEthBalance = await web3Wrapper.getBalanceInWeiAsync(takerAddress);
+            const expectedEthBalanceAfterGasCosts = initEthBalance.minus(fillAmount).minus(tx.gasUsed);
+            expect(takerBalanceAfter).to.be.bignumber.eq(takerBalanceBefore.plus(buyTokenAmount));
+            expect(afterEthBalance).to.be.bignumber.eq(expectedEthBalanceAfterGasCosts);
+        });
+        it('should buy the exact amount of tokens when buying zrx with fee abstraction', async () => {
+            signedOrder = orderFactory.newSignedOrder({
+                makerAssetData: assetProxyUtils.encodeERC20ProxyData(zrxToken.address),
+                takerFee: ZeroEx.toBaseUnitAmount(new BigNumber(1), DECIMALS_DEFAULT),
+            });
+            signedOrdersWithFee = [signedOrder];
+            feeOrders = [];
+            const buyTokenAmount = signedOrder.makerAssetAmount.div(2);
+            const initEthBalance = await web3Wrapper.getBalanceInWeiAsync(takerAddress);
+            const balancesBefore = await erc20Wrapper.getBalancesAsync();
+            // Rate is in ZRX which has fees so more ETH is required for the same expected amount
+            const rate = signedOrder.takerAssetAmount.dividedBy(
+                signedOrder.makerAssetAmount.minus(signedOrder.takerFee),
+            );
+            let fillAmountInZRX = buyTokenAmount;
+            const feeAmountInZRX = buyTokenAmount.times(signedOrder.takerFee.dividedBy(signedOrder.takerAssetAmount));
+            fillAmountInZRX = fillAmountInZRX.plus(feeAmountInZRX);
+            const fillAmount = fillAmountInZRX.times(rate).round();
+            const tx = await forwarderWrapper.buyExactTokensAsync(
+                signedOrdersWithFee,
+                feeOrders,
+                buyTokenAmount,
+                fillAmount,
+                takerAddress,
+            );
+            const newBalances = await erc20Wrapper.getBalancesAsync();
+            const takerBalanceBefore = balancesBefore[takerAddress][zrxToken.address];
+            const takerBalanceAfter = newBalances[takerAddress][zrxToken.address];
+            const afterEthBalance = await web3Wrapper.getBalanceInWeiAsync(takerAddress);
+            const expectedCostAfterGas = fillAmount.plus(tx.gasUsed);
+            // TODO this should be calculated precisely from the returned amount of ZRX * rate + gas Used
+            expect(takerBalanceAfter).to.be.bignumber.greaterThan(takerBalanceBefore.plus(buyTokenAmount));
+            expect(afterEthBalance).to.be.bignumber.greaterThan(initEthBalance.minus(expectedCostAfterGas));
         });
     });
     describe('Non fungible tokens', async () => {

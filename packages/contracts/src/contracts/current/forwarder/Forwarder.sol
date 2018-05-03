@@ -1,4 +1,4 @@
-pragma solidity ^0.4.22;
+pragma solidity 0.4.22;
 pragma experimental ABIEncoderV2;
 
 import "./MixinERC721.sol";
@@ -26,6 +26,14 @@ contract Forwarder is
         ETHER_TOKEN = _etherToken;
         ZRX_TOKEN = _zrxToken;
         setERC20ProxyApproval(assetProxyId);
+    }
+
+    /// @dev Default payabale function, this allows us to withdraw from WETH
+    function()
+        public
+        payable
+    {
+        require(msg.sender == address(ETHER_TOKEN), "Default function only allowed by WETH");
     }
 
     /// @dev Buys the tokens, performing fee abstraction if required. This function is payable
@@ -90,13 +98,19 @@ contract Forwarder is
         address token = readAddress(orders[0].takerAssetData, 1);
         require(token == address(ETHER_TOKEN), "order taker asset must be Wrapped ETH");
 
-        uint256 remainingTakerTokenAmount = payAndDeductFee(msg.value, feeProportion, feeRecipient);
+        uint256 remainingTakerTokenAmount = msg.value;
         ETHER_TOKEN.deposit.value(remainingTakerTokenAmount)();
         Exchange.FillResults memory totalFillResult = marketBuyTokens(orders, signatures, feeOrders, feeSignatures, tokenAmount);
-        // Return all of the excess WETH if any 
+        require(totalFillResult.makerAssetFilledAmount >= tokenAmount, "traded amount does not meet acceptable threshold");
         remainingTakerTokenAmount = safeSub(remainingTakerTokenAmount, totalFillResult.takerAssetFilledAmount);
+
+        // Return all of the excess WETH if any 
         if (remainingTakerTokenAmount > 0) {
             ETHER_TOKEN.withdraw(remainingTakerTokenAmount);
+            // Fees proportional to the amount traded
+            // uint256 totalFeeAmount = safeSub(remainingTakerTokenAmount, payAndDeductFee(totalFillResult.takerAssetFilledAmount, feeProportion, feeRecipient));
+            // remainingTakerTokenAmount = safeSub(remainingTakerTokenAmount, totalFeeAmount);
+            // TODO allow fee deduction proportional to amount traded if specified
             msg.sender.transfer(remainingTakerTokenAmount);
         }
         return totalFillResult;
@@ -228,23 +242,25 @@ contract Forwarder is
         address makerTokenAddress = readAddress(orders[0].makerAssetData, 1); 
         // We can short cut here for effeciency and use buyFeeTokens if maker asset token is ZRX
         // this buys us exactly that amount taking into account the fees
+        Exchange.FillResults memory requestedTokensResult;
         if (makerTokenAddress == address(ZRX_TOKEN)) {
             // TODO we read address twice here if it is ZRX
-            return buyFeeTokens(orders, signatures, tokenAmount);
+            requestedTokensResult = buyFeeTokens(orders, signatures, tokenAmount);
+        } else {
+            Exchange.FillResults memory expectedMarketBuyFillResults = expectedMaketBuyFillResults(orders, tokenAmount);
+            if (expectedMarketBuyFillResults.takerFeePaid > 0) {
+                // Fees are required for these orders. Buy enough ZRX to cover the future market buy
+                Exchange.FillResults memory feeTokensResult = buyFeeTokens(feeOrders, feeSignatures, expectedMarketBuyFillResults.takerFeePaid);
+                totalFillResult.takerAssetFilledAmount = feeTokensResult.takerAssetFilledAmount;
+                totalFillResult.takerFeePaid = feeTokensResult.takerFeePaid;
+            }
+            // Make our market sell to buy the requested tokens with the remaining balance
+            requestedTokensResult = EXCHANGE.marketBuyOrders(orders, tokenAmount, signatures);
         }
-        Exchange.FillResults memory expectedMarketBuyFillResults = expectedMaketBuyFillResults(orders, tokenAmount);
-        if (expectedMarketBuyFillResults.takerFeePaid > 0) {
-            // Fees are required for these orders. Buy enough ZRX to cover the future market buy
-            Exchange.FillResults memory feeTokensResult = buyFeeTokens(feeOrders, feeSignatures, expectedMarketBuyFillResults.takerFeePaid);
-            totalFillResult.takerAssetFilledAmount = feeTokensResult.takerAssetFilledAmount;
-            totalFillResult.takerFeePaid = feeTokensResult.takerFeePaid;
-        }
-        // Make our market sell to buy the requested tokens with the remaining balance
-        Exchange.FillResults memory requestedTokensResult = EXCHANGE.marketBuyOrders(orders, tokenAmount, signatures);
         addFillResults(totalFillResult, requestedTokensResult);
-        require(requestedTokensResult.makerAssetFilledAmount >= tokenAmount, "traded amount did not meet acceptable threshold");
+        require(totalFillResult.makerAssetFilledAmount >= tokenAmount, "traded amount did not meet acceptable threshold");
         // Transfer all tokens to msg.sender
-        transferToken(makerTokenAddress, msg.sender, requestedTokensResult.makerAssetFilledAmount);
+        transferToken(makerTokenAddress, msg.sender, totalFillResult.makerAssetFilledAmount);
         return totalFillResult;
     }
 
@@ -310,5 +326,4 @@ contract Forwarder is
             ZRX_TOKEN.approve(proxyAddress, MAX_UINT);
         }
     }
-
 }
