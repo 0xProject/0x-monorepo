@@ -36,22 +36,6 @@ const expect = chai.expect;
 const blockchainLifecycle = new BlockchainLifecycle(web3Wrapper);
 const DECIMALS_DEFAULT = 18;
 
-function debugLogs(tx: TransactionReceiptWithDecodedLogs) {
-    _.each(tx.logs, log => {
-        // tslint:disable-next-line:no-console
-        // console.log((log as any).event);
-        if (_.isObject((log as any).args)) {
-            _.each((log as any).args, (v: any, k: any) => {
-                // tslint:disable-next-line:no-console
-                console.log(k.toString(), v.toString());
-            });
-        } else {
-            // tslint:disable-next-line:no-console
-            console.log((log as any).args);
-        }
-    });
-}
-
 describe(ContractName.Forwarder, () => {
     let makerAddress: string;
     let owner: string;
@@ -176,13 +160,13 @@ describe(ContractName.Forwarder, () => {
     afterEach(async () => {
         await blockchainLifecycle.revertAsync();
     });
-    describe('buyTokens', () => {
+    describe('marketBuyTokens', () => {
         it('should fill the order', async () => {
             const fillAmount = signedOrder.takerAssetAmount.div(2);
             const makerBalanceBefore = erc20Balances[makerAddress][defaultMakerAssetAddress];
             const takerBalanceBefore = erc20Balances[takerAddress][defaultMakerAssetAddress];
             feeOrders = [];
-            const tx = await forwarderWrapper.buyTokensAsync(signedOrders, feeOrders, fillAmount, takerAddress);
+            const tx = await forwarderWrapper.marketBuyTokensAsync(signedOrders, feeOrders, fillAmount, takerAddress);
             const newBalances = await erc20Wrapper.getBalancesAsync();
             const makerBalanceAfter = newBalances[makerAddress][defaultMakerAssetAddress];
             const takerBalanceAfter = newBalances[takerAddress][defaultMakerAssetAddress];
@@ -197,7 +181,7 @@ describe(ContractName.Forwarder, () => {
         it('should fill the order and perform fee abstraction', async () => {
             const fillAmount = signedOrder.takerAssetAmount.div(4);
             const takerBalanceBefore = erc20Balances[takerAddress][defaultMakerAssetAddress];
-            await forwarderWrapper.buyTokensAsync(signedOrdersWithFee, feeOrders, fillAmount, takerAddress);
+            await forwarderWrapper.marketBuyTokensAsync(signedOrdersWithFee, feeOrders, fillAmount, takerAddress);
             const newBalances = await erc20Wrapper.getBalancesAsync();
             const takerBalanceAfter = newBalances[takerAddress][defaultMakerAssetAddress];
 
@@ -214,7 +198,7 @@ describe(ContractName.Forwarder, () => {
             const fillAmount = signedOrder.takerAssetAmount.div(2);
             const feeProportion = 150; // 1.5%
             feeOrders = [];
-            const txHash = await forwarderWrapper.buyTokensFeeAsync(
+            const txHash = await forwarderWrapper.marketBuyTokensFeeAsync(
                 signedOrders,
                 feeOrders,
                 fillAmount,
@@ -241,7 +225,7 @@ describe(ContractName.Forwarder, () => {
             const feeProportion = 1500; // 15.0%
             feeOrders = [];
             try {
-                const txHash = await forwarderWrapper.buyTokensFeeAsync(
+                const txHash = await forwarderWrapper.marketBuyTokensFeeAsync(
                     signedOrders,
                     feeOrders,
                     fillAmount,
@@ -257,25 +241,30 @@ describe(ContractName.Forwarder, () => {
         });
     });
     describe('quote', () => {
-        it('buyTokensQuote - no fees', async () => {
+        it('marketBuyTokensQuote - no fees', async () => {
             const fillAmount = signedOrder.takerAssetAmount.div(4);
             const takerBalanceBefore = erc20Balances[takerAddress][defaultMakerAssetAddress];
-            const sellQuote = await forwarderWrapper.buyTokensQuoteAsync([signedOrder], [], fillAmount);
+            const sellQuote = await forwarderWrapper.marketBuyTokensQuoteAsync([signedOrder], [], fillAmount);
             feeOrders = [];
-            const tx = await forwarderWrapper.buyTokensAsync(signedOrders, feeOrders, fillAmount, takerAddress);
+            const tx = await forwarderWrapper.marketBuyTokensAsync(signedOrders, feeOrders, fillAmount, takerAddress);
             const newBalances = await erc20Wrapper.getBalancesAsync();
             const takerBalanceAfter = newBalances[takerAddress][defaultMakerAssetAddress];
             expect(takerBalanceAfter).to.be.bignumber.eq(takerBalanceBefore.plus(sellQuote.makerAssetFilledAmount));
         });
-        it('buyTokensQuote - fee abstraction', async () => {
+        it('marketBuyTokensQuote - fee abstraction', async () => {
             const fillAmount = signedOrder.takerAssetAmount.div(2);
             const takerBalanceBefore = erc20Balances[takerAddress][defaultMakerAssetAddress];
-            const buyTokensQuote = await forwarderWrapper.buyTokensQuoteAsync(
+            const buyTokensQuote = await forwarderWrapper.marketBuyTokensQuoteAsync(
                 signedOrdersWithFee,
                 feeOrders,
                 fillAmount,
             );
-            const tx = await forwarderWrapper.buyTokensAsync(signedOrdersWithFee, feeOrders, fillAmount, takerAddress);
+            const tx = await forwarderWrapper.marketBuyTokensAsync(
+                signedOrdersWithFee,
+                feeOrders,
+                fillAmount,
+                takerAddress,
+            );
             const newBalances = await erc20Wrapper.getBalancesAsync();
             const takerBalanceAfter = newBalances[takerAddress][defaultMakerAssetAddress];
             expect(takerBalanceAfter).to.be.bignumber.eq(
@@ -283,7 +272,7 @@ describe(ContractName.Forwarder, () => {
             );
         });
     });
-    describe.only('buyExactTokens', () => {
+    describe('buyExactTokens', () => {
         it('should buy the exact amount of tokens', async () => {
             const buyTokenAmount = signedOrder.makerAssetAmount.div(2);
             const initEthBalance = await web3Wrapper.getBalanceInWeiAsync(takerAddress);

@@ -30,13 +30,19 @@ contract MixinBuyNFTTokens is
         address feeRecipient)
         payable
         public
+        returns (Exchange.FillResults)
     {
         require(msg.value > 0, "msg.value must be greater than 0");
         address token = readAddress(orders[0].takerAssetData, 1);
         require(token == address(ETHER_TOKEN), "order taker asset must be Wrapped ETH");
-        uint256 remainingTakerTokenAmount = payAndDeductFee(msg.value, feeProportion, feeRecipient);
+        uint256 remainingTakerTokenAmount = msg.value;
         ETHER_TOKEN.deposit.value(remainingTakerTokenAmount)();
-        buyNFTTokensInternal(orders, signatures, feeOrders, feeSignatures, remainingTakerTokenAmount);
+        Exchange.FillResults memory totalFillResults = buyNFTTokensInternal(
+            orders, signatures, feeOrders, feeSignatures, remainingTakerTokenAmount);
+
+        remainingTakerTokenAmount = safeSub(remainingTakerTokenAmount, totalFillResults.takerAssetFilledAmount);
+        withdrawPayAndDeductFee(remainingTakerTokenAmount, totalFillResults.takerAssetFilledAmount, feeProportion, feeRecipient);
+        return totalFillResults;
     }
 
     function buyNFTTokensInternal(
@@ -46,16 +52,17 @@ contract MixinBuyNFTTokens is
         bytes[] memory feeSignatures,
         uint256 takerTokenAmount)
         private
+        returns (Exchange.FillResults memory totalFillResults)
     {
         uint256 totalFeeAmount;
-        uint256 totalTakerAmountSpent;
         for (uint256 i = 0; i < orders.length; i++) {
             totalFeeAmount = safeAdd(totalFeeAmount, orders[i].takerFee);
         }
         if (totalFeeAmount > 0) {
             // Fees are required for these orders. Buy enough ZRX to cover the future fill
             Exchange.FillResults memory feeTokensResult = buyFeeTokensInternal(feeOrders, feeSignatures, totalFeeAmount);
-            totalTakerAmountSpent = safeAdd(totalTakerAmountSpent, feeTokensResult.takerAssetFilledAmount);
+            totalFillResults.takerFeePaid = feeTokensResult.takerFeePaid;
+            totalFillResults.takerAssetFilledAmount = feeTokensResult.takerAssetFilledAmount;
         }
         for (uint256 n = 0; n < orders.length; n++) {
             Exchange.FillResults memory fillOrderResults = EXCHANGE.fillOrder(
@@ -63,14 +70,16 @@ contract MixinBuyNFTTokens is
                 orders[n].takerAssetAmount,
                 signatures[n]
             );
+            addFillResults(totalFillResults, fillOrderResults);
             // Fail if it wasn't fully filled otherwise we will keep WETH
             require(fillOrderResults.takerAssetFilledAmount == orders[n].takerAssetAmount, "failed to completely fill order");
-            totalTakerAmountSpent = safeAdd(totalTakerAmountSpent, fillOrderResults.takerAssetFilledAmount);
             address makerTokenAddress = readAddress(orders[n].makerAssetData, 1);
             uint256 tokenId = readUint256(orders[n].makerAssetData, 21);
             transferNFTToken(makerTokenAddress, msg.sender, tokenId);
         }
         // Prevent a user from overestimating the amount of ETH required
-        require(isAcceptableThreshold(takerTokenAmount, totalTakerAmountSpent), "traded amount does not meet acceptable threshold");
+        require(isAcceptableThreshold(
+            takerTokenAmount, totalFillResults.takerAssetFilledAmount), "traded amount does not meet acceptable threshold");
+        return totalFillResults;
     }
 }
