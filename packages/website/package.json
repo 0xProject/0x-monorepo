@@ -1,6 +1,6 @@
 {
     "name": "@0xproject/website",
-    "version": "0.0.28",
+    "version": "0.0.29",
     "private": true,
     "description": "Website and 0x portal dapp",
     "scripts": {
@@ -14,13 +14,13 @@
     "author": "Fabio Berger",
     "license": "Apache-2.0",
     "dependencies": {
-        "0x.js": "^0.36.3",
-        "@0xproject/react-docs": "^0.0.8",
-        "@0xproject/react-shared": "^0.1.3",
-        "@0xproject/subproviders": "^0.9.0",
-        "@0xproject/typescript-typings": "^0.2.0",
-        "@0xproject/utils": "^0.5.2",
-        "@0xproject/web3-wrapper": "^0.6.1",
+        "0x.js": "^0.37.0",
+        "@0xproject/react-docs": "^0.0.9",
+        "@0xproject/react-shared": "^0.1.4",
+        "@0xproject/subproviders": "^0.10.0",
+        "@0xproject/typescript-typings": "^0.3.0",
+        "@0xproject/utils": "^0.6.0",
+        "@0xproject/web3-wrapper": "^0.6.2",
         "accounting": "^0.4.1",
         "basscss": "^8.0.3",
         "blockies": "^0.0.2",

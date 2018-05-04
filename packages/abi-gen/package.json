@@ -1,6 +1,6 @@
 {
     "name": "@0xproject/abi-gen",
-    "version": "0.2.11",
+    "version": "0.2.12",
     "description": "Generate contract wrappers from ABI and handlebars templates",
     "main": "lib/index.js",
     "types": "lib/index.d.ts",
@@ -24,9 +24,9 @@
     },
     "homepage": "https://github.com/0xProject/0x-monorepo/packages/abi-gen/README.md",
     "dependencies": {
-        "@0xproject/types": "^0.6.1",
-        "@0xproject/typescript-typings": "^0.2.0",
-        "@0xproject/utils": "^0.5.2",
+        "@0xproject/types": "^0.6.2",
+        "@0xproject/typescript-typings": "^0.3.0",
+        "@0xproject/utils": "^0.6.0",
         "chalk": "^2.3.0",
         "glob": "^7.1.2",
         "handlebars": "^4.0.11",
@@ -36,8 +36,8 @@
         "yargs": "^10.0.3"
     },
     "devDependencies": {
-        "@0xproject/monorepo-scripts": "^0.1.18",
-        "@0xproject/tslint-config": "^0.4.16",
+        "@0xproject/monorepo-scripts": "^0.1.19",
+        "@0xproject/tslint-config": "^0.4.17",
         "@types/glob": "^5.0.33",
         "@types/handlebars": "^4.0.36",
         "@types/mkdirp": "^0.5.1",

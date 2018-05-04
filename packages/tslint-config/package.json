@@ -1,6 +1,6 @@
 {
     "name": "@0xproject/tslint-config",
-    "version": "0.4.16",
+    "version": "0.4.17",
     "description": "Lint rules related to 0xProject for TSLint",
     "main": "tslint.json",
     "scripts": {
@@ -31,7 +31,7 @@
     },
     "homepage": "https://github.com/0xProject/0x-monorepo/packages/tslint-config/README.md",
     "devDependencies": {
-        "@0xproject/monorepo-scripts": "^0.1.18",
+        "@0xproject/monorepo-scripts": "^0.1.19",
         "@types/lodash": "4.14.104",
         "copyfiles": "^1.2.0",
         "shx": "^0.2.2",

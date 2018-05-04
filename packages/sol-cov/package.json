@@ -1,6 +1,6 @@
 {
     "name": "@0xproject/sol-cov",
-    "version": "0.0.8",
+    "version": "0.0.9",
     "description": "Generate coverage reports for Solidity code",
     "main": "lib/src/index.js",
     "types": "lib/src/index.d.ts",
@@ -43,9 +43,9 @@
     },
     "homepage": "https://github.com/0xProject/0x.js/packages/sol-cov/README.md",
     "dependencies": {
-        "@0xproject/subproviders": "^0.9.0",
-        "@0xproject/types": "^0.6.1",
-        "@0xproject/typescript-typings": "^0.2.0",
+        "@0xproject/subproviders": "^0.10.0",
+        "@0xproject/types": "^0.6.2",
+        "@0xproject/typescript-typings": "^0.3.0",
         "ethereumjs-util": "^5.1.1",
         "glob": "^7.1.2",
         "istanbul": "^0.4.5",
@@ -55,8 +55,8 @@
     },
     "devDependencies": {
         "@0xproject/deployer": "^0.3.5",
-        "@0xproject/monorepo-scripts": "^0.1.18",
-        "@0xproject/tslint-config": "^0.4.16",
+        "@0xproject/monorepo-scripts": "^0.1.19",
+        "@0xproject/tslint-config": "^0.4.17",
         "@types/istanbul": "^0.4.29",
         "@types/mocha": "^2.2.42",
         "@types/node": "^8.0.53",

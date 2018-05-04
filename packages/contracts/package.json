@@ -1,7 +1,7 @@
 {
     "private": true,
     "name": "contracts",
-    "version": "2.1.25",
+    "version": "2.1.26",
     "description": "Smart contract components of 0x protocol",
     "main": "index.js",
     "directories": {
@@ -40,8 +40,8 @@
     },
     "homepage": "https://github.com/0xProject/0x-monorepo/packages/contracts/README.md",
     "devDependencies": {
-        "@0xproject/dev-utils": "^0.3.6",
-        "@0xproject/tslint-config": "^0.4.16",
+        "@0xproject/dev-utils": "^0.4.0",
+        "@0xproject/tslint-config": "^0.4.17",
         "@types/lodash": "4.14.104",
         "@types/node": "^8.0.53",
         "@types/yargs": "^10.0.0",
@@ -60,12 +60,12 @@
         "yargs": "^10.0.3"
     },
     "dependencies": {
-        "0x.js": "^0.36.3",
-        "@0xproject/deployer": "^0.4.1",
-        "@0xproject/types": "^0.6.1",
-        "@0xproject/typescript-typings": "^0.2.0",
-        "@0xproject/utils": "^0.5.2",
-        "@0xproject/web3-wrapper": "^0.6.1",
+        "0x.js": "^0.37.0",
+        "@0xproject/deployer": "^0.4.2",
+        "@0xproject/types": "^0.6.2",
+        "@0xproject/typescript-typings": "^0.3.0",
+        "@0xproject/utils": "^0.6.0",
+        "@0xproject/web3-wrapper": "^0.6.2",
         "bn.js": "^4.11.8",
         "ethereumjs-abi": "^0.6.4",
         "ethereumjs-util": "^5.1.1",

@@ -1,7 +1,7 @@
 {
     "private": true,
     "name": "@0xproject/react-docs-example",
-    "version": "0.0.8",
+    "version": "0.0.9",
     "description": "An example app using react-docs",
     "scripts": {
         "lint": "tslint --project . 'ts/**/*.ts' 'ts/**/*.tsx'",
@@ -23,7 +23,7 @@
         "url": "https://github.com/0xProject/0x-monorepo.git"
     },
     "devDependencies": {
-        "@0xproject/tslint-config": "^0.4.16",
+        "@0xproject/tslint-config": "^0.4.17",
         "@types/lodash": "4.14.104",
         "@types/material-ui": "0.18.0",
         "@types/node": "^8.0.53",
@@ -46,7 +46,7 @@
         "webpack-dev-server": "^2.11.1"
     },
     "dependencies": {
-        "@0xproject/react-docs": "^0.0.8",
+        "@0xproject/react-docs": "^0.0.9",
         "basscss": "^8.0.3",
         "lodash": "^4.17.4",
         "material-ui": "^0.17.1",
