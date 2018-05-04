@@ -6,7 +6,8 @@
                 "note": "Update web3 provider engine to 14.0.4",
                 "pr": 555
             }
-        ]
+        ],
+        "timestamp": 1525428773
     },
     {
         "version": "0.3.6",

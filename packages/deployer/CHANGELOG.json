@@ -6,7 +6,8 @@
                 "note": "Add support for solidity 0.4.23",
                 "pr": 545
             }
-        ]
+        ],
+        "timestamp": 1525428773
     },
     {
         "version": "0.4.1",

@@ -18,7 +18,8 @@
                 "note": "Move `ZeroExError.InvalidSignature` to `@0xproject/order-utils` `OrderError.InvalidSignature`",
                 "pr": 559
             }
-        ]
+        ],
+        "timestamp": 1525428773
     },
     {
         "version": "0.36.3",
