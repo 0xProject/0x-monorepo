@@ -5,10 +5,10 @@ import "./MixinForwarderCore.sol";
 
 contract MixinForwarderQuote is MixinForwarderCore {
 
-    /// @dev Performs the 0x Exchange validation and calculations, without performing any state changes.
+    /// @dev Simulates the 0x Exchange fillOrder validation and calculations, without performing any state changes.
     /// @param order An Order struct containing order specifications.
     /// @param takerAssetFillAmount A number representing the amount of this order to fill.
-    /// @return Amounts filled and fees paid by maker and taker.
+    /// @return fillResults Amounts filled and fees paid by maker and taker.
     function fillOrderQuote(Order memory order, uint256 takerAssetFillAmount)
         public
         view
@@ -41,43 +41,43 @@ contract MixinForwarderQuote is MixinForwarderCore {
         return fillResults;
     }
 
-    /// @dev Calculates a total for selling takerTokenFillAmount across all orders. Including the fees
-    ///      required to be paid. 
+    /// @dev Calculates a FillResults total for selling takerAssetFillAmount over all orders. 
+    ///      Including the fees required to be paid. 
     /// @param orders An array of Order struct containing order specifications.
     /// @param takerAssetFillAmount A number representing the amount of this order to fill.
-    /// @return FillResult amounts filled and fees paid by maker and taker.
+    /// @return totalFillResults Amounts filled and fees paid by maker and taker.
     function expectedMaketSellFillResults(Order[] memory orders, uint256 takerAssetFillAmount)
         public
         view
-        returns (Exchange.FillResults memory fillResult)
+        returns (Exchange.FillResults memory totalFillResults)
     {
         for (uint256 i = 0; i < orders.length; i++) {
             require(areBytesEqual(orders[i].makerAssetData, orders[0].makerAssetData), "all orders must be the same token pair");
-            uint256 remainingTakerAssetFillAmount = safeSub(takerAssetFillAmount, fillResult.takerAssetFilledAmount);
+            uint256 remainingTakerAssetFillAmount = safeSub(takerAssetFillAmount, totalFillResults.takerAssetFilledAmount);
 
             Exchange.FillResults memory quoteFillResult = fillOrderQuote(orders[i], remainingTakerAssetFillAmount);
 
-            addFillResults(fillResult, quoteFillResult);
-            if (fillResult.takerAssetFilledAmount == takerAssetFillAmount) {
+            addFillResults(totalFillResults, quoteFillResult);
+            if (totalFillResults.takerAssetFilledAmount == takerAssetFillAmount) {
                 break;
             }
         }
-        return fillResult;
+        return totalFillResults;
     }
 
-    /// @dev Calculates a total for buying makerTokenFillAmount across all orders. Including the fees
-    ///      required to be paid. 
+    /// @dev Calculates a total FillResults for buying makerAssetFillAmount over all orders.
+    ///      Including the fees required to be paid. 
     /// @param orders An array of Order struct containing order specifications.
     /// @param makerAssetFillAmount A number representing the amount of this order to fill.
-    /// @return FillResult amounts filled and fees paid by maker and taker.
+    /// @return totalFillResults Amounts filled and fees paid by maker and taker.
     function expectedMaketBuyFillResults(Order[] memory orders, uint256 makerAssetFillAmount)
         public
         view
-        returns (Exchange.FillResults memory fillResult)
+        returns (Exchange.FillResults memory totalFillResults)
     {
         for (uint256 i = 0; i < orders.length; i++) {
             require(areBytesEqual(orders[i].makerAssetData, orders[0].makerAssetData), "all orders must be the same token pair");
-            uint256 remainingMakerAssetFillAmount = safeSub(makerAssetFillAmount, fillResult.makerAssetFilledAmount);
+            uint256 remainingMakerAssetFillAmount = safeSub(makerAssetFillAmount, totalFillResults.makerAssetFilledAmount);
             uint256 remainingTakerAssetFillAmount = getPartialAmount(
                 orders[i].takerAssetAmount,
                 orders[i].makerAssetAmount,
@@ -85,27 +85,27 @@ contract MixinForwarderQuote is MixinForwarderCore {
 
             Exchange.FillResults memory quoteFillResult = fillOrderQuote(orders[i], remainingTakerAssetFillAmount);
 
-            addFillResults(fillResult, quoteFillResult);
-            if (fillResult.makerAssetFilledAmount == makerAssetFillAmount) {
+            addFillResults(totalFillResults, quoteFillResult);
+            if (totalFillResults.makerAssetFilledAmount == makerAssetFillAmount) {
                 break;
             }
         }
-        return fillResult;
+        return totalFillResults;
     }
 
-    /// @dev Calculates a quote total for buyTokens. This is useful for off-chain queries to 
-    ///      ensure all calculations are performed atomically for consistent results
+    /// @dev Calculates a quote total for marketBuyTokens. This is useful for off-chain queries to 
+    ///      ensure all order calculations are calculated atomically for an accurate quote
     /// @param orders An array of Order struct containing order specifications.
     /// @param feeOrders An array of Order struct containing order specifications.
     /// @param sellAssetAmount A number representing the amount of this order to fill.
-    /// @return Quoted amounts which will be filled
-    function buyTokensQuote(
+    /// @return totalFillResult Quoted amounts which will be filled
+    function marketBuyTokensQuote(
         Order[] memory orders,
         Order[] memory feeOrders,
         uint256 sellAssetAmount)
         public
         view
-        returns (Exchange.FillResults memory totalFillResult)
+        returns (Exchange.FillResults memory totalFillResults)
     {
         uint256 takerAssetBalance = sellAssetAmount;
 
@@ -116,35 +116,35 @@ contract MixinForwarderQuote is MixinForwarderCore {
             takerAssetBalance = safeSub(takerAssetBalance, expectedBuyFeesFillResults.takerAssetFilledAmount);
             requestedTokensResult = expectedMaketSellFillResults(orders, takerAssetBalance);
             // Update our return FillResult with the additional fees
-            totalFillResult.takerFeePaid = expectedBuyFeesFillResults.takerFeePaid;
+            totalFillResults.takerFeePaid = expectedBuyFeesFillResults.takerFeePaid;
         } else {
             // Quote our market sell to buy the requested tokens with the remaining balance
             requestedTokensResult = expectedMaketSellFillResults(orders, takerAssetBalance);
         }
-        addFillResults(totalFillResult, requestedTokensResult);
+        addFillResults(totalFillResults, requestedTokensResult);
         // Ensure the token abstraction was fair if fees were proportionally too high, we fail
         require(isAcceptableThreshold(sellAssetAmount, requestedTokensResult.takerAssetFilledAmount),
             "traded amount does not meet acceptable threshold");
-        return totalFillResult;
+        return totalFillResults;
     }
 
     /// @dev Calculates a quote total for buyFeeTokens. This is useful for off-chain queries 
     ///      ensuring all calculations are performed atomically for consistent results
     /// @param orders An array of Order struct containing order specifications.
     /// @param zrxAmount A number representing the amount zrx to buy
-    /// @return Quoted amounts which will be filled
+    /// @return totalFillResults Quoted amounts which will be filled
     function computeBuyFeesFillResult(
         Order[] memory orders,
         uint256 zrxAmount)
         public
         view
-        returns (Exchange.FillResults memory totalFillResult)
+        returns (Exchange.FillResults memory totalFillResults)
     {
         address token = readAddress(orders[0].makerAssetData, 1);
         require(token == address(ZRX_TOKEN), "order taker asset must be ZRX");
         for (uint256 i = 0; i < orders.length; i++) {
             require(areBytesEqual(orders[i].makerAssetData, orders[0].makerAssetData), "all orders must be the same token pair");
-            uint256 remainingMakerAssetFillAmount = safeSub(zrxAmount, totalFillResult.makerAssetFilledAmount);
+            uint256 remainingMakerAssetFillAmount = safeSub(zrxAmount, totalFillResults.makerAssetFilledAmount);
             // Convert the remaining amount of makerToken to buy into remaining amount
             // of takerToken to sell, assuming entire amount can be sold in the current order
             uint256 remainingTakerAssetFillAmount = getPartialAmount(
@@ -154,12 +154,12 @@ contract MixinForwarderQuote is MixinForwarderCore {
             Exchange.FillResults memory singleFillResult = fillOrderQuote(orders[i], safeAdd(remainingTakerAssetFillAmount, 1));
 
             singleFillResult.makerAssetFilledAmount = safeSub(singleFillResult.makerAssetFilledAmount, singleFillResult.takerFeePaid);
-            addFillResults(totalFillResult, singleFillResult);
-            if (totalFillResult.makerAssetFilledAmount >= zrxAmount) {
+            addFillResults(totalFillResults, singleFillResult);
+            if (totalFillResults.makerAssetFilledAmount >= zrxAmount) {
                 break;
             }
         }
-        return totalFillResult;
+        return totalFillResults;
     }
 
 }

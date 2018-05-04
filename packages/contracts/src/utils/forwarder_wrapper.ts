@@ -48,7 +48,7 @@ export class ForwarderWrapper {
         const tx = await this._getTxWithDecodedLogsAsync(txHash);
         return tx;
     }
-    public async buyTokensAsync(
+    public async marketBuyTokensAsync(
         orders: SignedOrder[],
         feeOrders: SignedOrder[],
         fillAmountWei: BigNumber,
@@ -60,7 +60,7 @@ export class ForwarderWrapper {
         };
         const params = formatters.createMarketSellOrders(orders, fillAmountWei);
         const feeParams = formatters.createMarketSellOrders(feeOrders, new BigNumber(0));
-        const tx = await this.buyTokensFeeAsync(
+        const tx = await this.marketBuyTokensFeeAsync(
             orders,
             feeOrders,
             fillAmountWei,
@@ -70,7 +70,7 @@ export class ForwarderWrapper {
         );
         return tx;
     }
-    public async buyTokensFeeAsync(
+    public async marketBuyTokensFeeAsync(
         orders: SignedOrder[],
         feeOrders: SignedOrder[],
         fillAmountWei: BigNumber,
@@ -84,7 +84,7 @@ export class ForwarderWrapper {
         };
         const params = formatters.createMarketSellOrders(orders, fillAmountWei);
         const feeParams = formatters.createMarketSellOrders(feeOrders, new BigNumber(0));
-        const txHash: string = await this._forwarderContract.buyTokens.sendTransactionAsync(
+        const txHash: string = await this._forwarderContract.marketBuyTokens.sendTransactionAsync(
             params.orders,
             params.signatures,
             feeParams.orders,
@@ -96,7 +96,7 @@ export class ForwarderWrapper {
         const tx = await this._getTxWithDecodedLogsAsync(txHash);
         return tx;
     }
-    public async buyTokensQuoteAsync(
+    public async marketBuyTokensQuoteAsync(
         orders: SignedOrder[],
         feeOrders: SignedOrder[],
         buyAmountWei: BigNumber,
@@ -108,7 +108,7 @@ export class ForwarderWrapper {
     }> {
         const params = formatters.createMarketBuyOrders(orders, buyAmountWei);
         const feeParams = formatters.createMarketBuyOrders(feeOrders, buyAmountWei);
-        const quote = await this._forwarderContract.buyTokensQuote.callAsync(
+        const quote = await this._forwarderContract.marketBuyTokensQuote.callAsync(
             params.orders,
             feeParams.orders,
             buyAmountWei,
