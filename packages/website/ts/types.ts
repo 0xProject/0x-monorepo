@@ -433,6 +433,7 @@ export enum Key {
     Whitepaper = 'WHITEPAPER',
     Wiki = 'WIKI',
     Web3Wrapper = 'WEB3_WRAPPER',
+    OrderUtils = 'ORDER_UTILS',
     And = 'AND',
     Faq = 'FAQ',
     SmartContracts = 'SMART_CONTRACTS',
