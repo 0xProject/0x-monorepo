@@ -47,6 +47,26 @@
     "@0xproject/types" "^0.5.0"
     bignumber.js "~4.1.0"
 
+"@0xproject/typescript-typings@^0.2.0":
+  version "0.2.0"
+  resolved "https://registry.yarnpkg.com/@0xproject/typescript-typings/-/typescript-typings-0.2.0.tgz#53590e6866fde0f0bd3584b83e1211dabe9cd530"
+  dependencies:
+    "@0xproject/types" "^0.6.1"
+    bignumber.js "~4.1.0"
+
+"@0xproject/utils@^0.5.0":
+  version "0.5.2"
+  resolved "https://registry.yarnpkg.com/@0xproject/utils/-/utils-0.5.2.tgz#02ce0a920437db0a15d059e8c6c70fa33e9c3860"
+  dependencies:
+    "@0xproject/types" "^0.6.1"
+    "@0xproject/typescript-typings" "^0.2.0"
+    "@types/node" "^8.0.53"
+    bignumber.js "~4.1.0"
+    ethers-contracts "^2.2.1"
+    js-sha3 "^0.7.0"
+    lodash "^4.17.4"
+    web3 "^0.20.0"
+
 "@0xproject/web3-wrapper@^0.5.0":
   version "0.5.0"
   resolved "https://registry.yarnpkg.com/@0xproject/web3-wrapper/-/web3-wrapper-0.5.0.tgz#99a1acea60a5c3163ac0be28f4c0577c3d43dec4"
