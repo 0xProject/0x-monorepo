@@ -1,7 +1,7 @@
 {
     "private": true,
     "name": "@0xproject/testnet-faucets",
-    "version": "1.0.27",
+    "version": "1.0.28",
     "description": "A faucet micro-service that dispenses test ERC20 tokens or Ether",
     "main": "server.js",
     "scripts": {
@@ -15,7 +15,7 @@
     "author": "Fabio Berger",
     "license": "Apache-2.0",
     "dependencies": {
-        "0x.js": "^0.37.0",
+        "0x.js": "^0.37.1",
         "@0xproject/subproviders": "^0.10.0",
         "@0xproject/typescript-typings": "^0.3.0",
         "@0xproject/utils": "^0.6.0",

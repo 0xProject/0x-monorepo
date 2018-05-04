@@ -1,6 +1,6 @@
 {
     "name": "@0xproject/order-utils",
-    "version": "0.0.2",
+    "version": "0.0.3",
     "description": "0x order utils",
     "main": "lib/src/index.js",
     "types": "lib/src/index.d.ts",

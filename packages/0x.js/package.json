@@ -1,6 +1,6 @@
 {
     "name": "0x.js",
-    "version": "0.37.0",
+    "version": "0.37.1",
     "description": "A javascript library for interacting with the 0x protocol",
     "keywords": [
         "0x.js",
@@ -100,7 +100,7 @@
         "@0xproject/assert": "^0.2.8",
         "@0xproject/base-contract": "^0.3.0",
         "@0xproject/json-schemas": "^0.7.22",
-        "@0xproject/order-utils": "^0.0.2",
+        "@0xproject/order-utils": "^0.0.3",
         "@0xproject/types": "^0.6.2",
         "@0xproject/typescript-typings": "^0.3.0",
         "@0xproject/utils": "^0.6.0",
