@@ -5,6 +5,10 @@ Edit the package's CHANGELOG.json file only.
 
 CHANGELOG
 
+## v0.6.1 - _May 5, 2018_
+
+    * Dependencies updated
+
 ## v0.6.0 - _May 4, 2018_
 
     * Update ethers-contracts to ethers.js (#540)

@@ -5,6 +5,10 @@ Edit the package's CHANGELOG.json file only.
 
 CHANGELOG
 
+## v0.4.3 - _May 5, 2018_
+
+    * Dependencies updated
+
 ## v0.4.2 - _May 4, 2018_
 
     * Add support for solidity 0.4.23 (#545)

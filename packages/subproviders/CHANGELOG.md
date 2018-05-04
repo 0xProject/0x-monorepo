@@ -5,6 +5,10 @@ Edit the package's CHANGELOG.json file only.
 
 CHANGELOG
 
+## v0.10.1 - _May 5, 2018_
+
+    * Dependencies updated
+
 ## v0.10.0 - _May 4, 2018_
 
     * Upgrade web3-provider-engine to 14.0.4 (#555)
