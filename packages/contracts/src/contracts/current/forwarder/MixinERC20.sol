@@ -1,4 +1,4 @@
-pragma solidity ^0.4.21;
+pragma solidity ^0.4.22;
 
 import "../tokens/ERC20Token/IERC20Token.sol";
 contract MixinERC20 {

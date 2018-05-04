@@ -1,4 +1,4 @@
-pragma solidity ^0.4.21;
+pragma solidity ^0.4.22;
 pragma experimental ABIEncoderV2;
 
 import "./MixinForwarderCore.sol";
