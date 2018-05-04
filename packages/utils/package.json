@@ -1,6 +1,6 @@
 {
     "name": "@0xproject/utils",
-    "version": "0.6.0",
+    "version": "0.6.1",
     "description": "0x TS utils",
     "main": "lib/index.js",
     "types": "lib/index.d.ts",
@@ -31,8 +31,8 @@
         "typescript": "2.7.1"
     },
     "dependencies": {
-        "@0xproject/types": "^0.6.2",
-        "@0xproject/typescript-typings": "^0.3.0",
+        "@0xproject/types": "^0.6.3",
+        "@0xproject/typescript-typings": "^0.3.1",
         "@types/node": "^8.0.53",
         "bignumber.js": "~4.1.0",
         "ethers": "^3.0.15",

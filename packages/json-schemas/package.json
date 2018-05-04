@@ -1,6 +1,6 @@
 {
     "name": "@0xproject/json-schemas",
-    "version": "0.7.22",
+    "version": "0.7.23",
     "description": "0x-related json schemas",
     "main": "lib/src/index.js",
     "types": "lib/src/index.d.ts",
@@ -42,7 +42,7 @@
     },
     "homepage": "https://github.com/0xProject/0x-monorepo/packages/json-schemas/README.md",
     "dependencies": {
-        "@0xproject/typescript-typings": "^0.3.0",
+        "@0xproject/typescript-typings": "^0.3.1",
         "@types/node": "^8.0.53",
         "jsonschema": "^1.2.0",
         "lodash.values": "^4.3.0"
@@ -50,7 +50,7 @@
     "devDependencies": {
         "@0xproject/monorepo-scripts": "^0.1.19",
         "@0xproject/tslint-config": "^0.4.17",
-        "@0xproject/utils": "^0.6.0",
+        "@0xproject/utils": "^0.6.1",
         "@types/lodash.foreach": "^4.5.3",
         "@types/lodash.values": "^4.3.3",
         "@types/mocha": "^2.2.42",

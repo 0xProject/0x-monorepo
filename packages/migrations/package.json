@@ -1,6 +1,6 @@
 {
     "name": "@0xproject/migrations",
-    "version": "0.0.4",
+    "version": "0.0.5",
     "description": "0x smart contract migrations",
     "main": "lib/index.js",
     "types": "lib/index.d.ts",
@@ -19,7 +19,7 @@
     },
     "license": "Apache-2.0",
     "devDependencies": {
-        "@0xproject/dev-utils": "^0.4.0",
+        "@0xproject/dev-utils": "^0.4.1",
         "@0xproject/tslint-config": "^0.4.17",
         "npm-run-all": "^4.1.2",
         "shx": "^0.2.2",
@@ -27,9 +27,9 @@
         "typescript": "2.7.1"
     },
     "dependencies": {
-        "@0xproject/deployer": "^0.4.2",
-        "@0xproject/utils": "^0.6.0",
-        "@0xproject/web3-wrapper": "^0.6.2",
+        "@0xproject/deployer": "^0.4.3",
+        "@0xproject/utils": "^0.6.1",
+        "@0xproject/web3-wrapper": "^0.6.3",
         "lodash": "^4.17.4"
     },
     "publishConfig": {

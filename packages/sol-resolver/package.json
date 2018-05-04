@@ -1,6 +1,6 @@
 {
     "name": "@0xproject/sol-resolver",
-    "version": "0.0.3",
+    "version": "0.0.4",
     "description": "Import resolver for smart contracts dependencies",
     "main": "lib/index.js",
     "types": "lib/index.d.ts",
@@ -29,7 +29,7 @@
         "typescript": "2.7.1"
     },
     "dependencies": {
-        "@0xproject/types": "^0.6.2",
+        "@0xproject/types": "^0.6.3",
         "@0xproject/typescript-typings": "^0.0.3",
         "lodash": "^4.17.4"
     },

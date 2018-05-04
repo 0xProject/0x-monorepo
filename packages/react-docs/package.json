@@ -1,6 +1,6 @@
 {
     "name": "@0xproject/react-docs",
-    "version": "0.0.10",
+    "version": "0.0.11",
     "description": "React documentation component for rendering TypeDoc & Doxity generated JSON",
     "main": "lib/index.js",
     "types": "lib/index.d.ts",
@@ -22,7 +22,7 @@
         "url": "https://github.com/0xProject/0x-monorepo.git"
     },
     "devDependencies": {
-        "@0xproject/dev-utils": "^0.4.0",
+        "@0xproject/dev-utils": "^0.4.1",
         "@0xproject/monorepo-scripts": "^0.1.19",
         "@0xproject/tslint-config": "^0.4.17",
         "copyfiles": "^1.2.0",
@@ -31,8 +31,8 @@
         "typescript": "2.7.1"
     },
     "dependencies": {
-        "@0xproject/react-shared": "^0.1.5",
-        "@0xproject/utils": "^0.6.0",
+        "@0xproject/react-shared": "^0.1.6",
+        "@0xproject/utils": "^0.6.1",
         "@types/lodash": "4.14.104",
         "@types/material-ui": "0.18.0",
         "@types/node": "^8.0.53",

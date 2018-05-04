@@ -1,6 +1,6 @@
 {
     "name": "@0xproject/typescript-typings",
-    "version": "0.3.0",
+    "version": "0.3.1",
     "description": "0x project typescript type definitions",
     "scripts": {
         "build": "tsc && copyfiles -u 1 './lib/**/*' ./scripts",
@@ -21,7 +21,7 @@
     },
     "homepage": "https://github.com/0xProject/0x-monorepo/packages/typescript-typings#readme",
     "dependencies": {
-        "@0xproject/types": "^0.6.2",
+        "@0xproject/types": "^0.6.3",
         "bignumber.js": "~4.1.0"
     },
     "devDependencies": {
