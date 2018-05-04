@@ -41,20 +41,13 @@ contract MixinBuyExactTokens is
 
         uint256 remainingTakerTokenAmount = msg.value;
         ETHER_TOKEN.deposit.value(remainingTakerTokenAmount)();
-        Exchange.FillResults memory totalFillResult = buyExactTokensInternal(orders, signatures, feeOrders, feeSignatures, tokenAmount);
-        require(totalFillResult.makerAssetFilledAmount >= tokenAmount, "traded amount does not meet acceptable threshold");
-        remainingTakerTokenAmount = safeSub(remainingTakerTokenAmount, totalFillResult.takerAssetFilledAmount);
 
-        // Return all of the excess WETH if any 
-        if (remainingTakerTokenAmount > 0) {
-            ETHER_TOKEN.withdraw(remainingTakerTokenAmount);
-            // Fees proportional to the amount traded
-            // uint256 totalFeeAmount = safeSub(remainingTakerTokenAmount, payAndDeductFee(totalFillResult.takerAssetFilledAmount, feeProportion, feeRecipient));
-            // remainingTakerTokenAmount = safeSub(remainingTakerTokenAmount, totalFeeAmount);
-            // TODO allow fee deduction proportional to amount traded if specified
-            msg.sender.transfer(remainingTakerTokenAmount);
-        }
-        return totalFillResult;
+        Exchange.FillResults memory totalFillResults = buyExactTokensInternal(orders, signatures, feeOrders, feeSignatures, tokenAmount);
+        require(totalFillResults.makerAssetFilledAmount >= tokenAmount, "traded amount does not meet acceptable threshold");
+
+        remainingTakerTokenAmount = safeSub(remainingTakerTokenAmount, totalFillResults.takerAssetFilledAmount);
+        withdrawPayAndDeductFee(remainingTakerTokenAmount, totalFillResults.takerAssetFilledAmount, feeProportion, feeRecipient);
+        return totalFillResults;
     }
 
     function buyExactTokensInternal(
@@ -67,11 +60,10 @@ contract MixinBuyExactTokens is
         returns (Exchange.FillResults memory totalFillResults)
     {
         address makerTokenAddress = readAddress(orders[0].makerAssetData, 1); 
-        // We can short cut here for effeciency and use buyFeeTokens if maker asset token is ZRX
+        // We can short cut here for effeciency and use buyFeeTokensInternal if maker asset token is ZRX
         // this buys us exactly that amount taking into account the fees
         Exchange.FillResults memory requestedTokensResult;
         if (makerTokenAddress == address(ZRX_TOKEN)) {
-            // TODO we read address twice here if it is ZRX
             requestedTokensResult = buyFeeTokensInternal(orders, signatures, tokenAmount);
         } else {
             Exchange.FillResults memory expectedMarketBuyFillResults = expectedMaketBuyFillResults(orders, tokenAmount);

@@ -161,5 +161,4 @@ contract MixinForwarderQuote is MixinForwarderCore {
         }
         return totalFillResults;
     }
-
 }

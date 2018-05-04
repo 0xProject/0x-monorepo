@@ -1,9 +1,7 @@
-import { TransactionReceiptWithDecodedLogs, ZeroEx } from '0x.js';
-import { BlockchainLifecycle, devConstants, web3Factory } from '@0xproject/dev-utils';
+import { ZeroEx } from '0x.js';
+import { BlockchainLifecycle } from '@0xproject/dev-utils';
 import { BigNumber } from '@0xproject/utils';
-import { Web3Wrapper } from '@0xproject/web3-wrapper';
 import * as chai from 'chai';
-import * as _ from 'lodash';
 
 import { DummyERC20TokenContract } from '../../src/contract_wrappers/generated/dummy_e_r_c20_token';
 import { DummyERC721TokenContract } from '../../src/contract_wrappers/generated/dummy_e_r_c721_token';
@@ -18,15 +16,7 @@ import { ERC721Wrapper } from '../../src/utils/erc721_wrapper';
 import { ExchangeWrapper } from '../../src/utils/exchange_wrapper';
 import { ForwarderWrapper } from '../../src/utils/forwarder_wrapper';
 import { OrderFactory } from '../../src/utils/order_factory';
-import {
-    AssetProxyId,
-    ContractName,
-    ERC20BalancesByOwner,
-    ExchangeContractErrs,
-    SignatureType,
-    SignedOrder,
-    UnsignedOrder,
-} from '../../src/utils/types';
+import { AssetProxyId, ContractName, ERC20BalancesByOwner, SignedOrder } from '../../src/utils/types';
 import { chaiSetup } from '../utils/chai_setup';
 import { deployer } from '../utils/deployer';
 import { provider, web3Wrapper } from '../utils/web3_wrapper';

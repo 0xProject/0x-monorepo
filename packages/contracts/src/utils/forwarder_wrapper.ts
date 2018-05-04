@@ -1,18 +1,17 @@
-import { Order, OrderTransactionOpts, ZeroEx } from '0x.js';
-import { ContractAbi, TransactionReceiptWithDecodedLogs } from '@0xproject/types';
-import { AbiDecoder, BigNumber } from '@0xproject/utils';
+import { ZeroEx } from '0x.js';
+import { TransactionReceiptWithDecodedLogs } from '@0xproject/types';
+import { BigNumber } from '@0xproject/utils';
 import { Web3Wrapper } from '@0xproject/web3-wrapper';
 import * as _ from 'lodash';
-import * as Web3 from 'web3';
 
 import { formatters } from '../../src/utils/formatters';
-import { orderUtils } from '../../src/utils/order_utils';
 import { ForwarderContract } from '../contract_wrappers/generated/forwarder';
 
-import { Artifact, SignatureType, SignedOrder, UnsignedOrder } from './types';
+import { SignedOrder } from './types';
 
 const DEFAULT_FEE_PROPORTION = 0;
 const PERCENTAGE_DENOMINATOR = 10000;
+const ZERO_FILL = new BigNumber(0);
 
 export class ForwarderWrapper {
     private _web3Wrapper: Web3Wrapper;
@@ -34,7 +33,7 @@ export class ForwarderWrapper {
             value: fillAmountWei,
         };
         const params = formatters.createMarketBuyOrders(orders, fillAmountWei);
-        const feeParams = formatters.createMarketBuyOrders(feeOrders, new BigNumber(0));
+        const feeParams = formatters.createMarketBuyOrders(feeOrders, ZERO_FILL);
         const txHash: string = await this._forwarderContract.buyExactTokens.sendTransactionAsync(
             params.orders,
             params.signatures,
@@ -59,7 +58,7 @@ export class ForwarderWrapper {
             value: fillAmountWei,
         };
         const params = formatters.createMarketSellOrders(orders, fillAmountWei);
-        const feeParams = formatters.createMarketSellOrders(feeOrders, new BigNumber(0));
+        const feeParams = formatters.createMarketSellOrders(feeOrders, ZERO_FILL);
         const tx = await this.marketBuyTokensFeeAsync(
             orders,
             feeOrders,
@@ -83,7 +82,7 @@ export class ForwarderWrapper {
             value: fillAmountWei,
         };
         const params = formatters.createMarketSellOrders(orders, fillAmountWei);
-        const feeParams = formatters.createMarketSellOrders(feeOrders, new BigNumber(0));
+        const feeParams = formatters.createMarketSellOrders(feeOrders, ZERO_FILL);
         const txHash: string = await this._forwarderContract.marketBuyTokens.sendTransactionAsync(
             params.orders,
             params.signatures,
@@ -141,16 +140,16 @@ export class ForwarderWrapper {
             (totalAmount: BigNumber, order: SignedOrder) => {
                 return totalAmount.plus(order.takerAssetAmount);
             },
-            new BigNumber(0),
+            ZERO_FILL,
         );
-        const feeParams = formatters.createMarketSellOrders(feeOrders, new BigNumber(0));
         const params = formatters.createMarketSellOrders(orders, fillAmountWei);
+        const feeParams = formatters.createMarketSellOrders(feeOrders, ZERO_FILL);
         const totalFees = _.reduce(
             orders,
             (totalAmount: BigNumber, order: SignedOrder) => {
                 return totalAmount.plus(order.takerFee);
             },
-            new BigNumber(0),
+            ZERO_FILL,
         );
         if (totalFees.greaterThan(0)) {
             const feeQuote = await this._forwarderContract.computeBuyFeesFillResult.callAsync(
