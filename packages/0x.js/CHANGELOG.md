@@ -5,6 +5,10 @@ Edit the package's CHANGELOG.json file only.
 
 CHANGELOG
 
+## v0.37.1 - _May 4, 2018_
+
+    * Dependencies updated
+
 ## v0.37.0 - _May 4, 2018_
 
     * Fixed expiration watcher comparator to handle orders with equal expiration times (#526)
