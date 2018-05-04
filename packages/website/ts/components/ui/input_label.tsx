@@ -17,7 +17,7 @@ const styles = {
         userSelect: 'none',
         width: 240,
         zIndex: 1,
-    },
+    } as React.CSSProperties,
 };
 
 export const InputLabel = (props: InputLabelProps) => {

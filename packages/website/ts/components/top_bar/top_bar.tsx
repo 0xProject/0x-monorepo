@@ -56,7 +56,7 @@ const styles: Styles = {
         width: 70,
     },
     topBar: {
-        backgroundcolor: colors.white,
+        backgroundColor: colors.white,
         height: 59,
         width: '100%',
         position: 'relative',
