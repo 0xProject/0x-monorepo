@@ -28,7 +28,7 @@
         "test:circleci": "yarn test"
     },
     "config": {
-        "abis": "../migrations/artifacts/2.0.0/@(DummyERC20Token|DummyERC721Token|ERC20Proxy|ERC721Proxy|Exchange|MixinAuthorizable|MultiSigWallet|MultiSigWalletWithTimeLock|MultiSigWalletWithTimeLockExceptRemoveAuthorizedAddress|TestAssetProxyDispatcher|TestLibBytes|TestLibs|TestSignatureValidator|TokenRegistry|WETH9|ZRXToken).json"
+        "abis": "../migrations/artifacts/2.0.0/@(AssetProxyOwner|DummyERC20Token|DummyERC721Token|ERC20Proxy|ERC721Proxy|Exchange|MixinAuthorizable|MultiSigWallet|MultiSigWalletWithTimeLock||TestAssetProxyDispatcher|TestLibBytes|TestLibs|TestSignatureValidator|TokenRegistry|WETH9|ZRXToken).json"
     },
     "repository": {
         "type": "git",

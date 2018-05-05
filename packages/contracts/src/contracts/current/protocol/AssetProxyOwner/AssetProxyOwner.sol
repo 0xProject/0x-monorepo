@@ -18,15 +18,18 @@
 
 pragma solidity ^0.4.10;
 
-import "../MultiSigWalletWithTimeLock/MultiSigWalletWithTimeLock.sol";
+import "../../multisig/MultiSigWalletWithTimeLock/MultiSigWalletWithTimeLock.sol";
 
-contract MultiSigWalletWithTimeLockExceptRemoveAuthorizedAddress is
+contract AssetProxyOwner is
     MultiSigWalletWithTimeLock
 {
+
     event AssetProxyRegistration(address assetProxyContract, bool isRegistered);
 
     // Mapping of AssetProxy contract address => approved to execute removeAuthorizedAddress without time lock.
     mapping (address => bool) public isAssetProxyRegistered;
+
+    bytes4 constant REMOVE_AUTHORIZED_ADDRESS_SELECTOR = bytes4(keccak256("removeAuthorizedAddress(address)"));
 
     modifier validRemoveAuthorizedAddressTx(uint256 transactionId) {
         Transaction storage tx = transactions[transactionId];
@@ -35,12 +38,13 @@ contract MultiSigWalletWithTimeLockExceptRemoveAuthorizedAddress is
         _;
     }
 
-    /// @dev Contract constructor sets initial owners, required number of confirmations, time lock, and tokenTransferProxy address.
+    /// @dev Contract constructor sets initial owners, required number of confirmations,
+    ///      time lock, and list of AssetProxy addresses.
     /// @param _owners List of initial owners.
     /// @param _required Number of required confirmations.
     /// @param _secondsTimeLocked Duration needed after a transaction is confirmed and before it becomes executable, in seconds.
     /// @param _assetProxyContracts Array of AssetProxy contract addresses.
-    function MultiSigWalletWithTimeLockExceptRemoveAuthorizedAddress(
+    function AssetProxyOwner(
         address[] memory _owners,
         uint256 _required,
         uint256 _secondsTimeLocked,
@@ -54,7 +58,8 @@ contract MultiSigWalletWithTimeLockExceptRemoveAuthorizedAddress is
         }
     }
 
-    /// @dev Sets approval for calling removeAuthorizedAddress on an AssetProxy contract without a timelock.
+    /// @dev Registers or deregisters an AssetProxy to be able to execute
+    ///      removeAuthorizedAddress without a timelock.
     /// @param assetProxyContract Address of AssetProxy contract.
     /// @param isRegistered Status of approval for AssetProxy contract.
     function registerAssetProxy(address assetProxyContract, bool isRegistered)
@@ -92,12 +97,14 @@ contract MultiSigWalletWithTimeLockExceptRemoveAuthorizedAddress is
         pure
         returns (bool)
     {
-        bytes4 removeAuthorizedAddressSelector = bytes4(keccak256("removeAuthorizedAddress(address)"));
         bytes4 first4Bytes = readFirst4(data);
-        require(removeAuthorizedAddressSelector == first4Bytes);
+        require(REMOVE_AUTHORIZED_ADDRESS_SELECTOR == first4Bytes);
         return true;
     }
 
+    /// @dev Reads the first 4 bytes from a byte array of arbitrary length.
+    /// @param data Byte array to read first 4 bytes from.
+    /// @return First 4 bytes of data.
     function readFirst4(bytes memory data)
         public
         pure

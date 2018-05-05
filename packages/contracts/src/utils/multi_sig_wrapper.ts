@@ -3,8 +3,8 @@ import { BigNumber } from '@0xproject/utils';
 import * as _ from 'lodash';
 import * as Web3 from 'web3';
 
+import { AssetProxyOwnerContract } from '../contract_wrappers/generated/asset_proxy_owner';
 import { MultiSigWalletContract } from '../contract_wrappers/generated/multi_sig_wallet';
-import { MultiSigWalletWithTimeLockExceptRemoveAuthorizedAddressContract } from '../contract_wrappers/generated/multi_sig_wallet_with_time_lock_except_remove_authorized_address';
 
 import { constants } from './constants';
 import { LogDecoder } from './log_decoder';
@@ -45,10 +45,7 @@ export class MultiSigWrapper {
         from: string,
     ): Promise<TransactionReceiptWithDecodedLogs> {
         const txHash = await (this
-            ._multiSig as MultiSigWalletWithTimeLockExceptRemoveAuthorizedAddressContract).executeRemoveAuthorizedAddress.sendTransactionAsync(
-            txId,
-            { from },
-        );
+            ._multiSig as AssetProxyOwnerContract).executeRemoveAuthorizedAddress.sendTransactionAsync(txId, { from });
         const tx = await this._getTxWithDecodedMultiSigLogs(txHash);
         return tx;
     }
