@@ -17,7 +17,6 @@
 */
 
 pragma solidity ^0.4.23;
-pragma experimental ABIEncoderV2;
 
 contract LibBytes {
 
@@ -26,7 +25,8 @@ contract LibBytes {
     /// @param rhs Second byte array to compare.
     /// @return True if arrays are the same. False otherwise.
     function areBytesEqual(bytes memory lhs, bytes memory rhs)
-        public pure
+        internal
+        pure
         returns (bool equal)
     {
         assembly {
@@ -59,7 +59,8 @@ contract LibBytes {
     function readAddress(
         bytes memory b,
         uint256 index)
-        public pure
+        internal
+        pure
         returns (address result)
     {
         require(
@@ -90,7 +91,8 @@ contract LibBytes {
         bytes memory b,
         uint256 index,
         address input)
-        public pure
+        internal
+        pure
     {
         require(
             b.length >= index + 20,  // 20 is length of address
@@ -126,7 +128,8 @@ contract LibBytes {
     function readBytes32(
         bytes memory b,
         uint256 index)
-        public pure
+        internal
+        pure
         returns (bytes32 result)
     {
         require(
@@ -152,7 +155,8 @@ contract LibBytes {
         bytes memory b,
         uint256 index,
         bytes32 input)
-        public pure
+        internal
+        pure
     {
         require(
             b.length >= index + 32,
@@ -175,7 +179,8 @@ contract LibBytes {
     function readUint256(
         bytes memory b,
         uint256 index)
-        public pure
+        internal
+        pure
         returns (uint256 result)
     {
         return uint256(readBytes32(b, index));
@@ -189,7 +194,8 @@ contract LibBytes {
         bytes memory b,
         uint256 index,
         uint256 input)
-        public pure
+        internal
+        pure
     {
         writeBytes32(b, index, bytes32(input));
     }
