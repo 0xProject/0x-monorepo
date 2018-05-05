@@ -21,12 +21,11 @@ pragma experimental ABIEncoderV2;
 
 import "../../utils/LibBytes/LibBytes.sol";
 import "./mixins/MExchangeCore.sol";
-import "./LibMath.sol";
-import "./LibOrder.sol";
-import "./LibFillResults.sol";
-import "./LibExchangeErrors.sol";
+import "./lib/LibMath.sol";
+import "./lib/LibOrder.sol";
+import "./lib/LibFillResults.sol";
+import "./lib/LibExchangeErrors.sol";
 
-/// @dev Consumes MExchangeCore
 contract MixinWrapperFunctions is
     LibOrder,
     LibFillResults,

@@ -16,11 +16,10 @@
 
 */
 pragma solidity ^0.4.21;
-pragma experimental ABIEncoderV2;
 
 import "./mixins/MSignatureValidator.sol";
 import "./mixins/MTransactions.sol";
-import "./LibExchangeErrors.sol";
+import "./lib/LibExchangeErrors.sol";
 
 contract MixinTransactions is
     LibExchangeErrors,

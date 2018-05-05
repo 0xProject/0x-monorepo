@@ -16,21 +16,12 @@
 
 */
 pragma solidity ^0.4.23;
-pragma experimental ABIEncoderV2;
 
-contract MTransactions {
+import "../interfaces/ITransactions.sol";
 
-    /// @dev Executes an exchange method call in the context of signer.
-    /// @param salt Arbitrary number to ensure uniqueness of transaction hash.
-    /// @param signer Address of transaction signer.
-    /// @param data AbiV2 encoded calldata.
-    /// @param signature Proof of signer transaction by signer.
-    function executeTransaction(
-        uint256 salt,
-        address signer,
-        bytes data,
-        bytes signature)
-        external;
+contract MTransactions is
+    ITransactions
+{
 
     /// @dev The current function will be called in the context of this address (either 0x transaction signer or `msg.sender`).
     ///      If calling a fill function, this address will represent the taker.

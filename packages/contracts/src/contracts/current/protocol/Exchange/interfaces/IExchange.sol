@@ -19,21 +19,16 @@
 pragma solidity ^0.4.23;
 pragma experimental ABIEncoderV2;
 
-import "../interfaces/IAssetProxy.sol";
+import "./IExchangeCore.sol";
+import "./ISignatureValidator.sol";
+import "./IAssetProxyDispatcher.sol";
+import "./ITransactions.sol";
+import "./IWrapperFunctions.sol";
 
-contract MAssetProxy is
-    IAssetProxy
-{
-
-    /// @dev Internal version of `transferFrom`.
-    /// @param assetMetadata Encoded byte array.
-    /// @param from Address to transfer asset from.
-    /// @param to Address to transfer asset to.
-    /// @param amount Amount of asset to transfer.
-    function transferFromInternal(
-        bytes memory assetMetadata,
-        address from,
-        address to,
-        uint256 amount)
-        internal;
-}
+contract IExchange is
+    IWrapperFunctions,
+    IExchangeCore,
+    ISignatureValidator,
+    ITransactions,
+    IAssetProxyDispatcher
+{}

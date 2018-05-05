@@ -17,23 +17,16 @@
 */
 
 pragma solidity ^0.4.23;
-pragma experimental ABIEncoderV2;
 
-import "../interfaces/IAssetProxy.sol";
+contract ISignatureValidator {
 
-contract MAssetProxy is
-    IAssetProxy
-{
-
-    /// @dev Internal version of `transferFrom`.
-    /// @param assetMetadata Encoded byte array.
-    /// @param from Address to transfer asset from.
-    /// @param to Address to transfer asset to.
-    /// @param amount Amount of asset to transfer.
-    function transferFromInternal(
-        bytes memory assetMetadata,
-        address from,
-        address to,
-        uint256 amount)
-        internal;
+    /// @dev Approves a hash on-chain using any valid signature type.
+    ///      After presigning a hash, the preSign signature type will become valid for that hash and signer.
+    /// @param signer Address that should have signed the given hash.
+    /// @param signature Proof that the hash has been signed by signer.
+    function preSign(
+        bytes32 hash,
+        address signer,
+        bytes signature)
+        external;
 }

@@ -15,16 +15,19 @@
   limitations under the License.
 
 */
-
 pragma solidity ^0.4.23;
-pragma experimental ABIEncoderV2;
 
-contract ISigner {
+contract ITransactions {
 
-    function isValidSignature(
-        bytes32 hash,
+    /// @dev Executes an exchange method call in the context of signer.
+    /// @param salt Arbitrary number to ensure uniqueness of transaction hash.
+    /// @param signer Address of transaction signer.
+    /// @param data AbiV2 encoded calldata.
+    /// @param signature Proof of signer transaction by signer.
+    function executeTransaction(
+        uint256 salt,
+        address signer,
+        bytes data,
         bytes signature)
-        external
-        view
-        returns (bool isValid);
+        external;
 }

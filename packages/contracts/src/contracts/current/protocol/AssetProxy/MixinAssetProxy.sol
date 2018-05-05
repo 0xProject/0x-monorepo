@@ -20,11 +20,9 @@ pragma solidity ^0.4.23;
 pragma experimental ABIEncoderV2;
 
 import "./mixins/MAssetProxy.sol";
-import "./IAssetProxy.sol";
 import "../../utils/Authorizable/Authorizable.sol";
 
 contract MixinAssetProxy is 
-    IAssetProxy,
     Authorizable,
     MAssetProxy
 {

@@ -17,24 +17,50 @@
 */
 
 pragma solidity ^0.4.23;
-pragma experimental ABIEncoderV2;
 
-import "../LibOrder.sol";
-import "../LibFillResults.sol";
+import "../lib/LibOrder.sol";
+import "../lib/LibFillResults.sol";
+import "../interfaces/IExchangeCore.sol";
 
-contract MExchangeCore {
+contract MExchangeCore is
+    IExchangeCore
+{
 
-    function fillOrder(
+    // Fill event is emitted whenever an order is filled.
+    event Fill(
+        address indexed makerAddress,
+        address takerAddress,
+        address indexed feeRecipientAddress,
+        uint256 makerAssetFilledAmount,
+        uint256 takerAssetFilledAmount,
+        uint256 makerFeePaid,
+        uint256 takerFeePaid,
+        bytes32 indexed orderHash,
+        bytes makerAssetData,
+        bytes takerAssetData
+    );
+
+    // Cancel event is emitted whenever an individual order is cancelled.
+    event Cancel(
+        address indexed makerAddress,
+        address indexed feeRecipientAddress,
+        bytes32 indexed orderHash,
+        bytes makerAssetData,
+        bytes takerAssetData
+    );
+
+    // CancelUpTo event is emitted whenever `cancelOrdersUpTo` is executed succesfully.
+    event CancelUpTo(
+        address indexed makerAddress,
+        uint256 makerEpoch
+    );
+
+    /// @dev Logs a Fill event with the given arguments.
+    ///      The sole purpose of this function is to get around the stack variable limit.
+    function emitFillEvent(
         LibOrder.Order memory order,
-        uint256 takerAssetFillAmount,
-        bytes memory signature)
-        public
-        returns (LibFillResults.FillResults memory fillResults);
-
-    function cancelOrder(LibOrder.Order memory order)
-        public
-        returns (bool);
-
-    function cancelOrdersUpTo(uint256 salt)
-        external;
+        address takerAddress,
+        bytes32 orderHash,
+        LibFillResults.FillResults memory fillResults)
+        internal;
 }

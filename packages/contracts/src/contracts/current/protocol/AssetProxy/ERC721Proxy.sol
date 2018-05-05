@@ -19,21 +19,21 @@
 pragma solidity ^0.4.23;
 pragma experimental ABIEncoderV2;
 
-import "../../../utils/LibBytes/LibBytes.sol";
-import "../../../tokens/ERC20Token/IERC20Token.sol";
-import "../MixinAssetProxy.sol";
+import "../../utils/LibBytes/LibBytes.sol";
+import "../../tokens/ERC721Token/ERC721Token.sol";
+import "./MixinAssetProxy.sol";
 
-contract ERC20Proxy is
+contract ERC721Proxy is
     LibBytes,
     MixinAssetProxy
 {
 
     // Id of this proxy.
-    uint8 constant PROXY_ID = 1;
+    uint8 constant PROXY_ID = 2;
 
     // Revert reasons
-    string constant INVALID_METADATA_LENGTH = "Metadata must have a length of 21.";
-    string constant TRANSFER_FAILED = "Transfer failed.";
+    string constant INVALID_TRANSFER_AMOUNT = "Transfer amount must equal 1.";
+    string constant INVALID_METADATA_LENGTH = "Metadata must have a length of 53.";
     string constant PROXY_ID_MISMATCH = "Proxy id in metadata does not match this proxy id.";
 
     /// @dev Internal version of `transferFrom`.
@@ -54,19 +54,25 @@ contract ERC20Proxy is
             PROXY_ID_MISMATCH
         );
 
-        // Decode metadata.
+        // There exists only 1 of each token.
         require(
-            assetMetadata.length == 21,
+            amount == 1,
+            INVALID_TRANSFER_AMOUNT
+        );
+
+        // Decode metadata
+        require(
+            assetMetadata.length == 53,
             INVALID_METADATA_LENGTH
         );
         address token = readAddress(assetMetadata, 1);
+        uint256 tokenId = readUint256(assetMetadata, 21);
 
-        // Transfer tokens.
-        bool success = IERC20Token(token).transferFrom(from, to, amount);
-        require(
-            success == true,
-            TRANSFER_FAILED
-        );
+        // Transfer token.
+        // Either succeeds or throws.
+        // @TODO: Call safeTransferFrom if there is additional
+        //        data stored in `assetMetadata`.
+        ERC721Token(token).transferFrom(from, to, tokenId);
     }
 
     /// @dev Gets the proxy id associated with the proxy address.

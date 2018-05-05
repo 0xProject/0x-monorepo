@@ -17,32 +17,37 @@
 */
 
 pragma solidity ^0.4.23;
-pragma experimental ABIEncoderV2;
 
 import "./mixins/MSignatureValidator.sol";
-import "./ISigner.sol";
-import "./LibExchangeErrors.sol";
+import "./interfaces/ISigner.sol";
+import "./lib/LibExchangeErrors.sol";
 import "../../utils/LibBytes/LibBytes.sol";
 
-/// @dev Provides MSignatureValidator
 contract MixinSignatureValidator is
     LibBytes,
     LibExchangeErrors,
     MSignatureValidator
 {
-    enum SignatureType {
-        Illegal, // Default value
-        Invalid,
-        Caller,
-        Ecrecover,
-        EIP712,
-        Trezor,
-        Contract,
-        PreSigned
-    }
 
     // Mapping of hash => signer => signed
     mapping(bytes32 => mapping(address => bool)) preSigned;
+
+    /// @dev Approves a hash on-chain using any valid signature type.
+    ///      After presigning a hash, the preSign signature type will become valid for that hash and signer.
+    /// @param signer Address that should have signed the given hash.
+    /// @param signature Proof that the hash has been signed by signer.
+    function preSign(
+        bytes32 hash,
+        address signer,
+        bytes signature)
+        external
+    {
+        require(
+            isValidSignature(hash, signer, signature),
+            SIGNATURE_VALIDATION_FAILED
+        );
+        preSigned[hash][signer] = true;
+    }
 
     /// @dev Verifies that a hash has been signed by the given signer.
     /// @param hash Any 32 byte hash.
@@ -182,22 +187,5 @@ contract MixinSignatureValidator is
         // signature was invalid.)
         // NOTE: Reason cannot be assigned to a variable because of https://github.com/ethereum/solidity/issues/4051
         revert("Unsupported signature type.");
-    }
-
-    /// @dev Approves a hash on-chain using any valid signature type.
-    ///      After presigning a hash, the preSign signature type will become valid for that hash and signer.
-    /// @param signer Address that should have signed the given hash.
-    /// @param signature Proof that the hash has been signed by signer.
-    function preSign(
-        bytes32 hash,
-        address signer,
-        bytes signature)
-        external
-    {
-        require(
-            isValidSignature(hash, signer, signature),
-            SIGNATURE_VALIDATION_FAILED
-        );
-        preSigned[hash][signer] = true;
     }
 }
