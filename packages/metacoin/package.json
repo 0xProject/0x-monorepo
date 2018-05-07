@@ -12,13 +12,13 @@
         "build": "tsc",
         "test": "run-s build run_mocha",
         "test:coverage": "SOLIDITY_COVERAGE=true run-s build run_mocha coverage:report:text coverage:report:lcov",
-        "run_mocha": "mocha lib/test/**/*.js --bail --exit",
+        "run_mocha": "mocha lib/test/**/*_test.js lib/test/global_hooks.js --bail --exit",
         "generate_contract_wrappers": "node ../abi-gen/lib/index.js --abis 'artifacts/Metacoin.json' --template ../contract_templates/contract.handlebars --partials '../contract_templates/partials/**/*.handlebars' --output src/contract_wrappers --backend ethers && prettier --write 'src/contract_wrappers/**.ts'",
         "coverage:report:text": "istanbul report text",
         "coverage:report:html": "istanbul report html && open coverage/index.html",
         "coverage:report:lcov": "istanbul report lcov",
         "test:circleci": "yarn test:coverage",
-        "compile": "node ../deployer/lib/src/cli.js compile --contracts Metacoin --contracts-dir contracts --artifacts-dir artifacts"
+        "compile": "node ../deployer/lib/src/cli.js compile"
     },
     "author": "",
     "license": "Apache-2.0",

@@ -17,10 +17,9 @@ import { ContractName, SubmissionContractEventArgs, TransactionDataParams } from
 import { chaiSetup } from './utils/chai_setup';
 import { deployer } from './utils/deployer';
 import { provider, web3Wrapper } from './utils/web3_wrapper';
-const PROXY_ABI = artifacts.TokenTransferProxyArtifact.networks[constants.TESTRPC_NETWORK_ID].abi;
+const PROXY_ABI = artifacts.TokenTransferProxyArtifact.compilerOutput.abi;
 const MUTISIG_WALLET_WITH_TIME_LOCK_EXCEPT_REMOVE_AUTHORIZED_ADDRESS_ABI =
-    artifacts.MultiSigWalletWithTimeLockExceptRemoveAuthorizedAddressArtifact.networks[constants.TESTRPC_NETWORK_ID]
-        .abi;
+    artifacts.MultiSigWalletWithTimeLockExceptRemoveAuthorizedAddressArtifact.compilerOutput.abi;
 
 chaiSetup.configure();
 const expect = chai.expect;

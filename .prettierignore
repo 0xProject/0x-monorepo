@@ -2,6 +2,6 @@ lib
 .nyc_output
 /packages/contracts/src/artifacts
 /packages/metacoin/artifacts
-/packages/migrations/src/artifacts
+/packages/migrations/artifacts/1.0.0
 package.json
 scripts/postpublish_utils.js

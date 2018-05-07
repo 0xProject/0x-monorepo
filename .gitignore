@@ -77,7 +77,7 @@ bin/
 packages/sol-cov/test/fixtures/artifacts
 packages/metacoin/artifacts
 packages/0x.js/test/artifacts
-packages/migrations/src/artifacts
+packages/migrations/artifacts/1.0.0
 
 # generated contract wrappers
 packages/0x.js/src/contract_wrappers/generated/
