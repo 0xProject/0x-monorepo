@@ -18,7 +18,8 @@ export class NameResolver extends EnumerableResolver {
         const onFile = (filePath: string) => {
             const contractName = path.basename(filePath, SOLIDITY_FILE_EXTENSION);
             if (contractName === lookupContractName) {
-                const source = fs.readFileSync(path.join(this._contractsDir, filePath)).toString();
+                const absoluteContractPath = path.join(this._contractsDir, filePath);
+                const source = fs.readFileSync(absoluteContractPath).toString();
                 contractSource = {
                     source,
                     path: filePath,
@@ -35,7 +36,8 @@ export class NameResolver extends EnumerableResolver {
         const contractSources: ContractSource[] = [];
         const onFile = (filePath: string) => {
             const contractName = path.basename(filePath, SOLIDITY_FILE_EXTENSION);
-            const source = fs.readFileSync(path.join(this._contractsDir, filePath)).toString();
+            const absoluteContractPath = path.join(this._contractsDir, filePath);
+            const source = fs.readFileSync(absoluteContractPath).toString();
             const contractSource = {
                 source,
                 path: filePath,
