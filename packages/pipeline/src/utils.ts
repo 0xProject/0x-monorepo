@@ -44,6 +44,15 @@ export const typeConverters = {
         }
         return newToken;
     },
+    convertMetaMaskTokenToTokenObject(metaMaskToken: any): any {
+        const newToken: any = {};
+        for (const key in logToTokenSchemaMapping) {
+            if (_.has(metaMaskToken, key)) {
+                newToken[logToTokenSchemaMapping[key]] = _.get(metaMaskToken, key);
+            }
+        }
+        return newToken;
+    },
     convertLogTransactionToTransactionObject(logTransaction: any): any {
         const newTransaction: any = {};
         for (const key in logToTransactionSchemaMapping) {

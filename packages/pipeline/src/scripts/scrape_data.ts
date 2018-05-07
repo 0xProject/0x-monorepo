@@ -14,6 +14,7 @@ import { insertDataScripts } from './create_tables.js';
 import { dataFetchingQueries } from './query_data.js';
 import { relayer } from '../models/relayer.js';
 import { HttpRequestOptions } from '../../../connect/lib/src/types.js';
+import { token } from '../models/tokens.js';
 
 const optionDefinitions = [
     { name: 'from', alias: 'f', type: Number },
@@ -35,6 +36,7 @@ const API_HIST_LIMIT = 2000; //cryptocompare API limits histoday price query to 
 const SECONDS_PER_DAY = 86400;
 const PRICE_API_ENDPOINT = 'https://min-api.cryptocompare.com/data/pricehistorical';
 const RELAYER_REGISTRY_JSON = 'https://raw.githubusercontent.com/0xProject/0x-relayer-registry/master/relayers.json';
+const METAMASK_ETH_CONTRACT_METADATA_JSON = 'https://raw.githubusercontent.com/MetaMask/eth-contract-metadata/master/contract-map.json';
 // const HIST_PRICE_API_ENDPOINT = 'https://min-api.cryptocompare.com/data/histoday';
 
 const AIRTABLE_RELAYER_INFO = 'Relayer Info';
@@ -102,6 +104,17 @@ export const pullDataScripts = {
                 .catch((err: any) => {
                     reject(err);
                 });
+        });
+    },
+    getMetaMaskTokens(): any {
+        return new Promise((resolve, reject) => {
+            request(METAMASK_ETH_CONTRACT_METADATA_JSON, (error, response, body) => {
+                if (error) {
+                    reject(error);
+                } else {
+                    resolve(JSON.parse(body));
+                }
+            })
         });
     },
     getPriceData(symbol: string, timestamp: number, timeDelay?: number): any {
@@ -359,6 +372,35 @@ function _scrapeTokenRegistryToDB(): any {
     };
 }
 
+function _scrapeMetaMaskEthContractMetadataToDB(): any {
+    return (cb: () => void) => {
+        pullDataScripts
+            .getMetaMaskTokens()
+            .then((data: any) => {
+                const parsedTokens: any = [];
+                const dataArray = _.map(_.keys(data), (tokenAddress: string) => {
+                    const value = _.get(data, tokenAddress);
+                    return {
+                        address: tokenAddress,
+                        ...value
+                    };
+                })
+                const erc20TokensOnly = _.filter(dataArray, entry => {
+                    const isErc20 = _.get(entry, 'erc20');
+                    return isErc20;
+                });
+                for (const token of erc20TokensOnly) {
+                    parsedTokens.push(typeConverters.convertMetaMaskTokenToTokenObject(token));
+                }
+                insertDataScripts.insertMultipleRows('tokens', parsedTokens, Object.keys(parsedTokens[0]));
+                cb();
+            })
+            .catch((err: any) => {
+                cb();
+            });
+    };
+}
+
 function _scrapePriceToDB(timestamp: number, token: any, timeDelay?: number): any {
     return (cb: () => void) => {
         pullDataScripts
@@ -504,7 +546,7 @@ if (cli.type === 'events') {
             });
     }
 } else if (cli.type === 'tokens') {
-    q.push(_scrapeTokenRegistryToDB());
+    q.push(_scrapeMetaMaskEthContractMetadataToDB());
 } else if (cli.type === 'prices' && cli.from && cli.to) {
     const fromDate = new Date(cli.from);
     console.debug(fromDate);
