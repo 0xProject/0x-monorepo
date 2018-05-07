@@ -64,7 +64,7 @@ async function onDeployCommandAsync(argv: CliOptions): Promise<void> {
     await commands.deployAsync(argv.contract as string, deployerArgs, deployerOpts);
 }
 /**
- * Provides extra required options for deploy command.
+ * Adds additional required options for when the user is calling the deploy command.
  * @param yargsInstance yargs instance provided in builder function callback.
  */
 function deployCommandBuilder(yargsInstance: any) {
@@ -101,7 +101,7 @@ function deployCommandBuilder(yargsInstance: any) {
 }
 
 /**
- * Provides extra required options for compile command.
+ * Adds additional required options for when the user is calling the compile command.
  * @param yargsInstance yargs instance provided in builder function callback.
  */
 function compileCommandBuilder(yargsInstance: any) {
