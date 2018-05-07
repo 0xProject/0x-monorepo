@@ -59,7 +59,7 @@ async function onDeployCommandAsync(argv: CliOptions): Promise<void> {
         networkId,
         defaults,
     };
-    const deployerArgsString = argv.args as string;
+    const deployerArgsString = argv.constructorArgs as string;
     const deployerArgs = deployerArgsString.split(SEPARATOR);
     await commands.deployAsync(argv.contract as string, deployerArgs, deployerOpts);
 }
@@ -78,7 +78,7 @@ function deployCommandBuilder(yargsInstance: any) {
             type: 'string',
             description: 'name of contract to deploy, excluding .sol extension',
         })
-        .option('args', {
+        .option('constructor-args', {
             type: 'string',
             description: 'comma separated list of constructor args to deploy contract with',
         })
