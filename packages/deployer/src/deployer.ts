@@ -82,6 +82,9 @@ export class Deployer {
             data,
             gas,
         };
+        if (_.isUndefined(compilerOutput.abi)) {
+            throw new Error(`ABI not found in ${contractName} artifacts`);
+        }
         const abi = compilerOutput.abi;
         const constructorAbi = _.find(abi, { type: AbiType.Constructor }) as ConstructorAbi;
         const constructorArgs = _.isUndefined(constructorAbi) ? [] : constructorAbi.inputs;
@@ -151,6 +154,9 @@ export class Deployer {
     ): Promise<void> {
         const contractArtifactIfExists: ContractArtifact = this._loadContractArtifactIfExists(contractName);
         const compilerOutput = Deployer._getContractCompilerOutputFromArtifactIfExists(contractArtifactIfExists);
+        if (_.isUndefined(compilerOutput.abi)) {
+            throw new Error(`ABI not found in ${contractName} artifacts`);
+        }
         const abi = compilerOutput.abi;
         const encodedConstructorArgs = encoder.encodeConstructorArgsFromAbi(args, abi);
         const newContractData: ContractNetworkData = {
