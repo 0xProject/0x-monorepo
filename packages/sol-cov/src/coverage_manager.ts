@@ -134,9 +134,7 @@ export class CoverageManager {
             if (traceInfo.address !== constants.NEW_CONTRACT) {
                 // Runtime transaction
                 let runtimeBytecode = (traceInfo as TraceInfoExistingContract).runtimeBytecode;
-                if (runtimeBytecode.startsWith('0x')) {
-                    runtimeBytecode = runtimeBytecode.slice(2);
-                }
+                runtimeBytecode = utils.removeHexPrefix(runtimeBytecode);
                 const contractData = _.find(this._contractsData, { runtimeBytecode }) as ContractData;
                 if (_.isUndefined(contractData)) {
                     throw new Error(`Transaction to an unknown address: ${traceInfo.address}`);
@@ -161,9 +159,7 @@ export class CoverageManager {
             } else {
                 // Contract creation transaction
                 let bytecode = (traceInfo as TraceInfoNewContract).bytecode;
-                if (bytecode.startsWith('0x')) {
-                    bytecode = bytecode.slice(2);
-                }
+                bytecode = utils.removeHexPrefix(bytecode);
                 const contractData = _.find(this._contractsData, contractDataCandidate =>
                     bytecode.startsWith(contractDataCandidate.bytecode),
                 ) as ContractData;
