@@ -83,27 +83,44 @@ export class OrderStateUtils {
         const exchange = (this._orderFilledCancelledFetcher as any)._exchangeWrapper as ExchangeWrapper;
         const zrxTokenAddress = exchange.getZRXTokenAddress();
         const orderHash = ZeroEx.getOrderHashHex(signedOrder);
-        const makerBalance = await this._balanceAndProxyAllowanceFetcher.getBalanceAsync(
+        const makerBalancePromise = this._balanceAndProxyAllowanceFetcher.getBalanceAsync(
             signedOrder.makerTokenAddress,
             signedOrder.maker,
         );
-        const makerProxyAllowance = await this._balanceAndProxyAllowanceFetcher.getProxyAllowanceAsync(
+        const makerProxyAllowancePromise = this._balanceAndProxyAllowanceFetcher.getProxyAllowanceAsync(
             signedOrder.makerTokenAddress,
             signedOrder.maker,
         );
-        const makerFeeBalance = await this._balanceAndProxyAllowanceFetcher.getBalanceAsync(
+        const makerFeeBalancePromise = this._balanceAndProxyAllowanceFetcher.getBalanceAsync(
             zrxTokenAddress,
             signedOrder.maker,
         );
-        const makerFeeProxyAllowance = await this._balanceAndProxyAllowanceFetcher.getProxyAllowanceAsync(
+        const makerFeeProxyAllowancePromise = this._balanceAndProxyAllowanceFetcher.getProxyAllowanceAsync(
             zrxTokenAddress,
             signedOrder.maker,
         );
-        const filledTakerTokenAmount = await this._orderFilledCancelledFetcher.getFilledTakerAmountAsync(orderHash);
-        const cancelledTakerTokenAmount = await this._orderFilledCancelledFetcher.getCancelledTakerAmountAsync(
+        const filledTakerTokenAmountPromise = this._orderFilledCancelledFetcher.getFilledTakerAmountAsync(orderHash);
+        const cancelledTakerTokenAmountPromise = this._orderFilledCancelledFetcher.getCancelledTakerAmountAsync(
             orderHash,
         );
-        const unavailableTakerTokenAmount = await exchange.getUnavailableTakerAmountAsync(orderHash);
+        const unavailableTakerTokenAmountPromise = exchange.getUnavailableTakerAmountAsync(orderHash);
+        const [
+            makerBalance,
+            makerProxyAllowance,
+            makerFeeBalance,
+            makerFeeProxyAllowance,
+            filledTakerTokenAmount,
+            cancelledTakerTokenAmount,
+            unavailableTakerTokenAmount,
+        ] = await Promise.all([
+            makerBalancePromise,
+            makerProxyAllowancePromise,
+            makerFeeBalancePromise,
+            makerFeeProxyAllowancePromise,
+            filledTakerTokenAmountPromise,
+            cancelledTakerTokenAmountPromise,
+            unavailableTakerTokenAmountPromise,
+        ]);
         const totalMakerTokenAmount = signedOrder.makerTokenAmount;
         const totalTakerTokenAmount = signedOrder.takerTokenAmount;
         const remainingTakerTokenAmount = totalTakerTokenAmount.minus(unavailableTakerTokenAmount);
