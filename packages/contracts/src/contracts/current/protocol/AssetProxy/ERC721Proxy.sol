@@ -22,10 +22,12 @@ pragma experimental ABIEncoderV2;
 import "../../utils/LibBytes/LibBytes.sol";
 import "../../tokens/ERC721Token/ERC721Token.sol";
 import "./MixinAssetProxy.sol";
+import "./MixinAuthorizable.sol";
 
 contract ERC721Proxy is
     LibBytes,
-    MixinAssetProxy
+    MixinAssetProxy,
+    MixinAuthorizable
 {
 
     // Id of this proxy.

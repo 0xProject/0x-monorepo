@@ -19,7 +19,7 @@
 pragma solidity ^0.4.23;
 pragma experimental ABIEncoderV2;
 
-import "../../../utils/Authorizable/IAuthorizable.sol";
+import "./IAuthorizable.sol";
 
 contract IAssetProxy is
     IAuthorizable

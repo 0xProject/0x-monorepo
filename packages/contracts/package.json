@@ -30,9 +30,9 @@
     },
     "config": {
         "abis":
-            "../migrations/src/artifacts/@(DummyERC20Token|Exchange|TokenRegistry|MultiSigWallet|MultiSigWalletWithTimeLock|MultiSigWalletWithTimeLockExceptRemoveAuthorizedAddress|TokenRegistry|ZRXToken|TestAssetProxyDispatcher|TestLibs|TestSignatureValidator|ERC20Proxy|ERC721Proxy|DummyERC721Token|TestLibBytes|Authorizable).json",
+            "../migrations/src/artifacts/@(DummyERC20Token|Exchange|TokenRegistry|MultiSigWallet|MultiSigWalletWithTimeLock|MultiSigWalletWithTimeLockExceptRemoveAuthorizedAddress|TokenRegistry|ZRXToken|TestAssetProxyDispatcher|TestLibs|TestSignatureValidator|ERC20Proxy|ERC721Proxy|DummyERC721Token|TestLibBytes|MixinAuthorizable).json",
         "contracts":
-            "Exchange,DummyERC20Token,ZRXToken,WETH9,MultiSigWallet,MultiSigWalletWithTimeLock,MultiSigWalletWithTimeLockExceptRemoveAuthorizedAddress,TokenRegistry,TestAssetProxyDispatcher,TestLibs,TestSignatureValidator,ERC20Proxy,ERC721Proxy,DummyERC721Token,TestLibBytes,Authorizable"
+            "Exchange,DummyERC20Token,ZRXToken,WETH9,MultiSigWallet,MultiSigWalletWithTimeLock,MultiSigWalletWithTimeLockExceptRemoveAuthorizedAddress,TokenRegistry,TestAssetProxyDispatcher,TestLibs,TestSignatureValidator,ERC20Proxy,ERC721Proxy,DummyERC721Token,TestLibBytes,MixinAuthorizable"
     },
     "repository": {
         "type": "git",

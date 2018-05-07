@@ -8,7 +8,7 @@ pragma experimental ABIEncoderV2;
  * Provides onlyOwner modifier, which prevents function from running if it is called by anyone other than the owner.
  */
 
-import "../Ownable/IOwnable.sol";
+import "./IOwnable.sol";
 
 contract Ownable is IOwnable {
     address public owner;

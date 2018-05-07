@@ -19,37 +19,32 @@
 pragma solidity ^0.4.23;
 pragma experimental ABIEncoderV2;
 
-contract IAuthorizable {
+import "../../../utils/Ownable/IOwnable.sol";
+
+contract IAuthorizable is
+    IOwnable
+{
 
     /// @dev Gets all authorized addresses.
     /// @return Array of authorized addresses.
     function getAuthorizedAddresses()
-        public view
+        external
+        view
         returns (address[]);
 
     /// @dev Authorizes an address.
     /// @param target Address to authorize.
     function addAuthorizedAddress(address target)
-        public;
+        external;
 
     /// @dev Removes authorizion of an address.
     /// @param target Address to remove authorization from.
     function removeAuthorizedAddress(address target)
-        public;
+        external;
 
     /// @dev Removes authorizion of an address.
     /// @param target Address to remove authorization from.
     /// @param index Index of target in authorities array.
     function removeAuthorizedAddressAtIndex(address target, uint256 index)
-        public;
-
-    event AuthorizedAddressAdded(
-        address indexed target,
-        address indexed caller
-    );
-
-    event AuthorizedAddressRemoved(
-        address indexed target,
-        address indexed caller
-    );
+        external;
 }
