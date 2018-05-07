@@ -1,7 +1,4 @@
-const DUMMY_TOKEN_NAME = '';
-const DUMMY_TOKEN_SYMBOL = '';
-const DUMMY_TOKEN_DECIMALS = 18;
-const DUMMY_TOKEN_TOTAL_SUPPLY = 0;
+import { BigNumber } from '@0xproject/utils';
 
 export const constants = {
     INVALID_OPCODE: 'invalid opcode',
@@ -10,5 +7,8 @@ export const constants = {
     MAX_ETHERTOKEN_WITHDRAW_GAS: 43000,
     MAX_TOKEN_TRANSFERFROM_GAS: 80000,
     MAX_TOKEN_APPROVE_GAS: 60000,
-    DUMMY_TOKEN_ARGS: [DUMMY_TOKEN_NAME, DUMMY_TOKEN_SYMBOL, DUMMY_TOKEN_DECIMALS, DUMMY_TOKEN_TOTAL_SUPPLY],
+    DUMMY_TOKEN_NAME: '',
+    DUMMY_TOKEN_SYMBOL: '',
+    DUMMY_TOKEN_DECIMALS: new BigNumber(18),
+    DUMMY_TOKEN_TOTAL_SUPPLY: new BigNumber(0),
 };

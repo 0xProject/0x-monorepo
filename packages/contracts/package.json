@@ -26,7 +26,7 @@
         "test:circleci": "yarn test:coverage"
     },
     "config": {
-        "abis": "../migrations/artifacts/1.0.0/@(DummyToken|TokenTransferProxy|Exchange|TokenRegistry|MultiSigWallet|MultiSigWalletWithTimeLock|MultiSigWalletWithTimeLockExceptRemoveAuthorizedAddress|TokenRegistry|ZRXToken|Arbitrage|EtherDelta|AccountLevels).json"
+        "abis": "../migrations/artifacts/1.0.0/@(DummyToken|TokenTransferProxy|Exchange|TokenRegistry|MultiSigWallet|MultiSigWalletWithTimeLock|MultiSigWalletWithTimeLockExceptRemoveAuthorizedAddress|TokenRegistry|ZRXToken|Arbitrage|EtherDelta|AccountLevels|WETH9|MaliciousToken).json"
     },
     "repository": {
         "type": "git",

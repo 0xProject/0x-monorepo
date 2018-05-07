@@ -7,6 +7,7 @@
 import { BaseContract } from '@0xproject/base-contract';
 import { BlockParam, BlockParamLiteral, CallData, ContractAbi, DataItem, MethodAbi, Provider, TxData, TxDataPayable } from '@0xproject/types';
 import { BigNumber, classUtils, promisify } from '@0xproject/utils';
+import { ContractArtifact } from '@0xproject/deployer';
 import { Web3Wrapper } from '@0xproject/web3-wrapper';
 import * as ethers from 'ethers';
 import * as _ from 'lodash';
@@ -39,6 +40,41 @@ export class {{contractName}}Contract extends BaseContract {
     {{> tx contractName=../contractName}}
     {{/this.constant}}
 {{/each}}
+    public static async deploy0xArtifactAsync(
+        artifact: ContractArtifact,
+        provider: Provider,
+        defaults: Partial<TxData>,
+        {{> typed_params inputs=ctor.inputs}}
+    ): Promise<{{contractName}}Contract> {
+        const bytecode = artifact.compilerOutput.evm.bytecode.object;
+        const abi = artifact.compilerOutput.abi;
+        return {{contractName}}Contract.deployAsync(bytecode, abi, provider, defaults, {{> params inputs=ctor.inputs}});
+    }
+    public static async deployAsync(
+        bytecode: string,
+        abi: ContractAbi,
+        provider: Provider,
+        defaults: Partial<TxData>,
+        {{> typed_params inputs=ctor.inputs}}
+    ): Promise<{{contractName}}Contract> {
+        const constructorAbi = BaseContract._lookupConstructorAbi(abi);
+        [{{> params inputs=ctor.inputs}}] = BaseContract._formatABIDataItemList(
+            constructorAbi.inputs,
+            [{{> params inputs=ctor.inputs}}],
+            BaseContract._bigNumberToString,
+        );
+        const txData = ethers.Contract.getDeployTransaction(bytecode, abi, {{> params inputs=ctor.inputs}});
+        const web3Wrapper = new Web3Wrapper(provider);
+        const txDataWithDefaults = await BaseContract._applyDefaultsToDeployTxDataAsync(
+            txData,
+            defaults,
+            web3Wrapper.estimateGasAsync.bind(web3Wrapper),
+        );
+        const txHash = await web3Wrapper.sendTransactionAsync(txDataWithDefaults);
+        const txReceipt = await web3Wrapper.awaitTransactionMinedAsync(txHash);
+        const contractInstance = new {{contractName}}Contract(abi, txReceipt.contractAddress as string, provider, defaults);
+        return contractInstance;
+    }
     constructor(abi: ContractAbi, address: string, provider: Provider, defaults?: Partial<TxData>) {
         super(abi, address, provider, defaults);
         classUtils.bindAll(this, ['_ethersInterfacesByFunctionSignature', 'address', 'abi', '_web3Wrapper']);

@@ -26,6 +26,7 @@ declare module 'ethers' {
         constructor(abi: any);
     }
     export class Contract {
+        public static getDeployTransaction(bytecode: string, abi: any, ...args: any[]): any;
         constructor(address: string, abi: any, provider: any);
     }
 }

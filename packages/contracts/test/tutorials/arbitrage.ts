@@ -6,9 +6,13 @@ import * as chai from 'chai';
 import ethUtil = require('ethereumjs-util');
 import * as Web3 from 'web3';
 
+import { AccountLevelsContract } from '../../src/contract_wrappers/generated/account_levels';
 import { ArbitrageContract } from '../../src/contract_wrappers/generated/arbitrage';
+import { DummyTokenContract } from '../../src/contract_wrappers/generated/dummy_token';
 import { EtherDeltaContract } from '../../src/contract_wrappers/generated/ether_delta';
 import { ExchangeContract } from '../../src/contract_wrappers/generated/exchange';
+import { TokenTransferProxyContract } from '../../src/contract_wrappers/generated/token_transfer_proxy';
+import { artifacts } from '../../util/artifacts';
 import { Balances } from '../../util/balances';
 import { constants } from '../../util/constants';
 import { crypto } from '../../util/crypto';
@@ -16,8 +20,8 @@ import { ExchangeWrapper } from '../../util/exchange_wrapper';
 import { OrderFactory } from '../../util/order_factory';
 import { BalancesByOwner, ContractName, ExchangeContractErrs } from '../../util/types';
 import { chaiSetup } from '../utils/chai_setup';
-import { deployer } from '../utils/deployer';
-import { provider, web3Wrapper } from '../utils/web3_wrapper';
+
+import { defaults, provider, web3Wrapper } from '../utils/web3_wrapper';
 
 chaiSetup.configure();
 const expect = chai.expect;
@@ -54,33 +58,61 @@ describe('Arbitrage', () => {
     before(async () => {
         const accounts = await web3Wrapper.getAvailableAddressesAsync();
         [coinbase, maker, edMaker, edFrontRunner] = accounts;
-        weth = await deployer.deployAsync(ContractName.DummyToken, constants.DUMMY_TOKEN_ARGS);
-        zrx = await deployer.deployAsync(ContractName.DummyToken, constants.DUMMY_TOKEN_ARGS);
-        const accountLevels = await deployer.deployAsync(ContractName.AccountLevels);
+        weth = await DummyTokenContract.deploy0xArtifactAsync(
+            artifacts.DummyToken,
+            provider,
+            defaults,
+            constants.DUMMY_TOKEN_NAME,
+            constants.DUMMY_TOKEN_SYMBOL,
+            constants.DUMMY_TOKEN_DECIMALS,
+            constants.DUMMY_TOKEN_TOTAL_SUPPLY,
+        );
+        zrx = await DummyTokenContract.deploy0xArtifactAsync(
+            artifacts.DummyToken,
+            provider,
+            defaults,
+            constants.DUMMY_TOKEN_NAME,
+            constants.DUMMY_TOKEN_SYMBOL,
+            constants.DUMMY_TOKEN_DECIMALS,
+            constants.DUMMY_TOKEN_TOTAL_SUPPLY,
+        );
+        const accountLevels = await AccountLevelsContract.deploy0xArtifactAsync(
+            artifacts.AccountLevels,
+            provider,
+            defaults,
+        );
         const edAdminAddress = accounts[0];
-        const edMakerFee = 0;
-        const edTakerFee = 0;
-        const edFeeRebate = 0;
-        const etherDeltaInstance = await deployer.deployAsync(ContractName.EtherDelta, [
+        const edMakerFee = new BigNumber(0);
+        const edTakerFee = new BigNumber(0);
+        const edFeeRebate = new BigNumber(0);
+        etherDelta = await EtherDeltaContract.deploy0xArtifactAsync(
+            artifacts.EtherDelta,
+            provider,
+            defaults,
             edAdminAddress,
             feeRecipient,
             accountLevels.address,
             edMakerFee,
             edTakerFee,
             edFeeRebate,
-        ]);
-        etherDelta = new EtherDeltaContract(etherDeltaInstance.abi, etherDeltaInstance.address, provider);
-        const tokenTransferProxy = await deployer.deployAsync(ContractName.TokenTransferProxy);
-        const exchangeInstance = await deployer.deployAsync(ContractName.Exchange, [
+        );
+        const tokenTransferProxy = await TokenTransferProxyContract.deploy0xArtifactAsync(
+            artifacts.TokenTransferProxy,
+            provider,
+            defaults,
+        );
+        const exchange = await ExchangeContract.deploy0xArtifactAsync(
+            artifacts.Exchange,
+            provider,
+            defaults,
             zrx.address,
             tokenTransferProxy.address,
-        ]);
-        await tokenTransferProxy.addAuthorizedAddress(exchangeInstance.address, { from: accounts[0] });
+        );
+        await tokenTransferProxy.addAuthorizedAddress.sendTransactionAsync(exchange.address, { from: accounts[0] });
         zeroEx = new ZeroEx(provider, {
-            exchangeContractAddress: exchangeInstance.address,
+            exchangeContractAddress: exchange.address,
             networkId: constants.TESTRPC_NETWORK_ID,
         });
-        const exchange = new ExchangeContract(exchangeInstance.abi, exchangeInstance.address, provider);
         exWrapper = new ExchangeWrapper(exchange, zeroEx);
 
         makerTokenAmount = ZeroEx.toBaseUnitAmount(new BigNumber(1), 18);
@@ -97,12 +129,14 @@ describe('Arbitrage', () => {
             takerFee: new BigNumber(0),
         };
         orderFactory = new OrderFactory(zeroEx, defaultOrderParams);
-        const arbitrageInstance = await deployer.deployAsync(ContractName.Arbitrage, [
+        arbitrage = await ArbitrageContract.deploy0xArtifactAsync(
+            artifacts.Arbitrage,
+            provider,
+            defaults,
             exchange.address,
             etherDelta.address,
             tokenTransferProxy.address,
-        ]);
-        arbitrage = new ArbitrageContract(arbitrageInstance.abi, arbitrageInstance.address, provider);
+        );
         // Enable arbitrage and withdrawals of tokens
         await arbitrage.setAllowances.sendTransactionAsync(weth.address, { from: coinbase });
         await arbitrage.setAllowances.sendTransactionAsync(zrx.address, { from: coinbase });

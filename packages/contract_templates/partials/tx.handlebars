@@ -33,7 +33,7 @@ public {{this.tsName}} = {
     ): Promise<number> {
         const self = this as any as {{contractName}}Contract;
         const inputAbi = self._lookupAbi('{{this.functionSignature}}').inputs;
-        [{{> params inputs=inputs}}] = BaseContract._formatABIDataItemList(inputAbi, [{{> params inputs=inputs}}], BaseContract._bigNumberToString.bind(this));
+        [{{> params inputs=inputs}}] = BaseContract._formatABIDataItemList(inputAbi, [{{> params inputs=inputs}}], BaseContract._bigNumberToString);
         const encodedData = self._lookupEthersInterface('{{this.functionSignature}}').functions.{{this.name}}(
             {{> params inputs=inputs}}
         ).data;
@@ -51,7 +51,7 @@ public {{this.tsName}} = {
     ): string {
         const self = this as any as {{contractName}}Contract;
         const inputAbi = self._lookupAbi('{{this.functionSignature}}').inputs;
-        [{{> params inputs=inputs}}] = BaseContract._formatABIDataItemList(inputAbi, [{{> params inputs=inputs}}], BaseContract._bigNumberToString.bind(self));
+        [{{> params inputs=inputs}}] = BaseContract._formatABIDataItemList(inputAbi, [{{> params inputs=inputs}}], BaseContract._bigNumberToString);
         const abiEncodedTransactionData = self._lookupEthersInterface('{{this.functionSignature}}').functions.{{this.name}}(
             {{> params inputs=inputs}}
         ).data;

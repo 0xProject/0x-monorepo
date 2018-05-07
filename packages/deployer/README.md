@@ -29,13 +29,12 @@ If your project is in [TypeScript](https://www.typescriptlang.org/), add the fol
 **Import**
 
 ```typescript
-import { Deployer, Compiler } from '@0xproject/deployer';
+import { Compiler } from '@0xproject/deployer';
 ```
 
 or
 
 ```javascript
-var Deployer = require('@0xproject/deployer').Deployer;
 var Compiler = require('@0xproject/deployer').Compiler;
 ```
 

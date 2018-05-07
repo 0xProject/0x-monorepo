@@ -1,6 +1,7 @@
 import {
     AbiDefinition,
     AbiType,
+    ConstructorAbi,
     ContractAbi,
     DataItem,
     MethodAbi,
@@ -37,8 +38,39 @@ export class BaseContract {
     protected static _bigNumberToString(type: string, value: any): any {
         return _.isObject(value) && value.isBigNumber ? value.toString() : value;
     }
+    protected static _lookupConstructorAbi(abi: ContractAbi): ConstructorAbi {
+        const constructorAbiIfExists = _.find(
+            abi,
+            (abiDefinition: AbiDefinition) => abiDefinition.type === AbiType.Constructor,
+        ) as ConstructorAbi | undefined;
+        if (!_.isUndefined(constructorAbiIfExists)) {
+            return constructorAbiIfExists;
+        } else {
+            return {
+                type: AbiType.Constructor,
+                stateMutability: 'nonpayable',
+                payable: false,
+                inputs: [],
+            };
+        }
+    }
     protected static _bnToBigNumber(type: string, value: any): any {
         return _.isObject(value) && value._bn ? new BigNumber(value.toString()) : value;
+    }
+    protected static async _applyDefaultsToDeployTxDataAsync<T extends Partial<TxData | TxDataPayable>>(
+        txData: T,
+        defaults: Partial<TxData>,
+        estimateGasAsync?: (txData: T) => Promise<number>,
+    ): Promise<TxData> {
+        const txDataWithDefaults: TxData = {
+            ...defaults,
+            ...(txData as any),
+        };
+        if (_.isUndefined(txDataWithDefaults.gas) && !_.isUndefined(estimateGasAsync)) {
+            const estimatedGas = await estimateGasAsync(txData);
+            txDataWithDefaults.gas = estimatedGas;
+        }
+        return txDataWithDefaults;
     }
     protected async _applyDefaultsToTxDataAsync<T extends Partial<TxData | TxDataPayable>>(
         txData: T,

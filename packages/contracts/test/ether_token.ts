@@ -4,12 +4,14 @@ import { BigNumber, promisify } from '@0xproject/utils';
 import { Web3Wrapper } from '@0xproject/web3-wrapper';
 import * as chai from 'chai';
 
+import { WETH9Contract } from '../src/contract_wrappers/generated/weth9';
+import { artifacts } from '../util/artifacts';
 import { constants } from '../util/constants';
 import { ContractName } from '../util/types';
 
 import { chaiSetup } from './utils/chai_setup';
-import { deployer } from './utils/deployer';
-import { provider, web3Wrapper } from './utils/web3_wrapper';
+
+import { defaults, provider, web3Wrapper } from './utils/web3_wrapper';
 
 chaiSetup.configure();
 const expect = chai.expect;
@@ -24,7 +26,7 @@ describe('EtherToken', () => {
         const accounts = await web3Wrapper.getAvailableAddressesAsync();
         account = accounts[0];
 
-        const etherToken = await deployer.deployAsync(ContractName.EtherToken);
+        const etherToken = await WETH9Contract.deploy0xArtifactAsync(artifacts.EtherToken, provider, defaults);
         etherTokenAddress = etherToken.address;
         zeroEx = new ZeroEx(provider, {
             gasPrice,

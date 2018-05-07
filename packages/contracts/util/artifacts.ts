@@ -1,25 +1,31 @@
 import { ContractArtifact } from '@0xproject/deployer';
 
-import * as DummyTokenArtifact from '../src/artifacts/DummyToken.json';
-import * as ExchangeArtifact from '../src/artifacts/Exchange.json';
-import * as MaliciousTokenArtifact from '../src/artifacts/MaliciousToken.json';
-import * as MultiSigWalletWithTimeLockArtifact from '../src/artifacts/MultiSigWalletWithTimeLock.json';
-import * as MultiSigWalletWithTimeLockExceptRemoveAuthorizedAddressArtifact from '../src/artifacts/MultiSigWalletWithTimeLockExceptRemoveAuthorizedAddress.json';
-import * as TokenArtifact from '../src/artifacts/Token.json';
-import * as TokenRegistryArtifact from '../src/artifacts/TokenRegistry.json';
-import * as TokenTransferProxyArtifact from '../src/artifacts/TokenTransferProxy.json';
-import * as EtherTokenArtifact from '../src/artifacts/WETH9.json';
-import * as ZRXArtifact from '../src/artifacts/ZRXToken.json';
+import * as AccountLevels from '../src/artifacts/AccountLevels.json';
+import * as Arbitrage from '../src/artifacts/Arbitrage.json';
+import * as DummyToken from '../src/artifacts/DummyToken.json';
+import * as EtherDelta from '../src/artifacts/EtherDelta.json';
+import * as Exchange from '../src/artifacts/Exchange.json';
+import * as MaliciousToken from '../src/artifacts/MaliciousToken.json';
+import * as MultiSigWalletWithTimeLock from '../src/artifacts/MultiSigWalletWithTimeLock.json';
+import * as MultiSigWalletWithTimeLockExceptRemoveAuthorizedAddress from '../src/artifacts/MultiSigWalletWithTimeLockExceptRemoveAuthorizedAddress.json';
+import * as Token from '../src/artifacts/Token.json';
+import * as TokenRegistry from '../src/artifacts/TokenRegistry.json';
+import * as TokenTransferProxy from '../src/artifacts/TokenTransferProxy.json';
+import * as EtherToken from '../src/artifacts/WETH9.json';
+import * as ZRX from '../src/artifacts/ZRXToken.json';
 
 export const artifacts = {
-    ZRXArtifact: (ZRXArtifact as any) as ContractArtifact,
-    DummyTokenArtifact: (DummyTokenArtifact as any) as ContractArtifact,
-    TokenArtifact: (TokenArtifact as any) as ContractArtifact,
-    ExchangeArtifact: (ExchangeArtifact as any) as ContractArtifact,
-    EtherTokenArtifact: (EtherTokenArtifact as any) as ContractArtifact,
-    TokenRegistryArtifact: (TokenRegistryArtifact as any) as ContractArtifact,
-    MaliciousTokenArtifact: (MaliciousTokenArtifact as any) as ContractArtifact,
-    TokenTransferProxyArtifact: (TokenTransferProxyArtifact as any) as ContractArtifact,
-    MultiSigWalletWithTimeLockArtifact: (MultiSigWalletWithTimeLockArtifact as any) as ContractArtifact,
-    MultiSigWalletWithTimeLockExceptRemoveAuthorizedAddressArtifact: (MultiSigWalletWithTimeLockExceptRemoveAuthorizedAddressArtifact as any) as ContractArtifact,
+    AccountLevels: (AccountLevels as any) as ContractArtifact,
+    Arbitrage: (Arbitrage as any) as ContractArtifact,
+    EtherDelta: (EtherDelta as any) as ContractArtifact,
+    ZRX: (ZRX as any) as ContractArtifact,
+    DummyToken: (DummyToken as any) as ContractArtifact,
+    Token: (Token as any) as ContractArtifact,
+    Exchange: (Exchange as any) as ContractArtifact,
+    EtherToken: (EtherToken as any) as ContractArtifact,
+    TokenRegistry: (TokenRegistry as any) as ContractArtifact,
+    MaliciousToken: (MaliciousToken as any) as ContractArtifact,
+    TokenTransferProxy: (TokenTransferProxy as any) as ContractArtifact,
+    MultiSigWalletWithTimeLock: (MultiSigWalletWithTimeLock as any) as ContractArtifact,
+    MultiSigWalletWithTimeLockExceptRemoveAuthorizedAddress: (MultiSigWalletWithTimeLockExceptRemoveAuthorizedAddress as any) as ContractArtifact,
 };
