@@ -29,10 +29,31 @@ import {
 import { utils } from './utils';
 
 export class CoverageManager {
+    private _sourcesPath: string;
     private _traceInfos: TraceInfo[] = [];
     private _contractsData: ContractData[] = [];
     private _getContractCodeAsync: (address: string) => Promise<string>;
-    private static _getSingleFileCoverageForTrace(
+    constructor(
+        artifactsPath: string,
+        sourcesPath: string,
+        networkId: number,
+        getContractCodeAsync: (address: string) => Promise<string>,
+    ) {
+        this._getContractCodeAsync = getContractCodeAsync;
+        this._sourcesPath = sourcesPath;
+        this._contractsData = collectContractsData(artifactsPath, this._sourcesPath, networkId);
+    }
+    public appendTraceInfo(traceInfo: TraceInfo): void {
+        this._traceInfos.push(traceInfo);
+    }
+    public async writeCoverageAsync(): Promise<void> {
+        const finalCoverage = await this._computeCoverageAsync();
+        const jsonReplacer: null = null;
+        const numberOfJsonSpaces = 4;
+        const stringifiedCoverage = JSON.stringify(finalCoverage, jsonReplacer, numberOfJsonSpaces);
+        fs.writeFileSync('coverage/coverage.json', stringifiedCoverage);
+    }
+    private _getSingleFileCoverageForTrace(
         contractData: ContractData,
         coveredPcs: number[],
         pcToSourceRange: { [programCounter: number]: SourceRange },
@@ -94,36 +115,18 @@ export class CoverageManager {
             );
             statementCoverage[modifierStatementId] = isModifierCovered;
         }
+        const absoluteFileName = path.join(this._sourcesPath, fileName);
         const partialCoverage = {
-            [contractData.sources[fileIndex]]: {
+            [absoluteFileName]: {
                 ...coverageEntriesDescription,
                 l: {}, // It's able to derive it from statement coverage
-                path: fileName,
+                path: absoluteFileName,
                 f: functionCoverage,
                 s: statementCoverage,
                 b: branchCoverage,
             },
         };
         return partialCoverage;
-    }
-    constructor(
-        artifactsPath: string,
-        sourcesPath: string,
-        networkId: number,
-        getContractCodeAsync: (address: string) => Promise<string>,
-    ) {
-        this._getContractCodeAsync = getContractCodeAsync;
-        this._contractsData = collectContractsData(artifactsPath, sourcesPath, networkId);
-    }
-    public appendTraceInfo(traceInfo: TraceInfo): void {
-        this._traceInfos.push(traceInfo);
-    }
-    public async writeCoverageAsync(): Promise<void> {
-        const finalCoverage = await this._computeCoverageAsync();
-        const jsonReplacer: null = null;
-        const numberOfJsonSpaces = 4;
-        const stringifiedCoverage = JSON.stringify(finalCoverage, jsonReplacer, numberOfJsonSpaces);
-        fs.writeFileSync('coverage/coverage.json', stringifiedCoverage);
     }
     private async _computeCoverageAsync(): Promise<Coverage> {
         const collector = new Collector();
@@ -147,7 +150,7 @@ export class CoverageManager {
                     contractData.sources,
                 );
                 for (let fileIndex = 0; fileIndex < contractData.sources.length; fileIndex++) {
-                    const singleFileCoverageForTrace = CoverageManager._getSingleFileCoverageForTrace(
+                    const singleFileCoverageForTrace = this._getSingleFileCoverageForTrace(
                         contractData,
                         traceInfo.coveredPcs,
                         pcToSourceRange,
@@ -176,7 +179,7 @@ export class CoverageManager {
                     contractData.sources,
                 );
                 for (let fileIndex = 0; fileIndex < contractData.sources.length; fileIndex++) {
-                    const singleFileCoverageForTrace = CoverageManager._getSingleFileCoverageForTrace(
+                    const singleFileCoverageForTrace = this._getSingleFileCoverageForTrace(
                         contractData,
                         traceInfo.coveredPcs,
                         pcToSourceRange,

@@ -14,7 +14,9 @@ export const collectContractsData = (artifactsPath: string, sourcesPath: string,
         const sources = _.keys(artifact.sources);
         const contractName = artifact.contractName;
         // We don't compute coverage for dependencies
-        const sourceCodes = _.map(sources, (source: string) => fs.readFileSync(source).toString());
+        const sourceCodes = _.map(sources, (source: string) =>
+            fs.readFileSync(path.join(sourcesPath, source)).toString(),
+        );
         const contractData = {
             sourceCodes,
             sources,
