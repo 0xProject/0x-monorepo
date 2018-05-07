@@ -53,7 +53,7 @@ const DEFAULT_COMPILER_SETTINGS: solc.CompilerSettings = {
     },
     outputSelection: {
         '*': {
-            '*': ['abi', 'evm.bytecode.object'],
+            [ALL_CONTRACTS_IDENTIFIER]: ['abi', 'evm.bytecode.object'],
         },
     },
 };

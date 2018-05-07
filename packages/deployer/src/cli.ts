@@ -19,6 +19,7 @@ const DEFAULT_NETWORK_ID = 50;
 const DEFAULT_JSONRPC_URL = 'http://localhost:8545';
 const DEFAULT_GAS_PRICE = (10 ** 9 * 2).toString();
 const DEFAULT_CONTRACTS_LIST = '*';
+const SEPARATOR = ',';
 
 /**
  * Compiles all contracts with options passed in through CLI.
@@ -28,7 +29,7 @@ async function onCompileCommandAsync(argv: CliOptions): Promise<void> {
     const opts: CompilerOptions = {
         contractsDir: argv.contractsDir,
         artifactsDir: argv.artifactsDir,
-        contracts: argv.contracts === '*' ? argv.contracts : argv.contracts.split(','),
+        contracts: argv.contracts === DEFAULT_CONTRACTS_LIST ? DEFAULT_CONTRACTS_LIST : argv.contracts.split(SEPARATOR),
     };
     await commands.compileAsync(opts);
 }
@@ -44,7 +45,7 @@ async function onDeployCommandAsync(argv: CliOptions): Promise<void> {
     const compilerOpts: CompilerOptions = {
         contractsDir: argv.contractsDir,
         artifactsDir: argv.artifactsDir,
-        contracts: argv.contracts === '*' ? argv.contracts : argv.contracts.split(','),
+        contracts: argv.contracts === DEFAULT_CONTRACTS_LIST ? DEFAULT_CONTRACTS_LIST : argv.contracts.split(SEPARATOR),
     };
     await commands.compileAsync(compilerOpts);
 
@@ -59,7 +60,7 @@ async function onDeployCommandAsync(argv: CliOptions): Promise<void> {
         defaults,
     };
     const deployerArgsString = argv.args as string;
-    const deployerArgs = deployerArgsString.split(',');
+    const deployerArgs = deployerArgsString.split(SEPARATOR);
     await commands.deployAsync(argv.contract as string, deployerArgs, deployerOpts);
 }
 /**
