@@ -1,5 +1,5 @@
 {
-    "artifactsDir": "../migrations/src/artifacts",
+    "artifactsDir": "../migrations/artifacts/1.0.0",
     "contractsDir": "src/contracts",
     "compilerSettings": {
         "outputSelection": {
