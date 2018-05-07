@@ -65,14 +65,13 @@ contract MixinBuyNFTTokens is
             totalFillResults.takerAssetFilledAmount = feeTokensResult.takerAssetFilledAmount;
         }
         for (uint256 n = 0; n < orders.length; n++) {
-            Exchange.FillResults memory fillOrderResults = EXCHANGE.fillOrder(
+            // Fail if it wasn't fully filled otherwise we will keep WETH
+            Exchange.FillResults memory fillOrderResults = EXCHANGE.fillOrKillOrder(
                 orders[n],
                 orders[n].takerAssetAmount,
                 signatures[n]
             );
             addFillResults(totalFillResults, fillOrderResults);
-            // Fail if it wasn't fully filled otherwise we will keep WETH
-            require(fillOrderResults.takerAssetFilledAmount == orders[n].takerAssetAmount, "failed to completely fill order");
             address makerTokenAddress = readAddress(orders[n].makerAssetData, 1);
             uint256 tokenId = readUint256(orders[n].makerAssetData, 21);
             transferNFTToken(makerTokenAddress, msg.sender, tokenId);
