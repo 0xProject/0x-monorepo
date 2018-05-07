@@ -76,7 +76,7 @@ function deployCommandBuilder(yargsInstance: any) {
         })
         .option('contract', {
             type: 'string',
-            description: 'name of contract to deploy, exluding .sol extension',
+            description: 'name of contract to deploy, excluding .sol extension',
         })
         .option('args', {
             type: 'string',
