@@ -43,7 +43,9 @@ import {
 } from './utils/types';
 import { utils } from './utils/utils';
 
+type TYPE_ALL_FILES_IDENTIFIER = '*';
 const ALL_CONTRACTS_IDENTIFIER = '*';
+const ALL_FILES_IDENTIFIER = '*';
 const SOLC_BIN_DIR = path.join(__dirname, '..', '..', 'solc_bin');
 const DEFAULT_CONTRACTS_DIR = path.resolve('contracts');
 const DEFAULT_ARTIFACTS_DIR = path.resolve('artifacts');
@@ -55,7 +57,7 @@ const DEFAULT_COMPILER_SETTINGS: solc.CompilerSettings = {
         enabled: false,
     },
     outputSelection: {
-        '*': {
+        [ALL_FILES_IDENTIFIER]: {
             [ALL_CONTRACTS_IDENTIFIER]: ['abi', 'evm.bytecode.object'],
         },
     },
@@ -72,19 +74,20 @@ export class Compiler {
     private _contractsDir: string;
     private _compilerSettings: solc.CompilerSettings;
     private _artifactsDir: string;
-    private _specifiedContracts: string[] | '*';
+    private _specifiedContracts: string[] | TYPE_ALL_FILES_IDENTIFIER;
     /**
      * Instantiates a new instance of the Compiler class.
      * @return An instance of the Compiler class.
      */
     constructor(opts: CompilerOptions) {
+        // TODO: Look for config file in parent directories if not found in current directory
         const config: CompilerOptions = fs.existsSync(CONFIG_FILE)
             ? JSON.parse(fs.readFileSync(CONFIG_FILE).toString())
             : {};
         this._contractsDir = opts.contractsDir || config.contractsDir || DEFAULT_CONTRACTS_DIR;
         this._compilerSettings = opts.compilerSettings || config.compilerSettings || DEFAULT_COMPILER_SETTINGS;
         this._artifactsDir = opts.artifactsDir || config.artifactsDir || DEFAULT_ARTIFACTS_DIR;
-        this._specifiedContracts = opts.contracts || config.contracts || '*';
+        this._specifiedContracts = opts.contracts || config.contracts || ALL_CONTRACTS_IDENTIFIER;
         this._nameResolver = new NameResolver(path.resolve(this._contractsDir));
         const resolver = new FallthroughResolver();
         resolver.appendResolver(new URLResolver());
