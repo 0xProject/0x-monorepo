@@ -373,7 +373,7 @@ function _scrapePriceToDB(timestamp: number, token: any, timeDelay?: number): an
                 };
                 console.debug("Inserting " + timestamp);
                 console.debug(parsedPrice);
-                insertDataScripts.insertSingleRow('prices', parsedPrice);
+                insertDataScripts.insertSingleRow('prices', parsedPrice, ['symbol', 'timestamp'], ['price']);
                 cb();
             })
             .catch((err: any) => {
@@ -520,7 +520,7 @@ if (cli.type === 'events') {
             for (let curDate = fromDate; curDate < toDate; curDate.setDate(curDate.getDate() + 1)) {
                 for (const token of Object.values(result.rows)) {
                     console.debug("Scraping " + curDate + " " + token);
-                    q.push(_scrapePriceToDB(curDate.getTime(), token));
+                    q.push(_scrapePriceToDB(curDate.getTime(), token, 1000));
                 }
             }
         })

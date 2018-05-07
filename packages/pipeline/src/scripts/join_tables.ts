@@ -212,7 +212,11 @@ const dataInsertionQueries: any = {
         events.block_number >= $1
     AND
         events.block_number <= $2
-    ) ON CONFLICT (order_hash, txn_hash, log_index) DO NOTHING`,
+    ) ON CONFLICT (order_hash, txn_hash, log_index) DO UPDATE
+        SET taker_usd_price = excluded.taker_usd_price,
+        taker_txn_usd_value = excluded.taker_usd_price,
+        maker_usd_price = excluded.maker_usd_price,
+        maker_txn_usd_value = excluded.maker_txn_usd_value`,
 };
 
 if(cli.name) {

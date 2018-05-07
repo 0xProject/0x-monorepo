@@ -189,7 +189,7 @@ export const tableScripts = {
 };
 
 export const insertDataScripts = {
-    insertSingleRow(table: string, object: any): any {
+    insertSingleRow(table: string, object: any, conflictKeys?: any[], overwriteColumns?: any[]): any {
         return new Promise((resolve, reject) => {
             const columns = Object.keys(object);
             const safeArray: any = [];
@@ -207,7 +207,21 @@ export const insertDataScripts = {
                     safeArray.push('default');
                 }
             }
-            const queryString = `INSERT INTO ${table} (${columns}) VALUES (${safeArray}) ON CONFLICT DO NOTHING`;
+            let queryString = `INSERT INTO ${table} (${columns}) VALUES (${safeArray})`;
+            if(conflictKeys && overwriteColumns) {
+                queryString += 'ON CONFLICT (';
+                for(const key of conflictKeys) {
+                    queryString += key + ',';
+                }
+                queryString = queryString.slice(0,-1);
+                queryString += ') DO UPDATE ';
+                for(const column of overwriteColumns) {
+                    queryString += 'SET ' + column + ' = excluded.' + column + ',';
+                }
+                queryString = queryString.slice(0,-1);
+            } else {
+                queryString += 'ON CONFLICT DO NOTHING';
+            }
             console.log(queryString);
             postgresClient
                 .query(queryString)
@@ -219,7 +233,7 @@ export const insertDataScripts = {
                 });
         });
     },
-    insertMultipleRows(table: string, rows: any[], columns: any[]): any {
+    insertMultipleRows(table: string, rows: any[], columns: any[], conflictKeys?: any[], overwriteColumns?: any[]): any {
         return new Promise((resolve, reject) => {
             if (rows.length > 0) {
                 const rowsSplit = rows.map((value, index) => {
@@ -245,7 +259,21 @@ export const insertDataScripts = {
                     }
                     return '(' + safeArray + ')';
                 });
-                const queryString = `INSERT INTO ${table} (${columns}) VALUES ${rowsSplit} ON CONFLICT DO NOTHING`;
+                let queryString = `INSERT INTO ${table} (${columns}) VALUES ${rowsSplit}`;
+                if(conflictKeys && overwriteColumns) {
+                    queryString += 'ON CONFLICT (';
+                    for(const key of conflictKeys) {
+                        queryString += key + ',';
+                    }
+                    queryString = queryString.slice(0,-1);
+                    queryString += ') DO UPDATE ';
+                    for(const column of overwriteColumns) {
+                        queryString += 'SET ' + column + ' = excluded.' + column + ',';
+                    }
+                    queryString = queryString.slice(0,-1);
+                } else {
+                    queryString += 'ON CONFLICT DO NOTHING';
+                }
                 postgresClient
                     .query(queryString)
                     .then((data: any) => {
