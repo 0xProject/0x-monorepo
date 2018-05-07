@@ -47,6 +47,9 @@ const ALL_CONTRACTS_IDENTIFIER = '*';
 const SOLC_BIN_DIR = path.join(__dirname, '..', '..', 'solc_bin');
 const DEFAULT_CONTRACTS_DIR = path.resolve('contracts');
 const DEFAULT_ARTIFACTS_DIR = path.resolve('artifacts');
+// Solc compiler settings cannot be configured from the commandline.
+// If you need this configured, please create a `compiler.json` config file
+// with your desired configurations.
 const DEFAULT_COMPILER_SETTINGS: solc.CompilerSettings = {
     optimizer: {
         enabled: false,
