@@ -11,7 +11,7 @@ export enum AbiType {
 }
 
 export interface ContractArtifact extends ContractVersionData {
-    schemaVersion: '2.0.0';
+    schemaVersion: string;
     contractName: string;
     networks: ContractNetworks;
 }

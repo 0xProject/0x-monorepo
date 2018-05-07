@@ -131,10 +131,10 @@ export class Compiler {
             shouldCompile = true;
         } else {
             const currentArtifact = currentArtifactIfExists as ContractArtifact;
-            shouldCompile =
-                currentArtifact.schemaVersion !== '2.0.0' ||
-                !_.isEqual(currentArtifact.compiler.settings, this._compilerSettings) ||
-                currentArtifact.sourceTreeHashHex !== sourceTreeHashHex;
+            const isUserOnLatestVersion = currentArtifact.schemaVersion === constants.LATEST_ARTIFACT_VERSION;
+            const didCompilerSettingsChange = !_.isEqual(currentArtifact.compiler.settings, this._compilerSettings);
+            const didSourceChange = currentArtifact.sourceTreeHashHex !== sourceTreeHashHex;
+            shouldCompile = isUserOnLatestVersion || didCompilerSettingsChange || didSourceChange;
         }
         if (!shouldCompile) {
             return;
@@ -228,7 +228,7 @@ export class Compiler {
             };
         } else {
             newArtifact = {
-                schemaVersion: '2.0.0',
+                schemaVersion: constants.LATEST_ARTIFACT_VERSION,
                 contractName,
                 ...contractVersion,
                 networks: {},
