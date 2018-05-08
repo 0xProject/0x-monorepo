@@ -12,37 +12,6 @@ export interface RelayerGridTileProps {
     networkId: number;
 }
 
-// TODO: Get top tokens from remote
-const topTokens = [
-    {
-        address: '0x1dad4783cf3fe3085c1426157ab175a6119a04ba',
-        decimals: 18,
-        iconUrl: '/images/token_icons/makerdao.png',
-        isRegistered: true,
-        isTracked: true,
-        name: 'Maker DAO',
-        symbol: 'MKR',
-    },
-    {
-        address: '0x323b5d4c32345ced77393b3530b1eed0f346429d',
-        decimals: 18,
-        iconUrl: '/images/token_icons/melon.png',
-        isRegistered: true,
-        isTracked: true,
-        name: 'Melon Token',
-        symbol: 'MLN',
-    },
-    {
-        address: '0xb18845c260f680d5b9d84649638813e342e4f8c9',
-        decimals: 18,
-        iconUrl: '/images/token_icons/augur.png',
-        isRegistered: true,
-        isTracked: true,
-        name: 'Augur Reputation Token',
-        symbol: 'REP',
-    },
-];
-
 const styles: Styles = {
     root: {
         backgroundColor: colors.white,
@@ -108,7 +77,7 @@ export const RelayerGridTile: React.StatelessComponent<RelayerGridTileProps> = (
                         <div className="py1" style={styles.subLabel}>
                             Daily Trade Volume
                         </div>
-                        <TopTokens tokens={topTokens} networkId={props.networkId} />
+                        <TopTokens tokens={props.relayerInfo.topTokens} networkId={props.networkId} />
                         <div className="py1" style={styles.subLabel}>
                             Top tokens
                         </div>
