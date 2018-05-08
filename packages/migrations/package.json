@@ -11,11 +11,8 @@
         "lint": "tslint --project . 'src/**/*.ts'",
         "migrate": "run-s build compile script:migrate",
         "script:migrate": "node ./lib/migrate.js",
-        "copy_artifacts": "copyfiles 'src/artifacts/**/*' ./lib",
-        "compile": "node ../deployer/lib/src/cli.js compile --contracts ${npm_package_config_contracts} --contracts-dir ../contracts/src/contracts --artifacts-dir src/artifacts"
-    },
-    "config": {
-        "contracts": "Exchange,DummyToken,ZRXToken,Token,WETH9,TokenTransferProxy,MultiSigWallet,MultiSigWalletWithTimeLock,MultiSigWalletWithTimeLockExceptRemoveAuthorizedAddress,MaliciousToken,TokenRegistry,Arbitrage,EtherDelta,AccountLevels"
+        "copy_artifacts": "copyfiles 'artifacts/1.0.0/**/*' ./lib",
+        "compile": "node ../deployer/lib/src/cli.js compile"
     },
     "license": "Apache-2.0",
     "devDependencies": {

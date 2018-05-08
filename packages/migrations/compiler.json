@@ -1,0 +1,20 @@
+{
+    "artifactsDir": "artifacts/1.0.0",
+    "contractsDir": "../contracts/src/contracts",
+    "contracts": [
+        "Exchange",
+        "DummyToken",
+        "ZRXToken",
+        "Token",
+        "WETH9",
+        "TokenTransferProxy",
+        "MultiSigWallet",
+        "MultiSigWalletWithTimeLock",
+        "MultiSigWalletWithTimeLockExceptRemoveAuthorizedAddress",
+        "MaliciousToken",
+        "TokenRegistry",
+        "Arbitrage",
+        "EtherDelta",
+        "AccountLevels"
+    ]
+}
