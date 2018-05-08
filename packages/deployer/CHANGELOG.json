@@ -1,12 +1,22 @@
 [
     {
+        "timestamp": 1525477860,
+        "version": "0.4.3",
+        "changes": [
+            {
+                "note": "Dependencies updated"
+            }
+        ]
+    },
+    {
         "version": "0.4.2",
         "changes": [
             {
                 "note": "Add support for solidity 0.4.23",
                 "pr": 545
             }
-        ]
+        ],
+        "timestamp": 1525428773
     },
     {
         "version": "0.4.1",

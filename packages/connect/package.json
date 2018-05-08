@@ -1,6 +1,6 @@
 {
     "name": "@0xproject/connect",
-    "version": "0.6.10",
+    "version": "0.6.12",
     "description": "A javascript library for interacting with the standard relayer api",
     "keywords": [
         "connect",
@@ -50,19 +50,19 @@
     },
     "homepage": "https://github.com/0xProject/0x-monorepo/packages/connect/README.md",
     "dependencies": {
-        "@0xproject/assert": "^0.2.7",
-        "@0xproject/json-schemas": "^0.7.21",
-        "@0xproject/types": "^0.6.1",
-        "@0xproject/typescript-typings": "^0.2.0",
-        "@0xproject/utils": "^0.5.2",
+        "@0xproject/assert": "^0.2.9",
+        "@0xproject/json-schemas": "^0.7.23",
+        "@0xproject/types": "^0.6.3",
+        "@0xproject/typescript-typings": "^0.3.1",
+        "@0xproject/utils": "^0.6.1",
         "isomorphic-fetch": "^2.2.1",
         "lodash": "^4.17.4",
         "query-string": "^5.0.1",
         "websocket": "^1.0.25"
     },
     "devDependencies": {
-        "@0xproject/monorepo-scripts": "^0.1.18",
-        "@0xproject/tslint-config": "^0.4.16",
+        "@0xproject/monorepo-scripts": "^0.1.19",
+        "@0xproject/tslint-config": "^0.4.17",
         "@types/fetch-mock": "^5.12.1",
         "@types/lodash": "4.14.104",
         "@types/mocha": "^2.2.42",

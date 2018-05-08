@@ -113,7 +113,7 @@ const teamRow4: ProfileInfo[] = [
     {
         name: 'Blake Henderson',
         title: 'Operations Associate',
-        description: `Operations and Analytics. Previously analytics at LinkedIn. Economics at UC San Diego. `,
+        description: `Operations and Analytics. Previously analytics at LinkedIn. Economics at UC San Diego.`,
         image: '/images/team/blake.jpg',
         linkedIn: 'https://www.linkedin.com/in/blakerhenderson/',
         github: '',
@@ -126,6 +126,27 @@ const teamRow4: ProfileInfo[] = [
         image: '/images/team/zach.png',
         linkedIn: 'https://www.linkedin.com/in/zackaryskelly/',
         github: '',
+        medium: '',
+    },
+];
+
+const teamRow5: ProfileInfo[] = [
+    {
+        name: 'Greg Hysen',
+        title: 'Blockchain Engineer',
+        description: `Smart contract R&D. Previously lead distributed systems engineer at Hivemapper. Computer Science at University of Waterloo.`,
+        image: '/images/team/greg.jpeg',
+        linkedIn: 'https://www.linkedin.com/in/gregory-hysen-71741463/',
+        github: 'https://github.com/hysz',
+        medium: '',
+    },
+    {
+        name: 'Remco Bloemen',
+        title: 'Technical Fellow',
+        description: `Previously cofounder at Neufund and Coblue. Part III at Cambridge. PhD dropout at Twente Business School.`,
+        image: '/images/team/remco.jpeg',
+        linkedIn: 'https://www.linkedin.com/in/remcobloemen/',
+        github: 'http://github.com/recmo',
         medium: '',
     },
 ];
@@ -223,6 +244,7 @@ export class About extends React.Component<AboutProps, AboutState> {
                         <div className="clearfix">{this._renderProfiles(teamRow2)}</div>
                         <div className="clearfix">{this._renderProfiles(teamRow3)}</div>
                         <div className="clearfix">{this._renderProfiles(teamRow4)}</div>
+                        <div className="clearfix">{this._renderProfiles(teamRow5)}</div>
                     </div>
                     <div className="pt3 pb2">
                         <div

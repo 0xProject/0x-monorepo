@@ -91,7 +91,7 @@ export class Documentation extends React.Component<DocumentationProps, Documenta
                 left: 0,
                 bottom: 0,
                 right: 0,
-                overflowZ: 'hidden',
+                overflowX: 'hidden',
                 overflowY: 'scroll',
                 minHeight: `calc(100vh - ${this.props.topBarHeight}px)`,
                 WebkitOverflowScrolling: 'touch',

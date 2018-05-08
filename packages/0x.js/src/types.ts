@@ -27,7 +27,6 @@ export enum ZeroExError {
     TokenContractDoesNotExist = 'TOKEN_CONTRACT_DOES_NOT_EXIST',
     UnhandledError = 'UNHANDLED_ERROR',
     UserHasNoAssociatedAddress = 'USER_HAS_NO_ASSOCIATED_ADDRESSES',
-    InvalidSignature = 'INVALID_SIGNATURE',
     ContractNotDeployedOnNetwork = 'CONTRACT_NOT_DEPLOYED_ON_NETWORK',
     InsufficientAllowanceForTransfer = 'INSUFFICIENT_ALLOWANCE_FOR_TRANSFER',
     InsufficientBalanceForTransfer = 'INSUFFICIENT_BALANCE_FOR_TRANSFER',

@@ -9,7 +9,11 @@ import { BlockchainErrDialog } from 'ts/components/dialogs/blockchain_err_dialog
 import { LedgerConfigDialog } from 'ts/components/dialogs/ledger_config_dialog';
 import { PortalDisclaimerDialog } from 'ts/components/dialogs/portal_disclaimer_dialog';
 import { RelayerIndex } from 'ts/components/relayer_index/relayer_index';
+<<<<<<< HEAD
 import { TopBar, TopBarDisplayType } from 'ts/components/top_bar/top_bar';
+=======
+import { TopBar } from 'ts/components/top_bar/top_bar';
+>>>>>>> development
 import { FlashMessage } from 'ts/components/ui/flash_message';
 import { Wallet } from 'ts/components/wallet/wallet';
 import { localStorage } from 'ts/local_storage/local_storage';
@@ -51,7 +55,11 @@ interface PortalState {
 }
 
 const THROTTLE_TIMEOUT = 100;
+<<<<<<< HEAD
 const TOP_BAR_HEIGHT = TopBar.heightForDisplayType(TopBarDisplayType.Expanded);
+=======
+const TOP_BAR_HEIGHT = 60;
+>>>>>>> development
 
 const styles: Styles = {
     root: {

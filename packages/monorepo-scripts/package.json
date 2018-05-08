@@ -1,6 +1,6 @@
 {
     "name": "@0xproject/monorepo-scripts",
-    "version": "0.1.18",
+    "version": "0.1.19",
     "description": "Helper scripts for the monorepo",
     "main": "lib/index.js",
     "types": "lib/index.d.ts",

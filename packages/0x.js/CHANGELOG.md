@@ -5,6 +5,21 @@ Edit the package's CHANGELOG.json file only.
 
 CHANGELOG
 
+## v0.37.2 - _May 5, 2018_
+
+    * Dependencies updated
+
+## v0.37.1 - _May 4, 2018_
+
+    * Dependencies updated
+
+## v0.37.0 - _May 4, 2018_
+
+    * Fixed expiration watcher comparator to handle orders with equal expiration times (#526)
+    * Update Web3 Provider Engine to 14.0.4 (#555)
+    * Add `zeroEx.getProvider()` (#559)
+    * Move `ZeroExError.InvalidSignature` to `@0xproject/order-utils` `OrderError.InvalidSignature` (#559)
+
 ## v0.36.3 - _April 18, 2018_
 
     * Move @0xproject/migrations to devDependencies

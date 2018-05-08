@@ -1,6 +1,6 @@
 {
     "name": "@0xproject/subproviders",
-    "version": "0.9.0",
+    "version": "0.10.1",
     "main": "lib/src/index.js",
     "types": "lib/src/index.d.ts",
     "license": "Apache-2.0",
@@ -36,10 +36,10 @@
         }
     },
     "dependencies": {
-        "@0xproject/assert": "^0.2.7",
-        "@0xproject/types": "^0.6.1",
-        "@0xproject/typescript-typings": "^0.2.0",
-        "@0xproject/utils": "^0.5.2",
+        "@0xproject/assert": "^0.2.9",
+        "@0xproject/types": "^0.6.3",
+        "@0xproject/typescript-typings": "^0.3.1",
+        "@0xproject/utils": "^0.6.1",
         "@ledgerhq/hw-app-eth": "^4.3.0",
         "@ledgerhq/hw-transport-u2f": "^4.3.0",
         "bip39": "^2.5.0",
@@ -51,12 +51,12 @@
         "lodash": "^4.17.4",
         "semaphore-async-await": "^1.5.1",
         "web3": "^0.20.0",
-        "web3-provider-engine": "^13.0.1"
+        "web3-provider-engine": "^14.0.4"
     },
     "devDependencies": {
-        "@0xproject/monorepo-scripts": "^0.1.18",
-        "@0xproject/tslint-config": "^0.4.16",
-        "@0xproject/utils": "^0.5.2",
+        "@0xproject/monorepo-scripts": "^0.1.19",
+        "@0xproject/tslint-config": "^0.4.17",
+        "@0xproject/utils": "^0.6.1",
         "@types/bip39": "^2.4.0",
         "@types/lodash": "4.14.104",
         "@types/mocha": "^2.2.42",

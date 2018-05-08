@@ -66,7 +66,7 @@ export class RelayerIndex extends React.Component<RelayerIndexProps, RelayerInde
                     >
                         {this.state.relayerInfos.map((relayerInfo: WebsiteBackendRelayerInfo) => (
                             <RelayerGridTile
-                                key={relayerInfo.id}
+                                key={relayerInfo.name}
                                 relayerInfo={relayerInfo}
                                 networkId={this.props.networkId}
                             />

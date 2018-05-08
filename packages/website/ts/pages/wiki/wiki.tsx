@@ -47,7 +47,7 @@ const styles: Styles = {
         left: 0,
         bottom: 0,
         right: 0,
-        overflowZ: 'hidden',
+        overflow: 'hidden',
         height: `calc(100vh - ${TOP_BAR_HEIGHT}px)`,
         WebkitOverflowScrolling: 'touch',
     },

@@ -143,6 +143,12 @@ export class TopBar extends React.Component<TopBarProps, TopBarState> {
                     primaryText={this.props.translate.get(Key.Web3Wrapper, Deco.CapWords)}
                 />
             </Link>,
+            <Link key="subMenuItem-order-utils" to={WebsitePaths.OrderUtils} className="text-decoration-none">
+                <MenuItem
+                    style={{ fontSize: styles.menuItem.fontSize }}
+                    primaryText={this.props.translate.get(Key.OrderUtils, Deco.CapWords)}
+                />
+            </Link>,
             <Link key="subMenuItem-deployer" to={WebsitePaths.Deployer} className="text-decoration-none">
                 <MenuItem
                     style={{ fontSize: styles.menuItem.fontSize }}
@@ -199,7 +205,7 @@ export class TopBar extends React.Component<TopBarProps, TopBarState> {
         return (
             <div style={{ ...styles.topBar, ...bottomBorderStyle, ...this.props.style, ...{ height } }} className="pb1">
                 <div className={parentClassNames}>
-                    <div className="col col-2 sm-pl2 md-pl2 lg-pl0" style={{ paddingTop: 15 }}>
+                    <div className="col col-2 sm-pl1 md-pl2 lg-pl0" style={{ paddingTop: 15 }}>
                         <Link to={`${WebsitePaths.Home}`} className="text-decoration-none">
                             <img src={logoUrl} height="30" />
                         </Link>

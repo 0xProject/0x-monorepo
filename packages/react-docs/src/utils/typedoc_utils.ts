@@ -93,7 +93,13 @@ export const typeDocUtils = {
                 throw new Error('`react-docs` only supports projects with 1 exported class per file');
             }
             const isClassExport = packageDefinitionWithMergedChildren.children[0].kindString === KindString.Class;
+            const isObjectLiteralExport =
+                packageDefinitionWithMergedChildren.children[0].kindString === KindString.ObjectLiteral;
             if (isClassExport) {
+                entities = packageDefinitionWithMergedChildren.children[0].children;
+                const commentObj = packageDefinitionWithMergedChildren.children[0].comment;
+                packageComment = !_.isUndefined(commentObj) ? commentObj.shortText : packageComment;
+            } else if (isObjectLiteralExport) {
                 entities = packageDefinitionWithMergedChildren.children[0].children;
                 const commentObj = packageDefinitionWithMergedChildren.children[0].comment;
                 packageComment = !_.isUndefined(commentObj) ? commentObj.shortText : packageComment;

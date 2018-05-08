@@ -1,4 +1,11 @@
 import { schemas, SchemaValidator } from '@0xproject/json-schemas';
+import {
+    generatePseudoRandomSalt,
+    getOrderHashHex,
+    isValidOrderHash,
+    isValidSignature,
+    signOrderHashAsync,
+} from '@0xproject/order-utils';
 import { ECSignature, Order, Provider, SignedOrder, TransactionReceiptWithDecodedLogs } from '@0xproject/types';
 import { AbiDecoder, BigNumber, intervalUtils } from '@0xproject/utils';
 import { Web3Wrapper } from '@0xproject/web3-wrapper';
@@ -19,7 +26,6 @@ import { OrderStateWatcherConfig, ZeroExConfig, ZeroExError } from './types';
 import { assert } from './utils/assert';
 import { constants } from './utils/constants';
 import { decorators } from './utils/decorators';
-import { signatureUtils } from './utils/signature_utils';
 import { utils } from './utils/utils';
 
 /**
@@ -33,7 +39,6 @@ export class ZeroEx {
      * this constant for your convenience.
      */
     public static NULL_ADDRESS = constants.NULL_ADDRESS;
-
     /**
      * An instance of the ExchangeWrapper class containing methods for interacting with the 0x Exchange smart contract.
      */
@@ -59,6 +64,15 @@ export class ZeroEx {
     public proxy: TokenTransferProxyWrapper;
     private _web3Wrapper: Web3Wrapper;
     /**
+     * Generates a pseudo-random 256-bit salt.
+     * The salt can be included in a 0x order, ensuring that the order generates a unique orderHash
+     * and will not collide with other outstanding orders that are identical in all other parameters.
+     * @return  A pseudo-random 256-bit number that can be used as a salt.
+     */
+    public static generatePseudoRandomSalt(): BigNumber {
+        return generatePseudoRandomSalt();
+    }
+    /**
      * Verifies that the elliptic curve signature `signature` was generated
      * by signing `data` with the private key corresponding to the `signerAddress` address.
      * @param   data          The hex encoded data signed by the supplied signature.
@@ -67,27 +81,15 @@ export class ZeroEx {
      * @return  Whether the signature is valid for the supplied signerAddress and data.
      */
     public static isValidSignature(data: string, signature: ECSignature, signerAddress: string): boolean {
-        assert.isHexString('data', data);
-        assert.doesConformToSchema('signature', signature, schemas.ecSignatureSchema);
-        assert.isETHAddressHex('signerAddress', signerAddress);
-        const normalizedSignerAddress = signerAddress.toLowerCase();
-
-        const isValidSignature = signatureUtils.isValidSignature(data, signature, normalizedSignerAddress);
-        return isValidSignature;
+        return isValidSignature(data, signature, signerAddress);
     }
     /**
-     * Generates a pseudo-random 256-bit salt.
-     * The salt can be included in a 0x order, ensuring that the order generates a unique orderHash
-     * and will not collide with other outstanding orders that are identical in all other parameters.
-     * @return  A pseudo-random 256-bit number that can be used as a salt.
+     * Computes the orderHash for a supplied order.
+     * @param   order   An object that conforms to the Order or SignedOrder interface definitions.
+     * @return  The resulting orderHash from hashing the supplied order.
      */
-    public static generatePseudoRandomSalt(): BigNumber {
-        // BigNumber.random returns a pseudo-random number between 0 & 1 with a passed in number of decimal places.
-        // Source: https://mikemcl.github.io/bignumber.js/#random
-        const randomNumber = BigNumber.random(constants.MAX_DIGITS_IN_UNSIGNED_256_INT);
-        const factor = new BigNumber(10).pow(constants.MAX_DIGITS_IN_UNSIGNED_256_INT - 1);
-        const salt = randomNumber.times(factor).round();
-        return salt;
+    public static getOrderHashHex(order: Order | SignedOrder): string {
+        return getOrderHashHex(order);
     }
     /**
      * Checks if the supplied hex encoded order hash is valid.
@@ -97,12 +99,7 @@ export class ZeroEx {
      * @return  Whether the supplied orderHash has the expected format.
      */
     public static isValidOrderHash(orderHash: string): boolean {
-        // Since this method can be called to check if any arbitrary string conforms to an orderHash's
-        // format, we only assert that we were indeed passed a string.
-        assert.isString('orderHash', orderHash);
-        const schemaValidator = new SchemaValidator();
-        const isValidOrderHash = schemaValidator.validate(orderHash, schemas.orderHashSchema).valid;
-        return isValidOrderHash;
+        return isValidOrderHash(orderHash);
     }
     /**
      * A unit amount is defined as the amount of a token above the specified decimal places (integer part).
@@ -131,17 +128,6 @@ export class ZeroEx {
         assert.isNumber('decimals', decimals);
         const baseUnitAmount = Web3Wrapper.toBaseUnitAmount(amount, decimals);
         return baseUnitAmount;
-    }
-    /**
-     * Computes the orderHash for a supplied order.
-     * @param   order   An object that conforms to the Order or SignedOrder interface definitions.
-     * @return  The resulting orderHash from hashing the supplied order.
-     */
-    @decorators.syncZeroExErrorHandler
-    public static getOrderHashHex(order: Order | SignedOrder): string {
-        assert.doesConformToSchema('order', order, schemas.orderSchema);
-        const orderHashHex = utils.getOrderHashHex(order);
-        return orderHashHex;
     }
     /**
      * Instantiates a new ZeroEx instance that provides the public interface to the 0x.js library.
@@ -205,6 +191,13 @@ export class ZeroEx {
         (this.etherToken as any)._setNetworkId(networkId);
     }
     /**
+     * Get the provider instance currently used by 0x.js
+     * @return  Web3 provider instance
+     */
+    public getProvider(): Provider {
+        return this._web3Wrapper.getProvider();
+    }
+    /**
      * Get user Ethereum addresses available through the supplied web3 provider available for sending transactions.
      * @return  An array of available user Ethereum addresses.
      */
@@ -229,41 +222,12 @@ export class ZeroEx {
         signerAddress: string,
         shouldAddPersonalMessagePrefix: boolean,
     ): Promise<ECSignature> {
-        assert.isHexString('orderHash', orderHash);
-        await assert.isSenderAddressAsync('signerAddress', signerAddress, this._web3Wrapper);
-        const normalizedSignerAddress = signerAddress.toLowerCase();
-
-        let msgHashHex = orderHash;
-        if (shouldAddPersonalMessagePrefix) {
-            const orderHashBuff = ethUtil.toBuffer(orderHash);
-            const msgHashBuff = ethUtil.hashPersonalMessage(orderHashBuff);
-            msgHashHex = ethUtil.bufferToHex(msgHashBuff);
-        }
-
-        const signature = await this._web3Wrapper.signMessageAsync(normalizedSignerAddress, msgHashHex);
-
-        // HACK: There is no consensus on whether the signatureHex string should be formatted as
-        // v + r + s OR r + s + v, and different clients (even different versions of the same client)
-        // return the signature params in different orders. In order to support all client implementations,
-        // we parse the signature in both ways, and evaluate if either one is a valid signature.
-        const validVParamValues = [27, 28];
-        const ecSignatureVRS = signatureUtils.parseSignatureHexAsVRS(signature);
-        if (_.includes(validVParamValues, ecSignatureVRS.v)) {
-            const isValidVRSSignature = ZeroEx.isValidSignature(orderHash, ecSignatureVRS, normalizedSignerAddress);
-            if (isValidVRSSignature) {
-                return ecSignatureVRS;
-            }
-        }
-
-        const ecSignatureRSV = signatureUtils.parseSignatureHexAsRSV(signature);
-        if (_.includes(validVParamValues, ecSignatureRSV.v)) {
-            const isValidRSVSignature = ZeroEx.isValidSignature(orderHash, ecSignatureRSV, normalizedSignerAddress);
-            if (isValidRSVSignature) {
-                return ecSignatureRSV;
-            }
-        }
-
-        throw new Error(ZeroExError.InvalidSignature);
+        return signOrderHashAsync(
+            this._web3Wrapper.getProvider(),
+            orderHash,
+            signerAddress,
+            shouldAddPersonalMessagePrefix,
+        );
     }
     /**
      * Waits for a transaction to be mined and returns the transaction receipt.

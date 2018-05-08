@@ -35,6 +35,7 @@ const packageNameToWebsitePath: { [name: string]: string } = {
     deployer: 'deployer',
     'sol-cov': 'sol-cov',
     subproviders: 'subproviders',
+    'order-utils': 'order-utils',
 };
 
 (async () => {

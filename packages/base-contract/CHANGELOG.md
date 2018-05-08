@@ -5,11 +5,19 @@ Edit the package's CHANGELOG.json file only.
 
 CHANGELOG
 
+## v0.3.1 - _May 5, 2018_
+
+    * Dependencies updated
+
+## v0.3.0 - _May 4, 2018_
+
+    * Update ethers-contracts to ethers.js (#540)
+
 ## v0.2.1 - _April 18, 2018_
 
     * Dependencies updated
 
-## v0.2.0 - _April 12, 2018_
+## v0.2.0 - _April 11, 2018_
 
     * Contract wrappers now accept Provider and defaults instead of Web3Wrapper (#501)
 
@@ -23,6 +31,6 @@ CHANGELOG
 
     * Dependencies updated
 
-## v0.0.2 - _March 4, 2018_
+## v0.0.2 - _March 3, 2018_
 
     * Initial release

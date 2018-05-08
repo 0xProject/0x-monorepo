@@ -1,12 +1,22 @@
 [
     {
+        "timestamp": 1525477860,
+        "version": "0.3.1",
+        "changes": [
+            {
+                "note": "Dependencies updated"
+            }
+        ]
+    },
+    {
         "version": "0.3.0",
         "changes": [
             {
                 "note": "Add types for `ethers.js`, removing `ethers-contracts`",
                 "pr": 540
             }
-        ]
+        ],
+        "timestamp": 1525428773
     },
     {
         "version": "0.2.0",

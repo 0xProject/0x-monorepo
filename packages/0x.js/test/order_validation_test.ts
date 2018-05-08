@@ -1,4 +1,5 @@
 import { BlockchainLifecycle, devConstants } from '@0xproject/dev-utils';
+import { OrderError } from '@0xproject/order-utils';
 import { BlockParamLiteral } from '@0xproject/types';
 import { BigNumber } from '@0xproject/utils';
 import * as chai from 'chai';
@@ -68,6 +69,40 @@ describe('OrderValidation', () => {
             );
             await zeroEx.exchange.validateOrderFillableOrThrowAsync(signedOrder);
         });
+        it('should succeed if the maker is buying ZRX and has no ZRX balance', async () => {
+            const makerFee = new BigNumber(2);
+            const takerFee = new BigNumber(2);
+            const signedOrder = await fillScenarios.createFillableSignedOrderWithFeesAsync(
+                makerTokenAddress,
+                zrxTokenAddress,
+                makerFee,
+                takerFee,
+                makerAddress,
+                takerAddress,
+                fillableAmount,
+                feeRecipient,
+            );
+            const zrxMakerBalance = await zeroEx.token.getBalanceAsync(zrxTokenAddress, makerAddress);
+            await zeroEx.token.transferAsync(zrxTokenAddress, makerAddress, takerAddress, zrxMakerBalance);
+            await zeroEx.exchange.validateOrderFillableOrThrowAsync(signedOrder);
+        });
+        it('should succeed if the maker is buying ZRX and has no ZRX balance and there is no specified taker', async () => {
+            const makerFee = new BigNumber(2);
+            const takerFee = new BigNumber(2);
+            const signedOrder = await fillScenarios.createFillableSignedOrderWithFeesAsync(
+                makerTokenAddress,
+                zrxTokenAddress,
+                makerFee,
+                takerFee,
+                makerAddress,
+                constants.NULL_ADDRESS,
+                fillableAmount,
+                feeRecipient,
+            );
+            const zrxMakerBalance = await zeroEx.token.getBalanceAsync(zrxTokenAddress, makerAddress);
+            await zeroEx.token.transferAsync(zrxTokenAddress, makerAddress, takerAddress, zrxMakerBalance);
+            await zeroEx.exchange.validateOrderFillableOrThrowAsync(signedOrder);
+        });
         it('should succeed if the order is asymmetric and fillable', async () => {
             const makerFillableAmount = fillableAmount;
             const takerFillableAmount = fillableAmount.minus(4);
@@ -135,7 +170,7 @@ describe('OrderValidation', () => {
             signedOrder.ecSignature.v = 28 - signedOrder.ecSignature.v + 27;
             return expect(
                 zeroEx.exchange.validateFillOrderThrowIfInvalidAsync(signedOrder, fillableAmount, takerAddress),
-            ).to.be.rejectedWith(ZeroExError.InvalidSignature);
+            ).to.be.rejectedWith(OrderError.InvalidSignature);
         });
         it('should throw when the order is fully filled or cancelled', async () => {
             const signedOrder = await fillScenarios.createFillableSignedOrderAsync(
@@ -469,4 +504,4 @@ describe('OrderValidation', () => {
             expect(partialTakerFee).to.be.bignumber.equal(takerPartialFee);
         });
     });
-});
+}); // tslint:disable-line:max-file-line-count

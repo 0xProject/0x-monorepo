@@ -361,6 +361,7 @@ export enum WebsitePaths {
     JSONSchemas = '/docs/json-schemas',
     SolCov = '/docs/sol-cov',
     Subproviders = '/docs/subproviders',
+    OrderUtils = '/docs/order-utils',
     Jobs = '/jobs',
 }
 
@@ -373,6 +374,7 @@ export enum DocPackages {
     JSONSchemas = 'JSON_SCHEMAS',
     SolCov = 'SOL_COV',
     Subproviders = 'SUBPROVIDERS',
+    OrderUtils = 'ORDER_UTILS',
 }
 
 export enum Key {
@@ -431,6 +433,7 @@ export enum Key {
     Whitepaper = 'WHITEPAPER',
     Wiki = 'WIKI',
     Web3Wrapper = 'WEB3_WRAPPER',
+    OrderUtils = 'ORDER_UTILS',
     And = 'AND',
     Faq = 'FAQ',
     SmartContracts = 'SMART_CONTRACTS',
@@ -500,17 +503,17 @@ export interface TokenState {
     price?: BigNumber;
 }
 
-// TODO: Add topTokens and headerUrl properties once available from backend
+// TODO: Add topTokens property once available from backend
 export interface WebsiteBackendRelayerInfo {
-    id: string;
     name: string;
     dailyTxnVolume: string;
     url: string;
+    appUrl?: string;
+    headerImgUrl: string;
 }
 
 export interface WebsiteBackendPriceInfo {
-    price: string;
-    address: string;
+    [symbol: string]: string;
 }
 
 export interface WebsiteBackendGasInfo {
