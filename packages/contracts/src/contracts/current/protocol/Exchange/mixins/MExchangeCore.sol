@@ -18,8 +18,8 @@
 
 pragma solidity ^0.4.23;
 
-import "../lib/LibOrder.sol";
-import "../lib/LibFillResults.sol";
+import "../libs/LibOrder.sol";
+import "../libs/LibFillResults.sol";
 import "../interfaces/IExchangeCore.sol";
 
 contract MExchangeCore is

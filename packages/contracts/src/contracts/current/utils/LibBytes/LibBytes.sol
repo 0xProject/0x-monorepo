@@ -20,6 +20,10 @@ pragma solidity ^0.4.23;
 
 contract LibBytes {
 
+    // Revert reasons
+    string constant GTE_20_LENGTH_REQUIRED = "Length must be greater than or equal to 20.";
+    string constant GTE_32_LENGTH_REQUIRED = "Length must be greater than or equal to 32.";
+
     /// @dev Tests equality of two byte arrays.
     /// @param lhs First byte array to compare.
     /// @param rhs Second byte array to compare.
@@ -65,7 +69,7 @@ contract LibBytes {
     {
         require(
             b.length >= index + 20,  // 20 is length of address
-            "Cannot read address from byte array shorter than 20 bytes."
+            GTE_20_LENGTH_REQUIRED
         ); 
 
         // Add offset to index:
@@ -96,7 +100,7 @@ contract LibBytes {
     {
         require(
             b.length >= index + 20,  // 20 is length of address
-            "Cannot write address to byte array shorter than 20 bytes."
+            GTE_20_LENGTH_REQUIRED
         ); 
 
         // Add offset to index:
@@ -134,7 +138,7 @@ contract LibBytes {
     {
         require(
             b.length >= index + 32,
-            "Cannot read 32 bytes from byte array shorter than 32 bytes."
+            GTE_32_LENGTH_REQUIRED
         );
 
         // Arrays are prefixed by a 256 bit length parameter
@@ -160,7 +164,7 @@ contract LibBytes {
     {
         require(
             b.length >= index + 32,
-            "Cannot write 32 bytes to byte array shorter than 32 bytes."
+            GTE_32_LENGTH_REQUIRED
         );
 
         // Arrays are prefixed by a 256 bit length parameter

@@ -37,15 +37,15 @@ contract UnlimitedAllowanceToken is ERC20Token {
         uint256 allowance = allowed[_from][msg.sender];
         require(
             balances[_from] >= _value,
-            "Insufficient balance to complete transfer."
+            INSUFFICIENT_BALANCE
         );
         require(
             allowance >= _value,
-            "Insufficient allowance to complete transfer."
+            INSUFFICIENT_ALLOWANCE
         );
         require(
             balances[_to] + _value >= balances[_to],
-            "Transfer would result in an overflow."
+            OVERFLOW
         );
         balances[_to] += _value;
         balances[_from] -= _value;

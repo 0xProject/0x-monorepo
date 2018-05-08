@@ -20,7 +20,7 @@ pragma solidity ^0.4.23;
 
 import "../../utils/Ownable/Ownable.sol";
 import "../AssetProxy/interfaces/IAssetProxy.sol";
-import "./lib/LibExchangeErrors.sol";
+import "./libs/LibExchangeErrors.sol";
 import "./mixins/MAssetProxyDispatcher.sol";
 
 contract MixinAssetProxyDispatcher is
@@ -94,7 +94,7 @@ contract MixinAssetProxyDispatcher is
             // Lookup asset proxy
             require(
                 assetMetadata.length >= 1,
-                GREATER_THAN_ZERO_LENGTH_REQUIRED
+                GT_ZERO_LENGTH_REQUIRED
             );
             uint8 assetProxyId = uint8(assetMetadata[0]);
             IAssetProxy assetProxy = assetProxies[assetProxyId];

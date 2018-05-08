@@ -19,8 +19,8 @@
 pragma solidity ^0.4.23;
 pragma experimental ABIEncoderV2;
 
-import "./lib/LibOrder.sol";
-import "./lib/LibFillResults.sol";
+import "./libs/LibOrder.sol";
+import "./libs/LibFillResults.sol";
 
 contract IWrapperFunctions is
     LibOrder,

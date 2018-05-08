@@ -19,10 +19,10 @@
 pragma solidity ^0.4.23;
 pragma experimental ABIEncoderV2;
 
-import "./lib/LibFillResults.sol";
-import "./lib/LibOrder.sol";
-import "./lib/LibMath.sol";
-import "./lib/LibExchangeErrors.sol";
+import "./libs/LibFillResults.sol";
+import "./libs/LibOrder.sol";
+import "./libs/LibMath.sol";
+import "./libs/LibExchangeErrors.sol";
 import "./mixins/MExchangeCore.sol";
 import "./mixins/MSettlement.sol";
 import "./mixins/MSignatureValidator.sol";
@@ -94,11 +94,11 @@ contract MixinExchangeCore is
         if (filled[orderHash] == 0) {
             require(
                 order.makerAssetAmount > 0,
-                GREATER_THAN_ZERO_AMOUNT_REQUIRED
+                GT_ZERO_AMOUNT_REQUIRED
             );
             require(
                 order.takerAssetAmount > 0,
-                GREATER_THAN_ZERO_AMOUNT_REQUIRED
+                GT_ZERO_AMOUNT_REQUIRED
             );
             require(
                 isValidSignature(orderHash, order.makerAddress, signature),
@@ -124,7 +124,7 @@ contract MixinExchangeCore is
         }
         require(
             takerAssetFillAmount > 0,
-            GREATER_THAN_ZERO_AMOUNT_REQUIRED
+            GT_ZERO_AMOUNT_REQUIRED
         );
 
         // Validate order expiration
@@ -174,11 +174,11 @@ contract MixinExchangeCore is
         // Validate the order
         require(
             order.makerAssetAmount > 0,
-            GREATER_THAN_ZERO_AMOUNT_REQUIRED
+            GT_ZERO_AMOUNT_REQUIRED
         );
         require(
             order.takerAssetAmount > 0,
-            GREATER_THAN_ZERO_AMOUNT_REQUIRED
+            GT_ZERO_AMOUNT_REQUIRED
         );
 
         // Validate sender is allowed to cancel this order

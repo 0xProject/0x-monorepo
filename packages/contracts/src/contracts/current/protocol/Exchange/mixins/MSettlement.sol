@@ -18,7 +18,7 @@
 
 pragma solidity ^0.4.23;
 
-import "../lib/LibOrder.sol";
+import "../libs/LibOrder.sol";
 
 contract MSettlement {
 
