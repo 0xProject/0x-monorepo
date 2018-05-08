@@ -10,7 +10,7 @@ import { LedgerConfigDialog } from 'ts/components/dialogs/ledger_config_dialog';
 import { PortalDisclaimerDialog } from 'ts/components/dialogs/portal_disclaimer_dialog';
 import { AssetPicker } from 'ts/components/generate_order/asset_picker';
 import { RelayerIndex } from 'ts/components/relayer_index/relayer_index';
-import { TopBar } from 'ts/components/top_bar/top_bar';
+import { TopBar, TopBarDisplayType } from 'ts/components/top_bar/top_bar';
 import { FlashMessage } from 'ts/components/ui/flash_message';
 import { Wallet } from 'ts/components/wallet/wallet';
 import { localStorage } from 'ts/local_storage/local_storage';
@@ -53,7 +53,7 @@ interface PortalState {
 }
 
 const THROTTLE_TIMEOUT = 100;
-const TOP_BAR_HEIGHT = 60;
+const TOP_BAR_HEIGHT = TopBar.heightForDisplayType(TopBarDisplayType.Expanded);
 
 const styles: Styles = {
     root: {
@@ -156,6 +156,7 @@ export class Portal extends React.Component<PortalProps, PortalState> {
                     location={this.props.location}
                     blockchain={this._blockchain}
                     translate={this.props.translate}
+                    displayType={TopBarDisplayType.Expanded}
                     style={{ backgroundColor: colors.lightestGrey }}
                 />
                 <div id="portal" style={styles.body}>
