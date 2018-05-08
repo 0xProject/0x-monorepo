@@ -11,7 +11,7 @@ import { ProviderType } from 'ts/types';
 import { constants } from 'ts/utils/constants';
 import { utils } from 'ts/utils/utils';
 
-const IDENTICON_DIAMETER = 24;
+const ROOT_HEIGHT = 24;
 
 export interface ProviderDisplayProps {
     dispatcher: Dispatcher;
@@ -27,12 +27,9 @@ interface ProviderDisplayState {}
 
 const styles: Styles = {
     root: {
-        height: 24,
+        height: ROOT_HEIGHT,
         backgroundColor: colors.white,
-        borderBottomRightRadius: 24,
-        borderBottomLeftRadius: 24,
-        borderTopRightRadius: 24,
-        borderTopLeftRadius: 24,
+        borderRadius: ROOT_HEIGHT,
         boxShadow: `0px 4px 6px ${colors.walletBoxShadow}`,
     },
 };
@@ -52,21 +49,18 @@ export class ProviderDisplay extends React.Component<ProviderDisplayProps, Provi
             : 'Connect a wallet';
         const providerTitle =
             this.props.providerType === ProviderType.Injected ? injectedProviderName : 'Ledger Nano S';
-        const isProviderMetamask = providerTitle === 'Metamask';
+        const isProviderMetamask = providerTitle === constants.PROVIDER_NAME_METAMASK;
         const hoverActiveNode = (
             <div className="flex right lg-pr0 md-pr2 sm-pr2 p1" style={styles.root}>
                 <div>
-                    <Identicon address={this.props.userAddress} diameter={IDENTICON_DIAMETER} />
+                    <Identicon address={this.props.userAddress} diameter={ROOT_HEIGHT} />
                 </div>
                 <div style={{ marginLeft: 12, paddingTop: 3 }}>
                     <div style={{ fontSize: 16, color: colors.darkGrey }}>{displayAddress}</div>
                 </div>
                 {isProviderMetamask && (
                     <div style={{ marginLeft: 16 }}>
-                        <img
-                            src="/images/metamask_icon.png"
-                            style={{ width: IDENTICON_DIAMETER, height: IDENTICON_DIAMETER }}
-                        />
+                        <img src="/images/metamask_icon.png" style={{ width: ROOT_HEIGHT, height: ROOT_HEIGHT }} />
                     </div>
                 )}
             </div>
