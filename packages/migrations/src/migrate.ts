@@ -1,5 +1,4 @@
 #!/usr/bin/env node
-import { Deployer } from '@0xproject/deployer';
 import { devConstants, web3Factory } from '@0xproject/dev-utils';
 import { Provider } from '@0xproject/types';
 import { logUtils } from '@0xproject/utils';
