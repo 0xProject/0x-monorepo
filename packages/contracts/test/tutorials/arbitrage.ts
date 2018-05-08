@@ -40,8 +40,8 @@ describe('Arbitrage', () => {
     const INITIAL_BALANCE = ZeroEx.toBaseUnitAmount(new BigNumber(10000), 18);
     const INITIAL_ALLOWANCE = ZeroEx.toBaseUnitAmount(new BigNumber(10000), 18);
 
-    let weth: Web3.ContractInstance;
-    let zrx: Web3.ContractInstance;
+    let weth: DummyTokenContract;
+    let zrx: DummyTokenContract;
     let arbitrage: ArbitrageContract;
     let etherDelta: EtherDeltaContract;
 
@@ -58,7 +58,7 @@ describe('Arbitrage', () => {
     before(async () => {
         const accounts = await web3Wrapper.getAvailableAddressesAsync();
         [coinbase, maker, edMaker, edFrontRunner] = accounts;
-        weth = await DummyTokenContract.deploy0xArtifactAsync(
+        weth = await DummyTokenContract.deployFrom0xArtifactAsync(
             artifacts.DummyToken,
             provider,
             defaults,
@@ -67,7 +67,7 @@ describe('Arbitrage', () => {
             constants.DUMMY_TOKEN_DECIMALS,
             constants.DUMMY_TOKEN_TOTAL_SUPPLY,
         );
-        zrx = await DummyTokenContract.deploy0xArtifactAsync(
+        zrx = await DummyTokenContract.deployFrom0xArtifactAsync(
             artifacts.DummyToken,
             provider,
             defaults,
@@ -76,7 +76,7 @@ describe('Arbitrage', () => {
             constants.DUMMY_TOKEN_DECIMALS,
             constants.DUMMY_TOKEN_TOTAL_SUPPLY,
         );
-        const accountLevels = await AccountLevelsContract.deploy0xArtifactAsync(
+        const accountLevels = await AccountLevelsContract.deployFrom0xArtifactAsync(
             artifacts.AccountLevels,
             provider,
             defaults,
@@ -85,7 +85,7 @@ describe('Arbitrage', () => {
         const edMakerFee = new BigNumber(0);
         const edTakerFee = new BigNumber(0);
         const edFeeRebate = new BigNumber(0);
-        etherDelta = await EtherDeltaContract.deploy0xArtifactAsync(
+        etherDelta = await EtherDeltaContract.deployFrom0xArtifactAsync(
             artifacts.EtherDelta,
             provider,
             defaults,
@@ -96,12 +96,12 @@ describe('Arbitrage', () => {
             edTakerFee,
             edFeeRebate,
         );
-        const tokenTransferProxy = await TokenTransferProxyContract.deploy0xArtifactAsync(
+        const tokenTransferProxy = await TokenTransferProxyContract.deployFrom0xArtifactAsync(
             artifacts.TokenTransferProxy,
             provider,
             defaults,
         );
-        const exchange = await ExchangeContract.deploy0xArtifactAsync(
+        const exchange = await ExchangeContract.deployFrom0xArtifactAsync(
             artifacts.Exchange,
             provider,
             defaults,
@@ -129,7 +129,7 @@ describe('Arbitrage', () => {
             takerFee: new BigNumber(0),
         };
         orderFactory = new OrderFactory(zeroEx, defaultOrderParams);
-        arbitrage = await ArbitrageContract.deploy0xArtifactAsync(
+        arbitrage = await ArbitrageContract.deployFrom0xArtifactAsync(
             artifacts.Arbitrage,
             provider,
             defaults,
@@ -142,26 +142,26 @@ describe('Arbitrage', () => {
         await arbitrage.setAllowances.sendTransactionAsync(zrx.address, { from: coinbase });
 
         // Give some tokens to arbitrage contract
-        await weth.setBalance(arbitrage.address, takerTokenAmount, { from: coinbase });
+        await weth.setBalance.sendTransactionAsync(arbitrage.address, takerTokenAmount, { from: coinbase });
 
         // Fund the maker on exchange side
-        await zrx.setBalance(maker, makerTokenAmount, { from: coinbase });
+        await zrx.setBalance.sendTransactionAsync(maker, makerTokenAmount, { from: coinbase });
         // Set the allowance for the maker on Exchange side
-        await zrx.approve(tokenTransferProxy.address, INITIAL_ALLOWANCE, { from: maker });
+        await zrx.approve.sendTransactionAsync(tokenTransferProxy.address, INITIAL_ALLOWANCE, { from: maker });
 
         amountGive = ZeroEx.toBaseUnitAmount(new BigNumber(2), 18);
         // Fund the maker on EtherDelta side
-        await weth.setBalance(edMaker, amountGive, { from: coinbase });
+        await weth.setBalance.sendTransactionAsync(edMaker, amountGive, { from: coinbase });
         // Set the allowance for the maker on EtherDelta side
-        await weth.approve(etherDelta.address, INITIAL_ALLOWANCE, { from: edMaker });
+        await weth.approve.sendTransactionAsync(etherDelta.address, INITIAL_ALLOWANCE, { from: edMaker });
         // Deposit maker funds into EtherDelta
         await etherDelta.depositToken.sendTransactionAsync(weth.address, amountGive, { from: edMaker });
 
         amountGet = makerTokenAmount;
         // Fund the front runner on EtherDelta side
-        await zrx.setBalance(edFrontRunner, amountGet, { from: coinbase });
+        await zrx.setBalance.sendTransactionAsync(edFrontRunner, amountGet, { from: coinbase });
         // Set the allowance for the front-runner on EtherDelta side
-        await zrx.approve(etherDelta.address, INITIAL_ALLOWANCE, { from: edFrontRunner });
+        await zrx.approve.sendTransactionAsync(etherDelta.address, INITIAL_ALLOWANCE, { from: edFrontRunner });
         // Deposit front runner funds into EtherDelta
         await etherDelta.depositToken.sendTransactionAsync(zrx.address, amountGet, { from: edFrontRunner });
     });
@@ -228,11 +228,11 @@ describe('Arbitrage', () => {
                 from: coinbase,
             });
             const res = await zeroEx.awaitTransactionMinedAsync(txHash);
-            const postBalance = await weth.balanceOf(arbitrage.address);
+            const postBalance = await weth.balanceOf.callAsync(arbitrage.address);
             expect(postBalance).to.be.bignumber.equal(amountGive);
         });
         it('should fail and revert if front-runned', async () => {
-            const preBalance = await weth.balanceOf(arbitrage.address);
+            const preBalance = await weth.balanceOf.callAsync(arbitrage.address);
             // Front-running transaction
             await etherDelta.trade.sendTransactionAsync(
                 tokenGet,
@@ -252,7 +252,7 @@ describe('Arbitrage', () => {
             await expect(
                 arbitrage.makeAtomicTrade.sendTransactionAsync(addresses, values, v, r, s, { from: coinbase }),
             ).to.be.rejectedWith(constants.REVERT);
-            const postBalance = await weth.balanceOf(arbitrage.address);
+            const postBalance = await weth.balanceOf.callAsync(arbitrage.address);
             expect(preBalance).to.be.bignumber.equal(postBalance);
         });
     });

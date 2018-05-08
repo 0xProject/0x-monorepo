@@ -56,7 +56,7 @@ describe('Exchange', () => {
         tokenOwner = accounts[0];
         [maker, taker, feeRecipient] = accounts;
         [rep, dgd, zrx] = await Promise.all([
-            DummyTokenContract.deploy0xArtifactAsync(
+            DummyTokenContract.deployFrom0xArtifactAsync(
                 artifacts.DummyToken,
                 provider,
                 defaults,
@@ -65,7 +65,7 @@ describe('Exchange', () => {
                 constants.DUMMY_TOKEN_DECIMALS,
                 constants.DUMMY_TOKEN_TOTAL_SUPPLY,
             ),
-            DummyTokenContract.deploy0xArtifactAsync(
+            DummyTokenContract.deployFrom0xArtifactAsync(
                 artifacts.DummyToken,
                 provider,
                 defaults,
@@ -74,7 +74,7 @@ describe('Exchange', () => {
                 constants.DUMMY_TOKEN_DECIMALS,
                 constants.DUMMY_TOKEN_TOTAL_SUPPLY,
             ),
-            DummyTokenContract.deploy0xArtifactAsync(
+            DummyTokenContract.deployFrom0xArtifactAsync(
                 artifacts.DummyToken,
                 provider,
                 defaults,
@@ -84,13 +84,17 @@ describe('Exchange', () => {
                 constants.DUMMY_TOKEN_TOTAL_SUPPLY,
             ),
         ]);
-        tokenRegistry = await TokenRegistryContract.deploy0xArtifactAsync(artifacts.TokenRegistry, provider, defaults);
-        tokenTransferProxy = await TokenTransferProxyContract.deploy0xArtifactAsync(
+        tokenRegistry = await TokenRegistryContract.deployFrom0xArtifactAsync(
+            artifacts.TokenRegistry,
+            provider,
+            defaults,
+        );
+        tokenTransferProxy = await TokenTransferProxyContract.deployFrom0xArtifactAsync(
             artifacts.TokenTransferProxy,
             provider,
             defaults,
         );
-        exchange = await ExchangeContract.deploy0xArtifactAsync(
+        exchange = await ExchangeContract.deployFrom0xArtifactAsync(
             artifacts.Exchange,
             provider,
             defaults,

@@ -1,4 +1,6 @@
 declare module 'ethers' {
+    import { TxData } from '@0xproject/types';
+
     export interface TransactionDescription {
         name: string;
         signature: string;
@@ -26,7 +28,7 @@ declare module 'ethers' {
         constructor(abi: any);
     }
     export class Contract {
-        public static getDeployTransaction(bytecode: string, abi: any, ...args: any[]): any;
+        public static getDeployTransaction(bytecode: string, abi: any, ...args: any[]): Partial<TxData>;
         constructor(address: string, abi: any, provider: any);
     }
 }

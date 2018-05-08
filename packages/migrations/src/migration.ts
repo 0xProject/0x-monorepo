@@ -18,33 +18,33 @@ import { tokenInfo } from './utils/token_info';
  * Custom migrations should be defined in this function. This will be called with the CLI 'migrate' command.
  * Migrations could be written to run in parallel, but if you want contract addresses to be created deterministically,
  * the migration should be written to run synchronously.
- * @param provider Provider instance.
- * @param artifactsDir The directory with artifact files.
- * @param defaults Default transaction values to use.
+ * @param provider  Web3 provider instance.
+ * @param artifactsDir The directory with compiler artifact files.
+ * @param defaults Default transaction values to use when deploying contracts.
  */
 export const runMigrationsAsync = async (provider: Provider, artifactsDir: string, defaults: Partial<TxData>) => {
     const web3Wrapper = new Web3Wrapper(provider);
     const networkId = await web3Wrapper.getNetworkIdAsync();
     const artifactsWriter = new ArtifactWriter(artifactsDir, networkId);
-    const tokenTransferProxy = await TokenTransferProxyContract.deploy0xArtifactAsync(
+    const tokenTransferProxy = await TokenTransferProxyContract.deployFrom0xArtifactAsync(
         artifacts.TokenTransferProxy,
         provider,
         defaults,
     );
     artifactsWriter.saveArtifact(tokenTransferProxy);
-    const zrxToken = await ZRXTokenContract.deploy0xArtifactAsync(artifacts.ZRX, provider, defaults);
+    const zrxToken = await ZRXTokenContract.deployFrom0xArtifactAsync(artifacts.ZRX, provider, defaults);
     artifactsWriter.saveArtifact(zrxToken);
 
-    const etherToken = await WETH9Contract.deploy0xArtifactAsync(artifacts.EtherToken, provider, defaults);
+    const etherToken = await WETH9Contract.deployFrom0xArtifactAsync(artifacts.EtherToken, provider, defaults);
     artifactsWriter.saveArtifact(etherToken);
-    const tokenReg = await TokenRegistryContract.deploy0xArtifactAsync(artifacts.TokenRegistry, provider, defaults);
+    const tokenReg = await TokenRegistryContract.deployFrom0xArtifactAsync(artifacts.TokenRegistry, provider, defaults);
     artifactsWriter.saveArtifact(tokenReg);
 
     const accounts: string[] = await web3Wrapper.getAvailableAddressesAsync();
     const owners = [accounts[0], accounts[1]];
     const confirmationsRequired = new BigNumber(2);
     const secondsRequired = new BigNumber(0);
-    const exchange = await ExchangeContract.deploy0xArtifactAsync(
+    const exchange = await ExchangeContract.deployFrom0xArtifactAsync(
         artifacts.Exchange,
         provider,
         defaults,
@@ -52,7 +52,7 @@ export const runMigrationsAsync = async (provider: Provider, artifactsDir: strin
         tokenTransferProxy.address,
     );
     artifactsWriter.saveArtifact(exchange);
-    const multiSig = await MultiSigWalletWithTimeLockExceptRemoveAuthorizedAddressContract.deploy0xArtifactAsync(
+    const multiSig = await MultiSigWalletWithTimeLockExceptRemoveAuthorizedAddressContract.deployFrom0xArtifactAsync(
         artifacts.MultiSigWalletWithTimeLockExceptRemoveAuthorizedAddress,
         provider,
         defaults,
@@ -101,7 +101,7 @@ export const runMigrationsAsync = async (provider: Provider, artifactsDir: strin
     );
     for (const token of tokenInfo) {
         const totalSupply = new BigNumber(100000000000000000000);
-        const dummyToken = await DummyTokenContract.deploy0xArtifactAsync(
+        const dummyToken = await DummyTokenContract.deployFrom0xArtifactAsync(
             artifacts.DummyToken,
             provider,
             defaults,

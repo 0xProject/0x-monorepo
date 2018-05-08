@@ -48,12 +48,13 @@ export class BaseContract {
         if (!_.isUndefined(constructorAbiIfExists)) {
             return constructorAbiIfExists;
         } else {
-            return {
+            const defaultConstructorAbi: ConstructorAbi = {
                 type: AbiType.Constructor,
                 stateMutability: 'nonpayable',
                 payable: false,
                 inputs: [],
             };
+            return defaultConstructorAbi;
         }
     }
     protected static _bnToBigNumber(type: string, value: any): any {

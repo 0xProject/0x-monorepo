@@ -16,7 +16,7 @@
         "build": "tsc && copyfiles -u 3 './lib/src/monorepo_scripts/**/*' ./scripts",
         "clean": "shx rm -rf lib test_temp scripts",
         "copy_test_fixtures": "copyfiles -u 2 './test/fixtures/**/*.json' ./lib/test/fixtures",
-        "lint": "tslint --project . 'src/**/*.ts' 'test/**/*.ts'",
+        "lint": "tslint --project .",
         "run_mocha": "mocha lib/test/**/*_test.js --exit",
         "test": "run-s clean build copy_test_fixtures run_mocha",
         "test:coverage": "nyc npm run test --all && yarn coverage:report:lcov",

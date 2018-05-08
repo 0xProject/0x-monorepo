@@ -15,6 +15,6 @@ export const coverage = {
     },
     _getCoverageSubprovider(): CoverageSubprovider {
         const defaultFromAddress = devConstants.TESTRPC_FIRST_ADDRESS;
-        return new CoverageSubprovider(config.artifactsDir, config.contractsDir, config.networkId, defaultFromAddress);
+        return new CoverageSubprovider(config.artifactsDir, config.contractsDir, defaultFromAddress);
     },
 };

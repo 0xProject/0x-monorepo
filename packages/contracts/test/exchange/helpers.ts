@@ -40,18 +40,18 @@ describe('Exchange', () => {
     before(async () => {
         const accounts = await web3Wrapper.getAvailableAddressesAsync();
         [maker, feeRecipient] = accounts;
-        const tokenRegistry = await TokenRegistryContract.deploy0xArtifactAsync(
+        const tokenRegistry = await TokenRegistryContract.deployFrom0xArtifactAsync(
             artifacts.TokenRegistry,
             provider,
             defaults,
         );
-        const tokenTransferProxy = await TokenTransferProxyContract.deploy0xArtifactAsync(
+        const tokenTransferProxy = await TokenTransferProxyContract.deployFrom0xArtifactAsync(
             artifacts.TokenTransferProxy,
             provider,
             defaults,
         );
         const [rep, dgd, zrx] = await Promise.all([
-            DummyTokenContract.deploy0xArtifactAsync(
+            DummyTokenContract.deployFrom0xArtifactAsync(
                 artifacts.DummyToken,
                 provider,
                 defaults,
@@ -60,7 +60,7 @@ describe('Exchange', () => {
                 constants.DUMMY_TOKEN_DECIMALS,
                 constants.DUMMY_TOKEN_TOTAL_SUPPLY,
             ),
-            DummyTokenContract.deploy0xArtifactAsync(
+            DummyTokenContract.deployFrom0xArtifactAsync(
                 artifacts.DummyToken,
                 provider,
                 defaults,
@@ -69,7 +69,7 @@ describe('Exchange', () => {
                 constants.DUMMY_TOKEN_DECIMALS,
                 constants.DUMMY_TOKEN_TOTAL_SUPPLY,
             ),
-            DummyTokenContract.deploy0xArtifactAsync(
+            DummyTokenContract.deployFrom0xArtifactAsync(
                 artifacts.DummyToken,
                 provider,
                 defaults,
@@ -79,7 +79,7 @@ describe('Exchange', () => {
                 constants.DUMMY_TOKEN_TOTAL_SUPPLY,
             ),
         ]);
-        const exchange = await ExchangeContract.deploy0xArtifactAsync(
+        const exchange = await ExchangeContract.deployFrom0xArtifactAsync(
             artifacts.Exchange,
             provider,
             defaults,

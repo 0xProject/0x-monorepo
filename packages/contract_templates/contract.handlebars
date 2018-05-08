@@ -5,9 +5,9 @@
 // tslint:disable:no-consecutive-blank-lines
 // tslint:disable-next-line:no-unused-variable
 import { BaseContract } from '@0xproject/base-contract';
-import { BlockParam, BlockParamLiteral, CallData, ContractAbi, DataItem, MethodAbi, Provider, TxData, TxDataPayable } from '@0xproject/types';
-import { BigNumber, classUtils, promisify } from '@0xproject/utils';
 import { ContractArtifact } from '@0xproject/sol-compiler';
+import { BlockParam, BlockParamLiteral, CallData, ContractAbi, DataItem, MethodAbi, Provider, TxData, TxDataPayable } from '@0xproject/types';
+import { BigNumber, classUtils, logUtils, promisify } from '@0xproject/utils';
 import { Web3Wrapper } from '@0xproject/web3-wrapper';
 import * as ethers from 'ethers';
 import * as _ from 'lodash';
@@ -40,7 +40,7 @@ export class {{contractName}}Contract extends BaseContract {
     {{> tx contractName=../contractName}}
     {{/this.constant}}
 {{/each}}
-    public static async deploy0xArtifactAsync(
+    public static async deployFrom0xArtifactAsync(
         artifact: ContractArtifact,
         provider: Provider,
         defaults: Partial<TxData>,
@@ -71,9 +71,9 @@ export class {{contractName}}Contract extends BaseContract {
             web3Wrapper.estimateGasAsync.bind(web3Wrapper),
         );
         const txHash = await web3Wrapper.sendTransactionAsync(txDataWithDefaults);
-        console.log(`transactionHash: ${txHash}`);
+        logUtils.log(`transactionHash: ${txHash}`);
         const txReceipt = await web3Wrapper.awaitTransactionMinedAsync(txHash);
-        console.log(`{{contractName}} successfully deployed at ${txReceipt.contractAddress}`);
+        logUtils.log(`{{contractName}} successfully deployed at ${txReceipt.contractAddress}`);
         const contractInstance = new {{contractName}}Contract(abi, txReceipt.contractAddress as string, provider, defaults);
         contractInstance.constructorArgs = [{{> params inputs=ctor.inputs}}];
         return contractInstance;

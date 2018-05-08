@@ -14,7 +14,7 @@
         "compile": "npm run build; node lib/src/cli.js compile",
         "clean": "shx rm -rf lib scripts",
         "migrate": "npm run build; node lib/src/cli.js migrate",
-        "lint": "tslint --project . 'src/**/*.ts' 'test/**/*.ts'",
+        "lint": "tslint --project .",
         "test:circleci": "yarn test:coverage",
         "docs:stage": "yarn build && node ./scripts/stage_docs.js",
         "manual:postpublish": "yarn build; node ./scripts/postpublish.js",

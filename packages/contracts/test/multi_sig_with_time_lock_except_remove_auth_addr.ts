@@ -46,7 +46,7 @@ describe('MultiSigWalletWithTimeLockExceptRemoveAuthorizedAddress', () => {
         owners = [accounts[0], accounts[1]];
         [authorizedAddress, unauthorizedAddress] = accounts;
         const initialOwner = accounts[0];
-        tokenTransferProxy = await TokenTransferProxyContract.deploy0xArtifactAsync(
+        tokenTransferProxy = await TokenTransferProxyContract.deployFrom0xArtifactAsync(
             artifacts.TokenTransferProxy,
             provider,
             defaults,
@@ -54,7 +54,7 @@ describe('MultiSigWalletWithTimeLockExceptRemoveAuthorizedAddress', () => {
         await tokenTransferProxy.addAuthorizedAddress.sendTransactionAsync(authorizedAddress, {
             from: initialOwner,
         });
-        multiSig = await MultiSigWalletWithTimeLockExceptRemoveAuthorizedAddressContract.deploy0xArtifactAsync(
+        multiSig = await MultiSigWalletWithTimeLockExceptRemoveAuthorizedAddressContract.deployFrom0xArtifactAsync(
             artifacts.MultiSigWalletWithTimeLockExceptRemoveAuthorizedAddress,
             provider,
             defaults,
@@ -109,7 +109,7 @@ describe('MultiSigWalletWithTimeLockExceptRemoveAuthorizedAddress', () => {
         });
 
         it('should throw if tx destination is not the tokenTransferProxy', async () => {
-            const invalidTokenTransferProxy = await TokenTransferProxyContract.deploy0xArtifactAsync(
+            const invalidTokenTransferProxy = await TokenTransferProxyContract.deployFrom0xArtifactAsync(
                 artifacts.TokenTransferProxy,
                 provider,
                 defaults,

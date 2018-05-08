@@ -1,5 +1,5 @@
-import { ContractArtifact } from '@0xproject/sol-compiler';
 import { BlockchainLifecycle, devConstants } from '@0xproject/dev-utils';
+import { ContractArtifact } from '@0xproject/sol-compiler';
 import { LogWithDecodedArgs } from '@0xproject/types';
 import { BigNumber } from '@0xproject/utils';
 import { Web3Wrapper } from '@0xproject/web3-wrapper';
@@ -23,7 +23,7 @@ describe('Metacoin', () => {
     const ownerAddress = devConstants.TESTRPC_FIRST_ADDRESS;
     const INITIAL_BALANCE = new BigNumber(10000);
     before(async () => {
-        metacoin = await MetacoinContract.deploy0xArtifactAsync(artifact, provider, config.defaults);
+        metacoin = await MetacoinContract.deployFrom0xArtifactAsync(artifact, provider, config.defaults);
         web3Wrapper.abiDecoder.addABI(metacoin.abi);
     });
     beforeEach(async () => {

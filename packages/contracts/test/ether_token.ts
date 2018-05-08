@@ -26,7 +26,7 @@ describe('EtherToken', () => {
         const accounts = await web3Wrapper.getAvailableAddressesAsync();
         account = accounts[0];
 
-        const etherToken = await WETH9Contract.deploy0xArtifactAsync(artifacts.EtherToken, provider, defaults);
+        const etherToken = await WETH9Contract.deployFrom0xArtifactAsync(artifacts.EtherToken, provider, defaults);
         etherTokenAddress = etherToken.address;
         zeroEx = new ZeroEx(provider, {
             gasPrice,

@@ -47,7 +47,7 @@ describe('MultiSigWalletWithTimeLock', () => {
     describe('changeTimeLock', () => {
         describe('initially non-time-locked', async () => {
             before('deploy a wallet', async () => {
-                multiSig = await MultiSigWalletWithTimeLockContract.deploy0xArtifactAsync(
+                multiSig = await MultiSigWalletWithTimeLockContract.deployFrom0xArtifactAsync(
                     artifacts.MultiSigWalletWithTimeLock,
                     provider,
                     defaults,
@@ -142,7 +142,7 @@ describe('MultiSigWalletWithTimeLock', () => {
         });
         describe('initially time-locked', async () => {
             before('deploy a wallet', async () => {
-                multiSig = await MultiSigWalletWithTimeLockContract.deploy0xArtifactAsync(
+                multiSig = await MultiSigWalletWithTimeLockContract.deployFrom0xArtifactAsync(
                     artifacts.MultiSigWalletWithTimeLock,
                     provider,
                     defaults,

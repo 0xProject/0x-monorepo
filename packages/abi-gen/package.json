@@ -6,7 +6,7 @@
     "types": "lib/index.d.ts",
     "scripts": {
         "build:watch": "tsc -w",
-        "lint": "tslint --project . 'src/**/*.ts'",
+        "lint": "tslint --project .",
         "clean": "shx rm -rf lib scripts",
         "build": "tsc && copyfiles -u 2 './lib/monorepo_scripts/**/*' ./scripts",
         "manual:postpublish": "yarn build; node ./scripts/postpublish.js"

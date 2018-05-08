@@ -24,7 +24,7 @@ describe('TokenTransferProxy', () => {
         const accounts = await web3Wrapper.getAvailableAddressesAsync();
         owner = address = accounts[0];
         notOwner = accounts[1];
-        tokenTransferProxy = await TokenTransferProxyContract.deploy0xArtifactAsync(
+        tokenTransferProxy = await TokenTransferProxyContract.deployFrom0xArtifactAsync(
             artifacts.TokenTransferProxy,
             provider,
             defaults,

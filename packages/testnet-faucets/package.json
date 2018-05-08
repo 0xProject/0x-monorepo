@@ -9,7 +9,7 @@
         "build": "node ../../node_modules/gulp/bin/gulp.js build",
         "dev": "node ../../node_modules/gulp/bin/gulp.js run",
         "start": "node ./bin/server.js",
-        "lint": "tslint --project . 'src/**/*.ts'",
+        "lint": "tslint --project .",
         "clean": "shx rm -rf bin"
     },
     "author": "Fabio Berger",

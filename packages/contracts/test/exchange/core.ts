@@ -57,7 +57,7 @@ describe('Exchange', () => {
         maker = accounts[0];
         [tokenOwner, taker, feeRecipient] = accounts;
         [rep, dgd, zrx] = await Promise.all([
-            DummyTokenContract.deploy0xArtifactAsync(
+            DummyTokenContract.deployFrom0xArtifactAsync(
                 artifacts.DummyToken,
                 provider,
                 defaults,
@@ -66,7 +66,7 @@ describe('Exchange', () => {
                 constants.DUMMY_TOKEN_DECIMALS,
                 constants.DUMMY_TOKEN_TOTAL_SUPPLY,
             ),
-            DummyTokenContract.deploy0xArtifactAsync(
+            DummyTokenContract.deployFrom0xArtifactAsync(
                 artifacts.DummyToken,
                 provider,
                 defaults,
@@ -75,7 +75,7 @@ describe('Exchange', () => {
                 constants.DUMMY_TOKEN_DECIMALS,
                 constants.DUMMY_TOKEN_TOTAL_SUPPLY,
             ),
-            DummyTokenContract.deploy0xArtifactAsync(
+            DummyTokenContract.deployFrom0xArtifactAsync(
                 artifacts.DummyToken,
                 provider,
                 defaults,
@@ -85,12 +85,12 @@ describe('Exchange', () => {
                 constants.DUMMY_TOKEN_TOTAL_SUPPLY,
             ),
         ]);
-        tokenTransferProxy = await TokenTransferProxyContract.deploy0xArtifactAsync(
+        tokenTransferProxy = await TokenTransferProxyContract.deployFrom0xArtifactAsync(
             artifacts.TokenTransferProxy,
             provider,
             defaults,
         );
-        exchange = await ExchangeContract.deploy0xArtifactAsync(
+        exchange = await ExchangeContract.deployFrom0xArtifactAsync(
             artifacts.Exchange,
             provider,
             defaults,
@@ -713,7 +713,7 @@ describe('Exchange', () => {
 
         it('should throw if getBalance or getAllowance attempts to change state and \
                 shouldThrowOnInsufficientBalanceOrAllowance = false', async () => {
-            const maliciousToken = await MaliciousTokenContract.deploy0xArtifactAsync(
+            const maliciousToken = await MaliciousTokenContract.deployFrom0xArtifactAsync(
                 artifacts.MaliciousToken,
                 provider,
                 defaults,

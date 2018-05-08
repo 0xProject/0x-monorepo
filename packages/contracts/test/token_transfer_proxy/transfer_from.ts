@@ -32,12 +32,12 @@ describe('TokenTransferProxy', () => {
     before(async () => {
         accounts = await web3Wrapper.getAvailableAddressesAsync();
         owner = notAuthorized = accounts[0];
-        tokenTransferProxy = await TokenTransferProxyContract.deploy0xArtifactAsync(
+        tokenTransferProxy = await TokenTransferProxyContract.deployFrom0xArtifactAsync(
             artifacts.TokenTransferProxy,
             provider,
             defaults,
         );
-        rep = await DummyTokenContract.deploy0xArtifactAsync(
+        rep = await DummyTokenContract.deployFrom0xArtifactAsync(
             artifacts.DummyToken,
             provider,
             defaults,

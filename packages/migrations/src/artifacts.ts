@@ -33,7 +33,6 @@ export const artifacts = {
     MultiSigWalletWithTimeLockExceptRemoveAuthorizedAddress: (MultiSigWalletWithTimeLockExceptRemoveAuthorizedAddress as any) as ContractArtifact,
 };
 
-const ARTIFACTS_DIR = '../artifacts/1.0.0';
 export class ArtifactWriter {
     private _artifactsDir: string;
     private _networkId: number;

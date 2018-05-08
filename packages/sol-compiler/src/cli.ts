@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 // We need the above pragma since this script will be run as a command-line tool.
 
-import { BigNumber } from '@0xproject/utils';
+import { BigNumber, logUtils } from '@0xproject/utils';
 import { Web3Wrapper } from '@0xproject/web3-wrapper';
 import * as _ from 'lodash';
 import * as path from 'path';
@@ -38,4 +38,7 @@ const SEPARATOR = ',';
     };
     const compiler = new Compiler(opts);
     await compiler.compileAsync();
-})();
+})().catch(err => {
+    logUtils.log(err);
+    process.exit(1);
+});

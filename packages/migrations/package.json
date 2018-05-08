@@ -10,7 +10,7 @@
         "copy_artifacts": "copyfiles -u 4 'artifacts/1.0.0/**/*' ./lib/src/artifacts",
         "build": "tsc",
         "clean": "shx rm -rf lib",
-        "lint": "tslint --project . 'src/**/*.ts'",
+        "lint": "tslint --project .",
         "migrate": "run-s build compile script:migrate",
         "script:migrate": "node ./lib/migrate.js",
         "copy_artifacts": "copyfiles 'artifacts/1.0.0/**/*' ./lib",
@@ -35,6 +35,7 @@
         "@0xproject/base-contract": "^0.3.1",
         "@0xproject/utils": "^0.6.1",
         "@0xproject/web3-wrapper": "^0.6.3",
+        "ethers": "^3.0.15",
         "lodash": "^4.17.4"
     },
     "publishConfig": {

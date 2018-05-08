@@ -34,7 +34,7 @@ describe('ZRXToken', () => {
         zeroEx = new ZeroEx(provider, {
             networkId: constants.TESTRPC_NETWORK_ID,
         });
-        zrx = await ZRXTokenContract.deploy0xArtifactAsync(artifacts.ZRX, provider, defaults);
+        zrx = await ZRXTokenContract.deployFrom0xArtifactAsync(artifacts.ZRX, provider, defaults);
         zrxAddress = zrx.address;
         MAX_UINT = zeroEx.token.UNLIMITED_ALLOWANCE_IN_BASE_UNITS;
     });

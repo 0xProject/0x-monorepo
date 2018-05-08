@@ -29,7 +29,7 @@ describe('TokenRegistry', () => {
         const accounts = await web3Wrapper.getAvailableAddressesAsync();
         owner = accounts[0];
         notOwner = accounts[1];
-        tokenReg = await TokenRegistryContract.deploy0xArtifactAsync(artifacts.TokenRegistry, provider, defaults);
+        tokenReg = await TokenRegistryContract.deployFrom0xArtifactAsync(artifacts.TokenRegistry, provider, defaults);
         tokenRegWrapper = new TokenRegWrapper(tokenReg);
     });
     beforeEach(async () => {
