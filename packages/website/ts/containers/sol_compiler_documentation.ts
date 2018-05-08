@@ -12,9 +12,9 @@ import { constants } from 'ts/utils/constants';
 import { Translate } from 'ts/utils/translate';
 
 /* tslint:disable:no-var-requires */
-const IntroMarkdown = require('md/docs/deployer/introduction');
-const InstallationMarkdown = require('md/docs/deployer/installation');
-const UsageMarkdown = require('md/docs/deployer/usage');
+const IntroMarkdown = require('md/docs/sol-compiler/introduction');
+const InstallationMarkdown = require('md/docs/sol-compiler/installation');
+const UsageMarkdown = require('md/docs/sol-compiler/usage');
 /* tslint:enable:no-var-requires */
 
 const docSections = {
@@ -22,21 +22,19 @@ const docSections = {
     installation: 'installation',
     usage: 'usage',
     compiler: 'compiler',
-    deployer: 'deployer',
     types: docConstants.TYPES_SECTION_NAME,
 };
 
 const docsInfoConfig: DocsInfoConfig = {
-    id: DocPackages.Deployer,
+    id: DocPackages.SolCompiler,
     type: SupportedDocJson.TypeDoc,
-    displayName: 'Deployer',
+    displayName: 'Sol Compiler',
     packageUrl: 'https://github.com/0xProject/0x-monorepo',
     menu: {
         introduction: [docSections.introduction],
         install: [docSections.installation],
         usage: [docSections.usage],
         compiler: [docSections.compiler],
-        deployer: [docSections.deployer],
         types: [docSections.types],
     },
     sectionNameToMarkdown: {
@@ -45,13 +43,12 @@ const docsInfoConfig: DocsInfoConfig = {
         [docSections.usage]: UsageMarkdown,
     },
     sectionNameToModulePath: {
-        [docSections.compiler]: ['"deployer/src/compiler"'],
-        [docSections.deployer]: ['"deployer/src/deployer"'],
-        [docSections.types]: ['"deployer/src/utils/types"', '"types/src/index"'],
+        [docSections.compiler]: ['"sol-compiler/src/compiler"'],
+        [docSections.types]: ['"sol-compiler/src/utils/types"', '"types/src/index"'],
     },
     menuSubsectionToVersionWhenIntroduced: {},
     sections: docSections,
-    visibleConstructors: [docSections.compiler, docSections.deployer],
+    visibleConstructors: [docSections.compiler],
     typeConfigs: {
         // Note: This needs to be kept in sync with the types exported in index.ts. Unfortunately there is
         // currently no way to extract the re-exported types from index.ts via TypeDoc :(

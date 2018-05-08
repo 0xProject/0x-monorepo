@@ -18,7 +18,9 @@ import { tokenInfo } from './utils/token_info';
  * Custom migrations should be defined in this function. This will be called with the CLI 'migrate' command.
  * Migrations could be written to run in parallel, but if you want contract addresses to be created deterministically,
  * the migration should be written to run synchronously.
- * @param deployer Deployer instance.
+ * @param provider Provider instance.
+ * @param artifactsDir The directory with artifact files.
+ * @param defaults Default transaction values to use.
  */
 export const runMigrationsAsync = async (provider: Provider, artifactsDir: string, defaults: Partial<TxData>) => {
     const web3Wrapper = new Web3Wrapper(provider);

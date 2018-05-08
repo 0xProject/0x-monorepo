@@ -74,7 +74,7 @@ const docsInfoConfig: DocsInfoConfig = {
         [docSections.redundantRPCSubprovider]: ['"subproviders/src/subproviders/redundant_rpc"'],
         [docSections.ganacheSubprovider]: ['"subproviders/src/subproviders/ganache"'],
         [docSections.nonceTrackerSubprovider]: ['"subproviders/src/subproviders/nonce_tracker"'],
-        [docSections.types]: ['"deployer/src/utils/types"', '"types/src/index"', '"subproviders/src/types"'],
+        [docSections.types]: ['"sol-compiler/src/utils/types"', '"types/src/index"', '"subproviders/src/types"'],
     },
     menuSubsectionToVersionWhenIntroduced: {},
     sections: docSections,

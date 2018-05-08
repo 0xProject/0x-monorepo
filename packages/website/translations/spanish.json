@@ -57,7 +57,7 @@
     "ABOUT": "equipo",
     "CAREERS": "empleo",
     "CONTACT": "contacto",
-    "DEPLOYER": "Deployer",
+    "SOL_COMPILER": "Solidity Compiler",
     "JSON_SCHEMAS": "JSON Schemas",
     "SOL_COV": "Solidity Coverage",
     "SUBPROVIDERS": "Subproviders",

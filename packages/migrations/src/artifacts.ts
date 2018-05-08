@@ -1,5 +1,5 @@
 import { BaseContract } from '@0xproject/base-contract';
-import { ContractArtifact } from '@0xproject/deployer';
+import { ContractArtifact } from '@0xproject/sol-compiler';
 import * as fs from 'fs';
 import * as path from 'path';
 

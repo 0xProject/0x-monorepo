@@ -1,4 +1,4 @@
-import { ContractArtifact } from '@0xproject/deployer';
+import { ContractArtifact } from '@0xproject/sol-compiler';
 
 import * as AccountLevels from '../src/artifacts/AccountLevels.json';
 import * as Arbitrage from '../src/artifacts/Arbitrage.json';

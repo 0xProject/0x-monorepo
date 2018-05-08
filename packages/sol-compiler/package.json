@@ -1,7 +1,7 @@
 {
-    "name": "@0xproject/deployer",
+    "name": "@0xproject/sol-compiler",
     "version": "0.4.3",
-    "description": "Smart contract deployer of 0x protocol",
+    "description": "Solidity compiler wrapper and artifactor",
     "main": "lib/src/index.js",
     "types": "lib/src/index.d.ts",
     "scripts": {
@@ -28,13 +28,13 @@
                 "extraFileIncludes": [
                     "../types/src/index.ts"
                 ],
-                "s3BucketPath": "s3://doc-jsons/deployer/",
-                "s3StagingBucketPath": "s3://staging-doc-jsons/deployer/"
+                "s3BucketPath": "s3://doc-jsons/sol-compiler/",
+                "s3StagingBucketPath": "s3://staging-doc-jsons/sol-compiler/"
             }
         }
     },
     "bin": {
-        "0x-deployer": "lib/src/cli.js"
+        "sol-compiler": "lib/src/cli.js"
     },
     "repository": {
         "type": "git",
@@ -45,7 +45,7 @@
     "bugs": {
         "url": "https://github.com/0xProject/0x-monorepo/issues"
     },
-    "homepage": "https://github.com/0xProject/0x-monorepo/packages/deployer/README.md",
+    "homepage": "https://github.com/0xProject/0x-monorepo/packages/sol-compiler/README.md",
     "devDependencies": {
         "@0xproject/dev-utils": "^0.4.1",
         "@0xproject/monorepo-scripts": "^0.1.19",

@@ -15,7 +15,7 @@
         "script:migrate": "node ./lib/migrate.js",
         "copy_artifacts": "copyfiles 'artifacts/1.0.0/**/*' ./lib",
         "generate_contract_wrappers": "node ../abi-gen/lib/index.js --abis  ${npm_package_config_abis} --template ../contract_templates/contract.handlebars --partials '../contract_templates/partials/**/*.handlebars' --output src/contract_wrappers --backend ethers && prettier --write 'src/contract_wrappers/**.ts'",
-        "compile": "node ../deployer/lib/src/cli.js compile"
+        "compile": "node ../sol-compiler/lib/src/cli.js compile"
     },
     "config": {
         "abis": "artifacts/1.0.0/@(DummyToken|TokenTransferProxy|Exchange|TokenRegistry|MultiSigWallet|MultiSigWalletWithTimeLock|MultiSigWalletWithTimeLockExceptRemoveAuthorizedAddress|TokenRegistry|ZRXToken|Arbitrage|EtherDelta|AccountLevels|WETH9|MaliciousToken).json"
@@ -31,7 +31,7 @@
         "typescript": "2.7.1"
     },
     "dependencies": {
-        "@0xproject/deployer": "^0.4.3",
+        "@0xproject/sol-compiler": "^0.4.3",
         "@0xproject/base-contract": "^0.3.1",
         "@0xproject/utils": "^0.6.1",
         "@0xproject/web3-wrapper": "^0.6.3",

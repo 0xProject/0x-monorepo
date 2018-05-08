@@ -6,9 +6,9 @@
   version "0.3.9"
   resolved "https://registry.yarnpkg.com/8fold-marked/-/8fold-marked-0.3.9.tgz#bb89c645612f8ccfaffac1ca6e3c11f168c9cf59"
 
-"@0xproject/deployer@^0.3.5":
+"@0xproject/sol-compiler@^0.3.5":
   version "0.3.5"
-  resolved "https://registry.yarnpkg.com/@0xproject/deployer/-/deployer-0.3.5.tgz#3b4144ac62cfbbe4fc7174cbf92f29594f411973"
+  resolved "https://registry.yarnpkg.com/@0xproject/sol-compiler/-/deployer-0.3.5.tgz#3b4144ac62cfbbe4fc7174cbf92f29594f411973"
   dependencies:
     "@0xproject/json-schemas" "^0.7.19"
     "@0xproject/types" "^0.5.0"

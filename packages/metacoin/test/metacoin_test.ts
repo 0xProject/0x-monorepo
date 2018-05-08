@@ -1,4 +1,4 @@
-import { ContractArtifact } from '@0xproject/deployer';
+import { ContractArtifact } from '@0xproject/sol-compiler';
 import { BlockchainLifecycle, devConstants } from '@0xproject/dev-utils';
 import { LogWithDecodedArgs } from '@0xproject/types';
 import { BigNumber } from '@0xproject/utils';

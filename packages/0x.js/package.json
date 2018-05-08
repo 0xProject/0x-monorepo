@@ -21,10 +21,9 @@
         "test": "run-s clean test:commonjs",
         "test:coverage": "nyc npm run test --all && yarn coverage:report:lcov",
         "coverage:report:lcov": "nyc report --reporter=text-lcov > coverage/lcov.info",
-        "update_artifacts": "for i in ${npm_package_config_contracts}; do copyfiles -u 4 ../migrations/artifacts/1.0.0/$i.json test/artifacts; done;",
         "clean": "shx rm -rf _bundles lib test_temp scripts",
         "build:umd:prod": "NODE_ENV=production webpack",
-        "build:commonjs": "tsc && yarn update_artifacts && copyfiles -u 2 './src/compact_artifacts/**/*.json' ./lib/src/compact_artifacts && copyfiles -u 3 './lib/src/monorepo_scripts/**/*' ./scripts",
+        "build:commonjs": "tsc && copyfiles -u 2 './src/compact_artifacts/**/*.json' ./lib/src/compact_artifacts && copyfiles -u 3 './lib/src/monorepo_scripts/**/*' ./scripts",
         "test:commonjs": "run-s build:commonjs run_mocha",
         "run_mocha": "mocha lib/test/**/*_test.js lib/test/global_hooks.js --timeout 10000 --bail --exit",
         "manual:postpublish": "yarn build; node ./scripts/postpublish.js",
@@ -34,7 +33,6 @@
     },
     "config": {
         "compact_artifacts": "Exchange DummyToken ZRXToken Token EtherToken TokenTransferProxy TokenRegistry",
-        "contracts": "Exchange DummyToken ZRXToken Token WETH9 TokenTransferProxy MultiSigWallet MultiSigWalletWithTimeLock MultiSigWalletWithTimeLockExceptRemoveAuthorizedAddress MaliciousToken TokenRegistry Arbitrage EtherDelta AccountLevels",
         "postpublish": {
             "assets": [
                 "packages/0x.js/_bundles/index.js",
@@ -61,7 +59,7 @@
         "node": ">=6.0.0"
     },
     "devDependencies": {
-        "@0xproject/deployer": "^0.4.3",
+        "@0xproject/sol-compiler": "^0.4.3",
         "@0xproject/dev-utils": "^0.4.1",
         "@0xproject/migrations": "^0.0.5",
         "@0xproject/monorepo-scripts": "^0.1.19",

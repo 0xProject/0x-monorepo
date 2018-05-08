@@ -1,21 +1,21 @@
-## @0xproject/deployer
+## @0xproject/sol-compiler
 
-This repository contains a CLI tool that facilitates compiling and deployment of smart contracts.
+This repository contains a CLI tool that facilitates compiling smart contracts.
 
-### Read the [Documentation](https://0xproject.com/docs/deployer).
+### Read the [Documentation](https://0xproject.com/docs/sol-compiler).
 
 ## Installation
 
 #### CLI Installation
 
 ```bash
-yarn global add @0xproject/deployer
+yarn global add @0xproject/sol-compiler
 ```
 
 #### API Installation
 
 ```bash
-yarn add @0xproject/deployer
+yarn add @0xproject/sol-compiler
 ```
 
 If your project is in [TypeScript](https://www.typescriptlang.org/), add the following to your `tsconfig.json`:
@@ -29,13 +29,13 @@ If your project is in [TypeScript](https://www.typescriptlang.org/), add the fol
 **Import**
 
 ```typescript
-import { Compiler } from '@0xproject/deployer';
+import { Compiler } from '@0xproject/sol-compiler';
 ```
 
 or
 
 ```javascript
-var Compiler = require('@0xproject/deployer').Compiler;
+var Compiler = require('@0xproject/sol-compiler').Compiler;
 ```
 
 ## Contributing

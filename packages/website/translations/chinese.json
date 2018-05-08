@@ -56,7 +56,7 @@
     "ABOUT": "关于我们",
     "CAREERS": "人才招聘",
     "CONTACT": "联系方式",
-    "DEPLOYER": "Deployer",
+    "SOL_COMPILER": "Solidity Compiler",
     "JSON_SCHEMAS": "JSON Schemas",
     "SOL_COV": "Solidity Coverage",
     "SUBPROVIDERS": "Subproviders",

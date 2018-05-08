@@ -11,6 +11,6 @@ before('migrate contracts', async function() {
         gas: devConstants.GAS_ESTIMATE,
         from: devConstants.TESTRPC_FIRST_ADDRESS,
     };
-    const artifactsDir = path.resolve('test', 'artifacts');
+    const artifactsDir = '../migrations/artifacts/1.0.0';
     await runMigrationsAsync(provider, artifactsDir, defaults);
 });

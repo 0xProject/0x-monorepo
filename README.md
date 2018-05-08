@@ -24,7 +24,7 @@ This repository is a monorepo including the 0x protocol smart contracts and nume
 | [`@0xproject/assert`](/packages/assert)                         | [![npm](https://img.shields.io/npm/v/@0xproject/assert.svg)](https://www.npmjs.com/package/@0xproject/assert)                         | Type and schema assertions used by our packages                             |
 | [`@0xproject/base-contract`](/packages/base-contract)           | [![npm](https://img.shields.io/npm/v/@0xproject/base-contract.svg)](https://www.npmjs.com/package/@0xproject/base-contract)           | BaseContract used by auto-generated `abi-gen` wrapper contracts             |
 | [`@0xproject/connect`](/packages/connect)                       | [![npm](https://img.shields.io/npm/v/@0xproject/connect.svg)](https://www.npmjs.com/package/@0xproject/connect)                       | A Javascript library for interacting with the Standard Relayer API          |
-| [`@0xproject/deployer`](/packages/deployer)                     | [![npm](https://img.shields.io/npm/v/@0xproject/deployer.svg)](https://www.npmjs.com/package/@0xproject/deployer)                     | Solidity project compiler and deployer framework                            |
+| [`@0xproject/sol-compiler`](/packages/sol-compiler)             | [![npm](https://img.shields.io/npm/v/@0xproject/sol-compiler.svg)](https://www.npmjs.com/package/@0xproject/sol-compiler)             | Solidity project compiler framework                                         |
 | [`@0xproject/dev-utils`](/packages/dev-utils)                   | [![npm](https://img.shields.io/npm/v/@0xproject/dev-utils.svg)](https://www.npmjs.com/package/@0xproject/dev-utils)                   | Dev utils to be shared across 0x projects and packages                      |
 | [`@0xproject/json-schemas`](/packages/json-schemas)             | [![npm](https://img.shields.io/npm/v/@0xproject/json-schemas.svg)](https://www.npmjs.com/package/@0xproject/json-schemas)             | 0x-related json schemas                                                     |
 | [`@0xproject/monorepo-scripts`](/packages/monorepo-scripts)     | [![npm](https://img.shields.io/npm/v/@0xproject/monorepo-scripts.svg)](https://www.npmjs.com/package/@0xproject/monorepo-scripts)     | Monorepo scripts                                                            |
@@ -56,7 +56,7 @@ Dedicated documentation pages:
 *   [0x Connect](https://0xproject.com/docs/connect)
 *   [Smart contracts](https://0xproject.com/docs/contracts)
 *   [Subproviders](https://0xproject.com/docs/subproviders)
-*   [Deployer](https://0xproject.com/docs/deployer)
+*   [Sol Compiler](https://0xproject.com/docs/sol-compiler)
 *   [Web3-wrapper](https://0xproject.com/docs/web3-wrapper)
 *   [JSON-schemas](https://0xproject.com/docs/json-schemas)
 *   [Sol-cov](https://0xproject.com/docs/sol-cov)

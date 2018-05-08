@@ -32,7 +32,7 @@ const packageNameToWebsitePath: { [name: string]: string } = {
     contracts: 'contracts',
     connect: 'connect',
     'json-schemas': 'json-schemas',
-    deployer: 'deployer',
+    'sol-compiler': 'sol-compiler',
     'sol-cov': 'sol-cov',
     subproviders: 'subproviders',
     'order-utils': 'order-utils',
