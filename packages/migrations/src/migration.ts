@@ -1,8 +1,16 @@
-import { Deployer } from '@0xproject/deployer';
+import { Provider, TxData } from '@0xproject/types';
 import { BigNumber, NULL_BYTES } from '@0xproject/utils';
 import { Web3Wrapper } from '@0xproject/web3-wrapper';
 import * as _ from 'lodash';
 
+import { artifacts, ArtifactWriter } from './artifacts';
+import { DummyTokenContract } from './contract_wrappers/dummy_token';
+import { ExchangeContract } from './contract_wrappers/exchange';
+import { MultiSigWalletWithTimeLockExceptRemoveAuthorizedAddressContract } from './contract_wrappers/multi_sig_wallet_with_time_lock_except_remove_authorized_address';
+import { TokenRegistryContract } from './contract_wrappers/token_registry';
+import { TokenTransferProxyContract } from './contract_wrappers/token_transfer_proxy';
+import { WETH9Contract } from './contract_wrappers/weth9';
+import { ZRXTokenContract } from './contract_wrappers/zrx_token';
 import { ContractName } from './types';
 import { tokenInfo } from './utils/token_info';
 
@@ -12,25 +20,46 @@ import { tokenInfo } from './utils/token_info';
  * the migration should be written to run synchronously.
  * @param deployer Deployer instance.
  */
-export const runMigrationsAsync = async (deployer: Deployer) => {
-    const web3Wrapper: Web3Wrapper = deployer.web3Wrapper;
+export const runMigrationsAsync = async (provider: Provider, artifactsDir: string, defaults: Partial<TxData>) => {
+    const web3Wrapper = new Web3Wrapper(provider);
+    const networkId = await web3Wrapper.getNetworkIdAsync();
+    const artifactsWriter = new ArtifactWriter(artifactsDir, networkId);
+    const tokenTransferProxy = await TokenTransferProxyContract.deploy0xArtifactAsync(
+        artifacts.TokenTransferProxy,
+        provider,
+        defaults,
+    );
+    artifactsWriter.saveArtifact(tokenTransferProxy);
+    const zrxToken = await ZRXTokenContract.deploy0xArtifactAsync(artifacts.ZRX, provider, defaults);
+    artifactsWriter.saveArtifact(zrxToken);
+
+    const etherToken = await WETH9Contract.deploy0xArtifactAsync(artifacts.EtherToken, provider, defaults);
+    artifactsWriter.saveArtifact(etherToken);
+    const tokenReg = await TokenRegistryContract.deploy0xArtifactAsync(artifacts.TokenRegistry, provider, defaults);
+    artifactsWriter.saveArtifact(tokenReg);
+
     const accounts: string[] = await web3Wrapper.getAvailableAddressesAsync();
-
-    const tokenTransferProxy = await deployer.deployAndSaveAsync(ContractName.TokenTransferProxy);
-    const zrxToken = await deployer.deployAndSaveAsync(ContractName.ZRXToken);
-    const etherToken = await deployer.deployAndSaveAsync(ContractName.WETH9);
-    const tokenReg = await deployer.deployAndSaveAsync(ContractName.TokenRegistry);
-
-    const exchangeArgs = [zrxToken.address, tokenTransferProxy.address];
     const owners = [accounts[0], accounts[1]];
     const confirmationsRequired = new BigNumber(2);
     const secondsRequired = new BigNumber(0);
-    const multiSigArgs = [owners, confirmationsRequired, secondsRequired, tokenTransferProxy.address];
-    const exchange = await deployer.deployAndSaveAsync(ContractName.Exchange, exchangeArgs);
-    const multiSig = await deployer.deployAndSaveAsync(
-        ContractName.MultiSigWalletWithTimeLockExceptRemoveAuthorizedAddress,
-        multiSigArgs,
+    const exchange = await ExchangeContract.deploy0xArtifactAsync(
+        artifacts.Exchange,
+        provider,
+        defaults,
+        zrxToken.address,
+        tokenTransferProxy.address,
     );
+    artifactsWriter.saveArtifact(exchange);
+    const multiSig = await MultiSigWalletWithTimeLockExceptRemoveAuthorizedAddressContract.deploy0xArtifactAsync(
+        artifacts.MultiSigWalletWithTimeLockExceptRemoveAuthorizedAddress,
+        provider,
+        defaults,
+        owners,
+        confirmationsRequired,
+        secondsRequired,
+        tokenTransferProxy.address,
+    );
+    artifactsWriter.saveArtifact(multiSig);
 
     const owner = accounts[0];
     await tokenTransferProxy.addAuthorizedAddress.sendTransactionAsync(exchange.address, { from: owner });
@@ -70,8 +99,15 @@ export const runMigrationsAsync = async (deployer: Deployer) => {
     );
     for (const token of tokenInfo) {
         const totalSupply = new BigNumber(100000000000000000000);
-        const args = [token.name, token.symbol, token.decimals, totalSupply];
-        const dummyToken = await deployer.deployAsync(ContractName.DummyToken, args);
+        const dummyToken = await DummyTokenContract.deploy0xArtifactAsync(
+            artifacts.DummyToken,
+            provider,
+            defaults,
+            token.name,
+            token.symbol,
+            token.decimals,
+            totalSupply,
+        );
         await tokenReg.addToken.sendTransactionAsync(
             dummyToken.address,
             token.name,

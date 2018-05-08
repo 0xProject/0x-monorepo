@@ -25,6 +25,8 @@ export class BaseContract {
     protected _web3Wrapper: Web3Wrapper;
     public abi: ContractAbi;
     public address: string;
+    public contractName: string;
+    public constructorArgs: any[] = [];
     protected static _formatABIDataItemList(
         abis: DataItem[],
         values: any[],
@@ -114,7 +116,14 @@ export class BaseContract {
         }) as MethodAbi;
         return methodAbi;
     }
-    constructor(abi: ContractAbi, address: string, provider: Provider, defaults?: Partial<TxData>) {
+    constructor(
+        contractName: string,
+        abi: ContractAbi,
+        address: string,
+        provider: Provider,
+        defaults?: Partial<TxData>,
+    ) {
+        this.contractName = contractName;
         this._web3Wrapper = new Web3Wrapper(provider, defaults);
         this.abi = abi;
         this.address = address;

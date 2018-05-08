@@ -83,6 +83,7 @@ packages/migrations/artifacts/1.0.0
 packages/0x.js/src/contract_wrappers/generated/
 packages/contracts/src/contract_wrappers/generated/
 packages/metacoin/src/contract_wrappers
+packages/migrations/src/contract_wrappers
 
 # solc-bin in deployer
 packages/deployer/solc_bin/
