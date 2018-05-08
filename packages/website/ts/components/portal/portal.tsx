@@ -65,7 +65,6 @@ const styles: Styles = {
         height: `calc(100vh - ${TOP_BAR_HEIGHT}px)`,
     },
     scrollContainer: {
-        overflowZ: 'hidden',
         height: `calc(100vh - ${TOP_BAR_HEIGHT}px)`,
         WebkitOverflowScrolling: 'touch',
         overflow: 'auto',
