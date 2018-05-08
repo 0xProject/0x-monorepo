@@ -108,7 +108,7 @@ export class Portal extends React.Component<PortalProps, PortalState> {
         // We re-set the entire redux state when the portal is unmounted so that when it is re-rendered
         // the initialization process always occurs from the same base state. This helps avoid
         // initialization inconsistencies (i.e While the portal was unrendered, the user might have
-        // become disconnected from their backing Ethereum node, changes user accounts, etc...)
+        // become disconnected from their backing Ethereum node, changed user accounts, etc...)
         this.props.dispatcher.resetState();
     }
     public componentWillReceiveProps(nextProps: PortalProps) {
