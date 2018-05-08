@@ -56,6 +56,12 @@ describe('Exchange libs', () => {
     });
 
     describe('LibOrder', () => {
+        describe('getOrderSchema', () => {
+            it('should output the correct orderHash', async () => {
+                const orderSchema = await libs.publicGetOrderSchemaHash.callAsync();
+                expect(orderUtils.getOrderSchemaHex()).to.be.equal(orderSchema);
+            });
+        });
         describe('getOrderHash', () => {
             it('should output the correct orderHash', async () => {
                 const orderHashHex = await libs.publicGetOrderHash.callAsync(signedOrder);

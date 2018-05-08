@@ -69,6 +69,14 @@ contract TestLibs is
         return orderHash;
     }
 
+    function publicGetOrderSchemaHash()
+        public
+        view
+        returns (bytes32)
+    {
+        return ORDER_SCHEMA_HASH;
+    }
+
     function publicAddFillResults(FillResults memory totalFillResults, FillResults memory singleFillResults)
         public
         pure

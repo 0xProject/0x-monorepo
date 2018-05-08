@@ -1,7 +1,5 @@
 import { BigNumber } from '@0xproject/utils';
-import { Web3Wrapper } from '@0xproject/web3-wrapper';
 import ethUtil = require('ethereumjs-util');
-import * as _ from 'lodash';
 
 import { crypto } from './crypto';
 import { CancelOrder, MatchOrder, OrderStruct, SignatureType, SignedOrder, UnsignedOrder } from './types';
@@ -39,22 +37,31 @@ export const orderUtils = {
         };
         return orderStruct;
     },
-    getOrderHashBuff(order: SignedOrder | UnsignedOrder): Buffer {
+    getOrderSchemaHex(): string {
         const orderSchemaHashBuff = crypto.solSHA3([
-            'address exchangeAddress',
-            'address makerAddress',
-            'address takerAddress',
-            'address feeRecipientAddress',
-            'address senderAddress',
-            'uint256 makerAssetAmount',
-            'uint256 takerAssetAmount',
-            'uint256 makerFee',
-            'uint256 takerFee',
-            'uint256 expirationTimeSeconds',
-            'uint256 salt',
-            'bytes makerAssetData',
-            'bytes takerAssetData',
+            'Order(',
+            'address exchangeAddress,',
+            'address makerAddress,',
+            'address takerAddress,',
+            'address feeRecipientAddress,',
+            'address senderAddress,',
+            'uint256 makerAssetAmount,',
+            'uint256 takerAssetAmount,',
+            'uint256 makerFee,',
+            'uint256 takerFee,',
+            'uint256 expirationTimeSeconds,',
+            'uint256 salt,',
+            'bytes makerAssetData,',
+            'bytes takerAssetData,',
+            ')',
         ]);
+        const schemaHashHex = `0x${orderSchemaHashBuff.toString('hex')}`;
+        return schemaHashHex;
+    },
+    getOrderHashBuff(order: SignedOrder | UnsignedOrder): Buffer {
+        const makerAssetDataHash = crypto.solSHA3([ethUtil.toBuffer(order.makerAssetData)]);
+        const takerAssetDataHash = crypto.solSHA3([ethUtil.toBuffer(order.takerAssetData)]);
+
         const orderParamsHashBuff = crypto.solSHA3([
             order.exchangeAddress,
             order.makerAddress,
@@ -67,11 +74,11 @@ export const orderUtils = {
             order.takerFee,
             order.expirationTimeSeconds,
             order.salt,
-            ethUtil.toBuffer(order.makerAssetData),
-            ethUtil.toBuffer(order.takerAssetData),
+            makerAssetDataHash,
+            takerAssetDataHash,
         ]);
-        const orderSchemaHashHex = `0x${orderSchemaHashBuff.toString('hex')}`;
         const orderParamsHashHex = `0x${orderParamsHashBuff.toString('hex')}`;
+        const orderSchemaHashHex = orderUtils.getOrderSchemaHex();
         const orderHashBuff = crypto.solSHA3([new BigNumber(orderSchemaHashHex), new BigNumber(orderParamsHashHex)]);
         return orderHashBuff;
     },
