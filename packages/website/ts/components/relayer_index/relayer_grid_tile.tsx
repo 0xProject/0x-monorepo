@@ -64,11 +64,12 @@ const styles: Styles = {
 
 export const RelayerGridTile: React.StatelessComponent<RelayerGridTileProps> = (props: RelayerGridTileProps) => {
     const link = props.relayerInfo.appUrl || props.relayerInfo.url;
+    const headerImgUrl = props.relayerInfo.headerImgUrl || '/images/landing/hero_chip_image.png';
     return (
         <GridTile style={styles.root}>
             <div style={styles.innerDiv}>
                 <a href={link} target="_blank" style={{ textDecoration: 'none' }}>
-                    <img src={props.relayerInfo.headerImgUrl} style={styles.header} />
+                    <img src={headerImgUrl} style={styles.header} />
                 </a>
                 <div style={styles.body}>
                     <div className="py1" style={styles.relayerNameLabel}>
