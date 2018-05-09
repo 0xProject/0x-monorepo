@@ -75,6 +75,8 @@ export class WebSocketOrderbookChannel implements OrderbookChannel {
             if (!_.isUndefined(error)) {
                 handler.onError(this, subscriptionOpts, error);
             } else if (!_.isUndefined(connection) && connection.connected) {
+                // Bump up the max listeners otherwise a warning will be printed
+                connection.setMaxListeners(this._subscriptionCounter);
                 connection.on(WebsocketConnectionEventType.Error, wsError => {
                     handler.onError(this, subscriptionOpts, wsError);
                 });
@@ -86,6 +88,16 @@ export class WebSocketOrderbookChannel implements OrderbookChannel {
                 });
                 connection.sendUTF(JSON.stringify(subscribeMessage));
             }
+        });
+    }
+    /**
+     * Opens a Websocket connection ensuring the underlying socket is connected for future subscribe calls
+     */
+    public async connectAsync(): Promise<void> {
+        return new Promise<void>((resolve, reject) => {
+            this._getConnection((error, connection) => {
+                _.isUndefined(error) ? resolve() : reject(error);
+            });
         });
     }
     /**
