@@ -14,7 +14,7 @@
         "run_mocha": "mocha lib/test/**/*_test.js --exit",
         "clean": "shx rm -rf lib scripts",
         "build": "copyfiles 'test/fixtures/**/*' ./lib && tsc && copyfiles -u 3 './lib/src/monorepo_scripts/**/*' ./scripts",
-        "compile_test": "node ../deployer/lib/src/cli.js compile --contracts SimpleStorage --contracts-dir test/fixtures/contracts --artifacts-dir test/fixtures/artifacts",
+        "compile_test": "node ../deployer/lib/src/cli.js compile",
         "manual:postpublish": "yarn build; node ./scripts/postpublish.js",
         "docs:stage": "yarn build && node ./scripts/stage_docs.js",
         "docs:json": "typedoc --excludePrivate --excludeExternals --target ES5 --json $JSON_FILE_PATH $PROJECT_FILES",
