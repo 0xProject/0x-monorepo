@@ -235,6 +235,8 @@ export const insertDataScripts = {
     },
     insertMultipleRows(table: string, rows: any[], columns: any[], conflictKeys?: any[], overwriteColumns?: any[]): any {
         return new Promise((resolve, reject) => {
+            console.log(conflictKeys);
+            console.log(overwriteColumns);
             if (rows.length > 0) {
                 const rowsSplit = rows.map((value, index) => {
                     const safeArray: any = [];
@@ -266,14 +268,15 @@ export const insertDataScripts = {
                         queryString += key + ',';
                     }
                     queryString = queryString.slice(0,-1);
-                    queryString += ') DO UPDATE ';
+                    queryString += ') DO UPDATE SET';
                     for(const column of overwriteColumns) {
-                        queryString += 'SET ' + column + ' = excluded.' + column + ',';
+                        queryString += ' ' + column + ' = excluded.' + column + ',';
                     }
                     queryString = queryString.slice(0,-1);
                 } else {
                     queryString += 'ON CONFLICT DO NOTHING';
                 }
+                console.log(queryString);
                 postgresClient
                     .query(queryString)
                     .then((data: any) => {

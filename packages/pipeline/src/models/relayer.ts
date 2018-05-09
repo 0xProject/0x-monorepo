@@ -55,6 +55,12 @@ const relayer = {
         taker_addresses: {
             type: 'char(42)[]',
         },
+        header_img : {
+            type: 'varchar',
+        },
+        app_url: {
+            type: 'varchar',
+        },
     },
 };
 
@@ -74,6 +80,8 @@ const relayer = {
 const logToRelayerSchemaMapping: any = {
     'name': 'name',
     'homepage_url': 'url',
+    'header_img' : 'header_img',
+    'app_url' : 'app_url',
 };
 
 export { relayer, logToRelayerSchemaMapping };

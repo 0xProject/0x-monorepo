@@ -283,29 +283,6 @@ function _scrapeBlockToDB(block: number): any {
     };
 }
 
-// function _scrapeAllRelayersToDB(): any {
-//     return (cb: () => void) => {
-//         airtableBase(AIRTABLE_RELAYER_INFO)
-//         .select()
-//         .eachPage((records: any, fetchNextPage: () => void) => {
-//             const parsedRelayers: any[] = [];
-//             for(const record of records) {
-//                 parsedRelayers.push(typeConverters.convertRelayerToRelayerObject(record));
-//             }
-//             insertDataScripts.insertMultipleRows('relayers', parsedRelayers, Object.keys(parsedRelayers[0]))
-//             .then((result: any) => {
-//                 cb();
-//             })
-//             .catch((err: any) => {
-//                 cb();
-//             });
-//         })
-//         .catch((err: any) => {
-//             cb();
-//         });
-//     };
-// }
-
 function _scrapeAllRelayersToDB(): any {
     return (cb: () => void) => {
         pullDataScripts
@@ -317,7 +294,7 @@ function _scrapeAllRelayersToDB(): any {
                     parsedRelayers.push(typeConverters.convertRelayerToRelayerObject(relayer));
                 }
                 console.log(parsedRelayers);
-                insertDataScripts.insertMultipleRows('relayers', parsedRelayers, Object.keys(relayer.tableProperties))
+                insertDataScripts.insertMultipleRows('relayers', parsedRelayers, Object.keys(relayer.tableProperties), ['name'], ['name', 'url', 'app_url', 'sra_http_endpoint', 'sra_ws_endpoint', 'fee_recipient_addresses', 'taker_addresses', 'header_img'])
                 .then((result: any) => {
                     console.log(result)
                     cb();
