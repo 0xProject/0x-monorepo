@@ -14,8 +14,10 @@ import { TopBar, TopBarDisplayType } from 'ts/components/top_bar/top_bar';
 import { FlashMessage } from 'ts/components/ui/flash_message';
 import { Wallet } from 'ts/components/wallet/wallet';
 import { localStorage } from 'ts/local_storage/local_storage';
+import { trackedTokenStorage } from 'ts/local_storage/tracked_token_storage';
 import { Dispatcher } from 'ts/redux/dispatcher';
 import { BlockchainErrs, HashData, Order, ProviderType, ScreenWidths, TokenByAddress, TokenVisibility } from 'ts/types';
+import { configs } from 'ts/utils/configs';
 import { constants } from 'ts/utils/constants';
 import { Translate } from 'ts/utils/translate';
 import { utils } from 'ts/utils/utils';
@@ -49,7 +51,13 @@ interface PortalState {
     prevPathname: string;
     isDisclaimerDialogOpen: boolean;
     isLedgerDialogOpen: boolean;
-    isAssetPickerDialogOpen: boolean;
+    tokenManagementState: TokenManagementState;
+}
+
+enum TokenManagementState {
+    Add = 'Add',
+    Remove = 'Remove',
+    None = 'None',
 }
 
 const THROTTLE_TIMEOUT = 100;
@@ -90,7 +98,7 @@ export class Portal extends React.Component<PortalProps, PortalState> {
             prevUserAddress: this.props.userAddress,
             prevPathname: this.props.location.pathname,
             isDisclaimerDialogOpen: !hasAcceptedDisclaimer,
-            isAssetPickerDialogOpen: false,
+            tokenManagementState: TokenManagementState.None,
             isLedgerDialogOpen: false,
         };
     }
@@ -142,6 +150,11 @@ export class Portal extends React.Component<PortalProps, PortalState> {
         );
         const allTokens = _.values(this.props.tokenByAddress);
         const trackedTokens = _.filter(allTokens, t => t.isTracked);
+        const isAssetPickerDialogOpen = this.state.tokenManagementState !== TokenManagementState.None;
+        const tokenVisibility =
+            this.state.tokenManagementState === TokenManagementState.Add
+                ? TokenVisibility.UNTRACKED
+                : TokenVisibility.TRACKED;
         return (
             <div style={styles.root}>
                 <DocumentTitle title="0x Portal DApp" />
@@ -180,6 +193,7 @@ export class Portal extends React.Component<PortalProps, PortalState> {
                                 providerType={this.props.providerType}
                                 onToggleLedgerDialog={this._onToggleLedgerDialog.bind(this)}
                                 onAddToken={this._onAddToken.bind(this)}
+                                onRemoveToken={this._onRemoveToken.bind(this)}
                             />
                         </div>
                         <div className="flex-auto px3" style={styles.scrollContainer}>
@@ -217,11 +231,11 @@ export class Portal extends React.Component<PortalProps, PortalState> {
                         networkId={this.props.networkId}
                         blockchain={this._blockchain}
                         dispatcher={this.props.dispatcher}
-                        isOpen={this.state.isAssetPickerDialogOpen}
+                        isOpen={isAssetPickerDialogOpen}
                         currentTokenAddress={''}
                         onTokenChosen={this._onTokenChosen.bind(this)}
                         tokenByAddress={this.props.tokenByAddress}
-                        tokenVisibility={TokenVisibility.UNTRACKED}
+                        tokenVisibility={tokenVisibility}
                     />
                 </div>
             </div>
@@ -230,14 +244,29 @@ export class Portal extends React.Component<PortalProps, PortalState> {
     private _onTokenChosen(tokenAddress: string) {
         if (_.isEmpty(tokenAddress)) {
             this.setState({
-                isAssetPickerDialogOpen: false,
+                tokenManagementState: TokenManagementState.None,
             });
             return;
         }
         const token = this.props.tokenByAddress[tokenAddress];
-        this.props.dispatcher.updateTokenByAddress([token]);
+        const isDefaultTrackedToken = _.includes(configs.DEFAULT_TRACKED_TOKEN_SYMBOLS, token.symbol);
+        if (this.state.tokenManagementState === TokenManagementState.Remove && !isDefaultTrackedToken) {
+            if (token.isRegistered) {
+                // Remove the token from tracked tokens
+                const newToken = {
+                    ...token,
+                    isTracked: false,
+                };
+                this.props.dispatcher.updateTokenByAddress([newToken]);
+            } else {
+                this.props.dispatcher.removeTokenToTokenByAddress(token);
+            }
+            trackedTokenStorage.removeTrackedToken(this.props.userAddress, this.props.networkId, tokenAddress);
+        } else if (isDefaultTrackedToken) {
+            this.props.dispatcher.showFlashMessage(`Cannot remove ${token.name} because it's a default token`);
+        }
         this.setState({
-            isAssetPickerDialogOpen: false,
+            tokenManagementState: TokenManagementState.None,
         });
     }
     private _onToggleLedgerDialog() {
@@ -247,7 +276,12 @@ export class Portal extends React.Component<PortalProps, PortalState> {
     }
     private _onAddToken() {
         this.setState({
-            isAssetPickerDialogOpen: !this.state.isAssetPickerDialogOpen,
+            tokenManagementState: TokenManagementState.Add,
+        });
+    }
+    private _onRemoveToken() {
+        this.setState({
+            tokenManagementState: TokenManagementState.Remove,
         });
     }
     private _onPortalDisclaimerAccepted() {
