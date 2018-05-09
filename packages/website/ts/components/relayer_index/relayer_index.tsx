@@ -93,6 +93,12 @@ export class RelayerIndex extends React.Component<RelayerIndexProps, RelayerInde
     }
     private async _fetchRelayerInfosAsync(): Promise<void> {
         try {
+            if (!this._isUnmounted) {
+                this.setState({
+                    relayerInfos: undefined,
+                    error: undefined,
+                });
+            }
             const relayerInfos = await backendClient.getRelayerInfosAsync();
             if (!this._isUnmounted) {
                 this.setState({
