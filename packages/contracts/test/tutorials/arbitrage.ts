@@ -1,5 +1,6 @@
 import { ECSignature, SignedOrder, ZeroEx } from '0x.js';
 import { BlockchainLifecycle, devConstants, web3Factory } from '@0xproject/dev-utils';
+import { ExchangeContractErrs } from '@0xproject/types';
 import { BigNumber } from '@0xproject/utils';
 import { Web3Wrapper } from '@0xproject/web3-wrapper';
 import * as chai from 'chai';
@@ -14,7 +15,7 @@ import { constants } from '../../util/constants';
 import { crypto } from '../../util/crypto';
 import { ExchangeWrapper } from '../../util/exchange_wrapper';
 import { OrderFactory } from '../../util/order_factory';
-import { BalancesByOwner, ContractName, ExchangeContractErrs } from '../../util/types';
+import { BalancesByOwner, ContractName } from '../../util/types';
 import { chaiSetup } from '../utils/chai_setup';
 import { deployer } from '../utils/deployer';
 import { provider, web3Wrapper } from '../utils/web3_wrapper';

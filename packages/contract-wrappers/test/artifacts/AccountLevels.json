@@ -1,0 +1,39 @@
+{
+    "contract_name": "AccountLevels",
+    "networks": {
+        "50": {
+            "solc_version": "0.4.23",
+            "source_tree_hash": "0x48558bbda893aa15786836980a5fffb694db15163d462619c4dcb0f8ad97977b",
+            "optimizer_enabled": false,
+            "abi": [
+                {
+                    "constant": true,
+                    "inputs": [
+                        {
+                            "name": "user",
+                            "type": "address"
+                        }
+                    ],
+                    "name": "accountLevel",
+                    "outputs": [
+                        {
+                            "name": "",
+                            "type": "uint256"
+                        }
+                    ],
+                    "payable": false,
+                    "stateMutability": "view",
+                    "type": "function"
+                }
+            ],
+            "bytecode": "0x608060405234801561001057600080fd5b5060ce8061001f6000396000f300608060405260043610603f576000357c0100000000000000000000000000000000000000000000000000000000900463ffffffff1680631cbd0519146044575b600080fd5b348015604f57600080fd5b506082600480360381019080803573ffffffffffffffffffffffffffffffffffffffff1690602001909291905050506098565b6040518082815260200191505060405180910390f35b60008090509190505600a165627a7a72305820ba8f0553b1bad01d6aebe1dfdcea170d83055523ddd0c848be8952e0494b9e230029",
+            "runtime_bytecode": "0x608060405260043610603f576000357c0100000000000000000000000000000000000000000000000000000000900463ffffffff1680631cbd0519146044575b600080fd5b348015604f57600080fd5b506082600480360381019080803573ffffffffffffffffffffffffffffffffffffffff1690602001909291905050506098565b6040518082815260200191505060405180910390f35b60008090509190505600a165627a7a72305820ba8f0553b1bad01d6aebe1dfdcea170d83055523ddd0c848be8952e0494b9e230029",
+            "updated_at": 1525776887441,
+            "source_map": "26:388:0:-;;;;8:9:-1;5:2;;;30:1;27;20:12;5:2;26:388:0;;;;;;;",
+            "source_map_runtime": "26:388:0:-;;;;;;;;;;;;;;;;;;;;;;;;328:84;;8:9:-1;5:2;;;30:1;27;20:12;5:2;328:84:0;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;381:4;404:1;397:8;;328:84;;;:::o",
+            "sources": [
+                "/Users/fabioberger/Documents/projects/0x_project/0x-monorepo/packages/contracts/src/contracts/current/tutorials/EtherDelta/AccountLevels.sol"
+            ]
+        }
+    }
+}

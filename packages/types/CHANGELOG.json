@@ -1,5 +1,14 @@
 [
     {
+        "version": "0.7.0",
+        "changes": [
+            {
+                "note":
+                    "Moved ExchangeContractErrs, DoneCallback, Token, OrderRelevantState, OrderStateValid, OrderStateInvalid, OrderState, OrderAddresses and OrderValues types from 0x.js"
+            }
+        ]
+    },
+    {
         "timestamp": 1525477860,
         "version": "0.6.3",
         "changes": [

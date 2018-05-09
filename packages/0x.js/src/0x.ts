@@ -1,4 +1,13 @@
-import { schemas, SchemaValidator } from '@0xproject/json-schemas';
+import { assert } from '@0xproject/assert';
+import {
+    ContractWrappers,
+    EtherTokenWrapper,
+    ExchangeWrapper,
+    TokenRegistryWrapper,
+    TokenTransferProxyWrapper,
+    TokenWrapper,
+    ZeroExContractConfig,
+} from '@0xproject/contract-wrappers';
 import {
     generatePseudoRandomSalt,
     getOrderHashHex,
@@ -6,27 +15,13 @@ import {
     isValidSignature,
     signOrderHashAsync,
 } from '@0xproject/order-utils';
+import { OrderWatcher, OrderWatcherConfig } from '@0xproject/order-watcher';
 import { ECSignature, Order, Provider, SignedOrder, TransactionReceiptWithDecodedLogs } from '@0xproject/types';
-import { AbiDecoder, BigNumber, intervalUtils } from '@0xproject/utils';
+import { BigNumber } from '@0xproject/utils';
 import { Web3Wrapper } from '@0xproject/web3-wrapper';
-import * as ethUtil from 'ethereumjs-util';
 import * as _ from 'lodash';
 
-import { artifacts } from './artifacts';
-import { EtherTokenWrapper } from './contract_wrappers/ether_token_wrapper';
-import { ExchangeWrapper } from './contract_wrappers/exchange_wrapper';
-import { TokenRegistryWrapper } from './contract_wrappers/token_registry_wrapper';
-import { TokenTransferProxyWrapper } from './contract_wrappers/token_transfer_proxy_wrapper';
-import { TokenWrapper } from './contract_wrappers/token_wrapper';
-import { OrderStateWatcher } from './order_watcher/order_state_watcher';
-import { zeroExConfigSchema } from './schemas/zero_ex_config_schema';
-import { zeroExPrivateNetworkConfigSchema } from './schemas/zero_ex_private_network_config_schema';
-import { zeroExPublicNetworkConfigSchema } from './schemas/zero_ex_public_network_config_schema';
-import { OrderStateWatcherConfig, ZeroExConfig, ZeroExError } from './types';
-import { assert } from './utils/assert';
 import { constants } from './utils/constants';
-import { decorators } from './utils/decorators';
-import { utils } from './utils/utils';
 
 /**
  * The ZeroEx class is the single entry-point into the 0x.js library. It contains all of the library's functionality
@@ -62,7 +57,7 @@ export class ZeroEx {
      * tokenTransferProxy smart contract.
      */
     public proxy: TokenTransferProxyWrapper;
-    private _web3Wrapper: Web3Wrapper;
+    private _contractWrappers: ContractWrappers;
     /**
      * Generates a pseudo-random 256-bit salt.
      * The salt can be included in a 0x order, ensuring that the order generates a unique orderHash
@@ -136,40 +131,15 @@ export class ZeroEx {
      * @param   config      The configuration object. Look up the type for the description.
      * @return  An instance of the 0x.js ZeroEx class.
      */
-    constructor(provider: Provider, config: ZeroExConfig) {
+    constructor(provider: Provider, config: ZeroExContractConfig) {
         assert.isWeb3Provider('provider', provider);
-        assert.doesConformToSchema('config', config, zeroExConfigSchema, [
-            zeroExPrivateNetworkConfigSchema,
-            zeroExPublicNetworkConfigSchema,
-        ]);
-        const artifactJSONs = _.values(artifacts);
-        const abiArrays = _.map(artifactJSONs, artifact => artifact.abi);
-        const defaults = {
-            gasPrice: config.gasPrice,
-        };
-        this._web3Wrapper = new Web3Wrapper(provider, defaults);
-        _.forEach(abiArrays, abi => {
-            this._web3Wrapper.abiDecoder.addABI(abi);
-        });
-        this.proxy = new TokenTransferProxyWrapper(
-            this._web3Wrapper,
-            config.networkId,
-            config.tokenTransferProxyContractAddress,
-        );
-        this.token = new TokenWrapper(this._web3Wrapper, config.networkId, this.proxy);
-        this.exchange = new ExchangeWrapper(
-            this._web3Wrapper,
-            config.networkId,
-            this.token,
-            config.exchangeContractAddress,
-            config.zrxContractAddress,
-        );
-        this.tokenRegistry = new TokenRegistryWrapper(
-            this._web3Wrapper,
-            config.networkId,
-            config.tokenRegistryContractAddress,
-        );
-        this.etherToken = new EtherTokenWrapper(this._web3Wrapper, config.networkId, this.token);
+        this._contractWrappers = new ContractWrappers(provider, config);
+
+        this.proxy = this._contractWrappers.proxy;
+        this.token = this._contractWrappers.token;
+        this.exchange = this._contractWrappers.exchange;
+        this.tokenRegistry = this._contractWrappers.tokenRegistry;
+        this.etherToken = this._contractWrappers.etherToken;
     }
     /**
      * Sets a new web3 provider for 0x.js. Updating the provider will stop all
@@ -178,31 +148,23 @@ export class ZeroEx {
      * @param   networkId   The id of the network your provider is connected to
      */
     public setProvider(provider: Provider, networkId: number): void {
-        this._web3Wrapper.setProvider(provider);
-        (this.exchange as any)._invalidateContractInstances();
-        (this.exchange as any)._setNetworkId(networkId);
-        (this.tokenRegistry as any)._invalidateContractInstance();
-        (this.tokenRegistry as any)._setNetworkId(networkId);
-        (this.token as any)._invalidateContractInstances();
-        (this.token as any)._setNetworkId(networkId);
-        (this.proxy as any)._invalidateContractInstance();
-        (this.proxy as any)._setNetworkId(networkId);
-        (this.etherToken as any)._invalidateContractInstance();
-        (this.etherToken as any)._setNetworkId(networkId);
+        this._contractWrappers.setProvider(provider, networkId);
     }
     /**
      * Get the provider instance currently used by 0x.js
      * @return  Web3 provider instance
      */
     public getProvider(): Provider {
-        return this._web3Wrapper.getProvider();
+        return this._contractWrappers.getProvider();
     }
     /**
      * Get user Ethereum addresses available through the supplied web3 provider available for sending transactions.
      * @return  An array of available user Ethereum addresses.
      */
     public async getAvailableAddressesAsync(): Promise<string[]> {
-        const availableAddresses = await this._web3Wrapper.getAvailableAddressesAsync();
+        // Hack: Get Web3Wrapper from ZeroExContract
+        const web3Wrapper = (this._contractWrappers as any)._web3Wrapper;
+        const availableAddresses = await web3Wrapper.getAvailableAddressesAsync();
         return availableAddresses;
     }
     /**
@@ -223,7 +185,7 @@ export class ZeroEx {
         shouldAddPersonalMessagePrefix: boolean,
     ): Promise<ECSignature> {
         return signOrderHashAsync(
-            this._web3Wrapper.getProvider(),
+            this._contractWrappers.getProvider(),
             orderHash,
             signerAddress,
             shouldAddPersonalMessagePrefix,
@@ -241,7 +203,9 @@ export class ZeroEx {
         pollingIntervalMs = 1000,
         timeoutMs?: number,
     ): Promise<TransactionReceiptWithDecodedLogs> {
-        const transactionReceiptWithDecodedLogs = await this._web3Wrapper.awaitTransactionMinedAsync(
+        // Hack: Get Web3Wrapper from ZeroExContract
+        const web3Wrapper = (this._contractWrappers as any)._web3Wrapper;
+        const transactionReceiptWithDecodedLogs = await web3Wrapper.awaitTransactionMinedAsync(
             txHash,
             pollingIntervalMs,
             timeoutMs,
@@ -249,22 +213,16 @@ export class ZeroEx {
         return transactionReceiptWithDecodedLogs;
     }
     /**
-     * Instantiates and returns a new OrderStateWatcher instance.
+     * Instantiates and returns a new OrderWatcher instance.
      * Defaults to watching the pending state.
      * @param   config      The configuration object. Look up the type for the description.
-     * @return  An instance of the 0x.js OrderStateWatcher class.
+     * @return  An instance of the 0x.js OrderWatcher class.
      */
-    public createOrderStateWatcher(config?: OrderStateWatcherConfig) {
-        return new OrderStateWatcher(this._web3Wrapper, this.token, this.exchange, config);
-    }
-    /*
-     * HACK: `TokenWrapper` needs a token transfer proxy address. `TokenTransferProxy` address is fetched from
-     * an `ExchangeWrapper`. `ExchangeWrapper` needs `TokenWrapper` to validate orders, creating a dependency cycle.
-     * In order to break this - we create this function here and pass it as a parameter to the `TokenWrapper`
-     * and `ProxyWrapper`.
-     */
-    private async _getTokenTransferProxyAddressAsync(): Promise<string> {
-        const tokenTransferProxyAddress = await (this.exchange as any)._getTokenTransferProxyAddressAsync();
-        return tokenTransferProxyAddress;
+    public async createOrderWatcherAsync(config?: OrderWatcherConfig) {
+        // Hack: Get Web3Wrapper from ZeroExContract
+        const web3Wrapper = (this._contractWrappers as any)._web3Wrapper;
+        const networkId = web3Wrapper.getNetworkIdAsync();
+        const provider = this._contractWrappers.getProvider();
+        return new OrderWatcher(provider, networkId, config);
     }
 }

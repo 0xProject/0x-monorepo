@@ -77,12 +77,16 @@ bin/
 packages/sol-cov/test/fixtures/artifacts
 packages/metacoin/artifacts
 packages/0x.js/test/artifacts
+packages/order-watcher/test/artifacts
+packages/contract-wrappers/test/artifacts
 packages/migrations/src/artifacts
 
 # generated contract wrappers
 packages/0x.js/src/contract_wrappers/generated/
 packages/contracts/src/contract_wrappers/generated/
 packages/metacoin/src/contract_wrappers
+packages/fill-scenarios/src/generated_contract_wrappers/
+packages/order-watcher/src/generated_contract_wrappers/
 
 # solc-bin in deployer
 packages/deployer/solc_bin/

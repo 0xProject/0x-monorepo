@@ -1,0 +1,10 @@
+[
+    {
+        "version": "0.0.1",
+        "changes": [
+            {
+                "note": "Moved OrderWatcher out of 0x.js package"
+            }
+        ]
+    }
+]

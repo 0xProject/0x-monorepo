@@ -1,0 +1,22 @@
+{
+    "contract_name": "DummyToken",
+    "abi": [
+        {
+            "constant": false,
+            "inputs": [
+                {
+                    "name": "_target",
+                    "type": "address"
+                },
+                {
+                    "name": "_value",
+                    "type": "uint256"
+                }
+            ],
+            "name": "setBalance",
+            "outputs": [],
+            "payable": false,
+            "type": "function"
+        }
+    ]
+}

@@ -1,5 +1,15 @@
 [
     {
+        "version": "0.38.0",
+        "changes": [
+            {
+                "note": "Renamed createOrderStateWatcher to createOrderWatcherAsync since it is not async",
+                "note":
+                    "Renamed ZeroExError to ContractWrappersErrors since they not live in the @0xproject/contract-wrappers subpackage"
+            }
+        ]
+    },
+    {
         "timestamp": 1525477860,
         "version": "0.37.2",
         "changes": [

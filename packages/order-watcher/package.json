@@ -1,0 +1,94 @@
+{
+    "name": "@0xproject/order-watcher",
+    "version": "0.0.1",
+    "description": "An order watcher daemon that watches for order validity",
+    "keywords": [
+        "0x",
+        "0xproject",
+        "ethereum",
+        "exchange",
+        "orderbook"
+    ],
+    "main": "lib/src/index.js",
+    "types": "lib/src/index.d.ts",
+    "scripts": {
+        "build:watch": "tsc -w",
+        "prebuild": "run-s clean generate_contract_wrappers",
+        "generate_contract_wrappers": "node ../abi-gen/lib/index.js --abis 'src/compact_artifacts/@(Exchange|Token|TokenTransferProxy|EtherToken).json' --template ../contract_templates/contract.handlebars --partials '../contract_templates/partials/**/*.handlebars' --output src/generated_contract_wrappers --backend ethers && prettier --write 'src/generated_contract_wrappers/**.ts'",
+        "lint": "tslint --project . 'src/**/*.ts' 'test/**/*.ts'",
+        "test:circleci": "run-s test:coverage",
+        "test": "run-s clean build run_mocha",
+        "test:coverage": "nyc npm run test --all && yarn coverage:report:lcov",
+        "coverage:report:lcov": "nyc report --reporter=text-lcov > coverage/lcov.info",
+        "update_artifacts": "for i in ${npm_package_config_contracts}; do copyfiles -u 4 ../migrations/src/artifacts/$i.json test/artifacts; done;",
+        "clean": "shx rm -rf _bundles lib test_temp scripts",
+        "build": "tsc && yarn update_artifacts && copyfiles -u 2 './src/compact_artifacts/**/*.json' ./lib/src/compact_artifacts && copyfiles -u 3 './lib/src/monorepo_scripts/**/*' ./scripts",
+        "run_mocha": "mocha lib/test/**/*_test.js lib/test/global_hooks.js --timeout 10000 --bail --exit",
+        "manual:postpublish": "yarn build; node ./scripts/postpublish.js"
+    },
+    "config": {
+        "compact_artifacts": "Exchange DummyToken ZRXToken Token EtherToken TokenTransferProxy TokenRegistry",
+        "contracts": "Exchange DummyToken ZRXToken Token WETH9 TokenTransferProxy MultiSigWallet MultiSigWalletWithTimeLock MultiSigWalletWithTimeLockExceptRemoveAuthorizedAddress MaliciousToken TokenRegistry Arbitrage EtherDelta AccountLevels",
+        "postpublish": {
+            "assets": [
+                "packages/order-watcher/_bundles/index.js",
+                "packages/order-watcher/_bundles/index.min.js"
+            ]
+        }
+    },
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/0xProject/0x-monorepo"
+    },
+    "license": "Apache-2.0",
+    "engines": {
+        "node": ">=6.0.0"
+    },
+    "devDependencies": {
+        "@0xproject/deployer": "^0.4.3",
+        "@0xproject/dev-utils": "^0.4.1",
+        "@0xproject/migrations": "^0.0.5",
+        "@0xproject/monorepo-scripts": "^0.1.19",
+        "@0xproject/tslint-config": "^0.4.17",
+        "@types/bintrees": "^1.0.2",
+        "@types/lodash": "4.14.104",
+        "@types/mocha": "^2.2.42",
+        "@types/node": "^8.0.53",
+        "@types/sinon": "^2.2.2",
+        "awesome-typescript-loader": "^3.1.3",
+        "chai": "^4.0.1",
+        "chai-as-promised": "^7.1.0",
+        "chai-bignumber": "^2.0.1",
+        "copyfiles": "^1.2.0",
+        "dirty-chai": "^2.0.1",
+        "json-loader": "^0.5.4",
+        "mocha": "^4.0.1",
+        "npm-run-all": "^4.1.2",
+        "nyc": "^11.0.1",
+        "opn-cli": "^3.1.0",
+        "prettier": "^1.11.1",
+        "shx": "^0.2.2",
+        "sinon": "^4.0.0",
+        "source-map-support": "^0.5.0",
+        "tslint": "5.8.0",
+        "typescript": "2.7.1",
+    },
+    "dependencies": {
+        "@0xproject/contract-wrappers": "^0.0.1",
+        "@0xproject/assert": "^0.2.9",
+        "@0xproject/base-contract": "^0.3.1",
+        "@0xproject/fill-scenarios": "^0.0.1",
+        "@0xproject/json-schemas": "^0.7.23",
+        "@0xproject/order-utils": "^0.0.4",
+        "@0xproject/types": "^0.6.3",
+        "@0xproject/typescript-typings": "^0.3.1",
+        "@0xproject/utils": "^0.6.1",
+        "@0xproject/web3-wrapper": "^0.6.3",
+        "bintrees": "^1.0.2",
+        "ethers": "^3.0.15",
+        "lodash": "^4.17.4"
+    },
+    "publishConfig": {
+        "access": "public"
+    }
+}

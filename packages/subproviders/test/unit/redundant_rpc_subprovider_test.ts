@@ -1,4 +1,4 @@
-import { JSONRPCResponsePayload } from '@0xproject/types';
+import { DoneCallback, JSONRPCResponsePayload } from '@0xproject/types';
 import * as chai from 'chai';
 import * as _ from 'lodash';
 import Web3 = require('web3');
@@ -7,7 +7,6 @@ import RpcSubprovider = require('web3-provider-engine/subproviders/rpc');
 
 import { RedundantSubprovider } from '../../src';
 import { Subprovider } from '../../src/subproviders/subprovider';
-import { DoneCallback } from '../../src/types';
 import { chaiSetup } from '../chai_setup';
 import { ganacheSubprovider } from '../utils/ganache_subprovider';
 import { reportCallbackErrors } from '../utils/report_callback_errors';
