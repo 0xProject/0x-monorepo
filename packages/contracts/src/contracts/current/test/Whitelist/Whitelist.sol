@@ -16,17 +16,17 @@
 
 */
 
-pragma solidity ^0.4.21;
+pragma solidity ^0.4.23;
 pragma experimental ABIEncoderV2;
 
-import "../../protocol/Exchange/Exchange.sol";
-import "../../protocol/Exchange/LibOrder.sol";
+import "../../protocol/Exchange/interfaces/IExchange.sol";
+import "../../protocol/Exchange/libs/LibOrder.sol";
 import "../../utils/Ownable/Ownable.sol";
 
 contract Whitelist is Ownable {
 
     mapping (address => bool) public isWhitelisted;
-    Exchange EXCHANGE;
+    IExchange EXCHANGE;
 
     bytes txOriginSignature = new bytes(1);
     bytes4 fillOrderFunctionSelector;
@@ -34,7 +34,7 @@ contract Whitelist is Ownable {
     function Whitelist(address _exchange)
         public
     {
-        EXCHANGE = Exchange(_exchange);
+        EXCHANGE = IExchange(_exchange);
         txOriginSignature[0] = 0x04;
         fillOrderFunctionSelector = EXCHANGE.fillOrder.selector;
     }

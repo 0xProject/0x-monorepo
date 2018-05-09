@@ -112,10 +112,13 @@ contract MixinSignatureValidator is
 
         // Signature using EIP712
         } else if (signatureType == SignatureType.EIP712) {
-            require(signature.length == 66);
+            require(
+                signature.length == 66,
+                INVALID_SIGNATURE_LENGTH
+            );
             v = uint8(signature[1]);
-            r = get32(signature, 2);
-            s = get32(signature, 34);
+            r = readBytes32(signature, 2);
+            s = readBytes32(signature, 34);
             recovered = ecrecover(hash, v, r, s);
             isValid = signer == recovered;
             return isValid;
@@ -146,7 +149,10 @@ contract MixinSignatureValidator is
         // and a 0x transaction. By using the TxOrigin signature type, the signature
         // for the Ethereum transaction will encompass both signatures.
         } else if (signatureType == SignatureType.TxOrigin) {
-            require(signature.length == 1);
+            require(
+                signature.length == 1,
+                INVALID_SIGNATURE_LENGTH
+            );
             isValid = signer == tx.origin;
             return isValid;
 
@@ -159,7 +165,10 @@ contract MixinSignatureValidator is
         // `Caller` for his own signature. Or A and C can sign and B can
         // submit using `Caller`. Having `Caller` allows this flexibility.
         } else if (signatureType == SignatureType.Caller) {
-            require(signature.length == 1);
+            require(
+                signature.length == 1,
+                INVALID_SIGNATURE_LENGTH
+            );
             isValid = signer == msg.sender;
             return isValid;
 
