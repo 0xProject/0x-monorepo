@@ -47,7 +47,10 @@ contract MixinTransactions is
         external
     {
         // Prevent reentrancy
-        require(currentContextAddress == address(0));
+        require(
+            currentContextAddress == address(0),
+            REENTRANCY_NOT_ALLOWED
+        );
 
         // Calculate transaction hash
         bytes32 transactionHash = keccak256(

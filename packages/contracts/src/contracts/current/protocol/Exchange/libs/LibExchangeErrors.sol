@@ -32,6 +32,7 @@ contract LibExchangeErrors {
     string constant INVALID_ORDER_MAKER_ASSET_AMOUNT = "Invalid order maker asset amount: expected a non-zero value.";
 
     // Transaction revert reasons
+    string constant REENTRANCY_NOT_ALLOWED = "`executeTransaction` is not allowed to call itself recursively.";
     string constant DUPLICATE_TRANSACTION_HASH = "Transaction has already been executed.";
     string constant TRANSACTION_EXECUTION_FAILED = "Transaction execution failed.";
 
