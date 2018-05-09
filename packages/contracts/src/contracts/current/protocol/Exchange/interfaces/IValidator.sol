@@ -16,36 +16,20 @@
 
 */
 
-pragma solidity ^0.4.24;
+pragma solidity ^0.4.23;
 
-import "../interfaces/ISignatureValidator.sol";
-
-contract MSignatureValidator is
-    ISignatureValidator
-{
-    // Allowed signature types.
-    enum SignatureType {
-        Illegal,  // Default value
-        Invalid,
-        Caller,
-        Ecrecover,
-        EIP712,
-        Trezor,
-        Contract,
-        Validator,
-        PreSigned
-    }
+contract IValidator {
 
     /// @dev Verifies that a signature is valid.
     /// @param hash Message hash that is signed.
-    /// @param signer Address of signer.
+    /// @param signer Address that should have signed the given hash.
     /// @param signature Proof of signing.
     /// @return Validity of order signature.
     function isValidSignature(
         bytes32 hash,
         address signer,
-        bytes memory signature)
-        internal
+        bytes signature)
+        external
         view
         returns (bool isValid);
 }

@@ -60,7 +60,7 @@ describe('LibBytes', () => {
         await blockchainLifecycle.revertAsync();
     });
 
-    describe.only('deepCopyBytes', () => {
+    describe('deepCopyBytes', () => {
         const byteArrayLongerThan32BytesLen = (byteArrayLongerThan32Bytes.length - 2) / 2;
         it('should throw if length of copy is 0', async () => {
             const index = new BigNumber(0);

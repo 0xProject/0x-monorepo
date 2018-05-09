@@ -20,6 +20,7 @@ pragma solidity ^0.4.24;
 
 import "./mixins/MSignatureValidator.sol";
 import "./interfaces/ISigner.sol";
+import "./interfaces/IValidator.sol";
 import "./libs/LibExchangeErrors.sol";
 import "../../utils/LibBytes/LibBytes.sol";
 
@@ -169,9 +170,38 @@ contract MixinSignatureValidator is
             isValid = signer == recovered;
             return isValid;
 
-        // Signature verified by signer contract
+        // Signature verified by signer contract.
+        // If used with an order, the maker of the order is the signer contract.
         } else if (signatureType == SignatureType.Contract) {
-            isValid = ISigner(signer).isValidSignature(hash, signature);
+            // Pass in signature without signature type.
+            bytes memory signatureWithoutType = deepCopyBytes(
+                signature,
+                1,
+                signature.length - 1
+            );
+            isValid = ISigner(signer).isValidSignature(hash, signatureWithoutType);
+            return isValid;
+
+        // Signature verified by validator contract.
+        // If used with an order, the maker of the order can still be an EOA.
+        // A signature using this type should be encoded as:
+        // | Offset | Length | Contents                        |
+        // | 0x00   | 1      | Signature type is always "\x07" |
+        // | 0x01   | 20     | Address of validator contract   |
+        // | 0x15   | **     | Signature to validate           |
+        } else if (signatureType == SignatureType.Validator) {
+            address validator = readAddress(signature, 1);
+            // Pass in signature without type or validator address.
+            bytes memory signatureWithoutTypeOrAddress = deepCopyBytes(
+                signature,
+                21,
+                signature.length - 21
+            );
+            isValid = IValidator(validator).isValidSignature(
+                hash,
+                signer,
+                signatureWithoutTypeOrAddress
+            );
             return isValid;
 
         // Signer signed hash previously using the preSign function
