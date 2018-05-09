@@ -16,7 +16,7 @@
 
 */
 
-pragma solidity ^0.4.21;
+pragma solidity ^0.4.23;
 pragma experimental ABIEncoderV2;
 
 import "./MixinExchangeCore.sol";
@@ -36,7 +36,7 @@ contract Exchange is
 {
     string constant public VERSION = "2.0.1-alpha";
 
-    function Exchange(bytes memory _zrxProxyData)
+    constructor (bytes memory _zrxProxyData)
         public
         MixinExchangeCore()
         MixinSignatureValidator()

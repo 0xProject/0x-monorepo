@@ -16,7 +16,8 @@
 
 */
 
-pragma solidity ^0.4.21;
+pragma solidity ^0.4.23;
+pragma experimental ABIEncoderV2;
 
 import "../../tokens/UnlimitedAllowanceToken/UnlimitedAllowanceToken.sol";
 import "../../utils/SafeMath/SafeMath.sol";
@@ -29,7 +30,10 @@ contract Mintable is UnlimitedAllowanceToken, SafeMath {
     function mint(uint256 _value)
         public
     {
-        require(_value <= 100000000000000000000);
+        require(
+            _value <= 100000000000000000000,
+            "Minting more than 100000000000000000000 is not allowed."
+        );
         balances[msg.sender] = safeAdd(_value, balances[msg.sender]);
         totalSupply = safeAdd(totalSupply, _value);
     }

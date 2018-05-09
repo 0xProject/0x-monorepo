@@ -19,23 +19,16 @@
 pragma solidity ^0.4.23;
 pragma experimental ABIEncoderV2;
 
-import "../../protocol/Exchange/MixinSignatureValidator.sol";
+import "./IExchangeCore.sol";
+import "./ISignatureValidator.sol";
+import "./IAssetProxyDispatcher.sol";
+import "./ITransactions.sol";
+import "./IWrapperFunctions.sol";
 
-contract TestSignatureValidator is MixinSignatureValidator {
-
-    function publicIsValidSignature(
-        bytes32 hash,
-        address signer,
-        bytes memory signature)
-        public
-        view
-        returns (bool isValid)
-    {
-        isValid = isValidSignature(
-            hash,
-            signer,
-            signature
-        );
-        return isValid;
-    }
-}
+contract IExchange is
+    IWrapperFunctions,
+    IExchangeCore,
+    ISignatureValidator,
+    ITransactions,
+    IAssetProxyDispatcher
+{}

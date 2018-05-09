@@ -16,26 +16,23 @@
 
 */
 
-pragma solidity ^0.4.21;
+pragma solidity ^0.4.23;
 pragma experimental ABIEncoderV2;
 
-import "./LibFillResults.sol";
-import "./LibOrder.sol";
-import "./LibErrors.sol";
-import "./LibMath.sol";
+import "./libs/LibFillResults.sol";
+import "./libs/LibOrder.sol";
+import "./libs/LibMath.sol";
+import "./libs/LibExchangeErrors.sol";
 import "./mixins/MExchangeCore.sol";
 import "./mixins/MSettlement.sol";
 import "./mixins/MSignatureValidator.sol";
 import "./mixins/MTransactions.sol";
 
-/// @dev Provides MExchangeCore
-/// @dev Consumes MSettlement
-/// @dev Consumes MSignatureValidator
 contract MixinExchangeCore is
     LibOrder,
     LibFillResults,
-    LibErrors,
     LibMath,
+    LibExchangeErrors,
     MExchangeCore,
     MSettlement,
     MSignatureValidator,
@@ -51,35 +48,19 @@ contract MixinExchangeCore is
     // Orders with a salt less than their maker's epoch are considered cancelled
     mapping (address => uint256) public makerEpoch;
 
-    event Fill(
-        address indexed makerAddress,
-        address takerAddress,
-        address indexed feeRecipientAddress,
-        uint256 makerAssetFilledAmount,
-        uint256 takerAssetFilledAmount,
-        uint256 makerFeePaid,
-        uint256 takerFeePaid,
-        bytes32 indexed orderHash,
-        bytes makerAssetData,
-        bytes takerAssetData
-    );
-
-    event Cancel(
-        address indexed makerAddress,
-        address indexed feeRecipientAddress,
-        bytes32 indexed orderHash,
-        bytes makerAssetData,
-        bytes takerAssetData
-    );
-
-    event CancelUpTo(
-        address indexed makerAddress,
-        uint256 makerEpoch
-    );
-
-    /*
-    * Core exchange functions
-    */
+    /// @dev Cancels all orders reated by sender with a salt less than or equal to the specified salt value.
+    /// @param salt Orders created with a salt less or equal to this value will be cancelled.
+    function cancelOrdersUpTo(uint256 salt)
+        external
+    {
+        uint256 newMakerEpoch = salt + 1;  // makerEpoch is initialized to 0, so to cancelUpTo we need salt + 1
+        require(
+            newMakerEpoch > makerEpoch[msg.sender],  // epoch must be monotonically increasing
+            INVALID_NEW_MAKER_EPOCH
+        );
+        makerEpoch[msg.sender] = newMakerEpoch;
+        emit CancelUpTo(msg.sender, newMakerEpoch);
+    }
 
     /// @dev Fills the input order.
     /// @param order Order struct containing order specifications.
@@ -111,22 +92,40 @@ contract MixinExchangeCore is
         // Validate order and maker only if first time seen
         // TODO: Read filled and cancelled only once
         if (filled[orderHash] == 0) {
-            require(order.makerAssetAmount > 0);
-            require(order.takerAssetAmount > 0);
-            require(isValidSignature(orderHash, order.makerAddress, signature));
+            require(
+                order.makerAssetAmount > 0,
+                GT_ZERO_AMOUNT_REQUIRED
+            );
+            require(
+                order.takerAssetAmount > 0,
+                GT_ZERO_AMOUNT_REQUIRED
+            );
+            require(
+                isValidSignature(orderHash, order.makerAddress, signature),
+                SIGNATURE_VALIDATION_FAILED
+            );
         }
         
         // Validate sender is allowed to fill this order
         if (order.senderAddress != address(0)) {
-            require(order.senderAddress == msg.sender);
+            require(
+                order.senderAddress == msg.sender,
+                INVALID_SENDER
+            );
         }
 
         // Validate taker is allowed to fill this order
         address takerAddress = getCurrentContextAddress();
         if (order.takerAddress != address(0)) {
-            require(order.takerAddress == takerAddress);
+            require(
+                order.takerAddress == takerAddress,
+                INVALID_CONTEXT
+            );
         }
-        require(takerAssetFillAmount > 0);
+        require(
+            takerAssetFillAmount > 0,
+            GT_ZERO_AMOUNT_REQUIRED
+        );
 
         // Validate order expiration
         if (block.timestamp >= order.expirationTimeSeconds) {
@@ -173,17 +172,29 @@ contract MixinExchangeCore is
         bytes32 orderHash = getOrderHash(order);
 
         // Validate the order
-        require(order.makerAssetAmount > 0);
-        require(order.takerAssetAmount > 0);
+        require(
+            order.makerAssetAmount > 0,
+            GT_ZERO_AMOUNT_REQUIRED
+        );
+        require(
+            order.takerAssetAmount > 0,
+            GT_ZERO_AMOUNT_REQUIRED
+        );
 
         // Validate sender is allowed to cancel this order
         if (order.senderAddress != address(0)) {
-            require(order.senderAddress == msg.sender);
+            require(
+                order.senderAddress == msg.sender,
+                INVALID_SENDER
+            );
         }
         
         // Validate transaction signed by maker
         address makerAddress = getCurrentContextAddress();
-        require(order.makerAddress == makerAddress);
+        require(
+            order.makerAddress == makerAddress,
+            INVALID_CONTEXT
+        );
         
         if (block.timestamp >= order.expirationTimeSeconds) {
             emit ExchangeError(uint8(Errors.ORDER_EXPIRED), orderHash);
@@ -205,16 +216,6 @@ contract MixinExchangeCore is
             order.takerAssetData
         );
         return true;
-    }
-
-    /// @param salt Orders created with a salt less or equal to this value will be cancelled.
-    function cancelOrdersUpTo(uint256 salt)
-        external
-    {
-        uint256 newMakerEpoch = salt + 1;                // makerEpoch is initialized to 0, so to cancelUpTo we need salt+1
-        require(newMakerEpoch > makerEpoch[msg.sender]); // epoch must be monotonically increasing
-        makerEpoch[msg.sender] = newMakerEpoch;
-        emit CancelUpTo(msg.sender, newMakerEpoch);
     }
 
     /// @dev Logs a Fill event with the given arguments.

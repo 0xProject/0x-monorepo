@@ -16,7 +16,9 @@
 
 */
 
-pragma solidity ^0.4.21;
+pragma solidity ^0.4.23;
+pragma experimental ABIEncoderV2;
+
 import "../../tokens/ERC721Token/ERC721Token.sol";
 import "../../utils/Ownable/Ownable.sol";
 
@@ -30,7 +32,7 @@ contract DummyERC721Token is
     * @param name of token
     * @param symbol of token
     */
-    function DummyERC721Token(
+    constructor (
         string name,
         string symbol)
         public
@@ -47,7 +49,10 @@ contract DummyERC721Token is
         public
         onlyOwner
     {
-        require(!exists(tokenId));
+        require(
+            !exists(tokenId),
+            "Token with tokenId already exists."
+        );
         _mint(to, tokenId);
     }
 }

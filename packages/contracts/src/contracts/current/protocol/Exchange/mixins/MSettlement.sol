@@ -16,13 +16,17 @@
 
 */
 
-pragma solidity ^0.4.21;
-pragma experimental ABIEncoderV2;
+pragma solidity ^0.4.23;
 
-import "../LibOrder.sol";
+import "../libs/LibOrder.sol";
 
 contract MSettlement {
 
+    /// @dev Settles an order by transfering assets between counterparties.
+    /// @param order Order struct containing order specifications.
+    /// @param takerAddress Address selling takerAsset and buying makerAsset.
+    /// @param takerAssetFilledAmount The amount of takerAsset that will be transfered to the order's maker.
+    /// @return Amount filled by maker and fees paid by maker/taker.
     function settleOrder(
         LibOrder.Order memory order,
         address takerAddress,
@@ -33,5 +37,5 @@ contract MSettlement {
             uint256 makerFeePaid,
             uint256 takerFeePaid
         );
-
 }
+

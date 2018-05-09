@@ -16,42 +16,20 @@
 
 */
 
-pragma solidity ^0.4.21;
+pragma solidity ^0.4.23;
 
 import "../../utils/Ownable/Ownable.sol";
-import "../AssetProxy/IAssetProxy.sol";
+import "../AssetProxy/interfaces/IAssetProxy.sol";
+import "./libs/LibExchangeErrors.sol";
 import "./mixins/MAssetProxyDispatcher.sol";
 
 contract MixinAssetProxyDispatcher is
+    LibExchangeErrors,
     Ownable,
     MAssetProxyDispatcher
 {
     // Mapping from Asset Proxy Id's to their respective Asset Proxy
     mapping (uint8 => IAssetProxy) public assetProxies;
-
-    /// @dev Forwards arguments to assetProxy and calls `transferFrom`. Either succeeds or throws.
-    /// @param assetMetadata Byte array encoded for the respective asset proxy.
-    /// @param from Address to transfer token from.
-    /// @param to Address to transfer token to.
-    /// @param amount Amount of token to transfer.
-    function dispatchTransferFrom(
-        bytes memory assetMetadata,
-        address from,
-        address to,
-        uint256 amount)
-        internal
-    {
-        // Do nothing if no amount should be transferred.
-        if (amount > 0) {
-            // Lookup asset proxy.
-            require(assetMetadata.length >= 1);
-            uint8 assetProxyId = uint8(assetMetadata[0]);
-            IAssetProxy assetProxy = assetProxies[assetProxyId];
-
-            // transferFrom will either succeed or throw.
-            assetProxy.transferFrom(assetMetadata, from, to, amount);
-        }
-    }
 
     /// @dev Registers an asset proxy to an asset proxy id.
     ///      An id can only be assigned to a single proxy at a given time.
@@ -65,15 +43,21 @@ contract MixinAssetProxyDispatcher is
         external
         onlyOwner
     {
-        // Ensure the existing asset proxy is not unintentionally overwritten.
-        require(oldAssetProxy == address(assetProxies[assetProxyId]));
+        // Ensure the existing asset proxy is not unintentionally overwritten
+        require(
+            oldAssetProxy == address(assetProxies[assetProxyId]),
+            OLD_ASSET_PROXY_MISMATCH
+        );
 
         IAssetProxy assetProxy = IAssetProxy(newAssetProxy);
 
         // Ensure that the id of newAssetProxy matches the passed in assetProxyId, unless it is being reset to 0.
         if (newAssetProxy != address(0)) {
             uint8 newAssetProxyId = assetProxy.getProxyId();
-            require(newAssetProxyId == assetProxyId);
+            require(
+                newAssetProxyId == assetProxyId,
+                NEW_ASSET_PROXY_MISMATCH
+            );
         }
 
         // Add asset proxy and log registration.
@@ -89,7 +73,34 @@ contract MixinAssetProxyDispatcher is
         view
         returns (address)
     {
-        IAssetProxy assetProxy = assetProxies[assetProxyId];
-        return address(assetProxy);
+        address assetProxy = address(assetProxies[assetProxyId]);
+        return assetProxy;
+    }
+
+    /// @dev Forwards arguments to assetProxy and calls `transferFrom`. Either succeeds or throws.
+    /// @param assetMetadata Byte array encoded for the respective asset proxy.
+    /// @param from Address to transfer token from.
+    /// @param to Address to transfer token to.
+    /// @param amount Amount of token to transfer.
+    function dispatchTransferFrom(
+        bytes memory assetMetadata,
+        address from,
+        address to,
+        uint256 amount)
+        internal
+    {
+        // Do nothing if no amount should be transferred.
+        if (amount > 0) {
+            // Lookup asset proxy
+            require(
+                assetMetadata.length >= 1,
+                GT_ZERO_LENGTH_REQUIRED
+            );
+            uint8 assetProxyId = uint8(assetMetadata[0]);
+            IAssetProxy assetProxy = assetProxies[assetProxyId];
+
+            // transferFrom will either succeed or throw.
+            assetProxy.transferFrom(assetMetadata, from, to, amount);
+        }
     }
 }

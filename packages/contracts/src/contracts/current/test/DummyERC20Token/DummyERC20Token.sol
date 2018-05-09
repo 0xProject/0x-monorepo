@@ -16,7 +16,8 @@
 
 */
 
-pragma solidity ^0.4.21;
+pragma solidity ^0.4.23;
+pragma experimental ABIEncoderV2;
 
 import "../Mintable/Mintable.sol";
 import "../../utils/Ownable/Ownable.sol";
@@ -26,7 +27,7 @@ contract DummyERC20Token is Mintable, Ownable {
     string public symbol;
     uint256 public decimals;
 
-    function DummyERC20Token(
+    constructor (
         string _name,
         string _symbol,
         uint256 _decimals,

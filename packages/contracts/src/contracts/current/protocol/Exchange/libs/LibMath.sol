@@ -16,12 +16,13 @@
 
 */
 
-pragma solidity ^0.4.21;
-pragma experimental ABIEncoderV2;
+pragma solidity ^0.4.23;
 
-import "../../utils/SafeMath/SafeMath.sol";
+import "../../../utils/SafeMath/SafeMath.sol";
 
-contract LibMath is SafeMath {
+contract LibMath is
+    SafeMath
+{
 
     /// @dev Calculates partial value given a numerator and denominator.
     /// @param numerator Numerator.

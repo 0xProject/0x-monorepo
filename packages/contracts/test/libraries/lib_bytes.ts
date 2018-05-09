@@ -7,7 +7,7 @@ import * as chai from 'chai';
 import ethUtil = require('ethereumjs-util');
 import * as Web3 from 'web3';
 
-import { LibBytesContract } from '../../src/contract_wrappers/generated/lib_bytes';
+import { TestLibBytesContract } from '../../src/contract_wrappers/generated/test_lib_bytes';
 import { constants } from '../../src/utils/constants';
 import { AssetProxyId, ContractName } from '../../src/utils/types';
 import { chaiSetup } from '../utils/chai_setup';
@@ -20,7 +20,7 @@ const blockchainLifecycle = new BlockchainLifecycle(web3Wrapper);
 
 describe('LibBytes', () => {
     let owner: string;
-    let libBytes: LibBytesContract;
+    let libBytes: TestLibBytesContract;
     const byteArrayShorterThan32Bytes = '0x012345';
     const byteArrayLongerThan32Bytes =
         '0x0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef';
@@ -38,8 +38,8 @@ describe('LibBytes', () => {
         owner = accounts[0];
         testAddress = accounts[1];
         // Deploy LibBytes
-        const libBytesInstance = await deployer.deployAsync(ContractName.LibBytes);
-        libBytes = new LibBytesContract(libBytesInstance.abi, libBytesInstance.address, provider);
+        const libBytesInstance = await deployer.deployAsync(ContractName.TestLibBytes);
+        libBytes = new TestLibBytesContract(libBytesInstance.abi, libBytesInstance.address, provider);
         // Verify lengths of test data
         const byteArrayShorterThan32BytesLength = ethUtil.toBuffer(byteArrayShorterThan32Bytes).byteLength;
         expect(byteArrayShorterThan32BytesLength).to.be.lessThan(32);
@@ -57,7 +57,7 @@ describe('LibBytes', () => {
 
     describe('areBytesEqual', () => {
         it('should return true if byte arrays are equal (both arrays < 32 bytes)', async () => {
-            const areBytesEqual = await libBytes.areBytesEqual.callAsync(
+            const areBytesEqual = await libBytes.publicAreBytesEqual.callAsync(
                 byteArrayShorterThan32Bytes,
                 byteArrayShorterThan32Bytes,
             );
@@ -65,7 +65,7 @@ describe('LibBytes', () => {
         });
 
         it('should return true if byte arrays are equal (both arrays > 32 bytes)', async () => {
-            const areBytesEqual = await libBytes.areBytesEqual.callAsync(
+            const areBytesEqual = await libBytes.publicAreBytesEqual.callAsync(
                 byteArrayLongerThan32Bytes,
                 byteArrayLongerThan32Bytes,
             );
@@ -73,7 +73,7 @@ describe('LibBytes', () => {
         });
 
         it('should return false if byte arrays are not equal (first array < 32 bytes, second array > 32 bytes)', async () => {
-            const areBytesEqual = await libBytes.areBytesEqual.callAsync(
+            const areBytesEqual = await libBytes.publicAreBytesEqual.callAsync(
                 byteArrayShorterThan32Bytes,
                 byteArrayLongerThan32Bytes,
             );
@@ -81,7 +81,7 @@ describe('LibBytes', () => {
         });
 
         it('should return false if byte arrays are not equal (first array > 32 bytes, second array < 32 bytes)', async () => {
-            const areBytesEqual = await libBytes.areBytesEqual.callAsync(
+            const areBytesEqual = await libBytes.publicAreBytesEqual.callAsync(
                 byteArrayLongerThan32Bytes,
                 byteArrayShorterThan32Bytes,
             );
@@ -89,7 +89,7 @@ describe('LibBytes', () => {
         });
 
         it('should return false if byte arrays are not equal (same length, but a byte in first word differs)', async () => {
-            const areBytesEqual = await libBytes.areBytesEqual.callAsync(
+            const areBytesEqual = await libBytes.publicAreBytesEqual.callAsync(
                 byteArrayLongerThan32BytesFirstBytesSwapped,
                 byteArrayLongerThan32Bytes,
             );
@@ -97,7 +97,7 @@ describe('LibBytes', () => {
         });
 
         it('should return false if byte arrays are not equal (same length, but a byte in last word differs)', async () => {
-            const areBytesEqual = await libBytes.areBytesEqual.callAsync(
+            const areBytesEqual = await libBytes.publicAreBytesEqual.callAsync(
                 byteArrayLongerThan32BytesLastBytesSwapped,
                 byteArrayLongerThan32Bytes,
             );
@@ -109,7 +109,7 @@ describe('LibBytes', () => {
         it('should successfully read address when the address takes up the whole array)', async () => {
             const byteArray = ethUtil.addHexPrefix(testAddress);
             const testAddressOffset = new BigNumber(0);
-            const address = await libBytes.readAddress.callAsync(byteArray, testAddressOffset);
+            const address = await libBytes.publicReadAddress.callAsync(byteArray, testAddressOffset);
             return expect(address).to.be.equal(testAddress);
         });
 
@@ -119,20 +119,24 @@ describe('LibBytes', () => {
             const combinedByteArrayBuffer = Buffer.concat([prefixByteArrayBuffer, addressByteArrayBuffer]);
             const combinedByteArray = ethUtil.bufferToHex(combinedByteArrayBuffer);
             const testAddressOffset = new BigNumber(prefixByteArrayBuffer.byteLength);
-            const address = await libBytes.readAddress.callAsync(combinedByteArray, testAddressOffset);
+            const address = await libBytes.publicReadAddress.callAsync(combinedByteArray, testAddressOffset);
             return expect(address).to.be.equal(testAddress);
         });
 
         it('should fail if the byte array is too short to hold an address)', async () => {
             const shortByteArray = '0xabcdef';
             const offset = new BigNumber(0);
-            return expect(libBytes.readAddress.callAsync(shortByteArray, offset)).to.be.rejectedWith(constants.REVERT);
+            return expect(libBytes.publicReadAddress.callAsync(shortByteArray, offset)).to.be.rejectedWith(
+                constants.REVERT,
+            );
         });
 
         it('should fail if the length between the offset and end of the byte array is too short to hold an address)', async () => {
             const byteArray = ethUtil.addHexPrefix(testAddress);
             const badOffset = new BigNumber(ethUtil.toBuffer(byteArray).byteLength);
-            return expect(libBytes.readAddress.callAsync(byteArray, badOffset)).to.be.rejectedWith(constants.REVERT);
+            return expect(libBytes.publicReadAddress.callAsync(byteArray, badOffset)).to.be.rejectedWith(
+                constants.REVERT,
+            );
         });
     });
 
@@ -150,7 +154,7 @@ describe('LibBytes', () => {
     describe('readBytes32', () => {
         it('should successfully read bytes32 when the bytes32 takes up the whole array)', async () => {
             const testBytes32Offset = new BigNumber(0);
-            const bytes32 = await libBytes.readBytes32.callAsync(testBytes32, testBytes32Offset);
+            const bytes32 = await libBytes.publicReadBytes32.callAsync(testBytes32, testBytes32Offset);
             return expect(bytes32).to.be.equal(testBytes32);
         });
 
@@ -160,20 +164,22 @@ describe('LibBytes', () => {
             const combinedByteArrayBuffer = Buffer.concat([prefixByteArrayBuffer, bytes32ByteArrayBuffer]);
             const combinedByteArray = ethUtil.bufferToHex(combinedByteArrayBuffer);
             const testAddressOffset = new BigNumber(prefixByteArrayBuffer.byteLength);
-            const bytes32 = await libBytes.readBytes32.callAsync(combinedByteArray, testAddressOffset);
+            const bytes32 = await libBytes.publicReadBytes32.callAsync(combinedByteArray, testAddressOffset);
             return expect(bytes32).to.be.equal(testBytes32);
         });
 
         it('should fail if the byte array is too short to hold a bytes32)', async () => {
             const offset = new BigNumber(0);
-            return expect(libBytes.readBytes32.callAsync(byteArrayShorterThan32Bytes, offset)).to.be.rejectedWith(
+            return expect(libBytes.publicReadBytes32.callAsync(byteArrayShorterThan32Bytes, offset)).to.be.rejectedWith(
                 constants.REVERT,
             );
         });
 
         it('should fail if the length between the offset and end of the byte array is too short to hold a bytes32)', async () => {
             const badOffset = new BigNumber(ethUtil.toBuffer(testBytes32).byteLength);
-            return expect(libBytes.readBytes32.callAsync(testBytes32, badOffset)).to.be.rejectedWith(constants.REVERT);
+            return expect(libBytes.publicReadBytes32.callAsync(testBytes32, badOffset)).to.be.rejectedWith(
+                constants.REVERT,
+            );
         });
     });
 
@@ -194,7 +200,7 @@ describe('LibBytes', () => {
             const testUint256AsBuffer = ethUtil.toBuffer(formattedTestUint256);
             const byteArray = ethUtil.bufferToHex(testUint256AsBuffer);
             const testUint256Offset = new BigNumber(0);
-            const uint256 = await libBytes.readUint256.callAsync(byteArray, testUint256Offset);
+            const uint256 = await libBytes.publicReadUint256.callAsync(byteArray, testUint256Offset);
             return expect(uint256).to.bignumber.equal(testUint256);
         });
 
@@ -205,13 +211,13 @@ describe('LibBytes', () => {
             const combinedByteArrayBuffer = Buffer.concat([prefixByteArrayBuffer, testUint256AsBuffer]);
             const combinedByteArray = ethUtil.bufferToHex(combinedByteArrayBuffer);
             const testUint256Offset = new BigNumber(prefixByteArrayBuffer.byteLength);
-            const uint256 = await libBytes.readUint256.callAsync(combinedByteArray, testUint256Offset);
+            const uint256 = await libBytes.publicReadUint256.callAsync(combinedByteArray, testUint256Offset);
             return expect(uint256).to.bignumber.equal(testUint256);
         });
 
         it('should fail if the byte array is too short to hold a uint256)', async () => {
             const offset = new BigNumber(0);
-            return expect(libBytes.readUint256.callAsync(byteArrayShorterThan32Bytes, offset)).to.be.rejectedWith(
+            return expect(libBytes.publicReadUint256.callAsync(byteArrayShorterThan32Bytes, offset)).to.be.rejectedWith(
                 constants.REVERT,
             );
         });
@@ -221,7 +227,9 @@ describe('LibBytes', () => {
             const testUint256AsBuffer = ethUtil.toBuffer(formattedTestUint256);
             const byteArray = ethUtil.bufferToHex(testUint256AsBuffer);
             const badOffset = new BigNumber(testUint256AsBuffer.byteLength);
-            return expect(libBytes.readUint256.callAsync(byteArray, badOffset)).to.be.rejectedWith(constants.REVERT);
+            return expect(libBytes.publicReadUint256.callAsync(byteArray, badOffset)).to.be.rejectedWith(
+                constants.REVERT,
+            );
         });
     });
 

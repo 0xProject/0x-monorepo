@@ -16,10 +16,14 @@
 
 */
 
-pragma solidity ^0.4.21;
+pragma solidity ^0.4.23;
 pragma experimental ABIEncoderV2;
 
-contract MAssetProxy {
+import "../interfaces/IAssetProxy.sol";
+
+contract MAssetProxy is
+    IAssetProxy
+{
 
     /// @dev Internal version of `transferFrom`.
     /// @param assetMetadata Encoded byte array.

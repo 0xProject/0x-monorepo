@@ -16,20 +16,27 @@
 
 */
 
-pragma solidity ^0.4.21;
+pragma solidity ^0.4.23;
 pragma experimental ABIEncoderV2;
 
-contract LibErrors {
+import "../interfaces/IAuthorizable.sol";
 
-    // Error Codes
-    enum Errors {
-        ORDER_EXPIRED,                    // Order has already expired
-        ORDER_FULLY_FILLED,               // Order has already been fully filled
-        ORDER_CANCELLED,                  // Order has already been cancelled
-        ROUNDING_ERROR_TOO_LARGE,         // Rounding error too large
-        INSUFFICIENT_BALANCE_OR_ALLOWANCE // Insufficient balance or allowance for token transfer
-    }
+contract MAuthorizable is
+    IAuthorizable
+{
 
-    event ExchangeError(uint8 indexed errorId, bytes32 indexed orderHash);
+    // Event logged when a new address is authorized.
+    event AuthorizedAddressAdded(
+        address indexed target,
+        address indexed caller
+    );
 
+    // Event logged when a currently authorized address is unauthorized.
+    event AuthorizedAddressRemoved(
+        address indexed target,
+        address indexed caller
+    );
+
+    /// @dev Only authorized addresses can invoke functions with this modifier.
+    modifier onlyAuthorized { _; }
 }

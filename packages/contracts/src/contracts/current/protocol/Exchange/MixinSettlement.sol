@@ -16,23 +16,24 @@
 
 */
 
-pragma solidity ^0.4.21;
-pragma experimental ABIEncoderV2;
+pragma solidity ^0.4.23;
 
 import "./mixins/MSettlement.sol";
 import "./mixins/MAssetProxyDispatcher.sol";
-import "./LibOrder.sol";
-import "./LibMath.sol";
-import "../AssetProxy/IAssetProxy.sol";
+import "./libs/LibOrder.sol";
+import "./libs/LibMath.sol";
 
-/// @dev Provides MixinSettlement
 contract MixinSettlement is
     LibMath,
     MSettlement,
     MAssetProxyDispatcher
 {
+    // ZRX metadata used for fee transfers.
+    // This will be constant throughout the life of the Exchange contract,
+    // since ZRX will always be transferred via the ERC20 AssetProxy.
     bytes internal ZRX_PROXY_DATA;
 
+    /// @dev Gets the ZRX metadata used for fee transfers.
     function zrxProxyData()
         external
         view
@@ -41,12 +42,20 @@ contract MixinSettlement is
         return ZRX_PROXY_DATA;
     }
 
-    function MixinSettlement(bytes memory _zrxProxyData)
+    /// TODO: _zrxProxyData should be a constant in production.
+    /// @dev Constructor sets the metadata that will be used for paying ZRX fees.
+    /// @param _zrxProxyData Byte array containing ERC20 proxy id concatenated with address of ZRX.
+    constructor (bytes memory _zrxProxyData)
         public
     {
         ZRX_PROXY_DATA = _zrxProxyData;
     }
 
+    /// @dev Settles an order by transferring assets between counterparties.
+    /// @param order Order struct containing order specifications.
+    /// @param takerAddress Address selling takerAsset and buying makerAsset.
+    /// @param takerAssetFilledAmount The amount of takerAsset that will be transferred to the order's maker.
+    /// @return Amount filled by maker and fees paid by maker/taker.
     function settleOrder(
         LibOrder.Order memory order,
         address takerAddress,

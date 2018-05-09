@@ -3,7 +3,7 @@ import { Web3Wrapper } from '@0xproject/web3-wrapper';
 import * as chai from 'chai';
 import * as Web3 from 'web3';
 
-import { AuthorizableContract } from '../../src/contract_wrappers/generated/authorizable';
+import { MixinAuthorizableContract } from '../../src/contract_wrappers/generated/mixin_authorizable';
 import { constants } from '../../src/utils/constants';
 import { ContractName } from '../../src/utils/types';
 import { chaiSetup } from '../utils/chai_setup';
@@ -18,13 +18,13 @@ describe('Authorizable', () => {
     let owner: string;
     let notOwner: string;
     let address: string;
-    let authorizable: AuthorizableContract;
+    let authorizable: MixinAuthorizableContract;
     before(async () => {
         const accounts = await web3Wrapper.getAvailableAddressesAsync();
         owner = address = accounts[0];
         notOwner = accounts[1];
         const authorizableInstance = await deployer.deployAsync(ContractName.Authorizable);
-        authorizable = new AuthorizableContract(authorizableInstance.abi, authorizableInstance.address, provider);
+        authorizable = new MixinAuthorizableContract(authorizableInstance.abi, authorizableInstance.address, provider);
     });
     beforeEach(async () => {
         await blockchainLifecycle.startAsync();

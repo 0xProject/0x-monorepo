@@ -16,12 +16,12 @@
 
 */
 
-pragma solidity ^0.4.21;
+pragma solidity ^0.4.23;
 pragma experimental ABIEncoderV2;
 
-import "../../protocol/Exchange/LibMath.sol";
-import "../../protocol/Exchange/LibOrder.sol";
-import "../../protocol/Exchange/LibFillResults.sol";
+import "../../protocol/Exchange/libs/LibMath.sol";
+import "../../protocol/Exchange/libs/LibOrder.sol";
+import "../../protocol/Exchange/libs/LibFillResults.sol";
 
 contract TestLibs is 
     LibMath,

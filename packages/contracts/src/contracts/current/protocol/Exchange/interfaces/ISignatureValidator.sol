@@ -17,25 +17,16 @@
 */
 
 pragma solidity ^0.4.23;
-pragma experimental ABIEncoderV2;
 
-import "../../protocol/Exchange/MixinSignatureValidator.sol";
+contract ISignatureValidator {
 
-contract TestSignatureValidator is MixinSignatureValidator {
-
-    function publicIsValidSignature(
+    /// @dev Approves a hash on-chain using any valid signature type.
+    ///      After presigning a hash, the preSign signature type will become valid for that hash and signer.
+    /// @param signer Address that should have signed the given hash.
+    /// @param signature Proof that the hash has been signed by signer.
+    function preSign(
         bytes32 hash,
         address signer,
-        bytes memory signature)
-        public
-        view
-        returns (bool isValid)
-    {
-        isValid = isValidSignature(
-            hash,
-            signer,
-            signature
-        );
-        return isValid;
-    }
+        bytes signature)
+        external;
 }

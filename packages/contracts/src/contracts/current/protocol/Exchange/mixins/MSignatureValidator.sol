@@ -16,10 +16,24 @@
 
 */
 
-pragma solidity ^0.4.21;
-pragma experimental ABIEncoderV2;
+pragma solidity ^0.4.23;
 
-contract MSignatureValidator {
+import "../interfaces/ISignatureValidator.sol";
+
+contract MSignatureValidator is
+    ISignatureValidator
+{
+    // Allowed signature types.
+    enum SignatureType {
+        Illegal,  // Default value
+        Invalid,
+        Caller,
+        Ecrecover,
+        EIP712,
+        Trezor,
+        Contract,
+        PreSigned
+    }
 
     /// @dev Verifies that a signature is valid.
     /// @param hash Message hash that is signed.

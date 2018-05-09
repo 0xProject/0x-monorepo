@@ -16,17 +16,34 @@
 
 */
 
-pragma solidity ^0.4.18;
+pragma solidity ^0.4.23;
+pragma experimental ABIEncoderV2;
 
 import "./IERC20Token.sol";
 
 contract ERC20Token is IERC20Token {
 
+    string constant INSUFFICIENT_BALANCE = "Insufficient balance to complete transfer.";
+    string constant INSUFFICIENT_ALLOWANCE = "Insufficient allowance to complete transfer.";
+    string constant OVERFLOW = "Transfer would result in an overflow.";
+
+    mapping (address => uint256) balances;
+    mapping (address => mapping (address => uint256)) allowed;
+
+    uint256 public totalSupply;
+
     function transfer(address _to, uint256 _value)
         public
         returns (bool)
     {
-        require(balances[msg.sender] >= _value && balances[_to] + _value >= balances[_to]);
+        require(
+            balances[msg.sender] >= _value,
+            INSUFFICIENT_BALANCE
+        );
+        require(
+            balances[_to] + _value >= balances[_to],
+            OVERFLOW
+        );
         balances[msg.sender] -= _value;
         balances[_to] += _value;
         emit Transfer(msg.sender, _to, _value);
@@ -37,7 +54,18 @@ contract ERC20Token is IERC20Token {
         public
         returns (bool)
     {
-        require(balances[_from] >= _value && allowed[_from][msg.sender] >= _value && balances[_to] + _value >= balances[_to]);
+        require(
+            balances[_from] >= _value,
+            INSUFFICIENT_BALANCE
+        );
+        require(
+            allowed[_from][msg.sender] >= _value,
+            INSUFFICIENT_ALLOWANCE
+        );
+        require(
+            balances[_to] + _value >= balances[_to],
+            OVERFLOW
+        );
         balances[_to] += _value;
         balances[_from] -= _value;
         allowed[_from][msg.sender] -= _value;
@@ -68,8 +96,5 @@ contract ERC20Token is IERC20Token {
     {
         return allowed[_owner][_spender];
     }
-
-    mapping (address => uint256) balances;
-    mapping (address => mapping (address => uint256)) allowed;
-    uint256 public totalSupply;
 }
+
