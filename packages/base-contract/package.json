@@ -1,6 +1,9 @@
 {
     "name": "@0xproject/base-contract",
     "version": "0.3.1",
+    "engines": {
+        "node" : ">=8.0.0"
+    },
     "description": "0x Base TS contract",
     "main": "lib/src/index.js",
     "types": "lib/src/index.d.ts",

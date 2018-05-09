@@ -1,6 +1,9 @@
 {
     "name": "@0xproject/web3-wrapper",
     "version": "0.6.3",
+    "engines": {
+        "node" : ">=8.0.0"
+    },
     "description": "Wraps around web3 and gives a nicer interface",
     "main": "lib/src/index.js",
     "types": "lib/src/index.d.ts",

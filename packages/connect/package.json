@@ -1,6 +1,9 @@
 {
     "name": "@0xproject/connect",
     "version": "0.6.12",
+    "engines": {
+        "node" : ">=8.0.0"
+    },
     "description": "A javascript library for interacting with the standard relayer api",
     "keywords": [
         "connect",
@@ -42,9 +45,6 @@
     },
     "author": "Brandon Millman",
     "license": "Apache-2.0",
-    "engines": {
-        "node": ">=6.0.0"
-    },
     "bugs": {
         "url": "https://github.com/0xProject/0x-monorepo/issues"
     },

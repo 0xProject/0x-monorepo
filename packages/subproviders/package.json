@@ -1,6 +1,9 @@
 {
     "name": "@0xproject/subproviders",
     "version": "0.10.1",
+    "engines": {
+        "node" : ">=8.0.0"
+    },
     "main": "lib/src/index.js",
     "types": "lib/src/index.d.ts",
     "license": "Apache-2.0",

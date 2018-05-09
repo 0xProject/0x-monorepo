@@ -1,6 +1,9 @@
 {
     "name": "@0xproject/monorepo-scripts",
     "version": "0.1.19",
+    "engines": {
+        "node" : ">=8.0.0"
+    },
     "description": "Helper scripts for the monorepo",
     "main": "lib/index.js",
     "types": "lib/index.d.ts",

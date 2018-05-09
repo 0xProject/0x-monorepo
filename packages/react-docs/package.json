@@ -1,6 +1,9 @@
 {
     "name": "@0xproject/react-docs",
     "version": "0.0.11",
+    "engines": {
+        "node" : ">=8.0.0"
+    },
     "description": "React documentation component for rendering TypeDoc & Doxity generated JSON",
     "main": "lib/index.js",
     "types": "lib/index.d.ts",

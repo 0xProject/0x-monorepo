@@ -1,6 +1,9 @@
 {
     "name": "@0xproject/sra-report",
     "version": "0.0.14",
+    "engines": {
+        "node" : ">=8.0.0"
+    },
     "description": "Generate reports for standard relayer API compliance",
     "main": "lib/src/index.js",
     "types": "lib/src/index.d.ts",

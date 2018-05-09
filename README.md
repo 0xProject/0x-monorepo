@@ -62,6 +62,8 @@ Dedicated documentation pages:
 *   [Sol-cov](https://0xproject.com/docs/sol-cov)
 *   [Standard Relayer API](https://github.com/0xProject/standard-relayer-api/blob/master/README.md)
 
+Node version >= 8.0 is required.
+
 Most of the packages require additional typings for external dependencies.
 You can include those by prepending @0xproject/typescript-typings package to your [`typeRoots`](http://www.typescriptlang.org/docs/handbook/tsconfig-json.html) config.
 

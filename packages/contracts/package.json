@@ -2,6 +2,9 @@
     "private": true,
     "name": "contracts",
     "version": "2.1.28",
+    "engines": {
+        "node" : ">=8.0.0"
+    },
     "description": "Smart contract components of 0x protocol",
     "main": "index.js",
     "directories": {

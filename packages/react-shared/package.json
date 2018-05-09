@@ -1,6 +1,9 @@
 {
     "name": "@0xproject/react-shared",
     "version": "0.1.6",
+    "engines": {
+        "node" : ">=8.0.0"
+    },
     "description": "0x shared react components",
     "main": "lib/index.js",
     "types": "lib/index.d.ts",

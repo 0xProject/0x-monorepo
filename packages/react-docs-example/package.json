@@ -2,6 +2,9 @@
     "private": true,
     "name": "@0xproject/react-docs-example",
     "version": "0.0.11",
+    "engines": {
+        "node" : ">=8.0.0"
+    },
     "description": "An example app using react-docs",
     "scripts": {
         "lint": "tslint --project .",

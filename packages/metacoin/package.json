@@ -1,6 +1,9 @@
 {
     "name": "@0xproject/metacoin",
     "version": "0.0.6",
+    "engines": {
+        "node" : ">=8.0.0"
+    },
     "private": true,
     "description": "Example solidity project using 0x dev tools",
     "scripts": {

@@ -1,6 +1,9 @@
 {
     "name": "@0xproject/json-schemas",
     "version": "0.7.23",
+    "engines": {
+        "node" : ">=8.0.0"
+    },
     "description": "0x-related json schemas",
     "main": "lib/src/index.js",
     "types": "lib/src/index.d.ts",
