@@ -126,6 +126,10 @@ render(
                                 path={`${WebsiteLegacyPaths.Web3Wrapper}/:version?`}
                                 component={LazyWeb3WrapperDocumentation}
                             />
+                            <Route
+                                path={`${WebsiteLegacyPaths.Deployer}/:version?`}
+                                component={LazySolCompilerDocumentation}
+                            />
 
                             <Route component={NotFound as any} />
                         </Switch>

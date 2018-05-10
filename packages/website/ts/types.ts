@@ -344,6 +344,7 @@ export enum Docs {
 export enum WebsiteLegacyPaths {
     ZeroExJs = '/docs/0xjs',
     Web3Wrapper = '/docs/web3_wrapper',
+    Deployer = '/docs/deployer',
 }
 
 export enum WebsitePaths {
