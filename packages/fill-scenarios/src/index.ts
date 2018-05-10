@@ -13,7 +13,6 @@ import { TokenContract } from './generated_contract_wrappers/token';
 const INITIAL_COINBASE_TOKEN_SUPPLY_IN_UNITS = new BigNumber(100);
 
 export class FillScenarios {
-    private _provider: Provider;
     private _web3Wrapper: Web3Wrapper;
     private _userAddresses: string[];
     private _tokens: Token[];
@@ -27,8 +26,7 @@ export class FillScenarios {
         zrxTokenAddress: string,
         exchangeContractAddress: string,
     ) {
-        this._provider = provider;
-        this._web3Wrapper = new Web3Wrapper(this._provider);
+        this._web3Wrapper = new Web3Wrapper(provider);
         this._userAddresses = userAddresses;
         this._tokens = tokens;
         this._coinbase = userAddresses[0];
@@ -42,7 +40,7 @@ export class FillScenarios {
                 const dummyToken = new DummyTokenContract(
                     artifacts.DummyToken.abi,
                     token.address,
-                    this._provider,
+                    this._web3Wrapper.getProvider(),
                     this._web3Wrapper.getContractDefaults(),
                 );
                 const tokenSupply = Web3Wrapper.toBaseUnitAmount(
@@ -143,7 +141,7 @@ export class FillScenarios {
         const exchangeInstance = new ExchangeContract(
             artifacts.Exchange.abi,
             signedOrder.exchangeContractAddress,
-            this._provider,
+            this._web3Wrapper.getProvider(),
             this._web3Wrapper.getContractDefaults(),
         );
 
@@ -183,7 +181,7 @@ export class FillScenarios {
         ]);
 
         const signedOrder = await orderFactory.createSignedOrderAsync(
-            this._provider,
+            this._web3Wrapper.getProvider(),
             makerAddress,
             takerAddress,
             makerFee,
@@ -215,7 +213,7 @@ export class FillScenarios {
         const token = new TokenContract(
             artifacts.Token.abi,
             tokenAddress,
-            this._provider,
+            this._web3Wrapper.getProvider(),
             this._web3Wrapper.getContractDefaults(),
         );
         await token.transfer.sendTransactionAsync(address, amount, {
@@ -226,16 +224,15 @@ export class FillScenarios {
         const tokenInstance = new TokenContract(
             artifacts.Token.abi,
             tokenAddress,
-            this._provider,
+            this._web3Wrapper.getProvider(),
             this._web3Wrapper.getContractDefaults(),
         );
-        const txData = {};
         const networkArtifactsIfExists = artifacts.TokenTransferProxy.networks[constants.TEST_RPC_NETWORK_ID];
         if (_.isUndefined(networkArtifactsIfExists)) {
             throw new Error(`Did not find network artifacts for networkId: ${constants.TEST_RPC_NETWORK_ID}`);
         }
         const proxyAddress = networkArtifactsIfExists.address;
-        const oldMakerAllowance = await tokenInstance.allowance.callAsync(address, proxyAddress, txData);
+        const oldMakerAllowance = await tokenInstance.allowance.callAsync(address, proxyAddress);
         const newMakerAllowance = oldMakerAllowance.plus(amount);
 
         await tokenInstance.approve.sendTransactionAsync(proxyAddress, newMakerAllowance, {
