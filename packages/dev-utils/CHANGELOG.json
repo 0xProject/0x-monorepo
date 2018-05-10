@@ -3,7 +3,8 @@
         "version": "0.4.2",
         "changes": [
             {
-                "note": "Move callbackErrorReporter over from 0x.js"
+                "note": "Move callbackErrorReporter over from 0x.js",
+                "pr": 579
             }
         ]
     },
