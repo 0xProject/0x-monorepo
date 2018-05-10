@@ -1,12 +1,12 @@
 import { assert } from '@0xproject/assert';
 import {
     ContractWrappers,
+    ContractWrappersConfig,
     EtherTokenWrapper,
     ExchangeWrapper,
     TokenRegistryWrapper,
     TokenTransferProxyWrapper,
     TokenWrapper,
-    ContractWrappersConfig,
 } from '@0xproject/contract-wrappers';
 import {
     generatePseudoRandomSalt,

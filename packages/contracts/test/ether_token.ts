@@ -1,4 +1,4 @@
-import { ZeroEx, ContractWrappersError } from '0x.js';
+import { ContractWrappersError, ZeroEx } from '0x.js';
 import { BlockchainLifecycle, devConstants, web3Factory } from '@0xproject/dev-utils';
 import { BigNumber, promisify } from '@0xproject/utils';
 import { Web3Wrapper } from '@0xproject/web3-wrapper';
