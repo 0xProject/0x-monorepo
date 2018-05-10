@@ -27,14 +27,16 @@ const SEPARATOR = ',';
         })
         .option('contracts', {
             type: 'string',
-            default: DEFAULT_CONTRACTS_LIST,
             description: 'comma separated list of contracts to compile',
         })
         .help().argv;
+    const contracts = _.isUndefined(argv.contracts)
+        ? undefined
+        : argv.contracts === DEFAULT_CONTRACTS_LIST ? DEFAULT_CONTRACTS_LIST : argv.contracts.split(SEPARATOR);
     const opts: CompilerOptions = {
         contractsDir: argv.contractsDir,
         artifactsDir: argv.artifactsDir,
-        contracts: argv.contracts === DEFAULT_CONTRACTS_LIST ? DEFAULT_CONTRACTS_LIST : argv.contracts.split(SEPARATOR),
+        contracts,
     };
     const compiler = new Compiler(opts);
     await compiler.compileAsync();
