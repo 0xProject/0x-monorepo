@@ -184,4 +184,3 @@ export enum TransferType {
 }
 
 export type OnOrderStateChangeCallback = (err: Error | null, orderState?: OrderState) => void;
-// tslint:disable:max-file-line-count
