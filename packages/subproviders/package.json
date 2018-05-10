@@ -8,7 +8,7 @@
         "build:watch": "tsc -w",
         "clean": "shx rm -rf lib scripts",
         "build": "tsc && copyfiles -u 3 './lib/src/monorepo_scripts/**/*' ./scripts",
-        "lint": "tslint --project . 'src/**/*.ts' 'test/**/*.ts'",
+        "lint": "tslint --project .",
         "run_mocha_unit": "mocha lib/test/unit/**/*_test.js --timeout 10000 --bail --exit",
         "run_mocha_integration": "mocha lib/test/integration/**/*_test.js --timeout 10000 --bail --exit",
         "test": "npm run test:unit",

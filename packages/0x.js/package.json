@@ -16,7 +16,7 @@
         "prebuild": "run-s clean generate_contract_wrappers",
         "build": "run-p build:umd:prod build:commonjs; exit 0;",
         "generate_contract_wrappers": "node ../abi-gen/lib/index.js --abis 'src/compact_artifacts/@(Exchange|Token|TokenTransferProxy|EtherToken|TokenRegistry|DummyToken).json' --template ../contract_templates/contract.handlebars --partials '../contract_templates/partials/**/*.handlebars' --output src/contract_wrappers/generated --backend ethers && prettier --write 'src/contract_wrappers/generated/**.ts'",
-        "lint": "tslint --project . 'src/**/*.ts' 'test/**/*.ts'",
+        "lint": "tslint --project .",
         "test:circleci": "run-s test:coverage",
         "test": "run-s clean test:commonjs",
         "test:coverage": "nyc npm run test --all && yarn coverage:report:lcov",
