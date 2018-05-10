@@ -218,11 +218,12 @@ export class ZeroEx {
      * @param   config      The configuration object. Look up the type for the description.
      * @return  An instance of the 0x.js OrderWatcher class.
      */
-    public async createOrderWatcherAsync(config?: OrderWatcherConfig) {
+    public async createOrderWatcherAsync(config?: OrderWatcherConfig): Promise<OrderWatcher> {
         // Hack: Get Web3Wrapper from ZeroExContract
-        const web3Wrapper = (this._contractWrappers as any)._web3Wrapper;
-        const networkId = web3Wrapper.getNetworkIdAsync();
+        const web3Wrapper: Web3Wrapper = (this._contractWrappers as any)._web3Wrapper;
+        const networkId = await web3Wrapper.getNetworkIdAsync();
         const provider = this._contractWrappers.getProvider();
-        return new OrderWatcher(provider, networkId, config);
+        const orderWatcher = new OrderWatcher(provider, networkId, config);
+        return orderWatcher;
     }
 }
