@@ -1,4 +1,4 @@
-import { colors } from '@0xproject/react-shared';
+import { colors, Styles } from '@0xproject/react-shared';
 import * as _ from 'lodash';
 import RaisedButton from 'material-ui/RaisedButton';
 import * as React from 'react';
@@ -11,9 +11,9 @@ import { ProviderType } from 'ts/types';
 import { constants } from 'ts/utils/constants';
 import { utils } from 'ts/utils/utils';
 
-const IDENTICON_DIAMETER = 32;
+const ROOT_HEIGHT = 24;
 
-interface ProviderDisplayProps {
+export interface ProviderDisplayProps {
     dispatcher: Dispatcher;
     userAddress: string;
     networkId: number;
@@ -24,6 +24,15 @@ interface ProviderDisplayProps {
 }
 
 interface ProviderDisplayState {}
+
+const styles: Styles = {
+    root: {
+        height: ROOT_HEIGHT,
+        backgroundColor: colors.white,
+        borderRadius: ROOT_HEIGHT,
+        boxShadow: `0px 4px 6px ${colors.walletBoxShadow}`,
+    },
+};
 
 export class ProviderDisplay extends React.Component<ProviderDisplayProps, ProviderDisplayState> {
     public render() {
@@ -40,21 +49,20 @@ export class ProviderDisplay extends React.Component<ProviderDisplayProps, Provi
             : 'Connect a wallet';
         const providerTitle =
             this.props.providerType === ProviderType.Injected ? injectedProviderName : 'Ledger Nano S';
+        const isProviderMetamask = providerTitle === constants.PROVIDER_NAME_METAMASK;
         const hoverActiveNode = (
-            <div className="flex right lg-pr0 md-pr2 sm-pr2" style={{ paddingTop: 16 }}>
+            <div className="flex right lg-pr0 md-pr2 sm-pr2 p1" style={styles.root}>
                 <div>
-                    <Identicon address={this.props.userAddress} diameter={IDENTICON_DIAMETER} />
+                    <Identicon address={this.props.userAddress} diameter={ROOT_HEIGHT} />
                 </div>
-                <div style={{ marginLeft: 12, paddingTop: 1 }}>
-                    <div style={{ fontSize: 12, color: colors.amber800 }}>{providerTitle}</div>
-                    <div style={{ fontSize: 14 }}>{displayAddress}</div>
+                <div style={{ marginLeft: 12, paddingTop: 3 }}>
+                    <div style={{ fontSize: 16, color: colors.darkGrey }}>{displayAddress}</div>
                 </div>
-                <div
-                    style={{ borderLeft: `1px solid ${colors.grey300}`, marginLeft: 17, paddingTop: 1 }}
-                    className="px2"
-                >
-                    <i style={{ fontSize: 30, color: colors.grey300 }} className="zmdi zmdi zmdi-chevron-down" />
-                </div>
+                {isProviderMetamask && (
+                    <div style={{ marginLeft: 16 }}>
+                        <img src="/images/metamask_icon.png" style={{ width: ROOT_HEIGHT, height: ROOT_HEIGHT }} />
+                    </div>
+                )}
             </div>
         );
         const hasInjectedProvider =

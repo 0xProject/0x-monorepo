@@ -1,5 +1,7 @@
 import { colors, Styles } from '@0xproject/react-shared';
 import * as _ from 'lodash';
+import CircularProgress from 'material-ui/CircularProgress';
+import FlatButton from 'material-ui/FlatButton';
 import { GridList } from 'material-ui/GridList';
 import * as React from 'react';
 
@@ -32,9 +34,9 @@ const styles: Styles = {
     },
 };
 
-const CELL_HEIGHT = 260;
+const CELL_HEIGHT = 290;
 const NUMBER_OF_COLUMNS = 4;
-const GRID_PADDING = 16;
+const GRID_PADDING = 20;
 
 export class RelayerIndex extends React.Component<RelayerIndexProps, RelayerIndexState> {
     private _isUnmounted: boolean;
@@ -55,7 +57,24 @@ export class RelayerIndex extends React.Component<RelayerIndexProps, RelayerInde
     }
     public render() {
         const readyToRender = _.isUndefined(this.state.error) && !_.isUndefined(this.state.relayerInfos);
-        if (readyToRender) {
+        if (!readyToRender) {
+            return (
+                <div className="col col-12" style={{ ...styles.root, height: '100%' }}>
+                    <div
+                        className="relative sm-px2 sm-pt2 sm-m1"
+                        style={{ height: 122, top: '33%', transform: 'translateY(-50%)' }}
+                    >
+                        <div className="center pb2">
+                            {_.isUndefined(this.state.error) ? (
+                                <CircularProgress size={40} thickness={5} />
+                            ) : (
+                                <Retry onRetry={this._fetchRelayerInfosAsync.bind(this)} />
+                            )}
+                        </div>
+                    </div>
+                </div>
+            );
+        } else {
             return (
                 <div style={styles.root}>
                     <GridList
@@ -64,23 +83,22 @@ export class RelayerIndex extends React.Component<RelayerIndexProps, RelayerInde
                         padding={GRID_PADDING}
                         style={styles.gridList}
                     >
-                        {this.state.relayerInfos.map((relayerInfo: WebsiteBackendRelayerInfo) => (
-                            <RelayerGridTile
-                                key={relayerInfo.name}
-                                relayerInfo={relayerInfo}
-                                networkId={this.props.networkId}
-                            />
+                        {this.state.relayerInfos.map((relayerInfo: WebsiteBackendRelayerInfo, index) => (
+                            <RelayerGridTile key={index} relayerInfo={relayerInfo} networkId={this.props.networkId} />
                         ))}
                     </GridList>
                 </div>
             );
-        } else {
-            // TODO: loading and error states with a scrolling container
-            return null;
         }
     }
     private async _fetchRelayerInfosAsync(): Promise<void> {
         try {
+            if (!this._isUnmounted) {
+                this.setState({
+                    relayerInfos: undefined,
+                    error: undefined,
+                });
+            }
             const relayerInfos = await backendClient.getRelayerInfosAsync();
             if (!this._isUnmounted) {
                 this.setState({
@@ -96,3 +114,31 @@ export class RelayerIndex extends React.Component<RelayerIndexProps, RelayerInde
         }
     }
 }
+
+interface RetryProps {
+    onRetry: () => void;
+}
+const Retry = (props: RetryProps) => (
+    <div className="clearfix center" style={{ color: colors.black }}>
+        <div className="mx-auto inline-block align-middle" style={{ lineHeight: '44px', textAlign: 'center' }}>
+            <div className="h2" style={{ fontFamily: 'Roboto Mono' }}>
+                Something went wrong.
+            </div>
+            <div className="py3">
+                <FlatButton
+                    label={'reload'}
+                    backgroundColor={colors.black}
+                    labelStyle={{
+                        fontSize: 18,
+                        fontFamily: 'Roboto Mono',
+                        fontWeight: 'lighter',
+                        color: colors.white,
+                        textTransform: 'lowercase',
+                    }}
+                    style={{ width: 280, height: 62, borderRadius: 5 }}
+                    onClick={props.onRetry}
+                />
+            </div>
+        </div>
+    </div>
+);

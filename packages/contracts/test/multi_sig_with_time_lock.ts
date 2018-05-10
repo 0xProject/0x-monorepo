@@ -17,7 +17,7 @@ import { chaiSetup } from './utils/chai_setup';
 import { deployer } from './utils/deployer';
 import { provider, web3Wrapper } from './utils/web3_wrapper';
 
-const MULTI_SIG_ABI = artifacts.MultiSigWalletWithTimeLock.networks[constants.TESTRPC_NETWORK_ID].abi;
+const MULTI_SIG_ABI = artifacts.MultiSigWalletWithTimeLock.compilerOutput.abi;
 chaiSetup.configure();
 const expect = chai.expect;
 const blockchainLifecycle = new BlockchainLifecycle(web3Wrapper);

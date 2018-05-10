@@ -154,7 +154,6 @@ export class LegacyPortal extends React.Component<LegacyPortalProps, LegacyPorta
         const updateShouldBlockchainErrDialogBeOpen = this.props.dispatcher.updateShouldBlockchainErrDialogBeOpen.bind(
             this.props.dispatcher,
         );
-        const isDevelopment = configs.ENVIRONMENT === Environments.DEVELOPMENT;
         const portalStyle: React.CSSProperties = {
             minHeight: '100vh',
             display: 'flex',
@@ -204,18 +203,6 @@ export class LegacyPortal extends React.Component<LegacyPortalProps, LegacyPorta
                                     <div className="py2" style={{ backgroundColor: colors.grey50 }}>
                                         {this.props.blockchainIsLoaded ? (
                                             <Switch>
-                                                {isDevelopment && (
-                                                    <Route
-                                                        path={`${WebsitePaths.Portal}/wallet`}
-                                                        render={this._renderWallet.bind(this)}
-                                                    />
-                                                )}
-                                                {isDevelopment && (
-                                                    <Route
-                                                        path={`${WebsitePaths.Portal}/relayers`}
-                                                        render={this._renderRelayers.bind(this)}
-                                                    />
-                                                )}
                                                 <Route
                                                     path={`${WebsitePaths.Portal}/weth`}
                                                     render={this._renderEthWrapper.bind(this)}
@@ -293,40 +280,6 @@ export class LegacyPortal extends React.Component<LegacyPortalProps, LegacyPorta
         this.setState({
             isLedgerDialogOpen: !this.state.isLedgerDialogOpen,
         });
-    }
-    private _renderWallet() {
-        const allTokens = _.values(this.props.tokenByAddress);
-        const trackedTokens = _.filter(allTokens, t => t.isTracked);
-        return (
-            <div className="flex flex-center">
-                <div className="mx-auto">
-                    <Wallet
-                        userAddress={this.props.userAddress}
-                        networkId={this.props.networkId}
-                        blockchain={this._blockchain}
-                        blockchainIsLoaded={this.props.blockchainIsLoaded}
-                        blockchainErr={this.props.blockchainErr}
-                        dispatcher={this.props.dispatcher}
-                        tokenByAddress={this.props.tokenByAddress}
-                        trackedTokens={trackedTokens}
-                        userEtherBalanceInWei={this.props.userEtherBalanceInWei}
-                        lastForceTokenStateRefetch={this.props.lastForceTokenStateRefetch}
-                        injectedProviderName={this.props.injectedProviderName}
-                        providerType={this.props.providerType}
-                        onToggleLedgerDialog={this.onToggleLedgerDialog.bind(this)}
-                    />
-                </div>
-            </div>
-        );
-    }
-    private _renderRelayers() {
-        return (
-            <div className="flex flex-center">
-                <div className="mx-auto" style={{ width: 800 }}>
-                    <RelayerIndex networkId={this.props.networkId} />
-                </div>
-            </div>
-        );
     }
     private _renderEthWrapper() {
         return (

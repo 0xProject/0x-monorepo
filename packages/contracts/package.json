@@ -10,13 +10,13 @@
     "scripts": {
         "build:watch": "tsc -w",
         "prebuild": "run-s clean compile copy_artifacts generate_contract_wrappers",
-        "copy_artifacts": "copyfiles -u 4 '../migrations/src/artifacts/**/*' ./lib/src/artifacts;",
+        "copy_artifacts": "copyfiles -u 4 '../migrations/artifacts/1.0.0/**/*' ./lib/src/artifacts;",
         "build": "tsc",
         "test": "run-s build run_mocha",
         "test:coverage": "SOLIDITY_COVERAGE=true run-s build run_mocha coverage:report:text coverage:report:lcov",
         "run_mocha": "mocha 'lib/test/**/*.js' --timeout 100000 --bail --exit",
         "compile:comment": "Yarn workspaces do not link binaries correctly so we need to reference them directly https://github.com/yarnpkg/yarn/issues/3846",
-        "compile": "node ../deployer/lib/src/cli.js compile --contracts ${npm_package_config_contracts} --contracts-dir src/contracts --artifacts-dir ../migrations/src/artifacts",
+        "compile": "node ../deployer/lib/src/cli.js compile",
         "clean": "shx rm -rf ./lib",
         "generate_contract_wrappers": "node ../abi-gen/lib/index.js --abis  ${npm_package_config_abis} --template ../contract_templates/contract.handlebars --partials '../contract_templates/partials/**/*.handlebars' --output src/contract_wrappers/generated --backend ethers && prettier --write 'src/contract_wrappers/generated/**.ts'",
         "lint": "tslint --project . 'migrations/**/*.ts' 'test/**/*.ts' 'util/**/*.ts' 'deploy/**/*.ts'",
@@ -26,8 +26,7 @@
         "test:circleci": "yarn test:coverage"
     },
     "config": {
-        "abis": "../migrations/src/artifacts/@(DummyToken|TokenTransferProxy|Exchange|TokenRegistry|MultiSigWallet|MultiSigWalletWithTimeLock|MultiSigWalletWithTimeLockExceptRemoveAuthorizedAddress|TokenRegistry|ZRXToken|Arbitrage|EtherDelta|AccountLevels).json",
-        "contracts": "Exchange,DummyToken,ZRXToken,Token,WETH9,TokenTransferProxy,MultiSigWallet,MultiSigWalletWithTimeLock,MultiSigWalletWithTimeLockExceptRemoveAuthorizedAddress,MaliciousToken,TokenRegistry,Arbitrage,EtherDelta,AccountLevels"
+        "abis": "../migrations/artifacts/1.0.0/@(DummyToken|TokenTransferProxy|Exchange|TokenRegistry|MultiSigWallet|MultiSigWalletWithTimeLock|MultiSigWalletWithTimeLockExceptRemoveAuthorizedAddress|TokenRegistry|ZRXToken|Arbitrage|EtherDelta|AccountLevels).json"
     },
     "repository": {
         "type": "git",

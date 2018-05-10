@@ -19,9 +19,7 @@ describe('#Compiler', function() {
     const compilerOpts: CompilerOptions = {
         artifactsDir,
         contractsDir,
-        networkId: constants.networkId,
-        optimizerEnabled: constants.optimizerEnabled,
-        specifiedContracts: new Set(constants.specifiedContracts),
+        contracts: constants.contracts,
     };
     const compiler = new Compiler(compilerOpts);
     beforeEach((done: DoneCallback) => {
@@ -39,9 +37,8 @@ describe('#Compiler', function() {
         };
         const exchangeArtifactString = await fsWrapper.readFileAsync(exchangeArtifactPath, opts);
         const exchangeArtifact: ContractArtifact = JSON.parse(exchangeArtifactString);
-        const exchangeContractData: ContractNetworkData = exchangeArtifact.networks[constants.networkId];
         // The last 43 bytes of the binaries are metadata which may not be equivalent
-        const unlinkedBinaryWithoutMetadata = exchangeContractData.bytecode.slice(0, -86);
+        const unlinkedBinaryWithoutMetadata = exchangeArtifact.compilerOutput.evm.bytecode.object.slice(0, -86);
         const exchangeBinaryWithoutMetadata = exchange_binary.slice(0, -86);
         expect(unlinkedBinaryWithoutMetadata).to.equal(exchangeBinaryWithoutMetadata);
     });
