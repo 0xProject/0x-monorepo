@@ -23,10 +23,10 @@ import "./libs/LibOrder.sol";
 import "./libs/LibFillResults.sol";
 
 contract IWrapperFunctions is
+    LibBytes,
+    LibMath,
     LibOrder,
     LibFillResults,
-    LibMath,
-    LibBytes,
     LibExchangeErrors,
     MExchangeCore
 {

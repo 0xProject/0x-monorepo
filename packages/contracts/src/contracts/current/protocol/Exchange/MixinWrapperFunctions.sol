@@ -27,10 +27,11 @@ import "./libs/LibFillResults.sol";
 import "./libs/LibExchangeErrors.sol";
 
 contract MixinWrapperFunctions is
+    SafeMath,
+    LibBytes,
+    LibMath,
     LibOrder,
     LibFillResults,
-    LibMath,
-    LibBytes,
     LibExchangeErrors,
     MExchangeCore
 {

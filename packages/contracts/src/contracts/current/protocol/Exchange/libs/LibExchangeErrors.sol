@@ -20,23 +20,16 @@ pragma solidity ^0.4.23;
 
 contract LibExchangeErrors {
 
-    // Error Codes
-    enum Errors {
-        ORDER_EXPIRED,                     // Order has already expired
-        ORDER_FULLY_FILLED,                // Order has already been fully filled
-        ORDER_CANCELLED,                   // Order has already been cancelled
-        ROUNDING_ERROR_TOO_LARGE,          // Rounding error too large
-        INSUFFICIENT_BALANCE_OR_ALLOWANCE  // Insufficient balance or allowance for token transfer
-    }
-
-    event ExchangeError(uint8 indexed errorId, bytes32 indexed orderHash);
-
     // Core revert reasons
     string constant GT_ZERO_AMOUNT_REQUIRED = "Amount must be greater than 0.";
     string constant SIGNATURE_VALIDATION_FAILED = "Signature validation failed.";
     string constant INVALID_SENDER = "Invalid `msg.sender`.";
     string constant INVALID_CONTEXT = "Function called in an invalid context.";
     string constant INVALID_NEW_MAKER_EPOCH = "Specified salt must be greater than or equal to existing makerEpoch.";
+
+    // Order revert reasons
+    string constant INVALID_ORDER_TAKER_ASSET_AMOUNT = "Invalid order taker asset amount: expected a non-zero value.";
+    string constant INVALID_ORDER_MAKER_ASSET_AMOUNT = "Invalid order maker asset amount: expected a non-zero value.";
 
     // Transaction revert reasons
     string constant DUPLICATE_TRANSACTION_HASH = "Transaction has already been executed.";
