@@ -3,7 +3,7 @@ import { BigNumber } from '@0xproject/utils';
 import * as _ from 'lodash';
 import * as React from 'react';
 import * as DocumentTitle from 'react-document-title';
-import { Route, Switch } from 'react-router-dom';
+import { Route, RouteComponentProps, Switch } from 'react-router-dom';
 
 import { Blockchain } from 'ts/blockchain';
 import { BlockchainErrDialog } from 'ts/components/dialogs/blockchain_err_dialog';
@@ -12,7 +12,7 @@ import { PortalDisclaimerDialog } from 'ts/components/dialogs/portal_disclaimer_
 import { EthWrappers } from 'ts/components/eth_wrappers';
 import { FillOrder } from 'ts/components/fill_order';
 import { AssetPicker } from 'ts/components/generate_order/asset_picker';
-import { LegacyPortalMenu } from 'ts/components/legacy_portal/legacy_portal_menu';
+import { PortalMenu } from 'ts/components/portal/portal_menu';
 import { RelayerIndex } from 'ts/components/relayer_index/relayer_index';
 import { TokenBalances } from 'ts/components/token_balances';
 import { TopBar, TopBarDisplayType } from 'ts/components/top_bar/top_bar';
@@ -267,8 +267,8 @@ export class Portal extends React.Component<PortalProps, PortalState> {
             </div>
         );
     }
-    private _renderMenu() {
-        return <LegacyPortalMenu menuItemStyle={{ color: colors.darkerGrey }} />;
+    private _renderMenu(routeComponentProps: RouteComponentProps<any>) {
+        return <PortalMenu selectedPath={routeComponentProps.location.pathname} />;
     }
     private _renderWallet() {
         const allTokens = _.values(this.props.tokenByAddress);
