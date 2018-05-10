@@ -18,10 +18,10 @@ import { ExchangeWrapper } from './contract_wrappers/exchange_wrapper';
 import { TokenRegistryWrapper } from './contract_wrappers/token_registry_wrapper';
 import { TokenTransferProxyWrapper } from './contract_wrappers/token_transfer_proxy_wrapper';
 import { TokenWrapper } from './contract_wrappers/token_wrapper';
-import { zeroExContractConfigSchema } from './schemas/zero_ex_contract_config_schema';
-import { zeroExContractPrivateNetworkConfigSchema } from './schemas/zero_ex_contract_private_network_config_schema';
-import { zeroExContractPublicNetworkConfigSchema } from './schemas/zero_ex_contract_public_network_config_schema';
-import { ZeroExContractConfig } from './types';
+import { ContractWrappersConfigSchema } from './schemas/contract_wrappers_config_schema';
+import { contractWrappersPrivateNetworkConfigSchema } from './schemas/contract_wrappers_private_network_config_schema';
+import { contractWrappersPublicNetworkConfigSchema } from './schemas/contract_wrappers_public_network_config_schema';
+import { ContractWrappersConfig } from './types';
 import { assert } from './utils/assert';
 import { constants } from './utils/constants';
 import { decorators } from './utils/decorators';
@@ -62,11 +62,11 @@ export class ContractWrappers {
      * @param   config      The configuration object. Look up the type for the description.
      * @return  An instance of the ContractWrappers class.
      */
-    constructor(provider: Provider, config: ZeroExContractConfig) {
+    constructor(provider: Provider, config: ContractWrappersConfig) {
         assert.isWeb3Provider('provider', provider);
-        assert.doesConformToSchema('config', config, zeroExContractConfigSchema, [
-            zeroExContractPrivateNetworkConfigSchema,
-            zeroExContractPublicNetworkConfigSchema,
+        assert.doesConformToSchema('config', config, ContractWrappersConfigSchema, [
+            contractWrappersPrivateNetworkConfigSchema,
+            contractWrappersPublicNetworkConfigSchema,
         ]);
         const artifactJSONs = _.values(artifacts);
         const abiArrays = _.map(artifactJSONs, artifact => artifact.abi);

@@ -127,7 +127,7 @@ export type SyncMethod = (...args: any[]) => any;
  * tokenTransferProxyContractAddress: The address of the token transfer proxy contract to use
  * orderWatcherConfig: All the configs related to the orderWatcher
  */
-export interface ZeroExContractConfig {
+export interface ContractWrappersConfig {
     networkId: number;
     gasPrice?: BigNumber;
     exchangeContractAddress?: string;

@@ -6,7 +6,7 @@ import {
     TokenRegistryWrapper,
     TokenTransferProxyWrapper,
     TokenWrapper,
-    ZeroExContractConfig,
+    ContractWrappersConfig,
 } from '@0xproject/contract-wrappers';
 import {
     generatePseudoRandomSalt,
@@ -131,7 +131,7 @@ export class ZeroEx {
      * @param   config      The configuration object. Look up the type for the description.
      * @return  An instance of the 0x.js ZeroEx class.
      */
-    constructor(provider: Provider, config: ZeroExContractConfig) {
+    constructor(provider: Provider, config: ContractWrappersConfig) {
         assert.isWeb3Provider('provider', provider);
         this._contractWrappers = new ContractWrappers(provider, config);
 

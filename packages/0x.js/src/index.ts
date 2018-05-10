@@ -47,5 +47,5 @@ export {
     LogFillContractEventArgs,
     ExchangeContractEventArgs,
     ExchangeEvents,
-    ZeroExContractConfig,
+    ContractWrappersConfig,
 } from '@0xproject/contract-wrappers';

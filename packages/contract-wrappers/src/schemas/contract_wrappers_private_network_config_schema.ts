@@ -1,4 +1,4 @@
-export const zeroExContractPrivateNetworkConfigSchema = {
+export const contractWrappersPrivateNetworkConfigSchema = {
     id: '/ZeroExContractPrivateNetworkConfig',
     properties: {
         networkId: {

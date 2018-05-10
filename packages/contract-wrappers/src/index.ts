@@ -15,7 +15,7 @@ export {
     OrderCancellationRequest,
     OrderFillRequest,
     ContractEventArgs,
-    ZeroExContractConfig,
+    ContractWrappersConfig,
     MethodOpts,
     OrderTransactionOpts,
     TransactionOpts,
