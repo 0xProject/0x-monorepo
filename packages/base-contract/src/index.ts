@@ -48,6 +48,8 @@ export class BaseContract {
         if (!_.isUndefined(constructorAbiIfExists)) {
             return constructorAbiIfExists;
         } else {
+            // If the constructor is not explicitly defined, it won't be included in the ABI. It is
+            // still callable however, so we construct what the ABI would look like were it to exist.
             const defaultConstructorAbi: ConstructorAbi = {
                 type: AbiType.Constructor,
                 stateMutability: 'nonpayable',
