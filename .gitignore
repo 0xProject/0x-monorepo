@@ -73,13 +73,12 @@ packages/react-docs/example/public/bundle*
 # generated binaries
 bin/
 
-# generated contract artifacts
-packages/sol-cov/test/fixtures/artifacts
-packages/metacoin/artifacts
-packages/0x.js/test/artifacts
-packages/order-watcher/test/artifacts
-packages/contract-wrappers/test/artifacts
-packages/migrations/artifacts
+# generated contract artifacts/
+packages/sol-cov/test/fixtures/artifacts/
+packages/metacoin/artifacts/
+packages/0x.js/test/artifacts/
+packages/order-watcher/test/artifacts/
+packages/contract-wrappers/test/artifacts/
 
 # generated contract wrappers
 packages/0x.js/src/contract_wrappers/generated/
