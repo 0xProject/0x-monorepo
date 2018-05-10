@@ -3,20 +3,35 @@ import { BigNumber } from '@0xproject/utils';
 import * as _ from 'lodash';
 import * as React from 'react';
 import * as DocumentTitle from 'react-document-title';
+import { Route, Switch } from 'react-router-dom';
 
 import { Blockchain } from 'ts/blockchain';
 import { BlockchainErrDialog } from 'ts/components/dialogs/blockchain_err_dialog';
 import { LedgerConfigDialog } from 'ts/components/dialogs/ledger_config_dialog';
 import { PortalDisclaimerDialog } from 'ts/components/dialogs/portal_disclaimer_dialog';
+import { EthWrappers } from 'ts/components/eth_wrappers';
+import { FillOrder } from 'ts/components/fill_order';
 import { AssetPicker } from 'ts/components/generate_order/asset_picker';
 import { RelayerIndex } from 'ts/components/relayer_index/relayer_index';
+import { TokenBalances } from 'ts/components/token_balances';
 import { TopBar, TopBarDisplayType } from 'ts/components/top_bar/top_bar';
+import { TradeHistory } from 'ts/components/trade_history/trade_history';
 import { FlashMessage } from 'ts/components/ui/flash_message';
 import { Wallet } from 'ts/components/wallet/wallet';
+import { GenerateOrderForm } from 'ts/containers/generate_order_form';
 import { localStorage } from 'ts/local_storage/local_storage';
 import { trackedTokenStorage } from 'ts/local_storage/tracked_token_storage';
 import { Dispatcher } from 'ts/redux/dispatcher';
-import { BlockchainErrs, HashData, Order, ProviderType, ScreenWidths, TokenByAddress, TokenVisibility } from 'ts/types';
+import {
+    BlockchainErrs,
+    HashData,
+    Order,
+    ProviderType,
+    ScreenWidths,
+    TokenByAddress,
+    TokenVisibility,
+    WebsitePaths,
+} from 'ts/types';
 import { configs } from 'ts/utils/configs';
 import { constants } from 'ts/utils/constants';
 import { Translate } from 'ts/utils/translate';
@@ -85,6 +100,7 @@ const styles: Styles = {
 
 export class Portal extends React.Component<PortalProps, PortalState> {
     private _blockchain: Blockchain;
+    private _sharedOrderIfExists: Order;
     private _throttledScreenWidthUpdate: () => void;
     constructor(props: PortalProps) {
         super(props);
@@ -200,7 +216,22 @@ export class Portal extends React.Component<PortalProps, PortalState> {
                             <div className="py3" style={styles.title}>
                                 Explore 0x Ecosystem
                             </div>
-                            <RelayerIndex networkId={this.props.networkId} />
+                            <Switch>
+                                <Route
+                                    path={`${WebsitePaths.Portal}/weth`}
+                                    render={this._renderEthWrapper.bind(this)}
+                                />
+                                <Route path={`${WebsitePaths.Portal}/fill`} render={this._renderFillOrder.bind(this)} />
+                                <Route
+                                    path={`${WebsitePaths.Portal}/balances`}
+                                    render={this._renderTokenBalances.bind(this)}
+                                />
+                                <Route
+                                    path={`${WebsitePaths.Portal}/trades`}
+                                    component={this._renderTradeHistory.bind(this)}
+                                />
+                                <Route path={`${WebsitePaths.Home}`} component={this._renderRelayerIndex.bind(this)} />
+                            </Switch>
                         </div>
                     </div>
                     <BlockchainErrDialog
@@ -240,6 +271,78 @@ export class Portal extends React.Component<PortalProps, PortalState> {
                 </div>
             </div>
         );
+    }
+    private _renderEthWrapper() {
+        return (
+            <EthWrappers
+                networkId={this.props.networkId}
+                blockchain={this._blockchain}
+                dispatcher={this.props.dispatcher}
+                tokenByAddress={this.props.tokenByAddress}
+                userAddress={this.props.userAddress}
+                userEtherBalanceInWei={this.props.userEtherBalanceInWei}
+                lastForceTokenStateRefetch={this.props.lastForceTokenStateRefetch}
+            />
+        );
+    }
+    private _renderTradeHistory() {
+        return (
+            <TradeHistory
+                tokenByAddress={this.props.tokenByAddress}
+                userAddress={this.props.userAddress}
+                networkId={this.props.networkId}
+            />
+        );
+    }
+    private _renderTokenBalances() {
+        const allTokens = _.values(this.props.tokenByAddress);
+        const trackedTokens = _.filter(allTokens, t => t.isTracked);
+        return (
+            <TokenBalances
+                blockchain={this._blockchain}
+                blockchainErr={this.props.blockchainErr}
+                blockchainIsLoaded={this.props.blockchainIsLoaded}
+                dispatcher={this.props.dispatcher}
+                screenWidth={this.props.screenWidth}
+                tokenByAddress={this.props.tokenByAddress}
+                trackedTokens={trackedTokens}
+                userAddress={this.props.userAddress}
+                userEtherBalanceInWei={this.props.userEtherBalanceInWei}
+                networkId={this.props.networkId}
+                lastForceTokenStateRefetch={this.props.lastForceTokenStateRefetch}
+            />
+        );
+    }
+    private _renderFillOrder(match: any, location: Location, history: History) {
+        const initialFillOrder = !_.isUndefined(this.props.userSuppliedOrderCache)
+            ? this.props.userSuppliedOrderCache
+            : this._sharedOrderIfExists;
+        return (
+            <FillOrder
+                blockchain={this._blockchain}
+                blockchainErr={this.props.blockchainErr}
+                initialOrder={initialFillOrder}
+                isOrderInUrl={!_.isUndefined(this._sharedOrderIfExists)}
+                orderFillAmount={this.props.orderFillAmount}
+                networkId={this.props.networkId}
+                userAddress={this.props.userAddress}
+                tokenByAddress={this.props.tokenByAddress}
+                dispatcher={this.props.dispatcher}
+                lastForceTokenStateRefetch={this.props.lastForceTokenStateRefetch}
+            />
+        );
+    }
+    private _renderGenerateOrderForm(match: any, location: Location, history: History) {
+        return (
+            <GenerateOrderForm
+                blockchain={this._blockchain}
+                hashData={this.props.hashData}
+                dispatcher={this.props.dispatcher}
+            />
+        );
+    }
+    private _renderRelayerIndex() {
+        return <RelayerIndex networkId={this.props.networkId} />;
     }
     private _onTokenChosen(tokenAddress: string): void {
         if (_.isEmpty(tokenAddress)) {
