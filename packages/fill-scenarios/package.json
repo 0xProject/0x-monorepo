@@ -10,7 +10,7 @@
         "generate_contract_wrappers": "node ../abi-gen/lib/index.js --abis 'src/compact_artifacts/@(Exchange|Token|TokenTransferProxy|EtherToken).json' --template ../contract_templates/contract.handlebars --partials '../contract_templates/partials/**/*.handlebars' --output src/generated_contract_wrappers --backend ethers && prettier --write 'src/generated_contract_wrappers/**.ts'",
         "build": "tsc && copyfiles -u 2 './src/compact_artifacts/**/*.json' ./lib/compact_artifacts && copyfiles -u 3 './lib/src/monorepo_scripts/**/*' ./scripts",
         "clean": "shx rm -rf lib scripts",
-        "lint": "tslint --project .,
+        "lint": "tslint --project .",
         "manual:postpublish": "yarn build; node ./scripts/postpublish.js"
     },
     "license": "Apache-2.0",
