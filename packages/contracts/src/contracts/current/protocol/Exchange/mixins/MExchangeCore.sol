@@ -169,17 +169,8 @@ contract MExchangeCore is
         public
         returns (bool);
 
+    /// @dev Cancels all orders reated by sender with a salt less than or equal to the specified salt value.
     /// @param salt Orders created with a salt less or equal to this value will be cancelled.
     function cancelOrdersUpTo(uint256 salt)
         external;
-
-/*
-    /// @dev Checks if rounding error > 0.1%.
-    /// @param numerator Numerator.
-    /// @param denominator Denominator.
-    /// @param target Value to multiply with numerator/denominator.
-    /// @return Rounding error is present.
-    function isRoundingError(uint256 numerator, uint256 denominator, uint256 target)
-        public pure
-        returns (bool isError); */
 }
