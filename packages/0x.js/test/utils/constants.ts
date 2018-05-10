@@ -6,4 +6,5 @@ export const constants = {
     KOVAN_RPC_URL: 'https://kovan.infura.io/',
     ROPSTEN_RPC_URL: 'https://ropsten.infura.io/',
     ZRX_DECIMALS: 18,
+    ARTIFACTS_VERSION: '1.0.0',
 };
