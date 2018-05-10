@@ -1,0 +1,48 @@
+{
+    "schemaVersion": "2.0.0",
+    "contractName": "SafeMath_v1",
+    "compilerOutput": {
+        "abi": [],
+        "evm": {
+            "bytecode": {
+                "linkReferences": {},
+                "object": "6080604052348015600f57600080fd5b50603580601d6000396000f3006080604052600080fd00a165627a7a7230582002feb67266cf68f632a859065f23cfbaeff4d82b00095e2b44f7f24d24162acb0029",
+                "opcodes": "PUSH1 0x80 PUSH1 0x40 MSTORE CALLVALUE DUP1 ISZERO PUSH1 0xF JUMPI PUSH1 0x0 DUP1 REVERT JUMPDEST POP PUSH1 0x35 DUP1 PUSH1 0x1D PUSH1 0x0 CODECOPY PUSH1 0x0 RETURN STOP PUSH1 0x80 PUSH1 0x40 MSTORE PUSH1 0x0 DUP1 REVERT STOP LOG1 PUSH6 0x627A7A723058 KECCAK256 MUL INVALID 0xb6 PUSH19 0x66CF68F632A859065F23CFBAEFF4D82B00095E 0x2b DIFFICULTY 0xf7 CALLCODE 0x4d 0x24 AND 0x2a 0xcb STOP 0x29 ",
+                "sourceMap": "26:1271:0:-;;;;8:9:-1;5:2;;;30:1;27;20:12;5:2;26:1271:0;;;;;;;"
+            },
+            "deployedBytecode": {
+                "linkReferences": {},
+                "object": "6080604052600080fd00a165627a7a7230582002feb67266cf68f632a859065f23cfbaeff4d82b00095e2b44f7f24d24162acb0029",
+                "opcodes": "PUSH1 0x80 PUSH1 0x40 MSTORE PUSH1 0x0 DUP1 REVERT STOP LOG1 PUSH6 0x627A7A723058 KECCAK256 MUL INVALID 0xb6 PUSH19 0x66CF68F632A859065F23CFBAEFF4D82B00095E 0x2b DIFFICULTY 0xf7 CALLCODE 0x4d 0x24 AND 0x2a 0xcb STOP 0x29 ",
+                "sourceMap": "26:1271:0:-;;;;;"
+            }
+        }
+    },
+    "sources": {
+        "previous/SafeMath/SafeMath_v1.sol": {
+            "id": 0
+        }
+    },
+    "sourceCodes": {
+        "previous/SafeMath/SafeMath_v1.sol": "pragma solidity ^0.4.11;\n\ncontract SafeMath_v1 {\n    function safeMul(uint a, uint b)\n        internal\n        constant\n        returns (uint256)\n    {\n        uint c = a * b;\n        assert(a == 0 || c / a == b);\n        return c;\n    }\n\n    function safeDiv(uint a, uint b)\n        internal\n        constant\n        returns (uint256)\n    {\n        uint c = a / b;\n        return c;\n    }\n\n    function safeSub(uint a, uint b)\n        internal\n        constant\n        returns (uint256)\n    {\n        assert(b <= a);\n        return a - b;\n    }\n\n    function safeAdd(uint a, uint b)\n        internal\n        constant\n        returns (uint256)\n    {\n        uint c = a + b;\n        assert(c >= a);\n        return c;\n    }\n\n    function max64(uint64 a, uint64 b)\n        internal\n        constant\n        returns (uint64)\n    {\n        return a >= b ? a : b;\n    }\n\n    function min64(uint64 a, uint64 b)\n        internal\n        constant\n        returns (uint64)\n    {\n        return a < b ? a : b;\n    }\n\n    function max256(uint256 a, uint256 b)\n        internal\n        constant\n        returns (uint256)\n    {\n        return a >= b ? a : b;\n    }\n\n    function min256(uint256 a, uint256 b)\n        internal\n        constant\n        returns (uint256)\n    {\n        return a < b ? a : b;\n    }\n}\n"
+    },
+    "sourceTreeHashHex": "0xd2c1f0518a23e63d5892f66e7b8d228c7486495b139a0f3b049f6ba7803c892d",
+    "compiler": {
+        "name": "solc",
+        "version": "0.4.23",
+        "settings": {
+            "outputSelection": {
+                "*": {
+                    "*": [
+                        "abi",
+                        "evm.bytecode.object",
+                        "evm.bytecode.sourceMap",
+                        "evm.deployedBytecode.object",
+                        "evm.deployedBytecode.sourceMap"
+                    ]
+                }
+            }
+        }
+    },
+    "networks": {}
+}
