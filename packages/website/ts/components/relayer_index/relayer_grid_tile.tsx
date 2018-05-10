@@ -62,14 +62,19 @@ const styles: Styles = {
     },
 };
 
+const FALLBACK_IMG_SRC = '/images/landing/hero_chip_image.png';
+
 export const RelayerGridTile: React.StatelessComponent<RelayerGridTileProps> = (props: RelayerGridTileProps) => {
     const link = props.relayerInfo.appUrl || props.relayerInfo.url;
-    const headerImgUrl = props.relayerInfo.headerImgUrl || '/images/landing/hero_chip_image.png';
     return (
         <GridTile style={styles.root}>
             <div style={styles.innerDiv}>
                 <a href={link} target="_blank" style={{ textDecoration: 'none' }}>
-                    <img src={headerImgUrl} style={styles.header} />
+                    <ImgWithFallback
+                        src={props.relayerInfo.headerImgUrl}
+                        fallbackSrc={FALLBACK_IMG_SRC}
+                        style={styles.header}
+                    />
                 </a>
                 <div style={styles.body}>
                     <div className="py1" style={styles.relayerNameLabel}>
@@ -88,3 +93,32 @@ export const RelayerGridTile: React.StatelessComponent<RelayerGridTileProps> = (
         </GridTile>
     );
 };
+
+interface ImgWithFallbackProps {
+    src?: string;
+    fallbackSrc: string;
+    style: React.CSSProperties;
+}
+interface ImgWithFallbackState {
+    imageLoadFailed: boolean;
+}
+class ImgWithFallback extends React.Component<ImgWithFallbackProps, ImgWithFallbackState> {
+    constructor(props: ImgWithFallbackProps) {
+        super(props);
+        this.state = {
+            imageLoadFailed: false,
+        };
+    }
+    public render() {
+        if (this.state.imageLoadFailed || _.isUndefined(this.props.src)) {
+            return <img src={this.props.fallbackSrc} style={this.props.style} />;
+        } else {
+            return <img src={this.props.src} onError={this._onError.bind(this)} style={this.props.style} />;
+        }
+    }
+    private _onError() {
+        this.setState({
+            imageLoadFailed: true,
+        });
+    }
+}
