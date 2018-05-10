@@ -12,10 +12,11 @@ async callAsync(
         {{> params inputs=inputs}}
     ) as ethers.CallDescription;
     const encodedData = ethersFunction.data;
-    const callDataWithDefaults = await self._applyDefaultsToTxDataAsync(
+    const callDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
         {
             data: encodedData,
-        }
+        },
+        this._web3Wrapper.getContractDefaults(),
     )
     const rawCallResult = await self._web3Wrapper.callAsync(callDataWithDefaults, defaultBlock);
     let resultArray = ethersFunction.parse(rawCallResult);

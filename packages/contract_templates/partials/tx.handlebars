@@ -14,11 +14,12 @@ public {{this.tsName}} = {
         const encodedData = self._lookupEthersInterface('{{this.functionSignature}}').functions.{{this.name}}(
             {{> params inputs=inputs}}
         ).data;
-        const txDataWithDefaults = await self._applyDefaultsToTxDataAsync(
+        const txDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
             {
                 ...txData,
                 data: encodedData,
             },
+            this._web3Wrapper.getContractDefaults(),
             self.{{this.tsName}}.estimateGasAsync.bind(
                 self,
                 {{> params inputs=inputs}}
@@ -37,11 +38,12 @@ public {{this.tsName}} = {
         const encodedData = self._lookupEthersInterface('{{this.functionSignature}}').functions.{{this.name}}(
             {{> params inputs=inputs}}
         ).data;
-        const txDataWithDefaults = await self._applyDefaultsToTxDataAsync(
+        const txDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
             {
                 ...txData,
                 data: encodedData,
-            }
+            },
+            this._web3Wrapper.getContractDefaults(),
         );
         const gas = await self._web3Wrapper.estimateGasAsync(txDataWithDefaults);
         return gas;

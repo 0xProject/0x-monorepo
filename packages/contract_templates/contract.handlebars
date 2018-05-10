@@ -65,7 +65,7 @@ export class {{contractName}}Contract extends BaseContract {
         );
         const txData = ethers.Contract.getDeployTransaction(bytecode, abi, {{> params inputs=ctor.inputs}});
         const web3Wrapper = new Web3Wrapper(provider);
-        const txDataWithDefaults = await BaseContract._applyDefaultsToDeployTxDataAsync(
+        const txDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
             txData,
             defaults,
             web3Wrapper.estimateGasAsync.bind(web3Wrapper),
