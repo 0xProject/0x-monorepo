@@ -46,6 +46,9 @@ export class {{contractName}}Contract extends BaseContract {
         defaults: Partial<TxData>,
         {{> typed_params inputs=ctor.inputs}}
     ): Promise<{{contractName}}Contract> {
+        if (_.isUndefined(artifact.compilerOutput)) {
+            throw new Error('Compiler output not found in the artifact file');
+        }
         const bytecode = artifact.compilerOutput.evm.bytecode.object;
         const abi = artifact.compilerOutput.abi;
         return {{contractName}}Contract.deployAsync(bytecode, abi, provider, defaults, {{> params inputs=ctor.inputs}});

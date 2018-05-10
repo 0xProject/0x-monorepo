@@ -13,6 +13,6 @@ before('migrate contracts', async function() {
         gas: devConstants.GAS_ESTIMATE,
         from: devConstants.TESTRPC_FIRST_ADDRESS,
     };
-    const artifactsDir = `../migrations/artifacts/${constants.ARTIFACTS_VERSION}`;
+    const artifactsDir = `../migrations/artifacts/1.0.0`;
     await runMigrationsAsync(provider, artifactsDir, defaults);
 });
