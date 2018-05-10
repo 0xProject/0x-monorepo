@@ -390,7 +390,7 @@ export class TopBar extends React.Component<TopBarProps, TopBarState> {
             (!this._isViewing0xjsDocs() &&
                 !this._isViewingSmartContractsDocs() &&
                 !this._isViewingWeb3WrapperDocs() &&
-                !this._isViewingDeployerDocs() &&
+                !this._isViewingSolCompilerDocs() &&
                 !this._isViewingJsonSchemasDocs() &&
                 !this._isViewingSolCovDocs() &&
                 !this._isViewingSubprovidersDocs() &&

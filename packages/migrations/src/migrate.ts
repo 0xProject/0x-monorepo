@@ -7,7 +7,7 @@ import * as path from 'path';
 import { runMigrationsAsync } from './migration';
 
 (async () => {
-    const defaults = {
+    const txDefaults = {
         from: devConstants.TESTRPC_FIRST_ADDRESS,
     };
     const providerConfigs = { shouldUseInProcessGanache: false };

@@ -19,7 +19,7 @@ public {{this.tsName}} = {
                 ...txData,
                 data: encodedData,
             },
-            this._web3Wrapper.getContractDefaults(),
+            self._web3Wrapper.getContractDefaults(),
             self.{{this.tsName}}.estimateGasAsync.bind(
                 self,
                 {{> params inputs=inputs}}
@@ -43,7 +43,7 @@ public {{this.tsName}} = {
                 ...txData,
                 data: encodedData,
             },
-            this._web3Wrapper.getContractDefaults(),
+            self._web3Wrapper.getContractDefaults(),
         );
         const gas = await self._web3Wrapper.estimateGasAsync(txDataWithDefaults);
         return gas;

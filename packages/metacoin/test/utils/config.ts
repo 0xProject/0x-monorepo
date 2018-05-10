@@ -6,7 +6,7 @@ export const config = {
     artifactsDir: path.resolve(__dirname, '../../artifacts'),
     contractsDir: path.resolve(__dirname, '../../contracts'),
     ganacheLogFile: 'ganache.log',
-    defaults: {
+    txDefaults: {
         from: devConstants.TESTRPC_FIRST_ADDRESS,
     },
     mnemonic: 'concert load couple harbor equip island argue ramp clarify fence smart topic',

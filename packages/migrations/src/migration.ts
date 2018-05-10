@@ -3,7 +3,8 @@ import { BigNumber, NULL_BYTES } from '@0xproject/utils';
 import { Web3Wrapper } from '@0xproject/web3-wrapper';
 import * as _ from 'lodash';
 
-import { artifacts, ArtifactWriter } from './artifacts';
+import { ArtifactWriter } from './artifact_writer';
+import { artifacts } from './artifacts';
 import { DummyTokenContract } from './contract_wrappers/dummy_token';
 import { ExchangeContract } from './contract_wrappers/exchange';
 import { MultiSigWalletWithTimeLockExceptRemoveAuthorizedAddressContract } from './contract_wrappers/multi_sig_wallet_with_time_lock_except_remove_authorized_address';
