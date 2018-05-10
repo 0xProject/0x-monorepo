@@ -21,4 +21,4 @@ RUN /geth --datadir node0/ init genesis.json
 EXPOSE 8501
 EXPOSE 30310
 
-ENTRYPOINT /geth --datadir node0/ --syncmode 'full' --nat none --nodiscover --port 30310 --rpc --rpcaddr '0.0.0.0' --rpcport 8501 --rpcapi 'personal,db,eth,net,web3,txpool,miner,debug' --networkid 22395 --gasprice '1' --unlock '35e52c375871faaa9923defbda5820dfa5aefc8f' --password node0/password.txt
+ENTRYPOINT /geth --datadir node0/ --syncmode 'full' --nat none --nodiscover --port 30310 --rpc --rpcaddr '0.0.0.0' --rpcport 8501 --rpcapi 'personal,db,eth,net,web3,txpool,miner,debug' --networkid 50 --gasprice '1' --unlock '35e52c375871faaa9923defbda5820dfa5aefc8f' --password node0/password.txt
