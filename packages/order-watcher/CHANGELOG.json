@@ -3,7 +3,8 @@
         "version": "0.0.1",
         "changes": [
             {
-                "note": "Moved OrderWatcher out of 0x.js package"
+                "note": "Moved OrderWatcher out of 0x.js package",
+                "pr": 579
             }
         ]
     }

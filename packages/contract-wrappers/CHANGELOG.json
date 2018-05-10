@@ -3,7 +3,8 @@
         "version": "0.0.1",
         "changes": [
             {
-                "note": "Moved contractWrappers out of 0x.js"
+                "note": "Moved contractWrappers out of 0x.js",
+                "pr": 579
             }
         ]
     }
