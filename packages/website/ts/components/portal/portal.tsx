@@ -12,6 +12,7 @@ import { PortalDisclaimerDialog } from 'ts/components/dialogs/portal_disclaimer_
 import { EthWrappers } from 'ts/components/eth_wrappers';
 import { FillOrder } from 'ts/components/fill_order';
 import { AssetPicker } from 'ts/components/generate_order/asset_picker';
+import { LegacyPortalMenu } from 'ts/components/legacy_portal/legacy_portal_menu';
 import { RelayerIndex } from 'ts/components/relayer_index/relayer_index';
 import { TokenBalances } from 'ts/components/token_balances';
 import { TopBar, TopBarDisplayType } from 'ts/components/top_bar/top_bar';
@@ -164,8 +165,6 @@ export class Portal extends React.Component<PortalProps, PortalState> {
         const updateShouldBlockchainErrDialogBeOpen = this.props.dispatcher.updateShouldBlockchainErrDialogBeOpen.bind(
             this.props.dispatcher,
         );
-        const allTokens = _.values(this.props.tokenByAddress);
-        const trackedTokens = _.filter(allTokens, t => t.isTracked);
         const isAssetPickerDialogOpen = this.state.tokenManagementState !== TokenManagementState.None;
         const tokenVisibility =
             this.state.tokenManagementState === TokenManagementState.Add
@@ -194,23 +193,19 @@ export class Portal extends React.Component<PortalProps, PortalState> {
                             <div className="py3" style={styles.title}>
                                 Your Account
                             </div>
-                            <Wallet
-                                userAddress={this.props.userAddress}
-                                networkId={this.props.networkId}
-                                blockchain={this._blockchain}
-                                blockchainIsLoaded={this.props.blockchainIsLoaded}
-                                blockchainErr={this.props.blockchainErr}
-                                dispatcher={this.props.dispatcher}
-                                tokenByAddress={this.props.tokenByAddress}
-                                trackedTokens={trackedTokens}
-                                userEtherBalanceInWei={this.props.userEtherBalanceInWei}
-                                lastForceTokenStateRefetch={this.props.lastForceTokenStateRefetch}
-                                injectedProviderName={this.props.injectedProviderName}
-                                providerType={this.props.providerType}
-                                onToggleLedgerDialog={this._onToggleLedgerDialog.bind(this)}
-                                onAddToken={this._onAddToken.bind(this)}
-                                onRemoveToken={this._onRemoveToken.bind(this)}
-                            />
+                            <div style={{ width: 346 }}>
+                                <Switch>
+                                    <Route
+                                        path={`${WebsitePaths.Portal}/:route`}
+                                        render={this._renderMenu.bind(this)}
+                                    />
+                                    <Route
+                                        exact={true}
+                                        path={`${WebsitePaths.Portal}`}
+                                        component={this._renderWallet.bind(this)}
+                                    />
+                                </Switch>
+                            </div>
                         </div>
                         <div className="flex-auto px3" style={styles.scrollContainer}>
                             <div className="py3" style={styles.title}>
@@ -270,6 +265,32 @@ export class Portal extends React.Component<PortalProps, PortalState> {
                     />
                 </div>
             </div>
+        );
+    }
+    private _renderMenu() {
+        return <LegacyPortalMenu menuItemStyle={{ color: colors.darkerGrey }} />;
+    }
+    private _renderWallet() {
+        const allTokens = _.values(this.props.tokenByAddress);
+        const trackedTokens = _.filter(allTokens, t => t.isTracked);
+        return (
+            <Wallet
+                userAddress={this.props.userAddress}
+                networkId={this.props.networkId}
+                blockchain={this._blockchain}
+                blockchainIsLoaded={this.props.blockchainIsLoaded}
+                blockchainErr={this.props.blockchainErr}
+                dispatcher={this.props.dispatcher}
+                tokenByAddress={this.props.tokenByAddress}
+                trackedTokens={trackedTokens}
+                userEtherBalanceInWei={this.props.userEtherBalanceInWei}
+                lastForceTokenStateRefetch={this.props.lastForceTokenStateRefetch}
+                injectedProviderName={this.props.injectedProviderName}
+                providerType={this.props.providerType}
+                onToggleLedgerDialog={this._onToggleLedgerDialog.bind(this)}
+                onAddToken={this._onAddToken.bind(this)}
+                onRemoveToken={this._onRemoveToken.bind(this)}
+            />
         );
     }
     private _renderEthWrapper() {

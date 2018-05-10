@@ -80,7 +80,7 @@ interface AccessoryItemConfig {
 
 const styles: Styles = {
     root: {
-        width: 346,
+        width: '100%',
         backgroundColor: colors.white,
         borderBottomRightRadius: 10,
         borderBottomLeftRadius: 10,
