@@ -2,7 +2,7 @@
     "name": "@0xproject/abi-gen",
     "version": "0.2.13",
     "engines": {
-        "node" : ">=8.0.0"
+        "node" : ">=6.12"
     },
     "description": "Generate contract wrappers from ABI and handlebars templates",
     "main": "lib/index.js",

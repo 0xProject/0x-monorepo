@@ -2,7 +2,7 @@
     "name": "@0xproject/dev-utils",
     "version": "0.4.1",
     "engines": {
-        "node" : ">=8.0.0"
+        "node" : ">=6.12"
     },
     "description": "0x dev TS utils",
     "main": "lib/src/index.js",

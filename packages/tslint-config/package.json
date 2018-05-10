@@ -2,7 +2,7 @@
     "name": "@0xproject/tslint-config",
     "version": "0.4.17",
     "engines": {
-        "node" : ">=8.0.0"
+        "node" : ">=6.12"
     },
     "description": "Lint rules related to 0xProject for TSLint",
     "main": "tslint.json",

@@ -2,7 +2,7 @@
     "name": "@0xproject/subproviders",
     "version": "0.10.1",
     "engines": {
-        "node" : ">=8.0.0"
+        "node" : ">=6.12"
     },
     "main": "lib/src/index.js",
     "types": "lib/src/index.d.ts",

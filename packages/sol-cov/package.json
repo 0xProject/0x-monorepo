@@ -2,7 +2,7 @@
     "name": "@0xproject/sol-cov",
     "version": "0.0.10",
     "engines": {
-        "node" : ">=8.0.0"
+        "node" : ">=6.12"
     },
     "description": "Generate coverage reports for Solidity code",
     "main": "lib/src/index.js",

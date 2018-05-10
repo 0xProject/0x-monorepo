@@ -2,7 +2,7 @@
     "private": true,
     "name": "0x-monorepo",
     "engines": {
-        "node" : ">=8.0.0"
+        "node" : ">=6.12"
     },
     "workspaces": [
         "packages/*"

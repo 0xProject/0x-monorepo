@@ -2,7 +2,7 @@
     "name": "@0xproject/order-utils",
     "version": "0.0.4",
     "engines": {
-        "node" : ">=8.0.0"
+        "node" : ">=6.12"
     },
     "description": "0x order utils",
     "main": "lib/src/index.js",

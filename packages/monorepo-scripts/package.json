@@ -2,7 +2,7 @@
     "name": "@0xproject/monorepo-scripts",
     "version": "0.1.19",
     "engines": {
-        "node" : ">=8.0.0"
+        "node" : ">=6.12"
     },
     "description": "Helper scripts for the monorepo",
     "main": "lib/index.js",

@@ -3,7 +3,7 @@ version: 2
 jobs:
   build:
     docker:
-      - image: circleci/node:8.11
+      - image: circleci/node:6.12
     environment:
       CONTRACTS_COMMIT_HASH: '9ed05f5'
     working_directory: ~/repo
@@ -29,7 +29,7 @@ jobs:
             - ~/repo
   test-installation:
     docker:
-      - image: circleci/node:8.11
+      - image: circleci/node:6.12
     working_directory: ~/repo
     steps:
       - restore_cache:
@@ -38,7 +38,7 @@ jobs:
       - run: yarn test:installation
   test-0xjs:
     docker:
-      - image: circleci/node:8.11
+      - image: circleci/node:6.12
     working_directory: ~/repo
     steps:
       - restore_cache:
@@ -55,7 +55,7 @@ jobs:
             - ~/repo/packages/0x.js/coverage/lcov.info
   test-contracts:
     docker:
-      - image: circleci/node:8.11
+      - image: circleci/node:6.12
     working_directory: ~/repo
     steps:
       - restore_cache:
@@ -72,7 +72,7 @@ jobs:
             - ~/repo/packages/contracts/coverage/lcov.info
   test-sol-compiler:
     docker:
-      - image: circleci/node:8.11
+      - image: circleci/node:6.12
     working_directory: ~/repo
     steps:
       - restore_cache:
@@ -89,7 +89,7 @@ jobs:
             - ~/repo/packages/sol-compiler/coverage/lcov.info
   test-rest:
     docker:
-      - image: circleci/node:8.11
+      - image: circleci/node:6.12
     working_directory: ~/repo
     steps:
       - restore_cache:
@@ -131,7 +131,7 @@ jobs:
   lint:
     working_directory: ~/repo
     docker:
-      - image: circleci/node:8.11
+      - image: circleci/node:6.12
     steps:
       - restore_cache:
           keys:
@@ -140,7 +140,7 @@ jobs:
   prettier:
     working_directory: ~/repo
     docker:
-      - image: circleci/node:8.11
+      - image: circleci/node:6.12
     steps:
       - restore_cache:
           keys:
@@ -148,7 +148,7 @@ jobs:
       - run: yarn prettier:ci
   submit-coverage:
     docker:
-      - image: circleci/node:8.11
+      - image: circleci/node:6.12
     working_directory: ~/repo
     steps:
       - restore_cache:
