@@ -44,7 +44,7 @@ describe('ZeroEx library', () => {
 
             // Check that all nested zeroExContract/web3Wrapper instances return the updated provider
             const nestedWeb3WrapperProvider = ((zeroEx as any)._contractWrappers as ContractWrappers).getProvider();
-            expect(nestedWeb3WrapperProvider.zeroExTestId).to.be.a('number');
+            expect((nestedWeb3WrapperProvider as any).zeroExTestId).to.be.a('number');
             const exchangeWeb3WrapperProvider = (zeroEx.exchange as any)._web3Wrapper.getProvider();
             expect(exchangeWeb3WrapperProvider.zeroExTestId).to.be.a('number');
             const tokenRegistryWeb3WrapperProvider = (zeroEx.tokenRegistry as any)._web3Wrapper.getProvider();
