@@ -163,7 +163,7 @@ export class ZeroEx {
      */
     public async getAvailableAddressesAsync(): Promise<string[]> {
         // Hack: Get Web3Wrapper from ZeroExContract
-        const web3Wrapper = (this._contractWrappers as any)._web3Wrapper;
+        const web3Wrapper: Web3Wrapper = (this._contractWrappers as any)._web3Wrapper;
         const availableAddresses = await web3Wrapper.getAvailableAddressesAsync();
         return availableAddresses;
     }
@@ -204,7 +204,7 @@ export class ZeroEx {
         timeoutMs?: number,
     ): Promise<TransactionReceiptWithDecodedLogs> {
         // Hack: Get Web3Wrapper from ZeroExContract
-        const web3Wrapper = (this._contractWrappers as any)._web3Wrapper;
+        const web3Wrapper: Web3Wrapper = (this._contractWrappers as any)._web3Wrapper;
         const transactionReceiptWithDecodedLogs = await web3Wrapper.awaitTransactionMinedAsync(
             txHash,
             pollingIntervalMs,
