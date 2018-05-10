@@ -11,7 +11,6 @@
         "run_mocha": "mocha lib/test/*_test.js --bail --exit",
         "test:coverage": "nyc npm run test --all && yarn coverage:report:lcov",
         "coverage:report:lcov": "nyc report --reporter=text-lcov > coverage/lcov.info",
-        "compile": "npm run build; node lib/src/cli.js compile",
         "clean": "shx rm -rf lib scripts",
         "migrate": "npm run build; node lib/src/cli.js migrate",
         "lint": "tslint --project .",
