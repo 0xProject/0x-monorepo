@@ -64,10 +64,12 @@ export class OrderFilledCancelledLazyStore implements AbstractOrderFilledCancell
         this._filledTakerAmount = {};
         this._cancelledTakerAmount = {};
     }
-    public async getUnavailableTakerAmountAsync(orderHash: string) {
-        return this._exchangeWrapper.getUnavailableTakerAmountAsync(orderHash);
+    public async getUnavailableTakerAmountAsync(orderHash: string): Promise<BigNumber> {
+        const unavailableTakerAmount = await this._exchangeWrapper.getUnavailableTakerAmountAsync(orderHash);
+        return unavailableTakerAmount;
     }
     public getZRXTokenAddress(): string {
-        return this._exchangeWrapper.getZRXTokenAddress();
+        const zrxToken = this._exchangeWrapper.getZRXTokenAddress();
+        return zrxToken;
     }
 }
