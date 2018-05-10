@@ -16,7 +16,7 @@ import { ContractName, SubmissionContractEventArgs, TransactionDataParams } from
 
 import { chaiSetup } from './utils/chai_setup';
 
-import { txDefaults, provider, web3Wrapper } from './utils/web3_wrapper';
+import { provider, txDefaults, web3Wrapper } from './utils/web3_wrapper';
 const PROXY_ABI = artifacts.TokenTransferProxy.compilerOutput.abi;
 const MUTISIG_WALLET_WITH_TIME_LOCK_EXCEPT_REMOVE_AUTHORIZED_ADDRESS_ABI =
     artifacts.MultiSigWalletWithTimeLockExceptRemoveAuthorizedAddress.compilerOutput.abi;
