@@ -11,7 +11,7 @@ import { constants } from '../util/constants';
 import { ContractName } from '../util/types';
 
 import { chaiSetup } from './utils/chai_setup';
-import { defaults, provider, web3Wrapper } from './utils/web3_wrapper';
+import { txDefaults, provider, web3Wrapper } from './utils/web3_wrapper';
 
 chaiSetup.configure();
 const expect = chai.expect;
@@ -34,7 +34,7 @@ describe('ZRXToken', () => {
         zeroEx = new ZeroEx(provider, {
             networkId: constants.TESTRPC_NETWORK_ID,
         });
-        zrx = await ZRXTokenContract.deployFrom0xArtifactAsync(artifacts.ZRX, provider, defaults);
+        zrx = await ZRXTokenContract.deployFrom0xArtifactAsync(artifacts.ZRX, provider, txDefaults);
         zrxAddress = zrx.address;
         MAX_UINT = zeroEx.token.UNLIMITED_ALLOWANCE_IN_BASE_UNITS;
     });

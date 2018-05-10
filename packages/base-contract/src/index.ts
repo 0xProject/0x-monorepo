@@ -64,7 +64,7 @@ export class BaseContract {
     }
     protected static async _applyDefaultsToTxDataAsync<T extends Partial<TxData | TxDataPayable>>(
         txData: T,
-        defaults: Partial<TxData>,
+        txDefaults: Partial<TxData>,
         estimateGasAsync?: (txData: T) => Promise<number>,
     ): Promise<TxData> {
         // Gas amount sourced with the following priorities:
@@ -73,7 +73,7 @@ export class BaseContract {
         // 3. Gas estimate calculation + safety margin
         const removeUndefinedProperties = _.pickBy;
         const txDataWithDefaults: TxData = {
-            ...removeUndefinedProperties(defaults),
+            ...removeUndefinedProperties(txDefaults),
             ...removeUndefinedProperties(txData as any),
             // HACK: TS can't prove that T is spreadable.
             // Awaiting https://github.com/Microsoft/TypeScript/pull/13288 to be merged
@@ -109,10 +109,10 @@ export class BaseContract {
         abi: ContractAbi,
         address: string,
         provider: Provider,
-        defaults?: Partial<TxData>,
+        txDefaults?: Partial<TxData>,
     ) {
         this.contractName = contractName;
-        this._web3Wrapper = new Web3Wrapper(provider, defaults);
+        this._web3Wrapper = new Web3Wrapper(provider, txDefaults);
         this.abi = abi;
         this.address = address;
         const methodAbis = this.abi.filter(

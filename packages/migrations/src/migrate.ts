@@ -14,7 +14,7 @@ import { runMigrationsAsync } from './migration';
     const web3 = web3Factory.create(providerConfigs);
     const provider = web3.currentProvider;
     const artifactsDir = 'artifacts/1.0.0';
-    await runMigrationsAsync(provider, artifactsDir, defaults);
+    await runMigrationsAsync(provider, artifactsDir, txDefaults);
     process.exit(0);
 })().catch(err => {
     logUtils.log(err);

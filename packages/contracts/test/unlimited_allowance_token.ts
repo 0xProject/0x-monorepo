@@ -11,7 +11,7 @@ import { constants } from '../util/constants';
 import { ContractName } from '../util/types';
 
 import { chaiSetup } from './utils/chai_setup';
-import { defaults, provider, web3Wrapper } from './utils/web3_wrapper';
+import { txDefaults, provider, web3Wrapper } from './utils/web3_wrapper';
 
 chaiSetup.configure();
 const expect = chai.expect;
@@ -36,7 +36,7 @@ describe('UnlimitedAllowanceToken', () => {
         token = await DummyTokenContract.deployFrom0xArtifactAsync(
             artifacts.DummyToken,
             provider,
-            defaults,
+            txDefaults,
             constants.DUMMY_TOKEN_NAME,
             constants.DUMMY_TOKEN_SYMBOL,
             constants.DUMMY_TOKEN_DECIMALS,

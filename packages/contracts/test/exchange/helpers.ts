@@ -22,7 +22,7 @@ import { OrderFactory } from '../../util/order_factory';
 import { ContractName } from '../../util/types';
 import { chaiSetup } from '../utils/chai_setup';
 
-import { defaults, provider, web3Wrapper } from '../utils/web3_wrapper';
+import { txDefaults, provider, web3Wrapper } from '../utils/web3_wrapper';
 
 chaiSetup.configure();
 const expect = chai.expect;
@@ -43,18 +43,18 @@ describe('Exchange', () => {
         const tokenRegistry = await TokenRegistryContract.deployFrom0xArtifactAsync(
             artifacts.TokenRegistry,
             provider,
-            defaults,
+            txDefaults,
         );
         const tokenTransferProxy = await TokenTransferProxyContract.deployFrom0xArtifactAsync(
             artifacts.TokenTransferProxy,
             provider,
-            defaults,
+            txDefaults,
         );
         const [rep, dgd, zrx] = await Promise.all([
             DummyTokenContract.deployFrom0xArtifactAsync(
                 artifacts.DummyToken,
                 provider,
-                defaults,
+                txDefaults,
                 constants.DUMMY_TOKEN_NAME,
                 constants.DUMMY_TOKEN_SYMBOL,
                 constants.DUMMY_TOKEN_DECIMALS,
@@ -63,7 +63,7 @@ describe('Exchange', () => {
             DummyTokenContract.deployFrom0xArtifactAsync(
                 artifacts.DummyToken,
                 provider,
-                defaults,
+                txDefaults,
                 constants.DUMMY_TOKEN_NAME,
                 constants.DUMMY_TOKEN_SYMBOL,
                 constants.DUMMY_TOKEN_DECIMALS,
@@ -72,7 +72,7 @@ describe('Exchange', () => {
             DummyTokenContract.deployFrom0xArtifactAsync(
                 artifacts.DummyToken,
                 provider,
-                defaults,
+                txDefaults,
                 constants.DUMMY_TOKEN_NAME,
                 constants.DUMMY_TOKEN_SYMBOL,
                 constants.DUMMY_TOKEN_DECIMALS,
@@ -82,7 +82,7 @@ describe('Exchange', () => {
         const exchange = await ExchangeContract.deployFrom0xArtifactAsync(
             artifacts.Exchange,
             provider,
-            defaults,
+            txDefaults,
             zrx.address,
             tokenTransferProxy.address,
         );

@@ -20,24 +20,28 @@ import { tokenInfo } from './utils/token_info';
  * the migration should be written to run synchronously.
  * @param provider  Web3 provider instance.
  * @param artifactsDir The directory with compiler artifact files.
- * @param defaults Default transaction values to use when deploying contracts.
+ * @param txDefaults Default transaction values to use when deploying contracts.
  */
-export const runMigrationsAsync = async (provider: Provider, artifactsDir: string, defaults: Partial<TxData>) => {
+export const runMigrationsAsync = async (provider: Provider, artifactsDir: string, txDefaults: Partial<TxData>) => {
     const web3Wrapper = new Web3Wrapper(provider);
     const networkId = await web3Wrapper.getNetworkIdAsync();
     const artifactsWriter = new ArtifactWriter(artifactsDir, networkId);
     const tokenTransferProxy = await TokenTransferProxyContract.deployFrom0xArtifactAsync(
         artifacts.TokenTransferProxy,
         provider,
-        defaults,
+        txDefaults,
     );
     artifactsWriter.saveArtifact(tokenTransferProxy);
-    const zrxToken = await ZRXTokenContract.deployFrom0xArtifactAsync(artifacts.ZRX, provider, defaults);
+    const zrxToken = await ZRXTokenContract.deployFrom0xArtifactAsync(artifacts.ZRX, provider, txDefaults);
     artifactsWriter.saveArtifact(zrxToken);
 
-    const etherToken = await WETH9Contract.deployFrom0xArtifactAsync(artifacts.EtherToken, provider, defaults);
+    const etherToken = await WETH9Contract.deployFrom0xArtifactAsync(artifacts.EtherToken, provider, txDefaults);
     artifactsWriter.saveArtifact(etherToken);
-    const tokenReg = await TokenRegistryContract.deployFrom0xArtifactAsync(artifacts.TokenRegistry, provider, defaults);
+    const tokenReg = await TokenRegistryContract.deployFrom0xArtifactAsync(
+        artifacts.TokenRegistry,
+        provider,
+        txDefaults,
+    );
     artifactsWriter.saveArtifact(tokenReg);
 
     const accounts: string[] = await web3Wrapper.getAvailableAddressesAsync();
@@ -47,7 +51,7 @@ export const runMigrationsAsync = async (provider: Provider, artifactsDir: strin
     const exchange = await ExchangeContract.deployFrom0xArtifactAsync(
         artifacts.Exchange,
         provider,
-        defaults,
+        txDefaults,
         zrxToken.address,
         tokenTransferProxy.address,
     );
@@ -55,7 +59,7 @@ export const runMigrationsAsync = async (provider: Provider, artifactsDir: strin
     const multiSig = await MultiSigWalletWithTimeLockExceptRemoveAuthorizedAddressContract.deployFrom0xArtifactAsync(
         artifacts.MultiSigWalletWithTimeLockExceptRemoveAuthorizedAddress,
         provider,
-        defaults,
+        txDefaults,
         owners,
         confirmationsRequired,
         secondsRequired,
@@ -104,7 +108,7 @@ export const runMigrationsAsync = async (provider: Provider, artifactsDir: strin
         const dummyToken = await DummyTokenContract.deployFrom0xArtifactAsync(
             artifacts.DummyToken,
             provider,
-            defaults,
+            txDefaults,
             token.name,
             token.symbol,
             token.decimals,

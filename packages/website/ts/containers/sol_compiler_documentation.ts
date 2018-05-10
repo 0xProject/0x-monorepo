@@ -28,7 +28,7 @@ const docSections = {
 const docsInfoConfig: DocsInfoConfig = {
     id: DocPackages.SolCompiler,
     type: SupportedDocJson.TypeDoc,
-    displayName: 'Sol Compiler',
+    displayName: 'Solidity Compiler',
     packageUrl: 'https://github.com/0xProject/0x-monorepo',
     menu: {
         introduction: [docSections.introduction],
@@ -52,22 +52,9 @@ const docsInfoConfig: DocsInfoConfig = {
     typeConfigs: {
         // Note: This needs to be kept in sync with the types exported in index.ts. Unfortunately there is
         // currently no way to extract the re-exported types from index.ts via TypeDoc :(
-        publicTypes: [
-            'CompilerOptions',
-            'DeployerOptions',
-            'BaseDeployerOptions',
-            'UrlDeployerOptions',
-            'ProviderDeployerOptions',
-            'TxData',
-        ],
-        typeNameToExternalLink: {
-            Web3: constants.URL_WEB3_DOCS,
-            BigNumber: constants.URL_BIGNUMBERJS_GITHUB,
-            ContractInstance: 'https://github.com/0xProject/web3-typescript-typings/blob/f5bcb96/index.d.ts#L98',
-        },
-        typeNameToPrefix: {
-            ContractInstance: 'Web3',
-        },
+        publicTypes: ['CompilerOptions'],
+        typeNameToExternalLink: {},
+        typeNameToPrefix: {},
     },
 };
 const docsInfo = new DocsInfo(docsInfoConfig);

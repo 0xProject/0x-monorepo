@@ -46,7 +46,7 @@ import { utils } from './utils';
             include: ['index.ts'],
         };
         const tsconfigFilePath = path.join(testDirectory, 'tsconfig.json');
-        fs.writeFileSync(tsconfigFilePath, JSON.stringify(tsConfig, null, 4));
+        fs.writeFileSync(tsconfigFilePath, JSON.stringify(tsConfig, null, '\t'));
         utils.log(`Compiling ${packageName}`);
         const tscBinaryPath = path.join(monorepoRootPath, './node_modules/typescript/bin/tsc');
         await execAsync(tscBinaryPath, { cwd: testDirectory });

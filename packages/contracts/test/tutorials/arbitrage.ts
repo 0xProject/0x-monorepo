@@ -21,7 +21,7 @@ import { OrderFactory } from '../../util/order_factory';
 import { BalancesByOwner, ContractName, ExchangeContractErrs } from '../../util/types';
 import { chaiSetup } from '../utils/chai_setup';
 
-import { defaults, provider, web3Wrapper } from '../utils/web3_wrapper';
+import { txDefaults, provider, web3Wrapper } from '../utils/web3_wrapper';
 
 chaiSetup.configure();
 const expect = chai.expect;
@@ -61,7 +61,7 @@ describe('Arbitrage', () => {
         weth = await DummyTokenContract.deployFrom0xArtifactAsync(
             artifacts.DummyToken,
             provider,
-            defaults,
+            txDefaults,
             constants.DUMMY_TOKEN_NAME,
             constants.DUMMY_TOKEN_SYMBOL,
             constants.DUMMY_TOKEN_DECIMALS,
@@ -70,7 +70,7 @@ describe('Arbitrage', () => {
         zrx = await DummyTokenContract.deployFrom0xArtifactAsync(
             artifacts.DummyToken,
             provider,
-            defaults,
+            txDefaults,
             constants.DUMMY_TOKEN_NAME,
             constants.DUMMY_TOKEN_SYMBOL,
             constants.DUMMY_TOKEN_DECIMALS,
@@ -79,7 +79,7 @@ describe('Arbitrage', () => {
         const accountLevels = await AccountLevelsContract.deployFrom0xArtifactAsync(
             artifacts.AccountLevels,
             provider,
-            defaults,
+            txDefaults,
         );
         const edAdminAddress = accounts[0];
         const edMakerFee = new BigNumber(0);
@@ -88,7 +88,7 @@ describe('Arbitrage', () => {
         etherDelta = await EtherDeltaContract.deployFrom0xArtifactAsync(
             artifacts.EtherDelta,
             provider,
-            defaults,
+            txDefaults,
             edAdminAddress,
             feeRecipient,
             accountLevels.address,
@@ -99,12 +99,12 @@ describe('Arbitrage', () => {
         const tokenTransferProxy = await TokenTransferProxyContract.deployFrom0xArtifactAsync(
             artifacts.TokenTransferProxy,
             provider,
-            defaults,
+            txDefaults,
         );
         const exchange = await ExchangeContract.deployFrom0xArtifactAsync(
             artifacts.Exchange,
             provider,
-            defaults,
+            txDefaults,
             zrx.address,
             tokenTransferProxy.address,
         );
@@ -132,7 +132,7 @@ describe('Arbitrage', () => {
         arbitrage = await ArbitrageContract.deployFrom0xArtifactAsync(
             artifacts.Arbitrage,
             provider,
-            defaults,
+            txDefaults,
             exchange.address,
             etherDelta.address,
             tokenTransferProxy.address,

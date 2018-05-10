@@ -48,9 +48,7 @@ export class CoverageManager {
     }
     public async writeCoverageAsync(): Promise<void> {
         const finalCoverage = await this._computeCoverageAsync();
-        const jsonReplacer: null = null;
-        const numberOfJsonSpaces = 4;
-        const stringifiedCoverage = JSON.stringify(finalCoverage, jsonReplacer, numberOfJsonSpaces);
+        const stringifiedCoverage = JSON.stringify(finalCoverage, null, '\t');
         fs.writeFileSync('coverage/coverage.json', stringifiedCoverage);
     }
     private _getSingleFileCoverageForTrace(

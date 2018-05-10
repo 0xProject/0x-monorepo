@@ -2,7 +2,7 @@ import { devConstants, web3Factory } from '@0xproject/dev-utils';
 import { Provider } from '@0xproject/types';
 import { Web3Wrapper } from '@0xproject/web3-wrapper';
 
-export const defaults = {
+export const txDefaults = {
     from: devConstants.TESTRPC_FIRST_ADDRESS,
     gas: devConstants.GAS_ESTIMATE,
 };

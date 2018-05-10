@@ -15,7 +15,7 @@ import { ContractName, SubmissionContractEventArgs } from '../util/types';
 
 import { chaiSetup } from './utils/chai_setup';
 
-import { defaults, provider, web3Wrapper } from './utils/web3_wrapper';
+import { txDefaults, provider, web3Wrapper } from './utils/web3_wrapper';
 
 const MULTI_SIG_ABI = artifacts.MultiSigWalletWithTimeLock.compilerOutput.abi;
 chaiSetup.configure();
@@ -50,7 +50,7 @@ describe('MultiSigWalletWithTimeLock', () => {
                 multiSig = await MultiSigWalletWithTimeLockContract.deployFrom0xArtifactAsync(
                     artifacts.MultiSigWalletWithTimeLock,
                     provider,
-                    defaults,
+                    txDefaults,
                     owners,
                     SIGNATURES_REQUIRED,
                     new BigNumber(0),
@@ -145,7 +145,7 @@ describe('MultiSigWalletWithTimeLock', () => {
                 multiSig = await MultiSigWalletWithTimeLockContract.deployFrom0xArtifactAsync(
                     artifacts.MultiSigWalletWithTimeLock,
                     provider,
-                    defaults,
+                    txDefaults,
                     owners,
                     SIGNATURES_REQUIRED,
                     SECONDS_TIME_LOCKED,

@@ -14,7 +14,7 @@ import { TokenRegWrapper } from '../util/token_registry_wrapper';
 import { ContractName } from '../util/types';
 
 import { chaiSetup } from './utils/chai_setup';
-import { defaults, provider, web3Wrapper } from './utils/web3_wrapper';
+import { txDefaults, provider, web3Wrapper } from './utils/web3_wrapper';
 
 chaiSetup.configure();
 const expect = chai.expect;
@@ -29,7 +29,7 @@ describe('TokenRegistry', () => {
         const accounts = await web3Wrapper.getAvailableAddressesAsync();
         owner = accounts[0];
         notOwner = accounts[1];
-        tokenReg = await TokenRegistryContract.deployFrom0xArtifactAsync(artifacts.TokenRegistry, provider, defaults);
+        tokenReg = await TokenRegistryContract.deployFrom0xArtifactAsync(artifacts.TokenRegistry, provider, txDefaults);
         tokenRegWrapper = new TokenRegWrapper(tokenReg);
     });
     beforeEach(async () => {

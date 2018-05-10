@@ -9,10 +9,10 @@ before('migrate contracts', async function() {
     // HACK: Since the migrations take longer then our global mocha timeout limit
     // we manually increase it for this before hook.
     this.timeout(20000);
-    const defaults = {
+    const txDefaults = {
         gas: devConstants.GAS_ESTIMATE,
         from: devConstants.TESTRPC_FIRST_ADDRESS,
     };
     const artifactsDir = `../migrations/artifacts/1.0.0`;
-    await runMigrationsAsync(provider, artifactsDir, defaults);
+    await runMigrationsAsync(provider, artifactsDir, txDefaults);
 });

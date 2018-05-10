@@ -11,7 +11,7 @@ import { ContractName } from '../util/types';
 
 import { chaiSetup } from './utils/chai_setup';
 
-import { defaults, provider, web3Wrapper } from './utils/web3_wrapper';
+import { txDefaults, provider, web3Wrapper } from './utils/web3_wrapper';
 
 chaiSetup.configure();
 const expect = chai.expect;
@@ -26,7 +26,7 @@ describe('EtherToken', () => {
         const accounts = await web3Wrapper.getAvailableAddressesAsync();
         account = accounts[0];
 
-        const etherToken = await WETH9Contract.deployFrom0xArtifactAsync(artifacts.EtherToken, provider, defaults);
+        const etherToken = await WETH9Contract.deployFrom0xArtifactAsync(artifacts.EtherToken, provider, txDefaults);
         etherTokenAddress = etherToken.address;
         zeroEx = new ZeroEx(provider, {
             gasPrice,

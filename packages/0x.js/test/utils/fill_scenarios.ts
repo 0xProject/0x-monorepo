@@ -35,7 +35,6 @@ export class FillScenarios {
         const web3Wrapper = (this._zeroEx as any)._web3Wrapper as Web3Wrapper;
         for (const token of this._tokens) {
             if (token.symbol !== 'ZRX' && token.symbol !== 'WETH') {
-                const defaults = {};
                 const dummyToken = new DummyTokenContract(
                     artifacts.DummyTokenArtifact.abi,
                     token.address,

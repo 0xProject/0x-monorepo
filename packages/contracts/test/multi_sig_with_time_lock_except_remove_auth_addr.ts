@@ -16,7 +16,7 @@ import { ContractName, SubmissionContractEventArgs, TransactionDataParams } from
 
 import { chaiSetup } from './utils/chai_setup';
 
-import { defaults, provider, web3Wrapper } from './utils/web3_wrapper';
+import { txDefaults, provider, web3Wrapper } from './utils/web3_wrapper';
 const PROXY_ABI = artifacts.TokenTransferProxy.compilerOutput.abi;
 const MUTISIG_WALLET_WITH_TIME_LOCK_EXCEPT_REMOVE_AUTHORIZED_ADDRESS_ABI =
     artifacts.MultiSigWalletWithTimeLockExceptRemoveAuthorizedAddress.compilerOutput.abi;
@@ -49,7 +49,7 @@ describe('MultiSigWalletWithTimeLockExceptRemoveAuthorizedAddress', () => {
         tokenTransferProxy = await TokenTransferProxyContract.deployFrom0xArtifactAsync(
             artifacts.TokenTransferProxy,
             provider,
-            defaults,
+            txDefaults,
         );
         await tokenTransferProxy.addAuthorizedAddress.sendTransactionAsync(authorizedAddress, {
             from: initialOwner,
@@ -57,7 +57,7 @@ describe('MultiSigWalletWithTimeLockExceptRemoveAuthorizedAddress', () => {
         multiSig = await MultiSigWalletWithTimeLockExceptRemoveAuthorizedAddressContract.deployFrom0xArtifactAsync(
             artifacts.MultiSigWalletWithTimeLockExceptRemoveAuthorizedAddress,
             provider,
-            defaults,
+            txDefaults,
             owners,
             requiredApprovals,
             SECONDS_TIME_LOCKED,
@@ -112,7 +112,7 @@ describe('MultiSigWalletWithTimeLockExceptRemoveAuthorizedAddress', () => {
             const invalidTokenTransferProxy = await TokenTransferProxyContract.deployFrom0xArtifactAsync(
                 artifacts.TokenTransferProxy,
                 provider,
-                defaults,
+                txDefaults,
             );
             const invalidDestination = invalidTokenTransferProxy.address;
             const dataParams: TransactionDataParams = {

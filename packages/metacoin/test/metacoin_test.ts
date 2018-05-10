@@ -23,7 +23,7 @@ describe('Metacoin', () => {
     const ownerAddress = devConstants.TESTRPC_FIRST_ADDRESS;
     const INITIAL_BALANCE = new BigNumber(10000);
     before(async () => {
-        metacoin = await MetacoinContract.deployFrom0xArtifactAsync(artifact, provider, config.defaults);
+        metacoin = await MetacoinContract.deployFrom0xArtifactAsync(artifact, provider, config.txDefaults);
         web3Wrapper.abiDecoder.addABI(metacoin.abi);
     });
     beforeEach(async () => {

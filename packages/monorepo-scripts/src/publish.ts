@@ -214,7 +214,7 @@ async function updateChangeLogsAsync(updatedPublicLernaPackages: LernaPackage[])
         }
 
         // Save updated CHANGELOG.json
-        fs.writeFileSync(changelogJSONPath, JSON.stringify(changelogs, null, 4));
+        fs.writeFileSync(changelogJSONPath, JSON.stringify(changelogs, null, '\t'));
         await utils.prettifyAsync(changelogJSONPath, constants.monorepoRootPath);
         utils.log(`${packageName}: Updated CHANGELOG.json`);
         // Generate updated CHANGELOG.md
