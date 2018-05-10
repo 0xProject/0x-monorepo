@@ -6,7 +6,7 @@
     "types": "lib/src/index.d.ts",
     "scripts": {
         "build:watch": "tsc -w",
-        "lint": "tslint --project . 'src/**/*.ts'",
+        "lint": "tslint --project .,
         "test": "run-s clean build compile_test run_mocha",
         "test:coverage": "nyc npm run test --all && yarn coverage:report:lcov",
         "coverage:report:lcov": "nyc report --reporter=text-lcov > coverage/lcov.info",

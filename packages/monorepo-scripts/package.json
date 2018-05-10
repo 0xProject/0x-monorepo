@@ -6,7 +6,7 @@
     "types": "lib/index.d.ts",
     "scripts": {
         "build:watch": "tsc -w",
-        "lint": "tslint --project . 'src/**/*.ts'",
+        "lint": "tslint --project .,
         "clean": "shx rm -rf lib",
         "build": "tsc",
         "test:publish": "run-s build script:publish",

@@ -8,7 +8,7 @@
         "build:watch": "tsc -w",
         "build": "tsc && copyfiles -u 2 './lib/monorepo_scripts/**/*' ./scripts",
         "clean": "shx rm -rf lib scripts",
-        "lint": "tslint --project . 'src/**/*.ts'",
+        "lint": "tslint --project .,
         "manual:postpublish": "yarn build; node ./scripts/postpublish.js"
     },
     "license": "Apache-2.0",

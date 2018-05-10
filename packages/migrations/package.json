@@ -8,7 +8,7 @@
         "build:watch": "tsc -w",
         "build": "tsc",
         "clean": "shx rm -rf lib",
-        "lint": "tslint --project . 'src/**/*.ts'",
+        "lint": "tslint --project .,
         "migrate": "run-s build compile script:migrate",
         "script:migrate": "node ./lib/migrate.js",
         "copy_artifacts": "copyfiles 'src/artifacts/**/*' ./lib",
