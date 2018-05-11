@@ -146,7 +146,7 @@ export class FillScenarios {
 
         const [orderAddresses, orderValues] = formatters.getOrderAddressesAndValues(signedOrder);
 
-        const txHash = await exchangeInstance.fillOrder.sendTransactionAsync(
+        await exchangeInstance.fillOrder.sendTransactionAsync(
             orderAddresses,
             orderValues,
             partialFillAmount,
@@ -156,10 +156,6 @@ export class FillScenarios {
             signedOrder.ecSignature.s,
             { from: takerAddress },
         );
-        const txReceipt = await this._web3Wrapper.awaitTransactionMinedAsync(txHash);
-        if (txReceipt.status !== 1) {
-            throw new Error(`FillOrder tx reverted. TxHash: ${txReceipt.transactionHash}`);
-        }
         return signedOrder;
     }
     private async _createAsymmetricFillableSignedOrderWithFeesAsync(
@@ -219,13 +215,9 @@ export class FillScenarios {
             this._web3Wrapper.getProvider(),
             this._web3Wrapper.getContractDefaults(),
         );
-        const txHash = await token.transfer.sendTransactionAsync(address, amount, {
+        await token.transfer.sendTransactionAsync(address, amount, {
             from: this._coinbase,
         });
-        const txReceipt = await this._web3Wrapper.awaitTransactionMinedAsync(txHash);
-        if (txReceipt.status !== 1) {
-            throw new Error(`Transfer tx reverted. TxHash: ${txReceipt.transactionHash}`);
-        }
     }
     private async _increaseAllowanceAsync(tokenAddress: string, address: string, amount: BigNumber): Promise<void> {
         const tokenInstance = new TokenContract(
@@ -243,12 +235,8 @@ export class FillScenarios {
         const oldMakerAllowance = await tokenInstance.allowance.callAsync(address, proxyAddress);
         const newMakerAllowance = oldMakerAllowance.plus(amount);
 
-        const txHash = await tokenInstance.approve.sendTransactionAsync(proxyAddress, newMakerAllowance, {
+        await tokenInstance.approve.sendTransactionAsync(proxyAddress, newMakerAllowance, {
             from: address,
         });
-        const txReceipt = await this._web3Wrapper.awaitTransactionMinedAsync(txHash);
-        if (txReceipt.status !== 1) {
-            throw new Error(`Approve tx reverted. TxHash: ${txReceipt.transactionHash}`);
-        }
     }
 }
