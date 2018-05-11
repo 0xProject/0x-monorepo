@@ -162,8 +162,8 @@ export class ZeroEx {
      * @return  An array of available user Ethereum addresses.
      */
     public async getAvailableAddressesAsync(): Promise<string[]> {
-        // Hack: Get Web3Wrapper from ZeroExContract
-        const web3Wrapper: Web3Wrapper = (this._contractWrappers as any)._web3Wrapper;
+        const provider = this._contractWrappers.getProvider();
+        const web3Wrapper = new Web3Wrapper(provider);
         const availableAddresses = await web3Wrapper.getAvailableAddressesAsync();
         return availableAddresses;
     }
@@ -203,8 +203,8 @@ export class ZeroEx {
         pollingIntervalMs = 1000,
         timeoutMs?: number,
     ): Promise<TransactionReceiptWithDecodedLogs> {
-        // Hack: Get Web3Wrapper from ZeroExContract
-        const web3Wrapper: Web3Wrapper = (this._contractWrappers as any)._web3Wrapper;
+        const provider = this._contractWrappers.getProvider();
+        const web3Wrapper = new Web3Wrapper(provider);
         const transactionReceiptWithDecodedLogs = await web3Wrapper.awaitTransactionMinedAsync(
             txHash,
             pollingIntervalMs,
@@ -219,10 +219,9 @@ export class ZeroEx {
      * @return  An instance of the 0x.js OrderWatcher class.
      */
     public async createOrderWatcherAsync(config?: OrderWatcherConfig): Promise<OrderWatcher> {
-        // Hack: Get Web3Wrapper from ZeroExContract
-        const web3Wrapper: Web3Wrapper = (this._contractWrappers as any)._web3Wrapper;
-        const networkId = await web3Wrapper.getNetworkIdAsync();
         const provider = this._contractWrappers.getProvider();
+        const web3Wrapper = new Web3Wrapper(provider);
+        const networkId = await web3Wrapper.getNetworkIdAsync();
         const orderWatcher = new OrderWatcher(provider, networkId, config);
         return orderWatcher;
     }
