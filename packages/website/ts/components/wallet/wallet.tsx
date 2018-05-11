@@ -279,31 +279,48 @@ export class Wallet extends React.Component<WalletProps, WalletState> {
     }
     private _renderFooterRows(): React.ReactElement<{}> {
         return (
-            <ListItem
-                key={FOOTER_ITEM_KEY}
-                primaryText={
-                    <div className="flex">
-                        <FloatingActionButton mini={true} zDepth={0} onClick={this.props.onAddToken}>
-                            <ContentAdd />
-                        </FloatingActionButton>
-                        <FloatingActionButton mini={true} zDepth={0} className="px1" onClick={this.props.onRemoveToken}>
-                            <ContentRemove />
-                        </FloatingActionButton>
-                        <div
-                            style={{
-                                paddingLeft: 10,
-                                position: 'relative',
-                                top: '50%',
-                                transform: 'translateY(33%)',
-                            }}
-                        >
-                            add/remove tokens
+            <div key={FOOTER_ITEM_KEY}>
+                <ListItem
+                    primaryText={
+                        <div className="flex">
+                            <FloatingActionButton mini={true} zDepth={0} onClick={this.props.onAddToken}>
+                                <ContentAdd />
+                            </FloatingActionButton>
+                            <FloatingActionButton
+                                mini={true}
+                                zDepth={0}
+                                className="px1"
+                                onClick={this.props.onRemoveToken}
+                            >
+                                <ContentRemove />
+                            </FloatingActionButton>
+                            <div
+                                style={{
+                                    paddingLeft: 10,
+                                    position: 'relative',
+                                    top: '50%',
+                                    transform: 'translateY(33%)',
+                                }}
+                            >
+                                add/remove tokens
+                            </div>
                         </div>
-                    </div>
-                }
-                disabled={true}
-                innerDivStyle={styles.footerItemInnerDiv}
-            />
+                    }
+                    disabled={true}
+                    innerDivStyle={styles.footerItemInnerDiv}
+                    style={styles.borderedItem}
+                />
+                <Link to={`${WebsitePaths.Portal}/account`} style={{ textDecoration: 'none' }}>
+                    <ListItem
+                        primaryText={
+                            <div className="flex right" style={{ color: colors.mediumBlue, fontWeight: 'bold' }}>
+                                {'manage your wallet'}
+                            </div>
+                        }
+                        style={{ ...styles.paddedItem, ...styles.borderedItem }}
+                    />
+                </Link>
+            </div>
         );
     }
     private _renderEthRows(): React.ReactNode {
