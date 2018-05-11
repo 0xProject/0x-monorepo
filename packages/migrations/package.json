@@ -7,7 +7,7 @@
     "scripts": {
         "build:watch": "tsc -w",
         "build": "tsc",
-        "clean": "shx rm -rf lib",
+        "clean": "shx rm -rf lib artifacts",
         "lint": "tslint --project .",
         "migrate": "run-s build compile script:migrate",
         "script:migrate": "node ./lib/migrate.js",
