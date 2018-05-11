@@ -24,6 +24,7 @@
     "homepage": "https://github.com/0xProject/0x-monorepo/packages/fill-scenarios/README.md",
     "devDependencies": {
         "@0xproject/monorepo-scripts": "^0.1.19",
+        "@0xproject/sol-compiler": "^0.4.3",
         "@0xproject/tslint-config": "^0.4.17",
         "@types/lodash": "4.14.104",
         "copyfiles": "^1.2.0",
