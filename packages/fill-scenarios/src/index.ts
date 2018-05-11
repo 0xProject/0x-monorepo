@@ -36,7 +36,6 @@ export class FillScenarios {
     public async initTokenBalancesAsync() {
         for (const token of this._tokens) {
             if (token.symbol !== 'ZRX' && token.symbol !== 'WETH') {
-                const defaults = {};
                 const dummyToken = new DummyTokenContract(
                     artifacts.DummyToken.abi,
                     token.address,

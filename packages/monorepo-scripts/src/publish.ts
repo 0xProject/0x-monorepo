@@ -32,7 +32,7 @@ const packageNameToWebsitePath: { [name: string]: string } = {
     contracts: 'contracts',
     connect: 'connect',
     'json-schemas': 'json-schemas',
-    deployer: 'deployer',
+    'sol-compiler': 'sol-compiler',
     'sol-cov': 'sol-cov',
     subproviders: 'subproviders',
     'order-utils': 'order-utils',
@@ -214,7 +214,7 @@ async function updateChangeLogsAsync(updatedPublicLernaPackages: LernaPackage[])
         }
 
         // Save updated CHANGELOG.json
-        fs.writeFileSync(changelogJSONPath, JSON.stringify(changelogs, null, 4));
+        fs.writeFileSync(changelogJSONPath, JSON.stringify(changelogs, null, '\t'));
         await utils.prettifyAsync(changelogJSONPath, constants.monorepoRootPath);
         utils.log(`${packageName}: Updated CHANGELOG.json`);
         // Generate updated CHANGELOG.md

@@ -9,8 +9,11 @@ import {
 import { BigNumber } from '@0xproject/utils';
 import * as _ from 'lodash';
 import FlatButton from 'material-ui/FlatButton';
+import FloatingActionButton from 'material-ui/FloatingActionButton';
 import { List, ListItem } from 'material-ui/List';
 import ActionAccountBalanceWallet from 'material-ui/svg-icons/action/account-balance-wallet';
+import ContentAdd from 'material-ui/svg-icons/content/add';
+import ContentRemove from 'material-ui/svg-icons/content/remove';
 import NavigationArrowDownward from 'material-ui/svg-icons/navigation/arrow-downward';
 import NavigationArrowUpward from 'material-ui/svg-icons/navigation/arrow-upward';
 import Close from 'material-ui/svg-icons/navigation/close';
@@ -56,6 +59,7 @@ export interface WalletProps {
     providerType: ProviderType;
     onToggleLedgerDialog: () => void;
     onAddToken: () => void;
+    onRemoveToken: () => void;
 }
 
 interface WalletState {
@@ -138,6 +142,7 @@ const ZRX_TOKEN_SYMBOL = 'ZRX';
 const ETHER_SYMBOL = 'ETH';
 const ICON_DIMENSION = 24;
 const TOKEN_AMOUNT_DISPLAY_PRECISION = 3;
+const BODY_ITEM_KEY = 'BODY';
 const HEADER_ITEM_KEY = 'HEADER';
 const FOOTER_ITEM_KEY = 'FOOTER';
 const DISCONNECTED_ITEM_KEY = 'DISCONNECTED';
@@ -248,7 +253,7 @@ export class Wallet extends React.Component<WalletProps, WalletState> {
         };
         return (
             <ListItem
-                key="body"
+                key={BODY_ITEM_KEY}
                 innerDivStyle={bodyStyle}
                 onMouseEnter={this._onSidebarHover.bind(this)}
                 onMouseLeave={this._onSidebarHoverOff.bind(this)}
@@ -269,13 +274,31 @@ export class Wallet extends React.Component<WalletProps, WalletState> {
         });
     }
     private _renderFooterRows() {
-        const primaryText = '+ other tokens';
         return (
             <ListItem
                 key={FOOTER_ITEM_KEY}
-                primaryText={primaryText}
+                primaryText={
+                    <div className="flex">
+                        <FloatingActionButton mini={true} zDepth={0} onClick={this.props.onAddToken}>
+                            <ContentAdd />
+                        </FloatingActionButton>
+                        <FloatingActionButton mini={true} zDepth={0} className="px1" onClick={this.props.onRemoveToken}>
+                            <ContentRemove />
+                        </FloatingActionButton>
+                        <div
+                            style={{
+                                paddingLeft: 10,
+                                position: 'relative',
+                                top: '50%',
+                                transform: 'translateY(33%)',
+                            }}
+                        >
+                            add/remove tokens
+                        </div>
+                    </div>
+                }
+                disabled={true}
                 innerDivStyle={styles.footerItemInnerDiv}
-                onClick={this.props.onAddToken}
             />
         );
     }

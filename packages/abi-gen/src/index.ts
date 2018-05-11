@@ -114,7 +114,7 @@ for (const abiFileName of abiFileNames) {
     if (_.isUndefined(ABI)) {
         logUtils.log(`${chalk.red(`ABI not found in ${abiFileName}.`)}`);
         logUtils.log(
-            `Please make sure your ABI file is either an array with ABI entries or a truffle artifact or 0x deployer artifact`,
+            `Please make sure your ABI file is either an array with ABI entries or a truffle artifact or 0x sol-compiler artifact`,
         );
         process.exit(1);
     }

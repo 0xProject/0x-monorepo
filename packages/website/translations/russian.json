@@ -56,7 +56,7 @@
     "ABOUT": "Kоманда",
     "CAREERS": "Карьера",
     "CONTACT": "Связаться с нами",
-    "DEPLOYER": "Deployer",
+    "SOL_COMPILER": "Solidity Compiler",
     "JSON_SCHEMAS": "JSON Schemas",
     "SOL_COV": "Solidity Coverage",
     "SUBPROVIDERS": "Subproviders",

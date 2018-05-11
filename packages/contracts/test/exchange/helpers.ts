@@ -11,13 +11,18 @@ import {
     LogErrorContractEventArgs,
     LogFillContractEventArgs,
 } from '../../src/contract_wrappers/generated/exchange';
+
+import { DummyTokenContract } from '../../src/contract_wrappers/generated/dummy_token';
+import { TokenRegistryContract } from '../../src/contract_wrappers/generated/token_registry';
+import { TokenTransferProxyContract } from '../../src/contract_wrappers/generated/token_transfer_proxy';
+import { artifacts } from '../../util/artifacts';
 import { constants } from '../../util/constants';
 import { ExchangeWrapper } from '../../util/exchange_wrapper';
 import { OrderFactory } from '../../util/order_factory';
 import { ContractName } from '../../util/types';
 import { chaiSetup } from '../utils/chai_setup';
-import { deployer } from '../utils/deployer';
-import { provider, web3Wrapper } from '../utils/web3_wrapper';
+
+import { provider, txDefaults, web3Wrapper } from '../utils/web3_wrapper';
 
 chaiSetup.configure();
 const expect = chai.expect;
@@ -35,19 +40,53 @@ describe('Exchange', () => {
     before(async () => {
         const accounts = await web3Wrapper.getAvailableAddressesAsync();
         [maker, feeRecipient] = accounts;
-        const tokenRegistry = await deployer.deployAsync(ContractName.TokenRegistry);
-        const tokenTransferProxy = await deployer.deployAsync(ContractName.TokenTransferProxy);
+        const tokenRegistry = await TokenRegistryContract.deployFrom0xArtifactAsync(
+            artifacts.TokenRegistry,
+            provider,
+            txDefaults,
+        );
+        const tokenTransferProxy = await TokenTransferProxyContract.deployFrom0xArtifactAsync(
+            artifacts.TokenTransferProxy,
+            provider,
+            txDefaults,
+        );
         const [rep, dgd, zrx] = await Promise.all([
-            deployer.deployAsync(ContractName.DummyToken, constants.DUMMY_TOKEN_ARGS),
-            deployer.deployAsync(ContractName.DummyToken, constants.DUMMY_TOKEN_ARGS),
-            deployer.deployAsync(ContractName.DummyToken, constants.DUMMY_TOKEN_ARGS),
+            DummyTokenContract.deployFrom0xArtifactAsync(
+                artifacts.DummyToken,
+                provider,
+                txDefaults,
+                constants.DUMMY_TOKEN_NAME,
+                constants.DUMMY_TOKEN_SYMBOL,
+                constants.DUMMY_TOKEN_DECIMALS,
+                constants.DUMMY_TOKEN_TOTAL_SUPPLY,
+            ),
+            DummyTokenContract.deployFrom0xArtifactAsync(
+                artifacts.DummyToken,
+                provider,
+                txDefaults,
+                constants.DUMMY_TOKEN_NAME,
+                constants.DUMMY_TOKEN_SYMBOL,
+                constants.DUMMY_TOKEN_DECIMALS,
+                constants.DUMMY_TOKEN_TOTAL_SUPPLY,
+            ),
+            DummyTokenContract.deployFrom0xArtifactAsync(
+                artifacts.DummyToken,
+                provider,
+                txDefaults,
+                constants.DUMMY_TOKEN_NAME,
+                constants.DUMMY_TOKEN_SYMBOL,
+                constants.DUMMY_TOKEN_DECIMALS,
+                constants.DUMMY_TOKEN_TOTAL_SUPPLY,
+            ),
         ]);
-        const exchangeInstance = await deployer.deployAsync(ContractName.Exchange, [
+        const exchange = await ExchangeContract.deployFrom0xArtifactAsync(
+            artifacts.Exchange,
+            provider,
+            txDefaults,
             zrx.address,
             tokenTransferProxy.address,
-        ]);
-        const exchange = new ExchangeContract(exchangeInstance.abi, exchangeInstance.address, provider);
-        await tokenTransferProxy.addAuthorizedAddress(exchange.address, { from: accounts[0] });
+        );
+        await tokenTransferProxy.addAuthorizedAddress.sendTransactionAsync(exchange.address, { from: accounts[0] });
         const zeroEx = new ZeroEx(provider, { networkId: constants.TESTRPC_NETWORK_ID });
         exchangeWrapper = new ExchangeWrapper(exchange, zeroEx);
         const defaultOrderParams = {

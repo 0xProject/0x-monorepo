@@ -1,5 +1,6 @@
 lib
 .nyc_output
+/packages/0x.js/test/artifacts
 /packages/contracts/src/artifacts
 /packages/metacoin/artifacts
 /packages/migrations/artifacts/1.0.0

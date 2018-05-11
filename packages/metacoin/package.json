@@ -18,14 +18,14 @@
         "coverage:report:html": "istanbul report html && open coverage/index.html",
         "coverage:report:lcov": "istanbul report lcov",
         "test:circleci": "yarn test:coverage",
-        "compile": "node ../deployer/lib/src/cli.js compile"
+        "compile": "node ../sol-compiler/lib/src/cli.js compile"
     },
     "author": "",
     "license": "Apache-2.0",
     "dependencies": {
         "@0xproject/abi-gen": "^0.2.13",
         "@0xproject/base-contract": "^0.3.1",
-        "@0xproject/deployer": "^0.4.3",
+        "@0xproject/sol-compiler": "^0.4.3",
         "@0xproject/sol-cov": "^0.0.10",
         "@0xproject/subproviders": "^0.10.1",
         "@0xproject/tslint-config": "^0.4.17",

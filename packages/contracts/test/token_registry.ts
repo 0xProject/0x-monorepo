@@ -8,13 +8,13 @@ import * as _ from 'lodash';
 import * as Web3 from 'web3';
 
 import { TokenRegistryContract } from '../src/contract_wrappers/generated/token_registry';
+import { artifacts } from '../util/artifacts';
 import { constants } from '../util/constants';
 import { TokenRegWrapper } from '../util/token_registry_wrapper';
 import { ContractName } from '../util/types';
 
 import { chaiSetup } from './utils/chai_setup';
-import { deployer } from './utils/deployer';
-import { provider, web3Wrapper } from './utils/web3_wrapper';
+import { provider, txDefaults, web3Wrapper } from './utils/web3_wrapper';
 
 chaiSetup.configure();
 const expect = chai.expect;
@@ -29,8 +29,7 @@ describe('TokenRegistry', () => {
         const accounts = await web3Wrapper.getAvailableAddressesAsync();
         owner = accounts[0];
         notOwner = accounts[1];
-        const tokenRegInstance = await deployer.deployAsync(ContractName.TokenRegistry);
-        tokenReg = new TokenRegistryContract(tokenRegInstance.abi, tokenRegInstance.address, provider);
+        tokenReg = await TokenRegistryContract.deployFrom0xArtifactAsync(artifacts.TokenRegistry, provider, txDefaults);
         tokenRegWrapper = new TokenRegWrapper(tokenReg);
     });
     beforeEach(async () => {

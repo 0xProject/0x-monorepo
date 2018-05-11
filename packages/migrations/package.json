@@ -6,20 +6,24 @@
     "types": "lib/index.d.ts",
     "scripts": {
         "build:watch": "tsc -w",
+        "prebuild": "run-s clean compile copy_artifacts generate_contract_wrappers",
+        "copy_artifacts": "copyfiles -u 4 'artifacts/1.0.0/**/*' ./lib/src/artifacts",
         "build": "tsc",
         "clean": "shx rm -rf lib artifacts",
         "lint": "tslint --project .",
         "migrate": "run-s build compile script:migrate",
         "script:migrate": "node ./lib/migrate.js",
-        "copy_artifacts": "copyfiles 'src/artifacts/**/*' ./lib",
-        "compile": "node ../deployer/lib/src/cli.js compile --contracts ${npm_package_config_contracts} --contracts-dir ../contracts/src/contracts --artifacts-dir src/artifacts"
+        "copy_artifacts": "copyfiles 'artifacts/1.0.0/**/*' ./lib",
+        "generate_contract_wrappers": "node ../abi-gen/lib/index.js --abis  ${npm_package_config_abis} --template ../contract_templates/contract.handlebars --partials '../contract_templates/partials/**/*.handlebars' --output src/contract_wrappers --backend ethers && prettier --write 'src/contract_wrappers/**.ts'",
+        "compile": "node ../sol-compiler/lib/src/cli.js compile"
     },
     "config": {
-        "contracts": "Exchange,DummyToken,ZRXToken,Token,WETH9,TokenTransferProxy,MultiSigWallet,MultiSigWalletWithTimeLock,MultiSigWalletWithTimeLockExceptRemoveAuthorizedAddress,MaliciousToken,TokenRegistry,Arbitrage,EtherDelta,AccountLevels"
+        "abis": "artifacts/1.0.0/@(DummyToken|TokenTransferProxy|Exchange|TokenRegistry|MultiSigWallet|MultiSigWalletWithTimeLock|MultiSigWalletWithTimeLockExceptRemoveAuthorizedAddress|TokenRegistry|ZRXToken|Arbitrage|EtherDelta|AccountLevels|WETH9|MaliciousToken).json"
     },
     "license": "Apache-2.0",
     "devDependencies": {
         "@0xproject/dev-utils": "^0.4.1",
+        "@0xproject/types": "^0.6.3",
         "@0xproject/tslint-config": "^0.4.17",
         "npm-run-all": "^4.1.2",
         "shx": "^0.2.2",
@@ -27,9 +31,12 @@
         "typescript": "2.7.1"
     },
     "dependencies": {
-        "@0xproject/deployer": "^0.4.3",
+        "@0xproject/sol-compiler": "^0.4.3",
+        "@0xproject/base-contract": "^0.3.1",
+        "@0xproject/typescript-typings": "^0.3.1",
         "@0xproject/utils": "^0.6.1",
         "@0xproject/web3-wrapper": "^0.6.3",
+        "ethers": "^3.0.15",
         "lodash": "^4.17.4"
     },
     "publishConfig": {

@@ -7,9 +7,13 @@ import * as chai from 'chai';
 import ethUtil = require('ethereumjs-util');
 import * as Web3 from 'web3';
 
+import { AccountLevelsContract } from '../../src/contract_wrappers/generated/account_levels';
 import { ArbitrageContract } from '../../src/contract_wrappers/generated/arbitrage';
+import { DummyTokenContract } from '../../src/contract_wrappers/generated/dummy_token';
 import { EtherDeltaContract } from '../../src/contract_wrappers/generated/ether_delta';
 import { ExchangeContract } from '../../src/contract_wrappers/generated/exchange';
+import { TokenTransferProxyContract } from '../../src/contract_wrappers/generated/token_transfer_proxy';
+import { artifacts } from '../../util/artifacts';
 import { Balances } from '../../util/balances';
 import { constants } from '../../util/constants';
 import { crypto } from '../../util/crypto';
@@ -17,8 +21,8 @@ import { ExchangeWrapper } from '../../util/exchange_wrapper';
 import { OrderFactory } from '../../util/order_factory';
 import { BalancesByOwner, ContractName } from '../../util/types';
 import { chaiSetup } from '../utils/chai_setup';
-import { deployer } from '../utils/deployer';
-import { provider, web3Wrapper } from '../utils/web3_wrapper';
+
+import { provider, txDefaults, web3Wrapper } from '../utils/web3_wrapper';
 
 chaiSetup.configure();
 const expect = chai.expect;
@@ -37,8 +41,8 @@ describe('Arbitrage', () => {
     const INITIAL_BALANCE = ZeroEx.toBaseUnitAmount(new BigNumber(10000), 18);
     const INITIAL_ALLOWANCE = ZeroEx.toBaseUnitAmount(new BigNumber(10000), 18);
 
-    let weth: Web3.ContractInstance;
-    let zrx: Web3.ContractInstance;
+    let weth: DummyTokenContract;
+    let zrx: DummyTokenContract;
     let arbitrage: ArbitrageContract;
     let etherDelta: EtherDeltaContract;
 
@@ -55,33 +59,61 @@ describe('Arbitrage', () => {
     before(async () => {
         const accounts = await web3Wrapper.getAvailableAddressesAsync();
         [coinbase, maker, edMaker, edFrontRunner] = accounts;
-        weth = await deployer.deployAsync(ContractName.DummyToken, constants.DUMMY_TOKEN_ARGS);
-        zrx = await deployer.deployAsync(ContractName.DummyToken, constants.DUMMY_TOKEN_ARGS);
-        const accountLevels = await deployer.deployAsync(ContractName.AccountLevels);
+        weth = await DummyTokenContract.deployFrom0xArtifactAsync(
+            artifacts.DummyToken,
+            provider,
+            txDefaults,
+            constants.DUMMY_TOKEN_NAME,
+            constants.DUMMY_TOKEN_SYMBOL,
+            constants.DUMMY_TOKEN_DECIMALS,
+            constants.DUMMY_TOKEN_TOTAL_SUPPLY,
+        );
+        zrx = await DummyTokenContract.deployFrom0xArtifactAsync(
+            artifacts.DummyToken,
+            provider,
+            txDefaults,
+            constants.DUMMY_TOKEN_NAME,
+            constants.DUMMY_TOKEN_SYMBOL,
+            constants.DUMMY_TOKEN_DECIMALS,
+            constants.DUMMY_TOKEN_TOTAL_SUPPLY,
+        );
+        const accountLevels = await AccountLevelsContract.deployFrom0xArtifactAsync(
+            artifacts.AccountLevels,
+            provider,
+            txDefaults,
+        );
         const edAdminAddress = accounts[0];
-        const edMakerFee = 0;
-        const edTakerFee = 0;
-        const edFeeRebate = 0;
-        const etherDeltaInstance = await deployer.deployAsync(ContractName.EtherDelta, [
+        const edMakerFee = new BigNumber(0);
+        const edTakerFee = new BigNumber(0);
+        const edFeeRebate = new BigNumber(0);
+        etherDelta = await EtherDeltaContract.deployFrom0xArtifactAsync(
+            artifacts.EtherDelta,
+            provider,
+            txDefaults,
             edAdminAddress,
             feeRecipient,
             accountLevels.address,
             edMakerFee,
             edTakerFee,
             edFeeRebate,
-        ]);
-        etherDelta = new EtherDeltaContract(etherDeltaInstance.abi, etherDeltaInstance.address, provider);
-        const tokenTransferProxy = await deployer.deployAsync(ContractName.TokenTransferProxy);
-        const exchangeInstance = await deployer.deployAsync(ContractName.Exchange, [
+        );
+        const tokenTransferProxy = await TokenTransferProxyContract.deployFrom0xArtifactAsync(
+            artifacts.TokenTransferProxy,
+            provider,
+            txDefaults,
+        );
+        const exchange = await ExchangeContract.deployFrom0xArtifactAsync(
+            artifacts.Exchange,
+            provider,
+            txDefaults,
             zrx.address,
             tokenTransferProxy.address,
-        ]);
-        await tokenTransferProxy.addAuthorizedAddress(exchangeInstance.address, { from: accounts[0] });
+        );
+        await tokenTransferProxy.addAuthorizedAddress.sendTransactionAsync(exchange.address, { from: accounts[0] });
         zeroEx = new ZeroEx(provider, {
-            exchangeContractAddress: exchangeInstance.address,
+            exchangeContractAddress: exchange.address,
             networkId: constants.TESTRPC_NETWORK_ID,
         });
-        const exchange = new ExchangeContract(exchangeInstance.abi, exchangeInstance.address, provider);
         exWrapper = new ExchangeWrapper(exchange, zeroEx);
 
         makerTokenAmount = ZeroEx.toBaseUnitAmount(new BigNumber(1), 18);
@@ -98,37 +130,39 @@ describe('Arbitrage', () => {
             takerFee: new BigNumber(0),
         };
         orderFactory = new OrderFactory(zeroEx, defaultOrderParams);
-        const arbitrageInstance = await deployer.deployAsync(ContractName.Arbitrage, [
+        arbitrage = await ArbitrageContract.deployFrom0xArtifactAsync(
+            artifacts.Arbitrage,
+            provider,
+            txDefaults,
             exchange.address,
             etherDelta.address,
             tokenTransferProxy.address,
-        ]);
-        arbitrage = new ArbitrageContract(arbitrageInstance.abi, arbitrageInstance.address, provider);
+        );
         // Enable arbitrage and withdrawals of tokens
         await arbitrage.setAllowances.sendTransactionAsync(weth.address, { from: coinbase });
         await arbitrage.setAllowances.sendTransactionAsync(zrx.address, { from: coinbase });
 
         // Give some tokens to arbitrage contract
-        await weth.setBalance(arbitrage.address, takerTokenAmount, { from: coinbase });
+        await weth.setBalance.sendTransactionAsync(arbitrage.address, takerTokenAmount, { from: coinbase });
 
         // Fund the maker on exchange side
-        await zrx.setBalance(maker, makerTokenAmount, { from: coinbase });
+        await zrx.setBalance.sendTransactionAsync(maker, makerTokenAmount, { from: coinbase });
         // Set the allowance for the maker on Exchange side
-        await zrx.approve(tokenTransferProxy.address, INITIAL_ALLOWANCE, { from: maker });
+        await zrx.approve.sendTransactionAsync(tokenTransferProxy.address, INITIAL_ALLOWANCE, { from: maker });
 
         amountGive = ZeroEx.toBaseUnitAmount(new BigNumber(2), 18);
         // Fund the maker on EtherDelta side
-        await weth.setBalance(edMaker, amountGive, { from: coinbase });
+        await weth.setBalance.sendTransactionAsync(edMaker, amountGive, { from: coinbase });
         // Set the allowance for the maker on EtherDelta side
-        await weth.approve(etherDelta.address, INITIAL_ALLOWANCE, { from: edMaker });
+        await weth.approve.sendTransactionAsync(etherDelta.address, INITIAL_ALLOWANCE, { from: edMaker });
         // Deposit maker funds into EtherDelta
         await etherDelta.depositToken.sendTransactionAsync(weth.address, amountGive, { from: edMaker });
 
         amountGet = makerTokenAmount;
         // Fund the front runner on EtherDelta side
-        await zrx.setBalance(edFrontRunner, amountGet, { from: coinbase });
+        await zrx.setBalance.sendTransactionAsync(edFrontRunner, amountGet, { from: coinbase });
         // Set the allowance for the front-runner on EtherDelta side
-        await zrx.approve(etherDelta.address, INITIAL_ALLOWANCE, { from: edFrontRunner });
+        await zrx.approve.sendTransactionAsync(etherDelta.address, INITIAL_ALLOWANCE, { from: edFrontRunner });
         // Deposit front runner funds into EtherDelta
         await etherDelta.depositToken.sendTransactionAsync(zrx.address, amountGet, { from: edFrontRunner });
     });
@@ -195,11 +229,11 @@ describe('Arbitrage', () => {
                 from: coinbase,
             });
             const res = await zeroEx.awaitTransactionMinedAsync(txHash);
-            const postBalance = await weth.balanceOf(arbitrage.address);
+            const postBalance = await weth.balanceOf.callAsync(arbitrage.address);
             expect(postBalance).to.be.bignumber.equal(amountGive);
         });
         it('should fail and revert if front-runned', async () => {
-            const preBalance = await weth.balanceOf(arbitrage.address);
+            const preBalance = await weth.balanceOf.callAsync(arbitrage.address);
             // Front-running transaction
             await etherDelta.trade.sendTransactionAsync(
                 tokenGet,
@@ -219,7 +253,7 @@ describe('Arbitrage', () => {
             await expect(
                 arbitrage.makeAtomicTrade.sendTransactionAsync(addresses, values, v, r, s, { from: coinbase }),
             ).to.be.rejectedWith(constants.REVERT);
-            const postBalance = await weth.balanceOf(arbitrage.address);
+            const postBalance = await weth.balanceOf.callAsync(arbitrage.address);
             expect(preBalance).to.be.bignumber.equal(postBalance);
         });
     });

@@ -1,14 +1,18 @@
 import { BlockchainLifecycle, devConstants } from '@0xproject/dev-utils';
+import { ContractArtifact } from '@0xproject/sol-compiler';
 import { LogWithDecodedArgs } from '@0xproject/types';
 import { BigNumber } from '@0xproject/utils';
 import { Web3Wrapper } from '@0xproject/web3-wrapper';
 import * as chai from 'chai';
 
+import * as MetacoinArtifact from '../artifacts/Metacoin.json';
 import { MetacoinContract, TransferContractEventArgs } from '../src/contract_wrappers/metacoin';
 
 import { chaiSetup } from './utils/chai_setup';
-import { deployer } from './utils/deployer';
+import { config } from './utils/config';
 import { provider, web3Wrapper } from './utils/web3_wrapper';
+
+const artifact: ContractArtifact = MetacoinArtifact as any;
 
 chaiSetup.configure();
 const { expect } = chai;
@@ -19,9 +23,8 @@ describe('Metacoin', () => {
     const ownerAddress = devConstants.TESTRPC_FIRST_ADDRESS;
     const INITIAL_BALANCE = new BigNumber(10000);
     before(async () => {
-        const metacoinInstance = await deployer.deployAsync('Metacoin');
-        web3Wrapper.abiDecoder.addABI(metacoinInstance.abi);
-        metacoin = new MetacoinContract(metacoinInstance.abi, metacoinInstance.address, provider);
+        metacoin = await MetacoinContract.deployFrom0xArtifactAsync(artifact, provider, config.txDefaults);
+        web3Wrapper.abiDecoder.addABI(metacoin.abi);
     });
     beforeEach(async () => {
         await blockchainLifecycle.startAsync();
