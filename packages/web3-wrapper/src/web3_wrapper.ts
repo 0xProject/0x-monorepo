@@ -29,7 +29,7 @@ export class Web3Wrapper {
     public isZeroExWeb3Wrapper = true;
     public abiDecoder: AbiDecoder;
     private _web3: Web3;
-    private _defaults: Partial<TxData>;
+    private _txDefaults: Partial<TxData>;
     private _jsonRpcRequestId: number;
     /**
      * Check if an address is a valid Ethereum address
@@ -83,10 +83,10 @@ export class Web3Wrapper {
      * Instantiates a new Web3Wrapper.
      * @param   provider    The Web3 provider instance you would like the Web3Wrapper to use for interacting with
      *                      the backing Ethereum node.
-     * @param   defaults    Override TxData defaults sent with RPC requests to the backing Ethereum node.
+     * @param   txDefaults  Override TxData defaults sent with RPC requests to the backing Ethereum node.
      * @return  An instance of the Web3Wrapper class.
      */
-    constructor(provider: Provider, defaults?: Partial<TxData>) {
+    constructor(provider: Provider, txDefaults?: Partial<TxData>) {
         if (_.isUndefined((provider as any).sendAsync)) {
             // Web3@1.0 provider doesn't support synchronous http requests,
             // so it only has an async `send` method, instead of a `send` and `sendAsync` in web3@0.x.x`
@@ -96,7 +96,7 @@ export class Web3Wrapper {
         this.abiDecoder = new AbiDecoder([]);
         this._web3 = new Web3();
         this._web3.setProvider(provider);
-        this._defaults = defaults || {};
+        this._txDefaults = txDefaults || {};
         this._jsonRpcRequestId = 0;
     }
     /**
@@ -104,7 +104,7 @@ export class Web3Wrapper {
      * @return  TxData defaults (e.g gas, gasPrice, nonce, etc...)
      */
     public getContractDefaults(): Partial<TxData> {
-        return this._defaults;
+        return this._txDefaults;
     }
     /**
      * Retrieve the Web3 provider

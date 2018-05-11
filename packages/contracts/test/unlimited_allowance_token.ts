@@ -6,12 +6,12 @@ import * as chai from 'chai';
 import * as Web3 from 'web3';
 
 import { DummyTokenContract } from '../src/contract_wrappers/generated/dummy_token';
+import { artifacts } from '../util/artifacts';
 import { constants } from '../util/constants';
 import { ContractName } from '../util/types';
 
 import { chaiSetup } from './utils/chai_setup';
-import { deployer } from './utils/deployer';
-import { provider, web3Wrapper } from './utils/web3_wrapper';
+import { provider, txDefaults, web3Wrapper } from './utils/web3_wrapper';
 
 chaiSetup.configure();
 const expect = chai.expect;
@@ -33,8 +33,15 @@ describe('UnlimitedAllowanceToken', () => {
         const accounts = await web3Wrapper.getAvailableAddressesAsync();
         owner = accounts[0];
         spender = accounts[1];
-        const tokenInstance = await deployer.deployAsync(ContractName.DummyToken, constants.DUMMY_TOKEN_ARGS);
-        token = new DummyTokenContract(tokenInstance.abi, tokenInstance.address, provider);
+        token = await DummyTokenContract.deployFrom0xArtifactAsync(
+            artifacts.DummyToken,
+            provider,
+            txDefaults,
+            constants.DUMMY_TOKEN_NAME,
+            constants.DUMMY_TOKEN_SYMBOL,
+            constants.DUMMY_TOKEN_DECIMALS,
+            constants.DUMMY_TOKEN_TOTAL_SUPPLY,
+        );
         await token.mint.sendTransactionAsync(MAX_MINT_VALUE, { from: owner });
         tokenAddress = token.address;
     });

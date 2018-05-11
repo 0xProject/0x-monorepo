@@ -344,6 +344,7 @@ export enum Docs {
 export enum WebsiteLegacyPaths {
     ZeroExJs = '/docs/0xjs',
     Web3Wrapper = '/docs/web3_wrapper',
+    Deployer = '/docs/deployer',
 }
 
 export enum WebsitePaths {
@@ -357,7 +358,7 @@ export enum WebsitePaths {
     SmartContracts = '/docs/contracts',
     Connect = '/docs/connect',
     Web3Wrapper = '/docs/web3-wrapper',
-    Deployer = '/docs/deployer',
+    SolCompiler = '/docs/sol-compiler',
     JSONSchemas = '/docs/json-schemas',
     SolCov = '/docs/sol-cov',
     Subproviders = '/docs/subproviders',
@@ -370,7 +371,7 @@ export enum DocPackages {
     ZeroExJs = 'ZERO_EX_JS',
     SmartContracts = 'SMART_CONTRACTS',
     Web3Wrapper = 'WEB3_WRAPPER',
-    Deployer = 'DEPLOYER',
+    SolCompiler = 'SOL_COMPILER',
     JSONSchemas = 'JSON_SCHEMAS',
     SolCov = 'SOL_COV',
     Subproviders = 'SUBPROVIDERS',
@@ -423,7 +424,7 @@ export enum Key {
     About = 'ABOUT',
     Careers = 'CAREERS',
     Contact = 'CONTACT',
-    Deployer = 'DEPLOYER',
+    SolCompiler = 'SOL_COMPILER',
     JsonSchemas = 'JSON_SCHEMAS',
     SolCov = 'SOL_COV',
     Subproviders = 'SUBPROVIDERS',

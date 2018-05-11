@@ -54,8 +54,8 @@ const LazyConnectDocumentation = createLazyComponent('Documentation', async () =
 const LazyWeb3WrapperDocumentation = createLazyComponent('Documentation', async () =>
     System.import<any>(/* webpackChunkName: "web3WrapperDocs" */ 'ts/containers/web3_wrapper_documentation'),
 );
-const LazyDeployerDocumentation = createLazyComponent('Documentation', async () =>
-    System.import<any>(/* webpackChunkName: "deployerDocs" */ 'ts/containers/deployer_documentation'),
+const LazySolCompilerDocumentation = createLazyComponent('Documentation', async () =>
+    System.import<any>(/* webpackChunkName: "solCompilerDocs" */ 'ts/containers/sol_compiler_documentation'),
 );
 const LazyJSONSchemasDocumentation = createLazyComponent('Documentation', async () =>
     System.import<any>(/* webpackChunkName: "jsonSchemasDocs" */ 'ts/containers/json_schemas_documentation'),
@@ -91,7 +91,10 @@ render(
                             <Route path={WebsitePaths.Wiki} component={Wiki as any} />
                             <Route path={`${WebsitePaths.ZeroExJs}/:version?`} component={LazyZeroExJSDocumentation} />
                             <Route path={`${WebsitePaths.Connect}/:version?`} component={LazyConnectDocumentation} />
-                            <Route path={`${WebsitePaths.Deployer}/:version?`} component={LazyDeployerDocumentation} />
+                            <Route
+                                path={`${WebsitePaths.SolCompiler}/:version?`}
+                                component={LazySolCompilerDocumentation}
+                            />
                             <Route path={`${WebsitePaths.SolCov}/:version?`} component={LazySolCovDocumentation} />
                             <Route
                                 path={`${WebsitePaths.JSONSchemas}/:version?`}
@@ -122,6 +125,10 @@ render(
                             <Route
                                 path={`${WebsiteLegacyPaths.Web3Wrapper}/:version?`}
                                 component={LazyWeb3WrapperDocumentation}
+                            />
+                            <Route
+                                path={`${WebsiteLegacyPaths.Deployer}/:version?`}
+                                component={LazySolCompilerDocumentation}
                             />
 
                             <Route component={NotFound as any} />

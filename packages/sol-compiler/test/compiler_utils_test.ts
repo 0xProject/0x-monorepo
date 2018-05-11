@@ -55,8 +55,8 @@ describe('Compiler utils', () => {
             const dependencies = parseDependencies({ source, path });
             const expectedDependencies = [
                 'zeppelin-solidity/contracts/token/ERC20/ERC20.sol',
-                'packages/deployer/lib/test/fixtures/contracts/TokenTransferProxy.sol',
-                'packages/deployer/lib/test/fixtures/contracts/base/SafeMath.sol',
+                'packages/sol-compiler/lib/test/fixtures/contracts/TokenTransferProxy.sol',
+                'packages/sol-compiler/lib/test/fixtures/contracts/base/SafeMath.sol',
             ];
             _.each(expectedDependencies, expectedDepdency => {
                 const foundDependency = _.find(dependencies, dependency => _.endsWith(dependency, expectedDepdency));

@@ -149,10 +149,10 @@ export class TopBar extends React.Component<TopBarProps, TopBarState> {
                     primaryText={this.props.translate.get(Key.OrderUtils, Deco.CapWords)}
                 />
             </Link>,
-            <Link key="subMenuItem-deployer" to={WebsitePaths.Deployer} className="text-decoration-none">
+            <Link key="subMenuItem-sol-compiler" to={WebsitePaths.SolCompiler} className="text-decoration-none">
                 <MenuItem
                     style={{ fontSize: styles.menuItem.fontSize }}
-                    primaryText={this.props.translate.get(Key.Deployer, Deco.CapWords)}
+                    primaryText={this.props.translate.get(Key.SolCompiler, Deco.CapWords)}
                 />
             </Link>,
             <Link key="subMenuItem-sol-cov" to={WebsitePaths.SolCov} className="text-decoration-none">
@@ -328,10 +328,10 @@ export class TopBar extends React.Component<TopBarProps, TopBarState> {
                             </MenuItem>
                         </Link>
                     )}
-                    {!this._isViewingDeployerDocs() && (
-                        <Link to={WebsitePaths.Deployer} className="text-decoration-none">
+                    {!this._isViewingSolCompilerDocs() && (
+                        <Link to={WebsitePaths.SolCompiler} className="text-decoration-none">
                             <MenuItem className="py2">
-                                {this.props.translate.get(Key.Deployer, Deco.Cap)}{' '}
+                                {this.props.translate.get(Key.SolCompiler, Deco.Cap)}{' '}
                                 {this.props.translate.get(Key.Docs, Deco.Cap)}
                             </MenuItem>
                         </Link>
@@ -390,7 +390,7 @@ export class TopBar extends React.Component<TopBarProps, TopBarState> {
             (!this._isViewing0xjsDocs() &&
                 !this._isViewingSmartContractsDocs() &&
                 !this._isViewingWeb3WrapperDocs() &&
-                !this._isViewingDeployerDocs() &&
+                !this._isViewingSolCompilerDocs() &&
                 !this._isViewingJsonSchemasDocs() &&
                 !this._isViewingSolCovDocs() &&
                 !this._isViewingSubprovidersDocs() &&
@@ -476,8 +476,8 @@ export class TopBar extends React.Component<TopBarProps, TopBarState> {
             _.includes(this.props.location.pathname, WebsiteLegacyPaths.Web3Wrapper)
         );
     }
-    private _isViewingDeployerDocs() {
-        return _.includes(this.props.location.pathname, WebsitePaths.Deployer);
+    private _isViewingSolCompilerDocs() {
+        return _.includes(this.props.location.pathname, WebsitePaths.SolCompiler);
     }
     private _isViewingJsonSchemasDocs() {
         return _.includes(this.props.location.pathname, WebsitePaths.JSONSchemas);
@@ -498,7 +498,7 @@ export class TopBar extends React.Component<TopBarProps, TopBarState> {
             this._isViewingFAQ() ||
             this._isViewingSmartContractsDocs() ||
             this._isViewingWeb3WrapperDocs() ||
-            this._isViewingDeployerDocs() ||
+            this._isViewingSolCompilerDocs() ||
             this._isViewingJsonSchemasDocs() ||
             this._isViewingSolCovDocs() ||
             this._isViewingSubprovidersDocs() ||

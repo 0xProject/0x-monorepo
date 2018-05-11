@@ -37,7 +37,7 @@ describe('#Compiler', function() {
         const exchangeArtifactString = await fsWrapper.readFileAsync(exchangeArtifactPath, opts);
         const exchangeArtifact: ContractArtifact = JSON.parse(exchangeArtifactString);
         // The last 43 bytes of the binaries are metadata which may not be equivalent
-        const unlinkedBinaryWithoutMetadata = exchangeArtifact.compilerOutput.evm.bytecode.object.slice(0, -86);
+        const unlinkedBinaryWithoutMetadata = exchangeArtifact.compilerOutput.evm.bytecode.object.slice(2, -86);
         const exchangeBinaryWithoutMetadata = exchange_binary.slice(0, -86);
         expect(unlinkedBinaryWithoutMetadata).to.equal(exchangeBinaryWithoutMetadata);
     });

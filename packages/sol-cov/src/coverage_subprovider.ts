@@ -28,19 +28,13 @@ export class CoverageSubprovider extends Subprovider {
      * Instantiates a CoverageSubprovider instance
      * @param artifactsPath Path to the smart contract artifacts
      * @param sourcesPath Path to the smart contract source files
-     * @param networkId network id
      * @param defaultFromAddress default from address to use when sending transactions
      */
-    constructor(artifactsPath: string, sourcesPath: string, networkId: number, defaultFromAddress: string) {
+    constructor(artifactsPath: string, sourcesPath: string, defaultFromAddress: string) {
         super();
         this._lock = new Lock();
         this._defaultFromAddress = defaultFromAddress;
-        this._coverageManager = new CoverageManager(
-            artifactsPath,
-            sourcesPath,
-            networkId,
-            this._getContractCodeAsync.bind(this),
-        );
+        this._coverageManager = new CoverageManager(artifactsPath, sourcesPath, this._getContractCodeAsync.bind(this));
     }
     /**
      * Write the test coverage results to a file in Istanbul format.

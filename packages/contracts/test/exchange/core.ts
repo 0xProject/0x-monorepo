@@ -13,7 +13,9 @@ import {
     LogErrorContractEventArgs,
     LogFillContractEventArgs,
 } from '../../src/contract_wrappers/generated/exchange';
+import { MaliciousTokenContract } from '../../src/contract_wrappers/generated/malicious_token';
 import { TokenTransferProxyContract } from '../../src/contract_wrappers/generated/token_transfer_proxy';
+import { artifacts } from '../../util/artifacts';
 import { Balances } from '../../util/balances';
 import { constants } from '../../util/constants';
 import { crypto } from '../../util/crypto';
@@ -21,8 +23,8 @@ import { ExchangeWrapper } from '../../util/exchange_wrapper';
 import { OrderFactory } from '../../util/order_factory';
 import { BalancesByOwner, ContractName, ExchangeContractErrs } from '../../util/types';
 import { chaiSetup } from '../utils/chai_setup';
-import { deployer } from '../utils/deployer';
-import { provider, web3Wrapper } from '../utils/web3_wrapper';
+
+import { provider, txDefaults, web3Wrapper } from '../utils/web3_wrapper';
 
 chaiSetup.configure();
 const expect = chai.expect;
@@ -54,25 +56,47 @@ describe('Exchange', () => {
         const accounts = await web3Wrapper.getAvailableAddressesAsync();
         maker = accounts[0];
         [tokenOwner, taker, feeRecipient] = accounts;
-        const [repInstance, dgdInstance, zrxInstance] = await Promise.all([
-            deployer.deployAsync(ContractName.DummyToken, constants.DUMMY_TOKEN_ARGS),
-            deployer.deployAsync(ContractName.DummyToken, constants.DUMMY_TOKEN_ARGS),
-            deployer.deployAsync(ContractName.DummyToken, constants.DUMMY_TOKEN_ARGS),
+        [rep, dgd, zrx] = await Promise.all([
+            DummyTokenContract.deployFrom0xArtifactAsync(
+                artifacts.DummyToken,
+                provider,
+                txDefaults,
+                constants.DUMMY_TOKEN_NAME,
+                constants.DUMMY_TOKEN_SYMBOL,
+                constants.DUMMY_TOKEN_DECIMALS,
+                constants.DUMMY_TOKEN_TOTAL_SUPPLY,
+            ),
+            DummyTokenContract.deployFrom0xArtifactAsync(
+                artifacts.DummyToken,
+                provider,
+                txDefaults,
+                constants.DUMMY_TOKEN_NAME,
+                constants.DUMMY_TOKEN_SYMBOL,
+                constants.DUMMY_TOKEN_DECIMALS,
+                constants.DUMMY_TOKEN_TOTAL_SUPPLY,
+            ),
+            DummyTokenContract.deployFrom0xArtifactAsync(
+                artifacts.DummyToken,
+                provider,
+                txDefaults,
+                constants.DUMMY_TOKEN_NAME,
+                constants.DUMMY_TOKEN_SYMBOL,
+                constants.DUMMY_TOKEN_DECIMALS,
+                constants.DUMMY_TOKEN_TOTAL_SUPPLY,
+            ),
         ]);
-        rep = new DummyTokenContract(repInstance.abi, repInstance.address, provider);
-        dgd = new DummyTokenContract(dgdInstance.abi, dgdInstance.address, provider);
-        zrx = new DummyTokenContract(zrxInstance.abi, zrxInstance.address, provider);
-        const tokenTransferProxyInstance = await deployer.deployAsync(ContractName.TokenTransferProxy);
-        tokenTransferProxy = new TokenTransferProxyContract(
-            tokenTransferProxyInstance.abi,
-            tokenTransferProxyInstance.address,
+        tokenTransferProxy = await TokenTransferProxyContract.deployFrom0xArtifactAsync(
+            artifacts.TokenTransferProxy,
             provider,
+            txDefaults,
         );
-        const exchangeInstance = await deployer.deployAsync(ContractName.Exchange, [
+        exchange = await ExchangeContract.deployFrom0xArtifactAsync(
+            artifacts.Exchange,
+            provider,
+            txDefaults,
             zrx.address,
             tokenTransferProxy.address,
-        ]);
-        exchange = new ExchangeContract(exchangeInstance.abi, exchangeInstance.address, provider);
+        );
         await tokenTransferProxy.addAuthorizedAddress.sendTransactionAsync(exchange.address, { from: accounts[0] });
         zeroEx = new ZeroEx(provider, {
             exchangeContractAddress: exchange.address,
@@ -689,7 +713,11 @@ describe('Exchange', () => {
 
         it('should throw if getBalance or getAllowance attempts to change state and \
                 shouldThrowOnInsufficientBalanceOrAllowance = false', async () => {
-            const maliciousToken = await deployer.deployAsync(ContractName.MaliciousToken);
+            const maliciousToken = await MaliciousTokenContract.deployFrom0xArtifactAsync(
+                artifacts.MaliciousToken,
+                provider,
+                txDefaults,
+            );
             await maliciousToken.approve.sendTransactionAsync(tokenTransferProxy.address, INITIAL_ALLOWANCE, {
                 from: taker,
             });

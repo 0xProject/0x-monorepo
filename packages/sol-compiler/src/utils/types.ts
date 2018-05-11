@@ -50,39 +50,12 @@ export interface SolcErrors {
     [key: string]: boolean;
 }
 
-export interface CliOptions extends yargs.Arguments {
-    artifactsDir: string;
-    contractsDir: string;
-    jsonrpcUrl: string;
-    networkId: number;
-    gasPrice: string;
-    account?: string;
-    contract?: string;
-    args?: string;
-}
-
 export interface CompilerOptions {
     contractsDir?: string;
     artifactsDir?: string;
     compilerSettings?: solc.CompilerSettings;
     contracts?: string[] | '*';
 }
-
-export interface BaseDeployerOptions {
-    artifactsDir: string;
-    networkId: number;
-    defaults: Partial<TxData>;
-}
-
-export interface ProviderDeployerOptions extends BaseDeployerOptions {
-    provider: Provider;
-}
-
-export interface UrlDeployerOptions extends BaseDeployerOptions {
-    jsonrpcUrl: string;
-}
-
-export type DeployerOptions = UrlDeployerOptions | ProviderDeployerOptions;
 
 export interface ContractSourceData {
     [contractName: string]: ContractSpecificSourceData;

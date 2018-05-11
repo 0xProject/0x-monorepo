@@ -16,17 +16,17 @@
         "test:coverage": "SOLIDITY_COVERAGE=true run-s build run_mocha coverage:report:text coverage:report:lcov",
         "run_mocha": "mocha 'lib/test/**/*.js' --timeout 100000 --bail --exit",
         "compile:comment": "Yarn workspaces do not link binaries correctly so we need to reference them directly https://github.com/yarnpkg/yarn/issues/3846",
-        "compile": "node ../deployer/lib/src/cli.js compile",
+        "compile": "node ../sol-compiler/lib/src/cli.js",
         "clean": "shx rm -rf ./lib",
         "generate_contract_wrappers": "node ../abi-gen/lib/index.js --abis  ${npm_package_config_abis} --template ../contract_templates/contract.handlebars --partials '../contract_templates/partials/**/*.handlebars' --output src/contract_wrappers/generated --backend ethers && prettier --write 'src/contract_wrappers/generated/**.ts'",
-        "lint": "tslint --project . 'migrations/**/*.ts' 'test/**/*.ts' 'util/**/*.ts' 'deploy/**/*.ts'",
+        "lint": "tslint --project .",
         "coverage:report:text": "istanbul report text",
         "coverage:report:html": "istanbul report html && open coverage/index.html",
         "coverage:report:lcov": "istanbul report lcov",
         "test:circleci": "yarn test:coverage"
     },
     "config": {
-        "abis": "../migrations/artifacts/1.0.0/@(DummyToken|TokenTransferProxy|Exchange|TokenRegistry|MultiSigWallet|MultiSigWalletWithTimeLock|MultiSigWalletWithTimeLockExceptRemoveAuthorizedAddress|TokenRegistry|ZRXToken|Arbitrage|EtherDelta|AccountLevels).json"
+        "abis": "../migrations/artifacts/1.0.0/@(DummyToken|TokenTransferProxy|Exchange|TokenRegistry|MultiSigWallet|MultiSigWalletWithTimeLock|MultiSigWalletWithTimeLockExceptRemoveAuthorizedAddress|TokenRegistry|ZRXToken|Arbitrage|EtherDelta|AccountLevels|WETH9|MaliciousToken).json"
     },
     "repository": {
         "type": "git",
@@ -60,7 +60,8 @@
     },
     "dependencies": {
         "0x.js": "^0.37.2",
-        "@0xproject/deployer": "^0.4.3",
+        "@0xproject/base-contract": "^0.3.1",
+        "@0xproject/sol-compiler": "^0.4.3",
         "@0xproject/types": "^0.6.3",
         "@0xproject/typescript-typings": "^0.3.1",
         "@0xproject/utils": "^0.6.1",
@@ -68,7 +69,7 @@
         "bn.js": "^4.11.8",
         "ethereumjs-abi": "^0.6.4",
         "ethereumjs-util": "^5.1.1",
-        "ethers-contracts": "^2.2.1",
+        "ethers": "^3.0.15",
         "lodash": "^4.17.4",
         "web3": "^0.20.0"
     }

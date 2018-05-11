@@ -56,7 +56,7 @@
     "ABOUT": "기업 정보",
     "CAREERS": "채용",
     "CONTACT": "문의",
-    "DEPLOYER": "Deployer",
+    "SOL_COMPILER": "Solidity Compiler",
     "JSON_SCHEMAS": "JSON Schemas",
     "SOL_COV": "Solidity Coverage",
     "SUBPROVIDERS": "Subproviders",

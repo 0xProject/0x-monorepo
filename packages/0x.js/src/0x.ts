@@ -144,10 +144,10 @@ export class ZeroEx {
         ]);
         const artifactJSONs = _.values(artifacts);
         const abiArrays = _.map(artifactJSONs, artifact => artifact.abi);
-        const defaults = {
+        const txDefaults = {
             gasPrice: config.gasPrice,
         };
-        this._web3Wrapper = new Web3Wrapper(provider, defaults);
+        this._web3Wrapper = new Web3Wrapper(provider, txDefaults);
         _.forEach(abiArrays, abi => {
             this._web3Wrapper.abiDecoder.addABI(abi);
         });

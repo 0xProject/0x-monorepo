@@ -134,7 +134,7 @@ export class Compiler {
             const isUserOnLatestVersion = currentArtifact.schemaVersion === constants.LATEST_ARTIFACT_VERSION;
             const didCompilerSettingsChange = !_.isEqual(currentArtifact.compiler.settings, this._compilerSettings);
             const didSourceChange = currentArtifact.sourceTreeHashHex !== sourceTreeHashHex;
-            shouldCompile = isUserOnLatestVersion || didCompilerSettingsChange || didSourceChange;
+            shouldCompile = !isUserOnLatestVersion || didCompilerSettingsChange || didSourceChange;
         }
         if (!shouldCompile) {
             return;
@@ -203,6 +203,20 @@ export class Compiler {
                 }. Please make sure your contract has the same name as it's file name`,
             );
         }
+        if (!_.isUndefined(compiledData.evm)) {
+            if (!_.isUndefined(compiledData.evm.bytecode) && !_.isUndefined(compiledData.evm.bytecode.object)) {
+                compiledData.evm.bytecode.object = ethUtil.addHexPrefix(compiledData.evm.bytecode.object);
+            }
+            if (
+                !_.isUndefined(compiledData.evm.deployedBytecode) &&
+                !_.isUndefined(compiledData.evm.deployedBytecode.object)
+            ) {
+                compiledData.evm.deployedBytecode.object = ethUtil.addHexPrefix(
+                    compiledData.evm.deployedBytecode.object,
+                );
+            }
+        }
+
         const sourceCodes = _.mapValues(
             compiled.sources,
             (_1, sourceFilePath) => this._resolver.resolve(sourceFilePath).source,

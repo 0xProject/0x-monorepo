@@ -4,7 +4,7 @@
     "version": "0.0.11",
     "description": "An example app using react-docs",
     "scripts": {
-        "lint": "tslint --project . 'ts/**/*.ts' 'ts/**/*.tsx'",
+        "lint": "tslint --project .",
         "build": "tsc",
         "build:example": "NODE_ENV=production webpack",
         "build:watch": "tsc -w",

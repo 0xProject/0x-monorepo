@@ -5,7 +5,7 @@ import * as path from 'path';
 
 import { ContractData } from './types';
 
-export const collectContractsData = (artifactsPath: string, sourcesPath: string, networkId: number) => {
+export const collectContractsData = (artifactsPath: string, sourcesPath: string) => {
     const artifactsGlob = `${artifactsPath}/**/*.json`;
     const artifactFileNames = glob.sync(artifactsGlob, { absolute: true });
     const contractsData: ContractData[] = [];
