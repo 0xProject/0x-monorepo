@@ -1,3 +1,4 @@
+import { addHexPrefix } from 'ethereumjs-util';
 import * as fs from 'fs';
 import * as glob from 'glob';
 import * as _ from 'lodash';
@@ -20,9 +21,9 @@ export const collectContractsData = (artifactsPath: string, sourcesPath: string)
         const contractData = {
             sourceCodes,
             sources,
-            bytecode: artifact.compilerOutput.evm.bytecode.object,
+            bytecode: addHexPrefix(artifact.compilerOutput.evm.bytecode.object),
             sourceMap: artifact.compilerOutput.evm.bytecode.sourceMap,
-            runtimeBytecode: artifact.compilerOutput.evm.deployedBytecode.object,
+            runtimeBytecode: addHexPrefix(artifact.compilerOutput.evm.deployedBytecode.object),
             sourceMapRuntime: artifact.compilerOutput.evm.deployedBytecode.sourceMap,
         };
         contractsData.push(contractData);
