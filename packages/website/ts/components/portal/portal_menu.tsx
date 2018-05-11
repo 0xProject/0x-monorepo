@@ -17,39 +17,34 @@ interface MenuItemEntry {
 
 const menuItemEntries: MenuItemEntry[] = [
     {
-        to: `${WebsitePaths.Portal}`,
-        labelText: 'Generate order',
-        iconName: 'zmdi-arrow-right-top',
-    },
-    {
-        to: `${WebsitePaths.Portal}/fill`,
-        labelText: 'Fill order',
-        iconName: 'zmdi-arrow-left-bottom',
-    },
-    {
-        to: `${WebsitePaths.Portal}/balances`,
-        labelText: 'Balances',
+        to: `${WebsitePaths.Portal}/account`,
+        labelText: 'Account Overview',
         iconName: 'zmdi-balance-wallet',
     },
     {
         to: `${WebsitePaths.Portal}/trades`,
-        labelText: 'Trade History',
+        labelText: 'Trade history',
         iconName: 'zmdi-format-list-bulleted',
     },
     {
         to: `${WebsitePaths.Portal}/weth`,
-        labelText: 'Wrap ETH',
+        labelText: 'Wrapped ETH',
         iconName: 'zmdi-circle-o',
+    },
+    {
+        to: `${WebsitePaths.Portal}/direct`,
+        labelText: 'Trade direct',
+        iconName: 'zmdi-swap',
     },
 ];
 
 const DEFAULT_LABEL_COLOR = colors.darkerGrey;
 const DEFAULT_ICON_COLOR = colors.darkerGrey;
-const SELECTED_ICON_COLOR = colors.yellow800;
+const SELECTED_ICON_COLOR = colors.yellow900;
 
 export const PortalMenu: React.StatelessComponent<PortalMenuProps> = (props: PortalMenuProps) => {
     return (
-        <div>
+        <div style={{ paddingLeft: 185 }}>
             {_.map(menuItemEntries, entry => {
                 const selected = entry.to === props.selectedPath;
                 return (
@@ -80,7 +75,7 @@ const PortalMenuItemLabel: React.StatelessComponent<PortalMenuItemLabelProps> = 
     };
     return (
         <div className="flex">
-            <div className="pr1 pl2">
+            <div className="pr1">
                 <i style={styles.iconStyle} className={`zmdi ${props.iconName}`} />
             </div>
             <div className="pl1" style={styles.textStyle}>

@@ -18,6 +18,7 @@ import NavigationArrowDownward from 'material-ui/svg-icons/navigation/arrow-down
 import NavigationArrowUpward from 'material-ui/svg-icons/navigation/arrow-upward';
 import Close from 'material-ui/svg-icons/navigation/close';
 import * as React from 'react';
+import { Link } from 'react-router-dom';
 import ReactTooltip = require('react-tooltip');
 import firstBy = require('thenby');
 
@@ -38,6 +39,7 @@ import {
     TokenByAddress,
     TokenState,
     TokenStateByAddress,
+    WebsitePaths,
 } from 'ts/types';
 import { backendClient } from 'ts/utils/backend_client';
 import { constants } from 'ts/utils/constants';
@@ -237,13 +239,15 @@ export class Wallet extends React.Component<WalletProps, WalletState> {
         const userAddress = this.props.userAddress;
         const primaryText = utils.getAddressBeginAndEnd(userAddress);
         return (
-            <ListItem
-                key={HEADER_ITEM_KEY}
-                primaryText={primaryText}
-                leftIcon={<Identicon address={userAddress} diameter={ICON_DIMENSION} />}
-                style={{ ...styles.paddedItem, ...styles.borderedItem }}
-                innerDivStyle={styles.headerItemInnerDiv}
-            />
+            <Link to={`${WebsitePaths.Portal}/account`} style={{ textDecoration: 'none' }}>
+                <ListItem
+                    key={HEADER_ITEM_KEY}
+                    primaryText={primaryText}
+                    leftIcon={<Identicon address={userAddress} diameter={ICON_DIMENSION} />}
+                    style={{ ...styles.paddedItem, ...styles.borderedItem }}
+                    innerDivStyle={styles.headerItemInnerDiv}
+                />
+            </Link>
         );
     }
     private _renderBody(): React.ReactElement<{}> {

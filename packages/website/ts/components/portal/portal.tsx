@@ -3,7 +3,7 @@ import { BigNumber } from '@0xproject/utils';
 import * as _ from 'lodash';
 import * as React from 'react';
 import * as DocumentTitle from 'react-document-title';
-import { Route, RouteComponentProps, Switch } from 'react-router-dom';
+import { Link, Route, RouteComponentProps, Switch } from 'react-router-dom';
 
 import { Blockchain } from 'ts/blockchain';
 import { BlockchainErrDialog } from 'ts/components/dialogs/blockchain_err_dialog';
@@ -78,6 +78,7 @@ enum TokenManagementState {
 
 const THROTTLE_TIMEOUT = 100;
 const TOP_BAR_HEIGHT = TopBar.heightForDisplayType(TopBarDisplayType.Expanded);
+const BACK_BUTTON_HEIGHT = 28;
 
 const styles: Styles = {
     root: {
@@ -95,6 +96,16 @@ const styles: Styles = {
     },
     title: {
         fontWeight: 'bold',
+        fontSize: 20,
+    },
+    backButton: {
+        height: BACK_BUTTON_HEIGHT,
+        backgroundColor: colors.white,
+        borderRadius: BACK_BUTTON_HEIGHT,
+        boxShadow: `0px 4px 6px ${colors.walletBoxShadow}`,
+    },
+    backButtonIcon: {
+        color: colors.mediumBlue,
         fontSize: 20,
     },
 };
@@ -190,9 +201,6 @@ export class Portal extends React.Component<PortalProps, PortalState> {
                 <div id="portal" style={styles.body}>
                     <div className="sm-flex flex-center">
                         <div className="flex-last px3">
-                            <div className="py3" style={styles.title}>
-                                Your Account
-                            </div>
                             <div style={{ width: 346 }}>
                                 <Switch>
                                     <Route
@@ -208,9 +216,6 @@ export class Portal extends React.Component<PortalProps, PortalState> {
                             </div>
                         </div>
                         <div className="flex-auto px3" style={styles.scrollContainer}>
-                            <div className="py3" style={styles.title}>
-                                Explore 0x Ecosystem
-                            </div>
                             <Switch>
                                 <Route
                                     path={`${WebsitePaths.Portal}/weth`}
@@ -218,7 +223,7 @@ export class Portal extends React.Component<PortalProps, PortalState> {
                                 />
                                 <Route path={`${WebsitePaths.Portal}/fill`} render={this._renderFillOrder.bind(this)} />
                                 <Route
-                                    path={`${WebsitePaths.Portal}/balances`}
+                                    path={`${WebsitePaths.Portal}/account`}
                                     render={this._renderTokenBalances.bind(this)}
                                 />
                                 <Route
@@ -268,29 +273,37 @@ export class Portal extends React.Component<PortalProps, PortalState> {
         );
     }
     private _renderMenu(routeComponentProps: RouteComponentProps<any>) {
-        return <PortalMenu selectedPath={routeComponentProps.location.pathname} />;
+        return (
+            <div>
+                <BackButton />
+                <PortalMenu selectedPath={routeComponentProps.location.pathname} />
+            </div>
+        );
     }
     private _renderWallet() {
         const allTokens = _.values(this.props.tokenByAddress);
         const trackedTokens = _.filter(allTokens, t => t.isTracked);
         return (
-            <Wallet
-                userAddress={this.props.userAddress}
-                networkId={this.props.networkId}
-                blockchain={this._blockchain}
-                blockchainIsLoaded={this.props.blockchainIsLoaded}
-                blockchainErr={this.props.blockchainErr}
-                dispatcher={this.props.dispatcher}
-                tokenByAddress={this.props.tokenByAddress}
-                trackedTokens={trackedTokens}
-                userEtherBalanceInWei={this.props.userEtherBalanceInWei}
-                lastForceTokenStateRefetch={this.props.lastForceTokenStateRefetch}
-                injectedProviderName={this.props.injectedProviderName}
-                providerType={this.props.providerType}
-                onToggleLedgerDialog={this._onToggleLedgerDialog.bind(this)}
-                onAddToken={this._onAddToken.bind(this)}
-                onRemoveToken={this._onRemoveToken.bind(this)}
-            />
+            <div>
+                <Title titleText={'Your Account'} />
+                <Wallet
+                    userAddress={this.props.userAddress}
+                    networkId={this.props.networkId}
+                    blockchain={this._blockchain}
+                    blockchainIsLoaded={this.props.blockchainIsLoaded}
+                    blockchainErr={this.props.blockchainErr}
+                    dispatcher={this.props.dispatcher}
+                    tokenByAddress={this.props.tokenByAddress}
+                    trackedTokens={trackedTokens}
+                    userEtherBalanceInWei={this.props.userEtherBalanceInWei}
+                    lastForceTokenStateRefetch={this.props.lastForceTokenStateRefetch}
+                    injectedProviderName={this.props.injectedProviderName}
+                    providerType={this.props.providerType}
+                    onToggleLedgerDialog={this._onToggleLedgerDialog.bind(this)}
+                    onAddToken={this._onAddToken.bind(this)}
+                    onRemoveToken={this._onRemoveToken.bind(this)}
+                />
+            </div>
         );
     }
     private _renderEthWrapper() {
@@ -319,19 +332,22 @@ export class Portal extends React.Component<PortalProps, PortalState> {
         const allTokens = _.values(this.props.tokenByAddress);
         const trackedTokens = _.filter(allTokens, t => t.isTracked);
         return (
-            <TokenBalances
-                blockchain={this._blockchain}
-                blockchainErr={this.props.blockchainErr}
-                blockchainIsLoaded={this.props.blockchainIsLoaded}
-                dispatcher={this.props.dispatcher}
-                screenWidth={this.props.screenWidth}
-                tokenByAddress={this.props.tokenByAddress}
-                trackedTokens={trackedTokens}
-                userAddress={this.props.userAddress}
-                userEtherBalanceInWei={this.props.userEtherBalanceInWei}
-                networkId={this.props.networkId}
-                lastForceTokenStateRefetch={this.props.lastForceTokenStateRefetch}
-            />
+            <div>
+                <Title titleText={'Your Account'} />
+                <TokenBalances
+                    blockchain={this._blockchain}
+                    blockchainErr={this.props.blockchainErr}
+                    blockchainIsLoaded={this.props.blockchainIsLoaded}
+                    dispatcher={this.props.dispatcher}
+                    screenWidth={this.props.screenWidth}
+                    tokenByAddress={this.props.tokenByAddress}
+                    trackedTokens={trackedTokens}
+                    userAddress={this.props.userAddress}
+                    userEtherBalanceInWei={this.props.userEtherBalanceInWei}
+                    networkId={this.props.networkId}
+                    lastForceTokenStateRefetch={this.props.lastForceTokenStateRefetch}
+                />
+            </div>
         );
     }
     private _renderFillOrder(match: any, location: Location, history: History) {
@@ -363,7 +379,12 @@ export class Portal extends React.Component<PortalProps, PortalState> {
         );
     }
     private _renderRelayerIndex() {
-        return <RelayerIndex networkId={this.props.networkId} />;
+        return (
+            <div>
+                <Title titleText={'Explore 0x Relayers'} />
+                <RelayerIndex networkId={this.props.networkId} />
+            </div>
+        );
     }
     private _onTokenChosen(tokenAddress: string): void {
         if (_.isEmpty(tokenAddress)) {
@@ -419,3 +440,31 @@ export class Portal extends React.Component<PortalProps, PortalState> {
         this.props.dispatcher.updateScreenWidth(newScreenWidth);
     }
 }
+
+interface TitleProps {
+    titleText: string;
+}
+const Title = (props: TitleProps) => {
+    return (
+        <div className="py3" style={styles.title}>
+            {props.titleText}
+        </div>
+    );
+};
+
+const BackButton = () => {
+    return (
+        <div style={{ height: 65, paddingTop: 25 }}>
+            <Link to={`${WebsitePaths.Portal}`} style={{ textDecoration: 'none' }}>
+                <div className="flex right" style={{ ...styles.backButton, paddingTop: 10 }}>
+                    <div style={{ marginLeft: 12 }}>
+                        <i style={styles.backButtonIcon} className={`zmdi zmdi-arrow-left`} />
+                    </div>
+                    <div style={{ marginLeft: 12, marginRight: 12 }}>
+                        <div style={{ fontSize: 16, color: colors.lightGrey }}>back to Relayers</div>
+                    </div>
+                </div>
+            </Link>
+        </div>
+    );
+};
