@@ -65,7 +65,7 @@ contract MExchangeCore is
         LibFillResults.FillResults memory fillResults)
         internal;
 
-    /// @dev Gets information about an order.
+    /// @dev Gets information about an order: status, hash, and amount filled.
     /// @param order Order to gather information on.
     /// @return status Status of order. Statuses are defined in the LibStatus.Status struct.
     /// @return orderHash Keccak-256 EIP712 hash of the order.

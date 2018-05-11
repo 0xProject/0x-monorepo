@@ -23,9 +23,11 @@ import "./mixins/MAssetProxyDispatcher.sol";
 import "./libs/LibOrder.sol";
 import "./libs/LibMath.sol";
 import "./mixins/MMatchOrders.sol";
+import "./mixins/LibExchangeErrors.sol";
 
 contract MixinSettlement is
     LibMath,
+    LibExchangeErrors,
     MMatchOrders,
     MSettlement,
     MAssetProxyDispatcher
@@ -134,7 +136,11 @@ contract MixinSettlement is
         // rightOrder.MakerAsset == leftOrder.TakerAsset
         // leftOrder.takerAssetFilledAmount ~ rightOrder.makerAssetFilledAmount
         // The change goes to right, not to taker.
-        assert(matchedFillResults.right.makerAssetFilledAmount >= matchedFillResults.left.takerAssetFilledAmount);
+        require(
+            matchedFillResults.right.makerAssetFilledAmount >=
+            matchedFillResults.left.takerAssetFilledAmount,
+            MISCALCULATED_TRANSFER_AMOUNTS
+        );
         dispatchTransferFrom(
             rightOrder.makerAssetData,
             rightOrder.makerAddress,

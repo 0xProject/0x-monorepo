@@ -23,6 +23,7 @@ import "./libs/LibMath.sol";
 import "./libs/LibOrder.sol";
 import "./libs/LibStatus.sol";
 import "../../utils/LibBytes/LibBytes.sol";
+import "./libs/LibExchangeErrors.sol";
 
 contract MixinMatchOrders is
     SafeMath,
@@ -30,6 +31,7 @@ contract MixinMatchOrders is
     LibMath,
     LibStatus,
     LibOrder,
+    LibExchangeErrors,
     MExchangeCore,
     MMatchOrders,
     MSettlement,
@@ -45,22 +47,29 @@ contract MixinMatchOrders is
         internal
     {
         // The leftOrder maker asset must be the same as the rightOrder taker asset.
-        require(areBytesEqual(leftOrder.makerAssetData, rightOrder.takerAssetData));
+        require(
+            areBytesEqual(leftOrder.makerAssetData, rightOrder.takerAssetData),
+            ASSET_MISMATCH_MAKER_TAKER
+        );
 
         // The leftOrder taker asset must be the same as the rightOrder maker asset.
-        require(areBytesEqual(leftOrder.takerAssetData, rightOrder.makerAssetData));
+        require(
+            areBytesEqual(leftOrder.takerAssetData, rightOrder.makerAssetData),
+            ASSET_MISMATCH_TAKER_MAKER
+        );
 
         // Make sure there is a positive spread.
         // There is a positive spread iff the cost per unit bought (OrderA.MakerAmount/OrderA.TakerAmount) for each order is greater
         // than the profit per unit sold of the matched order (OrderB.TakerAmount/OrderB.MakerAmount).
         // This is satisfied by the equations below:
-        // <leftOrder.makerAssetAmount> / <leftOrder.takerAssetAmount> >= <rightOrder.takerAssetAmount> / <rightOrder.makerAssetAmount>
+        // <leftOrder.makerAssetAmount> / <leftOrder.takerAssetAmount> = <rightOrder.takerAssetAmount> / <rightOrder.makerAssetAmount>
         // AND
         // <rightOrder.makerAssetAmount> / <rightOrder.takerAssetAmount> >= <leftOrder.takerAssetAmount> / <leftOrder.makerAssetAmount>
         // These equations can be combined to get the following:
         require(
             safeMul(leftOrder.makerAssetAmount, rightOrder.makerAssetAmount) >=
-            safeMul(leftOrder.takerAssetAmount, rightOrder.takerAssetAmount)
+            safeMul(leftOrder.takerAssetAmount, rightOrder.takerAssetAmount),
+            NEGATIVE_SPREAD
         );
     }
 
@@ -69,11 +78,21 @@ contract MixinMatchOrders is
     function validateMatchedOrderFillResultsOrThrow(MatchedFillResults memory matchedFillResults)
         internal
     {
-        // The right order must spend at least as much as we're transferring to the left order's maker.
-        // If the amount transferred from the right order is greater than what is transferred, it is a rounding error amount.
+        // The right order must spend at least as much as we're transferring to the left order.
+        require(
+            matchedFillResults.right.makerAssetFilledAmount >=
+            matchedFillResults.left.takerAssetFilledAmount,
+            MISCALCULATED_TRANSFER_AMOUNTS
+        );
+        // If the amount transferred from the right order is different than what is transferred, it is a rounding error amount.
         // Ensure this difference is negligible by dividing the values with each other. The result should equal to ~1.
-        require(matchedFillResults.right.makerAssetFilledAmount >= matchedFillResults.left.takerAssetFilledAmount);
-        require(!isRoundingError(matchedFillResults.right.makerAssetFilledAmount, matchedFillResults.left.takerAssetFilledAmount, 1));
+        require(
+            !isRoundingError(
+                matchedFillResults.right.makerAssetFilledAmount,
+                matchedFillResults.left.takerAssetFilledAmount,
+                1),
+            ROUNDING_ERROR_TRANSFER_AMOUNTS
+        );
     }
 
     /// @dev Calculates partial value given a numerator and denominator.
@@ -89,7 +108,10 @@ contract MixinMatchOrders is
         internal pure
         returns (uint256 partialAmount)
     {
-        require(!isRoundingError(numerator, denominator, target));
+        require(
+            !isRoundingError(numerator, denominator, target),
+            ROUNDING_ERROR_ON_PARTIAL_AMOUNT
+            );
         return getPartialAmount(numerator, denominator, target);
     }
 
@@ -136,7 +158,7 @@ contract MixinMatchOrders is
             leftOrderAmountToFill = leftTakerAssetAmountRemaining;
 
             // The right order receives an amount proportional to how much was spent.
-            // TODO: Ensure rounding error is in the correct direction.
+            // TODO: Can we ensure rounding error is in the correct direction?
             rightOrderAmountToFill = safeGetPartialAmount(
                 rightOrder.takerAssetAmount,
                 rightOrder.makerAssetAmount,
@@ -146,7 +168,7 @@ contract MixinMatchOrders is
             rightOrderAmountToFill = rightTakerAssetAmountRemaining;
 
             // The left order receives an amount proportional to how much was spent.
-            // TODO: Ensure rounding error is in the correct direction.
+            // TODO: Can we ensure rounding error is in the correct direction?
             leftOrderAmountToFill = safeGetPartialAmount(
                 rightOrder.makerAssetAmount,
                 rightOrder.takerAssetAmount,

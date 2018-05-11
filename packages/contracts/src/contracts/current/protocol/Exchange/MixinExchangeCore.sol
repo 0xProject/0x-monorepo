@@ -53,7 +53,7 @@ contract MixinExchangeCore is
 
     ////// Core exchange functions //////
 
-    /// @dev Gets information about an order.
+    /// @dev Gets information about an order: status, hash, and amount filled.
     /// @param order Order to gather information on.
     /// @return status Status of order. Statuses are defined in the LibStatus.Status struct.
     /// @return orderHash Keccak-256 EIP712 hash of the order.
@@ -105,14 +105,12 @@ contract MixinExchangeCore is
             orderStatus = uint8(Status.ORDER_CANCELLED);
             return (orderStatus, orderHash, takerAssetFilledAmount);
         }
-
-        // Validate order is not cancelled
         if (makerEpoch[order.makerAddress] > order.salt) {
             orderStatus = uint8(Status.ORDER_CANCELLED);
             return (orderStatus, orderHash, takerAssetFilledAmount);
         }
 
-        // Order is Fillable
+        // All other statuses are ruled out: order is Fillable
         orderStatus = uint8(Status.ORDER_FILLABLE);
         return (orderStatus, orderHash, takerAssetFilledAmount);
     }
@@ -136,6 +134,8 @@ contract MixinExchangeCore is
         internal
     {
         // Ensure order is valid
+        // An order can only be filled if it is Status.FILLABLE;
+        // however, only invalid statuses result in a throw.
         require(
             orderStatus != uint8(Status.ORDER_INVALID_MAKER_ASSET_AMOUNT),
             INVALID_ORDER_MAKER_ASSET_AMOUNT
@@ -269,7 +269,7 @@ contract MixinExchangeCore is
         public
         returns (FillResults memory fillResults)
     {
-        // Fetch current order status
+        // Fetch order info
         bytes32 orderHash;
         uint8 orderStatus;
         uint256 takerAssetFilledAmount;
@@ -309,6 +309,8 @@ contract MixinExchangeCore is
         internal
     {
         // Ensure order is valid
+        // An order can only be cancelled if it is Status.FILLABLE;
+        // however, only invalid statuses result in a throw.
         require(
             orderStatus != uint8(Status.ORDER_INVALID_MAKER_ASSET_AMOUNT),
             INVALID_ORDER_MAKER_ASSET_AMOUNT
@@ -372,9 +374,11 @@ contract MixinExchangeCore is
     }
 
     /// @dev After calling, the order can not be filled anymore.
-    /// @param order Order struct containing order specifications.
+    ///      Throws if order is invalid or sender does not have permission to cancel.
+    /// @param order Order to cancel. Order must be Status.FILLABLE.
     /// @return True if the order state changed to cancelled.
-    ///         False if the transaction was already cancelled or expired.
+    ///         False if the order was order was in a valid, but
+    ///               unfillable state (see LibStatus.STATUS for order states)
     function cancelOrder(Order memory order)
         public
         returns (bool)

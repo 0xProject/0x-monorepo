@@ -48,4 +48,12 @@ contract LibExchangeErrors {
     string constant INVALID_SIGNATURE_LENGTH = "Invalid signature length.";
     string constant ILLEGAL_SIGNATURE_TYPE = "Illegal signature type.";
     string constant UNSUPPORTED_SIGNATURE_TYPE = "Unsupported signature type.";
+
+    // Order matching revert reasons
+    string constant ASSET_MISMATCH_MAKER_TAKER = "Left order maker asset is different from right order taker asset.";
+    string constant ASSET_MISMATCH_TAKER_MAKER = "Left order taker asset is different from right order maker asset.";
+    string constant NEGATIVE_SPREAD = "Matched orders must have a positive spread.";
+    string constant MISCALCULATED_TRANSFER_AMOUNTS = "A miscalculation occurred: the left maker would receive more than the right maker would spend.";
+    string constant ROUNDING_ERROR_TRANSFER_AMOUNTS = "A rounding error occurred when calculating transfer amounts for matched orders.";
+    string constant ROUNDING_ERROR_ON_PARTIAL_AMOUNT = "A rounding error occurred when calculating partial transfer amounts.";
 }
