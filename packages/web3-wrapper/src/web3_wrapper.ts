@@ -324,6 +324,13 @@ export class Web3Wrapper {
         const txHash = await promisify<string>(this._web3.eth.sendTransaction)(txData);
         return txHash;
     }
+    /**
+     * Waits for a transaction to be mined and returns the transaction receipt.
+     * @param   txHash            Transaction hash
+     * @param   pollingIntervalMs How often (in ms) should we check if the transaction is mined.
+     * @param   timeoutMs         How long (in ms) to poll for transaction mined until aborting.
+     * @return  Transaction receipt with decoded log args.
+     */
     public async awaitTransactionMinedAsync(
         txHash: string,
         pollingIntervalMs = 1000,

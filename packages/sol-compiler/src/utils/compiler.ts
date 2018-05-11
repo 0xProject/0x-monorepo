@@ -40,7 +40,7 @@ export async function getContractArtifactIfExistsAsync(
 export async function createDirIfDoesNotExistAsync(dirPath: string): Promise<void> {
     if (!fsWrapper.doesPathExistSync(dirPath)) {
         logUtils.log(`Creating directory at ${dirPath}...`);
-        await fsWrapper.mkdirAsync(dirPath);
+        await fsWrapper.mkdirpAsync(dirPath);
     }
 }
 

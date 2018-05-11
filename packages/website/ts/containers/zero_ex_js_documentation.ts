@@ -68,32 +68,38 @@ const docsInfoConfig: DocsInfoConfig = {
         [zeroExJsDocSections.exchange]: [
             '"0x.js/src/contract_wrappers/exchange_wrapper"',
             '"src/contract_wrappers/exchange_wrapper"',
+            '"contract-wrappers/src/contract_wrappers/exchange_wrapper"',
         ],
         [zeroExJsDocSections.tokenRegistry]: [
             '"0x.js/src/contract_wrappers/token_registry_wrapper"',
             '"src/contract_wrappers/token_registry_wrapper"',
+            '"contract-wrappers/src/contract_wrappers/token_registry_wrapper"',
         ],
         [zeroExJsDocSections.token]: [
             '"0x.js/src/contract_wrappers/token_wrapper"',
             '"src/contract_wrappers/token_wrapper"',
+            '"contract-wrappers/src/contract_wrappers/token_wrapper"',
         ],
         [zeroExJsDocSections.etherToken]: [
             '"0x.js/src/contract_wrappers/ether_token_wrapper"',
             '"src/contract_wrappers/ether_token_wrapper"',
+            '"contract-wrappers/src/contract_wrappers/ether_token_wrapper"',
         ],
         [zeroExJsDocSections.proxy]: [
             '"0x.js/src/contract_wrappers/proxy_wrapper"',
             '"0x.js/src/contract_wrappers/token_transfer_proxy_wrapper"',
-            '"src/contract_wrappers/token_transfer_proxy_wrapper"',
+            '"contract-wrappers/src/contract_wrappers/token_transfer_proxy_wrapper"',
         ],
         [zeroExJsDocSections.orderWatcher]: [
             '"0x.js/src/order_watcher/order_state_watcher"',
             '"src/order_watcher/order_state_watcher"',
+            '"order-watcher/src/order_watcher/order_watcher"',
         ],
         [zeroExJsDocSections.types]: [
             '"0x.js/src/types"',
             '"src/types"',
             '"types/src/index"',
+            '"contract-wrappers/src/types"',
             '"0x.js/src/contract_wrappers/generated/ether_token"',
             '"0x.js/src/contract_wrappers/generated/token"',
             '"0x.js/src/contract_wrappers/generated/exchange"',
@@ -114,7 +120,7 @@ const docsInfoConfig: DocsInfoConfig = {
             'Order',
             'SignedOrder',
             'ECSignature',
-            'ZeroExError',
+            'ContractWrappersError',
             'EventCallback',
             'EventCallbackAsync',
             'EventCallbackSync',

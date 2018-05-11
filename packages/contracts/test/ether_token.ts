@@ -1,4 +1,4 @@
-import { ZeroEx, ZeroExError } from '0x.js';
+import { ContractWrappersError, ZeroEx } from '0x.js';
 import { BlockchainLifecycle, devConstants, web3Factory } from '@0xproject/dev-utils';
 import { BigNumber, promisify } from '@0xproject/utils';
 import { Web3Wrapper } from '@0xproject/web3-wrapper';
@@ -45,7 +45,7 @@ describe('EtherToken', () => {
             const ethToDeposit = initEthBalance.plus(1);
 
             return expect(zeroEx.etherToken.depositAsync(etherTokenAddress, ethToDeposit, account)).to.be.rejectedWith(
-                ZeroExError.InsufficientEthBalanceForDeposit,
+                ContractWrappersError.InsufficientEthBalanceForDeposit,
             );
         });
 
@@ -74,7 +74,7 @@ describe('EtherToken', () => {
 
             return expect(
                 zeroEx.etherToken.withdrawAsync(etherTokenAddress, ethTokensToWithdraw, account),
-            ).to.be.rejectedWith(ZeroExError.InsufficientWEthBalanceForWithdrawal);
+            ).to.be.rejectedWith(ContractWrappersError.InsufficientWEthBalanceForWithdrawal);
         });
 
         it('should convert ether tokens to ether with sufficient balance', async () => {

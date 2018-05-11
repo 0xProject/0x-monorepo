@@ -4,3 +4,8 @@ export { orderFactory } from './order_factory';
 export { constants } from './constants';
 export { generatePseudoRandomSalt } from './salt';
 export { OrderError } from './types';
+export { formatters } from './formatters';
+export { AbstractBalanceAndProxyAllowanceFetcher } from './abstract/abstract_balance_and_proxy_allowance_fetcher';
+export { AbstractOrderFilledCancelledFetcher } from './abstract/abstract_order_filled_cancelled_fetcher';
+export { RemainingFillableCalculator } from './remaining_fillable_calculator';
+export { OrderStateUtils } from './order_state_utils';

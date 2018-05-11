@@ -1,5 +1,14 @@
 [
     {
+        "version": "0.4.2",
+        "changes": [
+            {
+                "note": "Move callbackErrorReporter over from 0x.js",
+                "pr": 579
+            }
+        ]
+    },
+    {
         "timestamp": 1525477860,
         "version": "0.4.1",
         "changes": [
