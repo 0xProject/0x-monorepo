@@ -6,6 +6,28 @@
   version "0.3.9"
   resolved "https://registry.yarnpkg.com/8fold-marked/-/8fold-marked-0.3.9.tgz#bb89c645612f8ccfaffac1ca6e3c11f168c9cf59"
 
+"@0xproject/deployer@^0.4.3":
+  version "0.4.3"
+  resolved "https://registry.yarnpkg.com/@0xproject/deployer/-/deployer-0.4.3.tgz#ac4739fee434ffb61fa80738a433c127b871a5eb"
+  dependencies:
+    "@0xproject/json-schemas" "^0.7.23"
+    "@0xproject/sol-resolver" "^0.0.4"
+    "@0xproject/types" "^0.6.3"
+    "@0xproject/typescript-typings" "^0.3.1"
+    "@0xproject/utils" "^0.6.1"
+    "@0xproject/web3-wrapper" "^0.6.3"
+    "@types/yargs" "^11.0.0"
+    chalk "^2.3.0"
+    ethereumjs-util "^5.1.1"
+    isomorphic-fetch "^2.2.1"
+    lodash "^4.17.4"
+    require-from-string "^2.0.1"
+    semver "^5.5.0"
+    solc "^0.4.23"
+    web3 "^0.20.0"
+    web3-eth-abi "^1.0.0-beta.24"
+    yargs "^10.0.3"
+
 "@0xproject/tslint-config@0.4.13":
   version "0.4.13"
   resolved "https://registry.yarnpkg.com/@0xproject/tslint-config/-/tslint-config-0.4.13.tgz#98c71c5ae5e80315a23eda0134cc9f6f4438cac2"
