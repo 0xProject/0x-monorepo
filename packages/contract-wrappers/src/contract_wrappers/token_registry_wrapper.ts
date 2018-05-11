@@ -105,10 +105,7 @@ export class TokenRegistryWrapper extends ContractWrapper {
      * @returns The Ethereum address of the TokenRegistry contract being used.
      */
     public getContractAddress(): string {
-        const contractAddress = this._getContractAddress(
-            artifacts.TokenRegistry,
-            this._contractAddressIfExists,
-        );
+        const contractAddress = this._getContractAddress(artifacts.TokenRegistry, this._contractAddressIfExists);
         return contractAddress;
     }
     private _invalidateContractInstance(): void {

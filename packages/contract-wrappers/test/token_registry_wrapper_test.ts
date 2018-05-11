@@ -86,7 +86,9 @@ describe('TokenRegistryWrapper', () => {
     });
     describe('#getTokenAddressByName', () => {
         it('should return correct address for a token in the registry', async () => {
-            const tokenAddress = await contractWrappers.tokenRegistry.getTokenAddressByNameIfExistsAsync(registeredName);
+            const tokenAddress = await contractWrappers.tokenRegistry.getTokenAddressByNameIfExistsAsync(
+                registeredName,
+            );
             expect(tokenAddress).to.be.equal(tokenAddressByName[registeredName]);
         });
         it('should return undefined for a token out of registry', async () => {

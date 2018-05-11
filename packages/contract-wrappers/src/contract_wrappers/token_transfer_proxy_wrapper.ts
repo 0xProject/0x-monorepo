@@ -46,10 +46,7 @@ export class TokenTransferProxyWrapper extends ContractWrapper {
      * @returns The Ethereum address of the TokenTransferProxy contract being used.
      */
     public getContractAddress(): string {
-        const contractAddress = this._getContractAddress(
-            artifacts.TokenTransferProxy,
-            this._contractAddressIfExists,
-        );
+        const contractAddress = this._getContractAddress(artifacts.TokenTransferProxy, this._contractAddressIfExists);
         return contractAddress;
     }
     private _invalidateContractInstance(): void {

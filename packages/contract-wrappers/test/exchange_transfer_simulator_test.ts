@@ -111,7 +111,9 @@ describe('ExchangeTransferSimulator', () => {
             const senderProxyAllowance = await store.getProxyAllowanceAsync(exampleTokenAddress, sender);
             expect(senderBalance).to.be.bignumber.equal(0);
             expect(recipientBalance).to.be.bignumber.equal(transferAmount);
-            expect(senderProxyAllowance).to.be.bignumber.equal(contractWrappers.token.UNLIMITED_ALLOWANCE_IN_BASE_UNITS);
+            expect(senderProxyAllowance).to.be.bignumber.equal(
+                contractWrappers.token.UNLIMITED_ALLOWANCE_IN_BASE_UNITS,
+            );
         });
     });
 });
