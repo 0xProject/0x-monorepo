@@ -240,6 +240,11 @@ export enum SolidityTypes {
     Uint = 'uint',
 }
 
+/**
+ * Contains the logs returned by a TransactionReceipt. We attempt to decode the
+ * logs using AbiDecoder. If we have the logs corresponding ABI, we decode it,
+ * otherwise we don't.
+ */
 export interface TransactionReceiptWithDecodedLogs extends TransactionReceipt {
     logs: Array<LogWithDecodedArgs<DecodedLogArgs> | LogEntry>;
 }
