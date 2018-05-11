@@ -18,7 +18,7 @@ interface MenuItemEntry {
 const menuItemEntries: MenuItemEntry[] = [
     {
         to: `${WebsitePaths.Portal}/account`,
-        labelText: 'Account Overview',
+        labelText: 'Account overview',
         iconName: 'zmdi-balance-wallet',
     },
     {

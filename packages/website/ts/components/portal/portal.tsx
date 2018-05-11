@@ -221,7 +221,6 @@ export class Portal extends React.Component<PortalProps, PortalState> {
                                     path={`${WebsitePaths.Portal}/weth`}
                                     render={this._renderEthWrapper.bind(this)}
                                 />
-                                <Route path={`${WebsitePaths.Portal}/fill`} render={this._renderFillOrder.bind(this)} />
                                 <Route
                                     path={`${WebsitePaths.Portal}/account`}
                                     render={this._renderTokenBalances.bind(this)}
@@ -229,6 +228,10 @@ export class Portal extends React.Component<PortalProps, PortalState> {
                                 <Route
                                     path={`${WebsitePaths.Portal}/trades`}
                                     component={this._renderTradeHistory.bind(this)}
+                                />
+                                <Route
+                                    path={`${WebsitePaths.Portal}/direct`}
+                                    component={this._renderTradeDirect.bind(this)}
                                 />
                                 <Route path={`${WebsitePaths.Home}`} component={this._renderRelayerIndex.bind(this)} />
                             </Switch>
@@ -308,24 +311,42 @@ export class Portal extends React.Component<PortalProps, PortalState> {
     }
     private _renderEthWrapper() {
         return (
-            <EthWrappers
-                networkId={this.props.networkId}
-                blockchain={this._blockchain}
-                dispatcher={this.props.dispatcher}
-                tokenByAddress={this.props.tokenByAddress}
-                userAddress={this.props.userAddress}
-                userEtherBalanceInWei={this.props.userEtherBalanceInWei}
-                lastForceTokenStateRefetch={this.props.lastForceTokenStateRefetch}
-            />
+            <div>
+                <Title labelText={'Wrapped ETH'} />
+                <EthWrappers
+                    networkId={this.props.networkId}
+                    blockchain={this._blockchain}
+                    dispatcher={this.props.dispatcher}
+                    tokenByAddress={this.props.tokenByAddress}
+                    userAddress={this.props.userAddress}
+                    userEtherBalanceInWei={this.props.userEtherBalanceInWei}
+                    lastForceTokenStateRefetch={this.props.lastForceTokenStateRefetch}
+                />
+            </div>
         );
     }
     private _renderTradeHistory() {
         return (
-            <TradeHistory
-                tokenByAddress={this.props.tokenByAddress}
-                userAddress={this.props.userAddress}
-                networkId={this.props.networkId}
-            />
+            <div>
+                <Title labelText={'Trade History'} />
+                <TradeHistory
+                    tokenByAddress={this.props.tokenByAddress}
+                    userAddress={this.props.userAddress}
+                    networkId={this.props.networkId}
+                />
+            </div>
+        );
+    }
+    private _renderTradeDirect(match: any, location: Location, history: History) {
+        return (
+            <div>
+                <Title labelText={'Trade Direct'} />
+                <GenerateOrderForm
+                    blockchain={this._blockchain}
+                    hashData={this.props.hashData}
+                    dispatcher={this.props.dispatcher}
+                />
+            </div>
         );
     }
     private _renderTokenBalances() {
@@ -348,34 +369,6 @@ export class Portal extends React.Component<PortalProps, PortalState> {
                     lastForceTokenStateRefetch={this.props.lastForceTokenStateRefetch}
                 />
             </div>
-        );
-    }
-    private _renderFillOrder(match: any, location: Location, history: History) {
-        const initialFillOrder = !_.isUndefined(this.props.userSuppliedOrderCache)
-            ? this.props.userSuppliedOrderCache
-            : this._sharedOrderIfExists;
-        return (
-            <FillOrder
-                blockchain={this._blockchain}
-                blockchainErr={this.props.blockchainErr}
-                initialOrder={initialFillOrder}
-                isOrderInUrl={!_.isUndefined(this._sharedOrderIfExists)}
-                orderFillAmount={this.props.orderFillAmount}
-                networkId={this.props.networkId}
-                userAddress={this.props.userAddress}
-                tokenByAddress={this.props.tokenByAddress}
-                dispatcher={this.props.dispatcher}
-                lastForceTokenStateRefetch={this.props.lastForceTokenStateRefetch}
-            />
-        );
-    }
-    private _renderGenerateOrderForm(match: any, location: Location, history: History) {
-        return (
-            <GenerateOrderForm
-                blockchain={this._blockchain}
-                hashData={this.props.hashData}
-                dispatcher={this.props.dispatcher}
-            />
         );
     }
     private _renderRelayerIndex() {
