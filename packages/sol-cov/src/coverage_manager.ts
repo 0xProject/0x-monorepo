@@ -28,20 +28,24 @@ import {
     TraceInfoNewContract,
 } from './types';
 import { utils } from './utils';
+import { mkdirpSync } from 'fs-extra';
 
 export class CoverageManager {
     private _sourcesPath: string;
     private _traceInfos: TraceInfo[] = [];
     private _contractsData: ContractData[] = [];
     private _getContractCodeAsync: (address: string) => Promise<string>;
+    private _verbose: boolean;
     constructor(
         artifactsPath: string,
         sourcesPath: string,
         getContractCodeAsync: (address: string) => Promise<string>,
+        verbose: boolean,
     ) {
         this._getContractCodeAsync = getContractCodeAsync;
         this._sourcesPath = sourcesPath;
         this._contractsData = collectContractsData(artifactsPath, this._sourcesPath);
+        this._verbose = verbose;
     }
     public appendTraceInfo(traceInfo: TraceInfo): void {
         this._traceInfos.push(traceInfo);
@@ -49,6 +53,7 @@ export class CoverageManager {
     public async writeCoverageAsync(): Promise<void> {
         const finalCoverage = await this._computeCoverageAsync();
         const stringifiedCoverage = JSON.stringify(finalCoverage, null, '\t');
+        mkdirpSync('coverage');
         fs.writeFileSync('coverage/coverage.json', stringifiedCoverage);
     }
     private _getSingleFileCoverageForTrace(
@@ -135,7 +140,9 @@ export class CoverageManager {
                 runtimeBytecode = addHexPrefix(runtimeBytecode);
                 const contractData = _.find(this._contractsData, { runtimeBytecode }) as ContractData;
                 if (_.isUndefined(contractData)) {
-                    throw new Error(`Transaction to an unknown address: ${traceInfo.address}`);
+                    if (this._verbose)
+                        console.log(`Transaction to an unknown address: ${traceInfo.address}`);
+                    continue;
                 }
                 const bytecodeHex = contractData.runtimeBytecode.slice(2);
                 const sourceMap = contractData.sourceMapRuntime;
@@ -162,7 +169,9 @@ export class CoverageManager {
                     bytecode.startsWith(contractDataCandidate.bytecode),
                 ) as ContractData;
                 if (_.isUndefined(contractData)) {
-                    throw new Error(`Unknown contract creation transaction`);
+                    if (this._verbose)
+                        console.log(`Unknown contract creation transaction`);
+                    continue;
                 }
                 const bytecodeHex = contractData.bytecode.slice(2);
                 const sourceMap = contractData.sourceMap;

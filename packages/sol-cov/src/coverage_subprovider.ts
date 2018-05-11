@@ -29,12 +29,13 @@ export class CoverageSubprovider extends Subprovider {
      * @param artifactsPath Path to the smart contract artifacts
      * @param sourcesPath Path to the smart contract source files
      * @param defaultFromAddress default from address to use when sending transactions
+     * @param verbose If true, we will log any unknown transactions. Otherwise we will ignore them
      */
-    constructor(artifactsPath: string, sourcesPath: string, defaultFromAddress: string) {
+    constructor(artifactsPath: string, sourcesPath: string, defaultFromAddress: string, verbose: boolean = false) {
         super();
         this._lock = new Lock();
         this._defaultFromAddress = defaultFromAddress;
-        this._coverageManager = new CoverageManager(artifactsPath, sourcesPath, this._getContractCodeAsync.bind(this));
+        this._coverageManager = new CoverageManager(artifactsPath, sourcesPath, this._getContractCodeAsync.bind(this), verbose);
     }
     /**
      * Write the test coverage results to a file in Istanbul format.
