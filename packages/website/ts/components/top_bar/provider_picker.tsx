@@ -19,7 +19,7 @@ interface ProviderPickerProps {
 interface ProviderPickerState {}
 
 export class ProviderPicker extends React.Component<ProviderPickerProps, ProviderPickerState> {
-    public render() {
+    public render(): React.ReactNode {
         const isLedgerSelected = this.props.providerType === ProviderType.Ledger;
         const menuStyle = {
             padding: 10,
@@ -46,7 +46,7 @@ export class ProviderPicker extends React.Component<ProviderPickerProps, Provide
             </div>
         );
     }
-    private _renderLabel(title: string, shouldShowNetwork: boolean) {
+    private _renderLabel(title: string, shouldShowNetwork: boolean): React.ReactNode {
         const label = (
             <div className="flex">
                 <div style={{ fontSize: 14 }}>{title}</div>
@@ -55,7 +55,7 @@ export class ProviderPicker extends React.Component<ProviderPickerProps, Provide
         );
         return label;
     }
-    private _renderNetwork() {
+    private _renderNetwork(): React.ReactNode {
         const networkName = sharedConstants.NETWORK_NAME_BY_ID[this.props.networkId];
         return (
             <div className="flex" style={{ marginTop: 1 }}>
@@ -70,7 +70,7 @@ export class ProviderPicker extends React.Component<ProviderPickerProps, Provide
             </div>
         );
     }
-    private _onProviderRadioChanged(value: string) {
+    private _onProviderRadioChanged(value: string): void {
         if (value === ProviderType.Ledger) {
             this.props.onToggleLedgerDialog();
         } else {

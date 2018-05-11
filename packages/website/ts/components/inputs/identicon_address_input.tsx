@@ -23,7 +23,7 @@ export class IdenticonAddressInput extends React.Component<IdenticonAddressInput
             address: props.initialAddress,
         };
     }
-    public render() {
+    public render(): React.ReactNode {
         const label = this.props.isRequired ? <RequiredLabel label={this.props.label} /> : this.props.label;
         return (
             <div className="relative" style={{ width: '100%' }}>

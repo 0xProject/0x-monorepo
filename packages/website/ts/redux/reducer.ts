@@ -91,7 +91,7 @@ const INITIAL_STATE: State = {
     translate: new Translate(),
 };
 
-export function reducer(state: State = INITIAL_STATE, action: Action) {
+export function reducer(state: State = INITIAL_STATE, action: Action): State {
     switch (action.type) {
         // Portal
         case ActionTypes.ResetState:

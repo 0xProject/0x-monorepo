@@ -377,7 +377,7 @@ export class OrderWatcher {
         }
         this._dependentOrderHashes[signedOrder.maker][zrxTokenAddress].add(orderHash);
     }
-    private _removeFromDependentOrderHashes(makerAddress: string, tokenAddress: string, orderHash: string) {
+    private _removeFromDependentOrderHashes(makerAddress: string, tokenAddress: string, orderHash: string): void {
         this._dependentOrderHashes[makerAddress][tokenAddress].delete(orderHash);
         if (this._dependentOrderHashes[makerAddress][tokenAddress].size === 0) {
             delete this._dependentOrderHashes[makerAddress][tokenAddress];

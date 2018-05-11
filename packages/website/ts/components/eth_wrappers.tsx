@@ -65,7 +65,7 @@ export class EthWrappers extends React.Component<EthWrappersProps, EthWrappersSt
             },
         };
     }
-    public componentWillReceiveProps(nextProps: EthWrappersProps) {
+    public componentWillReceiveProps(nextProps: EthWrappersProps): void {
         if (
             nextProps.userAddress !== this.props.userAddress ||
             nextProps.networkId !== this.props.networkId ||
@@ -75,15 +75,15 @@ export class EthWrappers extends React.Component<EthWrappersProps, EthWrappersSt
             this._fetchWETHStateAsync();
         }
     }
-    public componentDidMount() {
+    public componentDidMount(): void {
         window.scrollTo(0, 0);
         // tslint:disable-next-line:no-floating-promises
         this._fetchWETHStateAsync();
     }
-    public componentWillUnmount() {
+    public componentWillUnmount(): void {
         this._isUnmounted = true;
     }
-    public render() {
+    public render(): React.ReactNode {
         const etherToken = this._getEthToken();
         const wethBalance = ZeroEx.toUnitAmount(this.state.ethTokenState.balance, constants.DECIMAL_PLACES_ETH);
         const isBidirectional = true;
@@ -222,7 +222,7 @@ export class EthWrappers extends React.Component<EthWrappersProps, EthWrappersSt
             </div>
         );
     }
-    private _renderActionColumnTitle(isBidirectional: boolean) {
+    private _renderActionColumnTitle(isBidirectional: boolean): React.ReactNode {
         let iconClass = 'zmdi-long-arrow-right';
         let leftSymbol = 'WETH';
         let rightSymbol = 'ETH';
@@ -241,7 +241,7 @@ export class EthWrappers extends React.Component<EthWrappersProps, EthWrappersSt
             </div>
         );
     }
-    private _renderOutdatedWeths(etherToken: Token, etherTokenState: TokenState) {
+    private _renderOutdatedWeths(etherToken: Token, etherTokenState: TokenState): React.ReactNode {
         const rows = _.map(
             configs.OUTDATED_WRAPPED_ETHERS,
             (outdatedWETHByNetworkId: OutdatedWrappedEtherByNetworkId) => {
@@ -313,7 +313,7 @@ export class EthWrappers extends React.Component<EthWrappersProps, EthWrappersSt
         );
         return rows;
     }
-    private _renderTokenLink(tokenLabel: React.ReactNode, etherscanUrl: string) {
+    private _renderTokenLink(tokenLabel: React.ReactNode, etherscanUrl: string): React.ReactNode {
         return (
             <span>
                 {_.isUndefined(etherscanUrl) ? (
@@ -326,7 +326,7 @@ export class EthWrappers extends React.Component<EthWrappersProps, EthWrappersSt
             </span>
         );
     }
-    private _renderToken(name: string, address: string, imgPath: string) {
+    private _renderToken(name: string, address: string, imgPath: string): React.ReactNode {
         const tooltipId = `tooltip-${address}`;
         return (
             <div className="flex">
@@ -340,7 +340,7 @@ export class EthWrappers extends React.Component<EthWrappersProps, EthWrappersSt
             </div>
         );
     }
-    private async _onOutdatedConversionSuccessfulAsync(outdatedWETHAddress: string) {
+    private async _onOutdatedConversionSuccessfulAsync(outdatedWETHAddress: string): Promise<void> {
         const currentOutdatedWETHState = this.state.outdatedWETHStateByAddress[outdatedWETHAddress];
         this.setState({
             outdatedWETHStateByAddress: {
@@ -368,7 +368,7 @@ export class EthWrappers extends React.Component<EthWrappersProps, EthWrappersSt
             },
         });
     }
-    private async _fetchWETHStateAsync() {
+    private async _fetchWETHStateAsync(): Promise<void> {
         const tokens = _.values(this.props.tokenByAddress);
         const wethToken = _.find(tokens, token => token.symbol === 'WETH');
         const userAddressIfExists = _.isEmpty(this.props.userAddress) ? undefined : this.props.userAddress;
@@ -414,12 +414,12 @@ export class EthWrappers extends React.Component<EthWrappersProps, EthWrappersSt
         );
         return outdatedWETHAddresses;
     }
-    private _getEthToken() {
+    private _getEthToken(): Token {
         const tokens = _.values(this.props.tokenByAddress);
         const etherToken = _.find(tokens, { symbol: 'WETH' });
         return etherToken;
     }
-    private async _refetchEthTokenStateAsync() {
+    private async _refetchEthTokenStateAsync(): Promise<void> {
         const etherToken = this._getEthToken();
         const userAddressIfExists = _.isEmpty(this.props.userAddress) ? undefined : this.props.userAddress;
         const [balance, allowance] = await this.props.blockchain.getTokenBalanceAndAllowanceAsync(

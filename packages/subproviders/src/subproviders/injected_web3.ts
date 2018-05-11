@@ -31,7 +31,7 @@ export class InjectedWeb3Subprovider extends Subprovider {
      * @param end Callback to call if subprovider handled the request and wants to pass back the request.
      */
     // tslint:disable-next-line:prefer-function-over-method async-suffix
-    public async handleRequest(payload: JSONRPCRequestPayload, next: Callback, end: ErrorCallback) {
+    public async handleRequest(payload: JSONRPCRequestPayload, next: Callback, end: ErrorCallback): Promise<void> {
         switch (payload.method) {
             case 'web3_clientVersion':
                 this._injectedWeb3.version.getNode(end);

@@ -6,6 +6,15 @@ import * as _ from 'lodash';
 
 import { crypto } from './crypto';
 
+interface OrderAddressesAndValues {
+    orderAddresses: string[];
+    orderValues: BigNumber[];
+}
+
+interface OrderCancel extends OrderAddressesAndValues {
+    cancelTakerTokenAmount: BigNumber;
+}
+
 export const signedOrderUtils = {
     createFill: (
         signedOrder: SignedOrder,
@@ -20,14 +29,14 @@ export const signedOrderUtils = {
         };
         return fill;
     },
-    createCancel(signedOrder: SignedOrder, cancelTakerTokenAmount?: BigNumber) {
+    createCancel(signedOrder: SignedOrder, cancelTakerTokenAmount?: BigNumber): OrderCancel {
         const cancel = {
             ...signedOrderUtils.getOrderAddressesAndValues(signedOrder),
             cancelTakerTokenAmount: cancelTakerTokenAmount || signedOrder.takerTokenAmount,
         };
         return cancel;
     },
-    getOrderAddressesAndValues(signedOrder: SignedOrder) {
+    getOrderAddressesAndValues(signedOrder: SignedOrder): OrderAddressesAndValues {
         return {
             orderAddresses: [
                 signedOrder.maker,

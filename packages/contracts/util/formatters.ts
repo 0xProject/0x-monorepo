@@ -9,7 +9,7 @@ export const formatters = {
         signedOrders: SignedOrder[],
         shouldThrowOnInsufficientBalanceOrAllowance: boolean,
         fillTakerTokenAmounts: BigNumber[] = [],
-    ) {
+    ): BatchFillOrders {
         const batchFill: BatchFillOrders = {
             orderAddresses: [],
             orderValues: [],
@@ -48,7 +48,7 @@ export const formatters = {
         signedOrders: SignedOrder[],
         shouldThrowOnInsufficientBalanceOrAllowance: boolean,
         fillTakerTokenAmount: BigNumber,
-    ) {
+    ): FillOrdersUpTo {
         const fillUpTo: FillOrdersUpTo = {
             orderAddresses: [],
             orderValues: [],
@@ -80,7 +80,7 @@ export const formatters = {
         });
         return fillUpTo;
     },
-    createBatchCancel(signedOrders: SignedOrder[], cancelTakerTokenAmounts: BigNumber[] = []) {
+    createBatchCancel(signedOrders: SignedOrder[], cancelTakerTokenAmounts: BigNumber[] = []): BatchCancelOrders {
         const batchCancel: BatchCancelOrders = {
             orderAddresses: [],
             orderValues: [],

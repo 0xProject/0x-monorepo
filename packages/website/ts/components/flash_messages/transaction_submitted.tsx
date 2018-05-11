@@ -9,7 +9,7 @@ interface TransactionSubmittedProps {
 interface TransactionSubmittedState {}
 
 export class TransactionSubmitted extends React.Component<TransactionSubmittedProps, TransactionSubmittedState> {
-    public render() {
+    public render(): React.ReactNode {
         if (_.isUndefined(this.props.etherScanLinkIfExists)) {
             return <div>Transaction submitted to the network</div>;
         } else {

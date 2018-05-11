@@ -99,15 +99,15 @@ export class TokenBalances extends React.Component<TokenBalancesProps, TokenBala
             trackedTokenStateByAddress: initialTrackedTokenStateByAddress,
         };
     }
-    public componentWillMount() {
+    public componentWillMount(): void {
         const trackedTokenAddresses = _.keys(this.state.trackedTokenStateByAddress);
         // tslint:disable-next-line:no-floating-promises
         this._fetchBalancesAndAllowancesAsync(trackedTokenAddresses);
     }
-    public componentWillUnmount() {
+    public componentWillUnmount(): void {
         this._isUnmounted = true;
     }
-    public componentWillReceiveProps(nextProps: TokenBalancesProps) {
+    public componentWillReceiveProps(nextProps: TokenBalancesProps): void {
         if (nextProps.userEtherBalanceInWei !== this.props.userEtherBalanceInWei) {
             if (this.state.isBalanceSpinnerVisible) {
                 const receivedAmountInWei = nextProps.userEtherBalanceInWei.minus(this.props.userEtherBalanceInWei);
@@ -153,10 +153,10 @@ export class TokenBalances extends React.Component<TokenBalancesProps, TokenBala
             this._fetchBalancesAndAllowancesAsync(newTokenAddresses);
         }
     }
-    public componentDidMount() {
+    public componentDidMount(): void {
         window.scrollTo(0, 0);
     }
-    public render() {
+    public render(): React.ReactNode {
         const errorDialogActions = [
             <FlatButton
                 key="errorOkBtn"
@@ -294,7 +294,7 @@ export class TokenBalances extends React.Component<TokenBalancesProps, TokenBala
             </div>
         );
     }
-    private _renderTokenTableRows() {
+    private _renderTokenTableRows(): React.ReactNode {
         if (!this.props.blockchainIsLoaded || this.props.blockchainErr !== BlockchainErrs.NoError) {
             return '';
         }
@@ -313,7 +313,7 @@ export class TokenBalances extends React.Component<TokenBalancesProps, TokenBala
         );
         return tableRows;
     }
-    private _renderTokenRow(tokenColSpan: number, actionPaddingX: number, token: Token) {
+    private _renderTokenRow(tokenColSpan: number, actionPaddingX: number, token: Token): React.ReactNode {
         const tokenState = this.state.trackedTokenStateByAddress[token.address];
         const tokenLink = sharedUtils.getEtherScanLinkIfExists(
             token.address,
@@ -411,7 +411,7 @@ export class TokenBalances extends React.Component<TokenBalancesProps, TokenBala
             </TableRow>
         );
     }
-    private _onAssetTokenPicked(tokenAddress: string) {
+    private _onAssetTokenPicked(tokenAddress: string): void {
         if (_.isEmpty(tokenAddress)) {
             this.setState({
                 isTokenPickerOpen: false,
@@ -439,16 +439,16 @@ export class TokenBalances extends React.Component<TokenBalancesProps, TokenBala
             isTokenPickerOpen: false,
         });
     }
-    private _onSendFailed() {
+    private _onSendFailed(): void {
         this.setState({
             errorType: BalanceErrs.sendFailed,
         });
     }
-    private _renderAmount(amount: BigNumber, decimals: number) {
+    private _renderAmount(amount: BigNumber, decimals: number): React.ReactNode {
         const unitAmount = ZeroEx.toUnitAmount(amount, decimals);
         return unitAmount.toNumber().toFixed(configs.AMOUNT_DISPLAY_PRECSION);
     }
-    private _renderTokenName(token: Token) {
+    private _renderTokenName(token: Token): React.ReactNode {
         const tooltipId = `tooltip-${token.address}`;
         return (
             <div className="flex">
@@ -460,7 +460,7 @@ export class TokenBalances extends React.Component<TokenBalancesProps, TokenBala
             </div>
         );
     }
-    private _renderErrorDialogBody() {
+    private _renderErrorDialogBody(): React.ReactNode {
         switch (this.state.errorType) {
             case BalanceErrs.incorrectNetworkForFaucet:
                 return (
@@ -499,7 +499,7 @@ export class TokenBalances extends React.Component<TokenBalancesProps, TokenBala
                 throw utils.spawnSwitchErr('errorType', this.state.errorType);
         }
     }
-    private _onErrorOccurred(errorType: BalanceErrs) {
+    private _onErrorOccurred(errorType: BalanceErrs): void {
         this.setState({
             errorType,
         });
@@ -577,24 +577,24 @@ export class TokenBalances extends React.Component<TokenBalancesProps, TokenBala
         }
         return true;
     }
-    private _onErrorDialogToggle(isOpen: boolean) {
+    private _onErrorDialogToggle(isOpen: boolean): void {
         this.setState({
             errorType: undefined,
         });
     }
-    private _onAddTokenClicked() {
+    private _onAddTokenClicked(): void {
         this.setState({
             isTokenPickerOpen: true,
             isAddingToken: true,
         });
     }
-    private _onRemoveTokenClicked() {
+    private _onRemoveTokenClicked(): void {
         this.setState({
             isTokenPickerOpen: true,
             isAddingToken: false,
         });
     }
-    private async _startPollingZrxBalanceAsync() {
+    private async _startPollingZrxBalanceAsync(): Promise<void> {
         const tokens = _.values(this.props.tokenByAddress);
         const zrxToken = _.find(tokens, t => t.symbol === ZRX_TOKEN_SYMBOL);
 
@@ -609,7 +609,7 @@ export class TokenBalances extends React.Component<TokenBalancesProps, TokenBala
             isZRXSpinnerVisible: false,
         });
     }
-    private async _fetchBalancesAndAllowancesAsync(tokenAddresses: string[]) {
+    private async _fetchBalancesAndAllowancesAsync(tokenAddresses: string[]): Promise<void> {
         const trackedTokenStateByAddress = this.state.trackedTokenStateByAddress;
         const userAddressIfExists = _.isEmpty(this.props.userAddress) ? undefined : this.props.userAddress;
         for (const tokenAddress of tokenAddresses) {
@@ -629,7 +629,7 @@ export class TokenBalances extends React.Component<TokenBalancesProps, TokenBala
             });
         }
     }
-    private _getInitialTrackedTokenStateByAddress(trackedTokens: Token[]) {
+    private _getInitialTrackedTokenStateByAddress(trackedTokens: Token[]): TokenStateByAddress {
         const trackedTokenStateByAddress: TokenStateByAddress = {};
         _.each(trackedTokens, token => {
             trackedTokenStateByAddress[token.address] = {
@@ -640,7 +640,7 @@ export class TokenBalances extends React.Component<TokenBalancesProps, TokenBala
         });
         return trackedTokenStateByAddress;
     }
-    private async _refetchTokenStateAsync(tokenAddress: string) {
+    private async _refetchTokenStateAsync(tokenAddress: string): Promise<void> {
         const userAddressIfExists = _.isEmpty(this.props.userAddress) ? undefined : this.props.userAddress;
         const [balance, allowance] = await this.props.blockchain.getTokenBalanceAndAllowanceAsync(
             userAddressIfExists,

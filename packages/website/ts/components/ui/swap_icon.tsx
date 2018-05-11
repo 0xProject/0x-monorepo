@@ -17,7 +17,7 @@ export class SwapIcon extends React.Component<SwapIconProps, SwapIconState> {
             isHovering: false,
         };
     }
-    public render() {
+    public render(): React.ReactNode {
         const swapStyles = {
             color: this.state.isHovering ? colors.amber600 : colors.amber800,
             fontSize: 50,
@@ -34,7 +34,7 @@ export class SwapIcon extends React.Component<SwapIconProps, SwapIconState> {
             </div>
         );
     }
-    private _onToggleHover(isHovering: boolean) {
+    private _onToggleHover(isHovering: boolean): void {
         this.setState({
             isHovering,
         });

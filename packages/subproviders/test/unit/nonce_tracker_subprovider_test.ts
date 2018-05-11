@@ -39,7 +39,7 @@ describe('NonceTrackerSubprovider', () => {
         '0x5e1d3a76fbf824220eafc8c79ad578ad2b67d01b0c2425eb1f1347e8f50882ab',
         '0x5bd428537f05f9830e93792f90ea6a3e2d1ee84952dd96edbae9f658f831ab13',
     ];
-    function createFixtureSubprovider() {
+    function createFixtureSubprovider(): FixtureSubprovider {
         let isFirstGetTransactionCount = true;
         const fixedBlockNumberAndTransactionCountProvider = new FixtureSubprovider({
             eth_getBlockByNumber: '0x01',
