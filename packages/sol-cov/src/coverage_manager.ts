@@ -1,7 +1,9 @@
+import { promisify } from '@0xproject/utils';
 import { addHexPrefix } from 'ethereumjs-util';
 import * as fs from 'fs';
 import { Collector } from 'istanbul';
 import * as _ from 'lodash';
+import * as mkdirp from 'mkdirp';
 import * as path from 'path';
 
 import { collectContractsData } from './collect_contract_data';
@@ -29,6 +31,8 @@ import {
 } from './types';
 import { utils } from './utils';
 
+const mkdirpAsync = promisify<undefined>(mkdirp);
+
 export class CoverageManager {
     private _sourcesPath: string;
     private _traceInfos: TraceInfo[] = [];
@@ -49,6 +53,7 @@ export class CoverageManager {
     public async writeCoverageAsync(): Promise<void> {
         const finalCoverage = await this._computeCoverageAsync();
         const stringifiedCoverage = JSON.stringify(finalCoverage, null, '\t');
+        await mkdirpAsync('coverage');
         fs.writeFileSync('coverage/coverage.json', stringifiedCoverage);
     }
     private _getSingleFileCoverageForTrace(
