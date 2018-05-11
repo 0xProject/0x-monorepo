@@ -279,7 +279,6 @@ export class Web3Wrapper {
         };
         const payload = {
             jsonrpc: '2.0',
-            id: this._jsonRpcRequestId++,
             method: 'eth_getLogs',
             params: [serializedFilter],
         };
@@ -375,8 +374,44 @@ export class Web3Wrapper {
         const txReceipt = await txReceiptPromise;
         return txReceipt;
     }
+    /**
+     * Start the CPU mining process with the given number of threads and
+     * generate a new DAG if need be.
+     * @param   threads The number of threads to mine on.
+     */
+    public async minerStartAsync(threads: number = 1): Promise<void> {
+        await this._sendRawPayloadAsync<boolean>({
+            method: 'miner_start',
+            params: [threads],
+        });
+    }
+    /**
+     * Stop the CPU mining process.
+     * @param   threads The number of threads to mine on.
+     */
+    public async minerStopAsync(): Promise<void> {
+        await this._sendRawPayloadAsync<boolean>({ method: 'miner_stop', params: [] });
+    }
+    /**
+     * Returns true if client is actively mining new blocks.
+     * @returns A boolean indicating whether the node is currently mining.
+     */
+    public async isMiningAsync(): Promise<boolean> {
+        const isMining = await promisify<boolean>(this._web3.eth.getMining)();
+        return isMining;
+    }
+    /**
+     * Sets the current head of the local chain by block number. Note, this is a
+     * destructive action and may severely damage your chain. Use with extreme
+     * caution.
+     * @param  blockNumber The block number to reset to.
+     */
+    public async setHeadAsync(blockNumber: number): Promise<void> {
+        await this._sendRawPayloadAsync<void>({ method: 'debug_setHead', params: [this._web3.toHex(blockNumber)] });
+    }
     private async _sendRawPayloadAsync<A>(payload: Partial<JSONRPCRequestPayload>): Promise<A> {
         const sendAsync = this._web3.currentProvider.sendAsync.bind(this._web3.currentProvider);
+        payload.id = this._jsonRpcRequestId++;
         const response = await promisify<JSONRPCResponsePayload>(sendAsync)(payload);
         const result = response.result;
         return result;

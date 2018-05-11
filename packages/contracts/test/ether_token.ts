@@ -18,6 +18,9 @@ chaiSetup.configure();
 const expect = chai.expect;
 const blockchainLifecycle = new BlockchainLifecycle(web3Wrapper);
 
+// TODO(albrow): actually create the required accounts (giving them a balance is not sufficient).
+// TODO(albrow): wait for transactions to be added to the blockchain. (Ganache instant mines, so we never have to check).
+
 describe('EtherToken', () => {
     let account: string;
     const gasPrice = ZeroEx.toBaseUnitAmount(new BigNumber(20), 9);
