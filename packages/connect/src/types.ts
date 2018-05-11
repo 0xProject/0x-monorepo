@@ -11,7 +11,6 @@ export interface Client {
 }
 
 export interface OrderbookChannel {
-    connectAsync: () => Promise<void>;
     subscribe: (subscriptionOpts: OrderbookChannelSubscriptionOpts, handler: OrderbookChannelHandler) => void;
     close: () => void;
 }
