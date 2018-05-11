@@ -19,7 +19,7 @@
         "test": "run-s clean build run_mocha",
         "test:coverage": "nyc npm run test --all && yarn coverage:report:lcov",
         "coverage:report:lcov": "nyc report --reporter=text-lcov > coverage/lcov.info",
-        "update_artifacts": "for i in ${npm_package_config_contracts}; do copyfiles -u 4 ../migrations/artifacts/$i.json test/artifacts; done;",
+        "update_artifacts": "for i in ${npm_package_config_contracts}; do copyfiles -u 4 ../migrations/artifacts/1.0.0/$i.json test/artifacts; done;",
         "clean": "shx rm -rf _bundles lib test_temp scripts test/artifacts src/contract_wrappers/generated",
         "build": "tsc && yarn update_artifacts && copyfiles -u 2 './src/compact_artifacts/**/*.json' ./lib/src/compact_artifacts && copyfiles -u 3 './lib/src/monorepo_scripts/**/*' ./scripts",
         "run_mocha": "mocha lib/test/**/*_test.js lib/test/global_hooks.js --timeout 10000 --bail --exit",
