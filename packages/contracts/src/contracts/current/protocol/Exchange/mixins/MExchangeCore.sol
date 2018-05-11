@@ -56,14 +56,10 @@ contract MExchangeCore is
         uint256 makerEpoch
     );
 
-    /// @dev Logs a Fill event with the given arguments.
-    ///      The sole purpose of this function is to get around the stack variable limit.
-    function emitFillEvent(
-        LibOrder.Order memory order,
-        address takerAddress,
-        bytes32 orderHash,
-        LibFillResults.FillResults memory fillResults)
-        internal;
+    /// @dev Cancels all orders reated by sender with a salt less than or equal to the specified salt value.
+    /// @param salt Orders created with a salt less or equal to this value will be cancelled.
+    function cancelOrdersUpTo(uint256 salt)
+        external;
 
     /// @dev Gets information about an order: status, hash, and amount filled.
     /// @param order Order to gather information on.
@@ -76,24 +72,25 @@ contract MExchangeCore is
         returns (
             uint8 orderStatus,
             bytes32 orderHash,
-            uint256 takerAssetFilledAmount);
+            uint256 takerAssetFilledAmount
+        );
 
     /// @dev Validates context for fillOrder. Succeeds or throws.
     /// @param order to be filled.
     /// @param orderStatus Status of order to be filled.
     /// @param orderHash Hash of order to be filled.
-    /// @param takerAssetFilledAmount Amount of order already filled.
-    /// @param signature Proof that the orders was created by its maker.
     /// @param takerAddress Address of order taker.
+    /// @param takerAssetFilledAmount Amount of order already filled.
     /// @param takerAssetFillAmount Desired amount of order to fill by taker.
-    function validateFillOrderContextOrRevert(
+    /// @param signature Proof that the orders was created by its maker.
+    function validateFillOrRevert(
         LibOrder.Order memory order,
         uint8 orderStatus,
         bytes32 orderHash,
-        uint256 takerAssetFilledAmount,
-        bytes memory signature,
         address takerAddress,
-        uint256 takerAssetFillAmount)
+        uint256 takerAssetFilledAmount,
+        uint256 takerAssetFillAmount,
+        bytes memory signature)
         internal;
 
     /// @dev Calculates amounts filled and fees paid by maker and taker.
@@ -112,16 +109,19 @@ contract MExchangeCore is
         pure
         returns (
             uint8 status,
-            LibFillResults.FillResults memory fillResults);
+            LibFillResults.FillResults memory fillResults
+        );
 
     /// @dev Updates state with results of a fill order.
     /// @param order that was filled.
     /// @param takerAddress Address of taker who filled the order.
+    /// @param takerAssetFilledAmount Amount of order already filled.
     /// @return fillResults Amounts filled and fees paid by maker and taker.
     function updateFilledState(
         LibOrder.Order memory order,
         address takerAddress,
         bytes32 orderHash,
+        uint256 takerAssetFilledAmount,
         LibFillResults.FillResults memory fillResults)
         internal;
 
@@ -141,7 +141,7 @@ contract MExchangeCore is
     /// @param order that was cancelled.
     /// @param orderStatus Status of order that was cancelled.
     /// @param orderHash Hash of order that was cancelled.
-    function validateCancelOrderContextOrRevert(
+    function validateCancelOrRevert(
         LibOrder.Order memory order,
         uint8 orderStatus,
         bytes32 orderHash)
@@ -162,15 +162,12 @@ contract MExchangeCore is
         returns (bool stateUpdated);
 
     /// @dev After calling, the order can not be filled anymore.
-    /// @param order Order struct containing order specifications.
+    ///      Throws if order is invalid or sender does not have permission to cancel.
+    /// @param order Order to cancel. Order must be Status.FILLABLE.
     /// @return True if the order state changed to cancelled.
-    ///         False if the transaction was already cancelled or expired.
+    ///         False if the order was order was in a valid, but
+    ///               unfillable state (see LibStatus.STATUS for order states)
     function cancelOrder(LibOrder.Order memory order)
         public
         returns (bool);
-
-    /// @dev Cancels all orders reated by sender with a salt less than or equal to the specified salt value.
-    /// @param salt Orders created with a salt less or equal to this value will be cancelled.
-    function cancelOrdersUpTo(uint256 salt)
-        external;
 }

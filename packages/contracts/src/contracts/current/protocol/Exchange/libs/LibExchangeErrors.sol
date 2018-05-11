@@ -55,5 +55,4 @@ contract LibExchangeErrors {
     string constant NEGATIVE_SPREAD = "Matched orders must have a positive spread.";
     string constant MISCALCULATED_TRANSFER_AMOUNTS = "A miscalculation occurred: the left maker would receive more than the right maker would spend.";
     string constant ROUNDING_ERROR_TRANSFER_AMOUNTS = "A rounding error occurred when calculating transfer amounts for matched orders.";
-    string constant ROUNDING_ERROR_ON_PARTIAL_AMOUNT = "A rounding error occurred when calculating partial transfer amounts.";
 }

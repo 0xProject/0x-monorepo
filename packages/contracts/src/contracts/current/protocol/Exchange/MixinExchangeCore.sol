@@ -53,6 +53,20 @@ contract MixinExchangeCore is
 
     ////// Core exchange functions //////
 
+    /// @dev Cancels all orders reated by sender with a salt less than or equal to the specified salt value.
+    /// @param salt Orders created with a salt less or equal to this value will be cancelled.
+    function cancelOrdersUpTo(uint256 salt)
+        external
+    {
+        uint256 newMakerEpoch = salt + 1;  // makerEpoch is initialized to 0, so to cancelUpTo we need salt + 1
+        require(
+            newMakerEpoch > makerEpoch[msg.sender],  // epoch must be monotonically increasing
+            INVALID_NEW_MAKER_EPOCH
+        );
+        makerEpoch[msg.sender] = newMakerEpoch;
+        emit CancelUpTo(msg.sender, newMakerEpoch);
+    }
+
     /// @dev Gets information about an order: status, hash, and amount filled.
     /// @param order Order to gather information on.
     /// @return status Status of order. Statuses are defined in the LibStatus.Status struct.
@@ -64,20 +78,11 @@ contract MixinExchangeCore is
         returns (
             uint8 orderStatus,
             bytes32 orderHash,
-            uint256 takerAssetFilledAmount)
+            uint256 takerAssetFilledAmount
+        )
     {
-        // Compute the order hash and fetch filled amount
+        // Compute the order hash
         orderHash = getOrderHash(order);
-        takerAssetFilledAmount = filled[orderHash];
-
-        // If order.takerAssetAmount is zero, then the order will always
-        // be considered filled because 0 == takerAssetAmount == takerAssetFilledAmount
-        // Instead of distinguishing between unfilled and filled zero taker
-        // amount orders, we choose not to support them.
-        if (order.takerAssetAmount == 0) {
-            orderStatus = uint8(Status.ORDER_INVALID_TAKER_ASSET_AMOUNT);
-            return (orderStatus, orderHash, takerAssetFilledAmount);
-        }
 
         // If order.makerAssetAmount is zero, we also reject the order.
         // While the Exchange contract handles them correctly, they create
@@ -88,15 +93,18 @@ contract MixinExchangeCore is
             return (orderStatus, orderHash, takerAssetFilledAmount);
         }
 
-        // Validate order expiration
-        if (block.timestamp >= order.expirationTimeSeconds) {
-            orderStatus = uint8(Status.ORDER_EXPIRED);
+        // If order.takerAssetAmount is zero, then the order will always
+        // be considered filled because 0 == takerAssetAmount == takerAssetFilledAmount
+        // Instead of distinguishing between unfilled and filled zero taker
+        // amount orders, we choose not to support them.
+        if (order.takerAssetAmount == 0) {
+            orderStatus = uint8(Status.ORDER_INVALID_TAKER_ASSET_AMOUNT);
             return (orderStatus, orderHash, takerAssetFilledAmount);
         }
 
-        // Validate order availability
-        if (takerAssetFilledAmount >= order.takerAssetAmount) {
-            orderStatus = uint8(Status.ORDER_FULLY_FILLED);
+        // Validate order expiration
+        if (block.timestamp >= order.expirationTimeSeconds) {
+            orderStatus = uint8(Status.ORDER_EXPIRED);
             return (orderStatus, orderHash, takerAssetFilledAmount);
         }
 
@@ -110,6 +118,13 @@ contract MixinExchangeCore is
             return (orderStatus, orderHash, takerAssetFilledAmount);
         }
 
+        // Fetch filled amount and validate order availability
+        takerAssetFilledAmount = filled[orderHash];
+        if (takerAssetFilledAmount >= order.takerAssetAmount) {
+            orderStatus = uint8(Status.ORDER_FULLY_FILLED);
+            return (orderStatus, orderHash, takerAssetFilledAmount);
+        }
+
         // All other statuses are ruled out: order is Fillable
         orderStatus = uint8(Status.ORDER_FILLABLE);
         return (orderStatus, orderHash, takerAssetFilledAmount);
@@ -119,18 +134,18 @@ contract MixinExchangeCore is
     /// @param order to be filled.
     /// @param orderStatus Status of order to be filled.
     /// @param orderHash Hash of order to be filled.
-    /// @param takerAssetFilledAmount Amount of order already filled.
-    /// @param signature Proof that the orders was created by its maker.
     /// @param takerAddress Address of order taker.
+    /// @param takerAssetFilledAmount Amount of order already filled.
     /// @param takerAssetFillAmount Desired amount of order to fill by taker.
-    function validateFillOrderContextOrRevert(
+    /// @param signature Proof that the orders was created by its maker.
+    function validateFillOrRevert(
         Order memory order,
         uint8 orderStatus,
         bytes32 orderHash,
-        uint256 takerAssetFilledAmount,
-        bytes memory signature,
         address takerAddress,
-        uint256 takerAssetFillAmount)
+        uint256 takerAssetFilledAmount,
+        uint256 takerAssetFillAmount,
+        bytes memory signature)
         internal
     {
         // Ensure order is valid
@@ -190,23 +205,24 @@ contract MixinExchangeCore is
         pure
         returns (
             uint8 status,
-            FillResults memory fillResults)
+            FillResults memory fillResults
+        )
     {
-        // Fill Amount must be greater than 0
-        if (takerAssetFillAmount <= 0) {
+        // Fill amount must be greater than 0
+        if (takerAssetFillAmount == 0) {
             status = uint8(Status.TAKER_ASSET_FILL_AMOUNT_TOO_LOW);
             return;
         }
 
         // Ensure the order is fillable
         if (orderStatus != uint8(Status.ORDER_FILLABLE)) {
-            status = uint8(orderStatus);
+            status = orderStatus;
             return;
         }
 
         // Compute takerAssetFilledAmount
-        uint256 remainingtakerAssetAmount = safeSub(order.takerAssetAmount, takerAssetFilledAmount);
-        fillResults.takerAssetFilledAmount = min256(takerAssetFillAmount, remainingtakerAssetAmount);
+        uint256 remainingTakerAssetAmount = safeSub(order.takerAssetAmount, takerAssetFilledAmount);
+        fillResults.takerAssetFilledAmount = min256(takerAssetFillAmount, remainingTakerAssetAmount);
 
         // Validate fill order rounding
         if (isRoundingError(
@@ -242,19 +258,32 @@ contract MixinExchangeCore is
     /// @dev Updates state with results of a fill order.
     /// @param order that was filled.
     /// @param takerAddress Address of taker who filled the order.
+    /// @param takerAssetFilledAmount Amount of order already filled.
     /// @return fillResults Amounts filled and fees paid by maker and taker.
     function updateFilledState(
         Order memory order,
         address takerAddress,
         bytes32 orderHash,
+        uint256 takerAssetFilledAmount,
         FillResults memory fillResults)
         internal
     {
         // Update state
-        filled[orderHash] = safeAdd(filled[orderHash], fillResults.takerAssetFilledAmount);
+        filled[orderHash] = safeAdd(takerAssetFilledAmount, fillResults.takerAssetFilledAmount);
 
         // Log order
-        emitFillEvent(order, takerAddress, orderHash, fillResults);
+        emit Fill(
+            order.makerAddress,
+            takerAddress,
+            order.feeRecipientAddress,
+            fillResults.makerAssetFilledAmount,
+            fillResults.takerAssetFilledAmount,
+            fillResults.makerFeePaid,
+            fillResults.takerFeePaid,
+            orderHash,
+            order.makerAssetData,
+            order.takerAssetData
+        );
     }
 
     /// @dev Fills the input order.
@@ -279,7 +308,15 @@ contract MixinExchangeCore is
         address takerAddress = getCurrentContextAddress();
 
         // Either our context is valid or we revert
-        validateFillOrderContextOrRevert(order, orderStatus, orderHash, takerAssetFilledAmount, signature, takerAddress, takerAssetFillAmount);
+        validateFillOrRevert(
+            order,
+            orderStatus,
+            orderHash,
+            takerAddress,
+            takerAssetFilledAmount,
+            takerAssetFillAmount,
+            signature
+        );
 
         // Compute proportional fill amounts
         uint8 status;
@@ -290,11 +327,16 @@ contract MixinExchangeCore is
         }
 
         // Settle order
-        (fillResults.makerAssetFilledAmount, fillResults.makerFeePaid, fillResults.takerFeePaid) =
-            settleOrder(order, takerAddress, fillResults.takerAssetFilledAmount);
+        settleOrder(order, takerAddress, fillResults);
 
         // Update exchange internal state
-        updateFilledState(order, takerAddress, orderHash, fillResults);
+        updateFilledState(
+            order,
+            takerAddress,
+            orderHash,
+            takerAssetFilledAmount,
+            fillResults
+        );
         return fillResults;
     }
 
@@ -302,7 +344,7 @@ contract MixinExchangeCore is
     /// @param order that was cancelled.
     /// @param orderStatus Status of order that was cancelled.
     /// @param orderHash Hash of order that was cancelled.
-    function validateCancelOrderContextOrRevert(
+    function validateCancelOrRevert(
         Order memory order,
         uint8 orderStatus,
         bytes32 orderHash)
@@ -386,50 +428,12 @@ contract MixinExchangeCore is
         // Fetch current order status
         bytes32 orderHash;
         uint8 orderStatus;
-        uint256 takerAssetFilledAmount;
-        (orderStatus, orderHash, takerAssetFilledAmount) = getOrderInfo(order);
+        (orderStatus, orderHash, ) = getOrderInfo(order);
 
         // Validate context
-        validateCancelOrderContextOrRevert(order, orderStatus, orderHash);
+        validateCancelOrRevert(order, orderStatus, orderHash);
 
         // Perform cancel
         return updateCancelledState(order, orderStatus, orderHash);
-    }
-
-    /// @dev Cancels all orders reated by sender with a salt less than or equal to the specified salt value.
-    /// @param salt Orders created with a salt less or equal to this value will be cancelled.
-    function cancelOrdersUpTo(uint256 salt)
-        external
-    {
-        uint256 newMakerEpoch = salt + 1;  // makerEpoch is initialized to 0, so to cancelUpTo we need salt + 1
-        require(
-            newMakerEpoch > makerEpoch[msg.sender],  // epoch must be monotonically increasing
-            INVALID_NEW_MAKER_EPOCH
-        );
-        makerEpoch[msg.sender] = newMakerEpoch;
-        emit CancelUpTo(msg.sender, newMakerEpoch);
-    }
-
-    /// @dev Logs a Fill event with the given arguments.
-    ///      The sole purpose of this function is to get around the stack variable limit.
-    function emitFillEvent(
-        Order memory order,
-        address takerAddress,
-        bytes32 orderHash,
-        FillResults memory fillResults)
-        internal
-    {
-        emit Fill(
-            order.makerAddress,
-            takerAddress,
-            order.feeRecipientAddress,
-            fillResults.makerAssetFilledAmount,
-            fillResults.takerAssetFilledAmount,
-            fillResults.makerFeePaid,
-            fillResults.takerFeePaid,
-            orderHash,
-            order.makerAssetData,
-            order.takerAssetData
-        );
     }
 }

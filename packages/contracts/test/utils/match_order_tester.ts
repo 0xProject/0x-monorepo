@@ -32,7 +32,6 @@ import {
     TransferAmountsByMatchOrders as TransferAmounts,
 } from '../../src/utils/types';
 import { chaiSetup } from '../utils/chai_setup';
-import { deployer } from '../utils/deployer';
 import { provider, web3Wrapper } from '../utils/web3_wrapper';
 
 chaiSetup.configure();

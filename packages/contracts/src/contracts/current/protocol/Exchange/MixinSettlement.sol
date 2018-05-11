@@ -22,11 +22,13 @@ import "./mixins/MSettlement.sol";
 import "./mixins/MAssetProxyDispatcher.sol";
 import "./libs/LibOrder.sol";
 import "./libs/LibMath.sol";
+import "./libs/LibExchangeErrors.sol";
+import "./libs/LibFillResults.sol";
 import "./mixins/MMatchOrders.sol";
-import "./mixins/LibExchangeErrors.sol";
 
 contract MixinSettlement is
     LibMath,
+    LibFillResults,
     LibExchangeErrors,
     MMatchOrders,
     MSettlement,
@@ -58,47 +60,37 @@ contract MixinSettlement is
     /// @dev Settles an order by transferring assets between counterparties.
     /// @param order Order struct containing order specifications.
     /// @param takerAddress Address selling takerAsset and buying makerAsset.
-    /// @param takerAssetFilledAmount The amount of takerAsset that will be transferred to the order's maker.
-    /// @return Amount filled by maker and fees paid by maker/taker.
+    /// @param fillResults Amounts to be filled and fees paid by maker and taker.
     function settleOrder(
         LibOrder.Order memory order,
         address takerAddress,
-        uint256 takerAssetFilledAmount)
+        FillResults memory fillResults)
         internal
-        returns (
-            uint256 makerAssetFilledAmount,
-            uint256 makerFeePaid,
-            uint256 takerFeePaid
-        )
     {
-        makerAssetFilledAmount = getPartialAmount(takerAssetFilledAmount, order.takerAssetAmount, order.makerAssetAmount);
         dispatchTransferFrom(
             order.makerAssetData,
             order.makerAddress,
             takerAddress,
-            makerAssetFilledAmount
+            fillResults.makerAssetFilledAmount
         );
         dispatchTransferFrom(
             order.takerAssetData,
             takerAddress,
             order.makerAddress,
-            takerAssetFilledAmount
+            fillResults.takerAssetFilledAmount
         );
-        makerFeePaid = getPartialAmount(takerAssetFilledAmount, order.takerAssetAmount, order.makerFee);
         dispatchTransferFrom(
             ZRX_PROXY_DATA,
             order.makerAddress,
             order.feeRecipientAddress,
-            makerFeePaid
+            fillResults.makerFeePaid
         );
-        takerFeePaid = getPartialAmount(takerAssetFilledAmount, order.takerAssetAmount, order.takerFee);
         dispatchTransferFrom(
             ZRX_PROXY_DATA,
             takerAddress,
             order.feeRecipientAddress,
-            takerFeePaid
+            fillResults.takerFeePaid
         );
-        return (makerAssetFilledAmount, makerFeePaid, takerFeePaid);
     }
 
     /// @dev Settles matched order by transferring appropriate funds between order makers, taker, and fee recipient.

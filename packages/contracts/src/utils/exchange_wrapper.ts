@@ -225,12 +225,6 @@ export class ExchangeWrapper {
         const filledAmount = new BigNumber(await this._exchange.filled.callAsync(orderHashHex));
         return filledAmount;
     }
-    private async _getTxWithDecodedExchangeLogsAsync(txHash: string) {
-        const tx = await this._zeroEx.awaitTransactionMinedAsync(txHash);
-        tx.logs = _.filter(tx.logs, log => log.address === this._exchange.address);
-        tx.logs = _.map(tx.logs, log => this._logDecoder.decodeLogOrThrow(log));
-        return tx;
-    }
     public async getOrderInfoAsync(
         signedOrder: SignedOrder,
     ): Promise<[number /* orderStatus */, string /* orderHash */, BigNumber /* orderTakerAssetAmountFilled */]> {
@@ -251,6 +245,14 @@ export class ExchangeWrapper {
             { from },
         );
         const tx = await this._getTxWithDecodedExchangeLogsAsync(txHash);
+        tx.logs = _.filter(tx.logs, log => log.address === this._exchange.address);
+        tx.logs = _.map(tx.logs, log => this._logDecoder.decodeLogOrThrow(log));
+        return tx;
+    }
+    private async _getTxWithDecodedExchangeLogsAsync(txHash: string) {
+        const tx = await this._zeroEx.awaitTransactionMinedAsync(txHash);
+        tx.logs = _.filter(tx.logs, log => log.address === this._exchange.address);
+        tx.logs = _.map(tx.logs, log => this._logDecoder.decodeLogOrThrow(log));
         return tx;
     }
 }
