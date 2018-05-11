@@ -1,15 +1,5 @@
-import { schemas, SchemaValidator } from '@0xproject/json-schemas';
-import {
-    generatePseudoRandomSalt,
-    getOrderHashHex,
-    isValidOrderHash,
-    isValidSignature,
-    signOrderHashAsync,
-} from '@0xproject/order-utils';
-import { ECSignature, Order, Provider, SignedOrder, TransactionReceiptWithDecodedLogs } from '@0xproject/types';
-import { AbiDecoder, BigNumber, intervalUtils } from '@0xproject/utils';
+import { Provider } from '@0xproject/types';
 import { Web3Wrapper } from '@0xproject/web3-wrapper';
-import * as ethUtil from 'ethereumjs-util';
 import * as _ from 'lodash';
 
 import { artifacts } from './artifacts';
@@ -23,10 +13,6 @@ import { contractWrappersPrivateNetworkConfigSchema } from './schemas/contract_w
 import { contractWrappersPublicNetworkConfigSchema } from './schemas/contract_wrappers_public_network_config_schema';
 import { ContractWrappersConfig } from './types';
 import { assert } from './utils/assert';
-import { constants } from './utils/constants';
-import { decorators } from './utils/decorators';
-import { utils } from './utils/utils';
-
 /**
  * The ContractWrappers class contains smart contract wrappers helpful when building on 0x protocol.
  */
@@ -122,15 +108,5 @@ export class ContractWrappers {
      */
     public getProvider(): Provider {
         return this._web3Wrapper.getProvider();
-    }
-    /*
-     * HACK: `TokenWrapper` needs a token transfer proxy address. `TokenTransferProxy` address is fetched from
-     * an `ExchangeWrapper`. `ExchangeWrapper` needs `TokenWrapper` to validate orders, creating a dependency cycle.
-     * In order to break this - we create this function here and pass it as a parameter to the `TokenWrapper`
-     * and `ProxyWrapper`.
-     */
-    private async _getTokenTransferProxyAddressAsync(): Promise<string> {
-        const tokenTransferProxyAddress = await (this.exchange as any)._getTokenTransferProxyAddressAsync();
-        return tokenTransferProxyAddress;
     }
 }

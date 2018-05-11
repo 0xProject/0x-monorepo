@@ -936,10 +936,4 @@ export class ExchangeWrapper extends ContractWrapper {
         this._exchangeContractIfExists = contractInstance;
         return this._exchangeContractIfExists;
     }
-    private async _getTokenTransferProxyAddressAsync(): Promise<string> {
-        const exchangeInstance = await this._getExchangeContractAsync();
-        const tokenTransferProxyAddress = await exchangeInstance.TOKEN_TRANSFER_PROXY_CONTRACT.callAsync();
-        const tokenTransferProxyAddressLowerCase = tokenTransferProxyAddress.toLowerCase();
-        return tokenTransferProxyAddressLowerCase;
-    }
 } // tslint:disable:max-file-line-count
