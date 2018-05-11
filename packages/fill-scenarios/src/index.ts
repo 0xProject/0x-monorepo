@@ -234,9 +234,10 @@ export class FillScenarios {
             this._web3Wrapper.getProvider(),
             this._web3Wrapper.getContractDefaults(),
         );
-        const networkArtifactsIfExists = artifacts.TokenTransferProxy.networks[constants.TEST_RPC_NETWORK_ID];
+        const networkId = await this._web3Wrapper.getNetworkIdAsync();
+        const networkArtifactsIfExists = artifacts.TokenTransferProxy.networks[networkId];
         if (_.isUndefined(networkArtifactsIfExists)) {
-            throw new Error(`Did not find network artifacts for networkId: ${constants.TEST_RPC_NETWORK_ID}`);
+            throw new Error(`Did not find network artifacts for networkId: ${networkId}`);
         }
         const proxyAddress = networkArtifactsIfExists.address;
         const oldMakerAllowance = await tokenInstance.allowance.callAsync(address, proxyAddress);
