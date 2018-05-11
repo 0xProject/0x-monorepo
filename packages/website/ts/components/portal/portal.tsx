@@ -275,7 +275,7 @@ export class Portal extends React.Component<PortalProps, PortalState> {
     private _renderMenu(routeComponentProps: RouteComponentProps<any>) {
         return (
             <div>
-                <BackButton />
+                <BackButton to={`${WebsitePaths.Portal}`} labelText={'back to Relayers'} />
                 <PortalMenu selectedPath={routeComponentProps.location.pathname} />
             </div>
         );
@@ -285,7 +285,7 @@ export class Portal extends React.Component<PortalProps, PortalState> {
         const trackedTokens = _.filter(allTokens, t => t.isTracked);
         return (
             <div>
-                <Title titleText={'Your Account'} />
+                <Title labelText={'Your Account'} />
                 <Wallet
                     userAddress={this.props.userAddress}
                     networkId={this.props.networkId}
@@ -333,7 +333,7 @@ export class Portal extends React.Component<PortalProps, PortalState> {
         const trackedTokens = _.filter(allTokens, t => t.isTracked);
         return (
             <div>
-                <Title titleText={'Your Account'} />
+                <Title labelText={'Your Account'} />
                 <TokenBalances
                     blockchain={this._blockchain}
                     blockchainErr={this.props.blockchainErr}
@@ -381,7 +381,7 @@ export class Portal extends React.Component<PortalProps, PortalState> {
     private _renderRelayerIndex() {
         return (
             <div>
-                <Title titleText={'Explore 0x Relayers'} />
+                <Title labelText={'Explore 0x Relayers'} />
                 <RelayerIndex networkId={this.props.networkId} />
             </div>
         );
@@ -442,26 +442,30 @@ export class Portal extends React.Component<PortalProps, PortalState> {
 }
 
 interface TitleProps {
-    titleText: string;
+    labelText: string;
 }
 const Title = (props: TitleProps) => {
     return (
         <div className="py3" style={styles.title}>
-            {props.titleText}
+            {props.labelText}
         </div>
     );
 };
 
-const BackButton = () => {
+interface BackButtonProps {
+    to: string;
+    labelText: string;
+}
+const BackButton = (props: BackButtonProps) => {
     return (
         <div style={{ height: 65, paddingTop: 25 }}>
-            <Link to={`${WebsitePaths.Portal}`} style={{ textDecoration: 'none' }}>
+            <Link to={props.to} style={{ textDecoration: 'none' }}>
                 <div className="flex right" style={{ ...styles.backButton, paddingTop: 10 }}>
                     <div style={{ marginLeft: 12 }}>
                         <i style={styles.backButtonIcon} className={`zmdi zmdi-arrow-left`} />
                     </div>
                     <div style={{ marginLeft: 12, marginRight: 12 }}>
-                        <div style={{ fontSize: 16, color: colors.lightGrey }}>back to Relayers</div>
+                        <div style={{ fontSize: 16, color: colors.lightGrey }}>{props.labelText}</div>
                     </div>
                 </div>
             </Link>
