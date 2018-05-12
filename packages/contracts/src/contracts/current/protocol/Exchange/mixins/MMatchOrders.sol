@@ -27,6 +27,7 @@ contract MMatchOrders {
     struct MatchedFillResults {
         LibFillResults.FillResults left;
         LibFillResults.FillResults right;
+        uint256 takerFillAmount;
     }
 
     /// This struct exists solely to avoid the stack limit constraint

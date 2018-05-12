@@ -84,8 +84,8 @@ contract MixinMatchOrders is
         validateMatchOrThrow(leftOrder, rightOrder);
 
         // Compute proportional fill amounts
-        uint8 matchedFillAmountsStatus;
-        (   matchedFillAmountsStatus,
+        uint8 matchedFillResultsStatus;
+        (   matchedFillResultsStatus,
             matchedFillResults
         ) = calculateMatchedFillResults(
             leftOrder,
@@ -94,7 +94,7 @@ contract MixinMatchOrders is
             rightOrderInfo.orderStatus,
             leftOrderInfo.orderFilledAmount,
             rightOrderInfo.orderFilledAmount);
-        if (matchedFillAmountsStatus != uint8(Status.SUCCESS)) {
+        if (matchedFillResultsStatus != uint8(Status.SUCCESS)) {
             return matchedFillResults;
         }
 
@@ -181,6 +181,27 @@ contract MixinMatchOrders is
     function validateMatchOrThrow(MatchedFillResults memory matchedFillResults)
         internal
     {
+        // The left order must spend at least as much as we're sending to the combined
+        // amounts being sent to the right order and taker
+        uint256 amountSpentByLeft = safeAdd(
+            matchedFillResults.right.takerAssetFilledAmount,
+            matchedFillResults.takerFillAmount
+        );
+        require(
+            matchedFillResults.left.makerAssetFilledAmount >=
+            amountSpentByLeft,
+            MISCALCULATED_TRANSFER_AMOUNTS
+        );
+        // If the amount transferred from the left order is different than what is transferred, it is a rounding error amount.
+        // Ensure this difference is negligible by dividing the values with each other. The result should equal to ~1.
+        require(
+            !isRoundingError(
+                matchedFillResults.left.makerAssetFilledAmount,
+                amountSpentByLeft,
+                1),
+            ROUNDING_ERROR_TRANSFER_AMOUNTS
+        );
+
         // The right order must spend at least as much as we're transferring to the left order.
         require(
             matchedFillResults.right.makerAssetFilledAmount >=
@@ -282,6 +303,12 @@ contract MixinMatchOrders is
         if (status != uint8(Status.SUCCESS)) {
             return (status, matchedFillResults);
         }
+
+        // Calculate amount given to taker
+        matchedFillResults.takerFillAmount = safeSub(
+            matchedFillResults.left.makerAssetFilledAmount,
+            matchedFillResults.right.takerAssetFilledAmount
+        );
 
         // Validate the fill results
         validateMatchOrThrow(matchedFillResults);
