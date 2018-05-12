@@ -31,6 +31,7 @@ contract MixinMatchOrders is
     LibMath,
     LibStatus,
     LibOrder,
+    LibFillResults,
     LibExchangeErrors,
     MExchangeCore,
     MMatchOrders,
@@ -51,7 +52,8 @@ contract MixinMatchOrders is
         Order memory leftOrder,
         Order memory rightOrder,
         bytes leftSignature,
-        bytes rightSignature)
+        bytes rightSignature
+    )
         public
         returns (MatchedFillResults memory matchedFillResults)
     {
@@ -119,7 +121,12 @@ contract MixinMatchOrders is
         );
 
         // Settle matched orders. Succeeds or throws.
-        settleMatchedOrders(leftOrder, rightOrder, matchedFillResults, takerAddress);
+        settleMatchedOrders(
+            leftOrder,
+            rightOrder,
+            matchedFillResults,
+            takerAddress
+        );
 
         // Update exchange state
         updateFilledState(
@@ -146,7 +153,8 @@ contract MixinMatchOrders is
     /// @param rightOrder Second order to match.
     function validateMatchOrThrow(
         Order memory leftOrder,
-        Order memory rightOrder)
+        Order memory rightOrder
+    )
         internal
     {
         // The leftOrder maker asset must be the same as the rightOrder taker asset.
@@ -198,7 +206,8 @@ contract MixinMatchOrders is
             !isRoundingError(
                 matchedFillResults.left.makerAssetFilledAmount,
                 amountSpentByLeft,
-                1),
+                1
+            ),
             ROUNDING_ERROR_TRANSFER_AMOUNTS
         );
 
@@ -214,7 +223,8 @@ contract MixinMatchOrders is
             !isRoundingError(
                 matchedFillResults.right.makerAssetFilledAmount,
                 matchedFillResults.left.takerAssetFilledAmount,
-                1),
+                1
+            ),
             ROUNDING_ERROR_TRANSFER_AMOUNTS
         );
     }
@@ -237,7 +247,8 @@ contract MixinMatchOrders is
         uint8 leftOrderStatus,
         uint8 rightOrderStatus,
         uint256 leftOrderFilledAmount,
-        uint256 rightOrderFilledAmount)
+        uint256 rightOrderFilledAmount
+    )
         internal
         returns (
             uint8 status,

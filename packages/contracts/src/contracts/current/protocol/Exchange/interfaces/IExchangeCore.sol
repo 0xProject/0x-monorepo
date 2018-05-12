@@ -29,6 +29,20 @@ contract IExchangeCore {
     function cancelOrdersUpTo(uint256 salt)
         external;
 
+    /// @dev Gets information about an order: status, hash, and amount filled.
+    /// @param order Order to gather information on.
+    /// @return status Status of order. Statuses are defined in the LibStatus.Status struct.
+    /// @return orderHash Keccak-256 EIP712 hash of the order.
+    /// @return takerAssetFilledAmount Amount of order that has been filled.
+    function getOrderInfo(LibOrder.Order memory order)
+        public
+        view
+        returns (
+            uint8 orderStatus,
+            bytes32 orderHash,
+            uint256 takerAssetFilledAmount
+        );
+
     /// @dev Fills the input order.
     /// @param order Order struct containing order specifications.
     /// @param takerAssetFillAmount Desired amount of takerAsset to sell.

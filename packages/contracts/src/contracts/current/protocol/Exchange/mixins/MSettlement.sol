@@ -31,7 +31,8 @@ contract MSettlement {
     function settleOrder(
         LibOrder.Order memory order,
         address takerAddress,
-        LibFillResults.FillResults memory fillResults)
+        LibFillResults.FillResults memory fillResults
+    )
         internal;
 
     /// @dev Settles matched order by transferring appropriate funds between order makers, taker, and fee recipient.
@@ -42,7 +43,8 @@ contract MSettlement {
     function settleMatchedOrders(
         LibOrder.Order memory leftOrder,
         LibOrder.Order memory rightOrder,
-        MMatchOrders.MatchedFillResults memory matchedFillResults,
-        address takerAddress)
+        LibFillResults.MatchedFillResults memory matchedFillResults,
+        address takerAddress
+    )
         internal;
 }

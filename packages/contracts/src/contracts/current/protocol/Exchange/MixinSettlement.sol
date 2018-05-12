@@ -64,7 +64,8 @@ contract MixinSettlement is
     function settleOrder(
         LibOrder.Order memory order,
         address takerAddress,
-        FillResults memory fillResults)
+        FillResults memory fillResults
+    )
         internal
     {
         dispatchTransferFrom(
@@ -102,7 +103,8 @@ contract MixinSettlement is
         LibOrder.Order memory leftOrder,
         LibOrder.Order memory rightOrder,
         MatchedFillResults memory matchedFillResults,
-        address takerAddress)
+        address takerAddress
+    )
         internal
     {
         // Order makers and taker

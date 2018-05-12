@@ -31,6 +31,12 @@ contract LibFillResults is
         uint256 takerFeePaid;
     }
 
+    struct MatchedFillResults {
+        LibFillResults.FillResults left;
+        LibFillResults.FillResults right;
+        uint256 takerFillAmount;
+    }
+
     /// @dev Adds properties of both FillResults instances.
     ///      Modifies the first FillResults instance specified.
     /// @param totalFillResults Fill results instance that will be added onto.

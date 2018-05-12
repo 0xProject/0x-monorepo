@@ -21,14 +21,11 @@ pragma experimental ABIEncoderV2;
 import "../libs/LibOrder.sol";
 import "../libs/LibFillResults.sol";
 import "./MExchangeCore.sol";
+import "../interfaces/IMatchOrders.sol";
 
-contract MMatchOrders {
-
-    struct MatchedFillResults {
-        LibFillResults.FillResults left;
-        LibFillResults.FillResults right;
-        uint256 takerFillAmount;
-    }
+contract MMatchOrders is
+    IMatchOrders
+{
 
     /// This struct exists solely to avoid the stack limit constraint
     /// in matchOrders
@@ -38,34 +35,18 @@ contract MMatchOrders {
         uint256 orderFilledAmount;
     }
 
-    /// @dev Match two complementary orders that have a positive spread.
-    ///      Each order is filled at their respective price point. However, the calculations are
-    ///      carried out as though the orders are both being filled at the right order's price point.
-    ///      The profit made by the left order goes to the taker (who matched the two orders).
-    /// @param leftOrder First order to match.
-    /// @param rightOrder Second order to match.
-    /// @param leftSignature Proof that order was created by the left maker.
-    /// @param rightSignature Proof that order was created by the right maker.
-    /// @return matchedFillResults Amounts filled and fees paid by maker and taker of matched orders.
-    function matchOrders(
-        LibOrder.Order memory leftOrder,
-        LibOrder.Order memory rightOrder,
-        bytes leftSignature,
-        bytes rightSignature)
-        public
-        returns (MatchedFillResults memory matchedFillResults);
-
     /// @dev Validates context for matchOrders. Succeeds or throws.
     /// @param leftOrder First order to match.
     /// @param rightOrder Second order to match.
     function validateMatchOrThrow(
         LibOrder.Order memory leftOrder,
-        LibOrder.Order memory rightOrder)
+        LibOrder.Order memory rightOrder
+    )
         internal;
 
     /// @dev Validates matched fill results. Succeeds or throws.
     /// @param matchedFillResults Amounts to fill and fees to pay by maker and taker of matched orders.
-    function validateMatchOrThrow(MatchedFillResults memory matchedFillResults)
+    function validateMatchOrThrow(LibFillResults.MatchedFillResults memory matchedFillResults)
         internal;
 
     /// @dev Calculates fill amounts for the matched orders.
@@ -86,10 +67,11 @@ contract MMatchOrders {
         uint8 leftOrderStatus,
         uint8 rightOrderStatus,
         uint256 leftOrderFilledAmount,
-        uint256 rightOrderFilledAmount)
+        uint256 rightOrderFilledAmount
+    )
         internal
         returns (
             uint8 status,
-            MatchedFillResults memory matchedFillResults
+            LibFillResults.MatchedFillResults memory matchedFillResults
         );
 }
