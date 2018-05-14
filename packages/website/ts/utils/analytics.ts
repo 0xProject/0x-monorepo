@@ -5,10 +5,10 @@ import { utils } from 'ts/utils/utils';
 import * as Web3 from 'web3';
 
 export const analytics = {
-    init() {
+    init(): void {
         ReactGA.initialize(configs.GOOGLE_ANALYTICS_ID);
     },
-    logEvent(category: string, action: string, label: string, value?: any) {
+    logEvent(category: string, action: string, label: string, value?: any): void {
         ReactGA.event({
             category,
             action,
@@ -16,7 +16,7 @@ export const analytics = {
             value,
         });
     },
-    async logProviderAsync(web3IfExists: Web3) {
+    async logProviderAsync(web3IfExists: Web3): Promise<void> {
         await utils.onPageLoadAsync();
         const providerType = !_.isUndefined(web3IfExists)
             ? utils.getProviderType(web3IfExists.currentProvider)

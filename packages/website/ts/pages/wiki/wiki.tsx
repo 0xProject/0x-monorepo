@@ -69,19 +69,19 @@ export class Wiki extends React.Component<WikiProps, WikiState> {
             isHoveringSidebar: false,
         };
     }
-    public componentDidMount() {
+    public componentDidMount(): void {
         window.addEventListener('hashchange', this._onHashChanged.bind(this), false);
     }
-    public componentWillMount() {
+    public componentWillMount(): void {
         // tslint:disable-next-line:no-floating-promises
         this._fetchArticlesBySectionAsync();
     }
-    public componentWillUnmount() {
+    public componentWillUnmount(): void {
         this._isUnmounted = true;
         clearTimeout(this._wikiBackoffTimeoutId);
         window.removeEventListener('hashchange', this._onHashChanged.bind(this), false);
     }
-    public render() {
+    public render(): React.ReactNode {
         const menuSubsectionsBySection = _.isUndefined(this.state.articlesBySection)
             ? {}
             : this._getMenuSubsectionsBySection(this.state.articlesBySection);
@@ -171,7 +171,7 @@ export class Wiki extends React.Component<WikiProps, WikiState> {
         const sections = _.map(sectionNames, sectionName => this._renderSection(sectionName));
         return sections;
     }
-    private _renderSection(sectionName: string) {
+    private _renderSection(sectionName: string): React.ReactNode {
         const articles = this.state.articlesBySection[sectionName];
         const renderedArticles = _.map(articles, (article: Article) => {
             const githubLink = `${constants.URL_GITHUB_WIKI}/edit/master/${sectionName}/${article.fileName}`;
@@ -227,7 +227,7 @@ export class Wiki extends React.Component<WikiProps, WikiState> {
             }
         }
     }
-    private _getMenuSubsectionsBySection(articlesBySection: ArticlesBySection) {
+    private _getMenuSubsectionsBySection(articlesBySection: ArticlesBySection): { [section: string]: string[] } {
         const sectionNames = _.keys(articlesBySection);
         const menuSubsectionsBySection: { [section: string]: string[] } = {};
         for (const sectionName of sectionNames) {
@@ -237,17 +237,17 @@ export class Wiki extends React.Component<WikiProps, WikiState> {
         }
         return menuSubsectionsBySection;
     }
-    private _onSidebarHover(event: React.FormEvent<HTMLInputElement>) {
+    private _onSidebarHover(event: React.FormEvent<HTMLInputElement>): void {
         this.setState({
             isHoveringSidebar: true,
         });
     }
-    private _onSidebarHoverOff() {
+    private _onSidebarHoverOff(): void {
         this.setState({
             isHoveringSidebar: false,
         });
     }
-    private _onHashChanged(event: any) {
+    private _onHashChanged(event: any): void {
         const hash = window.location.hash.slice(1);
         sharedUtils.scrollToHash(hash, sharedConstants.SCROLL_CONTAINER_ID);
     }

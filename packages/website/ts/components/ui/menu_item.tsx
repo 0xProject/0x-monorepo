@@ -24,7 +24,7 @@ export class MenuItem extends React.Component<MenuItemProps, MenuItemState> {
             isHovering: false,
         };
     }
-    public render() {
+    public render(): React.ReactNode {
         const menuItemStyles = {
             cursor: 'pointer',
             opacity: this.state.isHovering ? 0.5 : 1,
@@ -43,7 +43,7 @@ export class MenuItem extends React.Component<MenuItemProps, MenuItemState> {
             </Link>
         );
     }
-    private _onToggleHover(isHovering: boolean) {
+    private _onToggleHover(isHovering: boolean): void {
         this.setState({
             isHovering,
         });

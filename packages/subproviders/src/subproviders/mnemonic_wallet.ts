@@ -56,7 +56,7 @@ export class MnemonicWalletSubprovider extends BaseWalletSubprovider {
      * Set a desired derivation path when computing the available user addresses
      * @param baseDerivationPath The desired derivation path (e.g `44'/60'/0'`)
      */
-    public setPath(baseDerivationPath: string) {
+    public setPath(baseDerivationPath: string): void {
         this._baseDerivationPath = baseDerivationPath;
         this._derivedKeyInfo = this._initialDerivedKeyInfo(this._baseDerivationPath);
     }

@@ -7,7 +7,7 @@ import { EtherscanLinkSuffixes, Networks } from '../types';
 import { constants } from './constants';
 
 export const utils = {
-    setUrlHash(anchorId: string) {
+    setUrlHash(anchorId: string): void {
         window.location.hash = anchorId;
     },
     scrollToHash(hash: string, containerId: string): void {
@@ -26,11 +26,11 @@ export const utils = {
         const isUserOnMobile = isMobile();
         return isUserOnMobile;
     },
-    getIdFromName(name: string) {
+    getIdFromName(name: string): string {
         const id = name.replace(/ /g, '-');
         return id;
     },
-    convertDashesToSpaces(text: string) {
+    convertDashesToSpaces(text: string): string {
         return text.replace(/-/g, ' ');
     },
     getEtherScanLinkIfExists(

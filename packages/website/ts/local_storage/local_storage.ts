@@ -1,7 +1,7 @@
 import * as _ from 'lodash';
 
 export const localStorage = {
-    doesExist() {
+    doesExist(): boolean {
         return !!window.localStorage;
     },
     getItemIfExists(key: string): string {
@@ -14,13 +14,13 @@ export const localStorage = {
         }
         return item;
     },
-    setItem(key: string, value: string) {
+    setItem(key: string, value: string): void {
         if (!this.doesExist || _.isUndefined(value)) {
             return;
         }
         window.localStorage.setItem(key, value);
     },
-    removeItem(key: string) {
+    removeItem(key: string): void {
         if (!this.doesExist) {
             return;
         }

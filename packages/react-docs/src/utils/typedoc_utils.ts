@@ -113,7 +113,7 @@ export const typeDocUtils = {
         });
         return docAgnosticFormat;
     },
-    _convertEntitiesToDocSection(entities: TypeDocNode[], docsInfo: DocsInfo, sectionName: string) {
+    _convertEntitiesToDocSection(entities: TypeDocNode[], docsInfo: DocsInfo, sectionName: string): DocSection {
         const docSection: DocSection = {
             comment: '',
             constructors: [],

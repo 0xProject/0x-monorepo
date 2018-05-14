@@ -29,7 +29,7 @@ export class EthAmountInput extends React.Component<EthAmountInputProps, EthAmou
         shouldShowUnderline: true,
         style: { height: 63 },
     };
-    public render() {
+    public render(): React.ReactNode {
         const amount = this.props.amount
             ? ZeroEx.toUnitAmount(this.props.amount, constants.DECIMAL_PLACES_ETH)
             : undefined;
@@ -52,7 +52,7 @@ export class EthAmountInput extends React.Component<EthAmountInputProps, EthAmou
             </div>
         );
     }
-    private _onChange(isValid: boolean, amount?: BigNumber) {
+    private _onChange(isValid: boolean, amount?: BigNumber): void {
         const baseUnitAmountIfExists = _.isUndefined(amount)
             ? undefined
             : ZeroEx.toBaseUnitAmount(amount, constants.DECIMAL_PLACES_ETH);

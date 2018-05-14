@@ -33,7 +33,7 @@ export class SendButton extends React.Component<SendButtonProps, SendButtonState
             isSending: false,
         };
     }
-    public render() {
+    public render(): React.ReactNode {
         const labelStyle = this.state.isSending ? { fontSize: 10 } : {};
         return (
             <div>
@@ -57,12 +57,12 @@ export class SendButton extends React.Component<SendButtonProps, SendButtonState
             </div>
         );
     }
-    private _toggleSendDialog() {
+    private _toggleSendDialog(): void {
         this.setState({
             isSendDialogVisible: !this.state.isSendDialogVisible,
         });
     }
-    private async _onSendAmountSelectedAsync(recipient: string, value: BigNumber) {
+    private async _onSendAmountSelectedAsync(recipient: string, value: BigNumber): Promise<void> {
         this.setState({
             isSending: true,
         });

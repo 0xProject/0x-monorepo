@@ -88,7 +88,7 @@ function renderParameters(
     docsInfo: DocsInfo,
     sectionName: string,
     typeDefinitionByName?: TypeDefinitionByName,
-) {
+): React.ReactNode[] {
     const params = _.map(parameters, (p: Parameter) => {
         const isOptional = p.isOptional;
         const hasDefaultValue = !_.isUndefined(p.defaultValue);
@@ -116,7 +116,7 @@ function renderTypeParameter(
     docsInfo: DocsInfo,
     sectionName: string,
     typeDefinitionByName?: TypeDefinitionByName,
-) {
+): React.ReactNode {
     const typeParam = (
         <span>
             {`<${typeParameter.name} extends `}

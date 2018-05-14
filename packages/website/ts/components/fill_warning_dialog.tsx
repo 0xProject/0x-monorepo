@@ -8,7 +8,7 @@ interface FillWarningDialogProps {
     onToggleDialog: (didUserCancel: boolean) => void;
 }
 
-export function FillWarningDialog(props: FillWarningDialogProps) {
+export const FillWarningDialog = (props: FillWarningDialogProps) => {
     const didCancel = true;
     return (
         <Dialog
@@ -42,4 +42,4 @@ export function FillWarningDialog(props: FillWarningDialogProps) {
             </div>
         </Dialog>
     );
-}
+};

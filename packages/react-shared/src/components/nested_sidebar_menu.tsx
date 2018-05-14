@@ -43,7 +43,7 @@ export class NestedSidebarMenu extends React.Component<NestedSidebarMenuProps, N
         shouldDisplaySectionHeaders: true,
         onMenuItemClick: _.noop,
     };
-    public render() {
+    public render(): React.ReactNode {
         const navigation = _.map(this.props.topLevelMenu, (menuItems: string[], sectionName: string) => {
             const finalSectionName = utils.convertDashesToSpaces(sectionName);
             if (this.props.shouldDisplaySectionHeaders) {

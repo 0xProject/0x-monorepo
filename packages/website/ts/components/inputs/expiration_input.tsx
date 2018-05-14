@@ -30,7 +30,7 @@ export class ExpirationInput extends React.Component<ExpirationInputProps, Expir
             timeMoment: didUserSetExpiry ? expirationMoment : undefined,
         };
     }
-    public render() {
+    public render(): React.ReactNode {
         const date = this.state.dateMoment ? this.state.dateMoment.toDate() : undefined;
         const time = this.state.timeMoment ? this.state.timeMoment.toDate() : undefined;
         return (
@@ -72,7 +72,7 @@ export class ExpirationInput extends React.Component<ExpirationInputProps, Expir
             .startOf('day')
             .isBefore(this._earliestPickableMoment);
     }
-    private _clearDates() {
+    private _clearDates(): void {
         this.setState({
             dateMoment: undefined,
             timeMoment: undefined,
@@ -80,7 +80,7 @@ export class ExpirationInput extends React.Component<ExpirationInputProps, Expir
         const defaultDateTime = utils.initialOrderExpiryUnixTimestampSec();
         this.props.updateOrderExpiry(defaultDateTime);
     }
-    private _onDateChanged(e: any, date: Date) {
+    private _onDateChanged(e: any, date: Date): void {
         const dateMoment = moment(date);
         this.setState({
             dateMoment,
@@ -88,7 +88,7 @@ export class ExpirationInput extends React.Component<ExpirationInputProps, Expir
         const timestamp = utils.convertToUnixTimestampSeconds(dateMoment, this.state.timeMoment);
         this.props.updateOrderExpiry(timestamp);
     }
-    private _onTimeChanged(e: any, time: Date) {
+    private _onTimeChanged(e: any, time: Date): void {
         const timeMoment = moment(time);
         this.setState({
             timeMoment,

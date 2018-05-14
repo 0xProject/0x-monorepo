@@ -13,10 +13,10 @@ export interface MarkdownLinkBlockState {}
 export class MarkdownLinkBlock extends React.Component<MarkdownLinkBlockProps, MarkdownLinkBlockState> {
     // Re-rendering a linkBlock causes it to remain unclickable.
     // We therefore noop re-renders on this component if it's props haven't changed.
-    public shouldComponentUpdate(nextProps: MarkdownLinkBlockProps, nextState: MarkdownLinkBlockState) {
+    public shouldComponentUpdate(nextProps: MarkdownLinkBlockProps, nextState: MarkdownLinkBlockState): boolean {
         return nextProps.href !== this.props.href;
     }
-    public render() {
+    public render(): React.ReactNode {
         const href = this.props.href;
         const isLinkToSection = _.startsWith(href, '#');
         // If protocol is http or https, we can open in a new tab, otherwise don't for security reasons
@@ -39,7 +39,7 @@ export class MarkdownLinkBlock extends React.Component<MarkdownLinkBlockProps, M
             return <a href={href}>{this.props.children}</a>;
         }
     }
-    private _onHashUrlClick(href: string) {
+    private _onHashUrlClick(href: string): void {
         const hash = href.split('#')[1];
         utils.scrollToHash(hash, constants.SCROLL_CONTAINER_ID);
         utils.setUrlHash(hash);

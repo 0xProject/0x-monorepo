@@ -1,3 +1,4 @@
+import { ContractWrappers } from '@0xproject/contract-wrappers';
 import { BlockchainLifecycle, devConstants, web3Factory } from '@0xproject/dev-utils';
 import { BigNumber } from '@0xproject/utils';
 import * as chai from 'chai';
@@ -41,9 +42,9 @@ describe('ZeroEx library', () => {
             expect((zeroEx.exchange as any)._exchangeContractIfExists).to.be.undefined();
             expect((zeroEx.tokenRegistry as any)._tokenRegistryContractIfExists).to.be.undefined();
 
-            // Check that all nested web3 wrapper instances return the updated provider
-            const nestedWeb3WrapperProvider = (zeroEx as any)._web3Wrapper.getProvider();
-            expect(nestedWeb3WrapperProvider.zeroExTestId).to.be.a('number');
+            // Check that all nested zeroExContract/web3Wrapper instances return the updated provider
+            const nestedWeb3WrapperProvider = ((zeroEx as any)._contractWrappers as ContractWrappers).getProvider();
+            expect((nestedWeb3WrapperProvider as any).zeroExTestId).to.be.a('number');
             const exchangeWeb3WrapperProvider = (zeroEx.exchange as any)._web3Wrapper.getProvider();
             expect(exchangeWeb3WrapperProvider.zeroExTestId).to.be.a('number');
             const tokenRegistryWeb3WrapperProvider = (zeroEx.tokenRegistry as any)._web3Wrapper.getProvider();

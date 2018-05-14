@@ -20,7 +20,7 @@ interface VisualOrderProps {
 interface VisualOrderState {}
 
 export class VisualOrder extends React.Component<VisualOrderProps, VisualOrderState> {
-    public render() {
+    public render(): React.ReactNode {
         const allTokens = _.values(this.props.tokenByAddress);
         const makerImage = this.props.makerToken.iconUrl;
         const takerImage = this.props.takerToken.iconUrl;
@@ -62,7 +62,7 @@ export class VisualOrder extends React.Component<VisualOrderProps, VisualOrderSt
             </div>
         );
     }
-    private _renderAmount(assetToken: AssetToken, token: Token) {
+    private _renderAmount(assetToken: AssetToken, token: Token): React.ReactNode {
         const unitAmount = ZeroEx.toUnitAmount(assetToken.amount, token.decimals);
         return (
             <div style={{ fontSize: 13 }}>

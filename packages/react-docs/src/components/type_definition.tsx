@@ -3,7 +3,7 @@ import * as _ from 'lodash';
 import * as React from 'react';
 
 import { DocsInfo } from '../docs_info';
-import { CustomType, CustomTypeChild, KindString, TypeDocTypes } from '../types';
+import { CustomType, CustomTypeChild, EnumValue, KindString, TypeDocTypes } from '../types';
 import { constants } from '../utils/constants';
 import { utils } from '../utils/utils';
 
@@ -35,7 +35,7 @@ export class TypeDefinition extends React.Component<TypeDefinitionProps, TypeDef
             shouldShowAnchor: false,
         };
     }
-    public render() {
+    public render(): React.ReactNode {
         const customType = this.props.customType;
         if (!this.props.docsInfo.isPublicType(customType.name)) {
             return null; // no-op
@@ -129,7 +129,7 @@ export class TypeDefinition extends React.Component<TypeDefinitionProps, TypeDef
             </div>
         );
     }
-    private _setAnchorVisibility(shouldShowAnchor: boolean) {
+    private _setAnchorVisibility(shouldShowAnchor: boolean): void {
         this.setState({
             shouldShowAnchor,
         });
@@ -150,7 +150,7 @@ export class TypeDefinition extends React.Component<TypeDefinitionProps, TypeDef
      *
      * Each property description should be on a new line.
      */
-    private _formatComment(text: string) {
+    private _formatComment(text: string): string {
         const NEW_LINE_REGEX = /(\r\n|\n|\r)/gm;
         const sanitizedText = text.replace(NEW_LINE_REGEX, ' ');
         const PROPERTY_DESCRIPTION_DIVIDER = ':';

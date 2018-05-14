@@ -24,7 +24,7 @@ export class EventDefinition extends React.Component<EventDefinitionProps, Event
             shouldShowAnchor: false,
         };
     }
-    public render() {
+    public render(): React.ReactNode {
         const event = this.props.event;
         const id = `${this.props.sectionName}-${event.name}`;
         return (
@@ -49,7 +49,7 @@ export class EventDefinition extends React.Component<EventDefinitionProps, Event
             </div>
         );
     }
-    private _renderEventCode() {
+    private _renderEventCode(): React.ReactNode {
         const indexed = <span style={{ color: colors.green }}> indexed</span>;
         const eventArgs = _.map(this.props.event.eventArgs, (eventArg: EventArg) => {
             const type = (
@@ -76,7 +76,7 @@ export class EventDefinition extends React.Component<EventDefinitionProps, Event
             </span>
         );
     }
-    private _setAnchorVisibility(shouldShowAnchor: boolean) {
+    private _setAnchorVisibility(shouldShowAnchor: boolean): void {
         this.setState({
             shouldShowAnchor,
         });

@@ -50,10 +50,10 @@ function isRelevantClassMember(node: ts.Node): node is RelevantClassMember {
             return false;
     }
 }
-function nameStartsWithUnderscore(text: string) {
+function nameStartsWithUnderscore(text: string): boolean {
     return text.charCodeAt(0) === UNDERSCORE.charCodeAt(0);
 }
-function memberIsPrivate(node: ts.Declaration) {
+function memberIsPrivate(node: ts.Declaration): boolean {
     return Lint.hasModifier(node.modifiers, ts.SyntaxKind.PrivateKeyword, ts.SyntaxKind.ProtectedKeyword);
 }
 function nameIsIdentifier(node: ts.Node): node is ts.Identifier {

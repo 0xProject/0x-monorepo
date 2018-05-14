@@ -1,0 +1,11 @@
+[
+    {
+        "version": "0.0.1",
+        "changes": [
+            {
+                "note": "Move FillScenarios out of 0x.js",
+                "pr": 579
+            }
+        ]
+    }
+]

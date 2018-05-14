@@ -42,10 +42,10 @@ export class Translate {
         }
         this.setLanguage(language);
     }
-    public getLanguage() {
+    public getLanguage(): Language {
         return this._selectedLanguage;
     }
-    public setLanguage(language: Language) {
+    public setLanguage(language: Language): void {
         const isLanguageSupported = !_.isUndefined(languageToTranslations[language]);
         if (!isLanguageSupported) {
             throw new Error(`${language} not supported`);
@@ -53,7 +53,7 @@ export class Translate {
         this._selectedLanguage = language;
         this._translation = languageToTranslations[language];
     }
-    public get(key: Key, decoration?: Deco) {
+    public get(key: Key, decoration?: Deco): string {
         let text = this._translation[key];
         if (!_.isUndefined(decoration) && !_.includes(languagesWithoutCaps, this._selectedLanguage)) {
             switch (decoration) {
@@ -77,7 +77,7 @@ export class Translate {
         }
         return text;
     }
-    private _capitalize(text: string) {
+    private _capitalize(text: string): string {
         return `${text.charAt(0).toUpperCase()}${text.slice(1)}`;
     }
 }

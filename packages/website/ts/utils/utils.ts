@@ -1,4 +1,4 @@
-import { ECSignature, ExchangeContractErrs, ZeroEx, ZeroExError } from '0x.js';
+import { ContractWrappersError, ECSignature, ExchangeContractErrs, ZeroEx } from '0x.js';
 import { OrderError } from '@0xproject/order-utils';
 import { constants as sharedConstants, EtherscanLinkSuffixes, Networks } from '@0xproject/react-shared';
 import { Provider } from '@0xproject/types';
@@ -6,7 +6,17 @@ import { BigNumber } from '@0xproject/utils';
 import deepEqual = require('deep-equal');
 import * as _ from 'lodash';
 import * as moment from 'moment';
-import { Environments, Order, Providers, ScreenWidths, Side, SideToAssetToken, Token, TokenByAddress } from 'ts/types';
+import {
+    BlockchainCallErrs,
+    Environments,
+    Order,
+    Providers,
+    ScreenWidths,
+    Side,
+    SideToAssetToken,
+    Token,
+    TokenByAddress,
+} from 'ts/types';
 import { configs } from 'ts/utils/configs';
 import { constants } from 'ts/utils/constants';
 import * as u2f from 'ts/vendor/u2f_api';
@@ -15,15 +25,15 @@ const LG_MIN_EM = 64;
 const MD_MIN_EM = 52;
 
 export const utils = {
-    assert(condition: boolean, message: string) {
+    assert(condition: boolean, message: string): void {
         if (!condition) {
             throw new Error(message);
         }
     },
-    spawnSwitchErr(name: string, value: any) {
+    spawnSwitchErr(name: string, value: any): Error {
         return new Error(`Unexpected switch value: ${value} encountered for ${name}`);
     },
-    isNumeric(n: string) {
+    isNumeric(n: string): boolean {
         return !isNaN(parseFloat(n)) && isFinite(Number(n));
     },
     // This default unix timestamp is used for orders where the user does not specify an expiry date.
@@ -96,13 +106,13 @@ export const utils = {
         };
         return order;
     },
-    async sleepAsync(ms: number) {
-        return new Promise(resolve => setTimeout(resolve, ms));
+    async sleepAsync(ms: number): Promise<NodeJS.Timer> {
+        return new Promise<NodeJS.Timer>(resolve => setTimeout(resolve, ms));
     },
-    deepEqual(actual: any, expected: any, opts?: { strict: boolean }) {
+    deepEqual(actual: any, expected: any, opts?: { strict: boolean }): boolean {
         return deepEqual(actual, expected, opts);
     },
-    getColSize(items: number) {
+    getColSize(items: number): number {
         const bassCssGridSize = 12; // Source: http://basscss.com/#basscss-grid
         const colSize = bassCssGridSize / items;
         if (!_.isInteger(colSize)) {
@@ -110,7 +120,7 @@ export const utils = {
         }
         return colSize;
     },
-    getScreenWidth() {
+    getScreenWidth(): ScreenWidths {
         const documentEl = document.documentElement;
         const body = document.getElementsByTagName('body')[0];
         const widthInPx = window.innerWidth || documentEl.clientWidth || body.clientWidth;
@@ -152,7 +162,7 @@ export const utils = {
     // This checks the error message returned from an injected Web3 instance on the page
     // after a user was prompted to sign a message or send a transaction and decided to
     // reject the request.
-    didUserDenyWeb3Request(errMsg: string) {
+    didUserDenyWeb3Request(errMsg: string): boolean {
         const metamaskDenialErrMsg = 'User denied';
         const paritySignerDenialErrMsg = 'Request has been rejected';
         const ledgerDenialErrMsg = 'Invalid status 6985';
@@ -162,7 +172,7 @@ export const utils = {
             _.includes(errMsg, ledgerDenialErrMsg);
         return isUserDeniedErrMsg;
     },
-    getCurrentEnvironment() {
+    getCurrentEnvironment(): string {
         switch (location.host) {
             case configs.DOMAIN_DEVELOPMENT:
                 return 'development';
@@ -178,7 +188,7 @@ export const utils = {
         const truncatedAddress = `${address.substring(0, 6)}...${address.substr(-4)}`; // 0x3d5a...b287
         return truncatedAddress;
     },
-    hasUniqueNameAndSymbol(tokens: Token[], token: Token) {
+    hasUniqueNameAndSymbol(tokens: Token[], token: Token): boolean {
         if (token.isRegistered) {
             return true; // Since it's registered, it is the canonical token
         }
@@ -193,21 +203,20 @@ export const utils = {
         const isUniqueSymbol = _.isUndefined(tokenWithSameSymbolIfExists);
         return isUniqueName && isUniqueSymbol;
     },
-    zeroExErrToHumanReadableErrMsg(error: ZeroExError | ExchangeContractErrs, takerAddress: string): string {
-        const ZeroExErrorToHumanReadableError: { [error: string]: string } = {
-            [ZeroExError.ExchangeContractDoesNotExist]: 'Exchange contract does not exist',
-            [ZeroExError.EtherTokenContractDoesNotExist]: 'EtherToken contract does not exist',
-            [ZeroExError.TokenTransferProxyContractDoesNotExist]: 'TokenTransferProxy contract does not exist',
-            [ZeroExError.TokenRegistryContractDoesNotExist]: 'TokenRegistry contract does not exist',
-            [ZeroExError.TokenContractDoesNotExist]: 'Token contract does not exist',
-            [ZeroExError.ZRXContractDoesNotExist]: 'ZRX contract does not exist',
-            [ZeroExError.UnhandledError]: 'Unhandled error occured',
-            [ZeroExError.UserHasNoAssociatedAddress]: 'User has no addresses available',
+    zeroExErrToHumanReadableErrMsg(error: ContractWrappersError | ExchangeContractErrs, takerAddress: string): string {
+        const ContractWrappersErrorToHumanReadableError: { [error: string]: string } = {
+            [ContractWrappersError.ExchangeContractDoesNotExist]: 'Exchange contract does not exist',
+            [ContractWrappersError.EtherTokenContractDoesNotExist]: 'EtherToken contract does not exist',
+            [ContractWrappersError.TokenTransferProxyContractDoesNotExist]:
+                'TokenTransferProxy contract does not exist',
+            [ContractWrappersError.TokenRegistryContractDoesNotExist]: 'TokenRegistry contract does not exist',
+            [ContractWrappersError.TokenContractDoesNotExist]: 'Token contract does not exist',
+            [ContractWrappersError.ZRXContractDoesNotExist]: 'ZRX contract does not exist',
+            [BlockchainCallErrs.UserHasNoAssociatedAddresses]: 'User has no addresses available',
             [OrderError.InvalidSignature]: 'Order signature is not valid',
-            [ZeroExError.ContractNotDeployedOnNetwork]: 'Contract is not deployed on the detected network',
-            [ZeroExError.InvalidJump]: 'Invalid jump occured while executing the transaction',
-            [ZeroExError.OutOfGas]: 'Transaction ran out of gas',
-            [ZeroExError.NoNetworkId]: 'No network id detected',
+            [ContractWrappersError.ContractNotDeployedOnNetwork]: 'Contract is not deployed on the detected network',
+            [ContractWrappersError.InvalidJump]: 'Invalid jump occured while executing the transaction',
+            [ContractWrappersError.OutOfGas]: 'Transaction ran out of gas',
         };
         const exchangeContractErrorToHumanReadableError: {
             [error: string]: string;
@@ -240,7 +249,7 @@ export const utils = {
             [ExchangeContractErrs.InsufficientRemainingFillAmount]: 'Insufficient remaining fill amount',
         };
         const humanReadableErrorMsg =
-            exchangeContractErrorToHumanReadableError[error] || ZeroExErrorToHumanReadableError[error];
+            exchangeContractErrorToHumanReadableError[error] || ContractWrappersErrorToHumanReadableError[error];
         return humanReadableErrorMsg;
     },
     isParityNode(nodeVersion: string): boolean {
@@ -260,7 +269,7 @@ export const utils = {
         );
         return isTestNetwork;
     },
-    getCurrentBaseUrl() {
+    getCurrentBaseUrl(): string {
         const port = window.location.port;
         const hasPort = !_.isUndefined(port);
         const baseUrl = `https://${window.location.hostname}${hasPort ? `:${port}` : ''}`;
@@ -293,10 +302,10 @@ export const utils = {
         }
         return parsedProviderName;
     },
-    isDevelopment() {
+    isDevelopment(): boolean {
         return configs.ENVIRONMENT === Environments.DEVELOPMENT;
     },
-    isStaging() {
+    isStaging(): boolean {
         return _.includes(window.location.href, configs.DOMAIN_STAGING);
     },
 };

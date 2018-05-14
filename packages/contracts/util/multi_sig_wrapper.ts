@@ -11,7 +11,7 @@ import { TransactionDataParams } from './types';
 
 export class MultiSigWrapper {
     private _multiSig: MultiSigWalletContract;
-    public static encodeFnArgs(name: string, abi: AbiDefinition[], args: any[]) {
+    public static encodeFnArgs(name: string, abi: AbiDefinition[], args: any[]): string {
         const abiEntity = _.find(abi, { name }) as MethodAbi;
         if (_.isUndefined(abiEntity)) {
             throw new Error(`Did not find abi entry for name: ${name}`);
@@ -33,7 +33,7 @@ export class MultiSigWrapper {
         from: string,
         dataParams: TransactionDataParams,
         value: BigNumber = new BigNumber(0),
-    ) {
+    ): Promise<string> {
         const { name, abi, args = [] } = dataParams;
         const encoded = MultiSigWrapper.encodeFnArgs(name, abi, args);
         return this._multiSig.submitTransaction.sendTransactionAsync(destination, value, encoded, {

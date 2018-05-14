@@ -106,7 +106,7 @@ describe('Signature utils', () => {
             };
 
             const fakeProvider = {
-                async sendAsync(payload: JSONRPCRequestPayload, callback: JSONRPCErrorCallback) {
+                async sendAsync(payload: JSONRPCRequestPayload, callback: JSONRPCErrorCallback): Promise<void> {
                     if (payload.method === 'eth_sign') {
                         const [address, message] = payload.params;
                         const signature = await web3Wrapper.signMessageAsync(address, message);
@@ -137,7 +137,7 @@ describe('Signature utils', () => {
                 s: '0x7feabdfe76e05924b484789f79af4ee7fa29ec006cedce1bbf369320d034e10b',
             };
             const fakeProvider = {
-                async sendAsync(payload: JSONRPCRequestPayload, callback: JSONRPCErrorCallback) {
+                async sendAsync(payload: JSONRPCRequestPayload, callback: JSONRPCErrorCallback): Promise<void> {
                     if (payload.method === 'eth_sign') {
                         const [address, message] = payload.params;
                         const signature = await web3Wrapper.signMessageAsync(address, message);

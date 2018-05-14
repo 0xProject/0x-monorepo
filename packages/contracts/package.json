@@ -9,7 +9,7 @@
     },
     "scripts": {
         "build:watch": "tsc -w",
-        "prebuild": "run-s clean compile copy_artifacts generate_contract_wrappers",
+        "prebuild": "run-s clean copy_artifacts generate_contract_wrappers",
         "copy_artifacts": "copyfiles -u 4 '../migrations/artifacts/1.0.0/**/*' ./lib/src/artifacts;",
         "build": "tsc",
         "test": "run-s build run_mocha",
@@ -17,7 +17,7 @@
         "run_mocha": "mocha 'lib/test/**/*.js' --timeout 100000 --bail --exit",
         "compile:comment": "Yarn workspaces do not link binaries correctly so we need to reference them directly https://github.com/yarnpkg/yarn/issues/3846",
         "compile": "node ../sol-compiler/lib/src/cli.js",
-        "clean": "shx rm -rf ./lib",
+        "clean": "shx rm -rf lib src/contract_wrappers/generated",
         "generate_contract_wrappers": "node ../abi-gen/lib/index.js --abis  ${npm_package_config_abis} --template ../contract_templates/contract.handlebars --partials '../contract_templates/partials/**/*.handlebars' --output src/contract_wrappers/generated --backend ethers && prettier --write 'src/contract_wrappers/generated/**.ts'",
         "lint": "tslint --project .",
         "coverage:report:text": "istanbul report text",

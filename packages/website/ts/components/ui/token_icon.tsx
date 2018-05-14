@@ -11,7 +11,7 @@ interface TokenIconProps {
 interface TokenIconState {}
 
 export class TokenIcon extends React.Component<TokenIconProps, TokenIconState> {
-    public render() {
+    public render(): React.ReactNode {
         const token = this.props.token;
         const diameter = this.props.diameter;
         return (

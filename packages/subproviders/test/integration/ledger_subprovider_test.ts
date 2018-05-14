@@ -1,4 +1,4 @@
-import { JSONRPCResponsePayload } from '@0xproject/types';
+import { DoneCallback, JSONRPCResponsePayload } from '@0xproject/types';
 import { promisify } from '@0xproject/utils';
 import Eth from '@ledgerhq/hw-app-eth';
 // HACK: This dependency is optional and tslint skips optional dependencies
@@ -12,7 +12,7 @@ import Web3ProviderEngine = require('web3-provider-engine');
 import RpcSubprovider = require('web3-provider-engine/subproviders/rpc');
 
 import { LedgerSubprovider } from '../../src';
-import { DoneCallback, LedgerEthereumClient } from '../../src/types';
+import { LedgerEthereumClient } from '../../src/types';
 import { chaiSetup } from '../chai_setup';
 import { fixtureData } from '../utils/fixture_data';
 import { reportCallbackErrors } from '../utils/report_callback_errors';

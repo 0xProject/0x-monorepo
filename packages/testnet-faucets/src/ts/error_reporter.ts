@@ -5,7 +5,7 @@ import rollbar = require('rollbar');
 import { configs } from './configs';
 
 export const errorReporter = {
-    setup() {
+    setup(): void {
         rollbar.init(configs.ROLLBAR_ACCESS_KEY, {
             environment: configs.ENVIRONMENT,
         });
@@ -31,7 +31,7 @@ export const errorReporter = {
             });
         });
     },
-    errorHandler() {
+    errorHandler(): any {
         return rollbar.errorHandler(configs.ROLLBAR_ACCESS_KEY);
     },
 };

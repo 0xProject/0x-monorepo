@@ -28,12 +28,12 @@ export class DispatchQueue {
     public isFull(): boolean {
         return this.size() >= MAX_QUEUE_SIZE;
     }
-    public stop() {
+    public stop(): void {
         if (!_.isUndefined(this._queueIntervalIdIfExists)) {
             intervalUtils.clearAsyncExcludingInterval(this._queueIntervalIdIfExists);
         }
     }
-    private _start() {
+    private _start(): void {
         this._queueIntervalIdIfExists = intervalUtils.setAsyncExcludingInterval(
             async () => {
                 const taskAsync = this._queue.shift();
