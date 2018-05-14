@@ -18,7 +18,7 @@
         "compile:comment": "Yarn workspaces do not link binaries correctly so we need to reference them directly https://github.com/yarnpkg/yarn/issues/3846",
         "compile": "node ../sol-compiler/lib/src/cli.js",
         "clean": "shx rm -rf lib src/contract_wrappers/generated",
-        "generate_contract_wrappers": "node ../abi-gen/lib/index.js --abis  ${npm_package_config_abis} --template ../contract_templates/contract.handlebars --partials '../contract_templates/partials/**/*.handlebars' --output src/contract_wrappers/generated --backend ethers && prettier --write 'src/contract_wrappers/generated/**.ts'",
+        "generate_contract_wrappers": "abi-gen --abis  ${npm_package_config_abis} --template ../contract_templates/contract.handlebars --partials '../contract_templates/partials/**/*.handlebars' --output src/contract_wrappers/generated --backend ethers && prettier --write 'src/contract_wrappers/generated/**.ts'",
         "lint": "tslint --project .",
         "coverage:report:text": "istanbul report text",
         "coverage:report:html": "istanbul report html && open coverage/index.html",
@@ -39,6 +39,7 @@
     },
     "homepage": "https://github.com/0xProject/0x-monorepo/packages/contracts/README.md",
     "devDependencies": {
+        "@0xproject/abi-gen": "^0.2.13",
         "@0xproject/dev-utils": "^0.4.1",
         "@0xproject/tslint-config": "^0.4.17",
         "@types/lodash": "4.14.104",

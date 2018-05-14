@@ -12,7 +12,7 @@
         "manual:postpublish": "yarn build; node ./scripts/postpublish.js"
     },
     "bin": {
-        "abi-gen": "lib/index.js"
+        "abi-gen": "bin/abi-gen.js"
     },
     "repository": {
         "type": "git",
