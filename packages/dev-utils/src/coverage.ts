@@ -1,4 +1,4 @@
-import { CoverageSubprovider } from '@0xproject/sol-cov';
+import { CoverageSubprovider, ZeroExArtifactAdapter } from '@0xproject/sol-cov';
 import * as _ from 'lodash';
 
 import { constants } from './constants';
@@ -16,6 +16,7 @@ export const coverage = {
         const artifactsPath = '../migrations/artifacts/1.0.0';
         const contractsPath = 'src/contracts';
         const defaultFromAddress = constants.TESTRPC_FIRST_ADDRESS;
-        return new CoverageSubprovider(artifactsPath, contractsPath, defaultFromAddress);
+        const zeroExArtifactsAdapter = new ZeroExArtifactAdapter(artifactsPath, contractsPath);
+        return new CoverageSubprovider(zeroExArtifactsAdapter, defaultFromAddress);
     },
 };

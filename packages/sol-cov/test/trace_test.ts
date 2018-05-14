@@ -1,0 +1,57 @@
+import { StructLog } from '@0xproject/types';
+import * as chai from 'chai';
+import * as fs from 'fs';
+import * as _ from 'lodash';
+import 'mocha';
+import * as path from 'path';
+
+import { getTracesByContractAddress } from '../src/trace';
+
+const expect = chai.expect;
+
+const DEFAULT_STRUCT_LOG: StructLog = {
+    depth: 0,
+    error: '',
+    gas: 0,
+    gasCost: 0,
+    memory: [],
+    op: 'DEFAULT',
+    pc: 0,
+    stack: [],
+    storage: {},
+};
+
+function addDefaultStructLogFields(compactStructLog: Partial<StructLog> & { op: string; depth: number }): StructLog {
+    return { ...DEFAULT_STRUCT_LOG, ...compactStructLog };
+}
+
+describe('Trace', () => {
+    describe('#getTracesByContractAddress', () => {
+        it('correctly splits trace by contract address', () => {
+            const delegateCallAddress = '0x0000000000000000000000000000000000000002';
+            const trace = [
+                {
+                    op: 'DELEGATECALL',
+                    stack: ['0x', '0x', delegateCallAddress],
+                    depth: 0,
+                },
+                {
+                    op: 'RETURN',
+                    depth: 1,
+                },
+                {
+                    op: 'RETURN',
+                    depth: 0,
+                },
+            ];
+            const fullTrace = _.map(trace, compactStructLog => addDefaultStructLogFields(compactStructLog));
+            const startAddress = '0x0000000000000000000000000000000000000001';
+            const traceByContractAddress = getTracesByContractAddress(fullTrace, startAddress);
+            const expectedTraceByContractAddress = {
+                [startAddress]: [fullTrace[0], fullTrace[2]],
+                [delegateCallAddress]: [fullTrace[1]],
+            };
+            expect(traceByContractAddress).to.be.deep.equal(expectedTraceByContractAddress);
+        });
+    });
+});

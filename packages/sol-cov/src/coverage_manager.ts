@@ -6,7 +6,7 @@ import * as _ from 'lodash';
 import * as mkdirp from 'mkdirp';
 import * as path from 'path';
 
-import { collectContractsData } from './collect_contract_data';
+import { AbstractArtifactAdapter } from './artifact_adapters/abstract';
 import { collectCoverageEntries } from './collect_coverage_entries';
 import { constants } from './constants';
 import { parseSourceMap } from './source_maps';
@@ -34,41 +34,23 @@ import { utils } from './utils';
 const mkdirpAsync = promisify<undefined>(mkdirp);
 
 export class CoverageManager {
-    private _sourcesPath: string;
+    private _artifactAdapter: AbstractArtifactAdapter;
+    private _verbose: boolean;
     private _traceInfos: TraceInfo[] = [];
-    private _contractsData: ContractData[] = [];
     private _getContractCodeAsync: (address: string) => Promise<string>;
-    constructor(
-        artifactsPath: string,
-        sourcesPath: string,
-        getContractCodeAsync: (address: string) => Promise<string>,
-    ) {
-        this._getContractCodeAsync = getContractCodeAsync;
-        this._sourcesPath = sourcesPath;
-        this._contractsData = collectContractsData(artifactsPath, this._sourcesPath);
-    }
-    public appendTraceInfo(traceInfo: TraceInfo): void {
-        this._traceInfos.push(traceInfo);
-    }
-    public async writeCoverageAsync(): Promise<void> {
-        const finalCoverage = await this._computeCoverageAsync();
-        const stringifiedCoverage = JSON.stringify(finalCoverage, null, '\t');
-        await mkdirpAsync('coverage');
-        fs.writeFileSync('coverage/coverage.json', stringifiedCoverage);
-    }
-    private _getSingleFileCoverageForTrace(
+    private static _getSingleFileCoverageForTrace(
         contractData: ContractData,
         coveredPcs: number[],
         pcToSourceRange: { [programCounter: number]: SourceRange },
         fileIndex: number,
     ): Coverage {
-        const fileName = contractData.sources[fileIndex];
+        const absoluteFileName = contractData.sources[fileIndex];
         const coverageEntriesDescription = collectCoverageEntries(contractData.sourceCodes[fileIndex]);
         let sourceRanges = _.map(coveredPcs, coveredPc => pcToSourceRange[coveredPc]);
         sourceRanges = _.compact(sourceRanges); // Some PC's don't map to a source range and we just ignore them.
         // By default lodash does a shallow object comparasion. We JSON.stringify them and compare as strings.
         sourceRanges = _.uniqBy(sourceRanges, s => JSON.stringify(s)); // We don't care if one PC was covered multiple times within a single transaction
-        sourceRanges = _.filter(sourceRanges, sourceRange => sourceRange.fileName === fileName);
+        sourceRanges = _.filter(sourceRanges, sourceRange => sourceRange.fileName === absoluteFileName);
         const branchCoverage: BranchCoverage = {};
         const branchIds = _.keys(coverageEntriesDescription.branchMap);
         for (const branchId of branchIds) {
@@ -118,7 +100,6 @@ export class CoverageManager {
             );
             statementCoverage[modifierStatementId] = isModifierCovered;
         }
-        const absoluteFileName = path.join(this._sourcesPath, fileName);
         const partialCoverage = {
             [absoluteFileName]: {
                 ...coverageEntriesDescription,
@@ -131,18 +112,53 @@ export class CoverageManager {
         };
         return partialCoverage;
     }
+    constructor(
+        artifactAdapter: AbstractArtifactAdapter,
+        getContractCodeAsync: (address: string) => Promise<string>,
+        verbose: boolean,
+    ) {
+        this._getContractCodeAsync = getContractCodeAsync;
+        this._artifactAdapter = artifactAdapter;
+        this._verbose = verbose;
+    }
+    public appendTraceInfo(traceInfo: TraceInfo): void {
+        // console.log(JSON.stringify(traceInfo, null, '\n'));
+        this._traceInfos.push(traceInfo);
+    }
+    public async writeCoverageAsync(): Promise<void> {
+        const finalCoverage = await this._computeCoverageAsync();
+        const stringifiedCoverage = JSON.stringify(finalCoverage, null, '\t');
+        await mkdirpAsync('coverage');
+        fs.writeFileSync('coverage/coverage.json', stringifiedCoverage);
+    }
     private async _computeCoverageAsync(): Promise<Coverage> {
+        const contractsData = await this._artifactAdapter.collectContractsDataAsync();
         const collector = new Collector();
         for (const traceInfo of this._traceInfos) {
             if (traceInfo.address !== constants.NEW_CONTRACT) {
                 // Runtime transaction
                 let runtimeBytecode = (traceInfo as TraceInfoExistingContract).runtimeBytecode;
                 runtimeBytecode = addHexPrefix(runtimeBytecode);
-                const contractData = _.find(this._contractsData, { runtimeBytecode }) as ContractData;
+                const contractData = _.find(contractsData, contractDataCandidate => {
+                    // Library linking placeholder: __ConvertLib____________________________
+                    let runtimeBytecodeRegex = contractDataCandidate.runtimeBytecode.replace(/_.*_/, '.*');
+                    // Last 86 characters is solidity compiler metadata that's different between compilations
+                    runtimeBytecodeRegex = runtimeBytecodeRegex.replace(/.{86}$/, '');
+                    // Libraries contain their own address at the beginning of the code and it's impossible to know it in advance
+                    runtimeBytecodeRegex = runtimeBytecodeRegex.replace(
+                        /^0x730000000000000000000000000000000000000000/,
+                        '0x73........................................',
+                    );
+                    return !_.isNull(runtimeBytecode.match(runtimeBytecodeRegex));
+                }) as ContractData;
                 if (_.isUndefined(contractData)) {
-                    throw new Error(`Transaction to an unknown address: ${traceInfo.address}`);
+                    if (this._verbose) {
+                        // tslint:disable-next-line:no-console
+                        console.warn(`Transaction to an unknown address: ${traceInfo.address}`);
+                    }
+                    continue;
                 }
-                const bytecodeHex = contractData.runtimeBytecode.slice(2);
+                const bytecodeHex = runtimeBytecode.slice(2);
                 const sourceMap = contractData.sourceMapRuntime;
                 const pcToSourceRange = parseSourceMap(
                     contractData.sourceCodes,
@@ -151,7 +167,7 @@ export class CoverageManager {
                     contractData.sources,
                 );
                 for (let fileIndex = 0; fileIndex < contractData.sources.length; fileIndex++) {
-                    const singleFileCoverageForTrace = this._getSingleFileCoverageForTrace(
+                    const singleFileCoverageForTrace = CoverageManager._getSingleFileCoverageForTrace(
                         contractData,
                         traceInfo.coveredPcs,
                         pcToSourceRange,
@@ -163,13 +179,26 @@ export class CoverageManager {
                 // Contract creation transaction
                 let bytecode = (traceInfo as TraceInfoNewContract).bytecode;
                 bytecode = addHexPrefix(bytecode);
-                const contractData = _.find(this._contractsData, contractDataCandidate =>
-                    bytecode.startsWith(contractDataCandidate.bytecode),
-                ) as ContractData;
+                const contractData = _.find(contractsData, contractDataCandidate => {
+                    // Library linking placeholder: __ConvertLib____________________________
+                    let bytecodeRegex = contractDataCandidate.bytecode.replace(/_.*_/, '.*');
+                    // Last 86 characters is solidity compiler metadata that's different between compilations
+                    bytecodeRegex = bytecodeRegex.replace(/.{86}$/, '');
+                    // Libraries contain their own address at the beginning of the code and it's impossible to know it in advance
+                    bytecodeRegex = bytecodeRegex.replace(
+                        /^0x730000000000000000000000000000000000000000/,
+                        '0x73........................................',
+                    );
+                    return !_.isNull(bytecode.match(bytecodeRegex));
+                }) as ContractData;
                 if (_.isUndefined(contractData)) {
-                    throw new Error(`Unknown contract creation transaction`);
+                    if (this._verbose) {
+                        // tslint:disable-next-line:no-console
+                        console.warn(`Unknown contract creation transaction`);
+                    }
+                    continue;
                 }
-                const bytecodeHex = contractData.bytecode.slice(2);
+                const bytecodeHex = bytecode.slice(2);
                 const sourceMap = contractData.sourceMap;
                 const pcToSourceRange = parseSourceMap(
                     contractData.sourceCodes,
@@ -178,7 +207,7 @@ export class CoverageManager {
                     contractData.sources,
                 );
                 for (let fileIndex = 0; fileIndex < contractData.sources.length; fileIndex++) {
-                    const singleFileCoverageForTrace = this._getSingleFileCoverageForTrace(
+                    const singleFileCoverageForTrace = CoverageManager._getSingleFileCoverageForTrace(
                         contractData,
                         traceInfo.coveredPcs,
                         pcToSourceRange,
