@@ -43,7 +43,7 @@ export const utils = {
         }
         return updatedPackages;
     },
-    getChangelogJSONIfExists(changelogPath: string): string|undefined {
+    getChangelogJSONIfExists(changelogPath: string): string | undefined {
         try {
             const changelogJSON = fs.readFileSync(changelogPath, 'utf-8');
             return changelogJSON;
