@@ -33,7 +33,7 @@
         }
     },
     "bin": {
-        "sol-compiler": "lib/src/cli.js"
+        "sol-compiler": "bin/sol-compiler.js"
     },
     "repository": {
         "type": "git",

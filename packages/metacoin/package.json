@@ -18,7 +18,7 @@
         "coverage:report:html": "istanbul report html && open coverage/index.html",
         "coverage:report:lcov": "istanbul report lcov",
         "test:circleci": "yarn test:coverage",
-        "compile": "node ../sol-compiler/lib/src/cli.js compile"
+        "compile": "sol-compiler compile"
     },
     "author": "",
     "license": "Apache-2.0",
