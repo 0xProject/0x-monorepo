@@ -27,7 +27,7 @@
         "test:commonjs": "run-s build:commonjs run_mocha",
         "run_mocha": "mocha lib/test/**/*_test.js lib/test/global_hooks.js --timeout 10000 --bail --exit",
         "manual:postpublish": "yarn build; node ./scripts/postpublish.js",
-        "docs:stage": "yarn build && node ./scripts/stage_docs.js",
+        "docs:stage": "node scripts/stage_docs.js",
         "docs:json": "typedoc --excludePrivate --excludeExternals --target ES5 --json $JSON_FILE_PATH $PROJECT_FILES",
         "upload_docs_json": "aws s3 cp generated_docs/index.json $S3_URL --profile 0xproject --grants read=uri=http://acs.amazonaws.com/groups/global/AllUsers --content-type application/json"
     },

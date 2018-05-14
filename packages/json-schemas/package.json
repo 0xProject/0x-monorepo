@@ -15,7 +15,7 @@
         "clean": "shx rm -rf lib test_temp scripts",
         "build": "tsc && copyfiles -u 3 './lib/src/monorepo_scripts/**/*' ./scripts",
         "manual:postpublish": "yarn build; node ./scripts/postpublish.js",
-        "docs:stage": "yarn build && node ./scripts/stage_docs.js",
+        "docs:stage": "node scripts/stage_docs.js",
         "docs:json": "typedoc --excludePrivate --excludeExternals --target ES5 --json $JSON_FILE_PATH $PROJECT_FILES",
         "upload_docs_json": "aws s3 cp generated_docs/index.json $S3_URL --profile 0xproject --grants read=uri=http://acs.amazonaws.com/groups/global/AllUsers --content-type application/json"
     },
