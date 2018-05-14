@@ -63,10 +63,6 @@ contract MixinMatchOrders is
             leftOrderInfo.orderHash,
             leftOrderInfo.orderFilledAmount
         ) = getOrderInfo(leftOrder);
-        if (leftOrderInfo.orderStatus != uint8(Status.ORDER_FILLABLE)) {
-            emit ExchangeStatus(uint8(leftOrderInfo.orderStatus), leftOrderInfo.orderHash);
-            return matchedFillResults;
-        }
 
         // Get right status
         OrderInfo memory rightOrderInfo;
@@ -74,10 +70,6 @@ contract MixinMatchOrders is
             rightOrderInfo.orderHash,
             rightOrderInfo.orderFilledAmount
         ) = getOrderInfo(rightOrder);
-        if (rightOrderInfo.orderStatus != uint8(Status.ORDER_FILLABLE)) {
-            emit ExchangeStatus(uint8(rightOrderInfo.orderStatus), rightOrderInfo.orderHash);
-            return matchedFillResults;
-        }
 
         // Fetch taker address
         address takerAddress = getCurrentContextAddress();
