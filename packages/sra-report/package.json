@@ -16,7 +16,7 @@
         "manual:postpublish": "yarn build; node ./scripts/postpublish.js"
     },
     "bin": {
-        "sra-report": "lib/src/index.js"
+        "sra-report": "bin/sra-report.js"
     },
     "repository": {
         "type": "git",
