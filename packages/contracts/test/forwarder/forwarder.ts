@@ -28,7 +28,7 @@ const expect = chai.expect;
 const blockchainLifecycle = new BlockchainLifecycle(web3Wrapper);
 const DECIMALS_DEFAULT = 18;
 
-describe.only(ContractName.Forwarder, () => {
+describe(ContractName.Forwarder, () => {
     let makerAddress: string;
     let owner: string;
     let takerAddress: string;
@@ -249,39 +249,6 @@ describe.only(ContractName.Forwarder, () => {
                 const afterEthBalance = await web3Wrapper.getBalanceInWeiAsync(feeRecipientAddress);
                 expect(afterEthBalance).to.be.bignumber.equal(initEthBalance);
             }
-        });
-    });
-    describe('Expected Results', () => {
-        it('epexctedMarketBuyTokensFillResults - no fees', async () => {
-            const fillAmount = signedOrder.takerAssetAmount.div(4);
-            const takerBalanceBefore = erc20Balances[takerAddress][defaultMakerAssetAddress];
-            const sellQuote = await forwarderWrapper.marketBuyTokensQuoteAsync([signedOrder], [], fillAmount);
-            feeOrders = [];
-            tx = await forwarderWrapper.marketBuyTokensAsync(signedOrders, feeOrders, {
-                fillAmountWei: fillAmount,
-                from: takerAddress,
-            });
-            const newBalances = await erc20Wrapper.getBalancesAsync();
-            const takerBalanceAfter = newBalances[takerAddress][defaultMakerAssetAddress];
-            expect(takerBalanceAfter).to.be.bignumber.eq(takerBalanceBefore.plus(sellQuote.makerAssetFilledAmount));
-        });
-        it('expectedMarketBuyTokensFillResults- fee abstraction', async () => {
-            const fillAmount = signedOrder.takerAssetAmount.div(2);
-            const takerBalanceBefore = erc20Balances[takerAddress][defaultMakerAssetAddress];
-            const buyTokensQuote = await forwarderWrapper.marketBuyTokensQuoteAsync(
-                signedOrdersWithFee,
-                feeOrders,
-                fillAmount,
-            );
-            tx = await forwarderWrapper.marketBuyTokensAsync(signedOrdersWithFee, feeOrders, {
-                fillAmountWei: fillAmount,
-                from: takerAddress,
-            });
-            const newBalances = await erc20Wrapper.getBalancesAsync();
-            const takerBalanceAfter = newBalances[takerAddress][defaultMakerAssetAddress];
-            expect(takerBalanceAfter).to.be.bignumber.eq(
-                takerBalanceBefore.plus(buyTokensQuote.makerAssetFilledAmount),
-            );
         });
     });
     describe('buyExactTokens', () => {

@@ -47,7 +47,7 @@ contract MixinForwarderExpectedResults is MixinForwarderCore {
     /// @param takerAssetFillAmount A number representing the amount of this order to fill.
     /// @return totalFillResults Amounts filled and fees paid by maker and taker.
     function expectedMarketSellFillResults(Order[] memory orders, uint256 takerAssetFillAmount)
-        public
+        internal
         view
         returns (Exchange.FillResults memory totalFillResults)
     {
@@ -90,41 +90,6 @@ contract MixinForwarderExpectedResults is MixinForwarderCore {
                 break;
             }
         }
-        return totalFillResults;
-    }
-
-    /// @dev Calculates the expected results for marketBuyTokens. This is useful for off-chain queries to 
-    ///      ensure all order calculations are calculated together for an accurate calculation
-    /// @param orders An array of Order struct containing order specifications.
-    /// @param feeOrders An array of Order struct containing order specifications.
-    /// @param sellAssetAmount A number representing the amount of this order to fill.
-    /// @return totalFillResult Expected fill amounts for marketBuyTokens
-    function expectedMarketBuyTokensFillResults(
-        Order[] memory orders,
-        Order[] memory feeOrders,
-        uint256 sellAssetAmount)
-        public
-        view
-        returns (Exchange.FillResults memory totalFillResults)
-    {
-        uint256 takerAssetBalance = sellAssetAmount;
-
-        Exchange.FillResults memory expectedMarketSellResults = expectedMarketSellFillResults(orders, sellAssetAmount);
-        Exchange.FillResults memory expectedRequestedTokensFillResults;
-        if (expectedMarketSellResults.takerFeePaid > 0) {
-            Exchange.FillResults memory expectedBuyFeesResults = expectedBuyFeesFillResults(feeOrders, expectedMarketSellResults.takerFeePaid);
-            takerAssetBalance = safeSub(takerAssetBalance, expectedBuyFeesResults.takerAssetFilledAmount);
-            expectedRequestedTokensFillResults = expectedMarketSellFillResults(orders, takerAssetBalance);
-            // Update our return FillResult with the additional fees
-            totalFillResults.takerFeePaid = expectedBuyFeesResults.takerFeePaid;
-        } else {
-            // Calculate expected results from the market sell to buy the requested tokens with the remaining balance
-            expectedRequestedTokensFillResults = expectedMarketSellFillResults(orders, takerAssetBalance);
-        }
-        addFillResults(totalFillResults, expectedRequestedTokensFillResults);
-        // Ensure the token abstraction was fair if fees were proportionally too high, we fail
-        require(isAcceptableThreshold(sellAssetAmount, expectedRequestedTokensFillResults.takerAssetFilledAmount),
-            "traded amount does not meet acceptable threshold");
         return totalFillResults;
     }
 

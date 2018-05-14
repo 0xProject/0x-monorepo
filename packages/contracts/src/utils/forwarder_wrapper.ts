@@ -12,7 +12,7 @@ import { AssetProxyId, SignedOrder } from './types';
 
 const DEFAULT_FEE_PROPORTION = 0;
 const PERCENTAGE_DENOMINATOR = 10000;
-const ZERO_FILL = new BigNumber(0);
+const ZERO_AMOUNT = new BigNumber(0);
 
 export class ForwarderWrapper {
     private _web3Wrapper: Web3Wrapper;
@@ -38,7 +38,7 @@ export class ForwarderWrapper {
             value: opts.fillAmountWei,
         };
         const params = formatters.createMarketBuyOrders(orders, opts.fillAmountWei);
-        const feeParams = formatters.createMarketBuyOrders(feeOrders, ZERO_FILL);
+        const feeParams = formatters.createMarketBuyOrders(feeOrders, ZERO_AMOUNT);
         const txHash: string = await this._forwarderContract.buyExactTokens.sendTransactionAsync(
             params.orders,
             params.signatures,
@@ -79,12 +79,17 @@ export class ForwarderWrapper {
             from: string;
         },
     ): Promise<TransactionReceiptWithDecodedLogs> {
+        const makerAssetData = ethUtil.toBuffer(orders[0].makerAssetData);
+        const proxyId = makerAssetData[0];
+        if (proxyId !== AssetProxyId.ERC20) {
+            throw new Error('Proxy type not supported by marketBuyTokens');
+        }
         const txOpts = {
             from: opts.from,
             value: opts.fillAmountWei,
         };
         const params = formatters.createMarketSellOrders(orders, opts.fillAmountWei);
-        const feeParams = formatters.createMarketSellOrders(feeOrders, ZERO_FILL);
+        const feeParams = formatters.createMarketSellOrders(feeOrders, ZERO_AMOUNT);
         const txHash: string = await this._forwarderContract.marketBuyTokens.sendTransactionAsync(
             params.orders,
             params.signatures,
@@ -96,25 +101,6 @@ export class ForwarderWrapper {
         );
         const tx = await this._getTxWithDecodedLogsAsync(txHash);
         return tx;
-    }
-    public async marketBuyTokensQuoteAsync(
-        orders: SignedOrder[],
-        feeOrders: SignedOrder[],
-        buyAmountWei: BigNumber,
-    ): Promise<{
-        makerAssetFilledAmount: BigNumber;
-        takerAssetFilledAmount: BigNumber;
-        makerFeePaid: BigNumber;
-        takerFeePaid: BigNumber;
-    }> {
-        const params = formatters.createMarketBuyOrders(orders, buyAmountWei);
-        const feeParams = formatters.createMarketBuyOrders(feeOrders, buyAmountWei);
-        const quote = await this._forwarderContract.expectedMarketBuyTokensFillResults.callAsync(
-            params.orders,
-            feeParams.orders,
-            buyAmountWei,
-        );
-        return quote;
     }
     public async calculateBuyExactFillAmountWeiAsync(
         orders: SignedOrder[],
@@ -155,7 +141,7 @@ export class ForwarderWrapper {
         const makerAssetData = ethUtil.toBuffer(orders[0].makerAssetData);
         const makerAssetToken = makerAssetData.slice(1, 21);
         const params = formatters.createMarketBuyOrders(orders, tokenAmount);
-        const feeParams = formatters.createMarketSellOrders(feeOrders, ZERO_FILL);
+        const feeParams = formatters.createMarketSellOrders(feeOrders, ZERO_AMOUNT);
 
         let fillAmountWei;
         if (makerAssetToken.equals(this._zrxAddressBuffer)) {
@@ -172,7 +158,7 @@ export class ForwarderWrapper {
             );
             fillAmountWei = expectedMarketBuyFillResults.takerAssetFilledAmount;
             const expectedFeeAmount = expectedMarketBuyFillResults.takerFeePaid;
-            if (expectedFeeAmount.greaterThan(0)) {
+            if (expectedFeeAmount.greaterThan(ZERO_AMOUNT)) {
                 const expectedFeeFillResults = await this._forwarderContract.expectedBuyFeesFillResults.callAsync(
                     feeParams.orders,
                     expectedFeeAmount,
@@ -194,18 +180,18 @@ export class ForwarderWrapper {
             (totalAmount: BigNumber, order: SignedOrder) => {
                 return totalAmount.plus(order.takerAssetAmount);
             },
-            ZERO_FILL,
+            ZERO_AMOUNT,
         );
         const totalFees = _.reduce(
             orders,
             (totalAmount: BigNumber, order: SignedOrder) => {
                 return totalAmount.plus(order.takerFee);
             },
-            ZERO_FILL,
+            ZERO_AMOUNT,
         );
         const params = formatters.createMarketSellOrders(orders, fillAmountWei);
-        const feeParams = formatters.createMarketSellOrders(feeOrders, ZERO_FILL);
-        if (totalFees.greaterThan(0)) {
+        const feeParams = formatters.createMarketSellOrders(feeOrders, ZERO_AMOUNT);
+        if (totalFees.greaterThan(ZERO_AMOUNT)) {
             const expectedFeeFillResults = await this._forwarderContract.expectedBuyFeesFillResults.callAsync(
                 feeParams.orders,
                 totalFees,
