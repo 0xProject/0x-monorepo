@@ -70,6 +70,8 @@ TODO.md
 packages/website/public/bundle*
 packages/react-docs/example/public/bundle*
 
+# server cli
+packages/testnet-faucets/server/
 
 # generated contract artifacts/
 packages/sol-cov/test/fixtures/artifacts/

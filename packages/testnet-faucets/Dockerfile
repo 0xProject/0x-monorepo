@@ -15,4 +15,4 @@ COPY . .
 
 EXPOSE 3000
 
-CMD ["forever", "./bin/server.js"]
+CMD ["forever", "./server/server.js"]
