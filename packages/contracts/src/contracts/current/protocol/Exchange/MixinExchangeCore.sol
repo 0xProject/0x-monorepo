@@ -69,7 +69,7 @@ contract MixinExchangeCore is
 
     /// @dev Fills the input order.
     /// @param order Order struct containing order specifications.
-    /// @param takerAssetFillAmount Desired amount of takerToken to sell.
+    /// @param takerAssetFillAmount Desired amount of takerAsset to sell.
     /// @param signature Proof that order has been created by maker.
     /// @return Amounts filled and fees paid by maker and taker.
     function fillOrder(
