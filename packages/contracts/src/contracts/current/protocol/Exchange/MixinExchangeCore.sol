@@ -67,69 +67,6 @@ contract MixinExchangeCore is
         emit CancelUpTo(msg.sender, newMakerEpoch);
     }
 
-    /// @dev Gets information about an order: status, hash, and amount filled.
-    /// @param order Order to gather information on.
-    /// @return status Status of order. Statuses are defined in the LibStatus.Status struct.
-    /// @return orderHash Keccak-256 EIP712 hash of the order.
-    /// @return takerAssetFilledAmount Amount of order that has been filled.
-    function getOrderInfo(Order memory order)
-        public
-        view
-        returns (
-            uint8 orderStatus,
-            bytes32 orderHash,
-            uint256 takerAssetFilledAmount
-        )
-    {
-        // Compute the order hash
-        orderHash = getOrderHash(order);
-
-        // If order.makerAssetAmount is zero, we also reject the order.
-        // While the Exchange contract handles them correctly, they create
-        // edge cases in the supporting infrastructure because they have
-        // an 'infinite' price when computed by a simple division.
-        if (order.makerAssetAmount == 0) {
-            orderStatus = uint8(Status.ORDER_INVALID_MAKER_ASSET_AMOUNT);
-            return (orderStatus, orderHash, takerAssetFilledAmount);
-        }
-
-        // If order.takerAssetAmount is zero, then the order will always
-        // be considered filled because 0 == takerAssetAmount == takerAssetFilledAmount
-        // Instead of distinguishing between unfilled and filled zero taker
-        // amount orders, we choose not to support them.
-        if (order.takerAssetAmount == 0) {
-            orderStatus = uint8(Status.ORDER_INVALID_TAKER_ASSET_AMOUNT);
-            return (orderStatus, orderHash, takerAssetFilledAmount);
-        }
-
-        // Validate order expiration
-        if (block.timestamp >= order.expirationTimeSeconds) {
-            orderStatus = uint8(Status.ORDER_EXPIRED);
-            return (orderStatus, orderHash, takerAssetFilledAmount);
-        }
-
-        // Check if order has been cancelled
-        if (cancelled[orderHash]) {
-            orderStatus = uint8(Status.ORDER_CANCELLED);
-            return (orderStatus, orderHash, takerAssetFilledAmount);
-        }
-        if (makerEpoch[order.makerAddress] > order.salt) {
-            orderStatus = uint8(Status.ORDER_CANCELLED);
-            return (orderStatus, orderHash, takerAssetFilledAmount);
-        }
-
-        // Fetch filled amount and validate order availability
-        takerAssetFilledAmount = filled[orderHash];
-        if (takerAssetFilledAmount >= order.takerAssetAmount) {
-            orderStatus = uint8(Status.ORDER_FULLY_FILLED);
-            return (orderStatus, orderHash, takerAssetFilledAmount);
-        }
-
-        // All other statuses are ruled out: order is Fillable
-        orderStatus = uint8(Status.ORDER_FILLABLE);
-        return (orderStatus, orderHash, takerAssetFilledAmount);
-    }
-
     /// @dev Fills the input order.
     /// @param order Order struct containing order specifications.
     /// @param takerAssetFillAmount Desired amount of takerToken to sell.
@@ -449,5 +386,68 @@ contract MixinExchangeCore is
         );
 
         return stateUpdated;
+    }
+
+    /// @dev Gets information about an order: status, hash, and amount filled.
+    /// @param order Order to gather information on.
+    /// @return status Status of order. Statuses are defined in the LibStatus.Status struct.
+    /// @return orderHash Keccak-256 EIP712 hash of the order.
+    /// @return takerAssetFilledAmount Amount of order that has been filled.
+    function getOrderInfo(Order memory order)
+        public
+        view
+        returns (
+            uint8 orderStatus,
+            bytes32 orderHash,
+            uint256 takerAssetFilledAmount
+        )
+    {
+        // Compute the order hash
+        orderHash = getOrderHash(order);
+
+        // If order.makerAssetAmount is zero, we also reject the order.
+        // While the Exchange contract handles them correctly, they create
+        // edge cases in the supporting infrastructure because they have
+        // an 'infinite' price when computed by a simple division.
+        if (order.makerAssetAmount == 0) {
+            orderStatus = uint8(Status.ORDER_INVALID_MAKER_ASSET_AMOUNT);
+            return (orderStatus, orderHash, takerAssetFilledAmount);
+        }
+
+        // If order.takerAssetAmount is zero, then the order will always
+        // be considered filled because 0 == takerAssetAmount == takerAssetFilledAmount
+        // Instead of distinguishing between unfilled and filled zero taker
+        // amount orders, we choose not to support them.
+        if (order.takerAssetAmount == 0) {
+            orderStatus = uint8(Status.ORDER_INVALID_TAKER_ASSET_AMOUNT);
+            return (orderStatus, orderHash, takerAssetFilledAmount);
+        }
+
+        // Validate order expiration
+        if (block.timestamp >= order.expirationTimeSeconds) {
+            orderStatus = uint8(Status.ORDER_EXPIRED);
+            return (orderStatus, orderHash, takerAssetFilledAmount);
+        }
+
+        // Check if order has been cancelled
+        if (cancelled[orderHash]) {
+            orderStatus = uint8(Status.ORDER_CANCELLED);
+            return (orderStatus, orderHash, takerAssetFilledAmount);
+        }
+        if (makerEpoch[order.makerAddress] > order.salt) {
+            orderStatus = uint8(Status.ORDER_CANCELLED);
+            return (orderStatus, orderHash, takerAssetFilledAmount);
+        }
+
+        // Fetch filled amount and validate order availability
+        takerAssetFilledAmount = filled[orderHash];
+        if (takerAssetFilledAmount >= order.takerAssetAmount) {
+            orderStatus = uint8(Status.ORDER_FULLY_FILLED);
+            return (orderStatus, orderHash, takerAssetFilledAmount);
+        }
+
+        // All other statuses are ruled out: order is Fillable
+        orderStatus = uint8(Status.ORDER_FILLABLE);
+        return (orderStatus, orderHash, takerAssetFilledAmount);
     }
 }
