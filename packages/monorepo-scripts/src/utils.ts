@@ -17,7 +17,7 @@ export const utils = {
         const newPatchVersion = `${versionSegments[0]}.${versionSegments[1]}.${newPatch}`;
         return newPatchVersion;
     },
-    async prettifyAsync(filePath: string, cwd: string) {
+    async prettifyAsync(filePath: string, cwd: string): Promise<void> {
         await execAsync(`prettier --write ${filePath} --config .prettierrc`, {
             cwd,
         });
@@ -43,7 +43,7 @@ export const utils = {
         }
         return updatedPackages;
     },
-    getChangelogJSONIfExists(changelogPath: string) {
+    getChangelogJSONIfExists(changelogPath: string): string|undefined {
         try {
             const changelogJSON = fs.readFileSync(changelogPath, 'utf-8');
             return changelogJSON;

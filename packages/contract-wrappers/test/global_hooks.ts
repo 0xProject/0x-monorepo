@@ -5,7 +5,7 @@ import * as path from 'path';
 import { constants } from './utils/constants';
 import { provider } from './utils/web3_wrapper';
 
-before('migrate contracts', async function() {
+before('migrate contracts', async function(): Promise<void> {
     // HACK: Since the migrations take longer then our global mocha timeout limit
     // we manually increase it for this before hook.
     this.timeout(20000);
