@@ -17,6 +17,7 @@
     "dependencies": {
         "0x.js": "^0.37.2",
         "@0xproject/subproviders": "^0.10.1",
+        "@0xproject/types": "^0.6.3",
         "@0xproject/typescript-typings": "^0.3.1",
         "@0xproject/utils": "^0.6.1",
         "body-parser": "^1.17.1",

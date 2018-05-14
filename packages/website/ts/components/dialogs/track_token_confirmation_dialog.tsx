@@ -33,7 +33,7 @@ export class TrackTokenConfirmationDialog extends React.Component<
             isAddingTokenToTracked: false,
         };
     }
-    public render() {
+    public render(): React.ReactNode {
         const tokens = this.props.tokens;
         return (
             <Dialog
@@ -66,7 +66,7 @@ export class TrackTokenConfirmationDialog extends React.Component<
             </Dialog>
         );
     }
-    private async _onTrackConfirmationRespondedAsync(didUserAcceptTracking: boolean) {
+    private async _onTrackConfirmationRespondedAsync(didUserAcceptTracking: boolean): Promise<void> {
         if (!didUserAcceptTracking) {
             this.props.onToggleDialog(didUserAcceptTracking);
             return;

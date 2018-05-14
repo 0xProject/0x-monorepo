@@ -117,7 +117,7 @@ export class Web3Wrapper {
      * Update the used Web3 provider
      * @param provider The new Web3 provider to be set
      */
-    public setProvider(provider: Provider) {
+    public setProvider(provider: Provider): void {
         this._web3.setProvider(provider);
     }
     /**
@@ -333,7 +333,7 @@ export class Web3Wrapper {
      */
     public async awaitTransactionMinedAsync(
         txHash: string,
-        pollingIntervalMs = 1000,
+        pollingIntervalMs: number = 1000,
         timeoutMs?: number,
     ): Promise<TransactionReceiptWithDecodedLogs> {
         let timeoutExceeded = false;

@@ -21,22 +21,22 @@ export class LazyComponent extends React.Component<LazyComponentProps, LazyCompo
             component: undefined,
         };
     }
-    public componentWillMount() {
+    public componentWillMount(): void {
         // tslint:disable-next-line:no-floating-promises
         this._loadComponentFireAndForgetAsync(this.props);
     }
-    public componentWillReceiveProps(nextProps: LazyComponentProps) {
+    public componentWillReceiveProps(nextProps: LazyComponentProps): void {
         if (nextProps.reactComponentPromise !== this.props.reactComponentPromise) {
             // tslint:disable-next-line:no-floating-promises
             this._loadComponentFireAndForgetAsync(nextProps);
         }
     }
-    public render() {
+    public render(): React.ReactNode {
         return _.isUndefined(this.state.component)
             ? null
             : React.createElement(this.state.component, this.props.reactComponentProps);
     }
-    private async _loadComponentFireAndForgetAsync(props: LazyComponentProps) {
+    private async _loadComponentFireAndForgetAsync(props: LazyComponentProps): Promise<void> {
         const component = await props.reactComponentPromise;
         this.setState({
             component,

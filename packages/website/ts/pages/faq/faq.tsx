@@ -404,10 +404,10 @@ const sections: FAQSection[] = [
 ];
 
 export class FAQ extends React.Component<FAQProps, FAQState> {
-    public componentDidMount() {
+    public componentDidMount(): void {
         window.scrollTo(0, 0);
     }
-    public render() {
+    public render(): React.ReactNode {
         return (
             <div>
                 <DocumentTitle title="0x FAQ" />
@@ -422,7 +422,7 @@ export class FAQ extends React.Component<FAQProps, FAQState> {
             </div>
         );
     }
-    private _renderSections() {
+    private _renderSections(): React.ReactNode {
         const renderedSections = _.map(sections, (section: FAQSection, i: number) => {
             const isFirstSection = i === 0;
             return (
@@ -434,7 +434,7 @@ export class FAQ extends React.Component<FAQProps, FAQState> {
         });
         return renderedSections;
     }
-    private _renderQuestions(questions: FAQQuestion[], isFirstSection: boolean) {
+    private _renderQuestions(questions: FAQQuestion[], isFirstSection: boolean): React.ReactNode {
         const renderedQuestions = _.map(questions, (question: FAQQuestion, i: number) => {
             const isFirstQuestion = i === 0;
             return (

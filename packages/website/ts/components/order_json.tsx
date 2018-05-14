@@ -38,7 +38,7 @@ export class OrderJSON extends React.Component<OrderJSONProps, OrderJSONState> {
         // tslint:disable-next-line:no-floating-promises
         this._setShareLinkAsync();
     }
-    public render() {
+    public render(): React.ReactNode {
         const order = utils.generateOrder(
             this.props.exchangeContractIfExists,
             this.props.sideToAssetToken,
@@ -116,11 +116,11 @@ export class OrderJSON extends React.Component<OrderJSONProps, OrderJSONState> {
             </div>
         );
     }
-    private async _shareViaTwitterAsync() {
+    private _shareViaTwitterAsync(): void {
         const tweetText = encodeURIComponent(`Fill my order using the 0x protocol: ${this.state.shareLink}`);
         window.open(`https://twitter.com/intent/tweet?text=${tweetText}`, 'Share your order', 'width=500,height=400');
     }
-    private async _shareViaFacebook() {
+    private _shareViaFacebook(): void {
         (window as any).FB.ui(
             {
                 display: 'popup',
@@ -130,14 +130,14 @@ export class OrderJSON extends React.Component<OrderJSONProps, OrderJSONState> {
             _.noop,
         );
     }
-    private async _shareViaEmailAsync() {
+    private _shareViaEmailAsync(): void {
         const encodedSubject = encodeURIComponent("Let's trade using the 0x protocol");
         const encodedBody = encodeURIComponent(`I generated an order with the 0x protocol.
 You can see and fill it here: ${this.state.shareLink}`);
         const mailToLink = `mailto:mail@example.org?subject=${encodedSubject}&body=${encodedBody}`;
         window.open(mailToLink, '_blank');
     }
-    private async _setShareLinkAsync() {
+    private async _setShareLinkAsync(): Promise<void> {
         const shareLink = await this._generateShareLinkAsync();
         this.setState({
             shareLink,
@@ -159,7 +159,7 @@ You can see and fill it here: ${this.state.shareLink}`);
         }
         return bodyObj.data.url;
     }
-    private _getOrderUrl() {
+    private _getOrderUrl(): string {
         const order = utils.generateOrder(
             this.props.exchangeContractIfExists,
             this.props.sideToAssetToken,

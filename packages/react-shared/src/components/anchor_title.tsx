@@ -52,7 +52,7 @@ export class AnchorTitle extends React.Component<AnchorTitleProps, AnchorTitleSt
             isHovering: false,
         };
     }
-    public render() {
+    public render(): React.ReactNode {
         let opacity = 0;
         if (this.props.shouldShowAnchor) {
             opacity = this.state.isHovering ? 0.6 : 1;
@@ -79,7 +79,7 @@ export class AnchorTitle extends React.Component<AnchorTitleProps, AnchorTitleSt
             </div>
         );
     }
-    private _setHoverState(isHovering: boolean) {
+    private _setHoverState(isHovering: boolean): void {
         this.setState({
             isHovering,
         });

@@ -10,7 +10,7 @@ export interface SourceLinkProps {
     version: string;
 }
 
-export function SourceLink(props: SourceLinkProps) {
+export const SourceLink = (props: SourceLinkProps) => {
     const src = props.source;
     const sourceCodeUrl = `${props.sourceUrl}/${src.fileName}#L${src.line}`;
     return (
@@ -20,4 +20,4 @@ export function SourceLink(props: SourceLinkProps) {
             </a>
         </div>
     );
-}
+};

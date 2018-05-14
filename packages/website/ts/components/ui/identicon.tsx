@@ -15,7 +15,7 @@ export class Identicon extends React.Component<IdenticonProps, IdenticonState> {
     public static defaultProps: Partial<IdenticonProps> = {
         style: {},
     };
-    public render() {
+    public render(): React.ReactNode {
         let address = this.props.address;
         if (_.isEmpty(address)) {
             address = constants.NULL_ADDRESS;

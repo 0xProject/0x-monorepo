@@ -51,7 +51,7 @@ export class CoverageSubprovider extends Subprovider {
      * @param end Callback to call if subprovider handled the request and wants to pass back the request.
      */
     // tslint:disable-next-line:prefer-function-over-method async-suffix
-    public async handleRequest(payload: JSONRPCRequestPayload, next: NextCallback, end: ErrorCallback) {
+    public async handleRequest(payload: JSONRPCRequestPayload, next: NextCallback, end: ErrorCallback): Promise<void> {
         switch (payload.method) {
             case 'eth_sendTransaction':
                 const txData = payload.params[0];

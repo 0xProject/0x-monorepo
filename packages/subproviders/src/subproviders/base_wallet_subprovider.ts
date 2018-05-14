@@ -8,13 +8,13 @@ import { Callback, ErrorCallback, PartialTxParams, ResponseWithTxParams, WalletS
 import { Subprovider } from './subprovider';
 
 export abstract class BaseWalletSubprovider extends Subprovider {
-    protected static _validateTxParams(txParams: PartialTxParams) {
+    protected static _validateTxParams(txParams: PartialTxParams): void {
         if (!_.isUndefined(txParams.to)) {
             assert.isETHAddressHex('to', txParams.to);
         }
         assert.isHexString('nonce', txParams.nonce);
     }
-    private static _validateSender(sender: string) {
+    private static _validateSender(sender: string): void {
         if (_.isUndefined(sender) || !addressUtils.isAddress(sender)) {
             throw new Error(WalletSubproviderErrors.SenderInvalidOrNotSupplied);
         }
@@ -33,7 +33,7 @@ export abstract class BaseWalletSubprovider extends Subprovider {
      * @param end Callback to call if subprovider handled the request and wants to pass back the request.
      */
     // tslint:disable-next-line:async-suffix
-    public async handleRequest(payload: JSONRPCRequestPayload, next: Callback, end: ErrorCallback) {
+    public async handleRequest(payload: JSONRPCRequestPayload, next: Callback, end: ErrorCallback): Promise<void> {
         let accounts;
         let txParams;
         switch (payload.method) {

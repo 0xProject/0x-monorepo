@@ -35,15 +35,15 @@ export class DropDown extends React.Component<DropDownProps, DropDownState> {
             isDropDownOpen: false,
         };
     }
-    public componentDidMount() {
+    public componentDidMount(): void {
         this._popoverCloseCheckIntervalId = window.setInterval(() => {
             this._checkIfShouldClosePopover();
         }, CHECK_CLOSE_POPOVER_INTERVAL_MS);
     }
-    public componentWillUnmount() {
+    public componentWillUnmount(): void {
         window.clearInterval(this._popoverCloseCheckIntervalId);
     }
-    public componentWillReceiveProps(nextProps: DropDownProps) {
+    public componentWillReceiveProps(nextProps: DropDownProps): void {
         // HACK: If the popoverContent is updated to a different dimension and the users
         // mouse is no longer above it, the dropdown can enter an inconsistent state where
         // it believes the user is still hovering over it. In order to remedy this, we
@@ -52,7 +52,7 @@ export class DropDown extends React.Component<DropDownProps, DropDownState> {
         // dropdowns from having dynamic content.
         this._onHoverOff();
     }
-    public render() {
+    public render(): React.ReactNode {
         return (
             <div
                 style={{ ...this.props.style, width: 'fit-content', height: '100%' }}
@@ -77,11 +77,11 @@ export class DropDown extends React.Component<DropDownProps, DropDownState> {
             </div>
         );
     }
-    private _onHover(event: React.FormEvent<HTMLInputElement>) {
+    private _onHover(event: React.FormEvent<HTMLInputElement>): void {
         this._isHovering = true;
         this._checkIfShouldOpenPopover(event);
     }
-    private _checkIfShouldOpenPopover(event: React.FormEvent<HTMLInputElement>) {
+    private _checkIfShouldOpenPopover(event: React.FormEvent<HTMLInputElement>): void {
         if (this.state.isDropDownOpen) {
             return; // noop
         }
@@ -91,16 +91,16 @@ export class DropDown extends React.Component<DropDownProps, DropDownState> {
             anchorEl: event.currentTarget,
         });
     }
-    private _onHoverOff() {
+    private _onHoverOff(): void {
         this._isHovering = false;
     }
-    private _checkIfShouldClosePopover() {
+    private _checkIfShouldClosePopover(): void {
         if (!this.state.isDropDownOpen || this._isHovering) {
             return; // noop
         }
         this._closePopover();
     }
-    private _closePopover() {
+    private _closePopover(): void {
         this.setState({
             isDropDownOpen: false,
         });

@@ -52,14 +52,14 @@ export class TokenAmountInput extends React.Component<TokenAmountInputProps, Tok
             isBalanceAndAllowanceLoaded: false,
         };
     }
-    public componentWillMount() {
+    public componentWillMount(): void {
         // tslint:disable-next-line:no-floating-promises
         this._fetchBalanceAndAllowanceAsync(this.props.token.address, this.props.userAddress);
     }
-    public componentWillUnmount() {
+    public componentWillUnmount(): void {
         this._isUnmounted = true;
     }
-    public componentWillReceiveProps(nextProps: TokenAmountInputProps) {
+    public componentWillReceiveProps(nextProps: TokenAmountInputProps): void {
         if (
             nextProps.userAddress !== this.props.userAddress ||
             nextProps.networkId !== this.props.networkId ||
@@ -70,7 +70,7 @@ export class TokenAmountInput extends React.Component<TokenAmountInputProps, Tok
             this._fetchBalanceAndAllowanceAsync(nextProps.token.address, nextProps.userAddress);
         }
     }
-    public render() {
+    public render(): React.ReactNode {
         const amount = this.props.amount
             ? ZeroEx.toUnitAmount(this.props.amount, this.props.token.decimals)
             : undefined;
@@ -98,7 +98,7 @@ export class TokenAmountInput extends React.Component<TokenAmountInputProps, Tok
             </div>
         );
     }
-    private _onChange(isValid: boolean, amount?: BigNumber) {
+    private _onChange(isValid: boolean, amount?: BigNumber): void {
         let baseUnitAmount;
         if (!_.isUndefined(amount)) {
             baseUnitAmount = ZeroEx.toBaseUnitAmount(amount, this.props.token.decimals);
@@ -122,7 +122,7 @@ export class TokenAmountInput extends React.Component<TokenAmountInputProps, Tok
             return undefined;
         }
     }
-    private async _fetchBalanceAndAllowanceAsync(tokenAddress: string, userAddress: string) {
+    private async _fetchBalanceAndAllowanceAsync(tokenAddress: string, userAddress: string): Promise<void> {
         this.setState({
             isBalanceAndAllowanceLoaded: false,
         });

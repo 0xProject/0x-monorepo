@@ -22,47 +22,47 @@ export class Dispatcher {
         this._dispatch = dispatch;
     }
     // Portal
-    public resetState() {
+    public resetState(): void {
         this._dispatch({
             type: ActionTypes.ResetState,
         });
     }
-    public updateNodeVersion(nodeVersion: string) {
+    public updateNodeVersion(nodeVersion: string): void {
         this._dispatch({
             data: nodeVersion,
             type: ActionTypes.UpdateNodeVersion,
         });
     }
-    public updateScreenWidth(screenWidth: ScreenWidths) {
+    public updateScreenWidth(screenWidth: ScreenWidths): void {
         this._dispatch({
             data: screenWidth,
             type: ActionTypes.UpdateScreenWidth,
         });
     }
-    public swapAssetTokenSymbols() {
+    public swapAssetTokenSymbols(): void {
         this._dispatch({
             type: ActionTypes.SwapAssetTokens,
         });
     }
-    public updateOrderSalt(salt: BigNumber) {
+    public updateOrderSalt(salt: BigNumber): void {
         this._dispatch({
             data: salt,
             type: ActionTypes.UpdateOrderSalt,
         });
     }
-    public updateUserSuppliedOrderCache(order: Order) {
+    public updateUserSuppliedOrderCache(order: Order): void {
         this._dispatch({
             data: order,
             type: ActionTypes.UpdateUserSuppliedOrderCache,
         });
     }
-    public updateShouldBlockchainErrDialogBeOpen(shouldBeOpen: boolean) {
+    public updateShouldBlockchainErrDialogBeOpen(shouldBeOpen: boolean): void {
         this._dispatch({
             data: shouldBeOpen,
             type: ActionTypes.UpdateShouldBlockchainErrDialogBeOpen,
         });
     }
-    public updateChosenAssetToken(side: Side, token: AssetToken) {
+    public updateChosenAssetToken(side: Side, token: AssetToken): void {
         this._dispatch({
             data: {
                 side,
@@ -71,7 +71,7 @@ export class Dispatcher {
             type: ActionTypes.UpdateChosenAssetToken,
         });
     }
-    public updateChosenAssetTokenAddress(side: Side, address: string) {
+    public updateChosenAssetTokenAddress(side: Side, address: string): void {
         this._dispatch({
             data: {
                 address,
@@ -80,43 +80,43 @@ export class Dispatcher {
             type: ActionTypes.UpdateChosenAssetTokenAddress,
         });
     }
-    public updateOrderTakerAddress(address: string) {
+    public updateOrderTakerAddress(address: string): void {
         this._dispatch({
             data: address,
             type: ActionTypes.UpdateOrderTakerAddress,
         });
     }
-    public updateUserAddress(address?: string) {
+    public updateUserAddress(address?: string): void {
         this._dispatch({
             data: address,
             type: ActionTypes.UpdateUserAddress,
         });
     }
-    public updateOrderExpiry(unixTimestampSec: BigNumber) {
+    public updateOrderExpiry(unixTimestampSec: BigNumber): void {
         this._dispatch({
             data: unixTimestampSec,
             type: ActionTypes.UpdateOrderExpiry,
         });
     }
-    public encounteredBlockchainError(err: BlockchainErrs) {
+    public encounteredBlockchainError(err: BlockchainErrs): void {
         this._dispatch({
             data: err,
             type: ActionTypes.BlockchainErrEncountered,
         });
     }
-    public updateBlockchainIsLoaded(isLoaded: boolean) {
+    public updateBlockchainIsLoaded(isLoaded: boolean): void {
         this._dispatch({
             data: isLoaded,
             type: ActionTypes.UpdateBlockchainIsLoaded,
         });
     }
-    public addTokenToTokenByAddress(token: Token) {
+    public addTokenToTokenByAddress(token: Token): void {
         this._dispatch({
             data: token,
             type: ActionTypes.AddTokenToTokenByAddress,
         });
     }
-    public removeTokenToTokenByAddress(token: Token) {
+    public removeTokenToTokenByAddress(token: Token): void {
         this._dispatch({
             data: token,
             type: ActionTypes.RemoveTokenFromTokenByAddress,
@@ -127,7 +127,7 @@ export class Dispatcher {
         networkId: number,
         userAddressIfExists: string | undefined,
         sideToAssetToken: SideToAssetToken,
-    ) {
+    ): void {
         this._dispatch({
             data: {
                 tokenByAddress,
@@ -138,36 +138,36 @@ export class Dispatcher {
             type: ActionTypes.BatchDispatch,
         });
     }
-    public updateTokenByAddress(tokens: Token[]) {
+    public updateTokenByAddress(tokens: Token[]): void {
         this._dispatch({
             data: tokens,
             type: ActionTypes.UpdateTokenByAddress,
         });
     }
-    public forceTokenStateRefetch() {
+    public forceTokenStateRefetch(): void {
         this._dispatch({
             type: ActionTypes.ForceTokenStateRefetch,
         });
     }
-    public updateECSignature(ecSignature: ECSignature) {
+    public updateECSignature(ecSignature: ECSignature): void {
         this._dispatch({
             data: ecSignature,
             type: ActionTypes.UpdateOrderECSignature,
         });
     }
-    public updateUserWeiBalance(balance: BigNumber) {
+    public updateUserWeiBalance(balance: BigNumber): void {
         this._dispatch({
             data: balance,
             type: ActionTypes.UpdateUserEtherBalance,
         });
     }
-    public updateNetworkId(networkId: number) {
+    public updateNetworkId(networkId: number): void {
         this._dispatch({
             data: networkId,
             type: ActionTypes.UpdateNetworkId,
         });
     }
-    public updateOrderFillAmount(amount: BigNumber) {
+    public updateOrderFillAmount(amount: BigNumber): void {
         this._dispatch({
             data: amount,
             type: ActionTypes.UpdateOrderFillAmount,
@@ -175,13 +175,13 @@ export class Dispatcher {
     }
 
     // Docs
-    public updateCurrentDocsVersion(version: string) {
+    public updateCurrentDocsVersion(version: string): void {
         this._dispatch({
             data: version,
             type: ActionTypes.UpdateLibraryVersion,
         });
     }
-    public updateAvailableDocVersions(versions: string[]) {
+    public updateAvailableDocVersions(versions: string[]): void {
         this._dispatch({
             data: versions,
             type: ActionTypes.UpdateAvailableLibraryVersions,
@@ -189,30 +189,30 @@ export class Dispatcher {
     }
 
     // Shared
-    public showFlashMessage(msg: string | React.ReactNode) {
+    public showFlashMessage(msg: string | React.ReactNode): void {
         this._dispatch({
             data: msg,
             type: ActionTypes.ShowFlashMessage,
         });
     }
-    public hideFlashMessage() {
+    public hideFlashMessage(): void {
         this._dispatch({
             type: ActionTypes.HideFlashMessage,
         });
     }
-    public updateProviderType(providerType: ProviderType) {
+    public updateProviderType(providerType: ProviderType): void {
         this._dispatch({
             type: ActionTypes.UpdateProviderType,
             data: providerType,
         });
     }
-    public updateInjectedProviderName(injectedProviderName: string) {
+    public updateInjectedProviderName(injectedProviderName: string): void {
         this._dispatch({
             type: ActionTypes.UpdateInjectedProviderName,
             data: injectedProviderName,
         });
     }
-    public updateSelectedLanguage(language: Language) {
+    public updateSelectedLanguage(language: Language): void {
         this._dispatch({
             type: ActionTypes.UpdateSelectedLanguage,
             data: language,

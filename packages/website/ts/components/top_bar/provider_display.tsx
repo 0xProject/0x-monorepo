@@ -35,7 +35,7 @@ const styles: Styles = {
 };
 
 export class ProviderDisplay extends React.Component<ProviderDisplayProps, ProviderDisplayState> {
-    public render() {
+    public render(): React.ReactNode {
         const isAddressAvailable = !_.isEmpty(this.props.userAddress);
         const isExternallyInjectedProvider =
             this.props.providerType === ProviderType.Injected && this.props.injectedProviderName !== '0x Public';
@@ -81,7 +81,7 @@ export class ProviderDisplay extends React.Component<ProviderDisplayProps, Provi
             </div>
         );
     }
-    public renderPopoverContent(hasInjectedProvider: boolean, hasLedgerProvider: boolean) {
+    public renderPopoverContent(hasInjectedProvider: boolean, hasLedgerProvider: boolean): React.ReactNode {
         if (hasInjectedProvider || hasLedgerProvider) {
             return (
                 <ProviderPicker

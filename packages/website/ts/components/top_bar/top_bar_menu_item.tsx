@@ -26,7 +26,7 @@ export class TopBarMenuItem extends React.Component<TopBarMenuItemProps, TopBarM
         className: '',
         isNightVersion: false,
     };
-    public render() {
+    public render(): React.ReactNode {
         const primaryStyles = this.props.isPrimary
             ? {
                   borderRadius: 4,

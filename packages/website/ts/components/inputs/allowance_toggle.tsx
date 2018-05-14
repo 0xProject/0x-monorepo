@@ -63,7 +63,7 @@ export class AllowanceToggle extends React.Component<AllowanceToggleProps, Allow
             prevAllowance: props.tokenState.allowance,
         };
     }
-    public componentWillReceiveProps(nextProps: AllowanceToggleProps) {
+    public componentWillReceiveProps(nextProps: AllowanceToggleProps): void {
         if (!nextProps.tokenState.allowance.eq(this.state.prevAllowance)) {
             this.setState({
                 isSpinnerVisible: false,
@@ -71,7 +71,7 @@ export class AllowanceToggle extends React.Component<AllowanceToggleProps, Allow
             });
         }
     }
-    public render() {
+    public render(): React.ReactNode {
         return (
             <div className="flex">
                 <div>
@@ -128,7 +128,7 @@ export class AllowanceToggle extends React.Component<AllowanceToggleProps, Allow
             await errorReporter.reportAsync(err);
         }
     }
-    private _isAllowanceSet() {
+    private _isAllowanceSet(): boolean {
         return !this.props.tokenState.allowance.eq(0);
     }
 }

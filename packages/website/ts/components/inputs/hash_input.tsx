@@ -27,7 +27,7 @@ interface HashInputProps {
 interface HashInputState {}
 
 export class HashInput extends React.Component<HashInputProps, HashInputState> {
-    public render() {
+    public render(): React.ReactNode {
         const msgHashHex = this.props.blockchainIsLoaded ? this._generateMessageHashHex() : '';
         return (
             <div>
@@ -40,7 +40,7 @@ export class HashInput extends React.Component<HashInputProps, HashInputState> {
             </div>
         );
     }
-    private _generateMessageHashHex() {
+    private _generateMessageHashHex(): string {
         const exchangeContractAddress = this.props.blockchain.getExchangeContractAddressIfExists();
         const hashData = this.props.hashData;
         const order: Order = {

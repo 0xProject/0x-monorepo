@@ -142,7 +142,7 @@ export const doxityUtils = {
         };
         return type;
     },
-    _isMethod(abiDoc: DoxityAbiDoc) {
+    _isMethod(abiDoc: DoxityAbiDoc): boolean {
         if (abiDoc.type !== AbiTypes.Function) {
             return false;
         }
@@ -152,7 +152,7 @@ export const doxityUtils = {
         const isMethod = hasNamedOutputIfExists && !isNameAllCaps;
         return isMethod;
     },
-    _isProperty(abiDoc: DoxityAbiDoc) {
+    _isProperty(abiDoc: DoxityAbiDoc): boolean {
         if (abiDoc.type !== AbiTypes.Function) {
             return false;
         }

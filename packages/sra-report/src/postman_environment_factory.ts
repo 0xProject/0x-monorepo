@@ -12,8 +12,22 @@ import { addresses as ropstenAddresses } from './contract_addresses/ropsten_addr
 
 const ENVIRONMENT_NAME = 'SRA Report';
 
-interface EnvironmentValue {
+export interface EnvironmentValue {
     key: string;
+    value: string;
+    enabled: true;
+    type: 'text';
+}
+
+export interface Environment {
+    name: string;
+    values: EnvironmentValue[];
+}
+
+export interface Addresses {
+    WETH: string;
+    ZRX: string;
+    EXCHANGE: string;
 }
 
 export const postmanEnvironmentFactory = {
@@ -25,7 +39,7 @@ export const postmanEnvironmentFactory = {
      *  - Contract addresses based on the network id for making specific queries (ex. baseTokenAddress=ZRX_address)
      *  - Order properties for making specific queries (ex. maker=orderMaker)
      */
-    async createPostmanEnvironmentAsync(url: string, networkId: number) {
+    async createPostmanEnvironmentAsync(url: string, networkId: number): Promise<Environment> {
         const orderEnvironmentValues = await createOrderEnvironmentValuesAsync(url);
         const allEnvironmentValues = _.concat(
             createSchemaEnvironmentValues(),
@@ -40,7 +54,7 @@ export const postmanEnvironmentFactory = {
         return environment;
     },
 };
-function createSchemaEnvironmentValues() {
+function createSchemaEnvironmentValues(): EnvironmentValue[] {
     const schemas: Schema[] = _.values(schemasByName);
     const schemaEnvironmentValues = _.compact(
         _.map(schemas, (schema: Schema) => {
@@ -60,7 +74,7 @@ function createSchemaEnvironmentValues() {
     const result = _.concat(schemaEnvironmentValues, createEnvironmentValue('schemaKeys', JSON.stringify(schemaKeys)));
     return result;
 }
-function createContractAddressEnvironmentValues(networkId: number) {
+function createContractAddressEnvironmentValues(networkId: number): EnvironmentValue[] {
     const contractAddresses = getContractAddresses(networkId);
     return [
         createEnvironmentValue('tokenContractAddress1', contractAddresses.WETH),
@@ -68,7 +82,7 @@ function createContractAddressEnvironmentValues(networkId: number) {
         createEnvironmentValue('exchangeContractAddress', contractAddresses.EXCHANGE),
     ];
 }
-async function createOrderEnvironmentValuesAsync(url: string) {
+async function createOrderEnvironmentValuesAsync(url: string): Promise<EnvironmentValue[]> {
     const httpClient = new HttpClient(url);
     const orders = await httpClient.getOrdersAsync();
     const orderIfExists = _.head(orders);
@@ -91,7 +105,7 @@ async function createOrderEnvironmentValuesAsync(url: string) {
         ];
     }
 }
-function getContractAddresses(networkId: number) {
+function getContractAddresses(networkId: number): Addresses {
     switch (networkId) {
         case 1:
             return mainnetAddresses;
@@ -105,7 +119,7 @@ function getContractAddresses(networkId: number) {
             throw new Error('Unsupported network id');
     }
 }
-function convertSchemaIdToKey(schemaId: string) {
+function convertSchemaIdToKey(schemaId: string): string {
     let result = schemaId;
     if (_.startsWith(result, '/')) {
         result = result.substr(1);
@@ -113,7 +127,8 @@ function convertSchemaIdToKey(schemaId: string) {
     result = `${result}Schema`;
     return result;
 }
-function createEnvironmentValue(key: string, value: string) {
+
+function createEnvironmentValue(key: string, value: string): EnvironmentValue {
     return {
         key,
         value,

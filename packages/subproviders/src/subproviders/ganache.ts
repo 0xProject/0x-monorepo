@@ -28,7 +28,7 @@ export class GanacheSubprovider extends Subprovider {
      * @param end Callback to call if subprovider handled the request and wants to pass back the request.
      */
     // tslint:disable-next-line:prefer-function-over-method async-suffix
-    public async handleRequest(payload: JSONRPCRequestPayload, next: Callback, end: ErrorCallback) {
+    public async handleRequest(payload: JSONRPCRequestPayload, next: Callback, end: ErrorCallback): Promise<void> {
         this._ganacheProvider.sendAsync(payload, (err: Error | null, result: any) => {
             end(err, result && result.result);
         });
