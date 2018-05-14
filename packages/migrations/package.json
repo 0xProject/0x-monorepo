@@ -5,7 +5,7 @@
     "main": "lib/index.js",
     "types": "lib/index.d.ts",
     "scripts": {
-        "build:watch": "tsc -w",
+        "watch": "tsc -w",
         "prebuild": "run-s clean compile copy_artifacts generate_contract_wrappers",
         "copy_artifacts": "copyfiles -u 4 'artifacts/1.0.0/**/*' ./lib/src/artifacts",
         "build": "tsc",

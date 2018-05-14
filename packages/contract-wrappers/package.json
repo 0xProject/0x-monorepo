@@ -11,7 +11,7 @@
     "main": "lib/src/index.js",
     "types": "lib/src/index.d.ts",
     "scripts": {
-        "build:watch": "tsc -w",
+        "watch": "tsc -w",
         "prebuild": "run-s clean generate_contract_wrappers",
         "generate_contract_wrappers": "node ../abi-gen/lib/index.js --abis 'src/compact_artifacts/@(Exchange|Token|TokenTransferProxy|EtherToken|TokenRegistry|DummyToken).json' --template ../contract_templates/contract.handlebars --partials '../contract_templates/partials/**/*.handlebars' --output src/contract_wrappers/generated --backend ethers && prettier --write 'src/contract_wrappers/generated/**.ts'",
         "lint": "tslint --project .",

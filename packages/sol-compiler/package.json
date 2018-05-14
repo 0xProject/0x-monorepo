@@ -5,7 +5,7 @@
     "main": "lib/src/index.js",
     "types": "lib/src/index.d.ts",
     "scripts": {
-        "build:watch": "tsc -w",
+        "watch": "tsc -w",
         "build": "yarn clean && copyfiles 'test/fixtures/contracts/**/*' ./lib && tsc && copyfiles -u 3 './lib/src/monorepo_scripts/**/*' ./scripts",
         "test": "run-s build run_mocha",
         "run_mocha": "mocha lib/test/*_test.js --bail --exit",

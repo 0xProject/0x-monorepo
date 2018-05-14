@@ -4,7 +4,7 @@
     "private": true,
     "description": "Example solidity project using 0x dev tools",
     "scripts": {
-        "build:watch": "tsc -w",
+        "watch": "tsc -w",
         "lint": "tslint --project .",
         "clean": "shx rm -rf lib artifacts src/contract_wrappers",
         "prebuild": "run-s clean compile generate_contract_wrappers copy_artifacts",

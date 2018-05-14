@@ -5,7 +5,7 @@
     "main": "lib/src/index.js",
     "types": "lib/src/index.d.ts",
     "scripts": {
-        "build:watch": "tsc -w",
+        "watch": "tsc -w",
         "lint": "tslint --project .",
         "test": "run-s clean build compile_test run_mocha",
         "test:coverage": "nyc npm run test --all && yarn coverage:report:lcov",

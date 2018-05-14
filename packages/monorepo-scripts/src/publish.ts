@@ -75,7 +75,7 @@ const packageNameToWebsitePath: { [name: string]: string } = {
 async function confirmDocPagesRenderAsync(packages: LernaPackage[]) {
     // push docs to staging
     utils.log("Upload all docJson's to S3 staging...");
-    await execAsync(`yarn lerna:stage_docs`, { cwd: constants.monorepoRootPath });
+    await execAsync(`yarn stage_docs`, { cwd: constants.monorepoRootPath });
 
     // deploy website to staging
     utils.log('Deploy website to staging...');

@@ -5,7 +5,7 @@
     "main": "lib/index.js",
     "types": "lib/index.d.ts",
     "scripts": {
-        "build:watch": "tsc -w",
+        "watch": "tsc -w",
         "lint": "tslint --project .",
         "clean": "shx rm -rf lib scripts",
         "build": "tsc && copyfiles -u 2 './lib/monorepo_scripts/**/*' ./scripts",

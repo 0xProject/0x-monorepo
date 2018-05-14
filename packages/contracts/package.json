@@ -8,7 +8,7 @@
         "test": "test"
     },
     "scripts": {
-        "build:watch": "tsc -w",
+        "watch": "tsc -w",
         "prebuild": "run-s clean copy_artifacts generate_contract_wrappers",
         "copy_artifacts": "copyfiles -u 4 '../migrations/artifacts/1.0.0/**/*' ./lib/src/artifacts;",
         "build": "tsc",
