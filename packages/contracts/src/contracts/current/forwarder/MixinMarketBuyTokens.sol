@@ -10,11 +10,11 @@ contract MixinMarketBuyTokens is
     MixinForwarderExpectedResults,
     MixinERC20
 {
-    /// @dev Buys the tokens, performing fee abstraction if required. This function is payable
+    /// @dev Market buys ERC20 tokens, performing fee abstraction if required. This does not support ERC721 tokens. This function is payable
     ///      and will convert all incoming ETH into WETH and perform the trade on behalf of the caller.
     ///      This function allows for a deduction of a proportion of incoming ETH sent to the feeRecipient.
-    ///      The caller is sent all tokens from the marketSell of orders (less any fees required to be paid in ZRX)
-    ///      If the purchased token amount does not meet some threshold (98%) then this function reverts.
+    ///      The caller is sent all tokens from the operation.
+    ///      If the purchased token amount does not meet an acceptable threshold then this function reverts.
     /// @param orders An array of Order struct containing order specifications.
     /// @param signatures An array of Proof that order has been created by maker.
     /// @param feeOrders An array of Order struct containing order specifications for fees.

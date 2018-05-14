@@ -4,14 +4,12 @@ pragma experimental ABIEncoderV2;
 import "./MixinForwarderCore.sol";
 import "./MixinBuyExactTokens.sol";
 import "./MixinMarketBuyTokens.sol";
-import "./MixinBuyNFTTokens.sol";
 import "../utils/Ownable/Ownable.sol";
 
 contract Forwarder is
     MixinForwarderCore,
     MixinBuyExactTokens,
     MixinMarketBuyTokens,
-    MixinBuyNFTTokens,
     Ownable
 {
     function Forwarder(
@@ -33,7 +31,7 @@ contract Forwarder is
         public
         payable
     {
-        require(msg.sender == address(ETHER_TOKEN), "Default function only allowed by WETH");
+        require(msg.sender == address(ETHER_TOKEN), "Default function only allowed by WETH contract");
     }
 
     /// @dev Sets the allowances on the proxy for this contract
