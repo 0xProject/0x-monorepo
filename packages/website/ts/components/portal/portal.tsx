@@ -210,7 +210,7 @@ export class Portal extends React.Component<PortalProps, PortalState> {
                                     <Route
                                         exact={true}
                                         path={`${WebsitePaths.Portal}`}
-                                        component={this._renderWallet.bind(this)}
+                                        render={this._renderWallet.bind(this)}
                                     />
                                 </Switch>
                             </div>
@@ -227,13 +227,17 @@ export class Portal extends React.Component<PortalProps, PortalState> {
                                 />
                                 <Route
                                     path={`${WebsitePaths.Portal}/trades`}
-                                    component={this._renderTradeHistory.bind(this)}
+                                    render={this._renderTradeHistory.bind(this)}
                                 />
                                 <Route
                                     path={`${WebsitePaths.Portal}/direct`}
-                                    component={this._renderTradeDirect.bind(this)}
+                                    render={this._renderTradeDirect.bind(this)}
                                 />
-                                <Route path={`${WebsitePaths.Home}`} component={this._renderRelayerIndex.bind(this)} />
+                                <Route
+                                    exact={true}
+                                    path={`${WebsitePaths.Portal}/`}
+                                    render={this._renderRelayerIndex.bind(this)}
+                                />
                             </Switch>
                         </div>
                     </div>
@@ -275,7 +279,7 @@ export class Portal extends React.Component<PortalProps, PortalState> {
             </div>
         );
     }
-    private _renderMenu(routeComponentProps: RouteComponentProps<any>) {
+    private _renderMenu(routeComponentProps: RouteComponentProps<any>): React.ReactNode {
         return (
             <div>
                 <BackButton to={`${WebsitePaths.Portal}`} labelText={'back to Relayers'} />
@@ -283,7 +287,7 @@ export class Portal extends React.Component<PortalProps, PortalState> {
             </div>
         );
     }
-    private _renderWallet() {
+    private _renderWallet(): React.ReactNode {
         const allTokens = _.values(this.props.tokenByAddress);
         const trackedTokens = _.filter(allTokens, t => t.isTracked);
         return (
@@ -309,7 +313,7 @@ export class Portal extends React.Component<PortalProps, PortalState> {
             </div>
         );
     }
-    private _renderEthWrapper() {
+    private _renderEthWrapper(): React.ReactNode {
         return (
             <div>
                 <Title labelText={'Wrapped ETH'} />
@@ -325,7 +329,7 @@ export class Portal extends React.Component<PortalProps, PortalState> {
             </div>
         );
     }
-    private _renderTradeHistory() {
+    private _renderTradeHistory(): React.ReactNode {
         return (
             <div>
                 <Title labelText={'Trade History'} />
@@ -337,7 +341,7 @@ export class Portal extends React.Component<PortalProps, PortalState> {
             </div>
         );
     }
-    private _renderTradeDirect(match: any, location: Location, history: History) {
+    private _renderTradeDirect(match: any, location: Location, history: History): React.ReactNode {
         return (
             <div>
                 <Title labelText={'Trade Direct'} />
@@ -349,7 +353,7 @@ export class Portal extends React.Component<PortalProps, PortalState> {
             </div>
         );
     }
-    private _renderTokenBalances() {
+    private _renderTokenBalances(): React.ReactNode {
         const allTokens = _.values(this.props.tokenByAddress);
         const trackedTokens = _.filter(allTokens, t => t.isTracked);
         return (
@@ -371,7 +375,7 @@ export class Portal extends React.Component<PortalProps, PortalState> {
             </div>
         );
     }
-    private _renderRelayerIndex() {
+    private _renderRelayerIndex(): React.ReactNode {
         return (
             <div>
                 <Title labelText={'Explore 0x Relayers'} />

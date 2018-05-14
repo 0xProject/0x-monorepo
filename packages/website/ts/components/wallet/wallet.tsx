@@ -239,9 +239,8 @@ export class Wallet extends React.Component<WalletProps, WalletState> {
         const userAddress = this.props.userAddress;
         const primaryText = utils.getAddressBeginAndEnd(userAddress);
         return (
-            <Link to={`${WebsitePaths.Portal}/account`} style={{ textDecoration: 'none' }}>
+            <Link key={HEADER_ITEM_KEY} to={`${WebsitePaths.Portal}/account`} style={{ textDecoration: 'none' }}>
                 <ListItem
-                    key={HEADER_ITEM_KEY}
                     primaryText={primaryText}
                     leftIcon={<Identicon address={userAddress} diameter={ICON_DIMENSION} />}
                     style={{ ...styles.paddedItem, ...styles.borderedItem }}
