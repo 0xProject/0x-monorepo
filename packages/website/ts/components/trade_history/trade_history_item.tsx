@@ -23,7 +23,7 @@ interface TradeHistoryItemProps {
 interface TradeHistoryItemState {}
 
 export class TradeHistoryItem extends React.Component<TradeHistoryItemProps, TradeHistoryItemState> {
-    public render() {
+    public render(): React.ReactNode {
         const fill = this.props.fill;
         const tokens = _.values(this.props.tokenByAddress);
         const takerToken = _.find(tokens, token => {
@@ -88,7 +88,7 @@ export class TradeHistoryItem extends React.Component<TradeHistoryItemProps, Tra
             </Paper>
         );
     }
-    private _renderAmounts(makerToken: Token, takerToken: Token) {
+    private _renderAmounts(makerToken: Token, takerToken: Token): React.ReactNode {
         const fill = this.props.fill;
         const filledTakerTokenAmountInUnits = ZeroEx.toUnitAmount(fill.filledTakerTokenAmount, takerToken.decimals);
         const filledMakerTokenAmountInUnits = ZeroEx.toUnitAmount(fill.filledMakerTokenAmount, takerToken.decimals);
@@ -136,7 +136,7 @@ export class TradeHistoryItem extends React.Component<TradeHistoryItemProps, Tra
             </div>
         );
     }
-    private _renderDate() {
+    private _renderDate(): React.ReactNode {
         const blockMoment = moment.unix(this.props.fill.blockTimestamp);
         if (!blockMoment.isValid()) {
             return null;
@@ -159,7 +159,7 @@ export class TradeHistoryItem extends React.Component<TradeHistoryItemProps, Tra
             </div>
         );
     }
-    private _renderAmount(amount: BigNumber, symbol: string, decimals: number) {
+    private _renderAmount(amount: BigNumber, symbol: string, decimals: number): React.ReactNode {
         const unitAmount = ZeroEx.toUnitAmount(amount, decimals);
         return (
             <span>

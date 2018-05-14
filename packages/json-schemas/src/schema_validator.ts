@@ -23,7 +23,7 @@ export class SchemaValidator {
      * instances of that schema.
      * @param schema The schema to add
      */
-    public addSchema(schema: Schema) {
+    public addSchema(schema: Schema): void {
         this._validator.addSchema(schema, schema.id);
     }
     // In order to validate a complex JS object using jsonschema, we must replace any complex

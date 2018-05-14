@@ -86,12 +86,12 @@ export class OrderValidationUtils {
     private static _validateRemainingFillAmountNotZeroOrThrow(
         takerTokenAmount: BigNumber,
         unavailableTakerTokenAmount: BigNumber,
-    ) {
+    ): void {
         if (takerTokenAmount.eq(unavailableTakerTokenAmount)) {
             throw new Error(ExchangeContractErrs.OrderRemainingFillAmountZero);
         }
     }
-    private static _validateOrderNotExpiredOrThrow(expirationUnixTimestampSec: BigNumber) {
+    private static _validateOrderNotExpiredOrThrow(expirationUnixTimestampSec: BigNumber): void {
         const currentUnixTimestampSec = utils.getCurrentUnixTimestampSec();
         if (expirationUnixTimestampSec.lessThan(currentUnixTimestampSec)) {
             throw new Error(ExchangeContractErrs.OrderFillExpired);

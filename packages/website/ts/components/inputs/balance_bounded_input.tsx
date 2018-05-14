@@ -46,7 +46,7 @@ export class BalanceBoundedInput extends React.Component<BalanceBoundedInputProp
             amountString,
         };
     }
-    public componentWillReceiveProps(nextProps: BalanceBoundedInputProps) {
+    public componentWillReceiveProps(nextProps: BalanceBoundedInputProps): void {
         if (nextProps === this.props) {
             return;
         }
@@ -76,7 +76,7 @@ export class BalanceBoundedInput extends React.Component<BalanceBoundedInputProp
             });
         }
     }
-    public render() {
+    public render(): React.ReactNode {
         let errorText;
         if (this.props.shouldShowErrs) {
             errorText =
@@ -104,7 +104,7 @@ export class BalanceBoundedInput extends React.Component<BalanceBoundedInputProp
             />
         );
     }
-    private _onValueChange(e: any, amountString: string) {
+    private _onValueChange(e: any, amountString: string): void {
         const errMsg = this._validate(amountString, this.props.balance);
         this.setState(
             {
@@ -135,7 +135,7 @@ export class BalanceBoundedInput extends React.Component<BalanceBoundedInputProp
         const errMsg = _.isUndefined(this.props.validate) ? undefined : this.props.validate(amount);
         return errMsg;
     }
-    private _renderIncreaseBalanceLink() {
+    private _renderIncreaseBalanceLink(): React.ReactNode {
         if (this.props.shouldHideVisitBalancesLink) {
             return null;
         }

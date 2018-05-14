@@ -42,7 +42,7 @@ export class SignatureBlock extends React.Component<SignatureBlockProps, Signatu
             shouldShowAnchor: false,
         };
     }
-    public render() {
+    public render(): React.ReactNode {
         const method = this.props.method;
         if (typeDocUtils.isPrivateOrProtectedProperty(method.name)) {
             return null;
@@ -111,14 +111,14 @@ export class SignatureBlock extends React.Component<SignatureBlockProps, Signatu
             </div>
         );
     }
-    private _renderChip(text: string) {
+    private _renderChip(text: string): React.ReactNode {
         return (
             <div className="p1 mr1" style={styles.chip}>
                 {text}
             </div>
         );
     }
-    private _renderParameterDescriptions(parameters: Parameter[]) {
+    private _renderParameterDescriptions(parameters: Parameter[]): React.ReactNode {
         const descriptions = _.map(parameters, parameter => {
             const isOptional = parameter.isOptional;
             return (
@@ -146,7 +146,7 @@ export class SignatureBlock extends React.Component<SignatureBlockProps, Signatu
         });
         return descriptions;
     }
-    private _setAnchorVisibility(shouldShowAnchor: boolean) {
+    private _setAnchorVisibility(shouldShowAnchor: boolean): void {
         this.setState({
             shouldShowAnchor,
         });

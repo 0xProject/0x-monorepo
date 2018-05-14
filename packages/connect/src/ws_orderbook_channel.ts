@@ -91,7 +91,7 @@ export class WebSocketOrderbookChannel implements OrderbookChannel {
     /**
      * Close the websocket and stop receiving updates
      */
-    public close() {
+    public close(): void {
         if (!_.isUndefined(this._connectionIfExists)) {
             this._connectionIfExists.close();
         }
@@ -99,7 +99,7 @@ export class WebSocketOrderbookChannel implements OrderbookChannel {
             clearInterval(this._heartbeatTimerIfExists);
         }
     }
-    private _getConnection(callback: (error?: Error, connection?: WebSocket.connection) => void) {
+    private _getConnection(callback: (error?: Error, connection?: WebSocket.connection) => void): void {
         if (!_.isUndefined(this._connectionIfExists) && this._connectionIfExists.connected) {
             callback(undefined, this._connectionIfExists);
         } else {

@@ -23,8 +23,8 @@ app.get('/ping', (req: express.Request, res: express.Response) => {
 app.get('/info', handler.getQueueInfo.bind(handler));
 app.get('/ether/:recipient', parameterTransformer.transform, handler.dispenseEther.bind(handler));
 app.get('/zrx/:recipient', parameterTransformer.transform, handler.dispenseZRX.bind(handler));
-app.get('/order/weth/:recipient', parameterTransformer.transform, handler.dispenseWETHOrder.bind(handler));
-app.get('/order/zrx/:recipient', parameterTransformer.transform, handler.dispenseZRXOrder.bind(handler));
+app.get('/order/weth/:recipient', parameterTransformer.transform, handler.dispenseWETHOrderAsync.bind(handler));
+app.get('/order/zrx/:recipient', parameterTransformer.transform, handler.dispenseZRXOrderAsync.bind(handler));
 
 // Log to rollbar any errors unhandled by handlers
 app.use(errorReporter.errorHandler());

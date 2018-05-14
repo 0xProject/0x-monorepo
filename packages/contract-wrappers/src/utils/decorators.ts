@@ -39,7 +39,7 @@ const asyncErrorHandlerFactory = (errorTransformer: ErrorTransformer) => {
         // Do not use arrow syntax here. Use a function expression in
         // order to use the correct value of `this` in this method
         // tslint:disable-next-line:only-arrow-functions
-        descriptor.value = async function(...args: any[]) {
+        descriptor.value = async function(...args: any[]): Promise<any> {
             try {
                 const result = await originalMethod.apply(this, args);
                 return result;
@@ -66,7 +66,7 @@ const syncErrorHandlerFactory = (errorTransformer: ErrorTransformer) => {
         // Do not use arrow syntax here. Use a function expression in
         // order to use the correct value of `this` in this method
         // tslint:disable-next-line:only-arrow-functions
-        descriptor.value = function(...args: any[]) {
+        descriptor.value = function(...args: any[]): any {
             try {
                 const result = originalMethod.apply(this, args);
                 return result;

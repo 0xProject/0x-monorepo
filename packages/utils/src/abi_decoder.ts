@@ -17,7 +17,7 @@ import { BigNumber } from './configured_bignumber';
 export class AbiDecoder {
     private _savedABIs: AbiDefinition[] = [];
     private _methodIds: { [signatureHash: string]: EventAbi } = {};
-    private static _padZeros(address: string) {
+    private static _padZeros(address: string): string {
         let formatted = address;
         if (_.startsWith(formatted, '0x')) {
             formatted = formatted.slice(2);
