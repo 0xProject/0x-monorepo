@@ -1,13 +1,13 @@
-pragma solidity ^0.4.22;
+pragma solidity ^0.4.23;
 pragma experimental ABIEncoderV2;
 
 import "./MixinForwarderCore.sol";
-import "./MixinForwarderQuote.sol";
+import "./MixinForwarderExpectedResults.sol";
 import "./MixinERC20.sol";
 
 contract MixinMarketBuyTokens is
     MixinForwarderCore,
-    MixinForwarderQuote,
+    MixinForwarderExpectedResults,
     MixinERC20
 {
     /// @dev Buys the tokens, performing fee abstraction if required. This function is payable
@@ -55,11 +55,11 @@ contract MixinMarketBuyTokens is
         uint256 takerTokenBalance = sellTokenAmount;
         address makerTokenAddress = readAddress(orders[0].makerAssetData, 1);
 
-        Exchange.FillResults memory expectedMarketSellFillResults = expectedMaketSellFillResults(orders, sellTokenAmount);
-        if (expectedMarketSellFillResults.takerFeePaid > 0) {
+        Exchange.FillResults memory expectedMarketSellResults = expectedMarketSellFillResults(orders, sellTokenAmount);
+        if (expectedMarketSellResults.takerFeePaid > 0) {
             // Fees are required for these orders. Buy enough ZRX to cover the future market buy
             Exchange.FillResults memory feeTokensResult = buyFeeTokensInternal(
-                feeOrders, feeSignatures, expectedMarketSellFillResults.takerFeePaid);
+                feeOrders, feeSignatures, expectedMarketSellResults.takerFeePaid);
             takerTokenBalance = safeSub(takerTokenBalance, feeTokensResult.takerAssetFilledAmount);
             totalFillResults.takerFeePaid = feeTokensResult.takerFeePaid;
         }

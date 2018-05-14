@@ -1,13 +1,13 @@
-pragma solidity ^0.4.22;
+pragma solidity ^0.4.23;
 pragma experimental ABIEncoderV2;
 
 import "./MixinForwarderCore.sol";
-import "./MixinForwarderQuote.sol";
+import "./MixinForwarderExpectedResults.sol";
 import "./MixinERC20.sol";
 
 contract MixinBuyExactTokens is
     MixinForwarderCore,
-    MixinForwarderQuote,
+    MixinForwarderExpectedResults,
     MixinERC20
 {
     /// @dev Buys the exact amount of tokens, performing fee abstraction if required and deducts a proportional fee to fee recipient.

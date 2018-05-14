@@ -107,7 +107,7 @@ export class ForwarderWrapper {
     }> {
         const params = formatters.createMarketBuyOrders(orders, buyAmountWei);
         const feeParams = formatters.createMarketBuyOrders(feeOrders, buyAmountWei);
-        const quote = await this._forwarderContract.marketBuyTokensQuote.callAsync(
+        const quote = await this._forwarderContract.expectedMarketBuyTokensFillResults.callAsync(
             params.orders,
             feeParams.orders,
             buyAmountWei,
@@ -152,7 +152,7 @@ export class ForwarderWrapper {
             ZERO_FILL,
         );
         if (totalFees.greaterThan(0)) {
-            const feeQuote = await this._forwarderContract.computeBuyFeesFillResult.callAsync(
+            const feeQuote = await this._forwarderContract.expectedBuyFeesFillResults.callAsync(
                 feeParams.orders,
                 totalFees,
             );

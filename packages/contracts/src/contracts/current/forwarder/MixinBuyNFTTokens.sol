@@ -1,13 +1,13 @@
-pragma solidity ^0.4.22;
+pragma solidity ^0.4.23;
 pragma experimental ABIEncoderV2;
 
 import "./MixinForwarderCore.sol";
-import "./MixinForwarderQuote.sol";
+import "./MixinForwarderExpectedResults.sol";
 import "./MixinERC721.sol";
 
 contract MixinBuyNFTTokens is
     MixinForwarderCore,
-    MixinForwarderQuote,
+    MixinForwarderExpectedResults,
     MixinERC721
 {
     /// @dev Buys the NFT tokens, performing fee abstraction if required and deducts a proportional fee to fee recipient.

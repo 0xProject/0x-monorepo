@@ -1,4 +1,4 @@
-pragma solidity ^0.4.22;
+pragma solidity ^0.4.23;
 pragma experimental ABIEncoderV2;
 
 import "../protocol/Exchange/Exchange.sol";
@@ -9,8 +9,9 @@ import "../utils/LibBytes/LibBytes.sol";
 
 contract MixinForwarderCore is
     LibOrder,
-    LibBytes,
-    SafeMath
+    LibFillResults,
+    LibMath,
+    LibBytes
 {
     uint16  constant public PERCENTAGE_DENOMINATOR = 10000; // 9800 == 98%, 10000 == 100%
     uint16  constant public MAX_FEE = 1000; // 10%
@@ -140,47 +141,5 @@ contract MixinForwarderCore is
     {
         uint256 acceptableProportion = safeDiv(safeMul(requestedTokenAmount, ALLOWABLE_EXCHANGE_PERCENTAGE), PERCENTAGE_DENOMINATOR);
         return soldTokenAmount >= acceptableProportion;
-    }
-
-    function addFillResults(Exchange.FillResults memory totalFillResults, Exchange.FillResults memory singleFillResults)
-        internal
-        pure
-    {
-        totalFillResults.makerAssetFilledAmount = safeAdd(totalFillResults.makerAssetFilledAmount, singleFillResults.makerAssetFilledAmount);
-        totalFillResults.takerAssetFilledAmount = safeAdd(totalFillResults.takerAssetFilledAmount, singleFillResults.takerAssetFilledAmount);
-        totalFillResults.makerFeePaid = safeAdd(totalFillResults.makerFeePaid, singleFillResults.makerFeePaid);
-        totalFillResults.takerFeePaid = safeAdd(totalFillResults.takerFeePaid, singleFillResults.takerFeePaid);
-    }
-
-    /// @dev Calculates partial value given a numerator and denominator.
-    /// @param numerator Numerator.
-    /// @param denominator Denominator.
-    /// @param target Value to calculate partial of.
-    /// @return Partial value of target.
-    function getPartialAmount(uint256 numerator, uint256 denominator, uint256 target)
-        internal
-        pure
-        returns (uint256 partialAmount)
-    {
-        partialAmount = safeDiv(safeMul(numerator, target), denominator);
-        return partialAmount;
-    }
-
-    function isRoundingError(uint256 numerator, uint256 denominator, uint256 target)
-        internal
-        pure
-        returns (bool isError)
-    {
-        uint256 remainder = mulmod(target, numerator, denominator);
-        if (remainder == 0) {
-            return false; // No rounding error.
-        }
-
-        uint256 errPercentageTimes1000000 = safeDiv(
-            safeMul(remainder, 1000000),
-            safeMul(numerator, target)
-        );
-        isError = errPercentageTimes1000000 > 1000;
-        return isError;
     }
 }

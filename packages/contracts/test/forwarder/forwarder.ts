@@ -239,8 +239,8 @@ describe.only(ContractName.Forwarder, () => {
             }
         });
     });
-    describe('quote', () => {
-        it('marketBuyTokensQuote - no fees', async () => {
+    describe('Expected Results', () => {
+        it('epexctedMarketBuyTokensFillResults - no fees', async () => {
             const fillAmount = signedOrder.takerAssetAmount.div(4);
             const takerBalanceBefore = erc20Balances[takerAddress][defaultMakerAssetAddress];
             const sellQuote = await forwarderWrapper.marketBuyTokensQuoteAsync([signedOrder], [], fillAmount);
@@ -250,7 +250,7 @@ describe.only(ContractName.Forwarder, () => {
             const takerBalanceAfter = newBalances[takerAddress][defaultMakerAssetAddress];
             expect(takerBalanceAfter).to.be.bignumber.eq(takerBalanceBefore.plus(sellQuote.makerAssetFilledAmount));
         });
-        it('marketBuyTokensQuote - fee abstraction', async () => {
+        it('expectedMarketBuyTokensFillResults- fee abstraction', async () => {
             const fillAmount = signedOrder.takerAssetAmount.div(2);
             const takerBalanceBefore = erc20Balances[takerAddress][defaultMakerAssetAddress];
             const buyTokensQuote = await forwarderWrapper.marketBuyTokensQuoteAsync(

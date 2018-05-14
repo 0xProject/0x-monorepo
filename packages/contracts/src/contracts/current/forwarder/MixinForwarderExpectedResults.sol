@@ -1,15 +1,15 @@
-pragma solidity ^0.4.22;
+pragma solidity ^0.4.23;
 pragma experimental ABIEncoderV2;
 
 import "./MixinForwarderCore.sol";
 
-contract MixinForwarderQuote is MixinForwarderCore {
+contract MixinForwarderExpectedResults is MixinForwarderCore {
 
     /// @dev Simulates the 0x Exchange fillOrder validation and calculations, without performing any state changes.
     /// @param order An Order struct containing order specifications.
     /// @param takerAssetFillAmount A number representing the amount of this order to fill.
     /// @return fillResults Amounts filled and fees paid by maker and taker.
-    function fillOrderQuote(Order memory order, uint256 takerAssetFillAmount)
+    function expectedFillOrderFillResults(Order memory order, uint256 takerAssetFillAmount)
         public
         view
         returns (Exchange.FillResults memory fillResults)
@@ -46,7 +46,7 @@ contract MixinForwarderQuote is MixinForwarderCore {
     /// @param orders An array of Order struct containing order specifications.
     /// @param takerAssetFillAmount A number representing the amount of this order to fill.
     /// @return totalFillResults Amounts filled and fees paid by maker and taker.
-    function expectedMaketSellFillResults(Order[] memory orders, uint256 takerAssetFillAmount)
+    function expectedMarketSellFillResults(Order[] memory orders, uint256 takerAssetFillAmount)
         public
         view
         returns (Exchange.FillResults memory totalFillResults)
@@ -55,9 +55,9 @@ contract MixinForwarderQuote is MixinForwarderCore {
             require(areBytesEqual(orders[i].makerAssetData, orders[0].makerAssetData), "all orders must be the same token pair");
             uint256 remainingTakerAssetFillAmount = safeSub(takerAssetFillAmount, totalFillResults.takerAssetFilledAmount);
 
-            Exchange.FillResults memory quoteFillResult = fillOrderQuote(orders[i], remainingTakerAssetFillAmount);
+            Exchange.FillResults memory fillOrderExpectedResults = expectedFillOrderFillResults(orders[i], remainingTakerAssetFillAmount);
 
-            addFillResults(totalFillResults, quoteFillResult);
+            addFillResults(totalFillResults, fillOrderExpectedResults);
             if (totalFillResults.takerAssetFilledAmount == takerAssetFillAmount) {
                 break;
             }
@@ -83,9 +83,9 @@ contract MixinForwarderQuote is MixinForwarderCore {
                 orders[i].makerAssetAmount,
                 remainingMakerAssetFillAmount);
 
-            Exchange.FillResults memory quoteFillResult = fillOrderQuote(orders[i], remainingTakerAssetFillAmount);
+            Exchange.FillResults memory fillOrderExpectedResults = expectedFillOrderFillResults(orders[i], remainingTakerAssetFillAmount);
 
-            addFillResults(totalFillResults, quoteFillResult);
+            addFillResults(totalFillResults, fillOrderExpectedResults);
             if (totalFillResults.makerAssetFilledAmount == makerAssetFillAmount) {
                 break;
             }
@@ -93,13 +93,13 @@ contract MixinForwarderQuote is MixinForwarderCore {
         return totalFillResults;
     }
 
-    /// @dev Calculates a quote total for marketBuyTokens. This is useful for off-chain queries to 
-    ///      ensure all order calculations are calculated atomically for an accurate quote
+    /// @dev Calculates the expected results for marketBuyTokens. This is useful for off-chain queries to 
+    ///      ensure all order calculations are calculated together for an accurate calculation
     /// @param orders An array of Order struct containing order specifications.
     /// @param feeOrders An array of Order struct containing order specifications.
     /// @param sellAssetAmount A number representing the amount of this order to fill.
-    /// @return totalFillResult Quoted amounts which will be filled
-    function marketBuyTokensQuote(
+    /// @return totalFillResult Expected fill amounts for marketBuyTokens
+    function expectedMarketBuyTokensFillResults(
         Order[] memory orders,
         Order[] memory feeOrders,
         uint256 sellAssetAmount)
@@ -109,31 +109,31 @@ contract MixinForwarderQuote is MixinForwarderCore {
     {
         uint256 takerAssetBalance = sellAssetAmount;
 
-        Exchange.FillResults memory expectedMarketSellFillResults = expectedMaketSellFillResults(orders, sellAssetAmount);
-        Exchange.FillResults memory requestedTokensResult;
-        if (expectedMarketSellFillResults.takerFeePaid > 0) {
-            Exchange.FillResults memory expectedBuyFeesFillResults = computeBuyFeesFillResult(feeOrders, expectedMarketSellFillResults.takerFeePaid);
-            takerAssetBalance = safeSub(takerAssetBalance, expectedBuyFeesFillResults.takerAssetFilledAmount);
-            requestedTokensResult = expectedMaketSellFillResults(orders, takerAssetBalance);
+        Exchange.FillResults memory expectedMarketSellResults = expectedMarketSellFillResults(orders, sellAssetAmount);
+        Exchange.FillResults memory expectedRequestedTokensFillResults;
+        if (expectedMarketSellResults.takerFeePaid > 0) {
+            Exchange.FillResults memory expectedBuyFeesResults = expectedBuyFeesFillResults(feeOrders, expectedMarketSellResults.takerFeePaid);
+            takerAssetBalance = safeSub(takerAssetBalance, expectedBuyFeesResults.takerAssetFilledAmount);
+            expectedRequestedTokensFillResults = expectedMarketSellFillResults(orders, takerAssetBalance);
             // Update our return FillResult with the additional fees
-            totalFillResults.takerFeePaid = expectedBuyFeesFillResults.takerFeePaid;
+            totalFillResults.takerFeePaid = expectedBuyFeesResults.takerFeePaid;
         } else {
-            // Quote our market sell to buy the requested tokens with the remaining balance
-            requestedTokensResult = expectedMaketSellFillResults(orders, takerAssetBalance);
+            // Calculate expected results from the market sell to buy the requested tokens with the remaining balance
+            expectedRequestedTokensFillResults = expectedMarketSellFillResults(orders, takerAssetBalance);
         }
-        addFillResults(totalFillResults, requestedTokensResult);
+        addFillResults(totalFillResults, expectedRequestedTokensFillResults);
         // Ensure the token abstraction was fair if fees were proportionally too high, we fail
-        require(isAcceptableThreshold(sellAssetAmount, requestedTokensResult.takerAssetFilledAmount),
+        require(isAcceptableThreshold(sellAssetAmount, expectedRequestedTokensFillResults.takerAssetFilledAmount),
             "traded amount does not meet acceptable threshold");
         return totalFillResults;
     }
 
-    /// @dev Calculates a quote total for buyFeeTokens. This is useful for off-chain queries 
+    /// @dev Calculates expected results for buyFeeTokens. This is useful for off-chain queries 
     ///      ensuring all calculations are performed atomically for consistent results
     /// @param orders An array of Order struct containing order specifications.
     /// @param zrxAmount A number representing the amount zrx to buy
-    /// @return totalFillResults Quoted amounts which will be filled
-    function computeBuyFeesFillResult(
+    /// @return totalFillResults Expected fill result amounts from buying fees
+    function expectedBuyFeesFillResults(
         Order[] memory orders,
         uint256 zrxAmount)
         public
@@ -151,10 +151,11 @@ contract MixinForwarderQuote is MixinForwarderCore {
                 orders[i].takerAssetAmount,
                 safeSub(orders[i].makerAssetAmount, orders[i].takerFee), // our exchange rate after fees 
                 remainingMakerAssetFillAmount);
-            Exchange.FillResults memory singleFillResult = fillOrderQuote(orders[i], safeAdd(remainingTakerAssetFillAmount, 1));
+            Exchange.FillResults memory singleFillResult = expectedFillOrderFillResults(orders[i], safeAdd(remainingTakerAssetFillAmount, 1));
 
             singleFillResult.makerAssetFilledAmount = safeSub(singleFillResult.makerAssetFilledAmount, singleFillResult.takerFeePaid);
             addFillResults(totalFillResults, singleFillResult);
+            // As we compensate for the rounding issue above have slightly more ZRX than the requested zrxAmount
             if (totalFillResults.makerAssetFilledAmount >= zrxAmount) {
                 break;
             }
