@@ -118,7 +118,7 @@ export class CoverageSubprovider extends Subprovider {
     private async _recordTxTraceAsync(address: string, data: string | undefined, txHash: string): Promise<void> {
         let payload = {
             method: 'debug_traceTransaction',
-            params: [txHash, { disableMemory: true, disableStack: true, disableStorage: true }], // TODO For now testrpc just ignores those parameters https://github.com/trufflesuite/ganache-cli/issues/489
+            params: [txHash, { disableMemory: true, disableStack: false, disableStorage: true }],
         };
         const jsonRPCResponsePayload = await this.emitPayloadAsync(payload);
         const trace: TransactionTrace = jsonRPCResponsePayload.result;

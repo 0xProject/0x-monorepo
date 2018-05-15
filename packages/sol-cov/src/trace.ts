@@ -7,7 +7,7 @@ import * as _ from 'lodash';
 export interface TraceByContractAddress {
     [contractAddress: string]: StructLog[];
 }
-function padZeros(address: string) {
+function padZeros(address: string): string {
     return addHexPrefix(_.padStart(stripHexPrefix(address), 40, '0'));
 }
 

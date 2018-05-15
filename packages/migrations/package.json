@@ -9,7 +9,7 @@
     "types": "lib/index.d.ts",
     "scripts": {
         "watch": "tsc -w",
-        "prebuild": "run-s clean compile copy_artifacts generate_contract_wrappers",
+        "prebuild": "run-s clean copy_artifacts generate_contract_wrappers",
         "copy_artifacts": "copyfiles 'artifacts/1.0.0/**/*' ./lib",
         "build": "tsc",
         "clean": "shx rm -rf lib src/contract_wrappers",

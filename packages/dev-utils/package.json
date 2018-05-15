@@ -44,7 +44,6 @@
         "typescript": "2.7.1"
     },
     "dependencies": {
-        "@0xproject/sol-cov": "^0.0.10",
         "@0xproject/subproviders": "^0.10.1",
         "@0xproject/types": "^0.6.3",
         "@0xproject/typescript-typings": "^0.3.1",

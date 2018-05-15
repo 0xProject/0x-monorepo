@@ -1,7 +1,7 @@
+import { devConstants } from '@0xproject/dev-utils';
 import { CoverageSubprovider, ZeroExArtifactAdapter } from '@0xproject/sol-cov';
+import * as fs from 'fs';
 import * as _ from 'lodash';
-
-import { constants } from './constants';
 
 let coverageSubprovider: CoverageSubprovider;
 
@@ -13,10 +13,9 @@ export const coverage = {
         return coverageSubprovider;
     },
     _getCoverageSubprovider(): CoverageSubprovider {
-        const artifactsPath = '../migrations/artifacts/1.0.0';
-        const contractsPath = 'src/contracts';
-        const defaultFromAddress = constants.TESTRPC_FIRST_ADDRESS;
-        const zeroExArtifactsAdapter = new ZeroExArtifactAdapter(artifactsPath, contractsPath);
+        const defaultFromAddress = devConstants.TESTRPC_FIRST_ADDRESS;
+        const config = JSON.parse(fs.readFileSync('compiler.json').toString());
+        const zeroExArtifactsAdapter = new ZeroExArtifactAdapter(config.artifactsDir, config.contractsDir);
         return new CoverageSubprovider(zeroExArtifactsAdapter, defaultFromAddress);
     },
 };
