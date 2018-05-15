@@ -1,11 +1,22 @@
-import { ECSignature, ExchangeContractErrs, ZeroEx, ZeroExError } from '0x.js';
+import { ContractWrappersError, ECSignature, ExchangeContractErrs, ZeroEx } from '0x.js';
+import { OrderError } from '@0xproject/order-utils';
 import { constants as sharedConstants, EtherscanLinkSuffixes, Networks } from '@0xproject/react-shared';
 import { Provider } from '@0xproject/types';
 import { BigNumber } from '@0xproject/utils';
 import deepEqual = require('deep-equal');
 import * as _ from 'lodash';
 import * as moment from 'moment';
-import { Environments, Order, Providers, ScreenWidths, Side, SideToAssetToken, Token, TokenByAddress } from 'ts/types';
+import {
+    BlockchainCallErrs,
+    Environments,
+    Order,
+    Providers,
+    ScreenWidths,
+    Side,
+    SideToAssetToken,
+    Token,
+    TokenByAddress,
+} from 'ts/types';
 import { configs } from 'ts/utils/configs';
 import { constants } from 'ts/utils/constants';
 import * as u2f from 'ts/vendor/u2f_api';
@@ -192,21 +203,20 @@ export const utils = {
         const isUniqueSymbol = _.isUndefined(tokenWithSameSymbolIfExists);
         return isUniqueName && isUniqueSymbol;
     },
-    zeroExErrToHumanReadableErrMsg(error: ZeroExError | ExchangeContractErrs, takerAddress: string): string {
-        const ZeroExErrorToHumanReadableError: { [error: string]: string } = {
-            [ZeroExError.ExchangeContractDoesNotExist]: 'Exchange contract does not exist',
-            [ZeroExError.EtherTokenContractDoesNotExist]: 'EtherToken contract does not exist',
-            [ZeroExError.TokenTransferProxyContractDoesNotExist]: 'TokenTransferProxy contract does not exist',
-            [ZeroExError.TokenRegistryContractDoesNotExist]: 'TokenRegistry contract does not exist',
-            [ZeroExError.TokenContractDoesNotExist]: 'Token contract does not exist',
-            [ZeroExError.ZRXContractDoesNotExist]: 'ZRX contract does not exist',
-            [ZeroExError.UnhandledError]: 'Unhandled error occured',
-            [ZeroExError.UserHasNoAssociatedAddress]: 'User has no addresses available',
-            [ZeroExError.InvalidSignature]: 'Order signature is not valid',
-            [ZeroExError.ContractNotDeployedOnNetwork]: 'Contract is not deployed on the detected network',
-            [ZeroExError.InvalidJump]: 'Invalid jump occured while executing the transaction',
-            [ZeroExError.OutOfGas]: 'Transaction ran out of gas',
-            [ZeroExError.NoNetworkId]: 'No network id detected',
+    zeroExErrToHumanReadableErrMsg(error: ContractWrappersError | ExchangeContractErrs, takerAddress: string): string {
+        const ContractWrappersErrorToHumanReadableError: { [error: string]: string } = {
+            [ContractWrappersError.ExchangeContractDoesNotExist]: 'Exchange contract does not exist',
+            [ContractWrappersError.EtherTokenContractDoesNotExist]: 'EtherToken contract does not exist',
+            [ContractWrappersError.TokenTransferProxyContractDoesNotExist]:
+                'TokenTransferProxy contract does not exist',
+            [ContractWrappersError.TokenRegistryContractDoesNotExist]: 'TokenRegistry contract does not exist',
+            [ContractWrappersError.TokenContractDoesNotExist]: 'Token contract does not exist',
+            [ContractWrappersError.ZRXContractDoesNotExist]: 'ZRX contract does not exist',
+            [BlockchainCallErrs.UserHasNoAssociatedAddresses]: 'User has no addresses available',
+            [OrderError.InvalidSignature]: 'Order signature is not valid',
+            [ContractWrappersError.ContractNotDeployedOnNetwork]: 'Contract is not deployed on the detected network',
+            [ContractWrappersError.InvalidJump]: 'Invalid jump occured while executing the transaction',
+            [ContractWrappersError.OutOfGas]: 'Transaction ran out of gas',
         };
         const exchangeContractErrorToHumanReadableError: {
             [error: string]: string;
@@ -239,7 +249,7 @@ export const utils = {
             [ExchangeContractErrs.InsufficientRemainingFillAmount]: 'Insufficient remaining fill amount',
         };
         const humanReadableErrorMsg =
-            exchangeContractErrorToHumanReadableError[error] || ZeroExErrorToHumanReadableError[error];
+            exchangeContractErrorToHumanReadableError[error] || ContractWrappersErrorToHumanReadableError[error];
         return humanReadableErrorMsg;
     },
     isParityNode(nodeVersion: string): boolean {

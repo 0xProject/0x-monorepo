@@ -1,12 +1,22 @@
 [
     {
+        "timestamp": 1525477860,
+        "version": "0.6.1",
+        "changes": [
+            {
+                "note": "Dependencies updated"
+            }
+        ]
+    },
+    {
         "version": "0.6.0",
         "changes": [
             {
                 "note": "Update ethers-contracts to ethers.js",
                 "pr": 540
             }
-        ]
+        ],
+        "timestamp": 1525428773
     },
     {
         "version": "0.5.2",

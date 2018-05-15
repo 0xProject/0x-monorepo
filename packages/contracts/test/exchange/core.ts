@@ -15,7 +15,9 @@ import {
     ExchangeErrorContractEventArgs,
     FillContractEventArgs,
 } from '../../src/contract_wrappers/generated/exchange';
+import { artifacts } from '../../src/utils/artifacts';
 import { assetProxyUtils } from '../../src/utils/asset_proxy_utils';
+import { chaiSetup } from '../../src/utils/chai_setup';
 import { constants } from '../../src/utils/constants';
 import { crypto } from '../../src/utils/crypto';
 import { ERC20Wrapper } from '../../src/utils/erc20_wrapper';
@@ -23,16 +25,8 @@ import { ERC721Wrapper } from '../../src/utils/erc721_wrapper';
 import { ExchangeWrapper } from '../../src/utils/exchange_wrapper';
 import { OrderFactory } from '../../src/utils/order_factory';
 import { orderUtils } from '../../src/utils/order_utils';
-import {
-    AssetProxyId,
-    ContractName,
-    ERC20BalancesByOwner,
-    ExchangeContractErrs,
-    SignedOrder,
-} from '../../src/utils/types';
-import { chaiSetup } from '../utils/chai_setup';
-import { deployer } from '../utils/deployer';
-import { provider, web3Wrapper } from '../utils/web3_wrapper';
+import { AssetProxyId, ERC20BalancesByOwner, ExchangeContractErrs, SignedOrder } from '../../src/utils/types';
+import { provider, txDefaults, web3Wrapper } from '../../src/utils/web3_wrapper';
 
 chaiSetup.configure();
 const expect = chai.expect;
@@ -71,8 +65,8 @@ describe('Exchange core', () => {
         const accounts = await web3Wrapper.getAvailableAddressesAsync();
         const usedAddresses = ([owner, makerAddress, takerAddress, feeRecipientAddress] = accounts);
 
-        erc20Wrapper = new ERC20Wrapper(deployer, provider, usedAddresses, owner);
-        erc721Wrapper = new ERC721Wrapper(deployer, provider, usedAddresses, owner);
+        erc20Wrapper = new ERC20Wrapper(provider, usedAddresses, owner);
+        erc721Wrapper = new ERC721Wrapper(provider, usedAddresses, owner);
 
         [erc20TokenA, erc20TokenB, zrxToken] = await erc20Wrapper.deployDummyTokensAsync();
         erc20Proxy = await erc20Wrapper.deployProxyAsync();
@@ -85,10 +79,12 @@ describe('Exchange core', () => {
         erc721MakerAssetIds = erc721Balances[makerAddress][erc721Token.address];
         erc721TakerAssetIds = erc721Balances[takerAddress][erc721Token.address];
 
-        const exchangeInstance = await deployer.deployAsync(ContractName.Exchange, [
+        exchange = await ExchangeContract.deployFrom0xArtifactAsync(
+            artifacts.Exchange,
+            provider,
+            txDefaults,
             assetProxyUtils.encodeERC20ProxyData(zrxToken.address),
-        ]);
-        exchange = new ExchangeContract(exchangeInstance.abi, exchangeInstance.address, provider);
+        );
         zeroEx = new ZeroEx(provider, {
             exchangeContractAddress: exchange.address,
             networkId: constants.TESTRPC_NETWORK_ID,

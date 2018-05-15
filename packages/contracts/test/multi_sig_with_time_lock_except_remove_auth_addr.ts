@@ -6,7 +6,7 @@
  *
 import { LogWithDecodedArgs, ZeroEx } from '0x.js';
 import { BlockchainLifecycle, devConstants, web3Factory } from '@0xproject/dev-utils';
-import { AbiDecoder } from '@0xproject/utils';
+import { AbiDecoder, BigNumber } from '@0xproject/utils';
 import { Web3Wrapper } from '@0xproject/web3-wrapper';
 import * as chai from 'chai';
 import * as Web3 from 'web3';
@@ -21,12 +21,12 @@ import { MultiSigWrapper } from '../src/utils/multi_sig_wrapper';
 import { ContractName, SubmissionContractEventArgs, TransactionDataParams } from '../src/utils/types';
 
 import { chaiSetup } from './utils/chai_setup';
-import { deployer } from './utils/deployer';
-import { provider, web3Wrapper } from './utils/web3_wrapper';
-const PROXY_ABI = artifacts.TokenTransferProxyArtifact.networks[constants.TESTRPC_NETWORK_ID].abi;
+
+import { provider, txDefaults, web3Wrapper } from './utils/web3_wrapper';
+
+const PROXY_ABI = artifacts.TokenTransferProxy.compilerOutput.abi;
 const MUTISIG_WALLET_WITH_TIME_LOCK_EXCEPT_REMOVE_AUTHORIZED_ADDRESS_ABI =
-    artifacts.MultiSigWalletWithTimeLockExceptRemoveAuthorizedAddressArtifact.networks[constants.TESTRPC_NETWORK_ID]
-        .abi;
+    artifacts.MultiSigWalletWithTimeLockExceptRemoveAuthorizedAddress.compilerOutput.abi;
 
 chaiSetup.configure();
 const expect = chai.expect;
@@ -36,8 +36,8 @@ const abiDecoder = new AbiDecoder([MUTISIG_WALLET_WITH_TIME_LOCK_EXCEPT_REMOVE_A
 describe('MultiSigWalletWithTimeLockExceptRemoveAuthorizedAddress', () => {
     const zeroEx = new ZeroEx(provider, { networkId: constants.TESTRPC_NETWORK_ID });
     let owners: string[];
-    const requiredApprovals = 2;
-    const SECONDS_TIME_LOCKED = 1000000;
+    const requiredApprovals = new BigNumber(2);
+    const SECONDS_TIME_LOCKED = new BigNumber(1000000);
 
     // initialize fake addresses
     let authorizedAddress: string;
@@ -53,23 +53,22 @@ describe('MultiSigWalletWithTimeLockExceptRemoveAuthorizedAddress', () => {
         owners = [accounts[0], accounts[1]];
         [authorizedAddress, unauthorizedAddress] = accounts;
         const initialOwner = accounts[0];
-        const tokenTransferProxyInstance = await deployer.deployAsync(ContractName.TokenTransferProxy);
-        tokenTransferProxy = new TokenTransferProxyContract(
-            tokenTransferProxyInstance.abi,
-            tokenTransferProxyInstance.address,
+        tokenTransferProxy = await TokenTransferProxyContract.deployFrom0xArtifactAsync(
+            artifacts.TokenTransferProxy,
             provider,
+            txDefaults,
         );
         await tokenTransferProxy.addAuthorizedAddress.sendTransactionAsync(authorizedAddress, {
             from: initialOwner,
         });
-        const multiSigInstance = await deployer.deployAsync(
-            ContractName.MultiSigWalletWithTimeLockExceptRemoveAuthorizedAddress,
-            [owners, requiredApprovals, SECONDS_TIME_LOCKED, tokenTransferProxy.address],
-        );
-        multiSig = new MultiSigWalletWithTimeLockExceptRemoveAuthorizedAddressContract(
-            multiSigInstance.abi,
-            multiSigInstance.address,
+        multiSig = await MultiSigWalletWithTimeLockExceptRemoveAuthorizedAddressContract.deployFrom0xArtifactAsync(
+            artifacts.MultiSigWalletWithTimeLockExceptRemoveAuthorizedAddress,
             provider,
+            txDefaults,
+            owners,
+            requiredApprovals,
+            SECONDS_TIME_LOCKED,
+            tokenTransferProxy.address,
         );
         await tokenTransferProxy.transferOwnership.sendTransactionAsync(multiSig.address, {
             from: initialOwner,
@@ -117,7 +116,11 @@ describe('MultiSigWalletWithTimeLockExceptRemoveAuthorizedAddress', () => {
         });
 
         it('should throw if tx destination is not the tokenTransferProxy', async () => {
-            const invalidTokenTransferProxy = await deployer.deployAsync(ContractName.TokenTransferProxy);
+            const invalidTokenTransferProxy = await TokenTransferProxyContract.deployFrom0xArtifactAsync(
+                artifacts.TokenTransferProxy,
+                provider,
+                txDefaults,
+            );
             const invalidDestination = invalidTokenTransferProxy.address;
             const dataParams: TransactionDataParams = {
                 name: 'removeAuthorizedAddress',

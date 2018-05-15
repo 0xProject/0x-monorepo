@@ -10,7 +10,7 @@ import { constants } from './constants';
 import { utils } from './utils';
 
 // For some reason, `depcheck` hangs on some packages. Add them here.
-const IGNORE_PACKAGES = ['@0xproject/deployer'];
+const IGNORE_PACKAGES = ['@0xproject/sol-compiler'];
 
 (async () => {
     utils.log('*** NOTE: Not all deps listed here are actually not required. ***');

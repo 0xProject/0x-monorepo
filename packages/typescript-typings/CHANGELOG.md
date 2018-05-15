@@ -5,11 +5,19 @@ Edit the package's CHANGELOG.json file only.
 
 CHANGELOG
 
+## v0.3.1 - _May 5, 2018_
+
+    * Dependencies updated
+
+## v0.3.0 - _May 4, 2018_
+
+    * Add types for `ethers.js`, removing `ethers-contracts` (#540)
+
 ## v0.2.0 - _April 18, 2018_
 
     * Add types for `solc.compileStandardWrapper` (#509)
 
-## v0.1.0 - _April 12, 2018_
+## v0.1.0 - _April 11, 2018_
 
     * Add types for more packages (#501)
     * Add types for HDKey (#507)

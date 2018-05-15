@@ -28,6 +28,7 @@ const baseColors = {
     linkBlue: '#1D5CDE',
     mediumBlue: '#488AEA',
     darkBlue: '#4D5481',
+    lightTurquois: '#aefcdc',
     turquois: '#058789',
     lightPurple: '#A81CA6',
     purple: '#690596',

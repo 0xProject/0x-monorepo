@@ -1,6 +1,9 @@
+import { promisify } from '@0xproject/utils';
+import { addHexPrefix } from 'ethereumjs-util';
 import * as fs from 'fs';
 import { Collector } from 'istanbul';
 import * as _ from 'lodash';
+import * as mkdirp from 'mkdirp';
 import * as path from 'path';
 
 import { collectContractsData } from './collect_contract_data';
@@ -28,11 +31,32 @@ import {
 } from './types';
 import { utils } from './utils';
 
+const mkdirpAsync = promisify<undefined>(mkdirp);
+
 export class CoverageManager {
+    private _sourcesPath: string;
     private _traceInfos: TraceInfo[] = [];
     private _contractsData: ContractData[] = [];
     private _getContractCodeAsync: (address: string) => Promise<string>;
-    private static _getSingleFileCoverageForTrace(
+    constructor(
+        artifactsPath: string,
+        sourcesPath: string,
+        getContractCodeAsync: (address: string) => Promise<string>,
+    ) {
+        this._getContractCodeAsync = getContractCodeAsync;
+        this._sourcesPath = sourcesPath;
+        this._contractsData = collectContractsData(artifactsPath, this._sourcesPath);
+    }
+    public appendTraceInfo(traceInfo: TraceInfo): void {
+        this._traceInfos.push(traceInfo);
+    }
+    public async writeCoverageAsync(): Promise<void> {
+        const finalCoverage = await this._computeCoverageAsync();
+        const stringifiedCoverage = JSON.stringify(finalCoverage, null, '\t');
+        await mkdirpAsync('coverage');
+        fs.writeFileSync('coverage/coverage.json', stringifiedCoverage);
+    }
+    private _getSingleFileCoverageForTrace(
         contractData: ContractData,
         coveredPcs: number[],
         pcToSourceRange: { [programCounter: number]: SourceRange },
@@ -94,11 +118,12 @@ export class CoverageManager {
             );
             statementCoverage[modifierStatementId] = isModifierCovered;
         }
+        const absoluteFileName = path.join(this._sourcesPath, fileName);
         const partialCoverage = {
-            [contractData.sources[fileIndex]]: {
+            [absoluteFileName]: {
                 ...coverageEntriesDescription,
                 l: {}, // It's able to derive it from statement coverage
-                path: fileName,
+                path: absoluteFileName,
                 f: functionCoverage,
                 s: statementCoverage,
                 b: branchCoverage,
@@ -106,31 +131,13 @@ export class CoverageManager {
         };
         return partialCoverage;
     }
-    constructor(
-        artifactsPath: string,
-        sourcesPath: string,
-        networkId: number,
-        getContractCodeAsync: (address: string) => Promise<string>,
-    ) {
-        this._getContractCodeAsync = getContractCodeAsync;
-        this._contractsData = collectContractsData(artifactsPath, sourcesPath, networkId);
-    }
-    public appendTraceInfo(traceInfo: TraceInfo): void {
-        this._traceInfos.push(traceInfo);
-    }
-    public async writeCoverageAsync(): Promise<void> {
-        const finalCoverage = await this._computeCoverageAsync();
-        const jsonReplacer: null = null;
-        const numberOfJsonSpaces = 4;
-        const stringifiedCoverage = JSON.stringify(finalCoverage, jsonReplacer, numberOfJsonSpaces);
-        fs.writeFileSync('coverage/coverage.json', stringifiedCoverage);
-    }
     private async _computeCoverageAsync(): Promise<Coverage> {
         const collector = new Collector();
         for (const traceInfo of this._traceInfos) {
             if (traceInfo.address !== constants.NEW_CONTRACT) {
                 // Runtime transaction
-                const runtimeBytecode = (traceInfo as TraceInfoExistingContract).runtimeBytecode;
+                let runtimeBytecode = (traceInfo as TraceInfoExistingContract).runtimeBytecode;
+                runtimeBytecode = addHexPrefix(runtimeBytecode);
                 const contractData = _.find(this._contractsData, { runtimeBytecode }) as ContractData;
                 if (_.isUndefined(contractData)) {
                     throw new Error(`Transaction to an unknown address: ${traceInfo.address}`);
@@ -144,7 +151,7 @@ export class CoverageManager {
                     contractData.sources,
                 );
                 for (let fileIndex = 0; fileIndex < contractData.sources.length; fileIndex++) {
-                    const singleFileCoverageForTrace = CoverageManager._getSingleFileCoverageForTrace(
+                    const singleFileCoverageForTrace = this._getSingleFileCoverageForTrace(
                         contractData,
                         traceInfo.coveredPcs,
                         pcToSourceRange,
@@ -154,7 +161,8 @@ export class CoverageManager {
                 }
             } else {
                 // Contract creation transaction
-                const bytecode = (traceInfo as TraceInfoNewContract).bytecode;
+                let bytecode = (traceInfo as TraceInfoNewContract).bytecode;
+                bytecode = addHexPrefix(bytecode);
                 const contractData = _.find(this._contractsData, contractDataCandidate =>
                     bytecode.startsWith(contractDataCandidate.bytecode),
                 ) as ContractData;
@@ -170,7 +178,7 @@ export class CoverageManager {
                     contractData.sources,
                 );
                 for (let fileIndex = 0; fileIndex < contractData.sources.length; fileIndex++) {
-                    const singleFileCoverageForTrace = CoverageManager._getSingleFileCoverageForTrace(
+                    const singleFileCoverageForTrace = this._getSingleFileCoverageForTrace(
                         contractData,
                         traceInfo.coveredPcs,
                         pcToSourceRange,
@@ -180,7 +188,6 @@ export class CoverageManager {
                 }
             }
         }
-        // TODO: Remove any cast as soon as https://github.com/DefinitelyTyped/DefinitelyTyped/pull/24233 gets merged
-        return (collector as any).getFinalCoverage();
+        return collector.getFinalCoverage();
     }
 }

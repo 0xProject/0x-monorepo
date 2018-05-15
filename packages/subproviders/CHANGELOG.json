@@ -1,5 +1,28 @@
 [
     {
+        "timestamp": 1525477860,
+        "version": "0.10.1",
+        "changes": [
+            {
+                "note": "Dependencies updated"
+            }
+        ]
+    },
+    {
+        "version": "0.10.0",
+        "changes": [
+            {
+                "note": "Upgrade web3-provider-engine to 14.0.4",
+                "pr": 555
+            },
+            {
+                "note": "Relax `to` validation in base wallet subprovider for transactions that deploy contracts",
+                "pr": 555
+            }
+        ],
+        "timestamp": 1525428773
+    },
+    {
         "version": "0.9.0",
         "changes": [
             {

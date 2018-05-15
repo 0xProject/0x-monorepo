@@ -8,14 +8,14 @@ import { DummyERC20TokenContract } from '../../src/contract_wrappers/generated/d
 import { ERC20ProxyContract } from '../../src/contract_wrappers/generated/e_r_c20_proxy';
 import { ERC721ProxyContract } from '../../src/contract_wrappers/generated/e_r_c721_proxy';
 import { TestAssetProxyDispatcherContract } from '../../src/contract_wrappers/generated/test_asset_proxy_dispatcher';
+import { artifacts } from '../../src/utils/artifacts';
 import { assetProxyUtils } from '../../src/utils/asset_proxy_utils';
+import { chaiSetup } from '../../src/utils/chai_setup';
 import { constants } from '../../src/utils/constants';
 import { ERC20Wrapper } from '../../src/utils/erc20_wrapper';
 import { ERC721Wrapper } from '../../src/utils/erc721_wrapper';
-import { AssetProxyId, ContractName } from '../../src/utils/types';
-import { chaiSetup } from '../utils/chai_setup';
-import { deployer } from '../utils/deployer';
-import { provider, web3Wrapper } from '../utils/web3_wrapper';
+import { AssetProxyId } from '../../src/utils/types';
+import { provider, txDefaults, web3Wrapper } from '../../src/utils/web3_wrapper';
 
 chaiSetup.configure();
 const expect = chai.expect;
@@ -42,8 +42,8 @@ describe('AssetProxyDispatcher', () => {
         const usedAddresses = ([owner, notOwner, makerAddress, takerAddress] = accounts);
         notAuthorized = notOwner;
 
-        erc20Wrapper = new ERC20Wrapper(deployer, provider, usedAddresses, owner);
-        erc721Wrapper = new ERC721Wrapper(deployer, provider, usedAddresses, owner);
+        erc20Wrapper = new ERC20Wrapper(provider, usedAddresses, owner);
+        erc721Wrapper = new ERC721Wrapper(provider, usedAddresses, owner);
 
         [zrxToken] = await erc20Wrapper.deployDummyTokensAsync();
         erc20Proxy = await erc20Wrapper.deployProxyAsync();
@@ -51,11 +51,10 @@ describe('AssetProxyDispatcher', () => {
 
         erc721Proxy = await erc721Wrapper.deployProxyAsync();
 
-        const assetProxyDispatcherInstance = await deployer.deployAsync(ContractName.TestAssetProxyDispatcher);
-        assetProxyDispatcher = new TestAssetProxyDispatcherContract(
-            assetProxyDispatcherInstance.abi,
-            assetProxyDispatcherInstance.address,
+        assetProxyDispatcher = await TestAssetProxyDispatcherContract.deployFrom0xArtifactAsync(
+            artifacts.TestAssetProxyDispatcher,
             provider,
+            txDefaults,
         );
         await erc20Proxy.addAuthorizedAddress.sendTransactionAsync(assetProxyDispatcher.address, {
             from: owner,
@@ -118,11 +117,10 @@ describe('AssetProxyDispatcher', () => {
             let proxyAddress = await assetProxyDispatcher.getAssetProxy.callAsync(AssetProxyId.ERC20);
             expect(proxyAddress).to.be.equal(erc20Proxy.address);
             // Deploy a new version of the ERC20 Transfer Proxy contract
-            const newErc20TransferProxyInstance = await deployer.deployAsync(ContractName.ERC20Proxy);
-            const newErc20TransferProxy = new ERC20ProxyContract(
-                newErc20TransferProxyInstance.abi,
-                newErc20TransferProxyInstance.address,
+            const newErc20TransferProxy = await ERC20ProxyContract.deployFrom0xArtifactAsync(
+                artifacts.ERC20Proxy,
                 provider,
+                txDefaults,
             );
             // Register new ERC20 Transfer Proxy contract
             const newAddress = newErc20TransferProxy.address;

@@ -6,14 +6,14 @@ import ethUtil = require('ethereumjs-util');
 
 import { TestSignatureValidatorContract } from '../../src/contract_wrappers/generated/test_signature_validator';
 import { addressUtils } from '../../src/utils/address_utils';
+import { artifacts } from '../../src/utils/artifacts';
 import { assetProxyUtils } from '../../src/utils/asset_proxy_utils';
+import { chaiSetup } from '../../src/utils/chai_setup';
 import { constants } from '../../src/utils/constants';
 import { OrderFactory } from '../../src/utils/order_factory';
 import { orderUtils } from '../../src/utils/order_utils';
-import { ContractName, SignedOrder } from '../../src/utils/types';
-import { chaiSetup } from '../utils/chai_setup';
-import { deployer } from '../utils/deployer';
-import { provider, web3Wrapper } from '../utils/web3_wrapper';
+import { SignedOrder } from '../../src/utils/types';
+import { provider, txDefaults, web3Wrapper } from '../../src/utils/web3_wrapper';
 
 chaiSetup.configure();
 const expect = chai.expect;
@@ -28,17 +28,16 @@ describe('MixinSignatureValidator', () => {
     before(async () => {
         const accounts = await web3Wrapper.getAvailableAddressesAsync();
         const makerAddress = accounts[0];
-        const signatureValidatorInstance = await deployer.deployAsync(ContractName.TestSignatureValidator);
-        signatureValidator = new TestSignatureValidatorContract(
-            signatureValidatorInstance.abi,
-            signatureValidatorInstance.address,
+        signatureValidator = await TestSignatureValidatorContract.deployFrom0xArtifactAsync(
+            artifacts.TestSignatureValidator,
             provider,
+            txDefaults,
         );
         const zeroEx = new ZeroEx(provider, { networkId: constants.TESTRPC_NETWORK_ID });
 
         const defaultOrderParams = {
             ...constants.STATIC_ORDER_PARAMS,
-            exchangeAddress: signatureValidatorInstance.address,
+            exchangeAddress: signatureValidator.address,
             makerAddress,
             feeRecipientAddress: addressUtils.generatePseudoRandomAddress(),
             makerAssetData: assetProxyUtils.encodeERC20ProxyData(addressUtils.generatePseudoRandomAddress()),

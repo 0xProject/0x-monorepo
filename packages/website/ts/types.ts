@@ -344,6 +344,7 @@ export enum Docs {
 export enum WebsiteLegacyPaths {
     ZeroExJs = '/docs/0xjs',
     Web3Wrapper = '/docs/web3_wrapper',
+    Deployer = '/docs/deployer',
 }
 
 export enum WebsitePaths {
@@ -357,10 +358,11 @@ export enum WebsitePaths {
     SmartContracts = '/docs/contracts',
     Connect = '/docs/connect',
     Web3Wrapper = '/docs/web3-wrapper',
-    Deployer = '/docs/deployer',
+    SolCompiler = '/docs/sol-compiler',
     JSONSchemas = '/docs/json-schemas',
     SolCov = '/docs/sol-cov',
     Subproviders = '/docs/subproviders',
+    OrderUtils = '/docs/order-utils',
     Jobs = '/jobs',
 }
 
@@ -369,10 +371,11 @@ export enum DocPackages {
     ZeroExJs = 'ZERO_EX_JS',
     SmartContracts = 'SMART_CONTRACTS',
     Web3Wrapper = 'WEB3_WRAPPER',
-    Deployer = 'DEPLOYER',
+    SolCompiler = 'SOL_COMPILER',
     JSONSchemas = 'JSON_SCHEMAS',
     SolCov = 'SOL_COV',
     Subproviders = 'SUBPROVIDERS',
+    OrderUtils = 'ORDER_UTILS',
 }
 
 export enum Key {
@@ -421,7 +424,7 @@ export enum Key {
     About = 'ABOUT',
     Careers = 'CAREERS',
     Contact = 'CONTACT',
-    Deployer = 'DEPLOYER',
+    SolCompiler = 'SOL_COMPILER',
     JsonSchemas = 'JSON_SCHEMAS',
     SolCov = 'SOL_COV',
     Subproviders = 'SUBPROVIDERS',
@@ -431,6 +434,7 @@ export enum Key {
     Whitepaper = 'WHITEPAPER',
     Wiki = 'WIKI',
     Web3Wrapper = 'WEB3_WRAPPER',
+    OrderUtils = 'ORDER_UTILS',
     And = 'AND',
     Faq = 'FAQ',
     SmartContracts = 'SMART_CONTRACTS',
@@ -500,17 +504,24 @@ export interface TokenState {
     price?: BigNumber;
 }
 
-// TODO: Add topTokens and headerUrl properties once available from backend
 export interface WebsiteBackendRelayerInfo {
-    id: string;
     name: string;
     dailyTxnVolume: string;
     url: string;
+    appUrl?: string;
+    headerImgUrl?: string;
+    topTokens: WebsiteBackendTokenInfo[];
 }
 
 export interface WebsiteBackendPriceInfo {
-    price: string;
+    [symbol: string]: string;
+}
+
+export interface WebsiteBackendTokenInfo {
     address: string;
+    decimals: number;
+    name: string;
+    symbol: string;
 }
 
 export interface WebsiteBackendGasInfo {

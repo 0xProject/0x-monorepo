@@ -70,7 +70,7 @@ jobs:
           key: coverage-contracts-{{ .Environment.CIRCLE_SHA1 }}
           paths:
             - ~/repo/packages/contracts/coverage/lcov.info
-  test-deployer:
+  test-sol-compiler:
     docker:
       - image: circleci/node:6.12
     working_directory: ~/repo
@@ -82,11 +82,11 @@ jobs:
           name: testrpc
           command: npm run testrpc -- --db testrpc_snapshot
           background: true
-      - run: yarn lerna:run --scope @0xproject/deployer test:circleci
+      - run: yarn lerna:run --scope @0xproject/sol-compiler test:circleci
       - save_cache:
-          key: coverage-deployer-{{ .Environment.CIRCLE_SHA1 }}
+          key: coverage-sol-compiler-{{ .Environment.CIRCLE_SHA1 }}
           paths:
-            - ~/repo/packages/deployer/coverage/lcov.info
+            - ~/repo/packages/sol-compiler/coverage/lcov.info
   test-rest:
     docker:
       - image: circleci/node:6.12
@@ -99,7 +99,7 @@ jobs:
           name: testrpc
           command: npm run testrpc -- --db testrpc_snapshot
           background: true
-      - run: yarn lerna:run --ignore contracts --ignore 0x.js --ignore @0xproject/deployer test:circleci
+      - run: yarn lerna:run --ignore contracts --ignore 0x.js --ignore @0xproject/sol-compiler test:circleci
       - save_cache:
           key: coverage-assert-{{ .Environment.CIRCLE_SHA1 }}
           paths:
@@ -177,7 +177,7 @@ jobs:
             - coverage-sol-cov-{{ .Environment.CIRCLE_SHA1 }}
       - restore_cache:
           keys:
-            - coverage-deployer-{{ .Environment.CIRCLE_SHA1 }}
+            - coverage-sol-compiler-{{ .Environment.CIRCLE_SHA1 }}
       - restore_cache:
           keys:
             - coverage-0xjs-{{ .Environment.CIRCLE_SHA1 }}
@@ -199,7 +199,7 @@ workflows:
       - test-contracts:
           requires:
             - build
-      - test-deployer:
+      - test-sol-compiler:
           requires:
             - build
       - test-rest:
@@ -214,6 +214,6 @@ workflows:
       - submit-coverage:
           requires:
             - test-0xjs
-            - test-deployer
+            - test-sol-compiler
             - test-rest
             - test-contracts

@@ -60,9 +60,9 @@ export const web3Factory = {
             provider.addProvider(
                 new GanacheSubprovider({
                     logger,
-                    verbose: env.parseBoolean(EnvVars.SolidityCoverage),
+                    verbose: env.parseBoolean(EnvVars.VerboseGanache),
                     port: 8545,
-                    networkId: 50,
+                    network_id: 50,
                     mnemonic: 'concert load couple harbor equip island argue ramp clarify fence smart topic',
                 }),
             );

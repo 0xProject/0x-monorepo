@@ -1,0 +1,28 @@
+{
+    "artifactsDir": "artifacts/1.0.0",
+    "contractsDir": "../contracts/src/contracts",
+    "contracts": [
+        "Exchange_v1",
+        "DummyERC20Token",
+        "ZRXToken",
+        "WETH9",
+        "TokenTransferProxy_v1",
+        "MultiSigWallet",
+        "MultiSigWalletWithTimeLock",
+        "MultiSigWalletWithTimeLockExceptRemoveAuthorizedAddress",
+        "TokenRegistry"
+    ],
+    "compilerSettings": {
+        "outputSelection": {
+            "*": {
+                "*": [
+                    "abi",
+                    "evm.bytecode.object",
+                    "evm.bytecode.sourceMap",
+                    "evm.deployedBytecode.object",
+                    "evm.deployedBytecode.sourceMap"
+                ]
+            }
+        }
+    }
+}

@@ -1,0 +1,547 @@
+{
+    "contract_name": "TokenRegistry",
+    "abi": [
+        {
+            "constant": false,
+            "inputs": [
+                {
+                    "name": "_token",
+                    "type": "address"
+                },
+                {
+                    "name": "_index",
+                    "type": "uint256"
+                }
+            ],
+            "name": "removeToken",
+            "outputs": [],
+            "payable": false,
+            "type": "function"
+        },
+        {
+            "constant": true,
+            "inputs": [
+                {
+                    "name": "_name",
+                    "type": "string"
+                }
+            ],
+            "name": "getTokenAddressByName",
+            "outputs": [
+                {
+                    "name": "",
+                    "type": "address"
+                }
+            ],
+            "payable": false,
+            "type": "function"
+        },
+        {
+            "constant": true,
+            "inputs": [
+                {
+                    "name": "_symbol",
+                    "type": "string"
+                }
+            ],
+            "name": "getTokenAddressBySymbol",
+            "outputs": [
+                {
+                    "name": "",
+                    "type": "address"
+                }
+            ],
+            "payable": false,
+            "type": "function"
+        },
+        {
+            "constant": false,
+            "inputs": [
+                {
+                    "name": "_token",
+                    "type": "address"
+                },
+                {
+                    "name": "_swarmHash",
+                    "type": "bytes"
+                }
+            ],
+            "name": "setTokenSwarmHash",
+            "outputs": [],
+            "payable": false,
+            "type": "function"
+        },
+        {
+            "constant": true,
+            "inputs": [
+                {
+                    "name": "_token",
+                    "type": "address"
+                }
+            ],
+            "name": "getTokenMetaData",
+            "outputs": [
+                {
+                    "name": "",
+                    "type": "address"
+                },
+                {
+                    "name": "",
+                    "type": "string"
+                },
+                {
+                    "name": "",
+                    "type": "string"
+                },
+                {
+                    "name": "",
+                    "type": "uint8"
+                },
+                {
+                    "name": "",
+                    "type": "bytes"
+                },
+                {
+                    "name": "",
+                    "type": "bytes"
+                }
+            ],
+            "payable": false,
+            "type": "function"
+        },
+        {
+            "constant": true,
+            "inputs": [],
+            "name": "owner",
+            "outputs": [
+                {
+                    "name": "",
+                    "type": "address"
+                }
+            ],
+            "payable": false,
+            "type": "function"
+        },
+        {
+            "constant": false,
+            "inputs": [
+                {
+                    "name": "_token",
+                    "type": "address"
+                },
+                {
+                    "name": "_name",
+                    "type": "string"
+                },
+                {
+                    "name": "_symbol",
+                    "type": "string"
+                },
+                {
+                    "name": "_decimals",
+                    "type": "uint8"
+                },
+                {
+                    "name": "_ipfsHash",
+                    "type": "bytes"
+                },
+                {
+                    "name": "_swarmHash",
+                    "type": "bytes"
+                }
+            ],
+            "name": "addToken",
+            "outputs": [],
+            "payable": false,
+            "type": "function"
+        },
+        {
+            "constant": false,
+            "inputs": [
+                {
+                    "name": "_token",
+                    "type": "address"
+                },
+                {
+                    "name": "_name",
+                    "type": "string"
+                }
+            ],
+            "name": "setTokenName",
+            "outputs": [],
+            "payable": false,
+            "type": "function"
+        },
+        {
+            "constant": true,
+            "inputs": [
+                {
+                    "name": "",
+                    "type": "address"
+                }
+            ],
+            "name": "tokens",
+            "outputs": [
+                {
+                    "name": "token",
+                    "type": "address"
+                },
+                {
+                    "name": "name",
+                    "type": "string"
+                },
+                {
+                    "name": "symbol",
+                    "type": "string"
+                },
+                {
+                    "name": "decimals",
+                    "type": "uint8"
+                },
+                {
+                    "name": "ipfsHash",
+                    "type": "bytes"
+                },
+                {
+                    "name": "swarmHash",
+                    "type": "bytes"
+                }
+            ],
+            "payable": false,
+            "type": "function"
+        },
+        {
+            "constant": true,
+            "inputs": [
+                {
+                    "name": "",
+                    "type": "uint256"
+                }
+            ],
+            "name": "tokenAddresses",
+            "outputs": [
+                {
+                    "name": "",
+                    "type": "address"
+                }
+            ],
+            "payable": false,
+            "type": "function"
+        },
+        {
+            "constant": true,
+            "inputs": [
+                {
+                    "name": "_name",
+                    "type": "string"
+                }
+            ],
+            "name": "getTokenByName",
+            "outputs": [
+                {
+                    "name": "",
+                    "type": "address"
+                },
+                {
+                    "name": "",
+                    "type": "string"
+                },
+                {
+                    "name": "",
+                    "type": "string"
+                },
+                {
+                    "name": "",
+                    "type": "uint8"
+                },
+                {
+                    "name": "",
+                    "type": "bytes"
+                },
+                {
+                    "name": "",
+                    "type": "bytes"
+                }
+            ],
+            "payable": false,
+            "type": "function"
+        },
+        {
+            "constant": true,
+            "inputs": [],
+            "name": "getTokenAddresses",
+            "outputs": [
+                {
+                    "name": "",
+                    "type": "address[]"
+                }
+            ],
+            "payable": false,
+            "type": "function"
+        },
+        {
+            "constant": false,
+            "inputs": [
+                {
+                    "name": "_token",
+                    "type": "address"
+                },
+                {
+                    "name": "_ipfsHash",
+                    "type": "bytes"
+                }
+            ],
+            "name": "setTokenIpfsHash",
+            "outputs": [],
+            "payable": false,
+            "type": "function"
+        },
+        {
+            "constant": true,
+            "inputs": [
+                {
+                    "name": "_symbol",
+                    "type": "string"
+                }
+            ],
+            "name": "getTokenBySymbol",
+            "outputs": [
+                {
+                    "name": "",
+                    "type": "address"
+                },
+                {
+                    "name": "",
+                    "type": "string"
+                },
+                {
+                    "name": "",
+                    "type": "string"
+                },
+                {
+                    "name": "",
+                    "type": "uint8"
+                },
+                {
+                    "name": "",
+                    "type": "bytes"
+                },
+                {
+                    "name": "",
+                    "type": "bytes"
+                }
+            ],
+            "payable": false,
+            "type": "function"
+        },
+        {
+            "constant": false,
+            "inputs": [
+                {
+                    "name": "_token",
+                    "type": "address"
+                },
+                {
+                    "name": "_symbol",
+                    "type": "string"
+                }
+            ],
+            "name": "setTokenSymbol",
+            "outputs": [],
+            "payable": false,
+            "type": "function"
+        },
+        {
+            "constant": false,
+            "inputs": [
+                {
+                    "name": "newOwner",
+                    "type": "address"
+                }
+            ],
+            "name": "transferOwnership",
+            "outputs": [],
+            "payable": false,
+            "type": "function"
+        },
+        {
+            "anonymous": false,
+            "inputs": [
+                {
+                    "indexed": true,
+                    "name": "token",
+                    "type": "address"
+                },
+                {
+                    "indexed": false,
+                    "name": "name",
+                    "type": "string"
+                },
+                {
+                    "indexed": false,
+                    "name": "symbol",
+                    "type": "string"
+                },
+                {
+                    "indexed": false,
+                    "name": "decimals",
+                    "type": "uint8"
+                },
+                {
+                    "indexed": false,
+                    "name": "ipfsHash",
+                    "type": "bytes"
+                },
+                {
+                    "indexed": false,
+                    "name": "swarmHash",
+                    "type": "bytes"
+                }
+            ],
+            "name": "LogAddToken",
+            "type": "event"
+        },
+        {
+            "anonymous": false,
+            "inputs": [
+                {
+                    "indexed": true,
+                    "name": "token",
+                    "type": "address"
+                },
+                {
+                    "indexed": false,
+                    "name": "name",
+                    "type": "string"
+                },
+                {
+                    "indexed": false,
+                    "name": "symbol",
+                    "type": "string"
+                },
+                {
+                    "indexed": false,
+                    "name": "decimals",
+                    "type": "uint8"
+                },
+                {
+                    "indexed": false,
+                    "name": "ipfsHash",
+                    "type": "bytes"
+                },
+                {
+                    "indexed": false,
+                    "name": "swarmHash",
+                    "type": "bytes"
+                }
+            ],
+            "name": "LogRemoveToken",
+            "type": "event"
+        },
+        {
+            "anonymous": false,
+            "inputs": [
+                {
+                    "indexed": true,
+                    "name": "token",
+                    "type": "address"
+                },
+                {
+                    "indexed": false,
+                    "name": "oldName",
+                    "type": "string"
+                },
+                {
+                    "indexed": false,
+                    "name": "newName",
+                    "type": "string"
+                }
+            ],
+            "name": "LogTokenNameChange",
+            "type": "event"
+        },
+        {
+            "anonymous": false,
+            "inputs": [
+                {
+                    "indexed": true,
+                    "name": "token",
+                    "type": "address"
+                },
+                {
+                    "indexed": false,
+                    "name": "oldSymbol",
+                    "type": "string"
+                },
+                {
+                    "indexed": false,
+                    "name": "newSymbol",
+                    "type": "string"
+                }
+            ],
+            "name": "LogTokenSymbolChange",
+            "type": "event"
+        },
+        {
+            "anonymous": false,
+            "inputs": [
+                {
+                    "indexed": true,
+                    "name": "token",
+                    "type": "address"
+                },
+                {
+                    "indexed": false,
+                    "name": "oldIpfsHash",
+                    "type": "bytes"
+                },
+                {
+                    "indexed": false,
+                    "name": "newIpfsHash",
+                    "type": "bytes"
+                }
+            ],
+            "name": "LogTokenIpfsHashChange",
+            "type": "event"
+        },
+        {
+            "anonymous": false,
+            "inputs": [
+                {
+                    "indexed": true,
+                    "name": "token",
+                    "type": "address"
+                },
+                {
+                    "indexed": false,
+                    "name": "oldSwarmHash",
+                    "type": "bytes"
+                },
+                {
+                    "indexed": false,
+                    "name": "newSwarmHash",
+                    "type": "bytes"
+                }
+            ],
+            "name": "LogTokenSwarmHashChange",
+            "type": "event"
+        }
+    ],
+    "networks": {
+        "1": {
+            "address": "0x926a74c5c36adf004c87399e65f75628b0f98d2c"
+        },
+        "3": {
+            "address": "0x6b1a50f0bb5a7995444bd3877b22dc89c62843ed"
+        },
+        "4": {
+            "address": "0x4e9aad8184de8833365fea970cd9149372fdf1e6"
+        },
+        "42": {
+            "address": "0xf18e504561f4347bea557f3d4558f559dddbae7f"
+        },
+        "50": {
+            "address": "0x0b1ba0af832d7c05fd64161e0db78e85978e8082"
+        }
+    }
+}

@@ -1,4 +1,3 @@
-import { Deployer } from '@0xproject/deployer';
 import { Provider } from '@0xproject/types';
 import { BigNumber } from '@0xproject/utils';
 import * as _ from 'lodash';
@@ -6,41 +5,43 @@ import * as _ from 'lodash';
 import { DummyERC20TokenContract } from '../contract_wrappers/generated/dummy_e_r_c20_token';
 import { ERC20ProxyContract } from '../contract_wrappers/generated/e_r_c20_proxy';
 
+import { artifacts } from './artifacts';
 import { constants } from './constants';
-import { ContractName, ERC20BalancesByOwner } from './types';
+import { ERC20BalancesByOwner } from './types';
+import { txDefaults } from './web3_wrapper';
 
 export class ERC20Wrapper {
     private _tokenOwnerAddresses: string[];
     private _contractOwnerAddress: string;
-    private _deployer: Deployer;
     private _provider: Provider;
     private _dummyTokenContracts?: DummyERC20TokenContract[];
     private _proxyContract?: ERC20ProxyContract;
-    constructor(deployer: Deployer, provider: Provider, tokenOwnerAddresses: string[], contractOwnerAddress: string) {
-        this._deployer = deployer;
+    constructor(provider: Provider, tokenOwnerAddresses: string[], contractOwnerAddress: string) {
         this._provider = provider;
         this._tokenOwnerAddresses = tokenOwnerAddresses;
         this._contractOwnerAddress = contractOwnerAddress;
     }
     public async deployDummyTokensAsync(): Promise<DummyERC20TokenContract[]> {
-        const tokenContractInstances = await Promise.all(
+        this._dummyTokenContracts = await Promise.all(
             _.times(constants.NUM_DUMMY_ERC20_TO_DEPLOY, () =>
-                this._deployer.deployAsync(ContractName.DummyERC20Token, constants.DUMMY_ERC20_TOKEN_ARGS),
+                DummyERC20TokenContract.deployFrom0xArtifactAsync(
+                    artifacts.DummyERC20Token,
+                    this._provider,
+                    txDefaults,
+                    constants.DUMMY_TOKEN_NAME,
+                    constants.DUMMY_TOKEN_SYMBOL,
+                    constants.DUMMY_TOKEN_DECIMALS,
+                    constants.DUMMY_TOKEN_TOTAL_SUPPLY,
+                ),
             ),
-        );
-        this._dummyTokenContracts = _.map(
-            tokenContractInstances,
-            tokenContractInstance =>
-                new DummyERC20TokenContract(tokenContractInstance.abi, tokenContractInstance.address, this._provider),
         );
         return this._dummyTokenContracts;
     }
     public async deployProxyAsync(): Promise<ERC20ProxyContract> {
-        const proxyContractInstance = await this._deployer.deployAsync(ContractName.ERC20Proxy);
-        this._proxyContract = new ERC20ProxyContract(
-            proxyContractInstance.abi,
-            proxyContractInstance.address,
+        this._proxyContract = await ERC20ProxyContract.deployFrom0xArtifactAsync(
+            artifacts.ERC20Proxy,
             this._provider,
+            txDefaults,
         );
         return this._proxyContract;
     }

@@ -3,10 +3,10 @@ import * as _ from 'lodash';
 import * as React from 'react';
 
 import { TokenIcon } from 'ts/components/ui/token_icon';
-import { Token } from 'ts/types';
+import { WebsiteBackendTokenInfo } from 'ts/types';
 
 export interface TopTokensProps {
-    tokens: Token[];
+    tokens: WebsiteBackendTokenInfo[];
     networkId: number;
 }
 
@@ -23,17 +23,17 @@ const styles: Styles = {
 export const TopTokens: React.StatelessComponent<TopTokensProps> = (props: TopTokensProps) => {
     return (
         <div className="flex">
-            {_.map(props.tokens, (token: Token, index: number) => {
+            {_.map(props.tokens, (tokenInfo: WebsiteBackendTokenInfo, index: number) => {
                 const firstItemStyle = { ...styles.tokenLabel, ...styles.followingTokenLabel };
                 const style = index !== 0 ? firstItemStyle : styles.tokenLabel;
                 return (
                     <a
-                        key={token.address}
-                        href={tokenLinkFromToken(token, props.networkId)}
+                        key={tokenInfo.address}
+                        href={tokenLinkFromToken(tokenInfo, props.networkId)}
                         target="_blank"
                         style={style}
                     >
-                        {token.symbol}
+                        {tokenInfo.symbol}
                     </a>
                 );
             })}
@@ -41,6 +41,6 @@ export const TopTokens: React.StatelessComponent<TopTokensProps> = (props: TopTo
     );
 };
 
-function tokenLinkFromToken(token: Token, networkId: number) {
-    return sharedUtils.getEtherScanLinkIfExists(token.address, networkId, EtherscanLinkSuffixes.Address);
+function tokenLinkFromToken(tokenInfo: WebsiteBackendTokenInfo, networkId: number) {
+    return sharedUtils.getEtherScanLinkIfExists(tokenInfo.address, networkId, EtherscanLinkSuffixes.Address);
 }

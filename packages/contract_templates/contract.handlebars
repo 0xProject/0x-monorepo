@@ -5,8 +5,9 @@
 // tslint:disable:no-consecutive-blank-lines
 // tslint:disable-next-line:no-unused-variable
 import { BaseContract } from '@0xproject/base-contract';
+import { ContractArtifact } from '@0xproject/sol-compiler';
 import { BlockParam, BlockParamLiteral, CallData, ContractAbi, DataItem, MethodAbi, Provider, TxData, TxDataPayable } from '@0xproject/types';
-import { BigNumber, classUtils, promisify } from '@0xproject/utils';
+import { BigNumber, classUtils, logUtils, promisify } from '@0xproject/utils';
 import { Web3Wrapper } from '@0xproject/web3-wrapper';
 import * as ethers from 'ethers';
 import * as _ from 'lodash';
@@ -39,8 +40,49 @@ export class {{contractName}}Contract extends BaseContract {
     {{> tx contractName=../contractName}}
     {{/this.constant}}
 {{/each}}
-    constructor(abi: ContractAbi, address: string, provider: Provider, defaults?: Partial<TxData>) {
-        super(abi, address, provider, defaults);
+    public static async deployFrom0xArtifactAsync(
+        artifact: ContractArtifact,
+        provider: Provider,
+        txDefaults: Partial<TxData>,
+        {{> typed_params inputs=ctor.inputs}}
+    ): Promise<{{contractName}}Contract> {
+        if (_.isUndefined(artifact.compilerOutput)) {
+            throw new Error('Compiler output not found in the artifact file');
+        }
+        const bytecode = artifact.compilerOutput.evm.bytecode.object;
+        const abi = artifact.compilerOutput.abi;
+        return {{contractName}}Contract.deployAsync(bytecode, abi, provider, txDefaults, {{> params inputs=ctor.inputs}});
+    }
+    public static async deployAsync(
+        bytecode: string,
+        abi: ContractAbi,
+        provider: Provider,
+        txDefaults: Partial<TxData>,
+        {{> typed_params inputs=ctor.inputs}}
+    ): Promise<{{contractName}}Contract> {
+        const constructorAbi = BaseContract._lookupConstructorAbi(abi);
+        [{{> params inputs=ctor.inputs}}] = BaseContract._formatABIDataItemList(
+            constructorAbi.inputs,
+            [{{> params inputs=ctor.inputs}}],
+            BaseContract._bigNumberToString,
+        );
+        const txData = ethers.Contract.getDeployTransaction(bytecode, abi, {{> params inputs=ctor.inputs}});
+        const web3Wrapper = new Web3Wrapper(provider);
+        const txDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
+            txData,
+            txDefaults,
+            web3Wrapper.estimateGasAsync.bind(web3Wrapper),
+        );
+        const txHash = await web3Wrapper.sendTransactionAsync(txDataWithDefaults);
+        logUtils.log(`transactionHash: ${txHash}`);
+        const txReceipt = await web3Wrapper.awaitTransactionMinedAsync(txHash);
+        logUtils.log(`{{contractName}} successfully deployed at ${txReceipt.contractAddress}`);
+        const contractInstance = new {{contractName}}Contract(abi, txReceipt.contractAddress as string, provider, txDefaults);
+        contractInstance.constructorArgs = [{{> params inputs=ctor.inputs}}];
+        return contractInstance;
+    }
+    constructor(abi: ContractAbi, address: string, provider: Provider, txDefaults?: Partial<TxData>) {
+        super("{{contractName}}", abi, address, provider, txDefaults);
         classUtils.bindAll(this, ['_ethersInterfacesByFunctionSignature', 'address', 'abi', '_web3Wrapper']);
     }
 } // tslint:disable:max-file-line-count

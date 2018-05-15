@@ -1,9 +1,9 @@
+import { ContractArtifact } from '@0xproject/sol-compiler';
 import { AbiDefinition, LogEntry, LogWithDecodedArgs, RawLog } from '@0xproject/types';
 import { AbiDecoder, BigNumber } from '@0xproject/utils';
 import * as _ from 'lodash';
 
 import { artifacts } from './artifacts';
-import { Artifact } from './types';
 
 export class LogDecoder {
     private _abiDecoder: AbiDecoder;
@@ -12,12 +12,9 @@ export class LogDecoder {
             throw new Error('networkId not specified');
         }
         const abiArrays: AbiDefinition[][] = [];
-        _.forEach(artifacts, (artifact: Artifact) => {
-            const networkIfExists = artifact.networks[networkIdIfExists];
-            if (_.isUndefined(networkIfExists)) {
-                throw new Error(`Artifact does not exist on network ${networkIdIfExists}`);
-            }
-            abiArrays.push(networkIfExists.abi);
+        _.forEach(artifacts, (artifact: ContractArtifact) => {
+            const compilerOutput = artifact.compilerOutput;
+            abiArrays.push(compilerOutput.abi);
         });
         this._abiDecoder = new AbiDecoder(abiArrays);
     }

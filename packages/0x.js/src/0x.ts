@@ -1,26 +1,27 @@
-import { schemas, SchemaValidator } from '@0xproject/json-schemas';
+import { assert } from '@0xproject/assert';
+import {
+    ContractWrappers,
+    ContractWrappersConfig,
+    EtherTokenWrapper,
+    ExchangeWrapper,
+    TokenRegistryWrapper,
+    TokenTransferProxyWrapper,
+    TokenWrapper,
+} from '@0xproject/contract-wrappers';
+import {
+    generatePseudoRandomSalt,
+    getOrderHashHex,
+    isValidOrderHash,
+    isValidSignature,
+    signOrderHashAsync,
+} from '@0xproject/order-utils';
+import { OrderWatcher, OrderWatcherConfig } from '@0xproject/order-watcher';
 import { ECSignature, Order, Provider, SignedOrder, TransactionReceiptWithDecodedLogs } from '@0xproject/types';
-import { AbiDecoder, BigNumber, intervalUtils } from '@0xproject/utils';
+import { BigNumber } from '@0xproject/utils';
 import { Web3Wrapper } from '@0xproject/web3-wrapper';
-import * as ethUtil from 'ethereumjs-util';
 import * as _ from 'lodash';
 
-import { artifacts } from './artifacts';
-import { EtherTokenWrapper } from './contract_wrappers/ether_token_wrapper';
-import { ExchangeWrapper } from './contract_wrappers/exchange_wrapper';
-import { TokenRegistryWrapper } from './contract_wrappers/token_registry_wrapper';
-import { TokenTransferProxyWrapper } from './contract_wrappers/token_transfer_proxy_wrapper';
-import { TokenWrapper } from './contract_wrappers/token_wrapper';
-import { OrderStateWatcher } from './order_watcher/order_state_watcher';
-import { zeroExConfigSchema } from './schemas/zero_ex_config_schema';
-import { zeroExPrivateNetworkConfigSchema } from './schemas/zero_ex_private_network_config_schema';
-import { zeroExPublicNetworkConfigSchema } from './schemas/zero_ex_public_network_config_schema';
-import { OrderStateWatcherConfig, ZeroExConfig, ZeroExError } from './types';
-import { assert } from './utils/assert';
 import { constants } from './utils/constants';
-import { decorators } from './utils/decorators';
-import { signatureUtils } from './utils/signature_utils';
-import { utils } from './utils/utils';
 
 /**
  * The ZeroEx class is the single entry-point into the 0x.js library. It contains all of the library's functionality
@@ -33,7 +34,6 @@ export class ZeroEx {
      * this constant for your convenience.
      */
     public static NULL_ADDRESS = constants.NULL_ADDRESS;
-
     /**
      * An instance of the ExchangeWrapper class containing methods for interacting with the 0x Exchange smart contract.
      */
@@ -57,7 +57,16 @@ export class ZeroEx {
      * tokenTransferProxy smart contract.
      */
     public proxy: TokenTransferProxyWrapper;
-    private _web3Wrapper: Web3Wrapper;
+    private _contractWrappers: ContractWrappers;
+    /**
+     * Generates a pseudo-random 256-bit salt.
+     * The salt can be included in a 0x order, ensuring that the order generates a unique orderHash
+     * and will not collide with other outstanding orders that are identical in all other parameters.
+     * @return  A pseudo-random 256-bit number that can be used as a salt.
+     */
+    public static generatePseudoRandomSalt(): BigNumber {
+        return generatePseudoRandomSalt();
+    }
     /**
      * Verifies that the elliptic curve signature `signature` was generated
      * by signing `data` with the private key corresponding to the `signerAddress` address.
@@ -67,27 +76,15 @@ export class ZeroEx {
      * @return  Whether the signature is valid for the supplied signerAddress and data.
      */
     public static isValidSignature(data: string, signature: ECSignature, signerAddress: string): boolean {
-        assert.isHexString('data', data);
-        assert.doesConformToSchema('signature', signature, schemas.ecSignatureSchema);
-        assert.isETHAddressHex('signerAddress', signerAddress);
-        const normalizedSignerAddress = signerAddress.toLowerCase();
-
-        const isValidSignature = signatureUtils.isValidSignature(data, signature, normalizedSignerAddress);
-        return isValidSignature;
+        return isValidSignature(data, signature, signerAddress);
     }
     /**
-     * Generates a pseudo-random 256-bit salt.
-     * The salt can be included in a 0x order, ensuring that the order generates a unique orderHash
-     * and will not collide with other outstanding orders that are identical in all other parameters.
-     * @return  A pseudo-random 256-bit number that can be used as a salt.
+     * Computes the orderHash for a supplied order.
+     * @param   order   An object that conforms to the Order or SignedOrder interface definitions.
+     * @return  The resulting orderHash from hashing the supplied order.
      */
-    public static generatePseudoRandomSalt(): BigNumber {
-        // BigNumber.random returns a pseudo-random number between 0 & 1 with a passed in number of decimal places.
-        // Source: https://mikemcl.github.io/bignumber.js/#random
-        const randomNumber = BigNumber.random(constants.MAX_DIGITS_IN_UNSIGNED_256_INT);
-        const factor = new BigNumber(10).pow(constants.MAX_DIGITS_IN_UNSIGNED_256_INT - 1);
-        const salt = randomNumber.times(factor).round();
-        return salt;
+    public static getOrderHashHex(order: Order | SignedOrder): string {
+        return getOrderHashHex(order);
     }
     /**
      * Checks if the supplied hex encoded order hash is valid.
@@ -97,12 +94,7 @@ export class ZeroEx {
      * @return  Whether the supplied orderHash has the expected format.
      */
     public static isValidOrderHash(orderHash: string): boolean {
-        // Since this method can be called to check if any arbitrary string conforms to an orderHash's
-        // format, we only assert that we were indeed passed a string.
-        assert.isString('orderHash', orderHash);
-        const schemaValidator = new SchemaValidator();
-        const isValidOrderHash = schemaValidator.validate(orderHash, schemas.orderHashSchema).valid;
-        return isValidOrderHash;
+        return isValidOrderHash(orderHash);
     }
     /**
      * A unit amount is defined as the amount of a token above the specified decimal places (integer part).
@@ -133,57 +125,21 @@ export class ZeroEx {
         return baseUnitAmount;
     }
     /**
-     * Computes the orderHash for a supplied order.
-     * @param   order   An object that conforms to the Order or SignedOrder interface definitions.
-     * @return  The resulting orderHash from hashing the supplied order.
-     */
-    @decorators.syncZeroExErrorHandler
-    public static getOrderHashHex(order: Order | SignedOrder): string {
-        assert.doesConformToSchema('order', order, schemas.orderSchema);
-        const orderHashHex = utils.getOrderHashHex(order);
-        return orderHashHex;
-    }
-    /**
      * Instantiates a new ZeroEx instance that provides the public interface to the 0x.js library.
      * @param   provider    The Provider instance you would like the 0x.js library to use for interacting with
      *                      the Ethereum network.
      * @param   config      The configuration object. Look up the type for the description.
      * @return  An instance of the 0x.js ZeroEx class.
      */
-    constructor(provider: Provider, config: ZeroExConfig) {
+    constructor(provider: Provider, config: ContractWrappersConfig) {
         assert.isWeb3Provider('provider', provider);
-        assert.doesConformToSchema('config', config, zeroExConfigSchema, [
-            zeroExPrivateNetworkConfigSchema,
-            zeroExPublicNetworkConfigSchema,
-        ]);
-        const artifactJSONs = _.values(artifacts);
-        const abiArrays = _.map(artifactJSONs, artifact => artifact.abi);
-        const defaults = {
-            gasPrice: config.gasPrice,
-        };
-        this._web3Wrapper = new Web3Wrapper(provider, defaults);
-        _.forEach(abiArrays, abi => {
-            this._web3Wrapper.abiDecoder.addABI(abi);
-        });
-        this.proxy = new TokenTransferProxyWrapper(
-            this._web3Wrapper,
-            config.networkId,
-            config.tokenTransferProxyContractAddress,
-        );
-        this.token = new TokenWrapper(this._web3Wrapper, config.networkId, this.proxy);
-        this.exchange = new ExchangeWrapper(
-            this._web3Wrapper,
-            config.networkId,
-            this.token,
-            config.exchangeContractAddress,
-            config.zrxContractAddress,
-        );
-        this.tokenRegistry = new TokenRegistryWrapper(
-            this._web3Wrapper,
-            config.networkId,
-            config.tokenRegistryContractAddress,
-        );
-        this.etherToken = new EtherTokenWrapper(this._web3Wrapper, config.networkId, this.token);
+        this._contractWrappers = new ContractWrappers(provider, config);
+
+        this.proxy = this._contractWrappers.proxy;
+        this.token = this._contractWrappers.token;
+        this.exchange = this._contractWrappers.exchange;
+        this.tokenRegistry = this._contractWrappers.tokenRegistry;
+        this.etherToken = this._contractWrappers.etherToken;
     }
     /**
      * Sets a new web3 provider for 0x.js. Updating the provider will stop all
@@ -192,24 +148,23 @@ export class ZeroEx {
      * @param   networkId   The id of the network your provider is connected to
      */
     public setProvider(provider: Provider, networkId: number): void {
-        this._web3Wrapper.setProvider(provider);
-        (this.exchange as any)._invalidateContractInstances();
-        (this.exchange as any)._setNetworkId(networkId);
-        (this.tokenRegistry as any)._invalidateContractInstance();
-        (this.tokenRegistry as any)._setNetworkId(networkId);
-        (this.token as any)._invalidateContractInstances();
-        (this.token as any)._setNetworkId(networkId);
-        (this.proxy as any)._invalidateContractInstance();
-        (this.proxy as any)._setNetworkId(networkId);
-        (this.etherToken as any)._invalidateContractInstance();
-        (this.etherToken as any)._setNetworkId(networkId);
+        this._contractWrappers.setProvider(provider, networkId);
+    }
+    /**
+     * Get the provider instance currently used by 0x.js
+     * @return  Web3 provider instance
+     */
+    public getProvider(): Provider {
+        return this._contractWrappers.getProvider();
     }
     /**
      * Get user Ethereum addresses available through the supplied web3 provider available for sending transactions.
      * @return  An array of available user Ethereum addresses.
      */
     public async getAvailableAddressesAsync(): Promise<string[]> {
-        const availableAddresses = await this._web3Wrapper.getAvailableAddressesAsync();
+        // Hack: Get Web3Wrapper from ContractWrappers
+        const web3Wrapper: Web3Wrapper = (this._contractWrappers as any)._web3Wrapper;
+        const availableAddresses = await web3Wrapper.getAvailableAddressesAsync();
         return availableAddresses;
     }
     /**
@@ -229,41 +184,12 @@ export class ZeroEx {
         signerAddress: string,
         shouldAddPersonalMessagePrefix: boolean,
     ): Promise<ECSignature> {
-        assert.isHexString('orderHash', orderHash);
-        await assert.isSenderAddressAsync('signerAddress', signerAddress, this._web3Wrapper);
-        const normalizedSignerAddress = signerAddress.toLowerCase();
-
-        let msgHashHex = orderHash;
-        if (shouldAddPersonalMessagePrefix) {
-            const orderHashBuff = ethUtil.toBuffer(orderHash);
-            const msgHashBuff = ethUtil.hashPersonalMessage(orderHashBuff);
-            msgHashHex = ethUtil.bufferToHex(msgHashBuff);
-        }
-
-        const signature = await this._web3Wrapper.signMessageAsync(normalizedSignerAddress, msgHashHex);
-
-        // HACK: There is no consensus on whether the signatureHex string should be formatted as
-        // v + r + s OR r + s + v, and different clients (even different versions of the same client)
-        // return the signature params in different orders. In order to support all client implementations,
-        // we parse the signature in both ways, and evaluate if either one is a valid signature.
-        const validVParamValues = [27, 28];
-        const ecSignatureVRS = signatureUtils.parseSignatureHexAsVRS(signature);
-        if (_.includes(validVParamValues, ecSignatureVRS.v)) {
-            const isValidVRSSignature = ZeroEx.isValidSignature(orderHash, ecSignatureVRS, normalizedSignerAddress);
-            if (isValidVRSSignature) {
-                return ecSignatureVRS;
-            }
-        }
-
-        const ecSignatureRSV = signatureUtils.parseSignatureHexAsRSV(signature);
-        if (_.includes(validVParamValues, ecSignatureRSV.v)) {
-            const isValidRSVSignature = ZeroEx.isValidSignature(orderHash, ecSignatureRSV, normalizedSignerAddress);
-            if (isValidRSVSignature) {
-                return ecSignatureRSV;
-            }
-        }
-
-        throw new Error(ZeroExError.InvalidSignature);
+        return signOrderHashAsync(
+            this._contractWrappers.getProvider(),
+            orderHash,
+            signerAddress,
+            shouldAddPersonalMessagePrefix,
+        );
     }
     /**
      * Waits for a transaction to be mined and returns the transaction receipt.
@@ -277,7 +203,9 @@ export class ZeroEx {
         pollingIntervalMs = 1000,
         timeoutMs?: number,
     ): Promise<TransactionReceiptWithDecodedLogs> {
-        const transactionReceiptWithDecodedLogs = await this._web3Wrapper.awaitTransactionMinedAsync(
+        // Hack: Get Web3Wrapper from ContractWrappers
+        const web3Wrapper: Web3Wrapper = (this._contractWrappers as any)._web3Wrapper;
+        const transactionReceiptWithDecodedLogs = await web3Wrapper.awaitTransactionMinedAsync(
             txHash,
             pollingIntervalMs,
             timeoutMs,
@@ -285,22 +213,17 @@ export class ZeroEx {
         return transactionReceiptWithDecodedLogs;
     }
     /**
-     * Instantiates and returns a new OrderStateWatcher instance.
+     * Instantiates and returns a new OrderWatcher instance.
      * Defaults to watching the pending state.
      * @param   config      The configuration object. Look up the type for the description.
-     * @return  An instance of the 0x.js OrderStateWatcher class.
+     * @return  An instance of the 0x.js OrderWatcher class.
      */
-    public createOrderStateWatcher(config?: OrderStateWatcherConfig) {
-        return new OrderStateWatcher(this._web3Wrapper, this.token, this.exchange, config);
-    }
-    /*
-     * HACK: `TokenWrapper` needs a token transfer proxy address. `TokenTransferProxy` address is fetched from
-     * an `ExchangeWrapper`. `ExchangeWrapper` needs `TokenWrapper` to validate orders, creating a dependency cycle.
-     * In order to break this - we create this function here and pass it as a parameter to the `TokenWrapper`
-     * and `ProxyWrapper`.
-     */
-    private async _getTokenTransferProxyAddressAsync(): Promise<string> {
-        const tokenTransferProxyAddress = await (this.exchange as any)._getTokenTransferProxyAddressAsync();
-        return tokenTransferProxyAddress;
+    public async createOrderWatcherAsync(config?: OrderWatcherConfig): Promise<OrderWatcher> {
+        // Hack: Get Web3Wrapper from ContractWrappers
+        const web3Wrapper: Web3Wrapper = (this._contractWrappers as any)._web3Wrapper;
+        const networkId = await web3Wrapper.getNetworkIdAsync();
+        const provider = this._contractWrappers.getProvider();
+        const orderWatcher = new OrderWatcher(provider, networkId, config);
+        return orderWatcher;
     }
 }

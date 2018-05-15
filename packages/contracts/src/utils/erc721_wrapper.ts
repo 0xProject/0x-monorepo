@@ -1,5 +1,4 @@
 import { ZeroEx } from '0x.js';
-import { Deployer } from '@0xproject/deployer';
 import { Provider } from '@0xproject/types';
 import { BigNumber } from '@0xproject/utils';
 import * as _ from 'lodash';
@@ -7,42 +6,42 @@ import * as _ from 'lodash';
 import { DummyERC721TokenContract } from '../contract_wrappers/generated/dummy_e_r_c721_token';
 import { ERC721ProxyContract } from '../contract_wrappers/generated/e_r_c721_proxy';
 
+import { artifacts } from './artifacts';
 import { constants } from './constants';
-import { ContractName, ERC721TokenIdsByOwner } from './types';
+import { ERC721TokenIdsByOwner } from './types';
+import { txDefaults } from './web3_wrapper';
 
 export class ERC721Wrapper {
     private _tokenOwnerAddresses: string[];
     private _contractOwnerAddress: string;
-    private _deployer: Deployer;
     private _provider: Provider;
     private _dummyTokenContracts?: DummyERC721TokenContract[];
     private _proxyContract?: ERC721ProxyContract;
     private _initialTokenIdsByOwner: ERC721TokenIdsByOwner = {};
-    constructor(deployer: Deployer, provider: Provider, tokenOwnerAddresses: string[], contractOwnerAddress: string) {
-        this._deployer = deployer;
+    constructor(provider: Provider, tokenOwnerAddresses: string[], contractOwnerAddress: string) {
         this._provider = provider;
         this._tokenOwnerAddresses = tokenOwnerAddresses;
         this._contractOwnerAddress = contractOwnerAddress;
     }
     public async deployDummyTokensAsync(): Promise<DummyERC721TokenContract[]> {
-        const tokenContractInstances = await Promise.all(
+        this._dummyTokenContracts = await Promise.all(
             _.times(constants.NUM_DUMMY_ERC721_TO_DEPLOY, () =>
-                this._deployer.deployAsync(ContractName.DummyERC721Token, constants.DUMMY_ERC721_TOKEN_ARGS),
+                DummyERC721TokenContract.deployFrom0xArtifactAsync(
+                    artifacts.DummyERC721Token,
+                    this._provider,
+                    txDefaults,
+                    constants.DUMMY_TOKEN_NAME,
+                    constants.DUMMY_TOKEN_SYMBOL,
+                ),
             ),
-        );
-        this._dummyTokenContracts = _.map(
-            tokenContractInstances,
-            tokenContractInstance =>
-                new DummyERC721TokenContract(tokenContractInstance.abi, tokenContractInstance.address, this._provider),
         );
         return this._dummyTokenContracts;
     }
     public async deployProxyAsync(): Promise<ERC721ProxyContract> {
-        const proxyContractInstance = await this._deployer.deployAsync(ContractName.ERC721Proxy);
-        this._proxyContract = new ERC721ProxyContract(
-            proxyContractInstance.abi,
-            proxyContractInstance.address,
+        this._proxyContract = await ERC721ProxyContract.deployFrom0xArtifactAsync(
+            artifacts.ERC721Proxy,
             this._provider,
+            txDefaults,
         );
         return this._proxyContract;
     }

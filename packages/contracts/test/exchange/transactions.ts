@@ -9,7 +9,9 @@ import * as Web3 from 'web3';
 import { DummyERC20TokenContract } from '../../src/contract_wrappers/generated/dummy_e_r_c20_token';
 import { ERC20ProxyContract } from '../../src/contract_wrappers/generated/e_r_c20_proxy';
 import { ExchangeContract } from '../../src/contract_wrappers/generated/exchange';
+import { artifacts } from '../../src/utils/artifacts';
 import { assetProxyUtils } from '../../src/utils/asset_proxy_utils';
+import { chaiSetup } from '../../src/utils/chai_setup';
 import { constants } from '../../src/utils/constants';
 import { ERC20Wrapper } from '../../src/utils/erc20_wrapper';
 import { ExchangeWrapper } from '../../src/utils/exchange_wrapper';
@@ -18,7 +20,6 @@ import { orderUtils } from '../../src/utils/order_utils';
 import { TransactionFactory } from '../../src/utils/transaction_factory';
 import {
     AssetProxyId,
-    ContractName,
     ERC20BalancesByOwner,
     ExchangeContractErrs,
     OrderStruct,
@@ -26,9 +27,7 @@ import {
     SignedOrder,
     SignedTransaction,
 } from '../../src/utils/types';
-import { chaiSetup } from '../utils/chai_setup';
-import { deployer } from '../utils/deployer';
-import { provider, web3Wrapper } from '../utils/web3_wrapper';
+import { provider, txDefaults, web3Wrapper } from '../../src/utils/web3_wrapper';
 
 chaiSetup.configure();
 const expect = chai.expect;
@@ -66,16 +65,18 @@ describe('Exchange transactions', () => {
         const accounts = await web3Wrapper.getAvailableAddressesAsync();
         const usedAddresses = ([owner, senderAddress, makerAddress, takerAddress, feeRecipientAddress] = accounts);
 
-        erc20Wrapper = new ERC20Wrapper(deployer, provider, usedAddresses, owner);
+        erc20Wrapper = new ERC20Wrapper(provider, usedAddresses, owner);
 
         [erc20TokenA, erc20TokenB, zrxToken] = await erc20Wrapper.deployDummyTokensAsync();
         erc20Proxy = await erc20Wrapper.deployProxyAsync();
         await erc20Wrapper.setBalancesAndAllowancesAsync();
 
-        const exchangeInstance = await deployer.deployAsync(ContractName.Exchange, [
+        exchange = await ExchangeContract.deployFrom0xArtifactAsync(
+            artifacts.Exchange,
+            provider,
+            txDefaults,
             assetProxyUtils.encodeERC20ProxyData(zrxToken.address),
-        ]);
-        exchange = new ExchangeContract(exchangeInstance.abi, exchangeInstance.address, provider);
+        );
         zeroEx = new ZeroEx(provider, {
             exchangeContractAddress: exchange.address,
             networkId: constants.TESTRPC_NETWORK_ID,

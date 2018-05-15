@@ -30,10 +30,11 @@ const docIdToSubpackageName: { [id: string]: string } = {
     [DocPackages.Connect]: 'connect',
     [DocPackages.SmartContracts]: 'contracts',
     [DocPackages.Web3Wrapper]: 'web3-wrapper',
-    [DocPackages.Deployer]: 'deployer',
+    [DocPackages.SolCompiler]: 'sol-compiler',
     [DocPackages.JSONSchemas]: 'json-schemas',
     [DocPackages.SolCov]: 'sol-cov',
     [DocPackages.Subproviders]: 'subproviders',
+    [DocPackages.OrderUtils]: 'order-utils',
 };
 
 export interface DocPageProps {

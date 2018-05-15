@@ -10,13 +10,12 @@ import { DummyERC721TokenContract } from '../../src/contract_wrappers/generated/
 import { ERC20ProxyContract } from '../../src/contract_wrappers/generated/e_r_c20_proxy';
 import { ERC721ProxyContract } from '../../src/contract_wrappers/generated/e_r_c721_proxy';
 import { assetProxyUtils } from '../../src/utils/asset_proxy_utils';
+import { chaiSetup } from '../../src/utils/chai_setup';
 import { constants } from '../../src/utils/constants';
 import { ERC20Wrapper } from '../../src/utils/erc20_wrapper';
 import { ERC721Wrapper } from '../../src/utils/erc721_wrapper';
-import { AssetProxyId, ContractName } from '../../src/utils/types';
-import { chaiSetup } from '../utils/chai_setup';
-import { deployer } from '../utils/deployer';
-import { provider, web3Wrapper } from '../utils/web3_wrapper';
+import { AssetProxyId } from '../../src/utils/types';
+import { provider, web3Wrapper } from '../../src/utils/web3_wrapper';
 
 chaiSetup.configure();
 const expect = chai.expect;
@@ -44,8 +43,8 @@ describe('Asset Transfer Proxies', () => {
         const accounts = await web3Wrapper.getAvailableAddressesAsync();
         const usedAddresses = ([owner, notAuthorized, exchangeAddress, makerAddress, takerAddress] = accounts);
 
-        erc20Wrapper = new ERC20Wrapper(deployer, provider, usedAddresses, owner);
-        erc721Wrapper = new ERC721Wrapper(deployer, provider, usedAddresses, owner);
+        erc20Wrapper = new ERC20Wrapper(provider, usedAddresses, owner);
+        erc721Wrapper = new ERC721Wrapper(provider, usedAddresses, owner);
 
         [zrxToken] = await erc20Wrapper.deployDummyTokensAsync();
         erc20Proxy = await erc20Wrapper.deployProxyAsync();

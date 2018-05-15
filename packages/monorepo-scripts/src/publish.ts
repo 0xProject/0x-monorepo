@@ -32,14 +32,21 @@ const packageNameToWebsitePath: { [name: string]: string } = {
     contracts: 'contracts',
     connect: 'connect',
     'json-schemas': 'json-schemas',
-    deployer: 'deployer',
+    'sol-compiler': 'sol-compiler',
     'sol-cov': 'sol-cov',
     subproviders: 'subproviders',
+    'order-utils': 'order-utils',
 };
 
 (async () => {
+    const hasRequiredSetup = await checkPublishRequiredSetupAsync();
+    if (!hasRequiredSetup) {
+        return; // abort
+    }
+
     // Fetch public, updated Lerna packages
-    const updatedPublicLernaPackages = await getUpdatedPublicLernaPackagesAsync();
+    const shouldIncludePrivate = false;
+    const updatedPublicLernaPackages = await utils.getUpdatedLernaPackagesAsync(shouldIncludePrivate);
 
     await confirmDocPagesRenderAsync(updatedPublicLernaPackages);
 
@@ -107,6 +114,54 @@ package.ts. Please add an entry for it and try again.`,
     }
 }
 
+async function checkPublishRequiredSetupAsync(): Promise<boolean> {
+    // check to see if logged into npm before publishing
+    try {
+        // HACK: for some reason on some setups, the `npm whoami` will not recognize a logged-in user
+        // unless run with `sudo` (i.e Fabio's NVM setup) but is fine for others (Jacob's N setup).
+        await execAsync(`sudo npm whoami`);
+    } catch (err) {
+        utils.log('You must be logged into npm in the commandline to publish. Run `npm login` and try again.');
+        return false;
+    }
+
+    // Check to see if Git personal token setup
+    if (_.isUndefined(constants.githubPersonalAccessToken)) {
+        utils.log(
+            'You must have a Github personal access token set to an envVar named `GITHUB_PERSONAL_ACCESS_TOKEN_0X_JS`. Add it then try again.',
+        );
+        return false;
+    }
+
+    // Check Yarn version is 1.X
+    const result = await execAsync(`yarn --version`);
+    const version = result.stdout;
+    const versionSegments = version.split('.');
+    const majorVersion = _.parseInt(versionSegments[0]);
+    if (majorVersion < 1) {
+        utils.log('Your yarn version must be v1.x or higher. Upgrade yarn and try again.');
+        return false;
+    }
+
+    // Check that `aws` commandline tool is installed
+    try {
+        await execAsync(`aws help`);
+    } catch (err) {
+        utils.log('You must have `awscli` commandline tool installed. Install it and try again.');
+        return false;
+    }
+
+    // Check that `aws` credentials are setup
+    try {
+        await execAsync(`aws sts get-caller-identity`);
+    } catch (err) {
+        utils.log('You must setup your AWS credentials by running `aws configure`. Do this and try again.');
+        return false;
+    }
+
+    return true;
+}
+
 async function pushChangelogsToGithubAsync() {
     await execAsync(`git add . --all`, { cwd: constants.monorepoRootPath });
     await execAsync(`git commit -m "Updated CHANGELOGS"`, { cwd: constants.monorepoRootPath });
@@ -114,23 +169,12 @@ async function pushChangelogsToGithubAsync() {
     utils.log(`Pushed CHANGELOG updates to Github`);
 }
 
-async function getUpdatedPublicLernaPackagesAsync(): Promise<LernaPackage[]> {
-    const updatedPublicPackages = await getPublicLernaUpdatedPackagesAsync();
-    const updatedPackageNames = _.map(updatedPublicPackages, pkg => pkg.name);
-
-    const allLernaPackages = lernaGetPackages(constants.monorepoRootPath);
-    const updatedPublicLernaPackages = _.filter(allLernaPackages, pkg => {
-        return _.includes(updatedPackageNames, pkg.package.name);
-    });
-    return updatedPublicLernaPackages;
-}
-
 async function updateChangeLogsAsync(updatedPublicLernaPackages: LernaPackage[]): Promise<PackageToVersionChange> {
     const packageToVersionChange: PackageToVersionChange = {};
     for (const lernaPackage of updatedPublicLernaPackages) {
         const packageName = lernaPackage.package.name;
         const changelogJSONPath = path.join(lernaPackage.location, 'CHANGELOG.json');
-        const changelogJSON = getChangelogJSONOrCreateIfMissing(lernaPackage.package.name, changelogJSONPath);
+        const changelogJSON = utils.getChangelogJSONOrCreateIfMissing(changelogJSONPath);
         let changelogs: Changelog[];
         try {
             changelogs = JSON.parse(changelogJSON);
@@ -170,7 +214,7 @@ async function updateChangeLogsAsync(updatedPublicLernaPackages: LernaPackage[])
         }
 
         // Save updated CHANGELOG.json
-        fs.writeFileSync(changelogJSONPath, JSON.stringify(changelogs, null, 4));
+        fs.writeFileSync(changelogJSONPath, JSON.stringify(changelogs, null, '\t'));
         await utils.prettifyAsync(changelogJSONPath, constants.monorepoRootPath);
         utils.log(`${packageName}: Updated CHANGELOG.json`);
         // Generate updated CHANGELOG.md
@@ -225,13 +269,6 @@ async function lernaPublishAsync(packageToVersionChange: { [name: string]: strin
     });
 }
 
-async function getPublicLernaUpdatedPackagesAsync(): Promise<UpdatedPackage[]> {
-    const result = await execAsync(`${LERNA_EXECUTABLE} updated --json`, { cwd: constants.monorepoRootPath });
-    const updatedPackages = JSON.parse(result.stdout);
-    const updatedPublicPackages = _.filter(updatedPackages, updatedPackage => !updatedPackage.private);
-    return updatedPublicPackages;
-}
-
 function updateVersionNumberIfNeeded(currentVersion: string, proposedNextVersion: string) {
     if (proposedNextVersion === currentVersion) {
         return utils.getNextPatchVersion(currentVersion);
@@ -241,19 +278,6 @@ function updateVersionNumberIfNeeded(currentVersion: string, proposedNextVersion
         return utils.getNextPatchVersion(currentVersion);
     }
     return proposedNextVersion;
-}
-
-function getChangelogJSONOrCreateIfMissing(packageName: string, changelogPath: string): string {
-    let changelogJSON: string;
-    try {
-        changelogJSON = fs.readFileSync(changelogPath, 'utf-8');
-        return changelogJSON;
-    } catch (err) {
-        // If none exists, create new, empty one.
-        const emptyChangelogJSON = JSON.stringify([], null, 4);
-        fs.writeFileSync(changelogPath, emptyChangelogJSON);
-        return emptyChangelogJSON;
-    }
 }
 
 function shouldAddNewChangelogEntry(currentVersion: string, changelogs: Changelog[]): boolean {

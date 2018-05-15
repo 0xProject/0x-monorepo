@@ -103,22 +103,6 @@ export enum ContractName {
     Authorizable = 'Authorizable',
 }
 
-export interface Artifact {
-    contract_name: ContractName;
-    networks: {
-        [networkId: number]: {
-            abi: ContractAbi;
-            solc_version: string;
-            keccak256: string;
-            optimizer_enabled: number;
-            unlinked_binary: string;
-            updated_at: number;
-            address: string;
-            constructor_args: string;
-        };
-    };
-}
-
 export interface SignedOrder extends UnsignedOrder {
     signature: string;
 }

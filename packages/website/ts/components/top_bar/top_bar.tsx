@@ -8,7 +8,7 @@ import * as React from 'react';
 import { Link } from 'react-router-dom';
 import ReactTooltip = require('react-tooltip');
 import { Blockchain } from 'ts/blockchain';
-import { PortalMenu } from 'ts/components/portal_menu';
+import { LegacyPortalMenu } from 'ts/components/legacy_portal/legacy_portal_menu';
 import { SidebarHeader } from 'ts/components/sidebar_header';
 import { ProviderDisplay } from 'ts/components/top_bar/provider_display';
 import { TopBarMenuItem } from 'ts/components/top_bar/top_bar_menu_item';
@@ -19,7 +19,12 @@ import { Deco, Key, ProviderType, WebsiteLegacyPaths, WebsitePaths } from 'ts/ty
 import { constants } from 'ts/utils/constants';
 import { Translate } from 'ts/utils/translate';
 
-interface TopBarProps {
+export enum TopBarDisplayType {
+    Default,
+    Expanded,
+}
+
+export interface TopBarProps {
     userAddress?: string;
     networkId?: number;
     injectedProviderName?: string;
@@ -34,7 +39,7 @@ interface TopBarProps {
     availableDocVersions?: string[];
     menu?: DocsMenu;
     menuSubsectionsBySection?: MenuSubsectionsBySection;
-    shouldFullWidth?: boolean;
+    displayType?: TopBarDisplayType;
     docsInfo?: DocsInfo;
     style?: React.CSSProperties;
     isNightVersion?: boolean;
@@ -47,17 +52,8 @@ interface TopBarState {
 }
 
 const styles: Styles = {
-    address: {
-        marginRight: 12,
-        overflow: 'hidden',
-        paddingTop: 4,
-        textOverflow: 'ellipsis',
-        whiteSpace: 'nowrap',
-        width: 70,
-    },
     topBar: {
-        backgroundcolor: colors.white,
-        height: 59,
+        backgroundColor: colors.white,
         width: '100%',
         position: 'relative',
         top: 0,
@@ -78,12 +74,19 @@ const styles: Styles = {
     },
 };
 
+const DEFAULT_HEIGHT = 59;
+const EXPANDED_HEIGHT = 75;
+
 export class TopBar extends React.Component<TopBarProps, TopBarState> {
     public static defaultProps: Partial<TopBarProps> = {
-        shouldFullWidth: false,
+        displayType: TopBarDisplayType.Default,
         style: {},
         isNightVersion: false,
     };
+    public static heightForDisplayType(displayType: TopBarDisplayType) {
+        const result = displayType === TopBarDisplayType.Expanded ? EXPANDED_HEIGHT : DEFAULT_HEIGHT;
+        return result + 1;
+    }
     constructor(props: TopBarProps) {
         super(props);
         this.state = {
@@ -92,8 +95,9 @@ export class TopBar extends React.Component<TopBarProps, TopBarState> {
     }
     public render() {
         const isNightVersion = this.props.isNightVersion;
-        const isFullWidthPage = this.props.shouldFullWidth;
-        const parentClassNames = `flex mx-auto ${isFullWidthPage ? 'pl2' : 'max-width-4'}`;
+        const isExpandedDisplayType = this.props.displayType === TopBarDisplayType.Expanded;
+        const parentClassNames = `flex mx-auto ${isExpandedDisplayType ? 'pl3 py1' : 'max-width-4'}`;
+        const height = isExpandedDisplayType ? EXPANDED_HEIGHT : DEFAULT_HEIGHT;
         const developerSectionMenuItems = [
             <Link key="subMenuItem-zeroEx" to={WebsitePaths.ZeroExJs} className="text-decoration-none">
                 <MenuItem style={{ fontSize: styles.menuItem.fontSize }} primaryText="0x.js" />
@@ -139,10 +143,16 @@ export class TopBar extends React.Component<TopBarProps, TopBarState> {
                     primaryText={this.props.translate.get(Key.Web3Wrapper, Deco.CapWords)}
                 />
             </Link>,
-            <Link key="subMenuItem-deployer" to={WebsitePaths.Deployer} className="text-decoration-none">
+            <Link key="subMenuItem-order-utils" to={WebsitePaths.OrderUtils} className="text-decoration-none">
                 <MenuItem
                     style={{ fontSize: styles.menuItem.fontSize }}
-                    primaryText={this.props.translate.get(Key.Deployer, Deco.CapWords)}
+                    primaryText={this.props.translate.get(Key.OrderUtils, Deco.CapWords)}
+                />
+            </Link>,
+            <Link key="subMenuItem-sol-compiler" to={WebsitePaths.SolCompiler} className="text-decoration-none">
+                <MenuItem
+                    style={{ fontSize: styles.menuItem.fontSize }}
+                    primaryText={this.props.translate.get(Key.SolCompiler, Deco.CapWords)}
                 />
             </Link>,
             <Link key="subMenuItem-sol-cov" to={WebsitePaths.SolCov} className="text-decoration-none">
@@ -172,9 +182,11 @@ export class TopBar extends React.Component<TopBarProps, TopBarState> {
             </a>,
         ];
         const bottomBorderStyle = this._shouldDisplayBottomBar() ? styles.bottomBar : {};
-        const fullWidthClasses = isFullWidthPage ? 'pr4' : '';
+        const fullWidthClasses = isExpandedDisplayType ? 'pr4' : '';
         const logoUrl = isNightVersion ? '/images/protocol_logo_white.png' : '/images/protocol_logo_black.png';
-        const menuClasses = `col col-${isFullWidthPage ? '4' : '5'} ${fullWidthClasses} lg-pr0 md-pr2 sm-hide xs-hide`;
+        const menuClasses = `col col-${
+            isExpandedDisplayType ? '4' : '5'
+        } ${fullWidthClasses} lg-pr0 md-pr2 sm-hide xs-hide`;
         const menuIconStyle = {
             fontSize: 25,
             color: isNightVersion ? 'white' : 'black',
@@ -191,15 +203,15 @@ export class TopBar extends React.Component<TopBarProps, TopBarState> {
         );
         const popoverContent = <Menu style={{ color: colors.darkGrey }}>{developerSectionMenuItems}</Menu>;
         return (
-            <div style={{ ...styles.topBar, ...bottomBorderStyle, ...this.props.style }} className="pb1">
+            <div style={{ ...styles.topBar, ...bottomBorderStyle, ...this.props.style, ...{ height } }} className="pb1">
                 <div className={parentClassNames}>
-                    <div className="col col-2 sm-pl2 md-pl2 lg-pl0" style={{ paddingTop: 15 }}>
+                    <div className="col col-2 sm-pl1 md-pl2 lg-pl0" style={{ paddingTop: 15 }}>
                         <Link to={`${WebsitePaths.Home}`} className="text-decoration-none">
                             <img src={logoUrl} height="30" />
                         </Link>
                     </div>
-                    <div className={`col col-${isFullWidthPage ? '8' : '9'} lg-hide md-hide`} />
-                    <div className={`col col-${isFullWidthPage ? '6' : '5'} sm-hide xs-hide`} />
+                    <div className={`col col-${isExpandedDisplayType ? '8' : '9'} lg-hide md-hide`} />
+                    <div className={`col col-${isExpandedDisplayType ? '6' : '5'} sm-hide xs-hide`} />
                     {!this._isViewingPortal() && (
                         <div className={menuClasses}>
                             <div className="flex justify-between">
@@ -236,7 +248,7 @@ export class TopBar extends React.Component<TopBarProps, TopBarState> {
                                     path={`${WebsitePaths.Portal}`}
                                     isPrimary={true}
                                     style={styles.menuItem}
-                                    className={`${isFullWidthPage && 'md-hide'}`}
+                                    className={`${isExpandedDisplayType && 'md-hide'}`}
                                     isNightVersion={isNightVersion}
                                     isExternal={false}
                                 />
@@ -244,7 +256,7 @@ export class TopBar extends React.Component<TopBarProps, TopBarState> {
                         </div>
                     )}
                     {this.props.blockchainIsLoaded && (
-                        <div className="sm-hide xs-hide col col-5">
+                        <div className="sm-hide xs-hide col col-5" style={{ paddingTop: 8, marginRight: 36 }}>
                             <ProviderDisplay
                                 dispatcher={this.props.dispatcher}
                                 userAddress={this.props.userAddress}
@@ -256,7 +268,7 @@ export class TopBar extends React.Component<TopBarProps, TopBarState> {
                             />
                         </div>
                     )}
-                    <div className={`col ${isFullWidthPage ? 'col-2 pl2' : 'col-1'} md-hide lg-hide`}>
+                    <div className={`col ${isExpandedDisplayType ? 'col-2 pl2' : 'col-1'} md-hide lg-hide`}>
                         <div style={menuIconStyle}>
                             <i className="zmdi zmdi-menu" onClick={this._onMenuButtonClick.bind(this)} />
                         </div>
@@ -316,10 +328,10 @@ export class TopBar extends React.Component<TopBarProps, TopBarState> {
                             </MenuItem>
                         </Link>
                     )}
-                    {!this._isViewingDeployerDocs() && (
-                        <Link to={WebsitePaths.Deployer} className="text-decoration-none">
+                    {!this._isViewingSolCompilerDocs() && (
+                        <Link to={WebsitePaths.SolCompiler} className="text-decoration-none">
                             <MenuItem className="py2">
-                                {this.props.translate.get(Key.Deployer, Deco.Cap)}{' '}
+                                {this.props.translate.get(Key.SolCompiler, Deco.Cap)}{' '}
                                 {this.props.translate.get(Key.Docs, Deco.Cap)}
                             </MenuItem>
                         </Link>
@@ -378,7 +390,7 @@ export class TopBar extends React.Component<TopBarProps, TopBarState> {
             (!this._isViewing0xjsDocs() &&
                 !this._isViewingSmartContractsDocs() &&
                 !this._isViewingWeb3WrapperDocs() &&
-                !this._isViewingDeployerDocs() &&
+                !this._isViewingSolCompilerDocs() &&
                 !this._isViewingJsonSchemasDocs() &&
                 !this._isViewingSolCovDocs() &&
                 !this._isViewingSubprovidersDocs() &&
@@ -431,22 +443,7 @@ export class TopBar extends React.Component<TopBarProps, TopBarState> {
                 <div className="pl1 py1" style={{ backgroundColor: colors.lightGrey }}>
                     {this.props.translate.get(Key.PortalDApp, Deco.CapWords)}
                 </div>
-                <PortalMenu menuItemStyle={{ color: 'black' }} onClick={this._onMenuButtonClick.bind(this)} />
-            </div>
-        );
-    }
-    private _renderUser() {
-        const userAddress = this.props.userAddress;
-        const identiconDiameter = 26;
-        return (
-            <div className="flex right lg-pr0 md-pr2 sm-pr2" style={{ paddingTop: 16 }}>
-                <div style={styles.address} data-tip={true} data-for="userAddressTooltip">
-                    {!_.isEmpty(userAddress) ? userAddress : ''}
-                </div>
-                <ReactTooltip id="userAddressTooltip">{userAddress}</ReactTooltip>
-                <div>
-                    <Identicon address={userAddress} diameter={identiconDiameter} />
-                </div>
+                <LegacyPortalMenu menuItemStyle={{ color: 'black' }} onClick={this._onMenuButtonClick.bind(this)} />
             </div>
         );
     }
@@ -479,8 +476,8 @@ export class TopBar extends React.Component<TopBarProps, TopBarState> {
             _.includes(this.props.location.pathname, WebsiteLegacyPaths.Web3Wrapper)
         );
     }
-    private _isViewingDeployerDocs() {
-        return _.includes(this.props.location.pathname, WebsitePaths.Deployer);
+    private _isViewingSolCompilerDocs() {
+        return _.includes(this.props.location.pathname, WebsitePaths.SolCompiler);
     }
     private _isViewingJsonSchemasDocs() {
         return _.includes(this.props.location.pathname, WebsitePaths.JSONSchemas);
@@ -501,11 +498,12 @@ export class TopBar extends React.Component<TopBarProps, TopBarState> {
             this._isViewingFAQ() ||
             this._isViewingSmartContractsDocs() ||
             this._isViewingWeb3WrapperDocs() ||
-            this._isViewingDeployerDocs() ||
+            this._isViewingSolCompilerDocs() ||
             this._isViewingJsonSchemasDocs() ||
             this._isViewingSolCovDocs() ||
             this._isViewingSubprovidersDocs() ||
-            this._isViewingConnectDocs()
+            this._isViewingConnectDocs() ||
+            this._isViewingPortal()
         );
     }
 } // tslint:disable:max-file-line-count

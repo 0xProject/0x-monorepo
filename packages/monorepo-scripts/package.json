@@ -1,19 +1,21 @@
 {
     "name": "@0xproject/monorepo-scripts",
-    "version": "0.1.18",
+    "version": "0.1.19",
     "description": "Helper scripts for the monorepo",
     "main": "lib/index.js",
     "types": "lib/index.d.ts",
     "scripts": {
         "build:watch": "tsc -w",
-        "lint": "tslint --project . 'src/**/*.ts'",
+        "lint": "tslint --project .",
         "clean": "shx rm -rf lib",
         "build": "tsc",
         "test:publish": "run-s build script:publish",
         "find_unused_deps": "run-s build script:find_unused_deps",
+        "remove_tags": "run-s build script:remove_tags",
         "script:deps_versions": "node ./lib/deps_versions.js",
         "script:publish": "IS_DRY_RUN=true node ./lib/publish.js",
-        "script:find_unused_deps": "node ./lib/find_unused_dependencies.js"
+        "script:find_unused_deps": "node ./lib/find_unused_dependencies.js",
+        "script:remove_tags": "node ./lib/remove_tags.js"
     },
     "repository": {
         "type": "git",

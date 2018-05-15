@@ -4,11 +4,10 @@ import * as chai from 'chai';
 import * as Web3 from 'web3';
 
 import { MixinAuthorizableContract } from '../../src/contract_wrappers/generated/mixin_authorizable';
+import { artifacts } from '../../src/utils/artifacts';
+import { chaiSetup } from '../../src/utils/chai_setup';
 import { constants } from '../../src/utils/constants';
-import { ContractName } from '../../src/utils/types';
-import { chaiSetup } from '../utils/chai_setup';
-import { deployer } from '../utils/deployer';
-import { provider, web3Wrapper } from '../utils/web3_wrapper';
+import { provider, txDefaults, web3Wrapper } from '../../src/utils/web3_wrapper';
 
 chaiSetup.configure();
 const expect = chai.expect;
@@ -23,8 +22,11 @@ describe('Authorizable', () => {
         const accounts = await web3Wrapper.getAvailableAddressesAsync();
         owner = address = accounts[0];
         notOwner = accounts[1];
-        const authorizableInstance = await deployer.deployAsync(ContractName.Authorizable);
-        authorizable = new MixinAuthorizableContract(authorizableInstance.abi, authorizableInstance.address, provider);
+        authorizable = await MixinAuthorizableContract.deployFrom0xArtifactAsync(
+            artifacts.MixinAuthorizable,
+            provider,
+            txDefaults,
+        );
     });
     beforeEach(async () => {
         await blockchainLifecycle.startAsync();

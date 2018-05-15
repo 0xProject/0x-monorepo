@@ -1,0 +1,151 @@
+[
+    {
+        "timestamp": 1525477860,
+        "version": "0.4.3",
+        "changes": [
+            {
+                "note": "Dependencies updated"
+            }
+        ]
+    },
+    {
+        "version": "0.4.2",
+        "changes": [
+            {
+                "note": "Add support for solidity 0.4.23",
+                "pr": 545
+            }
+        ],
+        "timestamp": 1525428773
+    },
+    {
+        "version": "0.4.1",
+        "changes": [
+            {
+                "note": "Add support for solidity 0.4.22",
+                "pr": 531
+            }
+        ],
+        "timestamp": 1524044013
+    },
+    {
+        "version": "0.4.0",
+        "changes": [
+            {
+                "note": "Changed the config key `web3Provider` to `provider` to be consistent with other tools",
+                "pr": 501
+            }
+        ],
+        "timestamp": 1523462196
+    },
+    {
+        "version": "0.3.5",
+        "changes": [
+            {
+                "note": "Don't try to write contract artifact if an error occured",
+                "pr": 485
+            }
+        ],
+        "timestamp": 1522673609
+    },
+    {
+        "version": "0.3.4",
+        "changes": [
+            {
+                "note": "Create solc_bin directory if does not exist before attempting to compile",
+                "pr": 491
+            }
+        ],
+        "timestamp": 1522658513
+    },
+    {
+        "version": "0.3.1",
+        "changes": [
+            {
+                "note": "Add TS types for `yargs`"
+            }
+        ],
+        "timestamp": 1521298800
+    },
+    {
+        "version": "0.3.0",
+        "changes": [
+            {
+                "note": "Add support for Solidity 0.4.20 and 0.4.21"
+            },
+            {
+                "note": "Replace `jsonrpcPort` config with `jsonrpcUrl`",
+                "pr": 426
+            },
+            {
+                "note": "Replace `jsonrpc-port` CLI option with `jsonrpc-url`",
+                "pr": 426
+            },
+            {
+                "note": "Export the `Compiler`",
+                "pr": 426
+            },
+            {
+                "note": "Load solc from remote source instead of having it locally",
+                "pr": 426
+            },
+            {
+                "note":
+                    "Add `bytecode`, `runtime_bytecode`, `source_map`, `source_map_runtime` and `sources` fields to artifacts",
+                "pr": 426
+            },
+            {
+                "note": "Remove 0x-specific `migrate` command",
+                "pr": 426
+            },
+            {
+                "note":
+                    "Allow deployer to accept a provider instead of port and host. This makes it possible to run it with in-process ganache-core",
+                "pr": 426
+            },
+            {
+                "note": "Consolidate all `console.log` calls into `logUtils` in the `@0xproject/utils` package",
+                "pr": 452
+            },
+            {
+                "note": "Add `#!/usr/bin/env node` pragma above `cli.ts` script to fix command-line error."
+            }
+        ],
+        "timestamp": 1521298800
+    },
+    {
+        "version": "0.2.0",
+        "changes": [
+            {
+                "note": "Check dependencies when determining if contracts should be recompiled",
+                "pr": 408
+            },
+            {
+                "note":
+                    "Improve an error message for when deployer is supplied with an incorrect number of constructor arguments",
+                "pr": 419
+            }
+        ],
+        "timestamp": 1520089200
+    },
+    {
+        "version": "0.1.0",
+        "changes": [
+            {
+                "note": "Add the ability to pass in specific contracts to compile in CLI",
+                "pr": 400
+            }
+        ],
+        "timestamp": 1518706800
+    },
+    {
+        "version": "0.0.8",
+        "changes": [
+            {
+                "note": "Fix publishing issue where .npmignore was not properly excluding undesired content",
+                "pr": 389
+            }
+        ],
+        "timestamp": 1518102000
+    }
+]

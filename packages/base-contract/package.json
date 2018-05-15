@@ -1,6 +1,6 @@
 {
     "name": "@0xproject/base-contract",
-    "version": "0.2.1",
+    "version": "0.3.1",
     "description": "0x Base TS contract",
     "main": "lib/src/index.js",
     "types": "lib/src/index.d.ts",
@@ -26,8 +26,8 @@
     },
     "homepage": "https://github.com/0xProject/0x-monorepo/packages/base-contract/README.md",
     "devDependencies": {
-        "@0xproject/monorepo-scripts": "^0.1.18",
-        "@0xproject/tslint-config": "^0.4.16",
+        "@0xproject/monorepo-scripts": "^0.1.19",
+        "@0xproject/tslint-config": "^0.4.17",
         "@types/lodash": "4.14.104",
         "chai": "^4.0.1",
         "copyfiles": "^1.2.0",
@@ -38,10 +38,10 @@
         "typescript": "2.7.1"
     },
     "dependencies": {
-        "@0xproject/types": "^0.6.1",
-        "@0xproject/typescript-typings": "^0.2.0",
-        "@0xproject/utils": "^0.5.2",
-        "@0xproject/web3-wrapper": "^0.6.1",
+        "@0xproject/types": "^0.6.3",
+        "@0xproject/typescript-typings": "^0.3.1",
+        "@0xproject/utils": "^0.6.1",
+        "@0xproject/web3-wrapper": "^0.6.3",
         "ethers": "^3.0.15",
         "lodash": "^4.17.4"
     },

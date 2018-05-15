@@ -8,11 +8,11 @@ import ethUtil = require('ethereumjs-util');
 import * as Web3 from 'web3';
 
 import { TestLibBytesContract } from '../../src/contract_wrappers/generated/test_lib_bytes';
+import { artifacts } from '../../src/utils/artifacts';
+import { chaiSetup } from '../../src/utils/chai_setup';
 import { constants } from '../../src/utils/constants';
-import { AssetProxyId, ContractName } from '../../src/utils/types';
-import { chaiSetup } from '../utils/chai_setup';
-import { deployer } from '../utils/deployer';
-import { provider, web3Wrapper } from '../utils/web3_wrapper';
+import { AssetProxyId } from '../../src/utils/types';
+import { provider, txDefaults, web3Wrapper } from '../../src/utils/web3_wrapper';
 
 chaiSetup.configure();
 const expect = chai.expect;
@@ -38,8 +38,7 @@ describe('LibBytes', () => {
         owner = accounts[0];
         testAddress = accounts[1];
         // Deploy LibBytes
-        const libBytesInstance = await deployer.deployAsync(ContractName.TestLibBytes);
-        libBytes = new TestLibBytesContract(libBytesInstance.abi, libBytesInstance.address, provider);
+        libBytes = await TestLibBytesContract.deployFrom0xArtifactAsync(artifacts.TestLibBytes, provider, txDefaults);
         // Verify lengths of test data
         const byteArrayShorterThan32BytesLength = ethUtil.toBuffer(byteArrayShorterThan32Bytes).byteLength;
         expect(byteArrayShorterThan32BytesLength).to.be.lessThan(32);

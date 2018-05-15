@@ -6,14 +6,14 @@ import ethUtil = require('ethereumjs-util');
 
 import { TestLibsContract } from '../../src/contract_wrappers/generated/test_libs';
 import { addressUtils } from '../../src/utils/address_utils';
+import { artifacts } from '../../src/utils/artifacts';
 import { assetProxyUtils } from '../../src/utils/asset_proxy_utils';
+import { chaiSetup } from '../../src/utils/chai_setup';
 import { constants } from '../../src/utils/constants';
 import { OrderFactory } from '../../src/utils/order_factory';
 import { orderUtils } from '../../src/utils/order_utils';
-import { ContractName, SignedOrder } from '../../src/utils/types';
-import { chaiSetup } from '../utils/chai_setup';
-import { deployer } from '../utils/deployer';
-import { provider, web3Wrapper } from '../utils/web3_wrapper';
+import { SignedOrder } from '../../src/utils/types';
+import { provider, txDefaults, web3Wrapper } from '../../src/utils/web3_wrapper';
 
 chaiSetup.configure();
 const expect = chai.expect;
@@ -28,8 +28,7 @@ describe('Exchange libs', () => {
     before(async () => {
         const accounts = await web3Wrapper.getAvailableAddressesAsync();
         const makerAddress = accounts[0];
-        const libsInstance = await deployer.deployAsync(ContractName.TestLibs);
-        libs = new TestLibsContract(libsInstance.abi, libsInstance.address, provider);
+        libs = await TestLibsContract.deployFrom0xArtifactAsync(artifacts.TestLibs, provider, txDefaults);
         const zeroEx = new ZeroEx(provider, { networkId: constants.TESTRPC_NETWORK_ID });
 
         const defaultOrderParams = {

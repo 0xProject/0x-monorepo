@@ -6,12 +6,10 @@ import * as chai from 'chai';
 import * as Web3 from 'web3';
 
 import { DummyERC20TokenContract } from '../src/contract_wrappers/generated/dummy_e_r_c20_token';
+import { artifacts } from '../src/utils/artifacts';
+import { chaiSetup } from '../src/utils/chai_setup';
 import { constants } from '../src/utils/constants';
-import { ContractName } from '../src/utils/types';
-
-import { chaiSetup } from './utils/chai_setup';
-import { deployer } from './utils/deployer';
-import { provider, web3Wrapper } from './utils/web3_wrapper';
+import { provider, txDefaults, web3Wrapper } from '../src/utils/web3_wrapper';
 
 chaiSetup.configure();
 const expect = chai.expect;
@@ -32,11 +30,15 @@ describe('UnlimitedAllowanceToken', () => {
         const accounts = await web3Wrapper.getAvailableAddressesAsync();
         owner = accounts[0];
         spender = accounts[1];
-        const tokenInstance = await deployer.deployAsync(
-            ContractName.DummyERC20Token,
-            constants.DUMMY_ERC20_TOKEN_ARGS,
+        token = await DummyERC20TokenContract.deployFrom0xArtifactAsync(
+            artifacts.DummyERC20Token,
+            provider,
+            txDefaults,
+            constants.DUMMY_TOKEN_NAME,
+            constants.DUMMY_TOKEN_SYMBOL,
+            constants.DUMMY_TOKEN_DECIMALS,
+            constants.DUMMY_TOKEN_TOTAL_SUPPLY,
         );
-        token = new DummyERC20TokenContract(tokenInstance.abi, tokenInstance.address, provider);
         await token.mint.sendTransactionAsync(MAX_MINT_VALUE, { from: owner });
         tokenAddress = token.address;
     });
