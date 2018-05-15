@@ -78,19 +78,14 @@ contract MixinMatchOrders is
         validateMatchOrThrow(leftOrder, rightOrder);
 
         // Compute proportional fill amounts
-        uint8 matchedFillResultsStatus;
-        (   matchedFillResultsStatus,
-            matchedFillResults
-        ) = calculateMatchedFillResults(
+        matchedFillResults = calculateMatchedFillResults(
             leftOrder,
             rightOrder,
             leftOrderInfo.orderStatus,
             rightOrderInfo.orderStatus,
             leftOrderInfo.orderFilledAmount,
-            rightOrderInfo.orderFilledAmount);
-        if (matchedFillResultsStatus != uint8(Status.SUCCESS)) {
-            return matchedFillResults;
-        }
+            rightOrderInfo.orderFilledAmount
+        );
 
         // Validate fill contexts
         validateFillOrRevert(
@@ -231,7 +226,6 @@ contract MixinMatchOrders is
     /// @param rightOrderStatus Order status of right order.
     /// @param leftOrderFilledAmount Amount of left order already filled.
     /// @param rightOrderFilledAmount Amount of right order already filled.
-    /// @return status Return status of calculating fill amounts. Returns Status.SUCCESS on success.
     /// @param matchedFillResults Amounts to fill and fees to pay by maker and taker of matched orders.
     function calculateMatchedFillResults(
         Order memory leftOrder,
@@ -242,10 +236,7 @@ contract MixinMatchOrders is
         uint256 rightOrderFilledAmount
     )
         internal
-        returns (
-            uint8 status,
-            MatchedFillResults memory matchedFillResults
-        )
+        returns (MatchedFillResults memory matchedFillResults)
     {
         // We settle orders at the price point defined by the right order (profit goes to the order taker)
         // The constraint can be either on the left or on the right.
@@ -286,15 +277,17 @@ contract MixinMatchOrders is
         }
 
         // Calculate fill results for left order
+        uint8 status;
         (status, matchedFillResults.left) = calculateFillResults(
             leftOrder,
             leftOrderStatus,
             leftOrderFilledAmount,
             leftOrderAmountToFill
         );
-        if (status != uint8(Status.SUCCESS)) {
-            return (status, matchedFillResults);
-        }
+        require(
+            status == uint8(Status.SUCCESS),
+            FAILED_TO_CALCULATE_FILL_RESULTS_FOR_LEFT_ORDER
+        );
 
         // Calculate fill results for right order
         (status, matchedFillResults.right) = calculateFillResults(
@@ -303,9 +296,10 @@ contract MixinMatchOrders is
             rightOrderFilledAmount,
             rightOrderAmountToFill
         );
-        if (status != uint8(Status.SUCCESS)) {
-            return (status, matchedFillResults);
-        }
+        require(
+            status == uint8(Status.SUCCESS),
+            FAILED_TO_CALCULATE_FILL_RESULTS_FOR_RIGHT_ORDER
+        );
 
         // Calculate amount given to taker
         matchedFillResults.takerFillAmount = safeSub(
@@ -316,7 +310,7 @@ contract MixinMatchOrders is
         // Validate the fill results
         validateMatchOrThrow(matchedFillResults);
 
-        // Return status & fill results
-        return (status, matchedFillResults);
+        // Return fill results
+        return matchedFillResults;
     }
 }

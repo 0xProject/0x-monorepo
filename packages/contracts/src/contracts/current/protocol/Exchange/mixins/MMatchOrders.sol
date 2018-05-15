@@ -59,7 +59,6 @@ contract MMatchOrders is
     /// @param rightOrderStatus Order status of right order.
     /// @param leftOrderFilledAmount Amount of left order already filled.
     /// @param rightOrderFilledAmount Amount of right order already filled.
-    /// @return status Return status of calculating fill amounts. Returns Status.SUCCESS on success.
     /// @param matchedFillResults Amounts to fill and fees to pay by maker and taker of matched orders.
     function calculateMatchedFillResults(
         LibOrder.Order memory leftOrder,
@@ -70,8 +69,5 @@ contract MMatchOrders is
         uint256 rightOrderFilledAmount
     )
         internal
-        returns (
-            uint8 status,
-            LibFillResults.MatchedFillResults memory matchedFillResults
-        );
+        returns (LibFillResults.MatchedFillResults memory matchedFillResults);
 }

@@ -647,7 +647,7 @@ describe('matchOrders', () => {
             );
         });
 
-        it('Should not transfer any amounts if left order is not fillable', async () => {
+        it('Should throw if left order is not fillable', async () => {
             // Create orders to match
             const signedOrderLeft = orderFactoryLeft.newSignedOrder({
                 makerAddress: makerAddressLeft,
@@ -668,13 +668,12 @@ describe('matchOrders', () => {
             // Cancel left order
             await exchangeWrapper.cancelOrderAsync(signedOrderLeft, signedOrderLeft.makerAddress);
             // Match orders
-            await exchangeWrapper.matchOrdersAsync(signedOrderLeft, signedOrderRight, takerAddress);
-            // Verify balances did not change
-            const newBalances = await erc20Wrapper.getBalancesAsync();
-            expect(newBalances).to.be.deep.equal(erc20BalancesByOwner);
+            return expect(
+                exchangeWrapper.matchOrdersAsync(signedOrderLeft, signedOrderRight, takerAddress),
+            ).to.be.rejectedWith(constants.REVERT);
         });
 
-        it('Should not transfer any amounts if right order is not fillable', async () => {
+        it('Should throw if right order is not fillable', async () => {
             // Create orders to match
             const signedOrderLeft = orderFactoryLeft.newSignedOrder({
                 makerAddress: makerAddressLeft,
@@ -695,10 +694,9 @@ describe('matchOrders', () => {
             // Cancel right order
             await exchangeWrapper.cancelOrderAsync(signedOrderRight, signedOrderRight.makerAddress);
             // Match orders
-            await exchangeWrapper.matchOrdersAsync(signedOrderLeft, signedOrderRight, takerAddress);
-            // Verify balances did not change
-            const newBalances = await erc20Wrapper.getBalancesAsync();
-            expect(newBalances).to.be.deep.equal(erc20BalancesByOwner);
+            return expect(
+                exchangeWrapper.matchOrdersAsync(signedOrderLeft, signedOrderRight, takerAddress),
+            ).to.be.rejectedWith(constants.REVERT);
         });
 
         it('should throw if there is not a positive spread', async () => {

@@ -61,7 +61,7 @@ contract LibMath is
         require(
             !isRoundingError(numerator, denominator, target),
             ROUNDING_ERROR_ON_PARTIAL_AMOUNT
-            );
+        );
         return getPartialAmount(numerator, denominator, target);
     }
 
