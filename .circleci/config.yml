@@ -22,7 +22,7 @@ jobs:
       - run: wget https://s3.amazonaws.com/testrpc-shapshots/${CONTRACTS_COMMIT_HASH}.zip
       - run: unzip ${CONTRACTS_COMMIT_HASH}.zip -d testrpc_snapshot
       - run: node ./node_modules/lerna/bin/lerna.js bootstrap
-      - run: yarn lerna:run build
+      - run: yarn build
       - save_cache:
           key: repo-{{ .Environment.CIRCLE_SHA1 }}
           paths:
@@ -48,7 +48,7 @@ jobs:
           name: testrpc
           command: npm run testrpc -- --db testrpc_snapshot
           background: true
-      - run: yarn lerna:run --scope 0x.js test:circleci
+      - run: yarn wsrun test:circleci 0x.js
       - save_cache:
           key: coverage-0xjs-{{ .Environment.CIRCLE_SHA1 }}
           paths:
@@ -65,7 +65,7 @@ jobs:
           name: testrpc
           command: npm run testrpc -- --db testrpc_snapshot
           background: true
-      - run: yarn lerna:run --scope contracts test:circleci
+      - run: yarn wsrun test:circleci contracts
       - save_cache:
           key: coverage-contracts-{{ .Environment.CIRCLE_SHA1 }}
           paths:
@@ -82,7 +82,7 @@ jobs:
           name: testrpc
           command: npm run testrpc -- --db testrpc_snapshot
           background: true
-      - run: yarn lerna:run --scope @0xproject/sol-compiler test:circleci
+      - run: yarn wsrun test:circleci @0xproject/sol-compiler
       - save_cache:
           key: coverage-sol-compiler-{{ .Environment.CIRCLE_SHA1 }}
           paths:
@@ -99,7 +99,7 @@ jobs:
           name: testrpc
           command: npm run testrpc -- --db testrpc_snapshot
           background: true
-      - run: yarn lerna:run --ignore contracts --ignore 0x.js --ignore @0xproject/sol-compiler test:circleci
+      - run: yarn wsrun test:circleci --exclude contracts --exclude 0x.js --exclude @0xproject/sol-compiler --stages --exclude-missing
       - save_cache:
           key: coverage-assert-{{ .Environment.CIRCLE_SHA1 }}
           paths:

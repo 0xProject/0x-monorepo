@@ -1,25 +1,23 @@
-## @0xproject/sol-cov
+## @0xproject/sol-resolver
 
-A Solidity code coverage tool.
-
-### Read the [Documentation](https://0xproject.com/docs/sol-cov).
+A Solidity import resolver used by [sol-compiler](https://github.com/0xProject/0x-monorepo/tree/development/packages/sol-compiler).
 
 ## Installation
 
 ```bash
-yarn add @0xproject/sol-cov
+yarn add @0xproject/sol-resolver
 ```
 
 **Import**
 
 ```javascript
-import { CoverageSubprovider } from '@0xproject/sol-cov';
+import { Resolver } from '@0xproject/sol-resolver';
 ```
 
 or
 
 ```javascript
-var CoverageSubprovider = require('@0xproject/sol-cov').CoverageSubprovider;
+var Resolver = require('@0xproject/sol-resolver').Resolver;
 ```
 
 ## Contributing
@@ -47,13 +45,13 @@ yarn install
 To build this package and all other monorepo packages that it depends on, run the following from the monorepo root directory:
 
 ```bash
-PKG=@0xproject/sol-cov yarn build
+PKG=@0xproject/sol-resolver yarn build
 ```
 
 Or continuously rebuild on change:
 
 ```bash
-PKG=@0xproject/sol-cov yarn watch
+PKG=@0xproject/sol-resolver yarn watch
 ```
 
 ### Clean
@@ -66,10 +64,4 @@ yarn clean
 
 ```bash
 yarn lint
-```
-
-### Run Tests
-
-```bash
-yarn test
 ```

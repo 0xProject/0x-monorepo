@@ -4,7 +4,7 @@
     "private": true,
     "description": "Example solidity project using 0x dev tools",
     "scripts": {
-        "build:watch": "tsc -w",
+        "watch": "tsc -w",
         "lint": "tslint --project .",
         "clean": "shx rm -rf lib artifacts src/contract_wrappers",
         "prebuild": "run-s clean compile generate_contract_wrappers copy_artifacts",
@@ -13,12 +13,12 @@
         "test": "run-s build run_mocha",
         "test:coverage": "SOLIDITY_COVERAGE=true run-s build run_mocha coverage:report:text coverage:report:lcov",
         "run_mocha": "mocha lib/test/**/*_test.js lib/test/global_hooks.js --bail --exit",
-        "generate_contract_wrappers": "node ../abi-gen/lib/index.js --abis 'artifacts/Metacoin.json' --template ../contract_templates/contract.handlebars --partials '../contract_templates/partials/**/*.handlebars' --output src/contract_wrappers --backend ethers && prettier --write 'src/contract_wrappers/**.ts'",
+        "generate_contract_wrappers": "abi-gen --abis 'artifacts/Metacoin.json' --template ../contract_templates/contract.handlebars --partials '../contract_templates/partials/**/*.handlebars' --output src/contract_wrappers --backend ethers && prettier --write 'src/contract_wrappers/**.ts'",
         "coverage:report:text": "istanbul report text",
         "coverage:report:html": "istanbul report html && open coverage/index.html",
         "coverage:report:lcov": "istanbul report lcov",
         "test:circleci": "yarn test:coverage",
-        "compile": "node ../sol-compiler/lib/src/cli.js compile"
+        "compile": "sol-compiler compile"
     },
     "author": "",
     "license": "Apache-2.0",

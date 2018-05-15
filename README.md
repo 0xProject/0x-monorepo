@@ -91,32 +91,87 @@ yarn install
 
 ### Build
 
-Build all packages. You need to do this before working on any given package. Although these packages
-as independent, when run from within the monorepo, they are internally symlinked, to make development
-easier. You can change several packages and run the changes without publishing them first to NPM. When
-running `rebuild`, Lerna will figure out the dependency order of all the packages, and build them in
-this order.
+To build all packages:
 
 ```bash
-yarn lerna:rebuild
+yarn build
 ```
 
-Or continuously rebuild on change:
+To build a specific package:
 
 ```bash
-yarn dev
+PKG=@0xproject/web3-wrapper yarn build
+```
+
+### Watch
+
+To re-build all packages on change:
+
+```bash
+yarn watch
+```
+
+To watch a specific package and all it's dependent packages:
+
+```bash
+PKG=[NPM_PACKAGE_NAME] yarn watch
+
+e.g
+PKG=@0xproject/web3-wrapper yarn watch
+```
+
+### Clean
+
+Clean all packages:
+
+```bash
+yarn clean
+```
+
+Clean a specific package
+
+```bash
+PKG=0x.js yarn clean
+```
+
+### Rebuild
+
+To re-build (clean & build) all packages:
+
+```bash
+yarn rebuild
+```
+
+To re-build (clean & build) a specific package & it's deps:
+
+```bash
+PKG=0x.js yarn rebuild
 ```
 
 ### Lint
 
-Lint all packages
+Lint all packages:
 
 ```bash
-yarn lerna:run lint
+yarn lint
+```
+
+Lint a specific package:
+
+```bash
+PKG=0x.js yarn lint
 ```
 
 ### Run Tests
 
+Run all tests:
+
 ```bash
-yarn lerna:test
+yarn test
+```
+
+Run a specific package's test:
+
+```bash
+PKG=@0xproject/web3-wrapper yarn test
 ```

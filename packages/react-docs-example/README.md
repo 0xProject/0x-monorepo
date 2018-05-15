@@ -25,7 +25,7 @@ yarn install
 The **first** time you work with this package, you must build **all** packages within the monorepo. This is because packages that depend on other packages located inside this monorepo are symlinked when run from **within** the monorepo. This allows you to make changes across multiple packages without first publishing dependent packages to NPM. To build all packages, run the following from the monorepo root directory:
 
 ```bash
-yarn lerna:rebuild
+PKG=0x.js yarn build
 ```
 
 Note: If you move this package out of the monorepo, it will work without this step. Make sure you copy it out on the `master` branch since the `development` version might rely on not-yet published changes to other packages.
@@ -35,7 +35,7 @@ Note: If you move this package out of the monorepo, it will work without this st
 The the `react-docs-example` root directory, run:
 
 ```bash
-yarn dev
+PKG=0x.js yarn watch
 ```
 
 ### Deploy Example to S3 bucket
@@ -50,8 +50,16 @@ yarn deploy_example
 
 ### Build
 
+To build this package and all other monorepo packages that it depends on, run the following from the monorepo root directory:
+
 ```bash
-yarn build
+PKG=@0xproject/react-docs-example yarn build
+```
+
+Or continuously rebuild on change:
+
+```bash
+PKG=@0xproject/react-docs-example yarn watch
 ```
 
 ### Clean

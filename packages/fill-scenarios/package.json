@@ -5,9 +5,9 @@
     "main": "lib/index.js",
     "types": "lib/index.d.ts",
     "scripts": {
-        "build:watch": "tsc -w",
+        "watch": "tsc -w",
         "prebuild": "run-s clean generate_contract_wrappers",
-        "generate_contract_wrappers": "node ../abi-gen/lib/index.js --abis 'src/compact_artifacts/@(Exchange|Token|TokenTransferProxy|EtherToken|DummyToken).json' --template ../contract_templates/contract.handlebars --partials '../contract_templates/partials/**/*.handlebars' --output src/generated_contract_wrappers --backend ethers && prettier --write 'src/generated_contract_wrappers/**.ts'",
+        "generate_contract_wrappers": "abi-gen --abis 'src/compact_artifacts/@(Exchange|Token|TokenTransferProxy|EtherToken|DummyToken).json' --template ../contract_templates/contract.handlebars --partials '../contract_templates/partials/**/*.handlebars' --output src/generated_contract_wrappers --backend ethers && prettier --write 'src/generated_contract_wrappers/**.ts'",
         "build": "tsc && copyfiles -u 2 './src/compact_artifacts/**/*.json' ./lib/compact_artifacts && copyfiles -u 3 './lib/src/monorepo_scripts/**/*' ./scripts",
         "clean": "shx rm -rf lib scripts src/generated_contract_wrappers",
         "lint": "tslint --project .",
@@ -23,6 +23,7 @@
     },
     "homepage": "https://github.com/0xProject/0x-monorepo/packages/fill-scenarios/README.md",
     "devDependencies": {
+        "@0xproject/abi-gen": "^0.2.13",
         "@0xproject/monorepo-scripts": "^0.1.19",
         "@0xproject/sol-compiler": "^0.4.3",
         "@0xproject/tslint-config": "^0.4.17",

@@ -5,7 +5,7 @@
     "types": "lib/src/index.d.ts",
     "license": "Apache-2.0",
     "scripts": {
-        "build:watch": "tsc -w",
+        "watch": "tsc -w",
         "clean": "shx rm -rf lib scripts",
         "build": "tsc && copyfiles -u 3 './lib/src/monorepo_scripts/**/*' ./scripts",
         "lint": "tslint --project .",
@@ -19,7 +19,7 @@
         "test:unit": "run-s clean build run_mocha_unit",
         "test:integration": "run-s clean build run_mocha_integration",
         "manual:postpublish": "yarn build; node ./scripts/postpublish.js",
-        "docs:stage": "yarn build && node ./scripts/stage_docs.js",
+        "docs:stage": "node scripts/stage_docs.js",
         "docs:json": "typedoc --excludePrivate --excludeExternals --target ES5 --json $JSON_FILE_PATH $PROJECT_FILES",
         "upload_docs_json": "aws s3 cp generated_docs/index.json $S3_URL --profile 0xproject --grants read=uri=http://acs.amazonaws.com/groups/global/AllUsers --content-type application/json"
     },

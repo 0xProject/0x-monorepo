@@ -5,7 +5,7 @@
     "main": "lib/index.js",
     "types": "lib/index.d.ts",
     "scripts": {
-        "build:watch": "tsc -w",
+        "watch": "tsc -w",
         "prebuild": "run-s clean compile copy_artifacts generate_contract_wrappers",
         "copy_artifacts": "copyfiles -u 4 'artifacts/1.0.0/**/*' ./lib/src/artifacts",
         "build": "tsc",
@@ -14,14 +14,15 @@
         "migrate": "run-s build compile script:migrate",
         "script:migrate": "node ./lib/migrate.js",
         "copy_artifacts": "copyfiles 'artifacts/1.0.0/**/*' ./lib",
-        "generate_contract_wrappers": "node ../abi-gen/lib/index.js --abis  ${npm_package_config_abis} --template ../contract_templates/contract.handlebars --partials '../contract_templates/partials/**/*.handlebars' --output src/contract_wrappers --backend ethers && prettier --write 'src/contract_wrappers/**.ts'",
-        "compile": "node ../sol-compiler/lib/src/cli.js compile"
+        "generate_contract_wrappers": "abi-gen --abis  ${npm_package_config_abis} --template ../contract_templates/contract.handlebars --partials '../contract_templates/partials/**/*.handlebars' --output src/contract_wrappers --backend ethers && prettier --write 'src/contract_wrappers/**.ts'",
+        "compile": "sol-compiler"
     },
     "config": {
         "abis": "artifacts/1.0.0/@(DummyToken|TokenTransferProxy|Exchange|TokenRegistry|MultiSigWallet|MultiSigWalletWithTimeLock|MultiSigWalletWithTimeLockExceptRemoveAuthorizedAddress|TokenRegistry|ZRXToken|Arbitrage|EtherDelta|AccountLevels|WETH9|MaliciousToken).json"
     },
     "license": "Apache-2.0",
     "devDependencies": {
+        "@0xproject/abi-gen": "^0.2.13",
         "@0xproject/dev-utils": "^0.4.1",
         "@0xproject/types": "^0.6.3",
         "@0xproject/tslint-config": "^0.4.17",

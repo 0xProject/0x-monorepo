@@ -7,7 +7,7 @@
     "scripts": {
         "lint": "tslint --project .",
         "build": "tsc && copyfiles -u 2 './lib/monorepo_scripts/**/*' ./scripts",
-        "build:watch": "tsc -w",
+        "watch": "tsc -w",
         "clean": "shx rm -rf lib scripts",
         "manual:postpublish": "yarn build; node ./scripts/postpublish.js"
     },

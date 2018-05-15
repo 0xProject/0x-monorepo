@@ -5,7 +5,7 @@
     "main": "lib/index.js",
     "types": "lib/index.d.ts",
     "scripts": {
-        "build:watch": "tsc -w",
+        "watch": "tsc -w",
         "lint": "tslint --project .",
         "clean": "shx rm -rf lib",
         "build": "tsc",
@@ -26,7 +26,6 @@
         "url": "https://github.com/0xProject/0x-monorepo/issues"
     },
     "homepage": "https://github.com/0xProject/0x-monorepo/packages/monorepo-scripts/README.md",
-    "comment": "// We purposefully use an older version of tslint-config here to avoid creating an import cycle",
     "devDependencies": {
         "@types/glob": "^5.0.33",
         "@types/node": "^8.0.53",
