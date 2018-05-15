@@ -78,11 +78,13 @@ We strongly recommend that the community help us make improvements and determine
 ### Install dependencies
 
 If you don't have yarn workspaces enabled (Yarn < v1.0) - enable them:
+
 ```bash
 yarn config set workspaces-experimental true
 ```
 
 Then install dependencies
+
 ```bash
 yarn install
 ```
@@ -90,11 +92,13 @@ yarn install
 ### Build
 
 To build all packages:
+
 ```bash
 yarn build
 ```
 
 To build a specific package:
+
 ```bash
 PKG=@0xproject/web3-wrapper yarn build
 ```
@@ -102,11 +106,13 @@ PKG=@0xproject/web3-wrapper yarn build
 ### Watch
 
 To re-build all packages on change:
+
 ```bash
 yarn watch
 ```
 
 To watch a specific package and all it's dependent packages:
+
 ```bash
 PKG=[NPM_PACKAGE_NAME] yarn watch
 
@@ -117,11 +123,13 @@ PKG=@0xproject/web3-wrapper yarn watch
 ### Clean
 
 Clean all packages:
+
 ```bash
 yarn clean
 ```
 
 Clean a specific package
+
 ```bash
 PKG=0x.js yarn clean
 ```
@@ -129,11 +137,13 @@ PKG=0x.js yarn clean
 ### Rebuild
 
 To re-build (clean & build) all packages:
+
 ```bash
 yarn rebuild
 ```
 
 To re-build (clean & build) a specific package & it's deps:
+
 ```bash
 PKG=0x.js yarn rebuild
 ```
@@ -141,11 +151,13 @@ PKG=0x.js yarn rebuild
 ### Lint
 
 Lint all packages:
+
 ```bash
 yarn lint
 ```
 
 Lint a specific package:
+
 ```bash
 PKG=0x.js yarn lint
 ```
@@ -153,11 +165,13 @@ PKG=0x.js yarn lint
 ### Run Tests
 
 Run all tests:
+
 ```bash
 yarn test
 ```
 
 Run a specific package's test:
+
 ```bash
 PKG=@0xproject/web3-wrapper yarn test
 ```

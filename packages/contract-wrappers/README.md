@@ -60,8 +60,6 @@ Or continuously rebuild on change:
 PKG=@0xproject/contract-wrappers yarn watch
 ```
 
-
-
 ```bash
 yarn build
 ```
