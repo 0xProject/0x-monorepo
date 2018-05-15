@@ -18,6 +18,7 @@ import { Dispatcher } from 'ts/redux/dispatcher';
 import { Deco, Key, ProviderType, WebsiteLegacyPaths, WebsitePaths } from 'ts/types';
 import { constants } from 'ts/utils/constants';
 import { Translate } from 'ts/utils/translate';
+import { utils } from 'ts/utils/utils';
 
 export enum TopBarDisplayType {
     Default,
@@ -202,6 +203,8 @@ export class TopBar extends React.Component<TopBarProps, TopBarState> {
             </div>
         );
         const popoverContent = <Menu style={{ color: colors.darkGrey }}>{developerSectionMenuItems}</Menu>;
+        // TODO : Remove this once we ship portal v2
+        const shouldShowPortalV2Drawer = this._isViewingPortal() && utils.shouldShowPortalV2();
         return (
             <div style={{ ...styles.topBar, ...bottomBorderStyle, ...this.props.style, ...{ height } }} className="pb1">
                 <div className={parentClassNames}>
@@ -274,8 +277,20 @@ export class TopBar extends React.Component<TopBarProps, TopBarState> {
                         </div>
                     </div>
                 </div>
-                {this._renderDrawer()}
+                {shouldShowPortalV2Drawer ? this._renderPortalV2Drawer() : this._renderDrawer()}
             </div>
+        );
+    }
+    private _renderPortalV2Drawer(): React.ReactNode {
+        return (
+            <Drawer
+                open={this.state.isDrawerOpen}
+                docked={false}
+                openSecondary={true}
+                onRequestChange={this._onMenuButtonClick.bind(this)}
+            >
+                <div />
+            </Drawer>
         );
     }
     private _renderDrawer(): React.ReactNode {

@@ -314,4 +314,7 @@ export const utils = {
         return _.includes(window.location.href, configs.DOMAIN_STAGING);
     },
     isDogfood,
+    shouldShowPortalV2(): boolean {
+        return this.isDevelopment() || this.isStaging() || this.isDogfood();
+    },
 };
