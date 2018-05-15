@@ -1,4 +1,4 @@
-import { StructLog } from '@0xproject/types';
+import { OpCode, StructLog } from '@0xproject/types';
 import * as chai from 'chai';
 import * as fs from 'fs';
 import * as _ from 'lodash';
@@ -15,13 +15,13 @@ const DEFAULT_STRUCT_LOG: StructLog = {
     gas: 0,
     gasCost: 0,
     memory: [],
-    op: 'DEFAULT',
+    op: OpCode.Invalid,
     pc: 0,
     stack: [],
     storage: {},
 };
 
-function addDefaultStructLogFields(compactStructLog: Partial<StructLog> & { op: string; depth: number }): StructLog {
+function addDefaultStructLogFields(compactStructLog: Partial<StructLog> & { op: OpCode; depth: number }): StructLog {
     return { ...DEFAULT_STRUCT_LOG, ...compactStructLog };
 }
 
@@ -31,16 +31,16 @@ describe('Trace', () => {
             const delegateCallAddress = '0x0000000000000000000000000000000000000002';
             const trace = [
                 {
-                    op: 'DELEGATECALL',
+                    op: OpCode.DelegateCall,
                     stack: ['0x', '0x', delegateCallAddress],
                     depth: 0,
                 },
                 {
-                    op: 'RETURN',
+                    op: OpCode.Return,
                     depth: 1,
                 },
                 {
-                    op: 'RETURN',
+                    op: OpCode.Return,
                     depth: 0,
                 },
             ];

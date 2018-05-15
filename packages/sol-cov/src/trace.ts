@@ -1,5 +1,5 @@
-import { StructLog, TransactionTrace } from '@0xproject/types';
-import { BigNumber } from '@0xproject/utils';
+import { OpCode, StructLog, TransactionTrace } from '@0xproject/types';
+import { BigNumber, logUtils } from '@0xproject/utils';
 import { addHexPrefix, stripHexPrefix } from 'ethereumjs-util';
 import * as fs from 'fs';
 import * as _ from 'lodash';
@@ -26,68 +26,44 @@ export function getTracesByContractAddress(structLogs: StructLog[], startAddress
         // That means that we can always safely pop from it
         currentTraceSegment.push(structLog);
 
-        if (structLog.op === 'DELEGATECALL') {
+        if (
+            structLog.op === OpCode.CallCode ||
+            structLog.op === OpCode.StaticCall ||
+            structLog.op === OpCode.Call ||
+            structLog.op === OpCode.DelegateCall
+        ) {
             const currentAddress = _.last(callStack) as string;
-            const jumpAddressOffset = 4;
+            const jumpAddressOffset = structLog.op === OpCode.DelegateCall ? 4 : 2;
             const newAddress = padZeros(new BigNumber(addHexPrefix(structLog.stack[jumpAddressOffset])).toString(16));
             callStack.push(newAddress);
             traceByContractAddress[currentAddress] = (traceByContractAddress[currentAddress] || []).concat(
                 currentTraceSegment,
             );
             currentTraceSegment = [];
-        } else if (structLog.op === 'RETURN') {
+        } else if (
+            structLog.op === OpCode.Return ||
+            structLog.op === OpCode.Stop ||
+            structLog.op === OpCode.Revert ||
+            structLog.op === OpCode.Invalid ||
+            structLog.op === OpCode.SelfDestruct
+        ) {
             const currentAddress = callStack.pop() as string;
             traceByContractAddress[currentAddress] = (traceByContractAddress[currentAddress] || []).concat(
                 currentTraceSegment,
             );
             currentTraceSegment = [];
-        } else if (structLog.op === 'STOP') {
-            const currentAddress = callStack.pop() as string;
-            traceByContractAddress[currentAddress] = (traceByContractAddress[currentAddress] || []).concat(
-                currentTraceSegment,
-            );
-            currentTraceSegment = [];
-            if (i !== structLogs.length - 1) {
-                throw new Error('Malformed trace. STOP is not the last opcode executed');
+            if (structLog.op === OpCode.SelfDestruct) {
+                // TODO: Record contract bytecode before the selfdestruct and handle that scenario
+                logUtils.warn(
+                    "Detected a selfdestruct. Sol-cov currently doesn't support that scenario. We'll just skip the trace part for a destructed contract",
+                );
             }
-        } else if (structLog.op === 'CREATE') {
-            console.warn(
+        } else if (structLog.op === OpCode.Create) {
+            // TODO: Extract the new contract address from the stack and handle that scenario
+            logUtils.warn(
                 "Detected a contract created from within another contract. Sol-cov currently doesn't support that scenario. We'll just skip that trace",
             );
             return traceByContractAddress;
-        } else if (structLog.op === 'CALL') {
-            const currentAddress = _.last(callStack) as string;
-            const jumpAddressOffset = 2;
-            const newAddress = padZeros(new BigNumber(addHexPrefix(structLog.stack[jumpAddressOffset])).toString(16));
-            callStack.push(newAddress);
-            traceByContractAddress[currentAddress] = (traceByContractAddress[currentAddress] || []).concat(
-                currentTraceSegment,
-            );
-            currentTraceSegment = [];
-        } else if (structLog.op === 'CALLCODE') {
-            throw new Error('CALLCODE opcode unsupported by coverage');
-        } else if (structLog.op === 'STATICCALL') {
-            throw new Error('STATICCALL opcode unsupported by coverage');
-        } else if (structLog.op === 'REVERT') {
-            const currentAddress = callStack.pop() as string;
-            traceByContractAddress[currentAddress] = (traceByContractAddress[currentAddress] || []).concat(
-                currentTraceSegment,
-            );
-            currentTraceSegment = [];
-            if (i !== structLogs.length - 1) {
-                throw new Error('Malformed trace. REVERT is not the last opcode executed');
-            }
-        } else if (structLog.op === 'INVALID') {
-            const currentAddress = callStack.pop() as string;
-            traceByContractAddress[currentAddress] = (traceByContractAddress[currentAddress] || []).concat(
-                currentTraceSegment,
-            );
-            currentTraceSegment = [];
-            if (i !== structLogs.length - 1) {
-                throw new Error('Malformed trace. INVALID is not the last opcode executed');
-            }
-        } else if (structLog.op === 'SELFDESTRUCT') {
-            throw new Error('SELFDESTRUCT opcode unsupported by coverage');
         }
     }
     if (callStack.length !== 0) {
