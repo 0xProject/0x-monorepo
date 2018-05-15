@@ -308,4 +308,7 @@ export const utils = {
     isStaging(): boolean {
         return _.includes(window.location.href, configs.DOMAIN_STAGING);
     },
+    isDogfood(): boolean {
+        return _.includes(window.location.href, configs.DOMAIN_DOGFOOD);
+    },
 };

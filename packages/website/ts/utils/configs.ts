@@ -1,5 +1,6 @@
 import * as _ from 'lodash';
 import { Environments, OutdatedWrappedEtherByNetworkId, PublicNodeUrlsByNetworkId } from 'ts/types';
+import { utils } from 'ts/utils/utils';
 
 const BASE_URL = window.location.origin;
 const isDevelopment = _.includes(
@@ -10,13 +11,16 @@ const INFURA_API_KEY = 'T5WSC8cautR4KXyYgsRs';
 
 export const configs = {
     AMOUNT_DISPLAY_PRECSION: 5,
-    BACKEND_BASE_URL: 'https://website-api.0xproject.com',
+    BACKEND_BASE_URL: utils.isDogfood()
+        ? 'http://ec2-52-91-181-85.compute-1.amazonaws.com'
+        : 'https://website-api.0xproject.com',
     BASE_URL,
     BITLY_ACCESS_TOKEN: 'ffc4c1a31e5143848fb7c523b39f91b9b213d208',
     DEFAULT_DERIVATION_PATH: `44'/60'/0'`,
     // WARNING: ZRX & WETH MUST always be default trackedTokens
     DEFAULT_TRACKED_TOKEN_SYMBOLS: ['WETH', 'ZRX'],
     DOMAIN_STAGING: 'staging-0xproject.s3-website-us-east-1.amazonaws.com',
+    DOMAIN_DOGFOOD: 'dogfood-0xproject.s3-website-us-east-1.amazonaws.com',
     DOMAIN_DEVELOPMENT: '0xproject.localhost:3572',
     DOMAIN_PRODUCTION: '0xproject.com',
     ENVIRONMENT: isDevelopment ? Environments.DEVELOPMENT : Environments.PRODUCTION,
