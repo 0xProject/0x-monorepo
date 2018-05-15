@@ -46,7 +46,7 @@ export const web3Factory = {
         if (!hasAddresses) {
             provider.addProvider(new EmptyWalletSubprovider());
         }
-        provider.addProvider(new FakeGasEstimateSubprovider(constants.GAS_ESTIMATE));
+        // provider.addProvider(new FakeGasEstimateSubprovider(constants.GAS_ESTIMATE));
         const logger = {
             log: (arg: any) => {
                 fs.appendFileSync('ganache.log', `${arg}\n`);

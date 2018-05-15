@@ -41,27 +41,29 @@ PoW it also means that mining does not require significant computational
 resources. You can learn more about PoA and the Geth-specific implementation
 called "Clique" in [EIP-225](https://github.com/ethereum/EIPs/issues/225).
 
-The address of the "sealer" is `35e52c375871faaa9923defbda5820dfa5aefc8f`. The
-password associated with the account is "password0" and the private keys are
-visible in the __node0/keystore__ directory. This account is already unlocked in
-the Geth node by default, so you can do things like sign and send transactions
-from this account using the JSON RPC endpoints directly.
+The address of the "sealer" is `0xe8816898d851d5b61b7f950627d04d794c07ca37`. The
+password associated with the account is "password" and the (encrypted) private
+keys are visible in the **node0/keystore** directory. This account is already
+"unlocked" in the Geth node by default, so you can do things like sign and send
+transactions from this account using the JSON RPC endpoints directly.
 
 There are also a number of other addresses that have hard-coded starting
-balances for testing purposes. You can see the details in the __genesis.json__
-file.
+balances for testing purposes. You can see the details in the **genesis.json**
+file. All of these accounts are also unlocked by default.
 
 ### Mining
 
-The node does not start mining by default, so you will need to do this if you
-want any new blocks to be added to the chain. To start mining, you can use the
-[`miner.start`](https://github.com/ethereum/go-ethereum/wiki/Management-APIs#miner_start)
-JSON RPC method. The network is configured to mine one block every second and,
-once started, will continue to mine until stopped.
+The node will automatically (nearly instantly) mine a block whenever new
+transactions are added to the transaction pool. If there are no transactions in
+the pool, it will wait.
 
 To stop mining, use the
 [`miner.stop`](https://github.com/ethereum/go-ethereum/wiki/Management-APIs#miner_stop)
 method.
+
+To start mining again, you can use the
+[`miner.start`](https://github.com/ethereum/go-ethereum/wiki/Management-APIs#miner_start)
+JSON RPC method.
 
 ## Contributing
 

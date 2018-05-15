@@ -43,6 +43,7 @@ export class BlockchainLifecycle {
                 if (!didRevert) {
                     throw new Error(`Snapshot with id #${snapshotId} failed to revert`);
                 }
+                break;
             case NodeType.Geth:
                 const blockNumber = this._snapshotIdsStack.pop() as number;
                 // Note: setHead will break the miner, so we need to stop it
@@ -55,6 +56,7 @@ export class BlockchainLifecycle {
                 if (wasMining) {
                     await this._web3Wrapper.minerStartAsync();
                 }
+                break;
             default:
                 throw new Error(`Unknown node type: ${nodeType}`);
         }

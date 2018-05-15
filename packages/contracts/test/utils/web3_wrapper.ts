@@ -4,7 +4,7 @@ import { Web3Wrapper } from '@0xproject/web3-wrapper';
 
 export const txDefaults = {
     from: devConstants.TESTRPC_FIRST_ADDRESS,
-    gas: devConstants.GAS_ESTIMATE,
+    // gas: devConstants.GAS_ESTIMATE,
 };
 const providerConfigs = {
     shouldUseInProcessGanache: false,
