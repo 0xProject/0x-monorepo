@@ -42,9 +42,11 @@ const DEFAULT_LABEL_COLOR = colors.darkerGrey;
 const DEFAULT_ICON_COLOR = colors.darkerGrey;
 const SELECTED_ICON_COLOR = colors.yellow900;
 
+const LEFT_PADDING = 185;
+
 export const PortalMenu: React.StatelessComponent<PortalMenuProps> = (props: PortalMenuProps) => {
     return (
-        <div style={{ paddingLeft: 185 }}>
+        <div style={{ paddingLeft: LEFT_PADDING }}>
             {_.map(menuItemEntries, entry => {
                 const selected = entry.to === props.selectedPath;
                 return (

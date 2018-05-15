@@ -11,7 +11,6 @@ import { BlockchainErrDialog } from 'ts/components/dialogs/blockchain_err_dialog
 import { LedgerConfigDialog } from 'ts/components/dialogs/ledger_config_dialog';
 import { PortalDisclaimerDialog } from 'ts/components/dialogs/portal_disclaimer_dialog';
 import { EthWrappers } from 'ts/components/eth_wrappers';
-import { FillOrder } from 'ts/components/fill_order';
 import { AssetPicker } from 'ts/components/generate_order/asset_picker';
 import { PortalMenu } from 'ts/components/portal/portal_menu';
 import { RelayerIndex } from 'ts/components/relayer_index/relayer_index';
@@ -81,6 +80,7 @@ enum TokenManagementState {
 const THROTTLE_TIMEOUT = 100;
 const TOP_BAR_HEIGHT = TopBar.heightForDisplayType(TopBarDisplayType.Expanded);
 const BACK_BUTTON_HEIGHT = 28;
+const LEFT_COLUMN_WIDTH = 346;
 
 const styles: Styles = {
     root: {
@@ -90,6 +90,9 @@ const styles: Styles = {
     },
     body: {
         height: `calc(100vh - ${TOP_BAR_HEIGHT}px)`,
+    },
+    leftColumn: {
+        width: LEFT_COLUMN_WIDTH,
     },
     scrollContainer: {
         height: `calc(100vh - ${TOP_BAR_HEIGHT}px)`,
@@ -114,7 +117,6 @@ const styles: Styles = {
 
 export class Portal extends React.Component<PortalProps, PortalState> {
     private _blockchain: Blockchain;
-    private _sharedOrderIfExists: Order;
     private _throttledScreenWidthUpdate: () => void;
     constructor(props: PortalProps) {
         super(props);
@@ -203,7 +205,7 @@ export class Portal extends React.Component<PortalProps, PortalState> {
                 <div id="portal" style={styles.body}>
                     <div className="sm-flex flex-center">
                         <div className="flex-last px3">
-                            <div style={{ width: 346 }}>
+                            <div style={styles.leftColumn}>
                                 <Switch>
                                     <Route
                                         path={`${WebsitePaths.Portal}/:route`}
@@ -313,6 +315,7 @@ export class Portal extends React.Component<PortalProps, PortalState> {
                 <Route render={this._renderNotFoundMessage.bind(this)} />
             </Switch>
         ) : (
+            // TODO: consolidate this loading component with the one in relayer_index
             <div className="pt4 sm-px2 sm-pt2 sm-m1" style={{ height: 500 }}>
                 <div
                     className="relative sm-px2 sm-pt2 sm-m1"

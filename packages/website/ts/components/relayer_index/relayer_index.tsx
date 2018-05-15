@@ -59,6 +59,7 @@ export class RelayerIndex extends React.Component<RelayerIndexProps, RelayerInde
         const readyToRender = _.isUndefined(this.state.error) && !_.isUndefined(this.state.relayerInfos);
         if (!readyToRender) {
             return (
+                // TODO: consolidate this loading component with the one in portal
                 <div className="pt4 sm-px2 sm-pt2 sm-m1" style={{ height: 500 }}>
                     <div
                         className="relative sm-px2 sm-pt2 sm-m1"
