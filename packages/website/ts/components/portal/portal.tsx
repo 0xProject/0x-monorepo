@@ -180,6 +180,8 @@ export class Portal extends React.Component<PortalProps, PortalState> {
             this.state.tokenManagementState === TokenManagementState.Add
                 ? TokenVisibility.UNTRACKED
                 : TokenVisibility.TRACKED;
+
+        const isSmallScreen = this.props.screenWidth === ScreenWidths.Sm;
         return (
             <div style={styles.root}>
                 <DocumentTitle title="0x Portal DApp" />
