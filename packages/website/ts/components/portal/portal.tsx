@@ -1,6 +1,7 @@
 import { colors, Styles } from '@0xproject/react-shared';
 import { BigNumber } from '@0xproject/utils';
 import * as _ from 'lodash';
+import CircularProgress from 'material-ui/CircularProgress';
 import * as React from 'react';
 import * as DocumentTitle from 'react-document-title';
 import { Link, Route, RouteComponentProps, Switch } from 'react-router-dom';
@@ -22,6 +23,7 @@ import { Wallet } from 'ts/components/wallet/wallet';
 import { GenerateOrderForm } from 'ts/containers/generate_order_form';
 import { localStorage } from 'ts/local_storage/local_storage';
 import { trackedTokenStorage } from 'ts/local_storage/tracked_token_storage';
+import { FullscreenMessage } from 'ts/pages/fullscreen_message';
 import { Dispatcher } from 'ts/redux/dispatcher';
 import {
     BlockchainErrs,
@@ -218,20 +220,8 @@ export class Portal extends React.Component<PortalProps, PortalState> {
                         <div className="flex-auto px3" style={styles.scrollContainer}>
                             <Switch>
                                 <Route
-                                    path={`${WebsitePaths.Portal}/weth`}
-                                    render={this._renderEthWrapper.bind(this)}
-                                />
-                                <Route
-                                    path={`${WebsitePaths.Portal}/account`}
-                                    render={this._renderTokenBalances.bind(this)}
-                                />
-                                <Route
-                                    path={`${WebsitePaths.Portal}/trades`}
-                                    render={this._renderTradeHistory.bind(this)}
-                                />
-                                <Route
-                                    path={`${WebsitePaths.Portal}/direct`}
-                                    render={this._renderTradeDirect.bind(this)}
+                                    path={`${WebsitePaths.Portal}/:route`}
+                                    render={this._renderAccountManagement.bind(this)}
                                 />
                                 <Route
                                     exact={true}
@@ -313,6 +303,28 @@ export class Portal extends React.Component<PortalProps, PortalState> {
             </div>
         );
     }
+    private _renderAccountManagement(): React.ReactNode {
+        return this.props.blockchainIsLoaded ? (
+            <Switch>
+                <Route path={`${WebsitePaths.Portal}/weth`} render={this._renderEthWrapper.bind(this)} />
+                <Route path={`${WebsitePaths.Portal}/account`} render={this._renderTokenBalances.bind(this)} />
+                <Route path={`${WebsitePaths.Portal}/trades`} render={this._renderTradeHistory.bind(this)} />
+                <Route path={`${WebsitePaths.Portal}/direct`} render={this._renderTradeDirect.bind(this)} />
+                <Route render={this._renderNotFoundMessage.bind(this)} />
+            </Switch>
+        ) : (
+            <div className="pt4 sm-px2 sm-pt2 sm-m1" style={{ height: 500 }}>
+                <div
+                    className="relative sm-px2 sm-pt2 sm-m1"
+                    style={{ height: 122, top: '50%', transform: 'translateY(-50%)' }}
+                >
+                    <div className="center pb2">
+                        <CircularProgress size={40} thickness={5} />
+                    </div>
+                </div>
+            </div>
+        );
+    }
     private _renderEthWrapper(): React.ReactNode {
         return (
             <div>
@@ -381,6 +393,14 @@ export class Portal extends React.Component<PortalProps, PortalState> {
                 <Title labelText={'Explore 0x Relayers'} />
                 <RelayerIndex networkId={this.props.networkId} />
             </div>
+        );
+    }
+    private _renderNotFoundMessage(): React.ReactNode {
+        return (
+            <FullscreenMessage
+                headerText={'404 Not Found'}
+                bodyText={"Hm... looks like we couldn't find what you are looking for."}
+            />
         );
     }
     private _onTokenChosen(tokenAddress: string): void {
