@@ -1,8 +1,8 @@
 import * as _ from 'lodash';
 
 import { ArticlesBySection, WebsiteBackendGasInfo, WebsiteBackendPriceInfo, WebsiteBackendRelayerInfo } from 'ts/types';
-import { utils } from 'ts/utils/utils';
 import { fetchUtils } from 'ts/utils/fetch_utils';
+import { utils } from 'ts/utils/utils';
 
 const ETH_GAS_STATION_ENDPOINT = '/eth_gas_station';
 const PRICES_ENDPOINT = '/prices';
