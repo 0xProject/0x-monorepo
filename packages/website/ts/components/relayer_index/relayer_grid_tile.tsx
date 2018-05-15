@@ -47,7 +47,7 @@ const styles: Styles = {
         width: '100%',
         boxSizing: 'border-box',
     },
-    dailyTradeVolumeLabel: {
+    weeklyTradeVolumeLabel: {
         fontSize: 14,
         color: colors.mediumBlue,
     },
@@ -80,9 +80,9 @@ export const RelayerGridTile: React.StatelessComponent<RelayerGridTileProps> = (
                     <div className="py1" style={styles.relayerNameLabel}>
                         {props.relayerInfo.name}
                     </div>
-                    <div style={styles.dailyTradeVolumeLabel}>{props.relayerInfo.dailyTxnVolume}</div>
+                    <div style={styles.weeklyTradeVolumeLabel}>{props.relayerInfo.weeklyTxnVolume}</div>
                     <div className="py1" style={styles.subLabel}>
-                        Daily Trade Volume
+                        Weekly Trade Volume
                     </div>
                     <TopTokens tokens={props.relayerInfo.topTokens} networkId={props.networkId} />
                     <div className="py1" style={styles.subLabel}>

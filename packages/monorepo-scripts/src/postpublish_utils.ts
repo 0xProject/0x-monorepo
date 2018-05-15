@@ -164,7 +164,12 @@ export const postpublishUtils = {
         });
         return fileIncludesAdjusted;
     },
-    async generateAndUploadDocsAsync(cwd: string, fileIncludes: string[], version: string, S3BucketPath: string): Promise<void> {
+    async generateAndUploadDocsAsync(
+        cwd: string,
+        fileIncludes: string[],
+        version: string,
+        S3BucketPath: string,
+    ): Promise<void> {
         const fileIncludesAdjusted = this.adjustFileIncludePaths(fileIncludes, cwd);
         const projectFiles = fileIncludesAdjusted.join(' ');
         const jsonFilePath = `${cwd}/${generatedDocsDirectoryName}/index.json`;
