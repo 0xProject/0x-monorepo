@@ -1,12 +1,10 @@
 FROM alpine:3.7
 
-COPY go-ethereum/ ./go-ethereum
-
 RUN \
   apk add --update go git make gcc musl-dev linux-headers ca-certificates && \
   # TODO(albrow): Change the Git URL and branch once we have all relvant PRs
   # merged to upstream.
-  # git clone --depth 1 --branch sethead-txpool-fix https://github.com/0xProject/go-ethereum && \
+  git clone --depth 1 --branch sethead-txpool-fix https://github.com/0xProject/go-ethereum && \
   (cd go-ethereum && make geth) && \
   cp go-ethereum/build/bin/geth /geth && \
   apk del go git make gcc musl-dev linux-headers && \
