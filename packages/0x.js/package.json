@@ -1,6 +1,9 @@
 {
     "name": "0x.js",
     "version": "0.37.2",
+    "engines": {
+        "node" : ">=6.12"
+    },
     "description": "A javascript library for interacting with the 0x protocol",
     "keywords": [
         "0x.js",
@@ -62,9 +65,6 @@
         "url": "https://github.com/0xProject/0x-monorepo"
     },
     "license": "Apache-2.0",
-    "engines": {
-        "node": ">=6.0.0"
-    },
     "devDependencies": {
         "@0xproject/abi-gen": "^0.2.13",
         "@0xproject/sol-compiler": "^0.4.3",

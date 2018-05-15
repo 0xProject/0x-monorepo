@@ -2,6 +2,9 @@
     "private": true,
     "name": "@0xproject/testnet-faucets",
     "version": "1.0.29",
+    "engines": {
+        "node" : ">=6.12"
+    },
     "description": "A faucet micro-service that dispenses test ERC20 tokens or Ether",
     "main": "server.js",
     "scripts": {
