@@ -70,7 +70,7 @@ contract MixinForwarderExpectedResults is MixinForwarderCore {
     /// @param orders An array of Order struct containing order specifications.
     /// @param makerAssetFillAmount A number representing the amount of this order to fill.
     /// @return totalFillResults Amounts filled and fees paid by maker and taker.
-    function expectedMaketBuyFillResults(Order[] memory orders, uint256 makerAssetFillAmount)
+    function expectedMarketBuyFillResults(Order[] memory orders, uint256 makerAssetFillAmount)
         public
         view
         returns (Exchange.FillResults memory totalFillResults)

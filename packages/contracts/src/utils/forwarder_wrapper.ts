@@ -24,13 +24,33 @@ export class ForwarderWrapper {
         this._web3Wrapper.abiDecoder.addABI(contractInstance.abi);
         this._zrxAddressBuffer = ethUtil.toBuffer(zrxAddress);
     }
-    public async buyExactTokensAsync(
+    public async buyExactAssetsAsync(
         orders: SignedOrder[],
         feeOrders: SignedOrder[],
         opts: {
-            from: string;
-            tokenAmount: BigNumber;
+            assetAmount: BigNumber;
             fillAmountWei: BigNumber;
+            from: string;
+        },
+    ): Promise<TransactionReceiptWithDecodedLogs> {
+        const tx = await this.buyExactAssetsFeeAsync(
+            orders,
+            feeOrders,
+            DEFAULT_FEE_PROPORTION,
+            ZeroEx.NULL_ADDRESS,
+            opts,
+        );
+        return tx;
+    }
+    public async buyExactAssetsFeeAsync(
+        orders: SignedOrder[],
+        feeOrders: SignedOrder[],
+        feeProportion: number,
+        feeRecipient: string,
+        opts: {
+            assetAmount: BigNumber;
+            fillAmountWei: BigNumber;
+            from: string;
         },
     ): Promise<TransactionReceiptWithDecodedLogs> {
         const txOpts = {
@@ -39,14 +59,14 @@ export class ForwarderWrapper {
         };
         const params = formatters.createMarketBuyOrders(orders, opts.fillAmountWei);
         const feeParams = formatters.createMarketBuyOrders(feeOrders, ZERO_AMOUNT);
-        const txHash: string = await this._forwarderContract.buyExactTokens.sendTransactionAsync(
+        const txHash: string = await this._forwarderContract.buyExactAssets.sendTransactionAsync(
             params.orders,
             params.signatures,
             feeParams.orders,
             feeParams.signatures,
-            opts.tokenAmount,
-            DEFAULT_FEE_PROPORTION,
-            ZeroEx.NULL_ADDRESS,
+            opts.assetAmount,
+            feeProportion,
+            feeRecipient,
             txOpts,
         );
         const tx = await this._getTxWithDecodedLogsAsync(txHash);
@@ -107,21 +127,21 @@ export class ForwarderWrapper {
         feeOrders: SignedOrder[],
         feeProportion: number,
         feeRecipient: string,
-        tokenAmount: BigNumber,
+        assetAmount: BigNumber,
     ): Promise<BigNumber> {
         const makerAssetData = ethUtil.toBuffer(orders[0].makerAssetData);
         const proxyId = makerAssetData[0];
         if (proxyId === AssetProxyId.ERC20) {
-            const fillAmountWei = await this._calculateBuyExactTokensFillAmountAsync(
+            const fillAmountWei = await this._calculateBuyExactERC20FillAmountAsync(
                 orders,
                 feeOrders,
                 feeProportion,
                 feeRecipient,
-                tokenAmount,
+                assetAmount,
             );
             return fillAmountWei;
         } else if (proxyId === AssetProxyId.ERC721) {
-            const fillAmountWei = await this._calculateBuyExactNFTFillAmountAsync(
+            const fillAmountWei = await this._calculateBuyExactERC721FillAmountAsync(
                 orders,
                 feeOrders,
                 feeProportion,
@@ -131,16 +151,16 @@ export class ForwarderWrapper {
         }
         throw new Error(`Invalid Asset Proxy Id: ${proxyId}`);
     }
-    private async _calculateBuyExactTokensFillAmountAsync(
+    private async _calculateBuyExactERC20FillAmountAsync(
         orders: SignedOrder[],
         feeOrders: SignedOrder[],
         feeProportion: number,
         feeRecipient: string,
-        tokenAmount: BigNumber,
+        assetAmount: BigNumber,
     ): Promise<BigNumber> {
         const makerAssetData = ethUtil.toBuffer(orders[0].makerAssetData);
         const makerAssetToken = makerAssetData.slice(1, 21);
-        const params = formatters.createMarketBuyOrders(orders, tokenAmount);
+        const params = formatters.createMarketBuyOrders(orders, assetAmount);
         const feeParams = formatters.createMarketSellOrders(feeOrders, ZERO_AMOUNT);
 
         let fillAmountWei;
@@ -148,13 +168,13 @@ export class ForwarderWrapper {
             // If buying ZRX we buy the tokens and fees from the ZRX order in one step
             const expectedBuyFeeTokensFillResults = await this._forwarderContract.expectedBuyFeesFillResults.callAsync(
                 params.orders,
-                tokenAmount,
+                assetAmount,
             );
             fillAmountWei = expectedBuyFeeTokensFillResults.takerAssetFilledAmount;
         } else {
-            const expectedMarketBuyFillResults = await this._forwarderContract.expectedMaketBuyFillResults.callAsync(
+            const expectedMarketBuyFillResults = await this._forwarderContract.expectedMarketBuyFillResults.callAsync(
                 params.orders,
-                tokenAmount,
+                assetAmount,
             );
             fillAmountWei = expectedMarketBuyFillResults.takerAssetFilledAmount;
             const expectedFeeAmount = expectedMarketBuyFillResults.takerFeePaid;
@@ -169,7 +189,7 @@ export class ForwarderWrapper {
         fillAmountWei = this._calculateAdditionalFeeProportionAmount(feeProportion, fillAmountWei);
         return fillAmountWei;
     }
-    private async _calculateBuyExactNFTFillAmountAsync(
+    private async _calculateBuyExactERC721FillAmountAsync(
         orders: SignedOrder[],
         feeOrders: SignedOrder[],
         feeProportion: number,
@@ -192,11 +212,15 @@ export class ForwarderWrapper {
         const params = formatters.createMarketSellOrders(orders, fillAmountWei);
         const feeParams = formatters.createMarketSellOrders(feeOrders, ZERO_AMOUNT);
         if (totalFees.greaterThan(ZERO_AMOUNT)) {
-            const expectedFeeFillResults = await this._forwarderContract.expectedBuyFeesFillResults.callAsync(
-                feeParams.orders,
+            const emptyFeeOrders: SignedOrder[] = [];
+            const expectedFeeAmountWei = await this._calculateBuyExactERC20FillAmountAsync(
+                feeOrders,
+                emptyFeeOrders,
+                DEFAULT_FEE_PROPORTION,
+                ZeroEx.NULL_ADDRESS,
                 totalFees,
             );
-            fillAmountWei = fillAmountWei.plus(expectedFeeFillResults.takerAssetFilledAmount);
+            fillAmountWei = fillAmountWei.plus(expectedFeeAmountWei);
         }
         fillAmountWei = this._calculateAdditionalFeeProportionAmount(feeProportion, fillAmountWei);
         return fillAmountWei;

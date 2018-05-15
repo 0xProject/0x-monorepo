@@ -2,13 +2,13 @@ pragma solidity ^0.4.23;
 pragma experimental ABIEncoderV2;
 
 import "./MixinForwarderCore.sol";
-import "./MixinBuyExactTokens.sol";
+import "./MixinBuyExactAssets.sol";
 import "./MixinMarketBuyTokens.sol";
 import "../utils/Ownable/Ownable.sol";
 
 contract Forwarder is
     MixinForwarderCore,
-    MixinBuyExactTokens,
+    MixinBuyExactAssets,
     MixinMarketBuyTokens,
     Ownable
 {
