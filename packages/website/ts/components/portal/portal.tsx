@@ -383,7 +383,7 @@ export class Portal extends React.Component<PortalProps, PortalState> {
         return (
             <Section
                 header={<TextHeader labelText="Explore 0x Relayers" />}
-                body={<RelayerIndex networkId={this.props.networkId} />}
+                body={<RelayerIndex networkId={this.props.networkId} screenWidth={this.props.screenWidth} />}
             />
         );
     }
