@@ -314,8 +314,7 @@ export class Wallet extends React.Component<WalletProps, WalletState> {
                         primaryText={
                             <div className="flex right" style={{ color: colors.mediumBlue, fontWeight: 'bold' }}>
                                 {'manage your wallet'}
-                            </div>
-                        }
+                            </div>}
                         style={{ ...styles.paddedItem, ...styles.borderedItem }}
                     />
                 </Link>
