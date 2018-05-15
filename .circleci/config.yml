@@ -136,7 +136,7 @@ jobs:
       - restore_cache:
           keys:
             - repo-{{ .Environment.CIRCLE_SHA1 }}
-      - run: yarn wsrun lint --parallel --exclude-missing --exclude @0xproject/monorepo-scripts
+      - run: yarn wsrun lint --exclude-missing
   prettier:
     working_directory: ~/repo
     docker:
