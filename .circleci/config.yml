@@ -136,7 +136,7 @@ jobs:
       - restore_cache:
           keys:
             - repo-{{ .Environment.CIRCLE_SHA1 }}
-      - run: yarn wsrun lint --exclude-missing
+      - run: yarn lerna:run lint
   prettier:
     working_directory: ~/repo
     docker:

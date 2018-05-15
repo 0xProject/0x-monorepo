@@ -16,6 +16,7 @@
         "script:publish:dry": "IS_DRY_RUN=true yarn script:publish",
         "install:all": "yarn install",
         "wsrun": "wsrun",
+        "lerna:run": "lerna run",
         "watch": "wsrun watch $PKG -r --stages --done-criteria='complete|successfully'",
         "build": "wsrun build $PKG -r --stages",
         "clean": "wsrun clean $PKG -r --parallel",
