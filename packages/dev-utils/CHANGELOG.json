@@ -3,6 +3,10 @@
         "version": "0.4.2",
         "changes": [
             {
+                "note": "Pass ZeroExArtifactsAdapter to CoverageSubprovider",
+                "pr": 589
+            },
+            {
                 "note": "Move callbackErrorReporter over from 0x.js",
                 "pr": 579
             }

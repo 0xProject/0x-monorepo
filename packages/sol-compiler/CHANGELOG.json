@@ -5,6 +5,10 @@
             {
                 "note": "Properly export the executable binary",
                 "pr": 588
+            },
+            {
+                "note": "Add a possibility to define a solidity version to use",
+                "pr": 589
             }
         ]
     },

@@ -1,5 +1,26 @@
 [
     {
+        "version": "0.1.0",
+        "changes": [
+            {
+                "note": "Add artifact adapter as a parameter for CoverageSubprovider. Export AbstractArtifactAdapter",
+                "pr": 589
+            },
+            {
+                "note": "Implement ZeroExArtiactAdapter and TruffleArtifactAdapter",
+                "pr": 589
+            },
+            {
+                "note": "Properly parse multi-level traces",
+                "pr": 589
+            },
+            {
+                "note": "Add support for solidity libraries",
+                "pr": 589
+            }
+        ]
+    },
+    {
         "timestamp": 1525477860,
         "version": "0.0.10",
         "changes": [
