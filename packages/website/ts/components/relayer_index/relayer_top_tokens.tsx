@@ -26,7 +26,14 @@ export const TopTokens: React.StatelessComponent<TopTokensProps> = (props: TopTo
             {_.map(props.tokens, (tokenInfo: WebsiteBackendTokenInfo, index: number) => {
                 const firstItemStyle = { ...styles.tokenLabel, ...styles.followingTokenLabel };
                 const style = index !== 0 ? firstItemStyle : styles.tokenLabel;
-                return <TokenLink tokenInfo={tokenInfo} style={style} networkId={props.networkId} />;
+                return (
+                    <TokenLink
+                        key={tokenInfo.address}
+                        tokenInfo={tokenInfo}
+                        style={style}
+                        networkId={props.networkId}
+                    />
+                );
             })}
         </div>
     );
@@ -56,7 +63,6 @@ class TokenLink extends React.Component<TokenLinkProps, TokenLinkState> {
         };
         return (
             <a
-                key={this.props.tokenInfo.address}
                 href={tokenLinkFromToken(this.props.tokenInfo, this.props.networkId)}
                 target="_blank"
                 style={style}
