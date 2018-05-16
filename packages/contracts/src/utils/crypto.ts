@@ -18,7 +18,7 @@ export const crypto = {
     solSHA256(args: any[]): Buffer {
         return crypto._solHash(args, ABI.soliditySHA256);
     },
-    _solHash(args: any[], hashFunction: (types: string[], values: any[]) => Buffer) {
+    _solHash(args: any[], hashFunction: (types: string[], values: any[]) => Buffer): Buffer {
         const argTypes: string[] = [];
         _.each(args, (arg, i) => {
             const isNumber = _.isFinite(arg);

@@ -1,5 +1,14 @@
 [
     {
+        "version": "0.1.0",
+        "changes": [
+            {
+                "note": "Properly export the executable binary",
+                "pr": 588
+            }
+        ]
+    },
+    {
         "timestamp": 1525477860,
         "version": "0.0.14",
         "changes": [

@@ -74,7 +74,7 @@ export class LedgerSubprovider extends BaseWalletSubprovider {
      * Set a desired derivation path when computing the available user addresses
      * @param basDerivationPath The desired derivation path (e.g `44'/60'/0'`)
      */
-    public setPath(basDerivationPath: string) {
+    public setPath(basDerivationPath: string): void {
         this._baseDerivationPath = basDerivationPath;
     }
     /**
@@ -192,7 +192,7 @@ export class LedgerSubprovider extends BaseWalletSubprovider {
         this._connectionLock.release();
         return ledgerEthereumClient;
     }
-    private async _destroyLedgerClientAsync() {
+    private async _destroyLedgerClientAsync(): Promise<void> {
         await this._connectionLock.acquire();
         if (_.isUndefined(this._ledgerClientIfExists)) {
             this._connectionLock.release();

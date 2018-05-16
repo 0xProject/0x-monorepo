@@ -11,7 +11,7 @@ export abstract class Subprovider {
     // tslint:disable-next-line:underscore-private-and-protected
     private engine: any;
     // Ported from: https://github.com/MetaMask/provider-engine/blob/master/util/random-id.js
-    private static _getRandomId() {
+    private static _getRandomId(): number {
         const extraDigits = 3;
         // 13 time digits
         const datePart = new Date().getTime() * Math.pow(10, extraDigits);

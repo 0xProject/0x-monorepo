@@ -16,7 +16,7 @@ interface TokenSendCompletedProps {
 interface TokenSendCompletedState {}
 
 export class TokenSendCompleted extends React.Component<TokenSendCompletedProps, TokenSendCompletedState> {
-    public render() {
+    public render(): React.ReactNode {
         const etherScanLink = !_.isUndefined(this.props.etherScanLinkIfExists) && (
             <a style={{ color: colors.white }} href={`${this.props.etherScanLinkIfExists}`} target="_blank">
                 Verify on Etherscan

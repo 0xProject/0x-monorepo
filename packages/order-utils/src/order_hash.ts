@@ -16,7 +16,7 @@ const INVALID_TAKER_FORMAT = 'instance.taker is not of a type(s) string';
  * expects values of Solidity type `uint` to be passed as type `BN`.
  * We do not use BN anywhere else in the codebase.
  */
-function bigNumberToBN(value: BigNumber) {
+function bigNumberToBN(value: BigNumber): BN {
     return new BN(value.toString(), 10);
 }
 

@@ -59,7 +59,7 @@ export class DocPage extends React.Component<DocPageProps, DocPageState> {
             docAgnosticFormat: undefined,
         };
     }
-    public componentWillMount() {
+    public componentWillMount(): void {
         const pathName = this.props.location.pathname;
         const lastSegment = pathName.substr(pathName.lastIndexOf('/') + 1);
         const versions = findVersions(lastSegment);
@@ -67,10 +67,10 @@ export class DocPage extends React.Component<DocPageProps, DocPageState> {
         // tslint:disable-next-line:no-floating-promises
         this._fetchJSONDocsFireAndForgetAsync(preferredVersionIfExists);
     }
-    public componentWillUnmount() {
+    public componentWillUnmount(): void {
         this._isUnmounted = true;
     }
-    public render() {
+    public render(): React.ReactNode {
         const menuSubsectionsBySection = _.isUndefined(this.state.docAgnosticFormat)
             ? {}
             : this.props.docsInfo.getMenuSubsectionsBySection(this.state.docAgnosticFormat);
@@ -135,7 +135,7 @@ export class DocPage extends React.Component<DocPageProps, DocPageState> {
             });
         }
     }
-    private _getSourceUrl() {
+    private _getSourceUrl(): string {
         const url = this.props.docsInfo.packageUrl;
         let pkg = docIdToSubpackageName[this.props.docsInfo.id];
         let tagPrefix = pkg;
@@ -155,7 +155,7 @@ export class DocPage extends React.Component<DocPageProps, DocPageState> {
         const sourceUrl = `${url}/blob/${tagPrefix}%40${this.props.docsVersion}/packages${pkg}`;
         return sourceUrl;
     }
-    private _onVersionSelected(semver: string) {
+    private _onVersionSelected(semver: string): void {
         let path = window.location.pathname;
         const lastChar = path[path.length - 1];
         if (_.isFinite(_.parseInt(lastChar))) {

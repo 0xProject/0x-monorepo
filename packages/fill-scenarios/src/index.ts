@@ -33,7 +33,7 @@ export class FillScenarios {
         this._zrxTokenAddress = zrxTokenAddress;
         this._exchangeContractAddress = exchangeContractAddress;
     }
-    public async initTokenBalancesAsync() {
+    public async initTokenBalancesAsync(): Promise<void> {
         for (const token of this._tokens) {
             if (token.symbol !== 'ZRX' && token.symbol !== 'WETH') {
                 const dummyToken = new DummyTokenContract(
@@ -126,7 +126,7 @@ export class FillScenarios {
         takerAddress: string,
         fillableAmount: BigNumber,
         partialFillAmount: BigNumber,
-    ) {
+    ): Promise<SignedOrder> {
         const [makerAddress] = this._userAddresses;
         const signedOrder = await this.createAsymmetricFillableSignedOrderAsync(
             makerTokenAddress,

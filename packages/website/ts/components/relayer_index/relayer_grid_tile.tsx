@@ -47,7 +47,7 @@ const styles: Styles = {
         width: '100%',
         boxSizing: 'border-box',
     },
-    dailyTradeVolumeLabel: {
+    weeklyTradeVolumeLabel: {
         fontSize: 14,
         color: colors.mediumBlue,
     },
@@ -80,9 +80,9 @@ export const RelayerGridTile: React.StatelessComponent<RelayerGridTileProps> = (
                     <div className="py1" style={styles.relayerNameLabel}>
                         {props.relayerInfo.name}
                     </div>
-                    <div style={styles.dailyTradeVolumeLabel}>{props.relayerInfo.dailyTxnVolume}</div>
+                    <div style={styles.weeklyTradeVolumeLabel}>{props.relayerInfo.weeklyTxnVolume}</div>
                     <div className="py1" style={styles.subLabel}>
-                        Daily Trade Volume
+                        Weekly Trade Volume
                     </div>
                     <TopTokens tokens={props.relayerInfo.topTokens} networkId={props.networkId} />
                     <div className="py1" style={styles.subLabel}>
@@ -109,14 +109,14 @@ class ImgWithFallback extends React.Component<ImgWithFallbackProps, ImgWithFallb
             imageLoadFailed: false,
         };
     }
-    public render() {
+    public render(): React.ReactNode {
         if (this.state.imageLoadFailed || _.isUndefined(this.props.src)) {
             return <img src={this.props.fallbackSrc} style={this.props.style} />;
         } else {
             return <img src={this.props.src} onError={this._onError.bind(this)} style={this.props.style} />;
         }
     }
-    private _onError() {
+    private _onError(): void {
         this.setState({
             imageLoadFailed: true,
         });

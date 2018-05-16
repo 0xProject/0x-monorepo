@@ -4,7 +4,7 @@ import ChaiBigNumber = require('chai-bignumber');
 import * as dirtyChai from 'dirty-chai';
 
 export const chaiSetup = {
-    configure() {
+    configure(): void {
         chai.config.includeStack = true;
         chai.use(ChaiBigNumber());
         chai.use(dirtyChai);

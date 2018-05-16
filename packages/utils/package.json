@@ -1,11 +1,14 @@
 {
     "name": "@0xproject/utils",
     "version": "0.6.1",
+    "engines": {
+        "node" : ">=6.12"
+    },
     "description": "0x TS utils",
     "main": "lib/index.js",
     "types": "lib/index.d.ts",
     "scripts": {
-        "build:watch": "tsc -w",
+        "watch": "tsc -w",
         "build": "tsc && copyfiles -u 2 './lib/monorepo_scripts/**/*' ./scripts",
         "clean": "shx rm -rf lib scripts",
         "lint": "tslint --project .",

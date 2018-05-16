@@ -27,7 +27,7 @@ export class Party extends React.Component<PartyProps, PartyState> {
         identiconStyle: {},
         identiconDiameter: IDENTICON_DIAMETER,
     };
-    public render() {
+    public render(): React.ReactNode {
         const label = this.props.label;
         const address = this.props.address;
         const identiconDiameter = this.props.identiconDiameter;

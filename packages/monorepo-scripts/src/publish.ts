@@ -72,10 +72,10 @@ const packageNameToWebsitePath: { [name: string]: string } = {
     process.exit(1);
 });
 
-async function confirmDocPagesRenderAsync(packages: LernaPackage[]) {
+async function confirmDocPagesRenderAsync(packages: LernaPackage[]): Promise<void> {
     // push docs to staging
     utils.log("Upload all docJson's to S3 staging...");
-    await execAsync(`yarn lerna:stage_docs`, { cwd: constants.monorepoRootPath });
+    await execAsync(`yarn stage_docs`, { cwd: constants.monorepoRootPath });
 
     // deploy website to staging
     utils.log('Deploy website to staging...');
@@ -162,7 +162,7 @@ async function checkPublishRequiredSetupAsync(): Promise<boolean> {
     return true;
 }
 
-async function pushChangelogsToGithubAsync() {
+async function pushChangelogsToGithubAsync(): Promise<void> {
     await execAsync(`git add . --all`, { cwd: constants.monorepoRootPath });
     await execAsync(`git commit -m "Updated CHANGELOGS"`, { cwd: constants.monorepoRootPath });
     await execAsync(`git push`, { cwd: constants.monorepoRootPath });
@@ -228,7 +228,7 @@ async function updateChangeLogsAsync(updatedPublicLernaPackages: LernaPackage[])
     return packageToVersionChange;
 }
 
-async function lernaPublishAsync(packageToVersionChange: { [name: string]: string }) {
+async function lernaPublishAsync(packageToVersionChange: { [name: string]: string }): Promise<void> {
     // HACK: Lerna publish does not provide a way to specify multiple package versions via
     // flags so instead we need to interact with their interactive prompt interface.
     const child = spawn('lerna', ['publish', '--registry=https://registry.npmjs.org/'], {
@@ -269,7 +269,7 @@ async function lernaPublishAsync(packageToVersionChange: { [name: string]: strin
     });
 }
 
-function updateVersionNumberIfNeeded(currentVersion: string, proposedNextVersion: string) {
+function updateVersionNumberIfNeeded(currentVersion: string, proposedNextVersion: string): string {
     if (proposedNextVersion === currentVersion) {
         return utils.getNextPatchVersion(currentVersion);
     }

@@ -61,14 +61,13 @@ const args = yargs
         'Full usage example',
     ).argv;
 
-function registerPartials(partialsGlob: string) {
+function registerPartials(partialsGlob: string): void {
     const partialTemplateFileNames = globSync(partialsGlob);
     logUtils.log(`Found ${chalk.green(`${partialTemplateFileNames.length}`)} ${chalk.bold('partial')} templates`);
     for (const partialTemplateFileName of partialTemplateFileNames) {
         const namedContent = utils.getNamedContent(partialTemplateFileName);
         Handlebars.registerPartial(namedContent.name, namedContent.content);
     }
-    return partialsGlob;
 }
 
 function writeOutputFile(name: string, renderedTsCode: string): void {

@@ -20,7 +20,7 @@ export class Question extends React.Component<QuestionProps, QuestionState> {
             isExpanded: props.shouldDisplayExpanded,
         };
     }
-    public render() {
+    public render(): React.ReactNode {
         return (
             <div className="py1">
                 <Card
@@ -43,7 +43,7 @@ export class Question extends React.Component<QuestionProps, QuestionState> {
             </div>
         );
     }
-    private _onExchangeChange() {
+    private _onExchangeChange(): void {
         this.setState({
             isExpanded: !this.state.isExpanded,
         });

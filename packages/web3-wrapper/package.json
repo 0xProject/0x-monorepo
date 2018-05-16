@@ -1,11 +1,14 @@
 {
     "name": "@0xproject/web3-wrapper",
     "version": "0.6.3",
+    "engines": {
+        "node" : ">=6.12"
+    },
     "description": "Wraps around web3 and gives a nicer interface",
     "main": "lib/src/index.js",
     "types": "lib/src/index.d.ts",
     "scripts": {
-        "build:watch": "tsc -w",
+        "watch": "tsc -w",
         "build": "tsc && copyfiles -u 3 './lib/src/monorepo_scripts/**/*' ./scripts",
         "clean": "shx rm -rf lib scripts",
         "lint": "tslint --project .",
@@ -15,7 +18,7 @@
         "test:coverage": "nyc npm run test --all && yarn coverage:report:lcov",
         "coverage:report:lcov": "nyc report --reporter=text-lcov > coverage/lcov.info",
         "manual:postpublish": "yarn build; node ./scripts/postpublish.js",
-        "docs:stage": "yarn build && node ./scripts/stage_docs.js",
+        "docs:stage": "node scripts/stage_docs.js",
         "docs:json": "typedoc --excludePrivate --excludeExternals --target ES5 --json $JSON_FILE_PATH $PROJECT_FILES",
         "upload_docs_json": "aws s3 cp generated_docs/index.json $S3_URL --profile 0xproject --grants read=uri=http://acs.amazonaws.com/groups/global/AllUsers --content-type application/json"
     },

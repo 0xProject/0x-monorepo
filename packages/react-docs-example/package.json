@@ -2,12 +2,15 @@
     "private": true,
     "name": "@0xproject/react-docs-example",
     "version": "0.0.11",
+    "engines": {
+        "node" : ">=6.12"
+    },
     "description": "An example app using react-docs",
     "scripts": {
         "lint": "tslint --project .",
         "build": "tsc",
         "build:example": "NODE_ENV=production webpack",
-        "build:watch": "tsc -w",
+        "watch": "tsc -w",
         "clean": "shx rm -rf lib; shx rm -f public/bundle*",
         "dev": "webpack-dev-server --open",
         "deploy_example": "npm run build:example; aws s3 sync ./public/. s3://react-docs-example --profile 0xproject --region us-east-1 --grants read=uri=http://acs.amazonaws.com/groups/global/AllUsers"

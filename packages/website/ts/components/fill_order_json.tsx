@@ -19,7 +19,7 @@ interface FillOrderJSONProps {
 interface FillOrderJSONState {}
 
 export class FillOrderJSON extends React.Component<FillOrderJSONProps, FillOrderJSONState> {
-    public render() {
+    public render(): React.ReactNode {
         const tokenAddresses = _.keys(this.props.tokenByAddress);
         const exchangeContract = this.props.blockchain.getExchangeContractAddressIfExists();
         const hintSideToAssetToken = {

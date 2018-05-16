@@ -8,7 +8,7 @@ import { rpcUrls } from './rpc_urls';
 const DEFAULT_NETWORK_ID = 42; // kovan
 
 export const parameterTransformer = {
-    transform(req: Request, res: Response, next: NextFunction) {
+    transform(req: Request, res: Response, next: NextFunction): void {
         const recipientAddress = req.params.recipient;
         if (_.isUndefined(recipientAddress) || !addressUtils.isAddress(recipientAddress)) {
             res.status(400).send('INVALID_RECIPIENT_ADDRESS');

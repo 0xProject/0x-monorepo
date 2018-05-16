@@ -35,7 +35,7 @@ export class SendDialog extends React.Component<SendDialogProps, SendDialogState
             isAmountValid: false,
         };
     }
-    public render() {
+    public render(): React.ReactNode {
         const transferDialogActions = [
             <FlatButton key="cancelTransfer" label="Cancel" onTouchTap={this._onCancel.bind(this)} />,
             <FlatButton
@@ -57,7 +57,7 @@ export class SendDialog extends React.Component<SendDialogProps, SendDialogState
             </Dialog>
         );
     }
-    private _renderSendDialogBody() {
+    private _renderSendDialogBody(): React.ReactNode {
         return (
             <div className="mx-auto" style={{ maxWidth: 300 }}>
                 <div style={{ height: 80 }}>
@@ -86,19 +86,19 @@ export class SendDialog extends React.Component<SendDialogProps, SendDialogState
             </div>
         );
     }
-    private _onRecipientChange(recipient?: string) {
+    private _onRecipientChange(recipient?: string): void {
         this.setState({
             shouldShowIncompleteErrs: false,
             recipient,
         });
     }
-    private _onValueChange(isValid: boolean, amount?: BigNumber) {
+    private _onValueChange(isValid: boolean, amount?: BigNumber): void {
         this.setState({
             isAmountValid: isValid,
             value: amount,
         });
     }
-    private _onSendClick() {
+    private _onSendClick(): void {
         if (this._hasErrors()) {
             this.setState({
                 shouldShowIncompleteErrs: true,
@@ -112,13 +112,13 @@ export class SendDialog extends React.Component<SendDialogProps, SendDialogState
             this.props.onComplete(this.state.recipient, value);
         }
     }
-    private _onCancel() {
+    private _onCancel(): void {
         this.setState({
             value: undefined,
         });
         this.props.onCancelled();
     }
-    private _hasErrors() {
+    private _hasErrors(): boolean {
         return _.isUndefined(this.state.recipient) || _.isUndefined(this.state.value) || !this.state.isAmountValid;
     }
 }

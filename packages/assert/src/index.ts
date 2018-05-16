@@ -10,7 +10,7 @@ export const assert = {
         const isBigNumber = _.isObject(value) && (value as any).isBigNumber;
         this.assert(isBigNumber, this.typeAssertionMessage(variableName, 'BigNumber', value));
     },
-    isValidBaseUnitAmount(variableName: string, value: BigNumber) {
+    isValidBaseUnitAmount(variableName: string, value: BigNumber): void {
         assert.isBigNumber(variableName, value);
         const isNegative = value.lessThan(0);
         this.assert(!isNegative, `${variableName} cannot be a negative number, found value: ${value.toNumber()}`);

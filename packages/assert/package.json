@@ -1,11 +1,14 @@
 {
     "name": "@0xproject/assert",
     "version": "0.2.9",
+    "engines": {
+        "node" : ">=6.12"
+    },
     "description": "Provides a standard way of performing type and schema validation across 0x projects",
     "main": "lib/src/index.js",
     "types": "lib/src/index.d.ts",
     "scripts": {
-        "build:watch": "tsc -w",
+        "watch": "tsc -w",
         "build": "tsc && copyfiles -u 3 './lib/src/monorepo_scripts/**/*' ./scripts",
         "clean": "shx rm -rf lib test_temp scripts",
         "lint": "tslint --project .",

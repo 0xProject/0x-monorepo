@@ -30,18 +30,16 @@ yarn install
 
 ### Initial setup
 
-The **first** time you work with this package, you must build **all** packages within the monorepo. This is because packages that depend on other packages located inside this monorepo are symlinked when run from **within** the monorepo. This allows you to make changes across multiple packages without first publishing dependent packages to NPM. To build all packages, run the following from the monorepo root directory:
+To build this package and all other monorepo packages that it depends on, run the following from the monorepo root directory:
 
 ```bash
-yarn lerna:rebuild
+PKG=@0xproject/website yarn build
 ```
 
 ### Run dev server
 
-The the `website` root directory, run:
-
 ```bash
-yarn dev
+PKG=@0xproject/website yarn watch
 ```
 
 Visit [0xproject.localhost:3572](http://0xproject.localhost:3572) in your browser.

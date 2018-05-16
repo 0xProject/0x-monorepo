@@ -11,8 +11,10 @@ const DISPENSE_AMOUNT_TOKEN = 0.1;
 const DISPENSE_MAX_AMOUNT_TOKEN = 2;
 const DISPENSE_MAX_AMOUNT_ETHER = 2;
 
+type AsyncTask = () => Promise<void>;
+
 export const dispenseAssetTasks = {
-    dispenseEtherTask(recipientAddress: string, web3: Web3) {
+    dispenseEtherTask(recipientAddress: string, web3: Web3): AsyncTask {
         return async () => {
             logUtils.log(`Processing ETH ${recipientAddress}`);
             const userBalance = await promisify<BigNumber>(web3.eth.getBalance)(recipientAddress);
@@ -32,7 +34,7 @@ export const dispenseAssetTasks = {
             logUtils.log(`Sent ${DISPENSE_AMOUNT_ETHER} ETH to ${recipientAddress} tx: ${txHash}`);
         };
     },
-    dispenseTokenTask(recipientAddress: string, tokenSymbol: string, zeroEx: ZeroEx) {
+    dispenseTokenTask(recipientAddress: string, tokenSymbol: string, zeroEx: ZeroEx): AsyncTask {
         return async () => {
             logUtils.log(`Processing ${tokenSymbol} ${recipientAddress}`);
             const amountToDispense = new BigNumber(DISPENSE_AMOUNT_TOKEN);

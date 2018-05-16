@@ -200,7 +200,7 @@ export class ZeroEx {
      */
     public async awaitTransactionMinedAsync(
         txHash: string,
-        pollingIntervalMs = 1000,
+        pollingIntervalMs: number = 1000,
         timeoutMs?: number,
     ): Promise<TransactionReceiptWithDecodedLogs> {
         // Hack: Get Web3Wrapper from ContractWrappers
