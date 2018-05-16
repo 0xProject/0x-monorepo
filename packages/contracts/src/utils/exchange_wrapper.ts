@@ -243,8 +243,6 @@ export class ExchangeWrapper {
             { from },
         );
         const tx = await this._getTxWithDecodedExchangeLogsAsync(txHash);
-        tx.logs = _.filter(tx.logs, log => log.address === this._exchange.address);
-        tx.logs = _.map(tx.logs, log => this._logDecoder.decodeLogOrThrow(log));
         return tx;
     }
     private async _getTxWithDecodedExchangeLogsAsync(txHash: string) {
