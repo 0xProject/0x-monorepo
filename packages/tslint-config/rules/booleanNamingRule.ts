@@ -41,7 +41,7 @@ function checkNodeForViolations(ctx: Lint.WalkContext<void>, node: ts.Node, tc: 
             break;
 
         default:
-        // noop
+            _.noop();
     }
 }
 
@@ -53,7 +53,6 @@ function handleBooleanNaming(
     const nodeName = node.name;
     const variableName = nodeName.getText();
     const lowercasedName = _.toLower(variableName);
-    // tslint:disable-next-line
     const typeNode = tc.getTypeAtLocation(node);
     const typeName = (typeNode as any).intrinsicName;
     if (typeName === 'boolean') {
