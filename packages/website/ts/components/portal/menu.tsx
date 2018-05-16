@@ -5,7 +5,7 @@ import { MenuItem } from 'ts/components/ui/menu_item';
 import { Environments, WebsitePaths } from 'ts/types';
 import { configs } from 'ts/utils/configs';
 
-export interface PortalMenuProps {
+export interface MenuProps {
     selectedPath?: string;
 }
 
@@ -44,14 +44,14 @@ const SELECTED_ICON_COLOR = colors.yellow900;
 
 const LEFT_PADDING = 185;
 
-export const PortalMenu: React.StatelessComponent<PortalMenuProps> = (props: PortalMenuProps) => {
+export const Menu: React.StatelessComponent<MenuProps> = (props: MenuProps) => {
     return (
         <div style={{ paddingLeft: LEFT_PADDING }}>
             {_.map(menuItemEntries, entry => {
                 const selected = entry.to === props.selectedPath;
                 return (
                     <MenuItem key={entry.to} className="py2" to={entry.to}>
-                        <PortalMenuItemLabel title={entry.labelText} iconName={entry.iconName} selected={selected} />
+                        <MenuItemLabel title={entry.labelText} iconName={entry.iconName} selected={selected} />
                     </MenuItem>
                 );
             })}
@@ -59,12 +59,12 @@ export const PortalMenu: React.StatelessComponent<PortalMenuProps> = (props: Por
     );
 };
 
-interface PortalMenuItemLabelProps {
+interface MenuItemLabelProps {
     title: string;
     iconName: string;
     selected: boolean;
 }
-const PortalMenuItemLabel: React.StatelessComponent<PortalMenuItemLabelProps> = (props: PortalMenuItemLabelProps) => {
+const MenuItemLabel: React.StatelessComponent<MenuItemLabelProps> = (props: MenuItemLabelProps) => {
     const styles: Styles = {
         iconStyle: {
             color: props.selected ? SELECTED_ICON_COLOR : DEFAULT_ICON_COLOR,

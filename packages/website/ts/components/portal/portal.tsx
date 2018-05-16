@@ -12,7 +12,10 @@ import { LedgerConfigDialog } from 'ts/components/dialogs/ledger_config_dialog';
 import { PortalDisclaimerDialog } from 'ts/components/dialogs/portal_disclaimer_dialog';
 import { EthWrappers } from 'ts/components/eth_wrappers';
 import { AssetPicker } from 'ts/components/generate_order/asset_picker';
-import { PortalMenu } from 'ts/components/portal/portal_menu';
+import { BackButton } from 'ts/components/portal/back_button';
+import { Menu } from 'ts/components/portal/menu';
+import { Section } from 'ts/components/portal/section';
+import { TextHeader } from 'ts/components/portal/text_header';
 import { RelayerIndex } from 'ts/components/relayer_index/relayer_index';
 import { TokenBalances } from 'ts/components/token_balances';
 import { TopBar, TopBarDisplayType } from 'ts/components/top_bar/top_bar';
@@ -79,7 +82,6 @@ enum TokenManagementState {
 
 const THROTTLE_TIMEOUT = 100;
 const TOP_BAR_HEIGHT = TopBar.heightForDisplayType(TopBarDisplayType.Expanded);
-const BACK_BUTTON_HEIGHT = 28;
 const LEFT_COLUMN_WIDTH = 346;
 
 const styles: Styles = {
@@ -98,21 +100,6 @@ const styles: Styles = {
         height: `calc(100vh - ${TOP_BAR_HEIGHT}px)`,
         WebkitOverflowScrolling: 'touch',
         overflow: 'auto',
-    },
-    title: {
-        fontWeight: 'bold',
-        fontSize: 20,
-    },
-    backButton: {
-        height: BACK_BUTTON_HEIGHT,
-        paddingTop: 10,
-        backgroundColor: colors.white,
-        borderRadius: BACK_BUTTON_HEIGHT,
-        boxShadow: `0px 4px 6px ${colors.walletBoxShadow}`,
-    },
-    backButtonIcon: {
-        color: colors.mediumBlue,
-        fontSize: 20,
     },
 };
 
@@ -261,36 +248,38 @@ export class Portal extends React.Component<PortalProps, PortalState> {
     }
     private _renderMenu(routeComponentProps: RouteComponentProps<any>): React.ReactNode {
         return (
-            <div>
-                <BackButton to={`${WebsitePaths.Portal}`} labelText="back to Relayers" />
-                <PortalMenu selectedPath={routeComponentProps.location.pathname} />
-            </div>
+            <Section
+                header={<BackButton to={`${WebsitePaths.Portal}`} labelText="back to Relayers" />}
+                body={<Menu selectedPath={routeComponentProps.location.pathname} />}
+            />
         );
     }
     private _renderWallet(): React.ReactNode {
         const allTokens = _.values(this.props.tokenByAddress);
         const trackedTokens = _.filter(allTokens, t => t.isTracked);
         return (
-            <div>
-                <Title labelText="Your Account" />
-                <Wallet
-                    userAddress={this.props.userAddress}
-                    networkId={this.props.networkId}
-                    blockchain={this._blockchain}
-                    blockchainIsLoaded={this.props.blockchainIsLoaded}
-                    blockchainErr={this.props.blockchainErr}
-                    dispatcher={this.props.dispatcher}
-                    tokenByAddress={this.props.tokenByAddress}
-                    trackedTokens={trackedTokens}
-                    userEtherBalanceInWei={this.props.userEtherBalanceInWei}
-                    lastForceTokenStateRefetch={this.props.lastForceTokenStateRefetch}
-                    injectedProviderName={this.props.injectedProviderName}
-                    providerType={this.props.providerType}
-                    onToggleLedgerDialog={this._onToggleLedgerDialog.bind(this)}
-                    onAddToken={this._onAddToken.bind(this)}
-                    onRemoveToken={this._onRemoveToken.bind(this)}
-                />
-            </div>
+            <Section
+                header={<TextHeader labelText="Your Account" />}
+                body={
+                    <Wallet
+                        userAddress={this.props.userAddress}
+                        networkId={this.props.networkId}
+                        blockchain={this._blockchain}
+                        blockchainIsLoaded={this.props.blockchainIsLoaded}
+                        blockchainErr={this.props.blockchainErr}
+                        dispatcher={this.props.dispatcher}
+                        tokenByAddress={this.props.tokenByAddress}
+                        trackedTokens={trackedTokens}
+                        userEtherBalanceInWei={this.props.userEtherBalanceInWei}
+                        lastForceTokenStateRefetch={this.props.lastForceTokenStateRefetch}
+                        injectedProviderName={this.props.injectedProviderName}
+                        providerType={this.props.providerType}
+                        onToggleLedgerDialog={this._onToggleLedgerDialog.bind(this)}
+                        onAddToken={this._onAddToken.bind(this)}
+                        onRemoveToken={this._onRemoveToken.bind(this)}
+                    />
+                }
+            />
         );
     }
     private _renderAccountManagement(): React.ReactNode {
@@ -318,72 +307,80 @@ export class Portal extends React.Component<PortalProps, PortalState> {
     }
     private _renderEthWrapper(): React.ReactNode {
         return (
-            <div>
-                <Title labelText="Wrapped ETH" />
-                <EthWrappers
-                    networkId={this.props.networkId}
-                    blockchain={this._blockchain}
-                    dispatcher={this.props.dispatcher}
-                    tokenByAddress={this.props.tokenByAddress}
-                    userAddress={this.props.userAddress}
-                    userEtherBalanceInWei={this.props.userEtherBalanceInWei}
-                    lastForceTokenStateRefetch={this.props.lastForceTokenStateRefetch}
-                />
-            </div>
+            <Section
+                header={<TextHeader labelText="Wrapped ETH" />}
+                body={
+                    <EthWrappers
+                        networkId={this.props.networkId}
+                        blockchain={this._blockchain}
+                        dispatcher={this.props.dispatcher}
+                        tokenByAddress={this.props.tokenByAddress}
+                        userAddress={this.props.userAddress}
+                        userEtherBalanceInWei={this.props.userEtherBalanceInWei}
+                        lastForceTokenStateRefetch={this.props.lastForceTokenStateRefetch}
+                    />
+                }
+            />
         );
     }
     private _renderTradeHistory(): React.ReactNode {
         return (
-            <div>
-                <Title labelText="Trade History" />
-                <TradeHistory
-                    tokenByAddress={this.props.tokenByAddress}
-                    userAddress={this.props.userAddress}
-                    networkId={this.props.networkId}
-                />
-            </div>
+            <Section
+                header={<TextHeader labelText="Trade History" />}
+                body={
+                    <TradeHistory
+                        tokenByAddress={this.props.tokenByAddress}
+                        userAddress={this.props.userAddress}
+                        networkId={this.props.networkId}
+                    />
+                }
+            />
         );
     }
     private _renderTradeDirect(match: any, location: Location, history: History): React.ReactNode {
         return (
-            <div>
-                <Title labelText="Trade Direct" />
-                <GenerateOrderForm
-                    blockchain={this._blockchain}
-                    hashData={this.props.hashData}
-                    dispatcher={this.props.dispatcher}
-                />
-            </div>
+            <Section
+                header={<TextHeader labelText="Trade Direct" />}
+                body={
+                    <GenerateOrderForm
+                        blockchain={this._blockchain}
+                        hashData={this.props.hashData}
+                        dispatcher={this.props.dispatcher}
+                    />
+                }
+            />
         );
     }
     private _renderTokenBalances(): React.ReactNode {
         const allTokens = _.values(this.props.tokenByAddress);
         const trackedTokens = _.filter(allTokens, t => t.isTracked);
         return (
-            <div>
-                <Title labelText="Your Account" />
-                <TokenBalances
-                    blockchain={this._blockchain}
-                    blockchainErr={this.props.blockchainErr}
-                    blockchainIsLoaded={this.props.blockchainIsLoaded}
-                    dispatcher={this.props.dispatcher}
-                    screenWidth={this.props.screenWidth}
-                    tokenByAddress={this.props.tokenByAddress}
-                    trackedTokens={trackedTokens}
-                    userAddress={this.props.userAddress}
-                    userEtherBalanceInWei={this.props.userEtherBalanceInWei}
-                    networkId={this.props.networkId}
-                    lastForceTokenStateRefetch={this.props.lastForceTokenStateRefetch}
-                />
-            </div>
+            <Section
+                header={<TextHeader labelText="Your Account" />}
+                body={
+                    <TokenBalances
+                        blockchain={this._blockchain}
+                        blockchainErr={this.props.blockchainErr}
+                        blockchainIsLoaded={this.props.blockchainIsLoaded}
+                        dispatcher={this.props.dispatcher}
+                        screenWidth={this.props.screenWidth}
+                        tokenByAddress={this.props.tokenByAddress}
+                        trackedTokens={trackedTokens}
+                        userAddress={this.props.userAddress}
+                        userEtherBalanceInWei={this.props.userEtherBalanceInWei}
+                        networkId={this.props.networkId}
+                        lastForceTokenStateRefetch={this.props.lastForceTokenStateRefetch}
+                    />
+                }
+            />
         );
     }
     private _renderRelayerIndex(): React.ReactNode {
         return (
-            <div>
-                <Title labelText="Explore 0x Relayers" />
-                <RelayerIndex networkId={this.props.networkId} />
-            </div>
+            <Section
+                header={<TextHeader labelText="Explore 0x Relayers" />}
+                body={<RelayerIndex networkId={this.props.networkId} />}
+            />
         );
     }
     private _renderNotFoundMessage(): React.ReactNode {
@@ -449,38 +446,6 @@ export class Portal extends React.Component<PortalProps, PortalState> {
     }
 }
 
-interface TitleProps {
-    labelText: string;
-}
-const Title = (props: TitleProps) => {
-    return (
-        <div className="py3" style={styles.title}>
-            {props.labelText}
-        </div>
-    );
-};
-
-interface BackButtonProps {
-    to: string;
-    labelText: string;
-}
-const BackButton = (props: BackButtonProps) => {
-    return (
-        <div style={{ height: 65, paddingTop: 25 }}>
-            <Link to={props.to} style={{ textDecoration: 'none' }}>
-                <div className="flex right" style={styles.backButton}>
-                    <div style={{ marginLeft: 12 }}>
-                        <i style={styles.backButtonIcon} className={`zmdi zmdi-arrow-left`} />
-                    </div>
-                    <div style={{ marginLeft: 12, marginRight: 12 }}>
-                        <div style={{ fontSize: 16, color: colors.lightGrey }}>{props.labelText}</div>
-                    </div>
-                </div>
-            </Link>
-        </div>
-    );
-};
-
 interface PortalLayoutProps {
     left: React.ReactNode;
     right: React.ReactNode;
@@ -496,4 +461,4 @@ const PortalLayout = (props: PortalLayoutProps) => {
             </div>
         </div>
     );
-};
+}; // tslint:disable:max-file-line-count
