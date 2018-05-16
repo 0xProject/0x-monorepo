@@ -1,5 +1,5 @@
-export const webSocketOrderbookChannelConfigSchema = {
-    id: '/WebSocketOrderbookChannelConfig',
+export const nodeWebSocketOrderbookChannelConfigSchema = {
+    id: '/NodeWebSocketOrderbookChannelConfig',
     type: 'object',
     properties: {
         heartbeatIntervalMs: {
