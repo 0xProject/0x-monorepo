@@ -885,14 +885,14 @@ describe('Schema', () => {
     });
     describe('#txDataSchema', () => {
         it('should validate valid txData', () => {
-            const bigNumGasAmt = new BigNumber(42);
+            const bigNumGasAmount = new BigNumber(42);
             const testCases = [
                 {
                     from: NULL_ADDRESS,
                 },
                 {
                     from: NULL_ADDRESS,
-                    gas: bigNumGasAmt,
+                    gas: bigNumGasAmount,
                 },
                 {
                     from: NULL_ADDRESS,
