@@ -38,7 +38,7 @@ describe('Web3Wrapper tests', () => {
             expect(networkId).to.be.equal(NETWORK_ID);
         });
     });
-    describe.only('mining functions', () => {
+    describe('mining functions', () => {
         it('starts and stops the miner', async () => {
             // Note: depending on our provider, the miner may or may not already
             // be mining. To account for both conditions, we have what might

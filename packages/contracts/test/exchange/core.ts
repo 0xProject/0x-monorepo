@@ -53,6 +53,13 @@ describe('Exchange', () => {
 
     let zeroEx: ZeroEx;
 
+    // TODO(albrow): Properly manage blockchainLifecycle everywhere.
+    // before(async () => {
+    //     await blockchainLifecycle.startAsync();
+    // });
+    // after(async () => {
+    //     await blockchainLifecycle.revertAsync();
+    // });
     before(async () => {
         const accounts = await web3Wrapper.getAvailableAddressesAsync();
         maker = accounts[0];

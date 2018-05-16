@@ -28,6 +28,7 @@ export class BlockchainLifecycle {
                 break;
             case NodeType.Geth:
                 const blockNumber = await this._web3Wrapper.getBlockNumberAsync();
+                console.log(`block number for taking snapshot: ${blockNumber}`);
                 this._snapshotIdsStack.push(blockNumber);
                 break;
             default:
@@ -46,8 +47,9 @@ export class BlockchainLifecycle {
                 break;
             case NodeType.Geth:
                 const blockNumber = this._snapshotIdsStack.pop() as number;
-                // Note: setHead will break the miner, so we need to stop it
-                // first if it was running.
+                console.log(`block number for restoring snapshot: ${blockNumber}`);
+                // Note: setHead will sometimes break the miner, so we need to
+                // stop it first if it was running.
                 const wasMining = await this._web3Wrapper.isMiningAsync();
                 if (wasMining) {
                     await this._web3Wrapper.minerStopAsync();
