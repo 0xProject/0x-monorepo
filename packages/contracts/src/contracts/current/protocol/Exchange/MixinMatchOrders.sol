@@ -112,8 +112,8 @@ contract MixinMatchOrders is
         settleMatchedOrders(
             leftOrder,
             rightOrder,
-            matchedFillResults,
-            takerAddress
+            takerAddress,
+            matchedFillResults
         );
 
         // Update exchange state
