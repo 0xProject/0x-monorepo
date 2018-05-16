@@ -22,7 +22,7 @@ contract MixinBuyExactAssets is
     /// @param feeOrders An array of Order struct containing order specifications for fees.
     /// @param assetAmount The amount of maker asset to buy.
     /// @param feeSignatures An array of Proof that order has been created by maker for the fee orders.
-    /// @param feeProportion A proportion deducted off the incoming ETH and sent to feeRecipient. The maximum value for this
+    /// @param feeProportion A proportion deducted off the ETH spent and sent to feeRecipient. The maximum value for this
     ///        is 1000, aka 10%. Supports up to 2 decimal places. I.e 0.59% is 59.
     /// @param feeRecipient An address of the fee recipient whom receives feeProportion of ETH.
     /// @return FillResults amounts filled and fees paid by maker and taker.
@@ -38,11 +38,11 @@ contract MixinBuyExactAssets is
         public
         returns (Exchange.FillResults memory totalFillResults)
     {
-        require(msg.value > 0, "msg.value must be greater than 0");
+        require(msg.value > 0, VALUE_GT_ZERO);
         address takerAsset = readAddress(orders[0].takerAssetData, 1);
-        require(takerAsset == address(ETHER_TOKEN), "order taker asset must be Wrapped ETH");
+        require(takerAsset == address(ETHER_TOKEN), TAKER_ASSET_WETH);
         uint8 proxyId = uint8(orders[0].makerAssetData[0]);
-        require(proxyId == 1 || proxyId == 2, "unsupported token proxy");
+        require(proxyId == 1 || proxyId == 2, UNSUPPORTED_TOKEN_PROXY);
 
         uint256 remainingTakerAssetAmount = msg.value;
         ETHER_TOKEN.deposit.value(remainingTakerAssetAmount)();
@@ -54,7 +54,7 @@ contract MixinBuyExactAssets is
         remainingTakerAssetAmount = safeSub(remainingTakerAssetAmount, totalFillResults.takerAssetFilledAmount);
         // Prevent a user from paying too high of fees during fee abstraction
         require(isAcceptableThreshold(
-            remainingTakerAssetAmount, totalFillResults.takerAssetFilledAmount), "traded amount does not meet acceptable threshold");
+            remainingTakerAssetAmount, totalFillResults.takerAssetFilledAmount), NOT_ACCEPTABLE_THRESHOLD);
         withdrawPayAndDeductFee(remainingTakerAssetAmount, totalFillResults.takerAssetFilledAmount, feeProportion, feeRecipient);
         return totalFillResults;
     }
@@ -75,19 +75,19 @@ contract MixinBuyExactAssets is
         if (makerTokenAddress == address(ZRX_TOKEN)) {
             requestedTokensResult = buyFeeTokensInternal(orders, signatures, assetAmount);
             // When buying ZRX we round up which can result in a small margin excess
-            require(requestedTokensResult.makerAssetFilledAmount >= assetAmount, "traded amount did not meet acceptable threshold");
+            require(requestedTokensResult.makerAssetFilledAmount >= assetAmount, NOT_ACCEPTABLE_THRESHOLD);
         } else {
-            Exchange.FillResults memory expectedMarketBuyResults = expectedMarketBuyFillResults(orders, assetAmount);
-            if (expectedMarketBuyResults.takerFeePaid > 0) {
+            Exchange.FillResults memory calculatedMarketBuyResults = calculateMarketBuyFillResults(orders, assetAmount);
+            if (calculatedMarketBuyResults.takerFeePaid > 0) {
                 // Fees are required for these orders. Buy enough ZRX to cover the future market buy
                 Exchange.FillResults memory feeTokensResult = buyFeeTokensInternal(
-                    feeOrders, feeSignatures, expectedMarketBuyResults.takerFeePaid);
+                    feeOrders, feeSignatures, calculatedMarketBuyResults.takerFeePaid);
                 totalFillResults.takerAssetFilledAmount = feeTokensResult.takerAssetFilledAmount;
                 totalFillResults.takerFeePaid = feeTokensResult.takerFeePaid;
             }
             // Make our market buy of the requested tokens with the remaining balance
             requestedTokensResult = EXCHANGE.marketBuyOrders(orders, assetAmount, signatures);
-            require(requestedTokensResult.makerAssetFilledAmount == assetAmount, "traded amount did not meet acceptable threshold");
+            require(requestedTokensResult.makerAssetFilledAmount == assetAmount, NOT_ACCEPTABLE_THRESHOLD);
         }
         addFillResults(totalFillResults, requestedTokensResult);
         // Transfer all tokens to msg.sender
@@ -104,7 +104,7 @@ contract MixinBuyExactAssets is
         private
         returns (Exchange.FillResults memory totalFillResults)
     {
-        require(assetAmount == orders.length, "assetAmount must match size of orders");
+        require(assetAmount == orders.length, ASSET_AMOUNT_MATCH_ORDER_SIZE);
         uint256 totalFeeAmount;
         for (uint256 i = 0; i < orders.length; i++) {
             totalFeeAmount = safeAdd(totalFeeAmount, orders[i].takerFee);

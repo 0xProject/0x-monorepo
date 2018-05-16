@@ -166,20 +166,20 @@ export class ForwarderWrapper {
         let fillAmountWei;
         if (makerAssetToken.equals(this._zrxAddressBuffer)) {
             // If buying ZRX we buy the tokens and fees from the ZRX order in one step
-            const expectedBuyFeeTokensFillResults = await this._forwarderContract.expectedBuyFeesFillResults.callAsync(
+            const expectedBuyFeeTokensFillResults = await this._forwarderContract.calculateBuyFeesFillResults.callAsync(
                 params.orders,
                 assetAmount,
             );
             fillAmountWei = expectedBuyFeeTokensFillResults.takerAssetFilledAmount;
         } else {
-            const expectedMarketBuyFillResults = await this._forwarderContract.expectedMarketBuyFillResults.callAsync(
+            const expectedMarketBuyFillResults = await this._forwarderContract.calculateMarketBuyFillResults.callAsync(
                 params.orders,
                 assetAmount,
             );
             fillAmountWei = expectedMarketBuyFillResults.takerAssetFilledAmount;
             const expectedFeeAmount = expectedMarketBuyFillResults.takerFeePaid;
             if (expectedFeeAmount.greaterThan(ZERO_AMOUNT)) {
-                const expectedFeeFillResults = await this._forwarderContract.expectedBuyFeesFillResults.callAsync(
+                const expectedFeeFillResults = await this._forwarderContract.calculateBuyFeesFillResults.callAsync(
                     feeParams.orders,
                     expectedFeeAmount,
                 );

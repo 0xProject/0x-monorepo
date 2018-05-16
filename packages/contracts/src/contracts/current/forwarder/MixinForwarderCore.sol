@@ -1,6 +1,7 @@
 pragma solidity ^0.4.23;
 pragma experimental ABIEncoderV2;
 
+import "./MixinErrorMessages.sol";
 import "../protocol/Exchange/Exchange.sol";
 import "../utils/SafeMath/SafeMath.sol";
 import { WETH9 as EtherToken } from "../tokens/WETH9/WETH9.sol";
@@ -8,6 +9,7 @@ import "../tokens/ZRXToken/ZRXToken.sol";
 import "../utils/LibBytes/LibBytes.sol";
 
 contract MixinForwarderCore is
+    MixinErrorMessages,
     LibOrder,
     LibFillResults,
     LibMath,
@@ -36,7 +38,7 @@ contract MixinForwarderCore is
     {
         remainingTakerTokenAmount = takerTokenAmount;
         if (feeProportion > 0 && feeRecipient != address(0x0)) {
-            require(feeProportion <= MAX_FEE, "feeProportion is larger than MAX_FEE");
+            require(feeProportion <= MAX_FEE, FEE_PROPORTION_TOO_LARGE);
             // 1.5% is 150, allowing for 2 decimal precision, i.e 0.05% is 5
             uint256 feeRecipientFeeAmount = safeDiv(safeMul(remainingTakerTokenAmount, feeProportion), PERCENTAGE_DENOMINATOR);
             remainingTakerTokenAmount = safeSub(remainingTakerTokenAmount, feeRecipientFeeAmount);
@@ -91,10 +93,10 @@ contract MixinForwarderCore is
         returns (Exchange.FillResults memory totalFillResults)
     {
         address token = readAddress(orders[0].makerAssetData, 1);
-        require(token == address(ZRX_TOKEN), "order taker asset must be ZRX");
+        require(token == address(ZRX_TOKEN), TAKER_ASSET_ZRX);
         for (uint256 i = 0; i < orders.length; i++) {
             // Token being bought by taker must be the same for each order
-            require(areBytesEqual(orders[i].makerAssetData, orders[0].makerAssetData), "all orders must be the same token pair");
+            require(areBytesEqual(orders[i].makerAssetData, orders[0].makerAssetData), SAME_ASSET_TYPE);
 
             // Calculate the remaining amount of makerToken to buy
             uint256 remainingMakerTokenFillAmount = safeSub(feeAmount, totalFillResults.makerAssetFilledAmount);

@@ -9,7 +9,7 @@ contract MixinForwarderExpectedResults is MixinForwarderCore {
     /// @param order An Order struct containing order specifications.
     /// @param takerAssetFillAmount A number representing the amount of this order to fill.
     /// @return fillResults Amounts filled and fees paid by maker and taker.
-    function expectedFillOrderFillResults(Order memory order, uint256 takerAssetFillAmount)
+    function calculateFillOrderFillResults(Order memory order, uint256 takerAssetFillAmount)
         public
         view
         returns (Exchange.FillResults memory fillResults)
@@ -46,7 +46,7 @@ contract MixinForwarderExpectedResults is MixinForwarderCore {
     /// @param orders An array of Order struct containing order specifications.
     /// @param takerAssetFillAmount A number representing the amount of this order to fill.
     /// @return totalFillResults Amounts filled and fees paid by maker and taker.
-    function expectedMarketSellFillResults(Order[] memory orders, uint256 takerAssetFillAmount)
+    function calculateMarketSellFillResults(Order[] memory orders, uint256 takerAssetFillAmount)
         internal
         view
         returns (Exchange.FillResults memory totalFillResults)
@@ -55,7 +55,7 @@ contract MixinForwarderExpectedResults is MixinForwarderCore {
             require(areBytesEqual(orders[i].makerAssetData, orders[0].makerAssetData), "all orders must be the same token pair");
             uint256 remainingTakerAssetFillAmount = safeSub(takerAssetFillAmount, totalFillResults.takerAssetFilledAmount);
 
-            Exchange.FillResults memory fillOrderExpectedResults = expectedFillOrderFillResults(orders[i], remainingTakerAssetFillAmount);
+            Exchange.FillResults memory fillOrderExpectedResults = calculateFillOrderFillResults(orders[i], remainingTakerAssetFillAmount);
 
             addFillResults(totalFillResults, fillOrderExpectedResults);
             if (totalFillResults.takerAssetFilledAmount == takerAssetFillAmount) {
@@ -70,7 +70,7 @@ contract MixinForwarderExpectedResults is MixinForwarderCore {
     /// @param orders An array of Order struct containing order specifications.
     /// @param makerAssetFillAmount A number representing the amount of this order to fill.
     /// @return totalFillResults Amounts filled and fees paid by maker and taker.
-    function expectedMarketBuyFillResults(Order[] memory orders, uint256 makerAssetFillAmount)
+    function calculateMarketBuyFillResults(Order[] memory orders, uint256 makerAssetFillAmount)
         public
         view
         returns (Exchange.FillResults memory totalFillResults)
@@ -83,9 +83,9 @@ contract MixinForwarderExpectedResults is MixinForwarderCore {
                 orders[i].makerAssetAmount,
                 remainingMakerAssetFillAmount);
 
-            Exchange.FillResults memory fillOrderExpectedResults = expectedFillOrderFillResults(orders[i], remainingTakerAssetFillAmount);
+            Exchange.FillResults memory calculatedFillOrderResults = calculateFillOrderFillResults(orders[i], remainingTakerAssetFillAmount);
 
-            addFillResults(totalFillResults, fillOrderExpectedResults);
+            addFillResults(totalFillResults, calculatedFillOrderResults);
             if (totalFillResults.makerAssetFilledAmount == makerAssetFillAmount) {
                 break;
             }
@@ -93,12 +93,12 @@ contract MixinForwarderExpectedResults is MixinForwarderCore {
         return totalFillResults;
     }
 
-    /// @dev Calculates expected results for buyFeeTokens. This is useful for off-chain queries 
-    ///      ensuring all calculations are performed atomically for consistent results
+    /// @dev Calculates fill results for buyFeeTokens. This handles fees on buying ZRX
+    ///      so the end result is the expected amount of ZRX (not less after fees).
     /// @param orders An array of Order struct containing order specifications.
     /// @param zrxAmount A number representing the amount zrx to buy
     /// @return totalFillResults Expected fill result amounts from buying fees
-    function expectedBuyFeesFillResults(
+    function calculateBuyFeesFillResults(
         Order[] memory orders,
         uint256 zrxAmount)
         public
@@ -116,7 +116,7 @@ contract MixinForwarderExpectedResults is MixinForwarderCore {
                 orders[i].takerAssetAmount,
                 safeSub(orders[i].makerAssetAmount, orders[i].takerFee), // our exchange rate after fees 
                 remainingMakerAssetFillAmount);
-            Exchange.FillResults memory singleFillResult = expectedFillOrderFillResults(orders[i], safeAdd(remainingTakerAssetFillAmount, 1));
+            Exchange.FillResults memory singleFillResult = calculateFillOrderFillResults(orders[i], safeAdd(remainingTakerAssetFillAmount, 1));
 
             singleFillResult.makerAssetFilledAmount = safeSub(singleFillResult.makerAssetFilledAmount, singleFillResult.takerFeePaid);
             addFillResults(totalFillResults, singleFillResult);

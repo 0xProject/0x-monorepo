@@ -34,9 +34,9 @@ contract MixinMarketBuyTokens is
         public
         returns (Exchange.FillResults)
     {
-        require(msg.value > 0, "msg.value must be greater than 0");
+        require(msg.value > 0, VALUE_GT_ZERO);
         address token = readAddress(orders[0].takerAssetData, 1);
-        require(token == address(ETHER_TOKEN), "order taker asset must be Wrapped ETH");
+        require(token == address(ETHER_TOKEN), TAKER_ASSET_WETH);
 
         uint256 remainingTakerTokenAmount = payAndDeductFee(msg.value, feeProportion, feeRecipient);
         ETHER_TOKEN.deposit.value(remainingTakerTokenAmount)();
@@ -55,23 +55,23 @@ contract MixinMarketBuyTokens is
         uint256 takerTokenBalance = sellTokenAmount;
         address makerTokenAddress = readAddress(orders[0].makerAssetData, 1);
 
-        Exchange.FillResults memory expectedMarketSellResults = expectedMarketSellFillResults(orders, sellTokenAmount);
-        if (expectedMarketSellResults.takerFeePaid > 0) {
+        Exchange.FillResults memory calculatedMarketSellResults = calculateMarketSellFillResults(orders, sellTokenAmount);
+        if (calculatedMarketSellResults.takerFeePaid > 0) {
             // Fees are required for these orders. Buy enough ZRX to cover the future market buy
-            Exchange.FillResults memory feeTokensResult = buyFeeTokensInternal(
-                feeOrders, feeSignatures, expectedMarketSellResults.takerFeePaid);
-            takerTokenBalance = safeSub(takerTokenBalance, feeTokensResult.takerAssetFilledAmount);
-            totalFillResults.takerFeePaid = feeTokensResult.takerFeePaid;
+            Exchange.FillResults memory feeTokensResults = buyFeeTokensInternal(
+                feeOrders, feeSignatures, calculatedMarketSellResults.takerFeePaid);
+            takerTokenBalance = safeSub(takerTokenBalance, feeTokensResults.takerAssetFilledAmount);
+            totalFillResults.takerFeePaid = feeTokensResults.takerFeePaid;
         }
         // Make our market sell to buy the requested tokens with the remaining balance
-        Exchange.FillResults memory requestedTokensResult = EXCHANGE.marketSellOrders(orders, takerTokenBalance, signatures);
+        Exchange.FillResults memory requestedTokensResults = EXCHANGE.marketSellOrders(orders, takerTokenBalance, signatures);
         // Update our return FillResult with the market sell
-        addFillResults(totalFillResults, requestedTokensResult);
+        addFillResults(totalFillResults, requestedTokensResults);
         // Ensure the token abstraction was fair if fees were proportionally too high, we fail
-        require(isAcceptableThreshold(sellTokenAmount, requestedTokensResult.takerAssetFilledAmount),
-            "traded amount did not meet acceptable threshold");
+        require(isAcceptableThreshold(sellTokenAmount, requestedTokensResults.takerAssetFilledAmount),
+            NOT_ACCEPTABLE_THRESHOLD);
         // Transfer all tokens to msg.sender
-        transferToken(makerTokenAddress, msg.sender, requestedTokensResult.makerAssetFilledAmount);
+        transferToken(makerTokenAddress, msg.sender, requestedTokensResults.makerAssetFilledAmount);
         return totalFillResults;
     }
 }
