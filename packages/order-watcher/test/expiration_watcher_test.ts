@@ -21,6 +21,7 @@ import { provider, web3Wrapper } from './utils/web3_wrapper';
 chaiSetup.configure();
 const expect = chai.expect;
 const blockchainLifecycle = new BlockchainLifecycle(web3Wrapper);
+const MILISECONDS_IN_SECOND = 1000;
 
 describe('ExpirationWatcher', () => {
     let contractWrappers: ContractWrappers;
@@ -83,13 +84,13 @@ describe('ExpirationWatcher', () => {
                 expirationUnixTimestampSec,
             );
             const orderHash = getOrderHashHex(signedOrder);
-            expirationWatcher.addOrder(orderHash, signedOrder.expirationUnixTimestampSec.times(1000));
+            expirationWatcher.addOrder(orderHash, signedOrder.expirationUnixTimestampSec.times(MILISECONDS_IN_SECOND));
             const callbackAsync = callbackErrorReporter.reportNoErrorCallbackErrors(done)((hash: string) => {
                 expect(hash).to.be.equal(orderHash);
                 expect(utils.getCurrentUnixTimestampSec()).to.be.bignumber.gte(expirationUnixTimestampSec);
             });
             expirationWatcher.subscribe(callbackAsync);
-            timer.tick(orderLifetimeSec * 1000);
+            timer.tick(orderLifetimeSec * MILISECONDS_IN_SECOND);
         })().catch(done);
     });
     it("doesn't emit events before order expires", (done: DoneCallback) => {
@@ -105,13 +106,13 @@ describe('ExpirationWatcher', () => {
                 expirationUnixTimestampSec,
             );
             const orderHash = getOrderHashHex(signedOrder);
-            expirationWatcher.addOrder(orderHash, signedOrder.expirationUnixTimestampSec.times(1000));
+            expirationWatcher.addOrder(orderHash, signedOrder.expirationUnixTimestampSec.times(MILISECONDS_IN_SECOND));
             const callbackAsync = callbackErrorReporter.reportNoErrorCallbackErrors(done)(async (hash: string) => {
                 done(new Error('Emitted expiration went before the order actually expired'));
             });
             expirationWatcher.subscribe(callbackAsync);
             const notEnoughTime = orderLifetimeSec - 1;
-            timer.tick(notEnoughTime * 1000);
+            timer.tick(notEnoughTime * MILISECONDS_IN_SECOND);
             done();
         })().catch(done);
     });
@@ -139,8 +140,14 @@ describe('ExpirationWatcher', () => {
             );
             const orderHash1 = getOrderHashHex(signedOrder1);
             const orderHash2 = getOrderHashHex(signedOrder2);
-            expirationWatcher.addOrder(orderHash2, signedOrder2.expirationUnixTimestampSec.times(1000));
-            expirationWatcher.addOrder(orderHash1, signedOrder1.expirationUnixTimestampSec.times(1000));
+            expirationWatcher.addOrder(
+                orderHash2,
+                signedOrder2.expirationUnixTimestampSec.times(MILISECONDS_IN_SECOND),
+            );
+            expirationWatcher.addOrder(
+                orderHash1,
+                signedOrder1.expirationUnixTimestampSec.times(MILISECONDS_IN_SECOND),
+            );
             const expirationOrder = [orderHash1, orderHash2];
             const expectToBeCalledOnce = false;
             const callbackAsync = callbackErrorReporter.reportNoErrorCallbackErrors(done, expectToBeCalledOnce)(
@@ -153,7 +160,7 @@ describe('ExpirationWatcher', () => {
                 },
             );
             expirationWatcher.subscribe(callbackAsync);
-            timer.tick(order2Lifetime * 1000);
+            timer.tick(order2Lifetime * MILISECONDS_IN_SECOND);
         })().catch(done);
     });
     it('emits events in correct order when expirations are equal', (done: DoneCallback) => {
@@ -180,8 +187,14 @@ describe('ExpirationWatcher', () => {
             );
             const orderHash1 = getOrderHashHex(signedOrder1);
             const orderHash2 = getOrderHashHex(signedOrder2);
-            expirationWatcher.addOrder(orderHash1, signedOrder1.expirationUnixTimestampSec.times(1000));
-            expirationWatcher.addOrder(orderHash2, signedOrder2.expirationUnixTimestampSec.times(1000));
+            expirationWatcher.addOrder(
+                orderHash1,
+                signedOrder1.expirationUnixTimestampSec.times(MILISECONDS_IN_SECOND),
+            );
+            expirationWatcher.addOrder(
+                orderHash2,
+                signedOrder2.expirationUnixTimestampSec.times(MILISECONDS_IN_SECOND),
+            );
             const expirationOrder = orderHash1 < orderHash2 ? [orderHash1, orderHash2] : [orderHash2, orderHash1];
             const expectToBeCalledOnce = false;
             const callbackAsync = callbackErrorReporter.reportNoErrorCallbackErrors(done, expectToBeCalledOnce)(
@@ -194,7 +207,7 @@ describe('ExpirationWatcher', () => {
                 },
             );
             expirationWatcher.subscribe(callbackAsync);
-            timer.tick(order2Lifetime * 1000);
+            timer.tick(order2Lifetime * MILISECONDS_IN_SECOND);
         })().catch(done);
     });
 });

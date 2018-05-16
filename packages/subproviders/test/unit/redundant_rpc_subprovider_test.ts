@@ -13,6 +13,7 @@ import { reportCallbackErrors } from '../utils/report_callback_errors';
 
 const expect = chai.expect;
 chaiSetup.configure();
+const DEFAULT_NUM_ACCOUNTS = 10;
 
 describe('RedundantSubprovider', () => {
     let provider: Web3ProviderEngine;
@@ -31,7 +32,7 @@ describe('RedundantSubprovider', () => {
         };
         const callback = reportCallbackErrors(done)((err: Error, response: JSONRPCResponsePayload) => {
             expect(err).to.be.a('null');
-            expect(response.result.length).to.be.equal(10);
+            expect(response.result.length).to.be.equal(DEFAULT_NUM_ACCOUNTS);
             done();
         });
         provider.sendAsync(payload, callback);
@@ -54,7 +55,7 @@ describe('RedundantSubprovider', () => {
         };
         const callback = reportCallbackErrors(done)((err: Error, response: JSONRPCResponsePayload) => {
             expect(err).to.be.a('null');
-            expect(response.result.length).to.be.equal(10);
+            expect(response.result.length).to.be.equal(DEFAULT_NUM_ACCOUNTS);
             done();
         });
         provider.sendAsync(payload, callback);

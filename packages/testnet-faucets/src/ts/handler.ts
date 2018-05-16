@@ -15,6 +15,7 @@ import ProviderEngine = require('web3-provider-engine');
 import RpcSubprovider = require('web3-provider-engine/subproviders/rpc');
 
 import { configs } from './configs';
+import { constants } from './constants';
 import { DispatchQueue } from './dispatch_queue';
 import { dispenseAssetTasks } from './dispense_asset_tasks';
 import { rpcUrls } from './rpc_urls';
@@ -80,7 +81,7 @@ export class Handler {
             };
         });
         const payload = JSON.stringify(queueInfo);
-        res.status(200).send(payload);
+        res.status(constants.SUCCESS_STATUS).send(payload);
     }
     public dispenseEther(req: express.Request, res: express.Response): void {
         this._dispenseAsset(req, res, RequestedAssetType.ETH);
@@ -120,11 +121,11 @@ export class Handler {
         }
         const didAddToQueue = networkConfig.dispatchQueue.add(dispenserTask);
         if (!didAddToQueue) {
-            res.status(503).send('QUEUE_IS_FULL');
+            res.status(constants.SERVICE_UNAVAILABLE_STATUS).send('QUEUE_IS_FULL');
             return;
         }
         logUtils.log(`Added ${recipient} to queue: ${requestedAssetType} networkId: ${networkId}`);
-        res.status(200).end();
+        res.status(constants.SUCCESS_STATUS).end();
     }
     private async _dispenseOrderAsync(
         req: express.Request,
@@ -133,7 +134,7 @@ export class Handler {
     ): Promise<void> {
         const networkConfig = _.get(this._networkConfigByNetworkId, req.params.networkId);
         if (_.isUndefined(networkConfig)) {
-            res.status(400).send('UNSUPPORTED_NETWORK_ID');
+            res.status(constants.BAD_REQUEST_STATUS).send('UNSUPPORTED_NETWORK_ID');
             return;
         }
         const zeroEx = networkConfig.zeroEx;
@@ -173,6 +174,6 @@ export class Handler {
         const signedOrderHash = ZeroEx.getOrderHashHex(signedOrder);
         const payload = JSON.stringify(signedOrder);
         logUtils.log(`Dispensed signed order: ${payload}`);
-        res.status(200).send(payload);
+        res.status(constants.SUCCESS_STATUS).send(payload);
     }
 }

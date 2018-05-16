@@ -17,7 +17,8 @@ const INVALID_TAKER_FORMAT = 'instance.taker is not of a type(s) string';
  * We do not use BN anywhere else in the codebase.
  */
 function bigNumberToBN(value: BigNumber): BN {
-    return new BN(value.toString(), 10);
+    const base = 10;
+    return new BN(value.toString(), base);
 }
 
 /**

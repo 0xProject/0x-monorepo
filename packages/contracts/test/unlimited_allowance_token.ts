@@ -99,8 +99,8 @@ describe('UnlimitedAllowanceToken', () => {
             const amountToTransfer = ownerBalance;
 
             const spenderAllowance = await zeroEx.token.getAllowanceAsync(tokenAddress, owner, spender);
-            const spenderAllowanceIsInsufficient = spenderAllowance.cmp(amountToTransfer) < 0;
-            expect(spenderAllowanceIsInsufficient).to.be.true();
+            const isSpenderAllowanceInsufficient = spenderAllowance.cmp(amountToTransfer) < 0;
+            expect(isSpenderAllowanceInsufficient).to.be.true();
 
             return expect(
                 token.transferFrom.callAsync(owner, spender, amountToTransfer, {

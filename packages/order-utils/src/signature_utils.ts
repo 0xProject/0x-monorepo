@@ -72,6 +72,7 @@ export async function signOrderHashAsync(
     // v + r + s OR r + s + v, and different clients (even different versions of the same client)
     // return the signature params in different orders. In order to support all client implementations,
     // we parse the signature in both ways, and evaluate if either one is a valid signature.
+    // tslint:disable-next-line:custom-no-magic-numbers
     const validVParamValues = [27, 28];
     const ecSignatureVRS = parseSignatureHexAsVRS(signature);
     if (_.includes(validVParamValues, ecSignatureVRS.v)) {
@@ -95,11 +96,19 @@ export async function signOrderHashAsync(
 function parseSignatureHexAsVRS(signatureHex: string): ECSignature {
     const signatureBuffer = ethUtil.toBuffer(signatureHex);
     let v = signatureBuffer[0];
-    if (v < 27) {
-        v += 27;
+    // HACK: Sometimes v is returned as [0, 1] and sometimes as [27, 28]
+    // If it is returned as [0, 1], add 27 to both so it becomes [27, 28]
+    const lowestValidV = 27;
+    const isProperlyFormattedV = v < lowestValidV;
+    if (!isProperlyFormattedV) {
+        v += lowestValidV;
     }
-    const r = signatureBuffer.slice(1, 33);
-    const s = signatureBuffer.slice(33, 65);
+    // signatureBuffer contains vrs
+    const vEndIndex = 1;
+    const rsIndex = 33;
+    const r = signatureBuffer.slice(vEndIndex, rsIndex);
+    const sEndIndex = 65;
+    const s = signatureBuffer.slice(rsIndex, sEndIndex);
     const ecSignature: ECSignature = {
         v,
         r: ethUtil.bufferToHex(r),

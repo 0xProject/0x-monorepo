@@ -123,21 +123,21 @@ describe('Exchange', () => {
         });
 
         it('should return true with a valid signature', async () => {
-            const success = await exchangeWrapper.isValidSignatureAsync(signedOrder);
+            const isValidSignatureForContract = await exchangeWrapper.isValidSignatureAsync(signedOrder);
             const orderHashHex = ZeroEx.getOrderHashHex(signedOrder);
             const isValidSignature = ZeroEx.isValidSignature(orderHashHex, signedOrder.ecSignature, signedOrder.maker);
             expect(isValidSignature).to.be.true();
-            expect(success).to.be.true();
+            expect(isValidSignatureForContract).to.be.true();
         });
 
         it('should return false with an invalid signature', async () => {
             signedOrder.ecSignature.r = ethUtil.bufferToHex(ethUtil.sha3('invalidR'));
             signedOrder.ecSignature.s = ethUtil.bufferToHex(ethUtil.sha3('invalidS'));
-            const success = await exchangeWrapper.isValidSignatureAsync(signedOrder);
+            const isValidSignatureForContract = await exchangeWrapper.isValidSignatureAsync(signedOrder);
             const orderHashHex = ZeroEx.getOrderHashHex(signedOrder);
             const isValidSignature = ZeroEx.isValidSignature(orderHashHex, signedOrder.ecSignature, signedOrder.maker);
             expect(isValidSignature).to.be.false();
-            expect(success).to.be.false();
+            expect(isValidSignatureForContract).to.be.false();
         });
     });
 

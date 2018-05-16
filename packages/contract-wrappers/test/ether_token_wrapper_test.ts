@@ -41,7 +41,7 @@ describe('EtherTokenWrapper', () => {
     let addressWithETH: string;
     let wethContractAddress: string;
     let depositWeiAmount: BigNumber;
-    let decimalPlaces: number;
+    const decimalPlaces = 7;
     let addressWithoutFunds: string;
     const gasPrice = new BigNumber(1);
     const zeroExConfig = {
@@ -59,7 +59,6 @@ describe('EtherTokenWrapper', () => {
         addressWithETH = userAddresses[0];
         wethContractAddress = contractWrappers.etherToken.getContractAddressIfExists() as string;
         depositWeiAmount = Web3Wrapper.toWei(new BigNumber(5));
-        decimalPlaces = 7;
         addressWithoutFunds = userAddresses[1];
     });
     beforeEach(async () => {
@@ -154,6 +153,7 @@ describe('EtherTokenWrapper', () => {
             const preWETHBalance = await contractWrappers.token.getBalanceAsync(wethContractAddress, addressWithETH);
             expect(preWETHBalance).to.be.bignumber.equal(0);
 
+            // tslint:disable-next-line:custom-no-magic-numbers
             const overWETHBalance = preWETHBalance.add(999999999);
 
             return expect(

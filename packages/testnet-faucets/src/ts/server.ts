@@ -1,6 +1,7 @@
 import * as bodyParser from 'body-parser';
 import * as express from 'express';
 
+import { constants } from './constants';
 import { errorReporter } from './error_reporter';
 import { Handler } from './handler';
 import { parameterTransformer } from './parameter_transformer';
@@ -18,7 +19,7 @@ app.use((req, res, next) => {
 
 const handler = new Handler();
 app.get('/ping', (req: express.Request, res: express.Response) => {
-    res.status(200).send('pong');
+    res.status(constants.SUCCESS_STATUS).send('pong');
 });
 app.get('/info', handler.getQueueInfo.bind(handler));
 app.get('/ether/:recipient', parameterTransformer.transform, handler.dispenseEther.bind(handler));
@@ -28,5 +29,6 @@ app.get('/order/zrx/:recipient', parameterTransformer.transform, handler.dispens
 
 // Log to rollbar any errors unhandled by handlers
 app.use(errorReporter.errorHandler());
-const port = process.env.PORT || 3000;
+const DEFAULT_PORT = 3000;
+const port = process.env.PORT || DEFAULT_PORT;
 app.listen(port);

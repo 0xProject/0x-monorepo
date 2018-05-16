@@ -19,6 +19,8 @@ import * as Web3 from 'web3';
 
 import { Web3WrapperErrors } from './types';
 
+const BASE_TEN = 10;
+
 /**
  * A wrapper around the Web3.js 0.x library that provides a consistent, clean promise-based interface.
  */
@@ -48,7 +50,7 @@ export class Web3Wrapper {
      * @return  The amount in units.
      */
     public static toUnitAmount(amount: BigNumber, decimals: number): BigNumber {
-        const aUnit = new BigNumber(10).pow(decimals);
+        const aUnit = new BigNumber(BASE_TEN).pow(decimals);
         const unit = amount.div(aUnit);
         return unit;
     }
@@ -61,7 +63,7 @@ export class Web3Wrapper {
      * @return  The amount in baseUnits.
      */
     public static toBaseUnitAmount(amount: BigNumber, decimals: number): BigNumber {
-        const unit = new BigNumber(10).pow(decimals);
+        const unit = new BigNumber(BASE_TEN).pow(decimals);
         const baseUnitAmount = amount.times(unit);
         const hasDecimals = baseUnitAmount.decimalPlaces() !== 0;
         if (hasDecimals) {
@@ -180,8 +182,8 @@ export class Web3Wrapper {
     public async doesContractExistAtAddressAsync(address: string): Promise<boolean> {
         const code = await promisify<string>(this._web3.eth.getCode)(address);
         // Regex matches 0x0, 0x00, 0x in order to accommodate poorly implemented clients
-        const codeIsEmpty = /^0x0{0,40}$/i.test(code);
-        return !codeIsEmpty;
+        const isCodeEmpty = /^0x0{0,40}$/i.test(code);
+        return !isCodeEmpty;
     }
     /**
      * Sign a message with a specific address's private key (`eth_sign`)
@@ -336,16 +338,16 @@ export class Web3Wrapper {
         pollingIntervalMs: number = 1000,
         timeoutMs?: number,
     ): Promise<TransactionReceiptWithDecodedLogs> {
-        let timeoutExceeded = false;
+        let wasTimeoutExceeded = false;
         if (timeoutMs) {
-            setTimeout(() => (timeoutExceeded = true), timeoutMs);
+            setTimeout(() => (wasTimeoutExceeded = true), timeoutMs);
         }
 
         const txReceiptPromise = new Promise(
             (resolve: (receipt: TransactionReceiptWithDecodedLogs) => void, reject) => {
                 const intervalId = intervalUtils.setAsyncExcludingInterval(
                     async () => {
-                        if (timeoutExceeded) {
+                        if (wasTimeoutExceeded) {
                             intervalUtils.clearAsyncExcludingInterval(intervalId);
                             return reject(Web3WrapperErrors.TransactionMiningTimeout);
                         }

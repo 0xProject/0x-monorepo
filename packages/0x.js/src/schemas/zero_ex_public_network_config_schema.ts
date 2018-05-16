@@ -1,9 +1,23 @@
+const networkNameToId: { [networkName: string]: number } = {
+    mainnet: 1,
+    ropsten: 3,
+    rinkeby: 4,
+    kovan: 42,
+    ganache: 50,
+};
+
 export const zeroExPublicNetworkConfigSchema = {
     id: '/ZeroExPublicNetworkConfig',
     properties: {
         networkId: {
             type: 'number',
-            enum: [1, 3, 4, 42, 50],
+            enum: [
+                networkNameToId.mainnet,
+                networkNameToId.ropsten,
+                networkNameToId.rinkeby,
+                networkNameToId.kovan,
+                networkNameToId.ganache,
+            ],
         },
         gasPrice: { $ref: '/Number' },
         zrxContractAddress: { $ref: '/Address' },

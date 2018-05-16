@@ -105,6 +105,7 @@ describe('OrderValidation', () => {
         });
         it('should succeed if the order is asymmetric and fillable', async () => {
             const makerFillableAmount = fillableAmount;
+            // tslint:disable-next-line:custom-no-magic-numbers
             const takerFillableAmount = fillableAmount.minus(4);
             const signedOrder = await fillScenarios.createAsymmetricFillableSignedOrderAsync(
                 makerTokenAddress,
@@ -171,6 +172,7 @@ describe('OrderValidation', () => {
                 fillableAmount,
             );
             // 27 <--> 28
+            // tslint:disable-next-line:custom-no-magic-numbers
             signedOrder.ecSignature.v = 28 - signedOrder.ecSignature.v + 27;
             return expect(
                 contractWrappers.exchange.validateFillOrderThrowIfInvalidAsync(
@@ -205,7 +207,8 @@ describe('OrderValidation', () => {
                 takerAddress,
                 fillableAmount,
             );
-            const nonTakerAddress = userAddresses[6];
+            const sixthIndex = 6;
+            const nonTakerAddress = userAddresses[sixthIndex];
             return expect(
                 contractWrappers.exchange.validateFillOrderThrowIfInvalidAsync(
                     signedOrder,
@@ -352,7 +355,8 @@ describe('OrderValidation', () => {
                 takerAddress,
                 zrxTokenAddress,
             );
-            expect(transferFromAsync.callCount).to.be.equal(4);
+            const expectedCallCount = 4;
+            expect(transferFromAsync.callCount).to.be.equal(expectedCallCount);
             expect(
                 transferFromAsync
                     .getCall(0)
@@ -422,7 +426,8 @@ describe('OrderValidation', () => {
                 takerAddress,
                 zrxTokenAddress,
             );
-            expect(transferFromAsync.callCount).to.be.equal(4);
+            const expectedCallCount = 4;
+            expect(transferFromAsync.callCount).to.be.equal(expectedCallCount);
             expect(
                 transferFromAsync
                     .getCall(0)
@@ -490,7 +495,8 @@ describe('OrderValidation', () => {
                 takerAddress,
                 zrxTokenAddress,
             );
-            expect(transferFromAsync.callCount).to.be.equal(4);
+            const expectedCallCount = 4;
+            expect(transferFromAsync.callCount).to.be.equal(expectedCallCount);
             const makerFillAmount = transferFromAsync.getCall(0).args[3];
             expect(makerFillAmount).to.be.bignumber.equal(makerTokenAmount);
         });
@@ -517,7 +523,8 @@ describe('OrderValidation', () => {
             );
             const makerPartialFee = makerFee.div(2);
             const takerPartialFee = takerFee.div(2);
-            expect(transferFromAsync.callCount).to.be.equal(4);
+            const expectedCallCount = 4;
+            expect(transferFromAsync.callCount).to.be.equal(expectedCallCount);
             const partialMakerFee = transferFromAsync.getCall(2).args[3];
             expect(partialMakerFee).to.be.bignumber.equal(makerPartialFee);
             const partialTakerFee = transferFromAsync.getCall(3).args[3];
