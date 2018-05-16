@@ -274,7 +274,7 @@ export class Portal extends React.Component<PortalProps, PortalState> {
     private _renderMenu(routeComponentProps: RouteComponentProps<any>): React.ReactNode {
         return (
             <div>
-                <BackButton to={`${WebsitePaths.Portal}`} labelText={'back to Relayers'} />
+                <BackButton to={`${WebsitePaths.Portal}`} labelText="back to Relayers" />
                 <PortalMenu selectedPath={routeComponentProps.location.pathname} />
             </div>
         );
@@ -284,7 +284,7 @@ export class Portal extends React.Component<PortalProps, PortalState> {
         const trackedTokens = _.filter(allTokens, t => t.isTracked);
         return (
             <div>
-                <Title labelText={'Your Account'} />
+                <Title labelText="Your Account" />
                 <Wallet
                     userAddress={this.props.userAddress}
                     networkId={this.props.networkId}
@@ -331,7 +331,7 @@ export class Portal extends React.Component<PortalProps, PortalState> {
     private _renderEthWrapper(): React.ReactNode {
         return (
             <div>
-                <Title labelText={'Wrapped ETH'} />
+                <Title labelText="Wrapped ETH" />
                 <EthWrappers
                     networkId={this.props.networkId}
                     blockchain={this._blockchain}
@@ -347,7 +347,7 @@ export class Portal extends React.Component<PortalProps, PortalState> {
     private _renderTradeHistory(): React.ReactNode {
         return (
             <div>
-                <Title labelText={'Trade History'} />
+                <Title labelText="Trade History" />
                 <TradeHistory
                     tokenByAddress={this.props.tokenByAddress}
                     userAddress={this.props.userAddress}
@@ -359,7 +359,7 @@ export class Portal extends React.Component<PortalProps, PortalState> {
     private _renderTradeDirect(match: any, location: Location, history: History): React.ReactNode {
         return (
             <div>
-                <Title labelText={'Trade Direct'} />
+                <Title labelText="Trade Direct" />
                 <GenerateOrderForm
                     blockchain={this._blockchain}
                     hashData={this.props.hashData}
@@ -373,7 +373,7 @@ export class Portal extends React.Component<PortalProps, PortalState> {
         const trackedTokens = _.filter(allTokens, t => t.isTracked);
         return (
             <div>
-                <Title labelText={'Your Account'} />
+                <Title labelText="Your Account" />
                 <TokenBalances
                     blockchain={this._blockchain}
                     blockchainErr={this.props.blockchainErr}
@@ -393,7 +393,7 @@ export class Portal extends React.Component<PortalProps, PortalState> {
     private _renderRelayerIndex(): React.ReactNode {
         return (
             <div>
-                <Title labelText={'Explore 0x Relayers'} />
+                <Title labelText="Explore 0x Relayers" />
                 <RelayerIndex networkId={this.props.networkId} />
             </div>
         );
@@ -401,8 +401,8 @@ export class Portal extends React.Component<PortalProps, PortalState> {
     private _renderNotFoundMessage(): React.ReactNode {
         return (
             <FullscreenMessage
-                headerText={'404 Not Found'}
-                bodyText={"Hm... looks like we couldn't find what you are looking for."}
+                headerText="404 Not Found"
+                bodyText="Hm... looks like we couldn't find what you are looking for."
             />
         );
     }
