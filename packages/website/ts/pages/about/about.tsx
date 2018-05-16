@@ -37,7 +37,7 @@ const teamRow1: ProfileInfo[] = [
         name: 'Fabio Berger',
         title: 'Senior Engineer',
         description: `Full-stack blockchain engineer. Previously software engineer \
-                      at Airtable and founder of WealthLift. Computer science at Duke.`,
+                      at Airtable and founder of WealthLift. Computer Science at Duke.`,
         image: '/images/team/fabio.jpg',
         linkedIn: 'https://www.linkedin.com/in/fabio-berger-03ab261a/',
         github: 'https://github.com/fabioberger',
@@ -60,7 +60,7 @@ const teamRow2: ProfileInfo[] = [
         name: 'Leonid Logvinov',
         title: 'Engineer',
         description: `Full-stack blockchain engineer. Previously blockchain engineer \
-                      at Neufund. Computer science at University of Warsaw.`,
+                      at Neufund. Computer Science at University of Warsaw.`,
         image: '/images/team/leonid.png',
         linkedIn: 'https://www.linkedin.com/in/leonidlogvinov/',
         github: 'https://github.com/LogvinovLeon',
@@ -152,7 +152,7 @@ const teamRow5: ProfileInfo[] = [
     {
         name: 'Francesco Agosti',
         title: 'Senior Frontend Engineer',
-        description: `Full-stack engineer. Previously senior software engineer at Yelp. Computer science Duke.`,
+        description: `Full-stack engineer. Previously senior software engineer at Yelp. Computer Science at Duke.`,
         image: 'images/team/fragosti.png',
         linkedIn: 'https://www.linkedin.com/in/fragosti/',
         github: 'http://github.com/fragosti',
