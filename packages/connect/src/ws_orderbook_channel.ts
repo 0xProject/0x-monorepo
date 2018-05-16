@@ -17,6 +17,8 @@ import { orderbookChannelMessageParser } from './utils/orderbook_channel_message
 
 const DEFAULT_HEARTBEAT_INTERVAL_MS = 15000;
 const MINIMUM_HEARTBEAT_INTERVAL_MS = 10;
+const CONNECTION_POLL_INTERVAL = 100;
+const FAILED_TO_POLL_CONNECTION_ERROR = 'Failed to establish a connection';
 
 /**
  * This class includes all the functionality related to interacting with a websocket endpoint
@@ -26,6 +28,7 @@ export class WebSocketOrderbookChannel implements OrderbookChannel {
     private _apiEndpointUrl: string;
     private _client: WebSocket.client;
     private _connectionIfExists?: WebSocket.connection;
+    private _isConnecting: boolean = false;
     private _heartbeatTimerIfExists?: NodeJS.Timer;
     private _subscriptionCounter = 0;
     private _heartbeatIntervalMs: number;
@@ -75,6 +78,8 @@ export class WebSocketOrderbookChannel implements OrderbookChannel {
             if (!_.isUndefined(error)) {
                 handler.onError(this, subscriptionOpts, error);
             } else if (!_.isUndefined(connection) && connection.connected) {
+                // Bump up the max listeners otherwise a warning will be printed
+                connection.setMaxListeners(this._subscriptionCounter);
                 connection.on(WebsocketConnectionEventType.Error, wsError => {
                     handler.onError(this, subscriptionOpts, wsError);
                 });
@@ -103,29 +108,50 @@ export class WebSocketOrderbookChannel implements OrderbookChannel {
         if (!_.isUndefined(this._connectionIfExists) && this._connectionIfExists.connected) {
             callback(undefined, this._connectionIfExists);
         } else {
-            this._client.on(WebsocketClientEventType.Connect, connection => {
-                this._connectionIfExists = connection;
-                if (this._heartbeatIntervalMs >= MINIMUM_HEARTBEAT_INTERVAL_MS) {
-                    this._heartbeatTimerIfExists = setInterval(() => {
-                        connection.ping('');
-                    }, this._heartbeatIntervalMs);
-                } else {
-                    callback(
-                        new Error(
-                            `Heartbeat interval is ${
-                                this._heartbeatIntervalMs
-                            }ms which is less than the required minimum of ${MINIMUM_HEARTBEAT_INTERVAL_MS}ms`,
-                        ),
-                        undefined,
-                    );
-                }
-                callback(undefined, this._connectionIfExists);
-            });
-            this._client.on(WebsocketClientEventType.ConnectFailed, error => {
-                callback(error, undefined);
-            });
-            this._client.connect(this._apiEndpointUrl);
+            if (!this._isConnecting) {
+                this._connect(callback);
+            } else {
+                // Since we're hitting the network it's possible that multiple getConnections are called before we are connected
+                // this can result in multiple connections established and multiple connection handlers registered
+                const awaitingConnectionInterval = setInterval(() => {
+                    if (!_.isUndefined(this._connectionIfExists) && this._connectionIfExists.connected) {
+                        clearInterval(awaitingConnectionInterval);
+                        return callback(undefined, this._connectionIfExists);
+                    }
+                    if (!this._isConnecting) {
+                        clearInterval(awaitingConnectionInterval);
+                        return callback(new Error(FAILED_TO_POLL_CONNECTION_ERROR));
+                    }
+                }, CONNECTION_POLL_INTERVAL);
+            }
         }
+    }
+    private _connect(callback: (error?: Error, connection?: WebSocket.connection) => void) {
+        this._isConnecting = true;
+        this._client.on(WebsocketClientEventType.Connect, connection => {
+            this._connectionIfExists = connection;
+            if (this._heartbeatIntervalMs >= MINIMUM_HEARTBEAT_INTERVAL_MS) {
+                this._heartbeatTimerIfExists = setInterval(() => {
+                    connection.ping('');
+                }, this._heartbeatIntervalMs);
+            } else {
+                callback(
+                    new Error(
+                        `Heartbeat interval is ${
+                            this._heartbeatIntervalMs
+                        }ms which is less than the required minimum of ${MINIMUM_HEARTBEAT_INTERVAL_MS}ms`,
+                    ),
+                    undefined,
+                );
+            }
+            this._isConnecting = false;
+            callback(undefined, this._connectionIfExists);
+        });
+        this._client.on(WebsocketClientEventType.ConnectFailed, error => {
+            this._isConnecting = false;
+            callback(error, undefined);
+        });
+        this._client.connect(this._apiEndpointUrl);
     }
     private _handleWebSocketMessage(
         requestId: number,
