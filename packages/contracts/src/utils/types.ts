@@ -174,3 +174,9 @@ export interface TransferAmountsByMatchOrders {
     feeReceivedLeft: BigNumber;
     feeReceivedRight: BigNumber;
 }
+
+export interface OrderInfo {
+    orderStatus: number;
+    orderHash: string;
+    orderFilledAmount: BigNumber;
+}

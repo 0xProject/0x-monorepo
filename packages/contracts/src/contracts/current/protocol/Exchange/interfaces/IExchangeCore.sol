@@ -51,15 +51,10 @@ contract IExchangeCore {
 
     /// @dev Gets information about an order: status, hash, and amount filled.
     /// @param order Order to gather information on.
-    /// @return status Status of order. See LibStatus for a complete description of order statuses.
-    /// @return orderHash Keccak-256 EIP712 hash of the order.
-    /// @return orderFilledAmount Amount of order that has been filled.
+    /// @return OrderInfo Information about the order and its state.
+    ///                   See LibOrder.OrderInfo for a complete description.
     function getOrderInfo(LibOrder.Order memory order)
         public
         view
-        returns (
-            uint8 orderStatus,
-            bytes32 orderHash,
-            uint256 orderFilledAmount
-        );
+        returns (LibOrder.OrderInfo memory orderInfo);
 }

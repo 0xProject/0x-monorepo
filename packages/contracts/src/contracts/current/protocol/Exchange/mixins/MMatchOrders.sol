@@ -27,14 +27,6 @@ contract MMatchOrders is
     IMatchOrders
 {
 
-    /// This struct exists solely to avoid the stack limit constraint
-    /// in matchOrders
-    struct OrderInfo {
-        uint8 orderStatus;
-        bytes32 orderHash;
-        uint256 orderFilledAmount;
-    }
-
     /// @dev Validates context for matchOrders. Succeeds or throws.
     /// @param leftOrder First order to match.
     /// @param rightOrder Second order to match.

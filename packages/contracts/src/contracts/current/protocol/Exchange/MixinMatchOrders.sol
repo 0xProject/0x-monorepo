@@ -58,19 +58,9 @@ contract MixinMatchOrders is
         public
         returns (MatchedFillResults memory matchedFillResults)
     {
-        // Get left status
-        OrderInfo memory leftOrderInfo;
-        (   leftOrderInfo.orderStatus,
-            leftOrderInfo.orderHash,
-            leftOrderInfo.orderFilledAmount
-        ) = getOrderInfo(leftOrder);
-
-        // Get right status
-        OrderInfo memory rightOrderInfo;
-        (   rightOrderInfo.orderStatus,
-            rightOrderInfo.orderHash,
-            rightOrderInfo.orderFilledAmount
-        ) = getOrderInfo(rightOrder);
+        // Get left & right order info
+        OrderInfo memory leftOrderInfo = getOrderInfo(leftOrder);
+        OrderInfo memory rightOrderInfo = getOrderInfo(rightOrder);
 
         // Fetch taker address
         address takerAddress = getCurrentContextAddress();

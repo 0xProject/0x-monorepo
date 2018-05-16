@@ -81,10 +81,7 @@ contract MixinExchangeCore is
         returns (FillResults memory fillResults)
     {
         // Fetch order info
-        bytes32 orderHash;
-        uint8 orderStatus;
-        uint256 orderFilledAmount;
-        (orderStatus, orderHash, orderFilledAmount) = getOrderInfo(order);
+        OrderInfo memory orderInfo = getOrderInfo(order);
 
         // Fetch taker address
         address takerAddress = getCurrentContextAddress();
@@ -92,10 +89,10 @@ contract MixinExchangeCore is
         // Either our context is valid or we revert
         assertValidFill(
             order,
-            orderStatus,
-            orderHash,
+            orderInfo.orderStatus,
+            orderInfo.orderHash,
             takerAddress,
-            orderFilledAmount,
+            orderInfo.orderFilledAmount,
             takerAssetFillAmount,
             signature
         );
@@ -104,12 +101,12 @@ contract MixinExchangeCore is
         uint8 status;
         (status, fillResults) = calculateFillResults(
             order,
-            orderStatus,
-            orderFilledAmount,
+            orderInfo.orderStatus,
+            orderInfo.orderFilledAmount,
             takerAssetFillAmount
         );
         if (status != uint8(Status.SUCCESS)) {
-            emit ExchangeStatus(uint8(status), orderHash);
+            emit ExchangeStatus(uint8(status), orderInfo.orderHash);
             return fillResults;
         }
 
@@ -120,8 +117,8 @@ contract MixinExchangeCore is
         updateFilledState(
             order,
             takerAddress,
-            orderHash,
-            orderFilledAmount,
+            orderInfo.orderHash,
+            orderInfo.orderFilledAmount,
             fillResults
         );
         return fillResults;
@@ -138,15 +135,13 @@ contract MixinExchangeCore is
         returns (bool)
     {
         // Fetch current order status
-        bytes32 orderHash;
-        uint8 orderStatus;
-        (orderStatus, orderHash, ) = getOrderInfo(order);
+        OrderInfo memory orderInfo = getOrderInfo(order);
 
         // Validate context
-        assertValidCancel(order, orderStatus, orderHash);
+        assertValidCancel(order, orderInfo.orderStatus, orderInfo.orderHash);
 
         // Perform cancel
-        return updateCancelledState(order, orderStatus, orderHash);
+        return updateCancelledState(order, orderInfo.orderStatus, orderInfo.orderHash);
     }
 
     /// @dev Validates context for fillOrder. Succeeds or throws.
@@ -393,28 +388,23 @@ contract MixinExchangeCore is
 
     /// @dev Gets information about an order: status, hash, and amount filled.
     /// @param order Order to gather information on.
-    /// @return status Status of order. See LibStatus for a complete description of order statuses.
-    /// @return orderHash Keccak-256 EIP712 hash of the order.
-    /// @return orderFilledAmount Amount of order that has been filled.
+    /// @return OrderInfo Information about the order and its state.
+    ///                   See LibOrder.OrderInfo for a complete description.
     function getOrderInfo(Order memory order)
         public
         view
-        returns (
-            uint8 orderStatus,
-            bytes32 orderHash,
-            uint256 orderFilledAmount
-        )
+        returns (LibOrder.OrderInfo memory orderInfo)
     {
         // Compute the order hash
-        orderHash = getOrderHash(order);
+        orderInfo.orderHash = getOrderHash(order);
 
         // If order.makerAssetAmount is zero, we also reject the order.
         // While the Exchange contract handles them correctly, they create
         // edge cases in the supporting infrastructure because they have
         // an 'infinite' price when computed by a simple division.
         if (order.makerAssetAmount == 0) {
-            orderStatus = uint8(Status.ORDER_INVALID_MAKER_ASSET_AMOUNT);
-            return (orderStatus, orderHash, orderFilledAmount);
+            orderInfo.orderStatus = uint8(Status.ORDER_INVALID_MAKER_ASSET_AMOUNT);
+            return orderInfo;
         }
 
         // If order.takerAssetAmount is zero, then the order will always
@@ -422,35 +412,35 @@ contract MixinExchangeCore is
         // Instead of distinguishing between unfilled and filled zero taker
         // amount orders, we choose not to support them.
         if (order.takerAssetAmount == 0) {
-            orderStatus = uint8(Status.ORDER_INVALID_TAKER_ASSET_AMOUNT);
-            return (orderStatus, orderHash, orderFilledAmount);
+            orderInfo.orderStatus = uint8(Status.ORDER_INVALID_TAKER_ASSET_AMOUNT);
+            return orderInfo;
         }
 
         // Validate order expiration
         if (block.timestamp >= order.expirationTimeSeconds) {
-            orderStatus = uint8(Status.ORDER_EXPIRED);
-            return (orderStatus, orderHash, orderFilledAmount);
+            orderInfo.orderStatus = uint8(Status.ORDER_EXPIRED);
+            return orderInfo;
         }
 
         // Check if order has been cancelled
-        if (cancelled[orderHash]) {
-            orderStatus = uint8(Status.ORDER_CANCELLED);
-            return (orderStatus, orderHash, orderFilledAmount);
+        if (cancelled[orderInfo.orderHash]) {
+            orderInfo.orderStatus = uint8(Status.ORDER_CANCELLED);
+            return orderInfo;
         }
         if (makerEpoch[order.makerAddress] > order.salt) {
-            orderStatus = uint8(Status.ORDER_CANCELLED);
-            return (orderStatus, orderHash, orderFilledAmount);
+            orderInfo.orderStatus = uint8(Status.ORDER_CANCELLED);
+            return orderInfo;
         }
 
         // Fetch filled amount and validate order availability
-        orderFilledAmount = filled[orderHash];
-        if (orderFilledAmount >= order.takerAssetAmount) {
-            orderStatus = uint8(Status.ORDER_FULLY_FILLED);
-            return (orderStatus, orderHash, orderFilledAmount);
+        orderInfo.orderFilledAmount = filled[orderInfo.orderHash];
+        if (orderInfo.orderFilledAmount >= order.takerAssetAmount) {
+            orderInfo.orderStatus = uint8(Status.ORDER_FULLY_FILLED);
+            return orderInfo;
         }
 
         // All other statuses are ruled out: order is Fillable
-        orderStatus = uint8(Status.ORDER_FILLABLE);
-        return (orderStatus, orderHash, orderFilledAmount);
+        orderInfo.orderStatus = uint8(Status.ORDER_FILLABLE);
+        return orderInfo;
     }
 }

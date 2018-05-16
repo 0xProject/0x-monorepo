@@ -9,7 +9,7 @@ import { constants } from './constants';
 import { formatters } from './formatters';
 import { LogDecoder } from './log_decoder';
 import { orderUtils } from './order_utils';
-import { AssetProxyId, SignedOrder, SignedTransaction } from './types';
+import { AssetProxyId, OrderInfo, SignedOrder, SignedTransaction } from './types';
 
 export class ExchangeWrapper {
     private _exchange: ExchangeContract;
@@ -225,10 +225,8 @@ export class ExchangeWrapper {
         const filledAmount = new BigNumber(await this._exchange.filled.callAsync(orderHashHex));
         return filledAmount;
     }
-    public async getOrderInfoAsync(
-        signedOrder: SignedOrder,
-    ): Promise<[number /* orderStatus */, string /* orderHash */, BigNumber /* orderTakerAssetAmountFilled */]> {
-        const orderInfo: [number, string, BigNumber] = await this._exchange.getOrderInfo.callAsync(signedOrder);
+    public async getOrderInfoAsync(signedOrder: SignedOrder): Promise<OrderInfo> {
+        const orderInfo = (await this._exchange.getOrderInfo.callAsync(signedOrder)) as OrderInfo;
         return orderInfo;
     }
     public async matchOrdersAsync(
