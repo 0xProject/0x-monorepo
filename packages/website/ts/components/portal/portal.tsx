@@ -105,6 +105,7 @@ const styles: Styles = {
     },
     backButton: {
         height: BACK_BUTTON_HEIGHT,
+        paddingTop: 10,
         backgroundColor: colors.white,
         borderRadius: BACK_BUTTON_HEIGHT,
         boxShadow: `0px 4px 6px ${colors.walletBoxShadow}`,
@@ -203,36 +204,17 @@ export class Portal extends React.Component<PortalProps, PortalState> {
                     style={{ backgroundColor: colors.lightestGrey }}
                 />
                 <div id="portal" style={styles.body}>
-                    <div className="sm-flex flex-center">
-                        <div className="flex-last px3">
-                            <div style={styles.leftColumn}>
-                                <Switch>
-                                    <Route
-                                        path={`${WebsitePaths.Portal}/:route`}
-                                        render={this._renderMenu.bind(this)}
-                                    />
-                                    <Route
-                                        exact={true}
-                                        path={`${WebsitePaths.Portal}`}
-                                        render={this._renderWallet.bind(this)}
-                                    />
-                                </Switch>
-                            </div>
-                        </div>
-                        <div className="flex-auto px3" style={styles.scrollContainer}>
-                            <Switch>
-                                <Route
-                                    path={`${WebsitePaths.Portal}/:route`}
-                                    render={this._renderAccountManagement.bind(this)}
-                                />
-                                <Route
-                                    exact={true}
-                                    path={`${WebsitePaths.Portal}/`}
-                                    render={this._renderRelayerIndex.bind(this)}
-                                />
-                            </Switch>
-                        </div>
-                    </div>
+                    <Switch>
+                        <Route
+                            path={`${WebsitePaths.Portal}/:route`}
+                            render={this._renderMenuAndAccountManagement.bind(this)}
+                        />
+                        <Route
+                            exact={true}
+                            path={`${WebsitePaths.Portal}/`}
+                            render={this._renderWalletAndRelayerIndex.bind(this)}
+                        />
+                    </Switch>
                     <BlockchainErrDialog
                         blockchain={this._blockchain}
                         blockchainErr={this.props.blockchainErr}
@@ -270,6 +252,12 @@ export class Portal extends React.Component<PortalProps, PortalState> {
                 </div>
             </div>
         );
+    }
+    private _renderWalletAndRelayerIndex(): React.ReactNode {
+        return <PortalLayout left={this._renderWallet()} right={this._renderRelayerIndex()} />;
+    }
+    private _renderMenuAndAccountManagement(routeComponentProps: RouteComponentProps<any>): React.ReactNode {
+        return <PortalLayout left={this._renderMenu(routeComponentProps)} right={this._renderAccountManagement()} />;
     }
     private _renderMenu(routeComponentProps: RouteComponentProps<any>): React.ReactNode {
         return (
@@ -480,7 +468,7 @@ const BackButton = (props: BackButtonProps) => {
     return (
         <div style={{ height: 65, paddingTop: 25 }}>
             <Link to={props.to} style={{ textDecoration: 'none' }}>
-                <div className="flex right" style={{ ...styles.backButton, paddingTop: 10 }}>
+                <div className="flex right" style={styles.backButton}>
                     <div style={{ marginLeft: 12 }}>
                         <i style={styles.backButtonIcon} className={`zmdi zmdi-arrow-left`} />
                     </div>
@@ -489,6 +477,23 @@ const BackButton = (props: BackButtonProps) => {
                     </div>
                 </div>
             </Link>
+        </div>
+    );
+};
+
+interface PortalLayoutProps {
+    left: React.ReactNode;
+    right: React.ReactNode;
+}
+const PortalLayout = (props: PortalLayoutProps) => {
+    return (
+        <div className="sm-flex flex-center">
+            <div className="flex-last px3">
+                <div style={styles.leftColumn}>{props.left}</div>
+            </div>
+            <div className="flex-auto px3" style={styles.scrollContainer}>
+                {props.right}
+            </div>
         </div>
     );
 };
