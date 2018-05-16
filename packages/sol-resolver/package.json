@@ -1,6 +1,9 @@
 {
     "name": "@0xproject/sol-resolver",
     "version": "0.0.4",
+    "engines": {
+        "node" : ">=6.12"
+    },
     "description": "Import resolver for smart contracts dependencies",
     "main": "lib/index.js",
     "types": "lib/index.d.ts",

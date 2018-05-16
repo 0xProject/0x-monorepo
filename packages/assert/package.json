@@ -1,6 +1,9 @@
 {
     "name": "@0xproject/assert",
     "version": "0.2.9",
+    "engines": {
+        "node" : ">=6.12"
+    },
     "description": "Provides a standard way of performing type and schema validation across 0x projects",
     "main": "lib/src/index.js",
     "types": "lib/src/index.d.ts",

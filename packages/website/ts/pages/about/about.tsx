@@ -128,9 +128,6 @@ const teamRow4: ProfileInfo[] = [
         github: '',
         medium: '',
     },
-];
-
-const teamRow5: ProfileInfo[] = [
     {
         name: 'Greg Hysen',
         title: 'Blockchain Engineer',
@@ -140,6 +137,9 @@ const teamRow5: ProfileInfo[] = [
         github: 'https://github.com/hysz',
         medium: '',
     },
+];
+
+const teamRow5: ProfileInfo[] = [
     {
         name: 'Remco Bloemen',
         title: 'Technical Fellow',
@@ -148,6 +148,14 @@ const teamRow5: ProfileInfo[] = [
         linkedIn: 'https://www.linkedin.com/in/remcobloemen/',
         github: 'http://github.com/recmo',
         medium: '',
+    },
+    {
+        name: 'Francesco Agosti',
+        title: 'Senior Frontend Engineer',
+        description: `Full-stack engineer. Previously senior software engineer at Yelp. Computer science Duke.`,
+        image: 'images/team/fragosti.png',
+        linkedIn: 'https://www.linkedin.com/in/fragosti/',
+        github: 'http://github.com/fragosti',
     },
 ];
 
