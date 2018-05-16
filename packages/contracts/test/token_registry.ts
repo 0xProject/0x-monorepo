@@ -16,6 +16,7 @@ import { ContractName } from '../util/types';
 
 import { chaiSetup } from './utils/chai_setup';
 import { provider, txDefaults, web3Wrapper } from './utils/web3_wrapper';
+import { expectRevertOrAlwaysFailingTransaction } from './utils/assertions';
 
 chaiSetup.configure();
 const expect = chai.expect;
@@ -71,8 +72,8 @@ describe('TokenRegistry', () => {
     };
 
     describe('addToken', () => {
-        it.skip('should throw when not called by owner', async () => {
-            return expect(tokenRegWrapper.addTokenAsync(token1, notOwner)).to.be.rejectedWith(constants.REVERT);
+        it('should throw when not called by owner', async () => {
+            return expectRevertOrAlwaysFailingTransaction(tokenRegWrapper.addTokenAsync(token1, notOwner));
         });
 
         it('should add token metadata when called by owner', async () => {
@@ -81,34 +82,30 @@ describe('TokenRegistry', () => {
             expect(tokenData).to.be.deep.equal(token1);
         });
 
-        it.skip('should throw if token already exists', async () => {
+        it('should throw if token already exists', async () => {
             await tokenRegWrapper.addTokenAsync(token1, owner);
 
-            return expect(tokenRegWrapper.addTokenAsync(token1, owner)).to.be.rejectedWith(constants.REVERT);
+            return expectRevertOrAlwaysFailingTransaction(tokenRegWrapper.addTokenAsync(token1, owner));
         });
 
-        it.skip('should throw if token address is null', async () => {
-            return expect(tokenRegWrapper.addTokenAsync(nullToken, owner)).to.be.rejectedWith(constants.REVERT);
+        it('should throw if token address is null', async () => {
+            return expectRevertOrAlwaysFailingTransaction(tokenRegWrapper.addTokenAsync(nullToken, owner));
         });
 
-        it.skip('should throw if name already exists', async () => {
+        it('should throw if name already exists', async () => {
             await tokenRegWrapper.addTokenAsync(token1, owner);
             const duplicateNameToken = _.assign({}, token2, { name: token1.name });
 
-            return expect(tokenRegWrapper.addTokenAsync(duplicateNameToken, owner)).to.be.rejectedWith(
-                constants.REVERT,
-            );
+            return expectRevertOrAlwaysFailingTransaction(tokenRegWrapper.addTokenAsync(duplicateNameToken, owner));
         });
 
-        it.skip('should throw if symbol already exists', async () => {
+        it('should throw if symbol already exists', async () => {
             await tokenRegWrapper.addTokenAsync(token1, owner);
             const duplicateSymbolToken = _.assign({}, token2, {
                 symbol: token1.symbol,
             });
 
-            return expect(tokenRegWrapper.addTokenAsync(duplicateSymbolToken, owner)).to.be.rejectedWith(
-                constants.REVERT,
-            );
+            return expectRevertOrAlwaysFailingTransaction(tokenRegWrapper.addTokenAsync(duplicateSymbolToken, owner));
         });
     });
 
@@ -132,10 +129,10 @@ describe('TokenRegistry', () => {
         });
 
         describe('setTokenName', () => {
-            it.skip('should throw when not called by owner', async () => {
-                return expect(
+            it('should throw when not called by owner', async () => {
+                return expectRevertOrAlwaysFailingTransaction(
                     tokenReg.setTokenName.sendTransactionAsync(token1.address, token2.name, { from: notOwner }),
-                ).to.be.rejectedWith(constants.REVERT);
+                );
             });
 
             it('should change the token name when called by owner', async () => {
@@ -153,28 +150,28 @@ describe('TokenRegistry', () => {
                 expect(oldData).to.be.deep.equal(expectedOldData);
             });
 
-            it.skip('should throw if the name already exists', async () => {
+            it('should throw if the name already exists', async () => {
                 await tokenRegWrapper.addTokenAsync(token2, owner);
 
-                return expect(
+                return expectRevertOrAlwaysFailingTransaction(
                     tokenReg.setTokenName.sendTransactionAsync(token1.address, token2.name, { from: owner }),
-                ).to.be.rejectedWith(constants.REVERT);
+                );
             });
 
-            it.skip('should throw if token does not exist', async () => {
-                return expect(
+            it('should throw if token does not exist', async () => {
+                return expectRevertOrAlwaysFailingTransaction(
                     tokenReg.setTokenName.sendTransactionAsync(nullToken.address, token2.name, { from: owner }),
-                ).to.be.rejectedWith(constants.REVERT);
+                );
             });
         });
 
         describe('setTokenSymbol', () => {
-            it.skip('should throw when not called by owner', async () => {
-                return expect(
+            it('should throw when not called by owner', async () => {
+                return expectRevertOrAlwaysFailingTransaction(
                     tokenReg.setTokenSymbol.sendTransactionAsync(token1.address, token2.symbol, {
                         from: notOwner,
                     }),
-                ).to.be.rejectedWith(constants.REVERT);
+                );
             });
 
             it('should change the token symbol when called by owner', async () => {
@@ -190,31 +187,31 @@ describe('TokenRegistry', () => {
                 expect(oldData).to.be.deep.equal(expectedOldData);
             });
 
-            it.skip('should throw if the symbol already exists', async () => {
+            it('should throw if the symbol already exists', async () => {
                 await tokenRegWrapper.addTokenAsync(token2, owner);
 
-                return expect(
+                return expectRevertOrAlwaysFailingTransaction(
                     tokenReg.setTokenSymbol.sendTransactionAsync(token1.address, token2.symbol, {
                         from: owner,
                     }),
-                ).to.be.rejectedWith(constants.REVERT);
+                );
             });
 
-            it.skip('should throw if token does not exist', async () => {
-                return expect(
+            it('should throw if token does not exist', async () => {
+                return expectRevertOrAlwaysFailingTransaction(
                     tokenReg.setTokenSymbol.sendTransactionAsync(nullToken.address, token2.symbol, {
                         from: owner,
                     }),
-                ).to.be.rejectedWith(constants.REVERT);
+                );
             });
         });
 
         describe('removeToken', () => {
-            it.skip('should throw if not called by owner', async () => {
+            it('should throw if not called by owner', async () => {
                 const index = new BigNumber(0);
-                return expect(
+                return expectRevertOrAlwaysFailingTransaction(
                     tokenReg.removeToken.sendTransactionAsync(token1.address, index, { from: notOwner }),
-                ).to.be.rejectedWith(constants.REVERT);
+                );
             });
 
             it('should remove token metadata when called by owner', async () => {
@@ -226,19 +223,19 @@ describe('TokenRegistry', () => {
                 expect(tokenData).to.be.deep.equal(nullToken);
             });
 
-            it.skip('should throw if token does not exist', async () => {
+            it('should throw if token does not exist', async () => {
                 const index = new BigNumber(0);
-                return expect(
+                return expectRevertOrAlwaysFailingTransaction(
                     tokenReg.removeToken.sendTransactionAsync(nullToken.address, index, { from: owner }),
-                ).to.be.rejectedWith(constants.REVERT);
+                );
             });
 
-            it.skip('should throw if token at given index does not match address', async () => {
+            it('should throw if token at given index does not match address', async () => {
                 await tokenRegWrapper.addTokenAsync(token2, owner);
                 const incorrectIndex = new BigNumber(0);
-                return expect(
+                return expectRevertOrAlwaysFailingTransaction(
                     tokenReg.removeToken.sendTransactionAsync(token2.address, incorrectIndex, { from: owner }),
-                ).to.be.rejectedWith(constants.REVERT);
+                );
             });
         });
     });

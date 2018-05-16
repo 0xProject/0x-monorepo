@@ -14,6 +14,7 @@ import { ContractName } from '../../util/types';
 import { chaiSetup } from '../utils/chai_setup';
 
 import { provider, txDefaults, web3Wrapper } from '../utils/web3_wrapper';
+import { expectRevertOrAlwaysFailingTransaction } from '../utils/assertions';
 
 chaiSetup.configure();
 const expect = chai.expect;
@@ -67,8 +68,8 @@ describe('TokenTransferProxy', () => {
     });
 
     describe('transferFrom', () => {
-        it.skip('should throw when called by an unauthorized address', async () => {
-            expect(
+        it('should throw when called by an unauthorized address', async () => {
+            return expectRevertOrAlwaysFailingTransaction(
                 tokenTransferProxy.transferFrom.sendTransactionAsync(
                     rep.address,
                     accounts[0],
@@ -78,7 +79,7 @@ describe('TokenTransferProxy', () => {
                         from: notAuthorized,
                     },
                 ),
-            ).to.be.rejectedWith(constants.REVERT);
+            );
         });
 
         it('should allow an authorized address to transfer', async () => {

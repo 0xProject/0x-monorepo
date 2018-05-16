@@ -24,6 +24,7 @@ import { BalancesByOwner, ContractName } from '../../util/types';
 import { chaiSetup } from '../utils/chai_setup';
 
 import { provider, txDefaults, web3Wrapper } from '../utils/web3_wrapper';
+import { expectRevertOrAlwaysFailingTransaction } from '../utils/assertions';
 
 chaiSetup.configure();
 const expect = chai.expect;
@@ -233,7 +234,7 @@ describe('Arbitrage', () => {
             const postBalance = await weth.balanceOf.callAsync(arbitrage.address);
             expect(postBalance).to.be.bignumber.equal(amountGive);
         });
-        it.skip('should fail and revert if front-runned', async () => {
+        it('should fail and revert if front-runned', async () => {
             const preBalance = await weth.balanceOf.callAsync(arbitrage.address);
             // Front-running transaction
             await etherDelta.trade.sendTransactionAsync(
@@ -251,9 +252,9 @@ describe('Arbitrage', () => {
                 { from: edFrontRunner },
             );
             // tslint:disable-next-line:await-promise
-            await expect(
+            await expectRevertOrAlwaysFailingTransaction(
                 arbitrage.makeAtomicTrade.sendTransactionAsync(addresses, values, v, r, s, { from: coinbase }),
-            ).to.be.rejectedWith(constants.REVERT);
+            );
             const postBalance = await weth.balanceOf.callAsync(arbitrage.address);
             expect(preBalance).to.be.bignumber.equal(postBalance);
         });

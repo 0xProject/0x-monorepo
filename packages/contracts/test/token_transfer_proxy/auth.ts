@@ -11,6 +11,7 @@ import { ContractName } from '../../util/types';
 import { chaiSetup } from '../utils/chai_setup';
 
 import { provider, txDefaults, web3Wrapper } from '../utils/web3_wrapper';
+import { expectRevertOrAlwaysFailingTransaction } from '../utils/assertions';
 
 chaiSetup.configure();
 const expect = chai.expect;
@@ -38,32 +39,32 @@ describe('TokenTransferProxy', () => {
         await blockchainLifecycle.revertAsync();
     });
     describe('addAuthorizedAddress', () => {
-        it.skip('should throw if not called by owner', async () => {
-            return expect(
+        it('should throw if not called by owner', async () => {
+            return expectRevertOrAlwaysFailingTransaction(
                 tokenTransferProxy.addAuthorizedAddress.sendTransactionAsync(notOwner, { from: notOwner }),
-            ).to.be.rejectedWith(constants.REVERT);
+            );
         });
         it('should allow owner to add an authorized address', async () => {
             await tokenTransferProxy.addAuthorizedAddress.sendTransactionAsync(address, { from: owner });
             const isAuthorized = await tokenTransferProxy.authorized.callAsync(address);
             expect(isAuthorized).to.be.true();
         });
-        it.skip('should throw if owner attempts to authorize a duplicate address', async () => {
+        it('should throw if owner attempts to authorize a duplicate address', async () => {
             await tokenTransferProxy.addAuthorizedAddress.sendTransactionAsync(address, { from: owner });
-            return expect(
+            return expectRevertOrAlwaysFailingTransaction(
                 tokenTransferProxy.addAuthorizedAddress.sendTransactionAsync(address, { from: owner }),
-            ).to.be.rejectedWith(constants.REVERT);
+            );
         });
     });
 
     describe('removeAuthorizedAddress', () => {
-        it.skip('should throw if not called by owner', async () => {
+        it('should throw if not called by owner', async () => {
             await tokenTransferProxy.addAuthorizedAddress.sendTransactionAsync(address, { from: owner });
-            return expect(
+            return expectRevertOrAlwaysFailingTransaction(
                 tokenTransferProxy.removeAuthorizedAddress.sendTransactionAsync(address, {
                     from: notOwner,
                 }),
-            ).to.be.rejectedWith(constants.REVERT);
+            );
         });
 
         it('should allow owner to remove an authorized address', async () => {
@@ -75,12 +76,12 @@ describe('TokenTransferProxy', () => {
             expect(isAuthorized).to.be.false();
         });
 
-        it.skip('should throw if owner attempts to remove an address that is not authorized', async () => {
-            return expect(
+        it('should throw if owner attempts to remove an address that is not authorized', async () => {
+            return expectRevertOrAlwaysFailingTransaction(
                 tokenTransferProxy.removeAuthorizedAddress.sendTransactionAsync(address, {
                     from: owner,
                 }),
-            ).to.be.rejectedWith(constants.REVERT);
+            );
         });
     });
 

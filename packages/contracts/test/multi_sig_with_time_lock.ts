@@ -17,6 +17,7 @@ import { ContractName, SubmissionContractEventArgs } from '../util/types';
 import { chaiSetup } from './utils/chai_setup';
 
 import { provider, txDefaults, web3Wrapper } from './utils/web3_wrapper';
+import { expectRevertOrAlwaysFailingTransaction } from './utils/assertions';
 
 const MULTI_SIG_ABI = artifacts.MultiSigWalletWithTimeLock.compilerOutput.abi;
 chaiSetup.configure();
@@ -61,13 +62,13 @@ describe('MultiSigWalletWithTimeLock', () => {
                 const secondsTimeLocked = await multiSig.secondsTimeLocked.callAsync();
                 initialSecondsTimeLocked = secondsTimeLocked.toNumber();
             });
-            it.skip('should throw when not called by wallet', async () => {
-                return expect(
+            it('should throw when not called by wallet', async () => {
+                return expectRevertOrAlwaysFailingTransaction(
                     multiSig.changeTimeLock.sendTransactionAsync(SECONDS_TIME_LOCKED, { from: owners[0] }),
-                ).to.be.rejectedWith(constants.REVERT);
+                );
             });
 
-            it.skip('should throw without enough confirmations', async () => {
+            it('should throw without enough confirmations', async () => {
                 const destination = multiSig.address;
                 const from = owners[0];
                 const dataParams = {
@@ -82,9 +83,9 @@ describe('MultiSigWalletWithTimeLock', () => {
                 >;
 
                 txId = log.args.transactionId;
-                return expect(
+                return expectRevertOrAlwaysFailingTransaction(
                     multiSig.executeTransaction.sendTransactionAsync(txId, { from: owners[0] }),
-                ).to.be.rejectedWith(constants.REVERT);
+                );
             });
 
             it('should set confirmation time with enough confirmations', async () => {
@@ -175,12 +176,13 @@ describe('MultiSigWalletWithTimeLock', () => {
                 expect(confRes.logs).to.have.length(2);
             });
             const newSecondsTimeLocked = 0;
-            it.skip('should throw if it has enough confirmations but is not past the time lock', async () => {
-                return expect(
+            it('should throw if it has enough confirmations but is not past the time lock', async () => {
+                return expectRevertOrAlwaysFailingTransaction(
                     multiSig.executeTransaction.sendTransactionAsync(txId, { from: owners[0] }),
-                ).to.be.rejectedWith(constants.REVERT);
+                );
             });
 
+            // TODO(albrow): Implement the increaseTimeAsync method in Geth.
             it.skip('should execute if it has enough confirmations and is past the time lock', async () => {
                 await web3Wrapper.increaseTimeAsync(SECONDS_TIME_LOCKED.toNumber());
                 await multiSig.executeTransaction.sendTransactionAsync(txId, { from: owners[0] });

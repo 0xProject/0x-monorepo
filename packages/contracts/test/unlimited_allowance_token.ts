@@ -13,6 +13,7 @@ import { ContractName } from '../util/types';
 
 import { chaiSetup } from './utils/chai_setup';
 import { provider, txDefaults, web3Wrapper } from './utils/web3_wrapper';
+import { expectRevertOrAlwaysFailingTransaction } from './utils/assertions';
 
 chaiSetup.configure();
 const expect = chai.expect;
@@ -53,11 +54,12 @@ describe('UnlimitedAllowanceToken', () => {
         await blockchainLifecycle.revertAsync();
     });
     describe('transfer', () => {
+        // TODO(albrow): We get an "invalid data for function output" error
         it.skip('should throw if owner has insufficient balance', async () => {
             const ownerBalance = await zeroEx.token.getBalanceAsync(tokenAddress, owner);
             const amountToTransfer = ownerBalance.plus(1);
-            return expect(token.transfer.callAsync(spender, amountToTransfer, { from: owner })).to.be.rejectedWith(
-                constants.REVERT,
+            return expectRevertOrAlwaysFailingTransaction(
+                token.transfer.callAsync(spender, amountToTransfer, { from: owner }),
             );
         });
 
@@ -84,17 +86,19 @@ describe('UnlimitedAllowanceToken', () => {
     });
 
     describe('transferFrom', () => {
+        // TODO(albrow): We get an "invalid data for function output" error
         it.skip('should throw if owner has insufficient balance', async () => {
             const ownerBalance = await zeroEx.token.getBalanceAsync(tokenAddress, owner);
             const amountToTransfer = ownerBalance.plus(1);
             await zeroEx.token.setAllowanceAsync(tokenAddress, owner, spender, amountToTransfer);
-            return expect(
+            return expectRevertOrAlwaysFailingTransaction(
                 token.transferFrom.callAsync(owner, spender, amountToTransfer, {
                     from: spender,
                 }),
-            ).to.be.rejectedWith(constants.REVERT);
+            );
         });
 
+        // TODO(albrow): We get an "invalid data for function output" error
         it.skip('should throw if spender has insufficient allowance', async () => {
             const ownerBalance = await zeroEx.token.getBalanceAsync(tokenAddress, owner);
             const amountToTransfer = ownerBalance;
@@ -103,11 +107,11 @@ describe('UnlimitedAllowanceToken', () => {
             const spenderAllowanceIsInsufficient = spenderAllowance.cmp(amountToTransfer) < 0;
             expect(spenderAllowanceIsInsufficient).to.be.true();
 
-            return expect(
+            return expectRevertOrAlwaysFailingTransaction(
                 token.transferFrom.callAsync(owner, spender, amountToTransfer, {
                     from: spender,
                 }),
-            ).to.be.rejectedWith(constants.REVERT);
+            );
         });
 
         it('should return true on a 0 value transfer', async () => {

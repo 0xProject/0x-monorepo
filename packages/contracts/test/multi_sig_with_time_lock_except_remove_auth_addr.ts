@@ -18,6 +18,7 @@ import { ContractName, SubmissionContractEventArgs, TransactionDataParams } from
 import { chaiSetup } from './utils/chai_setup';
 
 import { provider, txDefaults, web3Wrapper } from './utils/web3_wrapper';
+import { expectRevertOrAlwaysFailingTransaction } from './utils/assertions';
 
 const PROXY_ABI = artifacts.TokenTransferProxy.compilerOutput.abi;
 const MUTISIG_WALLET_WITH_TIME_LOCK_EXCEPT_REMOVE_AUTHORIZED_ADDRESS_ABI =
@@ -79,14 +80,13 @@ describe('MultiSigWalletWithTimeLockExceptRemoveAuthorizedAddress', () => {
     });
 
     describe('isFunctionRemoveAuthorizedAddress', () => {
+        // TODO(albrow): We get an "invalid data for function output" error
         it.skip('should throw if data is not for removeAuthorizedAddress', async () => {
             const data = MultiSigWrapper.encodeFnArgs('addAuthorizedAddress', PROXY_ABI, [owners[0]]);
-            return expect(multiSig.isFunctionRemoveAuthorizedAddress.callAsync(data)).to.be.rejectedWith(
-                constants.REVERT,
-            );
+            return expectRevertOrAlwaysFailingTransaction(multiSig.isFunctionRemoveAuthorizedAddress.callAsync(data));
         });
 
-        it.skip('should return true if data is for removeAuthorizedAddress', async () => {
+        it('should return true if data is for removeAuthorizedAddress', async () => {
             const data = MultiSigWrapper.encodeFnArgs('removeAuthorizedAddress', PROXY_ABI, [owners[0]]);
             const isFunctionRemoveAuthorizedAddress = await multiSig.isFunctionRemoveAuthorizedAddress.callAsync(data);
             expect(isFunctionRemoveAuthorizedAddress).to.be.true();
@@ -94,7 +94,7 @@ describe('MultiSigWalletWithTimeLockExceptRemoveAuthorizedAddress', () => {
     });
 
     describe('executeRemoveAuthorizedAddress', () => {
-        it.skip('should throw without the required confirmations', async () => {
+        it('should throw without the required confirmations', async () => {
             const dataParams: TransactionDataParams = {
                 name: 'removeAuthorizedAddress',
                 abi: PROXY_ABI,
@@ -105,12 +105,12 @@ describe('MultiSigWalletWithTimeLockExceptRemoveAuthorizedAddress', () => {
             const log = abiDecoder.tryToDecodeLogOrNoop(res.logs[0]) as LogWithDecodedArgs<SubmissionContractEventArgs>;
             const txId = log.args.transactionId;
 
-            return expect(
+            return expectRevertOrAlwaysFailingTransaction(
                 multiSig.executeRemoveAuthorizedAddress.sendTransactionAsync(txId, { from: owners[1] }),
-            ).to.be.rejectedWith(constants.REVERT);
+            );
         });
 
-        it.skip('should throw if tx destination is not the tokenTransferProxy', async () => {
+        it('should throw if tx destination is not the tokenTransferProxy', async () => {
             const invalidTokenTransferProxy = await TokenTransferProxyContract.deployFrom0xArtifactAsync(
                 artifacts.TokenTransferProxy,
                 provider,
@@ -130,12 +130,12 @@ describe('MultiSigWalletWithTimeLockExceptRemoveAuthorizedAddress', () => {
             const isConfirmed = await multiSig.isConfirmed.callAsync(txId);
             expect(isConfirmed).to.be.true();
 
-            return expect(
+            return expectRevertOrAlwaysFailingTransaction(
                 multiSig.executeRemoveAuthorizedAddress.sendTransactionAsync(txId, { from: owners[1] }),
-            ).to.be.rejectedWith(constants.REVERT);
+            );
         });
 
-        it.skip('should throw if tx data is not for removeAuthorizedAddress', async () => {
+        it('should throw if tx data is not for removeAuthorizedAddress', async () => {
             const dataParams: TransactionDataParams = {
                 name: 'addAuthorizedAddress',
                 abi: PROXY_ABI,
@@ -149,9 +149,9 @@ describe('MultiSigWalletWithTimeLockExceptRemoveAuthorizedAddress', () => {
             const isConfirmed = await multiSig.isConfirmed.callAsync(txId);
             expect(isConfirmed).to.be.true();
 
-            return expect(
+            return expectRevertOrAlwaysFailingTransaction(
                 multiSig.executeRemoveAuthorizedAddress.sendTransactionAsync(txId, { from: owners[1] }),
-            ).to.be.rejectedWith(constants.REVERT);
+            );
         });
 
         it('should execute removeAuthorizedAddress for valid tokenTransferProxy if fully confirmed', async () => {
@@ -172,7 +172,7 @@ describe('MultiSigWalletWithTimeLockExceptRemoveAuthorizedAddress', () => {
             expect(isAuthorized).to.be.false();
         });
 
-        it.skip('should throw if already executed', async () => {
+        it('should throw if already executed', async () => {
             const dataParams: TransactionDataParams = {
                 name: 'removeAuthorizedAddress',
                 abi: PROXY_ABI,
@@ -189,9 +189,9 @@ describe('MultiSigWalletWithTimeLockExceptRemoveAuthorizedAddress', () => {
             const tx = await multiSig.transactions.callAsync(txId);
             const isExecuted = tx[3];
             expect(isExecuted).to.be.true();
-            return expect(
+            return expectRevertOrAlwaysFailingTransaction(
                 multiSig.executeRemoveAuthorizedAddress.sendTransactionAsync(txId, { from: owners[1] }),
-            ).to.be.rejectedWith(constants.REVERT);
+            );
         });
     });
 });
