@@ -18,7 +18,7 @@ export interface OrderbookChannel {
 /**
  * heartbeatInterval: Interval in milliseconds that the orderbook channel should ping the underlying websocket. Default: 15000
  */
-export interface WebSocketOrderbookChannelConfig {
+export interface NodeWebSocketOrderbookChannelConfig {
     heartbeatIntervalMs?: number;
 }
 

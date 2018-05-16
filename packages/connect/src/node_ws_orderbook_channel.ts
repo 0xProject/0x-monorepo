@@ -1,18 +1,17 @@
-import { assert } from '@0xproject/assert';
-import { schemas } from '@0xproject/json-schemas';
 import * as _ from 'lodash';
 import * as WebSocket from 'websocket';
 
 import { schemas as clientSchemas } from './schemas/schemas';
 import {
+    NodeWebSocketOrderbookChannelConfig,
     OrderbookChannel,
     OrderbookChannelHandler,
     OrderbookChannelMessageTypes,
     OrderbookChannelSubscriptionOpts,
     WebsocketClientEventType,
     WebsocketConnectionEventType,
-    WebSocketOrderbookChannelConfig,
 } from './types';
+import { assert } from './utils/assert';
 import { orderbookChannelMessageParser } from './utils/orderbook_channel_message_parser';
 
 const DEFAULT_HEARTBEAT_INTERVAL_MS = 15000;
@@ -20,9 +19,9 @@ const MINIMUM_HEARTBEAT_INTERVAL_MS = 10;
 
 /**
  * This class includes all the functionality related to interacting with a websocket endpoint
- * that implements the standard relayer API v0
+ * that implements the standard relayer API v0 in a node environment
  */
-export class WebSocketOrderbookChannel implements OrderbookChannel {
+export class NodeWebSocketOrderbookChannel implements OrderbookChannel {
     private _apiEndpointUrl: string;
     private _client: WebSocket.client;
     private _connectionIfExists?: WebSocket.connection;
@@ -30,15 +29,15 @@ export class WebSocketOrderbookChannel implements OrderbookChannel {
     private _subscriptionCounter = 0;
     private _heartbeatIntervalMs: number;
     /**
-     * Instantiates a new WebSocketOrderbookChannel instance
+     * Instantiates a new NodeWebSocketOrderbookChannelConfig instance
      * @param   url                 The relayer API base WS url you would like to interact with
      * @param   config              The configuration object. Look up the type for the description.
-     * @return  An instance of WebSocketOrderbookChannel
+     * @return  An instance of NodeWebSocketOrderbookChannelConfig
      */
-    constructor(url: string, config?: WebSocketOrderbookChannelConfig) {
+    constructor(url: string, config?: NodeWebSocketOrderbookChannelConfig) {
         assert.isUri('url', url);
         if (!_.isUndefined(config)) {
-            assert.doesConformToSchema('config', config, clientSchemas.webSocketOrderbookChannelConfigSchema);
+            assert.doesConformToSchema('config', config, clientSchemas.nodeWebSocketOrderbookChannelConfigSchema);
         }
         this._apiEndpointUrl = url;
         this._heartbeatIntervalMs =
@@ -55,15 +54,8 @@ export class WebSocketOrderbookChannel implements OrderbookChannel {
      *                               channel updates
      */
     public subscribe(subscriptionOpts: OrderbookChannelSubscriptionOpts, handler: OrderbookChannelHandler): void {
-        assert.doesConformToSchema(
-            'subscriptionOpts',
-            subscriptionOpts,
-            schemas.relayerApiOrderbookChannelSubscribePayload,
-        );
-        assert.isFunction('handler.onSnapshot', _.get(handler, 'onSnapshot'));
-        assert.isFunction('handler.onUpdate', _.get(handler, 'onUpdate'));
-        assert.isFunction('handler.onError', _.get(handler, 'onError'));
-        assert.isFunction('handler.onClose', _.get(handler, 'onClose'));
+        assert.isOrderbookChannelSubscriptionOpts('subscriptionOpts', subscriptionOpts);
+        assert.isOrderbookChannelHandler('handler', handler);
         this._subscriptionCounter += 1;
         const subscribeMessage = {
             type: 'subscribe',
