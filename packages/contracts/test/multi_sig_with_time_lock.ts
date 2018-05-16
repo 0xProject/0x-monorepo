@@ -61,13 +61,13 @@ describe('MultiSigWalletWithTimeLock', () => {
                 const secondsTimeLocked = await multiSig.secondsTimeLocked.callAsync();
                 initialSecondsTimeLocked = secondsTimeLocked.toNumber();
             });
-            it('should throw when not called by wallet', async () => {
+            it.skip('should throw when not called by wallet', async () => {
                 return expect(
                     multiSig.changeTimeLock.sendTransactionAsync(SECONDS_TIME_LOCKED, { from: owners[0] }),
                 ).to.be.rejectedWith(constants.REVERT);
             });
 
-            it('should throw without enough confirmations', async () => {
+            it.skip('should throw without enough confirmations', async () => {
                 const destination = multiSig.address;
                 const from = owners[0];
                 const dataParams = {
@@ -175,13 +175,13 @@ describe('MultiSigWalletWithTimeLock', () => {
                 expect(confRes.logs).to.have.length(2);
             });
             const newSecondsTimeLocked = 0;
-            it('should throw if it has enough confirmations but is not past the time lock', async () => {
+            it.skip('should throw if it has enough confirmations but is not past the time lock', async () => {
                 return expect(
                     multiSig.executeTransaction.sendTransactionAsync(txId, { from: owners[0] }),
                 ).to.be.rejectedWith(constants.REVERT);
             });
 
-            it('should execute if it has enough confirmations and is past the time lock', async () => {
+            it.skip('should execute if it has enough confirmations and is past the time lock', async () => {
                 await web3Wrapper.increaseTimeAsync(SECONDS_TIME_LOCKED.toNumber());
                 await multiSig.executeTransaction.sendTransactionAsync(txId, { from: owners[0] });
 

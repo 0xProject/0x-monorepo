@@ -233,7 +233,7 @@ describe('Arbitrage', () => {
             const postBalance = await weth.balanceOf.callAsync(arbitrage.address);
             expect(postBalance).to.be.bignumber.equal(amountGive);
         });
-        it('should fail and revert if front-runned', async () => {
+        it.skip('should fail and revert if front-runned', async () => {
             const preBalance = await weth.balanceOf.callAsync(arbitrage.address);
             // Front-running transaction
             await etherDelta.trade.sendTransactionAsync(

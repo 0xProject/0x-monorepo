@@ -18,7 +18,7 @@ chaiSetup.configure();
 const expect = chai.expect;
 const blockchainLifecycle = new BlockchainLifecycle(web3Wrapper);
 
-describe.only('EtherToken', () => {
+describe('EtherToken', () => {
     let account: string;
     const gasPrice = ZeroEx.toBaseUnitAmount(new BigNumber(20), 9);
     let zeroEx: ZeroEx;
