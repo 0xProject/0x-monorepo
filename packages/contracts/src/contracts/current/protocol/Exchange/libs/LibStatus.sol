@@ -37,6 +37,8 @@ contract LibStatus {
         INVALID_MAKER,                          // Invalid maker
 
         /// Order State Statuses ///
+        // A valid order remains fillable until it is expired, fully filled, or cancelled.
+        // An order's state is unaffected by external factors, like account balances.
         ORDER_INVALID_MAKER_ASSET_AMOUNT,       // Order does not have a valid maker asset amount
         ORDER_INVALID_TAKER_ASSET_AMOUNT,       // Order does not have a valid taker asset amount
         ORDER_FILLABLE,                         // Order is fillable

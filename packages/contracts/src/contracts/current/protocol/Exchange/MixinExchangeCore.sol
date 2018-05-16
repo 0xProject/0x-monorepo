@@ -169,8 +169,9 @@ contract MixinExchangeCore is
         internal
     {
         // Ensure order is valid
-        // An order can only be filled if it is Status.FILLABLE;
+        // An order can only be filled if its status is FILLABLE;
         // however, only invalid statuses result in a throw.
+        // See LibStatus for a complete description of order statuses.
         require(
             orderStatus != uint8(Status.ORDER_INVALID_MAKER_ASSET_AMOUNT),
             INVALID_ORDER_MAKER_ASSET_AMOUNT
@@ -323,8 +324,9 @@ contract MixinExchangeCore is
         internal
     {
         // Ensure order is valid
-        // An order can only be cancelled if it is Status.FILLABLE;
+        // An order can only be cancelled if its status is FILLABLE;
         // however, only invalid statuses result in a throw.
+        // See LibStatus for a complete description of order statuses.
         require(
             orderStatus != uint8(Status.ORDER_INVALID_MAKER_ASSET_AMOUNT),
             INVALID_ORDER_MAKER_ASSET_AMOUNT
@@ -366,6 +368,7 @@ contract MixinExchangeCore is
         returns (bool stateUpdated)
     {
         // Ensure order is fillable (otherwise cancelling does nothing)
+        // See LibStatus for a complete description of order statuses.
         if (orderStatus != uint8(Status.ORDER_FILLABLE)) {
             emit ExchangeStatus(uint8(orderStatus), orderHash);
             stateUpdated = false;
@@ -390,7 +393,7 @@ contract MixinExchangeCore is
 
     /// @dev Gets information about an order: status, hash, and amount filled.
     /// @param order Order to gather information on.
-    /// @return status Status of order. Statuses are defined in the LibStatus.Status struct.
+    /// @return status Status of order. See LibStatus for a complete description of order statuses.
     /// @return orderHash Keccak-256 EIP712 hash of the order.
     /// @return takerAssetFilledAmount Amount of order that has been filled.
     function getOrderInfo(Order memory order)
