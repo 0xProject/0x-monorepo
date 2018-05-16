@@ -39,6 +39,7 @@ contract Exchange is
 
     string constant public VERSION = "2.0.1-alpha";
 
+    // Mixins are instantiated in the order they are inherited
     constructor (bytes memory _zrxProxyData)
         public
         MixinExchangeCore()

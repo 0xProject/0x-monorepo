@@ -75,7 +75,7 @@ contract MixinMatchOrders is
         address takerAddress = getCurrentContextAddress();
 
         // Either our context is valid or we revert
-        validateMatchOrThrow(leftOrder, rightOrder);
+        assertValidMatch(leftOrder, rightOrder);
 
         // Compute proportional fill amounts
         matchedFillResults = calculateMatchedFillResults(
@@ -88,7 +88,7 @@ contract MixinMatchOrders is
         );
 
         // Validate fill contexts
-        validateFillOrRevert(
+        assertValidFill(
             leftOrder,
             leftOrderInfo.orderStatus,
             leftOrderInfo.orderHash,
@@ -97,7 +97,7 @@ contract MixinMatchOrders is
             matchedFillResults.left.takerAssetFilledAmount,
             leftSignature
         );
-        validateFillOrRevert(
+        assertValidFill(
             rightOrder,
             rightOrderInfo.orderStatus,
             rightOrderInfo.orderHash,
@@ -131,14 +131,13 @@ contract MixinMatchOrders is
             matchedFillResults.right
         );
 
-        // Return results
         return matchedFillResults;
     }
 
     /// @dev Validates context for matchOrders. Succeeds or throws.
     /// @param leftOrder First order to match.
     /// @param rightOrder Second order to match.
-    function validateMatchOrThrow(
+    function assertValidMatch(
         Order memory leftOrder,
         Order memory rightOrder
     )
@@ -173,7 +172,7 @@ contract MixinMatchOrders is
 
     /// @dev Validates matched fill results. Succeeds or throws.
     /// @param matchedFillResults Amounts to fill and fees to pay by maker and taker of matched orders.
-    function validateMatchOrThrow(MatchedFillResults memory matchedFillResults)
+    function assertValidMatch(MatchedFillResults memory matchedFillResults)
         internal
     {
         // The left order must spend at least as much as we're sending to the combined
@@ -308,7 +307,7 @@ contract MixinMatchOrders is
         );
 
         // Validate the fill results
-        validateMatchOrThrow(matchedFillResults);
+        assertValidMatch(matchedFillResults);
 
         // Return fill results
         return matchedFillResults;

@@ -90,7 +90,7 @@ contract MixinExchangeCore is
         address takerAddress = getCurrentContextAddress();
 
         // Either our context is valid or we revert
-        validateFillOrRevert(
+        assertValidFill(
             order,
             orderStatus,
             orderHash,
@@ -131,7 +131,7 @@ contract MixinExchangeCore is
     ///      Throws if order is invalid or sender does not have permission to cancel.
     /// @param order Order to cancel. Order must be Status.FILLABLE.
     /// @return True if the order state changed to cancelled.
-    ///         False if the order was order was in a valid, but
+    ///         False if the order was valid, but in an
     ///               unfillable state (see LibStatus.STATUS for order states)
     function cancelOrder(Order memory order)
         public
@@ -143,7 +143,7 @@ contract MixinExchangeCore is
         (orderStatus, orderHash, ) = getOrderInfo(order);
 
         // Validate context
-        validateCancelOrRevert(order, orderStatus, orderHash);
+        assertValidCancel(order, orderStatus, orderHash);
 
         // Perform cancel
         return updateCancelledState(order, orderStatus, orderHash);
@@ -157,7 +157,7 @@ contract MixinExchangeCore is
     /// @param takerAssetFilledAmount Amount of order already filled.
     /// @param takerAssetFillAmount Desired amount of order to fill by taker.
     /// @param signature Proof that the orders was created by its maker.
-    function validateFillOrRevert(
+    function assertValidFill(
         Order memory order,
         uint8 orderStatus,
         bytes32 orderHash,
@@ -243,22 +243,22 @@ contract MixinExchangeCore is
 
         // Compute takerAssetFilledAmount
         uint256 remainingTakerAssetAmount = safeSub(order.takerAssetAmount, takerAssetFilledAmount);
-        fillResults.takerAssetFilledAmount = min256(takerAssetFillAmount, remainingTakerAssetAmount);
+        uint256 newTakerAssetFilledAmount = min256(takerAssetFillAmount, remainingTakerAssetAmount);
 
         // Validate fill order rounding
         if (isRoundingError(
-            fillResults.takerAssetFilledAmount,
+            newTakerAssetFilledAmount,
             order.takerAssetAmount,
             order.makerAssetAmount))
         {
             status = uint8(Status.ROUNDING_ERROR_TOO_LARGE);
-            fillResults.takerAssetFilledAmount = 0;
-            return;
+            return (status, fillResults);
         }
 
         // Compute proportional transfer amounts
         // TODO: All three are multiplied by the same fraction. This can
         // potentially be optimized.
+        fillResults.takerAssetFilledAmount = newTakerAssetFilledAmount;
         fillResults.makerAssetFilledAmount = getPartialAmount(
             fillResults.takerAssetFilledAmount,
             order.takerAssetAmount,
@@ -276,7 +276,7 @@ contract MixinExchangeCore is
         );
 
         status = uint8(Status.SUCCESS);
-        return;
+        return (status, fillResults);
     }
 
     /// @dev Updates state with results of a fill order.
@@ -315,7 +315,7 @@ contract MixinExchangeCore is
     /// @param order that was cancelled.
     /// @param orderStatus Status of order that was cancelled.
     /// @param orderHash Hash of order that was cancelled.
-    function validateCancelOrRevert(
+    function assertValidCancel(
         Order memory order,
         uint8 orderStatus,
         bytes32 orderHash

@@ -64,7 +64,7 @@ contract MExchangeCore is
     /// @param takerAssetFilledAmount Amount of order already filled.
     /// @param takerAssetFillAmount Desired amount of order to fill by taker.
     /// @param signature Proof that the orders was created by its maker.
-    function validateFillOrRevert(
+    function assertValidFill(
         LibOrder.Order memory order,
         uint8 orderStatus,
         bytes32 orderHash,
@@ -113,7 +113,7 @@ contract MExchangeCore is
     /// @param order that was cancelled.
     /// @param orderStatus Status of order that was cancelled.
     /// @param orderHash Hash of order that was cancelled.
-    function validateCancelOrRevert(
+    function assertValidCancel(
         LibOrder.Order memory order,
         uint8 orderStatus,
         bytes32 orderHash

@@ -38,7 +38,7 @@ contract MMatchOrders is
     /// @dev Validates context for matchOrders. Succeeds or throws.
     /// @param leftOrder First order to match.
     /// @param rightOrder Second order to match.
-    function validateMatchOrThrow(
+    function assertValidMatch(
         LibOrder.Order memory leftOrder,
         LibOrder.Order memory rightOrder
     )
@@ -46,7 +46,7 @@ contract MMatchOrders is
 
     /// @dev Validates matched fill results. Succeeds or throws.
     /// @param matchedFillResults Amounts to fill and fees to pay by maker and taker of matched orders.
-    function validateMatchOrThrow(LibFillResults.MatchedFillResults memory matchedFillResults)
+    function assertValidMatch(LibFillResults.MatchedFillResults memory matchedFillResults)
         internal;
 
     /// @dev Calculates fill amounts for the matched orders.
