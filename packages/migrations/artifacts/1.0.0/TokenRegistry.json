@@ -590,11 +590,5 @@
 			}
 		}
 	},
-	"networks": {
-		"50": {
-			"address": "0x0b1ba0af832d7c05fd64161e0db78e85978e8082",
-			"links": {},
-			"constructorArgs": "[]"
-		}
-	}
+	"networks": {}
 }
