@@ -207,7 +207,6 @@ export interface ContractEvent {
     args: any;
 }
 
-export type InputErrMsg = React.ReactNode | string | undefined;
 export type ValidatedBigNumberCallback = (isValid: boolean, amount?: BigNumber) => void;
 export enum ScreenWidths {
     Sm = 'SM',

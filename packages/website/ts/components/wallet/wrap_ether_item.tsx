@@ -31,8 +31,8 @@ export interface WrapEtherItemProps {
 
 interface WrapEtherItemState {
     currentInputAmount?: BigNumber;
-    currentInputHasErrors: boolean;
     isEthConversionHappening: boolean;
+    errorMsg: React.ReactNode;
 }
 
 const styles: Styles = {
@@ -46,12 +46,28 @@ const styles: Styles = {
         padding: 4,
         width: 125,
     },
-    ethAmountInput: { height: 32 },
-    innerDiv: { paddingLeft: 60, paddingTop: 0 },
-    wrapEtherConfirmationButtonContainer: { width: 128, top: 16 },
+    amountInput: { height: 34 },
+    amountInputLabel: {
+        paddingTop: 10,
+        paddingRight: 10,
+        paddingLeft: 5,
+        color: colors.grey,
+        fontSize: 14,
+    },
+    amountInputHint: {
+        bottom: 18,
+    },
+    innerDiv: { paddingLeft: 60, paddingTop: 0, paddingBottom: 10 },
+    wrapEtherConfirmationButtonContainer: { width: 128, top: 19 },
     wrapEtherConfirmationButtonLabel: {
-        fontSize: 10,
+        fontSize: 12,
         color: colors.white,
+    },
+    errorMsg: {
+        fontSize: 12,
+        marginTop: 4,
+        color: colors.red,
+        minHeight: 20,
     },
 };
 
@@ -60,8 +76,8 @@ export class WrapEtherItem extends React.Component<WrapEtherItemProps, WrapEther
         super(props);
         this.state = {
             currentInputAmount: undefined,
-            currentInputHasErrors: false,
             isEthConversionHappening: false,
+            errorMsg: null,
         };
     }
     public render(): React.ReactNode {
@@ -84,7 +100,10 @@ export class WrapEtherItem extends React.Component<WrapEtherItemProps, WrapEther
                                     shouldShowIncompleteErrs={false}
                                     shouldShowErrs={false}
                                     shouldShowUnderline={false}
-                                    style={styles.ethAmountInput}
+                                    style={styles.amountInput}
+                                    labelStyle={styles.amountInputLabel}
+                                    inputHintStyle={styles.amountInputHint}
+                                    onErrorMsgChange={this._onErrorMsgChange.bind(this)}
                                 />
                             ) : (
                                 <TokenAmountInput
@@ -99,12 +118,16 @@ export class WrapEtherItem extends React.Component<WrapEtherItemProps, WrapEther
                                     onChange={this._onValueChange.bind(this)}
                                     amount={this.state.currentInputAmount}
                                     hintText="0.00"
-                                    shouldShowErrs={false} // TODO: error handling
+                                    shouldShowErrs={false}
                                     shouldShowUnderline={false}
-                                    style={styles.ethAmountInput}
+                                    style={styles.amountInput}
+                                    labelStyle={styles.amountInputLabel}
+                                    inputHintStyle={styles.amountInputHint}
+                                    onErrorMsgChange={this._onErrorMsgChange.bind(this)}
                                 />
                             )}
                         </div>
+                        {this._renderErrorMsg()}
                     </div>
                 }
                 secondaryTextLines={2}
@@ -119,7 +142,11 @@ export class WrapEtherItem extends React.Component<WrapEtherItemProps, WrapEther
     private _onValueChange(isValid: boolean, amount?: BigNumber): void {
         this.setState({
             currentInputAmount: amount,
-            currentInputHasErrors: !isValid,
+        });
+    }
+    private _onErrorMsgChange(errorMsg: React.ReactNode): void {
+        this.setState({
+            errorMsg,
         });
     }
     private _renderIsEthConversionHappeningSpinner(): React.ReactElement<{}> {
@@ -141,6 +168,13 @@ export class WrapEtherItem extends React.Component<WrapEtherItemProps, WrapEther
                     onClick={this._wrapEtherConfirmationActionAsync.bind(this)}
                     disabled={this.state.isEthConversionHappening}
                 />
+            </div>
+        );
+    }
+    private _renderErrorMsg(): React.ReactNode {
+        return (
+            <div style={styles.errorMsg}>
+                {this.state.errorMsg}
             </div>
         );
     }
