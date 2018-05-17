@@ -20,6 +20,8 @@ interface EthAmountInputProps {
     shouldShowErrs?: boolean;
     shouldShowUnderline?: boolean;
     style?: React.CSSProperties;
+    labelStyle?: React.CSSProperties;
+    inputHintStyle?: React.CSSProperties;
 }
 
 interface EthAmountInputState {}
@@ -49,8 +51,10 @@ export class EthAmountInput extends React.Component<EthAmountInputProps, EthAmou
                     hintText={this.props.hintText}
                     shouldShowErrs={this.props.shouldShowErrs}
                     shouldShowUnderline={this.props.shouldShowUnderline}
+                    inputStyle={this.props.style}
+                    inputHintStyle={this.props.inputHintStyle}
                 />
-                <div style={{ paddingTop: _.isUndefined(this.props.label) ? 15 : 40 }}>ETH</div>
+                <div style={this._getLabelStyle()}>ETH</div>
             </div>
         );
     }
@@ -59,5 +63,8 @@ export class EthAmountInput extends React.Component<EthAmountInputProps, EthAmou
             ? undefined
             : ZeroEx.toBaseUnitAmount(amount, constants.DECIMAL_PLACES_ETH);
         this.props.onChange(isValid, baseUnitAmountIfExists);
+    }
+    private _getLabelStyle(): React.CSSProperties {
+        return this.props.labelStyle || { paddingTop: _.isUndefined(this.props.label) ? 15 : 40 };
     }
 }

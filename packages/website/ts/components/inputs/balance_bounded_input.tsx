@@ -23,6 +23,8 @@ interface BalanceBoundedInputProps {
     isDisabled?: boolean;
     shouldShowErrs?: boolean;
     shouldShowUnderline?: boolean;
+    inputStyle?: React.CSSProperties;
+    inputHintStyle?: React.CSSProperties;
 }
 
 interface BalanceBoundedInputState {
@@ -95,6 +97,8 @@ export class BalanceBoundedInput extends React.Component<BalanceBoundedInputProp
                 hintText={<span style={{ textTransform: 'capitalize' }}>{this.props.hintText}</span>}
                 onChange={this._onValueChange.bind(this)}
                 underlineStyle={{ width: 'calc(100% + 50px)' }}
+                inputStyle={this.props.inputStyle}
+                hintStyle={this.props.inputHintStyle}
                 underlineShow={this.props.shouldShowUnderline}
                 disabled={this.props.isDisabled}
             />

@@ -46,9 +46,19 @@ const styles: Styles = {
         padding: 4,
         width: 125,
     },
-    ethAmountInput: { height: 32 },
+    amountInput: { height: 34 },
+    amountInputLabel: {
+        paddingTop: 10,
+        paddingRight: 10,
+        paddingLeft: 5,
+        color: colors.grey,
+        fontSize: 14,
+    },
+    amountInputHint: {
+        bottom: 18,
+    },
     innerDiv: { paddingLeft: 60, paddingTop: 0, paddingBottom: 10 },
-    wrapEtherConfirmationButtonContainer: { width: 128, top: 18 },
+    wrapEtherConfirmationButtonContainer: { width: 128, top: 19 },
     wrapEtherConfirmationButtonLabel: {
         fontSize: 12,
         color: colors.white,
@@ -90,7 +100,9 @@ export class WrapEtherItem extends React.Component<WrapEtherItemProps, WrapEther
                                     shouldShowIncompleteErrs={false}
                                     shouldShowErrs={false}
                                     shouldShowUnderline={false}
-                                    style={styles.ethAmountInput}
+                                    style={styles.amountInput}
+                                    labelStyle={styles.amountInputLabel}
+                                    inputHintStyle={styles.amountInputHint}
                                     onErrorMsgChange={this._onErrorMsgChange.bind(this)}
                                 />
                             ) : (
@@ -108,7 +120,9 @@ export class WrapEtherItem extends React.Component<WrapEtherItemProps, WrapEther
                                     hintText="0.00"
                                     shouldShowErrs={false}
                                     shouldShowUnderline={false}
-                                    style={styles.ethAmountInput}
+                                    style={styles.amountInput}
+                                    labelStyle={styles.amountInputLabel}
+                                    inputHintStyle={styles.amountInputHint}
                                     onErrorMsgChange={this._onErrorMsgChange.bind(this)}
                                 />
                             )}
