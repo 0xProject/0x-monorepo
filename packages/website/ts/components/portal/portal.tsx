@@ -74,6 +74,12 @@ interface PortalState {
     tokenManagementState: TokenManagementState;
 }
 
+interface AccountManagementItem {
+    pathName: string;
+    headerText: string;
+    render: () => React.ReactNode;
+}
+
 enum TokenManagementState {
     Add = 'Add',
     Remove = 'Remove',
@@ -95,6 +101,7 @@ const styles: Styles = {
     },
     leftColumn: {
         width: LEFT_COLUMN_WIDTH,
+        height: '100%',
     },
     scrollContainer: {
         height: `calc(100vh - ${TOP_BAR_HEIGHT}px)`,
@@ -241,7 +248,7 @@ export class Portal extends React.Component<PortalProps, PortalState> {
         );
     }
     private _renderWalletAndRelayerIndex(): React.ReactNode {
-        return <PortalLayout left={this._renderWallet()} right={this._renderRelayerIndex()} />;
+        return <PortalLayout left={this._renderWallet()} right={this._renderRelayerIndexSection()} />;
     }
     private _renderMenuAndAccountManagement(routeComponentProps: RouteComponentProps<any>): React.ReactNode {
         return <PortalLayout left={this._renderMenu(routeComponentProps)} right={this._renderAccountManagement()} />;
@@ -283,74 +290,73 @@ export class Portal extends React.Component<PortalProps, PortalState> {
         );
     }
     private _renderAccountManagement(): React.ReactNode {
+        const accountManagementItems: AccountManagementItem[] = [
+            {
+                pathName: `${WebsitePaths.Portal}/weth`,
+                headerText: 'Wrapped ETH',
+                render: this._renderEthWrapper.bind(this),
+            },
+            {
+                pathName: `${WebsitePaths.Portal}/account`,
+                headerText: 'Your Account',
+                render: this._renderTokenBalances.bind(this),
+            },
+            {
+                pathName: `${WebsitePaths.Portal}/trades`,
+                headerText: 'Trade History',
+                render: this._renderTradeHistory.bind(this),
+            },
+            {
+                pathName: `${WebsitePaths.Portal}/direct`,
+                headerText: 'Trade Direct',
+                render: this._renderTradeDirect.bind(this),
+            },
+        ];
         return (
             <Switch>
-                <Route path={`${WebsitePaths.Portal}/weth`} render={this._renderEthWrapper.bind(this)} />
-                <Route path={`${WebsitePaths.Portal}/account`} render={this._renderTokenBalances.bind(this)} />
-                <Route path={`${WebsitePaths.Portal}/trades`} render={this._renderTradeHistory.bind(this)} />
-                <Route path={`${WebsitePaths.Portal}/direct`} render={this._renderTradeDirect.bind(this)} />
+                {_.map(accountManagementItems, item => {
+                    return <Route path={item.pathName} render={this._renderAccountManagementItem.bind(this, item)} />;
+                })}}
                 <Route render={this._renderNotFoundMessage.bind(this)} />
             </Switch>
         );
     }
-    private _renderEthWrapper(): React.ReactNode {
+    private _renderAccountManagementItem(item: AccountManagementItem): React.ReactNode {
         return (
             <Section
-                header={<TextHeader labelText="Wrapped ETH" />}
-                body={
-                    <Loading
-                        isLoading={!this.props.blockchainIsLoaded}
-                        content={
-                            <EthWrappers
-                                networkId={this.props.networkId}
-                                blockchain={this._blockchain}
-                                dispatcher={this.props.dispatcher}
-                                tokenByAddress={this.props.tokenByAddress}
-                                userAddress={this.props.userAddress}
-                                userEtherBalanceInWei={this.props.userEtherBalanceInWei}
-                                lastForceTokenStateRefetch={this.props.lastForceTokenStateRefetch}
-                            />
-                        }
-                    />
-                }
+                header={<TextHeader labelText={item.headerText} />}
+                body={<Loading isLoading={!this.props.blockchainIsLoaded} content={item.render()} />}
+            />
+        );
+    }
+    private _renderEthWrapper(): React.ReactNode {
+        return (
+            <EthWrappers
+                networkId={this.props.networkId}
+                blockchain={this._blockchain}
+                dispatcher={this.props.dispatcher}
+                tokenByAddress={this.props.tokenByAddress}
+                userAddress={this.props.userAddress}
+                userEtherBalanceInWei={this.props.userEtherBalanceInWei}
+                lastForceTokenStateRefetch={this.props.lastForceTokenStateRefetch}
             />
         );
     }
     private _renderTradeHistory(): React.ReactNode {
         return (
-            <Section
-                header={<TextHeader labelText="Trade History" />}
-                body={
-                    <Loading
-                        isLoading={!this.props.blockchainIsLoaded}
-                        content={
-                            <TradeHistory
-                                tokenByAddress={this.props.tokenByAddress}
-                                userAddress={this.props.userAddress}
-                                networkId={this.props.networkId}
-                            />
-                        }
-                    />
-                }
+            <TradeHistory
+                tokenByAddress={this.props.tokenByAddress}
+                userAddress={this.props.userAddress}
+                networkId={this.props.networkId}
             />
         );
     }
     private _renderTradeDirect(match: any, location: Location, history: History): React.ReactNode {
         return (
-            <Section
-                header={<TextHeader labelText="Trade Direct" />}
-                body={
-                    <Loading
-                        isLoading={!this.props.blockchainIsLoaded}
-                        content={
-                            <GenerateOrderForm
-                                blockchain={this._blockchain}
-                                hashData={this.props.hashData}
-                                dispatcher={this.props.dispatcher}
-                            />
-                        }
-                    />
-                }
+            <GenerateOrderForm
+                blockchain={this._blockchain}
+                hashData={this.props.hashData}
+                dispatcher={this.props.dispatcher}
             />
         );
     }
@@ -358,32 +364,22 @@ export class Portal extends React.Component<PortalProps, PortalState> {
         const allTokens = _.values(this.props.tokenByAddress);
         const trackedTokens = _.filter(allTokens, t => t.isTracked);
         return (
-            <Section
-                header={<TextHeader labelText="Your Account" />}
-                body={
-                    <Loading
-                        isLoading={!this.props.blockchainIsLoaded}
-                        content={
-                            <TokenBalances
-                                blockchain={this._blockchain}
-                                blockchainErr={this.props.blockchainErr}
-                                blockchainIsLoaded={this.props.blockchainIsLoaded}
-                                dispatcher={this.props.dispatcher}
-                                screenWidth={this.props.screenWidth}
-                                tokenByAddress={this.props.tokenByAddress}
-                                trackedTokens={trackedTokens}
-                                userAddress={this.props.userAddress}
-                                userEtherBalanceInWei={this.props.userEtherBalanceInWei}
-                                networkId={this.props.networkId}
-                                lastForceTokenStateRefetch={this.props.lastForceTokenStateRefetch}
-                            />
-                        }
-                    />
-                }
+            <TokenBalances
+                blockchain={this._blockchain}
+                blockchainErr={this.props.blockchainErr}
+                blockchainIsLoaded={this.props.blockchainIsLoaded}
+                dispatcher={this.props.dispatcher}
+                screenWidth={this.props.screenWidth}
+                tokenByAddress={this.props.tokenByAddress}
+                trackedTokens={trackedTokens}
+                userAddress={this.props.userAddress}
+                userEtherBalanceInWei={this.props.userEtherBalanceInWei}
+                networkId={this.props.networkId}
+                lastForceTokenStateRefetch={this.props.lastForceTokenStateRefetch}
             />
         );
     }
-    private _renderRelayerIndex(): React.ReactNode {
+    private _renderRelayerIndexSection(): React.ReactNode {
         return (
             <Section
                 header={<TextHeader labelText="Explore 0x Relayers" />}
