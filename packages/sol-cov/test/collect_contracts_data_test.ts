@@ -1,5 +1,6 @@
 import * as chai from 'chai';
 import * as _ from 'lodash';
+import 'make-promises-safe';
 import 'mocha';
 import * as path from 'path';
 

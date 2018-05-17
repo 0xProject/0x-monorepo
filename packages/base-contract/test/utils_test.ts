@@ -1,5 +1,6 @@
 import { BigNumber } from '@0xproject/utils';
 import * as chai from 'chai';
+import 'make-promises-safe';
 import 'mocha';
 
 import { formatABIDataItem } from '../src/utils';

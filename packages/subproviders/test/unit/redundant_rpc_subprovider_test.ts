@@ -1,6 +1,7 @@
 import { DoneCallback, JSONRPCResponsePayload } from '@0xproject/types';
 import * as chai from 'chai';
 import * as _ from 'lodash';
+import 'make-promises-safe';
 import Web3 = require('web3');
 import Web3ProviderEngine = require('web3-provider-engine');
 import RpcSubprovider = require('web3-provider-engine/subproviders/rpc');

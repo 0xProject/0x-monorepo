@@ -2,6 +2,7 @@ import { JSONRPCResponsePayload } from '@0xproject/types';
 import * as chai from 'chai';
 import * as ethUtils from 'ethereumjs-util';
 import * as _ from 'lodash';
+import 'make-promises-safe';
 import Web3ProviderEngine = require('web3-provider-engine');
 
 import { GanacheSubprovider, MnemonicWalletSubprovider } from '../../src/';

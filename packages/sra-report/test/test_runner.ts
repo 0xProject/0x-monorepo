@@ -2,6 +2,7 @@ import * as chai from 'chai';
 import * as chaiAsPromised from 'chai-as-promised';
 import * as dirtyChai from 'dirty-chai';
 import * as _ from 'lodash';
+import 'make-promises-safe';
 import 'mocha';
 import {
     NewmanRunExecution,

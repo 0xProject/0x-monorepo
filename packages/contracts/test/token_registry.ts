@@ -5,6 +5,7 @@ import { Web3Wrapper } from '@0xproject/web3-wrapper';
 import * as chai from 'chai';
 import ethUtil = require('ethereumjs-util');
 import * as _ from 'lodash';
+import 'make-promises-safe';
 import * as Web3 from 'web3';
 
 import { TokenRegistryContract } from '../src/contract_wrappers/generated/token_registry';

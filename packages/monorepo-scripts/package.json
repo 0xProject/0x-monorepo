@@ -2,7 +2,7 @@
     "name": "@0xproject/monorepo-scripts",
     "version": "0.1.19",
     "engines": {
-        "node" : ">=6.12"
+        "node": ">=6.12"
     },
     "description": "Helper scripts for the monorepo",
     "main": "lib/index.js",
@@ -36,6 +36,7 @@
         "@types/rimraf": "^2.0.2",
         "depcheck": "^0.6.9",
         "lerna-get-packages": "^1.0.0",
+        "make-promises-safe": "^1.1.0",
         "npm-run-all": "^4.1.2",
         "shx": "^0.2.2",
         "tslint": "5.8.0",

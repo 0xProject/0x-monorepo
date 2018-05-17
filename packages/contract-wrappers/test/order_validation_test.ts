@@ -4,6 +4,7 @@ import { OrderError } from '@0xproject/order-utils';
 import { BlockParamLiteral } from '@0xproject/types';
 import { BigNumber } from '@0xproject/utils';
 import * as chai from 'chai';
+import 'make-promises-safe';
 import * as Sinon from 'sinon';
 
 import { ContractWrappers, ContractWrappersError, ExchangeContractErrs, SignedOrder, Token } from '../src';

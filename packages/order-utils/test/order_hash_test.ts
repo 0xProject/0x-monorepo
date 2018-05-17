@@ -1,6 +1,7 @@
 import { web3Factory } from '@0xproject/dev-utils';
 import { BigNumber } from '@0xproject/utils';
 import * as chai from 'chai';
+import 'make-promises-safe';
 import 'mocha';
 
 import { constants, getOrderHashHex } from '../src';

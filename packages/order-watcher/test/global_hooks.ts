@@ -1,5 +1,6 @@
 import { devConstants } from '@0xproject/dev-utils';
 import { runMigrationsAsync } from '@0xproject/migrations';
+import 'make-promises-safe';
 import * as path from 'path';
 
 import { constants } from './utils/constants';

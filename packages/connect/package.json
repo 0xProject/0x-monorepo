@@ -2,7 +2,7 @@
     "name": "@0xproject/connect",
     "version": "0.6.12",
     "engines": {
-        "node" : ">=6.12"
+        "node": ">=6.12"
     },
     "description": "A javascript library for interacting with the standard relayer api",
     "keywords": [
@@ -74,6 +74,7 @@
         "copyfiles": "^1.2.0",
         "dirty-chai": "^2.0.1",
         "fetch-mock": "^5.13.1",
+        "make-promises-safe": "^1.1.0",
         "mocha": "^4.0.1",
         "npm-run-all": "^4.1.2",
         "nyc": "^11.0.1",

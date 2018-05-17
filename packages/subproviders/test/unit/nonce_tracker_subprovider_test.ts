@@ -1,6 +1,7 @@
 import * as chai from 'chai';
 import * as fs from 'fs';
 import * as _ from 'lodash';
+import 'make-promises-safe';
 import * as path from 'path';
 import Web3ProviderEngine = require('web3-provider-engine');
 import FixtureSubprovider = require('web3-provider-engine/subproviders/fixture');

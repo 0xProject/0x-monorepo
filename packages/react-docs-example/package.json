@@ -3,7 +3,7 @@
     "name": "@0xproject/react-docs-example",
     "version": "0.0.11",
     "engines": {
-        "node" : ">=6.12"
+        "node": ">=6.12"
     },
     "description": "An example app using react-docs",
     "scripts": {
@@ -39,6 +39,7 @@
         "json-loader": "^0.5.4",
         "less": "^2.7.2",
         "less-loader": "^2.2.3",
+        "make-promises-safe": "^1.1.0",
         "raw-loader": "^0.5.1",
         "shx": "^0.2.2",
         "source-map-loader": "^0.2.3",

@@ -3,6 +3,7 @@ import { EmptyWalletSubprovider } from '@0xproject/subproviders';
 import { DoneCallback, Provider } from '@0xproject/types';
 import { BigNumber } from '@0xproject/utils';
 import * as chai from 'chai';
+import 'make-promises-safe';
 import 'mocha';
 import Web3ProviderEngine = require('web3-provider-engine');
 
