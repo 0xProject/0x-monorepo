@@ -180,8 +180,6 @@ export class Portal extends React.Component<PortalProps, PortalState> {
             this.state.tokenManagementState === TokenManagementState.Add
                 ? TokenVisibility.UNTRACKED
                 : TokenVisibility.TRACKED;
-
-        const isSmallScreen = this.props.screenWidth === ScreenWidths.Sm;
         return (
             <div style={styles.root}>
                 <DocumentTitle title="0x Portal DApp" />
@@ -201,14 +199,11 @@ export class Portal extends React.Component<PortalProps, PortalState> {
                 />
                 <div id="portal" style={styles.body}>
                     <Switch>
-                        <Route
-                            path={`${WebsitePaths.Portal}/:route`}
-                            render={this._renderMenuAndAccountManagement.bind(this)}
-                        />
+                        <Route path={`${WebsitePaths.Portal}/:route`} render={this._renderOtherRoutes.bind(this)} />
                         <Route
                             exact={true}
                             path={`${WebsitePaths.Portal}/`}
-                            render={this._renderWalletAndRelayerIndex.bind(this)}
+                            render={this._renderMainRoute.bind(this)}
                         />
                     </Switch>
                     <BlockchainErrDialog
@@ -249,11 +244,19 @@ export class Portal extends React.Component<PortalProps, PortalState> {
             </div>
         );
     }
-    private _renderWalletAndRelayerIndex(): React.ReactNode {
-        return <PortalLayout left={this._renderWallet()} right={this._renderRelayerIndexSection()} />;
+    private _renderMainRoute(): React.ReactNode {
+        if (this._isSmallScreen()) {
+            return <SmallLayout content={this._renderRelayerIndexSection()} />;
+        } else {
+            return <LargeLayout left={this._renderWallet()} right={this._renderRelayerIndexSection()} />;
+        }
     }
-    private _renderMenuAndAccountManagement(routeComponentProps: RouteComponentProps<any>): React.ReactNode {
-        return <PortalLayout left={this._renderMenu(routeComponentProps)} right={this._renderAccountManagement()} />;
+    private _renderOtherRoutes(routeComponentProps: RouteComponentProps<any>): React.ReactNode {
+        if (this._isSmallScreen()) {
+            return <SmallLayout content={this._renderAccountManagement()} />;
+        } else {
+            return <LargeLayout left={this._renderMenu(routeComponentProps)} right={this._renderAccountManagement()} />;
+        }
     }
     private _renderMenu(routeComponentProps: RouteComponentProps<any>): React.ReactNode {
         return (
@@ -450,13 +453,17 @@ export class Portal extends React.Component<PortalProps, PortalState> {
         const newScreenWidth = utils.getScreenWidth();
         this.props.dispatcher.updateScreenWidth(newScreenWidth);
     }
+    private _isSmallScreen(): boolean {
+        const result = this.props.screenWidth === ScreenWidths.Sm;
+        return result;
+    }
 }
 
-interface PortalLayoutProps {
+interface LargeLayoutProps {
     left: React.ReactNode;
     right: React.ReactNode;
 }
-const PortalLayout = (props: PortalLayoutProps) => {
+const LargeLayout = (props: LargeLayoutProps) => {
     return (
         <div className="sm-flex flex-center">
             <div className="flex-last px3">
@@ -464,6 +471,19 @@ const PortalLayout = (props: PortalLayoutProps) => {
             </div>
             <div className="flex-auto px3" style={styles.scrollContainer}>
                 {props.right}
+            </div>
+        </div>
+    );
+};
+
+interface SmallLayoutProps {
+    content: React.ReactNode;
+}
+const SmallLayout = (props: SmallLayoutProps) => {
+    return (
+        <div className="sm-flex flex-center">
+            <div className="flex-auto px3" style={styles.scrollContainer}>
+                {props.content}
             </div>
         </div>
     );
