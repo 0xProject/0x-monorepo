@@ -217,7 +217,7 @@ export class LegacyPortal extends React.Component<LegacyPortalProps, LegacyPorta
                                                 />
                                                 <Route
                                                     path={`${WebsitePaths.Portal}/trades`}
-                                                    component={this._renderTradeHistory.bind(this)}
+                                                    render={this._renderTradeHistory.bind(this)}
                                                 />
                                                 <Route
                                                     path={`${WebsitePaths.Home}`}

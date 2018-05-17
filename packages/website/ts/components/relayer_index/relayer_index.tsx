@@ -59,19 +59,13 @@ export class RelayerIndex extends React.Component<RelayerIndexProps, RelayerInde
         const readyToRender = _.isUndefined(this.state.error) && !_.isUndefined(this.state.relayerInfos);
         if (!readyToRender) {
             return (
-                <div className="col col-12" style={{ ...styles.root, height: '100%' }}>
-                    <div
-                        className="relative sm-px2 sm-pt2 sm-m1"
-                        style={{ height: 122, top: '33%', transform: 'translateY(-50%)' }}
-                    >
-                        <div className="center pb2">
-                            {_.isUndefined(this.state.error) ? (
-                                <CircularProgress size={40} thickness={5} />
-                            ) : (
-                                <Retry onRetry={this._fetchRelayerInfosAsync.bind(this)} />
-                            )}
-                        </div>
-                    </div>
+                // TODO: consolidate this loading component with the one in portal
+                <div className="center">
+                    {_.isUndefined(this.state.error) ? (
+                        <CircularProgress size={40} thickness={5} />
+                    ) : (
+                        <Retry onRetry={this._fetchRelayerInfosAsync.bind(this)} />
+                    )}
                 </div>
             );
         } else {

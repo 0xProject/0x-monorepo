@@ -18,6 +18,7 @@ import NavigationArrowDownward from 'material-ui/svg-icons/navigation/arrow-down
 import NavigationArrowUpward from 'material-ui/svg-icons/navigation/arrow-upward';
 import Close from 'material-ui/svg-icons/navigation/close';
 import * as React from 'react';
+import { Link } from 'react-router-dom';
 import ReactTooltip = require('react-tooltip');
 import firstBy = require('thenby');
 
@@ -38,6 +39,7 @@ import {
     TokenByAddress,
     TokenState,
     TokenStateByAddress,
+    WebsitePaths,
 } from 'ts/types';
 import { backendClient } from 'ts/utils/backend_client';
 import { constants } from 'ts/utils/constants';
@@ -80,7 +82,7 @@ interface AccessoryItemConfig {
 
 const styles: Styles = {
     root: {
-        width: 346,
+        width: '100%',
         backgroundColor: colors.white,
         borderBottomRightRadius: 10,
         borderBottomLeftRadius: 10,
@@ -133,6 +135,10 @@ const styles: Styles = {
         maxHeight: 475,
         overflow: 'auto',
         WebkitOverflowScrolling: 'touch',
+    },
+    manageYourWalletText: {
+        color: colors.mediumBlue,
+        fontWeight: 'bold',
     },
 };
 
@@ -237,13 +243,14 @@ export class Wallet extends React.Component<WalletProps, WalletState> {
         const userAddress = this.props.userAddress;
         const primaryText = utils.getAddressBeginAndEnd(userAddress);
         return (
-            <ListItem
-                key={HEADER_ITEM_KEY}
-                primaryText={primaryText}
-                leftIcon={<Identicon address={userAddress} diameter={ICON_DIMENSION} />}
-                style={{ ...styles.paddedItem, ...styles.borderedItem }}
-                innerDivStyle={styles.headerItemInnerDiv}
-            />
+            <Link key={HEADER_ITEM_KEY} to={`${WebsitePaths.Portal}/account`} style={{ textDecoration: 'none' }}>
+                <ListItem
+                    primaryText={primaryText}
+                    leftIcon={<Identicon address={userAddress} diameter={ICON_DIMENSION} />}
+                    style={{ ...styles.paddedItem, ...styles.borderedItem }}
+                    innerDivStyle={styles.headerItemInnerDiv}
+                />
+            </Link>
         );
     }
     private _renderBody(): React.ReactElement<{}> {
@@ -275,31 +282,50 @@ export class Wallet extends React.Component<WalletProps, WalletState> {
     }
     private _renderFooterRows(): React.ReactElement<{}> {
         return (
-            <ListItem
-                key={FOOTER_ITEM_KEY}
-                primaryText={
-                    <div className="flex">
-                        <FloatingActionButton mini={true} zDepth={0} onClick={this.props.onAddToken}>
-                            <ContentAdd />
-                        </FloatingActionButton>
-                        <FloatingActionButton mini={true} zDepth={0} className="px1" onClick={this.props.onRemoveToken}>
-                            <ContentRemove />
-                        </FloatingActionButton>
-                        <div
-                            style={{
-                                paddingLeft: 10,
-                                position: 'relative',
-                                top: '50%',
-                                transform: 'translateY(33%)',
-                            }}
-                        >
-                            add/remove tokens
+            <div key={FOOTER_ITEM_KEY}>
+                <ListItem
+                    primaryText={
+                        <div className="flex">
+                            <FloatingActionButton mini={true} zDepth={0} onClick={this.props.onAddToken}>
+                                <ContentAdd />
+                            </FloatingActionButton>
+                            <FloatingActionButton
+                                mini={true}
+                                zDepth={0}
+                                className="px1"
+                                onClick={this.props.onRemoveToken}
+                            >
+                                <ContentRemove />
+                            </FloatingActionButton>
+                            <div
+                                style={{
+                                    paddingLeft: 10,
+                                    position: 'relative',
+                                    top: '50%',
+                                    transform: 'translateY(33%)',
+                                }}
+                            >
+                                add/remove tokens
+                            </div>
                         </div>
-                    </div>
-                }
-                disabled={true}
-                innerDivStyle={styles.footerItemInnerDiv}
-            />
+                    }
+                    disabled={true}
+                    innerDivStyle={styles.footerItemInnerDiv}
+                    style={styles.borderedItem}
+                />
+                <Link to={`${WebsitePaths.Portal}/account`} style={{ textDecoration: 'none' }}>
+                    <ListItem
+                        primaryText={
+                            <div className="flex right" style={styles.manageYourWalletText}>
+                                {'manage your wallet'}
+                            </div>
+                            // https://github.com/palantir/tslint-react/issues/140
+                            // tslint:disable-next-line:jsx-curly-spacing
+                        }
+                        style={{ ...styles.paddedItem, ...styles.borderedItem }}
+                    />
+                </Link>
+            </div>
         );
     }
     private _renderEthRows(): React.ReactNode {
