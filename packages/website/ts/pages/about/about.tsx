@@ -151,7 +151,7 @@ const teamRow5: ProfileInfo[] = [
     },
     {
         name: 'Francesco Agosti',
-        title: 'Senior Frontend Engineer',
+        title: 'Engineer',
         description: `Full-stack engineer. Previously senior software engineer at Yelp. Computer Science at Duke.`,
         image: 'images/team/fragosti.png',
         linkedIn: 'https://www.linkedin.com/in/fragosti/',
