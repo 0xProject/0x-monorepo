@@ -320,7 +320,13 @@ export class Portal extends React.Component<PortalProps, PortalState> {
         return (
             <Switch>
                 {_.map(accountManagementItems, item => {
-                    return <Route path={item.pathName} render={this._renderAccountManagementItem.bind(this, item)} />;
+                    return (
+                        <Route
+                            key={item.pathName}
+                            path={item.pathName}
+                            render={this._renderAccountManagementItem.bind(this, item)}
+                        />
+                    );
                 })}}
                 <Route render={this._renderNotFoundMessage.bind(this)} />
             </Switch>
