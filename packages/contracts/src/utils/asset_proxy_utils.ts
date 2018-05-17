@@ -2,7 +2,7 @@ import { BigNumber } from '@0xproject/utils';
 import BN = require('bn.js');
 import ethUtil = require('ethereumjs-util');
 
-import { AssetProxyId } from './types';
+import { AssetProxyId, ERC20ProxyData, ERC721ProxyData, ProxyData } from './types';
 
 export const assetProxyUtils = {
     encodeAssetProxyId(assetProxyId: AssetProxyId): Buffer {
@@ -43,7 +43,7 @@ export const assetProxyUtils = {
         const encodedMetadataHex = ethUtil.bufferToHex(encodedMetadata);
         return encodedMetadataHex;
     },
-    decodeERC20ProxyData(proxyData: string): string /* tokenAddress */ {
+    decodeERC20ProxyData(proxyData: string): ERC20ProxyData {
         const encodedProxyMetadata = ethUtil.toBuffer(proxyData);
         if (encodedProxyMetadata.byteLength !== 21) {
             throw new Error(
@@ -63,7 +63,11 @@ export const assetProxyUtils = {
         }
         const encodedTokenAddress = encodedProxyMetadata.slice(1, 21);
         const tokenAddress = assetProxyUtils.decodeAddress(encodedTokenAddress);
-        return tokenAddress;
+        const erc20ProxyData = {
+            assetProxyId,
+            tokenAddress,
+        };
+        return erc20ProxyData;
     },
     encodeERC721ProxyData(tokenAddress: string, tokenId: BigNumber): string {
         const encodedAssetProxyId = assetProxyUtils.encodeAssetProxyId(AssetProxyId.ERC721);
@@ -73,7 +77,7 @@ export const assetProxyUtils = {
         const encodedMetadataHex = ethUtil.bufferToHex(encodedMetadata);
         return encodedMetadataHex;
     },
-    decodeERC721ProxyData(proxyData: string): [string /* tokenAddress */, BigNumber /* tokenId */] {
+    decodeERC721ProxyData(proxyData: string): ERC721ProxyData {
         const encodedProxyMetadata = ethUtil.toBuffer(proxyData);
         if (encodedProxyMetadata.byteLength !== 53) {
             throw new Error(
@@ -95,7 +99,12 @@ export const assetProxyUtils = {
         const tokenAddress = assetProxyUtils.decodeAddress(encodedTokenAddress);
         const encodedTokenId = encodedProxyMetadata.slice(21, 53);
         const tokenId = assetProxyUtils.decodeUint256(encodedTokenId);
-        return [tokenAddress, tokenId];
+        const erc721ProxyData = {
+            assetProxyId,
+            tokenAddress,
+            tokenId,
+        };
+        return erc721ProxyData;
     },
     decodeProxyDataId(proxyData: string): AssetProxyId {
         const encodedProxyMetadata = ethUtil.toBuffer(proxyData);
@@ -109,5 +118,27 @@ export const assetProxyUtils = {
         const encodedAssetProxyId = encodedProxyMetadata.slice(0, 1);
         const assetProxyId = assetProxyUtils.decodeAssetProxyId(encodedAssetProxyId);
         return assetProxyId;
+    },
+    decodeProxyData(proxyData: string): ProxyData {
+        const assetProxyId = assetProxyUtils.decodeProxyDataId(proxyData);
+        switch (assetProxyId) {
+            case AssetProxyId.ERC20:
+                const erc20ProxyData = assetProxyUtils.decodeERC20ProxyData(proxyData);
+                const generalizedERC20ProxyData = {
+                    assetProxyId,
+                    tokenAddress: erc20ProxyData.tokenAddress,
+                };
+                return generalizedERC20ProxyData;
+            case AssetProxyId.ERC721:
+                const erc721ProxyData = assetProxyUtils.decodeERC721ProxyData(proxyData);
+                const generaliedERC721ProxyData = {
+                    assetProxyId,
+                    tokenAddress: erc721ProxyData.tokenAddress,
+                    data: erc721ProxyData.tokenId,
+                };
+                return generaliedERC721ProxyData;
+            default:
+                throw new Error(`Unrecognized asset proxy id: ${assetProxyId}`);
+        }
     },
 };

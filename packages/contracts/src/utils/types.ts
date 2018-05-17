@@ -180,3 +180,20 @@ export interface OrderInfo {
     orderHash: string;
     orderFilledAmount: BigNumber;
 }
+
+export interface ERC20ProxyData {
+    assetProxyId: AssetProxyId;
+    tokenAddress: string;
+}
+
+export interface ERC721ProxyData {
+    assetProxyId: AssetProxyId;
+    tokenAddress: string;
+    tokenId: BigNumber;
+}
+
+export interface ProxyData {
+    assetProxyId: AssetProxyId;
+    tokenAddress?: string;
+    data?: any;
+}
