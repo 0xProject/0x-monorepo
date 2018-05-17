@@ -143,12 +143,6 @@ export class TopBar extends React.Component<TopBarProps, TopBarState> {
                     primaryText={this.props.translate.get(Key.Web3Wrapper, Deco.CapWords)}
                 />
             </Link>,
-            <Link key="subMenuItem-order-utils" to={WebsitePaths.OrderUtils} className="text-decoration-none">
-                <MenuItem
-                    style={{ fontSize: styles.menuItem.fontSize }}
-                    primaryText={this.props.translate.get(Key.OrderUtils, Deco.CapWords)}
-                />
-            </Link>,
             <Link key="subMenuItem-sol-compiler" to={WebsitePaths.SolCompiler} className="text-decoration-none">
                 <MenuItem
                     style={{ fontSize: styles.menuItem.fontSize }}

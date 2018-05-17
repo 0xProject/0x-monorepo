@@ -668,11 +668,5 @@
 			}
 		}
 	},
-	"networks": {
-		"50": {
-			"address": "0x48bacb9266a570d521063ef5dd96e61686dbe788",
-			"links": {},
-			"constructorArgs": "[\"0x1d7022f5b17d2f8b695918fb48fa1089c9f85401\",\"0x1dc4c1cefef38a777b15aa20260a54e584b16c48\"]"
-		}
-	}
+	"networks": {}
 }
