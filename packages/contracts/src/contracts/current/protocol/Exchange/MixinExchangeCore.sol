@@ -144,6 +144,134 @@ contract MixinExchangeCore is
         return updateCancelledState(order, orderInfo.orderStatus, orderInfo.orderHash);
     }
 
+    /// @dev Gets information about an order: status, hash, and amount filled.
+    /// @param order Order to gather information on.
+    /// @return OrderInfo Information about the order and its state.
+    ///                   See LibOrder.OrderInfo for a complete description.
+    function getOrderInfo(Order memory order)
+        public
+        view
+        returns (LibOrder.OrderInfo memory orderInfo)
+    {
+        // Compute the order hash
+        orderInfo.orderHash = getOrderHash(order);
+
+        // If order.makerAssetAmount is zero, we also reject the order.
+        // While the Exchange contract handles them correctly, they create
+        // edge cases in the supporting infrastructure because they have
+        // an 'infinite' price when computed by a simple division.
+        if (order.makerAssetAmount == 0) {
+            orderInfo.orderStatus = uint8(Status.ORDER_INVALID_MAKER_ASSET_AMOUNT);
+            return orderInfo;
+        }
+
+        // If order.takerAssetAmount is zero, then the order will always
+        // be considered filled because 0 == takerAssetAmount == orderFilledAmount
+        // Instead of distinguishing between unfilled and filled zero taker
+        // amount orders, we choose not to support them.
+        if (order.takerAssetAmount == 0) {
+            orderInfo.orderStatus = uint8(Status.ORDER_INVALID_TAKER_ASSET_AMOUNT);
+            return orderInfo;
+        }
+
+        // Validate order expiration
+        if (block.timestamp >= order.expirationTimeSeconds) {
+            orderInfo.orderStatus = uint8(Status.ORDER_EXPIRED);
+            return orderInfo;
+        }
+
+        // Check if order has been cancelled
+        if (cancelled[orderInfo.orderHash]) {
+            orderInfo.orderStatus = uint8(Status.ORDER_CANCELLED);
+            return orderInfo;
+        }
+        if (makerEpoch[order.makerAddress] > order.salt) {
+            orderInfo.orderStatus = uint8(Status.ORDER_CANCELLED);
+            return orderInfo;
+        }
+
+        // Fetch filled amount and validate order availability
+        orderInfo.orderFilledAmount = filled[orderInfo.orderHash];
+        if (orderInfo.orderFilledAmount >= order.takerAssetAmount) {
+            orderInfo.orderStatus = uint8(Status.ORDER_FULLY_FILLED);
+            return orderInfo;
+        }
+
+        // All other statuses are ruled out: order is Fillable
+        orderInfo.orderStatus = uint8(Status.ORDER_FILLABLE);
+        return orderInfo;
+    }
+
+    /// @dev Calculates amounts filled and fees paid by maker and taker.
+    /// @param order to be filled.
+    /// @param orderStatus Status of order to be filled.
+    /// @param orderFilledAmount Amount of order already filled.
+    /// @param takerAssetFillAmount Desired amount of order to fill by taker.
+    /// @return status Return status of calculating fill amounts. Returns Status.SUCCESS on success.
+    /// @return fillResults Amounts filled and fees paid by maker and taker.
+    function calculateFillResults(
+        Order memory order,
+        uint8 orderStatus,
+        uint256 orderFilledAmount,
+        uint256 takerAssetFillAmount
+    )
+        public
+        pure
+        returns (
+            uint8 status,
+            FillResults memory fillResults
+        )
+    {
+        // Fill amount must be greater than 0
+        if (takerAssetFillAmount == 0) {
+            status = uint8(Status.TAKER_ASSET_FILL_AMOUNT_TOO_LOW);
+            return;
+        }
+
+        // Ensure the order is fillable
+        if (orderStatus != uint8(Status.ORDER_FILLABLE)) {
+            status = orderStatus;
+            return;
+        }
+
+        // Compute takerAssetFilledAmount
+        uint256 remainingTakerAssetAmount = safeSub(order.takerAssetAmount, orderFilledAmount);
+        uint256 takerAssetFilledAmount = min256(takerAssetFillAmount, remainingTakerAssetAmount);
+
+        // Validate fill order rounding
+        if (isRoundingError(
+            takerAssetFilledAmount,
+            order.takerAssetAmount,
+            order.makerAssetAmount))
+        {
+            status = uint8(Status.ROUNDING_ERROR_TOO_LARGE);
+            return (status, fillResults);
+        }
+
+        // Compute proportional transfer amounts
+        // TODO: All three are multiplied by the same fraction. This can
+        // potentially be optimized.
+        fillResults.takerAssetFilledAmount = takerAssetFilledAmount;
+        fillResults.makerAssetFilledAmount = getPartialAmount(
+            fillResults.takerAssetFilledAmount,
+            order.takerAssetAmount,
+            order.makerAssetAmount
+        );
+        fillResults.makerFeePaid = getPartialAmount(
+            fillResults.takerAssetFilledAmount,
+            order.takerAssetAmount,
+            order.makerFee
+        );
+        fillResults.takerFeePaid = getPartialAmount(
+            fillResults.takerAssetFilledAmount,
+            order.takerAssetAmount,
+            order.takerFee
+        );
+
+        status = uint8(Status.SUCCESS);
+        return (status, fillResults);
+    }
+
     /// @dev Validates context for fillOrder. Succeeds or throws.
     /// @param order to be filled.
     /// @param orderStatus Status of order to be filled.
@@ -203,76 +331,6 @@ contract MixinExchangeCore is
             takerAssetFillAmount > 0,
             GT_ZERO_AMOUNT_REQUIRED
         );
-    }
-
-    /// @dev Calculates amounts filled and fees paid by maker and taker.
-    /// @param order to be filled.
-    /// @param orderStatus Status of order to be filled.
-    /// @param orderFilledAmount Amount of order already filled.
-    /// @param takerAssetFillAmount Desired amount of order to fill by taker.
-    /// @return status Return status of calculating fill amounts. Returns Status.SUCCESS on success.
-    /// @return fillResults Amounts filled and fees paid by maker and taker.
-    function calculateFillResults(
-        Order memory order,
-        uint8 orderStatus,
-        uint256 orderFilledAmount,
-        uint256 takerAssetFillAmount
-    )
-        internal
-        pure
-        returns (
-            uint8 status,
-            FillResults memory fillResults
-        )
-    {
-        // Fill amount must be greater than 0
-        if (takerAssetFillAmount == 0) {
-            status = uint8(Status.TAKER_ASSET_FILL_AMOUNT_TOO_LOW);
-            return;
-        }
-
-        // Ensure the order is fillable
-        if (orderStatus != uint8(Status.ORDER_FILLABLE)) {
-            status = orderStatus;
-            return;
-        }
-
-        // Compute takerAssetFilledAmount
-        uint256 remainingTakerAssetAmount = safeSub(order.takerAssetAmount, orderFilledAmount);
-        uint256 takerAssetFilledAmount = min256(takerAssetFillAmount, remainingTakerAssetAmount);
-
-        // Validate fill order rounding
-        if (isRoundingError(
-            takerAssetFilledAmount,
-            order.takerAssetAmount,
-            order.makerAssetAmount))
-        {
-            status = uint8(Status.ROUNDING_ERROR_TOO_LARGE);
-            return (status, fillResults);
-        }
-
-        // Compute proportional transfer amounts
-        // TODO: All three are multiplied by the same fraction. This can
-        // potentially be optimized.
-        fillResults.takerAssetFilledAmount = takerAssetFilledAmount;
-        fillResults.makerAssetFilledAmount = getPartialAmount(
-            fillResults.takerAssetFilledAmount,
-            order.takerAssetAmount,
-            order.makerAssetAmount
-        );
-        fillResults.makerFeePaid = getPartialAmount(
-            fillResults.takerAssetFilledAmount,
-            order.takerAssetAmount,
-            order.makerFee
-        );
-        fillResults.takerFeePaid = getPartialAmount(
-            fillResults.takerAssetFilledAmount,
-            order.takerAssetAmount,
-            order.takerFee
-        );
-
-        status = uint8(Status.SUCCESS);
-        return (status, fillResults);
     }
 
     /// @dev Updates state with results of a fill order.
@@ -384,63 +442,5 @@ contract MixinExchangeCore is
         );
 
         return stateUpdated;
-    }
-
-    /// @dev Gets information about an order: status, hash, and amount filled.
-    /// @param order Order to gather information on.
-    /// @return OrderInfo Information about the order and its state.
-    ///                   See LibOrder.OrderInfo for a complete description.
-    function getOrderInfo(Order memory order)
-        public
-        view
-        returns (LibOrder.OrderInfo memory orderInfo)
-    {
-        // Compute the order hash
-        orderInfo.orderHash = getOrderHash(order);
-
-        // If order.makerAssetAmount is zero, we also reject the order.
-        // While the Exchange contract handles them correctly, they create
-        // edge cases in the supporting infrastructure because they have
-        // an 'infinite' price when computed by a simple division.
-        if (order.makerAssetAmount == 0) {
-            orderInfo.orderStatus = uint8(Status.ORDER_INVALID_MAKER_ASSET_AMOUNT);
-            return orderInfo;
-        }
-
-        // If order.takerAssetAmount is zero, then the order will always
-        // be considered filled because 0 == takerAssetAmount == orderFilledAmount
-        // Instead of distinguishing between unfilled and filled zero taker
-        // amount orders, we choose not to support them.
-        if (order.takerAssetAmount == 0) {
-            orderInfo.orderStatus = uint8(Status.ORDER_INVALID_TAKER_ASSET_AMOUNT);
-            return orderInfo;
-        }
-
-        // Validate order expiration
-        if (block.timestamp >= order.expirationTimeSeconds) {
-            orderInfo.orderStatus = uint8(Status.ORDER_EXPIRED);
-            return orderInfo;
-        }
-
-        // Check if order has been cancelled
-        if (cancelled[orderInfo.orderHash]) {
-            orderInfo.orderStatus = uint8(Status.ORDER_CANCELLED);
-            return orderInfo;
-        }
-        if (makerEpoch[order.makerAddress] > order.salt) {
-            orderInfo.orderStatus = uint8(Status.ORDER_CANCELLED);
-            return orderInfo;
-        }
-
-        // Fetch filled amount and validate order availability
-        orderInfo.orderFilledAmount = filled[orderInfo.orderHash];
-        if (orderInfo.orderFilledAmount >= order.takerAssetAmount) {
-            orderInfo.orderStatus = uint8(Status.ORDER_FULLY_FILLED);
-            return orderInfo;
-        }
-
-        // All other statuses are ruled out: order is Fillable
-        orderInfo.orderStatus = uint8(Status.ORDER_FILLABLE);
-        return orderInfo;
     }
 }

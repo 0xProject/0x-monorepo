@@ -75,26 +75,6 @@ contract MExchangeCore is
     )
         internal;
 
-    /// @dev Calculates amounts filled and fees paid by maker and taker.
-    /// @param order to be filled.
-    /// @param orderStatus Status of order to be filled.
-    /// @param orderFilledAmount Amount of order already filled.
-    /// @param takerAssetFillAmount Desired amount of order to fill by taker.
-    /// @return status Return status of calculating fill amounts. Returns Status.SUCCESS on success.
-    /// @return fillResults Amounts filled and fees paid by maker and taker.
-    function calculateFillResults(
-        LibOrder.Order memory order,
-        uint8 orderStatus,
-        uint256 orderFilledAmount,
-        uint256 takerAssetFillAmount
-    )
-        internal
-        pure
-        returns (
-            uint8 status,
-            LibFillResults.FillResults memory fillResults
-        );
-
     /// @dev Updates state with results of a fill order.
     /// @param order that was filled.
     /// @param takerAddress Address of taker who filled the order.
