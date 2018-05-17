@@ -136,6 +136,10 @@ const styles: Styles = {
         overflow: 'auto',
         WebkitOverflowScrolling: 'touch',
     },
+    manageYourWalletText: {
+        color: colors.mediumBlue,
+        fontWeight: 'bold',
+    },
 };
 
 const ETHER_ICON_PATH = '/images/ether.png';
@@ -312,9 +316,12 @@ export class Wallet extends React.Component<WalletProps, WalletState> {
                 <Link to={`${WebsitePaths.Portal}/account`} style={{ textDecoration: 'none' }}>
                     <ListItem
                         primaryText={
-                            <div className="flex right" style={{ color: colors.mediumBlue, fontWeight: 'bold' }}>
+                            <div className="flex right" style={styles.manageYourWalletText}>
                                 {'manage your wallet'}
-                            </div>}
+                            </div>
+                            // https://github.com/palantir/tslint-react/issues/140
+                            // tslint:disable-next-line:jsx-curly-spacing
+                        }
                         style={{ ...styles.paddedItem, ...styles.borderedItem }}
                     />
                 </Link>
