@@ -27,9 +27,6 @@ const MD_MIN_EM = 52;
 const isDogfood = (): boolean => _.includes(window.location.href, configs.DOMAIN_DOGFOOD);
 
 export const utils = {
-    noop(): void {
-        return undefined;
-    },
     assert(condition: boolean, message: string): void {
         if (!condition) {
             throw new Error(message);

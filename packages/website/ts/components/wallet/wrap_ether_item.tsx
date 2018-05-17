@@ -56,7 +56,7 @@ const styles: Styles = {
     errorMsg: {
         fontSize: 12,
         marginTop: 4,
-        color: 'red',
+        color: colors.red,
         minHeight: 20,
     },
 };

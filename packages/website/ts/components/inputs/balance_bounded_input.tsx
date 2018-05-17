@@ -5,7 +5,7 @@ import TextField from 'material-ui/TextField';
 import * as React from 'react';
 import { Link } from 'react-router-dom';
 import { RequiredLabel } from 'ts/components/ui/required_label';
-import { InputErrMsg, ValidatedBigNumberCallback, WebsitePaths } from 'ts/types';
+import { ValidatedBigNumberCallback, WebsitePaths } from 'ts/types';
 import { utils } from 'ts/utils/utils';
 
 interface BalanceBoundedInputProps {
@@ -17,7 +17,7 @@ interface BalanceBoundedInputProps {
     onErrorMsgChange?: (errorMsg: React.ReactNode) => void;
     shouldShowIncompleteErrs?: boolean;
     shouldCheckBalance: boolean;
-    validate?: (amount: BigNumber) => InputErrMsg;
+    validate?: (amount: BigNumber) => React.ReactNode;
     onVisitBalancesPageClick?: () => void;
     shouldHideVisitBalancesLink?: boolean;
     isDisabled?: boolean;
@@ -26,7 +26,7 @@ interface BalanceBoundedInputProps {
 }
 
 interface BalanceBoundedInputState {
-    errMsg: InputErrMsg;
+    errMsg: React.ReactNode;
     amountString: string;
 }
 
@@ -37,7 +37,7 @@ export class BalanceBoundedInput extends React.Component<BalanceBoundedInputProp
         isDisabled: false,
         shouldShowErrs: true,
         hintText: 'amount',
-        onErrorMsgChange: utils.noop,
+        onErrorMsgChange: _.noop,
         shouldShowUnderline: true,
     };
     constructor(props: BalanceBoundedInputProps) {
@@ -106,7 +106,8 @@ export class BalanceBoundedInput extends React.Component<BalanceBoundedInputProp
             this.props.balance,
             () => {
                 const isValid = _.isUndefined(this._validate(amountString, this.props.balance));
-                if (utils.isNumeric(amountString) && !_.includes(amountString, '-')) {
+                const isPositiveNumber = utils.isNumeric(amountString) && !_.includes(amountString, '-');
+                if (isPositiveNumber) {
                     this.props.onChange(isValid, new BigNumber(amountString));
                 } else {
                     this.props.onChange(isValid);
@@ -114,7 +115,7 @@ export class BalanceBoundedInput extends React.Component<BalanceBoundedInputProp
             },
         );
     }
-    private _validate(amountString: string, balance: BigNumber): InputErrMsg {
+    private _validate(amountString: string, balance: BigNumber): React.ReactNode {
         if (!utils.isNumeric(amountString)) {
             return amountString !== '' ? 'Must be a number' : '';
         }
@@ -155,7 +156,7 @@ export class BalanceBoundedInput extends React.Component<BalanceBoundedInputProp
         }
     }
 
-    private _setAmountState(amount: string, balance: BigNumber, callback: () => void = utils.noop): void {
+    private _setAmountState(amount: string, balance: BigNumber, callback: () => void = _.noop): void {
         const errorMsg = this._validate(amount, balance);
         this.props.onErrorMsgChange(errorMsg);
         this.setState({

@@ -6,7 +6,7 @@ import * as React from 'react';
 import { Link } from 'react-router-dom';
 import { Blockchain } from 'ts/blockchain';
 import { BalanceBoundedInput } from 'ts/components/inputs/balance_bounded_input';
-import { InputErrMsg, Token, ValidatedBigNumberCallback, WebsitePaths } from 'ts/types';
+import { Token, ValidatedBigNumberCallback, WebsitePaths } from 'ts/types';
 
 interface TokenAmountInputProps {
     userAddress: string;
@@ -107,7 +107,7 @@ export class TokenAmountInput extends React.Component<TokenAmountInputProps, Tok
         }
         this.props.onChange(isValid, baseUnitAmount);
     }
-    private _validate(amount: BigNumber): InputErrMsg {
+    private _validate(amount: BigNumber): React.ReactNode {
         if (this.props.shouldCheckAllowance && amount.gt(this.state.allowance)) {
             return (
                 <span>
