@@ -3,15 +3,15 @@ import * as dirtyChai from 'dirty-chai';
 import * as _ from 'lodash';
 import 'mocha';
 
-import { WebSocketOrderbookChannel } from '../src/ws_orderbook_channel';
+import { BrowserWebSocketOrderbookChannel } from '../src/browser_ws_orderbook_channel';
 
 chai.config.includeStack = true;
 chai.use(dirtyChai);
 const expect = chai.expect;
 
-describe('WebSocketOrderbookChannel', () => {
+describe('BrowserWebSocketOrderbookChannel', () => {
     const websocketUrl = 'ws://localhost:8080';
-    const orderbookChannel = new WebSocketOrderbookChannel(websocketUrl);
+    const orderbookChannel = new BrowserWebSocketOrderbookChannel(websocketUrl);
     const subscriptionOpts = {
         baseTokenAddress: '0x323b5d4c32345ced77393b3530b1eed0f346429d',
         quoteTokenAddress: '0xef7fff64389b814a946f3e92105513705ca6b990',

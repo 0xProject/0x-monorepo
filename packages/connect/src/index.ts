@@ -1,9 +1,11 @@
 export { HttpClient } from './http_client';
-export { WebSocketOrderbookChannel } from './ws_orderbook_channel';
+export { BrowserWebSocketOrderbookChannel } from './browser_ws_orderbook_channel';
+export { NodeWebSocketOrderbookChannel } from './node_ws_orderbook_channel';
 export {
     Client,
     FeesRequest,
     FeesResponse,
+    NodeWebSocketOrderbookChannelConfig,
     OrderbookChannel,
     OrderbookChannelHandler,
     OrderbookChannelSubscriptionOpts,
@@ -14,7 +16,5 @@ export {
     TokenPairsItem,
     TokenPairsRequestOpts,
     TokenTradeInfo,
-    WebSocketOrderbookChannelConfig,
 } from './types';
-
 export { ECSignature, Order, SignedOrder } from '@0xproject/types';
