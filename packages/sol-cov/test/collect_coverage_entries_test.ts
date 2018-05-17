@@ -39,15 +39,15 @@ describe('Collect coverage entries', () => {
             const coverageEntries = collectCoverageEntries(simpleStorageContract);
             const fnIds = _.keys(coverageEntries.fnMap);
             expect(coverageEntries.fnMap[fnIds[0]].name).to.be.equal('set');
-            const setExpectedLineNumber = 5;
-            expect(coverageEntries.fnMap[fnIds[0]].line).to.be.equal(setExpectedLineNumber);
+            // tslint:disable-next-line:custom-no-magic-numbers
+            expect(coverageEntries.fnMap[fnIds[0]].line).to.be.equal(5);
             const setFunction = `function set(uint x) {
         storedData = x;
     }`;
             expect(getRange(simpleStorageContract, coverageEntries.fnMap[fnIds[0]].loc)).to.be.equal(setFunction);
             expect(coverageEntries.fnMap[fnIds[1]].name).to.be.equal('get');
-            const getExpectedLineNumber = 8;
-            expect(coverageEntries.fnMap[fnIds[1]].line).to.be.equal(getExpectedLineNumber);
+            // tslint:disable-next-line:custom-no-magic-numbers
+            expect(coverageEntries.fnMap[fnIds[1]].line).to.be.equal(8);
             const getFunction = `function get() constant returns (uint retVal) {
         return storedData;
     }`;

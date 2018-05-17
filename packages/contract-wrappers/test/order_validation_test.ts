@@ -207,8 +207,8 @@ describe('OrderValidation', () => {
                 takerAddress,
                 fillableAmount,
             );
-            const sixthIndex = 6;
-            const nonTakerAddress = userAddresses[sixthIndex];
+            // tslint:disable-next-line:custom-no-magic-numbers
+            const nonTakerAddress = userAddresses[6];
             return expect(
                 contractWrappers.exchange.validateFillOrderThrowIfInvalidAsync(
                     signedOrder,
@@ -355,8 +355,8 @@ describe('OrderValidation', () => {
                 takerAddress,
                 zrxTokenAddress,
             );
-            const expectedCallCount = 4;
-            expect(transferFromAsync.callCount).to.be.equal(expectedCallCount);
+            // tslint:disable-next-line:custom-no-magic-numbers
+            expect(transferFromAsync.callCount).to.be.equal(4);
             expect(
                 transferFromAsync
                     .getCall(0)
@@ -426,8 +426,8 @@ describe('OrderValidation', () => {
                 takerAddress,
                 zrxTokenAddress,
             );
-            const expectedCallCount = 4;
-            expect(transferFromAsync.callCount).to.be.equal(expectedCallCount);
+            // tslint:disable-next-line:custom-no-magic-numbers
+            expect(transferFromAsync.callCount).to.be.equal(4);
             expect(
                 transferFromAsync
                     .getCall(0)
@@ -495,8 +495,8 @@ describe('OrderValidation', () => {
                 takerAddress,
                 zrxTokenAddress,
             );
-            const expectedCallCount = 4;
-            expect(transferFromAsync.callCount).to.be.equal(expectedCallCount);
+            // tslint:disable-next-line:custom-no-magic-numbers
+            expect(transferFromAsync.callCount).to.be.equal(4);
             const makerFillAmount = transferFromAsync.getCall(0).args[3];
             expect(makerFillAmount).to.be.bignumber.equal(makerTokenAmount);
         });
@@ -523,8 +523,8 @@ describe('OrderValidation', () => {
             );
             const makerPartialFee = makerFee.div(2);
             const takerPartialFee = takerFee.div(2);
-            const expectedCallCount = 4;
-            expect(transferFromAsync.callCount).to.be.equal(expectedCallCount);
+            // tslint:disable-next-line:custom-no-magic-numbers
+            expect(transferFromAsync.callCount).to.be.equal(4);
             const partialMakerFee = transferFromAsync.getCall(2).args[3];
             expect(partialMakerFee).to.be.bignumber.equal(makerPartialFee);
             const partialTakerFee = transferFromAsync.getCall(3).args[3];
