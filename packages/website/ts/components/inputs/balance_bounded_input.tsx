@@ -14,6 +14,7 @@ interface BalanceBoundedInputProps {
     amount?: BigNumber;
     hintText?: string;
     onChange: ValidatedBigNumberCallback;
+    onErrorMsgChange?: (errorMsg: React.ReactNode) => void;
     shouldShowIncompleteErrs?: boolean;
     shouldCheckBalance: boolean;
     validate?: (amount: BigNumber) => InputErrMsg;
@@ -36,6 +37,7 @@ export class BalanceBoundedInput extends React.Component<BalanceBoundedInputProp
         isDisabled: false,
         shouldShowErrs: true,
         hintText: 'amount',
+        onErrorMsgChange: utils.noop,
         shouldShowUnderline: true,
     };
     constructor(props: BalanceBoundedInputProps) {
@@ -63,17 +65,11 @@ export class BalanceBoundedInput extends React.Component<BalanceBoundedInputProp
             }
             if (shouldResetState) {
                 const amountString = nextProps.amount.toString();
-                this.setState({
-                    errMsg: this._validate(amountString, nextProps.balance),
-                    amountString,
-                });
+                this._setAmountState(amountString, nextProps.balance);
             }
         } else if (isCurrentAmountNumeric) {
             const amountString = '';
-            this.setState({
-                errMsg: this._validate(amountString, nextProps.balance),
-                amountString,
-            });
+            this._setAmountState(amountString, nextProps.balance);
         }
     }
     public render(): React.ReactNode {
@@ -105,14 +101,11 @@ export class BalanceBoundedInput extends React.Component<BalanceBoundedInputProp
         );
     }
     private _onValueChange(e: any, amountString: string): void {
-        const errMsg = this._validate(amountString, this.props.balance);
-        this.setState(
-            {
-                amountString,
-                errMsg,
-            },
+        this._setAmountState(
+            amountString,
+            this.props.balance,
             () => {
-                const isValid = _.isUndefined(errMsg);
+                const isValid = _.isUndefined(this._validate(amountString, this.props.balance));
                 if (utils.isNumeric(amountString) && !_.includes(amountString, '-')) {
                     this.props.onChange(isValid, new BigNumber(amountString));
                 } else {
@@ -160,5 +153,14 @@ export class BalanceBoundedInput extends React.Component<BalanceBoundedInputProp
                 </div>
             );
         }
+    }
+
+    private _setAmountState(amount: string, balance: BigNumber, callback: () => void = utils.noop): void {
+        const errorMsg = this._validate(amount, balance);
+        this.props.onErrorMsgChange(errorMsg);
+        this.setState({
+            amountString: amount,
+            errMsg: this._validate(amount, balance),
+        }, callback);
     }
 }

@@ -12,6 +12,7 @@ interface EthAmountInputProps {
     amount?: BigNumber;
     hintText?: string;
     onChange: ValidatedBigNumberCallback;
+    onErrorMsgChange?: (errorMsg: React.ReactNode) => void;
     shouldShowIncompleteErrs: boolean;
     onVisitBalancesPageClick?: () => void;
     shouldCheckBalance: boolean;
@@ -40,6 +41,7 @@ export class EthAmountInput extends React.Component<EthAmountInputProps, EthAmou
                     balance={this.props.balance}
                     amount={amount}
                     onChange={this._onChange.bind(this)}
+                    onErrorMsgChange={this.props.onErrorMsgChange}
                     shouldCheckBalance={this.props.shouldCheckBalance}
                     shouldShowIncompleteErrs={this.props.shouldShowIncompleteErrs}
                     onVisitBalancesPageClick={this.props.onVisitBalancesPageClick}

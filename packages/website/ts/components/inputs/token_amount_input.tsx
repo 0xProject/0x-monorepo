@@ -20,6 +20,7 @@ interface TokenAmountInputProps {
     shouldCheckBalance: boolean;
     shouldCheckAllowance: boolean;
     onChange: ValidatedBigNumberCallback;
+    onErrorMsgChange?: (errorMsg: React.ReactNode) => void;
     onVisitBalancesPageClick?: () => void;
     lastForceTokenStateRefetch: number;
     shouldShowErrs?: boolean;
@@ -85,6 +86,7 @@ export class TokenAmountInput extends React.Component<TokenAmountInputProps, Tok
                     amount={amount}
                     balance={ZeroEx.toUnitAmount(this.state.balance, this.props.token.decimals)}
                     onChange={this._onChange.bind(this)}
+                    onErrorMsgChange={this.props.onErrorMsgChange}
                     validate={this._validate.bind(this)}
                     shouldCheckBalance={this.props.shouldCheckBalance}
                     shouldShowIncompleteErrs={this.props.shouldShowIncompleteErrs}
