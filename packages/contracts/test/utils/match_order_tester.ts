@@ -158,7 +158,6 @@ export class MatchOrderTester {
 
         return [expectedNewERC20BalancesByOwner, expectedNewERC721TokenIdsByOwner];
     }
-
     /// @dev Compares a pair of ERC20 balances and a pair of ERC721 token owners.
     /// @param expectedNewERC20BalancesByOwner Expected ERC20 balances.
     /// @param realERC20BalancesByOwner Actual ERC20 balances.
@@ -193,7 +192,6 @@ export class MatchOrderTester {
         const erc721TokenIdsMatch = _.isEqual(sortedExpectedNewERC721TokenIdsByOwner, sortedNewERC721TokenIdsByOwner);
         return erc721TokenIdsMatch;
     }
-
     /// @dev Constructs new MatchOrderTester.
     /// @param exchangeWrapper Used to call to the Exchange.
     /// @param erc20Wrapper Used to fetch ERC20 balances.
@@ -203,7 +201,6 @@ export class MatchOrderTester {
         this._erc20Wrapper = erc20Wrapper;
         this._erc721Wrapper = erc721Wrapper;
     }
-
     /// @dev Matches two complementary orders and validates results.
     ///      Validation either succeeds or throws.
     /// @param signedOrderLeft First matched order.
@@ -231,21 +228,21 @@ export class MatchOrderTester {
         const feeRecipientAddressLeft = signedOrderLeft.feeRecipientAddress;
         const feeRecipientAddressRight = signedOrderRight.feeRecipientAddress;
         // Verify Left order preconditions
-        const takerAssetFilledAmountBeforeLeft = await this._exchangeWrapper.getTakerAssetFilledAmountAsync(
+        const orderFilledAmountLeft = await this._exchangeWrapper.getTakerAssetFilledAmountAsync(
             orderUtils.getOrderHashHex(signedOrderLeft),
         );
-        const expectedLeftOrderFillAmoutBeforeMatch = initialTakerAssetFilledAmountLeft
+        const expectedOrderFilledAmountLeft = initialTakerAssetFilledAmountLeft
             ? initialTakerAssetFilledAmountLeft
             : new BigNumber(0);
-        expect(takerAssetFilledAmountBeforeLeft).to.be.bignumber.equal(expectedLeftOrderFillAmoutBeforeMatch);
+        expect(expectedOrderFilledAmountLeft).to.be.bignumber.equal(orderFilledAmountLeft);
         // Verify Right order preconditions
-        const takerAssetFilledAmountBeforeRight = await this._exchangeWrapper.getTakerAssetFilledAmountAsync(
+        const orderFilledAmountRight = await this._exchangeWrapper.getTakerAssetFilledAmountAsync(
             orderUtils.getOrderHashHex(signedOrderRight),
         );
-        const expectedRightOrderFillAmoutBeforeMatch = initialTakerAssetFilledAmountRight
+        const expectedOrderFilledAmountRight = initialTakerAssetFilledAmountRight
             ? initialTakerAssetFilledAmountRight
             : new BigNumber(0);
-        expect(takerAssetFilledAmountBeforeRight).to.be.bignumber.equal(expectedRightOrderFillAmoutBeforeMatch);
+        expect(expectedOrderFilledAmountRight).to.be.bignumber.equal(orderFilledAmountRight);
         // Match left & right orders
         await this._exchangeWrapper.matchOrdersAsync(signedOrderLeft, signedOrderRight, takerAddress);
         const newERC20BalancesByOwner = await this._erc20Wrapper.getBalancesAsync();
@@ -254,8 +251,8 @@ export class MatchOrderTester {
         const expectedTransferAmounts = await this._calculateExpectedTransferAmountsAsync(
             signedOrderLeft,
             signedOrderRight,
-            expectedLeftOrderFillAmoutBeforeMatch,
-            expectedRightOrderFillAmoutBeforeMatch,
+            orderFilledAmountLeft,
+            orderFilledAmountRight,
         );
         let expectedERC20BalancesByOwner: ERC20BalancesByOwner;
         let expectedERC721TokenIdsByOwner: ERC721TokenIdsByOwner;
@@ -278,24 +275,23 @@ export class MatchOrderTester {
         expect(expectedBalancesMatchRealBalances).to.be.true();
         return [newERC20BalancesByOwner, newERC721TokenIdsByOwner];
     }
-
     /// @dev Calculates expected transfer amounts between order makers, fee recipients, and
     ///      the taker when two orders are matched.
     /// @param signedOrderLeft First matched order.
     /// @param signedOrderRight Second matched order.
-    /// @param expectedLeftOrderFillAmoutBeforeMatch How much we expect the left order has been filled, prior to matching orders.
-    /// @param expectedRightOrderFillAmoutBeforeMatch How much we expect the right order has been filled, prior to matching orders.
+    /// @param orderFilledAmountLeft How much left order has been filled, prior to matching orders.
+    /// @param orderFilledAmountRight How much the right order has been filled, prior to matching orders.
     /// @return TransferAmounts A struct containing the expected transfer amounts.
     private async _calculateExpectedTransferAmountsAsync(
         signedOrderLeft: SignedOrder,
         signedOrderRight: SignedOrder,
-        expectedLeftOrderFillAmoutBeforeMatch: BigNumber,
-        expectedRightOrderFillAmoutBeforeMatch: BigNumber,
+        orderFilledAmountLeft: BigNumber,
+        orderFilledAmountRight: BigNumber,
     ): Promise<TransferAmounts> {
         let amountBoughtByLeftMaker = await this._exchangeWrapper.getTakerAssetFilledAmountAsync(
             orderUtils.getOrderHashHex(signedOrderLeft),
         );
-        amountBoughtByLeftMaker = amountBoughtByLeftMaker.minus(expectedLeftOrderFillAmoutBeforeMatch);
+        amountBoughtByLeftMaker = amountBoughtByLeftMaker.minus(orderFilledAmountLeft);
         const amountSoldByLeftMaker = amountBoughtByLeftMaker
             .times(signedOrderLeft.makerAssetAmount)
             .dividedToIntegerBy(signedOrderLeft.takerAssetAmount);
@@ -306,7 +302,7 @@ export class MatchOrderTester {
         let amountBoughtByRightMaker = await this._exchangeWrapper.getTakerAssetFilledAmountAsync(
             orderUtils.getOrderHashHex(signedOrderRight),
         );
-        amountBoughtByRightMaker = amountBoughtByRightMaker.minus(expectedRightOrderFillAmoutBeforeMatch);
+        amountBoughtByRightMaker = amountBoughtByRightMaker.minus(orderFilledAmountRight);
         const amountSoldByRightMaker = amountBoughtByRightMaker
             .times(signedOrderRight.makerAssetAmount)
             .dividedToIntegerBy(signedOrderRight.takerAssetAmount);
