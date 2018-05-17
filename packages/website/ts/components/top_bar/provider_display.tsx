@@ -1,13 +1,15 @@
-import { colors, Styles } from '@0xproject/react-shared';
+import { Styles } from '@0xproject/react-shared';
 import * as _ from 'lodash';
 import RaisedButton from 'material-ui/RaisedButton';
 import * as React from 'react';
+
 import { Blockchain } from 'ts/blockchain';
 import { ProviderPicker } from 'ts/components/top_bar/provider_picker';
 import { DropDown } from 'ts/components/ui/drop_down';
 import { Identicon } from 'ts/components/ui/identicon';
 import { Dispatcher } from 'ts/redux/dispatcher';
 import { ProviderType } from 'ts/types';
+import { colors } from 'ts/utils/colors';
 import { constants } from 'ts/utils/constants';
 import { utils } from 'ts/utils/utils';
 
@@ -41,9 +43,7 @@ export class ProviderDisplay extends React.Component<ProviderDisplayProps, Provi
             this.props.providerType === ProviderType.Injected && this.props.injectedProviderName !== '0x Public';
         const displayAddress = isAddressAvailable
             ? utils.getAddressBeginAndEnd(this.props.userAddress)
-            : isExternallyInjectedProvider
-                ? 'Account locked'
-                : '0x0000...0000';
+            : isExternallyInjectedProvider ? 'Account locked' : '0x0000...0000';
         // If the "injected" provider is our fallback public node, then we want to
         // show the "connect a wallet" message instead of the providerName
         const injectedProviderName = isExternallyInjectedProvider

@@ -1,4 +1,4 @@
-import { colors, Styles } from '@0xproject/react-shared';
+import { Styles } from '@0xproject/react-shared';
 import * as _ from 'lodash';
 import CircularProgress from 'material-ui/CircularProgress';
 import FlatButton from 'material-ui/FlatButton';
@@ -8,6 +8,7 @@ import * as React from 'react';
 import { RelayerGridTile } from 'ts/components/relayer_index/relayer_grid_tile';
 import { ScreenWidths, WebsiteBackendRelayerInfo } from 'ts/types';
 import { backendClient } from 'ts/utils/backend_client';
+import { colors } from 'ts/utils/colors';
 
 export interface RelayerIndexProps {
     networkId: number;
