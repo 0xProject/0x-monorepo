@@ -228,13 +228,15 @@ contract MixinMatchOrders is
         internal
         returns (MatchedFillResults memory matchedFillResults)
     {
-        // We settle orders at the price point defined by the right order (profit goes to the order taker)
-        // The constraint can be either on the left or on the right.
-        // The constraint is on the left iff the amount required to fill the left order
-        // is less than or equal to the amount we can spend from the right order:
-        //    <leftTakerAssetAmountRemaining> <= <rightTakerAssetAmountRemaining> * <rightMakerToTakerRatio>
-        //    <leftTakerAssetAmountRemaining> <= <rightTakerAssetAmountRemaining> * <rightOrder.makerAssetAmount> / <rightOrder.takerAssetAmount>
-        //    <leftTakerAssetAmountRemaining> * <rightOrder.takerAssetAmount> <= <rightTakerAssetAmountRemaining> * <rightOrder.makerAssetAmount>
+        // We settle orders at the exchange rate of the right order.
+        // The amount saved by the left maker goes to the taker.
+        // Either the left or right order will be fully filled; possibly both.
+        // The left order is fully filled iff the right order can sell more than left can buy.
+        // That is: the amount required to fill the left order is less than or equal to
+        //          the amount we can spend from the right order:
+        //          <leftTakerAssetAmountRemaining> <= <rightTakerAssetAmountRemaining> * <rightMakerToTakerRatio>
+        //          <leftTakerAssetAmountRemaining> <= <rightTakerAssetAmountRemaining> * <rightOrder.makerAssetAmount> / <rightOrder.takerAssetAmount>
+        //          <leftTakerAssetAmountRemaining> * <rightOrder.takerAssetAmount> <= <rightTakerAssetAmountRemaining> * <rightOrder.makerAssetAmount>
         uint256 rightTakerAssetAmountRemaining = safeSub(rightOrder.takerAssetAmount, rightOrderFilledAmount);
         uint256 leftTakerAssetAmountRemaining = safeSub(leftOrder.takerAssetAmount, leftOrderFilledAmount);
         uint256 leftOrderAmountToFill;
@@ -243,7 +245,7 @@ contract MixinMatchOrders is
             safeMul(leftTakerAssetAmountRemaining, rightOrder.takerAssetAmount) <=
             safeMul(rightTakerAssetAmountRemaining, rightOrder.makerAssetAmount)
         ) {
-            // Left order is the constraint: maximally fill left
+            // Left order will be fully filled: maximally fill left
             leftOrderAmountToFill = leftTakerAssetAmountRemaining;
 
             // The right order receives an amount proportional to how much was spent.
@@ -254,7 +256,7 @@ contract MixinMatchOrders is
                 leftOrderAmountToFill
             );
         } else {
-            // Right order is the constraint: maximally fill right
+            // Right order will be fully filled: maximally fill right
             rightOrderAmountToFill = rightTakerAssetAmountRemaining;
 
             // The left order receives an amount proportional to how much was spent.
