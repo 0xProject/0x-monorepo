@@ -1,7 +1,6 @@
 import { colors, Styles } from '@0xproject/react-shared';
 import { BigNumber } from '@0xproject/utils';
 import * as _ from 'lodash';
-import CircularProgress from 'material-ui/CircularProgress';
 import * as React from 'react';
 import * as DocumentTitle from 'react-document-title';
 import { Link, Route, RouteComponentProps, Switch } from 'react-router-dom';
@@ -13,6 +12,7 @@ import { PortalDisclaimerDialog } from 'ts/components/dialogs/portal_disclaimer_
 import { EthWrappers } from 'ts/components/eth_wrappers';
 import { AssetPicker } from 'ts/components/generate_order/asset_picker';
 import { BackButton } from 'ts/components/portal/back_button';
+import { Loading } from 'ts/components/portal/loading';
 import { Menu } from 'ts/components/portal/menu';
 import { Section } from 'ts/components/portal/section';
 import { TextHeader } from 'ts/components/portal/text_header';
@@ -283,7 +283,7 @@ export class Portal extends React.Component<PortalProps, PortalState> {
         );
     }
     private _renderAccountManagement(): React.ReactNode {
-        return this.props.blockchainIsLoaded ? (
+        return (
             <Switch>
                 <Route path={`${WebsitePaths.Portal}/weth`} render={this._renderEthWrapper.bind(this)} />
                 <Route path={`${WebsitePaths.Portal}/account`} render={this._renderTokenBalances.bind(this)} />
@@ -291,18 +291,6 @@ export class Portal extends React.Component<PortalProps, PortalState> {
                 <Route path={`${WebsitePaths.Portal}/direct`} render={this._renderTradeDirect.bind(this)} />
                 <Route render={this._renderNotFoundMessage.bind(this)} />
             </Switch>
-        ) : (
-            // TODO: consolidate this loading component with the one in relayer_index
-            <div className="pt4 sm-px2 sm-pt2 sm-m1" style={{ height: 500 }}>
-                <div
-                    className="relative sm-px2 sm-pt2 sm-m1"
-                    style={{ height: 122, top: '50%', transform: 'translateY(-50%)' }}
-                >
-                    <div className="center pb2">
-                        <CircularProgress size={40} thickness={5} />
-                    </div>
-                </div>
-            </div>
         );
     }
     private _renderEthWrapper(): React.ReactNode {
@@ -310,14 +298,19 @@ export class Portal extends React.Component<PortalProps, PortalState> {
             <Section
                 header={<TextHeader labelText="Wrapped ETH" />}
                 body={
-                    <EthWrappers
-                        networkId={this.props.networkId}
-                        blockchain={this._blockchain}
-                        dispatcher={this.props.dispatcher}
-                        tokenByAddress={this.props.tokenByAddress}
-                        userAddress={this.props.userAddress}
-                        userEtherBalanceInWei={this.props.userEtherBalanceInWei}
-                        lastForceTokenStateRefetch={this.props.lastForceTokenStateRefetch}
+                    <Loading
+                        isLoading={!this.props.blockchainIsLoaded}
+                        content={
+                            <EthWrappers
+                                networkId={this.props.networkId}
+                                blockchain={this._blockchain}
+                                dispatcher={this.props.dispatcher}
+                                tokenByAddress={this.props.tokenByAddress}
+                                userAddress={this.props.userAddress}
+                                userEtherBalanceInWei={this.props.userEtherBalanceInWei}
+                                lastForceTokenStateRefetch={this.props.lastForceTokenStateRefetch}
+                            />
+                        }
                     />
                 }
             />
@@ -328,10 +321,15 @@ export class Portal extends React.Component<PortalProps, PortalState> {
             <Section
                 header={<TextHeader labelText="Trade History" />}
                 body={
-                    <TradeHistory
-                        tokenByAddress={this.props.tokenByAddress}
-                        userAddress={this.props.userAddress}
-                        networkId={this.props.networkId}
+                    <Loading
+                        isLoading={!this.props.blockchainIsLoaded}
+                        content={
+                            <TradeHistory
+                                tokenByAddress={this.props.tokenByAddress}
+                                userAddress={this.props.userAddress}
+                                networkId={this.props.networkId}
+                            />
+                        }
                     />
                 }
             />
@@ -342,10 +340,15 @@ export class Portal extends React.Component<PortalProps, PortalState> {
             <Section
                 header={<TextHeader labelText="Trade Direct" />}
                 body={
-                    <GenerateOrderForm
-                        blockchain={this._blockchain}
-                        hashData={this.props.hashData}
-                        dispatcher={this.props.dispatcher}
+                    <Loading
+                        isLoading={!this.props.blockchainIsLoaded}
+                        content={
+                            <GenerateOrderForm
+                                blockchain={this._blockchain}
+                                hashData={this.props.hashData}
+                                dispatcher={this.props.dispatcher}
+                            />
+                        }
                     />
                 }
             />
@@ -358,18 +361,23 @@ export class Portal extends React.Component<PortalProps, PortalState> {
             <Section
                 header={<TextHeader labelText="Your Account" />}
                 body={
-                    <TokenBalances
-                        blockchain={this._blockchain}
-                        blockchainErr={this.props.blockchainErr}
-                        blockchainIsLoaded={this.props.blockchainIsLoaded}
-                        dispatcher={this.props.dispatcher}
-                        screenWidth={this.props.screenWidth}
-                        tokenByAddress={this.props.tokenByAddress}
-                        trackedTokens={trackedTokens}
-                        userAddress={this.props.userAddress}
-                        userEtherBalanceInWei={this.props.userEtherBalanceInWei}
-                        networkId={this.props.networkId}
-                        lastForceTokenStateRefetch={this.props.lastForceTokenStateRefetch}
+                    <Loading
+                        isLoading={!this.props.blockchainIsLoaded}
+                        content={
+                            <TokenBalances
+                                blockchain={this._blockchain}
+                                blockchainErr={this.props.blockchainErr}
+                                blockchainIsLoaded={this.props.blockchainIsLoaded}
+                                dispatcher={this.props.dispatcher}
+                                screenWidth={this.props.screenWidth}
+                                tokenByAddress={this.props.tokenByAddress}
+                                trackedTokens={trackedTokens}
+                                userAddress={this.props.userAddress}
+                                userEtherBalanceInWei={this.props.userEtherBalanceInWei}
+                                networkId={this.props.networkId}
+                                lastForceTokenStateRefetch={this.props.lastForceTokenStateRefetch}
+                            />
+                        }
                     />
                 }
             />

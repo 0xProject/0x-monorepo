@@ -60,14 +60,12 @@ export class RelayerIndex extends React.Component<RelayerIndexProps, RelayerInde
         if (!readyToRender) {
             return (
                 // TODO: consolidate this loading component with the one in portal
-                <div style={styles.root}>
-                    <div className="center">
-                        {_.isUndefined(this.state.error) ? (
-                            <CircularProgress size={40} thickness={5} />
-                        ) : (
-                            <Retry onRetry={this._fetchRelayerInfosAsync.bind(this)} />
-                        )}
-                    </div>
+                <div className="center">
+                    {_.isUndefined(this.state.error) ? (
+                        <CircularProgress size={40} thickness={5} />
+                    ) : (
+                        <Retry onRetry={this._fetchRelayerInfosAsync.bind(this)} />
+                    )}
                 </div>
             );
         } else {
