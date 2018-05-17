@@ -5,8 +5,16 @@ import { MenuItem } from 'ts/components/ui/menu_item';
 import { Environments, WebsitePaths } from 'ts/types';
 import { configs } from 'ts/utils/configs';
 
+export interface MenuTheme {
+    paddingLeft: number;
+    textColor: string;
+    iconColor: string;
+    selectedIconColor: string;
+    selectedBackgroundColor: string;
+}
 export interface MenuProps {
     selectedPath?: string;
+    theme?: MenuTheme;
 }
 
 interface MenuItemEntry {
@@ -16,6 +24,11 @@ interface MenuItemEntry {
 }
 
 const menuItemEntries: MenuItemEntry[] = [
+    {
+        to: `${WebsitePaths.Portal}/`,
+        labelText: 'Relayer ecosystem',
+        iconName: 'zmdi-portable-wifi',
+    },
     {
         to: `${WebsitePaths.Portal}/account`,
         labelText: 'Account overview',
@@ -38,49 +51,65 @@ const menuItemEntries: MenuItemEntry[] = [
     },
 ];
 
-const DEFAULT_LABEL_COLOR = colors.darkerGrey;
-const DEFAULT_ICON_COLOR = colors.darkerGrey;
-const SELECTED_ICON_COLOR = colors.yellow900;
-
-const LEFT_PADDING = 185;
+const DEFAULT_MENU_THEME: MenuTheme = {
+    paddingLeft: 30,
+    textColor: colors.white,
+    iconColor: colors.white,
+    selectedIconColor: colors.white,
+    selectedBackgroundColor: '#424242',
+};
 
 export const Menu: React.StatelessComponent<MenuProps> = (props: MenuProps) => {
     return (
-        <div style={{ paddingLeft: LEFT_PADDING }}>
+        <div>
             {_.map(menuItemEntries, entry => {
                 const selected = entry.to === props.selectedPath;
                 return (
-                    <MenuItem key={entry.to} className="py2" to={entry.to}>
-                        <MenuItemLabel title={entry.labelText} iconName={entry.iconName} selected={selected} />
+                    <MenuItem key={entry.to} to={entry.to}>
+                        <MenuItemLabel
+                            title={entry.labelText}
+                            iconName={entry.iconName}
+                            selected={selected}
+                            theme={props.theme}
+                        />
                     </MenuItem>
                 );
             })}
         </div>
     );
 };
+Menu.defaultProps = {
+    theme: DEFAULT_MENU_THEME,
+};
 
 interface MenuItemLabelProps {
     title: string;
     iconName: string;
     selected: boolean;
+    theme: MenuTheme;
 }
 const MenuItemLabel: React.StatelessComponent<MenuItemLabelProps> = (props: MenuItemLabelProps) => {
     const styles: Styles = {
-        iconStyle: {
-            color: props.selected ? SELECTED_ICON_COLOR : DEFAULT_ICON_COLOR,
+        root: {
+            backgroundColor: props.selected ? props.theme.selectedBackgroundColor : undefined,
+            paddingLeft: props.theme.paddingLeft,
+        },
+        icon: {
+            color: props.selected ? props.theme.selectedIconColor : props.theme.iconColor,
             fontSize: 20,
         },
-        textStyle: {
-            color: DEFAULT_LABEL_COLOR,
+        text: {
+            color: props.theme.textColor,
             fontWeight: props.selected ? 'bold' : 'normal',
+            fontSize: 16,
         },
     };
     return (
-        <div className="flex">
+        <div className="flex py2" style={styles.root}>
             <div className="pr1">
-                <i style={styles.iconStyle} className={`zmdi ${props.iconName}`} />
+                <i style={styles.icon} className={`zmdi ${props.iconName}`} />
             </div>
-            <div className="pl1" style={styles.textStyle}>
+            <div className="pl1" style={styles.text}>
                 {props.title}
             </div>
         </div>

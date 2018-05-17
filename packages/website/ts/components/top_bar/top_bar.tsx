@@ -9,6 +9,7 @@ import { Link } from 'react-router-dom';
 import ReactTooltip = require('react-tooltip');
 import { Blockchain } from 'ts/blockchain';
 import { LegacyPortalMenu } from 'ts/components/legacy_portal/legacy_portal_menu';
+import { DrawerMenu } from 'ts/components/portal/drawer_menu';
 import { SidebarHeader } from 'ts/components/sidebar_header';
 import { ProviderDisplay } from 'ts/components/top_bar/provider_display';
 import { TopBarMenuItem } from 'ts/components/top_bar/top_bar_menu_item';
@@ -289,7 +290,7 @@ export class TopBar extends React.Component<TopBarProps, TopBarState> {
                 openSecondary={true}
                 onRequestChange={this._onMenuButtonClick.bind(this)}
             >
-                <div />
+                <DrawerMenu selectedPath={this.props.location.pathname} userAddress={this.props.userAddress} />
             </Drawer>
         );
     }
