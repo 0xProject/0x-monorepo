@@ -4,6 +4,7 @@ import { BigNumber } from '@0xproject/utils';
 import { Web3Wrapper } from '@0xproject/web3-wrapper';
 import * as chai from 'chai';
 import ethUtil = require('ethereumjs-util');
+import 'make-promises-safe';
 
 import {
     ExchangeContract,

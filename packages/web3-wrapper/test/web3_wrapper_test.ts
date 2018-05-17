@@ -1,5 +1,6 @@
 import * as chai from 'chai';
 import * as Ganache from 'ganache-core';
+import 'make-promises-safe';
 import 'mocha';
 
 import { Web3Wrapper } from '../src';

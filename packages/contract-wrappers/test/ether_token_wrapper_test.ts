@@ -3,6 +3,7 @@ import { DoneCallback } from '@0xproject/types';
 import { BigNumber } from '@0xproject/utils';
 import { Web3Wrapper } from '@0xproject/web3-wrapper';
 import * as chai from 'chai';
+import 'make-promises-safe';
 import 'mocha';
 
 import {

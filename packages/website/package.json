@@ -2,7 +2,7 @@
     "name": "@0xproject/website",
     "version": "0.0.32",
     "engines": {
-        "node" : ">=6.12"
+        "node": ">=6.12"
     },
     "private": true,
     "description": "Website and 0x portal dapp",
@@ -80,6 +80,7 @@
         "imports-loader": "0.6.x",
         "json-loader": "^0.5.4",
         "less-loader": "^2.2.3",
+        "make-promises-safe": "^1.1.0",
         "raw-loader": "^0.5.1",
         "shx": "^0.2.2",
         "source-map-loader": "^0.1.6",

@@ -2,7 +2,7 @@
     "name": "@0xproject/types",
     "version": "0.6.3",
     "engines": {
-        "node" : ">=6.12"
+        "node": ">=6.12"
     },
     "description": "0x types",
     "main": "lib/index.js",
@@ -27,6 +27,7 @@
         "@0xproject/monorepo-scripts": "^0.1.19",
         "@0xproject/tslint-config": "^0.4.17",
         "copyfiles": "^1.2.0",
+        "make-promises-safe": "^1.1.0",
         "shx": "^0.2.2",
         "tslint": "5.8.0",
         "typescript": "2.7.1"

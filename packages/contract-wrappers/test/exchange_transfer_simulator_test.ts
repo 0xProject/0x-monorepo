@@ -2,6 +2,7 @@ import { BlockchainLifecycle, devConstants } from '@0xproject/dev-utils';
 import { BlockParamLiteral, Token } from '@0xproject/types';
 import { BigNumber } from '@0xproject/utils';
 import * as chai from 'chai';
+import 'make-promises-safe';
 
 import { ContractWrappers, ExchangeContractErrs } from '../src';
 import { TradeSide, TransferType } from '../src/types';

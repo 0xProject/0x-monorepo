@@ -3,6 +3,7 @@ import { BlockchainLifecycle, devConstants, web3Factory } from '@0xproject/dev-u
 import { BigNumber } from '@0xproject/utils';
 import { Web3Wrapper } from '@0xproject/web3-wrapper';
 import * as chai from 'chai';
+import 'make-promises-safe';
 import * as Web3 from 'web3';
 
 import { ZRXTokenContract } from '../src/contract_wrappers/generated/zrx_token';

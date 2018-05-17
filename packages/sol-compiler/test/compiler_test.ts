@@ -1,5 +1,6 @@
 import { DoneCallback } from '@0xproject/types';
 import * as chai from 'chai';
+import 'make-promises-safe';
 import 'mocha';
 
 import { Compiler } from '../src/compiler';
