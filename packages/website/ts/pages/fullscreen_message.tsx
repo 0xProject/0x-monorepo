@@ -18,7 +18,7 @@ export const FullscreenMessage = (props: FullscreenMessageProps) => {
             <div className="center py4">
                 <div className="py4">
                     <div className="py4">
-                        <h1 style={{ ...styles.thin }}>{props.headerText}</h1>
+                        <h1 style={styles.thin}>{props.headerText}</h1>
                         <div className="py1">
                             <div className="py3">{props.bodyText}</div>
                         </div>
