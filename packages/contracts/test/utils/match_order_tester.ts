@@ -42,120 +42,8 @@ export class MatchOrderTester {
     private _exchangeWrapper: ExchangeWrapper;
     private _erc20Wrapper: ERC20Wrapper;
     private _erc721Wrapper: ERC721Wrapper;
+    private _feeTokenAddress: string;
 
-    /// @dev Calculates the expected balances of order makers, fee recipients, and the taker,
-    ///      as a result of matching two orders.
-    /// @param signedOrderLeft First matched order.
-    /// @param signedOrderRight Second matched order.
-    /// @param feeTokenAddress Address of ERC20 fee token.
-    /// @param takerAddress Address of taker (the address who matched the two orders)
-    /// @param erc20BalancesByOwner Current ERC20 balances.
-    /// @param erc721TokenIdsByOwner Current ERC721 token owners.
-    /// @param expectedTransferAmounts A struct containing the expected transfer amounts.
-    /// @return Expected ERC20 balances & ERC721 token owners after orders have been matched.
-    private static _calculateExpectedBalances(
-        signedOrderLeft: SignedOrder,
-        signedOrderRight: SignedOrder,
-        feeTokenAddress: string,
-        takerAddress: string,
-        erc20BalancesByOwner: ERC20BalancesByOwner,
-        erc721TokenIdsByOwner: ERC721TokenIdsByOwner,
-        expectedTransferAmounts: TransferAmounts,
-    ): [ERC20BalancesByOwner, ERC721TokenIdsByOwner] {
-        const makerAddressLeft = signedOrderLeft.makerAddress;
-        const makerAddressRight = signedOrderRight.makerAddress;
-        const feeRecipientAddressLeft = signedOrderLeft.feeRecipientAddress;
-        const feeRecipientAddressRight = signedOrderRight.feeRecipientAddress;
-        // Operations are performed on copies of the balances
-        const expectedNewERC20BalancesByOwner = _.cloneDeep(erc20BalancesByOwner);
-        const expectedNewERC721TokenIdsByOwner = _.cloneDeep(erc721TokenIdsByOwner);
-        // Left Maker Asset (Right Taker Asset)
-        const makerAssetProxyIdLeft = assetProxyUtils.decodeProxyDataId(signedOrderLeft.makerAssetData);
-        if (makerAssetProxyIdLeft === AssetProxyId.ERC20) {
-            // Decode asset data
-            const erc20ProxyData = assetProxyUtils.decodeERC20ProxyData(signedOrderLeft.makerAssetData);
-            const makerAssetAddressLeft = erc20ProxyData.tokenAddress;
-            const takerAssetAddressRight = makerAssetAddressLeft;
-            // Left Maker
-            expectedNewERC20BalancesByOwner[makerAddressLeft][makerAssetAddressLeft] = expectedNewERC20BalancesByOwner[
-                makerAddressLeft
-            ][makerAssetAddressLeft].minus(expectedTransferAmounts.amountSoldByLeftMaker);
-            // Right Maker
-            expectedNewERC20BalancesByOwner[makerAddressRight][
-                takerAssetAddressRight
-            ] = expectedNewERC20BalancesByOwner[makerAddressRight][takerAssetAddressRight].add(
-                expectedTransferAmounts.amountReceivedByRightMaker,
-            );
-            // Taker
-            expectedNewERC20BalancesByOwner[takerAddress][makerAssetAddressLeft] = expectedNewERC20BalancesByOwner[
-                takerAddress
-            ][makerAssetAddressLeft].add(expectedTransferAmounts.amountReceivedByTaker);
-        } else if (makerAssetProxyIdLeft === AssetProxyId.ERC721) {
-            // Decode asset data
-            const erc721ProxyData = assetProxyUtils.decodeERC721ProxyData(signedOrderLeft.makerAssetData);
-            const makerAssetAddressLeft = erc721ProxyData.tokenAddress;
-            const makerAssetIdLeft = erc721ProxyData.tokenId;
-            const takerAssetAddressRight = makerAssetAddressLeft;
-            const takerAssetIdRight = makerAssetIdLeft;
-            // Left Maker
-            _.remove(expectedNewERC721TokenIdsByOwner[makerAddressLeft][makerAssetAddressLeft], makerAssetIdLeft);
-            // Right Maker
-            expectedNewERC721TokenIdsByOwner[makerAddressRight][takerAssetAddressRight].push(takerAssetIdRight);
-            // Taker: Since there is only 1 asset transferred, the taker does not receive any of the left maker asset.
-        }
-        // Left Taker Asset (Right Maker Asset)
-        // Note: This exchange is only between the order makers: the Taker does not receive any of the left taker asset.
-        const takerAssetProxyIdLeft = assetProxyUtils.decodeProxyDataId(signedOrderLeft.takerAssetData);
-        if (takerAssetProxyIdLeft === AssetProxyId.ERC20) {
-            // Decode asset data
-            const erc20ProxyData = assetProxyUtils.decodeERC20ProxyData(signedOrderLeft.takerAssetData);
-            const takerAssetAddressLeft = erc20ProxyData.tokenAddress;
-            const makerAssetAddressRight = takerAssetAddressLeft;
-            // Left Maker
-            expectedNewERC20BalancesByOwner[makerAddressLeft][takerAssetAddressLeft] = expectedNewERC20BalancesByOwner[
-                makerAddressLeft
-            ][takerAssetAddressLeft].add(expectedTransferAmounts.amountReceivedByLeftMaker);
-            // Right Maker
-            expectedNewERC20BalancesByOwner[makerAddressRight][
-                makerAssetAddressRight
-            ] = expectedNewERC20BalancesByOwner[makerAddressRight][makerAssetAddressRight].minus(
-                expectedTransferAmounts.amountSoldByRightMaker,
-            );
-        } else if (takerAssetProxyIdLeft === AssetProxyId.ERC721) {
-            // Decode asset data
-            const erc721ProxyData = assetProxyUtils.decodeERC721ProxyData(signedOrderRight.makerAssetData);
-            const makerAssetAddressRight = erc721ProxyData.tokenAddress;
-            const makerAssetIdRight = erc721ProxyData.tokenId;
-            const takerAssetAddressLeft = makerAssetAddressRight;
-            const takerAssetIdLeft = makerAssetIdRight;
-            // Right Maker
-            _.remove(expectedNewERC721TokenIdsByOwner[makerAddressRight][makerAssetAddressRight], makerAssetIdRight);
-            // Left Maker
-            expectedNewERC721TokenIdsByOwner[makerAddressLeft][takerAssetAddressLeft].push(takerAssetIdLeft);
-        }
-        // Left Maker Fees
-        expectedNewERC20BalancesByOwner[makerAddressLeft][feeTokenAddress] = expectedNewERC20BalancesByOwner[
-            makerAddressLeft
-        ][feeTokenAddress].minus(expectedTransferAmounts.feePaidByLeftMaker);
-        // Right Maker Fees
-        expectedNewERC20BalancesByOwner[makerAddressRight][feeTokenAddress] = expectedNewERC20BalancesByOwner[
-            makerAddressRight
-        ][feeTokenAddress].minus(expectedTransferAmounts.feePaidByRightMaker);
-        // Taker Fees
-        expectedNewERC20BalancesByOwner[takerAddress][feeTokenAddress] = expectedNewERC20BalancesByOwner[takerAddress][
-            feeTokenAddress
-        ].minus(expectedTransferAmounts.totalFeePaidByTaker);
-        // Left Fee Recipient Fees
-        expectedNewERC20BalancesByOwner[feeRecipientAddressLeft][feeTokenAddress] = expectedNewERC20BalancesByOwner[
-            feeRecipientAddressLeft
-        ][feeTokenAddress].add(expectedTransferAmounts.feeReceivedLeft);
-        // Right Fee Recipient Fees
-        expectedNewERC20BalancesByOwner[feeRecipientAddressRight][feeTokenAddress] = expectedNewERC20BalancesByOwner[
-            feeRecipientAddressRight
-        ][feeTokenAddress].add(expectedTransferAmounts.feeReceivedRight);
-
-        return [expectedNewERC20BalancesByOwner, expectedNewERC721TokenIdsByOwner];
-    }
     /// @dev Compares a pair of ERC20 balances and a pair of ERC721 token owners.
     /// @param expectedNewERC20BalancesByOwner Expected ERC20 balances.
     /// @param realERC20BalancesByOwner Actual ERC20 balances.
@@ -194,16 +82,22 @@ export class MatchOrderTester {
     /// @param exchangeWrapper Used to call to the Exchange.
     /// @param erc20Wrapper Used to fetch ERC20 balances.
     /// @param erc721Wrapper Used to fetch ERC721 token owners.
-    constructor(exchangeWrapper: ExchangeWrapper, erc20Wrapper: ERC20Wrapper, erc721Wrapper: ERC721Wrapper) {
+    /// @param feeTokenAddress Address of ERC20 fee token.
+    constructor(
+        exchangeWrapper: ExchangeWrapper,
+        erc20Wrapper: ERC20Wrapper,
+        erc721Wrapper: ERC721Wrapper,
+        feeTokenAddress: string,
+    ) {
         this._exchangeWrapper = exchangeWrapper;
         this._erc20Wrapper = erc20Wrapper;
         this._erc721Wrapper = erc721Wrapper;
+        this._feeTokenAddress = feeTokenAddress;
     }
     /// @dev Matches two complementary orders and validates results.
     ///      Validation either succeeds or throws.
     /// @param signedOrderLeft First matched order.
     /// @param signedOrderRight Second matched order.
-    /// @param feeTokenAddress Address of ERC20 fee token.
     /// @param takerAddress Address of taker (the address who matched the two orders)
     /// @param erc20BalancesByOwner Current ERC20 balances.
     /// @param erc721TokenIdsByOwner Current ERC721 token owners.
@@ -213,7 +107,6 @@ export class MatchOrderTester {
     public async matchOrdersAndVerifyBalancesAsync(
         signedOrderLeft: SignedOrder,
         signedOrderRight: SignedOrder,
-        feeTokenAddress: string,
         takerAddress: string,
         erc20BalancesByOwner: ERC20BalancesByOwner,
         erc721TokenIdsByOwner: ERC721TokenIdsByOwner,
@@ -254,10 +147,9 @@ export class MatchOrderTester {
         );
         let expectedERC20BalancesByOwner: ERC20BalancesByOwner;
         let expectedERC721TokenIdsByOwner: ERC721TokenIdsByOwner;
-        [expectedERC20BalancesByOwner, expectedERC721TokenIdsByOwner] = MatchOrderTester._calculateExpectedBalances(
+        [expectedERC20BalancesByOwner, expectedERC721TokenIdsByOwner] = this._calculateExpectedBalances(
             signedOrderLeft,
             signedOrderRight,
-            feeTokenAddress,
             takerAddress,
             erc20BalancesByOwner,
             erc721TokenIdsByOwner,
@@ -342,5 +234,120 @@ export class MatchOrderTester {
             feeReceivedRight,
         };
         return expectedTransferAmounts;
+    }
+    /// @dev Calculates the expected balances of order makers, fee recipients, and the taker,
+    ///      as a result of matching two orders.
+    /// @param signedOrderLeft First matched order.
+    /// @param signedOrderRight Second matched order.
+    /// @param takerAddress Address of taker (the address who matched the two orders)
+    /// @param erc20BalancesByOwner Current ERC20 balances.
+    /// @param erc721TokenIdsByOwner Current ERC721 token owners.
+    /// @param expectedTransferAmounts A struct containing the expected transfer amounts.
+    /// @return Expected ERC20 balances & ERC721 token owners after orders have been matched.
+    private _calculateExpectedBalances(
+        signedOrderLeft: SignedOrder,
+        signedOrderRight: SignedOrder,
+        takerAddress: string,
+        erc20BalancesByOwner: ERC20BalancesByOwner,
+        erc721TokenIdsByOwner: ERC721TokenIdsByOwner,
+        expectedTransferAmounts: TransferAmounts,
+    ): [ERC20BalancesByOwner, ERC721TokenIdsByOwner] {
+        const makerAddressLeft = signedOrderLeft.makerAddress;
+        const makerAddressRight = signedOrderRight.makerAddress;
+        const feeRecipientAddressLeft = signedOrderLeft.feeRecipientAddress;
+        const feeRecipientAddressRight = signedOrderRight.feeRecipientAddress;
+        // Operations are performed on copies of the balances
+        const expectedNewERC20BalancesByOwner = _.cloneDeep(erc20BalancesByOwner);
+        const expectedNewERC721TokenIdsByOwner = _.cloneDeep(erc721TokenIdsByOwner);
+        // Left Maker Asset (Right Taker Asset)
+        const makerAssetProxyIdLeft = assetProxyUtils.decodeProxyDataId(signedOrderLeft.makerAssetData);
+        if (makerAssetProxyIdLeft === AssetProxyId.ERC20) {
+            // Decode asset data
+            const erc20ProxyData = assetProxyUtils.decodeERC20ProxyData(signedOrderLeft.makerAssetData);
+            const makerAssetAddressLeft = erc20ProxyData.tokenAddress;
+            const takerAssetAddressRight = makerAssetAddressLeft;
+            // Left Maker
+            expectedNewERC20BalancesByOwner[makerAddressLeft][makerAssetAddressLeft] = expectedNewERC20BalancesByOwner[
+                makerAddressLeft
+            ][makerAssetAddressLeft].minus(expectedTransferAmounts.amountSoldByLeftMaker);
+            // Right Maker
+            expectedNewERC20BalancesByOwner[makerAddressRight][
+                takerAssetAddressRight
+            ] = expectedNewERC20BalancesByOwner[makerAddressRight][takerAssetAddressRight].add(
+                expectedTransferAmounts.amountReceivedByRightMaker,
+            );
+            // Taker
+            expectedNewERC20BalancesByOwner[takerAddress][makerAssetAddressLeft] = expectedNewERC20BalancesByOwner[
+                takerAddress
+            ][makerAssetAddressLeft].add(expectedTransferAmounts.amountReceivedByTaker);
+        } else if (makerAssetProxyIdLeft === AssetProxyId.ERC721) {
+            // Decode asset data
+            const erc721ProxyData = assetProxyUtils.decodeERC721ProxyData(signedOrderLeft.makerAssetData);
+            const makerAssetAddressLeft = erc721ProxyData.tokenAddress;
+            const makerAssetIdLeft = erc721ProxyData.tokenId;
+            const takerAssetAddressRight = makerAssetAddressLeft;
+            const takerAssetIdRight = makerAssetIdLeft;
+            // Left Maker
+            _.remove(expectedNewERC721TokenIdsByOwner[makerAddressLeft][makerAssetAddressLeft], makerAssetIdLeft);
+            // Right Maker
+            expectedNewERC721TokenIdsByOwner[makerAddressRight][takerAssetAddressRight].push(takerAssetIdRight);
+            // Taker: Since there is only 1 asset transferred, the taker does not receive any of the left maker asset.
+        }
+        // Left Taker Asset (Right Maker Asset)
+        // Note: This exchange is only between the order makers: the Taker does not receive any of the left taker asset.
+        const takerAssetProxyIdLeft = assetProxyUtils.decodeProxyDataId(signedOrderLeft.takerAssetData);
+        if (takerAssetProxyIdLeft === AssetProxyId.ERC20) {
+            // Decode asset data
+            const erc20ProxyData = assetProxyUtils.decodeERC20ProxyData(signedOrderLeft.takerAssetData);
+            const takerAssetAddressLeft = erc20ProxyData.tokenAddress;
+            const makerAssetAddressRight = takerAssetAddressLeft;
+            // Left Maker
+            expectedNewERC20BalancesByOwner[makerAddressLeft][takerAssetAddressLeft] = expectedNewERC20BalancesByOwner[
+                makerAddressLeft
+            ][takerAssetAddressLeft].add(expectedTransferAmounts.amountReceivedByLeftMaker);
+            // Right Maker
+            expectedNewERC20BalancesByOwner[makerAddressRight][
+                makerAssetAddressRight
+            ] = expectedNewERC20BalancesByOwner[makerAddressRight][makerAssetAddressRight].minus(
+                expectedTransferAmounts.amountSoldByRightMaker,
+            );
+        } else if (takerAssetProxyIdLeft === AssetProxyId.ERC721) {
+            // Decode asset data
+            const erc721ProxyData = assetProxyUtils.decodeERC721ProxyData(signedOrderRight.makerAssetData);
+            const makerAssetAddressRight = erc721ProxyData.tokenAddress;
+            const makerAssetIdRight = erc721ProxyData.tokenId;
+            const takerAssetAddressLeft = makerAssetAddressRight;
+            const takerAssetIdLeft = makerAssetIdRight;
+            // Right Maker
+            _.remove(expectedNewERC721TokenIdsByOwner[makerAddressRight][makerAssetAddressRight], makerAssetIdRight);
+            // Left Maker
+            expectedNewERC721TokenIdsByOwner[makerAddressLeft][takerAssetAddressLeft].push(takerAssetIdLeft);
+        }
+        // Left Maker Fees
+        expectedNewERC20BalancesByOwner[makerAddressLeft][this._feeTokenAddress] = expectedNewERC20BalancesByOwner[
+            makerAddressLeft
+        ][this._feeTokenAddress].minus(expectedTransferAmounts.feePaidByLeftMaker);
+        // Right Maker Fees
+        expectedNewERC20BalancesByOwner[makerAddressRight][this._feeTokenAddress] = expectedNewERC20BalancesByOwner[
+            makerAddressRight
+        ][this._feeTokenAddress].minus(expectedTransferAmounts.feePaidByRightMaker);
+        // Taker Fees
+        expectedNewERC20BalancesByOwner[takerAddress][this._feeTokenAddress] = expectedNewERC20BalancesByOwner[
+            takerAddress
+        ][this._feeTokenAddress].minus(expectedTransferAmounts.totalFeePaidByTaker);
+        // Left Fee Recipient Fees
+        expectedNewERC20BalancesByOwner[feeRecipientAddressLeft][
+            this._feeTokenAddress
+        ] = expectedNewERC20BalancesByOwner[feeRecipientAddressLeft][this._feeTokenAddress].add(
+            expectedTransferAmounts.feeReceivedLeft,
+        );
+        // Right Fee Recipient Fees
+        expectedNewERC20BalancesByOwner[feeRecipientAddressRight][
+            this._feeTokenAddress
+        ] = expectedNewERC20BalancesByOwner[feeRecipientAddressRight][this._feeTokenAddress].add(
+            expectedTransferAmounts.feeReceivedRight,
+        );
+
+        return [expectedNewERC20BalancesByOwner, expectedNewERC721TokenIdsByOwner];
     }
 }

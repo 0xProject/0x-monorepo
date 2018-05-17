@@ -139,7 +139,7 @@ describe('matchOrders', () => {
         const privateKeyRight = constants.TESTRPC_PRIVATE_KEYS[accounts.indexOf(makerAddressRight)];
         orderFactoryRight = new OrderFactory(privateKeyRight, defaultOrderParams);
         // Set match order tester
-        matchOrderTester = new MatchOrderTester(exchangeWrapper, erc20Wrapper, erc721Wrapper);
+        matchOrderTester = new MatchOrderTester(exchangeWrapper, erc20Wrapper, erc721Wrapper, zrxToken.address);
     });
     beforeEach(async () => {
         await blockchainLifecycle.startAsync();
@@ -175,7 +175,6 @@ describe('matchOrders', () => {
             await matchOrderTester.matchOrdersAndVerifyBalancesAsync(
                 signedOrderLeft,
                 signedOrderRight,
-                zrxToken.address,
                 takerAddress,
                 erc20BalancesByOwner,
                 erc721TokenIdsByOwner,
@@ -217,7 +216,6 @@ describe('matchOrders', () => {
             ] = await matchOrderTester.matchOrdersAndVerifyBalancesAsync(
                 signedOrderLeft,
                 signedOrderRight,
-                zrxToken.address,
                 takerAddress,
                 erc20BalancesByOwner,
                 erc721TokenIdsByOwner,
@@ -256,7 +254,6 @@ describe('matchOrders', () => {
             await matchOrderTester.matchOrdersAndVerifyBalancesAsync(
                 signedOrderLeft,
                 signedOrderRight,
-                zrxToken.address,
                 takerAddress,
                 erc20BalancesByOwner,
                 erc721TokenIdsByOwner,
@@ -291,7 +288,6 @@ describe('matchOrders', () => {
             await matchOrderTester.matchOrdersAndVerifyBalancesAsync(
                 signedOrderLeft,
                 signedOrderRight,
-                zrxToken.address,
                 takerAddress,
                 erc20BalancesByOwner,
                 erc721TokenIdsByOwner,
@@ -331,7 +327,6 @@ describe('matchOrders', () => {
             ] = await matchOrderTester.matchOrdersAndVerifyBalancesAsync(
                 signedOrderLeft,
                 signedOrderRight,
-                zrxToken.address,
                 takerAddress,
                 erc20BalancesByOwner,
                 erc721TokenIdsByOwner,
@@ -360,7 +355,6 @@ describe('matchOrders', () => {
             await matchOrderTester.matchOrdersAndVerifyBalancesAsync(
                 signedOrderLeft,
                 signedOrderRight2,
-                zrxToken.address,
                 takerAddress,
                 newERC20BalancesByOwner,
                 erc721TokenIdsByOwner,
@@ -403,7 +397,6 @@ describe('matchOrders', () => {
             ] = await matchOrderTester.matchOrdersAndVerifyBalancesAsync(
                 signedOrderLeft,
                 signedOrderRight,
-                zrxToken.address,
                 takerAddress,
                 erc20BalancesByOwner,
                 erc721TokenIdsByOwner,
@@ -435,7 +428,6 @@ describe('matchOrders', () => {
             await matchOrderTester.matchOrdersAndVerifyBalancesAsync(
                 signedOrderLeft2,
                 signedOrderRight,
-                zrxToken.address,
                 takerAddress,
                 newERC20BalancesByOwner,
                 erc721TokenIdsByOwner,
@@ -472,7 +464,6 @@ describe('matchOrders', () => {
             await matchOrderTester.matchOrdersAndVerifyBalancesAsync(
                 signedOrderLeft,
                 signedOrderRight,
-                zrxToken.address,
                 takerAddress,
                 erc20BalancesByOwner,
                 erc721TokenIdsByOwner,
@@ -502,7 +493,6 @@ describe('matchOrders', () => {
             await matchOrderTester.matchOrdersAndVerifyBalancesAsync(
                 signedOrderLeft,
                 signedOrderRight,
-                zrxToken.address,
                 takerAddress,
                 erc20BalancesByOwner,
                 erc721TokenIdsByOwner,
@@ -532,7 +522,6 @@ describe('matchOrders', () => {
             await matchOrderTester.matchOrdersAndVerifyBalancesAsync(
                 signedOrderLeft,
                 signedOrderRight,
-                zrxToken.address,
                 takerAddress,
                 erc20BalancesByOwner,
                 erc721TokenIdsByOwner,
@@ -562,7 +551,6 @@ describe('matchOrders', () => {
             await matchOrderTester.matchOrdersAndVerifyBalancesAsync(
                 signedOrderLeft,
                 signedOrderRight,
-                zrxToken.address,
                 takerAddress,
                 erc20BalancesByOwner,
                 erc721TokenIdsByOwner,
@@ -592,7 +580,6 @@ describe('matchOrders', () => {
             await matchOrderTester.matchOrdersAndVerifyBalancesAsync(
                 signedOrderLeft,
                 signedOrderRight,
-                zrxToken.address,
                 takerAddress,
                 erc20BalancesByOwner,
                 erc721TokenIdsByOwner,
@@ -621,7 +608,6 @@ describe('matchOrders', () => {
             await matchOrderTester.matchOrdersAndVerifyBalancesAsync(
                 signedOrderLeft,
                 signedOrderRight,
-                zrxToken.address,
                 takerAddress,
                 erc20BalancesByOwner,
                 erc721TokenIdsByOwner,
@@ -703,7 +689,6 @@ describe('matchOrders', () => {
                 matchOrderTester.matchOrdersAndVerifyBalancesAsync(
                     signedOrderLeft,
                     signedOrderRight,
-                    zrxToken.address,
                     takerAddress,
                     erc20BalancesByOwner,
                     erc721TokenIdsByOwner,
@@ -734,7 +719,6 @@ describe('matchOrders', () => {
                 matchOrderTester.matchOrdersAndVerifyBalancesAsync(
                     signedOrderLeft,
                     signedOrderRight,
-                    zrxToken.address,
                     takerAddress,
                     erc20BalancesByOwner,
                     erc721TokenIdsByOwner,
@@ -765,7 +749,6 @@ describe('matchOrders', () => {
                 matchOrderTester.matchOrdersAndVerifyBalancesAsync(
                     signedOrderLeft,
                     signedOrderRight,
-                    zrxToken.address,
                     takerAddress,
                     erc20BalancesByOwner,
                     erc721TokenIdsByOwner,
@@ -796,7 +779,6 @@ describe('matchOrders', () => {
             await matchOrderTester.matchOrdersAndVerifyBalancesAsync(
                 signedOrderLeft,
                 signedOrderRight,
-                zrxToken.address,
                 takerAddress,
                 erc20BalancesByOwner,
                 erc721TokenIdsByOwner,
@@ -832,7 +814,6 @@ describe('matchOrders', () => {
             await matchOrderTester.matchOrdersAndVerifyBalancesAsync(
                 signedOrderLeft,
                 signedOrderRight,
-                zrxToken.address,
                 takerAddress,
                 erc20BalancesByOwner,
                 erc721TokenIdsByOwner,
