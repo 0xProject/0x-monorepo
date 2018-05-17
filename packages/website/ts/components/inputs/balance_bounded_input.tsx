@@ -160,7 +160,7 @@ export class BalanceBoundedInput extends React.Component<BalanceBoundedInputProp
         this.props.onErrorMsgChange(errorMsg);
         this.setState({
             amountString: amount,
-            errMsg: this._validate(amount, balance),
+            errMsg: errorMsg,
         }, callback);
     }
 }
