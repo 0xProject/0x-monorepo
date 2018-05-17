@@ -23,8 +23,8 @@ export class AbiDecoder {
             formatted = formatted.slice(2);
         }
 
-        const desiredLength = 40;
-        formatted = _.padStart(formatted, desiredLength, '0');
+        const addressLength = 40;
+        formatted = _.padStart(formatted, addressLength, '0');
         return `0x${formatted}`;
     }
     constructor(abiArrays: AbiDefinition[][]) {
