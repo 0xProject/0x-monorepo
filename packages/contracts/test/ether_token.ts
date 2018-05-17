@@ -24,6 +24,12 @@ describe('EtherToken', () => {
     let zeroEx: ZeroEx;
     let etherTokenAddress: string;
     before(async () => {
+        await blockchainLifecycle.startAsync();
+    });
+    after(async () => {
+        await blockchainLifecycle.revertAsync();
+    });
+    before(async () => {
         const accounts = await web3Wrapper.getAvailableAddressesAsync();
         account = accounts[0];
 
@@ -114,7 +120,6 @@ describe('EtherToken', () => {
                 value: ethToDeposit,
                 gasPrice,
             });
-
             const receipt = await zeroEx.awaitTransactionMinedAsync(txHash);
 
             const ethSpentOnGas = gasPrice.times(receipt.gasUsed);

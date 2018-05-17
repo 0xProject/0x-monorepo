@@ -11,9 +11,9 @@ import { artifacts } from '../util/artifacts';
 import { constants } from '../util/constants';
 import { ContractName } from '../util/types';
 
+import { expectRevertOrAlwaysFailingTransaction } from './utils/assertions';
 import { chaiSetup } from './utils/chai_setup';
 import { provider, txDefaults, web3Wrapper } from './utils/web3_wrapper';
-import { expectRevertOrAlwaysFailingTransaction } from './utils/assertions';
 
 chaiSetup.configure();
 const expect = chai.expect;
@@ -32,6 +32,12 @@ describe('UnlimitedAllowanceToken', () => {
     let token: DummyTokenContract;
 
     before(async () => {
+        await blockchainLifecycle.startAsync();
+    });
+    after(async () => {
+        await blockchainLifecycle.revertAsync();
+    });
+    before(async () => {
         const accounts = await web3Wrapper.getAvailableAddressesAsync();
         owner = accounts[0];
         spender = accounts[1];
@@ -44,7 +50,10 @@ describe('UnlimitedAllowanceToken', () => {
             constants.DUMMY_TOKEN_DECIMALS,
             constants.DUMMY_TOKEN_TOTAL_SUPPLY,
         );
-        await token.mint.sendTransactionAsync(MAX_MINT_VALUE, { from: owner });
+        await web3Wrapper.awaitTransactionMinedAsync(
+            await token.mint.sendTransactionAsync(MAX_MINT_VALUE, { from: owner }),
+            constants.TEST_AWAIT_TRANSACTION_MS,
+        );
         tokenAddress = token.address;
     });
     beforeEach(async () => {

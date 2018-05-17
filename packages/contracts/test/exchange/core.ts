@@ -4,6 +4,7 @@ import { BigNumber } from '@0xproject/utils';
 import { Web3Wrapper } from '@0xproject/web3-wrapper';
 import * as chai from 'chai';
 import ethUtil = require('ethereumjs-util');
+import * as _ from 'lodash';
 import 'make-promises-safe';
 import * as Web3 from 'web3';
 
@@ -54,13 +55,12 @@ describe('Exchange', () => {
 
     let zeroEx: ZeroEx;
 
-    // TODO(albrow): Properly manage blockchainLifecycle everywhere.
-    // before(async () => {
-    //     await blockchainLifecycle.startAsync();
-    // });
-    // after(async () => {
-    //     await blockchainLifecycle.revertAsync();
-    // });
+    before(async () => {
+        await blockchainLifecycle.startAsync();
+    });
+    after(async () => {
+        await blockchainLifecycle.revertAsync();
+    });
     before(async () => {
         const accounts = await web3Wrapper.getAvailableAddressesAsync();
         maker = accounts[0];
@@ -106,13 +106,17 @@ describe('Exchange', () => {
             zrx.address,
             tokenTransferProxy.address,
         );
-        await tokenTransferProxy.addAuthorizedAddress.sendTransactionAsync(exchange.address, { from: accounts[0] });
+        await web3Wrapper.awaitTransactionMinedAsync(
+            await tokenTransferProxy.addAuthorizedAddress.sendTransactionAsync(exchange.address, {
+                from: accounts[0],
+            }),
+            constants.TEST_AWAIT_TRANSACTION_MS,
+        );
         zeroEx = new ZeroEx(provider, {
             exchangeContractAddress: exchange.address,
             networkId: constants.TESTRPC_NETWORK_ID,
         });
         exWrapper = new ExchangeWrapper(exchange, zeroEx);
-
         const defaultOrderParams = {
             exchangeContractAddress: exchange.address,
             maker,
@@ -126,7 +130,7 @@ describe('Exchange', () => {
         };
         orderFactory = new OrderFactory(zeroEx, defaultOrderParams);
         dmyBalances = new Balances([rep, dgd, zrx], [maker, taker, feeRecipient]);
-        await Promise.all([
+        const transactions = await Promise.all([
             rep.approve.sendTransactionAsync(tokenTransferProxy.address, INITIAL_ALLOWANCE, {
                 from: maker,
             }),
@@ -152,6 +156,11 @@ describe('Exchange', () => {
             zrx.setBalance.sendTransactionAsync(maker, INITIAL_BALANCE, { from: tokenOwner }),
             zrx.setBalance.sendTransactionAsync(taker, INITIAL_BALANCE, { from: tokenOwner }),
         ]);
+        await Promise.all(
+            _.map(transactions, async txHash => {
+                await web3Wrapper.awaitTransactionMinedAsync(txHash, constants.TEST_AWAIT_TRANSACTION_MS);
+            }),
+        );
     });
     beforeEach(async () => {
         await blockchainLifecycle.startAsync();
@@ -620,11 +629,19 @@ describe('Exchange', () => {
 
         it('should not change balances if maker allowances are too low to fill order and \
                 shouldThrowOnInsufficientBalanceOrAllowance = false', async () => {
-            await rep.approve.sendTransactionAsync(tokenTransferProxy.address, new BigNumber(0), { from: maker });
+            await web3Wrapper.awaitTransactionMinedAsync(
+                await rep.approve.sendTransactionAsync(tokenTransferProxy.address, new BigNumber(0), {
+                    from: maker,
+                }),
+                constants.TEST_AWAIT_TRANSACTION_MS,
+            );
             await exWrapper.fillOrderAsync(signedOrder, taker);
-            await rep.approve.sendTransactionAsync(tokenTransferProxy.address, INITIAL_ALLOWANCE, {
-                from: maker,
-            });
+            await web3Wrapper.awaitTransactionMinedAsync(
+                await rep.approve.sendTransactionAsync(tokenTransferProxy.address, INITIAL_ALLOWANCE, {
+                    from: maker,
+                }),
+                constants.TEST_AWAIT_TRANSACTION_MS,
+            );
 
             const newBalances = await dmyBalances.getAsync();
             expect(newBalances).to.be.deep.equal(balances);
@@ -632,24 +649,36 @@ describe('Exchange', () => {
 
         it('should throw if maker allowances are too low to fill order and \
                 shouldThrowOnInsufficientBalanceOrAllowance = true', async () => {
-            await rep.approve.sendTransactionAsync(tokenTransferProxy.address, new BigNumber(0), { from: maker });
+            await web3Wrapper.awaitTransactionMinedAsync(
+                await rep.approve.sendTransactionAsync(tokenTransferProxy.address, new BigNumber(0), { from: maker }),
+                constants.TEST_AWAIT_TRANSACTION_MS,
+            );
             await expectRevertOrAlwaysFailingTransaction(
                 exWrapper.fillOrderAsync(signedOrder, taker, {
                     shouldThrowOnInsufficientBalanceOrAllowance: true,
                 }),
             );
-            await rep.approve.sendTransactionAsync(tokenTransferProxy.address, INITIAL_ALLOWANCE, {
-                from: maker,
-            });
+            await web3Wrapper.awaitTransactionMinedAsync(
+                await rep.approve.sendTransactionAsync(tokenTransferProxy.address, INITIAL_ALLOWANCE, {
+                    from: maker,
+                }),
+                constants.TEST_AWAIT_TRANSACTION_MS,
+            );
         });
 
         it('should not change balances if taker allowances are too low to fill order and \
                 shouldThrowOnInsufficientBalanceOrAllowance = false', async () => {
-            await dgd.approve.sendTransactionAsync(tokenTransferProxy.address, new BigNumber(0), { from: taker });
+            await web3Wrapper.awaitTransactionMinedAsync(
+                await dgd.approve.sendTransactionAsync(tokenTransferProxy.address, new BigNumber(0), { from: taker }),
+                constants.TEST_AWAIT_TRANSACTION_MS,
+            );
             await exWrapper.fillOrderAsync(signedOrder, taker);
-            await dgd.approve.sendTransactionAsync(tokenTransferProxy.address, INITIAL_ALLOWANCE, {
-                from: taker,
-            });
+            await web3Wrapper.awaitTransactionMinedAsync(
+                await dgd.approve.sendTransactionAsync(tokenTransferProxy.address, INITIAL_ALLOWANCE, {
+                    from: taker,
+                }),
+                constants.TEST_AWAIT_TRANSACTION_MS,
+            );
 
             const newBalances = await dmyBalances.getAsync();
             expect(newBalances).to.be.deep.equal(balances);
@@ -657,15 +686,21 @@ describe('Exchange', () => {
 
         it('should throw if taker allowances are too low to fill order and \
                 shouldThrowOnInsufficientBalanceOrAllowance = true', async () => {
-            await dgd.approve.sendTransactionAsync(tokenTransferProxy.address, new BigNumber(0), { from: taker });
+            await web3Wrapper.awaitTransactionMinedAsync(
+                await dgd.approve.sendTransactionAsync(tokenTransferProxy.address, new BigNumber(0), { from: taker }),
+                constants.TEST_AWAIT_TRANSACTION_MS,
+            );
             await expectRevertOrAlwaysFailingTransaction(
                 exWrapper.fillOrderAsync(signedOrder, taker, {
                     shouldThrowOnInsufficientBalanceOrAllowance: true,
                 }),
             );
-            await dgd.approve.sendTransactionAsync(tokenTransferProxy.address, INITIAL_ALLOWANCE, {
-                from: taker,
-            });
+            await web3Wrapper.awaitTransactionMinedAsync(
+                await dgd.approve.sendTransactionAsync(tokenTransferProxy.address, INITIAL_ALLOWANCE, {
+                    from: taker,
+                }),
+                constants.TEST_AWAIT_TRANSACTION_MS,
+            );
         });
 
         it('should not change balances if makerTokenAddress is ZRX, makerTokenAmount + makerFee > maker balance, \
@@ -727,9 +762,12 @@ describe('Exchange', () => {
                 provider,
                 txDefaults,
             );
-            await maliciousToken.approve.sendTransactionAsync(tokenTransferProxy.address, INITIAL_ALLOWANCE, {
-                from: taker,
-            });
+            await web3Wrapper.awaitTransactionMinedAsync(
+                await maliciousToken.approve.sendTransactionAsync(tokenTransferProxy.address, INITIAL_ALLOWANCE, {
+                    from: taker,
+                }),
+                constants.TEST_AWAIT_TRANSACTION_MS,
+            );
 
             signedOrder = await orderFactory.newSignedOrderAsync({
                 takerTokenAddress: maliciousToken.address,

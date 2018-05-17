@@ -16,8 +16,8 @@ import { ContractName, SubmissionContractEventArgs } from '../util/types';
 
 import { chaiSetup } from './utils/chai_setup';
 
-import { provider, txDefaults, web3Wrapper } from './utils/web3_wrapper';
 import { expectRevertOrAlwaysFailingTransaction } from './utils/assertions';
+import { provider, txDefaults, web3Wrapper } from './utils/web3_wrapper';
 
 const MULTI_SIG_ABI = artifacts.MultiSigWalletWithTimeLock.compilerOutput.abi;
 chaiSetup.configure();
@@ -48,6 +48,12 @@ describe('MultiSigWalletWithTimeLock', () => {
 
     describe('changeTimeLock', () => {
         describe('initially non-time-locked', async () => {
+            before(async () => {
+                await blockchainLifecycle.startAsync();
+            });
+            after(async () => {
+                await blockchainLifecycle.revertAsync();
+            });
             before('deploy a wallet', async () => {
                 multiSig = await MultiSigWalletWithTimeLockContract.deployFrom0xArtifactAsync(
                     artifacts.MultiSigWalletWithTimeLock,
@@ -143,6 +149,12 @@ describe('MultiSigWalletWithTimeLock', () => {
             });
         });
         describe('initially time-locked', async () => {
+            before(async () => {
+                await blockchainLifecycle.startAsync();
+            });
+            after(async () => {
+                await blockchainLifecycle.revertAsync();
+            });
             before('deploy a wallet', async () => {
                 multiSig = await MultiSigWalletWithTimeLockContract.deployFrom0xArtifactAsync(
                     artifacts.MultiSigWalletWithTimeLock,
@@ -185,7 +197,10 @@ describe('MultiSigWalletWithTimeLock', () => {
             // TODO(albrow): Implement the increaseTimeAsync method in Geth.
             it.skip('should execute if it has enough confirmations and is past the time lock', async () => {
                 await web3Wrapper.increaseTimeAsync(SECONDS_TIME_LOCKED.toNumber());
-                await multiSig.executeTransaction.sendTransactionAsync(txId, { from: owners[0] });
+                await web3Wrapper.awaitTransactionMinedAsync(
+                    await multiSig.executeTransaction.sendTransactionAsync(txId, { from: owners[0] }),
+                    constants.TEST_AWAIT_TRANSACTION_MS,
+                );
 
                 const secondsTimeLocked = new BigNumber(await multiSig.secondsTimeLocked.callAsync());
                 expect(secondsTimeLocked).to.be.bignumber.equal(newSecondsTimeLocked);
