@@ -107,7 +107,7 @@ contract MixinExchangeCore is
         );
         if (status != uint8(Status.SUCCESS)) {
             emit ExchangeStatus(uint8(status), orderInfo.orderHash);
-            return fillResults;
+            return getNullFillResults();
         }
 
         // Settle order
