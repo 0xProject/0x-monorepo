@@ -11,7 +11,7 @@
   limitations under the License.
 */
 
-pragma solidity ^0.4.23;
+pragma solidity ^0.4.24;
 pragma experimental ABIEncoderV2;
 
 import "./mixins/MExchangeCore.sol";

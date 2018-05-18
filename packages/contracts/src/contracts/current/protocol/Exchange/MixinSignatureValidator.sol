@@ -16,7 +16,7 @@
 
 */
 
-pragma solidity ^0.4.23;
+pragma solidity ^0.4.24;
 
 import "./mixins/MSignatureValidator.sol";
 import "./interfaces/ISigner.sol";
