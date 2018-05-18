@@ -39,7 +39,7 @@ contract MixinMatchOrders is
     MTransactions
 {
 
-    /// @dev Match two complementary orders that have a positive spread.
+    /// @dev Match two complementary orders that have a profitable spread.
     ///      Each order is filled at their respective price point. However, the calculations are
     ///      carried out as though the orders are both being filled at the right order's price point.
     ///      The profit made by the left order goes to the taker (who matched the two orders).
@@ -52,8 +52,8 @@ contract MixinMatchOrders is
     function matchOrders(
         Order memory leftOrder,
         Order memory rightOrder,
-        bytes leftSignature,
-        bytes rightSignature
+        bytes memory leftSignature,
+        bytes memory rightSignature
     )
         public
         returns (MatchedFillResults memory matchedFillResults)
@@ -135,19 +135,21 @@ contract MixinMatchOrders is
         internal
     {
         // The leftOrder maker asset must be the same as the rightOrder taker asset.
+        // TODO: Can we safely assume equality and expect a later failure otherwise?
         require(
             areBytesEqual(leftOrder.makerAssetData, rightOrder.takerAssetData),
             ASSET_MISMATCH_MAKER_TAKER
         );
 
         // The leftOrder taker asset must be the same as the rightOrder maker asset.
+        // TODO: Can we safely assume equality and expect a later failure otherwise?
         require(
             areBytesEqual(leftOrder.takerAssetData, rightOrder.makerAssetData),
             ASSET_MISMATCH_TAKER_MAKER
         );
 
-        // Make sure there is a positive spread.
-        // There is a positive spread iff the cost per unit bought (OrderA.MakerAmount/OrderA.TakerAmount) for each order is greater
+        // Make sure there is a profitable spread.
+        // There is a profitable spread iff the cost per unit bought (OrderA.MakerAmount/OrderA.TakerAmount) for each order is greater
         // than the profit per unit sold of the matched order (OrderB.TakerAmount/OrderB.MakerAmount).
         // This is satisfied by the equations below:
         // <leftOrder.makerAssetAmount> / <leftOrder.takerAssetAmount> >= <rightOrder.takerAssetAmount> / <rightOrder.makerAssetAmount>
@@ -163,22 +165,15 @@ contract MixinMatchOrders is
 
     /// @dev Validates matched fill results. Succeeds or throws.
     /// @param matchedFillResults Amounts to fill and fees to pay by maker and taker of matched orders.
-    function assertValidMatch(MatchedFillResults memory matchedFillResults)
+    function assertValidMatchResults(MatchedFillResults memory matchedFillResults)
         internal
     {
-        // The left order must spend at least as much as we're sending to the combined
-        // amounts being sent to the right order and taker
+        // If the amount transferred from the left order is different than what is transferred, it is a rounding error amount.
+        // Ensure this difference is negligible by dividing the values with each other. The result should equal to ~1.
         uint256 amountSpentByLeft = safeAdd(
             matchedFillResults.right.takerAssetFilledAmount,
             matchedFillResults.takerFillAmount
         );
-        require(
-            matchedFillResults.left.makerAssetFilledAmount >=
-            amountSpentByLeft,
-            MISCALCULATED_TRANSFER_AMOUNTS
-        );
-        // If the amount transferred from the left order is different than what is transferred, it is a rounding error amount.
-        // Ensure this difference is negligible by dividing the values with each other. The result should equal to ~1.
         require(
             !isRoundingError(
                 matchedFillResults.left.makerAssetFilledAmount,
@@ -188,12 +183,6 @@ contract MixinMatchOrders is
             ROUNDING_ERROR_TRANSFER_AMOUNTS
         );
 
-        // The right order must spend at least as much as we're transferring to the left order.
-        require(
-            matchedFillResults.right.makerAssetFilledAmount >=
-            matchedFillResults.left.takerAssetFilledAmount,
-            MISCALCULATED_TRANSFER_AMOUNTS
-        );
         // If the amount transferred from the right order is different than what is transferred, it is a rounding error amount.
         // Ensure this difference is negligible by dividing the values with each other. The result should equal to ~1.
         require(
@@ -300,7 +289,7 @@ contract MixinMatchOrders is
         );
 
         // Validate the fill results
-        assertValidMatch(matchedFillResults);
+        assertValidMatchResults(matchedFillResults);
 
         // Return fill results
         return matchedFillResults;

@@ -225,13 +225,13 @@ contract MixinExchangeCore is
         // Fill amount must be greater than 0
         if (takerAssetFillAmount == 0) {
             status = uint8(Status.TAKER_ASSET_FILL_AMOUNT_TOO_LOW);
-            return;
+            return (status, fillResults);
         }
 
         // Ensure the order is fillable
         if (orderStatus != uint8(Status.ORDER_FILLABLE)) {
             status = orderStatus;
-            return;
+            return (status, fillResults);
         }
 
         // Compute takerAssetFilledAmount

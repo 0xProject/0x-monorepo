@@ -38,7 +38,7 @@ contract MMatchOrders is
 
     /// @dev Validates matched fill results. Succeeds or throws.
     /// @param matchedFillResults Amounts to fill and fees to pay by maker and taker of matched orders.
-    function assertValidMatch(LibFillResults.MatchedFillResults memory matchedFillResults)
+    function assertValidMatchResults(LibFillResults.MatchedFillResults memory matchedFillResults)
         internal;
 
     /// @dev Calculates fill amounts for the matched orders.

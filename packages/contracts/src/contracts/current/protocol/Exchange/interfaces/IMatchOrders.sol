@@ -23,7 +23,7 @@ import "../libs/LibFillResults.sol";
 
 contract IMatchOrders {
 
-    /// @dev Match two complementary orders that have a positive spread.
+    /// @dev Match two complementary orders that have a profitable spread.
     ///      Each order is filled at their respective price point. However, the calculations are
     ///      carried out as though the orders are both being filled at the right order's price point.
     ///      The profit made by the left order goes to the taker (who matched the two orders).
@@ -36,8 +36,8 @@ contract IMatchOrders {
     function matchOrders(
         LibOrder.Order memory leftOrder,
         LibOrder.Order memory rightOrder,
-        bytes leftSignature,
-        bytes rightSignature
+        bytes memory leftSignature,
+        bytes memory rightSignature
     )
         public
         returns (LibFillResults.MatchedFillResults memory matchedFillResults);
