@@ -1,4 +1,4 @@
-import { colors, Styles } from '@0xproject/react-shared';
+import { Styles } from '@0xproject/react-shared';
 import * as _ from 'lodash';
 import CircularProgress from 'material-ui/CircularProgress';
 import FlatButton from 'material-ui/FlatButton';
@@ -6,11 +6,13 @@ import { GridList } from 'material-ui/GridList';
 import * as React from 'react';
 
 import { RelayerGridTile } from 'ts/components/relayer_index/relayer_grid_tile';
-import { WebsiteBackendRelayerInfo } from 'ts/types';
+import { ScreenWidths, WebsiteBackendRelayerInfo } from 'ts/types';
 import { backendClient } from 'ts/utils/backend_client';
+import { colors } from 'ts/utils/colors';
 
 export interface RelayerIndexProps {
     networkId: number;
+    screenWidth: ScreenWidths;
 }
 
 interface RelayerIndexState {
@@ -35,7 +37,9 @@ const styles: Styles = {
 };
 
 const CELL_HEIGHT = 290;
-const NUMBER_OF_COLUMNS = 4;
+const NUMBER_OF_COLUMNS_LARGE = 4;
+const NUMBER_OF_COLUMNS_MEDIUM = 3;
+const NUMBER_OF_COLUMNS_SMALL = 1;
 const GRID_PADDING = 20;
 
 export class RelayerIndex extends React.Component<RelayerIndexProps, RelayerIndexState> {
@@ -69,11 +73,12 @@ export class RelayerIndex extends React.Component<RelayerIndexProps, RelayerInde
                 </div>
             );
         } else {
+            const numberOfColumns = this._numberOfColumnsForScreenWidth(this.props.screenWidth);
             return (
                 <div style={styles.root}>
                     <GridList
                         cellHeight={CELL_HEIGHT}
-                        cols={NUMBER_OF_COLUMNS}
+                        cols={numberOfColumns}
                         padding={GRID_PADDING}
                         style={styles.gridList}
                     >
@@ -105,6 +110,17 @@ export class RelayerIndex extends React.Component<RelayerIndexProps, RelayerInde
                     error,
                 });
             }
+        }
+    }
+    private _numberOfColumnsForScreenWidth(screenWidth: ScreenWidths): number {
+        switch (screenWidth) {
+            case ScreenWidths.Md:
+                return NUMBER_OF_COLUMNS_MEDIUM;
+            case ScreenWidths.Sm:
+                return NUMBER_OF_COLUMNS_SMALL;
+            case ScreenWidths.Lg:
+            default:
+                return NUMBER_OF_COLUMNS_LARGE;
         }
     }
 }

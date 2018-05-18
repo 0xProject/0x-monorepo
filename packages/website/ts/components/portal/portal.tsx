@@ -13,7 +13,7 @@ import { EthWrappers } from 'ts/components/eth_wrappers';
 import { AssetPicker } from 'ts/components/generate_order/asset_picker';
 import { BackButton } from 'ts/components/portal/back_button';
 import { Loading } from 'ts/components/portal/loading';
-import { Menu } from 'ts/components/portal/menu';
+import { Menu, MenuTheme } from 'ts/components/portal/menu';
 import { Section } from 'ts/components/portal/section';
 import { TextHeader } from 'ts/components/portal/text_header';
 import { RelayerIndex } from 'ts/components/relayer_index/relayer_index';
@@ -89,6 +89,7 @@ enum TokenManagementState {
 const THROTTLE_TIMEOUT = 100;
 const TOP_BAR_HEIGHT = TopBar.heightForDisplayType(TopBarDisplayType.Expanded);
 const LEFT_COLUMN_WIDTH = 346;
+const MENU_PADDING_LEFT = 185;
 
 const styles: Styles = {
     root: {
@@ -199,14 +200,11 @@ export class Portal extends React.Component<PortalProps, PortalState> {
                 />
                 <div id="portal" style={styles.body}>
                     <Switch>
-                        <Route
-                            path={`${WebsitePaths.Portal}/:route`}
-                            render={this._renderMenuAndAccountManagement.bind(this)}
-                        />
+                        <Route path={`${WebsitePaths.Portal}/:route`} render={this._renderOtherRoutes.bind(this)} />
                         <Route
                             exact={true}
                             path={`${WebsitePaths.Portal}/`}
-                            render={this._renderWalletAndRelayerIndex.bind(this)}
+                            render={this._renderMainRoute.bind(this)}
                         />
                     </Switch>
                     <BlockchainErrDialog
@@ -247,17 +245,32 @@ export class Portal extends React.Component<PortalProps, PortalState> {
             </div>
         );
     }
-    private _renderWalletAndRelayerIndex(): React.ReactNode {
-        return <PortalLayout left={this._renderWallet()} right={this._renderRelayerIndexSection()} />;
+    private _renderMainRoute(): React.ReactNode {
+        if (this._isSmallScreen()) {
+            return <SmallLayout content={this._renderRelayerIndexSection()} />;
+        } else {
+            return <LargeLayout left={this._renderWalletSection()} right={this._renderRelayerIndexSection()} />;
+        }
     }
-    private _renderMenuAndAccountManagement(routeComponentProps: RouteComponentProps<any>): React.ReactNode {
-        return <PortalLayout left={this._renderMenu(routeComponentProps)} right={this._renderAccountManagement()} />;
+    private _renderOtherRoutes(routeComponentProps: RouteComponentProps<any>): React.ReactNode {
+        if (this._isSmallScreen()) {
+            return <SmallLayout content={this._renderAccountManagement()} />;
+        } else {
+            return <LargeLayout left={this._renderMenu(routeComponentProps)} right={this._renderAccountManagement()} />;
+        }
     }
     private _renderMenu(routeComponentProps: RouteComponentProps<any>): React.ReactNode {
+        const menuTheme: MenuTheme = {
+            paddingLeft: MENU_PADDING_LEFT,
+            textColor: colors.darkerGrey,
+            iconColor: colors.darkerGrey,
+            selectedIconColor: colors.yellow800,
+            selectedBackgroundColor: 'transparent',
+        };
         return (
             <Section
                 header={<BackButton to={`${WebsitePaths.Portal}`} labelText="back to Relayers" />}
-                body={<Menu selectedPath={routeComponentProps.location.pathname} />}
+                body={<Menu selectedPath={routeComponentProps.location.pathname} theme={menuTheme} />}
             />
         );
     }
@@ -265,29 +278,27 @@ export class Portal extends React.Component<PortalProps, PortalState> {
         const allTokens = _.values(this.props.tokenByAddress);
         const trackedTokens = _.filter(allTokens, t => t.isTracked);
         return (
-            <Section
-                header={<TextHeader labelText="Your Account" />}
-                body={
-                    <Wallet
-                        userAddress={this.props.userAddress}
-                        networkId={this.props.networkId}
-                        blockchain={this._blockchain}
-                        blockchainIsLoaded={this.props.blockchainIsLoaded}
-                        blockchainErr={this.props.blockchainErr}
-                        dispatcher={this.props.dispatcher}
-                        tokenByAddress={this.props.tokenByAddress}
-                        trackedTokens={trackedTokens}
-                        userEtherBalanceInWei={this.props.userEtherBalanceInWei}
-                        lastForceTokenStateRefetch={this.props.lastForceTokenStateRefetch}
-                        injectedProviderName={this.props.injectedProviderName}
-                        providerType={this.props.providerType}
-                        onToggleLedgerDialog={this._onToggleLedgerDialog.bind(this)}
-                        onAddToken={this._onAddToken.bind(this)}
-                        onRemoveToken={this._onRemoveToken.bind(this)}
-                    />
-                }
+            <Wallet
+                userAddress={this.props.userAddress}
+                networkId={this.props.networkId}
+                blockchain={this._blockchain}
+                blockchainIsLoaded={this.props.blockchainIsLoaded}
+                blockchainErr={this.props.blockchainErr}
+                dispatcher={this.props.dispatcher}
+                tokenByAddress={this.props.tokenByAddress}
+                trackedTokens={trackedTokens}
+                userEtherBalanceInWei={this.props.userEtherBalanceInWei}
+                lastForceTokenStateRefetch={this.props.lastForceTokenStateRefetch}
+                injectedProviderName={this.props.injectedProviderName}
+                providerType={this.props.providerType}
+                onToggleLedgerDialog={this._onToggleLedgerDialog.bind(this)}
+                onAddToken={this._onAddToken.bind(this)}
+                onRemoveToken={this._onRemoveToken.bind(this)}
             />
         );
+    }
+    private _renderWalletSection(): React.ReactNode {
+        return <Section header={<TextHeader labelText="Your Account" />} body={this._renderWallet()} />;
     }
     private _renderAccountManagement(): React.ReactNode {
         const accountManagementItems: AccountManagementItem[] = [
@@ -299,7 +310,7 @@ export class Portal extends React.Component<PortalProps, PortalState> {
             {
                 pathName: `${WebsitePaths.Portal}/account`,
                 headerText: 'Your Account',
-                render: this._renderTokenBalances.bind(this),
+                render: this._isSmallScreen() ? this._renderWallet.bind(this) : this._renderTokenBalances.bind(this),
             },
             {
                 pathName: `${WebsitePaths.Portal}/trades`,
@@ -315,7 +326,13 @@ export class Portal extends React.Component<PortalProps, PortalState> {
         return (
             <Switch>
                 {_.map(accountManagementItems, item => {
-                    return <Route path={item.pathName} render={this._renderAccountManagementItem.bind(this, item)} />;
+                    return (
+                        <Route
+                            key={item.pathName}
+                            path={item.pathName}
+                            render={this._renderAccountManagementItem.bind(this, item)}
+                        />
+                    );
                 })}}
                 <Route render={this._renderNotFoundMessage.bind(this)} />
             </Switch>
@@ -383,7 +400,7 @@ export class Portal extends React.Component<PortalProps, PortalState> {
         return (
             <Section
                 header={<TextHeader labelText="Explore 0x Relayers" />}
-                body={<RelayerIndex networkId={this.props.networkId} />}
+                body={<RelayerIndex networkId={this.props.networkId} screenWidth={this.props.screenWidth} />}
             />
         );
     }
@@ -448,13 +465,17 @@ export class Portal extends React.Component<PortalProps, PortalState> {
         const newScreenWidth = utils.getScreenWidth();
         this.props.dispatcher.updateScreenWidth(newScreenWidth);
     }
+    private _isSmallScreen(): boolean {
+        const result = this.props.screenWidth === ScreenWidths.Sm;
+        return result;
+    }
 }
 
-interface PortalLayoutProps {
+interface LargeLayoutProps {
     left: React.ReactNode;
     right: React.ReactNode;
 }
-const PortalLayout = (props: PortalLayoutProps) => {
+const LargeLayout = (props: LargeLayoutProps) => {
     return (
         <div className="sm-flex flex-center">
             <div className="flex-last px3">
@@ -462,6 +483,19 @@ const PortalLayout = (props: PortalLayoutProps) => {
             </div>
             <div className="flex-auto px3" style={styles.scrollContainer}>
                 {props.right}
+            </div>
+        </div>
+    );
+};
+
+interface SmallLayoutProps {
+    content: React.ReactNode;
+}
+const SmallLayout = (props: SmallLayoutProps) => {
+    return (
+        <div className="sm-flex flex-center">
+            <div className="flex-auto px3" style={styles.scrollContainer}>
+                {props.content}
             </div>
         </div>
     );

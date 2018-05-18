@@ -1,4 +1,4 @@
-import { colors, constants as sharedConstants, Styles } from '@0xproject/react-shared';
+import { constants as sharedConstants, Styles } from '@0xproject/react-shared';
 import { BigNumber, logUtils } from '@0xproject/utils';
 import * as _ from 'lodash';
 import Toggle from 'material-ui/Toggle';
@@ -7,6 +7,7 @@ import { Blockchain } from 'ts/blockchain';
 import { Dispatcher } from 'ts/redux/dispatcher';
 import { BalanceErrs, Token, TokenState } from 'ts/types';
 import { analytics } from 'ts/utils/analytics';
+import { colors } from 'ts/utils/colors';
 import { constants } from 'ts/utils/constants';
 import { errorReporter } from 'ts/utils/error_reporter';
 import { utils } from 'ts/utils/utils';

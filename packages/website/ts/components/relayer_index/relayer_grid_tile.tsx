@@ -1,4 +1,4 @@
-import { colors, Styles } from '@0xproject/react-shared';
+import { Styles } from '@0xproject/react-shared';
 import * as _ from 'lodash';
 import { GridTile } from 'material-ui/GridList';
 import * as React from 'react';
@@ -6,6 +6,7 @@ import * as React from 'react';
 import { TopTokens } from 'ts/components/relayer_index/relayer_top_tokens';
 import { TokenIcon } from 'ts/components/ui/token_icon';
 import { Token, WebsiteBackendRelayerInfo } from 'ts/types';
+import { colors } from 'ts/utils/colors';
 
 export interface RelayerGridTileProps {
     relayerInfo: WebsiteBackendRelayerInfo;
