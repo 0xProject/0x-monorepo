@@ -74,8 +74,8 @@ contract MixinMatchOrders is
             rightOrder,
             leftOrderInfo.orderStatus,
             rightOrderInfo.orderStatus,
-            leftOrderInfo.orderFilledAmount,
-            rightOrderInfo.orderFilledAmount
+            leftOrderInfo.orderTakerAssetFilledAmount,
+            rightOrderInfo.orderTakerAssetFilledAmount
         );
 
         // Validate fill contexts
@@ -84,7 +84,7 @@ contract MixinMatchOrders is
             leftOrderInfo.orderStatus,
             leftOrderInfo.orderHash,
             takerAddress,
-            leftOrderInfo.orderFilledAmount,
+            leftOrderInfo.orderTakerAssetFilledAmount,
             matchedFillResults.left.takerAssetFilledAmount,
             leftSignature
         );
@@ -93,7 +93,7 @@ contract MixinMatchOrders is
             rightOrderInfo.orderStatus,
             rightOrderInfo.orderHash,
             takerAddress,
-            rightOrderInfo.orderFilledAmount,
+            rightOrderInfo.orderTakerAssetFilledAmount,
             matchedFillResults.right.takerAssetFilledAmount,
             rightSignature
         );
@@ -111,14 +111,14 @@ contract MixinMatchOrders is
             leftOrder,
             takerAddress,
             leftOrderInfo.orderHash,
-            leftOrderInfo.orderFilledAmount,
+            leftOrderInfo.orderTakerAssetFilledAmount,
             matchedFillResults.left
         );
         updateFilledState(
             rightOrder,
             takerAddress,
             rightOrderInfo.orderHash,
-            rightOrderInfo.orderFilledAmount,
+            rightOrderInfo.orderTakerAssetFilledAmount,
             matchedFillResults.right
         );
 

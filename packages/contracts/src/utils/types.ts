@@ -178,7 +178,7 @@ export interface TransferAmountsByMatchOrders {
 export interface OrderInfo {
     orderStatus: number;
     orderHash: string;
-    orderFilledAmount: BigNumber;
+    orderTakerAssetFilledAmount: BigNumber;
 }
 
 export interface ERC20ProxyData {

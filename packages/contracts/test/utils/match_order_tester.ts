@@ -119,21 +119,21 @@ export class MatchOrderTester {
         const feeRecipientAddressLeft = signedOrderLeft.feeRecipientAddress;
         const feeRecipientAddressRight = signedOrderRight.feeRecipientAddress;
         // Verify Left order preconditions
-        const orderFilledAmountLeft = await this._exchangeWrapper.getTakerAssetFilledAmountAsync(
+        const orderTakerAssetFilledAmountLeft = await this._exchangeWrapper.getTakerAssetFilledAmountAsync(
             orderUtils.getOrderHashHex(signedOrderLeft),
         );
         const expectedOrderFilledAmountLeft = initialTakerAssetFilledAmountLeft
             ? initialTakerAssetFilledAmountLeft
             : new BigNumber(0);
-        expect(expectedOrderFilledAmountLeft).to.be.bignumber.equal(orderFilledAmountLeft);
+        expect(expectedOrderFilledAmountLeft).to.be.bignumber.equal(orderTakerAssetFilledAmountLeft);
         // Verify Right order preconditions
-        const orderFilledAmountRight = await this._exchangeWrapper.getTakerAssetFilledAmountAsync(
+        const orderTakerAssetFilledAmountRight = await this._exchangeWrapper.getTakerAssetFilledAmountAsync(
             orderUtils.getOrderHashHex(signedOrderRight),
         );
         const expectedOrderFilledAmountRight = initialTakerAssetFilledAmountRight
             ? initialTakerAssetFilledAmountRight
             : new BigNumber(0);
-        expect(expectedOrderFilledAmountRight).to.be.bignumber.equal(orderFilledAmountRight);
+        expect(expectedOrderFilledAmountRight).to.be.bignumber.equal(orderTakerAssetFilledAmountRight);
         // Match left & right orders
         await this._exchangeWrapper.matchOrdersAsync(signedOrderLeft, signedOrderRight, takerAddress);
         const newERC20BalancesByOwner = await this._erc20Wrapper.getBalancesAsync();
@@ -142,8 +142,8 @@ export class MatchOrderTester {
         const expectedTransferAmounts = await this._calculateExpectedTransferAmountsAsync(
             signedOrderLeft,
             signedOrderRight,
-            orderFilledAmountLeft,
-            orderFilledAmountRight,
+            orderTakerAssetFilledAmountLeft,
+            orderTakerAssetFilledAmountRight,
         );
         let expectedERC20BalancesByOwner: ERC20BalancesByOwner;
         let expectedERC721TokenIdsByOwner: ERC721TokenIdsByOwner;
@@ -169,19 +169,19 @@ export class MatchOrderTester {
     ///      the taker when two orders are matched.
     /// @param signedOrderLeft First matched order.
     /// @param signedOrderRight Second matched order.
-    /// @param orderFilledAmountLeft How much left order has been filled, prior to matching orders.
-    /// @param orderFilledAmountRight How much the right order has been filled, prior to matching orders.
+    /// @param orderTakerAssetFilledAmountLeft How much left order has been filled, prior to matching orders.
+    /// @param orderTakerAssetFilledAmountRight How much the right order has been filled, prior to matching orders.
     /// @return TransferAmounts A struct containing the expected transfer amounts.
     private async _calculateExpectedTransferAmountsAsync(
         signedOrderLeft: SignedOrder,
         signedOrderRight: SignedOrder,
-        orderFilledAmountLeft: BigNumber,
-        orderFilledAmountRight: BigNumber,
+        orderTakerAssetFilledAmountLeft: BigNumber,
+        orderTakerAssetFilledAmountRight: BigNumber,
     ): Promise<TransferAmounts> {
         let amountBoughtByLeftMaker = await this._exchangeWrapper.getTakerAssetFilledAmountAsync(
             orderUtils.getOrderHashHex(signedOrderLeft),
         );
-        amountBoughtByLeftMaker = amountBoughtByLeftMaker.minus(orderFilledAmountLeft);
+        amountBoughtByLeftMaker = amountBoughtByLeftMaker.minus(orderTakerAssetFilledAmountLeft);
         const amountSoldByLeftMaker = amountBoughtByLeftMaker
             .times(signedOrderLeft.makerAssetAmount)
             .dividedToIntegerBy(signedOrderLeft.takerAssetAmount);
@@ -192,7 +192,7 @@ export class MatchOrderTester {
         let amountBoughtByRightMaker = await this._exchangeWrapper.getTakerAssetFilledAmountAsync(
             orderUtils.getOrderHashHex(signedOrderRight),
         );
-        amountBoughtByRightMaker = amountBoughtByRightMaker.minus(orderFilledAmountRight);
+        amountBoughtByRightMaker = amountBoughtByRightMaker.minus(orderTakerAssetFilledAmountRight);
         const amountSoldByRightMaker = amountBoughtByRightMaker
             .times(signedOrderRight.makerAssetAmount)
             .dividedToIntegerBy(signedOrderRight.takerAssetAmount);

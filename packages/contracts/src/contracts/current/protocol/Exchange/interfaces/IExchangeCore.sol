@@ -61,14 +61,14 @@ contract IExchangeCore {
     /// @dev Calculates amounts filled and fees paid by maker and taker.
     /// @param order to be filled.
     /// @param orderStatus Status of order to be filled.
-    /// @param orderFilledAmount Amount of order already filled.
+    /// @param orderTakerAssetFilledAmount Amount of order already filled.
     /// @param takerAssetFillAmount Desired amount of order to fill by taker.
     /// @return status Return status of calculating fill amounts. Returns Status.SUCCESS on success.
     /// @return fillResults Amounts filled and fees paid by maker and taker.
     function calculateFillResults(
         LibOrder.Order memory order,
         uint8 orderStatus,
-        uint256 orderFilledAmount,
+        uint256 orderTakerAssetFilledAmount,
         uint256 takerAssetFillAmount
     )
         public

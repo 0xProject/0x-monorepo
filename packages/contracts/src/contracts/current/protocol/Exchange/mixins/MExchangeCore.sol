@@ -61,7 +61,7 @@ contract MExchangeCore is
     /// @param orderStatus Status of order to be filled.
     /// @param orderHash Hash of order to be filled.
     /// @param takerAddress Address of order taker.
-    /// @param orderFilledAmount Amount of order already filled.
+    /// @param orderTakerAssetFilledAmount Amount of order already filled.
     /// @param takerAssetFillAmount Desired amount of order to fill by taker.
     /// @param signature Proof that the orders was created by its maker.
     function assertValidFill(
@@ -69,7 +69,7 @@ contract MExchangeCore is
         uint8 orderStatus,
         bytes32 orderHash,
         address takerAddress,
-        uint256 orderFilledAmount,
+        uint256 orderTakerAssetFilledAmount,
         uint256 takerAssetFillAmount,
         bytes memory signature
     )
@@ -78,13 +78,13 @@ contract MExchangeCore is
     /// @dev Updates state with results of a fill order.
     /// @param order that was filled.
     /// @param takerAddress Address of taker who filled the order.
-    /// @param orderFilledAmount Amount of order already filled.
+    /// @param orderTakerAssetFilledAmount Amount of order already filled.
     /// @return fillResults Amounts filled and fees paid by maker and taker.
     function updateFilledState(
         LibOrder.Order memory order,
         address takerAddress,
         bytes32 orderHash,
-        uint256 orderFilledAmount,
+        uint256 orderTakerAssetFilledAmount,
         LibFillResults.FillResults memory fillResults
     )
         internal;

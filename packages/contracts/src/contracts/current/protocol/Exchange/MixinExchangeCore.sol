@@ -92,7 +92,7 @@ contract MixinExchangeCore is
             orderInfo.orderStatus,
             orderInfo.orderHash,
             takerAddress,
-            orderInfo.orderFilledAmount,
+            orderInfo.orderTakerAssetFilledAmount,
             takerAssetFillAmount,
             signature
         );
@@ -102,7 +102,7 @@ contract MixinExchangeCore is
         (status, fillResults) = calculateFillResults(
             order,
             orderInfo.orderStatus,
-            orderInfo.orderFilledAmount,
+            orderInfo.orderTakerAssetFilledAmount,
             takerAssetFillAmount
         );
         if (status != uint8(Status.SUCCESS)) {
@@ -118,7 +118,7 @@ contract MixinExchangeCore is
             order,
             takerAddress,
             orderInfo.orderHash,
-            orderInfo.orderFilledAmount,
+            orderInfo.orderTakerAssetFilledAmount,
             fillResults
         );
         return fillResults;
@@ -166,7 +166,7 @@ contract MixinExchangeCore is
         }
 
         // If order.takerAssetAmount is zero, then the order will always
-        // be considered filled because 0 == takerAssetAmount == orderFilledAmount
+        // be considered filled because 0 == takerAssetAmount == orderTakerAssetFilledAmount
         // Instead of distinguishing between unfilled and filled zero taker
         // amount orders, we choose not to support them.
         if (order.takerAssetAmount == 0) {
@@ -191,8 +191,8 @@ contract MixinExchangeCore is
         }
 
         // Fetch filled amount and validate order availability
-        orderInfo.orderFilledAmount = filled[orderInfo.orderHash];
-        if (orderInfo.orderFilledAmount >= order.takerAssetAmount) {
+        orderInfo.orderTakerAssetFilledAmount = filled[orderInfo.orderHash];
+        if (orderInfo.orderTakerAssetFilledAmount >= order.takerAssetAmount) {
             orderInfo.orderStatus = uint8(Status.ORDER_FULLY_FILLED);
             return orderInfo;
         }
@@ -205,14 +205,14 @@ contract MixinExchangeCore is
     /// @dev Calculates amounts filled and fees paid by maker and taker.
     /// @param order to be filled.
     /// @param orderStatus Status of order to be filled.
-    /// @param orderFilledAmount Amount of order already filled.
+    /// @param orderTakerAssetFilledAmount Amount of order already filled.
     /// @param takerAssetFillAmount Desired amount of order to fill by taker.
     /// @return status Return status of calculating fill amounts. Returns Status.SUCCESS on success.
     /// @return fillResults Amounts filled and fees paid by maker and taker.
     function calculateFillResults(
         Order memory order,
         uint8 orderStatus,
-        uint256 orderFilledAmount,
+        uint256 orderTakerAssetFilledAmount,
         uint256 takerAssetFillAmount
     )
         public
@@ -235,7 +235,7 @@ contract MixinExchangeCore is
         }
 
         // Compute takerAssetFilledAmount
-        uint256 remainingTakerAssetAmount = safeSub(order.takerAssetAmount, orderFilledAmount);
+        uint256 remainingTakerAssetAmount = safeSub(order.takerAssetAmount, orderTakerAssetFilledAmount);
         uint256 takerAssetFilledAmount = min256(takerAssetFillAmount, remainingTakerAssetAmount);
 
         // Validate fill order rounding
@@ -277,7 +277,7 @@ contract MixinExchangeCore is
     /// @param orderStatus Status of order to be filled.
     /// @param orderHash Hash of order to be filled.
     /// @param takerAddress Address of order taker.
-    /// @param orderFilledAmount Amount of order already filled.
+    /// @param orderTakerAssetFilledAmount Amount of order already filled.
     /// @param takerAssetFillAmount Desired amount of order to fill by taker.
     /// @param signature Proof that the orders was created by its maker.
     function assertValidFill(
@@ -285,7 +285,7 @@ contract MixinExchangeCore is
         uint8 orderStatus,
         bytes32 orderHash,
         address takerAddress,
-        uint256 orderFilledAmount,
+        uint256 orderTakerAssetFilledAmount,
         uint256 takerAssetFillAmount,
         bytes memory signature
     )
@@ -305,7 +305,7 @@ contract MixinExchangeCore is
         );
 
         // Validate Maker signature (check only if first time seen)
-        if (orderFilledAmount == 0) {
+        if (orderTakerAssetFilledAmount == 0) {
             require(
                 isValidSignature(orderHash, order.makerAddress, signature),
                 SIGNATURE_VALIDATION_FAILED
@@ -336,19 +336,19 @@ contract MixinExchangeCore is
     /// @dev Updates state with results of a fill order.
     /// @param order that was filled.
     /// @param takerAddress Address of taker who filled the order.
-    /// @param orderFilledAmount Amount of order already filled.
+    /// @param orderTakerAssetFilledAmount Amount of order already filled.
     /// @return fillResults Amounts filled and fees paid by maker and taker.
     function updateFilledState(
         Order memory order,
         address takerAddress,
         bytes32 orderHash,
-        uint256 orderFilledAmount,
+        uint256 orderTakerAssetFilledAmount,
         FillResults memory fillResults
     )
         internal
     {
         // Update state
-        filled[orderHash] = safeAdd(orderFilledAmount, fillResults.takerAssetFilledAmount);
+        filled[orderHash] = safeAdd(orderTakerAssetFilledAmount, fillResults.takerAssetFilledAmount);
 
         // Log order
         emit Fill(

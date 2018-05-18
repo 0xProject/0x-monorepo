@@ -57,7 +57,7 @@ contract LibOrder {
         // Keccak-256 EIP712 hash of the order
         bytes32 orderHash;
         // Amount of order that has been filled
-        uint256 orderFilledAmount;
+        uint256 orderTakerAssetFilledAmount;
     }
 
     /// @dev Calculates Keccak-256 hash of the order.
