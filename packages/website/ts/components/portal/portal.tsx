@@ -249,7 +249,7 @@ export class Portal extends React.Component<PortalProps, PortalState> {
         if (this._isSmallScreen()) {
             return <SmallLayout content={this._renderRelayerIndexSection()} />;
         } else {
-            return <LargeLayout left={this._renderWallet()} right={this._renderRelayerIndexSection()} />;
+            return <LargeLayout left={this._renderWalletSection()} right={this._renderRelayerIndexSection()} />;
         }
     }
     private _renderOtherRoutes(routeComponentProps: RouteComponentProps<any>): React.ReactNode {
@@ -278,29 +278,27 @@ export class Portal extends React.Component<PortalProps, PortalState> {
         const allTokens = _.values(this.props.tokenByAddress);
         const trackedTokens = _.filter(allTokens, t => t.isTracked);
         return (
-            <Section
-                header={<TextHeader labelText="Your Account" />}
-                body={
-                    <Wallet
-                        userAddress={this.props.userAddress}
-                        networkId={this.props.networkId}
-                        blockchain={this._blockchain}
-                        blockchainIsLoaded={this.props.blockchainIsLoaded}
-                        blockchainErr={this.props.blockchainErr}
-                        dispatcher={this.props.dispatcher}
-                        tokenByAddress={this.props.tokenByAddress}
-                        trackedTokens={trackedTokens}
-                        userEtherBalanceInWei={this.props.userEtherBalanceInWei}
-                        lastForceTokenStateRefetch={this.props.lastForceTokenStateRefetch}
-                        injectedProviderName={this.props.injectedProviderName}
-                        providerType={this.props.providerType}
-                        onToggleLedgerDialog={this._onToggleLedgerDialog.bind(this)}
-                        onAddToken={this._onAddToken.bind(this)}
-                        onRemoveToken={this._onRemoveToken.bind(this)}
-                    />
-                }
+            <Wallet
+                userAddress={this.props.userAddress}
+                networkId={this.props.networkId}
+                blockchain={this._blockchain}
+                blockchainIsLoaded={this.props.blockchainIsLoaded}
+                blockchainErr={this.props.blockchainErr}
+                dispatcher={this.props.dispatcher}
+                tokenByAddress={this.props.tokenByAddress}
+                trackedTokens={trackedTokens}
+                userEtherBalanceInWei={this.props.userEtherBalanceInWei}
+                lastForceTokenStateRefetch={this.props.lastForceTokenStateRefetch}
+                injectedProviderName={this.props.injectedProviderName}
+                providerType={this.props.providerType}
+                onToggleLedgerDialog={this._onToggleLedgerDialog.bind(this)}
+                onAddToken={this._onAddToken.bind(this)}
+                onRemoveToken={this._onRemoveToken.bind(this)}
             />
         );
+    }
+    private _renderWalletSection(): React.ReactNode {
+        return <Section header={<TextHeader labelText="Your Account" />} body={this._renderWallet()} />;
     }
     private _renderAccountManagement(): React.ReactNode {
         const accountManagementItems: AccountManagementItem[] = [
@@ -312,7 +310,7 @@ export class Portal extends React.Component<PortalProps, PortalState> {
             {
                 pathName: `${WebsitePaths.Portal}/account`,
                 headerText: 'Your Account',
-                render: this._renderTokenBalances.bind(this),
+                render: this._isSmallScreen() ? this._renderWallet.bind(this) : this._renderTokenBalances.bind(this),
             },
             {
                 pathName: `${WebsitePaths.Portal}/trades`,
