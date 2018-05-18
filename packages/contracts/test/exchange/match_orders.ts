@@ -15,7 +15,9 @@ import {
     ExchangeStatusContractEventArgs,
     FillContractEventArgs,
 } from '../../src/contract_wrappers/generated/exchange';
+import { artifacts } from '../../src/utils/artifacts';
 import { assetProxyUtils } from '../../src/utils/asset_proxy_utils';
+import { chaiSetup } from '../../src/utils/chai_setup';
 import { constants } from '../../src/utils/constants';
 import { crypto } from '../../src/utils/crypto';
 import { ERC20Wrapper } from '../../src/utils/erc20_wrapper';
@@ -32,9 +34,7 @@ import {
     OrderInfo,
     SignedOrder,
 } from '../../src/utils/types';
-import { chaiSetup } from '../utils/chai_setup';
-import { deployer } from '../utils/deployer';
-import { provider, web3Wrapper } from '../utils/web3_wrapper';
+import { provider, txDefaults, web3Wrapper } from '../../src/utils/web3_wrapper';
 
 import { MatchOrderTester } from '../utils/match_order_tester';
 
@@ -90,8 +90,8 @@ describe('matchOrders', () => {
             feeRecipientAddressRight,
         ] = accounts);
         // Create wrappers
-        erc20Wrapper = new ERC20Wrapper(deployer, provider, usedAddresses, owner);
-        erc721Wrapper = new ERC721Wrapper(deployer, provider, usedAddresses, owner);
+        erc20Wrapper = new ERC20Wrapper(provider, usedAddresses, owner);
+        erc721Wrapper = new ERC721Wrapper(provider, usedAddresses, owner);
         // Deploy ERC20 token & ERC20 proxy
         [erc20TokenA, erc20TokenB, zrxToken] = await erc20Wrapper.deployDummyTokensAsync();
         erc20Proxy = await erc20Wrapper.deployProxyAsync();
@@ -105,10 +105,12 @@ describe('matchOrders', () => {
         erc721RightMakerAssetIds = erc721Balances[makerAddressRight][erc721Token.address];
         erc721TakerAssetIds = erc721Balances[takerAddress][erc721Token.address];
         // Depoy exchange
-        const exchangeInstance = await deployer.deployAsync(ContractName.Exchange, [
+        exchange = await ExchangeContract.deployFrom0xArtifactAsync(
+            artifacts.Exchange,
+            provider,
+            txDefaults,
             assetProxyUtils.encodeERC20ProxyData(zrxToken.address),
-        ]);
-        exchange = new ExchangeContract(exchangeInstance.abi, exchangeInstance.address, provider);
+        );
         zeroEx = new ZeroEx(provider, {
             exchangeContractAddress: exchange.address,
             networkId: constants.TESTRPC_NETWORK_ID,

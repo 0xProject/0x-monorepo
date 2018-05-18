@@ -15,6 +15,7 @@ import {
     FillContractEventArgs,
 } from '../../src/contract_wrappers/generated/exchange';
 import { assetProxyUtils } from '../../src/utils/asset_proxy_utils';
+import { chaiSetup } from '../../src/utils/chai_setup';
 import { constants } from '../../src/utils/constants';
 import { crypto } from '../../src/utils/crypto';
 import { ERC20Wrapper } from '../../src/utils/erc20_wrapper';
@@ -31,8 +32,7 @@ import {
     SignedOrder,
     TransferAmountsByMatchOrders as TransferAmounts,
 } from '../../src/utils/types';
-import { chaiSetup } from '../utils/chai_setup';
-import { provider, web3Wrapper } from '../utils/web3_wrapper';
+import { provider, web3Wrapper } from '../../src/utils/web3_wrapper';
 
 chaiSetup.configure();
 const expect = chai.expect;

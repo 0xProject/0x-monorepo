@@ -26,7 +26,7 @@ import { ExchangeWrapper } from '../../src/utils/exchange_wrapper';
 import { OrderFactory } from '../../src/utils/order_factory';
 import { orderUtils } from '../../src/utils/order_utils';
 import { AssetProxyId, ContractName, ERC20BalancesByOwner, ExchangeStatus, SignedOrder } from '../../src/utils/types';
-import { provider, txDefaults, web3Wrapper } from '../utils/web3_wrapper';
+import { provider, txDefaults, web3Wrapper } from '../../src/utils/web3_wrapper';
 
 chaiSetup.configure();
 const expect = chai.expect;

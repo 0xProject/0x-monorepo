@@ -12,7 +12,7 @@
     },
     "scripts": {
         "watch": "tsc -w",
-        "prebuild": "run-s clean copy_artifacts generate_contract_wrappers",
+        "prebuild": "run-s clean compile copy_artifacts generate_contract_wrappers",
         "copy_artifacts": "copyfiles -u 4 '../migrations/artifacts/2.0.0/**/*' ./lib/src/artifacts;",
         "build": "tsc",
         "test": "run-s build run_mocha",
