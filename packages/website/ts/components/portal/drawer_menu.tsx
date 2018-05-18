@@ -1,9 +1,11 @@
-import { colors, Styles } from '@0xproject/react-shared';
+import { Styles } from '@0xproject/react-shared';
 import * as _ from 'lodash';
 import * as React from 'react';
 
-import { Menu } from 'ts/components/portal/menu';
+import { defaultMenuItemEntries, Menu } from 'ts/components/portal/menu';
 import { Identicon } from 'ts/components/ui/identicon';
+import { WebsitePaths } from 'ts/types';
+import { colors } from 'ts/utils/colors';
 import { utils } from 'ts/utils/utils';
 
 const IDENTICON_DIAMETER = 45;
@@ -11,7 +13,7 @@ const BORDER_RADIUS = '50%';
 
 const styles: Styles = {
     root: {
-        backgroundColor: '#4A4A4A',
+        backgroundColor: colors.drawerMenuBackground,
         width: '100%',
         height: '100%',
     },
@@ -33,10 +35,16 @@ export interface DrawerMenuProps {
     userAddress?: string;
 }
 export const DrawerMenu = (props: DrawerMenuProps) => {
+    const relayerItemEntry = {
+        to: `${WebsitePaths.Portal}/`,
+        labelText: 'Relayer ecosystem',
+        iconName: 'zmdi-portable-wifi',
+    };
+    const menuItemEntries = _.concat(relayerItemEntry, defaultMenuItemEntries);
     return (
         <div style={styles.root}>
             <Header userAddress={props.userAddress} />
-            <Menu selectedPath={props.selectedPath} />
+            <Menu selectedPath={props.selectedPath} menuItemEntries={menuItemEntries} />
         </div>
     );
 };

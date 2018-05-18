@@ -1,8 +1,9 @@
-import { colors, Styles } from '@0xproject/react-shared';
+import { Styles } from '@0xproject/react-shared';
 import * as _ from 'lodash';
 import * as React from 'react';
 import { MenuItem } from 'ts/components/ui/menu_item';
 import { Environments, WebsitePaths } from 'ts/types';
+import { colors } from 'ts/utils/colors';
 import { configs } from 'ts/utils/configs';
 
 export interface MenuTheme {
@@ -12,23 +13,20 @@ export interface MenuTheme {
     selectedIconColor: string;
     selectedBackgroundColor: string;
 }
-export interface MenuProps {
-    selectedPath?: string;
-    theme?: MenuTheme;
-}
 
-interface MenuItemEntry {
+export interface MenuItemEntry {
     to: string;
     labelText: string;
     iconName: string;
 }
 
-const menuItemEntries: MenuItemEntry[] = [
-    {
-        to: `${WebsitePaths.Portal}/`,
-        labelText: 'Relayer ecosystem',
-        iconName: 'zmdi-portable-wifi',
-    },
+export interface MenuProps {
+    selectedPath?: string;
+    theme?: MenuTheme;
+    menuItemEntries?: MenuItemEntry[];
+}
+
+export const defaultMenuItemEntries: MenuItemEntry[] = [
     {
         to: `${WebsitePaths.Portal}/account`,
         labelText: 'Account overview',
@@ -56,13 +54,13 @@ const DEFAULT_MENU_THEME: MenuTheme = {
     textColor: colors.white,
     iconColor: colors.white,
     selectedIconColor: colors.white,
-    selectedBackgroundColor: '#424242',
+    selectedBackgroundColor: colors.menuItemDefaultSelectedBackground,
 };
 
 export const Menu: React.StatelessComponent<MenuProps> = (props: MenuProps) => {
     return (
         <div>
-            {_.map(menuItemEntries, entry => {
+            {_.map(props.menuItemEntries, entry => {
                 const selected = entry.to === props.selectedPath;
                 return (
                     <MenuItem key={entry.to} to={entry.to}>
@@ -80,6 +78,7 @@ export const Menu: React.StatelessComponent<MenuProps> = (props: MenuProps) => {
 };
 Menu.defaultProps = {
     theme: DEFAULT_MENU_THEME,
+    menuItemEntries: defaultMenuItemEntries,
 };
 
 interface MenuItemLabelProps {

@@ -13,7 +13,7 @@ import { EthWrappers } from 'ts/components/eth_wrappers';
 import { AssetPicker } from 'ts/components/generate_order/asset_picker';
 import { BackButton } from 'ts/components/portal/back_button';
 import { Loading } from 'ts/components/portal/loading';
-import { Menu } from 'ts/components/portal/menu';
+import { Menu, MenuTheme } from 'ts/components/portal/menu';
 import { Section } from 'ts/components/portal/section';
 import { TextHeader } from 'ts/components/portal/text_header';
 import { RelayerIndex } from 'ts/components/relayer_index/relayer_index';
@@ -89,6 +89,7 @@ enum TokenManagementState {
 const THROTTLE_TIMEOUT = 100;
 const TOP_BAR_HEIGHT = TopBar.heightForDisplayType(TopBarDisplayType.Expanded);
 const LEFT_COLUMN_WIDTH = 346;
+const MENU_PADDING_LEFT = 185;
 
 const styles: Styles = {
     root: {
@@ -259,10 +260,17 @@ export class Portal extends React.Component<PortalProps, PortalState> {
         }
     }
     private _renderMenu(routeComponentProps: RouteComponentProps<any>): React.ReactNode {
+        const menuTheme: MenuTheme = {
+            paddingLeft: MENU_PADDING_LEFT,
+            textColor: colors.darkerGrey,
+            iconColor: colors.darkerGrey,
+            selectedIconColor: colors.yellow800,
+            selectedBackgroundColor: 'transparent',
+        };
         return (
             <Section
                 header={<BackButton to={`${WebsitePaths.Portal}`} labelText="back to Relayers" />}
-                body={<Menu selectedPath={routeComponentProps.location.pathname} />}
+                body={<Menu selectedPath={routeComponentProps.location.pathname} theme={menuTheme} />}
             />
         );
     }

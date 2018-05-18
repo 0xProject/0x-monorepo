@@ -9,6 +9,8 @@ const appColors = {
     allowanceToggleOffTrack: '#adadad',
     allowanceToggleOnTrack: sharedColors.mediumBlue,
     wrapEtherConfirmationButton: sharedColors.mediumBlue,
+    drawerMenuBackground: '#4a4a4a',
+    menuItemDefaultSelectedBackground: '#424242',
 };
 
 export const colors = {
