@@ -172,11 +172,7 @@ export class WrapEtherItem extends React.Component<WrapEtherItemProps, WrapEther
         );
     }
     private _renderErrorMsg(): React.ReactNode {
-        return (
-            <div style={styles.errorMsg}>
-                {this.state.errorMsg}
-            </div>
-        );
+        return <div style={styles.errorMsg}>{this.state.errorMsg}</div>;
     }
     private async _wrapEtherConfirmationActionAsync(): Promise<void> {
         this.setState({

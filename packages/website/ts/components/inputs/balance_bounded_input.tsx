@@ -105,19 +105,15 @@ export class BalanceBoundedInput extends React.Component<BalanceBoundedInputProp
         );
     }
     private _onValueChange(e: any, amountString: string): void {
-        this._setAmountState(
-            amountString,
-            this.props.balance,
-            () => {
-                const isValid = _.isUndefined(this._validate(amountString, this.props.balance));
-                const isPositiveNumber = utils.isNumeric(amountString) && !_.includes(amountString, '-');
-                if (isPositiveNumber) {
-                    this.props.onChange(isValid, new BigNumber(amountString));
-                } else {
-                    this.props.onChange(isValid);
-                }
-            },
-        );
+        this._setAmountState(amountString, this.props.balance, () => {
+            const isValid = _.isUndefined(this._validate(amountString, this.props.balance));
+            const isPositiveNumber = utils.isNumeric(amountString) && !_.includes(amountString, '-');
+            if (isPositiveNumber) {
+                this.props.onChange(isValid, new BigNumber(amountString));
+            } else {
+                this.props.onChange(isValid);
+            }
+        });
     }
     private _validate(amountString: string, balance: BigNumber): React.ReactNode {
         if (!utils.isNumeric(amountString)) {
@@ -163,9 +159,12 @@ export class BalanceBoundedInput extends React.Component<BalanceBoundedInputProp
     private _setAmountState(amount: string, balance: BigNumber, callback: () => void = _.noop): void {
         const errorMsg = this._validate(amount, balance);
         this.props.onErrorMsgChange(errorMsg);
-        this.setState({
-            amountString: amount,
-            errMsg: errorMsg,
-        }, callback);
+        this.setState(
+            {
+                amountString: amount,
+                errMsg: errorMsg,
+            },
+            callback,
+        );
     }
 }
