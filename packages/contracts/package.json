@@ -20,7 +20,8 @@
         "run_mocha": "mocha 'lib/test/**/*.js' --timeout 100000 --bail --exit",
         "compile": "sol-compiler",
         "clean": "shx rm -rf lib src/contract_wrappers/generated",
-        "generate_contract_wrappers": "abi-gen --abis  ${npm_package_config_abis} --template ../contract_templates/contract.handlebars --partials '../contract_templates/partials/**/*.handlebars' --output src/contract_wrappers/generated --backend ethers && prettier --write 'src/contract_wrappers/generated/**.ts'",
+        "generate_contract_wrappers":
+            "abi-gen --abis  ${npm_package_config_abis} --template ../contract_templates/contract.handlebars --partials '../contract_templates/partials/**/*.handlebars' --output src/contract_wrappers/generated --backend ethers && prettier --write 'src/contract_wrappers/generated/**.ts'",
         "lint": "tslint --project .",
         "coverage:report:text": "istanbul report text",
         "coverage:report:html": "istanbul report html && open coverage/index.html",

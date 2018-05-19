@@ -40,7 +40,11 @@ describe('AssetProxyOwner', () => {
         const accounts = await web3Wrapper.getAvailableAddressesAsync();
         owners = [accounts[0], accounts[1]];
         const initialOwner = (authorized = accounts[0]);
-        erc20Proxy = await MixinAuthorizableContract.deployFrom0xArtifactAsync(artifacts.MixinAuthorizable, provider, txDefaults);
+        erc20Proxy = await MixinAuthorizableContract.deployFrom0xArtifactAsync(
+            artifacts.MixinAuthorizable,
+            provider,
+            txDefaults,
+        );
         erc721Proxy = await MixinAuthorizableContract.deployFrom0xArtifactAsync(
             artifacts.MixinAuthorizable,
             provider,
@@ -55,7 +59,7 @@ describe('AssetProxyOwner', () => {
             requiredApprovals,
             SECONDS_TIME_LOCKED,
             defaultAssetProxyContractAddresses,
-        ]);
+        );
         multiSigWrapper = new MultiSigWrapper(multiSig, zeroEx);
         await erc20Proxy.transferOwnership.sendTransactionAsync(multiSig.address, { from: initialOwner });
         await erc721Proxy.transferOwnership.sendTransactionAsync(multiSig.address, { from: initialOwner });
