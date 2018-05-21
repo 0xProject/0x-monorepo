@@ -33,6 +33,9 @@ contract MixinSignatureValidator is
     // Mapping of hash => signer => signed
     mapping(bytes32 => mapping(address => bool)) preSigned;
 
+    // Mapping of signer => validator => approved
+    mapping(address => mapping (address => bool)) allowedValidators;
+
     /// @dev Approves a hash on-chain using any valid signature type.
     ///      After presigning a hash, the preSign signature type will become valid for that hash and signer.
     /// @param signer Address that should have signed the given hash.
@@ -48,6 +51,15 @@ contract MixinSignatureValidator is
             SIGNATURE_VALIDATION_FAILED
         );
         preSigned[hash][signer] = true;
+    }
+
+    /// @dev Approves a Validator contract to verify signatures on signer's behalf.
+    /// @param validator Address of Validator contract.
+    /// @param approval Approval or disapproval of  Validator contract.
+    function approveSignatureValidator(address validator, bool approval)
+        external
+    {
+        allowedValidators[msg.sender][validator] = approval;
     }
 
     /// @dev Verifies that a hash has been signed by the given signer.
@@ -172,7 +184,7 @@ contract MixinSignatureValidator is
 
         // Signature verified by signer contract.
         // If used with an order, the maker of the order is the signer contract.
-        } else if (signatureType == SignatureType.Contract) {
+        } else if (signatureType == SignatureType.Signer) {
             // Pass in signature without signature type.
             bytes memory signatureWithoutType = deepCopyBytes(
                 signature,
@@ -191,6 +203,9 @@ contract MixinSignatureValidator is
         // | 0x15   | **     | Signature to validate           |
         } else if (signatureType == SignatureType.Validator) {
             address validator = readAddress(signature, 1);
+            if (!allowedValidators[signer][validator]) {
+                return false;
+            }
             // Pass in signature without type or validator address.
             bytes memory signatureWithoutTypeOrAddress = deepCopyBytes(
                 signature,
