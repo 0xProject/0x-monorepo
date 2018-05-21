@@ -17,6 +17,7 @@ export const coverage = {
         const CONFIG_FILE = 'compiler.json';
         const config = JSON.parse(fs.readFileSync(CONFIG_FILE).toString());
         const zeroExArtifactsAdapter = new ZeroExArtifactAdapter(config.artifactsDir, config.contractsDir);
-        return new CoverageSubprovider(zeroExArtifactsAdapter, defaultFromAddress);
+        const coverageSubrpovider = new CoverageSubprovider(zeroExArtifactsAdapter, defaultFromAddress);
+        return coverageSubprovider;
     },
 };
