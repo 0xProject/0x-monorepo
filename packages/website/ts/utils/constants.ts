@@ -58,6 +58,7 @@ export const constants = {
     PROJECT_URL_AUCTUS: 'https://auctus.org',
     PROJECT_URL_OPEN_ANX: 'https://www.openanx.org',
     PROJECT_URL_IDT: 'https://kinalpha.com',
+    PROJECT_URL_AMIS: 'https://github.com/amisolution/ERC20-AMIS',
     URL_ANGELLIST: 'https://angel.co/0xproject/jobs',
     URL_BITLY_API: 'https://api-ssl.bitly.com',
     URL_BLOG: 'https://blog.0xproject.com/latest',
