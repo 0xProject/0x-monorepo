@@ -7,7 +7,7 @@
                 "pr": 589
             },
             {
-                "note": "Implement ZeroExArtiactAdapter and TruffleArtifactAdapter",
+                "note": "Implement SolCompilerArtifactAdapter and TruffleArtifactAdapter",
                 "pr": 589
             },
             {
