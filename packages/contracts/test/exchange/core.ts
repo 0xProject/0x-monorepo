@@ -538,7 +538,9 @@ describe('Exchange core', () => {
                 }),
                 constants.AWAIT_TRANSACTION_MINED_MS,
             );
-            expect(exchangeWrapper.fillOrderAsync(signedOrder, takerAddress)).to.be.rejectedWith(constants.REVERT);
+            await expect(exchangeWrapper.fillOrderAsync(signedOrder, takerAddress)).to.be.rejectedWith(
+                constants.REVERT,
+            );
             await web3Wrapper.awaitTransactionMinedAsync(
                 await erc20TokenA.approve.sendTransactionAsync(erc20Proxy.address, constants.INITIAL_ERC20_ALLOWANCE, {
                     from: makerAddress,
@@ -554,7 +556,9 @@ describe('Exchange core', () => {
                 }),
                 constants.AWAIT_TRANSACTION_MINED_MS,
             );
-            expect(exchangeWrapper.fillOrderAsync(signedOrder, takerAddress)).to.be.rejectedWith(constants.REVERT);
+            await expect(exchangeWrapper.fillOrderAsync(signedOrder, takerAddress)).to.be.rejectedWith(
+                constants.REVERT,
+            );
             await web3Wrapper.awaitTransactionMinedAsync(
                 await erc20TokenB.approve.sendTransactionAsync(erc20Proxy.address, constants.INITIAL_ERC20_ALLOWANCE, {
                     from: takerAddress,

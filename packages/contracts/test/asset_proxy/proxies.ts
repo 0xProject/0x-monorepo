@@ -221,7 +221,7 @@ describe('Asset Transfer Proxies', () => {
                 const toAddresses = _.times(numTransfers, () => takerAddress);
                 const amounts = _.times(numTransfers, () => amount);
 
-                expect(
+                return expect(
                     erc20Proxy.batchTransferFrom.sendTransactionAsync(
                         assetMetadata,
                         fromAddresses,
@@ -405,7 +405,7 @@ describe('Asset Transfer Proxies', () => {
                 const toAddresses = _.times(numTransfers, () => takerAddress);
                 const amounts = _.times(numTransfers, () => new BigNumber(1));
 
-                expect(
+                return expect(
                     erc721Proxy.batchTransferFrom.sendTransactionAsync(
                         assetMetadata,
                         fromAddresses,
