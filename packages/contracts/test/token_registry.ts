@@ -143,9 +143,12 @@ describe('TokenRegistry', () => {
             });
 
             it('should change the token name when called by owner', async () => {
-                await tokenReg.setTokenName.sendTransactionAsync(token1.address, token2.name, {
-                    from: owner,
-                });
+                await web3Wrapper.awaitTransactionMinedAsync(
+                    await tokenReg.setTokenName.sendTransactionAsync(token1.address, token2.name, {
+                        from: owner,
+                    }),
+                    constants.AWAIT_TRANSACTION_MINED_MS,
+                );
                 const [newData, oldData] = await Promise.all([
                     tokenRegWrapper.getTokenByNameAsync(token2.name),
                     tokenRegWrapper.getTokenByNameAsync(token1.name),
@@ -182,7 +185,10 @@ describe('TokenRegistry', () => {
             });
 
             it('should change the token symbol when called by owner', async () => {
-                await tokenReg.setTokenSymbol.sendTransactionAsync(token1.address, token2.symbol, { from: owner });
+                await web3Wrapper.awaitTransactionMinedAsync(
+                    await tokenReg.setTokenSymbol.sendTransactionAsync(token1.address, token2.symbol, { from: owner }),
+                    constants.AWAIT_TRANSACTION_MINED_MS,
+                );
                 const [newData, oldData] = await Promise.all([
                     tokenRegWrapper.getTokenBySymbolAsync(token2.symbol),
                     tokenRegWrapper.getTokenBySymbolAsync(token1.symbol),
@@ -223,9 +229,12 @@ describe('TokenRegistry', () => {
 
             it('should remove token metadata when called by owner', async () => {
                 const index = new BigNumber(0);
-                await tokenReg.removeToken.sendTransactionAsync(token1.address, index, {
-                    from: owner,
-                });
+                await web3Wrapper.awaitTransactionMinedAsync(
+                    await tokenReg.removeToken.sendTransactionAsync(token1.address, index, {
+                        from: owner,
+                    }),
+                    constants.AWAIT_TRANSACTION_MINED_MS,
+                );
                 const tokenData = await tokenRegWrapper.getTokenMetaDataAsync(token1.address);
                 expect(tokenData).to.be.deep.equal(nullToken);
             });

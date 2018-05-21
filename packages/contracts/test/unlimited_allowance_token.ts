@@ -46,7 +46,10 @@ describe('UnlimitedAllowanceToken', () => {
             constants.DUMMY_TOKEN_DECIMALS,
             constants.DUMMY_TOKEN_TOTAL_SUPPLY,
         );
-        await token.mint.sendTransactionAsync(MAX_MINT_VALUE, { from: owner });
+        await web3Wrapper.awaitTransactionMinedAsync(
+            await token.mint.sendTransactionAsync(MAX_MINT_VALUE, { from: owner }),
+            constants.AWAIT_TRANSACTION_MINED_MS,
+        );
         tokenAddress = token.address;
     });
     beforeEach(async () => {

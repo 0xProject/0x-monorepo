@@ -107,7 +107,7 @@ describe('MultiSigWalletWithTimeLock', () => {
 
                 txId = log.args.transactionId;
                 txHash = await multiSig.confirmTransaction.sendTransactionAsync(txId, { from: owners[1] });
-                const res = await zeroEx.awaitTransactionMinedAsync(txHash);
+                const res = await zeroEx.awaitTransactionMinedAsync(txHash, constants.AWAIT_TRANSACTION_MINED_MS);
                 expect(res.logs).to.have.length(2);
 
                 const blockNum = await web3Wrapper.getBlockNumberAsync();
@@ -134,10 +134,12 @@ describe('MultiSigWalletWithTimeLock', () => {
 
                 txId = log.args.transactionId;
                 txHash = await multiSig.confirmTransaction.sendTransactionAsync(txId, { from: owners[1] });
+                await web3Wrapper.awaitTransactionMinedAsync(txHash, constants.AWAIT_TRANSACTION_MINED_MS);
 
                 expect(initialSecondsTimeLocked).to.be.equal(0);
 
                 txHash = await multiSig.executeTransaction.sendTransactionAsync(txId, { from: owners[0] });
+                await web3Wrapper.awaitTransactionMinedAsync(txHash, constants.AWAIT_TRANSACTION_MINED_MS);
                 const res = await zeroEx.awaitTransactionMinedAsync(txHash);
                 expect(res.logs).to.have.length(2);
 
@@ -181,7 +183,8 @@ describe('MultiSigWalletWithTimeLock', () => {
                 txHash = await multiSig.confirmTransaction.sendTransactionAsync(txId, {
                     from: owners[1],
                 });
-                const confRes = await zeroEx.awaitTransactionMinedAsync(txHash);
+                await web3Wrapper.awaitTransactionMinedAsync(txHash, constants.AWAIT_TRANSACTION_MINED_MS);
+                const confRes = await zeroEx.awaitTransactionMinedAsync(txHash, constants.AWAIT_TRANSACTION_MINED_MS);
                 expect(confRes.logs).to.have.length(2);
             });
             const newSecondsTimeLocked = 0;
@@ -193,7 +196,10 @@ describe('MultiSigWalletWithTimeLock', () => {
 
             it('should execute if it has enough confirmations and is past the time lock', async () => {
                 await web3Wrapper.increaseTimeAsync(SECONDS_TIME_LOCKED.toNumber());
-                await multiSig.executeTransaction.sendTransactionAsync(txId, { from: owners[0] });
+                await web3Wrapper.awaitTransactionMinedAsync(
+                    await multiSig.executeTransaction.sendTransactionAsync(txId, { from: owners[0] }),
+                    constants.AWAIT_TRANSACTION_MINED_MS,
+                );
 
                 const secondsTimeLocked = new BigNumber(await multiSig.secondsTimeLocked.callAsync());
                 expect(secondsTimeLocked).to.be.bignumber.equal(newSecondsTimeLocked);

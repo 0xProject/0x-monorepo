@@ -99,12 +99,18 @@ describe('Exchange core', () => {
         await exchangeWrapper.registerAssetProxyAsync(AssetProxyId.ERC20, erc20Proxy.address, owner);
         await exchangeWrapper.registerAssetProxyAsync(AssetProxyId.ERC721, erc721Proxy.address, owner);
 
-        await erc20Proxy.addAuthorizedAddress.sendTransactionAsync(exchange.address, {
-            from: owner,
-        });
-        await erc721Proxy.addAuthorizedAddress.sendTransactionAsync(exchange.address, {
-            from: owner,
-        });
+        await web3Wrapper.awaitTransactionMinedAsync(
+            await erc20Proxy.addAuthorizedAddress.sendTransactionAsync(exchange.address, {
+                from: owner,
+            }),
+            constants.AWAIT_TRANSACTION_MINED_MS,
+        );
+        await web3Wrapper.awaitTransactionMinedAsync(
+            await erc721Proxy.addAuthorizedAddress.sendTransactionAsync(exchange.address, {
+                from: owner,
+            }),
+            constants.AWAIT_TRANSACTION_MINED_MS,
+        );
 
         defaultMakerAssetAddress = erc20TokenA.address;
         defaultTakerAssetAddress = erc20TokenB.address;
@@ -526,23 +532,35 @@ describe('Exchange core', () => {
         });
 
         it('should throw if maker allowances are too low to fill order', async () => {
-            await erc20TokenA.approve.sendTransactionAsync(erc20Proxy.address, new BigNumber(0), {
-                from: makerAddress,
-            });
+            await web3Wrapper.awaitTransactionMinedAsync(
+                await erc20TokenA.approve.sendTransactionAsync(erc20Proxy.address, new BigNumber(0), {
+                    from: makerAddress,
+                }),
+                constants.AWAIT_TRANSACTION_MINED_MS,
+            );
             expect(exchangeWrapper.fillOrderAsync(signedOrder, takerAddress)).to.be.rejectedWith(constants.REVERT);
-            await erc20TokenA.approve.sendTransactionAsync(erc20Proxy.address, constants.INITIAL_ERC20_ALLOWANCE, {
-                from: makerAddress,
-            });
+            await web3Wrapper.awaitTransactionMinedAsync(
+                await erc20TokenA.approve.sendTransactionAsync(erc20Proxy.address, constants.INITIAL_ERC20_ALLOWANCE, {
+                    from: makerAddress,
+                }),
+                constants.AWAIT_TRANSACTION_MINED_MS,
+            );
         });
 
         it('should throw if taker allowances are too low to fill order', async () => {
-            await erc20TokenB.approve.sendTransactionAsync(erc20Proxy.address, new BigNumber(0), {
-                from: takerAddress,
-            });
+            await web3Wrapper.awaitTransactionMinedAsync(
+                await erc20TokenB.approve.sendTransactionAsync(erc20Proxy.address, new BigNumber(0), {
+                    from: takerAddress,
+                }),
+                constants.AWAIT_TRANSACTION_MINED_MS,
+            );
             expect(exchangeWrapper.fillOrderAsync(signedOrder, takerAddress)).to.be.rejectedWith(constants.REVERT);
-            await erc20TokenB.approve.sendTransactionAsync(erc20Proxy.address, constants.INITIAL_ERC20_ALLOWANCE, {
-                from: takerAddress,
-            });
+            await web3Wrapper.awaitTransactionMinedAsync(
+                await erc20TokenB.approve.sendTransactionAsync(erc20Proxy.address, constants.INITIAL_ERC20_ALLOWANCE, {
+                    from: takerAddress,
+                }),
+                constants.AWAIT_TRANSACTION_MINED_MS,
+            );
         });
 
         it('should not change erc20Balances if an order is expired', async () => {

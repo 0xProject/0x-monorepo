@@ -90,7 +90,10 @@ describe('Exchange transactions', () => {
         exchangeWrapper = new ExchangeWrapper(exchange, zeroEx);
         await exchangeWrapper.registerAssetProxyAsync(AssetProxyId.ERC20, erc20Proxy.address, owner);
 
-        await erc20Proxy.addAuthorizedAddress.sendTransactionAsync(exchange.address, { from: owner });
+        await web3Wrapper.awaitTransactionMinedAsync(
+            await erc20Proxy.addAuthorizedAddress.sendTransactionAsync(exchange.address, { from: owner }),
+            constants.AWAIT_TRANSACTION_MINED_MS,
+        );
 
         defaultMakerTokenAddress = erc20TokenA.address;
         defaultTakerTokenAddress = erc20TokenB.address;
