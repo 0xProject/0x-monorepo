@@ -105,6 +105,10 @@ const relayersAndDappProjects: Project[] = [
         logoFileName: 'anx.png',
         projectUrl: constants.PROJECT_URL_OPEN_ANX,
     },
+    {
+        logoFileName: 'amis.png',
+        projectUrl: constants.PROJECT_URL_AMIS,
+    },
 ];
 
 const relayerProjects: Project[] = [
