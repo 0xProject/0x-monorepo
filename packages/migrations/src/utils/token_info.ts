@@ -3,6 +3,13 @@ import { BigNumber, NULL_BYTES } from '@0xproject/utils';
 import { Token } from '../types';
 
 export const tokenInfo: Token[] = [
+     {
+        name: 'AMIS',
+        symbol: 'AMIS',
+        decimals: new BigNumber(9),
+        ipfsHash: NULL_BYTES,
+        swarmHash: NULL_BYTES,
+    },
     {
         name: 'Augur Reputation Token',
         symbol: 'REP',
