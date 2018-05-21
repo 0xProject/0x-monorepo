@@ -62,12 +62,11 @@ describe('LibBytes', () => {
 
     describe('deepCopyBytes', () => {
         const byteArrayLongerThan32BytesLen = (byteArrayLongerThan32Bytes.length - 2) / 2;
-        it('should throw if length of copy is 0', async () => {
+        it('should return a byte array of length 0 if len is 0', async () => {
             const index = new BigNumber(0);
             const len = new BigNumber(0);
-            return expect(
-                libBytes.publicDeepCopyBytes.callAsync(byteArrayLongerThan32Bytes, index, len),
-            ).to.be.rejectedWith(constants.REVERT);
+            const copy = await libBytes.publicDeepCopyBytes.callAsync(byteArrayLongerThan32Bytes, index, len);
+            expect(copy).to.equal(constants.NULL_BYTES);
         });
 
         it('should throw if start index + length to copy is greater than length of byte array', async () => {

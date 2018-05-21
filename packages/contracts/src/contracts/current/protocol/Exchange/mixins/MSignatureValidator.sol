@@ -29,12 +29,11 @@ contract MSignatureValidator is
         Invalid,    // 0x01
         EIP712,     // 0x02
         Ecrecover,  // 0x03
-        TxOrigin,   // 0x04
-        Caller,     // 0x05
-        Signer,     // 0x06
-        Validator,  // 0x07
-        PreSigned,  // 0x08
-        Trezor      // 0x09
+        Caller,     // 0x04
+        Signer,     // 0x05
+        Validator,  // 0x06
+        PreSigned,  // 0x07
+        Trezor      // 0x08
     }
 
     /// @dev Verifies that a signature is valid.

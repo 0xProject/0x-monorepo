@@ -218,6 +218,10 @@ describe('Exchange transactions', () => {
                 txDefaults,
                 exchange.address,
             );
+            const isApproved = true;
+            await exchange.approveSignatureValidator.sendTransactionAsync(whitelist.address, isApproved, {
+                from: takerAddress,
+            });
             const defaultOrderParams = {
                 ...constants.STATIC_ORDER_PARAMS,
                 senderAddress: whitelist.address,

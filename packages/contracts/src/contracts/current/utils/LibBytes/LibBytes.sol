@@ -41,10 +41,6 @@ contract LibBytes {
         returns (bytes memory)
     {
         require(
-            len > 0,
-            GT_ZERO_LENGTH_REQUIRED
-        );
-        require(
             b.length >= index + len,
             INDEX_OUT_OF_BOUNDS
         );

@@ -31,10 +31,10 @@ contract MixinSignatureValidator is
 {
 
     // Mapping of hash => signer => signed
-    mapping(bytes32 => mapping(address => bool)) preSigned;
+    mapping (bytes32 => mapping (address => bool)) preSigned;
 
     // Mapping of signer => validator => approved
-    mapping(address => mapping (address => bool)) allowedValidators;
+    mapping (address => mapping (address => bool)) allowedValidators;
 
     /// @dev Approves a hash on-chain using any valid signature type.
     ///      After presigning a hash, the preSign signature type will become valid for that hash and signer.
@@ -141,21 +141,6 @@ contract MixinSignatureValidator is
             isValid = signer == recovered;
             return isValid;
 
-        // Implicitly signed by signer of Ethereum transaction.
-        // This is useful when initiating a call from a contract that might
-        // otherwise require multiple signatures.
-        // Example: Contract A calls Exchange.fillOrder using `executeTransaction`.
-        // This would normally require the user to sign both an Ethereum transaction
-        // and a 0x transaction. By using the TxOrigin signature type, the signature
-        // for the Ethereum transaction will encompass both signatures.
-        } else if (signatureType == SignatureType.TxOrigin) {
-            require(
-                signature.length == 1,
-                INVALID_SIGNATURE_LENGTH
-            );
-            isValid = signer == tx.origin;
-            return isValid;
-
         // Implicitly signed by caller.
         // The signer has initiated the call. In the case of non-contract
         // accounts it means the transaction itself was signed.
@@ -188,7 +173,7 @@ contract MixinSignatureValidator is
         // If used with an order, the maker of the order can still be an EOA.
         // A signature using this type should be encoded as:
         // | Offset | Length | Contents                        |
-        // | 0x00   | 1      | Signature type is always "\x07" |
+        // | 0x00   | 1      | Signature type is always "\x06" |
         // | 0x01   | 20     | Address of validator contract   |
         // | 0x15   | **     | Signature to validate           |
         } else if (signatureType == SignatureType.Validator) {

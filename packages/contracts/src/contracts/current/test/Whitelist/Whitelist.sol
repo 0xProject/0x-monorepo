@@ -35,13 +35,14 @@ contract Whitelist is
     // Exchange contract.
     IExchange EXCHANGE;
 
-    // TxOrigin signature type is the 5th value in enum SignatureType and has a length of 1.
-    bytes constant TX_ORIGIN_SIGNATURE = "\x04";
+    byte constant VALIDATOR_SIGNATURE_BYTE = "\x06";
+    bytes TX_ORIGIN_SIGNATURE;
 
     constructor (address _exchange)
         public
     {
         EXCHANGE = IExchange(_exchange);
+        TX_ORIGIN_SIGNATURE = abi.encodePacked(VALIDATOR_SIGNATURE_BYTE, address(this));
     }
 
     /// @dev Adds or removes an address from the whitelist.
@@ -101,5 +102,20 @@ contract Whitelist is
             data,
             TX_ORIGIN_SIGNATURE
         );
+    }
+
+    /// @dev Verifies signer is same as signer of current Ethereum transaction.
+    /// @param signer Address that should have signed the given hash.
+    /// @param signature Proof of signing.
+    /// @return Validity of order signature.
+    function isValidSignature(
+        bytes32 hash,
+        address signer,
+        bytes signature)
+        external
+        view
+        returns (bool isValid)
+    {
+        return signer == tx.origin;
     }
 }
