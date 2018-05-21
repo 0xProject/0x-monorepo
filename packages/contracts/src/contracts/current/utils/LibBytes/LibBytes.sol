@@ -27,39 +27,45 @@ contract LibBytes {
     string constant GTE_32_LENGTH_REQUIRED = "Length must be greater than or equal to 32.";
     string constant INDEX_OUT_OF_BOUNDS = "Specified array index is out of bounds.";
 
-    /// @dev Performs a deep copy of a section of a byte array.
-    /// @param b Byte array that will be copied.
-    /// @param index Index of first byte to copy.
-    /// @param len Number of bytes to copy starting from index.
-    /// @return A deep copy `len` bytes of b starting from index.
-    function deepCopyBytes(
-        bytes memory b,
-        uint256 index,
-        uint256 len)
+    /// @dev Pops the last byte off of a byte array by modifying its length.
+    /// @param b Byte array that will be modified.
+    /// @return The byte that was popped off.
+    function popByte(bytes memory b)
         internal
-        pure
-        returns (bytes memory)
+        returns (byte result)
     {
         require(
-            b.length >= index + len,
-            INDEX_OUT_OF_BOUNDS
+            b.length > 0,
+            GT_ZERO_LENGTH_REQUIRED
         );
 
-        bytes memory copy = new bytes(len);
+        result = b[b.length - 1];
+        assembly {
+            let newLen := sub(mload(b), 1)
+            mstore(b, newLen)
+        }
+        result;
+    }
 
-        // Arrays are prefixed by a 256 bit length parameter
-        index += 32;
+    /// @dev Pops the last 20 bytes off of a byte array by modifying its length.
+    /// @param b Byte array that will be modified.
+    /// @return The 20 byte address that was popped off.
+    function popAddress(bytes memory b)
+        internal
+        returns (address result)
+    {
+        require(
+            b.length >= 20,
+            GTE_20_LENGTH_REQUIRED
+        );
+
+        result = readAddress(b, b.length - 20);
 
         assembly {
-            // Start storing onto copy after length field
-            let storeStartIndex := add(copy, 32)
-            // Start loading from b at index
-            let startLoadIndex := add(b, index)
-            for {let i := 0} lt(i, len) {i := add(i, 32)} {
-                mstore(add(storeStartIndex, i), mload(add(startLoadIndex, i)))
-            }
+            let newLen := sub(mload(b), 20)
+            mstore(b, newLen)
         }
-        return copy;
+        return result;
     }
 
     /// @dev Tests equality of two byte arrays.

@@ -25,21 +25,26 @@ contract TestLibBytes is
     LibBytes
 {
 
-    /// @dev Performs a deep copy of a section of a byte array.
-    /// @param b Byte array that will be sliced.
-    /// @param startIndex Index of first byte to copy.
-    /// @param endIndex Index of last byte to copy + 1.
-    /// @return A deep copy of b from startIndex to endIndex.
-    function publicDeepCopyBytes(
-        bytes memory b,
-        uint256 startIndex,
-        uint256 endIndex)
+    /// @dev Pops the last byte off of a byte array by modifying its length.
+    /// @param b Byte array that will be modified.
+    /// @return The byte that was popped off.
+    function publicPopByte(bytes memory b)
         public
-        pure
-        returns (bytes memory copy)
+        returns (bytes memory, byte result)
     {
-        copy = deepCopyBytes(b, startIndex, endIndex);
-        return copy;
+        result = popByte(b);
+        return (b, result);
+    }
+
+    /// @dev Pops the last 20 bytes off of a byte array by modifying its length.
+    /// @param b Byte array that will be modified.
+    /// @return The 20 byte address that was popped off.
+    function publicPopAddress(bytes memory b)
+        public
+        returns (bytes memory, address result)
+    {
+        result = popAddress(b);
+        return (b, result);
     }
 
     /// @dev Tests equality of two byte arrays.

@@ -81,7 +81,9 @@ contract MixinSignatureValidator is
             signature.length >= 1,
             INVALID_SIGNATURE_LENGTH
         );
-        SignatureType signatureType = SignatureType(uint8(signature[0]));
+
+        // Pop last byte off of 
+        SignatureType signatureType = SignatureType(uint8(popByte(signature)));
 
         // Variables are not scoped in Solidity.
         uint8 v;
@@ -104,7 +106,7 @@ contract MixinSignatureValidator is
         // a correctly formatted but incorrect signature.
         } else if (signatureType == SignatureType.Invalid) {
             require(
-                signature.length == 1,
+                signature.length == 0,
                 INVALID_SIGNATURE_LENGTH
             );
             isValid = false;
@@ -113,12 +115,12 @@ contract MixinSignatureValidator is
         // Signature using EIP712
         } else if (signatureType == SignatureType.EIP712) {
             require(
-                signature.length == 66,
+                signature.length == 65,
                 INVALID_SIGNATURE_LENGTH
             );
-            v = uint8(signature[1]);
-            r = readBytes32(signature, 2);
-            s = readBytes32(signature, 34);
+            v = uint8(signature[0]);
+            r = readBytes32(signature, 1);
+            s = readBytes32(signature, 33);
             recovered = ecrecover(hash, v, r, s);
             isValid = signer == recovered;
             return isValid;
@@ -126,12 +128,12 @@ contract MixinSignatureValidator is
         // Signed using web3.eth_sign
         } else if (signatureType == SignatureType.Ecrecover) {
             require(
-                signature.length == 66,
+                signature.length == 65,
                 INVALID_SIGNATURE_LENGTH
             );
-            v = uint8(signature[1]);
-            r = readBytes32(signature, 2);
-            s = readBytes32(signature, 34);
+            v = uint8(signature[0]);
+            r = readBytes32(signature, 1);
+            s = readBytes32(signature, 33);
             recovered = ecrecover(
                 keccak256("\x19Ethereum Signed Message:\n32", hash),
                 v,
@@ -151,7 +153,7 @@ contract MixinSignatureValidator is
         // submit using `Caller`. Having `Caller` allows this flexibility.
         } else if (signatureType == SignatureType.Caller) {
             require(
-                signature.length == 1,
+                signature.length == 0,
                 INVALID_SIGNATURE_LENGTH
             );
             isValid = signer == msg.sender;
@@ -160,37 +162,25 @@ contract MixinSignatureValidator is
         // Signature verified by signer contract.
         // If used with an order, the maker of the order is the signer contract.
         } else if (signatureType == SignatureType.Signer) {
-            // Pass in signature without signature type.
-            bytes memory signatureWithoutType = deepCopyBytes(
-                signature,
-                1,
-                signature.length - 1
-            );
-            isValid = ISigner(signer).isValidSignature(hash, signatureWithoutType);
+            isValid = ISigner(signer).isValidSignature(hash, signature);
             return isValid;
 
         // Signature verified by validator contract.
         // If used with an order, the maker of the order can still be an EOA.
         // A signature using this type should be encoded as:
-        // | Offset | Length | Contents                        |
-        // | 0x00   | 1      | Signature type is always "\x06" |
-        // | 0x01   | 20     | Address of validator contract   |
-        // | 0x15   | **     | Signature to validate           |
+        // | Offset   | Length | Contents                        |
+        // | 0x00     | x      | Signature to validate           |
+        // | 0x00 + x | 20     | Address of validator contract   |
+        // | 0x14 + x | 1      | Signature type is always "\x06" |
         } else if (signatureType == SignatureType.Validator) {
-            address validator = readAddress(signature, 1);
+            address validator = popAddress(signature);
             if (!allowedValidators[signer][validator]) {
                 return false;
             }
-            // Pass in signature without type or validator address.
-            bytes memory signatureWithoutTypeOrAddress = deepCopyBytes(
-                signature,
-                21,
-                signature.length - 21
-            );
             isValid = IValidator(validator).isValidSignature(
                 hash,
                 signer,
-                signatureWithoutTypeOrAddress
+                signature
             );
             return isValid;
 
@@ -209,12 +199,12 @@ contract MixinSignatureValidator is
         // https://github.com/trezor/trezor-mcu/blob/master/firmware/crypto.c#L36
         } else if (signatureType == SignatureType.Trezor) {
             require(
-                signature.length == 66,
+                signature.length == 65,
                 INVALID_SIGNATURE_LENGTH
             );
-            v = uint8(signature[1]);
-            r = readBytes32(signature, 2);
-            s = readBytes32(signature, 34);
+            v = uint8(signature[0]);
+            r = readBytes32(signature, 1);
+            s = readBytes32(signature, 33);
             recovered = ecrecover(
                 keccak256("\x19Ethereum Signed Message:\n\x41", hash),
                 v,

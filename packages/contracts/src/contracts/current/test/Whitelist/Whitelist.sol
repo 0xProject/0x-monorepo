@@ -75,7 +75,7 @@ contract Whitelist is
         // This contract must be the entry point for the transaction.
         require(takerAddress == tx.origin);
 
-        // Check if maker is on the whitelist
+        // Check if maker is on the whitelist.
         require(
             isWhitelisted[order.makerAddress],
             ADDRESS_NOT_WHITELISTED
