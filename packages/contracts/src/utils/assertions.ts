@@ -1,7 +1,7 @@
 import * as chai from 'chai';
 import * as _ from 'lodash';
 
-import { constants } from '../../util/constants';
+import { constants } from './constants';
 
 const expect = chai.expect;
 
