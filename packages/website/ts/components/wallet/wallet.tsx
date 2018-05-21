@@ -383,15 +383,32 @@ export class Wallet extends React.Component<WalletProps, WalletState> {
         const style = shouldShowWrapEtherItem
             ? { ...walletItemStyles.focusedItem, ...styles.paddedItem }
             : { ...styles.tokenItem, ...styles.borderedItem, ...styles.paddedItem };
+        const etherToken = this._getEthToken();
         return (
-            <div className="flex items-center" style={style}>
-                <div className="px2">{icon}</div>
-                <div className="flex-none pr2 pt2 pb2">
-                    {primaryText}
-                    {secondaryText}
+            <div className="flex flex-column">
+                <div className="flex items-center" style={style}>
+                    <div className="px2">{icon}</div>
+                    <div className="flex-none pr2 pt2 pb2">
+                        {primaryText}
+                        {secondaryText}
+                    </div>
+                    <div className="flex-auto" />
+                    <div>{this._renderAccessoryItems(accessoryItemConfig)}</div>
                 </div>
-                <div className="flex-auto" />
-                <div>{this._renderAccessoryItems(accessoryItemConfig)}</div>
+                {shouldShowWrapEtherItem && (
+                    <WrapEtherItem
+                        userAddress={this.props.userAddress}
+                        networkId={this.props.networkId}
+                        blockchain={this.props.blockchain}
+                        dispatcher={this.props.dispatcher}
+                        userEtherBalanceInWei={this.props.userEtherBalanceInWei}
+                        direction={accessoryItemConfig.wrappedEtherDirection}
+                        etherToken={etherToken}
+                        lastForceTokenStateRefetch={this.props.lastForceTokenStateRefetch}
+                        onConversionSuccessful={this._closeWrappedEtherActionRow.bind(this)}
+                        refetchEthTokenStateAsync={this._refetchTokenStateAsync.bind(this, etherToken.address)}
+                    />
+                )}
             </div>
         );
     }
