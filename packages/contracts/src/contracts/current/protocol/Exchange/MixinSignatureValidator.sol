@@ -20,6 +20,7 @@ pragma solidity ^0.4.23;
 
 import "./mixins/MSignatureValidator.sol";
 import "./interfaces/ISigner.sol";
+import "./interfaces/IValidator.sol";
 import "./libs/LibExchangeErrors.sol";
 import "../../utils/LibBytes/LibBytes.sol";
 
@@ -31,6 +32,9 @@ contract MixinSignatureValidator is
 
     // Mapping of hash => signer => signed
     mapping(bytes32 => mapping(address => bool)) preSigned;
+
+    // Mapping of signer => validator => approved
+    mapping(address => mapping (address => bool)) allowedValidators;
 
     /// @dev Approves a hash on-chain using any valid signature type.
     ///      After presigning a hash, the preSign signature type will become valid for that hash and signer.
@@ -47,6 +51,15 @@ contract MixinSignatureValidator is
             SIGNATURE_VALIDATION_FAILED
         );
         preSigned[hash][signer] = true;
+    }
+
+    /// @dev Approves a Validator contract to verify signatures on signer's behalf.
+    /// @param validator Address of Validator contract.
+    /// @param approval Approval or disapproval of  Validator contract.
+    function approveSignatureValidator(address validator, bool approval)
+        external
+    {
+        allowedValidators[msg.sender][validator] = approval;
     }
 
     /// @dev Verifies that a hash has been signed by the given signer.
@@ -169,9 +182,41 @@ contract MixinSignatureValidator is
             isValid = signer == recovered;
             return isValid;
 
-        // Signature verified by signer contract
-        } else if (signatureType == SignatureType.Contract) {
-            isValid = ISigner(signer).isValidSignature(hash, signature);
+        // Signature verified by signer contract.
+        // If used with an order, the maker of the order is the signer contract.
+        } else if (signatureType == SignatureType.Signer) {
+            // Pass in signature without signature type.
+            bytes memory signatureWithoutType = deepCopyBytes(
+                signature,
+                1,
+                signature.length - 1
+            );
+            isValid = ISigner(signer).isValidSignature(hash, signatureWithoutType);
+            return isValid;
+
+        // Signature verified by validator contract.
+        // If used with an order, the maker of the order can still be an EOA.
+        // A signature using this type should be encoded as:
+        // | Offset | Length | Contents                        |
+        // | 0x00   | 1      | Signature type is always "\x07" |
+        // | 0x01   | 20     | Address of validator contract   |
+        // | 0x15   | **     | Signature to validate           |
+        } else if (signatureType == SignatureType.Validator) {
+            address validator = readAddress(signature, 1);
+            if (!allowedValidators[signer][validator]) {
+                return false;
+            }
+            // Pass in signature without type or validator address.
+            bytes memory signatureWithoutTypeOrAddress = deepCopyBytes(
+                signature,
+                21,
+                signature.length - 21
+            );
+            isValid = IValidator(validator).isValidSignature(
+                hash,
+                signer,
+                signatureWithoutTypeOrAddress
+            );
             return isValid;
 
         // Signer signed hash previously using the preSign function

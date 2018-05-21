@@ -54,6 +54,40 @@ describe('LibBytes', () => {
         await blockchainLifecycle.revertAsync();
     });
 
+    describe('deepCopyBytes', () => {
+        const byteArrayLongerThan32BytesLen = (byteArrayLongerThan32Bytes.length - 2) / 2;
+        it('should throw if length of copy is 0', async () => {
+            const index = new BigNumber(0);
+            const len = new BigNumber(0);
+            return expect(
+                libBytes.publicDeepCopyBytes.callAsync(byteArrayLongerThan32Bytes, index, len),
+            ).to.be.rejectedWith(constants.REVERT);
+        });
+
+        it('should throw if start index + length to copy is greater than length of byte array', async () => {
+            const index = new BigNumber(0);
+            const len = new BigNumber(byteArrayLongerThan32BytesLen + 1);
+            return expect(
+                libBytes.publicDeepCopyBytes.callAsync(byteArrayLongerThan32Bytes, index, len),
+            ).to.be.rejectedWith(constants.REVERT);
+        });
+
+        it('should copy the entire byte array if index = 0 and len = b.length', async () => {
+            const index = new BigNumber(0);
+            const len = new BigNumber(byteArrayLongerThan32BytesLen);
+            const copy = await libBytes.publicDeepCopyBytes.callAsync(byteArrayLongerThan32Bytes, index, len);
+            expect(copy).to.equal(byteArrayLongerThan32Bytes);
+        });
+
+        it('should copy part of the byte array if area to copy is less than b.length', async () => {
+            const index = new BigNumber(10);
+            const len = new BigNumber(4);
+            const copy = await libBytes.publicDeepCopyBytes.callAsync(byteArrayLongerThan32Bytes, index, len);
+            const expectedCopy = `0x${byteArrayLongerThan32Bytes.slice(22, 30)}`;
+            expect(copy).to.equal(expectedCopy);
+        });
+    });
+
     describe('areBytesEqual', () => {
         it('should return true if byte arrays are equal (both arrays < 32 bytes)', async () => {
             const areBytesEqual = await libBytes.publicAreBytesEqual.callAsync(
