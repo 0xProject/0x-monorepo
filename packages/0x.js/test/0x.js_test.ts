@@ -3,6 +3,7 @@ import { BlockchainLifecycle, devConstants, web3Factory } from '@0xproject/dev-u
 import { BigNumber } from '@0xproject/utils';
 import * as chai from 'chai';
 import * as _ from 'lodash';
+import 'make-promises-safe';
 import 'mocha';
 import * as path from 'path';
 import * as Sinon from 'sinon';

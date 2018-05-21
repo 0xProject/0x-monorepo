@@ -2,7 +2,7 @@
     "name": "@0xproject/base-contract",
     "version": "0.3.1",
     "engines": {
-        "node" : ">=6.12"
+        "node": ">=6.12"
     },
     "description": "0x Base TS contract",
     "main": "lib/src/index.js",
@@ -34,6 +34,7 @@
         "@types/lodash": "4.14.104",
         "chai": "^4.0.1",
         "copyfiles": "^1.2.0",
+        "make-promises-safe": "^1.1.0",
         "mocha": "^4.0.1",
         "npm-run-all": "^4.1.2",
         "shx": "^0.2.2",

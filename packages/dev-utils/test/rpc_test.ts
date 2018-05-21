@@ -1,6 +1,7 @@
 import { BlockParamLiteral } from '@0xproject/types';
 import { Web3Wrapper } from '@0xproject/web3-wrapper';
 import * as chai from 'chai';
+import 'make-promises-safe';
 import 'mocha';
 
 import { web3Factory } from '../src';

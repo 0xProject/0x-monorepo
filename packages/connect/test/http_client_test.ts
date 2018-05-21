@@ -3,6 +3,7 @@ import * as chai from 'chai';
 import * as chaiAsPromised from 'chai-as-promised';
 import * as dirtyChai from 'dirty-chai';
 import * as fetchMock from 'fetch-mock';
+import 'make-promises-safe';
 import 'mocha';
 
 import { HttpClient } from '../src/index';

@@ -9,6 +9,7 @@ import { BlockchainLifecycle, devConstants, web3Factory } from '@0xproject/dev-u
 import { AbiDecoder, BigNumber } from '@0xproject/utils';
 import { Web3Wrapper } from '@0xproject/web3-wrapper';
 import * as chai from 'chai';
+import 'make-promises-safe';
 import * as Web3 from 'web3';
 
 import { MultiSigWalletContract } from '../src/contract_wrappers/generated/multi_sig_wallet';

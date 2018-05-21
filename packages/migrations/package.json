@@ -2,7 +2,7 @@
     "name": "@0xproject/migrations",
     "version": "0.0.5",
     "engines": {
-        "node" : ">=6.12"
+        "node": ">=6.12"
     },
     "description": "0x smart contract migrations",
     "main": "lib/index.js",
@@ -10,13 +10,12 @@
     "scripts": {
         "watch": "tsc -w",
         "prebuild": "run-s clean compile copy_artifacts generate_contract_wrappers",
-        "copy_artifacts": "copyfiles -u 4 'artifacts/1.0.0/**/*' ./lib/src/artifacts",
+        "copy_artifacts": "copyfiles 'artifacts/1.0.0/**/*' ./lib",
         "build": "tsc",
         "clean": "shx rm -rf lib",
         "lint": "tslint --project .",
         "migrate": "run-s build compile script:migrate",
         "script:migrate": "node ./lib/migrate.js",
-        "copy_artifacts": "copyfiles 'artifacts/1.0.0/**/*' ./lib",
         "generate_contract_wrappers": "abi-gen --abis  ${npm_package_config_abis} --template ../contract_templates/contract.handlebars --partials '../contract_templates/partials/**/*.handlebars' --output src/contract_wrappers --backend ethers && prettier --write 'src/contract_wrappers/**.ts'",
         "compile": "sol-compiler"
     },
@@ -28,16 +27,17 @@
     "devDependencies": {
         "@0xproject/abi-gen": "^0.2.13",
         "@0xproject/dev-utils": "^0.4.1",
-        "@0xproject/types": "^0.6.3",
         "@0xproject/tslint-config": "^0.4.17",
+        "@0xproject/types": "^0.6.3",
+        "make-promises-safe": "^1.1.0",
         "npm-run-all": "^4.1.2",
         "shx": "^0.2.2",
         "tslint": "5.8.0",
         "typescript": "2.7.1"
     },
     "dependencies": {
-        "@0xproject/sol-compiler": "^0.4.3",
         "@0xproject/base-contract": "^0.3.1",
+        "@0xproject/sol-compiler": "^0.4.3",
         "@0xproject/typescript-typings": "^0.3.1",
         "@0xproject/utils": "^0.6.1",
         "@0xproject/web3-wrapper": "^0.6.3",

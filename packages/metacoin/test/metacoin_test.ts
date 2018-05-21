@@ -4,6 +4,7 @@ import { LogWithDecodedArgs } from '@0xproject/types';
 import { BigNumber } from '@0xproject/utils';
 import { Web3Wrapper } from '@0xproject/web3-wrapper';
 import * as chai from 'chai';
+import 'make-promises-safe';
 
 import * as MetacoinArtifact from '../artifacts/Metacoin.json';
 import { MetacoinContract, TransferContractEventArgs } from '../src/contract_wrappers/metacoin';

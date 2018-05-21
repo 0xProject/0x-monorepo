@@ -2,7 +2,7 @@
     "name": "@0xproject/sra-report",
     "version": "0.0.14",
     "engines": {
-        "node" : ">=6.12"
+        "node": ">=6.12"
     },
     "description": "Generate reports for standard relayer API compliance",
     "main": "lib/src/index.js",
@@ -54,6 +54,7 @@
         "chai-as-promised": "^7.1.0",
         "copyfiles": "^1.2.0",
         "dirty-chai": "^2.0.1",
+        "make-promises-safe": "^1.1.0",
         "mocha": "^4.0.1",
         "nock": "^9.2.3",
         "npm-run-all": "^4.1.2",

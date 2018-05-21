@@ -2,7 +2,7 @@
     "name": "@0xproject/tslint-config",
     "version": "0.4.17",
     "engines": {
-        "node" : ">=6.12"
+        "node": ">=6.12"
     },
     "description": "Lint rules related to 0xProject for TSLint",
     "main": "tslint.json",
@@ -37,6 +37,7 @@
         "@0xproject/monorepo-scripts": "^0.1.19",
         "@types/lodash": "4.14.104",
         "copyfiles": "^1.2.0",
+        "make-promises-safe": "^1.1.0",
         "shx": "^0.2.2",
         "typescript": "2.7.1"
     },

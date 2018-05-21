@@ -6,6 +6,7 @@ import { DoneCallback, Token } from '@0xproject/types';
 import { BigNumber } from '@0xproject/utils';
 import * as chai from 'chai';
 import * as _ from 'lodash';
+import 'make-promises-safe';
 import 'mocha';
 import * as Sinon from 'sinon';
 
