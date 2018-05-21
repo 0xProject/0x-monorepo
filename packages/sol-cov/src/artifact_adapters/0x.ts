@@ -7,7 +7,7 @@ import { ContractData } from '../types';
 
 import { AbstractArtifactAdapter } from './abstract';
 
-export class ZeroExArtifactAdapter extends AbstractArtifactAdapter {
+export class SolCompilerArtifactAdapter extends AbstractArtifactAdapter {
     private _artifactsPath: string;
     private _sourcesPath: string;
     constructor(artifactsPath: string, sourcesPath: string) {

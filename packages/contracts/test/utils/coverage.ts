@@ -1,5 +1,5 @@
 import { devConstants } from '@0xproject/dev-utils';
-import { CoverageSubprovider, ZeroExArtifactAdapter } from '@0xproject/sol-cov';
+import { CoverageSubprovider, SolCompilerArtifactAdapter } from '@0xproject/sol-cov';
 import * as fs from 'fs';
 import * as _ from 'lodash';
 
@@ -16,7 +16,7 @@ export const coverage = {
         const defaultFromAddress = devConstants.TESTRPC_FIRST_ADDRESS;
         const CONFIG_FILE = 'compiler.json';
         const config = JSON.parse(fs.readFileSync(CONFIG_FILE).toString());
-        const zeroExArtifactsAdapter = new ZeroExArtifactAdapter(config.artifactsDir, config.contractsDir);
+        const zeroExArtifactsAdapter = new SolCompilerArtifactAdapter(config.artifactsDir, config.contractsDir);
         const coverageSubrpovider = new CoverageSubprovider(zeroExArtifactsAdapter, defaultFromAddress);
         return coverageSubprovider;
     },

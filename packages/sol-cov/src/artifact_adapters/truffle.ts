@@ -7,7 +7,7 @@ import * as rimraf from 'rimraf';
 
 import { ContractData } from '../types';
 
-import { ZeroExArtifactAdapter } from './0x';
+import { SolCompilerArtifactAdapter } from './0x';
 import { AbstractArtifactAdapter } from './abstract';
 
 export class TruffleArtifactAdapter extends AbstractArtifactAdapter {
@@ -35,8 +35,8 @@ export class TruffleArtifactAdapter extends AbstractArtifactAdapter {
         };
         const compiler = new Compiler(compilerOptions);
         await compiler.compileAsync();
-        const zeroExArtifactAdapter = new ZeroExArtifactAdapter(artifactsDir, this._sourcesPath);
-        const contractsDataFrom0xArtifacts = await zeroExArtifactAdapter.collectContractsDataAsync();
+        const solCompilerArtifactAdapter = new SolCompilerArtifactAdapter(artifactsDir, this._sourcesPath);
+        const contractsDataFrom0xArtifacts = await solCompilerArtifactAdapter.collectContractsDataAsync();
         rimraf.sync(artifactsDir);
         return contractsDataFrom0xArtifacts;
     }
