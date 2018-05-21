@@ -31,6 +31,7 @@ export const configs = {
         GNT: '/images/token_icons/golem.png',
         MKR: '/images/token_icons/makerdao.png',
         ZRX: '/images/token_icons/zero_ex.png',
+        AMIS: '/images/token_icons/amis.png',
         ANT: '/images/token_icons/aragon.png',
         BNT: '/images/token_icons/bancor.png',
         BAT: '/images/token_icons/basicattentiontoken.png',
