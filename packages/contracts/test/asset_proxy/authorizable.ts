@@ -20,6 +20,12 @@ describe('Authorizable', () => {
     let address: string;
     let authorizable: MixinAuthorizableContract;
     before(async () => {
+        await blockchainLifecycle.startAsync();
+    });
+    after(async () => {
+        await blockchainLifecycle.revertAsync();
+    });
+    before(async () => {
         const accounts = await web3Wrapper.getAvailableAddressesAsync();
         owner = address = accounts[0];
         notOwner = accounts[1];
