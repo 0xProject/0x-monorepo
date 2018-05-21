@@ -31,7 +31,7 @@ contract MSignatureValidator is
         Ecrecover,
         EIP712,
         Trezor,
-        Contract,
+        Signer,
         Validator,
         PreSigned
     }
