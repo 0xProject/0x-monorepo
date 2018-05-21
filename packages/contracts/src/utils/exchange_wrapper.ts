@@ -9,7 +9,7 @@ import { constants } from './constants';
 import { formatters } from './formatters';
 import { LogDecoder } from './log_decoder';
 import { orderUtils } from './order_utils';
-import { AssetProxyId, SignedOrder, SignedTransaction } from './types';
+import { AssetProxyId, OrderInfo, SignedOrder, SignedTransaction } from './types';
 
 export class ExchangeWrapper {
     private _exchange: ExchangeContract;
@@ -224,6 +224,26 @@ export class ExchangeWrapper {
     public async getTakerAssetFilledAmountAsync(orderHashHex: string): Promise<BigNumber> {
         const filledAmount = new BigNumber(await this._exchange.filled.callAsync(orderHashHex));
         return filledAmount;
+    }
+    public async getOrderInfoAsync(signedOrder: SignedOrder): Promise<OrderInfo> {
+        const orderInfo = (await this._exchange.getOrderInfo.callAsync(signedOrder)) as OrderInfo;
+        return orderInfo;
+    }
+    public async matchOrdersAsync(
+        signedOrderLeft: SignedOrder,
+        signedOrderRight: SignedOrder,
+        from: string,
+    ): Promise<TransactionReceiptWithDecodedLogs> {
+        const params = orderUtils.createMatchOrders(signedOrderLeft, signedOrderRight);
+        const txHash = await this._exchange.matchOrders.sendTransactionAsync(
+            params.left,
+            params.right,
+            params.leftSignature,
+            params.rightSignature,
+            { from },
+        );
+        const tx = await this._getTxWithDecodedExchangeLogsAsync(txHash);
+        return tx;
     }
     private async _getTxWithDecodedExchangeLogsAsync(txHash: string) {
         const tx = await this._zeroEx.awaitTransactionMinedAsync(txHash);

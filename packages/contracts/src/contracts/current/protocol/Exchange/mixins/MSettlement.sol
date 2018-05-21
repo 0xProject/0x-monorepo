@@ -16,26 +16,35 @@
 
 */
 
-pragma solidity ^0.4.23;
+pragma solidity ^0.4.24;
 
 import "../libs/LibOrder.sol";
+import "./MMatchOrders.sol";
+import "../libs/LibFillResults.sol";
 
 contract MSettlement {
 
-    /// @dev Settles an order by transfering assets between counterparties.
+    /// @dev Settles an order by transferring assets between counterparties.
     /// @param order Order struct containing order specifications.
     /// @param takerAddress Address selling takerAsset and buying makerAsset.
-    /// @param takerAssetFilledAmount The amount of takerAsset that will be transfered to the order's maker.
-    /// @return Amount filled by maker and fees paid by maker/taker.
+    /// @param fillResults Amounts to be filled and fees paid by maker and taker.
     function settleOrder(
         LibOrder.Order memory order,
         address takerAddress,
-        uint256 takerAssetFilledAmount)
-        internal
-        returns (
-            uint256 makerAssetFilledAmount,
-            uint256 makerFeePaid,
-            uint256 takerFeePaid
-        );
-}
+        LibFillResults.FillResults memory fillResults
+    )
+        internal;
 
+    /// @dev Settles matched order by transferring appropriate funds between order makers, taker, and fee recipient.
+    /// @param leftOrder First matched order.
+    /// @param rightOrder Second matched order.
+    /// @param takerAddress Address that matched the orders. The taker receives the spread between orders as profit.
+    /// @param matchedFillResults Struct holding amounts to transfer between makers, taker, and fee recipients.
+    function settleMatchedOrders(
+        LibOrder.Order memory leftOrder,
+        LibOrder.Order memory rightOrder,
+        address takerAddress,
+        LibFillResults.MatchedFillResults memory matchedFillResults
+    )
+        internal;
+}

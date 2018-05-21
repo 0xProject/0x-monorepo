@@ -16,7 +16,7 @@
 
 */
 
-pragma solidity ^0.4.23;
+pragma solidity ^0.4.24;
 
 contract LibOrder {
 
@@ -49,6 +49,15 @@ contract LibOrder {
         uint256 salt;
         bytes makerAssetData;
         bytes takerAssetData;
+    }
+
+    struct OrderInfo {
+        // See LibStatus for a complete description of order statuses
+        uint8 orderStatus;
+        // Keccak-256 EIP712 hash of the order
+        bytes32 orderHash;
+        // Amount of order that has been filled
+        uint256 orderTakerAssetFilledAmount;
     }
 
     /// @dev Calculates Keccak-256 hash of the order.

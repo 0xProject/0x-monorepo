@@ -16,7 +16,7 @@
 
 */
 
-pragma solidity ^0.4.23;
+pragma solidity ^0.4.24;
 pragma experimental ABIEncoderV2;
 
 import "../libs/LibOrder.sol";
@@ -48,4 +48,33 @@ contract IExchangeCore {
     function cancelOrder(LibOrder.Order memory order)
         public
         returns (bool);
+
+    /// @dev Gets information about an order: status, hash, and amount filled.
+    /// @param order Order to gather information on.
+    /// @return OrderInfo Information about the order and its state.
+    ///                   See LibOrder.OrderInfo for a complete description.
+    function getOrderInfo(LibOrder.Order memory order)
+        public
+        view
+        returns (LibOrder.OrderInfo memory orderInfo);
+
+    /// @dev Calculates amounts filled and fees paid by maker and taker.
+    /// @param order to be filled.
+    /// @param orderStatus Status of order to be filled.
+    /// @param orderTakerAssetFilledAmount Amount of order already filled.
+    /// @param takerAssetFillAmount Desired amount of order to fill by taker.
+    /// @return status Return status of calculating fill amounts. Returns Status.SUCCESS on success.
+    /// @return fillResults Amounts filled and fees paid by maker and taker.
+    function calculateFillResults(
+        LibOrder.Order memory order,
+        uint8 orderStatus,
+        uint256 orderTakerAssetFilledAmount,
+        uint256 takerAssetFillAmount
+    )
+        public
+        pure
+        returns (
+            uint8 status,
+            LibFillResults.FillResults memory fillResults
+        );
 }

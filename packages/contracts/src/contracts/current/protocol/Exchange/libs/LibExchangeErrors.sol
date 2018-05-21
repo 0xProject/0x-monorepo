@@ -16,20 +16,9 @@
 
 */
 
-pragma solidity ^0.4.23;
+pragma solidity ^0.4.24;
 
 contract LibExchangeErrors {
-
-    // Error Codes
-    enum Errors {
-        ORDER_EXPIRED,                     // Order has already expired
-        ORDER_FULLY_FILLED,                // Order has already been fully filled
-        ORDER_CANCELLED,                   // Order has already been cancelled
-        ROUNDING_ERROR_TOO_LARGE,          // Rounding error too large
-        INSUFFICIENT_BALANCE_OR_ALLOWANCE  // Insufficient balance or allowance for token transfer
-    }
-
-    event ExchangeError(uint8 indexed errorId, bytes32 indexed orderHash);
 
     // Core revert reasons
     string constant GT_ZERO_AMOUNT_REQUIRED = "Amount must be greater than 0.";
@@ -37,6 +26,10 @@ contract LibExchangeErrors {
     string constant INVALID_SENDER = "Invalid `msg.sender`.";
     string constant INVALID_CONTEXT = "Function called in an invalid context.";
     string constant INVALID_NEW_MAKER_EPOCH = "Specified salt must be greater than or equal to existing makerEpoch.";
+
+    // Order revert reasons
+    string constant INVALID_ORDER_TAKER_ASSET_AMOUNT = "Invalid order taker asset amount: expected a non-zero value.";
+    string constant INVALID_ORDER_MAKER_ASSET_AMOUNT = "Invalid order maker asset amount: expected a non-zero value.";
 
     // Transaction revert reasons
     string constant DUPLICATE_TRANSACTION_HASH = "Transaction has already been executed.";
@@ -55,4 +48,13 @@ contract LibExchangeErrors {
     string constant INVALID_SIGNATURE_LENGTH = "Invalid signature length.";
     string constant ILLEGAL_SIGNATURE_TYPE = "Illegal signature type.";
     string constant UNSUPPORTED_SIGNATURE_TYPE = "Unsupported signature type.";
+
+    // Order matching revert reasons
+    string constant ASSET_MISMATCH_MAKER_TAKER = "Left order maker asset is different from right order taker asset.";
+    string constant ASSET_MISMATCH_TAKER_MAKER = "Left order taker asset is different from right order maker asset.";
+    string constant NEGATIVE_SPREAD = "Matched orders must have a positive spread.";
+    string constant MISCALCULATED_TRANSFER_AMOUNTS = "A miscalculation occurred: the left maker would receive more than the right maker would spend.";
+    string constant ROUNDING_ERROR_TRANSFER_AMOUNTS = "A rounding error occurred when calculating transfer amounts for matched orders.";
+    string constant FAILED_TO_CALCULATE_FILL_RESULTS_FOR_LEFT_ORDER = "Failed to calculate fill results for left order.";
+    string constant FAILED_TO_CALCULATE_FILL_RESULTS_FOR_RIGHT_ORDER = "Failed to calculate fill results for right order.";
 }

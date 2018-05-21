@@ -23,7 +23,7 @@ TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
 SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 */
 
-pragma solidity ^0.4.23;
+pragma solidity ^0.4.24;
 
 import "./IERC721Token.sol";
 import "./IERC721Receiver.sol";

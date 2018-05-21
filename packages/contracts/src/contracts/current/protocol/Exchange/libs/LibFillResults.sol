@@ -16,7 +16,7 @@
 
 */
 
-pragma solidity ^0.4.23;
+pragma solidity ^0.4.24;
 
 import "../../../utils/SafeMath/SafeMath.sol";
 
@@ -31,6 +31,12 @@ contract LibFillResults is
         uint256 takerFeePaid;
     }
 
+    struct MatchedFillResults {
+        LibFillResults.FillResults left;
+        LibFillResults.FillResults right;
+        uint256 takerFillAmount;
+    }
+
     /// @dev Adds properties of both FillResults instances.
     ///      Modifies the first FillResults instance specified.
     /// @param totalFillResults Fill results instance that will be added onto.
@@ -43,5 +49,20 @@ contract LibFillResults is
         totalFillResults.takerAssetFilledAmount = safeAdd(totalFillResults.takerAssetFilledAmount, singleFillResults.takerAssetFilledAmount);
         totalFillResults.makerFeePaid = safeAdd(totalFillResults.makerFeePaid, singleFillResults.makerFeePaid);
         totalFillResults.takerFeePaid = safeAdd(totalFillResults.takerFeePaid, singleFillResults.takerFeePaid);
+    }
+
+    /// @dev Returns a null fill results struct
+    function getNullFillResults()
+        internal
+        pure
+        returns (FillResults memory)
+    {
+        // returns zeroed out FillResults instance
+        return FillResults({
+            makerAssetFilledAmount: 0,
+            takerAssetFilledAmount: 0,
+            makerFeePaid: 0,
+            takerFeePaid: 0
+        });
     }
 }
