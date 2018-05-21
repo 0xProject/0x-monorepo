@@ -7,13 +7,17 @@ import { coverage } from './coverage';
 
 export const txDefaults = {
     from: devConstants.TESTRPC_FIRST_ADDRESS,
-    gas: devConstants.GAS_LIMIT,
+    // gas: devConstants.GAS_LIMIT,
 };
-const providerConfigs = { shouldUseInProcessGanache: true };
+const providerConfigs = {
+    shouldUseInProcessGanache: false,
+    rpcUrl: 'http://localhost:8501',
+};
 export const provider = web3Factory.getRpcProvider(providerConfigs);
 const isCoverageEnabled = env.parseBoolean(EnvVars.SolidityCoverage);
 if (isCoverageEnabled) {
     const coverageSubprovider = coverage.getCoverageSubproviderSingleton();
     prependSubprovider(provider, coverageSubprovider);
 }
+
 export const web3Wrapper = new Web3Wrapper(provider);
