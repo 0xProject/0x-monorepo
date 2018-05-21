@@ -127,11 +127,6 @@ describe('Exchange core', () => {
     afterEach(async () => {
         await blockchainLifecycle.revertAsync();
     });
-    describe('internal functions', () => {
-        it('should include transferViaTokenTransferProxy', () => {
-            expect((exchange as any).transferViaTokenTransferProxy).to.be.undefined();
-        });
-    });
 
     describe('fillOrder', () => {
         beforeEach(async () => {
