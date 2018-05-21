@@ -7,7 +7,7 @@
                 "pr": 588
             },
             {
-                "note": "Add a possibility to define a solidity version to use",
+                "note": "Add the ability to define a specific solidity version",
                 "pr": 589
             }
         ]
