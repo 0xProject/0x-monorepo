@@ -14,7 +14,8 @@ export const coverage = {
     },
     _getCoverageSubprovider(): CoverageSubprovider {
         const defaultFromAddress = devConstants.TESTRPC_FIRST_ADDRESS;
-        const config = JSON.parse(fs.readFileSync('compiler.json').toString());
+        const CONFIG_FILE = 'compiler.json';
+        const config = JSON.parse(fs.readFileSync(CONFIG_FILE).toString());
         const zeroExArtifactsAdapter = new ZeroExArtifactAdapter(config.artifactsDir, config.contractsDir);
         return new CoverageSubprovider(zeroExArtifactsAdapter, defaultFromAddress);
     },
