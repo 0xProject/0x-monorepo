@@ -23,7 +23,7 @@ const blockchainLifecycle = new BlockchainLifecycle(web3Wrapper);
 
 describe('MultiSigWalletWithTimeLock', () => {
     let owners: string[];
-    const requiredApprovals = new BigNumber(2);
+    const REQUIRED_APPROVALS = new BigNumber(2);
     const SECONDS_TIME_LOCKED = new BigNumber(1000000);
 
     before(async () => {
@@ -56,7 +56,7 @@ describe('MultiSigWalletWithTimeLock', () => {
                     provider,
                     txDefaults,
                     owners,
-                    requiredApprovals,
+                    REQUIRED_APPROVALS,
                     secondsTimeLocked,
                 );
                 multiSigWrapper = new MultiSigWrapper(multiSig, provider);
@@ -127,7 +127,7 @@ describe('MultiSigWalletWithTimeLock', () => {
                     provider,
                     txDefaults,
                     owners,
-                    requiredApprovals,
+                    REQUIRED_APPROVALS,
                     SECONDS_TIME_LOCKED,
                 );
                 multiSigWrapper = new MultiSigWrapper(multiSig, provider);

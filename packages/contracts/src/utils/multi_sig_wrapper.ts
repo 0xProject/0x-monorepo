@@ -27,17 +27,17 @@ export class MultiSigWrapper {
         const txHash = await this._multiSig.submitTransaction.sendTransactionAsync(destination, value, data, {
             from,
         });
-        const tx = await this._getTxWithDecodedMultiSigLogs(txHash);
+        const tx = await this._getTxWithDecodedMultiSigLogsAsync(txHash);
         return tx;
     }
     public async confirmTransactionAsync(txId: BigNumber, from: string): Promise<TransactionReceiptWithDecodedLogs> {
         const txHash = await this._multiSig.confirmTransaction.sendTransactionAsync(txId, { from });
-        const tx = await this._getTxWithDecodedMultiSigLogs(txHash);
+        const tx = await this._getTxWithDecodedMultiSigLogsAsync(txHash);
         return tx;
     }
     public async executeTransactionAsync(txId: BigNumber, from: string): Promise<TransactionReceiptWithDecodedLogs> {
         const txHash = await this._multiSig.executeTransaction.sendTransactionAsync(txId, { from });
-        const tx = await this._getTxWithDecodedMultiSigLogs(txHash);
+        const tx = await this._getTxWithDecodedMultiSigLogsAsync(txHash);
         return tx;
     }
     public async executeRemoveAuthorizedAddressAsync(
@@ -46,10 +46,10 @@ export class MultiSigWrapper {
     ): Promise<TransactionReceiptWithDecodedLogs> {
         const txHash = await (this
             ._multiSig as AssetProxyOwnerContract).executeRemoveAuthorizedAddress.sendTransactionAsync(txId, { from });
-        const tx = await this._getTxWithDecodedMultiSigLogs(txHash);
+        const tx = await this._getTxWithDecodedMultiSigLogsAsync(txHash);
         return tx;
     }
-    private async _getTxWithDecodedMultiSigLogs(txHash: string) {
+    private async _getTxWithDecodedMultiSigLogsAsync(txHash: string): Promise<TransactionReceiptWithDecodedLogs> {
         const tx = await this._zeroEx.awaitTransactionMinedAsync(txHash);
         tx.logs = _.filter(tx.logs, log => log.address === this._multiSig.address);
         tx.logs = _.map(tx.logs, log => this._logDecoder.decodeLogOrThrow(log));

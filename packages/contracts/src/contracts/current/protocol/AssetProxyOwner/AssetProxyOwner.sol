@@ -18,7 +18,7 @@
 
 pragma solidity ^0.4.10;
 
-import "../../multisig/MultiSigWalletWithTimeLock/MultiSigWalletWithTimeLock.sol";
+import "../../multisig/MultiSigWalletWithTimeLock.sol";
 
 contract AssetProxyOwner is
     MultiSigWalletWithTimeLock

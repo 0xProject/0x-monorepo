@@ -1,6 +1,6 @@
 /*
 
-  Copyright 2017 ZeroEx Intl.
+  Copyright 2018 ZeroEx Intl.
 
   Licensed under the Apache License, Version 2.0 (the "License");
   you may not use this file except in compliance with the License.
@@ -18,7 +18,7 @@
 
 pragma solidity ^0.4.10;
 
-import "../../current/multisig/MultiSigWalletWithTimeLock/MultiSigWalletWithTimeLock.sol";
+import "../../current/multisig/MultiSigWalletWithTimeLock.sol";
 
 contract MultiSigWalletWithTimeLockExceptRemoveAuthorizedAddress is MultiSigWalletWithTimeLock {
 
