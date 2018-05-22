@@ -1,6 +1,6 @@
 {
     "name": "@0xproject/react-shared",
-    "version": "0.1.6",
+    "version": "0.1.7",
     "engines": {
         "node": ">=6.12"
     },
@@ -25,9 +25,9 @@
         "url": "https://github.com/0xProject/0x-monorepo.git"
     },
     "devDependencies": {
-        "@0xproject/dev-utils": "^0.4.1",
-        "@0xproject/monorepo-scripts": "^0.1.19",
-        "@0xproject/tslint-config": "^0.4.17",
+        "@0xproject/dev-utils": "^0.4.2",
+        "@0xproject/monorepo-scripts": "^0.1.20",
+        "@0xproject/tslint-config": "^0.4.18",
         "copyfiles": "^1.2.0",
         "make-promises-safe": "^1.1.0",
         "shx": "^0.2.2",

@@ -1,6 +1,6 @@
 {
     "name": "0x.js",
-    "version": "0.37.2",
+    "version": "0.38.0",
     "engines": {
         "node": ">=6.12"
     },
@@ -66,12 +66,12 @@
     },
     "license": "Apache-2.0",
     "devDependencies": {
-        "@0xproject/abi-gen": "^0.2.13",
-        "@0xproject/dev-utils": "^0.4.1",
-        "@0xproject/migrations": "^0.0.5",
-        "@0xproject/monorepo-scripts": "^0.1.19",
-        "@0xproject/sol-compiler": "^0.4.3",
-        "@0xproject/tslint-config": "^0.4.17",
+        "@0xproject/abi-gen": "^0.3.0",
+        "@0xproject/dev-utils": "^0.4.2",
+        "@0xproject/migrations": "^0.0.6",
+        "@0xproject/monorepo-scripts": "^0.1.20",
+        "@0xproject/sol-compiler": "^0.5.0",
+        "@0xproject/tslint-config": "^0.4.18",
         "@types/lodash": "4.14.104",
         "@types/mocha": "^2.2.42",
         "@types/node": "^8.0.53",
@@ -98,16 +98,16 @@
         "webpack": "^3.1.0"
     },
     "dependencies": {
-        "@0xproject/assert": "^0.2.9",
-        "@0xproject/base-contract": "^0.3.1",
-        "@0xproject/contract-wrappers": "^0.0.1",
-        "@0xproject/order-utils": "^0.0.4",
-        "@0xproject/order-watcher": "^0.0.1",
-        "@0xproject/sol-compiler": "^0.4.3",
-        "@0xproject/types": "^0.6.3",
-        "@0xproject/typescript-typings": "^0.3.1",
-        "@0xproject/utils": "^0.6.1",
-        "@0xproject/web3-wrapper": "^0.6.3",
+        "@0xproject/assert": "^0.2.10",
+        "@0xproject/base-contract": "^0.3.2",
+        "@0xproject/contract-wrappers": "^0.0.2",
+        "@0xproject/order-utils": "^0.0.5",
+        "@0xproject/order-watcher": "^0.0.2",
+        "@0xproject/sol-compiler": "^0.5.0",
+        "@0xproject/types": "^0.7.0",
+        "@0xproject/typescript-typings": "^0.3.2",
+        "@0xproject/utils": "^0.6.2",
+        "@0xproject/web3-wrapper": "^0.6.4",
         "ethers": "^3.0.15",
         "lodash": "^4.17.4"
     },
