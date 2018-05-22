@@ -122,7 +122,6 @@ export class CoverageManager {
         this._verbose = verbose;
     }
     public appendTraceInfo(traceInfo: TraceInfo): void {
-        // console.log(JSON.stringify(traceInfo, null, '\n'));
         this._traceInfos.push(traceInfo);
     }
     public async writeCoverageAsync(): Promise<void> {
