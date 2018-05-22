@@ -27,7 +27,9 @@ export function getTracesByContractAddress(structLogs: StructLog[], startAddress
             const currentAddress = _.last(callStack) as string;
             const jumpAddressOffset = structLog.op === OpCode.DelegateCall ? 4 : 2;
             const newAddress = addressUtils.padZeros(
-                new BigNumber(addHexPrefix(structLog.stack[structLog.stack.length - jumpAddressOffset])).toString(16),
+                new BigNumber(addHexPrefix(structLog.stack[structLog.stack.length - jumpAddressOffset - 1])).toString(
+                    16,
+                ),
             );
             if (structLog === _.last(structLogs)) {
                 throw new Error('CALL-like opcode can not be the last one');
