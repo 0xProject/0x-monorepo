@@ -88,6 +88,7 @@
         "tslint": "5.8.0",
         "tslint-config-0xproject": "^0.0.2",
         "typescript": "2.7.1",
+        "uglifyjs-webpack-plugin": "^1.2.5",
         "webpack": "^3.1.0",
         "webpack-dev-middleware": "^1.10.0",
         "webpack-dev-server": "^2.5.0"
