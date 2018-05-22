@@ -61,13 +61,13 @@ export const Menu: React.StatelessComponent<MenuProps> = (props: MenuProps) => {
     return (
         <div>
             {_.map(props.menuItemEntries, entry => {
-                const selected = entry.to === props.selectedPath;
+                const isSelected = entry.to === props.selectedPath;
                 return (
                     <MenuItem key={entry.to} to={entry.to}>
                         <MenuItemLabel
                             title={entry.labelText}
                             iconName={entry.iconName}
-                            selected={selected}
+                            selected={isSelected}
                             theme={props.theme}
                         />
                     </MenuItem>
