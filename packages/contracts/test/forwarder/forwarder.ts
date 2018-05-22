@@ -37,8 +37,8 @@ describe(ContractName.Forwarder, () => {
     let feeRecipientAddress: string;
     let defaultTakerAssetAddress: string;
     let defaultMakerAssetAddress: string;
-    const INITIAL_BALANCE = ZeroEx.toBaseUnitAmount(new BigNumber(10000), DECIMALS_DEFAULT);
-    const INITIAL_ALLOWANCE = ZeroEx.toBaseUnitAmount(new BigNumber(10000), DECIMALS_DEFAULT);
+    const INITIAL_BALANCE = Web3Wrapper.toBaseUnitAmount(new BigNumber(10000), DECIMALS_DEFAULT);
+    const INITIAL_ALLOWANCE = Web3Wrapper.toBaseUnitAmount(new BigNumber(10000), DECIMALS_DEFAULT);
 
     let weth: DummyERC20TokenContract;
     let erc20TokenA: DummyERC20TokenContract;
@@ -64,8 +64,6 @@ describe(ContractName.Forwarder, () => {
 
     let erc721MakerAssetIds: BigNumber[];
     let feeProportion: number = 0;
-
-    let zeroEx: ZeroEx;
 
     before(async () => {
         const accounts = await web3Wrapper.getAvailableAddressesAsync();
@@ -99,7 +97,7 @@ describe(ContractName.Forwarder, () => {
             assetProxyUtils.encodeERC20ProxyData(zrxToken.address),
         );
         const exchange = new ExchangeContract(exchangeInstance.abi, exchangeInstance.address, provider);
-        zeroEx = new ZeroEx(provider, {
+        const zeroEx = new ZeroEx(provider, {
             exchangeContractAddress: exchangeInstance.address,
             networkId: constants.TESTRPC_NETWORK_ID,
         });
@@ -122,10 +120,10 @@ describe(ContractName.Forwarder, () => {
             feeRecipientAddress,
             makerAssetData: assetProxyUtils.encodeERC20ProxyData(defaultMakerAssetAddress),
             takerAssetData: assetProxyUtils.encodeERC20ProxyData(defaultTakerAssetAddress),
-            makerAssetAmount: ZeroEx.toBaseUnitAmount(new BigNumber(200), DECIMALS_DEFAULT),
-            takerAssetAmount: ZeroEx.toBaseUnitAmount(new BigNumber(10), DECIMALS_DEFAULT),
-            makerFee: ZeroEx.toBaseUnitAmount(new BigNumber(1), DECIMALS_DEFAULT),
-            takerFee: ZeroEx.toBaseUnitAmount(new BigNumber(0), DECIMALS_DEFAULT),
+            makerAssetAmount: Web3Wrapper.toBaseUnitAmount(new BigNumber(200), DECIMALS_DEFAULT),
+            takerAssetAmount: Web3Wrapper.toBaseUnitAmount(new BigNumber(10), DECIMALS_DEFAULT),
+            makerFee: Web3Wrapper.toBaseUnitAmount(new BigNumber(1), DECIMALS_DEFAULT),
+            takerFee: Web3Wrapper.toBaseUnitAmount(new BigNumber(0), DECIMALS_DEFAULT),
         };
         const privateKey = constants.TESTRPC_PRIVATE_KEYS[accounts.indexOf(makerAddress)];
         orderFactory = new OrderFactory(privateKey, defaultOrderParams);
@@ -167,11 +165,11 @@ describe(ContractName.Forwarder, () => {
         signedOrders = [signedOrder];
         feeOrder = orderFactory.newSignedOrder({
             makerAssetData: assetProxyUtils.encodeERC20ProxyData(zrxToken.address),
-            takerFee: ZeroEx.toBaseUnitAmount(new BigNumber(1), DECIMALS_DEFAULT),
+            takerFee: Web3Wrapper.toBaseUnitAmount(new BigNumber(1), DECIMALS_DEFAULT),
         });
         feeOrders = [feeOrder];
         orderWithFee = orderFactory.newSignedOrder({
-            takerFee: ZeroEx.toBaseUnitAmount(new BigNumber(1), DECIMALS_DEFAULT),
+            takerFee: Web3Wrapper.toBaseUnitAmount(new BigNumber(1), DECIMALS_DEFAULT),
         });
         signedOrdersWithFee = [orderWithFee];
     });
@@ -332,7 +330,7 @@ describe(ContractName.Forwarder, () => {
         it('should buy the exact amount of assets when buying zrx with fee abstraction', async () => {
             signedOrder = orderFactory.newSignedOrder({
                 makerAssetData: assetProxyUtils.encodeERC20ProxyData(zrxToken.address),
-                takerFee: ZeroEx.toBaseUnitAmount(new BigNumber(1), DECIMALS_DEFAULT),
+                takerFee: Web3Wrapper.toBaseUnitAmount(new BigNumber(1), DECIMALS_DEFAULT),
             });
             signedOrdersWithFee = [signedOrder];
             feeOrders = [];
@@ -389,7 +387,7 @@ describe(ContractName.Forwarder, () => {
             const makerAssetId = erc721MakerAssetIds[0];
             signedOrder = orderFactory.newSignedOrder({
                 makerAssetAmount: new BigNumber(1),
-                takerFee: ZeroEx.toBaseUnitAmount(new BigNumber(1), DECIMALS_DEFAULT),
+                takerFee: Web3Wrapper.toBaseUnitAmount(new BigNumber(1), DECIMALS_DEFAULT),
                 makerAssetData: assetProxyUtils.encodeERC721ProxyData(erc721Token.address, makerAssetId),
             });
             signedOrders = [signedOrder];
@@ -413,7 +411,7 @@ describe(ContractName.Forwarder, () => {
             const makerAssetId = erc721MakerAssetIds[0];
             signedOrder = orderFactory.newSignedOrder({
                 makerAssetAmount: new BigNumber(1),
-                takerFee: ZeroEx.toBaseUnitAmount(new BigNumber(1), DECIMALS_DEFAULT),
+                takerFee: Web3Wrapper.toBaseUnitAmount(new BigNumber(1), DECIMALS_DEFAULT),
                 makerAssetData: assetProxyUtils.encodeERC721ProxyData(erc721Token.address, makerAssetId),
             });
             signedOrders = [signedOrder];
