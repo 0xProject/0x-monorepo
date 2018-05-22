@@ -703,7 +703,7 @@ describe('Exchange core', () => {
             // Create 3 orders with makerEpoch values: 0,1,2,3
             // Since we cancelled with makerEpoch=1, orders with makerEpoch<=1 will not be processed
             erc20Balances = await erc20Wrapper.getBalancesAsync();
-            const signedOrders = await Promise.all([
+            const signedOrders = [
                 orderFactory.newSignedOrder({
                     makerAssetAmount: Web3Wrapper.toBaseUnitAmount(new BigNumber(9), 18),
                     takerAssetAmount: Web3Wrapper.toBaseUnitAmount(new BigNumber(9), 18),
@@ -724,7 +724,7 @@ describe('Exchange core', () => {
                     takerAssetAmount: Web3Wrapper.toBaseUnitAmount(new BigNumber(7979), 18),
                     salt: new BigNumber(3),
                 }),
-            ]);
+            ];
             await exchangeWrapper.batchFillOrdersNoThrowAsync(signedOrders, takerAddress);
 
             const newBalances = await erc20Wrapper.getBalancesAsync();

@@ -90,7 +90,7 @@ describe('AssetProxyOwner', () => {
         });
         it('should throw if a null address is included in assetProxyContracts', async () => {
             const assetProxyContractAddresses = [erc20Proxy.address, ZeroEx.NULL_ADDRESS];
-            expect(
+            return expect(
                 AssetProxyOwnerContract.deployFrom0xArtifactAsync(
                     artifacts.AssetProxyOwner,
                     provider,
@@ -128,7 +128,7 @@ describe('AssetProxyOwner', () => {
     describe('registerAssetProxy', () => {
         it('should throw if not called by multisig', async () => {
             const isRegistered = true;
-            expect(
+            return expect(
                 multiSig.registerAssetProxy.sendTransactionAsync(erc20Proxy.address, isRegistered, { from: owners[0] }),
             ).to.be.rejectedWith(constants.REVERT);
         });

@@ -50,7 +50,7 @@ export class MultiSigWrapper {
         return tx;
     }
     private async _getTxWithDecodedMultiSigLogsAsync(txHash: string): Promise<TransactionReceiptWithDecodedLogs> {
-        const tx = await this._zeroEx.awaitTransactionMinedAsync(txHash);
+        const tx = await this._zeroEx.awaitTransactionMinedAsync(txHash, constants.AWAIT_TRANSACTION_MINED_MS);
         tx.logs = _.filter(tx.logs, log => log.address === this._multiSig.address);
         tx.logs = _.map(tx.logs, log => this._logDecoder.decodeLogOrThrow(log));
         return tx;
