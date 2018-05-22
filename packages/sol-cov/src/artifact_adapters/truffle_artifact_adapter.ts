@@ -19,7 +19,7 @@ export class TruffleArtifactAdapter extends AbstractArtifactAdapter {
         this._sourcesPath = sourcesPath;
     }
     public async collectContractsDataAsync(): Promise<ContractData[]> {
-        const artifactsDir = '0x-artifacts';
+        const artifactsDir = '.0x-artifacts';
         const compilerOptions: CompilerOptions = {
             contractsDir: this._sourcesPath,
             artifactsDir,

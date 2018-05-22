@@ -24,7 +24,6 @@ export class SolCompilerArtifactAdapter extends AbstractArtifactAdapter {
             let sources = _.keys(artifact.sources);
             sources = _.map(sources, relativeFilePath => path.resolve(this._sourcesPath, relativeFilePath));
             const contractName = artifact.contractName;
-            // We don't compute coverage for dependencies
             const sourceCodes = _.map(sources, (source: string) => fs.readFileSync(source).toString());
             const contractData = {
                 sourceCodes,
