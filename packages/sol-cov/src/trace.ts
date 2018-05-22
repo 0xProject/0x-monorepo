@@ -25,7 +25,7 @@ export function getTracesByContractAddress(structLogs: StructLog[], startAddress
 
         if (_.includes([OpCode.CallCode, OpCode.StaticCall, OpCode.Call, OpCode.DelegateCall], structLog.op)) {
             const currentAddress = _.last(callStack) as string;
-            const jumpAddressOffset = structLog.op === OpCode.DelegateCall ? 4 : 2;
+            const jumpAddressOffset = 1;
             const newAddress = addressUtils.padZeros(
                 new BigNumber(addHexPrefix(structLog.stack[structLog.stack.length - jumpAddressOffset - 1])).toString(
                     16,
@@ -65,6 +65,21 @@ export function getTracesByContractAddress(structLogs: StructLog[], startAddress
                 "Detected a contract created from within another contract. Sol-cov currently doesn't support that scenario. We'll just skip that trace",
             );
             return traceByContractAddress;
+        } else {
+            if (structLog !== _.last(structLogs)) {
+                const nextStructLog = structLogs[i + 1];
+                if (nextStructLog.depth === structLog.depth) {
+                    continue;
+                } else if (nextStructLog.depth === structLog.depth - 1) {
+                    const currentAddress = callStack.pop() as string;
+                    traceByContractAddress[currentAddress] = (traceByContractAddress[currentAddress] || []).concat(
+                        currentTraceSegment,
+                    );
+                    currentTraceSegment = [];
+                } else {
+                    throw new Error('Shit broke');
+                }
+            }
         }
     }
     if (callStack.length !== 0) {
