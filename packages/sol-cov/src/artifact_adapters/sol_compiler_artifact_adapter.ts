@@ -5,7 +5,7 @@ import * as path from 'path';
 
 import { ContractData } from '../types';
 
-import { AbstractArtifactAdapter } from './abstract';
+import { AbstractArtifactAdapter } from './abstract_artifact_adapter';
 
 export class SolCompilerArtifactAdapter extends AbstractArtifactAdapter {
     private _artifactsPath: string;

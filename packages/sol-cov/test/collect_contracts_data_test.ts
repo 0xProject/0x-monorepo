@@ -4,7 +4,7 @@ import 'make-promises-safe';
 import 'mocha';
 import * as path from 'path';
 
-import { SolCompilerArtifactAdapter } from '../src/artifact_adapters/0x';
+import { SolCompilerArtifactAdapter } from '../src/artifact_adapters/sol_compiler_artifact_adapter';
 
 const expect = chai.expect;
 

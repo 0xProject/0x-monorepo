@@ -4,7 +4,7 @@ import * as fs from 'fs';
 import * as _ from 'lodash';
 import { Lock } from 'semaphore-async-await';
 
-import { AbstractArtifactAdapter } from './artifact_adapters/abstract';
+import { AbstractArtifactAdapter } from './artifact_adapters/abstract_artifact_adapter';
 import { constants } from './constants';
 import { CoverageManager } from './coverage_manager';
 import { getTracesByContractAddress } from './trace';
