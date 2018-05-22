@@ -1,5 +1,6 @@
-import { TransactionReceiptWithDecodedLogs, ZeroEx } from '0x.js';
+import { TransactionReceiptWithDecodedLogs } from '@0xproject/types';
 import { BigNumber } from '@0xproject/utils';
+import { Web3Wrapper } from '@0xproject/web3-wrapper';
 import * as _ from 'lodash';
 import * as Web3 from 'web3';
 
@@ -14,10 +15,8 @@ import { AssetProxyId, OrderInfo, SignedOrder, SignedTransaction } from './types
 export class ExchangeWrapper {
     private _exchange: ExchangeContract;
     private _logDecoder: LogDecoder = new LogDecoder(constants.TESTRPC_NETWORK_ID);
-    private _zeroEx: ZeroEx;
-    constructor(exchangeContract: ExchangeContract, zeroEx: ZeroEx) {
+    constructor(exchangeContract: ExchangeContract) {
         this._exchange = exchangeContract;
-        this._zeroEx = zeroEx;
     }
     public async fillOrderAsync(
         signedOrder: SignedOrder,
@@ -196,7 +195,7 @@ export class ExchangeWrapper {
         opts: { oldAssetProxyAddressIfExists?: string } = {},
     ): Promise<TransactionReceiptWithDecodedLogs> {
         const oldAssetProxyAddress = _.isUndefined(opts.oldAssetProxyAddressIfExists)
-            ? ZeroEx.NULL_ADDRESS
+            ? constants.NULL_ADDRESS
             : opts.oldAssetProxyAddressIfExists;
         const txHash = await this._exchange.registerAssetProxy.sendTransactionAsync(
             assetProxyId,
@@ -246,7 +245,7 @@ export class ExchangeWrapper {
         return tx;
     }
     private async _getTxWithDecodedExchangeLogsAsync(txHash: string) {
-        const tx = await this._zeroEx.awaitTransactionMinedAsync(txHash);
+        const tx = await Web3Wrapper.awaitTransactionMinedAsync(txHash);
         tx.logs = _.filter(tx.logs, log => log.address === this._exchange.address);
         tx.logs = _.map(tx.logs, log => this._logDecoder.decodeLogOrThrow(log));
         return tx;

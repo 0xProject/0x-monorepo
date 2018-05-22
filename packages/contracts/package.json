@@ -28,8 +28,7 @@
         "test:circleci": "yarn test:coverage"
     },
     "config": {
-        "abis":
-            "../migrations/artifacts/2.0.0/@(DummyERC20Token|DummyERC721Token|ERC20Proxy|ERC721Proxy|Exchange|MixinAuthorizable|MultiSigWallet|MultiSigWalletWithTimeLock|MultiSigWalletWithTimeLockExceptRemoveAuthorizedAddress|TestAssetProxyDispatcher|TestLibBytes|TestLibs|TestSignatureValidator|TokenRegistry|WETH9|ZRXToken).json"
+        "abis": "../migrations/artifacts/2.0.0/@(DummyERC20Token|DummyERC721Token|ERC20Proxy|ERC721Proxy|Exchange|MixinAuthorizable|MultiSigWallet|MultiSigWalletWithTimeLock|MultiSigWalletWithTimeLockExceptRemoveAuthorizedAddress|TestAssetProxyDispatcher|TestLibBytes|TestLibs|TestSignatureValidator|TokenRegistry|WETH9|ZRXToken).json"
     },
     "repository": {
         "type": "git",
@@ -64,8 +63,9 @@
         "yargs": "^10.0.3"
     },
     "dependencies": {
-        "0x.js": "^0.37.2",
         "@0xproject/base-contract": "^0.3.1",
+        "@0xproject/contract-wrappers": "^0.0.2",
+        "@0xproject/order-utils": "^0.0.4",
         "@0xproject/sol-compiler": "^0.4.3",
         "@0xproject/types": "^0.6.3",
         "@0xproject/typescript-typings": "^0.3.1",

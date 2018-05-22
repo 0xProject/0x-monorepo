@@ -1,4 +1,4 @@
-import { ZeroEx } from '0x.js';
+import { generatePseudoRandomSalt } from '@0xproject/order-utils';
 import { Provider } from '@0xproject/types';
 import { BigNumber } from '@0xproject/utils';
 import * as _ from 'lodash';
@@ -54,7 +54,7 @@ export class ERC721Wrapper {
         _.forEach(this._dummyTokenContracts, dummyTokenContract => {
             _.forEach(this._tokenOwnerAddresses, tokenOwnerAddress => {
                 _.forEach(_.range(constants.NUM_ERC721_TOKENS_TO_MINT), () => {
-                    const tokenId = ZeroEx.generatePseudoRandomSalt();
+                    const tokenId = generatePseudoRandomSalt();
                     setBalancePromises.push(
                         dummyTokenContract.mint.sendTransactionAsync(tokenOwnerAddress, tokenId, {
                             from: this._contractOwnerAddress,

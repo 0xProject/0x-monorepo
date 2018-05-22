@@ -1,4 +1,3 @@
-import { ZeroEx } from '0x.js';
 import { BlockchainLifecycle } from '@0xproject/dev-utils';
 import { BigNumber } from '@0xproject/utils';
 import * as chai from 'chai';
@@ -37,8 +36,6 @@ describe('Asset Transfer Proxies', () => {
     let erc721Wrapper: ERC721Wrapper;
     let erc721MakerTokenId: BigNumber;
 
-    let zeroEx: ZeroEx;
-
     before(async () => {
         const accounts = await web3Wrapper.getAvailableAddressesAsync();
         const usedAddresses = ([owner, notAuthorized, exchangeAddress, makerAddress, takerAddress] = accounts);
@@ -60,10 +57,6 @@ describe('Asset Transfer Proxies', () => {
         erc721MakerTokenId = erc721Balances[makerAddress][erc721Token.address][0];
         await erc721Proxy.addAuthorizedAddress.sendTransactionAsync(exchangeAddress, {
             from: owner,
-        });
-
-        zeroEx = new ZeroEx(provider, {
-            networkId: constants.TESTRPC_NETWORK_ID,
         });
     });
     beforeEach(async () => {
@@ -179,7 +172,7 @@ describe('Asset Transfer Proxies', () => {
                     amounts,
                     { from: exchangeAddress },
                 );
-                const res = await zeroEx.awaitTransactionMinedAsync(txHash);
+                const res = await web3Wrapper.awaitTransactionMinedAsync(txHash);
                 const newBalances = await erc20Wrapper.getBalancesAsync();
 
                 expect(res.logs.length).to.equal(numTransfers);
@@ -356,7 +349,7 @@ describe('Asset Transfer Proxies', () => {
                     amounts,
                     { from: exchangeAddress },
                 );
-                const res = await zeroEx.awaitTransactionMinedAsync(txHash);
+                const res = await web3Wrapper.awaitTransactionMinedAsync(txHash);
                 expect(res.logs.length).to.equal(numTransfers);
 
                 const newOwnerMakerAssetA = await erc721Token.ownerOf.callAsync(makerTokenIdA);
