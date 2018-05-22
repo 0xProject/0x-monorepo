@@ -12,7 +12,7 @@
         "prebuild": "run-s clean compile copy_artifacts generate_contract_wrappers",
         "copy_artifacts": "copyfiles 'artifacts/1.0.0/**/*' ./lib",
         "build": "tsc",
-        "clean": "shx rm -rf lib",
+        "clean": "shx rm -rf lib src/contract_wrappers",
         "lint": "tslint --project .",
         "migrate": "run-s build compile script:migrate",
         "script:migrate": "node ./lib/migrate.js",

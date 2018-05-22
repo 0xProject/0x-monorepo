@@ -11,6 +11,7 @@ chai.config.includeStack = true;
 chai.use(dirtyChai);
 const expect = chai.expect;
 
+// tslint:disable:custom-no-magic-numbers
 describe('Assertions', () => {
     const variableName = 'variable';
     describe('#isBigNumber', () => {
@@ -252,3 +253,4 @@ describe('Assertions', () => {
         });
     });
 });
+// tslint:enable:custom-no-magic-numbers

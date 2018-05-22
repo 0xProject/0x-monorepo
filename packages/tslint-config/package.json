@@ -45,7 +45,8 @@
         "lodash": "^4.17.4",
         "tslint": "5.8.0",
         "tslint-eslint-rules": "^4.1.1",
-        "tslint-react": "^3.2.0"
+        "tslint-react": "^3.2.0",
+        "tsutils": "^2.12.1"
     },
     "publishConfig": {
         "access": "public"

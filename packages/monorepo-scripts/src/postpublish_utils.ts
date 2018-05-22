@@ -158,6 +158,7 @@ export const postpublishUtils = {
             // HACK: tsconfig.json needs wildcard directory endings as `/**/*`
             // but TypeDoc needs it as `/**` in order to pick up files at the root
             if (_.endsWith(includePath, '/**/*')) {
+                // tslint:disable-next-line:custom-no-magic-numbers
                 includePath = includePath.slice(0, -2);
             }
             return includePath;

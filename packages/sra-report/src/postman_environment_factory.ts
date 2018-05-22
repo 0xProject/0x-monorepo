@@ -11,6 +11,12 @@ import { addresses as rinkebyAddresses } from './contract_addresses/rinkeby_addr
 import { addresses as ropstenAddresses } from './contract_addresses/ropsten_addresses';
 
 const ENVIRONMENT_NAME = 'SRA Report';
+const networkNameToId: { [networkName: string]: number } = {
+    mainnet: 1,
+    ropsten: 3,
+    rinkeby: 4,
+    kovan: 42,
+};
 
 export interface EnvironmentValue {
     key: string;
@@ -107,13 +113,13 @@ async function createOrderEnvironmentValuesAsync(url: string): Promise<Environme
 }
 function getContractAddresses(networkId: number): Addresses {
     switch (networkId) {
-        case 1:
+        case networkNameToId.mainnet:
             return mainnetAddresses;
-        case 3:
+        case networkNameToId.ropsten:
             return ropstenAddresses;
-        case 4:
+        case networkNameToId.rinkeby:
             return rinkebyAddresses;
-        case 42:
+        case networkNameToId.kovan:
             return kovanAddresses;
         default:
             throw new Error('Unsupported network id');
