@@ -37,7 +37,10 @@ interface WrapEtherItemState {
 }
 
 const styles: Styles = {
-    topLabel: { color: colors.black, fontSize: 11 },
+    topLabel: {
+        color: colors.black,
+        fontSize: 11,
+    },
     inputContainer: {
         backgroundColor: colors.white,
         borderBottomRightRadius: 3,
@@ -45,9 +48,10 @@ const styles: Styles = {
         borderTopRightRadius: 3,
         borderTopLeftRadius: 3,
         padding: 4,
-        width: 125,
     },
-    amountInput: { height: 34 },
+    amountInput: {
+        height: 34,
+    },
     amountInputLabel: {
         paddingTop: 10,
         paddingRight: 10,
@@ -58,8 +62,6 @@ const styles: Styles = {
     amountInputHint: {
         bottom: 18,
     },
-    innerDiv: { paddingLeft: 60, paddingTop: 0, paddingBottom: 10 },
-    wrapEtherConfirmationButtonContainer: { width: 128, top: 19 },
     wrapEtherConfirmationButtonLabel: {
         fontSize: 12,
         color: colors.white,
@@ -69,6 +71,12 @@ const styles: Styles = {
         marginTop: 4,
         color: colors.red,
         minHeight: 20,
+    },
+    conversionSpinner: {
+        paddingTop: 26,
+    },
+    conversionSpinnerPlaceholder: {
+        width: 61,
     },
 };
 
@@ -85,11 +93,13 @@ export class WrapEtherItem extends React.Component<WrapEtherItemProps, WrapEther
         const etherBalanceInEth = ZeroEx.toUnitAmount(this.props.userEtherBalanceInWei, constants.DECIMAL_PLACES_ETH);
         const isWrappingEth = this.props.direction === Side.Deposit;
         const topLabelText = isWrappingEth ? 'Convert ETH into WETH 1:1' : 'Convert WETH into ETH 1:1';
+
         return (
-            <ListItem
-                primaryText={
-                    <div>
-                        <div style={styles.topLabel}>{topLabelText}</div>
+            <div className="flex" style={walletItemStyles.focusedItem}>
+                <div>{this._renderIsEthConversionHappeningSpinner()} </div>
+                <div className="flex flex-column">
+                    <div style={styles.topLabel}>{topLabelText}</div>
+                    <div className="flex items-center">
                         <div style={styles.inputContainer}>
                             {isWrappingEth ? (
                                 <EthAmountInput
@@ -128,16 +138,12 @@ export class WrapEtherItem extends React.Component<WrapEtherItemProps, WrapEther
                                 />
                             )}
                         </div>
-                        {this._renderErrorMsg()}
+                        <div>{this._renderWrapEtherConfirmationButton()}</div>
                     </div>
-                }
-                secondaryTextLines={2}
-                disableTouchRipple={true}
-                style={walletItemStyles.focusedItem}
-                innerDivStyle={styles.innerDiv}
-                leftIcon={this._renderIsEthConversionHappeningSpinner()}
-                rightAvatar={this._renderWrapEtherConfirmationButton()}
-            />
+
+                    {this._renderErrorMsg()}
+                </div>
+            </div>
         );
     }
     private _onValueChange(isValid: boolean, amount?: BigNumber): void {
@@ -152,16 +158,18 @@ export class WrapEtherItem extends React.Component<WrapEtherItemProps, WrapEther
     }
     private _renderIsEthConversionHappeningSpinner(): React.ReactElement<{}> {
         return this.state.isEthConversionHappening ? (
-            <div className="pl1" style={{ paddingTop: 10 }}>
+            <div className="pl3 pr2" style={styles.conversionSpinner}>
                 <i className="zmdi zmdi-spinner zmdi-hc-spin" />
             </div>
-        ) : null;
+        ) : (
+            <div style={styles.conversionSpinnerPlaceholder} />
+        );
     }
     private _renderWrapEtherConfirmationButton(): React.ReactElement<{}> {
         const isWrappingEth = this.props.direction === Side.Deposit;
         const labelText = isWrappingEth ? 'wrap' : 'unwrap';
         return (
-            <div style={styles.wrapEtherConfirmationButtonContainer}>
+            <div className="pl1 pr3">
                 <FlatButton
                     backgroundColor={colors.wrapEtherConfirmationButton}
                     label={labelText}
