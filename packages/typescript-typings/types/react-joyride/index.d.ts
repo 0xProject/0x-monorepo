@@ -14,11 +14,13 @@ declare module 'react-joyride' {
         zIndex?: number,
     }
     
+    export type Placement = "top" | "top-left" | "top-right" | "bottom" | "bottom-left" | "bottom-right" | "right" | "left";
+
     export interface Step {
         title?: string;
         content: React.ReactNode;
         target: string;
-        placement?: "top" | "top-left" | "top-right" | "bottom" | "bottom-left" | "bottom-right" | "right" | "left";
+        placement?: Placement;
         type?: "click" | "hover";
         isFixed?: boolean;
         allowClicksThruHole?: boolean;
@@ -29,7 +31,8 @@ declare module 'react-joyride' {
     
     export interface Props {
         steps?: Step[];
-        beaconComponent?: React.ComponentClass;
+        beaconComponent?: React.ReactNode;
+        disableOverlayClose?: boolean;
         run?: boolean;
         stepIndex?: number;
         callback?: (options: any) => void;

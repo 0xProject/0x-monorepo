@@ -1,6 +1,7 @@
 import * as React from 'react';
 import { connect } from 'react-redux';
 import { Dispatch } from 'redux';
+import { ActionTypes } from 'ts/types';
 
 import {
     PortalOnboardingFlow as PortalOnboardingFlowComponent,
@@ -13,6 +14,10 @@ interface ConnectedState {
     isRunning: boolean;
 }
 
+interface ConnectedDispatch {
+    setOnboardingShowing: (isShowing: boolean) => void;
+}
+
 const mapStateToProps = (state: State, ownProps: PortalOnboardingFlowComponentProps): ConnectedState => {
     return {
         stepIndex: state.portalOnboardingStep,
@@ -20,4 +25,13 @@ const mapStateToProps = (state: State, ownProps: PortalOnboardingFlowComponentPr
     };
 };
 
-export const PortalOnboardingFlow: React.ComponentClass<PortalOnboardingFlowComponentProps> = connect(mapStateToProps)(PortalOnboardingFlowComponent);
+const mapDispatchToProps = (dispatch: Dispatch<State>): ConnectedDispatch => ({
+    setOnboardingShowing: (isShowing: boolean): void => {
+        dispatch({
+            type: ActionTypes.UpdatePortalOnboardingShowing,
+            data: isShowing,
+        });
+    },
+});
+
+export const PortalOnboardingFlow: React.ComponentClass<PortalOnboardingFlowComponentProps> = connect(mapStateToProps, mapDispatchToProps)(PortalOnboardingFlowComponent);

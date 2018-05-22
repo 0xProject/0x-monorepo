@@ -8,6 +8,8 @@ interface OnboardingFlowProps {
     steps: Step[];
     stepIndex?: number;
     isRunning: boolean;
+    onClose: () => void;
+    onChange?: (options: any) => void;
 }
 
 const style: StyleOptions = {
@@ -16,16 +18,28 @@ const style: StyleOptions = {
 
 // Wrapper around Joyride with defaults and styles set
 export class OnboardingFlow extends React.Component<OnboardingFlowProps> {
+    public static defaultProps: Partial<OnboardingFlowProps> = {
+        onChange: _.noop,
+    };
+
     public render(): React.ReactNode {
-        const { steps, stepIndex, isRunning } = this.props;
         return (
             <Joyride
-                run={isRunning}
+                run={this.props.isRunning}
                 debug={true}
-                steps={steps}
-                stepIndex={stepIndex}
+                steps={this.props.steps}
+                stepIndex={this.props.stepIndex}
                 styles={{ options: style }}
+                callback={this._handleChange.bind(this)}
             />
         );
     }
-};
+
+    private _handleChange(options: any): void {
+        switch (options.action) {
+            case 'close':
+                this.props.onClose();
+        }
+        this.props.onChange(options);
+    }
+}
