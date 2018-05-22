@@ -296,6 +296,8 @@ export class Portal extends React.Component<PortalProps, PortalState> {
                     lastForceTokenStateRefetch={this.props.lastForceTokenStateRefetch}
                     injectedProviderName={this.props.injectedProviderName}
                     providerType={this.props.providerType}
+                    screenWidth={this.props.screenWidth}
+                    location={this.props.location}
                     onToggleLedgerDialog={this._onToggleLedgerDialog.bind(this)}
                     onAddToken={this._onAddToken.bind(this)}
                     onRemoveToken={this._onRemoveToken.bind(this)}
