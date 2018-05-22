@@ -41,6 +41,7 @@ export const web3Factory = {
             }
             provider.addProvider(
                 new GanacheSubprovider({
+                    gasLimit: constants.GAS_ESTIMATE,
                     logger,
                     verbose: env.parseBoolean(EnvVars.VerboseGanache),
                     port: 8545,
