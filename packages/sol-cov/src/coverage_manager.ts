@@ -3,6 +3,7 @@ import { addHexPrefix, stripHexPrefix } from 'ethereumjs-util';
 import * as fs from 'fs';
 import { Collector } from 'istanbul';
 import * as _ from 'lodash';
+import { getLogger, levels, Logger, LogLevel } from 'loglevel';
 import * as mkdirp from 'mkdirp';
 import * as path from 'path';
 
@@ -35,7 +36,7 @@ const mkdirpAsync = promisify<undefined>(mkdirp);
 
 export class CoverageManager {
     private _artifactAdapter: AbstractArtifactAdapter;
-    private _verbose: boolean;
+    private _logger: Logger;
     private _traceInfos: TraceInfo[] = [];
     private _getContractCodeAsync: (address: string) => Promise<string>;
     private static _getSingleFileCoverageForTrace(
@@ -124,7 +125,7 @@ export class CoverageManager {
     }
     private static _getContractDataIfExists(contractsData: ContractData[], bytecode: string): ContractData | undefined {
         if (!bytecode.startsWith('0x')) {
-            throw new Error(')x missing');
+            throw new Error('0x missing');
         }
         const contractData = _.find(contractsData, contractDataCandidate => {
             const bytecodeRegex = CoverageManager._bytecodeToBytecodeRegex(contractDataCandidate.bytecode);
@@ -142,7 +143,8 @@ export class CoverageManager {
     ) {
         this._getContractCodeAsync = getContractCodeAsync;
         this._artifactAdapter = artifactAdapter;
-        this._verbose = verbose;
+        this._logger = getLogger('sol-cov');
+        this._logger.setLevel(verbose ? levels.TRACE : levels.ERROR);
     }
     public appendTraceInfo(traceInfo: TraceInfo): void {
         this._traceInfos.push(traceInfo);
@@ -162,10 +164,7 @@ export class CoverageManager {
                 const runtimeBytecode = (traceInfo as TraceInfoExistingContract).runtimeBytecode;
                 const contractData = CoverageManager._getContractDataIfExists(contractsData, runtimeBytecode);
                 if (_.isUndefined(contractData)) {
-                    if (this._verbose) {
-                        // tslint:disable-next-line:no-console
-                        console.warn(`Transaction to an unknown address: ${traceInfo.address}`);
-                    }
+                    this._logger.warn(`Transaction to an unknown address: ${traceInfo.address}`);
                     continue;
                 }
                 const bytecodeHex = stripHexPrefix(runtimeBytecode);
@@ -190,10 +189,7 @@ export class CoverageManager {
                 const bytecode = (traceInfo as TraceInfoNewContract).bytecode;
                 const contractData = CoverageManager._getContractDataIfExists(contractsData, bytecode);
                 if (_.isUndefined(contractData)) {
-                    if (this._verbose) {
-                        // tslint:disable-next-line:no-console
-                        console.warn(`Unknown contract creation transaction`);
-                    }
+                    this._logger.warn(`Unknown contract creation transaction`);
                     continue;
                 }
                 const bytecodeHex = stripHexPrefix(bytecode);
