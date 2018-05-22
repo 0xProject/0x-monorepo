@@ -7,13 +7,22 @@ import { ContractData } from '../types';
 
 import { AbstractArtifactAdapter } from './abstract_artifact_adapter';
 
+const CONFIG_FILE = 'compiler.json';
+
 export class SolCompilerArtifactAdapter extends AbstractArtifactAdapter {
     private _artifactsPath: string;
     private _sourcesPath: string;
-    constructor(artifactsPath: string, sourcesPath: string) {
+    constructor(artifactsPath?: string, sourcesPath?: string) {
         super();
-        this._artifactsPath = artifactsPath;
-        this._sourcesPath = sourcesPath;
+        const config = JSON.parse(fs.readFileSync(CONFIG_FILE).toString());
+        if (_.isUndefined(artifactsPath) && _.isUndefined(config.artifactsDir)) {
+            throw new Error(`artifactsDir not found in ${CONFIG_FILE}`);
+        }
+        this._artifactsPath = config.artifactsDir;
+        if (_.isUndefined(sourcesPath) && _.isUndefined(config.contractsDir)) {
+            throw new Error(`contractsDir not found in ${CONFIG_FILE}`);
+        }
+        this._sourcesPath = config.contractsDir;
     }
     public async collectContractsDataAsync(): Promise<ContractData[]> {
         const artifactsGlob = `${this._artifactsPath}/**/*.json`;

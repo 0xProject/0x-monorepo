@@ -14,9 +14,7 @@ export const coverage = {
     },
     _getCoverageSubprovider(): CoverageSubprovider {
         const defaultFromAddress = devConstants.TESTRPC_FIRST_ADDRESS;
-        const CONFIG_FILE = 'compiler.json';
-        const config = JSON.parse(fs.readFileSync(CONFIG_FILE).toString());
-        const solCompilerArtifactAdapter = new SolCompilerArtifactAdapter(config.artifactsDir, config.contractsDir);
+        const solCompilerArtifactAdapter = new SolCompilerArtifactAdapter();
         const subprovider = new CoverageSubprovider(solCompilerArtifactAdapter, defaultFromAddress);
         return subprovider;
     },
