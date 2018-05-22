@@ -244,8 +244,8 @@ export class ExchangeWrapper {
         const tx = await this._getTxWithDecodedExchangeLogsAsync(txHash);
         return tx;
     }
-    private async _getTxWithDecodedExchangeLogsAsync(txHash: string) {
-        const tx = await Web3Wrapper.awaitTransactionMinedAsync(txHash);
+    private async _getTxWithDecodedExchangeLogsAsync(txHash: string): Promise<TransactionReceiptWithDecodedLogs> {
+        const tx = await Web3Wrapper.awaitTransactionMinedAsync(txHash, constants.AWAIT_TRANSACTION_MINED_MS);
         tx.logs = _.filter(tx.logs, log => log.address === this._exchange.address);
         tx.logs = _.map(tx.logs, log => this._logDecoder.decodeLogOrThrow(log));
         return tx;

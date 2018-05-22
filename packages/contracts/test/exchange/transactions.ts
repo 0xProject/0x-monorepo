@@ -58,6 +58,12 @@ describe('Exchange transactions', () => {
     let defaultTakerTokenAddress: string;
 
     before(async () => {
+        await blockchainLifecycle.startAsync();
+    });
+    after(async () => {
+        await blockchainLifecycle.revertAsync();
+    });
+    before(async () => {
         const accounts = await web3Wrapper.getAvailableAddressesAsync();
         const usedAddresses = ([owner, senderAddress, makerAddress, takerAddress, feeRecipientAddress] = accounts);
 
@@ -76,7 +82,10 @@ describe('Exchange transactions', () => {
         exchangeWrapper = new ExchangeWrapper(exchange);
         await exchangeWrapper.registerAssetProxyAsync(AssetProxyId.ERC20, erc20Proxy.address, owner);
 
-        await erc20Proxy.addAuthorizedAddress.sendTransactionAsync(exchange.address, { from: owner });
+        await web3Wrapper.awaitTransactionMinedAsync(
+            await erc20Proxy.addAuthorizedAddress.sendTransactionAsync(exchange.address, { from: owner }),
+            constants.AWAIT_TRANSACTION_MINED_MS,
+        );
 
         defaultMakerTokenAddress = erc20TokenA.address;
         defaultTakerTokenAddress = erc20TokenB.address;
