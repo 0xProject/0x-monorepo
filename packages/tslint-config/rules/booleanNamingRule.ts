@@ -2,7 +2,7 @@ import * as _ from 'lodash';
 import * as Lint from 'tslint';
 import * as ts from 'typescript';
 
-const VALID_BOOLEAN_PREFIXES = ['is', 'does', 'should', 'was', 'has', 'can', 'did', 'would'];
+const VALID_BOOLEAN_PREFIXES = ['is', 'does', 'should', 'was', 'has', 'can', 'did', 'would', 'are'];
 
 export class Rule extends Lint.Rules.TypedRule {
     public static FAILURE_STRING = `Boolean variable names should begin with: ${VALID_BOOLEAN_PREFIXES.join(', ')}`;
