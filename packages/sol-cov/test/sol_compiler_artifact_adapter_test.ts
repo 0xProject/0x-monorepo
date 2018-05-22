@@ -8,7 +8,7 @@ import { SolCompilerArtifactAdapter } from '../src/artifact_adapters/sol_compile
 
 const expect = chai.expect;
 
-describe('Collect contracts data', () => {
+describe('SolCompilerArtifactAdapter', () => {
     describe('#collectContractsData', () => {
         it('correctly collects contracts data', async () => {
             const artifactsPath = path.resolve(__dirname, 'fixtures/artifacts');

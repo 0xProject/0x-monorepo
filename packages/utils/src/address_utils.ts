@@ -1,4 +1,6 @@
+import { addHexPrefix, stripHexPrefix } from 'ethereumjs-util';
 import * as jsSHA3 from 'js-sha3';
+import * as _ from 'lodash';
 
 const BASIC_ADDRESS_REGEX = /^(0x)?[0-9a-f]{40}$/i;
 const SAME_CASE_ADDRESS_REGEX = /^(0x)?([0-9a-f]{40}|[0-9A-F]{40})$/;
@@ -37,5 +39,8 @@ export const addressUtils = {
             const isValidChecksummedAddress = addressUtils.isChecksumAddress(address);
             return isValidChecksummedAddress;
         }
+    },
+    padZeros(address: string): string {
+        return addHexPrefix(_.padStart(stripHexPrefix(address), 40, '0'));
     },
 };

@@ -139,12 +139,12 @@ export class CoverageManager {
     constructor(
         artifactAdapter: AbstractArtifactAdapter,
         getContractCodeAsync: (address: string) => Promise<string>,
-        verbose: boolean,
+        isVerbose: boolean,
     ) {
         this._getContractCodeAsync = getContractCodeAsync;
         this._artifactAdapter = artifactAdapter;
         this._logger = getLogger('sol-cov');
-        this._logger.setLevel(verbose ? levels.TRACE : levels.ERROR);
+        this._logger.setLevel(isVerbose ? levels.TRACE : levels.ERROR);
     }
     public appendTraceInfo(traceInfo: TraceInfo): void {
         this._traceInfos.push(traceInfo);

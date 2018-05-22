@@ -9,5 +9,7 @@ import { Subprovider } from '../subproviders/subprovider';
  */
 export function prependSubprovider(provider: ProviderEngine, subprovider: Subprovider): void {
     subprovider.setEngine(provider);
+    // HACK: We use implementation details of provider engine here
+    // https://github.com/MetaMask/provider-engine/blob/master/index.js#L68
     (provider as any)._providers = [subprovider, ...(provider as any)._providers];
 }

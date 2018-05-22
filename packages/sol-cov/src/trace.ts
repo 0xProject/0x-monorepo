@@ -1,5 +1,5 @@
 import { OpCode, StructLog, TransactionTrace } from '@0xproject/types';
-import { BigNumber, logUtils } from '@0xproject/utils';
+import { addressUtils, BigNumber, logUtils } from '@0xproject/utils';
 import { addHexPrefix, stripHexPrefix } from 'ethereumjs-util';
 import * as fs from 'fs';
 import * as _ from 'lodash';
@@ -7,17 +7,13 @@ import * as _ from 'lodash';
 export interface TraceByContractAddress {
     [contractAddress: string]: StructLog[];
 }
-function padZeros(address: string): string {
-    return addHexPrefix(_.padStart(stripHexPrefix(address), 40, '0'));
-}
 
 export function getTracesByContractAddress(structLogs: StructLog[], startAddress: string): TraceByContractAddress {
     const traceByContractAddress: TraceByContractAddress = {};
     let currentTraceSegment = [];
     const callStack = [startAddress];
-    // tslint:disable-next-line: prefer-for-of
-    for (let i = 0; i < structLogs.length; ++i) {
-        const structLog = structLogs[i];
+    // tslint:disable-next-line:prefer-for-of
+    for (const structLog of structLogs) {
         if (structLog.depth !== callStack.length - 1) {
             throw new Error("Malformed trace. trace depth doesn't match call stack depth");
         }
@@ -26,26 +22,19 @@ export function getTracesByContractAddress(structLogs: StructLog[], startAddress
         // That means that we can always safely pop from it
         currentTraceSegment.push(structLog);
 
-        if (
-            structLog.op === OpCode.CallCode ||
-            structLog.op === OpCode.StaticCall ||
-            structLog.op === OpCode.Call ||
-            structLog.op === OpCode.DelegateCall
-        ) {
+        if (_.includes([OpCode.CallCode, OpCode.StaticCall, OpCode.Call, OpCode.DelegateCall], structLog.op)) {
             const currentAddress = _.last(callStack) as string;
             const jumpAddressOffset = structLog.op === OpCode.DelegateCall ? 4 : 2;
-            const newAddress = padZeros(new BigNumber(addHexPrefix(structLog.stack[jumpAddressOffset])).toString(16));
+            const newAddress = addressUtils.padZeros(
+                new BigNumber(addHexPrefix(structLog.stack[jumpAddressOffset])).toString(16),
+            );
             callStack.push(newAddress);
             traceByContractAddress[currentAddress] = (traceByContractAddress[currentAddress] || []).concat(
                 currentTraceSegment,
             );
             currentTraceSegment = [];
         } else if (
-            structLog.op === OpCode.Return ||
-            structLog.op === OpCode.Stop ||
-            structLog.op === OpCode.Revert ||
-            structLog.op === OpCode.Invalid ||
-            structLog.op === OpCode.SelfDestruct
+            _.includes([OpCode.Return, OpCode.Stop, OpCode.Revert, OpCode.Invalid, OpCode.SelfDestruct], structLog.op)
         ) {
             const currentAddress = callStack.pop() as string;
             traceByContractAddress[currentAddress] = (traceByContractAddress[currentAddress] || []).concat(
