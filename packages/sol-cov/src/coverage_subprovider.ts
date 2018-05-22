@@ -123,16 +123,32 @@ export class CoverageSubprovider extends Subprovider {
         const jsonRPCResponsePayload = await this.emitPayloadAsync(payload);
         const trace: TransactionTrace = jsonRPCResponsePayload.result;
         if (address === constants.NEW_CONTRACT) {
-            // TODO handle calls to external contracts and contract creations from within the constructor
-            const structLogsOnDepth0 = _.filter(trace.structLogs, { depth: 0 });
-            const coveredPcs = _.map(structLogsOnDepth0, log => log.pc);
-            const traceInfo: TraceInfoNewContract = {
-                coveredPcs,
-                txHash,
-                address: address as 'NEW_CONTRACT',
-                bytecode: data as string,
-            };
-            this._coverageManager.appendTraceInfo(traceInfo);
+            const tracesByContractAddress = getTracesByContractAddress(trace.structLogs, address);
+            for (const subcallAddress of _.keys(tracesByContractAddress)) {
+                let traceInfo: TraceInfoNewContract | TraceInfoExistingContract;
+                if (subcallAddress === 'NEW_CONTRACT') {
+                    const traceForThatSubcall = tracesByContractAddress[subcallAddress];
+                    const coveredPcs = _.map(traceForThatSubcall, log => log.pc);
+                    traceInfo = {
+                        coveredPcs,
+                        txHash,
+                        address: address as 'NEW_CONTRACT',
+                        bytecode: data as string,
+                    };
+                } else {
+                    payload = { method: 'eth_getCode', params: [subcallAddress, BlockParamLiteral.Latest] };
+                    const runtimeBytecode = (await this.emitPayloadAsync(payload)).result;
+                    const traceForThatSubcall = tracesByContractAddress[subcallAddress];
+                    const coveredPcs = _.map(traceForThatSubcall, log => log.pc);
+                    traceInfo = {
+                        coveredPcs,
+                        txHash,
+                        address: subcallAddress,
+                        runtimeBytecode,
+                    };
+                }
+                this._coverageManager.appendTraceInfo(traceInfo);
+            }
         } else {
             const tracesByContractAddress = getTracesByContractAddress(trace.structLogs, address);
             for (const subcallAddress of _.keys(tracesByContractAddress)) {
