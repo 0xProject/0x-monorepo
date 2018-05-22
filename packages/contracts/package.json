@@ -1,7 +1,7 @@
 {
     "private": true,
     "name": "contracts",
-    "version": "2.1.28",
+    "version": "2.1.29",
     "engines": {
         "node": ">=6.12"
     },
@@ -42,9 +42,9 @@
     },
     "homepage": "https://github.com/0xProject/0x-monorepo/packages/contracts/README.md",
     "devDependencies": {
-        "@0xproject/abi-gen": "^0.2.13",
-        "@0xproject/dev-utils": "^0.4.1",
-        "@0xproject/tslint-config": "^0.4.17",
+        "@0xproject/abi-gen": "^0.3.0",
+        "@0xproject/dev-utils": "^0.4.2",
+        "@0xproject/tslint-config": "^0.4.18",
         "@types/lodash": "4.14.104",
         "@types/node": "^8.0.53",
         "@types/yargs": "^10.0.0",
@@ -64,13 +64,13 @@
         "yargs": "^10.0.3"
     },
     "dependencies": {
-        "0x.js": "^0.37.2",
-        "@0xproject/base-contract": "^0.3.1",
-        "@0xproject/sol-compiler": "^0.4.3",
-        "@0xproject/types": "^0.6.3",
-        "@0xproject/typescript-typings": "^0.3.1",
-        "@0xproject/utils": "^0.6.1",
-        "@0xproject/web3-wrapper": "^0.6.3",
+        "0x.js": "^0.38.0",
+        "@0xproject/base-contract": "^0.3.2",
+        "@0xproject/sol-compiler": "^0.5.0",
+        "@0xproject/types": "^0.7.0",
+        "@0xproject/typescript-typings": "^0.3.2",
+        "@0xproject/utils": "^0.6.2",
+        "@0xproject/web3-wrapper": "^0.6.4",
         "bn.js": "^4.11.8",
         "ethereumjs-abi": "^0.6.4",
         "ethereumjs-util": "^5.1.1",

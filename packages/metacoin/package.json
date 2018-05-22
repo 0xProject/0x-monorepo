@@ -1,6 +1,6 @@
 {
     "name": "@0xproject/metacoin",
-    "version": "0.0.6",
+    "version": "0.0.7",
     "engines": {
         "node": ">=6.12"
     },
@@ -26,21 +26,21 @@
     "author": "",
     "license": "Apache-2.0",
     "dependencies": {
-        "@0xproject/abi-gen": "^0.2.13",
-        "@0xproject/base-contract": "^0.3.1",
-        "@0xproject/sol-compiler": "^0.4.3",
-        "@0xproject/sol-cov": "^0.0.10",
-        "@0xproject/subproviders": "^0.10.1",
-        "@0xproject/tslint-config": "^0.4.17",
-        "@0xproject/types": "^0.6.3",
-        "@0xproject/utils": "^0.6.1",
-        "@0xproject/web3-wrapper": "^0.6.3",
+        "@0xproject/abi-gen": "^0.3.0",
+        "@0xproject/base-contract": "^0.3.2",
+        "@0xproject/sol-compiler": "^0.5.0",
+        "@0xproject/sol-cov": "^0.0.11",
+        "@0xproject/subproviders": "^0.10.2",
+        "@0xproject/tslint-config": "^0.4.18",
+        "@0xproject/types": "^0.7.0",
+        "@0xproject/utils": "^0.6.2",
+        "@0xproject/web3-wrapper": "^0.6.4",
         "ethers": "^3.0.15",
         "lodash": "^4.17.4",
         "web3-provider-engine": "^14.0.4"
     },
     "devDependencies": {
-        "@0xproject/dev-utils": "^0.4.1",
+        "@0xproject/dev-utils": "^0.4.2",
         "chai": "^4.0.1",
         "chai-as-promised": "^7.1.0",
         "chai-bignumber": "^2.0.1",
