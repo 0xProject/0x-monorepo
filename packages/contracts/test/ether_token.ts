@@ -61,10 +61,7 @@ describe('EtherToken', () => {
             const ethToDeposit = new BigNumber(Web3Wrapper.toWei(new BigNumber(1)));
 
             const txHash = await contractWrappers.etherToken.depositAsync(etherTokenAddress, ethToDeposit, account);
-            const receipt = await contractWrappers.awaitTransactionMinedAsync(
-                txHash,
-                constants.AWAIT_TRANSACTION_MINED_MS,
-            );
+            const receipt = await web3Wrapper.awaitTransactionMinedAsync(txHash, constants.AWAIT_TRANSACTION_MINED_MS);
 
             const ethSpentOnGas = gasPrice.times(receipt.gasUsed);
             const finalEthBalance = await web3Wrapper.getBalanceInWeiAsync(account);
@@ -100,10 +97,7 @@ describe('EtherToken', () => {
                     gasLimit: constants.MAX_ETHERTOKEN_WITHDRAW_GAS,
                 },
             );
-            const receipt = await contractWrappers.awaitTransactionMinedAsync(
-                txHash,
-                constants.AWAIT_TRANSACTION_MINED_MS,
-            );
+            const receipt = await web3Wrapper.awaitTransactionMinedAsync(txHash, constants.AWAIT_TRANSACTION_MINED_MS);
 
             const ethSpentOnGas = gasPrice.times(receipt.gasUsed);
             const finalEthBalance = await web3Wrapper.getBalanceInWeiAsync(account);
@@ -130,10 +124,7 @@ describe('EtherToken', () => {
                 gasPrice,
             });
 
-            const receipt = await contractWrappers.awaitTransactionMinedAsync(
-                txHash,
-                constants.AWAIT_TRANSACTION_MINED_MS,
-            );
+            const receipt = await web3Wrapper.awaitTransactionMinedAsync(txHash, constants.AWAIT_TRANSACTION_MINED_MS);
 
             const ethSpentOnGas = gasPrice.times(receipt.gasUsed);
             const finalEthBalance = await web3Wrapper.getBalanceInWeiAsync(account);
