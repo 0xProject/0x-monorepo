@@ -2,7 +2,6 @@ import { ContractWrappersError } from '@0xproject/contract-wrappers';
 import { BlockchainLifecycle, devConstants, web3Factory } from '@0xproject/dev-utils';
 import { BigNumber, promisify } from '@0xproject/utils';
 import { Web3Wrapper } from '@0xproject/web3-wrapper';
-import { Web3Wrapper } from '@0xproject/web3_wrapper';
 import * as chai from 'chai';
 import 'make-promises-safe';
 

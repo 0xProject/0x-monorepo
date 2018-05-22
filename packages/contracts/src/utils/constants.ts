@@ -1,5 +1,5 @@
 import { BigNumber } from '@0xproject/utils';
-import { Web3Wrapper } from '@0xproject/web3_wrapper';
+import { Web3Wrapper } from '@0xproject/web3-wrapper';
 import * as ethUtil from 'ethereumjs-util';
 import * as _ from 'lodash';
 
