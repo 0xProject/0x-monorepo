@@ -12,19 +12,32 @@ jobs:
       - run: echo 'export PATH=$HOME/CIRCLE_PROJECT_REPONAME/node_modules/.bin:$PATH' >> $BASH_ENV
       - restore_cache:
           key: dependency-cache-{{ checksum "package.json" }}
-      - run:
-          name: yarn
-          command: yarn --frozen-lockfile
+      - run: yarn --frozen-lockfile
       - save_cache:
           key: dependency-cache-{{ checksum "package.json" }}
           paths:
             - ./node_modules
-      - run: wget https://s3.amazonaws.com/testrpc-shapshots/${CONTRACTS_COMMIT_HASH}.zip
-      - run: unzip ${CONTRACTS_COMMIT_HASH}.zip -d testrpc_snapshot
-      - run: node ./node_modules/lerna/bin/lerna.js bootstrap
+      - run: yarn lerna bootstrap
       - run: yarn build
+      - run: yarn test
+      - run: yarn test:installation
+      - run: yarn lint
+      - run: yarn prettier:ci
       - save_cache:
           key: repo-{{ .Environment.CIRCLE_SHA1 }}
+          paths:
+            - ~/repo
+  test:
+    docker:
+      - image: circleci/node:9.11
+    working_directory: ~/repo
+    steps:
+      - restore_cache:
+          keys:
+            - repo-{{ .Environment.CIRCLE_SHA1 }}
+      - run: yarn test
+      - save_cache:
+          key: coverage-test-{{ .Environment.CIRCLE_SHA1 }}
           paths:
             - ~/repo
   test-installation:
@@ -36,98 +49,10 @@ jobs:
           keys:
             - repo-{{ .Environment.CIRCLE_SHA1 }}
       - run: yarn test:installation
-  test-0xjs:
-    docker:
-      - image: circleci/node:9.11
-    working_directory: ~/repo
-    steps:
-      - restore_cache:
-          keys:
-            - repo-{{ .Environment.CIRCLE_SHA1 }}
-      - run:
-          name: testrpc
-          command: npm run testrpc -- --db testrpc_snapshot
-          background: true
-      - run: yarn wsrun test:circleci 0x.js
       - save_cache:
-          key: coverage-0xjs-{{ .Environment.CIRCLE_SHA1 }}
+          key: coverage-test-installation-{{ .Environment.CIRCLE_SHA1 }}
           paths:
-            - ~/repo/packages/0x.js/coverage/lcov.info
-  test-contracts:
-    docker:
-      - image: circleci/node:9.11
-    working_directory: ~/repo
-    steps:
-      - restore_cache:
-          keys:
-            - repo-{{ .Environment.CIRCLE_SHA1 }}
-      - run:
-          name: testrpc
-          command: npm run testrpc -- --db testrpc_snapshot
-          background: true
-      - run: yarn wsrun test:circleci contracts
-      - save_cache:
-          key: coverage-contracts-{{ .Environment.CIRCLE_SHA1 }}
-          paths:
-            - ~/repo/packages/contracts/coverage/lcov.info
-  test-sol-compiler:
-    docker:
-      - image: circleci/node:9.11
-    working_directory: ~/repo
-    steps:
-      - restore_cache:
-          keys:
-            - repo-{{ .Environment.CIRCLE_SHA1 }}
-      - run:
-          name: testrpc
-          command: npm run testrpc -- --db testrpc_snapshot
-          background: true
-      - run: yarn wsrun test:circleci @0xproject/sol-compiler
-      - save_cache:
-          key: coverage-sol-compiler-{{ .Environment.CIRCLE_SHA1 }}
-          paths:
-            - ~/repo/packages/sol-compiler/coverage/lcov.info
-  test-rest:
-    docker:
-      - image: circleci/node:9.11
-    working_directory: ~/repo
-    steps:
-      - restore_cache:
-          keys:
-            - repo-{{ .Environment.CIRCLE_SHA1 }}
-      - run:
-          name: testrpc
-          command: npm run testrpc -- --db testrpc_snapshot
-          background: true
-      - run: yarn wsrun test:circleci --exclude contracts --exclude 0x.js --exclude @0xproject/sol-compiler --stages --exclude-missing
-      - save_cache:
-          key: coverage-assert-{{ .Environment.CIRCLE_SHA1 }}
-          paths:
-            - ~/repo/packages/assert/coverage/lcov.info
-      - save_cache:
-          key: coverage-connect-{{ .Environment.CIRCLE_SHA1 }}
-          paths:
-            - ~/repo/packages/connect/coverage/lcov.info
-      - save_cache:
-          key: coverage-dev-utils-{{ .Environment.CIRCLE_SHA1 }}
-          paths:
-            - ~/repo/packages/dev-utils/coverage/lcov.info
-      - save_cache:
-          key: coverage-json-schemas-{{ .Environment.CIRCLE_SHA1 }}
-          paths:
-            - ~/repo/packages/json-schemas/coverage/lcov.info
-      - save_cache:
-          key: coverage-subproviders-{{ .Environment.CIRCLE_SHA1 }}
-          paths:
-            - ~/repo/packages/subproviders/coverage/lcov.info
-      - save_cache:
-          key: coverage-sol-cov-{{ .Environment.CIRCLE_SHA1 }}
-          paths:
-            - ~/repo/packages/sol-cov/coverage/lcov.info
-      - save_cache:
-          key: coverage-metacoin-{{ .Environment.CIRCLE_SHA1 }}
-          paths:
-            - ~/repo/packages/metacoin/coverage/lcov.info
+            - ~/repo
   lint:
     working_directory: ~/repo
     docker:
@@ -136,7 +61,7 @@ jobs:
       - restore_cache:
           keys:
             - repo-{{ .Environment.CIRCLE_SHA1 }}
-      - run: yarn lerna:run lint
+      - run: yarn lint
   prettier:
     working_directory: ~/repo
     docker:
@@ -190,25 +115,19 @@ workflows:
   main:
     jobs:
       - build
+      - test:
+          requires:
+            - build
       - test-installation:
           requires:
             - build
-      - test-0xjs:
-          requires:
-            - build
-      - test-contracts:
-          requires:
-            - build
-      - test-sol-compiler:
-          requires:
-            - build
-      - test-rest:
-          requires:
-            - build
-      - prettier:
+      - lint:
           requires:
             - build
       - lint:
+          requires:
+            - build
+      - prettier:
           requires:
             - build
       - submit-coverage:
