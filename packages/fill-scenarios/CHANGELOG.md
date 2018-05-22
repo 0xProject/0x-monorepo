@@ -11,4 +11,4 @@ CHANGELOG
 
 ## v0.0.1 - _May 22, 2018_
 
-    * Moved contractWrappers out of 0x.js (#579)
+    * Move FillScenarios out of 0x.js (#579)

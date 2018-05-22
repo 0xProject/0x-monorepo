@@ -1,6 +1,6 @@
 {
     "name": "@0xproject/subproviders",
-    "version": "0.10.1",
+    "version": "0.10.2",
     "engines": {
         "node": ">=6.12"
     },
@@ -39,10 +39,10 @@
         }
     },
     "dependencies": {
-        "@0xproject/assert": "^0.2.9",
-        "@0xproject/types": "^0.6.3",
-        "@0xproject/typescript-typings": "^0.3.1",
-        "@0xproject/utils": "^0.6.1",
+        "@0xproject/assert": "^0.2.10",
+        "@0xproject/types": "^0.7.0",
+        "@0xproject/typescript-typings": "^0.3.2",
+        "@0xproject/utils": "^0.6.2",
         "@ledgerhq/hw-app-eth": "^4.3.0",
         "@ledgerhq/hw-transport-u2f": "^4.3.0",
         "bip39": "^2.5.0",
@@ -57,9 +57,9 @@
         "web3-provider-engine": "^14.0.4"
     },
     "devDependencies": {
-        "@0xproject/monorepo-scripts": "^0.1.19",
-        "@0xproject/tslint-config": "^0.4.17",
-        "@0xproject/utils": "^0.6.1",
+        "@0xproject/monorepo-scripts": "^0.1.20",
+        "@0xproject/tslint-config": "^0.4.18",
+        "@0xproject/utils": "^0.6.2",
         "@types/bip39": "^2.4.0",
         "@types/lodash": "4.14.104",
         "@types/mocha": "^2.2.42",

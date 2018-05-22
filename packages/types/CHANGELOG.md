@@ -5,7 +5,11 @@ Edit the package's CHANGELOG.json file only.
 
 CHANGELOG
 
-## v0.6.3 - _May 5, 2018_
+## v0.7.0 - _May 22, 2018_
+
+    * Moved ExchangeContractErrs, DoneCallback, Token, OrderRelevantState, OrderStateValid, OrderStateInvalid, OrderState, OrderAddresses and OrderValues types from 0x.js (#579)
+
+## v0.6.3 - _May 4, 2018_
 
     * Dependencies updated
 
