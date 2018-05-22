@@ -340,7 +340,8 @@ export class Wallet extends React.Component<WalletProps, WalletState> {
         const style = isInWrappedEtherState
             ? { ...walletItemStyles.focusedItem, ...styles.paddedItem }
             : { ...styles.tokenItem, ...styles.borderedItem, ...styles.paddedItem };
-        return this._renderBalanceRow(icon, primaryText, secondaryText, accessoryItemConfig);
+        const key = ETHER_ITEM_KEY;
+        return this._renderBalanceRow(key, icon, primaryText, secondaryText, accessoryItemConfig);
     }
     private _renderTokenRows(): React.ReactNode {
         const trackedTokens = this.props.trackedTokens;
@@ -369,9 +370,11 @@ export class Wallet extends React.Component<WalletProps, WalletState> {
                 tokenState,
             },
         };
-        return this._renderBalanceRow(icon, primaryText, secondaryText, accessoryItemConfig);
+        const key = token.address;
+        return this._renderBalanceRow(key, icon, primaryText, secondaryText, accessoryItemConfig);
     }
     private _renderBalanceRow(
+        key: string,
         icon: React.ReactNode,
         primaryText: React.ReactNode,
         secondaryText: React.ReactNode,
@@ -385,7 +388,7 @@ export class Wallet extends React.Component<WalletProps, WalletState> {
             : { ...styles.tokenItem, ...styles.borderedItem, ...styles.paddedItem };
         const etherToken = this._getEthToken();
         return (
-            <div className="flex flex-column">
+            <div key={key} className="flex flex-column">
                 <div className="flex items-center" style={style}>
                     <div className="px2">{icon}</div>
                     <div className="flex-none pr2 pt2 pb2">
