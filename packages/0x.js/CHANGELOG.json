@@ -11,7 +11,8 @@
                     "Renamed ZeroExError to ContractWrappersErrors since they now lives in the @0xproject/contract-wrappers subpackage",
                 "pr": 579
             }
-        ]
+        ],
+        "timestamp": 1527008270
     },
     {
         "timestamp": 1525477860,
