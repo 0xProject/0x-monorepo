@@ -25,6 +25,7 @@ import { Blockchain } from 'ts/blockchain';
 import { AllowanceToggle } from 'ts/components/inputs/allowance_toggle';
 import { IconButton } from 'ts/components/ui/icon_button';
 import { Identicon } from 'ts/components/ui/identicon';
+import { Island } from 'ts/components/ui/island';
 import { TokenIcon } from 'ts/components/ui/token_icon';
 import { WalletDisconnectedItem } from 'ts/components/wallet/wallet_disconnected_item';
 import { WrapEtherItem } from 'ts/components/wallet/wrap_ether_item';
@@ -84,13 +85,6 @@ interface AccessoryItemConfig {
 const styles: Styles = {
     root: {
         width: '100%',
-        backgroundColor: colors.white,
-        borderBottomRightRadius: 10,
-        borderBottomLeftRadius: 10,
-        borderTopRightRadius: 10,
-        borderTopLeftRadius: 10,
-        boxShadow: `0px 4px 6px ${colors.walletBoxShadow}`,
-        overflow: 'hidden',
     },
     headerItemInnerDiv: {
         paddingLeft: 65,
@@ -198,11 +192,11 @@ export class Wallet extends React.Component<WalletProps, WalletState> {
         const isReadyToRender = this.props.blockchainIsLoaded && this.props.blockchainErr === BlockchainErrs.NoError;
         const isAddressAvailable = !_.isEmpty(this.props.userAddress);
         return (
-            <div className="flex flex-column" style={styles.root}>
+            <Island className="flex flex-column" style={styles.root}>
                 {isReadyToRender && isAddressAvailable
                     ? _.concat(this._renderConnectedHeaderRows(), this._renderBody(), this._renderFooterRows())
                     : _.concat(this._renderDisconnectedHeaderRows(), this._renderDisconnectedRows())}
-            </div>
+            </Island>
         );
     }
     private _renderDisconnectedHeaderRows(): React.ReactElement<{}> {

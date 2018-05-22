@@ -20,6 +20,7 @@ import { Deco, Key, ProviderType, WebsiteLegacyPaths, WebsitePaths } from 'ts/ty
 import { constants } from 'ts/utils/constants';
 import { Translate } from 'ts/utils/translate';
 import { utils } from 'ts/utils/utils';
+import { zIndex } from 'ts/utils/style';
 
 export enum TopBarDisplayType {
     Default,
@@ -59,7 +60,7 @@ const styles: Styles = {
         width: '100%',
         position: 'relative',
         top: 0,
-        zIndex: 1100,
+        zIndex: zIndex.topBar,
         paddingBottom: 1,
     },
     bottomBar: {

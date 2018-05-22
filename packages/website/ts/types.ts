@@ -1,6 +1,7 @@
 import { ECSignature } from '@0xproject/types';
 import { BigNumber } from '@0xproject/utils';
 import * as _ from 'lodash';
+import * as React from 'react';
 
 export enum Side {
     Receive = 'RECEIVE',
@@ -19,6 +20,11 @@ export interface Token {
 
 export interface TokenByAddress {
     [address: string]: Token;
+}
+
+export interface Styleable {
+    style: React.CSSProperties;
+    children: React.ReactNode;
 }
 
 export interface AssetToken {
@@ -125,6 +131,8 @@ export enum ActionTypes {
     UpdateUserSuppliedOrderCache = 'UPDATE_USER_SUPPLIED_ORDER_CACHE',
     UpdateOrderFillAmount = 'UPDATE_ORDER_FILL_AMOUNT',
     UpdateShouldBlockchainErrDialogBeOpen = 'UPDATE_SHOULD_BLOCKCHAIN_ERR_DIALOG_BE_OPEN',
+    UpdatePortalOnboardingStep = 'UPDATE_ONBOARDING_STEP',
+    UpdatePortalOnboardingShowing = 'UPDATE_PORTAL_ONBOARDING_SHOWING',
 
     // Docs
     UpdateLibraryVersion = 'UPDATE_LIBRARY_VERSION',

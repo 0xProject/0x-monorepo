@@ -40,6 +40,8 @@ export interface State {
     lastForceTokenStateRefetch: number;
     userAddress: string;
     userEtherBalanceInWei: BigNumber;
+    portalOnboardingStep: number;
+    isPortalOnboardingShowing: boolean;
     // Note: cache of supplied orderJSON in fill order step. Do not use for anything else.
     userSuppliedOrderCache: Order;
 
@@ -80,7 +82,8 @@ const INITIAL_STATE: State = {
     userAddress: '',
     userEtherBalanceInWei: new BigNumber(0),
     userSuppliedOrderCache: undefined,
-
+    portalOnboardingStep: 0,
+    isPortalOnboardingShowing: false,
     // Docs
     docsVersion: DEFAULT_DOCS_VERSION,
     availableDocVersions: [DEFAULT_DOCS_VERSION],
@@ -290,6 +293,22 @@ export function reducer(state: State = INITIAL_STATE, action: Action): State {
             return {
                 ...state,
                 userAddress,
+            };
+        }
+
+        case ActionTypes.UpdatePortalOnboardingStep: {
+            const portalOnboardingStep = action.data;
+            return {
+                ...state,
+                portalOnboardingStep,
+            };
+        }
+
+        case ActionTypes.UpdatePortalOnboardingShowing: {
+            const isPortalOnboardingShowing = action.data;
+            return {
+                ...state,
+                isPortalOnboardingShowing,
             };
         }
 

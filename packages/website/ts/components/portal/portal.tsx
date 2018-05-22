@@ -19,8 +19,11 @@ import { TextHeader } from 'ts/components/portal/text_header';
 import { RelayerIndex } from 'ts/components/relayer_index/relayer_index';
 import { TokenBalances } from 'ts/components/token_balances';
 import { TopBar, TopBarDisplayType } from 'ts/components/top_bar/top_bar';
+import { PortalOnboardingFlow } from 'ts/containers/portal_onboarding_flow';
+import { Island } from 'ts/components/ui/island';
 import { TradeHistory } from 'ts/components/trade_history/trade_history';
 import { FlashMessage } from 'ts/components/ui/flash_message';
+import { Container } from 'ts/components/ui/container';
 import { Wallet } from 'ts/components/wallet/wallet';
 import { GenerateOrderForm } from 'ts/containers/generate_order_form';
 import { localStorage } from 'ts/local_storage/local_storage';
@@ -183,6 +186,7 @@ export class Portal extends React.Component<PortalProps, PortalState> {
                 : TokenVisibility.TRACKED;
         return (
             <div style={styles.root}>
+                <PortalOnboardingFlow />
                 <DocumentTitle title="0x Portal DApp" />
                 <TopBar
                     userAddress={this.props.userAddress}
@@ -278,24 +282,36 @@ export class Portal extends React.Component<PortalProps, PortalState> {
         const allTokens = _.values(this.props.tokenByAddress);
         const trackedTokens = _.filter(allTokens, t => t.isTracked);
         return (
-            <Wallet
-                userAddress={this.props.userAddress}
-                networkId={this.props.networkId}
-                blockchain={this._blockchain}
-                blockchainIsLoaded={this.props.blockchainIsLoaded}
-                blockchainErr={this.props.blockchainErr}
-                dispatcher={this.props.dispatcher}
-                tokenByAddress={this.props.tokenByAddress}
-                trackedTokens={trackedTokens}
-                userEtherBalanceInWei={this.props.userEtherBalanceInWei}
-                lastForceTokenStateRefetch={this.props.lastForceTokenStateRefetch}
-                injectedProviderName={this.props.injectedProviderName}
-                providerType={this.props.providerType}
-                onToggleLedgerDialog={this._onToggleLedgerDialog.bind(this)}
-                onAddToken={this._onAddToken.bind(this)}
-                onRemoveToken={this._onRemoveToken.bind(this)}
-            />
+            <div>
+                <Wallet
+                    userAddress={this.props.userAddress}
+                    networkId={this.props.networkId}
+                    blockchain={this._blockchain}
+                    blockchainIsLoaded={this.props.blockchainIsLoaded}
+                    blockchainErr={this.props.blockchainErr}
+                    dispatcher={this.props.dispatcher}
+                    tokenByAddress={this.props.tokenByAddress}
+                    trackedTokens={trackedTokens}
+                    userEtherBalanceInWei={this.props.userEtherBalanceInWei}
+                    lastForceTokenStateRefetch={this.props.lastForceTokenStateRefetch}
+                    injectedProviderName={this.props.injectedProviderName}
+                    providerType={this.props.providerType}
+                    onToggleLedgerDialog={this._onToggleLedgerDialog.bind(this)}
+                    onAddToken={this._onAddToken.bind(this)}
+                    onRemoveToken={this._onRemoveToken.bind(this)}
+                />
+                <Container marginTop="15px">
+                    <Island>
+                        {/** TODO: Implement real styles. */}
+                        <p onClick={this._startOnboarding.bind(this)}>Start onboarding flow.</p>
+                    </Island>
+                </Container>
+            </div>
         );
+    }
+
+    private _startOnboarding(): void {
+        this.props.dispatcher.updatePortalOnboardingShowing(true);
     }
     private _renderWalletSection(): React.ReactNode {
         return <Section header={<TextHeader labelText="Your Account" />} body={this._renderWallet()} />;
