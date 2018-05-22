@@ -19,8 +19,10 @@
 pragma solidity ^0.4.10;
 
 import "../../multisig/MultiSigWalletWithTimeLock.sol";
+import "../../utils/LibBytes/LibBytes.sol";
 
 contract AssetProxyOwner is
+    LibBytes,
     MultiSigWalletWithTimeLock
 {
 
@@ -31,6 +33,8 @@ contract AssetProxyOwner is
 
     bytes4 constant REMOVE_AUTHORIZED_ADDRESS_SELECTOR = bytes4(keccak256("removeAuthorizedAddress(address)"));
 
+    /// @dev Function will revert if the transaction does not call `removeAuthorizedAddress`
+    ///      on an approved AssetProxy contract.
     modifier validRemoveAuthorizedAddressTx(uint256 transactionId) {
         Transaction storage tx = transactions[transactionId];
         require(isAssetProxyRegistered[tx.destination]);
@@ -41,20 +45,22 @@ contract AssetProxyOwner is
     /// @dev Contract constructor sets initial owners, required number of confirmations,
     ///      time lock, and list of AssetProxy addresses.
     /// @param _owners List of initial owners.
+    /// @param _assetProxyContracts Array of AssetProxy contract addresses.
     /// @param _required Number of required confirmations.
     /// @param _secondsTimeLocked Duration needed after a transaction is confirmed and before it becomes executable, in seconds.
-    /// @param _assetProxyContracts Array of AssetProxy contract addresses.
     function AssetProxyOwner(
         address[] memory _owners,
+        address[] memory _assetProxyContracts,
         uint256 _required,
-        uint256 _secondsTimeLocked,
-        address[] memory _assetProxyContracts)
+        uint256 _secondsTimeLocked
+    )
         public
         MultiSigWalletWithTimeLock(_owners, _required, _secondsTimeLocked)
     {
         for (uint256 i = 0; i < _assetProxyContracts.length; i++) {
-            require(_assetProxyContracts[i] != address(0));
-            isAssetProxyRegistered[_assetProxyContracts[i]] = true;
+            address assetProxy = _assetProxyContracts[i];
+            require(assetProxy != address(0));
+            isAssetProxyRegistered[assetProxy] = true;
         }
     }
 
@@ -100,20 +106,5 @@ contract AssetProxyOwner is
         bytes4 first4Bytes = readFirst4(data);
         require(REMOVE_AUTHORIZED_ADDRESS_SELECTOR == first4Bytes);
         return true;
-    }
-
-    /// @dev Reads the first 4 bytes from a byte array of arbitrary length.
-    /// @param data Byte array to read first 4 bytes from.
-    /// @return First 4 bytes of data.
-    function readFirst4(bytes memory data)
-        public
-        pure
-        returns (bytes4 result)
-    {
-        require(data.length >= 4);
-        assembly {
-            result := mload(add(data, 32))
-        }
-        return result;
     }
 }

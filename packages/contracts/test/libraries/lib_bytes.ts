@@ -248,4 +248,12 @@ describe('LibBytes', () => {
         it('should fail if the length between the offset and end of the byte array is too short to hold a uint256)', async () => {});
     });
     */
+
+    describe('readFirst4', () => {
+        it('should return the first 4 bytes of a byte array of arbitrary length', async () => {
+            const first4Bytes = libBytes.publicReadFirst4.callAsync(byteArrayLongerThan32Bytes);
+            const expectedFirst4Bytes = byteArrayLongerThan32Bytes.slice(0, 10);
+            expect(first4Bytes).to.equal(expectedFirst4Bytes);
+        });
+    });
 });

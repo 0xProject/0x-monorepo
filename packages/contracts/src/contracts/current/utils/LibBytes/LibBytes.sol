@@ -21,6 +21,7 @@ pragma solidity ^0.4.24;
 contract LibBytes {
 
     // Revert reasons
+    string constant GTE_4_LENGTH_REQUIRED = "Length must be greater than or equal to 4.";
     string constant GTE_20_LENGTH_REQUIRED = "Length must be greater than or equal to 20.";
     string constant GTE_32_LENGTH_REQUIRED = "Length must be greater than or equal to 32.";
 
@@ -202,5 +203,23 @@ contract LibBytes {
         pure
     {
         writeBytes32(b, index, bytes32(input));
+    }
+
+    /// @dev Reads the first 4 bytes from a byte array of arbitrary length.
+    /// @param b Byte array to read first 4 bytes from.
+    /// @return First 4 bytes of data.
+    function readFirst4(bytes memory b)
+        internal
+        pure
+        returns (bytes4 result)
+    {
+        require(
+            b.length >= 4,
+            GTE_4_LENGTH_REQUIRED
+        );
+        assembly {
+            result := mload(add(b, 32))
+        }
+        return result;
     }
 }

@@ -56,9 +56,9 @@ describe('AssetProxyOwner', () => {
             provider,
             txDefaults,
             owners,
+            defaultAssetProxyContractAddresses,
             REQUIRED_APPROVALS,
             SECONDS_TIME_LOCKED,
-            defaultAssetProxyContractAddresses,
         );
         multiSigWrapper = new MultiSigWrapper(multiSig, zeroEx);
         await erc20Proxy.transferOwnership.sendTransactionAsync(multiSig.address, { from: initialOwner });
@@ -79,9 +79,9 @@ describe('AssetProxyOwner', () => {
                 provider,
                 txDefaults,
                 owners,
+                assetProxyContractAddresses,
                 REQUIRED_APPROVALS,
                 SECONDS_TIME_LOCKED,
-                assetProxyContractAddresses,
             );
             const isErc20ProxyRegistered = await newMultiSig.isAssetProxyRegistered.callAsync(erc20Proxy.address);
             const isErc721ProxyRegistered = await newMultiSig.isAssetProxyRegistered.callAsync(erc721Proxy.address);
@@ -96,27 +96,11 @@ describe('AssetProxyOwner', () => {
                     provider,
                     txDefaults,
                     owners,
+                    assetProxyContractAddresses,
                     REQUIRED_APPROVALS,
                     SECONDS_TIME_LOCKED,
-                    assetProxyContractAddresses,
                 ),
             ).to.be.rejectedWith(constants.REVERT);
-        });
-    });
-    describe('readFirst4', () => {
-        it('should return the first 4 bytes of a byte array of arbitrary length', async () => {
-            const addAuthorizedAddressData = erc20Proxy.addAuthorizedAddress.getABIEncodedTransactionData(owners[0]);
-            const removeAuthorizedAddressData = erc20Proxy.removeAuthorizedAddress.getABIEncodedTransactionData(
-                owners[0],
-            );
-            const expectedAddAuthorizedAddressSelector = addAuthorizedAddressData.slice(0, 10);
-            const expectedRemoveAuthorizedAddressSelector = removeAuthorizedAddressData.slice(0, 10);
-            const [addAuthorizedAddressSelector, removeAuthorizedAddressSelector] = await Promise.all([
-                multiSig.readFirst4.callAsync(addAuthorizedAddressData),
-                multiSig.readFirst4.callAsync(removeAuthorizedAddressData),
-            ]);
-            expect(expectedAddAuthorizedAddressSelector).to.equal(addAuthorizedAddressSelector);
-            expect(expectedRemoveAuthorizedAddressSelector).to.equal(removeAuthorizedAddressSelector);
         });
     });
 
