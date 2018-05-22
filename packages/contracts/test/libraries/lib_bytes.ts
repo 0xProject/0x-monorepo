@@ -10,6 +10,7 @@ import * as Web3 from 'web3';
 
 import { TestLibBytesContract } from '../../src/contract_wrappers/generated/test_lib_bytes';
 import { artifacts } from '../../src/utils/artifacts';
+import { expectRevertOrAlwaysFailingTransaction } from '../../src/utils/assertions';
 import { chaiSetup } from '../../src/utils/chai_setup';
 import { constants } from '../../src/utils/constants';
 import { provider, txDefaults, web3Wrapper } from '../../src/utils/web3_wrapper';
@@ -162,17 +163,13 @@ describe('LibBytes', () => {
         it('should fail if the byte array is too short to hold an address)', async () => {
             const shortByteArray = '0xabcdef';
             const offset = new BigNumber(0);
-            return expect(libBytes.publicReadAddress.callAsync(shortByteArray, offset)).to.be.rejectedWith(
-                constants.REVERT,
-            );
+            return expectRevertOrAlwaysFailingTransaction(libBytes.publicReadAddress.callAsync(shortByteArray, offset));
         });
 
         it('should fail if the length between the offset and end of the byte array is too short to hold an address)', async () => {
             const byteArray = ethUtil.addHexPrefix(testAddress);
             const badOffset = new BigNumber(ethUtil.toBuffer(byteArray).byteLength);
-            return expect(libBytes.publicReadAddress.callAsync(byteArray, badOffset)).to.be.rejectedWith(
-                constants.REVERT,
-            );
+            return expectRevertOrAlwaysFailingTransaction(libBytes.publicReadAddress.callAsync(byteArray, badOffset));
         });
     });
 
@@ -206,16 +203,14 @@ describe('LibBytes', () => {
 
         it('should fail if the byte array is too short to hold a bytes32)', async () => {
             const offset = new BigNumber(0);
-            return expect(libBytes.publicReadBytes32.callAsync(byteArrayShorterThan32Bytes, offset)).to.be.rejectedWith(
-                constants.REVERT,
+            return expectRevertOrAlwaysFailingTransaction(
+                libBytes.publicReadBytes32.callAsync(byteArrayShorterThan32Bytes, offset),
             );
         });
 
         it('should fail if the length between the offset and end of the byte array is too short to hold a bytes32)', async () => {
             const badOffset = new BigNumber(ethUtil.toBuffer(testBytes32).byteLength);
-            return expect(libBytes.publicReadBytes32.callAsync(testBytes32, badOffset)).to.be.rejectedWith(
-                constants.REVERT,
-            );
+            return expectRevertOrAlwaysFailingTransaction(libBytes.publicReadBytes32.callAsync(testBytes32, badOffset));
         });
     });
 
@@ -253,8 +248,8 @@ describe('LibBytes', () => {
 
         it('should fail if the byte array is too short to hold a uint256)', async () => {
             const offset = new BigNumber(0);
-            return expect(libBytes.publicReadUint256.callAsync(byteArrayShorterThan32Bytes, offset)).to.be.rejectedWith(
-                constants.REVERT,
+            return expectRevertOrAlwaysFailingTransaction(
+                libBytes.publicReadUint256.callAsync(byteArrayShorterThan32Bytes, offset),
             );
         });
 
@@ -263,9 +258,7 @@ describe('LibBytes', () => {
             const testUint256AsBuffer = ethUtil.toBuffer(formattedTestUint256);
             const byteArray = ethUtil.bufferToHex(testUint256AsBuffer);
             const badOffset = new BigNumber(testUint256AsBuffer.byteLength);
-            return expect(libBytes.publicReadUint256.callAsync(byteArray, badOffset)).to.be.rejectedWith(
-                constants.REVERT,
-            );
+            return expectRevertOrAlwaysFailingTransaction(libBytes.publicReadUint256.callAsync(byteArray, badOffset));
         });
     });
 

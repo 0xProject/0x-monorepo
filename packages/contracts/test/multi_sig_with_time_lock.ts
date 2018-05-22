@@ -12,6 +12,7 @@ import {
     SubmissionContractEventArgs,
 } from '../src/contract_wrappers/generated/multi_sig_wallet_with_time_lock';
 import { artifacts } from '../src/utils/artifacts';
+import { expectRevertOrAlwaysFailingTransaction } from '../src/utils/assertions';
 import { chaiSetup } from '../src/utils/chai_setup';
 import { constants } from '../src/utils/constants';
 import { MultiSigWrapper } from '../src/utils/multi_sig_wrapper';
@@ -69,9 +70,9 @@ describe('MultiSigWalletWithTimeLock', () => {
             });
 
             it('should throw when not called by wallet', async () => {
-                return expect(
+                return expectRevertOrAlwaysFailingTransaction(
                     multiSig.changeTimeLock.sendTransactionAsync(SECONDS_TIME_LOCKED, { from: owners[0] }),
-                ).to.be.rejectedWith(constants.REVERT);
+                );
             });
 
             it('should throw without enough confirmations', async () => {
@@ -80,10 +81,9 @@ describe('MultiSigWalletWithTimeLock', () => {
                 const res = await multiSigWrapper.submitTransactionAsync(destination, changeTimeLockData, owners[0]);
                 const log = res.logs[0] as LogWithDecodedArgs<SubmissionContractEventArgs>;
                 const txId = log.args.transactionId;
-
-                return expect(
+                return expectRevertOrAlwaysFailingTransaction(
                     multiSig.executeTransaction.sendTransactionAsync(txId, { from: owners[0] }),
-                ).to.be.rejectedWith(constants.REVERT);
+                );
             });
 
             it('should set confirmation time with enough confirmations', async () => {
@@ -149,9 +149,9 @@ describe('MultiSigWalletWithTimeLock', () => {
                 await multiSigWrapper.confirmTransactionAsync(txId, owners[1]);
             });
             it('should throw if it has enough confirmations but is not past the time lock', async () => {
-                return expect(
+                return expectRevertOrAlwaysFailingTransaction(
                     multiSig.executeTransaction.sendTransactionAsync(txId, { from: owners[0] }),
-                ).to.be.rejectedWith(constants.REVERT);
+                );
             });
 
             it('should execute if it has enough confirmations and is past the time lock', async () => {

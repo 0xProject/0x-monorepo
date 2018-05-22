@@ -7,7 +7,7 @@ const expect = chai.expect;
 
 // throws if the given promise does not reject with one of two expected error
 // messages.
-export const expectRevertOrAlwaysFailingTransaction = <T>(p: Promise<T>) => {
+export function expectRevertOrAlwaysFailingTransaction<T>(p: Promise<T>): PromiseLike<void> {
     return expect(p)
         .to.be.rejected()
         .then(e => {
@@ -17,4 +17,4 @@ export const expectRevertOrAlwaysFailingTransaction = <T>(p: Promise<T>) => {
                     _.includes(err.message, constants.ALWAYS_FAILING_TRANSACTION),
             );
         });
-};
+}
