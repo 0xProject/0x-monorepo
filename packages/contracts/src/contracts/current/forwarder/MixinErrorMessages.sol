@@ -1,4 +1,4 @@
-pragma solidity ^0.4.23;
+pragma solidity ^0.4.24;
 
 contract MixinErrorMessages {
     string constant VALUE_GT_ZERO = "msg.value must be greater than 0";
@@ -9,4 +9,5 @@ contract MixinErrorMessages {
     string constant NOT_ACCEPTABLE_THRESHOLD = "traded amount did not meet acceptable threshold";
     string constant UNSUPPORTED_TOKEN_PROXY = "unsupported token proxy";
     string constant ASSET_AMOUNT_MATCH_ORDER_SIZE = "assetAmount must match size of orders";
+    string constant DEFAULT_FUNCTION_WETH_CONTRACT_ONLY = "Default function only allowed by WETH contract";
 }

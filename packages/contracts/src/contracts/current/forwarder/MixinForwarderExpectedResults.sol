@@ -1,4 +1,4 @@
-pragma solidity ^0.4.23;
+pragma solidity ^0.4.24;
 pragma experimental ABIEncoderV2;
 
 import "./MixinForwarderCore.sol";
@@ -14,30 +14,14 @@ contract MixinForwarderExpectedResults is MixinForwarderCore {
         view
         returns (Exchange.FillResults memory fillResults)
     {
-        // Compute the order hash
-        bytes32 orderHash = getOrderHash(order);
-        uint256 remainingTakerAssetAmount = safeSub(order.takerAssetAmount, EXCHANGE.getUnavailableTakerTokenAmount(orderHash));
-        // Validate order expiration
-        if (block.timestamp >= order.expirationTimeSeconds) {
-            return fillResults;
-        }
-        // Validate order availability
-        fillResults.takerAssetFilledAmount = min256(takerAssetFillAmount, remainingTakerAssetAmount);
-        if (fillResults.takerAssetFilledAmount == 0) {
-            return fillResults;
-        }
-        // Validate fill order rounding
-        if (isRoundingError(fillResults.takerAssetFilledAmount, order.takerAssetAmount, order.makerAssetAmount)) {
-            fillResults.takerAssetFilledAmount = 0;
-            return fillResults;
-        }
-        fillResults.makerAssetFilledAmount = getPartialAmount(fillResults.takerAssetFilledAmount, order.takerAssetAmount, order.makerAssetAmount);
-        if (order.makerFee > 0) {
-            fillResults.makerFeePaid = getPartialAmount(fillResults.takerAssetFilledAmount, order.takerAssetAmount, order.makerFee);
-        }
-        if (order.takerFee > 0) {
-            fillResults.takerFeePaid = getPartialAmount(fillResults.takerAssetFilledAmount, order.takerAssetAmount, order.takerFee);
-        }
+        Exchange.OrderInfo memory orderInfo = EXCHANGE.getOrderInfo(order);
+        uint8 _status;
+        (_status, fillResults) = EXCHANGE.calculateFillResults(
+            order,
+            orderInfo.orderStatus,
+            orderInfo.orderTakerAssetFilledAmount,
+            takerAssetFillAmount
+        );
         return fillResults;
     }
 

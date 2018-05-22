@@ -1,4 +1,4 @@
-pragma solidity ^0.4.23;
+pragma solidity ^0.4.24;
 
 import "zeppelin-solidity/contracts/token/ERC721/ERC721Basic.sol";
 contract MixinERC721 {

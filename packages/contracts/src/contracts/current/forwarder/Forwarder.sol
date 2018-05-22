@@ -1,4 +1,4 @@
-pragma solidity ^0.4.23;
+pragma solidity ^0.4.24;
 pragma experimental ABIEncoderV2;
 
 import "./MixinForwarderCore.sol";
@@ -31,7 +31,7 @@ contract Forwarder is
         public
         payable
     {
-        require(msg.sender == address(ETHER_TOKEN), "Default function only allowed by WETH contract");
+        require(msg.sender == address(ETHER_TOKEN), DEFAULT_FUNCTION_WETH_CONTRACT_ONLY);
     }
 
     /// @dev Sets the allowances on the proxy for this contract
