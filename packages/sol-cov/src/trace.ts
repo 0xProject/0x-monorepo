@@ -54,7 +54,11 @@ export function getTracesByContractAddress(structLogs: StructLog[], startAddress
             );
             currentTraceSegment = [];
             if (structLog.op === OpCode.SelfDestruct) {
-                // TODO: Record contract bytecode before the selfdestruct and handle that scenario
+                // After contract execution, we look at all sub-calls to external contracts, and for each one, fetch
+                // the bytecode and compute the coverage for the call. If the contract is destroyed with a call
+                // to `selfdestruct`, we are unable to fetch it's bytecode and compute coverage.
+                // TODO: Refactor this logic to fetch the sub-called contract bytecode before the selfdestruct is called
+                // in order to handle this edge-case.
                 logUtils.warn(
                     "Detected a selfdestruct. Sol-cov currently doesn't support that scenario. We'll just skip the trace part for a destructed contract",
                 );
