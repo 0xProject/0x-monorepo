@@ -26,7 +26,7 @@
         "rebuild": "run-s clean build",
         "test": "wsrun test $PKG --serial --exclude-missing",
         "stage_docs": "wsrun docs:stage $PKG --parallel --exclude-missing",
-        "lint": "wsrun lint $PKG --exclude-missing"
+        "lint": "wsrun lint $PKG --parallel --exclude-missing"
     },
     "config": {
         "mnemonic": "concert load couple harbor equip island argue ramp clarify fence smart topic"
