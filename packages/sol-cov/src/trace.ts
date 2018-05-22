@@ -13,7 +13,8 @@ export function getTracesByContractAddress(structLogs: StructLog[], startAddress
     let currentTraceSegment = [];
     const callStack = [startAddress];
     // tslint:disable-next-line:prefer-for-of
-    for (const structLog of structLogs) {
+    for (let i = 0; i < structLogs.length; i++) {
+        const structLog = structLogs[i];
         if (structLog.depth !== callStack.length - 1) {
             throw new Error("Malformed trace. trace depth doesn't match call stack depth");
         }
@@ -26,13 +27,22 @@ export function getTracesByContractAddress(structLogs: StructLog[], startAddress
             const currentAddress = _.last(callStack) as string;
             const jumpAddressOffset = structLog.op === OpCode.DelegateCall ? 4 : 2;
             const newAddress = addressUtils.padZeros(
-                new BigNumber(addHexPrefix(structLog.stack[jumpAddressOffset])).toString(16),
+                new BigNumber(addHexPrefix(structLog.stack[structLog.stack.length - jumpAddressOffset])).toString(16),
             );
-            callStack.push(newAddress);
-            traceByContractAddress[currentAddress] = (traceByContractAddress[currentAddress] || []).concat(
-                currentTraceSegment,
-            );
-            currentTraceSegment = [];
+            if (structLog === _.last(structLogs)) {
+                throw new Error('CALL-like opcode can not be the last one');
+            }
+            // Sometimes calls don't change the execution context (current address). When we do a transfer to an
+            // externally owned account - it does the call and immidiately returns because there is no fallback
+            // function. We manually check if the call depth had changed to handle that case.
+            const nextStructLog = structLogs[i + 1];
+            if (nextStructLog.depth !== structLog.depth) {
+                callStack.push(newAddress);
+                traceByContractAddress[currentAddress] = (traceByContractAddress[currentAddress] || []).concat(
+                    currentTraceSegment,
+                );
+                currentTraceSegment = [];
+            }
         } else if (
             _.includes([OpCode.Return, OpCode.Stop, OpCode.Revert, OpCode.Invalid, OpCode.SelfDestruct], structLog.op)
         ) {

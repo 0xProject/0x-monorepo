@@ -13,6 +13,7 @@ const providerConfigs = { shouldUseInProcessGanache: true };
 export const provider = web3Factory.getRpcProvider(providerConfigs);
 const isCoverageEnabled = env.parseBoolean(EnvVars.SolidityCoverage);
 if (isCoverageEnabled) {
-    prependSubprovider(provider, coverage.getCoverageSubproviderSingleton());
+    const coverageSubprovider = coverage.getCoverageSubproviderSingleton();
+    prependSubprovider(provider, coverageSubprovider);
 }
 export const web3Wrapper = new Web3Wrapper(provider);
