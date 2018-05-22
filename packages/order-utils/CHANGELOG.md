@@ -5,7 +5,11 @@ Edit the package's CHANGELOG.json file only.
 
 CHANGELOG
 
-## v0.0.4 - _May 5, 2018_
+## v0.0.5 - _May 22, 2018_
+
+    * Add orderStateUtils, a module for computing order state needed to decide if an order is still valid
+
+## v0.0.4 - _May 4, 2018_
 
     * Dependencies updated
 
