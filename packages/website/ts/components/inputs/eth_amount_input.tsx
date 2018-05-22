@@ -1,5 +1,5 @@
-import { ZeroEx } from '0x.js';
 import { BigNumber } from '@0xproject/utils';
+import { Web3Wrapper } from '@0xproject/web3-wrapper';
 import * as _ from 'lodash';
 import * as React from 'react';
 import { BalanceBoundedInput } from 'ts/components/inputs/balance_bounded_input';
@@ -34,7 +34,7 @@ export class EthAmountInput extends React.Component<EthAmountInputProps, EthAmou
     };
     public render(): React.ReactNode {
         const amount = this.props.amount
-            ? ZeroEx.toUnitAmount(this.props.amount, constants.DECIMAL_PLACES_ETH)
+            ? Web3Wrapper.toUnitAmount(this.props.amount, constants.DECIMAL_PLACES_ETH)
             : undefined;
         return (
             <div className="flex overflow-hidden" style={this.props.style}>
@@ -61,7 +61,7 @@ export class EthAmountInput extends React.Component<EthAmountInputProps, EthAmou
     private _onChange(isValid: boolean, amount?: BigNumber): void {
         const baseUnitAmountIfExists = _.isUndefined(amount)
             ? undefined
-            : ZeroEx.toBaseUnitAmount(amount, constants.DECIMAL_PLACES_ETH);
+            : Web3Wrapper.toBaseUnitAmount(amount, constants.DECIMAL_PLACES_ETH);
         this.props.onChange(isValid, baseUnitAmountIfExists);
     }
     private _getLabelStyle(): React.CSSProperties {

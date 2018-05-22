@@ -1,5 +1,6 @@
-import { ECSignature, Order, ZeroEx } from '0x.js';
+import { generatePseudoRandomSalt, getOrderHashHex } from '@0xproject/order-utils';
 import { colors, constants as sharedConstants } from '@0xproject/react-shared';
+import { ECSignature, Order } from '@0xproject/types';
 import { BigNumber, logUtils } from '@0xproject/utils';
 import * as _ from 'lodash';
 import Dialog from 'material-ui/Dialog';
@@ -78,7 +79,7 @@ export class GenerateOrderForm extends React.Component<GenerateOrderFormProps, G
                                   specified, anyone is able to fill it.';
         const exchangeContractIfExists = this.props.blockchain.getExchangeContractAddressIfExists();
         const initialTakerAddress =
-            this.props.orderTakerAddress === ZeroEx.NULL_ADDRESS ? '' : this.props.orderTakerAddress;
+            this.props.orderTakerAddress === constants.NULL_ADDRESS ? '' : this.props.orderTakerAddress;
         return (
             <div className="clearfix mb2 lg-px4 md-px4 sm-px2">
                 <h3>Generate an order</h3>
@@ -224,7 +225,7 @@ export class GenerateOrderForm extends React.Component<GenerateOrderFormProps, G
         // Upon closing the order JSON dialog, we update the orderSalt stored in the Redux store
         // with a new value so that if a user signs the identical order again, the newly signed
         // orderHash will not collide with the previously generated orderHash.
-        this.props.dispatcher.updateOrderSalt(ZeroEx.generatePseudoRandomSalt());
+        this.props.dispatcher.updateOrderSalt(generatePseudoRandomSalt());
         this.setState({
             signingState: SigningState.UNSIGNED,
         });
@@ -305,7 +306,7 @@ export class GenerateOrderForm extends React.Component<GenerateOrderFormProps, G
             takerTokenAddress: hashData.receiveTokenContractAddr,
             takerTokenAmount: hashData.receiveAmount,
         };
-        const orderHash = ZeroEx.getOrderHashHex(zeroExOrder);
+        const orderHash = getOrderHashHex(zeroExOrder);
 
         let globalErrMsg = '';
         try {
@@ -348,7 +349,7 @@ export class GenerateOrderForm extends React.Component<GenerateOrderFormProps, G
     }
     private _updateOrderAddress(address?: string): void {
         if (!_.isUndefined(address)) {
-            const normalizedAddress = _.isEmpty(address) ? ZeroEx.NULL_ADDRESS : address;
+            const normalizedAddress = _.isEmpty(address) ? constants.NULL_ADDRESS : address;
             this.props.dispatcher.updateOrderTakerAddress(normalizedAddress);
         }
     }

@@ -1,4 +1,4 @@
-import { ECSignature } from '0x.js';
+import { ECSignature } from '@0xproject/types';
 import { BigNumber, logUtils } from '@0xproject/utils';
 import * as _ from 'lodash';
 import Paper from 'material-ui/Paper';
