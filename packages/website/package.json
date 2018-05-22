@@ -2,7 +2,7 @@
     "name": "@0xproject/website",
     "version": "0.0.32",
     "engines": {
-        "node" : ">=6.12"
+        "node": ">=6.12"
     },
     "private": true,
     "description": "Website and 0x portal dapp",
@@ -81,6 +81,7 @@
         "json-loader": "^0.5.4",
         "less-loader": "^2.2.3",
         "raw-loader": "^0.5.1",
+        "redux-devtools-extension": "^2.13.2",
         "shx": "^0.2.2",
         "source-map-loader": "^0.1.6",
         "style-loader": "0.13.x",

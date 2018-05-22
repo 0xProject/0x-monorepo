@@ -6,6 +6,7 @@ import { Provider } from 'react-redux';
 import { BrowserRouter as Router, Redirect, Route, Switch } from 'react-router-dom';
 import * as injectTapEventPlugin from 'react-tap-event-plugin';
 import { createStore, Store as ReduxStore } from 'redux';
+import { devToolsEnhancer } from 'redux-devtools-extension';
 import { Redirecter } from 'ts/components/redirecter';
 import { About } from 'ts/containers/about';
 import { FAQ } from 'ts/containers/faq';
@@ -74,7 +75,7 @@ const LazyOrderUtilsDocumentation = createLazyComponent('Documentation', async (
 analytics.init();
 // tslint:disable-next-line:no-floating-promises
 analytics.logProviderAsync((window as any).web3);
-const store: ReduxStore<State> = createStore(reducer);
+const store: ReduxStore<State> = createStore(reducer, devToolsEnhancer({ name: '0x Website Redux Store' }));
 render(
     <Router>
         <div>
