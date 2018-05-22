@@ -127,7 +127,7 @@ describe('MultiSigWalletWithTimeLock', () => {
                     args: [SECONDS_TIME_LOCKED.toNumber()],
                 };
                 let txHash = await multiSigWrapper.submitTransactionAsync(destination, from, dataParams);
-                const subRes = await zeroEx.awaitTransactionMinedAsync(txHash);
+                const subRes = await zeroEx.awaitTransactionMinedAsync(txHash, constants.AWAIT_TRANSACTION_MINED_MS);
                 const log = abiDecoder.tryToDecodeLogOrNoop(subRes.logs[0]) as LogWithDecodedArgs<
                     SubmissionContractEventArgs
                 >;
@@ -139,8 +139,7 @@ describe('MultiSigWalletWithTimeLock', () => {
                 expect(initialSecondsTimeLocked).to.be.equal(0);
 
                 txHash = await multiSig.executeTransaction.sendTransactionAsync(txId, { from: owners[0] });
-                await web3Wrapper.awaitTransactionMinedAsync(txHash, constants.AWAIT_TRANSACTION_MINED_MS);
-                const res = await zeroEx.awaitTransactionMinedAsync(txHash);
+                const res = await zeroEx.awaitTransactionMinedAsync(txHash, constants.AWAIT_TRANSACTION_MINED_MS);
                 expect(res.logs).to.have.length(2);
 
                 const secondsTimeLocked = new BigNumber(await multiSig.secondsTimeLocked.callAsync());
@@ -183,7 +182,6 @@ describe('MultiSigWalletWithTimeLock', () => {
                 txHash = await multiSig.confirmTransaction.sendTransactionAsync(txId, {
                     from: owners[1],
                 });
-                await web3Wrapper.awaitTransactionMinedAsync(txHash, constants.AWAIT_TRANSACTION_MINED_MS);
                 const confRes = await zeroEx.awaitTransactionMinedAsync(txHash, constants.AWAIT_TRANSACTION_MINED_MS);
                 expect(confRes.logs).to.have.length(2);
             });
