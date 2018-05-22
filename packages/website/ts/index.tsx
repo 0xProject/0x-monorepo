@@ -6,7 +6,7 @@ import { Provider } from 'react-redux';
 import { BrowserRouter as Router, Redirect, Route, Switch } from 'react-router-dom';
 import * as injectTapEventPlugin from 'react-tap-event-plugin';
 import { createStore, Store as ReduxStore } from 'redux';
-import { devToolsEnhancer } from 'redux-devtools-extension';
+import { devToolsEnhancer } from 'redux-devtools-extension/developmentOnly';
 import { Redirecter } from 'ts/components/redirecter';
 import { About } from 'ts/containers/about';
 import { FAQ } from 'ts/containers/faq';
