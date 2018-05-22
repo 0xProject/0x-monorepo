@@ -26,6 +26,12 @@ describe('Exchange libs', () => {
     let libs: TestLibsContract;
 
     before(async () => {
+        await blockchainLifecycle.startAsync();
+    });
+    after(async () => {
+        await blockchainLifecycle.revertAsync();
+    });
+    before(async () => {
         const accounts = await web3Wrapper.getAvailableAddressesAsync();
         const makerAddress = accounts[0];
         libs = await TestLibsContract.deployFrom0xArtifactAsync(artifacts.TestLibs, provider, txDefaults);
