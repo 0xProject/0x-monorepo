@@ -23,7 +23,7 @@ export class ERC20Wrapper {
     }
     public async deployDummyTokensAsync(): Promise<DummyERC20TokenContract[]> {
         this._dummyTokenContracts = await Promise.all(
-            _.times(constants.NUM_DUMMY_ERC20_TO_DEPLOY, () =>
+            _.times(constants.NUM_DUMMY_ERC20_TO_DEPLOY, async () =>
                 DummyERC20TokenContract.deployFrom0xArtifactAsync(
                     artifacts.DummyERC20Token,
                     this._provider,
@@ -45,7 +45,7 @@ export class ERC20Wrapper {
         );
         return this._proxyContract;
     }
-    public async setBalancesAndAllowancesAsync() {
+    public async setBalancesAndAllowancesAsync(): Promise<void> {
         this._validateDummyTokenContractsExistOrThrow();
         this._validateProxyContractExistsOrThrow();
         const setBalancePromises: Array<Promise<string>> = [];
@@ -103,12 +103,12 @@ export class ERC20Wrapper {
         const tokenAddresses = _.map(this._dummyTokenContracts, dummyTokenContract => dummyTokenContract.address);
         return tokenAddresses;
     }
-    private _validateDummyTokenContractsExistOrThrow() {
+    private _validateDummyTokenContractsExistOrThrow(): void {
         if (_.isUndefined(this._dummyTokenContracts)) {
             throw new Error('Dummy ERC20 tokens not yet deployed, please call "deployDummyTokensAsync"');
         }
     }
-    private _validateProxyContractExistsOrThrow() {
+    private _validateProxyContractExistsOrThrow(): void {
         if (_.isUndefined(this._proxyContract)) {
             throw new Error('ERC20 proxy contract not yet deployed, please call "deployProxyAsync"');
         }

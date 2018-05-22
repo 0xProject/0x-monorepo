@@ -55,7 +55,7 @@ export class MatchOrderTester {
         realERC20BalancesByOwner: ERC20BalancesByOwner,
         expectedNewERC721TokenIdsByOwner: ERC721TokenIdsByOwner,
         realERC721TokenIdsByOwner: ERC721TokenIdsByOwner,
-    ) {
+    ): boolean {
         // ERC20 Balances
         const erc20BalancesMatch = _.isEqual(expectedNewERC20BalancesByOwner, realERC20BalancesByOwner);
         if (!erc20BalancesMatch) {
