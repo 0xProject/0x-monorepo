@@ -5,13 +5,17 @@ import { BigNumber } from '@0xproject/utils';
 import { Web3Wrapper } from '@0xproject/web3-wrapper';
 import * as chai from 'chai';
 
+import { EtherTokenContract } from '../../../0x.js/lib/src/contract_wrappers/generated/ether_token';
 import { DummyERC20TokenContract } from '../../src/contract_wrappers/generated/dummy_e_r_c20_token';
 import { DummyERC721TokenContract } from '../../src/contract_wrappers/generated/dummy_e_r_c721_token';
 import { ERC20ProxyContract } from '../../src/contract_wrappers/generated/e_r_c20_proxy';
 import { ERC721ProxyContract } from '../../src/contract_wrappers/generated/e_r_c721_proxy';
 import { ExchangeContract } from '../../src/contract_wrappers/generated/exchange';
 import { ForwarderContract } from '../../src/contract_wrappers/generated/forwarder';
+import { WETH9Contract } from '../../src/contract_wrappers/generated/weth9';
+import { artifacts } from '../../src/utils/artifacts';
 import { assetProxyUtils } from '../../src/utils/asset_proxy_utils';
+import { chaiSetup } from '../../src/utils/chai_setup';
 import { constants } from '../../src/utils/constants';
 import { ERC20Wrapper } from '../../src/utils/erc20_wrapper';
 import { ERC721Wrapper } from '../../src/utils/erc721_wrapper';
@@ -19,9 +23,7 @@ import { ExchangeWrapper } from '../../src/utils/exchange_wrapper';
 import { ForwarderWrapper } from '../../src/utils/forwarder_wrapper';
 import { OrderFactory } from '../../src/utils/order_factory';
 import { AssetProxyId, ContractName, ERC20BalancesByOwner, SignedOrder } from '../../src/utils/types';
-import { chaiSetup } from '../utils/chai_setup';
-import { deployer } from '../utils/deployer';
-import { provider, web3Wrapper } from '../utils/web3_wrapper';
+import { provider, txDefaults, web3Wrapper } from '../../src/utils/web3_wrapper';
 
 chaiSetup.configure();
 const expect = chai.expect;
@@ -69,8 +71,8 @@ describe(ContractName.Forwarder, () => {
         const accounts = await web3Wrapper.getAvailableAddressesAsync();
         const usedAddresses = ([owner, makerAddress, takerAddress, feeRecipientAddress] = accounts);
 
-        erc20Wrapper = new ERC20Wrapper(deployer, provider, usedAddresses, owner);
-        erc721Wrapper = new ERC721Wrapper(deployer, provider, usedAddresses, owner);
+        erc20Wrapper = new ERC20Wrapper(provider, usedAddresses, owner);
+        erc721Wrapper = new ERC721Wrapper(provider, usedAddresses, owner);
 
         [erc20TokenA, erc20TokenB, zrxToken] = await erc20Wrapper.deployDummyTokensAsync();
         erc20Proxy = await erc20Wrapper.deployProxyAsync();
@@ -82,13 +84,20 @@ describe(ContractName.Forwarder, () => {
         const erc721Balances = await erc721Wrapper.getBalancesAsync();
         erc721MakerAssetIds = erc721Balances[makerAddress][erc721Token.address];
 
-        const etherTokenInstance = await deployer.deployAsync(ContractName.EtherToken);
+        const etherTokenInstance = await WETH9Contract.deployFrom0xArtifactAsync(
+            artifacts.EtherToken,
+            provider,
+            txDefaults,
+        );
         weth = new DummyERC20TokenContract(etherTokenInstance.abi, etherTokenInstance.address, provider);
         erc20Wrapper.addDummyTokenContract(weth);
 
-        const exchangeInstance = await deployer.deployAsync(ContractName.Exchange, [
+        const exchangeInstance = await ExchangeContract.deployFrom0xArtifactAsync(
+            artifacts.Exchange,
+            provider,
+            txDefaults,
             assetProxyUtils.encodeERC20ProxyData(zrxToken.address),
-        ]);
+        );
         const exchange = new ExchangeContract(exchangeInstance.abi, exchangeInstance.address, provider);
         zeroEx = new ZeroEx(provider, {
             exchangeContractAddress: exchangeInstance.address,
@@ -127,7 +136,15 @@ describe(ContractName.Forwarder, () => {
             zrxToken.address,
             AssetProxyId.ERC20,
         ];
-        const forwarderInstance = await deployer.deployAndSaveAsync(ContractName.Forwarder, forwarderArgs);
+        const forwarderInstance = await ForwarderContract.deployFrom0xArtifactAsync(
+            artifacts.Forwarder,
+            provider,
+            txDefaults,
+            exchangeInstance.address,
+            etherTokenInstance.address,
+            zrxToken.address,
+            AssetProxyId.ERC20,
+        );
         forwarderContract = new ForwarderContract(forwarderInstance.abi, forwarderInstance.address, provider);
         await forwarderContract.setERC20ProxyApproval.sendTransactionAsync(AssetProxyId.ERC20, { from: owner });
         forwarderWrapper = new ForwarderWrapper(forwarderContract, web3Wrapper, zrxToken.address);
