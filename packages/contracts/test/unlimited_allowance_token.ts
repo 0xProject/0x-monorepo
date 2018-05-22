@@ -7,6 +7,7 @@ import * as Web3 from 'web3';
 
 import { DummyERC20TokenContract } from '../src/contract_wrappers/generated/dummy_e_r_c20_token';
 import { artifacts } from '../src/utils/artifacts';
+import { expectRevertOrAlwaysFailingTransaction } from '../src/utils/assertions';
 import { chaiSetup } from '../src/utils/chai_setup';
 import { constants } from '../src/utils/constants';
 import { provider, txDefaults, web3Wrapper } from '../src/utils/web3_wrapper';
@@ -93,11 +94,11 @@ describe('UnlimitedAllowanceToken', () => {
                 await token.approve.sendTransactionAsync(spender, amountToTransfer, { from: owner }),
                 constants.AWAIT_TRANSACTION_MINED_MS,
             );
-            return expect(
+            return expectRevertOrAlwaysFailingTransaction(
                 token.transferFrom.callAsync(owner, spender, amountToTransfer, {
                     from: spender,
                 }),
-            ).to.be.rejectedWith(constants.REVERT);
+            );
         });
 
         it('should throw if spender has insufficient allowance', async () => {
@@ -108,11 +109,11 @@ describe('UnlimitedAllowanceToken', () => {
             const isSpenderAllowanceInsufficient = spenderAllowance.cmp(amountToTransfer) < 0;
             expect(isSpenderAllowanceInsufficient).to.be.true();
 
-            return expect(
+            return expectRevertOrAlwaysFailingTransaction(
                 token.transferFrom.callAsync(owner, spender, amountToTransfer, {
                     from: spender,
                 }),
-            ).to.be.rejectedWith(constants.REVERT);
+            );
         });
 
         it('should return true on a 0 value transfer', async () => {
