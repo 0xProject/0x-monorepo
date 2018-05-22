@@ -29,6 +29,10 @@ declare module 'react-joyride' {
         [prop: string]: any;
     }
     
+    interface StyleOptionsProp {
+        options: StyleOptions;
+    }
+
     export interface Props {
         steps?: Step[];
         beaconComponent?: React.ReactNode;
@@ -37,7 +41,7 @@ declare module 'react-joyride' {
         stepIndex?: number;
         callback?: (options: any) => void;
         debug?: boolean;
-        styles?: { options: StyleOptions };
+        styles?: StyleOptionsProp;
     }
     
     export interface State {

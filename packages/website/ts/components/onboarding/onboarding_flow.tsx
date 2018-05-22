@@ -6,7 +6,7 @@ import { zIndex } from 'ts/utils/style';
 
 interface OnboardingFlowProps {
     steps: Step[];
-    stepIndex?: number;
+    stepIndex: number;
     isRunning: boolean;
     onClose: () => void;
     onChange?: (options: any) => void;
