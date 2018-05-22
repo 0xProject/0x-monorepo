@@ -83,7 +83,7 @@ describe('Exchange wrappers', () => {
             txDefaults,
             assetProxyUtils.encodeERC20ProxyData(zrxToken.address),
         );
-        exchangeWrapper = new ExchangeWrapper(exchange);
+        exchangeWrapper = new ExchangeWrapper(exchange, provider);
         await exchangeWrapper.registerAssetProxyAsync(AssetProxyId.ERC20, erc20Proxy.address, owner);
         await exchangeWrapper.registerAssetProxyAsync(AssetProxyId.ERC721, erc721Proxy.address, owner);
 

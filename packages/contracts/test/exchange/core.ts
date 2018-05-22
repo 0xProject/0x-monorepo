@@ -60,8 +60,6 @@ describe('Exchange core', () => {
     let defaultMakerAssetAddress: string;
     let defaultTakerAssetAddress: string;
 
-    let zeroEx: ZeroEx;
-
     before(async () => {
         await blockchainLifecycle.startAsync();
     });
@@ -92,11 +90,7 @@ describe('Exchange core', () => {
             txDefaults,
             assetProxyUtils.encodeERC20ProxyData(zrxToken.address),
         );
-        zeroEx = new ZeroEx(provider, {
-            exchangeContractAddress: exchange.address,
-            networkId: constants.TESTRPC_NETWORK_ID,
-        });
-        exchangeWrapper = new ExchangeWrapper(exchange);
+        exchangeWrapper = new ExchangeWrapper(exchange, provider);
         await exchangeWrapper.registerAssetProxyAsync(AssetProxyId.ERC20, erc20Proxy.address, owner);
         await exchangeWrapper.registerAssetProxyAsync(AssetProxyId.ERC721, erc721Proxy.address, owner);
 

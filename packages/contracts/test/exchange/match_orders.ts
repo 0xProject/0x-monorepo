@@ -116,7 +116,7 @@ describe('matchOrders', () => {
             txDefaults,
             assetProxyUtils.encodeERC20ProxyData(zrxToken.address),
         );
-        exchangeWrapper = new ExchangeWrapper(exchange);
+        exchangeWrapper = new ExchangeWrapper(exchange, provider);
         await exchangeWrapper.registerAssetProxyAsync(AssetProxyId.ERC20, erc20Proxy.address, owner);
         await exchangeWrapper.registerAssetProxyAsync(AssetProxyId.ERC721, erc721Proxy.address, owner);
         // Authorize ERC20 and ERC721 trades by exchange

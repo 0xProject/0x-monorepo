@@ -115,7 +115,7 @@
 //             exchangeContractAddress: exchange.address,
 //             networkId: constants.TESTRPC_NETWORK_ID,
 //         });
-//         exWrapper = new ExchangeWrapper(exchange);
+//         exWrapper = new ExchangeWrapper(exchange, provider);
 
 //         makerTokenAmount = ZeroEx.toBaseUnitAmount(new BigNumber(1), 18);
 //         takerTokenAmount = makerTokenAmount;
