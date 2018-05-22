@@ -8,7 +8,7 @@ import { AbstractArtifactAdapter } from './artifact_adapters/abstract_artifact_a
 import { constants } from './constants';
 import { CoverageManager } from './coverage_manager';
 import { getTracesByContractAddress } from './trace';
-import { TraceInfoExistingContract, TraceInfoNewContract } from './types';
+import { BlockParamLiteral, TraceInfoExistingContract, TraceInfoNewContract } from './types';
 
 interface MaybeFakeTxData extends TxData {
     isFakeTransaction?: boolean;
@@ -89,7 +89,7 @@ export class CoverageSubprovider extends Subprovider {
         } else {
             const payload = {
                 method: 'eth_getBlockByNumber',
-                params: ['latest', true],
+                params: [BlockParamLiteral.Latest, true],
             };
             const jsonRPCResponsePayload = await this.emitPayloadAsync(payload);
             const transactions = jsonRPCResponsePayload.result.transactions;
@@ -136,7 +136,7 @@ export class CoverageSubprovider extends Subprovider {
         } else {
             const tracesByContractAddress = getTracesByContractAddress(trace.structLogs, address);
             for (const subcallAddress of _.keys(tracesByContractAddress)) {
-                payload = { method: 'eth_getCode', params: [subcallAddress, 'latest'] };
+                payload = { method: 'eth_getCode', params: [subcallAddress, BlockParamLiteral.Latest] };
                 const runtimeBytecode = (await this.emitPayloadAsync(payload)).result;
                 const traceForThatSubcall = tracesByContractAddress[subcallAddress];
                 const coveredPcs = _.map(traceForThatSubcall, log => log.pc);
@@ -178,7 +178,7 @@ export class CoverageSubprovider extends Subprovider {
     private async _getContractCodeAsync(address: string): Promise<string> {
         const payload = {
             method: 'eth_getCode',
-            params: [address, 'latest'],
+            params: [address, BlockParamLiteral.Latest],
         };
         const jsonRPCResponsePayload = await this.emitPayloadAsync(payload);
         const contractCode: string = jsonRPCResponsePayload.result;

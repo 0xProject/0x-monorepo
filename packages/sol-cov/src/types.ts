@@ -98,3 +98,7 @@ export interface TraceInfoExistingContract extends TraceInfoBase {
 }
 
 export type TraceInfo = TraceInfoNewContract | TraceInfoExistingContract;
+
+export enum BlockParamLiteral {
+    Latest = 'latest',
+}
