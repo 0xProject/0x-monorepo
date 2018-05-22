@@ -1,7 +1,7 @@
 import { BlockchainLifecycle } from '@0xproject/dev-utils';
 import { LogWithDecodedArgs } from '@0xproject/types';
 import { BigNumber } from '@0xproject/utils';
-import { Web3Wrapper } from '@0xproject/web-wrapper';
+import { Web3Wrapper } from '@0xproject/web3-wrapper';
 import * as chai from 'chai';
 import ethUtil = require('ethereumjs-util');
 import 'make-promises-safe';
