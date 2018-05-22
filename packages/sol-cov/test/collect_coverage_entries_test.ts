@@ -40,12 +40,14 @@ describe('Collect coverage entries', () => {
             const coverageEntries = collectCoverageEntries(simpleStorageContract);
             const fnIds = _.keys(coverageEntries.fnMap);
             expect(coverageEntries.fnMap[fnIds[0]].name).to.be.equal('set');
+            // tslint:disable-next-line:custom-no-magic-numbers
             expect(coverageEntries.fnMap[fnIds[0]].line).to.be.equal(5);
             const setFunction = `function set(uint x) {
         storedData = x;
     }`;
             expect(getRange(simpleStorageContract, coverageEntries.fnMap[fnIds[0]].loc)).to.be.equal(setFunction);
             expect(coverageEntries.fnMap[fnIds[1]].name).to.be.equal('get');
+            // tslint:disable-next-line:custom-no-magic-numbers
             expect(coverageEntries.fnMap[fnIds[1]].line).to.be.equal(8);
             const getFunction = `function get() constant returns (uint retVal) {
         return storedData;
@@ -122,6 +124,7 @@ describe('Collect coverage entries', () => {
 
             const branchDescriptions = _.values(coverageEntries.branchMap);
             const branchLines = _.map(branchDescriptions, branchDescription => branchDescription.line);
+            // tslint:disable-next-line:custom-no-magic-numbers
             expect(branchLines).to.be.deep.equal([94, 115, 119, 130, 151, 187]);
             const branchTypes = _.map(branchDescriptions, branchDescription => branchDescription.type);
             expect(branchTypes).to.be.deep.equal(['if', 'if', 'if', 'if', 'binary-expr', 'if']);

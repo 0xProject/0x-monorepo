@@ -80,11 +80,12 @@ export const runMigrationsAsync = async (provider: Provider, artifactsDir: strin
         tokenInfo[0].swarmHash,
         { from: owner },
     );
+    const decimals = 18;
     await tokenReg.addToken.sendTransactionAsync(
         zrxToken.address,
         '0x Protocol Token',
         'ZRX',
-        18,
+        decimals,
         NULL_BYTES,
         NULL_BYTES,
         {
@@ -96,7 +97,7 @@ export const runMigrationsAsync = async (provider: Provider, artifactsDir: strin
         etherToken.address,
         'Ether Token',
         'WETH',
-        18,
+        decimals,
         NULL_BYTES,
         NULL_BYTES,
         {

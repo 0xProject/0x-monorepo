@@ -6,18 +6,18 @@ export const intervalUtils = {
         intervalMs: number,
         onError: (err: Error) => void,
     ): NodeJS.Timer {
-        let locked = false;
+        let isLocked = false;
         const intervalId = setInterval(async () => {
-            if (locked) {
+            if (isLocked) {
                 return;
             } else {
-                locked = true;
+                isLocked = true;
                 try {
                     await fn();
                 } catch (err) {
                     onError(err);
                 }
-                locked = false;
+                isLocked = false;
             }
         }, intervalMs);
         return intervalId;
