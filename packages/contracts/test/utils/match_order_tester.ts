@@ -57,8 +57,8 @@ export class MatchOrderTester {
         realERC721TokenIdsByOwner: ERC721TokenIdsByOwner,
     ): boolean {
         // ERC20 Balances
-        const erc20BalancesMatch = _.isEqual(expectedNewERC20BalancesByOwner, realERC20BalancesByOwner);
-        if (!erc20BalancesMatch) {
+        const doesErc20BalancesMatch = _.isEqual(expectedNewERC20BalancesByOwner, realERC20BalancesByOwner);
+        if (!doesErc20BalancesMatch) {
             return false;
         }
         // ERC721 Token Ids
@@ -75,8 +75,11 @@ export class MatchOrderTester {
                 _.sortBy(tokenIds);
             });
         });
-        const erc721TokenIdsMatch = _.isEqual(sortedExpectedNewERC721TokenIdsByOwner, sortedNewERC721TokenIdsByOwner);
-        return erc721TokenIdsMatch;
+        const doesErc721TokenIdsMatch = _.isEqual(
+            sortedExpectedNewERC721TokenIdsByOwner,
+            sortedNewERC721TokenIdsByOwner,
+        );
+        return doesErc721TokenIdsMatch;
     }
     /// @dev Constructs new MatchOrderTester.
     /// @param exchangeWrapper Used to call to the Exchange.
@@ -156,13 +159,13 @@ export class MatchOrderTester {
             expectedTransferAmounts,
         );
         // Assert our expected balances are equal to the actual balances
-        const expectedBalancesMatchRealBalances = MatchOrderTester._compareExpectedAndRealBalances(
+        const didExpectedBalancesMatchRealBalances = MatchOrderTester._compareExpectedAndRealBalances(
             expectedERC20BalancesByOwner,
             newERC20BalancesByOwner,
             expectedERC721TokenIdsByOwner,
             newERC721TokenIdsByOwner,
         );
-        expect(expectedBalancesMatchRealBalances).to.be.true();
+        expect(didExpectedBalancesMatchRealBalances).to.be.true();
         return [newERC20BalancesByOwner, newERC721TokenIdsByOwner];
     }
     /// @dev Calculates expected transfer amounts between order makers, fee recipients, and

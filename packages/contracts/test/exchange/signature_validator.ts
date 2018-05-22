@@ -62,12 +62,12 @@ describe('MixinSignatureValidator', () => {
 
         it('should return true with a valid signature', async () => {
             const orderHashHex = orderUtils.getOrderHashHex(signedOrder);
-            const success = await signatureValidator.publicIsValidSignature.callAsync(
+            const isValidSignature = await signatureValidator.publicIsValidSignature.callAsync(
                 orderHashHex,
                 signedOrder.makerAddress,
                 signedOrder.signature,
             );
-            expect(success).to.be.true();
+            expect(isValidSignature).to.be.true();
         });
 
         it('should return false with an invalid signature', async () => {
@@ -81,12 +81,12 @@ describe('MixinSignatureValidator', () => {
             const invalidSigHex = `0x${invalidSigBuff.toString('hex')}`;
             signedOrder.signature = invalidSigHex;
             const orderHashHex = orderUtils.getOrderHashHex(signedOrder);
-            const success = await signatureValidator.publicIsValidSignature.callAsync(
+            const isValidSignature = await signatureValidator.publicIsValidSignature.callAsync(
                 orderHashHex,
                 signedOrder.makerAddress,
                 signedOrder.signature,
             );
-            expect(success).to.be.false();
+            expect(isValidSignature).to.be.false();
         });
     });
 });
