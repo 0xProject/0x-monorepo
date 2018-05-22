@@ -32,19 +32,23 @@ contract LibBytes {
     /// @return The byte that was popped off.
     function popByte(bytes memory b)
         internal
-        returns (byte result)
+        pure
+        returns (bytes1 result)
     {
         require(
             b.length > 0,
             GT_ZERO_LENGTH_REQUIRED
         );
 
+        // Store last byte.
         result = b[b.length - 1];
+        
         assembly {
+            // Decrement length of byte array.
             let newLen := sub(mload(b), 1)
             mstore(b, newLen)
         }
-        result;
+        return result;
     }
 
     /// @dev Pops the last 20 bytes off of a byte array by modifying its length.
@@ -52,6 +56,7 @@ contract LibBytes {
     /// @return The 20 byte address that was popped off.
     function popAddress(bytes memory b)
         internal
+        pure
         returns (address result)
     {
         require(
@@ -59,9 +64,11 @@ contract LibBytes {
             GTE_20_LENGTH_REQUIRED
         );
 
+        // Store last 20 bytes.
         result = readAddress(b, b.length - 20);
 
         assembly {
+            // Subtract 20 from byte array length.
             let newLen := sub(mload(b), 20)
             mstore(b, newLen)
         }
@@ -72,7 +79,10 @@ contract LibBytes {
     /// @param lhs First byte array to compare.
     /// @param rhs Second byte array to compare.
     /// @return True if arrays are the same. False otherwise.
-    function areBytesEqual(bytes memory lhs, bytes memory rhs)
+    function areBytesEqual(
+        bytes memory lhs,
+        bytes memory rhs
+    )
         internal
         pure
         returns (bool equal)
@@ -106,7 +116,8 @@ contract LibBytes {
     /// @return address from byte array.
     function readAddress(
         bytes memory b,
-        uint256 index)
+        uint256 index
+    )
         internal
         pure
         returns (address result)
@@ -138,7 +149,8 @@ contract LibBytes {
     function writeAddress(
         bytes memory b,
         uint256 index,
-        address input)
+        address input
+    )
         internal
         pure
     {
@@ -175,7 +187,8 @@ contract LibBytes {
     /// @return bytes32 value from byte array.
     function readBytes32(
         bytes memory b,
-        uint256 index)
+        uint256 index
+    )
         internal
         pure
         returns (bytes32 result)
@@ -202,7 +215,8 @@ contract LibBytes {
     function writeBytes32(
         bytes memory b,
         uint256 index,
-        bytes32 input)
+        bytes32 input
+    )
         internal
         pure
     {
@@ -226,7 +240,8 @@ contract LibBytes {
     /// @return uint256 value from byte array.
     function readUint256(
         bytes memory b,
-        uint256 index)
+        uint256 index
+    )
         internal
         pure
         returns (uint256 result)
@@ -241,7 +256,8 @@ contract LibBytes {
     function writeUint256(
         bytes memory b,
         uint256 index,
-        uint256 input)
+        uint256 input
+    )
         internal
         pure
     {

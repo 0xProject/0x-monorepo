@@ -43,7 +43,8 @@ contract MixinSignatureValidator is
     function preSign(
         bytes32 hash,
         address signer,
-        bytes signature)
+        bytes signature
+    )
         external
     {
         require(
@@ -56,7 +57,10 @@ contract MixinSignatureValidator is
     /// @dev Approves a Validator contract to verify signatures on signer's behalf.
     /// @param validator Address of Validator contract.
     /// @param approval Approval or disapproval of  Validator contract.
-    function approveSignatureValidator(address validator, bool approval)
+    function approveSignatureValidator(
+        address validator,
+        bool approval
+    )
         external
     {
         allowedValidators[msg.sender][validator] = approval;
@@ -70,19 +74,19 @@ contract MixinSignatureValidator is
     function isValidSignature(
         bytes32 hash,
         address signer,
-        bytes memory signature)
+        bytes memory signature
+    )
         internal
         view
         returns (bool isValid)
     {
         // TODO: Domain separation: make hash depend on role. (Taker sig should not be valid as maker sig, etc.)
-
         require(
             signature.length >= 1,
             INVALID_SIGNATURE_LENGTH
         );
 
-        // Pop last byte off of 
+        // Pop last byte off of signature byte array.
         SignatureType signatureType = SignatureType(uint8(popByte(signature)));
 
         // Variables are not scoped in Solidity.
@@ -90,7 +94,7 @@ contract MixinSignatureValidator is
         bytes32 r;
         bytes32 s;
         address recovered;
-
+        
         // Always illegal signature.
         // This is always an implicit option since a signer can create a
         // signature array with invalid type or length. We may as well make
@@ -173,7 +177,9 @@ contract MixinSignatureValidator is
         // | 0x00 + x | 20     | Address of validator contract   |
         // | 0x14 + x | 1      | Signature type is always "\x06" |
         } else if (signatureType == SignatureType.Validator) {
+            // Pop last 20 bytes off of signature byte array.
             address validator = popAddress(signature);
+            // Ensure signer has approved validator.
             if (!allowedValidators[signer][validator]) {
                 return false;
             }

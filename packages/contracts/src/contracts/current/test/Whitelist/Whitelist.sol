@@ -27,7 +27,9 @@ contract Whitelist is
     Ownable
 {
     // Revert reasons
-    string constant ADDRESS_NOT_WHITELISTED = "Address not whitelisted.";
+    string constant MAKER_NOT_WHITELISTED = "Maker address not whitelisted.";
+    string constant TAKER_NOT_WHITELISTED = "Taker address not whitelisted.";
+    string constant INVALID_SENDER = "Sender must equal transaction origin.";
 
     // Mapping of address => whitelist status.
     mapping (address => bool) public isWhitelisted;
@@ -42,7 +44,7 @@ contract Whitelist is
         public
     {
         EXCHANGE = IExchange(_exchange);
-        TX_ORIGIN_SIGNATURE = abi.encodePacked(VALIDATOR_SIGNATURE_BYTE, address(this));
+        TX_ORIGIN_SIGNATURE = abi.encodePacked(address(this), VALIDATOR_SIGNATURE_BYTE);
     }
 
     /// @dev Adds or removes an address from the whitelist.
@@ -67,24 +69,28 @@ contract Whitelist is
         LibOrder.Order memory order,
         uint256 takerAssetFillAmount,
         uint256 salt,
-        bytes memory orderSignature)
+        bytes memory orderSignature
+    )
         public
     {
         address takerAddress = msg.sender;
     
         // This contract must be the entry point for the transaction.
-        require(takerAddress == tx.origin);
+        require(
+            takerAddress == tx.origin,
+            INVALID_SENDER
+        );
 
         // Check if maker is on the whitelist.
         require(
             isWhitelisted[order.makerAddress],
-            ADDRESS_NOT_WHITELISTED
+            MAKER_NOT_WHITELISTED
         );
 
         // Check if taker is on the whitelist.
         require(
             isWhitelisted[takerAddress],
-            ADDRESS_NOT_WHITELISTED
+            TAKER_NOT_WHITELISTED
         );
 
         // Encode arguments into byte array.
@@ -111,7 +117,8 @@ contract Whitelist is
     function isValidSignature(
         bytes32 hash,
         address signer,
-        bytes signature)
+        bytes signature
+    )
         external
         view
         returns (bool isValid)

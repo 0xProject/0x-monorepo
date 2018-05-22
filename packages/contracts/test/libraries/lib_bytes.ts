@@ -90,6 +90,7 @@ describe('LibBytes', () => {
             expect(poppedAddress).to.equal(expectedPoppedAddress);
         });
     });
+
     describe('areBytesEqual', () => {
         it('should return true if byte arrays are equal (both arrays < 32 bytes)', async () => {
             const areBytesEqual = await libBytes.publicAreBytesEqual.callAsync(

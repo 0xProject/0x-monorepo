@@ -30,7 +30,7 @@ contract TestLibBytes is
     /// @return The byte that was popped off.
     function publicPopByte(bytes memory b)
         public
-        returns (bytes memory, byte result)
+        returns (bytes memory, bytes1 result)
     {
         result = popByte(b);
         return (b, result);
