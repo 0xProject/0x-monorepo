@@ -5,7 +5,11 @@ Edit the package's CHANGELOG.json file only.
 
 CHANGELOG
 
-## v0.4.1 - _May 5, 2018_
+## v0.4.2 - _May 22, 2018_
+
+    * Move callbackErrorReporter over from 0x.js (#579)
+
+## v0.4.1 - _May 4, 2018_
 
     * Dependencies updated
 

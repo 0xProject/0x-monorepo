@@ -11,7 +11,8 @@
                     "Moved ExchangeContractErrs, DoneCallback, Token, OrderRelevantState, OrderStateValid, OrderStateInvalid, OrderState, OrderAddresses and OrderValues types from 0x.js",
                 "pr": 579
             }
-        ]
+        ],
+        "timestamp": 1527009133
     },
     {
         "timestamp": 1525477860,

@@ -5,7 +5,12 @@ Edit the package's CHANGELOG.json file only.
 
 CHANGELOG
 
-## v0.37.2 - _May 5, 2018_
+## v0.38.0 - _May 22, 2018_
+
+    * Renamed createOrderStateWatcher to createOrderWatcherAsync since it is now async (#579)
+    * Renamed ZeroExError to ContractWrappersErrors since they now lives in the @0xproject/contract-wrappers subpackage (#579)
+
+## v0.37.2 - _May 4, 2018_
 
     * Dependencies updated
 
