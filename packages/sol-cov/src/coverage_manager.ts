@@ -1,12 +1,12 @@
 import { promisify } from '@0xproject/utils';
-import { addHexPrefix } from 'ethereumjs-util';
+import { addHexPrefix, stripHexPrefix } from 'ethereumjs-util';
 import * as fs from 'fs';
 import { Collector } from 'istanbul';
 import * as _ from 'lodash';
 import * as mkdirp from 'mkdirp';
 import * as path from 'path';
 
-import { AbstractArtifactAdapter } from './artifact_adapters/abstract';
+import { AbstractArtifactAdapter } from './artifact_adapters/abstract_artifact_adapter';
 import { collectCoverageEntries } from './collect_coverage_entries';
 import { constants } from './constants';
 import { parseSourceMap } from './source_maps';
@@ -112,6 +112,29 @@ export class CoverageManager {
         };
         return partialCoverage;
     }
+    private static _bytecodeToBytecodeRegex(bytecode: string): string {
+        const bytecodeRegex = bytecode
+            // Library linking placeholder: __ConvertLib____________________________
+            .replace(/_.*_/, '.*')
+            // Last 86 characters is solidity compiler metadata that's different between compilations
+            .replace(/.{86}$/, '')
+            // Libraries contain their own address at the beginning of the code and it's impossible to know it in advance
+            .replace(/^0x730000000000000000000000000000000000000000/, '0x73........................................');
+        return bytecodeRegex;
+    }
+    private static _getContractDataIfExists(contractsData: ContractData[], bytecode: string): ContractData | undefined {
+        if (!bytecode.startsWith('0x')) {
+            throw new Error(')x missing');
+        }
+        const contractData = _.find(contractsData, contractDataCandidate => {
+            const bytecodeRegex = CoverageManager._bytecodeToBytecodeRegex(contractDataCandidate.bytecode);
+            const runtimeBytecodeRegex = CoverageManager._bytecodeToBytecodeRegex(
+                contractDataCandidate.runtimeBytecode,
+            );
+            return !_.isNull(bytecode.match(bytecodeRegex)) || !_.isNull(bytecode.match(runtimeBytecodeRegex));
+        });
+        return contractData;
+    }
     constructor(
         artifactAdapter: AbstractArtifactAdapter,
         getContractCodeAsync: (address: string) => Promise<string>,
@@ -136,20 +159,8 @@ export class CoverageManager {
         for (const traceInfo of this._traceInfos) {
             if (traceInfo.address !== constants.NEW_CONTRACT) {
                 // Runtime transaction
-                let runtimeBytecode = (traceInfo as TraceInfoExistingContract).runtimeBytecode;
-                runtimeBytecode = addHexPrefix(runtimeBytecode);
-                const contractData = _.find(contractsData, contractDataCandidate => {
-                    // Library linking placeholder: __ConvertLib____________________________
-                    let runtimeBytecodeRegex = contractDataCandidate.runtimeBytecode.replace(/_.*_/, '.*');
-                    // Last 86 characters is solidity compiler metadata that's different between compilations
-                    runtimeBytecodeRegex = runtimeBytecodeRegex.replace(/.{86}$/, '');
-                    // Libraries contain their own address at the beginning of the code and it's impossible to know it in advance
-                    runtimeBytecodeRegex = runtimeBytecodeRegex.replace(
-                        /^0x730000000000000000000000000000000000000000/,
-                        '0x73........................................',
-                    );
-                    return !_.isNull(runtimeBytecode.match(runtimeBytecodeRegex));
-                }) as ContractData;
+                const runtimeBytecode = (traceInfo as TraceInfoExistingContract).runtimeBytecode;
+                const contractData = CoverageManager._getContractDataIfExists(contractsData, runtimeBytecode);
                 if (_.isUndefined(contractData)) {
                     if (this._verbose) {
                         // tslint:disable-next-line:no-console
@@ -157,7 +168,7 @@ export class CoverageManager {
                     }
                     continue;
                 }
-                const bytecodeHex = runtimeBytecode.slice(2);
+                const bytecodeHex = stripHexPrefix(runtimeBytecode);
                 const sourceMap = contractData.sourceMapRuntime;
                 const pcToSourceRange = parseSourceMap(
                     contractData.sourceCodes,
@@ -176,20 +187,8 @@ export class CoverageManager {
                 }
             } else {
                 // Contract creation transaction
-                let bytecode = (traceInfo as TraceInfoNewContract).bytecode;
-                bytecode = addHexPrefix(bytecode);
-                const contractData = _.find(contractsData, contractDataCandidate => {
-                    // Library linking placeholder: __ConvertLib____________________________
-                    let bytecodeRegex = contractDataCandidate.bytecode.replace(/_.*_/, '.*');
-                    // Last 86 characters is solidity compiler metadata that's different between compilations
-                    bytecodeRegex = bytecodeRegex.replace(/.{86}$/, '');
-                    // Libraries contain their own address at the beginning of the code and it's impossible to know it in advance
-                    bytecodeRegex = bytecodeRegex.replace(
-                        /^0x730000000000000000000000000000000000000000/,
-                        '0x73........................................',
-                    );
-                    return !_.isNull(bytecode.match(bytecodeRegex));
-                }) as ContractData;
+                const bytecode = (traceInfo as TraceInfoNewContract).bytecode;
+                const contractData = CoverageManager._getContractDataIfExists(contractsData, bytecode);
                 if (_.isUndefined(contractData)) {
                     if (this._verbose) {
                         // tslint:disable-next-line:no-console
@@ -197,7 +196,7 @@ export class CoverageManager {
                     }
                     continue;
                 }
-                const bytecodeHex = bytecode.slice(2);
+                const bytecodeHex = stripHexPrefix(bytecode);
                 const sourceMap = contractData.sourceMap;
                 const pcToSourceRange = parseSourceMap(
                     contractData.sourceCodes,

@@ -7,8 +7,8 @@ import * as rimraf from 'rimraf';
 
 import { ContractData } from '../types';
 
-import { SolCompilerArtifactAdapter } from './0x';
-import { AbstractArtifactAdapter } from './abstract';
+import { AbstractArtifactAdapter } from './abstract_artifact_adapter';
+import { SolCompilerArtifactAdapter } from './sol_compiler_artifact_adapter';
 
 export class TruffleArtifactAdapter extends AbstractArtifactAdapter {
     private _solcVersion: string;
