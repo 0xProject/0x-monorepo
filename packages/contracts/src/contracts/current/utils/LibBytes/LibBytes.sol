@@ -18,7 +18,11 @@
 
 pragma solidity ^0.4.24;
 
-contract LibBytes {
+import "../LibMem/LibMem.sol";
+
+contract LibBytes is
+    LibMem
+{
 
     // Revert reasons
     string constant GT_ZERO_LENGTH_REQUIRED = "Length must be greater than 0.";
@@ -42,7 +46,7 @@ contract LibBytes {
 
         // Store last byte.
         result = b[b.length - 1];
-        
+
         assembly {
             // Decrement length of byte array.
             let newLen := sub(mload(b), 1)
@@ -125,7 +129,7 @@ contract LibBytes {
         require(
             b.length >= index + 20,  // 20 is length of address
             GTE_20_LENGTH_REQUIRED
-        ); 
+        );
 
         // Add offset to index:
         // 1. Arrays are prefixed by 32-byte length parameter (add 32 to index)
@@ -157,7 +161,7 @@ contract LibBytes {
         require(
             b.length >= index + 20,  // 20 is length of address
             GTE_20_LENGTH_REQUIRED
-        ); 
+        );
 
         // Add offset to index:
         // 1. Arrays are prefixed by 32-byte length parameter (add 32 to index)
@@ -264,6 +268,7 @@ contract LibBytes {
         writeBytes32(b, index, bytes32(input));
     }
 
+=======
     /// @dev Reads the first 4 bytes from a byte array of arbitrary length.
     /// @param b Byte array to read first 4 bytes from.
     /// @return First 4 bytes of data.
@@ -280,5 +285,68 @@ contract LibBytes {
             result := mload(add(b, 32))
         }
         return result;
+    }
+
+    /// @dev Reads a uint256 value from a position in a byte array.
+    /// @param b Byte array containing a uint256 value.
+    /// @param index Index in byte array of uint256 value.
+    /// @return uint256 value from byte array.
+    function readBytes(
+        bytes memory b,
+        uint256 index
+    )
+        internal
+        pure
+        returns (bytes memory result)
+    {
+        // Read length of nested bytes
+        require(
+            b.length >= index + 32,
+            GTE_32_LENGTH_REQUIRED
+        );
+        uint256 nestedBytesLength = readUint256(b, index);
+
+        // Assert length of <b> is valid, given
+        // length of nested bytes
+        require(
+            b.length >= index + 32 + nestedBytesLength,
+            GTE_32_LENGTH_REQUIRED
+        );
+
+        // Allocate memory and copy value to result
+        result = new bytes(nestedBytesLength);
+        memcpy(
+            getMemAddress(result) + 32,    // +32 skips array length
+            getMemAddress(b) + index + 32, // +32 skips array length
+            nestedBytesLength
+        );
+
+        return result;
+    }
+
+    /// @dev Writes a uint256 into a specific position in a byte array.
+    /// @param b Byte array to insert <input> into.
+    /// @param index Index in byte array of <input>.
+    /// @param input uint256 to put into byte array.
+    function writeBytes(
+        bytes memory b,
+        uint256 index,
+        bytes memory input
+    )
+        internal
+        pure
+    {
+        // Read length of nested bytes
+        require(
+            b.length >= index + 32 /* 32 bytes to store length */ + input.length,
+            GTE_32_LENGTH_REQUIRED
+        );
+
+        // Copy <input> into <b>
+        memcpy(
+            getMemAddress(b) + index,
+            getMemAddress(input),
+            input.length + 32 /* 32 bytes to store length */
+        );
     }
 }
