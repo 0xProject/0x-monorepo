@@ -1,4 +1,4 @@
-import { ZeroEx } from '0x.js';
+import { ContractWrappers } from '@0xproject/contract-wrappers';
 import { BlockchainLifecycle, devConstants, web3Factory } from '@0xproject/dev-utils';
 import { BigNumber } from '@0xproject/utils';
 import { Web3Wrapper } from '@0xproject/web3-wrapper';
@@ -19,7 +19,7 @@ const blockchainLifecycle = new BlockchainLifecycle(web3Wrapper);
 describe('UnlimitedAllowanceToken', () => {
     let owner: string;
     let spender: string;
-    const zeroEx = new ZeroEx(provider, {
+    const contractWrappers = new ContractWrappers(provider, {
         networkId: constants.TESTRPC_NETWORK_ID,
     });
 
@@ -60,7 +60,7 @@ describe('UnlimitedAllowanceToken', () => {
     });
     describe('transfer', () => {
         it('should throw if owner has insufficient balance', async () => {
-            const ownerBalance = await zeroEx.token.getBalanceAsync(tokenAddress, owner);
+            const ownerBalance = await contractWrappers.token.getBalanceAsync(tokenAddress, owner);
             const amountToTransfer = ownerBalance.plus(1);
             return expect(token.transfer.callAsync(spender, amountToTransfer, { from: owner })).to.be.rejectedWith(
                 constants.REVERT,
@@ -69,11 +69,11 @@ describe('UnlimitedAllowanceToken', () => {
 
         it('should transfer balance from sender to receiver', async () => {
             const receiver = spender;
-            const initOwnerBalance = await zeroEx.token.getBalanceAsync(tokenAddress, owner);
+            const initOwnerBalance = await contractWrappers.token.getBalanceAsync(tokenAddress, owner);
             const amountToTransfer = new BigNumber(1);
-            await zeroEx.token.transferAsync(tokenAddress, owner, receiver, amountToTransfer);
-            const finalOwnerBalance = await zeroEx.token.getBalanceAsync(tokenAddress, owner);
-            const finalReceiverBalance = await zeroEx.token.getBalanceAsync(tokenAddress, receiver);
+            await contractWrappers.token.transferAsync(tokenAddress, owner, receiver, amountToTransfer);
+            const finalOwnerBalance = await contractWrappers.token.getBalanceAsync(tokenAddress, owner);
+            const finalReceiverBalance = await contractWrappers.token.getBalanceAsync(tokenAddress, receiver);
 
             const expectedFinalOwnerBalance = initOwnerBalance.minus(amountToTransfer);
             const expectedFinalReceiverBalance = amountToTransfer;
@@ -91,9 +91,9 @@ describe('UnlimitedAllowanceToken', () => {
 
     describe('transferFrom', () => {
         it('should throw if owner has insufficient balance', async () => {
-            const ownerBalance = await zeroEx.token.getBalanceAsync(tokenAddress, owner);
+            const ownerBalance = await contractWrappers.token.getBalanceAsync(tokenAddress, owner);
             const amountToTransfer = ownerBalance.plus(1);
-            await zeroEx.token.setAllowanceAsync(tokenAddress, owner, spender, amountToTransfer);
+            await contractWrappers.token.setAllowanceAsync(tokenAddress, owner, spender, amountToTransfer);
             return expect(
                 token.transferFrom.callAsync(owner, spender, amountToTransfer, {
                     from: spender,
@@ -102,10 +102,10 @@ describe('UnlimitedAllowanceToken', () => {
         });
 
         it('should throw if spender has insufficient allowance', async () => {
-            const ownerBalance = await zeroEx.token.getBalanceAsync(tokenAddress, owner);
+            const ownerBalance = await contractWrappers.token.getBalanceAsync(tokenAddress, owner);
             const amountToTransfer = ownerBalance;
 
-            const spenderAllowance = await zeroEx.token.getAllowanceAsync(tokenAddress, owner, spender);
+            const spenderAllowance = await contractWrappers.token.getAllowanceAsync(tokenAddress, owner, spender);
             const isSpenderAllowanceInsufficient = spenderAllowance.cmp(amountToTransfer) < 0;
             expect(isSpenderAllowanceInsufficient).to.be.true();
 
@@ -125,44 +125,44 @@ describe('UnlimitedAllowanceToken', () => {
         });
 
         it('should not modify spender allowance if spender allowance is 2^256 - 1', async () => {
-            const initOwnerBalance = await zeroEx.token.getBalanceAsync(tokenAddress, owner);
+            const initOwnerBalance = await contractWrappers.token.getBalanceAsync(tokenAddress, owner);
             const amountToTransfer = initOwnerBalance;
-            const initSpenderAllowance = zeroEx.token.UNLIMITED_ALLOWANCE_IN_BASE_UNITS;
-            await zeroEx.token.setAllowanceAsync(tokenAddress, owner, spender, initSpenderAllowance);
-            await zeroEx.token.transferFromAsync(tokenAddress, owner, spender, spender, amountToTransfer, {
+            const initSpenderAllowance = contractWrappers.token.UNLIMITED_ALLOWANCE_IN_BASE_UNITS;
+            await contractWrappers.token.setAllowanceAsync(tokenAddress, owner, spender, initSpenderAllowance);
+            await contractWrappers.token.transferFromAsync(tokenAddress, owner, spender, spender, amountToTransfer, {
                 gasLimit: constants.MAX_TOKEN_TRANSFERFROM_GAS,
             });
 
-            const newSpenderAllowance = await zeroEx.token.getAllowanceAsync(tokenAddress, owner, spender);
+            const newSpenderAllowance = await contractWrappers.token.getAllowanceAsync(tokenAddress, owner, spender);
             expect(initSpenderAllowance).to.be.bignumber.equal(newSpenderAllowance);
         });
 
         it('should transfer the correct balances if spender has sufficient allowance', async () => {
-            const initOwnerBalance = await zeroEx.token.getBalanceAsync(tokenAddress, owner);
+            const initOwnerBalance = await contractWrappers.token.getBalanceAsync(tokenAddress, owner);
             const amountToTransfer = initOwnerBalance;
             const initSpenderAllowance = initOwnerBalance;
-            await zeroEx.token.setAllowanceAsync(tokenAddress, owner, spender, initSpenderAllowance);
-            await zeroEx.token.transferFromAsync(tokenAddress, owner, spender, spender, amountToTransfer, {
+            await contractWrappers.token.setAllowanceAsync(tokenAddress, owner, spender, initSpenderAllowance);
+            await contractWrappers.token.transferFromAsync(tokenAddress, owner, spender, spender, amountToTransfer, {
                 gasLimit: constants.MAX_TOKEN_TRANSFERFROM_GAS,
             });
 
-            const newOwnerBalance = await zeroEx.token.getBalanceAsync(tokenAddress, owner);
-            const newSpenderBalance = await zeroEx.token.getBalanceAsync(tokenAddress, spender);
+            const newOwnerBalance = await contractWrappers.token.getBalanceAsync(tokenAddress, owner);
+            const newSpenderBalance = await contractWrappers.token.getBalanceAsync(tokenAddress, spender);
 
             expect(newOwnerBalance).to.be.bignumber.equal(0);
             expect(newSpenderBalance).to.be.bignumber.equal(initOwnerBalance);
         });
 
         it('should modify allowance if spender has sufficient allowance less than 2^256 - 1', async () => {
-            const initOwnerBalance = await zeroEx.token.getBalanceAsync(tokenAddress, owner);
+            const initOwnerBalance = await contractWrappers.token.getBalanceAsync(tokenAddress, owner);
             const amountToTransfer = initOwnerBalance;
             const initSpenderAllowance = initOwnerBalance;
-            await zeroEx.token.setAllowanceAsync(tokenAddress, owner, spender, initSpenderAllowance);
-            await zeroEx.token.transferFromAsync(tokenAddress, owner, spender, spender, amountToTransfer, {
+            await contractWrappers.token.setAllowanceAsync(tokenAddress, owner, spender, initSpenderAllowance);
+            await contractWrappers.token.transferFromAsync(tokenAddress, owner, spender, spender, amountToTransfer, {
                 gasLimit: constants.MAX_TOKEN_TRANSFERFROM_GAS,
             });
 
-            const newSpenderAllowance = await zeroEx.token.getAllowanceAsync(tokenAddress, owner, spender);
+            const newSpenderAllowance = await contractWrappers.token.getAllowanceAsync(tokenAddress, owner, spender);
             expect(newSpenderAllowance).to.be.bignumber.equal(0);
         });
     });
