@@ -24,6 +24,7 @@ import { OrderFactory } from '../../util/order_factory';
 import { BalancesByOwner, ContractName } from '../../util/types';
 import { chaiSetup } from '../utils/chai_setup';
 
+import { expectRevertOrAlwaysFailingTransaction } from '../utils/assertions';
 import { provider, txDefaults, web3Wrapper } from '../utils/web3_wrapper';
 
 chaiSetup.configure();
@@ -52,6 +53,12 @@ describe('Exchange', () => {
     let dmyBalances: Balances;
     let orderFactory: OrderFactory;
 
+    before(async () => {
+        await blockchainLifecycle.startAsync();
+    });
+    after(async () => {
+        await blockchainLifecycle.revertAsync();
+    });
     before(async () => {
         const accounts = await web3Wrapper.getAvailableAddressesAsync();
         tokenOwner = accounts[0];
@@ -102,7 +109,10 @@ describe('Exchange', () => {
             zrx.address,
             tokenTransferProxy.address,
         );
-        await tokenTransferProxy.addAuthorizedAddress.sendTransactionAsync(exchange.address, { from: accounts[0] });
+        await web3Wrapper.awaitTransactionMinedAsync(
+            await tokenTransferProxy.addAuthorizedAddress.sendTransactionAsync(exchange.address, { from: accounts[0] }),
+            constants.TEST_AWAIT_TRANSACTION_MS,
+        );
         const zeroEx = new ZeroEx(provider, { networkId: constants.TESTRPC_NETWORK_ID });
         exWrapper = new ExchangeWrapper(exchange, zeroEx);
 
@@ -120,7 +130,7 @@ describe('Exchange', () => {
 
         orderFactory = new OrderFactory(zeroEx, defaultOrderParams);
         dmyBalances = new Balances([rep, dgd, zrx], [maker, taker, feeRecipient]);
-        await Promise.all([
+        const transactions = await Promise.all([
             rep.approve.sendTransactionAsync(tokenTransferProxy.address, INIT_ALLOW, { from: maker }),
             rep.approve.sendTransactionAsync(tokenTransferProxy.address, INIT_ALLOW, { from: taker }),
             rep.setBalance.sendTransactionAsync(maker, INIT_BAL, { from: tokenOwner }),
@@ -134,6 +144,11 @@ describe('Exchange', () => {
             zrx.setBalance.sendTransactionAsync(maker, INIT_BAL, { from: tokenOwner }),
             zrx.setBalance.sendTransactionAsync(taker, INIT_BAL, { from: tokenOwner }),
         ]);
+        await Promise.all(
+            _.map(transactions, async txHash => {
+                await web3Wrapper.awaitTransactionMinedAsync(txHash, constants.TEST_AWAIT_TRANSACTION_MS);
+            }),
+        );
     });
     beforeEach(async () => {
         await blockchainLifecycle.startAsync();
@@ -191,7 +206,7 @@ describe('Exchange', () => {
                 expirationUnixTimestampSec: new BigNumber(Math.floor((Date.now() - 10000) / 1000)),
             });
 
-            return expect(exWrapper.fillOrKillOrderAsync(signedOrder, taker)).to.be.rejectedWith(constants.REVERT);
+            return expectRevertOrAlwaysFailingTransaction(exWrapper.fillOrKillOrderAsync(signedOrder, taker));
         });
 
         it('should throw if entire fillTakerTokenAmount not filled', async () => {
@@ -202,7 +217,7 @@ describe('Exchange', () => {
                 fillTakerTokenAmount: signedOrder.takerTokenAmount.div(2),
             });
 
-            return expect(exWrapper.fillOrKillOrderAsync(signedOrder, taker)).to.be.rejectedWith(constants.REVERT);
+            return expectRevertOrAlwaysFailingTransaction(exWrapper.fillOrKillOrderAsync(signedOrder, taker));
         });
     });
 
@@ -299,11 +314,11 @@ describe('Exchange', () => {
 
                 await exWrapper.fillOrKillOrderAsync(signedOrders[0], taker);
 
-                return expect(
+                return expectRevertOrAlwaysFailingTransaction(
                     exWrapper.batchFillOrKillOrdersAsync(signedOrders, taker, {
                         fillTakerTokenAmounts,
                     }),
-                ).to.be.rejectedWith(constants.REVERT);
+                );
             });
         });
 
@@ -382,11 +397,11 @@ describe('Exchange', () => {
                     orderFactory.newSignedOrderAsync(),
                 ]);
 
-                return expect(
+                return expectRevertOrAlwaysFailingTransaction(
                     exWrapper.fillOrdersUpToAsync(signedOrders, taker, {
                         fillTakerTokenAmount: ZeroEx.toBaseUnitAmount(new BigNumber(1000), 18),
                     }),
-                ).to.be.rejectedWith(constants.REVERT);
+                );
             });
         });
 

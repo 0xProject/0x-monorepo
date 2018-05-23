@@ -10,6 +10,7 @@ import { constants } from '../../util/constants';
 import { ContractName } from '../../util/types';
 import { chaiSetup } from '../utils/chai_setup';
 
+import { expectRevertOrAlwaysFailingTransaction } from '../utils/assertions';
 import { provider, txDefaults, web3Wrapper } from '../utils/web3_wrapper';
 
 chaiSetup.configure();
@@ -21,6 +22,12 @@ describe('TokenTransferProxy', () => {
     let notOwner: string;
     let address: string;
     let tokenTransferProxy: TokenTransferProxyContract;
+    before(async () => {
+        await blockchainLifecycle.startAsync();
+    });
+    after(async () => {
+        await blockchainLifecycle.revertAsync();
+    });
     before(async () => {
         const accounts = await web3Wrapper.getAvailableAddressesAsync();
         owner = address = accounts[0];
@@ -39,48 +46,63 @@ describe('TokenTransferProxy', () => {
     });
     describe('addAuthorizedAddress', () => {
         it('should throw if not called by owner', async () => {
-            return expect(
+            return expectRevertOrAlwaysFailingTransaction(
                 tokenTransferProxy.addAuthorizedAddress.sendTransactionAsync(notOwner, { from: notOwner }),
-            ).to.be.rejectedWith(constants.REVERT);
+            );
         });
         it('should allow owner to add an authorized address', async () => {
-            await tokenTransferProxy.addAuthorizedAddress.sendTransactionAsync(address, { from: owner });
+            await web3Wrapper.awaitTransactionMinedAsync(
+                await tokenTransferProxy.addAuthorizedAddress.sendTransactionAsync(address, { from: owner }),
+                constants.TEST_AWAIT_TRANSACTION_MS,
+            );
             const isAuthorized = await tokenTransferProxy.authorized.callAsync(address);
             expect(isAuthorized).to.be.true();
         });
         it('should throw if owner attempts to authorize a duplicate address', async () => {
-            await tokenTransferProxy.addAuthorizedAddress.sendTransactionAsync(address, { from: owner });
-            return expect(
+            await web3Wrapper.awaitTransactionMinedAsync(
+                await tokenTransferProxy.addAuthorizedAddress.sendTransactionAsync(address, { from: owner }),
+                constants.TEST_AWAIT_TRANSACTION_MS,
+            );
+            return expectRevertOrAlwaysFailingTransaction(
                 tokenTransferProxy.addAuthorizedAddress.sendTransactionAsync(address, { from: owner }),
-            ).to.be.rejectedWith(constants.REVERT);
+            );
         });
     });
 
     describe('removeAuthorizedAddress', () => {
         it('should throw if not called by owner', async () => {
-            await tokenTransferProxy.addAuthorizedAddress.sendTransactionAsync(address, { from: owner });
-            return expect(
+            await web3Wrapper.awaitTransactionMinedAsync(
+                await tokenTransferProxy.addAuthorizedAddress.sendTransactionAsync(address, { from: owner }),
+                constants.TEST_AWAIT_TRANSACTION_MS,
+            );
+            return expectRevertOrAlwaysFailingTransaction(
                 tokenTransferProxy.removeAuthorizedAddress.sendTransactionAsync(address, {
                     from: notOwner,
                 }),
-            ).to.be.rejectedWith(constants.REVERT);
+            );
         });
 
         it('should allow owner to remove an authorized address', async () => {
-            await tokenTransferProxy.addAuthorizedAddress.sendTransactionAsync(address, { from: owner });
-            await tokenTransferProxy.removeAuthorizedAddress.sendTransactionAsync(address, {
-                from: owner,
-            });
+            await web3Wrapper.awaitTransactionMinedAsync(
+                await tokenTransferProxy.addAuthorizedAddress.sendTransactionAsync(address, { from: owner }),
+                constants.TEST_AWAIT_TRANSACTION_MS,
+            );
+            await web3Wrapper.awaitTransactionMinedAsync(
+                await tokenTransferProxy.removeAuthorizedAddress.sendTransactionAsync(address, {
+                    from: owner,
+                }),
+                constants.TEST_AWAIT_TRANSACTION_MS,
+            );
             const isAuthorized = await tokenTransferProxy.authorized.callAsync(address);
             expect(isAuthorized).to.be.false();
         });
 
         it('should throw if owner attempts to remove an address that is not authorized', async () => {
-            return expect(
+            return expectRevertOrAlwaysFailingTransaction(
                 tokenTransferProxy.removeAuthorizedAddress.sendTransactionAsync(address, {
                     from: owner,
                 }),
-            ).to.be.rejectedWith(constants.REVERT);
+            );
         });
     });
 
@@ -88,16 +110,22 @@ describe('TokenTransferProxy', () => {
         it('should return all authorized addresses', async () => {
             const initial = await tokenTransferProxy.getAuthorizedAddresses.callAsync();
             expect(initial).to.have.length(0);
-            await tokenTransferProxy.addAuthorizedAddress.sendTransactionAsync(address, {
-                from: owner,
-            });
+            await web3Wrapper.awaitTransactionMinedAsync(
+                await tokenTransferProxy.addAuthorizedAddress.sendTransactionAsync(address, {
+                    from: owner,
+                }),
+                constants.TEST_AWAIT_TRANSACTION_MS,
+            );
             const afterAdd = await tokenTransferProxy.getAuthorizedAddresses.callAsync();
             expect(afterAdd).to.have.length(1);
             expect(afterAdd).to.include(address);
 
-            await tokenTransferProxy.removeAuthorizedAddress.sendTransactionAsync(address, {
-                from: owner,
-            });
+            await web3Wrapper.awaitTransactionMinedAsync(
+                await tokenTransferProxy.removeAuthorizedAddress.sendTransactionAsync(address, {
+                    from: owner,
+                }),
+                constants.TEST_AWAIT_TRANSACTION_MS,
+            );
             const afterRemove = await tokenTransferProxy.getAuthorizedAddresses.callAsync();
             expect(afterRemove).to.have.length(0);
         });

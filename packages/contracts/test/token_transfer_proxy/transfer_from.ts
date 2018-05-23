@@ -2,6 +2,7 @@ import { BlockchainLifecycle, devConstants, web3Factory } from '@0xproject/dev-u
 import { BigNumber } from '@0xproject/utils';
 import { Web3Wrapper } from '@0xproject/web3-wrapper';
 import * as chai from 'chai';
+import * as _ from 'lodash';
 import 'make-promises-safe';
 import * as Web3 from 'web3';
 
@@ -13,6 +14,7 @@ import { constants } from '../../util/constants';
 import { ContractName } from '../../util/types';
 import { chaiSetup } from '../utils/chai_setup';
 
+import { expectRevertOrAlwaysFailingTransaction } from '../utils/assertions';
 import { provider, txDefaults, web3Wrapper } from '../utils/web3_wrapper';
 
 chaiSetup.configure();
@@ -31,6 +33,12 @@ describe('TokenTransferProxy', () => {
     let dmyBalances: Balances;
 
     before(async () => {
+        await blockchainLifecycle.startAsync();
+    });
+    after(async () => {
+        await blockchainLifecycle.revertAsync();
+    });
+    before(async () => {
         accounts = await web3Wrapper.getAvailableAddressesAsync();
         owner = notAuthorized = accounts[0];
         tokenTransferProxy = await TokenTransferProxyContract.deployFrom0xArtifactAsync(
@@ -48,7 +56,7 @@ describe('TokenTransferProxy', () => {
             constants.DUMMY_TOKEN_TOTAL_SUPPLY,
         );
         dmyBalances = new Balances([rep], [accounts[0], accounts[1]]);
-        await Promise.all([
+        const transactions = await Promise.all([
             rep.approve.sendTransactionAsync(tokenTransferProxy.address, INIT_ALLOW, {
                 from: accounts[0],
             }),
@@ -58,6 +66,11 @@ describe('TokenTransferProxy', () => {
             }),
             rep.setBalance.sendTransactionAsync(accounts[1], INIT_BAL, { from: owner }),
         ]);
+        await Promise.all(
+            _.map(transactions, async txHash => {
+                await web3Wrapper.awaitTransactionMinedAsync(txHash, constants.TEST_AWAIT_TRANSACTION_MS);
+            }),
+        );
     });
     beforeEach(async () => {
         await blockchainLifecycle.startAsync();
@@ -68,7 +81,7 @@ describe('TokenTransferProxy', () => {
 
     describe('transferFrom', () => {
         it('should throw when called by an unauthorized address', async () => {
-            expect(
+            return expectRevertOrAlwaysFailingTransaction(
                 tokenTransferProxy.transferFrom.sendTransactionAsync(
                     rep.address,
                     accounts[0],
@@ -78,24 +91,30 @@ describe('TokenTransferProxy', () => {
                         from: notAuthorized,
                     },
                 ),
-            ).to.be.rejectedWith(constants.REVERT);
+            );
         });
 
         it('should allow an authorized address to transfer', async () => {
             const balances = await dmyBalances.getAsync();
 
-            await tokenTransferProxy.addAuthorizedAddress.sendTransactionAsync(notAuthorized, {
-                from: owner,
-            });
+            await web3Wrapper.awaitTransactionMinedAsync(
+                await tokenTransferProxy.addAuthorizedAddress.sendTransactionAsync(notAuthorized, {
+                    from: owner,
+                }),
+                constants.TEST_AWAIT_TRANSACTION_MS,
+            );
             const transferAmt = new BigNumber(10000);
-            await tokenTransferProxy.transferFrom.sendTransactionAsync(
-                rep.address,
-                accounts[0],
-                accounts[1],
-                transferAmt,
-                {
-                    from: notAuthorized,
-                },
+            await web3Wrapper.awaitTransactionMinedAsync(
+                await tokenTransferProxy.transferFrom.sendTransactionAsync(
+                    rep.address,
+                    accounts[0],
+                    accounts[1],
+                    transferAmt,
+                    {
+                        from: notAuthorized,
+                    },
+                ),
+                constants.TEST_AWAIT_TRANSACTION_MS,
             );
 
             const newBalances = await dmyBalances.getAsync();

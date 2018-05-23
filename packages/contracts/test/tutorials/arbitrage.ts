@@ -5,6 +5,7 @@ import { BigNumber } from '@0xproject/utils';
 import { Web3Wrapper } from '@0xproject/web3-wrapper';
 import * as chai from 'chai';
 import ethUtil = require('ethereumjs-util');
+import * as _ from 'lodash';
 import 'make-promises-safe';
 import * as Web3 from 'web3';
 
@@ -23,6 +24,7 @@ import { OrderFactory } from '../../util/order_factory';
 import { BalancesByOwner, ContractName } from '../../util/types';
 import { chaiSetup } from '../utils/chai_setup';
 
+import { expectRevertOrAlwaysFailingTransaction } from '../utils/assertions';
 import { provider, txDefaults, web3Wrapper } from '../utils/web3_wrapper';
 
 chaiSetup.configure();
@@ -53,6 +55,12 @@ describe('Arbitrage', () => {
 
     let zeroEx: ZeroEx;
 
+    before(async () => {
+        await blockchainLifecycle.startAsync();
+    });
+    after(async () => {
+        await blockchainLifecycle.revertAsync();
+    });
     // From a bird's eye view - we create two orders.
     // 0x order of 1 ZRX (maker) for 1 WETH (taker)
     // ED order of 2 WETH (tokenGive) for 1 ZRX (tokenGet)
@@ -110,7 +118,10 @@ describe('Arbitrage', () => {
             zrx.address,
             tokenTransferProxy.address,
         );
-        await tokenTransferProxy.addAuthorizedAddress.sendTransactionAsync(exchange.address, { from: accounts[0] });
+        await web3Wrapper.awaitTransactionMinedAsync(
+            await tokenTransferProxy.addAuthorizedAddress.sendTransactionAsync(exchange.address, { from: accounts[0] }),
+            constants.TEST_AWAIT_TRANSACTION_MS,
+        );
         zeroEx = new ZeroEx(provider, {
             exchangeContractAddress: exchange.address,
             networkId: constants.TESTRPC_NETWORK_ID,
@@ -139,33 +150,41 @@ describe('Arbitrage', () => {
             etherDelta.address,
             tokenTransferProxy.address,
         );
-        // Enable arbitrage and withdrawals of tokens
-        await arbitrage.setAllowances.sendTransactionAsync(weth.address, { from: coinbase });
-        await arbitrage.setAllowances.sendTransactionAsync(zrx.address, { from: coinbase });
-
-        // Give some tokens to arbitrage contract
-        await weth.setBalance.sendTransactionAsync(arbitrage.address, takerTokenAmount, { from: coinbase });
-
-        // Fund the maker on exchange side
-        await zrx.setBalance.sendTransactionAsync(maker, makerTokenAmount, { from: coinbase });
-        // Set the allowance for the maker on Exchange side
-        await zrx.approve.sendTransactionAsync(tokenTransferProxy.address, INITIAL_ALLOWANCE, { from: maker });
 
         amountGive = ZeroEx.toBaseUnitAmount(new BigNumber(2), 18);
-        // Fund the maker on EtherDelta side
-        await weth.setBalance.sendTransactionAsync(edMaker, amountGive, { from: coinbase });
-        // Set the allowance for the maker on EtherDelta side
-        await weth.approve.sendTransactionAsync(etherDelta.address, INITIAL_ALLOWANCE, { from: edMaker });
-        // Deposit maker funds into EtherDelta
-        await etherDelta.depositToken.sendTransactionAsync(weth.address, amountGive, { from: edMaker });
-
         amountGet = makerTokenAmount;
-        // Fund the front runner on EtherDelta side
-        await zrx.setBalance.sendTransactionAsync(edFrontRunner, amountGet, { from: coinbase });
-        // Set the allowance for the front-runner on EtherDelta side
-        await zrx.approve.sendTransactionAsync(etherDelta.address, INITIAL_ALLOWANCE, { from: edFrontRunner });
-        // Deposit front runner funds into EtherDelta
-        await etherDelta.depositToken.sendTransactionAsync(zrx.address, amountGet, { from: edFrontRunner });
+        const transactions = await Promise.all([
+            // Enable arbitrage and withdrawals of tokens
+            await arbitrage.setAllowances.sendTransactionAsync(weth.address, { from: coinbase }),
+            await arbitrage.setAllowances.sendTransactionAsync(zrx.address, { from: coinbase }),
+
+            // Give some tokens to arbitrage contract
+            await weth.setBalance.sendTransactionAsync(arbitrage.address, takerTokenAmount, { from: coinbase }),
+
+            // Fund the maker on exchange side
+            await zrx.setBalance.sendTransactionAsync(maker, makerTokenAmount, { from: coinbase }),
+            // Set the allowance for the maker on Exchange side
+            await zrx.approve.sendTransactionAsync(tokenTransferProxy.address, INITIAL_ALLOWANCE, { from: maker }),
+
+            // Fund the maker on EtherDelta side
+            await weth.setBalance.sendTransactionAsync(edMaker, amountGive, { from: coinbase }),
+            // Set the allowance for the maker on EtherDelta side
+            await weth.approve.sendTransactionAsync(etherDelta.address, INITIAL_ALLOWANCE, { from: edMaker }),
+            // Deposit maker funds into EtherDelta
+            await etherDelta.depositToken.sendTransactionAsync(weth.address, amountGive, { from: edMaker }),
+
+            // Fund the front runner on EtherDelta side
+            await zrx.setBalance.sendTransactionAsync(edFrontRunner, amountGet, { from: coinbase }),
+            // Set the allowance for the front-runner on EtherDelta side
+            await zrx.approve.sendTransactionAsync(etherDelta.address, INITIAL_ALLOWANCE, { from: edFrontRunner }),
+            // Deposit front runner funds into EtherDelta
+            await etherDelta.depositToken.sendTransactionAsync(zrx.address, amountGet, { from: edFrontRunner }),
+        ]);
+        await Promise.all(
+            _.map(transactions, async txHash => {
+                await web3Wrapper.awaitTransactionMinedAsync(txHash, constants.TEST_AWAIT_TRANSACTION_MS);
+            }),
+        );
     });
     beforeEach(async () => {
         await blockchainLifecycle.startAsync();
@@ -226,34 +245,39 @@ describe('Arbitrage', () => {
             s = [signedOrder.ecSignature.s, edSignature.s];
         });
         it('should successfully execute the arbitrage if not front-runned', async () => {
-            const txHash = await arbitrage.makeAtomicTrade.sendTransactionAsync(addresses, values, v, r, s, {
-                from: coinbase,
-            });
-            const res = await zeroEx.awaitTransactionMinedAsync(txHash);
+            await web3Wrapper.awaitTransactionMinedAsync(
+                await arbitrage.makeAtomicTrade.sendTransactionAsync(addresses, values, v, r, s, {
+                    from: coinbase,
+                }),
+                constants.TEST_AWAIT_TRANSACTION_MS,
+            );
             const postBalance = await weth.balanceOf.callAsync(arbitrage.address);
             expect(postBalance).to.be.bignumber.equal(amountGive);
         });
         it('should fail and revert if front-runned', async () => {
             const preBalance = await weth.balanceOf.callAsync(arbitrage.address);
             // Front-running transaction
-            await etherDelta.trade.sendTransactionAsync(
-                tokenGet,
-                amountGet,
-                tokenGive,
-                amountGive,
-                expires,
-                nonce,
-                edMaker,
-                edSignature.v,
-                edSignature.r,
-                edSignature.s,
-                amountGet,
-                { from: edFrontRunner },
+            await web3Wrapper.awaitTransactionMinedAsync(
+                await etherDelta.trade.sendTransactionAsync(
+                    tokenGet,
+                    amountGet,
+                    tokenGive,
+                    amountGive,
+                    expires,
+                    nonce,
+                    edMaker,
+                    edSignature.v,
+                    edSignature.r,
+                    edSignature.s,
+                    amountGet,
+                    { from: edFrontRunner },
+                ),
+                constants.TEST_AWAIT_TRANSACTION_MS,
             );
             // tslint:disable-next-line:await-promise
-            await expect(
+            await expectRevertOrAlwaysFailingTransaction(
                 arbitrage.makeAtomicTrade.sendTransactionAsync(addresses, values, v, r, s, { from: coinbase }),
-            ).to.be.rejectedWith(constants.REVERT);
+            );
             const postBalance = await weth.balanceOf.callAsync(arbitrage.address);
             expect(preBalance).to.be.bignumber.equal(postBalance);
         });

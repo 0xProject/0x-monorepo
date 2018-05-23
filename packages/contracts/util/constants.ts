@@ -3,7 +3,9 @@ import { BigNumber } from '@0xproject/utils';
 export const constants = {
     INVALID_OPCODE: 'invalid opcode',
     REVERT: 'revert',
+    ALWAYS_FAILING_TRANSACTION: 'always failing transaction',
     TESTRPC_NETWORK_ID: 50,
+    TEST_AWAIT_TRANSACTION_MS: 100,
     MAX_ETHERTOKEN_WITHDRAW_GAS: 43000,
     MAX_TOKEN_TRANSFERFROM_GAS: 80000,
     MAX_TOKEN_APPROVE_GAS: 60000,

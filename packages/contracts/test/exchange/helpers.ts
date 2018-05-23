@@ -39,6 +39,12 @@ describe('Exchange', () => {
     let orderFactory: OrderFactory;
 
     before(async () => {
+        await blockchainLifecycle.startAsync();
+    });
+    after(async () => {
+        await blockchainLifecycle.revertAsync();
+    });
+    before(async () => {
         const accounts = await web3Wrapper.getAvailableAddressesAsync();
         [maker, feeRecipient] = accounts;
         const tokenRegistry = await TokenRegistryContract.deployFrom0xArtifactAsync(
@@ -87,7 +93,12 @@ describe('Exchange', () => {
             zrx.address,
             tokenTransferProxy.address,
         );
-        await tokenTransferProxy.addAuthorizedAddress.sendTransactionAsync(exchange.address, { from: accounts[0] });
+        await web3Wrapper.awaitTransactionMinedAsync(
+            await tokenTransferProxy.addAuthorizedAddress.sendTransactionAsync(exchange.address, {
+                from: accounts[0],
+            }),
+            constants.TEST_AWAIT_TRANSACTION_MS,
+        );
         const zeroEx = new ZeroEx(provider, { networkId: constants.TESTRPC_NETWORK_ID });
         exchangeWrapper = new ExchangeWrapper(exchange, zeroEx);
         const defaultOrderParams = {
