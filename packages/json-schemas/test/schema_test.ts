@@ -14,8 +14,6 @@ const NULL_ADDRESS = '0x0000000000000000000000000000000000000000';
 const {
     numberSchema,
     addressSchema,
-    ecSignatureSchema,
-    ecSignatureParameterSchema,
     orderCancellationRequestsSchema,
     orderFillOrKillRequestsSchema,
     orderFillRequestsSchema,
@@ -85,47 +83,15 @@ describe('Schema', () => {
             validateAgainstSchema(testCases, addressSchema, shouldFail);
         });
     });
-    describe('#ecSignatureParameterSchema', () => {
-        it('should validate valid parameters', () => {
-            const testCases = [
-                '0x61a3ed31b43c8780e905a260a35faefcc527be7516aa11c0256729b5b351bc33',
-                '0X40349190569279751135161d22529dc25add4f6069af05be04cacbda2ace2254',
-            ];
-            validateAgainstSchema(testCases, ecSignatureParameterSchema);
+    describe('#hexSchema', () => {
+        it('should validate valid hex string', () => {
+            const testCases = ['0x8b0292b11a196601ed2ce54b665cafeca0347d42', NULL_ADDRESS];
+            validateAgainstSchema(testCases, addressSchema);
         });
-        it('should fail for invalid parameters', () => {
-            const testCases = [
-                '0x61a3ed31b43c8780e905a260a35faefcc527be7516aa11c0256729b5b351bc3', // shorter
-                '0xzzzz9190569279751135161d22529dc25add4f6069af05be04cacbda2ace2254', // invalid characters
-                '40349190569279751135161d22529dc25add4f6069af05be04cacbda2ace2254', // no 0x
-            ];
+        it('should fail for invalid hex string', () => {
+            const testCases = ['0x', '0', '0x00', '0xzzzzzzB11a196601eD2ce54B665CaFEca0347D42'];
             const shouldFail = true;
-            validateAgainstSchema(testCases, ecSignatureParameterSchema, shouldFail);
-        });
-    });
-    describe('#ecSignatureSchema', () => {
-        it('should validate valid signature', () => {
-            const signature = {
-                v: 27,
-                r: '0x61a3ed31b43c8780e905a260a35faefcc527be7516aa11c0256729b5b351bc33',
-                s: '0x40349190569279751135161d22529dc25add4f6069af05be04cacbda2ace2254',
-            };
-            const testCases = [
-                signature,
-                {
-                    ...signature,
-                    v: 28,
-                },
-            ];
-            validateAgainstSchema(testCases, ecSignatureSchema);
-        });
-        it('should fail for invalid signature', () => {
-            const v = 27;
-            const r = '0x61a3ed31b43c8780e905a260a35faefcc527be7516aa11c0256729b5b351bc33';
-            const s = '0x40349190569279751135161d22529dc25add4f6069af05be04cacbda2ace2254';
-            const testCases = [{}, { v }, { r, s, v: 31 }];
-            const shouldFail = true;
-            validateAgainstSchema(testCases, ecSignatureSchema, shouldFail);
+            validateAgainstSchema(testCases, addressSchema, shouldFail);
         });
     });
     describe('#orderHashSchema', () => {
@@ -202,18 +168,17 @@ describe('Schema', () => {
     });
     describe('order including schemas', () => {
         const order = {
-            maker: NULL_ADDRESS,
-            taker: NULL_ADDRESS,
+            makerAddress: NULL_ADDRESS,
+            takerAddress: NULL_ADDRESS,
             makerFee: '1',
             takerFee: '2',
-            makerTokenAmount: '1',
-            takerTokenAmount: '2',
-            makerTokenAddress: NULL_ADDRESS,
-            takerTokenAddress: NULL_ADDRESS,
+            makerAssetAmount: '1',
+            takerAssetAmount: '2',
+            makerAssetData: NULL_ADDRESS,
+            takerAssetData: NULL_ADDRESS,
             salt: '67006738228878699843088602623665307406148487219438534730168799356281242528500',
-            feeRecipient: NULL_ADDRESS,
-            exchangeContractAddress: NULL_ADDRESS,
-            expirationUnixTimestampSec: '42',
+            feeRecipientAddress: NULL_ADDRESS,
+            expirationTimeSeconds: '42',
         };
         describe('#orderSchema', () => {
             it('should validate valid order', () => {
@@ -239,11 +204,8 @@ describe('Schema', () => {
         describe('signed order including schemas', () => {
             const signedOrder = {
                 ...order,
-                ecSignature: {
-                    v: 27,
-                    r: '0x61a3ed31b43c8780e905a260a35faefcc527be7516aa11c0256729b5b351bc33',
-                    s: '0x40349190569279751135161d22529dc25add4f6069af05be04cacbda2ace2254',
-                },
+                signature:
+                    '0x031b61a3ed31b43c8780e905a260a35faefcc527be7516aa11c0256729b5b351bc3340349190569279751135161d22529dc25add4f6069af05be04cacbda2ace2254',
             };
             describe('#signedOrdersSchema', () => {
                 it('should validate valid signed orders', () => {
@@ -265,7 +227,7 @@ describe('Schema', () => {
                     const testCases = [
                         {
                             ...signedOrder,
-                            ecSignature: undefined,
+                            signature: undefined,
                         },
                     ];
                     const shouldFail = true;
