@@ -38,6 +38,7 @@
         "@0xproject/types": "^0.7.0",
         "@0xproject/typescript-typings": "^0.3.2",
         "@types/node": "^8.0.53",
+        "ethereumjs-util": "^5.1.1",
         "bignumber.js": "~4.1.0",
         "ethers": "^3.0.15",
         "js-sha3": "^0.7.0",

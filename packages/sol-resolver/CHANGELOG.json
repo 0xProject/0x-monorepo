@@ -1,5 +1,18 @@
 [
     {
+        "version": "0.0.5",
+        "changes": [
+            {
+                "note": "Fix a bug in FsResolver where it tries to read directories as files",
+                "pr": 589
+            },
+            {
+                "note": "Fix a bug in NameResolver where it is not ignoring .sol files",
+                "pr": 589
+            }
+        ]
+    },
+    {
         "timestamp": 1527009133,
         "version": "0.0.5",
         "changes": [

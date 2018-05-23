@@ -11,8 +11,7 @@ import { runMigrationsAsync } from './migration';
         from: devConstants.TESTRPC_FIRST_ADDRESS,
     };
     const providerConfigs = { shouldUseInProcessGanache: false };
-    const web3 = web3Factory.create(providerConfigs);
-    const provider = web3.currentProvider;
+    const provider: Provider = web3Factory.getRpcProvider(providerConfigs);
     const artifactsDir = 'artifacts/1.0.0';
     await runMigrationsAsync(provider, artifactsDir, txDefaults);
     process.exit(0);

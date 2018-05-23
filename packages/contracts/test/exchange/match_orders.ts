@@ -37,7 +37,7 @@ import {
 } from '../../src/utils/types';
 import { provider, txDefaults, web3Wrapper } from '../../src/utils/web3_wrapper';
 
-import { MatchOrderTester } from '../utils/match_order_tester';
+import { MatchOrderTester } from '../../src/utils/match_order_tester';
 
 chaiSetup.configure();
 const expect = chai.expect;
