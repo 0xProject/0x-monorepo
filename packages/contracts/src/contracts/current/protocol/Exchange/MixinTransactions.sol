@@ -56,6 +56,7 @@ contract MixinTransactions is
         // Calculate transaction hash
         bytes32 transactionHash = keccak256(
             address(this),
+            signer,
             salt,
             data
         );

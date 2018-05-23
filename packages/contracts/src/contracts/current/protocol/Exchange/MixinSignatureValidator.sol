@@ -19,6 +19,7 @@
 pragma solidity ^0.4.24;
 
 import "./mixins/MSignatureValidator.sol";
+import "./mixins/MTransactions.sol";
 import "./interfaces/ISigner.sol";
 import "./interfaces/IValidator.sol";
 import "./libs/LibExchangeErrors.sol";
@@ -27,7 +28,8 @@ import "../../utils/LibBytes/LibBytes.sol";
 contract MixinSignatureValidator is
     LibBytes,
     LibExchangeErrors,
-    MSignatureValidator
+    MSignatureValidator,
+    MTransactions
 {
 
     // Mapping of hash => signer => signed
@@ -63,7 +65,8 @@ contract MixinSignatureValidator is
     )
         external
     {
-        allowedValidators[msg.sender][validator] = approval;
+        address signer = getCurrentContextAddress();
+        allowedValidators[signer][validator] = approval;
     }
 
     /// @dev Verifies that a hash has been signed by the given signer.
