@@ -44,7 +44,8 @@ contract MSignatureValidator is
     function isValidSignature(
         bytes32 hash,
         address signer,
-        bytes memory signature)
+        bytes memory signature
+    )
         internal
         view
         returns (bool isValid);

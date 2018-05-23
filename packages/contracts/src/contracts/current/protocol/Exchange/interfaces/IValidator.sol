@@ -28,7 +28,8 @@ contract IValidator {
     function isValidSignature(
         bytes32 hash,
         address signer,
-        bytes signature)
+        bytes signature
+    )
         external
         view
         returns (bool isValid);

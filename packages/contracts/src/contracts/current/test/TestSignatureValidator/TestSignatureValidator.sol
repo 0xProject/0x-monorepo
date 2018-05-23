@@ -26,7 +26,8 @@ contract TestSignatureValidator is MixinSignatureValidator {
     function publicIsValidSignature(
         bytes32 hash,
         address signer,
-        bytes memory signature)
+        bytes memory signature
+    )
         public
         view
         returns (bool isValid)

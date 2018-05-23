@@ -105,7 +105,7 @@ contract MixinSignatureValidator is
         // also the initialization value for the enum type.
         if (signatureType == SignatureType.Illegal) {
             // NOTE: Reason cannot be assigned to a variable because of https://github.com/ethereum/solidity/issues/4051
-            revert("Illegal signature type.");
+            revert(ILLEGAL_SIGNATURE_TYPE);
 
         // Always invalid signature.
         // Like Illegal, this is always implicitly available and therefore

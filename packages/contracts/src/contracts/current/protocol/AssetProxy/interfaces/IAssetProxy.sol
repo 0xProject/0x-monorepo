@@ -34,7 +34,8 @@ contract IAssetProxy is
         bytes assetMetadata,
         address from,
         address to,
-        uint256 amount)
+        uint256 amount
+    )
         external;
     
     /// @dev Makes multiple transfers of assets. Either succeeds or throws.
@@ -46,7 +47,8 @@ contract IAssetProxy is
         bytes[] memory assetMetadata,
         address[] memory from,
         address[] memory to,
-        uint256[] memory amounts)
+        uint256[] memory amounts
+    )
         public;
 
     /// @dev Gets the proxy id associated with the proxy address.

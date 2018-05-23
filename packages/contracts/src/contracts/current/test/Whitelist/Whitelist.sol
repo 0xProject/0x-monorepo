@@ -50,7 +50,10 @@ contract Whitelist is
     /// @dev Adds or removes an address from the whitelist.
     /// @param target Address to add or remove from whitelist.
     /// @param isApproved Whitelist status to assign to address.
-    function updateWhitelistStatus(address target, bool isApproved)
+    function updateWhitelistStatus(
+        address target,
+        bool isApproved
+    )
         external
         onlyOwner
     {
