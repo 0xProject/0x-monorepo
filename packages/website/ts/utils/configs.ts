@@ -19,7 +19,7 @@ export const configs = {
     // WARNING: ZRX & WETH MUST always be default trackedTokens
     DEFAULT_TRACKED_TOKEN_SYMBOLS: ['WETH', 'ZRX'],
     DOMAIN_STAGING: 'staging-0xproject.s3-website-us-east-1.amazonaws.com',
-    DOMAIN_DOGFOOD: 'dogfood-0xproject.s3-website-us-east-1.amazonaws.com',
+    DOMAIN_DOGFOOD: 'dogfood.0xproject.com',
     DOMAIN_DEVELOPMENT: '0xproject.localhost:3572',
     DOMAIN_PRODUCTION: '0xproject.com',
     ENVIRONMENT: isDevelopment ? Environments.DEVELOPMENT : Environments.PRODUCTION,
