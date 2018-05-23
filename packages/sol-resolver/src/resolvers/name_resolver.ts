@@ -56,13 +56,15 @@ export class NameResolver extends EnumerableResolver {
             throw new Error(`No directory found at ${dirPath}`);
         }
         for (const fileName of dirContents) {
-            if (!fileName.endsWith(SOLIDITY_FILE_EXTENSION)) {
-                continue;
-            }
             const absoluteEntryPath = path.join(dirPath, fileName);
             const isDirectory = fs.lstatSync(absoluteEntryPath).isDirectory();
             const entryPath = path.relative(this._contractsDir, absoluteEntryPath);
-            const isComplete = isDirectory ? this._traverseContractsDir(absoluteEntryPath, onFile) : onFile(entryPath);
+            let isComplete;
+            if (isDirectory) {
+                isComplete = this._traverseContractsDir(absoluteEntryPath, onFile);
+            } else if (fileName.endsWith(SOLIDITY_FILE_EXTENSION)) {
+                isComplete = onFile(entryPath);
+            }
             if (isComplete) {
                 return isComplete;
             }
