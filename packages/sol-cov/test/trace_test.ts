@@ -32,7 +32,7 @@ describe('Trace', () => {
             const trace = [
                 {
                     op: OpCode.DelegateCall,
-                    stack: [delegateCallAddress, '0x', '0x', '0x', '0x'],
+                    stack: [delegateCallAddress, '0x'],
                     depth: 0,
                 },
                 {
