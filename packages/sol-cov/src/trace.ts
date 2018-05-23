@@ -9,7 +9,8 @@ export interface TraceByContractAddress {
 }
 
 function getAddressFromStackEntry(stackEntry: string): string {
-    return addressUtils.padZeros(new BigNumber(addHexPrefix(stackEntry)).toString(16));
+    const hexBase = 16;
+    return addressUtils.padZeros(new BigNumber(addHexPrefix(stackEntry)).toString(hexBase));
 }
 
 export function getTracesByContractAddress(structLogs: StructLog[], startAddress: string): TraceByContractAddress {
