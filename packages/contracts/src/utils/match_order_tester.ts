@@ -5,24 +5,24 @@ import * as chai from 'chai';
 import ethUtil = require('ethereumjs-util');
 import * as _ from 'lodash';
 
-import { DummyERC20TokenContract } from '../../src/contract_wrappers/generated/dummy_e_r_c20_token';
-import { DummyERC721TokenContract } from '../../src/contract_wrappers/generated/dummy_e_r_c721_token';
-import { ERC20ProxyContract } from '../../src/contract_wrappers/generated/e_r_c20_proxy';
-import { ERC721ProxyContract } from '../../src/contract_wrappers/generated/e_r_c721_proxy';
+import { DummyERC20TokenContract } from '../contract_wrappers/generated/dummy_e_r_c20_token';
+import { DummyERC721TokenContract } from '../contract_wrappers/generated/dummy_e_r_c721_token';
+import { ERC20ProxyContract } from '../contract_wrappers/generated/e_r_c20_proxy';
+import { ERC721ProxyContract } from '../contract_wrappers/generated/e_r_c721_proxy';
 import {
     CancelContractEventArgs,
     ExchangeContract,
     FillContractEventArgs,
-} from '../../src/contract_wrappers/generated/exchange';
-import { assetProxyUtils } from '../../src/utils/asset_proxy_utils';
-import { chaiSetup } from '../../src/utils/chai_setup';
-import { constants } from '../../src/utils/constants';
-import { crypto } from '../../src/utils/crypto';
-import { ERC20Wrapper } from '../../src/utils/erc20_wrapper';
-import { ERC721Wrapper } from '../../src/utils/erc721_wrapper';
-import { ExchangeWrapper } from '../../src/utils/exchange_wrapper';
-import { OrderFactory } from '../../src/utils/order_factory';
-import { orderUtils } from '../../src/utils/order_utils';
+} from '../contract_wrappers/generated/exchange';
+import { assetProxyUtils } from '../utils/asset_proxy_utils';
+import { chaiSetup } from '../utils/chai_setup';
+import { constants } from '../utils/constants';
+import { crypto } from '../utils/crypto';
+import { ERC20Wrapper } from '../utils/erc20_wrapper';
+import { ERC721Wrapper } from '../utils/erc721_wrapper';
+import { ExchangeWrapper } from '../utils/exchange_wrapper';
+import { OrderFactory } from '../utils/order_factory';
+import { orderUtils } from '../utils/order_utils';
 import {
     AssetProxyId,
     ContractName,
@@ -31,8 +31,8 @@ import {
     ExchangeStatus,
     SignedOrder,
     TransferAmountsByMatchOrders as TransferAmounts,
-} from '../../src/utils/types';
-import { provider, web3Wrapper } from '../../src/utils/web3_wrapper';
+} from '../utils/types';
+import { provider, web3Wrapper } from '../utils/web3_wrapper';
 
 chaiSetup.configure();
 const expect = chai.expect;

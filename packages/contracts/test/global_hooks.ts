@@ -1,6 +1,6 @@
 import { env, EnvVars } from '@0xproject/dev-utils';
 
-import { coverage } from './utils/coverage';
+import { coverage } from '../src/utils/coverage';
 
 after('generate coverage report', async () => {
     if (env.parseBoolean(EnvVars.SolidityCoverage)) {
