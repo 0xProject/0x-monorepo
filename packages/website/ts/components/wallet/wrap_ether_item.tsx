@@ -75,9 +75,6 @@ const styles: Styles = {
     conversionSpinner: {
         paddingTop: 26,
     },
-    conversionSpinnerPlaceholder: {
-        width: 61,
-    },
 };
 
 export class WrapEtherItem extends React.Component<WrapEtherItemProps, WrapEtherItemState> {
@@ -160,12 +157,12 @@ export class WrapEtherItem extends React.Component<WrapEtherItemProps, WrapEther
         });
     }
     private _renderIsEthConversionHappeningSpinner(): React.ReactElement<{}> {
-        return this.state.isEthConversionHappening ? (
-            <div className="pl3 pr2" style={styles.conversionSpinner}>
+        const visibility = this.state.isEthConversionHappening ? 'visible' : 'hidden';
+        const style: React.CSSProperties = { ...styles.conversionSpinner, visibility };
+        return (
+            <div className="pl3 pr2" style={style}>
                 <i className="zmdi zmdi-spinner zmdi-hc-spin" />
             </div>
-        ) : (
-            <div style={styles.conversionSpinnerPlaceholder} />
         );
     }
     private _renderWrapEtherConfirmationButton(): React.ReactElement<{}> {
