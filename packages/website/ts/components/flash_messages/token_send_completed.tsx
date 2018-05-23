@@ -1,6 +1,6 @@
-import { ZeroEx } from '0x.js';
 import { colors } from '@0xproject/react-shared';
 import { BigNumber } from '@0xproject/utils';
+import { Web3Wrapper } from '@0xproject/web3-wrapper';
 import * as _ from 'lodash';
 import * as React from 'react';
 import { Token } from 'ts/types';
@@ -22,7 +22,7 @@ export class TokenSendCompleted extends React.Component<TokenSendCompletedProps,
                 Verify on Etherscan
             </a>
         );
-        const amountInUnits = ZeroEx.toUnitAmount(this.props.amountInBaseUnits, this.props.token.decimals);
+        const amountInUnits = Web3Wrapper.toUnitAmount(this.props.amountInBaseUnits, this.props.token.decimals);
         const truncatedAddress = utils.getAddressBeginAndEnd(this.props.toAddress);
         return (
             <div>

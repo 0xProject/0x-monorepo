@@ -1,6 +1,6 @@
-import { ZeroEx } from '0x.js';
 import { colors, EtherscanLinkSuffixes, utils as sharedUtils } from '@0xproject/react-shared';
 import { BigNumber } from '@0xproject/utils';
+import { Web3Wrapper } from '@0xproject/web3-wrapper';
 import * as _ from 'lodash';
 import Divider from 'material-ui/Divider';
 import { Table, TableBody, TableHeader, TableHeaderColumn, TableRow, TableRowColumn } from 'material-ui/Table';
@@ -85,7 +85,7 @@ export class EthWrappers extends React.Component<EthWrappersProps, EthWrappersSt
     }
     public render(): React.ReactNode {
         const etherToken = this._getEthToken();
-        const wethBalance = ZeroEx.toUnitAmount(this.state.ethTokenState.balance, constants.DECIMAL_PLACES_ETH);
+        const wethBalance = Web3Wrapper.toUnitAmount(this.state.ethTokenState.balance, constants.DECIMAL_PLACES_ETH);
         const isBidirectional = true;
         const etherscanUrl = sharedUtils.getEtherScanLinkIfExists(
             etherToken.address,
@@ -93,7 +93,7 @@ export class EthWrappers extends React.Component<EthWrappersProps, EthWrappersSt
             EtherscanLinkSuffixes.Address,
         );
         const tokenLabel = this._renderToken('Wrapped Ether', etherToken.address, configs.ICON_URL_BY_SYMBOL.WETH);
-        const userEtherBalanceInEth = ZeroEx.toUnitAmount(
+        const userEtherBalanceInEth = Web3Wrapper.toUnitAmount(
             this.props.userEtherBalanceInWei,
             constants.DECIMAL_PLACES_ETH,
         );
@@ -265,7 +265,7 @@ export class EthWrappers extends React.Component<EthWrappersProps, EthWrappersSt
                 const outdatedEtherTokenState = this.state.outdatedWETHStateByAddress[outdatedWETHIfExists.address];
                 const isStateLoaded = outdatedEtherTokenState.isLoaded;
                 const balanceInEthIfExists = isStateLoaded
-                    ? ZeroEx.toUnitAmount(outdatedEtherTokenState.balance, constants.DECIMAL_PLACES_ETH).toFixed(
+                    ? Web3Wrapper.toUnitAmount(outdatedEtherTokenState.balance, constants.DECIMAL_PLACES_ETH).toFixed(
                           configs.AMOUNT_DISPLAY_PRECSION,
                       )
                     : undefined;

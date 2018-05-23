@@ -1,4 +1,4 @@
-import { ECSignature } from '0x.js';
+import { ECSignature } from '@0xproject/types';
 import { BigNumber } from '@0xproject/utils';
 import { Dispatch } from 'redux';
 import { State } from 'ts/redux/reducer';

@@ -1,4 +1,3 @@
-import { ZeroEx } from '0x.js';
 import {
     constants as sharedConstants,
     EtherscanLinkSuffixes,
@@ -6,6 +5,7 @@ import {
     utils as sharedUtils,
 } from '@0xproject/react-shared';
 import { BigNumber } from '@0xproject/utils';
+import { Web3Wrapper } from '@0xproject/web3-wrapper';
 import * as _ from 'lodash';
 import FlatButton from 'material-ui/FlatButton';
 import FloatingActionButton from 'material-ui/FloatingActionButton';
@@ -473,7 +473,7 @@ export class Wallet extends React.Component<WalletProps, WalletState> {
         );
     }
     private _renderAmount(amount: BigNumber, decimals: number, symbol: string): React.ReactNode {
-        const unitAmount = ZeroEx.toUnitAmount(amount, decimals);
+        const unitAmount = Web3Wrapper.toUnitAmount(amount, decimals);
         const formattedAmount = unitAmount.toPrecision(TOKEN_AMOUNT_DISPLAY_PRECISION);
         const result = `${formattedAmount} ${symbol}`;
         return <div style={styles.amountLabel}>{result}</div>;
@@ -482,7 +482,7 @@ export class Wallet extends React.Component<WalletProps, WalletState> {
         if (_.isUndefined(price)) {
             return null;
         }
-        const unitAmount = ZeroEx.toUnitAmount(amount, decimals);
+        const unitAmount = Web3Wrapper.toUnitAmount(amount, decimals);
         const value = unitAmount.mul(price);
         const formattedAmount = value.toFixed(USD_DECIMAL_PLACES);
         const result = `$${formattedAmount}`;

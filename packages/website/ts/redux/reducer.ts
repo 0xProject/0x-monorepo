@@ -1,4 +1,5 @@
-import { ECSignature, ZeroEx } from '0x.js';
+import { constants, generatePseudoRandomSalt } from '@0xproject/order-utils';
+import { ECSignature } from '@0xproject/types';
 import { BigNumber } from '@0xproject/utils';
 import * as _ from 'lodash';
 import * as moment from 'moment';
@@ -65,8 +66,8 @@ const INITIAL_STATE: State = {
         s: '',
         v: 27,
     },
-    orderTakerAddress: ZeroEx.NULL_ADDRESS,
-    orderSalt: ZeroEx.generatePseudoRandomSalt(),
+    orderTakerAddress: constants.NULL_ADDRESS,
+    orderSalt: generatePseudoRandomSalt(),
     nodeVersion: undefined,
     screenWidth: utils.getScreenWidth(),
     shouldBlockchainErrDialogBeOpen: false,

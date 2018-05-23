@@ -1,7 +1,7 @@
-import { ContractWrappersError, ECSignature, ExchangeContractErrs, ZeroEx } from '0x.js';
+import { ContractWrappersError, ExchangeContractErrs } from '@0xproject/contract-wrappers';
 import { OrderError } from '@0xproject/order-utils';
 import { constants as sharedConstants, EtherscanLinkSuffixes, Networks } from '@0xproject/react-shared';
-import { Provider } from '@0xproject/types';
+import { ECSignature, Provider } from '@0xproject/types';
 import { BigNumber } from '@0xproject/utils';
 import deepEqual = require('deep-equal');
 import * as _ from 'lodash';
