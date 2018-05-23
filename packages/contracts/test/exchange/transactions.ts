@@ -82,7 +82,7 @@ describe('Exchange transactions', () => {
         exchangeWrapper = new ExchangeWrapper(exchange, provider);
         await exchangeWrapper.registerAssetProxyAsync(AssetProxyId.ERC20, erc20Proxy.address, owner);
 
-        await web3Wrapper.awaitTransactionMinedAsync(
+        await web3Wrapper.awaitTransactionSuccessAsync(
             await erc20Proxy.addAuthorizedAddress.sendTransactionAsync(exchange.address, { from: owner }),
             constants.AWAIT_TRANSACTION_MINED_MS,
         );

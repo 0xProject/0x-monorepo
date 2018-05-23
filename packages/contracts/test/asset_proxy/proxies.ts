@@ -52,7 +52,7 @@ describe('Asset Transfer Proxies', () => {
         [zrxToken] = await erc20Wrapper.deployDummyTokensAsync();
         erc20Proxy = await erc20Wrapper.deployProxyAsync();
         await erc20Wrapper.setBalancesAndAllowancesAsync();
-        await web3Wrapper.awaitTransactionMinedAsync(
+        await web3Wrapper.awaitTransactionSuccessAsync(
             await erc20Proxy.addAuthorizedAddress.sendTransactionAsync(exchangeAddress, {
                 from: owner,
             }),
@@ -64,7 +64,7 @@ describe('Asset Transfer Proxies', () => {
         await erc721Wrapper.setBalancesAndAllowancesAsync();
         const erc721Balances = await erc721Wrapper.getBalancesAsync();
         erc721MakerTokenId = erc721Balances[makerAddress][erc721Token.address][0];
-        await web3Wrapper.awaitTransactionMinedAsync(
+        await web3Wrapper.awaitTransactionSuccessAsync(
             await erc721Proxy.addAuthorizedAddress.sendTransactionAsync(exchangeAddress, {
                 from: owner,
             }),
@@ -85,7 +85,7 @@ describe('Asset Transfer Proxies', () => {
                 // Perform a transfer from makerAddress to takerAddress
                 const erc20Balances = await erc20Wrapper.getBalancesAsync();
                 const amount = new BigNumber(10);
-                await web3Wrapper.awaitTransactionMinedAsync(
+                await web3Wrapper.awaitTransactionSuccessAsync(
                     await erc20Proxy.transferFrom.sendTransactionAsync(
                         encodedProxyMetadata,
                         makerAddress,
@@ -111,7 +111,7 @@ describe('Asset Transfer Proxies', () => {
                 // Perform a transfer from makerAddress to takerAddress
                 const erc20Balances = await erc20Wrapper.getBalancesAsync();
                 const amount = new BigNumber(0);
-                await web3Wrapper.awaitTransactionMinedAsync(
+                await web3Wrapper.awaitTransactionSuccessAsync(
                     await erc20Proxy.transferFrom.sendTransactionAsync(
                         encodedProxyMetadata,
                         makerAddress,
@@ -137,7 +137,7 @@ describe('Asset Transfer Proxies', () => {
                 // Create allowance less than transfer amount. Set allowance on proxy.
                 const allowance = new BigNumber(0);
                 const transferAmount = new BigNumber(10);
-                await web3Wrapper.awaitTransactionMinedAsync(
+                await web3Wrapper.awaitTransactionSuccessAsync(
                     await zrxToken.approve.sendTransactionAsync(erc20Proxy.address, allowance, {
                         from: makerAddress,
                     }),
@@ -193,7 +193,10 @@ describe('Asset Transfer Proxies', () => {
                     amounts,
                     { from: exchangeAddress },
                 );
-                const res = await web3Wrapper.awaitTransactionMinedAsync(txHash, constants.AWAIT_TRANSACTION_MINED_MS);
+                const res = await web3Wrapper.awaitTransactionSuccessAsync(
+                    txHash,
+                    constants.AWAIT_TRANSACTION_MINED_MS,
+                );
                 const newBalances = await erc20Wrapper.getBalancesAsync();
 
                 expect(res.logs.length).to.equal(numTransfers);
@@ -246,7 +249,7 @@ describe('Asset Transfer Proxies', () => {
                 // Perform a transfer from makerAddress to takerAddress
                 const erc20Balances = await erc20Wrapper.getBalancesAsync();
                 const amount = new BigNumber(1);
-                await web3Wrapper.awaitTransactionMinedAsync(
+                await web3Wrapper.awaitTransactionSuccessAsync(
                     await erc721Proxy.transferFrom.sendTransactionAsync(
                         encodedProxyMetadata,
                         makerAddress,
@@ -314,7 +317,7 @@ describe('Asset Transfer Proxies', () => {
                     erc721MakerTokenId,
                 );
                 // Remove transfer approval for makerAddress.
-                await web3Wrapper.awaitTransactionMinedAsync(
+                await web3Wrapper.awaitTransactionSuccessAsync(
                     await erc721Token.setApprovalForAll.sendTransactionAsync(erc721Proxy.address, false, {
                         from: makerAddress,
                     }),
@@ -376,7 +379,10 @@ describe('Asset Transfer Proxies', () => {
                     amounts,
                     { from: exchangeAddress },
                 );
-                const res = await web3Wrapper.awaitTransactionMinedAsync(txHash, constants.AWAIT_TRANSACTION_MINED_MS);
+                const res = await web3Wrapper.awaitTransactionSuccessAsync(
+                    txHash,
+                    constants.AWAIT_TRANSACTION_MINED_MS,
+                );
                 expect(res.logs.length).to.equal(numTransfers);
 
                 const newOwnerMakerAssetA = await erc721Token.ownerOf.callAsync(makerTokenIdA);

@@ -49,7 +49,7 @@ export class FillScenarios {
                 const txHash = await dummyToken.setBalance.sendTransactionAsync(this._coinbase, tokenSupply, {
                     from: this._coinbase,
                 });
-                await this._web3Wrapper.awaitTransactionMinedAsync(txHash);
+                await this._web3Wrapper.awaitTransactionSuccessAsync(txHash);
             }
         }
     }

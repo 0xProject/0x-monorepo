@@ -95,7 +95,7 @@ describe('EtherTokenWrapper', () => {
                 depositWeiAmount,
                 addressWithETH,
             );
-            await web3Wrapper.awaitTransactionMinedAsync(txHash);
+            await web3Wrapper.awaitTransactionSuccessAsync(txHash);
 
             const postETHBalanceInWei = await web3Wrapper.getBalanceInWeiAsync(addressWithETH);
             const postWETHBalanceInBaseUnits = await contractWrappers.token.getBalanceAsync(
@@ -137,7 +137,7 @@ describe('EtherTokenWrapper', () => {
                 depositWeiAmount,
                 addressWithETH,
             );
-            await web3Wrapper.awaitTransactionMinedAsync(txHash);
+            await web3Wrapper.awaitTransactionSuccessAsync(txHash);
 
             const postETHBalance = await web3Wrapper.getBalanceInWeiAsync(addressWithETH);
             const postWETHBalanceInBaseUnits = await contractWrappers.token.getBalanceAsync(
@@ -347,7 +347,7 @@ describe('EtherTokenWrapper', () => {
         });
         it('should get logs with decoded args emitted by Approval', async () => {
             txHash = await contractWrappers.token.setUnlimitedProxyAllowanceAsync(etherTokenAddress, addressWithETH);
-            await web3Wrapper.awaitTransactionMinedAsync(txHash);
+            await web3Wrapper.awaitTransactionSuccessAsync(txHash);
             const eventName = EtherTokenEvents.Approval;
             const indexFilterValues = {};
             const logs = await contractWrappers.etherToken.getLogsAsync<ApprovalContractEventArgs>(
@@ -381,7 +381,7 @@ describe('EtherTokenWrapper', () => {
         });
         it('should only get the logs with the correct event name', async () => {
             txHash = await contractWrappers.token.setUnlimitedProxyAllowanceAsync(etherTokenAddress, addressWithETH);
-            await web3Wrapper.awaitTransactionMinedAsync(txHash);
+            await web3Wrapper.awaitTransactionSuccessAsync(txHash);
             const differentEventName = EtherTokenEvents.Transfer;
             const indexFilterValues = {};
             const logs = await contractWrappers.etherToken.getLogsAsync(
@@ -394,12 +394,12 @@ describe('EtherTokenWrapper', () => {
         });
         it('should only get the logs with the correct indexed fields', async () => {
             txHash = await contractWrappers.token.setUnlimitedProxyAllowanceAsync(etherTokenAddress, addressWithETH);
-            await web3Wrapper.awaitTransactionMinedAsync(txHash);
+            await web3Wrapper.awaitTransactionSuccessAsync(txHash);
             txHash = await contractWrappers.token.setUnlimitedProxyAllowanceAsync(
                 etherTokenAddress,
                 addressWithoutFunds,
             );
-            await web3Wrapper.awaitTransactionMinedAsync(txHash);
+            await web3Wrapper.awaitTransactionSuccessAsync(txHash);
             const eventName = EtherTokenEvents.Approval;
             const indexFilterValues = {
                 _owner: addressWithETH,

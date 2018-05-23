@@ -623,7 +623,7 @@ export class Blockchain {
         );
         const provider = this._contractWrappers.getProvider();
         const web3Wrapper = new Web3Wrapper(provider);
-        const receipt = await web3Wrapper.awaitTransactionMinedAsync(txHash);
+        const receipt = await web3Wrapper.awaitTransactionSuccessAsync(txHash);
         return receipt;
     }
     private _doesUserAddressExist(): boolean {

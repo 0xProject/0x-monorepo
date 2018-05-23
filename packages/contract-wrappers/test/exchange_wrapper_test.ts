@@ -276,7 +276,7 @@ describe('ExchangeWrapper', () => {
                         shouldThrowOnInsufficientBalanceOrAllowance,
                         takerAddress,
                     );
-                    await web3Wrapper.awaitTransactionMinedAsync(txHash);
+                    await web3Wrapper.awaitTransactionSuccessAsync(txHash);
                     expect(
                         await contractWrappers.token.getBalanceAsync(makerTokenAddress, makerAddress),
                     ).to.be.bignumber.equal(fillableAmount.minus(takerTokenFillAmount));
@@ -305,7 +305,7 @@ describe('ExchangeWrapper', () => {
                         shouldThrowOnInsufficientBalanceOrAllowance,
                         takerAddress,
                     );
-                    await web3Wrapper.awaitTransactionMinedAsync(txHash);
+                    await web3Wrapper.awaitTransactionSuccessAsync(txHash);
                     expect(
                         await contractWrappers.token.getBalanceAsync(makerTokenAddress, makerAddress),
                     ).to.be.bignumber.equal(fillableAmount.minus(partialFillAmount));
@@ -338,7 +338,7 @@ describe('ExchangeWrapper', () => {
                         shouldThrowOnInsufficientBalanceOrAllowance,
                         takerAddress,
                     );
-                    await web3Wrapper.awaitTransactionMinedAsync(txHash);
+                    await web3Wrapper.awaitTransactionSuccessAsync(txHash);
                     expect(
                         await contractWrappers.token.getBalanceAsync(zrxTokenAddress, feeRecipient),
                     ).to.be.bignumber.equal(makerFee.plus(takerFee));
@@ -469,7 +469,7 @@ describe('ExchangeWrapper', () => {
                         shouldThrowOnInsufficientBalanceOrAllowance,
                         takerAddress,
                     );
-                    await web3Wrapper.awaitTransactionMinedAsync(txHash);
+                    await web3Wrapper.awaitTransactionSuccessAsync(txHash);
                     const filledAmount = await contractWrappers.exchange.getFilledTakerAmountAsync(signedOrderHashHex);
                     const anotherFilledAmount = await contractWrappers.exchange.getFilledTakerAmountAsync(
                         anotherOrderHashHex,
@@ -595,7 +595,7 @@ describe('ExchangeWrapper', () => {
                         shouldThrowOnInsufficientBalanceOrAllowance,
                         takerAddress,
                     );
-                    await web3Wrapper.awaitTransactionMinedAsync(txHash);
+                    await web3Wrapper.awaitTransactionSuccessAsync(txHash);
                     const filledAmount = await contractWrappers.exchange.getFilledTakerAmountAsync(signedOrderHashHex);
                     const anotherFilledAmount = await contractWrappers.exchange.getFilledTakerAmountAsync(
                         anotherOrderHashHex,
@@ -611,7 +611,7 @@ describe('ExchangeWrapper', () => {
                         shouldThrowOnInsufficientBalanceOrAllowance,
                         takerAddress,
                     );
-                    await web3Wrapper.awaitTransactionMinedAsync(txHash);
+                    await web3Wrapper.awaitTransactionSuccessAsync(txHash);
                     const filledAmount = await contractWrappers.exchange.getFilledTakerAmountAsync(signedOrderHashHex);
                     const zeroAmount = await contractWrappers.exchange.getFilledTakerAmountAsync(anotherOrderHashHex);
                     expect(filledAmount).to.be.bignumber.equal(fillableAmount);
@@ -632,7 +632,7 @@ describe('ExchangeWrapper', () => {
                         shouldThrowOnInsufficientBalanceOrAllowance,
                         takerAddress,
                     );
-                    await web3Wrapper.awaitTransactionMinedAsync(txHash);
+                    await web3Wrapper.awaitTransactionSuccessAsync(txHash);
                     const filledAmount = await contractWrappers.exchange.getFilledTakerAmountAsync(signedOrderHashHex);
                     const anotherFilledAmount = await contractWrappers.exchange.getFilledTakerAmountAsync(
                         anotherOrderHashHex,
@@ -730,7 +730,7 @@ describe('ExchangeWrapper', () => {
             describe('successful cancels', () => {
                 it('should cancel an order', async () => {
                     const txHash = await contractWrappers.exchange.cancelOrderAsync(signedOrder, cancelAmount);
-                    await web3Wrapper.awaitTransactionMinedAsync(txHash);
+                    await web3Wrapper.awaitTransactionSuccessAsync(txHash);
                     const cancelledAmount = await contractWrappers.exchange.getCancelledTakerAmountAsync(orderHashHex);
                     expect(cancelledAmount).to.be.bignumber.equal(cancelAmount);
                 });
@@ -1112,7 +1112,7 @@ describe('ExchangeWrapper', () => {
                 shouldThrowOnInsufficientBalanceOrAllowance,
                 takerAddress,
             );
-            await web3Wrapper.awaitTransactionMinedAsync(txHash);
+            await web3Wrapper.awaitTransactionSuccessAsync(txHash);
             const eventName = ExchangeEvents.LogFill;
             const indexFilterValues = {};
             const logs = await contractWrappers.exchange.getLogsAsync(eventName, blockRange, indexFilterValues);
@@ -1133,7 +1133,7 @@ describe('ExchangeWrapper', () => {
                 shouldThrowOnInsufficientBalanceOrAllowance,
                 takerAddress,
             );
-            await web3Wrapper.awaitTransactionMinedAsync(txHash);
+            await web3Wrapper.awaitTransactionSuccessAsync(txHash);
             const differentEventName = ExchangeEvents.LogCancel;
             const indexFilterValues = {};
             const logs = await contractWrappers.exchange.getLogsAsync(
@@ -1157,7 +1157,7 @@ describe('ExchangeWrapper', () => {
                 shouldThrowOnInsufficientBalanceOrAllowance,
                 takerAddress,
             );
-            await web3Wrapper.awaitTransactionMinedAsync(txHash);
+            await web3Wrapper.awaitTransactionSuccessAsync(txHash);
 
             const differentMakerAddress = userAddresses[2];
             const anotherSignedOrder = await fillScenarios.createFillableSignedOrderAsync(
@@ -1173,7 +1173,7 @@ describe('ExchangeWrapper', () => {
                 shouldThrowOnInsufficientBalanceOrAllowance,
                 takerAddress,
             );
-            await web3Wrapper.awaitTransactionMinedAsync(txHash);
+            await web3Wrapper.awaitTransactionSuccessAsync(txHash);
 
             const eventName = ExchangeEvents.LogFill;
             const indexFilterValues = {

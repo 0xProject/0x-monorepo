@@ -120,13 +120,13 @@ describe('matchOrders', () => {
         await exchangeWrapper.registerAssetProxyAsync(AssetProxyId.ERC20, erc20Proxy.address, owner);
         await exchangeWrapper.registerAssetProxyAsync(AssetProxyId.ERC721, erc721Proxy.address, owner);
         // Authorize ERC20 and ERC721 trades by exchange
-        await web3Wrapper.awaitTransactionMinedAsync(
+        await web3Wrapper.awaitTransactionSuccessAsync(
             await erc20Proxy.addAuthorizedAddress.sendTransactionAsync(exchange.address, {
                 from: owner,
             }),
             constants.AWAIT_TRANSACTION_MINED_MS,
         );
-        await web3Wrapper.awaitTransactionMinedAsync(
+        await web3Wrapper.awaitTransactionSuccessAsync(
             await erc721Proxy.addAuthorizedAddress.sendTransactionAsync(exchange.address, {
                 from: owner,
             }),

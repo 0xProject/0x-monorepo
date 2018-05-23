@@ -48,7 +48,7 @@ describe('Authorizable', () => {
             ).to.be.rejectedWith(constants.REVERT);
         });
         it('should allow owner to add an authorized address', async () => {
-            await web3Wrapper.awaitTransactionMinedAsync(
+            await web3Wrapper.awaitTransactionSuccessAsync(
                 await authorizable.addAuthorizedAddress.sendTransactionAsync(address, { from: owner }),
                 constants.AWAIT_TRANSACTION_MINED_MS,
             );
@@ -56,7 +56,7 @@ describe('Authorizable', () => {
             expect(isAuthorized).to.be.true();
         });
         it('should throw if owner attempts to authorize a duplicate address', async () => {
-            await web3Wrapper.awaitTransactionMinedAsync(
+            await web3Wrapper.awaitTransactionSuccessAsync(
                 await authorizable.addAuthorizedAddress.sendTransactionAsync(address, { from: owner }),
                 constants.AWAIT_TRANSACTION_MINED_MS,
             );
@@ -68,7 +68,7 @@ describe('Authorizable', () => {
 
     describe('removeAuthorizedAddress', () => {
         it('should throw if not called by owner', async () => {
-            await web3Wrapper.awaitTransactionMinedAsync(
+            await web3Wrapper.awaitTransactionSuccessAsync(
                 await authorizable.addAuthorizedAddress.sendTransactionAsync(address, { from: owner }),
                 constants.AWAIT_TRANSACTION_MINED_MS,
             );
@@ -80,11 +80,11 @@ describe('Authorizable', () => {
         });
 
         it('should allow owner to remove an authorized address', async () => {
-            await web3Wrapper.awaitTransactionMinedAsync(
+            await web3Wrapper.awaitTransactionSuccessAsync(
                 await authorizable.addAuthorizedAddress.sendTransactionAsync(address, { from: owner }),
                 constants.AWAIT_TRANSACTION_MINED_MS,
             );
-            await web3Wrapper.awaitTransactionMinedAsync(
+            await web3Wrapper.awaitTransactionSuccessAsync(
                 await authorizable.removeAuthorizedAddress.sendTransactionAsync(address, {
                     from: owner,
                 }),
@@ -107,7 +107,7 @@ describe('Authorizable', () => {
         it('should return all authorized addresses', async () => {
             const initial = await authorizable.getAuthorizedAddresses.callAsync();
             expect(initial).to.have.length(0);
-            await web3Wrapper.awaitTransactionMinedAsync(
+            await web3Wrapper.awaitTransactionSuccessAsync(
                 await authorizable.addAuthorizedAddress.sendTransactionAsync(address, {
                     from: owner,
                 }),
@@ -117,7 +117,7 @@ describe('Authorizable', () => {
             expect(afterAdd).to.have.length(1);
             expect(afterAdd).to.include(address);
 
-            await web3Wrapper.awaitTransactionMinedAsync(
+            await web3Wrapper.awaitTransactionSuccessAsync(
                 await authorizable.removeAuthorizedAddress.sendTransactionAsync(address, {
                     from: owner,
                 }),
