@@ -1,28 +1,28 @@
-import { LogWithDecodedArgs, ZeroEx } from '0x.js';
 import { BlockchainLifecycle } from '@0xproject/dev-utils';
+import { LogWithDecodedArgs } from '@0xproject/types';
 import { BigNumber } from '@0xproject/utils';
 import * as chai from 'chai';
 import ethUtil = require('ethereumjs-util');
 import * as _ from 'lodash';
 
-import { DummyERC20TokenContract } from '../../src/contract_wrappers/generated/dummy_e_r_c20_token';
-import { DummyERC721TokenContract } from '../../src/contract_wrappers/generated/dummy_e_r_c721_token';
-import { ERC20ProxyContract } from '../../src/contract_wrappers/generated/e_r_c20_proxy';
-import { ERC721ProxyContract } from '../../src/contract_wrappers/generated/e_r_c721_proxy';
+import { DummyERC20TokenContract } from '../contract_wrappers/generated/dummy_e_r_c20_token';
+import { DummyERC721TokenContract } from '../contract_wrappers/generated/dummy_e_r_c721_token';
+import { ERC20ProxyContract } from '../contract_wrappers/generated/e_r_c20_proxy';
+import { ERC721ProxyContract } from '../contract_wrappers/generated/e_r_c721_proxy';
 import {
     CancelContractEventArgs,
     ExchangeContract,
     FillContractEventArgs,
-} from '../../src/contract_wrappers/generated/exchange';
-import { assetProxyUtils } from '../../src/utils/asset_proxy_utils';
-import { chaiSetup } from '../../src/utils/chai_setup';
-import { constants } from '../../src/utils/constants';
-import { crypto } from '../../src/utils/crypto';
-import { ERC20Wrapper } from '../../src/utils/erc20_wrapper';
-import { ERC721Wrapper } from '../../src/utils/erc721_wrapper';
-import { ExchangeWrapper } from '../../src/utils/exchange_wrapper';
-import { OrderFactory } from '../../src/utils/order_factory';
-import { orderUtils } from '../../src/utils/order_utils';
+} from '../contract_wrappers/generated/exchange';
+import { assetProxyUtils } from '../utils/asset_proxy_utils';
+import { chaiSetup } from '../utils/chai_setup';
+import { constants } from '../utils/constants';
+import { crypto } from '../utils/crypto';
+import { ERC20Wrapper } from '../utils/erc20_wrapper';
+import { ERC721Wrapper } from '../utils/erc721_wrapper';
+import { ExchangeWrapper } from '../utils/exchange_wrapper';
+import { OrderFactory } from '../utils/order_factory';
+import { orderUtils } from '../utils/order_utils';
 import {
     AssetProxyId,
     ContractName,
@@ -31,8 +31,8 @@ import {
     ExchangeStatus,
     SignedOrder,
     TransferAmountsByMatchOrders as TransferAmounts,
-} from '../../src/utils/types';
-import { provider, web3Wrapper } from '../../src/utils/web3_wrapper';
+} from '../utils/types';
+import { provider, web3Wrapper } from '../utils/web3_wrapper';
 
 chaiSetup.configure();
 const expect = chai.expect;
@@ -55,10 +55,10 @@ export class MatchOrderTester {
         realERC20BalancesByOwner: ERC20BalancesByOwner,
         expectedNewERC721TokenIdsByOwner: ERC721TokenIdsByOwner,
         realERC721TokenIdsByOwner: ERC721TokenIdsByOwner,
-    ) {
+    ): boolean {
         // ERC20 Balances
-        const erc20BalancesMatch = _.isEqual(expectedNewERC20BalancesByOwner, realERC20BalancesByOwner);
-        if (!erc20BalancesMatch) {
+        const doesErc20BalancesMatch = _.isEqual(expectedNewERC20BalancesByOwner, realERC20BalancesByOwner);
+        if (!doesErc20BalancesMatch) {
             return false;
         }
         // ERC721 Token Ids
@@ -75,8 +75,11 @@ export class MatchOrderTester {
                 _.sortBy(tokenIds);
             });
         });
-        const erc721TokenIdsMatch = _.isEqual(sortedExpectedNewERC721TokenIdsByOwner, sortedNewERC721TokenIdsByOwner);
-        return erc721TokenIdsMatch;
+        const doesErc721TokenIdsMatch = _.isEqual(
+            sortedExpectedNewERC721TokenIdsByOwner,
+            sortedNewERC721TokenIdsByOwner,
+        );
+        return doesErc721TokenIdsMatch;
     }
     /// @dev Constructs new MatchOrderTester.
     /// @param exchangeWrapper Used to call to the Exchange.
@@ -156,13 +159,13 @@ export class MatchOrderTester {
             expectedTransferAmounts,
         );
         // Assert our expected balances are equal to the actual balances
-        const expectedBalancesMatchRealBalances = MatchOrderTester._compareExpectedAndRealBalances(
+        const didExpectedBalancesMatchRealBalances = MatchOrderTester._compareExpectedAndRealBalances(
             expectedERC20BalancesByOwner,
             newERC20BalancesByOwner,
             expectedERC721TokenIdsByOwner,
             newERC721TokenIdsByOwner,
         );
-        expect(expectedBalancesMatchRealBalances).to.be.true();
+        expect(didExpectedBalancesMatchRealBalances).to.be.true();
         return [newERC20BalancesByOwner, newERC721TokenIdsByOwner];
     }
     /// @dev Calculates expected transfer amounts between order makers, fee recipients, and

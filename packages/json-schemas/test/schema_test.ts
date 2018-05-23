@@ -149,7 +149,8 @@ describe('Schema', () => {
     });
     describe('#blockParamSchema', () => {
         it('should validate valid block param', () => {
-            const testCases = [42, 'latest', 'pending', 'earliest'];
+            const blockNumber = 42;
+            const testCases = [blockNumber, 'latest', 'pending', 'earliest'];
             validateAgainstSchema(testCases, blockParamSchema);
         });
         it('should fail for invalid block param', () => {
@@ -182,6 +183,7 @@ describe('Schema', () => {
             validateAgainstSchema(testCases, tokenSchema);
         });
         it('should fail for invalid token', () => {
+            const num = 4;
             const testCases = [
                 {
                     ...token,
@@ -192,7 +194,7 @@ describe('Schema', () => {
                     decimals: undefined,
                 },
                 [],
-                4,
+                num,
             ];
             const shouldFail = true;
             validateAgainstSchema(testCases, tokenSchema, shouldFail);
@@ -871,10 +873,12 @@ describe('Schema', () => {
     });
     describe('#jsNumberSchema', () => {
         it('should validate valid js number', () => {
+            // tslint:disable-next-line:custom-no-magic-numbers
             const testCases = [1, 42];
             validateAgainstSchema(testCases, jsNumber);
         });
         it('should fail for invalid js number', () => {
+            // tslint:disable-next-line:custom-no-magic-numbers
             const testCases = [NaN, -1, new BigNumber(1)];
             const shouldFail = true;
             validateAgainstSchema(testCases, jsNumber, shouldFail);
@@ -882,13 +886,14 @@ describe('Schema', () => {
     });
     describe('#txDataSchema', () => {
         it('should validate valid txData', () => {
+            const bigNumGasAmount = new BigNumber(42);
             const testCases = [
                 {
                     from: NULL_ADDRESS,
                 },
                 {
                     from: NULL_ADDRESS,
-                    gas: new BigNumber(42),
+                    gas: bigNumGasAmount,
                 },
                 {
                     from: NULL_ADDRESS,

@@ -3,10 +3,15 @@
         "version": "0.4.2",
         "changes": [
             {
+                "note": "Pass SolCompilerArtifactAdapter to CoverageSubprovider",
+                "pr": 589
+            },
+            {
                 "note": "Move callbackErrorReporter over from 0x.js",
                 "pr": 579
             }
-        ]
+        ],
+        "timestamp": 1527008544
     },
     {
         "timestamp": 1525477860,

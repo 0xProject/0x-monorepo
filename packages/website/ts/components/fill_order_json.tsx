@@ -1,4 +1,4 @@
-import { ZeroEx } from '0x.js';
+import { generatePseudoRandomSalt } from '@0xproject/order-utils';
 import { BigNumber } from '@0xproject/utils';
 import * as _ from 'lodash';
 import Paper from 'material-ui/Paper';
@@ -38,7 +38,7 @@ export class FillOrderJSON extends React.Component<FillOrderJSONProps, FillOrder
             s: '937862111edcba395f8a9e0cc1b2c5e12320...',
             v: 27,
         };
-        const hintSalt = ZeroEx.generatePseudoRandomSalt();
+        const hintSalt = generatePseudoRandomSalt();
         const feeRecipient = constants.NULL_ADDRESS;
         const hintOrder = utils.generateOrder(
             exchangeContract,

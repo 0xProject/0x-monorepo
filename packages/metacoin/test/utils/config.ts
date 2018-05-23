@@ -3,8 +3,8 @@ import * as path from 'path';
 
 export const config = {
     networkId: 50,
-    artifactsDir: path.resolve(__dirname, '../../artifacts'),
-    contractsDir: path.resolve(__dirname, '../../contracts'),
+    artifactsDir: 'artifacts',
+    contractsDir: 'contracts',
     ganacheLogFile: 'ganache.log',
     txDefaults: {
         from: devConstants.TESTRPC_FIRST_ADDRESS,

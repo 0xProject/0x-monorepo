@@ -1,5 +1,5 @@
-import { ZeroEx } from '0x.js';
 import { BigNumber, logUtils } from '@0xproject/utils';
+import { Web3Wrapper } from '@0xproject/web3-wrapper';
 import * as _ from 'lodash';
 import RaisedButton from 'material-ui/RaisedButton';
 import * as React from 'react';
@@ -95,11 +95,11 @@ export class EthWethConversionButton extends React.Component<
         try {
             if (direction === Side.Deposit) {
                 await this.props.blockchain.convertEthToWrappedEthTokensAsync(token.address, value);
-                const ethAmount = ZeroEx.toUnitAmount(value, constants.DECIMAL_PLACES_ETH);
+                const ethAmount = Web3Wrapper.toUnitAmount(value, constants.DECIMAL_PLACES_ETH);
                 this.props.dispatcher.showFlashMessage(`Successfully wrapped ${ethAmount.toString()} ETH to WETH`);
             } else {
                 await this.props.blockchain.convertWrappedEthTokensToEthAsync(token.address, value);
-                const tokenAmount = ZeroEx.toUnitAmount(value, token.decimals);
+                const tokenAmount = Web3Wrapper.toUnitAmount(value, token.decimals);
                 this.props.dispatcher.showFlashMessage(`Successfully unwrapped ${tokenAmount.toString()} WETH to ETH`);
             }
             if (!this.props.isOutdatedWrappedEther) {

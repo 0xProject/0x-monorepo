@@ -21,6 +21,7 @@ import { reportCallbackErrors } from '../utils/report_callback_errors';
 chaiSetup.configure();
 const expect = chai.expect;
 const FAKE_ADDRESS = '0xb088a3bc93f71b4de97b9de773e9647645983688';
+const DEFAULT_NUM_ACCOUNTS = 10;
 
 describe('LedgerSubprovider', () => {
     const networkId: number = 42;
@@ -73,7 +74,7 @@ describe('LedgerSubprovider', () => {
             it('returns default number of accounts', async () => {
                 const accounts = await ledgerSubprovider.getAccountsAsync();
                 expect(accounts[0]).to.be.equal(FAKE_ADDRESS);
-                expect(accounts.length).to.be.equal(10);
+                expect(accounts.length).to.be.equal(DEFAULT_NUM_ACCOUNTS);
             });
             it('returns requested number of accounts', async () => {
                 const numberOfAccounts = 20;
@@ -119,7 +120,7 @@ describe('LedgerSubprovider', () => {
                 };
                 const callback = reportCallbackErrors(done)((err: Error, response: JSONRPCResponsePayload) => {
                     expect(err).to.be.a('null');
-                    expect(response.result.length).to.be.equal(10);
+                    expect(response.result.length).to.be.equal(DEFAULT_NUM_ACCOUNTS);
                     expect(response.result[0]).to.be.equal(FAKE_ADDRESS);
                     done();
                 });
@@ -176,7 +177,8 @@ describe('LedgerSubprovider', () => {
                 };
                 const callback = reportCallbackErrors(done)((err: Error, response: JSONRPCResponsePayload) => {
                     expect(err).to.be.a('null');
-                    expect(response.result.raw.length).to.be.equal(192);
+                    const rawTxLength = 192;
+                    expect(response.result.raw.length).to.be.equal(rawTxLength);
                     expect(response.result.raw.substr(0, 2)).to.be.equal('0x');
                     done();
                 });

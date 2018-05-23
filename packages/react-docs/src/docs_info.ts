@@ -64,8 +64,8 @@ export class DocsInfo {
         finalMenu.contracts = _.filter(finalMenu.contracts, (contractName: string) => {
             const versionIntroducedIfExists = this._docsInfo.menuSubsectionToVersionWhenIntroduced[contractName];
             if (!_.isUndefined(versionIntroducedIfExists)) {
-                const existsInSelectedVersion = compareVersions(selectedVersion, versionIntroducedIfExists) >= 0;
-                return existsInSelectedVersion;
+                const doesExistInSelectedVersion = compareVersions(selectedVersion, versionIntroducedIfExists) >= 0;
+                return doesExistInSelectedVersion;
             } else {
                 return true;
             }

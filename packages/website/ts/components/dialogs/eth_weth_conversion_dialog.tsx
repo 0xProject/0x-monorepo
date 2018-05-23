@@ -1,6 +1,6 @@
-import { ZeroEx } from '0x.js';
 import { colors } from '@0xproject/react-shared';
 import { BigNumber } from '@0xproject/utils';
+import { Web3Wrapper } from '@0xproject/web3-wrapper';
 import * as _ from 'lodash';
 import Dialog from 'material-ui/Dialog';
 import FlatButton from 'material-ui/FlatButton';
@@ -78,7 +78,7 @@ export class EthWethConversionDialog extends React.Component<
                 ? 'Convert your Ether into a tokenized, tradable form.'
                 : "Convert your Wrapped Ether back into it's native form.";
         const isWrappedVersion = this.props.direction === Side.Receive;
-        const etherBalanceInEth = ZeroEx.toUnitAmount(this.props.etherBalanceInWei, constants.DECIMAL_PLACES_ETH);
+        const etherBalanceInEth = Web3Wrapper.toUnitAmount(this.props.etherBalanceInWei, constants.DECIMAL_PLACES_ETH);
         return (
             <div>
                 <div className="pb2">{explanation}</div>

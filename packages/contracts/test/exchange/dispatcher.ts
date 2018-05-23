@@ -1,4 +1,3 @@
-import { ZeroEx } from '0x.js';
 import { BlockchainLifecycle } from '@0xproject/dev-utils';
 import { BigNumber } from '@0xproject/utils';
 import * as chai from 'chai';
@@ -37,6 +36,12 @@ describe('AssetProxyDispatcher', () => {
     let erc721Wrapper: ERC721Wrapper;
 
     before(async () => {
+        await blockchainLifecycle.startAsync();
+    });
+    after(async () => {
+        await blockchainLifecycle.revertAsync();
+    });
+    before(async () => {
         // Setup accounts & addresses
         const accounts = await web3Wrapper.getAvailableAddressesAsync();
         const usedAddresses = ([owner, notOwner, makerAddress, takerAddress] = accounts);
@@ -56,12 +61,18 @@ describe('AssetProxyDispatcher', () => {
             provider,
             txDefaults,
         );
-        await erc20Proxy.addAuthorizedAddress.sendTransactionAsync(assetProxyDispatcher.address, {
-            from: owner,
-        });
-        await erc721Proxy.addAuthorizedAddress.sendTransactionAsync(assetProxyDispatcher.address, {
-            from: owner,
-        });
+        await web3Wrapper.awaitTransactionMinedAsync(
+            await erc20Proxy.addAuthorizedAddress.sendTransactionAsync(assetProxyDispatcher.address, {
+                from: owner,
+            }),
+            constants.AWAIT_TRANSACTION_MINED_MS,
+        );
+        await web3Wrapper.awaitTransactionMinedAsync(
+            await erc721Proxy.addAuthorizedAddress.sendTransactionAsync(assetProxyDispatcher.address, {
+                from: owner,
+            }),
+            constants.AWAIT_TRANSACTION_MINED_MS,
+        );
     });
     beforeEach(async () => {
         await blockchainLifecycle.startAsync();
@@ -71,12 +82,15 @@ describe('AssetProxyDispatcher', () => {
     });
     describe('registerAssetProxy', () => {
         it('should record proxy upon registration', async () => {
-            const prevProxyAddress = ZeroEx.NULL_ADDRESS;
-            await assetProxyDispatcher.registerAssetProxy.sendTransactionAsync(
-                AssetProxyId.ERC20,
-                erc20Proxy.address,
-                prevProxyAddress,
-                { from: owner },
+            const prevProxyAddress = constants.NULL_ADDRESS;
+            await web3Wrapper.awaitTransactionMinedAsync(
+                await assetProxyDispatcher.registerAssetProxy.sendTransactionAsync(
+                    AssetProxyId.ERC20,
+                    erc20Proxy.address,
+                    prevProxyAddress,
+                    { from: owner },
+                ),
+                constants.AWAIT_TRANSACTION_MINED_MS,
             );
             const proxyAddress = await assetProxyDispatcher.getAssetProxy.callAsync(AssetProxyId.ERC20);
             expect(proxyAddress).to.be.equal(erc20Proxy.address);
@@ -84,22 +98,28 @@ describe('AssetProxyDispatcher', () => {
 
         it('should be able to record multiple proxies', async () => {
             // Record first proxy
-            const prevERC20ProxyAddress = ZeroEx.NULL_ADDRESS;
-            await assetProxyDispatcher.registerAssetProxy.sendTransactionAsync(
-                AssetProxyId.ERC20,
-                erc20Proxy.address,
-                prevERC20ProxyAddress,
-                { from: owner },
+            const prevERC20ProxyAddress = constants.NULL_ADDRESS;
+            await web3Wrapper.awaitTransactionMinedAsync(
+                await assetProxyDispatcher.registerAssetProxy.sendTransactionAsync(
+                    AssetProxyId.ERC20,
+                    erc20Proxy.address,
+                    prevERC20ProxyAddress,
+                    { from: owner },
+                ),
+                constants.AWAIT_TRANSACTION_MINED_MS,
             );
             let proxyAddress = await assetProxyDispatcher.getAssetProxy.callAsync(AssetProxyId.ERC20);
             expect(proxyAddress).to.be.equal(erc20Proxy.address);
             // Record another proxy
-            const prevERC721ProxyAddress = ZeroEx.NULL_ADDRESS;
-            await assetProxyDispatcher.registerAssetProxy.sendTransactionAsync(
-                AssetProxyId.ERC721,
-                erc721Proxy.address,
-                prevERC721ProxyAddress,
-                { from: owner },
+            const prevERC721ProxyAddress = constants.NULL_ADDRESS;
+            await web3Wrapper.awaitTransactionMinedAsync(
+                await assetProxyDispatcher.registerAssetProxy.sendTransactionAsync(
+                    AssetProxyId.ERC721,
+                    erc721Proxy.address,
+                    prevERC721ProxyAddress,
+                    { from: owner },
+                ),
+                constants.AWAIT_TRANSACTION_MINED_MS,
             );
             proxyAddress = await assetProxyDispatcher.getAssetProxy.callAsync(AssetProxyId.ERC721);
             expect(proxyAddress).to.be.equal(erc721Proxy.address);
@@ -107,12 +127,15 @@ describe('AssetProxyDispatcher', () => {
 
         it('should replace proxy address upon re-registration', async () => {
             // Initial registration
-            const prevProxyAddress = ZeroEx.NULL_ADDRESS;
-            await assetProxyDispatcher.registerAssetProxy.sendTransactionAsync(
-                AssetProxyId.ERC20,
-                erc20Proxy.address,
-                prevProxyAddress,
-                { from: owner },
+            const prevProxyAddress = constants.NULL_ADDRESS;
+            await web3Wrapper.awaitTransactionMinedAsync(
+                await assetProxyDispatcher.registerAssetProxy.sendTransactionAsync(
+                    AssetProxyId.ERC20,
+                    erc20Proxy.address,
+                    prevProxyAddress,
+                    { from: owner },
+                ),
+                constants.AWAIT_TRANSACTION_MINED_MS,
             );
             let proxyAddress = await assetProxyDispatcher.getAssetProxy.callAsync(AssetProxyId.ERC20);
             expect(proxyAddress).to.be.equal(erc20Proxy.address);
@@ -125,11 +148,14 @@ describe('AssetProxyDispatcher', () => {
             // Register new ERC20 Transfer Proxy contract
             const newAddress = newErc20TransferProxy.address;
             const currentAddress = erc20Proxy.address;
-            await assetProxyDispatcher.registerAssetProxy.sendTransactionAsync(
-                AssetProxyId.ERC20,
-                newAddress,
-                currentAddress,
-                { from: owner },
+            await web3Wrapper.awaitTransactionMinedAsync(
+                await assetProxyDispatcher.registerAssetProxy.sendTransactionAsync(
+                    AssetProxyId.ERC20,
+                    newAddress,
+                    currentAddress,
+                    { from: owner },
+                ),
+                constants.AWAIT_TRANSACTION_MINED_MS,
             );
             // Verify new asset proxy has replaced initial version
             proxyAddress = await assetProxyDispatcher.getAssetProxy.callAsync(AssetProxyId.ERC20);
@@ -138,21 +164,24 @@ describe('AssetProxyDispatcher', () => {
 
         it('should throw if registering with incorrect "currentAssetProxyAddress" field', async () => {
             // Initial registration
-            const prevProxyAddress = ZeroEx.NULL_ADDRESS;
-            await assetProxyDispatcher.registerAssetProxy.sendTransactionAsync(
-                AssetProxyId.ERC20,
-                erc20Proxy.address,
-                prevProxyAddress,
-                { from: owner },
+            const prevProxyAddress = constants.NULL_ADDRESS;
+            await web3Wrapper.awaitTransactionMinedAsync(
+                await assetProxyDispatcher.registerAssetProxy.sendTransactionAsync(
+                    AssetProxyId.ERC20,
+                    erc20Proxy.address,
+                    prevProxyAddress,
+                    { from: owner },
+                ),
+                constants.AWAIT_TRANSACTION_MINED_MS,
             );
             const proxyAddress = await assetProxyDispatcher.getAssetProxy.callAsync(AssetProxyId.ERC20);
             expect(proxyAddress).to.be.equal(erc20Proxy.address);
-            // The following transaction will throw because the currentAddress is no longer ZeroEx.NULL_ADDRESS
+            // The following transaction will throw because the currentAddress is no longer constants.NULL_ADDRESS
             return expect(
                 assetProxyDispatcher.registerAssetProxy.sendTransactionAsync(
                     AssetProxyId.ERC20,
                     erc20Proxy.address,
-                    ZeroEx.NULL_ADDRESS,
+                    constants.NULL_ADDRESS,
                     { from: owner },
                 ),
             ).to.be.rejectedWith(constants.REVERT);
@@ -160,29 +189,35 @@ describe('AssetProxyDispatcher', () => {
 
         it('should be able to reset proxy address to NULL', async () => {
             // Initial registration
-            const prevProxyAddress = ZeroEx.NULL_ADDRESS;
-            await assetProxyDispatcher.registerAssetProxy.sendTransactionAsync(
-                AssetProxyId.ERC20,
-                erc20Proxy.address,
-                prevProxyAddress,
-                { from: owner },
+            const prevProxyAddress = constants.NULL_ADDRESS;
+            await web3Wrapper.awaitTransactionMinedAsync(
+                await assetProxyDispatcher.registerAssetProxy.sendTransactionAsync(
+                    AssetProxyId.ERC20,
+                    erc20Proxy.address,
+                    prevProxyAddress,
+                    { from: owner },
+                ),
+                constants.AWAIT_TRANSACTION_MINED_MS,
             );
             const proxyAddress = await assetProxyDispatcher.getAssetProxy.callAsync(AssetProxyId.ERC20);
             expect(proxyAddress).to.be.equal(erc20Proxy.address);
             // The following transaction will reset the proxy address
-            const newProxyAddress = ZeroEx.NULL_ADDRESS;
-            await assetProxyDispatcher.registerAssetProxy.sendTransactionAsync(
-                AssetProxyId.ERC20,
-                newProxyAddress,
-                erc20Proxy.address,
-                { from: owner },
+            const newProxyAddress = constants.NULL_ADDRESS;
+            await web3Wrapper.awaitTransactionMinedAsync(
+                await assetProxyDispatcher.registerAssetProxy.sendTransactionAsync(
+                    AssetProxyId.ERC20,
+                    newProxyAddress,
+                    erc20Proxy.address,
+                    { from: owner },
+                ),
+                constants.AWAIT_TRANSACTION_MINED_MS,
             );
             const finalProxyAddress = await assetProxyDispatcher.getAssetProxy.callAsync(AssetProxyId.ERC20);
             expect(finalProxyAddress).to.be.equal(newProxyAddress);
         });
 
         it('should throw if requesting address is not owner', async () => {
-            const prevProxyAddress = ZeroEx.NULL_ADDRESS;
+            const prevProxyAddress = constants.NULL_ADDRESS;
             return expect(
                 assetProxyDispatcher.registerAssetProxy.sendTransactionAsync(
                     AssetProxyId.ERC20,
@@ -194,7 +229,7 @@ describe('AssetProxyDispatcher', () => {
         });
 
         it('should throw if attempting to register a proxy to the incorrect id', async () => {
-            const prevProxyAddress = ZeroEx.NULL_ADDRESS;
+            const prevProxyAddress = constants.NULL_ADDRESS;
             return expect(
                 assetProxyDispatcher.registerAssetProxy.sendTransactionAsync(
                     AssetProxyId.ERC721,
@@ -208,12 +243,15 @@ describe('AssetProxyDispatcher', () => {
 
     describe('getAssetProxy', () => {
         it('should return correct address of registered proxy', async () => {
-            const prevProxyAddress = ZeroEx.NULL_ADDRESS;
-            await assetProxyDispatcher.registerAssetProxy.sendTransactionAsync(
-                AssetProxyId.ERC20,
-                erc20Proxy.address,
-                prevProxyAddress,
-                { from: owner },
+            const prevProxyAddress = constants.NULL_ADDRESS;
+            await web3Wrapper.awaitTransactionMinedAsync(
+                await assetProxyDispatcher.registerAssetProxy.sendTransactionAsync(
+                    AssetProxyId.ERC20,
+                    erc20Proxy.address,
+                    prevProxyAddress,
+                    { from: owner },
+                ),
+                constants.AWAIT_TRANSACTION_MINED_MS,
             );
             const proxyAddress = await assetProxyDispatcher.getAssetProxy.callAsync(AssetProxyId.ERC20);
             expect(proxyAddress).to.be.equal(erc20Proxy.address);
@@ -221,31 +259,37 @@ describe('AssetProxyDispatcher', () => {
 
         it('should return NULL address if requesting non-existent proxy', async () => {
             const proxyAddress = await assetProxyDispatcher.getAssetProxy.callAsync(AssetProxyId.ERC20);
-            expect(proxyAddress).to.be.equal(ZeroEx.NULL_ADDRESS);
+            expect(proxyAddress).to.be.equal(constants.NULL_ADDRESS);
         });
     });
 
     describe('dispatchTransferFrom', () => {
         it('should dispatch transfer to registered proxy', async () => {
             // Register ERC20 proxy
-            const prevProxyAddress = ZeroEx.NULL_ADDRESS;
-            await assetProxyDispatcher.registerAssetProxy.sendTransactionAsync(
-                AssetProxyId.ERC20,
-                erc20Proxy.address,
-                prevProxyAddress,
-                { from: owner },
+            const prevProxyAddress = constants.NULL_ADDRESS;
+            await web3Wrapper.awaitTransactionMinedAsync(
+                await assetProxyDispatcher.registerAssetProxy.sendTransactionAsync(
+                    AssetProxyId.ERC20,
+                    erc20Proxy.address,
+                    prevProxyAddress,
+                    { from: owner },
+                ),
+                constants.AWAIT_TRANSACTION_MINED_MS,
             );
             // Construct metadata for ERC20 proxy
             const encodedProxyMetadata = assetProxyUtils.encodeERC20ProxyData(zrxToken.address);
             // Perform a transfer from makerAddress to takerAddress
             const erc20Balances = await erc20Wrapper.getBalancesAsync();
             const amount = new BigNumber(10);
-            await assetProxyDispatcher.publicDispatchTransferFrom.sendTransactionAsync(
-                encodedProxyMetadata,
-                makerAddress,
-                takerAddress,
-                amount,
-                { from: owner },
+            await web3Wrapper.awaitTransactionMinedAsync(
+                await assetProxyDispatcher.publicDispatchTransferFrom.sendTransactionAsync(
+                    encodedProxyMetadata,
+                    makerAddress,
+                    takerAddress,
+                    amount,
+                    { from: owner },
+                ),
+                constants.AWAIT_TRANSACTION_MINED_MS,
             );
             // Verify transfer was successful
             const newBalances = await erc20Wrapper.getBalancesAsync();

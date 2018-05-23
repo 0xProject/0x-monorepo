@@ -1,6 +1,6 @@
-import { ZeroEx } from '0x.js';
 import { colors } from '@0xproject/react-shared';
 import { BigNumber } from '@0xproject/utils';
+import { Web3Wrapper } from '@0xproject/web3-wrapper';
 import * as _ from 'lodash';
 import * as React from 'react';
 import { Link } from 'react-router-dom';
@@ -75,14 +75,14 @@ export class TokenAmountInput extends React.Component<TokenAmountInputProps, Tok
     }
     public render(): React.ReactNode {
         const amount = this.props.amount
-            ? ZeroEx.toUnitAmount(this.props.amount, this.props.token.decimals)
+            ? Web3Wrapper.toUnitAmount(this.props.amount, this.props.token.decimals)
             : undefined;
         return (
             <div className="flex overflow-hidden" style={this._getStyle()}>
                 <BalanceBoundedInput
                     label={this.props.label}
                     amount={amount}
-                    balance={ZeroEx.toUnitAmount(this.state.balance, this.props.token.decimals)}
+                    balance={Web3Wrapper.toUnitAmount(this.state.balance, this.props.token.decimals)}
                     onChange={this._onChange.bind(this)}
                     onErrorMsgChange={this.props.onErrorMsgChange}
                     validate={this._validate.bind(this)}
@@ -103,7 +103,7 @@ export class TokenAmountInput extends React.Component<TokenAmountInputProps, Tok
     private _onChange(isValid: boolean, amount?: BigNumber): void {
         let baseUnitAmount;
         if (!_.isUndefined(amount)) {
-            baseUnitAmount = ZeroEx.toBaseUnitAmount(amount, this.props.token.decimals);
+            baseUnitAmount = Web3Wrapper.toBaseUnitAmount(amount, this.props.token.decimals);
         }
         this.props.onChange(isValid, baseUnitAmount);
     }

@@ -1,4 +1,4 @@
-import { ZeroEx } from '0x.js';
+import { generatePseudoRandomSalt } from '@0xproject/order-utils';
 import { BigNumber } from '@0xproject/utils';
 import * as ethUtil from 'ethereumjs-util';
 
@@ -20,7 +20,7 @@ export class TransactionFactory {
         data: string,
         signatureType: SignatureType = SignatureType.Ecrecover,
     ): SignedTransaction {
-        const salt = ZeroEx.generatePseudoRandomSalt();
+        const salt = generatePseudoRandomSalt();
         const txHash = crypto.solSHA3([this._exchangeAddress, salt, ethUtil.toBuffer(data)]);
         const signature = signingUtils.signMessage(txHash, this._privateKey, signatureType);
         const signedTx = {

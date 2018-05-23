@@ -5,7 +5,7 @@ import * as Exchange from '../artifacts/1.0.0/Exchange_v1.json';
 import * as MultiSigWalletWithTimeLock from '../artifacts/1.0.0/MultiSigWalletWithTimeLock.json';
 import * as MultiSigWalletWithTimeLockExceptRemoveAuthorizedAddress from '../artifacts/1.0.0/MultiSigWalletWithTimeLockExceptRemoveAuthorizedAddress.json';
 import * as TokenRegistry from '../artifacts/1.0.0/TokenRegistry.json';
-import * as TokenTransferProxy from '../artifacts/1.0.0/TokenTransferProxy.json';
+import * as TokenTransferProxy from '../artifacts/1.0.0/TokenTransferProxy_v1.json';
 import * as EtherToken from '../artifacts/1.0.0/WETH9.json';
 import * as ZRX from '../artifacts/1.0.0/ZRXToken.json';
 

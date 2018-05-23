@@ -60,8 +60,8 @@ export class RelayerIndex extends React.Component<RelayerIndexProps, RelayerInde
         this._isUnmounted = true;
     }
     public render(): React.ReactNode {
-        const readyToRender = _.isUndefined(this.state.error) && !_.isUndefined(this.state.relayerInfos);
-        if (!readyToRender) {
+        const isReadyToRender = _.isUndefined(this.state.error) && !_.isUndefined(this.state.relayerInfos);
+        if (!isReadyToRender) {
             return (
                 // TODO: consolidate this loading component with the one in portal
                 <div className="center">

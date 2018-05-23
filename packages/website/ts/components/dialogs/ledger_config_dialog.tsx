@@ -1,6 +1,6 @@
-import { ZeroEx } from '0x.js';
 import { colors, constants as sharedConstants } from '@0xproject/react-shared';
 import { BigNumber, logUtils } from '@0xproject/utils';
+import { Web3Wrapper } from '@0xproject/web3-wrapper';
 import * as _ from 'lodash';
 import Dialog from 'material-ui/Dialog';
 import FlatButton from 'material-ui/FlatButton';
@@ -168,7 +168,7 @@ export class LedgerConfigDialog extends React.Component<LedgerConfigDialogProps,
             // We specifically prefix kovan ETH.
             // TODO: We should probably add prefixes for all networks
             const isKovanNetwork = networkName === 'Kovan';
-            const balanceInEth = ZeroEx.toUnitAmount(balanceInWei, constants.DECIMAL_PLACES_ETH);
+            const balanceInEth = Web3Wrapper.toUnitAmount(balanceInWei, constants.DECIMAL_PLACES_ETH);
             const balanceString = `${balanceInEth.toString()} ${isKovanNetwork ? 'Kovan ' : ''}ETH`;
             return (
                 <TableRow key={userAddress} style={{ height: 40 }}>

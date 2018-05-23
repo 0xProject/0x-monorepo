@@ -5,7 +5,7 @@ import { orderUtils } from './order_utils';
 import { BatchCancelOrders, BatchFillOrders, MarketBuyOrders, MarketSellOrders, SignedOrder } from './types';
 
 export const formatters = {
-    createBatchFill(signedOrders: SignedOrder[], takerAssetFillAmounts: BigNumber[] = []) {
+    createBatchFill(signedOrders: SignedOrder[], takerAssetFillAmounts: BigNumber[] = []): BatchFillOrders {
         const batchFill: BatchFillOrders = {
             orders: [],
             signatures: [],
@@ -21,7 +21,7 @@ export const formatters = {
         });
         return batchFill;
     },
-    createMarketSellOrders(signedOrders: SignedOrder[], takerAssetFillAmount: BigNumber) {
+    createMarketSellOrders(signedOrders: SignedOrder[], takerAssetFillAmount: BigNumber): MarketSellOrders {
         const marketSellOrders: MarketSellOrders = {
             orders: [],
             signatures: [],
@@ -34,7 +34,7 @@ export const formatters = {
         });
         return marketSellOrders;
     },
-    createMarketBuyOrders(signedOrders: SignedOrder[], makerAssetFillAmount: BigNumber) {
+    createMarketBuyOrders(signedOrders: SignedOrder[], makerAssetFillAmount: BigNumber): MarketBuyOrders {
         const marketBuyOrders: MarketBuyOrders = {
             orders: [],
             signatures: [],
@@ -47,7 +47,7 @@ export const formatters = {
         });
         return marketBuyOrders;
     },
-    createBatchCancel(signedOrders: SignedOrder[]) {
+    createBatchCancel(signedOrders: SignedOrder[]): BatchCancelOrders {
         const batchCancel: BatchCancelOrders = {
             orders: [],
         };

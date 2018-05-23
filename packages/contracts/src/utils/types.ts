@@ -197,3 +197,15 @@ export interface ProxyData {
     tokenAddress?: string;
     data?: any;
 }
+
+export interface CancelOrder {
+    order: OrderStruct;
+    takerAssetCancelAmount: BigNumber;
+}
+
+export interface MatchOrder {
+    left: OrderStruct;
+    right: OrderStruct;
+    leftSignature: string;
+    rightSignature: string;
+}

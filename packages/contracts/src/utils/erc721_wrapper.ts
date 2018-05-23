@@ -1,4 +1,4 @@
-import { ZeroEx } from '0x.js';
+import { generatePseudoRandomSalt } from '@0xproject/order-utils';
 import { Provider } from '@0xproject/types';
 import { BigNumber } from '@0xproject/utils';
 import * as _ from 'lodash';
@@ -25,7 +25,7 @@ export class ERC721Wrapper {
     }
     public async deployDummyTokensAsync(): Promise<DummyERC721TokenContract[]> {
         this._dummyTokenContracts = await Promise.all(
-            _.times(constants.NUM_DUMMY_ERC721_TO_DEPLOY, () =>
+            _.times(constants.NUM_DUMMY_ERC721_TO_DEPLOY, async () =>
                 DummyERC721TokenContract.deployFrom0xArtifactAsync(
                     artifacts.DummyERC721Token,
                     this._provider,
@@ -45,7 +45,7 @@ export class ERC721Wrapper {
         );
         return this._proxyContract;
     }
-    public async setBalancesAndAllowancesAsync() {
+    public async setBalancesAndAllowancesAsync(): Promise<void> {
         this._validateDummyTokenContractsExistOrThrow();
         this._validateProxyContractExistsOrThrow();
         const setBalancePromises: Array<Promise<string>> = [];
@@ -54,7 +54,7 @@ export class ERC721Wrapper {
         _.forEach(this._dummyTokenContracts, dummyTokenContract => {
             _.forEach(this._tokenOwnerAddresses, tokenOwnerAddress => {
                 _.forEach(_.range(constants.NUM_ERC721_TOKENS_TO_MINT), () => {
-                    const tokenId = ZeroEx.generatePseudoRandomSalt();
+                    const tokenId = generatePseudoRandomSalt();
                     setBalancePromises.push(
                         dummyTokenContract.mint.sendTransactionAsync(tokenOwnerAddress, tokenId, {
                             from: this._contractOwnerAddress,
@@ -125,17 +125,17 @@ export class ERC721Wrapper {
         const tokenAddresses = _.map(this._dummyTokenContracts, dummyTokenContract => dummyTokenContract.address);
         return tokenAddresses;
     }
-    private _validateDummyTokenContractsExistOrThrow() {
+    private _validateDummyTokenContractsExistOrThrow(): void {
         if (_.isUndefined(this._dummyTokenContracts)) {
             throw new Error('Dummy ERC721 tokens not yet deployed, please call "deployDummyTokensAsync"');
         }
     }
-    private _validateProxyContractExistsOrThrow() {
+    private _validateProxyContractExistsOrThrow(): void {
         if (_.isUndefined(this._proxyContract)) {
             throw new Error('ERC721 proxy contract not yet deployed, please call "deployProxyAsync"');
         }
     }
-    private _validateBalancesAndAllowancesSetOrThrow() {
+    private _validateBalancesAndAllowancesSetOrThrow(): void {
         if (_.keys(this._initialTokenIdsByOwner).length === 0) {
             throw new Error(
                 'Dummy ERC721 balances and allowances not yet set, please call "setBalancesAndAllowancesAsync"',

@@ -1,4 +1,3 @@
-import { ZeroEx } from '0x.js';
 import { BlockchainLifecycle } from '@0xproject/dev-utils';
 import { BigNumber } from '@0xproject/utils';
 import * as chai from 'chai';
@@ -26,6 +25,12 @@ describe('MixinSignatureValidator', () => {
     let signatureValidator: TestSignatureValidatorContract;
 
     before(async () => {
+        await blockchainLifecycle.startAsync();
+    });
+    after(async () => {
+        await blockchainLifecycle.revertAsync();
+    });
+    before(async () => {
         const accounts = await web3Wrapper.getAvailableAddressesAsync();
         const makerAddress = accounts[0];
         signatureValidator = await TestSignatureValidatorContract.deployFrom0xArtifactAsync(
@@ -33,7 +38,6 @@ describe('MixinSignatureValidator', () => {
             provider,
             txDefaults,
         );
-        const zeroEx = new ZeroEx(provider, { networkId: constants.TESTRPC_NETWORK_ID });
 
         const defaultOrderParams = {
             ...constants.STATIC_ORDER_PARAMS,
@@ -62,12 +66,12 @@ describe('MixinSignatureValidator', () => {
 
         it('should return true with a valid signature', async () => {
             const orderHashHex = orderUtils.getOrderHashHex(signedOrder);
-            const success = await signatureValidator.publicIsValidSignature.callAsync(
+            const isValidSignature = await signatureValidator.publicIsValidSignature.callAsync(
                 orderHashHex,
                 signedOrder.makerAddress,
                 signedOrder.signature,
             );
-            expect(success).to.be.true();
+            expect(isValidSignature).to.be.true();
         });
 
         it('should return false with an invalid signature', async () => {
@@ -81,12 +85,12 @@ describe('MixinSignatureValidator', () => {
             const invalidSigHex = `0x${invalidSigBuff.toString('hex')}`;
             signedOrder.signature = invalidSigHex;
             const orderHashHex = orderUtils.getOrderHashHex(signedOrder);
-            const success = await signatureValidator.publicIsValidSignature.callAsync(
+            const isValidSignature = await signatureValidator.publicIsValidSignature.callAsync(
                 orderHashHex,
                 signedOrder.makerAddress,
                 signedOrder.signature,
             );
-            expect(success).to.be.false();
+            expect(isValidSignature).to.be.false();
         });
     });
 });

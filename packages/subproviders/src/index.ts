@@ -4,6 +4,7 @@ export { ECSignature } from '@0xproject/types';
 
 import { LedgerEthereumClient } from './types';
 
+export { prependSubprovider } from './utils/subprovider_utils';
 export { EmptyWalletSubprovider } from './subproviders/empty_wallet_subprovider';
 export { FakeGasEstimateSubprovider } from './subproviders/fake_gas_estimate_subprovider';
 export { InjectedWeb3Subprovider } from './subproviders/injected_web3';

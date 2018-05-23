@@ -60,6 +60,7 @@ interface OrderStateByOrderHash {
     [orderHash: string]: OrderState;
 }
 
+// tslint:disable-next-line:custom-no-magic-numbers
 const DEFAULT_CLEANUP_JOB_INTERVAL_MS = 1000 * 60 * 60; // 1h
 
 /**
@@ -130,7 +131,8 @@ export class OrderWatcher {
         assert.isValidSignature(orderHash, signedOrder.ecSignature, signedOrder.maker);
         this._orderByOrderHash[orderHash] = signedOrder;
         this._addToDependentOrderHashes(signedOrder, orderHash);
-        const expirationUnixTimestampMs = signedOrder.expirationUnixTimestampSec.times(1000);
+        const milisecondsInASecond = 1000;
+        const expirationUnixTimestampMs = signedOrder.expirationUnixTimestampSec.times(milisecondsInASecond);
         this._expirationWatcher.addOrder(orderHash, expirationUnixTimestampMs);
     }
     /**

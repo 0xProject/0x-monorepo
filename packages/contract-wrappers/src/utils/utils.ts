@@ -5,7 +5,8 @@ export const utils = {
         return new Error(`Unexpected switch value: ${value} encountered for ${name}`);
     },
     getCurrentUnixTimestampSec(): BigNumber {
-        return new BigNumber(Date.now() / 1000).round();
+        const milisecondsInSecond = 1000;
+        return new BigNumber(Date.now() / milisecondsInSecond).round();
     },
     getCurrentUnixTimestampMs(): BigNumber {
         return new BigNumber(Date.now());
