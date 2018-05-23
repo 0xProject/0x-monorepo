@@ -32,9 +32,7 @@ const SEPARATOR = ',';
         .help().argv;
     const contracts = _.isUndefined(argv.contracts)
         ? undefined
-        : argv.contracts === DEFAULT_CONTRACTS_LIST
-            ? DEFAULT_CONTRACTS_LIST
-            : argv.contracts.split(SEPARATOR);
+        : argv.contracts === DEFAULT_CONTRACTS_LIST ? DEFAULT_CONTRACTS_LIST : argv.contracts.split(SEPARATOR);
     const opts: CompilerOptions = {
         contractsDir: argv.contractsDir,
         artifactsDir: argv.artifactsDir,
