@@ -18,7 +18,11 @@
 
 pragma solidity ^0.4.24;
 
-contract LibBytes {
+import "../LibMem/LibMem.sol";
+
+contract LibBytes is
+    LibMem
+{
 
     // Revert reasons
     string constant GTE_20_LENGTH_REQUIRED = "Length must be greater than or equal to 20.";
@@ -62,7 +66,8 @@ contract LibBytes {
     /// @return address from byte array.
     function readAddress(
         bytes memory b,
-        uint256 index)
+        uint256 index
+    )
         internal
         pure
         returns (address result)
@@ -70,7 +75,7 @@ contract LibBytes {
         require(
             b.length >= index + 20,  // 20 is length of address
             GTE_20_LENGTH_REQUIRED
-        ); 
+        );
 
         // Add offset to index:
         // 1. Arrays are prefixed by 32-byte length parameter (add 32 to index)
@@ -94,14 +99,15 @@ contract LibBytes {
     function writeAddress(
         bytes memory b,
         uint256 index,
-        address input)
+        address input
+    )
         internal
         pure
     {
         require(
             b.length >= index + 20,  // 20 is length of address
             GTE_20_LENGTH_REQUIRED
-        ); 
+        );
 
         // Add offset to index:
         // 1. Arrays are prefixed by 32-byte length parameter (add 32 to index)
@@ -131,7 +137,8 @@ contract LibBytes {
     /// @return bytes32 value from byte array.
     function readBytes32(
         bytes memory b,
-        uint256 index)
+        uint256 index
+    )
         internal
         pure
         returns (bytes32 result)
@@ -158,7 +165,8 @@ contract LibBytes {
     function writeBytes32(
         bytes memory b,
         uint256 index,
-        bytes32 input)
+        bytes32 input
+    )
         internal
         pure
     {
@@ -182,7 +190,8 @@ contract LibBytes {
     /// @return uint256 value from byte array.
     function readUint256(
         bytes memory b,
-        uint256 index)
+        uint256 index
+    )
         internal
         pure
         returns (uint256 result)
@@ -197,10 +206,74 @@ contract LibBytes {
     function writeUint256(
         bytes memory b,
         uint256 index,
-        uint256 input)
+        uint256 input
+    )
         internal
         pure
     {
         writeBytes32(b, index, bytes32(input));
+    }
+
+    /// @dev Reads a uint256 value from a position in a byte array.
+    /// @param b Byte array containing a uint256 value.
+    /// @param index Index in byte array of uint256 value.
+    /// @return uint256 value from byte array.
+    function readBytes(
+        bytes memory b,
+        uint256 index
+    )
+        internal
+        pure
+        returns (bytes memory result)
+    {
+        // Read length of nested bytes
+        require(
+            b.length >= index + 32,
+            GTE_32_LENGTH_REQUIRED
+        );
+        uint256 nestedBytesLength = readUint256(b, index);
+
+        // Assert length of <b> is valid, given
+        // length of nested bytes
+        require(
+            b.length >= index + 32 + nestedBytesLength,
+            GTE_32_LENGTH_REQUIRED
+        );
+
+        // Allocate memory and copy value to result
+        result = new bytes(nestedBytesLength);
+        memcpy(
+            getMemAddress(result) + 32,    // +32 skips array length
+            getMemAddress(b) + index + 32, // +32 skips array length
+            nestedBytesLength
+        );
+
+        return result;
+    }
+
+    /// @dev Writes a uint256 into a specific position in a byte array.
+    /// @param b Byte array to insert <input> into.
+    /// @param index Index in byte array of <input>.
+    /// @param input uint256 to put into byte array.
+    function writeBytes(
+        bytes memory b,
+        uint256 index,
+        bytes memory input
+    )
+        internal
+        pure
+    {
+        // Read length of nested bytes
+        require(
+            b.length >= index + 32 /* 32 bytes to store length */ + input.length,
+            GTE_32_LENGTH_REQUIRED
+        );
+
+        // Copy <input> into <b>
+        memcpy(
+            getMemAddress(b) + index,
+            getMemAddress(input),
+            input.length + 32 /* 32 bytes to store length */
+        );
     }
 }

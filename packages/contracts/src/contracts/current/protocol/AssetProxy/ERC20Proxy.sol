@@ -20,12 +20,14 @@ pragma solidity ^0.4.24;
 pragma experimental ABIEncoderV2;
 
 import "../../utils/LibBytes/LibBytes.sol";
+import "../../utils/LibAssetProxyDecoder/LibAssetProxyDecoder.sol";
 import "../../tokens/ERC20Token/IERC20Token.sol";
 import "./MixinAssetProxy.sol";
 import "./MixinAuthorizable.sol";
 
 contract ERC20Proxy is
     LibBytes,
+    LibAssetProxyDecoder,
     MixinAssetProxy,
     MixinAuthorizable
 {
@@ -39,29 +41,28 @@ contract ERC20Proxy is
     string constant PROXY_ID_MISMATCH = "Proxy id in metadata does not match this proxy id.";
 
     /// @dev Internal version of `transferFrom`.
-    /// @param assetMetadata Encoded byte array.
+    /// @param proxyData Encoded byte array.
     /// @param from Address to transfer asset from.
     /// @param to Address to transfer asset to.
     /// @param amount Amount of asset to transfer.
     function transferFromInternal(
-        bytes memory assetMetadata,
+        bytes memory proxyData,
         address from,
         address to,
         uint256 amount)
         internal
     {
+        // Decode proxy data.
+        (
+            uint8 proxyId,
+            address token
+        ) = decodeERC20Data(proxyData);
+
         // Data must be intended for this proxy.
         require(
-            uint8(assetMetadata[0]) == PROXY_ID,
+            proxyId == PROXY_ID,
             PROXY_ID_MISMATCH
         );
-
-        // Decode metadata.
-        require(
-            assetMetadata.length == 21,
-            INVALID_METADATA_LENGTH
-        );
-        address token = readAddress(assetMetadata, 1);
 
         // Transfer tokens.
         bool success = IERC20Token(token).transferFrom(from, to, amount);
