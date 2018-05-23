@@ -533,6 +533,9 @@ describe('Exchange core', () => {
                 }),
                 constants.AWAIT_TRANSACTION_MINED_MS,
             );
+            // HACK: `rejectWith` returns a "promise-like" type, but not an actual "Promise", so TSLint
+            // complains, even though we do need to `await` it. So we disable the TSLint error below.
+            // tslint:disable-next-line:await-promise
             await expect(exchangeWrapper.fillOrderAsync(signedOrder, takerAddress)).to.be.rejectedWith(
                 constants.REVERT,
             );
@@ -551,6 +554,9 @@ describe('Exchange core', () => {
                 }),
                 constants.AWAIT_TRANSACTION_MINED_MS,
             );
+            // HACK: `rejectWith` returns a "promise-like" type, but not an actual "Promise", so TSLint
+            // complains, even though we do need to `await` it. So we disable the TSLint error below.
+            // tslint:disable-next-line:await-promise
             await expect(exchangeWrapper.fillOrderAsync(signedOrder, takerAddress)).to.be.rejectedWith(
                 constants.REVERT,
             );
