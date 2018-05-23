@@ -399,7 +399,7 @@ export class Web3Wrapper {
     ): Promise<TransactionReceiptWithDecodedLogs> {
         const receipt = await this.awaitTransactionMinedAsync(txHash, pollingIntervalMs, timeoutMs);
         if (receipt.status !== 1) {
-            throw new Error('Transaction failed (transaction receipt did not have a status of 1)');
+            throw new Error(`Transaction failed: ${txHash}`);
         }
         return receipt;
     }
