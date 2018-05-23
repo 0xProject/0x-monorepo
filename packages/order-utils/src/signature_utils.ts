@@ -99,7 +99,7 @@ function parseSignatureHexAsVRS(signatureHex: string): ECSignature {
     // HACK: Sometimes v is returned as [0, 1] and sometimes as [27, 28]
     // If it is returned as [0, 1], add 27 to both so it becomes [27, 28]
     const lowestValidV = 27;
-    const isProperlyFormattedV = v < lowestValidV;
+    const isProperlyFormattedV = v >= lowestValidV;
     if (!isProperlyFormattedV) {
         v += lowestValidV;
     }

@@ -1,7 +1,8 @@
-import { ZeroEx } from '0x.js';
+import { generatePseudoRandomSalt } from '@0xproject/order-utils';
 import { BigNumber } from '@0xproject/utils';
 import * as _ from 'lodash';
 
+import { constants } from './constants';
 import { orderUtils } from './order_utils';
 import { signingUtils } from './signing_utils';
 import { SignatureType, SignedOrder, UnsignedOrder } from './types';
@@ -19,10 +20,10 @@ export class OrderFactory {
     ): SignedOrder {
         const randomExpiration = new BigNumber(Math.floor((Date.now() + Math.random() * 100000000000) / 1000));
         const order = ({
-            senderAddress: ZeroEx.NULL_ADDRESS,
+            senderAddress: constants.NULL_ADDRESS,
             expirationTimeSeconds: randomExpiration,
-            salt: ZeroEx.generatePseudoRandomSalt(),
-            takerAddress: ZeroEx.NULL_ADDRESS,
+            salt: generatePseudoRandomSalt(),
+            takerAddress: constants.NULL_ADDRESS,
             ...this._defaultOrderParams,
             ...customOrderParams,
         } as any) as UnsignedOrder;

@@ -1,4 +1,3 @@
-import { ZeroEx } from '0x.js';
 import { BlockchainLifecycle, devConstants, web3Factory } from '@0xproject/dev-utils';
 import { BigNumber, NULL_BYTES } from '@0xproject/utils';
 import { Web3Wrapper } from '@0xproject/web3-wrapper';
@@ -66,7 +65,7 @@ describe('TokenRegistry', () => {
     };
 
     const nullToken = {
-        address: ZeroEx.NULL_ADDRESS,
+        address: constants.NULL_ADDRESS,
         name: '',
         symbol: '',
         decimals: 0,

@@ -1,6 +1,6 @@
-import { ZeroEx } from '0x.js';
 import { Styles } from '@0xproject/react-shared';
 import { BigNumber, logUtils } from '@0xproject/utils';
+import { Web3Wrapper } from '@0xproject/web3-wrapper';
 import * as _ from 'lodash';
 import FlatButton from 'material-ui/FlatButton';
 import { ListItem } from 'material-ui/List';
@@ -82,7 +82,10 @@ export class WrapEtherItem extends React.Component<WrapEtherItemProps, WrapEther
         };
     }
     public render(): React.ReactNode {
-        const etherBalanceInEth = ZeroEx.toUnitAmount(this.props.userEtherBalanceInWei, constants.DECIMAL_PLACES_ETH);
+        const etherBalanceInEth = Web3Wrapper.toUnitAmount(
+            this.props.userEtherBalanceInWei,
+            constants.DECIMAL_PLACES_ETH,
+        );
         const isWrappingEth = this.props.direction === Side.Deposit;
         const topLabelText = isWrappingEth ? 'Convert ETH into WETH 1:1' : 'Convert WETH into ETH 1:1';
         return (
@@ -184,11 +187,11 @@ export class WrapEtherItem extends React.Component<WrapEtherItemProps, WrapEther
             const amountToConvert = this.state.currentInputAmount;
             if (this.props.direction === Side.Deposit) {
                 await this.props.blockchain.convertEthToWrappedEthTokensAsync(etherToken.address, amountToConvert);
-                const ethAmount = ZeroEx.toUnitAmount(amountToConvert, constants.DECIMAL_PLACES_ETH);
+                const ethAmount = Web3Wrapper.toUnitAmount(amountToConvert, constants.DECIMAL_PLACES_ETH);
                 this.props.dispatcher.showFlashMessage(`Successfully wrapped ${ethAmount.toString()} ETH to WETH`);
             } else {
                 await this.props.blockchain.convertWrappedEthTokensToEthAsync(etherToken.address, amountToConvert);
-                const tokenAmount = ZeroEx.toUnitAmount(amountToConvert, etherToken.decimals);
+                const tokenAmount = Web3Wrapper.toUnitAmount(amountToConvert, etherToken.decimals);
                 this.props.dispatcher.showFlashMessage(`Successfully unwrapped ${tokenAmount.toString()} WETH to ETH`);
             }
             await this.props.refetchEthTokenStateAsync();

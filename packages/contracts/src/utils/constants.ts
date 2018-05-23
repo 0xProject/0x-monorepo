@@ -1,5 +1,5 @@
-import { ZeroEx } from '0x.js';
 import { BigNumber } from '@0xproject/utils';
+import { Web3Wrapper } from '@0xproject/web3-wrapper';
 import * as ethUtil from 'ethereumjs-util';
 import * as _ from 'lodash';
 
@@ -31,13 +31,14 @@ export const constants = {
     NUM_DUMMY_ERC20_TO_DEPLOY: 3,
     NUM_DUMMY_ERC721_TO_DEPLOY: 1,
     NUM_ERC721_TOKENS_TO_MINT: 2,
+    NULL_ADDRESS: '0x0000000000000000000000000000000000000000',
     TESTRPC_PRIVATE_KEYS: _.map(TESTRPC_PRIVATE_KEYS_STRINGS, privateKeyString => ethUtil.toBuffer(privateKeyString)),
-    INITIAL_ERC20_BALANCE: ZeroEx.toBaseUnitAmount(new BigNumber(10000), 18),
-    INITIAL_ERC20_ALLOWANCE: ZeroEx.toBaseUnitAmount(new BigNumber(10000), 18),
+    INITIAL_ERC20_BALANCE: Web3Wrapper.toBaseUnitAmount(new BigNumber(10000), 18),
+    INITIAL_ERC20_ALLOWANCE: Web3Wrapper.toBaseUnitAmount(new BigNumber(10000), 18),
     STATIC_ORDER_PARAMS: {
-        makerAssetAmount: ZeroEx.toBaseUnitAmount(new BigNumber(100), 18),
-        takerAssetAmount: ZeroEx.toBaseUnitAmount(new BigNumber(200), 18),
-        makerFee: ZeroEx.toBaseUnitAmount(new BigNumber(1), 18),
-        takerFee: ZeroEx.toBaseUnitAmount(new BigNumber(1), 18),
+        makerAssetAmount: Web3Wrapper.toBaseUnitAmount(new BigNumber(100), 18),
+        takerAssetAmount: Web3Wrapper.toBaseUnitAmount(new BigNumber(200), 18),
+        makerFee: Web3Wrapper.toBaseUnitAmount(new BigNumber(1), 18),
+        takerFee: Web3Wrapper.toBaseUnitAmount(new BigNumber(1), 18),
     },
 };

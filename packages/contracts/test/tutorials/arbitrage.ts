@@ -38,7 +38,7 @@
 //     let amountGive: BigNumber;
 //     let makerTokenAmount: BigNumber;
 //     let takerTokenAmount: BigNumber;
-//     const feeRecipient = ZeroEx.NULL_ADDRESS;
+//     const feeRecipient = constants.NULL_ADDRESS;
 //     const INITIAL_BALANCE = ZeroEx.toBaseUnitAmount(new BigNumber(10000), 18);
 //     const INITIAL_ALLOWANCE = ZeroEx.toBaseUnitAmount(new BigNumber(10000), 18);
 
@@ -115,7 +115,7 @@
 //             exchangeContractAddress: exchange.address,
 //             networkId: constants.TESTRPC_NETWORK_ID,
 //         });
-//         exWrapper = new ExchangeWrapper(exchange, zeroEx);
+//         exWrapper = new ExchangeWrapper(exchange, provider);
 
 //         makerTokenAmount = ZeroEx.toBaseUnitAmount(new BigNumber(1), 18);
 //         takerTokenAmount = makerTokenAmount;

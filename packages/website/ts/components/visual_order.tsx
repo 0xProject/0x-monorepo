@@ -1,4 +1,4 @@
-import { ZeroEx } from '0x.js';
+import { Web3Wrapper } from '@0xproject/web3-wrapper';
 import * as _ from 'lodash';
 import * as React from 'react';
 import { Party } from 'ts/components/ui/party';
@@ -63,7 +63,7 @@ export class VisualOrder extends React.Component<VisualOrderProps, VisualOrderSt
         );
     }
     private _renderAmount(assetToken: AssetToken, token: Token): React.ReactNode {
-        const unitAmount = ZeroEx.toUnitAmount(assetToken.amount, token.decimals);
+        const unitAmount = Web3Wrapper.toUnitAmount(assetToken.amount, token.decimals);
         return (
             <div style={{ fontSize: 13 }}>
                 {unitAmount.toNumber().toFixed(configs.AMOUNT_DISPLAY_PRECSION)} {token.symbol}
