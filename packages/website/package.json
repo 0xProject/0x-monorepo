@@ -21,6 +21,7 @@
         "@0xproject/react-docs": "^0.0.12",
         "@0xproject/react-shared": "^0.1.7",
         "@0xproject/subproviders": "^0.10.2",
+        "@0xproject/contract-wrappers": "^0.0.2",
         "@0xproject/typescript-typings": "^0.3.2",
         "@0xproject/utils": "^0.6.2",
         "@0xproject/web3-wrapper": "^0.6.4",
