@@ -125,13 +125,15 @@ export class CoverageManager {
     }
     private static _getContractDataIfExists(contractsData: ContractData[], bytecode: string): ContractData | undefined {
         if (!bytecode.startsWith('0x')) {
-            throw new Error('0x missing');
+            throw new Error(`0x hex prefix missing: ${bytecode}`);
         }
         const contractData = _.find(contractsData, contractDataCandidate => {
             const bytecodeRegex = CoverageManager._bytecodeToBytecodeRegex(contractDataCandidate.bytecode);
             const runtimeBytecodeRegex = CoverageManager._bytecodeToBytecodeRegex(
                 contractDataCandidate.runtimeBytecode,
             );
+            // We use that function to find by bytecode or runtimeBytecode. Those are quasi-random strings so
+            // collisions are practically impossible and it allows us to reuse that code
             return !_.isNull(bytecode.match(bytecodeRegex)) || !_.isNull(bytecode.match(runtimeBytecodeRegex));
         });
         return contractData;

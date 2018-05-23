@@ -31,13 +31,13 @@ export class CoverageSubprovider extends Subprovider {
      * Instantiates a CoverageSubprovider instance
      * @param artifactAdapter Adapter for used artifacts format (0x, truffle, giveth, etc.)
      * @param defaultFromAddress default from address to use when sending transactions
-     * @param verbose If true, we will log any unknown transactions. Otherwise we will ignore them
+     * @param isVerbose If true, we will log any unknown transactions. Otherwise we will ignore them
      */
-    constructor(artifactAdapter: AbstractArtifactAdapter, defaultFromAddress: string, verbose: boolean = true) {
+    constructor(artifactAdapter: AbstractArtifactAdapter, defaultFromAddress: string, isVerbose: boolean = true) {
         super();
         this._lock = new Lock();
         this._defaultFromAddress = defaultFromAddress;
-        this._coverageManager = new CoverageManager(artifactAdapter, this._getContractCodeAsync.bind(this), verbose);
+        this._coverageManager = new CoverageManager(artifactAdapter, this._getContractCodeAsync.bind(this), isVerbose);
     }
     /**
      * Write the test coverage results to a file in Istanbul format.
@@ -120,11 +120,12 @@ export class CoverageSubprovider extends Subprovider {
             method: 'debug_traceTransaction',
             params: [txHash, { disableMemory: true, disableStack: false, disableStorage: true }],
         };
-        const jsonRPCResponsePayload = await this.emitPayloadAsync(payload);
+        let jsonRPCResponsePayload = await this.emitPayloadAsync(payload);
         const trace: TransactionTrace = jsonRPCResponsePayload.result;
+        const tracesByContractAddress = getTracesByContractAddress(trace.structLogs, address);
+        const subcallAddresses = _.keys(tracesByContractAddress);
         if (address === constants.NEW_CONTRACT) {
-            const tracesByContractAddress = getTracesByContractAddress(trace.structLogs, address);
-            for (const subcallAddress of _.keys(tracesByContractAddress)) {
+            for (const subcallAddress of subcallAddresses) {
                 let traceInfo: TraceInfoNewContract | TraceInfoExistingContract;
                 if (subcallAddress === 'NEW_CONTRACT') {
                     const traceForThatSubcall = tracesByContractAddress[subcallAddress];
@@ -132,12 +133,13 @@ export class CoverageSubprovider extends Subprovider {
                     traceInfo = {
                         coveredPcs,
                         txHash,
-                        address: address as 'NEW_CONTRACT',
+                        address: constants.NEW_CONTRACT,
                         bytecode: data as string,
                     };
                 } else {
                     payload = { method: 'eth_getCode', params: [subcallAddress, BlockParamLiteral.Latest] };
-                    const runtimeBytecode = (await this.emitPayloadAsync(payload)).result;
+                    jsonRPCResponsePayload = await this.emitPayloadAsync(payload);
+                    const runtimeBytecode = jsonRPCResponsePayload.result;
                     const traceForThatSubcall = tracesByContractAddress[subcallAddress];
                     const coveredPcs = _.map(traceForThatSubcall, log => log.pc);
                     traceInfo = {
@@ -150,10 +152,10 @@ export class CoverageSubprovider extends Subprovider {
                 this._coverageManager.appendTraceInfo(traceInfo);
             }
         } else {
-            const tracesByContractAddress = getTracesByContractAddress(trace.structLogs, address);
-            for (const subcallAddress of _.keys(tracesByContractAddress)) {
+            for (const subcallAddress of subcallAddresses) {
                 payload = { method: 'eth_getCode', params: [subcallAddress, BlockParamLiteral.Latest] };
-                const runtimeBytecode = (await this.emitPayloadAsync(payload)).result;
+                jsonRPCResponsePayload = await this.emitPayloadAsync(payload);
+                const runtimeBytecode = jsonRPCResponsePayload.result;
                 const traceForThatSubcall = tracesByContractAddress[subcallAddress];
                 const coveredPcs = _.map(traceForThatSubcall, log => log.pc);
                 const traceInfo: TraceInfoExistingContract = {

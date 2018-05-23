@@ -3,7 +3,7 @@
         "version": "0.4.2",
         "changes": [
             {
-                "note": "Pass ZeroExArtifactsAdapter to CoverageSubprovider",
+                "note": "Pass SolCompilerArtifactAdapter to CoverageSubprovider",
                 "pr": 589
             },
             {
