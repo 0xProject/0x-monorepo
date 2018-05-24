@@ -82,18 +82,19 @@ export class Compiler {
      * Instantiates a new instance of the Compiler class.
      * @return An instance of the Compiler class.
      */
-    constructor(opts: CompilerOptions) {
+    constructor(opts?: CompilerOptions) {
         assert.doesConformToSchema('opts', opts, compilerOptionsSchema);
         // TODO: Look for config file in parent directories if not found in current directory
         const config: CompilerOptions = fs.existsSync(CONFIG_FILE)
             ? JSON.parse(fs.readFileSync(CONFIG_FILE).toString())
             : {};
+        const passedOpts = opts || {};
         assert.doesConformToSchema('compiler.json', config, compilerOptionsSchema);
-        this._contractsDir = opts.contractsDir || config.contractsDir || DEFAULT_CONTRACTS_DIR;
-        this._solcVersionIfExists = opts.solcVersion || config.solcVersion;
-        this._compilerSettings = opts.compilerSettings || config.compilerSettings || DEFAULT_COMPILER_SETTINGS;
-        this._artifactsDir = opts.artifactsDir || config.artifactsDir || DEFAULT_ARTIFACTS_DIR;
-        this._specifiedContracts = opts.contracts || config.contracts || ALL_CONTRACTS_IDENTIFIER;
+        this._contractsDir = passedOpts.contractsDir || config.contractsDir || DEFAULT_CONTRACTS_DIR;
+        this._solcVersionIfExists = passedOpts.solcVersion || config.solcVersion;
+        this._compilerSettings = passedOpts.compilerSettings || config.compilerSettings || DEFAULT_COMPILER_SETTINGS;
+        this._artifactsDir = passedOpts.artifactsDir || config.artifactsDir || DEFAULT_ARTIFACTS_DIR;
+        this._specifiedContracts = passedOpts.contracts || config.contracts || ALL_CONTRACTS_IDENTIFIER;
         this._nameResolver = new NameResolver(path.resolve(this._contractsDir));
         const resolver = new FallthroughResolver();
         resolver.appendResolver(new URLResolver());
