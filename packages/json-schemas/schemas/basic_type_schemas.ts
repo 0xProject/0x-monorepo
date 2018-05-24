@@ -7,7 +7,7 @@ export const addressSchema = {
 export const hexSchema = {
     id: '/Hex',
     type: 'string',
-    pattern: '^0x[0-9a-f]',
+    pattern: '^0x([0-9a-f][0-9a-f])*$',
 };
 
 export const numberSchema = {

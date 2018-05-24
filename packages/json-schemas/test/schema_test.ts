@@ -14,6 +14,7 @@ const NULL_ADDRESS = '0x0000000000000000000000000000000000000000';
 const {
     numberSchema,
     addressSchema,
+    hexSchema,
     orderCancellationRequestsSchema,
     orderFillOrKillRequestsSchema,
     orderFillRequestsSchema,
@@ -86,12 +87,12 @@ describe('Schema', () => {
     describe('#hexSchema', () => {
         it('should validate valid hex string', () => {
             const testCases = ['0x8b0292b11a196601ed2ce54b665cafeca0347d42', NULL_ADDRESS];
-            validateAgainstSchema(testCases, addressSchema);
+            validateAgainstSchema(testCases, hexSchema);
         });
         it('should fail for invalid hex string', () => {
             const testCases = ['0x', '0', '0x00', '0xzzzzzzB11a196601eD2ce54B665CaFEca0347D42'];
             const shouldFail = true;
-            validateAgainstSchema(testCases, addressSchema, shouldFail);
+            validateAgainstSchema(testCases, hexSchema, shouldFail);
         });
     });
     describe('#orderHashSchema', () => {
