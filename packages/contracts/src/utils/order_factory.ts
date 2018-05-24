@@ -1,11 +1,12 @@
 import { generatePseudoRandomSalt } from '@0xproject/order-utils';
+import { SignedOrder, UnsignedOrder } from '@0xproject/types';
 import { BigNumber } from '@0xproject/utils';
 import * as _ from 'lodash';
 
 import { constants } from './constants';
 import { orderUtils } from './order_utils';
 import { signingUtils } from './signing_utils';
-import { SignatureType, SignedOrder, UnsignedOrder } from './types';
+import { SignatureType } from './types';
 
 export class OrderFactory {
     private _defaultOrderParams: Partial<UnsignedOrder>;

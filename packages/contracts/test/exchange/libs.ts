@@ -1,5 +1,6 @@
 import { BlockchainLifecycle } from '@0xproject/dev-utils';
 import { BigNumber } from '@0xproject/utils';
+import { SignedOrder } from '@0xproject/types';
 import * as chai from 'chai';
 import ethUtil = require('ethereumjs-util');
 
@@ -11,7 +12,6 @@ import { chaiSetup } from '../../src/utils/chai_setup';
 import { constants } from '../../src/utils/constants';
 import { OrderFactory } from '../../src/utils/order_factory';
 import { orderUtils } from '../../src/utils/order_utils';
-import { SignedOrder } from '../../src/utils/types';
 import { provider, txDefaults, web3Wrapper } from '../../src/utils/web3_wrapper';
 
 chaiSetup.configure();

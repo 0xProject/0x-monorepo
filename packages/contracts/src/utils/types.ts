@@ -1,4 +1,4 @@
-import { AbiDefinition, ContractAbi } from '@0xproject/types';
+import { AbiDefinition, ContractAbi, Order } from '@0xproject/types';
 import { BigNumber } from '@0xproject/utils';
 
 export interface ERC20BalancesByOwner {
@@ -18,25 +18,25 @@ export interface SubmissionContractEventArgs {
 }
 
 export interface BatchFillOrders {
-    orders: OrderStruct[];
+    orders: Order[];
     signatures: string[];
     takerAssetFillAmounts: BigNumber[];
 }
 
 export interface MarketSellOrders {
-    orders: OrderStruct[];
+    orders: Order[];
     signatures: string[];
     takerAssetFillAmount: BigNumber;
 }
 
 export interface MarketBuyOrders {
-    orders: OrderStruct[];
+    orders: Order[];
     signatures: string[];
     makerAssetFillAmount: BigNumber;
 }
 
 export interface BatchCancelOrders {
-    orders: OrderStruct[];
+    orders: Order[];
 }
 
 export interface CancelOrdersBefore {
@@ -113,29 +113,6 @@ export enum ContractName {
     Authorizable = 'Authorizable',
 }
 
-export interface SignedOrder extends UnsignedOrder {
-    signature: string;
-}
-
-export interface OrderStruct {
-    senderAddress: string;
-    makerAddress: string;
-    takerAddress: string;
-    feeRecipientAddress: string;
-    makerAssetAmount: BigNumber;
-    takerAssetAmount: BigNumber;
-    makerFee: BigNumber;
-    takerFee: BigNumber;
-    expirationTimeSeconds: BigNumber;
-    salt: BigNumber;
-    makerAssetData: string;
-    takerAssetData: string;
-}
-
-export interface UnsignedOrder extends OrderStruct {
-    exchangeAddress: string;
-}
-
 export enum SignatureType {
     Illegal,
     Invalid,
@@ -199,13 +176,13 @@ export interface ProxyData {
 }
 
 export interface CancelOrder {
-    order: OrderStruct;
+    order: Order;
     takerAssetCancelAmount: BigNumber;
 }
 
 export interface MatchOrder {
-    left: OrderStruct;
-    right: OrderStruct;
+    left: Order;
+    right: Order;
     leftSignature: string;
     rightSignature: string;
 }

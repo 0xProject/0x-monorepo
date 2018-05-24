@@ -1,5 +1,5 @@
 import { BlockchainLifecycle } from '@0xproject/dev-utils';
-import { LogWithDecodedArgs } from '@0xproject/types';
+import { LogWithDecodedArgs, SignedOrder } from '@0xproject/types';
 import { BigNumber } from '@0xproject/utils';
 import { Web3Wrapper } from '@0xproject/web3-wrapper';
 import * as chai from 'chai';
@@ -33,7 +33,6 @@ import {
     ERC721TokenIdsByOwner,
     ExchangeStatus,
     OrderInfo,
-    SignedOrder,
 } from '../../src/utils/types';
 import { provider, txDefaults, web3Wrapper } from '../../src/utils/web3_wrapper';
 

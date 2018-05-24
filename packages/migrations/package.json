@@ -10,18 +10,28 @@
     "scripts": {
         "watch": "tsc -w",
         "prebuild": "run-s clean copy_artifacts generate_contract_wrappers",
-        "copy_artifacts": "copyfiles 'artifacts/1.0.0/**/*' ./lib",
+        "copy_artifacts": "copyfiles 'artifacts/**/*' ./lib",
         "build": "tsc",
         "clean": "shx rm -rf lib src/contract_wrappers",
         "lint": "tslint --project .",
-        "migrate": "run-s build compile script:migrate",
-        "script:migrate": "node ./lib/migrate.js",
-        "generate_contract_wrappers": "abi-gen --abis  ${npm_package_config_abis} --template ../contract_templates/contract.handlebars --partials '../contract_templates/partials/**/*.handlebars' --output src/contract_wrappers --backend ethers && prettier --write 'src/contract_wrappers/**.ts'",
+        "migrate:v1": "run-s build compile script:migrate:v1",
+        "migrate:v2": "run-s build compile script:migrate:v2",
+        "script:migrate:v1": "node ./lib/migrate.js --contracts-version 1.0.0",
+        "script:migrate:v2": "node ./lib/migrate.js --contracts-version 2.0.0",
+        "generate_contract_wrappers": "run-p generate_contract_wrappers:*",
+        "generate_contract_wrappers:v1":
+            "abi-gen --abis  ${npm_package_config_abis_v1} --template ../contract_templates/contract.handlebars --partials '../contract_templates/partials/**/*.handlebars' --output src/v1/contract_wrappers --backend ethers && prettier --write 'src/v1/contract_wrappers/**.ts'",
+        "generate_contract_wrappers:v2":
+            "abi-gen --abis  ${npm_package_config_abis_v2} --template ../contract_templates/contract.handlebars --partials '../contract_templates/partials/**/*.handlebars' --output src/v2/contract_wrappers --backend ethers && prettier --write 'src/v2/contract_wrappers/**.ts'",
         "compile": "sol-compiler"
     },
     "config": {
-        "abis":
-            "artifacts/1.0.0/@(DummyERC20Token|TokenTransferProxy_v1|Exchange_v1|TokenRegistry|MultiSigWallet|MultiSigWalletWithTimeLock|MultiSigWalletWithTimeLockExceptRemoveAuthorizedAddress|TokenRegistry|ZRXToken|WETH9).json"
+        "abis": {
+            "v1":
+                "artifacts/1.0.0/@(DummyERC20Token|TokenTransferProxy_v1|Exchange_v1|TokenRegistry|MultiSigWallet|MultiSigWalletWithTimeLock|MultiSigWalletWithTimeLockExceptRemoveAuthorizedAddress|TokenRegistry|ZRXToken|WETH9).json",
+            "v2":
+                "artifacts/2.0.0/@(DummyERC20Token|DummyERC721Token|ERC20Proxy|ERC721Proxy|Exchange|MultiSigWalletWithTimeLockExceptRemoveAuthorizedAddress|ZRXToken|WETH9).json"
+        }
     },
     "license": "Apache-2.0",
     "devDependencies": {
@@ -29,6 +39,8 @@
         "@0xproject/dev-utils": "^0.4.2",
         "@0xproject/tslint-config": "^0.4.18",
         "@0xproject/types": "^0.7.0",
+        "@types/yargs": "^10.0.0",
+        "yargs": "^10.0.3",
         "make-promises-safe": "^1.1.0",
         "npm-run-all": "^4.1.2",
         "shx": "^0.2.2",
