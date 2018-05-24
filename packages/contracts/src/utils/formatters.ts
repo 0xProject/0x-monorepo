@@ -1,5 +1,5 @@
-import { BigNumber } from '@0xproject/utils';
 import { SignedOrder } from '@0xproject/types';
+import { BigNumber } from '@0xproject/utils';
 import * as _ from 'lodash';
 
 import { orderUtils } from './order_utils';
