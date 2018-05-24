@@ -13,6 +13,7 @@ import {
     Providers,
     ScreenWidths,
     Side,
+    ProviderType,
     SideToAssetToken,
     Token,
     TokenByAddress,
@@ -312,6 +313,9 @@ export const utils = {
     },
     isStaging(): boolean {
         return _.includes(window.location.href, configs.DOMAIN_STAGING);
+    },
+    isExternallyInjected(providerType: ProviderType, injectedProviderName: string): boolean {
+        return providerType === ProviderType.Injected && injectedProviderName !== constants.PROVIDER_NAME_PUBLIC;
     },
     isDogfood,
     shouldShowPortalV2(): boolean {

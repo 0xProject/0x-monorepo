@@ -39,8 +39,7 @@ const styles: Styles = {
 export class ProviderDisplay extends React.Component<ProviderDisplayProps, ProviderDisplayState> {
     public render(): React.ReactNode {
         const isAddressAvailable = !_.isEmpty(this.props.userAddress);
-        const isExternallyInjectedProvider =
-            this.props.providerType === ProviderType.Injected && this.props.injectedProviderName !== '0x Public';
+        const isExternallyInjectedProvider = utils.isExternallyInjected(this.props.providerType, this.props.injectedProviderName);
         const displayAddress = isAddressAvailable
             ? utils.getAddressBeginAndEnd(this.props.userAddress)
             : isExternallyInjectedProvider
@@ -69,15 +68,13 @@ export class ProviderDisplay extends React.Component<ProviderDisplayProps, Provi
                 )}
             </div>
         );
-        const hasInjectedProvider =
-            this.props.injectedProviderName !== '0x Public' && this.props.providerType === ProviderType.Injected;
         const hasLedgerProvider = this.props.providerType === ProviderType.Ledger;
-        const horizontalPosition = hasInjectedProvider || hasLedgerProvider ? 'left' : 'middle';
+        const horizontalPosition = isExternallyInjectedProvider || hasLedgerProvider ? 'left' : 'middle';
         return (
             <div style={{ width: 'fit-content', height: 48, float: 'right' }}>
                 <DropDown
                     hoverActiveNode={hoverActiveNode}
-                    popoverContent={this.renderPopoverContent(hasInjectedProvider, hasLedgerProvider)}
+                    popoverContent={this.renderPopoverContent(isExternallyInjectedProvider, hasLedgerProvider)}
                     anchorOrigin={{ horizontal: horizontalPosition, vertical: 'bottom' }}
                     targetOrigin={{ horizontal: horizontalPosition, vertical: 'top' }}
                     zDepth={1}
