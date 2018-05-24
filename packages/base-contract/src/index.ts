@@ -79,8 +79,13 @@ export class BaseContract {
             // Awaiting https://github.com/Microsoft/TypeScript/pull/13288 to be merged
         } as any;
         if (_.isUndefined(txDataWithDefaults.gas) && !_.isUndefined(estimateGasAsync)) {
+            // TODO(albrow): Move this code into a subprovider which we only
+            // use for Geth.
             const estimatedGas = await estimateGasAsync(txData);
-            txDataWithDefaults.gas = estimatedGas;
+            // console.log(`original estimate: ${estimatedGas}`);
+            const buffered = Math.ceil(estimatedGas * 1.1);
+            // console.log(`buffered estimate: ${buffered}`);
+            txDataWithDefaults.gas = buffered;
         }
         return txDataWithDefaults;
     }

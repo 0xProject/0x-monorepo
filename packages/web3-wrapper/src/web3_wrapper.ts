@@ -258,7 +258,8 @@ export class Web3Wrapper {
      * @param timeDelta Amount of time to add in seconds
      */
     public async increaseTimeAsync(timeDelta: number): Promise<void> {
-        await this._sendRawPayloadAsync<string>({ method: 'evm_increaseTime', params: [timeDelta] });
+        // TODO(albrow): Detect Geth vs. Ganache and use appropriate endpoint.
+        await this._sendRawPayloadAsync<string>({ method: 'debug_increaseTime', params: [timeDelta] });
     }
     /**
      * Retrieve smart contract logs for a given filter

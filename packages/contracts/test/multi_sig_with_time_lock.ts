@@ -148,14 +148,23 @@ describe('MultiSigWalletWithTimeLock', () => {
                 txId = log.args.transactionId;
                 await multiSigWrapper.confirmTransactionAsync(txId, owners[1]);
             });
+
             it('should throw if it has enough confirmations but is not past the time lock', async () => {
                 return expectRevertOrAlwaysFailingTransaction(
                     multiSig.executeTransaction.sendTransactionAsync(txId, { from: owners[0] }),
                 );
             });
 
+            // TODO(albrow): increaseTimeAsync not supported
             it('should execute if it has enough confirmations and is past the time lock', async () => {
                 await web3Wrapper.increaseTimeAsync(SECONDS_TIME_LOCKED.toNumber());
+                // Note: we need to send a transaction after increasing time so
+                // that a block is actually mined. The contract looks at the
+                // last mined block for the timestamp.
+                await web3Wrapper.awaitTransactionSuccessAsync(
+                    await web3Wrapper.sendTransactionAsync({ from: owners[0], to: owners[1], value: 1 }),
+                    constants.AWAIT_TRANSACTION_MINED_MS,
+                );
                 await web3Wrapper.awaitTransactionSuccessAsync(
                     await multiSig.executeTransaction.sendTransactionAsync(txId, { from: owners[0] }),
                     constants.AWAIT_TRANSACTION_MINED_MS,
