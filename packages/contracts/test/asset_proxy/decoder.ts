@@ -7,7 +7,7 @@ import * as chai from 'chai';
 import ethUtil = require('ethereumjs-util');
 import * as Web3 from 'web3';
 
-import { TestLibMemContract } from '../../src/contract_wrappers/generated/test_lib_mem';
+import { TestLibAssetProxyDecoderContract } from '../../src/contract_wrappers/generated/test_lib_asset_proxy_decoder';
 import { artifacts } from '../../src/utils/artifacts';
 import { chaiSetup } from '../../src/utils/chai_setup';
 import { constants } from '../../src/utils/constants';
@@ -18,16 +18,20 @@ chaiSetup.configure();
 const expect = chai.expect;
 const blockchainLifecycle = new BlockchainLifecycle(web3Wrapper);
 
-describe('LibMem', () => {
+describe.only('AssetProxyDecoder', () => {
     let owner: string;
-    let testLibMem: TestLibMemContract;
+    let testAssetProxyDecoder: TestLibAssetProxyDecoderContract;
 
     before(async () => {
         // Setup accounts & addresses
         const accounts = await web3Wrapper.getAvailableAddressesAsync();
         owner = accounts[0];
         // Deploy TestLibMem
-        testLibMem = await TestLibMemContract.deployFrom0xArtifactAsync(artifacts.TestLibMem, provider, txDefaults);
+        testAssetProxyDecoder = await TestLibAssetProxyDecoderContract.deployFrom0xArtifactAsync(
+            artifacts.TestLibAssetProxyDecoder,
+            provider,
+            txDefaults,
+        );
     });
     beforeEach(async () => {
         await blockchainLifecycle.startAsync();
@@ -36,9 +40,9 @@ describe('LibMem', () => {
         await blockchainLifecycle.revertAsync();
     });
 
-    describe('LibMem', () => {
-        it('should )', async () => {
-            await testLibMem.test1.sendTransactionAsync();
+    describe('LibAssetProxyDecoder', () => {
+        /*it('should )', async () => {
+            await testAssetProxyDecoder.test1.sendTransactionAsync();
         });
 
         it('should )', async () => {
@@ -63,6 +67,6 @@ describe('LibMem', () => {
 
         it('should )', async () => {
             return expect(testLibMem.test7.sendTransactionAsync()).to.be.rejectedWith(constants.REVERT);
-        });
+        });*/
     });
 });
