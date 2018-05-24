@@ -46,7 +46,7 @@ describe('UnlimitedAllowanceToken', () => {
             constants.DUMMY_TOKEN_DECIMALS,
             constants.DUMMY_TOKEN_TOTAL_SUPPLY,
         );
-        await web3Wrapper.awaitTransactionMinedAsync(
+        await web3Wrapper.awaitTransactionSuccessAsync(
             await token.mint.sendTransactionAsync(MAX_MINT_VALUE, { from: owner }),
             constants.AWAIT_TRANSACTION_MINED_MS,
         );

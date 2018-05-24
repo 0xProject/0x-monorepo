@@ -542,7 +542,7 @@ describe('TokenWrapper', () => {
         });
         it('should get logs with decoded args emitted by Approval', async () => {
             txHash = await contractWrappers.token.setUnlimitedProxyAllowanceAsync(tokenAddress, coinbase);
-            await web3Wrapper.awaitTransactionMinedAsync(txHash);
+            await web3Wrapper.awaitTransactionSuccessAsync(txHash);
             const eventName = TokenEvents.Approval;
             const indexFilterValues = {};
             const logs = await contractWrappers.token.getLogsAsync<ApprovalContractEventArgs>(
@@ -560,7 +560,7 @@ describe('TokenWrapper', () => {
         });
         it('should only get the logs with the correct event name', async () => {
             txHash = await contractWrappers.token.setUnlimitedProxyAllowanceAsync(tokenAddress, coinbase);
-            await web3Wrapper.awaitTransactionMinedAsync(txHash);
+            await web3Wrapper.awaitTransactionSuccessAsync(txHash);
             const differentEventName = TokenEvents.Transfer;
             const indexFilterValues = {};
             const logs = await contractWrappers.token.getLogsAsync(
@@ -573,9 +573,9 @@ describe('TokenWrapper', () => {
         });
         it('should only get the logs with the correct indexed fields', async () => {
             txHash = await contractWrappers.token.setUnlimitedProxyAllowanceAsync(tokenAddress, coinbase);
-            await web3Wrapper.awaitTransactionMinedAsync(txHash);
+            await web3Wrapper.awaitTransactionSuccessAsync(txHash);
             txHash = await contractWrappers.token.setUnlimitedProxyAllowanceAsync(tokenAddress, addressWithoutFunds);
-            await web3Wrapper.awaitTransactionMinedAsync(txHash);
+            await web3Wrapper.awaitTransactionSuccessAsync(txHash);
             const eventName = TokenEvents.Approval;
             const indexFilterValues = {
                 _owner: coinbase,

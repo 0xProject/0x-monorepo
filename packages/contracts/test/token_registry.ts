@@ -142,7 +142,7 @@ describe('TokenRegistry', () => {
             });
 
             it('should change the token name when called by owner', async () => {
-                await web3Wrapper.awaitTransactionMinedAsync(
+                await web3Wrapper.awaitTransactionSuccessAsync(
                     await tokenReg.setTokenName.sendTransactionAsync(token1.address, token2.name, {
                         from: owner,
                     }),
@@ -184,7 +184,7 @@ describe('TokenRegistry', () => {
             });
 
             it('should change the token symbol when called by owner', async () => {
-                await web3Wrapper.awaitTransactionMinedAsync(
+                await web3Wrapper.awaitTransactionSuccessAsync(
                     await tokenReg.setTokenSymbol.sendTransactionAsync(token1.address, token2.symbol, { from: owner }),
                     constants.AWAIT_TRANSACTION_MINED_MS,
                 );
@@ -228,7 +228,7 @@ describe('TokenRegistry', () => {
 
             it('should remove token metadata when called by owner', async () => {
                 const index = new BigNumber(0);
-                await web3Wrapper.awaitTransactionMinedAsync(
+                await web3Wrapper.awaitTransactionSuccessAsync(
                     await tokenReg.removeToken.sendTransactionAsync(token1.address, index, {
                         from: owner,
                     }),

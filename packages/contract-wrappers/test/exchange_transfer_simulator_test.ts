@@ -60,7 +60,7 @@ describe('ExchangeTransferSimulator', () => {
         });
         it("throws if the user doesn't have enough balance", async () => {
             txHash = await contractWrappers.token.setProxyAllowanceAsync(exampleTokenAddress, sender, transferAmount);
-            await web3Wrapper.awaitTransactionMinedAsync(txHash);
+            await web3Wrapper.awaitTransactionSuccessAsync(txHash);
             return expect(
                 exchangeTransferSimulator.transferFromAsync(
                     exampleTokenAddress,
@@ -74,9 +74,9 @@ describe('ExchangeTransferSimulator', () => {
         });
         it('updates balances and proxyAllowance after transfer', async () => {
             txHash = await contractWrappers.token.transferAsync(exampleTokenAddress, coinbase, sender, transferAmount);
-            await web3Wrapper.awaitTransactionMinedAsync(txHash);
+            await web3Wrapper.awaitTransactionSuccessAsync(txHash);
             txHash = await contractWrappers.token.setProxyAllowanceAsync(exampleTokenAddress, sender, transferAmount);
-            await web3Wrapper.awaitTransactionMinedAsync(txHash);
+            await web3Wrapper.awaitTransactionSuccessAsync(txHash);
             await exchangeTransferSimulator.transferFromAsync(
                 exampleTokenAddress,
                 sender,
@@ -95,9 +95,9 @@ describe('ExchangeTransferSimulator', () => {
         });
         it("doesn't update proxyAllowance after transfer if unlimited", async () => {
             txHash = await contractWrappers.token.transferAsync(exampleTokenAddress, coinbase, sender, transferAmount);
-            await web3Wrapper.awaitTransactionMinedAsync(txHash);
+            await web3Wrapper.awaitTransactionSuccessAsync(txHash);
             txHash = await contractWrappers.token.setUnlimitedProxyAllowanceAsync(exampleTokenAddress, sender);
-            await web3Wrapper.awaitTransactionMinedAsync(txHash);
+            await web3Wrapper.awaitTransactionSuccessAsync(txHash);
             await exchangeTransferSimulator.transferFromAsync(
                 exampleTokenAddress,
                 sender,

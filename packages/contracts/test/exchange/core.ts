@@ -94,13 +94,13 @@ describe('Exchange core', () => {
         await exchangeWrapper.registerAssetProxyAsync(AssetProxyId.ERC20, erc20Proxy.address, owner);
         await exchangeWrapper.registerAssetProxyAsync(AssetProxyId.ERC721, erc721Proxy.address, owner);
 
-        await web3Wrapper.awaitTransactionMinedAsync(
+        await web3Wrapper.awaitTransactionSuccessAsync(
             await erc20Proxy.addAuthorizedAddress.sendTransactionAsync(exchange.address, {
                 from: owner,
             }),
             constants.AWAIT_TRANSACTION_MINED_MS,
         );
-        await web3Wrapper.awaitTransactionMinedAsync(
+        await web3Wrapper.awaitTransactionSuccessAsync(
             await erc721Proxy.addAuthorizedAddress.sendTransactionAsync(exchange.address, {
                 from: owner,
             }),
@@ -527,7 +527,7 @@ describe('Exchange core', () => {
         });
 
         it('should throw if maker allowances are too low to fill order', async () => {
-            await web3Wrapper.awaitTransactionMinedAsync(
+            await web3Wrapper.awaitTransactionSuccessAsync(
                 await erc20TokenA.approve.sendTransactionAsync(erc20Proxy.address, new BigNumber(0), {
                     from: makerAddress,
                 }),
@@ -539,7 +539,7 @@ describe('Exchange core', () => {
             await expect(exchangeWrapper.fillOrderAsync(signedOrder, takerAddress)).to.be.rejectedWith(
                 constants.REVERT,
             );
-            await web3Wrapper.awaitTransactionMinedAsync(
+            await web3Wrapper.awaitTransactionSuccessAsync(
                 await erc20TokenA.approve.sendTransactionAsync(erc20Proxy.address, constants.INITIAL_ERC20_ALLOWANCE, {
                     from: makerAddress,
                 }),
@@ -548,7 +548,7 @@ describe('Exchange core', () => {
         });
 
         it('should throw if taker allowances are too low to fill order', async () => {
-            await web3Wrapper.awaitTransactionMinedAsync(
+            await web3Wrapper.awaitTransactionSuccessAsync(
                 await erc20TokenB.approve.sendTransactionAsync(erc20Proxy.address, new BigNumber(0), {
                     from: takerAddress,
                 }),
@@ -560,7 +560,7 @@ describe('Exchange core', () => {
             await expect(exchangeWrapper.fillOrderAsync(signedOrder, takerAddress)).to.be.rejectedWith(
                 constants.REVERT,
             );
-            await web3Wrapper.awaitTransactionMinedAsync(
+            await web3Wrapper.awaitTransactionSuccessAsync(
                 await erc20TokenB.approve.sendTransactionAsync(erc20Proxy.address, constants.INITIAL_ERC20_ALLOWANCE, {
                     from: takerAddress,
                 }),

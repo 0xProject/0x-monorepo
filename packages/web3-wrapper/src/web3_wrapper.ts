@@ -328,6 +328,10 @@ export class Web3Wrapper {
     }
     /**
      * Waits for a transaction to be mined and returns the transaction receipt.
+     * Note that just because a transaction was mined does not mean it was
+     * successful. You need to check the status code of the transaction receipt
+     * to find out if it was successful, or use the helper method
+     * awaitTransactionSuccessAsync.
      * @param   txHash            Transaction hash
      * @param   pollingIntervalMs How often (in ms) should we check if the transaction is mined.
      * @param   timeoutMs         How long (in ms) to poll for transaction mined until aborting.
@@ -376,6 +380,28 @@ export class Web3Wrapper {
         );
         const txReceipt = await txReceiptPromise;
         return txReceipt;
+    }
+    /**
+     * Waits for a transaction to be mined and returns the transaction receipt.
+     * Unlike awaitTransactionMinedAsync, it will throw if the receipt has a
+     * status that is not equal to 1. A status of 0 or null indicates that the
+     * transaction was mined, but failed. See:
+     * https://github.com/ethereum/wiki/wiki/JavaScript-API#web3ethgettransactionreceipt
+     * @param   txHash            Transaction hash
+     * @param   pollingIntervalMs How often (in ms) should we check if the transaction is mined.
+     * @param   timeoutMs         How long (in ms) to poll for transaction mined until aborting.
+     * @return  Transaction receipt with decoded log args.
+     */
+    public async awaitTransactionSuccessAsync(
+        txHash: string,
+        pollingIntervalMs: number = 1000,
+        timeoutMs?: number,
+    ): Promise<TransactionReceiptWithDecodedLogs> {
+        const receipt = await this.awaitTransactionMinedAsync(txHash, pollingIntervalMs, timeoutMs);
+        if (receipt.status !== 1) {
+            throw new Error(`Transaction failed: ${txHash}`);
+        }
+        return receipt;
     }
     private async _sendRawPayloadAsync<A>(payload: Partial<JSONRPCRequestPayload>): Promise<A> {
         const sendAsync = this._web3.currentProvider.sendAsync.bind(this._web3.currentProvider);

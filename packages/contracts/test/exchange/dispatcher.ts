@@ -61,13 +61,13 @@ describe('AssetProxyDispatcher', () => {
             provider,
             txDefaults,
         );
-        await web3Wrapper.awaitTransactionMinedAsync(
+        await web3Wrapper.awaitTransactionSuccessAsync(
             await erc20Proxy.addAuthorizedAddress.sendTransactionAsync(assetProxyDispatcher.address, {
                 from: owner,
             }),
             constants.AWAIT_TRANSACTION_MINED_MS,
         );
-        await web3Wrapper.awaitTransactionMinedAsync(
+        await web3Wrapper.awaitTransactionSuccessAsync(
             await erc721Proxy.addAuthorizedAddress.sendTransactionAsync(assetProxyDispatcher.address, {
                 from: owner,
             }),
@@ -83,7 +83,7 @@ describe('AssetProxyDispatcher', () => {
     describe('registerAssetProxy', () => {
         it('should record proxy upon registration', async () => {
             const prevProxyAddress = constants.NULL_ADDRESS;
-            await web3Wrapper.awaitTransactionMinedAsync(
+            await web3Wrapper.awaitTransactionSuccessAsync(
                 await assetProxyDispatcher.registerAssetProxy.sendTransactionAsync(
                     AssetProxyId.ERC20,
                     erc20Proxy.address,
@@ -99,7 +99,7 @@ describe('AssetProxyDispatcher', () => {
         it('should be able to record multiple proxies', async () => {
             // Record first proxy
             const prevERC20ProxyAddress = constants.NULL_ADDRESS;
-            await web3Wrapper.awaitTransactionMinedAsync(
+            await web3Wrapper.awaitTransactionSuccessAsync(
                 await assetProxyDispatcher.registerAssetProxy.sendTransactionAsync(
                     AssetProxyId.ERC20,
                     erc20Proxy.address,
@@ -112,7 +112,7 @@ describe('AssetProxyDispatcher', () => {
             expect(proxyAddress).to.be.equal(erc20Proxy.address);
             // Record another proxy
             const prevERC721ProxyAddress = constants.NULL_ADDRESS;
-            await web3Wrapper.awaitTransactionMinedAsync(
+            await web3Wrapper.awaitTransactionSuccessAsync(
                 await assetProxyDispatcher.registerAssetProxy.sendTransactionAsync(
                     AssetProxyId.ERC721,
                     erc721Proxy.address,
@@ -128,7 +128,7 @@ describe('AssetProxyDispatcher', () => {
         it('should replace proxy address upon re-registration', async () => {
             // Initial registration
             const prevProxyAddress = constants.NULL_ADDRESS;
-            await web3Wrapper.awaitTransactionMinedAsync(
+            await web3Wrapper.awaitTransactionSuccessAsync(
                 await assetProxyDispatcher.registerAssetProxy.sendTransactionAsync(
                     AssetProxyId.ERC20,
                     erc20Proxy.address,
@@ -148,7 +148,7 @@ describe('AssetProxyDispatcher', () => {
             // Register new ERC20 Transfer Proxy contract
             const newAddress = newErc20TransferProxy.address;
             const currentAddress = erc20Proxy.address;
-            await web3Wrapper.awaitTransactionMinedAsync(
+            await web3Wrapper.awaitTransactionSuccessAsync(
                 await assetProxyDispatcher.registerAssetProxy.sendTransactionAsync(
                     AssetProxyId.ERC20,
                     newAddress,
@@ -165,7 +165,7 @@ describe('AssetProxyDispatcher', () => {
         it('should throw if registering with incorrect "currentAssetProxyAddress" field', async () => {
             // Initial registration
             const prevProxyAddress = constants.NULL_ADDRESS;
-            await web3Wrapper.awaitTransactionMinedAsync(
+            await web3Wrapper.awaitTransactionSuccessAsync(
                 await assetProxyDispatcher.registerAssetProxy.sendTransactionAsync(
                     AssetProxyId.ERC20,
                     erc20Proxy.address,
@@ -190,7 +190,7 @@ describe('AssetProxyDispatcher', () => {
         it('should be able to reset proxy address to NULL', async () => {
             // Initial registration
             const prevProxyAddress = constants.NULL_ADDRESS;
-            await web3Wrapper.awaitTransactionMinedAsync(
+            await web3Wrapper.awaitTransactionSuccessAsync(
                 await assetProxyDispatcher.registerAssetProxy.sendTransactionAsync(
                     AssetProxyId.ERC20,
                     erc20Proxy.address,
@@ -203,7 +203,7 @@ describe('AssetProxyDispatcher', () => {
             expect(proxyAddress).to.be.equal(erc20Proxy.address);
             // The following transaction will reset the proxy address
             const newProxyAddress = constants.NULL_ADDRESS;
-            await web3Wrapper.awaitTransactionMinedAsync(
+            await web3Wrapper.awaitTransactionSuccessAsync(
                 await assetProxyDispatcher.registerAssetProxy.sendTransactionAsync(
                     AssetProxyId.ERC20,
                     newProxyAddress,
@@ -244,7 +244,7 @@ describe('AssetProxyDispatcher', () => {
     describe('getAssetProxy', () => {
         it('should return correct address of registered proxy', async () => {
             const prevProxyAddress = constants.NULL_ADDRESS;
-            await web3Wrapper.awaitTransactionMinedAsync(
+            await web3Wrapper.awaitTransactionSuccessAsync(
                 await assetProxyDispatcher.registerAssetProxy.sendTransactionAsync(
                     AssetProxyId.ERC20,
                     erc20Proxy.address,
@@ -267,7 +267,7 @@ describe('AssetProxyDispatcher', () => {
         it('should dispatch transfer to registered proxy', async () => {
             // Register ERC20 proxy
             const prevProxyAddress = constants.NULL_ADDRESS;
-            await web3Wrapper.awaitTransactionMinedAsync(
+            await web3Wrapper.awaitTransactionSuccessAsync(
                 await assetProxyDispatcher.registerAssetProxy.sendTransactionAsync(
                     AssetProxyId.ERC20,
                     erc20Proxy.address,
@@ -281,7 +281,7 @@ describe('AssetProxyDispatcher', () => {
             // Perform a transfer from makerAddress to takerAddress
             const erc20Balances = await erc20Wrapper.getBalancesAsync();
             const amount = new BigNumber(10);
-            await web3Wrapper.awaitTransactionMinedAsync(
+            await web3Wrapper.awaitTransactionSuccessAsync(
                 await assetProxyDispatcher.publicDispatchTransferFrom.sendTransactionAsync(
                     encodedProxyMetadata,
                     makerAddress,

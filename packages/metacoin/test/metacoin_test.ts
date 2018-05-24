@@ -52,7 +52,7 @@ describe('Metacoin', () => {
                 },
                 { from: devConstants.TESTRPC_FIRST_ADDRESS },
             );
-            const txReceipt = await web3Wrapper.awaitTransactionMinedAsync(txHash);
+            const txReceipt = await web3Wrapper.awaitTransactionSuccessAsync(txHash);
             const transferLogs = txReceipt.logs[0] as LogWithDecodedArgs<TransferContractEventArgs>;
             expect(transferLogs.args).to.be.deep.equal({
                 _to: ZERO_ADDRESS,
@@ -77,7 +77,7 @@ describe('Metacoin', () => {
                 callback,
                 { from: devConstants.TESTRPC_FIRST_ADDRESS },
             );
-            const txReceipt = await web3Wrapper.awaitTransactionMinedAsync(txHash);
+            const txReceipt = await web3Wrapper.awaitTransactionSuccessAsync(txHash);
             const transferLogs = txReceipt.logs[0] as LogWithDecodedArgs<TransferContractEventArgs>;
             expect(transferLogs.args).to.be.deep.equal({
                 _to: ZERO_ADDRESS,
@@ -104,7 +104,7 @@ describe('Metacoin', () => {
                 },
                 { from: devConstants.TESTRPC_FIRST_ADDRESS },
             );
-            const txReceipt = await web3Wrapper.awaitTransactionMinedAsync(txHash);
+            const txReceipt = await web3Wrapper.awaitTransactionSuccessAsync(txHash);
             const transferLogs = txReceipt.logs[0] as LogWithDecodedArgs<TransferContractEventArgs>;
             expect(transferLogs.args).to.be.deep.equal({
                 _to: ZERO_ADDRESS,
