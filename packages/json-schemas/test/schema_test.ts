@@ -171,6 +171,7 @@ describe('Schema', () => {
         const order = {
             makerAddress: NULL_ADDRESS,
             takerAddress: NULL_ADDRESS,
+            senderAddress: NULL_ADDRESS,
             makerFee: '1',
             takerFee: '2',
             makerAssetAmount: '1',
