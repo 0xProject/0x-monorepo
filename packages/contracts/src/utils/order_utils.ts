@@ -2,7 +2,7 @@ import { BigNumber } from '@0xproject/utils';
 import ethUtil = require('ethereumjs-util');
 
 import { crypto } from './crypto';
-import { CancelOrder, MatchOrder, OrderStruct, SignatureType, SignedOrder, UnsignedOrder } from './types';
+import { CancelOrder, MatchOrder, OrderStruct, SignedOrder, UnsignedOrder } from './types';
 
 export const orderUtils = {
     createFill: (signedOrder: SignedOrder, takerAssetFillAmount?: BigNumber) => {
@@ -37,10 +37,19 @@ export const orderUtils = {
         };
         return orderStruct;
     },
+    getDomainSeparatorSchemaHex(): string {
+        const domainSeparatorSchemaHashBuff = crypto.solSHA3(['DomainSeparator(address contract)']);
+        const schemaHashHex = `0x${domainSeparatorSchemaHashBuff.toString('hex')}`;
+        return schemaHashHex;
+    },
+    getDomainSeparatorHashHex(exchangeAddress: string): string {
+        const domainSeparatorHashBuff = crypto.solSHA3([exchangeAddress]);
+        const domainSeparatorHashHex = `0x${domainSeparatorHashBuff.toString('hex')}`;
+        return domainSeparatorHashHex;
+    },
     getOrderSchemaHex(): string {
         const orderSchemaHashBuff = crypto.solSHA3([
             'Order(',
-            'address exchangeAddress,',
             'address makerAddress,',
             'address takerAddress,',
             'address feeRecipientAddress,',
@@ -63,7 +72,6 @@ export const orderUtils = {
         const takerAssetDataHash = crypto.solSHA3([ethUtil.toBuffer(order.takerAssetData)]);
 
         const orderParamsHashBuff = crypto.solSHA3([
-            order.exchangeAddress,
             order.makerAddress,
             order.takerAddress,
             order.feeRecipientAddress,
@@ -79,7 +87,14 @@ export const orderUtils = {
         ]);
         const orderParamsHashHex = `0x${orderParamsHashBuff.toString('hex')}`;
         const orderSchemaHashHex = orderUtils.getOrderSchemaHex();
-        const orderHashBuff = crypto.solSHA3([new BigNumber(orderSchemaHashHex), new BigNumber(orderParamsHashHex)]);
+        const domainSeparatorHashHex = this.getDomainSeparatorHashHex(order.exchangeAddress);
+        const domainSeparatorSchemaHex = this.getDomainSeparatorSchemaHex();
+        const orderHashBuff = crypto.solSHA3([
+            new BigNumber(domainSeparatorSchemaHex),
+            new BigNumber(domainSeparatorHashHex),
+            new BigNumber(orderSchemaHashHex),
+            new BigNumber(orderParamsHashHex),
+        ]);
         return orderHashBuff;
     },
     getOrderHashHex(order: SignedOrder | UnsignedOrder): string {
