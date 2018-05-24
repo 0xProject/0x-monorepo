@@ -3,6 +3,10 @@
         "version": "0.5.1",
         "changes": [
             {
+                "note": "Make `opts` constructor parameter optional",
+                "pr": 621
+            },
+            {
                 "note": "Add schema validation for compiler configuration",
                 "pr": 621
             }
