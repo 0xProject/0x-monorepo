@@ -17,4 +17,4 @@ export {
     WebSocketOrderbookChannelConfig,
 } from './types';
 
-export { ECSignature, Order, SignedOrder } from '@0xproject/types';
+export { Order, SignedOrder } from '@0xproject/types';

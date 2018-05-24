@@ -1,4 +1,5 @@
 import { BlockchainLifecycle } from '@0xproject/dev-utils';
+import { SignedOrder } from '@0xproject/types';
 import { BigNumber } from '@0xproject/utils';
 import * as chai from 'chai';
 import ethUtil = require('ethereumjs-util');
@@ -11,7 +12,6 @@ import { chaiSetup } from '../../src/utils/chai_setup';
 import { constants } from '../../src/utils/constants';
 import { OrderFactory } from '../../src/utils/order_factory';
 import { orderUtils } from '../../src/utils/order_utils';
-import { SignedOrder } from '../../src/utils/types';
 import { provider, txDefaults, web3Wrapper } from '../../src/utils/web3_wrapper';
 
 chaiSetup.configure();
@@ -56,8 +56,20 @@ describe('Exchange libs', () => {
     });
 
     describe('LibOrder', () => {
+        describe('getOrderSchema', () => {
+            it('should output the correct order schema hash', async () => {
+                const orderSchema = await libs.getOrderSchemaHash.callAsync();
+                expect(orderUtils.getOrderSchemaHex()).to.be.equal(orderSchema);
+            });
+        });
+        describe('getDomainSeparatorSchema', () => {
+            it('should output the correct domain separator schema hash', async () => {
+                const domainSeparatorSchema = await libs.getDomainSeparatorSchemaHash.callAsync();
+                expect(orderUtils.getDomainSeparatorSchemaHex()).to.be.equal(domainSeparatorSchema);
+            });
+        });
         describe('getOrderHash', () => {
-            it('should output the correct orderHash', async () => {
+            it('should output the correct order hash', async () => {
                 const orderHashHex = await libs.publicGetOrderHash.callAsync(signedOrder);
                 expect(orderUtils.getOrderHashHex(signedOrder)).to.be.equal(orderHashHex);
             });

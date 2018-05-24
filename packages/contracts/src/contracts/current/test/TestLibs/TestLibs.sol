@@ -69,6 +69,22 @@ contract TestLibs is
         return orderHash;
     }
 
+    function getOrderSchemaHash()
+        public
+        view
+        returns (bytes32)
+    {
+        return ORDER_SCHEMA_HASH;
+    }
+
+    function getDomainSeparatorSchemaHash()
+        public
+        view
+        returns (bytes32)
+    {
+        return DOMAIN_SEPARATOR_SCHEMA_HASH;
+    }
+
     function publicAddFillResults(FillResults memory totalFillResults, FillResults memory singleFillResults)
         public
         pure

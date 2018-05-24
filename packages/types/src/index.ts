@@ -282,22 +282,26 @@ export interface RawLogEntry {
 }
 
 export interface Order {
-    maker: string;
-    taker: string;
+    senderAddress: string;
+    makerAddress: string;
+    takerAddress: string;
     makerFee: BigNumber;
     takerFee: BigNumber;
-    makerTokenAmount: BigNumber;
-    takerTokenAmount: BigNumber;
-    makerTokenAddress: string;
-    takerTokenAddress: string;
+    makerAssetAmount: BigNumber;
+    takerAssetAmount: BigNumber;
+    makerAssetData: string;
+    takerAssetData: string;
     salt: BigNumber;
-    exchangeContractAddress: string;
-    feeRecipient: string;
-    expirationUnixTimestampSec: BigNumber;
+    feeRecipientAddress: string;
+    expirationTimeSeconds: BigNumber;
 }
 
-export interface SignedOrder extends Order {
-    ecSignature: ECSignature;
+export interface SignedOrder extends UnsignedOrder {
+    signature: string;
+}
+
+export interface UnsignedOrder extends Order {
+    exchangeAddress: string;
 }
 
 /**
@@ -348,10 +352,6 @@ export interface Artifact {
         };
     };
 }
-
-export type OrderAddresses = [string, string, string, string, string];
-
-export type OrderValues = [BigNumber, BigNumber, BigNumber, BigNumber, BigNumber, BigNumber];
 
 export type DoneCallback = (err?: Error) => void;
 

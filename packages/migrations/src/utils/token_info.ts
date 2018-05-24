@@ -1,8 +1,8 @@
 import { BigNumber, NULL_BYTES } from '@0xproject/utils';
 
-import { Token } from '../types';
+import { ERC20Token, ERC721Token } from '../types';
 
-export const tokenInfo: Token[] = [
+export const erc20TokenInfo: ERC20Token[] = [
     {
         name: 'Augur Reputation Token',
         symbol: 'REP',
@@ -37,5 +37,12 @@ export const tokenInfo: Token[] = [
         decimals: new BigNumber(18),
         ipfsHash: NULL_BYTES,
         swarmHash: NULL_BYTES,
+    },
+];
+
+export const erc721TokenInfo: ERC721Token[] = [
+    {
+        name: 'CryptoKitties',
+        symbol: 'CK',
     },
 ];
