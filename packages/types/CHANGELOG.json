@@ -1,5 +1,14 @@
 [
     {
+        "version": "0.8.0",
+        "changes": [
+            {
+                "note": "Change the order type to v2 format",
+                "pr": 618
+            }
+        ]
+    },
+    {
         "version": "0.7.0",
         "changes": [
             {

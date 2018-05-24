@@ -1,5 +1,5 @@
 import { BlockchainLifecycle } from '@0xproject/dev-utils';
-import { LogWithDecodedArgs } from '@0xproject/types';
+import { LogWithDecodedArgs, SignedOrder } from '@0xproject/types';
 import { BigNumber } from '@0xproject/utils';
 import * as chai from 'chai';
 import ethUtil = require('ethereumjs-util');
@@ -29,7 +29,6 @@ import {
     ERC20BalancesByOwner,
     ERC721TokenIdsByOwner,
     ExchangeStatus,
-    SignedOrder,
     TransferAmountsByMatchOrders as TransferAmounts,
 } from '../utils/types';
 import { provider, web3Wrapper } from '../utils/web3_wrapper';
