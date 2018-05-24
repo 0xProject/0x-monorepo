@@ -1,5 +1,4 @@
 import { assert } from '@0xproject/assert';
-import { schemas } from '@0xproject/json-schemas';
 import {
     ContractSource,
     ContractSources,

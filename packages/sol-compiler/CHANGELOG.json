@@ -1,5 +1,15 @@
 [
     {
+        "version": "0.5.1",
+        "changes": [
+            {
+                "note": "Add schema validation for compiler configuration",
+                "pr": 621
+            }
+        ],
+        "timestamp": 1527009133
+    },
+    {
         "version": "0.5.0",
         "changes": [
             {
