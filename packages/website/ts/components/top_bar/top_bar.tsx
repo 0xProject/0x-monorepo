@@ -18,6 +18,7 @@ import { Identicon } from 'ts/components/ui/identicon';
 import { Dispatcher } from 'ts/redux/dispatcher';
 import { Deco, Key, ProviderType, WebsiteLegacyPaths, WebsitePaths } from 'ts/types';
 import { constants } from 'ts/utils/constants';
+import { zIndex } from 'ts/utils/style';
 import { Translate } from 'ts/utils/translate';
 import { utils } from 'ts/utils/utils';
 
@@ -59,7 +60,7 @@ const styles: Styles = {
         width: '100%',
         position: 'relative',
         top: 0,
-        zIndex: 1100,
+        zIndex: zIndex.topBar,
         paddingBottom: 1,
     },
     bottomBar: {

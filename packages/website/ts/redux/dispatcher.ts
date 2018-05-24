@@ -174,6 +174,13 @@ export class Dispatcher {
         });
     }
 
+    public updatePortalOnboardingShowing(isShowing: boolean): void {
+        this._dispatch({
+            data: isShowing,
+            type: ActionTypes.UpdatePortalOnboardingShowing,
+        });
+    }
+
     // Docs
     public updateCurrentDocsVersion(version: string): void {
         this._dispatch({

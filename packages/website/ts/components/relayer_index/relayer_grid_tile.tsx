@@ -4,6 +4,7 @@ import { GridTile } from 'material-ui/GridList';
 import * as React from 'react';
 
 import { TopTokens } from 'ts/components/relayer_index/relayer_top_tokens';
+import { Island } from 'ts/components/ui/island';
 import { TokenIcon } from 'ts/components/ui/token_icon';
 import { Token, WebsiteBackendRelayerInfo } from 'ts/types';
 import { colors } from 'ts/utils/colors';
@@ -15,13 +16,6 @@ export interface RelayerGridTileProps {
 
 const styles: Styles = {
     root: {
-        backgroundColor: colors.white,
-        borderBottomRightRadius: 10,
-        borderBottomLeftRadius: 10,
-        borderTopRightRadius: 10,
-        borderTopLeftRadius: 10,
-        boxShadow: `0px 4px 6px ${colors.walletBoxShadow}`,
-        overflow: 'hidden',
         boxSizing: 'border-box',
     },
     innerDiv: {
@@ -68,7 +62,7 @@ const FALLBACK_IMG_SRC = '/images/landing/hero_chip_image.png';
 export const RelayerGridTile: React.StatelessComponent<RelayerGridTileProps> = (props: RelayerGridTileProps) => {
     const link = props.relayerInfo.appUrl || props.relayerInfo.url;
     return (
-        <GridTile style={styles.root}>
+        <Island style={styles.root} Component={GridTile}>
             <div style={styles.innerDiv}>
                 <a href={link} target="_blank" style={{ textDecoration: 'none' }}>
                     <ImgWithFallback
@@ -91,7 +85,7 @@ export const RelayerGridTile: React.StatelessComponent<RelayerGridTileProps> = (
                     </div>
                 </div>
             </div>
-        </GridTile>
+        </Island>
     );
 };
 
