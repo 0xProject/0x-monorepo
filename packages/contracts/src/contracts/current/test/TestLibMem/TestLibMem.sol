@@ -27,8 +27,7 @@ contract TestLibMem is
 {
 
     function test1()
-        public
-        pure
+        external
     {
         // Length of array & length to copy
         uint256 length = 0;
@@ -52,8 +51,7 @@ contract TestLibMem is
     }
 
     function test2()
-        public
-        pure
+        external
     {
         // Length of array & length to copy
         uint256 length = 1;
@@ -78,8 +76,7 @@ contract TestLibMem is
     }
 
     function test3()
-        public
-        pure
+        external
     {
         // Length of array & length to copy
         uint256 length = 11;
@@ -106,8 +103,7 @@ contract TestLibMem is
     }
 
     function test4()
-        public
-        pure
+        external
     {
         // Length of array & length to copy
         uint256 length = 32;
@@ -134,8 +130,7 @@ contract TestLibMem is
     }
 
     function test5()
-        public
-        pure
+        external
     {
         // Length of array & length to copy
         uint256 length = 72;
@@ -163,8 +158,7 @@ contract TestLibMem is
 
 
     function test6()
-        public
-        pure
+        external
     {
         // Length of arrays
         uint256 length1 = 72;
@@ -208,8 +202,7 @@ contract TestLibMem is
     }
 
     function test7()
-        public
-        pure
+        external
     {
         // Length of array & length to copy
         uint256 length = 72;
@@ -232,7 +225,7 @@ contract TestLibMem is
         // We expect this to fail
         require(
             areBytesEqual(sourceArray, destArray),
-            "Test #7 failed. Array contents are not the same."
+            "Test #7 failed. Array contents are not the same. This is expected."
         );
     }
 }
