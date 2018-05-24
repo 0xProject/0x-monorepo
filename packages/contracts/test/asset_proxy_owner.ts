@@ -1,5 +1,5 @@
-import { LogWithDecodedArgs, ZeroEx } from '0x.js';
 import { BlockchainLifecycle } from '@0xproject/dev-utils';
+import { LogWithDecodedArgs } from '@0xproject/types';
 import { BigNumber } from '@0xproject/utils';
 import * as chai from 'chai';
 import * as _ from 'lodash';
@@ -23,7 +23,6 @@ import { provider, txDefaults, web3Wrapper } from '../src/utils/web3_wrapper';
 chaiSetup.configure();
 const expect = chai.expect;
 const blockchainLifecycle = new BlockchainLifecycle(web3Wrapper);
-const zeroEx = new ZeroEx(provider, { networkId: constants.TESTRPC_NETWORK_ID });
 
 describe('AssetProxyOwner', () => {
     let owners: string[];
@@ -60,7 +59,7 @@ describe('AssetProxyOwner', () => {
             REQUIRED_APPROVALS,
             SECONDS_TIME_LOCKED,
         );
-        multiSigWrapper = new MultiSigWrapper(multiSig, zeroEx);
+        multiSigWrapper = new MultiSigWrapper(multiSig, provider);
         await erc20Proxy.transferOwnership.sendTransactionAsync(multiSig.address, { from: initialOwner });
         await erc721Proxy.transferOwnership.sendTransactionAsync(multiSig.address, { from: initialOwner });
     });
@@ -89,7 +88,7 @@ describe('AssetProxyOwner', () => {
             expect(isErc721ProxyRegistered).to.equal(true);
         });
         it('should throw if a null address is included in assetProxyContracts', async () => {
-            const assetProxyContractAddresses = [erc20Proxy.address, ZeroEx.NULL_ADDRESS];
+            const assetProxyContractAddresses = [erc20Proxy.address, constants.NULL_ADDRESS];
             return expect(
                 AssetProxyOwnerContract.deployFrom0xArtifactAsync(
                     artifacts.AssetProxyOwner,
@@ -161,7 +160,7 @@ describe('AssetProxyOwner', () => {
         });
 
         it('should fail if registering a null address', async () => {
-            const addressToRegister = ZeroEx.NULL_ADDRESS;
+            const addressToRegister = constants.NULL_ADDRESS;
             const isRegistered = true;
             const registerAssetProxyData = multiSig.registerAssetProxy.getABIEncodedTransactionData(
                 addressToRegister,

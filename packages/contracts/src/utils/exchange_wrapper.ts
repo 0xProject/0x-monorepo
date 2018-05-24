@@ -2,20 +2,18 @@ import { Provider, TransactionReceiptWithDecodedLogs } from '@0xproject/types';
 import { BigNumber } from '@0xproject/utils';
 import { Web3Wrapper } from '@0xproject/web3-wrapper';
 import * as _ from 'lodash';
-import * as Web3 from 'web3';
 
 import { ExchangeContract } from '../contract_wrappers/generated/exchange';
 
 import { constants } from './constants';
 import { formatters } from './formatters';
-import { LogDecoder } from './log_decoder';
+import { logDecoder } from './log_decoder';
 import { orderUtils } from './order_utils';
 import { AssetProxyId, OrderInfo, SignedOrder, SignedTransaction } from './types';
 
 export class ExchangeWrapper {
     private _exchange: ExchangeContract;
     private _web3Wrapper: Web3Wrapper;
-    private _logDecoder: LogDecoder = new LogDecoder(constants.TESTRPC_NETWORK_ID);
     constructor(exchangeContract: ExchangeContract, provider: Provider) {
         this._exchange = exchangeContract;
         this._web3Wrapper = new Web3Wrapper(provider);
@@ -249,7 +247,7 @@ export class ExchangeWrapper {
     private async _getTxWithDecodedExchangeLogsAsync(txHash: string): Promise<TransactionReceiptWithDecodedLogs> {
         const tx = await this._web3Wrapper.awaitTransactionSuccessAsync(txHash, constants.AWAIT_TRANSACTION_MINED_MS);
         tx.logs = _.filter(tx.logs, log => log.address === this._exchange.address);
-        tx.logs = _.map(tx.logs, log => this._logDecoder.decodeLogOrThrow(log));
+        tx.logs = _.map(tx.logs, log => logDecoder.decodeLogOrThrow(log));
         return tx;
     }
 }

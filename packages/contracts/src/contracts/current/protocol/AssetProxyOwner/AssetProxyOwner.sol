@@ -28,7 +28,8 @@ contract AssetProxyOwner is
 
     event AssetProxyRegistration(address assetProxyContract, bool isRegistered);
 
-    // Mapping of AssetProxy contract address => approved to execute removeAuthorizedAddress without time lock.
+    // Mapping of AssetProxy contract address =>
+    // if this contract is allowed to call the AssetProxy's removeAuthorizedAddress method without a time lock.
     mapping (address => bool) public isAssetProxyRegistered;
 
     bytes4 constant REMOVE_AUTHORIZED_ADDRESS_SELECTOR = bytes4(keccak256("removeAuthorizedAddress(address)"));
@@ -95,7 +96,7 @@ contract AssetProxyOwner is
         }
     }
 
-    /// @dev Compares first 4 bytes of byte array to removeAuthorizedAddress function signature.
+    /// @dev Compares first 4 bytes of byte array to removeAuthorizedAddress function selector.
     /// @param data Transaction data.
     /// @return Successful if data is a call to removeAuthorizedAddress.
     function isFunctionRemoveAuthorizedAddress(bytes memory data)

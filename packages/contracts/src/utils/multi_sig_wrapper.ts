@@ -1,21 +1,20 @@
-import { TransactionReceiptWithDecodedLogs, ZeroEx } from '0x.js';
+import { Provider, TransactionReceiptWithDecodedLogs } from '@0xproject/types';
 import { BigNumber } from '@0xproject/utils';
+import { Web3Wrapper } from '@0xproject/web3-wrapper';
 import * as _ from 'lodash';
-import * as Web3 from 'web3';
 
 import { AssetProxyOwnerContract } from '../contract_wrappers/generated/asset_proxy_owner';
 import { MultiSigWalletContract } from '../contract_wrappers/generated/multi_sig_wallet';
 
 import { constants } from './constants';
-import { LogDecoder } from './log_decoder';
+import { logDecoder } from './log_decoder';
 
 export class MultiSigWrapper {
     private _multiSig: MultiSigWalletContract;
-    private _logDecoder: LogDecoder = new LogDecoder(constants.TESTRPC_NETWORK_ID);
-    private _zeroEx: ZeroEx;
-    constructor(multiSigContract: MultiSigWalletContract, zeroEx: ZeroEx) {
+    private _web3Wrapper: Web3Wrapper;
+    constructor(multiSigContract: MultiSigWalletContract, provider: Provider) {
         this._multiSig = multiSigContract;
-        this._zeroEx = zeroEx;
+        this._web3Wrapper = new Web3Wrapper(provider);
     }
     public async submitTransactionAsync(
         destination: string,
@@ -50,9 +49,9 @@ export class MultiSigWrapper {
         return tx;
     }
     private async _getTxWithDecodedMultiSigLogsAsync(txHash: string): Promise<TransactionReceiptWithDecodedLogs> {
-        const tx = await this._zeroEx.awaitTransactionMinedAsync(txHash, constants.AWAIT_TRANSACTION_MINED_MS);
+        const tx = await this._web3Wrapper.awaitTransactionMinedAsync(txHash, constants.AWAIT_TRANSACTION_MINED_MS);
         tx.logs = _.filter(tx.logs, log => log.address === this._multiSig.address);
-        tx.logs = _.map(tx.logs, log => this._logDecoder.decodeLogOrThrow(log));
+        tx.logs = _.map(tx.logs, log => logDecoder.decodeLogOrThrow(log));
         return tx;
     }
 }
