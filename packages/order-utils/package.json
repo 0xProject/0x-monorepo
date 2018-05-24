@@ -63,7 +63,7 @@
     },
     "dependencies": {
         "@0xproject/assert": "^0.2.10",
-        "@0xproject/json-schemas": "0.7.23",
+        "@0xproject/json-schemas": "0.7.22",
         "@0xproject/types": "^0.7.0",
         "@0xproject/typescript-typings": "^0.3.2",
         "@0xproject/utils": "^0.6.2",
