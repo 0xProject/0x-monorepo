@@ -641,7 +641,7 @@ describe('matchOrders', () => {
             // Cancel left order
             await exchangeWrapper.cancelOrderAsync(signedOrderLeft, signedOrderLeft.makerAddress);
             // Match orders
-            return exexpectRevertOrAlwaysFailingTransactionpect(
+            return expectRevertOrAlwaysFailingTransaction(
                 exchangeWrapper.matchOrdersAsync(signedOrderLeft, signedOrderRight, takerAddress),
             );
         });
