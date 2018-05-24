@@ -1,3 +1,5 @@
+import { assert } from '@0xproject/assert';
+import { schemas } from '@0xproject/json-schemas';
 import {
     ContractSource,
     ContractSources,
@@ -22,6 +24,7 @@ import * as requireFromString from 'require-from-string';
 import * as semver from 'semver';
 import solc = require('solc');
 
+import { compilerOptionsSchema } from './schemas/compiler_options_schema';
 import { binPaths } from './solc/bin_paths';
 import {
     createDirIfDoesNotExistAsync,
@@ -81,10 +84,12 @@ export class Compiler {
      * @return An instance of the Compiler class.
      */
     constructor(opts: CompilerOptions) {
+        assert.doesConformToSchema('opts', opts, compilerOptionsSchema);
         // TODO: Look for config file in parent directories if not found in current directory
         const config: CompilerOptions = fs.existsSync(CONFIG_FILE)
             ? JSON.parse(fs.readFileSync(CONFIG_FILE).toString())
             : {};
+        assert.doesConformToSchema('compiler.json', config, compilerOptionsSchema);
         this._contractsDir = opts.contractsDir || config.contractsDir || DEFAULT_CONTRACTS_DIR;
         this._solcVersionIfExists = opts.solcVersion || config.solcVersion;
         this._compilerSettings = opts.compilerSettings || config.compilerSettings || DEFAULT_COMPILER_SETTINGS;
