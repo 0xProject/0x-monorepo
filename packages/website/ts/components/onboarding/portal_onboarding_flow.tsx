@@ -14,7 +14,6 @@ export interface PortalOnboardingFlowProps {
     providerType: ProviderType;
     injectedProviderName: string;
     blockchainIsLoaded: boolean;
-    setOnboardingStep: (stepIndex: number) => void;
 }
 
 export class PortalOnboardingFlow extends React.Component<PortalOnboardingFlowProps> {
