@@ -1,6 +1,6 @@
 import * as React from 'react';
 
-interface ContainerProps {
+export interface ContainerProps {
     marginTop?: string | number;
     marginBottom?: string | number;
     marginRight?: string | number;

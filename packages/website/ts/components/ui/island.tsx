@@ -20,7 +20,7 @@ const defaultStyle: React.CSSProperties = {
 };
 
 export const Island: React.StatelessComponent<IslandProps> = (props: IslandProps) => (
-    <props.Component style={{...defaultStyle, ...props.style}} className={props.className}>
+    <props.Component style={{ ...defaultStyle, ...props.style }} className={props.className}>
         {props.children}
     </props.Component>
 );

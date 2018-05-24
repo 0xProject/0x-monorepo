@@ -192,7 +192,7 @@ export class Wallet extends React.Component<WalletProps, WalletState> {
         const isReadyToRender = this.props.blockchainIsLoaded && this.props.blockchainErr === BlockchainErrs.NoError;
         const isAddressAvailable = !_.isEmpty(this.props.userAddress);
         return (
-            <Island className="flex flex-column" style={styles.root}>
+            <Island className="flex flex-column wallet" style={styles.root}>
                 {isReadyToRender && isAddressAvailable
                     ? _.concat(this._renderConnectedHeaderRows(), this._renderBody(), this._renderFooterRows())
                     : _.concat(this._renderDisconnectedHeaderRows(), this._renderDisconnectedRows())}

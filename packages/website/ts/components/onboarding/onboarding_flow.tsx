@@ -4,24 +4,19 @@ import Joyride, { Step, StyleOptions } from 'react-joyride';
 
 import { zIndex } from 'ts/utils/style';
 
-interface OnboardingFlowProps {
+export interface OnboardingFlowProps {
     steps: Step[];
     stepIndex: number;
     isRunning: boolean;
     onClose: () => void;
-    onChange?: (options: any) => void;
 }
 
-const style: StyleOptions = {
+const joyrideStyleOptions: StyleOptions = {
     zIndex: zIndex.overlay,
 };
 
 // Wrapper around Joyride with defaults and styles set
 export class OnboardingFlow extends React.Component<OnboardingFlowProps> {
-    public static defaultProps: Partial<OnboardingFlowProps> = {
-        onChange: _.noop,
-    };
-
     public render(): React.ReactNode {
         return (
             <Joyride
@@ -29,7 +24,7 @@ export class OnboardingFlow extends React.Component<OnboardingFlowProps> {
                 debug={true}
                 steps={this.props.steps}
                 stepIndex={this.props.stepIndex}
-                styles={{ options: style }}
+                styles={{ options: joyrideStyleOptions }}
                 callback={this._handleChange.bind(this)}
             />
         );
@@ -40,6 +35,5 @@ export class OnboardingFlow extends React.Component<OnboardingFlowProps> {
             case 'close':
                 this.props.onClose();
         }
-        this.props.onChange(options);
     }
 }

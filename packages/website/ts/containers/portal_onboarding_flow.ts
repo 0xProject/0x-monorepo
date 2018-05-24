@@ -31,4 +31,7 @@ const mapDispatchToProps = (dispatch: Dispatch<State>): ConnectedDispatch => ({
     },
 });
 
-export const PortalOnboardingFlow: React.ComponentClass<PortalOnboardingFlowProps> = connect(mapStateToProps, mapDispatchToProps)(PortalOnboardingFlowComponent);
+export const PortalOnboardingFlow: React.ComponentClass<PortalOnboardingFlowProps> = connect(
+    mapStateToProps,
+    mapDispatchToProps,
+)(PortalOnboardingFlowComponent);

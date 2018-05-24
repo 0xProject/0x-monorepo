@@ -4,31 +4,39 @@
 declare module 'react-joyride' {
     import * as React from 'react';
     export interface StyleOptions {
-        arrowColor?: string,
-        backgroundColor?: string,
-        primaryColor?: string,
-        textColor?: string,
-        overlayColor?: string,
-        spotlightShadow?: string,
-        beaconSize?: number,
-        zIndex?: number,
+        arrowColor?: string;
+        backgroundColor?: string;
+        primaryColor?: string;
+        textColor?: string;
+        overlayColor?: string;
+        spotlightShadow?: string;
+        beaconSize?: number;
+        zIndex?: number;
     }
-    
-    export type Placement = "top" | "top-left" | "top-right" | "bottom" | "bottom-left" | "bottom-right" | "right" | "left";
+
+    export type Placement =
+        | 'top'
+        | 'top-left'
+        | 'top-right'
+        | 'bottom'
+        | 'bottom-left'
+        | 'bottom-right'
+        | 'right'
+        | 'left';
 
     export interface Step {
         title?: string;
         content: React.ReactNode;
         target: string;
         placement?: Placement;
-        type?: "click" | "hover";
+        type?: 'click' | 'hover';
         isFixed?: boolean;
         allowClicksThruHole?: boolean;
         disableBeacon?: boolean;
         style?: StyleOptions;
         [prop: string]: any;
     }
-    
+
     interface StyleOptionsProp {
         options: StyleOptions;
     }
@@ -43,19 +51,19 @@ declare module 'react-joyride' {
         debug?: boolean;
         styles?: StyleOptionsProp;
     }
-    
+
     export interface State {
-        action: string,
-        controlled: boolean,
-        index: number,
-        lifecycle: string,
-        size: 0,
-        status: string,
+        action: string;
+        controlled: boolean;
+        index: number;
+        lifecycle: string;
+        size: 0;
+        status: string;
     }
-    
+
     export default class Joyride extends React.Component<Props, State> {
         constructor(props: Props);
-    
+
         static defaultProps: Props;
     }
 }
