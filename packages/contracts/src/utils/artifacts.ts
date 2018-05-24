@@ -10,6 +10,7 @@ import * as MixinAuthorizable from '../artifacts/MixinAuthorizable.json';
 import * as MultiSigWallet from '../artifacts/MultiSigWallet.json';
 import * as MultiSigWalletWithTimeLock from '../artifacts/MultiSigWalletWithTimeLock.json';
 import * as TestAssetProxyDispatcher from '../artifacts/TestAssetProxyDispatcher.json';
+import * as TestLibAssetProxyDecoder from '../artifacts/TestLibAssetProxyDecoder.json';
 import * as TestLibBytes from '../artifacts/TestLibBytes.json';
 import * as TestLibMem from '../artifacts/TestLibMem.json';
 import * as TestLibs from '../artifacts/TestLibs.json';
@@ -31,6 +32,7 @@ export const artifacts = {
     MultiSigWallet: (MultiSigWallet as any) as ContractArtifact,
     MultiSigWalletWithTimeLock: (MultiSigWalletWithTimeLock as any) as ContractArtifact,
     TestAssetProxyDispatcher: (TestAssetProxyDispatcher as any) as ContractArtifact,
+    TestLibAssetProxyDecoder: (TestLibAssetProxyDecoder as any) as ContractArtifact,
     TestLibBytes: (TestLibBytes as any) as ContractArtifact,
     TestLibMem: (TestLibMem as any) as ContractArtifact,
     TestLibs: (TestLibs as any) as ContractArtifact,

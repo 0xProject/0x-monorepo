@@ -29,6 +29,7 @@
         "MixinAuthorizable",
         "MultiSigWallet",
         "MultiSigWalletWithTimeLock",
+        "TestLibAssetProxyDecoder",
         "TestAssetProxyDispatcher",
         "TestLibBytes",
         "TestLibMem",
