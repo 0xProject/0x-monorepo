@@ -91,7 +91,7 @@ export const runV2MigrationsAsync = async (provider: Provider, artifactsDir: str
     );
     artifactsWriter.saveArtifact(multiSigERC721);
     await erc721proxy.addAuthorizedAddress.sendTransactionAsync(exchange.address, { from: owner });
-    await erc721proxy.transferOwnership.sendTransactionAsync(multiSigERC20.address, { from: owner });
+    await erc721proxy.transferOwnership.sendTransactionAsync(multiSigERC721.address, { from: owner });
 
     // Dummy ERC20 tokens
     for (const token of erc20TokenInfo) {
@@ -107,7 +107,7 @@ export const runV2MigrationsAsync = async (provider: Provider, artifactsDir: str
         );
     }
 
-    // CK -> Token registry
+    // ERC721
     const cryptoKittieToken = await DummyERC721TokenContract.deployFrom0xArtifactAsync(
         artifacts.DummyERC721Token,
         provider,
