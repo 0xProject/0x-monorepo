@@ -3,7 +3,10 @@ import { BigNumber, NULL_BYTES } from '@0xproject/utils';
 import { Web3Wrapper } from '@0xproject/web3-wrapper';
 import * as _ from 'lodash';
 
-import { ArtifactWriter } from './artifact_writer';
+import { ArtifactWriter } from '../artifact_writer';
+import { ContractName } from '../types';
+import { erc20TokenInfo } from '../utils/token_info';
+
 import { artifacts } from './artifacts';
 import { DummyERC20TokenContract } from './contract_wrappers/dummy_e_r_c20_token';
 import { Exchange_v1Contract } from './contract_wrappers/exchange_v1';
@@ -12,18 +15,16 @@ import { TokenRegistryContract } from './contract_wrappers/token_registry';
 import { TokenTransferProxy_v1Contract } from './contract_wrappers/tokentransferproxy_v1';
 import { WETH9Contract } from './contract_wrappers/weth9';
 import { ZRXTokenContract } from './contract_wrappers/zrx_token';
-import { ContractName } from './types';
-import { tokenInfo } from './utils/token_info';
 
 /**
- * Custom migrations should be defined in this function. This will be called with the CLI 'migrate' command.
+ * Custom migrations should be defined in this function. This will be called with the CLI 'migrate:v1' command.
  * Migrations could be written to run in parallel, but if you want contract addresses to be created deterministically,
  * the migration should be written to run synchronously.
  * @param provider  Web3 provider instance.
  * @param artifactsDir The directory with compiler artifact files.
  * @param txDefaults Default transaction values to use when deploying contracts.
  */
-export const runMigrationsAsync = async (provider: Provider, artifactsDir: string, txDefaults: Partial<TxData>) => {
+export const runV1MigrationsAsync = async (provider: Provider, artifactsDir: string, txDefaults: Partial<TxData>) => {
     const web3Wrapper = new Web3Wrapper(provider);
     const networkId = await web3Wrapper.getNetworkIdAsync();
     const artifactsWriter = new ArtifactWriter(artifactsDir, networkId);
@@ -73,11 +74,11 @@ export const runMigrationsAsync = async (provider: Provider, artifactsDir: strin
     await tokenTransferProxy.transferOwnership.sendTransactionAsync(multiSig.address, { from: owner });
     const addTokenGasEstimate = await tokenReg.addToken.estimateGasAsync(
         zrxToken.address,
-        tokenInfo[0].name,
-        tokenInfo[0].symbol,
-        tokenInfo[0].decimals,
-        tokenInfo[0].ipfsHash,
-        tokenInfo[0].swarmHash,
+        erc20TokenInfo[0].name,
+        erc20TokenInfo[0].symbol,
+        erc20TokenInfo[0].decimals,
+        erc20TokenInfo[0].ipfsHash,
+        erc20TokenInfo[0].swarmHash,
         { from: owner },
     );
     const decimals = 18;
@@ -105,7 +106,7 @@ export const runMigrationsAsync = async (provider: Provider, artifactsDir: strin
             gas: addTokenGasEstimate,
         },
     );
-    for (const token of tokenInfo) {
+    for (const token of erc20TokenInfo) {
         const totalSupply = new BigNumber(100000000000000000000);
         const dummyToken = await DummyERC20TokenContract.deployFrom0xArtifactAsync(
             artifacts.DummyERC20Token,

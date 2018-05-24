@@ -1,4 +1,4 @@
-import { ECSignature, Order, SignedOrder } from '@0xproject/types';
+import { Order, SignedOrder } from '@0xproject/types';
 import { BigNumber } from '@0xproject/utils';
 
 export interface Client {

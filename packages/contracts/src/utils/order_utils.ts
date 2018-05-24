@@ -1,3 +1,4 @@
+import { Order, SignedOrder, UnsignedOrder } from '@0xproject/types';
 import { BigNumber } from '@0xproject/utils';
 import ethUtil = require('ethereumjs-util');
 
@@ -20,7 +21,7 @@ export const orderUtils = {
         };
         return cancel;
     },
-    getOrderStruct(signedOrder: SignedOrder): OrderStruct {
+    getOrderStruct(signedOrder: SignedOrder): Order {
         const orderStruct = {
             senderAddress: signedOrder.senderAddress,
             makerAddress: signedOrder.makerAddress,
