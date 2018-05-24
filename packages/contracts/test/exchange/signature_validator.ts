@@ -25,12 +25,6 @@ describe('MixinSignatureValidator', () => {
     let signatureValidator: TestSignatureValidatorContract;
 
     before(async () => {
-        await blockchainLifecycle.startAsync();
-    });
-    after(async () => {
-        await blockchainLifecycle.revertAsync();
-    });
-    before(async () => {
         const accounts = await web3Wrapper.getAvailableAddressesAsync();
         const makerAddress = accounts[0];
         signatureValidator = await TestSignatureValidatorContract.deployFrom0xArtifactAsync(
@@ -53,7 +47,6 @@ describe('MixinSignatureValidator', () => {
 
     beforeEach(async () => {
         await blockchainLifecycle.startAsync();
-        signedOrder = orderFactory.newSignedOrder();
     });
     afterEach(async () => {
         await blockchainLifecycle.revertAsync();

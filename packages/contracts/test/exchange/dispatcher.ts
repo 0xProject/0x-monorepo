@@ -36,12 +36,6 @@ describe('AssetProxyDispatcher', () => {
     let erc721Wrapper: ERC721Wrapper;
 
     before(async () => {
-        await blockchainLifecycle.startAsync();
-    });
-    after(async () => {
-        await blockchainLifecycle.revertAsync();
-    });
-    before(async () => {
         // Setup accounts & addresses
         const accounts = await web3Wrapper.getAvailableAddressesAsync();
         const usedAddresses = ([owner, notOwner, makerAddress, takerAddress] = accounts);

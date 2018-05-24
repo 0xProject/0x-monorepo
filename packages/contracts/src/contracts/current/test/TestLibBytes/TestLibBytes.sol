@@ -30,6 +30,7 @@ contract TestLibBytes is
     /// @return The byte that was popped off.
     function publicPopByte(bytes memory b)
         public
+        pure
         returns (bytes memory, bytes1 result)
     {
         result = popByte(b);
@@ -41,6 +42,7 @@ contract TestLibBytes is
     /// @return The 20 byte address that was popped off.
     function publicPopAddress(bytes memory b)
         public
+        pure
         returns (bytes memory, address result)
     {
         result = popAddress(b);

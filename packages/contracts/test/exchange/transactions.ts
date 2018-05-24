@@ -1,4 +1,5 @@
 import { BlockchainLifecycle } from '@0xproject/dev-utils';
+import { generatePseudoRandomSalt } from '@0xproject/order-utils';
 import { Order, SignedOrder } from '@0xproject/types';
 import { BigNumber } from '@0xproject/utils';
 import * as chai from 'chai';
@@ -59,12 +60,6 @@ describe('Exchange transactions', () => {
     let makerPrivateKey: Buffer;
     let takerPrivateKey: Buffer;
 
-    before(async () => {
-        await blockchainLifecycle.startAsync();
-    });
-    after(async () => {
-        await blockchainLifecycle.revertAsync();
-    });
     before(async () => {
         const accounts = await web3Wrapper.getAvailableAddressesAsync();
         const usedAddresses = ([owner, senderAddress, makerAddress, takerAddress, feeRecipientAddress] = accounts);
@@ -245,7 +240,7 @@ describe('Exchange transactions', () => {
 
             const orderStruct = orderUtils.getOrderStruct(signedOrder);
             const takerAssetFillAmount = signedOrder.takerAssetAmount;
-            const salt = ZeroEx.generatePseudoRandomSalt();
+            const salt = generatePseudoRandomSalt();
             return expect(
                 whitelist.fillOrderIfWhitelisted.sendTransactionAsync(
                     orderStruct,
@@ -263,7 +258,7 @@ describe('Exchange transactions', () => {
 
             const orderStruct = orderUtils.getOrderStruct(signedOrder);
             const takerAssetFillAmount = signedOrder.takerAssetAmount;
-            const salt = ZeroEx.generatePseudoRandomSalt();
+            const salt = generatePseudoRandomSalt();
             return expect(
                 whitelist.fillOrderIfWhitelisted.sendTransactionAsync(
                     orderStruct,
@@ -282,7 +277,7 @@ describe('Exchange transactions', () => {
 
             const orderStruct = orderUtils.getOrderStruct(signedOrder);
             const takerAssetFillAmount = signedOrder.takerAssetAmount;
-            const salt = ZeroEx.generatePseudoRandomSalt();
+            const salt = generatePseudoRandomSalt();
             await whitelist.fillOrderIfWhitelisted.sendTransactionAsync(
                 orderStruct,
                 takerAssetFillAmount,
