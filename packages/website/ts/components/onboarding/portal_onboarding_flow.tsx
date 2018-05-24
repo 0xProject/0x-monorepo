@@ -6,7 +6,7 @@ import { OnboardingFlow } from 'ts/components/onboarding/onboarding_flow';
 export interface PortalOnboardingFlowProps {
     stepIndex: number;
     isRunning: boolean;
-    setOnboardingShowing: (isShowing: boolean) => void;
+    onClose: () => void;
 }
 
 const steps: Step[] = [
@@ -25,12 +25,8 @@ export class PortalOnboardingFlow extends React.Component<PortalOnboardingFlowPr
                 steps={steps}
                 stepIndex={this.props.stepIndex}
                 isRunning={this.props.isRunning}
-                onClose={this._handleClose.bind(this)}
+                onClose={this.props.onClose}
             />
         );
-    }
-
-    private _handleClose(): void {
-        this.props.setOnboardingShowing(false);
     }
 }

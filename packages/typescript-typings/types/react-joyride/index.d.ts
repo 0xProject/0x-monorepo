@@ -37,9 +37,26 @@ declare module 'react-joyride' {
         [prop: string]: any;
     }
 
-    interface StyleOptionsProp {
+    export interface StyleOptionsProp {
         options: StyleOptions;
     }
+
+    interface CallbackMetadata {
+        type:
+            | 'tour:start'
+            | 'step:before'
+            | 'beacon'
+            | 'tooltip'
+            | 'close'
+            | 'step:after'
+            | 'tour:end'
+            | 'tour:status'
+            | 'error:target_not_found'
+            | 'error';
+        step: number;
+    }
+
+    export type CallbackData = CallbackMetadata & State;
 
     export interface Props {
         steps?: Step[];
@@ -47,7 +64,7 @@ declare module 'react-joyride' {
         disableOverlayClose?: boolean;
         run?: boolean;
         stepIndex?: number;
-        callback?: (options: any) => void;
+        callback?: (data: CallbackData) => void;
         debug?: boolean;
         styles?: StyleOptionsProp;
     }

@@ -1,6 +1,6 @@
 import * as _ from 'lodash';
 import * as React from 'react';
-import Joyride, { Step, StyleOptions } from 'react-joyride';
+import Joyride, { CallbackData, Step, StyleOptions } from 'react-joyride';
 
 import { zIndex } from 'ts/utils/style';
 
@@ -30,8 +30,8 @@ export class OnboardingFlow extends React.Component<OnboardingFlowProps> {
         );
     }
 
-    private _handleChange(options: any): void {
-        switch (options.action) {
+    private _handleChange(data: CallbackData): void {
+        switch (data.action) {
             case 'close':
                 this.props.onClose();
         }

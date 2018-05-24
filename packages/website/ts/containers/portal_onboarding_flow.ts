@@ -14,7 +14,7 @@ interface ConnectedState {
 }
 
 interface ConnectedDispatch {
-    setOnboardingShowing: (isShowing: boolean) => void;
+    onClose: () => void;
 }
 
 const mapStateToProps = (state: State): ConnectedState => ({
@@ -23,10 +23,10 @@ const mapStateToProps = (state: State): ConnectedState => ({
 });
 
 const mapDispatchToProps = (dispatch: Dispatch<State>): ConnectedDispatch => ({
-    setOnboardingShowing: (isShowing: boolean): void => {
+    onClose: (): void => {
         dispatch({
             type: ActionTypes.UpdatePortalOnboardingShowing,
-            data: isShowing,
+            data: false,
         });
     },
 });
