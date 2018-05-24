@@ -9,23 +9,26 @@ import * as Web3 from 'web3';
 
 import { TestLibAssetProxyDecoderContract } from '../../src/contract_wrappers/generated/test_lib_asset_proxy_decoder';
 import { artifacts } from '../../src/utils/artifacts';
+import { assetProxyUtils } from '../../src/utils/asset_proxy_utils';
 import { chaiSetup } from '../../src/utils/chai_setup';
 import { constants } from '../../src/utils/constants';
-import { AssetProxyId } from '../../src/utils/types';
+import { AssetProxyId, ERC20ProxyData, ERC721ProxyData, ProxyData } from '../../src/utils/types';
 import { provider, txDefaults, web3Wrapper } from '../../src/utils/web3_wrapper';
 
 chaiSetup.configure();
 const expect = chai.expect;
 const blockchainLifecycle = new BlockchainLifecycle(web3Wrapper);
 
-describe.only('AssetProxyDecoder', () => {
+describe.only('LibAssetProxyDecoder', () => {
     let owner: string;
     let testAssetProxyDecoder: TestLibAssetProxyDecoderContract;
+    let testAddress: string;
 
     before(async () => {
         // Setup accounts & addresses
         const accounts = await web3Wrapper.getAvailableAddressesAsync();
         owner = accounts[0];
+        testAddress = accounts[1];
         // Deploy TestLibMem
         testAssetProxyDecoder = await TestLibAssetProxyDecoderContract.deployFrom0xArtifactAsync(
             artifacts.TestLibAssetProxyDecoder,
@@ -41,32 +44,33 @@ describe.only('AssetProxyDecoder', () => {
     });
 
     describe('LibAssetProxyDecoder', () => {
-        /*it('should )', async () => {
-            await testAssetProxyDecoder.test1.sendTransactionAsync();
+        it('should correctly decode ERC20 proxy data)', async () => {
+            const encodedProxyData = assetProxyUtils.encodeERC20ProxyData(testAddress);
+            const expectedDecodedProxyData = assetProxyUtils.decodeERC20ProxyData(encodedProxyData);
+            let decodedAssetProxyId: number;
+            let decodedTokenAddress: string;
+            [decodedAssetProxyId, decodedTokenAddress] = await testAssetProxyDecoder.publicDecodeERC20Data.callAsync(
+                encodedProxyData,
+            );
+            expect(decodedAssetProxyId).to.be.equal(expectedDecodedProxyData.assetProxyId);
+            expect(decodedTokenAddress).to.be.equal(expectedDecodedProxyData.tokenAddress);
         });
 
-        it('should )', async () => {
-            await testLibMem.test2.sendTransactionAsync();
+        it('should correctly decode ERC721 proxy data)', async () => {
+            const tokenId = ZeroEx.generatePseudoRandomSalt();
+            const encodedProxyData = assetProxyUtils.encodeERC721ProxyData(testAddress, tokenId);
+            const expectedDecodedProxyData = assetProxyUtils.decodeERC721ProxyData(encodedProxyData);
+            let decodedAssetProxyId: number;
+            let decodedTokenAddress: string;
+            let decodedTokenId: BigNumber;
+            [
+                decodedAssetProxyId,
+                decodedTokenAddress,
+                decodedTokenId,
+            ] = await testAssetProxyDecoder.publicDecodeERC721Data.callAsync(encodedProxyData);
+            expect(decodedAssetProxyId).to.be.equal(expectedDecodedProxyData.assetProxyId);
+            expect(decodedTokenAddress).to.be.equal(expectedDecodedProxyData.tokenAddress);
+            expect(decodedTokenId).to.be.bignumber.equal(expectedDecodedProxyData.tokenId);
         });
-
-        it('should )', async () => {
-            await testLibMem.test3.sendTransactionAsync();
-        });
-
-        it('should )', async () => {
-            await testLibMem.test4.sendTransactionAsync();
-        });
-
-        it('should )', async () => {
-            await testLibMem.test5.sendTransactionAsync();
-        });
-
-        it('should )', async () => {
-            await testLibMem.test6.sendTransactionAsync();
-        });
-
-        it('should )', async () => {
-            return expect(testLibMem.test7.sendTransactionAsync()).to.be.rejectedWith(constants.REVERT);
-        });*/
     });
 });

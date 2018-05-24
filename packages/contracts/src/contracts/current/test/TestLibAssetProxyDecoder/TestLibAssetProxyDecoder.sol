@@ -36,7 +36,7 @@ contract TestLibAssetProxyDecoder is
 
     /// @dev Decodes ERC721 Asset Proxy data
     function publicDecodeERC721Data(bytes memory proxyData)
-        internal
+        public
         pure
         returns (
             uint8,
