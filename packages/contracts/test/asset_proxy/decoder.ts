@@ -19,7 +19,7 @@ chaiSetup.configure();
 const expect = chai.expect;
 const blockchainLifecycle = new BlockchainLifecycle(web3Wrapper);
 
-describe.only('LibAssetProxyDecoder', () => {
+describe('LibAssetProxyDecoder', () => {
     let owner: string;
     let testAssetProxyDecoder: TestLibAssetProxyDecoderContract;
     let testAddress: string;

@@ -1,27 +1,36 @@
-import { ZeroEx } from '0x.js';
+import { LogWithDecodedArgs, ZeroEx } from '0x.js';
 import { BlockchainLifecycle } from '@0xproject/dev-utils';
 import { BigNumber } from '@0xproject/utils';
 import * as chai from 'chai';
+import ethUtil = require('ethereumjs-util');
 import * as _ from 'lodash';
 import * as Web3 from 'web3';
 
 import { DummyERC20TokenContract } from '../../src/contract_wrappers/generated/dummy_e_r_c20_token';
+import {
+    DummyERC721ReceiverContract,
+    TokenReceivedContractEventArgs,
+} from '../../src/contract_wrappers/generated/dummy_e_r_c721_receiver';
 import { DummyERC721TokenContract } from '../../src/contract_wrappers/generated/dummy_e_r_c721_token';
 import { ERC20ProxyContract } from '../../src/contract_wrappers/generated/e_r_c20_proxy';
 import { ERC721ProxyContract } from '../../src/contract_wrappers/generated/e_r_c721_proxy';
+import { artifacts } from '../../src/utils/artifacts';
 import { assetProxyUtils } from '../../src/utils/asset_proxy_utils';
 import { chaiSetup } from '../../src/utils/chai_setup';
 import { constants } from '../../src/utils/constants';
 import { ERC20Wrapper } from '../../src/utils/erc20_wrapper';
 import { ERC721Wrapper } from '../../src/utils/erc721_wrapper';
+import { LogDecoder } from '../../src/utils/log_decoder';
 import { AssetProxyId } from '../../src/utils/types';
-import { provider, web3Wrapper } from '../../src/utils/web3_wrapper';
+import { provider, txDefaults, web3Wrapper } from '../../src/utils/web3_wrapper';
 
 chaiSetup.configure();
 const expect = chai.expect;
 const blockchainLifecycle = new BlockchainLifecycle(web3Wrapper);
 
 describe('Asset Transfer Proxies', () => {
+    const nullDataHex = '0x';
+
     let owner: string;
     let notAuthorized: string;
     let exchangeAddress: string;
@@ -30,6 +39,7 @@ describe('Asset Transfer Proxies', () => {
 
     let zrxToken: DummyERC20TokenContract;
     let erc721Token: DummyERC721TokenContract;
+    let erc721Receiver: DummyERC721ReceiverContract;
     let erc20Proxy: ERC20ProxyContract;
     let erc721Proxy: ERC721ProxyContract;
 
@@ -61,6 +71,12 @@ describe('Asset Transfer Proxies', () => {
         await erc721Proxy.addAuthorizedAddress.sendTransactionAsync(exchangeAddress, {
             from: owner,
         });
+
+        erc721Receiver = await DummyERC721ReceiverContract.deployFrom0xArtifactAsync(
+            artifacts.DummyERC721Receiver,
+            provider,
+            txDefaults,
+        );
 
         zeroEx = new ZeroEx(provider, {
             networkId: constants.TESTRPC_NETWORK_ID,
@@ -218,7 +234,7 @@ describe('Asset Transfer Proxies', () => {
         });
     });
 
-    describe('Transfer Proxy - ERC721', () => {
+    describe.only('Transfer Proxy - ERC721', () => {
         describe('transferFrom', () => {
             it('should successfully transfer tokens', async () => {
                 // Construct metadata for ERC721 proxy
@@ -243,6 +259,97 @@ describe('Asset Transfer Proxies', () => {
                 const newOwnerMakerAsset = await erc721Token.ownerOf.callAsync(erc721MakerTokenId);
                 expect(newOwnerMakerAsset).to.be.bignumber.equal(takerAddress);
             });
+
+            it.only('should call onERC721Received when transferring to a smart contract', async () => {
+                // Construct metadata for ERC721 proxy
+                const encodedProxyMetadata = assetProxyUtils.encodeERC721ProxyData(
+                    erc721Token.address,
+                    erc721MakerTokenId,
+                );
+                // Verify pre-condition
+                const ownerMakerAsset = await erc721Token.ownerOf.callAsync(erc721MakerTokenId);
+                expect(ownerMakerAsset).to.be.bignumber.equal(makerAddress);
+                // Perform a transfer from makerAddress to takerAddress
+                const erc20Balances = await erc20Wrapper.getBalancesAsync();
+                const amount = new BigNumber(1);
+                const txHash = await erc721Proxy.transferFrom.sendTransactionAsync(
+                    encodedProxyMetadata,
+                    makerAddress,
+                    erc721Receiver.address,
+                    amount,
+                    { from: exchangeAddress },
+                );
+                // Parse transaction logs
+                const tx = await zeroEx.awaitTransactionMinedAsync(txHash);
+                tx.logs = _.filter(tx.logs, log => log.address === erc721Receiver.address);
+                const logDecoder = new LogDecoder(constants.TESTRPC_NETWORK_ID);
+                tx.logs = _.map(tx.logs, log => logDecoder.decodeLogOrThrow(log));
+                // Validate log emitted  by erc721 receiver
+                expect(tx.logs.length).to.be.equal(1);
+                const tokenReceivedLog = tx.logs[0] as LogWithDecodedArgs<TokenReceivedContractEventArgs>;
+                expect(tokenReceivedLog.args.from).to.be.equal(makerAddress);
+                expect(tokenReceivedLog.args.tokenId).to.be.bignumber.equal(erc721MakerTokenId);
+                expect(tokenReceivedLog.args.data).to.be.equal(nullDataHex);
+                // Verify transfer was successful
+                const newOwnerMakerAsset = await erc721Token.ownerOf.callAsync(erc721MakerTokenId);
+                expect(newOwnerMakerAsset).to.be.bignumber.equal(erc721Receiver.address);
+            });
+
+            it('should call onERC721Received when transferring to a smart contract and receive extra data', async () => {
+                // Construct metadata for ERC721 proxy
+                const encodedProxyMetadata = assetProxyUtils.encodeERC721ProxyData(
+                    erc721Token.address,
+                    erc721MakerTokenId,
+                );
+                // Verify pre-condition
+                const ownerMakerAsset = await erc721Token.ownerOf.callAsync(erc721MakerTokenId);
+                expect(ownerMakerAsset).to.be.bignumber.equal(makerAddress);
+                // Perform a transfer from makerAddress to takerAddress
+                const erc20Balances = await erc20Wrapper.getBalancesAsync();
+                const amount = new BigNumber(1);
+                const txHash = await erc721Proxy.transferFrom.sendTransactionAsync(
+                    encodedProxyMetadata,
+                    makerAddress,
+                    erc721Receiver.address,
+                    amount,
+                    { from: exchangeAddress },
+                );
+                // Parse transaction logs
+                const tx = await zeroEx.awaitTransactionMinedAsync(txHash);
+                tx.logs = _.filter(tx.logs, log => log.address === erc721Receiver.address);
+                const logDecoder = new LogDecoder(constants.TESTRPC_NETWORK_ID);
+                tx.logs = _.map(tx.logs, log => logDecoder.decodeLogOrThrow(log));
+                // Verify erc721 receiver log emitted
+                console.log(tx.logs);
+                // Verify transfer was successful
+                const newOwnerMakerAsset = await erc721Token.ownerOf.callAsync(erc721MakerTokenId);
+                expect(newOwnerMakerAsset).to.be.bignumber.equal(erc721Receiver.address);
+            });
+
+            /*
+            it('should throw if receiving contract does not have onERC721Received', async () => {
+                // Construct metadata for ERC721 proxy
+                const encodedProxyMetadata = assetProxyUtils.encodeERC721ProxyData(
+                    erc721Token.address,
+                    erc721MakerTokenId,
+                );
+                // Verify pre-condition
+                const ownerMakerAsset = await erc721Token.ownerOf.callAsync(erc721MakerTokenId);
+                expect(ownerMakerAsset).to.be.bignumber.equal(makerAddress);
+                // Perform a transfer from makerAddress to takerAddress
+                const erc20Balances = await erc20Wrapper.getBalancesAsync();
+                const amount = new BigNumber(1);
+                await erc721Proxy.transferFrom.sendTransactionAsync(
+                    encodedProxyMetadata,
+                    makerAddress,
+                    takerAddress,
+                    amount,
+                    { from: exchangeAddress },
+                );
+                // Verify transfer was successful
+                const newOwnerMakerAsset = await erc721Token.ownerOf.callAsync(erc721MakerTokenId);
+                expect(newOwnerMakerAsset).to.be.bignumber.equal(takerAddress);
+            });*/
 
             it('should throw if transferring 0 amount of a token', async () => {
                 // Construct metadata for ERC721 proxy

@@ -20,8 +20,8 @@
     },
     "contracts": [
         "DummyERC20Token",
-        "DummyERC721Token",
         "DummyERC721Receiver",
+        "DummyERC721Token",
         "ERC20Proxy",
         "ERC721Proxy",
         "Exchange",
