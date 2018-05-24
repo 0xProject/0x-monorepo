@@ -15,9 +15,9 @@
     jsonschema "^1.2.0"
     lodash.values "^4.3.0"
 
-"@0xproject/types@0.6.3":
-  version "0.6.3"
-  resolved "https://registry.yarnpkg.com/@0xproject/types/-/types-0.6.3.tgz#0bc066967aad4151011b6e478bb707b1afb8504b"
+"@0xproject/types@0.7.0":
+  version "0.7.0"
+  resolved "https://registry.yarnpkg.com/@0xproject/types/-/types-0.7.0.tgz#fad13925ee92ad4ee1980668a5cb2bed4dcaab8f"
   dependencies:
     "@types/node" "^8.0.53"
     bignumber.js "~4.1.0"
