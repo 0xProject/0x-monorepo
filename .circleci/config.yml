@@ -3,7 +3,7 @@ version: 2
 jobs:
   build:
     docker:
-      - image: circleci/node:6.12
+      - image: circleci/node:9
     environment:
       CONTRACTS_COMMIT_HASH: '9ed05f5'
     working_directory: ~/repo
