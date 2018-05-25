@@ -33,7 +33,7 @@ jobs:
             - ~/repo
   test-1:
     docker:
-      - image: circleci/node:6.12
+      - image: circleci/node:9
     working_directory: ~/repo
     steps:
       - restore_cache:
@@ -51,7 +51,7 @@ jobs:
             - ~/repo/packages/sol-compiler/coverage/lcov.info
   test-contracts:
     docker:
-      - image: circleci/node:6.12
+      - image: circleci/node:9
     working_directory: ~/repo
     steps:
       - restore_cache:
@@ -60,7 +60,7 @@ jobs:
       - run: yarn wsrun test:circleci contracts
   test-2:
     docker:
-      - image: circleci/node:6.12
+      - image: circleci/node:9
     working_directory: ~/repo
     steps:
       - restore_cache:
@@ -104,7 +104,7 @@ jobs:
   static-tests:
     working_directory: ~/repo
     docker:
-      - image: circleci/node:6.12
+      - image: circleci/node:9
     steps:
       - restore_cache:
           keys:
@@ -113,7 +113,7 @@ jobs:
       - run: yarn lerna:run lint
   submit-coverage:
     docker:
-      - image: circleci/node:6.12
+      - image: circleci/node:9
     working_directory: ~/repo
     steps:
       - restore_cache:
