@@ -1,6 +1,7 @@
 export { HttpClient } from './http_client';
 export { BrowserWebSocketOrderbookChannel } from './browser_ws_orderbook_channel';
 export { NodeWebSocketOrderbookChannel } from './node_ws_orderbook_channel';
+export { orderbookChannelFactory } from './orderbook_channel_factory';
 export {
     Client,
     FeesRequest,

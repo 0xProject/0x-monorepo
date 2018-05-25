@@ -1,5 +1,4 @@
 import * as _ from 'lodash';
-import * as WebSocket from 'websocket';
 
 import {
     OrderbookChannel,
@@ -22,17 +21,16 @@ interface Subscription {
  * that implements the standard relayer API v0 in a browser environment
  */
 export class BrowserWebSocketOrderbookChannel implements OrderbookChannel {
-    private _apiEndpointUrl: string;
-    private _clientIfExists?: WebSocket.w3cwebsocket;
+    private _client: WebSocket;
     private _subscriptions: Subscription[] = [];
     /**
      * Instantiates a new WebSocketOrderbookChannel instance
      * @param   url                 The relayer API base WS url you would like to interact with
      * @return  An instance of WebSocketOrderbookChannel
      */
-    constructor(url: string) {
-        assert.isUri('url', url);
-        this._apiEndpointUrl = url;
+    constructor(client: WebSocket) {
+        // assert.isUri('url', url);
+        this._client = client;
     }
     /**
      * Subscribe to orderbook snapshots and updates from the websocket
@@ -55,40 +53,31 @@ export class BrowserWebSocketOrderbookChannel implements OrderbookChannel {
             requestId: this._subscriptions.length - 1,
             payload: subscriptionOpts,
         };
-        if (_.isUndefined(this._clientIfExists)) {
-            this._clientIfExists = new WebSocket.w3cwebsocket(this._apiEndpointUrl);
-            this._clientIfExists.onopen = () => {
-                this._sendMessage(subscribeMessage);
-            };
-            this._clientIfExists.onerror = error => {
-                this._alertAllHandlersToError(error);
-            };
-            this._clientIfExists.onclose = () => {
-                _.forEach(this._subscriptions, subscription => {
-                    subscription.handler.onClose(this, subscription.subscriptionOpts);
-                });
-            };
-            this._clientIfExists.onmessage = message => {
-                this._handleWebSocketMessage(message);
-            };
-        } else {
-            this._sendMessage(subscribeMessage);
-        }
+        this._client.onerror = () => {
+            this._alertAllHandlersToError(new Error('hello'));
+        };
+        this._client.onclose = () => {
+            _.forEach(this._subscriptions, subscription => {
+                subscription.handler.onClose(this, subscription.subscriptionOpts);
+            });
+        };
+        this._client.onmessage = message => {
+            this._handleWebSocketMessage(message);
+        };
+        this._sendMessage(subscribeMessage);
     }
     /**
      * Close the websocket and stop receiving updates
      */
     public close(): void {
-        if (!_.isUndefined(this._clientIfExists)) {
-            this._clientIfExists.close();
-        }
+        this._client.close();
     }
     /**
      * Send a message to the client if it has been instantiated and it is open
      */
     private _sendMessage(message: any): void {
-        if (!_.isUndefined(this._clientIfExists) && this._clientIfExists.readyState === WebSocket.w3cwebsocket.OPEN) {
-            this._clientIfExists.send(JSON.stringify(message));
+        if (this._client.readyState === WebSocket.OPEN) {
+            this._client.send(JSON.stringify(message));
         }
     }
     /**
