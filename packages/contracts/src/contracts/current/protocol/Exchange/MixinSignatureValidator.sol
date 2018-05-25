@@ -132,7 +132,7 @@ contract MixinSignatureValidator is
             return isValid;
 
         // Signed using web3.eth_sign
-        } else if (signatureType == SignatureType.Ecrecover) {
+        } else if (signatureType == SignatureType.EthSign) {
             require(
                 signature.length == 65,
                 INVALID_SIGNATURE_LENGTH
@@ -165,9 +165,9 @@ contract MixinSignatureValidator is
             isValid = signer == msg.sender;
             return isValid;
 
-        // Signature verified by signer contract.
-        // If used with an order, the maker of the order is the signer contract.
-        } else if (signatureType == SignatureType.Signer) {
+        // Signature verified by wallet contract.
+        // If used with an order, the maker of the order is the wallet contract.
+        } else if (signatureType == SignatureType.Wallet) {
             isValid = ISigner(signer).isValidSignature(hash, signature);
             return isValid;
 

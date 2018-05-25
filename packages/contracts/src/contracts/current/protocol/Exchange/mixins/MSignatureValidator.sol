@@ -28,9 +28,9 @@ contract MSignatureValidator is
         Illegal,    // 0x00, default value
         Invalid,    // 0x01
         EIP712,     // 0x02
-        Ecrecover,  // 0x03
+        EthSign,    // 0x03
         Caller,     // 0x04
-        Signer,     // 0x05
+        Wallet,     // 0x05
         Validator,  // 0x06
         PreSigned,  // 0x07
         Trezor      // 0x08
