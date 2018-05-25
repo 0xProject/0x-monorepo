@@ -4,6 +4,7 @@ import { GridTile } from 'material-ui/GridList';
 import * as React from 'react';
 
 import { TopTokens } from 'ts/components/relayer_index/relayer_top_tokens';
+import { Container } from 'ts/components/ui/container';
 import { Island } from 'ts/components/ui/island';
 import { TokenIcon } from 'ts/components/ui/token_icon';
 import { Token, WebsiteBackendRelayerInfo } from 'ts/types';
@@ -58,9 +59,12 @@ const styles: Styles = {
 };
 
 const FALLBACK_IMG_SRC = '/images/landing/hero_chip_image.png';
+const NO_CONTENT_MESSAGE = '--';
 
 export const RelayerGridTile: React.StatelessComponent<RelayerGridTileProps> = (props: RelayerGridTileProps) => {
     const link = props.relayerInfo.appUrl || props.relayerInfo.url;
+    const topTokens = props.relayerInfo.topTokens;
+    const weeklyTxnVolume = props.relayerInfo.weeklyTxnVolume;
     return (
         <Island style={styles.root} Component={GridTile}>
             <div style={styles.innerDiv}>
@@ -75,19 +79,36 @@ export const RelayerGridTile: React.StatelessComponent<RelayerGridTileProps> = (
                     <div className="py1" style={styles.relayerNameLabel}>
                         {props.relayerInfo.name}
                     </div>
-                    <div style={styles.weeklyTradeVolumeLabel}>{props.relayerInfo.weeklyTxnVolume}</div>
-                    <div className="py1" style={styles.subLabel}>
-                        Weekly Trade Volume
-                    </div>
-                    <TopTokens tokens={props.relayerInfo.topTokens} networkId={props.networkId} />
-                    <div className="py1" style={styles.subLabel}>
-                        Top tokens
-                    </div>
+                    <Section titleText="Weekly Trade Volume">
+                        {!_.isUndefined(weeklyTxnVolume) && (
+                            <div style={styles.weeklyTradeVolumeLabel}>{props.relayerInfo.weeklyTxnVolume}</div>
+                        )}
+                    </Section>
+                    <Container marginTop="10px">
+                        <Section titleText="Top Tokens">
+                            {!_.isEmpty(topTokens) && <TopTokens tokens={topTokens} networkId={props.networkId} />}
+                        </Section>
+                    </Container>
                 </div>
             </div>
         </Island>
     );
 };
+
+interface SectionProps {
+    titleText: string;
+    children?: React.ReactNode;
+}
+const Section = (props: SectionProps) => {
+    return (
+        <div>
+            <div style={styles.subLabel}>{props.titleText}</div>
+            <Container marginTop="6px">{props.children || <NoContent />}</Container>
+        </div>
+    );
+};
+
+const NoContent = () => <div style={styles.subLabel}>{NO_CONTENT_MESSAGE}</div>;
 
 interface ImgWithFallbackProps {
     src?: string;
