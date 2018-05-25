@@ -106,16 +106,7 @@ jobs:
           key: coverage-metacoin-{{ .Environment.CIRCLE_SHA1 }}
           paths:
             - ~/repo/packages/metacoin/coverage/lcov.info
-  lint:
-    working_directory: ~/repo
-    docker:
-      - image: circleci/node:6.12
-    steps:
-      - restore_cache:
-          keys:
-            - repo-{{ .Environment.CIRCLE_SHA1 }}
-      - run: yarn lerna:run lint
-  prettier:
+  static_tests:
     working_directory: ~/repo
     docker:
       - image: circleci/node:6.12
@@ -124,6 +115,7 @@ jobs:
           keys:
             - repo-{{ .Environment.CIRCLE_SHA1 }}
       - run: yarn prettier:ci
+      - run: yarn lerna:run lint
   submit-coverage:
     docker:
       - image: circleci/node:6.12
@@ -168,9 +160,6 @@ workflows:
   main:
     jobs:
       - build
-      # - test-installation:
-      #     requires:
-      #       - build
       - test-contract-wrappers:
           requires:
             - build
@@ -183,10 +172,7 @@ workflows:
       - test-rest:
           requires:
             - build
-      - prettier:
-          requires:
-            - build
-      - lint:
+      - static_tests:
           requires:
             - build
       - submit-coverage:
