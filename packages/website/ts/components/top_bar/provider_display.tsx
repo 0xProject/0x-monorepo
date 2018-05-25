@@ -39,7 +39,10 @@ const styles: Styles = {
 export class ProviderDisplay extends React.Component<ProviderDisplayProps, ProviderDisplayState> {
     public render(): React.ReactNode {
         const isAddressAvailable = !_.isEmpty(this.props.userAddress);
-        const isExternallyInjectedProvider = utils.isExternallyInjected(this.props.providerType, this.props.injectedProviderName);
+        const isExternallyInjectedProvider = utils.isExternallyInjected(
+            this.props.providerType,
+            this.props.injectedProviderName,
+        );
         const displayAddress = isAddressAvailable
             ? utils.getAddressBeginAndEnd(this.props.userAddress)
             : isExternallyInjectedProvider
