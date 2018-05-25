@@ -193,6 +193,7 @@ export interface ERC721ProxyData {
     assetProxyId: AssetProxyId;
     tokenAddress: string;
     tokenId: BigNumber;
+    data: string;
 }
 
 export interface ProxyData {

@@ -130,4 +130,29 @@ contract TestLibBytes is
         writeUint256(b, index, input);
         return b;
     }
+
+
+    function publicReadBytes(
+        bytes memory b,
+        uint256 index)
+        public
+        pure
+        returns (bytes memory result)
+    {
+        result = readBytes(b, index);
+        return result;
+    }
+
+
+    function publicWriteBytes(
+        bytes memory b,
+        uint256 index,
+        bytes memory input)
+        public
+        pure
+        returns (bytes memory)
+    {
+        writeBytes(b, index, input);
+        return b;
+    }
 }
