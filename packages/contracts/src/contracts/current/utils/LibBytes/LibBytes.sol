@@ -300,24 +300,21 @@ contract LibBytes is
         returns (bytes memory result)
     {
         // Read length of nested bytes
-        require(
-            b.length >= index + 32,
-            GTE_32_LENGTH_REQUIRED
-        );
         uint256 nestedBytesLength = readUint256(b, index);
+        index += 32;
 
         // Assert length of <b> is valid, given
         // length of nested bytes
         require(
-            b.length >= index + 32 + nestedBytesLength,
+            b.length >= index + nestedBytesLength,
             GTE_32_LENGTH_REQUIRED
         );
 
         // Allocate memory and copy value to result
         result = new bytes(nestedBytesLength);
         memcpy(
-            getMemAddress(result) + 32,    // +32 skips array length
-            getMemAddress(b) + index + 32, // +32 skips array length
+            getMemAddress(result) + 32, // +32 skips array length
+            getMemAddress(b) + index + 32,
             nestedBytesLength
         );
 
@@ -344,9 +341,9 @@ contract LibBytes is
 
         // Copy <input> into <b>
         memcpy(
-            getMemAddress(b) + index,
-            getMemAddress(input),
-            input.length + 32 /* 32 bytes to store length */
+            getMemAddress(b) + index + 32,  // +32 to skip length of <b>
+            getMemAddress(input),           // include length of byte array
+            input.length + 32               // +32 bytes to store length
         );
     }
 }

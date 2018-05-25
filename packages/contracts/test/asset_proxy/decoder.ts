@@ -56,21 +56,45 @@ describe('LibAssetProxyDecoder', () => {
             expect(decodedTokenAddress).to.be.equal(expectedDecodedProxyData.tokenAddress);
         });
 
-        it('should correctly decode ERC721 proxy data)', async () => {
+        it('should correctly decode ERC721 proxy data', async () => {
             const tokenId = ZeroEx.generatePseudoRandomSalt();
             const encodedProxyData = assetProxyUtils.encodeERC721ProxyData(testAddress, tokenId);
             const expectedDecodedProxyData = assetProxyUtils.decodeERC721ProxyData(encodedProxyData);
             let decodedAssetProxyId: number;
             let decodedTokenAddress: string;
             let decodedTokenId: BigNumber;
+            let decodedData: string;
             [
                 decodedAssetProxyId,
                 decodedTokenAddress,
                 decodedTokenId,
+                decodedData,
             ] = await testAssetProxyDecoder.publicDecodeERC721Data.callAsync(encodedProxyData);
             expect(decodedAssetProxyId).to.be.equal(expectedDecodedProxyData.assetProxyId);
             expect(decodedTokenAddress).to.be.equal(expectedDecodedProxyData.tokenAddress);
             expect(decodedTokenId).to.be.bignumber.equal(expectedDecodedProxyData.tokenId);
+            expect(decodedData).to.be.equal(expectedDecodedProxyData.data);
+        });
+
+        it('should correctly decode ERC721 proxy data with receiver data', async () => {
+            const tokenId = ZeroEx.generatePseudoRandomSalt();
+            const data = ethUtil.bufferToHex(assetProxyUtils.encodeUint256(ZeroEx.generatePseudoRandomSalt())) + 'FFFF';
+            const encodedProxyData = assetProxyUtils.encodeERC721ProxyData(testAddress, tokenId, data);
+            const expectedDecodedProxyData = assetProxyUtils.decodeERC721ProxyData(encodedProxyData);
+            let decodedAssetProxyId: number;
+            let decodedTokenAddress: string;
+            let decodedTokenId: BigNumber;
+            let decodedData: string;
+            [
+                decodedAssetProxyId,
+                decodedTokenAddress,
+                decodedTokenId,
+                decodedData,
+            ] = await testAssetProxyDecoder.publicDecodeERC721Data.callAsync(encodedProxyData);
+            expect(decodedAssetProxyId).to.be.equal(expectedDecodedProxyData.assetProxyId);
+            expect(decodedTokenAddress).to.be.equal(expectedDecodedProxyData.tokenAddress);
+            expect(decodedTokenId).to.be.bignumber.equal(expectedDecodedProxyData.tokenId);
+            expect(decodedData).to.be.equal(expectedDecodedProxyData.data);
         });
     });
 });

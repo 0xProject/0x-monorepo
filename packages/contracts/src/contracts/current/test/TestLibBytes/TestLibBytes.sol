@@ -155,6 +155,7 @@ contract TestLibBytes is
         return b;
     }
 
+=======
     /// @dev Reads the first 4 bytes from a byte array of arbitrary length.
     /// @param b Byte array to read first 4 bytes from.
     /// @return First 4 bytes of data.
@@ -165,5 +166,29 @@ contract TestLibBytes is
     {
         result = readFirst4(b);
         return result;
+    }
+
+    function publicReadBytes(
+        bytes memory b,
+        uint256 index)
+        public
+        pure
+        returns (bytes memory result)
+    {
+        result = readBytes(b, index);
+        return result;
+    }
+
+
+    function publicWriteBytes(
+        bytes memory b,
+        uint256 index,
+        bytes memory input)
+        public
+        pure
+        returns (bytes memory)
+    {
+        writeBytes(b, index, input);
+        return b;
     }
 }

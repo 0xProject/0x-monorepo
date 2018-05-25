@@ -6,7 +6,8 @@ import ethUtil = require('ethereumjs-util');
 
 import { TestLibBytesContract } from '../../src/generated_contract_wrappers/test_lib_bytes';
 import { artifacts } from '../../src/utils/artifacts';
-import { expectRevertOrOtherErrorAsync } from '../../src/utils/assertions';
+import { expectRevertOrOtherErrorAsync, expectRevertOrOtherErrorAsync } from '../../src/utils/assertions';
+import { assetProxyUtils } from '../../src/utils/asset_proxy_utils';
 import { chaiSetup } from '../../src/utils/chai_setup';
 import { constants } from '../../src/utils/constants';
 import { provider, txDefaults, web3Wrapper } from '../../src/utils/web3_wrapper';
@@ -28,6 +29,15 @@ describe('LibBytes', () => {
     let testAddress: string;
     const testBytes32 = '0x102030405060708090a0b0c0d0e0f0102030405060708090a0b0c0d0e0f01020';
     const testUint256 = new BigNumber(testBytes32, 16);
+    let shortData: string;
+    let shortTestBytes: string;
+    let shortTestBytesAsBuffer: Buffer;
+    let wordOfData: string;
+    let wordOfTestBytes: string;
+    let wordOfTestBytesAsBuffer: Buffer;
+    let longData: string;
+    let longTestBytes: string;
+    let longTestBytesAsBuffer: Buffer;
 
     before(async () => {
         await blockchainLifecycle.startAsync();
@@ -48,6 +58,26 @@ describe('LibBytes', () => {
         expect(byteArrayLongerThan32BytesLength).to.be.greaterThan(32);
         const testBytes32Length = ethUtil.toBuffer(testBytes32).byteLength;
         expect(testBytes32Length).to.be.equal(32);
+        // Create short test bytes
+        shortData = '0xffffaa';
+        const encodedShortData = ethUtil.toBuffer(shortData);
+        const shortDataLength = new BigNumber(encodedShortData.byteLength);
+        const encodedShortDataLength = assetProxyUtils.encodeUint256(shortDataLength);
+        shortTestBytesAsBuffer = Buffer.concat([encodedShortDataLength, encodedShortData]);
+        shortTestBytes = ethUtil.bufferToHex(shortTestBytesAsBuffer);
+        // Create test bytes one word in length
+        wordOfData = ethUtil.bufferToHex(assetProxyUtils.encodeUint256(ZeroEx.generatePseudoRandomSalt()));
+        const encodedWordOfData = ethUtil.toBuffer(wordOfData);
+        const wordOfDataLength = new BigNumber(encodedWordOfData.byteLength);
+        const encodedWordOfDataLength = assetProxyUtils.encodeUint256(wordOfDataLength);
+        wordOfTestBytesAsBuffer = Buffer.concat([encodedWordOfDataLength, encodedWordOfData]);
+        wordOfTestBytes = ethUtil.bufferToHex(wordOfTestBytesAsBuffer);
+        // Create long test bytes (combines short test bytes with word of test bytes)
+        longData = ethUtil.bufferToHex(Buffer.concat([encodedShortData, encodedWordOfData]));
+        const longDataLength = new BigNumber(encodedShortData.byteLength + encodedWordOfData.byteLength);
+        const encodedLongDataLength = assetProxyUtils.encodeUint256(longDataLength);
+        longTestBytesAsBuffer = Buffer.concat([encodedLongDataLength, encodedShortData, encodedWordOfData]);
+        longTestBytes = ethUtil.bufferToHex(longTestBytesAsBuffer);
     });
     beforeEach(async () => {
         await blockchainLifecycle.startAsync();
@@ -285,6 +315,7 @@ describe('LibBytes', () => {
     });
     */
 
+=======
     describe('readFirst4', () => {
         // AssertionError: expected promise to be rejected with an error including 'revert' but it was fulfilled with '0x08c379a0'
         it('should revert if byte array has a length < 4', async () => {
@@ -300,4 +331,92 @@ describe('LibBytes', () => {
             expect(first4Bytes).to.equal(expectedFirst4Bytes);
         });
     });
+
+    describe('readBytes', () => {
+        it('should successfully read short, nested array of bytes when it takes up the whole array', async () => {
+            const testBytesOffset = new BigNumber(0);
+            const bytes = await libBytes.publicReadBytes.callAsync(shortTestBytes, testBytesOffset);
+            return expect(bytes).to.be.equal(shortData);
+        });
+
+        it('should successfully read short, nested array of bytes when it is offset in the array', async () => {
+            const prefixByteArrayBuffer = ethUtil.toBuffer('0xabcdef');
+            const shortDataAsBuffer = ethUtil.toBuffer(shortData);
+            const combinedByteArrayBuffer = Buffer.concat([prefixByteArrayBuffer, shortTestBytesAsBuffer]);
+            const combinedByteArray = ethUtil.bufferToHex(combinedByteArrayBuffer);
+            const testUint256Offset = new BigNumber(prefixByteArrayBuffer.byteLength);
+            const bytes = await libBytes.publicReadBytes.callAsync(combinedByteArray, testUint256Offset);
+            return expect(bytes).to.be.equal(shortData);
+        });
+
+        it('should successfully read a nested array of bytes - one word in length - when it takes up the whole array', async () => {
+            const testBytesOffset = new BigNumber(0);
+            const bytes = await libBytes.publicReadBytes.callAsync(wordOfTestBytes, testBytesOffset);
+            return expect(bytes).to.be.equal(wordOfData);
+        });
+
+        it('should successfully read a nested array of bytes - one word in length - when it is offset in the array', async () => {
+            const prefixByteArrayBuffer = ethUtil.toBuffer('0xabcdef');
+            const wordOfDataAsBuffer = ethUtil.toBuffer(wordOfData);
+            const combinedByteArrayBuffer = Buffer.concat([prefixByteArrayBuffer, wordOfTestBytesAsBuffer]);
+            const combinedByteArray = ethUtil.bufferToHex(combinedByteArrayBuffer);
+            const testUint256Offset = new BigNumber(prefixByteArrayBuffer.byteLength);
+            const bytes = await libBytes.publicReadBytes.callAsync(combinedByteArray, testUint256Offset);
+            return expect(bytes).to.be.equal(wordOfData);
+        });
+
+        it('should successfully read long, nested array of bytes when it takes up the whole array', async () => {
+            const testBytesOffset = new BigNumber(0);
+            const bytes = await libBytes.publicReadBytes.callAsync(longTestBytes, testBytesOffset);
+            return expect(bytes).to.be.equal(longData);
+        });
+
+        it('should successfully read long, nested array of bytes when it is offset in the array', async () => {
+            const prefixByteArrayBuffer = ethUtil.toBuffer('0xabcdef');
+            const longDataAsBuffer = ethUtil.toBuffer(longData);
+            const combinedByteArrayBuffer = Buffer.concat([prefixByteArrayBuffer, longTestBytesAsBuffer]);
+            const combinedByteArray = ethUtil.bufferToHex(combinedByteArrayBuffer);
+            const testUint256Offset = new BigNumber(prefixByteArrayBuffer.byteLength);
+            const bytes = await libBytes.publicReadBytes.callAsync(combinedByteArray, testUint256Offset);
+            return expect(bytes).to.be.equal(longData);
+        });
+
+        it('should fail if the byte array is too short to hold the length of a nested byte array)', async () => {
+            // The length of the nested array is 32 bytes. By storing less than 32 bytes, a length cannot be read.
+            const offset = new BigNumber(0);
+            return expect(libBytes.publicReadBytes.callAsync(byteArrayShorterThan32Bytes, offset)).to.be.rejectedWith(
+                constants.REVERT,
+            );
+        });
+
+        it('should fail if we store a nested byte array length, without a nested byte array)', async () => {
+            const offset = new BigNumber(0);
+            return expect(libBytes.publicReadBytes.callAsync(testBytes32, offset)).to.be.rejectedWith(constants.REVERT);
+        });
+
+        it('should fail if the length between the offset and end of the byte array is too short to hold the length of a nested byte array)', async () => {
+            const badOffset = new BigNumber(ethUtil.toBuffer(byteArrayShorterThan32Bytes).byteLength);
+            return expect(
+                libBytes.publicReadBytes.callAsync(byteArrayShorterThan32Bytes, badOffset),
+            ).to.be.rejectedWith(constants.REVERT);
+        });
+
+        it('should fail if the length between the offset and end of the byte array is too short to hold the nested byte array)', async () => {
+            const badOffset = new BigNumber(ethUtil.toBuffer(testBytes32).byteLength);
+            return expect(libBytes.publicReadBytes.callAsync(testBytes32, badOffset)).to.be.rejectedWith(
+                constants.REVERT,
+            );
+        });
+    });
+
+    /// @TODO Implement test cases for writeUint256. Test template below.
+    ///       Currently, the generated contract wrappers do not support this library's write methods.
+    /*
+    describe('writeBytes', () => {
+        it('should successfully write bytes when it takes up the whole array)', async () => {});
+        it('should successfully write bytes when it is offset in the array)', async () => {});
+        it('should fail if the byte array is too short to hold the nested bytes)', async () => {});
+        it('should fail if the length between the offset and end of the byte array is too short to hold the nested bytes)', async () => {});
+    });
+    */
 });
