@@ -19,6 +19,7 @@ interface ConnectedState {
 
 interface ConnectedDispatch {
     onClose: () => void;
+    setOnboardingStep: (stepIndex: number) => void;
 }
 
 const mapStateToProps = (state: State): ConnectedState => ({
@@ -35,6 +36,12 @@ const mapDispatchToProps = (dispatch: Dispatch<State>): ConnectedDispatch => ({
         dispatch({
             type: ActionTypes.UpdatePortalOnboardingShowing,
             data: false,
+        });
+    },
+    setOnboardingStep: (stepIndex: number): void => {
+        dispatch({
+            type: ActionTypes.UpdatePortalOnboardingStep,
+            data: stepIndex,
         });
     },
 });
