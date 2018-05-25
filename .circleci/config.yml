@@ -19,8 +19,6 @@ jobs:
           key: dependency-cache-{{ checksum "package.json" }}
           paths:
             - ./node_modules
-      - run: wget https://s3.amazonaws.com/testrpc-shapshots/${CONTRACTS_COMMIT_HASH}.zip
-      - run: unzip ${CONTRACTS_COMMIT_HASH}.zip -d testrpc_snapshot
       - run: node ./node_modules/lerna/bin/lerna.js bootstrap
       - run: yarn build
       - save_cache:
@@ -36,7 +34,7 @@ jobs:
           keys:
             - repo-{{ .Environment.CIRCLE_SHA1 }}
       - run: yarn test:installation
-  test-0xjs:
+  test-contract-wrappers:
     docker:
       - image: circleci/node:6.12
     working_directory: ~/repo
@@ -44,15 +42,11 @@ jobs:
       - restore_cache:
           keys:
             - repo-{{ .Environment.CIRCLE_SHA1 }}
-      - run:
-          name: testrpc
-          command: npm run testrpc -- --db testrpc_snapshot
-          background: true
-      - run: yarn wsrun test:circleci 0x.js
+      - run: yarn wsrun test:circleci @0xproject/contract-wrappers
       - save_cache:
-          key: coverage-0xjs-{{ .Environment.CIRCLE_SHA1 }}
+          key: coverage-contract-wrappers-{{ .Environment.CIRCLE_SHA1 }}
           paths:
-            - ~/repo/packages/0x.js/coverage/lcov.info
+            - ~/repo/packages/contract-wrappers/coverage/lcov.info
   test-contracts:
     docker:
       - image: circleci/node:6.12
@@ -61,10 +55,6 @@ jobs:
       - restore_cache:
           keys:
             - repo-{{ .Environment.CIRCLE_SHA1 }}
-      - run:
-          name: testrpc
-          command: npm run testrpc -- --db testrpc_snapshot
-          background: true
       - run: yarn wsrun test:circleci contracts
   test-sol-compiler:
     docker:
@@ -74,10 +64,6 @@ jobs:
       - restore_cache:
           keys:
             - repo-{{ .Environment.CIRCLE_SHA1 }}
-      - run:
-          name: testrpc
-          command: npm run testrpc -- --db testrpc_snapshot
-          background: true
       - run: yarn wsrun test:circleci @0xproject/sol-compiler
       - save_cache:
           key: coverage-sol-compiler-{{ .Environment.CIRCLE_SHA1 }}
@@ -91,11 +77,7 @@ jobs:
       - restore_cache:
           keys:
             - repo-{{ .Environment.CIRCLE_SHA1 }}
-      - run:
-          name: testrpc
-          command: npm run testrpc -- --db testrpc_snapshot
-          background: true
-      - run: yarn wsrun test:circleci --exclude contracts --exclude 0x.js --exclude @0xproject/sol-compiler --stages --exclude-missing
+      - run: yarn wsrun test:circleci --exclude contracts --exclude @0xproject/contract-wrappers --exclude @0xproject/sol-compiler --stages --exclude-missing
       - save_cache:
           key: coverage-assert-{{ .Environment.CIRCLE_SHA1 }}
           paths:
@@ -158,6 +140,9 @@ jobs:
             - coverage-connect-{{ .Environment.CIRCLE_SHA1 }}
       - restore_cache:
           keys:
+            - coverage-contract-wrappers-{{ .Environment.CIRCLE_SHA1 }}
+      - restore_cache:
+          keys:
             - coverage-dev-utils-{{ .Environment.CIRCLE_SHA1 }}
       - restore_cache:
           keys:
@@ -186,7 +171,7 @@ workflows:
       # - test-installation:
       #     requires:
       #       - build
-      - test-0xjs:
+      - test-contract-wrappers:
           requires:
             - build
       - test-contracts:
@@ -206,6 +191,6 @@ workflows:
             - build
       - submit-coverage:
           requires:
-            - test-0xjs
+            - test-contract-wrappers
             - test-sol-compiler
             - test-rest
