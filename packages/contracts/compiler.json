@@ -19,6 +19,7 @@
         }
     },
     "contracts": [
+        "AssetProxyOwner",
         "DummyERC20Token",
         "DummyERC721Token",
         "ERC20Proxy",
@@ -27,7 +28,6 @@
         "MixinAuthorizable",
         "MultiSigWallet",
         "MultiSigWalletWithTimeLock",
-        "MultiSigWalletWithTimeLockExceptRemoveAuthorizedAddress",
         "TestAssetProxyDispatcher",
         "TestLibBytes",
         "TestLibs",

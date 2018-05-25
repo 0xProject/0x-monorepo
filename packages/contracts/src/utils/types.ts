@@ -99,7 +99,7 @@ export enum ContractName {
     ZRXToken = 'ZRXToken',
     DummyERC20Token = 'DummyERC20Token',
     EtherToken = 'WETH9',
-    MultiSigWalletWithTimeLockExceptRemoveAuthorizedAddress = 'MultiSigWalletWithTimeLockExceptRemoveAuthorizedAddress',
+    AssetProxyOwner = 'AssetProxyOwner',
     AccountLevels = 'AccountLevels',
     EtherDelta = 'EtherDelta',
     Arbitrage = 'Arbitrage',

@@ -130,4 +130,16 @@ contract TestLibBytes is
         writeUint256(b, index, input);
         return b;
     }
+
+    /// @dev Reads the first 4 bytes from a byte array of arbitrary length.
+    /// @param b Byte array to read first 4 bytes from.
+    /// @return First 4 bytes of data.
+    function publicReadFirst4(bytes memory b)
+        public
+        pure
+        returns (bytes4 result)
+    {
+        result = readFirst4(b);
+        return result;
+    }
 }
