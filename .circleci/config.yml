@@ -11,29 +11,26 @@ jobs:
       - checkout
       - run: echo 'export PATH=$HOME/CIRCLE_PROJECT_REPONAME/node_modules/.bin:$PATH' >> $BASH_ENV
       - restore_cache:
-          key: dependency-cache-{{ checksum "package.json" }}
+          name: Restore Yarn Package Cache
+          keys:
+            - yarn-packages-{{ .Branch }}-{{ checksum "yarn.lock" }}
+            - yarn-packages-{{ .Branch }}
+            - yarn-packages-master
+            - yarn-packages-
       - run:
           name: yarn
-          command: yarn --frozen-lockfile
+          command: yarn --frozen-lockfile install
       - save_cache:
-          key: dependency-cache-{{ checksum "package.json" }}
+          name: Save Yarn Package Cache
+          key: yarn-packages-{{ .Branch }}-{{ checksum "yarn.lock" }}
           paths:
-            - ./node_modules
+            - node_modules/
       - run: node ./node_modules/lerna/bin/lerna.js bootstrap
       - run: yarn build
       - save_cache:
           key: repo-{{ .Environment.CIRCLE_SHA1 }}
           paths:
             - ~/repo
-  test-installation:
-    docker:
-      - image: circleci/node:6.12
-    working_directory: ~/repo
-    steps:
-      - restore_cache:
-          keys:
-            - repo-{{ .Environment.CIRCLE_SHA1 }}
-      - run: yarn test:installation
   test-contract-wrappers:
     docker:
       - image: circleci/node:6.12
@@ -106,7 +103,7 @@ jobs:
           key: coverage-metacoin-{{ .Environment.CIRCLE_SHA1 }}
           paths:
             - ~/repo/packages/metacoin/coverage/lcov.info
-  static_tests:
+  static-tests:
     working_directory: ~/repo
     docker:
       - image: circleci/node:6.12
@@ -172,7 +169,7 @@ workflows:
       - test-rest:
           requires:
             - build
-      - static_tests:
+      - static-tests:
           requires:
             - build
       - submit-coverage:
