@@ -42,6 +42,7 @@ export interface State {
     userEtherBalanceInWei: BigNumber;
     portalOnboardingStep: number;
     isPortalOnboardingShowing: boolean;
+    hasPortalOnboardingBeenSeen: boolean;
     // Note: cache of supplied orderJSON in fill order step. Do not use for anything else.
     userSuppliedOrderCache: Order;
 
@@ -56,7 +57,7 @@ export interface State {
     translate: Translate;
 }
 
-const INITIAL_STATE: State = {
+export const INITIAL_STATE: State = {
     // Portal
     blockchainErr: BlockchainErrs.NoError,
     blockchainIsLoaded: false,
@@ -84,6 +85,7 @@ const INITIAL_STATE: State = {
     userSuppliedOrderCache: undefined,
     portalOnboardingStep: 0,
     isPortalOnboardingShowing: false,
+    hasPortalOnboardingBeenSeen: false,
     // Docs
     docsVersion: DEFAULT_DOCS_VERSION,
     availableDocVersions: [DEFAULT_DOCS_VERSION],
@@ -309,6 +311,7 @@ export function reducer(state: State = INITIAL_STATE, action: Action): State {
             return {
                 ...state,
                 isPortalOnboardingShowing,
+                hasPortalOnboardingBeenSeen: true,
             };
         }
 

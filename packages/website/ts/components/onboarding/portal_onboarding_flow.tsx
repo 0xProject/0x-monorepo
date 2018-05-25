@@ -14,7 +14,8 @@ export interface PortalOnboardingFlowProps {
     providerType: ProviderType;
     injectedProviderName: string;
     blockchainIsLoaded: boolean;
-    onClose: () => void;
+    hasBeenSeen: boolean;
+    setIsRunning: (isRunning: boolean) => void;
     setOnboardingStep: (stepIndex: number) => void;
 }
 
@@ -42,6 +43,12 @@ const steps: Step[] = [
 ];
 
 export class PortalOnboardingFlow extends React.Component<PortalOnboardingFlowProps> {
+    public componentDidMount(): void {
+        this._autoStartOnboardingIfShould();
+    }
+    public componentDidUpdate(): void {
+        this._autoStartOnboardingIfShould();
+    }
     public render(): React.ReactNode {
         return (
             <OnboardingFlow
@@ -49,7 +56,7 @@ export class PortalOnboardingFlow extends React.Component<PortalOnboardingFlowPr
                 blacklistedStepIndices={this._getBlacklistedStepIndices()}
                 stepIndex={this.props.stepIndex}
                 isRunning={this.props.isRunning}
-                onClose={this.props.onClose}
+                onClose={this.props.setIsRunning.bind(this, false)}
                 setOnboardingStep={this.props.setOnboardingStep}
             />
         );
@@ -72,5 +79,11 @@ export class PortalOnboardingFlow extends React.Component<PortalOnboardingFlowPr
             return [0].concat(twoAndOn);
         }
         return twoAndOn;
+    }
+
+    private _autoStartOnboardingIfShould(): void {
+        if (!this.props.isRunning && !this.props.hasBeenSeen && this.props.blockchainIsLoaded) {
+            this.props.setIsRunning(true);
+        }
     }
 }

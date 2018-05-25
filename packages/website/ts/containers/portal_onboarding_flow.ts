@@ -15,10 +15,11 @@ interface ConnectedState {
     providerType: ProviderType;
     injectedProviderName: string;
     blockchainIsLoaded: boolean;
+    hasBeenSeen: boolean;
 }
 
 interface ConnectedDispatch {
-    onClose: () => void;
+    setIsRunning: (isRunning: boolean) => void;
     setOnboardingStep: (stepIndex: number) => void;
 }
 
@@ -29,13 +30,14 @@ const mapStateToProps = (state: State): ConnectedState => ({
     providerType: state.providerType,
     injectedProviderName: state.injectedProviderName,
     blockchainIsLoaded: state.blockchainIsLoaded,
+    hasBeenSeen: state.hasPortalOnboardingBeenSeen,
 });
 
 const mapDispatchToProps = (dispatch: Dispatch<State>): ConnectedDispatch => ({
-    onClose: (): void => {
+    setIsRunning: (isRunning: boolean): void => {
         dispatch({
             type: ActionTypes.UpdatePortalOnboardingShowing,
-            data: false,
+            data: isRunning,
         });
     },
     setOnboardingStep: (stepIndex: number): void => {
