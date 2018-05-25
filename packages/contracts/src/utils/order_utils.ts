@@ -3,7 +3,7 @@ import { BigNumber } from '@0xproject/utils';
 import ethUtil = require('ethereumjs-util');
 
 import { crypto } from './crypto';
-import { CancelOrder, MatchOrder, OrderStruct, SignedOrder, UnsignedOrder } from './types';
+import { CancelOrder, MatchOrder } from './types';
 
 export const orderUtils = {
     createFill: (signedOrder: SignedOrder, takerAssetFillAmount?: BigNumber) => {

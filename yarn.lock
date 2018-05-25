@@ -6,6 +6,20 @@
   version "0.3.9"
   resolved "https://registry.yarnpkg.com/8fold-marked/-/8fold-marked-0.3.9.tgz#bb89c645612f8ccfaffac1ca6e3c11f168c9cf59"
 
+"@0xproject/connect@0.6.12":
+  version "0.6.12"
+  resolved "https://registry.yarnpkg.com/@0xproject/connect/-/connect-0.6.12.tgz#7d4711804f2c760f0436b5f2ddbf6631aaee36ba"
+  dependencies:
+    "@0xproject/assert" "^0.2.9"
+    "@0xproject/json-schemas" "^0.7.23"
+    "@0xproject/types" "^0.6.3"
+    "@0xproject/typescript-typings" "^0.3.1"
+    "@0xproject/utils" "^0.6.1"
+    isomorphic-fetch "^2.2.1"
+    lodash "^4.17.4"
+    query-string "^5.0.1"
+    websocket "^1.0.25"
+
 "@0xproject/json-schemas@0.7.22":
   version "0.7.22"
   resolved "https://registry.yarnpkg.com/@0xproject/json-schemas/-/json-schemas-0.7.22.tgz#95cbdc9ec0eff3d1920903960284d491eb668f28"
@@ -26,6 +40,13 @@
   version "0.5.0"
   resolved "https://registry.yarnpkg.com/@0xproject/types/-/types-0.5.0.tgz#ba3cfbc11a8c6344b57c9680aa7df2ea84b9bf05"
   dependencies:
+    bignumber.js "~4.1.0"
+
+"@0xproject/types@^0.6.3":
+  version "0.6.3"
+  resolved "https://registry.yarnpkg.com/@0xproject/types/-/types-0.6.3.tgz#0bc066967aad4151011b6e478bb707b1afb8504b"
+  dependencies:
+    "@types/node" "^8.0.53"
     bignumber.js "~4.1.0"
 
 "@0xproject/typescript-typings@^0.0.3":
