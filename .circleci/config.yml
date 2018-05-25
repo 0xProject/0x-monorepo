@@ -31,7 +31,7 @@ jobs:
           key: repo-{{ .Environment.CIRCLE_SHA1 }}
           paths:
             - ~/repo
-  test-contract-wrappers:
+  test-1:
     docker:
       - image: circleci/node:6.12
     working_directory: ~/repo
@@ -40,10 +40,15 @@ jobs:
           keys:
             - repo-{{ .Environment.CIRCLE_SHA1 }}
       - run: yarn wsrun test:circleci @0xproject/contract-wrappers
+      - run: yarn wsrun test:circleci @0xproject/sol-compiler
       - save_cache:
           key: coverage-contract-wrappers-{{ .Environment.CIRCLE_SHA1 }}
           paths:
             - ~/repo/packages/contract-wrappers/coverage/lcov.info
+      - save_cache:
+          key: coverage-sol-compiler-{{ .Environment.CIRCLE_SHA1 }}
+          paths:
+            - ~/repo/packages/sol-compiler/coverage/lcov.info
   test-contracts:
     docker:
       - image: circleci/node:6.12
@@ -53,7 +58,7 @@ jobs:
           keys:
             - repo-{{ .Environment.CIRCLE_SHA1 }}
       - run: yarn wsrun test:circleci contracts
-  test-sol-compiler:
+  test-2:
     docker:
       - image: circleci/node:6.12
     working_directory: ~/repo
@@ -61,20 +66,13 @@ jobs:
       - restore_cache:
           keys:
             - repo-{{ .Environment.CIRCLE_SHA1 }}
-      - run: yarn wsrun test:circleci @0xproject/sol-compiler
-      - save_cache:
-          key: coverage-sol-compiler-{{ .Environment.CIRCLE_SHA1 }}
-          paths:
-            - ~/repo/packages/sol-compiler/coverage/lcov.info
-  test-rest:
-    docker:
-      - image: circleci/node:6.12
-    working_directory: ~/repo
-    steps:
-      - restore_cache:
-          keys:
-            - repo-{{ .Environment.CIRCLE_SHA1 }}
-      - run: yarn wsrun test:circleci --exclude contracts --exclude @0xproject/contract-wrappers --exclude @0xproject/sol-compiler --stages --exclude-missing
+      - run: yarn wsrun test:circleci @0xproject/assert
+      - run: yarn wsrun test:circleci @0xproject/connect
+      - run: yarn wsrun test:circleci @0xproject/dev-utils
+      - run: yarn wsrun test:circleci @0xproject/json-schemas
+      - run: yarn wsrun test:circleci @0xproject/subproviders
+      - run: yarn wsrun test:circleci @0xproject/sol-cov
+      - run: yarn wsrun test:circleci @0xproject/metacoin
       - save_cache:
           key: coverage-assert-{{ .Environment.CIRCLE_SHA1 }}
           paths:
@@ -144,6 +142,9 @@ jobs:
             - coverage-sol-cov-{{ .Environment.CIRCLE_SHA1 }}
       - restore_cache:
           keys:
+            - coverage-contracts-{{ .Environment.CIRCLE_SHA1 }}
+      - restore_cache:
+          keys:
             - coverage-sol-compiler-{{ .Environment.CIRCLE_SHA1 }}
       - restore_cache:
           keys:
@@ -157,16 +158,13 @@ workflows:
   main:
     jobs:
       - build
-      - test-contract-wrappers:
+      - test-1:
+          requires:
+            - build
+      - test-2:
           requires:
             - build
       - test-contracts:
-          requires:
-            - build
-      - test-sol-compiler:
-          requires:
-            - build
-      - test-rest:
           requires:
             - build
       - static-tests:
@@ -174,6 +172,6 @@ workflows:
             - build
       - submit-coverage:
           requires:
-            - test-contract-wrappers
-            - test-sol-compiler
-            - test-rest
+            - test-contracts
+            - test-1
+            - test-2
