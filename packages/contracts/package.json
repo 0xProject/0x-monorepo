@@ -67,7 +67,6 @@
     },
     "dependencies": {
         "@0xproject/base-contract": "^0.3.2",
-        "@0xproject/contract-wrappers": "^0.0.2",
         "@0xproject/order-utils": "^0.0.5",
         "@0xproject/sol-compiler": "^0.5.0",
         "@0xproject/types": "^0.7.0",
