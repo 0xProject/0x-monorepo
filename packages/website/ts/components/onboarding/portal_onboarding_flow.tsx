@@ -40,6 +40,12 @@ const steps: Step[] = [
         placement: 'right',
         disableBeacon: true,
     },
+    {
+        target: '.wallet',
+        content: 'Before you begin you will need to send some ETH to your metamask wallet',
+        placement: 'right',
+        disableBeacon: true,
+    },
 ];
 
 export class PortalOnboardingFlow extends React.Component<PortalOnboardingFlowProps> {

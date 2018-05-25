@@ -31,6 +31,7 @@ export class OnboardingFlow extends React.Component<OnboardingFlowProps> {
         return (
             <Joyride
                 run={this.props.isRunning}
+                continuous={true}
                 debug={true}
                 steps={this.props.steps}
                 stepIndex={this.props.stepIndex}
@@ -48,7 +49,9 @@ export class OnboardingFlow extends React.Component<OnboardingFlowProps> {
             this.props.steps.length,
             blacklistedSteps,
         );
-        this.props.setOnboardingStep(newStepIndex);
+        if (newStepIndex !== nextIndex) {
+            this.props.setOnboardingStep(newStepIndex);
+        }
     }
 
     private _adjustedStepBasedOnBlacklist(
@@ -87,6 +90,7 @@ export class OnboardingFlow extends React.Component<OnboardingFlowProps> {
         switch (data.action) {
             case 'close':
                 this.props.onClose();
+                break;
         }
     }
 }
