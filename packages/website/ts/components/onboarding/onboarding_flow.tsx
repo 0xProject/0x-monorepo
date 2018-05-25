@@ -2,6 +2,7 @@ import * as _ from 'lodash';
 import * as React from 'react';
 import Joyride, { CallbackData, Step, StyleOptions } from 'react-joyride';
 
+import { OnboardingTooltip } from 'ts/components/onboarding/onboarding_tooltip';
 import { zIndex } from 'ts/utils/style';
 
 export interface OnboardingFlowProps {
@@ -36,7 +37,7 @@ export class OnboardingFlow extends React.Component<OnboardingFlowProps> {
                 steps={this.props.steps}
                 stepIndex={this.props.stepIndex}
                 styles={{ options: joyrideStyleOptions }}
-                callback={this._handleChange.bind(this)}
+                tooltipComponent={this._renderToolTip.bind(this)}
             />
         );
     }
@@ -86,11 +87,37 @@ export class OnboardingFlow extends React.Component<OnboardingFlowProps> {
         return newStep;
     }
 
-    private _handleChange(data: CallbackData): void {
-        switch (data.action) {
-            case 'close':
-                this.props.onClose();
-                break;
+    private _renderToolTip(): React.ReactNode {
+        const { steps, stepIndex } = this.props;
+        const step = steps[stepIndex];
+        const isLastStep = steps.length - 1 === stepIndex;
+        return (
+            <OnboardingTooltip
+                title={step.title}
+                content={step.content}
+                isLastStep={isLastStep}
+                onClose={this.props.onClose}
+                onClickNext={this._goToNextStep.bind(this)}
+                onClickBack={this._goToPrevStep.bind(this)}
+            />
+        );
+    }
+
+    private _goToNextStep(): void {
+        const nextStep = this.props.stepIndex + 1;
+        if (nextStep < this.props.steps.length) {
+            this.props.setOnboardingStep(nextStep);
+        } else {
+            this.props.onClose();
+        }
+    }
+
+    private _goToPrevStep(): void {
+        const nextStep = this.props.stepIndex - 1;
+        if (nextStep >= 0) {
+            this.props.setOnboardingStep(nextStep);
+        } else {
+            this.props.onClose();
         }
     }
 }

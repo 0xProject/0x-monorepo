@@ -65,9 +65,9 @@ declare module 'react-joyride' {
         continuous?: boolean;
         run?: boolean;
         stepIndex?: number;
-        callback?: (data: CallbackData) => void;
         debug?: boolean;
         styles?: StyleOptionsProp;
+        tooltipComponent: React.ComponentClass<any> | React.StatelessComponent;
     }
 
     export interface State {
