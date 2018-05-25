@@ -2,16 +2,18 @@ import * as chai from 'chai';
 import * as dirtyChai from 'dirty-chai';
 import * as _ from 'lodash';
 import 'mocha';
+import * as WebSocket from 'websocket';
 
-import { NodeWebSocketOrderbookChannel } from '../src/node_ws_orderbook_channel';
+import { WebSocketOrderbookChannel } from '../src/ws_orderbook_channel';
 
 chai.config.includeStack = true;
 chai.use(dirtyChai);
 const expect = chai.expect;
 
-describe('NodeWebSocketOrderbookChannel', () => {
+describe('WebSocketOrderbookChannel', () => {
     const websocketUrl = 'ws://localhost:8080';
-    const orderbookChannel = new NodeWebSocketOrderbookChannel(websocketUrl);
+    const client = new WebSocket.w3cwebsocket(websocketUrl);
+    const orderbookChannel = new WebSocketOrderbookChannel(client);
     const subscriptionOpts = {
         baseTokenAddress: '0x323b5d4c32345ced77393b3530b1eed0f346429d',
         quoteTokenAddress: '0xef7fff64389b814a946f3e92105513705ca6b990',

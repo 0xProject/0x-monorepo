@@ -16,13 +16,6 @@ export interface OrderbookChannel {
 }
 
 /**
- * heartbeatInterval: Interval in milliseconds that the orderbook channel should ping the underlying websocket. Default: 15000
- */
-export interface NodeWebSocketOrderbookChannelConfig {
-    heartbeatIntervalMs?: number;
-}
-
-/**
  * baseTokenAddress: The address of token designated as the baseToken in the currency pair calculation of price
  * quoteTokenAddress: The address of token designated as the quoteToken in the currency pair calculation of price
  * snapshot: If true, a snapshot of the orderbook will be sent before the updates to the orderbook

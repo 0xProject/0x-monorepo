@@ -1,16 +1,21 @@
-// import * as WebSocket from 'websocket';
+import * as WebSocket from 'websocket';
 
-import { BrowserWebSocketOrderbookChannel } from './browser_ws_orderbook_channel';
-import { NodeWebSocketOrderbookChannel } from './node_ws_orderbook_channel';
+import { OrderbookChannel, WebsocketClientEventType } from './types';
+import { assert } from './utils/assert';
+import { WebSocketOrderbookChannel } from './ws_orderbook_channel';
 
 export const orderbookChannelFactory = {
-    async createBrowserOrderbookChannelAsync(url: string): Promise<BrowserWebSocketOrderbookChannel> {
-        return new Promise<BrowserWebSocketOrderbookChannel>((resolve, reject) => {
-            const client = new WebSocket(url);
-            console.log(client);
+    /**
+     * Instantiates a new WebSocketOrderbookChannel instance
+     * @param   url                 The relayer API base WS url you would like to interact with
+     * @return  An OrderbookChannel Promise
+     */
+    async createWebSocketOrderbookChannelAsync(url: string): Promise<OrderbookChannel> {
+        assert.isUri('url', url);
+        return new Promise<OrderbookChannel>((resolve, reject) => {
+            const client = new WebSocket.w3cwebsocket(url);
             client.onopen = () => {
-                const orderbookChannel = new BrowserWebSocketOrderbookChannel(client);
-                console.log(orderbookChannel);
+                const orderbookChannel = new WebSocketOrderbookChannel(client);
                 resolve(orderbookChannel);
             };
             client.onerror = err => {
@@ -18,16 +23,4 @@ export const orderbookChannelFactory = {
             };
         });
     },
-    // async createNodeOrderbookChannelAsync(url: string): Promise<NodeWebSocketOrderbookChannel> {
-    //     return new Promise<BrowserWebSocketOrderbookChannel>((resolve, reject) => {
-    //         const client = new WebSocket.w3cwebsocket(url);
-    //         client.onopen = () => {
-    //             const orderbookChannel = new BrowserWebSocketOrderbookChannel(client);
-    //             resolve(orderbookChannel);
-    //         };
-    //         client.onerror = err => {
-    //             reject(err);
-    //         };
-    //     });
-    // },
 };

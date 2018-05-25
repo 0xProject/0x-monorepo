@@ -1,4 +1,5 @@
 import * as _ from 'lodash';
+import * as WebSocket from 'websocket';
 
 import {
     OrderbookChannel,
@@ -18,19 +19,27 @@ interface Subscription {
 
 /**
  * This class includes all the functionality related to interacting with a websocket endpoint
- * that implements the standard relayer API v0 in a browser environment
+ * that implements the standard relayer API v0
  */
-export class BrowserWebSocketOrderbookChannel implements OrderbookChannel {
-    private _client: WebSocket;
+export class WebSocketOrderbookChannel implements OrderbookChannel {
+    private _client: WebSocket.w3cwebsocket;
     private _subscriptions: Subscription[] = [];
     /**
      * Instantiates a new WebSocketOrderbookChannel instance
      * @param   url                 The relayer API base WS url you would like to interact with
      * @return  An instance of WebSocketOrderbookChannel
      */
-    constructor(client: WebSocket) {
-        // assert.isUri('url', url);
+    constructor(client: WebSocket.w3cwebsocket) {
         this._client = client;
+        this._client.onerror = err => {
+            this._alertAllHandlersToError(err);
+        };
+        this._client.onclose = () => {
+            this._alertAllHandlersToClose();
+        };
+        this._client.onmessage = message => {
+            this._handleWebSocketMessage(message);
+        };
     }
     /**
      * Subscribe to orderbook snapshots and updates from the websocket
@@ -53,17 +62,6 @@ export class BrowserWebSocketOrderbookChannel implements OrderbookChannel {
             requestId: this._subscriptions.length - 1,
             payload: subscriptionOpts,
         };
-        this._client.onerror = () => {
-            this._alertAllHandlersToError(new Error('hello'));
-        };
-        this._client.onclose = () => {
-            _.forEach(this._subscriptions, subscription => {
-                subscription.handler.onClose(this, subscription.subscriptionOpts);
-            });
-        };
-        this._client.onmessage = message => {
-            this._handleWebSocketMessage(message);
-        };
         this._sendMessage(subscribeMessage);
     }
     /**
@@ -76,7 +74,7 @@ export class BrowserWebSocketOrderbookChannel implements OrderbookChannel {
      * Send a message to the client if it has been instantiated and it is open
      */
     private _sendMessage(message: any): void {
-        if (this._client.readyState === WebSocket.OPEN) {
+        if (this._client.readyState === WebSocket.w3cwebsocket.OPEN) {
             this._client.send(JSON.stringify(message));
         }
     }
@@ -86,6 +84,11 @@ export class BrowserWebSocketOrderbookChannel implements OrderbookChannel {
     private _alertAllHandlersToError(error: Error): void {
         _.forEach(this._subscriptions, subscription => {
             subscription.handler.onError(this, subscription.subscriptionOpts, error);
+        });
+    }
+    private _alertAllHandlersToClose(): void {
+        _.forEach(this._subscriptions, subscription => {
+            subscription.handler.onClose(this, subscription.subscriptionOpts);
         });
     }
     private _handleWebSocketMessage(message: any): void {
