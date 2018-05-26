@@ -82,8 +82,8 @@ contract LibMem {
                 // Example:
                 //   Suppose a word of 8 bits has all 1's: [11111111]
                 //   Let X = 7 (we want to free the first 7 bits, and retain the last bit)
-                //   Apply a left shift of 1: [11111110]
-                //   Apply a right shift of 1: [01111111]
+                //   Apply a left shift of 7: [10000000]
+                //   Apply a right shift of 7: [00000001]
                 let destShiftFactor := exp(2, mul(8, remainder))
                 let destWord := mload(add(dest, offset))
                 let destBytes := div(mul(destWord, destShiftFactor), destShiftFactor)
@@ -92,7 +92,7 @@ contract LibMem {
                 // The source bytes run from [0..X-1] and the dest bytes from [X..31].
                 // Example:
                 //   Following the example from above, we have [11111110]
-                //   from the source word and [01111111] from the dest word.
+                //   from the source word and [00000001] from the dest word.
                 //   Combine these words using <or> to get [11111111].
                 let combinedDestWord := or(sourceBytes, destBytes)
 
