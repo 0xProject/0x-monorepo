@@ -13,9 +13,6 @@ jobs:
       - restore_cache:
           key: dependency-cache-{{ checksum "package.json" }}
       - run:
-          name: Cause life is too short to debug yarn registry issues
-          command: yarn config set registry "https://registry.npmjs.org"
-      - run:
           name: yarn
           command: yarn --frozen-lockfile
       - save_cache:
