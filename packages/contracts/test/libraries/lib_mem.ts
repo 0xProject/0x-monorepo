@@ -18,6 +18,14 @@ chaiSetup.configure();
 const expect = chai.expect;
 const blockchainLifecycle = new BlockchainLifecycle(web3Wrapper);
 
+// BUG: Ideally we would use Buffer.from(memory).toString('hex')
+// https://github.com/Microsoft/TypeScript/issues/23155
+const toHex = (buf: Uint8Array): string =>
+    buf.reduce((a, v) => a + ('00' + v.toString(16)).slice(-2), '0x');
+
+const fromHex = (str: string): Uint8Array =>
+    Uint8Array.from(Buffer.from(str.slice(2), 'hex'));
+
 describe('LibMem', () => {
     let owner: string;
     let testLibMem: TestLibMemContract;
@@ -36,7 +44,37 @@ describe('LibMem', () => {
         await blockchainLifecycle.revertAsync();
     });
 
-    describe('LibMem', () => {
+    describe('memcpy', () => {
+
+        // Create memory 0x000102...FF
+        const memSize = 256;
+        const memory = (new Uint8Array(memSize)).map((_, i) => i);
+        const memHex = toHex(memory);
+
+        // Reference implementation to test against
+        const refMemcpy = (mem: Uint8Array, dest: number, source: number, length: number): Uint8Array =>
+            Uint8Array.from(memory).copyWithin(dest, source, source + length);
+
+        // Test vectors: destination, source, length, job description
+        const tests: Array<[number, number, number, string]> = [
+            [1, 5, 4, 'four bytes within one word'],
+        ];
+
+        // Construct test cases
+        tests.forEach(([dest, source, length, job]) =>
+            it(`copies ${job}`, async () => {
+                const expected = refMemcpy(memory, dest, source, length);
+                const resultStr = await testLibMem.testMemcpy.callAsync(
+                    memHex,
+                    new BigNumber(dest),
+                    new BigNumber(source),
+                    new BigNumber(length),
+                );
+                const result = fromHex(resultStr);
+                expect(result).to.deep.equal(expected);
+            }),
+        );
+
         it('should )', async () => {
             await testLibMem.test1.sendTransactionAsync();
         });
@@ -62,7 +100,7 @@ describe('LibMem', () => {
         });
 
         it('should )', async () => {
-            return expect(testLibMem.test7.sendTransactionAsync()).to.be.rejectedWith(constants.REVERT);
+            return expect(testLibMem.test7.sendTransactionAsync()).to.be.rejectedWith(constants.REVERT );
         });
     });
 });
