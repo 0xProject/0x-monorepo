@@ -19,7 +19,7 @@
 pragma solidity ^0.4.24;
 
 contract LibMem {
-
+    
     function getMemAddress(bytes memory input)
         internal
         pure
@@ -30,9 +30,11 @@ contract LibMem {
         }
         return address_;
     }
-
-    /// @dev Writes a uint256 into a specific position in a byte array.
-    /// @param dest memory adress to copy bytes to
+    
+    /// @dev Copies `length` bytes from memory location `source` to `dest`.
+    /// @param dest memory address to copy bytes to
+    /// @param source memory address to copy bytes from
+    /// @param length number of bytes to copy
     function memcpy(
         uint256 dest,
         uint256 source,
@@ -41,63 +43,87 @@ contract LibMem {
         internal
         pure
     {
-        // Base cases
-        if(length == 0) return;
-        if(source == dest) return;
-
-        // Copy bytes from source to dest
-        assembly {
-            // Compute number of complete words to copy + remaining bytes
-            let lenFullWords := div(add(length, 0x1F), 0x20)
-            let remainder := mod(length, 0x20)
-            if gt(remainder, 0) {
-                lenFullWords := sub(lenFullWords, 1)
+        if (length < 32) {
+            // Handle a partial word by reading destination and masking
+            // off the bits we are interested in.
+            // This correctly handles overlap, zero lengths and source == dest
+            assembly {
+                let mask := sub(exp(256, sub(32, length)), 1)
+                let s := and(mload(source), not(mask))
+                let d := and(mload(dest), mask)
+                mstore(dest, or(s, d))
             }
-
-            // Copy full words from source to dest
-            let offset := 0
-            let maxOffset := mul(0x20, lenFullWords)
-            for {offset := 0} lt(offset, maxOffset) {offset := add(offset, 0x20)} {
-                mstore(add(dest, offset),  mload(add(source, offset)))
+        } else {
+            // Skip the O(length) loop when source == dest.
+            if (source == dest) {
+                return;
             }
-
-            // Copy remaining bytes
-            if gt(remainder, 0) {
-                // Read a full word from source, containing X bytes to copy to dest.
-                // We only want to keep the X bytes, zeroing out the remaining bytes.
-                // We accomplish this by a right shift followed by a left shift.
-                // Example:
-                //   Suppose a word of 8 bits has all 1's: [11111111]
-                //   Let X = 7 (we want to copy the first 7 bits)
-                //   Apply a right shift of 1: [01111111]
-                //   Apply a left shift of 1: [11111110]
-                let sourceShiftFactor := exp(2, mul(8, sub(0x20, remainder)))
-                let sourceWord := mload(add(source, offset))
-                let sourceBytes := mul(div(sourceWord, sourceShiftFactor), sourceShiftFactor)
-
-                // Read a full word from dest, containing (32-X) bytes to retain.
-                // We need to zero out the remaining bytes to be overwritten by source,
-                // while retaining the (32-X) bytes we don't want to overwrite.
-                // We accomplish this by a left shift followed by a right shift.
-                // Example:
-                //   Suppose a word of 8 bits has all 1's: [11111111]
-                //   Let X = 7 (we want to free the first 7 bits, and retain the last bit)
-                //   Apply a left shift of 7: [10000000]
-                //   Apply a right shift of 7: [00000001]
-                let destShiftFactor := exp(2, mul(8, remainder))
-                let destWord := mload(add(dest, offset))
-                let destBytes := div(mul(destWord, destShiftFactor), destShiftFactor)
-
-                // Combine the source and dest bytes. There should be no overlap:
-                // The source bytes run from [0..X-1] and the dest bytes from [X..31].
-                // Example:
-                //   Following the example from above, we have [11111110]
-                //   from the source word and [00000001] from the dest word.
-                //   Combine these words using <or> to get [11111111].
-                let combinedDestWord := or(sourceBytes, destBytes)
-
-                // Store the combined word into dest
-                mstore(add(dest, offset), combinedDestWord)
+            
+            // For large copies we copy whole words at a time. The final
+            // word is aligned to the end of the range (instead of after the
+            // previous) to handle partial words. So a copy will look like this:
+            //
+            //  ####
+            //      ####
+            //          ####
+            //            ####
+            //
+            // We handle overlap in the source and destination range by
+            // changing the copying direction. This prevents us from
+            // overwriting parts of source that we still need to copy.
+            //
+            // This correctly handles source == dest
+            //
+            if (source > dest) {
+                assembly {
+                    // We subtract 32 from `send` and `dend` because it
+                    // is easier to compare with in the loop, and these
+                    // are also the addresses we need for copying the
+                    // last bytes.
+                    length := sub(length, 32)
+                    let send := add(source, length)
+                    let dend := add(dest, length)
+                    
+                    // Remember the last 32 bytes of source
+                    // This needs to be done here and not after the loop
+                    // because we may have overwritten the last bytes in
+                    // source already due to overlap.
+                    let last := mload(send)
+                    
+                    // Copy whole words front to back
+                    for {} lt(source, send) {} {
+                        mstore(dest, mload(source))
+                        source := add(source, 32)
+                        dest := add(dest, 32)
+                    }
+                    
+                    // Write the last 32 bytes
+                    mstore(dend, last)
+                }
+            } else {
+                assembly {
+                    // We subtract 32 from `send` and `dend` because those
+                    // are the starting points when copying a word at the end.
+                    length := sub(length, 32)
+                    let send := add(source, length)
+                    let dend := add(dest, length)
+                    
+                    // Remember the first 32 bytes of source
+                    // This needs to be done here and not after the loop
+                    // because we may have overwritten the first bytes in
+                    // source already due to overlap.
+                    let first := mload(source)
+                    
+                    // Copy whole words back to front
+                    for {} lt(source, send) {} {
+                        mstore(dend, mload(send))
+                        send := sub(send, 32)
+                        dend := sub(dend, 32)
+                    }
+                    
+                    // Write the first 32 bytes
+                    mstore(dest, first)
+                }
             }
         }
     }
