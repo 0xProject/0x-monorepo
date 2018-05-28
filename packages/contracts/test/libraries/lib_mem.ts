@@ -57,7 +57,12 @@ describe('LibMem', () => {
 
         // Test vectors: destination, source, length, job description
         const tests: Array<[number, number, number, string]> = [
-            [1, 5, 4, 'four bytes within one word'],
+            [128, 0, 0, 'zero bytes'],
+            [128, 0, 1, 'one byte'],
+            [128, 0, 11, 'eleven bytes'],
+            [128, 0, 32, 'one word'],
+            [128, 0, 72, 'two words and eight bytes'],
+            [128, 0, 100, 'three words and four bytes']
         ];
 
         // Construct test cases
@@ -74,33 +79,5 @@ describe('LibMem', () => {
                 expect(result).to.deep.equal(expected);
             }),
         );
-
-        it('should )', async () => {
-            await testLibMem.test1.sendTransactionAsync();
-        });
-
-        it('should )', async () => {
-            await testLibMem.test2.sendTransactionAsync();
-        });
-
-        it('should )', async () => {
-            await testLibMem.test3.sendTransactionAsync();
-        });
-
-        it('should )', async () => {
-            await testLibMem.test4.sendTransactionAsync();
-        });
-
-        it('should )', async () => {
-            await testLibMem.test5.sendTransactionAsync();
-        });
-
-        it('should )', async () => {
-            await testLibMem.test6.sendTransactionAsync();
-        });
-
-        it('should )', async () => {
-            return expect(testLibMem.test7.sendTransactionAsync()).to.be.rejectedWith(constants.REVERT );
-        });
     });
 });
