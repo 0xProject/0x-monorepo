@@ -19,12 +19,33 @@
 pragma solidity ^0.4.24;
 
 import "../../utils/LibMem/LibMem.sol";
-import "../../utils/LibBytes/LibBytes.sol";
 
 contract TestLibMem is
-    LibMem,
-    LibBytes
+    LibMem
 {
+    function testMemcpy(
+        bytes mem,       ///< Memory contents we want to apply memcpy to
+        uint256 dest,
+        uint256 source,
+        uint256 length
+    )
+        public // not external, we need input in memory
+        pure
+        returns (bytes)
+    {
+        // Sanity check. Overflows are not checked.
+        require(source + length <= mem.length);
+        require(dest + length <= mem.length);
+        
+        // Get pointer to memory contents
+        uint256 offset = getMemAddress(mem) + 32;
+        
+        // Execute memcpy adjusted for memory array location
+        memcpy(offset + dest, offset + source, length);
+        
+        // Return modified memory contents
+        return mem;
+    }
 
     function test1()
         external
