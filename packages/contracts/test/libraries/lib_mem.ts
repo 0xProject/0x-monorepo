@@ -57,7 +57,9 @@ describe('LibMem', () => {
                     expect(result).to.deep.equal(expected);
                 }),
             );
-
+            
+        test([[0, 0, 0, 'copies zero bytes with overlap']]);
+        
         describe('copies forward', () => test([
             [128, 0, 0, 'zero bytes'],
             [128, 0, 1, 'one byte'],
