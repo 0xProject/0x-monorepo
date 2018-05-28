@@ -1,22 +1,13 @@
-import { LogWithDecodedArgs, TransactionReceiptWithDecodedLogs, ZeroEx } from '0x.js';
-import { BlockchainLifecycle, devConstants, web3Factory } from '@0xproject/dev-utils';
 import { BigNumber } from '@0xproject/utils';
-import { Web3Wrapper } from '@0xproject/web3-wrapper';
-import BN = require('bn.js');
 import * as chai from 'chai';
-import ethUtil = require('ethereumjs-util');
-import * as Web3 from 'web3';
 
 import { TestLibMemContract } from '../../src/contract_wrappers/generated/test_lib_mem';
 import { artifacts } from '../../src/utils/artifacts';
 import { chaiSetup } from '../../src/utils/chai_setup';
-import { constants } from '../../src/utils/constants';
-import { AssetProxyId } from '../../src/utils/types';
 import { provider, txDefaults, web3Wrapper } from '../../src/utils/web3_wrapper';
 
 chaiSetup.configure();
 const expect = chai.expect;
-const blockchainLifecycle = new BlockchainLifecycle(web3Wrapper);
 
 // BUG: Ideally we would use Buffer.from(memory).toString('hex')
 // https://github.com/Microsoft/TypeScript/issues/23155
@@ -37,12 +28,6 @@ describe('LibMem', () => {
         // Deploy TestLibMem
         testLibMem = await TestLibMemContract.deployFrom0xArtifactAsync(artifacts.TestLibMem, provider, txDefaults);
     });
-    beforeEach(async () => {
-        await blockchainLifecycle.startAsync();
-    });
-    afterEach(async () => {
-        await blockchainLifecycle.revertAsync();
-    });
 
     describe('memcpy', () => {
 
@@ -62,7 +47,7 @@ describe('LibMem', () => {
             [128, 0, 11, 'eleven bytes'],
             [128, 0, 32, 'one word'],
             [128, 0, 72, 'two words and eight bytes'],
-            [128, 0, 100, 'three words and four bytes']
+            [128, 0, 100, 'three words and four bytes'],
         ];
 
         // Construct test cases
