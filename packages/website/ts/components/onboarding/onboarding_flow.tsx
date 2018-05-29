@@ -3,6 +3,7 @@ import * as React from 'react';
 import { Placement, Popper, PopperChildrenProps } from 'react-popper';
 
 import { OnboardingTooltip } from 'ts/components/onboarding/onboarding_tooltip';
+import { Container } from 'ts/components/ui/container';
 import { Overlay } from 'ts/components/ui/overlay';
 import { zIndex } from 'ts/utils/style';
 
@@ -36,7 +37,7 @@ export class OnboardingFlow extends React.Component<OnboardingFlowProps> {
             return null;
         }
         return (
-            <Overlay onClick={this.props.onClose}>
+            <Overlay>
                 <Popper referenceElement={this._getElementForStep()} placement={this._getCurrentStep().placement}>
                     {this._renderPopperChildren.bind(this)}
                 </Popper>
@@ -94,11 +95,9 @@ export class OnboardingFlow extends React.Component<OnboardingFlowProps> {
     }
 
     private _renderPopperChildren(props: PopperChildrenProps): React.ReactNode {
-        const { arrowProps } = props;
         return (
             <div ref={props.ref} style={props.style} data-placement={props.placement}>
                 {this._renderToolTip()}
-                <div ref={arrowProps.ref} style={arrowProps.style} />
             </div>
         );
     }
@@ -108,14 +107,16 @@ export class OnboardingFlow extends React.Component<OnboardingFlowProps> {
         const step = steps[stepIndex];
         const isLastStep = steps.length - 1 === stepIndex;
         return (
-            <OnboardingTooltip
-                title={step.title}
-                content={step.content}
-                isLastStep={isLastStep}
-                onClose={this.props.onClose}
-                onClickNext={this._goToNextStep.bind(this)}
-                onClickBack={this._goToPrevStep.bind(this)}
-            />
+            <Container marginLeft="15px">
+                <OnboardingTooltip
+                    title={step.title}
+                    content={step.content}
+                    isLastStep={isLastStep}
+                    onClose={this.props.onClose}
+                    onClickNext={this._goToNextStep.bind(this)}
+                    onClickBack={this._goToPrevStep.bind(this)}
+                />
+            </Container>
         );
     }
 
