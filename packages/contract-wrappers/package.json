@@ -1,6 +1,6 @@
 {
     "name": "@0xproject/contract-wrappers",
-    "version": "0.0.3",
+    "version": "0.0.4",
     "description": "Smart TS wrappers for 0x smart contracts",
     "keywords": [
         "0xproject",

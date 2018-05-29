@@ -1,6 +1,6 @@
 {
     "name": "@0xproject/order-watcher",
-    "version": "0.0.3",
+    "version": "0.0.4",
     "description": "An order watcher daemon that watches for order validity",
     "keywords": [
         "0x",
@@ -78,7 +78,7 @@
     "dependencies": {
         "@0xproject/assert": "^0.2.10",
         "@0xproject/base-contract": "^0.3.2",
-        "@0xproject/contract-wrappers": "^0.0.3",
+        "@0xproject/contract-wrappers": "^0.0.4",
         "@0xproject/fill-scenarios": "^0.0.3",
         "@0xproject/json-schemas": "^0.7.24",
         "@0xproject/order-utils": "^0.0.6",
