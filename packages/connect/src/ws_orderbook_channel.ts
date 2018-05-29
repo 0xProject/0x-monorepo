@@ -51,6 +51,7 @@ export class WebSocketOrderbookChannel implements OrderbookChannel {
     public subscribe(subscriptionOpts: OrderbookChannelSubscriptionOpts, handler: OrderbookChannelHandler): void {
         assert.isOrderbookChannelSubscriptionOpts('subscriptionOpts', subscriptionOpts);
         assert.isOrderbookChannelHandler('handler', handler);
+        assert.assert(this._client.readyState === WebSocket.w3cwebsocket.OPEN, 'WebSocket connection is closed');
         const newSubscription: Subscription = {
             subscriptionOpts,
             handler,
@@ -62,21 +63,13 @@ export class WebSocketOrderbookChannel implements OrderbookChannel {
             requestId: this._subscriptions.length - 1,
             payload: subscriptionOpts,
         };
-        this._sendMessage(subscribeMessage);
+        this._client.send(JSON.stringify(subscribeMessage));
     }
     /**
      * Close the websocket and stop receiving updates
      */
     public close(): void {
         this._client.close();
-    }
-    /**
-     * Send a message to the client if it has been instantiated and it is open
-     */
-    private _sendMessage(message: any): void {
-        if (this._client.readyState === WebSocket.w3cwebsocket.OPEN) {
-            this._client.send(JSON.stringify(message));
-        }
     }
     /**
      * For use in cases where we need to alert all handlers of an error
