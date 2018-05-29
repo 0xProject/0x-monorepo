@@ -64,6 +64,9 @@ export const assert = {
         this.assert(isWeb3Provider, this.typeAssertionMessage(variableName, 'Provider', value));
     },
     doesConformToSchema(variableName: string, value: any, schema: Schema, subSchemas?: Schema[]): void {
+        if (_.isUndefined(value)) {
+            throw new Error(`${variableName} can't be undefined`);
+        }
         const schemaValidator = new SchemaValidator();
         if (!_.isUndefined(subSchemas)) {
             _.map(subSchemas, schemaValidator.addSchema.bind(schemaValidator));
