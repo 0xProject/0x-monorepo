@@ -1,9 +1,8 @@
 import * as _ from 'lodash';
 import * as React from 'react';
-import { Step } from 'react-joyride';
 
 import { black } from 'material-ui/styles/colors';
-import { OnboardingFlow } from 'ts/components/onboarding/onboarding_flow';
+import { OnboardingFlow, Step } from 'ts/components/onboarding/onboarding_flow';
 import { ProviderType } from 'ts/types';
 import { utils } from 'ts/utils/utils';
 
@@ -25,26 +24,22 @@ const steps: Step[] = [
         content:
             'Before you begin, you need to connect to a wallet. This will be used across all 0x relayers and dApps',
         placement: 'right',
-        disableBeacon: true,
     },
     {
         target: '.wallet',
         content: 'Unlock your metamask extension to begin',
         placement: 'right',
-        disableBeacon: true,
     },
     {
         target: '.wallet',
         content:
             'In order to start trading on any 0x relayer in the 0x ecosystem, you need to complete two simple steps',
         placement: 'right',
-        disableBeacon: true,
     },
     {
         target: '.wallet',
         content: 'Before you begin you will need to send some ETH to your metamask wallet',
         placement: 'right',
-        disableBeacon: true,
     },
 ];
 

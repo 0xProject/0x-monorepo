@@ -1,10 +1,16 @@
 import * as _ from 'lodash';
 import * as React from 'react';
-import Joyride, { CallbackData, Step, StyleOptions } from 'react-joyride';
-import { Popper, PopperChildrenProps } from 'react-popper';
+import { Placement, Popper, PopperChildrenProps } from 'react-popper';
 
 import { OnboardingTooltip } from 'ts/components/onboarding/onboarding_tooltip';
 import { zIndex } from 'ts/utils/style';
+
+export interface Step {
+    target: string;
+    title?: string;
+    content: React.ReactNode;
+    placement?: Placement;
+}
 
 export interface OnboardingFlowProps {
     steps: Step[];
@@ -15,11 +21,6 @@ export interface OnboardingFlowProps {
     setOnboardingStep: (stepIndex: number) => void;
 }
 
-const joyrideStyleOptions: StyleOptions = {
-    zIndex: zIndex.overlay,
-};
-
-// Wrapper around Joyride with defaults and styles set
 export class OnboardingFlow extends React.Component<OnboardingFlowProps> {
     public componentDidMount(): void {
         this._setOnboardingStepBasedOnBlacklist(this.props.stepIndex);
@@ -34,7 +35,7 @@ export class OnboardingFlow extends React.Component<OnboardingFlowProps> {
             return null;
         }
         return (
-            <Popper referenceElement={this._getElementForStep()} placement="right">
+            <Popper referenceElement={this._getElementForStep()} placement={this._getCurrentStep().placement}>
                 {this._renderPopperChildren.bind(this)}
             </Popper>
         );
@@ -86,11 +87,10 @@ export class OnboardingFlow extends React.Component<OnboardingFlowProps> {
     }
 
     private _getElementForStep(): Element {
-        const step = this.props.steps[this.props.stepIndex];
-        return document.querySelector(step.target);
+        return document.querySelector(this._getCurrentStep().target);
     }
 
-    private _renderPopperChildren(props: any): React.ReactNode {
+    private _renderPopperChildren(props: PopperChildrenProps): React.ReactNode {
         const { arrowProps } = props;
         return (
             <div ref={props.ref} style={props.style} data-placement={props.placement}>
@@ -114,6 +114,10 @@ export class OnboardingFlow extends React.Component<OnboardingFlowProps> {
                 onClickBack={this._goToPrevStep.bind(this)}
             />
         );
+    }
+
+    private _getCurrentStep(): Step {
+        return this.props.steps[this.props.stepIndex];
     }
 
     private _goToNextStep(): void {
