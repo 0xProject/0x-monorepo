@@ -22,6 +22,12 @@ describe('UnlimitedAllowanceToken', () => {
     let token: DummyERC20TokenContract;
 
     before(async () => {
+        await blockchainLifecycle.startAsync();
+    });
+    after(async () => {
+        await blockchainLifecycle.revertAsync();
+    });
+    before(async () => {
         const accounts = await web3Wrapper.getAvailableAddressesAsync();
         owner = accounts[0];
         spender = accounts[1];

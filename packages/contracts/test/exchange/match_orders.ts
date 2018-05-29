@@ -77,6 +77,12 @@ describe('matchOrders', () => {
     let matchOrderTester: MatchOrderTester;
 
     before(async () => {
+        await blockchainLifecycle.startAsync();
+    });
+    after(async () => {
+        await blockchainLifecycle.revertAsync();
+    });
+    before(async () => {
         // Create accounts
         const accounts = await web3Wrapper.getAvailableAddressesAsync();
         const usedAddresses = ([

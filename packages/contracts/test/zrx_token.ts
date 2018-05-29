@@ -22,6 +22,12 @@ describe('ZRXToken', () => {
     let zrxToken: ZRXTokenContract;
 
     before(async () => {
+        await blockchainLifecycle.startAsync();
+    });
+    after(async () => {
+        await blockchainLifecycle.revertAsync();
+    });
+    before(async () => {
         const accounts = await web3Wrapper.getAvailableAddressesAsync();
         owner = accounts[0];
         spender = accounts[1];

@@ -23,6 +23,13 @@ describe('TokenRegistry', () => {
     let notOwner: string;
     let tokenReg: TokenRegistryContract;
     let tokenRegWrapper: TokenRegWrapper;
+
+    before(async () => {
+        await blockchainLifecycle.startAsync();
+    });
+    after(async () => {
+        await blockchainLifecycle.revertAsync();
+    });
     before(async () => {
         const accounts = await web3Wrapper.getAvailableAddressesAsync();
         owner = accounts[0];

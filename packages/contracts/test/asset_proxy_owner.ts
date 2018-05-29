@@ -36,6 +36,12 @@ describe('AssetProxyOwner', () => {
     let multiSigWrapper: MultiSigWrapper;
 
     before(async () => {
+        await blockchainLifecycle.startAsync();
+    });
+    after(async () => {
+        await blockchainLifecycle.revertAsync();
+    });
+    before(async () => {
         const accounts = await web3Wrapper.getAvailableAddressesAsync();
         owners = [accounts[0], accounts[1]];
         const initialOwner = (authorized = accounts[0]);

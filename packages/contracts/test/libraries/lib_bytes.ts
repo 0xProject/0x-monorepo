@@ -34,6 +34,12 @@ describe('LibBytes', () => {
     const testUint256 = new BigNumber(testBytes32, 16);
 
     before(async () => {
+        await blockchainLifecycle.startAsync();
+    });
+    after(async () => {
+        await blockchainLifecycle.revertAsync();
+    });
+    before(async () => {
         // Setup accounts & addresses
         const accounts = await web3Wrapper.getAvailableAddressesAsync();
         owner = accounts[0];
