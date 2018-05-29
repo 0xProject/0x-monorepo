@@ -20,7 +20,7 @@ pragma solidity ^0.4.24;
 
 import "./mixins/MSignatureValidator.sol";
 import "./mixins/MTransactions.sol";
-import "./interfaces/ISigner.sol";
+import "./interfaces/IWallet.sol";
 import "./interfaces/IValidator.sol";
 import "./libs/LibExchangeErrors.sol";
 import "../../utils/LibBytes/LibBytes.sol";
@@ -168,7 +168,7 @@ contract MixinSignatureValidator is
         // Signature verified by wallet contract.
         // If used with an order, the maker of the order is the wallet contract.
         } else if (signatureType == SignatureType.Wallet) {
-            isValid = ISigner(signer).isValidSignature(hash, signature);
+            isValid = IWallet(signer).isValidSignature(hash, signature);
             return isValid;
 
         // Signature verified by validator contract.

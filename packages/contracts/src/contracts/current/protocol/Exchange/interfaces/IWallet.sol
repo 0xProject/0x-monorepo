@@ -18,7 +18,7 @@
 
 pragma solidity ^0.4.24;
 
-contract ISigner {
+contract IWallet {
 
     /// @dev Verifies that a signature is valid.
     /// @param hash Message hash that is signed.
