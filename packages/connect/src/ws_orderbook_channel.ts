@@ -68,12 +68,10 @@ export class WebSocketOrderbookChannel implements OrderbookChannel {
         this._client.close();
     }
     private _handleWebSocketMessage(message: any): void {
-        // if we get a message with no data, alert all handlers and return
         if (_.isUndefined(message.data)) {
             this._handler.onError(this, new Error(`Message does not contain utf8Data`));
             return;
         }
-        // try to parse the message data and route it to the correct handler
         try {
             const utf8Data = message.data;
             const parserResult = orderbookChannelMessageParser.parse(utf8Data);
