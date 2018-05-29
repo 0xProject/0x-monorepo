@@ -1,13 +1,13 @@
 import * as WebSocket from 'websocket';
 
-import { OrderbookChannel, WebsocketClientEventType } from './types';
+import { OrderbookChannel } from './types';
 import { assert } from './utils/assert';
 import { WebSocketOrderbookChannel } from './ws_orderbook_channel';
 
 export const orderbookChannelFactory = {
     /**
      * Instantiates a new WebSocketOrderbookChannel instance
-     * @param   url                 The relayer API base WS url you would like to interact with
+     * @param   url The relayer API base WS url you would like to interact with
      * @return  An OrderbookChannel Promise
      */
     async createWebSocketOrderbookChannelAsync(url: string): Promise<OrderbookChannel> {
