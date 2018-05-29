@@ -11,22 +11,19 @@
         "clean": "shx rm -f public/bundle*",
         "lint": "tslint --project . 'ts/**/*.ts' 'ts/**/*.tsx'",
         "watch": "webpack-dev-server --content-base public --https",
-        "deploy_dogfood":
-            "npm run build; aws s3 sync ./public/. s3://dogfood.0xproject.com --profile 0xproject --region us-east-1 --grants read=uri=http://acs.amazonaws.com/groups/global/AllUsers",
-        "deploy_staging":
-            "npm run build; aws s3 sync ./public/. s3://staging-0xproject --profile 0xproject --region us-east-1 --grants read=uri=http://acs.amazonaws.com/groups/global/AllUsers",
-        "deploy_live":
-            "npm run build; aws s3 sync ./public/. s3://0xproject.com --profile 0xproject --region us-east-1 --grants read=uri=http://acs.amazonaws.com/groups/global/AllUsers"
+        "deploy_dogfood": "npm run build; aws s3 sync ./public/. s3://dogfood.0xproject.com --profile 0xproject --region us-east-1 --grants read=uri=http://acs.amazonaws.com/groups/global/AllUsers",
+        "deploy_staging": "npm run build; aws s3 sync ./public/. s3://staging-0xproject --profile 0xproject --region us-east-1 --grants read=uri=http://acs.amazonaws.com/groups/global/AllUsers",
+        "deploy_live": "npm run build; aws s3 sync ./public/. s3://0xproject.com --profile 0xproject --region us-east-1 --grants read=uri=http://acs.amazonaws.com/groups/global/AllUsers"
     },
     "author": "Fabio Berger",
     "license": "Apache-2.0",
     "dependencies": {
+        "@0xproject/contract-wrappers": "^0.0.2",
         "@0xproject/react-docs": "^0.0.12",
         "@0xproject/react-shared": "^0.1.7",
         "@0xproject/subproviders": "^0.10.2",
-        "@0xproject/contract-wrappers": "^0.0.2",
-        "@0xproject/typescript-typings": "^0.3.2",
         "@0xproject/types": "0.7.0",
+        "@0xproject/typescript-typings": "^0.3.2",
         "@0xproject/utils": "^0.6.2",
         "@0xproject/web3-wrapper": "^0.6.4",
         "accounting": "^0.4.1",
@@ -47,6 +44,7 @@
         "react-dom": "15.6.1",
         "react-ga": "^2.4.1",
         "react-joyride": "^2.0.0-11",
+        "react-popper": "^1.0.0-beta.6",
         "react-redux": "^5.0.3",
         "react-router-dom": "^4.1.1",
         "react-scroll": "^1.5.2",

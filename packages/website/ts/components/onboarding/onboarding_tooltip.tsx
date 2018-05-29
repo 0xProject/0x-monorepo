@@ -3,10 +3,9 @@ import * as React from 'react';
 import { Island } from 'ts/components/ui/island';
 
 export interface OnboardingTooltipProps {
-    title: string;
+    title?: string;
     content: React.ReactNode;
     isLastStep: boolean;
-    index: number;
     onClose: () => void;
     onClickNext: () => void;
     onClickBack: () => void;

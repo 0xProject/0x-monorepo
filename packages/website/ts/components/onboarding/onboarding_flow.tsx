@@ -1,6 +1,7 @@
 import * as _ from 'lodash';
 import * as React from 'react';
 import Joyride, { CallbackData, Step, StyleOptions } from 'react-joyride';
+import { Popper, PopperChildrenProps } from 'react-popper';
 
 import { OnboardingTooltip } from 'ts/components/onboarding/onboarding_tooltip';
 import { zIndex } from 'ts/utils/style';
@@ -29,16 +30,13 @@ export class OnboardingFlow extends React.Component<OnboardingFlowProps> {
     }
 
     public render(): React.ReactNode {
+        if (!this.props.isRunning) {
+            return null;
+        }
         return (
-            <Joyride
-                run={this.props.isRunning}
-                continuous={true}
-                debug={true}
-                steps={this.props.steps}
-                stepIndex={this.props.stepIndex}
-                styles={{ options: joyrideStyleOptions }}
-                tooltipComponent={this._renderToolTip.bind(this)}
-            />
+            <Popper referenceElement={this._getElementForStep()} placement="right">
+                {this._renderPopperChildren.bind(this)}
+            </Popper>
         );
     }
 
@@ -85,6 +83,21 @@ export class OnboardingFlow extends React.Component<OnboardingFlowProps> {
             }
         }
         return newStep;
+    }
+
+    private _getElementForStep(): Element {
+        const step = this.props.steps[this.props.stepIndex];
+        return document.querySelector(step.target);
+    }
+
+    private _renderPopperChildren(props: any): React.ReactNode {
+        const { arrowProps } = props;
+        return (
+            <div ref={props.ref} style={props.style} data-placement={props.placement}>
+                {this._renderToolTip()}
+                <div ref={arrowProps.ref} style={arrowProps.style} />
+            </div>
+        );
     }
 
     private _renderToolTip(): React.ReactNode {
