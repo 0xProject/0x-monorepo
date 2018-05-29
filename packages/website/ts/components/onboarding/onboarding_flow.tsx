@@ -3,6 +3,7 @@ import * as React from 'react';
 import { Placement, Popper, PopperChildrenProps } from 'react-popper';
 
 import { OnboardingTooltip } from 'ts/components/onboarding/onboarding_tooltip';
+import { Overlay } from 'ts/components/ui/overlay';
 import { zIndex } from 'ts/utils/style';
 
 export interface Step {
@@ -35,9 +36,11 @@ export class OnboardingFlow extends React.Component<OnboardingFlowProps> {
             return null;
         }
         return (
-            <Popper referenceElement={this._getElementForStep()} placement={this._getCurrentStep().placement}>
-                {this._renderPopperChildren.bind(this)}
-            </Popper>
+            <Overlay onClick={this.props.onClose}>
+                <Popper referenceElement={this._getElementForStep()} placement={this._getCurrentStep().placement}>
+                    {this._renderPopperChildren.bind(this)}
+                </Popper>
+            </Overlay>
         );
     }
 

@@ -11,6 +11,7 @@ import { Dispatcher } from 'ts/redux/dispatcher';
 import { ProviderType } from 'ts/types';
 import { colors } from 'ts/utils/colors';
 import { constants } from 'ts/utils/constants';
+import { zIndex } from 'ts/utils/style';
 import { utils } from 'ts/utils/utils';
 
 const ROOT_HEIGHT = 24;
@@ -33,6 +34,8 @@ const styles: Styles = {
         backgroundColor: colors.white,
         borderRadius: ROOT_HEIGHT,
         boxShadow: `0px 4px 6px ${colors.walletBoxShadow}`,
+        zIndex: zIndex.aboveOverlay,
+        position: 'relative',
     },
 };
 

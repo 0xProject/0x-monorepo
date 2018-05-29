@@ -47,6 +47,7 @@ import { colors } from 'ts/utils/colors';
 import { constants } from 'ts/utils/constants';
 import { utils } from 'ts/utils/utils';
 import { styles as walletItemStyles } from 'ts/utils/wallet_item_styles';
+import { zIndex } from '../../utils/style';
 
 export interface WalletProps {
     userAddress: string;
@@ -85,6 +86,8 @@ interface AccessoryItemConfig {
 const styles: Styles = {
     root: {
         width: '100%',
+        zIndex: zIndex.aboveOverlay,
+        position: 'relative',
     },
     headerItemInnerDiv: {
         paddingLeft: 65,
