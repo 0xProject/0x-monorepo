@@ -35,6 +35,7 @@ const steps: Step[] = [
         content:
             'In order to start trading on any 0x relayer in the 0x ecosystem, you need to complete two simple steps',
         placement: 'right',
+        hideBackButton: true,
     },
     {
         target: '.wallet',
@@ -45,16 +46,15 @@ const steps: Step[] = [
 
 export class PortalOnboardingFlow extends React.Component<PortalOnboardingFlowProps> {
     public componentDidMount(): void {
-        this._autoStartOnboardingIfShould();
+        this._overrideOnboardingStateIfShould();
     }
     public componentDidUpdate(): void {
-        this._autoStartOnboardingIfShould();
+        this._overrideOnboardingStateIfShould();
     }
     public render(): React.ReactNode {
         return (
             <OnboardingFlow
                 steps={steps}
-                blacklistedStepIndices={this._getBlacklistedStepIndices()}
                 stepIndex={this.props.stepIndex}
                 isRunning={this.props.isRunning}
                 onClose={this.props.setIsRunning.bind(this, false)}
@@ -67,21 +67,28 @@ export class PortalOnboardingFlow extends React.Component<PortalOnboardingFlowPr
         return !_.isEmpty(this.props.userAddress);
     }
 
-    private _getBlacklistedStepIndices(): number[] {
+    private _overrideOnboardingStateIfShould(): void {
+        this._autoStartOnboardingIfShould();
+        this._adjustStepIfShould();
+    }
+
+    private _adjustStepIfShould(): void {
         if (this._isAddressAvailable()) {
-            return [0, 1];
+            if (this.props.stepIndex < 2) {
+                this.props.setOnboardingStep(2);
+            }
+            return;
         }
         const isExternallyInjected = utils.isExternallyInjected(
             this.props.providerType,
             this.props.injectedProviderName,
         );
-        const twoAndOn = _.range(2, steps.length);
         if (isExternallyInjected) {
-            return [0].concat(twoAndOn);
+            this.props.setOnboardingStep(1);
+            return;
         }
-        return twoAndOn;
+        this.props.setOnboardingStep(0);
     }
-
     private _autoStartOnboardingIfShould(): void {
         if (!this.props.isRunning && !this.props.hasBeenSeen && this.props.blockchainIsLoaded) {
             this.props.setIsRunning(true);

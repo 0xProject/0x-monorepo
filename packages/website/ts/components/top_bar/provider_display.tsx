@@ -34,8 +34,6 @@ const styles: Styles = {
         backgroundColor: colors.white,
         borderRadius: ROOT_HEIGHT,
         boxShadow: `0px 4px 6px ${colors.walletBoxShadow}`,
-        zIndex: zIndex.aboveOverlay,
-        position: 'relative',
     },
 };
 

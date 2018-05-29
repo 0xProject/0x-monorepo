@@ -12,11 +12,11 @@ export interface Step {
     title?: string;
     content: React.ReactNode;
     placement?: Placement;
+    hideBackButton?: boolean;
 }
 
 export interface OnboardingFlowProps {
     steps: Step[];
-    blacklistedStepIndices: number[];
     stepIndex: number;
     isRunning: boolean;
     onClose: () => void;
@@ -24,14 +24,6 @@ export interface OnboardingFlowProps {
 }
 
 export class OnboardingFlow extends React.Component<OnboardingFlowProps> {
-    public componentDidMount(): void {
-        this._setOnboardingStepBasedOnBlacklist(this.props.stepIndex);
-    }
-
-    public componentWillReceiveProps(nextProps: OnboardingFlowProps): void {
-        this._setOnboardingStepBasedOnBlacklist(nextProps.stepIndex);
-    }
-
     public render(): React.ReactNode {
         if (!this.props.isRunning) {
             return null;
@@ -43,51 +35,6 @@ export class OnboardingFlow extends React.Component<OnboardingFlowProps> {
                 </Popper>
             </Overlay>
         );
-    }
-
-    private _setOnboardingStepBasedOnBlacklist(nextIndex: number): void {
-        const blacklistedSteps = this.props.blacklistedStepIndices;
-        const newStepIndex = this._adjustedStepBasedOnBlacklist(
-            this.props.stepIndex,
-            nextIndex,
-            this.props.steps.length,
-            blacklistedSteps,
-        );
-        if (newStepIndex !== nextIndex) {
-            this.props.setOnboardingStep(newStepIndex);
-        }
-    }
-
-    private _adjustedStepBasedOnBlacklist(
-        currentStep: number,
-        nextStep: number,
-        totalSteps: number,
-        blacklistedSteps: number[],
-    ): number {
-        if (!blacklistedSteps.includes(nextStep)) {
-            return nextStep;
-        }
-        let newStep = nextStep;
-        const op = nextStep >= currentStep ? _.add : _.subtract;
-        let didSearch = false;
-        while (blacklistedSteps.includes(newStep)) {
-            newStep = op(newStep, 1);
-            if (newStep < 0) {
-                if (didSearch) {
-                    break;
-                }
-                newStep = totalSteps - 1;
-                didSearch = true;
-            }
-            if (newStep >= totalSteps) {
-                if (didSearch) {
-                    break;
-                }
-                newStep = 0;
-                didSearch = true;
-            }
-        }
-        return newStep;
     }
 
     private _getElementForStep(): Element {
@@ -112,6 +59,7 @@ export class OnboardingFlow extends React.Component<OnboardingFlowProps> {
                     title={step.title}
                     content={step.content}
                     isLastStep={isLastStep}
+                    hideBackButton={step.hideBackButton}
                     onClose={this.props.onClose}
                     onClickNext={this._goToNextStep.bind(this)}
                     onClickBack={this._goToPrevStep.bind(this)}

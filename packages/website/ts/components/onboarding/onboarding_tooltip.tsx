@@ -11,6 +11,7 @@ export interface OnboardingTooltipProps {
     onClose: () => void;
     onClickNext: () => void;
     onClickBack: () => void;
+    hideBackButton?: boolean;
 }
 
 export const OnboardingTooltip: React.StatelessComponent<OnboardingTooltipProps> = (props: OnboardingTooltipProps) => (
@@ -19,7 +20,7 @@ export const OnboardingTooltip: React.StatelessComponent<OnboardingTooltipProps>
             <div className="flex flex-column">
                 {props.title}
                 {props.content}
-                <button onClick={props.onClickBack}>Back</button>
+                {!props.hideBackButton && <button onClick={props.onClickBack}>Back</button>}
                 <button onClick={props.onClickNext}>Skip</button>
                 <button onClick={props.onClose}>Close</button>
             </div>
