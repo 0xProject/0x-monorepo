@@ -5,6 +5,10 @@ Edit the package's CHANGELOG.json file only.
 
 CHANGELOG
 
+## v0.38.1 - _May 29, 2018_
+
+    * Dependencies updated
+
 ## v0.38.0 - _May 22, 2018_
 
     * Renamed createOrderStateWatcher to createOrderWatcherAsync since it is now async (#579)
