@@ -57,6 +57,7 @@ export class WebSocketOrderbookChannel implements OrderbookChannel {
             handler,
         };
         this._subscriptions.push(newSubscription);
+        // TODO: update requestId management to use UUIDs for v2
         const subscribeMessage = {
             type: 'subscribe',
             channel: 'orderbook',
