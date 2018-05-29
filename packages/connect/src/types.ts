@@ -11,7 +11,7 @@ export interface Client {
 }
 
 export interface OrderbookChannel {
-    subscribe: (subscriptionOpts: OrderbookChannelSubscriptionOpts, handler: OrderbookChannelHandler) => void;
+    subscribe: (subscriptionOpts: OrderbookChannelSubscriptionOpts) => void;
     close: () => void;
 }
 
