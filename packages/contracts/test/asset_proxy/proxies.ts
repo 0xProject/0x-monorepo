@@ -1,4 +1,6 @@
 import { BlockchainLifecycle } from '@0xproject/dev-utils';
+import { assetProxyUtils } from '@0xproject/order-utils';
+import { AssetProxyId } from '@0xproject/types';
 import { BigNumber } from '@0xproject/utils';
 import * as chai from 'chai';
 import * as _ from 'lodash';
@@ -8,12 +10,10 @@ import { DummyERC20TokenContract } from '../../src/contract_wrappers/generated/d
 import { DummyERC721TokenContract } from '../../src/contract_wrappers/generated/dummy_e_r_c721_token';
 import { ERC20ProxyContract } from '../../src/contract_wrappers/generated/e_r_c20_proxy';
 import { ERC721ProxyContract } from '../../src/contract_wrappers/generated/e_r_c721_proxy';
-import { assetProxyUtils } from '../../src/utils/asset_proxy_utils';
 import { chaiSetup } from '../../src/utils/chai_setup';
 import { constants } from '../../src/utils/constants';
 import { ERC20Wrapper } from '../../src/utils/erc20_wrapper';
 import { ERC721Wrapper } from '../../src/utils/erc721_wrapper';
-import { AssetProxyId } from '../../src/utils/types';
 import { provider, web3Wrapper } from '../../src/utils/web3_wrapper';
 
 chaiSetup.configure();

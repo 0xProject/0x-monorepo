@@ -43,12 +43,6 @@ export interface CancelOrdersBefore {
     salt: BigNumber;
 }
 
-export enum AssetProxyId {
-    INVALID,
-    ERC20,
-    ERC721,
-}
-
 export interface TransactionDataParams {
     name: string;
     abi: AbiDefinition[];
@@ -113,16 +107,6 @@ export enum ContractName {
     Authorizable = 'Authorizable',
 }
 
-export enum SignatureType {
-    Illegal,
-    Invalid,
-    Caller,
-    Ecrecover,
-    EIP712,
-    Trezor,
-    Contract,
-}
-
 export interface SignedTransaction {
     exchangeAddress: string;
     salt: BigNumber;
@@ -156,23 +140,6 @@ export interface OrderInfo {
     orderStatus: number;
     orderHash: string;
     orderTakerAssetFilledAmount: BigNumber;
-}
-
-export interface ERC20ProxyData {
-    assetProxyId: AssetProxyId;
-    tokenAddress: string;
-}
-
-export interface ERC721ProxyData {
-    assetProxyId: AssetProxyId;
-    tokenAddress: string;
-    tokenId: BigNumber;
-}
-
-export interface ProxyData {
-    assetProxyId: AssetProxyId;
-    tokenAddress?: string;
-    data?: any;
 }
 
 export interface CancelOrder {

@@ -30,7 +30,7 @@ contract MixinSignatureValidator is
 {
 
     // Mapping of hash => signer => signed
-    mapping(bytes32 => mapping(address => bool)) preSigned;
+    mapping(bytes32 => mapping(address => bool)) public preSigned;
 
     /// @dev Approves a hash on-chain using any valid signature type.
     ///      After presigning a hash, the preSign signature type will become valid for that hash and signer.

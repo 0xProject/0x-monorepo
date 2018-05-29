@@ -2,48 +2,56 @@ import { Provider, SignedOrder } from '@0xproject/types';
 import { BigNumber } from '@0xproject/utils';
 import * as _ from 'lodash';
 
-import { getOrderHashHex } from './order_hash';
+import { orderHashUtils } from './order_hash';
 import { generatePseudoRandomSalt } from './salt';
-import { signOrderHashAsync } from './signature_utils';
+import { ecSignOrderHashAsync, getVRSHexString } from './signature_utils';
 
 const SHOULD_ADD_PERSONAL_MESSAGE_PREFIX = false;
 
 export const orderFactory = {
     async createSignedOrderAsync(
         provider: Provider,
-        maker: string,
-        taker: string,
+        makerAddress: string,
+        takerAddress: string,
+        senderAddress: string,
         makerFee: BigNumber,
         takerFee: BigNumber,
-        makerTokenAmount: BigNumber,
-        makerTokenAddress: string,
-        takerTokenAmount: BigNumber,
-        takerTokenAddress: string,
-        exchangeContractAddress: string,
-        feeRecipient: string,
-        expirationUnixTimestampSecIfExists?: BigNumber,
+        makerAssetAmount: BigNumber,
+        makerAssetData: string,
+        takerAssetAmount: BigNumber,
+        takerAssetData: string,
+        exchangeAddress: string,
+        feeRecipientAddress: string,
+        expirationTimeSecondsIfExists?: BigNumber,
     ): Promise<SignedOrder> {
         const defaultExpirationUnixTimestampSec = new BigNumber(2524604400); // Close to infinite
-        const expirationUnixTimestampSec = _.isUndefined(expirationUnixTimestampSecIfExists)
+        const expirationTimeSeconds = _.isUndefined(expirationTimeSecondsIfExists)
             ? defaultExpirationUnixTimestampSec
-            : expirationUnixTimestampSecIfExists;
+            : expirationTimeSecondsIfExists;
         const order = {
-            maker,
-            taker,
+            makerAddress,
+            takerAddress,
+            senderAddress,
             makerFee,
             takerFee,
-            makerTokenAmount,
-            takerTokenAmount,
-            makerTokenAddress,
-            takerTokenAddress,
+            makerAssetAmount,
+            takerAssetAmount,
+            makerAssetData,
+            takerAssetData,
             salt: generatePseudoRandomSalt(),
-            exchangeContractAddress,
-            feeRecipient,
-            expirationUnixTimestampSec,
+            exchangeAddress,
+            feeRecipientAddress,
+            expirationTimeSeconds,
         };
-        const orderHash = getOrderHashHex(order);
-        const ecSignature = await signOrderHashAsync(provider, orderHash, maker, SHOULD_ADD_PERSONAL_MESSAGE_PREFIX);
-        const signedOrder: SignedOrder = _.assign(order, { ecSignature });
+        const orderHash = orderHashUtils.getOrderHashHex(order);
+        const ecSignature = await ecSignOrderHashAsync(
+            provider,
+            orderHash,
+            makerAddress,
+            SHOULD_ADD_PERSONAL_MESSAGE_PREFIX,
+        );
+        const signature = getVRSHexString(ecSignature);
+        const signedOrder: SignedOrder = _.assign(order, { signature });
         return signedOrder;
     },
 };

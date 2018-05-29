@@ -1,5 +1,5 @@
 {
-    "artifactsDir": "artifacts/1.0.0",
+    "artifactsDir": "artifacts/2.0.0",
     "contractsDir": "../contracts/src/contracts",
     "contracts": [
         "Exchange_v1",
@@ -10,7 +10,8 @@
         "MultiSigWallet",
         "MultiSigWalletWithTimeLock",
         "MultiSigWalletWithTimeLockExceptRemoveAuthorizedAddress",
-        "TokenRegistry"
+        "TokenRegistry",
+        "ISigner"
     ],
     "compilerSettings": {
         "outputSelection": {

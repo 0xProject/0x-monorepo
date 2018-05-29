@@ -1,5 +1,6 @@
 import { BlockchainLifecycle } from '@0xproject/dev-utils';
-import { LogWithDecodedArgs, SignedOrder } from '@0xproject/types';
+import { assetProxyUtils, crypto, orderHashUtils } from '@0xproject/order-utils';
+import { AssetProxyId, LogWithDecodedArgs, SignedOrder } from '@0xproject/types';
 import { BigNumber } from '@0xproject/utils';
 import { Web3Wrapper } from '@0xproject/web3-wrapper';
 import * as chai from 'chai';
@@ -17,16 +18,13 @@ import {
     FillContractEventArgs,
 } from '../../src/contract_wrappers/generated/exchange';
 import { artifacts } from '../../src/utils/artifacts';
-import { assetProxyUtils } from '../../src/utils/asset_proxy_utils';
 import { chaiSetup } from '../../src/utils/chai_setup';
 import { constants } from '../../src/utils/constants';
-import { crypto } from '../../src/utils/crypto';
 import { ERC20Wrapper } from '../../src/utils/erc20_wrapper';
 import { ERC721Wrapper } from '../../src/utils/erc721_wrapper';
 import { ExchangeWrapper } from '../../src/utils/exchange_wrapper';
 import { OrderFactory } from '../../src/utils/order_factory';
-import { orderUtils } from '../../src/utils/order_utils';
-import { AssetProxyId, ContractName, ERC20BalancesByOwner, ExchangeStatus } from '../../src/utils/types';
+import { ContractName, ERC20BalancesByOwner, ExchangeStatus } from '../../src/utils/types';
 import { provider, txDefaults, web3Wrapper } from '../../src/utils/web3_wrapper';
 
 chaiSetup.configure();
@@ -127,7 +125,6 @@ describe('Exchange core', () => {
     afterEach(async () => {
         await blockchainLifecycle.revertAsync();
     });
-
     describe('fillOrder', () => {
         beforeEach(async () => {
             erc20Balances = await erc20Wrapper.getBalancesAsync();
@@ -141,7 +138,7 @@ describe('Exchange core', () => {
             });
 
             const takerAssetFilledAmountBefore = await exchangeWrapper.getTakerAssetFilledAmountAsync(
-                orderUtils.getOrderHashHex(signedOrder),
+                orderHashUtils.getOrderHashHex(signedOrder),
             );
             expect(takerAssetFilledAmountBefore).to.be.bignumber.equal(0);
 
@@ -151,7 +148,7 @@ describe('Exchange core', () => {
             });
 
             const takerAssetFilledAmountAfter1 = await exchangeWrapper.getTakerAssetFilledAmountAsync(
-                orderUtils.getOrderHashHex(signedOrder),
+                orderHashUtils.getOrderHashHex(signedOrder),
             );
             expect(takerAssetFilledAmountAfter1).to.be.bignumber.equal(fillTakerAssetAmount1);
 
@@ -161,7 +158,7 @@ describe('Exchange core', () => {
             });
 
             const takerAssetFilledAmountAfter2 = await exchangeWrapper.getTakerAssetFilledAmountAsync(
-                orderUtils.getOrderHashHex(signedOrder),
+                orderHashUtils.getOrderHashHex(signedOrder),
             );
             expect(takerAssetFilledAmountAfter2).to.be.bignumber.equal(takerAssetFilledAmountAfter1);
         });
@@ -173,7 +170,7 @@ describe('Exchange core', () => {
             });
 
             const takerAssetFilledAmountBefore = await exchangeWrapper.getTakerAssetFilledAmountAsync(
-                orderUtils.getOrderHashHex(signedOrder),
+                orderHashUtils.getOrderHashHex(signedOrder),
             );
             expect(takerAssetFilledAmountBefore).to.be.bignumber.equal(0);
 
@@ -181,7 +178,7 @@ describe('Exchange core', () => {
             await exchangeWrapper.fillOrderAsync(signedOrder, takerAddress, { takerAssetFillAmount });
 
             const makerAmountBoughtAfter = await exchangeWrapper.getTakerAssetFilledAmountAsync(
-                orderUtils.getOrderHashHex(signedOrder),
+                orderHashUtils.getOrderHashHex(signedOrder),
             );
             expect(makerAmountBoughtAfter).to.be.bignumber.equal(takerAssetFillAmount);
 
@@ -226,7 +223,7 @@ describe('Exchange core', () => {
             });
 
             const takerAssetFilledAmountBefore = await exchangeWrapper.getTakerAssetFilledAmountAsync(
-                orderUtils.getOrderHashHex(signedOrder),
+                orderHashUtils.getOrderHashHex(signedOrder),
             );
             expect(takerAssetFilledAmountBefore).to.be.bignumber.equal(0);
 
@@ -234,7 +231,7 @@ describe('Exchange core', () => {
             await exchangeWrapper.fillOrderAsync(signedOrder, takerAddress, { takerAssetFillAmount });
 
             const makerAmountBoughtAfter = await exchangeWrapper.getTakerAssetFilledAmountAsync(
-                orderUtils.getOrderHashHex(signedOrder),
+                orderHashUtils.getOrderHashHex(signedOrder),
             );
             expect(makerAmountBoughtAfter).to.be.bignumber.equal(takerAssetFillAmount);
 
@@ -279,7 +276,7 @@ describe('Exchange core', () => {
             });
 
             const takerAssetFilledAmountBefore = await exchangeWrapper.getTakerAssetFilledAmountAsync(
-                orderUtils.getOrderHashHex(signedOrder),
+                orderHashUtils.getOrderHashHex(signedOrder),
             );
             expect(takerAssetFilledAmountBefore).to.be.bignumber.equal(0);
 
@@ -287,7 +284,7 @@ describe('Exchange core', () => {
             await exchangeWrapper.fillOrderAsync(signedOrder, takerAddress, { takerAssetFillAmount });
 
             const makerAmountBoughtAfter = await exchangeWrapper.getTakerAssetFilledAmountAsync(
-                orderUtils.getOrderHashHex(signedOrder),
+                orderHashUtils.getOrderHashHex(signedOrder),
             );
             expect(makerAmountBoughtAfter).to.be.bignumber.equal(takerAssetFillAmount);
 
@@ -333,7 +330,7 @@ describe('Exchange core', () => {
             });
 
             const takerAssetFilledAmountBefore = await exchangeWrapper.getTakerAssetFilledAmountAsync(
-                orderUtils.getOrderHashHex(signedOrder),
+                orderHashUtils.getOrderHashHex(signedOrder),
             );
             expect(takerAssetFilledAmountBefore).to.be.bignumber.equal(0);
 
@@ -341,7 +338,7 @@ describe('Exchange core', () => {
             await exchangeWrapper.fillOrderAsync(signedOrder, takerAddress, { takerAssetFillAmount });
 
             const makerAmountBoughtAfter = await exchangeWrapper.getTakerAssetFilledAmountAsync(
-                orderUtils.getOrderHashHex(signedOrder),
+                orderHashUtils.getOrderHashHex(signedOrder),
             );
             const expectedMakerAmountBoughtAfter = takerAssetFillAmount.add(takerAssetFilledAmountBefore);
             expect(makerAmountBoughtAfter).to.be.bignumber.equal(expectedMakerAmountBoughtAfter);
@@ -441,7 +438,7 @@ describe('Exchange core', () => {
             expect(expectedFilledTakerAssetAmount).to.be.bignumber.equal(logArgs.takerAssetFilledAmount);
             expect(expectedFeeMPaid).to.be.bignumber.equal(logArgs.makerFeePaid);
             expect(expectedFeeTPaid).to.be.bignumber.equal(logArgs.takerFeePaid);
-            expect(orderUtils.getOrderHashHex(signedOrder)).to.be.equal(logArgs.orderHash);
+            expect(orderHashUtils.getOrderHashHex(signedOrder)).to.be.equal(logArgs.orderHash);
         });
 
         it('should throw when taker is specified and order is claimed by other', async () => {
@@ -534,12 +531,6 @@ describe('Exchange core', () => {
             await expect(exchangeWrapper.fillOrderAsync(signedOrder, takerAddress)).to.be.rejectedWith(
                 constants.REVERT,
             );
-            await web3Wrapper.awaitTransactionSuccessAsync(
-                await erc20TokenA.approve.sendTransactionAsync(erc20Proxy.address, constants.INITIAL_ERC20_ALLOWANCE, {
-                    from: makerAddress,
-                }),
-                constants.AWAIT_TRANSACTION_MINED_MS,
-            );
         });
 
         it('should throw if taker allowances are too low to fill order', async () => {
@@ -554,12 +545,6 @@ describe('Exchange core', () => {
             // tslint:disable-next-line:await-promise
             await expect(exchangeWrapper.fillOrderAsync(signedOrder, takerAddress)).to.be.rejectedWith(
                 constants.REVERT,
-            );
-            await web3Wrapper.awaitTransactionSuccessAsync(
-                await erc20TokenB.approve.sendTransactionAsync(erc20Proxy.address, constants.INITIAL_ERC20_ALLOWANCE, {
-                    from: takerAddress,
-                }),
-                constants.AWAIT_TRANSACTION_MINED_MS,
             );
         });
 
@@ -651,7 +636,7 @@ describe('Exchange core', () => {
             expect(signedOrder.feeRecipientAddress).to.be.equal(logArgs.feeRecipientAddress);
             expect(signedOrder.makerAssetData).to.be.equal(logArgs.makerAssetData);
             expect(signedOrder.takerAssetData).to.be.equal(logArgs.takerAssetData);
-            expect(orderUtils.getOrderHashHex(signedOrder)).to.be.equal(logArgs.orderHash);
+            expect(orderHashUtils.getOrderHashHex(signedOrder)).to.be.equal(logArgs.orderHash);
         });
 
         it('should log an error if already cancelled', async () => {
