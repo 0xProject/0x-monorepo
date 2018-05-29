@@ -1,13 +1,9 @@
-// Polyfills
-import * as _ from 'lodash';
 import { MuiThemeProvider } from 'material-ui/styles';
 import * as React from 'react';
 import { render } from 'react-dom';
 import { Provider } from 'react-redux';
 import { BrowserRouter as Router, Redirect, Route, Switch } from 'react-router-dom';
 import * as injectTapEventPlugin from 'react-tap-event-plugin';
-import { createStore, Store as ReduxStore } from 'redux';
-import { devToolsEnhancer } from 'redux-devtools-extension/developmentOnly';
 import { Redirecter } from 'ts/components/redirecter';
 import { About } from 'ts/containers/about';
 import { FAQ } from 'ts/containers/faq';
@@ -15,14 +11,14 @@ import { Landing } from 'ts/containers/landing';
 import { NotFound } from 'ts/containers/not_found';
 import { Wiki } from 'ts/containers/wiki';
 import { createLazyComponent } from 'ts/lazy_component';
-import { stateStorage } from 'ts/local_storage/state_storage';
 import { trackedTokenStorage } from 'ts/local_storage/tracked_token_storage';
 import { tradeHistoryStorage } from 'ts/local_storage/trade_history_storage';
-import { reducer, State } from 'ts/redux/reducer';
+import { store } from 'ts/redux/store';
 import { WebsiteLegacyPaths, WebsitePaths } from 'ts/types';
 import { analytics } from 'ts/utils/analytics';
 import { muiTheme } from 'ts/utils/mui_theme';
 import { utils } from 'ts/utils/utils';
+// Polyfills
 import 'whatwg-fetch';
 injectTapEventPlugin();
 
@@ -77,18 +73,6 @@ const LazyOrderUtilsDocumentation = createLazyComponent('Documentation', async (
 analytics.init();
 // tslint:disable-next-line:no-floating-promises
 analytics.logProviderAsync((window as any).web3);
-const store: ReduxStore<State> = createStore(
-    reducer,
-    stateStorage.getPersistedDefaultState(),
-    devToolsEnhancer({ name: '0x Website Redux Store' }),
-);
-store.subscribe(
-    _.throttle(() => {
-        stateStorage.saveState({
-            hasPortalOnboardingBeenSeen: store.getState().hasPortalOnboardingBeenSeen,
-        });
-    }, 1000),
-);
 
 render(
     <Router>

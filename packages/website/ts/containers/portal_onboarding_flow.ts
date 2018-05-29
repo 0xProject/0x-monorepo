@@ -19,8 +19,8 @@ interface ConnectedState {
 }
 
 interface ConnectedDispatch {
-    setIsRunning: (isRunning: boolean) => void;
-    setOnboardingStep: (stepIndex: number) => void;
+    updateIsRunning: (isRunning: boolean) => void;
+    updateOnboardingStep: (stepIndex: number) => void;
 }
 
 const mapStateToProps = (state: State): ConnectedState => ({
@@ -34,13 +34,13 @@ const mapStateToProps = (state: State): ConnectedState => ({
 });
 
 const mapDispatchToProps = (dispatch: Dispatch<State>): ConnectedDispatch => ({
-    setIsRunning: (isRunning: boolean): void => {
+    updateIsRunning: (isRunning: boolean): void => {
         dispatch({
             type: ActionTypes.UpdatePortalOnboardingShowing,
             data: isRunning,
         });
     },
-    setOnboardingStep: (stepIndex: number): void => {
+    updateOnboardingStep: (stepIndex: number): void => {
         dispatch({
             type: ActionTypes.UpdatePortalOnboardingStep,
             data: stepIndex,

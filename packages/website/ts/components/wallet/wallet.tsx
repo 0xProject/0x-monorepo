@@ -45,9 +45,9 @@ import {
 import { backendClient } from 'ts/utils/backend_client';
 import { colors } from 'ts/utils/colors';
 import { constants } from 'ts/utils/constants';
+import { zIndex } from 'ts/utils/style';
 import { utils } from 'ts/utils/utils';
 import { styles as walletItemStyles } from 'ts/utils/wallet_item_styles';
-import { zIndex } from '../../utils/style';
 
 export interface WalletProps {
     userAddress: string;

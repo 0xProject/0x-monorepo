@@ -14,8 +14,8 @@ export interface PortalOnboardingFlowProps {
     injectedProviderName: string;
     blockchainIsLoaded: boolean;
     hasBeenSeen: boolean;
-    setIsRunning: (isRunning: boolean) => void;
-    setOnboardingStep: (stepIndex: number) => void;
+    updateIsRunning: (isRunning: boolean) => void;
+    updateOnboardingStep: (stepIndex: number) => void;
 }
 
 const steps: Step[] = [
@@ -57,8 +57,8 @@ export class PortalOnboardingFlow extends React.Component<PortalOnboardingFlowPr
                 steps={steps}
                 stepIndex={this.props.stepIndex}
                 isRunning={this.props.isRunning}
-                onClose={this.props.setIsRunning.bind(this, false)}
-                setOnboardingStep={this.props.setOnboardingStep}
+                onClose={this.props.updateIsRunning.bind(this, false)}
+                updateOnboardingStep={this.props.updateOnboardingStep}
             />
         );
     }
@@ -75,7 +75,7 @@ export class PortalOnboardingFlow extends React.Component<PortalOnboardingFlowPr
     private _adjustStepIfShould(): void {
         if (this._isAddressAvailable()) {
             if (this.props.stepIndex < 2) {
-                this.props.setOnboardingStep(2);
+                this.props.updateOnboardingStep(2);
             }
             return;
         }
@@ -84,14 +84,14 @@ export class PortalOnboardingFlow extends React.Component<PortalOnboardingFlowPr
             this.props.injectedProviderName,
         );
         if (isExternallyInjected) {
-            this.props.setOnboardingStep(1);
+            this.props.updateOnboardingStep(1);
             return;
         }
-        this.props.setOnboardingStep(0);
+        this.props.updateOnboardingStep(0);
     }
     private _autoStartOnboardingIfShould(): void {
         if (!this.props.isRunning && !this.props.hasBeenSeen && this.props.blockchainIsLoaded) {
-            this.props.setIsRunning(true);
+            this.props.updateIsRunning(true);
         }
     }
 }

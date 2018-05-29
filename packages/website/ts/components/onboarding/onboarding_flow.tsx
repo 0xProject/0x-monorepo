@@ -20,7 +20,7 @@ export interface OnboardingFlowProps {
     stepIndex: number;
     isRunning: boolean;
     onClose: () => void;
-    setOnboardingStep: (stepIndex: number) => void;
+    updateOnboardingStep: (stepIndex: number) => void;
 }
 
 export class OnboardingFlow extends React.Component<OnboardingFlowProps> {
@@ -75,7 +75,7 @@ export class OnboardingFlow extends React.Component<OnboardingFlowProps> {
     private _goToNextStep(): void {
         const nextStep = this.props.stepIndex + 1;
         if (nextStep < this.props.steps.length) {
-            this.props.setOnboardingStep(nextStep);
+            this.props.updateOnboardingStep(nextStep);
         } else {
             this.props.onClose();
         }
@@ -84,7 +84,7 @@ export class OnboardingFlow extends React.Component<OnboardingFlowProps> {
     private _goToPrevStep(): void {
         const nextStep = this.props.stepIndex - 1;
         if (nextStep >= 0) {
-            this.props.setOnboardingStep(nextStep);
+            this.props.updateOnboardingStep(nextStep);
         } else {
             this.props.onClose();
         }

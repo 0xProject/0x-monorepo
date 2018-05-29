@@ -26,14 +26,10 @@ export const localStorage = {
         }
         window.localStorage.removeItem(key);
     },
-    getObject(key: string): object {
+    getObject(key: string): object | undefined {
         const item = localStorage.getItemIfExists(key);
         if (item) {
-            try {
-                return JSON.parse(item);
-            } catch (err) {
-                return undefined;
-            }
+            return JSON.parse(item);
         }
         return undefined;
     },
