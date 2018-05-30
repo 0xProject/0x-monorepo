@@ -1,7 +1,8 @@
+import { BigNumber } from '@0xproject/utils';
 import * as React from 'react';
 import { connect } from 'react-redux';
 import { Dispatch } from 'redux';
-import { ActionTypes, ProviderType } from 'ts/types';
+import { ActionTypes, ProviderType, TokenByAddress } from 'ts/types';
 
 import { PortalOnboardingFlow as PortalOnboardingFlowComponent } from 'ts/components/onboarding/portal_onboarding_flow';
 import { State } from 'ts/redux/reducer';
@@ -12,10 +13,12 @@ interface ConnectedState {
     stepIndex: number;
     isRunning: boolean;
     userAddress: string;
+    hasBeenSeen: boolean;
     providerType: ProviderType;
     injectedProviderName: string;
     blockchainIsLoaded: boolean;
-    hasBeenSeen: boolean;
+    userEthBalanceInWei: BigNumber;
+    tokenByAddress: TokenByAddress;
 }
 
 interface ConnectedDispatch {
@@ -30,6 +33,8 @@ const mapStateToProps = (state: State): ConnectedState => ({
     providerType: state.providerType,
     injectedProviderName: state.injectedProviderName,
     blockchainIsLoaded: state.blockchainIsLoaded,
+    userEthBalanceInWei: state.userEtherBalanceInWei,
+    tokenByAddress: state.tokenByAddress,
     hasBeenSeen: state.hasPortalOnboardingBeenSeen,
 });
 

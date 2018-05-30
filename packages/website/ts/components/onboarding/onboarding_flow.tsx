@@ -2,7 +2,7 @@ import * as _ from 'lodash';
 import * as React from 'react';
 import { Placement, Popper, PopperChildrenProps } from 'react-popper';
 
-import { OnboardingTooltip } from 'ts/components/onboarding/onboarding_tooltip';
+import { ContinueButtonDisplay, OnboardingTooltip } from 'ts/components/onboarding/onboarding_tooltip';
 import { Container } from 'ts/components/ui/container';
 import { Overlay } from 'ts/components/ui/overlay';
 import { zIndex } from 'ts/utils/style';
@@ -13,6 +13,8 @@ export interface Step {
     content: React.ReactNode;
     placement?: Placement;
     hideBackButton?: boolean;
+    hideNextButton?: boolean;
+    continueButtonDisplay?: ContinueButtonDisplay;
 }
 
 export interface OnboardingFlowProps {
@@ -60,9 +62,11 @@ export class OnboardingFlow extends React.Component<OnboardingFlowProps> {
                     content={step.content}
                     isLastStep={isLastStep}
                     hideBackButton={step.hideBackButton}
+                    hideNextButton={step.hideNextButton}
                     onClose={this.props.onClose}
                     onClickNext={this._goToNextStep.bind(this)}
                     onClickBack={this._goToPrevStep.bind(this)}
+                    continueButtonDisplay={step.continueButtonDisplay}
                 />
             </Container>
         );

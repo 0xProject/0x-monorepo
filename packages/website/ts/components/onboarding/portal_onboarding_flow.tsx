@@ -1,48 +1,24 @@
 import * as _ from 'lodash';
 import * as React from 'react';
 
-import { black } from 'material-ui/styles/colors';
+import { BigNumber } from '@0xproject/utils';
 import { OnboardingFlow, Step } from 'ts/components/onboarding/onboarding_flow';
-import { ProviderType } from 'ts/types';
+import { ProviderType, TokenByAddress } from 'ts/types';
 import { utils } from 'ts/utils/utils';
 
 export interface PortalOnboardingFlowProps {
     stepIndex: number;
     isRunning: boolean;
     userAddress: string;
+    hasBeenSeen: boolean;
     providerType: ProviderType;
     injectedProviderName: string;
     blockchainIsLoaded: boolean;
-    hasBeenSeen: boolean;
+    userEthBalanceInWei: BigNumber;
+    tokenByAddress: TokenByAddress;
     updateIsRunning: (isRunning: boolean) => void;
     updateOnboardingStep: (stepIndex: number) => void;
 }
-
-const steps: Step[] = [
-    {
-        target: '.wallet',
-        content:
-            'Before you begin, you need to connect to a wallet. This will be used across all 0x relayers and dApps',
-        placement: 'right',
-    },
-    {
-        target: '.wallet',
-        content: 'Unlock your metamask extension to begin',
-        placement: 'right',
-    },
-    {
-        target: '.wallet',
-        content:
-            'In order to start trading on any 0x relayer in the 0x ecosystem, you need to complete two simple steps',
-        placement: 'right',
-        hideBackButton: true,
-    },
-    {
-        target: '.wallet',
-        content: 'Before you begin you will need to send some ETH to your metamask wallet',
-        placement: 'right',
-    },
-];
 
 export class PortalOnboardingFlow extends React.Component<PortalOnboardingFlowProps> {
     public componentDidMount(): void {
@@ -54,7 +30,7 @@ export class PortalOnboardingFlow extends React.Component<PortalOnboardingFlowPr
     public render(): React.ReactNode {
         return (
             <OnboardingFlow
-                steps={steps}
+                steps={this._getSteps()}
                 stepIndex={this.props.stepIndex}
                 isRunning={this.props.isRunning}
                 onClose={this.props.updateIsRunning.bind(this, false)}
@@ -63,8 +39,58 @@ export class PortalOnboardingFlow extends React.Component<PortalOnboardingFlowPr
         );
     }
 
+    private _getSteps(): Step[] {
+        const steps: Step[] = [
+            {
+                target: '.wallet',
+                content:
+                    'Before you begin, you need to connect to a wallet. This will be used across all 0x relayers and dApps',
+                placement: 'right',
+                hideBackButton: true,
+                hideNextButton: true,
+            },
+            {
+                target: '.wallet',
+                content: 'Unlock your metamask extension to begin',
+                placement: 'right',
+                hideBackButton: true,
+                hideNextButton: true,
+            },
+            {
+                target: '.wallet',
+                content:
+                    'In order to start trading on any 0x relayer in the 0x ecosystem, you need to complete two simple steps',
+                placement: 'right',
+                hideBackButton: true,
+                continueButtonDisplay: 'enabled',
+            },
+            {
+                target: '.eth-row',
+                content: 'Before you begin you will need to send some ETH to your metamask wallet',
+                placement: 'right',
+                continueButtonDisplay: this._userHasEth() ? 'enabled' : 'disabled',
+            },
+            {
+                target: '.weth-row',
+                content: 'You need to convert some of your ETH into tradeable Wrapped ETH (WETH)',
+                placement: 'right',
+                continueButtonDisplay: this._userHasWeth() ? 'enabled' : 'disabled',
+            },
+        ];
+        return steps;
+    }
+
     private _isAddressAvailable(): boolean {
         return !_.isEmpty(this.props.userAddress);
+    }
+
+    private _userHasEth(): boolean {
+        return this.props.userEthBalanceInWei > new BigNumber(0);
+    }
+
+    private _userHasWeth(): boolean {
+        // TODO: https://app.asana.com/0/681385331277907/690722374136933
+        return false;
     }
 
     private _overrideOnboardingStateIfShould(): void {
