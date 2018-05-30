@@ -1,8 +1,29 @@
-import { Order, OrderWithoutExchangeAddress, SignedOrder } from '@0xproject/types';
+import { Order, OrderWithoutExchangeAddress, SignedOrder, UnsignedOrder } from '@0xproject/types';
 import { BigNumber } from '@0xproject/utils';
 import ethUtil = require('ethereumjs-util');
+import * as _ from 'lodash';
 
-import { CancelOrder, MatchOrder } from './types';
+import { crypto } from './crypto';
+import { EIP712Utils } from './eip712_utils';
+import { CancelOrder, EIP712Schema, MatchOrder } from './types';
+
+const EIP712_ORDER_SCHEMA: EIP712Schema = {
+    name: 'Order',
+    parameters: [
+        { name: 'makerAddress', type: 'address' },
+        { name: 'takerAddress', type: 'address' },
+        { name: 'feeRecipientAddress', type: 'address' },
+        { name: 'senderAddress', type: 'address' },
+        { name: 'makerAssetAmount', type: 'uint256' },
+        { name: 'takerAssetAmount', type: 'uint256' },
+        { name: 'makerFee', type: 'uint256' },
+        { name: 'takerFee', type: 'uint256' },
+        { name: 'expirationTimeSeconds', type: 'uint256' },
+        { name: 'salt', type: 'uint256' },
+        { name: 'makerAssetData', type: 'bytes' },
+        { name: 'takerAssetData', type: 'bytes' },
+    ],
+};
 
 export const orderUtils = {
     createFill: (signedOrder: SignedOrder, takerAssetFillAmount?: BigNumber) => {
@@ -36,6 +57,37 @@ export const orderUtils = {
             takerAssetData: signedOrder.takerAssetData,
         };
         return orderStruct;
+    },
+    getOrderSchemaBuffer(): Buffer {
+        return EIP712Utils.compileSchema(EIP712_ORDER_SCHEMA);
+    },
+    getOrderHashBuffer(order: SignedOrder | UnsignedOrder): Buffer {
+        const makerAssetDataHash = crypto.solSHA3([ethUtil.toBuffer(order.makerAssetData)]);
+        const takerAssetDataHash = crypto.solSHA3([ethUtil.toBuffer(order.takerAssetData)]);
+
+        const orderParamsHashBuff = crypto.solSHA3([
+            orderUtils.getOrderSchemaBuffer(),
+            EIP712Utils.pad32Address(order.makerAddress),
+            EIP712Utils.pad32Address(order.takerAddress),
+            EIP712Utils.pad32Address(order.feeRecipientAddress),
+            EIP712Utils.pad32Address(order.senderAddress),
+            order.makerAssetAmount,
+            order.takerAssetAmount,
+            order.makerFee,
+            order.takerFee,
+            order.expirationTimeSeconds,
+            order.salt,
+            makerAssetDataHash,
+            takerAssetDataHash,
+        ]);
+        const orderParamsHashHex = `0x${orderParamsHashBuff.toString('hex')}`;
+        const orderHashBuff = EIP712Utils.createEIP712Message(orderParamsHashHex, order.exchangeAddress);
+        return orderHashBuff;
+    },
+    getOrderHashHex(order: SignedOrder | UnsignedOrder): string {
+        const orderHashBuff = orderUtils.getOrderHashBuffer(order);
+        const orderHashHex = `0x${orderHashBuff.toString('hex')}`;
+        return orderHashHex;
     },
     createMatchOrders(signedOrderLeft: SignedOrder, signedOrderRight: SignedOrder): MatchOrder {
         const fill = {

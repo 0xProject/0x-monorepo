@@ -18,27 +18,28 @@
 
 pragma solidity ^0.4.24;
 
-contract LibOrder {
+import "./LibEIP712.sol";
 
-    bytes32 constant DOMAIN_SEPARATOR_SCHEMA_HASH = keccak256(abi.encodePacked(
-        "DomainSeparator(address contract)"
-    ));
+contract LibOrder is
+    LibEIP712
+{
 
-    bytes32 constant ORDER_SCHEMA_HASH = keccak256(abi.encodePacked(
-        "Order(",
-        "address makerAddress,",
-        "address takerAddress,",
-        "address feeRecipientAddress,",
-        "address senderAddress,",
-        "uint256 makerAssetAmount,",
-        "uint256 takerAssetAmount,",
-        "uint256 makerFee,",
-        "uint256 takerFee,",
-        "uint256 expirationTimeSeconds,",
-        "uint256 salt,",
-        "bytes makerAssetData,",
-        "bytes takerAssetData,",
-        ")"
+    bytes32 constant EIP712_ORDER_SCHEMA_HASH = keccak256(
+        abi.encodePacked(
+            "Order(",
+            "address makerAddress,",
+            "address takerAddress,",
+            "address feeRecipientAddress,",
+            "address senderAddress,",
+            "uint256 makerAssetAmount,",
+            "uint256 takerAssetAmount,",
+            "uint256 makerFee,",
+            "uint256 takerFee,",
+            "uint256 expirationTimeSeconds,",
+            "uint256 salt,",
+            "bytes makerAssetData,",
+            "bytes takerAssetData",
+            ")"
     ));
 
     // A valid order remains fillable until it is expired, fully filled, or cancelled.
@@ -85,17 +86,14 @@ contract LibOrder {
         view
         returns (bytes32 orderHash)
     {
-        // TODO: EIP712 is not finalized yet
-        // Source: https://github.com/ethereum/EIPs/pull/712
-        orderHash = keccak256(abi.encodePacked(
-            DOMAIN_SEPARATOR_SCHEMA_HASH,
-            keccak256(abi.encodePacked(address(this))),
-            ORDER_SCHEMA_HASH,
-            keccak256(abi.encodePacked(
-                order.makerAddress,
-                order.takerAddress,
-                order.feeRecipientAddress,
-                order.senderAddress,
+        orderHash = createEIP712Message(
+            keccak256(
+                abi.encodePacked(
+                EIP712_ORDER_SCHEMA_HASH,
+                bytes32(order.makerAddress),
+                bytes32(order.takerAddress),
+                bytes32(order.feeRecipientAddress),
+                bytes32(order.senderAddress),
                 order.makerAssetAmount,
                 order.takerAssetAmount,
                 order.makerFee,
@@ -104,8 +102,7 @@ contract LibOrder {
                 order.salt,
                 keccak256(abi.encodePacked(order.makerAssetData)),
                 keccak256(abi.encodePacked(order.takerAssetData))
-            ))
-        ));
+        )));
         return orderHash;
     }
 }

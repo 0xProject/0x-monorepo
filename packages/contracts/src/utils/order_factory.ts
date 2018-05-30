@@ -1,5 +1,5 @@
 import { generatePseudoRandomSalt, orderHashUtils } from '@0xproject/order-utils';
-import { Order, SignatureType, SignedOrder } from '@0xproject/types';
+import { Order, SignatureType, SignedOrder, UnsignedOrder } from '@0xproject/types';
 import { BigNumber } from '@0xproject/utils';
 import * as _ from 'lodash';
 
@@ -26,8 +26,8 @@ export class OrderFactory {
             takerAddress: constants.NULL_ADDRESS,
             ...this._defaultOrderParams,
             ...customOrderParams,
-        } as any) as Order;
-        const orderHashBuff = orderHashUtils.getOrderHashBuff(order);
+        } as any) as UnsignedOrder;
+        const orderHashBuff = orderHashUtils.getOrderHashBuffer(order);
         const signature = signingUtils.signMessage(orderHashBuff, this._privateKey, signatureType);
         const signedOrder = {
             ...order,
