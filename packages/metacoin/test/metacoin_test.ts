@@ -1,6 +1,6 @@
 import { BlockchainLifecycle, devConstants } from '@0xproject/dev-utils';
 import { ContractArtifact } from '@0xproject/sol-compiler';
-import { LogWithDecodedArgs } from '@0xproject/types';
+import { LogWithDecodedArgs } from 'ethereum-types';
 import { BigNumber } from '@0xproject/utils';
 import { Web3Wrapper } from '@0xproject/web3-wrapper';
 import * as chai from 'chai';

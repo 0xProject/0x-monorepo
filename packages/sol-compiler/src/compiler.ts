@@ -11,7 +11,7 @@ import {
     Resolver,
     URLResolver,
 } from '@0xproject/sol-resolver';
-import { ContractAbi } from '@0xproject/types';
+import { ContractAbi } from 'ethereum-types';
 import { logUtils, promisify } from '@0xproject/utils';
 import chalk from 'chalk';
 import * as ethUtil from 'ethereumjs-util';

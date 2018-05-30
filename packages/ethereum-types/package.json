@@ -1,10 +1,10 @@
 {
-    "name": "@0xproject/types",
-    "version": "0.7.1",
+    "name": "ethereum-types",
+    "version": "0.0.1",
     "engines": {
         "node": ">=6.12"
     },
-    "description": "0x types",
+    "description": "Ethereum types",
     "main": "lib/index.js",
     "types": "lib/index.d.ts",
     "scripts": {
@@ -34,8 +34,7 @@
     },
     "dependencies": {
         "@types/node": "^8.0.53",
-        "bignumber.js": "~4.1.0",
-        "ethereum-types": "^0.0.1"
+        "bignumber.js": "~4.1.0"
     },
     "publishConfig": {
         "access": "public"

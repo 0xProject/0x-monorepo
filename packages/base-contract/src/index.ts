@@ -1,3 +1,5 @@
+import { abiUtils, BigNumber } from '@0xproject/utils';
+import { Web3Wrapper } from '@0xproject/web3-wrapper';
 import {
     AbiDefinition,
     AbiType,
@@ -8,9 +10,7 @@ import {
     Provider,
     TxData,
     TxDataPayable,
-} from '@0xproject/types';
-import { abiUtils, BigNumber } from '@0xproject/utils';
-import { Web3Wrapper } from '@0xproject/web3-wrapper';
+} from 'ethereum-types';
 import * as ethers from 'ethers';
 import * as _ from 'lodash';
 

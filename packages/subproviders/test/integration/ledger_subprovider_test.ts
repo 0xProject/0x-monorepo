@@ -1,10 +1,11 @@
-import { DoneCallback, JSONRPCResponsePayload } from '@0xproject/types';
+import { DoneCallback } from '@0xproject/types';
 import { promisify } from '@0xproject/utils';
 import Eth from '@ledgerhq/hw-app-eth';
 // HACK: This dependency is optional and tslint skips optional dependencies
 // tslint:disable-next-line:no-implicit-dependencies
 import TransportNodeHid from '@ledgerhq/hw-transport-node-hid';
 import * as chai from 'chai';
+import { JSONRPCResponsePayload } from 'ethereum-types';
 import * as ethUtils from 'ethereumjs-util';
 import * as _ from 'lodash';
 import 'make-promises-safe';

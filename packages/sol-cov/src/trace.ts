@@ -1,4 +1,4 @@
-import { OpCode, StructLog, TransactionTrace } from '@0xproject/types';
+import { OpCode, StructLog, TransactionTrace } from 'ethereum-types';
 import { addressUtils, BigNumber, logUtils } from '@0xproject/utils';
 import { addHexPrefix, stripHexPrefix } from 'ethereumjs-util';
 import * as fs from 'fs';

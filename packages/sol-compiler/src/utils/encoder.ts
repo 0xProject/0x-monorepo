@@ -1,4 +1,4 @@
-import { AbiDefinition, AbiType, ContractAbi, DataItem } from '@0xproject/types';
+import { AbiDefinition, AbiType, ContractAbi, DataItem } from 'ethereum-types';
 import * as _ from 'lodash';
 import * as web3Abi from 'web3-eth-abi';
 

@@ -1,13 +1,7 @@
 import { ContractArtifact } from '@0xproject/sol-compiler';
-import {
-    AbiDefinition,
-    LogEntry,
-    LogWithDecodedArgs,
-    RawLog,
-    TransactionReceiptWithDecodedLogs,
-} from '@0xproject/types';
 import { AbiDecoder, BigNumber } from '@0xproject/utils';
 import { Web3Wrapper } from '@0xproject/web3-wrapper';
+import { AbiDefinition, LogEntry, LogWithDecodedArgs, RawLog, TransactionReceiptWithDecodedLogs } from 'ethereum-types';
 import * as _ from 'lodash';
 
 import { artifacts } from './artifacts';

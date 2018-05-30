@@ -1,5 +1,5 @@
 import { BlockchainLifecycle, devConstants, web3Factory } from '@0xproject/dev-utils';
-import { LogWithDecodedArgs, TransactionReceiptWithDecodedLogs } from '@0xproject/types';
+import { LogWithDecodedArgs, TransactionReceiptWithDecodedLogs } from 'ethereum-types';
 import { BigNumber } from '@0xproject/utils';
 import { Web3Wrapper } from '@0xproject/web3-wrapper';
 import BN = require('bn.js');

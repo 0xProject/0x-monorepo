@@ -1,5 +1,5 @@
 import { generatePseudoRandomSalt } from '@0xproject/order-utils';
-import { Provider } from '@0xproject/types';
+import { Provider } from 'ethereum-types';
 import { BigNumber } from '@0xproject/utils';
 import { Web3Wrapper } from '@0xproject/web3-wrapper';
 import * as _ from 'lodash';

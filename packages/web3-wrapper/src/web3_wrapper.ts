@@ -12,7 +12,7 @@ import {
     TransactionReceipt,
     TransactionReceiptWithDecodedLogs,
     TxData,
-} from '@0xproject/types';
+} from 'ethereum-types';
 import { AbiDecoder, addressUtils, BigNumber, intervalUtils, promisify } from '@0xproject/utils';
 import * as _ from 'lodash';
 import * as Web3 from 'web3';

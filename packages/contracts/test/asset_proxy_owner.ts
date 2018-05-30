@@ -1,5 +1,5 @@
 import { BlockchainLifecycle } from '@0xproject/dev-utils';
-import { LogWithDecodedArgs } from '@0xproject/types';
+import { LogWithDecodedArgs } from 'ethereum-types';
 import { BigNumber } from '@0xproject/utils';
 import * as chai from 'chai';
 import * as _ from 'lodash';

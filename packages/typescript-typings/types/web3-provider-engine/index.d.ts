@@ -1,5 +1,5 @@
 declare module 'web3-provider-engine' {
-    import { Provider, JSONRPCRequestPayload, JSONRPCResponsePayload } from '@0xproject/types';
+    import { Provider, JSONRPCRequestPayload, JSONRPCResponsePayload } from 'ethereum-types';
     class Web3ProviderEngine implements Provider {
         public on(event: string, handler: () => void): void;
         public send(payload: JSONRPCRequestPayload): void;
@@ -23,7 +23,7 @@ declare module 'web3-provider-engine/subproviders/subprovider' {
     export = Subprovider;
 }
 declare module 'web3-provider-engine/subproviders/rpc' {
-    import { JSONRPCRequestPayload, JSONRPCResponsePayload } from '@0xproject/types';
+    import { JSONRPCRequestPayload, JSONRPCResponsePayload } from 'ethereum-types';
     class RpcSubprovider {
         constructor(options: { rpcUrl: string });
         public handleRequest(
@@ -41,7 +41,7 @@ declare module 'web3-provider-engine/util/rpc-cache-utils' {
     export = ProviderEngineRpcUtils;
 }
 declare module 'web3-provider-engine/subproviders/fixture' {
-    import { JSONRPCRequestPayload, JSONRPCResponsePayload } from '@0xproject/types';
+    import { JSONRPCRequestPayload, JSONRPCResponsePayload } from 'ethereum-types';
     class FixtureSubprovider {
         constructor(staticResponses: any);
         public handleRequest(
