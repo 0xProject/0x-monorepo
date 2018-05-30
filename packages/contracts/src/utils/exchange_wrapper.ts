@@ -7,16 +7,18 @@ import { ExchangeContract } from '../contract_wrappers/generated/exchange';
 
 import { constants } from './constants';
 import { formatters } from './formatters';
-import { logDecoder } from './log_decoder';
+import { LogDecoder } from './log_decoder';
 import { orderUtils } from './order_utils';
 import { AssetProxyId, OrderInfo, SignedTransaction } from './types';
 
 export class ExchangeWrapper {
     private _exchange: ExchangeContract;
     private _web3Wrapper: Web3Wrapper;
+    private _logDecoder: LogDecoder;
     constructor(exchangeContract: ExchangeContract, provider: Provider) {
         this._exchange = exchangeContract;
         this._web3Wrapper = new Web3Wrapper(provider);
+        this._logDecoder = new LogDecoder(this._web3Wrapper, this._exchange.address);
     }
     public async fillOrderAsync(
         signedOrder: SignedOrder,
@@ -30,13 +32,13 @@ export class ExchangeWrapper {
             params.signature,
             { from },
         );
-        const tx = await this._getTxWithDecodedExchangeLogsAsync(txHash);
+        const tx = await this._logDecoder.getTxWithDecodedLogsAsync(txHash);
         return tx;
     }
     public async cancelOrderAsync(signedOrder: SignedOrder, from: string): Promise<TransactionReceiptWithDecodedLogs> {
         const params = orderUtils.createCancel(signedOrder);
         const txHash = await this._exchange.cancelOrder.sendTransactionAsync(params.order, { from });
-        const tx = await this._getTxWithDecodedExchangeLogsAsync(txHash);
+        const tx = await this._logDecoder.getTxWithDecodedLogsAsync(txHash);
         return tx;
     }
     public async fillOrKillOrderAsync(
@@ -51,7 +53,7 @@ export class ExchangeWrapper {
             params.signature,
             { from },
         );
-        const tx = await this._getTxWithDecodedExchangeLogsAsync(txHash);
+        const tx = await this._logDecoder.getTxWithDecodedLogsAsync(txHash);
         return tx;
     }
     public async fillOrderNoThrowAsync(
@@ -66,7 +68,7 @@ export class ExchangeWrapper {
             params.signature,
             { from },
         );
-        const tx = await this._getTxWithDecodedExchangeLogsAsync(txHash);
+        const tx = await this._logDecoder.getTxWithDecodedLogsAsync(txHash);
         return tx;
     }
     public async batchFillOrdersAsync(
@@ -81,7 +83,7 @@ export class ExchangeWrapper {
             params.signatures,
             { from },
         );
-        const tx = await this._getTxWithDecodedExchangeLogsAsync(txHash);
+        const tx = await this._logDecoder.getTxWithDecodedLogsAsync(txHash);
         return tx;
     }
     public async batchFillOrKillOrdersAsync(
@@ -96,7 +98,7 @@ export class ExchangeWrapper {
             params.signatures,
             { from },
         );
-        const tx = await this._getTxWithDecodedExchangeLogsAsync(txHash);
+        const tx = await this._logDecoder.getTxWithDecodedLogsAsync(txHash);
         return tx;
     }
     public async batchFillOrdersNoThrowAsync(
@@ -111,7 +113,7 @@ export class ExchangeWrapper {
             params.signatures,
             { from },
         );
-        const tx = await this._getTxWithDecodedExchangeLogsAsync(txHash);
+        const tx = await this._logDecoder.getTxWithDecodedLogsAsync(txHash);
         return tx;
     }
     public async marketSellOrdersAsync(
@@ -126,7 +128,7 @@ export class ExchangeWrapper {
             params.signatures,
             { from },
         );
-        const tx = await this._getTxWithDecodedExchangeLogsAsync(txHash);
+        const tx = await this._logDecoder.getTxWithDecodedLogsAsync(txHash);
         return tx;
     }
     public async marketSellOrdersNoThrowAsync(
@@ -141,7 +143,7 @@ export class ExchangeWrapper {
             params.signatures,
             { from },
         );
-        const tx = await this._getTxWithDecodedExchangeLogsAsync(txHash);
+        const tx = await this._logDecoder.getTxWithDecodedLogsAsync(txHash);
         return tx;
     }
     public async marketBuyOrdersAsync(
@@ -156,7 +158,7 @@ export class ExchangeWrapper {
             params.signatures,
             { from },
         );
-        const tx = await this._getTxWithDecodedExchangeLogsAsync(txHash);
+        const tx = await this._logDecoder.getTxWithDecodedLogsAsync(txHash);
         return tx;
     }
     public async marketBuyOrdersNoThrowAsync(
@@ -171,7 +173,7 @@ export class ExchangeWrapper {
             params.signatures,
             { from },
         );
-        const tx = await this._getTxWithDecodedExchangeLogsAsync(txHash);
+        const tx = await this._logDecoder.getTxWithDecodedLogsAsync(txHash);
         return tx;
     }
     public async batchCancelOrdersAsync(
@@ -180,12 +182,12 @@ export class ExchangeWrapper {
     ): Promise<TransactionReceiptWithDecodedLogs> {
         const params = formatters.createBatchCancel(orders);
         const txHash = await this._exchange.batchCancelOrders.sendTransactionAsync(params.orders, { from });
-        const tx = await this._getTxWithDecodedExchangeLogsAsync(txHash);
+        const tx = await this._logDecoder.getTxWithDecodedLogsAsync(txHash);
         return tx;
     }
     public async cancelOrdersUpToAsync(salt: BigNumber, from: string): Promise<TransactionReceiptWithDecodedLogs> {
         const txHash = await this._exchange.cancelOrdersUpTo.sendTransactionAsync(salt, { from });
-        const tx = await this._getTxWithDecodedExchangeLogsAsync(txHash);
+        const tx = await this._logDecoder.getTxWithDecodedLogsAsync(txHash);
         return tx;
     }
     public async registerAssetProxyAsync(
@@ -203,7 +205,7 @@ export class ExchangeWrapper {
             oldAssetProxyAddress,
             { from },
         );
-        const tx = await this._getTxWithDecodedExchangeLogsAsync(txHash);
+        const tx = await this._logDecoder.getTxWithDecodedLogsAsync(txHash);
         return tx;
     }
     public async executeTransactionAsync(
@@ -217,7 +219,7 @@ export class ExchangeWrapper {
             signedTx.signature,
             { from },
         );
-        const tx = await this._getTxWithDecodedExchangeLogsAsync(txHash);
+        const tx = await this._logDecoder.getTxWithDecodedLogsAsync(txHash);
         return tx;
     }
     public async getTakerAssetFilledAmountAsync(orderHashHex: string): Promise<BigNumber> {
@@ -241,13 +243,7 @@ export class ExchangeWrapper {
             params.rightSignature,
             { from },
         );
-        const tx = await this._getTxWithDecodedExchangeLogsAsync(txHash);
-        return tx;
-    }
-    private async _getTxWithDecodedExchangeLogsAsync(txHash: string): Promise<TransactionReceiptWithDecodedLogs> {
-        const tx = await this._web3Wrapper.awaitTransactionSuccessAsync(txHash, constants.AWAIT_TRANSACTION_MINED_MS);
-        tx.logs = _.filter(tx.logs, log => log.address === this._exchange.address);
-        tx.logs = _.map(tx.logs, log => logDecoder.decodeLogOrThrow(log));
+        const tx = await this._logDecoder.getTxWithDecodedLogsAsync(txHash);
         return tx;
     }
 }
