@@ -4,6 +4,9 @@ import { BigNumber } from '@0xproject/utils';
 export const constants = {
     DECIMAL_PLACES_ETH: 18,
     DECIMAL_PLACES_ZRX: 18,
+    ETHER_TOKEN_SYMBOL: 'WETH',
+    ZRX_TOKEN_SYMBOL: 'ZRX',
+    ETHER_SYMBOL: 'ETH',
     GENESIS_ORDER_BLOCK_BY_NETWORK_ID: {
         1: 4145578,
         42: 3117574,
