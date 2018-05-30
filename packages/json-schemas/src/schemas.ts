@@ -1,5 +1,6 @@
 import { addressSchema, hexSchema, numberSchema } from '../schemas/basic_type_schemas';
 import { blockParamSchema, blockRangeSchema } from '../schemas/block_range_schema';
+import { ecSignatureSchema } from '../schemas/ec_signature_schema';
 import { indexFilterValuesSchema } from '../schemas/index_filter_values_schema';
 import { orderCancellationRequestsSchema } from '../schemas/order_cancel_schema';
 import { orderFillOrKillRequestsSchema } from '../schemas/order_fill_or_kill_requests_schema';
@@ -31,6 +32,7 @@ export const schemas = {
     numberSchema,
     addressSchema,
     hexSchema,
+    ecSignatureSchema,
     indexFilterValuesSchema,
     orderCancellationRequestsSchema,
     orderFillOrKillRequestsSchema,
