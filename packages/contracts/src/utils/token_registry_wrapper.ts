@@ -4,13 +4,16 @@ import { TokenRegistryContract } from '../contract_wrappers/generated/token_regi
 
 import { Token } from './types';
 
+import { constants } from './constants';
+import { web3Wrapper } from './web3_wrapper';
+
 export class TokenRegWrapper {
     private _tokenReg: TokenRegistryContract;
     constructor(tokenRegContract: TokenRegistryContract) {
         this._tokenReg = tokenRegContract;
     }
     public async addTokenAsync(token: Token, from: string): Promise<string> {
-        const tx = this._tokenReg.addToken.sendTransactionAsync(
+        const txHash = await this._tokenReg.addToken.sendTransactionAsync(
             token.address as string,
             token.name,
             token.symbol,
@@ -19,7 +22,8 @@ export class TokenRegWrapper {
             token.swarmHash,
             { from },
         );
-        return tx;
+        await web3Wrapper.awaitTransactionSuccessAsync(txHash, constants.AWAIT_TRANSACTION_MINED_MS);
+        return txHash;
     }
     public async getTokenMetaDataAsync(tokenAddress: string): Promise<Token> {
         const data = await this._tokenReg.getTokenMetaData.callAsync(tokenAddress);
