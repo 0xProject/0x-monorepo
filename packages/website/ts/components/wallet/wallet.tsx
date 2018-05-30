@@ -92,9 +92,6 @@ const styles: Styles = {
         zIndex: zIndex.aboveOverlay,
         position: 'relative',
     },
-    headerItemInnerDiv: {
-        paddingLeft: 65,
-    },
     footerItemInnerDiv: {
         paddingLeft: 24,
         borderTopColor: colors.walletBorder,
@@ -108,6 +105,7 @@ const styles: Styles = {
     },
     tokenItem: {
         backgroundColor: colors.walletDefaultItemBackground,
+        minHeight: 85,
     },
     amountLabel: {
         fontWeight: 'bold',
@@ -132,7 +130,7 @@ const styles: Styles = {
 };
 
 const ETHER_ICON_PATH = '/images/ether.png';
-const ICON_DIMENSION = 24;
+const ICON_DIMENSION = 28;
 const TOKEN_AMOUNT_DISPLAY_PRECISION = 3;
 const BODY_ITEM_KEY = 'BODY';
 const HEADER_ITEM_KEY = 'HEADER';
@@ -211,12 +209,9 @@ export class Wallet extends React.Component<WalletProps, WalletState> {
         const userAddress = this.props.userAddress;
         const primaryText = 'wallet';
         return (
-            <ListItem
-                key={HEADER_ITEM_KEY}
-                primaryText={primaryText.toUpperCase()}
-                leftIcon={<ActionAccountBalanceWallet color={colors.mediumBlue} />}
-                style={styles.paddedItem}
-                innerDivStyle={styles.headerItemInnerDiv}
+            <StandardIconRow
+                icon={<ActionAccountBalanceWallet color={colors.mediumBlue} />}
+                main={primaryText.toUpperCase()}
             />
         );
     }
@@ -235,11 +230,10 @@ export class Wallet extends React.Component<WalletProps, WalletState> {
         const primaryText = utils.getAddressBeginAndEnd(userAddress);
         return (
             <Link key={HEADER_ITEM_KEY} to={ACCOUNT_PATH} style={{ textDecoration: 'none' }}>
-                <ListItem
-                    primaryText={primaryText}
-                    leftIcon={<Identicon address={userAddress} diameter={ICON_DIMENSION} />}
-                    style={{ ...styles.paddedItem, ...styles.borderedItem }}
-                    innerDivStyle={styles.headerItemInnerDiv}
+                <StandardIconRow
+                    icon={<Identicon address={userAddress} diameter={ICON_DIMENSION} />}
+                    main={primaryText}
+                    style={styles.borderedItem}
                 />
             </Link>
         );
@@ -340,12 +334,6 @@ export class Wallet extends React.Component<WalletProps, WalletState> {
         const accessoryItemConfig = {
             wrappedEtherDirection: Side.Deposit,
         };
-        const isInWrappedEtherState =
-            !_.isUndefined(this.state.wrappedEtherDirection) &&
-            this.state.wrappedEtherDirection === accessoryItemConfig.wrappedEtherDirection;
-        const style = isInWrappedEtherState
-            ? { ...walletItemStyles.focusedItem, ...styles.paddedItem }
-            : { ...styles.tokenItem, ...styles.borderedItem, ...styles.paddedItem };
         const key = ETHER_ITEM_KEY;
         return this._renderBalanceRow(key, icon, primaryText, secondaryText, accessoryItemConfig, 'eth-row');
     }
@@ -398,21 +386,22 @@ export class Wallet extends React.Component<WalletProps, WalletState> {
         const shouldShowWrapEtherItem =
             !_.isUndefined(this.state.wrappedEtherDirection) &&
             this.state.wrappedEtherDirection === accessoryItemConfig.wrappedEtherDirection;
-        const style = shouldShowWrapEtherItem
-            ? { ...walletItemStyles.focusedItem, ...styles.paddedItem }
-            : { ...styles.tokenItem, ...styles.borderedItem, ...styles.paddedItem };
+        const additionalStyle = shouldShowWrapEtherItem ? walletItemStyles.focusedItem : styles.borderedItem;
+        const style = { ...styles.tokenItem, ...additionalStyle };
         const etherToken = this._getEthToken();
         return (
             <div key={key} className={`flex flex-column ${className || ''}`}>
-                <div className="flex items-center" style={style}>
-                    <div className="px2">{icon}</div>
-                    <div className="flex-none pr2 pt2 pb2">
-                        {primaryText}
-                        {secondaryText}
-                    </div>
-                    <div className="flex-auto" />
-                    <div>{this._renderAccessoryItems(accessoryItemConfig)}</div>
-                </div>
+                <StandardIconRow
+                    icon={icon}
+                    main={
+                        <div>
+                            {primaryText}
+                            {secondaryText}
+                        </div>
+                    }
+                    accessory={this._renderAccessoryItems(accessoryItemConfig)}
+                    style={style}
+                />
                 {shouldShowWrapEtherItem && (
                     <WrapEtherItem
                         userAddress={this.props.userAddress}
@@ -595,4 +584,22 @@ export class Wallet extends React.Component<WalletProps, WalletState> {
     private _getEthToken(): Token {
         return utils.getEthToken(this.props.tokenByAddress);
     }
-} // tslint:disable:max-file-line-count
+}
+
+interface StandardIconRowProps {
+    icon: React.ReactNode;
+    main: React.ReactNode;
+    accessory?: React.ReactNode;
+    style?: React.CSSProperties;
+}
+const StandardIconRow = (props: StandardIconRowProps) => {
+    return (
+        <div className="flex items-center" style={props.style}>
+            <div className="p2">{props.icon}</div>
+            <div className="flex-none pr2 pt2 pb2">{props.main}</div>
+            <div className="flex-auto" />
+            <div>{props.accessory}</div>
+        </div>
+    );
+};
+// tslint:disable:max-file-line-count
