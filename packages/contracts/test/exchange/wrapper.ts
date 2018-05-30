@@ -959,7 +959,7 @@ describe('Exchange wrappers', () => {
                 const takerAssetCancelAmounts = _.map(signedOrders, signedOrder => signedOrder.takerAssetAmount);
                 await exchangeWrapper.batchCancelOrdersAsync(signedOrders, makerAddress);
 
-                await exchangeWrapper.batchFillOrdersAsync(signedOrders, takerAddress, {
+                await exchangeWrapper.batchFillOrdersNoThrowAsync(signedOrders, takerAddress, {
                     takerAssetFillAmounts: takerAssetCancelAmounts,
                 });
                 const newBalances = await erc20Wrapper.getBalancesAsync();
