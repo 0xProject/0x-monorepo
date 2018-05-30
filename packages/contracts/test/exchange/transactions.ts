@@ -1,5 +1,6 @@
 import { BlockchainLifecycle } from '@0xproject/dev-utils';
-import { AssetProxyId, Order, SignatureType, SignedOrder } from '@0xproject/types';
+import { assetProxyUtils } from '@0xproject/order-utils';
+import { AssetProxyId, Order, OrderWithoutExchangeAddress, SignatureType, SignedOrder } from '@0xproject/types';
 import { BigNumber } from '@0xproject/utils';
 import * as chai from 'chai';
 import * as ethUtil from 'ethereumjs-util';
@@ -9,7 +10,6 @@ import { DummyERC20TokenContract } from '../../src/contract_wrappers/generated/d
 import { ERC20ProxyContract } from '../../src/contract_wrappers/generated/e_r_c20_proxy';
 import { ExchangeContract } from '../../src/contract_wrappers/generated/exchange';
 import { artifacts } from '../../src/utils/artifacts';
-import { assetProxyUtils } from '@0xproject/order-utils';
 import { chaiSetup } from '../../src/utils/chai_setup';
 import { constants } from '../../src/utils/constants';
 import { ERC20Wrapper } from '../../src/utils/erc20_wrapper';
@@ -40,7 +40,7 @@ describe('Exchange transactions', () => {
     let erc20Balances: ERC20BalancesByOwner;
     let signedOrder: SignedOrder;
     let signedTx: SignedTransaction;
-    let order: Order;
+    let orderWithoutExchangeAddress: OrderWithoutExchangeAddress;
     let orderFactory: OrderFactory;
     let makerTransactionFactory: TransactionFactory;
     let takerTransactionFactory: TransactionFactory;
@@ -111,11 +111,11 @@ describe('Exchange transactions', () => {
             beforeEach(async () => {
                 erc20Balances = await erc20Wrapper.getBalancesAsync();
                 signedOrder = orderFactory.newSignedOrder();
-                order = orderUtils.getOrderStruct(signedOrder);
+                orderWithoutExchangeAddress = orderUtils.getOrderWithoutExchangeAddress(signedOrder);
 
                 takerAssetFillAmount = signedOrder.takerAssetAmount.div(2);
                 const data = exchange.fillOrder.getABIEncodedTransactionData(
-                    order,
+                    orderWithoutExchangeAddress,
                     takerAssetFillAmount,
                     signedOrder.signature,
                 );
@@ -179,7 +179,7 @@ describe('Exchange transactions', () => {
 
         describe('cancelOrder', () => {
             beforeEach(async () => {
-                const data = exchange.cancelOrder.getABIEncodedTransactionData(order);
+                const data = exchange.cancelOrder.getABIEncodedTransactionData(orderWithoutExchangeAddress);
                 signedTx = makerTransactionFactory.newSignedTransaction(data);
             });
 

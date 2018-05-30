@@ -1,4 +1,4 @@
-import { Order, SignedOrder } from '@0xproject/types';
+import { Order, OrderWithoutExchangeAddress, SignedOrder } from '@0xproject/types';
 import { BigNumber } from '@0xproject/utils';
 import ethUtil = require('ethereumjs-util');
 
@@ -7,7 +7,7 @@ import { CancelOrder, MatchOrder } from './types';
 export const orderUtils = {
     createFill: (signedOrder: SignedOrder, takerAssetFillAmount?: BigNumber) => {
         const fill = {
-            order: orderUtils.getOrderStruct(signedOrder),
+            order: orderUtils.getOrderWithoutExchangeAddress(signedOrder),
             takerAssetFillAmount: takerAssetFillAmount || signedOrder.takerAssetAmount,
             signature: signedOrder.signature,
         };
@@ -15,15 +15,12 @@ export const orderUtils = {
     },
     createCancel(signedOrder: SignedOrder, takerAssetCancelAmount?: BigNumber): CancelOrder {
         const cancel = {
-            order: orderUtils.getOrderStruct(signedOrder),
+            order: orderUtils.getOrderWithoutExchangeAddress(signedOrder),
             takerAssetCancelAmount: takerAssetCancelAmount || signedOrder.takerAssetAmount,
         };
         return cancel;
     },
-    // TODO: This seems redundant... it currently returns a deep copy w/o signature.
-    // Question: Should we still have a separate OrderStruct type that simply doesn't
-    // include the exchangeAddress? Seems like we need to for batch ops...
-    getOrderStruct(signedOrder: SignedOrder): Order {
+    getOrderWithoutExchangeAddress(signedOrder: SignedOrder): OrderWithoutExchangeAddress {
         const orderStruct = {
             senderAddress: signedOrder.senderAddress,
             makerAddress: signedOrder.makerAddress,
@@ -37,14 +34,13 @@ export const orderUtils = {
             salt: signedOrder.salt,
             makerAssetData: signedOrder.makerAssetData,
             takerAssetData: signedOrder.takerAssetData,
-            exchangeAddress: signedOrder.exchangeAddress,
         };
         return orderStruct;
     },
     createMatchOrders(signedOrderLeft: SignedOrder, signedOrderRight: SignedOrder): MatchOrder {
         const fill = {
-            left: orderUtils.getOrderStruct(signedOrderLeft),
-            right: orderUtils.getOrderStruct(signedOrderRight),
+            left: orderUtils.getOrderWithoutExchangeAddress(signedOrderLeft),
+            right: orderUtils.getOrderWithoutExchangeAddress(signedOrderRight),
             leftSignature: signedOrderLeft.signature,
             rightSignature: signedOrderRight.signature,
         };

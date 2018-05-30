@@ -297,6 +297,21 @@ export interface Order {
     expirationTimeSeconds: BigNumber;
 }
 
+export interface OrderWithoutExchangeAddress {
+    senderAddress: string;
+    makerAddress: string;
+    takerAddress: string;
+    makerFee: BigNumber;
+    takerFee: BigNumber;
+    makerAssetAmount: BigNumber;
+    takerAssetAmount: BigNumber;
+    makerAssetData: string;
+    takerAssetData: string;
+    salt: BigNumber;
+    feeRecipientAddress: string;
+    expirationTimeSeconds: BigNumber;
+}
+
 export interface SignedOrder extends Order {
     signature: string;
 }
