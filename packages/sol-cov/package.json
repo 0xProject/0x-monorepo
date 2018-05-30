@@ -67,6 +67,7 @@
         "@types/istanbul": "^0.4.30",
         "@types/loglevel": "^1.5.3",
         "@types/mkdirp": "^0.5.1",
+        "@types/solidity-parser-antlr": "^0.2.0",
         "@types/mocha": "^2.2.42",
         "@types/node": "^8.0.53",
         "@types/rimraf": "^2.0.2",
