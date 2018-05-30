@@ -9,7 +9,7 @@ import * as _ from 'lodash';
 import { assert } from './assert';
 import { crypto } from './crypto';
 
-const INVALID_TAKER_FORMAT = 'instance.taker is not of a type(s) string';
+const INVALID_TAKER_FORMAT = 'instance.takerAddress is not of a type(s) string';
 
 export const orderHashUtils = {
     /**
@@ -34,7 +34,7 @@ export const orderHashUtils = {
      */
     getOrderHashHex(order: SignedOrder | Order): string {
         try {
-            assert.doesConformToSchema('order', order, schemas.orderSchema);
+            assert.doesConformToSchema('order', order, schemas.orderSchema, [schemas.hexSchema]);
         } catch (error) {
             if (_.includes(error.message, INVALID_TAKER_FORMAT)) {
                 const errMsg =

@@ -39,7 +39,7 @@ describe('Order hashing', () => {
         it('throws a readable error message if taker format is invalid', async () => {
             const orderWithInvalidtakerFormat = {
                 ...order,
-                taker: (null as any) as string,
+                takerAddress: (null as any) as string,
             };
             const expectedErrorMessage =
                 'Order taker must be of type string. If you want anyone to be able to fill an order - pass ZeroEx.NULL_ADDRESS';

@@ -7,7 +7,7 @@ import 'make-promises-safe';
 import 'mocha';
 import * as Sinon from 'sinon';
 
-import { ecSignOrderHashAsync, generatePseudoRandomSalt, orderHashUtils } from '../src';
+import { ecSignOrderHashAsync, generatePseudoRandomSalt, MessagePrefixType, orderHashUtils } from '../src';
 import { isValidECSignature, isValidSignatureAsync } from '../src/signature_utils';
 
 import { chaiSetup } from './utils/chai_setup';
@@ -15,8 +15,6 @@ import { provider, web3Wrapper } from './utils/web3_wrapper';
 
 chaiSetup.configure();
 const expect = chai.expect;
-
-const SHOULD_ADD_PERSONAL_MESSAGE_PREFIX = false;
 
 describe('Signature utils', () => {
     describe('#isValidSignature', () => {
@@ -75,28 +73,28 @@ describe('Signature utils', () => {
         // TODO: remaining sigs
     });
     describe('#isValidECSignature', () => {
-        // The Exchange smart contract `isValidECSignature` method only validates orderHashes and assumes
-        // the length of the data is exactly 32 bytes. Thus for these tests, we use data of this size.
-        const dataHex = '0x6927e990021d23b1eb7b8789f6a6feaf98fe104bb0cf8259421b79f9a34222b0';
+        // TODO: Replace this with a vanilla signature without ANY prefix or modification
         const signature = {
             v: 27,
-            r: '0x61a3ed31b43c8780e905a260a35faefcc527be7516aa11c0256729b5b351bc33',
-            s: '0x40349190569279751135161d22529dc25add4f6069af05be04cacbda2ace2254',
+            r: '0xaca7da997ad177f040240cdccf6905b71ab16b74434388c3a72f34fd25d64393',
+            s: '0x46b2bac274ff29b48b3ea6e2d04c1336eaceafda3c53ab483fc3ff12fac3ebf2',
         };
-        const address = '0x5409ed021d9299bf6814279a6a1411a7e866a631';
+        const data = '0x47173285a8d7341e5e972fc677286384f802f8ef42a5ec5f03bbfa254cb01fad';
+        const address = '0x0e5cb767cce09a7f3ca594df118aa519be5e2b5a';
+
         it("should return false if the data doesn't pertain to the signature & address", async () => {
             expect(isValidECSignature('0x0', signature, address)).to.be.false();
         });
         it("should return false if the address doesn't pertain to the signature & data", async () => {
             const validUnrelatedAddress = '0x8b0292b11a196601ed2ce54b665cafeca0347d42';
-            expect(isValidECSignature(dataHex, signature, validUnrelatedAddress)).to.be.false();
+            expect(isValidECSignature(data, signature, validUnrelatedAddress)).to.be.false();
         });
-        it("should return false if the signature doesn't pertain to the dataHex & address", async () => {
+        it("should return false if the signature doesn't pertain to the data & address", async () => {
             const wrongSignature = _.assign({}, signature, { v: 28 });
-            expect(isValidECSignature(dataHex, wrongSignature, address)).to.be.false();
+            expect(isValidECSignature(data, wrongSignature, address)).to.be.false();
         });
-        it('should return true if the signature does pertain to the dataHex & address', async () => {
-            const isValidSignatureLocal = isValidECSignature(dataHex, signature, address);
+        it('should return true if the signature does pertain to the data & address', async () => {
+            const isValidSignatureLocal = isValidECSignature(data, signature, address);
             expect(isValidSignatureLocal).to.be.true();
         });
     });
@@ -147,12 +145,11 @@ describe('Signature utils', () => {
                 r: '0x61a3ed31b43c8780e905a260a35faefcc527be7516aa11c0256729b5b351bc33',
                 s: '0x40349190569279751135161d22529dc25add4f6069af05be04cacbda2ace2254',
             };
-            const ecSignature = await ecSignOrderHashAsync(
-                provider,
-                orderHash,
-                makerAddress,
-                SHOULD_ADD_PERSONAL_MESSAGE_PREFIX,
-            );
+            const messagePrefixOpts = {
+                prefixType: MessagePrefixType.EthSign,
+                shouldAddPrefixBeforeCallingEthSign: false,
+            };
+            const ecSignature = await ecSignOrderHashAsync(provider, orderHash, makerAddress, messagePrefixOpts);
             expect(ecSignature).to.deep.equal(expectedECSignature);
         });
         it('should return the correct ECSignature for signatureHex concatenated as R + S + V', async () => {
@@ -181,12 +178,11 @@ describe('Signature utils', () => {
                 },
             };
 
-            const ecSignature = await ecSignOrderHashAsync(
-                fakeProvider,
-                orderHash,
-                makerAddress,
-                SHOULD_ADD_PERSONAL_MESSAGE_PREFIX,
-            );
+            const messagePrefixOpts = {
+                prefixType: MessagePrefixType.EthSign,
+                shouldAddPrefixBeforeCallingEthSign: false,
+            };
+            const ecSignature = await ecSignOrderHashAsync(fakeProvider, orderHash, makerAddress, messagePrefixOpts);
             expect(ecSignature).to.deep.equal(expectedECSignature);
         });
         it('should return the correct ECSignature for signatureHex concatenated as V + R + S', async () => {
@@ -212,12 +208,11 @@ describe('Signature utils', () => {
                 },
             };
 
-            const ecSignature = await ecSignOrderHashAsync(
-                fakeProvider,
-                orderHash,
-                makerAddress,
-                SHOULD_ADD_PERSONAL_MESSAGE_PREFIX,
-            );
+            const messagePrefixOpts = {
+                prefixType: MessagePrefixType.EthSign,
+                shouldAddPrefixBeforeCallingEthSign: false,
+            };
+            const ecSignature = await ecSignOrderHashAsync(fakeProvider, orderHash, makerAddress, messagePrefixOpts);
             expect(ecSignature).to.deep.equal(expectedECSignature);
         });
     });

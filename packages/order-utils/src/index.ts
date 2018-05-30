@@ -1,10 +1,10 @@
 export { orderHashUtils } from './order_hash';
-export { isValidSignatureAsync, ecSignOrderHashAsync } from './signature_utils';
+export { isValidSignatureAsync, ecSignOrderHashAsync, addSignedMessagePrefix } from './signature_utils';
 export { orderFactory } from './order_factory';
 export { constants } from './constants';
 export { crypto } from './crypto';
 export { generatePseudoRandomSalt } from './salt';
-export { OrderError } from './types';
+export { OrderError, MessagePrefixType, MessagePrefixOpts } from './types';
 export { AbstractBalanceAndProxyAllowanceFetcher } from './abstract/abstract_balance_and_proxy_allowance_fetcher';
 export { AbstractOrderFilledCancelledFetcher } from './abstract/abstract_order_filled_cancelled_fetcher';
 export { RemainingFillableCalculator } from './remaining_fillable_calculator';

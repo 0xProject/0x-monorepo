@@ -1,12 +1,12 @@
-import { Provider, SignedOrder } from '@0xproject/types';
+import { ECSignature, Provider, SignedOrder } from '@0xproject/types';
 import { BigNumber } from '@0xproject/utils';
+import * as ethUtil from 'ethereumjs-util';
 import * as _ from 'lodash';
 
 import { orderHashUtils } from './order_hash';
 import { generatePseudoRandomSalt } from './salt';
-import { ecSignOrderHashAsync, getVRSHexString } from './signature_utils';
-
-const SHOULD_ADD_PERSONAL_MESSAGE_PREFIX = false;
+import { ecSignOrderHashAsync } from './signature_utils';
+import { MessagePrefixType } from './types';
 
 export const orderFactory = {
     async createSignedOrderAsync(
@@ -44,14 +44,25 @@ export const orderFactory = {
             expirationTimeSeconds,
         };
         const orderHash = orderHashUtils.getOrderHashHex(order);
-        const ecSignature = await ecSignOrderHashAsync(
-            provider,
-            orderHash,
-            makerAddress,
-            SHOULD_ADD_PERSONAL_MESSAGE_PREFIX,
-        );
+        const messagePrefixOpts = {
+            prefixType: MessagePrefixType.EthSign,
+            shouldAddPrefixBeforeCallingEthSign: false,
+        };
+        const ecSignature = await ecSignOrderHashAsync(provider, orderHash, makerAddress, messagePrefixOpts);
         const signature = getVRSHexString(ecSignature);
         const signedOrder: SignedOrder = _.assign(order, { signature });
         return signedOrder;
     },
 };
+
+function getVRSHexString(ecSignature: ECSignature): string {
+    const vrs = `0x${intToHex(ecSignature.v)}${ethUtil.stripHexPrefix(ecSignature.r)}${ethUtil.stripHexPrefix(
+        ecSignature.s,
+    )}`;
+    return vrs;
+}
+
+function intToHex(i: number): string {
+    const hex = ethUtil.bufferToHex(ethUtil.toBuffer(i));
+    return hex;
+}
