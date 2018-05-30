@@ -31,7 +31,7 @@ const styles: Styles = {
     },
 };
 
-const ITEM_HEIGHT = 292;
+const ITEM_HEIGHT = 381;
 const METAMASK_ICON_WIDTH = 35;
 const LEDGER_ICON_WIDTH = 30;
 const BUTTON_BOTTOM_PADDING = 80;

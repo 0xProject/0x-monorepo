@@ -7,6 +7,7 @@ import {
 import { BigNumber } from '@0xproject/utils';
 import { Web3Wrapper } from '@0xproject/web3-wrapper';
 import * as _ from 'lodash';
+import CircularProgress from 'material-ui/CircularProgress';
 import FlatButton from 'material-ui/FlatButton';
 import FloatingActionButton from 'material-ui/FloatingActionButton';
 import { ListItem } from 'material-ui/List';
@@ -128,6 +129,9 @@ const styles: Styles = {
         color: colors.mediumBlue,
         fontWeight: 'bold',
     },
+    loadingBody: {
+        height: 381,
+    },
 };
 
 const ETHER_ICON_PATH = '/images/ether.png';
@@ -204,7 +208,16 @@ export class Wallet extends React.Component<WalletProps, WalletState> {
             : _.concat(this._renderDisconnectedHeaderRows(), this._renderDisconnectedRows());
     }
     private _renderLoadingRows(): React.ReactNode {
-        return <div />;
+        return _.concat(this._renderDisconnectedHeaderRows(), this._renderLoadingBodyRows());
+    }
+    private _renderLoadingBodyRows(): React.ReactElement<{}> {
+        return (
+            <div className="flex items-center" style={styles.loadingBody}>
+                <div className="mx-auto">
+                    <CircularProgress size={40} thickness={5} />
+                </div>
+            </div>
+        );
     }
     private _renderDisconnectedHeaderRows(): React.ReactElement<{}> {
         const userAddress = this.props.userAddress;
@@ -213,6 +226,7 @@ export class Wallet extends React.Component<WalletProps, WalletState> {
             <StandardIconRow
                 icon={<ActionAccountBalanceWallet color={colors.mediumBlue} />}
                 main={primaryText.toUpperCase()}
+                style={styles.borderedItem}
             />
         );
     }
@@ -472,12 +486,18 @@ export class Wallet extends React.Component<WalletProps, WalletState> {
         );
     }
     private _renderValue(isLoaded: boolean, amount: BigNumber, decimals: number, price?: BigNumber): React.ReactNode {
-        let result = '$00.00';
-        if (!_.isUndefined(price) && isLoaded) {
-            const unitAmount = Web3Wrapper.toUnitAmount(amount, decimals);
-            const value = unitAmount.mul(price);
-            const formattedAmount = value.toFixed(USD_DECIMAL_PLACES);
-            result = `$${formattedAmount}`;
+        let result;
+        if (isLoaded) {
+            if (_.isUndefined(price)) {
+                result = '--';
+            } else {
+                const unitAmount = Web3Wrapper.toUnitAmount(amount, decimals);
+                const value = unitAmount.mul(price);
+                const formattedAmount = value.toFixed(USD_DECIMAL_PLACES);
+                result = `$${formattedAmount}`;
+            }
+        } else {
+            result = '$0.00';
         }
         return (
             <PlaceHolder hideChildren={!isLoaded}>
@@ -627,6 +647,7 @@ const PlaceHolder = (props: PlaceHolderProps) => {
     const rootStyle: React.CSSProperties = {
         backgroundColor: rootBackgroundColor,
         display: 'inline-block',
+        borderRadius: 2,
     };
     const childrenVisibility = props.hideChildren ? 'hidden' : 'visible';
     const childrenStyle: React.CSSProperties = { visibility: childrenVisibility };
