@@ -409,7 +409,7 @@ describe('LibBytes', () => {
         });
     });
 
-    describe.only('writeBytes', () => {
+    describe('writeBytes', () => {
         it('should successfully write short, nested array of bytes when it takes up the whole array)', async () => {
             const testBytesOffset = new BigNumber(0);
             const emptyByteArray = ethUtil.bufferToHex(new Buffer(shortTestBytesAsBuffer.byteLength));

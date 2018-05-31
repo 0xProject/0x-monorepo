@@ -29,7 +29,7 @@ contract LibAssetProxyDecoder is
     string constant INVALID_ERC721_METADATA_LENGTH = "Metadata must have a length of at least 53.";
 
     /// @dev Decodes ERC721 Asset Proxy data
-    function decodeERC20Data(bytes memory proxyData)
+    function decodeERC20Data(bytes memory assetData)
         internal
         pure
         returns (
@@ -38,17 +38,17 @@ contract LibAssetProxyDecoder is
         )
     {
         require(
-            proxyData.length == 21,
+            assetData.length == 21,
             INVALID_ERC20_METADATA_LENGTH
         );
-        proxyId = uint8(proxyData[0]);
-        token = readAddress(proxyData, 1);
+        proxyId = uint8(assetData[0]);
+        token = readAddress(assetData, 1);
 
         return (proxyId, token);
     }
 
     /// @dev Decodes ERC721 Asset Proxy data
-    function decodeERC721Data(bytes memory proxyData)
+    function decodeERC721Data(bytes memory assetData)
         internal
         pure
         returns (
@@ -59,14 +59,14 @@ contract LibAssetProxyDecoder is
         )
     {
         require(
-            proxyData.length >= 53,
+            assetData.length >= 53,
             INVALID_ERC721_METADATA_LENGTH
         );
-        proxyId = uint8(proxyData[0]);
-        token = readAddress(proxyData, 1);
-        tokenId = readUint256(proxyData, 21);
-        if (proxyData.length > 53) {
-            data = readBytes(proxyData, 53);
+        proxyId = uint8(assetData[0]);
+        token = readAddress(assetData, 1);
+        tokenId = readUint256(assetData, 21);
+        if (assetData.length > 53) {
+            data = readBytes(assetData, 53);
         }
 
         return (proxyId, token, tokenId, data);
