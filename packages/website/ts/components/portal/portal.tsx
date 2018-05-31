@@ -10,6 +10,7 @@ import { BlockchainErrDialog } from 'ts/components/dialogs/blockchain_err_dialog
 import { LedgerConfigDialog } from 'ts/components/dialogs/ledger_config_dialog';
 import { PortalDisclaimerDialog } from 'ts/components/dialogs/portal_disclaimer_dialog';
 import { EthWrappers } from 'ts/components/eth_wrappers';
+import { FillOrder } from 'ts/components/fill_order';
 import { AssetPicker } from 'ts/components/generate_order/asset_picker';
 import { BackButton } from 'ts/components/portal/back_button';
 import { Loading } from 'ts/components/portal/loading';
@@ -336,9 +337,14 @@ export class Portal extends React.Component<PortalProps, PortalState> {
                 render: this._renderTradeHistory.bind(this),
             },
             {
-                pathName: `${WebsitePaths.Portal}/direct`,
-                headerText: 'Trade Direct',
-                render: this._renderTradeDirect.bind(this),
+                pathName: `${WebsitePaths.Portal}/generate`,
+                headerText: 'Generate Order',
+                render: this._renderGenerateOrderForm.bind(this),
+            },
+            {
+                pathName: `${WebsitePaths.Portal}/fill`,
+                headerText: 'Fill Order',
+                render: this._renderFillOrder.bind(this),
             },
         ];
         return (
@@ -386,12 +392,28 @@ export class Portal extends React.Component<PortalProps, PortalState> {
             />
         );
     }
-    private _renderTradeDirect(match: any, location: Location, history: History): React.ReactNode {
+    private _renderGenerateOrderForm(): React.ReactNode {
         return (
             <GenerateOrderForm
                 blockchain={this._blockchain}
                 hashData={this.props.hashData}
                 dispatcher={this.props.dispatcher}
+            />
+        );
+    }
+    private _renderFillOrder(): React.ReactNode {
+        return (
+            <FillOrder
+                blockchain={this._blockchain}
+                blockchainErr={this.props.blockchainErr}
+                initialOrder={undefined} // Add user supplied order and shared order stuff here
+                isOrderInUrl={false}
+                orderFillAmount={this.props.orderFillAmount}
+                networkId={this.props.networkId}
+                userAddress={this.props.userAddress}
+                tokenByAddress={this.props.tokenByAddress}
+                dispatcher={this.props.dispatcher}
+                lastForceTokenStateRefetch={this.props.lastForceTokenStateRefetch}
             />
         );
     }
