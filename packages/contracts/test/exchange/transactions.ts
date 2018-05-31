@@ -214,7 +214,7 @@ describe('Exchange transactions', () => {
             );
             const isApproved = true;
             await web3Wrapper.awaitTransactionSuccessAsync(
-                await exchange.approveSignatureValidator.sendTransactionAsync(whitelist.address, isApproved, {
+                await exchange.setSignatureValidatorApproval.sendTransactionAsync(whitelist.address, isApproved, {
                     from: takerAddress,
                 }),
             );
