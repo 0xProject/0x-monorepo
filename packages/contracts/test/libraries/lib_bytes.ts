@@ -1,9 +1,9 @@
 import { BlockchainLifecycle, devConstants, web3Factory } from '@0xproject/dev-utils';
-import { LogWithDecodedArgs, TransactionReceiptWithDecodedLogs } from 'ethereum-types';
 import { BigNumber } from '@0xproject/utils';
 import { Web3Wrapper } from '@0xproject/web3-wrapper';
 import BN = require('bn.js');
 import * as chai from 'chai';
+import { LogWithDecodedArgs, TransactionReceiptWithDecodedLogs } from 'ethereum-types';
 import ethUtil = require('ethereumjs-util');
 import * as Web3 from 'web3';
 

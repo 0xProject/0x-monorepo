@@ -1,7 +1,7 @@
 import { generatePseudoRandomSalt } from '@0xproject/order-utils';
-import { Provider } from 'ethereum-types';
 import { BigNumber } from '@0xproject/utils';
 import { Web3Wrapper } from '@0xproject/web3-wrapper';
+import { Provider } from 'ethereum-types';
 import * as _ from 'lodash';
 
 import { DummyERC721TokenContract } from '../contract_wrappers/generated/dummy_e_r_c721_token';

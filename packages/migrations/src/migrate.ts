@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 import { devConstants, web3Factory } from '@0xproject/dev-utils';
-import { Provider } from 'ethereum-types';
 import { logUtils } from '@0xproject/utils';
+import { Provider } from 'ethereum-types';
 import * as path from 'path';
 import * as yargs from 'yargs';
 
