@@ -28,7 +28,8 @@
             "assets": [],
             "docPublishConfigs": {
                 "extraFileIncludes": [
-                    "../types/src/index.ts"
+                    "../types/src/index.ts",
+                    "../ethereum-types/src/index.ts"
                 ],
                 "s3BucketPath": "s3://doc-jsons/sol-compiler/",
                 "s3StagingBucketPath": "s3://staging-doc-jsons/sol-compiler/"
@@ -80,6 +81,7 @@
         "@0xproject/utils": "^0.6.2",
         "@0xproject/web3-wrapper": "^0.6.4",
         "@types/yargs": "^11.0.0",
+        "ethereum-types": "^0.0.1",
         "chalk": "^2.3.0",
         "ethereumjs-util": "^5.1.1",
         "isomorphic-fetch": "^2.2.1",

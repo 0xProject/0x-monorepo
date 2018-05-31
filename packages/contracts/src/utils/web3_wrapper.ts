@@ -1,7 +1,7 @@
 import { devConstants, env, EnvVars, web3Factory } from '@0xproject/dev-utils';
 import { prependSubprovider } from '@0xproject/subproviders';
-import { Provider } from '@0xproject/types';
 import { Web3Wrapper } from '@0xproject/web3-wrapper';
+import { Provider } from 'ethereum-types';
 
 import { coverage } from './coverage';
 

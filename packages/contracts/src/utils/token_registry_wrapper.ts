@@ -1,5 +1,5 @@
-import { Provider } from '@0xproject/types';
 import { Web3Wrapper } from '@0xproject/web3-wrapper';
+import { Provider } from 'ethereum-types';
 
 import { TokenRegistryContract } from '../contract_wrappers/generated/token_registry';
 

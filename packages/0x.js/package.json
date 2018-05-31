@@ -44,6 +44,7 @@
             "docPublishConfigs": {
                 "extraFileIncludes": [
                     "../types/src/index.ts",
+                    "../ethereum-types/src/index.ts",
                     "../contract-wrappers/src/types.ts",
                     "../contract-wrappers/src/contract_wrappers/ether_token_wrapper.ts",
                     "../contract-wrappers/src/contract_wrappers/exchange_wrapper.ts",
@@ -108,6 +109,7 @@
         "@0xproject/typescript-typings": "^0.3.2",
         "@0xproject/utils": "^0.6.2",
         "@0xproject/web3-wrapper": "^0.6.4",
+        "ethereum-types": "^0.0.1",
         "ethers": "^3.0.15",
         "lodash": "^4.17.4"
     },

@@ -1,3 +1,4 @@
+import { AbiDecoder, addressUtils, BigNumber, intervalUtils, promisify } from '@0xproject/utils';
 import {
     BlockParam,
     BlockWithoutTransactionData,
@@ -12,8 +13,7 @@ import {
     TransactionReceipt,
     TransactionReceiptWithDecodedLogs,
     TxData,
-} from '@0xproject/types';
-import { AbiDecoder, addressUtils, BigNumber, intervalUtils, promisify } from '@0xproject/utils';
+} from 'ethereum-types';
 import * as _ from 'lodash';
 import * as Web3 from 'web3';
 

@@ -1,8 +1,8 @@
 #!/usr/bin/env node
 
-import { AbiDefinition, ConstructorAbi, EventAbi, MethodAbi } from '@0xproject/types';
 import { abiUtils, logUtils } from '@0xproject/utils';
 import chalk from 'chalk';
+import { AbiDefinition, ConstructorAbi, EventAbi, MethodAbi } from 'ethereum-types';
 import * as fs from 'fs';
 import { sync as globSync } from 'glob';
 import * as Handlebars from 'handlebars';

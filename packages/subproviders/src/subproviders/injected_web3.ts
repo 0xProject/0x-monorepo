@@ -1,4 +1,4 @@
-import { JSONRPCRequestPayload, Provider } from '@0xproject/types';
+import { JSONRPCRequestPayload, Provider } from 'ethereum-types';
 import * as _ from 'lodash';
 import * as Web3 from 'web3';
 

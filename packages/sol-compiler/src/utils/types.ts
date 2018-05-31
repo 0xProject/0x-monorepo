@@ -1,4 +1,4 @@
-import { ContractAbi, Provider, TxData } from '@0xproject/types';
+import { ContractAbi, Provider, TxData } from 'ethereum-types';
 import * as solc from 'solc';
 import * as Web3 from 'web3';
 import * as yargs from 'yargs';

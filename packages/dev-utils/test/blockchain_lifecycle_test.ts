@@ -1,6 +1,6 @@
-import { BlockParamLiteral } from '@0xproject/types';
 import { Web3Wrapper } from '@0xproject/web3-wrapper';
 import * as chai from 'chai';
+import { BlockParamLiteral } from 'ethereum-types';
 import 'make-promises-safe';
 import 'mocha';
 

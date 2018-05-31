@@ -1,4 +1,4 @@
-export interface {{name}}ContractEventArgs {
+export interface {{name}}ContractEventArgs extends DecodedLogArgs {
     {{#each inputs}}
     {{name}}: {{#returnType type components}}{{/returnType}};
     {{/each}}
