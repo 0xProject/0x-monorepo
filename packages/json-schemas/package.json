@@ -27,7 +27,8 @@
             "assets": [],
             "docPublishConfigs": {
                 "extraFileIncludes": [
-                    "../types/src/index.ts"
+                    "../types/src/index.ts",
+                    "../ethereum-types/src/index.ts"
                 ],
                 "s3BucketPath": "s3://doc-jsons/json-schemas/",
                 "s3StagingBucketPath": "s3://staging-doc-jsons/json-schemas/"

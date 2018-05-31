@@ -44,6 +44,7 @@
             "docPublishConfigs": {
                 "extraFileIncludes": [
                     "../types/src/index.ts",
+                    "../ethereum-types/src/index.ts",
                     "../contract-wrappers/src/types.ts",
                     "../contract-wrappers/src/contract_wrappers/ether_token_wrapper.ts",
                     "../contract-wrappers/src/contract_wrappers/exchange_wrapper.ts",
