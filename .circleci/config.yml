@@ -172,6 +172,5 @@ workflows:
             - build
       - submit-coverage:
           requires:
-            - test-contracts
             - test-1
             - test-2
