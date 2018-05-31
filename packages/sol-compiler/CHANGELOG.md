@@ -5,9 +5,15 @@ Edit the package's CHANGELOG.json file only.
 
 CHANGELOG
 
+## v0.5.1 - _May 22, 2018_
+
+    * Make `opts` constructor parameter optional (#621)
+    * Add schema validation for compiler configuration (#621)
+
 ## v0.5.0 - _May 22, 2018_
 
     * Properly export the executable binary (#588)
+    * Add the ability to define a specific solidity version (#589)
 
 ## v0.4.3 - _May 4, 2018_
 

@@ -5,8 +5,13 @@ Edit the package's CHANGELOG.json file only.
 
 CHANGELOG
 
+## v0.4.3 - _May 31, 2018_
+
+    * Dependencies updated
+
 ## v0.4.2 - _May 22, 2018_
 
+    * Pass SolCompilerArtifactAdapter to CoverageSubprovider (#589)
     * Move callbackErrorReporter over from 0x.js (#579)
 
 ## v0.4.1 - _May 4, 2018_

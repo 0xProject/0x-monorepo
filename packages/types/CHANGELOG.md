@@ -5,8 +5,13 @@ Edit the package's CHANGELOG.json file only.
 
 CHANGELOG
 
+## v0.8.0 - _May 31, 2018_
+
+    * Change the order type to v2 format (#618)
+
 ## v0.7.0 - _May 22, 2018_
 
+    * Make OpCode type an enum (#589)
     * Moved ExchangeContractErrs, DoneCallback, Token, OrderRelevantState, OrderStateValid, OrderStateInvalid, OrderState, OrderAddresses and OrderValues types from 0x.js (#579)
 
 ## v0.6.3 - _May 4, 2018_

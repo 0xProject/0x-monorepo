@@ -5,6 +5,10 @@ Edit the package's CHANGELOG.json file only.
 
 CHANGELOG
 
+## v0.8.0 - _May 31, 2018_
+
+    * Update Order & SignedOrder schemas, remove ECSignature schema and add Hex schema as part of V2 upgrades (#615)
+
 ## v0.7.24 - _May 22, 2018_
 
     * Dependencies updated

@@ -5,6 +5,10 @@ Edit the package's CHANGELOG.json file only.
 
 CHANGELOG
 
+## v0.2.0 - _May 31, 2018_
+
+    * Removed portal specific colors
+
 ## v0.1.7 - _May 22, 2018_
 
     * Dependencies updated

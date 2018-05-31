@@ -13,7 +13,8 @@
                     "Remove types for blockies, bn.js, compare-versions, ethereumjs-abi, ethereumjs-tx, find-versions, hdkey, is-mobile, solidity-parser-antlr, xml-js as they were moved to DefinitelyTyped",
                 "pr": 641
             }
-        ]
+        ],
+        "timestamp": 1527809861
     },
     {
         "timestamp": 1527009133,

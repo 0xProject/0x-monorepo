@@ -5,6 +5,10 @@ Edit the package's CHANGELOG.json file only.
 
 CHANGELOG
 
+## v0.7.0 - _May 31, 2018_
+
+    * Add logUtils.warn (#589)
+
 ## v0.6.2 - _May 22, 2018_
 
     * Dependencies updated

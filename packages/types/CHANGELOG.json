@@ -6,7 +6,8 @@
                 "note": "Change the order type to v2 format",
                 "pr": 618
             }
-        ]
+        ],
+        "timestamp": 1527809861
     },
     {
         "version": "0.7.0",

@@ -7,7 +7,8 @@
                     "Update Order & SignedOrder schemas, remove ECSignature schema and add Hex schema as part of V2 upgrades",
                 "pr": 615
             }
-        ]
+        ],
+        "timestamp": 1527809861
     },
     {
         "timestamp": 1527008794,

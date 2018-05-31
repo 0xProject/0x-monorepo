@@ -5,6 +5,12 @@ Edit the package's CHANGELOG.json file only.
 
 CHANGELOG
 
+## v0.4.0 - _May 31, 2018_
+
+    * Add types for `react-joyride`
+    * Add types for `react-popper`, remove types for `react-joyride`
+    * Remove types for blockies, bn.js, compare-versions, ethereumjs-abi, ethereumjs-tx, find-versions, hdkey, is-mobile, solidity-parser-antlr, xml-js as they were moved to DefinitelyTyped (#641)
+
 ## v0.3.2 - _May 22, 2018_
 
     * Dependencies updated
