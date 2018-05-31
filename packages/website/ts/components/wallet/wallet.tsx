@@ -212,7 +212,7 @@ export class Wallet extends React.Component<WalletProps, WalletState> {
     }
     private _renderLoadingBodyRows(): React.ReactElement<{}> {
         return (
-            <div className="flex items-center" style={styles.loadingBody}>
+            <div key={BODY_ITEM_KEY} className="flex items-center" style={styles.loadingBody}>
                 <div className="mx-auto">
                     <CircularProgress size={40} thickness={5} />
                 </div>
@@ -224,6 +224,7 @@ export class Wallet extends React.Component<WalletProps, WalletState> {
         const primaryText = 'wallet';
         return (
             <StandardIconRow
+                key={HEADER_ITEM_KEY}
                 icon={<ActionAccountBalanceWallet color={colors.mediumBlue} />}
                 main={primaryText.toUpperCase()}
                 style={styles.borderedItem}
