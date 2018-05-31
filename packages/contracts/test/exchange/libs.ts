@@ -49,7 +49,6 @@ describe('Exchange libs', () => {
 
     beforeEach(async () => {
         await blockchainLifecycle.startAsync();
-        signedOrder = orderFactory.newSignedOrder();
     });
     afterEach(async () => {
         await blockchainLifecycle.revertAsync();
@@ -69,7 +68,8 @@ describe('Exchange libs', () => {
             });
         });
         describe('getOrderHash', () => {
-            it('should output the correct order hash', async () => {
+            it('should output the correct orderHash', async () => {
+                signedOrder = orderFactory.newSignedOrder();
                 const orderHashHex = await libs.publicGetOrderHash.callAsync(signedOrder);
                 expect(orderUtils.getOrderHashHex(signedOrder)).to.be.equal(orderHashHex);
             });

@@ -22,6 +22,7 @@ describe('LibBytes', () => {
     let owner: string;
     let libBytes: TestLibBytesContract;
     const byteArrayShorterThan32Bytes = '0x012345';
+    const byteArrayShorterThan20Bytes = byteArrayShorterThan32Bytes;
     const byteArrayLongerThan32Bytes =
         '0x0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef';
     const byteArrayLongerThan32BytesFirstBytesSwapped =
@@ -58,6 +59,36 @@ describe('LibBytes', () => {
     });
     afterEach(async () => {
         await blockchainLifecycle.revertAsync();
+    });
+
+    describe('popByte', () => {
+        it('should revert if length is 0', async () => {
+            return expect(libBytes.publicPopByte.callAsync(constants.NULL_BYTES)).to.be.rejectedWith(constants.REVERT);
+        });
+
+        it('should pop the last byte from the input and return it', async () => {
+            const [newBytes, poppedByte] = await libBytes.publicPopByte.callAsync(byteArrayLongerThan32Bytes);
+            const expectedNewBytes = byteArrayLongerThan32Bytes.slice(0, -2);
+            const expectedPoppedByte = `0x${byteArrayLongerThan32Bytes.slice(-2)}`;
+            expect(newBytes).to.equal(expectedNewBytes);
+            expect(poppedByte).to.equal(expectedPoppedByte);
+        });
+    });
+
+    describe('popAddress', () => {
+        it('should revert if length is less than 20', async () => {
+            return expect(libBytes.publicPopAddress.callAsync(byteArrayShorterThan20Bytes)).to.be.rejectedWith(
+                constants.REVERT,
+            );
+        });
+
+        it('should pop the last 20 bytes from the input and return it', async () => {
+            const [newBytes, poppedAddress] = await libBytes.publicPopAddress.callAsync(byteArrayLongerThan32Bytes);
+            const expectedNewBytes = byteArrayLongerThan32Bytes.slice(0, -40);
+            const expectedPoppedAddress = `0x${byteArrayLongerThan32Bytes.slice(-40)}`;
+            expect(newBytes).to.equal(expectedNewBytes);
+            expect(poppedAddress).to.equal(expectedPoppedAddress);
+        });
     });
 
     describe('areBytesEqual', () => {

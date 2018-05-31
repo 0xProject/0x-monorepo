@@ -7,7 +7,7 @@ import { coverage } from './coverage';
 
 export const txDefaults = {
     from: devConstants.TESTRPC_FIRST_ADDRESS,
-    gas: devConstants.GAS_ESTIMATE,
+    gas: devConstants.GAS_LIMIT,
 };
 const providerConfigs = { shouldUseInProcessGanache: true };
 export const provider = web3Factory.getRpcProvider(providerConfigs);

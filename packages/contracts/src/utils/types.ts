@@ -111,16 +111,19 @@ export enum ContractName {
     DummyERC721Token = 'DummyERC721Token',
     TestLibBytes = 'TestLibBytes',
     Authorizable = 'Authorizable',
+    Whitelist = 'Whitelist',
 }
 
 export enum SignatureType {
     Illegal,
     Invalid,
-    Caller,
-    Ecrecover,
     EIP712,
-    Trezor,
+    Ecrecover,
+    TxOrigin,
+    Caller,
     Contract,
+    PreSigned,
+    Trezor,
 }
 
 export interface SignedTransaction {

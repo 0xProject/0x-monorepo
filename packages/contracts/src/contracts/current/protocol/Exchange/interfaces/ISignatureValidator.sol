@@ -27,6 +27,16 @@ contract ISignatureValidator {
     function preSign(
         bytes32 hash,
         address signer,
-        bytes signature)
+        bytes signature
+    )
+        external;
+    
+    /// @dev Approves/unnapproves a Validator contract to verify signatures on signer's behalf.
+    /// @param validator Address of Validator contract.
+    /// @param approval Approval or disapproval of  Validator contract.
+    function setSignatureValidatorApproval(
+        address validator,
+        bool approval
+    )
         external;
 }

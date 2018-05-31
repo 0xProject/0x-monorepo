@@ -36,7 +36,8 @@ contract MixinAssetProxy is
         bytes assetMetadata,
         address from,
         address to,
-        uint256 amount)
+        uint256 amount
+    )
         external
         onlyAuthorized
     {
@@ -57,7 +58,8 @@ contract MixinAssetProxy is
         bytes[] memory assetMetadata,
         address[] memory from,
         address[] memory to,
-        uint256[] memory amounts)
+        uint256[] memory amounts
+    )
         public
         onlyAuthorized
     {

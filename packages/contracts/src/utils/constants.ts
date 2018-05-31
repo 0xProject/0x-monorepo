@@ -28,6 +28,7 @@ export const constants = {
     DUMMY_TOKEN_SYMBOL: '',
     DUMMY_TOKEN_DECIMALS: new BigNumber(18),
     DUMMY_TOKEN_TOTAL_SUPPLY: new BigNumber(0),
+    NULL_BYTES: '0x',
     NUM_DUMMY_ERC20_TO_DEPLOY: 3,
     NUM_DUMMY_ERC721_TO_DEPLOY: 1,
     NUM_ERC721_TOKENS_TO_MINT: 2,

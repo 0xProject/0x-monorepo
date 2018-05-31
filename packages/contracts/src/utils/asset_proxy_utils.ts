@@ -39,7 +39,7 @@ export const assetProxyUtils = {
     encodeERC20ProxyData(tokenAddress: string): string {
         const encodedAssetProxyId = assetProxyUtils.encodeAssetProxyId(AssetProxyId.ERC20);
         const encodedAddress = assetProxyUtils.encodeAddress(tokenAddress);
-        const encodedMetadata = Buffer.concat([encodedAssetProxyId, encodedAddress]);
+        const encodedMetadata = Buffer.concat([encodedAddress, encodedAssetProxyId]);
         const encodedMetadataHex = ethUtil.bufferToHex(encodedMetadata);
         return encodedMetadataHex;
     },
@@ -52,7 +52,7 @@ export const assetProxyUtils = {
                 }`,
             );
         }
-        const encodedAssetProxyId = encodedProxyMetadata.slice(0, 1);
+        const encodedAssetProxyId = encodedProxyMetadata.slice(-1);
         const assetProxyId = assetProxyUtils.decodeAssetProxyId(encodedAssetProxyId);
         if (assetProxyId !== AssetProxyId.ERC20) {
             throw new Error(
@@ -61,7 +61,7 @@ export const assetProxyUtils = {
                 }), but got ${assetProxyId}`,
             );
         }
-        const encodedTokenAddress = encodedProxyMetadata.slice(1, 21);
+        const encodedTokenAddress = encodedProxyMetadata.slice(0, 20);
         const tokenAddress = assetProxyUtils.decodeAddress(encodedTokenAddress);
         const erc20ProxyData = {
             assetProxyId,
@@ -73,7 +73,7 @@ export const assetProxyUtils = {
         const encodedAssetProxyId = assetProxyUtils.encodeAssetProxyId(AssetProxyId.ERC721);
         const encodedAddress = assetProxyUtils.encodeAddress(tokenAddress);
         const encodedTokenId = assetProxyUtils.encodeUint256(tokenId);
-        const encodedMetadata = Buffer.concat([encodedAssetProxyId, encodedAddress, encodedTokenId]);
+        const encodedMetadata = Buffer.concat([encodedAddress, encodedTokenId, encodedAssetProxyId]);
         const encodedMetadataHex = ethUtil.bufferToHex(encodedMetadata);
         return encodedMetadataHex;
     },
@@ -86,7 +86,7 @@ export const assetProxyUtils = {
                 }`,
             );
         }
-        const encodedAssetProxyId = encodedProxyMetadata.slice(0, 1);
+        const encodedAssetProxyId = encodedProxyMetadata.slice(-1);
         const assetProxyId = assetProxyUtils.decodeAssetProxyId(encodedAssetProxyId);
         if (assetProxyId !== AssetProxyId.ERC721) {
             throw new Error(
@@ -95,9 +95,9 @@ export const assetProxyUtils = {
                 }), but got ${assetProxyId}`,
             );
         }
-        const encodedTokenAddress = encodedProxyMetadata.slice(1, 21);
+        const encodedTokenAddress = encodedProxyMetadata.slice(0, 20);
         const tokenAddress = assetProxyUtils.decodeAddress(encodedTokenAddress);
-        const encodedTokenId = encodedProxyMetadata.slice(21, 53);
+        const encodedTokenId = encodedProxyMetadata.slice(20, 52);
         const tokenId = assetProxyUtils.decodeUint256(encodedTokenId);
         const erc721ProxyData = {
             assetProxyId,
@@ -115,7 +115,7 @@ export const assetProxyUtils = {
                 }`,
             );
         }
-        const encodedAssetProxyId = encodedProxyMetadata.slice(0, 1);
+        const encodedAssetProxyId = encodedProxyMetadata.slice(-1);
         const assetProxyId = assetProxyUtils.decodeAssetProxyId(encodedAssetProxyId);
         return assetProxyId;
     },

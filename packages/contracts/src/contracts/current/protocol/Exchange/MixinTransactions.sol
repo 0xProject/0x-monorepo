@@ -43,15 +43,20 @@ contract MixinTransactions is
         uint256 salt,
         address signer,
         bytes data,
-        bytes signature)
+        bytes signature
+    )
         external
     {
         // Prevent reentrancy
-        require(currentContextAddress == address(0));
+        require(
+            currentContextAddress == address(0),
+            REENTRANCY_NOT_ALLOWED
+        );
 
         // Calculate transaction hash
         bytes32 transactionHash = keccak256(
             address(this),
+            signer,
             salt,
             data
         );

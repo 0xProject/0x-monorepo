@@ -38,5 +38,5 @@ contract MAuthorizable is
     );
 
     /// @dev Only authorized addresses can invoke functions with this modifier.
-    modifier onlyAuthorized { _; }
+    modifier onlyAuthorized { revert(); _; }
 }

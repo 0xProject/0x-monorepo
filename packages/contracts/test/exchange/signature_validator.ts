@@ -53,7 +53,6 @@ describe('MixinSignatureValidator', () => {
 
     beforeEach(async () => {
         await blockchainLifecycle.startAsync();
-        signedOrder = orderFactory.newSignedOrder();
     });
     afterEach(async () => {
         await blockchainLifecycle.revertAsync();
@@ -75,13 +74,11 @@ describe('MixinSignatureValidator', () => {
         });
 
         it('should return false with an invalid signature', async () => {
+            const v = ethUtil.toBuffer(signedOrder.signature.slice(0, 4));
             const invalidR = ethUtil.sha3('invalidR');
             const invalidS = ethUtil.sha3('invalidS');
-            const invalidSigBuff = Buffer.concat([
-                ethUtil.toBuffer(signedOrder.signature.slice(0, 6)),
-                invalidR,
-                invalidS,
-            ]);
+            const signatureType = ethUtil.toBuffer(`0x${signedOrder.signature.slice(-2)}`);
+            const invalidSigBuff = Buffer.concat([v, invalidR, invalidS, signatureType]);
             const invalidSigHex = `0x${invalidSigBuff.toString('hex')}`;
             signedOrder.signature = invalidSigHex;
             const orderHashHex = orderUtils.getOrderHashHex(signedOrder);

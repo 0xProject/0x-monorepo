@@ -460,10 +460,11 @@ describe('Exchange core', () => {
                 makerAssetAmount: Web3Wrapper.toBaseUnitAmount(new BigNumber(10), 18),
             });
 
+            const v = ethUtil.toBuffer(signedOrder.signature.slice(0, 4));
             const invalidR = ethUtil.sha3('invalidR');
             const invalidS = ethUtil.sha3('invalidS');
-            const signatureTypeAndV = signedOrder.signature.slice(0, 6);
-            const invalidSigBuff = Buffer.concat([ethUtil.toBuffer(signatureTypeAndV), invalidR, invalidS]);
+            const signatureType = ethUtil.toBuffer(`0x${signedOrder.signature.slice(-2)}`);
+            const invalidSigBuff = Buffer.concat([v, invalidR, invalidS, signatureType]);
             const invalidSigHex = `0x${invalidSigBuff.toString('hex')}`;
             signedOrder.signature = invalidSigHex;
             return expect(exchangeWrapper.fillOrderAsync(signedOrder, takerAddress)).to.be.rejectedWith(
