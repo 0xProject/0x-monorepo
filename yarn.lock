@@ -113,12 +113,26 @@
   dependencies:
     "@types/node" "*"
 
+"@types/blockies@^0.0.0":
+  version "0.0.0"
+  resolved "https://registry.yarnpkg.com/@types/blockies/-/blockies-0.0.0.tgz#e1dea77f138ee718bebbeb5b59d5d02139983617"
+
+"@types/bn.js@^4.11.0":
+  version "4.11.0"
+  resolved "https://registry.yarnpkg.com/@types/bn.js/-/bn.js-4.11.0.tgz#401cb20874f0a7b8414e46308a99c449759b7de9"
+  dependencies:
+    "@types/node" "*"
+
 "@types/body-parser@*", "@types/body-parser@^1.16.1":
   version "1.16.8"
   resolved "https://registry.yarnpkg.com/@types/body-parser/-/body-parser-1.16.8.tgz#687ec34140624a3bec2b1a8ea9268478ae8f3be3"
   dependencies:
     "@types/express" "*"
     "@types/node" "*"
+
+"@types/compare-versions@^3.0.1":
+  version "3.0.0"
+  resolved "https://registry.yarnpkg.com/@types/compare-versions/-/compare-versions-3.0.0.tgz#4a45dffe0ebbc00d0f2daef8a0e96ffc66cf5955"
 
 "@types/deep-equal@^1.0.0":
   version "1.0.1"
@@ -127,6 +141,18 @@
 "@types/depcheck@^0.6.0":
   version "0.6.0"
   resolved "https://registry.yarnpkg.com/@types/depcheck/-/depcheck-0.6.0.tgz#13c8654983feb0916f45c40b2d9fafe0c8b0e4a8"
+
+"@types/ethereumjs-abi@^0.6.0":
+  version "0.6.0"
+  resolved "https://registry.yarnpkg.com/@types/ethereumjs-abi/-/ethereumjs-abi-0.6.0.tgz#72d21083a36d9288821b62905e04b15e0c12175d"
+  dependencies:
+    "@types/node" "*"
+
+"@types/ethereumjs-tx@^1.0.0":
+  version "1.0.0"
+  resolved "https://registry.yarnpkg.com/@types/ethereumjs-tx/-/ethereumjs-tx-1.0.0.tgz#ae2ce90a145cc1a6849656db38baf0e793ff7927"
+  dependencies:
+    "@types/node" "*"
 
 "@types/events@*":
   version "1.2.0"
@@ -150,6 +176,10 @@
 "@types/fetch-mock@^5.12.1":
   version "5.12.2"
   resolved "https://registry.yarnpkg.com/@types/fetch-mock/-/fetch-mock-5.12.2.tgz#8c96517ff74303031c65c5da2d99858e34c844d2"
+
+"@types/find-versions@^2.0.0":
+  version "2.0.0"
+  resolved "https://registry.yarnpkg.com/@types/find-versions/-/find-versions-2.0.0.tgz#a976ca032ab8dd1161116604eded0620d2b85df2"
 
 "@types/fs-extra@5.0.0":
   version "5.0.0"
@@ -179,6 +209,12 @@
   version "4.0.37"
   resolved "https://registry.yarnpkg.com/@types/handlebars/-/handlebars-4.0.37.tgz#a3bc3eba0c0f03f753cac00841a5b21e26a02c03"
 
+"@types/hdkey@^0.7.0":
+  version "0.7.0"
+  resolved "https://registry.yarnpkg.com/@types/hdkey/-/hdkey-0.7.0.tgz#6734d138e3c597f241be8fae2e60c2949bc3af87"
+  dependencies:
+    "@types/node" "*"
+
 "@types/highlight.js@9.12.2", "@types/highlight.js@^9.1.8":
   version "9.12.2"
   resolved "https://registry.yarnpkg.com/@types/highlight.js/-/highlight.js-9.12.2.tgz#6ee7cd395effe5ec80b515d3ff1699068cd0cd1d"
@@ -186,6 +222,10 @@
 "@types/history@*":
   version "4.6.2"
   resolved "https://registry.yarnpkg.com/@types/history/-/history-4.6.2.tgz#12cfaba693ba20f114ed5765467ff25fdf67ddb0"
+
+"@types/is-mobile@0.3.0":
+  version "0.3.0"
+  resolved "https://registry.yarnpkg.com/@types/is-mobile/-/is-mobile-0.3.0.tgz#821825eeddb9016c41dd11c0dd6d2db8621432fc"
 
 "@types/istanbul@^0.4.30":
   version "0.4.30"
@@ -196,6 +236,10 @@
   resolved "https://registry.yarnpkg.com/@types/jsonschema/-/jsonschema-1.1.1.tgz#08703dfe074010e8e829123111594af731f57b1a"
   dependencies:
     jsonschema "*"
+
+"@types/lerna-get-packages@^1.0.0":
+  version "1.0.0"
+  resolved "https://registry.yarnpkg.com/@types/lerna-get-packages/-/lerna-get-packages-1.0.0.tgz#d98269467207e17fb43ae76d78d1bcc2c9b76a34"
 
 "@types/lodash.foreach@^4.5.3":
   version "4.5.3"
@@ -360,6 +404,10 @@
     "@types/glob" "*"
     "@types/node" "*"
 
+"@types/semver-sort@^0.0.0":
+  version "0.0.0"
+  resolved "https://registry.yarnpkg.com/@types/semver-sort/-/semver-sort-0.0.0.tgz#30b7bb8b954e9bd9b453b303a9a7a477204d3645"
+
 "@types/semver@^5.5.0":
   version "5.5.0"
   resolved "https://registry.yarnpkg.com/@types/semver/-/semver-5.5.0.tgz#146c2a29ee7d3bae4bf2fcb274636e264c813c45"
@@ -388,6 +436,10 @@
 "@types/sinon@^2.2.2":
   version "2.3.7"
   resolved "https://registry.yarnpkg.com/@types/sinon/-/sinon-2.3.7.tgz#e92c2fed3297eae078d78d1da032b26788b4af86"
+
+"@types/solidity-parser-antlr@^0.2.0":
+  version "0.2.0"
+  resolved "https://registry.yarnpkg.com/@types/solidity-parser-antlr/-/solidity-parser-antlr-0.2.0.tgz#52b2df98d8d529adfd7188adc62a854bb77f0fb3"
 
 "@types/uuid@^3.4.2":
   version "3.4.3"
@@ -12863,9 +12915,9 @@ xhr@^2.0.4, xhr@^2.2.0, xhr@^2.3.3:
     parse-headers "^2.0.0"
     xtend "^4.0.0"
 
-xml-js@^1.3.2:
-  version "1.6.2"
-  resolved "https://registry.yarnpkg.com/xml-js/-/xml-js-1.6.2.tgz#4c4cb8413998f73701a202a1b8b2f17c985a72c5"
+xml-js@^1.6.4:
+  version "1.6.4"
+  resolved "https://registry.yarnpkg.com/xml-js/-/xml-js-1.6.4.tgz#fcf9fdc9fb6d691122a02fe5a55c30f84d93ab90"
   dependencies:
     sax "^1.2.4"
 

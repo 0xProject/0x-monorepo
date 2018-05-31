@@ -46,6 +46,8 @@
         "@0xproject/dev-utils": "^0.4.2",
         "@0xproject/monorepo-scripts": "^0.1.20",
         "@0xproject/tslint-config": "^0.4.18",
+        "@types/ethereumjs-abi": "^0.6.0",
+        "@types/bn.js": "^4.11.0",
         "@types/lodash": "4.14.104",
         "chai": "^4.0.1",
         "chai-as-promised": "^7.1.0",
