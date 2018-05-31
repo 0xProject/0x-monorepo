@@ -26,16 +26,16 @@ contract TestLibAssetProxyDecoder is
 {
 
     /// @dev Decodes ERC721 Asset Proxy data
-    function publicDecodeERC20Data(bytes memory proxyData)
+    function publicDecodeERC20Data(bytes memory assetData)
         public
         pure
         returns (uint8, address)
     {
-        return decodeERC20Data(proxyData);
+        return decodeERC20Data(assetData);
     }
 
     /// @dev Decodes ERC721 Asset Proxy data
-    function publicDecodeERC721Data(bytes memory proxyData)
+    function publicDecodeERC721Data(bytes memory assetData)
         public
         pure
         returns (
@@ -45,6 +45,6 @@ contract TestLibAssetProxyDecoder is
             bytes memory
         )
     {
-        return decodeERC721Data(proxyData);
+        return decodeERC721Data(assetData);
     }
 }

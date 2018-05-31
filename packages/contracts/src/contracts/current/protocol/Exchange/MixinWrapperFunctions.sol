@@ -91,12 +91,12 @@ contract MixinWrapperFunctions is
         // |          | 0x0E0  |         |   8.  takerFeeAmount                        |
         // |          | 0x100  |         |   9.  expirationTimeSeconds                 |
         // |          | 0x120  |         |   10. salt                                  |
-        // |          | 0x140  |         |   11. Offset to makerAssetProxyMetadata (*) |
-        // |          | 0x160  |         |   12. Offset to takerAssetProxyMetadata (*) |
-        // |          | 0x180  | 32      | makerAssetProxyMetadata Length              |
-        // |          | 0x1A0  | **      | makerAssetProxyMetadata Contents            |
-        // |          | 0x1C0  | 32      | takerAssetProxyMetadata Length              |
-        // |          | 0x1E0  | **      | takerAssetProxyMetadata Contents            |
+        // |          | 0x140  |         |   11. Offset to makerAssetData (*) |
+        // |          | 0x160  |         |   12. Offset to takerAssetData (*) |
+        // |          | 0x180  | 32      | makerAssetData Length              |
+        // |          | 0x1A0  | **      | makerAssetData Contents            |
+        // |          | 0x1C0  | 32      | takerAssetData Length              |
+        // |          | 0x1E0  | **      | takerAssetData Contents            |
         // |          | 0x200  | 32      | signature Length                            |
         // |          | 0x220  | **      | signature Contents                          |
 
@@ -163,43 +163,43 @@ contract MixinWrapperFunctions is
             mstore(add(dataAreaEnd, 0xE0), mload(add(sourceOffset, 0xE0)))      // takerFeeAmount
             mstore(add(dataAreaEnd, 0x100), mload(add(sourceOffset, 0x100)))    // expirationTimeSeconds
             mstore(add(dataAreaEnd, 0x120), mload(add(sourceOffset, 0x120)))    // salt
-            mstore(add(dataAreaEnd, 0x140), mload(add(sourceOffset, 0x140)))    // Offset to makerAssetProxyMetadata
-            mstore(add(dataAreaEnd, 0x160), mload(add(sourceOffset, 0x160)))    // Offset to takerAssetProxyMetadata
+            mstore(add(dataAreaEnd, 0x140), mload(add(sourceOffset, 0x140)))    // Offset to makerAssetData
+            mstore(add(dataAreaEnd, 0x160), mload(add(sourceOffset, 0x160)))    // Offset to takerAssetData
             dataAreaEnd := add(dataAreaEnd, 0x180)
             sourceOffset := add(sourceOffset, 0x180)
 
-            // Write offset to <order.makerAssetProxyMetadata>
+            // Write offset to <order.makerAssetData>
             mstore(add(dataAreaStart, mul(10, 0x20)), sub(dataAreaEnd, dataAreaStart))
 
-            // Calculate length of <order.makerAssetProxyMetadata>
+            // Calculate length of <order.makerAssetData>
             arrayLenBytes := mload(sourceOffset)
             sourceOffset := add(sourceOffset, 0x20)
             arrayLenWords := div(add(arrayLenBytes, 0x1F), 0x20)
 
-            // Write length of <order.makerAssetProxyMetadata>
+            // Write length of <order.makerAssetData>
             mstore(dataAreaEnd, arrayLenBytes)
             dataAreaEnd := add(dataAreaEnd, 0x20)
 
-            // Write contents of <order.makerAssetProxyMetadata>
+            // Write contents of <order.makerAssetData>
             for {let i := 0} lt(i, arrayLenWords) {i := add(i, 1)} {
                 mstore(dataAreaEnd, mload(sourceOffset))
                 dataAreaEnd := add(dataAreaEnd, 0x20)
                 sourceOffset := add(sourceOffset, 0x20)
             }
 
-            // Write offset to <order.takerAssetProxyMetadata>
+            // Write offset to <order.takerAssetData>
             mstore(add(dataAreaStart, mul(11, 0x20)), sub(dataAreaEnd, dataAreaStart))
 
-            // Calculate length of <order.takerAssetProxyMetadata>
+            // Calculate length of <order.takerAssetData>
             arrayLenBytes := mload(sourceOffset)
             sourceOffset := add(sourceOffset, 0x20)
             arrayLenWords := div(add(arrayLenBytes, 0x1F), 0x20)
 
-            // Write length of <order.takerAssetProxyMetadata>
+            // Write length of <order.takerAssetData>
             mstore(dataAreaEnd, arrayLenBytes)
             dataAreaEnd := add(dataAreaEnd, 0x20)
 
-            // Write contents of  <order.takerAssetProxyMetadata>
+            // Write contents of  <order.takerAssetData>
             for {let i := 0} lt(i, arrayLenWords) {i := add(i, 1)} {
                 mstore(dataAreaEnd, mload(sourceOffset))
                 dataAreaEnd := add(dataAreaEnd, 0x20)

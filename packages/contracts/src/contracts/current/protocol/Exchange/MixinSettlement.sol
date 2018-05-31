@@ -40,7 +40,7 @@ contract MixinSettlement is
     bytes internal ZRX_PROXY_DATA;
 
     /// @dev Gets the ZRX metadata used for fee transfers.
-    function zrxProxyData()
+    function zrxAssetData()
         external
         view
         returns (bytes memory)
@@ -48,13 +48,13 @@ contract MixinSettlement is
         return ZRX_PROXY_DATA;
     }
 
-    /// TODO: _zrxProxyData should be a constant in production.
+    /// TODO: _zrxAssetData should be a constant in production.
     /// @dev Constructor sets the metadata that will be used for paying ZRX fees.
-    /// @param _zrxProxyData Byte array containing ERC20 proxy id concatenated with address of ZRX.
-    constructor (bytes memory _zrxProxyData)
+    /// @param _zrxAssetData Byte array containing ERC20 proxy id concatenated with address of ZRX.
+    constructor (bytes memory _zrxAssetData)
         public
     {
-        ZRX_PROXY_DATA = _zrxProxyData;
+        ZRX_PROXY_DATA = _zrxAssetData;
     }
 
     /// @dev Settles an order by transferring assets between counterparties.

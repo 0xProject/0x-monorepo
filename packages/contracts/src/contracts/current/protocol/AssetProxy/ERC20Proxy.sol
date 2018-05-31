@@ -36,12 +36,12 @@ contract ERC20Proxy is
     uint8 constant PROXY_ID = 1;
 
     /// @dev Internal version of `transferFrom`.
-    /// @param proxyData Encoded byte array.
+    /// @param assetData Encoded byte array.
     /// @param from Address to transfer asset from.
     /// @param to Address to transfer asset to.
     /// @param amount Amount of asset to transfer.
     function transferFromInternal(
-        bytes memory proxyData,
+        bytes memory assetData,
         address from,
         address to,
         uint256 amount
@@ -52,7 +52,7 @@ contract ERC20Proxy is
         (
             uint8 proxyId,
             address token
-        ) = decodeERC20Data(proxyData);
+        ) = decodeERC20Data(assetData);
 
         // Data must be intended for this proxy.
         uint256 length = assetMetadata.length;
