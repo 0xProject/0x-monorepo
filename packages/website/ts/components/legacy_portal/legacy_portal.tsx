@@ -363,32 +363,6 @@ export class LegacyPortal extends React.Component<LegacyPortalProps, LegacyPorta
             isWethNoticeDialogOpen: false,
         });
     }
-    private _getSharedOrderIfExists(): Order | undefined {
-        const queryString = window.location.search;
-        if (queryString.length === 0) {
-            return undefined;
-        }
-        const queryParams = queryString.substring(1).split('&');
-        const orderQueryParam = _.find(queryParams, queryParam => {
-            const queryPair = queryParam.split('=');
-            return queryPair[0] === 'order';
-        });
-        if (_.isUndefined(orderQueryParam)) {
-            return undefined;
-        }
-        const orderPair = orderQueryParam.split('=');
-        if (orderPair.length !== 2) {
-            return undefined;
-        }
-
-        const order = JSON.parse(decodeURIComponent(orderPair[1]));
-        const validationResult = validator.validate(order, portalOrderSchema);
-        if (validationResult.errors.length > 0) {
-            logUtils.log(`Invalid shared order: ${validationResult.errors}`);
-            return undefined;
-        }
-        return order;
-    }
     private _updateScreenWidth(): void {
         const newScreenWidth = utils.getScreenWidth();
         this.props.dispatcher.updateScreenWidth(newScreenWidth);
