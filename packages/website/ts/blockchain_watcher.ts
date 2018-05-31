@@ -10,7 +10,7 @@ export class BlockchainWatcher {
     private _prevNetworkId: number;
     private _shouldPollUserAddress: boolean;
     private _watchNetworkAndBalanceIntervalId: NodeJS.Timer;
-    private _prevUserEtherBalanceInWei: BigNumber;
+    private _prevUserEtherBalanceInWei?: BigNumber;
     private _prevUserAddressIfExists: string;
     constructor(
         dispatcher: Dispatcher,
@@ -41,7 +41,7 @@ export class BlockchainWatcher {
         }
 
         let prevNodeVersion: string;
-        this._prevUserEtherBalanceInWei = new BigNumber(0);
+        this._prevUserEtherBalanceInWei = undefined;
         this._dispatcher.updateNetworkId(this._prevNetworkId);
         this._watchNetworkAndBalanceIntervalId = intervalUtils.setAsyncExcludingInterval(
             async () => {
@@ -94,7 +94,7 @@ export class BlockchainWatcher {
     }
     private async _updateUserWeiBalanceAsync(userAddress: string): Promise<void> {
         const balanceInWei = await this._web3Wrapper.getBalanceInWeiAsync(userAddress);
-        if (!balanceInWei.eq(this._prevUserEtherBalanceInWei)) {
+        if (_.isUndefined(this._prevUserEtherBalanceInWei) || !balanceInWei.eq(this._prevUserEtherBalanceInWei)) {
             this._prevUserEtherBalanceInWei = balanceInWei;
             this._dispatcher.updateUserWeiBalance(balanceInWei);
         }

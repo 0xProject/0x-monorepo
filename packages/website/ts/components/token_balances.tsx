@@ -85,6 +85,9 @@ interface TokenBalancesState {
 }
 
 export class TokenBalances extends React.Component<TokenBalancesProps, TokenBalancesState> {
+    public static defaultProps: Partial<TokenBalancesProps> = {
+        userEtherBalanceInWei: new BigNumber(0),
+    };
     private _isUnmounted: boolean;
     public constructor(props: TokenBalancesProps) {
         super(props);
