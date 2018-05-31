@@ -19,7 +19,7 @@
 pragma solidity ^0.4.24;
 
 contract LibMem {
-    
+
     function getMemAddress(bytes memory input)
         internal
         pure
@@ -30,7 +30,7 @@ contract LibMem {
         }
         return address_;
     }
-    
+
     /// @dev Copies `length` bytes from memory location `source` to `dest`.
     /// @param dest memory address to copy bytes to
     /// @param source memory address to copy bytes from
@@ -58,7 +58,7 @@ contract LibMem {
             if (source == dest) {
                 return;
             }
-            
+
             // For large copies we copy whole words at a time. The final
             // word is aligned to the end of the range (instead of after the
             // previous) to handle partial words. So a copy will look like this:
@@ -76,6 +76,9 @@ contract LibMem {
             //
             if (source > dest) {
                 assembly {
+                    // Record the total number of full words to copy
+                    let nwords := div(length, 32)
+
                     // We subtract 32 from `send` and `dend` because it
                     // is easier to compare with in the loop, and these
                     // are also the addresses we need for copying the
@@ -83,44 +86,47 @@ contract LibMem {
                     length := sub(length, 32)
                     let send := add(source, length)
                     let dend := add(dest, length)
-                    
+
                     // Remember the last 32 bytes of source
                     // This needs to be done here and not after the loop
                     // because we may have overwritten the last bytes in
                     // source already due to overlap.
                     let last := mload(send)
-                    
+
                     // Copy whole words front to back
-                    for {} lt(source, send) {} {
+                    for {let i := 0} lt(i, nwords) {i := add(i, 1)} {
                         mstore(dest, mload(source))
                         source := add(source, 32)
                         dest := add(dest, 32)
                     }
-                    
+
                     // Write the last 32 bytes
                     mstore(dend, last)
                 }
             } else {
                 assembly {
+                    // Record the total number of full words to copy
+                    let nwords := div(length, 32)
+
                     // We subtract 32 from `send` and `dend` because those
                     // are the starting points when copying a word at the end.
                     length := sub(length, 32)
                     let send := add(source, length)
                     let dend := add(dest, length)
-                    
+
                     // Remember the first 32 bytes of source
                     // This needs to be done here and not after the loop
                     // because we may have overwritten the first bytes in
                     // source already due to overlap.
                     let first := mload(source)
-                    
+
                     // Copy whole words back to front
-                    for {} lt(source, send) {} {
+                    for {let i := 0} lt(i, nwords) {i := add(i, 1)} {
                         mstore(dend, mload(send))
                         send := sub(send, 32)
                         dend := sub(dend, 32)
                     }
-                    
+
                     // Write the first 32 bytes
                     mstore(dest, first)
                 }
