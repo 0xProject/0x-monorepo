@@ -66,14 +66,30 @@ export async function isValidSignatureAsync(
         }
 
         case SignatureType.PreSigned: {
-            const exchangeContract = new ExchangeContract(artifacts.Exchange.abi, signerAddress, provider);
-            const isValid = await exchangeContract.preSigned.callAsync(data, signerAddress);
-            return true;
+            return isValidPresignedSignatureAsync(provider, data, signature, signerAddress);
         }
 
         default:
             throw new Error(`Unhandled SignatureType: ${signatureTypeIndexIfExists}`);
     }
+}
+
+/**
+ * Verifies that the provided presigned signature is valid according to the 0x Protocol smart contracts
+ * @param   data          The hex encoded data signed by the supplied signature.
+ * @param   signature     A hex encoded presigned 0x Protocol signature made up of: [SignatureType.Presigned]
+ * @param   signerAddress The hex encoded address that signed the data, producing the supplied signature.
+ * @return  Whether the data was preSigned by the supplied signerAddress.
+ */
+export async function isValidPresignedSignatureAsync(
+    provider: Provider,
+    data: string,
+    signature: string,
+    signerAddress: string,
+): Promise<boolean> {
+    const exchangeContract = new ExchangeContract(artifacts.Exchange.abi, signerAddress, provider);
+    const isValid = await exchangeContract.preSigned.callAsync(data, signerAddress);
+    return isValid;
 }
 
 /**
