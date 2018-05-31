@@ -35,8 +35,8 @@ contract MixinMarketBuyTokens is
         returns (Exchange.FillResults)
     {
         require(msg.value > 0, VALUE_GT_ZERO);
-        address token = readAddress(orders[0].takerAssetData, 1);
-        require(token == address(ETHER_TOKEN), TAKER_ASSET_WETH);
+        address token = readAddress(orders[0].takerAssetData, 0);
+        require(token == address(ETHER_TOKEN), TAKER_ASSET_WETH_REQUIRED);
 
         uint256 remainingTakerTokenAmount = payAndDeductFee(msg.value, feeProportion, feeRecipient);
         ETHER_TOKEN.deposit.value(remainingTakerTokenAmount)();
@@ -53,7 +53,7 @@ contract MixinMarketBuyTokens is
         returns (Exchange.FillResults memory totalFillResults)
     {
         uint256 takerTokenBalance = sellTokenAmount;
-        address makerTokenAddress = readAddress(orders[0].makerAssetData, 1);
+        address makerTokenAddress = readAddress(orders[0].makerAssetData, 0);
 
         Exchange.FillResults memory calculatedMarketSellResults = calculateMarketSellFillResults(orders, sellTokenAmount);
         if (calculatedMarketSellResults.takerFeePaid > 0) {

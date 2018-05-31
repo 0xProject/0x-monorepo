@@ -138,12 +138,12 @@ export class ERC20Wrapper {
         });
         return balancesByOwner;
     }
-    public addDummyTokenContract(dummy: DummyERC20TokenContract) {
+    public addDummyTokenContract(dummy: DummyERC20TokenContract): void {
         if (!_.isUndefined(this._dummyTokenContracts)) {
             this._dummyTokenContracts.push(dummy);
         }
     }
-    public addTokenOwnerAddress(address: string) {
+    public addTokenOwnerAddress(address: string): void {
         this._tokenOwnerAddresses.push(address);
     }
     public getTokenOwnerAddresses(): string[] {

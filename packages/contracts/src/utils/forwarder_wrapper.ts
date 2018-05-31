@@ -1,14 +1,15 @@
-import { ZeroEx } from '0x.js';
-import { TransactionReceiptWithDecodedLogs } from '@0xproject/types';
+import { SignedOrder } from '@0xproject/types';
 import { BigNumber } from '@0xproject/utils';
 import { Web3Wrapper } from '@0xproject/web3-wrapper';
+import { Provider, TransactionReceiptWithDecodedLogs } from 'ethereum-types';
 import ethUtil = require('ethereumjs-util');
 import * as _ from 'lodash';
 
 import { formatters } from '../../src/utils/formatters';
 import { ForwarderContract } from '../contract_wrappers/generated/forwarder';
 
-import { AssetProxyId, SignedOrder } from './types';
+import { constants } from './constants';
+import { AssetProxyId } from './types';
 
 const DEFAULT_FEE_PROPORTION = 0;
 const PERCENTAGE_DENOMINATOR = 10000;
@@ -18,9 +19,18 @@ export class ForwarderWrapper {
     private _web3Wrapper: Web3Wrapper;
     private _forwarderContract: ForwarderContract;
     private _zrxAddressBuffer: Buffer;
-    constructor(contractInstance: ForwarderContract, web3Wrapper: Web3Wrapper, zrxAddress: string) {
+    private static _calculateAdditionalFeeProportionAmount(feeProportion: number, fillAmountWei: BigNumber): BigNumber {
+        if (feeProportion > 0) {
+            // Add to the total ETH transaction to ensure all NFTs can be filled after fees
+            // 150 = 1.5% = 0.015
+            const denominator = new BigNumber(1).minus(new BigNumber(feeProportion).dividedBy(PERCENTAGE_DENOMINATOR));
+            return fillAmountWei.dividedBy(denominator).round(0, BigNumber.ROUND_UP);
+        }
+        return fillAmountWei;
+    }
+    constructor(contractInstance: ForwarderContract, provider: Provider, zrxAddress: string) {
         this._forwarderContract = contractInstance;
-        this._web3Wrapper = web3Wrapper;
+        this._web3Wrapper = new Web3Wrapper(provider);
         this._web3Wrapper.abiDecoder.addABI(contractInstance.abi);
         this._zrxAddressBuffer = ethUtil.toBuffer(zrxAddress);
     }
@@ -37,7 +47,7 @@ export class ForwarderWrapper {
             orders,
             feeOrders,
             DEFAULT_FEE_PROPORTION,
-            ZeroEx.NULL_ADDRESS,
+            constants.NULL_ADDRESS,
             opts,
         );
         return tx;
@@ -84,7 +94,7 @@ export class ForwarderWrapper {
             orders,
             feeOrders,
             DEFAULT_FEE_PROPORTION,
-            ZeroEx.NULL_ADDRESS,
+            constants.NULL_ADDRESS,
             opts,
         );
         return tx;
@@ -100,7 +110,7 @@ export class ForwarderWrapper {
         },
     ): Promise<TransactionReceiptWithDecodedLogs> {
         const makerAssetData = ethUtil.toBuffer(orders[0].makerAssetData);
-        const proxyId = makerAssetData[0];
+        const proxyId = makerAssetData[makerAssetData.length - 1];
         if (proxyId !== AssetProxyId.ERC20) {
             throw new Error('Proxy type not supported by marketBuyTokens');
         }
@@ -130,7 +140,7 @@ export class ForwarderWrapper {
         assetAmount: BigNumber,
     ): Promise<BigNumber> {
         const makerAssetData = ethUtil.toBuffer(orders[0].makerAssetData);
-        const proxyId = makerAssetData[0];
+        const proxyId = makerAssetData[makerAssetData.length - 1];
         if (proxyId === AssetProxyId.ERC20) {
             const fillAmountWei = await this._calculateBuyExactERC20FillAmountAsync(
                 orders,
@@ -159,7 +169,7 @@ export class ForwarderWrapper {
         assetAmount: BigNumber,
     ): Promise<BigNumber> {
         const makerAssetData = ethUtil.toBuffer(orders[0].makerAssetData);
-        const makerAssetToken = makerAssetData.slice(1, 21);
+        const makerAssetToken = makerAssetData.slice(0, 20);
         const params = formatters.createMarketBuyOrders(orders, assetAmount);
         const feeParams = formatters.createMarketSellOrders(feeOrders, ZERO_AMOUNT);
 
@@ -186,7 +196,7 @@ export class ForwarderWrapper {
                 fillAmountWei = fillAmountWei.plus(expectedFeeFillResults.takerAssetFilledAmount);
             }
         }
-        fillAmountWei = this._calculateAdditionalFeeProportionAmount(feeProportion, fillAmountWei);
+        fillAmountWei = ForwarderWrapper._calculateAdditionalFeeProportionAmount(feeProportion, fillAmountWei);
         return fillAmountWei;
     }
     private async _calculateBuyExactERC721FillAmountAsync(
@@ -217,25 +227,15 @@ export class ForwarderWrapper {
                 feeOrders,
                 emptyFeeOrders,
                 DEFAULT_FEE_PROPORTION,
-                ZeroEx.NULL_ADDRESS,
+                constants.NULL_ADDRESS,
                 totalFees,
             );
             fillAmountWei = fillAmountWei.plus(expectedFeeAmountWei);
         }
-        fillAmountWei = this._calculateAdditionalFeeProportionAmount(feeProportion, fillAmountWei);
+        fillAmountWei = ForwarderWrapper._calculateAdditionalFeeProportionAmount(feeProportion, fillAmountWei);
         return fillAmountWei;
     }
-    // tslint:disable-next-line:prefer-function-over-method
-    private _calculateAdditionalFeeProportionAmount(feeProportion: number, fillAmountWei: BigNumber): BigNumber {
-        if (feeProportion > 0) {
-            // Add to the total ETH transaction to ensure all NFTs can be filled after fees
-            // 150 = 1.5% = 0.015
-            const denominator = new BigNumber(1).minus(new BigNumber(feeProportion).dividedBy(PERCENTAGE_DENOMINATOR));
-            return fillAmountWei.dividedBy(denominator).round(0, BigNumber.ROUND_UP);
-        }
-        return fillAmountWei;
-    }
-    private async _getTxWithDecodedLogsAsync(txHash: string) {
+    private async _getTxWithDecodedLogsAsync(txHash: string): Promise<TransactionReceiptWithDecodedLogs> {
         const tx = await this._web3Wrapper.awaitTransactionMinedAsync(txHash);
         tx.logs = _.filter(tx.logs, log => log.address === this._forwarderContract.address);
         return tx;

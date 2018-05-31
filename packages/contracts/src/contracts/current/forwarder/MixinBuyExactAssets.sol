@@ -39,9 +39,9 @@ contract MixinBuyExactAssets is
         returns (Exchange.FillResults memory totalFillResults)
     {
         require(msg.value > 0, VALUE_GT_ZERO);
-        address takerAsset = readAddress(orders[0].takerAssetData, 1);
-        require(takerAsset == address(ETHER_TOKEN), TAKER_ASSET_WETH);
-        uint8 proxyId = uint8(orders[0].makerAssetData[0]);
+        address takerAsset = readAddress(orders[0].takerAssetData, 0);
+        require(takerAsset == address(ETHER_TOKEN), TAKER_ASSET_WETH_REQUIRED);
+        uint8 proxyId = uint8(orders[0].makerAssetData[orders[0].makerAssetData.length-1]);
         require(proxyId == 1 || proxyId == 2, UNSUPPORTED_TOKEN_PROXY);
 
         uint256 remainingTakerAssetAmount = msg.value;
@@ -68,7 +68,7 @@ contract MixinBuyExactAssets is
         private
         returns (Exchange.FillResults memory totalFillResults)
     {
-        address makerTokenAddress = readAddress(orders[0].makerAssetData, 1); 
+        address makerTokenAddress = readAddress(orders[0].makerAssetData, 0); 
         // We can short cut here for effeciency and use buyFeeTokensInternal if maker asset token is ZRX
         // this buys us exactly that amount taking into account the fees. This saves gas and calculates the rate correctly
         Exchange.FillResults memory requestedTokensResult;
@@ -115,7 +115,7 @@ contract MixinBuyExactAssets is
             totalFillResults.takerFeePaid = feeTokensResult.takerFeePaid;
             totalFillResults.takerAssetFilledAmount = feeTokensResult.takerAssetFilledAmount;
         }
-        address makerTokenAddress = readAddress(orders[0].makerAssetData, 1);
+        address makerTokenAddress = readAddress(orders[0].makerAssetData, 0);
         for (uint256 n = 0; n < orders.length; n++) {
             // Fail if it wasn't fully filled otherwise we will keep WETH
             Exchange.FillResults memory fillOrderResults = EXCHANGE.fillOrKillOrder(
@@ -124,7 +124,7 @@ contract MixinBuyExactAssets is
                 signatures[n]
             );
             addFillResults(totalFillResults, fillOrderResults);
-            uint256 tokenId = readUint256(orders[n].makerAssetData, 21);
+            uint256 tokenId = readUint256(orders[n].makerAssetData, 20);
             transferNFTToken(makerTokenAddress, msg.sender, tokenId);
         }
         return totalFillResults;
