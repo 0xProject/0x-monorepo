@@ -233,7 +233,7 @@ export class Portal extends React.Component<PortalProps, PortalState> {
                 : TokenVisibility.TRACKED;
         return (
             <div style={styles.root}>
-                <PortalOnboardingFlow />
+                <PortalOnboardingFlow trackedTokenStateByAddress={this.state.trackedTokenStateByAddress} />
                 <DocumentTitle title="0x Portal DApp" />
                 <TopBar
                     userAddress={this.props.userAddress}
