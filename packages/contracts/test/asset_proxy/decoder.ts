@@ -7,12 +7,12 @@ import * as chai from 'chai';
 import ethUtil = require('ethereumjs-util');
 import * as Web3 from 'web3';
 
-import { TestLibAssetProxyDecoderContract } from '../../src/contract_wrappers/generated/test_lib_asset_proxy_decoder';
+import { TestAssetDataDecodersContract } from '../../src/contract_wrappers/generated/test_asset_data_decoders';
 import { artifacts } from '../../src/utils/artifacts';
 import { assetProxyUtils } from '../../src/utils/asset_proxy_utils';
 import { chaiSetup } from '../../src/utils/chai_setup';
 import { constants } from '../../src/utils/constants';
-import { AssetProxyId, ERC20AssetData, ERC721AssetData, AssetData } from '../../src/utils/types';
+import { AssetData, AssetProxyId, ERC20AssetData, ERC721AssetData } from '../../src/utils/types';
 import { provider, txDefaults, web3Wrapper } from '../../src/utils/web3_wrapper';
 
 chaiSetup.configure();
@@ -21,7 +21,7 @@ const blockchainLifecycle = new BlockchainLifecycle(web3Wrapper);
 
 describe('LibAssetProxyDecoder', () => {
     let owner: string;
-    let testAssetProxyDecoder: TestLibAssetProxyDecoderContract;
+    let testAssetProxyDecoder: TestAssetDataDecodersContract;
     let testAddress: string;
 
     before(async () => {
@@ -30,8 +30,8 @@ describe('LibAssetProxyDecoder', () => {
         owner = accounts[0];
         testAddress = accounts[1];
         // Deploy TestLibMem
-        testAssetProxyDecoder = await TestLibAssetProxyDecoderContract.deployFrom0xArtifactAsync(
-            artifacts.TestLibAssetProxyDecoder,
+        testAssetProxyDecoder = await TestAssetDataDecodersContract.deployFrom0xArtifactAsync(
+            artifacts.TestAssetDataDecoders,
             provider,
             txDefaults,
         );

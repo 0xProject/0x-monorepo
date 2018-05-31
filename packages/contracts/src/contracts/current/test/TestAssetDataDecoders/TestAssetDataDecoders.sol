@@ -19,10 +19,12 @@
 pragma solidity ^0.4.24;
 pragma experimental ABIEncoderV2;
 
-import "../../utils/LibAssetProxyDecoder/LibAssetProxyDecoder.sol";
+import "../../protocol/AssetProxy/ERC20Proxy.sol";
+import "../../protocol/AssetProxy/ERC721Proxy.sol";
 
-contract TestLibAssetProxyDecoder is
-    LibAssetProxyDecoder
+contract TestAssetDataDecoders is
+    ERC20Proxy,
+    ERC721Proxy
 {
 
     /// @dev Decodes ERC721 Asset Proxy data
@@ -31,7 +33,7 @@ contract TestLibAssetProxyDecoder is
         pure
         returns (uint8, address)
     {
-        return decodeERC20Data(assetData);
+        return ERC20Proxy.decodeERC20AssetData(assetData);
     }
 
     /// @dev Decodes ERC721 Asset Proxy data
@@ -45,6 +47,6 @@ contract TestLibAssetProxyDecoder is
             bytes memory
         )
     {
-        return decodeERC721Data(assetData);
+        return ERC721Proxy.decodeERC721AssetData(assetData);
     }
 }
