@@ -22,7 +22,7 @@
     "bugs": {
         "url": "https://github.com/0xProject/0x-monorepo/issues"
     },
-    "homepage": "https://github.com/0xProject/0x-monorepo/packages/types/README.md",
+    "homepage": "https://github.com/0xProject/0x-monorepo/packages/ethereum-types/README.md",
     "devDependencies": {
         "@0xproject/monorepo-scripts": "^0.1.20",
         "@0xproject/tslint-config": "^0.4.18",
