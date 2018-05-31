@@ -1,19 +1,19 @@
 [
     {
-        "timestamp": 1527009133,
-        "version": "0.6.2",
-        "changes": [
-            {
-                "note": "Dependencies updated"
-            }
-        ]
-    },
-    {
         "version": "0.7.0",
         "changes": [
             {
                 "note": "Add logUtils.warn",
                 "pr": 589
+            }
+        ]
+    },
+    {
+        "timestamp": 1527009133,
+        "version": "0.6.2",
+        "changes": [
+            {
+                "note": "Dependencies updated"
             }
         ]
     },
