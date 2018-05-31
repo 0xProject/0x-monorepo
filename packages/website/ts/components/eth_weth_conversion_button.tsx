@@ -18,7 +18,7 @@ interface EthWethConversionButtonProps {
     ethToken: Token;
     dispatcher: Dispatcher;
     blockchain: Blockchain;
-    userEtherBalanceInWei: BigNumber;
+    userEtherBalanceInWei?: BigNumber;
     isOutdatedWrappedEther: boolean;
     onConversionSuccessful?: () => void;
     isDisabled?: boolean;

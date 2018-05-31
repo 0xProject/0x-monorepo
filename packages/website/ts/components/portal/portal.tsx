@@ -57,7 +57,7 @@ export interface PortalProps {
     providerType: ProviderType;
     screenWidth: ScreenWidths;
     tokenByAddress: TokenByAddress;
-    userEtherBalanceInWei: BigNumber;
+    userEtherBalanceInWei?: BigNumber;
     userAddress: string;
     shouldBlockchainErrDialogBeOpen: boolean;
     userSuppliedOrderCache: Order;

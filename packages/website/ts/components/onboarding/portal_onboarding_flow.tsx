@@ -14,7 +14,7 @@ export interface PortalOnboardingFlowProps {
     providerType: ProviderType;
     injectedProviderName: string;
     blockchainIsLoaded: boolean;
-    userEthBalanceInWei: BigNumber;
+    userEtherBalanceInWei?: BigNumber;
     tokenByAddress: TokenByAddress;
     updateIsRunning: (isRunning: boolean) => void;
     updateOnboardingStep: (stepIndex: number) => void;
@@ -85,7 +85,7 @@ export class PortalOnboardingFlow extends React.Component<PortalOnboardingFlowPr
     }
 
     private _userHasEth(): boolean {
-        return this.props.userEthBalanceInWei > new BigNumber(0);
+        return this.props.userEtherBalanceInWei > new BigNumber(0);
     }
 
     private _userHasWeth(): boolean {

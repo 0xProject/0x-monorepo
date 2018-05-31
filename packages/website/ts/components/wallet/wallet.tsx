@@ -61,7 +61,7 @@ export interface WalletProps {
     dispatcher: Dispatcher;
     tokenByAddress: TokenByAddress;
     trackedTokens: Token[];
-    userEtherBalanceInWei: BigNumber;
+    userEtherBalanceInWei?: BigNumber;
     lastForceTokenStateRefetch: number;
     injectedProviderName: string;
     providerType: ProviderType;
@@ -335,16 +335,16 @@ export class Wallet extends React.Component<WalletProps, WalletState> {
     private _renderEthRows(): React.ReactNode {
         const icon = <img style={{ width: ICON_DIMENSION, height: ICON_DIMENSION }} src={ETHER_ICON_PATH} />;
         const primaryText = this._renderAmount(
-            true,
-            this.props.userEtherBalanceInWei,
+            !_.isUndefined(this.props.userEtherBalanceInWei),
+            this.props.userEtherBalanceInWei || new BigNumber(0),
             constants.DECIMAL_PLACES_ETH,
             constants.ETHER_SYMBOL,
         );
         const etherToken = this._getEthToken();
         const etherPrice = this.state.trackedTokenStateByAddress[etherToken.address].price;
         const secondaryText = this._renderValue(
-            true,
-            this.props.userEtherBalanceInWei,
+            !_.isUndefined(this.props.userEtherBalanceInWei) && !_.isUndefined(etherPrice),
+            this.props.userEtherBalanceInWei || new BigNumber(0),
             constants.DECIMAL_PLACES_ETH,
             etherPrice,
         );
@@ -407,7 +407,8 @@ export class Wallet extends React.Component<WalletProps, WalletState> {
     ): React.ReactNode {
         const shouldShowWrapEtherItem =
             !_.isUndefined(this.state.wrappedEtherDirection) &&
-            this.state.wrappedEtherDirection === accessoryItemConfig.wrappedEtherDirection;
+            this.state.wrappedEtherDirection === accessoryItemConfig.wrappedEtherDirection &&
+            !_.isUndefined(this.props.userEtherBalanceInWei);
         const additionalStyle = shouldShowWrapEtherItem ? walletItemStyles.focusedItem : styles.borderedItem;
         const style = { ...styles.tokenItem, ...additionalStyle };
         const etherToken = this._getEthToken();
