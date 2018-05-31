@@ -404,7 +404,7 @@ export class Wallet extends React.Component<WalletProps, WalletState> {
                         lastForceTokenStateRefetch={this.props.lastForceTokenStateRefetch}
                         onConversionSuccessful={this._closeWrappedEtherActionRow.bind(this)}
                         // tslint:disable:jsx-no-lambda
-                        refetchEthTokenStateAsync={() => this.props.refetchTokenStateAsync(etherToken.address)}
+                        refetchEthTokenStateAsync={async () => this.props.refetchTokenStateAsync(etherToken.address)}
                     />
                 )}
             </div>
@@ -440,7 +440,7 @@ export class Wallet extends React.Component<WalletProps, WalletState> {
                 onErrorOccurred={_.noop} // TODO: Error handling
                 userAddress={this.props.userAddress}
                 isDisabled={!config.tokenState.isLoaded}
-                refetchTokenStateAsync={() => this.props.refetchTokenStateAsync(config.token.address)}
+                refetchTokenStateAsync={async () => this.props.refetchTokenStateAsync(config.token.address)}
             />
         );
     }

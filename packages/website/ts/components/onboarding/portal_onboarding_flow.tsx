@@ -69,13 +69,13 @@ export class PortalOnboardingFlow extends React.Component<PortalOnboardingFlowPr
                 target: '.eth-row',
                 content: 'Before you begin you will need to send some ETH to your metamask wallet',
                 placement: 'right',
-                continueButtonDisplay: this._userHasEth() ? 'enabled' : 'disabled',
+                continueButtonDisplay: this._userHasVisibleEth() ? 'enabled' : 'disabled',
             },
             {
                 target: '.weth-row',
                 content: 'You need to convert some of your ETH into tradeable Wrapped ETH (WETH)',
                 placement: 'right',
-                continueButtonDisplay: this._userHasWeth() ? 'enabled' : 'disabled',
+                continueButtonDisplay: this._userHasVisibleWeth() ? 'enabled' : 'disabled',
             },
         ];
         return steps;
@@ -85,11 +85,11 @@ export class PortalOnboardingFlow extends React.Component<PortalOnboardingFlowPr
         return !_.isEmpty(this.props.userAddress);
     }
 
-    private _userHasEth(): boolean {
+    private _userHasVisibleEth(): boolean {
         return this.props.userEtherBalanceInWei > new BigNumber(0);
     }
 
-    private _userHasWeth(): boolean {
+    private _userHasVisibleWeth(): boolean {
         const ethToken = utils.getEthToken(this.props.tokenByAddress);
         if (!ethToken) {
             return false;

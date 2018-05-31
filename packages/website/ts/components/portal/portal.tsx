@@ -582,11 +582,15 @@ export class Portal extends React.Component<PortalProps, PortalState> {
     private async _fetchBalancesAndAllowancesAsync(tokenAddresses: string[]): Promise<void> {
         const trackedTokenStateByAddress = this.state.trackedTokenStateByAddress;
         const userAddressIfExists = _.isEmpty(this.props.userAddress) ? undefined : this.props.userAddress;
-        for (const tokenAddress of tokenAddresses) {
-            const [balance, allowance] = await this._blockchain.getTokenBalanceAndAllowanceAsync(
-                userAddressIfExists,
-                tokenAddress,
-            );
+        const balancesAndAllowances = await Promise.all(
+            tokenAddresses.map(async tokenAddress => {
+                return this._blockchain.getTokenBalanceAndAllowanceAsync(userAddressIfExists, tokenAddress);
+            }),
+        );
+        for (let i = 0; i < tokenAddresses.length; i++) {
+            // Order is preserved in Promise.all
+            const [balance, allowance] = balancesAndAllowances[i];
+            const tokenAddress = tokenAddresses[i];
             trackedTokenStateByAddress[tokenAddress] = {
                 balance,
                 allowance,
