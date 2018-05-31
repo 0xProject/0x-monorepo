@@ -38,6 +38,7 @@ import {
 } from 'ts/types';
 import { configs } from 'ts/utils/configs';
 import { constants } from 'ts/utils/constants';
+import { orderParser } from 'ts/utils/order_parser';
 import { Translate } from 'ts/utils/translate';
 import { utils } from 'ts/utils/utils';
 
@@ -86,7 +87,7 @@ export class LegacyPortal extends React.Component<LegacyPortalProps, LegacyPorta
     }
     constructor(props: LegacyPortalProps) {
         super(props);
-        this._sharedOrderIfExists = this._getSharedOrderIfExists();
+        this._sharedOrderIfExists = orderParser.parse(window.location.search);
         this._throttledScreenWidthUpdate = _.throttle(this._updateScreenWidth.bind(this), THROTTLE_TIMEOUT);
 
         const isViewingBalances = _.includes(props.location.pathname, `${WebsitePaths.Portal}/balances`);

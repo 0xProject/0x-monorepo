@@ -43,6 +43,7 @@ import {
 } from 'ts/types';
 import { configs } from 'ts/utils/configs';
 import { constants } from 'ts/utils/constants';
+import { orderParser } from 'ts/utils/order_parser';
 import { Translate } from 'ts/utils/translate';
 import { utils } from 'ts/utils/utils';
 
@@ -117,9 +118,11 @@ const styles: Styles = {
 
 export class Portal extends React.Component<PortalProps, PortalState> {
     private _blockchain: Blockchain;
+    private _sharedOrderIfExists: Order;
     private _throttledScreenWidthUpdate: () => void;
     constructor(props: PortalProps) {
         super(props);
+        this._sharedOrderIfExists = orderParser.parse(window.location.search);
         this._throttledScreenWidthUpdate = _.throttle(this._updateScreenWidth.bind(this), THROTTLE_TIMEOUT);
         const didAcceptPortalDisclaimer = localStorage.getItemIfExists(constants.LOCAL_STORAGE_KEY_ACCEPT_DISCLAIMER);
         const hasAcceptedDisclaimer =
@@ -402,12 +405,15 @@ export class Portal extends React.Component<PortalProps, PortalState> {
         );
     }
     private _renderFillOrder(): React.ReactNode {
+        const initialFillOrder = !_.isUndefined(this.props.userSuppliedOrderCache)
+            ? this.props.userSuppliedOrderCache
+            : this._sharedOrderIfExists;
         return (
             <FillOrder
                 blockchain={this._blockchain}
                 blockchainErr={this.props.blockchainErr}
-                initialOrder={undefined} // Add user supplied order and shared order stuff here
-                isOrderInUrl={false}
+                initialOrder={initialFillOrder}
+                isOrderInUrl={!_.isUndefined(this._sharedOrderIfExists)}
                 orderFillAmount={this.props.orderFillAmount}
                 networkId={this.props.networkId}
                 userAddress={this.props.userAddress}
