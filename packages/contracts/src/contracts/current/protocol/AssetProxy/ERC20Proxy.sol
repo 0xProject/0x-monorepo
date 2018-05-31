@@ -47,21 +47,25 @@ contract ERC20Proxy is
         bytes memory assetMetadata,
         address from,
         address to,
-        uint256 amount)
+        uint256 amount
+    )
         internal
     {
         // Data must be intended for this proxy.
+        uint256 length = assetMetadata.length;
+
         require(
-            uint8(assetMetadata[0]) == PROXY_ID,
+            length == 21,
+            INVALID_METADATA_LENGTH
+        );
+
+        require(
+            uint8(assetMetadata[length - 1]) == PROXY_ID,
             PROXY_ID_MISMATCH
         );
 
         // Decode metadata.
-        require(
-            assetMetadata.length == 21,
-            INVALID_METADATA_LENGTH
-        );
-        address token = readAddress(assetMetadata, 1);
+        address token = readAddress(assetMetadata, 0);
 
         // Transfer tokens.
         bool success = IERC20Token(token).transferFrom(from, to, amount);

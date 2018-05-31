@@ -17,30 +17,18 @@
 */
 
 pragma solidity ^0.4.24;
-pragma experimental ABIEncoderV2;
 
-import "../../protocol/Exchange/MixinSignatureValidator.sol";
-import "../../protocol/Exchange/MixinTransactions.sol";
+contract IWallet {
 
-contract TestSignatureValidator is
-    MixinSignatureValidator,
-    MixinTransactions
-{
-
-    function publicIsValidSignature(
+    /// @dev Verifies that a signature is valid.
+    /// @param hash Message hash that is signed.
+    /// @param signature Proof of signing.
+    /// @return Validity of order signature.
+    function isValidSignature(
         bytes32 hash,
-        address signer,
-        bytes memory signature
+        bytes signature
     )
-        public
+        external
         view
-        returns (bool isValid)
-    {
-        isValid = isValidSignature(
-            hash,
-            signer,
-            signature
-        );
-        return isValid;
-    }
+        returns (bool isValid);
 }

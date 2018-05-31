@@ -19,27 +19,23 @@
 pragma solidity ^0.4.24;
 pragma experimental ABIEncoderV2;
 
-import "./libs/LibOrder.sol";
-import "./libs/LibFillResults.sol";
+import "../libs/LibOrder.sol";
+import "../libs/LibFillResults.sol";
 
 contract IWrapperFunctions is
-    LibBytes,
-    LibMath,
     LibOrder,
-    LibFillResults,
-    LibExchangeErrors,
-    MExchangeCore
+    LibFillResults
 {
     /// @dev Fills the input order. Reverts if exact takerAssetFillAmount not filled.
     /// @param order LibOrder.Order struct containing order specifications.
     /// @param takerAssetFillAmount Desired amount of takerAsset to sell.
     /// @param signature Proof that order has been created by maker.
     function fillOrKillOrder(
-        LibOrder.LibOrder.Order memory order,
+        LibOrder.Order memory order,
         uint256 takerAssetFillAmount,
         bytes memory signature)
         public
-        returns (LibFillResults.LibFillResults.FillResults memory fillResults);
+        returns (LibFillResults.FillResults memory fillResults);
 
     /// @dev Fills an order with specified parameters and ECDSA signature.
     ///      Returns false if the transaction would otherwise revert.

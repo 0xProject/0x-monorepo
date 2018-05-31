@@ -34,39 +34,38 @@ export async function isValidSignatureAsync(
         case SignatureType.Invalid:
             return false;
 
-        case SignatureType.Caller:
-            // HACK: We currently do not "validate" the caller signature type.
-            // It can only be validated during Exchange contract execution.
-            throw new Error('Caller signature type cannot be validated off-chain');
+        case SignatureType.EIP712: {
+            const ecSignature = parseECSignature(signature);
+            return isValidECSignature(data, ecSignature, signerAddress);
+        }
 
-        // TODO: Rename this type to `EthSign` b/c multiple of the signature
-        // types use ECRecover...
-        case SignatureType.Ecrecover: {
+        case SignatureType.EthSign: {
             const ecSignature = parseECSignature(signature);
             const prefixedMessageHex = addSignedMessagePrefix(data, MessagePrefixType.EthSign);
             return isValidECSignature(prefixedMessageHex, ecSignature, signerAddress);
         }
 
-        case SignatureType.EIP712: {
-            const ecSignature = parseECSignature(signature);
-            return isValidECSignature(data, ecSignature, signerAddress);
+        case SignatureType.Caller:
+            // HACK: We currently do not "validate" the caller signature type.
+            // It can only be validated during Exchange contract execution.
+            throw new Error('Caller signature type cannot be validated off-chain');
+
+        case SignatureType.Wallet: {
+            const signerContract = new ISignerContract(artifacts.ISigner.abi, signerAddress, provider);
+            const isValid = await signerContract.isValidSignature.callAsync(data, signature);
+            return isValid;
+        }
+
+        // TODO: Add SignatureType.Validator
+
+        case SignatureType.PreSigned: {
+            return isValidPresignedSignatureAsync(provider, data, signature, signerAddress);
         }
 
         case SignatureType.Trezor: {
             const prefixedMessageHex = addSignedMessagePrefix(data, MessagePrefixType.Trezor);
             const ecSignature = parseECSignature(signature);
             return isValidECSignature(prefixedMessageHex, ecSignature, signerAddress);
-        }
-
-        // TODO: Rename Contract -> Wallet
-        case SignatureType.Contract: {
-            const signerContract = new ISignerContract(artifacts.ISigner.abi, signerAddress, provider);
-            const isValid = await signerContract.isValidSignature.callAsync(data, signature);
-            return isValid;
-        }
-
-        case SignatureType.PreSigned: {
-            return isValidPresignedSignatureAsync(provider, data, signature, signerAddress);
         }
 
         default:
@@ -205,15 +204,16 @@ function hashTrezorPersonalMessage(message: Buffer): Buffer {
 }
 
 function parseECSignature(signature: string): ECSignature {
+    assert.isHexString('signature', signature);
     const signatureTypeIndexIfExists = getSignatureTypeIndexIfExists(signature);
-    const ecSignatureTypes = [SignatureType.Ecrecover, SignatureType.EIP712, SignatureType.Trezor];
+    const ecSignatureTypes = [SignatureType.EthSign, SignatureType.EIP712, SignatureType.Trezor];
     const isECSignatureType = _.includes(ecSignatureTypes, signatureTypeIndexIfExists);
     if (!isECSignatureType) {
         throw new Error(`Cannot parse non-ECSignature type: ${signatureTypeIndexIfExists}`);
     }
 
     // tslint:disable-next-line:custom-no-magic-numbers
-    const vrsHex = `0x${signature.substr(4)}`;
+    const vrsHex = signature.slice(0, -2);
     const ecSignature = parseSignatureHexAsVRS(vrsHex);
 
     return ecSignature;
@@ -221,7 +221,8 @@ function parseECSignature(signature: string): ECSignature {
 
 function getSignatureTypeIndexIfExists(signature: string): number {
     const unprefixedSignature = ethUtil.stripHexPrefix(signature);
-    const signatureTypeHex = unprefixedSignature.substr(0, 2);
+    // tslint:disable-next-line:custom-no-magic-numbers
+    const signatureTypeHex = unprefixedSignature.slice(-2);
     const base = 16;
     const signatureTypeInt = parseInt(signatureTypeHex, base);
     return signatureTypeInt;

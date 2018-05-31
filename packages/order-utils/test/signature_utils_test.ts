@@ -20,7 +20,7 @@ describe('Signature utils', () => {
     describe('#isValidSignature', () => {
         let dataHex = '0x6927e990021d23b1eb7b8789f6a6feaf98fe104bb0cf8259421b79f9a34222b0';
         const ethSignSignature =
-            '0x031B61a3ed31b43c8780e905a260a35faefcc527be7516aa11c0256729b5b351bc3340349190569279751135161d22529dc25add4f6069af05be04cacbda2ace2254';
+            '0x1B61a3ed31b43c8780e905a260a35faefcc527be7516aa11c0256729b5b351bc3340349190569279751135161d22529dc25add4f6069af05be04cacbda2ace225403';
         let address = '0x5409ed021d9299bf6814279a6a1411a7e866a631';
 
         it("should return false if the data doesn't pertain to the signature & address", async () => {
@@ -56,7 +56,7 @@ describe('Signature utils', () => {
             dataHex = '0xa1d7403bcbbcd75ec233cfd6584ff8dabed677d0e9bb32c2bea94e9dd8a109da';
             address = '0x6ecbe1db9ef729cbe972c83fb886247691fb6beb';
             const eip712Signature =
-                '0x041bdde07aac4bf12c12ddbb155919c43eba4146a2cfcf904a862950dbebe332554c6674975603eb5a4eaf8fd7f2e06350267e5b36cda9851a89f8bb49fe2fc9afe2';
+                '0x1bdde07aac4bf12c12ddbb155919c43eba4146a2cfcf904a862950dbebe332554c6674975603eb5a4eaf8fd7f2e06350267e5b36cda9851a89f8bb49fe2fc9afe202';
             const isValidSignatureLocal = await isValidSignatureAsync(provider, dataHex, eip712Signature, address);
             expect(isValidSignatureLocal).to.be.true();
         });
@@ -65,7 +65,7 @@ describe('Signature utils', () => {
             dataHex = '0xd0d994e31c88f33fd8a572552a70ed339de579e5ba49ee1d17cc978bbe1cdd21';
             address = '0x6ecbe1db9ef729cbe972c83fb886247691fb6beb';
             const trezorSignature =
-                '0x051ce4760660e6495b5ae6723087bea073b3a99ce98ea81fdf00c240279c010e63d05b87bc34c4d67d4776e8d5aeb023a67484f4eaf0fd353b40893e5101e845cd99';
+                '0x1ce4760660e6495b5ae6723087bea073b3a99ce98ea81fdf00c240279c010e63d05b87bc34c4d67d4776e8d5aeb023a67484f4eaf0fd353b40893e5101e845cd9908';
             const isValidSignatureLocal = await isValidSignatureAsync(provider, dataHex, trezorSignature, address);
             expect(isValidSignatureLocal).to.be.true();
         });

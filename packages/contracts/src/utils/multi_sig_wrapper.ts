@@ -7,14 +7,16 @@ import { AssetProxyOwnerContract } from '../contract_wrappers/generated/asset_pr
 import { MultiSigWalletContract } from '../contract_wrappers/generated/multi_sig_wallet';
 
 import { constants } from './constants';
-import { logDecoder } from './log_decoder';
+import { LogDecoder } from './log_decoder';
 
 export class MultiSigWrapper {
     private _multiSig: MultiSigWalletContract;
     private _web3Wrapper: Web3Wrapper;
+    private _logDecoder: LogDecoder;
     constructor(multiSigContract: MultiSigWalletContract, provider: Provider) {
         this._multiSig = multiSigContract;
         this._web3Wrapper = new Web3Wrapper(provider);
+        this._logDecoder = new LogDecoder(this._web3Wrapper, this._multiSig.address);
     }
     public async submitTransactionAsync(
         destination: string,
@@ -26,17 +28,17 @@ export class MultiSigWrapper {
         const txHash = await this._multiSig.submitTransaction.sendTransactionAsync(destination, value, data, {
             from,
         });
-        const tx = await this._getTxWithDecodedMultiSigLogsAsync(txHash);
+        const tx = await this._logDecoder.getTxWithDecodedLogsAsync(txHash);
         return tx;
     }
     public async confirmTransactionAsync(txId: BigNumber, from: string): Promise<TransactionReceiptWithDecodedLogs> {
         const txHash = await this._multiSig.confirmTransaction.sendTransactionAsync(txId, { from });
-        const tx = await this._getTxWithDecodedMultiSigLogsAsync(txHash);
+        const tx = await this._logDecoder.getTxWithDecodedLogsAsync(txHash);
         return tx;
     }
     public async executeTransactionAsync(txId: BigNumber, from: string): Promise<TransactionReceiptWithDecodedLogs> {
         const txHash = await this._multiSig.executeTransaction.sendTransactionAsync(txId, { from });
-        const tx = await this._getTxWithDecodedMultiSigLogsAsync(txHash);
+        const tx = await this._logDecoder.getTxWithDecodedLogsAsync(txHash);
         return tx;
     }
     public async executeRemoveAuthorizedAddressAsync(
@@ -45,13 +47,7 @@ export class MultiSigWrapper {
     ): Promise<TransactionReceiptWithDecodedLogs> {
         const txHash = await (this
             ._multiSig as AssetProxyOwnerContract).executeRemoveAuthorizedAddress.sendTransactionAsync(txId, { from });
-        const tx = await this._getTxWithDecodedMultiSigLogsAsync(txHash);
-        return tx;
-    }
-    private async _getTxWithDecodedMultiSigLogsAsync(txHash: string): Promise<TransactionReceiptWithDecodedLogs> {
-        const tx = await this._web3Wrapper.awaitTransactionMinedAsync(txHash, constants.AWAIT_TRANSACTION_MINED_MS);
-        tx.logs = _.filter(tx.logs, log => log.address === this._multiSig.address);
-        tx.logs = _.map(tx.logs, log => logDecoder.decodeLogOrThrow(log));
+        const tx = await this._logDecoder.getTxWithDecodedLogsAsync(txHash);
         return tx;
     }
 }

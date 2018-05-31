@@ -402,12 +402,13 @@ export interface Token {
 export enum SignatureType {
     Illegal,
     Invalid,
-    Caller,
-    Ecrecover,
     EIP712,
-    Trezor,
-    Contract,
+    EthSign,
+    Caller,
+    Wallet,
+    Validator,
     PreSigned,
+    Trezor,
 }
 
 /**

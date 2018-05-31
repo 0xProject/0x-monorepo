@@ -33,6 +33,7 @@
         "TestLibs",
         "TestSignatureValidator",
         "TokenRegistry",
+        "Whitelist",
         "WETH9",
         "ZRXToken"
     ]

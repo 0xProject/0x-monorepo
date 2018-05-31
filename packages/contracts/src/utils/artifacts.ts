@@ -15,6 +15,7 @@ import * as TestLibs from '../artifacts/TestLibs.json';
 import * as TestSignatureValidator from '../artifacts/TestSignatureValidator.json';
 import * as TokenRegistry from '../artifacts/TokenRegistry.json';
 import * as EtherToken from '../artifacts/WETH9.json';
+import * as Whitelist from '../artifacts/Whitelist.json';
 import * as ZRX from '../artifacts/ZRXToken.json';
 
 export const artifacts = {
@@ -33,5 +34,6 @@ export const artifacts = {
     TestLibs: (TestLibs as any) as ContractArtifact,
     TestSignatureValidator: (TestSignatureValidator as any) as ContractArtifact,
     TokenRegistry: (TokenRegistry as any) as ContractArtifact,
+    Whitelist: (Whitelist as any) as ContractArtifact,
     ZRX: (ZRX as any) as ContractArtifact,
 };

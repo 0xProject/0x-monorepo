@@ -36,7 +36,7 @@ export interface DrawerMenuProps {
 }
 export const DrawerMenu = (props: DrawerMenuProps) => {
     const relayerItemEntry = {
-        to: `${WebsitePaths.Portal}/`,
+        to: `${WebsitePaths.Portal}`,
         labelText: 'Relayer ecosystem',
         iconName: 'zmdi-portable-wifi',
     };

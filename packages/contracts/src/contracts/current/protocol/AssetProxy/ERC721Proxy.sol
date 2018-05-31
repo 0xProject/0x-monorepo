@@ -47,12 +47,20 @@ contract ERC721Proxy is
         bytes memory assetMetadata,
         address from,
         address to,
-        uint256 amount)
+        uint256 amount
+    )
         internal
     {
         // Data must be intended for this proxy.
+        uint256 length = assetMetadata.length;
+
         require(
-            uint8(assetMetadata[0]) == PROXY_ID,
+            length == 53,
+            INVALID_METADATA_LENGTH
+        );
+
+        require(
+            uint8(assetMetadata[length - 1]) == PROXY_ID,
             PROXY_ID_MISMATCH
         );
 
@@ -63,12 +71,8 @@ contract ERC721Proxy is
         );
 
         // Decode metadata
-        require(
-            assetMetadata.length == 53,
-            INVALID_METADATA_LENGTH
-        );
-        address token = readAddress(assetMetadata, 1);
-        uint256 tokenId = readUint256(assetMetadata, 21);
+        address token = readAddress(assetMetadata, 0);
+        uint256 tokenId = readUint256(assetMetadata, 20);
 
         // Transfer token.
         // Either succeeds or throws.

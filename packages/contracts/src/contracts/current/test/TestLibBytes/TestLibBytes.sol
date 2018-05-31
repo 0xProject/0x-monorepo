@@ -25,6 +25,30 @@ contract TestLibBytes is
     LibBytes
 {
 
+    /// @dev Pops the last byte off of a byte array by modifying its length.
+    /// @param b Byte array that will be modified.
+    /// @return The byte that was popped off.
+    function publicPopByte(bytes memory b)
+        public
+        pure
+        returns (bytes memory, bytes1 result)
+    {
+        result = popByte(b);
+        return (b, result);
+    }
+
+    /// @dev Pops the last 20 bytes off of a byte array by modifying its length.
+    /// @param b Byte array that will be modified.
+    /// @return The 20 byte address that was popped off.
+    function publicPopAddress(bytes memory b)
+        public
+        pure
+        returns (bytes memory, address result)
+    {
+        result = popAddress(b);
+        return (b, result);
+    }
+
     /// @dev Tests equality of two byte arrays.
     /// @param lhs First byte array to compare.
     /// @param rhs Second byte array to compare.
