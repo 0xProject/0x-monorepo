@@ -220,9 +220,11 @@ describe('Exchange transactions', () => {
                 exchange.address,
             );
             const isApproved = true;
-            await exchange.approveSignatureValidator.sendTransactionAsync(whitelist.address, isApproved, {
-                from: takerAddress,
-            });
+            await web3Wrapper.awaitTransactionSuccessAsync(
+                await exchange.approveSignatureValidator.sendTransactionAsync(whitelist.address, isApproved, {
+                    from: takerAddress,
+                }),
+            );
             const defaultOrderParams = {
                 ...constants.STATIC_ORDER_PARAMS,
                 senderAddress: whitelist.address,
@@ -242,7 +244,9 @@ describe('Exchange transactions', () => {
 
         it('should revert if maker has not been whitelisted', async () => {
             const isApproved = true;
-            await whitelist.updateWhitelistStatus.sendTransactionAsync(takerAddress, isApproved, { from: owner });
+            await web3Wrapper.awaitTransactionSuccessAsync(
+                await whitelist.updateWhitelistStatus.sendTransactionAsync(takerAddress, isApproved, { from: owner }),
+            );
 
             const orderStruct = orderUtils.getOrderStruct(signedOrder);
             const takerAssetFillAmount = signedOrder.takerAssetAmount;
@@ -260,7 +264,9 @@ describe('Exchange transactions', () => {
 
         it('should revert if taker has not been whitelisted', async () => {
             const isApproved = true;
-            await whitelist.updateWhitelistStatus.sendTransactionAsync(makerAddress, isApproved, { from: owner });
+            await web3Wrapper.awaitTransactionSuccessAsync(
+                await whitelist.updateWhitelistStatus.sendTransactionAsync(makerAddress, isApproved, { from: owner }),
+            );
 
             const orderStruct = orderUtils.getOrderStruct(signedOrder);
             const takerAssetFillAmount = signedOrder.takerAssetAmount;
@@ -278,19 +284,27 @@ describe('Exchange transactions', () => {
 
         it('should fill the order if maker and taker have been whitelisted', async () => {
             const isApproved = true;
-            await whitelist.updateWhitelistStatus.sendTransactionAsync(makerAddress, isApproved, { from: owner });
-            await whitelist.updateWhitelistStatus.sendTransactionAsync(takerAddress, isApproved, { from: owner });
+            await web3Wrapper.awaitTransactionSuccessAsync(
+                await whitelist.updateWhitelistStatus.sendTransactionAsync(makerAddress, isApproved, { from: owner }),
+            );
+
+            await web3Wrapper.awaitTransactionSuccessAsync(
+                await whitelist.updateWhitelistStatus.sendTransactionAsync(takerAddress, isApproved, { from: owner }),
+            );
 
             const orderStruct = orderUtils.getOrderStruct(signedOrder);
             const takerAssetFillAmount = signedOrder.takerAssetAmount;
             const salt = generatePseudoRandomSalt();
-            await whitelist.fillOrderIfWhitelisted.sendTransactionAsync(
-                orderStruct,
-                takerAssetFillAmount,
-                salt,
-                signedOrder.signature,
-                { from: takerAddress },
+            await web3Wrapper.awaitTransactionSuccessAsync(
+                await whitelist.fillOrderIfWhitelisted.sendTransactionAsync(
+                    orderStruct,
+                    takerAssetFillAmount,
+                    salt,
+                    signedOrder.signature,
+                    { from: takerAddress },
+                ),
             );
+
             const newBalances = await erc20Wrapper.getBalancesAsync();
 
             const makerAssetFillAmount = signedOrder.makerAssetAmount;

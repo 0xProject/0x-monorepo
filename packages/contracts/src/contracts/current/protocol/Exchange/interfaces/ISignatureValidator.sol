@@ -31,10 +31,10 @@ contract ISignatureValidator {
     )
         external;
     
-    /// @dev Approves a Validator contract to verify signatures on signer's behalf.
+    /// @dev Approves/unnapproves a Validator contract to verify signatures on signer's behalf.
     /// @param validator Address of Validator contract.
     /// @param approval Approval or disapproval of  Validator contract.
-    function approveSignatureValidator(
+    function setSignatureValidatorApproval(
         address validator,
         bool approval
     )
