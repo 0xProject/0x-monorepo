@@ -335,18 +335,19 @@ export class Wallet extends React.Component<WalletProps, WalletState> {
     private _renderEthRows(): React.ReactNode {
         const icon = <img style={{ width: ICON_DIMENSION, height: ICON_DIMENSION }} src={ETHER_ICON_PATH} />;
         const primaryText = this._renderAmount(
-            !_.isUndefined(this.props.userEtherBalanceInWei),
             this.props.userEtherBalanceInWei || new BigNumber(0),
             constants.DECIMAL_PLACES_ETH,
             constants.ETHER_SYMBOL,
+            _.isUndefined(this.props.userEtherBalanceInWei),
         );
         const etherToken = this._getEthToken();
-        const etherPrice = this.state.trackedTokenStateByAddress[etherToken.address].price;
+        const etherTokenState = this.state.trackedTokenStateByAddress[etherToken.address];
+        const etherPrice = etherTokenState.price;
         const secondaryText = this._renderValue(
-            !_.isUndefined(this.props.userEtherBalanceInWei) && !_.isUndefined(etherPrice),
             this.props.userEtherBalanceInWei || new BigNumber(0),
             constants.DECIMAL_PLACES_ETH,
             etherPrice,
+            _.isUndefined(this.props.userEtherBalanceInWei) || !etherTokenState.isLoaded,
         );
         const accessoryItemConfig = {
             wrappedEtherDirection: Side.Deposit,
@@ -373,12 +374,12 @@ export class Wallet extends React.Component<WalletProps, WalletState> {
         const icon = <TokenIcon token={token} diameter={ICON_DIMENSION} link={tokenLink} />;
         const isWeth = token.symbol === constants.ETHER_TOKEN_SYMBOL;
         const wrappedEtherDirection = isWeth ? Side.Receive : undefined;
-        const primaryText = this._renderAmount(tokenState.isLoaded, tokenState.balance, token.decimals, token.symbol);
+        const primaryText = this._renderAmount(tokenState.balance, token.decimals, token.symbol, !tokenState.isLoaded);
         const secondaryText = this._renderValue(
-            tokenState.isLoaded,
             tokenState.balance,
             token.decimals,
             tokenState.price,
+            !tokenState.isLoaded,
         );
         const accessoryItemConfig: AccessoryItemConfig = {
             wrappedEtherDirection,
@@ -476,19 +477,29 @@ export class Wallet extends React.Component<WalletProps, WalletState> {
             />
         );
     }
-    private _renderAmount(isLoaded: boolean, amount: BigNumber, decimals: number, symbol: string): React.ReactNode {
+    private _renderAmount(
+        amount: BigNumber,
+        decimals: number,
+        symbol: string,
+        isLoading: boolean = false,
+    ): React.ReactNode {
         const unitAmount = Web3Wrapper.toUnitAmount(amount, decimals);
         const formattedAmount = unitAmount.toPrecision(TOKEN_AMOUNT_DISPLAY_PRECISION);
         const result = `${formattedAmount} ${symbol}`;
         return (
-            <PlaceHolder hideChildren={!isLoaded}>
+            <PlaceHolder hideChildren={isLoading}>
                 <div style={styles.amountLabel}>{result}</div>
             </PlaceHolder>
         );
     }
-    private _renderValue(isLoaded: boolean, amount: BigNumber, decimals: number, price?: BigNumber): React.ReactNode {
+    private _renderValue(
+        amount: BigNumber,
+        decimals: number,
+        price?: BigNumber,
+        isLoading: boolean = false,
+    ): React.ReactNode {
         let result;
-        if (isLoaded) {
+        if (!isLoading) {
             if (_.isUndefined(price)) {
                 result = '--';
             } else {
@@ -501,7 +512,7 @@ export class Wallet extends React.Component<WalletProps, WalletState> {
             result = '$0.00';
         }
         return (
-            <PlaceHolder hideChildren={!isLoaded}>
+            <PlaceHolder hideChildren={isLoading}>
                 <div style={styles.valueLabel}>{result}</div>
             </PlaceHolder>
         );
