@@ -66,8 +66,14 @@ describe('AssetProxyOwner', () => {
             SECONDS_TIME_LOCKED,
         );
         multiSigWrapper = new MultiSigWrapper(multiSig, provider);
-        await erc20Proxy.transferOwnership.sendTransactionAsync(multiSig.address, { from: initialOwner });
-        await erc721Proxy.transferOwnership.sendTransactionAsync(multiSig.address, { from: initialOwner });
+        await web3Wrapper.awaitTransactionSuccessAsync(
+            await erc20Proxy.transferOwnership.sendTransactionAsync(multiSig.address, { from: initialOwner }),
+            constants.AWAIT_TRANSACTION_MINED_MS,
+        );
+        await web3Wrapper.awaitTransactionSuccessAsync(
+            await erc721Proxy.transferOwnership.sendTransactionAsync(multiSig.address, { from: initialOwner }),
+            constants.AWAIT_TRANSACTION_MINED_MS,
+        );
     });
     beforeEach(async () => {
         await blockchainLifecycle.startAsync();
