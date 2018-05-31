@@ -3,8 +3,8 @@ import { BigNumber } from '@0xproject/utils';
 import BN = require('bn.js');
 import ethUtil = require('ethereumjs-util');
 
-const ERC20_PROXY_METADATA_BYTE_LENGTH = 20;
-const ERC721_PROXY_METADATA_BYTE_LENGTH = 52;
+const ERC20_PROXY_METADATA_BYTE_LENGTH = 21;
+const ERC721_PROXY_METADATA_BYTE_LENGTH = 53;
 
 export const assetProxyUtils = {
     encodeAssetProxyId(assetProxyId: AssetProxyId): Buffer {
@@ -65,7 +65,8 @@ export const assetProxyUtils = {
                 }), but got ${assetProxyId}`,
             );
         }
-        const encodedTokenAddress = encodedProxyMetadata.slice(0, ERC20_PROXY_METADATA_BYTE_LENGTH);
+        const addressOffset = ERC20_PROXY_METADATA_BYTE_LENGTH - 1;
+        const encodedTokenAddress = encodedProxyMetadata.slice(0, addressOffset);
         const tokenAddress = assetProxyUtils.decodeAddress(encodedTokenAddress);
         const erc20ProxyData = {
             assetProxyId,
@@ -99,10 +100,11 @@ export const assetProxyUtils = {
                 }), but got ${assetProxyId}`,
             );
         }
-        const addressOffset = 20;
+        const addressOffset = ERC20_PROXY_METADATA_BYTE_LENGTH - 1;
         const encodedTokenAddress = encodedProxyMetadata.slice(0, addressOffset);
         const tokenAddress = assetProxyUtils.decodeAddress(encodedTokenAddress);
-        const encodedTokenId = encodedProxyMetadata.slice(addressOffset, ERC721_PROXY_METADATA_BYTE_LENGTH);
+        const tokenIdOffset = ERC721_PROXY_METADATA_BYTE_LENGTH - 1;
+        const encodedTokenId = encodedProxyMetadata.slice(addressOffset, tokenIdOffset);
         const tokenId = assetProxyUtils.decodeUint256(encodedTokenId);
         const erc721ProxyData = {
             assetProxyId,
