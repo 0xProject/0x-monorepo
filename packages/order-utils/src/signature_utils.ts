@@ -34,9 +34,10 @@ export async function isValidSignatureAsync(
         case SignatureType.Invalid:
             return false;
 
-        // Question: Does it make sense to handle this?
         case SignatureType.Caller:
-            return true;
+            // HACK: We currently do not "validate" the caller signature type.
+            // It can only be validated during Exchange contract execution.
+            throw new Error('Caller signature type cannot be validated off-chain');
 
         // TODO: Rename this type to `EthSign` b/c multiple of the signature
         // types use ECRecover...
