@@ -16,7 +16,7 @@ export class OrderFactory {
     }
     public newSignedOrder(
         customOrderParams: Partial<Order> = {},
-        signatureType: SignatureType = SignatureType.Ecrecover,
+        signatureType: SignatureType = SignatureType.EthSign,
     ): SignedOrder {
         const randomExpiration = new BigNumber(Math.floor((Date.now() + Math.random() * 100000000000) / 1000));
         const order = ({
