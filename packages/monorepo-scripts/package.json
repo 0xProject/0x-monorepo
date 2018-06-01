@@ -16,6 +16,7 @@
         "find_unused_deps": "run-s build script:find_unused_deps",
         "remove_tags": "run-s build script:remove_tags",
         "script:deps_versions": "node ./lib/deps_versions.js",
+        "script:prepublish_checks": "node ./lib/prepublish_checks.js",
         "script:publish": "IS_DRY_RUN=true node ./lib/publish.js",
         "script:find_unused_deps": "node ./lib/find_unused_dependencies.js",
         "script:remove_tags": "node ./lib/remove_tags.js"
