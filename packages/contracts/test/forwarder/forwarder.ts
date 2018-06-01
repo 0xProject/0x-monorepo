@@ -301,7 +301,7 @@ describe(ContractName.Forwarder, () => {
             expect(takerBalanceAfter).to.be.bignumber.eq(takerBalanceBefore.plus(assetAmount));
             expect(afterEthBalance).to.be.bignumber.eq(expectedEthBalanceAfterGasCosts);
         });
-        it('should buy the exact amount of assets and with fee abstraction', async () => {
+        it('should buy the exact amount of assets with fee abstraction', async () => {
             const assetAmount = signedOrder.makerAssetAmount.div(2);
             const initEthBalance = await web3Wrapper.getBalanceInWeiAsync(takerAddress);
             const balancesBefore = await erc20Wrapper.getBalancesAsync();
