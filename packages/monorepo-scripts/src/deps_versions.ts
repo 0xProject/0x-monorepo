@@ -5,7 +5,7 @@ import * as fs from 'fs';
 import { sync as globSync } from 'glob';
 import * as _ from 'lodash';
 
-import { utils } from './utils';
+import { utils } from './utils/utils';
 
 interface Dependencies {
     [depName: string]: string;
