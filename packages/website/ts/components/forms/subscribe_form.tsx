@@ -58,8 +58,8 @@ export class SubscribeForm extends React.Component<SubscribeFormProps, Subscribe
     }
     private async _handleSubscribeClickAsync(): Promise<void> {
         this._setStatus(SubscribeFormStatus.Loading);
-        const success = await backendClient.subscribeToNewsletterAsync(this.state.emailText);
-        const status = success ? SubscribeFormStatus.Success : SubscribeFormStatus.Error;
+        const isSuccess = await backendClient.subscribeToNewsletterAsync(this.state.emailText);
+        const status = isSuccess ? SubscribeFormStatus.Success : SubscribeFormStatus.Error;
         this._setStatus(status);
     }
     private _setStatus(status: SubscribeFormStatus): void {

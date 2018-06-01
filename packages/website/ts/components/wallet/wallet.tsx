@@ -30,6 +30,8 @@ import { TokenIcon } from 'ts/components/ui/token_icon';
 import { WalletDisconnectedItem } from 'ts/components/wallet/wallet_disconnected_item';
 import { WrapEtherItem } from 'ts/components/wallet/wrap_ether_item';
 import { Dispatcher } from 'ts/redux/dispatcher';
+import { colors } from 'ts/style/colors';
+import { zIndex } from 'ts/style/z_index';
 import {
     BalanceErrs,
     BlockchainErrs,
@@ -44,9 +46,7 @@ import {
     WebsitePaths,
 } from 'ts/types';
 import { backendClient } from 'ts/utils/backend_client';
-import { colors } from 'ts/utils/colors';
 import { constants } from 'ts/utils/constants';
-import { zIndex } from 'ts/utils/style';
 import { utils } from 'ts/utils/utils';
 import { styles as walletItemStyles } from 'ts/utils/wallet_item_styles';
 
