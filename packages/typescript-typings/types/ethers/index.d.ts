@@ -1,5 +1,5 @@
 declare module 'ethers' {
-    import { TxData } from '@0xproject/types';
+    import { TxData } from 'ethereum-types';
 
     export interface TransactionDescription {
         name: string;

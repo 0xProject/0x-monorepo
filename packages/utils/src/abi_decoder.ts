@@ -8,7 +8,7 @@ import {
     LogWithDecodedArgs,
     RawLog,
     SolidityTypes,
-} from '@0xproject/types';
+} from 'ethereum-types';
 import * as ethers from 'ethers';
 import * as _ from 'lodash';
 
@@ -22,7 +22,7 @@ export class AbiDecoder {
         _.forEach(abiArrays, this.addABI.bind(this));
     }
     // This method can only decode logs from the 0x & ERC20 smart contracts
-    public tryToDecodeLogOrNoop<ArgsType>(log: LogEntry): LogWithDecodedArgs<ArgsType> | RawLog {
+    public tryToDecodeLogOrNoop<ArgsType extends DecodedLogArgs>(log: LogEntry): LogWithDecodedArgs<ArgsType> | RawLog {
         const methodId = log.topics[0];
         const event = this._methodIds[methodId];
         if (_.isUndefined(event)) {

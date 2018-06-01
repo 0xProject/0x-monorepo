@@ -1,6 +1,6 @@
 import { Order, SignedOrder, ZeroEx } from '0x.js';
-import { Provider } from '@0xproject/types';
 import { BigNumber, logUtils } from '@0xproject/utils';
+import { Provider } from 'ethereum-types';
 import * as express from 'express';
 import * as _ from 'lodash';
 import * as Web3 from 'web3';

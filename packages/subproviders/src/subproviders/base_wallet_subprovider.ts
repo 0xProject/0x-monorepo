@@ -1,6 +1,6 @@
 import { assert } from '@0xproject/assert';
-import { JSONRPCRequestPayload, JSONRPCResponsePayload } from '@0xproject/types';
 import { addressUtils } from '@0xproject/utils';
+import { JSONRPCRequestPayload, JSONRPCResponsePayload } from 'ethereum-types';
 import * as _ from 'lodash';
 
 import { Callback, ErrorCallback, PartialTxParams, ResponseWithTxParams, WalletSubproviderErrors } from '../types';

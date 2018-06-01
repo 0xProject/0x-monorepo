@@ -1,6 +1,6 @@
-import { Provider, TxData } from '@0xproject/types';
 import { BigNumber, NULL_BYTES } from '@0xproject/utils';
 import { Web3Wrapper } from '@0xproject/web3-wrapper';
+import { Provider, TxData } from 'ethereum-types';
 import * as _ from 'lodash';
 
 import { ArtifactWriter } from '../artifact_writer';

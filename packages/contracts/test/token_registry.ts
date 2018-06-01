@@ -35,7 +35,7 @@ describe('TokenRegistry', () => {
         owner = accounts[0];
         notOwner = accounts[1];
         tokenReg = await TokenRegistryContract.deployFrom0xArtifactAsync(artifacts.TokenRegistry, provider, txDefaults);
-        tokenRegWrapper = new TokenRegWrapper(tokenReg);
+        tokenRegWrapper = new TokenRegWrapper(tokenReg, provider);
     });
     beforeEach(async () => {
         await blockchainLifecycle.startAsync();

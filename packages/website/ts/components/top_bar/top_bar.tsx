@@ -261,7 +261,7 @@ export class TopBar extends React.Component<TopBarProps, TopBarState> {
                             </div>
                         </div>
                     )}
-                    {this.props.blockchainIsLoaded && (
+                    {this._isViewingPortal() && (
                         <div className="sm-hide xs-hide col col-5" style={{ paddingTop: 8, marginRight: 36 }}>
                             <ProviderDisplay
                                 dispatcher={this.props.dispatcher}
@@ -271,6 +271,7 @@ export class TopBar extends React.Component<TopBarProps, TopBarState> {
                                 providerType={this.props.providerType}
                                 onToggleLedgerDialog={this.props.onToggleLedgerDialog}
                                 blockchain={this.props.blockchain}
+                                blockchainIsLoaded={this.props.blockchainIsLoaded}
                             />
                         </div>
                     )}

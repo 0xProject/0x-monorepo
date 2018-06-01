@@ -27,9 +27,9 @@
     },
     "homepage": "https://github.com/0xProject/0x-monorepo/packages/abi-gen/README.md",
     "dependencies": {
-        "@0xproject/types": "^0.7.0",
         "@0xproject/typescript-typings": "^0.3.2",
         "@0xproject/utils": "^0.6.2",
+        "ethereum-types": "^0.0.1",
         "chalk": "^2.3.0",
         "glob": "^7.1.2",
         "handlebars": "^4.0.11",

@@ -33,7 +33,7 @@ interface EthWrappersProps {
     dispatcher: Dispatcher;
     tokenByAddress: TokenByAddress;
     userAddress: string;
-    userEtherBalanceInWei: BigNumber;
+    userEtherBalanceInWei?: BigNumber;
     lastForceTokenStateRefetch: number;
 }
 

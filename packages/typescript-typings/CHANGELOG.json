@@ -1,17 +1,17 @@
 [
     {
-        "version": "0.5.0",
-        "changes": [
-            {
-                "note": "Add types for `react-popper`, remove types for `react-joyride`"
-            }
-        ]
-    },
-    {
         "version": "0.4.0",
         "changes": [
             {
                 "note": "Add types for `react-joyride`"
+            },
+            {
+                "note": "Add types for `react-popper`, remove types for `react-joyride`"
+            },
+            {
+                "note":
+                    "Remove types for blockies, bn.js, compare-versions, ethereumjs-abi, ethereumjs-tx, find-versions, hdkey, is-mobile, solidity-parser-antlr, xml-js as they were moved to DefinitelyTyped",
+                "pr": 641
             }
         ]
     },

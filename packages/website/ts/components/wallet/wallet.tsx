@@ -7,6 +7,7 @@ import {
 import { BigNumber } from '@0xproject/utils';
 import { Web3Wrapper } from '@0xproject/web3-wrapper';
 import * as _ from 'lodash';
+import CircularProgress from 'material-ui/CircularProgress';
 import FlatButton from 'material-ui/FlatButton';
 import FloatingActionButton from 'material-ui/FloatingActionButton';
 import { ListItem } from 'material-ui/List';
@@ -23,6 +24,7 @@ import firstBy = require('thenby');
 
 import { Blockchain } from 'ts/blockchain';
 import { AllowanceToggle } from 'ts/components/inputs/allowance_toggle';
+import { Container } from 'ts/components/ui/container';
 import { IconButton } from 'ts/components/ui/icon_button';
 import { Identicon } from 'ts/components/ui/identicon';
 import { Island } from 'ts/components/ui/island';
@@ -59,7 +61,7 @@ export interface WalletProps {
     dispatcher: Dispatcher;
     tokenByAddress: TokenByAddress;
     trackedTokens: Token[];
-    userEtherBalanceInWei: BigNumber;
+    userEtherBalanceInWei?: BigNumber;
     lastForceTokenStateRefetch: number;
     injectedProviderName: string;
     providerType: ProviderType;
@@ -92,9 +94,6 @@ const styles: Styles = {
         zIndex: zIndex.aboveOverlay,
         position: 'relative',
     },
-    headerItemInnerDiv: {
-        paddingLeft: 65,
-    },
     footerItemInnerDiv: {
         paddingLeft: 24,
         borderTopColor: colors.walletBorder,
@@ -108,6 +107,7 @@ const styles: Styles = {
     },
     tokenItem: {
         backgroundColor: colors.walletDefaultItemBackground,
+        minHeight: 85,
     },
     amountLabel: {
         fontWeight: 'bold',
@@ -129,10 +129,13 @@ const styles: Styles = {
         color: colors.mediumBlue,
         fontWeight: 'bold',
     },
+    loadingBody: {
+        height: 381,
+    },
 };
 
 const ETHER_ICON_PATH = '/images/ether.png';
-const ICON_DIMENSION = 24;
+const ICON_DIMENSION = 28;
 const TOKEN_AMOUNT_DISPLAY_PRECISION = 3;
 const BODY_ITEM_KEY = 'BODY';
 const HEADER_ITEM_KEY = 'HEADER';
@@ -191,26 +194,40 @@ export class Wallet extends React.Component<WalletProps, WalletState> {
         }
     }
     public render(): React.ReactNode {
-        const isReadyToRender = this.props.blockchainIsLoaded && this.props.blockchainErr === BlockchainErrs.NoError;
-        const isAddressAvailable = !_.isEmpty(this.props.userAddress);
+        const isBlockchainLoaded = this.props.blockchainIsLoaded && this.props.blockchainErr === BlockchainErrs.NoError;
         return (
             <Island className="flex flex-column wallet" style={styles.root}>
-                {isReadyToRender && isAddressAvailable
-                    ? _.concat(this._renderConnectedHeaderRows(), this._renderBody(), this._renderFooterRows())
-                    : _.concat(this._renderDisconnectedHeaderRows(), this._renderDisconnectedRows())}
+                {isBlockchainLoaded ? this._renderLoadedRows() : this._renderLoadingRows()}
             </Island>
+        );
+    }
+    private _renderLoadedRows(): React.ReactNode {
+        const isAddressAvailable = !_.isEmpty(this.props.userAddress);
+        return isAddressAvailable
+            ? _.concat(this._renderConnectedHeaderRows(), this._renderBody(), this._renderFooterRows())
+            : _.concat(this._renderDisconnectedHeaderRows(), this._renderDisconnectedRows());
+    }
+    private _renderLoadingRows(): React.ReactNode {
+        return _.concat(this._renderDisconnectedHeaderRows(), this._renderLoadingBodyRows());
+    }
+    private _renderLoadingBodyRows(): React.ReactElement<{}> {
+        return (
+            <div key={BODY_ITEM_KEY} className="flex items-center" style={styles.loadingBody}>
+                <div className="mx-auto">
+                    <CircularProgress size={40} thickness={5} />
+                </div>
+            </div>
         );
     }
     private _renderDisconnectedHeaderRows(): React.ReactElement<{}> {
         const userAddress = this.props.userAddress;
         const primaryText = 'wallet';
         return (
-            <ListItem
+            <StandardIconRow
                 key={HEADER_ITEM_KEY}
-                primaryText={primaryText.toUpperCase()}
-                leftIcon={<ActionAccountBalanceWallet color={colors.mediumBlue} />}
-                style={styles.paddedItem}
-                innerDivStyle={styles.headerItemInnerDiv}
+                icon={<ActionAccountBalanceWallet color={colors.mediumBlue} />}
+                main={primaryText.toUpperCase()}
+                style={styles.borderedItem}
             />
         );
     }
@@ -229,11 +246,10 @@ export class Wallet extends React.Component<WalletProps, WalletState> {
         const primaryText = utils.getAddressBeginAndEnd(userAddress);
         return (
             <Link key={HEADER_ITEM_KEY} to={ACCOUNT_PATH} style={{ textDecoration: 'none' }}>
-                <ListItem
-                    primaryText={primaryText}
-                    leftIcon={<Identicon address={userAddress} diameter={ICON_DIMENSION} />}
-                    style={{ ...styles.paddedItem, ...styles.borderedItem }}
-                    innerDivStyle={styles.headerItemInnerDiv}
+                <StandardIconRow
+                    icon={<Identicon address={userAddress} diameter={ICON_DIMENSION} />}
+                    main={primaryText}
+                    style={styles.borderedItem}
                 />
             </Link>
         );
@@ -320,26 +336,23 @@ export class Wallet extends React.Component<WalletProps, WalletState> {
     private _renderEthRows(): React.ReactNode {
         const icon = <img style={{ width: ICON_DIMENSION, height: ICON_DIMENSION }} src={ETHER_ICON_PATH} />;
         const primaryText = this._renderAmount(
-            this.props.userEtherBalanceInWei,
+            this.props.userEtherBalanceInWei || new BigNumber(0),
             constants.DECIMAL_PLACES_ETH,
             constants.ETHER_SYMBOL,
+            _.isUndefined(this.props.userEtherBalanceInWei),
         );
         const etherToken = this._getEthToken();
-        const etherPrice = this.state.trackedTokenStateByAddress[etherToken.address].price;
+        const etherTokenState = this.state.trackedTokenStateByAddress[etherToken.address];
+        const etherPrice = etherTokenState.price;
         const secondaryText = this._renderValue(
-            this.props.userEtherBalanceInWei,
+            this.props.userEtherBalanceInWei || new BigNumber(0),
             constants.DECIMAL_PLACES_ETH,
             etherPrice,
+            _.isUndefined(this.props.userEtherBalanceInWei) || !etherTokenState.isLoaded,
         );
         const accessoryItemConfig = {
             wrappedEtherDirection: Side.Deposit,
         };
-        const isInWrappedEtherState =
-            !_.isUndefined(this.state.wrappedEtherDirection) &&
-            this.state.wrappedEtherDirection === accessoryItemConfig.wrappedEtherDirection;
-        const style = isInWrappedEtherState
-            ? { ...walletItemStyles.focusedItem, ...styles.paddedItem }
-            : { ...styles.tokenItem, ...styles.borderedItem, ...styles.paddedItem };
         const key = ETHER_ITEM_KEY;
         return this._renderBalanceRow(key, icon, primaryText, secondaryText, accessoryItemConfig, 'eth-row');
     }
@@ -360,10 +373,15 @@ export class Wallet extends React.Component<WalletProps, WalletState> {
             EtherscanLinkSuffixes.Address,
         );
         const icon = <TokenIcon token={token} diameter={ICON_DIMENSION} link={tokenLink} />;
-        const primaryText = this._renderAmount(tokenState.balance, token.decimals, token.symbol);
-        const secondaryText = this._renderValue(tokenState.balance, token.decimals, tokenState.price);
         const isWeth = token.symbol === constants.ETHER_TOKEN_SYMBOL;
         const wrappedEtherDirection = isWeth ? Side.Receive : undefined;
+        const primaryText = this._renderAmount(tokenState.balance, token.decimals, token.symbol, !tokenState.isLoaded);
+        const secondaryText = this._renderValue(
+            tokenState.balance,
+            token.decimals,
+            tokenState.price,
+            !tokenState.isLoaded,
+        );
         const accessoryItemConfig: AccessoryItemConfig = {
             wrappedEtherDirection,
             allowanceToggleConfig: {
@@ -391,22 +409,24 @@ export class Wallet extends React.Component<WalletProps, WalletState> {
     ): React.ReactNode {
         const shouldShowWrapEtherItem =
             !_.isUndefined(this.state.wrappedEtherDirection) &&
-            this.state.wrappedEtherDirection === accessoryItemConfig.wrappedEtherDirection;
-        const style = shouldShowWrapEtherItem
-            ? { ...walletItemStyles.focusedItem, ...styles.paddedItem }
-            : { ...styles.tokenItem, ...styles.borderedItem, ...styles.paddedItem };
+            this.state.wrappedEtherDirection === accessoryItemConfig.wrappedEtherDirection &&
+            !_.isUndefined(this.props.userEtherBalanceInWei);
+        const additionalStyle = shouldShowWrapEtherItem ? walletItemStyles.focusedItem : styles.borderedItem;
+        const style = { ...styles.tokenItem, ...additionalStyle };
         const etherToken = this._getEthToken();
         return (
             <div key={key} className={`flex flex-column ${className || ''}`}>
-                <div className="flex items-center" style={style}>
-                    <div className="px2">{icon}</div>
-                    <div className="flex-none pr2 pt2 pb2">
-                        {primaryText}
-                        {secondaryText}
-                    </div>
-                    <div className="flex-auto" />
-                    <div>{this._renderAccessoryItems(accessoryItemConfig)}</div>
-                </div>
+                <StandardIconRow
+                    icon={icon}
+                    main={
+                        <div className="flex flex-column">
+                            {primaryText}
+                            <Container marginTop="3px">{secondaryText}</Container>
+                        </div>
+                    }
+                    accessory={this._renderAccessoryItems(accessoryItemConfig)}
+                    style={style}
+                />
                 {shouldShowWrapEtherItem && (
                     <WrapEtherItem
                         userAddress={this.props.userAddress}
@@ -458,21 +478,45 @@ export class Wallet extends React.Component<WalletProps, WalletState> {
             />
         );
     }
-    private _renderAmount(amount: BigNumber, decimals: number, symbol: string): React.ReactNode {
+    private _renderAmount(
+        amount: BigNumber,
+        decimals: number,
+        symbol: string,
+        isLoading: boolean = false,
+    ): React.ReactNode {
         const unitAmount = Web3Wrapper.toUnitAmount(amount, decimals);
         const formattedAmount = unitAmount.toPrecision(TOKEN_AMOUNT_DISPLAY_PRECISION);
         const result = `${formattedAmount} ${symbol}`;
-        return <div style={styles.amountLabel}>{result}</div>;
+        return (
+            <PlaceHolder hideChildren={isLoading}>
+                <div style={styles.amountLabel}>{result}</div>
+            </PlaceHolder>
+        );
     }
-    private _renderValue(amount: BigNumber, decimals: number, price?: BigNumber): React.ReactNode {
-        if (_.isUndefined(price)) {
-            return null;
+    private _renderValue(
+        amount: BigNumber,
+        decimals: number,
+        price?: BigNumber,
+        isLoading: boolean = false,
+    ): React.ReactNode {
+        let result;
+        if (!isLoading) {
+            if (_.isUndefined(price)) {
+                result = '--';
+            } else {
+                const unitAmount = Web3Wrapper.toUnitAmount(amount, decimals);
+                const value = unitAmount.mul(price);
+                const formattedAmount = value.toFixed(USD_DECIMAL_PLACES);
+                result = `$${formattedAmount}`;
+            }
+        } else {
+            result = '$0.00';
         }
-        const unitAmount = Web3Wrapper.toUnitAmount(amount, decimals);
-        const value = unitAmount.mul(price);
-        const formattedAmount = value.toFixed(USD_DECIMAL_PLACES);
-        const result = `$${formattedAmount}`;
-        return <div style={styles.valueLabel}>{result}</div>;
+        return (
+            <PlaceHolder hideChildren={isLoading}>
+                <div style={styles.valueLabel}>{result}</div>
+            </PlaceHolder>
+        );
     }
     private _renderWrappedEtherButton(wrappedEtherDirection: Side): React.ReactNode {
         const isWrappedEtherDirectionOpen = this.state.wrappedEtherDirection === wrappedEtherDirection;
@@ -589,4 +633,41 @@ export class Wallet extends React.Component<WalletProps, WalletState> {
     private _getEthToken(): Token {
         return utils.getEthToken(this.props.tokenByAddress);
     }
-} // tslint:disable:max-file-line-count
+}
+
+interface StandardIconRowProps {
+    icon: React.ReactNode;
+    main: React.ReactNode;
+    accessory?: React.ReactNode;
+    style?: React.CSSProperties;
+}
+const StandardIconRow = (props: StandardIconRowProps) => {
+    return (
+        <div className="flex items-center" style={props.style}>
+            <div className="p2">{props.icon}</div>
+            <div className="flex-none pr2 pt2 pb2">{props.main}</div>
+            <div className="flex-auto" />
+            <div>{props.accessory}</div>
+        </div>
+    );
+};
+interface PlaceHolderProps {
+    hideChildren: React.ReactNode;
+    children?: React.ReactNode;
+}
+const PlaceHolder = (props: PlaceHolderProps) => {
+    const rootBackgroundColor = props.hideChildren ? colors.lightGrey : 'transparent';
+    const rootStyle: React.CSSProperties = {
+        backgroundColor: rootBackgroundColor,
+        display: 'inline-block',
+        borderRadius: 2,
+    };
+    const childrenVisibility = props.hideChildren ? 'hidden' : 'visible';
+    const childrenStyle: React.CSSProperties = { visibility: childrenVisibility };
+    return (
+        <div style={rootStyle}>
+            <div style={childrenStyle}>{props.children}</div>
+        </div>
+    );
+};
+// tslint:disable:max-file-line-count

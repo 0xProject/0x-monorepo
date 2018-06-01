@@ -10,6 +10,7 @@ import { BlockchainErrDialog } from 'ts/components/dialogs/blockchain_err_dialog
 import { LedgerConfigDialog } from 'ts/components/dialogs/ledger_config_dialog';
 import { PortalDisclaimerDialog } from 'ts/components/dialogs/portal_disclaimer_dialog';
 import { EthWrappers } from 'ts/components/eth_wrappers';
+import { FillOrder } from 'ts/components/fill_order';
 import { AssetPicker } from 'ts/components/generate_order/asset_picker';
 import { BackButton } from 'ts/components/portal/back_button';
 import { Loading } from 'ts/components/portal/loading';
@@ -42,6 +43,7 @@ import {
 } from 'ts/types';
 import { configs } from 'ts/utils/configs';
 import { constants } from 'ts/utils/constants';
+import { orderParser } from 'ts/utils/order_parser';
 import { Translate } from 'ts/utils/translate';
 import { utils } from 'ts/utils/utils';
 
@@ -57,7 +59,7 @@ export interface PortalProps {
     providerType: ProviderType;
     screenWidth: ScreenWidths;
     tokenByAddress: TokenByAddress;
-    userEtherBalanceInWei: BigNumber;
+    userEtherBalanceInWei?: BigNumber;
     userAddress: string;
     shouldBlockchainErrDialogBeOpen: boolean;
     userSuppliedOrderCache: Order;
@@ -116,9 +118,11 @@ const styles: Styles = {
 
 export class Portal extends React.Component<PortalProps, PortalState> {
     private _blockchain: Blockchain;
+    private _sharedOrderIfExists: Order;
     private _throttledScreenWidthUpdate: () => void;
     constructor(props: PortalProps) {
         super(props);
+        this._sharedOrderIfExists = orderParser.parse(window.location.search);
         this._throttledScreenWidthUpdate = _.throttle(this._updateScreenWidth.bind(this), THROTTLE_TIMEOUT);
         const didAcceptPortalDisclaimer = localStorage.getItemIfExists(constants.LOCAL_STORAGE_KEY_ACCEPT_DISCLAIMER);
         const hasAcceptedDisclaimer =
@@ -336,9 +340,14 @@ export class Portal extends React.Component<PortalProps, PortalState> {
                 render: this._renderTradeHistory.bind(this),
             },
             {
-                pathName: `${WebsitePaths.Portal}/direct`,
-                headerText: 'Trade Direct',
-                render: this._renderTradeDirect.bind(this),
+                pathName: `${WebsitePaths.Portal}/generate`,
+                headerText: 'Generate Order',
+                render: this._renderGenerateOrderForm.bind(this),
+            },
+            {
+                pathName: `${WebsitePaths.Portal}/fill`,
+                headerText: 'Fill Order',
+                render: this._renderFillOrder.bind(this),
             },
         ];
         return (
@@ -386,12 +395,31 @@ export class Portal extends React.Component<PortalProps, PortalState> {
             />
         );
     }
-    private _renderTradeDirect(match: any, location: Location, history: History): React.ReactNode {
+    private _renderGenerateOrderForm(): React.ReactNode {
         return (
             <GenerateOrderForm
                 blockchain={this._blockchain}
                 hashData={this.props.hashData}
                 dispatcher={this.props.dispatcher}
+            />
+        );
+    }
+    private _renderFillOrder(): React.ReactNode {
+        const initialFillOrder = !_.isUndefined(this.props.userSuppliedOrderCache)
+            ? this.props.userSuppliedOrderCache
+            : this._sharedOrderIfExists;
+        return (
+            <FillOrder
+                blockchain={this._blockchain}
+                blockchainErr={this.props.blockchainErr}
+                initialOrder={initialFillOrder}
+                isOrderInUrl={!_.isUndefined(this._sharedOrderIfExists)}
+                orderFillAmount={this.props.orderFillAmount}
+                networkId={this.props.networkId}
+                userAddress={this.props.userAddress}
+                tokenByAddress={this.props.tokenByAddress}
+                dispatcher={this.props.dispatcher}
+                lastForceTokenStateRefetch={this.props.lastForceTokenStateRefetch}
             />
         );
     }

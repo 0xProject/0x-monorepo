@@ -1,5 +1,5 @@
-import { OpCode, StructLog } from '@0xproject/types';
 import * as chai from 'chai';
+import { OpCode, StructLog } from 'ethereum-types';
 import * as fs from 'fs';
 import * as _ from 'lodash';
 import 'mocha';

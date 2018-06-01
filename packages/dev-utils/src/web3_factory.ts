@@ -7,7 +7,7 @@ import ProviderEngine = require('web3-provider-engine');
 import RpcSubprovider = require('web3-provider-engine/subproviders/rpc');
 
 import { EmptyWalletSubprovider, FakeGasEstimateSubprovider, GanacheSubprovider } from '@0xproject/subproviders';
-import { Provider } from '@0xproject/types';
+import { Provider } from 'ethereum-types';
 import * as fs from 'fs';
 import * as _ from 'lodash';
 import * as process from 'process';

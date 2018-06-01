@@ -155,7 +155,7 @@ export class Dispatcher {
             type: ActionTypes.UpdateOrderECSignature,
         });
     }
-    public updateUserWeiBalance(balance: BigNumber): void {
+    public updateUserWeiBalance(balance?: BigNumber): void {
         this._dispatch({
             data: balance,
             type: ActionTypes.UpdateUserEtherBalance,

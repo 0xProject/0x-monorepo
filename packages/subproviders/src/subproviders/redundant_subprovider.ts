@@ -1,5 +1,5 @@
-import { JSONRPCRequestPayload } from '@0xproject/types';
 import { promisify } from '@0xproject/utils';
+import { JSONRPCRequestPayload } from 'ethereum-types';
 import * as _ from 'lodash';
 
 import { Callback } from '../types';

@@ -83,7 +83,10 @@ describe('EtherToken', () => {
 
         it('should convert ether tokens to ether with sufficient balance', async () => {
             const ethToDeposit = new BigNumber(Web3Wrapper.toWei(new BigNumber(1)));
-            await etherToken.deposit.sendTransactionAsync({ value: ethToDeposit });
+            await web3Wrapper.awaitTransactionSuccessAsync(
+                await etherToken.deposit.sendTransactionAsync({ value: ethToDeposit }),
+                constants.AWAIT_TRANSACTION_MINED_MS,
+            );
             const initEthTokenBalance = await etherToken.balanceOf.callAsync(account);
             const initEthBalance = await web3Wrapper.getBalanceInWeiAsync(account);
             const ethTokensToWithdraw = initEthTokenBalance;

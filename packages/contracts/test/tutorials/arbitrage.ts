@@ -1,6 +1,6 @@
 // import { ECSignature, SignedOrder, ZeroEx } from '0x.js';
 // import { BlockchainLifecycle, devConstants, web3Factory } from '@0xproject/dev-utils';
-// import { ExchangeContractErrs } from '@0xproject/types';
+// import { ExchangeContractErrs } from 'ethereum-types';
 // import { BigNumber } from '@0xproject/utils';
 // import { Web3Wrapper } from '@0xproject/web3-wrapper';
 // import * as chai from 'chai';

@@ -1,5 +1,6 @@
-import { DoneCallback, JSONRPCResponsePayload } from '@0xproject/types';
+import { DoneCallback } from '@0xproject/types';
 import * as chai from 'chai';
+import { JSONRPCResponsePayload } from 'ethereum-types';
 import * as _ from 'lodash';
 import 'make-promises-safe';
 import Web3 = require('web3');
