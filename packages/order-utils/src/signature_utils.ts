@@ -230,6 +230,13 @@ export async function ecSignOrderHashAsync(
     throw new Error(OrderError.InvalidSignature);
 }
 
+/**
+ * Adds the relevant prefix to the message being signed.
+ * @param message Message to sign
+ * @param messagePrefixType The type of message prefix to add. Different signers expect
+ *                          specific message prefixes.
+ * @return Prefixed message
+ */
 export function addSignedMessagePrefix(message: string, messagePrefixType: MessagePrefixType): string {
     switch (messagePrefixType) {
         case MessagePrefixType.None:
