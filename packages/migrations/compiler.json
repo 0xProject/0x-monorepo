@@ -11,7 +11,8 @@
         "MultiSigWalletWithTimeLock",
         "MultiSigWalletWithTimeLockExceptRemoveAuthorizedAddress",
         "TokenRegistry",
-        "ISigner"
+        "IWallet",
+        "IValidator"
     ],
     "compilerSettings": {
         "outputSelection": {

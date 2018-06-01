@@ -7,7 +7,8 @@ import * as _ from 'lodash';
 import { artifacts } from './artifacts';
 import { assert } from './assert';
 import { ExchangeContract } from './generated_contract_wrappers/exchange';
-import { ISignerContract } from './generated_contract_wrappers/i_signer';
+import { IWalletContract } from './generated_contract_wrappers/i_signer';
+import { IValidatorContract } from './generated_contract_wrappers/i_validator';
 import { MessagePrefixOpts, MessagePrefixType, OrderError } from './types';
 
 /**
@@ -51,12 +52,27 @@ export async function isValidSignatureAsync(
             throw new Error('Caller signature type cannot be validated off-chain');
 
         case SignatureType.Wallet: {
-            const signerContract = new ISignerContract(artifacts.ISigner.abi, signerAddress, provider);
+            const signerContract = new IWalletContract(artifacts.IWallet.abi, signerAddress, provider);
             const isValid = await signerContract.isValidSignature.callAsync(data, signature);
             return isValid;
         }
 
-        // TODO: Add SignatureType.Validator
+        case SignatureType.Validator: {
+            const validatorAddress = getValidatorAddressFromSignature(signature);
+            const exchangeContract = new ExchangeContract(artifacts.Exchange.abi, signerAddress, provider);
+            const isValidatorApproved = await exchangeContract.allowedValidators.callAsync(
+                signerAddress,
+                validatorAddress,
+            );
+            if (!isValidatorApproved) {
+                throw new Error(`Validator ${validatorAddress} was not pre-approved by ${signerAddress}.`);
+            }
+
+            const validatorSignature = getValidatorSignatureFromSignature(signature);
+            const validatorContract = new IValidatorContract(artifacts.IValidator.abi, signerAddress, provider);
+            const isValid = await validatorContract.isValidSignature.callAsync(data, signerAddress, validatorSignature);
+            return isValid;
+        }
 
         case SignatureType.PreSigned: {
             return isValidPresignedSignatureAsync(provider, data, signature, signerAddress);
@@ -217,6 +233,26 @@ function parseECSignature(signature: string): ECSignature {
     const ecSignature = parseSignatureHexAsVRS(vrsHex);
 
     return ecSignature;
+}
+
+function getValidatorSignatureFromSignature(signature: string): string {
+    const signatureTypeIndex = getSignatureTypeIndexIfExists(signature);
+    if (signatureTypeIndex !== SignatureType.Validator) {
+        throw new Error('Cannot get validator address from non-validator signature');
+    }
+    // tslint:disable-next-line:custom-no-magic-numbers
+    const validatorSignature = signature.slice(0, -22);
+    return validatorSignature;
+}
+
+function getValidatorAddressFromSignature(signature: string): string {
+    const signatureTypeIndex = getSignatureTypeIndexIfExists(signature);
+    if (signatureTypeIndex !== SignatureType.Validator) {
+        throw new Error('Cannot get validator address from non-validator signature');
+    }
+    // tslint:disable-next-line:custom-no-magic-numbers
+    const validatorAddress = signature.slice(-22, -2);
+    return `0x${validatorAddress}`;
 }
 
 function getSignatureTypeIndexIfExists(signature: string): number {
