@@ -25,6 +25,8 @@ export const constants = {
     LIB_BYTES_GTE_20_LENGTH_REQUIRED: 'Length must be greater than or equal to 20.',
     LIB_BYTES_GTE_32_LENGTH_REQUIRED: 'Length must be greater than or equal to 32.',
     LIB_BYTES_INDEX_OUT_OF_BOUNDS: 'Specified array index is out of bounds.',
+    ERC20_INSUFFICIENT_BALANCE: 'Insufficient balance to complete transfer.',
+    ERC20_INSUFFICIENT_ALLOWANCE: 'Insufficient allowance to complete transfer.',
     TESTRPC_NETWORK_ID: 50,
     AWAIT_TRANSACTION_MINED_MS: 100,
     MAX_ETHERTOKEN_WITHDRAW_GAS: 43000,

@@ -18,3 +18,15 @@ export function expectRevertOrAlwaysFailingTransaction<T>(p: Promise<T>): Promis
             );
         });
 }
+
+export function expectInsufficientFunds<T>(p: Promise<T>): PromiseLike<void> {
+    return expect(p)
+        .to.be.rejected()
+        .then(e => {
+            expect(e).to.satisfy(
+                (err: Error) =>
+                    _.includes(err.message, 'insufficient funds') ||
+                    _.includes(err.message, "sender doesn't have enough funds"),
+            );
+        });
+}
