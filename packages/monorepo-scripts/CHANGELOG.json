@@ -1,5 +1,14 @@
 [
     {
+        "version": "0.2.0",
+        "changes": [
+            {
+                "note": "Add `prepublish_checks` script",
+                "pr": 650
+            }
+        ]
+    },
+    {
         "timestamp": 1527008794,
         "version": "0.1.20",
         "changes": [
