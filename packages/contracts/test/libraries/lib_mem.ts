@@ -15,7 +15,7 @@ const toHex = (buf: Uint8Array): string => buf.reduce((a, v) => a + ('00' + v.to
 
 const fromHex = (str: string): Uint8Array => Uint8Array.from(Buffer.from(str.slice(2), 'hex'));
 
-describe.only('LibMem', () => {
+describe('LibMem', () => {
     let owner: string;
     let testLibMem: TestLibMemContract;
 

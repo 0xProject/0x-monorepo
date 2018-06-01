@@ -77,8 +77,13 @@ contract ERC721Proxy is
         );
 
         // Transfer token.
+        // Save gas by calling safeTransferFrom only when there is data present.
         // Either succeeds or throws.
-        ERC721Token(token).safeTransferFrom(from, to, tokenId, data);
+        if(data.length > 0) {
+            ERC721Token(token).safeTransferFrom(from, to, tokenId, data);
+        } else {
+            ERC721Token(token).transferFrom(from, to, tokenId);
+        }
     }
 
     /// @dev Gets the proxy id associated with the proxy address.

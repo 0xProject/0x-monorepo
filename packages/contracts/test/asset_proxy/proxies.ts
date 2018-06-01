@@ -280,7 +280,7 @@ describe('Asset Transfer Proxies', () => {
                 expect(newOwnerMakerAsset).to.be.bignumber.equal(takerAddress);
             });
 
-            it('should call onERC721Received when transferring to a smart contract', async () => {
+            it('should not call onERC721Received when transferring to a smart contract without receiver data', async () => {
                 // Construct metadata for ERC721 proxy
                 const encodedAssetData = assetProxyUtils.encodeERC721AssetData(erc721Token.address, erc721MakerTokenId);
                 // Verify pre-condition
@@ -296,23 +296,20 @@ describe('Asset Transfer Proxies', () => {
                     amount,
                     { from: exchangeAddress },
                 );
+
                 // Parse transaction logs
                 const tx = await zeroEx.awaitTransactionMinedAsync(txHash);
                 tx.logs = _.filter(tx.logs, log => log.address === erc721Receiver.address);
                 const logDecoder = new LogDecoder(constants.TESTRPC_NETWORK_ID);
                 tx.logs = _.map(tx.logs, log => logDecoder.decodeLogOrThrow(log));
-                // Validate log emitted  by erc721 receiver
-                expect(tx.logs.length).to.be.equal(1);
-                const tokenReceivedLog = tx.logs[0] as LogWithDecodedArgs<TokenReceivedContractEventArgs>;
-                expect(tokenReceivedLog.args.from).to.be.equal(makerAddress);
-                expect(tokenReceivedLog.args.tokenId).to.be.bignumber.equal(erc721MakerTokenId);
-                expect(tokenReceivedLog.args.data).to.be.equal(nullDataHex);
+                // Verify that no log was emitted by erc721 receiver
+                expect(tx.logs.length).to.be.equal(0);
                 // Verify transfer was successful
                 const newOwnerMakerAsset = await erc721Token.ownerOf.callAsync(erc721MakerTokenId);
                 expect(newOwnerMakerAsset).to.be.bignumber.equal(erc721Receiver.address);
             });
 
-            it('should call onERC721Received when transferring to a smart contract and receive extra data', async () => {
+            it('should call onERC721Received when transferring to a smart contract with receiver data', async () => {
                 // Construct metadata for ERC721 proxy
                 const data = ethUtil.bufferToHex(assetProxyUtils.encodeUint256(ZeroEx.generatePseudoRandomSalt()));
                 const encodedAssetData = assetProxyUtils.encodeERC721AssetData(
@@ -338,7 +335,7 @@ describe('Asset Transfer Proxies', () => {
                 tx.logs = _.filter(tx.logs, log => log.address === erc721Receiver.address);
                 const logDecoder = new LogDecoder(constants.TESTRPC_NETWORK_ID);
                 tx.logs = _.map(tx.logs, log => logDecoder.decodeLogOrThrow(log));
-                // Validate log emitted  by erc721 receiver
+                // Validate log emitted by erc721 receiver
                 expect(tx.logs.length).to.be.equal(1);
                 const tokenReceivedLog = tx.logs[0] as LogWithDecodedArgs<TokenReceivedContractEventArgs>;
                 expect(tokenReceivedLog.args.from).to.be.equal(makerAddress);
@@ -349,9 +346,14 @@ describe('Asset Transfer Proxies', () => {
                 expect(newOwnerMakerAsset).to.be.bignumber.equal(erc721Receiver.address);
             });
 
-            it('should throw if receiving contract does not have onERC721Received', async () => {
+            it('should throw if there is receiver data but contract does not have onERC721Received', async () => {
                 // Construct metadata for ERC721 proxy
-                const encodedAssetData = assetProxyUtils.encodeERC721AssetData(erc721Token.address, erc721MakerTokenId);
+                const data = ethUtil.bufferToHex(assetProxyUtils.encodeUint256(ZeroEx.generatePseudoRandomSalt()));
+                const encodedAssetData = assetProxyUtils.encodeERC721AssetData(
+                    erc721Token.address,
+                    erc721MakerTokenId,
+                    data,
+                );
                 // Verify pre-condition
                 const ownerMakerAsset = await erc721Token.ownerOf.callAsync(erc721MakerTokenId);
                 expect(ownerMakerAsset).to.be.bignumber.equal(makerAddress);
