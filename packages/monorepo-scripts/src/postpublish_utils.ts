@@ -7,7 +7,7 @@ import * as publishRelease from 'publish-release';
 import semverSort = require('semver-sort');
 
 import { constants } from './constants';
-import { utils } from './utils';
+import { utils } from './utils/utils';
 
 const publishReleaseAsync = promisify(publishRelease);
 const generatedDocsDirectoryName = 'generated_docs';

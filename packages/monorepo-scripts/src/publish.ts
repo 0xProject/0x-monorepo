@@ -13,14 +13,14 @@ import semverDiff = require('semver-diff');
 import semverSort = require('semver-sort');
 
 import { constants } from './constants';
-import { Changelog, Changes, PackageToVersionChange, SemVerIndex, UpdatedPackage } from './types';
-import { utils } from './utils';
+import { Changelog, PackageToVersionChange, SemVerIndex, VersionChangelog } from './types';
+import { changelogUtils } from './utils/changelog_utils';
+import { utils } from './utils/utils';
 
 const DOC_GEN_COMMAND = 'docs:json';
 const NPM_NAMESPACE = '@0xproject/';
 const IS_DRY_RUN = process.env.IS_DRY_RUN === 'true';
 const TODAYS_TIMESTAMP = moment().unix();
-const LERNA_EXECUTABLE = './node_modules/lerna/bin/lerna.js';
 const semverNameToIndex: { [semver: string]: number } = {
     patch: SemVerIndex.Patch,
     minor: SemVerIndex.Minor,
@@ -118,7 +118,7 @@ async function checkPublishRequiredSetupAsync(): Promise<boolean> {
     // check to see if logged into npm before publishing
     try {
         // HACK: for some reason on some setups, the `npm whoami` will not recognize a logged-in user
-        // unless run with `sudo` (i.e Fabio's NVM setup) but is fine for others (Jacob's N setup).
+        // unless run with `sudo` (i.e Fabio's NVM setup) but is fine for others (Jacob's NVM setup).
         await execAsync(`sudo npm whoami`);
     } catch (err) {
         utils.log('You must be logged into npm in the commandline to publish. Run `npm login` and try again.');
@@ -175,7 +175,7 @@ async function updateChangeLogsAsync(updatedPublicLernaPackages: LernaPackage[])
         const packageName = lernaPackage.package.name;
         const changelogJSONPath = path.join(lernaPackage.location, 'CHANGELOG.json');
         const changelogJSON = utils.getChangelogJSONOrCreateIfMissing(changelogJSONPath);
-        let changelogs: Changelog[];
+        let changelogs: Changelog;
         try {
             changelogs = JSON.parse(changelogJSON);
         } catch (err) {
@@ -185,11 +185,11 @@ async function updateChangeLogsAsync(updatedPublicLernaPackages: LernaPackage[])
         }
 
         const currentVersion = lernaPackage.package.version;
-        const shouldAddNewEntry = shouldAddNewChangelogEntry(currentVersion, changelogs);
+        const shouldAddNewEntry = changelogUtils.shouldAddNewChangelogEntry(currentVersion, changelogs);
         if (shouldAddNewEntry) {
             // Create a new entry for a patch version with generic changelog entry.
             const nextPatchVersion = utils.getNextPatchVersion(currentVersion);
-            const newChangelogEntry: Changelog = {
+            const newChangelogEntry: VersionChangelog = {
                 timestamp: TODAYS_TIMESTAMP,
                 version: nextPatchVersion,
                 changes: [
@@ -218,7 +218,7 @@ async function updateChangeLogsAsync(updatedPublicLernaPackages: LernaPackage[])
         await utils.prettifyAsync(changelogJSONPath, constants.monorepoRootPath);
         utils.log(`${packageName}: Updated CHANGELOG.json`);
         // Generate updated CHANGELOG.md
-        const changelogMd = generateChangelogMd(changelogs);
+        const changelogMd = changelogUtils.generateChangelogMd(changelogs);
         const changelogMdPath = path.join(lernaPackage.location, 'CHANGELOG.md');
         fs.writeFileSync(changelogMdPath, changelogMd);
         await utils.prettifyAsync(changelogMdPath, constants.monorepoRootPath);
@@ -231,7 +231,8 @@ async function updateChangeLogsAsync(updatedPublicLernaPackages: LernaPackage[])
 async function lernaPublishAsync(packageToVersionChange: { [name: string]: string }): Promise<void> {
     // HACK: Lerna publish does not provide a way to specify multiple package versions via
     // flags so instead we need to interact with their interactive prompt interface.
-    const child = spawn('lerna', ['publish', '--registry=https://registry.npmjs.org/'], {
+    const PACKAGE_REGISTRY = 'https://registry.npmjs.org/';
+    const child = spawn('lerna', ['publish', `--registry=${PACKAGE_REGISTRY}`], {
         cwd: constants.monorepoRootPath,
     });
     let shouldPrintOutput = false;
@@ -278,47 +279,4 @@ function updateVersionNumberIfNeeded(currentVersion: string, proposedNextVersion
         return utils.getNextPatchVersion(currentVersion);
     }
     return proposedNextVersion;
-}
-
-function shouldAddNewChangelogEntry(currentVersion: string, changelogs: Changelog[]): boolean {
-    if (_.isEmpty(changelogs)) {
-        return true;
-    }
-    const lastEntry = changelogs[0];
-    const isLastEntryCurrentVersion = lastEntry.version === currentVersion;
-    return isLastEntryCurrentVersion;
-}
-
-function generateChangelogMd(changelogs: Changelog[]): string {
-    let changelogMd = `<!--
-This file is auto-generated using the monorepo-scripts package. Don't edit directly.
-Edit the package's CHANGELOG.json file only.
--->
-
-CHANGELOG
-    `;
-
-    _.each(changelogs, changelog => {
-        if (_.isUndefined(changelog.timestamp)) {
-            throw new Error(
-                'All CHANGELOG.json entries must be updated to include a timestamp before generating their MD version',
-            );
-        }
-        const date = moment(`${changelog.timestamp}`, 'X').format('MMMM D, YYYY');
-        const title = `\n## v${changelog.version} - _${date}_\n\n`;
-        changelogMd += title;
-
-        let changes = '';
-        _.each(changelog.changes, change => {
-            let line = `    * ${change.note}`;
-            if (!_.isUndefined(change.pr)) {
-                line += ` (#${change.pr})`;
-            }
-            line += '\n';
-            changes += line;
-        });
-        changelogMd += `${changes}`;
-    });
-
-    return changelogMd;
 }
