@@ -17,27 +17,28 @@ export class ERC721Wrapper {
     private _contractOwnerAddress: string;
     private _web3Wrapper: Web3Wrapper;
     private _provider: Provider;
-    private _dummyTokenContracts?: DummyERC721TokenContract[];
+    private _dummyTokenContracts: DummyERC721TokenContract[];
     private _proxyContract?: ERC721ProxyContract;
     private _initialTokenIdsByOwner: ERC721TokenIdsByOwner = {};
     constructor(provider: Provider, tokenOwnerAddresses: string[], contractOwnerAddress: string) {
         this._web3Wrapper = new Web3Wrapper(provider);
         this._provider = provider;
+        this._dummyTokenContracts = [];
         this._tokenOwnerAddresses = tokenOwnerAddresses;
         this._contractOwnerAddress = contractOwnerAddress;
     }
     public async deployDummyTokensAsync(): Promise<DummyERC721TokenContract[]> {
-        this._dummyTokenContracts = await Promise.all(
-            _.times(constants.NUM_DUMMY_ERC721_TO_DEPLOY, async () =>
-                DummyERC721TokenContract.deployFrom0xArtifactAsync(
+        for (let i = 0; i < constants.NUM_DUMMY_ERC721_TO_DEPLOY; i++) {
+            this._dummyTokenContracts.push(
+                await DummyERC721TokenContract.deployFrom0xArtifactAsync(
                     artifacts.DummyERC721Token,
                     this._provider,
                     txDefaults,
                     constants.DUMMY_TOKEN_NAME,
                     constants.DUMMY_TOKEN_SYMBOL,
                 ),
-            ),
-        );
+            );
+        }
         return this._dummyTokenContracts;
     }
     public async deployProxyAsync(): Promise<ERC721ProxyContract> {
@@ -54,14 +55,15 @@ export class ERC721Wrapper {
         const setBalancePromises: Array<Promise<string>> = [];
         const setAllowancePromises: Array<Promise<string>> = [];
         this._initialTokenIdsByOwner = {};
-        _.forEach(this._dummyTokenContracts, dummyTokenContract => {
-            _.forEach(this._tokenOwnerAddresses, tokenOwnerAddress => {
-                _.forEach(_.range(constants.NUM_ERC721_TOKENS_TO_MINT), () => {
+        for (const dummyTokenContract of this._dummyTokenContracts) {
+            for (const tokenOwnerAddress of this._tokenOwnerAddresses) {
+                for (let i = 0; i < constants.NUM_ERC721_TOKENS_TO_MINT; i++) {
                     const tokenId = generatePseudoRandomSalt();
-                    setBalancePromises.push(
-                        dummyTokenContract.mint.sendTransactionAsync(tokenOwnerAddress, tokenId, {
+                    await this._web3Wrapper.awaitTransactionSuccessAsync(
+                        await dummyTokenContract.mint.sendTransactionAsync(tokenOwnerAddress, tokenId, {
                             from: this._contractOwnerAddress,
                         }),
+                        constants.AWAIT_TRANSACTION_MINED_MS,
                     );
                     if (_.isUndefined(this._initialTokenIdsByOwner[tokenOwnerAddress])) {
                         this._initialTokenIdsByOwner[tokenOwnerAddress] = {
@@ -72,41 +74,40 @@ export class ERC721Wrapper {
                         this._initialTokenIdsByOwner[tokenOwnerAddress][dummyTokenContract.address] = [];
                     }
                     this._initialTokenIdsByOwner[tokenOwnerAddress][dummyTokenContract.address].push(tokenId);
-                });
+                }
                 const shouldApprove = true;
-                setAllowancePromises.push(
-                    dummyTokenContract.setApprovalForAll.sendTransactionAsync(
+                await this._web3Wrapper.awaitTransactionSuccessAsync(
+                    await dummyTokenContract.setApprovalForAll.sendTransactionAsync(
                         (this._proxyContract as ERC721ProxyContract).address,
                         shouldApprove,
                         { from: tokenOwnerAddress },
                     ),
+                    constants.AWAIT_TRANSACTION_MINED_MS,
                 );
-            });
-        });
-        const txHashes = await Promise.all([...setBalancePromises, ...setAllowancePromises]);
-        await Promise.all(_.map(txHashes, async txHash => this._web3Wrapper.awaitTransactionSuccessAsync(txHash)));
+            }
+        }
     }
     public async getBalancesAsync(): Promise<ERC721TokenIdsByOwner> {
         this._validateDummyTokenContractsExistOrThrow();
         this._validateBalancesAndAllowancesSetOrThrow();
         const tokenIdsByOwner: ERC721TokenIdsByOwner = {};
+        const tokenOwnerAddresses: string[] = [];
         const tokenOwnerPromises: Array<Promise<string>> = [];
         const tokenInfo: Array<{ tokenId: BigNumber; tokenAddress: string }> = [];
-        _.forEach(this._dummyTokenContracts, dummyTokenContract => {
-            _.forEach(this._tokenOwnerAddresses, tokenOwnerAddress => {
+        for (const dummyTokenContract of this._dummyTokenContracts) {
+            for (const tokenOwnerAddress of this._tokenOwnerAddresses) {
                 const initialTokenOwnerIds = this._initialTokenIdsByOwner[tokenOwnerAddress][
                     dummyTokenContract.address
                 ];
-                _.forEach(initialTokenOwnerIds, tokenId => {
-                    tokenOwnerPromises.push(dummyTokenContract.ownerOf.callAsync(tokenId));
+                for (const tokenId of initialTokenOwnerIds) {
+                    tokenOwnerAddresses.push(await dummyTokenContract.ownerOf.callAsync(tokenId));
                     tokenInfo.push({
                         tokenId,
                         tokenAddress: dummyTokenContract.address,
                     });
-                });
-            });
-        });
-        const tokenOwnerAddresses = await Promise.all(tokenOwnerPromises);
+                }
+            }
+        }
         _.forEach(tokenOwnerAddresses, (tokenOwnerAddress, ownerIndex) => {
             const tokenAddress = tokenInfo[ownerIndex].tokenAddress;
             const tokenId = tokenInfo[ownerIndex].tokenId;

@@ -16,18 +16,19 @@ export class ERC20Wrapper {
     private _contractOwnerAddress: string;
     private _web3Wrapper: Web3Wrapper;
     private _provider: Provider;
-    private _dummyTokenContracts?: DummyERC20TokenContract[];
+    private _dummyTokenContracts: DummyERC20TokenContract[];
     private _proxyContract?: ERC20ProxyContract;
     constructor(provider: Provider, tokenOwnerAddresses: string[], contractOwnerAddress: string) {
+        this._dummyTokenContracts = [];
         this._web3Wrapper = new Web3Wrapper(provider);
         this._provider = provider;
         this._tokenOwnerAddresses = tokenOwnerAddresses;
         this._contractOwnerAddress = contractOwnerAddress;
     }
     public async deployDummyTokensAsync(): Promise<DummyERC20TokenContract[]> {
-        this._dummyTokenContracts = await Promise.all(
-            _.times(constants.NUM_DUMMY_ERC20_TO_DEPLOY, async () =>
-                DummyERC20TokenContract.deployFrom0xArtifactAsync(
+        for (let i = 0; i < constants.NUM_DUMMY_ERC20_TO_DEPLOY; i++) {
+            this._dummyTokenContracts.push(
+                await DummyERC20TokenContract.deployFrom0xArtifactAsync(
                     artifacts.DummyERC20Token,
                     this._provider,
                     txDefaults,
@@ -36,8 +37,8 @@ export class ERC20Wrapper {
                     constants.DUMMY_TOKEN_DECIMALS,
                     constants.DUMMY_TOKEN_TOTAL_SUPPLY,
                 ),
-            ),
-        );
+            );
+        }
         return this._dummyTokenContracts;
     }
     public async deployProxyAsync(): Promise<ERC20ProxyContract> {
@@ -53,42 +54,42 @@ export class ERC20Wrapper {
         this._validateProxyContractExistsOrThrow();
         const setBalancePromises: Array<Promise<string>> = [];
         const setAllowancePromises: Array<Promise<string>> = [];
-        _.forEach(this._dummyTokenContracts, dummyTokenContract => {
-            _.forEach(this._tokenOwnerAddresses, tokenOwnerAddress => {
-                setBalancePromises.push(
-                    dummyTokenContract.setBalance.sendTransactionAsync(
+        for (const dummyTokenContract of this._dummyTokenContracts) {
+            for (const tokenOwnerAddress of this._tokenOwnerAddresses) {
+                await this._web3Wrapper.awaitTransactionSuccessAsync(
+                    await dummyTokenContract.setBalance.sendTransactionAsync(
                         tokenOwnerAddress,
                         constants.INITIAL_ERC20_BALANCE,
                         { from: this._contractOwnerAddress },
                     ),
+                    constants.AWAIT_TRANSACTION_MINED_MS,
                 );
-                setAllowancePromises.push(
-                    dummyTokenContract.approve.sendTransactionAsync(
+                await this._web3Wrapper.awaitTransactionSuccessAsync(
+                    await dummyTokenContract.approve.sendTransactionAsync(
                         (this._proxyContract as ERC20ProxyContract).address,
                         constants.INITIAL_ERC20_ALLOWANCE,
                         { from: tokenOwnerAddress },
                     ),
+                    constants.AWAIT_TRANSACTION_MINED_MS,
                 );
-            });
-        });
-        const txHashes = await Promise.all([...setBalancePromises, ...setAllowancePromises]);
-        await Promise.all(_.map(txHashes, async txHash => this._web3Wrapper.awaitTransactionSuccessAsync(txHash)));
+            }
+        }
     }
     public async getBalancesAsync(): Promise<ERC20BalancesByOwner> {
         this._validateDummyTokenContractsExistOrThrow();
         const balancesByOwner: ERC20BalancesByOwner = {};
+        const balances: BigNumber[] = [];
         const balancePromises: Array<Promise<BigNumber>> = [];
         const balanceInfo: Array<{ tokenOwnerAddress: string; tokenAddress: string }> = [];
-        _.forEach(this._dummyTokenContracts, dummyTokenContract => {
-            _.forEach(this._tokenOwnerAddresses, tokenOwnerAddress => {
-                balancePromises.push(dummyTokenContract.balanceOf.callAsync(tokenOwnerAddress));
+        for (const dummyTokenContract of this._dummyTokenContracts) {
+            for (const tokenOwnerAddress of this._tokenOwnerAddresses) {
+                balances.push(await dummyTokenContract.balanceOf.callAsync(tokenOwnerAddress));
                 balanceInfo.push({
                     tokenOwnerAddress,
                     tokenAddress: dummyTokenContract.address,
                 });
-            });
-        });
-        const balances = await Promise.all(balancePromises);
+            }
+        }
         _.forEach(balances, (balance, balanceIndex) => {
             const tokenAddress = balanceInfo[balanceIndex].tokenAddress;
             const tokenOwnerAddress = balanceInfo[balanceIndex].tokenOwnerAddress;
