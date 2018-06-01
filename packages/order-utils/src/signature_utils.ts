@@ -1,6 +1,7 @@
 import { schemas } from '@0xproject/json-schemas';
-import { ECSignature, Provider, SignatureType, ValidatorSignature } from '@0xproject/types';
+import { ECSignature, SignatureType, ValidatorSignature } from '@0xproject/types';
 import { Web3Wrapper } from '@0xproject/web3-wrapper';
+import { Provider } from 'ethereum-types';
 import * as ethUtil from 'ethereumjs-util';
 import * as _ from 'lodash';
 

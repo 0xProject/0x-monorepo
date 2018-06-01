@@ -1,5 +1,6 @@
-import { ECSignature, Provider, SignedOrder } from '@0xproject/types';
+import { ECSignature, SignedOrder } from '@0xproject/types';
 import { BigNumber } from '@0xproject/utils';
+import { Provider } from 'ethereum-types';
 import * as ethUtil from 'ethereumjs-util';
 import * as _ from 'lodash';
 

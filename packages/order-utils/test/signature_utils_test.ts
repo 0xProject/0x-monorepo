@@ -1,7 +1,7 @@
 import { web3Factory } from '@0xproject/dev-utils';
-import { JSONRPCErrorCallback, JSONRPCRequestPayload } from '@0xproject/types';
 import { BigNumber } from '@0xproject/utils';
 import * as chai from 'chai';
+import { JSONRPCErrorCallback, JSONRPCRequestPayload } from 'ethereum-types';
 import * as _ from 'lodash';
 import 'make-promises-safe';
 import 'mocha';
