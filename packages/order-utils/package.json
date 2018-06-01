@@ -80,6 +80,7 @@
         "@0xproject/web3-wrapper": "^0.6.4",
         "@types/node": "^8.0.53",
         "bn.js": "^4.11.8",
+        "ethereum-types": "^0.0.1",
         "ethereumjs-abi": "^0.6.4",
         "ethereumjs-util": "^5.1.1",
         "ethers": "^3.0.15",
