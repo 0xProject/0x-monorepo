@@ -14,8 +14,8 @@
         "build": "tsc",
         "clean": "shx rm -rf lib src/contract_wrappers",
         "lint": "tslint --project .",
-        "migrate:v1": "run-s build compile script:migrate:v1",
-        "migrate:v2": "run-s build compile script:migrate:v2",
+        "migrate:v1": "run-s build compile:v1 script:migrate:v1",
+        "migrate:v2": "run-s build compile:v2 script:migrate:v2",
         "script:migrate:v1": "node ./lib/migrate.js --contracts-version 1.0.0",
         "script:migrate:v2": "node ./lib/migrate.js --contracts-version 2.0.0",
         "generate_contract_wrappers": "run-p generate_contract_wrappers:*",
@@ -23,14 +23,15 @@
             "abi-gen --abis  ${npm_package_config_abis_v1} --template ../contract_templates/contract.handlebars --partials '../contract_templates/partials/**/*.handlebars' --output src/v1/contract_wrappers --backend ethers && prettier --write 'src/v1/contract_wrappers/**.ts'",
         "generate_contract_wrappers:v2":
             "abi-gen --abis  ${npm_package_config_abis_v2} --template ../contract_templates/contract.handlebars --partials '../contract_templates/partials/**/*.handlebars' --output src/v2/contract_wrappers --backend ethers && prettier --write 'src/v2/contract_wrappers/**.ts'",
-        "compile": "sol-compiler"
+        "compile:v1": "sol-compiler --artifacts-dir artifacts/1.0.0 --contracts Exchange_v1,DummyERC20Token,ZRXToken,WETH9,TokenTransferProxy_v1,MultiSigWallet,MultiSigWalletWithTimeLock,MultiSigWalletWithTimeLockExceptRemoveAuthorizedAddress,TokenRegistry",
+        "compile:v2": "sol-compiler --artifacts-dir artifacts/2.0.0 --contracts DummyERC20Token,DummyERC721Token,ERC20Proxy,ERC721Proxy,Exchange,MultiSigWalletWithTimeLockExceptRemoveAuthorizedAddress,ZRXToken,WETH9,IWallet,IValidator"
     },
     "config": {
         "abis": {
             "v1":
                 "artifacts/1.0.0/@(DummyERC20Token|TokenTransferProxy_v1|Exchange_v1|TokenRegistry|MultiSigWallet|MultiSigWalletWithTimeLock|MultiSigWalletWithTimeLockExceptRemoveAuthorizedAddress|TokenRegistry|ZRXToken|WETH9).json",
             "v2":
-                "artifacts/2.0.0/@(DummyERC20Token|DummyERC721Token|ERC20Proxy|ERC721Proxy|Exchange|MultiSigWalletWithTimeLockExceptRemoveAuthorizedAddress|ZRXToken|WETH9).json"
+                "artifacts/2.0.0/@(DummyERC20Token|DummyERC721Token|ERC20Proxy|ERC721Proxy|Exchange|MultiSigWalletWithTimeLockExceptRemoveAuthorizedAddress|ZRXToken|WETH9|IWallet|IValidator).json"
         }
     },
     "license": "Apache-2.0",
