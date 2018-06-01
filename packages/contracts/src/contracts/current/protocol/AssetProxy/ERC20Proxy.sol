@@ -47,7 +47,7 @@ contract ERC20Proxy is
     )
         internal
     {
-        // Decode proxy data.
+        // Decode asset data.
         (
             uint8 proxyId,
             address token

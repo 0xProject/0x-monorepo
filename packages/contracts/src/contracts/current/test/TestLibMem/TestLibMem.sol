@@ -23,8 +23,15 @@ import "../../utils/LibMem/LibMem.sol";
 contract TestLibMem is
     LibMem
 {
+
+    /// @dev Copies a block of memory from one location to another.
+    /// @param mem Memory contents we want to apply memcpy to
+    /// @param dest Destination offset into <mem>.
+    /// @param source Source offset into <mem>.
+    /// @param length Length of bytes to copy from <source> to <dest>
+    /// @return mem Memory contents after calling memcpy.
     function testMemcpy(
-        bytes mem,       ///< Memory contents we want to apply memcpy to
+        bytes mem,
         uint256 dest,
         uint256 source,
         uint256 length
@@ -36,13 +43,13 @@ contract TestLibMem is
         // Sanity check. Overflows are not checked.
         require(source + length <= mem.length);
         require(dest + length <= mem.length);
-        
+
         // Get pointer to memory contents
         uint256 offset = getMemAddress(mem) + 32;
-        
+
         // Execute memcpy adjusted for memory array location
         memcpy(offset + dest, offset + source, length);
-        
+
         // Return modified memory contents
         return mem;
     }

@@ -155,7 +155,6 @@ contract TestLibBytes is
         return b;
     }
 
-=======
     /// @dev Reads the first 4 bytes from a byte array of arbitrary length.
     /// @param b Byte array to read first 4 bytes from.
     /// @return First 4 bytes of data.
@@ -168,6 +167,10 @@ contract TestLibBytes is
         return result;
     }
 
+    /// @dev Reads nested bytes from a specific position.
+    /// @param b Byte array containing nested bytes.
+    /// @param index Index of nested bytes.
+    /// @return result Nested bytes.
     function publicReadBytes(
         bytes memory b,
         uint256 index)
@@ -179,7 +182,11 @@ contract TestLibBytes is
         return result;
     }
 
-
+    /// @dev Inserts bytes at a specific position in a byte array.
+    /// @param b Byte array to insert <input> into.
+    /// @param index Index in byte array of <input>.
+    /// @param input bytes to insert.
+    /// @return b Updated input byte array
     function publicWriteBytes(
         bytes memory b,
         uint256 index,

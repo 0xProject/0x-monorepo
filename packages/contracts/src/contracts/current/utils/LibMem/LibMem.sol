@@ -18,23 +18,27 @@
 
 pragma solidity ^0.4.24;
 
-contract LibMem {
+contract LibMem
+{
 
+    /// @dev Gets the memory address for a byte array.
+    /// @param input Byte array to lookup.
+    /// @return memoryAddress Memory address of byte array.
     function getMemAddress(bytes memory input)
         internal
         pure
-        returns (uint256 address_)
+        returns (uint256 memoryAddress)
     {
         assembly {
-            address_ := input
+            memoryAddress := input
         }
-        return address_;
+        return memoryAddress;
     }
 
     /// @dev Copies `length` bytes from memory location `source` to `dest`.
-    /// @param dest memory address to copy bytes to
-    /// @param source memory address to copy bytes from
-    /// @param length number of bytes to copy
+    /// @param dest memory address to copy bytes to.
+    /// @param source memory address to copy bytes from.
+    /// @param length number of bytes to copy.
     function memcpy(
         uint256 dest,
         uint256 source,

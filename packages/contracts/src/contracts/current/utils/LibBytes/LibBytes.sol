@@ -268,7 +268,6 @@ contract LibBytes is
         writeBytes32(b, index, bytes32(input));
     }
 
-=======
     /// @dev Reads the first 4 bytes from a byte array of arbitrary length.
     /// @param b Byte array to read first 4 bytes from.
     /// @return First 4 bytes of data.
@@ -287,10 +286,10 @@ contract LibBytes is
         return result;
     }
 
-    /// @dev Reads a uint256 value from a position in a byte array.
-    /// @param b Byte array containing a uint256 value.
-    /// @param index Index in byte array of uint256 value.
-    /// @return uint256 value from byte array.
+    /// @dev Reads nested bytes from a specific position.
+    /// @param b Byte array containing nested bytes.
+    /// @param index Index of nested bytes.
+    /// @return result Nested bytes.
     function readBytes(
         bytes memory b,
         uint256 index
@@ -321,10 +320,10 @@ contract LibBytes is
         return result;
     }
 
-    /// @dev Writes a uint256 into a specific position in a byte array.
+    /// @dev Inserts bytes at a specific position in a byte array.
     /// @param b Byte array to insert <input> into.
     /// @param index Index in byte array of <input>.
-    /// @param input uint256 to put into byte array.
+    /// @param input bytes to insert.
     function writeBytes(
         bytes memory b,
         uint256 index,
