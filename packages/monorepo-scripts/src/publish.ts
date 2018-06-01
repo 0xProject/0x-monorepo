@@ -39,11 +39,6 @@ const packageNameToWebsitePath: { [name: string]: string } = {
 };
 
 (async () => {
-    const hasRequiredSetup = await checkPublishRequiredSetupAsync();
-    if (!hasRequiredSetup) {
-        return; // abort
-    }
-
     // Fetch public, updated Lerna packages
     const shouldIncludePrivate = false;
     const updatedPublicLernaPackages = await utils.getUpdatedLernaPackagesAsync(shouldIncludePrivate);
@@ -112,54 +107,6 @@ package.ts. Please add an entry for it and try again.`,
         utils.log('Publish process aborted.');
         process.exit(0);
     }
-}
-
-async function checkPublishRequiredSetupAsync(): Promise<boolean> {
-    // check to see if logged into npm before publishing
-    try {
-        // HACK: for some reason on some setups, the `npm whoami` will not recognize a logged-in user
-        // unless run with `sudo` (i.e Fabio's NVM setup) but is fine for others (Jacob's NVM setup).
-        await execAsync(`sudo npm whoami`);
-    } catch (err) {
-        utils.log('You must be logged into npm in the commandline to publish. Run `npm login` and try again.');
-        return false;
-    }
-
-    // Check to see if Git personal token setup
-    if (_.isUndefined(constants.githubPersonalAccessToken)) {
-        utils.log(
-            'You must have a Github personal access token set to an envVar named `GITHUB_PERSONAL_ACCESS_TOKEN_0X_JS`. Add it then try again.',
-        );
-        return false;
-    }
-
-    // Check Yarn version is 1.X
-    const result = await execAsync(`yarn --version`);
-    const version = result.stdout;
-    const versionSegments = version.split('.');
-    const majorVersion = _.parseInt(versionSegments[0]);
-    if (majorVersion < 1) {
-        utils.log('Your yarn version must be v1.x or higher. Upgrade yarn and try again.');
-        return false;
-    }
-
-    // Check that `aws` commandline tool is installed
-    try {
-        await execAsync(`aws help`);
-    } catch (err) {
-        utils.log('You must have `awscli` commandline tool installed. Install it and try again.');
-        return false;
-    }
-
-    // Check that `aws` credentials are setup
-    try {
-        await execAsync(`aws sts get-caller-identity`);
-    } catch (err) {
-        utils.log('You must setup your AWS credentials by running `aws configure`. Do this and try again.');
-        return false;
-    }
-
-    return true;
 }
 
 async function pushChangelogsToGithubAsync(): Promise<void> {
