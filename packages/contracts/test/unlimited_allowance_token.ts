@@ -53,12 +53,11 @@ describe('UnlimitedAllowanceToken', () => {
         await blockchainLifecycle.revertAsync();
     });
     describe('transfer', () => {
-        // TODO(albrow): AssertionError: expected promise to be rejected but it was fulfilled with true
-        it.skip('should throw if owner has insufficient balance', async () => {
+        it('should throw if owner has insufficient balance', async () => {
             const ownerBalance = await token.balanceOf.callAsync(owner);
             const amountToTransfer = ownerBalance.plus(1);
-            return expectRevertOrAlwaysFailingTransaction(
-                token.transfer.callAsync(spender, amountToTransfer, { from: owner }),
+            return expect(token.transfer.callAsync(spender, amountToTransfer, { from: owner })).to.be.rejectedWith(
+                constants.ERC20_INSUFFICIENT_BALANCE,
             );
         });
 
@@ -88,23 +87,21 @@ describe('UnlimitedAllowanceToken', () => {
     });
 
     describe('transferFrom', () => {
-        // TODO(albrow): AssertionError: expected promise to be rejected but it was fulfilled with true
-        it.skip('should throw if owner has insufficient balance', async () => {
+        it('should throw if owner has insufficient balance', async () => {
             const ownerBalance = await token.balanceOf.callAsync(owner);
             const amountToTransfer = ownerBalance.plus(1);
             await web3Wrapper.awaitTransactionSuccessAsync(
                 await token.approve.sendTransactionAsync(spender, amountToTransfer, { from: owner }),
                 constants.AWAIT_TRANSACTION_MINED_MS,
             );
-            return expectRevertOrAlwaysFailingTransaction(
+            return expect(
                 token.transferFrom.callAsync(owner, spender, amountToTransfer, {
                     from: spender,
                 }),
-            );
+            ).to.be.rejectedWith(constants.ERC20_INSUFFICIENT_BALANCE);
         });
 
-        // TODO(albrow): AssertionError: expected promise to be rejected but it was fulfilled with true
-        it.skip('should throw if spender has insufficient allowance', async () => {
+        it('should throw if spender has insufficient allowance', async () => {
             const ownerBalance = await token.balanceOf.callAsync(owner);
             const amountToTransfer = ownerBalance;
 
@@ -112,11 +109,11 @@ describe('UnlimitedAllowanceToken', () => {
             const isSpenderAllowanceInsufficient = spenderAllowance.cmp(amountToTransfer) < 0;
             expect(isSpenderAllowanceInsufficient).to.be.true();
 
-            return expectRevertOrAlwaysFailingTransaction(
+            return expect(
                 token.transferFrom.callAsync(owner, spender, amountToTransfer, {
                     from: spender,
                 }),
-            );
+            ).to.be.rejectedWith(constants.ERC20_INSUFFICIENT_ALLOWANCE);
         });
 
         it('should return true on a 0 value transfer', async () => {

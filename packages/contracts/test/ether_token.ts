@@ -6,6 +6,7 @@ import 'make-promises-safe';
 
 import { WETH9Contract } from '../src/contract_wrappers/generated/weth9';
 import { artifacts } from '../src/utils/artifacts';
+import { expectInsufficientFunds, expectRevertOrAlwaysFailingTransaction } from '../src/utils/assertions';
 import { chaiSetup } from '../src/utils/chai_setup';
 import { constants } from '../src/utils/constants';
 import { provider, txDefaults, web3Wrapper } from '../src/utils/web3_wrapper';
@@ -41,14 +42,11 @@ describe('EtherToken', () => {
         await blockchainLifecycle.revertAsync();
     });
     describe('deposit', () => {
-        // TODO(albrow):  AssertionError: expected promise to be rejected with an error including 'ender doesn\'t have enough funds to send tx.' but got 'insufficient funds for gas * price + value'
-        it.skip('should throw if caller attempts to deposit more Ether than caller balance', async () => {
+        it('should throw if caller attempts to deposit more Ether than caller balance', async () => {
             const initEthBalance = await web3Wrapper.getBalanceInWeiAsync(account);
             const ethToDeposit = initEthBalance.plus(1);
 
-            return expect(etherToken.deposit.sendTransactionAsync({ value: ethToDeposit })).to.be.rejectedWith(
-                "ender doesn't have enough funds to send tx.",
-            );
+            return expectInsufficientFunds(etherToken.deposit.sendTransactionAsync({ value: ethToDeposit }));
         });
 
         it('should convert deposited Ether to wrapped Ether tokens', async () => {
@@ -73,13 +71,12 @@ describe('EtherToken', () => {
     });
 
     describe('withdraw', () => {
-        // TODO(albrow): AssertionError: expected promise to be rejected with an error including 'revert' but got 'gas required exceeds allowance or always failing transaction'
-        it.skip('should throw if caller attempts to withdraw greater than caller balance', async () => {
+        it('should throw if caller attempts to withdraw greater than caller balance', async () => {
             const initEthTokenBalance = await etherToken.balanceOf.callAsync(account);
             const ethTokensToWithdraw = initEthTokenBalance.plus(1);
 
-            return expect(etherToken.withdraw.sendTransactionAsync(ethTokensToWithdraw)).to.be.rejectedWith(
-                constants.REVERT,
+            return expectRevertOrAlwaysFailingTransaction(
+                etherToken.withdraw.sendTransactionAsync(ethTokensToWithdraw),
             );
         });
 
