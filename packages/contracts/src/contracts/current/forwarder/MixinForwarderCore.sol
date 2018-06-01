@@ -37,7 +37,7 @@ contract MixinForwarderCore is
         returns (uint256 remainingTakerTokenAmount)
     {
         remainingTakerTokenAmount = takerTokenAmount;
-        if (feeProportion > 0 && feeRecipient != address(0x0)) {
+        if (feeProportion > 0 && feeRecipient != address(0)) {
             require(feeProportion <= MAX_FEE, FEE_PROPORTION_TOO_LARGE);
             // 1.5% is 150, allowing for 2 decimal precision, i.e 0.05% is 5
             uint256 feeRecipientFeeAmount = safeDiv(safeMul(remainingTakerTokenAmount, feeProportion), PERCENTAGE_DENOMINATOR);

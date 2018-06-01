@@ -34,7 +34,7 @@ contract MixinMarketBuyTokens is
         public
         returns (Exchange.FillResults)
     {
-        require(msg.value > 0, VALUE_GT_ZERO);
+        require(msg.value > 0, VALUE_GREATER_THAN_ZERO);
         address token = readAddress(orders[0].takerAssetData, 0);
         require(token == address(ETHER_TOKEN), TAKER_ASSET_WETH_REQUIRED);
 
@@ -69,7 +69,7 @@ contract MixinMarketBuyTokens is
         addFillResults(totalFillResults, requestedTokensResults);
         // Ensure the token abstraction was fair if fees were proportionally too high, we fail
         require(isAcceptableThreshold(sellTokenAmount, requestedTokensResults.takerAssetFilledAmount),
-            NOT_ACCEPTABLE_THRESHOLD);
+            UNACCEPTABLE_THRESHOLD);
         // Transfer all tokens to msg.sender
         transferToken(makerTokenAddress, msg.sender, requestedTokensResults.makerAssetFilledAmount);
         return totalFillResults;

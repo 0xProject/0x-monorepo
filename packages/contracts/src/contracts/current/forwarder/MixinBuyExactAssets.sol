@@ -12,6 +12,8 @@ contract MixinBuyExactAssets is
     MixinERC20,
     MixinERC721
 {
+    uint8 public constant ERC20_PROXY_ID = 1;
+    uint8 public constant ERC721_PROXY_ID = 2;
     /// @dev Buys the exact amount of assets (ERC20 and ERC721), performing fee abstraction if required.
     ///      All order assets must be of the same type. Deducts a proportional fee to fee recipient.
     ///      This function is payable and will convert all incoming ETH into WETH and perform the trade on behalf of the caller.
@@ -38,23 +40,26 @@ contract MixinBuyExactAssets is
         public
         returns (Exchange.FillResults memory totalFillResults)
     {
-        require(msg.value > 0, VALUE_GT_ZERO);
+        require(msg.value > 0, VALUE_GREATER_THAN_ZERO);
         address takerAsset = readAddress(orders[0].takerAssetData, 0);
         require(takerAsset == address(ETHER_TOKEN), TAKER_ASSET_WETH_REQUIRED);
-        uint8 proxyId = uint8(orders[0].makerAssetData[orders[0].makerAssetData.length-1]);
-        require(proxyId == 1 || proxyId == 2, UNSUPPORTED_TOKEN_PROXY);
+        uint8 proxyId = uint8(orders[0].makerAssetData[orders[0].makerAssetData.length - 1]);
+        require(proxyId == ERC20_PROXY_ID || proxyId == ERC721_PROXY_ID, UNSUPPORTED_TOKEN_PROXY);
 
         uint256 remainingTakerAssetAmount = msg.value;
         ETHER_TOKEN.deposit.value(remainingTakerAssetAmount)();
-        if (proxyId == 1) {
+        if (proxyId == ERC20_PROXY_ID) {
             totalFillResults = buyExactERC20TokensInternal(orders, signatures, feeOrders, feeSignatures, assetAmount);
-        } else if (proxyId == 2) {
+        } else if (proxyId == ERC721_PROXY_ID) {
             totalFillResults = buyExactERC721TokensInternal(orders, signatures, feeOrders, feeSignatures, assetAmount);
         }
         remainingTakerAssetAmount = safeSub(remainingTakerAssetAmount, totalFillResults.takerAssetFilledAmount);
-        // Prevent a user from paying too high of fees during fee abstraction
-        require(isAcceptableThreshold(
-            remainingTakerAssetAmount, totalFillResults.takerAssetFilledAmount), NOT_ACCEPTABLE_THRESHOLD);
+        // Prevent a user from paying too much in fees through fee abstraction
+        require(
+            isAcceptableThreshold(
+                remainingTakerAssetAmount,
+                totalFillResults.takerAssetFilledAmount),
+            UNACCEPTABLE_THRESHOLD);
         withdrawPayAndDeductFee(remainingTakerAssetAmount, totalFillResults.takerAssetFilledAmount, feeProportion, feeRecipient);
         return totalFillResults;
     }
@@ -75,7 +80,7 @@ contract MixinBuyExactAssets is
         if (makerTokenAddress == address(ZRX_TOKEN)) {
             requestedTokensResult = buyFeeTokensInternal(orders, signatures, assetAmount);
             // When buying ZRX we round up which can result in a small margin excess
-            require(requestedTokensResult.makerAssetFilledAmount >= assetAmount, NOT_ACCEPTABLE_THRESHOLD);
+            require(requestedTokensResult.makerAssetFilledAmount >= assetAmount, UNACCEPTABLE_THRESHOLD);
         } else {
             Exchange.FillResults memory calculatedMarketBuyResults = calculateMarketBuyFillResults(orders, assetAmount);
             if (calculatedMarketBuyResults.takerFeePaid > 0) {
@@ -87,7 +92,7 @@ contract MixinBuyExactAssets is
             }
             // Make our market buy of the requested tokens with the remaining balance
             requestedTokensResult = EXCHANGE.marketBuyOrders(orders, assetAmount, signatures);
-            require(requestedTokensResult.makerAssetFilledAmount == assetAmount, NOT_ACCEPTABLE_THRESHOLD);
+            require(requestedTokensResult.makerAssetFilledAmount == assetAmount, UNACCEPTABLE_THRESHOLD);
         }
         addFillResults(totalFillResults, requestedTokensResult);
         // Transfer all tokens to msg.sender

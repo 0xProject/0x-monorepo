@@ -1,6 +1,7 @@
 pragma solidity ^0.4.24;
 
 import "zeppelin-solidity/contracts/token/ERC721/ERC721Basic.sol";
+
 contract MixinERC721 {
     // Equals to `bytes4(keccak256("onERC721Received(address,uint256,bytes)"))`
     bytes4 constant ERC721_RECEIVED = 0xf0b9e5ba;
