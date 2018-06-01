@@ -27,26 +27,51 @@ contract TestAssetDataDecoders is
     ERC721Proxy
 {
 
-    /// @dev Decodes ERC721 Asset Proxy data
+    /// @dev Decodes ERC20 Asset data.
+    /// @param assetData Encoded byte array.
+    /// @return proxyId Intended ERC20 proxy id.
+    /// @return token ERC20 token address.
     function publicDecodeERC20Data(bytes memory assetData)
         public
         pure
-        returns (uint8, address)
+        returns (
+            uint8 proxyId,
+            address token
+        )
     {
-        return ERC20Proxy.decodeERC20AssetData(assetData);
+        (proxyId, token) = decodeERC20AssetData(assetData);
+        return (proxyId, token);
     }
 
-    /// @dev Decodes ERC721 Asset Proxy data
+    /// @dev Decodes ERC721 Asset data.
+    /// @param assetData Encoded byte array.
+    /// @return proxyId Intended ERC721 proxy id.
+    /// @return token ERC721 token address.
+    /// @return tokenId ERC721 token id.
+    /// @return receiverData Additional data with no specific format, which
+    ///                      is passed to the receiving contract's onERC721Received.
     function publicDecodeERC721Data(bytes memory assetData)
         public
         pure
         returns (
-            uint8,
-            address,
-            uint256,
-            bytes memory
+            uint8 proxyId,
+            address token,
+            uint256 tokenId,
+            bytes memory receiverData
         )
     {
-        return ERC721Proxy.decodeERC721AssetData(assetData);
+        (
+            proxyId,
+            token,
+            tokenId,
+            receiverData
+        ) = decodeERC721AssetData(assetData);
+
+        return (
+            proxyId,
+            token,
+            tokenId,
+            receiverData
+        );
     }
 }

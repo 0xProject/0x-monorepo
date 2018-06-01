@@ -79,7 +79,10 @@ contract ERC20Proxy is
         return PROXY_ID;
     }
 
-    /// @dev Decodes ERC20 Asset Proxy data
+    /// @dev Decodes ERC20 Asset data.
+    /// @param assetData Encoded byte array.
+    /// @return proxyId Intended ERC20 proxy id.
+    /// @return token ERC20 token address.
     function decodeERC20AssetData(bytes memory assetData)
         internal
         pure
@@ -88,10 +91,13 @@ contract ERC20Proxy is
             address token
         )
     {
+        // Validate encoded data length
         require(
             assetData.length == 21,
             INVALID_ASSET_DATA_LENGTH
         );
+
+        // Decode data
         proxyId = uint8(assetData[0]);
         token = readAddress(assetData, 1);
 

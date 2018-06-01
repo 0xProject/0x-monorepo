@@ -53,7 +53,7 @@ contract ERC721Proxy is
             uint8 proxyId,
             address token,
             uint256 tokenId,
-            bytes memory data
+            bytes memory receiverData
         ) = decodeERC721AssetData(assetData);
 
         // Data must be intended for this proxy.
@@ -76,11 +76,10 @@ contract ERC721Proxy is
             INVALID_AMOUNT
         );
 
-        // Transfer token.
-        // Save gas by calling safeTransferFrom only when there is data present.
-        // Either succeeds or throws.
-        if(data.length > 0) {
-            ERC721Token(token).safeTransferFrom(from, to, tokenId, data);
+        // Transfer token. Saves gas by calling safeTransferFrom only
+        // when there is receiverData present. Either succeeds or throws.
+        if(receiverData.length > 0) {
+            ERC721Token(token).safeTransferFrom(from, to, tokenId, receiverData);
         } else {
             ERC721Token(token).transferFrom(from, to, tokenId);
         }
@@ -96,7 +95,13 @@ contract ERC721Proxy is
         return PROXY_ID;
     }
 
-    /// @dev Decodes ERC721 Asset Proxy data
+    /// @dev Decodes ERC721 Asset data.
+    /// @param assetData Encoded byte array.
+    /// @return proxyId Intended ERC721 proxy id.
+    /// @return token ERC721 token address.
+    /// @return tokenId ERC721 token id.
+    /// @return receiverData Additional data with no specific format, which
+    ///                      is passed to the receiving contract's onERC721Received.
     function decodeERC721AssetData(bytes memory assetData)
         internal
         pure
@@ -104,20 +109,28 @@ contract ERC721Proxy is
             uint8 proxyId,
             address token,
             uint256 tokenId,
-            bytes memory data
+            bytes memory receiverData
         )
     {
+        // Validate encoded data length
         require(
             assetData.length >= 53,
             INVALID_ASSET_DATA_LENGTH
         );
+
+        // Decode asset data
         proxyId = uint8(assetData[0]);
         token = readAddress(assetData, 1);
         tokenId = readUint256(assetData, 21);
         if (assetData.length > 53) {
-            data = readBytes(assetData, 53);
+            receiverData = readBytes(assetData, 53);
         }
 
-        return (proxyId, token, tokenId, data);
+        return (
+            proxyId,
+            token,
+            tokenId,
+            receiverData
+        );
     }
 }
