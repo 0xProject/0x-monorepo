@@ -70,10 +70,9 @@ describe('Signature utils', () => {
             expect(isValidSignatureLocal).to.be.true();
         });
 
-        // TODO: remaining sigs
+        // TODO: Add remaining signature tests: Validator, Wallet, Presigned?
     });
     describe('#isValidECSignature', () => {
-        // TODO: Replace this with a vanilla signature without ANY prefix or modification
         const signature = {
             v: 27,
             r: '0xaca7da997ad177f040240cdccf6905b71ab16b74434388c3a72f34fd25d64393',
