@@ -7,7 +7,7 @@ import * as _ from 'lodash';
 import { exec as execAsync } from 'promisify-child-process';
 
 import { constants } from './constants';
-import { utils } from './utils';
+import { utils } from './utils/utils';
 
 // For some reason, `depcheck` hangs on some packages. Add them here.
 const IGNORE_PACKAGES = ['@0xproject/sol-compiler'];

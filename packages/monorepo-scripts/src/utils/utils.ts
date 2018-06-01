@@ -3,8 +3,8 @@ import lernaGetPackages = require('lerna-get-packages');
 import * as _ from 'lodash';
 import { exec as execAsync, spawn } from 'promisify-child-process';
 
-import { constants } from './constants';
-import { UpdatedPackage } from './types';
+import { constants } from '../constants';
+import { UpdatedPackage } from '../types';
 
 export const utils = {
     log(...args: any[]): void {
