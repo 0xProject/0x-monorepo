@@ -38,6 +38,7 @@ import {
 } from 'ts/types';
 import { configs } from 'ts/utils/configs';
 import { constants } from 'ts/utils/constants';
+import { orderParser } from 'ts/utils/order_parser';
 import { Translate } from 'ts/utils/translate';
 import { utils } from 'ts/utils/utils';
 
@@ -86,7 +87,7 @@ export class LegacyPortal extends React.Component<LegacyPortalProps, LegacyPorta
     }
     constructor(props: LegacyPortalProps) {
         super(props);
-        this._sharedOrderIfExists = this._getSharedOrderIfExists();
+        this._sharedOrderIfExists = orderParser.parse(window.location.search);
         this._throttledScreenWidthUpdate = _.throttle(this._updateScreenWidth.bind(this), THROTTLE_TIMEOUT);
 
         const isViewingBalances = _.includes(props.location.pathname, `${WebsitePaths.Portal}/balances`);
@@ -361,32 +362,6 @@ export class LegacyPortal extends React.Component<LegacyPortalProps, LegacyPorta
         this.setState({
             isWethNoticeDialogOpen: false,
         });
-    }
-    private _getSharedOrderIfExists(): Order | undefined {
-        const queryString = window.location.search;
-        if (queryString.length === 0) {
-            return undefined;
-        }
-        const queryParams = queryString.substring(1).split('&');
-        const orderQueryParam = _.find(queryParams, queryParam => {
-            const queryPair = queryParam.split('=');
-            return queryPair[0] === 'order';
-        });
-        if (_.isUndefined(orderQueryParam)) {
-            return undefined;
-        }
-        const orderPair = orderQueryParam.split('=');
-        if (orderPair.length !== 2) {
-            return undefined;
-        }
-
-        const order = JSON.parse(decodeURIComponent(orderPair[1]));
-        const validationResult = validator.validate(order, portalOrderSchema);
-        if (validationResult.errors.length > 0) {
-            logUtils.log(`Invalid shared order: ${validationResult.errors}`);
-            return undefined;
-        }
-        return order;
     }
     private _updateScreenWidth(): void {
         const newScreenWidth = utils.getScreenWidth();
