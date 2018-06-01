@@ -306,7 +306,8 @@ export const utils = {
         return parsedProviderName;
     },
     getBackendBaseUrl(): string {
-        return isDogfood() ? configs.BACKEND_BASE_STAGING_URL : configs.BACKEND_BASE_PROD_URL;
+        return 'http://localhost:3000';
+        // return isDogfood() ? configs.BACKEND_BASE_STAGING_URL : configs.BACKEND_BASE_PROD_URL;
     },
     isDevelopment(): boolean {
         return configs.ENVIRONMENT === Environments.DEVELOPMENT;

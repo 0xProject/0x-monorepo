@@ -5,6 +5,7 @@ import * as React from 'react';
 import DocumentTitle = require('react-document-title');
 import { Link } from 'react-router-dom';
 import { Footer } from 'ts/components/footer';
+import { SubscribeForm } from 'ts/components/forms/subscribe_form';
 import { TopBar } from 'ts/components/top_bar/top_bar';
 import { Dispatcher } from 'ts/redux/dispatcher';
 import { Deco, Key, Language, ScreenWidths, WebsitePaths } from 'ts/types';
@@ -298,6 +299,7 @@ export class Landing extends React.Component<LandingProps, LandingState> {
                                         </a>
                                     </div>
                                 </div>
+                                <SubscribeForm />
                             </div>
                         </div>
                     </div>
