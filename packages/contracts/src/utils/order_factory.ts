@@ -1,5 +1,4 @@
-import { generatePseudoRandomSalt } from '@0xproject/order-utils';
-import { orderHashUtils } from '@0xproject/order-utils';
+import { generatePseudoRandomSalt, orderHashUtils } from '@0xproject/order-utils';
 import { Order, SignatureType, SignedOrder } from '@0xproject/types';
 import { BigNumber } from '@0xproject/utils';
 import * as _ from 'lodash';
