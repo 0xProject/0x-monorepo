@@ -261,18 +261,20 @@ export class TopBar extends React.Component<TopBarProps, TopBarState> {
                             </div>
                         </div>
                     )}
-                    <div className="sm-hide xs-hide col col-5" style={{ paddingTop: 8, marginRight: 36 }}>
-                        <ProviderDisplay
-                            dispatcher={this.props.dispatcher}
-                            userAddress={this.props.userAddress}
-                            networkId={this.props.networkId}
-                            injectedProviderName={this.props.injectedProviderName}
-                            providerType={this.props.providerType}
-                            onToggleLedgerDialog={this.props.onToggleLedgerDialog}
-                            blockchain={this.props.blockchain}
-                            blockchainIsLoaded={this.props.blockchainIsLoaded}
-                        />
-                    </div>
+                    {this._isViewingPortal() && (
+                        <div className="sm-hide xs-hide col col-5" style={{ paddingTop: 8, marginRight: 36 }}>
+                            <ProviderDisplay
+                                dispatcher={this.props.dispatcher}
+                                userAddress={this.props.userAddress}
+                                networkId={this.props.networkId}
+                                injectedProviderName={this.props.injectedProviderName}
+                                providerType={this.props.providerType}
+                                onToggleLedgerDialog={this.props.onToggleLedgerDialog}
+                                blockchain={this.props.blockchain}
+                                blockchainIsLoaded={this.props.blockchainIsLoaded}
+                            />
+                        </div>
+                    )}
                     <div className={`col ${isExpandedDisplayType ? 'col-2 pl2' : 'col-1'} md-hide lg-hide`}>
                         <div style={menuIconStyle}>
                             <i className="zmdi zmdi-menu" onClick={this._onMenuButtonClick.bind(this)} />
