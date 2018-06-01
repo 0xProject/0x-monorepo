@@ -379,7 +379,11 @@ export class Web3Wrapper {
     }
     private async _sendRawPayloadAsync<A>(payload: Partial<JSONRPCRequestPayload>): Promise<A> {
         const sendAsync = this._web3.currentProvider.sendAsync.bind(this._web3.currentProvider);
-        const response = await promisify<JSONRPCResponsePayload>(sendAsync)(payload);
+        const payloadWithDefaults = {
+            id: this._jsonRpcRequestId++,
+            ...payload,
+        };
+        const response = await promisify<JSONRPCResponsePayload>(sendAsync)(payloadWithDefaults);
         const result = response.result;
         return result;
     }
