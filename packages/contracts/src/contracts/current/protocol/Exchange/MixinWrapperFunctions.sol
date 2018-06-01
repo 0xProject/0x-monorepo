@@ -91,12 +91,12 @@ contract MixinWrapperFunctions is
         // |          | 0x0E0  |         |   8.  takerFeeAmount                        |
         // |          | 0x100  |         |   9.  expirationTimeSeconds                 |
         // |          | 0x120  |         |   10. salt                                  |
-        // |          | 0x140  |         |   11. Offset to makerAssetData (*) |
-        // |          | 0x160  |         |   12. Offset to takerAssetData (*) |
-        // |          | 0x180  | 32      | makerAssetData Length              |
-        // |          | 0x1A0  | **      | makerAssetData Contents            |
-        // |          | 0x1C0  | 32      | takerAssetData Length              |
-        // |          | 0x1E0  | **      | takerAssetData Contents            |
+        // |          | 0x140  |         |   11. Offset to makerAssetData (*)          |
+        // |          | 0x160  |         |   12. Offset to takerAssetData (*)          |
+        // |          | 0x180  | 32      | makerAssetData Length                       |
+        // |          | 0x1A0  | **      | makerAssetData Contents                     |
+        // |          | 0x1C0  | 32      | takerAssetData Length                       |
+        // |          | 0x1E0  | **      | takerAssetData Contents                     |
         // |          | 0x200  | 32      | signature Length                            |
         // |          | 0x220  | **      | signature Contents                          |
 
