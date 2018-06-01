@@ -28,7 +28,7 @@
         "stage_docs": "wsrun docs:stage $PKG --fast-exit --parallel --exclude-missing",
         "lint": "wsrun lint $PKG --fast-exit --parallel --exclude-missing",
         "comment:postinstall": "HACK: For some reason `yarn` is not setting up symlinks properly for order-utils. We temporarily set them manually. Remove this after V2 refactor is complete.",
-        "postinstall": "rm -rf `pwd`/packages/order-utils/node_modules/@0xproject; mkdir `pwd`/packages/order-utils/node_modules/@0xproject; ln -s `pwd`/packages/json-schemas `pwd`/packages/order-utils/node_modules/@0xproject/json-schemas; ln -s `pwd`/packages/types `pwd`/packages/order-utils/node_modules/@0xproject/types"
+        "postinstall": "rm -rf `pwd`/packages/order-utils/node_modules/@0xproject; mkdir `pwd`/packages/order-utils/node_modules/@0xproject; ln -s `pwd`/packages/json-schemas `pwd`/packages/order-utils/node_modules/@0xproject/json-schemas; ln -s `pwd`/packages/types `pwd`/packages/order-utils/node_modules/@0xproject/types; rm -f `pwd`/packages/contracts/node_modules/@0xproject/types; ln -s `pwd`/packages/types `pwd`/packages/contracts/node_modules/@0xproject/types"
     },
     "config": {
         "mnemonic": "concert load couple harbor equip island argue ramp clarify fence smart topic"
