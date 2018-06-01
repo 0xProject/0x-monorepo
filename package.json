@@ -47,6 +47,6 @@
     },
     "resolutions": {
         "ethereumjs-tx": "0xProject/ethereumjs-tx#fake-tx-include-signature-by-default",
-        "ethers.js": "0xproject/ethers.js#eip-838-reasons"
+        "ethers": "0xproject/ethers.js#eip-838-reasons"
     }
 }
