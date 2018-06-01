@@ -70,7 +70,7 @@
         "@0xproject/base-contract": "^0.3.2",
         "@0xproject/json-schemas": "0.7.24",
         "@0xproject/sol-compiler": "^0.5.0",
-        "@0xproject/types": "^0.7.1",
+        "@0xproject/types": "^1.0.0",
         "@0xproject/typescript-typings": "^0.3.2",
         "@0xproject/utils": "^0.6.2",
         "@0xproject/web3-wrapper": "^0.6.4",
