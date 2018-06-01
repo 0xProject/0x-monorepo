@@ -48,7 +48,7 @@
     "dependencies": {
         "@0xproject/sol-compiler": "^0.5.0",
         "@0xproject/subproviders": "^0.10.2",
-        "@0xproject/types": "^0.7.0",
+        "@0xproject/types": "1.0.0",
         "@0xproject/typescript-typings": "^0.3.2",
         "@0xproject/utils": "^0.6.2",
         "ethereumjs-util": "^5.1.1",
