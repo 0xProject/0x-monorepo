@@ -29,6 +29,15 @@
     jsonschema "^1.2.0"
     lodash.values "^4.3.0"
 
+"@0xproject/json-schemas@^0.7.23", "@0xproject/json-schemas@^0.7.24":
+  version "0.7.24"
+  resolved "https://registry.yarnpkg.com/@0xproject/json-schemas/-/json-schemas-0.7.24.tgz#21a12b43ab0ab4aa302d02c4891668cda36b6c64"
+  dependencies:
+    "@0xproject/typescript-typings" "^0.3.2"
+    "@types/node" "^8.0.53"
+    jsonschema "^1.2.0"
+    lodash.values "^4.3.0"
+
 "@0xproject/order-utils@0.0.5":
   version "0.0.5"
   resolved "https://registry.yarnpkg.com/@0xproject/order-utils/-/order-utils-0.0.5.tgz#c8d92a112740b0020e08f13137844f8c183c863b"
