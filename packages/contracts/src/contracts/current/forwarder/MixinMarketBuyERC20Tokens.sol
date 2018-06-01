@@ -5,7 +5,7 @@ import "./MixinForwarderCore.sol";
 import "./MixinForwarderExpectedResults.sol";
 import "./MixinERC20.sol";
 
-contract MixinMarketBuyTokens is
+contract MixinMarketBuyERC20Tokens is
     MixinForwarderCore,
     MixinForwarderExpectedResults,
     MixinERC20

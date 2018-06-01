@@ -3,13 +3,13 @@ pragma experimental ABIEncoderV2;
 
 import "./MixinForwarderCore.sol";
 import "./MixinBuyExactAssets.sol";
-import "./MixinMarketBuyTokens.sol";
+import "./MixinMarketBuyERC20Tokens.sol";
 import "../utils/Ownable/Ownable.sol";
 
 contract Forwarder is
     MixinForwarderCore,
     MixinBuyExactAssets,
-    MixinMarketBuyTokens,
+    MixinMarketBuyERC20Tokens,
     Ownable
 {
     function Forwarder(
