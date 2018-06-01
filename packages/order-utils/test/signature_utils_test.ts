@@ -69,8 +69,6 @@ describe('Signature utils', () => {
             const isValidSignatureLocal = await isValidSignatureAsync(provider, dataHex, trezorSignature, address);
             expect(isValidSignatureLocal).to.be.true();
         });
-
-        // TODO: Add remaining signature tests: Validator, Wallet, Presigned?
     });
     describe('#isValidECSignature', () => {
         const signature = {

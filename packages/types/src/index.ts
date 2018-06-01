@@ -326,6 +326,14 @@ export interface ECSignature {
 }
 
 /**
+ * Validator signature components
+ */
+export interface ValidatorSignature {
+    validatorAddress: string;
+    signature: string;
+}
+
+/**
  * Errors originating from the 0x exchange contract
  */
 export enum ExchangeContractErrs {
