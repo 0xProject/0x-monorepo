@@ -9,8 +9,9 @@
     "types": "lib/src/index.d.ts",
     "scripts": {
         "watch": "tsc -w",
-        "prebuild": "run-s clean update_artifacts generate_contract_wrappers",
-        "build": "tsc && copyfiles -u 3 './lib/src/monorepo_scripts/**/*' ./scripts",
+        "build": "run-s clean update_artifacts generate_contract_wrappers transpile copy_monorepo_scripts",
+        "transpile": "tsc",
+        "copy_monorepo_scripts": "copyfiles -u 3 './lib/src/monorepo_scripts/**/*' ./scripts",
         "generate_contract_wrappers": "abi-gen --abis 'lib/src/artifacts/@(Exchange|IWallet|IValidator).json' --template ../contract_templates/contract.handlebars --partials '../contract_templates/partials/**/*.handlebars' --output src/generated_contract_wrappers --backend ethers && prettier --write 'src/generated_contract_wrappers/**.ts'",
         "update_artifacts": "for i in ${npm_package_config_contracts}; do copyfiles -u 4 ../migrations/artifacts/2.0.0/$i.json lib/src/artifacts; done;",
         "test": "run-s build run_mocha",
