@@ -56,15 +56,8 @@ contract ERC721Proxy is
             bytes memory receiverData
         ) = decodeERC721AssetData(assetData);
 
+
         // Data must be intended for this proxy.
-        uint256 length = assetMetadata.length;
-
-        require(
-            length == 53,
-            LENGTH_53_REQUIRED
-        );
-
-        // TODO: Is this too inflexible in the future?
         require(
             proxyId == PROXY_ID,
             PROXY_ID_MISMATCH
@@ -113,18 +106,19 @@ contract ERC721Proxy is
         )
     {
         // Validate encoded data length
+        uint256 length = assetData.length;
         require(
             assetData.length >= 53,
             INVALID_ASSET_DATA_LENGTH
         );
 
         // Decode asset data.
-        proxyId = uint8(assetData[0]);
-        token = readAddress(assetData, 1);
-        tokenId = readUint256(assetData, 21);
+        token = readAddress(assetData, 0);
+        tokenId = readUint256(assetData, 20);
         if (assetData.length > 53) {
-            receiverData = readBytes(assetData, 53);
+            receiverData = readBytes(assetData, 52);
         }
+        proxyId = uint8(assetData[length-1]);
 
         return (
             proxyId,

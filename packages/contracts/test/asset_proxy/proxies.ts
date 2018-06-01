@@ -1,8 +1,10 @@
-import { LogWithDecodedArgs, ZeroEx } from '0x.js';
 import { BlockchainLifecycle } from '@0xproject/dev-utils';
 import { assetProxyUtils } from '@0xproject/order-utils';
+import { generatePseudoRandomSalt } from '@0xproject/order-utils';
+import { AssetProxyId } from '@0xproject/types';
 import { BigNumber } from '@0xproject/utils';
 import * as chai from 'chai';
+import { LogWithDecodedArgs } from 'ethereum-types';
 import ethUtil = require('ethereumjs-util');
 import * as _ from 'lodash';
 
@@ -82,20 +84,11 @@ describe('Asset Transfer Proxies', () => {
             }),
             constants.AWAIT_TRANSACTION_MINED_MS,
         );
-
-        await erc721Proxy.addAuthorizedAddress.sendTransactionAsync(exchangeAddress, {
-            from: owner,
-        });
-
         erc721Receiver = await DummyERC721ReceiverContract.deployFrom0xArtifactAsync(
             artifacts.DummyERC721Receiver,
             provider,
             txDefaults,
         );
-
-        zeroEx = new ZeroEx(provider, {
-            networkId: constants.TESTRPC_NETWORK_ID,
-        });
     });
     beforeEach(async () => {
         await blockchainLifecycle.startAsync();
@@ -298,10 +291,8 @@ describe('Asset Transfer Proxies', () => {
                 );
 
                 // Parse transaction logs
-                const tx = await zeroEx.awaitTransactionMinedAsync(txHash);
-                tx.logs = _.filter(tx.logs, log => log.address === erc721Receiver.address);
-                const logDecoder = new LogDecoder(constants.TESTRPC_NETWORK_ID);
-                tx.logs = _.map(tx.logs, log => logDecoder.decodeLogOrThrow(log));
+                const logDecoder = new LogDecoder(web3Wrapper, erc721Receiver.address);
+                const tx = await logDecoder.getTxWithDecodedLogsAsync(txHash);
                 // Verify that no log was emitted by erc721 receiver
                 expect(tx.logs.length).to.be.equal(0);
                 // Verify transfer was successful
@@ -311,9 +302,7 @@ describe('Asset Transfer Proxies', () => {
 
             it('should call onERC721Received when transferring to a smart contract with receiver data', async () => {
                 // Construct ERC721 asset data
-                const receiverData = ethUtil.bufferToHex(
-                    assetProxyUtils.encodeUint256(ZeroEx.generatePseudoRandomSalt()),
-                );
+                const receiverData = ethUtil.bufferToHex(assetProxyUtils.encodeUint256(generatePseudoRandomSalt()));
                 const encodedAssetData = assetProxyUtils.encodeERC721AssetData(
                     erc721Token.address,
                     erc721MakerTokenId,
@@ -333,10 +322,8 @@ describe('Asset Transfer Proxies', () => {
                     { from: exchangeAddress },
                 );
                 // Parse transaction logs
-                const tx = await zeroEx.awaitTransactionMinedAsync(txHash);
-                tx.logs = _.filter(tx.logs, log => log.address === erc721Receiver.address);
-                const logDecoder = new LogDecoder(constants.TESTRPC_NETWORK_ID);
-                tx.logs = _.map(tx.logs, log => logDecoder.decodeLogOrThrow(log));
+                const logDecoder = new LogDecoder(web3Wrapper, erc721Receiver.address);
+                const tx = await logDecoder.getTxWithDecodedLogsAsync(txHash);
                 // Validate log emitted by erc721 receiver
                 expect(tx.logs.length).to.be.equal(1);
                 const tokenReceivedLog = tx.logs[0] as LogWithDecodedArgs<TokenReceivedContractEventArgs>;
@@ -350,9 +337,7 @@ describe('Asset Transfer Proxies', () => {
 
             it('should throw if there is receiver data but contract does not have onERC721Received', async () => {
                 // Construct ERC721 asset data
-                const receiverData = ethUtil.bufferToHex(
-                    assetProxyUtils.encodeUint256(ZeroEx.generatePseudoRandomSalt()),
-                );
+                const receiverData = ethUtil.bufferToHex(assetProxyUtils.encodeUint256(generatePseudoRandomSalt()));
                 const encodedAssetData = assetProxyUtils.encodeERC721AssetData(
                     erc721Token.address,
                     erc721MakerTokenId,

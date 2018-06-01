@@ -79,13 +79,14 @@ export const assetProxyUtils = {
         const encodedAssetProxyId = assetProxyUtils.encodeAssetProxyId(AssetProxyId.ERC721);
         const encodedAddress = assetProxyUtils.encodeAddress(tokenAddress);
         const encodedTokenId = assetProxyUtils.encodeUint256(tokenId);
-        const encodedMetadata = Buffer.concat([encodedAddress, encodedTokenId, encodedAssetProxyId]);
+        let encodedMetadata = Buffer.concat([encodedAddress, encodedTokenId]);
         if (!_.isUndefined(data)) {
             const encodedData = ethUtil.toBuffer(data);
             const dataLength = new BigNumber(encodedData.byteLength);
             const encodedDataLength = assetProxyUtils.encodeUint256(dataLength);
             encodedMetadata = Buffer.concat([encodedMetadata, encodedDataLength, encodedData]);
         }
+        encodedMetadata = Buffer.concat([encodedMetadata, encodedAssetProxyId]);
         const encodedMetadataHex = ethUtil.bufferToHex(encodedMetadata);
         return encodedMetadataHex;
     },
@@ -116,7 +117,7 @@ export const assetProxyUtils = {
         const nullData = '0x';
         let data = nullData;
         if (encodedAssetData.byteLength > 53) {
-            const encodedDataLength = encodedAssetData.slice(53, 85);
+            const encodedDataLength = encodedAssetData.slice(52, 84);
             const dataLength = assetProxyUtils.decodeUint256(encodedDataLength);
             const expectedDataLength = new BigNumber(encodedAssetData.byteLength - 85);
             if (!dataLength.equals(expectedDataLength)) {
@@ -124,7 +125,7 @@ export const assetProxyUtils = {
                     `Data length (${dataLength}) does not match actual length of data (${expectedDataLength})`,
                 );
             }
-            const encodedData = encodedAssetData.slice(85);
+            const encodedData = encodedAssetData.slice(84, expectedDataLength.toNumber() + 84);
             data = ethUtil.bufferToHex(encodedData);
         }
         const erc721AssetData: ERC721AssetData = {

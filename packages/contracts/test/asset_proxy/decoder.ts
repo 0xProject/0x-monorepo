@@ -1,9 +1,10 @@
-import { LogWithDecodedArgs, TransactionReceiptWithDecodedLogs, ZeroEx } from '0x.js';
 import { BlockchainLifecycle, devConstants, web3Factory } from '@0xproject/dev-utils';
+import { generatePseudoRandomSalt } from '@0xproject/order-utils';
 import { BigNumber } from '@0xproject/utils';
 import { Web3Wrapper } from '@0xproject/web3-wrapper';
 import BN = require('bn.js');
 import * as chai from 'chai';
+import { LogWithDecodedArgs, TransactionReceiptWithDecodedLogs } from 'ethereum-types';
 import ethUtil = require('ethereumjs-util');
 import * as Web3 from 'web3';
 
@@ -57,7 +58,7 @@ describe('TestAssetDataDecoders', () => {
         });
 
         it('should correctly decode ERC721 asset data', async () => {
-            const tokenId = ZeroEx.generatePseudoRandomSalt();
+            const tokenId = generatePseudoRandomSalt();
             const encodedAssetData = assetProxyUtils.encodeERC721AssetData(testAddress, tokenId);
             const expectedDecodedAssetData = assetProxyUtils.decodeERC721AssetData(encodedAssetData);
             let decodedAssetProxyId: number;
@@ -77,9 +78,9 @@ describe('TestAssetDataDecoders', () => {
         });
 
         it('should correctly decode ERC721 asset data with receiver data', async () => {
-            const tokenId = ZeroEx.generatePseudoRandomSalt();
+            const tokenId = generatePseudoRandomSalt();
             const receiverData =
-                ethUtil.bufferToHex(assetProxyUtils.encodeUint256(ZeroEx.generatePseudoRandomSalt())) + 'FFFF';
+                ethUtil.bufferToHex(assetProxyUtils.encodeUint256(generatePseudoRandomSalt())) + 'FFFF';
             const encodedAssetData = assetProxyUtils.encodeERC721AssetData(testAddress, tokenId, receiverData);
             const expectedDecodedAssetData = assetProxyUtils.decodeERC721AssetData(encodedAssetData);
             let decodedAssetProxyId: number;

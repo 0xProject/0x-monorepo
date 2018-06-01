@@ -1,4 +1,6 @@
 import { BlockchainLifecycle } from '@0xproject/dev-utils';
+import { generatePseudoRandomSalt } from '@0xproject/order-utils';
+import { AssetProxyId } from '@0xproject/types';
 import { BigNumber } from '@0xproject/utils';
 import BN = require('bn.js');
 import * as chai from 'chai';
@@ -66,7 +68,7 @@ describe('LibBytes', () => {
         shortTestBytesAsBuffer = Buffer.concat([encodedShortDataLength, encodedShortData]);
         shortTestBytes = ethUtil.bufferToHex(shortTestBytesAsBuffer);
         // Create test bytes one word in length
-        wordOfData = ethUtil.bufferToHex(assetProxyUtils.encodeUint256(ZeroEx.generatePseudoRandomSalt()));
+        wordOfData = ethUtil.bufferToHex(assetProxyUtils.encodeUint256(generatePseudoRandomSalt()));
         const encodedWordOfData = ethUtil.toBuffer(wordOfData);
         const wordOfDataLength = new BigNumber(encodedWordOfData.byteLength);
         const encodedWordOfDataLength = assetProxyUtils.encodeUint256(wordOfDataLength);
@@ -315,7 +317,6 @@ describe('LibBytes', () => {
     });
     */
 
-=======
     describe('readFirst4', () => {
         // AssertionError: expected promise to be rejected with an error including 'revert' but it was fulfilled with '0x08c379a0'
         it('should revert if byte array has a length < 4', async () => {

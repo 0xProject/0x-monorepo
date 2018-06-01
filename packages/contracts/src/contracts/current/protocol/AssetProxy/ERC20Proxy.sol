@@ -54,8 +54,6 @@ contract ERC20Proxy is
         ) = decodeERC20AssetData(assetData);
 
         // Data must be intended for this proxy.
-        uint256 length = assetMetadata.length;
-
         require(
             proxyId == PROXY_ID,
             PROXY_ID_MISMATCH
@@ -92,14 +90,15 @@ contract ERC20Proxy is
         )
     {
         // Validate encoded data length
+        uint256 length = assetData.length;
         require(
             assetData.length == 21,
             INVALID_ASSET_DATA_LENGTH
         );
 
         // Decode data
-        proxyId = uint8(assetData[0]);
-        token = readAddress(assetData, 1);
+        token = readAddress(assetData, 0);
+        proxyId = uint8(assetData[length-1]);
 
         return (proxyId, token);
     }

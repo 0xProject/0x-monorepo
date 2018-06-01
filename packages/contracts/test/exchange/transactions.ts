@@ -224,8 +224,8 @@ describe('Exchange transactions', () => {
                 exchangeAddress: exchange.address,
                 makerAddress,
                 feeRecipientAddress,
-                makerAssetData: assetProxyUtils.encodeERC20ProxyData(defaultMakerTokenAddress),
-                takerAssetData: assetProxyUtils.encodeERC20ProxyData(defaultTakerTokenAddress),
+                makerAssetData: assetProxyUtils.encodeERC20AssetData(defaultMakerTokenAddress),
+                takerAssetData: assetProxyUtils.encodeERC20AssetData(defaultTakerTokenAddress),
             };
             whitelistOrderFactory = new OrderFactory(makerPrivateKey, defaultOrderParams);
         });

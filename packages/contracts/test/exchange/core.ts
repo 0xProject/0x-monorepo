@@ -845,7 +845,7 @@ describe('Exchange core', () => {
             const makerAssetId = erc721MakerAssetIds[0];
             signedOrder = orderFactory.newSignedOrder({
                 makerAssetAmount: new BigNumber(1),
-                takerAssetAmount: ZeroEx.toBaseUnitAmount(new BigNumber(100), 18),
+                takerAssetAmount: Web3Wrapper.toBaseUnitAmount(new BigNumber(100), 18),
                 makerAssetData: assetProxyUtils.encodeERC721AssetData(erc721Token.address, makerAssetId),
                 takerAssetData: assetProxyUtils.encodeERC20AssetData(defaultTakerAssetAddress),
             });
@@ -885,7 +885,7 @@ describe('Exchange core', () => {
             const takerAssetId = erc721TakerAssetIds[0];
             signedOrder = orderFactory.newSignedOrder({
                 takerAssetAmount: new BigNumber(1),
-                makerAssetAmount: ZeroEx.toBaseUnitAmount(new BigNumber(100), 18),
+                makerAssetAmount: Web3Wrapper.toBaseUnitAmount(new BigNumber(100), 18),
                 takerAssetData: assetProxyUtils.encodeERC721AssetData(erc721Token.address, takerAssetId),
                 makerAssetData: assetProxyUtils.encodeERC20AssetData(defaultMakerAssetAddress),
             });
