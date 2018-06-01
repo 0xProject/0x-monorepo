@@ -52,8 +52,6 @@ export class ERC20Wrapper {
     public async setBalancesAndAllowancesAsync(): Promise<void> {
         this._validateDummyTokenContractsExistOrThrow();
         this._validateProxyContractExistsOrThrow();
-        const setBalancePromises: Array<Promise<string>> = [];
-        const setAllowancePromises: Array<Promise<string>> = [];
         for (const dummyTokenContract of this._dummyTokenContracts) {
             for (const tokenOwnerAddress of this._tokenOwnerAddresses) {
                 await this._web3Wrapper.awaitTransactionSuccessAsync(
@@ -79,7 +77,6 @@ export class ERC20Wrapper {
         this._validateDummyTokenContractsExistOrThrow();
         const balancesByOwner: ERC20BalancesByOwner = {};
         const balances: BigNumber[] = [];
-        const balancePromises: Array<Promise<BigNumber>> = [];
         const balanceInfo: Array<{ tokenOwnerAddress: string; tokenAddress: string }> = [];
         for (const dummyTokenContract of this._dummyTokenContracts) {
             for (const tokenOwnerAddress of this._tokenOwnerAddresses) {

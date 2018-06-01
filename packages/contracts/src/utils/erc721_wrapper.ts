@@ -52,8 +52,6 @@ export class ERC721Wrapper {
     public async setBalancesAndAllowancesAsync(): Promise<void> {
         this._validateDummyTokenContractsExistOrThrow();
         this._validateProxyContractExistsOrThrow();
-        const setBalancePromises: Array<Promise<string>> = [];
-        const setAllowancePromises: Array<Promise<string>> = [];
         this._initialTokenIdsByOwner = {};
         for (const dummyTokenContract of this._dummyTokenContracts) {
             for (const tokenOwnerAddress of this._tokenOwnerAddresses) {
@@ -92,7 +90,6 @@ export class ERC721Wrapper {
         this._validateBalancesAndAllowancesSetOrThrow();
         const tokenIdsByOwner: ERC721TokenIdsByOwner = {};
         const tokenOwnerAddresses: string[] = [];
-        const tokenOwnerPromises: Array<Promise<string>> = [];
         const tokenInfo: Array<{ tokenId: BigNumber; tokenAddress: string }> = [];
         for (const dummyTokenContract of this._dummyTokenContracts) {
             for (const tokenOwnerAddress of this._tokenOwnerAddresses) {
