@@ -1,18 +1,5 @@
 {
-    "artifactsDir": "artifacts/2.0.0",
     "contractsDir": "../contracts/src/contracts",
-    "contracts": [
-        "DummyERC20Token",
-        "DummyERC721Token",
-        "ERC20Proxy",
-        "ERC721Proxy",
-        "Exchange",
-        "MultiSigWalletWithTimeLockExceptRemoveAuthorizedAddress",
-        "ZRXToken",
-        "WETH9",
-        "IWallet",
-        "IValidator"
-    ],
     "compilerSettings": {
         "outputSelection": {
             "*": {
