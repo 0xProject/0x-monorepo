@@ -64,7 +64,9 @@ describe('LibBytes', () => {
 
     describe('popByte', () => {
         it('should revert if length is 0', async () => {
-            return expect(libBytes.publicPopByte.callAsync(constants.NULL_BYTES)).to.be.rejectedWith(constants.REVERT);
+            return expect(libBytes.publicPopByte.callAsync(constants.NULL_BYTES)).to.be.rejectedWith(
+                constants.LIB_BYTES_GT_ZERO_LENGTH_REQUIRED,
+            );
         });
 
         it('should pop the last byte from the input and return it', async () => {
@@ -79,7 +81,7 @@ describe('LibBytes', () => {
     describe('popAddress', () => {
         it('should revert if length is less than 20', async () => {
             return expect(libBytes.publicPopAddress.callAsync(byteArrayShorterThan20Bytes)).to.be.rejectedWith(
-                constants.REVERT,
+                constants.LIB_BYTES_GTE_20_LENGTH_REQUIRED,
             );
         });
 
@@ -160,18 +162,20 @@ describe('LibBytes', () => {
             return expect(address).to.be.equal(testAddress);
         });
 
-        // TOOD(albrow): AssertionError: expected promise to be rejected but it was fulfilled with '0x0000000000000000000000000000000000000000'
-        it.skip('should fail if the byte array is too short to hold an address)', async () => {
+        it('should fail if the byte array is too short to hold an address)', async () => {
             const shortByteArray = '0xabcdef';
             const offset = new BigNumber(0);
-            return expectRevertOrAlwaysFailingTransaction(libBytes.publicReadAddress.callAsync(shortByteArray, offset));
+            return expect(libBytes.publicReadAddress.callAsync(shortByteArray, offset)).to.be.rejectedWith(
+                constants.LIB_BYTES_GTE_20_LENGTH_REQUIRED,
+            );
         });
 
-        // TODO(albrow): AssertionError: expected promise to be rejected but it was fulfilled with '0x0000000000000000000000000000000000000000'
-        it.skip('should fail if the length between the offset and end of the byte array is too short to hold an address)', async () => {
+        it('should fail if the length between the offset and end of the byte array is too short to hold an address)', async () => {
             const byteArray = ethUtil.addHexPrefix(testAddress);
             const badOffset = new BigNumber(ethUtil.toBuffer(byteArray).byteLength);
-            return expectRevertOrAlwaysFailingTransaction(libBytes.publicReadAddress.callAsync(byteArray, badOffset));
+            return expect(libBytes.publicReadAddress.callAsync(byteArray, badOffset)).to.be.rejectedWith(
+                constants.LIB_BYTES_GTE_20_LENGTH_REQUIRED,
+            );
         });
     });
 
@@ -203,18 +207,18 @@ describe('LibBytes', () => {
             return expect(bytes32).to.be.equal(testBytes32);
         });
 
-        // TODO(albrow): AssertionError: expected promise to be rejected but it was fulfilled with '0x08c379a000000000000000000000000000000000000000000000000000000000'
-        it.skip('should fail if the byte array is too short to hold a bytes32)', async () => {
+        it('should fail if the byte array is too short to hold a bytes32)', async () => {
             const offset = new BigNumber(0);
-            return expectRevertOrAlwaysFailingTransaction(
-                libBytes.publicReadBytes32.callAsync(byteArrayShorterThan32Bytes, offset),
+            return expect(libBytes.publicReadBytes32.callAsync(byteArrayShorterThan32Bytes, offset)).to.be.rejectedWith(
+                constants.LIB_BYTES_GTE_32_LENGTH_REQUIRED,
             );
         });
 
-        // TODO(albrow): AssertionError: expected promise to be rejected but it was fulfilled with '0x08c379a000000000000000000000000000000000000000000000000000000000'
-        it.skip('should fail if the length between the offset and end of the byte array is too short to hold a bytes32)', async () => {
+        it('should fail if the length between the offset and end of the byte array is too short to hold a bytes32)', async () => {
             const badOffset = new BigNumber(ethUtil.toBuffer(testBytes32).byteLength);
-            return expectRevertOrAlwaysFailingTransaction(libBytes.publicReadBytes32.callAsync(testBytes32, badOffset));
+            return expect(libBytes.publicReadBytes32.callAsync(testBytes32, badOffset)).to.be.rejectedWith(
+                constants.LIB_BYTES_GTE_32_LENGTH_REQUIRED,
+            );
         });
     });
 
@@ -250,21 +254,21 @@ describe('LibBytes', () => {
             return expect(uint256).to.bignumber.equal(testUint256);
         });
 
-        // TODO(albrow): AssertionError: expected promise to be rejected but it was fulfilled with { Object (s, e, ...) }
-        it.skip('should fail if the byte array is too short to hold a uint256)', async () => {
+        it('should fail if the byte array is too short to hold a uint256)', async () => {
             const offset = new BigNumber(0);
-            return expectRevertOrAlwaysFailingTransaction(
-                libBytes.publicReadUint256.callAsync(byteArrayShorterThan32Bytes, offset),
+            return expect(libBytes.publicReadUint256.callAsync(byteArrayShorterThan32Bytes, offset)).to.be.rejectedWith(
+                constants.LIB_BYTES_GTE_32_LENGTH_REQUIRED,
             );
         });
 
-        // TODO(albrow): AssertionError: expected promise to be rejected but it was fulfilled with { Object (s, e, ...) }
-        it.skip('should fail if the length between the offset and end of the byte array is too short to hold a uint256)', async () => {
+        it('should fail if the length between the offset and end of the byte array is too short to hold a uint256)', async () => {
             const formattedTestUint256 = new BN(testUint256.toString(10));
             const testUint256AsBuffer = ethUtil.toBuffer(formattedTestUint256);
             const byteArray = ethUtil.bufferToHex(testUint256AsBuffer);
             const badOffset = new BigNumber(testUint256AsBuffer.byteLength);
-            return expectRevertOrAlwaysFailingTransaction(libBytes.publicReadUint256.callAsync(byteArray, badOffset));
+            return expect(libBytes.publicReadUint256.callAsync(byteArray, badOffset)).to.be.rejectedWith(
+                constants.LIB_BYTES_GTE_32_LENGTH_REQUIRED,
+            );
         });
     });
 
@@ -281,10 +285,10 @@ describe('LibBytes', () => {
 
     describe('readFirst4', () => {
         // AssertionError: expected promise to be rejected with an error including 'revert' but it was fulfilled with '0x08c379a0'
-        it.skip('should revert if byte array has a length < 4', async () => {
+        it('should revert if byte array has a length < 4', async () => {
             const byteArrayLessThan4Bytes = '0x010101';
             return expect(libBytes.publicReadFirst4.callAsync(byteArrayLessThan4Bytes)).to.be.rejectedWith(
-                constants.REVERT,
+                constants.LIB_BYTES_GTE_4_LENGTH_REQUIRED,
             );
         });
         it('should return the first 4 bytes of a byte array of arbitrary length', async () => {
