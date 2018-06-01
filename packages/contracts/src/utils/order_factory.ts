@@ -19,7 +19,8 @@ export class OrderFactory {
         customOrderParams: Partial<UnsignedOrder> = {},
         signatureType: SignatureType = SignatureType.Ecrecover,
     ): SignedOrder {
-        const randomExpiration = new BigNumber(Math.floor((Date.now() + Math.random() * 100000000000) / 1000));
+        const tenMinutes = 10 * 60 * 1000;
+        const randomExpiration = new BigNumber(Date.now() + tenMinutes);
         const order = ({
             senderAddress: constants.NULL_ADDRESS,
             expirationTimeSeconds: randomExpiration,
