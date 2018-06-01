@@ -245,7 +245,7 @@ describe('Exchange transactions', () => {
             orderWithoutExchangeAddress = orderUtils.getOrderWithoutExchangeAddress(signedOrder);
             const takerAssetFillAmount = signedOrder.takerAssetAmount;
             const salt = generatePseudoRandomSalt();
-            return expect(
+            return expectRevertOrAlwaysFailingTransaction(
                 whitelist.fillOrderIfWhitelisted.sendTransactionAsync(
                     orderWithoutExchangeAddress,
                     takerAssetFillAmount,
@@ -253,7 +253,7 @@ describe('Exchange transactions', () => {
                     signedOrder.signature,
                     { from: takerAddress },
                 ),
-            ).to.be.rejectedWith(constants.REVERT);
+            );
         });
 
         it('should revert if taker has not been whitelisted', async () => {
@@ -265,7 +265,7 @@ describe('Exchange transactions', () => {
             orderWithoutExchangeAddress = orderUtils.getOrderWithoutExchangeAddress(signedOrder);
             const takerAssetFillAmount = signedOrder.takerAssetAmount;
             const salt = generatePseudoRandomSalt();
-            return expect(
+            return expectRevertOrAlwaysFailingTransaction(
                 whitelist.fillOrderIfWhitelisted.sendTransactionAsync(
                     orderWithoutExchangeAddress,
                     takerAssetFillAmount,
@@ -273,7 +273,7 @@ describe('Exchange transactions', () => {
                     signedOrder.signature,
                     { from: takerAddress },
                 ),
-            ).to.be.rejectedWith(constants.REVERT);
+            );
         });
 
         it('should fill the order if maker and taker have been whitelisted', async () => {
