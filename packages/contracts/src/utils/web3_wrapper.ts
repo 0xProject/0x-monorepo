@@ -5,7 +5,7 @@ import { Provider } from 'ethereum-types';
 
 import { coverage } from './coverage';
 
-const useGeth = false;
+const useGeth = true;
 
 const ganacheTxDefaults = {
     from: devConstants.TESTRPC_FIRST_ADDRESS,

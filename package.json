@@ -47,6 +47,7 @@
     },
     "resolutions": {
         "ethereumjs-tx": "0xProject/ethereumjs-tx#fake-tx-include-signature-by-default",
-        "ethers": "0xproject/ethers.js#eip-838-reasons"
+        "ethers": "0xproject/ethers.js#eip-838-reasons",
+        "ganache-core": "0xProject/ganache-core#feature/revert-strings"
     }
 }
