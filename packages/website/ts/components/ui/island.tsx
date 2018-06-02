@@ -1,6 +1,6 @@
 import * as React from 'react';
+import { colors } from 'ts/style/colors';
 import { Styleable } from 'ts/types';
-import { colors } from 'ts/utils/colors';
 
 export interface IslandProps {
     style?: React.CSSProperties;

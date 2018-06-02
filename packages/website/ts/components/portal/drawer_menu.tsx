@@ -4,8 +4,8 @@ import * as React from 'react';
 
 import { defaultMenuItemEntries, Menu } from 'ts/components/portal/menu';
 import { Identicon } from 'ts/components/ui/identicon';
+import { colors } from 'ts/style/colors';
 import { WebsitePaths } from 'ts/types';
-import { colors } from 'ts/utils/colors';
 import { utils } from 'ts/utils/utils';
 
 const IDENTICON_DIAMETER = 45;
