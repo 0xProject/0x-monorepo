@@ -29,7 +29,32 @@
     jsonschema "^1.2.0"
     lodash.values "^4.3.0"
 
-"@0xproject/types@0.7.0":
+"@0xproject/json-schemas@^0.7.23", "@0xproject/json-schemas@^0.7.24":
+  version "0.7.24"
+  resolved "https://registry.yarnpkg.com/@0xproject/json-schemas/-/json-schemas-0.7.24.tgz#21a12b43ab0ab4aa302d02c4891668cda36b6c64"
+  dependencies:
+    "@0xproject/typescript-typings" "^0.3.2"
+    "@types/node" "^8.0.53"
+    jsonschema "^1.2.0"
+    lodash.values "^4.3.0"
+
+"@0xproject/order-utils@0.0.5":
+  version "0.0.5"
+  resolved "https://registry.yarnpkg.com/@0xproject/order-utils/-/order-utils-0.0.5.tgz#c8d92a112740b0020e08f13137844f8c183c863b"
+  dependencies:
+    "@0xproject/assert" "^0.2.10"
+    "@0xproject/json-schemas" "^0.7.24"
+    "@0xproject/types" "^0.7.0"
+    "@0xproject/typescript-typings" "^0.3.2"
+    "@0xproject/utils" "^0.6.2"
+    "@0xproject/web3-wrapper" "^0.6.4"
+    "@types/node" "^8.0.53"
+    bn.js "^4.11.8"
+    ethereumjs-abi "^0.6.4"
+    ethereumjs-util "^5.1.1"
+    lodash "^4.17.4"
+
+"@0xproject/types@0.7.0", "@0xproject/types@^0.7.0":
   version "0.7.0"
   resolved "https://registry.yarnpkg.com/@0xproject/types/-/types-0.7.0.tgz#fad13925ee92ad4ee1980668a5cb2bed4dcaab8f"
   dependencies:

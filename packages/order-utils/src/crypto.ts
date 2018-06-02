@@ -26,7 +26,8 @@ export const crypto = {
                 argTypes.push('uint8');
             } else if (arg.isBigNumber) {
                 argTypes.push('uint256');
-                args[i] = new BN(arg.toString(10), 10);
+                const base = 10;
+                args[i] = new BN(arg.toString(base), base);
             } else if (ethUtil.isValidAddress(arg)) {
                 argTypes.push('address');
             } else if (_.isString(arg)) {

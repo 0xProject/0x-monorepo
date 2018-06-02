@@ -37,7 +37,7 @@
     },
     "dependencies": {
         "@0xproject/base-contract": "^0.3.2",
-        "@0xproject/order-utils": "^0.0.5",
+        "@0xproject/order-utils": "0.0.5",
         "@0xproject/types": "0.7.0",
         "ethereum-types": "^0.0.1",
         "@0xproject/typescript-typings": "^0.3.2",

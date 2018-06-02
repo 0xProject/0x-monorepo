@@ -1,4 +1,4 @@
-import { SignedOrder } from '@0xproject/types';
+import { AssetProxyId, SignedOrder } from '@0xproject/types';
 import { BigNumber } from '@0xproject/utils';
 import { Web3Wrapper } from '@0xproject/web3-wrapper';
 import { LogEntry, Provider, TransactionReceiptWithDecodedLogs } from 'ethereum-types';
@@ -10,7 +10,7 @@ import { constants } from './constants';
 import { formatters } from './formatters';
 import { LogDecoder } from './log_decoder';
 import { orderUtils } from './order_utils';
-import { AssetProxyId, OrderInfo, SignedTransaction } from './types';
+import { OrderInfo, SignedTransaction } from './types';
 
 export class ExchangeWrapper {
     private _exchange: ExchangeContract;

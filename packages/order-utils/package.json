@@ -1,6 +1,6 @@
 {
     "name": "@0xproject/order-utils",
-    "version": "0.0.5",
+    "version": "0.0.6",
     "engines": {
         "node": ">=6.12"
     },
@@ -9,13 +9,17 @@
     "types": "lib/src/index.d.ts",
     "scripts": {
         "watch": "tsc -w",
-        "build": "tsc && copyfiles -u 3 './lib/src/monorepo_scripts/**/*' ./scripts",
-        "test": "run-s clean build run_mocha",
+        "build": "run-s clean update_artifacts generate_contract_wrappers transpile copy_monorepo_scripts",
+        "transpile": "tsc",
+        "copy_monorepo_scripts": "copyfiles -u 3 './lib/src/monorepo_scripts/**/*' ./scripts",
+        "generate_contract_wrappers": "abi-gen --abis 'lib/src/artifacts/@(Exchange|IWallet|IValidator).json' --template ../contract_templates/contract.handlebars --partials '../contract_templates/partials/**/*.handlebars' --output src/generated_contract_wrappers --backend ethers && prettier --write 'src/generated_contract_wrappers/**.ts'",
+        "update_artifacts": "for i in ${npm_package_config_contracts}; do copyfiles -u 4 ../migrations/artifacts/2.0.0/$i.json lib/src/artifacts; done;",
+        "test": "run-s build run_mocha",
         "test:circleci": "yarn test:coverage",
         "run_mocha": "mocha lib/test/**/*_test.js --bail --exit",
         "test:coverage": "nyc npm run test --all && yarn coverage:report:lcov",
         "coverage:report:lcov": "nyc report --reporter=text-lcov > coverage/lcov.info",
-        "clean": "shx rm -rf lib scripts",
+        "clean": "shx rm -rf lib scripts lib/src/artifacts src/generated_contract_wrappers",
         "lint": "tslint --project .",
         "manual:postpublish": "yarn build; node ./scripts/postpublish.js",
         "docs:stage": "node scripts/stage_docs.js",
@@ -23,6 +27,7 @@
         "upload_docs_json": "aws s3 cp generated_docs/index.json $S3_URL --profile 0xproject --grants read=uri=http://acs.amazonaws.com/groups/global/AllUsers --content-type application/json"
     },
     "config": {
+        "contracts": "IWallet IValidator Exchange",
         "postpublish": {
             "docPublishConfigs": {
                 "extraFileIncludes": [
@@ -66,15 +71,19 @@
     },
     "dependencies": {
         "@0xproject/assert": "^0.2.10",
-        "@0xproject/json-schemas": "0.7.22",
-        "@0xproject/types": "0.7.0",
+        "@0xproject/base-contract": "^0.3.2",
+        "@0xproject/json-schemas": "1.0.0",
+        "@0xproject/sol-compiler": "^0.5.0",
+        "@0xproject/types": "^1.0.0",
         "@0xproject/typescript-typings": "^0.3.2",
         "@0xproject/utils": "^0.6.2",
         "@0xproject/web3-wrapper": "^0.6.4",
         "@types/node": "^8.0.53",
         "bn.js": "^4.11.8",
+        "ethereum-types": "^0.0.1",
         "ethereumjs-abi": "^0.6.4",
         "ethereumjs-util": "^5.1.1",
+        "ethers": "^3.0.15",
         "lodash": "^4.17.4"
     },
     "publishConfig": {

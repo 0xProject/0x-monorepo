@@ -1,5 +1,6 @@
 import { BlockchainLifecycle } from '@0xproject/dev-utils';
-import { SignedOrder } from '@0xproject/types';
+import { assetProxyUtils, crypto } from '@0xproject/order-utils';
+import { AssetProxyId, SignedOrder } from '@0xproject/types';
 import { BigNumber } from '@0xproject/utils';
 import { Web3Wrapper } from '@0xproject/web3-wrapper';
 import * as chai from 'chai';
@@ -18,17 +19,14 @@ import {
     FillContractEventArgs,
 } from '../../src/contract_wrappers/generated/exchange';
 import { artifacts } from '../../src/utils/artifacts';
-import { assetProxyUtils } from '../../src/utils/asset_proxy_utils';
 import { chaiSetup } from '../../src/utils/chai_setup';
 import { constants } from '../../src/utils/constants';
-import { crypto } from '../../src/utils/crypto';
 import { ERC20Wrapper } from '../../src/utils/erc20_wrapper';
 import { ERC721Wrapper } from '../../src/utils/erc721_wrapper';
 import { ExchangeWrapper } from '../../src/utils/exchange_wrapper';
+import { MatchOrderTester } from '../../src/utils/match_order_tester';
 import { OrderFactory } from '../../src/utils/order_factory';
-import { orderUtils } from '../../src/utils/order_utils';
 import {
-    AssetProxyId,
     ContractName,
     ERC20BalancesByOwner,
     ERC721TokenIdsByOwner,
@@ -36,8 +34,6 @@ import {
     OrderInfo,
 } from '../../src/utils/types';
 import { provider, txDefaults, web3Wrapper } from '../../src/utils/web3_wrapper';
-
-import { MatchOrderTester } from '../../src/utils/match_order_tester';
 
 chaiSetup.configure();
 const expect = chai.expect;

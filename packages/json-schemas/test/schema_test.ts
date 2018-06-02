@@ -171,6 +171,7 @@ describe('Schema', () => {
         const order = {
             makerAddress: NULL_ADDRESS,
             takerAddress: NULL_ADDRESS,
+            senderAddress: NULL_ADDRESS,
             makerFee: '1',
             takerFee: '2',
             makerAssetAmount: '1',
@@ -179,6 +180,7 @@ describe('Schema', () => {
             takerAssetData: NULL_ADDRESS,
             salt: '67006738228878699843088602623665307406148487219438534730168799356281242528500',
             feeRecipientAddress: NULL_ADDRESS,
+            exchangeAddress: NULL_ADDRESS,
             expirationTimeSeconds: '42',
         };
         describe('#orderSchema', () => {

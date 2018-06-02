@@ -97,7 +97,7 @@ contract MixinSignatureValidator is
         bytes32 r;
         bytes32 s;
         address recovered;
-        
+
         // Always illegal signature.
         // This is always an implicit option since a signer can create a
         // signature array with invalid type or length. We may as well make

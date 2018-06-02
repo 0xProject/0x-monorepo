@@ -1,6 +1,6 @@
 {
     "name": "@0xproject/json-schemas",
-    "version": "0.7.24",
+    "version": "1.0.0",
     "engines": {
         "node": ">=6.12"
     },

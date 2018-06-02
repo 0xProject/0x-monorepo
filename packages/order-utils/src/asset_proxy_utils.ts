@@ -1,8 +1,10 @@
+import { AssetProxyId, ERC20ProxyData, ERC721ProxyData, ProxyData } from '@0xproject/types';
 import { BigNumber } from '@0xproject/utils';
 import BN = require('bn.js');
 import ethUtil = require('ethereumjs-util');
 
-import { AssetProxyId, ERC20ProxyData, ERC721ProxyData, ProxyData } from './types';
+const ERC20_PROXY_METADATA_BYTE_LENGTH = 21;
+const ERC721_PROXY_METADATA_BYTE_LENGTH = 53;
 
 export const assetProxyUtils = {
     encodeAssetProxyId(assetProxyId: AssetProxyId): Buffer {
@@ -26,8 +28,10 @@ export const assetProxyUtils = {
         return address;
     },
     encodeUint256(value: BigNumber): Buffer {
-        const formattedValue = new BN(value.toString(10));
+        const base = 10;
+        const formattedValue = new BN(value.toString(base));
         const encodedValue = ethUtil.toBuffer(formattedValue);
+        // tslint:disable-next-line:custom-no-magic-numbers
         const paddedValue = ethUtil.setLengthLeft(encodedValue, 32);
         return paddedValue;
     },
@@ -45,7 +49,7 @@ export const assetProxyUtils = {
     },
     decodeERC20ProxyData(proxyData: string): ERC20ProxyData {
         const encodedProxyMetadata = ethUtil.toBuffer(proxyData);
-        if (encodedProxyMetadata.byteLength !== 21) {
+        if (encodedProxyMetadata.byteLength !== ERC20_PROXY_METADATA_BYTE_LENGTH) {
             throw new Error(
                 `Could not decode ERC20 Proxy Data. Expected length of encoded data to be 21. Got ${
                     encodedProxyMetadata.byteLength
@@ -61,7 +65,8 @@ export const assetProxyUtils = {
                 }), but got ${assetProxyId}`,
             );
         }
-        const encodedTokenAddress = encodedProxyMetadata.slice(0, 20);
+        const addressOffset = ERC20_PROXY_METADATA_BYTE_LENGTH - 1;
+        const encodedTokenAddress = encodedProxyMetadata.slice(0, addressOffset);
         const tokenAddress = assetProxyUtils.decodeAddress(encodedTokenAddress);
         const erc20ProxyData = {
             assetProxyId,
@@ -79,7 +84,7 @@ export const assetProxyUtils = {
     },
     decodeERC721ProxyData(proxyData: string): ERC721ProxyData {
         const encodedProxyMetadata = ethUtil.toBuffer(proxyData);
-        if (encodedProxyMetadata.byteLength !== 53) {
+        if (encodedProxyMetadata.byteLength !== ERC721_PROXY_METADATA_BYTE_LENGTH) {
             throw new Error(
                 `Could not decode ERC20 Proxy Data. Expected length of encoded data to be 53. Got ${
                     encodedProxyMetadata.byteLength
@@ -95,9 +100,11 @@ export const assetProxyUtils = {
                 }), but got ${assetProxyId}`,
             );
         }
-        const encodedTokenAddress = encodedProxyMetadata.slice(0, 20);
+        const addressOffset = ERC20_PROXY_METADATA_BYTE_LENGTH - 1;
+        const encodedTokenAddress = encodedProxyMetadata.slice(0, addressOffset);
         const tokenAddress = assetProxyUtils.decodeAddress(encodedTokenAddress);
-        const encodedTokenId = encodedProxyMetadata.slice(20, 52);
+        const tokenIdOffset = ERC721_PROXY_METADATA_BYTE_LENGTH - 1;
+        const encodedTokenId = encodedProxyMetadata.slice(addressOffset, tokenIdOffset);
         const tokenId = assetProxyUtils.decodeUint256(encodedTokenId);
         const erc721ProxyData = {
             assetProxyId,
