@@ -34,11 +34,11 @@ export const backendClient = {
         const result = await fetchUtils.requestAsync(utils.getBackendBaseUrl(), WIKI_ENDPOINT);
         return result;
     },
-    async subscribeToNewsletterAsync(email: string): Promise<boolean> {
+    async subscribeToNewsletterAsync(email: string): Promise<Response> {
         const result = await fetchUtils.postAsync(utils.getBackendBaseUrl(), SUBSCRIBE_SUBSTACK_NEWSLETTER_ENDPOINT, {
             email,
             referrer: window.location.href,
         });
-        return result.status === 200;
+        return result;
     },
 };
