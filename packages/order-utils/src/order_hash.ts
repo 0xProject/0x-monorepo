@@ -1,5 +1,5 @@
 import { schemas, SchemaValidator } from '@0xproject/json-schemas';
-import { Order, SignatureType, SignedOrder } from '@0xproject/types';
+import { Order, SignedOrder } from '@0xproject/types';
 import { BigNumber } from '@0xproject/utils';
 import BN = require('bn.js');
 import { SolidityTypes } from 'ethereum-types';

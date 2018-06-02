@@ -1,6 +1,6 @@
 import { BlockchainLifecycle } from '@0xproject/dev-utils';
 import { assetProxyUtils, generatePseudoRandomSalt } from '@0xproject/order-utils';
-import { AssetProxyId, Order, OrderWithoutExchangeAddress, SignatureType, SignedOrder } from '@0xproject/types';
+import { AssetProxyId, Order, OrderWithoutExchangeAddress, SignedOrder } from '@0xproject/types';
 import { BigNumber } from '@0xproject/utils';
 import * as chai from 'chai';
 import * as ethUtil from 'ethereumjs-util';

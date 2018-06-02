@@ -16,8 +16,8 @@ import { utils } from './utils';
 /**
  * Verifies that the provided signature is valid according to the 0x Protocol smart contracts
  * @param   data          The hex encoded data signed by the supplied signature.
- * @param   signature     A hex encoded 0x Protocol signature made up of: [SignatureType][TypeSpecificData].
- *          E.g [SignatureType.EIP712][vrs]
+ * @param   signature     A hex encoded 0x Protocol signature made up of: [TypeSpecificData][SignatureType].
+ *          E.g [vrs][SignatureType.EIP712]
  * @param   signerAddress The hex encoded address that signed the data, producing the supplied signature.
  * @return  Whether the signature is valid for the supplied signerAddress and data.
  */
