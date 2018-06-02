@@ -7,7 +7,7 @@ import * as path from 'path';
 import { exec as execAsync } from 'promisify-child-process';
 import * as rimraf from 'rimraf';
 
-import { utils } from './utils';
+import { utils } from './utils/utils';
 
 (async () => {
     const monorepoRootPath = path.join(__dirname, '../../..');

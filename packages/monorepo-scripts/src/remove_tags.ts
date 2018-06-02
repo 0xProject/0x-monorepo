@@ -8,7 +8,7 @@ import semverSort = require('semver-sort');
 
 import { constants } from './constants';
 import { Changelog } from './types';
-import { utils } from './utils';
+import { utils } from './utils/utils';
 
 (async () => {
     const shouldIncludePrivate = true;
@@ -24,7 +24,7 @@ import { utils } from './utils';
 
         let latestChangelogVersion: string;
         if (!_.isUndefined(changelogJSONIfExists)) {
-            let changelogs: Changelog[];
+            let changelogs: Changelog;
             try {
                 changelogs = JSON.parse(changelogJSONIfExists);
             } catch (err) {
