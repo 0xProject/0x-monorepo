@@ -1,11 +1,11 @@
 import { colors } from '@0xproject/react-shared';
 import * as React from 'react';
 
+import { logUtils } from '@0xproject/utils';
 import { Button } from 'ts/components/ui/button';
+import { Container } from 'ts/components/ui/container';
 import { Input } from 'ts/components/ui/input';
 import { Text } from 'ts/components/ui/text';
-import { logUtils } from '@0xproject/utils';
-import { Container } from 'ts/components/ui/container';
 import { styled } from 'ts/style/theme';
 import { backendClient } from 'ts/utils/backend_client';
 
@@ -47,7 +47,7 @@ export class SubscribeForm extends React.Component<SubscribeFormProps, Subscribe
                                 value={this.state.emailText}
                                 fontColor={colors.white}
                                 fontSize={formFontSize}
-                                backgroundColor="#343333"
+                                backgroundColor={colors.projectsGrey}
                                 width="275px"
                                 onChange={this._handleEmailInputChange.bind(this)}
                             />
@@ -55,7 +55,7 @@ export class SubscribeForm extends React.Component<SubscribeFormProps, Subscribe
                         <Container marginLeft="15px" marginTop="15px">
                             <Button
                                 type="submit"
-                                backgroundColor="#252525"
+                                backgroundColor={colors.darkButtonGrey}
                                 fontColor={colors.white}
                                 fontSize={formFontSize}
                             >

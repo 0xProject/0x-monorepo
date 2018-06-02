@@ -1,12 +1,12 @@
 import { colors } from '@0xproject/react-shared';
 import * as _ from 'lodash';
 import * as React from 'react';
-import { CTA } from 'ts/components/ui/button';
 import DocumentTitle = require('react-document-title');
 import { Link } from 'react-router-dom';
 import { Footer } from 'ts/components/footer';
 import { SubscribeForm } from 'ts/components/forms/subscribe_form';
 import { TopBar } from 'ts/components/top_bar/top_bar';
+import { CTA } from 'ts/components/ui/button';
 import { Dispatcher } from 'ts/redux/dispatcher';
 import { Deco, Key, Language, ScreenWidths, WebsitePaths } from 'ts/types';
 import { constants } from 'ts/utils/constants';

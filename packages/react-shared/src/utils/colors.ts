@@ -22,7 +22,7 @@ const baseColors = {
     heroGrey: '#404040',
     projectsGrey: '#343333',
     darkestGrey: '#272727',
-    dharmaDarkGrey: '#252525',
+    darkButtonGrey: '#252525',
     lightBlue: '#60A4F4',
     lightBlueA700: '#0091EA',
     linkBlue: '#1D5CDE',
