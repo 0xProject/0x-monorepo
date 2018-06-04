@@ -62,6 +62,7 @@ export class EthLightwalletSubprovider extends BaseWalletSubprovider {
             this._pwDerivedKey,
             txHex,
             txParams.from,
+            this._keystore.hdPathString,
         );
 
         signedTxHex = `0x${signedTxHex}`;
@@ -89,6 +90,7 @@ export class EthLightwalletSubprovider extends BaseWalletSubprovider {
             this._pwDerivedKey,
             data,
             address,
+            this._keystore.hdPathString,
         );
 
         const signature = this._signing.concatSig(result);
