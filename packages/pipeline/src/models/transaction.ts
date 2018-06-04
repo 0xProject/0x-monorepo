@@ -8,7 +8,7 @@ const transaction = {
             type: 'char(66)',
         },
         block_number: {
-            type: 'bigint'
+            type: 'bigint',
         },
         gas_used: {
             type: 'varchar',

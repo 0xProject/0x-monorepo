@@ -102,7 +102,7 @@ const tableQueries: any = {
         block_number BIGINT,
         PRIMARY KEY (block_hash)
     )`,
-    transactions:  `CREATE TABLE IF NOT EXISTS transactions (
+    transactions: `CREATE TABLE IF NOT EXISTS transactions (
         txn_hash CHAR(66) UNIQUE,
         block_hash CHAR(66),
         block_number BIGINT,
@@ -182,8 +182,8 @@ export const tableScripts = {
         return _safeQuery(query);
     },
     createAllTables(): any {
-        for(const tableName in tableQueries) {
-            _safeQuery(tableQueries[tableName])
+        for (const tableName in tableQueries) {
+            _safeQuery(tableQueries[tableName]);
         }
     },
 };
@@ -193,16 +193,15 @@ export const insertDataScripts = {
         return new Promise((resolve, reject) => {
             const columns = Object.keys(object);
             const safeArray: any = [];
-            for(let key of columns) {
-                if(key in object) {
-                    if(key === 'timestamp') {
+            for (let key of columns) {
+                if (key in object) {
+                    if (key === 'timestamp') {
                         safeArray.push('to_timestamp(' + object[key] + ')');
                     } else if (typeof object[key] === 'string' || object[key] instanceof String) {
-                        safeArray.push(formatters.escapeSQLParam(object[key]))
+                        safeArray.push(formatters.escapeSQLParam(object[key]));
                     } else {
-                        safeArray.push(object[key])
+                        safeArray.push(object[key]);
                     }
-
                 } else {
                     safeArray.push('default');
                 }
@@ -224,12 +223,12 @@ export const insertDataScripts = {
             if (rows.length > 0) {
                 const rowsSplit = rows.map((value, index) => {
                     const safeArray: any = [];
-                    for(let key of columns) {
-                        if(key in value) {
-                            if(key === 'timestamp') {
+                    for (let key of columns) {
+                        if (key in value) {
+                            if (key === 'timestamp') {
                                 safeArray.push('to_timestamp(' + value[key] + ')');
                             } else if (typeof value[key] === 'string' || value[key] instanceof String) {
-                                safeArray.push(formatters.escapeSQLParam(value[key]))
+                                safeArray.push(formatters.escapeSQLParam(value[key]));
                             } else if (value[key] instanceof Array) {
                                 const escapedArray = value[key].map((subValue: string, subIndex: number) => {
                                     return formatters.escapeSQLParam(subValue);
@@ -238,7 +237,6 @@ export const insertDataScripts = {
                             } else {
                                 safeArray.push(value[key]);
                             }
-
                         } else {
                             safeArray.push('default');
                         }

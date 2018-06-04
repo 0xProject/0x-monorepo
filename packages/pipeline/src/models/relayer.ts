@@ -40,7 +40,7 @@ const relayer = {
         name: {
             type: 'varchar',
         },
-        url : {
+        url: {
             type: 'varchar',
         },
         sra_http_endpoint: {
@@ -72,8 +72,8 @@ const relayer = {
 // };
 
 const logToRelayerSchemaMapping: any = {
-    'name': 'name',
-    'homepage_url': 'url',
+    name: 'name',
+    homepage_url: 'url',
 };
 
 export { relayer, logToRelayerSchemaMapping };

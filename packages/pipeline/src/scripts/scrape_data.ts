@@ -28,7 +28,7 @@ const cli = commandLineArgs(optionDefinitions);
 
 const q = queue({ concurrency: 6, autostart: true });
 
-const airtableBase = new Airtable({apiKey: process.env.AIRTABLE_API_KEY}).base(process.env.AIRTABLE_0X_BASE);
+const airtableBase = new Airtable({ apiKey: process.env.AIRTABLE_API_KEY }).base(process.env.AIRTABLE_0X_BASE);
 
 const BLOCK_INCREMENTS = 1000;
 const BASE_SYMBOL = 'USD'; // use USD as base currency against
@@ -36,7 +36,8 @@ const API_HIST_LIMIT = 2000; //cryptocompare API limits histoday price query to 
 const SECONDS_PER_DAY = 86400;
 const PRICE_API_ENDPOINT = 'https://min-api.cryptocompare.com/data/pricehistorical';
 const RELAYER_REGISTRY_JSON = 'https://raw.githubusercontent.com/0xProject/0x-relayer-registry/master/relayers.json';
-const METAMASK_ETH_CONTRACT_METADATA_JSON = 'https://raw.githubusercontent.com/MetaMask/eth-contract-metadata/master/contract-map.json';
+const METAMASK_ETH_CONTRACT_METADATA_JSON =
+    'https://raw.githubusercontent.com/MetaMask/eth-contract-metadata/master/contract-map.json';
 // const HIST_PRICE_API_ENDPOINT = 'https://min-api.cryptocompare.com/data/histoday';
 
 const AIRTABLE_RELAYER_INFO = 'Relayer Info';
@@ -114,12 +115,12 @@ export const pullDataScripts = {
                 } else {
                     resolve(JSON.parse(body));
                 }
-            })
+            });
         });
     },
     getPriceData(symbol: string, timestamp: number, timeDelay?: number): any {
         return new Promise((resolve, reject) => {
-            if(symbol === 'WETH') {
+            if (symbol === 'WETH') {
                 symbol = 'ETH';
             }
             var parsedParams = querystring.stringify({
@@ -147,14 +148,14 @@ export const pullDataScripts = {
                 } else {
                     resolve(JSON.parse(body));
                 }
-            })
+            });
         });
     },
     async getOrderBook(sraEndpoint: string): Promise<Object> {
         const relayerClient = new HttpClient(sraEndpoint);
         const tokenResponse: TokenPairsItem[] = await relayerClient.getTokenPairsAsync();
         const fullOrderBook: OrderbookResponse[] = [];
-        for(const tokenPair of tokenResponse) {
+        for (const tokenPair of tokenResponse) {
             const orderBookRequest: OrderbookRequest = {
                 baseTokenAddress: tokenPair.tokenA.address,
                 quoteTokenAddress: tokenPair.tokenB.address,
@@ -210,7 +211,7 @@ export const scrapeDataScripts = {
             .then((result: any) => {
                 for (let curDate = fromDate; curDate < toDate; curDate.setDate(curDate.getDate() + 1)) {
                     for (const token of Object.values(result.rows)) {
-                        console.debug("Scraping " + curDate + " " + token);
+                        console.debug('Scraping ' + curDate + ' ' + token);
                         q.push(_scrapePriceToDB(curDate.getTime(), token, 500));
                     }
                 }
@@ -218,8 +219,8 @@ export const scrapeDataScripts = {
             .catch((err: any) => {
                 console.debug(err);
             });
-    } 
-}
+    },
+};
 
 function _scrapeEventsToDB(fromBlock: number, toBlock: number): any {
     return (cb: () => void) => {
@@ -238,7 +239,7 @@ function _scrapeEventsToDB(fromBlock: number, toBlock: number): any {
                     }
                 }
 
-                console.log(fromBlock + " : " + toBlock + " " + parsedEvents[ExchangeEvents.LogFill].length);
+                console.log(fromBlock + ' : ' + toBlock + ' ' + parsedEvents[ExchangeEvents.LogFill].length);
 
                 for (const event_type in parsedEvents) {
                     if (parsedEvents[event_type].length > 0) {
@@ -248,10 +249,8 @@ function _scrapeEventsToDB(fromBlock: number, toBlock: number): any {
                                 parsedEvents[event_type],
                                 Object.keys(parsedEvents[event_type][0]),
                             )
-                            .then(() => {
-                            })
-                            .catch((error: any) => {
-                            });
+                            .then(() => {})
+                            .catch((error: any) => {});
                     }
                 }
                 cb();
@@ -313,24 +312,25 @@ function _scrapeAllRelayersToDB(): any {
             .then((relayers: any[]) => {
                 console.log(relayers);
                 const parsedRelayers: any[] = [];
-                for(const relayer of relayers) {
+                for (const relayer of relayers) {
                     parsedRelayers.push(typeConverters.convertRelayerToRelayerObject(relayer));
                 }
                 console.log(parsedRelayers);
-                insertDataScripts.insertMultipleRows('relayers', parsedRelayers, Object.keys(relayer.tableProperties))
-                .then((result: any) => {
-                    console.log(result)
-                    cb();
-                })
-                .catch((err: any) => {
-                    console.log(err);
-                    cb();
-                });
+                insertDataScripts
+                    .insertMultipleRows('relayers', parsedRelayers, Object.keys(relayer.tableProperties))
+                    .then((result: any) => {
+                        console.log(result);
+                        cb();
+                    })
+                    .catch((err: any) => {
+                        console.log(err);
+                        cb();
+                    });
             })
             .catch((err: any) => {
                 cb();
             });
-        };
+    };
 }
 
 function _scrapeTransactionToDB(transactionHash: string): any {
@@ -382,9 +382,9 @@ function _scrapeMetaMaskEthContractMetadataToDB(): any {
                     const value = _.get(data, tokenAddress);
                     return {
                         address: tokenAddress,
-                        ...value
+                        ...value,
                     };
-                })
+                });
                 const erc20TokensOnly = _.filter(dataArray, entry => {
                     const isErc20 = _.get(entry, 'erc20');
                     return isErc20;
@@ -408,12 +408,12 @@ function _scrapePriceToDB(timestamp: number, token: any, timeDelay?: number): an
             .then((data: any) => {
                 const safeSymbol = token.symbol === 'WETH' ? 'ETH' : token.symbol;
                 const parsedPrice = {
-                    'timestamp': timestamp / 1000,
+                    timestamp: timestamp / 1000,
                     symbol: token.symbol,
                     base: 'USD',
-                    price: (_.has(data[safeSymbol],'USD') ? data[safeSymbol]['USD'] : 0),
+                    price: _.has(data[safeSymbol], 'USD') ? data[safeSymbol]['USD'] : 0,
                 };
-                console.debug("Inserting " + timestamp);
+                console.debug('Inserting ' + timestamp);
                 console.debug(parsedPrice);
                 insertDataScripts.insertSingleRow('prices', parsedPrice);
                 cb();
@@ -462,24 +462,22 @@ function _scrapeOrderBookToDB(id: string, sraEndpoint: string): any {
         pullDataScripts
             .getOrderBook(sraEndpoint)
             .then((data: any) => {
-                for(const book of data) {
-                    for(const order of book.bids) {
-                        console.debug(order)
+                for (const book of data) {
+                    for (const order of book.bids) {
+                        console.debug(order);
                         const parsedOrder = typeConverters.convertLogOrderToOrderObject(order);
                         parsedOrder.relayer_id = id;
                         parsedOrder.order_hash = ZeroEx.getOrderHashHex(order);
-                        insertDataScripts.insertSingleRow('orders', parsedOrder)
-                        .catch((error: any) => {
+                        insertDataScripts.insertSingleRow('orders', parsedOrder).catch((error: any) => {
                             console.error(error);
                         });
                     }
-                    for(const order of book.asks) {
-                        console.debug(order)
+                    for (const order of book.asks) {
+                        console.debug(order);
                         const parsedOrder = typeConverters.convertLogOrderToOrderObject(order);
                         parsedOrder.relayer_id = id;
                         parsedOrder.order_hash = ZeroEx.getOrderHashHex(order);
-                        insertDataScripts.insertSingleRow('orders', parsedOrder)
-                        .catch((error: any) => {
+                        insertDataScripts.insertSingleRow('orders', parsedOrder).catch((error: any) => {
                             console.error(error);
                         });
                     }
@@ -561,7 +559,7 @@ if (cli.type === 'events') {
         .then((result: any) => {
             for (let curDate = fromDate; curDate < toDate; curDate.setDate(curDate.getDate() + 1)) {
                 for (const token of Object.values(result.rows)) {
-                    console.debug("Scraping " + curDate + " " + token);
+                    console.debug('Scraping ' + curDate + ' ' + token);
                     q.push(_scrapePriceToDB(curDate.getTime(), token));
                 }
             }
@@ -569,35 +567,33 @@ if (cli.type === 'events') {
         .catch((err: any) => {
             console.debug(err);
         });
-// } else if (cli.type === 'historical_prices') {
-//     if (cli.token && cli.from && cli.to) {
-//         q.push(_scrapeHistoricalPricesToDB(cli.token, cli.from, cli.to));
-//     }
-// } else if (cli.type === 'all_historical_prices') {
-//     if (cli.from && cli.to) {
-//         postgresClient
-//             .query(dataFetchingQueries.get_token_registry, [])
-//             .then((result: any) => {
-//                 const curTokens: any = result.rows.map((a: any): any => a.symbol);
-//                 for (const curToken of curTokens) {
-//                     console.debug('Historical data backfill: Pushing coin ' + curToken);
-//                     q.push(_scrapeHistoricalPricesToDB(curToken, cli.from, cli.to));
-//                 }
-//             })
-//             .catch((err: any) => {
-//                 console.debug(err);
-//             });
-//     }
-} else if(cli.type === 'relayers') {
+    // } else if (cli.type === 'historical_prices') {
+    //     if (cli.token && cli.from && cli.to) {
+    //         q.push(_scrapeHistoricalPricesToDB(cli.token, cli.from, cli.to));
+    //     }
+    // } else if (cli.type === 'all_historical_prices') {
+    //     if (cli.from && cli.to) {
+    //         postgresClient
+    //             .query(dataFetchingQueries.get_token_registry, [])
+    //             .then((result: any) => {
+    //                 const curTokens: any = result.rows.map((a: any): any => a.symbol);
+    //                 for (const curToken of curTokens) {
+    //                     console.debug('Historical data backfill: Pushing coin ' + curToken);
+    //                     q.push(_scrapeHistoricalPricesToDB(curToken, cli.from, cli.to));
+    //                 }
+    //             })
+    //             .catch((err: any) => {
+    //                 console.debug(err);
+    //             });
+    //     }
+} else if (cli.type === 'relayers') {
     q.push(_scrapeAllRelayersToDB());
-} else if(cli.type === 'orders') {
-    postgresClient
-        .query(dataFetchingQueries.get_relayers, [])
-        .then((result: any) => {
-            for(const relayer of result.rows) {
-                if(relayer.sra_http_url) {
-                    q.push(_scrapeOrderBookToDB(relayer.id, relayer.sra_http_url));
-                }
+} else if (cli.type === 'orders') {
+    postgresClient.query(dataFetchingQueries.get_relayers, []).then((result: any) => {
+        for (const relayer of result.rows) {
+            if (relayer.sra_http_url) {
+                q.push(_scrapeOrderBookToDB(relayer.id, relayer.sra_http_url));
             }
-        });
+        }
+    });
 }

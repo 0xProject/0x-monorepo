@@ -2,10 +2,10 @@ const historicalPrices = {
     tableName: 'historical_prices',
     tableProperties: {
         token: {
-            type: 'varchar'
+            type: 'varchar',
         },
         base: {
-            type: 'varchar'
+            type: 'varchar',
         },
         timestamp: {
             type: 'timestamp',
@@ -28,11 +28,10 @@ const historicalPrices = {
         volume_to: {
             type: 'numeric(50)',
         },
-    }
-
+    },
 };
 
-const logToHistoricalPricesSchema: {[log: string]: string} = {
+const logToHistoricalPricesSchema: { [log: string]: string } = {
     token: 'token',
     time: 'timestamp',
     close: 'close',

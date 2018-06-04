@@ -59,13 +59,16 @@ export const typeConverters = {
             if (_.has(logTransaction, key)) {
                 newTransaction[logToTransactionSchemaMapping[key]] = _.get(logTransaction, key);
                 if (newTransaction[logToTransactionSchemaMapping[key]].constructor.name === 'BigNumber') {
-                    newTransaction[logToTransactionSchemaMapping[key]] = newTransaction[logToTransactionSchemaMapping[key]].toString();
+                    newTransaction[logToTransactionSchemaMapping[key]] = newTransaction[
+                        logToTransactionSchemaMapping[key]
+                    ].toString();
                 }
             } else {
-                if(key === 'method_id') {
+                if (key === 'method_id') {
                     newTransaction[logToTransactionSchemaMapping[key]] = logTransaction.input.substring(0, 10);
-                } else if(key === 'salt') {
-                    newTransaction[logToTransactionSchemaMapping[key]] = "0x" + logTransaction.input.substring(714, 778); // Only God can judge me
+                } else if (key === 'salt') {
+                    newTransaction[logToTransactionSchemaMapping[key]] =
+                        '0x' + logTransaction.input.substring(714, 778); // Only God can judge me
                 }
             }
         }
@@ -95,26 +98,29 @@ export const typeConverters = {
                 if (newRelayer[logToRelayerSchemaMapping[key]].constructor.name === 'BigNumber') {
                     newRelayer[logToRelayerSchemaMapping[key]] = newRelayer[logToRelayerSchemaMapping[key]].toString();
                 }
-            } else if((logToRelayerSchemaMapping[key] === 'known_fee_addresses' || logToRelayerSchemaMapping[key] === 'known_taker_addresses')) {
+            } else if (
+                logToRelayerSchemaMapping[key] === 'known_fee_addresses' ||
+                logToRelayerSchemaMapping[key] === 'known_taker_addresses'
+            ) {
                 newRelayer[logToRelayerSchemaMapping[key]] = '{}';
             } else {
                 newRelayer[logToRelayerSchemaMapping[key]] = '';
             }
         }
-        if(_.has(logRelayer, "networks")) {
-            for(const network of logRelayer.networks) {
-                if(network.networkId === 1) {
-                    if(_.has(network, "sra_http_endpoint")) {
+        if (_.has(logRelayer, 'networks')) {
+            for (const network of logRelayer.networks) {
+                if (network.networkId === 1) {
+                    if (_.has(network, 'sra_http_endpoint')) {
                         newRelayer.sra_http_endpoint = network.sra_http_endpoint;
                     }
-                    if(_.has(network, "sra_ws_endpoint")) {
+                    if (_.has(network, 'sra_ws_endpoint')) {
                         newRelayer.sra_ws_endpoint = network.sra_ws_endpoint;
                     }
-                    if(_.has(network, "static_order_fields")) {
-                        if(_.has(network, "static_order_fields.fee_recipient_addresses")) {
+                    if (_.has(network, 'static_order_fields')) {
+                        if (_.has(network, 'static_order_fields.fee_recipient_addresses')) {
                             newRelayer.fee_recipient_addresses = network.static_order_fields.fee_recipient_addresses;
                         }
-                        if(_.has(network, "static_order_fields.taker_addresses")) {
+                        if (_.has(network, 'static_order_fields.taker_addresses')) {
                             newRelayer.taker_addresses = network.static_order_fields.taker_addresses;
                         }
                     }
@@ -128,7 +134,6 @@ export const typeConverters = {
         for (const key in logToHistoricalPricesSchema) {
             if (_.has(logHistoricalPrice, key)) {
                 newHistoricalPrices[logToHistoricalPricesSchema[key]] = _.get(logHistoricalPrice, key);
-                
             }
         }
         return newHistoricalPrices;
@@ -137,8 +142,8 @@ export const typeConverters = {
         const newOrder: any = {};
         for (const key in logToOrderSchemaMapping) {
             if (_.has(logOrder, key)) {
-                console.log(key)
-                console.log(logOrder[key])
+                console.log(key);
+                console.log(logOrder[key]);
                 newOrder[logToOrderSchemaMapping[key]] = _.get(logOrder, key);
                 if (newOrder[logToOrderSchemaMapping[key]].constructor.name === 'BigNumber') {
                     newOrder[logToOrderSchemaMapping[key]] = newOrder[logToOrderSchemaMapping[key]].toString();

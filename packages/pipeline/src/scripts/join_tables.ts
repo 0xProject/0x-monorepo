@@ -2,7 +2,11 @@ import * as commandLineArgs from 'command-line-args';
 import { postgresClient } from '../postgres';
 import { formatters } from '../utils';
 
-const optionDefinitions = [{ name: 'name', alias: 'n', type: String }, { name: 'from', alias: 'f', type: Number }, { name: 'to', alias: 't', type: Number }];
+const optionDefinitions = [
+    { name: 'name', alias: 'n', type: String },
+    { name: 'from', alias: 'f', type: Number },
+    { name: 'to', alias: 't', type: Number },
+];
 const cli = commandLineArgs(optionDefinitions);
 
 const dataInsertionQueries: any = {
@@ -215,17 +219,18 @@ const dataInsertionQueries: any = {
     ) ON CONFLICT (order_hash, txn_hash, log_index) DO NOTHING`,
 };
 
-if(cli.name) {
+if (cli.name) {
     let query = dataInsertionQueries[cli.name];
     if (query && cli.from) {
         const fromBlock = cli.from;
         const toBlock = cli.to ? cli.to : cli.from + 1;
-        postgresClient.query(query, [fromBlock, toBlock])
-        .then((data: any) => {
-            console.log(data);
-        })
-        .catch((err: any) => {
-            console.error(err);
-        })
+        postgresClient
+            .query(query, [fromBlock, toBlock])
+            .then((data: any) => {
+                console.log(data);
+            })
+            .catch((err: any) => {
+                console.error(err);
+            });
     }
 }
