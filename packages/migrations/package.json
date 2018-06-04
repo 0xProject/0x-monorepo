@@ -31,7 +31,7 @@
             "v1":
                 "artifacts/1.0.0/@(DummyERC20Token|TokenTransferProxy_v1|Exchange_v1|TokenRegistry|MultiSigWallet|MultiSigWalletWithTimeLock|MultiSigWalletWithTimeLockExceptRemoveAuthorizedAddress|TokenRegistry|ZRXToken|WETH9).json",
             "v2":
-                "artifacts/2.0.0/@(ERC20Token|DummyERC20Token|ERC721Token|DummyERC721Token|ERC20Proxy|ERC721Proxy|Exchange|MultiSigWallet|MultiSigWalletWithTimeLock|ZRXToken|WETH9|IWallet|IValidator).json"
+                "artifacts/2.0.0/@(ERC20Token|DummyERC20Token|ERC721Token|DummyERC721Token|ERC20Proxy|ERC721Proxy|Exchange|MultiSigWalletWithTimeLockExceptRemoveAuthorizedAddress|ZRXToken|WETH9|IWallet|IValidator).json"
         }
     },
     "license": "Apache-2.0",
