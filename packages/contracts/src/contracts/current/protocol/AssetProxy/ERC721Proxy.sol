@@ -22,51 +22,15 @@ pragma experimental ABIEncoderV2;
 import "../../utils/LibBytes/LibBytes.sol";
 import "./MixinAssetProxy.sol";
 import "./MixinAuthorizable.sol";
-import "../../tokens/ERC721Token/ERC721Token.sol";
+import "./MixinERC721Transfer.sol";
 
 contract ERC721Proxy is
-    LibBytes,
     MixinAssetProxy,
-    MixinAuthorizable
+    MixinAuthorizable,
+    MixinERC721Transfer
 {
-
     // Id of this proxy.
     uint8 constant PROXY_ID = 2;
-
-    /// @dev Internal version of `transferFrom`.
-    /// @param assetData Encoded byte array.
-    /// @param from Address to transfer asset from.
-    /// @param to Address to transfer asset to.
-    /// @param amount Amount of asset to transfer.
-    function transferFromInternal(
-        bytes memory assetData,
-        address from,
-        address to,
-        uint256 amount
-    )
-        internal
-    {
-        // There exists only 1 of each token.
-        require(
-            amount == 1,
-            INVALID_AMOUNT
-        );
-    
-        // Decode asset data.
-        (
-            address token,
-            uint256 tokenId,
-            bytes memory receiverData
-        ) = decodeERC721AssetData(assetData);
-
-        // Transfer token. Saves gas by calling safeTransferFrom only
-        // when there is receiverData present. Either succeeds or throws.
-        if (receiverData.length > 0) {
-            ERC721Token(token).safeTransferFrom(from, to, tokenId, receiverData);
-        } else {
-            ERC721Token(token).transferFrom(from, to, tokenId);
-        }
-    }
 
     /// @dev Gets the proxy id associated with the proxy address.
     /// @return Proxy id.

@@ -22,68 +22,15 @@ pragma experimental ABIEncoderV2;
 import "../../utils/LibBytes/LibBytes.sol";
 import "./MixinAssetProxy.sol";
 import "./MixinAuthorizable.sol";
-import "../../tokens/ERC20Token/IERC20Token.sol";
+import "./MixinERC20Transfer.sol";
 
 contract ERC20Proxy is
-    LibBytes,
     MixinAssetProxy,
-    MixinAuthorizable
+    MixinAuthorizable,
+    MixinERC20Transfer
 {
-
     // Id of this proxy.
     uint8 constant PROXY_ID = 1;
-
-    /// @dev Internal version of `transferFrom`.
-    /// @param assetData Encoded byte array.
-    /// @param from Address to transfer asset from.
-    /// @param to Address to transfer asset to.
-    /// @param amount Amount of asset to transfer.
-    function transferFromInternal(
-        bytes memory assetData,
-        address from,
-        address to,
-        uint256 amount
-    )
-        internal
-    {
-        // Decode asset data.
-        address token = readAddress(assetData, 0);
-
-        // Transfer tokens.
-        // We do a raw call so we can check the success separate
-        // from the return data.
-        bool success = token.call(abi.encodeWithSelector(
-            IERC20Token(token).transferFrom.selector,
-            from,
-            to,
-            amount
-        ));
-        require(
-            success,
-            TRANSFER_FAILED
-        );
-        
-        // Check return data.
-        // If there is no return data, we assume the token incorrectly
-        // does not return a bool. In this case we expect it to revert
-        // on failure, which was handled above.
-        // If the token does return data, we require that it is a single
-        // value that evaluates to true.
-        assembly {
-            if returndatasize {
-                success := 0
-                if eq(returndatasize, 32) {
-                    // First 64 bytes of memory are reserved scratch space
-                    returndatacopy(0, 0, 32)
-                    success := mload(0)
-                }
-            }
-        }
-        require(
-            success,
-            TRANSFER_FAILED
-        );
-    }
 
     /// @dev Gets the proxy id associated with the proxy address.
     /// @return Proxy id.
