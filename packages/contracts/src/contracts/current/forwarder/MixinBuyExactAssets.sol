@@ -14,6 +14,7 @@ contract MixinBuyExactAssets is
 {
     uint8 public constant ERC20_PROXY_ID = 1;
     uint8 public constant ERC721_PROXY_ID = 2;
+
     /// @dev Buys the exact amount of assets (ERC20 and ERC721), performing fee abstraction if required.
     ///      All order assets must be of the same type. Deducts a proportional fee to fee recipient.
     ///      This function is payable and will convert all incoming ETH into WETH and perform the trade on behalf of the caller.
@@ -43,6 +44,7 @@ contract MixinBuyExactAssets is
         require(msg.value > 0, VALUE_GREATER_THAN_ZERO);
         address takerAsset = readAddress(orders[0].takerAssetData, 0);
         require(takerAsset == address(ETHER_TOKEN), TAKER_ASSET_WETH_REQUIRED);
+
         uint8 proxyId = uint8(orders[0].makerAssetData[orders[0].makerAssetData.length - 1]);
         require(proxyId == ERC20_PROXY_ID || proxyId == ERC721_PROXY_ID, UNSUPPORTED_TOKEN_PROXY);
 
@@ -76,11 +78,11 @@ contract MixinBuyExactAssets is
         address makerTokenAddress = readAddress(orders[0].makerAssetData, 0); 
         // We can short cut here for effeciency and use buyFeeTokensInternal if maker asset token is ZRX
         // this buys us exactly that amount taking into account the fees. This saves gas and calculates the rate correctly
-        Exchange.FillResults memory requestedTokensResult;
+        Exchange.FillResults memory requestedTokensResults;
         if (makerTokenAddress == address(ZRX_TOKEN)) {
-            requestedTokensResult = buyFeeTokensInternal(orders, signatures, assetAmount);
+            requestedTokensResults = buyFeeTokensInternal(orders, signatures, assetAmount);
             // When buying ZRX we round up which can result in a small margin excess
-            require(requestedTokensResult.makerAssetFilledAmount >= assetAmount, UNACCEPTABLE_THRESHOLD);
+            require(requestedTokensResults.makerAssetFilledAmount >= assetAmount, UNACCEPTABLE_THRESHOLD);
         } else {
             Exchange.FillResults memory calculatedMarketBuyResults = calculateMarketBuyFillResults(orders, assetAmount);
             if (calculatedMarketBuyResults.takerFeePaid > 0) {
@@ -91,12 +93,13 @@ contract MixinBuyExactAssets is
                 totalFillResults.takerFeePaid = feeTokensResult.takerFeePaid;
             }
             // Make our market buy of the requested tokens with the remaining balance
-            requestedTokensResult = EXCHANGE.marketBuyOrders(orders, assetAmount, signatures);
-            require(requestedTokensResult.makerAssetFilledAmount == assetAmount, UNACCEPTABLE_THRESHOLD);
+            requestedTokensResults = EXCHANGE.marketBuyOrders(orders, assetAmount, signatures);
+            require(requestedTokensResults.makerAssetFilledAmount == assetAmount, UNACCEPTABLE_THRESHOLD);
         }
-        addFillResults(totalFillResults, requestedTokensResult);
+        addFillResults(totalFillResults, requestedTokensResults);
         // Transfer all tokens to msg.sender
-        transferToken(makerTokenAddress, msg.sender, totalFillResults.makerAssetFilledAmount);
+        // transferTokenInternal(orders[0].makerAssetData, address(this), msg.sender, totalFillResults.makerAssetFilledAmount);
+        transferToken(makerTokenAddress, msg.sender, requestedTokensResults.makerAssetFilledAmount);
         return totalFillResults;
     }
 
@@ -120,7 +123,6 @@ contract MixinBuyExactAssets is
             totalFillResults.takerFeePaid = feeTokensResult.takerFeePaid;
             totalFillResults.takerAssetFilledAmount = feeTokensResult.takerAssetFilledAmount;
         }
-        address makerTokenAddress = readAddress(orders[0].makerAssetData, 0);
         for (uint256 n = 0; n < orders.length; n++) {
             // Fail if it wasn't fully filled otherwise we will keep WETH
             Exchange.FillResults memory fillOrderResults = EXCHANGE.fillOrKillOrder(
@@ -129,8 +131,7 @@ contract MixinBuyExactAssets is
                 signatures[n]
             );
             addFillResults(totalFillResults, fillOrderResults);
-            uint256 tokenId = readUint256(orders[n].makerAssetData, 20);
-            transferNFTToken(makerTokenAddress, msg.sender, tokenId);
+            transferERC721Token(orders[n].makerAssetData, address(this), msg.sender, fillOrderResults.makerAssetFilledAmount);
         }
         return totalFillResults;
     }

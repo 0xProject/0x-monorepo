@@ -8,11 +8,10 @@ import "../utils/Ownable/Ownable.sol";
 
 contract Forwarder is
     MixinForwarderCore,
-    MixinBuyExactAssets,
     MixinMarketBuyERC20Tokens,
-    Ownable
+    MixinBuyExactAssets
 {
-    function Forwarder(
+    constructor (
         Exchange _exchange,
         EtherToken _etherToken,
         ZRXToken _zrxToken,

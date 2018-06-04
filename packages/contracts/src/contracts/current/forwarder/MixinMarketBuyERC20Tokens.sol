@@ -54,7 +54,6 @@ contract MixinMarketBuyERC20Tokens is
     {
         uint256 takerTokenBalance = sellTokenAmount;
         address makerTokenAddress = readAddress(orders[0].makerAssetData, 0);
-
         Exchange.FillResults memory calculatedMarketSellResults = calculateMarketSellFillResults(orders, sellTokenAmount);
         if (calculatedMarketSellResults.takerFeePaid > 0) {
             // Fees are required for these orders. Buy enough ZRX to cover the future market buy
@@ -68,7 +67,8 @@ contract MixinMarketBuyERC20Tokens is
         // Update our return FillResult with the market sell
         addFillResults(totalFillResults, requestedTokensResults);
         // Ensure the token abstraction was fair if fees were proportionally too high, we fail
-        require(isAcceptableThreshold(sellTokenAmount, requestedTokensResults.takerAssetFilledAmount),
+        require(
+            isAcceptableThreshold(sellTokenAmount, requestedTokensResults.takerAssetFilledAmount),
             UNACCEPTABLE_THRESHOLD);
         // Transfer all tokens to msg.sender
         transferToken(makerTokenAddress, msg.sender, requestedTokensResults.makerAssetFilledAmount);
