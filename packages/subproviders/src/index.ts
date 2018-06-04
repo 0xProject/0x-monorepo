@@ -14,6 +14,7 @@ export { Subprovider } from './subproviders/subprovider';
 export { NonceTrackerSubprovider } from './subproviders/nonce_tracker';
 export { PrivateKeyWalletSubprovider } from './subproviders/private_key_wallet';
 export { MnemonicWalletSubprovider } from './subproviders/mnemonic_wallet';
+export { EthLightwalletSubprovider } from './subproviders/eth_lightwallet_subprovider';
 export {
     Callback,
     ErrorCallback,
