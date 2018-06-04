@@ -1,4 +1,5 @@
 import { assert } from '@0xproject/assert';
+import { ECSignatureBuffer } from '@0xproject/types';
 import { addressUtils } from '@0xproject/utils';
 import * as lightwallet from 'eth-lightwallet';
 import EthereumTx = require('ethereumjs-tx');

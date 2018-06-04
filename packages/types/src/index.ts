@@ -298,6 +298,12 @@ export interface ECSignature {
     s: string;
 }
 
+export interface ECSignatureBuffer {
+    v: number;
+    r: Buffer;
+    s: Buffer;
+}
+
 /**
  * Errors originating from the 0x exchange contract
  */
