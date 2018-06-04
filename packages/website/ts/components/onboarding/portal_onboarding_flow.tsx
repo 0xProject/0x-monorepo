@@ -3,7 +3,7 @@ import * as React from 'react';
 
 import { BigNumber } from '@0xproject/utils';
 import { OnboardingFlow, Step } from 'ts/components/onboarding/onboarding_flow';
-import { ProviderType, TokenByAddress } from 'ts/types';
+import { ProviderType, TokenByAddress, TokenStateByAddress } from 'ts/types';
 import { utils } from 'ts/utils/utils';
 
 export interface PortalOnboardingFlowProps {
@@ -16,6 +16,7 @@ export interface PortalOnboardingFlowProps {
     blockchainIsLoaded: boolean;
     userEtherBalanceInWei?: BigNumber;
     tokenByAddress: TokenByAddress;
+    trackedTokenStateByAddress: TokenStateByAddress;
     updateIsRunning: (isRunning: boolean) => void;
     updateOnboardingStep: (stepIndex: number) => void;
 }
@@ -68,13 +69,13 @@ export class PortalOnboardingFlow extends React.Component<PortalOnboardingFlowPr
                 target: '.eth-row',
                 content: 'Before you begin you will need to send some ETH to your metamask wallet',
                 placement: 'right',
-                continueButtonDisplay: this._userHasEth() ? 'enabled' : 'disabled',
+                continueButtonDisplay: this._userHasVisibleEth() ? 'enabled' : 'disabled',
             },
             {
                 target: '.weth-row',
                 content: 'You need to convert some of your ETH into tradeable Wrapped ETH (WETH)',
                 placement: 'right',
-                continueButtonDisplay: this._userHasWeth() ? 'enabled' : 'disabled',
+                continueButtonDisplay: this._userHasVisibleWeth() ? 'enabled' : 'disabled',
             },
         ];
         return steps;
@@ -84,13 +85,17 @@ export class PortalOnboardingFlow extends React.Component<PortalOnboardingFlowPr
         return !_.isEmpty(this.props.userAddress);
     }
 
-    private _userHasEth(): boolean {
+    private _userHasVisibleEth(): boolean {
         return this.props.userEtherBalanceInWei > new BigNumber(0);
     }
 
-    private _userHasWeth(): boolean {
-        // TODO: https://app.asana.com/0/681385331277907/690722374136933
-        return false;
+    private _userHasVisibleWeth(): boolean {
+        const ethToken = utils.getEthToken(this.props.tokenByAddress);
+        if (!ethToken) {
+            return false;
+        }
+        const wethTokenState = this.props.trackedTokenStateByAddress[ethToken.address];
+        return wethTokenState.balance > new BigNumber(0);
     }
 
     private _overrideOnboardingStateIfShould(): void {

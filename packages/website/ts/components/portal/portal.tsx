@@ -37,7 +37,9 @@ import {
     Order,
     ProviderType,
     ScreenWidths,
+    Token,
     TokenByAddress,
+    TokenStateByAddress,
     TokenVisibility,
     WebsitePaths,
 } from 'ts/types';
@@ -77,6 +79,7 @@ interface PortalState {
     isDisclaimerDialogOpen: boolean;
     isLedgerDialogOpen: boolean;
     tokenManagementState: TokenManagementState;
+    trackedTokenStateByAddress: TokenStateByAddress;
 }
 
 interface AccountManagementItem {
@@ -127,6 +130,9 @@ export class Portal extends React.Component<PortalProps, PortalState> {
         const didAcceptPortalDisclaimer = localStorage.getItemIfExists(constants.LOCAL_STORAGE_KEY_ACCEPT_DISCLAIMER);
         const hasAcceptedDisclaimer =
             !_.isUndefined(didAcceptPortalDisclaimer) && !_.isEmpty(didAcceptPortalDisclaimer);
+        const initialTrackedTokenStateByAddress = this._getInitialTrackedTokenStateByAddress(
+            this._getCurrentTrackedTokens(),
+        );
         this.state = {
             prevNetworkId: this.props.networkId,
             prevNodeVersion: this.props.nodeVersion,
@@ -135,6 +141,7 @@ export class Portal extends React.Component<PortalProps, PortalState> {
             isDisclaimerDialogOpen: !hasAcceptedDisclaimer,
             tokenManagementState: TokenManagementState.None,
             isLedgerDialogOpen: false,
+            trackedTokenStateByAddress: initialTrackedTokenStateByAddress,
         };
     }
     public componentDidMount(): void {
@@ -143,6 +150,9 @@ export class Portal extends React.Component<PortalProps, PortalState> {
     }
     public componentWillMount(): void {
         this._blockchain = new Blockchain(this.props.dispatcher);
+        const trackedTokenAddresses = _.keys(this.state.trackedTokenStateByAddress);
+        // tslint:disable-next-line:no-floating-promises
+        this._fetchBalancesAndAllowancesAsync(trackedTokenAddresses);
     }
     public componentWillUnmount(): void {
         this._blockchain.destroy();
@@ -178,6 +188,39 @@ export class Portal extends React.Component<PortalProps, PortalState> {
                 prevPathname: nextProps.location.pathname,
             });
         }
+        if (
+            nextProps.userAddress !== this.props.userAddress ||
+            nextProps.networkId !== this.props.networkId ||
+            nextProps.lastForceTokenStateRefetch !== this.props.lastForceTokenStateRefetch
+        ) {
+            const trackedTokenAddresses = _.keys(this.state.trackedTokenStateByAddress);
+            // tslint:disable-next-line:no-floating-promises
+            this._fetchBalancesAndAllowancesAsync(trackedTokenAddresses);
+        }
+
+        const nextTrackedTokens = this._getTrackedTokens(nextProps.tokenByAddress);
+        const trackedTokens = this._getCurrentTrackedTokens();
+
+        if (!_.isEqual(nextTrackedTokens, trackedTokens)) {
+            const newTokens = _.difference(nextTrackedTokens, trackedTokens);
+            const newTokenAddresses = _.map(newTokens, token => token.address);
+            // Add placeholder entry for this token to the state, since fetching the
+            // balance/allowance is asynchronous
+            const trackedTokenStateByAddress = this.state.trackedTokenStateByAddress;
+            for (const tokenAddress of newTokenAddresses) {
+                trackedTokenStateByAddress[tokenAddress] = {
+                    balance: new BigNumber(0),
+                    allowance: new BigNumber(0),
+                    isLoaded: false,
+                };
+            }
+            this.setState({
+                trackedTokenStateByAddress,
+            });
+            // Fetch the actual balance/allowance.
+            // tslint:disable-next-line:no-floating-promises
+            this._fetchBalancesAndAllowancesAsync(newTokenAddresses);
+        }
     }
     public render(): React.ReactNode {
         const updateShouldBlockchainErrDialogBeOpen = this.props.dispatcher.updateShouldBlockchainErrDialogBeOpen.bind(
@@ -190,7 +233,7 @@ export class Portal extends React.Component<PortalProps, PortalState> {
                 : TokenVisibility.TRACKED;
         return (
             <div style={styles.root}>
-                <PortalOnboardingFlow />
+                <PortalOnboardingFlow trackedTokenStateByAddress={this.state.trackedTokenStateByAddress} />
                 <DocumentTitle title="0x Portal DApp" />
                 <TopBar
                     userAddress={this.props.userAddress}
@@ -283,8 +326,6 @@ export class Portal extends React.Component<PortalProps, PortalState> {
         );
     }
     private _renderWallet(): React.ReactNode {
-        const allTokens = _.values(this.props.tokenByAddress);
-        const trackedTokens = _.filter(allTokens, t => t.isTracked);
         return (
             <div>
                 <Wallet
@@ -295,16 +336,18 @@ export class Portal extends React.Component<PortalProps, PortalState> {
                     blockchainErr={this.props.blockchainErr}
                     dispatcher={this.props.dispatcher}
                     tokenByAddress={this.props.tokenByAddress}
-                    trackedTokens={trackedTokens}
+                    trackedTokens={this._getCurrentTrackedTokens()}
                     userEtherBalanceInWei={this.props.userEtherBalanceInWei}
                     lastForceTokenStateRefetch={this.props.lastForceTokenStateRefetch}
                     injectedProviderName={this.props.injectedProviderName}
                     providerType={this.props.providerType}
                     screenWidth={this.props.screenWidth}
                     location={this.props.location}
+                    trackedTokenStateByAddress={this.state.trackedTokenStateByAddress}
                     onToggleLedgerDialog={this._onToggleLedgerDialog.bind(this)}
                     onAddToken={this._onAddToken.bind(this)}
                     onRemoveToken={this._onRemoveToken.bind(this)}
+                    refetchTokenStateAsync={this._refetchTokenStateAsync.bind(this)}
                 />
                 <Container marginTop="15px">
                     <Island>
@@ -424,8 +467,6 @@ export class Portal extends React.Component<PortalProps, PortalState> {
         );
     }
     private _renderTokenBalances(): React.ReactNode {
-        const allTokens = _.values(this.props.tokenByAddress);
-        const trackedTokens = _.filter(allTokens, t => t.isTracked);
         return (
             <TokenBalances
                 blockchain={this._blockchain}
@@ -434,7 +475,7 @@ export class Portal extends React.Component<PortalProps, PortalState> {
                 dispatcher={this.props.dispatcher}
                 screenWidth={this.props.screenWidth}
                 tokenByAddress={this.props.tokenByAddress}
-                trackedTokens={trackedTokens}
+                trackedTokens={this._getCurrentTrackedTokens()}
                 userAddress={this.props.userAddress}
                 userEtherBalanceInWei={this.props.userEtherBalanceInWei}
                 networkId={this.props.networkId}
@@ -514,6 +555,55 @@ export class Portal extends React.Component<PortalProps, PortalState> {
     private _isSmallScreen(): boolean {
         const isSmallScreen = this.props.screenWidth === ScreenWidths.Sm;
         return isSmallScreen;
+    }
+
+    private _getCurrentTrackedTokens(): Token[] {
+        return this._getTrackedTokens(this.props.tokenByAddress);
+    }
+
+    private _getTrackedTokens(tokenByAddress: TokenByAddress): Token[] {
+        const allTokens = _.values(tokenByAddress);
+        const trackedTokens = _.filter(allTokens, t => t.isTracked);
+        return trackedTokens;
+    }
+
+    private _getInitialTrackedTokenStateByAddress(trackedTokens: Token[]): TokenStateByAddress {
+        const trackedTokenStateByAddress: TokenStateByAddress = {};
+        _.each(trackedTokens, token => {
+            trackedTokenStateByAddress[token.address] = {
+                balance: new BigNumber(0),
+                allowance: new BigNumber(0),
+                isLoaded: false,
+            };
+        });
+        return trackedTokenStateByAddress;
+    }
+
+    private async _fetchBalancesAndAllowancesAsync(tokenAddresses: string[]): Promise<void> {
+        const trackedTokenStateByAddress = this.state.trackedTokenStateByAddress;
+        const userAddressIfExists = _.isEmpty(this.props.userAddress) ? undefined : this.props.userAddress;
+        const balancesAndAllowances = await Promise.all(
+            tokenAddresses.map(async tokenAddress => {
+                return this._blockchain.getTokenBalanceAndAllowanceAsync(userAddressIfExists, tokenAddress);
+            }),
+        );
+        for (let i = 0; i < tokenAddresses.length; i++) {
+            // Order is preserved in Promise.all
+            const [balance, allowance] = balancesAndAllowances[i];
+            const tokenAddress = tokenAddresses[i];
+            trackedTokenStateByAddress[tokenAddress] = {
+                balance,
+                allowance,
+                isLoaded: true,
+            };
+        }
+        this.setState({
+            trackedTokenStateByAddress,
+        });
+    }
+
+    private async _refetchTokenStateAsync(tokenAddress: string): Promise<void> {
+        await this._fetchBalancesAndAllowancesAsync([tokenAddress]);
     }
 }
 

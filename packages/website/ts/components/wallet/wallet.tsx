@@ -67,13 +67,14 @@ export interface WalletProps {
     providerType: ProviderType;
     screenWidth: ScreenWidths;
     location: Location;
+    trackedTokenStateByAddress: TokenStateByAddress;
     onToggleLedgerDialog: () => void;
     onAddToken: () => void;
     onRemoveToken: () => void;
+    refetchTokenStateAsync: (tokenAddress: string) => Promise<void>;
 }
 
 interface WalletState {
-    trackedTokenStateByAddress: TokenStateByAddress;
     wrappedEtherDirection?: Side;
     isHoveringSidebar: boolean;
 }
@@ -151,48 +152,12 @@ export class Wallet extends React.Component<WalletProps, WalletState> {
     constructor(props: WalletProps) {
         super(props);
         this._isUnmounted = false;
-        const trackedTokenAddresses = _.map(props.trackedTokens, token => token.address);
-        const initialTrackedTokenStateByAddress = this._getInitialTrackedTokenStateByAddress(trackedTokenAddresses);
         this.state = {
-            trackedTokenStateByAddress: initialTrackedTokenStateByAddress,
             wrappedEtherDirection: undefined,
             isHoveringSidebar: false,
         };
     }
-    public componentWillMount(): void {
-        const trackedTokenAddresses = _.keys(this.state.trackedTokenStateByAddress);
-        // tslint:disable-next-line:no-floating-promises
-        this._fetchBalancesAndAllowancesAsync(trackedTokenAddresses);
-    }
-    public componentWillUnmount(): void {
-        this._isUnmounted = true;
-    }
-    public componentWillReceiveProps(nextProps: WalletProps): void {
-        if (
-            nextProps.userAddress !== this.props.userAddress ||
-            nextProps.networkId !== this.props.networkId ||
-            nextProps.lastForceTokenStateRefetch !== this.props.lastForceTokenStateRefetch
-        ) {
-            const trackedTokenAddresses = _.keys(this.state.trackedTokenStateByAddress);
-            // tslint:disable-next-line:no-floating-promises
-            this._fetchBalancesAndAllowancesAsync(trackedTokenAddresses);
-        }
-        if (!_.isEqual(nextProps.trackedTokens, this.props.trackedTokens)) {
-            const newTokens = _.difference(nextProps.trackedTokens, this.props.trackedTokens);
-            const newTokenAddresses = _.map(newTokens, token => token.address);
-            // Add placeholder entry for this token to the state, since fetching the
-            // balance/allowance is asynchronous
-            const trackedTokenStateByAddress = this.state.trackedTokenStateByAddress;
-            const initialTrackedTokenStateByAddress = this._getInitialTrackedTokenStateByAddress(newTokenAddresses);
-            _.assign(trackedTokenStateByAddress, initialTrackedTokenStateByAddress);
-            this.setState({
-                trackedTokenStateByAddress,
-            });
-            // Fetch the actual balance/allowance.
-            // tslint:disable-next-line:no-floating-promises
-            this._fetchBalancesAndAllowancesAsync(newTokenAddresses);
-        }
-    }
+
     public render(): React.ReactNode {
         const isBlockchainLoaded = this.props.blockchainIsLoaded && this.props.blockchainErr === BlockchainErrs.NoError;
         return (
@@ -342,7 +307,7 @@ export class Wallet extends React.Component<WalletProps, WalletState> {
             _.isUndefined(this.props.userEtherBalanceInWei),
         );
         const etherToken = this._getEthToken();
-        const etherTokenState = this.state.trackedTokenStateByAddress[etherToken.address];
+        const etherTokenState = this.props.trackedTokenStateByAddress[etherToken.address];
         const etherPrice = etherTokenState.price;
         const secondaryText = this._renderValue(
             this.props.userEtherBalanceInWei || new BigNumber(0),
@@ -366,7 +331,7 @@ export class Wallet extends React.Component<WalletProps, WalletState> {
         return _.map(trackedTokensStartingWithEtherToken, this._renderTokenRow.bind(this));
     }
     private _renderTokenRow(token: Token, index: number): React.ReactNode {
-        const tokenState = this.state.trackedTokenStateByAddress[token.address];
+        const tokenState = this.props.trackedTokenStateByAddress[token.address];
         const tokenLink = sharedUtils.getEtherScanLinkIfExists(
             token.address,
             this.props.networkId,
@@ -438,7 +403,8 @@ export class Wallet extends React.Component<WalletProps, WalletState> {
                         etherToken={etherToken}
                         lastForceTokenStateRefetch={this.props.lastForceTokenStateRefetch}
                         onConversionSuccessful={this._closeWrappedEtherActionRow.bind(this)}
-                        refetchEthTokenStateAsync={this._refetchTokenStateAsync.bind(this, etherToken.address)}
+                        // tslint:disable:jsx-no-lambda
+                        refetchEthTokenStateAsync={async () => this.props.refetchTokenStateAsync(etherToken.address)}
                     />
                 )}
             </div>
@@ -474,7 +440,7 @@ export class Wallet extends React.Component<WalletProps, WalletState> {
                 onErrorOccurred={_.noop} // TODO: Error handling
                 userAddress={this.props.userAddress}
                 isDisabled={!config.tokenState.isLoaded}
-                refetchTokenStateAsync={this._refetchTokenStateAsync.bind(this, config.token.address)}
+                refetchTokenStateAsync={async () => this.props.refetchTokenStateAsync(config.token.address)}
             />
         );
     }
@@ -557,42 +523,7 @@ export class Wallet extends React.Component<WalletProps, WalletState> {
         });
         return trackedTokenStateByAddress;
     }
-    private async _fetchBalancesAndAllowancesAsync(tokenAddresses: string[]): Promise<void> {
-        const balanceAndAllowanceTupleByAddress: ItemByAddress<BigNumber[]> = {};
-        const userAddressIfExists = _.isEmpty(this.props.userAddress) ? undefined : this.props.userAddress;
-        for (const tokenAddress of tokenAddresses) {
-            const balanceAndAllowanceTuple = await this.props.blockchain.getTokenBalanceAndAllowanceAsync(
-                userAddressIfExists,
-                tokenAddress,
-            );
-            balanceAndAllowanceTupleByAddress[tokenAddress] = balanceAndAllowanceTuple;
-        }
-        const priceByAddress = await this._getPriceByAddressAsync(tokenAddresses);
-        const trackedTokenStateByAddress = _.reduce(
-            tokenAddresses,
-            (acc, address) => {
-                const [balance, allowance] = balanceAndAllowanceTupleByAddress[address];
-                const priceIfExists = _.get(priceByAddress, address);
-                acc[address] = {
-                    balance,
-                    allowance,
-                    price: priceIfExists,
-                    isLoaded: true,
-                };
-                return acc;
-            },
-            this.state.trackedTokenStateByAddress,
-        );
 
-        if (!this._isUnmounted) {
-            this.setState({
-                trackedTokenStateByAddress,
-            });
-        }
-    }
-    private async _refetchTokenStateAsync(tokenAddress: string): Promise<void> {
-        await this._fetchBalancesAndAllowancesAsync([tokenAddress]);
-    }
     private async _getPriceByAddressAsync(tokenAddresses: string[]): Promise<ItemByAddress<BigNumber>> {
         if (_.isEmpty(tokenAddresses)) {
             return {};

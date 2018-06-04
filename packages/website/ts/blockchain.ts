@@ -506,7 +506,7 @@ export class Blockchain {
     public async getTokenBalanceAndAllowanceAsync(
         ownerAddressIfExists: string,
         tokenAddress: string,
-    ): Promise<BigNumber[]> {
+    ): Promise<[BigNumber, BigNumber]> {
         utils.assert(!_.isUndefined(this._contractWrappers), 'ContractWrappers must be instantiated.');
 
         if (_.isUndefined(ownerAddressIfExists)) {
@@ -516,8 +516,10 @@ export class Blockchain {
         let balance = new BigNumber(0);
         let allowance = new BigNumber(0);
         if (this._doesUserAddressExist()) {
-            balance = await this._contractWrappers.token.getBalanceAsync(tokenAddress, ownerAddressIfExists);
-            allowance = await this._contractWrappers.token.getProxyAllowanceAsync(tokenAddress, ownerAddressIfExists);
+            [balance, allowance] = await Promise.all([
+                this._contractWrappers.token.getBalanceAsync(tokenAddress, ownerAddressIfExists),
+                this._contractWrappers.token.getProxyAllowanceAsync(tokenAddress, ownerAddressIfExists),
+            ]);
         }
         return [balance, allowance];
     }
