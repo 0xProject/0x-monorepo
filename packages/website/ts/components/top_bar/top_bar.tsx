@@ -165,6 +165,12 @@ export class TopBar extends React.Component<TopBarProps, TopBarState> {
                     primaryText={this.props.translate.get(Key.SolCov, Deco.CapWords)}
                 />
             </Link>,
+            <Link key="subMenuItem-ethereum-types" to={WebsitePaths.EthereumTypes} className="text-decoration-none">
+                <MenuItem
+                    style={{ fontSize: styles.menuItem.fontSize }}
+                    primaryText={this.props.translate.get(Key.EthereumTypes, Deco.CapWords)}
+                />
+            </Link>,
             <a
                 key="subMenuItem-whitePaper"
                 target="_blank"

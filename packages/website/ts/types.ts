@@ -370,6 +370,7 @@ export enum WebsitePaths {
     SolCov = '/docs/sol-cov',
     Subproviders = '/docs/subproviders',
     OrderUtils = '/docs/order-utils',
+    EthereumTypes = '/docs/ethereum-types',
     Jobs = '/jobs',
 }
 
@@ -383,6 +384,7 @@ export enum DocPackages {
     SolCov = 'SOL_COV',
     Subproviders = 'SUBPROVIDERS',
     OrderUtils = 'ORDER_UTILS',
+    EthereumTypes = 'ETHEREUM_TYPES',
 }
 
 export enum Key {
@@ -434,6 +436,7 @@ export enum Key {
     SolCompiler = 'SOL_COMPILER',
     JsonSchemas = 'JSON_SCHEMAS',
     SolCov = 'SOL_COV',
+    EthereumTypes = 'ETHEREUM_TYPES',
     Subproviders = 'SUBPROVIDERS',
     Blog = 'BLOG',
     Forum = 'FORUM',
