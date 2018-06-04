@@ -24,14 +24,14 @@
         "generate_contract_wrappers:v2":
             "abi-gen --abis  ${npm_package_config_abis_v2} --template ../contract_templates/contract.handlebars --partials '../contract_templates/partials/**/*.handlebars' --output src/v2/contract_wrappers --backend ethers && prettier --write 'src/v2/contract_wrappers/**.ts'",
         "compile:v1": "sol-compiler --artifacts-dir artifacts/1.0.0 --contracts Exchange_v1,DummyERC20Token,ZRXToken,WETH9,TokenTransferProxy_v1,MultiSigWallet,MultiSigWalletWithTimeLock,MultiSigWalletWithTimeLockExceptRemoveAuthorizedAddress,TokenRegistry",
-        "compile:v2": "sol-compiler --artifacts-dir artifacts/2.0.0 --contracts DummyERC20Token,DummyERC721Token,ERC20Proxy,ERC721Proxy,Exchange,MultiSigWalletWithTimeLockExceptRemoveAuthorizedAddress,ZRXToken,WETH9,IWallet,IValidator"
+        "compile:v2": "sol-compiler --artifacts-dir artifacts/2.0.0 --contracts ERC20Token,DummyERC20Token,ERC721Token,DummyERC721Token,ERC20Proxy,ERC721Proxy,Exchange,MultiSigWallet,MultiSigWalletWithTimeLock,ZRXToken,WETH9,IWallet,IValidator"
     },
     "config": {
         "abis": {
             "v1":
                 "artifacts/1.0.0/@(DummyERC20Token|TokenTransferProxy_v1|Exchange_v1|TokenRegistry|MultiSigWallet|MultiSigWalletWithTimeLock|MultiSigWalletWithTimeLockExceptRemoveAuthorizedAddress|TokenRegistry|ZRXToken|WETH9).json",
             "v2":
-                "artifacts/2.0.0/@(DummyERC20Token|DummyERC721Token|ERC20Proxy|ERC721Proxy|Exchange|MultiSigWalletWithTimeLockExceptRemoveAuthorizedAddress|ZRXToken|WETH9|IWallet|IValidator).json"
+                "artifacts/2.0.0/@(ERC20Token|DummyERC20Token|ERC721Token|DummyERC721Token|ERC20Proxy|ERC721Proxy|Exchange|MultiSigWallet|MultiSigWalletWithTimeLock|ZRXToken|WETH9|IWallet|IValidator).json"
         }
     },
     "license": "Apache-2.0",

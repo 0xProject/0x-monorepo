@@ -1,17 +1,22 @@
 {
     "name": "@0xproject/fill-scenarios",
-    "version": "0.0.2",
+    "version": "1.0.0",
     "description": "0x order fill scenario generator",
     "main": "lib/index.js",
     "types": "lib/index.d.ts",
     "scripts": {
-        "watch": "tsc -w",
-        "prebuild": "run-s clean generate_contract_wrappers",
-        "generate_contract_wrappers": "abi-gen --abis 'src/compact_artifacts/@(Exchange|Token|TokenTransferProxy|EtherToken|DummyToken).json' --template ../contract_templates/contract.handlebars --partials '../contract_templates/partials/**/*.handlebars' --output src/generated_contract_wrappers --backend ethers && prettier --write 'src/generated_contract_wrappers/**.ts'",
-        "build": "tsc && copyfiles -u 2 './src/compact_artifacts/**/*.json' ./lib/compact_artifacts && copyfiles -u 3 './lib/src/monorepo_scripts/**/*' ./scripts",
+        "watch": "yarn update_contract_wrappers && tsc -w",
+        "build": "yarn update_contract_wrappers && tsc",
+        "update_contract_wrappers": "run-s clean update_artifacts generate_contract_wrappers",
+        "update_artifacts": "for i in ${npm_package_config_contracts}; do copyfiles -u 4 ../migrations/artifacts/2.0.0/$i.json lib/artifacts; done;",
+        "generate_contract_wrappers": "abi-gen --abis 'lib/artifacts/@(Exchange|ERC20Token|DummyERC20Token).json' --template ../contract_templates/contract.handlebars --partials '../contract_templates/partials/**/*.handlebars' --output src/generated_contract_wrappers --backend ethers && prettier --write 'src/generated_contract_wrappers/**.ts'",
+        "copy_monorepo_scripts": "copyfiles -u 3 './lib/src/monorepo_scripts/**/*' ./scripts",
         "clean": "shx rm -rf lib scripts src/generated_contract_wrappers",
         "lint": "tslint --project .",
         "manual:postpublish": "yarn build; node ./scripts/postpublish.js"
+    },
+    "config": {
+        "contracts": "Exchange ERC20Token DummyERC20Token"
     },
     "license": "Apache-2.0",
     "repository": {
