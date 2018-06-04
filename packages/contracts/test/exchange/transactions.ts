@@ -18,7 +18,7 @@ import { ExchangeWrapper } from '../../src/utils/exchange_wrapper';
 import { OrderFactory } from '../../src/utils/order_factory';
 import { orderUtils } from '../../src/utils/order_utils';
 import { TransactionFactory } from '../../src/utils/transaction_factory';
-import { ERC20BalancesByOwner, ExchangeStatus, SignedTransaction } from '../../src/utils/types';
+import { ERC20BalancesByOwner, OrderStatus, SignedTransaction } from '../../src/utils/types';
 import { provider, txDefaults, web3Wrapper } from '../../src/utils/web3_wrapper';
 
 chaiSetup.configure();

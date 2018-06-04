@@ -25,7 +25,7 @@ import { ERC721Wrapper } from '../../src/utils/erc721_wrapper';
 import { ExchangeWrapper } from '../../src/utils/exchange_wrapper';
 import { OrderFactory } from '../../src/utils/order_factory';
 import { orderUtils } from '../../src/utils/order_utils';
-import { ContractName, ERC20BalancesByOwner, ExchangeStatus } from '../../src/utils/types';
+import { ContractName, ERC20BalancesByOwner, OrderStatus } from '../../src/utils/types';
 import { provider, txDefaults, web3Wrapper } from '../../src/utils/web3_wrapper';
 
 chaiSetup.configure();
@@ -131,42 +131,6 @@ describe('Exchange core', () => {
             erc20Balances = await erc20Wrapper.getBalancesAsync();
             signedOrder = orderFactory.newSignedOrder();
         });
-
-<<<<<<< HEAD
-        it('should create an unfillable order', async () => {
-            signedOrder = orderFactory.newSignedOrder({
-                makerAssetAmount: new BigNumber(1001),
-                takerAssetAmount: new BigNumber(3),
-            });
-
-            const takerAssetFilledAmountBefore = await exchangeWrapper.getTakerAssetFilledAmountAsync(
-                orderHashUtils.getOrderHashHex(signedOrder),
-            );
-            expect(takerAssetFilledAmountBefore).to.be.bignumber.equal(0);
-
-            const fillTakerAssetAmount1 = new BigNumber(2);
-            await exchangeWrapper.fillOrderAsync(signedOrder, takerAddress, {
-                takerAssetFillAmount: fillTakerAssetAmount1,
-            });
-
-            const takerAssetFilledAmountAfter1 = await exchangeWrapper.getTakerAssetFilledAmountAsync(
-                orderHashUtils.getOrderHashHex(signedOrder),
-            );
-            expect(takerAssetFilledAmountAfter1).to.be.bignumber.equal(fillTakerAssetAmount1);
-
-            const fillTakerAssetAmount2 = new BigNumber(1);
-            await exchangeWrapper.fillOrderAsync(signedOrder, takerAddress, {
-                takerAssetFillAmount: fillTakerAssetAmount2,
-            });
-
-            const takerAssetFilledAmountAfter2 = await exchangeWrapper.getTakerAssetFilledAmountAsync(
-                orderHashUtils.getOrderHashHex(signedOrder),
-            );
-            expect(takerAssetFilledAmountAfter2).to.be.bignumber.equal(takerAssetFilledAmountAfter1);
-        });
-
-=======
->>>>>>> Update Exchange statuses, revert instead of emmitting event on fill/cancel failures, and remove redundant logic in matchOrders
         it('should transfer the correct amounts when makerAssetAmount === takerAssetAmount', async () => {
             signedOrder = orderFactory.newSignedOrder({
                 makerAssetAmount: Web3Wrapper.toBaseUnitAmount(new BigNumber(100), 18),
