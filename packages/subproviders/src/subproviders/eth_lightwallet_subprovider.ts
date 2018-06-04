@@ -65,7 +65,7 @@ export class EthLightwalletSubprovider extends BaseWalletSubprovider {
     /**
      * Sign a personal Ethereum signed message. The signing account will be the account
      * associated with the provided address.
-     * If you've added the MnemonicWalletSubprovider to your app's provider, you can simply send an `eth_sign`
+     * If you've added the EthLightwalletSubprovider to your app's provider, you can simply send an `eth_sign`
      * or `personal_sign` JSON RPC request, and this method will be called auto-magically.
      * If you are not using this via a ProviderEngine instance, you can call it directly.
      * @param data Hex string message to sign
