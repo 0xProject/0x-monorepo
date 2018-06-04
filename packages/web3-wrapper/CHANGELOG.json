@@ -1,5 +1,13 @@
 [
     {
+        "version": "0.7.0",
+        "changes": [
+            {
+                "note": "Add default parameters when sending a raw payload"
+            }
+        ]
+    },
+    {
         "timestamp": 1527009133,
         "version": "0.6.4",
         "changes": [
