@@ -381,6 +381,8 @@ export class Web3Wrapper {
         const sendAsync = this._web3.currentProvider.sendAsync.bind(this._web3.currentProvider);
         const payloadWithDefaults = {
             id: this._jsonRpcRequestId++,
+            params: [],
+            jsonrpc: '2.0',
             ...payload,
         };
         const response = await promisify<JSONRPCResponsePayload>(sendAsync)(payloadWithDefaults);
