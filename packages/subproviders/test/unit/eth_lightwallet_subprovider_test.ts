@@ -66,8 +66,10 @@ describe('EthLightwalletSubprovider', () => {
 
                 // Keccak-256 hash of 'hello world'
                 const messageHash = '0x47173285a8d7341e5e972fc677286384f802f8ef42a5ec5f03bbfa254cb01fad';
-                const ecSignatureHex =
-                    await ethLightwalletSubprovider.signPersonalMessageAsync(messageHash, signingAccount);
+                const ecSignatureHex = await ethLightwalletSubprovider.signPersonalMessageAsync(
+                    messageHash,
+                    signingAccount,
+                );
                 expect(ecSignatureHex).to.be.equal(
                     // tslint:disable-next-line:max-line-length
                     '0xa46b696c1aa8f91dbb33d1a66f6440bf3cf334c9dc45dc389668c1e60e2db31e259400b41f31632fa994837054c5345c88dc455c13931332489029adee6fd24d1b',
