@@ -200,8 +200,7 @@ export class ZeroEx {
      */
     public async awaitTransactionMinedAsync(
         txHash: string,
-        // TODO(albrow): Change this back to 1000
-        pollingIntervalMs: number = 100,
+        pollingIntervalMs: number = 1000,
         timeoutMs?: number,
     ): Promise<TransactionReceiptWithDecodedLogs> {
         // Hack: Get Web3Wrapper from ContractWrappers

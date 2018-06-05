@@ -13,8 +13,7 @@ export function expectRevertOrAlwaysFailingTransaction<T>(p: Promise<T>): Promis
         .then(e => {
             expect(e).to.satisfy(
                 (err: Error) =>
-                    _.includes(err.message, constants.REVERT) ||
-                    _.includes(err.message, constants.ALWAYS_FAILING_TRANSACTION),
+                    _.includes(err.message, constants.REVERT) || _.includes(err.message, 'always failing transaction'),
             );
         });
 }
@@ -37,8 +36,7 @@ export function expectRevertOrContractCallFailed<T>(p: Promise<T>): PromiseLike<
         .then(e => {
             expect(e).to.satisfy(
                 (err: Error) =>
-                    _.includes(err.message, constants.REVERT) ||
-                    _.includes(err.message, constants.CONTRACT_CALL_FAILED),
+                    _.includes(err.message, constants.REVERT) || _.includes(err.message, 'Contract call failed'),
             );
         });
 }

@@ -30,7 +30,7 @@ describe('AssetProxyOwner', () => {
     let owners: string[];
     let authorized: string;
     const REQUIRED_APPROVALS = new BigNumber(2);
-    const SECONDS_TIME_LOCKED = new BigNumber(1000);
+    const SECONDS_TIME_LOCKED = new BigNumber(1000000);
 
     let erc20Proxy: MixinAuthorizableContract;
     let erc721Proxy: MixinAuthorizableContract;
@@ -162,7 +162,7 @@ describe('AssetProxyOwner', () => {
             const log = submitTxRes.logs[0] as LogWithDecodedArgs<SubmissionContractEventArgs>;
             const txId = log.args.transactionId;
 
-            const confirmTxRes = await multiSigWrapper.confirmTransactionAsync(txId, owners[1]);
+            await multiSigWrapper.confirmTransactionAsync(txId, owners[1]);
             await increaseTimeAndMineBlockAsync(SECONDS_TIME_LOCKED.toNumber());
 
             const executeTxRes = await multiSigWrapper.executeTransactionAsync(txId, owners[0]);
