@@ -23,6 +23,12 @@ REDSHIFT_HOST
 WEB3_PROVIDER_URL
 ```
 
+Running a script example:
+
+```
+node ./lib/scripts/scrape_data.js --type tokens
+```
+
 ### Install dependencies:
 
 ```bash
