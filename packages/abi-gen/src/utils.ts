@@ -56,7 +56,7 @@ export const utils = {
                     const componentType = `${component.name}: ${componentValueType}`;
                     return componentType;
                 });
-                const tsType = `{${componentsType}}`;
+                const tsType = `{${componentsType.join(';')}}`;
                 return tsType;
             }
             throw new Error(`Unknown Solidity type found: ${solType}`);
