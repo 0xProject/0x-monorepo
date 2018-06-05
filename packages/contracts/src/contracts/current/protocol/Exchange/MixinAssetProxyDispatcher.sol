@@ -19,13 +19,13 @@
 pragma solidity ^0.4.24;
 
 import "../../utils/Ownable/Ownable.sol";
-import "../AssetProxy/interfaces/IAssetProxy.sol";
 import "./libs/LibExchangeErrors.sol";
 import "./mixins/MAssetProxyDispatcher.sol";
+import "../AssetProxy/interfaces/IAssetProxy.sol";
 
 contract MixinAssetProxyDispatcher is
-    LibExchangeErrors,
     Ownable,
+    LibExchangeErrors,
     MAssetProxyDispatcher
 {
     // Mapping from Asset Proxy Id's to their respective Asset Proxy
@@ -45,9 +45,10 @@ contract MixinAssetProxyDispatcher is
         onlyOwner
     {
         // Ensure the existing asset proxy is not unintentionally overwritten
+        address currentAssetProxy = address(assetProxies[assetProxyId]);
         require(
-            oldAssetProxy == address(assetProxies[assetProxyId]),
-            OLD_ASSET_PROXY_MISMATCH
+            oldAssetProxy == currentAssetProxy,
+            ASSET_PROXY_MISMATCH
         );
 
         IAssetProxy assetProxy = IAssetProxy(newAssetProxy);
@@ -57,7 +58,7 @@ contract MixinAssetProxyDispatcher is
             uint8 newAssetProxyId = assetProxy.getProxyId();
             require(
                 newAssetProxyId == assetProxyId,
-                NEW_ASSET_PROXY_MISMATCH
+                ASSET_PROXY_ID_MISMATCH
             );
         }
 
@@ -98,7 +99,7 @@ contract MixinAssetProxyDispatcher is
             uint256 length = assetMetadata.length;
             require(
                 length > 0,
-                GT_ZERO_LENGTH_REQUIRED
+                LENGTH_GREATER_THAN_0_REQUIRED
             );
             uint8 assetProxyId = uint8(assetMetadata[length - 1]);
             IAssetProxy assetProxy = assetProxies[assetProxyId];

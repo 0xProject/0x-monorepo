@@ -18,7 +18,7 @@ import { ExchangeWrapper } from '../../src/utils/exchange_wrapper';
 import { OrderFactory } from '../../src/utils/order_factory';
 import { orderUtils } from '../../src/utils/order_utils';
 import { TransactionFactory } from '../../src/utils/transaction_factory';
-import { ERC20BalancesByOwner, ExchangeStatus, SignedTransaction } from '../../src/utils/types';
+import { ERC20BalancesByOwner, OrderStatus, SignedTransaction } from '../../src/utils/types';
 import { provider, txDefaults, web3Wrapper } from '../../src/utils/web3_wrapper';
 
 chaiSetup.configure();
@@ -194,9 +194,9 @@ describe('Exchange transactions', () => {
 
             it('should cancel the order when signed by maker and called by sender', async () => {
                 await exchangeWrapper.executeTransactionAsync(signedTx, senderAddress);
-                const res = await exchangeWrapper.fillOrderAsync(signedOrder, senderAddress);
-                const newBalances = await erc20Wrapper.getBalancesAsync();
-                expect(newBalances).to.deep.equal(erc20Balances);
+                return expect(exchangeWrapper.fillOrderAsync(signedOrder, senderAddress)).to.be.rejectedWith(
+                    constants.REVERT,
+                );
             });
         });
     });

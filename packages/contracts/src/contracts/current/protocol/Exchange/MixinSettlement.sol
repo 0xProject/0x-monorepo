@@ -19,17 +19,16 @@
 pragma solidity ^0.4.24;
 pragma experimental ABIEncoderV2;
 
+import "./libs/LibMath.sol";
+import "./libs/LibFillResults.sol";
+import "./libs/LibOrder.sol";
+import "./libs/LibExchangeErrors.sol";
+import "./mixins/MMatchOrders.sol";
 import "./mixins/MSettlement.sol";
 import "./mixins/MAssetProxyDispatcher.sol";
-import "./libs/LibOrder.sol";
-import "./libs/LibMath.sol";
-import "./libs/LibExchangeErrors.sol";
-import "./libs/LibFillResults.sol";
-import "./mixins/MMatchOrders.sol";
 
 contract MixinSettlement is
     LibMath,
-    LibFillResults,
     LibExchangeErrors,
     MMatchOrders,
     MSettlement,
@@ -65,7 +64,7 @@ contract MixinSettlement is
     function settleOrder(
         LibOrder.Order memory order,
         address takerAddress,
-        FillResults memory fillResults
+        LibFillResults.FillResults memory fillResults
     )
         internal
     {
@@ -104,7 +103,7 @@ contract MixinSettlement is
         LibOrder.Order memory leftOrder,
         LibOrder.Order memory rightOrder,
         address takerAddress,
-        MatchedFillResults memory matchedFillResults
+        LibFillResults.MatchedFillResults memory matchedFillResults
     )
         internal
     {
@@ -125,7 +124,7 @@ contract MixinSettlement is
             leftOrder.makerAssetData,
             leftOrder.makerAddress,
             takerAddress,
-            matchedFillResults.takerFillAmount
+            matchedFillResults.leftMakerAssetSpreadAmount
         );
 
         // Maker fees

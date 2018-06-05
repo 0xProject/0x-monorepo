@@ -20,9 +20,9 @@ pragma solidity ^0.4.24;
 pragma experimental ABIEncoderV2;
 
 import "../../utils/LibBytes/LibBytes.sol";
-import "../../tokens/ERC20Token/IERC20Token.sol";
 import "./MixinAssetProxy.sol";
 import "./MixinAuthorizable.sol";
+import "../../tokens/ERC20Token/IERC20Token.sol";
 
 contract ERC20Proxy is
     LibBytes,
@@ -32,11 +32,6 @@ contract ERC20Proxy is
 
     // Id of this proxy.
     uint8 constant PROXY_ID = 1;
-
-    // Revert reasons
-    string constant INVALID_METADATA_LENGTH = "Metadata must have a length of 21.";
-    string constant TRANSFER_FAILED = "Transfer failed.";
-    string constant PROXY_ID_MISMATCH = "Proxy id in metadata does not match this proxy id.";
 
     /// @dev Internal version of `transferFrom`.
     /// @param assetMetadata Encoded byte array.
@@ -56,12 +51,12 @@ contract ERC20Proxy is
 
         require(
             length == 21,
-            INVALID_METADATA_LENGTH
+            LENGTH_21_REQUIRED
         );
-
+        // TODO: Is this too inflexible in the future?
         require(
             uint8(assetMetadata[length - 1]) == PROXY_ID,
-            PROXY_ID_MISMATCH
+            ASSET_PROXY_ID_MISMATCH
         );
 
         // Decode metadata.
@@ -70,7 +65,7 @@ contract ERC20Proxy is
         // Transfer tokens.
         bool success = IERC20Token(token).transferFrom(from, to, amount);
         require(
-            success == true,
+            success,
             TRANSFER_FAILED
         );
     }

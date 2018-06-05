@@ -37,17 +37,15 @@ contract IExchangeCore {
     function fillOrder(
         LibOrder.Order memory order,
         uint256 takerAssetFillAmount,
-        bytes memory signature)
+        bytes memory signature
+    )
         public
         returns (LibFillResults.FillResults memory fillResults);
 
     /// @dev After calling, the order can not be filled anymore.
     /// @param order Order struct containing order specifications.
-    /// @return True if the order state changed to cancelled.
-    ///         False if the transaction was already cancelled or expired.
     function cancelOrder(LibOrder.Order memory order)
-        public
-        returns (bool);
+        public;
 
     /// @dev Gets information about an order: status, hash, and amount filled.
     /// @param order Order to gather information on.
@@ -57,24 +55,4 @@ contract IExchangeCore {
         public
         view
         returns (LibOrder.OrderInfo memory orderInfo);
-
-    /// @dev Calculates amounts filled and fees paid by maker and taker.
-    /// @param order to be filled.
-    /// @param orderStatus Status of order to be filled.
-    /// @param orderTakerAssetFilledAmount Amount of order already filled.
-    /// @param takerAssetFillAmount Desired amount of order to fill by taker.
-    /// @return status Return status of calculating fill amounts. Returns Status.SUCCESS on success.
-    /// @return fillResults Amounts filled and fees paid by maker and taker.
-    function calculateFillResults(
-        LibOrder.Order memory order,
-        uint8 orderStatus,
-        uint256 orderTakerAssetFilledAmount,
-        uint256 takerAssetFillAmount
-    )
-        public
-        pure
-        returns (
-            uint8 status,
-            LibFillResults.FillResults memory fillResults
-        );
 }
