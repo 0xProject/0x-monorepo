@@ -1,5 +1,13 @@
 [
     {
+        "version": "0.4.2",
+        "changes": [
+            {
+                "note": "Add types for `eth-lightwallet`"
+            }
+        ]
+    },
+    {
         "timestamp": 1529397769,
         "version": "0.4.1",
         "changes": [
