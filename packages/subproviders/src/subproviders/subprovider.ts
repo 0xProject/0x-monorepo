@@ -1,5 +1,5 @@
 import { promisify } from '@0xproject/utils';
-import { JSONRPCRequestPayload, JSONRPCResponsePayload } from 'ethereum-types';
+import { JSONRPCRequestPayload, JSONRPCResponsePayload, Provider } from 'ethereum-types';
 import * as Web3 from 'web3';
 
 import { Callback, ErrorCallback, JSONRPCRequestPayloadWithMethod } from '../types';
@@ -9,7 +9,7 @@ import { Callback, ErrorCallback, JSONRPCRequestPayloadWithMethod } from '../typ
  */
 export abstract class Subprovider {
     // tslint:disable-next-line:underscore-private-and-protected
-    private engine: any;
+    private engine!: Provider;
     // Ported from: https://github.com/MetaMask/provider-engine/blob/master/util/random-id.js
     private static _getRandomId(): number {
         const extraDigits = 3;
@@ -57,7 +57,7 @@ export abstract class Subprovider {
      * This is only called within the ProviderEngine source code, do not call
      * directly.
      */
-    public setEngine(engine: any): void {
+    public setEngine(engine: Provider): void {
         this.engine = engine;
     }
 }
