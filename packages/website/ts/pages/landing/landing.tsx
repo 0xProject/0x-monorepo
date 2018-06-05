@@ -349,6 +349,9 @@ export class Landing extends React.Component<LandingProps, LandingState> {
                 case ScreenWidths.Lg:
                     colWidth = isRelayersOnly ? 2 : 2 - i % 2;
                     break;
+
+                default:
+                    throw new Error(`Encountered unknown ScreenWidths value: ${this.state.screenWidth}`);
             }
             return (
                 <div key={`project-${project.logoFileName}`} className={`col col-${colWidth} center`}>
