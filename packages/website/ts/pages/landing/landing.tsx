@@ -6,7 +6,7 @@ import { Link } from 'react-router-dom';
 import { Footer } from 'ts/components/footer';
 import { SubscribeForm } from 'ts/components/forms/subscribe_form';
 import { TopBar } from 'ts/components/top_bar/top_bar';
-import { CTA } from 'ts/components/ui/button';
+import { CallToAction } from 'ts/components/ui/button';
 import { Dispatcher } from 'ts/redux/dispatcher';
 import { Deco, Key, Language, ScreenWidths, WebsitePaths } from 'ts/types';
 import { constants } from 'ts/utils/constants';
@@ -272,9 +272,9 @@ export class Landing extends React.Component<LandingProps, LandingState> {
                                 <div className="pt3 clearfix sm-mx-auto" style={{ maxWidth: 389 }}>
                                     <div className="lg-pr2 md-pr2 col col-6 sm-center">
                                         <Link to={WebsitePaths.ZeroExJs} className="text-decoration-none">
-                                            <CTA width="175px" type="light">
+                                            <CallToAction width="175px" type="light">
                                                 {this.props.translate.get(Key.BuildCallToAction, Deco.Cap)}
-                                            </CTA>
+                                            </CallToAction>
                                         </Link>
                                     </div>
                                     <div className="col col-6 sm-center">
@@ -283,9 +283,9 @@ export class Landing extends React.Component<LandingProps, LandingState> {
                                             target="_blank"
                                             className="text-decoration-none"
                                         >
-                                            <CTA width="175px">
+                                            <CallToAction width="175px">
                                                 {this.props.translate.get(Key.CommunityCallToAction, Deco.Cap)}
-                                            </CTA>
+                                            </CallToAction>
                                         </a>
                                     </div>
                                 </div>
@@ -774,7 +774,9 @@ export class Landing extends React.Component<LandingProps, LandingState> {
                         </div>
                         <div className="sm-center sm-pt2 lg-table-cell md-table-cell">
                             <Link to={WebsitePaths.ZeroExJs} className="text-decoration-none">
-                                <CTA fontSize="15px">{this.props.translate.get(Key.BuildCallToAction, Deco.Cap)}</CTA>
+                                <CallToAction fontSize="15px">
+                                    {this.props.translate.get(Key.BuildCallToAction, Deco.Cap)}
+                                </CallToAction>
                             </Link>
                         </div>
                     </div>

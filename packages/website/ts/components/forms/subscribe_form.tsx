@@ -1,7 +1,6 @@
 import { colors } from '@0xproject/react-shared';
 import * as React from 'react';
 
-import { logUtils } from '@0xproject/utils';
 import { Button } from 'ts/components/ui/button';
 import { Container } from 'ts/components/ui/container';
 import { Input } from 'ts/components/ui/input';
@@ -16,6 +15,7 @@ export enum SubscribeFormStatus {
     Error,
     Success,
     Loading,
+    Other,
 }
 
 export interface SubscribeFormState {
@@ -24,6 +24,9 @@ export interface SubscribeFormState {
     status: SubscribeFormStatus;
 }
 
+const FORM_FONT_SIZE = '15px';
+
+// TODO: Translate visible strings. https://app.asana.com/0/628666249318202/697485674422001
 export class SubscribeForm extends React.Component<SubscribeFormProps, SubscribeFormState> {
     public state = {
         emailText: '',
@@ -31,7 +34,6 @@ export class SubscribeForm extends React.Component<SubscribeFormProps, Subscribe
         status: SubscribeFormStatus.None,
     };
     public render(): React.ReactNode {
-        const formFontSize = '15px';
         return (
             <Container className="flex flex-column items-center justify-between md-mx2 sm-mx2">
                 <Container marginBottom="15px">
@@ -46,18 +48,18 @@ export class SubscribeForm extends React.Component<SubscribeFormProps, Subscribe
                                 placeholder="you@email.com"
                                 value={this.state.emailText}
                                 fontColor={colors.white}
-                                fontSize={formFontSize}
+                                fontSize={FORM_FONT_SIZE}
                                 backgroundColor={colors.projectsGrey}
-                                width="275px"
+                                width="300px"
                                 onChange={this._handleEmailInputChange.bind(this)}
                             />
                         </Container>
                         <Container marginLeft="15px" marginTop="15px">
                             <Button
                                 type="submit"
-                                backgroundColor={colors.darkButtonGrey}
+                                backgroundColor={colors.darkestGrey}
                                 fontColor={colors.white}
-                                fontSize={formFontSize}
+                                fontSize={FORM_FONT_SIZE}
                             >
                                 Subscribe
                             </Button>
@@ -82,16 +84,19 @@ export class SubscribeForm extends React.Component<SubscribeFormProps, Subscribe
                 break;
             case SubscribeFormStatus.None:
                 break;
+            default:
+                throw new Error(
+                    'The SubscribeFormStatus switch statement is not exhaustive when choosing an error message.',
+                );
         }
         return (
             <Container isHidden={!message} marginTop="30px">
                 <Text center={true} fontFamily="Roboto Mono" fontColor={colors.grey}>
-                    {message || 'spacer text'}
+                    {message || 'spacer text (never shown to user)'}
                 </Text>
             </Container>
         );
     }
-
     private _handleEmailInputChange(event: React.ChangeEvent<HTMLInputElement>): void {
         this.setState({ emailText: event.target.value });
     }
@@ -107,15 +112,12 @@ export class SubscribeForm extends React.Component<SubscribeFormProps, Subscribe
         try {
             const response = await backendClient.subscribeToNewsletterAsync(this.state.emailText);
             const status = response.status === 200 ? SubscribeFormStatus.Success : SubscribeFormStatus.Error;
-            this._setStatus(status);
+            this.setState({ status, emailText: '' });
         } catch (error) {
-            logUtils.log(error);
             this._setStatus(SubscribeFormStatus.Error);
-        } finally {
-            this.setState({ emailText: '' });
         }
     }
-    private _setStatus(status: SubscribeFormStatus, then?: () => void): void {
-        this.setState({ status }, then);
+    private _setStatus(status: SubscribeFormStatus): void {
+        this.setState({ status });
     }
 }

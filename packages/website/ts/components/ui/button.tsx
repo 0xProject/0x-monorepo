@@ -48,15 +48,15 @@ Button.defaultProps = {
 
 Button.displayName = 'Button';
 
-type CTAType = 'light' | 'dark';
+type CallToActionType = 'light' | 'dark';
 
-export interface CTAProps {
-    type?: CTAType;
+export interface CallToActionProps {
+    type?: CallToActionType;
     fontSize?: string;
     width?: string;
 }
 
-export const CTA: React.StatelessComponent<CTAProps> = ({ children, type, fontSize, width }) => {
+export const CallToAction: React.StatelessComponent<CallToActionProps> = ({ children, type, fontSize, width }) => {
     const isLight = type === 'light';
     const backgroundColor = isLight ? colors.white : colors.heroGrey;
     const fontColor = isLight ? colors.heroGrey : colors.white;
@@ -74,6 +74,6 @@ export const CTA: React.StatelessComponent<CTAProps> = ({ children, type, fontSi
     );
 };
 
-CTA.defaultProps = {
+CallToAction.defaultProps = {
     type: 'dark',
 };

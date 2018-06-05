@@ -28,7 +28,7 @@ export const Input = styled(PlainInput)`
     border: none;
     background-color: ${props => props.backgroundColor};
     &::placeholder {
-        color: ${props => props.placeholder};
+        color: ${props => props.placeholderColor};
     }
 `;
 
@@ -36,7 +36,7 @@ Input.defaultProps = {
     width: 'auto',
     backgroundColor: colors.white,
     fontColor: colors.darkestGrey,
-    placeholderColor: colors.grey500,
+    placeholderColor: colors.darkGrey,
     fontSize: '12px',
 };
 

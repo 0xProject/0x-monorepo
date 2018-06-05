@@ -4,23 +4,26 @@ import * as queryString from 'query-string';
 
 import { errorReporter } from 'ts/utils/error_reporter';
 
+const logErrorIfPresent = (response: Response, requestedURL: string) => {
+    if (response.status !== 200) {
+        const errorText = `Error requesting url: ${requestedURL}, ${response.status}: ${response.statusText}`;
+        logUtils.log(errorText);
+        const error = Error(errorText);
+        // tslint:disable-next-line:no-floating-promises
+        errorReporter.reportAsync(error);
+        throw error;
+    }
+};
+
 export const fetchUtils = {
     async requestAsync(baseUrl: string, path: string, queryParams?: object): Promise<any> {
         const query = queryStringFromQueryParams(queryParams);
         const url = `${baseUrl}${path}${query}`;
         const response = await fetch(url);
-        if (response.status !== 200) {
-            const errorText = `Error requesting url: ${url}, ${response.status}: ${response.statusText}`;
-            logUtils.log(errorText);
-            const error = Error(errorText);
-            // tslint:disable-next-line:no-floating-promises
-            errorReporter.reportAsync(error);
-            throw error;
-        }
+        logErrorIfPresent(response, url);
         const result = await response.json();
         return result;
     },
-
     async postAsync(baseUrl: string, path: string, body: object): Promise<Response> {
         const url = `${baseUrl}${path}`;
         const response = await fetch(url, {
@@ -30,6 +33,7 @@ export const fetchUtils = {
             },
             body: JSON.stringify(body),
         });
+        logErrorIfPresent(response, url);
         return response;
     },
 };

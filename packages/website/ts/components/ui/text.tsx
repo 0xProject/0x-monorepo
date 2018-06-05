@@ -52,5 +52,5 @@ export const TranslatedText: React.StatelessComponent<TranslatedTextProps> = ({
     translate,
     children,
     deco,
-    ...textProps,
+    ...textProps
 }) => <Text {...textProps}>{translate.get(children, deco)}</Text>;
