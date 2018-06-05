@@ -61,7 +61,7 @@ const docsInfoConfig: DocsInfoConfig = {
             'EventAbi',
             'DataItem',
             'OpCode',
-            // 'StructLog',
+            // 'StructLog', // TODO: This type breaks the docs so we don't render it for now
             'TransactionTrace',
             'Unit',
             'JSONRPCRequestPayload',
