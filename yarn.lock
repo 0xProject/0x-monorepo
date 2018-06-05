@@ -20,6 +20,19 @@
     query-string "^5.0.1"
     websocket "^1.0.25"
 
+"@0xproject/fill-scenarios@^0.0.2":
+  version "0.0.2"
+  resolved "https://registry.yarnpkg.com/@0xproject/fill-scenarios/-/fill-scenarios-0.0.2.tgz#176ac2cba13f527e84346fbf06da84965a852bab"
+  dependencies:
+    "@0xproject/base-contract" "^0.3.2"
+    "@0xproject/order-utils" "^0.0.5"
+    "@0xproject/types" "^0.7.0"
+    "@0xproject/typescript-typings" "^0.3.2"
+    "@0xproject/utils" "^0.6.2"
+    "@0xproject/web3-wrapper" "^0.6.4"
+    ethers "^3.0.15"
+    lodash "^4.17.4"
+
 "@0xproject/json-schemas@0.7.22":
   version "0.7.22"
   resolved "https://registry.yarnpkg.com/@0xproject/json-schemas/-/json-schemas-0.7.22.tgz#95cbdc9ec0eff3d1920903960284d491eb668f28"
@@ -38,7 +51,7 @@
     jsonschema "^1.2.0"
     lodash.values "^4.3.0"
 
-"@0xproject/order-utils@0.0.5":
+"@0xproject/order-utils@0.0.5", "@0xproject/order-utils@^0.0.5":
   version "0.0.5"
   resolved "https://registry.yarnpkg.com/@0xproject/order-utils/-/order-utils-0.0.5.tgz#c8d92a112740b0020e08f13137844f8c183c863b"
   dependencies:
