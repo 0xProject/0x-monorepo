@@ -18,6 +18,7 @@ import { artifacts } from '../src/utils/artifacts';
 import { expectRevertOrAlwaysFailingTransaction } from '../src/utils/assertions';
 import { chaiSetup } from '../src/utils/chai_setup';
 import { constants } from '../src/utils/constants';
+import { increaseTimeAndMineBlockAsync } from '../src/utils/increase_time';
 import { MultiSigWrapper } from '../src/utils/multi_sig_wrapper';
 import { provider, txDefaults, web3Wrapper } from '../src/utils/web3_wrapper';
 
@@ -29,7 +30,7 @@ describe('AssetProxyOwner', () => {
     let owners: string[];
     let authorized: string;
     const REQUIRED_APPROVALS = new BigNumber(2);
-    const SECONDS_TIME_LOCKED = new BigNumber(1000000);
+    const SECONDS_TIME_LOCKED = new BigNumber(1000);
 
     let erc20Proxy: MixinAuthorizableContract;
     let erc721Proxy: MixinAuthorizableContract;
@@ -147,8 +148,7 @@ describe('AssetProxyOwner', () => {
             );
         });
 
-        // TODO(albrow): gas required exceeds allowance or always failing transaction
-        it.skip('should register an address if called by multisig after timelock', async () => {
+        it('should register an address if called by multisig after timelock', async () => {
             const addressToRegister = erc20Proxy.address;
             const isRegistered = true;
             const registerAssetProxyData = multiSig.registerAssetProxy.getABIEncodedTransactionData(
@@ -160,11 +160,12 @@ describe('AssetProxyOwner', () => {
                 registerAssetProxyData,
                 owners[0],
             );
+
             const log = submitTxRes.logs[0] as LogWithDecodedArgs<SubmissionContractEventArgs>;
             const txId = log.args.transactionId;
 
             const confirmTxRes = await multiSigWrapper.confirmTransactionAsync(txId, owners[1]);
-            await web3Wrapper.increaseTimeAsync(SECONDS_TIME_LOCKED.toNumber());
+            await increaseTimeAndMineBlockAsync(SECONDS_TIME_LOCKED.toNumber());
 
             const executeTxRes = await multiSigWrapper.executeTransactionAsync(txId, owners[0]);
             const registerLog = executeTxRes.logs[0] as LogWithDecodedArgs<AssetProxyRegistrationContractEventArgs>;
@@ -175,8 +176,7 @@ describe('AssetProxyOwner', () => {
             expect(isAssetProxyRegistered).to.equal(isRegistered);
         });
 
-        // TODO(albrow): gas required exceeds allowance or always failing transaction
-        it.skip('should fail if registering a null address', async () => {
+        it('should fail if registering a null address', async () => {
             const addressToRegister = constants.NULL_ADDRESS;
             const isRegistered = true;
             const registerAssetProxyData = multiSig.registerAssetProxy.getABIEncodedTransactionData(
@@ -192,7 +192,7 @@ describe('AssetProxyOwner', () => {
             const txId = log.args.transactionId;
 
             await multiSigWrapper.confirmTransactionAsync(txId, owners[1]);
-            await web3Wrapper.increaseTimeAsync(SECONDS_TIME_LOCKED.toNumber());
+            await increaseTimeAndMineBlockAsync(SECONDS_TIME_LOCKED.toNumber());
 
             const executeTxRes = await multiSigWrapper.executeTransactionAsync(txId, owners[0]);
             const failureLog = executeTxRes.logs[0] as LogWithDecodedArgs<ExecutionFailureContractEventArgs>;
@@ -203,8 +203,7 @@ describe('AssetProxyOwner', () => {
         });
     });
 
-    // TODO(albrow): gas required exceeds allowance or always failing transaction
-    describe.skip('executeRemoveAuthorizedAddress', () => {
+    describe('executeRemoveAuthorizedAddress', () => {
         before('authorize both proxies and register erc20 proxy', async () => {
             // Only register ERC20 proxy
             const addressToRegister = erc20Proxy.address;
@@ -245,7 +244,7 @@ describe('AssetProxyOwner', () => {
 
             await multiSigWrapper.confirmTransactionAsync(erc20AddAuthorizedAddressTxId, owners[1]);
             await multiSigWrapper.confirmTransactionAsync(erc721AddAuthorizedAddressTxId, owners[1]);
-            await web3Wrapper.increaseTimeAsync(SECONDS_TIME_LOCKED.toNumber());
+            await increaseTimeAndMineBlockAsync(SECONDS_TIME_LOCKED.toNumber());
             await multiSigWrapper.executeTransactionAsync(registerAssetProxyTxId, owners[0]);
             await multiSigWrapper.executeTransactionAsync(erc20AddAuthorizedAddressTxId, owners[0]);
             await multiSigWrapper.executeTransactionAsync(erc721AddAuthorizedAddressTxId, owners[0]);

@@ -62,7 +62,6 @@ describe('Exchange wrappers', () => {
         await blockchainLifecycle.revertAsync();
     });
     before(async () => {
-        console.log('before running');
         const accounts = await web3Wrapper.getAvailableAddressesAsync();
         const usedAddresses = ([owner, makerAddress, takerAddress, feeRecipientAddress] = accounts);
 
@@ -116,13 +115,10 @@ describe('Exchange wrappers', () => {
         };
         const privateKey = constants.TESTRPC_PRIVATE_KEYS[accounts.indexOf(makerAddress)];
         orderFactory = new OrderFactory(privateKey, defaultOrderParams);
-        console.log('before finished running');
     });
     beforeEach(async () => {
-        console.log('beforeEach running');
         await blockchainLifecycle.startAsync();
         erc20Balances = await erc20Wrapper.getBalancesAsync();
-        console.log('beforeEach finished');
     });
     afterEach(async () => {
         await blockchainLifecycle.revertAsync();
@@ -203,48 +199,64 @@ describe('Exchange wrappers', () => {
 
         //   -10000000000000000000000
         //   +9950000000000000000000
+        //
+        // We think this is failing due to a problem in the fillOrderNoThrow
+        // function in the smart contract. (There's a lot of assembly).
         it.skip('should transfer the correct amounts', async () => {
             const signedOrder = orderFactory.newSignedOrder({
                 makerAssetAmount: Web3Wrapper.toBaseUnitAmount(new BigNumber(100), 18),
                 takerAssetAmount: Web3Wrapper.toBaseUnitAmount(new BigNumber(200), 18),
             });
             const takerAssetFillAmount = signedOrder.takerAssetAmount.div(2);
+
+            console.log('maker balance: ', erc20Balances[makerAddress][defaultMakerAssetAddress].toString());
             await exchangeWrapper.fillOrderNoThrowAsync(signedOrder, takerAddress, {
                 takerAssetFillAmount,
             });
 
             const newBalances = await erc20Wrapper.getBalancesAsync();
 
-            const makerAssetFilledAmount = takerAssetFillAmount
-                .times(signedOrder.makerAssetAmount)
-                .dividedToIntegerBy(signedOrder.takerAssetAmount);
-            const makerFee = signedOrder.makerFee
-                .times(makerAssetFilledAmount)
-                .dividedToIntegerBy(signedOrder.makerAssetAmount);
-            const takerFee = signedOrder.takerFee
-                .times(makerAssetFilledAmount)
-                .dividedToIntegerBy(signedOrder.makerAssetAmount);
-            expect(newBalances[makerAddress][defaultMakerAssetAddress]).to.be.bignumber.equal(
-                erc20Balances[makerAddress][defaultMakerAssetAddress].minus(makerAssetFilledAmount),
-            );
-            expect(newBalances[makerAddress][defaultTakerAssetAddress]).to.be.bignumber.equal(
-                erc20Balances[makerAddress][defaultTakerAssetAddress].add(takerAssetFillAmount),
-            );
-            expect(newBalances[makerAddress][zrxToken.address]).to.be.bignumber.equal(
-                erc20Balances[makerAddress][zrxToken.address].minus(makerFee),
-            );
-            expect(newBalances[takerAddress][defaultTakerAssetAddress]).to.be.bignumber.equal(
-                erc20Balances[takerAddress][defaultTakerAssetAddress].minus(takerAssetFillAmount),
-            );
-            expect(newBalances[takerAddress][defaultMakerAssetAddress]).to.be.bignumber.equal(
-                erc20Balances[takerAddress][defaultMakerAssetAddress].add(makerAssetFilledAmount),
-            );
-            expect(newBalances[takerAddress][zrxToken.address]).to.be.bignumber.equal(
-                erc20Balances[takerAddress][zrxToken.address].minus(takerFee),
-            );
-            expect(newBalances[feeRecipientAddress][zrxToken.address]).to.be.bignumber.equal(
-                erc20Balances[feeRecipientAddress][zrxToken.address].add(makerFee.add(takerFee)),
-            );
+            console.log('new maker balance: ', newBalances[makerAddress][defaultMakerAssetAddress].toString());
+
+            // const makerAssetFilledAmount = takerAssetFillAmount
+            //     .times(signedOrder.makerAssetAmount)
+            //     .dividedToIntegerBy(signedOrder.takerAssetAmount);
+            // const makerFee = signedOrder.makerFee
+            //     .times(makerAssetFilledAmount)
+            //     .dividedToIntegerBy(signedOrder.makerAssetAmount);
+            // const takerFee = signedOrder.takerFee
+            //     .times(makerAssetFilledAmount)
+            //     .dividedToIntegerBy(signedOrder.makerAssetAmount);
+            // console.log('makerAssetFilledAmount: ', makerAssetFilledAmount);
+            // console.log('makerFee: ', makerFee);
+            // console.log('takerFee: ', takerFee);
+            // expect(newBalances[makerAddress][defaultMakerAssetAddress]).to.be.bignumber.equal(
+            //     erc20Balances[makerAddress][defaultMakerAssetAddress].minus(makerAssetFilledAmount),
+            // );
+            // console.log(1);
+            // expect(newBalances[makerAddress][defaultTakerAssetAddress]).to.be.bignumber.equal(
+            //     erc20Balances[makerAddress][defaultTakerAssetAddress].add(takerAssetFillAmount),
+            // );
+            // console.log(2);
+            // expect(newBalances[makerAddress][zrxToken.address]).to.be.bignumber.equal(
+            //     erc20Balances[makerAddress][zrxToken.address].minus(makerFee),
+            // );
+            // console.log(3);
+            // expect(newBalances[takerAddress][defaultTakerAssetAddress]).to.be.bignumber.equal(
+            //     erc20Balances[takerAddress][defaultTakerAssetAddress].minus(takerAssetFillAmount),
+            // );
+            // console.log(4);
+            // expect(newBalances[takerAddress][defaultMakerAssetAddress]).to.be.bignumber.equal(
+            //     erc20Balances[takerAddress][defaultMakerAssetAddress].add(makerAssetFilledAmount),
+            // );
+            // console.log(5);
+            // expect(newBalances[takerAddress][zrxToken.address]).to.be.bignumber.equal(
+            //     erc20Balances[takerAddress][zrxToken.address].minus(takerFee),
+            // );
+            // console.log(6);
+            // expect(newBalances[feeRecipientAddress][zrxToken.address]).to.be.bignumber.equal(
+            //     erc20Balances[feeRecipientAddress][zrxToken.address].add(makerFee.add(takerFee)),
+            // );
         });
 
         it('should not change erc20Balances if maker erc20Balances are too low to fill order', async () => {
@@ -725,8 +737,7 @@ describe('Exchange wrappers', () => {
                 );
             });
 
-            // TODO(albrow): failing similar to above
-            it.skip('should fill all signedOrders if cannot fill entire takerAssetFillAmount', async () => {
+            it('should fill all signedOrders if cannot fill entire takerAssetFillAmount', async () => {
                 const takerAssetFillAmount = Web3Wrapper.toBaseUnitAmount(new BigNumber(100000), 18);
                 _.forEach(signedOrders, signedOrder => {
                     erc20Balances[makerAddress][defaultMakerAssetAddress] = erc20Balances[makerAddress][

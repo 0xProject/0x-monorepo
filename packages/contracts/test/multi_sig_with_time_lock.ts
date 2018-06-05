@@ -15,6 +15,7 @@ import { artifacts } from '../src/utils/artifacts';
 import { expectRevertOrAlwaysFailingTransaction } from '../src/utils/assertions';
 import { chaiSetup } from '../src/utils/chai_setup';
 import { constants } from '../src/utils/constants';
+import { increaseTimeAndMineBlockAsync } from '../src/utils/increase_time';
 import { MultiSigWrapper } from '../src/utils/multi_sig_wrapper';
 import { provider, txDefaults, web3Wrapper } from '../src/utils/web3_wrapper';
 
@@ -155,16 +156,8 @@ describe('MultiSigWalletWithTimeLock', () => {
                 );
             });
 
-            // TODO(albrow): increaseTimeAsync not supported
             it('should execute if it has enough confirmations and is past the time lock', async () => {
-                await web3Wrapper.increaseTimeAsync(SECONDS_TIME_LOCKED.toNumber());
-                // Note: we need to send a transaction after increasing time so
-                // that a block is actually mined. The contract looks at the
-                // last mined block for the timestamp.
-                await web3Wrapper.awaitTransactionSuccessAsync(
-                    await web3Wrapper.sendTransactionAsync({ from: owners[0], to: owners[1], value: 1 }),
-                    constants.AWAIT_TRANSACTION_MINED_MS,
-                );
+                await increaseTimeAndMineBlockAsync(SECONDS_TIME_LOCKED.toNumber());
                 await web3Wrapper.awaitTransactionSuccessAsync(
                     await multiSig.executeTransaction.sendTransactionAsync(txId, { from: owners[0] }),
                     constants.AWAIT_TRANSACTION_MINED_MS,
