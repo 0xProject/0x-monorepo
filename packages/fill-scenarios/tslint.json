@@ -1,6 +1,6 @@
 {
     "extends": ["@0xproject/tslint-config"],
-    "rules": {
-        "no-unused-variable": false
+    "linterOptions": {
+        "exclude": ["src/generated_contract_wrappers/*"]
     }
 }

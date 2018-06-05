@@ -1,12 +1,8 @@
-import { BlockchainLifecycle, devConstants, web3Factory } from '@0xproject/dev-utils';
-import { AssetProxyId } from '@0xproject/types';
+import { BlockchainLifecycle } from '@0xproject/dev-utils';
 import { BigNumber } from '@0xproject/utils';
-import { Web3Wrapper } from '@0xproject/web3-wrapper';
 import BN = require('bn.js');
 import * as chai from 'chai';
-import { LogWithDecodedArgs, TransactionReceiptWithDecodedLogs } from 'ethereum-types';
 import ethUtil = require('ethereumjs-util');
-import * as Web3 from 'web3';
 
 import { TestLibBytesContract } from '../../src/contract_wrappers/generated/test_lib_bytes';
 import { artifacts } from '../../src/utils/artifacts';
@@ -19,7 +15,6 @@ const expect = chai.expect;
 const blockchainLifecycle = new BlockchainLifecycle(web3Wrapper);
 
 describe('LibBytes', () => {
-    let owner: string;
     let libBytes: TestLibBytesContract;
     const byteArrayShorterThan32Bytes = '0x012345';
     const byteArrayShorterThan20Bytes = byteArrayShorterThan32Bytes;
@@ -42,7 +37,6 @@ describe('LibBytes', () => {
     before(async () => {
         // Setup accounts & addresses
         const accounts = await web3Wrapper.getAvailableAddressesAsync();
-        owner = accounts[0];
         testAddress = accounts[1];
         // Deploy LibBytes
         libBytes = await TestLibBytesContract.deployFrom0xArtifactAsync(artifacts.TestLibBytes, provider, txDefaults);

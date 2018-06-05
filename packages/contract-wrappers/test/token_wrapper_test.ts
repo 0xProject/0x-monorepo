@@ -218,7 +218,6 @@ describe('TokenWrapper', () => {
         describe('With provider without accounts', () => {
             let zeroExContractWithoutAccounts: ContractWrappers;
             before(async () => {
-                const hasAddresses = false;
                 const emptyWalletProvider = addEmptyWalletSubprovider(provider);
                 zeroExContractWithoutAccounts = new ContractWrappers(emptyWalletProvider, config);
             });
@@ -361,7 +360,6 @@ describe('TokenWrapper', () => {
         describe('With provider without accounts', () => {
             let zeroExContractWithoutAccounts: ContractWrappers;
             before(async () => {
-                const hasAddresses = false;
                 const emptyWalletProvider = addEmptyWalletSubprovider(provider);
                 zeroExContractWithoutAccounts = new ContractWrappers(emptyWalletProvider, config);
             });

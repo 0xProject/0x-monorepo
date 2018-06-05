@@ -885,6 +885,7 @@ export class ExchangeWrapper extends ContractWrapper {
         const contractAddress = this._getContractAddress(artifacts.ZRX, this._zrxContractAddressIfExists);
         return contractAddress;
     }
+    // tslint:disable:no-unused-variable
     private _invalidateContractInstances(): void {
         this.unsubscribeAll();
         delete this._exchangeContractIfExists;
@@ -916,6 +917,7 @@ export class ExchangeWrapper extends ContractWrapper {
         const orderHashHex = await exchangeInstance.getOrderHash.callAsync(orderAddresses, orderValues);
         return orderHashHex;
     }
+    // tslint:enable:no-unused-variable
     private async _getExchangeContractAsync(): Promise<ExchangeContract> {
         if (!_.isUndefined(this._exchangeContractIfExists)) {
             return this._exchangeContractIfExists;

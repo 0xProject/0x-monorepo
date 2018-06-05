@@ -1,11 +1,8 @@
-import { BlockchainLifecycle, web3Factory } from '@0xproject/dev-utils';
+import { BlockchainLifecycle } from '@0xproject/dev-utils';
 import { BigNumber } from '@0xproject/utils';
-import { Web3Wrapper } from '@0xproject/web3-wrapper';
 import * as chai from 'chai';
 import { LogWithDecodedArgs } from 'ethereum-types';
-import * as _ from 'lodash';
 import 'make-promises-safe';
-import * as Web3 from 'web3';
 
 import {
     MultiSigWalletWithTimeLockContract,
@@ -20,7 +17,7 @@ import { provider, txDefaults, web3Wrapper } from '../src/utils/web3_wrapper';
 chaiSetup.configure();
 const expect = chai.expect;
 const blockchainLifecycle = new BlockchainLifecycle(web3Wrapper);
-
+// tslint:disable:no-unnecessary-type-assertion
 describe('MultiSigWalletWithTimeLock', () => {
     let owners: string[];
     const REQUIRED_APPROVALS = new BigNumber(2);
@@ -167,3 +164,4 @@ describe('MultiSigWalletWithTimeLock', () => {
         });
     });
 });
+// tslint:enable:no-unnecessary-type-assertion

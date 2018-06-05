@@ -181,6 +181,7 @@ export class EtherTokenWrapper extends ContractWrapper {
             : networkSpecificArtifact.address;
         return contractAddressIfExists;
     }
+    // tslint:disable-next-line:no-unused-variable
     private _invalidateContractInstance(): void {
         this.unsubscribeAll();
         this._etherTokenContractsByAddress = {};

@@ -1,5 +1,5 @@
 import { BlockchainLifecycle } from '@0xproject/dev-utils';
-import { assetProxyUtils, crypto, orderHashUtils } from '@0xproject/order-utils';
+import { assetProxyUtils, orderHashUtils } from '@0xproject/order-utils';
 import { AssetProxyId, SignedOrder } from '@0xproject/types';
 import { BigNumber } from '@0xproject/utils';
 import { Web3Wrapper } from '@0xproject/web3-wrapper';
@@ -24,14 +24,13 @@ import { ERC20Wrapper } from '../../src/utils/erc20_wrapper';
 import { ERC721Wrapper } from '../../src/utils/erc721_wrapper';
 import { ExchangeWrapper } from '../../src/utils/exchange_wrapper';
 import { OrderFactory } from '../../src/utils/order_factory';
-import { orderUtils } from '../../src/utils/order_utils';
-import { ContractName, ERC20BalancesByOwner, OrderStatus } from '../../src/utils/types';
+import { ERC20BalancesByOwner } from '../../src/utils/types';
 import { provider, txDefaults, web3Wrapper } from '../../src/utils/web3_wrapper';
 
 chaiSetup.configure();
 const expect = chai.expect;
 const blockchainLifecycle = new BlockchainLifecycle(web3Wrapper);
-
+// tslint:disable:no-unnecessary-type-assertion
 describe('Exchange core', () => {
     let makerAddress: string;
     let owner: string;
@@ -577,7 +576,6 @@ describe('Exchange core', () => {
         });
 
         it('should log 1 event with correct arguments', async () => {
-            const divisor = 2;
             const res = await exchangeWrapper.cancelOrderAsync(signedOrder, makerAddress);
             expect(res.logs).to.have.length(1);
 
@@ -724,6 +722,7 @@ describe('Exchange core', () => {
             expect(initialOwnerTakerAsset).to.be.bignumber.equal(takerAddress);
             // Call Exchange
             const takerAssetFillAmount = signedOrder.takerAssetAmount;
+            // tslint:disable-next-line:no-unused-variable
             const res = await exchangeWrapper.fillOrderAsync(signedOrder, takerAddress, { takerAssetFillAmount });
             // Verify post-conditions
             const newOwnerMakerAsset = await erc721Token.ownerOf.callAsync(makerAssetId);
@@ -922,4 +921,6 @@ describe('Exchange core', () => {
             );
         });
     });
-}); // tslint:disable-line:max-file-line-count
+});
+// tslint:disable:max-file-line-count
+// tslint:enable:no-unnecessary-type-assertion

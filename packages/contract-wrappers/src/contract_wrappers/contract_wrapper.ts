@@ -185,6 +185,7 @@ export class ContractWrapper {
             this._unsubscribe(filterToken, err);
         });
     }
+    // tslint:disable-next-line:no-unused-variable
     private _setNetworkId(networkId: number): void {
         this._networkId = networkId;
     }

@@ -28,7 +28,6 @@
         "interface-name": false,
         "interface-over-type-literal": true,
         "linebreak-style": [true, "LF"],
-        "max-classes-per-file": false,
         "max-classes-per-file": [true, 1],
         "max-line-length": false,
         "max-file-line-count": [true, 500],

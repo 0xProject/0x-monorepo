@@ -1,22 +1,16 @@
 import { BlockchainLifecycle } from '@0xproject/dev-utils';
-import { assetProxyUtils, crypto } from '@0xproject/order-utils';
-import { AssetProxyId, SignedOrder } from '@0xproject/types';
+import { assetProxyUtils } from '@0xproject/order-utils';
+import { AssetProxyId } from '@0xproject/types';
 import { BigNumber } from '@0xproject/utils';
 import { Web3Wrapper } from '@0xproject/web3-wrapper';
 import * as chai from 'chai';
-import { LogWithDecodedArgs } from 'ethereum-types';
-import ethUtil = require('ethereumjs-util');
 import * as _ from 'lodash';
 
 import { DummyERC20TokenContract } from '../../src/contract_wrappers/generated/dummy_e_r_c20_token';
 import { DummyERC721TokenContract } from '../../src/contract_wrappers/generated/dummy_e_r_c721_token';
 import { ERC20ProxyContract } from '../../src/contract_wrappers/generated/e_r_c20_proxy';
 import { ERC721ProxyContract } from '../../src/contract_wrappers/generated/e_r_c721_proxy';
-import {
-    CancelContractEventArgs,
-    ExchangeContract,
-    FillContractEventArgs,
-} from '../../src/contract_wrappers/generated/exchange';
+import { ExchangeContract } from '../../src/contract_wrappers/generated/exchange';
 import { artifacts } from '../../src/utils/artifacts';
 import { chaiSetup } from '../../src/utils/chai_setup';
 import { constants } from '../../src/utils/constants';
@@ -25,13 +19,7 @@ import { ERC721Wrapper } from '../../src/utils/erc721_wrapper';
 import { ExchangeWrapper } from '../../src/utils/exchange_wrapper';
 import { MatchOrderTester } from '../../src/utils/match_order_tester';
 import { OrderFactory } from '../../src/utils/order_factory';
-import {
-    ContractName,
-    ERC20BalancesByOwner,
-    ERC721TokenIdsByOwner,
-    OrderInfo,
-    OrderStatus,
-} from '../../src/utils/types';
+import { ERC20BalancesByOwner, ERC721TokenIdsByOwner, OrderInfo, OrderStatus } from '../../src/utils/types';
 import { provider, txDefaults, web3Wrapper } from '../../src/utils/web3_wrapper';
 
 chaiSetup.configure();
@@ -64,7 +52,6 @@ describe('matchOrders', () => {
 
     let erc721LeftMakerAssetIds: BigNumber[];
     let erc721RightMakerAssetIds: BigNumber[];
-    let erc721TakerAssetIds: BigNumber[];
 
     let defaultERC20MakerAssetAddress: string;
     let defaultERC20TakerAssetAddress: string;
@@ -103,7 +90,6 @@ describe('matchOrders', () => {
         const erc721Balances = await erc721Wrapper.getBalancesAsync();
         erc721LeftMakerAssetIds = erc721Balances[makerAddressLeft][erc721Token.address];
         erc721RightMakerAssetIds = erc721Balances[makerAddressRight][erc721Token.address];
-        erc721TakerAssetIds = erc721Balances[takerAddress][erc721Token.address];
         // Depoy exchange
         exchange = await ExchangeContract.deployFrom0xArtifactAsync(
             artifacts.Exchange,
