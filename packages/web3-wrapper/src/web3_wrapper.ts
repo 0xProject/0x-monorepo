@@ -21,6 +21,13 @@ import { Web3WrapperErrors } from './types';
 
 const BASE_TEN = 10;
 
+// These are unique identifiers contained in the response of the
+// web3_clientVersion call.
+export const uniqueVersionIds = {
+    geth: 'Geth',
+    ganache: 'EthereumJS TestRPC',
+};
+
 /**
  * A wrapper around the Web3.js 0.x library that provides a consistent, clean promise-based interface.
  */
@@ -254,12 +261,20 @@ export class Web3Wrapper {
         await this._sendRawPayloadAsync<string>({ method: 'evm_mine', params: [] });
     }
     /**
-     * Increase the next blocks timestamp on TestRPC/Ganache local node
+     * Increase the next blocks timestamp on TestRPC/Ganache or Geth local node.
+     * Will throw if provider is neither TestRPC/Ganache or Geth.
      * @param timeDelta Amount of time to add in seconds
      */
     public async increaseTimeAsync(timeDelta: number): Promise<number> {
-        // TODO(albrow): Detect Geth vs. Ganache and use appropriate endpoint.
-        return this._sendRawPayloadAsync<number>({ method: 'debug_increaseTime', params: [timeDelta] });
+        // Detect Geth vs. Ganache and use appropriate endpoint.
+        const version = await this.getNodeVersionAsync();
+        if (_.includes(version, uniqueVersionIds.geth)) {
+            return this._sendRawPayloadAsync<number>({ method: 'debug_increaseTime', params: [timeDelta] });
+        } else if (_.includes(version, uniqueVersionIds.ganache)) {
+            return this._sendRawPayloadAsync<number>({ method: 'evm_increaseTime', params: [timeDelta] });
+        } else {
+            throw new Error(`Unknown client version: ${version}`);
+        }
     }
     /**
      * Retrieve smart contract logs for a given filter
