@@ -293,7 +293,7 @@ export class Landing extends React.Component<LandingProps, LandingState> {
                         </div>
                     </div>
                 </div>
-                <SubscribeForm />
+                {this.props.translate.getLanguage() === Language.English && <SubscribeForm />}
             </div>
         );
     }
