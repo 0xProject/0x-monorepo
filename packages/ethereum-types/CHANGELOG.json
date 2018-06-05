@@ -1,5 +1,13 @@
 [
     {
+        "changes": [
+            {
+                "note": "Add missing `data` field to the `Transaction` type",
+                "pr": "TODO"
+            }
+        ]
+    },
+    {
         "version": "0.0.1",
         "changes": [
             {

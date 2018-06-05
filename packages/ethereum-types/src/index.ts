@@ -154,6 +154,7 @@ export interface Transaction {
     blockNumber: number | null;
     transactionIndex: number | null;
     from: string;
+    data: string;
     to: string | null;
     value: BigNumber;
     gasPrice: BigNumber;
