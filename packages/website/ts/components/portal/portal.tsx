@@ -268,10 +268,6 @@ export class Portal extends React.Component<PortalProps, PortalState> {
                         toggleDialogFn={updateShouldBlockchainErrDialogBeOpen}
                         networkId={this.props.networkId}
                     />
-                    <PortalDisclaimerDialog
-                        isOpen={this.state.isDisclaimerDialogOpen}
-                        onToggleDialog={this._onPortalDisclaimerAccepted.bind(this)}
-                    />
                     <FlashMessage dispatcher={this.props.dispatcher} flashMessage={this.props.flashMessage} />
                     {this.props.blockchainIsLoaded && (
                         <LedgerConfigDialog
@@ -396,18 +392,24 @@ export class Portal extends React.Component<PortalProps, PortalState> {
             },
         ];
         return (
-            <Switch>
-                {_.map(accountManagementItems, item => {
-                    return (
-                        <Route
-                            key={item.pathName}
-                            path={item.pathName}
-                            render={this._renderAccountManagementItem.bind(this, item)}
-                        />
-                    );
-                })}}
-                <Route render={this._renderNotFoundMessage.bind(this)} />
-            </Switch>
+            <div>
+                <Switch>
+                    {_.map(accountManagementItems, item => {
+                        return (
+                            <Route
+                                key={item.pathName}
+                                path={item.pathName}
+                                render={this._renderAccountManagementItem.bind(this, item)}
+                            />
+                        );
+                    })}}
+                    <Route render={this._renderNotFoundMessage.bind(this)} />
+                </Switch>
+                <PortalDisclaimerDialog
+                    isOpen={this.state.isDisclaimerDialogOpen}
+                    onToggleDialog={this._onPortalDisclaimerAccepted.bind(this)}
+                />
+            </div>
         );
     }
     private _renderAccountManagementItem(item: AccountManagementItem): React.ReactNode {
