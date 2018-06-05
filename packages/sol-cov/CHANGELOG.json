@@ -5,6 +5,10 @@
             {
                 "note": "Fixed a bug causing RegExp to crash if contract code is longer that 32767 characters",
                 "pr": "TODO"
+            },
+            {
+                "note": "Fixed a bug caused by Geth debug trace depth being 1-indexed",
+                "pr": "TODO"
             }
         ]
     },

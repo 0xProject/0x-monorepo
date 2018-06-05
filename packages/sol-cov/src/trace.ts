@@ -17,6 +17,10 @@ export function getTracesByContractAddress(structLogs: StructLog[], startAddress
     const traceByContractAddress: TraceByContractAddress = {};
     let currentTraceSegment = [];
     const callStack = [startAddress];
+    if (structLogs[0].depth === 1) {
+        // Geth uses 1-indexed depth counter whilst ganache starts from 0
+        _.forEach(structLogs, structLog => structLog.depth--);
+    }
     // tslint:disable-next-line:prefer-for-of
     for (let i = 0; i < structLogs.length; i++) {
         const structLog = structLogs[i];
