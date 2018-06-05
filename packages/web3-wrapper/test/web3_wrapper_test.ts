@@ -2,7 +2,6 @@ import * as chai from 'chai';
 import * as Ganache from 'ganache-core';
 import 'make-promises-safe';
 import 'mocha';
-import * as Web3 from 'web3';
 
 import { Web3Wrapper } from '../src';
 
@@ -36,24 +35,6 @@ describe('Web3Wrapper tests', () => {
         it('gets the network id', async () => {
             const networkId = await web3Wrapper.getNetworkIdAsync();
             expect(networkId).to.be.equal(NETWORK_ID);
-        });
-    });
-    describe('mining functions', () => {
-        it('starts and stops the miner', async () => {
-            // Note: depending on our provider, the miner may or may not already
-            // be mining. To account for both conditions, we have what might
-            // look like too many stops and starts here, but it is necessary.
-            await web3Wrapper.minerStopAsync();
-            let isMining = await web3Wrapper.isMiningAsync();
-            expect(isMining).to.be.false();
-            await web3Wrapper.minerStartAsync(1);
-            isMining = await web3Wrapper.isMiningAsync();
-            expect(isMining).to.be.true();
-            isMining = await web3Wrapper.isMiningAsync();
-            expect(isMining).to.be.true();
-            await web3Wrapper.minerStopAsync();
-            isMining = await web3Wrapper.isMiningAsync();
-            expect(isMining).to.be.false();
         });
     });
 });

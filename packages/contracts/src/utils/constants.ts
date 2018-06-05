@@ -19,8 +19,6 @@ const TESTRPC_PRIVATE_KEYS_STRINGS = [
 export const constants = {
     INVALID_OPCODE: 'invalid opcode',
     REVERT: 'revert',
-    ALWAYS_FAILING_TRANSACTION: 'always failing transaction',
-    CONTRACT_CALL_FAILED: 'Contract call failed',
     LIB_BYTES_GT_ZERO_LENGTH_REQUIRED: 'Length must be greater than 0.',
     LIB_BYTES_GTE_4_LENGTH_REQUIRED: 'Length must be greater than or equal to 4.',
     LIB_BYTES_GTE_20_LENGTH_REQUIRED: 'Length must be greater than or equal to 20.',
