@@ -68,14 +68,14 @@ FROM
                         ELSE a.maker_txn_usd_value END) as txn_value
         from events_full a
         where a.event_type = 'LogFill'
-        and a.timestamp > (NOW() + INTERVAL '-{{hours}} hours')
+        and a.timestamp > (NOW() + INTERVAL '-24 hours')
         union
         select a.timestamp, a.taker_token as token_address, (CASE WHEN a.taker_txn_usd_value > a.maker_txn_usd_value OR a.maker_txn_usd_value IS NULL
                         THEN a.taker_txn_usd_value
                         ELSE a.maker_txn_usd_value END) as txn_value
         from events_full a
         where a.event_type = 'LogFill'
-        and a.timestamp > (NOW() + INTERVAL '-{{hours}} hours')) token_txn_values
+        and a.timestamp > (NOW() + INTERVAL '-24 hours')) token_txn_values
 WHERE token_address IS NOT NULL
 AND txn_value > 0
 GROUP BY 1
