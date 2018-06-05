@@ -7,6 +7,7 @@ import { Footer } from 'ts/components/footer';
 import { SubscribeForm } from 'ts/components/forms/subscribe_form';
 import { TopBar } from 'ts/components/top_bar/top_bar';
 import { CallToAction } from 'ts/components/ui/button';
+import { Container } from 'ts/components/ui/container';
 import { Dispatcher } from 'ts/redux/dispatcher';
 import { Deco, Key, Language, ScreenWidths, WebsitePaths } from 'ts/types';
 import { constants } from 'ts/utils/constants';
@@ -269,15 +270,15 @@ export class Landing extends React.Component<LandingProps, LandingState> {
                                 >
                                     {this.props.translate.get(Key.TopTagline)}
                                 </div>
-                                <div className="pt3 clearfix sm-mx-auto" style={{ maxWidth: 389 }}>
-                                    <div className="lg-pr2 md-pr2 col col-6 sm-center">
+                                <Container className="pt3 clearfix sm-mx-auto" maxWidth="390px">
+                                    <div className="lg-pr2 md-pr2 lg-col lg-col-6 sm-center sm-col sm-col-12 mb2">
                                         <Link to={WebsitePaths.ZeroExJs} className="text-decoration-none">
                                             <CallToAction width="175px" type="light">
                                                 {this.props.translate.get(Key.BuildCallToAction, Deco.Cap)}
                                             </CallToAction>
                                         </Link>
                                     </div>
-                                    <div className="col col-6 sm-center">
+                                    <div className="lg-col lg-col-6 sm-center sm-col sm-col-12">
                                         <a
                                             href={constants.URL_ZEROEX_CHAT}
                                             target="_blank"
@@ -288,7 +289,7 @@ export class Landing extends React.Component<LandingProps, LandingState> {
                                             </CallToAction>
                                         </a>
                                     </div>
-                                </div>
+                                </Container>
                             </div>
                         </div>
                     </div>
