@@ -658,14 +658,7 @@ describe('Exchange core', () => {
             );
         });
 
-        // TODO(albrow):
-        //
-        //       AssertionError: expected '9021000000000000000000' to equal '1042000000000000000000'
-        // + expected - actual
-        //
-        // -9021000000000000000000
-        // +1042000000000000000000
-        it.skip('should cancel only orders with a makerEpoch less than existing makerEpoch', async () => {
+        it('should cancel only orders with a makerEpoch less than existing makerEpoch', async () => {
             // Cancel all transactions with a makerEpoch less than 1
             const makerEpoch = new BigNumber(1);
             await exchangeWrapper.cancelOrdersUpToAsync(makerEpoch, makerAddress);
@@ -695,7 +688,9 @@ describe('Exchange core', () => {
                     salt: new BigNumber(3),
                 }),
             ];
-            await exchangeWrapper.batchFillOrdersNoThrowAsync(signedOrders, takerAddress);
+            await exchangeWrapper.batchFillOrdersNoThrowAsync(signedOrders, takerAddress, {
+                gas: 490000,
+            });
 
             const newBalances = await erc20Wrapper.getBalancesAsync();
             const fillMakerAssetAmount = signedOrders[2].makerAssetAmount.add(signedOrders[3].makerAssetAmount);
