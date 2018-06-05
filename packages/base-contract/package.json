@@ -8,7 +8,7 @@
     "main": "lib/src/index.js",
     "types": "lib/src/index.d.ts",
     "scripts": {
-        "watch": "tsc -w",
+        "watch_without_deps": "tsc -w",
         "build": "tsc && copyfiles -u 2 './lib/monorepo_scripts/**/*' ./scripts",
         "clean": "shx rm -rf lib scripts",
         "test": "yarn run_mocha",

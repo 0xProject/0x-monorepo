@@ -8,8 +8,9 @@
     "main": "lib/src/index.js",
     "types": "lib/src/index.d.ts",
     "scripts": {
-        "watch": "tsc -w",
-        "build": "run-s clean update_artifacts generate_contract_wrappers transpile copy_monorepo_scripts",
+        "watch_without_deps": "yarn pre_build && tsc -w",
+        "build": "run-s pre_build transpile copy_monorepo_scripts",
+        "pre_build": "run-s update_artifacts generate_contract_wrappers",
         "transpile": "tsc",
         "copy_monorepo_scripts": "copyfiles -u 3 './lib/src/monorepo_scripts/**/*' ./scripts",
         "generate_contract_wrappers": "abi-gen --abis 'lib/src/artifacts/@(Exchange|IWallet|IValidator).json' --template ../contract_templates/contract.handlebars --partials '../contract_templates/partials/**/*.handlebars' --output src/generated_contract_wrappers --backend ethers && prettier --write 'src/generated_contract_wrappers/**.ts'",

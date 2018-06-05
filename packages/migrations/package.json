@@ -8,10 +8,10 @@
     "main": "lib/index.js",
     "types": "lib/index.d.ts",
     "scripts": {
-        "watch": "tsc -w",
-        "prebuild": "run-s clean copy_artifacts generate_contract_wrappers",
+        "watch_without_deps": "yarn pre_build && tsc -w",
+        "build": "yarn pre_build && tsc",
+        "pre_build": "run-s copy_artifacts generate_contract_wrappers",
         "copy_artifacts": "copyfiles 'artifacts/**/*' ./lib",
-        "build": "tsc",
         "clean": "shx rm -rf lib src/contract_wrappers",
         "lint": "tslint --project .",
         "migrate:v1": "run-s build compile:v1 script:migrate:v1",
