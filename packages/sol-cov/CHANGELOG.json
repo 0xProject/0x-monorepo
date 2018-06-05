@@ -1,5 +1,14 @@
 [
     {
+        "version": "0.2.0",
+        "changes": [
+            {
+                "note": "Fixed a bug causing RegExp to crash if contract code is longer that 32767 characters",
+                "pr": "TODO"
+            }
+        ]
+    },
+    {
         "timestamp": 1527009134,
         "version": "0.1.0",
         "changes": [
