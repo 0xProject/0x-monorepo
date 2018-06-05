@@ -192,71 +192,50 @@ describe('Exchange wrappers', () => {
     });
 
     describe('fillOrderNoThrow', () => {
-        // TODO(albrow):
-        //
-        // AssertionError: expected '10000000000000000000000' to equal '9950000000000000000000'
-        //   + expected - actual
-
-        //   -10000000000000000000000
-        //   +9950000000000000000000
-        //
-        // We think this is failing due to a problem in the fillOrderNoThrow
-        // function in the smart contract. (There's a lot of assembly).
-        it.skip('should transfer the correct amounts', async () => {
+        it('should transfer the correct amounts', async () => {
             const signedOrder = orderFactory.newSignedOrder({
                 makerAssetAmount: Web3Wrapper.toBaseUnitAmount(new BigNumber(100), 18),
                 takerAssetAmount: Web3Wrapper.toBaseUnitAmount(new BigNumber(200), 18),
             });
             const takerAssetFillAmount = signedOrder.takerAssetAmount.div(2);
 
-            console.log('maker balance: ', erc20Balances[makerAddress][defaultMakerAssetAddress].toString());
             await exchangeWrapper.fillOrderNoThrowAsync(signedOrder, takerAddress, {
                 takerAssetFillAmount,
+                gas: 250000,
             });
 
             const newBalances = await erc20Wrapper.getBalancesAsync();
+            const makerAssetFilledAmount = takerAssetFillAmount
+                .times(signedOrder.makerAssetAmount)
+                .dividedToIntegerBy(signedOrder.takerAssetAmount);
+            const makerFee = signedOrder.makerFee
+                .times(makerAssetFilledAmount)
+                .dividedToIntegerBy(signedOrder.makerAssetAmount);
+            const takerFee = signedOrder.takerFee
+                .times(makerAssetFilledAmount)
+                .dividedToIntegerBy(signedOrder.makerAssetAmount);
 
-            console.log('new maker balance: ', newBalances[makerAddress][defaultMakerAssetAddress].toString());
-
-            // const makerAssetFilledAmount = takerAssetFillAmount
-            //     .times(signedOrder.makerAssetAmount)
-            //     .dividedToIntegerBy(signedOrder.takerAssetAmount);
-            // const makerFee = signedOrder.makerFee
-            //     .times(makerAssetFilledAmount)
-            //     .dividedToIntegerBy(signedOrder.makerAssetAmount);
-            // const takerFee = signedOrder.takerFee
-            //     .times(makerAssetFilledAmount)
-            //     .dividedToIntegerBy(signedOrder.makerAssetAmount);
-            // console.log('makerAssetFilledAmount: ', makerAssetFilledAmount);
-            // console.log('makerFee: ', makerFee);
-            // console.log('takerFee: ', takerFee);
-            // expect(newBalances[makerAddress][defaultMakerAssetAddress]).to.be.bignumber.equal(
-            //     erc20Balances[makerAddress][defaultMakerAssetAddress].minus(makerAssetFilledAmount),
-            // );
-            // console.log(1);
-            // expect(newBalances[makerAddress][defaultTakerAssetAddress]).to.be.bignumber.equal(
-            //     erc20Balances[makerAddress][defaultTakerAssetAddress].add(takerAssetFillAmount),
-            // );
-            // console.log(2);
-            // expect(newBalances[makerAddress][zrxToken.address]).to.be.bignumber.equal(
-            //     erc20Balances[makerAddress][zrxToken.address].minus(makerFee),
-            // );
-            // console.log(3);
-            // expect(newBalances[takerAddress][defaultTakerAssetAddress]).to.be.bignumber.equal(
-            //     erc20Balances[takerAddress][defaultTakerAssetAddress].minus(takerAssetFillAmount),
-            // );
-            // console.log(4);
-            // expect(newBalances[takerAddress][defaultMakerAssetAddress]).to.be.bignumber.equal(
-            //     erc20Balances[takerAddress][defaultMakerAssetAddress].add(makerAssetFilledAmount),
-            // );
-            // console.log(5);
-            // expect(newBalances[takerAddress][zrxToken.address]).to.be.bignumber.equal(
-            //     erc20Balances[takerAddress][zrxToken.address].minus(takerFee),
-            // );
-            // console.log(6);
-            // expect(newBalances[feeRecipientAddress][zrxToken.address]).to.be.bignumber.equal(
-            //     erc20Balances[feeRecipientAddress][zrxToken.address].add(makerFee.add(takerFee)),
-            // );
+            expect(newBalances[makerAddress][defaultMakerAssetAddress]).to.be.bignumber.equal(
+                erc20Balances[makerAddress][defaultMakerAssetAddress].minus(makerAssetFilledAmount),
+            );
+            expect(newBalances[makerAddress][defaultTakerAssetAddress]).to.be.bignumber.equal(
+                erc20Balances[makerAddress][defaultTakerAssetAddress].add(takerAssetFillAmount),
+            );
+            expect(newBalances[makerAddress][zrxToken.address]).to.be.bignumber.equal(
+                erc20Balances[makerAddress][zrxToken.address].minus(makerFee),
+            );
+            expect(newBalances[takerAddress][defaultTakerAssetAddress]).to.be.bignumber.equal(
+                erc20Balances[takerAddress][defaultTakerAssetAddress].minus(takerAssetFillAmount),
+            );
+            expect(newBalances[takerAddress][defaultMakerAssetAddress]).to.be.bignumber.equal(
+                erc20Balances[takerAddress][defaultMakerAssetAddress].add(makerAssetFilledAmount),
+            );
+            expect(newBalances[takerAddress][zrxToken.address]).to.be.bignumber.equal(
+                erc20Balances[takerAddress][zrxToken.address].minus(takerFee),
+            );
+            expect(newBalances[feeRecipientAddress][zrxToken.address]).to.be.bignumber.equal(
+                erc20Balances[feeRecipientAddress][zrxToken.address].add(makerFee.add(takerFee)),
+            );
         });
 
         it('should not change erc20Balances if maker erc20Balances are too low to fill order', async () => {
@@ -367,13 +346,7 @@ describe('Exchange wrappers', () => {
             expect(newBalances).to.be.deep.equal(erc20Balances);
         });
 
-        // TODO(albrow):
-        // AssertionError: expected '632535711063398434296830887161296310597744028651' to equal '1298408583951973923893717610336274351578718691204'
-        //      + expected - actual
-
-        //      -632535711063398434296830887161296310597744028651
-        //      +1298408583951973923893717610336274351578718691204
-        it.skip('should successfully exchange ERC721 tokens', async () => {
+        it('should successfully exchange ERC721 tokens', async () => {
             // Construct Exchange parameters
             const makerAssetId = erc721MakerAssetId;
             const takerAssetId = erc721TakerAssetId;
@@ -390,7 +363,10 @@ describe('Exchange wrappers', () => {
             expect(initialOwnerTakerAsset).to.be.bignumber.equal(takerAddress);
             // Call Exchange
             const takerAssetFillAmount = signedOrder.takerAssetAmount;
-            await exchangeWrapper.fillOrderNoThrowAsync(signedOrder, takerAddress, { takerAssetFillAmount });
+            await exchangeWrapper.fillOrderNoThrowAsync(signedOrder, takerAddress, {
+                takerAssetFillAmount,
+                gas: 270000,
+            });
             // Verify post-conditions
             const newOwnerMakerAsset = await erc721Token.ownerOf.callAsync(makerAssetId);
             expect(newOwnerMakerAsset).to.be.bignumber.equal(takerAddress);
@@ -524,76 +500,7 @@ describe('Exchange wrappers', () => {
         });
 
         describe('batchFillOrdersNoThrow', async () => {
-            // TODO(albrow)
-            //
-            // AssertionError: expected { Object (0x5409ed021d9299bf6814279a6a1411a7e866a631, 0x6ecbe1db9ef729cbe972c83fb886247691fb6beb, ...) } to deeply equal { Object (0x5409ed021d9299bf6814279a6a1411a7e866a631, 0x6ecbe1db9ef729cbe972c83fb886247691fb6beb, ...) }
-            //       + expected - actual
-            //
-            //     }
-            //     "0x6ecbe1db9ef729cbe972c83fb886247691fb6beb": {
-            //       "0x0b1ba0af832d7c05fd64161e0db78e85978e8082": {
-            //         "c": [
-            //  -        102000000
-            //  +        103000000
-            //         ]
-            //         "e": 22
-            //         "s": 1
-            //       }
-            //       "0x34d402f14d58e001d8efbe6585051bf9706aa064": {
-            //         "c": [
-            //  -        99000000
-            //  +        98500000
-            //         ]
-            //         "e": 21
-            //         "s": 1
-            //       }
-            //       "0x48bacb9266a570d521063ef5dd96e61686dbe788": {
-            //         "c": [
-            //  -        99990000
-            //  +        99985000
-            //         ]
-            //         "e": 21
-            //         "s": 1
-            //       }
-            // --
-            //     }
-            //     "0xe36ea790bc9d7ab70c55260c66d52b1eca985f84": {
-            //       "0x0b1ba0af832d7c05fd64161e0db78e85978e8082": {
-            //         "c": [
-            //  -        98000000
-            //  +        97000000
-            //         ]
-            //         "e": 21
-            //         "s": 1
-            //       }
-            //       "0x34d402f14d58e001d8efbe6585051bf9706aa064": {
-            //         "c": [
-            //  -        101000000
-            //  +        101500000
-            //         ]
-            //         "e": 22
-            //         "s": 1
-            //       }
-            //       "0x48bacb9266a570d521063ef5dd96e61686dbe788": {
-            //         "c": [
-            //  -        99990000
-            //  +        99985000
-            //         ]
-            //         "e": 21
-            //         "s": 1
-            //       }
-            // --
-            //         "s": 1
-            //       }
-            //       "0x48bacb9266a570d521063ef5dd96e61686dbe788": {
-            //         "c": [
-            //  -        100020000
-            //  +        100030000
-            //         ]
-            //         "e": 22
-            //         "s": 1
-            //       }
-            it.skip('should transfer the correct amounts', async () => {
+            it('should transfer the correct amounts', async () => {
                 const takerAssetFillAmounts: BigNumber[] = [];
                 const makerAssetAddress = erc20TokenA.address;
                 const takerAssetAddress = erc20TokenB.address;
@@ -634,14 +541,14 @@ describe('Exchange wrappers', () => {
 
                 await exchangeWrapper.batchFillOrdersNoThrowAsync(signedOrders, takerAddress, {
                     takerAssetFillAmounts,
+                    gas: 600000,
                 });
 
                 const newBalances = await erc20Wrapper.getBalancesAsync();
                 expect(newBalances).to.be.deep.equal(erc20Balances);
             });
 
-            // TODO(albrow): Failing similar to above.
-            it.skip('should not throw if an order is invalid and fill the remaining orders', async () => {
+            it('should not throw if an order is invalid and fill the remaining orders', async () => {
                 const takerAssetFillAmounts: BigNumber[] = [];
                 const makerAssetAddress = erc20TokenA.address;
                 const takerAssetAddress = erc20TokenB.address;
@@ -691,6 +598,7 @@ describe('Exchange wrappers', () => {
                 const newOrders = [invalidOrder, ...validOrders];
                 await exchangeWrapper.batchFillOrdersNoThrowAsync(newOrders, takerAddress, {
                     takerAssetFillAmounts,
+                    gas: 450000,
                 });
 
                 const newBalances = await erc20Wrapper.getBalancesAsync();
@@ -826,8 +734,7 @@ describe('Exchange wrappers', () => {
                 );
             });
 
-            // TODO(albrow): Failing with wrong values
-            it.skip('should fill all signedOrders if cannot fill entire takerAssetFillAmount', async () => {
+            it('should fill all signedOrders if cannot fill entire takerAssetFillAmount', async () => {
                 const takerAssetFillAmount = Web3Wrapper.toBaseUnitAmount(new BigNumber(100000), 18);
                 _.forEach(signedOrders, signedOrder => {
                     erc20Balances[makerAddress][defaultMakerAssetAddress] = erc20Balances[makerAddress][
@@ -854,6 +761,7 @@ describe('Exchange wrappers', () => {
                 });
                 await exchangeWrapper.marketSellOrdersNoThrowAsync(signedOrders, takerAddress, {
                     takerAssetFillAmount,
+                    gas: 600000,
                 });
 
                 const newBalances = await erc20Wrapper.getBalancesAsync();
@@ -1005,8 +913,7 @@ describe('Exchange wrappers', () => {
                 );
             });
 
-            // TODO(albrow): Failing with wrong values
-            it.skip('should fill all signedOrders if cannot fill entire takerAssetFillAmount', async () => {
+            it('should fill all signedOrders if cannot fill entire takerAssetFillAmount', async () => {
                 const takerAssetFillAmount = Web3Wrapper.toBaseUnitAmount(new BigNumber(100000), 18);
                 _.forEach(signedOrders, signedOrder => {
                     erc20Balances[makerAddress][defaultMakerAssetAddress] = erc20Balances[makerAddress][
@@ -1033,6 +940,7 @@ describe('Exchange wrappers', () => {
                 });
                 await exchangeWrapper.marketSellOrdersNoThrowAsync(signedOrders, takerAddress, {
                     takerAssetFillAmount,
+                    gas: 600000,
                 });
 
                 const newBalances = await erc20Wrapper.getBalancesAsync();
