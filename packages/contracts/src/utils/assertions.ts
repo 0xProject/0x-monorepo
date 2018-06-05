@@ -5,7 +5,7 @@ import { constants } from './constants';
 
 const expect = chai.expect;
 
-function _expectEitherError<T>(p: Promise<T>, error1: string, error2: string): PromiseLike<void> {
+function _expectEitherErrorAsync<T>(p: Promise<T>, error1: string, error2: string): PromiseLike<void> {
     return expect(p)
         .to.be.rejected()
         .then(e => {
@@ -24,8 +24,8 @@ function _expectEitherError<T>(p: Promise<T>, error1: string, error2: string): P
  * @returns a new Promise which will reject if the conditions are not met and
  * otherwise resolve with no value.
  */
-export function expectInsufficientFunds<T>(p: Promise<T>): PromiseLike<void> {
-    return _expectEitherError(p, 'insufficient funds', "sender doesn't have enough funds");
+export function expectInsufficientFundsAsync<T>(p: Promise<T>): PromiseLike<void> {
+    return _expectEitherErrorAsync(p, 'insufficient funds', "sender doesn't have enough funds");
 }
 
 /**
@@ -36,8 +36,8 @@ export function expectInsufficientFunds<T>(p: Promise<T>): PromiseLike<void> {
  * @returns a new Promise which will reject if the conditions are not met and
  * otherwise resolve with no value.
  */
-export function expectRevertOrOtherError<T>(p: Promise<T>, otherError: string): PromiseLike<void> {
-    return _expectEitherError(p, constants.REVERT, otherError);
+export function expectRevertOrOtherErrorAsync<T>(p: Promise<T>, otherError: string): PromiseLike<void> {
+    return _expectEitherErrorAsync(p, constants.REVERT, otherError);
 }
 
 /**
@@ -47,8 +47,8 @@ export function expectRevertOrOtherError<T>(p: Promise<T>, otherError: string): 
  * @returns a new Promise which will reject if the conditions are not met and
  * otherwise resolve with no value.
  */
-export function expectRevertOrAlwaysFailingTransaction<T>(p: Promise<T>): PromiseLike<void> {
-    return expectRevertOrOtherError(p, 'always failing transaction');
+export function expectRevertOrAlwaysFailingTransactionAsync<T>(p: Promise<T>): PromiseLike<void> {
+    return expectRevertOrOtherErrorAsync(p, 'always failing transaction');
 }
 
 /**
@@ -58,6 +58,6 @@ export function expectRevertOrAlwaysFailingTransaction<T>(p: Promise<T>): Promis
  * @returns a new Promise which will reject if the conditions are not met and
  * otherwise resolve with no value.
  */
-export function expectRevertOrContractCallFailed<T>(p: Promise<T>): PromiseLike<void> {
-    return expectRevertOrOtherError<T>(p, 'Contract call failed');
+export function expectRevertOrContractCallFailedAsync<T>(p: Promise<T>): PromiseLike<void> {
+    return expectRevertOrOtherErrorAsync<T>(p, 'Contract call failed');
 }
