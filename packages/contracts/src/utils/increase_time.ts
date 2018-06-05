@@ -5,8 +5,13 @@ import { web3Wrapper } from './web3_wrapper';
 
 let firstAccount: string | undefined;
 
-// increases time by the given number of seconds and then mines a block so that
-// the current block timestamp has the offset applied.
+/**
+ * Increases time by the given number of seconds and then mines a block so that
+ * the current block timestamp has the offset applied.
+ * @param seconds the Promise which is expected to reject
+ * @returns a new Promise which will resolve with the new total time offset or
+ * reject if the time could not be increased.
+ */
 export async function increaseTimeAndMineBlockAsync(seconds: number): Promise<number> {
     if (_.isUndefined(firstAccount)) {
         const accounts = await web3Wrapper.getAvailableAddressesAsync();

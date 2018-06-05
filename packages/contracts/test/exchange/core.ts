@@ -505,7 +505,6 @@ describe('Exchange core', () => {
             signedOrder = orderFactory.newSignedOrder({
                 takerAssetAmount: Web3Wrapper.toBaseUnitAmount(new BigNumber(100000), 18),
             });
-
             return expectRevertOrAlwaysFailingTransaction(exchangeWrapper.fillOrderAsync(signedOrder, takerAddress));
         });
 
@@ -516,10 +515,7 @@ describe('Exchange core', () => {
                 }),
                 constants.AWAIT_TRANSACTION_MINED_MS,
             );
-            // HACK: `rejectWith` returns a "promise-like" type, but not an actual "Promise", so TSLint
-            // complains, even though we do need to `await` it. So we disable the TSLint error below.
-            // tslint:disable-next-line:await-promise
-            await expectRevertOrAlwaysFailingTransaction(exchangeWrapper.fillOrderAsync(signedOrder, takerAddress));
+            return expectRevertOrAlwaysFailingTransaction(exchangeWrapper.fillOrderAsync(signedOrder, takerAddress));
         });
 
         it('should throw if taker allowances are too low to fill order', async () => {
@@ -529,7 +525,7 @@ describe('Exchange core', () => {
                 }),
                 constants.AWAIT_TRANSACTION_MINED_MS,
             );
-            await expectRevertOrAlwaysFailingTransaction(exchangeWrapper.fillOrderAsync(signedOrder, takerAddress));
+            return expectRevertOrAlwaysFailingTransaction(exchangeWrapper.fillOrderAsync(signedOrder, takerAddress));
         });
 
         it('should not change erc20Balances if an order is expired', async () => {
