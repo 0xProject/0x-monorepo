@@ -315,6 +315,9 @@ export class Web3Wrapper {
      */
     public async callAsync(callData: CallData, defaultBlock?: BlockParam): Promise<string> {
         const rawCallResult = await promisify<string>(this._web3.eth.call)(callData, defaultBlock);
+        if (rawCallResult === '0x') {
+            throw new Error('Contract call failed (returned null)');
+        }
         return rawCallResult;
     }
     /**

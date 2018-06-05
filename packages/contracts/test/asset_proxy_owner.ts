@@ -15,7 +15,7 @@ import {
 } from '../src/contract_wrappers/generated/asset_proxy_owner';
 import { MixinAuthorizableContract } from '../src/contract_wrappers/generated/mixin_authorizable';
 import { artifacts } from '../src/utils/artifacts';
-import { expectRevertOrAlwaysFailingTransaction } from '../src/utils/assertions';
+import { expectRevertOrAlwaysFailingTransaction, expectRevertOrContractCallFailed } from '../src/utils/assertions';
 import { chaiSetup } from '../src/utils/chai_setup';
 import { constants } from '../src/utils/constants';
 import { increaseTimeAndMineBlockAsync } from '../src/utils/increase_time';
@@ -118,15 +118,13 @@ describe('AssetProxyOwner', () => {
     });
 
     describe('isFunctionRemoveAuthorizedAddress', () => {
-        // TODO(albrow):
-        // AssertionError: expected promise to be rejected with an error including 'revert' but got 'invalid data for function output (arg="data", errorArg=null, errorValue="0x", value="0x", reason="insufficient data for boolean type")'
-        it.skip('should throw if data is not for removeAuthorizedAddress', async () => {
+        it('should throw if data is not for removeAuthorizedAddress', async () => {
             const notRemoveAuthorizedAddressData = erc20Proxy.addAuthorizedAddress.getABIEncodedTransactionData(
                 owners[0],
             );
-            return expect(
+            return expectRevertOrContractCallFailed(
                 multiSig.isFunctionRemoveAuthorizedAddress.callAsync(notRemoveAuthorizedAddressData),
-            ).to.be.rejectedWith(constants.REVERT);
+            );
         });
 
         it('should return true if data is for removeAuthorizedAddress', async () => {
