@@ -1,5 +1,5 @@
 import { assetProxyUtils, orderFactory } from '@0xproject/order-utils';
-import { SignedOrder, Token } from '@0xproject/types';
+import { OrderWithoutExchangeAddress, SignedOrder, Token } from '@0xproject/types';
 import { BigNumber } from '@0xproject/utils';
 import { Web3Wrapper } from '@0xproject/web3-wrapper';
 import { Provider } from 'ethereum-types';
@@ -144,20 +144,10 @@ export class FillScenarios {
             this._web3Wrapper.getContractDefaults(),
         );
 
-        const orderWithoutExchangeAddress = {
-            senderAddress: signedOrder.senderAddress,
-            makerAddress: signedOrder.makerAddress,
-            takerAddress: signedOrder.takerAddress,
-            feeRecipientAddress: signedOrder.feeRecipientAddress,
-            makerAssetAmount: signedOrder.makerAssetAmount,
-            takerAssetAmount: signedOrder.takerAssetAmount,
-            makerFee: signedOrder.makerFee,
-            takerFee: signedOrder.takerFee,
-            expirationTimeSeconds: signedOrder.expirationTimeSeconds,
-            salt: signedOrder.salt,
-            makerAssetData: signedOrder.makerAssetData,
-            takerAssetData: signedOrder.takerAssetData,
-        };
+        const orderWithoutExchangeAddress = _.omit(signedOrder, [
+            'signature',
+            'exchangeAddress',
+        ]) as OrderWithoutExchangeAddress;
 
         await exchangeInstance.fillOrder.sendTransactionAsync(
             orderWithoutExchangeAddress,
