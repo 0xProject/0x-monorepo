@@ -109,7 +109,7 @@ contract ERC721Proxy is
         uint256 length = assetData.length;
         require(
             assetData.length >= 53,
-            INVALID_ASSET_DATA_LENGTH
+            LENGTH_AT_LEAST_53_REQUIRED
         );
 
         // Decode asset data.

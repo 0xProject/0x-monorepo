@@ -56,7 +56,7 @@ contract ERC20Proxy is
         // Data must be intended for this proxy.
         require(
             proxyId == PROXY_ID,
-            PROXY_ID_MISMATCH
+            ASSET_PROXY_ID_MISMATCH
         );
 
         // Transfer tokens.
@@ -93,7 +93,7 @@ contract ERC20Proxy is
         uint256 length = assetData.length;
         require(
             assetData.length == 21,
-            INVALID_ASSET_DATA_LENGTH
+            LENGTH_21_REQUIRED
         );
 
         // Decode data

@@ -29,9 +29,9 @@ contract LibAssetProxyErrors {
     /// AssetProxy errors ///
     string constant ASSET_PROXY_ID_MISMATCH = "ASSET_PROXY_ID_MISMATCH";          // Proxy id in metadata does not match this proxy id.
     string constant INVALID_AMOUNT = "INVALID_AMOUNT";                            // Transfer amount must equal 1.
-    string constant TRANSFER_FAILED = "TRANSFER_FAILED";                          // Transfer failed. 
+    string constant TRANSFER_FAILED = "TRANSFER_FAILED";                          // Transfer failed.
 
     /// Length validation errors ///
     string constant LENGTH_21_REQUIRED = "LENGTH_21_REQUIRED";                    // Byte array must have a length of 21.
-    string constant LENGTH_53_REQUIRED = "LENGTH_53_REQUIRED";                    // Byte array must have a length of 53.
+    string constant LENGTH_AT_LEAST_53_REQUIRED = "LENGTH_AT_LEAST_53_REQUIRED";  // Byte array must have a length of at least 53.
 }
