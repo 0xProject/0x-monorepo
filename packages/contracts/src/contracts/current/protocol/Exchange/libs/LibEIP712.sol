@@ -20,16 +20,19 @@ pragma solidity ^0.4.24;
 
 contract LibEIP712 {
     string public constant EIP191_HEADER = "\x19\x01";
+
     bytes32 public constant EIP712_DOMAIN_SEPARATOR_NAME_HASH = keccak256("0x Protocol");
 
-    bytes32 public constant EIP712_DOMAIN_SEPARATOR_VERSION_HASH = keccak256("1");
+    bytes32 public constant EIP712_DOMAIN_SEPARATOR_VERSION_HASH = keccak256("2");
 
     bytes32 public constant EIP712_DOMAIN_SEPARATOR_SCHEMA_HASH = keccak256(
-        "DomainSeparator(",
-        "string name,",
-        "string version,",
-        "address contract",
-        ")"
+        abi.encodePacked(
+            "DomainSeparator(",
+            "string name,",
+            "string version,",
+            "address contract",
+            ")"
+        )
     );
 
     function createEIP712Message(bytes32 hashStruct)
@@ -41,14 +44,18 @@ contract LibEIP712 {
         // Source: https://github.com/ethereum/EIPs/pull/712
         // TODO: Cache the Domain Separator
         message = keccak256(
-            EIP191_HEADER,
-            keccak256(
-                EIP712_DOMAIN_SEPARATOR_SCHEMA_HASH,
-                EIP712_DOMAIN_SEPARATOR_NAME_HASH,
-                EIP712_DOMAIN_SEPARATOR_VERSION_HASH,
-                bytes32(address(this))
-            ),
-            hashStruct
+            abi.encodePacked(
+                EIP191_HEADER,
+                keccak256(
+                    abi.encodePacked(
+                        EIP712_DOMAIN_SEPARATOR_SCHEMA_HASH,
+                        EIP712_DOMAIN_SEPARATOR_NAME_HASH,
+                        EIP712_DOMAIN_SEPARATOR_VERSION_HASH,
+                        bytes32(address(this))
+                    )
+                ),
+                hashStruct
+            )
         );
         return message;
     }

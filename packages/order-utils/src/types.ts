@@ -23,3 +23,13 @@ export interface MessagePrefixOpts {
     prefixType: MessagePrefixType;
     shouldAddPrefixBeforeCallingEthSign: boolean;
 }
+
+export interface EIP712Parameter {
+    name: string;
+    type: string;
+}
+
+export interface EIP712Schema {
+    name: string;
+    parameters: EIP712Parameter[];
+}

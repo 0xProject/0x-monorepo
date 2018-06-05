@@ -89,20 +89,22 @@ contract LibOrder is
         orderHash = createEIP712Message(
             keccak256(
                 abi.encodePacked(
-                EIP712_ORDER_SCHEMA_HASH,
-                bytes32(order.makerAddress),
-                bytes32(order.takerAddress),
-                bytes32(order.feeRecipientAddress),
-                bytes32(order.senderAddress),
-                order.makerAssetAmount,
-                order.takerAssetAmount,
-                order.makerFee,
-                order.takerFee,
-                order.expirationTimeSeconds,
-                order.salt,
-                keccak256(abi.encodePacked(order.makerAssetData)),
-                keccak256(abi.encodePacked(order.takerAssetData))
-        )));
+                    EIP712_ORDER_SCHEMA_HASH,
+                    bytes32(order.makerAddress),
+                    bytes32(order.takerAddress),
+                    bytes32(order.feeRecipientAddress),
+                    bytes32(order.senderAddress),
+                    order.makerAssetAmount,
+                    order.takerAssetAmount,
+                    order.makerFee,
+                    order.takerFee,
+                    order.expirationTimeSeconds,
+                    order.salt,
+                    keccak256(abi.encodePacked(order.makerAssetData)),
+                    keccak256(abi.encodePacked(order.takerAssetData))
+                )
+            )
+        );
         return orderHash;
     }
 }

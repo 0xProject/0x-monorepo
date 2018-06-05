@@ -1,5 +1,5 @@
 import { BlockchainLifecycle } from '@0xproject/dev-utils';
-import { assetProxyUtils, orderHashUtils } from '@0xproject/order-utils';
+import { assetProxyUtils, EIP712Utils, orderHashUtils } from '@0xproject/order-utils';
 import { SignedOrder } from '@0xproject/types';
 import { BigNumber } from '@0xproject/utils';
 import * as chai from 'chai';
@@ -10,7 +10,6 @@ import { addressUtils } from '../../src/utils/address_utils';
 import { artifacts } from '../../src/utils/artifacts';
 import { chaiSetup } from '../../src/utils/chai_setup';
 import { constants } from '../../src/utils/constants';
-import { EIP712Utils } from '../../src/utils/eip712_utils';
 import { OrderFactory } from '../../src/utils/order_factory';
 import { provider, txDefaults, web3Wrapper } from '../../src/utils/web3_wrapper';
 
@@ -58,15 +57,15 @@ describe('Exchange libs', () => {
         describe('getOrderSchema', () => {
             it('should output the correct order schema hash', async () => {
                 const orderSchema = await libs.getOrderSchemaHash.callAsync();
-                const orderSchemaBuffer = orderHashUtils._getOrderSchemaHex();
-                const schemaHashHex = `0x${orderSchemaBuffer.toString('hex')}`;
+                const schemaHashBuffer = orderHashUtils._getOrderSchemaBuffer();
+                const schemaHashHex = `0x${schemaHashBuffer.toString('hex')}`;
                 expect(schemaHashHex).to.be.equal(orderSchema);
             });
         });
         describe('getDomainSeparatorSchema', () => {
             it('should output the correct domain separator schema hash', async () => {
                 const domainSeparatorSchema = await libs.getDomainSeparatorSchemaHash.callAsync();
-                const domainSchemaBuffer = EIP712Utils.getDomainSeparatorSchemaBuffer();
+                const domainSchemaBuffer = EIP712Utils._getDomainSeparatorSchemaBuffer();
                 const schemaHashHex = `0x${domainSchemaBuffer.toString('hex')}`;
                 expect(schemaHashHex).to.be.equal(domainSeparatorSchema);
             });
