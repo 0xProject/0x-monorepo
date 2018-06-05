@@ -10,7 +10,7 @@ import * as Web3 from 'web3';
 
 import { TestLibBytesContract } from '../../src/contract_wrappers/generated/test_lib_bytes';
 import { artifacts } from '../../src/utils/artifacts';
-import { expectRevertOrAlwaysFailingTransaction, expectRevertOrOtherError } from '../../src/utils/assertions';
+import { expectRevertOrAlwaysFailingTransactionAsync, expectRevertOrOtherErrorAsync } from '../../src/utils/assertions';
 import { chaiSetup } from '../../src/utils/chai_setup';
 import { constants } from '../../src/utils/constants';
 import { provider, txDefaults, web3Wrapper } from '../../src/utils/web3_wrapper';
@@ -64,7 +64,7 @@ describe('LibBytes', () => {
 
     describe('popByte', () => {
         it('should revert if length is 0', async () => {
-            return expectRevertOrOtherError(
+            return expectRevertOrOtherErrorAsync(
                 libBytes.publicPopByte.callAsync(constants.NULL_BYTES),
                 constants.LIB_BYTES_GT_ZERO_LENGTH_REQUIRED,
             );
@@ -81,7 +81,7 @@ describe('LibBytes', () => {
 
     describe('popAddress', () => {
         it('should revert if length is less than 20', async () => {
-            return expectRevertOrOtherError(
+            return expectRevertOrOtherErrorAsync(
                 libBytes.publicPopAddress.callAsync(byteArrayShorterThan20Bytes),
                 constants.LIB_BYTES_GTE_20_LENGTH_REQUIRED,
             );
@@ -167,7 +167,7 @@ describe('LibBytes', () => {
         it('should fail if the byte array is too short to hold an address)', async () => {
             const shortByteArray = '0xabcdef';
             const offset = new BigNumber(0);
-            return expectRevertOrOtherError(
+            return expectRevertOrOtherErrorAsync(
                 libBytes.publicReadAddress.callAsync(shortByteArray, offset),
                 constants.LIB_BYTES_GTE_20_LENGTH_REQUIRED,
             );
@@ -176,7 +176,7 @@ describe('LibBytes', () => {
         it('should fail if the length between the offset and end of the byte array is too short to hold an address)', async () => {
             const byteArray = ethUtil.addHexPrefix(testAddress);
             const badOffset = new BigNumber(ethUtil.toBuffer(byteArray).byteLength);
-            return expectRevertOrOtherError(
+            return expectRevertOrOtherErrorAsync(
                 libBytes.publicReadAddress.callAsync(byteArray, badOffset),
                 constants.LIB_BYTES_GTE_20_LENGTH_REQUIRED,
             );
@@ -213,7 +213,7 @@ describe('LibBytes', () => {
 
         it('should fail if the byte array is too short to hold a bytes32)', async () => {
             const offset = new BigNumber(0);
-            return expectRevertOrOtherError(
+            return expectRevertOrOtherErrorAsync(
                 libBytes.publicReadBytes32.callAsync(byteArrayShorterThan32Bytes, offset),
                 constants.LIB_BYTES_GTE_32_LENGTH_REQUIRED,
             );
@@ -221,7 +221,7 @@ describe('LibBytes', () => {
 
         it('should fail if the length between the offset and end of the byte array is too short to hold a bytes32)', async () => {
             const badOffset = new BigNumber(ethUtil.toBuffer(testBytes32).byteLength);
-            return expectRevertOrOtherError(
+            return expectRevertOrOtherErrorAsync(
                 libBytes.publicReadBytes32.callAsync(testBytes32, badOffset),
                 constants.LIB_BYTES_GTE_32_LENGTH_REQUIRED,
             );
@@ -262,7 +262,7 @@ describe('LibBytes', () => {
 
         it('should fail if the byte array is too short to hold a uint256)', async () => {
             const offset = new BigNumber(0);
-            return expectRevertOrOtherError(
+            return expectRevertOrOtherErrorAsync(
                 libBytes.publicReadUint256.callAsync(byteArrayShorterThan32Bytes, offset),
                 constants.LIB_BYTES_GTE_32_LENGTH_REQUIRED,
             );
@@ -273,7 +273,7 @@ describe('LibBytes', () => {
             const testUint256AsBuffer = ethUtil.toBuffer(formattedTestUint256);
             const byteArray = ethUtil.bufferToHex(testUint256AsBuffer);
             const badOffset = new BigNumber(testUint256AsBuffer.byteLength);
-            return expectRevertOrOtherError(
+            return expectRevertOrOtherErrorAsync(
                 libBytes.publicReadUint256.callAsync(byteArray, badOffset),
                 constants.LIB_BYTES_GTE_32_LENGTH_REQUIRED,
             );
@@ -295,7 +295,7 @@ describe('LibBytes', () => {
         // AssertionError: expected promise to be rejected with an error including 'revert' but it was fulfilled with '0x08c379a0'
         it('should revert if byte array has a length < 4', async () => {
             const byteArrayLessThan4Bytes = '0x010101';
-            return expectRevertOrOtherError(
+            return expectRevertOrOtherErrorAsync(
                 libBytes.publicReadFirst4.callAsync(byteArrayLessThan4Bytes),
                 constants.LIB_BYTES_GTE_4_LENGTH_REQUIRED,
             );

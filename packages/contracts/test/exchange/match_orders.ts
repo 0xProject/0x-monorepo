@@ -18,7 +18,7 @@ import {
     FillContractEventArgs,
 } from '../../src/contract_wrappers/generated/exchange';
 import { artifacts } from '../../src/utils/artifacts';
-import { expectRevertOrAlwaysFailingTransaction } from '../../src/utils/assertions';
+import { expectRevertOrAlwaysFailingTransactionAsync } from '../../src/utils/assertions';
 import { chaiSetup } from '../../src/utils/chai_setup';
 import { constants } from '../../src/utils/constants';
 import { ERC20Wrapper } from '../../src/utils/erc20_wrapper';
@@ -640,7 +640,7 @@ describe('matchOrders', () => {
             // Cancel left order
             await exchangeWrapper.cancelOrderAsync(signedOrderLeft, signedOrderLeft.makerAddress);
             // Match orders
-            return expectRevertOrAlwaysFailingTransaction(
+            return expectRevertOrAlwaysFailingTransactionAsync(
                 exchangeWrapper.matchOrdersAsync(signedOrderLeft, signedOrderRight, takerAddress),
             );
         });
@@ -666,7 +666,7 @@ describe('matchOrders', () => {
             // Cancel right order
             await exchangeWrapper.cancelOrderAsync(signedOrderRight, signedOrderRight.makerAddress);
             // Match orders
-            return expectRevertOrAlwaysFailingTransaction(
+            return expectRevertOrAlwaysFailingTransactionAsync(
                 exchangeWrapper.matchOrdersAsync(signedOrderLeft, signedOrderRight, takerAddress),
             );
         });
@@ -690,7 +690,7 @@ describe('matchOrders', () => {
                 feeRecipientAddress: feeRecipientAddressRight,
             });
             // Match orders
-            return expectRevertOrAlwaysFailingTransaction(
+            return expectRevertOrAlwaysFailingTransactionAsync(
                 matchOrderTester.matchOrdersAndVerifyBalancesAsync(
                     signedOrderLeft,
                     signedOrderRight,
@@ -720,7 +720,7 @@ describe('matchOrders', () => {
                 feeRecipientAddress: feeRecipientAddressRight,
             });
             // Match orders
-            return expectRevertOrAlwaysFailingTransaction(
+            return expectRevertOrAlwaysFailingTransactionAsync(
                 matchOrderTester.matchOrdersAndVerifyBalancesAsync(
                     signedOrderLeft,
                     signedOrderRight,
@@ -750,7 +750,7 @@ describe('matchOrders', () => {
                 feeRecipientAddress: feeRecipientAddressRight,
             });
             // Match orders
-            return expectRevertOrAlwaysFailingTransaction(
+            return expectRevertOrAlwaysFailingTransactionAsync(
                 matchOrderTester.matchOrdersAndVerifyBalancesAsync(
                     signedOrderLeft,
                     signedOrderRight,

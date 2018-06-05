@@ -18,7 +18,7 @@ import {
     FillContractEventArgs,
 } from '../../src/contract_wrappers/generated/exchange';
 import { artifacts } from '../../src/utils/artifacts';
-import { expectRevertOrAlwaysFailingTransaction } from '../../src/utils/assertions';
+import { expectRevertOrAlwaysFailingTransactionAsync } from '../../src/utils/assertions';
 import { chaiSetup } from '../../src/utils/chai_setup';
 import { constants } from '../../src/utils/constants';
 import { ERC20Wrapper } from '../../src/utils/erc20_wrapper';
@@ -416,7 +416,7 @@ describe('Exchange core', () => {
                 makerAssetAmount: Web3Wrapper.toBaseUnitAmount(new BigNumber(100), 18),
                 takerAssetAmount: Web3Wrapper.toBaseUnitAmount(new BigNumber(200), 18),
             });
-            return expectRevertOrAlwaysFailingTransaction(exchangeWrapper.fillOrderAsync(signedOrder, takerAddress));
+            return expectRevertOrAlwaysFailingTransactionAsync(exchangeWrapper.fillOrderAsync(signedOrder, takerAddress));
         });
 
         it('should throw if signature is invalid', async () => {
@@ -431,7 +431,7 @@ describe('Exchange core', () => {
             const invalidSigBuff = Buffer.concat([v, invalidR, invalidS, signatureType]);
             const invalidSigHex = `0x${invalidSigBuff.toString('hex')}`;
             signedOrder.signature = invalidSigHex;
-            return expectRevertOrAlwaysFailingTransaction(exchangeWrapper.fillOrderAsync(signedOrder, takerAddress));
+            return expectRevertOrAlwaysFailingTransactionAsync(exchangeWrapper.fillOrderAsync(signedOrder, takerAddress));
         });
 
         it('should throw if makerAssetAmount is 0', async () => {
@@ -439,7 +439,7 @@ describe('Exchange core', () => {
                 makerAssetAmount: new BigNumber(0),
             });
 
-            return expectRevertOrAlwaysFailingTransaction(exchangeWrapper.fillOrderAsync(signedOrder, takerAddress));
+            return expectRevertOrAlwaysFailingTransactionAsync(exchangeWrapper.fillOrderAsync(signedOrder, takerAddress));
         });
 
         it('should throw if takerAssetAmount is 0', async () => {
@@ -447,13 +447,13 @@ describe('Exchange core', () => {
                 takerAssetAmount: new BigNumber(0),
             });
 
-            return expectRevertOrAlwaysFailingTransaction(exchangeWrapper.fillOrderAsync(signedOrder, takerAddress));
+            return expectRevertOrAlwaysFailingTransactionAsync(exchangeWrapper.fillOrderAsync(signedOrder, takerAddress));
         });
 
         it('should throw if takerAssetFillAmount is 0', async () => {
             signedOrder = orderFactory.newSignedOrder();
 
-            return expectRevertOrAlwaysFailingTransaction(
+            return expectRevertOrAlwaysFailingTransactionAsync(
                 exchangeWrapper.fillOrderAsync(signedOrder, takerAddress, {
                     takerAssetFillAmount: new BigNumber(0),
                 }),
@@ -465,14 +465,14 @@ describe('Exchange core', () => {
                 makerAssetAmount: Web3Wrapper.toBaseUnitAmount(new BigNumber(100000), 18),
             });
 
-            return expectRevertOrAlwaysFailingTransaction(exchangeWrapper.fillOrderAsync(signedOrder, takerAddress));
+            return expectRevertOrAlwaysFailingTransactionAsync(exchangeWrapper.fillOrderAsync(signedOrder, takerAddress));
         });
 
         it('should throw if taker erc20Balances are too low to fill order', async () => {
             signedOrder = orderFactory.newSignedOrder({
                 takerAssetAmount: Web3Wrapper.toBaseUnitAmount(new BigNumber(100000), 18),
             });
-            return expectRevertOrAlwaysFailingTransaction(exchangeWrapper.fillOrderAsync(signedOrder, takerAddress));
+            return expectRevertOrAlwaysFailingTransactionAsync(exchangeWrapper.fillOrderAsync(signedOrder, takerAddress));
         });
 
         it('should throw if maker allowances are too low to fill order', async () => {
@@ -482,7 +482,7 @@ describe('Exchange core', () => {
                 }),
                 constants.AWAIT_TRANSACTION_MINED_MS,
             );
-            return expectRevertOrAlwaysFailingTransaction(exchangeWrapper.fillOrderAsync(signedOrder, takerAddress));
+            return expectRevertOrAlwaysFailingTransactionAsync(exchangeWrapper.fillOrderAsync(signedOrder, takerAddress));
         });
 
         it('should throw if taker allowances are too low to fill order', async () => {
@@ -492,7 +492,7 @@ describe('Exchange core', () => {
                 }),
                 constants.AWAIT_TRANSACTION_MINED_MS,
             );
-            return expectRevertOrAlwaysFailingTransaction(exchangeWrapper.fillOrderAsync(signedOrder, takerAddress));
+            return expectRevertOrAlwaysFailingTransactionAsync(exchangeWrapper.fillOrderAsync(signedOrder, takerAddress));
         });
 
         it('should throw if an order is expired', async () => {
@@ -520,7 +520,7 @@ describe('Exchange core', () => {
         });
 
         it('should throw if not sent by maker', async () => {
-            return expectRevertOrAlwaysFailingTransaction(exchangeWrapper.cancelOrderAsync(signedOrder, takerAddress));
+            return expectRevertOrAlwaysFailingTransactionAsync(exchangeWrapper.cancelOrderAsync(signedOrder, takerAddress));
         });
 
         it('should throw if makerAssetAmount is 0', async () => {
@@ -528,7 +528,7 @@ describe('Exchange core', () => {
                 makerAssetAmount: new BigNumber(0),
             });
 
-            return expectRevertOrAlwaysFailingTransaction(exchangeWrapper.cancelOrderAsync(signedOrder, makerAddress));
+            return expectRevertOrAlwaysFailingTransactionAsync(exchangeWrapper.cancelOrderAsync(signedOrder, makerAddress));
         });
 
         it('should throw if takerAssetAmount is 0', async () => {
@@ -536,7 +536,7 @@ describe('Exchange core', () => {
                 takerAssetAmount: new BigNumber(0),
             });
 
-            return expectRevertOrAlwaysFailingTransaction(exchangeWrapper.cancelOrderAsync(signedOrder, makerAddress));
+            return expectRevertOrAlwaysFailingTransactionAsync(exchangeWrapper.cancelOrderAsync(signedOrder, makerAddress));
         });
 
         it('should be able to cancel a full order', async () => {
@@ -604,7 +604,7 @@ describe('Exchange core', () => {
             const makerEpoch = new BigNumber(1);
             await exchangeWrapper.cancelOrdersUpToAsync(makerEpoch, makerAddress);
             const lesserMakerEpoch = new BigNumber(0);
-            return expectRevertOrAlwaysFailingTransaction(
+            return expectRevertOrAlwaysFailingTransactionAsync(
                 exchangeWrapper.cancelOrdersUpToAsync(lesserMakerEpoch, makerAddress),
             );
         });
@@ -612,7 +612,7 @@ describe('Exchange core', () => {
         it('should fail to set makerEpoch equal to existing makerEpoch', async () => {
             const makerEpoch = new BigNumber(1);
             await exchangeWrapper.cancelOrdersUpToAsync(makerEpoch, makerAddress);
-            return expectRevertOrAlwaysFailingTransaction(
+            return expectRevertOrAlwaysFailingTransactionAsync(
                 exchangeWrapper.cancelOrdersUpToAsync(makerEpoch, makerAddress),
             );
         });
@@ -723,7 +723,7 @@ describe('Exchange core', () => {
             expect(initialOwnerTakerAsset).to.be.bignumber.equal(takerAddress);
             // Call Exchange
             const takerAssetFillAmount = signedOrder.takerAssetAmount;
-            return expectRevertOrAlwaysFailingTransaction(
+            return expectRevertOrAlwaysFailingTransactionAsync(
                 exchangeWrapper.fillOrderAsync(signedOrder, takerAddress, { takerAssetFillAmount }),
             );
         });
@@ -745,7 +745,7 @@ describe('Exchange core', () => {
             expect(initialOwnerTakerAsset).to.be.bignumber.not.equal(takerAddress);
             // Call Exchange
             const takerAssetFillAmount = signedOrder.takerAssetAmount;
-            return expectRevertOrAlwaysFailingTransaction(
+            return expectRevertOrAlwaysFailingTransactionAsync(
                 exchangeWrapper.fillOrderAsync(signedOrder, takerAddress, { takerAssetFillAmount }),
             );
         });
@@ -767,7 +767,7 @@ describe('Exchange core', () => {
             expect(initialOwnerTakerAsset).to.be.bignumber.equal(takerAddress);
             // Call Exchange
             const takerAssetFillAmount = signedOrder.takerAssetAmount;
-            return expectRevertOrAlwaysFailingTransaction(
+            return expectRevertOrAlwaysFailingTransactionAsync(
                 exchangeWrapper.fillOrderAsync(signedOrder, takerAddress, { takerAssetFillAmount }),
             );
         });
@@ -789,7 +789,7 @@ describe('Exchange core', () => {
             expect(initialOwnerTakerAsset).to.be.bignumber.equal(takerAddress);
             // Call Exchange
             const takerAssetFillAmount = signedOrder.takerAssetAmount;
-            return expectRevertOrAlwaysFailingTransaction(
+            return expectRevertOrAlwaysFailingTransactionAsync(
                 exchangeWrapper.fillOrderAsync(signedOrder, takerAddress, { takerAssetFillAmount }),
             );
         });
@@ -811,7 +811,7 @@ describe('Exchange core', () => {
             expect(initialOwnerTakerAsset).to.be.bignumber.equal(takerAddress);
             // Call Exchange
             const takerAssetFillAmount = signedOrder.takerAssetAmount;
-            return expectRevertOrAlwaysFailingTransaction(
+            return expectRevertOrAlwaysFailingTransactionAsync(
                 exchangeWrapper.fillOrderAsync(signedOrder, takerAddress, { takerAssetFillAmount }),
             );
         });

@@ -6,7 +6,7 @@ import 'make-promises-safe';
 
 import { WETH9Contract } from '../src/contract_wrappers/generated/weth9';
 import { artifacts } from '../src/utils/artifacts';
-import { expectInsufficientFunds, expectRevertOrAlwaysFailingTransaction } from '../src/utils/assertions';
+import { expectInsufficientFundsAsync, expectRevertOrAlwaysFailingTransactionAsync } from '../src/utils/assertions';
 import { chaiSetup } from '../src/utils/chai_setup';
 import { constants } from '../src/utils/constants';
 import { provider, txDefaults, web3Wrapper } from '../src/utils/web3_wrapper';
@@ -46,7 +46,7 @@ describe('EtherToken', () => {
             const initEthBalance = await web3Wrapper.getBalanceInWeiAsync(account);
             const ethToDeposit = initEthBalance.plus(1);
 
-            return expectInsufficientFunds(etherToken.deposit.sendTransactionAsync({ value: ethToDeposit }));
+            return expectInsufficientFundsAsync(etherToken.deposit.sendTransactionAsync({ value: ethToDeposit }));
         });
 
         it('should convert deposited Ether to wrapped Ether tokens', async () => {
@@ -75,7 +75,7 @@ describe('EtherToken', () => {
             const initEthTokenBalance = await etherToken.balanceOf.callAsync(account);
             const ethTokensToWithdraw = initEthTokenBalance.plus(1);
 
-            return expectRevertOrAlwaysFailingTransaction(
+            return expectRevertOrAlwaysFailingTransactionAsync(
                 etherToken.withdraw.sendTransactionAsync(ethTokensToWithdraw),
             );
         });

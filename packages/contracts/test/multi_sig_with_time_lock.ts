@@ -12,7 +12,7 @@ import {
     SubmissionContractEventArgs,
 } from '../src/contract_wrappers/generated/multi_sig_wallet_with_time_lock';
 import { artifacts } from '../src/utils/artifacts';
-import { expectRevertOrAlwaysFailingTransaction } from '../src/utils/assertions';
+import { expectRevertOrAlwaysFailingTransactionAsync } from '../src/utils/assertions';
 import { chaiSetup } from '../src/utils/chai_setup';
 import { constants } from '../src/utils/constants';
 import { increaseTimeAndMineBlockAsync } from '../src/utils/increase_time';
@@ -71,7 +71,7 @@ describe('MultiSigWalletWithTimeLock', () => {
             });
 
             it('should throw when not called by wallet', async () => {
-                return expectRevertOrAlwaysFailingTransaction(
+                return expectRevertOrAlwaysFailingTransactionAsync(
                     multiSig.changeTimeLock.sendTransactionAsync(SECONDS_TIME_LOCKED, { from: owners[0] }),
                 );
             });
@@ -82,7 +82,7 @@ describe('MultiSigWalletWithTimeLock', () => {
                 const res = await multiSigWrapper.submitTransactionAsync(destination, changeTimeLockData, owners[0]);
                 const log = res.logs[0] as LogWithDecodedArgs<SubmissionContractEventArgs>;
                 const txId = log.args.transactionId;
-                return expectRevertOrAlwaysFailingTransaction(
+                return expectRevertOrAlwaysFailingTransactionAsync(
                     multiSig.executeTransaction.sendTransactionAsync(txId, { from: owners[0] }),
                 );
             });
@@ -151,7 +151,7 @@ describe('MultiSigWalletWithTimeLock', () => {
             });
 
             it('should throw if it has enough confirmations but is not past the time lock', async () => {
-                return expectRevertOrAlwaysFailingTransaction(
+                return expectRevertOrAlwaysFailingTransactionAsync(
                     multiSig.executeTransaction.sendTransactionAsync(txId, { from: owners[0] }),
                 );
             });
