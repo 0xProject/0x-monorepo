@@ -99,7 +99,7 @@ contract MixinAssetProxyDispatcher is
             uint256 length = assetMetadata.length;
             require(
                 length > 0,
-                LENGTH_GT_0_REQUIRED
+                LENGTH_GREATER_THAN_0_REQUIRED
             );
             uint8 assetProxyId = uint8(assetMetadata[length - 1]);
             IAssetProxy assetProxy = assetProxies[assetProxyId];

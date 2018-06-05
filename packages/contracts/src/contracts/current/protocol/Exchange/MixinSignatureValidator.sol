@@ -89,7 +89,7 @@ contract MixinSignatureValidator is
         // TODO: Domain separation: make hash depend on role. (Taker sig should not be valid as maker sig, etc.)
         require(
             signature.length > 0,
-            LENGTH_GT_0_REQUIRED
+            LENGTH_GREATER_THAN_0_REQUIRED
         );
 
         // Pop last byte off of signature byte array.
