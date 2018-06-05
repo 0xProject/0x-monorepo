@@ -38,6 +38,8 @@ const PRICE_API_ENDPOINT = 'https://min-api.cryptocompare.com/data/pricehistoric
 const RELAYER_REGISTRY_JSON = 'https://raw.githubusercontent.com/0xProject/0x-relayer-registry/master/relayers.json';
 const METAMASK_ETH_CONTRACT_METADATA_JSON =
     'https://raw.githubusercontent.com/MetaMask/eth-contract-metadata/master/contract-map.json';
+const ETHPLORER_BASE_URL = 'http://api.ethplorer.io';
+const ETHPLORER_TOP_TOKENS_JSON = `${ETHPLORER_BASE_URL}/getTopTokens?apiKey=freekey`;
 // const HIST_PRICE_API_ENDPOINT = 'https://min-api.cryptocompare.com/data/histoday';
 
 const AIRTABLE_RELAYER_INFO = 'Relayer Info';
@@ -110,6 +112,29 @@ export const pullDataScripts = {
     getMetaMaskTokens(): any {
         return new Promise((resolve, reject) => {
             request(METAMASK_ETH_CONTRACT_METADATA_JSON, (error, response, body) => {
+                if (error) {
+                    reject(error);
+                } else {
+                    resolve(JSON.parse(body));
+                }
+            });
+        });
+    },
+    getEthplorerTopTokens(): any {
+        return new Promise((resolve, reject) => {
+            request(ETHPLORER_TOP_TOKENS_JSON, (error, response, body) => {
+                if (error) {
+                    reject(error);
+                } else {
+                    resolve(JSON.parse(body));
+                }
+            });
+        });
+    },
+    getEthplorerToken(tokenAddress: string): any {
+        return new Promise((resolve, reject) => {
+            const url = `${ETHPLORER_BASE_URL}/getTokenInfo/${tokenAddress}?apiKey=freekey`;
+            request(url, (error, response, body) => {
                 if (error) {
                     reject(error);
                 } else {
@@ -401,6 +426,46 @@ function _scrapeMetaMaskEthContractMetadataToDB(): any {
     };
 }
 
+function _scrapeEthplorerTopTokensToDB(): any {
+    return (cb: () => void) => {
+        pullDataScripts
+            .getEthplorerTopTokens()
+            .then((data: any) => {
+                const parsedTokens: any = [];
+                const tokens = _.get(data, 'tokens');
+                for (const token of tokens) {
+                    parsedTokens.push(typeConverters.convertMetaMaskTokenToTokenObject(token));
+                }
+                insertDataScripts.insertMultipleRows('tokens', parsedTokens, Object.keys(parsedTokens[0]));
+                cb();
+            })
+            .catch((err: any) => {
+                cb();
+            });
+    };
+}
+function _scrapeUnknownTokenInformationToDB(): any {
+    return (cb: () => void) => {
+        postgresClient
+            .query(dataFetchingQueries.get_top_unknown_token_addresses)
+            .then(async (result: any) => {
+                const addresses = _.map(result.rows, row => _.get(row, 'address'));
+                const responses = await Promise.all(
+                    _.map(addresses, address => pullDataScripts.getEthplorerToken(address)),
+                );
+                const tokens = _.filter(responses, response => _.isUndefined(_.get(response, 'error')));
+                const parsedTokens = _.map(tokens, tokenInfo =>
+                    typeConverters.convertEthplorerTokenToTokenObject(tokenInfo),
+                );
+                insertDataScripts.insertMultipleRows('tokens', parsedTokens, Object.keys(parsedTokens[0]));
+                cb();
+            })
+            .catch((err: any) => {
+                cb();
+            });
+    };
+}
+
 function _scrapePriceToDB(timestamp: number, token: any, timeDelay?: number): any {
     return (cb: () => void) => {
         pullDataScripts
@@ -545,6 +610,9 @@ if (cli.type === 'events') {
     }
 } else if (cli.type === 'tokens') {
     q.push(_scrapeMetaMaskEthContractMetadataToDB());
+    q.push(_scrapeEthplorerTopTokensToDB());
+} else if (cli.type === 'unknown_tokens') {
+    q.push(_scrapeUnknownTokenInformationToDB());
 } else if (cli.type === 'prices' && cli.from && cli.to) {
     const fromDate = new Date(cli.from);
     console.debug(fromDate);

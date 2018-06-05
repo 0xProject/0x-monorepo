@@ -42,6 +42,7 @@ export const typeConverters = {
                 }
             }
         }
+        newToken[logToTokenSchemaMapping.address] = newToken[logToTokenSchemaMapping.address].toLowerCase();
         return newToken;
     },
     convertMetaMaskTokenToTokenObject(metaMaskToken: any): any {
@@ -51,6 +52,18 @@ export const typeConverters = {
                 newToken[logToTokenSchemaMapping[key]] = _.get(metaMaskToken, key);
             }
         }
+        newToken[logToTokenSchemaMapping.address] = newToken[logToTokenSchemaMapping.address].toLowerCase();
+        console.log(newToken);
+        return newToken;
+    },
+    convertEthplorerTokenToTokenObject(ethplorerToken: any): any {
+        const newToken: any = {};
+        for (const key in logToTokenSchemaMapping) {
+            if (_.has(ethplorerToken, key)) {
+                newToken[logToTokenSchemaMapping[key]] = _.get(ethplorerToken, key);
+            }
+        }
+        newToken[logToTokenSchemaMapping.address] = newToken[logToTokenSchemaMapping.address].toLowerCase();
         return newToken;
     },
     convertLogTransactionToTransactionObject(logTransaction: any): any {
