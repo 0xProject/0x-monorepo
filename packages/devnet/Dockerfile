@@ -23,7 +23,3 @@ EXPOSE 8501
 EXPOSE 30310
 
 ENTRYPOINT ./run.sh
-
-# TODO(albrow): Send a single transaction to increment the block number from 0
-# to 1. This seems to prevent bugs in the tests. (There's probably something
-# Geth doesn't like about getting reset back to block 0).
