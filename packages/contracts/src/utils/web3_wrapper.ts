@@ -5,7 +5,7 @@ import { Provider } from 'ethereum-types';
 
 import { coverage } from './coverage';
 
-const useGeth = true;
+const testProvider = process.env.TEST_PROVIDER || 'ganache';
 
 const ganacheTxDefaults = {
     from: devConstants.TESTRPC_FIRST_ADDRESS,
@@ -14,7 +14,7 @@ const ganacheTxDefaults = {
 const gethTxDefaults = {
     from: devConstants.TESTRPC_FIRST_ADDRESS,
 };
-export const txDefaults = useGeth ? gethTxDefaults : ganacheTxDefaults;
+export const txDefaults = testProvider === 'ganache' ? ganacheTxDefaults : gethTxDefaults;
 
 const gethConfigs = {
     shouldUseInProcessGanache: false,
@@ -24,7 +24,8 @@ const gethConfigs = {
 const ganacheConfigs = {
     shouldUseInProcessGanache: true,
 };
-const providerConfigs = useGeth ? gethConfigs : ganacheConfigs;
+
+const providerConfigs = testProvider === 'ganache' ? ganacheConfigs : gethConfigs;
 
 export const provider = web3Factory.getRpcProvider(providerConfigs);
 const isCoverageEnabled = env.parseBoolean(EnvVars.SolidityCoverage);

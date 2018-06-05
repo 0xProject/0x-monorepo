@@ -257,9 +257,9 @@ export class Web3Wrapper {
      * Increase the next blocks timestamp on TestRPC/Ganache local node
      * @param timeDelta Amount of time to add in seconds
      */
-    public async increaseTimeAsync(timeDelta: number): Promise<void> {
+    public async increaseTimeAsync(timeDelta: number): Promise<number> {
         // TODO(albrow): Detect Geth vs. Ganache and use appropriate endpoint.
-        await this._sendRawPayloadAsync<string>({ method: 'debug_increaseTime', params: [timeDelta] });
+        return this._sendRawPayloadAsync<number>({ method: 'debug_increaseTime', params: [timeDelta] });
     }
     /**
      * Retrieve smart contract logs for a given filter
