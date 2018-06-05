@@ -6,7 +6,8 @@
     "scripts": {
         "lint": "tslint --project . 'src/**/*.ts'",
         "clean": "shx rm -rf lib",
-        "build": "tsc"
+        "build": "tsc",
+        "watch": "tsc -w"
     },
     "repository": {
         "type": "git",
