@@ -1,6 +1,6 @@
 import { BlockchainLifecycle } from '@0xproject/dev-utils';
-import { assetProxyUtils } from '@0xproject/order-utils';
 import { generatePseudoRandomSalt } from '@0xproject/order-utils';
+import { assetProxyUtils } from '@0xproject/order-utils';
 import { AssetProxyId } from '@0xproject/types';
 import { BigNumber } from '@0xproject/utils';
 import * as chai from 'chai';
@@ -18,13 +18,11 @@ import { ERC20ProxyContract } from '../../src/generated_contract_wrappers/e_r_c2
 import { ERC721ProxyContract } from '../../src/generated_contract_wrappers/e_r_c721_proxy';
 import { artifacts } from '../../src/utils/artifacts';
 import { expectRevertOrAlwaysFailingTransactionAsync } from '../../src/utils/assertions';
-import { assetProxyUtils } from '../../src/utils/asset_proxy_utils';
 import { chaiSetup } from '../../src/utils/chai_setup';
 import { constants } from '../../src/utils/constants';
 import { ERC20Wrapper } from '../../src/utils/erc20_wrapper';
 import { ERC721Wrapper } from '../../src/utils/erc721_wrapper';
 import { LogDecoder } from '../../src/utils/log_decoder';
-import { AssetProxyId } from '../../src/utils/types';
 import { provider, txDefaults, web3Wrapper } from '../../src/utils/web3_wrapper';
 
 chaiSetup.configure();

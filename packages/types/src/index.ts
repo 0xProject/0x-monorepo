@@ -156,18 +156,19 @@ export enum AssetProxyId {
     ERC721,
 }
 
-export interface ERC20ProxyData {
+export interface ERC20AssetData {
     assetProxyId: AssetProxyId;
     tokenAddress: string;
 }
 
-export interface ERC721ProxyData {
+export interface ERC721AssetData {
     assetProxyId: AssetProxyId;
     tokenAddress: string;
     tokenId: BigNumber;
+    receiverData: string;
 }
 
-export interface ProxyData {
+export interface AssetData {
     assetProxyId: AssetProxyId;
     tokenAddress?: string;
     data?: any;

@@ -1,5 +1,6 @@
 import { BlockchainLifecycle, devConstants, web3Factory } from '@0xproject/dev-utils';
-import { generatePseudoRandomSalt } from '@0xproject/order-utils';
+import { assetProxyUtils, generatePseudoRandomSalt } from '@0xproject/order-utils';
+import { AssetData, AssetProxyId, ERC20AssetData, ERC721AssetData } from '@0xproject/types';
 import { BigNumber } from '@0xproject/utils';
 import { Web3Wrapper } from '@0xproject/web3-wrapper';
 import BN = require('bn.js');
@@ -10,10 +11,8 @@ import * as Web3 from 'web3';
 
 import { TestAssetDataDecodersContract } from '../../src/contract_wrappers/generated/test_asset_data_decoders';
 import { artifacts } from '../../src/utils/artifacts';
-import { assetProxyUtils } from '../../src/utils/asset_proxy_utils';
 import { chaiSetup } from '../../src/utils/chai_setup';
 import { constants } from '../../src/utils/constants';
-import { AssetData, AssetProxyId, ERC20AssetData, ERC721AssetData } from '../../src/utils/types';
 import { provider, txDefaults, web3Wrapper } from '../../src/utils/web3_wrapper';
 
 chaiSetup.configure();
@@ -74,7 +73,7 @@ describe('TestAssetDataDecoders', () => {
             expect(decodedAssetProxyId).to.be.equal(expectedDecodedAssetData.assetProxyId);
             expect(decodedTokenAddress).to.be.equal(expectedDecodedAssetData.tokenAddress);
             expect(decodedTokenId).to.be.bignumber.equal(expectedDecodedAssetData.tokenId);
-            expect(decodedData).to.be.equal(expectedDecodedAssetData.data);
+            expect(decodedData).to.be.equal(expectedDecodedAssetData.receiverData);
         });
 
         it('should correctly decode ERC721 asset data with receiver data', async () => {
@@ -96,7 +95,7 @@ describe('TestAssetDataDecoders', () => {
             expect(decodedAssetProxyId).to.be.equal(expectedDecodedAssetData.assetProxyId);
             expect(decodedTokenAddress).to.be.equal(expectedDecodedAssetData.tokenAddress);
             expect(decodedTokenId).to.be.bignumber.equal(expectedDecodedAssetData.tokenId);
-            expect(decodedReceiverData).to.be.equal(expectedDecodedAssetData.data);
+            expect(decodedReceiverData).to.be.equal(expectedDecodedAssetData.receiverData);
         });
     });
 });
