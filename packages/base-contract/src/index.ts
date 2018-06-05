@@ -20,6 +20,8 @@ export interface EthersInterfaceByFunctionSignature {
     [key: string]: ethers.Interface;
 }
 
+const GAS_BUFFER_AMOUNT = 1.1;
+
 export class BaseContract {
     protected _ethersInterfacesByFunctionSignature: EthersInterfaceByFunctionSignature;
     protected _web3Wrapper: Web3Wrapper;
@@ -79,12 +81,8 @@ export class BaseContract {
             // Awaiting https://github.com/Microsoft/TypeScript/pull/13288 to be merged
         } as any;
         if (_.isUndefined(txDataWithDefaults.gas) && !_.isUndefined(estimateGasAsync)) {
-            // TODO(albrow): Move this code into a subprovider which we only
-            // use for Geth.
             const estimatedGas = await estimateGasAsync(txData);
-            // console.log(`original estimate: ${estimatedGas}`);
-            const buffered = Math.ceil(estimatedGas * 1.1);
-            // console.log(`buffered estimate: ${buffered}`);
+            const buffered = Math.ceil(estimatedGas * GAS_BUFFER_AMOUNT);
             txDataWithDefaults.gas = buffered;
         }
         return txDataWithDefaults;

@@ -28,7 +28,6 @@ export class BlockchainLifecycle {
                 break;
             case NodeType.Geth:
                 const blockNumber = await this._web3Wrapper.getBlockNumberAsync();
-                console.log(`block number for snapshot: ${blockNumber}`);
                 this._snapshotIdsStack.push(blockNumber);
                 break;
             default:
@@ -47,7 +46,6 @@ export class BlockchainLifecycle {
                 break;
             case NodeType.Geth:
                 const blockNumber = this._snapshotIdsStack.pop() as number;
-                console.log(`setting head: ${blockNumber}`);
                 await this._web3Wrapper.setHeadAsync(blockNumber);
                 break;
             default:
