@@ -38,7 +38,6 @@ export class CoverageManager {
     private _artifactAdapter: AbstractArtifactAdapter;
     private _logger: Logger;
     private _traceInfos: TraceInfo[] = [];
-    private _getContractCodeAsync: (address: string) => Promise<string>;
     private static _getSingleFileCoverageForTrace(
         contractData: ContractData,
         coveredPcs: number[],
@@ -141,12 +140,7 @@ export class CoverageManager {
         });
         return contractData;
     }
-    constructor(
-        artifactAdapter: AbstractArtifactAdapter,
-        getContractCodeAsync: (address: string) => Promise<string>,
-        isVerbose: boolean,
-    ) {
-        this._getContractCodeAsync = getContractCodeAsync;
+    constructor(artifactAdapter: AbstractArtifactAdapter, isVerbose: boolean) {
         this._artifactAdapter = artifactAdapter;
         this._logger = getLogger('sol-cov');
         this._logger.setLevel(isVerbose ? levels.TRACE : levels.ERROR);

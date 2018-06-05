@@ -9,6 +9,10 @@
             {
                 "note": "Fixed a bug caused by Geth debug trace depth being 1-indexed",
                 "pr": "TODO"
+            },
+            {
+                "note": "Use BlockchainLifecycle to support reverst on Geth",
+                "pr": "TODO"
             }
         ]
     },

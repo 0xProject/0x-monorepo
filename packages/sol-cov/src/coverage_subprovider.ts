@@ -1,5 +1,7 @@
+import { BlockchainLifecycle } from '@0xproject/dev-utils';
 import { Callback, ErrorCallback, NextCallback, Subprovider } from '@0xproject/subproviders';
-import { BlockParam, CallData, JSONRPCRequestPayload, TransactionTrace, TxData } from 'ethereum-types';
+import { Web3Wrapper } from '@0xproject/web3-wrapper';
+import { BlockParam, CallData, JSONRPCRequestPayload, Provider, TransactionTrace, TxData } from 'ethereum-types';
 import * as fs from 'fs';
 import * as _ from 'lodash';
 import { Lock } from 'semaphore-async-await';
@@ -27,6 +29,7 @@ export class CoverageSubprovider extends Subprovider {
     private _lock: Lock;
     private _coverageManager: CoverageManager;
     private _defaultFromAddress: string;
+    private _web3Wrapper!: Web3Wrapper;
     /**
      * Instantiates a CoverageSubprovider instance
      * @param artifactAdapter Adapter for used artifacts format (0x, truffle, giveth, etc.)
@@ -37,7 +40,7 @@ export class CoverageSubprovider extends Subprovider {
         super();
         this._lock = new Lock();
         this._defaultFromAddress = defaultFromAddress;
-        this._coverageManager = new CoverageManager(artifactAdapter, this._getContractCodeAsync.bind(this), isVerbose);
+        this._coverageManager = new CoverageManager(artifactAdapter, isVerbose);
     }
     /**
      * Write the test coverage results to a file in Istanbul format.
@@ -72,6 +75,15 @@ export class CoverageSubprovider extends Subprovider {
                 return;
         }
     }
+    /**
+     * Set's the subprovider's engine to the ProviderEngine it is added to.
+     * This is only called within the ProviderEngine source code, do not call
+     * directly.
+     */
+    public setEngine(engine: Provider): void {
+        super.setEngine(engine);
+        this._web3Wrapper = new Web3Wrapper(engine);
+    }
     private async _onTransactionSentAsync(
         txData: MaybeFakeTxData,
         err: Error | null,
@@ -87,12 +99,8 @@ export class CoverageSubprovider extends Subprovider {
             const toAddress = _.isUndefined(txData.to) || txData.to === '0x0' ? constants.NEW_CONTRACT : txData.to;
             await this._recordTxTraceAsync(toAddress, txData.data, txHash as string);
         } else {
-            const payload = {
-                method: 'eth_getBlockByNumber',
-                params: [BlockParamLiteral.Latest, true],
-            };
-            const jsonRPCResponsePayload = await this.emitPayloadAsync(payload);
-            const transactions = jsonRPCResponsePayload.result.transactions;
+            const latestBlock = await this._web3Wrapper.getBlockWithTransactionDataAsync(BlockParamLiteral.Latest);
+            const transactions = latestBlock.transactions;
             for (const transaction of transactions) {
                 const toAddress = _.isUndefined(txData.to) || txData.to === '0x0' ? constants.NEW_CONTRACT : txData.to;
                 await this._recordTxTraceAsync(toAddress, transaction.data, transaction.hash);
@@ -116,12 +124,11 @@ export class CoverageSubprovider extends Subprovider {
         cb();
     }
     private async _recordTxTraceAsync(address: string, data: string | undefined, txHash: string): Promise<void> {
-        let payload = {
-            method: 'debug_traceTransaction',
-            params: [txHash, { disableMemory: true, disableStack: false, disableStorage: true }],
-        };
-        let jsonRPCResponsePayload = await this.emitPayloadAsync(payload);
-        const trace: TransactionTrace = jsonRPCResponsePayload.result;
+        const trace: TransactionTrace = await this._web3Wrapper.getTransactionTraceAsync(txHash, {
+            disableMemory: true,
+            disableStack: false,
+            disableStorage: true,
+        });
         const tracesByContractAddress = getTracesByContractAddress(trace.structLogs, address);
         const subcallAddresses = _.keys(tracesByContractAddress);
         if (address === constants.NEW_CONTRACT) {
@@ -137,9 +144,7 @@ export class CoverageSubprovider extends Subprovider {
                         bytecode: data as string,
                     };
                 } else {
-                    payload = { method: 'eth_getCode', params: [subcallAddress, BlockParamLiteral.Latest] };
-                    jsonRPCResponsePayload = await this.emitPayloadAsync(payload);
-                    const runtimeBytecode = jsonRPCResponsePayload.result;
+                    const runtimeBytecode = await this._web3Wrapper.getContractCodeAsync(subcallAddress);
                     const traceForThatSubcall = tracesByContractAddress[subcallAddress];
                     const coveredPcs = _.map(traceForThatSubcall, log => log.pc);
                     traceInfo = {
@@ -153,9 +158,7 @@ export class CoverageSubprovider extends Subprovider {
             }
         } else {
             for (const subcallAddress of subcallAddresses) {
-                payload = { method: 'eth_getCode', params: [subcallAddress, BlockParamLiteral.Latest] };
-                jsonRPCResponsePayload = await this.emitPayloadAsync(payload);
-                const runtimeBytecode = jsonRPCResponsePayload.result;
+                const runtimeBytecode = await this._web3Wrapper.getContractCodeAsync(subcallAddress);
                 const traceForThatSubcall = tracesByContractAddress[subcallAddress];
                 const coveredPcs = _.map(traceForThatSubcall, log => log.pc);
                 const traceInfo: TraceInfoExistingContract = {
@@ -172,34 +175,19 @@ export class CoverageSubprovider extends Subprovider {
         // We don't want other transactions to be exeucted during snashotting period, that's why we lock the
         // transaction execution for all transactions except our fake ones.
         await this._lock.acquire();
-        const snapshotId = Number((await this.emitPayloadAsync({ method: 'evm_snapshot' })).result);
+        const blockchainLifecycle = new BlockchainLifecycle(this._web3Wrapper);
+        await blockchainLifecycle.startAsync();
         const fakeTxData: MaybeFakeTxData = {
             isFakeTransaction: true, // This transaction (and only it) is allowed to come through when the lock is locked
             ...callData,
             from: callData.from || this._defaultFromAddress,
         };
         try {
-            await this.emitPayloadAsync({
-                method: 'eth_sendTransaction',
-                params: [fakeTxData],
-            });
+            await this._web3Wrapper.sendTransactionAsync(fakeTxData);
         } catch (err) {
             // Even if this transaction failed - we've already recorded it's trace.
         }
-        const jsonRPCResponse = await this.emitPayloadAsync({ method: 'evm_revert', params: [snapshotId] });
+        await blockchainLifecycle.revertAsync();
         this._lock.release();
-        const didRevert = jsonRPCResponse.result;
-        if (!didRevert) {
-            throw new Error('Failed to revert the snapshot');
-        }
-    }
-    private async _getContractCodeAsync(address: string): Promise<string> {
-        const payload = {
-            method: 'eth_getCode',
-            params: [address, BlockParamLiteral.Latest],
-        };
-        const jsonRPCResponsePayload = await this.emitPayloadAsync(payload);
-        const contractCode: string = jsonRPCResponsePayload.result;
-        return contractCode;
     }
 }
