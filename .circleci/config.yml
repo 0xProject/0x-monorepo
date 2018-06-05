@@ -25,7 +25,6 @@ jobs:
           key: yarn-packages-{{ .Branch }}-{{ checksum "yarn.lock" }}
           paths:
             - node_modules/
-      - run: node ./node_modules/lerna/bin/lerna.js bootstrap
       - run: yarn build
       - save_cache:
           key: repo-{{ .Environment.CIRCLE_SHA1 }}
