@@ -25,7 +25,12 @@ jobs:
           key: yarn-packages-{{ .Branch }}-{{ checksum "yarn.lock" }}
           paths:
             - node_modules/
-      - run: yarn build
+      - run: >
+            if [ -z "$(git diff --name-only v2-prototype packages/website)" ]; then
+                yarn build --exclude website
+            else
+                yarn build
+            fi
       - save_cache:
           key: repo-{{ .Environment.CIRCLE_SHA1 }}
           paths:
