@@ -106,14 +106,14 @@ contract ERC721Proxy is
         // Validate encoded data length
         uint256 length = assetData.length;
         require(
-            assetData.length >= 53,
+            length >= 53,
             LENGTH_AT_LEAST_53_REQUIRED
         );
 
         // Decode asset data.
         token = readAddress(assetData, 0);
         tokenId = readUint256(assetData, 20);
-        if (assetData.length > 53) {
+        if (length > 53) {
             receiverData = readBytes(assetData, 52);
         }
         proxyId = uint8(assetData[length-1]);

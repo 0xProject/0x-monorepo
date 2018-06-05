@@ -91,13 +91,13 @@ contract ERC20Proxy is
         // Validate encoded data length
         uint256 length = assetData.length;
         require(
-            assetData.length == 21,
+            length == 21,
             LENGTH_21_REQUIRED
         );
 
         // Decode data
         token = readAddress(assetData, 0);
-        proxyId = uint8(assetData[length-1]);
+        proxyId = uint8(assetData[length - 1]);
 
         return (proxyId, token);
     }
