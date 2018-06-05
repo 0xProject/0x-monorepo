@@ -20,7 +20,6 @@ pragma solidity ^0.4.24;
 pragma experimental ABIEncoderV2;
 
 import "../../utils/LibBytes/LibBytes.sol";
-import "../../tokens/ERC20Token/IERC20Token.sol";
 import "./MixinAssetProxy.sol";
 import "./MixinAuthorizable.sol";
 import "../../tokens/ERC20Token/IERC20Token.sol";

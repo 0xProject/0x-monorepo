@@ -25,6 +25,12 @@ describe('TestAssetDataDecoders', () => {
     let testAddress: string;
 
     before(async () => {
+        await blockchainLifecycle.startAsync();
+    });
+    after(async () => {
+        await blockchainLifecycle.revertAsync();
+    });
+    before(async () => {
         // Setup accounts & addresses
         const accounts = await web3Wrapper.getAvailableAddressesAsync();
         owner = accounts[0];
@@ -78,8 +84,12 @@ describe('TestAssetDataDecoders', () => {
 
         it('should correctly decode ERC721 asset data with receiver data', async () => {
             const tokenId = generatePseudoRandomSalt();
-            const receiverData =
-                ethUtil.bufferToHex(assetProxyUtils.encodeUint256(generatePseudoRandomSalt())) + 'FFFF';
+            const receiverDataFirst32Bytes = ethUtil.bufferToHex(
+                assetProxyUtils.encodeUint256(generatePseudoRandomSalt()),
+            );
+            const receiverDataExtraBytes = 'FFFF';
+            // We add extra bytes to generate a value that doesn't fit perfectly into one word
+            const receiverData = receiverDataFirst32Bytes + receiverDataExtraBytes;
             const encodedAssetData = assetProxyUtils.encodeERC721AssetData(testAddress, tokenId, receiverData);
             const expectedDecodedAssetData = assetProxyUtils.decodeERC721AssetData(encodedAssetData);
             let decodedAssetProxyId: number;

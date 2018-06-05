@@ -119,10 +119,12 @@ export const assetProxyUtils = {
         const tokenId = assetProxyUtils.decodeUint256(encodedTokenId);
         const nullData = '0x';
         let receiverData = nullData;
-        if (encodedAssetData.byteLength > receiverDataLengthOffset + 1) {
+        const lengthUpToReceiverDataLength = receiverDataLengthOffset + 1;
+        if (encodedAssetData.byteLength > lengthUpToReceiverDataLength) {
             const encodedReceiverDataLength = encodedAssetData.slice(receiverDataLengthOffset, receiverDataOffset);
             const receiverDataLength = assetProxyUtils.decodeUint256(encodedReceiverDataLength);
-            const expectedReceiverDataLength = new BigNumber(encodedAssetData.byteLength - (receiverDataOffset + 1));
+            const lengthUpToReceiverData = receiverDataOffset + 1;
+            const expectedReceiverDataLength = new BigNumber(encodedAssetData.byteLength - lengthUpToReceiverData);
             if (!receiverDataLength.equals(expectedReceiverDataLength)) {
                 throw new Error(
                     `Data length (${receiverDataLength}) does not match actual length of data (${expectedReceiverDataLength})`,
@@ -167,12 +169,12 @@ export const assetProxyUtils = {
                 return generalizedERC20AssetData;
             case AssetProxyId.ERC721:
                 const erc721AssetData = assetProxyUtils.decodeERC721AssetData(assetData);
-                const generaliedERC721AssetData = {
+                const generalizedERC721AssetData = {
                     assetProxyId,
                     tokenAddress: erc721AssetData.tokenAddress,
                     data: erc721AssetData.tokenId,
                 };
-                return generaliedERC721AssetData;
+                return generalizedERC721AssetData;
             default:
                 throw new Error(`Unrecognized asset proxy id: ${assetProxyId}`);
         }

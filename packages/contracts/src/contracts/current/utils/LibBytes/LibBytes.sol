@@ -332,7 +332,8 @@ contract LibBytes is
         internal
         pure
     {
-        // Read length of nested bytes
+        // Assert length of <b> is valid, given
+        // length of input
         require(
             b.length >= index + 32 /* 32 bytes to store length */ + input.length,
             GTE_32_LENGTH_REQUIRED
@@ -340,9 +341,9 @@ contract LibBytes is
 
         // Copy <input> into <b>
         memcpy(
-            getMemAddress(b) + index + 32,  // +32 to skip length of <b>
-            getMemAddress(input),           // include length of byte array
-            input.length + 32               // +32 bytes to store length
+            getMemAddress(b) + 32 + index,  // +32 to skip length of <b>
+            getMemAddress(input),           // includes length of <input>
+            input.length + 32               // +32 bytes to store <input> length
         );
     }
 }

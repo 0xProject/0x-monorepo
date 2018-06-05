@@ -33,8 +33,6 @@ contract ERC721Proxy is
     // Id of this proxy.
     uint8 constant PROXY_ID = 2;
 
-    string constant PROXY_ID_MISMATCH = "Proxy id in metadata does not match this proxy id.";
-
     /// @dev Internal version of `transferFrom`.
     /// @param assetData Encoded byte array.
     /// @param from Address to transfer asset from.
@@ -60,7 +58,7 @@ contract ERC721Proxy is
         // Data must be intended for this proxy.
         require(
             proxyId == PROXY_ID,
-            PROXY_ID_MISMATCH
+            ASSET_PROXY_ID_MISMATCH
         );
 
         // There exists only 1 of each token.
