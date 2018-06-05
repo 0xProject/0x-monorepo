@@ -1,5 +1,14 @@
 [
     {
+        "timestamp": 1528241469,
+        "version": "0.8.0",
+        "changes": [
+            {
+                "note": "Add `ECSignatureBuffer`"
+            }
+        ]
+    },
+    {
         "version": "0.7.0",
         "changes": [
             {

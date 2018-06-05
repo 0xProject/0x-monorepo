@@ -1,5 +1,14 @@
 [
     {
+        "timestamp": 1528241469,
+        "version": "0.11.0",
+        "changes": [
+            {
+                "note": "Add `EthLightwalletSubprovider`"
+            }
+        ]
+    },
+    {
         "timestamp": 1527009133,
         "version": "0.10.2",
         "changes": [
