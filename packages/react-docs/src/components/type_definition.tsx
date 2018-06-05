@@ -3,7 +3,7 @@ import * as _ from 'lodash';
 import * as React from 'react';
 
 import { DocsInfo } from '../docs_info';
-import { CustomType, CustomTypeChild, EnumValue, KindString, TypeDocTypes } from '../types';
+import { CustomType, CustomTypeChild, KindString, TypeDocTypes } from '../types';
 import { constants } from '../utils/constants';
 import { utils } from '../utils/utils';
 

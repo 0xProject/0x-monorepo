@@ -1,5 +1,5 @@
 import { colors } from '@0xproject/react-shared';
-import { BigNumber, logUtils } from '@0xproject/utils';
+import { BigNumber } from '@0xproject/utils';
 import * as _ from 'lodash';
 import CircularProgress from 'material-ui/CircularProgress';
 import Paper from 'material-ui/Paper';
@@ -15,20 +15,15 @@ import { EthWrappers } from 'ts/components/eth_wrappers';
 import { FillOrder } from 'ts/components/fill_order';
 import { Footer } from 'ts/components/footer';
 import { LegacyPortalMenu } from 'ts/components/legacy_portal/legacy_portal_menu';
-import { RelayerIndex } from 'ts/components/relayer_index/relayer_index';
 import { TokenBalances } from 'ts/components/token_balances';
 import { TopBar } from 'ts/components/top_bar/top_bar';
 import { TradeHistory } from 'ts/components/trade_history/trade_history';
 import { FlashMessage } from 'ts/components/ui/flash_message';
-import { Wallet } from 'ts/components/wallet/wallet';
 import { GenerateOrderForm } from 'ts/containers/generate_order_form';
 import { localStorage } from 'ts/local_storage/local_storage';
 import { Dispatcher } from 'ts/redux/dispatcher';
-import { portalOrderSchema } from 'ts/schemas/portal_order_schema';
-import { validator } from 'ts/schemas/validator';
 import {
     BlockchainErrs,
-    Environments,
     HashData,
     Order,
     ProviderType,

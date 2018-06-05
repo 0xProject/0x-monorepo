@@ -2,7 +2,6 @@
 
 import * as promisify from 'es6-promisify';
 import * as fs from 'fs';
-import lernaGetPackages = require('lerna-get-packages');
 import * as _ from 'lodash';
 import * as moment from 'moment';
 import opn = require('opn');

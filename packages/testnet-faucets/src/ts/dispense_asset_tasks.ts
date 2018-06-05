@@ -4,7 +4,6 @@ import * as _ from 'lodash';
 import * as Web3 from 'web3';
 
 import { configs } from './configs';
-import { errorReporter } from './error_reporter';
 
 const DISPENSE_AMOUNT_ETHER = 0.1;
 const DISPENSE_AMOUNT_TOKEN = 0.1;

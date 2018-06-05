@@ -7,7 +7,7 @@ import { Link } from 'react-router-dom';
 import { Footer } from 'ts/components/footer';
 import { TopBar } from 'ts/components/top_bar/top_bar';
 import { Dispatcher } from 'ts/redux/dispatcher';
-import { Deco, Key, Language, ScreenWidths, WebsitePaths } from 'ts/types';
+import { Deco, Key, ScreenWidths, WebsitePaths } from 'ts/types';
 import { constants } from 'ts/utils/constants';
 import { Translate } from 'ts/utils/translate';
 import { utils } from 'ts/utils/utils';
@@ -805,8 +805,5 @@ export class Landing extends React.Component<LandingProps, LandingState> {
                 screenWidth: newScreenWidth,
             });
         }
-    }
-    private _onLanguageSelected(language: Language): void {
-        this.props.dispatcher.updateSelectedLanguage(language);
     }
 } // tslint:disable:max-file-line-count

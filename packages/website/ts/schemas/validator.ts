@@ -1,5 +1,4 @@
 import { SchemaValidator } from '@0xproject/json-schemas';
-import { Schema as JSONSchema, Validator } from 'jsonschema';
 import { orderMetadataSchema } from 'ts/schemas/metadata_schema';
 import { portalOrderSchema } from 'ts/schemas/portal_order_schema';
 import { portalTokenMetadataSchema } from 'ts/schemas/portal_token_metadata';

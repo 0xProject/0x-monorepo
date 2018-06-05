@@ -45,6 +45,7 @@
         "no-parameter-reassignment": true,
         "no-redundant-jsdoc": true,
         "no-return-await": true,
+        "no-unused-variable": true,
         "no-string-throw": true,
         "no-submodule-imports": false,
         "no-unnecessary-type-assertion": true,

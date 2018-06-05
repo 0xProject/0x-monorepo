@@ -1,4 +1,4 @@
-import { BlockchainLifecycle, callbackErrorReporter, devConstants } from '@0xproject/dev-utils';
+import { BlockchainLifecycle, callbackErrorReporter } from '@0xproject/dev-utils';
 import { EmptyWalletSubprovider } from '@0xproject/subproviders';
 import { DoneCallback, Provider } from '@0xproject/types';
 import { BigNumber } from '@0xproject/utils';

@@ -1,5 +1,4 @@
 import * as _ from 'lodash';
-import RaisedButton from 'material-ui/RaisedButton';
 import * as React from 'react';
 import * as ReactMarkdown from 'react-markdown';
 import { Element as ScrollElement } from 'react-scroll';

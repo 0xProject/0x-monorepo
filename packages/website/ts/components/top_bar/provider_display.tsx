@@ -12,7 +12,6 @@ import { Dispatcher } from 'ts/redux/dispatcher';
 import { ProviderType } from 'ts/types';
 import { colors } from 'ts/utils/colors';
 import { constants } from 'ts/utils/constants';
-import { zIndex } from 'ts/utils/style';
 import { utils } from 'ts/utils/utils';
 
 const ROOT_HEIGHT = 24;

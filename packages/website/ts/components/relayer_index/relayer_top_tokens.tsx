@@ -2,7 +2,6 @@ import { colors, EtherscanLinkSuffixes, Styles, utils as sharedUtils } from '@0x
 import * as _ from 'lodash';
 import * as React from 'react';
 
-import { TokenIcon } from 'ts/components/ui/token_icon';
 import { WebsiteBackendTokenInfo } from 'ts/types';
 
 export interface TopTokensProps {

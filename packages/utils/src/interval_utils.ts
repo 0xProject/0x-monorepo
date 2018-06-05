@@ -1,4 +1,3 @@
-import * as _ from 'lodash';
 
 export const intervalUtils = {
     setAsyncExcludingInterval(

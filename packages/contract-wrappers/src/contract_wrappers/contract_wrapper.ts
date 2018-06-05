@@ -7,7 +7,7 @@ import {
     LogWithDecodedArgs,
     RawLog,
 } from '@0xproject/types';
-import { AbiDecoder, intervalUtils } from '@0xproject/utils';
+import { intervalUtils } from '@0xproject/utils';
 import { Web3Wrapper } from '@0xproject/web3-wrapper';
 import { Block, BlockAndLogStreamer } from 'ethereumjs-blockstream';
 import * as _ from 'lodash';

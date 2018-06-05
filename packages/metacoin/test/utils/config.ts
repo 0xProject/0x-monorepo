@@ -1,5 +1,4 @@
 import { devConstants } from '@0xproject/dev-utils';
-import * as path from 'path';
 
 export const config = {
     networkId: 50,

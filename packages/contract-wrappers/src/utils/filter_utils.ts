@@ -1,11 +1,8 @@
 import {
-    ConstructorAbi,
     ContractAbi,
     EventAbi,
-    FallbackAbi,
     FilterObject,
     LogEntry,
-    MethodAbi,
 } from '@0xproject/types';
 import * as ethUtil from 'ethereumjs-util';
 import * as jsSHA3 from 'js-sha3';

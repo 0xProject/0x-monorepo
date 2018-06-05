@@ -1,4 +1,4 @@
-import { BlockchainLifecycle, callbackErrorReporter, devConstants, web3Factory } from '@0xproject/dev-utils';
+import { BlockchainLifecycle, callbackErrorReporter } from '@0xproject/dev-utils';
 import { DoneCallback } from '@0xproject/types';
 import { BigNumber } from '@0xproject/utils';
 import { Web3Wrapper } from '@0xproject/web3-wrapper';

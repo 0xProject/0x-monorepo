@@ -1,6 +1,5 @@
 #!/usr/bin/env node
 
-import lernaGetPackages = require('lerna-get-packages');
 import * as _ from 'lodash';
 import * as path from 'path';
 import { exec as execAsync } from 'promisify-child-process';

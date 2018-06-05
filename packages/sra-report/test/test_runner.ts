@@ -112,7 +112,6 @@ export const testRunner = {
                 nockInterceptor.reply(SUCCESS_STATUS, correctJson);
                 const summary = await utils.newmanRunAsync(newmanRunOptions);
                 const error = findAssertionErrorIfExists(summary, postmanCollectionRequestName, SCHEMA_ASSERTION_NAME);
-                const errorMessage = _.get(error, 'message');
                 expect(error).to.be.undefined();
             });
         });

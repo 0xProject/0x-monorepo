@@ -1,6 +1,5 @@
 import * as _ from 'lodash';
 import * as React from 'react';
-import * as ReactDOM from 'react-dom';
 
 import { DocsInfo } from '../docs_info';
 import { Parameter, Type as TypeDef, TypeDefinitionByName, TypeParameter } from '../types';

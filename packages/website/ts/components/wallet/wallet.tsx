@@ -1,25 +1,15 @@
-import {
-    constants as sharedConstants,
-    EtherscanLinkSuffixes,
-    Styles,
-    utils as sharedUtils,
-} from '@0xproject/react-shared';
+import { EtherscanLinkSuffixes, Styles, utils as sharedUtils } from '@0xproject/react-shared';
 import { BigNumber } from '@0xproject/utils';
 import { Web3Wrapper } from '@0xproject/web3-wrapper';
 import * as _ from 'lodash';
 import CircularProgress from 'material-ui/CircularProgress';
-import FlatButton from 'material-ui/FlatButton';
 import FloatingActionButton from 'material-ui/FloatingActionButton';
 import { ListItem } from 'material-ui/List';
 import ActionAccountBalanceWallet from 'material-ui/svg-icons/action/account-balance-wallet';
 import ContentAdd from 'material-ui/svg-icons/content/add';
 import ContentRemove from 'material-ui/svg-icons/content/remove';
-import NavigationArrowDownward from 'material-ui/svg-icons/navigation/arrow-downward';
-import NavigationArrowUpward from 'material-ui/svg-icons/navigation/arrow-upward';
-import Close from 'material-ui/svg-icons/navigation/close';
 import * as React from 'react';
 import { Link } from 'react-router-dom';
-import ReactTooltip = require('react-tooltip');
 import firstBy = require('thenby');
 
 import { Blockchain } from 'ts/blockchain';
@@ -33,9 +23,7 @@ import { WalletDisconnectedItem } from 'ts/components/wallet/wallet_disconnected
 import { WrapEtherItem } from 'ts/components/wallet/wrap_ether_item';
 import { Dispatcher } from 'ts/redux/dispatcher';
 import {
-    BalanceErrs,
     BlockchainErrs,
-    ItemByAddress,
     ProviderType,
     ScreenWidths,
     Side,
@@ -45,7 +33,6 @@ import {
     TokenStateByAddress,
     WebsitePaths,
 } from 'ts/types';
-import { backendClient } from 'ts/utils/backend_client';
 import { colors } from 'ts/utils/colors';
 import { constants } from 'ts/utils/constants';
 import { zIndex } from 'ts/utils/style';
@@ -148,10 +135,8 @@ const NO_ALLOWANCE_TOGGLE_SPACE_WIDTH = 56;
 const ACCOUNT_PATH = `${WebsitePaths.Portal}/account`;
 
 export class Wallet extends React.Component<WalletProps, WalletState> {
-    private _isUnmounted: boolean;
     constructor(props: WalletProps) {
         super(props);
-        this._isUnmounted = false;
         this.state = {
             wrappedEtherDirection: undefined,
             isHoveringSidebar: false,
@@ -185,7 +170,6 @@ export class Wallet extends React.Component<WalletProps, WalletState> {
         );
     }
     private _renderDisconnectedHeaderRows(): React.ReactElement<{}> {
-        const userAddress = this.props.userAddress;
         const primaryText = 'wallet';
         return (
             <StandardIconRow
@@ -511,45 +495,6 @@ export class Wallet extends React.Component<WalletProps, WalletState> {
         return (
             <IconButton iconName={buttonIconName} labelText={buttonLabel} onClick={onClick} color={colors.mediumBlue} />
         );
-    }
-    private _getInitialTrackedTokenStateByAddress(tokenAddresses: string[]): TokenStateByAddress {
-        const trackedTokenStateByAddress: TokenStateByAddress = {};
-        _.each(tokenAddresses, tokenAddress => {
-            trackedTokenStateByAddress[tokenAddress] = {
-                balance: new BigNumber(0),
-                allowance: new BigNumber(0),
-                isLoaded: false,
-            };
-        });
-        return trackedTokenStateByAddress;
-    }
-
-    private async _getPriceByAddressAsync(tokenAddresses: string[]): Promise<ItemByAddress<BigNumber>> {
-        if (_.isEmpty(tokenAddresses)) {
-            return {};
-        }
-        // for each input token address, search for the corresponding symbol in this.props.tokenByAddress, if it exists
-        // create a mapping from existing symbols -> address
-        const tokenAddressBySymbol: { [symbol: string]: string } = {};
-        _.each(tokenAddresses, address => {
-            const tokenIfExists = _.get(this.props.tokenByAddress, address);
-            if (!_.isUndefined(tokenIfExists)) {
-                const symbol = tokenIfExists.symbol;
-                tokenAddressBySymbol[symbol] = address;
-            }
-        });
-        const tokenSymbols = _.keys(tokenAddressBySymbol);
-        try {
-            const priceBySymbol = await backendClient.getPriceInfoAsync(tokenSymbols);
-            const priceByAddress = _.mapKeys(priceBySymbol, (value, symbol) => _.get(tokenAddressBySymbol, symbol));
-            const result = _.mapValues(priceByAddress, price => {
-                const priceBigNumber = new BigNumber(price);
-                return priceBigNumber;
-            });
-            return result;
-        } catch (err) {
-            return {};
-        }
     }
     private _openWrappedEtherActionRow(wrappedEtherDirection: Side): void {
         this.setState({
