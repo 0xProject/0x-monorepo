@@ -1,4 +1,5 @@
 import { colors } from '@0xproject/react-shared';
+import * as _ from 'lodash';
 import * as React from 'react';
 
 import { Button } from 'ts/components/ui/button';
@@ -102,7 +103,7 @@ export class SubscribeForm extends React.Component<SubscribeFormProps, Subscribe
     }
     private async _handleFormSubmitAsync(event: React.FormEvent<HTMLInputElement>): Promise<void> {
         event.preventDefault();
-        if (!this.state.emailText) {
+        if (_.isUndefined(this.state.emailText) || _.isEmpty(this.state.emailText)) {
             return;
         }
         this.setState({
