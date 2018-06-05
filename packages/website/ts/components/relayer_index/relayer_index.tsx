@@ -6,9 +6,9 @@ import { GridList } from 'material-ui/GridList';
 import * as React from 'react';
 
 import { RelayerGridTile } from 'ts/components/relayer_index/relayer_grid_tile';
+import { colors } from 'ts/style/colors';
 import { ScreenWidths, WebsiteBackendRelayerInfo } from 'ts/types';
 import { backendClient } from 'ts/utils/backend_client';
-import { colors } from 'ts/utils/colors';
 
 export interface RelayerIndexProps {
     networkId: number;
