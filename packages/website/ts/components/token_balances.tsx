@@ -57,7 +57,7 @@ const TOKEN_COL_SPAN_SM = 1;
 
 const styles: Styles = {
     bgColor: {
-        backgroundColor: colors.grey50,
+        backgroundColor: 'transparent',
     },
 };
 
