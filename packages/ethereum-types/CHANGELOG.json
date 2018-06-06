@@ -3,11 +3,11 @@
         "changes": [
             {
                 "note": "Add missing `data` field to the `Transaction` type",
-                "pr": "TODO"
+                "pr": 667
             },
             {
                 "note": "Add `TraceParams` interface for `debug_traceTransaction` parameters",
-                "pr": "TODO"
+                "pr": 667
             }
         ]
     },

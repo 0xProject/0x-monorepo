@@ -4,15 +4,15 @@
         "changes": [
             {
                 "note": "Add `web3Wrapper.getContractCodeAsync`",
-                "pr": "TODO"
+                "pr": 667
             },
             {
                 "note": "Add `web3Wrapper.getTransactionTraceAsync`",
-                "pr": "TODO"
+                "pr": 667
             },
             {
                 "note": "Add `web3Wrapper.getBlockWithTransactionDataAsync`",
-                "pr": "TODO"
+                "pr": 667
             },
             {
                 "note": "Add exported uniqueVersionIds object",

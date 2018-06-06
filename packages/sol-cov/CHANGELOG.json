@@ -4,15 +4,15 @@
         "changes": [
             {
                 "note": "Fixed a bug causing RegExp to crash if contract code is longer that 32767 characters",
-                "pr": "TODO"
+                "pr": 667
             },
             {
                 "note": "Fixed a bug caused by Geth debug trace depth being 1-indexed",
-                "pr": "TODO"
+                "pr": 667
             },
             {
                 "note": "Use BlockchainLifecycle to support reverst on Geth",
-                "pr": "TODO"
+                "pr": 667
             }
         ]
     },
