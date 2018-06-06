@@ -16,8 +16,8 @@ import { BaseWalletSubprovider } from './base_wallet_subprovider';
  * Source: https://github.com/MetaMask/provider-engine/blob/master/subproviders/subprovider.js
  */
 export class EthLightwalletSubprovider extends BaseWalletSubprovider {
-    private _signing: any;
-    private _keystore: any;
+    private _signing: lightwallet.signing;
+    private _keystore: lightwallet.keystore;
     private _pwDerivedKey: Uint8Array;
 
     constructor(signing: lightwallet.signing, keystore: lightwallet.keystore, pwDerivedKey: Uint8Array) {
@@ -60,7 +60,6 @@ export class EthLightwalletSubprovider extends BaseWalletSubprovider {
             this._pwDerivedKey,
             txHex,
             txParams.from,
-            this._keystore.hdPathString,
         );
 
         signedTxHex = `0x${signedTxHex}`;
@@ -89,7 +88,6 @@ export class EthLightwalletSubprovider extends BaseWalletSubprovider {
             this._pwDerivedKey,
             data,
             address,
-            this._keystore.hdPathString,
         );
 
         const signature = this._signing.concatSig(result);

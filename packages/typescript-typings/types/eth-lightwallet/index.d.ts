@@ -2,27 +2,29 @@
 declare module 'eth-lightwallet' {
     import { ECSignatureBuffer } from '@0xproject/types';
 
-    export class signing {
-        public static signTx(
+    interface signing {
+        signTx(
             keystore: keystore,
             pwDerivedKey: Uint8Array,
             rawTx: string,
             signingAddress: string,
         ): string;
-        public static signMsg(
+        signMsg(
             keystore: keystore,
             pwDerivedKey: Uint8Array,
             rawMsg: string,
             signingAddress: string,
         ): ECSignatureBuffer;
-        public static signMsgHash(
+        signMsgHash(
             keystore: keystore,
             pwDerivedKey: Uint8Array,
             msgHash: string,
             signingAddress: string,
         ): ECSignatureBuffer;
-        public static concatSig(signature: any): string;
+        concatSig(signature: any): string;
     }
+    export const signing: signing;
+
     export class keystore {
         public static createVault(options: any, callback?: (error: Error, keystore: keystore) => void): keystore;
         public static generateRandomSeed(): string;
