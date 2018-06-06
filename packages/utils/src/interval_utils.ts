@@ -1,4 +1,3 @@
-
 export const intervalUtils = {
     setAsyncExcludingInterval(
         fn: () => Promise<void>,

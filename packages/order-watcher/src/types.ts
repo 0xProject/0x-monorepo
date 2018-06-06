@@ -1,9 +1,4 @@
-
-import {
-    BlockParamLiteral,
-    LogEntryEvent,
-    OrderState,
-} from '@0xproject/types';
+import { BlockParamLiteral, LogEntryEvent, OrderState } from '@0xproject/types';
 
 export enum OrderWatcherError {
     SubscriptionAlreadyPresent = 'SUBSCRIPTION_ALREADY_PRESENT',

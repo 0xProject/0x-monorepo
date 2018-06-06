@@ -5,10 +5,7 @@ import 'make-promises-safe';
 import Web3ProviderEngine = require('web3-provider-engine');
 
 import { GanacheSubprovider, PrivateKeyWalletSubprovider } from '../../src/';
-import {
-    DoneCallback,
-    WalletSubproviderErrors,
-} from '../../src/types';
+import { DoneCallback, WalletSubproviderErrors } from '../../src/types';
 import { chaiSetup } from '../chai_setup';
 import { fixtureData } from '../utils/fixture_data';
 import { reportCallbackErrors } from '../utils/report_callback_errors';

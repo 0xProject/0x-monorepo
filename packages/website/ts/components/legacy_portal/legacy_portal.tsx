@@ -22,15 +22,7 @@ import { FlashMessage } from 'ts/components/ui/flash_message';
 import { GenerateOrderForm } from 'ts/containers/generate_order_form';
 import { localStorage } from 'ts/local_storage/local_storage';
 import { Dispatcher } from 'ts/redux/dispatcher';
-import {
-    BlockchainErrs,
-    HashData,
-    Order,
-    ProviderType,
-    ScreenWidths,
-    TokenByAddress,
-    WebsitePaths,
-} from 'ts/types';
+import { BlockchainErrs, HashData, Order, ProviderType, ScreenWidths, TokenByAddress, WebsitePaths } from 'ts/types';
 import { configs } from 'ts/utils/configs';
 import { constants } from 'ts/utils/constants';
 import { orderParser } from 'ts/utils/order_parser';
