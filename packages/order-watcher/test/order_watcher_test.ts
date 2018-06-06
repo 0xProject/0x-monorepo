@@ -3,7 +3,7 @@ import { ContractWrappers } from '@0xproject/contract-wrappers';
 import { BlockchainLifecycle, callbackErrorReporter } from '@0xproject/dev-utils';
 import { FillScenarios } from '@0xproject/fill-scenarios';
 import { getOrderHashHex } from '@0xproject/order-utils';
-import { DoneCallback, ExchangeContractErrs, OrderState, OrderStateInvalid, SignedOrder, Token, OrderStateValid } from '@0xproject/types';
+import { DoneCallback, ExchangeContractErrs, OrderState, OrderStateInvalid, OrderStateValid, SignedOrder, Token } from '@0xproject/types';
 import { BigNumber } from '@0xproject/utils';
 import { Web3Wrapper } from '@0xproject/web3-wrapper';
 import * as chai from 'chai';

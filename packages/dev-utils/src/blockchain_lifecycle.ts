@@ -1,6 +1,5 @@
 import { uniqueVersionIds, Web3Wrapper } from '@0xproject/web3-wrapper';
 import { includes } from 'lodash';
-import * as Web3 from 'web3';
 
 enum NodeType {
     Geth = 'GETH',
