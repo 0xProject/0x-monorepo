@@ -165,6 +165,12 @@ export class TopBar extends React.Component<TopBarProps, TopBarState> {
                     primaryText={this.props.translate.get(Key.SolCov, Deco.CapWords)}
                 />
             </Link>,
+            <Link key="subMenuItem-ethereum-types" to={WebsitePaths.EthereumTypes} className="text-decoration-none">
+                <MenuItem
+                    style={{ fontSize: styles.menuItem.fontSize }}
+                    primaryText={this.props.translate.get(Key.EthereumTypes, Deco.CapWords)}
+                />
+            </Link>,
             <a
                 key="subMenuItem-whitePaper"
                 target="_blank"
@@ -379,6 +385,14 @@ export class TopBar extends React.Component<TopBarProps, TopBarState> {
                             </MenuItem>
                         </Link>
                     )}
+                    {!this._isViewingEthereumTypesDocs() && (
+                        <Link to={WebsitePaths.EthereumTypes} className="text-decoration-none">
+                            <MenuItem className="py2">
+                                {this.props.translate.get(Key.EthereumTypes, Deco.Cap)}{' '}
+                                {this.props.translate.get(Key.Docs, Deco.Cap)}
+                            </MenuItem>
+                        </Link>
+                    )}
                     {!this._isViewingPortal() && (
                         <Link to={`${WebsitePaths.Portal}`} className="text-decoration-none">
                             <MenuItem className="py2">
@@ -506,6 +520,9 @@ export class TopBar extends React.Component<TopBarProps, TopBarState> {
     }
     private _isViewingSubprovidersDocs(): boolean {
         return _.includes(this.props.location.pathname, WebsitePaths.Subproviders);
+    }
+    private _isViewingEthereumTypesDocs(): boolean {
+        return _.includes(this.props.location.pathname, WebsitePaths.EthereumTypes);
     }
     private _isViewingWiki(): boolean {
         return _.includes(this.props.location.pathname, WebsitePaths.Wiki);
