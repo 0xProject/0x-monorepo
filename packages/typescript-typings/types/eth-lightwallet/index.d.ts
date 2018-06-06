@@ -3,12 +3,7 @@ declare module 'eth-lightwallet' {
     import { ECSignatureBuffer } from '@0xproject/types';
 
     interface signing {
-        signTx(
-            keystore: keystore,
-            pwDerivedKey: Uint8Array,
-            rawTx: string,
-            signingAddress: string,
-        ): string;
+        signTx(keystore: keystore, pwDerivedKey: Uint8Array, rawTx: string, signingAddress: string): string;
         signMsg(
             keystore: keystore,
             pwDerivedKey: Uint8Array,
