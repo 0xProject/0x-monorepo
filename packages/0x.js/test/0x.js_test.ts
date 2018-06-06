@@ -6,7 +6,7 @@ import * as _ from 'lodash';
 import 'make-promises-safe';
 import 'mocha';
 
-import { ApprovalContractEventArgs, LogWithDecodedArgs, TokenEvents, ZeroEx } from '../src';
+import { TokenEvents, ZeroEx } from '../src';
 
 import { chaiSetup } from './utils/chai_setup';
 import { constants } from './utils/constants';
