@@ -97,10 +97,9 @@ export class EthWrappers extends React.Component<EthWrappersProps, EthWrappersSt
             EtherscanLinkSuffixes.Address,
         );
         const tokenLabel = this._renderToken('Wrapped Ether', etherToken.address, configs.ICON_URL_BY_SYMBOL.WETH);
-        const userEtherBalanceInEth = Web3Wrapper.toUnitAmount(
-            this.props.userEtherBalanceInWei,
-            constants.DECIMAL_PLACES_ETH,
-        );
+        const userEtherBalanceInEth = !_.isUndefined(this.props.userEtherBalanceInWei)
+            ? Web3Wrapper.toUnitAmount(this.props.userEtherBalanceInWei, constants.DECIMAL_PLACES_ETH)
+            : undefined;
         const rootClassName = this.props.isFullWidth ? 'clearfix' : 'clearfix lg-px4 md-px4 sm-px2';
         return (
             <div className={rootClassName} style={{ minHeight: 600 }}>
@@ -148,7 +147,11 @@ export class EthWrappers extends React.Component<EthWrappersProps, EthWrappersSt
                                         </div>
                                     </TableRowColumn>
                                     <TableRowColumn>
-                                        {userEtherBalanceInEth.toFixed(configs.AMOUNT_DISPLAY_PRECSION)} ETH
+                                        {!_.isUndefined(userEtherBalanceInEth) ? (
+                                            `${userEtherBalanceInEth.toFixed(configs.AMOUNT_DISPLAY_PRECSION)} ETH`
+                                        ) : (
+                                            <i className="zmdi zmdi-spinner zmdi-hc-spin" />
+                                        )}
                                     </TableRowColumn>
                                     <TableRowColumn>
                                         <EthWethConversionButton
@@ -162,6 +165,7 @@ export class EthWrappers extends React.Component<EthWrappersProps, EthWrappersSt
                                             dispatcher={this.props.dispatcher}
                                             blockchain={this.props.blockchain}
                                             userEtherBalanceInWei={this.props.userEtherBalanceInWei}
+                                            isDisabled={_.isUndefined(userEtherBalanceInEth)}
                                         />
                                     </TableRowColumn>
                                 </TableRow>
