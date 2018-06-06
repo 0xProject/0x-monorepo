@@ -451,6 +451,8 @@ export class Portal extends React.Component<PortalProps, PortalState> {
                 blockchain={this._blockchain}
                 hashData={this.props.hashData}
                 dispatcher={this.props.dispatcher}
+                isFullWidth={true}
+                shouldRenderHeader={false}
             />
         );
     }
@@ -470,6 +472,8 @@ export class Portal extends React.Component<PortalProps, PortalState> {
                 tokenByAddress={this.props.tokenByAddress}
                 dispatcher={this.props.dispatcher}
                 lastForceTokenStateRefetch={this.props.lastForceTokenStateRefetch}
+                isFullWidth={true}
+                shouldRenderHeader={false}
             />
         );
     }

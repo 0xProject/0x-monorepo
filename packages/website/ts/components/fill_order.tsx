@@ -39,6 +39,8 @@ interface FillOrderProps {
     initialOrder: Order;
     dispatcher: Dispatcher;
     lastForceTokenStateRefetch: number;
+    isFullWidth?: boolean;
+    shouldRenderHeader?: boolean;
 }
 
 interface FillOrderState {
@@ -61,6 +63,10 @@ interface FillOrderState {
 }
 
 export class FillOrder extends React.Component<FillOrderProps, FillOrderState> {
+    public static defaultProps: Partial<FillOrderProps> = {
+        isFullWidth: false,
+        shouldRenderHeader: true,
+    };
     private _isUnmounted: boolean;
     constructor(props: FillOrderProps) {
         super(props);
@@ -97,10 +103,15 @@ export class FillOrder extends React.Component<FillOrderProps, FillOrderState> {
         this._isUnmounted = true;
     }
     public render(): React.ReactNode {
+        const rootClassName = this.props.isFullWidth ? 'clearfix' : 'lg-px4 md-px4 sm-px2';
         return (
-            <div className="clearfix lg-px4 md-px4 sm-px2" style={{ minHeight: 600 }}>
-                <h3>Fill an order</h3>
-                <Divider />
+            <div className={rootClassName} style={{ minHeight: 600 }}>
+                {this.props.shouldRenderHeader && (
+                    <div>
+                        <h3>Fill an order</h3>
+                        <Divider />
+                    </div>
+                )}
                 <div>
                     {!this.props.isOrderInUrl && (
                         <div>
