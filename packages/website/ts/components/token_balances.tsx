@@ -22,7 +22,7 @@ import ReactTooltip = require('react-tooltip');
 import firstBy = require('thenby');
 import { Blockchain } from 'ts/blockchain';
 import { AssetPicker } from 'ts/components/generate_order/asset_picker';
-import { AllowanceToggle } from 'ts/components/inputs/allowance_toggle';
+import { AllowanceToggle } from 'ts/containers/inputs/allowance_toggle';
 import { SendButton } from 'ts/components/send_button';
 import { HelpTooltip } from 'ts/components/ui/help_tooltip';
 import { LifeCycleRaisedButton } from 'ts/components/ui/lifecycle_raised_button';
@@ -362,13 +362,10 @@ export class TokenBalances extends React.Component<TokenBalancesProps, TokenBala
                 </TableRowColumn>
                 <TableRowColumn>
                     <AllowanceToggle
-                        networkId={this.props.networkId}
                         blockchain={this.props.blockchain}
-                        dispatcher={this.props.dispatcher}
                         token={token}
                         tokenState={tokenState}
                         onErrorOccurred={this._onErrorOccurred.bind(this)}
-                        userAddress={this.props.userAddress}
                         isDisabled={!tokenState.isLoaded}
                         refetchTokenStateAsync={this._refetchTokenStateAsync.bind(this, token.address)}
                     />

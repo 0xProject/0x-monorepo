@@ -23,7 +23,7 @@ import ReactTooltip = require('react-tooltip');
 import firstBy = require('thenby');
 
 import { Blockchain } from 'ts/blockchain';
-import { AllowanceToggle } from 'ts/components/inputs/allowance_toggle';
+import { AllowanceToggle } from 'ts/containers/inputs/allowance_toggle';
 import { Container } from 'ts/components/ui/container';
 import { IconButton } from 'ts/components/ui/icon_button';
 import { Identicon } from 'ts/components/ui/identicon';
@@ -428,15 +428,12 @@ export class Wallet extends React.Component<WalletProps, WalletState> {
         );
     }
     private _renderAllowanceToggle(config: AllowanceToggleConfig): React.ReactNode {
+        // TODO: Error handling
         return (
             <AllowanceToggle
-                networkId={this.props.networkId}
                 blockchain={this.props.blockchain}
-                dispatcher={this.props.dispatcher}
                 token={config.token}
                 tokenState={config.tokenState}
-                onErrorOccurred={_.noop} // TODO: Error handling
-                userAddress={this.props.userAddress}
                 isDisabled={!config.tokenState.isLoaded}
                 refetchTokenStateAsync={async () => this.props.refetchTokenStateAsync(config.token.address)}
             />

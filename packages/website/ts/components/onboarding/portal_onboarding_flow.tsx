@@ -5,6 +5,7 @@ import { BigNumber } from '@0xproject/utils';
 import { OnboardingFlow, Step } from 'ts/components/onboarding/onboarding_flow';
 import { ProviderType, TokenByAddress, TokenStateByAddress } from 'ts/types';
 import { utils } from 'ts/utils/utils';
+import { AllowanceToggle } from 'ts/containers/inputs/allowance_toggle';
 
 export interface PortalOnboardingFlowProps {
     stepIndex: number;
@@ -77,6 +78,12 @@ export class PortalOnboardingFlow extends React.Component<PortalOnboardingFlowPr
                 placement: 'right',
                 continueButtonDisplay: this._userHasVisibleWeth() ? 'enabled' : 'disabled',
             },
+            {
+                target: '.weth-row',
+                content: 'Unlock your tokens for trading. You only need to do this once for each token.',
+                placement: 'right',
+                continueButtonDisplay: 'disabled',
+            },
         ];
         return steps;
     }
@@ -124,5 +131,13 @@ export class PortalOnboardingFlow extends React.Component<PortalOnboardingFlowPr
         if (!this.props.isRunning && !this.props.hasBeenSeen && this.props.blockchainIsLoaded) {
             this.props.updateIsRunning(true);
         }
+    }
+    private _renderAllowanceToggle(): React.ReactNode {
+        return (
+            <AllowanceToggle
+                blockchain={this.props.blockchain}
+                refetchTokenStateAsync={this.props.refetchTokenStateAsync}
+            />
+        );
     }
 }

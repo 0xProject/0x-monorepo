@@ -18,11 +18,11 @@ interface AllowanceToggleProps {
     networkId: number;
     blockchain: Blockchain;
     dispatcher: Dispatcher;
-    onErrorOccurred: (errType: BalanceErrs) => void;
     token: Token;
     tokenState: TokenState;
     userAddress: string;
-    isDisabled: boolean;
+    isDisabled?: boolean;
+    onErrorOccurred?: (errType: BalanceErrs) => void;
     refetchTokenStateAsync: () => Promise<void>;
 }
 
@@ -57,6 +57,10 @@ const styles: Styles = {
 };
 
 export class AllowanceToggle extends React.Component<AllowanceToggleProps, AllowanceToggleState> {
+    public static defaultProps = {
+        onErrorOccurred: _.noop,
+        isDisabled: false,
+    };
     constructor(props: AllowanceToggleProps) {
         super(props);
         this.state = {
