@@ -6,6 +6,7 @@ import * as Web3 from 'web3';
 
 import { MixinAuthorizableContract } from '../../src/contract_wrappers/generated/mixin_authorizable';
 import { artifacts } from '../../src/utils/artifacts';
+import { expectRevertOrAlwaysFailingTransactionAsync } from '../../src/utils/assertions';
 import { chaiSetup } from '../../src/utils/chai_setup';
 import { constants } from '../../src/utils/constants';
 import { provider, txDefaults, web3Wrapper } from '../../src/utils/web3_wrapper';
@@ -44,9 +45,9 @@ describe('Authorizable', () => {
     });
     describe('addAuthorizedAddress', () => {
         it('should throw if not called by owner', async () => {
-            return expect(
+            return expectRevertOrAlwaysFailingTransactionAsync(
                 authorizable.addAuthorizedAddress.sendTransactionAsync(notOwner, { from: notOwner }),
-            ).to.be.rejectedWith(constants.REVERT);
+            );
         });
         it('should allow owner to add an authorized address', async () => {
             await web3Wrapper.awaitTransactionSuccessAsync(
@@ -61,9 +62,9 @@ describe('Authorizable', () => {
                 await authorizable.addAuthorizedAddress.sendTransactionAsync(address, { from: owner }),
                 constants.AWAIT_TRANSACTION_MINED_MS,
             );
-            return expect(
+            return expectRevertOrAlwaysFailingTransactionAsync(
                 authorizable.addAuthorizedAddress.sendTransactionAsync(address, { from: owner }),
-            ).to.be.rejectedWith(constants.REVERT);
+            );
         });
     });
 
@@ -73,11 +74,11 @@ describe('Authorizable', () => {
                 await authorizable.addAuthorizedAddress.sendTransactionAsync(address, { from: owner }),
                 constants.AWAIT_TRANSACTION_MINED_MS,
             );
-            return expect(
+            return expectRevertOrAlwaysFailingTransactionAsync(
                 authorizable.removeAuthorizedAddress.sendTransactionAsync(address, {
                     from: notOwner,
                 }),
-            ).to.be.rejectedWith(constants.REVERT);
+            );
         });
 
         it('should allow owner to remove an authorized address', async () => {
@@ -96,11 +97,11 @@ describe('Authorizable', () => {
         });
 
         it('should throw if owner attempts to remove an address that is not authorized', async () => {
-            return expect(
+            return expectRevertOrAlwaysFailingTransactionAsync(
                 authorizable.removeAuthorizedAddress.sendTransactionAsync(address, {
                     from: owner,
                 }),
-            ).to.be.rejectedWith(constants.REVERT);
+            );
         });
     });
 

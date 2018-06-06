@@ -19,16 +19,22 @@ export interface Web3Config {
     hasAddresses?: boolean; // default: true
     shouldUseInProcessGanache?: boolean; // default: false
     rpcUrl?: string; // default: localhost:8545
+    shouldUseFakeGasEstimate?: boolean; // default: true
 }
 
 export const web3Factory = {
     getRpcProvider(config: Web3Config = {}): ProviderEngine {
         const provider = new ProviderEngine();
         const hasAddresses = _.isUndefined(config.hasAddresses) || config.hasAddresses;
+        config.shouldUseFakeGasEstimate =
+            _.isUndefined(config.shouldUseFakeGasEstimate) || config.shouldUseFakeGasEstimate;
         if (!hasAddresses) {
             provider.addProvider(new EmptyWalletSubprovider());
         }
-        provider.addProvider(new FakeGasEstimateSubprovider(constants.GAS_LIMIT));
+
+        if (config.shouldUseFakeGasEstimate) {
+            provider.addProvider(new FakeGasEstimateSubprovider(constants.GAS_LIMIT));
+        }
         const logger = {
             log: (arg: any) => {
                 fs.appendFileSync('ganache.log', `${arg}\n`);

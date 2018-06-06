@@ -60,14 +60,14 @@ export class ExchangeWrapper {
     public async fillOrderNoThrowAsync(
         signedOrder: SignedOrder,
         from: string,
-        opts: { takerAssetFillAmount?: BigNumber } = {},
+        opts: { takerAssetFillAmount?: BigNumber; gas?: number } = {},
     ): Promise<TransactionReceiptWithDecodedLogs> {
         const params = orderUtils.createFill(signedOrder, opts.takerAssetFillAmount);
         const txHash = await this._exchange.fillOrderNoThrow.sendTransactionAsync(
             params.order,
             params.takerAssetFillAmount,
             params.signature,
-            { from },
+            { from, gas: opts.gas },
         );
         const tx = await this._logDecoder.getTxWithDecodedLogsAsync(txHash);
         return tx;
@@ -105,14 +105,14 @@ export class ExchangeWrapper {
     public async batchFillOrdersNoThrowAsync(
         orders: SignedOrder[],
         from: string,
-        opts: { takerAssetFillAmounts?: BigNumber[] } = {},
+        opts: { takerAssetFillAmounts?: BigNumber[]; gas?: number } = {},
     ): Promise<TransactionReceiptWithDecodedLogs> {
         const params = formatters.createBatchFill(orders, opts.takerAssetFillAmounts);
         const txHash = await this._exchange.batchFillOrdersNoThrow.sendTransactionAsync(
             params.orders,
             params.takerAssetFillAmounts,
             params.signatures,
-            { from },
+            { from, gas: opts.gas },
         );
         const tx = await this._logDecoder.getTxWithDecodedLogsAsync(txHash);
         return tx;
@@ -135,14 +135,14 @@ export class ExchangeWrapper {
     public async marketSellOrdersNoThrowAsync(
         orders: SignedOrder[],
         from: string,
-        opts: { takerAssetFillAmount: BigNumber },
+        opts: { takerAssetFillAmount: BigNumber; gas?: number },
     ): Promise<TransactionReceiptWithDecodedLogs> {
         const params = formatters.createMarketSellOrders(orders, opts.takerAssetFillAmount);
         const txHash = await this._exchange.marketSellOrdersNoThrow.sendTransactionAsync(
             params.orders,
             params.takerAssetFillAmount,
             params.signatures,
-            { from },
+            { from, gas: opts.gas },
         );
         const tx = await this._logDecoder.getTxWithDecodedLogsAsync(txHash);
         return tx;

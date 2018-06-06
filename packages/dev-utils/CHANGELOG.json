@@ -1,5 +1,14 @@
 [
     {
+        "version": "0.4.3",
+        "changes": [
+            {
+                "note": "Add optional parameter shouldUseFakeGasEstimate to Web3Config",
+                "pr": 622
+            }
+        ]
+    },
+    {
         "version": "0.4.2",
         "changes": [
             {
