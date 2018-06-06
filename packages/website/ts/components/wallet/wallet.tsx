@@ -496,20 +496,6 @@ export class Wallet extends React.Component<WalletProps, WalletState> {
             <IconButton iconName={buttonIconName} labelText={buttonLabel} onClick={onClick} color={colors.mediumBlue} />
         );
     }
-<<<<<<< HEAD
-=======
-    private _getInitialTrackedTokenStateByAddress(tokenAddresses: string[]): TokenStateByAddress {
-        const trackedTokenStateByAddress: TokenStateByAddress = {};
-        _.each(tokenAddresses, tokenAddress => {
-            trackedTokenStateByAddress[tokenAddress] = {
-                balance: new BigNumber(0),
-                allowance: new BigNumber(0),
-                isLoaded: false,
-            };
-        });
-        return trackedTokenStateByAddress;
-    }
->>>>>>> v2-prototype
     private _openWrappedEtherActionRow(wrappedEtherDirection: Side): void {
         this.setState({
             wrappedEtherDirection,
