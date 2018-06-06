@@ -121,7 +121,7 @@ export class EthWrappers extends React.Component<EthWrappersProps, EthWrappersSt
                 <div>
                     <div className="py2">Wrap ETH into an ERC20-compliant Ether token. 1 ETH = 1 WETH.</div>
                     <div>
-                        <Table selectable={false} style={{ backgroundColor: colors.grey50 }}>
+                        <Table selectable={false} style={{ backgroundColor: 'transparent' }}>
                             <TableHeader displaySelectAll={false} adjustForCheckbox={false}>
                                 <TableRow>
                                     <TableHeaderColumn>ETH Token</TableHeaderColumn>
@@ -208,7 +208,7 @@ export class EthWrappers extends React.Component<EthWrappersProps, EthWrappersSt
                         it to the updated WETH token.
                     </div>
                     <div>
-                        <Table selectable={false} style={{ backgroundColor: colors.grey50 }}>
+                        <Table selectable={false} style={{ backgroundColor: 'transparent' }}>
                             <TableHeader displaySelectAll={false} adjustForCheckbox={false}>
                                 <TableRow>
                                     <TableHeaderColumn>WETH Version</TableHeaderColumn>
