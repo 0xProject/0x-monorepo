@@ -271,7 +271,7 @@ export class TokenBalances extends React.Component<TokenBalancesProps, TokenBala
                                 <div className="inline-block">Allowance</div>
                                 <HelpTooltip style={{ paddingLeft: 4 }} explanation={allowanceExplanation} />
                             </TableHeaderColumn>
-                            <TableHeaderColumn>Action</TableHeaderColumn>
+                            {isTestNetwork && <TableHeaderColumn>Action</TableHeaderColumn>}
                             {this.props.screenWidth !== ScreenWidths.Sm && <TableHeaderColumn>Send</TableHeaderColumn>}
                         </TableRow>
                     </TableHeader>
@@ -376,17 +376,17 @@ export class TokenBalances extends React.Component<TokenBalancesProps, TokenBala
                         refetchTokenStateAsync={this._refetchTokenStateAsync.bind(this, token.address)}
                     />
                 </TableRowColumn>
-                <TableRowColumn style={{ paddingLeft: actionPaddingX, paddingRight: actionPaddingX }}>
-                    {isMintable && (
-                        <LifeCycleRaisedButton
-                            labelReady="Mint"
-                            labelLoading={<span style={{ fontSize: 12 }}>Minting...</span>}
-                            labelComplete="Minted!"
-                            onClickAsyncFn={this._onMintTestTokensAsync.bind(this, token)}
-                        />
-                    )}
-                    {token.symbol === ZRX_TOKEN_SYMBOL &&
-                        utils.isTestNetwork(this.props.networkId) && (
+                {utils.isTestNetwork(this.props.networkId) && (
+                    <TableRowColumn style={{ paddingLeft: actionPaddingX, paddingRight: actionPaddingX }}>
+                        {isMintable && (
+                            <LifeCycleRaisedButton
+                                labelReady="Mint"
+                                labelLoading={<span style={{ fontSize: 12 }}>Minting...</span>}
+                                labelComplete="Minted!"
+                                onClickAsyncFn={this._onMintTestTokensAsync.bind(this, token)}
+                            />
+                        )}
+                        {token.symbol === ZRX_TOKEN_SYMBOL && (
                             <LifeCycleRaisedButton
                                 labelReady="Request"
                                 labelLoading="Sending..."
@@ -394,7 +394,8 @@ export class TokenBalances extends React.Component<TokenBalancesProps, TokenBala
                                 onClickAsyncFn={this._faucetRequestAsync.bind(this, false)}
                             />
                         )}
-                </TableRowColumn>
+                    </TableRowColumn>
+                )}
                 {this.props.screenWidth !== ScreenWidths.Sm && (
                     <TableRowColumn
                         style={{
