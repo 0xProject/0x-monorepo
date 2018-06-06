@@ -2,7 +2,7 @@
  * This file is auto-generated using abi-gen. Don't edit directly.
  * Templates can be found at https://github.com/0xProject/0x-monorepo/tree/development/packages/contract_templates.
  */
-// tslint:disable:no-consecutive-blank-lines ordered-imports
+// tslint:disable:no-consecutive-blank-lines ordered-imports align trailing-comma whitespace
 // tslint:disable-next-line:no-unused-variable
 import { BaseContract } from '@0xproject/base-contract';
 import { ContractArtifact } from '@0xproject/sol-compiler';
@@ -83,7 +83,7 @@ export class {{contractName}}Contract extends BaseContract {
         return contractInstance;
     }
     constructor(abi: ContractAbi, address: string, provider: Provider, txDefaults?: Partial<TxData>) {
-        super("{{contractName}}", abi, address, provider, txDefaults);
+        super('{{contractName}}', abi, address, provider, txDefaults);
         classUtils.bindAll(this, ['_ethersInterfacesByFunctionSignature', 'address', 'abi', '_web3Wrapper']);
     }
 } // tslint:disable:max-file-line-count
