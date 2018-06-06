@@ -18,7 +18,7 @@
         "lint": "tslint --project .",
         "test:circleci": "run-s test:coverage",
         "test": "yarn run_mocha",
-        "rebuild-and-test": "run-s build test",
+        "rebuild_and_test": "run-s build test",
         "test:coverage": "nyc npm run test --all && yarn coverage:report:lcov",
         "coverage:report:lcov": "nyc report --reporter=text-lcov > coverage/lcov.info",
         "update_artifacts": "for i in ${npm_package_config_contracts}; do copyfiles -u 4 ../migrations/artifacts/1.0.0/$i.json test/artifacts; done;",

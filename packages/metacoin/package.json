@@ -14,7 +14,7 @@
         "copy_artifacts": "copyfiles './artifacts/**/*' './contracts/**/*' ./lib",
         "build": "tsc",
         "test": "yarn run_mocha",
-        "rebuild-and-test": "run-s build test",
+        "rebuild_and_test": "run-s build test",
         "test:coverage": "SOLIDITY_COVERAGE=true run-s build run_mocha coverage:report:text coverage:report:lcov",
         "run_mocha": "mocha lib/test/**/*_test.js lib/test/global_hooks.js --bail --exit",
         "generate_contract_wrappers": "abi-gen --abis 'artifacts/Metacoin.json' --template ../contract_templates/contract.handlebars --partials '../contract_templates/partials/**/*.handlebars' --output src/contract_wrappers --backend ethers && prettier --write 'src/contract_wrappers/**.ts'",

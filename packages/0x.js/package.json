@@ -22,7 +22,7 @@
         "lint": "tslint --project .",
         "test:circleci": "run-s test:coverage",
         "test": "yarn run_mocha",
-        "rebuild-and-test": "run-s build test",
+        "rebuild_and_test": "run-s build test",
         "test:coverage": "nyc npm run test --all && yarn coverage:report:lcov",
         "coverage:report:lcov": "nyc report --reporter=text-lcov > coverage/lcov.info",
         "clean": "shx rm -rf _bundles lib test_temp scripts src/contract_wrappers/generated",
