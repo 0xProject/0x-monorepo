@@ -8,8 +8,10 @@
     "main": "lib/src/index.js",
     "types": "lib/src/index.d.ts",
     "scripts": {
-        "watch": "tsc -w",
-        "build": "yarn clean && copyfiles 'test/fixtures/contracts/**/*' ./lib && tsc && copyfiles -u 3 './lib/src/monorepo_scripts/**/*' ./scripts",
+        "watch_without_deps": "yarn pre_build && tsc -w",
+        "build": "yarn pre_build && tsc && copyfiles -u 3 './lib/src/monorepo_scripts/**/*' ./scripts",
+        "pre_build": "run-s update_contract_fixtures",
+        "update_contract_fixtures": "copyfiles 'test/fixtures/contracts/**/*' ./lib",
         "test": "yarn run_mocha",
         "rebuild_and_test": "run-s build test",
         "run_mocha": "mocha lib/test/*_test.js --bail --exit",
