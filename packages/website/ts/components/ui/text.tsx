@@ -39,18 +39,3 @@ Text.defaultProps = {
 };
 
 Text.displayName = 'Text';
-
-interface TranslatedProps {
-    children: Key;
-    translate: Translate;
-    deco?: Deco;
-}
-
-export type TranslatedTextProps = TextProps & TranslatedProps;
-
-export const TranslatedText: React.StatelessComponent<TranslatedTextProps> = ({
-    translate,
-    children,
-    deco,
-    ...textProps
-}) => <Text {...textProps}>{translate.get(children, deco)}</Text>;
