@@ -4,7 +4,7 @@ import {
     Styles,
     utils as sharedUtils,
 } from '@0xproject/react-shared';
-import { BigNumber } from '@0xproject/utils';
+import { BigNumber, errorUtils } from '@0xproject/utils';
 import { Web3Wrapper } from '@0xproject/web3-wrapper';
 import * as _ from 'lodash';
 import CircularProgress from 'material-ui/CircularProgress';
@@ -500,7 +500,7 @@ export class Wallet extends React.Component<WalletProps, WalletState> {
                     buttonIconName = 'zmdi-long-arrow-up';
                     break;
                 default:
-                    throw utils.spawnSwitchErr('wrappedEtherDirection', wrappedEtherDirection);
+                    throw errorUtils.spawnSwitchErr('wrappedEtherDirection', wrappedEtherDirection);
             }
         }
         const onClick = isWrappedEtherDirectionOpen

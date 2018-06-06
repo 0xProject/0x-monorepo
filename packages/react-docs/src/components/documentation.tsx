@@ -29,7 +29,6 @@ import {
     TypescriptMethod,
 } from '../types';
 import { constants } from '../utils/constants';
-import { utils } from '../utils/utils';
 
 import { Badge } from './badge';
 import { Comment } from './comment';

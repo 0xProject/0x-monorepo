@@ -1,4 +1,5 @@
 import { colors } from '@0xproject/react-shared';
+import { errorUtils } from '@0xproject/utils';
 import * as _ from 'lodash';
 import RaisedButton from 'material-ui/RaisedButton';
 import * as React from 'react';
@@ -63,7 +64,7 @@ export class LifeCycleRaisedButton extends React.Component<LifeCycleRaisedButton
                 label = this.props.labelComplete;
                 break;
             default:
-                throw utils.spawnSwitchErr('ButtonState', this.state.buttonState);
+                throw errorUtils.spawnSwitchErr('ButtonState', this.state.buttonState);
         }
         return (
             <RaisedButton

@@ -1,3 +1,4 @@
+import { errorUtils } from '@0xproject/utils';
 import * as _ from 'lodash';
 
 import { DocsInfo } from '../docs_info';
@@ -19,7 +20,6 @@ import {
     TypescriptFunction,
     TypescriptMethod,
 } from '../types';
-import { utils } from '../utils/utils';
 
 export const typeDocUtils = {
     isType(entity: TypeDocNode): boolean {
@@ -197,7 +197,7 @@ export const typeDocUtils = {
                     break;
 
                 default:
-                    throw utils.spawnSwitchErr('kindString', entity.kindString);
+                    throw errorUtils.spawnSwitchErr('kindString', entity.kindString);
             }
         });
         return docSection;

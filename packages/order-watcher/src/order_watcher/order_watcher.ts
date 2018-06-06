@@ -14,7 +14,7 @@ import {
     Provider,
     SignedOrder,
 } from '@0xproject/types';
-import { AbiDecoder, intervalUtils } from '@0xproject/utils';
+import { AbiDecoder, errorUtils, intervalUtils } from '@0xproject/utils';
 import { Web3Wrapper } from '@0xproject/web3-wrapper';
 import * as _ from 'lodash';
 
@@ -344,7 +344,7 @@ export class OrderWatcher {
                 return; // noop
 
             default:
-                throw utils.spawnSwitchErr('decodedLog.event', decodedLog.event);
+                throw errorUtils.spawnSwitchErr('decodedLog.event', decodedLog.event);
         }
     }
     private async _emitRevalidateOrdersAsync(orderHashes: string[]): Promise<void> {

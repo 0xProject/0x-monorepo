@@ -1,11 +1,11 @@
 import { AnchorTitle, colors, HeaderSizes } from '@0xproject/react-shared';
+import { errorUtils } from '@0xproject/utils';
 import * as _ from 'lodash';
 import * as React from 'react';
 
 import { DocsInfo } from '../docs_info';
 import { CustomType, CustomTypeChild, EnumValue, KindString, TypeDocTypes } from '../types';
 import { constants } from '../utils/constants';
-import { utils } from '../utils/utils';
 
 import { Comment } from './comment';
 import { CustomEnum } from './custom_enum';
@@ -96,7 +96,7 @@ export class TypeDefinition extends React.Component<TypeDefinitionProps, TypeDef
                 break;
 
             default:
-                throw utils.spawnSwitchErr('type.kindString', customType.kindString);
+                throw errorUtils.spawnSwitchErr('type.kindString', customType.kindString);
         }
 
         const typeDefinitionAnchorId = `${this.props.sectionName}-${customType.name}`;

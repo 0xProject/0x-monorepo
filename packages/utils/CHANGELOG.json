@@ -1,5 +1,13 @@
 [
     {
+        "version": "0.6.3",
+        "changes": [
+            {
+                "note": "Added errorUtils.spawnSwitchErr"
+            }
+        ]
+    },
+    {
         "timestamp": 1527009133,
         "version": "0.6.2",
         "changes": [
