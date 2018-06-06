@@ -1,5 +1,4 @@
 import {
-    colors,
     constants as sharedConstants,
     EtherscanLinkSuffixes,
     Networks,
