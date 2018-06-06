@@ -135,7 +135,7 @@ const styles: Styles = {
 
 const ETHER_ICON_PATH = '/images/ether.png';
 const ICON_DIMENSION = 28;
-const TOKEN_AMOUNT_DISPLAY_PRECISION = 3;
+const TOKEN_AMOUNT_DISPLAY_PRECISION = 5;
 const BODY_ITEM_KEY = 'BODY';
 const HEADER_ITEM_KEY = 'HEADER';
 const FOOTER_ITEM_KEY = 'FOOTER';
@@ -448,14 +448,19 @@ export class Wallet extends React.Component<WalletProps, WalletState> {
         symbol: string,
         isLoading: boolean = false,
     ): React.ReactNode {
-        const unitAmount = Web3Wrapper.toUnitAmount(amount, decimals);
-        const formattedAmount = unitAmount.toPrecision(TOKEN_AMOUNT_DISPLAY_PRECISION);
-        const result = `${formattedAmount} ${symbol}`;
-        return (
-            <PlaceHolder hideChildren={isLoading}>
-                <div style={styles.amountLabel}>{result}</div>
-            </PlaceHolder>
-        );
+        if (isLoading) {
+            return (
+                <PlaceHolder hideChildren={isLoading}>
+                    <div style={styles.amountLabel}>0.00 XXX</div>
+                </PlaceHolder>
+            );
+        } else {
+            const unitAmount = Web3Wrapper.toUnitAmount(amount, decimals);
+            const precision = Math.min(TOKEN_AMOUNT_DISPLAY_PRECISION, unitAmount.decimalPlaces());
+            const formattedAmount = unitAmount.toFixed(precision);
+            const result = `${formattedAmount} ${symbol}`;
+            return <div style={styles.amountLabel}>{result}</div>;
+        }
     }
     private _renderValue(
         amount: BigNumber,
