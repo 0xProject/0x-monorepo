@@ -195,8 +195,8 @@ describe('Exchange transactions', () => {
 
             it('should cancel the order when signed by maker and called by sender', async () => {
                 await exchangeWrapper.executeTransactionAsync(signedTx, senderAddress);
-                return expect(exchangeWrapper.fillOrderAsync(signedOrder, senderAddress)).to.be.rejectedWith(
-                    constants.REVERT,
+                return expectRevertOrAlwaysFailingTransactionAsync(
+                    exchangeWrapper.fillOrderAsync(signedOrder, senderAddress),
                 );
             });
         });

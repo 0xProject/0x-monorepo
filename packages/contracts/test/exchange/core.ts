@@ -515,16 +515,16 @@ describe('Exchange core', () => {
             signedOrder = orderFactory.newSignedOrder({
                 expirationTimeSeconds: new BigNumber(Math.floor((Date.now() - 10000) / 1000)),
             });
-            return expect(exchangeWrapper.fillOrderAsync(signedOrder, takerAddress)).to.be.rejectedWith(
-                constants.REVERT,
+            return expectRevertOrAlwaysFailingTransactionAsync(
+                exchangeWrapper.fillOrderAsync(signedOrder, takerAddress),
             );
         });
 
         it('should throw if no value is filled', async () => {
             signedOrder = orderFactory.newSignedOrder();
             await exchangeWrapper.fillOrderAsync(signedOrder, takerAddress);
-            return expect(exchangeWrapper.fillOrderAsync(signedOrder, takerAddress)).to.be.rejectedWith(
-                constants.REVERT,
+            return expectRevertOrAlwaysFailingTransactionAsync(
+                exchangeWrapper.fillOrderAsync(signedOrder, takerAddress),
             );
         });
     });
@@ -563,11 +563,11 @@ describe('Exchange core', () => {
 
         it('should be able to cancel a full order', async () => {
             await exchangeWrapper.cancelOrderAsync(signedOrder, makerAddress);
-            return expect(
+            return expectRevertOrAlwaysFailingTransactionAsync(
                 exchangeWrapper.fillOrderAsync(signedOrder, takerAddress, {
                     takerAssetFillAmount: signedOrder.takerAssetAmount.div(2),
                 }),
-            ).to.be.rejectedWith(constants.REVERT);
+            );
         });
 
         it('should log 1 event with correct arguments', async () => {
@@ -587,8 +587,8 @@ describe('Exchange core', () => {
 
         it('should throw if already cancelled', async () => {
             await exchangeWrapper.cancelOrderAsync(signedOrder, makerAddress);
-            return expect(exchangeWrapper.cancelOrderAsync(signedOrder, makerAddress)).to.be.rejectedWith(
-                constants.REVERT,
+            return expectRevertOrAlwaysFailingTransactionAsync(
+                exchangeWrapper.cancelOrderAsync(signedOrder, makerAddress),
             );
         });
 
@@ -596,8 +596,8 @@ describe('Exchange core', () => {
             signedOrder = orderFactory.newSignedOrder({
                 expirationTimeSeconds: new BigNumber(Math.floor((Date.now() - 10000) / 1000)),
             });
-            return expect(exchangeWrapper.cancelOrderAsync(signedOrder, makerAddress)).to.be.rejectedWith(
-                constants.REVERT,
+            return expectRevertOrAlwaysFailingTransactionAsync(
+                exchangeWrapper.cancelOrderAsync(signedOrder, makerAddress),
             );
         });
 
@@ -613,11 +613,11 @@ describe('Exchange core', () => {
             });
 
             const fillTakerAssetAmount2 = new BigNumber(1);
-            return expect(
+            return expectRevertOrAlwaysFailingTransactionAsync(
                 exchangeWrapper.fillOrderAsync(signedOrder, takerAddress, {
                     takerAssetFillAmount: fillTakerAssetAmount2,
                 }),
-            ).to.be.rejectedWith(constants.REVERT);
+            );
         });
     });
 
