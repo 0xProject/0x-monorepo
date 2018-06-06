@@ -430,6 +430,7 @@ export class Portal extends React.Component<PortalProps, PortalState> {
                 userAddress={this.props.userAddress}
                 userEtherBalanceInWei={this.props.userEtherBalanceInWei}
                 lastForceTokenStateRefetch={this.props.lastForceTokenStateRefetch}
+                isFullWidth={true}
             />
         );
     }

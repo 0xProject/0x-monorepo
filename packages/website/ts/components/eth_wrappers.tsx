@@ -35,6 +35,7 @@ interface EthWrappersProps {
     userAddress: string;
     userEtherBalanceInWei?: BigNumber;
     lastForceTokenStateRefetch: number;
+    isFullWidth?: boolean;
 }
 
 interface EthWrappersState {
@@ -43,6 +44,9 @@ interface EthWrappersState {
 }
 
 export class EthWrappers extends React.Component<EthWrappersProps, EthWrappersState> {
+    public static defaultProps: Partial<EthWrappersProps> = {
+        isFullWidth: false,
+    };
     private _isUnmounted: boolean;
     constructor(props: EthWrappersProps) {
         super(props);
@@ -97,8 +101,9 @@ export class EthWrappers extends React.Component<EthWrappersProps, EthWrappersSt
             this.props.userEtherBalanceInWei,
             constants.DECIMAL_PLACES_ETH,
         );
+        const rootClassName = this.props.isFullWidth ? 'clearfix' : 'clearfix lg-px4 md-px4 sm-px2';
         return (
-            <div className="clearfix lg-px4 md-px4 sm-px2" style={{ minHeight: 600 }}>
+            <div className={rootClassName} style={{ minHeight: 600 }}>
                 <div className="relative">
                     <h3>ETH Wrapper</h3>
                     <div className="absolute" style={{ top: 0, right: 0 }}>
