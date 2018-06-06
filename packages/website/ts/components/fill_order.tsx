@@ -40,7 +40,7 @@ interface FillOrderProps {
     dispatcher: Dispatcher;
     lastForceTokenStateRefetch: number;
     isFullWidth?: boolean;
-    shouldRenderHeader?: boolean;
+    shouldHideHeader?: boolean;
 }
 
 interface FillOrderState {
@@ -65,7 +65,7 @@ interface FillOrderState {
 export class FillOrder extends React.Component<FillOrderProps, FillOrderState> {
     public static defaultProps: Partial<FillOrderProps> = {
         isFullWidth: false,
-        shouldRenderHeader: true,
+        shouldHideHeader: false,
     };
     private _isUnmounted: boolean;
     constructor(props: FillOrderProps) {
@@ -106,7 +106,7 @@ export class FillOrder extends React.Component<FillOrderProps, FillOrderState> {
         const rootClassName = this.props.isFullWidth ? 'clearfix' : 'lg-px4 md-px4 sm-px2';
         return (
             <div className={rootClassName} style={{ minHeight: 600 }}>
-                {this.props.shouldRenderHeader && (
+                {!this.props.shouldHideHeader && (
                     <div>
                         <h3>Fill an order</h3>
                         <Divider />

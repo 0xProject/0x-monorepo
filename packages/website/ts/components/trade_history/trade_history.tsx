@@ -14,7 +14,7 @@ interface TradeHistoryProps {
     userAddress: string;
     networkId: number;
     isFullWidth?: boolean;
-    shouldRenderHeader?: boolean;
+    shouldHideHeader?: boolean;
     isScrollable?: boolean;
 }
 
@@ -25,7 +25,7 @@ interface TradeHistoryState {
 export class TradeHistory extends React.Component<TradeHistoryProps, TradeHistoryState> {
     public static defaultProps: Partial<TradeHistoryProps> = {
         isFullWidth: false,
-        shouldRenderHeader: true,
+        shouldHideHeader: false,
         isScrollable: true,
     };
     private _fillPollingIntervalId: number;
@@ -49,7 +49,7 @@ export class TradeHistory extends React.Component<TradeHistoryProps, TradeHistor
         const rootClassName = !this.props.isFullWidth ? 'lg-px4 md-px4 sm-px2' : undefined;
         return (
             <div className={rootClassName}>
-                {this.props.shouldRenderHeader && (
+                {!this.props.shouldHideHeader && (
                     <div>
                         <h3>Trade history</h3>
                         <Divider />

@@ -48,7 +48,7 @@ interface GenerateOrderFormProps {
     tokenByAddress: TokenByAddress;
     lastForceTokenStateRefetch: number;
     isFullWidth?: boolean;
-    shouldRenderHeader?: boolean;
+    shouldHideHeader?: boolean;
 }
 
 interface GenerateOrderFormState {
@@ -60,7 +60,7 @@ interface GenerateOrderFormState {
 export class GenerateOrderForm extends React.Component<GenerateOrderFormProps, GenerateOrderFormState> {
     public static defaultProps: Partial<GenerateOrderFormProps> = {
         isFullWidth: false,
-        shouldRenderHeader: true,
+        shouldHideHeader: false,
     };
     constructor(props: GenerateOrderFormProps) {
         super(props);
@@ -89,7 +89,7 @@ export class GenerateOrderForm extends React.Component<GenerateOrderFormProps, G
         const rootClassName = this.props.isFullWidth ? 'clearfix mb2' : 'clearfix mb2 lg-px4 md-px4 sm-px2';
         return (
             <div className={rootClassName}>
-                {this.props.shouldRenderHeader && (
+                {!this.props.shouldHideHeader && (
                     <div>
                         <h3>Generate an order</h3>
                         <Divider />

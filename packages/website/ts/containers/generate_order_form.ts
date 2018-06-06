@@ -14,7 +14,7 @@ interface GenerateOrderFormProps {
     hashData: HashData;
     dispatcher: Dispatcher;
     isFullWidth?: boolean;
-    shouldRenderHeader?: boolean;
+    shouldHideHeader?: boolean;
 }
 
 interface ConnectedState {

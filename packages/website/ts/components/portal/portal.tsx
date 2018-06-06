@@ -441,7 +441,7 @@ export class Portal extends React.Component<PortalProps, PortalState> {
                 userAddress={this.props.userAddress}
                 networkId={this.props.networkId}
                 isFullWidth={true}
-                shouldRenderHeader={false}
+                shouldHideHeader={true}
                 isScrollable={false}
             />
         );
@@ -453,7 +453,7 @@ export class Portal extends React.Component<PortalProps, PortalState> {
                 hashData={this.props.hashData}
                 dispatcher={this.props.dispatcher}
                 isFullWidth={true}
-                shouldRenderHeader={false}
+                shouldHideHeader={true}
             />
         );
     }
@@ -474,7 +474,7 @@ export class Portal extends React.Component<PortalProps, PortalState> {
                 dispatcher={this.props.dispatcher}
                 lastForceTokenStateRefetch={this.props.lastForceTokenStateRefetch}
                 isFullWidth={true}
-                shouldRenderHeader={false}
+                shouldHideHeader={true}
             />
         );
     }
