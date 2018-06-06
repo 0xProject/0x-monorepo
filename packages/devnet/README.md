@@ -34,7 +34,7 @@ the name of the currently running container).
 
 ### Configuration
 
-The devnet network only has a single node and using PoA instead of PoW. That
+The devnet network only has a single node and uses PoA instead of PoW. That
 means that one node, called the "sealer", is the ultimate authority for
 validating transactions and adding new blocks to the chain. Since there is no
 PoW it also means that mining does not require significant computational
@@ -50,6 +50,41 @@ transactions from this account using the JSON RPC endpoints directly.
 There are also a number of other addresses that have hard-coded starting
 balances for testing purposes. You can see the details in the **genesis.json**
 file. All of these accounts are also unlocked by default.
+
+### Additional JSON RPC Methods
+
+In addition to the
+[standard JSON RPC methods](https://github.com/ethereum/wiki/wiki/JSON-RPC) and
+the
+[Geth Management API](https://github.com/ethereum/go-ethereum/wiki/Management-APIs)
+The devnet node supports some additional JSON RPC methods:
+
+#### debug_increaseTime
+
+Increases the timestamp of the next mined block.
+
+##### Parameters
+
+`Number` - The number of seconds by which to increase the time offset.
+
+##### Returns
+
+`Number` - The total number of seconds by which the time offset has been
+increased (this includes all calls to `debug_increaseTime`).
+
+##### Example
+
+```js
+// Request
+curl -X POST --data '{"jsonrpc":"2.0","method":"debug_increaseTime","params":[100],"id":67}'
+
+// Result
+{
+  "id":67,
+  "jsonrpc": "2.0",
+  "result": "5000"
+}
+```
 
 ### Mining
 
