@@ -1,5 +1,14 @@
 [
     {
+        "version": "0.1.0",
+        "changes": [
+            {
+                "note": "Make order-utils compatible with V2 of 0x protocol",
+                "pr": 636
+            }
+        ]
+    },
+    {
         "version": "0.0.5",
         "changes": [
             {

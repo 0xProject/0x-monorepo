@@ -10,7 +10,8 @@
     "scripts": {
         "watch": "tsc -w",
         "lint": "tslint --project .",
-        "test": "run-s clean build compile_test run_mocha",
+        "test": "run-s compile_test run_mocha",
+        "rebuild_and_test": "run-s clean build test",
         "test:coverage": "nyc npm run test --all && yarn coverage:report:lcov",
         "coverage:report:lcov": "nyc report --reporter=text-lcov > coverage/lcov.info",
         "test:circleci": "yarn test:coverage",

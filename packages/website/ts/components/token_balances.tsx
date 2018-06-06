@@ -76,11 +76,11 @@ interface TokenBalancesProps {
 
 interface TokenBalancesState {
     errorType: BalanceErrs;
+    trackedTokenStateByAddress: TokenStateByAddress;
     isBalanceSpinnerVisible: boolean;
     isZRXSpinnerVisible: boolean;
     isTokenPickerOpen: boolean;
     isAddingToken: boolean;
-    trackedTokenStateByAddress: TokenStateByAddress;
 }
 
 export class TokenBalances extends React.Component<TokenBalancesProps, TokenBalancesState> {

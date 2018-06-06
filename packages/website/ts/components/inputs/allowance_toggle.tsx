@@ -4,9 +4,9 @@ import Toggle from 'material-ui/Toggle';
 import * as React from 'react';
 import { Blockchain } from 'ts/blockchain';
 import { Dispatcher } from 'ts/redux/dispatcher';
+import { colors } from 'ts/style/colors';
 import { BalanceErrs, Token, TokenState } from 'ts/types';
 import { analytics } from 'ts/utils/analytics';
-import { colors } from 'ts/utils/colors';
 import { errorReporter } from 'ts/utils/error_reporter';
 import { utils } from 'ts/utils/utils';
 

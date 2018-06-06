@@ -11,13 +11,20 @@ export interface ContainerProps {
     paddingBottom?: StringOrNum;
     paddingRight?: StringOrNum;
     paddingLeft?: StringOrNum;
+    backgroundColor?: string;
+    borderRadius?: StringOrNum;
     maxWidth?: StringOrNum;
-    children?: React.ReactNode;
+    isHidden?: boolean;
+    className?: string;
 }
 
-export const Container: React.StatelessComponent<ContainerProps> = (props: ContainerProps) => {
-    const { children, ...style } = props;
-    return <div style={style}>{children}</div>;
+export const Container: React.StatelessComponent<ContainerProps> = ({ children, className, isHidden, ...style }) => {
+    const visibility = isHidden ? 'hidden' : undefined;
+    return (
+        <div style={{ ...style, visibility }} className={className}>
+            {children}
+        </div>
+    );
 };
 
 Container.displayName = 'Container';

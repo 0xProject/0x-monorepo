@@ -7,6 +7,7 @@
         "async-suffix": true,
         "boolean-naming": true,
         "no-switch-case-fall-through": true,
+        "switch-default": true,
         "await-promise": true,
         "custom-no-magic-numbers": [true, 0, 1, 2, 3, -1],
         "binary-expression-operand-order": true,
