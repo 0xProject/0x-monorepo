@@ -13,7 +13,7 @@
         "build": "tsc && copyfiles -u 3 './lib/src/monorepo_scripts/**/*' ./scripts",
         "lint": "tslint --project .",
         "test": "run-s copy_test_environments copy_test_fixtures run_mocha",
-        "rebuild-and-test": "run-s clean build test",
+        "rebuild_and_test": "run-s clean build test",
         "copy_test_fixtures": "copyfiles -u 2 './test/fixtures/**/*.json' ./lib/test/fixtures",
         "copy_test_environments": "copyfiles -u 2 './test/environments/**/*.json' ./lib/test/environments",
         "run_mocha": "mocha lib/test/**/*_test.js --exit",

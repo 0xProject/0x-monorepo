@@ -15,7 +15,7 @@
         "run_mocha": "mocha lib/test/**/*_test.js --exit",
         "prepublishOnly": "run-p build",
         "test": "yarn run_mocha",
-        "rebuild-and-test": "run-s clean build test",
+        "rebuild_and_test": "run-s clean build test",
         "test:coverage": "nyc npm run test --all && yarn coverage:report:lcov",
         "coverage:report:lcov": "nyc report --reporter=text-lcov > coverage/lcov.info",
         "test:circleci": "yarn test:coverage",

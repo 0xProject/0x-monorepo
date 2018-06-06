@@ -34,6 +34,7 @@ import { Dispatcher } from 'ts/redux/dispatcher';
 import {
     BlockchainErrs,
     HashData,
+    ItemByAddress,
     Order,
     ProviderType,
     ScreenWidths,
@@ -43,6 +44,7 @@ import {
     TokenVisibility,
     WebsitePaths,
 } from 'ts/types';
+import { backendClient } from 'ts/utils/backend_client';
 import { configs } from 'ts/utils/configs';
 import { constants } from 'ts/utils/constants';
 import { orderParser } from 'ts/utils/order_parser';
@@ -266,10 +268,6 @@ export class Portal extends React.Component<PortalProps, PortalState> {
                         toggleDialogFn={updateShouldBlockchainErrDialogBeOpen}
                         networkId={this.props.networkId}
                     />
-                    <PortalDisclaimerDialog
-                        isOpen={this.state.isDisclaimerDialogOpen}
-                        onToggleDialog={this._onPortalDisclaimerAccepted.bind(this)}
-                    />
                     <FlashMessage dispatcher={this.props.dispatcher} flashMessage={this.props.flashMessage} />
                     {this.props.blockchainIsLoaded && (
                         <LedgerConfigDialog
@@ -394,18 +392,24 @@ export class Portal extends React.Component<PortalProps, PortalState> {
             },
         ];
         return (
-            <Switch>
-                {_.map(accountManagementItems, item => {
-                    return (
-                        <Route
-                            key={item.pathName}
-                            path={item.pathName}
-                            render={this._renderAccountManagementItem.bind(this, item)}
-                        />
-                    );
-                })}}
-                <Route render={this._renderNotFoundMessage.bind(this)} />
-            </Switch>
+            <div>
+                <Switch>
+                    {_.map(accountManagementItems, item => {
+                        return (
+                            <Route
+                                key={item.pathName}
+                                path={item.pathName}
+                                render={this._renderAccountManagementItem.bind(this, item)}
+                            />
+                        );
+                    })}}
+                    <Route render={this._renderNotFoundMessage.bind(this)} />
+                </Switch>
+                <PortalDisclaimerDialog
+                    isOpen={this.state.isDisclaimerDialogOpen}
+                    onToggleDialog={this._onPortalDisclaimerAccepted.bind(this)}
+                />
+            </div>
         );
     }
     private _renderAccountManagementItem(item: AccountManagementItem): React.ReactNode {
@@ -587,6 +591,7 @@ export class Portal extends React.Component<PortalProps, PortalState> {
                 return this._blockchain.getTokenBalanceAndAllowanceAsync(userAddressIfExists, tokenAddress);
             }),
         );
+        const priceByAddress = await this._getPriceByAddressAsync(tokenAddresses);
         for (let i = 0; i < tokenAddresses.length; i++) {
             // Order is preserved in Promise.all
             const [balance, allowance] = balancesAndAllowances[i];
@@ -595,11 +600,40 @@ export class Portal extends React.Component<PortalProps, PortalState> {
                 balance,
                 allowance,
                 isLoaded: true,
+                price: priceByAddress[tokenAddress],
             };
         }
         this.setState({
             trackedTokenStateByAddress,
         });
+    }
+
+    private async _getPriceByAddressAsync(tokenAddresses: string[]): Promise<ItemByAddress<BigNumber>> {
+        if (_.isEmpty(tokenAddresses)) {
+            return {};
+        }
+        // for each input token address, search for the corresponding symbol in this.props.tokenByAddress, if it exists
+        // create a mapping from existing symbols -> address
+        const tokenAddressBySymbol: { [symbol: string]: string } = {};
+        _.each(tokenAddresses, address => {
+            const tokenIfExists = _.get(this.props.tokenByAddress, address);
+            if (!_.isUndefined(tokenIfExists)) {
+                const symbol = tokenIfExists.symbol;
+                tokenAddressBySymbol[symbol] = address;
+            }
+        });
+        const tokenSymbols = _.keys(tokenAddressBySymbol);
+        try {
+            const priceBySymbol = await backendClient.getPriceInfoAsync(tokenSymbols);
+            const priceByAddress = _.mapKeys(priceBySymbol, (value, symbol) => _.get(tokenAddressBySymbol, symbol));
+            const result = _.mapValues(priceByAddress, price => {
+                const priceBigNumber = new BigNumber(price);
+                return priceBigNumber;
+            });
+            return result;
+        } catch (err) {
+            return {};
+        }
     }
 
     private async _refetchTokenStateAsync(tokenAddress: string): Promise<void> {

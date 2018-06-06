@@ -12,7 +12,7 @@
         "build": "tsc && copyfiles -u 2 './lib/monorepo_scripts/**/*' ./scripts",
         "clean": "shx rm -rf lib scripts",
         "test": "yarn run_mocha",
-        "rebuild-and-test": "run-s clean build test",
+        "rebuild_and_test": "run-s clean build test",
         "test:circleci": "yarn test:coverage",
         "run_mocha": "mocha lib/test/**/*_test.js --bail --exit",
         "test:coverage": "nyc npm run test --all && yarn coverage:report:lcov",

@@ -13,7 +13,7 @@
         "pre_build": "run-s update_contract_fixtures",
         "update_contract_fixtures": "copyfiles 'test/fixtures/contracts/**/*' ./lib",
         "test": "yarn run_mocha",
-        "rebuild-and-test": "run-s build test",
+        "rebuild_and_test": "run-s build test",
         "run_mocha": "mocha lib/test/*_test.js --bail --exit",
         "test:coverage": "nyc npm run test --all && yarn coverage:report:lcov",
         "coverage:report:lcov": "nyc report --reporter=text-lcov > coverage/lcov.info",
