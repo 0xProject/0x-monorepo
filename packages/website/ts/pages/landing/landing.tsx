@@ -222,17 +222,6 @@ export class Landing extends React.Component<LandingProps, LandingState> {
     }
     private _renderHero(): React.ReactNode {
         const isSmallScreen = this.state.screenWidth === ScreenWidths.Sm;
-        const buttonLabelStyle: React.CSSProperties = {
-            textTransform: 'none',
-            fontSize: isSmallScreen ? 12 : 14,
-            fontWeight: 400,
-        };
-        const lightButtonStyle: React.CSSProperties = {
-            borderRadius: 6,
-            border: '1px solid #D8D8D8',
-            lineHeight: '33px',
-            height: 38,
-        };
         const left = 'col lg-col-7 md-col-7 col-12 lg-pl4 md-pl4 sm-pl0 sm-px3 sm-center';
         return (
             <div className="clearfix py4" style={{ backgroundColor: colors.heroGrey }}>
@@ -749,17 +738,6 @@ export class Landing extends React.Component<LandingProps, LandingState> {
     }
     private _renderCallToAction(): React.ReactNode {
         const isSmallScreen = this.state.screenWidth === ScreenWidths.Sm;
-        const buttonLabelStyle: React.CSSProperties = {
-            textTransform: 'none',
-            fontSize: 15,
-            fontWeight: 400,
-        };
-        const lightButtonStyle: React.CSSProperties = {
-            borderRadius: 6,
-            border: `1px solid ${colors.grey500}`,
-            lineHeight: '33px',
-            height: 49,
-        };
         const callToActionClassNames =
             'lg-pr3 md-pr3 lg-right-align md-right-align sm-center sm-px3 h4 lg-table-cell md-table-cell';
         return (
