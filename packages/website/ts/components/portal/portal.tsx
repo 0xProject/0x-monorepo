@@ -442,6 +442,7 @@ export class Portal extends React.Component<PortalProps, PortalState> {
                 networkId={this.props.networkId}
                 isFullWidth={true}
                 shouldRenderHeader={false}
+                isScrollable={false}
             />
         );
     }

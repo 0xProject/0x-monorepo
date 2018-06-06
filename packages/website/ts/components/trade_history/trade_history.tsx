@@ -15,6 +15,7 @@ interface TradeHistoryProps {
     networkId: number;
     isFullWidth?: boolean;
     shouldRenderHeader?: boolean;
+    isScrollable?: boolean;
 }
 
 interface TradeHistoryState {
@@ -25,6 +26,7 @@ export class TradeHistory extends React.Component<TradeHistoryProps, TradeHistor
     public static defaultProps: Partial<TradeHistoryProps> = {
         isFullWidth: false,
         shouldRenderHeader: true,
+        isScrollable: true,
     };
     private _fillPollingIntervalId: number;
     public constructor(props: TradeHistoryProps) {
@@ -53,9 +55,13 @@ export class TradeHistory extends React.Component<TradeHistoryProps, TradeHistor
                         <Divider />
                     </div>
                 )}
-                <div className="pt2" style={{ height: 608, overflow: 'scroll' }}>
-                    {this._renderTrades()}
-                </div>
+                {this.props.isScrollable ? (
+                    <div className="pt2" style={{ height: 608, overflow: 'scroll' }}>
+                        {this._renderTrades()}
+                    </div>
+                ) : (
+                    this._renderTrades()
+                )}
             </div>
         );
     }
