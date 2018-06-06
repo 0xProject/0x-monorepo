@@ -40,7 +40,8 @@ contract MixinWrapperFunctions is
     function fillOrKillOrder(
         LibOrder.Order memory order,
         uint256 takerAssetFillAmount,
-        bytes memory signature)
+        bytes memory signature
+    )
         public
         returns (FillResults memory fillResults)
     {
@@ -65,7 +66,8 @@ contract MixinWrapperFunctions is
     function fillOrderNoThrow(
         LibOrder.Order memory order,
         uint256 takerAssetFillAmount,
-        bytes memory signature)
+        bytes memory signature
+    )
         public
         returns (FillResults memory fillResults)
     {
@@ -264,7 +266,8 @@ contract MixinWrapperFunctions is
     function batchFillOrders(
         LibOrder.Order[] memory orders,
         uint256[] memory takerAssetFillAmounts,
-        bytes[] memory signatures)
+        bytes[] memory signatures
+    )
         public
     {
         for (uint256 i = 0; i < orders.length; i++) {
@@ -283,7 +286,8 @@ contract MixinWrapperFunctions is
     function batchFillOrKillOrders(
         LibOrder.Order[] memory orders,
         uint256[] memory takerAssetFillAmounts,
-        bytes[] memory signatures)
+        bytes[] memory signatures
+    )
         public
     {
         for (uint256 i = 0; i < orders.length; i++) {
@@ -303,7 +307,8 @@ contract MixinWrapperFunctions is
     function batchFillOrdersNoThrow(
         LibOrder.Order[] memory orders,
         uint256[] memory takerAssetFillAmounts,
-        bytes[] memory signatures)
+        bytes[] memory signatures
+    )
         public
     {
         for (uint256 i = 0; i < orders.length; i++) {
@@ -323,7 +328,8 @@ contract MixinWrapperFunctions is
     function marketSellOrders(
         LibOrder.Order[] memory orders,
         uint256 takerAssetFillAmount,
-        bytes[] memory signatures)
+        bytes[] memory signatures
+    )
         public
         returns (FillResults memory totalFillResults)
     {
@@ -366,7 +372,8 @@ contract MixinWrapperFunctions is
     function marketSellOrdersNoThrow(
         LibOrder.Order[] memory orders,
         uint256 takerAssetFillAmount,
-        bytes[] memory signatures)
+        bytes[] memory signatures
+    )
         public
         returns (FillResults memory totalFillResults)
     {
@@ -408,7 +415,8 @@ contract MixinWrapperFunctions is
     function marketBuyOrders(
         LibOrder.Order[] memory orders,
         uint256 makerAssetFillAmount,
-        bytes[] memory signatures)
+        bytes[] memory signatures
+    )
         public
         returns (FillResults memory totalFillResults)
     {
@@ -459,7 +467,8 @@ contract MixinWrapperFunctions is
     function marketBuyOrdersNoThrow(
         LibOrder.Order[] memory orders,
         uint256 makerAssetFillAmount,
-        bytes[] memory signatures)
+        bytes[] memory signatures
+    )
         public
         returns (FillResults memory totalFillResults)
     {

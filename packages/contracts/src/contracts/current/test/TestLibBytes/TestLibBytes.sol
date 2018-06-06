@@ -68,7 +68,8 @@ contract TestLibBytes is
     /// @return address from byte array.
     function publicReadAddress(
         bytes memory b,
-        uint256 index)
+        uint256 index
+    )
         public
         pure
         returns (address result)
@@ -84,7 +85,8 @@ contract TestLibBytes is
     function publicWriteAddress(
         bytes memory b,
         uint256 index,
-        address input)
+        address input
+    )
         public
         pure
         returns (bytes memory)
@@ -99,7 +101,8 @@ contract TestLibBytes is
     /// @return bytes32 value from byte array.
     function publicReadBytes32(
         bytes memory b,
-        uint256 index)
+        uint256 index
+    )
         public
         pure
         returns (bytes32 result)
@@ -115,7 +118,8 @@ contract TestLibBytes is
     function publicWriteBytes32(
         bytes memory b,
         uint256 index,
-        bytes32 input)
+        bytes32 input
+    )
         public
         pure
         returns (bytes memory)
@@ -130,7 +134,8 @@ contract TestLibBytes is
     /// @return uint256 value from byte array.
     function publicReadUint256(
         bytes memory b,
-        uint256 index)
+        uint256 index
+    )
         public
         pure
         returns (uint256 result)
@@ -146,7 +151,8 @@ contract TestLibBytes is
     function publicWriteUint256(
         bytes memory b,
         uint256 index,
-        uint256 input)
+        uint256 input
+    )
         public
         pure
         returns (bytes memory)
@@ -173,7 +179,8 @@ contract TestLibBytes is
     /// @return result Nested bytes.
     function publicReadBytes(
         bytes memory b,
-        uint256 index)
+        uint256 index
+    )
         public
         pure
         returns (bytes memory result)
@@ -190,7 +197,8 @@ contract TestLibBytes is
     function publicWriteBytes(
         bytes memory b,
         uint256 index,
-        bytes memory input)
+        bytes memory input
+    )
         public
         pure
         returns (bytes memory)

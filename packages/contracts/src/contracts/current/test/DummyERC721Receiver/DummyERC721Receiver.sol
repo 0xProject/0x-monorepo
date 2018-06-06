@@ -52,7 +52,8 @@ contract DummyERC721Receiver is
     function onERC721Received(
         address _from,
         uint256 _tokenId,
-        bytes _data)
+        bytes _data
+    )
         public
         returns (bytes4)
     {
