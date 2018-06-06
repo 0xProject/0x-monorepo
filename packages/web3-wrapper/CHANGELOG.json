@@ -1,5 +1,26 @@
 [
     {
+        "version": "0.7.0",
+        "changes": [
+            {
+                "note": "Add exported uniqueVersionIds object",
+                "pr": 622
+            },
+            {
+                "note": "Update increaseTimeAsync to work with Geth",
+                "pr": 622
+            },
+            {
+                "note": "Make callAsync throw if raw call result is 0x (null)",
+                "pr": 622
+            },
+            {
+                "note": "Add new setHeadAsync method",
+                "pr": 622
+            }
+        ]
+    },
+    {
         "timestamp": 1527009133,
         "version": "0.6.4",
         "changes": [
