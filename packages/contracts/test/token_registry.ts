@@ -100,7 +100,9 @@ describe('TokenRegistry', () => {
             await tokenRegWrapper.addTokenAsync(token1, owner);
             const duplicateNameToken = _.assign({}, token2, { name: token1.name });
 
-            return expectRevertOrAlwaysFailingTransactionAsync(tokenRegWrapper.addTokenAsync(duplicateNameToken, owner));
+            return expectRevertOrAlwaysFailingTransactionAsync(
+                tokenRegWrapper.addTokenAsync(duplicateNameToken, owner),
+            );
         });
 
         it('should throw if symbol already exists', async () => {
@@ -109,7 +111,9 @@ describe('TokenRegistry', () => {
                 symbol: token1.symbol,
             });
 
-            return expectRevertOrAlwaysFailingTransactionAsync(tokenRegWrapper.addTokenAsync(duplicateSymbolToken, owner));
+            return expectRevertOrAlwaysFailingTransactionAsync(
+                tokenRegWrapper.addTokenAsync(duplicateSymbolToken, owner),
+            );
         });
     });
 

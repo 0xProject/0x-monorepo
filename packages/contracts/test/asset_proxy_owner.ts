@@ -15,7 +15,10 @@ import {
 } from '../src/contract_wrappers/generated/asset_proxy_owner';
 import { MixinAuthorizableContract } from '../src/contract_wrappers/generated/mixin_authorizable';
 import { artifacts } from '../src/utils/artifacts';
-import { expectRevertOrAlwaysFailingTransactionAsync, expectRevertOrContractCallFailedAsync } from '../src/utils/assertions';
+import {
+    expectRevertOrAlwaysFailingTransactionAsync,
+    expectRevertOrContractCallFailedAsync,
+} from '../src/utils/assertions';
 import { chaiSetup } from '../src/utils/chai_setup';
 import { constants } from '../src/utils/constants';
 import { increaseTimeAndMineBlockAsync } from '../src/utils/increase_time';
