@@ -1,6 +1,3 @@
 {
-    "extends": ["@0xproject/tslint-config"],
-    "linterOptions": {
-        "exclude": ["src/contract_wrappers/generated/*"]
-    }
+    "extends": ["@0xproject/tslint-config"]
 }

@@ -17,7 +17,7 @@
         "run_mocha": "mocha lib/test/**/*_test.js --bail --exit",
         "test:coverage": "nyc npm run test --all && yarn coverage:report:lcov",
         "coverage:report:lcov": "nyc report --reporter=text-lcov > coverage/lcov.info",
-        "lint": "tslint --project .",
+        "lint": "tslint --project . --exclude **/src/contract_wrappers/**/*",
         "manual:postpublish": "yarn build; node ./scripts/postpublish.js"
     },
     "license": "Apache-2.0",

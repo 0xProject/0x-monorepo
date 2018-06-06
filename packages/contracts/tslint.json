@@ -2,8 +2,5 @@
     "extends": ["@0xproject/tslint-config"],
     "rules": {
         "custom-no-magic-numbers": false
-    },
-    "linterOptions": {
-        "exclude": ["src/contract_wrappers/generated/*"]
     }
 }
