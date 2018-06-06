@@ -32,10 +32,11 @@ import { TokenIcon } from 'ts/components/ui/token_icon';
 import { WalletDisconnectedItem } from 'ts/components/wallet/wallet_disconnected_item';
 import { WrapEtherItem } from 'ts/components/wallet/wrap_ether_item';
 import { Dispatcher } from 'ts/redux/dispatcher';
+import { colors } from 'ts/style/colors';
+import { zIndex } from 'ts/style/z_index';
 import {
     BalanceErrs,
     BlockchainErrs,
-    ItemByAddress,
     ProviderType,
     ScreenWidths,
     Side,
@@ -45,10 +46,7 @@ import {
     TokenStateByAddress,
     WebsitePaths,
 } from 'ts/types';
-import { backendClient } from 'ts/utils/backend_client';
-import { colors } from 'ts/utils/colors';
 import { constants } from 'ts/utils/constants';
-import { zIndex } from 'ts/utils/style';
 import { utils } from 'ts/utils/utils';
 import { styles as walletItemStyles } from 'ts/utils/wallet_item_styles';
 
@@ -522,34 +520,6 @@ export class Wallet extends React.Component<WalletProps, WalletState> {
             };
         });
         return trackedTokenStateByAddress;
-    }
-
-    private async _getPriceByAddressAsync(tokenAddresses: string[]): Promise<ItemByAddress<BigNumber>> {
-        if (_.isEmpty(tokenAddresses)) {
-            return {};
-        }
-        // for each input token address, search for the corresponding symbol in this.props.tokenByAddress, if it exists
-        // create a mapping from existing symbols -> address
-        const tokenAddressBySymbol: { [symbol: string]: string } = {};
-        _.each(tokenAddresses, address => {
-            const tokenIfExists = _.get(this.props.tokenByAddress, address);
-            if (!_.isUndefined(tokenIfExists)) {
-                const symbol = tokenIfExists.symbol;
-                tokenAddressBySymbol[symbol] = address;
-            }
-        });
-        const tokenSymbols = _.keys(tokenAddressBySymbol);
-        try {
-            const priceBySymbol = await backendClient.getPriceInfoAsync(tokenSymbols);
-            const priceByAddress = _.mapKeys(priceBySymbol, (value, symbol) => _.get(tokenAddressBySymbol, symbol));
-            const result = _.mapValues(priceByAddress, price => {
-                const priceBigNumber = new BigNumber(price);
-                return priceBigNumber;
-            });
-            return result;
-        } catch (err) {
-            return {};
-        }
     }
     private _openWrappedEtherActionRow(wrappedEtherDirection: Side): void {
         this.setState({

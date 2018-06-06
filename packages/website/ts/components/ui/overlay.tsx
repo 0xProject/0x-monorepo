@@ -2,7 +2,7 @@ import { colors } from '@0xproject/react-shared';
 import * as _ from 'lodash';
 import * as React from 'react';
 
-import { zIndex } from 'ts/utils/style';
+import { zIndex } from 'ts/style/z_index';
 
 export interface OverlayProps {
     children?: React.ReactNode;
