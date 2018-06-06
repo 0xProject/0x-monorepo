@@ -2,12 +2,14 @@ import * as _ from 'lodash';
 import * as React from 'react';
 
 import { BigNumber } from '@0xproject/utils';
+import { Blockchain } from 'ts/blockchain';
 import { OnboardingFlow, Step } from 'ts/components/onboarding/onboarding_flow';
 import { ProviderType, TokenByAddress, TokenStateByAddress } from 'ts/types';
 import { utils } from 'ts/utils/utils';
 import { AllowanceToggle } from 'ts/containers/inputs/allowance_toggle';
 
 export interface PortalOnboardingFlowProps {
+    blockchain: Blockchain;
     stepIndex: number;
     isRunning: boolean;
     userAddress: string;
@@ -20,6 +22,7 @@ export interface PortalOnboardingFlowProps {
     trackedTokenStateByAddress: TokenStateByAddress;
     updateIsRunning: (isRunning: boolean) => void;
     updateOnboardingStep: (stepIndex: number) => void;
+    refetchTokenStateAsync: (tokenAddress: string) => Promise<void>;
 }
 
 export class PortalOnboardingFlow extends React.Component<PortalOnboardingFlowProps> {
