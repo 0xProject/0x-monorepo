@@ -57,7 +57,12 @@ export class EthLightwalletSubprovider extends BaseWalletSubprovider {
 
         const tx = new EthereumTx(txParams);
         const txHex = tx.serialize().toString('hex');
-        let signedTxHex: string = this._signing.signTx(this._keystore, this._pwDerivedKey, txHex, txParams.from);
+        let signedTxHex: string = this._signing.signTx(
+            this._keystore,
+            this._pwDerivedKey,
+            txHex,
+            txParams.from,
+        );
 
         signedTxHex = `0x${signedTxHex}`;
 
@@ -79,7 +84,12 @@ export class EthLightwalletSubprovider extends BaseWalletSubprovider {
         }
         assert.isHexString('data', data);
         assert.isETHAddressHex('address', address);
-        const result: ECSignatureBuffer = this._signing.signMsgHash(this._keystore, this._pwDerivedKey, data, address);
+        const result: ECSignatureBuffer = await this._signing.signMsgHash(
+            this._keystore,
+            this._pwDerivedKey,
+            data,
+            address,
+        );
 
         const signature = this._signing.concatSig(result);
 
