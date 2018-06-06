@@ -35,6 +35,7 @@ interface EthWrappersProps {
     userAddress: string;
     userEtherBalanceInWei?: BigNumber;
     lastForceTokenStateRefetch: number;
+    isFullWidth?: boolean;
 }
 
 interface EthWrappersState {
@@ -43,6 +44,9 @@ interface EthWrappersState {
 }
 
 export class EthWrappers extends React.Component<EthWrappersProps, EthWrappersState> {
+    public static defaultProps: Partial<EthWrappersProps> = {
+        isFullWidth: false,
+    };
     private _isUnmounted: boolean;
     constructor(props: EthWrappersProps) {
         super(props);
@@ -93,12 +97,12 @@ export class EthWrappers extends React.Component<EthWrappersProps, EthWrappersSt
             EtherscanLinkSuffixes.Address,
         );
         const tokenLabel = this._renderToken('Wrapped Ether', etherToken.address, configs.ICON_URL_BY_SYMBOL.WETH);
-        const userEtherBalanceInEth = Web3Wrapper.toUnitAmount(
-            this.props.userEtherBalanceInWei,
-            constants.DECIMAL_PLACES_ETH,
-        );
+        const userEtherBalanceInEth = !_.isUndefined(this.props.userEtherBalanceInWei)
+            ? Web3Wrapper.toUnitAmount(this.props.userEtherBalanceInWei, constants.DECIMAL_PLACES_ETH)
+            : undefined;
+        const rootClassName = this.props.isFullWidth ? 'clearfix' : 'clearfix lg-px4 md-px4 sm-px2';
         return (
-            <div className="clearfix lg-px4 md-px4 sm-px2" style={{ minHeight: 600 }}>
+            <div className={rootClassName} style={{ minHeight: 600 }}>
                 <div className="relative">
                     <h3>ETH Wrapper</h3>
                     <div className="absolute" style={{ top: 0, right: 0 }}>
@@ -116,7 +120,7 @@ export class EthWrappers extends React.Component<EthWrappersProps, EthWrappersSt
                 <div>
                     <div className="py2">Wrap ETH into an ERC20-compliant Ether token. 1 ETH = 1 WETH.</div>
                     <div>
-                        <Table selectable={false} style={{ backgroundColor: colors.grey50 }}>
+                        <Table selectable={false} style={{ backgroundColor: 'transparent' }}>
                             <TableHeader displaySelectAll={false} adjustForCheckbox={false}>
                                 <TableRow>
                                     <TableHeaderColumn>ETH Token</TableHeaderColumn>
@@ -143,7 +147,11 @@ export class EthWrappers extends React.Component<EthWrappersProps, EthWrappersSt
                                         </div>
                                     </TableRowColumn>
                                     <TableRowColumn>
-                                        {userEtherBalanceInEth.toFixed(configs.AMOUNT_DISPLAY_PRECSION)} ETH
+                                        {!_.isUndefined(userEtherBalanceInEth) ? (
+                                            `${userEtherBalanceInEth.toFixed(configs.AMOUNT_DISPLAY_PRECSION)} ETH`
+                                        ) : (
+                                            <i className="zmdi zmdi-spinner zmdi-hc-spin" />
+                                        )}
                                     </TableRowColumn>
                                     <TableRowColumn>
                                         <EthWethConversionButton
@@ -157,6 +165,7 @@ export class EthWrappers extends React.Component<EthWrappersProps, EthWrappersSt
                                             dispatcher={this.props.dispatcher}
                                             blockchain={this.props.blockchain}
                                             userEtherBalanceInWei={this.props.userEtherBalanceInWei}
+                                            isDisabled={_.isUndefined(userEtherBalanceInEth)}
                                         />
                                     </TableRowColumn>
                                 </TableRow>
@@ -203,7 +212,7 @@ export class EthWrappers extends React.Component<EthWrappersProps, EthWrappersSt
                         it to the updated WETH token.
                     </div>
                     <div>
-                        <Table selectable={false} style={{ backgroundColor: colors.grey50 }}>
+                        <Table selectable={false} style={{ backgroundColor: 'transparent' }}>
                             <TableHeader displaySelectAll={false} adjustForCheckbox={false}>
                                 <TableRow>
                                     <TableHeaderColumn>WETH Version</TableHeaderColumn>

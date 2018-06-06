@@ -57,7 +57,7 @@ const TOKEN_COL_SPAN_SM = 1;
 
 const styles: Styles = {
     bgColor: {
-        backgroundColor: colors.grey50,
+        backgroundColor: 'transparent',
     },
 };
 
@@ -73,6 +73,7 @@ interface TokenBalancesProps {
     userEtherBalanceInWei: BigNumber;
     networkId: number;
     lastForceTokenStateRefetch: number;
+    isFullWidth?: boolean;
 }
 
 interface TokenBalancesState {
@@ -87,6 +88,7 @@ interface TokenBalancesState {
 export class TokenBalances extends React.Component<TokenBalancesProps, TokenBalancesState> {
     public static defaultProps: Partial<TokenBalancesProps> = {
         userEtherBalanceInWei: new BigNumber(0),
+        isFullWidth: false,
     };
     private _isUnmounted: boolean;
     public constructor(props: TokenBalancesProps) {
@@ -187,8 +189,9 @@ export class TokenBalances extends React.Component<TokenBalancesProps, TokenBala
             this.props.userEtherBalanceInWei,
             constants.DECIMAL_PLACES_ETH,
         );
+        const rootClassName = this.props.isFullWidth ? 'pb2' : 'lg-px4 md-px4 sm-px1 pb2';
         return (
-            <div className="lg-px4 md-px4 sm-px1 pb2">
+            <div className={rootClassName}>
                 <h3>{isTestNetwork ? 'Test ether' : 'Ether'}</h3>
                 <Divider />
                 <div className="pt2 pb2">
@@ -268,7 +271,7 @@ export class TokenBalances extends React.Component<TokenBalancesProps, TokenBala
                                 <div className="inline-block">Allowance</div>
                                 <HelpTooltip style={{ paddingLeft: 4 }} explanation={allowanceExplanation} />
                             </TableHeaderColumn>
-                            <TableHeaderColumn>Action</TableHeaderColumn>
+                            {isTestNetwork && <TableHeaderColumn>Action</TableHeaderColumn>}
                             {this.props.screenWidth !== ScreenWidths.Sm && <TableHeaderColumn>Send</TableHeaderColumn>}
                         </TableRow>
                     </TableHeader>
@@ -373,17 +376,17 @@ export class TokenBalances extends React.Component<TokenBalancesProps, TokenBala
                         refetchTokenStateAsync={this._refetchTokenStateAsync.bind(this, token.address)}
                     />
                 </TableRowColumn>
-                <TableRowColumn style={{ paddingLeft: actionPaddingX, paddingRight: actionPaddingX }}>
-                    {isMintable && (
-                        <LifeCycleRaisedButton
-                            labelReady="Mint"
-                            labelLoading={<span style={{ fontSize: 12 }}>Minting...</span>}
-                            labelComplete="Minted!"
-                            onClickAsyncFn={this._onMintTestTokensAsync.bind(this, token)}
-                        />
-                    )}
-                    {token.symbol === ZRX_TOKEN_SYMBOL &&
-                        utils.isTestNetwork(this.props.networkId) && (
+                {utils.isTestNetwork(this.props.networkId) && (
+                    <TableRowColumn style={{ paddingLeft: actionPaddingX, paddingRight: actionPaddingX }}>
+                        {isMintable && (
+                            <LifeCycleRaisedButton
+                                labelReady="Mint"
+                                labelLoading={<span style={{ fontSize: 12 }}>Minting...</span>}
+                                labelComplete="Minted!"
+                                onClickAsyncFn={this._onMintTestTokensAsync.bind(this, token)}
+                            />
+                        )}
+                        {token.symbol === ZRX_TOKEN_SYMBOL && (
                             <LifeCycleRaisedButton
                                 labelReady="Request"
                                 labelLoading="Sending..."
@@ -391,7 +394,8 @@ export class TokenBalances extends React.Component<TokenBalancesProps, TokenBala
                                 onClickAsyncFn={this._faucetRequestAsync.bind(this, false)}
                             />
                         )}
-                </TableRowColumn>
+                    </TableRowColumn>
+                )}
                 {this.props.screenWidth !== ScreenWidths.Sm && (
                     <TableRowColumn
                         style={{

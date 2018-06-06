@@ -13,6 +13,8 @@ interface GenerateOrderFormProps {
     blockchain: Blockchain;
     hashData: HashData;
     dispatcher: Dispatcher;
+    isFullWidth?: boolean;
+    shouldHideHeader?: boolean;
 }
 
 interface ConnectedState {
