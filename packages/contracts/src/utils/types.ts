@@ -147,3 +147,34 @@ export interface MatchOrder {
     leftSignature: string;
     rightSignature: string;
 }
+
+export interface ERC721Token {
+    address: string;
+    id: BigNumber;
+}
+
+// Combinatorial testing types
+
+export enum FeeRecipientAddressScenario {
+    BurnAddress = 'BURN_ADDRESS',
+    EthUserAddress = 'ETH_USER_ADDRESS',
+}
+
+export enum OrderAmountScenario {
+    Zero = 'ZERO',
+    NonZero = 'NON_ZERO',
+}
+
+export enum ExpirationTimeSecondsScenario {
+    InPast = 'IN_PAST',
+    InFuture = 'IN_FUTURE',
+}
+
+export enum AssetDataScenario {
+    ERC721ValidAssetProxyId = 'ERC721_VALID_ASSET_PROXY_ID',
+    ERC721InvalidAssetProxyId = 'ERC721_INVALID_ASSET_PROXY_ID',
+    ZRXFeeToken = 'ZRX_FEE_TOKEN',
+    ERC20InvalidAssetProxyId = 'ERC20_INVALID_ASSET_PROXY_ID',
+    ERC20FiveDecimals = 'ERC20_FIVE_DECIMALS',
+    ERC20NonZRXEighteenDecimals = 'ERC20_NON_ZRX_EIGHTEEN_DECIMALS',
+}
