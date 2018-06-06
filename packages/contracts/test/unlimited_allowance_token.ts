@@ -5,6 +5,7 @@ import 'make-promises-safe';
 
 import { DummyERC20TokenContract } from '../src/contract_wrappers/generated/dummy_e_r_c20_token';
 import { artifacts } from '../src/utils/artifacts';
+import { expectRevertOrAlwaysFailingTransactionAsync, expectRevertOrOtherErrorAsync } from '../src/utils/assertions';
 import { chaiSetup } from '../src/utils/chai_setup';
 import { constants } from '../src/utils/constants';
 import { provider, txDefaults, web3Wrapper } from '../src/utils/web3_wrapper';
@@ -53,8 +54,9 @@ describe('UnlimitedAllowanceToken', () => {
         it('should throw if owner has insufficient balance', async () => {
             const ownerBalance = await token.balanceOf.callAsync(owner);
             const amountToTransfer = ownerBalance.plus(1);
-            return expect(token.transfer.callAsync(spender, amountToTransfer, { from: owner })).to.be.rejectedWith(
-                constants.REVERT,
+            return expectRevertOrOtherErrorAsync(
+                token.transfer.callAsync(spender, amountToTransfer, { from: owner }),
+                constants.ERC20_INSUFFICIENT_BALANCE,
             );
         });
 
@@ -91,11 +93,12 @@ describe('UnlimitedAllowanceToken', () => {
                 await token.approve.sendTransactionAsync(spender, amountToTransfer, { from: owner }),
                 constants.AWAIT_TRANSACTION_MINED_MS,
             );
-            return expect(
+            return expectRevertOrOtherErrorAsync(
                 token.transferFrom.callAsync(owner, spender, amountToTransfer, {
                     from: spender,
                 }),
-            ).to.be.rejectedWith(constants.REVERT);
+                constants.ERC20_INSUFFICIENT_BALANCE,
+            );
         });
 
         it('should throw if spender has insufficient allowance', async () => {
@@ -106,11 +109,12 @@ describe('UnlimitedAllowanceToken', () => {
             const isSpenderAllowanceInsufficient = spenderAllowance.cmp(amountToTransfer) < 0;
             expect(isSpenderAllowanceInsufficient).to.be.true();
 
-            return expect(
+            return expectRevertOrOtherErrorAsync(
                 token.transferFrom.callAsync(owner, spender, amountToTransfer, {
                     from: spender,
                 }),
-            ).to.be.rejectedWith(constants.REVERT);
+                constants.ERC20_INSUFFICIENT_ALLOWANCE,
+            );
         });
 
         it('should return true on a 0 value transfer', async () => {

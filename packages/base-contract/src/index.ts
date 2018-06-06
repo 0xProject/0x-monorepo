@@ -80,8 +80,7 @@ export class BaseContract {
             // Awaiting https://github.com/Microsoft/TypeScript/pull/13288 to be merged
         } as any;
         if (_.isUndefined(txDataWithDefaults.gas) && !_.isUndefined(estimateGasAsync)) {
-            const estimatedGas = await estimateGasAsync(txData);
-            txDataWithDefaults.gas = estimatedGas;
+            txDataWithDefaults.gas = await estimateGasAsync(txData);
         }
         return txDataWithDefaults;
     }

@@ -9,6 +9,7 @@ import { ERC20ProxyContract } from '../../src/contract_wrappers/generated/e_r_c2
 import { ExchangeContract } from '../../src/contract_wrappers/generated/exchange';
 import { WhitelistContract } from '../../src/contract_wrappers/generated/whitelist';
 import { artifacts } from '../../src/utils/artifacts';
+import { expectRevertOrAlwaysFailingTransactionAsync } from '../../src/utils/assertions';
 import { chaiSetup } from '../../src/utils/chai_setup';
 import { constants } from '../../src/utils/constants';
 import { ERC20Wrapper } from '../../src/utils/erc20_wrapper';
@@ -124,8 +125,8 @@ describe('Exchange transactions', () => {
             });
 
             it('should throw if not called by specified sender', async () => {
-                return expect(exchangeWrapper.executeTransactionAsync(signedTx, takerAddress)).to.be.rejectedWith(
-                    constants.REVERT,
+                return expectRevertOrAlwaysFailingTransactionAsync(
+                    exchangeWrapper.executeTransactionAsync(signedTx, takerAddress),
                 );
             });
 
@@ -166,8 +167,8 @@ describe('Exchange transactions', () => {
 
             it('should throw if the a 0x transaction with the same transactionHash has already been executed', async () => {
                 await exchangeWrapper.executeTransactionAsync(signedTx, senderAddress);
-                return expect(exchangeWrapper.executeTransactionAsync(signedTx, senderAddress)).to.be.rejectedWith(
-                    constants.REVERT,
+                return expectRevertOrAlwaysFailingTransactionAsync(
+                    exchangeWrapper.executeTransactionAsync(signedTx, senderAddress),
                 );
             });
 
@@ -185,15 +186,15 @@ describe('Exchange transactions', () => {
             });
 
             it('should throw if not called by specified sender', async () => {
-                return expect(exchangeWrapper.executeTransactionAsync(signedTx, makerAddress)).to.be.rejectedWith(
-                    constants.REVERT,
+                return expectRevertOrAlwaysFailingTransactionAsync(
+                    exchangeWrapper.executeTransactionAsync(signedTx, makerAddress),
                 );
             });
 
             it('should cancel the order when signed by maker and called by sender', async () => {
                 await exchangeWrapper.executeTransactionAsync(signedTx, senderAddress);
-                return expect(exchangeWrapper.fillOrderAsync(signedOrder, senderAddress)).to.be.rejectedWith(
-                    constants.REVERT,
+                return expectRevertOrAlwaysFailingTransactionAsync(
+                    exchangeWrapper.fillOrderAsync(signedOrder, senderAddress),
                 );
             });
         });
@@ -242,7 +243,7 @@ describe('Exchange transactions', () => {
             orderWithoutExchangeAddress = orderUtils.getOrderWithoutExchangeAddress(signedOrder);
             const takerAssetFillAmount = signedOrder.takerAssetAmount;
             const salt = generatePseudoRandomSalt();
-            return expect(
+            return expectRevertOrAlwaysFailingTransactionAsync(
                 whitelist.fillOrderIfWhitelisted.sendTransactionAsync(
                     orderWithoutExchangeAddress,
                     takerAssetFillAmount,
@@ -250,7 +251,7 @@ describe('Exchange transactions', () => {
                     signedOrder.signature,
                     { from: takerAddress },
                 ),
-            ).to.be.rejectedWith(constants.REVERT);
+            );
         });
 
         it('should revert if taker has not been whitelisted', async () => {
@@ -262,7 +263,7 @@ describe('Exchange transactions', () => {
             orderWithoutExchangeAddress = orderUtils.getOrderWithoutExchangeAddress(signedOrder);
             const takerAssetFillAmount = signedOrder.takerAssetAmount;
             const salt = generatePseudoRandomSalt();
-            return expect(
+            return expectRevertOrAlwaysFailingTransactionAsync(
                 whitelist.fillOrderIfWhitelisted.sendTransactionAsync(
                     orderWithoutExchangeAddress,
                     takerAssetFillAmount,
@@ -270,7 +271,7 @@ describe('Exchange transactions', () => {
                     signedOrder.signature,
                     { from: takerAddress },
                 ),
-            ).to.be.rejectedWith(constants.REVERT);
+            );
         });
 
         it('should fill the order if maker and taker have been whitelisted', async () => {
