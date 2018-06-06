@@ -11,8 +11,9 @@
     "main": "lib/src/index.js",
     "types": "lib/src/index.d.ts",
     "scripts": {
-        "watch": "tsc -w",
-        "prebuild": "run-s clean generate_contract_wrappers",
+        "watch_without_deps": "yarn pre_build && tsc -w",
+        "build": "yarn pre_build && tsc && copyfiles -u 3 './lib/src/monorepo_scripts/**/*' ./scripts",
+        "pre_build": "run-s generate_contract_wrappers update_test_artifacts update_compact_artifacts",
         "generate_contract_wrappers": "abi-gen --abis 'src/compact_artifacts/@(Exchange|Token|TokenTransferProxy|EtherToken|TokenRegistry|DummyToken).json' --template ../contract_templates/contract.handlebars --partials '../contract_templates/partials/**/*.handlebars' --output src/contract_wrappers/generated --backend ethers && prettier --write 'src/contract_wrappers/generated/**.ts'",
         "lint": "tslint --project .",
         "test:circleci": "run-s test:coverage",
@@ -20,9 +21,9 @@
         "rebuild_and_test": "run-s build test",
         "test:coverage": "nyc npm run test --all && yarn coverage:report:lcov",
         "coverage:report:lcov": "nyc report --reporter=text-lcov > coverage/lcov.info",
-        "update_artifacts": "for i in ${npm_package_config_contracts}; do copyfiles -u 4 ../migrations/artifacts/1.0.0/$i.json test/artifacts; done;",
+        "update_compact_artifacts": "copyfiles -u 2 './src/compact_artifacts/**/*.json' ./lib/src/compact_artifacts",
+        "update_test_artifacts": "for i in ${npm_package_config_contracts}; do copyfiles -u 4 ../migrations/artifacts/1.0.0/$i.json test/artifacts; done;",
         "clean": "shx rm -rf _bundles lib test_temp scripts test/artifacts src/contract_wrappers/generated",
-        "build": "tsc && yarn update_artifacts && copyfiles -u 2 './src/compact_artifacts/**/*.json' ./lib/src/compact_artifacts && copyfiles -u 3 './lib/src/monorepo_scripts/**/*' ./scripts",
         "run_mocha": "mocha lib/test/**/*_test.js lib/test/global_hooks.js --timeout 10000 --bail --exit",
         "manual:postpublish": "yarn build; node ./scripts/postpublish.js"
     },

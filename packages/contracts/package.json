@@ -11,10 +11,10 @@
         "test": "test"
     },
     "scripts": {
-        "watch": "tsc -w",
-        "prebuild": "run-s clean compile copy_artifacts generate_contract_wrappers",
+        "watch_without_deps": "yarn pre_build && tsc -w",
+        "build": "yarn pre_build && tsc",
+        "pre_build": "run-s compile copy_artifacts generate_contract_wrappers",
         "copy_artifacts": "copyfiles -u 4 '../migrations/artifacts/2.0.0/**/*' ./lib/src/artifacts;",
-        "build": "tsc",
         "test": "yarn run_mocha",
         "rebuild_and_test": "run-s build test",
         "test:coverage": "SOLIDITY_COVERAGE=true run-s build run_mocha coverage:report:text coverage:report:lcov",

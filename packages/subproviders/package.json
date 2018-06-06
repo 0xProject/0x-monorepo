@@ -8,9 +8,9 @@
     "types": "lib/src/index.d.ts",
     "license": "Apache-2.0",
     "scripts": {
-        "watch": "tsc -w",
-        "clean": "shx rm -rf lib scripts",
+        "watch_without_deps": "tsc -w",
         "build": "tsc && copyfiles -u 3 './lib/src/monorepo_scripts/**/*' ./scripts",
+        "clean": "shx rm -rf lib scripts",
         "lint": "tslint --project .",
         "run_mocha_unit": "mocha lib/test/unit/**/*_test.js --timeout 10000 --bail --exit",
         "run_mocha_integration": "mocha lib/test/integration/**/*_test.js --timeout 10000 --bail --exit",
