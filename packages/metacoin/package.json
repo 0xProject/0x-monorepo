@@ -8,7 +8,7 @@
     "description": "Example solidity project using 0x dev tools",
     "scripts": {
         "watch": "tsc -w",
-        "lint": "tslint --project .",
+        "lint": "tslint --project . --exclude **/src/contract_wrappers/**/*",
         "clean": "shx rm -rf lib artifacts src/contract_wrappers",
         "prebuild": "run-s clean compile generate_contract_wrappers copy_artifacts",
         "copy_artifacts": "copyfiles './artifacts/**/*' './contracts/**/*' ./lib",

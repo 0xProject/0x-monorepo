@@ -20,7 +20,7 @@
         "test:coverage": "nyc npm run test --all && yarn coverage:report:lcov",
         "coverage:report:lcov": "nyc report --reporter=text-lcov > coverage/lcov.info",
         "clean": "shx rm -rf lib scripts lib/src/artifacts src/generated_contract_wrappers",
-        "lint": "tslint --project .",
+        "lint": "tslint --project . --exclude **/src/generated_contract_wrappers/**/*",
         "manual:postpublish": "yarn build; node ./scripts/postpublish.js",
         "docs:stage": "node scripts/stage_docs.js",
         "docs:json": "typedoc --excludePrivate --excludeExternals --target ES5 --json $JSON_FILE_PATH $PROJECT_FILES",
