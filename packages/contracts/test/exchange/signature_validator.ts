@@ -5,7 +5,7 @@ import { BigNumber } from '@0xproject/utils';
 import * as chai from 'chai';
 import ethUtil = require('ethereumjs-util');
 
-import { TestSignatureValidatorContract } from '../../src/contract_wrappers/generated/test_signature_validator';
+import { TestSignatureValidatorContract } from '../../src/generated_contract_wrappers/test_signature_validator';
 import { addressUtils } from '../../src/utils/address_utils';
 import { artifacts } from '../../src/utils/artifacts';
 import { chaiSetup } from '../../src/utils/chai_setup';

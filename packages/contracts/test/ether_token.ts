@@ -4,7 +4,7 @@ import { Web3Wrapper } from '@0xproject/web3-wrapper';
 import * as chai from 'chai';
 import 'make-promises-safe';
 
-import { WETH9Contract } from '../src/contract_wrappers/generated/weth9';
+import { WETH9Contract } from '../src/generated_contract_wrappers/weth9';
 import { artifacts } from '../src/utils/artifacts';
 import { chaiSetup } from '../src/utils/chai_setup';
 import { constants } from '../src/utils/constants';

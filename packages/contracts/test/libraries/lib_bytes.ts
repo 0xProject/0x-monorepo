@@ -8,7 +8,7 @@ import { LogWithDecodedArgs, TransactionReceiptWithDecodedLogs } from 'ethereum-
 import ethUtil = require('ethereumjs-util');
 import * as Web3 from 'web3';
 
-import { TestLibBytesContract } from '../../src/contract_wrappers/generated/test_lib_bytes';
+import { TestLibBytesContract } from '../../src/generated_contract_wrappers/test_lib_bytes';
 import { artifacts } from '../../src/utils/artifacts';
 import { chaiSetup } from '../../src/utils/chai_setup';
 import { constants } from '../../src/utils/constants';

@@ -7,15 +7,15 @@ import { LogWithDecodedArgs } from 'ethereum-types';
 import ethUtil = require('ethereumjs-util');
 import * as _ from 'lodash';
 
-import { DummyERC20TokenContract } from '../contract_wrappers/generated/dummy_e_r_c20_token';
-import { DummyERC721TokenContract } from '../contract_wrappers/generated/dummy_e_r_c721_token';
-import { ERC20ProxyContract } from '../contract_wrappers/generated/e_r_c20_proxy';
-import { ERC721ProxyContract } from '../contract_wrappers/generated/e_r_c721_proxy';
+import { DummyERC20TokenContract } from '../generated_contract_wrappers/dummy_e_r_c20_token';
+import { DummyERC721TokenContract } from '../generated_contract_wrappers/dummy_e_r_c721_token';
+import { ERC20ProxyContract } from '../generated_contract_wrappers/e_r_c20_proxy';
+import { ERC721ProxyContract } from '../generated_contract_wrappers/e_r_c721_proxy';
 import {
     CancelContractEventArgs,
     ExchangeContract,
     FillContractEventArgs,
-} from '../contract_wrappers/generated/exchange';
+} from '../generated_contract_wrappers/exchange';
 import { chaiSetup } from '../utils/chai_setup';
 import { constants } from '../utils/constants';
 import { ERC20Wrapper } from '../utils/erc20_wrapper';

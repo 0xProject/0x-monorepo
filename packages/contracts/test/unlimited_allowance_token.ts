@@ -5,7 +5,7 @@ import * as chai from 'chai';
 import 'make-promises-safe';
 import * as Web3 from 'web3';
 
-import { DummyERC20TokenContract } from '../src/contract_wrappers/generated/dummy_e_r_c20_token';
+import { DummyERC20TokenContract } from '../src/generated_contract_wrappers/dummy_e_r_c20_token';
 import { artifacts } from '../src/utils/artifacts';
 import { chaiSetup } from '../src/utils/chai_setup';
 import { constants } from '../src/utils/constants';

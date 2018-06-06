@@ -5,7 +5,7 @@ import * as chai from 'chai';
 import 'make-promises-safe';
 import * as Web3 from 'web3';
 
-import { ZRXTokenContract } from '../src/contract_wrappers/generated/zrx_token';
+import { ZRXTokenContract } from '../src/generated_contract_wrappers/zrx_token';
 import { artifacts } from '../src/utils/artifacts';
 import { chaiSetup } from '../src/utils/chai_setup';
 import { constants } from '../src/utils/constants';

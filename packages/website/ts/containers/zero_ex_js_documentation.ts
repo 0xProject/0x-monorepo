@@ -103,6 +103,9 @@ const docsInfoConfig: DocsInfoConfig = {
             '"0x.js/src/contract_wrappers/generated/ether_token"',
             '"0x.js/src/contract_wrappers/generated/token"',
             '"0x.js/src/contract_wrappers/generated/exchange"',
+            '"0x.js/src/generated_contract_wrappers/ether_token"',
+            '"0x.js/src/generated_contract_wrappers/token"',
+            '"0x.js/src/generated_contract_wrappers/exchange"',
         ],
     },
     menuSubsectionToVersionWhenIntroduced: {

@@ -7,7 +7,7 @@ import * as _ from 'lodash';
 import 'make-promises-safe';
 import * as Web3 from 'web3';
 
-import { TokenRegistryContract } from '../src/contract_wrappers/generated/token_registry';
+import { TokenRegistryContract } from '../src/generated_contract_wrappers/token_registry';
 import { artifacts } from '../src/utils/artifacts';
 import { chaiSetup } from '../src/utils/chai_setup';
 import { constants } from '../src/utils/constants';

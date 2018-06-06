@@ -4,7 +4,7 @@ import * as chai from 'chai';
 import 'make-promises-safe';
 import * as Web3 from 'web3';
 
-import { MixinAuthorizableContract } from '../../src/contract_wrappers/generated/mixin_authorizable';
+import { MixinAuthorizableContract } from '../../src/generated_contract_wrappers/mixin_authorizable';
 import { artifacts } from '../../src/utils/artifacts';
 import { chaiSetup } from '../../src/utils/chai_setup';
 import { constants } from '../../src/utils/constants';
