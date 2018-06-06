@@ -73,6 +73,7 @@ interface TokenBalancesProps {
     userEtherBalanceInWei: BigNumber;
     networkId: number;
     lastForceTokenStateRefetch: number;
+    isFullWidth?: boolean;
 }
 
 interface TokenBalancesState {
@@ -87,6 +88,7 @@ interface TokenBalancesState {
 export class TokenBalances extends React.Component<TokenBalancesProps, TokenBalancesState> {
     public static defaultProps: Partial<TokenBalancesProps> = {
         userEtherBalanceInWei: new BigNumber(0),
+        isFullWidth: false,
     };
     private _isUnmounted: boolean;
     public constructor(props: TokenBalancesProps) {
@@ -187,8 +189,9 @@ export class TokenBalances extends React.Component<TokenBalancesProps, TokenBala
             this.props.userEtherBalanceInWei,
             constants.DECIMAL_PLACES_ETH,
         );
+        const rootClassName = this.props.isFullWidth ? 'pb2' : 'lg-px4 md-px4 sm-px1 pb2';
         return (
-            <div className="lg-px4 md-px4 sm-px1 pb2">
+            <div className={rootClassName}>
                 <h3>{isTestNetwork ? 'Test ether' : 'Ether'}</h3>
                 <Divider />
                 <div className="pt2 pb2">
