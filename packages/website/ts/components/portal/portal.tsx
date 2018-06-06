@@ -439,6 +439,8 @@ export class Portal extends React.Component<PortalProps, PortalState> {
                 tokenByAddress={this.props.tokenByAddress}
                 userAddress={this.props.userAddress}
                 networkId={this.props.networkId}
+                isFullWidth={true}
+                shouldRenderHeader={false}
             />
         );
     }
