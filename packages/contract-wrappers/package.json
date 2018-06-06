@@ -69,7 +69,6 @@
         "npm-run-all": "^4.1.2",
         "nyc": "^11.0.1",
         "opn-cli": "^3.1.0",
-        "prettier": "^1.11.1",
         "shx": "^0.2.2",
         "sinon": "^4.0.0",
         "source-map-support": "^0.5.0",

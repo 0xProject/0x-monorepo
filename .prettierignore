@@ -1,5 +1,14 @@
 lib
 .nyc_output
+/packages/0x.js/src/contract_wrappers/generated/
+/packages/contracts/src/contract_wrappers/generated/
+/packages/contract-wrappers/src/contract_wrappers/generated/
+/packages/metacoin/src/contract_wrappers
+/packages/fill-scenarios/src/generated_contract_wrappers/
+/packages/order-watcher/src/generated_contract_wrappers/
+/packages/order-utils/src/generated_contract_wrappers/
+/packages/migrations/src/v1/contract_wrappers
+/packages/migrations/src/v2/contract_wrappers
 /packages/0x.js/test/artifacts
 /packages/contracts/src/artifacts
 /packages/metacoin/artifacts
