@@ -8,7 +8,7 @@ let firstAccount: string | undefined;
 /**
  * Increases time by the given number of seconds and then mines a block so that
  * the current block timestamp has the offset applied.
- * @param seconds the Promise which is expected to reject
+ * @param seconds the number of seconds by which to incrase the time offset.
  * @returns a new Promise which will resolve with the new total time offset or
  * reject if the time could not be increased.
  */

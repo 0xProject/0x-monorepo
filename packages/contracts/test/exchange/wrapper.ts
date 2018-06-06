@@ -201,6 +201,9 @@ describe('Exchange wrappers', () => {
 
             await exchangeWrapper.fillOrderNoThrowAsync(signedOrder, takerAddress, {
                 takerAssetFillAmount,
+                // HACK(albrow): We need to hardcode the gas estimate here because
+                // the Geth gas estimator doesn't work with the way we use
+                // delegatecall and swallow errors.
                 gas: 250000,
             });
 
@@ -365,6 +368,9 @@ describe('Exchange wrappers', () => {
             const takerAssetFillAmount = signedOrder.takerAssetAmount;
             await exchangeWrapper.fillOrderNoThrowAsync(signedOrder, takerAddress, {
                 takerAssetFillAmount,
+                // HACK(albrow): We need to hardcode the gas estimate here because
+                // the Geth gas estimator doesn't work with the way we use
+                // delegatecall and swallow errors.
                 gas: 270000,
             });
             // Verify post-conditions
@@ -541,6 +547,9 @@ describe('Exchange wrappers', () => {
 
                 await exchangeWrapper.batchFillOrdersNoThrowAsync(signedOrders, takerAddress, {
                     takerAssetFillAmounts,
+                    // HACK(albrow): We need to hardcode the gas estimate here because
+                    // the Geth gas estimator doesn't work with the way we use
+                    // delegatecall and swallow errors.
                     gas: 600000,
                 });
 
@@ -598,6 +607,9 @@ describe('Exchange wrappers', () => {
                 const newOrders = [invalidOrder, ...validOrders];
                 await exchangeWrapper.batchFillOrdersNoThrowAsync(newOrders, takerAddress, {
                     takerAssetFillAmounts,
+                    // HACK(albrow): We need to hardcode the gas estimate here because
+                    // the Geth gas estimator doesn't work with the way we use
+                    // delegatecall and swallow errors.
                     gas: 450000,
                 });
 
@@ -761,6 +773,9 @@ describe('Exchange wrappers', () => {
                 });
                 await exchangeWrapper.marketSellOrdersNoThrowAsync(signedOrders, takerAddress, {
                     takerAssetFillAmount,
+                    // HACK(albrow): We need to hardcode the gas estimate here because
+                    // the Geth gas estimator doesn't work with the way we use
+                    // delegatecall and swallow errors.
                     gas: 600000,
                 });
 
@@ -940,6 +955,9 @@ describe('Exchange wrappers', () => {
                 });
                 await exchangeWrapper.marketSellOrdersNoThrowAsync(signedOrders, takerAddress, {
                     takerAssetFillAmount,
+                    // HACK(albrow): We need to hardcode the gas estimate here because
+                    // the Geth gas estimator doesn't work with the way we use
+                    // delegatecall and swallow errors.
                     gas: 600000,
                 });
 

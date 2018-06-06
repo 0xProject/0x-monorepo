@@ -416,7 +416,9 @@ describe('Exchange core', () => {
                 makerAssetAmount: Web3Wrapper.toBaseUnitAmount(new BigNumber(100), 18),
                 takerAssetAmount: Web3Wrapper.toBaseUnitAmount(new BigNumber(200), 18),
             });
-            return expectRevertOrAlwaysFailingTransactionAsync(exchangeWrapper.fillOrderAsync(signedOrder, takerAddress));
+            return expectRevertOrAlwaysFailingTransactionAsync(
+                exchangeWrapper.fillOrderAsync(signedOrder, takerAddress),
+            );
         });
 
         it('should throw if signature is invalid', async () => {
@@ -431,7 +433,9 @@ describe('Exchange core', () => {
             const invalidSigBuff = Buffer.concat([v, invalidR, invalidS, signatureType]);
             const invalidSigHex = `0x${invalidSigBuff.toString('hex')}`;
             signedOrder.signature = invalidSigHex;
-            return expectRevertOrAlwaysFailingTransactionAsync(exchangeWrapper.fillOrderAsync(signedOrder, takerAddress));
+            return expectRevertOrAlwaysFailingTransactionAsync(
+                exchangeWrapper.fillOrderAsync(signedOrder, takerAddress),
+            );
         });
 
         it('should throw if makerAssetAmount is 0', async () => {
@@ -439,7 +443,9 @@ describe('Exchange core', () => {
                 makerAssetAmount: new BigNumber(0),
             });
 
-            return expectRevertOrAlwaysFailingTransactionAsync(exchangeWrapper.fillOrderAsync(signedOrder, takerAddress));
+            return expectRevertOrAlwaysFailingTransactionAsync(
+                exchangeWrapper.fillOrderAsync(signedOrder, takerAddress),
+            );
         });
 
         it('should throw if takerAssetAmount is 0', async () => {
@@ -447,7 +453,9 @@ describe('Exchange core', () => {
                 takerAssetAmount: new BigNumber(0),
             });
 
-            return expectRevertOrAlwaysFailingTransactionAsync(exchangeWrapper.fillOrderAsync(signedOrder, takerAddress));
+            return expectRevertOrAlwaysFailingTransactionAsync(
+                exchangeWrapper.fillOrderAsync(signedOrder, takerAddress),
+            );
         });
 
         it('should throw if takerAssetFillAmount is 0', async () => {
@@ -465,14 +473,18 @@ describe('Exchange core', () => {
                 makerAssetAmount: Web3Wrapper.toBaseUnitAmount(new BigNumber(100000), 18),
             });
 
-            return expectRevertOrAlwaysFailingTransactionAsync(exchangeWrapper.fillOrderAsync(signedOrder, takerAddress));
+            return expectRevertOrAlwaysFailingTransactionAsync(
+                exchangeWrapper.fillOrderAsync(signedOrder, takerAddress),
+            );
         });
 
         it('should throw if taker erc20Balances are too low to fill order', async () => {
             signedOrder = orderFactory.newSignedOrder({
                 takerAssetAmount: Web3Wrapper.toBaseUnitAmount(new BigNumber(100000), 18),
             });
-            return expectRevertOrAlwaysFailingTransactionAsync(exchangeWrapper.fillOrderAsync(signedOrder, takerAddress));
+            return expectRevertOrAlwaysFailingTransactionAsync(
+                exchangeWrapper.fillOrderAsync(signedOrder, takerAddress),
+            );
         });
 
         it('should throw if maker allowances are too low to fill order', async () => {
@@ -482,7 +494,9 @@ describe('Exchange core', () => {
                 }),
                 constants.AWAIT_TRANSACTION_MINED_MS,
             );
-            return expectRevertOrAlwaysFailingTransactionAsync(exchangeWrapper.fillOrderAsync(signedOrder, takerAddress));
+            return expectRevertOrAlwaysFailingTransactionAsync(
+                exchangeWrapper.fillOrderAsync(signedOrder, takerAddress),
+            );
         });
 
         it('should throw if taker allowances are too low to fill order', async () => {
@@ -492,7 +506,9 @@ describe('Exchange core', () => {
                 }),
                 constants.AWAIT_TRANSACTION_MINED_MS,
             );
-            return expectRevertOrAlwaysFailingTransactionAsync(exchangeWrapper.fillOrderAsync(signedOrder, takerAddress));
+            return expectRevertOrAlwaysFailingTransactionAsync(
+                exchangeWrapper.fillOrderAsync(signedOrder, takerAddress),
+            );
         });
 
         it('should throw if an order is expired', async () => {
@@ -520,7 +536,9 @@ describe('Exchange core', () => {
         });
 
         it('should throw if not sent by maker', async () => {
-            return expectRevertOrAlwaysFailingTransactionAsync(exchangeWrapper.cancelOrderAsync(signedOrder, takerAddress));
+            return expectRevertOrAlwaysFailingTransactionAsync(
+                exchangeWrapper.cancelOrderAsync(signedOrder, takerAddress),
+            );
         });
 
         it('should throw if makerAssetAmount is 0', async () => {
@@ -528,7 +546,9 @@ describe('Exchange core', () => {
                 makerAssetAmount: new BigNumber(0),
             });
 
-            return expectRevertOrAlwaysFailingTransactionAsync(exchangeWrapper.cancelOrderAsync(signedOrder, makerAddress));
+            return expectRevertOrAlwaysFailingTransactionAsync(
+                exchangeWrapper.cancelOrderAsync(signedOrder, makerAddress),
+            );
         });
 
         it('should throw if takerAssetAmount is 0', async () => {
@@ -536,7 +556,9 @@ describe('Exchange core', () => {
                 takerAssetAmount: new BigNumber(0),
             });
 
-            return expectRevertOrAlwaysFailingTransactionAsync(exchangeWrapper.cancelOrderAsync(signedOrder, makerAddress));
+            return expectRevertOrAlwaysFailingTransactionAsync(
+                exchangeWrapper.cancelOrderAsync(signedOrder, makerAddress),
+            );
         });
 
         it('should be able to cancel a full order', async () => {
@@ -648,6 +670,9 @@ describe('Exchange core', () => {
                 }),
             ];
             await exchangeWrapper.batchFillOrdersNoThrowAsync(signedOrders, takerAddress, {
+                // HACK(albrow): We need to hardcode the gas estimate here because
+                // the Geth gas estimator doesn't work with the way we use
+                // delegatecall and swallow errors.
                 gas: 490000,
             });
 

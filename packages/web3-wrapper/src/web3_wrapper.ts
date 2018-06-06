@@ -422,9 +422,11 @@ export class Web3Wrapper {
         return receipt;
     }
     /**
-     * Sets the current head of the local chain by block number. Note, this is a
-     * destructive action and may severely damage your chain. Use with extreme
-     * caution.
+     * Calls the 'debug_setHead' JSON RPC method, which sets the current head of
+     * the local chain by block number. Note, this is a destructive action and
+     * may severely damage your chain. Use with extreme caution. As of now, this
+     * is only supported by Geth. It sill throw if the 'debug_setHead' method is
+     * not supported.
      * @param  blockNumber The block number to reset to.
      */
     public async setHeadAsync(blockNumber: number): Promise<void> {
