@@ -414,7 +414,7 @@ export class TokenWrapper extends ContractWrapper {
         );
         return logs;
     }
-    // tslint:disable:no-unused-variable
+    // tslint:disable-next-line:no-unused-variable
     private _invalidateContractInstances(): void {
         this.unsubscribeAll();
         this._tokenContractsByAddress = {};
