@@ -5,7 +5,7 @@ import 'make-promises-safe';
 
 import { DummyERC20TokenContract } from '../src/generated_contract_wrappers/dummy_e_r_c20_token';
 import { artifacts } from '../src/utils/artifacts';
-import { expectRevertOrAlwaysFailingTransactionAsync, expectRevertOrOtherErrorAsync } from '../src/utils/assertions';
+import { expectRevertOrOtherErrorAsync } from '../src/utils/assertions';
 import { chaiSetup } from '../src/utils/chai_setup';
 import { constants } from '../src/utils/constants';
 import { provider, txDefaults, web3Wrapper } from '../src/utils/web3_wrapper';
