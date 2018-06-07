@@ -216,6 +216,7 @@ describe('Exchange transactions', () => {
                 await exchange.setSignatureValidatorApproval.sendTransactionAsync(whitelist.address, isApproved, {
                     from: takerAddress,
                 }),
+                constants.AWAIT_TRANSACTION_MINED_MS,
             );
             const defaultOrderParams = {
                 ...constants.STATIC_ORDER_PARAMS,
@@ -238,6 +239,7 @@ describe('Exchange transactions', () => {
             const isApproved = true;
             await web3Wrapper.awaitTransactionSuccessAsync(
                 await whitelist.updateWhitelistStatus.sendTransactionAsync(takerAddress, isApproved, { from: owner }),
+                constants.AWAIT_TRANSACTION_MINED_MS,
             );
 
             orderWithoutExchangeAddress = orderUtils.getOrderWithoutExchangeAddress(signedOrder);
@@ -258,6 +260,7 @@ describe('Exchange transactions', () => {
             const isApproved = true;
             await web3Wrapper.awaitTransactionSuccessAsync(
                 await whitelist.updateWhitelistStatus.sendTransactionAsync(makerAddress, isApproved, { from: owner }),
+                constants.AWAIT_TRANSACTION_MINED_MS,
             );
 
             orderWithoutExchangeAddress = orderUtils.getOrderWithoutExchangeAddress(signedOrder);
@@ -278,10 +281,12 @@ describe('Exchange transactions', () => {
             const isApproved = true;
             await web3Wrapper.awaitTransactionSuccessAsync(
                 await whitelist.updateWhitelistStatus.sendTransactionAsync(makerAddress, isApproved, { from: owner }),
+                constants.AWAIT_TRANSACTION_MINED_MS,
             );
 
             await web3Wrapper.awaitTransactionSuccessAsync(
                 await whitelist.updateWhitelistStatus.sendTransactionAsync(takerAddress, isApproved, { from: owner }),
+                constants.AWAIT_TRANSACTION_MINED_MS,
             );
 
             orderWithoutExchangeAddress = orderUtils.getOrderWithoutExchangeAddress(signedOrder);
@@ -295,6 +300,7 @@ describe('Exchange transactions', () => {
                     signedOrder.signature,
                     { from: takerAddress },
                 ),
+                constants.AWAIT_TRANSACTION_MINED_MS,
             );
 
             const newBalances = await erc20Wrapper.getBalancesAsync();
