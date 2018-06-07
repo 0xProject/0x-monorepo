@@ -7,28 +7,29 @@ import RpcSubprovider = require('web3-provider-engine/subproviders/rpc');
 import { EthLightwalletSubprovider } from '../../src';
 import { DoneCallback } from '../../src/types';
 import { chaiSetup } from '../chai_setup';
+import { ganacheSubprovider } from '../utils/ganache_subprovider';
 import { reportCallbackErrors } from '../utils/report_callback_errors';
 
 chaiSetup.configure();
 const expect = chai.expect;
 const FAKE_ADDRESS = '0x44be42fd88e22387c43ba9b75941aa3e680dae25';
 const NUM_GENERATED_ADDRESSES = 10;
+const PASSWORD = 'supersecretpassword99';
+const SEED_PHRASE = 'dilemma hollow outer pony cube season start stereo surprise when edit blast';
+const SALT = 'kvODghzs7Ff1uqHyI0P3wI4Hso4w4iWT2e9qmrWz0y4';
+const HD_PATH_STRING = `m/44'/60'/0'`;
 
 describe('EthLightwalletSubprovider', () => {
-    const seedPhrase: string = 'dilemma hollow outer pony cube season start stereo surprise when edit blast';
-    const salt: string = 'kvODghzs7Ff1uqHyI0P3wI4Hso4w4iWT2e9qmrWz0y4';
-    const password: string = 'supersecretpassword99';
-
     let ethLightwalletSubprovider: EthLightwalletSubprovider;
     before(async () => {
         const options = {
-            password,
-            seedPhrase,
-            salt,
-            hdPathString: `m/44'/60'/0'`,
+            password: PASSWORD,
+            seedPhrase: SEED_PHRASE,
+            salt: SALT,
+            hdPathString: HD_PATH_STRING,
         };
 
-        const createVaultAsync = async (vaultOptions: any) => {
+        const createVaultAsync = async (vaultOptions: lightwallet.VaultOptions) => {
             return new Promise<lightwallet.keystore>(resolve => {
                 // Create Vault
                 lightwallet.keystore.createVault(vaultOptions, (err: Error, vaultKeystore) => {
@@ -37,9 +38,9 @@ describe('EthLightwalletSubprovider', () => {
             });
         };
 
-        const deriveKeyFromPasswordAsync = async (vaultKeystore: any) => {
+        const deriveKeyFromPasswordAsync = async (vaultKeystore: lightwallet.keystore) => {
             return new Promise<Uint8Array>(resolve => {
-                keystore.keyFromPassword(password, (err: Error, passwordDerivedKey: Uint8Array) => {
+                vaultKeystore.keyFromPassword(PASSWORD, (err: Error, passwordDerivedKey: Uint8Array) => {
                     resolve(passwordDerivedKey);
                 });
             });
@@ -82,10 +83,7 @@ describe('EthLightwalletSubprovider', () => {
         before(() => {
             provider = new Web3ProviderEngine();
             provider.addProvider(ethLightwalletSubprovider);
-            const httpProvider = new RpcSubprovider({
-                rpcUrl: 'http://localhost:8545',
-            });
-            provider.addProvider(httpProvider);
+            provider.addProvider(ganacheSubprovider);
             provider.start();
         });
         describe('success cases', () => {

@@ -10,16 +10,20 @@ import { PartialTxParams, WalletSubproviderErrors } from '../types';
 import { BaseWalletSubprovider } from './base_wallet_subprovider';
 
 /*
- * This class implements the web3-provider-engine subprovider interface and forwards
- * requests involving user accounts and signing operations to eth-lightwallet
- *
- * Source: https://github.com/MetaMask/provider-engine/blob/master/subproviders/subprovider.js
+ * This class implements the [web3-provider-engine](https://github.com/MetaMask/provider-engine) subprovider interface.
+ * This subprovider intercepts all account related RPC requests (e.g message/transaction signing, etc...) and
+ * re-routes them to [eth-lightwallet](https://github.com/ConsenSys/eth-lightwallet).
  */
 export class EthLightwalletSubprovider extends BaseWalletSubprovider {
     private _signing: lightwallet.signing;
     private _keystore: lightwallet.keystore;
     private _pwDerivedKey: Uint8Array;
-
+    /**
+     * Instantiates a EthLightwalletSubprovider
+     * @param signing The lightwallet module containing signing functions
+     * @param keystore An instance of the lightwallet keystore
+     * @param pwDerivedKey The users password derived key
+     */
     constructor(signing: lightwallet.signing, keystore: lightwallet.keystore, pwDerivedKey: Uint8Array) {
         super();
 
@@ -27,7 +31,6 @@ export class EthLightwalletSubprovider extends BaseWalletSubprovider {
         this._keystore = keystore;
         this._pwDerivedKey = pwDerivedKey;
     }
-
     /**
      * Retrieve the accounts associated with the eth-lightwallet instance.
      * This method is implicitly called when issuing a `eth_accounts` JSON RPC request
@@ -39,7 +42,6 @@ export class EthLightwalletSubprovider extends BaseWalletSubprovider {
         const accounts = this._keystore.getAddresses();
         return accounts;
     }
-
     /**
      * Signs a transaction with the account specificed by the `from` field in txParams.
      * If you've added this Subprovider to your app's provider, you can simply send
@@ -61,7 +63,6 @@ export class EthLightwalletSubprovider extends BaseWalletSubprovider {
 
         return signedTxHex;
     }
-
     /**
      * Sign a personal Ethereum signed message. The signing account will be the account
      * associated with the provided address.

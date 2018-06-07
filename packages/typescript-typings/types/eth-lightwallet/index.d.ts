@@ -20,8 +20,17 @@ declare module 'eth-lightwallet' {
     }
     export const signing: signing;
 
+    interface VaultOptions {
+        password: string;
+        seedPhrase: string;
+        salt?: string;
+        hdPathString: string;
+    }
     export class keystore {
-        public static createVault(options: any, callback?: (error: Error, keystore: keystore) => void): keystore;
+        public static createVault(
+            options: VaultOptions,
+            callback?: (error: Error, keystore: keystore) => void,
+        ): keystore;
         public static generateRandomSeed(): string;
         public static isSeedValid(seed: string): boolean;
         public static deserialize(keystore: string): keystore;
