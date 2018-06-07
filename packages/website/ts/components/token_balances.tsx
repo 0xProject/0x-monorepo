@@ -5,7 +5,7 @@ import {
     Styles,
     utils as sharedUtils,
 } from '@0xproject/react-shared';
-import { BigNumber, logUtils } from '@0xproject/utils';
+import { BigNumber, errorUtils, logUtils } from '@0xproject/utils';
 import { Web3Wrapper } from '@0xproject/web3-wrapper';
 import * as _ from 'lodash';
 import Dialog from 'material-ui/Dialog';
@@ -500,7 +500,7 @@ export class TokenBalances extends React.Component<TokenBalancesProps, TokenBala
                 return null; // No error to show
 
             default:
-                throw utils.spawnSwitchErr('errorType', this.state.errorType);
+                throw errorUtils.spawnSwitchErr('errorType', this.state.errorType);
         }
     }
     private _onErrorOccurred(errorType: BalanceErrs): void {
