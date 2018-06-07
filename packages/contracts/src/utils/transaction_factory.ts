@@ -26,21 +26,22 @@ export class TransactionFactory {
     public newSignedTransaction(data: string, signatureType: SignatureType = SignatureType.EthSign): SignedTransaction {
         const executeTransactionSchemaHashBuff = EIP712Utils.compileSchema(EIP712_EXECUTE_TRANSACTION_SCHEMA);
         const salt = generatePseudoRandomSalt();
-        const dataHash = crypto.solSHA3([ethUtil.toBuffer(data)]);
-        const executeTransactionDataHash = crypto.solSHA3([
-            executeTransactionSchemaHashBuff,
+        const signer = `0x${this._signerBuff.toString('hex')}`;
+        const executeTransactionData = {
             salt,
-            EIP712Utils.pad32Buffer(this._signerBuff),
-            dataHash,
-        ]);
-        const txHash = EIP712Utils.createEIP712Message(executeTransactionDataHash, this._exchangeAddress);
+            signer,
+            data,
+        };
+        const executeTransactionHashBuff = EIP712Utils.structHash(
+            EIP712_EXECUTE_TRANSACTION_SCHEMA,
+            executeTransactionData,
+        );
+        const txHash = EIP712Utils.createEIP712Message(executeTransactionHashBuff, this._exchangeAddress);
         const signature = signingUtils.signMessage(txHash, this._privateKey, signatureType);
         const signedTx = {
             exchangeAddress: this._exchangeAddress,
-            salt,
-            signer: `0x${this._signerBuff.toString('hex')}`,
-            data,
             signature: `0x${signature.toString('hex')}`,
+            ...executeTransactionData,
         };
         return signedTx;
     }

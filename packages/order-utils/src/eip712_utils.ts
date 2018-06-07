@@ -2,6 +2,7 @@ import { BigNumber } from '@0xproject/utils';
 import ethUtil = require('ethereumjs-util');
 import * as _ from 'lodash';
 
+import { assetProxyUtils } from './asset_proxy_utils';
 import { crypto } from './crypto';
 import { EIP712Schema } from './types';
 
@@ -19,6 +20,14 @@ const EIP712_DOMAIN_SCHEMA: EIP712Schema = {
     ],
 };
 
+enum EIP712Types {
+    String = 'string',
+    Bytes = 'bytes',
+    Address = 'address',
+    Bytes32 = 'bytes32',
+    Uint256 = 'uint256',
+}
+
 export const EIP712Utils = {
     /**
      * Compiles the EIP712Schema and returns the hash of the schema.
@@ -26,9 +35,7 @@ export const EIP712Utils = {
      * @return  The hash of the compiled schema
      */
     compileSchema(schema: EIP712Schema): Buffer {
-        const namedTypes = _.map(schema.parameters, parameter => `${parameter.type} ${parameter.name}`);
-        const namedTypesJoined = namedTypes.join(',');
-        const eip712Schema = `${schema.name}(${namedTypesJoined})`;
+        const eip712Schema = EIP712Utils._encodeType(schema);
         const eip712SchemaHashBuffer = crypto.solSHA3([eip712Schema]);
         return eip712SchemaHashBuffer;
     },
@@ -57,14 +64,44 @@ export const EIP712Utils = {
     },
     _getDomainSeparatorHashBuffer(exchangeAddress: string): Buffer {
         const domainSeparatorSchemaBuffer = EIP712Utils._getDomainSeparatorSchemaBuffer();
-        const nameHash = crypto.solSHA3([EIP712_DOMAIN_NAME]);
-        const versionHash = crypto.solSHA3([EIP712_DOMAIN_VERSION]);
-        const domainSeparatorHashBuff = crypto.solSHA3([
-            domainSeparatorSchemaBuffer,
-            nameHash,
-            versionHash,
-            EIP712Utils.pad32Address(exchangeAddress),
-        ]);
-        return domainSeparatorHashBuff;
+        const encodedData = EIP712Utils._encodeData(EIP712_DOMAIN_SCHEMA, {
+            name: EIP712_DOMAIN_NAME,
+            version: EIP712_DOMAIN_VERSION,
+            contract: exchangeAddress,
+        });
+        const domainSeparatorHashBuff2 = crypto.solSHA3([domainSeparatorSchemaBuffer, ...encodedData]);
+        return domainSeparatorHashBuff2;
+    },
+    _encodeType(schema: EIP712Schema): string {
+        const namedTypes = _.map(schema.parameters, ({ name, type }) => `${type} ${name}`);
+        const namedTypesJoined = namedTypes.join(',');
+        const encodedType = `${schema.name}(${namedTypesJoined})`;
+        return encodedType;
+    },
+    _encodeData(schema: EIP712Schema, data: { [key: string]: any }): any {
+        const encodedTypes = [];
+        const encodedValues = [];
+        for (const parameter of schema.parameters) {
+            const value = data[parameter.name];
+            if (parameter.type === EIP712Types.String || parameter.type === EIP712Types.Bytes) {
+                encodedTypes.push(EIP712Types.Bytes32);
+                encodedValues.push(crypto.solSHA3([ethUtil.toBuffer(value)]));
+            } else if (parameter.type === EIP712Types.Uint256) {
+                encodedTypes.push(EIP712Types.Uint256);
+                encodedValues.push(value);
+            } else if (parameter.type === EIP712Types.Address) {
+                encodedTypes.push(EIP712Types.Address);
+                encodedValues.push(EIP712Utils.pad32Address(value));
+            } else {
+                throw new Error(`Unable to encode ${parameter.type}`);
+            }
+        }
+        return encodedValues;
+    },
+    structHash(schema: EIP712Schema, data: { [key: string]: any }): Buffer {
+        const encodedData = EIP712Utils._encodeData(schema, data);
+        const schemaHash = EIP712Utils.compileSchema(schema);
+        const hashBuffer = crypto.solSHA3([schemaHash, ...encodedData]);
+        return hashBuffer;
     },
 };

@@ -75,24 +75,7 @@ export const orderHashUtils = {
      * @return  The resulting orderHash from hashing the supplied order as a Buffer
      */
     getOrderHashBuffer(order: SignedOrder | Order): Buffer {
-        const makerAssetDataHash = crypto.solSHA3([ethUtil.toBuffer(order.makerAssetData)]);
-        const takerAssetDataHash = crypto.solSHA3([ethUtil.toBuffer(order.takerAssetData)]);
-
-        const orderParamsHashBuff = crypto.solSHA3([
-            orderHashUtils._getOrderSchemaBuffer(),
-            EIP712Utils.pad32Address(order.makerAddress),
-            EIP712Utils.pad32Address(order.takerAddress),
-            EIP712Utils.pad32Address(order.feeRecipientAddress),
-            EIP712Utils.pad32Address(order.senderAddress),
-            order.makerAssetAmount,
-            order.takerAssetAmount,
-            order.makerFee,
-            order.takerFee,
-            order.expirationTimeSeconds,
-            order.salt,
-            makerAssetDataHash,
-            takerAssetDataHash,
-        ]);
+        const orderParamsHashBuff = EIP712Utils.structHash(EIP712_ORDER_SCHEMA, order);
         const orderHashBuff = EIP712Utils.createEIP712Message(orderParamsHashBuff, order.exchangeAddress);
         return orderHashBuff;
     },
