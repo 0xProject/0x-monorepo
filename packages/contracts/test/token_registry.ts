@@ -5,7 +5,7 @@ import ethUtil = require('ethereumjs-util');
 import * as _ from 'lodash';
 import 'make-promises-safe';
 
-import { TokenRegistryContract } from '../src/contract_wrappers/generated/token_registry';
+import { TokenRegistryContract } from '../src/generated_contract_wrappers/token_registry';
 import { artifacts } from '../src/utils/artifacts';
 import { expectRevertOrAlwaysFailingTransactionAsync } from '../src/utils/assertions';
 import { chaiSetup } from '../src/utils/chai_setup';

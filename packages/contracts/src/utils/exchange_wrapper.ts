@@ -4,7 +4,7 @@ import { Web3Wrapper } from '@0xproject/web3-wrapper';
 import { Provider, TransactionReceiptWithDecodedLogs } from 'ethereum-types';
 import * as _ from 'lodash';
 
-import { ExchangeContract } from '../contract_wrappers/generated/exchange';
+import { ExchangeContract } from '../generated_contract_wrappers/exchange';
 
 import { constants } from './constants';
 import { formatters } from './formatters';

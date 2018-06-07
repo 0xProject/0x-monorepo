@@ -4,10 +4,10 @@ import { AssetProxyId, OrderWithoutExchangeAddress, SignedOrder } from '@0xproje
 import { BigNumber } from '@0xproject/utils';
 import * as chai from 'chai';
 
-import { DummyERC20TokenContract } from '../../src/contract_wrappers/generated/dummy_e_r_c20_token';
-import { ERC20ProxyContract } from '../../src/contract_wrappers/generated/e_r_c20_proxy';
-import { ExchangeContract } from '../../src/contract_wrappers/generated/exchange';
-import { WhitelistContract } from '../../src/contract_wrappers/generated/whitelist';
+import { DummyERC20TokenContract } from '../../src/generated_contract_wrappers/dummy_e_r_c20_token';
+import { ERC20ProxyContract } from '../../src/generated_contract_wrappers/e_r_c20_proxy';
+import { ExchangeContract } from '../../src/generated_contract_wrappers/exchange';
+import { WhitelistContract } from '../../src/generated_contract_wrappers/whitelist';
 import { artifacts } from '../../src/utils/artifacts';
 import { expectRevertOrAlwaysFailingTransactionAsync } from '../../src/utils/assertions';
 import { chaiSetup } from '../../src/utils/chai_setup';
