@@ -7,11 +7,11 @@ import { LogWithDecodedArgs } from 'ethereum-types';
 import ethUtil = require('ethereumjs-util');
 import * as _ from 'lodash';
 
+import { DummyERC20TokenContract } from '../../src/generated_contract_wrappers/dummy_e_r_c20_token';
 import {
     DummyERC721ReceiverContract,
     TokenReceivedContractEventArgs,
-} from '../../src/contract_wrappers/generated/dummy_e_r_c721_receiver';
-import { DummyERC20TokenContract } from '../../src/generated_contract_wrappers/dummy_e_r_c20_token';
+} from '../../src/generated_contract_wrappers/dummy_e_r_c721_receiver';
 import { DummyERC721TokenContract } from '../../src/generated_contract_wrappers/dummy_e_r_c721_token';
 import { ERC20ProxyContract } from '../../src/generated_contract_wrappers/e_r_c20_proxy';
 import { ERC721ProxyContract } from '../../src/generated_contract_wrappers/e_r_c721_proxy';

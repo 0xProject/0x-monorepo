@@ -1,7 +1,7 @@
 import { BigNumber } from '@0xproject/utils';
 import * as chai from 'chai';
 
-import { TestLibMemContract } from '../../src/contract_wrappers/generated/test_lib_mem';
+import { TestLibMemContract } from '../../src/generated_contract_wrappers/test_lib_mem';
 import { artifacts } from '../../src/utils/artifacts';
 import { chaiSetup } from '../../src/utils/chai_setup';
 import { provider, txDefaults, web3Wrapper } from '../../src/utils/web3_wrapper';

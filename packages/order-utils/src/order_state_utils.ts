@@ -79,7 +79,7 @@ export class OrderStateUtils {
     }
     public async getOrderRelevantStateAsync(signedOrder: SignedOrder): Promise<OrderRelevantState> {
         const zrxTokenAddress = this._orderFilledCancelledFetcher.getZRXTokenAddress();
-        const makerProxyData = assetProxyUtils.decodeERC20ProxyData(signedOrder.makerAssetData);
+        const makerProxyData = assetProxyUtils.decodeERC20AssetData(signedOrder.makerAssetData);
         const makerAssetAddress = makerProxyData.tokenAddress;
         const orderHash = orderHashUtils.getOrderHashHex(signedOrder);
         const makerBalance = await this._balanceAndProxyAllowanceFetcher.getBalanceAsync(
@@ -112,7 +112,7 @@ export class OrderStateUtils {
         const transferrableFeeAssetAmount = BigNumber.min([makerFeeProxyAllowance, makerFeeBalance]);
 
         const zrxAssetData = assetProxyUtils.encodeERC20AssetData(zrxTokenAddress);
-        const isMakerTokenZRX = signedOrder.makerAssetData === zrxAssetData;
+        const isMakerAssetZRX = signedOrder.makerAssetData === zrxAssetData;
         const remainingFillableCalculator = new RemainingFillableCalculator(
             signedOrder.makerFee,
             signedOrder.makerAssetAmount,

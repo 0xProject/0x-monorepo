@@ -7,7 +7,7 @@ import * as chai from 'chai';
 import ethUtil = require('ethereumjs-util');
 import * as Web3 from 'web3';
 
-import { TestAssetDataDecodersContract } from '../../src/contract_wrappers/generated/test_asset_data_decoders';
+import { TestAssetDataDecodersContract } from '../../src/generated_contract_wrappers/test_asset_data_decoders';
 import { artifacts } from '../../src/utils/artifacts';
 import { chaiSetup } from '../../src/utils/chai_setup';
 import { constants } from '../../src/utils/constants';
