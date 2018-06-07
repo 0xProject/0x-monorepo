@@ -3,93 +3,92 @@ import { BigNumber } from '@0xproject/utils';
 
 export class RemainingFillableCalculator {
     private _signedOrder: SignedOrder;
-    private _isMakerTokenZRX: boolean;
+    private _isTraderAssetZRX: boolean;
     // Transferrable Amount is the minimum of Approval and Balance
-    private _transferrableMakerTokenAmount: BigNumber;
-    private _transferrableMakerFeeTokenAmount: BigNumber;
-    private _remainingMakerTokenAmount: BigNumber;
-    private _remainingMakerFeeAmount: BigNumber;
+    private _transferrableAssetAmount: BigNumber;
+    private _transferrableFeeAmount: BigNumber;
+    private _remainingOrderAssetAmount: BigNumber;
+    private _remainingOrderFeeAmount: BigNumber;
+    private _orderFee: BigNumber;
+    private _orderAssetAmount: BigNumber;
     constructor(
+        isTraderMaker: boolean,
         signedOrder: SignedOrder,
-        isMakerTokenZRX: boolean,
-        transferrableMakerTokenAmount: BigNumber,
-        transferrableMakerFeeTokenAmount: BigNumber,
-        remainingMakerTokenAmount: BigNumber,
+        isTraderAssetZRX: boolean,
+        transferrableAssetAmount: BigNumber,
+        transferrableFeeAmount: BigNumber,
+        remainingOrderAssetAmount: BigNumber,
     ) {
+        if (isTraderMaker) {
+            this._orderFee = signedOrder.makerFee;
+            this._orderAssetAmount = signedOrder.makerAssetAmount;
+        } else {
+            this._orderFee = signedOrder.takerFee;
+            this._orderAssetAmount = signedOrder.takerAssetAmount;
+        }
         this._signedOrder = signedOrder;
-        this._isMakerTokenZRX = isMakerTokenZRX;
-        this._transferrableMakerTokenAmount = transferrableMakerTokenAmount;
-        this._transferrableMakerFeeTokenAmount = transferrableMakerFeeTokenAmount;
-        this._remainingMakerTokenAmount = remainingMakerTokenAmount;
-        this._remainingMakerFeeAmount = remainingMakerTokenAmount
-            .times(signedOrder.makerFee)
-            .dividedToIntegerBy(signedOrder.makerAssetAmount);
+        this._isTraderAssetZRX = isTraderAssetZRX;
+        this._transferrableAssetAmount = transferrableAssetAmount;
+        this._transferrableFeeAmount = transferrableFeeAmount;
+        this._remainingOrderAssetAmount = remainingOrderAssetAmount;
+        this._remainingOrderFeeAmount = remainingOrderAssetAmount
+            .times(this._orderFee)
+            .dividedToIntegerBy(this._orderAssetAmount);
     }
-    public computeRemainingMakerFillable(): BigNumber {
+    public computeRemainingFillable(): BigNumber {
         if (this._hasSufficientFundsForFeeAndTransferAmount()) {
-            return this._remainingMakerTokenAmount;
+            return this._remainingOrderAssetAmount;
         }
-        if (this._signedOrder.makerFee.isZero()) {
-            return BigNumber.min(this._remainingMakerTokenAmount, this._transferrableMakerTokenAmount);
+        if (this._orderFee.isZero()) {
+            return BigNumber.min(this._remainingOrderAssetAmount, this._transferrableAssetAmount);
         }
-        return this._calculatePartiallyFillableMakerTokenAmount();
-    }
-    public computeRemainingTakerFillable(): BigNumber {
-        return this.computeRemainingMakerFillable()
-            .times(this._signedOrder.takerAssetAmount)
-            .dividedToIntegerBy(this._signedOrder.makerAssetAmount);
+        return this._calculatePartiallyFillableAssetAmount();
     }
     private _hasSufficientFundsForFeeAndTransferAmount(): boolean {
-        if (this._isMakerTokenZRX) {
-            const totalZRXTransferAmountRequired = this._remainingMakerTokenAmount.plus(this._remainingMakerFeeAmount);
-            const hasSufficientFunds = this._transferrableMakerTokenAmount.greaterThanOrEqualTo(
+        if (this._isTraderAssetZRX) {
+            const totalZRXTransferAmountRequired = this._remainingOrderAssetAmount.plus(this._remainingOrderFeeAmount);
+            const hasSufficientFunds = this._transferrableAssetAmount.greaterThanOrEqualTo(
                 totalZRXTransferAmountRequired,
             );
             return hasSufficientFunds;
         } else {
-            const hasSufficientFundsForTransferAmount = this._transferrableMakerTokenAmount.greaterThanOrEqualTo(
-                this._remainingMakerTokenAmount,
+            const hasSufficientFundsForTransferAmount = this._transferrableAssetAmount.greaterThanOrEqualTo(
+                this._remainingOrderAssetAmount,
             );
-            const hasSufficientFundsForFeeAmount = this._transferrableMakerFeeTokenAmount.greaterThanOrEqualTo(
-                this._remainingMakerFeeAmount,
+            const hasSufficientFundsForFeeAmount = this._transferrableFeeAmount.greaterThanOrEqualTo(
+                this._remainingOrderFeeAmount,
             );
             const hasSufficientFunds = hasSufficientFundsForTransferAmount && hasSufficientFundsForFeeAmount;
             return hasSufficientFunds;
         }
     }
-    private _calculatePartiallyFillableMakerTokenAmount(): BigNumber {
+    private _calculatePartiallyFillableAssetAmount(): BigNumber {
         // Given an order for 200 wei for 2 ZRXwei fee, find 100 wei for 1 ZRXwei. Order ratio is then 100:1
-        const orderToFeeRatio = this._signedOrder.makerAssetAmount.dividedBy(this._signedOrder.makerFee);
-        // The number of times the maker can fill the order, if each fill only required the transfer of a single
+        const orderToFeeRatio = this._orderAssetAmount.dividedBy(this._orderFee);
+        // The number of times the trader (maker or taker) can fill the order, if each fill only required the transfer of a single
         // baseUnit of fee tokens.
-        // Given 2 ZRXwei, the maximum amount of times Maker can fill this order, in terms of fees, is 2
-        const fillableTimesInFeeTokenBaseUnits = BigNumber.min(
-            this._transferrableMakerFeeTokenAmount,
-            this._remainingMakerFeeAmount,
-        );
-        // The number of times the Maker can fill the order, given the Maker Token Balance
-        // Assuming a balance of 150 wei, and an orderToFeeRatio of 100:1, maker can fill this order 1 time.
-        let fillableTimesInMakerTokenUnits = this._transferrableMakerTokenAmount.dividedBy(orderToFeeRatio);
-        if (this._isMakerTokenZRX) {
-            // If ZRX is the maker token, the Fee and the Maker amount need to be removed from the same pool;
+        // Given 2 ZRXwei, the maximum amount of times trader can fill this order, in terms of fees, is 2
+        const fillableTimesInFeeBaseUnits = BigNumber.min(this._transferrableFeeAmount, this._remainingOrderFeeAmount);
+        // The number of times the trader can fill the order, given the traders asset Balance
+        // Assuming a balance of 150 wei, and an orderToFeeRatio of 100:1, trader can fill this order 1 time.
+        let fillableTimesInAssetUnits = this._transferrableAssetAmount.dividedBy(orderToFeeRatio);
+        if (this._isTraderAssetZRX) {
+            // If ZRX is the trader asset, the Fee and the trader fill amount need to be removed from the same pool;
             // 200 ZRXwei for 2ZRXwei fee can only be filled once (need 202 ZRXwei)
-            const totalZRXTokenPooled = this._transferrableMakerTokenAmount;
+            const totalZRXTokenPooled = this._transferrableAssetAmount;
             // The purchasing power here is less as the tokens are taken from the same Pool
             // For every one number of fills, we have to take an extra ZRX out of the pool
-            fillableTimesInMakerTokenUnits = totalZRXTokenPooled.dividedBy(orderToFeeRatio.plus(new BigNumber(1)));
+            fillableTimesInAssetUnits = totalZRXTokenPooled.dividedBy(orderToFeeRatio.plus(new BigNumber(1)));
         }
         // When Ratio is not fully divisible there can be remainders which cannot be represented, so they are floored.
         // This can result in a RoundingError being thrown by the Exchange Contract.
-        const partiallyFillableMakerTokenAmount = fillableTimesInMakerTokenUnits
-            .times(this._signedOrder.makerAssetAmount)
-            .dividedToIntegerBy(this._signedOrder.makerFee);
-        const partiallyFillableFeeTokenAmount = fillableTimesInFeeTokenBaseUnits
-            .times(this._signedOrder.makerAssetAmount)
-            .dividedToIntegerBy(this._signedOrder.makerFee);
-        const partiallyFillableAmount = BigNumber.min(
-            partiallyFillableMakerTokenAmount,
-            partiallyFillableFeeTokenAmount,
-        );
+        const partiallyFillableAssetAmount = fillableTimesInAssetUnits
+            .times(this._orderAssetAmount)
+            .dividedToIntegerBy(this._orderFee);
+        const partiallyFillableFeeAmount = fillableTimesInFeeBaseUnits
+            .times(this._orderAssetAmount)
+            .dividedToIntegerBy(this._orderFee);
+        const partiallyFillableAmount = BigNumber.min(partiallyFillableAssetAmount, partiallyFillableFeeAmount);
         return partiallyFillableAmount;
     }
 }
