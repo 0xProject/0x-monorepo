@@ -341,7 +341,7 @@ describe('Asset Transfer Proxies', () => {
                 // Perform a transfer from makerAddress to takerAddress
                 const erc20Balances = await erc20Wrapper.getBalancesAsync();
                 const amount = new BigNumber(1);
-                return expect(
+                return expectRevertOrAlwaysFailingTransactionAsync(
                     erc721Proxy.transferFrom.sendTransactionAsync(
                         encodedAssetData,
                         makerAddress,
@@ -349,7 +349,7 @@ describe('Asset Transfer Proxies', () => {
                         amount,
                         { from: exchangeAddress },
                     ),
-                ).to.be.rejectedWith(constants.REVERT);
+                );
             });
 
             it('should throw if transferring 0 amount of a token', async () => {

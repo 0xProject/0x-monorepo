@@ -385,27 +385,27 @@ describe('LibBytes', () => {
         it('should fail if the byte array is too short to hold the length of a nested byte array)', async () => {
             // The length of the nested array is 32 bytes. By storing less than 32 bytes, a length cannot be read.
             const offset = new BigNumber(0);
-            return expect(libBytes.publicReadBytes.callAsync(byteArrayShorterThan32Bytes, offset)).to.be.rejectedWith(
-                constants.REVERT,
+            return expectRevertOrAlwaysFailingTransactionAsync(
+                libBytes.publicReadBytes.callAsync(byteArrayShorterThan32Bytes, offset),
             );
         });
 
         it('should fail if we store a nested byte array length, without a nested byte array)', async () => {
             const offset = new BigNumber(0);
-            return expect(libBytes.publicReadBytes.callAsync(testBytes32, offset)).to.be.rejectedWith(constants.REVERT);
+            return expectRevertOrAlwaysFailingTransactionAsync(libBytes.publicReadBytes.callAsync(testBytes32, offset));
         });
 
         it('should fail if the length between the offset and end of the byte array is too short to hold the length of a nested byte array)', async () => {
             const badOffset = new BigNumber(ethUtil.toBuffer(byteArrayShorterThan32Bytes).byteLength);
-            return expect(
+            return expectRevertOrAlwaysFailingTransactionAsync(
                 libBytes.publicReadBytes.callAsync(byteArrayShorterThan32Bytes, badOffset),
-            ).to.be.rejectedWith(constants.REVERT);
+            );
         });
 
         it('should fail if the length between the offset and end of the byte array is too short to hold the nested byte array)', async () => {
             const badOffset = new BigNumber(ethUtil.toBuffer(testBytes32).byteLength);
-            return expect(libBytes.publicReadBytes.callAsync(testBytes32, badOffset)).to.be.rejectedWith(
-                constants.REVERT,
+            return expectRevertOrAlwaysFailingTransactionAsync(
+                libBytes.publicReadBytes.callAsync(testBytes32, badOffset),
             );
         });
     });
@@ -489,16 +489,16 @@ describe('LibBytes', () => {
         it('should fail if the byte array is too short to hold the length of a nested byte array)', async () => {
             const offset = new BigNumber(0);
             const emptyByteArray = ethUtil.bufferToHex(new Buffer(1));
-            return expect(libBytes.publicWriteBytes.callAsync(emptyByteArray, offset, longData)).to.be.rejectedWith(
-                constants.REVERT,
+            return expectRevertOrAlwaysFailingTransactionAsync(
+                libBytes.publicWriteBytes.callAsync(emptyByteArray, offset, longData),
             );
         });
 
         it('should fail if the length between the offset and end of the byte array is too short to hold the length of a nested byte array)', async () => {
             const emptyByteArray = ethUtil.bufferToHex(new Buffer(shortTestBytesAsBuffer.byteLength));
             const badOffset = new BigNumber(ethUtil.toBuffer(shortTestBytesAsBuffer).byteLength);
-            return expect(libBytes.publicWriteBytes.callAsync(emptyByteArray, badOffset, shortData)).to.be.rejectedWith(
-                constants.REVERT,
+            return expectRevertOrAlwaysFailingTransactionAsync(
+                libBytes.publicWriteBytes.callAsync(emptyByteArray, badOffset, shortData),
             );
         });
     });
