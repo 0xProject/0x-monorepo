@@ -1,4 +1,4 @@
-import { ECSignature, SignedOrder } from '@0xproject/types';
+import { SignedOrder } from '@0xproject/types';
 import { BigNumber } from '@0xproject/utils';
 import { Web3Wrapper } from '@0xproject/web3-wrapper';
 import * as chai from 'chai';
@@ -65,10 +65,9 @@ describe('RemainingFillableCalculator', () => {
         it('calculates the correct amount when unfilled and funds available', () => {
             signedOrder = buildSignedOrder();
             remainingMakeAssetAmount = signedOrder.makerAssetAmount;
-            const isTraderMaker = true;
             calculator = new RemainingFillableCalculator(
-                isTraderMaker,
-                signedOrder,
+                signedOrder.makerFee,
+                signedOrder.makerAssetAmount,
                 isMakeAssetZRX,
                 transferrableMakeAssetAmount,
                 transferrableMakerFeeTokenAmount,
@@ -79,10 +78,9 @@ describe('RemainingFillableCalculator', () => {
         it('calculates the correct amount when partially filled and funds available', () => {
             signedOrder = buildSignedOrder();
             remainingMakeAssetAmount = Web3Wrapper.toBaseUnitAmount(new BigNumber(1), decimals);
-            const isTraderMaker = true;
             calculator = new RemainingFillableCalculator(
-                isTraderMaker,
-                signedOrder,
+                signedOrder.makerFee,
+                signedOrder.makerAssetAmount,
                 isMakeAssetZRX,
                 transferrableMakeAssetAmount,
                 transferrableMakerFeeTokenAmount,
@@ -94,10 +92,9 @@ describe('RemainingFillableCalculator', () => {
             signedOrder = buildSignedOrder();
             transferrableMakerFeeTokenAmount = zero;
             remainingMakeAssetAmount = signedOrder.makerAssetAmount;
-            const isTraderMaker = true;
             calculator = new RemainingFillableCalculator(
-                isTraderMaker,
-                signedOrder,
+                signedOrder.makerFee,
+                signedOrder.makerAssetAmount,
                 isMakeAssetZRX,
                 transferrableMakeAssetAmount,
                 transferrableMakerFeeTokenAmount,
@@ -110,10 +107,9 @@ describe('RemainingFillableCalculator', () => {
             const partiallyFilledAmount = Web3Wrapper.toBaseUnitAmount(new BigNumber(2), decimals);
             remainingMakeAssetAmount = signedOrder.makerAssetAmount.minus(partiallyFilledAmount);
             transferrableMakeAssetAmount = remainingMakeAssetAmount.minus(partiallyFilledAmount);
-            const isTraderMaker = true;
             calculator = new RemainingFillableCalculator(
-                isTraderMaker,
-                signedOrder,
+                signedOrder.makerFee,
+                signedOrder.makerAssetAmount,
                 isMakeAssetZRX,
                 transferrableMakeAssetAmount,
                 transferrableMakerFeeTokenAmount,
@@ -134,10 +130,9 @@ describe('RemainingFillableCalculator', () => {
                 remainingMakeAssetAmount = signedOrder.makerAssetAmount;
                 const transferredAmount = Web3Wrapper.toBaseUnitAmount(new BigNumber(2), decimals);
                 transferrableMakeAssetAmount = remainingMakeAssetAmount.minus(transferredAmount);
-                const isTraderMaker = true;
                 calculator = new RemainingFillableCalculator(
-                    isTraderMaker,
-                    signedOrder,
+                    signedOrder.makerFee,
+                    signedOrder.makerAssetAmount,
                     isMakeAssetZRX,
                     transferrableMakeAssetAmount,
                     transferrableMakerFeeTokenAmount,
@@ -159,10 +154,9 @@ describe('RemainingFillableCalculator', () => {
                 remainingMakeAssetAmount = signedOrder.makerAssetAmount;
                 const transferredAmount = Web3Wrapper.toBaseUnitAmount(new BigNumber(2), decimals);
                 transferrableMakeAssetAmount = remainingMakeAssetAmount.minus(transferredAmount);
-                const isTraderMaker = true;
                 calculator = new RemainingFillableCalculator(
-                    isTraderMaker,
-                    signedOrder,
+                    signedOrder.makerFee,
+                    signedOrder.makerAssetAmount,
                     isMakeAssetZRX,
                     transferrableMakeAssetAmount,
                     transferrableMakerFeeTokenAmount,
@@ -186,10 +180,9 @@ describe('RemainingFillableCalculator', () => {
             transferrableMakeAssetAmount = makerAmount.plus(makerFeeAmount);
             transferrableMakerFeeTokenAmount = transferrableMakeAssetAmount;
             remainingMakeAssetAmount = signedOrder.makerAssetAmount;
-            const isTraderMaker = true;
             calculator = new RemainingFillableCalculator(
-                isTraderMaker,
-                signedOrder,
+                signedOrder.makerFee,
+                signedOrder.makerAssetAmount,
                 isMakeAssetZRX,
                 transferrableMakeAssetAmount,
                 transferrableMakerFeeTokenAmount,
@@ -200,10 +193,9 @@ describe('RemainingFillableCalculator', () => {
         it('calculates the correct amount when partially filled and funds available', () => {
             signedOrder = buildSignedOrder();
             remainingMakeAssetAmount = Web3Wrapper.toBaseUnitAmount(new BigNumber(1), decimals);
-            const isTraderMaker = true;
             calculator = new RemainingFillableCalculator(
-                isTraderMaker,
-                signedOrder,
+                signedOrder.makerFee,
+                signedOrder.makerAssetAmount,
                 isMakeAssetZRX,
                 transferrableMakeAssetAmount,
                 transferrableMakerFeeTokenAmount,
@@ -216,10 +208,9 @@ describe('RemainingFillableCalculator', () => {
             transferrableMakeAssetAmount = zero;
             transferrableMakerFeeTokenAmount = zero;
             remainingMakeAssetAmount = signedOrder.makerAssetAmount;
-            const isTraderMaker = true;
             calculator = new RemainingFillableCalculator(
-                isTraderMaker,
-                signedOrder,
+                signedOrder.makerFee,
+                signedOrder.makerAssetAmount,
                 isMakeAssetZRX,
                 transferrableMakeAssetAmount,
                 transferrableMakerFeeTokenAmount,
@@ -236,10 +227,9 @@ describe('RemainingFillableCalculator', () => {
 
             const orderToFeeRatio = signedOrder.makerAssetAmount.dividedToIntegerBy(signedOrder.makerFee);
             const expectedFillableAmount = new BigNumber(450980);
-            const isTraderMaker = true;
             calculator = new RemainingFillableCalculator(
-                isTraderMaker,
-                signedOrder,
+                signedOrder.makerFee,
+                signedOrder.makerAssetAmount,
                 isMakeAssetZRX,
                 transferrableMakeAssetAmount,
                 transferrableMakerFeeTokenAmount,

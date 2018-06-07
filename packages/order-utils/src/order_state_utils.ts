@@ -113,10 +113,9 @@ export class OrderStateUtils {
 
         const zrxAssetData = assetProxyUtils.encodeERC20ProxyData(zrxTokenAddress);
         const isMakerAssetZRX = signedOrder.makerAssetData === zrxAssetData;
-        const isTraderMaker = true;
         const remainingFillableCalculator = new RemainingFillableCalculator(
-            isTraderMaker,
-            signedOrder,
+            signedOrder.makerFee,
+            signedOrder.makerAssetAmount,
             isMakerAssetZRX,
             transferrableMakerAssetAmount,
             transferrableFeeAssetAmount,
