@@ -5,7 +5,7 @@ import ethUtil = require('ethereumjs-util');
 import * as _ from 'lodash';
 
 const ERC20_ASSET_DATA_BYTE_LENGTH = 21;
-const ERC721_ASSET_DATA_BYTE_LENGTH = 53;
+const ERC721_ASSET_DATA_MINIMUM_BYTE_LENGTH = 53;
 const ASSET_DATA_ADDRESS_OFFSET = 0;
 const ERC721_ASSET_DATA_TOKEN_ID_OFFSET = 20;
 const ERC721_ASSET_DATA_RECEIVER_DATA_LENGTH_OFFSET = 52;
@@ -96,7 +96,7 @@ export const assetProxyUtils = {
     },
     decodeERC721AssetData(assetData: string): ERC721AssetData {
         const encodedAssetData = ethUtil.toBuffer(assetData);
-        if (encodedAssetData.byteLength < ERC721_ASSET_DATA_BYTE_LENGTH) {
+        if (encodedAssetData.byteLength < ERC721_ASSET_DATA_MINIMUM_BYTE_LENGTH) {
             throw new Error(
                 `Could not decode ERC20 Proxy Data. Expected length of encoded data to be at least 53. Got ${
                     encodedAssetData.byteLength

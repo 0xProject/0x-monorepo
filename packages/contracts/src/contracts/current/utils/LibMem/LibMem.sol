@@ -39,7 +39,7 @@ contract LibMem
     /// @param dest memory address to copy bytes to.
     /// @param source memory address to copy bytes from.
     /// @param length number of bytes to copy.
-    function memcpy(
+    function memCopy(
         uint256 dest,
         uint256 source,
         uint256 length
@@ -81,42 +81,42 @@ contract LibMem
             if (source > dest) {
                 assembly {
                     // Record the total number of full words to copy
-                    let nwords := div(length, 32)
+                    let nWords := div(length, 32)
 
-                    // We subtract 32 from `send` and `dend` because it
+                    // We subtract 32 from `sEnd` and `dEnd` because it
                     // is easier to compare with in the loop, and these
                     // are also the addresses we need for copying the
                     // last bytes.
                     length := sub(length, 32)
-                    let send := add(source, length)
-                    let dend := add(dest, length)
+                    let sEnd := add(source, length)
+                    let dEnd := add(dest, length)
 
                     // Remember the last 32 bytes of source
                     // This needs to be done here and not after the loop
                     // because we may have overwritten the last bytes in
                     // source already due to overlap.
-                    let last := mload(send)
+                    let last := mload(sEnd)
 
                     // Copy whole words front to back
-                    for {let i := 0} lt(i, nwords) {i := add(i, 1)} {
+                    for {let i := 0} lt(i, nWords) {i := add(i, 1)} {
                         mstore(dest, mload(source))
                         source := add(source, 32)
                         dest := add(dest, 32)
                     }
 
                     // Write the last 32 bytes
-                    mstore(dend, last)
+                    mstore(dEnd, last)
                 }
             } else {
                 assembly {
                     // Record the total number of full words to copy
-                    let nwords := div(length, 32)
+                    let nWords := div(length, 32)
 
-                    // We subtract 32 from `send` and `dend` because those
+                    // We subtract 32 from `sEnd` and `dEnd` because those
                     // are the starting points when copying a word at the end.
                     length := sub(length, 32)
-                    let send := add(source, length)
-                    let dend := add(dest, length)
+                    let sEnd := add(source, length)
+                    let dEnd := add(dest, length)
 
                     // Remember the first 32 bytes of source
                     // This needs to be done here and not after the loop
@@ -125,10 +125,10 @@ contract LibMem
                     let first := mload(source)
 
                     // Copy whole words back to front
-                    for {let i := 0} lt(i, nwords) {i := add(i, 1)} {
-                        mstore(dend, mload(send))
-                        send := sub(send, 32)
-                        dend := sub(dend, 32)
+                    for {let i := 0} lt(i, nWords) {i := add(i, 1)} {
+                        mstore(dEnd, mload(sEnd))
+                        sEnd := sub(sEnd, 32)
+                        dEnd := sub(dEnd, 32)
                     }
 
                     // Write the first 32 bytes

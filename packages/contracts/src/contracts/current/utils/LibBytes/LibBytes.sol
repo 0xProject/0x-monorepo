@@ -311,7 +311,7 @@ contract LibBytes is
 
         // Allocate memory and copy value to result
         result = new bytes(nestedBytesLength);
-        memcpy(
+        memCopy(
             getMemAddress(result) + 32, // +32 skips array length
             getMemAddress(b) + index + 32,
             nestedBytesLength
@@ -340,7 +340,7 @@ contract LibBytes is
         );
 
         // Copy <input> into <b>
-        memcpy(
+        memCopy(
             getMemAddress(b) + 32 + index,  // +32 to skip length of <b>
             getMemAddress(input),           // includes length of <input>
             input.length + 32               // +32 bytes to store <input> length

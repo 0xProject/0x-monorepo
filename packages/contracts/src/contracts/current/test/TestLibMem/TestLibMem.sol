@@ -25,11 +25,11 @@ contract TestLibMem is
 {
 
     /// @dev Copies a block of memory from one location to another.
-    /// @param mem Memory contents we want to apply memcpy to
+    /// @param mem Memory contents we want to apply memCopy to
     /// @param dest Destination offset into <mem>.
     /// @param source Source offset into <mem>.
     /// @param length Length of bytes to copy from <source> to <dest>
-    /// @return mem Memory contents after calling memcpy.
+    /// @return mem Memory contents after calling memCopy.
     function testMemcpy(
         bytes mem,
         uint256 dest,
@@ -47,8 +47,8 @@ contract TestLibMem is
         // Get pointer to memory contents
         uint256 offset = getMemAddress(mem) + 32;
 
-        // Execute memcpy adjusted for memory array location
-        memcpy(offset + dest, offset + source, length);
+        // Execute memCopy adjusted for memory array location
+        memCopy(offset + dest, offset + source, length);
 
         // Return modified memory contents
         return mem;

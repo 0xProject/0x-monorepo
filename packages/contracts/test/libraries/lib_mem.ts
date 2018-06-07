@@ -27,7 +27,7 @@ describe('LibMem', () => {
         testLibMem = await TestLibMemContract.deployFrom0xArtifactAsync(artifacts.TestLibMem, provider, txDefaults);
     });
 
-    describe('memcpy', () => {
+    describe('memCopy', () => {
         // Create memory 0x000102...FF
         const memSize = 256;
         const memory = new Uint8Array(memSize).map((_, i) => i);
