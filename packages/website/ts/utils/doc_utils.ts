@@ -3,7 +3,6 @@ import { logUtils } from '@0xproject/utils';
 import findVersions = require('find-versions');
 import * as _ from 'lodash';
 import { S3FileObject, VersionToFilePath } from 'ts/types';
-import { utils } from 'ts/utils/utils';
 import convert = require('xml-js');
 
 export const docUtils = {

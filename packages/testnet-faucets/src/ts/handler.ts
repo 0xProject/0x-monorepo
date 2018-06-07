@@ -1,4 +1,4 @@
-import { Order, SignedOrder, ZeroEx } from '0x.js';
+import { Order, ZeroEx } from '0x.js';
 import { BigNumber, logUtils } from '@0xproject/utils';
 import { Provider } from 'ethereum-types';
 import * as express from 'express';
@@ -171,6 +171,7 @@ export class Handler {
             ...order,
             ecSignature: signature,
         };
+        // tslint:disable-next-line:no-unused-variable
         const signedOrderHash = ZeroEx.getOrderHashHex(signedOrder);
         const payload = JSON.stringify(signedOrder);
         logUtils.log(`Dispensed signed order: ${payload}`);

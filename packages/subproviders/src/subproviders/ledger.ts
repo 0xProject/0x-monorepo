@@ -7,14 +7,12 @@ import * as _ from 'lodash';
 import { Lock } from 'semaphore-async-await';
 
 import {
-    Callback,
     DerivedHDKeyInfo,
     LedgerEthereumClient,
     LedgerEthereumClientFactoryAsync,
     LedgerSubproviderConfigs,
     LedgerSubproviderErrors,
     PartialTxParams,
-    ResponseWithTxParams,
     WalletSubproviderErrors,
 } from '../types';
 import { walletUtils } from '../utils/wallet_utils';
@@ -33,6 +31,7 @@ const DEFAULT_ADDRESS_SEARCH_LIMIT = 1000;
  * re-routes them to a Ledger device plugged into the users computer.
  */
 export class LedgerSubprovider extends BaseWalletSubprovider {
+    // tslint:disable-next-line:no-unused-variable
     private _nonceLock = new Lock();
     private _connectionLock = new Lock();
     private _networkId: number;

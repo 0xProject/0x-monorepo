@@ -1,6 +1,5 @@
 import { crypto, generatePseudoRandomSalt } from '@0xproject/order-utils';
 import { SignatureType } from '@0xproject/types';
-import { BigNumber } from '@0xproject/utils';
 import * as ethUtil from 'ethereumjs-util';
 
 import { signingUtils } from './signing_utils';

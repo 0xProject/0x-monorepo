@@ -1,16 +1,11 @@
 #!/usr/bin/env node
 // We need the above pragma since this script will be run as a command-line tool.
 
-import { BigNumber, logUtils } from '@0xproject/utils';
-import { Web3Wrapper } from '@0xproject/web3-wrapper';
+import { logUtils } from '@0xproject/utils';
 import * as _ from 'lodash';
-import * as path from 'path';
-import * as Web3 from 'web3';
 import * as yargs from 'yargs';
 
 import { Compiler } from './compiler';
-import { constants } from './utils/constants';
-import { CompilerOptions } from './utils/types';
 
 const DEFAULT_CONTRACTS_LIST = '*';
 const SEPARATOR = ',';

@@ -3,7 +3,6 @@ import { assetProxyUtils } from '@0xproject/order-utils';
 import { AssetProxyId } from '@0xproject/types';
 import { BigNumber } from '@0xproject/utils';
 import * as chai from 'chai';
-import * as Web3 from 'web3';
 
 import { DummyERC20TokenContract } from '../../src/contract_wrappers/generated/dummy_e_r_c20_token';
 import { ERC20ProxyContract } from '../../src/contract_wrappers/generated/e_r_c20_proxy';
@@ -24,7 +23,6 @@ const blockchainLifecycle = new BlockchainLifecycle(web3Wrapper);
 describe('AssetProxyDispatcher', () => {
     let owner: string;
     let notOwner: string;
-    let notAuthorized: string;
     let makerAddress: string;
     let takerAddress: string;
 
@@ -46,7 +44,6 @@ describe('AssetProxyDispatcher', () => {
         // Setup accounts & addresses
         const accounts = await web3Wrapper.getAvailableAddressesAsync();
         const usedAddresses = ([owner, notOwner, makerAddress, takerAddress] = accounts);
-        notAuthorized = notOwner;
 
         erc20Wrapper = new ERC20Wrapper(provider, usedAddresses, owner);
         erc721Wrapper = new ERC721Wrapper(provider, usedAddresses, owner);
@@ -306,7 +303,6 @@ describe('AssetProxyDispatcher', () => {
             // Construct metadata for ERC20 proxy
             const encodedProxyMetadata = assetProxyUtils.encodeERC20ProxyData(zrxToken.address);
             // Perform a transfer from makerAddress to takerAddress
-            const erc20Balances = await erc20Wrapper.getBalancesAsync();
             const amount = new BigNumber(10);
             return expectRevertOrAlwaysFailingTransactionAsync(
                 assetProxyDispatcher.publicDispatchTransferFrom.sendTransactionAsync(

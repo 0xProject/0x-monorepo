@@ -7,10 +7,11 @@
     "private": true,
     "description": "Example solidity project using 0x dev tools",
     "scripts": {
+        "watch": "tsc -w",
+        "lint": "tslint --project . --exclude **/src/contract_wrappers/**/*",
         "watch_without_deps": "yarn pre_build && tsc -w",
         "build": "yarn pre_build && tsc",
         "pre_build": "run-s compile generate_contract_wrappers copy_artifacts",
-        "lint": "tslint --project .",
         "clean": "shx rm -rf lib artifacts src/contract_wrappers",
         "copy_artifacts": "copyfiles './artifacts/**/*' './contracts/**/*' ./lib",
         "test": "yarn run_mocha",

@@ -3,7 +3,7 @@ import * as Lint from 'tslint';
 import * as ts from 'typescript';
 
 const VALID_BOOLEAN_PREFIXES = ['is', 'does', 'should', 'was', 'has', 'can', 'did', 'would', 'are'];
-
+// tslint:disable:no-unnecessary-type-assertion
 export class Rule extends Lint.Rules.TypedRule {
     public static FAILURE_STRING = `Boolean variable names should begin with: ${VALID_BOOLEAN_PREFIXES.join(', ')}`;
 
@@ -66,3 +66,4 @@ function handleBooleanNaming(
         }
     }
 }
+// tslint:enable:no-unnecessary-type-assertion

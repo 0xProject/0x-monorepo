@@ -1,4 +1,3 @@
-import * as _ from 'lodash';
 import * as React from 'react';
 
 import {
@@ -95,9 +94,6 @@ export class Docs extends React.Component<DocsProps, DocsState> {
         };
     }
     public render(): React.ReactNode {
-        const menuSubsectionsBySection = _.isUndefined(this.state.docAgnosticFormat)
-            ? {}
-            : docsInfo.getMenuSubsectionsBySection(this.state.docAgnosticFormat);
         return (
             <Documentation
                 selectedVersion={this.state.selectedVersion}

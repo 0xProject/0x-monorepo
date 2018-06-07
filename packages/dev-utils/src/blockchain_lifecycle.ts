@@ -1,6 +1,5 @@
 import { uniqueVersionIds, Web3Wrapper } from '@0xproject/web3-wrapper';
-import * as _ from 'lodash';
-import * as Web3 from 'web3';
+import { includes } from 'lodash';
 
 enum NodeType {
     Geth = 'GETH',
@@ -49,9 +48,9 @@ export class BlockchainLifecycle {
     }
     private async _getNodeTypeAsync(): Promise<NodeType> {
         const version = await this._web3Wrapper.getNodeVersionAsync();
-        if (_.includes(version, uniqueVersionIds.geth)) {
+        if (includes(version, uniqueVersionIds.geth)) {
             return NodeType.Geth;
-        } else if (_.includes(version, uniqueVersionIds.ganache)) {
+        } else if (includes(version, uniqueVersionIds.ganache)) {
             return NodeType.Ganache;
         } else {
             throw new Error(`Unknown client version: ${version}`);

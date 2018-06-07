@@ -1,5 +1,4 @@
 import { JSONRPCRequestPayload, Provider } from 'ethereum-types';
-import * as _ from 'lodash';
 import * as Web3 from 'web3';
 
 import { Callback, ErrorCallback } from '../types';

@@ -44,6 +44,7 @@ export class BaseContract {
         const constructorAbiIfExists = _.find(
             abi,
             (abiDefinition: AbiDefinition) => abiDefinition.type === AbiType.Constructor,
+            // tslint:disable-next-line:no-unnecessary-type-assertion
         ) as ConstructorAbi | undefined;
         if (!_.isUndefined(constructorAbiIfExists)) {
             return constructorAbiIfExists;

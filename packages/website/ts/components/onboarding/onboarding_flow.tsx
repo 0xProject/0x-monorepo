@@ -1,11 +1,9 @@
-import * as _ from 'lodash';
 import * as React from 'react';
 import { Placement, Popper, PopperChildrenProps } from 'react-popper';
 
 import { ContinueButtonDisplay, OnboardingTooltip } from 'ts/components/onboarding/onboarding_tooltip';
 import { Container } from 'ts/components/ui/container';
 import { Overlay } from 'ts/components/ui/overlay';
-import { zIndex } from 'ts/style/z_index';
 
 export interface Step {
     target: string;

@@ -1,9 +1,7 @@
-import { BlockchainLifecycle, devConstants, web3Factory } from '@0xproject/dev-utils';
+import { BlockchainLifecycle } from '@0xproject/dev-utils';
 import { BigNumber } from '@0xproject/utils';
-import { Web3Wrapper } from '@0xproject/web3-wrapper';
 import * as chai from 'chai';
 import 'make-promises-safe';
-import * as Web3 from 'web3';
 
 import { DummyERC20TokenContract } from '../src/contract_wrappers/generated/dummy_e_r_c20_token';
 import { artifacts } from '../src/utils/artifacts';

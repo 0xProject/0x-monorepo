@@ -1,5 +1,4 @@
 import {
-    colors,
     constants as sharedConstants,
     EtherscanLinkSuffixes,
     Networks,
@@ -13,7 +12,6 @@ import Dialog from 'material-ui/Dialog';
 import Divider from 'material-ui/Divider';
 import FlatButton from 'material-ui/FlatButton';
 import FloatingActionButton from 'material-ui/FloatingActionButton';
-import RaisedButton from 'material-ui/RaisedButton';
 import ContentAdd from 'material-ui/svg-icons/content/add';
 import ContentRemove from 'material-ui/svg-icons/content/remove';
 import { Table, TableBody, TableHeader, TableHeaderColumn, TableRow, TableRowColumn } from 'material-ui/Table';
@@ -171,7 +169,6 @@ export class TokenBalances extends React.Component<TokenBalancesProps, TokenBala
             />,
         ];
         const isTestNetwork = utils.isTestNetwork(this.props.networkId);
-        const isKovanTestNetwork = this.props.networkId === constants.NETWORK_ID_KOVAN;
         const stubColumnStyle = {
             display: isTestNetwork ? 'none' : 'table-cell',
         };

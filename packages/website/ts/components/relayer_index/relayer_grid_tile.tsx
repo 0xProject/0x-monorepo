@@ -6,9 +6,8 @@ import * as React from 'react';
 import { TopTokens } from 'ts/components/relayer_index/relayer_top_tokens';
 import { Container } from 'ts/components/ui/container';
 import { Island } from 'ts/components/ui/island';
-import { TokenIcon } from 'ts/components/ui/token_icon';
 import { colors } from 'ts/style/colors';
-import { Token, WebsiteBackendRelayerInfo } from 'ts/types';
+import { WebsiteBackendRelayerInfo } from 'ts/types';
 
 export interface RelayerGridTileProps {
     relayerInfo: WebsiteBackendRelayerInfo;

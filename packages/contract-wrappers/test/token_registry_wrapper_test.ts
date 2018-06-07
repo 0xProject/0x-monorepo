@@ -1,4 +1,4 @@
-import { BlockchainLifecycle, devConstants } from '@0xproject/dev-utils';
+import { BlockchainLifecycle } from '@0xproject/dev-utils';
 import { schemas, SchemaValidator } from '@0xproject/json-schemas';
 import * as chai from 'chai';
 import * as _ from 'lodash';

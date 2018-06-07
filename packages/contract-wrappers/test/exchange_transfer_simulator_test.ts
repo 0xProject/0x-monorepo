@@ -1,4 +1,4 @@
-import { BlockchainLifecycle, devConstants } from '@0xproject/dev-utils';
+import { BlockchainLifecycle } from '@0xproject/dev-utils';
 import { BlockParamLiteral, Token } from '@0xproject/types';
 import { BigNumber } from '@0xproject/utils';
 import * as chai from 'chai';

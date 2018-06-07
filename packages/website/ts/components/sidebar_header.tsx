@@ -1,8 +1,5 @@
 import { colors } from '@0xproject/react-shared';
-import * as _ from 'lodash';
 import * as React from 'react';
-
-const SHOW_DURATION_MS = 4000;
 
 interface SidebarHeaderProps {
     title: string;

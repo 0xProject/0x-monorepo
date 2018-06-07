@@ -1,5 +1,5 @@
 import { ContractWrappers } from '@0xproject/contract-wrappers';
-import { BlockchainLifecycle, callbackErrorReporter, devConstants } from '@0xproject/dev-utils';
+import { BlockchainLifecycle, callbackErrorReporter } from '@0xproject/dev-utils';
 import { FillScenarios } from '@0xproject/fill-scenarios';
 import { getOrderHashHex } from '@0xproject/order-utils';
 import { DoneCallback, Token } from '@0xproject/types';
@@ -10,7 +10,6 @@ import 'make-promises-safe';
 import 'mocha';
 import * as Sinon from 'sinon';
 
-import { artifacts } from '../src/artifacts';
 import { ExpirationWatcher } from '../src/order_watcher/expiration_watcher';
 import { utils } from '../src/utils/utils';
 

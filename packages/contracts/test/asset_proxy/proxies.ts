@@ -1,10 +1,8 @@
 import { BlockchainLifecycle } from '@0xproject/dev-utils';
 import { assetProxyUtils } from '@0xproject/order-utils';
-import { AssetProxyId } from '@0xproject/types';
 import { BigNumber } from '@0xproject/utils';
 import * as chai from 'chai';
 import * as _ from 'lodash';
-import * as Web3 from 'web3';
 
 import { DummyERC20TokenContract } from '../../src/contract_wrappers/generated/dummy_e_r_c20_token';
 import { DummyERC721TokenContract } from '../../src/contract_wrappers/generated/dummy_e_r_c721_token';
@@ -248,7 +246,6 @@ describe('Asset Transfer Proxies', () => {
                 const ownerMakerAsset = await erc721Token.ownerOf.callAsync(erc721MakerTokenId);
                 expect(ownerMakerAsset).to.be.bignumber.equal(makerAddress);
                 // Perform a transfer from makerAddress to takerAddress
-                const erc20Balances = await erc20Wrapper.getBalancesAsync();
                 const amount = new BigNumber(1);
                 await web3Wrapper.awaitTransactionSuccessAsync(
                     await erc721Proxy.transferFrom.sendTransactionAsync(
@@ -275,7 +272,6 @@ describe('Asset Transfer Proxies', () => {
                 const ownerMakerAsset = await erc721Token.ownerOf.callAsync(erc721MakerTokenId);
                 expect(ownerMakerAsset).to.be.bignumber.equal(makerAddress);
                 // Perform a transfer from makerAddress to takerAddress
-                const erc20Balances = await erc20Wrapper.getBalancesAsync();
                 const amount = new BigNumber(0);
                 return expectRevertOrAlwaysFailingTransactionAsync(
                     erc721Proxy.transferFrom.sendTransactionAsync(
@@ -298,7 +294,6 @@ describe('Asset Transfer Proxies', () => {
                 const ownerMakerAsset = await erc721Token.ownerOf.callAsync(erc721MakerTokenId);
                 expect(ownerMakerAsset).to.be.bignumber.equal(makerAddress);
                 // Perform a transfer from makerAddress to takerAddress
-                const erc20Balances = await erc20Wrapper.getBalancesAsync();
                 const amount = new BigNumber(500);
                 return expectRevertOrAlwaysFailingTransactionAsync(
                     erc721Proxy.transferFrom.sendTransactionAsync(
