@@ -1,8 +1,6 @@
-import { SignedOrder } from '@0xproject/types';
 import { BigNumber } from '@0xproject/utils';
 
 export class RemainingFillableCalculator {
-    private _signedOrder: SignedOrder;
     private _isTraderAssetZRX: boolean;
     // Transferrable Amount is the minimum of Approval and Balance
     private _transferrableAssetAmount: BigNumber;
@@ -12,21 +10,15 @@ export class RemainingFillableCalculator {
     private _orderFee: BigNumber;
     private _orderAssetAmount: BigNumber;
     constructor(
-        isTraderMaker: boolean,
-        signedOrder: SignedOrder,
+        orderFee: BigNumber,
+        orderAssetAmount: BigNumber,
         isTraderAssetZRX: boolean,
         transferrableAssetAmount: BigNumber,
         transferrableFeeAmount: BigNumber,
         remainingOrderAssetAmount: BigNumber,
     ) {
-        if (isTraderMaker) {
-            this._orderFee = signedOrder.makerFee;
-            this._orderAssetAmount = signedOrder.makerAssetAmount;
-        } else {
-            this._orderFee = signedOrder.takerFee;
-            this._orderAssetAmount = signedOrder.takerAssetAmount;
-        }
-        this._signedOrder = signedOrder;
+        this._orderFee = orderFee;
+        this._orderAssetAmount = orderAssetAmount;
         this._isTraderAssetZRX = isTraderAssetZRX;
         this._transferrableAssetAmount = transferrableAssetAmount;
         this._transferrableFeeAmount = transferrableFeeAmount;
