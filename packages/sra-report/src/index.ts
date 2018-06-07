@@ -1,10 +1,8 @@
 #!/usr/bin/env node
 import { assert } from '@0xproject/assert';
-import { Schema, schemas } from '@0xproject/json-schemas';
-import { logUtils, promisify } from '@0xproject/utils';
+import { logUtils } from '@0xproject/utils';
 import chalk from 'chalk';
 import * as _ from 'lodash';
-import * as newman from 'newman';
 import * as yargs from 'yargs';
 
 import * as sraReportCollectionJSON from '../../postman_collections/sra_report.postman_collection.json';

@@ -1,7 +1,7 @@
 import * as fs from 'fs';
 import lernaGetPackages = require('lerna-get-packages');
 import * as _ from 'lodash';
-import { exec as execAsync, spawn } from 'promisify-child-process';
+import { exec as execAsync } from 'promisify-child-process';
 
 import { constants } from '../constants';
 import { UpdatedPackage } from '../types';

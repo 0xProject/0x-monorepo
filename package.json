@@ -46,6 +46,7 @@
         "wsrun": "^2.2.0"
     },
     "resolutions": {
-        "ethereumjs-tx": "0xProject/ethereumjs-tx#fake-tx-include-signature-by-default"
+        "ethereumjs-tx": "0xProject/ethereumjs-tx#fake-tx-include-signature-by-default",
+        "ethers": "0xproject/ethers.js#eip-838-reasons"
     }
 }

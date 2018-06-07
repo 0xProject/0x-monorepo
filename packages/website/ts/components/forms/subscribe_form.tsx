@@ -6,7 +6,6 @@ import { Button } from 'ts/components/ui/button';
 import { Container } from 'ts/components/ui/container';
 import { Input } from 'ts/components/ui/input';
 import { Text } from 'ts/components/ui/text';
-import { styled } from 'ts/style/theme';
 import { backendClient } from 'ts/utils/backend_client';
 
 export interface SubscribeFormProps {}

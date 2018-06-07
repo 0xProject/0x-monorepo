@@ -1,5 +1,6 @@
+// tslint:disable:no-unnecessary-type-assertion
 import { ContractWrappers } from '@0xproject/contract-wrappers';
-import { BlockchainLifecycle, callbackErrorReporter, devConstants } from '@0xproject/dev-utils';
+import { BlockchainLifecycle, callbackErrorReporter } from '@0xproject/dev-utils';
 import { FillScenarios } from '@0xproject/fill-scenarios';
 import { getOrderHashHex } from '@0xproject/order-utils';
 import {
@@ -53,6 +54,7 @@ describe('OrderWatcher', () => {
     const fillableAmount = Web3Wrapper.toBaseUnitAmount(new BigNumber(5), decimals);
     before(async () => {
         contractWrappers = new ContractWrappers(provider, config);
+        // tslint:disable-next-line:no-unused-variable
         const networkId = await web3Wrapper.getNetworkIdAsync();
         orderWatcher = new OrderWatcher(provider, constants.TESTRPC_NETWORK_ID);
         exchangeContractAddress = contractWrappers.exchange.getContractAddress();

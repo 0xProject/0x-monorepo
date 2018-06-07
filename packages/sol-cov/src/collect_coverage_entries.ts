@@ -1,7 +1,5 @@
 import * as ethUtil from 'ethereumjs-util';
-import * as fs from 'fs';
 import * as _ from 'lodash';
-import * as path from 'path';
 import * as parser from 'solidity-parser-antlr';
 
 import { ASTVisitor, CoverageEntriesDescription } from './ast_visitor';

@@ -1,5 +1,3 @@
-import { Styles } from '@0xproject/react-shared';
-import * as _ from 'lodash';
 import * as React from 'react';
 import { Footer } from 'ts/components/footer';
 import { TopBar } from 'ts/components/top_bar/top_bar';

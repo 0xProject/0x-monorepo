@@ -7,20 +7,9 @@ import * as ReactTooltip from 'react-tooltip';
 
 import { DocsInfo } from '../docs_info';
 import { Type as TypeDef, TypeDefinitionByName, TypeDocTypes } from '../types';
-import { constants } from '../utils/constants';
 
 import { Signature } from './signature';
 import { TypeDefinition } from './type_definition';
-
-const typeToSection: { [typeName: string]: string } = {
-    ExchangeWrapper: 'exchange',
-    TokenWrapper: 'token',
-    TokenRegistryWrapper: 'tokenRegistry',
-    EtherTokenWrapper: 'etherToken',
-    ProxyWrapper: 'proxy',
-    TokenTransferProxyWrapper: 'proxy',
-    OrderStateWatcher: 'orderWatcher',
-};
 
 export interface TypeProps {
     type: TypeDef;

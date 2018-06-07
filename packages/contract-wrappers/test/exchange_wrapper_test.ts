@@ -1,11 +1,10 @@
-import { BlockchainLifecycle, callbackErrorReporter, devConstants, web3Factory } from '@0xproject/dev-utils';
+import { BlockchainLifecycle, callbackErrorReporter } from '@0xproject/dev-utils';
 import { FillScenarios } from '@0xproject/fill-scenarios';
 import { getOrderHashHex } from '@0xproject/order-utils';
 import { BlockParamLiteral, DoneCallback, OrderState } from '@0xproject/types';
 import { BigNumber } from '@0xproject/utils';
 import { Web3Wrapper } from '@0xproject/web3-wrapper';
 import * as chai from 'chai';
-import * as _ from 'lodash';
 import 'make-promises-safe';
 import 'mocha';
 

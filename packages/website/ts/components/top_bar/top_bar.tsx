@@ -6,15 +6,12 @@ import Menu from 'material-ui/Menu';
 import MenuItem from 'material-ui/MenuItem';
 import * as React from 'react';
 import { Link } from 'react-router-dom';
-import ReactTooltip = require('react-tooltip');
 import { Blockchain } from 'ts/blockchain';
 import { LegacyPortalMenu } from 'ts/components/legacy_portal/legacy_portal_menu';
 import { DrawerMenu } from 'ts/components/portal/drawer_menu';
-import { SidebarHeader } from 'ts/components/sidebar_header';
 import { ProviderDisplay } from 'ts/components/top_bar/provider_display';
 import { TopBarMenuItem } from 'ts/components/top_bar/top_bar_menu_item';
 import { DropDown } from 'ts/components/ui/drop_down';
-import { Identicon } from 'ts/components/ui/identicon';
 import { Dispatcher } from 'ts/redux/dispatcher';
 import { zIndex } from 'ts/style/z_index';
 import { Deco, Key, ProviderType, WebsiteLegacyPaths, WebsitePaths } from 'ts/types';
@@ -163,6 +160,12 @@ export class TopBar extends React.Component<TopBarProps, TopBarState> {
                 <MenuItem
                     style={{ fontSize: styles.menuItem.fontSize }}
                     primaryText={this.props.translate.get(Key.SolCov, Deco.CapWords)}
+                />
+            </Link>,
+            <Link key="subMenuItem-ethereum-types" to={WebsitePaths.EthereumTypes} className="text-decoration-none">
+                <MenuItem
+                    style={{ fontSize: styles.menuItem.fontSize }}
+                    primaryText={this.props.translate.get(Key.EthereumTypes, Deco.CapWords)}
                 />
             </Link>,
             <a
@@ -379,6 +382,14 @@ export class TopBar extends React.Component<TopBarProps, TopBarState> {
                             </MenuItem>
                         </Link>
                     )}
+                    {!this._isViewingEthereumTypesDocs() && (
+                        <Link to={WebsitePaths.EthereumTypes} className="text-decoration-none">
+                            <MenuItem className="py2">
+                                {this.props.translate.get(Key.EthereumTypes, Deco.Cap)}{' '}
+                                {this.props.translate.get(Key.Docs, Deco.Cap)}
+                            </MenuItem>
+                        </Link>
+                    )}
                     {!this._isViewingPortal() && (
                         <Link to={`${WebsitePaths.Portal}`} className="text-decoration-none">
                             <MenuItem className="py2">
@@ -418,8 +429,6 @@ export class TopBar extends React.Component<TopBarProps, TopBarState> {
         ) {
             return undefined;
         }
-
-        const sectionTitle = `${this.props.docsInfo.displayName} Docs`;
         return (
             <div className="lg-hide md-hide">
                 <NestedSidebarMenu
@@ -506,6 +515,9 @@ export class TopBar extends React.Component<TopBarProps, TopBarState> {
     }
     private _isViewingSubprovidersDocs(): boolean {
         return _.includes(this.props.location.pathname, WebsitePaths.Subproviders);
+    }
+    private _isViewingEthereumTypesDocs(): boolean {
+        return _.includes(this.props.location.pathname, WebsitePaths.EthereumTypes);
     }
     private _isViewingWiki(): boolean {
         return _.includes(this.props.location.pathname, WebsitePaths.Wiki);

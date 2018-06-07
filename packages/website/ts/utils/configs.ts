@@ -1,6 +1,5 @@
 import * as _ from 'lodash';
 import { Environments, OutdatedWrappedEtherByNetworkId, PublicNodeUrlsByNetworkId } from 'ts/types';
-import { utils } from 'ts/utils/utils';
 
 const BASE_URL = window.location.origin;
 const isDevelopment = _.includes(

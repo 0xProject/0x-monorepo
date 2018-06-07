@@ -1,5 +1,4 @@
 import * as fs from 'fs';
-import * as _ from 'lodash';
 import * as path from 'path';
 
 import { ContractSource } from '../types';
@@ -35,7 +34,6 @@ export class NameResolver extends EnumerableResolver {
     public getAll(): ContractSource[] {
         const contractSources: ContractSource[] = [];
         const onFile = (filePath: string) => {
-            const contractName = path.basename(filePath, SOLIDITY_FILE_EXTENSION);
             const absoluteContractPath = path.join(this._contractsDir, filePath);
             const source = fs.readFileSync(absoluteContractPath).toString();
             const contractSource = {
