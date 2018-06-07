@@ -226,13 +226,9 @@ describe('Asset Transfer Proxies', () => {
                 const amounts = _.times(numTransfers, () => amount);
 
                 return expectRevertOrAlwaysFailingTransactionAsync(
-                    erc20Proxy.batchTransferFrom.sendTransactionAsync(
-                        encodedAssetData,
-                        fromAddresses,
-                        toAddresses,
-                        amounts,
-                        { from: notAuthorized },
-                    ),
+                    erc20Proxy.batchTransferFrom.sendTransactionAsync(assetData, fromAddresses, toAddresses, amounts, {
+                        from: notAuthorized,
+                    }),
                 );
             });
         });
@@ -477,13 +473,9 @@ describe('Asset Transfer Proxies', () => {
                 const amounts = _.times(numTransfers, () => new BigNumber(1));
 
                 return expectRevertOrAlwaysFailingTransactionAsync(
-                    erc721Proxy.batchTransferFrom.sendTransactionAsync(
-                        encodedAssetData,
-                        fromAddresses,
-                        toAddresses,
-                        amounts,
-                        { from: notAuthorized },
-                    ),
+                    erc721Proxy.batchTransferFrom.sendTransactionAsync(assetData, fromAddresses, toAddresses, amounts, {
+                        from: notAuthorized,
+                    }),
                 );
             });
         });

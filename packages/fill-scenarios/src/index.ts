@@ -169,10 +169,10 @@ export class FillScenarios {
         feeRecepientAddress: string,
         expirationTimeSeconds?: BigNumber,
     ): Promise<SignedOrder> {
-        const makerERC20ProxyData = assetProxyUtils.decodeERC20ProxyData(makerAssetData);
-        const makerTokenAddress = makerERC20ProxyData.tokenAddress;
-        const takerERC20ProxyData = assetProxyUtils.decodeERC20ProxyData(takerAssetData);
-        const takerTokenAddress = takerERC20ProxyData.tokenAddress;
+        const makerERC20AssetData = assetProxyUtils.decodeERC20AssetData(makerAssetData);
+        const makerTokenAddress = makerERC20AssetData.tokenAddress;
+        const takerERC20AssetData = assetProxyUtils.decodeERC20AssetData(takerAssetData);
+        const takerTokenAddress = takerERC20AssetData.tokenAddress;
         await Promise.all([
             this._increaseERC20BalanceAndAllowanceAsync(makerTokenAddress, makerAddress, makerFillableAmount),
             this._increaseERC20BalanceAndAllowanceAsync(takerTokenAddress, takerAddress, takerFillableAmount),
