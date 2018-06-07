@@ -7,7 +7,7 @@ import {
     LogWithDecodedArgs,
     RawLog,
 } from '@0xproject/types';
-import { AbiDecoder, intervalUtils } from '@0xproject/utils';
+import { intervalUtils } from '@0xproject/utils';
 import { Web3Wrapper } from '@0xproject/web3-wrapper';
 import { Block, BlockAndLogStreamer } from 'ethereumjs-blockstream';
 import * as _ from 'lodash';
@@ -185,6 +185,7 @@ export class ContractWrapper {
             this._unsubscribe(filterToken, err);
         });
     }
+    // tslint:disable-next-line:no-unused-variable
     private _setNetworkId(networkId: number): void {
         this._networkId = networkId;
     }

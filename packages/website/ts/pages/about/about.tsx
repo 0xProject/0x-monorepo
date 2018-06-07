@@ -8,7 +8,6 @@ import { TopBar } from 'ts/components/top_bar/top_bar';
 import { Profile } from 'ts/pages/about/profile';
 import { Dispatcher } from 'ts/redux/dispatcher';
 import { ProfileInfo, WebsitePaths } from 'ts/types';
-import { constants } from 'ts/utils/constants';
 import { Translate } from 'ts/utils/translate';
 import { utils } from 'ts/utils/utils';
 

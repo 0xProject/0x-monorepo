@@ -3,13 +3,13 @@ import { assetProxyUtils } from '@0xproject/order-utils';
 import { AssetProxyId } from '@0xproject/types';
 import { BigNumber } from '@0xproject/utils';
 import * as chai from 'chai';
-import * as Web3 from 'web3';
 
 import { DummyERC20TokenContract } from '../../src/generated_contract_wrappers/dummy_e_r_c20_token';
 import { ERC20ProxyContract } from '../../src/generated_contract_wrappers/e_r_c20_proxy';
 import { ERC721ProxyContract } from '../../src/generated_contract_wrappers/e_r_c721_proxy';
 import { TestAssetProxyDispatcherContract } from '../../src/generated_contract_wrappers/test_asset_proxy_dispatcher';
 import { artifacts } from '../../src/utils/artifacts';
+import { expectRevertOrAlwaysFailingTransactionAsync } from '../../src/utils/assertions';
 import { chaiSetup } from '../../src/utils/chai_setup';
 import { constants } from '../../src/utils/constants';
 import { ERC20Wrapper } from '../../src/utils/erc20_wrapper';
@@ -23,7 +23,6 @@ const blockchainLifecycle = new BlockchainLifecycle(web3Wrapper);
 describe('AssetProxyDispatcher', () => {
     let owner: string;
     let notOwner: string;
-    let notAuthorized: string;
     let makerAddress: string;
     let takerAddress: string;
 
@@ -45,7 +44,6 @@ describe('AssetProxyDispatcher', () => {
         // Setup accounts & addresses
         const accounts = await web3Wrapper.getAvailableAddressesAsync();
         const usedAddresses = ([owner, notOwner, makerAddress, takerAddress] = accounts);
-        notAuthorized = notOwner;
 
         erc20Wrapper = new ERC20Wrapper(provider, usedAddresses, owner);
         erc721Wrapper = new ERC721Wrapper(provider, usedAddresses, owner);
@@ -177,14 +175,14 @@ describe('AssetProxyDispatcher', () => {
             const proxyAddress = await assetProxyDispatcher.getAssetProxy.callAsync(AssetProxyId.ERC20);
             expect(proxyAddress).to.be.equal(erc20Proxy.address);
             // The following transaction will throw because the currentAddress is no longer constants.NULL_ADDRESS
-            return expect(
+            return expectRevertOrAlwaysFailingTransactionAsync(
                 assetProxyDispatcher.registerAssetProxy.sendTransactionAsync(
                     AssetProxyId.ERC20,
                     erc20Proxy.address,
                     constants.NULL_ADDRESS,
                     { from: owner },
                 ),
-            ).to.be.rejectedWith(constants.REVERT);
+            );
         });
 
         it('should be able to reset proxy address to NULL', async () => {
@@ -218,26 +216,26 @@ describe('AssetProxyDispatcher', () => {
 
         it('should throw if requesting address is not owner', async () => {
             const prevProxyAddress = constants.NULL_ADDRESS;
-            return expect(
+            return expectRevertOrAlwaysFailingTransactionAsync(
                 assetProxyDispatcher.registerAssetProxy.sendTransactionAsync(
                     AssetProxyId.ERC20,
                     erc20Proxy.address,
                     prevProxyAddress,
                     { from: notOwner },
                 ),
-            ).to.be.rejectedWith(constants.REVERT);
+            );
         });
 
         it('should throw if attempting to register a proxy to the incorrect id', async () => {
             const prevProxyAddress = constants.NULL_ADDRESS;
-            return expect(
+            return expectRevertOrAlwaysFailingTransactionAsync(
                 assetProxyDispatcher.registerAssetProxy.sendTransactionAsync(
                     AssetProxyId.ERC721,
                     erc20Proxy.address,
                     prevProxyAddress,
                     { from: owner },
                 ),
-            ).to.be.rejectedWith(constants.REVERT);
+            );
         });
     });
 
@@ -305,9 +303,8 @@ describe('AssetProxyDispatcher', () => {
             // Construct metadata for ERC20 proxy
             const encodedProxyMetadata = assetProxyUtils.encodeERC20ProxyData(zrxToken.address);
             // Perform a transfer from makerAddress to takerAddress
-            const erc20Balances = await erc20Wrapper.getBalancesAsync();
             const amount = new BigNumber(10);
-            return expect(
+            return expectRevertOrAlwaysFailingTransactionAsync(
                 assetProxyDispatcher.publicDispatchTransferFrom.sendTransactionAsync(
                     encodedProxyMetadata,
                     makerAddress,
@@ -315,7 +312,7 @@ describe('AssetProxyDispatcher', () => {
                     amount,
                     { from: owner },
                 ),
-            ).to.be.rejectedWith(constants.REVERT);
+            );
         });
     });
 });

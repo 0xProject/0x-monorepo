@@ -1,11 +1,10 @@
 import { promisify } from '@0xproject/utils';
-import { addHexPrefix, stripHexPrefix } from 'ethereumjs-util';
+import { stripHexPrefix } from 'ethereumjs-util';
 import * as fs from 'fs';
 import { Collector } from 'istanbul';
 import * as _ from 'lodash';
-import { getLogger, levels, Logger, LogLevel } from 'loglevel';
+import { getLogger, levels, Logger } from 'loglevel';
 import * as mkdirp from 'mkdirp';
-import * as path from 'path';
 
 import { AbstractArtifactAdapter } from './artifact_adapters/abstract_artifact_adapter';
 import { collectCoverageEntries } from './collect_coverage_entries';
@@ -14,18 +13,14 @@ import { parseSourceMap } from './source_maps';
 import {
     BranchCoverage,
     BranchDescription,
-    BranchMap,
     ContractData,
     Coverage,
-    FnMap,
     FunctionCoverage,
     FunctionDescription,
-    LineColumn,
     SingleFileSourceRange,
     SourceRange,
     StatementCoverage,
     StatementDescription,
-    StatementMap,
     TraceInfo,
     TraceInfoExistingContract,
     TraceInfoNewContract,
@@ -38,6 +33,7 @@ export class CoverageManager {
     private _artifactAdapter: AbstractArtifactAdapter;
     private _logger: Logger;
     private _traceInfos: TraceInfo[] = [];
+    // tslint:disable-next-line:no-unused-variable
     private _getContractCodeAsync: (address: string) => Promise<string>;
     private static _getSingleFileCoverageForTrace(
         contractData: ContractData,

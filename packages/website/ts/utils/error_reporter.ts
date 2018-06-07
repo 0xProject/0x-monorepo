@@ -2,7 +2,6 @@ import { logUtils } from '@0xproject/utils';
 import { Environments } from 'ts/types';
 import { configs } from 'ts/utils/configs';
 import { constants } from 'ts/utils/constants';
-import { utils } from 'ts/utils/utils';
 
 // Suggested way to include Rollbar with Webpack
 // https://github.com/rollbar/rollbar.js/tree/master/examples/webpack

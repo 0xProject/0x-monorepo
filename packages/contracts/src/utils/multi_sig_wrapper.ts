@@ -6,7 +6,6 @@ import * as _ from 'lodash';
 import { AssetProxyOwnerContract } from '../generated_contract_wrappers/asset_proxy_owner';
 import { MultiSigWalletContract } from '../generated_contract_wrappers/multi_sig_wallet';
 
-import { constants } from './constants';
 import { LogDecoder } from './log_decoder';
 
 export class MultiSigWrapper {

@@ -69,6 +69,9 @@ const LazySubprovidersDocumentation = createLazyComponent('Documentation', async
 const LazyOrderUtilsDocumentation = createLazyComponent('Documentation', async () =>
     System.import<any>(/* webpackChunkName: "orderUtilsDocs" */ 'ts/containers/order_utils_documentation'),
 );
+const LazyEthereumTypesDocumentation = createLazyComponent('Documentation', async () =>
+    System.import<any>(/* webpackChunkName: "ethereumTypesDocs" */ 'ts/containers/ethereum_types_documentation'),
+);
 
 analytics.init();
 // tslint:disable-next-line:no-floating-promises
@@ -115,6 +118,10 @@ render(
                             <Route
                                 path={`${WebsitePaths.SmartContracts}/:version?`}
                                 component={LazySmartContractsDocumentation}
+                            />
+                            <Route
+                                path={`${WebsitePaths.EthereumTypes}/:version?`}
+                                component={LazyEthereumTypesDocumentation}
                             />
 
                             {/* Legacy endpoints */}

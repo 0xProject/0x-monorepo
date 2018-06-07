@@ -1,10 +1,8 @@
 #!/usr/bin/env node
 
 import * as depcheckAsync from 'depcheck';
-import * as fs from 'fs';
 import lernaGetPackages = require('lerna-get-packages');
 import * as _ from 'lodash';
-import { exec as execAsync } from 'promisify-child-process';
 
 import { constants } from './constants';
 import { utils } from './utils/utils';

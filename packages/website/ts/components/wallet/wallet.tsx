@@ -1,25 +1,15 @@
-import {
-    constants as sharedConstants,
-    EtherscanLinkSuffixes,
-    Styles,
-    utils as sharedUtils,
-} from '@0xproject/react-shared';
+import { EtherscanLinkSuffixes, Styles, utils as sharedUtils } from '@0xproject/react-shared';
 import { BigNumber } from '@0xproject/utils';
 import { Web3Wrapper } from '@0xproject/web3-wrapper';
 import * as _ from 'lodash';
 import CircularProgress from 'material-ui/CircularProgress';
-import FlatButton from 'material-ui/FlatButton';
 import FloatingActionButton from 'material-ui/FloatingActionButton';
 import { ListItem } from 'material-ui/List';
 import ActionAccountBalanceWallet from 'material-ui/svg-icons/action/account-balance-wallet';
 import ContentAdd from 'material-ui/svg-icons/content/add';
 import ContentRemove from 'material-ui/svg-icons/content/remove';
-import NavigationArrowDownward from 'material-ui/svg-icons/navigation/arrow-downward';
-import NavigationArrowUpward from 'material-ui/svg-icons/navigation/arrow-upward';
-import Close from 'material-ui/svg-icons/navigation/close';
 import * as React from 'react';
 import { Link } from 'react-router-dom';
-import ReactTooltip = require('react-tooltip');
 import firstBy = require('thenby');
 
 import { Blockchain } from 'ts/blockchain';
@@ -35,7 +25,6 @@ import { Dispatcher } from 'ts/redux/dispatcher';
 import { colors } from 'ts/style/colors';
 import { zIndex } from 'ts/style/z_index';
 import {
-    BalanceErrs,
     BlockchainErrs,
     ProviderType,
     ScreenWidths,
@@ -135,7 +124,7 @@ const styles: Styles = {
 
 const ETHER_ICON_PATH = '/images/ether.png';
 const ICON_DIMENSION = 28;
-const TOKEN_AMOUNT_DISPLAY_PRECISION = 3;
+const TOKEN_AMOUNT_DISPLAY_PRECISION = 5;
 const BODY_ITEM_KEY = 'BODY';
 const HEADER_ITEM_KEY = 'HEADER';
 const FOOTER_ITEM_KEY = 'FOOTER';
@@ -146,10 +135,8 @@ const NO_ALLOWANCE_TOGGLE_SPACE_WIDTH = 56;
 const ACCOUNT_PATH = `${WebsitePaths.Portal}/account`;
 
 export class Wallet extends React.Component<WalletProps, WalletState> {
-    private _isUnmounted: boolean;
     constructor(props: WalletProps) {
         super(props);
-        this._isUnmounted = false;
         this.state = {
             wrappedEtherDirection: undefined,
             isHoveringSidebar: false,
@@ -183,7 +170,6 @@ export class Wallet extends React.Component<WalletProps, WalletState> {
         );
     }
     private _renderDisconnectedHeaderRows(): React.ReactElement<{}> {
-        const userAddress = this.props.userAddress;
         const primaryText = 'wallet';
         return (
             <StandardIconRow
@@ -448,14 +434,19 @@ export class Wallet extends React.Component<WalletProps, WalletState> {
         symbol: string,
         isLoading: boolean = false,
     ): React.ReactNode {
-        const unitAmount = Web3Wrapper.toUnitAmount(amount, decimals);
-        const formattedAmount = unitAmount.toPrecision(TOKEN_AMOUNT_DISPLAY_PRECISION);
-        const result = `${formattedAmount} ${symbol}`;
-        return (
-            <PlaceHolder hideChildren={isLoading}>
-                <div style={styles.amountLabel}>{result}</div>
-            </PlaceHolder>
-        );
+        if (isLoading) {
+            return (
+                <PlaceHolder hideChildren={isLoading}>
+                    <div style={styles.amountLabel}>0.00 XXX</div>
+                </PlaceHolder>
+            );
+        } else {
+            const unitAmount = Web3Wrapper.toUnitAmount(amount, decimals);
+            const precision = Math.min(TOKEN_AMOUNT_DISPLAY_PRECISION, unitAmount.decimalPlaces());
+            const formattedAmount = unitAmount.toFixed(precision);
+            const result = `${formattedAmount} ${symbol}`;
+            return <div style={styles.amountLabel}>{result}</div>;
+        }
     }
     private _renderValue(
         amount: BigNumber,
@@ -509,17 +500,6 @@ export class Wallet extends React.Component<WalletProps, WalletState> {
         return (
             <IconButton iconName={buttonIconName} labelText={buttonLabel} onClick={onClick} color={colors.mediumBlue} />
         );
-    }
-    private _getInitialTrackedTokenStateByAddress(tokenAddresses: string[]): TokenStateByAddress {
-        const trackedTokenStateByAddress: TokenStateByAddress = {};
-        _.each(tokenAddresses, tokenAddress => {
-            trackedTokenStateByAddress[tokenAddress] = {
-                balance: new BigNumber(0),
-                allowance: new BigNumber(0),
-                isLoaded: false,
-            };
-        });
-        return trackedTokenStateByAddress;
     }
     private _openWrappedEtherActionRow(wrappedEtherDirection: Side): void {
         this.setState({

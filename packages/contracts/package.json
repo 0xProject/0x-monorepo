@@ -22,8 +22,8 @@
         "compile": "sol-compiler",
         "clean": "shx rm -rf lib src/generated_contract_wrappers",
         "generate_contract_wrappers":
-            "abi-gen --abis  ${npm_package_config_abis} --template ../contract_templates/contract.handlebars --partials '../contract_templates/partials/**/*.handlebars' --output src/generated_contract_wrappers --backend ethers && prettier --write 'src/generated_contract_wrappers/**.ts'",
-        "lint": "tslint --project .",
+            "abi-gen --abis  ${npm_package_config_abis} --template ../contract_templates/contract.handlebars --partials '../contract_templates/partials/**/*.handlebars' --output src/generated_contract_wrappers/generated --backend ethers",
+        "lint": "tslint --project . --exclude **/src/contract_wrappers/**/* --exclude **/lib/**/*",
         "coverage:report:text": "istanbul report text",
         "coverage:report:html": "istanbul report html && open coverage/index.html",
         "coverage:report:lcov": "istanbul report lcov",
@@ -61,7 +61,6 @@
         "make-promises-safe": "^1.1.0",
         "mocha": "^4.0.1",
         "npm-run-all": "^4.1.2",
-        "prettier": "^1.11.1",
         "shx": "^0.2.2",
         "solc": "^0.4.24",
         "tslint": "5.8.0",

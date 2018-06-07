@@ -49,6 +49,7 @@ export class TokenTransferProxyWrapper extends ContractWrapper {
         const contractAddress = this._getContractAddress(artifacts.TokenTransferProxy, this._contractAddressIfExists);
         return contractAddress;
     }
+    // tslint:disable-next-line:no-unused-variable
     private _invalidateContractInstance(): void {
         delete this._tokenTransferProxyContractIfExists;
     }

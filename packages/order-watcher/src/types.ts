@@ -1,18 +1,4 @@
-import { BigNumber } from '@0xproject/utils';
-
-import {
-    BlockParam,
-    BlockParamLiteral,
-    ContractAbi,
-    ContractEventArg,
-    ExchangeContractErrs,
-    FilterObject,
-    LogEntryEvent,
-    LogWithDecodedArgs,
-    Order,
-    OrderState,
-    SignedOrder,
-} from '@0xproject/types';
+import { BlockParamLiteral, LogEntryEvent, OrderState } from '@0xproject/types';
 
 export enum OrderWatcherError {
     SubscriptionAlreadyPresent = 'SUBSCRIPTION_ALREADY_PRESENT',

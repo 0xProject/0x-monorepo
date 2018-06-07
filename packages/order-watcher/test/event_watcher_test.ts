@@ -1,4 +1,4 @@
-import { callbackErrorReporter, web3Factory } from '@0xproject/dev-utils';
+import { callbackErrorReporter } from '@0xproject/dev-utils';
 import { DoneCallback, LogEntry, LogEntryEvent } from '@0xproject/types';
 import { Web3Wrapper } from '@0xproject/web3-wrapper';
 import * as chai from 'chai';
