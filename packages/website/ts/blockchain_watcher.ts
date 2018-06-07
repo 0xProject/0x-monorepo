@@ -1,8 +1,7 @@
-import { BigNumber, intervalUtils, logUtils, promisify } from '@0xproject/utils';
+import { BigNumber, intervalUtils, logUtils } from '@0xproject/utils';
 import { Web3Wrapper } from '@0xproject/web3-wrapper';
 import * as _ from 'lodash';
 import { Dispatcher } from 'ts/redux/dispatcher';
-import { utils } from 'ts/utils/utils';
 
 export class BlockchainWatcher {
     private _dispatcher: Dispatcher;

@@ -3,8 +3,6 @@ import DropDownMenu from 'material-ui/DropDownMenu';
 import MenuItem from 'material-ui/MenuItem';
 import * as React from 'react';
 
-import { utils } from '../utils/utils';
-
 export interface VersionDropDownProps {
     selectedVersion: string;
     versions: string[];

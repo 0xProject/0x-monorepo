@@ -8,12 +8,10 @@ import {
     LogEntry,
     LogWithDecodedArgs,
     Order,
-    OrderAddresses,
     OrderState,
-    OrderValues,
     SignedOrder,
 } from '@0xproject/types';
-import { AbiDecoder, BigNumber } from '@0xproject/utils';
+import { BigNumber } from '@0xproject/utils';
 import { Web3Wrapper } from '@0xproject/web3-wrapper';
 import * as _ from 'lodash';
 
@@ -35,7 +33,6 @@ import { assert } from '../utils/assert';
 import { decorators } from '../utils/decorators';
 import { ExchangeTransferSimulator } from '../utils/exchange_transfer_simulator';
 import { OrderValidationUtils } from '../utils/order_validation_utils';
-import { utils } from '../utils/utils';
 
 import { ContractWrapper } from './contract_wrapper';
 import {
@@ -888,6 +885,7 @@ export class ExchangeWrapper extends ContractWrapper {
         const contractAddress = this._getContractAddress(artifacts.ZRX, this._zrxContractAddressIfExists);
         return contractAddress;
     }
+    // tslint:disable:no-unused-variable
     private _invalidateContractInstances(): void {
         this.unsubscribeAll();
         delete this._exchangeContractIfExists;
@@ -919,6 +917,7 @@ export class ExchangeWrapper extends ContractWrapper {
         const orderHashHex = await exchangeInstance.getOrderHash.callAsync(orderAddresses, orderValues);
         return orderHashHex;
     }
+    // tslint:enable:no-unused-variable
     private async _getExchangeContractAsync(): Promise<ExchangeContract> {
         if (!_.isUndefined(this._exchangeContractIfExists)) {
             return this._exchangeContractIfExists;

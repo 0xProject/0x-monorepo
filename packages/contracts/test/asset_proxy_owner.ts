@@ -2,9 +2,7 @@ import { BlockchainLifecycle } from '@0xproject/dev-utils';
 import { BigNumber } from '@0xproject/utils';
 import * as chai from 'chai';
 import { LogWithDecodedArgs } from 'ethereum-types';
-import * as _ from 'lodash';
 import 'make-promises-safe';
-import * as Web3 from 'web3';
 
 import {
     AssetProxyOwnerContract,
@@ -15,15 +13,20 @@ import {
 } from '../src/contract_wrappers/generated/asset_proxy_owner';
 import { MixinAuthorizableContract } from '../src/contract_wrappers/generated/mixin_authorizable';
 import { artifacts } from '../src/utils/artifacts';
+import {
+    expectRevertOrAlwaysFailingTransactionAsync,
+    expectRevertOrContractCallFailedAsync,
+} from '../src/utils/assertions';
 import { chaiSetup } from '../src/utils/chai_setup';
 import { constants } from '../src/utils/constants';
+import { increaseTimeAndMineBlockAsync } from '../src/utils/increase_time';
 import { MultiSigWrapper } from '../src/utils/multi_sig_wrapper';
 import { provider, txDefaults, web3Wrapper } from '../src/utils/web3_wrapper';
 
 chaiSetup.configure();
 const expect = chai.expect;
 const blockchainLifecycle = new BlockchainLifecycle(web3Wrapper);
-
+// tslint:disable:no-unnecessary-type-assertion
 describe('AssetProxyOwner', () => {
     let owners: string[];
     let authorized: string;
@@ -101,7 +104,7 @@ describe('AssetProxyOwner', () => {
         });
         it('should throw if a null address is included in assetProxyContracts', async () => {
             const assetProxyContractAddresses = [erc20Proxy.address, constants.NULL_ADDRESS];
-            return expect(
+            return expectRevertOrAlwaysFailingTransactionAsync(
                 AssetProxyOwnerContract.deployFrom0xArtifactAsync(
                     artifacts.AssetProxyOwner,
                     provider,
@@ -111,7 +114,7 @@ describe('AssetProxyOwner', () => {
                     REQUIRED_APPROVALS,
                     SECONDS_TIME_LOCKED,
                 ),
-            ).to.be.rejectedWith(constants.REVERT);
+            );
         });
     });
 
@@ -120,9 +123,9 @@ describe('AssetProxyOwner', () => {
             const notRemoveAuthorizedAddressData = erc20Proxy.addAuthorizedAddress.getABIEncodedTransactionData(
                 owners[0],
             );
-            return expect(
+            return expectRevertOrContractCallFailedAsync(
                 multiSig.isFunctionRemoveAuthorizedAddress.callAsync(notRemoveAuthorizedAddressData),
-            ).to.be.rejectedWith(constants.REVERT);
+            );
         });
 
         it('should return true if data is for removeAuthorizedAddress', async () => {
@@ -139,9 +142,9 @@ describe('AssetProxyOwner', () => {
     describe('registerAssetProxy', () => {
         it('should throw if not called by multisig', async () => {
             const isRegistered = true;
-            return expect(
+            return expectRevertOrAlwaysFailingTransactionAsync(
                 multiSig.registerAssetProxy.sendTransactionAsync(erc20Proxy.address, isRegistered, { from: owners[0] }),
-            ).to.be.rejectedWith(constants.REVERT);
+            );
         });
 
         it('should register an address if called by multisig after timelock', async () => {
@@ -156,11 +159,12 @@ describe('AssetProxyOwner', () => {
                 registerAssetProxyData,
                 owners[0],
             );
+
             const log = submitTxRes.logs[0] as LogWithDecodedArgs<SubmissionContractEventArgs>;
             const txId = log.args.transactionId;
 
             await multiSigWrapper.confirmTransactionAsync(txId, owners[1]);
-            await web3Wrapper.increaseTimeAsync(SECONDS_TIME_LOCKED.toNumber());
+            await increaseTimeAndMineBlockAsync(SECONDS_TIME_LOCKED.toNumber());
 
             const executeTxRes = await multiSigWrapper.executeTransactionAsync(txId, owners[0]);
             const registerLog = executeTxRes.logs[0] as LogWithDecodedArgs<AssetProxyRegistrationContractEventArgs>;
@@ -187,7 +191,7 @@ describe('AssetProxyOwner', () => {
             const txId = log.args.transactionId;
 
             await multiSigWrapper.confirmTransactionAsync(txId, owners[1]);
-            await web3Wrapper.increaseTimeAsync(SECONDS_TIME_LOCKED.toNumber());
+            await increaseTimeAndMineBlockAsync(SECONDS_TIME_LOCKED.toNumber());
 
             const executeTxRes = await multiSigWrapper.executeTransactionAsync(txId, owners[0]);
             const failureLog = executeTxRes.logs[0] as LogWithDecodedArgs<ExecutionFailureContractEventArgs>;
@@ -239,7 +243,7 @@ describe('AssetProxyOwner', () => {
 
             await multiSigWrapper.confirmTransactionAsync(erc20AddAuthorizedAddressTxId, owners[1]);
             await multiSigWrapper.confirmTransactionAsync(erc721AddAuthorizedAddressTxId, owners[1]);
-            await web3Wrapper.increaseTimeAsync(SECONDS_TIME_LOCKED.toNumber());
+            await increaseTimeAndMineBlockAsync(SECONDS_TIME_LOCKED.toNumber());
             await multiSigWrapper.executeTransactionAsync(registerAssetProxyTxId, owners[0]);
             await multiSigWrapper.executeTransactionAsync(erc20AddAuthorizedAddressTxId, owners[0]);
             await multiSigWrapper.executeTransactionAsync(erc721AddAuthorizedAddressTxId, owners[0]);
@@ -257,9 +261,9 @@ describe('AssetProxyOwner', () => {
             const log = res.logs[0] as LogWithDecodedArgs<SubmissionContractEventArgs>;
             const txId = log.args.transactionId;
 
-            return expect(
+            return expectRevertOrAlwaysFailingTransactionAsync(
                 multiSig.executeRemoveAuthorizedAddress.sendTransactionAsync(txId, { from: owners[1] }),
-            ).to.be.rejectedWith(constants.REVERT);
+            );
         });
 
         it('should throw if tx destination is not registered', async () => {
@@ -276,9 +280,9 @@ describe('AssetProxyOwner', () => {
 
             await multiSigWrapper.confirmTransactionAsync(txId, owners[1]);
 
-            return expect(
+            return expectRevertOrAlwaysFailingTransactionAsync(
                 multiSig.executeRemoveAuthorizedAddress.sendTransactionAsync(txId, { from: owners[1] }),
-            ).to.be.rejectedWith(constants.REVERT);
+            );
         });
 
         it('should throw if tx data is not for removeAuthorizedAddress', async () => {
@@ -296,9 +300,9 @@ describe('AssetProxyOwner', () => {
 
             await multiSigWrapper.confirmTransactionAsync(txId, owners[1]);
 
-            return expect(
+            return expectRevertOrAlwaysFailingTransactionAsync(
                 multiSig.executeRemoveAuthorizedAddress.sendTransactionAsync(txId, { from: owners[1] }),
-            ).to.be.rejectedWith(constants.REVERT);
+            );
         });
 
         it('should execute removeAuthorizedAddress for registered address if fully confirmed', async () => {
@@ -349,9 +353,10 @@ describe('AssetProxyOwner', () => {
             const isExecuted = tx[3];
             expect(isExecuted).to.equal(true);
 
-            return expect(
+            return expectRevertOrAlwaysFailingTransactionAsync(
                 multiSig.executeRemoveAuthorizedAddress.sendTransactionAsync(txId, { from: owners[1] }),
-            ).to.be.rejectedWith(constants.REVERT);
+            );
         });
     });
 });
+// tslint:enable:no-unnecessary-type-assertion

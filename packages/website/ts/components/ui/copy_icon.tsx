@@ -1,5 +1,4 @@
 import { colors } from '@0xproject/react-shared';
-import * as _ from 'lodash';
 import * as React from 'react';
 import * as CopyToClipboard from 'react-copy-to-clipboard';
 import * as ReactDOM from 'react-dom';

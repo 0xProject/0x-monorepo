@@ -1,3 +1,4 @@
+// tslint:disable:no-unused-variable
 import {
     ConstructorAbi,
     ContractAbi,
@@ -7,6 +8,7 @@ import {
     LogEntry,
     MethodAbi,
 } from '@0xproject/types';
+// tslint:enable:no-unused-variable
 import * as ethUtil from 'ethereumjs-util';
 import * as jsSHA3 from 'js-sha3';
 import * as _ from 'lodash';

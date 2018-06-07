@@ -19,7 +19,6 @@ import { OrderWatcher, OrderWatcherConfig } from '@0xproject/order-watcher';
 import { ECSignature, Order, Provider, SignedOrder, TransactionReceiptWithDecodedLogs } from '@0xproject/types';
 import { BigNumber } from '@0xproject/utils';
 import { Web3Wrapper } from '@0xproject/web3-wrapper';
-import * as _ from 'lodash';
 
 import { constants } from './utils/constants';
 

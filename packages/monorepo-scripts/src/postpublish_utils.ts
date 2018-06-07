@@ -4,7 +4,6 @@ import * as fs from 'fs';
 import * as _ from 'lodash';
 import * as path from 'path';
 import * as publishRelease from 'publish-release';
-import semverSort = require('semver-sort');
 
 import { constants } from './constants';
 import { utils } from './utils/utils';
@@ -53,12 +52,7 @@ export const postpublishUtils = {
     },
     async runAsync(packageJSON: any, tsConfigJSON: any, cwd: string): Promise<void> {
         const configs = this.generateConfig(packageJSON, tsConfigJSON, cwd);
-        const release = await this.publishReleaseNotesAsync(
-            configs.cwd,
-            configs.packageName,
-            configs.version,
-            configs.assets,
-        );
+        await this.publishReleaseNotesAsync(configs.cwd, configs.packageName, configs.version, configs.assets);
         if (
             !_.isUndefined(configs.docPublishConfigs.s3BucketPath) ||
             !_.isUndefined(configs.docPublishConfigs.s3StagingBucketPath)
@@ -93,9 +87,9 @@ export const postpublishUtils = {
         const notes = this.getReleaseNotes(packageName, version);
         const releaseName = this.getReleaseName(packageName, version);
         const tag = this.getTag(packageName, version);
-        const finalAssets = this.adjustAssetPaths(cwd, assets);
+        this.adjustAssetPaths(cwd, assets);
         utils.log('POSTPUBLISH: Releasing ', releaseName, '...');
-        const result = await publishReleaseAsync({
+        await publishReleaseAsync({
             token: constants.githubPersonalAccessToken,
             owner: '0xProject',
             repo: '0x-monorepo',

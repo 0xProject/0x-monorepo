@@ -1,5 +1,4 @@
 import { colors, Networks } from '@0xproject/react-shared';
-import * as _ from 'lodash';
 import Dialog from 'material-ui/Dialog';
 import FlatButton from 'material-ui/FlatButton';
 import * as React from 'react';

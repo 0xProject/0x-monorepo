@@ -1,9 +1,7 @@
 import * as chai from 'chai';
 import { OpCode, StructLog } from 'ethereum-types';
-import * as fs from 'fs';
 import * as _ from 'lodash';
 import 'mocha';
-import * as path from 'path';
 
 import { getTracesByContractAddress } from '../src/trace';
 

@@ -1,6 +1,5 @@
 import { devConstants } from '@0xproject/dev-utils';
 import { CoverageSubprovider, SolCompilerArtifactAdapter } from '@0xproject/sol-cov';
-import * as fs from 'fs';
 import * as _ from 'lodash';
 
 let coverageSubprovider: CoverageSubprovider;

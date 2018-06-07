@@ -3,8 +3,7 @@ import * as _ from 'lodash';
 import * as React from 'react';
 import { MenuItem } from 'ts/components/ui/menu_item';
 import { colors } from 'ts/style/colors';
-import { Environments, WebsitePaths } from 'ts/types';
-import { configs } from 'ts/utils/configs';
+import { WebsitePaths } from 'ts/types';
 
 export interface MenuTheme {
     paddingLeft: number;
