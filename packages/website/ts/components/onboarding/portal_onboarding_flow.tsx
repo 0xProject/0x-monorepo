@@ -4,7 +4,7 @@ import * as React from 'react';
 import { BigNumber } from '@0xproject/utils';
 import { Blockchain } from 'ts/blockchain';
 import { OnboardingFlow, Step } from 'ts/components/onboarding/onboarding_flow';
-import { ProviderType, TokenByAddress, TokenStateByAddress } from 'ts/types';
+import { ProviderType, Token, TokenByAddress, TokenStateByAddress } from 'ts/types';
 import { utils } from 'ts/utils/utils';
 import { AllowanceToggle } from 'ts/containers/inputs/allowance_toggle';
 
@@ -83,7 +83,8 @@ export class PortalOnboardingFlow extends React.Component<PortalOnboardingFlowPr
             },
             {
                 target: '.weth-row',
-                content: 'Unlock your tokens for trading. You only need to do this once for each token.',
+                // content: <div> Unlock your tokens for trading. You only need to do this once for each token. {this._renderEthAllowanceToggle()}</div>,
+                content: 'blah',
                 placement: 'right',
                 continueButtonDisplay: 'disabled',
             },
@@ -135,9 +136,23 @@ export class PortalOnboardingFlow extends React.Component<PortalOnboardingFlowPr
             this.props.updateIsRunning(true);
         }
     }
-    private _renderAllowanceToggle(): React.ReactNode {
+    private _renderZrxAllowanceToggle(): React.ReactNode {
+        const zrxToken = utils.getZrxToken(this.props.tokenByAddress)
+        return this._renderAllowanceToggle(zrxToken);
+    }
+    private _renderEthAllowanceToggle(): React.ReactNode {
+        const ethToken = utils.getEthToken(this.props.tokenByAddress);
+        return this._renderAllowanceToggle(ethToken);
+    }
+    private _renderAllowanceToggle(token: Token): React.ReactNode {
+        if (!token) {
+            return null;
+        }
+        const tokenState = this.props.trackedTokenStateByAddress[token.address];
         return (
             <AllowanceToggle
+                token={token}
+                tokenState={tokenState}
                 blockchain={this.props.blockchain}
                 refetchTokenStateAsync={this.props.refetchTokenStateAsync}
             />

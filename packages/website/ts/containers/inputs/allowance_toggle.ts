@@ -14,8 +14,8 @@ interface AllowanceToggleProps {
     onErrorOccurred?: (errType: BalanceErrs) => void;
     token: Token;
     tokenState: TokenState;
-    isDisabled: boolean;
-    refetchTokenStateAsync: () => Promise<void>;
+    isDisabled?: boolean;
+    refetchTokenStateAsync: (tokenAddress: string) => Promise<void>;
 }
 
 interface ConnectedState {
