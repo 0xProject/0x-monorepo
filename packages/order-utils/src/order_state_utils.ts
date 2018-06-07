@@ -20,11 +20,8 @@ export class OrderStateUtils {
     private _balanceAndProxyAllowanceFetcher: AbstractBalanceAndProxyAllowanceFetcher;
     private _orderFilledCancelledFetcher: AbstractOrderFilledCancelledFetcher;
     private static _validateIfOrderIsValid(signedOrder: SignedOrder, orderRelevantState: OrderRelevantState): void {
-        const unavailableTakerTokenAmount = orderRelevantState.cancelledTakerTokenAmount.add(
-            orderRelevantState.filledTakerTokenAmount,
-        );
-        const availableTakerTokenAmount = signedOrder.takerAssetAmount.minus(unavailableTakerTokenAmount);
-        if (availableTakerTokenAmount.eq(0)) {
+        const availableTakerAssetAmount = signedOrder.takerAssetAmount.minus(orderRelevantState.filledTakerAssetAmount);
+        if (availableTakerAssetAmount.eq(0)) {
             throw new Error(ExchangeContractErrs.OrderRemainingFillAmountZero);
         }
 
@@ -42,12 +39,12 @@ export class OrderStateUtils {
                 throw new Error(ExchangeContractErrs.InsufficientMakerFeeAllowance);
             }
         }
-        const minFillableTakerTokenAmountWithinNoRoundingErrorRange = signedOrder.takerAssetAmount
+        const minFillableTakerAssetAmountWithinNoRoundingErrorRange = signedOrder.takerAssetAmount
             .dividedBy(ACCEPTABLE_RELATIVE_ROUNDING_ERROR)
             .dividedBy(signedOrder.makerAssetAmount);
         if (
-            orderRelevantState.remainingFillableTakerTokenAmount.lessThan(
-                minFillableTakerTokenAmountWithinNoRoundingErrorRange,
+            orderRelevantState.remainingFillableTakerAssetAmount.lessThan(
+                minFillableTakerAssetAmountWithinNoRoundingErrorRange,
             )
         ) {
             throw new Error(ExchangeContractErrs.OrderFillRoundingError);
@@ -72,23 +69,20 @@ export class OrderStateUtils {
             };
             return orderState;
         } catch (err) {
-            const orderState: OrderStateInvalid = {
-                isValid: false,
-                orderHash,
-                error: err.message,
-            };
-            return orderState;
+            throw err;
         }
     }
     public async getOrderRelevantStateAsync(signedOrder: SignedOrder): Promise<OrderRelevantState> {
         const zrxTokenAddress = this._orderFilledCancelledFetcher.getZRXTokenAddress();
+        const makerProxyData = assetProxyUtils.decodeERC20ProxyData(signedOrder.makerAssetData);
+        const makerAssetAddress = makerProxyData.tokenAddress;
         const orderHash = orderHashUtils.getOrderHashHex(signedOrder);
         const makerBalance = await this._balanceAndProxyAllowanceFetcher.getBalanceAsync(
-            signedOrder.makerAssetData,
+            makerAssetAddress,
             signedOrder.makerAddress,
         );
         const makerProxyAllowance = await this._balanceAndProxyAllowanceFetcher.getProxyAllowanceAsync(
-            signedOrder.makerAssetData,
+            makerAssetAddress,
             signedOrder.makerAddress,
         );
         const makerFeeBalance = await this._balanceAndProxyAllowanceFetcher.getBalanceAsync(
@@ -99,42 +93,42 @@ export class OrderStateUtils {
             zrxTokenAddress,
             signedOrder.makerAddress,
         );
-        const filledTakerTokenAmount = await this._orderFilledCancelledFetcher.getFilledTakerAmountAsync(orderHash);
-        const cancelledTakerTokenAmount = await this._orderFilledCancelledFetcher.getCancelledTakerAmountAsync(
-            orderHash,
-        );
-        const unavailableTakerTokenAmount = await this._orderFilledCancelledFetcher.getUnavailableTakerAmountAsync(
-            orderHash,
-        );
-        const totalMakerTokenAmount = signedOrder.makerAssetAmount;
-        const totalTakerTokenAmount = signedOrder.takerAssetAmount;
-        const remainingTakerTokenAmount = totalTakerTokenAmount.minus(unavailableTakerTokenAmount);
-        const remainingMakerTokenAmount = remainingTakerTokenAmount
-            .times(totalMakerTokenAmount)
-            .dividedToIntegerBy(totalTakerTokenAmount);
-        const transferrableMakerTokenAmount = BigNumber.min([makerProxyAllowance, makerBalance]);
-        const transferrableFeeTokenAmount = BigNumber.min([makerFeeProxyAllowance, makerFeeBalance]);
+        const filledTakerAssetAmount = await this._orderFilledCancelledFetcher.getFilledTakerAmountAsync(orderHash);
+        const isOrderCancelled = await this._orderFilledCancelledFetcher.isOrderCancelledAsync(orderHash);
+        const totalMakerAssetAmount = signedOrder.makerAssetAmount;
+        const totalTakerAssetAmount = signedOrder.takerAssetAmount;
+        const remainingTakerAssetAmount = isOrderCancelled
+            ? new BigNumber(0)
+            : totalTakerAssetAmount.minus(filledTakerAssetAmount);
+        const remainingMakerAssetAmount = remainingTakerAssetAmount
+            .times(totalMakerAssetAmount)
+            .dividedToIntegerBy(totalTakerAssetAmount);
+        const transferrableMakerAssetAmount = BigNumber.min([makerProxyAllowance, makerBalance]);
+        const transferrableFeeAssetAmount = BigNumber.min([makerFeeProxyAllowance, makerFeeBalance]);
 
         const zrxAssetData = assetProxyUtils.encodeERC20ProxyData(zrxTokenAddress);
-        const isMakerTokenZRX = signedOrder.makerAssetData === zrxAssetData;
+        const isMakerAssetZRX = signedOrder.makerAssetData === zrxAssetData;
+        const isTraderMaker = true;
         const remainingFillableCalculator = new RemainingFillableCalculator(
+            isTraderMaker,
             signedOrder,
-            isMakerTokenZRX,
-            transferrableMakerTokenAmount,
-            transferrableFeeTokenAmount,
-            remainingMakerTokenAmount,
+            isMakerAssetZRX,
+            transferrableMakerAssetAmount,
+            transferrableFeeAssetAmount,
+            remainingMakerAssetAmount,
         );
-        const remainingFillableMakerTokenAmount = remainingFillableCalculator.computeRemainingMakerFillable();
-        const remainingFillableTakerTokenAmount = remainingFillableCalculator.computeRemainingTakerFillable();
+        const remainingFillableMakerAssetAmount = remainingFillableCalculator.computeRemainingFillable();
+        const remainingFillableTakerAssetAmount = remainingFillableMakerAssetAmount
+            .times(signedOrder.takerAssetAmount)
+            .dividedToIntegerBy(signedOrder.makerAssetAmount);
         const orderRelevantState = {
             makerBalance,
             makerProxyAllowance,
             makerFeeBalance,
             makerFeeProxyAllowance,
-            filledTakerTokenAmount,
-            cancelledTakerTokenAmount,
-            remainingFillableMakerTokenAmount,
-            remainingFillableTakerTokenAmount,
+            filledTakerAssetAmount,
+            remainingFillableMakerAssetAmount,
+            remainingFillableTakerAssetAmount,
         };
         return orderRelevantState;
     }
