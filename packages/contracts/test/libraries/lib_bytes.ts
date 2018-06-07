@@ -6,7 +6,7 @@ import ethUtil = require('ethereumjs-util');
 
 import { TestLibBytesContract } from '../../src/contract_wrappers/generated/test_lib_bytes';
 import { artifacts } from '../../src/utils/artifacts';
-import { expectRevertOrAlwaysFailingTransactionAsync, expectRevertOrOtherErrorAsync } from '../../src/utils/assertions';
+import { expectRevertOrOtherErrorAsync } from '../../src/utils/assertions';
 import { chaiSetup } from '../../src/utils/chai_setup';
 import { constants } from '../../src/utils/constants';
 import { provider, txDefaults, web3Wrapper } from '../../src/utils/web3_wrapper';
