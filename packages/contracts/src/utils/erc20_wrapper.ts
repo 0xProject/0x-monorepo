@@ -25,8 +25,11 @@ export class ERC20Wrapper {
         this._tokenOwnerAddresses = tokenOwnerAddresses;
         this._contractOwnerAddress = contractOwnerAddress;
     }
-    public async deployDummyTokensAsync(): Promise<DummyERC20TokenContract[]> {
-        for (let i = 0; i < constants.NUM_DUMMY_ERC20_TO_DEPLOY; i++) {
+    public async deployDummyTokensAsync(num?: number, decimals?: BigNumber): Promise<DummyERC20TokenContract[]> {
+        // TODO(fabio): Remove and refactor all tests
+        const finalNum = _.isUndefined(num) ? constants.NUM_DUMMY_ERC20_TO_DEPLOY : num;
+        const finalDecimals = _.isUndefined(decimals) ? constants.DUMMY_TOKEN_DECIMALS : decimals;
+        for (let i = 0; i < finalNum; i++) {
             this._dummyTokenContracts.push(
                 await DummyERC20TokenContract.deployFrom0xArtifactAsync(
                     artifacts.DummyERC20Token,
@@ -34,7 +37,7 @@ export class ERC20Wrapper {
                     txDefaults,
                     constants.DUMMY_TOKEN_NAME,
                     constants.DUMMY_TOKEN_SYMBOL,
-                    constants.DUMMY_TOKEN_DECIMALS,
+                    finalDecimals,
                     constants.DUMMY_TOKEN_TOTAL_SUPPLY,
                 ),
             );
@@ -72,6 +75,25 @@ export class ERC20Wrapper {
                 );
             }
         }
+    }
+    public async getBalanceAsync(owner: string, token: string): Promise<BigNumber> {
+        const tokenContractIfExists = _.find(this._dummyTokenContracts, c => c.address === token);
+        if (_.isUndefined(tokenContractIfExists)) {
+            throw new Error(`Token: ${token} was not deployed through ERC20Wrapper`);
+        }
+        const balance = new BigNumber(await tokenContractIfExists.balanceOf.callAsync(owner));
+        return balance;
+    }
+    public async getProxyAllowanceAsync(owner: string, token: string): Promise<BigNumber> {
+        this._validateProxyContractExistsOrThrow();
+        const tokenContractIfExists = _.find(this._dummyTokenContracts, c => c.address === token);
+        if (_.isUndefined(tokenContractIfExists)) {
+            throw new Error(`Token: ${token} was not deployed through ERC20Wrapper`);
+        }
+        const balance = new BigNumber(
+            await tokenContractIfExists.allowance.callAsync(owner, (this._proxyContract as ERC20ProxyContract).address),
+        );
+        return balance;
     }
     public async getBalancesAsync(): Promise<ERC20BalancesByOwner> {
         this._validateDummyTokenContractsExistOrThrow();

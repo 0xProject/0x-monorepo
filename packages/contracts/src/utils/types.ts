@@ -148,11 +148,6 @@ export interface MatchOrder {
     rightSignature: string;
 }
 
-export interface ERC721Token {
-    address: string;
-    id: BigNumber;
-}
-
 // Combinatorial testing types
 
 export enum FeeRecipientAddressScenario {
