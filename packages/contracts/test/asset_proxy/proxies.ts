@@ -1,6 +1,5 @@
 import { BlockchainLifecycle } from '@0xproject/dev-utils';
-import { generatePseudoRandomSalt } from '@0xproject/order-utils';
-import { assetProxyUtils } from '@0xproject/order-utils';
+import { assetProxyUtils, generatePseudoRandomSalt } from '@0xproject/order-utils';
 import { AssetProxyId } from '@0xproject/types';
 import { BigNumber } from '@0xproject/utils';
 import * as chai from 'chai';
@@ -30,8 +29,6 @@ const expect = chai.expect;
 const blockchainLifecycle = new BlockchainLifecycle(web3Wrapper);
 
 describe('Asset Transfer Proxies', () => {
-    const nullDataHex = '0x';
-
     let owner: string;
     let notAuthorized: string;
     let exchangeAddress: string;

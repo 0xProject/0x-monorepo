@@ -25,11 +25,11 @@ contract LibBytes is
 {
 
     // Revert reasons
-    string constant GT_ZERO_LENGTH_REQUIRED = "Length must be greater than 0.";
-    string constant GTE_4_LENGTH_REQUIRED = "Length must be greater than or equal to 4.";
-    string constant GTE_20_LENGTH_REQUIRED = "Length must be greater than or equal to 20.";
-    string constant GTE_32_LENGTH_REQUIRED = "Length must be greater than or equal to 32.";
-    string constant INDEX_OUT_OF_BOUNDS = "Specified array index is out of bounds.";
+    string constant GREATER_THAN_ZERO_LENGTH_REQUIRED = "GREATER_THAN_ZERO_LENGTH_REQUIRED";
+    string constant GREATER_OR_EQUAL_TO_4_LENGTH_REQUIRED = "GREATER_THAN_4_LENGTH_REQUIRED";
+    string constant GREATER_OR_EQUAL_TO_20_LENGTH_REQUIRED = "GREATER_OR_EQUAL_TO_20_LENGTH_REQUIRED";
+    string constant GREATER_OR_EQUAL_TO_32_LENGTH_REQUIRED = "GREATER_OR_EQUAL_TO_32_LENGTH_REQUIRED";
+    string constant GREATER_OR_EQUAL_TO_NESTED_BYTES_LENGTH_REQUIRED = "GREATER_OR_EQUAL_TO_NESTED_BYTES_LENGTH_REQUIRED";
 
     /// @dev Pops the last byte off of a byte array by modifying its length.
     /// @param b Byte array that will be modified.
@@ -41,7 +41,7 @@ contract LibBytes is
     {
         require(
             b.length > 0,
-            GT_ZERO_LENGTH_REQUIRED
+            GREATER_THAN_ZERO_LENGTH_REQUIRED
         );
 
         // Store last byte.
@@ -65,7 +65,7 @@ contract LibBytes is
     {
         require(
             b.length >= 20,
-            GTE_20_LENGTH_REQUIRED
+            GREATER_OR_EQUAL_TO_20_LENGTH_REQUIRED
         );
 
         // Store last 20 bytes.
@@ -128,7 +128,7 @@ contract LibBytes is
     {
         require(
             b.length >= index + 20,  // 20 is length of address
-            GTE_20_LENGTH_REQUIRED
+            GREATER_OR_EQUAL_TO_20_LENGTH_REQUIRED
         );
 
         // Add offset to index:
@@ -160,7 +160,7 @@ contract LibBytes is
     {
         require(
             b.length >= index + 20,  // 20 is length of address
-            GTE_20_LENGTH_REQUIRED
+            GREATER_OR_EQUAL_TO_20_LENGTH_REQUIRED
         );
 
         // Add offset to index:
@@ -199,7 +199,7 @@ contract LibBytes is
     {
         require(
             b.length >= index + 32,
-            GTE_32_LENGTH_REQUIRED
+            GREATER_OR_EQUAL_TO_32_LENGTH_REQUIRED
         );
 
         // Arrays are prefixed by a 256 bit length parameter
@@ -226,7 +226,7 @@ contract LibBytes is
     {
         require(
             b.length >= index + 32,
-            GTE_32_LENGTH_REQUIRED
+            GREATER_OR_EQUAL_TO_32_LENGTH_REQUIRED
         );
 
         // Arrays are prefixed by a 256 bit length parameter
@@ -278,7 +278,7 @@ contract LibBytes is
     {
         require(
             b.length >= 4,
-            GTE_4_LENGTH_REQUIRED
+            GREATER_OR_EQUAL_TO_4_LENGTH_REQUIRED
         );
         assembly {
             result := mload(add(b, 32))
@@ -306,7 +306,7 @@ contract LibBytes is
         // length of nested bytes
         require(
             b.length >= index + nestedBytesLength,
-            GTE_32_LENGTH_REQUIRED
+            GREATER_OR_EQUAL_TO_NESTED_BYTES_LENGTH_REQUIRED
         );
 
         // Allocate memory and copy value to result
@@ -336,7 +336,7 @@ contract LibBytes is
         // length of input
         require(
             b.length >= index + 32 /* 32 bytes to store length */ + input.length,
-            GTE_32_LENGTH_REQUIRED
+            GREATER_OR_EQUAL_TO_NESTED_BYTES_LENGTH_REQUIRED
         );
 
         // Copy <input> into <b>

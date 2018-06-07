@@ -116,7 +116,7 @@ contract ERC721Proxy is
         if (length > 53) {
             receiverData = readBytes(assetData, 52);
         }
-        proxyId = uint8(assetData[length-1]);
+        proxyId = uint8(assetData[length - 1]);
 
         return (
             proxyId,

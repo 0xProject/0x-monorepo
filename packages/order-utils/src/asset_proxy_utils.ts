@@ -4,6 +4,8 @@ import BN = require('bn.js');
 import ethUtil = require('ethereumjs-util');
 import * as _ from 'lodash';
 
+import { constants } from '../../src/utils/constants';
+
 const ERC20_ASSET_DATA_BYTE_LENGTH = 21;
 const ERC721_ASSET_DATA_BYTE_LENGTH = 53;
 
@@ -117,8 +119,7 @@ export const assetProxyUtils = {
         const tokenAddress = assetProxyUtils.decodeAddress(encodedTokenAddress);
         const encodedTokenId = encodedAssetData.slice(tokenIdOffset, receiverDataLengthOffset);
         const tokenId = assetProxyUtils.decodeUint256(encodedTokenId);
-        const nullData = '0x';
-        let receiverData = nullData;
+        let receiverData = constants.NULL_BYTE;
         const lengthUpToReceiverDataLength = receiverDataLengthOffset + 1;
         if (encodedAssetData.byteLength > lengthUpToReceiverDataLength) {
             const encodedReceiverDataLength = encodedAssetData.slice(receiverDataLengthOffset, receiverDataOffset);
