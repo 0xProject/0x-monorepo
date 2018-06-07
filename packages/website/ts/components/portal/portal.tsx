@@ -3,7 +3,7 @@ import { BigNumber } from '@0xproject/utils';
 import * as _ from 'lodash';
 import * as React from 'react';
 import * as DocumentTitle from 'react-document-title';
-import { Link, Route, RouteComponentProps, Switch } from 'react-router-dom';
+import { Route, RouteComponentProps, Switch } from 'react-router-dom';
 
 import { Blockchain } from 'ts/blockchain';
 import { BlockchainErrDialog } from 'ts/components/dialogs/blockchain_err_dialog';
@@ -272,10 +272,6 @@ export class Portal extends React.Component<PortalProps, PortalState> {
                         toggleDialogFn={updateShouldBlockchainErrDialogBeOpen}
                         networkId={this.props.networkId}
                     />
-                    <PortalDisclaimerDialog
-                        isOpen={this.state.isDisclaimerDialogOpen}
-                        onToggleDialog={this._onPortalDisclaimerAccepted.bind(this)}
-                    />
                     <FlashMessage dispatcher={this.props.dispatcher} flashMessage={this.props.flashMessage} />
                     {this.props.blockchainIsLoaded && (
                         <LedgerConfigDialog
@@ -400,18 +396,24 @@ export class Portal extends React.Component<PortalProps, PortalState> {
             },
         ];
         return (
-            <Switch>
-                {_.map(accountManagementItems, item => {
-                    return (
-                        <Route
-                            key={item.pathName}
-                            path={item.pathName}
-                            render={this._renderAccountManagementItem.bind(this, item)}
-                        />
-                    );
-                })}}
-                <Route render={this._renderNotFoundMessage.bind(this)} />
-            </Switch>
+            <div>
+                <Switch>
+                    {_.map(accountManagementItems, item => {
+                        return (
+                            <Route
+                                key={item.pathName}
+                                path={item.pathName}
+                                render={this._renderAccountManagementItem.bind(this, item)}
+                            />
+                        );
+                    })}}
+                    <Route render={this._renderNotFoundMessage.bind(this)} />
+                </Switch>
+                <PortalDisclaimerDialog
+                    isOpen={this.state.isDisclaimerDialogOpen}
+                    onToggleDialog={this._onPortalDisclaimerAccepted.bind(this)}
+                />
+            </div>
         );
     }
     private _renderAccountManagementItem(item: AccountManagementItem): React.ReactNode {
@@ -432,6 +434,7 @@ export class Portal extends React.Component<PortalProps, PortalState> {
                 userAddress={this.props.userAddress}
                 userEtherBalanceInWei={this.props.userEtherBalanceInWei}
                 lastForceTokenStateRefetch={this.props.lastForceTokenStateRefetch}
+                isFullWidth={true}
             />
         );
     }
@@ -441,6 +444,9 @@ export class Portal extends React.Component<PortalProps, PortalState> {
                 tokenByAddress={this.props.tokenByAddress}
                 userAddress={this.props.userAddress}
                 networkId={this.props.networkId}
+                isFullWidth={true}
+                shouldHideHeader={true}
+                isScrollable={false}
             />
         );
     }
@@ -450,6 +456,8 @@ export class Portal extends React.Component<PortalProps, PortalState> {
                 blockchain={this._blockchain}
                 hashData={this.props.hashData}
                 dispatcher={this.props.dispatcher}
+                isFullWidth={true}
+                shouldHideHeader={true}
             />
         );
     }
@@ -469,6 +477,8 @@ export class Portal extends React.Component<PortalProps, PortalState> {
                 tokenByAddress={this.props.tokenByAddress}
                 dispatcher={this.props.dispatcher}
                 lastForceTokenStateRefetch={this.props.lastForceTokenStateRefetch}
+                isFullWidth={true}
+                shouldHideHeader={true}
             />
         );
     }
@@ -486,6 +496,7 @@ export class Portal extends React.Component<PortalProps, PortalState> {
                 userEtherBalanceInWei={this.props.userEtherBalanceInWei}
                 networkId={this.props.networkId}
                 lastForceTokenStateRefetch={this.props.lastForceTokenStateRefetch}
+                isFullWidth={true}
             />
         );
     }

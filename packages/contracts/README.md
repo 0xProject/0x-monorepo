@@ -63,3 +63,12 @@ yarn lint
 ```bash
 yarn test
 ```
+
+### Run Tests Against Geth
+
+Follow the instructions in the README for the devnet package to start the
+devnet.
+
+```bash
+TEST_PROVIDER=geth yarn test
+```

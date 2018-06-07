@@ -1,4 +1,4 @@
-import { BlockchainLifecycle, devConstants } from '@0xproject/dev-utils';
+import { BlockchainLifecycle } from '@0xproject/dev-utils';
 import { FillScenarios } from '@0xproject/fill-scenarios';
 import { OrderError } from '@0xproject/order-utils';
 import { BlockParamLiteral } from '@0xproject/types';
@@ -7,7 +7,7 @@ import * as chai from 'chai';
 import 'make-promises-safe';
 import * as Sinon from 'sinon';
 
-import { ContractWrappers, ContractWrappersError, ExchangeContractErrs, SignedOrder, Token } from '../src';
+import { ContractWrappers, ExchangeContractErrs, SignedOrder, Token } from '../src';
 import { TradeSide, TransferType } from '../src/types';
 import { ExchangeTransferSimulator } from '../src/utils/exchange_transfer_simulator';
 import { OrderValidationUtils } from '../src/utils/order_validation_utils';

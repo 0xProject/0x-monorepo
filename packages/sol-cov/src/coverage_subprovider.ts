@@ -1,6 +1,5 @@
 import { Callback, ErrorCallback, NextCallback, Subprovider } from '@0xproject/subproviders';
 import { BlockParam, CallData, JSONRPCRequestPayload, TransactionTrace, TxData } from 'ethereum-types';
-import * as fs from 'fs';
 import * as _ from 'lodash';
 import { Lock } from 'semaphore-async-await';
 

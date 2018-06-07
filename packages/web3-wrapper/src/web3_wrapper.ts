@@ -21,6 +21,13 @@ import { Web3WrapperErrors } from './types';
 
 const BASE_TEN = 10;
 
+// These are unique identifiers contained in the response of the
+// web3_clientVersion call.
+export const uniqueVersionIds = {
+    geth: 'Geth',
+    ganache: 'EthereumJS TestRPC',
+};
+
 /**
  * A wrapper around the Web3.js 0.x library that provides a consistent, clean promise-based interface.
  */
@@ -254,11 +261,20 @@ export class Web3Wrapper {
         await this._sendRawPayloadAsync<string>({ method: 'evm_mine', params: [] });
     }
     /**
-     * Increase the next blocks timestamp on TestRPC/Ganache local node
+     * Increase the next blocks timestamp on TestRPC/Ganache or Geth local node.
+     * Will throw if provider is neither TestRPC/Ganache or Geth.
      * @param timeDelta Amount of time to add in seconds
      */
-    public async increaseTimeAsync(timeDelta: number): Promise<void> {
-        await this._sendRawPayloadAsync<string>({ method: 'evm_increaseTime', params: [timeDelta] });
+    public async increaseTimeAsync(timeDelta: number): Promise<number> {
+        // Detect Geth vs. Ganache and use appropriate endpoint.
+        const version = await this.getNodeVersionAsync();
+        if (_.includes(version, uniqueVersionIds.geth)) {
+            return this._sendRawPayloadAsync<number>({ method: 'debug_increaseTime', params: [timeDelta] });
+        } else if (_.includes(version, uniqueVersionIds.ganache)) {
+            return this._sendRawPayloadAsync<number>({ method: 'evm_increaseTime', params: [timeDelta] });
+        } else {
+            throw new Error(`Unknown client version: ${version}`);
+        }
     }
     /**
      * Retrieve smart contract logs for a given filter
@@ -281,7 +297,6 @@ export class Web3Wrapper {
         };
         const payload = {
             jsonrpc: '2.0',
-            id: this._jsonRpcRequestId++,
             method: 'eth_getLogs',
             params: [serializedFilter],
         };
@@ -315,6 +330,9 @@ export class Web3Wrapper {
      */
     public async callAsync(callData: CallData, defaultBlock?: BlockParam): Promise<string> {
         const rawCallResult = await promisify<string>(this._web3.eth.call)(callData, defaultBlock);
+        if (rawCallResult === '0x') {
+            throw new Error('Contract call failed (returned null)');
+        }
         return rawCallResult;
     }
     /**
@@ -403,8 +421,20 @@ export class Web3Wrapper {
         }
         return receipt;
     }
+    /**
+     * Calls the 'debug_setHead' JSON RPC method, which sets the current head of
+     * the local chain by block number. Note, this is a destructive action and
+     * may severely damage your chain. Use with extreme caution. As of now, this
+     * is only supported by Geth. It sill throw if the 'debug_setHead' method is
+     * not supported.
+     * @param  blockNumber The block number to reset to.
+     */
+    public async setHeadAsync(blockNumber: number): Promise<void> {
+        await this._sendRawPayloadAsync<void>({ method: 'debug_setHead', params: [this._web3.toHex(blockNumber)] });
+    }
     private async _sendRawPayloadAsync<A>(payload: Partial<JSONRPCRequestPayload>): Promise<A> {
         const sendAsync = this._web3.currentProvider.sendAsync.bind(this._web3.currentProvider);
+        payload.id = this._jsonRpcRequestId++;
         const response = await promisify<JSONRPCResponsePayload>(sendAsync)(payload);
         const result = response.result;
         return result;

@@ -2,7 +2,6 @@ import { env, EnvVars } from '@0xproject/dev-utils';
 import { GanacheSubprovider, prependSubprovider } from '@0xproject/subproviders';
 import { Web3Wrapper } from '@0xproject/web3-wrapper';
 import * as fs from 'fs';
-import * as _ from 'lodash';
 import ProviderEngine = require('web3-provider-engine');
 
 import { config } from './config';

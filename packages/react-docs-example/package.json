@@ -10,7 +10,7 @@
         "lint": "tslint --project .",
         "build": "tsc",
         "build:example": "NODE_ENV=production webpack",
-        "watch": "tsc -w",
+        "watch_without_deps": "tsc -w",
         "clean": "shx rm -rf lib; shx rm -f public/bundle*",
         "dev": "webpack-dev-server --open",
         "deploy_example": "npm run build:example; aws s3 sync ./public/. s3://react-docs-example --profile 0xproject --region us-east-1 --grants read=uri=http://acs.amazonaws.com/groups/global/AllUsers"

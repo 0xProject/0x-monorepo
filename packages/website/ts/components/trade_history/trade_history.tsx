@@ -13,6 +13,9 @@ interface TradeHistoryProps {
     tokenByAddress: TokenByAddress;
     userAddress: string;
     networkId: number;
+    isFullWidth?: boolean;
+    shouldHideHeader?: boolean;
+    isScrollable?: boolean;
 }
 
 interface TradeHistoryState {
@@ -20,6 +23,11 @@ interface TradeHistoryState {
 }
 
 export class TradeHistory extends React.Component<TradeHistoryProps, TradeHistoryState> {
+    public static defaultProps: Partial<TradeHistoryProps> = {
+        isFullWidth: false,
+        shouldHideHeader: false,
+        isScrollable: true,
+    };
     private _fillPollingIntervalId: number;
     public constructor(props: TradeHistoryProps) {
         super(props);
@@ -38,13 +46,22 @@ export class TradeHistory extends React.Component<TradeHistoryProps, TradeHistor
         window.scrollTo(0, 0);
     }
     public render(): React.ReactNode {
+        const rootClassName = !this.props.isFullWidth ? 'lg-px4 md-px4 sm-px2' : undefined;
         return (
-            <div className="lg-px4 md-px4 sm-px2">
-                <h3>Trade history</h3>
-                <Divider />
-                <div className="pt2" style={{ height: 608, overflow: 'scroll' }}>
-                    {this._renderTrades()}
-                </div>
+            <div className={rootClassName}>
+                {!this.props.shouldHideHeader && (
+                    <div>
+                        <h3>Trade history</h3>
+                        <Divider />
+                    </div>
+                )}
+                {this.props.isScrollable ? (
+                    <div className="pt2" style={{ height: 608, overflow: 'scroll' }}>
+                        {this._renderTrades()}
+                    </div>
+                ) : (
+                    this._renderTrades()
+                )}
             </div>
         );
     }

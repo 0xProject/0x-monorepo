@@ -2,7 +2,6 @@ import { addressUtils } from '@0xproject/utils';
 import { NextFunction, Request, Response } from 'express';
 import * as _ from 'lodash';
 
-import { configs } from './configs';
 import { constants } from './constants';
 import { rpcUrls } from './rpc_urls';
 

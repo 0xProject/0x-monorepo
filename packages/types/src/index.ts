@@ -1,5 +1,5 @@
 import { BigNumber } from 'bignumber.js';
-import { ContractAbi, DecodedLogArgs, LogEntry, LogWithDecodedArgs, TransactionReceipt } from 'ethereum-types';
+import { ContractAbi } from 'ethereum-types';
 
 // HACK: Rather then extending from OrderWithoutExchangeAddress
 // we don't, because our docs don't expand inherited types, and it's unnecessarily

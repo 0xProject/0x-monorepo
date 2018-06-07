@@ -2,6 +2,7 @@ import * as Lint from 'tslint';
 import { isPrefixUnaryExpression } from 'tsutils';
 import * as ts from 'typescript';
 
+// tslint:disable:no-unnecessary-type-assertion
 /**
  * A modified version of the no-magic-numbers rule that allows for magic numbers
  * when instantiating a BigNumber instance.
@@ -74,3 +75,4 @@ class CustomNoMagicNumbersWalker extends Lint.AbstractWalker<Set<string>> {
     }
     // tslint:enable:no-non-null-assertion
 }
+// tslint:enable:no-unnecessary-type-assertion

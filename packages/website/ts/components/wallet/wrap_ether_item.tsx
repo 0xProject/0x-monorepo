@@ -3,7 +3,6 @@ import { BigNumber, logUtils } from '@0xproject/utils';
 import { Web3Wrapper } from '@0xproject/web3-wrapper';
 import * as _ from 'lodash';
 import FlatButton from 'material-ui/FlatButton';
-import { ListItem } from 'material-ui/List';
 import * as React from 'react';
 
 import { Blockchain } from 'ts/blockchain';

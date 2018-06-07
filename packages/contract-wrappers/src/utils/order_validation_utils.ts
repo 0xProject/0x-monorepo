@@ -4,7 +4,7 @@ import { BigNumber } from '@0xproject/utils';
 import * as _ from 'lodash';
 
 import { ExchangeWrapper } from '../contract_wrappers/exchange_wrapper';
-import { ContractWrappersError, TradeSide, TransferType } from '../types';
+import { TradeSide, TransferType } from '../types';
 import { constants } from '../utils/constants';
 import { utils } from '../utils/utils';
 

@@ -1,13 +1,12 @@
 import { DocsInfo, DocsInfoConfig, SupportedDocJson } from '@0xproject/react-docs';
 import { Networks } from '@0xproject/react-shared';
-import * as _ from 'lodash';
 import * as React from 'react';
 import { connect } from 'react-redux';
 import { Dispatch } from 'redux';
 import { DocPage as DocPageComponent, DocPageProps } from 'ts/pages/documentation/doc_page';
 import { Dispatcher } from 'ts/redux/dispatcher';
 import { State } from 'ts/redux/reducer';
-import { DocPackages, SmartContractDocSections as Sections, WebsitePaths } from 'ts/types';
+import { DocPackages, SmartContractDocSections as Sections } from 'ts/types';
 import { Translate } from 'ts/utils/translate';
 
 /* tslint:disable:no-var-requires */
