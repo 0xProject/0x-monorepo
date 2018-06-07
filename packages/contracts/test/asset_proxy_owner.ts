@@ -10,8 +10,8 @@ import {
     ExecutionContractEventArgs,
     ExecutionFailureContractEventArgs,
     SubmissionContractEventArgs,
-} from '../src/contract_wrappers/generated/asset_proxy_owner';
-import { MixinAuthorizableContract } from '../src/contract_wrappers/generated/mixin_authorizable';
+} from '../src/generated_contract_wrappers/asset_proxy_owner';
+import { MixinAuthorizableContract } from '../src/generated_contract_wrappers/mixin_authorizable';
 import { artifacts } from '../src/utils/artifacts';
 import {
     expectRevertOrAlwaysFailingTransactionAsync,

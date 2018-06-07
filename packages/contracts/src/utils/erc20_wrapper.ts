@@ -3,8 +3,8 @@ import { Web3Wrapper } from '@0xproject/web3-wrapper';
 import { Provider } from 'ethereum-types';
 import * as _ from 'lodash';
 
-import { DummyERC20TokenContract } from '../contract_wrappers/generated/dummy_e_r_c20_token';
-import { ERC20ProxyContract } from '../contract_wrappers/generated/e_r_c20_proxy';
+import { DummyERC20TokenContract } from '../generated_contract_wrappers/dummy_e_r_c20_token';
+import { ERC20ProxyContract } from '../generated_contract_wrappers/e_r_c20_proxy';
 
 import { artifacts } from './artifacts';
 import { constants } from './constants';

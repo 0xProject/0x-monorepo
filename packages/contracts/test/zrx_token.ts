@@ -4,7 +4,7 @@ import { Web3Wrapper } from '@0xproject/web3-wrapper';
 import * as chai from 'chai';
 import 'make-promises-safe';
 
-import { ZRXTokenContract } from '../src/contract_wrappers/generated/zrx_token';
+import { ZRXTokenContract } from '../src/generated_contract_wrappers/zrx_token';
 import { artifacts } from '../src/utils/artifacts';
 import { chaiSetup } from '../src/utils/chai_setup';
 import { constants } from '../src/utils/constants';

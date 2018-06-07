@@ -3,7 +3,7 @@ import { BigNumber } from '@0xproject/utils';
 import * as chai from 'chai';
 import 'make-promises-safe';
 
-import { DummyERC20TokenContract } from '../src/contract_wrappers/generated/dummy_e_r_c20_token';
+import { DummyERC20TokenContract } from '../src/generated_contract_wrappers/dummy_e_r_c20_token';
 import { artifacts } from '../src/utils/artifacts';
 import { expectRevertOrOtherErrorAsync } from '../src/utils/assertions';
 import { chaiSetup } from '../src/utils/chai_setup';

@@ -39,7 +39,6 @@ import {
 } from '../generated_contract_wrappers/token';
 import { OnOrderStateChangeCallback, OrderWatcherConfig, OrderWatcherError } from '../types';
 import { assert } from '../utils/assert';
-import { utils } from '../utils/utils';
 
 import { EventWatcher } from './event_watcher';
 import { ExpirationWatcher } from './expiration_watcher';
