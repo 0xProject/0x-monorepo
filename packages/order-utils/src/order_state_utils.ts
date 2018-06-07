@@ -69,7 +69,12 @@ export class OrderStateUtils {
             };
             return orderState;
         } catch (err) {
-            throw err;
+            const orderState: OrderStateInvalid = {
+                isValid: false,
+                orderHash,
+                error: err.message,
+            };
+            return orderState;
         }
     }
     public async getOrderRelevantStateAsync(signedOrder: SignedOrder): Promise<OrderRelevantState> {
