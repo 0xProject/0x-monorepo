@@ -167,9 +167,3 @@ export interface ERC721AssetData {
     tokenId: BigNumber;
     receiverData: string;
 }
-
-export interface AssetData {
-    assetProxyId: AssetProxyId;
-    tokenAddress?: string;
-    data?: any;
-}

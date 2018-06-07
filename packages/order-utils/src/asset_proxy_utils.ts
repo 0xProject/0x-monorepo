@@ -1,4 +1,4 @@
-import { AssetData, AssetProxyId, ERC20AssetData, ERC721AssetData } from '@0xproject/types';
+import { AssetProxyId, ERC20AssetData, ERC721AssetData } from '@0xproject/types';
 import { BigNumber } from '@0xproject/utils';
 import BN = require('bn.js');
 import ethUtil = require('ethereumjs-util');
@@ -157,24 +157,15 @@ export const assetProxyUtils = {
         const assetProxyId = assetProxyUtils.decodeAssetProxyId(encodedAssetProxyId);
         return assetProxyId;
     },
-    decodeAssetData(assetData: string): AssetData {
+    decodeAssetData(assetData: string): ERC20AssetData | ERC721AssetData {
         const assetProxyId = assetProxyUtils.decodeAssetDataId(assetData);
         switch (assetProxyId) {
             case AssetProxyId.ERC20:
                 const erc20AssetData = assetProxyUtils.decodeERC20AssetData(assetData);
-                const generalizedERC20AssetData = {
-                    assetProxyId,
-                    tokenAddress: erc20AssetData.tokenAddress,
-                };
-                return generalizedERC20AssetData;
+                return erc20AssetData;
             case AssetProxyId.ERC721:
                 const erc721AssetData = assetProxyUtils.decodeERC721AssetData(assetData);
-                const generalizedERC721AssetData = {
-                    assetProxyId,
-                    tokenAddress: erc721AssetData.tokenAddress,
-                    data: erc721AssetData.tokenId,
-                };
-                return generalizedERC721AssetData;
+                return erc721AssetData;
             default:
                 throw new Error(`Unrecognized asset proxy id: ${assetProxyId}`);
         }
