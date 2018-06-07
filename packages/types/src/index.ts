@@ -103,10 +103,9 @@ export interface OrderRelevantState {
     makerProxyAllowance: BigNumber;
     makerFeeBalance: BigNumber;
     makerFeeProxyAllowance: BigNumber;
-    filledTakerTokenAmount: BigNumber;
-    cancelledTakerTokenAmount: BigNumber;
-    remainingFillableMakerTokenAmount: BigNumber;
-    remainingFillableTakerTokenAmount: BigNumber;
+    filledTakerAssetAmount: BigNumber;
+    remainingFillableMakerAssetAmount: BigNumber;
+    remainingFillableTakerAssetAmount: BigNumber;
 }
 
 export interface OrderStateValid {
