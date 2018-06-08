@@ -21,24 +21,31 @@ export interface JobsProps {
     dispatcher: Dispatcher;
 }
 
-export const Jobs: React.StatelessComponent<JobsProps> = props => {
-    return (
-        <div>
-            <DocumentTitle title="Jobs" />
-            <TopBar
-                blockchainIsLoaded={false}
-                location={props.location}
-                style={{ backgroundColor: colors.white, position: 'relative' }}
-                translate={props.translate}
-            />
-            <Join0x />
-            <Mission />
-            <PhotoRail />
-            <Values />
-            <Benefits />
-            <Teams />
-            <OpenPositions />
-            <Footer translate={props.translate} dispatcher={props.dispatcher} />
-        </div>
-    );
-};
+export interface JobsState {}
+
+export class Jobs extends React.Component<JobsProps, JobsState> {
+    public componentDidMount(): void {
+        window.scrollTo(0, 0);
+    }
+    public render(): React.ReactNode {
+        return (
+            <div>
+                <DocumentTitle title="Jobs" />
+                <TopBar
+                    blockchainIsLoaded={false}
+                    location={this.props.location}
+                    style={{ backgroundColor: colors.white, position: 'relative' }}
+                    translate={this.props.translate}
+                />
+                <Join0x />
+                <Mission />
+                <PhotoRail />
+                <Values />
+                <Benefits />
+                <Teams />
+                <OpenPositions />
+                <Footer translate={this.props.translate} dispatcher={this.props.dispatcher} />
+            </div>
+        );
+    }
+}
