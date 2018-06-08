@@ -21,6 +21,7 @@ import {
     SourceRange,
     StatementCoverage,
     StatementDescription,
+    Subtrace,
     TraceInfo,
     TraceInfoExistingContract,
     TraceInfoNewContract,
@@ -29,21 +30,30 @@ import { utils } from './utils';
 
 const mkdirpAsync = promisify<undefined>(mkdirp);
 
+/**
+ * CoverageManager is used by CoverageSubprovider to compute code coverage based on collected trace data.
+ */
 export class CoverageManager {
     private _artifactAdapter: AbstractArtifactAdapter;
     private _logger: Logger;
     private _traceInfos: TraceInfo[] = [];
-    // tslint:disable-next-line:no-unused-variable
-    private _getContractCodeAsync: (address: string) => Promise<string>;
-    private static _getSingleFileCoverageForTrace(
+    /**
+     * Computed partial coverage for a single file & subtrace
+     * @param contractData      Contract metadata (source, srcMap, bytecode)
+     * @param subtrace          A subset of a transcation/call trace that was executed within that contract
+     * @param pcToSourceRange   A mapping from program counters to source ranges
+     * @param fileIndex         Index of a file to compute coverage for
+     * @return Partial istanbul coverage for that file & subtrace
+     */
+    private static _getSingleFileCoverageForSubtrace(
         contractData: ContractData,
-        coveredPcs: number[],
+        subtrace: Subtrace,
         pcToSourceRange: { [programCounter: number]: SourceRange },
         fileIndex: number,
     ): Coverage {
         const absoluteFileName = contractData.sources[fileIndex];
         const coverageEntriesDescription = collectCoverageEntries(contractData.sourceCodes[fileIndex]);
-        let sourceRanges = _.map(coveredPcs, coveredPc => pcToSourceRange[coveredPc]);
+        let sourceRanges = _.map(subtrace, structLog => pcToSourceRange[structLog.pc]);
         sourceRanges = _.compact(sourceRanges); // Some PC's don't map to a source range and we just ignore them.
         // By default lodash does a shallow object comparasion. We JSON.stringify them and compare as strings.
         sourceRanges = _.uniqBy(sourceRanges, s => JSON.stringify(s)); // We don't care if one PC was covered multiple times within a single transaction
@@ -52,26 +62,32 @@ export class CoverageManager {
         const branchIds = _.keys(coverageEntriesDescription.branchMap);
         for (const branchId of branchIds) {
             const branchDescription = coverageEntriesDescription.branchMap[branchId];
-            const isCoveredByBranchIndex = _.map(branchDescription.locations, location =>
-                _.some(sourceRanges, range => utils.isRangeInside(range.location, location)),
-            );
-            branchCoverage[branchId] = isCoveredByBranchIndex;
+            const isBranchCoveredByBranchIndex = _.map(branchDescription.locations, location => {
+                const isBranchCovered = _.some(sourceRanges, range => utils.isRangeInside(range.location, location));
+                const timesBranchCovered = Number(isBranchCovered);
+                return timesBranchCovered;
+            });
+            branchCoverage[branchId] = isBranchCoveredByBranchIndex;
         }
         const statementCoverage: StatementCoverage = {};
         const statementIds = _.keys(coverageEntriesDescription.statementMap);
         for (const statementId of statementIds) {
             const statementDescription = coverageEntriesDescription.statementMap[statementId];
-            const isCovered = _.some(sourceRanges, range => utils.isRangeInside(range.location, statementDescription));
-            statementCoverage[statementId] = isCovered;
+            const isStatementCovered = _.some(sourceRanges, range =>
+                utils.isRangeInside(range.location, statementDescription),
+            );
+            const timesStatementCovered = Number(isStatementCovered);
+            statementCoverage[statementId] = timesStatementCovered;
         }
         const functionCoverage: FunctionCoverage = {};
         const functionIds = _.keys(coverageEntriesDescription.fnMap);
         for (const fnId of functionIds) {
             const functionDescription = coverageEntriesDescription.fnMap[fnId];
-            const isCovered = _.some(sourceRanges, range =>
+            const isFunctionCovered = _.some(sourceRanges, range =>
                 utils.isRangeInside(range.location, functionDescription.loc),
             );
-            functionCoverage[fnId] = isCovered;
+            const timesFunctionCovered = Number(isFunctionCovered);
+            functionCoverage[fnId] = timesFunctionCovered;
         }
         // HACK: Solidity doesn't emit any opcodes that map back to modifiers with no args, that's why we map back to the
         // function range and check if there is any covered statement within that range.
@@ -95,12 +111,12 @@ export class CoverageManager {
                     return isInsideTheModifierEnclosingFunction && isCovered;
                 },
             );
-            statementCoverage[modifierStatementId] = isModifierCovered;
+            const timesModifierCovered = Number(isModifierCovered);
+            statementCoverage[modifierStatementId] = timesModifierCovered;
         }
         const partialCoverage = {
             [absoluteFileName]: {
                 ...coverageEntriesDescription,
-                l: {}, // It's able to derive it from statement coverage
                 path: absoluteFileName,
                 f: functionCoverage,
                 s: statementCoverage,
@@ -109,37 +125,7 @@ export class CoverageManager {
         };
         return partialCoverage;
     }
-    private static _bytecodeToBytecodeRegex(bytecode: string): string {
-        const bytecodeRegex = bytecode
-            // Library linking placeholder: __ConvertLib____________________________
-            .replace(/_.*_/, '.*')
-            // Last 86 characters is solidity compiler metadata that's different between compilations
-            .replace(/.{86}$/, '')
-            // Libraries contain their own address at the beginning of the code and it's impossible to know it in advance
-            .replace(/^0x730000000000000000000000000000000000000000/, '0x73........................................');
-        return bytecodeRegex;
-    }
-    private static _getContractDataIfExists(contractsData: ContractData[], bytecode: string): ContractData | undefined {
-        if (!bytecode.startsWith('0x')) {
-            throw new Error(`0x hex prefix missing: ${bytecode}`);
-        }
-        const contractData = _.find(contractsData, contractDataCandidate => {
-            const bytecodeRegex = CoverageManager._bytecodeToBytecodeRegex(contractDataCandidate.bytecode);
-            const runtimeBytecodeRegex = CoverageManager._bytecodeToBytecodeRegex(
-                contractDataCandidate.runtimeBytecode,
-            );
-            // We use that function to find by bytecode or runtimeBytecode. Those are quasi-random strings so
-            // collisions are practically impossible and it allows us to reuse that code
-            return !_.isNull(bytecode.match(bytecodeRegex)) || !_.isNull(bytecode.match(runtimeBytecodeRegex));
-        });
-        return contractData;
-    }
-    constructor(
-        artifactAdapter: AbstractArtifactAdapter,
-        getContractCodeAsync: (address: string) => Promise<string>,
-        isVerbose: boolean,
-    ) {
-        this._getContractCodeAsync = getContractCodeAsync;
+    constructor(artifactAdapter: AbstractArtifactAdapter, isVerbose: boolean) {
         this._artifactAdapter = artifactAdapter;
         this._logger = getLogger('sol-cov');
         this._logger.setLevel(isVerbose ? levels.TRACE : levels.ERROR);
@@ -157,56 +143,34 @@ export class CoverageManager {
         const contractsData = await this._artifactAdapter.collectContractsDataAsync();
         const collector = new Collector();
         for (const traceInfo of this._traceInfos) {
-            if (traceInfo.address !== constants.NEW_CONTRACT) {
-                // Runtime transaction
-                const runtimeBytecode = (traceInfo as TraceInfoExistingContract).runtimeBytecode;
-                const contractData = CoverageManager._getContractDataIfExists(contractsData, runtimeBytecode);
-                if (_.isUndefined(contractData)) {
-                    this._logger.warn(`Transaction to an unknown address: ${traceInfo.address}`);
-                    continue;
-                }
-                const bytecodeHex = stripHexPrefix(runtimeBytecode);
-                const sourceMap = contractData.sourceMapRuntime;
-                const pcToSourceRange = parseSourceMap(
-                    contractData.sourceCodes,
-                    sourceMap,
-                    bytecodeHex,
-                    contractData.sources,
+            const isContractCreation = traceInfo.address === constants.NEW_CONTRACT;
+            const bytecode = isContractCreation
+                ? (traceInfo as TraceInfoNewContract).bytecode
+                : (traceInfo as TraceInfoExistingContract).runtimeBytecode;
+            const contractData = utils.getContractDataIfExists(contractsData, bytecode);
+            if (_.isUndefined(contractData)) {
+                const errMsg = isContractCreation
+                    ? `Unknown contract creation transaction`
+                    : `Transaction to an unknown address: ${traceInfo.address}`;
+                this._logger.warn(errMsg);
+                continue;
+            }
+            const bytecodeHex = stripHexPrefix(bytecode);
+            const sourceMap = isContractCreation ? contractData.sourceMap : contractData.sourceMapRuntime;
+            const pcToSourceRange = parseSourceMap(
+                contractData.sourceCodes,
+                sourceMap,
+                bytecodeHex,
+                contractData.sources,
+            );
+            for (let fileIndex = 0; fileIndex < contractData.sources.length; fileIndex++) {
+                const singleFileCoverageForTrace = CoverageManager._getSingleFileCoverageForSubtrace(
+                    contractData,
+                    traceInfo.subtrace,
+                    pcToSourceRange,
+                    fileIndex,
                 );
-                for (let fileIndex = 0; fileIndex < contractData.sources.length; fileIndex++) {
-                    const singleFileCoverageForTrace = CoverageManager._getSingleFileCoverageForTrace(
-                        contractData,
-                        traceInfo.coveredPcs,
-                        pcToSourceRange,
-                        fileIndex,
-                    );
-                    collector.add(singleFileCoverageForTrace);
-                }
-            } else {
-                // Contract creation transaction
-                const bytecode = (traceInfo as TraceInfoNewContract).bytecode;
-                const contractData = CoverageManager._getContractDataIfExists(contractsData, bytecode);
-                if (_.isUndefined(contractData)) {
-                    this._logger.warn(`Unknown contract creation transaction`);
-                    continue;
-                }
-                const bytecodeHex = stripHexPrefix(bytecode);
-                const sourceMap = contractData.sourceMap;
-                const pcToSourceRange = parseSourceMap(
-                    contractData.sourceCodes,
-                    sourceMap,
-                    bytecodeHex,
-                    contractData.sources,
-                );
-                for (let fileIndex = 0; fileIndex < contractData.sources.length; fileIndex++) {
-                    const singleFileCoverageForTrace = CoverageManager._getSingleFileCoverageForTrace(
-                        contractData,
-                        traceInfo.coveredPcs,
-                        pcToSourceRange,
-                        fileIndex,
-                    );
-                    collector.add(singleFileCoverageForTrace);
-                }
+                collector.add(singleFileCoverageForTrace);
             }
         }
         return collector.getFinalCoverage();

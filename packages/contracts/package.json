@@ -18,6 +18,7 @@
         "test": "yarn run_mocha",
         "rebuild_and_test": "run-s build test",
         "test:coverage": "SOLIDITY_COVERAGE=true run-s build run_mocha coverage:report:text coverage:report:lcov",
+        "test:profiler": "SOLIDITY_PROFILER=true run-s build run_mocha profiler:report:html",
         "run_mocha": "mocha --require source-map-support/register 'lib/test/**/*.js' --timeout 100000 --bail --exit",
         "compile": "sol-compiler",
         "clean": "shx rm -rf lib src/generated_contract_wrappers",
@@ -26,6 +27,7 @@
         "lint": "tslint --project . --exclude **/src/contract_wrappers/**/* --exclude **/lib/**/*",
         "coverage:report:text": "istanbul report text",
         "coverage:report:html": "istanbul report html && open coverage/index.html",
+        "profiler:report:html": "istanbul report html && open coverage/index.html",
         "coverage:report:lcov": "istanbul report lcov",
         "test:circleci": "yarn test"
     },

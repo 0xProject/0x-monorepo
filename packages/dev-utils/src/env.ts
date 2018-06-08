@@ -3,6 +3,7 @@ import * as process from 'process';
 
 export enum EnvVars {
     SolidityCoverage = 'SOLIDITY_COVERAGE',
+    SolidityProfiler = 'SOLIDITY_PROFILER',
     VerboseGanache = 'VERBOSE_GANACHE',
 }
 
