@@ -219,7 +219,6 @@ export class TraceCollectionSubprovider extends Subprovider {
         // transaction execution for all transactions except our fake ones.
         await this._lock.acquire();
         const blockchainLifecycle = new BlockchainLifecycle(this._web3Wrapper);
-        // debugPrinter.enterFunction('snapshot');
         await blockchainLifecycle.startAsync();
         const fakeTxData: MaybeFakeTxData = {
             isFakeTransaction: true, // This transaction (and only it) is allowed to come through when the lock is locked
@@ -227,11 +226,11 @@ export class TraceCollectionSubprovider extends Subprovider {
             from: callData.from || this._defaultFromAddress,
         };
         try {
-            await this._web3Wrapper.sendTransactionAsync(fakeTxData);
+            const txHash = await this._web3Wrapper.sendTransactionAsync(fakeTxData);
+            await this._web3Wrapper.awaitTransactionMinedAsync(txHash);
         } catch (err) {
             // Even if this transaction failed - we've already recorded it's trace.
         }
-        // debugPrinter.leaveFunction('snapshot');
         await blockchainLifecycle.revertAsync();
         this._lock.release();
     }
@@ -248,7 +247,8 @@ export class TraceCollectionSubprovider extends Subprovider {
             gas: BLOCK_GAS_LIMIT,
         };
         try {
-            await this._web3Wrapper.sendTransactionAsync(fakeTxData);
+            const txHash = await this._web3Wrapper.sendTransactionAsync(fakeTxData);
+            await this._web3Wrapper.awaitTransactionMinedAsync(txHash);
         } catch (err) {
             // Even if this transaction failed - we've already recorded it's trace.
         }
