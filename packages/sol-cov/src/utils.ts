@@ -24,7 +24,7 @@ export const utils = {
             .replace(/.{86}$/, '')
             // Libraries contain their own address at the beginning of the code and it's impossible to know it in advance
             .replace(/^0x730000000000000000000000000000000000000000/, '0x73........................................');
-        // HACK: Node regexes can't be longer that 32767 characters. Contracts bytecode can. We jsut truncate the regexes. It's safe in practice.
+        // HACK: Node regexes can't be longer that 32767 characters. Contracts bytecode can. We just truncate the regexes. It's safe in practice.
         const MAX_REGEX_LENGTH = 32767;
         const truncatedBytecodeRegex = bytecodeRegex.slice(0, MAX_REGEX_LENGTH);
         return truncatedBytecodeRegex;

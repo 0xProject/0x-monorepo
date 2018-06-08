@@ -132,19 +132,22 @@ export class TraceCollectionSubprovider extends Subprovider {
             // And we don't want it to be executed within a snapshotting period
             await this._lock.acquire();
         }
+        const NULL_ADDRESS = '0x0';
         if (_.isNull(err)) {
-            const toAddress = _.isUndefined(txData.to) || txData.to === '0x0' ? constants.NEW_CONTRACT : txData.to;
+            const toAddress =
+                _.isUndefined(txData.to) || txData.to === NULL_ADDRESS ? constants.NEW_CONTRACT : txData.to;
             await this._recordTxTraceAsync(toAddress, txData.data, txHash as string);
         } else {
             const latestBlock = await this._web3Wrapper.getBlockWithTransactionDataAsync(BlockParamLiteral.Latest);
             const transactions = latestBlock.transactions;
             for (const transaction of transactions) {
-                const toAddress = _.isUndefined(txData.to) || txData.to === '0x0' ? constants.NEW_CONTRACT : txData.to;
+                const toAddress =
+                    _.isUndefined(txData.to) || txData.to === NULL_ADDRESS ? constants.NEW_CONTRACT : txData.to;
                 await this._recordTxTraceAsync(toAddress, transaction.input, transaction.hash);
             }
         }
         if (!txData.isFakeTransaction) {
-            // This transaction is a usual ttransaction. Not a call executed as one.
+            // This transaction is a usual transaction. Not a call executed as one.
             // And we don't want it to be executed within a snapshotting period
             this._lock.release();
         }
@@ -230,6 +233,7 @@ export class TraceCollectionSubprovider extends Subprovider {
             await this._web3Wrapper.awaitTransactionMinedAsync(txHash);
         } catch (err) {
             // Even if this transaction failed - we've already recorded it's trace.
+            _.noop();
         }
         await blockchainLifecycle.revertAsync();
         this._lock.release();
@@ -251,6 +255,7 @@ export class TraceCollectionSubprovider extends Subprovider {
             await this._web3Wrapper.awaitTransactionMinedAsync(txHash);
         } catch (err) {
             // Even if this transaction failed - we've already recorded it's trace.
+            _.noop();
         }
         await blockchainLifecycle.revertAsync();
         this._lock.release();

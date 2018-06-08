@@ -195,10 +195,21 @@ export class Web3Wrapper {
         const isCodeEmpty = /^0x0{0,40}$/i.test(code);
         return !isCodeEmpty;
     }
+    /**
+     * Gets the contract code by address
+     * @param  address Address of the contract
+     * @return Code of the contract
+     */
     public async getContractCodeAsync(address: string): Promise<string> {
         const code = await promisify<string>(this._web3.eth.getCode)(address);
         return code;
     }
+    /**
+     * Gets the debug trace of a transaction
+     * @param  txHash Hash of the transactuon to get a trace for
+     * @param  traceParams Config object allowing you to specify if you need memory/storage/stack traces.
+     * @return Transaction trace
+     */
     public async getTransactionTraceAsync(txHash: string, traceParams: TraceParams): Promise<TransactionTrace> {
         const trace = await this._sendRawPayloadAsync<TransactionTrace>({
             method: 'debug_traceTransaction',

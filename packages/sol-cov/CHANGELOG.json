@@ -15,7 +15,7 @@
                 "pr": 675
             },
             {
-                "note": "Use `BlockchainLifecycle` to support reverst on Geth",
+                "note": "Use `BlockchainLifecycle` to support reverts on Geth",
                 "pr": 675
             },
             {
@@ -35,7 +35,7 @@
                 "pr": 675
             },
             {
-                "note": "Skip interface artifacts with the warning instead of failing",
+                "note": "Skip interface artifacts with a warning instead of failing",
                 "pr": 675
             }
         ]
