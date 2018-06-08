@@ -32,7 +32,8 @@ contract MixinForwarderCore is
     function payAndDeductFee(
         uint256 takerTokenAmount,
         uint16 feeProportion,
-        address feeRecipient)
+        address feeRecipient
+    )
         internal
         returns (uint256 remainingTakerTokenAmount)
     {
@@ -59,7 +60,8 @@ contract MixinForwarderCore is
         uint256 withdrawAmount,
         uint256 takerTokenAmount,
         uint16 feeProportion,
-        address feeRecipient)
+        address feeRecipient
+    )
         internal
         returns (uint256 remainingTakerTokenAmount)
     {
@@ -88,7 +90,8 @@ contract MixinForwarderCore is
     function buyFeeTokensInternal(
         Order[] memory orders,
         bytes[] memory signatures,
-        uint256 feeAmount)
+        uint256 feeAmount
+    )
         internal
         returns (Exchange.FillResults memory totalFillResults)
     {
@@ -106,7 +109,8 @@ contract MixinForwarderCore is
             uint256 remainingTakerTokenFillAmount = getPartialAmount(
                 orders[i].takerAssetAmount,
                 safeSub(orders[i].makerAssetAmount, orders[i].takerFee), // our exchange rate after fees 
-                remainingMakerTokenFillAmount);
+                remainingMakerTokenFillAmount
+            );
 
             // Attempt to sell the remaining amount of takerToken
             // Round up the amount to ensure we don't under buy by a fractional amount

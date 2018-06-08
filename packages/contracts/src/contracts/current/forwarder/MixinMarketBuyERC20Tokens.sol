@@ -29,7 +29,8 @@ contract MixinMarketBuyERC20Tokens is
         Order[] memory feeOrders,
         bytes[] memory feeSignatures,
         uint16  feeProportion,
-        address feeRecipient)
+        address feeRecipient
+    )
         payable
         public
         returns (Exchange.FillResults)
@@ -48,7 +49,8 @@ contract MixinMarketBuyERC20Tokens is
         bytes[] memory signatures,
         Order[] memory feeOrders,
         bytes[] memory feeSignatures,
-        uint256 sellTokenAmount)
+        uint256 sellTokenAmount
+    )
         private
         returns (Exchange.FillResults memory totalFillResults)
     {
@@ -69,7 +71,8 @@ contract MixinMarketBuyERC20Tokens is
         // Ensure the token abstraction was fair if fees were proportionally too high, we fail
         require(
             isAcceptableThreshold(sellTokenAmount, requestedTokensResults.takerAssetFilledAmount),
-            UNACCEPTABLE_THRESHOLD);
+            UNACCEPTABLE_THRESHOLD
+        );
         // Transfer all tokens to msg.sender
         transferToken(makerTokenAddress, msg.sender, requestedTokensResults.makerAssetFilledAmount);
         return totalFillResults;

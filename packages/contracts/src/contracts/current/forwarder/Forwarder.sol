@@ -15,7 +15,8 @@ contract Forwarder is
         Exchange _exchange,
         EtherToken _etherToken,
         ZRXToken _zrxToken,
-        uint8 erc20AssetProxyId)
+        uint8 erc20AssetProxyId
+    )
         public
         Ownable()
     {

@@ -36,7 +36,8 @@ contract MixinBuyExactAssets is
         bytes[] memory feeSignatures,
         uint256 assetAmount,
         uint16  feeProportion,
-        address feeRecipient)
+        address feeRecipient
+    )
         payable
         public
         returns (Exchange.FillResults memory totalFillResults)
@@ -61,7 +62,8 @@ contract MixinBuyExactAssets is
             isAcceptableThreshold(
                 remainingTakerAssetAmount,
                 totalFillResults.takerAssetFilledAmount),
-            UNACCEPTABLE_THRESHOLD);
+            UNACCEPTABLE_THRESHOLD
+        );
         withdrawPayAndDeductFee(remainingTakerAssetAmount, totalFillResults.takerAssetFilledAmount, feeProportion, feeRecipient);
         return totalFillResults;
     }
@@ -71,7 +73,8 @@ contract MixinBuyExactAssets is
         bytes[] memory signatures,
         Order[] memory feeOrders,
         bytes[] memory feeSignatures,
-        uint256 assetAmount)
+        uint256 assetAmount
+    )
         private
         returns (Exchange.FillResults memory totalFillResults)
     {
@@ -108,7 +111,8 @@ contract MixinBuyExactAssets is
         bytes[] memory signatures,
         Order[] memory feeOrders,
         bytes[] memory feeSignatures,
-        uint256 assetAmount)
+        uint256 assetAmount
+    )
         private
         returns (Exchange.FillResults memory totalFillResults)
     {

@@ -1,15 +1,14 @@
-import { SignedOrder } from '@0xproject/types';
+import { AssetProxyId, SignedOrder } from '@0xproject/types';
 import { BigNumber } from '@0xproject/utils';
 import { Web3Wrapper } from '@0xproject/web3-wrapper';
 import { Provider, TransactionReceiptWithDecodedLogs } from 'ethereum-types';
 import ethUtil = require('ethereumjs-util');
 import * as _ from 'lodash';
 
+import { ForwarderContract } from '../../src/generated_contract_wrappers/forwarder';
 import { formatters } from '../../src/utils/formatters';
-import { ForwarderContract } from '../contract_wrappers/generated/forwarder';
 
 import { constants } from './constants';
-import { AssetProxyId } from './types';
 
 const DEFAULT_FEE_PROPORTION = 0;
 const PERCENTAGE_DENOMINATOR = 10000;

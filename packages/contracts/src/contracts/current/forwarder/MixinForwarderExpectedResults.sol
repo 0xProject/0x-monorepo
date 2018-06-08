@@ -9,19 +9,16 @@ contract MixinForwarderExpectedResults is MixinForwarderCore {
     /// @param order An Order struct containing order specifications.
     /// @param takerAssetFillAmount A number representing the amount of this order to fill.
     /// @return fillResults Amounts filled and fees paid by maker and taker.
-    function calculateFillOrderFillResults(Order memory order, uint256 takerAssetFillAmount)
+    function calculateFillOrderFillResults(
+        Order memory order,
+        uint256 takerAssetFillAmount
+    )
         public
         view
         returns (Exchange.FillResults memory fillResults)
     {
-        Exchange.OrderInfo memory orderInfo = EXCHANGE.getOrderInfo(order);
-        uint8 _status;
-        (_status, fillResults) = EXCHANGE.calculateFillResults(
-            order,
-            orderInfo.orderStatus,
-            orderInfo.orderTakerAssetFilledAmount,
-            takerAssetFillAmount
-        );
+        // Exchange.OrderInfo memory orderInfo = EXCHANGE.getOrderInfo(order);
+        fillResults = EXCHANGE.calculateFillResults(order, takerAssetFillAmount);
         return fillResults;
     }
 
@@ -30,7 +27,10 @@ contract MixinForwarderExpectedResults is MixinForwarderCore {
     /// @param orders An array of Order struct containing order specifications.
     /// @param takerAssetFillAmount A number representing the amount of this order to fill.
     /// @return totalFillResults Amounts filled and fees paid by maker and taker.
-    function calculateMarketSellFillResults(Order[] memory orders, uint256 takerAssetFillAmount)
+    function calculateMarketSellFillResults(
+        Order[] memory orders,
+        uint256 takerAssetFillAmount
+    )
         internal
         view
         returns (Exchange.FillResults memory totalFillResults)
@@ -54,7 +54,10 @@ contract MixinForwarderExpectedResults is MixinForwarderCore {
     /// @param orders An array of Order struct containing order specifications.
     /// @param makerAssetFillAmount A number representing the amount of this order to fill.
     /// @return totalFillResults Amounts filled and fees paid by maker and taker.
-    function calculateMarketBuyFillResults(Order[] memory orders, uint256 makerAssetFillAmount)
+    function calculateMarketBuyFillResults(
+        Order[] memory orders,
+        uint256 makerAssetFillAmount
+    )
         public
         view
         returns (Exchange.FillResults memory totalFillResults)
@@ -65,7 +68,8 @@ contract MixinForwarderExpectedResults is MixinForwarderCore {
             uint256 remainingTakerAssetFillAmount = getPartialAmount(
                 orders[i].takerAssetAmount,
                 orders[i].makerAssetAmount,
-                remainingMakerAssetFillAmount);
+                remainingMakerAssetFillAmount
+            );
 
             Exchange.FillResults memory calculatedFillOrderResults = calculateFillOrderFillResults(orders[i], remainingTakerAssetFillAmount);
 
@@ -84,7 +88,8 @@ contract MixinForwarderExpectedResults is MixinForwarderCore {
     /// @return totalFillResults Expected fill result amounts from buying fees
     function calculateBuyFeesFillResults(
         Order[] memory orders,
-        uint256 zrxAmount)
+        uint256 zrxAmount
+    )
         public
         view
         returns (Exchange.FillResults memory totalFillResults)
@@ -99,7 +104,8 @@ contract MixinForwarderExpectedResults is MixinForwarderCore {
             uint256 remainingTakerAssetFillAmount = getPartialAmount(
                 orders[i].takerAssetAmount,
                 safeSub(orders[i].makerAssetAmount, orders[i].takerFee), // our exchange rate after fees 
-                remainingMakerAssetFillAmount);
+                remainingMakerAssetFillAmount
+            );
             Exchange.FillResults memory singleFillResult = calculateFillOrderFillResults(orders[i], safeAdd(remainingTakerAssetFillAmount, 1));
 
             singleFillResult.makerAssetFilledAmount = safeSub(singleFillResult.makerAssetFilledAmount, singleFillResult.takerFeePaid);

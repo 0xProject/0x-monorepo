@@ -369,7 +369,7 @@ contract MixinExchangeCore is
         Order memory order,
         uint256 takerAssetFilledAmount
     )
-        internal
+        public
         pure
         returns (FillResults memory fillResults)
     {
