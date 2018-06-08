@@ -90,7 +90,7 @@ export class TraceCollectionSubprovider extends Subprovider {
                         next();
                     } else {
                         const callData = payload.params[0];
-                        next(this._onCallExecutedAsync.bind(this, callData));
+                        next(this._onCallOrGasEstimateExecutedAsync.bind(this, callData));
                     }
                     return;
 
@@ -99,7 +99,7 @@ export class TraceCollectionSubprovider extends Subprovider {
                         next();
                     } else {
                         const estimateGasData = payload.params[0];
-                        next(this._onGasEstimateAsync.bind(this, estimateGasData));
+                        next(this._onCallOrGasEstimateExecutedAsync.bind(this, estimateGasData));
                     }
                     return;
 
@@ -153,22 +153,13 @@ export class TraceCollectionSubprovider extends Subprovider {
         }
         cb();
     }
-    private async _onCallExecutedAsync(
+    private async _onCallOrGasEstimateExecutedAsync(
         callData: Partial<CallData>,
         err: Error | null,
         callResult: string,
         cb: Callback,
     ): Promise<void> {
-        await this._recordCallTraceAsync(callData);
-        cb();
-    }
-    private async _onGasEstimateAsync(
-        estimateGasData: Partial<TxData>,
-        err: Error | null,
-        estimateGasResult: string,
-        cb: Callback,
-    ): Promise<void> {
-        await this._recordEstimateGasTraceAsync(estimateGasData);
+        await this._recordCallOrGasEstimateTraceAsync(callData);
         cb();
     }
     private async _recordTxTraceAsync(address: string, data: string | undefined, txHash: string): Promise<void> {
@@ -217,38 +208,17 @@ export class TraceCollectionSubprovider extends Subprovider {
             }
         }
     }
-    private async _recordCallTraceAsync(callData: Partial<CallData>): Promise<void> {
+    private async _recordCallOrGasEstimateTraceAsync(callData: Partial<CallData>): Promise<void> {
         // We don't want other transactions to be exeucted during snashotting period, that's why we lock the
         // transaction execution for all transactions except our fake ones.
         await this._lock.acquire();
         const blockchainLifecycle = new BlockchainLifecycle(this._web3Wrapper);
         await blockchainLifecycle.startAsync();
         const fakeTxData: MaybeFakeTxData = {
+            gas: BLOCK_GAS_LIMIT,
             isFakeTransaction: true, // This transaction (and only it) is allowed to come through when the lock is locked
             ...callData,
             from: callData.from || this._defaultFromAddress,
-        };
-        try {
-            const txHash = await this._web3Wrapper.sendTransactionAsync(fakeTxData);
-            await this._web3Wrapper.awaitTransactionMinedAsync(txHash);
-        } catch (err) {
-            // Even if this transaction failed - we've already recorded it's trace.
-            _.noop();
-        }
-        await blockchainLifecycle.revertAsync();
-        this._lock.release();
-    }
-    private async _recordEstimateGasTraceAsync(estimateGasData: Partial<TxData>): Promise<void> {
-        // We don't want other transactions to be exeucted during snashotting period, that's why we lock the
-        // transaction execution for all transactions except our fake ones.
-        await this._lock.acquire();
-        const blockchainLifecycle = new BlockchainLifecycle(this._web3Wrapper);
-        await blockchainLifecycle.startAsync();
-        const fakeTxData: MaybeFakeTxData = {
-            isFakeTransaction: true, // This transaction (and only it) is allowed to come through when the lock is locked
-            ...estimateGasData,
-            from: estimateGasData.from || this._defaultFromAddress,
-            gas: BLOCK_GAS_LIMIT,
         };
         try {
             const txHash = await this._web3Wrapper.sendTransactionAsync(fakeTxData);
