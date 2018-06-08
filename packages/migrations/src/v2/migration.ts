@@ -73,10 +73,18 @@ export const runV2MigrationsAsync = async (provider: Provider, artifactsDir: str
         secondsRequired,
     );
     artifactsWriter.saveArtifact(assetProxyOwner);
-    await erc20proxy.addAuthorizedAddress.sendTransactionAsync(exchange.address, { from: owner });
-    await erc20proxy.transferOwnership.sendTransactionAsync(assetProxyOwner.address, { from: owner });
-    await erc721proxy.addAuthorizedAddress.sendTransactionAsync(exchange.address, { from: owner });
-    await erc721proxy.transferOwnership.sendTransactionAsync(assetProxyOwner.address, { from: owner });
+    await web3Wrapper.awaitTransactionSuccessAsync(
+        await erc20proxy.addAuthorizedAddress.sendTransactionAsync(exchange.address, { from: owner }),
+    );
+    await web3Wrapper.awaitTransactionSuccessAsync(
+        await erc20proxy.transferOwnership.sendTransactionAsync(assetProxyOwner.address, { from: owner }),
+    );
+    await web3Wrapper.awaitTransactionSuccessAsync(
+        await erc721proxy.addAuthorizedAddress.sendTransactionAsync(exchange.address, { from: owner }),
+    );
+    await web3Wrapper.awaitTransactionSuccessAsync(
+        await erc721proxy.transferOwnership.sendTransactionAsync(assetProxyOwner.address, { from: owner }),
+    );
 
     // Dummy ERC20 tokens
     for (const token of erc20TokenInfo) {
