@@ -44,6 +44,13 @@ contract MixinMarketBuyERC20Tokens is
         return marketSellTokensInternal(orders, signatures, feeOrders, feeSignatures, remainingTakerTokenAmount);
     }
 
+    /// @dev Market sells WETH for ERC20 tokens. 
+    /// @param orders An array of Order struct containing order specifications.
+    /// @param signatures An array of Proof that order has been created by maker.
+    /// @param feeOrders An array of Order struct containing order specifications for fees.
+    /// @param feeSignatures An array of Proof that order has been created by maker for the fee orders.
+    /// @param sellTokenAmount The amount of WETH to sell.
+    /// @return FillResults amounts filled and fees paid by maker and taker.
     function marketSellTokensInternal(
         Order[] memory orders,
         bytes[] memory signatures,
@@ -60,7 +67,10 @@ contract MixinMarketBuyERC20Tokens is
         if (calculatedMarketSellResults.takerFeePaid > 0) {
             // Fees are required for these orders. Buy enough ZRX to cover the future market buy
             Exchange.FillResults memory feeTokensResults = buyFeeTokensInternal(
-                feeOrders, feeSignatures, calculatedMarketSellResults.takerFeePaid);
+                feeOrders,
+                feeSignatures,
+                calculatedMarketSellResults.takerFeePaid
+            );
             takerTokenBalance = safeSub(takerTokenBalance, feeTokensResults.takerAssetFilledAmount);
             totalFillResults.takerFeePaid = feeTokensResults.takerFeePaid;
         }

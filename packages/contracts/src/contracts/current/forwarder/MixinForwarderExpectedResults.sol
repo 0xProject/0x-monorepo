@@ -70,9 +70,7 @@ contract MixinForwarderExpectedResults is MixinForwarderCore {
                 orders[i].makerAssetAmount,
                 remainingMakerAssetFillAmount
             );
-
             Exchange.FillResults memory calculatedFillOrderResults = calculateFillOrderFillResults(orders[i], remainingTakerAssetFillAmount);
-
             addFillResults(totalFillResults, calculatedFillOrderResults);
             if (totalFillResults.makerAssetFilledAmount == makerAssetFillAmount) {
                 break;

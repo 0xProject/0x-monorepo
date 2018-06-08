@@ -68,6 +68,13 @@ contract MixinBuyExactAssets is
         return totalFillResults;
     }
 
+    /// @dev Buys an exact amount of an ERC20 token using WETH.
+    /// @param orders Orders to fill. The maker asset is the ERC20 token to buy. The taker asset is WETH.
+    /// @param signatures Proof that the orders were created by their respective makers.
+    /// @param feeOrders to fill. The maker asset is ZRX and the taker asset is WETH.
+    /// @param feeSignatures Proof that the feeOrders were created by their respective makers.
+    /// @param assetAmount Amount of the ERC20 token to buy.
+    /// @return totalFillResults Aggregated fill results of buying the ERC20 and ZRX tokens.
     function buyExactERC20TokensInternal(
         Order[] memory orders,
         bytes[] memory signatures,
@@ -101,11 +108,17 @@ contract MixinBuyExactAssets is
         }
         addFillResults(totalFillResults, requestedTokensResults);
         // Transfer all tokens to msg.sender
-        // transferTokenInternal(orders[0].makerAssetData, address(this), msg.sender, totalFillResults.makerAssetFilledAmount);
         transferToken(makerTokenAddress, msg.sender, requestedTokensResults.makerAssetFilledAmount);
         return totalFillResults;
     }
 
+    /// @dev Buys an all of the ERC721 tokens in the orders.
+    /// @param orders Orders to fill. The maker asset is the ERC721 token to buy. The taker asset is WETH.
+    /// @param signatures Proof that the orders were created by their respective makers.
+    /// @param feeOrders to fill. The maker asset is ZRX and the taker asset is WETH.
+    /// @param feeSignatures Proof that the feeOrders were created by their respective makers.
+    /// @param assetAmount Amount of the ERC721 tokens to buy, should match orders length.
+    /// @return totalFillResults Aggregated fill results of buying the ERC721 tokens and ZRX tokens.
     function buyExactERC721TokensInternal(
         Order[] memory orders,
         bytes[] memory signatures,
@@ -127,15 +140,15 @@ contract MixinBuyExactAssets is
             totalFillResults.takerFeePaid = feeTokensResult.takerFeePaid;
             totalFillResults.takerAssetFilledAmount = feeTokensResult.takerAssetFilledAmount;
         }
-        for (uint256 n = 0; n < orders.length; n++) {
+        for (i = 0; i < orders.length; i++) {
             // Fail if it wasn't fully filled otherwise we will keep WETH
             Exchange.FillResults memory fillOrderResults = EXCHANGE.fillOrKillOrder(
-                orders[n],
-                orders[n].takerAssetAmount,
-                signatures[n]
+                orders[i],
+                orders[i].takerAssetAmount,
+                signatures[i]
             );
             addFillResults(totalFillResults, fillOrderResults);
-            transferERC721Token(orders[n].makerAssetData, address(this), msg.sender, fillOrderResults.makerAssetFilledAmount);
+            transferERC721Token(orders[i].makerAssetData, address(this), msg.sender, fillOrderResults.makerAssetFilledAmount);
         }
         return totalFillResults;
     }
