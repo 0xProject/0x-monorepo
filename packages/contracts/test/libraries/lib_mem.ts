@@ -4,7 +4,7 @@ import * as chai from 'chai';
 import { TestLibMemContract } from '../../src/generated_contract_wrappers/test_lib_mem';
 import { artifacts } from '../../src/utils/artifacts';
 import { chaiSetup } from '../../src/utils/chai_setup';
-import { provider, txDefaults, web3Wrapper } from '../../src/utils/web3_wrapper';
+import { provider, txDefaults } from '../../src/utils/web3_wrapper';
 
 chaiSetup.configure();
 const expect = chai.expect;
@@ -16,13 +16,9 @@ const toHex = (buf: Uint8Array): string => buf.reduce((a, v) => a + ('00' + v.to
 const fromHex = (str: string): Uint8Array => Uint8Array.from(Buffer.from(str.slice(2), 'hex'));
 
 describe('LibMem', () => {
-    let owner: string;
     let testLibMem: TestLibMemContract;
 
     before(async () => {
-        // Setup accounts & addresses
-        const accounts = await web3Wrapper.getAvailableAddressesAsync();
-        owner = accounts[0];
         // Deploy TestLibMem
         testLibMem = await TestLibMemContract.deployFrom0xArtifactAsync(artifacts.TestLibMem, provider, txDefaults);
     });

@@ -1,6 +1,5 @@
 import { BlockchainLifecycle } from '@0xproject/dev-utils';
 import { assetProxyUtils, generatePseudoRandomSalt } from '@0xproject/order-utils';
-import { AssetProxyId } from '@0xproject/types';
 import { BigNumber } from '@0xproject/utils';
 import BN = require('bn.js');
 import * as chai from 'chai';
@@ -8,7 +7,7 @@ import ethUtil = require('ethereumjs-util');
 
 import { TestLibBytesContract } from '../../src/generated_contract_wrappers/test_lib_bytes';
 import { artifacts } from '../../src/utils/artifacts';
-import { expectRevertOrAlwaysFailingTransactionAsync, expectRevertOrOtherErrorAsync } from '../../src/utils/assertions';
+import { expectRevertOrOtherErrorAsync } from '../../src/utils/assertions';
 import { chaiSetup } from '../../src/utils/chai_setup';
 import { constants } from '../../src/utils/constants';
 import { provider, txDefaults, web3Wrapper } from '../../src/utils/web3_wrapper';
@@ -341,7 +340,6 @@ describe('LibBytes', () => {
 
         it('should successfully read short, nested array of bytes when it is offset in the array', async () => {
             const prefixByteArrayBuffer = ethUtil.toBuffer('0xabcdef');
-            const shortDataAsBuffer = ethUtil.toBuffer(shortData);
             const combinedByteArrayBuffer = Buffer.concat([prefixByteArrayBuffer, shortTestBytesAsBuffer]);
             const combinedByteArray = ethUtil.bufferToHex(combinedByteArrayBuffer);
             const testUint256Offset = new BigNumber(prefixByteArrayBuffer.byteLength);
@@ -357,7 +355,6 @@ describe('LibBytes', () => {
 
         it('should successfully read a nested array of bytes - one word in length - when it is offset in the array', async () => {
             const prefixByteArrayBuffer = ethUtil.toBuffer('0xabcdef');
-            const wordOfDataAsBuffer = ethUtil.toBuffer(wordOfData);
             const combinedByteArrayBuffer = Buffer.concat([prefixByteArrayBuffer, wordOfTestBytesAsBuffer]);
             const combinedByteArray = ethUtil.bufferToHex(combinedByteArrayBuffer);
             const testUint256Offset = new BigNumber(prefixByteArrayBuffer.byteLength);
@@ -373,7 +370,6 @@ describe('LibBytes', () => {
 
         it('should successfully read long, nested array of bytes when it is offset in the array', async () => {
             const prefixByteArrayBuffer = ethUtil.toBuffer('0xabcdef');
-            const longDataAsBuffer = ethUtil.toBuffer(longData);
             const combinedByteArrayBuffer = Buffer.concat([prefixByteArrayBuffer, longTestBytesAsBuffer]);
             const combinedByteArray = ethUtil.bufferToHex(combinedByteArrayBuffer);
             const testUint256Offset = new BigNumber(prefixByteArrayBuffer.byteLength);
@@ -510,3 +506,4 @@ describe('LibBytes', () => {
         });
     });
 });
+// tslint:disable:max-file-line-count
