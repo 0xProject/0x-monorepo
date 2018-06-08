@@ -35,10 +35,14 @@ const POSITIONS = [
     },
 ];
 
-export const OpenPositions = () => {
+export interface OpenPositionsProps {
+    hash: string;
+}
+
+export const OpenPositions = (props: OpenPositionsProps) => {
     const labelStyle = { fontFamily: 'Roboto Mono', fontSize: 18 };
     return (
-        <div className="py4" style={{ paddingLeft: 200, paddingRight: 200 }}>
+        <div id={props.hash} className="py4" style={{ paddingLeft: 200, paddingRight: 200 }}>
             <Table selectable={false}>
                 <TableHeader displaySelectAll={false} adjustForCheckbox={false}>
                     <TableRow>
