@@ -109,7 +109,7 @@ export const assetProxyUtils = {
             ERC721_ASSET_DATA_TOKEN_ID_OFFSET,
         );
         const proxyIdOffset = encodedAssetData.byteLength - 1;
-        const encodedAssetProxyId = encodedAssetData.slice(-1);
+        const encodedAssetProxyId = encodedAssetData.slice(proxyIdOffset);
         const assetProxyId = assetProxyUtils.decodeAssetProxyId(encodedAssetProxyId);
         if (assetProxyId !== AssetProxyId.ERC721) {
             throw new Error(
@@ -141,7 +141,7 @@ export const assetProxyUtils = {
             }
             const encodedReceiverData = encodedAssetData.slice(
                 ERC721_ASSET_DATA_RECEIVER_DATA_OFFSET,
-                ERC721_ASSET_DATA_RECEIVER_DATA_OFFSET + receiverDataLength.toNumber(),
+                receiverDataLength.add(ERC721_ASSET_DATA_RECEIVER_DATA_OFFSET).toNumber(),
             );
             receiverData = ethUtil.bufferToHex(encodedReceiverData);
         }
