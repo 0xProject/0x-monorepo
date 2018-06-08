@@ -128,7 +128,7 @@ export class TraceCollectionSubprovider extends Subprovider {
         cb: Callback,
     ): Promise<void> {
         if (!txData.isFakeTransaction) {
-            // This transaction is a usual ttransaction. Not a call executed as one.
+            // This transaction is a usual transaction. Not a call executed as one.
             // And we don't want it to be executed within a snapshotting period
             await this._lock.acquire();
         }
