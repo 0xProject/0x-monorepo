@@ -8,7 +8,7 @@ export interface Join0xProps {
 }
 
 export const Join0x = (props: Join0xProps) => (
-    <div className="clearfix center py4" style={{ backgroundColor: colors.white, color: colors.black }}>
+    <div className="clearfix center lg-py4 md-py4" style={{ backgroundColor: colors.white, color: colors.black }}>
         <div className="mx-auto inline-block align-middle py4" style={{ lineHeight: '44px', textAlign: 'center' }}>
             <div className="h2 sm-center sm-pt3" style={{ fontFamily: 'Roboto Mono' }}>
                 Join 0x
