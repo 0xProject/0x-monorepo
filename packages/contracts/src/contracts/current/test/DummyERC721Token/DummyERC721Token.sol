@@ -34,7 +34,8 @@ contract DummyERC721Token is
     */
     constructor (
         string name,
-        string symbol)
+        string symbol
+    )
         public
         ERC721Token(name, symbol)
     {}
