@@ -19,6 +19,7 @@
 pragma solidity ^0.4.24;
 pragma experimental ABIEncoderV2;
 
+import "../../utils/LibBytes/LibBytes.sol";
 import "./libs/LibMath.sol";
 import "./libs/LibFillResults.sol";
 import "./libs/LibOrder.sol";
@@ -28,6 +29,7 @@ import "./mixins/MSettlement.sol";
 import "./mixins/MAssetProxyDispatcher.sol";
 
 contract MixinSettlement is
+    LibBytes,
     LibMath,
     LibExchangeErrors,
     MMatchOrders,
@@ -37,7 +39,7 @@ contract MixinSettlement is
     // ZRX metadata used for fee transfers.
     // This will be constant throughout the life of the Exchange contract,
     // since ZRX will always be transferred via the ERC20 AssetProxy.
-    bytes internal ZRX_PROXY_DATA;
+    bytes internal ZRX_ASSET_DATA;
 
     /// @dev Gets the ZRX metadata used for fee transfers.
     function zrxAssetData()
@@ -45,7 +47,7 @@ contract MixinSettlement is
         view
         returns (bytes memory)
     {
-        return ZRX_PROXY_DATA;
+        return ZRX_ASSET_DATA;
     }
 
     /// TODO: _zrxAssetData should be a constant in production.
@@ -54,7 +56,7 @@ contract MixinSettlement is
     constructor (bytes memory _zrxAssetData)
         public
     {
-        ZRX_PROXY_DATA = _zrxAssetData;
+        ZRX_ASSET_DATA = _zrxAssetData;
     }
 
     /// @dev Settles an order by transferring assets between counterparties.
@@ -68,26 +70,34 @@ contract MixinSettlement is
     )
         internal
     {
+        uint8 makerAssetProxyId = uint8(popByte(order.makerAssetData));
+        uint8 takerAssetProxyId = uint8(popByte(order.takerAssetData));
+        bytes memory zrxAssetData = ZRX_ASSET_DATA;
+        uint8 zrxProxyId = uint8(popByte(zrxAssetData));
         dispatchTransferFrom(
             order.makerAssetData,
+            makerAssetProxyId,
             order.makerAddress,
             takerAddress,
             fillResults.makerAssetFilledAmount
         );
         dispatchTransferFrom(
             order.takerAssetData,
+            takerAssetProxyId,
             takerAddress,
             order.makerAddress,
             fillResults.takerAssetFilledAmount
         );
         dispatchTransferFrom(
-            ZRX_PROXY_DATA,
+            zrxAssetData,
+            zrxProxyId,
             order.makerAddress,
             order.feeRecipientAddress,
             fillResults.makerFeePaid
         );
         dispatchTransferFrom(
-            ZRX_PROXY_DATA,
+            zrxAssetData,
+            zrxProxyId,
             takerAddress,
             order.feeRecipientAddress,
             fillResults.takerFeePaid
@@ -107,21 +117,28 @@ contract MixinSettlement is
     )
         internal
     {
+        uint8 leftMakerAssetProxyId = uint8(popByte(leftOrder.makerAssetData));
+        uint8 rightMakerAssetProxyId = uint8(popByte(rightOrder.makerAssetData));
+        bytes memory zrxAssetData = ZRX_ASSET_DATA;
+        uint8 zrxProxyId = uint8(popByte(zrxAssetData));
         // Order makers and taker
         dispatchTransferFrom(
             leftOrder.makerAssetData,
+            leftMakerAssetProxyId,
             leftOrder.makerAddress,
             rightOrder.makerAddress,
             matchedFillResults.right.takerAssetFilledAmount
         );
         dispatchTransferFrom(
             rightOrder.makerAssetData,
+            rightMakerAssetProxyId,
             rightOrder.makerAddress,
             leftOrder.makerAddress,
             matchedFillResults.left.takerAssetFilledAmount
         );
         dispatchTransferFrom(
             leftOrder.makerAssetData,
+            leftMakerAssetProxyId,
             leftOrder.makerAddress,
             takerAddress,
             matchedFillResults.leftMakerAssetSpreadAmount
@@ -129,13 +146,15 @@ contract MixinSettlement is
 
         // Maker fees
         dispatchTransferFrom(
-            ZRX_PROXY_DATA,
+            zrxAssetData,
+            zrxProxyId,
             leftOrder.makerAddress,
             leftOrder.feeRecipientAddress,
             matchedFillResults.left.makerFeePaid
         );
         dispatchTransferFrom(
-            ZRX_PROXY_DATA,
+            zrxAssetData,
+            zrxProxyId,
             rightOrder.makerAddress,
             rightOrder.feeRecipientAddress,
             matchedFillResults.right.makerFeePaid
@@ -144,7 +163,8 @@ contract MixinSettlement is
         // Taker fees
         if (leftOrder.feeRecipientAddress == rightOrder.feeRecipientAddress) {
             dispatchTransferFrom(
-                ZRX_PROXY_DATA,
+                zrxAssetData,
+                zrxProxyId,
                 takerAddress,
                 leftOrder.feeRecipientAddress,
                 safeAdd(
@@ -154,13 +174,15 @@ contract MixinSettlement is
             );
         } else {
             dispatchTransferFrom(
-                ZRX_PROXY_DATA,
+                zrxAssetData,
+                zrxProxyId,
                 takerAddress,
                 leftOrder.feeRecipientAddress,
                 matchedFillResults.left.takerFeePaid
             );
             dispatchTransferFrom(
-                ZRX_PROXY_DATA,
+                zrxAssetData,
+                zrxProxyId,
                 takerAddress,
                 rightOrder.feeRecipientAddress,
                 matchedFillResults.right.takerFeePaid

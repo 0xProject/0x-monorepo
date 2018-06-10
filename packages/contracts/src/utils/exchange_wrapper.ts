@@ -165,7 +165,7 @@ export class ExchangeWrapper {
     public async marketBuyOrdersNoThrowAsync(
         orders: SignedOrder[],
         from: string,
-        opts: { makerAssetFillAmount: BigNumber },
+        opts: { makerAssetFillAmount: BigNumber; gas?: number },
     ): Promise<TransactionReceiptWithDecodedLogs> {
         const params = formatters.createMarketBuyOrders(orders, opts.makerAssetFillAmount);
         const txHash = await this._exchange.marketBuyOrdersNoThrow.sendTransactionAsync(

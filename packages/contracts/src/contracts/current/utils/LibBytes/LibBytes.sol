@@ -30,6 +30,7 @@ contract LibBytes is
     string constant GREATER_OR_EQUAL_TO_20_LENGTH_REQUIRED = "GREATER_OR_EQUAL_TO_20_LENGTH_REQUIRED";
     string constant GREATER_OR_EQUAL_TO_32_LENGTH_REQUIRED = "GREATER_OR_EQUAL_TO_32_LENGTH_REQUIRED";
     string constant GREATER_OR_EQUAL_TO_NESTED_BYTES_LENGTH_REQUIRED = "GREATER_OR_EQUAL_TO_NESTED_BYTES_LENGTH_REQUIRED";
+    string constant GREATER_OR_EQUAL_TO_SOURCE_BYTES_LENGTH_REQUIRED = "GREATER_OR_EQUAL_TO_SOURCE_BYTES_LENGTH_REQUIRED";
 
     /// @dev Pops the last byte off of a byte array by modifying its length.
     /// @param b Byte array that will be modified.
@@ -112,6 +113,29 @@ contract LibBytes is
        }
 
        return equal;
+    }
+
+    /// @dev Performs a deep copy of a byte array onto another byte array of greater than or equal length.
+    /// @param dest Byte array that will be overwritten with source bytes.
+    /// @param source Byte array to copy onto dest bytes.
+    function deepCopyBytes(
+        bytes memory dest,
+        bytes memory source
+    )
+        internal
+        pure
+    {
+        uint256 sourceLen = source.length;
+        // Dest length must be >= source length, or some bytes would not be copied.
+        require(
+            dest.length >= sourceLen,
+            GREATER_OR_EQUAL_TO_SOURCE_BYTES_LENGTH_REQUIRED
+        );
+        memCopy(
+            getMemAddress(dest) + 32,    // +32 to skip length of <dest>
+            getMemAddress(source) + 32,  // +32 to skip length of <source>
+            sourceLen
+        );
     }
 
     /// @dev Reads an address from a position in a byte array.

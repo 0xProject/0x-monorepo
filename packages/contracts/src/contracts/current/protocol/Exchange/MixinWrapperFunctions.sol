@@ -335,12 +335,13 @@ contract MixinWrapperFunctions is
     {
         for (uint256 i = 0; i < orders.length; i++) {
 
-            // Token being sold by taker must be the same for each order
-            // TODO: optimize by only using takerAssetData for first order.
-            require(
-                areBytesEqual(orders[i].takerAssetData, orders[0].takerAssetData),
-                ASSET_DATA_MISMATCH
-            );
+            // We assume that asset being sold by taker is the same for each order.
+            // Rather than passing this in as calldata, we copy the takerAssetData from the first order onto all later orders.
+            // We cannot reference the same takerAssetData byte array because the array is modified when a trade is settled.
+            uint256 next = i + 1;
+            if (next != orders.length) {
+                deepCopyBytes(orders[next].takerAssetData, orders[i].takerAssetData);
+            }
 
             // Calculate the remaining amount of takerAsset to sell
             uint256 remainingTakerAssetFillAmount = safeSub(takerAssetFillAmount, totalFillResults.takerAssetFilledAmount);
@@ -379,12 +380,13 @@ contract MixinWrapperFunctions is
     {
         for (uint256 i = 0; i < orders.length; i++) {
 
-            // Token being sold by taker must be the same for each order
-            // TODO: optimize by only using takerAssetData for first order.
-            require(
-                areBytesEqual(orders[i].takerAssetData, orders[0].takerAssetData),
-                ASSET_DATA_MISMATCH
-            );
+            // We assume that asset being sold by taker is the same for each order.
+            // Rather than passing this in as calldata, we copy the takerAssetData from the first order onto all later orders.
+            // We cannot reference the same takerAssetData byte array because the array is modified when a trade is settled.
+            uint256 next = i + 1;
+            if (next != orders.length) {
+                deepCopyBytes(orders[next].takerAssetData, orders[i].takerAssetData);
+            }
 
             // Calculate the remaining amount of takerAsset to sell
             uint256 remainingTakerAssetFillAmount = safeSub(takerAssetFillAmount, totalFillResults.takerAssetFilledAmount);
@@ -422,12 +424,13 @@ contract MixinWrapperFunctions is
     {
         for (uint256 i = 0; i < orders.length; i++) {
 
-            // Token being bought by taker must be the same for each order
-            // TODO: optimize by only using makerAssetData for first order.
-            require(
-                areBytesEqual(orders[i].makerAssetData, orders[0].makerAssetData),
-                ASSET_DATA_MISMATCH
-            );
+            // We assume that asset being bought by taker is the same for each order.
+            // Rather than passing this in as calldata, we copy the makerAssetData from the first order onto all later orders.
+            // We cannot reference the same makerAssetData byte array because the array is modified when a trade is settled.
+            uint256 next = i + 1;
+            if (next != orders.length) {
+                deepCopyBytes(orders[next].makerAssetData, orders[i].makerAssetData);
+            }
 
             // Calculate the remaining amount of makerAsset to buy
             uint256 remainingMakerAssetFillAmount = safeSub(makerAssetFillAmount, totalFillResults.makerAssetFilledAmount);
@@ -474,12 +477,13 @@ contract MixinWrapperFunctions is
     {
         for (uint256 i = 0; i < orders.length; i++) {
 
-            // Token being bought by taker must be the same for each order
-            // TODO: optimize by only using makerAssetData for first order.
-            require(
-                areBytesEqual(orders[i].makerAssetData, orders[0].makerAssetData),
-                ASSET_DATA_MISMATCH
-            );
+            // We assume that asset being bought by taker is the same for each order.
+            // Rather than passing this in as calldata, we copy the makerAssetData from the first order onto all later orders.
+            // We cannot reference the same makerAssetData byte array because the array is modified when a trade is settled.
+            uint256 next = i + 1;
+            if (next != orders.length) {
+                deepCopyBytes(orders[next].makerAssetData, orders[i].makerAssetData);
+            }
 
             // Calculate the remaining amount of makerAsset to buy
             uint256 remainingMakerAssetFillAmount = safeSub(makerAssetFillAmount, totalFillResults.makerAssetFilledAmount);

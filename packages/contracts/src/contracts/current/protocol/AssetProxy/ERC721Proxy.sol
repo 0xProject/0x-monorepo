@@ -46,30 +46,22 @@ contract ERC721Proxy is
     )
         internal
     {
-        // Decode asset data.
-        (
-            uint8 proxyId,
-            address token,
-            uint256 tokenId,
-            bytes memory receiverData
-        ) = decodeERC721AssetData(assetData);
-
-
-        // Data must be intended for this proxy.
-        require(
-            proxyId == PROXY_ID,
-            ASSET_PROXY_ID_MISMATCH
-        );
-
         // There exists only 1 of each token.
         require(
             amount == 1,
             INVALID_AMOUNT
         );
+    
+        // Decode asset data.
+        (
+            address token,
+            uint256 tokenId,
+            bytes memory receiverData
+        ) = decodeERC721AssetData(assetData);
 
         // Transfer token. Saves gas by calling safeTransferFrom only
         // when there is receiverData present. Either succeeds or throws.
-        if(receiverData.length > 0) {
+        if (receiverData.length > 0) {
             ERC721Token(token).safeTransferFrom(from, to, tokenId, receiverData);
         } else {
             ERC721Token(token).transferFrom(from, to, tokenId);
@@ -97,29 +89,19 @@ contract ERC721Proxy is
         internal
         pure
         returns (
-            uint8 proxyId,
             address token,
             uint256 tokenId,
             bytes memory receiverData
         )
     {
-        // Validate encoded data length
-        uint256 length = assetData.length;
-        require(
-            length >= 53,
-            LENGTH_AT_LEAST_53_REQUIRED
-        );
-
         // Decode asset data.
         token = readAddress(assetData, 0);
         tokenId = readUint256(assetData, 20);
-        if (length > 53) {
+        if (assetData.length > 52) {
             receiverData = readBytes(assetData, 52);
         }
-        proxyId = uint8(assetData[length - 1]);
 
         return (
-            proxyId,
             token,
             tokenId,
             receiverData
