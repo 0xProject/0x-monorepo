@@ -62,6 +62,21 @@ contract TestLibBytes is
         return equal;
     }
 
+    /// @dev Performs a deep copy of a byte array onto another byte array of greater than or equal length.
+    /// @param dest Byte array that will be overwritten with source bytes.
+    /// @param source Byte array to copy onto dest bytes.
+    function publicDeepCopyBytes(
+        bytes memory dest,
+        bytes memory source
+    )
+        public
+        pure
+        returns (bytes memory)
+    {
+        deepCopyBytes(dest, source);
+        return dest;
+    }
+
     /// @dev Reads an address from a position in a byte array.
     /// @param b Byte array containing an address.
     /// @param index Index in byte array of address.
