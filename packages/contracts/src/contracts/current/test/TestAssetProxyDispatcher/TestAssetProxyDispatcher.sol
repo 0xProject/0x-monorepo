@@ -24,11 +24,12 @@ import "../../protocol/Exchange/MixinAssetProxyDispatcher.sol";
 contract TestAssetProxyDispatcher is MixinAssetProxyDispatcher {
     function publicDispatchTransferFrom(
         bytes memory assetData,
+        uint8 assetProxyId,
         address from,
         address to,
         uint256 amount)
         public
     {
-        dispatchTransferFrom(assetData, from, to, amount);
+        dispatchTransferFrom(assetData, assetProxyId, from, to, amount);
     }
 }

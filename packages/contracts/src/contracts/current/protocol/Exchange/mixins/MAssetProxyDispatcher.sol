@@ -34,11 +34,13 @@ contract MAssetProxyDispatcher is
 
     /// @dev Forwards arguments to assetProxy and calls `transferFrom`. Either succeeds or throws.
     /// @param assetData Byte array encoded for the respective asset proxy.
+    /// @param assetProxyId Id of assetProxy to dispach to.
     /// @param from Address to transfer token from.
     /// @param to Address to transfer token to.
     /// @param amount Amount of token to transfer.
     function dispatchTransferFrom(
         bytes memory assetData,
+        uint8 assetProxyId,
         address from,
         address to,
         uint256 amount

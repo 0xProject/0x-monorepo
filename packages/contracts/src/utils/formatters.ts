@@ -28,8 +28,14 @@ export const formatters = {
             signatures: [],
             takerAssetFillAmount,
         };
-        _.forEach(signedOrders, signedOrder => {
+        _.forEach(signedOrders, (signedOrder, i) => {
             const orderWithoutExchangeAddress = orderUtils.getOrderWithoutExchangeAddress(signedOrder);
+            if (i !== 0) {
+                orderWithoutExchangeAddress.takerAssetData = `0x${_.repeat(
+                    '0',
+                    signedOrders[0].takerAssetData.length - 2,
+                )}`;
+            }
             marketSellOrders.orders.push(orderWithoutExchangeAddress);
             marketSellOrders.signatures.push(signedOrder.signature);
         });
@@ -41,8 +47,14 @@ export const formatters = {
             signatures: [],
             makerAssetFillAmount,
         };
-        _.forEach(signedOrders, signedOrder => {
+        _.forEach(signedOrders, (signedOrder, i) => {
             const orderWithoutExchangeAddress = orderUtils.getOrderWithoutExchangeAddress(signedOrder);
+            if (i !== 0) {
+                orderWithoutExchangeAddress.makerAssetData = `0x${_.repeat(
+                    '0',
+                    signedOrders[0].makerAssetData.length - 2,
+                )}`;
+            }
             marketBuyOrders.orders.push(orderWithoutExchangeAddress);
             marketBuyOrders.signatures.push(signedOrder.signature);
         });
