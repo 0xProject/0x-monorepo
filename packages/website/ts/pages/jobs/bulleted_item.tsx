@@ -7,9 +7,9 @@ export interface BulletedItemProps {
     height?: number;
 }
 export const BulletedItem = (props: BulletedItemProps) => {
-    const height = props.height || 150;
+    const minHeight = props.height || 150;
     return (
-        <div className="flex" style={{ height }}>
+        <div className="flex" style={{ minHeight }}>
             <svg className="flex-none px2" height="26" width="26">
                 <circle cx="13" cy="13" r="13" fill={props.bulletColor} />
             </svg>
