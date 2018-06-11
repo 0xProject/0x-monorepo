@@ -10,6 +10,7 @@ import { MetacoinContract, TransferContractEventArgs } from '../src/contract_wra
 
 import { chaiSetup } from './utils/chai_setup';
 import { config } from './utils/config';
+import { profiler } from './utils/profiler';
 import { provider, web3Wrapper } from './utils/web3_wrapper';
 
 const artifact: ContractArtifact = MetacoinArtifact as any;
@@ -44,6 +45,7 @@ describe('Metacoin', () => {
             const amount = INITIAL_BALANCE.div(2);
             const oldBalance = await metacoin.balances.callAsync(ZERO_ADDRESS);
             expect(oldBalance).to.be.bignumber.equal(0);
+            // profiler.start();
             const txHash = await metacoin.transfer1.sendTransactionAsync(
                 {
                     to: ZERO_ADDRESS,
@@ -51,6 +53,7 @@ describe('Metacoin', () => {
                 },
                 { from: devConstants.TESTRPC_FIRST_ADDRESS },
             );
+            // profiler.stop();
             const txReceipt = await web3Wrapper.awaitTransactionSuccessAsync(txHash);
             const transferLogs = txReceipt.logs[0] as LogWithDecodedArgs<TransferContractEventArgs>;
             expect(transferLogs.args).to.be.deep.equal({
