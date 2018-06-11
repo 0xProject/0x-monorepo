@@ -174,6 +174,7 @@ contract MixinWrapperFunctions is
             mstore(add(dataAreaStart, mul(10, 0x20)), sub(dataAreaEnd, dataAreaStart))
 
             // Calculate length of <order.makerAssetData>
+            sourceOffset := mload(add(order, 0x140)) // makerAssetData
             arrayLenBytes := mload(sourceOffset)
             sourceOffset := add(sourceOffset, 0x20)
             arrayLenWords := div(add(arrayLenBytes, 0x1F), 0x20)
@@ -193,6 +194,7 @@ contract MixinWrapperFunctions is
             mstore(add(dataAreaStart, mul(11, 0x20)), sub(dataAreaEnd, dataAreaStart))
 
             // Calculate length of <order.takerAssetData>
+            sourceOffset := mload(add(order, 0x160)) // takerAssetData
             arrayLenBytes := mload(sourceOffset)
             sourceOffset := add(sourceOffset, 0x20)
             arrayLenWords := div(add(arrayLenBytes, 0x1F), 0x20)
