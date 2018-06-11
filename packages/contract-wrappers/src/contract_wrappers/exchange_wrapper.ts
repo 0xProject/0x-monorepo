@@ -962,8 +962,8 @@ export class ExchangeWrapper extends ContractWrapper {
             return this._orderValidationUtilsIfExists;
         }
         const exchangeContract = await this._getExchangeContractAsync();
-        const orderValidationUtils = new OrderValidationUtils(exchangeContract);
-        return orderValidationUtils;
+        this._orderValidationUtilsIfExists = new OrderValidationUtils(exchangeContract);
+        return this._orderValidationUtilsIfExists;
     }
     // tslint:enable:no-unused-variable
     private async _getExchangeContractAsync(): Promise<ExchangeContract> {
