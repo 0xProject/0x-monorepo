@@ -37,7 +37,7 @@ export const errorReporter = {
             return; // Let's not log development errors to rollbar
         }
 
-        return new Promise((resolve, reject) => {
+        return new Promise((resolve, _reject) => {
             rollbar.error(err, (rollbarErr: Error) => {
                 if (rollbarErr) {
                     logUtils.log(`Error reporting to rollbar, ignoring: ${rollbarErr}`);

@@ -13,7 +13,7 @@ export interface MarkdownLinkBlockState {}
 export class MarkdownLinkBlock extends React.Component<MarkdownLinkBlockProps, MarkdownLinkBlockState> {
     // Re-rendering a linkBlock causes it to remain unclickable.
     // We therefore noop re-renders on this component if it's props haven't changed.
-    public shouldComponentUpdate(nextProps: MarkdownLinkBlockProps, nextState: MarkdownLinkBlockState): boolean {
+    public shouldComponentUpdate(nextProps: MarkdownLinkBlockProps, _nextState: MarkdownLinkBlockState): boolean {
         return nextProps.href !== this.props.href;
     }
     public render(): React.ReactNode {

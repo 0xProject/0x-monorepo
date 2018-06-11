@@ -41,7 +41,7 @@ describe('NonceTrackerSubprovider', () => {
         let isFirstGetTransactionCount = true;
         const fixedBlockNumberAndTransactionCountProvider = new FixtureSubprovider({
             eth_getBlockByNumber: '0x01',
-            eth_getTransactionCount: (data: any, next: any, end: any) => {
+            eth_getTransactionCount: (_data: any, _next: any, end: any) => {
                 // For testing caching we return different results on the second call
                 if (isFirstGetTransactionCount) {
                     isFirstGetTransactionCount = false;
@@ -88,7 +88,7 @@ describe('NonceTrackerSubprovider', () => {
         provider.addProvider(createFixtureSubprovider());
         provider.addProvider(
             new FixtureSubprovider({
-                eth_sendRawTransaction: (data: any, next: any, end: any) => {
+                eth_sendRawTransaction: (_data: any, _next: any, end: any) => {
                     end(new Error('Transaction nonce is too low'));
                 },
             }),
@@ -123,7 +123,7 @@ describe('NonceTrackerSubprovider', () => {
         provider.addProvider(createFixtureSubprovider());
         provider.addProvider(
             new FixtureSubprovider({
-                eth_sendRawTransaction: (data: any, next: any, end: any) => {
+                eth_sendRawTransaction: (_data: any, _next: any, end: any) => {
                     end(null);
                 },
             }),

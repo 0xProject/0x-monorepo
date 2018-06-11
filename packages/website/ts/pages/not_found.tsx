@@ -11,7 +11,7 @@ export interface NotFoundProps {
     dispatcher: Dispatcher;
 }
 
-export const NotFound = (props: NotFoundProps) => {
+export const NotFound = (_props: NotFoundProps) => {
     return (
         <div>
             <TopBar blockchainIsLoaded={false} location={this.props.location} translate={this.props.translate} />

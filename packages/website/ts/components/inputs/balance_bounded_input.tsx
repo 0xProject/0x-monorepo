@@ -104,7 +104,7 @@ export class BalanceBoundedInput extends React.Component<BalanceBoundedInputProp
             />
         );
     }
-    private _onValueChange(e: any, amountString: string): void {
+    private _onValueChange(_event: any, amountString: string): void {
         this._setAmountState(amountString, this.props.balance, () => {
             const isValid = _.isUndefined(this._validate(amountString, this.props.balance));
             const isPositiveNumber = utils.isNumeric(amountString) && !_.includes(amountString, '-');

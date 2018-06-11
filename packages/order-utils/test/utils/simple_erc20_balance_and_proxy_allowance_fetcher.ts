@@ -11,14 +11,14 @@ export class SimpleERC20BalanceAndProxyAllowanceFetcher implements AbstractBalan
         this._erc20TokenContract = erc20TokenWrapper;
         this._erc20ProxyAddress = erc20ProxyAddress;
     }
-    public async getBalanceAsync(assetData: string, userAddress: string): Promise<BigNumber> {
-        // HACK: We cheat and don't pass in the userData since it's always the same token used
+    public async getBalanceAsync(_assetData: string, userAddress: string): Promise<BigNumber> {
+        // HACK: We cheat and don't pass in the assetData since it's always the same token used
         // in our tests.
         const balance = await this._erc20TokenContract.balanceOf.callAsync(userAddress);
         return balance;
     }
-    public async getProxyAllowanceAsync(assetData: string, userAddress: string): Promise<BigNumber> {
-        // HACK: We cheat and don't pass in the userData since it's always the same token used
+    public async getProxyAllowanceAsync(_assetData: string, userAddress: string): Promise<BigNumber> {
+        // HACK: We cheat and don't pass in the assetData since it's always the same token used
         // in our tests.
         const proxyAllowance = await this._erc20TokenContract.allowance.callAsync(userAddress, this._erc20ProxyAddress);
         return proxyAllowance;

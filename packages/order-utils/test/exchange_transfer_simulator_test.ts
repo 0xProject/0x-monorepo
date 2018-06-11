@@ -2,7 +2,6 @@ import { BlockchainLifecycle, devConstants } from '@0xproject/dev-utils';
 import { ExchangeContractErrs } from '@0xproject/types';
 import { BigNumber } from '@0xproject/utils';
 import * as chai from 'chai';
-import * as _ from 'lodash';
 import 'make-promises-safe';
 
 import { artifacts } from '../src/artifacts';
@@ -176,11 +175,3 @@ describe('ExchangeTransferSimulator', async () => {
         });
     });
 });
-
-function getAddressFromArtifact(artifact: any, networkId: number): string {
-    if (_.isUndefined(artifact.networks[networkId])) {
-        throw new Error(`Contract ${artifact.contractName} not deployed to network ${networkId}`);
-    }
-    const contractAddress = artifact.networks[networkId].address.toLowerCase();
-    return contractAddress;
-}

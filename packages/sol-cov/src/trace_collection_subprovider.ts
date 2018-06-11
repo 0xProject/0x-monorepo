@@ -73,7 +73,7 @@ export class TraceCollectionSubprovider extends Subprovider {
      * @param end Callback to call if subprovider handled the request and wants to pass back the request.
      */
     // tslint:disable-next-line:prefer-function-over-method async-suffix
-    public async handleRequest(payload: JSONRPCRequestPayload, next: NextCallback, end: ErrorCallback): Promise<void> {
+    public async handleRequest(payload: JSONRPCRequestPayload, next: NextCallback, _end: ErrorCallback): Promise<void> {
         if (this._isEnabled) {
             switch (payload.method) {
                 case 'eth_sendTransaction':
@@ -155,8 +155,8 @@ export class TraceCollectionSubprovider extends Subprovider {
     }
     private async _onCallOrGasEstimateExecutedAsync(
         callData: Partial<CallData>,
-        err: Error | null,
-        callResult: string,
+        _err: Error | null,
+        _callResult: string,
         cb: Callback,
     ): Promise<void> {
         await this._recordCallOrGasEstimateTraceAsync(callData);

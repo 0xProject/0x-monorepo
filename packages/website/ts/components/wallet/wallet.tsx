@@ -222,7 +222,7 @@ export class Wallet extends React.Component<WalletProps, WalletState> {
             </div>
         );
     }
-    private _onSidebarHover(event: React.FormEvent<HTMLInputElement>): void {
+    private _onSidebarHover(_event: React.FormEvent<HTMLInputElement>): void {
         this.setState({
             isHoveringSidebar: true,
         });
@@ -314,7 +314,7 @@ export class Wallet extends React.Component<WalletProps, WalletState> {
         );
         return _.map(trackedTokensStartingWithEtherToken, this._renderTokenRow.bind(this));
     }
-    private _renderTokenRow(token: Token, index: number): React.ReactNode {
+    private _renderTokenRow(token: Token, _index: number): React.ReactNode {
         const tokenState = this.props.trackedTokenStateByAddress[token.address];
         const tokenLink = sharedUtils.getEtherScanLinkIfExists(
             token.address,
