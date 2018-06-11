@@ -1,6 +1,5 @@
 import { ExchangeContractErrs } from '@0xproject/types';
 import { BigNumber } from '@0xproject/utils';
-import { BlockParamLiteral } from 'ethereum-types';
 
 import { AbstractBalanceAndProxyAllowanceLazyStore } from './abstract/abstract_balance_and_proxy_allowance_lazy_store';
 import { constants } from './constants';

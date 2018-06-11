@@ -1,5 +1,4 @@
 import { BigNumber } from '@0xproject/utils';
-import { BlockParamLiteral } from 'ethereum-types';
 import * as _ from 'lodash';
 
 import { AbstractBalanceAndProxyAllowanceFetcher } from '../abstract/abstract_balance_and_proxy_allowance_fetcher';

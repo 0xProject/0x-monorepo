@@ -192,7 +192,7 @@ export class OrderValidationUtils {
             zrxTokenAddress,
         );
 
-        const wouldRoundingErrorOccur = await OrderValidationUtils.isRoundingError(
+        const wouldRoundingErrorOccur = OrderValidationUtils.isRoundingError(
             filledTakerTokenAmount,
             signedOrder.takerAssetAmount,
             signedOrder.makerAssetAmount,

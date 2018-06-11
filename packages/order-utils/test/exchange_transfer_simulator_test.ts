@@ -1,8 +1,7 @@
 import { BlockchainLifecycle } from '@0xproject/dev-utils';
-import { ExchangeContractErrs, Token } from '@0xproject/types';
+import { ExchangeContractErrs } from '@0xproject/types';
 import { BigNumber } from '@0xproject/utils';
 import * as chai from 'chai';
-import { BlockParamLiteral } from 'ethereum-types';
 import * as _ from 'lodash';
 import 'make-promises-safe';
 
@@ -96,7 +95,7 @@ describe('ExchangeTransferSimulator', async () => {
                 ),
             ).to.be.rejectedWith(ExchangeContractErrs.InsufficientMakerBalance);
         });
-        it('updates balances and proxyAllowance after transfer', async function(): Promise<void> {
+        it('updates balances and proxyAllowance after transfer', async () => {
             txHash = await dummyERC20Token.transfer.sendTransactionAsync(sender, transferAmount, {
                 from: coinbase,
             });
