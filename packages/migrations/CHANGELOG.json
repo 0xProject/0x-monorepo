@@ -3,10 +3,6 @@
         "version": "0.0.7",
         "changes": [
             {
-                "note": "Export ArtifactWriter class",
-                "pr": 684
-            },
-            {
                 "note": "Use AssetProxyOwner instead of MultiSigWalletWithTimeLockExceptRemoveAuthorizedAddress",
                 "pr": 675
             }
