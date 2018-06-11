@@ -1,5 +1,6 @@
 import { ExchangeContractErrs, Order, SignedOrder } from '@0xproject/types';
 import { BigNumber } from '@0xproject/utils';
+import { Provider } from 'ethereum-types';
 import * as _ from 'lodash';
 
 import { OrderError, TradeSide, TransferType } from './types';
@@ -8,7 +9,7 @@ import { constants } from './constants';
 import { ExchangeTransferSimulator } from './exchange_transfer_simulator';
 import { ExchangeContract } from './generated_contract_wrappers/exchange';
 import { orderHashUtils } from './order_hash';
-import { isValidECSignature, parseECSignature } from './signature_utils';
+import { isValidSignatureAsync } from './signature_utils';
 import { utils } from './utils';
 
 export class OrderValidationUtils {
@@ -157,6 +158,7 @@ export class OrderValidationUtils {
     }
     public async validateFillOrderThrowIfInvalidAsync(
         exchangeTradeEmulator: ExchangeTransferSimulator,
+        provider: Provider,
         signedOrder: SignedOrder,
         fillTakerTokenAmount: BigNumber,
         takerAddress: string,
@@ -166,9 +168,13 @@ export class OrderValidationUtils {
             throw new Error(ExchangeContractErrs.OrderFillAmountZero);
         }
         const orderHash = orderHashUtils.getOrderHashHex(signedOrder);
-        // TODO: Verify all signature types! To do this, we need access to a Provider...
-        const ecSignature = parseECSignature(signedOrder.signature);
-        if (!isValidECSignature(orderHash, ecSignature, signedOrder.makerAddress)) {
+        const isValid = await isValidSignatureAsync(
+            provider,
+            orderHash,
+            signedOrder.signature,
+            signedOrder.makerAddress,
+        );
+        if (!isValid) {
             throw new Error(OrderError.InvalidSignature);
         }
         const filledTakerTokenAmount = await this._exchangeContract.filled.callAsync(orderHash);
@@ -204,6 +210,7 @@ export class OrderValidationUtils {
     }
     public async validateFillOrKillOrderThrowIfInvalidAsync(
         exchangeTradeEmulator: ExchangeTransferSimulator,
+        provider: Provider,
         signedOrder: SignedOrder,
         fillTakerTokenAmount: BigNumber,
         takerAddress: string,
@@ -211,6 +218,7 @@ export class OrderValidationUtils {
     ): Promise<void> {
         const filledTakerTokenAmount = await this.validateFillOrderThrowIfInvalidAsync(
             exchangeTradeEmulator,
+            provider,
             signedOrder,
             fillTakerTokenAmount,
             takerAddress,
