@@ -14,7 +14,8 @@ export const coverage = {
     _getCoverageSubprovider(): CoverageSubprovider {
         const defaultFromAddress = devConstants.TESTRPC_FIRST_ADDRESS;
         const solCompilerArtifactAdapter = new SolCompilerArtifactAdapter();
-        const subprovider = new CoverageSubprovider(solCompilerArtifactAdapter, defaultFromAddress);
+        const isVerbose = true;
+        const subprovider = new CoverageSubprovider(solCompilerArtifactAdapter, defaultFromAddress, isVerbose);
         return subprovider;
     },
 };

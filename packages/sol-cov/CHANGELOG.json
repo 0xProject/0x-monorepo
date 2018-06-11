@@ -1,5 +1,46 @@
 [
     {
+        "version": "0.2.0",
+        "changes": [
+            {
+                "note": "Fixed a bug causing RegExp to crash if contract code is longer that 32767 characters",
+                "pr": 675
+            },
+            {
+                "note": "Fixed a bug caused by Geth debug trace depth being 1-indexed",
+                "pr": 675
+            },
+            {
+                "note": "Fixed a bug when the tool crashed on empty traces",
+                "pr": 675
+            },
+            {
+                "note": "Use `BlockchainLifecycle` to support reverts on Geth",
+                "pr": 675
+            },
+            {
+                "note": "Add `ProfilerSubprovider` as a hacky way to profile code using coverage tools",
+                "pr": 675
+            },
+            {
+                "note": "Collect traces from `estimate_gas` calls",
+                "pr": 675
+            },
+            {
+                "note": "Fix a race condition caused by not awaiting the transaction before getting a trace",
+                "pr": 675
+            },
+            {
+                "note": "Add `start`/`stop` functionality to `CoverageSubprovider` and `ProfilerSubprovider`",
+                "pr": 675
+            },
+            {
+                "note": "Skip interface artifacts with a warning instead of failing",
+                "pr": 675
+            }
+        ]
+    },
+    {
         "timestamp": 1527009134,
         "version": "0.1.0",
         "changes": [
