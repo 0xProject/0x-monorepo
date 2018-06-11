@@ -61,7 +61,7 @@ export class Jobs extends React.Component<JobsProps, JobsState> {
                     <PhotoRail images={PHOTO_RAIL_IMAGES} />
                 )}
                 <Values />
-                <Benefits />
+                <Benefits screenWidth={this.props.screenWidth} />
                 <Teams />
                 <OpenPositions hash={OPEN_POSITIONS_HASH} />
                 <Footer translate={this.props.translate} dispatcher={this.props.dispatcher} />

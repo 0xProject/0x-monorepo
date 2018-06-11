@@ -18,6 +18,7 @@ export const BulletedItemList = (props: BulletedItemListProps) => {
                 {_.map(props.bulletedItems, bulletedItemProps => {
                     return (
                         <BulletedItem
+                            key={bulletedItemProps.title}
                             bulletColor={bulletedItemProps.bulletColor}
                             title={bulletedItemProps.title}
                             description={bulletedItemProps.description}
