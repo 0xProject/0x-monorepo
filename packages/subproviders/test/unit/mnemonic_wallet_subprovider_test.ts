@@ -130,7 +130,7 @@ describe('MnemonicWalletSubprovider', () => {
                     params: [fixtureData.TEST_RPC_ACCOUNT_0, nonHexMessage],
                     id: 1,
                 };
-                const callback = reportCallbackErrors(done)((err: Error, response: JSONRPCResponsePayload) => {
+                const callback = reportCallbackErrors(done)((err: Error, _response: JSONRPCResponsePayload) => {
                     expect(err).to.not.be.a('null');
                     expect(err.message).to.be.equal('Expected data to be of type HexString, encountered: hello world');
                     done();
@@ -145,7 +145,7 @@ describe('MnemonicWalletSubprovider', () => {
                     params: [nonHexMessage, fixtureData.TEST_RPC_ACCOUNT_0],
                     id: 1,
                 };
-                const callback = reportCallbackErrors(done)((err: Error, response: JSONRPCResponsePayload) => {
+                const callback = reportCallbackErrors(done)((err: Error, _response: JSONRPCResponsePayload) => {
                     expect(err).to.not.be.a('null');
                     expect(err.message).to.be.equal('Expected data to be of type HexString, encountered: hello world');
                     done();
@@ -160,7 +160,7 @@ describe('MnemonicWalletSubprovider', () => {
                     params: [messageHex, fixtureData.NULL_ADDRESS],
                     id: 1,
                 };
-                const callback = reportCallbackErrors(done)((err: Error, response: JSONRPCResponsePayload) => {
+                const callback = reportCallbackErrors(done)((err: Error, _response: JSONRPCResponsePayload) => {
                     expect(err).to.not.be.a('null');
                     expect(err.message).to.be.equal(
                         `${WalletSubproviderErrors.AddressNotFound}: ${fixtureData.NULL_ADDRESS}`,
@@ -180,7 +180,7 @@ describe('MnemonicWalletSubprovider', () => {
                     params: [tx],
                     id: 1,
                 };
-                const callback = reportCallbackErrors(done)((err: Error, response: JSONRPCResponsePayload) => {
+                const callback = reportCallbackErrors(done)((err: Error, _response: JSONRPCResponsePayload) => {
                     expect(err).to.not.be.a('null');
                     expect(err.message).to.be.equal(WalletSubproviderErrors.SenderInvalidOrNotSupplied);
                     done();
@@ -199,7 +199,7 @@ describe('MnemonicWalletSubprovider', () => {
                     params: [tx],
                     id: 1,
                 };
-                const callback = reportCallbackErrors(done)((err: Error, response: JSONRPCResponsePayload) => {
+                const callback = reportCallbackErrors(done)((err: Error, _response: JSONRPCResponsePayload) => {
                     expect(err).to.not.be.a('null');
                     expect(err.message).to.be.equal(WalletSubproviderErrors.SenderInvalidOrNotSupplied);
                     done();

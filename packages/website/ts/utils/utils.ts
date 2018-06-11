@@ -152,7 +152,7 @@ export const utils = {
                 const intervalId = setTimeout(() => {
                     resolve(false);
                 }, getApiVersionTimeoutMs);
-                u2f.getApiVersion((version: number) => {
+                u2f.getApiVersion((_version: number) => {
                     clearTimeout(intervalId);
                     resolve(true);
                 });
@@ -279,7 +279,7 @@ export const utils = {
         if (document.readyState === 'complete') {
             return; // Already loaded
         }
-        return new Promise<void>((resolve, reject) => {
+        return new Promise<void>((resolve, _reject) => {
             window.onload = () => resolve();
         });
     },

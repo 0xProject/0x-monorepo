@@ -8,6 +8,7 @@ import 'make-promises-safe';
 import * as Sinon from 'sinon';
 
 import { ContractWrappers, ExchangeContractErrs, SignedOrder, Token } from '../src';
+import { BalanceAndProxyAllowanceLazyStore } from '../src/stores/balance_proxy_allowance_lazy_store';
 import { TradeSide, TransferType } from '../src/types';
 import { ExchangeTransferSimulator } from '../src/utils/exchange_transfer_simulator';
 import { OrderValidationUtils } from '../src/utils/order_validation_utils';
@@ -332,7 +333,11 @@ describe('OrderValidation', () => {
             return Sinon.match((value: BigNumber) => value.eq(expected));
         };
         beforeEach('create exchangeTransferSimulator', async () => {
-            exchangeTransferSimulator = new ExchangeTransferSimulator(contractWrappers.token, BlockParamLiteral.Latest);
+            const balanceAndProxyAllowanceLazyStore = new BalanceAndProxyAllowanceLazyStore(
+                contractWrappers.token,
+                BlockParamLiteral.Latest,
+            );
+            exchangeTransferSimulator = new ExchangeTransferSimulator(balanceAndProxyAllowanceLazyStore);
             transferFromAsync = Sinon.spy();
             exchangeTransferSimulator.transferFromAsync = transferFromAsync as any;
         });

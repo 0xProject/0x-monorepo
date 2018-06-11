@@ -581,7 +581,7 @@ export class TokenBalances extends React.Component<TokenBalancesProps, TokenBala
         }
         return true;
     }
-    private _onErrorDialogToggle(isOpen: boolean): void {
+    private _onErrorDialogToggle(_isOpen: boolean): void {
         this.setState({
             errorType: undefined,
         });

@@ -1,30 +1,54 @@
-import { getOrderHashHex, isValidSignature, OrderError } from '@0xproject/order-utils';
 import { ExchangeContractErrs, Order, SignedOrder } from '@0xproject/types';
 import { BigNumber } from '@0xproject/utils';
+import { Provider } from 'ethereum-types';
 import * as _ from 'lodash';
 
-import { ExchangeContract } from '../contract_wrappers/generated/exchange';
-import { TradeSide, TransferType } from '../types';
-import { constants } from '../utils/constants';
-import { utils } from '../utils/utils';
+import { OrderError, TradeSide, TransferType } from './types';
 
+import { constants } from './constants';
 import { ExchangeTransferSimulator } from './exchange_transfer_simulator';
+import { ExchangeContract } from './generated_contract_wrappers/exchange';
+import { orderHashUtils } from './order_hash';
+import { isValidSignatureAsync } from './signature_utils';
+import { utils } from './utils';
 
 export class OrderValidationUtils {
     private _exchangeContract: ExchangeContract;
+    // TODO: Write some tests for the function
+    // const numerator = new BigNumber(20);
+    // const denominator = new BigNumber(999);
+    // const target = new BigNumber(50);
+    // rounding error = ((20*50/999) - floor(20*50/999)) / (20*50/999) = 0.1%
+    public static isRoundingError(numerator: BigNumber, denominator: BigNumber, target: BigNumber): boolean {
+        // Solidity's mulmod() in JS
+        // Source: https://solidity.readthedocs.io/en/latest/units-and-global-variables.html#mathematical-and-cryptographic-functions
+        if (denominator.eq(0)) {
+            throw new Error('denominator cannot be 0');
+        }
+        const remainder = target.mul(numerator).mod(denominator);
+        if (remainder.eq(0)) {
+            return false; // no rounding error
+        }
+
+        // tslint:disable-next-line:custom-no-magic-numbers
+        const errPercentageTimes1000000 = remainder.mul(1000000).div(numerator.mul(target));
+        // tslint:disable-next-line:custom-no-magic-numbers
+        const isError = errPercentageTimes1000000.gt(1000);
+        return isError;
+    }
     public static validateCancelOrderThrowIfInvalid(
         order: Order,
         cancelTakerTokenAmount: BigNumber,
-        unavailableTakerTokenAmount: BigNumber,
+        filledTakerTokenAmount: BigNumber,
     ): void {
         if (cancelTakerTokenAmount.eq(0)) {
             throw new Error(ExchangeContractErrs.OrderCancelAmountZero);
         }
-        if (order.takerTokenAmount.eq(unavailableTakerTokenAmount)) {
+        if (order.takerAssetAmount.eq(filledTakerTokenAmount)) {
             throw new Error(ExchangeContractErrs.OrderAlreadyCancelledOrFilled);
         }
         const currentUnixTimestampSec = utils.getCurrentUnixTimestampSec();
-        if (order.expirationUnixTimestampSec.lessThan(currentUnixTimestampSec)) {
+        if (order.expirationTimeSeconds.lessThan(currentUnixTimestampSec)) {
             throw new Error(ExchangeContractErrs.OrderCancelExpired);
         }
     }
@@ -37,63 +61,63 @@ export class OrderValidationUtils {
     ): Promise<void> {
         const fillMakerTokenAmount = OrderValidationUtils._getPartialAmount(
             fillTakerTokenAmount,
-            signedOrder.takerTokenAmount,
-            signedOrder.makerTokenAmount,
+            signedOrder.takerAssetAmount,
+            signedOrder.makerAssetAmount,
         );
         await exchangeTradeEmulator.transferFromAsync(
-            signedOrder.makerTokenAddress,
-            signedOrder.maker,
+            signedOrder.makerAssetData,
+            signedOrder.makerAddress,
             senderAddress,
             fillMakerTokenAmount,
             TradeSide.Maker,
             TransferType.Trade,
         );
         await exchangeTradeEmulator.transferFromAsync(
-            signedOrder.takerTokenAddress,
+            signedOrder.takerAssetData,
             senderAddress,
-            signedOrder.maker,
+            signedOrder.makerAddress,
             fillTakerTokenAmount,
             TradeSide.Taker,
             TransferType.Trade,
         );
         const makerFeeAmount = OrderValidationUtils._getPartialAmount(
             fillTakerTokenAmount,
-            signedOrder.takerTokenAmount,
+            signedOrder.takerAssetAmount,
             signedOrder.makerFee,
         );
         await exchangeTradeEmulator.transferFromAsync(
             zrxTokenAddress,
-            signedOrder.maker,
-            signedOrder.feeRecipient,
+            signedOrder.makerAddress,
+            signedOrder.feeRecipientAddress,
             makerFeeAmount,
             TradeSide.Maker,
             TransferType.Fee,
         );
         const takerFeeAmount = OrderValidationUtils._getPartialAmount(
             fillTakerTokenAmount,
-            signedOrder.takerTokenAmount,
+            signedOrder.takerAssetAmount,
             signedOrder.takerFee,
         );
         await exchangeTradeEmulator.transferFromAsync(
             zrxTokenAddress,
             senderAddress,
-            signedOrder.feeRecipient,
+            signedOrder.feeRecipientAddress,
             takerFeeAmount,
             TradeSide.Taker,
             TransferType.Fee,
         );
     }
     private static _validateRemainingFillAmountNotZeroOrThrow(
-        takerTokenAmount: BigNumber,
-        unavailableTakerTokenAmount: BigNumber,
+        takerAssetAmount: BigNumber,
+        filledTakerTokenAmount: BigNumber,
     ): void {
-        if (takerTokenAmount.eq(unavailableTakerTokenAmount)) {
+        if (takerAssetAmount.eq(filledTakerTokenAmount)) {
             throw new Error(ExchangeContractErrs.OrderRemainingFillAmountZero);
         }
     }
-    private static _validateOrderNotExpiredOrThrow(expirationUnixTimestampSec: BigNumber): void {
+    private static _validateOrderNotExpiredOrThrow(expirationTimeSeconds: BigNumber): void {
         const currentUnixTimestampSec = utils.getCurrentUnixTimestampSec();
-        if (expirationUnixTimestampSec.lessThan(currentUnixTimestampSec)) {
+        if (expirationTimeSeconds.lessThan(currentUnixTimestampSec)) {
             throw new Error(ExchangeContractErrs.OrderFillExpired);
         }
     }
@@ -113,16 +137,14 @@ export class OrderValidationUtils {
         zrxTokenAddress: string,
         expectedFillTakerTokenAmount?: BigNumber,
     ): Promise<void> {
-        const orderHash = getOrderHashHex(signedOrder);
-        const unavailableTakerTokenAmount = await this._exchangeContract.getUnavailableTakerTokenAmount.callAsync(
-            orderHash,
-        );
+        const orderHash = orderHashUtils.getOrderHashHex(signedOrder);
+        const filledTakerTokenAmount = await this._exchangeContract.filled.callAsync(orderHash);
         OrderValidationUtils._validateRemainingFillAmountNotZeroOrThrow(
-            signedOrder.takerTokenAmount,
-            unavailableTakerTokenAmount,
+            signedOrder.takerAssetAmount,
+            filledTakerTokenAmount,
         );
-        OrderValidationUtils._validateOrderNotExpiredOrThrow(signedOrder.expirationUnixTimestampSec);
-        let fillTakerTokenAmount = signedOrder.takerTokenAmount.minus(unavailableTakerTokenAmount);
+        OrderValidationUtils._validateOrderNotExpiredOrThrow(signedOrder.expirationTimeSeconds);
+        let fillTakerTokenAmount = signedOrder.takerAssetAmount.minus(filledTakerTokenAmount);
         if (!_.isUndefined(expectedFillTakerTokenAmount)) {
             fillTakerTokenAmount = expectedFillTakerTokenAmount;
         }
@@ -130,12 +152,13 @@ export class OrderValidationUtils {
             exchangeTradeEmulator,
             signedOrder,
             fillTakerTokenAmount,
-            signedOrder.taker,
+            signedOrder.takerAddress,
             zrxTokenAddress,
         );
     }
     public async validateFillOrderThrowIfInvalidAsync(
         exchangeTradeEmulator: ExchangeTransferSimulator,
+        provider: Provider,
         signedOrder: SignedOrder,
         fillTakerTokenAmount: BigNumber,
         takerAddress: string,
@@ -144,37 +167,41 @@ export class OrderValidationUtils {
         if (fillTakerTokenAmount.eq(0)) {
             throw new Error(ExchangeContractErrs.OrderFillAmountZero);
         }
-        const orderHash = getOrderHashHex(signedOrder);
-        if (!isValidSignature(orderHash, signedOrder.ecSignature, signedOrder.maker)) {
+        const orderHash = orderHashUtils.getOrderHashHex(signedOrder);
+        const isValid = await isValidSignatureAsync(
+            provider,
+            orderHash,
+            signedOrder.signature,
+            signedOrder.makerAddress,
+        );
+        if (!isValid) {
             throw new Error(OrderError.InvalidSignature);
         }
-        const unavailableTakerTokenAmount = await this._exchangeContract.getUnavailableTakerTokenAmount.callAsync(
-            orderHash,
-        );
+        const filledTakerTokenAmount = await this._exchangeContract.filled.callAsync(orderHash);
         OrderValidationUtils._validateRemainingFillAmountNotZeroOrThrow(
-            signedOrder.takerTokenAmount,
-            unavailableTakerTokenAmount,
+            signedOrder.takerAssetAmount,
+            filledTakerTokenAmount,
         );
-        if (signedOrder.taker !== constants.NULL_ADDRESS && signedOrder.taker !== takerAddress) {
+        if (signedOrder.takerAddress !== constants.NULL_ADDRESS && signedOrder.takerAddress !== takerAddress) {
             throw new Error(ExchangeContractErrs.TransactionSenderIsNotFillOrderTaker);
         }
-        OrderValidationUtils._validateOrderNotExpiredOrThrow(signedOrder.expirationUnixTimestampSec);
-        const remainingTakerTokenAmount = signedOrder.takerTokenAmount.minus(unavailableTakerTokenAmount);
-        const filledTakerTokenAmount = remainingTakerTokenAmount.lessThan(fillTakerTokenAmount)
+        OrderValidationUtils._validateOrderNotExpiredOrThrow(signedOrder.expirationTimeSeconds);
+        const remainingTakerTokenAmount = signedOrder.takerAssetAmount.minus(filledTakerTokenAmount);
+        const desiredFillTakerTokenAmount = remainingTakerTokenAmount.lessThan(fillTakerTokenAmount)
             ? remainingTakerTokenAmount
             : fillTakerTokenAmount;
         await OrderValidationUtils.validateFillOrderBalancesAllowancesThrowIfInvalidAsync(
             exchangeTradeEmulator,
             signedOrder,
-            filledTakerTokenAmount,
+            desiredFillTakerTokenAmount,
             takerAddress,
             zrxTokenAddress,
         );
 
-        const wouldRoundingErrorOccur = await this._exchangeContract.isRoundingError.callAsync(
+        const wouldRoundingErrorOccur = OrderValidationUtils.isRoundingError(
             filledTakerTokenAmount,
-            signedOrder.takerTokenAmount,
-            signedOrder.makerTokenAmount,
+            signedOrder.takerAssetAmount,
+            signedOrder.makerAssetAmount,
         );
         if (wouldRoundingErrorOccur) {
             throw new Error(ExchangeContractErrs.OrderFillRoundingError);
@@ -183,6 +210,7 @@ export class OrderValidationUtils {
     }
     public async validateFillOrKillOrderThrowIfInvalidAsync(
         exchangeTradeEmulator: ExchangeTransferSimulator,
+        provider: Provider,
         signedOrder: SignedOrder,
         fillTakerTokenAmount: BigNumber,
         takerAddress: string,
@@ -190,6 +218,7 @@ export class OrderValidationUtils {
     ): Promise<void> {
         const filledTakerTokenAmount = await this.validateFillOrderThrowIfInvalidAsync(
             exchangeTradeEmulator,
+            provider,
             signedOrder,
             fillTakerTokenAmount,
             takerAddress,

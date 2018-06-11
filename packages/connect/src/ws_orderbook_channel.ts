@@ -78,7 +78,7 @@ export class WebSocketOrderbookChannel implements OrderbookChannel {
                 connection.on(WebsocketConnectionEventType.Error, wsError => {
                     handler.onError(this, subscriptionOpts, wsError);
                 });
-                connection.on(WebsocketConnectionEventType.Close, (code: number, desc: string) => {
+                connection.on(WebsocketConnectionEventType.Close, (_code: number, _desc: string) => {
                     handler.onClose(this, subscriptionOpts);
                 });
                 connection.on(WebsocketConnectionEventType.Message, message => {

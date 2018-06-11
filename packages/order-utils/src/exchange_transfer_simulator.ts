@@ -1,10 +1,9 @@
-import { BlockParamLiteral, ExchangeContractErrs } from '@0xproject/types';
+import { ExchangeContractErrs } from '@0xproject/types';
 import { BigNumber } from '@0xproject/utils';
 
-import { AbstractBalanceAndProxyAllowanceLazyStore } from '../abstract/abstract_balance_and_proxy_allowance_lazy_store';
-import { TokenWrapper } from '../contract_wrappers/token_wrapper';
-import { TradeSide, TransferType } from '../types';
-import { constants } from '../utils/constants';
+import { AbstractBalanceAndProxyAllowanceLazyStore } from './abstract/abstract_balance_and_proxy_allowance_lazy_store';
+import { constants } from './constants';
+import { TradeSide, TransferType } from './types';
 
 enum FailureReason {
     Balance = 'balance',
@@ -49,7 +48,9 @@ export class ExchangeTransferSimulator {
     }
     /**
      * Simulates transferFrom call performed by a proxy
-     * @param  tokenAddress      Address of the token to be transferred
+     * @param  assetData         Data of the asset being transferred. Includes
+     *                           it's identifying information and assetType,
+     *                           e.g address for ERC20, address & tokenId for ERC721
      * @param  from              Owner of the transferred tokens
      * @param  to                Recipient of the transferred tokens
      * @param  amountInBaseUnits The amount of tokens being transferred
@@ -57,7 +58,7 @@ export class ExchangeTransferSimulator {
      * @param  transferType      Is it a fee payment or a value transfer
      */
     public async transferFromAsync(
-        tokenAddress: string,
+        assetData: string,
         from: string,
         to: string,
         amountInBaseUnits: BigNumber,
@@ -68,45 +69,45 @@ export class ExchangeTransferSimulator {
         // allowances for the taker. We do however, want to increase the balance of the maker since the maker
         // might be relying on those funds to fill subsequent orders or pay the order's fees.
         if (from === constants.NULL_ADDRESS && tradeSide === TradeSide.Taker) {
-            await this._increaseBalanceAsync(tokenAddress, to, amountInBaseUnits);
+            await this._increaseBalanceAsync(assetData, to, amountInBaseUnits);
             return;
         }
-        const balance = await this._store.getBalanceAsync(tokenAddress, from);
-        const proxyAllowance = await this._store.getProxyAllowanceAsync(tokenAddress, from);
+        const balance = await this._store.getBalanceAsync(assetData, from);
+        const proxyAllowance = await this._store.getProxyAllowanceAsync(assetData, from);
         if (proxyAllowance.lessThan(amountInBaseUnits)) {
             ExchangeTransferSimulator._throwValidationError(FailureReason.ProxyAllowance, tradeSide, transferType);
         }
         if (balance.lessThan(amountInBaseUnits)) {
             ExchangeTransferSimulator._throwValidationError(FailureReason.Balance, tradeSide, transferType);
         }
-        await this._decreaseProxyAllowanceAsync(tokenAddress, from, amountInBaseUnits);
-        await this._decreaseBalanceAsync(tokenAddress, from, amountInBaseUnits);
-        await this._increaseBalanceAsync(tokenAddress, to, amountInBaseUnits);
+        await this._decreaseProxyAllowanceAsync(assetData, from, amountInBaseUnits);
+        await this._decreaseBalanceAsync(assetData, from, amountInBaseUnits);
+        await this._increaseBalanceAsync(assetData, to, amountInBaseUnits);
     }
     private async _decreaseProxyAllowanceAsync(
-        tokenAddress: string,
+        assetData: string,
         userAddress: string,
         amountInBaseUnits: BigNumber,
     ): Promise<void> {
-        const proxyAllowance = await this._store.getProxyAllowanceAsync(tokenAddress, userAddress);
+        const proxyAllowance = await this._store.getProxyAllowanceAsync(assetData, userAddress);
         if (!proxyAllowance.eq(constants.UNLIMITED_ALLOWANCE_IN_BASE_UNITS)) {
-            this._store.setProxyAllowance(tokenAddress, userAddress, proxyAllowance.minus(amountInBaseUnits));
+            this._store.setProxyAllowance(assetData, userAddress, proxyAllowance.minus(amountInBaseUnits));
         }
     }
     private async _increaseBalanceAsync(
-        tokenAddress: string,
+        assetData: string,
         userAddress: string,
         amountInBaseUnits: BigNumber,
     ): Promise<void> {
-        const balance = await this._store.getBalanceAsync(tokenAddress, userAddress);
-        this._store.setBalance(tokenAddress, userAddress, balance.plus(amountInBaseUnits));
+        const balance = await this._store.getBalanceAsync(assetData, userAddress);
+        this._store.setBalance(assetData, userAddress, balance.plus(amountInBaseUnits));
     }
     private async _decreaseBalanceAsync(
-        tokenAddress: string,
+        assetData: string,
         userAddress: string,
         amountInBaseUnits: BigNumber,
     ): Promise<void> {
-        const balance = await this._store.getBalanceAsync(tokenAddress, userAddress);
-        this._store.setBalance(tokenAddress, userAddress, balance.minus(amountInBaseUnits));
+        const balance = await this._store.getBalanceAsync(assetData, userAddress);
+        this._store.setBalance(assetData, userAddress, balance.minus(amountInBaseUnits));
     }
 }

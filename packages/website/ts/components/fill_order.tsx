@@ -351,7 +351,7 @@ export class FillOrder extends React.Component<FillOrderProps, FillOrderState> {
             this._onFillOrderClickFireAndForgetAsync();
         }
     }
-    private _onFillAmountChange(isValid: boolean, amount?: BigNumber): void {
+    private _onFillAmountChange(_isValid: boolean, amount?: BigNumber): void {
         this.props.dispatcher.updateOrderFillAmount(amount);
     }
     private _onFillOrderJSONChanged(event: any): void {

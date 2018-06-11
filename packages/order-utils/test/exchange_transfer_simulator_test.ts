@@ -1,41 +1,72 @@
-import { BlockchainLifecycle } from '@0xproject/dev-utils';
-import { BlockParamLiteral, Token } from '@0xproject/types';
+import { BlockchainLifecycle, devConstants } from '@0xproject/dev-utils';
+import { ExchangeContractErrs } from '@0xproject/types';
 import { BigNumber } from '@0xproject/utils';
 import * as chai from 'chai';
 import 'make-promises-safe';
 
-import { ContractWrappers, ExchangeContractErrs } from '../src';
-import { BalanceAndProxyAllowanceLazyStore } from '../src/stores/balance_proxy_allowance_lazy_store';
+import { artifacts } from '../src/artifacts';
+import { constants } from '../src/constants';
+import { ExchangeTransferSimulator } from '../src/exchange_transfer_simulator';
+import { DummyERC20TokenContract } from '../src/generated_contract_wrappers/dummy_e_r_c20_token';
+import { ERC20ProxyContract } from '../src/generated_contract_wrappers/e_r_c20_proxy';
+import { ERC20TokenContract } from '../src/generated_contract_wrappers/e_r_c20_token';
+import { BalanceAndProxyAllowanceLazyStore } from '../src/store/balance_and_proxy_allowance_lazy_store';
 import { TradeSide, TransferType } from '../src/types';
-import { ExchangeTransferSimulator } from '../src/utils/exchange_transfer_simulator';
 
 import { chaiSetup } from './utils/chai_setup';
-import { constants } from './utils/constants';
+import { SimpleERC20BalanceAndProxyAllowanceFetcher } from './utils/simple_erc20_balance_and_proxy_allowance_fetcher';
 import { provider, web3Wrapper } from './utils/web3_wrapper';
 
 chaiSetup.configure();
 const expect = chai.expect;
 const blockchainLifecycle = new BlockchainLifecycle(web3Wrapper);
 
-describe('ExchangeTransferSimulator', () => {
-    const config = {
-        networkId: constants.TESTRPC_NETWORK_ID,
-    };
-    const contractWrappers = new ContractWrappers(provider, config);
+describe('ExchangeTransferSimulator', async () => {
     const transferAmount = new BigNumber(5);
     let userAddresses: string[];
-    let tokens: Token[];
+    let dummyERC20Token: DummyERC20TokenContract;
     let coinbase: string;
     let sender: string;
     let recipient: string;
     let exampleTokenAddress: string;
     let exchangeTransferSimulator: ExchangeTransferSimulator;
     let txHash: string;
-    before(async () => {
+    let erc20ProxyAddress: string;
+    before(async function(): Promise<void> {
+        const mochaTestTimeoutMs = 20000;
+        this.timeout(mochaTestTimeoutMs);
+
         userAddresses = await web3Wrapper.getAvailableAddressesAsync();
         [coinbase, sender, recipient] = userAddresses;
-        tokens = await contractWrappers.tokenRegistry.getTokensAsync();
-        exampleTokenAddress = tokens[0].address;
+
+        const txDefaults = {
+            gas: devConstants.GAS_LIMIT,
+            from: devConstants.TESTRPC_FIRST_ADDRESS,
+        };
+
+        const erc20Proxy = await ERC20ProxyContract.deployFrom0xArtifactAsync(
+            artifacts.ERC20Proxy,
+            provider,
+            txDefaults,
+        );
+        erc20ProxyAddress = erc20Proxy.address;
+
+        const totalSupply = new BigNumber(100000000000000000000);
+        const name = 'Test';
+        const symbol = 'TST';
+        const decimals = new BigNumber(18);
+        // tslint:disable-next-line:no-unused-variable
+        dummyERC20Token = await DummyERC20TokenContract.deployFrom0xArtifactAsync(
+            artifacts.DummyERC20Token,
+            provider,
+            txDefaults,
+            name,
+            symbol,
+            decimals,
+            totalSupply,
+        );
+
+        exampleTokenAddress = dummyERC20Token.address;
     });
     beforeEach(async () => {
         await blockchainLifecycle.startAsync();
@@ -43,11 +74,18 @@ describe('ExchangeTransferSimulator', () => {
     afterEach(async () => {
         await blockchainLifecycle.revertAsync();
     });
-    describe('#transferFromAsync', () => {
+    describe('#transferFromAsync', function(): void {
+        // HACK: For some reason these tests need a slightly longer timeout
+        const mochaTestTimeoutMs = 3000;
+        this.timeout(mochaTestTimeoutMs);
+
         beforeEach(() => {
+            const simpleERC20BalanceAndProxyAllowanceFetcher = new SimpleERC20BalanceAndProxyAllowanceFetcher(
+                (dummyERC20Token as any) as ERC20TokenContract,
+                erc20ProxyAddress,
+            );
             const balanceAndProxyAllowanceLazyStore = new BalanceAndProxyAllowanceLazyStore(
-                contractWrappers.token,
-                BlockParamLiteral.Latest,
+                simpleERC20BalanceAndProxyAllowanceFetcher,
             );
             exchangeTransferSimulator = new ExchangeTransferSimulator(balanceAndProxyAllowanceLazyStore);
         });
@@ -64,7 +102,9 @@ describe('ExchangeTransferSimulator', () => {
             ).to.be.rejectedWith(ExchangeContractErrs.InsufficientTakerAllowance);
         });
         it("throws if the user doesn't have enough balance", async () => {
-            txHash = await contractWrappers.token.setProxyAllowanceAsync(exampleTokenAddress, sender, transferAmount);
+            txHash = await dummyERC20Token.approve.sendTransactionAsync(erc20ProxyAddress, transferAmount, {
+                from: sender,
+            });
             await web3Wrapper.awaitTransactionSuccessAsync(txHash);
             return expect(
                 exchangeTransferSimulator.transferFromAsync(
@@ -78,10 +118,16 @@ describe('ExchangeTransferSimulator', () => {
             ).to.be.rejectedWith(ExchangeContractErrs.InsufficientMakerBalance);
         });
         it('updates balances and proxyAllowance after transfer', async () => {
-            txHash = await contractWrappers.token.transferAsync(exampleTokenAddress, coinbase, sender, transferAmount);
+            txHash = await dummyERC20Token.transfer.sendTransactionAsync(sender, transferAmount, {
+                from: coinbase,
+            });
             await web3Wrapper.awaitTransactionSuccessAsync(txHash);
-            txHash = await contractWrappers.token.setProxyAllowanceAsync(exampleTokenAddress, sender, transferAmount);
+
+            txHash = await dummyERC20Token.approve.sendTransactionAsync(erc20ProxyAddress, transferAmount, {
+                from: sender,
+            });
             await web3Wrapper.awaitTransactionSuccessAsync(txHash);
+
             await exchangeTransferSimulator.transferFromAsync(
                 exampleTokenAddress,
                 sender,
@@ -99,9 +145,17 @@ describe('ExchangeTransferSimulator', () => {
             expect(senderProxyAllowance).to.be.bignumber.equal(0);
         });
         it("doesn't update proxyAllowance after transfer if unlimited", async () => {
-            txHash = await contractWrappers.token.transferAsync(exampleTokenAddress, coinbase, sender, transferAmount);
+            txHash = await dummyERC20Token.transfer.sendTransactionAsync(sender, transferAmount, {
+                from: coinbase,
+            });
             await web3Wrapper.awaitTransactionSuccessAsync(txHash);
-            txHash = await contractWrappers.token.setUnlimitedProxyAllowanceAsync(exampleTokenAddress, sender);
+            txHash = await dummyERC20Token.approve.sendTransactionAsync(
+                erc20ProxyAddress,
+                constants.UNLIMITED_ALLOWANCE_IN_BASE_UNITS,
+                {
+                    from: sender,
+                },
+            );
             await web3Wrapper.awaitTransactionSuccessAsync(txHash);
             await exchangeTransferSimulator.transferFromAsync(
                 exampleTokenAddress,
@@ -117,9 +171,7 @@ describe('ExchangeTransferSimulator', () => {
             const senderProxyAllowance = await store.getProxyAllowanceAsync(exampleTokenAddress, sender);
             expect(senderBalance).to.be.bignumber.equal(0);
             expect(recipientBalance).to.be.bignumber.equal(transferAmount);
-            expect(senderProxyAllowance).to.be.bignumber.equal(
-                contractWrappers.token.UNLIMITED_ALLOWANCE_IN_BASE_UNITS,
-            );
+            expect(senderProxyAllowance).to.be.bignumber.equal(constants.UNLIMITED_ALLOWANCE_IN_BASE_UNITS);
         });
     });
 });

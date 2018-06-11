@@ -18,6 +18,7 @@ import * as _ from 'lodash';
 import { artifacts } from '../artifacts';
 import { SimpleBalanceAndProxyAllowanceFetcher } from '../fetchers/simple_balance_and_proxy_allowance_fetcher';
 import { SimpleOrderFilledCancelledFetcher } from '../fetchers/simple_order_filled_cancelled_fetcher';
+import { BalanceAndProxyAllowanceLazyStore } from '../stores/balance_proxy_allowance_lazy_store';
 import {
     BlockRange,
     EventCallback,
@@ -54,7 +55,7 @@ interface ExchangeContractErrCodesToMsgs {
  */
 export class ExchangeWrapper extends ContractWrapper {
     private _exchangeContractIfExists?: ExchangeContract;
-    private _orderValidationUtils: OrderValidationUtils;
+    private _orderValidationUtilsIfExists?: OrderValidationUtils;
     private _tokenWrapper: TokenWrapper;
     private _exchangeContractErrCodesToMsg: ExchangeContractErrCodesToMsgs = {
         [ExchangeContractErrCodes.ERROR_FILL_EXPIRED]: ExchangeContractErrs.OrderFillExpired,
@@ -75,7 +76,6 @@ export class ExchangeWrapper extends ContractWrapper {
     ) {
         super(web3Wrapper, networkId);
         this._tokenWrapper = tokenWrapper;
-        this._orderValidationUtils = new OrderValidationUtils(this);
         this._contractAddressIfExists = contractAddressIfExists;
         this._zrxContractAddressIfExists = zrxContractAddressIfExists;
     }
@@ -177,8 +177,13 @@ export class ExchangeWrapper extends ContractWrapper {
             : orderTransactionOpts.shouldValidate;
         if (shouldValidate) {
             const zrxTokenAddress = this.getZRXTokenAddress();
-            const exchangeTradeEmulator = new ExchangeTransferSimulator(this._tokenWrapper, BlockParamLiteral.Latest);
-            await this._orderValidationUtils.validateFillOrderThrowIfInvalidAsync(
+            const balanceAndProxyAllowanceLazyStore = new BalanceAndProxyAllowanceLazyStore(
+                this._tokenWrapper,
+                BlockParamLiteral.Latest,
+            );
+            const exchangeTradeEmulator = new ExchangeTransferSimulator(balanceAndProxyAllowanceLazyStore);
+            const orderValidationUtils = await this._getOrderValidationUtilsAsync();
+            await orderValidationUtils.validateFillOrderThrowIfInvalidAsync(
                 exchangeTradeEmulator,
                 signedOrder,
                 fillTakerTokenAmount,
@@ -252,9 +257,14 @@ export class ExchangeWrapper extends ContractWrapper {
         if (shouldValidate) {
             let filledTakerTokenAmount = new BigNumber(0);
             const zrxTokenAddress = this.getZRXTokenAddress();
-            const exchangeTradeEmulator = new ExchangeTransferSimulator(this._tokenWrapper, BlockParamLiteral.Latest);
+            const balanceAndProxyAllowanceLazyStore = new BalanceAndProxyAllowanceLazyStore(
+                this._tokenWrapper,
+                BlockParamLiteral.Latest,
+            );
+            const exchangeTradeEmulator = new ExchangeTransferSimulator(balanceAndProxyAllowanceLazyStore);
+            const orderValidationUtils = await this._getOrderValidationUtilsAsync();
             for (const signedOrder of signedOrders) {
-                const singleFilledTakerTokenAmount = await this._orderValidationUtils.validateFillOrderThrowIfInvalidAsync(
+                const singleFilledTakerTokenAmount = await orderValidationUtils.validateFillOrderThrowIfInvalidAsync(
                     exchangeTradeEmulator,
                     signedOrder,
                     fillTakerTokenAmount.minus(filledTakerTokenAmount),
@@ -345,9 +355,14 @@ export class ExchangeWrapper extends ContractWrapper {
             : orderTransactionOpts.shouldValidate;
         if (shouldValidate) {
             const zrxTokenAddress = this.getZRXTokenAddress();
-            const exchangeTradeEmulator = new ExchangeTransferSimulator(this._tokenWrapper, BlockParamLiteral.Latest);
+            const balanceAndProxyAllowanceLazyStore = new BalanceAndProxyAllowanceLazyStore(
+                this._tokenWrapper,
+                BlockParamLiteral.Latest,
+            );
+            const exchangeTradeEmulator = new ExchangeTransferSimulator(balanceAndProxyAllowanceLazyStore);
+            const orderValidationUtils = await this._getOrderValidationUtilsAsync();
             for (const orderFillRequest of orderFillRequests) {
-                await this._orderValidationUtils.validateFillOrderThrowIfInvalidAsync(
+                await orderValidationUtils.validateFillOrderThrowIfInvalidAsync(
                     exchangeTradeEmulator,
                     orderFillRequest.signedOrder,
                     orderFillRequest.takerTokenFillAmount,
@@ -421,8 +436,13 @@ export class ExchangeWrapper extends ContractWrapper {
             : orderTransactionOpts.shouldValidate;
         if (shouldValidate) {
             const zrxTokenAddress = this.getZRXTokenAddress();
-            const exchangeTradeEmulator = new ExchangeTransferSimulator(this._tokenWrapper, BlockParamLiteral.Latest);
-            await this._orderValidationUtils.validateFillOrKillOrderThrowIfInvalidAsync(
+            const balanceAndProxyAllowanceLazyStore = new BalanceAndProxyAllowanceLazyStore(
+                this._tokenWrapper,
+                BlockParamLiteral.Latest,
+            );
+            const exchangeTradeEmulator = new ExchangeTransferSimulator(balanceAndProxyAllowanceLazyStore);
+            const orderValidationUtils = await this._getOrderValidationUtilsAsync();
+            await orderValidationUtils.validateFillOrKillOrderThrowIfInvalidAsync(
                 exchangeTradeEmulator,
                 signedOrder,
                 fillTakerTokenAmount,
@@ -483,9 +503,14 @@ export class ExchangeWrapper extends ContractWrapper {
             : orderTransactionOpts.shouldValidate;
         if (shouldValidate) {
             const zrxTokenAddress = this.getZRXTokenAddress();
-            const exchangeTradeEmulator = new ExchangeTransferSimulator(this._tokenWrapper, BlockParamLiteral.Latest);
+            const balanceAndProxyAllowanceLazyStore = new BalanceAndProxyAllowanceLazyStore(
+                this._tokenWrapper,
+                BlockParamLiteral.Latest,
+            );
+            const exchangeTradeEmulator = new ExchangeTransferSimulator(balanceAndProxyAllowanceLazyStore);
+            const orderValidationUtils = await this._getOrderValidationUtilsAsync();
             for (const orderFillRequest of orderFillRequests) {
-                await this._orderValidationUtils.validateFillOrKillOrderThrowIfInvalidAsync(
+                await orderValidationUtils.validateFillOrKillOrderThrowIfInvalidAsync(
                     exchangeTradeEmulator,
                     orderFillRequest.signedOrder,
                     orderFillRequest.takerTokenFillAmount,
@@ -733,8 +758,13 @@ export class ExchangeWrapper extends ContractWrapper {
         assert.doesConformToSchema('signedOrder', signedOrder, schemas.signedOrderSchema);
         const zrxTokenAddress = this.getZRXTokenAddress();
         const expectedFillTakerTokenAmount = !_.isUndefined(opts) ? opts.expectedFillTakerTokenAmount : undefined;
-        const exchangeTradeEmulator = new ExchangeTransferSimulator(this._tokenWrapper, BlockParamLiteral.Latest);
-        await this._orderValidationUtils.validateOrderFillableOrThrowAsync(
+        const balanceAndProxyAllowanceLazyStore = new BalanceAndProxyAllowanceLazyStore(
+            this._tokenWrapper,
+            BlockParamLiteral.Latest,
+        );
+        const exchangeTradeEmulator = new ExchangeTransferSimulator(balanceAndProxyAllowanceLazyStore);
+        const orderValidationUtils = await this._getOrderValidationUtilsAsync();
+        await orderValidationUtils.validateOrderFillableOrThrowAsync(
             exchangeTradeEmulator,
             signedOrder,
             zrxTokenAddress,
@@ -759,8 +789,13 @@ export class ExchangeWrapper extends ContractWrapper {
         await assert.isSenderAddressAsync('takerAddress', takerAddress, this._web3Wrapper);
         const normalizedTakerAddress = takerAddress.toLowerCase();
         const zrxTokenAddress = this.getZRXTokenAddress();
-        const exchangeTradeEmulator = new ExchangeTransferSimulator(this._tokenWrapper, BlockParamLiteral.Latest);
-        await this._orderValidationUtils.validateFillOrderThrowIfInvalidAsync(
+        const balanceAndProxyAllowanceLazyStore = new BalanceAndProxyAllowanceLazyStore(
+            this._tokenWrapper,
+            BlockParamLiteral.Latest,
+        );
+        const exchangeTradeEmulator = new ExchangeTransferSimulator(balanceAndProxyAllowanceLazyStore);
+        const orderValidationUtils = await this._getOrderValidationUtilsAsync();
+        await orderValidationUtils.validateFillOrderThrowIfInvalidAsync(
             exchangeTradeEmulator,
             signedOrder,
             fillTakerTokenAmount,
@@ -806,8 +841,13 @@ export class ExchangeWrapper extends ContractWrapper {
         await assert.isSenderAddressAsync('takerAddress', takerAddress, this._web3Wrapper);
         const normalizedTakerAddress = takerAddress.toLowerCase();
         const zrxTokenAddress = this.getZRXTokenAddress();
-        const exchangeTradeEmulator = new ExchangeTransferSimulator(this._tokenWrapper, BlockParamLiteral.Latest);
-        await this._orderValidationUtils.validateFillOrKillOrderThrowIfInvalidAsync(
+        const balanceAndProxyAllowanceLazyStore = new BalanceAndProxyAllowanceLazyStore(
+            this._tokenWrapper,
+            BlockParamLiteral.Latest,
+        );
+        const exchangeTradeEmulator = new ExchangeTransferSimulator(balanceAndProxyAllowanceLazyStore);
+        const orderValidationUtils = await this._getOrderValidationUtilsAsync();
+        await orderValidationUtils.validateFillOrKillOrderThrowIfInvalidAsync(
             exchangeTradeEmulator,
             signedOrder,
             fillTakerTokenAmount,
@@ -916,6 +956,14 @@ export class ExchangeWrapper extends ContractWrapper {
         const [orderAddresses, orderValues] = formatters.getOrderAddressesAndValues(order);
         const orderHashHex = await exchangeInstance.getOrderHash.callAsync(orderAddresses, orderValues);
         return orderHashHex;
+    }
+    private async _getOrderValidationUtilsAsync(): Promise<OrderValidationUtils> {
+        if (!_.isUndefined(this._orderValidationUtilsIfExists)) {
+            return this._orderValidationUtilsIfExists;
+        }
+        const exchangeContract = await this._getExchangeContractAsync();
+        this._orderValidationUtilsIfExists = new OrderValidationUtils(exchangeContract);
+        return this._orderValidationUtilsIfExists;
     }
     // tslint:enable:no-unused-variable
     private async _getExchangeContractAsync(): Promise<ExchangeContract> {
