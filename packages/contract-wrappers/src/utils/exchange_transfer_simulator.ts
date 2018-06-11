@@ -1,8 +1,8 @@
 import { BlockParamLiteral, ExchangeContractErrs } from '@0xproject/types';
 import { BigNumber } from '@0xproject/utils';
 
+import { AbstractBalanceAndProxyAllowanceLazyStore } from '../abstract/abstract_balance_and_proxy_allowance_lazy_store';
 import { TokenWrapper } from '../contract_wrappers/token_wrapper';
-import { BalanceAndProxyAllowanceLazyStore } from '../stores/balance_proxy_allowance_lazy_store';
 import { TradeSide, TransferType } from '../types';
 import { constants } from '../utils/constants';
 
@@ -35,8 +35,7 @@ const ERR_MSG_MAPPING = {
 };
 
 export class ExchangeTransferSimulator {
-    private _store: BalanceAndProxyAllowanceLazyStore;
-    private _UNLIMITED_ALLOWANCE_IN_BASE_UNITS: BigNumber;
+    private _store: AbstractBalanceAndProxyAllowanceLazyStore;
     private static _throwValidationError(
         failureReason: FailureReason,
         tradeSide: TradeSide,
@@ -45,9 +44,8 @@ export class ExchangeTransferSimulator {
         const errMsg = ERR_MSG_MAPPING[failureReason][tradeSide][transferType];
         throw new Error(errMsg);
     }
-    constructor(token: TokenWrapper, defaultBlock: BlockParamLiteral) {
-        this._store = new BalanceAndProxyAllowanceLazyStore(token, defaultBlock);
-        this._UNLIMITED_ALLOWANCE_IN_BASE_UNITS = token.UNLIMITED_ALLOWANCE_IN_BASE_UNITS;
+    constructor(store: AbstractBalanceAndProxyAllowanceLazyStore) {
+        this._store = store;
     }
     /**
      * Simulates transferFrom call performed by a proxy
@@ -91,7 +89,7 @@ export class ExchangeTransferSimulator {
         amountInBaseUnits: BigNumber,
     ): Promise<void> {
         const proxyAllowance = await this._store.getProxyAllowanceAsync(tokenAddress, userAddress);
-        if (!proxyAllowance.eq(this._UNLIMITED_ALLOWANCE_IN_BASE_UNITS)) {
+        if (!proxyAllowance.eq(constants.UNLIMITED_ALLOWANCE_IN_BASE_UNITS)) {
             this._store.setProxyAllowance(tokenAddress, userAddress, proxyAllowance.minus(amountInBaseUnits));
         }
     }
