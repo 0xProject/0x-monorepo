@@ -2,7 +2,8 @@ import { colors } from '@0xproject/react-shared';
 import * as _ from 'lodash';
 import * as React from 'react';
 
-import { BulletedItem, BulletedItemProps } from 'ts/pages/jobs/bulleted_item';
+import { BulletedItemProps } from 'ts/pages/jobs/bulleted_item';
+import { BulletedItemList } from 'ts/pages/jobs/bulleted_item_list';
 
 const BULLETED_ITEMS: BulletedItemProps[] = [
     {
@@ -22,26 +23,4 @@ const BULLETED_ITEMS: BulletedItemProps[] = [
     },
 ];
 
-export const Values = () => {
-    const isSmallScreen = false;
-    return (
-        <div className="clearfix" style={{ backgroundColor: colors.white }}>
-            <div className="mx-auto max-width-4 clearfix">
-                <div className="h2 lg-py4 md-py4 sm-py3" style={{ paddingLeft: 90, fontFamily: 'Roboto Mono' }}>
-                    Our Values
-                </div>
-                <div className="col col-12 px2">
-                    {_.map(BULLETED_ITEMS, bulletedItemProps => {
-                        return (
-                            <BulletedItem
-                                bulletColor={bulletedItemProps.bulletColor}
-                                title={bulletedItemProps.title}
-                                description={bulletedItemProps.description}
-                            />
-                        );
-                    })}
-                </div>
-            </div>
-        </div>
-    );
-};
+export const Values = () => <BulletedItemList headerText="Our Values" bulletedItems={BULLETED_ITEMS} />;
