@@ -2,10 +2,9 @@ import { colors } from '@0xproject/react-shared';
 import * as _ from 'lodash';
 import * as React from 'react';
 
-import { BulletedItemProps } from 'ts/pages/jobs/bulleted_item';
-import { BulletedItemList } from 'ts/pages/jobs/bulleted_item_list';
+import { BulletedItemInfo, BulletedItemList } from 'ts/pages/jobs/bulleted_item_list';
 
-const BULLETED_ITEMS: BulletedItemProps[] = [
+const BULLETED_ITEM_INFOS: BulletedItemInfo[] = [
     {
         bulletColor: '#6FCF97',
         title: 'Ethics/Doing the right thing',
@@ -23,4 +22,4 @@ const BULLETED_ITEMS: BulletedItemProps[] = [
     },
 ];
 
-export const Values = () => <BulletedItemList headerText="Our Values" bulletedItems={BULLETED_ITEMS} />;
+export const Values = () => <BulletedItemList headerText="Our Values" bulletedItemInfos={BULLETED_ITEM_INFOS} />;

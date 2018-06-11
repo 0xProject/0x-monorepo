@@ -2,9 +2,10 @@ import { colors } from '@0xproject/react-shared';
 import * as _ from 'lodash';
 import * as React from 'react';
 
-import { BulletedItem, BulletedItemProps } from 'ts/pages/jobs/bulleted_item';
+import { BulletedItemInfo, BulletedItemList } from 'ts/pages/jobs/bulleted_item_list';
+import { ScreenWidths } from 'ts/types';
 
-const ITEMS_COLUMN1: BulletedItemProps[] = [
+const ITEMS_COLUMN1: BulletedItemInfo[] = [
     {
         bulletColor: '#EB5757',
         title: 'User Growth',
@@ -18,7 +19,7 @@ const ITEMS_COLUMN1: BulletedItemProps[] = [
             'Donec eget auctor mauris, a imperdiet ante. Ut a tellus ullamcorper, pharetra nibh sed, dignissim mauris. Quisque vel magna vitae nisi scelerisque commodo sed eget dolor. Maecenas vehicula orci',
     },
 ];
-const ITEMS_COLUMN2: BulletedItemProps[] = [
+const ITEMS_COLUMN2: BulletedItemInfo[] = [
     {
         bulletColor: '#EB5757',
         title: 'Developer Tools',
@@ -32,38 +33,25 @@ const ITEMS_COLUMN2: BulletedItemProps[] = [
             'Donec eget auctor mauris, a imperdiet ante. Ut a tellus ullamcorper, pharetra nibh sed, dignissim mauris. Quisque vel magna vitae nisi scelerisque commodo sed eget dolor. Maecenas vehicula orci',
     },
 ];
+const HEADER_TEXT = 'Our Teams';
 
-export const Teams = () => {
-    const isSmallScreen = false;
-    const teamHeight = 220;
-    return (
-        <div className="clearfix lg-py4 md-py4 sm-pb4 sm-pt2" style={{ backgroundColor: colors.white }}>
-            <div className="mx-auto max-width-4 clearfix">
-                <div className="col lg-col-6 md-col-6 col-12 p2">
-                    {_.map(ITEMS_COLUMN1, bulletedItemProps => {
-                        return (
-                            <BulletedItem
-                                bulletColor={bulletedItemProps.bulletColor}
-                                title={bulletedItemProps.title}
-                                description={bulletedItemProps.description}
-                                height={teamHeight}
-                            />
-                        );
-                    })}
-                </div>
-                <div className="col lg-col-6 md-col-6 col-12 p2">
-                    {_.map(ITEMS_COLUMN2, bulletedItemProps => {
-                        return (
-                            <BulletedItem
-                                bulletColor={bulletedItemProps.bulletColor}
-                                title={bulletedItemProps.title}
-                                description={bulletedItemProps.description}
-                                height={teamHeight}
-                            />
-                        );
-                    })}
-                </div>
-            </div>
+export interface TeamsProps {
+    screenWidth: ScreenWidths;
+}
+
+export const Teams = (props: TeamsProps) => (props.screenWidth === ScreenWidths.Sm ? <SmallLayout /> : <LargeLayout />);
+
+const LargeLayout = () => (
+    <div className="mx-auto max-width-4 clearfix">
+        <div className="col lg-col-6 md-col-6 col-12">
+            <BulletedItemList headerText={HEADER_TEXT} bulletedItemInfos={ITEMS_COLUMN1} />
         </div>
-    );
-};
+        <div className="col lg-col-6 md-col-6 col-12">
+            <BulletedItemList headerText=" " bulletedItemInfos={ITEMS_COLUMN2} />
+        </div>
+    </div>
+);
+
+const SmallLayout = () => (
+    <BulletedItemList headerText={HEADER_TEXT} bulletedItemInfos={_.concat(ITEMS_COLUMN1, ITEMS_COLUMN2)} />
+);

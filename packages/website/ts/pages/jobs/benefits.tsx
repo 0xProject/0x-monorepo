@@ -1,15 +1,14 @@
 import * as _ from 'lodash';
 import * as React from 'react';
 
-import { BulletedItemProps } from 'ts/pages/jobs/bulleted_item';
-import { BulletedItemList } from 'ts/pages/jobs/bulleted_item_list';
+import { BulletedItemInfo, BulletedItemList } from 'ts/pages/jobs/bulleted_item_list';
 import { FilledImage } from 'ts/pages/jobs/filled_image';
 import { FloatingImage } from 'ts/pages/jobs/floating_image';
 import { colors } from 'ts/style/colors';
 import { ScreenWidths } from 'ts/types';
 
 const IMAGE_PATHS = ['/images/jobs/location1.png', '/images/jobs/location2.png', '/images/jobs/location3.png'];
-const BULLETED_ITEMS: BulletedItemProps[] = [
+const BULLETED_ITEM_INFOS: BulletedItemInfo[] = [
     {
         bulletColor: '#6FCF97',
         title: 'Ethics/Doing the right thing',
@@ -65,7 +64,7 @@ const SmallLayout = () => (
     </div>
 );
 
-const BenefitsList = () => <BulletedItemList headerText="Benefits" bulletedItems={BULLETED_ITEMS} />;
+const BenefitsList = () => <BulletedItemList headerText="Benefits" bulletedItemInfos={BULLETED_ITEM_INFOS} />;
 
 const ImageGrid = () => (
     <div style={{ width: '100%', height: '100%' }}>

@@ -62,7 +62,7 @@ export class Jobs extends React.Component<JobsProps, JobsState> {
                 )}
                 <Values />
                 <Benefits screenWidth={this.props.screenWidth} />
-                <Teams />
+                <Teams screenWidth={this.props.screenWidth} />
                 <OpenPositions hash={OPEN_POSITIONS_HASH} />
                 <Footer translate={this.props.translate} dispatcher={this.props.dispatcher} />
             </div>
