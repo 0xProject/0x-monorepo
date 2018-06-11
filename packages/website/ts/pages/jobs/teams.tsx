@@ -42,7 +42,7 @@ export interface TeamsProps {
 export const Teams = (props: TeamsProps) => (props.screenWidth === ScreenWidths.Sm ? <SmallLayout /> : <LargeLayout />);
 
 const LargeLayout = () => (
-    <div className="mx-auto max-width-4 clearfix">
+    <div className="mx-auto max-width-4 clearfix pb4">
         <div className="col lg-col-6 md-col-6 col-12">
             <BulletedItemList headerText={HEADER_TEXT} bulletedItemInfos={ITEMS_COLUMN1} />
         </div>

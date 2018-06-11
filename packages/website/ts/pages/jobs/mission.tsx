@@ -35,7 +35,7 @@ export const Mission = (props: MissionProps) => {
         </div>
     );
     return (
-        <div className="container lg-py4 md-py4" style={{ backgroundColor: colors.jobsPageGrey, color: colors.black }}>
+        <div className="container lg-py4 md-py4" style={{ backgroundColor: colors.jobsPageBackground, color: colors.black }}>
             <div className="mx-auto clearfix sm-py4">
                 {isSmallScreen ? (
                     <div>

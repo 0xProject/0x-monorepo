@@ -41,7 +41,7 @@ export interface BenefitsProps {
 }
 
 export const Benefits = (props: BenefitsProps) => (
-    <div style={{ backgroundColor: colors.jobsPageGrey }}>
+    <div style={{ backgroundColor: colors.jobsPageBackground }}>
         {props.screenWidth === ScreenWidths.Sm ? <SmallLayout /> : <LargeLayout />}
     </div>
 );

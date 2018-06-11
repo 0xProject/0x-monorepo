@@ -536,4 +536,12 @@ export interface WebsiteBackendTokenInfo {
 export interface WebsiteBackendGasInfo {
     average: number;
 }
+
+export interface WebsiteBackendJobInfo {
+    id: number;
+    title: string;
+    department: string;
+    office: string;
+    url: string;
+}
 // tslint:disable:max-file-line-count

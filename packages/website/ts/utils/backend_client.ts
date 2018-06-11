@@ -1,10 +1,17 @@
 import * as _ from 'lodash';
 
-import { ArticlesBySection, WebsiteBackendGasInfo, WebsiteBackendPriceInfo, WebsiteBackendRelayerInfo } from 'ts/types';
+import {
+    ArticlesBySection,
+    WebsiteBackendGasInfo,
+    WebsiteBackendJobInfo,
+    WebsiteBackendPriceInfo,
+    WebsiteBackendRelayerInfo,
+} from 'ts/types';
 import { fetchUtils } from 'ts/utils/fetch_utils';
 import { utils } from 'ts/utils/utils';
 
 const ETH_GAS_STATION_ENDPOINT = '/eth_gas_station';
+const JOBS_ENDPOINT = '/jobs';
 const PRICES_ENDPOINT = '/prices';
 const RELAYERS_ENDPOINT = '/relayers';
 const WIKI_ENDPOINT = '/wiki';
@@ -13,6 +20,10 @@ const SUBSCRIBE_SUBSTACK_NEWSLETTER_ENDPOINT = '/newsletter_subscriber/substack'
 export const backendClient = {
     async getGasInfoAsync(): Promise<WebsiteBackendGasInfo> {
         const result = await fetchUtils.requestAsync(utils.getBackendBaseUrl(), ETH_GAS_STATION_ENDPOINT);
+        return result;
+    },
+    async getJobInfosAsync(): Promise<WebsiteBackendJobInfo[]> {
+        const result = await fetchUtils.requestAsync(utils.getBackendBaseUrl(), JOBS_ENDPOINT);
         return result;
     },
     async getPriceInfoAsync(tokenSymbols: string[]): Promise<WebsiteBackendPriceInfo> {
