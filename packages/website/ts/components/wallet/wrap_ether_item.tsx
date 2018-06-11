@@ -145,7 +145,7 @@ export class WrapEtherItem extends React.Component<WrapEtherItemProps, WrapEther
             </div>
         );
     }
-    private _onValueChange(isValid: boolean, amount?: BigNumber): void {
+    private _onValueChange(_isValid: boolean, amount?: BigNumber): void {
         this.setState({
             currentInputAmount: amount,
         });

@@ -31,7 +31,7 @@ export class VersionDropDown extends React.Component<VersionDropDownProps, Versi
         });
         return items;
     }
-    private _updateSelectedVersion(e: any, index: number, semver: string): void {
+    private _updateSelectedVersion(_e: any, _index: number, semver: string): void {
         this.props.onVersionSelected(semver);
     }
 }

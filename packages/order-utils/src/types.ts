@@ -23,3 +23,13 @@ export interface MessagePrefixOpts {
     prefixType: MessagePrefixType;
     shouldAddPrefixBeforeCallingEthSign: boolean;
 }
+
+export enum TradeSide {
+    Maker = 'maker',
+    Taker = 'taker',
+}
+
+export enum TransferType {
+    Trade = 'trade',
+    Fee = 'fee',
+}

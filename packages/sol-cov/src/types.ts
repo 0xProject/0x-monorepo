@@ -1,3 +1,5 @@
+import { StructLog } from 'ethereum-types';
+
 export interface LineColumn {
     line: number;
     column: number;
@@ -45,24 +47,24 @@ export interface StatementMap {
 }
 
 export interface LineCoverage {
-    [lineNo: number]: boolean;
+    [lineNo: number]: number;
 }
 
 export interface FunctionCoverage {
-    [functionId: string]: boolean;
+    [functionId: string]: number;
 }
 
 export interface StatementCoverage {
-    [statementId: string]: boolean;
+    [statementId: string]: number;
 }
 
 export interface BranchCoverage {
-    [branchId: string]: boolean[];
+    [branchId: string]: number[];
 }
 
 export interface Coverage {
     [fineName: string]: {
-        l: LineCoverage;
+        l?: LineCoverage;
         f: FunctionCoverage;
         s: StatementCoverage;
         b: BranchCoverage;
@@ -82,8 +84,11 @@ export interface ContractData {
     sources: string[];
 }
 
+// Part of the trace executed within the same context
+export type Subtrace = StructLog[];
+
 export interface TraceInfoBase {
-    coveredPcs: number[];
+    subtrace: Subtrace;
     txHash: string;
 }
 

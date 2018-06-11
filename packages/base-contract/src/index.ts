@@ -37,7 +37,7 @@ export class BaseContract {
     protected static _lowercaseAddress(type: string, value: string): string {
         return type === 'address' ? value.toLowerCase() : value;
     }
-    protected static _bigNumberToString(type: string, value: any): any {
+    protected static _bigNumberToString(_type: string, value: any): any {
         return _.isObject(value) && value.isBigNumber ? value.toString() : value;
     }
     protected static _lookupConstructorAbi(abi: ContractAbi): ConstructorAbi {
@@ -60,7 +60,7 @@ export class BaseContract {
             return defaultConstructorAbi;
         }
     }
-    protected static _bnToBigNumber(type: string, value: any): any {
+    protected static _bnToBigNumber(_type: string, value: any): any {
         return _.isObject(value) && value._bn ? new BigNumber(value.toString()) : value;
     }
     protected static async _applyDefaultsToTxDataAsync<T extends Partial<TxData | TxDataPayable>>(

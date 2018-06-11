@@ -70,7 +70,7 @@ interface ConnectedDispatch {
     dispatcher: Dispatcher;
 }
 
-const mapStateToProps = (state: State, ownProps: DocPageProps): ConnectedState => ({
+const mapStateToProps = (state: State, _ownProps: DocPageProps): ConnectedState => ({
     docsVersion: state.docsVersion,
     availableDocVersions: state.availableDocVersions,
     translate: state.translate,

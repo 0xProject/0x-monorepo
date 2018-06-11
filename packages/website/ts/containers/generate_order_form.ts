@@ -30,7 +30,7 @@ interface ConnectedState {
     lastForceTokenStateRefetch: number;
 }
 
-const mapStateToProps = (state: State, ownProps: GenerateOrderFormProps): ConnectedState => ({
+const mapStateToProps = (state: State, _ownProps: GenerateOrderFormProps): ConnectedState => ({
     blockchainErr: state.blockchainErr,
     blockchainIsLoaded: state.blockchainIsLoaded,
     orderExpiryTimestamp: state.orderExpiryTimestamp,

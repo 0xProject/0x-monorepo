@@ -68,8 +68,13 @@ export const runV1MigrationsAsync = async (provider: Provider, artifactsDir: str
     artifactsWriter.saveArtifact(multiSig);
 
     const owner = accounts[0];
-    await tokenTransferProxy.addAuthorizedAddress.sendTransactionAsync(exchange.address, { from: owner });
-    await tokenTransferProxy.transferOwnership.sendTransactionAsync(multiSig.address, { from: owner });
+
+    await web3Wrapper.awaitTransactionSuccessAsync(
+        await tokenTransferProxy.addAuthorizedAddress.sendTransactionAsync(exchange.address, { from: owner }),
+    );
+    await web3Wrapper.awaitTransactionSuccessAsync(
+        await tokenTransferProxy.transferOwnership.sendTransactionAsync(multiSig.address, { from: owner }),
+    );
     const addTokenGasEstimate = await tokenReg.addToken.estimateGasAsync(
         zrxToken.address,
         erc20TokenInfo[0].name,
@@ -80,29 +85,33 @@ export const runV1MigrationsAsync = async (provider: Provider, artifactsDir: str
         { from: owner },
     );
     const decimals = 18;
-    await tokenReg.addToken.sendTransactionAsync(
-        zrxToken.address,
-        '0x Protocol Token',
-        'ZRX',
-        decimals,
-        NULL_BYTES,
-        NULL_BYTES,
-        {
-            from: owner,
-            gas: addTokenGasEstimate,
-        },
+    await web3Wrapper.awaitTransactionSuccessAsync(
+        await tokenReg.addToken.sendTransactionAsync(
+            zrxToken.address,
+            '0x Protocol Token',
+            'ZRX',
+            decimals,
+            NULL_BYTES,
+            NULL_BYTES,
+            {
+                from: owner,
+                gas: addTokenGasEstimate,
+            },
+        ),
     );
-    await tokenReg.addToken.sendTransactionAsync(
-        etherToken.address,
-        'Ether Token',
-        'WETH',
-        decimals,
-        NULL_BYTES,
-        NULL_BYTES,
-        {
-            from: owner,
-            gas: addTokenGasEstimate,
-        },
+    await web3Wrapper.awaitTransactionSuccessAsync(
+        await tokenReg.addToken.sendTransactionAsync(
+            etherToken.address,
+            'Ether Token',
+            'WETH',
+            decimals,
+            NULL_BYTES,
+            NULL_BYTES,
+            {
+                from: owner,
+                gas: addTokenGasEstimate,
+            },
+        ),
     );
     for (const token of erc20TokenInfo) {
         const totalSupply = new BigNumber(100000000000000000000);
@@ -115,17 +124,19 @@ export const runV1MigrationsAsync = async (provider: Provider, artifactsDir: str
             token.decimals,
             totalSupply,
         );
-        await tokenReg.addToken.sendTransactionAsync(
-            dummyToken.address,
-            token.name,
-            token.symbol,
-            token.decimals,
-            token.ipfsHash,
-            token.swarmHash,
-            {
-                from: owner,
-                gas: addTokenGasEstimate,
-            },
+        await web3Wrapper.awaitTransactionSuccessAsync(
+            await tokenReg.addToken.sendTransactionAsync(
+                dummyToken.address,
+                token.name,
+                token.symbol,
+                token.decimals,
+                token.ipfsHash,
+                token.swarmHash,
+                {
+                    from: owner,
+                    gas: addTokenGasEstimate,
+                },
+            ),
         );
     }
 };

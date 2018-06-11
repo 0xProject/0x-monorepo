@@ -18,14 +18,18 @@
 
 pragma solidity ^0.4.24;
 
-contract LibBytes {
+import "../LibMem/LibMem.sol";
+
+contract LibBytes is
+    LibMem
+{
 
     // Revert reasons
-    string constant GT_ZERO_LENGTH_REQUIRED = "Length must be greater than 0.";
-    string constant GTE_4_LENGTH_REQUIRED = "Length must be greater than or equal to 4.";
-    string constant GTE_20_LENGTH_REQUIRED = "Length must be greater than or equal to 20.";
-    string constant GTE_32_LENGTH_REQUIRED = "Length must be greater than or equal to 32.";
-    string constant INDEX_OUT_OF_BOUNDS = "Specified array index is out of bounds.";
+    string constant GREATER_THAN_ZERO_LENGTH_REQUIRED = "GREATER_THAN_ZERO_LENGTH_REQUIRED";
+    string constant GREATER_OR_EQUAL_TO_4_LENGTH_REQUIRED = "GREATER_OR_EQUAL_TO_4_LENGTH_REQUIRED";
+    string constant GREATER_OR_EQUAL_TO_20_LENGTH_REQUIRED = "GREATER_OR_EQUAL_TO_20_LENGTH_REQUIRED";
+    string constant GREATER_OR_EQUAL_TO_32_LENGTH_REQUIRED = "GREATER_OR_EQUAL_TO_32_LENGTH_REQUIRED";
+    string constant GREATER_OR_EQUAL_TO_NESTED_BYTES_LENGTH_REQUIRED = "GREATER_OR_EQUAL_TO_NESTED_BYTES_LENGTH_REQUIRED";
 
     /// @dev Pops the last byte off of a byte array by modifying its length.
     /// @param b Byte array that will be modified.
@@ -37,12 +41,12 @@ contract LibBytes {
     {
         require(
             b.length > 0,
-            GT_ZERO_LENGTH_REQUIRED
+            GREATER_THAN_ZERO_LENGTH_REQUIRED
         );
 
         // Store last byte.
         result = b[b.length - 1];
-        
+
         assembly {
             // Decrement length of byte array.
             let newLen := sub(mload(b), 1)
@@ -61,7 +65,7 @@ contract LibBytes {
     {
         require(
             b.length >= 20,
-            GTE_20_LENGTH_REQUIRED
+            GREATER_OR_EQUAL_TO_20_LENGTH_REQUIRED
         );
 
         // Store last 20 bytes.
@@ -124,8 +128,8 @@ contract LibBytes {
     {
         require(
             b.length >= index + 20,  // 20 is length of address
-            GTE_20_LENGTH_REQUIRED
-        ); 
+            GREATER_OR_EQUAL_TO_20_LENGTH_REQUIRED
+        );
 
         // Add offset to index:
         // 1. Arrays are prefixed by 32-byte length parameter (add 32 to index)
@@ -156,8 +160,8 @@ contract LibBytes {
     {
         require(
             b.length >= index + 20,  // 20 is length of address
-            GTE_20_LENGTH_REQUIRED
-        ); 
+            GREATER_OR_EQUAL_TO_20_LENGTH_REQUIRED
+        );
 
         // Add offset to index:
         // 1. Arrays are prefixed by 32-byte length parameter (add 32 to index)
@@ -195,7 +199,7 @@ contract LibBytes {
     {
         require(
             b.length >= index + 32,
-            GTE_32_LENGTH_REQUIRED
+            GREATER_OR_EQUAL_TO_32_LENGTH_REQUIRED
         );
 
         // Arrays are prefixed by a 256 bit length parameter
@@ -222,7 +226,7 @@ contract LibBytes {
     {
         require(
             b.length >= index + 32,
-            GTE_32_LENGTH_REQUIRED
+            GREATER_OR_EQUAL_TO_32_LENGTH_REQUIRED
         );
 
         // Arrays are prefixed by a 256 bit length parameter
@@ -274,11 +278,72 @@ contract LibBytes {
     {
         require(
             b.length >= 4,
-            GTE_4_LENGTH_REQUIRED
+            GREATER_OR_EQUAL_TO_4_LENGTH_REQUIRED
         );
         assembly {
             result := mload(add(b, 32))
         }
         return result;
+    }
+
+    /// @dev Reads nested bytes from a specific position.
+    /// @param b Byte array containing nested bytes.
+    /// @param index Index of nested bytes.
+    /// @return result Nested bytes.
+    function readBytes(
+        bytes memory b,
+        uint256 index
+    )
+        internal
+        pure
+        returns (bytes memory result)
+    {
+        // Read length of nested bytes
+        uint256 nestedBytesLength = readUint256(b, index);
+        index += 32;
+
+        // Assert length of <b> is valid, given
+        // length of nested bytes
+        require(
+            b.length >= index + nestedBytesLength,
+            GREATER_OR_EQUAL_TO_NESTED_BYTES_LENGTH_REQUIRED
+        );
+
+        // Allocate memory and copy value to result
+        result = new bytes(nestedBytesLength);
+        memCopy(
+            getMemAddress(result) + 32, // +32 skips array length
+            getMemAddress(b) + index + 32,
+            nestedBytesLength
+        );
+
+        return result;
+    }
+
+    /// @dev Inserts bytes at a specific position in a byte array.
+    /// @param b Byte array to insert <input> into.
+    /// @param index Index in byte array of <input>.
+    /// @param input bytes to insert.
+    function writeBytes(
+        bytes memory b,
+        uint256 index,
+        bytes memory input
+    )
+        internal
+        pure
+    {
+        // Assert length of <b> is valid, given
+        // length of input
+        require(
+            b.length >= index + 32 /* 32 bytes to store length */ + input.length,
+            GREATER_OR_EQUAL_TO_NESTED_BYTES_LENGTH_REQUIRED
+        );
+
+        // Copy <input> into <b>
+        memCopy(
+            getMemAddress(b) + 32 + index,  // +32 to skip length of <b>
+            getMemAddress(input),           // includes length of <input>
+            input.length + 32               // +32 bytes to store <input> length
+        );
     }
 }

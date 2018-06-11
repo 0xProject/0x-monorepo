@@ -34,7 +34,7 @@ interface ConnectedDispatch {
     dispatcher: Dispatcher;
 }
 
-const mapStateToProps = (state: State, ownProps: PortalComponentProps): ConnectedState => {
+const mapStateToProps = (state: State, _ownProps: PortalComponentProps): ConnectedState => {
     const receiveAssetToken = state.sideToAssetToken[Side.Receive];
     const depositAssetToken = state.sideToAssetToken[Side.Deposit];
     const receiveAddress = !_.isUndefined(receiveAssetToken.address)

@@ -11,6 +11,7 @@ errorReporter.setup();
 
 const app = express();
 app.use(bodyParser.json()); // for parsing application/json
+// tslint:disable-next-line:no-unused-variable
 app.use((req, res, next) => {
     res.header('Access-Control-Allow-Origin', '*');
     res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept');
@@ -18,6 +19,7 @@ app.use((req, res, next) => {
 });
 
 const handler = new Handler();
+// tslint:disable-next-line:no-unused-variable
 app.get('/ping', (req: express.Request, res: express.Response) => {
     res.status(constants.SUCCESS_STATUS).send('pong');
 });

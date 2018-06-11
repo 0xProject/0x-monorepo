@@ -221,9 +221,7 @@ export class EthWrappers extends React.Component<EthWrappersProps, EthWrappersSt
                                     </TableHeaderColumn>
                                 </TableRow>
                             </TableHeader>
-                            <TableBody displayRowCheckbox={false}>
-                                {this._renderOutdatedWeths(etherToken, this.state.ethTokenState)}
-                            </TableBody>
+                            <TableBody displayRowCheckbox={false}>{this._renderOutdatedWeths(etherToken)}</TableBody>
                         </Table>
                     </div>
                 </div>
@@ -249,7 +247,7 @@ export class EthWrappers extends React.Component<EthWrappersProps, EthWrappersSt
             </div>
         );
     }
-    private _renderOutdatedWeths(etherToken: Token, etherTokenState: TokenState): React.ReactNode {
+    private _renderOutdatedWeths(etherToken: Token): React.ReactNode {
         const rows = _.map(
             configs.OUTDATED_WRAPPED_ETHERS,
             (outdatedWETHByNetworkId: OutdatedWrappedEtherByNetworkId) => {

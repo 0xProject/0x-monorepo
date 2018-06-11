@@ -250,7 +250,7 @@ export class LedgerConfigDialog extends React.Component<LedgerConfigDialogProps,
         });
         return true;
     }
-    private _onDerivationPathChanged(e: any, derivationPath: string): void {
+    private _onDerivationPathChanged(_event: any, derivationPath: string): void {
         let derivationErrMsg = '';
         if (!_.startsWith(derivationPath, VALID_ETHEREUM_DERIVATION_PATH_PREFIX)) {
             derivationErrMsg = 'Must be valid Ethereum path.';
@@ -295,7 +295,7 @@ export class LedgerConfigDialog extends React.Component<LedgerConfigDialogProps,
         }
         return userAddresses;
     }
-    private _onSelectedNetworkUpdated(e: any, index: number, networkId: number): void {
+    private _onSelectedNetworkUpdated(_event: any, _index: number, networkId: number): void {
         this.setState({
             preferredNetworkId: networkId,
         });

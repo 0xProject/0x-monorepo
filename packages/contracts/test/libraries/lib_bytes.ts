@@ -1,4 +1,5 @@
 import { BlockchainLifecycle } from '@0xproject/dev-utils';
+import { assetProxyUtils, generatePseudoRandomSalt } from '@0xproject/order-utils';
 import { BigNumber } from '@0xproject/utils';
 import BN = require('bn.js');
 import * as chai from 'chai';
@@ -28,6 +29,15 @@ describe('LibBytes', () => {
     let testAddress: string;
     const testBytes32 = '0x102030405060708090a0b0c0d0e0f0102030405060708090a0b0c0d0e0f01020';
     const testUint256 = new BigNumber(testBytes32, 16);
+    let shortData: string;
+    let shortTestBytes: string;
+    let shortTestBytesAsBuffer: Buffer;
+    let wordOfData: string;
+    let wordOfTestBytes: string;
+    let wordOfTestBytesAsBuffer: Buffer;
+    let longData: string;
+    let longTestBytes: string;
+    let longTestBytesAsBuffer: Buffer;
 
     before(async () => {
         await blockchainLifecycle.startAsync();
@@ -48,6 +58,26 @@ describe('LibBytes', () => {
         expect(byteArrayLongerThan32BytesLength).to.be.greaterThan(32);
         const testBytes32Length = ethUtil.toBuffer(testBytes32).byteLength;
         expect(testBytes32Length).to.be.equal(32);
+        // Create short test bytes
+        shortData = '0xffffaa';
+        const encodedShortData = ethUtil.toBuffer(shortData);
+        const shortDataLength = new BigNumber(encodedShortData.byteLength);
+        const encodedShortDataLength = assetProxyUtils.encodeUint256(shortDataLength);
+        shortTestBytesAsBuffer = Buffer.concat([encodedShortDataLength, encodedShortData]);
+        shortTestBytes = ethUtil.bufferToHex(shortTestBytesAsBuffer);
+        // Create test bytes one word in length
+        wordOfData = ethUtil.bufferToHex(assetProxyUtils.encodeUint256(generatePseudoRandomSalt()));
+        const encodedWordOfData = ethUtil.toBuffer(wordOfData);
+        const wordOfDataLength = new BigNumber(encodedWordOfData.byteLength);
+        const encodedWordOfDataLength = assetProxyUtils.encodeUint256(wordOfDataLength);
+        wordOfTestBytesAsBuffer = Buffer.concat([encodedWordOfDataLength, encodedWordOfData]);
+        wordOfTestBytes = ethUtil.bufferToHex(wordOfTestBytesAsBuffer);
+        // Create long test bytes (combines short test bytes with word of test bytes)
+        longData = ethUtil.bufferToHex(Buffer.concat([encodedShortData, encodedWordOfData]));
+        const longDataLength = new BigNumber(encodedShortData.byteLength + encodedWordOfData.byteLength);
+        const encodedLongDataLength = assetProxyUtils.encodeUint256(longDataLength);
+        longTestBytesAsBuffer = Buffer.concat([encodedLongDataLength, encodedShortData, encodedWordOfData]);
+        longTestBytes = ethUtil.bufferToHex(longTestBytesAsBuffer);
     });
     beforeEach(async () => {
         await blockchainLifecycle.startAsync();
@@ -60,7 +90,7 @@ describe('LibBytes', () => {
         it('should revert if length is 0', async () => {
             return expectRevertOrOtherErrorAsync(
                 libBytes.publicPopByte.callAsync(constants.NULL_BYTES),
-                constants.LIB_BYTES_GT_ZERO_LENGTH_REQUIRED,
+                constants.LIB_BYTES_GREATER_THAN_ZERO_LENGTH_REQUIRED,
             );
         });
 
@@ -77,7 +107,7 @@ describe('LibBytes', () => {
         it('should revert if length is less than 20', async () => {
             return expectRevertOrOtherErrorAsync(
                 libBytes.publicPopAddress.callAsync(byteArrayShorterThan20Bytes),
-                constants.LIB_BYTES_GTE_20_LENGTH_REQUIRED,
+                constants.LIB_BYTES_GREATER_OR_EQUAL_TO_20_LENGTH_REQUIRED,
             );
         });
 
@@ -163,7 +193,7 @@ describe('LibBytes', () => {
             const offset = new BigNumber(0);
             return expectRevertOrOtherErrorAsync(
                 libBytes.publicReadAddress.callAsync(shortByteArray, offset),
-                constants.LIB_BYTES_GTE_20_LENGTH_REQUIRED,
+                constants.LIB_BYTES_GREATER_OR_EQUAL_TO_20_LENGTH_REQUIRED,
             );
         });
 
@@ -172,7 +202,7 @@ describe('LibBytes', () => {
             const badOffset = new BigNumber(ethUtil.toBuffer(byteArray).byteLength);
             return expectRevertOrOtherErrorAsync(
                 libBytes.publicReadAddress.callAsync(byteArray, badOffset),
-                constants.LIB_BYTES_GTE_20_LENGTH_REQUIRED,
+                constants.LIB_BYTES_GREATER_OR_EQUAL_TO_20_LENGTH_REQUIRED,
             );
         });
     });
@@ -209,7 +239,7 @@ describe('LibBytes', () => {
             const offset = new BigNumber(0);
             return expectRevertOrOtherErrorAsync(
                 libBytes.publicReadBytes32.callAsync(byteArrayShorterThan32Bytes, offset),
-                constants.LIB_BYTES_GTE_32_LENGTH_REQUIRED,
+                constants.LIB_BYTES_GREATER_OR_EQUAL_TO_32_LENGTH_REQUIRED,
             );
         });
 
@@ -217,7 +247,7 @@ describe('LibBytes', () => {
             const badOffset = new BigNumber(ethUtil.toBuffer(testBytes32).byteLength);
             return expectRevertOrOtherErrorAsync(
                 libBytes.publicReadBytes32.callAsync(testBytes32, badOffset),
-                constants.LIB_BYTES_GTE_32_LENGTH_REQUIRED,
+                constants.LIB_BYTES_GREATER_OR_EQUAL_TO_32_LENGTH_REQUIRED,
             );
         });
     });
@@ -258,7 +288,7 @@ describe('LibBytes', () => {
             const offset = new BigNumber(0);
             return expectRevertOrOtherErrorAsync(
                 libBytes.publicReadUint256.callAsync(byteArrayShorterThan32Bytes, offset),
-                constants.LIB_BYTES_GTE_32_LENGTH_REQUIRED,
+                constants.LIB_BYTES_GREATER_OR_EQUAL_TO_32_LENGTH_REQUIRED,
             );
         });
 
@@ -269,7 +299,7 @@ describe('LibBytes', () => {
             const badOffset = new BigNumber(testUint256AsBuffer.byteLength);
             return expectRevertOrOtherErrorAsync(
                 libBytes.publicReadUint256.callAsync(byteArray, badOffset),
-                constants.LIB_BYTES_GTE_32_LENGTH_REQUIRED,
+                constants.LIB_BYTES_GREATER_OR_EQUAL_TO_32_LENGTH_REQUIRED,
             );
         });
     });
@@ -291,7 +321,7 @@ describe('LibBytes', () => {
             const byteArrayLessThan4Bytes = '0x010101';
             return expectRevertOrOtherErrorAsync(
                 libBytes.publicReadFirst4.callAsync(byteArrayLessThan4Bytes),
-                constants.LIB_BYTES_GTE_4_LENGTH_REQUIRED,
+                constants.LIB_BYTES_GREATER_OR_EQUAL_TO_4_LENGTH_REQUIRED,
             );
         });
         it('should return the first 4 bytes of a byte array of arbitrary length', async () => {
@@ -300,4 +330,180 @@ describe('LibBytes', () => {
             expect(first4Bytes).to.equal(expectedFirst4Bytes);
         });
     });
+
+    describe('readBytes', () => {
+        it('should successfully read short, nested array of bytes when it takes up the whole array', async () => {
+            const testBytesOffset = new BigNumber(0);
+            const bytes = await libBytes.publicReadBytes.callAsync(shortTestBytes, testBytesOffset);
+            return expect(bytes).to.be.equal(shortData);
+        });
+
+        it('should successfully read short, nested array of bytes when it is offset in the array', async () => {
+            const prefixByteArrayBuffer = ethUtil.toBuffer('0xabcdef');
+            const combinedByteArrayBuffer = Buffer.concat([prefixByteArrayBuffer, shortTestBytesAsBuffer]);
+            const combinedByteArray = ethUtil.bufferToHex(combinedByteArrayBuffer);
+            const testUint256Offset = new BigNumber(prefixByteArrayBuffer.byteLength);
+            const bytes = await libBytes.publicReadBytes.callAsync(combinedByteArray, testUint256Offset);
+            return expect(bytes).to.be.equal(shortData);
+        });
+
+        it('should successfully read a nested array of bytes - one word in length - when it takes up the whole array', async () => {
+            const testBytesOffset = new BigNumber(0);
+            const bytes = await libBytes.publicReadBytes.callAsync(wordOfTestBytes, testBytesOffset);
+            return expect(bytes).to.be.equal(wordOfData);
+        });
+
+        it('should successfully read a nested array of bytes - one word in length - when it is offset in the array', async () => {
+            const prefixByteArrayBuffer = ethUtil.toBuffer('0xabcdef');
+            const combinedByteArrayBuffer = Buffer.concat([prefixByteArrayBuffer, wordOfTestBytesAsBuffer]);
+            const combinedByteArray = ethUtil.bufferToHex(combinedByteArrayBuffer);
+            const testUint256Offset = new BigNumber(prefixByteArrayBuffer.byteLength);
+            const bytes = await libBytes.publicReadBytes.callAsync(combinedByteArray, testUint256Offset);
+            return expect(bytes).to.be.equal(wordOfData);
+        });
+
+        it('should successfully read long, nested array of bytes when it takes up the whole array', async () => {
+            const testBytesOffset = new BigNumber(0);
+            const bytes = await libBytes.publicReadBytes.callAsync(longTestBytes, testBytesOffset);
+            return expect(bytes).to.be.equal(longData);
+        });
+
+        it('should successfully read long, nested array of bytes when it is offset in the array', async () => {
+            const prefixByteArrayBuffer = ethUtil.toBuffer('0xabcdef');
+            const combinedByteArrayBuffer = Buffer.concat([prefixByteArrayBuffer, longTestBytesAsBuffer]);
+            const combinedByteArray = ethUtil.bufferToHex(combinedByteArrayBuffer);
+            const testUint256Offset = new BigNumber(prefixByteArrayBuffer.byteLength);
+            const bytes = await libBytes.publicReadBytes.callAsync(combinedByteArray, testUint256Offset);
+            return expect(bytes).to.be.equal(longData);
+        });
+
+        it('should fail if the byte array is too short to hold the length of a nested byte array', async () => {
+            // The length of the nested array is 32 bytes. By storing less than 32 bytes, a length cannot be read.
+            const offset = new BigNumber(0);
+            return expectRevertOrOtherErrorAsync(
+                libBytes.publicReadBytes.callAsync(byteArrayShorterThan32Bytes, offset),
+                constants.LIB_BYTES_GREATER_OR_EQUAL_TO_32_LENGTH_REQUIRED,
+            );
+        });
+
+        it('should fail if we store a nested byte array length, without a nested byte array', async () => {
+            const offset = new BigNumber(0);
+            return expectRevertOrOtherErrorAsync(
+                libBytes.publicReadBytes.callAsync(testBytes32, offset),
+                constants.LIB_BYTES_GREATER_OR_EQUAL_TO_NESTED_BYTES_LENGTH_REQUIRED,
+            );
+        });
+
+        it('should fail if the length between the offset and end of the byte array is too short to hold the length of a nested byte array', async () => {
+            const badOffset = new BigNumber(ethUtil.toBuffer(byteArrayShorterThan32Bytes).byteLength);
+            return expectRevertOrOtherErrorAsync(
+                libBytes.publicReadBytes.callAsync(byteArrayShorterThan32Bytes, badOffset),
+                constants.LIB_BYTES_GREATER_OR_EQUAL_TO_32_LENGTH_REQUIRED,
+            );
+        });
+
+        it('should fail if the length between the offset and end of the byte array is too short to hold the nested byte array', async () => {
+            const badOffset = new BigNumber(ethUtil.toBuffer(testBytes32).byteLength);
+            return expectRevertOrOtherErrorAsync(
+                libBytes.publicReadBytes.callAsync(testBytes32, badOffset),
+                constants.LIB_BYTES_GREATER_OR_EQUAL_TO_32_LENGTH_REQUIRED,
+            );
+        });
+    });
+
+    describe('writeBytes', () => {
+        it('should successfully write short, nested array of bytes when it takes up the whole array)', async () => {
+            const testBytesOffset = new BigNumber(0);
+            const emptyByteArray = ethUtil.bufferToHex(new Buffer(shortTestBytesAsBuffer.byteLength));
+            const bytesWritten = await libBytes.publicWriteBytes.callAsync(emptyByteArray, testBytesOffset, shortData);
+            const bytesRead = await libBytes.publicReadBytes.callAsync(bytesWritten, testBytesOffset);
+            return expect(bytesRead).to.be.equal(shortData);
+        });
+
+        it('should successfully write short, nested array of bytes when it is offset in the array', async () => {
+            // Write a prefix to the array
+            const prefixData = '0xabcdef';
+            const prefixDataAsBuffer = ethUtil.toBuffer(prefixData);
+            const prefixOffset = new BigNumber(0);
+            const emptyByteArray = ethUtil.bufferToHex(
+                new Buffer(prefixDataAsBuffer.byteLength + shortTestBytesAsBuffer.byteLength),
+            );
+            let bytesWritten = await libBytes.publicWriteBytes.callAsync(emptyByteArray, prefixOffset, prefixData);
+            // Write data after prefix
+            const testBytesOffset = new BigNumber(prefixDataAsBuffer.byteLength);
+            bytesWritten = await libBytes.publicWriteBytes.callAsync(bytesWritten, testBytesOffset, shortData);
+            // Read data after prefix and validate
+            const bytes = await libBytes.publicReadBytes.callAsync(bytesWritten, testBytesOffset);
+            return expect(bytes).to.be.equal(shortData);
+        });
+
+        it('should successfully write a nested array of bytes - one word in length - when it takes up the whole array', async () => {
+            const testBytesOffset = new BigNumber(0);
+            const emptyByteArray = ethUtil.bufferToHex(new Buffer(wordOfTestBytesAsBuffer.byteLength));
+            const bytesWritten = await libBytes.publicWriteBytes.callAsync(emptyByteArray, testBytesOffset, wordOfData);
+            const bytesRead = await libBytes.publicReadBytes.callAsync(bytesWritten, testBytesOffset);
+            return expect(bytesRead).to.be.equal(wordOfData);
+        });
+
+        it('should successfully write a nested array of bytes - one word in length - when it is offset in the array', async () => {
+            // Write a prefix to the array
+            const prefixData = '0xabcdef';
+            const prefixDataAsBuffer = ethUtil.toBuffer(prefixData);
+            const prefixOffset = new BigNumber(0);
+            const emptyByteArray = ethUtil.bufferToHex(
+                new Buffer(prefixDataAsBuffer.byteLength + wordOfTestBytesAsBuffer.byteLength),
+            );
+            let bytesWritten = await libBytes.publicWriteBytes.callAsync(emptyByteArray, prefixOffset, prefixData);
+            // Write data after prefix
+            const testBytesOffset = new BigNumber(prefixDataAsBuffer.byteLength);
+            bytesWritten = await libBytes.publicWriteBytes.callAsync(bytesWritten, testBytesOffset, wordOfData);
+            // Read data after prefix and validate
+            const bytes = await libBytes.publicReadBytes.callAsync(bytesWritten, testBytesOffset);
+            return expect(bytes).to.be.equal(wordOfData);
+        });
+
+        it('should successfully write a long, nested bytes when it takes up the whole array', async () => {
+            const testBytesOffset = new BigNumber(0);
+            const emptyByteArray = ethUtil.bufferToHex(new Buffer(longTestBytesAsBuffer.byteLength));
+            const bytesWritten = await libBytes.publicWriteBytes.callAsync(emptyByteArray, testBytesOffset, longData);
+            const bytesRead = await libBytes.publicReadBytes.callAsync(bytesWritten, testBytesOffset);
+            return expect(bytesRead).to.be.equal(longData);
+        });
+
+        it('should successfully write long, nested array of bytes when it is offset in the array', async () => {
+            // Write a prefix to the array
+            const prefixData = '0xabcdef';
+            const prefixDataAsBuffer = ethUtil.toBuffer(prefixData);
+            const prefixOffset = new BigNumber(0);
+            const emptyByteArray = ethUtil.bufferToHex(
+                new Buffer(prefixDataAsBuffer.byteLength + longTestBytesAsBuffer.byteLength),
+            );
+            let bytesWritten = await libBytes.publicWriteBytes.callAsync(emptyByteArray, prefixOffset, prefixData);
+            // Write data after prefix
+            const testBytesOffset = new BigNumber(prefixDataAsBuffer.byteLength);
+            bytesWritten = await libBytes.publicWriteBytes.callAsync(bytesWritten, testBytesOffset, longData);
+            // Read data after prefix and validate
+            const bytes = await libBytes.publicReadBytes.callAsync(bytesWritten, testBytesOffset);
+            return expect(bytes).to.be.equal(longData);
+        });
+
+        it('should fail if the byte array is too short to hold the length of a nested byte array', async () => {
+            const offset = new BigNumber(0);
+            const emptyByteArray = ethUtil.bufferToHex(new Buffer(1));
+            return expectRevertOrOtherErrorAsync(
+                libBytes.publicWriteBytes.callAsync(emptyByteArray, offset, longData),
+                constants.LIB_BYTES_GREATER_OR_EQUAL_TO_NESTED_BYTES_LENGTH_REQUIRED,
+            );
+        });
+
+        it('should fail if the length between the offset and end of the byte array is too short to hold the length of a nested byte array)', async () => {
+            const emptyByteArray = ethUtil.bufferToHex(new Buffer(shortTestBytesAsBuffer.byteLength));
+            const badOffset = new BigNumber(ethUtil.toBuffer(shortTestBytesAsBuffer).byteLength);
+            return expectRevertOrOtherErrorAsync(
+                libBytes.publicWriteBytes.callAsync(emptyByteArray, badOffset, shortData),
+                constants.LIB_BYTES_GREATER_OR_EQUAL_TO_NESTED_BYTES_LENGTH_REQUIRED,
+            );
+        });
+    });
 });
+// tslint:disable:max-file-line-count

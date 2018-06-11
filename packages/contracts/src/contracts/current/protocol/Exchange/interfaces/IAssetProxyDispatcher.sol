@@ -28,7 +28,8 @@ contract IAssetProxyDispatcher {
     function registerAssetProxy(
         uint8 assetProxyId,
         address newAssetProxy,
-        address oldAssetProxy)
+        address oldAssetProxy
+    )
         external;
 
     /// @dev Gets an asset proxy.

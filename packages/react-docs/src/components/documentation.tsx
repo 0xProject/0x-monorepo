@@ -73,7 +73,7 @@ export class Documentation extends React.Component<DocumentationProps, Documenta
     public componentWillUnmount(): void {
         window.removeEventListener('hashchange', this._onHashChanged.bind(this), false);
     }
-    public componentDidUpdate(prevProps: DocumentationProps, prevState: DocumentationState): void {
+    public componentDidUpdate(prevProps: DocumentationProps, _prevState: DocumentationState): void {
         if (!_.isEqual(prevProps.docAgnosticFormat, this.props.docAgnosticFormat)) {
             const hash = window.location.hash.slice(1);
             sharedUtils.scrollToHash(hash, sharedConstants.SCROLL_CONTAINER_ID);
@@ -364,7 +364,7 @@ export class Documentation extends React.Component<DocumentationProps, Documenta
             />
         );
     }
-    private _onSidebarHover(event: React.FormEvent<HTMLInputElement>): void {
+    private _onSidebarHover(_event: React.FormEvent<HTMLInputElement>): void {
         this.setState({
             isHoveringSidebar: true,
         });
@@ -374,7 +374,7 @@ export class Documentation extends React.Component<DocumentationProps, Documenta
             isHoveringSidebar: false,
         });
     }
-    private _onHashChanged(event: any): void {
+    private _onHashChanged(_event: any): void {
         const hash = window.location.hash.slice(1);
         sharedUtils.scrollToHash(hash, sharedConstants.SCROLL_CONTAINER_ID);
     }
