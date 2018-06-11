@@ -1,4 +1,4 @@
-import { BlockchainLifecycle } from '@0xproject/dev-utils';
+import { BlockchainLifecycle, devConstants } from '@0xproject/dev-utils';
 import { ExchangeContractErrs } from '@0xproject/types';
 import { BigNumber } from '@0xproject/utils';
 import * as chai from 'chai';
@@ -9,6 +9,8 @@ import { artifacts } from '../src/artifacts';
 import { constants } from '../src/constants';
 import { ExchangeTransferSimulator } from '../src/exchange_transfer_simulator';
 import { DummyERC20TokenContract } from '../src/generated_contract_wrappers/dummy_e_r_c20_token';
+import { ERC20ProxyContract } from '../src/generated_contract_wrappers/e_r_c20_proxy';
+import { ERC20TokenContract } from '../src/generated_contract_wrappers/e_r_c20_token';
 import { BalanceAndProxyAllowanceLazyStore } from '../src/store/balance_and_proxy_allowance_lazy_store';
 import { TradeSide, TransferType } from '../src/types';
 
@@ -31,19 +33,40 @@ describe('ExchangeTransferSimulator', async () => {
     let exchangeTransferSimulator: ExchangeTransferSimulator;
     let txHash: string;
     let erc20ProxyAddress: string;
-    before(async () => {
+    before(async function(): Promise<void> {
+        const mochaTestTimeoutMs = 20000;
+        this.timeout(mochaTestTimeoutMs);
+
         userAddresses = await web3Wrapper.getAvailableAddressesAsync();
         [coinbase, sender, recipient] = userAddresses;
 
-        erc20ProxyAddress = getAddressFromArtifact(artifacts.ERC20Proxy, constants.TESTRPC_NETWORK_ID);
+        const txDefaults = {
+            gas: devConstants.GAS_LIMIT,
+            from: devConstants.TESTRPC_FIRST_ADDRESS,
+        };
 
-        const wethArtifact = artifacts.DummyERC20Token;
-        const wethAddress = getAddressFromArtifact(wethArtifact, constants.TESTRPC_NETWORK_ID);
-        dummyERC20Token = new DummyERC20TokenContract(
-            artifacts.DummyERC20Token.compilerOutput.abi,
-            wethAddress,
+        const erc20Proxy = await ERC20ProxyContract.deployFrom0xArtifactAsync(
+            artifacts.ERC20Proxy,
             provider,
+            txDefaults,
         );
+        erc20ProxyAddress = erc20Proxy.address;
+
+        const totalSupply = new BigNumber(100000000000000000000);
+        const name = 'Test';
+        const symbol = 'TST';
+        const decimals = new BigNumber(18);
+        // tslint:disable-next-line:no-unused-variable
+        dummyERC20Token = await DummyERC20TokenContract.deployFrom0xArtifactAsync(
+            artifacts.DummyERC20Token,
+            provider,
+            txDefaults,
+            name,
+            symbol,
+            decimals,
+            totalSupply,
+        );
+
         exampleTokenAddress = dummyERC20Token.address;
     });
     beforeEach(async () => {
@@ -59,7 +82,7 @@ describe('ExchangeTransferSimulator', async () => {
 
         beforeEach(() => {
             const simpleERC20BalanceAndProxyAllowanceFetcher = new SimpleERC20BalanceAndProxyAllowanceFetcher(
-                dummyERC20Token,
+                (dummyERC20Token as any) as ERC20TokenContract,
                 erc20ProxyAddress,
             );
             const balanceAndProxyAllowanceLazyStore = new BalanceAndProxyAllowanceLazyStore(
