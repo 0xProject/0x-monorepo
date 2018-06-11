@@ -1,4 +1,4 @@
-import { devConstants, env, EnvVars } from '@0xproject/dev-utils';
+import { env, EnvVars } from '@0xproject/dev-utils';
 import { GanacheSubprovider, prependSubprovider } from '@0xproject/subproviders';
 import { logUtils } from '@0xproject/utils';
 import { Web3Wrapper } from '@0xproject/web3-wrapper';

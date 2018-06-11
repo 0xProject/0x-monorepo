@@ -10,7 +10,7 @@ import { MetacoinContract, TransferContractEventArgs } from '../src/contract_wra
 
 import { chaiSetup } from './utils/chai_setup';
 import { config } from './utils/config';
-import { profiler } from './utils/profiler';
+// import { profiler } from './utils/profiler';
 import { provider, web3Wrapper } from './utils/web3_wrapper';
 
 const artifact: ContractArtifact = MetacoinArtifact as any;
