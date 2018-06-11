@@ -7,6 +7,7 @@ export {
     isValidECSignature,
     ecSignOrderHashAsync,
     addSignedMessagePrefix,
+    parseECSignature,
 } from './signature_utils';
 export { orderFactory } from './order_factory';
 export { constants } from './constants';
