@@ -1,4 +1,4 @@
-import { ContractArtifact } from '@0xproject/sol-compiler';
+import { CompilerOptions, ContractArtifact } from '@0xproject/sol-compiler';
 import { logUtils } from '@0xproject/utils';
 import * as fs from 'fs';
 import * as glob from 'glob';
@@ -16,15 +16,17 @@ export class SolCompilerArtifactAdapter extends AbstractArtifactAdapter {
     private _sourcesPath: string;
     constructor(artifactsPath?: string, sourcesPath?: string) {
         super();
-        const config = JSON.parse(fs.readFileSync(CONFIG_FILE).toString());
+        const config: CompilerOptions = fs.existsSync(CONFIG_FILE)
+            ? JSON.parse(fs.readFileSync(CONFIG_FILE).toString())
+            : {};
         if (_.isUndefined(artifactsPath) && _.isUndefined(config.artifactsDir)) {
             throw new Error(`artifactsDir not found in ${CONFIG_FILE}`);
         }
-        this._artifactsPath = artifactsPath || config.artifactsDir;
+        this._artifactsPath = (artifactsPath || config.artifactsDir) as string;
         if (_.isUndefined(sourcesPath) && _.isUndefined(config.contractsDir)) {
             throw new Error(`contractsDir not found in ${CONFIG_FILE}`);
         }
-        this._sourcesPath = sourcesPath || config.contractsDir;
+        this._sourcesPath = (sourcesPath || config.contractsDir) as string;
     }
     public async collectContractsDataAsync(): Promise<ContractData[]> {
         const artifactsGlob = `${this._artifactsPath}/**/*.json`;
