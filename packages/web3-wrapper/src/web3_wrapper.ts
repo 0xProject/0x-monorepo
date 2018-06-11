@@ -2,6 +2,7 @@ import { AbiDecoder, addressUtils, BigNumber, intervalUtils, promisify } from '@
 import {
     BlockParam,
     BlockWithoutTransactionData,
+    BlockWithTransactionData,
     CallData,
     ContractAbi,
     FilterObject,
@@ -10,8 +11,10 @@ import {
     LogEntry,
     Provider,
     RawLogEntry,
+    TraceParams,
     TransactionReceipt,
     TransactionReceiptWithDecodedLogs,
+    TransactionTrace,
     TxData,
 } from 'ethereum-types';
 import * as _ from 'lodash';
@@ -187,10 +190,32 @@ export class Web3Wrapper {
      * @returns Whether or not contract code was found at the supplied address
      */
     public async doesContractExistAtAddressAsync(address: string): Promise<boolean> {
-        const code = await promisify<string>(this._web3.eth.getCode)(address);
+        const code = await this.getContractCodeAsync(address);
         // Regex matches 0x0, 0x00, 0x in order to accommodate poorly implemented clients
         const isCodeEmpty = /^0x0{0,40}$/i.test(code);
         return !isCodeEmpty;
+    }
+    /**
+     * Gets the contract code by address
+     * @param  address Address of the contract
+     * @return Code of the contract
+     */
+    public async getContractCodeAsync(address: string): Promise<string> {
+        const code = await promisify<string>(this._web3.eth.getCode)(address);
+        return code;
+    }
+    /**
+     * Gets the debug trace of a transaction
+     * @param  txHash Hash of the transactuon to get a trace for
+     * @param  traceParams Config object allowing you to specify if you need memory/storage/stack traces.
+     * @return Transaction trace
+     */
+    public async getTransactionTraceAsync(txHash: string, traceParams: TraceParams): Promise<TransactionTrace> {
+        const trace = await this._sendRawPayloadAsync<TransactionTrace>({
+            method: 'debug_traceTransaction',
+            params: [txHash, traceParams],
+        });
+        return trace;
     }
     /**
      * Sign a message with a specific address's private key (`eth_sign`)
@@ -211,13 +236,30 @@ export class Web3Wrapper {
         return blockNumber;
     }
     /**
-     * Fetch a specific Ethereum block
+     * Fetch a specific Ethereum block without transaction data
      * @param blockParam The block you wish to fetch (blockHash, blockNumber or blockLiteral)
      * @returns The requested block without transaction data
      */
     public async getBlockAsync(blockParam: string | BlockParam): Promise<BlockWithoutTransactionData> {
-        const block = await promisify<BlockWithoutTransactionData>(this._web3.eth.getBlock)(blockParam);
-        return block;
+        const shouldIncludeTransactionData = false;
+        const blockWithoutTransactionData = await promisify<BlockWithoutTransactionData>(this._web3.eth.getBlock)(
+            blockParam,
+            shouldIncludeTransactionData,
+        );
+        return blockWithoutTransactionData;
+    }
+    /**
+     * Fetch a specific Ethereum block with transaction data
+     * @param blockParam The block you wish to fetch (blockHash, blockNumber or blockLiteral)
+     * @returns The requested block with transaction data
+     */
+    public async getBlockWithTransactionDataAsync(blockParam: string | BlockParam): Promise<BlockWithTransactionData> {
+        const shouldIncludeTransactionData = true;
+        const blockWithTransactionData = await promisify<BlockWithTransactionData>(this._web3.eth.getBlock)(
+            blockParam,
+            shouldIncludeTransactionData,
+        );
+        return blockWithTransactionData;
     }
     /**
      * Fetch a block's timestamp
@@ -469,4 +511,4 @@ export class Web3Wrapper {
         const decimal = this._web3.toDecimal(hex);
         return decimal;
     }
-}
+} // tslint:disable-line:max-file-line-count

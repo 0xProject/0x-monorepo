@@ -3,6 +3,18 @@
         "version": "0.7.0",
         "changes": [
             {
+                "note": "Add `web3Wrapper.getContractCodeAsync`",
+                "pr": 675
+            },
+            {
+                "note": "Add `web3Wrapper.getTransactionTraceAsync`",
+                "pr": 675
+            },
+            {
+                "note": "Add `web3Wrapper.getBlockWithTransactionDataAsync`",
+                "pr": 675
+            },
+            {
                 "note": "Add exported uniqueVersionIds object",
                 "pr": 622
             },

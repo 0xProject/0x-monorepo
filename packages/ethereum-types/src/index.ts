@@ -279,3 +279,9 @@ export enum SolidityTypes {
 export interface TransactionReceiptWithDecodedLogs extends TransactionReceipt {
     logs: Array<LogWithDecodedArgs<DecodedLogArgs> | LogEntry>;
 }
+
+export interface TraceParams {
+    disableMemory?: boolean;
+    disableStack?: boolean;
+    disableStorage?: boolean;
+}

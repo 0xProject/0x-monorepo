@@ -30,21 +30,7 @@
 				"stateMutability": "view",
 				"type": "function"
 			}
-		],
-		"evm": {
-			"bytecode": {
-				"linkReferences": {},
-				"object": "0x",
-				"opcodes": "",
-				"sourceMap": ""
-			},
-			"deployedBytecode": {
-				"linkReferences": {},
-				"object": "0x",
-				"opcodes": "",
-				"sourceMap": ""
-			}
-		}
+		]
 	},
 	"sources": {
 		"current/protocol/Exchange/interfaces/IValidator.sol": {

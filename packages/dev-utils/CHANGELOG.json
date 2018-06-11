@@ -5,6 +5,10 @@
             {
                 "note": "Add optional parameter shouldUseFakeGasEstimate to Web3Config",
                 "pr": 622
+            },
+            {
+                "note": "Add SolidityProfiler to EnvVars",
+                "pr": 675
             }
         ]
     },
