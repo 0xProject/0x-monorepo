@@ -5,8 +5,8 @@ import * as DocumentTitle from 'react-document-title';
 
 import { Footer } from 'ts/components/footer';
 import { TopBar } from 'ts/components/top_bar/top_bar';
+import { FilledImage } from 'ts/components/ui/filled_image';
 import { Benefits } from 'ts/pages/jobs/benefits';
-import { FloatingImage } from 'ts/pages/jobs/floating_image';
 import { Join0x } from 'ts/pages/jobs/join_0x';
 import { Mission } from 'ts/pages/jobs/mission';
 import { OpenPositions } from 'ts/pages/jobs/open_positions';
@@ -55,7 +55,7 @@ export class Jobs extends React.Component<JobsProps, JobsState> {
                 <Join0x onCallToActionClick={this._onJoin0xCallToActionClick.bind(this)} />
                 <Mission screenWidth={this.props.screenWidth} />
                 {this._isSmallScreen() ? (
-                    <FloatingImage src={_.head(PHOTO_RAIL_IMAGES)} />
+                    <FilledImage src={_.head(PHOTO_RAIL_IMAGES)} />
                 ) : (
                     <PhotoRail images={PHOTO_RAIL_IMAGES} />
                 )}

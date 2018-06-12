@@ -2,7 +2,6 @@ import * as _ from 'lodash';
 import * as React from 'react';
 
 import { FilledImage } from 'ts/components/ui/filled_image';
-import { FloatingImage } from 'ts/pages/jobs/floating_image';
 import { HeaderItem } from 'ts/pages/jobs/list/header_item';
 import { ListItem } from 'ts/pages/jobs/list/list_item';
 import { colors } from 'ts/style/colors';
@@ -67,7 +66,7 @@ const LargeLayout = () => (
 
 const SmallLayout = () => (
     <div>
-        <FloatingImage src={_.head(IMAGE_PATHS)} />
+        <FilledImage src={_.head(IMAGE_PATHS)} />
         <BenefitsList />
     </div>
 );
