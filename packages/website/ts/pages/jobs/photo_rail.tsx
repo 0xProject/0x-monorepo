@@ -1,7 +1,7 @@
 import * as _ from 'lodash';
 import * as React from 'react';
 
-import { FilledImage } from 'ts/pages/jobs/filled_image';
+import { FilledImage } from 'ts/components/ui/filled_image';
 
 export interface PhotoRailProps {
     images: string[];

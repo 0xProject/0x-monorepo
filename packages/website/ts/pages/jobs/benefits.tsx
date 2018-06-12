@@ -1,7 +1,7 @@
 import * as _ from 'lodash';
 import * as React from 'react';
 
-import { FilledImage } from 'ts/pages/jobs/filled_image';
+import { FilledImage } from 'ts/components/ui/filled_image';
 import { FloatingImage } from 'ts/pages/jobs/floating_image';
 import { HeaderItem } from 'ts/pages/jobs/list/header_item';
 import { ListItem } from 'ts/pages/jobs/list/list_item';
