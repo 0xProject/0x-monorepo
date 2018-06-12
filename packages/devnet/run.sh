@@ -35,9 +35,9 @@ sleep 10
 # to break when there are fewer than 3 blocks in the chain. (We have no idea
 # why, but it was consistently reproducible).
 /geth --datadir node0/ attach --exec 'eth.sendTransaction({"from": "0x5409ED021D9299bf6814279A6A1411A7e866A631", "to": "0x84bd1cfa409cb0bb9b23b8b1a33515b4ac00a0af", "value": "0x1"})'
-sleep 2
+sleep 3
 /geth --datadir node0/ attach --exec 'eth.sendTransaction({"from": "0x5409ED021D9299bf6814279A6A1411A7e866A631", "to": "0x84bd1cfa409cb0bb9b23b8b1a33515b4ac00a0af", "value": "0x1"})'
-sleep 2
+sleep 3
 /geth --datadir node0/ attach --exec 'eth.sendTransaction({"from": "0x5409ED021D9299bf6814279A6A1411A7e866A631", "to": "0x84bd1cfa409cb0bb9b23b8b1a33515b4ac00a0af", "value": "0x1"})'
 
 # Use tail to re-attach to the log file and actually see the output.
