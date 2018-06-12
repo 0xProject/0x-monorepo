@@ -12,7 +12,7 @@ import { utils } from './utils';
  * ProfilerSubprovider is used to profile Solidity code while running tests.
  */
 export class ProfilerSubprovider extends TraceCollectionSubprovider {
-    private _coverageCollector: TraceCollector;
+    private _profilerCollector: TraceCollector;
     /**
      * Instantiates a ProfilerSubprovider instance
      * @param artifactAdapter Adapter for used artifacts format (0x, truffle, giveth, etc.)
@@ -26,16 +26,16 @@ export class ProfilerSubprovider extends TraceCollectionSubprovider {
             shouldCollectCallTraces: false,
         };
         super(defaultFromAddress, traceCollectionSubproviderConfig);
-        this._coverageCollector = new TraceCollector(artifactAdapter, isVerbose, profilerHandler);
+        this._profilerCollector = new TraceCollector(artifactAdapter, isVerbose, profilerHandler);
     }
     public async handleTraceInfoAsync(traceInfo: TraceInfo): Promise<void> {
-        await this._coverageCollector.computeSingleTraceCoverageAsync(traceInfo);
+        await this._profilerCollector.computeSingleTraceCoverageAsync(traceInfo);
     }
     /**
      * Write the test profiler results to a file in Istanbul format.
      */
     public async writeProfilerOutputAsync(): Promise<void> {
-        await this._coverageCollector.writeOutputAsync();
+        await this._profilerCollector.writeOutputAsync();
     }
 }
 
