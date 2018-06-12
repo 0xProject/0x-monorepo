@@ -44,26 +44,28 @@ export class OpenPositions extends React.Component<OpenPositionsProps, OpenPosit
     }
     public render(): React.ReactNode {
         const isReadyToRender = _.isUndefined(this.state.error) && !_.isUndefined(this.state.jobInfos);
+        return (
+            <div id={this.props.hash} className="mx-auto max-width-4">
+                {isReadyToRender ? this._renderBody() : this._renderLoading()}
+            </div>
+        );
+    }
+    private _renderBody(): React.ReactNode {
         const isSmallScreen = this.props.screenWidth === ScreenWidths.Sm;
-        if (!isReadyToRender) {
-            return (
-                // TODO: consolidate this loading component with the one in portal and RelayerIndex
-                // TODO: possibly refactor into a generic loading container with spinner and retry UI
-                <div className="center">
-                    {_.isUndefined(this.state.error) ? (
-                        <CircularProgress size={40} thickness={5} />
-                    ) : (
-                        <Retry onRetry={this._fetchJobInfosAsync.bind(this)} />
-                    )}
-                </div>
-            );
-        } else {
-            return (
-                <div id={this.props.hash} className="mx-auto max-width-4">
-                    {isSmallScreen ? this._renderList() : this._renderTable()}
-                </div>
-            );
-        }
+        return isSmallScreen ? this._renderList() : this._renderTable();
+    }
+    private _renderLoading(): React.ReactNode {
+        return (
+            // TODO: consolidate this loading component with the one in portal and RelayerIndex
+            // TODO: possibly refactor into a generic loading container with spinner and retry UI
+            <div className="center">
+                {_.isUndefined(this.state.error) ? (
+                    <CircularProgress size={40} thickness={5} />
+                ) : (
+                    <Retry onRetry={this._fetchJobInfosAsync.bind(this)} />
+                )}
+            </div>
+        );
     }
     private _renderList(): React.ReactNode {
         return (
