@@ -1,14 +1,14 @@
 ## @0xproject/metacoin
 
-This is a small example project that server as a showroom/polygon for 0x dev tools.
-It suppports:
+This is an example project that demonstrates how the many Ethereum dev tools developed by 0x can be used in any Solidity/TS project.
+It supports:
 
 *   Compiling & testing smart contracts
-*   Typed contract wrappers
-*   Coverage
-*   Profiling
+*   Generating typed contract wrappers
+*   Solidity coverage
+*   Solidity gas profiling
 *   Running tests against Ganache
-*   Running tests against our fork of Geth that supports snapshots & time travel
+*   Running tests against our fork of Geth (it supports snapshotting & time travel)
 
 ## Contributing
 
@@ -81,7 +81,7 @@ yarn coverage:report:html
 
 ### Profiling
 
-Please note that traces emmited by ganache have incorrect gas costs so we recommend using Geth for profiling.
+Please note that traces emitted by ganache have incorrect gas costs so we recommend using Geth for profiling.
 
 ```bash
 TEST_PROVIDER=geth yarn test:profile

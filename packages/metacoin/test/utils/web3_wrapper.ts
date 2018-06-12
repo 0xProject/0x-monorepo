@@ -1,6 +1,6 @@
 import { env, EnvVars } from '@0xproject/dev-utils';
 import { GanacheSubprovider, prependSubprovider } from '@0xproject/subproviders';
-import { logUtils } from '@0xproject/utils';
+import { logUtils, errorUtils } from '@0xproject/utils';
 import { Web3Wrapper } from '@0xproject/web3-wrapper';
 import * as fs from 'fs';
 import ProviderEngine = require('web3-provider-engine');
@@ -27,7 +27,7 @@ switch (process.env.TEST_PROVIDER) {
         testProvider = ProviderType.Geth;
         break;
     default:
-        throw new Error(`Unknown TEST_PROVIDER: ${process.env.TEST_PROVIDER}`);
+        throw errorUtils.spawnSwitchErr('TEST_PROVIDER', process.env.TEST_PROVIDER);
 }
 
 export const provider = new ProviderEngine();
