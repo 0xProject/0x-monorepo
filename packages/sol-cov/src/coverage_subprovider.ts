@@ -3,6 +3,7 @@ import * as _ from 'lodash';
 import { AbstractArtifactAdapter } from './artifact_adapters/abstract_artifact_adapter';
 import { CoverageManager } from './coverage_manager';
 import { TraceCollectionSubprovider } from './trace_collection_subprovider';
+import { TraceInfo } from './types';
 
 /**
  * This class implements the [web3-provider-engine](https://github.com/MetaMask/provider-engine) subprovider interface.
@@ -25,12 +26,13 @@ export class CoverageSubprovider extends TraceCollectionSubprovider {
         super(defaultFromAddress, traceCollectionSubproviderConfig);
         this._coverageManager = new CoverageManager(artifactAdapter, isVerbose);
     }
+    public async handleTraceInfoAsync(traceInfo: TraceInfo): Promise<void> {
+        return this._coverageManager.computeCoverageAsync(traceInfo);
+    }
     /**
      * Write the test coverage results to a file in Istanbul format.
      */
     public async writeCoverageAsync(): Promise<void> {
-        const traceInfos = this.getCollectedTraceInfos();
-        _.forEach(traceInfos, traceInfo => this._coverageManager.appendTraceInfo(traceInfo));
-        await this._coverageManager.writeCoverageAsync();
+        return this._coverageManager.writeCoverageAsync();
     }
 }

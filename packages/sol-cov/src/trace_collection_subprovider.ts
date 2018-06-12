@@ -29,12 +29,11 @@ export interface TraceCollectionSubproviderConfig {
  * This class implements the [web3-provider-engine](https://github.com/MetaMask/provider-engine) subprovider interface.
  * It collects traces of all transactions that were sent and all calls that were executed through JSON RPC.
  */
-export class TraceCollectionSubprovider extends Subprovider {
+export abstract class TraceCollectionSubprovider extends Subprovider {
     // Lock is used to not accept normal transactions while doing call/snapshot magic because they'll be reverted later otherwise
     private _lock = new Lock();
     private _defaultFromAddress: string;
     private _web3Wrapper!: Web3Wrapper;
-    private _traceInfos: TraceInfo[] = [];
     private _isEnabled = true;
     private _config: TraceCollectionSubproviderConfig;
     /**
@@ -45,12 +44,6 @@ export class TraceCollectionSubprovider extends Subprovider {
         super();
         this._defaultFromAddress = defaultFromAddress;
         this._config = config;
-    }
-    /**
-     * Returns all trace infos collected by the subprovider so far
-     */
-    public getCollectedTraceInfos(): TraceInfo[] {
-        return this._traceInfos;
     }
     /**
      * Starts trace collection
@@ -64,6 +57,11 @@ export class TraceCollectionSubprovider extends Subprovider {
     public stop(): void {
         this._isEnabled = false;
     }
+    /**
+     * Called for each subtrace.
+     * @param traceInfo Trace info for this subtrace.
+     */
+    public abstract handleTraceInfoAsync(traceInfo: TraceInfo): Promise<void>;
     /**
      * This method conforms to the web3-provider-engine interface.
      * It is called internally by the ProviderEngine when it is this subproviders
@@ -192,7 +190,7 @@ export class TraceCollectionSubprovider extends Subprovider {
                         runtimeBytecode,
                     };
                 }
-                this._traceInfos.push(traceInfo);
+                this.handleTraceInfoAsync(traceInfo);
             }
         } else {
             for (const subcallAddress of subcallAddresses) {
@@ -204,7 +202,7 @@ export class TraceCollectionSubprovider extends Subprovider {
                     address: subcallAddress,
                     runtimeBytecode,
                 };
-                this._traceInfos.push(traceInfo);
+                this.handleTraceInfoAsync(traceInfo);
             }
         }
     }

@@ -3,6 +3,7 @@ import * as _ from 'lodash';
 import { AbstractArtifactAdapter } from './artifact_adapters/abstract_artifact_adapter';
 import { ProfilerManager } from './profiler_manager';
 import { TraceCollectionSubprovider } from './trace_collection_subprovider';
+import { TraceInfo } from './types';
 
 /**
  * This class implements the [web3-provider-engine](https://github.com/MetaMask/provider-engine) subprovider interface.
@@ -25,12 +26,13 @@ export class ProfilerSubprovider extends TraceCollectionSubprovider {
         super(defaultFromAddress, traceCollectionSubproviderConfig);
         this._profilerManager = new ProfilerManager(artifactAdapter, isVerbose);
     }
+    public async handleTraceInfoAsync(traceInfo: TraceInfo): Promise<void> {
+        return this._profilerManager.computeCoverageAsync(traceInfo);
+    }
     /**
      * Write the test profiler results to a file in Istanbul format.
      */
     public async writeProfilerOutputAsync(): Promise<void> {
-        const traceInfos = this.getCollectedTraceInfos();
-        _.forEach(traceInfos, traceInfo => this._profilerManager.appendTraceInfo(traceInfo));
-        await this._profilerManager.writeProfilerOutputAsync();
+        return this._profilerManager.writeProfilerOutputAsync();
     }
 }
