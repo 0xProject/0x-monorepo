@@ -36,7 +36,8 @@ const mkdirpAsync = promisify<undefined>(mkdirp);
 export class CoverageManager {
     private _artifactAdapter: AbstractArtifactAdapter;
     private _logger: Logger;
-    private _traceInfos: TraceInfo[] = [];
+    private _contractsData!: ContractData[];
+    private _collector = new Collector();
     /**
      * Computed partial coverage for a single file & subtrace
      * @param contractData      Contract metadata (source, srcMap, bytecode)
@@ -130,49 +131,39 @@ export class CoverageManager {
         this._logger = getLogger('sol-cov');
         this._logger.setLevel(isVerbose ? levels.TRACE : levels.ERROR);
     }
-    public appendTraceInfo(traceInfo: TraceInfo): void {
-        this._traceInfos.push(traceInfo);
-    }
     public async writeCoverageAsync(): Promise<void> {
-        const finalCoverage = await this._computeCoverageAsync();
+        const finalCoverage = this._collector.getFinalCoverage();
         const stringifiedCoverage = JSON.stringify(finalCoverage, null, '\t');
         await mkdirpAsync('coverage');
         fs.writeFileSync('coverage/coverage.json', stringifiedCoverage);
     }
-    private async _computeCoverageAsync(): Promise<Coverage> {
-        const contractsData = await this._artifactAdapter.collectContractsDataAsync();
-        const collector = new Collector();
-        for (const traceInfo of this._traceInfos) {
-            const isContractCreation = traceInfo.address === constants.NEW_CONTRACT;
-            const bytecode = isContractCreation
-                ? (traceInfo as TraceInfoNewContract).bytecode
-                : (traceInfo as TraceInfoExistingContract).runtimeBytecode;
-            const contractData = utils.getContractDataIfExists(contractsData, bytecode);
-            if (_.isUndefined(contractData)) {
-                const errMsg = isContractCreation
-                    ? `Unknown contract creation transaction`
-                    : `Transaction to an unknown address: ${traceInfo.address}`;
-                this._logger.warn(errMsg);
-                continue;
-            }
-            const bytecodeHex = stripHexPrefix(bytecode);
-            const sourceMap = isContractCreation ? contractData.sourceMap : contractData.sourceMapRuntime;
-            const pcToSourceRange = parseSourceMap(
-                contractData.sourceCodes,
-                sourceMap,
-                bytecodeHex,
-                contractData.sources,
-            );
-            for (let fileIndex = 0; fileIndex < contractData.sources.length; fileIndex++) {
-                const singleFileCoverageForTrace = CoverageManager._getSingleFileCoverageForSubtrace(
-                    contractData,
-                    traceInfo.subtrace,
-                    pcToSourceRange,
-                    fileIndex,
-                );
-                collector.add(singleFileCoverageForTrace);
-            }
+    public async computeSingleTraceCoverageAsync(traceInfo: TraceInfo): Promise<void> {
+        if (_.isUndefined(this._contractsData)) {
+            this._contractsData = await this._artifactAdapter.collectContractsDataAsync();
         }
-        return collector.getFinalCoverage();
+        const isContractCreation = traceInfo.address === constants.NEW_CONTRACT;
+        const bytecode = isContractCreation
+            ? (traceInfo as TraceInfoNewContract).bytecode
+            : (traceInfo as TraceInfoExistingContract).runtimeBytecode;
+        const contractData = utils.getContractDataIfExists(this._contractsData, bytecode);
+        if (_.isUndefined(contractData)) {
+            const errMsg = isContractCreation
+                ? `Unknown contract creation transaction`
+                : `Transaction to an unknown address: ${traceInfo.address}`;
+            this._logger.warn(errMsg);
+            return;
+        }
+        const bytecodeHex = stripHexPrefix(bytecode);
+        const sourceMap = isContractCreation ? contractData.sourceMap : contractData.sourceMapRuntime;
+        const pcToSourceRange = parseSourceMap(contractData.sourceCodes, sourceMap, bytecodeHex, contractData.sources);
+        for (let fileIndex = 0; fileIndex < contractData.sources.length; fileIndex++) {
+            const singleFileCoverageForTrace = CoverageManager._getSingleFileCoverageForSubtrace(
+                contractData,
+                traceInfo.subtrace,
+                pcToSourceRange,
+                fileIndex,
+            );
+            this._collector.add(singleFileCoverageForTrace);
+        }
     }
 }
