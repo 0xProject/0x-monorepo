@@ -1,5 +1,3 @@
-import * as _ from 'lodash';
-
 import { AbstractArtifactAdapter } from './artifact_adapters/abstract_artifact_adapter';
 import { CoverageManager } from './coverage_manager';
 import { TraceCollectionSubprovider } from './trace_collection_subprovider';
@@ -27,12 +25,12 @@ export class CoverageSubprovider extends TraceCollectionSubprovider {
         this._coverageManager = new CoverageManager(artifactAdapter, isVerbose);
     }
     public async handleTraceInfoAsync(traceInfo: TraceInfo): Promise<void> {
-        return this._coverageManager.computeCoverageAsync(traceInfo);
+        await this._coverageManager.computeCoverageAsync(traceInfo);
     }
     /**
      * Write the test coverage results to a file in Istanbul format.
      */
     public async writeCoverageAsync(): Promise<void> {
-        return this._coverageManager.writeCoverageAsync();
+        await this._coverageManager.writeCoverageAsync();
     }
 }

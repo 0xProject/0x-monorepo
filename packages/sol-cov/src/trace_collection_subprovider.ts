@@ -190,7 +190,7 @@ export abstract class TraceCollectionSubprovider extends Subprovider {
                         runtimeBytecode,
                     };
                 }
-                this.handleTraceInfoAsync(traceInfo);
+                await this.handleTraceInfoAsync(traceInfo);
             }
         } else {
             for (const subcallAddress of subcallAddresses) {
@@ -202,7 +202,7 @@ export abstract class TraceCollectionSubprovider extends Subprovider {
                     address: subcallAddress,
                     runtimeBytecode,
                 };
-                this.handleTraceInfoAsync(traceInfo);
+                await this.handleTraceInfoAsync(traceInfo);
             }
         }
     }

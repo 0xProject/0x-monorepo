@@ -1,5 +1,3 @@
-import * as _ from 'lodash';
-
 import { AbstractArtifactAdapter } from './artifact_adapters/abstract_artifact_adapter';
 import { ProfilerManager } from './profiler_manager';
 import { TraceCollectionSubprovider } from './trace_collection_subprovider';
@@ -27,12 +25,12 @@ export class ProfilerSubprovider extends TraceCollectionSubprovider {
         this._profilerManager = new ProfilerManager(artifactAdapter, isVerbose);
     }
     public async handleTraceInfoAsync(traceInfo: TraceInfo): Promise<void> {
-        return this._profilerManager.computeCoverageAsync(traceInfo);
+        await this._profilerManager.computeCoverageAsync(traceInfo);
     }
     /**
      * Write the test profiler results to a file in Istanbul format.
      */
     public async writeProfilerOutputAsync(): Promise<void> {
-        return this._profilerManager.writeProfilerOutputAsync();
+        await this._profilerManager.writeProfilerOutputAsync();
     }
 }
