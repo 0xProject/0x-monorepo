@@ -25,7 +25,7 @@ export class CoverageSubprovider extends TraceCollectionSubprovider {
         this._coverageManager = new CoverageManager(artifactAdapter, isVerbose);
     }
     public async handleTraceInfoAsync(traceInfo: TraceInfo): Promise<void> {
-        await this._coverageManager.computeCoverageAsync(traceInfo);
+        await this._coverageManager.computeSingleTraceCoverageAsync(traceInfo);
     }
     /**
      * Write the test coverage results to a file in Istanbul format.

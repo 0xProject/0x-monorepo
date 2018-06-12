@@ -93,7 +93,7 @@ export class ProfilerManager {
         await mkdirpAsync('coverage');
         fs.writeFileSync('coverage/coverage.json', stringifiedCoverage);
     }
-    public async computeCoverageAsync(traceInfo: TraceInfo): Promise<void> {
+    public async computeSingleTraceCoverageAsync(traceInfo: TraceInfo): Promise<void> {
         if (_.isUndefined(this._contractsData)) {
             this._contractsData = await this._artifactAdapter.collectContractsDataAsync();
         }

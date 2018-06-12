@@ -25,7 +25,7 @@ export class ProfilerSubprovider extends TraceCollectionSubprovider {
         this._profilerManager = new ProfilerManager(artifactAdapter, isVerbose);
     }
     public async handleTraceInfoAsync(traceInfo: TraceInfo): Promise<void> {
-        await this._profilerManager.computeCoverageAsync(traceInfo);
+        await this._profilerManager.computeSingleTraceCoverageAsync(traceInfo);
     }
     /**
      * Write the test profiler results to a file in Istanbul format.
