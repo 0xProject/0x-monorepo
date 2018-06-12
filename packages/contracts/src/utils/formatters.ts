@@ -2,6 +2,7 @@ import { SignedOrder } from '@0xproject/types';
 import { BigNumber } from '@0xproject/utils';
 import * as _ from 'lodash';
 
+import { constants } from './constants';
 import { orderUtils } from './order_utils';
 import { BatchCancelOrders, BatchFillOrders, MarketBuyOrders, MarketSellOrders } from './types';
 
@@ -28,8 +29,11 @@ export const formatters = {
             signatures: [],
             takerAssetFillAmount,
         };
-        _.forEach(signedOrders, signedOrder => {
+        _.forEach(signedOrders, (signedOrder, i) => {
             const orderWithoutExchangeAddress = orderUtils.getOrderWithoutExchangeAddress(signedOrder);
+            if (i !== 0) {
+                orderWithoutExchangeAddress.takerAssetData = constants.NULL_BYTES;
+            }
             marketSellOrders.orders.push(orderWithoutExchangeAddress);
             marketSellOrders.signatures.push(signedOrder.signature);
         });
@@ -41,8 +45,11 @@ export const formatters = {
             signatures: [],
             makerAssetFillAmount,
         };
-        _.forEach(signedOrders, signedOrder => {
+        _.forEach(signedOrders, (signedOrder, i) => {
             const orderWithoutExchangeAddress = orderUtils.getOrderWithoutExchangeAddress(signedOrder);
+            if (i !== 0) {
+                orderWithoutExchangeAddress.makerAssetData = constants.NULL_BYTES;
+            }
             marketBuyOrders.orders.push(orderWithoutExchangeAddress);
             marketBuyOrders.signatures.push(signedOrder.signature);
         });

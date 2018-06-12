@@ -14,7 +14,6 @@
 pragma solidity ^0.4.24;
 pragma experimental ABIEncoderV2;
 
-import "../../utils/LibBytes/LibBytes.sol";
 import "./libs/LibMath.sol";
 import "./libs/LibOrder.sol";
 import "./libs/LibFillResults.sol";
@@ -25,7 +24,6 @@ import "./mixins/MSettlement.sol";
 import "./mixins/MTransactions.sol";
 
 contract MixinMatchOrders is
-    LibBytes,
     LibMath,
     LibExchangeErrors,
     MExchangeCore,
@@ -94,14 +92,6 @@ contract MixinMatchOrders is
             rightSignature
         );
 
-        // Settle matched orders. Succeeds or throws.
-        settleMatchedOrders(
-            leftOrder,
-            rightOrder,
-            takerAddress,
-            matchedFillResults
-        );
-
         // Update exchange state
         updateFilledState(
             leftOrder,
@@ -116,6 +106,14 @@ contract MixinMatchOrders is
             rightOrderInfo.orderHash,
             rightOrderInfo.orderTakerAssetFilledAmount,
             matchedFillResults.right
+        );
+    
+        // Settle matched orders. Succeeds or throws.
+        settleMatchedOrders(
+            leftOrder,
+            rightOrder,
+            takerAddress,
+            matchedFillResults
         );
 
         return matchedFillResults;
