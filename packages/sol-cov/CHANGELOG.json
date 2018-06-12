@@ -37,6 +37,18 @@
             {
                 "note": "Skip interface artifacts with a warning instead of failing",
                 "pr": 675
+            },
+            {
+                "note": "Fix solcVersion regex in parameter validation",
+                "pr": 690
+            },
+            {
+                "note": "Fix a bug when in TruffleArtifactsAdapter causing it to throw if compiler.json is not there",
+                "pr": 690
+            },
+            {
+                "note": "HUGE perf improvements",
+                "pr": 690
             }
         ]
     },
