@@ -7,3 +7,4 @@ export { AbiDecoder } from './abi_decoder';
 export { logUtils } from './log_utils';
 export { abiUtils } from './abi_utils';
 export { NULL_BYTES } from './constants';
+export { errorUtils } from './error_utils';

@@ -159,7 +159,7 @@ describe('OrderWatcher', () => {
                     fillableAmount,
                 );
                 orderWatcher.addOrder(signedOrder);
-                const callback = callbackErrorReporter.reportNodeCallbackErrors(done)((orderState: OrderState) => {
+                const callback = callbackErrorReporter.reportNodeCallbackErrors(done)((_orderState: OrderState) => {
                     throw new Error('OrderState callback fired for irrelevant order');
                 });
                 orderWatcher.subscribe(callback);

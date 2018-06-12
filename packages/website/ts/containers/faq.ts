@@ -14,7 +14,7 @@ interface ConnectedDispatch {
     dispatcher: Dispatcher;
 }
 
-const mapStateToProps = (state: State, ownProps: FAQProps): ConnectedState => ({
+const mapStateToProps = (state: State, _ownProps: FAQProps): ConnectedState => ({
     translate: state.translate,
 });
 

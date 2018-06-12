@@ -4,10 +4,10 @@ import { AssetProxyId, OrderWithoutExchangeAddress, SignedOrder } from '@0xproje
 import { BigNumber } from '@0xproject/utils';
 import * as chai from 'chai';
 
-import { DummyERC20TokenContract } from '../../src/contract_wrappers/generated/dummy_e_r_c20_token';
-import { ERC20ProxyContract } from '../../src/contract_wrappers/generated/e_r_c20_proxy';
-import { ExchangeContract } from '../../src/contract_wrappers/generated/exchange';
-import { WhitelistContract } from '../../src/contract_wrappers/generated/whitelist';
+import { DummyERC20TokenContract } from '../../src/generated_contract_wrappers/dummy_e_r_c20_token';
+import { ERC20ProxyContract } from '../../src/generated_contract_wrappers/e_r_c20_proxy';
+import { ExchangeContract } from '../../src/generated_contract_wrappers/exchange';
+import { WhitelistContract } from '../../src/generated_contract_wrappers/whitelist';
 import { artifacts } from '../../src/utils/artifacts';
 import { expectRevertOrAlwaysFailingTransactionAsync } from '../../src/utils/assertions';
 import { chaiSetup } from '../../src/utils/chai_setup';
@@ -72,7 +72,7 @@ describe('Exchange transactions', () => {
             artifacts.Exchange,
             provider,
             txDefaults,
-            assetProxyUtils.encodeERC20ProxyData(zrxToken.address),
+            assetProxyUtils.encodeERC20AssetData(zrxToken.address),
         );
         exchangeWrapper = new ExchangeWrapper(exchange, provider);
         await exchangeWrapper.registerAssetProxyAsync(AssetProxyId.ERC20, erc20Proxy.address, owner);
@@ -91,8 +91,8 @@ describe('Exchange transactions', () => {
             exchangeAddress: exchange.address,
             makerAddress,
             feeRecipientAddress,
-            makerAssetData: assetProxyUtils.encodeERC20ProxyData(defaultMakerTokenAddress),
-            takerAssetData: assetProxyUtils.encodeERC20ProxyData(defaultTakerTokenAddress),
+            makerAssetData: assetProxyUtils.encodeERC20AssetData(defaultMakerTokenAddress),
+            takerAssetData: assetProxyUtils.encodeERC20AssetData(defaultTakerTokenAddress),
         };
         makerPrivateKey = constants.TESTRPC_PRIVATE_KEYS[accounts.indexOf(makerAddress)];
         takerPrivateKey = constants.TESTRPC_PRIVATE_KEYS[accounts.indexOf(takerAddress)];
@@ -216,6 +216,7 @@ describe('Exchange transactions', () => {
                 await exchange.setSignatureValidatorApproval.sendTransactionAsync(whitelist.address, isApproved, {
                     from: takerAddress,
                 }),
+                constants.AWAIT_TRANSACTION_MINED_MS,
             );
             const defaultOrderParams = {
                 ...constants.STATIC_ORDER_PARAMS,
@@ -223,8 +224,8 @@ describe('Exchange transactions', () => {
                 exchangeAddress: exchange.address,
                 makerAddress,
                 feeRecipientAddress,
-                makerAssetData: assetProxyUtils.encodeERC20ProxyData(defaultMakerTokenAddress),
-                takerAssetData: assetProxyUtils.encodeERC20ProxyData(defaultTakerTokenAddress),
+                makerAssetData: assetProxyUtils.encodeERC20AssetData(defaultMakerTokenAddress),
+                takerAssetData: assetProxyUtils.encodeERC20AssetData(defaultTakerTokenAddress),
             };
             whitelistOrderFactory = new OrderFactory(makerPrivateKey, defaultOrderParams);
         });
@@ -238,6 +239,7 @@ describe('Exchange transactions', () => {
             const isApproved = true;
             await web3Wrapper.awaitTransactionSuccessAsync(
                 await whitelist.updateWhitelistStatus.sendTransactionAsync(takerAddress, isApproved, { from: owner }),
+                constants.AWAIT_TRANSACTION_MINED_MS,
             );
 
             orderWithoutExchangeAddress = orderUtils.getOrderWithoutExchangeAddress(signedOrder);
@@ -258,6 +260,7 @@ describe('Exchange transactions', () => {
             const isApproved = true;
             await web3Wrapper.awaitTransactionSuccessAsync(
                 await whitelist.updateWhitelistStatus.sendTransactionAsync(makerAddress, isApproved, { from: owner }),
+                constants.AWAIT_TRANSACTION_MINED_MS,
             );
 
             orderWithoutExchangeAddress = orderUtils.getOrderWithoutExchangeAddress(signedOrder);
@@ -278,10 +281,12 @@ describe('Exchange transactions', () => {
             const isApproved = true;
             await web3Wrapper.awaitTransactionSuccessAsync(
                 await whitelist.updateWhitelistStatus.sendTransactionAsync(makerAddress, isApproved, { from: owner }),
+                constants.AWAIT_TRANSACTION_MINED_MS,
             );
 
             await web3Wrapper.awaitTransactionSuccessAsync(
                 await whitelist.updateWhitelistStatus.sendTransactionAsync(takerAddress, isApproved, { from: owner }),
+                constants.AWAIT_TRANSACTION_MINED_MS,
             );
 
             orderWithoutExchangeAddress = orderUtils.getOrderWithoutExchangeAddress(signedOrder);
@@ -295,6 +300,7 @@ describe('Exchange transactions', () => {
                     signedOrder.signature,
                     { from: takerAddress },
                 ),
+                constants.AWAIT_TRANSACTION_MINED_MS,
             );
 
             const newBalances = await erc20Wrapper.getBalancesAsync();

@@ -19,15 +19,18 @@ const TESTRPC_PRIVATE_KEYS_STRINGS = [
 export const constants = {
     INVALID_OPCODE: 'invalid opcode',
     REVERT: 'revert',
-    LIB_BYTES_GT_ZERO_LENGTH_REQUIRED: 'Length must be greater than 0.',
-    LIB_BYTES_GTE_4_LENGTH_REQUIRED: 'Length must be greater than or equal to 4.',
-    LIB_BYTES_GTE_20_LENGTH_REQUIRED: 'Length must be greater than or equal to 20.',
-    LIB_BYTES_GTE_32_LENGTH_REQUIRED: 'Length must be greater than or equal to 32.',
-    LIB_BYTES_INDEX_OUT_OF_BOUNDS: 'Specified array index is out of bounds.',
+    LIB_BYTES_GREATER_THAN_ZERO_LENGTH_REQUIRED: 'GREATER_THAN_ZERO_LENGTH_REQUIRED',
+    LIB_BYTES_GREATER_OR_EQUAL_TO_4_LENGTH_REQUIRED: 'GREATER_OR_EQUAL_TO_4_LENGTH_REQUIRED',
+    LIB_BYTES_GREATER_OR_EQUAL_TO_20_LENGTH_REQUIRED: 'GREATER_OR_EQUAL_TO_20_LENGTH_REQUIRED',
+    LIB_BYTES_GREATER_OR_EQUAL_TO_32_LENGTH_REQUIRED: 'GREATER_OR_EQUAL_TO_32_LENGTH_REQUIRED',
+    LIB_BYTES_GREATER_OR_EQUAL_TO_NESTED_BYTES_LENGTH_REQUIRED: 'GREATER_OR_EQUAL_TO_NESTED_BYTES_LENGTH_REQUIRED',
     ERC20_INSUFFICIENT_BALANCE: 'Insufficient balance to complete transfer.',
     ERC20_INSUFFICIENT_ALLOWANCE: 'Insufficient allowance to complete transfer.',
     TESTRPC_NETWORK_ID: 50,
-    AWAIT_TRANSACTION_MINED_MS: 100,
+    // Note(albrow): In practice V8 and most other engines limit the minimum
+    // interval for setInterval to 10ms. We still set it to 0 here in order to
+    // ensure we always use the minimum interval.
+    AWAIT_TRANSACTION_MINED_MS: 0,
     MAX_ETHERTOKEN_WITHDRAW_GAS: 43000,
     MAX_TOKEN_TRANSFERFROM_GAS: 80000,
     MAX_TOKEN_APPROVE_GAS: 60000,

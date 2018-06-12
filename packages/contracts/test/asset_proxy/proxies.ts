@@ -1,24 +1,33 @@
 import { BlockchainLifecycle } from '@0xproject/dev-utils';
-import { assetProxyUtils } from '@0xproject/order-utils';
+import { assetProxyUtils, generatePseudoRandomSalt } from '@0xproject/order-utils';
 import { BigNumber } from '@0xproject/utils';
 import * as chai from 'chai';
+import { LogWithDecodedArgs } from 'ethereum-types';
+import ethUtil = require('ethereumjs-util');
 import * as _ from 'lodash';
 
-import { DummyERC20TokenContract } from '../../src/contract_wrappers/generated/dummy_e_r_c20_token';
-import { DummyERC721TokenContract } from '../../src/contract_wrappers/generated/dummy_e_r_c721_token';
-import { ERC20ProxyContract } from '../../src/contract_wrappers/generated/e_r_c20_proxy';
-import { ERC721ProxyContract } from '../../src/contract_wrappers/generated/e_r_c721_proxy';
+import { DummyERC20TokenContract } from '../../src/generated_contract_wrappers/dummy_e_r_c20_token';
+import {
+    DummyERC721ReceiverContract,
+    TokenReceivedContractEventArgs,
+} from '../../src/generated_contract_wrappers/dummy_e_r_c721_receiver';
+import { DummyERC721TokenContract } from '../../src/generated_contract_wrappers/dummy_e_r_c721_token';
+import { ERC20ProxyContract } from '../../src/generated_contract_wrappers/e_r_c20_proxy';
+import { ERC721ProxyContract } from '../../src/generated_contract_wrappers/e_r_c721_proxy';
+import { artifacts } from '../../src/utils/artifacts';
 import { expectRevertOrAlwaysFailingTransactionAsync } from '../../src/utils/assertions';
 import { chaiSetup } from '../../src/utils/chai_setup';
 import { constants } from '../../src/utils/constants';
 import { ERC20Wrapper } from '../../src/utils/erc20_wrapper';
 import { ERC721Wrapper } from '../../src/utils/erc721_wrapper';
-import { provider, web3Wrapper } from '../../src/utils/web3_wrapper';
+import { LogDecoder } from '../../src/utils/log_decoder';
+import { provider, txDefaults, web3Wrapper } from '../../src/utils/web3_wrapper';
 
 chaiSetup.configure();
 const expect = chai.expect;
 const blockchainLifecycle = new BlockchainLifecycle(web3Wrapper);
 
+// tslint:disable:no-unnecessary-type-assertion
 describe('Asset Transfer Proxies', () => {
     let owner: string;
     let notAuthorized: string;
@@ -28,6 +37,7 @@ describe('Asset Transfer Proxies', () => {
 
     let zrxToken: DummyERC20TokenContract;
     let erc721Token: DummyERC721TokenContract;
+    let erc721Receiver: DummyERC721ReceiverContract;
     let erc20Proxy: ERC20ProxyContract;
     let erc721Proxy: ERC721ProxyContract;
 
@@ -69,6 +79,11 @@ describe('Asset Transfer Proxies', () => {
             }),
             constants.AWAIT_TRANSACTION_MINED_MS,
         );
+        erc721Receiver = await DummyERC721ReceiverContract.deployFrom0xArtifactAsync(
+            artifacts.DummyERC721Receiver,
+            provider,
+            txDefaults,
+        );
     });
     beforeEach(async () => {
         await blockchainLifecycle.startAsync();
@@ -79,14 +94,14 @@ describe('Asset Transfer Proxies', () => {
     describe('Transfer Proxy - ERC20', () => {
         describe('transferFrom', () => {
             it('should successfully transfer tokens', async () => {
-                // Construct metadata for ERC20 proxy
-                const encodedProxyMetadata = assetProxyUtils.encodeERC20ProxyData(zrxToken.address);
+                // Construct ERC20 asset data
+                const encodedAssetData = assetProxyUtils.encodeERC20AssetData(zrxToken.address);
                 // Perform a transfer from makerAddress to takerAddress
                 const erc20Balances = await erc20Wrapper.getBalancesAsync();
                 const amount = new BigNumber(10);
                 await web3Wrapper.awaitTransactionSuccessAsync(
                     await erc20Proxy.transferFrom.sendTransactionAsync(
-                        encodedProxyMetadata,
+                        encodedAssetData,
                         makerAddress,
                         takerAddress,
                         amount,
@@ -105,14 +120,14 @@ describe('Asset Transfer Proxies', () => {
             });
 
             it('should do nothing if transferring 0 amount of a token', async () => {
-                // Construct metadata for ERC20 proxy
-                const encodedProxyMetadata = assetProxyUtils.encodeERC20ProxyData(zrxToken.address);
+                // Construct ERC20 asset data
+                const encodedAssetData = assetProxyUtils.encodeERC20AssetData(zrxToken.address);
                 // Perform a transfer from makerAddress to takerAddress
                 const erc20Balances = await erc20Wrapper.getBalancesAsync();
                 const amount = new BigNumber(0);
                 await web3Wrapper.awaitTransactionSuccessAsync(
                     await erc20Proxy.transferFrom.sendTransactionAsync(
-                        encodedProxyMetadata,
+                        encodedAssetData,
                         makerAddress,
                         takerAddress,
                         amount,
@@ -131,8 +146,8 @@ describe('Asset Transfer Proxies', () => {
             });
 
             it('should throw if allowances are too low', async () => {
-                // Construct metadata for ERC20 proxy
-                const encodedProxyMetadata = assetProxyUtils.encodeERC20ProxyData(zrxToken.address);
+                // Construct ERC20 asset data
+                const encodedAssetData = assetProxyUtils.encodeERC20AssetData(zrxToken.address);
                 // Create allowance less than transfer amount. Set allowance on proxy.
                 const allowance = new BigNumber(0);
                 const transferAmount = new BigNumber(10);
@@ -145,7 +160,7 @@ describe('Asset Transfer Proxies', () => {
                 // Perform a transfer; expect this to fail.
                 return expectRevertOrAlwaysFailingTransactionAsync(
                     erc20Proxy.transferFrom.sendTransactionAsync(
-                        encodedProxyMetadata,
+                        encodedAssetData,
                         makerAddress,
                         takerAddress,
                         transferAmount,
@@ -155,20 +170,14 @@ describe('Asset Transfer Proxies', () => {
             });
 
             it('should throw if requesting address is not authorized', async () => {
-                // Construct metadata for ERC20 proxy
-                const encodedProxyMetadata = assetProxyUtils.encodeERC20ProxyData(zrxToken.address);
+                // Construct ERC20 asset data
+                const encodedAssetData = assetProxyUtils.encodeERC20AssetData(zrxToken.address);
                 // Perform a transfer from makerAddress to takerAddress
                 const amount = new BigNumber(10);
                 return expectRevertOrAlwaysFailingTransactionAsync(
-                    erc20Proxy.transferFrom.sendTransactionAsync(
-                        encodedProxyMetadata,
-                        makerAddress,
-                        takerAddress,
-                        amount,
-                        {
-                            from: notAuthorized,
-                        },
-                    ),
+                    erc20Proxy.transferFrom.sendTransactionAsync(encodedAssetData, makerAddress, takerAddress, amount, {
+                        from: notAuthorized,
+                    }),
                 );
             });
         });
@@ -177,16 +186,16 @@ describe('Asset Transfer Proxies', () => {
             it('should succesfully make multiple token transfers', async () => {
                 const erc20Balances = await erc20Wrapper.getBalancesAsync();
 
-                const encodedProxyMetadata = assetProxyUtils.encodeERC20ProxyData(zrxToken.address);
+                const encodedAssetData = assetProxyUtils.encodeERC20AssetData(zrxToken.address);
                 const amount = new BigNumber(10);
                 const numTransfers = 2;
-                const assetMetadata = _.times(numTransfers, () => encodedProxyMetadata);
+                const assetData = _.times(numTransfers, () => encodedAssetData);
                 const fromAddresses = _.times(numTransfers, () => makerAddress);
                 const toAddresses = _.times(numTransfers, () => takerAddress);
                 const amounts = _.times(numTransfers, () => amount);
 
                 const txHash = await erc20Proxy.batchTransferFrom.sendTransactionAsync(
-                    assetMetadata,
+                    assetData,
                     fromAddresses,
                     toAddresses,
                     amounts,
@@ -208,22 +217,18 @@ describe('Asset Transfer Proxies', () => {
             });
 
             it('should throw if not called by an authorized address', async () => {
-                const encodedProxyMetadata = assetProxyUtils.encodeERC20ProxyData(zrxToken.address);
+                const encodedAssetData = assetProxyUtils.encodeERC20AssetData(zrxToken.address);
                 const amount = new BigNumber(10);
                 const numTransfers = 2;
-                const assetMetadata = _.times(numTransfers, () => encodedProxyMetadata);
+                const assetData = _.times(numTransfers, () => encodedAssetData);
                 const fromAddresses = _.times(numTransfers, () => makerAddress);
                 const toAddresses = _.times(numTransfers, () => takerAddress);
                 const amounts = _.times(numTransfers, () => amount);
 
                 return expectRevertOrAlwaysFailingTransactionAsync(
-                    erc20Proxy.batchTransferFrom.sendTransactionAsync(
-                        assetMetadata,
-                        fromAddresses,
-                        toAddresses,
-                        amounts,
-                        { from: notAuthorized },
-                    ),
+                    erc20Proxy.batchTransferFrom.sendTransactionAsync(assetData, fromAddresses, toAddresses, amounts, {
+                        from: notAuthorized,
+                    }),
                 );
             });
         });
@@ -237,11 +242,8 @@ describe('Asset Transfer Proxies', () => {
     describe('Transfer Proxy - ERC721', () => {
         describe('transferFrom', () => {
             it('should successfully transfer tokens', async () => {
-                // Construct metadata for ERC721 proxy
-                const encodedProxyMetadata = assetProxyUtils.encodeERC721ProxyData(
-                    erc721Token.address,
-                    erc721MakerTokenId,
-                );
+                // Construct ERC721 asset data
+                const encodedAssetData = assetProxyUtils.encodeERC721AssetData(erc721Token.address, erc721MakerTokenId);
                 // Verify pre-condition
                 const ownerMakerAsset = await erc721Token.ownerOf.callAsync(erc721MakerTokenId);
                 expect(ownerMakerAsset).to.be.bignumber.equal(makerAddress);
@@ -249,7 +251,7 @@ describe('Asset Transfer Proxies', () => {
                 const amount = new BigNumber(1);
                 await web3Wrapper.awaitTransactionSuccessAsync(
                     await erc721Proxy.transferFrom.sendTransactionAsync(
-                        encodedProxyMetadata,
+                        encodedAssetData,
                         makerAddress,
                         takerAddress,
                         amount,
@@ -262,12 +264,94 @@ describe('Asset Transfer Proxies', () => {
                 expect(newOwnerMakerAsset).to.be.bignumber.equal(takerAddress);
             });
 
-            it('should throw if transferring 0 amount of a token', async () => {
-                // Construct metadata for ERC721 proxy
-                const encodedProxyMetadata = assetProxyUtils.encodeERC721ProxyData(
+            it('should not call onERC721Received when transferring to a smart contract without receiver data', async () => {
+                // Construct ERC721 asset data
+                const encodedAssetData = assetProxyUtils.encodeERC721AssetData(erc721Token.address, erc721MakerTokenId);
+                // Verify pre-condition
+                const ownerMakerAsset = await erc721Token.ownerOf.callAsync(erc721MakerTokenId);
+                expect(ownerMakerAsset).to.be.bignumber.equal(makerAddress);
+                // Perform a transfer from makerAddress to takerAddress
+                const amount = new BigNumber(1);
+                const txHash = await erc721Proxy.transferFrom.sendTransactionAsync(
+                    encodedAssetData,
+                    makerAddress,
+                    erc721Receiver.address,
+                    amount,
+                    { from: exchangeAddress },
+                );
+                await web3Wrapper.awaitTransactionSuccessAsync(txHash, constants.AWAIT_TRANSACTION_MINED_MS);
+                // Parse transaction logs
+                const logDecoder = new LogDecoder(web3Wrapper, erc721Receiver.address);
+                const tx = await logDecoder.getTxWithDecodedLogsAsync(txHash);
+                // Verify that no log was emitted by erc721 receiver
+                expect(tx.logs.length).to.be.equal(0);
+                // Verify transfer was successful
+                const newOwnerMakerAsset = await erc721Token.ownerOf.callAsync(erc721MakerTokenId);
+                expect(newOwnerMakerAsset).to.be.bignumber.equal(erc721Receiver.address);
+            });
+
+            it('should call onERC721Received when transferring to a smart contract with receiver data', async () => {
+                // Construct ERC721 asset data
+                const receiverData = ethUtil.bufferToHex(assetProxyUtils.encodeUint256(generatePseudoRandomSalt()));
+                const encodedAssetData = assetProxyUtils.encodeERC721AssetData(
                     erc721Token.address,
                     erc721MakerTokenId,
+                    receiverData,
                 );
+                // Verify pre-condition
+                const ownerMakerAsset = await erc721Token.ownerOf.callAsync(erc721MakerTokenId);
+                expect(ownerMakerAsset).to.be.bignumber.equal(makerAddress);
+                // Perform a transfer from makerAddress to takerAddress
+                const amount = new BigNumber(1);
+                const txHash = await erc721Proxy.transferFrom.sendTransactionAsync(
+                    encodedAssetData,
+                    makerAddress,
+                    erc721Receiver.address,
+                    amount,
+                    { from: exchangeAddress },
+                );
+                await web3Wrapper.awaitTransactionSuccessAsync(txHash, constants.AWAIT_TRANSACTION_MINED_MS);
+                // Parse transaction logs
+                const logDecoder = new LogDecoder(web3Wrapper, erc721Receiver.address);
+                const tx = await logDecoder.getTxWithDecodedLogsAsync(txHash);
+                // Validate log emitted by erc721 receiver
+                expect(tx.logs.length).to.be.equal(1);
+                const tokenReceivedLog = tx.logs[0] as LogWithDecodedArgs<TokenReceivedContractEventArgs>;
+                expect(tokenReceivedLog.args.from).to.be.equal(makerAddress);
+                expect(tokenReceivedLog.args.tokenId).to.be.bignumber.equal(erc721MakerTokenId);
+                expect(tokenReceivedLog.args.data).to.be.equal(receiverData);
+                // Verify transfer was successful
+                const newOwnerMakerAsset = await erc721Token.ownerOf.callAsync(erc721MakerTokenId);
+                expect(newOwnerMakerAsset).to.be.bignumber.equal(erc721Receiver.address);
+            });
+
+            it('should throw if there is receiver data but contract does not have onERC721Received', async () => {
+                // Construct ERC721 asset data
+                const receiverData = ethUtil.bufferToHex(assetProxyUtils.encodeUint256(generatePseudoRandomSalt()));
+                const encodedAssetData = assetProxyUtils.encodeERC721AssetData(
+                    erc721Token.address,
+                    erc721MakerTokenId,
+                    receiverData,
+                );
+                // Verify pre-condition
+                const ownerMakerAsset = await erc721Token.ownerOf.callAsync(erc721MakerTokenId);
+                expect(ownerMakerAsset).to.be.bignumber.equal(makerAddress);
+                // Perform a transfer from makerAddress to takerAddress
+                const amount = new BigNumber(1);
+                return expectRevertOrAlwaysFailingTransactionAsync(
+                    erc721Proxy.transferFrom.sendTransactionAsync(
+                        encodedAssetData,
+                        makerAddress,
+                        erc20Proxy.address, // the ERC20 proxy does not have an ERC721 receiver
+                        amount,
+                        { from: exchangeAddress },
+                    ),
+                );
+            });
+
+            it('should throw if transferring 0 amount of a token', async () => {
+                // Construct ERC721 asset data
+                const encodedAssetData = assetProxyUtils.encodeERC721AssetData(erc721Token.address, erc721MakerTokenId);
                 // Verify pre-condition
                 const ownerMakerAsset = await erc721Token.ownerOf.callAsync(erc721MakerTokenId);
                 expect(ownerMakerAsset).to.be.bignumber.equal(makerAddress);
@@ -275,7 +359,7 @@ describe('Asset Transfer Proxies', () => {
                 const amount = new BigNumber(0);
                 return expectRevertOrAlwaysFailingTransactionAsync(
                     erc721Proxy.transferFrom.sendTransactionAsync(
-                        encodedProxyMetadata,
+                        encodedAssetData,
                         makerAddress,
                         takerAddress,
                         amount,
@@ -285,11 +369,8 @@ describe('Asset Transfer Proxies', () => {
             });
 
             it('should throw if transferring > 1 amount of a token', async () => {
-                // Construct metadata for ERC721 proxy
-                const encodedProxyMetadata = assetProxyUtils.encodeERC721ProxyData(
-                    erc721Token.address,
-                    erc721MakerTokenId,
-                );
+                // Construct ERC721 asset data
+                const encodedAssetData = assetProxyUtils.encodeERC721AssetData(erc721Token.address, erc721MakerTokenId);
                 // Verify pre-condition
                 const ownerMakerAsset = await erc721Token.ownerOf.callAsync(erc721MakerTokenId);
                 expect(ownerMakerAsset).to.be.bignumber.equal(makerAddress);
@@ -297,7 +378,7 @@ describe('Asset Transfer Proxies', () => {
                 const amount = new BigNumber(500);
                 return expectRevertOrAlwaysFailingTransactionAsync(
                     erc721Proxy.transferFrom.sendTransactionAsync(
-                        encodedProxyMetadata,
+                        encodedAssetData,
                         makerAddress,
                         takerAddress,
                         amount,
@@ -307,11 +388,8 @@ describe('Asset Transfer Proxies', () => {
             });
 
             it('should throw if allowances are too low', async () => {
-                // Construct metadata for ERC721 proxy
-                const encodedProxyMetadata = assetProxyUtils.encodeERC721ProxyData(
-                    erc721Token.address,
-                    erc721MakerTokenId,
-                );
+                // Construct ERC721 asset data
+                const encodedAssetData = assetProxyUtils.encodeERC721AssetData(erc721Token.address, erc721MakerTokenId);
                 // Remove transfer approval for makerAddress.
                 await web3Wrapper.awaitTransactionSuccessAsync(
                     await erc721Token.setApprovalForAll.sendTransactionAsync(erc721Proxy.address, false, {
@@ -322,29 +400,20 @@ describe('Asset Transfer Proxies', () => {
                 // Perform a transfer; expect this to fail.
                 const amount = new BigNumber(1);
                 return expectRevertOrAlwaysFailingTransactionAsync(
-                    erc20Proxy.transferFrom.sendTransactionAsync(
-                        encodedProxyMetadata,
-                        makerAddress,
-                        takerAddress,
-                        amount,
-                        {
-                            from: notAuthorized,
-                        },
-                    ),
+                    erc20Proxy.transferFrom.sendTransactionAsync(encodedAssetData, makerAddress, takerAddress, amount, {
+                        from: notAuthorized,
+                    }),
                 );
             });
 
             it('should throw if requesting address is not authorized', async () => {
-                // Construct metadata for ERC721 proxy
-                const encodedProxyMetadata = assetProxyUtils.encodeERC721ProxyData(
-                    erc721Token.address,
-                    erc721MakerTokenId,
-                );
+                // Construct ERC721 asset data
+                const encodedAssetData = assetProxyUtils.encodeERC721AssetData(erc721Token.address, erc721MakerTokenId);
                 // Perform a transfer from makerAddress to takerAddress
                 const amount = new BigNumber(1);
                 return expectRevertOrAlwaysFailingTransactionAsync(
                     erc721Proxy.transferFrom.sendTransactionAsync(
-                        encodedProxyMetadata,
+                        encodedAssetData,
                         makerAddress,
                         takerAddress,
                         amount,
@@ -360,16 +429,16 @@ describe('Asset Transfer Proxies', () => {
                 const [makerTokenIdA, makerTokenIdB] = erc721TokensById[makerAddress][erc721Token.address];
 
                 const numTransfers = 2;
-                const assetMetadata = [
-                    assetProxyUtils.encodeERC721ProxyData(erc721Token.address, makerTokenIdA),
-                    assetProxyUtils.encodeERC721ProxyData(erc721Token.address, makerTokenIdB),
+                const assetData = [
+                    assetProxyUtils.encodeERC721AssetData(erc721Token.address, makerTokenIdA),
+                    assetProxyUtils.encodeERC721AssetData(erc721Token.address, makerTokenIdB),
                 ];
                 const fromAddresses = _.times(numTransfers, () => makerAddress);
                 const toAddresses = _.times(numTransfers, () => takerAddress);
                 const amounts = _.times(numTransfers, () => new BigNumber(1));
 
                 const txHash = await erc721Proxy.batchTransferFrom.sendTransactionAsync(
-                    assetMetadata,
+                    assetData,
                     fromAddresses,
                     toAddresses,
                     amounts,
@@ -392,22 +461,18 @@ describe('Asset Transfer Proxies', () => {
                 const [makerTokenIdA, makerTokenIdB] = erc721TokensById[makerAddress][erc721Token.address];
 
                 const numTransfers = 2;
-                const assetMetadata = [
-                    assetProxyUtils.encodeERC721ProxyData(erc721Token.address, makerTokenIdA),
-                    assetProxyUtils.encodeERC721ProxyData(erc721Token.address, makerTokenIdB),
+                const assetData = [
+                    assetProxyUtils.encodeERC721AssetData(erc721Token.address, makerTokenIdA),
+                    assetProxyUtils.encodeERC721AssetData(erc721Token.address, makerTokenIdB),
                 ];
                 const fromAddresses = _.times(numTransfers, () => makerAddress);
                 const toAddresses = _.times(numTransfers, () => takerAddress);
                 const amounts = _.times(numTransfers, () => new BigNumber(1));
 
                 return expectRevertOrAlwaysFailingTransactionAsync(
-                    erc721Proxy.batchTransferFrom.sendTransactionAsync(
-                        assetMetadata,
-                        fromAddresses,
-                        toAddresses,
-                        amounts,
-                        { from: notAuthorized },
-                    ),
+                    erc721Proxy.batchTransferFrom.sendTransactionAsync(assetData, fromAddresses, toAddresses, amounts, {
+                        from: notAuthorized,
+                    }),
                 );
             });
         });
@@ -418,3 +483,4 @@ describe('Asset Transfer Proxies', () => {
         });
     });
 });
+// tslint:enable:no-unnecessary-type-assertion

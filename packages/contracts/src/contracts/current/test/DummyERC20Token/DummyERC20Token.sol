@@ -31,7 +31,8 @@ contract DummyERC20Token is Mintable, Ownable {
         string _name,
         string _symbol,
         uint256 _decimals,
-        uint256 _totalSupply)
+        uint256 _totalSupply
+    )
         public
     {
         name = _name;

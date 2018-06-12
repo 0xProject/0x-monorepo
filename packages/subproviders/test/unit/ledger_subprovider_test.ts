@@ -48,7 +48,7 @@ describe('LedgerSubprovider', () => {
                     };
                     return ecSignature;
                 },
-                signTransaction: async (derivationPath: string, txHex: string) => {
+                signTransaction: async (_derivationPath: string, _txHex: string) => {
                     const ecSignature = {
                         v: '77',
                         r: '88a95ef1378487bc82be558e82c8478baf840c545d5b887536bb1da63673a98b',
@@ -193,7 +193,7 @@ describe('LedgerSubprovider', () => {
                     params: [FAKE_ADDRESS, nonHexMessage],
                     id: 1,
                 };
-                const callback = reportCallbackErrors(done)((err: Error, response: JSONRPCResponsePayload) => {
+                const callback = reportCallbackErrors(done)((err: Error, _response: JSONRPCResponsePayload) => {
                     expect(err).to.not.be.a('null');
                     expect(err.message).to.be.equal('Expected data to be of type HexString, encountered: hello world');
                     done();
@@ -208,7 +208,7 @@ describe('LedgerSubprovider', () => {
                     params: [nonHexMessage, FAKE_ADDRESS],
                     id: 1,
                 };
-                const callback = reportCallbackErrors(done)((err: Error, response: JSONRPCResponsePayload) => {
+                const callback = reportCallbackErrors(done)((err: Error, _response: JSONRPCResponsePayload) => {
                     expect(err).to.not.be.a('null');
                     expect(err.message).to.be.equal('Expected data to be of type HexString, encountered: hello world');
                     done();
@@ -226,7 +226,7 @@ describe('LedgerSubprovider', () => {
                     params: [tx],
                     id: 1,
                 };
-                const callback = reportCallbackErrors(done)((err: Error, response: JSONRPCResponsePayload) => {
+                const callback = reportCallbackErrors(done)((err: Error, _response: JSONRPCResponsePayload) => {
                     expect(err).to.not.be.a('null');
                     expect(err.message).to.be.equal(WalletSubproviderErrors.SenderInvalidOrNotSupplied);
                     done();
@@ -245,7 +245,7 @@ describe('LedgerSubprovider', () => {
                     params: [tx],
                     id: 1,
                 };
-                const callback = reportCallbackErrors(done)((err: Error, response: JSONRPCResponsePayload) => {
+                const callback = reportCallbackErrors(done)((err: Error, _response: JSONRPCResponsePayload) => {
                     expect(err).to.not.be.a('null');
                     expect(err.message).to.be.equal(WalletSubproviderErrors.SenderInvalidOrNotSupplied);
                     done();

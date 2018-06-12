@@ -7,7 +7,7 @@ import 'make-promises-safe';
 import {
     MultiSigWalletWithTimeLockContract,
     SubmissionContractEventArgs,
-} from '../src/contract_wrappers/generated/multi_sig_wallet_with_time_lock';
+} from '../src/generated_contract_wrappers/multi_sig_wallet_with_time_lock';
 import { artifacts } from '../src/utils/artifacts';
 import { expectRevertOrAlwaysFailingTransactionAsync } from '../src/utils/assertions';
 import { chaiSetup } from '../src/utils/chai_setup';

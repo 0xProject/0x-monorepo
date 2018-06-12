@@ -4,10 +4,10 @@ import { AssetProxyId } from '@0xproject/types';
 import { BigNumber } from '@0xproject/utils';
 import * as chai from 'chai';
 
-import { DummyERC20TokenContract } from '../../src/contract_wrappers/generated/dummy_e_r_c20_token';
-import { ERC20ProxyContract } from '../../src/contract_wrappers/generated/e_r_c20_proxy';
-import { ERC721ProxyContract } from '../../src/contract_wrappers/generated/e_r_c721_proxy';
-import { TestAssetProxyDispatcherContract } from '../../src/contract_wrappers/generated/test_asset_proxy_dispatcher';
+import { DummyERC20TokenContract } from '../../src/generated_contract_wrappers/dummy_e_r_c20_token';
+import { ERC20ProxyContract } from '../../src/generated_contract_wrappers/e_r_c20_proxy';
+import { ERC721ProxyContract } from '../../src/generated_contract_wrappers/e_r_c721_proxy';
+import { TestAssetProxyDispatcherContract } from '../../src/generated_contract_wrappers/test_asset_proxy_dispatcher';
 import { artifacts } from '../../src/utils/artifacts';
 import { expectRevertOrAlwaysFailingTransactionAsync } from '../../src/utils/assertions';
 import { chaiSetup } from '../../src/utils/chai_setup';
@@ -275,13 +275,13 @@ describe('AssetProxyDispatcher', () => {
                 constants.AWAIT_TRANSACTION_MINED_MS,
             );
             // Construct metadata for ERC20 proxy
-            const encodedProxyMetadata = assetProxyUtils.encodeERC20ProxyData(zrxToken.address);
+            const encodedAssetData = assetProxyUtils.encodeERC20AssetData(zrxToken.address);
             // Perform a transfer from makerAddress to takerAddress
             const erc20Balances = await erc20Wrapper.getBalancesAsync();
             const amount = new BigNumber(10);
             await web3Wrapper.awaitTransactionSuccessAsync(
                 await assetProxyDispatcher.publicDispatchTransferFrom.sendTransactionAsync(
-                    encodedProxyMetadata,
+                    encodedAssetData,
                     makerAddress,
                     takerAddress,
                     amount,
@@ -301,12 +301,12 @@ describe('AssetProxyDispatcher', () => {
 
         it('should throw if dispatching to unregistered proxy', async () => {
             // Construct metadata for ERC20 proxy
-            const encodedProxyMetadata = assetProxyUtils.encodeERC20ProxyData(zrxToken.address);
+            const encodedAssetData = assetProxyUtils.encodeERC20AssetData(zrxToken.address);
             // Perform a transfer from makerAddress to takerAddress
             const amount = new BigNumber(10);
             return expectRevertOrAlwaysFailingTransactionAsync(
                 assetProxyDispatcher.publicDispatchTransferFrom.sendTransactionAsync(
-                    encodedProxyMetadata,
+                    encodedAssetData,
                     makerAddress,
                     takerAddress,
                     amount,

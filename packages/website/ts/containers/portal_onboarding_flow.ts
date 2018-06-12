@@ -31,7 +31,7 @@ interface ConnectedDispatch {
     updateOnboardingStep: (stepIndex: number) => void;
 }
 
-const mapStateToProps = (state: State, ownProps: PortalOnboardingFlowProps): ConnectedState => ({
+const mapStateToProps = (state: State, _ownProps: PortalOnboardingFlowProps): ConnectedState => ({
     stepIndex: state.portalOnboardingStep,
     isRunning: state.isPortalOnboardingShowing,
     userAddress: state.userAddress,

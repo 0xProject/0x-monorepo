@@ -34,9 +34,6 @@ export const utils = {
             throw new Error(message);
         }
     },
-    spawnSwitchErr(name: string, value: any): Error {
-        return new Error(`Unexpected switch value: ${value} encountered for ${name}`);
-    },
     isNumeric(n: string): boolean {
         return !isNaN(parseFloat(n)) && isFinite(Number(n));
     },
@@ -156,7 +153,7 @@ export const utils = {
                 const intervalId = setTimeout(() => {
                     resolve(false);
                 }, getApiVersionTimeoutMs);
-                u2f.getApiVersion((version: number) => {
+                u2f.getApiVersion((_version: number) => {
                     clearTimeout(intervalId);
                     resolve(true);
                 });
@@ -283,7 +280,7 @@ export const utils = {
         if (document.readyState === 'complete') {
             return; // Already loaded
         }
-        return new Promise<void>((resolve, reject) => {
+        return new Promise<void>((resolve, _reject) => {
             window.onload = () => resolve();
         });
     },

@@ -310,7 +310,7 @@ export class LegacyPortal extends React.Component<LegacyPortalProps, LegacyPorta
             />
         );
     }
-    private _renderFillOrder(match: any, location: Location, history: History): React.ReactNode {
+    private _renderFillOrder(_match: any, _location: Location, _history: History): React.ReactNode {
         const initialFillOrder = !_.isUndefined(this.props.userSuppliedOrderCache)
             ? this.props.userSuppliedOrderCache
             : this._sharedOrderIfExists;
@@ -329,7 +329,7 @@ export class LegacyPortal extends React.Component<LegacyPortalProps, LegacyPorta
             />
         );
     }
-    private _renderGenerateOrderForm(match: any, location: Location, history: History): React.ReactNode {
+    private _renderGenerateOrderForm(_match: any, _location: Location, _history: History): React.ReactNode {
         return (
             <GenerateOrderForm
                 blockchain={this._blockchain}

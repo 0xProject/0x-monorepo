@@ -101,6 +101,9 @@ const docsInfoConfig: DocsInfoConfig = {
             '"0x.js/src/contract_wrappers/generated/ether_token"',
             '"0x.js/src/contract_wrappers/generated/token"',
             '"0x.js/src/contract_wrappers/generated/exchange"',
+            '"0x.js/src/generated_contract_wrappers/ether_token"',
+            '"0x.js/src/generated_contract_wrappers/token"',
+            '"0x.js/src/generated_contract_wrappers/exchange"',
         ],
     },
     menuSubsectionToVersionWhenIntroduced: {
@@ -206,7 +209,7 @@ interface ConnectedDispatch {
     dispatcher: Dispatcher;
 }
 
-const mapStateToProps = (state: State, ownProps: DocPageProps): ConnectedState => ({
+const mapStateToProps = (state: State, _ownProps: DocPageProps): ConnectedState => ({
     docsVersion: state.docsVersion,
     availableDocVersions: state.availableDocVersions,
     docsInfo,

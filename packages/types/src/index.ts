@@ -103,10 +103,9 @@ export interface OrderRelevantState {
     makerProxyAllowance: BigNumber;
     makerFeeBalance: BigNumber;
     makerFeeProxyAllowance: BigNumber;
-    filledTakerTokenAmount: BigNumber;
-    cancelledTakerTokenAmount: BigNumber;
-    remainingFillableMakerTokenAmount: BigNumber;
-    remainingFillableTakerTokenAmount: BigNumber;
+    filledTakerAssetAmount: BigNumber;
+    remainingFillableMakerAssetAmount: BigNumber;
+    remainingFillableTakerAssetAmount: BigNumber;
 }
 
 export interface OrderStateValid {
@@ -157,19 +156,14 @@ export enum AssetProxyId {
     ERC721,
 }
 
-export interface ERC20ProxyData {
+export interface ERC20AssetData {
     assetProxyId: AssetProxyId;
     tokenAddress: string;
 }
 
-export interface ERC721ProxyData {
+export interface ERC721AssetData {
     assetProxyId: AssetProxyId;
     tokenAddress: string;
     tokenId: BigNumber;
-}
-
-export interface ProxyData {
-    assetProxyId: AssetProxyId;
-    tokenAddress?: string;
-    data?: any;
+    receiverData: string;
 }

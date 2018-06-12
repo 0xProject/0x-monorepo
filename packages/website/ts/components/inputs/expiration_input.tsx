@@ -80,7 +80,7 @@ export class ExpirationInput extends React.Component<ExpirationInputProps, Expir
         const defaultDateTime = utils.initialOrderExpiryUnixTimestampSec();
         this.props.updateOrderExpiry(defaultDateTime);
     }
-    private _onDateChanged(e: any, date: Date): void {
+    private _onDateChanged(_event: any, date: Date): void {
         const dateMoment = moment(date);
         this.setState({
             dateMoment,
@@ -88,7 +88,7 @@ export class ExpirationInput extends React.Component<ExpirationInputProps, Expir
         const timestamp = utils.convertToUnixTimestampSeconds(dateMoment, this.state.timeMoment);
         this.props.updateOrderExpiry(timestamp);
     }
-    private _onTimeChanged(e: any, time: Date): void {
+    private _onTimeChanged(_event: any, time: Date): void {
         const timeMoment = moment(time);
         this.setState({
             timeMoment,

@@ -60,7 +60,7 @@ export const callbackErrorReporter = {
         done: DoneCallback,
         errMsg: string,
     ): <T>(error: Error | null, value: T | undefined) => void {
-        const wrapped = <T>(error: Error | null, value: T | undefined) => {
+        const wrapped = <T>(error: Error | null, _value: T | undefined) => {
             if (_.isNull(error)) {
                 done(new Error('Expected callback to receive an error'));
             } else {

@@ -18,19 +18,21 @@
         "test": "yarn run_mocha",
         "rebuild_and_test": "run-s build test",
         "test:coverage": "SOLIDITY_COVERAGE=true run-s build run_mocha coverage:report:text coverage:report:lcov",
-        "run_mocha": "mocha 'lib/test/**/*.js' --timeout 100000 --bail --exit",
+        "test:profiler": "SOLIDITY_PROFILER=true run-s build run_mocha profiler:report:html",
+        "run_mocha": "mocha --require source-map-support/register 'lib/test/**/*.js' --timeout 100000 --bail --exit",
         "compile": "sol-compiler",
-        "clean": "shx rm -rf lib src/contract_wrappers/generated",
+        "clean": "shx rm -rf lib src/generated_contract_wrappers",
         "generate_contract_wrappers":
-            "abi-gen --abis  ${npm_package_config_abis} --template ../contract_templates/contract.handlebars --partials '../contract_templates/partials/**/*.handlebars' --output src/contract_wrappers/generated --backend ethers",
-        "lint": "tslint --project . --exclude **/src/contract_wrappers/**/* --exclude **/lib/**/*",
+            "abi-gen --abis  ${npm_package_config_abis} --template ../contract_templates/contract.handlebars --partials '../contract_templates/partials/**/*.handlebars' --output src/generated_contract_wrappers --backend ethers",
+        "lint": "tslint --project . --exclude **/src/generated_contract_wrappers/**/* --exclude **/lib/**/*",
         "coverage:report:text": "istanbul report text",
         "coverage:report:html": "istanbul report html && open coverage/index.html",
+        "profiler:report:html": "istanbul report html && open coverage/index.html",
         "coverage:report:lcov": "istanbul report lcov",
         "test:circleci": "yarn test"
     },
     "config": {
-        "abis": "../migrations/artifacts/2.0.0/@(AssetProxyOwner|DummyERC20Token|DummyERC721Token|ERC20Proxy|ERC721Proxy|Exchange|MixinAuthorizable|MultiSigWallet|MultiSigWalletWithTimeLock|TestAssetProxyDispatcher|TestLibBytes|TestLibs|TestSignatureValidator|TokenRegistry|Whitelist|WETH9|ZRXToken).json"
+        "abis": "../migrations/artifacts/2.0.0/@(AssetProxyOwner|DummyERC20Token|DummyERC721Receiver|DummyERC721Token|ERC20Proxy|ERC721Proxy|Exchange|MixinAuthorizable|MultiSigWallet|MultiSigWalletWithTimeLock|TestAssetDataDecoders|TestAssetProxyDispatcher|TestLibBytes|TestLibMem|TestLibs|TestSignatureValidator|TokenRegistry|Whitelist|WETH9|ZRXToken).json"
     },
     "repository": {
         "type": "git",

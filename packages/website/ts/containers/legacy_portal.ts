@@ -37,7 +37,7 @@ interface ConnectedDispatch {
     dispatcher: Dispatcher;
 }
 
-const mapStateToProps = (state: State, ownProps: LegacyPortalComponentProps): ConnectedState => {
+const mapStateToProps = (state: State, _ownProps: LegacyPortalComponentProps): ConnectedState => {
     const receiveAssetToken = state.sideToAssetToken[Side.Receive];
     const depositAssetToken = state.sideToAssetToken[Side.Deposit];
     const receiveAddress = !_.isUndefined(receiveAssetToken.address)

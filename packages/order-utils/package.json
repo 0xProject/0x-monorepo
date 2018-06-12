@@ -13,12 +13,12 @@
         "pre_build": "run-s update_artifacts generate_contract_wrappers",
         "transpile": "tsc",
         "copy_monorepo_scripts": "copyfiles -u 3 './lib/src/monorepo_scripts/**/*' ./scripts",
-        "generate_contract_wrappers": "abi-gen --abis 'lib/src/artifacts/@(Exchange|IWallet|IValidator).json' --template ../contract_templates/contract.handlebars --partials '../contract_templates/partials/**/*.handlebars' --output src/generated_contract_wrappers --backend ethers",
+        "generate_contract_wrappers": "abi-gen --abis 'lib/src/artifacts/@(Exchange|IWallet|IValidator|DummyERC20Token|ERC20Proxy|ERC20Token).json' --template ../contract_templates/contract.handlebars --partials '../contract_templates/partials/**/*.handlebars' --output src/generated_contract_wrappers --backend ethers",
         "update_artifacts": "for i in ${npm_package_config_contracts}; do copyfiles -u 4 ../migrations/artifacts/2.0.0/$i.json lib/src/artifacts; done;",
         "test": "yarn run_mocha",
         "rebuild_and_test": "run-s build test",
         "test:circleci": "yarn test:coverage",
-        "run_mocha": "mocha lib/test/**/*_test.js --bail --exit",
+        "run_mocha": "mocha --require source-map-support/register lib/test/**/*_test.js --bail --exit",
         "test:coverage": "nyc npm run test --all && yarn coverage:report:lcov",
         "coverage:report:lcov": "nyc report --reporter=text-lcov > coverage/lcov.info",
         "clean": "shx rm -rf lib scripts lib/src/artifacts src/generated_contract_wrappers",
@@ -29,7 +29,7 @@
         "upload_docs_json": "aws s3 cp generated_docs/index.json $S3_URL --profile 0xproject --grants read=uri=http://acs.amazonaws.com/groups/global/AllUsers --content-type application/json"
     },
     "config": {
-        "contracts": "IWallet IValidator Exchange",
+        "contracts": "IWallet IValidator Exchange DummyERC20Token ERC20Proxy ERC20Token",
         "postpublish": {
             "docPublishConfigs": {
                 "extraFileIncludes": [
@@ -52,6 +52,7 @@
     "homepage": "https://github.com/0xProject/0x-monorepo/packages/order-utils/README.md",
     "devDependencies": {
         "@0xproject/dev-utils": "^0.4.2",
+        "@0xproject/migrations": "^0.0.6",
         "@0xproject/monorepo-scripts": "^0.1.20",
         "@0xproject/tslint-config": "^0.4.18",
         "@types/ethereumjs-abi": "^0.6.0",

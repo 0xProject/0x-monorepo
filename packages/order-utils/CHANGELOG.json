@@ -1,5 +1,13 @@
 [
     {
+        "changes": [
+            {
+                "note": "Export parseECSignature method",
+                "pr": 684
+            }
+        ]
+    },
+    {
         "version": "0.1.0",
         "changes": [
             {

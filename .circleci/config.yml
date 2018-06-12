@@ -35,7 +35,28 @@ jobs:
           key: repo-{{ .Environment.CIRCLE_SHA1 }}
           paths:
             - ~/repo
-  test-1:
+  test-contracts-ganache:
+    docker:
+      - image: circleci/node:9
+    working_directory: ~/repo
+    steps:
+      - restore_cache:
+          keys:
+            - repo-{{ .Environment.CIRCLE_SHA1 }}
+      - run: yarn wsrun test:circleci contracts
+  test-contracts-geth:
+    docker:
+      - image: circleci/node:9
+      - image: albrow/0x-devnet
+    working_directory: ~/repo
+    steps:
+      - restore_cache:
+          keys:
+            - repo-{{ .Environment.CIRCLE_SHA1 }}
+      # HACK(albrow): we need to sleep 15 seconds to ensure the devnet is
+      # initialized
+      - run: sleep 15 && TEST_PROVIDER=geth yarn wsrun test contracts
+  test-rest:
     docker:
       - image: circleci/node:9
     working_directory: ~/repo
@@ -45,6 +66,13 @@ jobs:
             - repo-{{ .Environment.CIRCLE_SHA1 }}
       - run: yarn wsrun test:circleci @0xproject/contract-wrappers
       - run: yarn wsrun test:circleci @0xproject/sol-compiler
+      - run: yarn wsrun test:circleci @0xproject/assert
+      - run: yarn wsrun test:circleci @0xproject/connect
+      - run: yarn wsrun test:circleci @0xproject/dev-utils
+      - run: yarn wsrun test:circleci @0xproject/json-schemas
+      - run: yarn wsrun test:circleci @0xproject/subproviders
+      - run: yarn wsrun test:circleci @0xproject/sol-cov
+      - run: yarn wsrun test:circleci @0xproject/metacoin
       - save_cache:
           key: coverage-contract-wrappers-{{ .Environment.CIRCLE_SHA1 }}
           paths:
@@ -53,30 +81,6 @@ jobs:
           key: coverage-sol-compiler-{{ .Environment.CIRCLE_SHA1 }}
           paths:
             - ~/repo/packages/sol-compiler/coverage/lcov.info
-  test-contracts:
-    docker:
-      - image: circleci/node:9
-    working_directory: ~/repo
-    steps:
-      - restore_cache:
-          keys:
-            - repo-{{ .Environment.CIRCLE_SHA1 }}
-      - run: yarn wsrun test:circleci contracts
-  test-2:
-    docker:
-      - image: circleci/node:9
-    working_directory: ~/repo
-    steps:
-      - restore_cache:
-          keys:
-            - repo-{{ .Environment.CIRCLE_SHA1 }}
-      - run: yarn wsrun test:circleci @0xproject/assert
-      - run: yarn wsrun test:circleci @0xproject/connect
-      - run: yarn wsrun test:circleci @0xproject/dev-utils
-      - run: yarn wsrun test:circleci @0xproject/json-schemas
-      - run: yarn wsrun test:circleci @0xproject/subproviders
-      - run: yarn wsrun test:circleci @0xproject/sol-cov
-      - run: yarn wsrun test:circleci @0xproject/metacoin
       - save_cache:
           key: coverage-assert-{{ .Environment.CIRCLE_SHA1 }}
           paths:
@@ -162,13 +166,13 @@ workflows:
   main:
     jobs:
       - build
-      - test-1:
+      - test-contracts-ganache:
           requires:
             - build
-      - test-2:
+      - test-contracts-geth:
           requires:
             - build
-      - test-contracts:
+      - test-rest:
           requires:
             - build
       - static-tests:
@@ -176,5 +180,4 @@ workflows:
             - build
       - submit-coverage:
           requires:
-            - test-1
-            - test-2
+            - test-rest

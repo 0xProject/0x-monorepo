@@ -5,6 +5,7 @@ import * as chai from 'chai';
 import 'make-promises-safe';
 
 import { ContractWrappers, ExchangeContractErrs } from '../src';
+import { BalanceAndProxyAllowanceLazyStore } from '../src/stores/balance_proxy_allowance_lazy_store';
 import { TradeSide, TransferType } from '../src/types';
 import { ExchangeTransferSimulator } from '../src/utils/exchange_transfer_simulator';
 
@@ -44,7 +45,11 @@ describe('ExchangeTransferSimulator', () => {
     });
     describe('#transferFromAsync', () => {
         beforeEach(() => {
-            exchangeTransferSimulator = new ExchangeTransferSimulator(contractWrappers.token, BlockParamLiteral.Latest);
+            const balanceAndProxyAllowanceLazyStore = new BalanceAndProxyAllowanceLazyStore(
+                contractWrappers.token,
+                BlockParamLiteral.Latest,
+            );
+            exchangeTransferSimulator = new ExchangeTransferSimulator(balanceAndProxyAllowanceLazyStore);
         });
         it("throws if the user doesn't have enough allowance", async () => {
             return expect(

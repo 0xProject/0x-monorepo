@@ -50,7 +50,7 @@ contract MixinExchangeCore is
 
     ////// Core exchange functions //////
 
-    /// @dev Cancels all orders reated by sender with a salt less than or equal to the specified salt value.
+    /// @dev Cancels all orders created by sender with a salt less than or equal to the specified salt value.
     /// @param salt Orders created with a salt less or equal to this value will be cancelled.
     function cancelOrdersUpTo(uint256 salt)
         external

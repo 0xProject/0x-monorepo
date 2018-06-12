@@ -17,7 +17,7 @@
         "test:coverage": "nyc npm run test --all && yarn coverage:report:lcov",
         "coverage:report:lcov": "nyc report --reporter=text-lcov > coverage/lcov.info",
         "test:circleci": "yarn test:coverage",
-        "run_mocha": "mocha lib/test/**/*_test.js --exit",
+        "run_mocha": "mocha --require source-map-support/register lib/test/**/*_test.js --exit",
         "clean": "shx rm -rf lib scripts test/fixtures/artifacts src/artifacts",
         "copy_test_fixtures": "copyfiles 'test/fixtures/**/*' ./lib",
         "compile_test": "sol-compiler compile",
@@ -54,6 +54,8 @@
         "@0xproject/subproviders": "^0.10.2",
         "@0xproject/typescript-typings": "^0.3.2",
         "@0xproject/utils": "^0.6.2",
+        "@0xproject/web3-wrapper": "^0.6.4",
+        "@0xproject/dev-utils": "^0.4.2",
         "ethereum-types": "^0.0.1",
         "ethereumjs-util": "^5.1.1",
         "glob": "^7.1.2",
@@ -63,7 +65,7 @@
         "mkdirp": "^0.5.1",
         "rimraf": "^2.6.2",
         "semaphore-async-await": "^1.5.1",
-        "solidity-parser-antlr": "^0.2.11"
+        "solidity-parser-antlr": "^0.2.12"
     },
     "devDependencies": {
         "@0xproject/monorepo-scripts": "^0.1.20",

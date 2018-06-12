@@ -638,7 +638,7 @@ export class Portal extends React.Component<PortalProps, PortalState> {
         const tokenSymbols = _.keys(tokenAddressBySymbol);
         try {
             const priceBySymbol = await backendClient.getPriceInfoAsync(tokenSymbols);
-            const priceByAddress = _.mapKeys(priceBySymbol, (value, symbol) => _.get(tokenAddressBySymbol, symbol));
+            const priceByAddress = _.mapKeys(priceBySymbol, (_value, symbol) => _.get(tokenAddressBySymbol, symbol));
             const result = _.mapValues(priceByAddress, price => {
                 const priceBigNumber = new BigNumber(price);
                 return priceBigNumber;

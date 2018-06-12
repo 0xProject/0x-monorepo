@@ -4,7 +4,7 @@ import { SignedOrder } from '@0xproject/types';
 import * as chai from 'chai';
 import ethUtil = require('ethereumjs-util');
 
-import { TestSignatureValidatorContract } from '../../src/contract_wrappers/generated/test_signature_validator';
+import { TestSignatureValidatorContract } from '../../src/generated_contract_wrappers/test_signature_validator';
 import { addressUtils } from '../../src/utils/address_utils';
 import { artifacts } from '../../src/utils/artifacts';
 import { chaiSetup } from '../../src/utils/chai_setup';
@@ -42,8 +42,8 @@ describe('MixinSignatureValidator', () => {
             exchangeAddress: signatureValidator.address,
             makerAddress,
             feeRecipientAddress: addressUtils.generatePseudoRandomAddress(),
-            makerAssetData: assetProxyUtils.encodeERC20ProxyData(addressUtils.generatePseudoRandomAddress()),
-            takerAssetData: assetProxyUtils.encodeERC20ProxyData(addressUtils.generatePseudoRandomAddress()),
+            makerAssetData: assetProxyUtils.encodeERC20AssetData(addressUtils.generatePseudoRandomAddress()),
+            takerAssetData: assetProxyUtils.encodeERC20AssetData(addressUtils.generatePseudoRandomAddress()),
         };
         const privateKey = constants.TESTRPC_PRIVATE_KEYS[accounts.indexOf(makerAddress)];
         orderFactory = new OrderFactory(privateKey, defaultOrderParams);

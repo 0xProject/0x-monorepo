@@ -233,7 +233,7 @@ export class Wiki extends React.Component<WikiProps, WikiState> {
         }
         return menuSubsectionsBySection;
     }
-    private _onSidebarHover(event: React.FormEvent<HTMLInputElement>): void {
+    private _onSidebarHover(_event: React.FormEvent<HTMLInputElement>): void {
         this.setState({
             isHoveringSidebar: true,
         });
@@ -243,7 +243,7 @@ export class Wiki extends React.Component<WikiProps, WikiState> {
             isHoveringSidebar: false,
         });
     }
-    private _onHashChanged(event: any): void {
+    private _onHashChanged(_event: any): void {
         const hash = window.location.hash.slice(1);
         sharedUtils.scrollToHash(hash, sharedConstants.SCROLL_CONTAINER_ID);
     }

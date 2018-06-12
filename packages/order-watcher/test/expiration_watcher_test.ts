@@ -107,7 +107,7 @@ describe('ExpirationWatcher', () => {
             );
             const orderHash = getOrderHashHex(signedOrder);
             expirationWatcher.addOrder(orderHash, signedOrder.expirationUnixTimestampSec.times(MILISECONDS_IN_SECOND));
-            const callbackAsync = callbackErrorReporter.reportNoErrorCallbackErrors(done)(async (hash: string) => {
+            const callbackAsync = callbackErrorReporter.reportNoErrorCallbackErrors(done)(async (_hash: string) => {
                 done(new Error('Emitted expiration went before the order actually expired'));
             });
             expirationWatcher.subscribe(callbackAsync);
