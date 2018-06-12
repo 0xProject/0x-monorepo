@@ -19,7 +19,6 @@
 pragma solidity ^0.4.24;
 pragma experimental ABIEncoderV2;
 
-import "../../utils/LibBytes/LibBytes.sol";
 import "./libs/LibMath.sol";
 import "./libs/LibOrder.sol";
 import "./libs/LibFillResults.sol";
@@ -27,7 +26,6 @@ import "./libs/LibExchangeErrors.sol";
 import "./mixins/MExchangeCore.sol";
 
 contract MixinWrapperFunctions is
-    LibBytes,
     LibMath,
     LibFillResults,
     LibExchangeErrors,
@@ -335,15 +333,13 @@ contract MixinWrapperFunctions is
         public
         returns (FillResults memory totalFillResults)
     {
+        bytes memory takerAssetData = orders[0].takerAssetData;
+    
         for (uint256 i = 0; i < orders.length; i++) {
 
             // We assume that asset being sold by taker is the same for each order.
-            // Rather than passing this in as calldata, we copy the takerAssetData from the first order onto all later orders.
-            // We cannot reference the same takerAssetData byte array because the array is modified when a trade is settled.
-            uint256 next = i + 1;
-            if (next != orders.length) {
-                deepCopyBytes(orders[next].takerAssetData, orders[i].takerAssetData);
-            }
+            // Rather than passing this in as calldata, we use the takerAssetData from the first order in all later orders.
+            orders[i].takerAssetData = takerAssetData;
 
             // Calculate the remaining amount of takerAsset to sell
             uint256 remainingTakerAssetFillAmount = safeSub(takerAssetFillAmount, totalFillResults.takerAssetFilledAmount);
@@ -354,6 +350,14 @@ contract MixinWrapperFunctions is
                 remainingTakerAssetFillAmount,
                 signatures[i]
             );
+
+            // HACK: the proxyId is "popped" from the byte array before a fill is settled
+            // by subtracting from the length of the array. Since the popped byte is 
+            // still in memory, we can "unpop" it by incrementing the length of the byte array.
+            assembly {
+                let len := mload(takerAssetData)
+                mstore(takerAssetData, add(len, 1))
+            }
 
             // Update amounts filled and fees paid by maker and taker
             addFillResults(totalFillResults, singleFillResults);
@@ -380,15 +384,13 @@ contract MixinWrapperFunctions is
         public
         returns (FillResults memory totalFillResults)
     {
+        bytes memory takerAssetData = orders[0].takerAssetData;
+
         for (uint256 i = 0; i < orders.length; i++) {
 
             // We assume that asset being sold by taker is the same for each order.
-            // Rather than passing this in as calldata, we copy the takerAssetData from the first order onto all later orders.
-            // We cannot reference the same takerAssetData byte array because the array is modified when a trade is settled.
-            uint256 next = i + 1;
-            if (next != orders.length) {
-                deepCopyBytes(orders[next].takerAssetData, orders[i].takerAssetData);
-            }
+            // Rather than passing this in as calldata, we use the takerAssetData from the first order in all later orders.
+            orders[i].takerAssetData = takerAssetData;
 
             // Calculate the remaining amount of takerAsset to sell
             uint256 remainingTakerAssetFillAmount = safeSub(takerAssetFillAmount, totalFillResults.takerAssetFilledAmount);
@@ -424,15 +426,13 @@ contract MixinWrapperFunctions is
         public
         returns (FillResults memory totalFillResults)
     {
+        bytes memory makerAssetData = orders[0].makerAssetData;
+
         for (uint256 i = 0; i < orders.length; i++) {
 
             // We assume that asset being bought by taker is the same for each order.
             // Rather than passing this in as calldata, we copy the makerAssetData from the first order onto all later orders.
-            // We cannot reference the same makerAssetData byte array because the array is modified when a trade is settled.
-            uint256 next = i + 1;
-            if (next != orders.length) {
-                deepCopyBytes(orders[next].makerAssetData, orders[i].makerAssetData);
-            }
+            orders[i].makerAssetData = makerAssetData;
 
             // Calculate the remaining amount of makerAsset to buy
             uint256 remainingMakerAssetFillAmount = safeSub(makerAssetFillAmount, totalFillResults.makerAssetFilledAmount);
@@ -451,6 +451,14 @@ contract MixinWrapperFunctions is
                 remainingTakerAssetFillAmount,
                 signatures[i]
             );
+
+            // HACK: the proxyId is "popped" from the byte array before a fill is settled
+            // by subtracting from the length of the array. Since the popped byte is 
+            // still in memory, we can "unpop" it by incrementing the length of the byte array.
+            assembly {
+                let len := mload(makerAssetData)
+                mstore(makerAssetData, add(len, 1))
+            }
 
             // Update amounts filled and fees paid by maker and taker
             addFillResults(totalFillResults, singleFillResults);
@@ -477,15 +485,13 @@ contract MixinWrapperFunctions is
         public
         returns (FillResults memory totalFillResults)
     {
+        bytes memory makerAssetData = orders[0].makerAssetData;
+
         for (uint256 i = 0; i < orders.length; i++) {
 
             // We assume that asset being bought by taker is the same for each order.
             // Rather than passing this in as calldata, we copy the makerAssetData from the first order onto all later orders.
-            // We cannot reference the same makerAssetData byte array because the array is modified when a trade is settled.
-            uint256 next = i + 1;
-            if (next != orders.length) {
-                deepCopyBytes(orders[next].makerAssetData, orders[i].makerAssetData);
-            }
+            orders[i].makerAssetData = makerAssetData;
 
             // Calculate the remaining amount of makerAsset to buy
             uint256 remainingMakerAssetFillAmount = safeSub(makerAssetFillAmount, totalFillResults.makerAssetFilledAmount);

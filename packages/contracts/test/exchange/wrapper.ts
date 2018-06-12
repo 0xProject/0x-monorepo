@@ -712,6 +712,10 @@ describe('Exchange wrappers', () => {
                 );
                 await exchangeWrapper.marketSellOrdersNoThrowAsync(signedOrders, takerAddress, {
                     takerAssetFillAmount,
+                    // HACK(albrow): We need to hardcode the gas estimate here because
+                    // the Geth gas estimator doesn't work with the way we use
+                    // delegatecall and swallow errors.
+                    gas: 6000000,
                 });
 
                 const newBalances = await erc20Wrapper.getBalancesAsync();
