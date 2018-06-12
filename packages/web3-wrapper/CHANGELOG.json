@@ -29,6 +29,11 @@
             {
                 "note": "Add new setHeadAsync method",
                 "pr": 622
+            },
+            {
+                "note":
+                    "Improve performance of awaitTransactionMinedAsync by immediately checking if the transaction was already mined instead of waiting for the first interval.",
+                "pr": 688
             }
         ]
     },

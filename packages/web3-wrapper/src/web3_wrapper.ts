@@ -402,6 +402,21 @@ export class Web3Wrapper {
         pollingIntervalMs: number = 1000,
         timeoutMs?: number,
     ): Promise<TransactionReceiptWithDecodedLogs> {
+        // Immediately check if the transaction has already been mined.
+        let transactionReceipt = await this.getTransactionReceiptAsync(txHash);
+        if (!_.isNull(transactionReceipt)) {
+            const logsWithDecodedArgs = _.map(
+                transactionReceipt.logs,
+                this.abiDecoder.tryToDecodeLogOrNoop.bind(this.abiDecoder),
+            );
+            const transactionReceiptWithDecodedLogArgs: TransactionReceiptWithDecodedLogs = {
+                ...transactionReceipt,
+                logs: logsWithDecodedArgs,
+            };
+            return transactionReceiptWithDecodedLogArgs;
+        }
+
+        // Otherwise, check again every pollingIntervalMs.
         let wasTimeoutExceeded = false;
         if (timeoutMs) {
             setTimeout(() => (wasTimeoutExceeded = true), timeoutMs);
@@ -416,7 +431,7 @@ export class Web3Wrapper {
                             return reject(Web3WrapperErrors.TransactionMiningTimeout);
                         }
 
-                        const transactionReceipt = await this.getTransactionReceiptAsync(txHash);
+                        transactionReceipt = await this.getTransactionReceiptAsync(txHash);
                         if (!_.isNull(transactionReceipt)) {
                             intervalUtils.clearAsyncExcludingInterval(intervalId);
                             const logsWithDecodedArgs = _.map(
