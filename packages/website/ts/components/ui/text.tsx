@@ -11,6 +11,7 @@ export interface TextProps {
     fontFamily?: string;
     fontColor?: string;
     lineHeight?: string;
+    minHeight?: string;
     center?: boolean;
     fontWeight?: number;
 }
@@ -26,6 +27,7 @@ export const Text = styled(PlainText)`
     ${props => (props.lineHeight ? `line-height: ${props.lineHeight}` : '')};
     ${props => (props.center ? 'text-align: center' : '')};
     color: ${props => props.fontColor};
+    min-height: ${props => props.minHeight};
 `;
 
 Text.defaultProps = {
