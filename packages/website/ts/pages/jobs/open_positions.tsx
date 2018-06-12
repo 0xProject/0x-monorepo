@@ -4,6 +4,7 @@ import { Table, TableBody, TableHeader, TableHeaderColumn, TableRow, TableRowCol
 import * as React from 'react';
 
 import { Retry } from 'ts/components/ui/retry';
+import { Text } from 'ts/components/ui/text';
 import { HeaderItem } from 'ts/pages/jobs/list/header_item';
 import { ListItem } from 'ts/pages/jobs/list/list_item';
 import { colors } from 'ts/style/colors';
@@ -171,10 +172,12 @@ export interface JobInfoListItemProps {
 const PlainJobInfoListItem: React.StatelessComponent<JobInfoListItemProps> = ({ title, description, onClick }) => (
     <div className="mb3" onClick={onClick}>
         <ListItem>
-            <div style={{ fontWeight: 'bold', fontSize: 16, color: colors.mediumBlue }}>{title + ' ›'}</div>
-            <div className="pt1" style={{ fontSize: 16, color: colors.darkGrey }}>
+            <Text fontWeight="bold" fontSize="16px" fontColor={colors.mediumBlue}>
+                {title + ' ›'}
+            </Text>
+            <Text className="pt1" fontSize="16px" fontColor={colors.darkGrey}>
                 {description}
-            </div>
+            </Text>
         </ListItem>
     </div>
 );

@@ -13,7 +13,7 @@ export interface TextProps {
     lineHeight?: string;
     minHeight?: string;
     center?: boolean;
-    fontWeight?: number;
+    fontWeight?: number | string;
 }
 
 const PlainText: React.StatelessComponent<TextProps> = ({ children, className, Tag }) => (
