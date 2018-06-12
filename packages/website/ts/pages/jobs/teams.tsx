@@ -1,8 +1,10 @@
 import * as _ from 'lodash';
 import * as React from 'react';
 
+import { Text } from 'ts/components/ui/text';
 import { HeaderItem } from 'ts/pages/jobs/list/header_item';
 import { ListItem } from 'ts/pages/jobs/list/list_item';
+import { colors } from 'ts/style/colors';
 import { ScreenWidths } from 'ts/types';
 
 const TEAM_ITEM_PROPS_COLUMN1: TeamItemProps[] = [
@@ -74,12 +76,14 @@ export const TeamItem: React.StatelessComponent<TeamItemProps> = ({ bulletColor,
     return (
         <div style={{ minHeight: MINIMUM_ITEM_HEIGHT }}>
             <ListItem bulletColor={bulletColor}>
-                <div style={{ fontWeight: 'bold', fontSize: 16 }}>{title}</div>
+                <Text fontWeight="bold" fontSize="16px" fontColor={colors.black}>
+                    {title}
+                </Text>
             </ListItem>
             <ListItem>
-                <div className="pt1" style={{ fontSize: 16, lineHeight: 2 }}>
+                <Text className="pt1" fontSize="16px" lineHeight="2em" fontColor={colors.black}>
                     {description}
-                </div>
+                </Text>
             </ListItem>
         </div>
     );
