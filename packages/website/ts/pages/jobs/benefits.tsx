@@ -1,40 +1,45 @@
 import * as _ from 'lodash';
 import * as React from 'react';
 
-import { BulletedItemInfo, BulletedItemList } from 'ts/pages/jobs/bulleted_item_list';
 import { FilledImage } from 'ts/pages/jobs/filled_image';
 import { FloatingImage } from 'ts/pages/jobs/floating_image';
+import { HeaderItem } from 'ts/pages/jobs/list/header_item';
+import { ListItem } from 'ts/pages/jobs/list/list_item';
 import { colors } from 'ts/style/colors';
 import { ScreenWidths } from 'ts/types';
 
 const IMAGE_PATHS = ['/images/jobs/location1.png', '/images/jobs/location2.png', '/images/jobs/location3.png'];
-const BULLETED_ITEM_INFOS: BulletedItemInfo[] = [
+const BENEFIT_ITEM_PROPS_LIST: BenefitItemProps[] = [
     {
         bulletColor: '#6FCF97',
-        title: 'Ethics/Doing the right thing',
-        description: 'orem ipsum dolor sit amet, consectetur adipiscing elit.',
+        description:
+            'Donec eget auctor mauris, a imperdiet ante. Ut a tellus ullamcorper, pharetra nibh sed, dignissim mauris. Quisque vel magna vitae nisi scelerisque commodo sed eget dolor. Maecenas vehicula orci',
     },
     {
         bulletColor: '#56CCF2',
-        title: 'Consistently ship',
-        description: 'orem ipsum dolor sit amet, consectetur adipiscing elit.',
+        description:
+            'Donec eget auctor mauris, a imperdiet ante. Ut a tellus ullamcorper, pharetra nibh sed, dignissim mauris. Quisque vel magna vitae nisi scelerisque commodo sed eget dolor. Maecenas vehicula orci',
     },
     {
         bulletColor: '#EB5757',
-        title: 'Focus on long term impact',
-        description: 'orem ipsum dolor sit amet, consectetur adipiscing elit.',
+        description:
+            'Donec eget auctor mauris, a imperdiet ante. Ut a tellus ullamcorper, pharetra nibh sed, dignissim mauris. Quisque vel magna vitae nisi scelerisque commodo sed eget dolor. Maecenas vehicula orci',
     },
     {
         bulletColor: '#6FCF97',
-        title: 'Test test yo',
-        description: 'orem ipsum dolor sit amet, consectetur adipiscing elit.',
+        description:
+            'Donec eget auctor mauris, a imperdiet ante. Ut a tellus ullamcorper, pharetra nibh sed, dignissim mauris. Quisque vel magna vitae nisi scelerisque commodo sed eget dolor. Maecenas vehicula orci',
     },
     {
         bulletColor: '#56CCF2',
-        title: 'Waddle Waddle',
-        description: 'orem ipsum dolor sit amet, consectetur adipiscing elit.',
+        description:
+            'Donec eget auctor mauris, a imperdiet ante. Ut a tellus ullamcorper, pharetra nibh sed, dignissim mauris. Quisque vel magna vitae nisi scelerisque commodo sed eget dolor. Maecenas vehicula orci',
     },
 ];
+const LARGE_LAYOUT_HEIGHT = 937;
+const LARGE_LAYOUT_BENEFITS_LIST_PADDING_LEFT = 205;
+const HEADER_TEXT = 'Benefits';
+const BENEFIT_ITEM_MIN_HEIGHT = 150;
 
 export interface BenefitsProps {
     screenWidth: ScreenWidths;
@@ -47,11 +52,14 @@ export const Benefits = (props: BenefitsProps) => (
 );
 
 const LargeLayout = () => (
-    <div className="flex" style={{ height: 937 }}>
+    <div className="flex" style={{ height: LARGE_LAYOUT_HEIGHT }}>
         <div style={{ width: '43%', height: '100%' }}>
             <ImageGrid />
         </div>
-        <div style={{ paddingLeft: 205, width: '57%', height: '100%' }}>
+        <div
+            className="pr4"
+            style={{ paddingLeft: LARGE_LAYOUT_BENEFITS_LIST_PADDING_LEFT, width: '57%', height: '100%' }}
+        >
             <BenefitsList />
         </div>
     </div>
@@ -64,7 +72,26 @@ const SmallLayout = () => (
     </div>
 );
 
-const BenefitsList = () => <BulletedItemList headerText="Benefits" bulletedItemInfos={BULLETED_ITEM_INFOS} />;
+export const BenefitsList = () => {
+    return (
+        <div>
+            <HeaderItem headerText={HEADER_TEXT} />
+            {_.map(BENEFIT_ITEM_PROPS_LIST, valueItemProps => React.createElement(BenefitItem, valueItemProps))}
+        </div>
+    );
+};
+interface BenefitItemProps {
+    bulletColor: string;
+    description: string;
+}
+
+const BenefitItem: React.StatelessComponent<BenefitItemProps> = ({ bulletColor, description }) => (
+    <div style={{ minHeight: BENEFIT_ITEM_MIN_HEIGHT }}>
+        <ListItem bulletColor={bulletColor}>
+            <div style={{ fontSize: 16, lineHeight: 1.5 }}>{description}</div>
+        </ListItem>
+    </div>
+);
 
 const ImageGrid = () => (
     <div style={{ width: '100%', height: '100%' }}>

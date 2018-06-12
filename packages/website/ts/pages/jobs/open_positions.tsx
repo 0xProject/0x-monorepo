@@ -4,14 +4,20 @@ import { Table, TableBody, TableHeader, TableHeaderColumn, TableRow, TableRowCol
 import * as React from 'react';
 
 import { Retry } from 'ts/components/ui/retry';
+import { HeaderItem } from 'ts/pages/jobs/list/header_item';
+import { ListItem } from 'ts/pages/jobs/list/list_item';
 import { colors } from 'ts/style/colors';
-import { WebsiteBackendJobInfo } from 'ts/types';
+import { styled } from 'ts/style/theme';
+import { ScreenWidths, WebsiteBackendJobInfo } from 'ts/types';
 import { backendClient } from 'ts/utils/backend_client';
 
 const labelStyle = { fontFamily: 'Roboto Mono', fontSize: 18 };
+const HEADER_TEXT = 'Open Positions';
+const LIST_ITEM_MIN_HEIGHT = 80;
 
 export interface OpenPositionsProps {
     hash: string;
+    screenWidth: ScreenWidths;
 }
 export interface OpenPositionsState {
     jobInfos?: WebsiteBackendJobInfo[];
@@ -37,6 +43,7 @@ export class OpenPositions extends React.Component<OpenPositionsProps, OpenPosit
     }
     public render(): React.ReactNode {
         const isReadyToRender = _.isUndefined(this.state.error) && !_.isUndefined(this.state.jobInfos);
+        const isSmallScreen = this.props.screenWidth === ScreenWidths.Sm;
         if (!isReadyToRender) {
             return (
                 // TODO: consolidate this loading component with the one in portal and RelayerIndex
@@ -52,32 +59,54 @@ export class OpenPositions extends React.Component<OpenPositionsProps, OpenPosit
         } else {
             return (
                 <div id={this.props.hash} className="mx-auto max-width-4">
-                    <Title />
-                    <Table selectable={false} onCellClick={this._onCellClick.bind(this)}>
-                        <TableHeader displaySelectAll={false} adjustForCheckbox={false}>
-                            <TableRow>
-                                <TableHeaderColumn colSpan={5} style={labelStyle}>
-                                    Position
-                                </TableHeaderColumn>
-                                <TableHeaderColumn colSpan={3} style={labelStyle}>
-                                    Department
-                                </TableHeaderColumn>
-                                <TableHeaderColumn colSpan={4} style={labelStyle}>
-                                    Office
-                                </TableHeaderColumn>
-                            </TableRow>
-                        </TableHeader>
-                        <TableBody displayRowCheckbox={false} showRowHover={true}>
-                            {_.map(this.state.jobInfos, jobInfo => {
-                                return this._renderJobInfo(jobInfo);
-                            })}
-                        </TableBody>
-                    </Table>
+                    {isSmallScreen ? this._renderList() : this._renderTable()}
                 </div>
             );
         }
     }
-    private _renderJobInfo(jobInfo: WebsiteBackendJobInfo): React.ReactNode {
+    private _renderList(): React.ReactNode {
+        return (
+            <div style={{ backgroundColor: colors.jobsPageBackground }}>
+                <HeaderItem headerText={HEADER_TEXT} />
+                {_.map(this.state.jobInfos, jobInfo => (
+                    <JobInfoListItem
+                        key={jobInfo.id}
+                        title={jobInfo.title}
+                        description={jobInfo.department}
+                        onClick={this._openJobInfoUrl.bind(this, jobInfo)}
+                    />
+                ))}
+            </div>
+        );
+    }
+    private _renderTable(): React.ReactNode {
+        return (
+            <div>
+                <HeaderItem headerText={HEADER_TEXT} />
+                <Table selectable={false} onCellClick={this._onCellClick.bind(this)}>
+                    <TableHeader displaySelectAll={false} adjustForCheckbox={false}>
+                        <TableRow>
+                            <TableHeaderColumn colSpan={5} style={labelStyle}>
+                                Position
+                            </TableHeaderColumn>
+                            <TableHeaderColumn colSpan={3} style={labelStyle}>
+                                Department
+                            </TableHeaderColumn>
+                            <TableHeaderColumn colSpan={4} style={labelStyle}>
+                                Office
+                            </TableHeaderColumn>
+                        </TableRow>
+                    </TableHeader>
+                    <TableBody displayRowCheckbox={false} showRowHover={true}>
+                        {_.map(this.state.jobInfos, jobInfo => {
+                            return this._renderJobInfoTableRow(jobInfo);
+                        })}
+                    </TableBody>
+                </Table>
+            </div>
+        );
+    }
+    private _renderJobInfoTableRow(jobInfo: WebsiteBackendJobInfo): React.ReactNode {
         return (
             <TableRow key={jobInfo.id} hoverable={true} displayBorder={false} style={{ height: 100, border: 2 }}>
                 <TableRowColumn colSpan={5} style={labelStyle}>
@@ -118,19 +147,36 @@ export class OpenPositions extends React.Component<OpenPositionsProps, OpenPosit
         if (_.isUndefined(this.state.jobInfos)) {
             return;
         }
-        const url = this.state.jobInfos[rowNumber].url;
+        const jobInfo = this.state.jobInfos[rowNumber];
+        this._openJobInfoUrl(jobInfo);
+    }
+
+    private _openJobInfoUrl(jobInfo: WebsiteBackendJobInfo): void {
+        const url = jobInfo.url;
         window.open(url, '_blank');
     }
 }
 
-const Title = () => (
-    <div
-        className="h2 lg-py4 md-py4 sm-py3"
-        style={{
-            paddingLeft: 90,
-            fontFamily: 'Roboto Mono',
-        }}
-    >
-        {'Open Positions'}
+export interface JobInfoListItemProps {
+    title?: string;
+    description?: string;
+    onClick?: (event: React.MouseEvent<HTMLElement>) => void;
+}
+
+const PlainJobInfoListItem: React.StatelessComponent<JobInfoListItemProps> = ({ title, description, onClick }) => (
+    <div className="mb3" onClick={onClick}>
+        <ListItem>
+            <div style={{ fontWeight: 'bold', fontSize: 16, color: colors.mediumBlue }}>{title + ' ›'}</div>
+            <div className="pt1" style={{ fontSize: 16, color: colors.darkGrey }}>
+                {description}
+            </div>
+        </ListItem>
     </div>
 );
+
+export const JobInfoListItem = styled(PlainJobInfoListItem)`
+    cursor: pointer;
+    &:hover {
+        opacity: 0.5;
+    }
+`;
