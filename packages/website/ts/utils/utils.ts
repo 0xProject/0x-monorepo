@@ -21,7 +21,6 @@ import {
 import { configs } from 'ts/utils/configs';
 import { constants } from 'ts/utils/constants';
 import * as u2f from 'ts/vendor/u2f_api';
-import { Container } from '../components/ui/container';
 
 const LG_MIN_EM = 64;
 const MD_MIN_EM = 52;

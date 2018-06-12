@@ -1,5 +1,6 @@
 import { constants as sharedConstants, Styles } from '@0xproject/react-shared';
 import { BigNumber, logUtils } from '@0xproject/utils';
+import * as _ from 'lodash';
 import Toggle from 'material-ui/Toggle';
 import * as React from 'react';
 import { Blockchain } from 'ts/blockchain';

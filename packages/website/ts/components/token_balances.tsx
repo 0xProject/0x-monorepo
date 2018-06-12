@@ -20,11 +20,11 @@ import ReactTooltip = require('react-tooltip');
 import firstBy = require('thenby');
 import { Blockchain } from 'ts/blockchain';
 import { AssetPicker } from 'ts/components/generate_order/asset_picker';
-import { AllowanceToggle } from 'ts/containers/inputs/allowance_toggle';
 import { SendButton } from 'ts/components/send_button';
 import { HelpTooltip } from 'ts/components/ui/help_tooltip';
 import { LifeCycleRaisedButton } from 'ts/components/ui/lifecycle_raised_button';
 import { TokenIcon } from 'ts/components/ui/token_icon';
+import { AllowanceToggle } from 'ts/containers/inputs/allowance_toggle';
 import { trackedTokenStorage } from 'ts/local_storage/tracked_token_storage';
 import { Dispatcher } from 'ts/redux/dispatcher';
 import {

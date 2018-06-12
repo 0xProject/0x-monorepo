@@ -1,10 +1,9 @@
 import * as React from 'react';
-import { BalanceErrs, Token, TokenState } from 'ts/types';
-import { ActionTypes, ProviderType, TokenByAddress, TokenStateByAddress } from 'ts/types';
 import { connect } from 'react-redux';
 import { Dispatch } from 'redux';
 import { Blockchain } from 'ts/blockchain';
 import { State } from 'ts/redux/reducer';
+import { BalanceErrs, Token, TokenState } from 'ts/types';
 
 import { AllowanceToggle as AllowanceToggleComponent } from 'ts/components/inputs/allowance_toggle';
 import { Dispatcher } from 'ts/redux/dispatcher';
@@ -15,7 +14,7 @@ interface AllowanceToggleProps {
     token: Token;
     tokenState: TokenState;
     isDisabled?: boolean;
-    refetchTokenStateAsync: (tokenAddress: string) => Promise<void>;
+    refetchTokenStateAsync: () => Promise<void>;
 }
 
 interface ConnectedState {
@@ -27,7 +26,7 @@ interface ConnectedDispatch {
     dispatcher: Dispatcher;
 }
 
-const mapStateToProps = (state: State, ownProps: AllowanceToggleProps): ConnectedState => ({
+const mapStateToProps = (state: State, _ownProps: AllowanceToggleProps): ConnectedState => ({
     networkId: state.networkId,
     userAddress: state.userAddress,
 });
