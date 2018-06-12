@@ -93,7 +93,7 @@ contract MixinSignatureValidator is
         );
 
         // Pop last byte off of signature byte array.
-        SignatureType signatureType = SignatureType(uint8(popByte(signature)));
+        SignatureType signatureType = SignatureType(uint8(popLastByte(signature)));
 
         // Variables are not scoped in Solidity.
         uint8 v;
@@ -183,7 +183,7 @@ contract MixinSignatureValidator is
         // | 0x14 + x | 1      | Signature type is always "\x06" |
         } else if (signatureType == SignatureType.Validator) {
             // Pop last 20 bytes off of signature byte array.
-            address validator = popAddress(signature);
+            address validator = popLast20Bytes(signature);
             // Ensure signer has approved validator.
             if (!allowedValidators[signer][validator]) {
                 return false;

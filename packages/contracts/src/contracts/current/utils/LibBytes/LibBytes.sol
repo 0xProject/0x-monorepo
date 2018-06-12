@@ -35,7 +35,7 @@ contract LibBytes is
     /// @dev Pops the last byte off of a byte array by modifying its length.
     /// @param b Byte array that will be modified.
     /// @return The byte that was popped off.
-    function popByte(bytes memory b)
+    function popLastByte(bytes memory b)
         internal
         pure
         returns (bytes1 result)
@@ -59,7 +59,7 @@ contract LibBytes is
     /// @dev Pops the last 20 bytes off of a byte array by modifying its length.
     /// @param b Byte array that will be modified.
     /// @return The 20 byte address that was popped off.
-    function popAddress(bytes memory b)
+    function popLast20Bytes(bytes memory b)
         internal
         pure
         returns (address result)

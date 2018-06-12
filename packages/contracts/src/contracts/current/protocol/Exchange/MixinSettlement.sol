@@ -62,8 +62,8 @@ contract MixinSettlement is
     )
         internal
     {
-        uint8 makerAssetProxyId = uint8(popByte(order.makerAssetData));
-        uint8 takerAssetProxyId = uint8(popByte(order.takerAssetData));
+        uint8 makerAssetProxyId = uint8(popLastByte(order.makerAssetData));
+        uint8 takerAssetProxyId = uint8(popLastByte(order.takerAssetData));
         bytes memory zrxAssetData = ZRX_ASSET_DATA;
         dispatchTransferFrom(
             order.makerAssetData,
@@ -108,8 +108,8 @@ contract MixinSettlement is
     )
         internal
     {
-        uint8 leftMakerAssetProxyId = uint8(popByte(leftOrder.makerAssetData));
-        uint8 rightMakerAssetProxyId = uint8(popByte(rightOrder.makerAssetData));
+        uint8 leftMakerAssetProxyId = uint8(popLastByte(leftOrder.makerAssetData));
+        uint8 rightMakerAssetProxyId = uint8(popLastByte(rightOrder.makerAssetData));
         bytes memory zrxAssetData = ZRX_ASSET_DATA;
         // Order makers and taker
         dispatchTransferFrom(

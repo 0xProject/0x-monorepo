@@ -91,15 +91,15 @@ describe('LibBytes', () => {
         await blockchainLifecycle.revertAsync();
     });
 
-    describe('popByte', () => {
+    describe('popLastByte', () => {
         it('should revert if length is 0', async () => {
             return expectRevertOrOtherErrorAsync(
-                libBytes.publicPopByte.callAsync(constants.NULL_BYTES),
+                libBytes.publicPopLastByte.callAsync(constants.NULL_BYTES),
                 constants.LIB_BYTES_GREATER_THAN_ZERO_LENGTH_REQUIRED,
             );
         });
         it('should pop the last byte from the input and return it', async () => {
-            const [newBytes, poppedByte] = await libBytes.publicPopByte.callAsync(byteArrayLongerThan32Bytes);
+            const [newBytes, poppedByte] = await libBytes.publicPopLastByte.callAsync(byteArrayLongerThan32Bytes);
             const expectedNewBytes = byteArrayLongerThan32Bytes.slice(0, -2);
             const expectedPoppedByte = `0x${byteArrayLongerThan32Bytes.slice(-2)}`;
             expect(newBytes).to.equal(expectedNewBytes);
@@ -107,15 +107,15 @@ describe('LibBytes', () => {
         });
     });
 
-    describe('popAddress', () => {
+    describe('popLast20Bytes', () => {
         it('should revert if length is less than 20', async () => {
             return expectRevertOrOtherErrorAsync(
-                libBytes.publicPopAddress.callAsync(byteArrayShorterThan20Bytes),
+                libBytes.publicPopLast20Bytes.callAsync(byteArrayShorterThan20Bytes),
                 constants.LIB_BYTES_GREATER_OR_EQUAL_TO_20_LENGTH_REQUIRED,
             );
         });
         it('should pop the last 20 bytes from the input and return it', async () => {
-            const [newBytes, poppedAddress] = await libBytes.publicPopAddress.callAsync(byteArrayLongerThan32Bytes);
+            const [newBytes, poppedAddress] = await libBytes.publicPopLast20Bytes.callAsync(byteArrayLongerThan32Bytes);
             const expectedNewBytes = byteArrayLongerThan32Bytes.slice(0, -40);
             const expectedPoppedAddress = `0x${byteArrayLongerThan32Bytes.slice(-40)}`;
             expect(newBytes).to.equal(expectedNewBytes);
