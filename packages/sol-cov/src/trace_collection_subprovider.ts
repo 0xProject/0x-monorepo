@@ -163,7 +163,7 @@ export class TraceCollectionSubprovider extends Subprovider {
         cb();
     }
     private async _recordTxTraceAsync(address: string, data: string | undefined, txHash: string): Promise<void> {
-        await this._web3Wrapper.awaitTransactionMinedAsync(txHash);
+        await this._web3Wrapper.awaitTransactionMinedAsync(txHash, 0);
         const trace = await this._web3Wrapper.getTransactionTraceAsync(txHash, {
             disableMemory: true,
             disableStack: false,
@@ -222,7 +222,7 @@ export class TraceCollectionSubprovider extends Subprovider {
         };
         try {
             const txHash = await this._web3Wrapper.sendTransactionAsync(fakeTxData);
-            await this._web3Wrapper.awaitTransactionMinedAsync(txHash);
+            await this._web3Wrapper.awaitTransactionMinedAsync(txHash, 0);
         } catch (err) {
             // Even if this transaction failed - we've already recorded it's trace.
             _.noop();
