@@ -10,7 +10,7 @@ const INFURA_API_KEY = 'T5WSC8cautR4KXyYgsRs';
 
 export const configs = {
     AMOUNT_DISPLAY_PRECSION: 5,
-    BACKEND_BASE_PROD_URL: 'http://localhost:3000',
+    BACKEND_BASE_PROD_URL: 'https://website-api.0xproject.com',
     BACKEND_BASE_STAGING_URL: 'http://ec2-52-91-181-85.compute-1.amazonaws.com',
     BASE_URL,
     BITLY_ACCESS_TOKEN: 'ffc4c1a31e5143848fb7c523b39f91b9b213d208',
