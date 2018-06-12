@@ -29,7 +29,7 @@
         "coverage:report:html": "istanbul report html && open coverage/index.html",
         "profiler:report:html": "istanbul report html && open coverage/index.html",
         "coverage:report:lcov": "istanbul report lcov",
-        "test:circleci": "yarn test"
+        "test:circleci": "yarn test:coverage"
     },
     "config": {
         "abis": "../migrations/artifacts/2.0.0/@(AssetProxyOwner|DummyERC20Token|DummyERC721Receiver|DummyERC721Token|ERC20Proxy|ERC721Proxy|Exchange|MixinAuthorizable|MultiSigWallet|MultiSigWalletWithTimeLock|TestAssetDataDecoders|TestAssetProxyDispatcher|TestLibBytes|TestLibMem|TestLibs|TestSignatureValidator|TokenRegistry|Whitelist|WETH9|ZRXToken).json"
