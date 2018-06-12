@@ -7,7 +7,6 @@ import ethUtil = require('ethereumjs-util');
 import * as _ from 'lodash';
 
 import { TestLibBytesContract } from '../../src/generated_contract_wrappers/test_lib_bytes';
-import { addressUtils } from '../../src/utils/address_utils';
 import { artifacts } from '../../src/utils/artifacts';
 import { expectRevertOrOtherErrorAsync } from '../../src/utils/assertions';
 import { chaiSetup } from '../../src/utils/chai_setup';
@@ -29,8 +28,11 @@ describe('LibBytes', () => {
     const byteArrayLongerThan32BytesLastBytesSwapped =
         '0x0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef0123456789abefcd';
     let testAddress: string;
+    let testAddressB: string;
     const testBytes32 = '0x102030405060708090a0b0c0d0e0f0102030405060708090a0b0c0d0e0f01020';
+    const testBytes32B = '0x534877abd8443578526845cdfef020047528759477fedef87346527659aced32';
     const testUint256 = new BigNumber(testBytes32, 16);
+    const testUint256B = new BigNumber(testBytes32B, 16);
     let shortData: string;
     let shortTestBytes: string;
     let shortTestBytesAsBuffer: Buffer;
@@ -51,6 +53,7 @@ describe('LibBytes', () => {
         // Setup accounts & addresses
         const accounts = await web3Wrapper.getAvailableAddressesAsync();
         testAddress = accounts[1];
+        testAddressB = accounts[2];
         // Deploy LibBytes
         libBytes = await TestLibBytesContract.deployFrom0xArtifactAsync(artifacts.TestLibBytes, provider, txDefaults);
         // Verify lengths of test data
@@ -239,13 +242,12 @@ describe('LibBytes', () => {
         it('should successfully write address when the address takes up the whole array', async () => {
             const byteArray = testAddress;
             const testAddressOffset = new BigNumber(0);
-            const psuedoRandomAddress = addressUtils.generatePseudoRandomAddress();
             const newByteArray = await libBytes.publicWriteAddress.callAsync(
                 byteArray,
                 testAddressOffset,
-                psuedoRandomAddress,
+                testAddressB,
             );
-            return expect(newByteArray).to.be.equal(psuedoRandomAddress);
+            return expect(newByteArray).to.be.equal(testAddressB);
         });
         it('should successfully write address when it is offset in the array', async () => {
             const addressByteArrayBuffer = ethUtil.toBuffer(testAddress);
@@ -253,16 +255,15 @@ describe('LibBytes', () => {
             const combinedByteArrayBuffer = Buffer.concat([prefixByteArrayBuffer, addressByteArrayBuffer]);
             const combinedByteArray = ethUtil.bufferToHex(combinedByteArrayBuffer);
             const testAddressOffset = new BigNumber(prefixByteArrayBuffer.byteLength);
-            const psuedoRandomAddress = addressUtils.generatePseudoRandomAddress();
             const newByteArray = await libBytes.publicWriteAddress.callAsync(
                 combinedByteArray,
                 testAddressOffset,
-                psuedoRandomAddress,
+                testAddressB,
             );
             const newByteArrayBuffer = ethUtil.toBuffer(newByteArray);
             const addressFromOffsetBuffer = newByteArrayBuffer.slice(prefixByteArrayBuffer.byteLength);
             const addressFromOffset = ethUtil.addHexPrefix(ethUtil.bufferToHex(addressFromOffsetBuffer));
-            return expect(addressFromOffset).to.be.equal(psuedoRandomAddress);
+            return expect(addressFromOffset).to.be.equal(testAddressB);
         });
         it('should fail if the byte array is too short to hold an address', async () => {
             const offset = new BigNumber(0);
@@ -316,13 +317,12 @@ describe('LibBytes', () => {
         it('should successfully write bytes32 when the address takes up the whole array', async () => {
             const byteArray = testBytes32;
             const testBytes32Offset = new BigNumber(0);
-            const pseudoRandomBytes32 = ethUtil.addHexPrefix(generatePseudoRandomSalt().toString(16));
             const newByteArray = await libBytes.publicWriteBytes32.callAsync(
                 byteArray,
                 testBytes32Offset,
-                pseudoRandomBytes32,
+                testBytes32B,
             );
-            return expect(newByteArray).to.be.equal(pseudoRandomBytes32);
+            return expect(newByteArray).to.be.equal(testBytes32B);
         });
         it('should successfully write bytes32 when it is offset in the array', async () => {
             const bytes32ByteArrayBuffer = ethUtil.toBuffer(testBytes32);
@@ -330,16 +330,15 @@ describe('LibBytes', () => {
             const combinedByteArrayBuffer = Buffer.concat([prefixByteArrayBuffer, bytes32ByteArrayBuffer]);
             const combinedByteArray = ethUtil.bufferToHex(combinedByteArrayBuffer);
             const testBytes32Offset = new BigNumber(prefixByteArrayBuffer.byteLength);
-            const pseudoRandomBytes32 = ethUtil.addHexPrefix(generatePseudoRandomSalt().toString(16));
             const newByteArray = await libBytes.publicWriteBytes32.callAsync(
                 combinedByteArray,
                 testBytes32Offset,
-                pseudoRandomBytes32,
+                testBytes32B,
             );
             const newByteArrayBuffer = ethUtil.toBuffer(newByteArray);
             const bytes32FromOffsetBuffer = newByteArrayBuffer.slice(prefixByteArrayBuffer.byteLength);
             const bytes32FromOffset = ethUtil.addHexPrefix(ethUtil.bufferToHex(bytes32FromOffsetBuffer));
-            return expect(bytes32FromOffset).to.be.equal(pseudoRandomBytes32);
+            return expect(bytes32FromOffset).to.be.equal(testBytes32B);
         });
         it('should fail if the byte array is too short to hold a bytes32', async () => {
             const offset = new BigNumber(0);
@@ -400,14 +399,13 @@ describe('LibBytes', () => {
         it('should successfully write uint256 when the address takes up the whole array', async () => {
             const byteArray = testBytes32;
             const testUint256Offset = new BigNumber(0);
-            const pseudoRandomUint256 = generatePseudoRandomSalt();
             const newByteArray = await libBytes.publicWriteUint256.callAsync(
                 byteArray,
                 testUint256Offset,
-                pseudoRandomUint256,
+                testUint256B,
             );
             const newByteArrayAsUint256 = new BigNumber(newByteArray, 16);
-            return expect(newByteArrayAsUint256).to.be.bignumber.equal(pseudoRandomUint256);
+            return expect(newByteArrayAsUint256).to.be.bignumber.equal(testUint256B);
         });
         it('should successfully write uint256 when it is offset in the array', async () => {
             const bytes32ByteArrayBuffer = ethUtil.toBuffer(testBytes32);
@@ -415,11 +413,10 @@ describe('LibBytes', () => {
             const combinedByteArrayBuffer = Buffer.concat([prefixByteArrayBuffer, bytes32ByteArrayBuffer]);
             const combinedByteArray = ethUtil.bufferToHex(combinedByteArrayBuffer);
             const testUint256Offset = new BigNumber(prefixByteArrayBuffer.byteLength);
-            const pseudoRandomUint256 = generatePseudoRandomSalt();
             const newByteArray = await libBytes.publicWriteUint256.callAsync(
                 combinedByteArray,
                 testUint256Offset,
-                pseudoRandomUint256,
+                testUint256B,
             );
             const newByteArrayBuffer = ethUtil.toBuffer(newByteArray);
             const uint256FromOffsetBuffer = newByteArrayBuffer.slice(prefixByteArrayBuffer.byteLength);
@@ -427,7 +424,7 @@ describe('LibBytes', () => {
                 ethUtil.addHexPrefix(ethUtil.bufferToHex(uint256FromOffsetBuffer)),
                 16,
             );
-            return expect(uint256FromOffset).to.be.bignumber.equal(pseudoRandomUint256);
+            return expect(uint256FromOffset).to.be.bignumber.equal(testUint256B);
         });
         it('should fail if the byte array is too short to hold a uint256', async () => {
             const offset = new BigNumber(0);
