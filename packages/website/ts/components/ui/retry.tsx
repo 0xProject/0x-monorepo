@@ -1,7 +1,9 @@
-import FlatButton from 'material-ui/FlatButton';
 import * as React from 'react';
 
+import { Button } from 'ts/components/ui/button';
 import { colors } from 'ts/style/colors';
+
+const BUTTON_TEXT = 'reload';
 
 export interface RetryProps {
     onRetry: () => void;
@@ -13,19 +15,17 @@ export const Retry = (props: RetryProps) => (
                 Something went wrong.
             </div>
             <div className="py3">
-                <FlatButton
-                    label={'reload'}
+                <Button
+                    type="button"
                     backgroundColor={colors.black}
-                    labelStyle={{
-                        fontSize: 18,
-                        fontFamily: 'Roboto Mono',
-                        fontWeight: 'lighter',
-                        color: colors.white,
-                        textTransform: 'lowercase',
-                    }}
-                    style={{ width: 280, height: 62, borderRadius: 5 }}
+                    width="290px"
+                    fontColor={colors.white}
+                    fontSize="18px"
+                    fontFamily="Roboto Mono"
                     onClick={props.onRetry}
-                />
+                >
+                    {BUTTON_TEXT}
+                </Button>
             </div>
         </div>
     </div>
