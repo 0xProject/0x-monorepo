@@ -11,8 +11,8 @@ const appColors = {
     wrapEtherConfirmationButton: sharedColors.mediumBlue,
     drawerMenuBackground: '#4a4a4a',
     menuItemDefaultSelectedBackground: '#424242',
-    jobsPageBackground: '#fafafa',
-    jobsPageOpenPositionRow: '#f5f5f5',
+    jobsPageBackground: sharedColors.green50,
+    jobsPageOpenPositionRow: sharedColors.green100,
 };
 
 export const colors = {
