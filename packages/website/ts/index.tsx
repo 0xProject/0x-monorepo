@@ -4,7 +4,6 @@ import { render } from 'react-dom';
 import { Provider } from 'react-redux';
 import { BrowserRouter as Router, Redirect, Route, Switch } from 'react-router-dom';
 import * as injectTapEventPlugin from 'react-tap-event-plugin';
-import { createStore, Store as ReduxStore } from 'redux';
 import { About } from 'ts/containers/about';
 import { FAQ } from 'ts/containers/faq';
 import { Jobs } from 'ts/containers/jobs';

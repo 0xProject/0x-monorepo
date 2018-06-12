@@ -15,7 +15,6 @@ import { Teams } from 'ts/pages/jobs/teams';
 import { Values } from 'ts/pages/jobs/values';
 import { Dispatcher } from 'ts/redux/dispatcher';
 import { ScreenWidths } from 'ts/types';
-import { constants } from 'ts/utils/constants';
 import { Translate } from 'ts/utils/translate';
 import { utils } from 'ts/utils/utils';
 

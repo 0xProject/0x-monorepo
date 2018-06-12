@@ -1,6 +1,5 @@
 import * as React from 'react';
 
-import { FilledImage } from 'ts/pages/jobs/filled_image';
 import { colors } from 'ts/style/colors';
 import { ScreenWidths } from 'ts/types';
 
@@ -35,7 +34,10 @@ export const Mission = (props: MissionProps) => {
         </div>
     );
     return (
-        <div className="container lg-py4 md-py4" style={{ backgroundColor: colors.jobsPageBackground, color: colors.black }}>
+        <div
+            className="container lg-py4 md-py4"
+            style={{ backgroundColor: colors.jobsPageBackground, color: colors.black }}
+        >
             <div className="mx-auto clearfix sm-py4">
                 {isSmallScreen ? (
                     <div>

@@ -1,5 +1,4 @@
 import FlatButton from 'material-ui/FlatButton';
-import { GridList } from 'material-ui/GridList';
 import * as React from 'react';
 
 import { colors } from 'ts/style/colors';

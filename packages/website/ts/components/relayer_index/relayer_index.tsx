@@ -1,7 +1,6 @@
 import { Styles } from '@0xproject/react-shared';
 import * as _ from 'lodash';
 import CircularProgress from 'material-ui/CircularProgress';
-import FlatButton from 'material-ui/FlatButton';
 import { GridList } from 'material-ui/GridList';
 import * as React from 'react';
 

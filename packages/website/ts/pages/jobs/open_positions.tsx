@@ -13,7 +13,7 @@ import { backendClient } from 'ts/utils/backend_client';
 
 const labelStyle = { fontFamily: 'Roboto Mono', fontSize: 18 };
 const HEADER_TEXT = 'Open Positions';
-const LIST_ITEM_MIN_HEIGHT = 80;
+const TABLE_ROW_MIN_HEIGHT = 100;
 
 export interface OpenPositionsProps {
     hash: string;
@@ -108,7 +108,12 @@ export class OpenPositions extends React.Component<OpenPositionsProps, OpenPosit
     }
     private _renderJobInfoTableRow(jobInfo: WebsiteBackendJobInfo): React.ReactNode {
         return (
-            <TableRow key={jobInfo.id} hoverable={true} displayBorder={false} style={{ height: 100, border: 2 }}>
+            <TableRow
+                key={jobInfo.id}
+                hoverable={true}
+                displayBorder={false}
+                style={{ height: TABLE_ROW_MIN_HEIGHT, border: 2 }}
+            >
                 <TableRowColumn colSpan={5} style={labelStyle}>
                     {jobInfo.title}
                 </TableRowColumn>
