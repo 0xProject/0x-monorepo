@@ -121,4 +121,16 @@ contract MExchangeCore is
         internal
         pure
         returns (LibFillResults.FillResults memory fillResults);
+
+    /// @dev Settles an order by transferring assets between counterparties.
+    /// @param order Order struct containing order specifications.
+    /// @param takerAddress Address selling takerAsset and buying makerAsset.
+    /// @param fillResults Amounts to be filled and fees paid by maker and taker.
+    function settleOrder(
+        LibOrder.Order memory order,
+        address takerAddress,
+        LibFillResults.FillResults memory fillResults
+    )
+        internal;
+
 }
