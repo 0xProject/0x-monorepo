@@ -172,7 +172,7 @@ export class ExchangeWrapper {
             params.orders,
             params.makerAssetFillAmount,
             params.signatures,
-            { from },
+            { from, gas: opts.gas },
         );
         const tx = await this._logDecoder.getTxWithDecodedLogsAsync(txHash);
         return tx;
