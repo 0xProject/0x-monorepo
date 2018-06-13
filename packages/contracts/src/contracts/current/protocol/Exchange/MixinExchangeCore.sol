@@ -108,9 +108,6 @@ contract MixinExchangeCore is
         // Compute proportional fill amounts
         fillResults = calculateFillResults(order, takerAssetFilledAmount);
 
-        // Settle order
-        settleOrder(order, takerAddress, fillResults);
-
         // Update exchange internal state
         updateFilledState(
             order,
@@ -119,6 +116,10 @@ contract MixinExchangeCore is
             orderInfo.orderTakerAssetFilledAmount,
             fillResults
         );
+    
+        // Settle order
+        settleOrder(order, takerAddress, fillResults);
+
         return fillResults;
     }
 

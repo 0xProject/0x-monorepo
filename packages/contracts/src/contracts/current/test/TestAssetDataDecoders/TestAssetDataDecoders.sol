@@ -23,26 +23,8 @@ import "../../protocol/AssetProxy/ERC20Proxy.sol";
 import "../../protocol/AssetProxy/ERC721Proxy.sol";
 
 contract TestAssetDataDecoders is
-    ERC20Proxy,
     ERC721Proxy
 {
-
-    /// @dev Decodes ERC20 Asset data.
-    /// @param assetData Encoded byte array.
-    /// @return proxyId Intended ERC20 proxy id.
-    /// @return token ERC20 token address.
-    function publicDecodeERC20Data(bytes memory assetData)
-        public
-        pure
-        returns (
-            uint8 proxyId,
-            address token
-        )
-    {
-        (proxyId, token) = decodeERC20AssetData(assetData);
-        return (proxyId, token);
-    }
-
     /// @dev Decodes ERC721 Asset data.
     /// @param assetData Encoded byte array.
     /// @return proxyId Intended ERC721 proxy id.
@@ -54,21 +36,18 @@ contract TestAssetDataDecoders is
         public
         pure
         returns (
-            uint8 proxyId,
             address token,
             uint256 tokenId,
             bytes memory receiverData
         )
     {
         (
-            proxyId,
             token,
             tokenId,
             receiverData
         ) = decodeERC721AssetData(assetData);
 
         return (
-            proxyId,
             token,
             tokenId,
             receiverData

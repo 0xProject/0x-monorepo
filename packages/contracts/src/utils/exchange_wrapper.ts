@@ -165,14 +165,14 @@ export class ExchangeWrapper {
     public async marketBuyOrdersNoThrowAsync(
         orders: SignedOrder[],
         from: string,
-        opts: { makerAssetFillAmount: BigNumber },
+        opts: { makerAssetFillAmount: BigNumber; gas?: number },
     ): Promise<TransactionReceiptWithDecodedLogs> {
         const params = formatters.createMarketBuyOrders(orders, opts.makerAssetFillAmount);
         const txHash = await this._exchange.marketBuyOrdersNoThrow.sendTransactionAsync(
             params.orders,
             params.makerAssetFillAmount,
             params.signatures,
-            { from },
+            { from, gas: opts.gas },
         );
         const tx = await this._logDecoder.getTxWithDecodedLogsAsync(txHash);
         return tx;

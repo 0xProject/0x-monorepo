@@ -19,12 +19,14 @@
 pragma solidity ^0.4.24;
 
 import "../../utils/Ownable/Ownable.sol";
+import "../../utils/LibBytes/LibBytes.sol";
 import "./libs/LibExchangeErrors.sol";
 import "./mixins/MAssetProxyDispatcher.sol";
 import "../AssetProxy/interfaces/IAssetProxy.sol";
 
 contract MixinAssetProxyDispatcher is
     Ownable,
+    LibBytes,
     LibExchangeErrors,
     MAssetProxyDispatcher
 {
@@ -81,11 +83,13 @@ contract MixinAssetProxyDispatcher is
 
     /// @dev Forwards arguments to assetProxy and calls `transferFrom`. Either succeeds or throws.
     /// @param assetData Byte array encoded for the respective asset proxy.
+    /// @param assetProxyId Id of assetProxy to dispach to.
     /// @param from Address to transfer token from.
     /// @param to Address to transfer token to.
     /// @param amount Amount of token to transfer.
     function dispatchTransferFrom(
         bytes memory assetData,
+        uint8 assetProxyId,
         address from,
         address to,
         uint256 amount
@@ -94,16 +98,8 @@ contract MixinAssetProxyDispatcher is
     {
         // Do nothing if no amount should be transferred.
         if (amount > 0) {
-
-            // Lookup asset proxy
-            uint256 length = assetData.length;
-            require(
-                length > 0,
-                LENGTH_GREATER_THAN_0_REQUIRED
-            );
-            uint8 assetProxyId = uint8(assetData[length - 1]);
+            // Lookup assetProxy
             IAssetProxy assetProxy = assetProxies[assetProxyId];
-
             // transferFrom will either succeed or throw.
             assetProxy.transferFrom(assetData, from, to, amount);
         }

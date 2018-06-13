@@ -25,7 +25,6 @@ contract LibExchangeErrors {
     string constant INVALID_TAKER = "INVALID_TAKER";                        // Invalid takerAddress.
     string constant INVALID_SENDER = "INVALID_SENDER";                      // Invalid `msg.sender`.
     string constant INVALID_ORDER_SIGNATURE = "INVALID_ORDER_SIGNATURE";    // Signature validation failed. 
-    string constant ASSET_DATA_MISMATCH = "ASSET_DATA_MISMATCH";            // Asset data must be the same for each order. 
     
     /// fillOrder validation errors ///
     string constant INVALID_TAKER_AMOUNT = "INVALID_TAKER_AMOUNT";          // takerAssetFillAmount cannot equal 0.

@@ -81,7 +81,7 @@ describe('Exchange wrappers', () => {
             artifacts.Exchange,
             provider,
             txDefaults,
-            assetProxyUtils.encodeERC20AssetData(zrxToken.address),
+            zrxToken.address,
         );
         exchangeWrapper = new ExchangeWrapper(exchange, provider);
         await exchangeWrapper.registerAssetProxyAsync(AssetProxyId.ERC20, erc20Proxy.address, owner);
@@ -712,6 +712,10 @@ describe('Exchange wrappers', () => {
                 );
                 await exchangeWrapper.marketSellOrdersNoThrowAsync(signedOrders, takerAddress, {
                     takerAssetFillAmount,
+                    // HACK(albrow): We need to hardcode the gas estimate here because
+                    // the Geth gas estimator doesn't work with the way we use
+                    // delegatecall and swallow errors.
+                    gas: 6000000,
                 });
 
                 const newBalances = await erc20Wrapper.getBalancesAsync();
@@ -781,20 +785,49 @@ describe('Exchange wrappers', () => {
                 expect(newBalances).to.be.deep.equal(erc20Balances);
             });
 
-            it('should throw when a signedOrder does not use the same takerAssetAddress', async () => {
+            it('should not fill a signedOrder that does not use the same takerAssetAddress', async () => {
                 signedOrders = [
+                    orderFactory.newSignedOrder(),
                     orderFactory.newSignedOrder(),
                     orderFactory.newSignedOrder({
                         takerAssetData: assetProxyUtils.encodeERC20AssetData(zrxToken.address),
                     }),
-                    orderFactory.newSignedOrder(),
                 ];
+                const takerAssetFillAmount = Web3Wrapper.toBaseUnitAmount(new BigNumber(100000), 18);
+                const filledSignedOrders = signedOrders.slice(0, -1);
+                _.forEach(filledSignedOrders, signedOrder => {
+                    erc20Balances[makerAddress][defaultMakerAssetAddress] = erc20Balances[makerAddress][
+                        defaultMakerAssetAddress
+                    ].minus(signedOrder.makerAssetAmount);
+                    erc20Balances[makerAddress][defaultTakerAssetAddress] = erc20Balances[makerAddress][
+                        defaultTakerAssetAddress
+                    ].add(signedOrder.takerAssetAmount);
+                    erc20Balances[makerAddress][zrxToken.address] = erc20Balances[makerAddress][zrxToken.address].minus(
+                        signedOrder.makerFee,
+                    );
+                    erc20Balances[takerAddress][defaultMakerAssetAddress] = erc20Balances[takerAddress][
+                        defaultMakerAssetAddress
+                    ].add(signedOrder.makerAssetAmount);
+                    erc20Balances[takerAddress][defaultTakerAssetAddress] = erc20Balances[takerAddress][
+                        defaultTakerAssetAddress
+                    ].minus(signedOrder.takerAssetAmount);
+                    erc20Balances[takerAddress][zrxToken.address] = erc20Balances[takerAddress][zrxToken.address].minus(
+                        signedOrder.takerFee,
+                    );
+                    erc20Balances[feeRecipientAddress][zrxToken.address] = erc20Balances[feeRecipientAddress][
+                        zrxToken.address
+                    ].add(signedOrder.makerFee.add(signedOrder.takerFee));
+                });
+                await exchangeWrapper.marketSellOrdersNoThrowAsync(signedOrders, takerAddress, {
+                    takerAssetFillAmount,
+                    // HACK(albrow): We need to hardcode the gas estimate here because
+                    // the Geth gas estimator doesn't work with the way we use
+                    // delegatecall and swallow errors.
+                    gas: 600000,
+                });
 
-                return expectRevertOrAlwaysFailingTransactionAsync(
-                    exchangeWrapper.marketSellOrdersNoThrowAsync(signedOrders, takerAddress, {
-                        takerAssetFillAmount: Web3Wrapper.toBaseUnitAmount(new BigNumber(1000), 18),
-                    }),
-                );
+                const newBalances = await erc20Wrapper.getBalancesAsync();
+                expect(newBalances).to.be.deep.equal(erc20Balances);
             });
         });
 
@@ -894,6 +927,10 @@ describe('Exchange wrappers', () => {
                 );
                 await exchangeWrapper.marketBuyOrdersNoThrowAsync(signedOrders, takerAddress, {
                     makerAssetFillAmount,
+                    // HACK(albrow): We need to hardcode the gas estimate here because
+                    // the Geth gas estimator doesn't work with the way we use
+                    // delegatecall and swallow errors.
+                    gas: 600000,
                 });
 
                 const newBalances = await erc20Wrapper.getBalancesAsync();
@@ -926,8 +963,8 @@ describe('Exchange wrappers', () => {
                 );
             });
 
-            it('should fill all signedOrders if cannot fill entire takerAssetFillAmount', async () => {
-                const takerAssetFillAmount = Web3Wrapper.toBaseUnitAmount(new BigNumber(100000), 18);
+            it('should fill all signedOrders if cannot fill entire makerAssetFillAmount', async () => {
+                const makerAssetFillAmount = Web3Wrapper.toBaseUnitAmount(new BigNumber(100000), 18);
                 _.forEach(signedOrders, signedOrder => {
                     erc20Balances[makerAddress][defaultMakerAssetAddress] = erc20Balances[makerAddress][
                         defaultMakerAssetAddress
@@ -951,8 +988,8 @@ describe('Exchange wrappers', () => {
                         zrxToken.address
                     ].add(signedOrder.makerFee.add(signedOrder.takerFee));
                 });
-                await exchangeWrapper.marketSellOrdersNoThrowAsync(signedOrders, takerAddress, {
-                    takerAssetFillAmount,
+                await exchangeWrapper.marketBuyOrdersNoThrowAsync(signedOrders, takerAddress, {
+                    makerAssetFillAmount,
                     // HACK(albrow): We need to hardcode the gas estimate here because
                     // the Geth gas estimator doesn't work with the way we use
                     // delegatecall and swallow errors.
@@ -963,20 +1000,50 @@ describe('Exchange wrappers', () => {
                 expect(newBalances).to.be.deep.equal(erc20Balances);
             });
 
-            it('should throw when a signedOrder does not use the same makerAssetAddress', async () => {
+            it('should not fill a signedOrder that does not use the same makerAssetAddress', async () => {
                 signedOrders = [
+                    orderFactory.newSignedOrder(),
                     orderFactory.newSignedOrder(),
                     orderFactory.newSignedOrder({
                         makerAssetData: assetProxyUtils.encodeERC20AssetData(zrxToken.address),
                     }),
-                    orderFactory.newSignedOrder(),
                 ];
 
-                return expectRevertOrAlwaysFailingTransactionAsync(
-                    exchangeWrapper.marketBuyOrdersNoThrowAsync(signedOrders, takerAddress, {
-                        makerAssetFillAmount: Web3Wrapper.toBaseUnitAmount(new BigNumber(1000), 18),
-                    }),
-                );
+                const makerAssetFillAmount = Web3Wrapper.toBaseUnitAmount(new BigNumber(100000), 18);
+                const filledSignedOrders = signedOrders.slice(0, -1);
+                _.forEach(filledSignedOrders, signedOrder => {
+                    erc20Balances[makerAddress][defaultMakerAssetAddress] = erc20Balances[makerAddress][
+                        defaultMakerAssetAddress
+                    ].minus(signedOrder.makerAssetAmount);
+                    erc20Balances[makerAddress][defaultTakerAssetAddress] = erc20Balances[makerAddress][
+                        defaultTakerAssetAddress
+                    ].add(signedOrder.takerAssetAmount);
+                    erc20Balances[makerAddress][zrxToken.address] = erc20Balances[makerAddress][zrxToken.address].minus(
+                        signedOrder.makerFee,
+                    );
+                    erc20Balances[takerAddress][defaultMakerAssetAddress] = erc20Balances[takerAddress][
+                        defaultMakerAssetAddress
+                    ].add(signedOrder.makerAssetAmount);
+                    erc20Balances[takerAddress][defaultTakerAssetAddress] = erc20Balances[takerAddress][
+                        defaultTakerAssetAddress
+                    ].minus(signedOrder.takerAssetAmount);
+                    erc20Balances[takerAddress][zrxToken.address] = erc20Balances[takerAddress][zrxToken.address].minus(
+                        signedOrder.takerFee,
+                    );
+                    erc20Balances[feeRecipientAddress][zrxToken.address] = erc20Balances[feeRecipientAddress][
+                        zrxToken.address
+                    ].add(signedOrder.makerFee.add(signedOrder.takerFee));
+                });
+                await exchangeWrapper.marketBuyOrdersNoThrowAsync(signedOrders, takerAddress, {
+                    makerAssetFillAmount,
+                    // HACK(albrow): We need to hardcode the gas estimate here because
+                    // the Geth gas estimator doesn't work with the way we use
+                    // delegatecall and swallow errors.
+                    gas: 600000,
+                });
+
+                const newBalances = await erc20Wrapper.getBalancesAsync();
+                expect(newBalances).to.be.deep.equal(erc20Balances);
             });
         });
 

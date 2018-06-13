@@ -28,24 +28,24 @@ contract TestLibBytes is
     /// @dev Pops the last byte off of a byte array by modifying its length.
     /// @param b Byte array that will be modified.
     /// @return The byte that was popped off.
-    function publicPopByte(bytes memory b)
+    function publicPopLastByte(bytes memory b)
         public
         pure
         returns (bytes memory, bytes1 result)
     {
-        result = popByte(b);
+        result = popLastByte(b);
         return (b, result);
     }
 
     /// @dev Pops the last 20 bytes off of a byte array by modifying its length.
     /// @param b Byte array that will be modified.
     /// @return The 20 byte address that was popped off.
-    function publicPopAddress(bytes memory b)
+    function publicPopLast20Bytes(bytes memory b)
         public
         pure
         returns (bytes memory, address result)
     {
-        result = popAddress(b);
+        result = popLast20Bytes(b);
         return (b, result);
     }
 
@@ -60,6 +60,21 @@ contract TestLibBytes is
     {
         equal = areBytesEqual(lhs, rhs);
         return equal;
+    }
+
+    /// @dev Performs a deep copy of a byte array onto another byte array of greater than or equal length.
+    /// @param dest Byte array that will be overwritten with source bytes.
+    /// @param source Byte array to copy onto dest bytes.
+    function publicDeepCopyBytes(
+        bytes memory dest,
+        bytes memory source
+    )
+        public
+        pure
+        returns (bytes memory)
+    {
+        deepCopyBytes(dest, source);
+        return dest;
     }
 
     /// @dev Reads an address from a position in a byte array.

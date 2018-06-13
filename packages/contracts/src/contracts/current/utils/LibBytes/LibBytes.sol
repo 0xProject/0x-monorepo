@@ -30,11 +30,12 @@ contract LibBytes is
     string constant GREATER_OR_EQUAL_TO_20_LENGTH_REQUIRED = "GREATER_OR_EQUAL_TO_20_LENGTH_REQUIRED";
     string constant GREATER_OR_EQUAL_TO_32_LENGTH_REQUIRED = "GREATER_OR_EQUAL_TO_32_LENGTH_REQUIRED";
     string constant GREATER_OR_EQUAL_TO_NESTED_BYTES_LENGTH_REQUIRED = "GREATER_OR_EQUAL_TO_NESTED_BYTES_LENGTH_REQUIRED";
+    string constant GREATER_OR_EQUAL_TO_SOURCE_BYTES_LENGTH_REQUIRED = "GREATER_OR_EQUAL_TO_SOURCE_BYTES_LENGTH_REQUIRED";
 
     /// @dev Pops the last byte off of a byte array by modifying its length.
     /// @param b Byte array that will be modified.
     /// @return The byte that was popped off.
-    function popByte(bytes memory b)
+    function popLastByte(bytes memory b)
         internal
         pure
         returns (bytes1 result)
@@ -58,7 +59,7 @@ contract LibBytes is
     /// @dev Pops the last 20 bytes off of a byte array by modifying its length.
     /// @param b Byte array that will be modified.
     /// @return The 20 byte address that was popped off.
-    function popAddress(bytes memory b)
+    function popLast20Bytes(bytes memory b)
         internal
         pure
         returns (address result)
@@ -77,41 +78,6 @@ contract LibBytes is
             mstore(b, newLen)
         }
         return result;
-    }
-
-    /// @dev Tests equality of two byte arrays.
-    /// @param lhs First byte array to compare.
-    /// @param rhs Second byte array to compare.
-    /// @return True if arrays are the same. False otherwise.
-    function areBytesEqual(
-        bytes memory lhs,
-        bytes memory rhs
-    )
-        internal
-        pure
-        returns (bool equal)
-    {
-        assembly {
-            // Get the number of words occupied by <lhs>
-            let lenFullWords := div(add(mload(lhs), 0x1F), 0x20)
-
-            // Add 1 to the number of words, to account for the length field
-            lenFullWords := add(lenFullWords, 0x1)
-
-            // Test equality word-by-word.
-            // Terminates early if there is a mismatch.
-            for {let i := 0} lt(i, lenFullWords) {i := add(i, 1)} {
-                let lhsWord := mload(add(lhs, mul(i, 0x20)))
-                let rhsWord := mload(add(rhs, mul(i, 0x20)))
-                equal := eq(lhsWord, rhsWord)
-                if eq(equal, 0) {
-                    // Break
-                    i := lenFullWords
-                }
-            }
-       }
-
-       return equal;
     }
 
     /// @dev Reads an address from a position in a byte array.
@@ -344,6 +310,64 @@ contract LibBytes is
             getMemAddress(b) + 32 + index,  // +32 to skip length of <b>
             getMemAddress(input),           // includes length of <input>
             input.length + 32               // +32 bytes to store <input> length
+        );
+    }
+
+    /// @dev Tests equality of two byte arrays.
+    /// @param lhs First byte array to compare.
+    /// @param rhs Second byte array to compare.
+    /// @return True if arrays are the same. False otherwise.
+    function areBytesEqual(
+        bytes memory lhs,
+        bytes memory rhs
+    )
+        internal
+        pure
+        returns (bool equal)
+    {
+        assembly {
+            // Get the number of words occupied by <lhs>
+            let lenFullWords := div(add(mload(lhs), 0x1F), 0x20)
+
+            // Add 1 to the number of words, to account for the length field
+            lenFullWords := add(lenFullWords, 0x1)
+
+            // Test equality word-by-word.
+            // Terminates early if there is a mismatch.
+            for {let i := 0} lt(i, lenFullWords) {i := add(i, 1)} {
+                let lhsWord := mload(add(lhs, mul(i, 0x20)))
+                let rhsWord := mload(add(rhs, mul(i, 0x20)))
+                equal := eq(lhsWord, rhsWord)
+                if eq(equal, 0) {
+                    // Break
+                    i := lenFullWords
+                }
+            }
+       }
+
+       return equal;
+    }
+
+    /// @dev Performs a deep copy of a byte array onto another byte array of greater than or equal length.
+    /// @param dest Byte array that will be overwritten with source bytes.
+    /// @param source Byte array to copy onto dest bytes.
+    function deepCopyBytes(
+        bytes memory dest,
+        bytes memory source
+    )
+        internal
+        pure
+    {
+        uint256 sourceLen = source.length;
+        // Dest length must be >= source length, or some bytes would not be copied.
+        require(
+            dest.length >= sourceLen,
+            GREATER_OR_EQUAL_TO_SOURCE_BYTES_LENGTH_REQUIRED
+        );
+        memCopy(
+            getMemAddress(dest) + 32,    // +32 to skip length of <dest>
+            getMemAddress(source) + 32,  // +32 to skip length of <source>
+            sourceLen
         );
     }
 }

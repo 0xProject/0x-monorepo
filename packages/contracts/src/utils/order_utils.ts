@@ -1,6 +1,7 @@
 import { OrderWithoutExchangeAddress, SignedOrder } from '@0xproject/types';
 import { BigNumber } from '@0xproject/utils';
 
+import { constants } from './constants';
 import { CancelOrder, MatchOrder } from './types';
 
 export const orderUtils = {
@@ -50,6 +51,8 @@ export const orderUtils = {
             leftSignature: signedOrderLeft.signature,
             rightSignature: signedOrderRight.signature,
         };
+        fill.right.makerAssetData = constants.NULL_BYTES;
+        fill.right.takerAssetData = constants.NULL_BYTES;
         return fill;
     },
 };

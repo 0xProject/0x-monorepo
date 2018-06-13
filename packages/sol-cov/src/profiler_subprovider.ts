@@ -1,15 +1,18 @@
 import * as _ from 'lodash';
 
 import { AbstractArtifactAdapter } from './artifact_adapters/abstract_artifact_adapter';
-import { ProfilerManager } from './profiler_manager';
+import { collectCoverageEntries } from './collect_coverage_entries';
 import { TraceCollectionSubprovider } from './trace_collection_subprovider';
+import { SingleFileSubtraceHandler, TraceCollector } from './trace_collector';
+import { ContractData, Coverage, SourceRange, Subtrace, TraceInfo } from './types';
+import { utils } from './utils';
 
 /**
  * This class implements the [web3-provider-engine](https://github.com/MetaMask/provider-engine) subprovider interface.
  * ProfilerSubprovider is used to profile Solidity code while running tests.
  */
 export class ProfilerSubprovider extends TraceCollectionSubprovider {
-    private _profilerManager: ProfilerManager;
+    private _profilerCollector: TraceCollector;
     /**
      * Instantiates a ProfilerSubprovider instance
      * @param artifactAdapter Adapter for used artifacts format (0x, truffle, giveth, etc.)
@@ -23,14 +26,66 @@ export class ProfilerSubprovider extends TraceCollectionSubprovider {
             shouldCollectCallTraces: false,
         };
         super(defaultFromAddress, traceCollectionSubproviderConfig);
-        this._profilerManager = new ProfilerManager(artifactAdapter, isVerbose);
+        this._profilerCollector = new TraceCollector(artifactAdapter, isVerbose, profilerHandler);
+    }
+    public async handleTraceInfoAsync(traceInfo: TraceInfo): Promise<void> {
+        await this._profilerCollector.computeSingleTraceCoverageAsync(traceInfo);
     }
     /**
      * Write the test profiler results to a file in Istanbul format.
      */
     public async writeProfilerOutputAsync(): Promise<void> {
-        const traceInfos = this.getCollectedTraceInfos();
-        _.forEach(traceInfos, traceInfo => this._profilerManager.appendTraceInfo(traceInfo));
-        await this._profilerManager.writeProfilerOutputAsync();
+        await this._profilerCollector.writeOutputAsync();
     }
 }
+
+/**
+ * Computed partial coverage for a single file & subtrace for the purposes of
+ * gas profiling.
+ * @param contractData      Contract metadata (source, srcMap, bytecode)
+ * @param subtrace          A subset of a transcation/call trace that was executed within that contract
+ * @param pcToSourceRange   A mapping from program counters to source ranges
+ * @param fileIndex         Index of a file to compute coverage for
+ * @return Partial istanbul coverage for that file & subtrace
+ */
+export const profilerHandler: SingleFileSubtraceHandler = (
+    contractData: ContractData,
+    subtrace: Subtrace,
+    pcToSourceRange: { [programCounter: number]: SourceRange },
+    fileIndex: number,
+): Coverage => {
+    const absoluteFileName = contractData.sources[fileIndex];
+    const profilerEntriesDescription = collectCoverageEntries(contractData.sourceCodes[fileIndex]);
+    const gasConsumedByStatement: { [statementId: string]: number } = {};
+    const statementIds = _.keys(profilerEntriesDescription.statementMap);
+    for (const statementId of statementIds) {
+        const statementDescription = profilerEntriesDescription.statementMap[statementId];
+        const totalGasCost = _.sum(
+            _.map(subtrace, structLog => {
+                const sourceRange = pcToSourceRange[structLog.pc];
+                if (_.isUndefined(sourceRange)) {
+                    return 0;
+                }
+                if (sourceRange.fileName !== absoluteFileName) {
+                    return 0;
+                }
+                if (utils.isRangeInside(sourceRange.location, statementDescription)) {
+                    return structLog.gasCost;
+                } else {
+                    return 0;
+                }
+            }),
+        );
+        gasConsumedByStatement[statementId] = totalGasCost;
+    }
+    const partialProfilerOutput = {
+        [absoluteFileName]: {
+            ...profilerEntriesDescription,
+            path: absoluteFileName,
+            f: {}, // I's meaningless in profiling context
+            s: gasConsumedByStatement,
+            b: {}, // I's meaningless in profiling context
+        },
+    };
+    return partialProfilerOutput;
+};
