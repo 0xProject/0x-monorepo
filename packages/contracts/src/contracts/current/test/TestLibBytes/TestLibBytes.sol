@@ -221,4 +221,34 @@ contract TestLibBytes is
         writeBytes(b, index, input);
         return b;
     }
+    
+    /// @dev Copies a block of memory from one location to another.
+    /// @param mem Memory contents we want to apply memCopy to
+    /// @param dest Destination offset into <mem>.
+    /// @param source Source offset into <mem>.
+    /// @param length Length of bytes to copy from <source> to <dest>
+    /// @return mem Memory contents after calling memCopy.
+    function testMemcpy(
+        bytes mem,
+        uint256 dest,
+        uint256 source,
+        uint256 length
+    )
+        public // not external, we need input in memory
+        pure
+        returns (bytes)
+    {
+        // Sanity check. Overflows are not checked.
+        require(source + length <= mem.length);
+        require(dest + length <= mem.length);
+
+        // Get pointer to memory contents
+        uint256 offset = getMemAddress(mem) + 32;
+
+        // Execute memCopy adjusted for memory array location
+        memCopy(offset + dest, offset + source, length);
+
+        // Return modified memory contents
+        return mem;
+    }
 }

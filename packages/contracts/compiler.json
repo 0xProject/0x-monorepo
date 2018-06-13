@@ -33,7 +33,6 @@
         "TestAssetDataDecoders",
         "TestAssetProxyDispatcher",
         "TestLibBytes",
-        "TestLibMem",
         "TestLibs",
         "TestSignatureValidator",
         "TestValidator",
