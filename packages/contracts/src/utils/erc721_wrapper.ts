@@ -1,4 +1,4 @@
-import { generatePseudoRandomSalt } from '@0xproject/order-utils';
+import { assetProxyUtils, generatePseudoRandomSalt } from '@0xproject/order-utils';
 import { BigNumber } from '@0xproject/utils';
 import { Web3Wrapper } from '@0xproject/web3-wrapper';
 import { Provider } from 'ethereum-types';
@@ -19,6 +19,7 @@ export class ERC721Wrapper {
     private _provider: Provider;
     private _dummyTokenContracts: DummyERC721TokenContract[];
     private _proxyContract?: ERC721ProxyContract;
+    private _proxyIdIfExists?: number;
     private _initialTokenIdsByOwner: ERC721TokenIdsByOwner = {};
     constructor(provider: Provider, tokenOwnerAddresses: string[], contractOwnerAddress: string) {
         this._web3Wrapper = new Web3Wrapper(provider);
@@ -47,7 +48,12 @@ export class ERC721Wrapper {
             this._provider,
             txDefaults,
         );
+        this._proxyIdIfExists = await this._proxyContract.getProxyId.callAsync();
         return this._proxyContract;
+    }
+    public getProxyId(): number {
+        this._validateProxyContractExistsOrThrow();
+        return this._proxyIdIfExists as number;
     }
     public async setBalancesAndAllowancesAsync(): Promise<void> {
         this._validateDummyTokenContractsExistOrThrow();
@@ -84,6 +90,33 @@ export class ERC721Wrapper {
                 );
             }
         }
+    }
+    public async getBalanceAsync(owner: string, assetData: string): Promise<BigNumber> {
+        const erc721ProxyData = assetProxyUtils.decodeERC721AssetData(assetData);
+        const tokenAddress = erc721ProxyData.tokenAddress;
+        const tokenContractIfExists = _.find(this._dummyTokenContracts, c => c.address === tokenAddress);
+        if (_.isUndefined(tokenContractIfExists)) {
+            throw new Error(`Token: ${tokenAddress} was not deployed through ERC20Wrapper`);
+        }
+        const tokenId = erc721ProxyData.tokenId;
+        const tokenOwner = await tokenContractIfExists.ownerOf.callAsync(tokenId);
+        const balance = tokenOwner === owner ? new BigNumber(1) : new BigNumber(0);
+        return balance;
+    }
+    public async getProxyAllowanceAsync(owner: string, assetData: string): Promise<BigNumber> {
+        const erc721ProxyData = assetProxyUtils.decodeERC721AssetData(assetData);
+        const tokenAddress = erc721ProxyData.tokenAddress;
+        this._validateProxyContractExistsOrThrow();
+        const tokenContractIfExists = _.find(this._dummyTokenContracts, c => c.address === tokenAddress);
+        if (_.isUndefined(tokenContractIfExists)) {
+            throw new Error(`Token: ${tokenAddress} was not deployed through ERC20Wrapper`);
+        }
+        const operator = (this._proxyContract as ERC721ProxyContract).address;
+        const didApproveAll = await tokenContractIfExists.isApprovedForAll.callAsync(owner, operator);
+        const tokenId = erc721ProxyData.tokenId;
+        const allowedAddress = await tokenContractIfExists.getApproved.callAsync(tokenId);
+        const allowance = allowedAddress === operator || didApproveAll ? new BigNumber(1) : new BigNumber(0);
+        return allowance;
     }
     public async getBalancesAsync(): Promise<ERC721TokenIdsByOwner> {
         this._validateDummyTokenContractsExistOrThrow();
