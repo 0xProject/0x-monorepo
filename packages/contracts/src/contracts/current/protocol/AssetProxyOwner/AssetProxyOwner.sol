@@ -104,7 +104,7 @@ contract AssetProxyOwner is
         pure
         returns (bool)
     {
-        bytes4 first4Bytes = data.readFirst4();
+        bytes4 first4Bytes = data.readBytes4(0);
         require(REMOVE_AUTHORIZED_ADDRESS_SELECTOR == first4Bytes);
         return true;
     }

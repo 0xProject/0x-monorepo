@@ -459,17 +459,21 @@ describe('LibBytes', () => {
         });
     });
 
-    describe('readFirst4', () => {
+    describe('readBytes4', () => {
         // AssertionError: expected promise to be rejected with an error including 'revert' but it was fulfilled with '0x08c379a0'
         it('should revert if byte array has a length < 4', async () => {
             const byteArrayLessThan4Bytes = '0x010101';
             return expectRevertOrOtherErrorAsync(
-                libBytes.publicReadFirst4.callAsync(byteArrayLessThan4Bytes),
+                libBytes.publicReadBytes4.callAsync(
+                    byteArrayLessThan4Bytes,
+                    new BigNumber(0)),
                 constants.LIB_BYTES_GREATER_OR_EQUAL_TO_4_LENGTH_REQUIRED,
             );
         });
         it('should return the first 4 bytes of a byte array of arbitrary length', async () => {
-            const first4Bytes = await libBytes.publicReadFirst4.callAsync(byteArrayLongerThan32Bytes);
+            const first4Bytes = await libBytes.publicReadBytes4.callAsync(
+                byteArrayLongerThan32Bytes,
+                new BigNumber(0));
             const expectedFirst4Bytes = byteArrayLongerThan32Bytes.slice(0, 10);
             expect(first4Bytes).to.equal(expectedFirst4Bytes);
         });

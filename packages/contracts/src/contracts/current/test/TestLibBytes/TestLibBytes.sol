@@ -187,15 +187,19 @@ contract TestLibBytes {
         return b;
     }
 
-    /// @dev Reads the first 4 bytes from a byte array of arbitrary length.
-    /// @param b Byte array to read first 4 bytes from.
-    /// @return First 4 bytes of data.
-    function publicReadFirst4(bytes memory b)
+    /// @dev Reads an unpadded bytes4 value from a position in a byte array.
+    /// @param b Byte array containing a bytes4 value.
+    /// @param index Index in byte array of bytes4 value.
+    /// @return bytes4 value from byte array.
+    function publicReadBytes4(
+        bytes memory b,
+        uint256 index
+    )
         public
         pure
         returns (bytes4 result)
     {
-        result = b.readFirst4();
+        result = b.readBytes4(index);
         return result;
     }
 
