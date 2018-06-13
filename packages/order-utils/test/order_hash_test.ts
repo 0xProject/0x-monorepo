@@ -29,6 +29,7 @@ describe('Order hashing', () => {
             makerAssetAmount: new BigNumber(0),
             takerAssetAmount: new BigNumber(0),
             expirationTimeSeconds: new BigNumber(0),
+            userData: '0x0',
         };
         it('calculates the order hash', async () => {
             const orderHash = orderHashUtils.getOrderHashHex(order);

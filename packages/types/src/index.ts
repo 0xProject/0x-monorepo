@@ -18,6 +18,7 @@ export interface Order {
     exchangeAddress: string;
     feeRecipientAddress: string;
     expirationTimeSeconds: BigNumber;
+    userData: string;
 }
 
 export interface OrderWithoutExchangeAddress {
@@ -33,6 +34,7 @@ export interface OrderWithoutExchangeAddress {
     salt: BigNumber;
     feeRecipientAddress: string;
     expirationTimeSeconds: BigNumber;
+    userData: string;
 }
 
 export interface SignedOrder extends Order {

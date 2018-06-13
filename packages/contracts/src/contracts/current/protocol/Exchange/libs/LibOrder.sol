@@ -38,6 +38,7 @@ contract LibOrder {
         "uint256 salt,",
         "bytes makerAssetData,",
         "bytes takerAssetData,",
+        "bytes userData,",
         ")"
     ));
 
@@ -66,6 +67,7 @@ contract LibOrder {
         uint256 salt;
         bytes makerAssetData;
         bytes takerAssetData;
+        bytes userData;
     }
 
     struct OrderInfo {
@@ -85,13 +87,8 @@ contract LibOrder {
         view
         returns (bytes32 orderHash)
     {
-        // TODO: EIP712 is not finalized yet
-        // Source: https://github.com/ethereum/EIPs/pull/712
-        orderHash = keccak256(abi.encodePacked(
-            DOMAIN_SEPARATOR_SCHEMA_HASH,
-            keccak256(abi.encodePacked(address(this))),
-            ORDER_SCHEMA_HASH,
-            keccak256(abi.encodePacked(
+        bytes32 orderDataHash = keccak256(
+            abi.encodePacked(
                 order.makerAddress,
                 order.takerAddress,
                 order.feeRecipientAddress,
@@ -103,9 +100,20 @@ contract LibOrder {
                 order.expirationTimeSeconds,
                 order.salt,
                 keccak256(abi.encodePacked(order.makerAssetData)),
-                keccak256(abi.encodePacked(order.takerAssetData))
-            ))
-        ));
+                keccak256(abi.encodePacked(order.takerAssetData)),
+                keccak256(abi.encodePacked(order.userData))
+            )
+        );
+        // TODO: EIP712 is not finalized yet
+        // Source: https://github.com/ethereum/EIPs/pull/712
+        orderHash = keccak256(
+            abi.encodePacked(
+                DOMAIN_SEPARATOR_SCHEMA_HASH,
+                keccak256(abi.encodePacked(address(this))),
+                ORDER_SCHEMA_HASH,
+                orderDataHash
+            )
+        );
         return orderHash;
     }
 }

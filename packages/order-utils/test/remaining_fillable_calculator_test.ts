@@ -56,6 +56,7 @@ describe('RemainingFillableCalculator', () => {
             takerAssetData,
             salt: zero,
             expirationTimeSeconds: zero,
+            userData: zeroAddress,
         };
     }
     describe('Maker token is NOT ZRX', () => {

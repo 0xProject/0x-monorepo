@@ -34,6 +34,7 @@ export const orderUtils = {
             salt: signedOrder.salt,
             makerAssetData: signedOrder.makerAssetData,
             takerAssetData: signedOrder.takerAssetData,
+            userData: signedOrder.userData,
         };
         return orderStruct;
     },
