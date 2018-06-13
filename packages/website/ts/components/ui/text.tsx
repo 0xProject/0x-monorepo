@@ -27,7 +27,7 @@ export const Text = styled(PlainText)`
     ${props => (props.lineHeight ? `line-height: ${props.lineHeight}` : '')};
     ${props => (props.center ? 'text-align: center' : '')};
     color: ${props => props.fontColor};
-    min-height: ${props => props.minHeight};
+    ${props => (props.minHeight ? `min-height: ${props.minHeight}` : '')};
 `;
 
 Text.defaultProps = {
