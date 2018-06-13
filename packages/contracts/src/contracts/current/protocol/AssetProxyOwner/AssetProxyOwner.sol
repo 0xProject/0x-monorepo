@@ -22,7 +22,6 @@ import "../../multisig/MultiSigWalletWithTimeLock.sol";
 import "../../utils/LibBytes/LibBytes.sol";
 
 contract AssetProxyOwner is
-    LibBytes,
     MultiSigWalletWithTimeLock
 {
 
@@ -104,7 +103,7 @@ contract AssetProxyOwner is
         pure
         returns (bool)
     {
-        bytes4 first4Bytes = readFirst4(data);
+        bytes4 first4Bytes = LibBytes.readFirst4(data);
         require(REMOVE_AUTHORIZED_ADDRESS_SELECTOR == first4Bytes);
         return true;
     }
