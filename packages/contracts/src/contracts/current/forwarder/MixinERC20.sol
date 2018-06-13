@@ -17,6 +17,9 @@ contract MixinERC20
         // when calling transferFrom. We have to move these tokens using transfer directly.
         // TODO: Some ERC20 implementations don't return a boolean correctly and this fails on newer versions of the solidity compiler.
         // We need to solve for this here
-        require(IERC20Token(token).transfer(account, amount), ERROR_TRANSFER_FAILED);
+        require(
+            IERC20Token(token).transfer(account, amount),
+            ERROR_TRANSFER_FAILED
+        );
     }
 }

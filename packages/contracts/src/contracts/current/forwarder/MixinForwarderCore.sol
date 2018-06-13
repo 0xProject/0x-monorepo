@@ -96,14 +96,15 @@ contract MixinForwarderCore is
         returns (Exchange.FillResults memory totalFillResults)
     {
         address token = readAddress(orders[0].makerAssetData, 0);
-        require(token == address(ZRX_TOKEN), TAKER_ASSET_ZRX_REQUIRED);
+        require(
+            token == address(ZRX_TOKEN),
+            TAKER_ASSET_ZRX_REQUIRED
+        );
         for (uint256 i = 0; i < orders.length; i++) {
-            // Token being bought by taker must be the same for each order
-            require(areBytesEqual(orders[i].makerAssetData, orders[0].makerAssetData), SAME_ASSET_TYPE_REQUIRED);
-
+            // All of these are ZRX tokens, we can drop the subsequent makerAssetData from callData as it is duplicated (ZRX)
+            orders[i].makerAssetData = orders[0].makerAssetData;
             // Calculate the remaining amount of makerToken to buy
             uint256 remainingMakerTokenFillAmount = safeSub(feeAmount, totalFillResults.makerAssetFilledAmount);
-
             // Convert the remaining amount of makerToken to buy into remaining amount
             // of takerToken to sell, assuming entire amount can be sold in the current order
             uint256 remainingTakerTokenFillAmount = getPartialAmount(
@@ -111,7 +112,6 @@ contract MixinForwarderCore is
                 safeSub(orders[i].makerAssetAmount, orders[i].takerFee), // our exchange rate after fees 
                 remainingMakerTokenFillAmount
             );
-
             // Attempt to sell the remaining amount of takerToken
             // Round up the amount to ensure we don't under buy by a fractional amount
             Exchange.FillResults memory singleFillResult = EXCHANGE.fillOrder(
@@ -119,12 +119,10 @@ contract MixinForwarderCore is
                 safeAdd(remainingTakerTokenFillAmount, 1),
                 signatures[i]
             );
-
             // We didn't buy the full amount when buying ZRX as some were taken for fees
             singleFillResult.makerAssetFilledAmount = safeSub(singleFillResult.makerAssetFilledAmount, singleFillResult.takerFeePaid);
             // Update amounts filled and fees paid by maker and taker
             addFillResults(totalFillResults, singleFillResult);
-
             // Stop execution if the entire amount of makerToken has been bought
             if (totalFillResults.makerAssetFilledAmount >= feeAmount) {
                 break;

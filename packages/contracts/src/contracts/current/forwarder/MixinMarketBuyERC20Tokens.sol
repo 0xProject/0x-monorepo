@@ -35,10 +35,15 @@ contract MixinMarketBuyERC20Tokens is
         public
         returns (Exchange.FillResults)
     {
-        require(msg.value > 0, VALUE_GREATER_THAN_ZERO);
+        require(
+            msg.value > 0,
+            VALUE_GREATER_THAN_ZERO
+        );
         address token = readAddress(orders[0].takerAssetData, 0);
-        require(token == address(ETHER_TOKEN), TAKER_ASSET_WETH_REQUIRED);
-
+        require(
+            token == address(ETHER_TOKEN),
+            TAKER_ASSET_WETH_REQUIRED
+        );
         uint256 remainingTakerTokenAmount = payAndDeductFee(msg.value, feeProportion, feeRecipient);
         ETHER_TOKEN.deposit.value(remainingTakerTokenAmount)();
         return marketSellTokensInternal(orders, signatures, feeOrders, feeSignatures, remainingTakerTokenAmount);

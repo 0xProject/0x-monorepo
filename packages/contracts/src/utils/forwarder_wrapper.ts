@@ -9,6 +9,8 @@ import { ForwarderContract } from '../../src/generated_contract_wrappers/forward
 import { formatters } from '../../src/utils/formatters';
 
 import { constants } from './constants';
+import { orderUtils } from './order_utils';
+import { MarketSellOrders } from './types';
 
 const DEFAULT_FEE_PROPORTION = 0;
 const PERCENTAGE_DENOMINATOR = 10000;
@@ -18,6 +20,14 @@ export class ForwarderWrapper {
     private _web3Wrapper: Web3Wrapper;
     private _forwarderContract: ForwarderContract;
     private _zrxAddressBuffer: Buffer;
+    private static _createOptimizedSellOrders(signedOrders: SignedOrder[]): MarketSellOrders {
+        const marketSellOrders = formatters.createMarketSellOrders(signedOrders, ZERO_AMOUNT);
+        // Contract will fill this in for us as all of the assetData is assumed to be the same
+        for (let i = 1; i < signedOrders.length; i++) {
+            marketSellOrders.orders[i].makerAssetData = constants.NULL_BYTES;
+        }
+        return marketSellOrders;
+    }
     private static _calculateAdditionalFeeProportionAmount(feeProportion: number, fillAmountWei: BigNumber): BigNumber {
         if (feeProportion > 0) {
             // Add to the total ETH transaction to ensure all NFTs can be filled after fees
@@ -67,7 +77,7 @@ export class ForwarderWrapper {
             value: opts.fillAmountWei,
         };
         const params = formatters.createMarketBuyOrders(orders, opts.fillAmountWei);
-        const feeParams = formatters.createMarketBuyOrders(feeOrders, ZERO_AMOUNT);
+        const feeParams = ForwarderWrapper._createOptimizedSellOrders(feeOrders);
         const txHash: string = await this._forwarderContract.buyExactAssets.sendTransactionAsync(
             params.orders,
             params.signatures,
@@ -118,7 +128,7 @@ export class ForwarderWrapper {
             value: opts.fillAmountWei,
         };
         const params = formatters.createMarketSellOrders(orders, opts.fillAmountWei);
-        const feeParams = formatters.createMarketSellOrders(feeOrders, ZERO_AMOUNT);
+        const feeParams = ForwarderWrapper._createOptimizedSellOrders(feeOrders);
         const txHash: string = await this._forwarderContract.marketBuyTokens.sendTransactionAsync(
             params.orders,
             params.signatures,
@@ -234,6 +244,7 @@ export class ForwarderWrapper {
         fillAmountWei = ForwarderWrapper._calculateAdditionalFeeProportionAmount(feeProportion, fillAmountWei);
         return fillAmountWei;
     }
+
     private async _getTxWithDecodedLogsAsync(txHash: string): Promise<TransactionReceiptWithDecodedLogs> {
         const tx = await this._web3Wrapper.awaitTransactionMinedAsync(txHash);
         tx.logs = _.filter(tx.logs, log => log.address === this._forwarderContract.address);

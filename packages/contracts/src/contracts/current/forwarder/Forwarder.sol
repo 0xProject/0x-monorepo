@@ -31,7 +31,10 @@ contract Forwarder is
         public
         payable
     {
-        require(msg.sender == address(ETHER_TOKEN), DEFAULT_FUNCTION_WETH_CONTRACT_ONLY);
+        require(
+            msg.sender == address(ETHER_TOKEN),
+            DEFAULT_FUNCTION_WETH_CONTRACT_ONLY
+        );
     }
 
     /// @dev Sets the allowances to the proxy for this contract

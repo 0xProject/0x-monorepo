@@ -23,7 +23,7 @@ contract MixinBuyExactAssets is
     /// @param orders An array of Order struct containing order specifications.
     /// @param signatures An array of Proof that order has been created by maker.
     /// @param feeOrders An array of Order struct containing order specifications for fees.
-    /// @param assetAmount The amount of maker asset to buy.
+    /// @param makerAssetAmount The amount of maker asset to buy.
     /// @param feeSignatures An array of Proof that order has been created by maker for the fee orders.
     /// @param feeProportion A proportion deducted off the ETH spent and sent to feeRecipient. The maximum value for this
     ///        is 1000, aka 10%. Supports up to 2 decimal places. I.e 0.59% is 59.
@@ -34,7 +34,7 @@ contract MixinBuyExactAssets is
         bytes[] memory signatures,
         Order[] memory feeOrders,
         bytes[] memory feeSignatures,
-        uint256 assetAmount,
+        uint256 makerAssetAmount,
         uint16  feeProportion,
         address feeRecipient
     )
@@ -42,29 +42,40 @@ contract MixinBuyExactAssets is
         public
         returns (Exchange.FillResults memory totalFillResults)
     {
-        require(msg.value > 0, VALUE_GREATER_THAN_ZERO);
+        require(
+            msg.value > 0,
+            VALUE_GREATER_THAN_ZERO
+        );
         address takerAsset = readAddress(orders[0].takerAssetData, 0);
-        require(takerAsset == address(ETHER_TOKEN), TAKER_ASSET_WETH_REQUIRED);
-
+        require(
+            takerAsset == address(ETHER_TOKEN),
+            TAKER_ASSET_WETH_REQUIRED
+        );
         uint8 proxyId = uint8(orders[0].makerAssetData[orders[0].makerAssetData.length - 1]);
         require(proxyId == ERC20_PROXY_ID || proxyId == ERC721_PROXY_ID, UNSUPPORTED_TOKEN_PROXY);
 
         uint256 remainingTakerAssetAmount = msg.value;
         ETHER_TOKEN.deposit.value(remainingTakerAssetAmount)();
         if (proxyId == ERC20_PROXY_ID) {
-            totalFillResults = buyExactERC20TokensInternal(orders, signatures, feeOrders, feeSignatures, assetAmount);
+            totalFillResults = buyExactERC20TokensInternal(orders, signatures, feeOrders, feeSignatures, makerAssetAmount);
         } else if (proxyId == ERC721_PROXY_ID) {
-            totalFillResults = buyExactERC721TokensInternal(orders, signatures, feeOrders, feeSignatures, assetAmount);
+            totalFillResults = buyExactERC721TokensInternal(orders, signatures, feeOrders, feeSignatures, makerAssetAmount);
         }
         remainingTakerAssetAmount = safeSub(remainingTakerAssetAmount, totalFillResults.takerAssetFilledAmount);
         // Prevent a user from paying too much in fees through fee abstraction
         require(
             isAcceptableThreshold(
                 remainingTakerAssetAmount,
-                totalFillResults.takerAssetFilledAmount),
+                totalFillResults.takerAssetFilledAmount
+            ),
             UNACCEPTABLE_THRESHOLD
         );
-        withdrawPayAndDeductFee(remainingTakerAssetAmount, totalFillResults.takerAssetFilledAmount, feeProportion, feeRecipient);
+        withdrawPayAndDeductFee(
+            remainingTakerAssetAmount,
+            totalFillResults.takerAssetFilledAmount,
+            feeProportion,
+            feeRecipient
+        );
         return totalFillResults;
     }
 
@@ -73,14 +84,14 @@ contract MixinBuyExactAssets is
     /// @param signatures Proof that the orders were created by their respective makers.
     /// @param feeOrders to fill. The maker asset is ZRX and the taker asset is WETH.
     /// @param feeSignatures Proof that the feeOrders were created by their respective makers.
-    /// @param assetAmount Amount of the ERC20 token to buy.
+    /// @param makerAssetAmount Amount of the ERC20 token to buy.
     /// @return totalFillResults Aggregated fill results of buying the ERC20 and ZRX tokens.
     function buyExactERC20TokensInternal(
         Order[] memory orders,
         bytes[] memory signatures,
         Order[] memory feeOrders,
         bytes[] memory feeSignatures,
-        uint256 assetAmount
+        uint256 makerAssetAmount
     )
         private
         returns (Exchange.FillResults memory totalFillResults)
@@ -90,11 +101,14 @@ contract MixinBuyExactAssets is
         // this buys us exactly that amount taking into account the fees. This saves gas and calculates the rate correctly
         Exchange.FillResults memory requestedTokensResults;
         if (makerTokenAddress == address(ZRX_TOKEN)) {
-            requestedTokensResults = buyFeeTokensInternal(orders, signatures, assetAmount);
+            requestedTokensResults = buyFeeTokensInternal(orders, signatures, makerAssetAmount);
             // When buying ZRX we round up which can result in a small margin excess
-            require(requestedTokensResults.makerAssetFilledAmount >= assetAmount, UNACCEPTABLE_THRESHOLD);
+            require(
+                requestedTokensResults.makerAssetFilledAmount >= makerAssetAmount,
+                UNACCEPTABLE_THRESHOLD
+            );
         } else {
-            Exchange.FillResults memory calculatedMarketBuyResults = calculateMarketBuyFillResults(orders, assetAmount);
+            Exchange.FillResults memory calculatedMarketBuyResults = calculateMarketBuyFillResults(orders, makerAssetAmount);
             if (calculatedMarketBuyResults.takerFeePaid > 0) {
                 // Fees are required for these orders. Buy enough ZRX to cover the future market buy
                 Exchange.FillResults memory feeTokensResult = buyFeeTokensInternal(
@@ -103,8 +117,11 @@ contract MixinBuyExactAssets is
                 totalFillResults.takerFeePaid = feeTokensResult.takerFeePaid;
             }
             // Make our market buy of the requested tokens with the remaining balance
-            requestedTokensResults = EXCHANGE.marketBuyOrders(orders, assetAmount, signatures);
-            require(requestedTokensResults.makerAssetFilledAmount == assetAmount, UNACCEPTABLE_THRESHOLD);
+            requestedTokensResults = EXCHANGE.marketBuyOrders(orders, makerAssetAmount, signatures);
+            require(
+                requestedTokensResults.makerAssetFilledAmount == makerAssetAmount,
+                UNACCEPTABLE_THRESHOLD
+            );
         }
         addFillResults(totalFillResults, requestedTokensResults);
         // Transfer all tokens to msg.sender
@@ -117,19 +134,22 @@ contract MixinBuyExactAssets is
     /// @param signatures Proof that the orders were created by their respective makers.
     /// @param feeOrders to fill. The maker asset is ZRX and the taker asset is WETH.
     /// @param feeSignatures Proof that the feeOrders were created by their respective makers.
-    /// @param assetAmount Amount of the ERC721 tokens to buy, should match orders length.
+    /// @param makerAssetAmount Amount of the ERC721 tokens to buy, should match orders length.
     /// @return totalFillResults Aggregated fill results of buying the ERC721 tokens and ZRX tokens.
     function buyExactERC721TokensInternal(
         Order[] memory orders,
         bytes[] memory signatures,
         Order[] memory feeOrders,
         bytes[] memory feeSignatures,
-        uint256 assetAmount
+        uint256 makerAssetAmount
     )
         private
         returns (Exchange.FillResults memory totalFillResults)
     {
-        require(assetAmount == orders.length, ASSET_AMOUNT_MATCH_ORDER_SIZE);
+        require(
+            makerAssetAmount == orders.length,
+            ASSET_AMOUNT_MATCH_ORDER_SIZE
+        );
         uint256 totalFeeAmount;
         for (uint256 i = 0; i < orders.length; i++) {
             totalFeeAmount = safeAdd(totalFeeAmount, orders[i].takerFee);
