@@ -172,6 +172,16 @@ describe('LibBytes', () => {
             );
             return expect(equals).to.be.false();
         });
+
+        describe('should ignore trailing data', () => {
+            it('should return true when both < 32 bytes', async () => {
+                const equals = await libBytes.publicEqualsPop1.callAsync(
+                    '0x0102',
+                    '0x0103',
+                );
+                return expect(equals).to.be.true();
+            });
+        });
     });
 
     describe('deepCopyBytes', () => {
