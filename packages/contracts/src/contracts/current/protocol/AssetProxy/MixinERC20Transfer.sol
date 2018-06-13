@@ -26,6 +26,8 @@ import "./libs/LibTransferErrors.sol";
 contract MixinERC20Transfer is
     LibTransferErrors
 {
+    using LibBytes for bytes;
+
     /// @dev Internal version of `transferFrom`.
     /// @param assetData Encoded byte array.
     /// @param from Address to transfer asset from.
@@ -40,7 +42,7 @@ contract MixinERC20Transfer is
         internal
     {
         // Decode asset data.
-        address token = LibBytes.readAddress(assetData, 0);
+        address token = assetData.readAddress(0);
 
         // Transfer tokens.
         // We do a raw call so we can check the success separate

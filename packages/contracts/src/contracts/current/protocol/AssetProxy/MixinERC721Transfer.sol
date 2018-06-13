@@ -26,6 +26,8 @@ import "./libs/LibTransferErrors.sol";
 contract MixinERC721Transfer is
     LibTransferErrors
 {
+    using LibBytes for bytes;
+    
     /// @dev Internal version of `transferFrom`.
     /// @param assetData Encoded byte array.
     /// @param from Address to transfer asset from.
@@ -72,10 +74,10 @@ contract MixinERC721Transfer is
         )
     {
         // Decode asset data.
-        token = LibBytes.readAddress(assetData, 0);
-        tokenId = LibBytes.readUint256(assetData, 20);
+        token = assetData.readAddress(0);
+        tokenId = assetData.readUint256(20);
         if (assetData.length > 52) {
-            receiverData = LibBytes.readBytes(assetData, 52);
+            receiverData = assetData.readBytes(52);
         }
 
         return (
