@@ -4,6 +4,7 @@ import { render } from 'react-dom';
 import { Provider } from 'react-redux';
 import { BrowserRouter as Router, Redirect, Route, Switch } from 'react-router-dom';
 import * as injectTapEventPlugin from 'react-tap-event-plugin';
+import { Redirector } from 'ts/components/redirector';
 import { About } from 'ts/containers/about';
 import { FAQ } from 'ts/containers/faq';
 import { Jobs } from 'ts/containers/jobs';
@@ -86,7 +87,12 @@ render(
                         <Switch>
                             <Route exact={true} path="/" component={Landing as any} />
                             <Redirect from="/otc" to={`${WebsitePaths.Portal}`} />
-                            <Route path={WebsitePaths.Jobs} component={Jobs as any} />
+                            {/* TODO: Remove this once we ship the jobs page*/}
+                            {utils.shouldShowJobsPage() ? (
+                                <Route path={WebsitePaths.Jobs} component={Jobs as any} />
+                            ) : (
+                                <Route path={WebsitePaths.Jobs} component={Redirector as any} />
+                            )}
                             <Route path={WebsitePaths.Portal} component={LazyPortal} />
                             <Route path={WebsitePaths.FAQ} component={FAQ as any} />
                             <Route path={WebsitePaths.About} component={About as any} />
