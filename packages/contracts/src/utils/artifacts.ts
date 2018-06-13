@@ -14,7 +14,6 @@ import * as MultiSigWalletWithTimeLock from '../artifacts/MultiSigWalletWithTime
 import * as TestAssetDataDecoders from '../artifacts/TestAssetDataDecoders.json';
 import * as TestAssetProxyDispatcher from '../artifacts/TestAssetProxyDispatcher.json';
 import * as TestLibBytes from '../artifacts/TestLibBytes.json';
-import * as TestLibMem from '../artifacts/TestLibMem.json';
 import * as TestLibs from '../artifacts/TestLibs.json';
 import * as TestSignatureValidator from '../artifacts/TestSignatureValidator.json';
 import * as TestValidator from '../artifacts/TestValidator.json';
@@ -40,7 +39,6 @@ export const artifacts = {
     TestAssetProxyDispatcher: (TestAssetProxyDispatcher as any) as ContractArtifact,
     TestAssetDataDecoders: (TestAssetDataDecoders as any) as ContractArtifact,
     TestLibBytes: (TestLibBytes as any) as ContractArtifact,
-    TestLibMem: (TestLibMem as any) as ContractArtifact,
     TestLibs: (TestLibs as any) as ContractArtifact,
     TestSignatureValidator: (TestSignatureValidator as any) as ContractArtifact,
     TestValidator: (TestValidator as any) as ContractArtifact,

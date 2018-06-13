@@ -27,7 +27,6 @@ describe('TestAssetDataDecoders', () => {
         // Setup accounts & addresses
         const accounts = await web3Wrapper.getAvailableAddressesAsync();
         testAddress = accounts[0];
-        // Deploy TestLibMem
         testAssetProxyDecoder = await TestAssetDataDecodersContract.deployFrom0xArtifactAsync(
             artifacts.TestAssetDataDecoders,
             provider,
