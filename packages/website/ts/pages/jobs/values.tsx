@@ -1,8 +1,10 @@
 import * as _ from 'lodash';
 import * as React from 'react';
 
+import { Text } from 'ts/components/ui/text';
 import { HeaderItem } from 'ts/pages/jobs/list/header_item';
 import { ListItem } from 'ts/pages/jobs/list/list_item';
+import { colors } from 'ts/style/colors';
 
 const VALUE_ITEM_PROPS_LIST: ValueItemProps[] = [
     {
@@ -44,12 +46,14 @@ export const ValueItem: React.StatelessComponent<ValueItemProps> = ({ bulletColo
     return (
         <div style={{ minHeight: VALUE_ITEM_MIN_HEIGHT }}>
             <ListItem bulletColor={bulletColor}>
-                <div style={{ fontWeight: 'bold', fontSize: 16 }}>{title}</div>
+                <Text fontWeight="bold" fontSize="16x" fontColor={colors.black}>
+                    {title}
+                </Text>
             </ListItem>
             <ListItem>
-                <div className="pt1" style={{ fontSize: 16, lineHeight: 2 }}>
+                <Text className="pt1" fontSize="16x" lineHeight="2em" fontColor={colors.black}>
                     {description}
-                </div>
+                </Text>
             </ListItem>
         </div>
     );
