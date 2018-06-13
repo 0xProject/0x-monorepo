@@ -1,11 +1,11 @@
 import { BlockchainLifecycle } from '@0xproject/dev-utils';
 import * as _ from 'lodash';
 
-import { chaiSetup } from '../src/utils/chai_setup';
-import { CoreCombinatorialUtils, coreCombinatorialUtilsFactoryAsync } from '../src/utils/core_combinatorial_utils';
-import { provider, txDefaults, web3Wrapper } from '../src/utils/web3_wrapper';
+import { chaiSetup } from '../../src/utils/chai_setup';
+import { CoreCombinatorialUtils, coreCombinatorialUtilsFactoryAsync } from '../../src/utils/core_combinatorial_utils';
+import { provider, txDefaults, web3Wrapper } from '../../src/utils/web3_wrapper';
 
-import { OrderScenario } from '../src/utils/types';
+import { OrderScenario } from '../../src/utils/types';
 
 chaiSetup.configure();
 const blockchainLifecycle = new BlockchainLifecycle(web3Wrapper);
