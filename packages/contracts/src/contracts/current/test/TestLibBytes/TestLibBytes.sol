@@ -67,8 +67,8 @@ contract TestLibBytes {
         pure
         returns (bool equal)
     {
-        lhs.popByte();
-        rhs.popByte();
+        lhs.popLastByte();
+        rhs.popLastByte();
         equal = lhs.equals(rhs);
         return equal;
     }
