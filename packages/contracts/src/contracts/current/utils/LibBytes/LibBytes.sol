@@ -451,6 +451,9 @@ library LibBytes {
         );
         assembly {
             result := mload(add(b, 32))
+            // Solidity does not require us to clean the trailing bytes.
+            // We do it anyway
+            result := and(result, 0xFFFFFFFF00000000000000000000000000000000000000000000000000000000)
         }
         return result;
     }
