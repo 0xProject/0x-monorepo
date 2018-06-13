@@ -341,6 +341,10 @@ library LibBytes {
             // 2. Load 32-byte word from memory
             // 3. Apply 12-byte mask to obtain extra bytes occupying word of memory where we'll store the address
             let neighbors := and(mload(add(b, index)), 0xffffffffffffffffffffffff0000000000000000000000000000000000000000)
+            
+            // Make sure input address is clean.
+            // (Solidity does not guarantee this)
+            input := and(input, 0xffffffffffffffffffffffffffffffffffffffff)
 
             // Store the neighbors and address into memory
             mstore(add(b, index), xor(input, neighbors))
