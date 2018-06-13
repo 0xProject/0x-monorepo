@@ -39,7 +39,7 @@ contract AssetProxyOwner is
     modifier validRemoveAuthorizedAddressTx(uint256 transactionId) {
         Transaction storage tx = transactions[transactionId];
         require(isAssetProxyRegistered[tx.destination]);
-        require(isFunctionRemoveAuthorizedAddress(tx.data));
+        require(tx.data.readBytes4(0) == REMOVE_AUTHORIZED_ADDRESS_SELECTOR);
         _;
     }
 
@@ -94,18 +94,5 @@ contract AssetProxyOwner is
             ExecutionFailure(transactionId);
             tx.executed = false;
         }
-    }
-
-    /// @dev Compares first 4 bytes of byte array to removeAuthorizedAddress function selector.
-    /// @param data Transaction data.
-    /// @return Successful if data is a call to removeAuthorizedAddress.
-    function isFunctionRemoveAuthorizedAddress(bytes memory data)
-        public
-        pure
-        returns (bool)
-    {
-        bytes4 first4Bytes = data.readBytes4(0);
-        require(REMOVE_AUTHORIZED_ADDRESS_SELECTOR == first4Bytes);
-        return true;
     }
 }

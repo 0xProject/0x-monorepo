@@ -11,11 +11,11 @@ import {
     ExecutionFailureContractEventArgs,
     SubmissionContractEventArgs,
 } from '../src/generated_contract_wrappers/asset_proxy_owner';
-import { MixinAuthorizableContract } from '../src/generated_contract_wrappers/mixin_authorizable';
+import { MixinAuthorizableContract } from  '../src/generated_contract_wrappers/mixin_authorizable';
+import { TestAssetProxyOwnerContract} from '../src/generated_contract_wrappers/test_asset_proxy_owner';
 import { artifacts } from '../src/utils/artifacts';
 import {
     expectRevertOrAlwaysFailingTransactionAsync,
-    expectRevertOrContractCallFailedAsync,
 } from '../src/utils/assertions';
 import { chaiSetup } from '../src/utils/chai_setup';
 import { constants } from '../src/utils/constants';
@@ -36,6 +36,7 @@ describe('AssetProxyOwner', () => {
     let erc20Proxy: MixinAuthorizableContract;
     let erc721Proxy: MixinAuthorizableContract;
     let multiSig: AssetProxyOwnerContract;
+    let testAssetProxyOwner: TestAssetProxyOwnerContract;
     let multiSigWrapper: MultiSigWrapper;
 
     before(async () => {
@@ -69,6 +70,15 @@ describe('AssetProxyOwner', () => {
             SECONDS_TIME_LOCKED,
         );
         multiSigWrapper = new MultiSigWrapper(multiSig, provider);
+        testAssetProxyOwner = await TestAssetProxyOwnerContract.deployFrom0xArtifactAsync(
+            artifacts.TestAssetProxyOwner,
+            provider,
+            txDefaults,
+            owners,
+            defaultAssetProxyContractAddresses,
+            REQUIRED_APPROVALS,
+            SECONDS_TIME_LOCKED,
+        );
         await web3Wrapper.awaitTransactionSuccessAsync(
             await erc20Proxy.transferOwnership.sendTransactionAsync(multiSig.address, { from: initialOwner }),
             constants.AWAIT_TRANSACTION_MINED_MS,
@@ -119,23 +129,24 @@ describe('AssetProxyOwner', () => {
     });
 
     describe('isFunctionRemoveAuthorizedAddress', () => {
-        it('should throw if data is not for removeAuthorizedAddress', async () => {
+        it('should return false if data is not for removeAuthorizedAddress', async () => {
             const notRemoveAuthorizedAddressData = erc20Proxy.addAuthorizedAddress.getABIEncodedTransactionData(
                 owners[0],
             );
-            return expectRevertOrContractCallFailedAsync(
-                multiSig.isFunctionRemoveAuthorizedAddress.callAsync(notRemoveAuthorizedAddressData),
+            const result = await testAssetProxyOwner.isFunctionRemoveAuthorizedAddress.callAsync(
+                notRemoveAuthorizedAddressData,
             );
+            expect(result).to.be.false();
         });
 
         it('should return true if data is for removeAuthorizedAddress', async () => {
             const removeAuthorizedAddressData = erc20Proxy.removeAuthorizedAddress.getABIEncodedTransactionData(
                 owners[0],
             );
-            const isFunctionRemoveAuthorizedAddress = await multiSig.isFunctionRemoveAuthorizedAddress.callAsync(
+            const result = await testAssetProxyOwner.isFunctionRemoveAuthorizedAddress.callAsync(
                 removeAuthorizedAddressData,
             );
-            expect(isFunctionRemoveAuthorizedAddress).to.be.true();
+            expect(result).to.be.true();
         });
     });
 
