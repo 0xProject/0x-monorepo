@@ -22,6 +22,8 @@ pragma experimental ABIEncoderV2;
 import "../../utils/LibBytes/LibBytes.sol";
 
 contract TestLibBytes {
+    
+    using LibBytes for bytes;
 
     /// @dev Pops the last byte off of a byte array by modifying its length.
     /// @param b Byte array that will be modified.
@@ -31,7 +33,7 @@ contract TestLibBytes {
         pure
         returns (bytes memory, bytes1 result)
     {
-        result = LibBytes.popLastByte(b);
+        result = b.popLastByte();
         return (b, result);
     }
 
@@ -43,7 +45,7 @@ contract TestLibBytes {
         pure
         returns (bytes memory, address result)
     {
-        result = LibBytes.popLast20Bytes(b);
+        result = b.popLast20Bytes();
         return (b, result);
     }
 
@@ -56,7 +58,7 @@ contract TestLibBytes {
         pure
         returns (bool equal)
     {
-        equal = LibBytes.areBytesEqual(lhs, rhs);
+        equal = lhs.areBytesEqual(rhs);
         return equal;
     }
 
@@ -87,7 +89,7 @@ contract TestLibBytes {
         pure
         returns (address result)
     {
-        result = LibBytes.readAddress(b, index);
+        result = b.readAddress(index);
         return result;
     }
 
@@ -104,7 +106,7 @@ contract TestLibBytes {
         pure
         returns (bytes memory)
     {
-        LibBytes.writeAddress(b, index, input);
+        b.writeAddress(index, input);
         return b;
     }
 
@@ -120,7 +122,7 @@ contract TestLibBytes {
         pure
         returns (bytes32 result)
     {
-        result = LibBytes.readBytes32(b, index);
+        result = b.readBytes32(index);
         return result;
     }
 
@@ -137,7 +139,7 @@ contract TestLibBytes {
         pure
         returns (bytes memory)
     {
-        LibBytes.writeBytes32(b, index, input);
+        b.writeBytes32(index, input);
         return b;
     }
 
@@ -153,7 +155,7 @@ contract TestLibBytes {
         pure
         returns (uint256 result)
     {
-        result = LibBytes.readUint256(b, index);
+        result = b.readUint256(index);
         return result;
     }
 
@@ -170,7 +172,7 @@ contract TestLibBytes {
         pure
         returns (bytes memory)
     {
-        LibBytes.writeUint256(b, index, input);
+        b.writeUint256(index, input);
         return b;
     }
 
@@ -182,7 +184,7 @@ contract TestLibBytes {
         pure
         returns (bytes4 result)
     {
-        result = LibBytes.readFirst4(b);
+        result = b.readFirst4();
         return result;
     }
 
@@ -198,7 +200,7 @@ contract TestLibBytes {
         pure
         returns (bytes memory result)
     {
-        result = LibBytes.readBytes(b, index);
+        result = b.readBytes(index);
         return result;
     }
 
@@ -216,7 +218,7 @@ contract TestLibBytes {
         pure
         returns (bytes memory)
     {
-        LibBytes.writeBytes(b, index, input);
+        b.writeBytes(index, input);
         return b;
     }
     
@@ -241,7 +243,7 @@ contract TestLibBytes {
         require(dest + length <= mem.length);
 
         // Get pointer to memory contents
-        uint256 offset = LibBytes.getMemAddress(mem) + 32;
+        uint256 offset = mem.getMemAddress() + 32;
 
         // Execute memCopy adjusted for memory array location
         LibBytes.memCopy(offset + dest, offset + source, length);
