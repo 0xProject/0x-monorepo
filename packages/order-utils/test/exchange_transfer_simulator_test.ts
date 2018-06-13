@@ -5,6 +5,7 @@ import * as chai from 'chai';
 import 'make-promises-safe';
 
 import { artifacts } from '../src/artifacts';
+import { assetProxyUtils } from '../src/asset_proxy_utils';
 import { constants } from '../src/constants';
 import { ExchangeTransferSimulator } from '../src/exchange_transfer_simulator';
 import { DummyERC20TokenContract } from '../src/generated_contract_wrappers/dummy_e_r_c20_token';
@@ -28,7 +29,7 @@ describe('ExchangeTransferSimulator', async () => {
     let coinbase: string;
     let sender: string;
     let recipient: string;
-    let exampleTokenAddress: string;
+    let exampleAssetData: string;
     let exchangeTransferSimulator: ExchangeTransferSimulator;
     let txHash: string;
     let erc20ProxyAddress: string;
@@ -66,7 +67,7 @@ describe('ExchangeTransferSimulator', async () => {
             totalSupply,
         );
 
-        exampleTokenAddress = dummyERC20Token.address;
+        exampleAssetData = assetProxyUtils.encodeERC20AssetData(dummyERC20Token.address);
     });
     beforeEach(async () => {
         await blockchainLifecycle.startAsync();
@@ -92,7 +93,7 @@ describe('ExchangeTransferSimulator', async () => {
         it("throws if the user doesn't have enough allowance", async () => {
             return expect(
                 exchangeTransferSimulator.transferFromAsync(
-                    exampleTokenAddress,
+                    exampleAssetData,
                     sender,
                     recipient,
                     transferAmount,
@@ -108,7 +109,7 @@ describe('ExchangeTransferSimulator', async () => {
             await web3Wrapper.awaitTransactionSuccessAsync(txHash);
             return expect(
                 exchangeTransferSimulator.transferFromAsync(
-                    exampleTokenAddress,
+                    exampleAssetData,
                     sender,
                     recipient,
                     transferAmount,
@@ -129,7 +130,7 @@ describe('ExchangeTransferSimulator', async () => {
             await web3Wrapper.awaitTransactionSuccessAsync(txHash);
 
             await exchangeTransferSimulator.transferFromAsync(
-                exampleTokenAddress,
+                exampleAssetData,
                 sender,
                 recipient,
                 transferAmount,
@@ -137,9 +138,9 @@ describe('ExchangeTransferSimulator', async () => {
                 TransferType.Trade,
             );
             const store = (exchangeTransferSimulator as any)._store;
-            const senderBalance = await store.getBalanceAsync(exampleTokenAddress, sender);
-            const recipientBalance = await store.getBalanceAsync(exampleTokenAddress, recipient);
-            const senderProxyAllowance = await store.getProxyAllowanceAsync(exampleTokenAddress, sender);
+            const senderBalance = await store.getBalanceAsync(exampleAssetData, sender);
+            const recipientBalance = await store.getBalanceAsync(exampleAssetData, recipient);
+            const senderProxyAllowance = await store.getProxyAllowanceAsync(exampleAssetData, sender);
             expect(senderBalance).to.be.bignumber.equal(0);
             expect(recipientBalance).to.be.bignumber.equal(transferAmount);
             expect(senderProxyAllowance).to.be.bignumber.equal(0);
@@ -158,7 +159,7 @@ describe('ExchangeTransferSimulator', async () => {
             );
             await web3Wrapper.awaitTransactionSuccessAsync(txHash);
             await exchangeTransferSimulator.transferFromAsync(
-                exampleTokenAddress,
+                exampleAssetData,
                 sender,
                 recipient,
                 transferAmount,
@@ -166,9 +167,9 @@ describe('ExchangeTransferSimulator', async () => {
                 TransferType.Trade,
             );
             const store = (exchangeTransferSimulator as any)._store;
-            const senderBalance = await store.getBalanceAsync(exampleTokenAddress, sender);
-            const recipientBalance = await store.getBalanceAsync(exampleTokenAddress, recipient);
-            const senderProxyAllowance = await store.getProxyAllowanceAsync(exampleTokenAddress, sender);
+            const senderBalance = await store.getBalanceAsync(exampleAssetData, sender);
+            const recipientBalance = await store.getBalanceAsync(exampleAssetData, recipient);
+            const senderProxyAllowance = await store.getProxyAllowanceAsync(exampleAssetData, sender);
             expect(senderBalance).to.be.bignumber.equal(0);
             expect(recipientBalance).to.be.bignumber.equal(transferAmount);
             expect(senderProxyAllowance).to.be.bignumber.equal(constants.UNLIMITED_ALLOWANCE_IN_BASE_UNITS);
