@@ -84,7 +84,7 @@ contract TestLibBytes {
         pure
         returns (bytes memory)
     {
-        deepCopyBytes(dest, source);
+        LibBytes.deepCopyBytes(dest, source);
         return dest;
     }
 
