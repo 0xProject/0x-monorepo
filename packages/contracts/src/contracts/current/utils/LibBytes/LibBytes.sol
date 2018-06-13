@@ -19,6 +19,7 @@
 pragma solidity ^0.4.24;
 
 library LibBytes {
+    using LibBytes for bytes;
 
     // Revert reasons
     string constant GREATER_THAN_ZERO_LENGTH_REQUIRED = "GREATER_THAN_ZERO_LENGTH_REQUIRED";
@@ -30,14 +31,30 @@ library LibBytes {
 
     /// @dev Gets the memory address for a byte array.
     /// @param input Byte array to lookup.
-    /// @return memoryAddress Memory address of byte array.
-    function getMemAddress(bytes memory input)
+    /// @return memoryAddress Memory address of byte array. This
+    ///         points to the header of the byte array which contains
+    ///         the length.
+    function rawAddress(bytes memory input)
         internal
         pure
         returns (uint256 memoryAddress)
     {
         assembly {
             memoryAddress := input
+        }
+        return memoryAddress;
+    }
+    
+    /// @dev Gets the memory address for the contents of a byte array.
+    /// @param input Byte array to lookup.
+    /// @return memoryAddress Memory address of the contents of the byte array.
+    function contentAddress(bytes memory input)
+        internal
+        pure
+        returns (uint256 memoryAddress)
+    {
+        assembly {
+            memoryAddress := add(input, 32)
         }
         return memoryAddress;
     }
@@ -393,8 +410,8 @@ library LibBytes {
         // Allocate memory and copy value to result
         result = new bytes(nestedBytesLength);
         memCopy(
-            getMemAddress(result) + 32, // +32 skips array length
-            getMemAddress(b) + index + 32,
+            result.contentAddress(),
+            b.contentAddress() + index,
             nestedBytesLength
         );
 
@@ -422,9 +439,9 @@ library LibBytes {
 
         // Copy <input> into <b>
         memCopy(
-            getMemAddress(b) + 32 + index,  // +32 to skip length of <b>
-            getMemAddress(input),           // includes length of <input>
-            input.length + 32               // +32 bytes to store <input> length
+            b.contentAddress() + index,
+            input.rawAddress(), // includes length of <input>
+            input.length + 32   // +32 bytes to store <input> length
         );
     }
 
