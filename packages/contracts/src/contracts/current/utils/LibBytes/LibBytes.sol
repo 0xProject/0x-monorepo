@@ -571,8 +571,8 @@ library LibBytes {
             GREATER_OR_EQUAL_TO_SOURCE_BYTES_LENGTH_REQUIRED
         );
         memCopy(
-            getMemAddress(dest) + 32,    // +32 to skip length of <dest>
-            getMemAddress(source) + 32,  // +32 to skip length of <source>
+            dest.contentAddress(),
+            source.contentAddress(),
             sourceLen
         );
     }
