@@ -227,6 +227,10 @@ export class ExchangeWrapper {
         const filledAmount = new BigNumber(await this._exchange.filled.callAsync(orderHashHex));
         return filledAmount;
     }
+    public async isCancelledAsync(orderHashHex: string): Promise<boolean> {
+        const isCancelled = await this._exchange.cancelled.callAsync(orderHashHex);
+        return isCancelled;
+    }
     public async getOrderInfoAsync(signedOrder: SignedOrder): Promise<OrderInfo> {
         const orderInfo = (await this._exchange.getOrderInfo.callAsync(signedOrder)) as OrderInfo;
         return orderInfo;

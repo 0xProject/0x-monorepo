@@ -1,7 +1,8 @@
-import { ExchangeContractErrs } from '@0xproject/types';
+import { AssetProxyId, ExchangeContractErrs } from '@0xproject/types';
 import { BigNumber } from '@0xproject/utils';
 
 import { AbstractBalanceAndProxyAllowanceLazyStore } from './abstract/abstract_balance_and_proxy_allowance_lazy_store';
+import { assetProxyUtils } from './asset_proxy_utils';
 import { constants } from './constants';
 import { TradeSide, TransferType } from './types';
 
@@ -89,8 +90,13 @@ export class ExchangeTransferSimulator {
         userAddress: string,
         amountInBaseUnits: BigNumber,
     ): Promise<void> {
+        const assetProxyId = assetProxyUtils.decodeAssetDataId(assetData);
+        const isERC721Asset = assetProxyId === AssetProxyId.ERC721;
         const proxyAllowance = await this._store.getProxyAllowanceAsync(assetData, userAddress);
-        if (!proxyAllowance.eq(constants.UNLIMITED_ALLOWANCE_IN_BASE_UNITS)) {
+        // HACK: This code assumes that all tokens with an UNLIMITED_ALLOWANCE_IN_BASE_UNITS set,
+        // are UnlimitedAllowanceTokens. This is however not true, it just so happens that all
+        // DummyERC20Tokens we use in tests are.
+        if (!proxyAllowance.eq(constants.UNLIMITED_ALLOWANCE_IN_BASE_UNITS) && !isERC721Asset) {
             this._store.setProxyAllowance(assetData, userAddress, proxyAllowance.minus(amountInBaseUnits));
         }
     }

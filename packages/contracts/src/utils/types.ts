@@ -169,10 +169,19 @@ export enum ExpirationTimeSecondsScenario {
 }
 
 export enum AssetDataScenario {
-    ERC721ValidAssetProxyId = 'ERC721_VALID_ASSET_PROXY_ID',
-    ERC721InvalidAssetProxyId = 'ERC721_INVALID_ASSET_PROXY_ID',
+    ERC721 = 'ERC721',
     ZRXFeeToken = 'ZRX_FEE_TOKEN',
-    ERC20InvalidAssetProxyId = 'ERC20_INVALID_ASSET_PROXY_ID',
     ERC20FiveDecimals = 'ERC20_FIVE_DECIMALS',
     ERC20NonZRXEighteenDecimals = 'ERC20_NON_ZRX_EIGHTEEN_DECIMALS',
+}
+
+export interface OrderScenario {
+    feeRecipientScenario: FeeRecipientAddressScenario;
+    makerAssetAmountScenario: OrderAmountScenario;
+    takerAssetAmountScenario: OrderAmountScenario;
+    makerFeeScenario: OrderAmountScenario;
+    takerFeeScenario: OrderAmountScenario;
+    expirationTimeSecondsScenario: ExpirationTimeSecondsScenario;
+    makerAssetDataScenario: AssetDataScenario;
+    takerAssetDataScenario: AssetDataScenario;
 }

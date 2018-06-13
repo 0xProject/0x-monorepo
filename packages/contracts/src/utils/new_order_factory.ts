@@ -2,7 +2,7 @@ import { assetProxyUtils, generatePseudoRandomSalt } from '@0xproject/order-util
 import { Order } from '@0xproject/types';
 import { BigNumber, errorUtils } from '@0xproject/utils';
 
-import { DummyERC721TokenContract } from '../contract_wrappers/generated/dummy_e_r_c721_token';
+import { DummyERC721TokenContract } from '../generated_contract_wrappers/dummy_e_r_c721_token';
 
 import { constants } from './constants';
 import {
@@ -11,20 +11,13 @@ import {
     ExpirationTimeSecondsScenario,
     FeeRecipientAddressScenario,
     OrderAmountScenario,
+    OrderScenario,
 } from './types';
 
 const TEN_UNITS_EIGHTEEN_DECIMALS = new BigNumber(10000000000000000000);
 const POINT_ONE_UNITS_EIGHTEEN_DECIMALS = new BigNumber(100000000000000000);
 const TEN_UNITS_FIVE_DECIMALS = new BigNumber(1000000);
 const ONE_NFT_UNIT = new BigNumber(1);
-const TEN_MINUTES_MS = 1000 * 60 * 10;
-
-/*
- * TODO:
- * - Write function that given an order, fillAmount, retrieves orderRelevantState and maps it to expected test outcome.
- * - Write function that generates order permutations.
- * - Write functions for other steps that must be permutated
- */
 
 export class NewOrderFactory {
     private _userAddresses: string[];
@@ -51,16 +44,7 @@ export class NewOrderFactory {
         this._erc721Balances = erc721Balances;
         this._exchangeAddress = exchangeAddress;
     }
-    public generateOrder(
-        feeRecipientScenario: FeeRecipientAddressScenario,
-        makerAssetAmountScenario: OrderAmountScenario,
-        takerAssetAmountScenario: OrderAmountScenario,
-        makerFeeScenario: OrderAmountScenario,
-        takerFeeScenario: OrderAmountScenario,
-        expirationTimeSecondsScenario: ExpirationTimeSecondsScenario,
-        makerAssetDataScenario: AssetDataScenario,
-        takerAssetDataScenario: AssetDataScenario,
-    ): Order {
+    public generateOrder(orderScenario: OrderScenario): Order {
         const makerAddress = this._userAddresses[1];
         const takerAddress = this._userAddresses[2];
         const erc721MakerAssetIds = this._erc721Balances[makerAddress][this._erc721Token.address];
@@ -74,7 +58,7 @@ export class NewOrderFactory {
         let makerAssetData;
         let takerAssetData;
 
-        switch (feeRecipientScenario) {
+        switch (orderScenario.feeRecipientScenario) {
             case FeeRecipientAddressScenario.BurnAddress:
                 feeRecipientAddress = constants.NULL_ADDRESS;
                 break;
@@ -82,135 +66,102 @@ export class NewOrderFactory {
                 feeRecipientAddress = this._userAddresses[4];
                 break;
             default:
-                throw errorUtils.spawnSwitchErr('FeeRecipientAddressScenario', feeRecipientScenario);
+                throw errorUtils.spawnSwitchErr('FeeRecipientAddressScenario', orderScenario.feeRecipientScenario);
         }
 
-        const invalidAssetProxyIdHex = '0A';
-        switch (makerAssetDataScenario) {
+        switch (orderScenario.makerAssetDataScenario) {
             case AssetDataScenario.ZRXFeeToken:
-                makerAssetData = assetProxyUtils.encodeERC20ProxyData(this._zrxAddress);
+                makerAssetData = assetProxyUtils.encodeERC20AssetData(this._zrxAddress);
                 break;
             case AssetDataScenario.ERC20NonZRXEighteenDecimals:
-                makerAssetData = assetProxyUtils.encodeERC20ProxyData(
+                makerAssetData = assetProxyUtils.encodeERC20AssetData(
                     this._nonZrxERC20EighteenDecimalTokenAddresses[0],
                 );
                 break;
             case AssetDataScenario.ERC20FiveDecimals:
-                makerAssetData = assetProxyUtils.encodeERC20ProxyData(this._erc20FiveDecimalTokenAddresses[0]);
+                makerAssetData = assetProxyUtils.encodeERC20AssetData(this._erc20FiveDecimalTokenAddresses[0]);
                 break;
-            case AssetDataScenario.ERC20InvalidAssetProxyId: {
-                const validAssetData = assetProxyUtils.encodeERC20ProxyData(
-                    this._nonZrxERC20EighteenDecimalTokenAddresses[0],
-                );
-                makerAssetData = `${validAssetData.slice(0, -2)}${invalidAssetProxyIdHex}`;
-                break;
-            }
-            case AssetDataScenario.ERC721ValidAssetProxyId:
-                makerAssetData = assetProxyUtils.encodeERC721ProxyData(
+            case AssetDataScenario.ERC721:
+                makerAssetData = assetProxyUtils.encodeERC721AssetData(
                     this._erc721Token.address,
                     erc721MakerAssetIds[0],
                 );
                 break;
-            case AssetDataScenario.ERC721InvalidAssetProxyId: {
-                const validAssetData = assetProxyUtils.encodeERC721ProxyData(
-                    this._erc721Token.address,
-                    erc721MakerAssetIds[0],
-                );
-                makerAssetData = `${validAssetData.slice(0, -2)}${invalidAssetProxyIdHex}`;
-                break;
-            }
             default:
-                throw errorUtils.spawnSwitchErr('AssetDataScenario', makerAssetDataScenario);
+                throw errorUtils.spawnSwitchErr('AssetDataScenario', orderScenario.makerAssetDataScenario);
         }
 
-        switch (takerAssetDataScenario) {
+        switch (orderScenario.takerAssetDataScenario) {
             case AssetDataScenario.ZRXFeeToken:
-                takerAssetData = assetProxyUtils.encodeERC20ProxyData(this._zrxAddress);
+                takerAssetData = assetProxyUtils.encodeERC20AssetData(this._zrxAddress);
                 break;
             case AssetDataScenario.ERC20NonZRXEighteenDecimals:
-                takerAssetData = assetProxyUtils.encodeERC20ProxyData(
+                takerAssetData = assetProxyUtils.encodeERC20AssetData(
                     this._nonZrxERC20EighteenDecimalTokenAddresses[1],
                 );
                 break;
             case AssetDataScenario.ERC20FiveDecimals:
-                takerAssetData = assetProxyUtils.encodeERC20ProxyData(this._erc20FiveDecimalTokenAddresses[1]);
+                takerAssetData = assetProxyUtils.encodeERC20AssetData(this._erc20FiveDecimalTokenAddresses[1]);
                 break;
-            case AssetDataScenario.ERC20InvalidAssetProxyId: {
-                const validAssetData = assetProxyUtils.encodeERC20ProxyData(
-                    this._nonZrxERC20EighteenDecimalTokenAddresses[1],
-                );
-                takerAssetData = `${validAssetData.slice(0, -2)}${invalidAssetProxyIdHex}`;
-                break;
-            }
-            case AssetDataScenario.ERC721ValidAssetProxyId:
-                takerAssetData = assetProxyUtils.encodeERC721ProxyData(
+            case AssetDataScenario.ERC721:
+                takerAssetData = assetProxyUtils.encodeERC721AssetData(
                     this._erc721Token.address,
                     erc721TakerAssetIds[0],
                 );
                 break;
-            case AssetDataScenario.ERC721InvalidAssetProxyId: {
-                const validAssetData = assetProxyUtils.encodeERC721ProxyData(
-                    this._erc721Token.address,
-                    erc721TakerAssetIds[0],
-                );
-                takerAssetData = `${validAssetData.slice(0, -2)}${invalidAssetProxyIdHex}`;
-                break;
-            }
             default:
-                throw errorUtils.spawnSwitchErr('AssetDataScenario', takerAssetDataScenario);
+                throw errorUtils.spawnSwitchErr('AssetDataScenario', orderScenario.takerAssetDataScenario);
         }
 
-        switch (makerAssetAmountScenario) {
+        switch (orderScenario.makerAssetAmountScenario) {
             case OrderAmountScenario.NonZero:
-                switch (makerAssetDataScenario) {
+                switch (orderScenario.makerAssetDataScenario) {
+                    case AssetDataScenario.ZRXFeeToken:
                     case AssetDataScenario.ERC20NonZRXEighteenDecimals:
-                    case AssetDataScenario.ERC20InvalidAssetProxyId:
                         makerAssetAmount = TEN_UNITS_EIGHTEEN_DECIMALS;
                         break;
                     case AssetDataScenario.ERC20FiveDecimals:
                         makerAssetAmount = TEN_UNITS_FIVE_DECIMALS;
                         break;
-                    case AssetDataScenario.ERC721ValidAssetProxyId:
-                    case AssetDataScenario.ERC721InvalidAssetProxyId:
+                    case AssetDataScenario.ERC721:
                         makerAssetAmount = ONE_NFT_UNIT;
                         break;
                     default:
-                        throw errorUtils.spawnSwitchErr('AssetDataScenario', makerAssetDataScenario);
+                        throw errorUtils.spawnSwitchErr('AssetDataScenario', orderScenario.makerAssetDataScenario);
                 }
                 break;
             case OrderAmountScenario.Zero:
                 makerAssetAmount = new BigNumber(0);
                 break;
             default:
-                throw errorUtils.spawnSwitchErr('OrderAmountScenario', makerAssetAmountScenario);
+                throw errorUtils.spawnSwitchErr('OrderAmountScenario', orderScenario.makerAssetAmountScenario);
         }
 
-        switch (takerAssetAmountScenario) {
+        switch (orderScenario.takerAssetAmountScenario) {
             case OrderAmountScenario.NonZero:
-                switch (takerAssetDataScenario) {
+                switch (orderScenario.takerAssetDataScenario) {
                     case AssetDataScenario.ERC20NonZRXEighteenDecimals:
-                    case AssetDataScenario.ERC20InvalidAssetProxyId:
+                    case AssetDataScenario.ZRXFeeToken:
                         takerAssetAmount = TEN_UNITS_EIGHTEEN_DECIMALS;
                         break;
                     case AssetDataScenario.ERC20FiveDecimals:
                         takerAssetAmount = TEN_UNITS_FIVE_DECIMALS;
                         break;
-                    case AssetDataScenario.ERC721ValidAssetProxyId:
-                    case AssetDataScenario.ERC721InvalidAssetProxyId:
+                    case AssetDataScenario.ERC721:
                         takerAssetAmount = ONE_NFT_UNIT;
                         break;
                     default:
-                        throw errorUtils.spawnSwitchErr('AssetDataScenario', takerAssetDataScenario);
+                        throw errorUtils.spawnSwitchErr('AssetDataScenario', orderScenario.takerAssetDataScenario);
                 }
                 break;
             case OrderAmountScenario.Zero:
                 takerAssetAmount = new BigNumber(0);
                 break;
             default:
-                throw errorUtils.spawnSwitchErr('OrderAmountScenario', takerAssetAmountScenario);
+                throw errorUtils.spawnSwitchErr('OrderAmountScenario', orderScenario.takerAssetAmountScenario);
         }
 
-        switch (makerFeeScenario) {
+        switch (orderScenario.makerFeeScenario) {
             case OrderAmountScenario.NonZero:
                 makerFee = POINT_ONE_UNITS_EIGHTEEN_DECIMALS;
                 break;
@@ -218,10 +169,10 @@ export class NewOrderFactory {
                 makerFee = new BigNumber(0);
                 break;
             default:
-                throw errorUtils.spawnSwitchErr('OrderAmountScenario', makerFeeScenario);
+                throw errorUtils.spawnSwitchErr('OrderAmountScenario', orderScenario.makerFeeScenario);
         }
 
-        switch (takerFeeScenario) {
+        switch (orderScenario.takerFeeScenario) {
             case OrderAmountScenario.NonZero:
                 takerFee = POINT_ONE_UNITS_EIGHTEEN_DECIMALS;
                 break;
@@ -229,18 +180,21 @@ export class NewOrderFactory {
                 takerFee = new BigNumber(0);
                 break;
             default:
-                throw errorUtils.spawnSwitchErr('OrderAmountScenario', takerFeeScenario);
+                throw errorUtils.spawnSwitchErr('OrderAmountScenario', orderScenario.takerFeeScenario);
         }
 
-        switch (expirationTimeSecondsScenario) {
+        switch (orderScenario.expirationTimeSecondsScenario) {
             case ExpirationTimeSecondsScenario.InFuture:
-                expirationTimeSeconds = new BigNumber(Date.now() + TEN_MINUTES_MS);
+                expirationTimeSeconds = new BigNumber(2524604400); // Close to infinite
                 break;
             case ExpirationTimeSecondsScenario.InPast:
-                expirationTimeSeconds = new BigNumber(Date.now() - TEN_MINUTES_MS);
+                expirationTimeSeconds = new BigNumber(0); // Jan 1, 1970
                 break;
             default:
-                throw errorUtils.spawnSwitchErr('ExpirationTimeSecondsScenario', expirationTimeSecondsScenario);
+                throw errorUtils.spawnSwitchErr(
+                    'ExpirationTimeSecondsScenario',
+                    orderScenario.expirationTimeSecondsScenario,
+                );
         }
 
         const order: Order = {
