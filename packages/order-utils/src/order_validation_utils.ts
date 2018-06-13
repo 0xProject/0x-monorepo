@@ -14,11 +14,6 @@ import { utils } from './utils';
 
 export class OrderValidationUtils {
     private _exchangeContract: ExchangeContract;
-    // TODO: Write some tests for the function
-    // const numerator = new BigNumber(20);
-    // const denominator = new BigNumber(999);
-    // const target = new BigNumber(50);
-    // rounding error = ((20*50/999) - floor(20*50/999)) / (20*50/999) = 0.1%
     public static isRoundingError(numerator: BigNumber, denominator: BigNumber, target: BigNumber): boolean {
         // Solidity's mulmod() in JS
         // Source: https://solidity.readthedocs.io/en/latest/units-and-global-variables.html#mathematical-and-cryptographic-functions
