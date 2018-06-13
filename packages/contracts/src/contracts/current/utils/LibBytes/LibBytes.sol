@@ -270,27 +270,10 @@ library LibBytes {
         pure
         returns (bool equal)
     {
-        assembly {
-            // Get the number of words occupied by <lhs>
-            let lenFullWords := div(add(mload(lhs), 0x1F), 0x20)
-
-            // Add 1 to the number of words, to account for the length field
-            lenFullWords := add(lenFullWords, 0x1)
-
-            // Test equality word-by-word.
-            // Terminates early if there is a mismatch.
-            for {let i := 0} lt(i, lenFullWords) {i := add(i, 1)} {
-                let lhsWord := mload(add(lhs, mul(i, 0x20)))
-                let rhsWord := mload(add(rhs, mul(i, 0x20)))
-                equal := eq(lhsWord, rhsWord)
-                if eq(equal, 0) {
-                    // Break
-                    i := lenFullWords
-                }
-            }
-       }
-
-       return equal;
+        // Keccak gas cost is 30 + numWords * 6. This is a cheap way to compare.
+        // We early exit on unequal lengths, but keccak would also correctly
+        // handle this.
+        return lhs.length == rhs.length && keccak256(lhs) == keccak256(rhs);
     }
 
     /// @dev Reads an address from a position in a byte array.
