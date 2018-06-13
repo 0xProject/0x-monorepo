@@ -192,7 +192,7 @@ contract TestLibBytes {
     /// @param b Byte array containing nested bytes.
     /// @param index Index of nested bytes.
     /// @return result Nested bytes.
-    function publicReadBytes(
+    function publicReadBytesWithLength(
         bytes memory b,
         uint256 index
     )
@@ -200,7 +200,7 @@ contract TestLibBytes {
         pure
         returns (bytes memory result)
     {
-        result = b.readBytes(index);
+        result = b.readBytesWithLength(index);
         return result;
     }
 
@@ -209,7 +209,7 @@ contract TestLibBytes {
     /// @param index Index in byte array of <input>.
     /// @param input bytes to insert.
     /// @return b Updated input byte array
-    function publicWriteBytes(
+    function publicWriteBytesWithLength(
         bytes memory b,
         uint256 index,
         bytes memory input
@@ -218,7 +218,7 @@ contract TestLibBytes {
         pure
         returns (bytes memory)
     {
-        b.writeBytes(index, input);
+        b.writeBytesWithLength(index, input);
         return b;
     }
     

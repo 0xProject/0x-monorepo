@@ -371,7 +371,7 @@ library LibBytes {
     /// @param b Byte array containing nested bytes.
     /// @param index Index of nested bytes.
     /// @return result Nested bytes.
-    function readBytes(
+    function readBytesWithLength(
         bytes memory b,
         uint256 index
     )
@@ -405,7 +405,7 @@ library LibBytes {
     /// @param b Byte array to insert <input> into.
     /// @param index Index in byte array of <input>.
     /// @param input bytes to insert.
-    function writeBytes(
+    function writeBytesWithLength(
         bytes memory b,
         uint256 index,
         bytes memory input
