@@ -243,7 +243,7 @@ contract TestLibBytes {
         require(dest + length <= mem.length);
 
         // Get pointer to memory contents
-        uint256 offset = mem.getMemAddress() + 32;
+        uint256 offset = mem.contentAddress();
 
         // Execute memCopy adjusted for memory array location
         LibBytes.memCopy(offset + dest, offset + source, length);
