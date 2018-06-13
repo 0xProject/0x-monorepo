@@ -258,6 +258,41 @@ library LibBytes {
         return result;
     }
 
+    /// @dev Tests equality of two byte arrays.
+    /// @param lhs First byte array to compare.
+    /// @param rhs Second byte array to compare.
+    /// @return True if arrays are the same. False otherwise.
+    function equals(
+        bytes memory lhs,
+        bytes memory rhs
+    )
+        internal
+        pure
+        returns (bool equal)
+    {
+        assembly {
+            // Get the number of words occupied by <lhs>
+            let lenFullWords := div(add(mload(lhs), 0x1F), 0x20)
+
+            // Add 1 to the number of words, to account for the length field
+            lenFullWords := add(lenFullWords, 0x1)
+
+            // Test equality word-by-word.
+            // Terminates early if there is a mismatch.
+            for {let i := 0} lt(i, lenFullWords) {i := add(i, 1)} {
+                let lhsWord := mload(add(lhs, mul(i, 0x20)))
+                let rhsWord := mload(add(rhs, mul(i, 0x20)))
+                equal := eq(lhsWord, rhsWord)
+                if eq(equal, 0) {
+                    // Break
+                    i := lenFullWords
+                }
+            }
+       }
+
+       return equal;
+    }
+
     /// @dev Reads an address from a position in a byte array.
     /// @param b Byte array containing an address.
     /// @param index Index in byte array of address.

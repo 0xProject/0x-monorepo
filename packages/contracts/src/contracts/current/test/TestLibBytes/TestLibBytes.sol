@@ -53,12 +53,12 @@ contract TestLibBytes {
     /// @param lhs First byte array to compare.
     /// @param rhs Second byte array to compare.
     /// @return True if arrays are the same. False otherwise.
-    function publicAreBytesEqual(bytes memory lhs, bytes memory rhs)
+    function publicEquals(bytes memory lhs, bytes memory rhs)
         public
         pure
         returns (bool equal)
     {
-        equal = lhs.areBytesEqual(rhs);
+        equal = lhs.equals(rhs);
         return equal;
     }
 
