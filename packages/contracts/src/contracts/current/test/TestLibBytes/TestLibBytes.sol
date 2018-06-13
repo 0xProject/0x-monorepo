@@ -61,6 +61,17 @@ contract TestLibBytes {
         equal = lhs.equals(rhs);
         return equal;
     }
+    
+    function publicEqualsPop1(bytes memory lhs, bytes memory rhs)
+        public
+        pure
+        returns (bool equal)
+    {
+        lhs.popByte();
+        rhs.popByte();
+        equal = lhs.equals(rhs);
+        return equal;
+    }
 
     /// @dev Performs a deep copy of a byte array onto another byte array of greater than or equal length.
     /// @param dest Byte array that will be overwritten with source bytes.
