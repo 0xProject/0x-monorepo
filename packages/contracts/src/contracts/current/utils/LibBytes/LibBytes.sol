@@ -18,7 +18,7 @@
 
 pragma solidity ^0.4.24;
 
-contract LibBytes {
+library LibBytes {
 
     // Revert reasons
     string constant GREATER_THAN_ZERO_LENGTH_REQUIRED = "GREATER_THAN_ZERO_LENGTH_REQUIRED";

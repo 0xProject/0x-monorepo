@@ -24,7 +24,6 @@ import "../../tokens/ERC721Token/ERC721Token.sol";
 import "./libs/LibTransferErrors.sol";
 
 contract MixinERC721Transfer is
-    LibBytes,
     LibTransferErrors
 {
     /// @dev Internal version of `transferFrom`.
@@ -78,10 +77,10 @@ contract MixinERC721Transfer is
         )
     {
         // Decode asset data.
-        token = readAddress(assetData, 0);
-        tokenId = readUint256(assetData, 20);
+        token = LibBytes.readAddress(assetData, 0);
+        tokenId = LibBytes.readUint256(assetData, 20);
         if (assetData.length > 52) {
-            receiverData = readBytes(assetData, 52);
+            receiverData = LibBytes.readBytes(assetData, 52);
         }
 
         return (
