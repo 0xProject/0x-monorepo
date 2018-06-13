@@ -28,6 +28,8 @@ library LibBytes {
     string constant GREATER_OR_EQUAL_TO_32_LENGTH_REQUIRED = "GREATER_OR_EQUAL_TO_32_LENGTH_REQUIRED";
     string constant GREATER_OR_EQUAL_TO_NESTED_BYTES_LENGTH_REQUIRED = "GREATER_OR_EQUAL_TO_NESTED_BYTES_LENGTH_REQUIRED";
     string constant GREATER_OR_EQUAL_TO_SOURCE_BYTES_LENGTH_REQUIRED = "GREATER_OR_EQUAL_TO_SOURCE_BYTES_LENGTH_REQUIRED";
+    string constant FROM_LESS_THAN_TO_REQUIRED = "FROM_LESS_THAN_TO_REQUIRED";
+    string constant TO_LESS_THAN_LENGTH_REQUIRED = "TO_LESS_THAN_LENGTH_REQUIRED";
 
     /// @dev Gets the memory address for a byte array.
     /// @param input Byte array to lookup.
@@ -162,6 +164,50 @@ library LibBytes {
                 }
             }
         }
+    }
+    
+    /// @dev Returns a slices from a byte array.
+    /// @param b The byte array to take a slice from.
+    /// @param from The starting index for the slice (inclusive).
+    /// @param to The final index for the slice (exclusive).
+    /// @return result The slice containing bytes at indices [from, to)
+    function slice(bytes memory b, uint256 from, uint256 to)
+        internal
+        pure
+        returns (bytes memory result)
+    {
+        require(from <= to, FROM_LESS_THAN_TO_REQUIRED);
+        require(to < b.length, TO_LESS_THAN_LENGTH_REQUIRED);
+        
+        // Create a new bytes structure and copy contents
+        result = new bytes(to - from);
+        memCopy(
+            result.contentAddress(),
+            b.contentAddress() + from,
+            result.length);
+        return result;
+    }
+    
+    /// @dev Returns a slices from a byte array without preserving the input.
+    /// @param b The byte array to take a slice from. Will be destroyed in the process.
+    /// @param from The starting index for the slice (inclusive).
+    /// @param to The final index for the slice (exclusive).
+    /// @return result The slice containing bytes at indices [from, to)
+    /// @dev When `from == 0`, the original array will match the slice. In other cases it's state will be corrupted.
+    function sliceDestructive(bytes memory b, uint256 from, uint256 to)
+        internal
+        pure
+        returns (bytes memory result)
+    {
+        require(from <= to, FROM_LESS_THAN_TO_REQUIRED);
+        require(to < b.length, TO_LESS_THAN_LENGTH_REQUIRED);
+        
+        // Create a new bytes structure around [from, to) in-place.
+        assembly {
+            result := add(b, from)
+            mstore(result, sub(to, from))
+        }
+        return result;
     }
 
     /// @dev Pops the last byte off of a byte array by modifying its length.
