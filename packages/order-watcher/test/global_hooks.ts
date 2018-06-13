@@ -7,7 +7,7 @@ import { provider } from './utils/web3_wrapper';
 before('migrate contracts', async function(): Promise<void> {
     // HACK: Since the migrations take longer then our global mocha timeout limit
     // we manually increase it for this before hook.
-    const mochaTestTimeoutMs = 20000;
+    const mochaTestTimeoutMs = 25000;
     this.timeout(mochaTestTimeoutMs);
     const txDefaults = {
         gas: devConstants.GAS_LIMIT,
