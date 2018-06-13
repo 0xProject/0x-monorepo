@@ -7,6 +7,7 @@ export interface ButtonProps {
     className?: string;
     fontSize?: string;
     fontColor?: string;
+    fontFamily?: string;
     backgroundColor?: string;
     borderColor?: string;
     width?: string;
@@ -28,7 +29,7 @@ export const Button = styled(PlainButton)`
     border-radius: 6px;
     box-shadow: 0px 0px 4px rgba(0, 0, 0, 0.25);
     font-weight: 500;
-    font-family: 'Roboto';
+    font-family: ${props => props.fontFamily};
     width: ${props => props.width};
     background-color: ${props => props.backgroundColor};
     border: ${props => (props.borderColor ? `1px solid ${props.borderColor}` : 'none')};
@@ -44,6 +45,7 @@ Button.defaultProps = {
     fontSize: '12px',
     backgroundColor: colors.white,
     width: 'auto',
+    fontFamily: 'Roboto',
 };
 
 Button.displayName = 'Button';
