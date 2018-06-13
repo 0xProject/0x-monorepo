@@ -33,8 +33,8 @@ export class ExchangeWrapper {
             params.signature,
             { from },
         );
-        const tx = await this._logDecoder.getTxWithDecodedLogsAsync(txHash);
-        return tx;
+        const txReceipt = await this._logDecoder.getTxWithDecodedLogsAsync(txHash);
+        return txReceipt;
     }
     public async cancelOrderAsync(signedOrder: SignedOrder, from: string): Promise<TransactionReceiptWithDecodedLogs> {
         const params = orderUtils.createCancel(signedOrder);
