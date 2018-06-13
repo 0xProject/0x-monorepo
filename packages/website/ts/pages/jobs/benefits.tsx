@@ -75,7 +75,7 @@ export const BenefitsList = () => {
     return (
         <div>
             <HeaderItem headerText={HEADER_TEXT} />
-            {_.map(BENEFIT_ITEM_PROPS_LIST, valueItemProps => React.createElement(BenefitItem, valueItemProps))}
+            {_.map(BENEFIT_ITEM_PROPS_LIST, valueItemProps => <BenefitItem {...valueItemProps} />)}
         </div>
     );
 };

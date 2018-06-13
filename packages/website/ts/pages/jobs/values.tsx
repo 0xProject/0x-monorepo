@@ -29,7 +29,7 @@ export const Values = () => {
     return (
         <div className="mx-auto max-width-4">
             <HeaderItem headerText={HEADER_TEXT} />
-            {_.map(VALUE_ITEM_PROPS_LIST, valueItemProps => React.createElement(ValueItem, valueItemProps))}
+            {_.map(VALUE_ITEM_PROPS_LIST, valueItemProps => <ValueItem {...valueItemProps} />)}
         </div>
     );
 };

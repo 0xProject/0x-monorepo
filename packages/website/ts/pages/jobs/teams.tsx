@@ -48,11 +48,11 @@ const LargeLayout = () => (
     <div className="mx-auto max-width-4 clearfix pb4">
         <div className="col lg-col-6 md-col-6 col-12">
             <HeaderItem headerText={HEADER_TEXT} />
-            {_.map(TEAM_ITEM_PROPS_COLUMN1, teamItemProps => React.createElement(TeamItem, teamItemProps))}
+            {_.map(TEAM_ITEM_PROPS_COLUMN1, teamItemProps => <TeamItem {...teamItemProps} />)}
         </div>
         <div className="col lg-col-6 md-col-6 col-12">
             <HeaderItem headerText=" " />
-            {_.map(TEAM_ITEM_PROPS_COLUMN2, teamItemProps => React.createElement(TeamItem, teamItemProps))}
+            {_.map(TEAM_ITEM_PROPS_COLUMN2, teamItemProps => <TeamItem {...teamItemProps} />)}
         </div>
     </div>
 );
@@ -60,9 +60,9 @@ const LargeLayout = () => (
 const SmallLayout = () => (
     <div>
         <HeaderItem headerText={HEADER_TEXT} />
-        {_.map(_.concat(TEAM_ITEM_PROPS_COLUMN1, TEAM_ITEM_PROPS_COLUMN2), teamItemProps =>
-            React.createElement(TeamItem, teamItemProps),
-        )}
+        {_.map(_.concat(TEAM_ITEM_PROPS_COLUMN1, TEAM_ITEM_PROPS_COLUMN2), teamItemProps => (
+            <TeamItem {...teamItemProps} />
+        ))}
     </div>
 );
 
