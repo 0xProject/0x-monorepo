@@ -148,49 +148,6 @@ describe('Exchange core', () => {
             );
         });
 
-        it('should throw if maker erc20Balances are too low to fill order', async () => {
-            signedOrder = orderFactory.newSignedOrder({
-                makerAssetAmount: Web3Wrapper.toBaseUnitAmount(new BigNumber(100000), 18),
-            });
-
-            return expectRevertOrAlwaysFailingTransactionAsync(
-                exchangeWrapper.fillOrderAsync(signedOrder, takerAddress),
-            );
-        });
-
-        it('should throw if taker erc20Balances are too low to fill order', async () => {
-            signedOrder = orderFactory.newSignedOrder({
-                takerAssetAmount: Web3Wrapper.toBaseUnitAmount(new BigNumber(100000), 18),
-            });
-            return expectRevertOrAlwaysFailingTransactionAsync(
-                exchangeWrapper.fillOrderAsync(signedOrder, takerAddress),
-            );
-        });
-
-        it('should throw if maker allowances are too low to fill order', async () => {
-            await web3Wrapper.awaitTransactionSuccessAsync(
-                await erc20TokenA.approve.sendTransactionAsync(erc20Proxy.address, new BigNumber(0), {
-                    from: makerAddress,
-                }),
-                constants.AWAIT_TRANSACTION_MINED_MS,
-            );
-            return expectRevertOrAlwaysFailingTransactionAsync(
-                exchangeWrapper.fillOrderAsync(signedOrder, takerAddress),
-            );
-        });
-
-        it('should throw if taker allowances are too low to fill order', async () => {
-            await web3Wrapper.awaitTransactionSuccessAsync(
-                await erc20TokenB.approve.sendTransactionAsync(erc20Proxy.address, new BigNumber(0), {
-                    from: takerAddress,
-                }),
-                constants.AWAIT_TRANSACTION_MINED_MS,
-            );
-            return expectRevertOrAlwaysFailingTransactionAsync(
-                exchangeWrapper.fillOrderAsync(signedOrder, takerAddress),
-            );
-        });
-
         it('should throw if no value is filled', async () => {
             signedOrder = orderFactory.newSignedOrder();
             await exchangeWrapper.fillOrderAsync(signedOrder, takerAddress);

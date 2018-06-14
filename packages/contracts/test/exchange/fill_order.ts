@@ -13,6 +13,7 @@ import {
     OrderScenario,
     TakerAssetFillAmountScenario,
     TakerScenario,
+    TokenAmountScenario,
 } from '../../src/utils/types';
 
 chaiSetup.configure();
@@ -31,6 +32,18 @@ const defaultFillScenario = {
         takerAssetDataScenario: AssetDataScenario.ERC20NonZRXEighteenDecimals,
     },
     takerAssetFillAmountScenario: TakerAssetFillAmountScenario.LessThanRemainingFillableTakerAssetAmount,
+    makerStateScenario: {
+        traderAssetBalance: TokenAmountScenario.Higher,
+        traderAssetAllowance: TokenAmountScenario.Higher,
+        zrxFeeBalance: TokenAmountScenario.Higher,
+        zrxFeeAllowance: TokenAmountScenario.Higher,
+    },
+    takerStateScenario: {
+        traderAssetBalance: TokenAmountScenario.Higher,
+        traderAssetAllowance: TokenAmountScenario.Higher,
+        zrxFeeBalance: TokenAmountScenario.Higher,
+        zrxFeeAllowance: TokenAmountScenario.Higher,
+    },
 };
 
 describe('FillOrder Tests', () => {
@@ -140,6 +153,50 @@ describe('FillOrder Tests', () => {
                 orderScenario: {
                     ...defaultFillScenario.orderScenario,
                     expirationTimeSecondsScenario: ExpirationTimeSecondsScenario.InPast,
+                },
+            };
+            await coreCombinatorialUtils.testFillOrderScenarioAsync(provider, fillScenario);
+        });
+
+        it('should throw if maker erc20Balances are too low to fill order', async () => {
+            const fillScenario = {
+                ...defaultFillScenario,
+                makerStateScenario: {
+                    ...defaultFillScenario.makerStateScenario,
+                    traderAssetBalance: TokenAmountScenario.TooLow,
+                },
+            };
+            await coreCombinatorialUtils.testFillOrderScenarioAsync(provider, fillScenario);
+        });
+
+        it('should throw if taker erc20Balances are too low to fill order', async () => {
+            const fillScenario = {
+                ...defaultFillScenario,
+                takerStateScenario: {
+                    ...defaultFillScenario.makerStateScenario,
+                    traderAssetBalance: TokenAmountScenario.TooLow,
+                },
+            };
+            await coreCombinatorialUtils.testFillOrderScenarioAsync(provider, fillScenario);
+        });
+
+        it('should throw if maker allowances are too low to fill order', async () => {
+            const fillScenario = {
+                ...defaultFillScenario,
+                makerStateScenario: {
+                    ...defaultFillScenario.makerStateScenario,
+                    traderAssetAllowance: TokenAmountScenario.TooLow,
+                },
+            };
+            await coreCombinatorialUtils.testFillOrderScenarioAsync(provider, fillScenario);
+        });
+
+        it('should throw if taker allowances are too low to fill order', async () => {
+            const fillScenario = {
+                ...defaultFillScenario,
+                takerStateScenario: {
+                    ...defaultFillScenario.makerStateScenario,
+                    traderAssetAllowance: TokenAmountScenario.TooLow,
                 },
             };
             await coreCombinatorialUtils.testFillOrderScenarioAsync(provider, fillScenario);
