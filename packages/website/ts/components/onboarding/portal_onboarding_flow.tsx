@@ -82,18 +82,19 @@ export class PortalOnboardingFlow extends React.Component<PortalOnboardingFlowPr
             },
             {
                 target: '.weth-row',
-                content: <div>
-                    Unlock your tokens for trading. You only need to do this once for each token.
-                    <div> ETH: {this._renderEthAllowanceToggle()}</div>
-                    <div> ZRX: {this._renderZrxAllowanceToggle()}</div>
-                </div>,
+                content: (
+                    <div>
+                        Unlock your tokens for trading. You only need to do this once for each token.
+                        <div> ETH: {this._renderEthAllowanceToggle()}</div>
+                        <div> ZRX: {this._renderZrxAllowanceToggle()}</div>
+                    </div>
+                ),
                 placement: 'right',
                 continueButtonDisplay: this._userHasAllowancesForWethAndZrx() ? 'enabled' : 'disabled',
             },
             {
                 target: '.wallet',
-                content:
-                    'Congrats! Your wallet is now set up for trading. Use it on any relayer in the 0x ecosystem.',
+                content: 'Congrats! Your wallet is now set up for trading. Use it on any relayer in the 0x ecosystem.',
                 placement: 'right',
                 continueButtonDisplay: 'enabled',
             },
