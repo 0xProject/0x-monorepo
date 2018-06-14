@@ -19,6 +19,7 @@
         "rebuild_and_test": "run-s build test",
         "test:coverage": "SOLIDITY_COVERAGE=true run-s build run_mocha coverage:report:text coverage:report:lcov",
         "test:profiler": "SOLIDITY_PROFILER=true run-s build run_mocha profiler:report:html",
+        "test:trace": "SOLIDITY_REVERT_TRACE=true run-s run_mocha",
         "run_mocha": "mocha --require source-map-support/register 'lib/test/**/*.js' --timeout 100000 --bail --exit",
         "compile": "sol-compiler",
         "clean": "shx rm -rf lib src/generated_contract_wrappers",
