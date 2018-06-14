@@ -1,9 +1,9 @@
 import { constants } from 'ts/utils/constants';
 
-interface RedirecterProps {
+interface RedirectorProps {
     location: string;
 }
 
-export function Redirecter(_props: RedirecterProps): void {
+export function Redirector(_props: RedirectorProps): void {
     window.location.href = constants.URL_ANGELLIST;
 }

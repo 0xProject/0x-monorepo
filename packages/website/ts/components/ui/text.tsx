@@ -11,8 +11,9 @@ export interface TextProps {
     fontFamily?: string;
     fontColor?: string;
     lineHeight?: string;
+    minHeight?: string;
     center?: boolean;
-    fontWeight?: number;
+    fontWeight?: number | string;
 }
 
 const PlainText: React.StatelessComponent<TextProps> = ({ children, className, Tag }) => (
@@ -26,6 +27,7 @@ export const Text = styled(PlainText)`
     ${props => (props.lineHeight ? `line-height: ${props.lineHeight}` : '')};
     ${props => (props.center ? 'text-align: center' : '')};
     color: ${props => props.fontColor};
+    ${props => (props.minHeight ? `min-height: ${props.minHeight}` : '')};
 `;
 
 Text.defaultProps = {
