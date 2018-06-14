@@ -54,7 +54,7 @@ const isRevertTraceEnabled = env.parseBoolean(EnvVars.SolidityRevertTrace);
 const enabledSubproviderCount = _.filter([isCoverageEnabled, isProfilerEnabled, isRevertTraceEnabled], _.identity)
     .length;
 if (enabledSubproviderCount > 1) {
-    throw new Error(`Only one of coverage, profiler, and revert trace subproviders can be enabled at a time`);
+    throw new Error(`Only one of coverage, profiler, or revert trace subproviders can be enabled at a time`);
 }
 if (isCoverageEnabled) {
     const coverageSubprovider = coverage.getCoverageSubproviderSingleton();
