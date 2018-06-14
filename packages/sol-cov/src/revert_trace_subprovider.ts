@@ -117,14 +117,14 @@ export class RevertTraceSubprovider extends Subprovider {
         if (_.isNull(err)) {
             const toAddress =
                 _.isUndefined(txData.to) || txData.to === NULL_ADDRESS ? constants.NEW_CONTRACT : txData.to;
-            await this._recordTxTraceAsync(toAddress, txData.data, txHash as string);
+            await this._recordTxTraceAsync(toAddress, txHash as string);
         } else {
             const latestBlock = await this._web3Wrapper.getBlockWithTransactionDataAsync(BlockParamLiteral.Latest);
             const transactions = latestBlock.transactions;
             for (const transaction of transactions) {
                 const toAddress =
                     _.isUndefined(txData.to) || txData.to === NULL_ADDRESS ? constants.NEW_CONTRACT : txData.to;
-                await this._recordTxTraceAsync(toAddress, transaction.input, transaction.hash);
+                await this._recordTxTraceAsync(toAddress, transaction.hash);
             }
         }
         if (!txData.isFakeTransaction) {
@@ -143,7 +143,7 @@ export class RevertTraceSubprovider extends Subprovider {
         await this._recordCallOrGasEstimateTraceAsync(callData);
         cb();
     }
-    private async _recordTxTraceAsync(address: string, data: string | undefined, txHash: string): Promise<void> {
+    private async _recordTxTraceAsync(address: string, txHash: string): Promise<void> {
         await this._web3Wrapper.awaitTransactionMinedAsync(txHash, 0);
         const trace = await this._web3Wrapper.getTransactionTraceAsync(txHash, {
             disableMemory: true,

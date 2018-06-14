@@ -7,6 +7,8 @@ import { coverage } from './coverage';
 import { profiler } from './profiler';
 import { revertTrace } from './revert_trace';
 
+import * as _ from 'lodash';
+
 enum ProviderType {
     Ganache = 'ganache',
     Geth = 'geth',
@@ -50,11 +52,10 @@ export const provider = web3Factory.getRpcProvider(providerConfigs);
 const isCoverageEnabled = env.parseBoolean(EnvVars.SolidityCoverage);
 const isProfilerEnabled = env.parseBoolean(EnvVars.SolidityProfiler);
 const isRevertTraceEnabled = env.parseBoolean(EnvVars.SolidityRevertTrace);
-// TODO(albrow): Include revertTrace checks in the warnings below.
-if (isCoverageEnabled && isProfilerEnabled) {
-    throw new Error(
-        `Unfortunately for now you can't enable both coverage and profiler at the same time. They both use coverage.json file and there is no way to configure that.`,
-    );
+const enabledSubproviderCount = _.filter([isCoverageEnabled, isProfilerEnabled, isRevertTraceEnabled], _.identity)
+    .length;
+if (enabledSubproviderCount > 1) {
+    throw new Error(`Only one of coverage, profiler, and revert trace subproviders can be enabled at a time`);
 }
 if (isCoverageEnabled) {
     const coverageSubprovider = coverage.getCoverageSubproviderSingleton();

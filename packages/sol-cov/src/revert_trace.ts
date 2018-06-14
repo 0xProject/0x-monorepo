@@ -3,7 +3,7 @@ import { OpCode, StructLog } from 'ethereum-types';
 
 import * as _ from 'lodash';
 
-import { EvmCallStack, EvmCallStackEntry } from './types';
+import { EvmCallStack } from './types';
 import { utils } from './utils';
 
 export function getRevertTrace(structLogs: StructLog[], startAddress: string): EvmCallStack {
