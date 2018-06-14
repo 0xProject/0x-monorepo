@@ -186,6 +186,10 @@ export class RevertTraceSubprovider extends Subprovider {
         }
         for (const evmCallStackEntry of evmCallStack) {
             const isContractCreation = evmCallStackEntry.address === constants.NEW_CONTRACT;
+            if (isContractCreation) {
+                this._logger.error('Contract creation not supported');
+                continue;
+            }
             const bytecode = await this._web3Wrapper.getContractCodeAsync(evmCallStackEntry.address);
             const contractData = utils.getContractDataIfExists(this._contractsData, bytecode);
             if (_.isUndefined(contractData)) {
@@ -223,7 +227,7 @@ export class RevertTraceSubprovider extends Subprovider {
             sourceRanges.push(sourceRange);
         }
         if (sourceRanges.length > 0) {
-            this._logger.error('\n\nStack trace:\n');
+            this._logger.error('\n\nStack trace for REVERT:\n');
             _.forEach(sourceRanges, sourceRange => {
                 this._logger.error(
                     `${sourceRange.fileName}:${sourceRange.location.start.line}:${sourceRange.location.start.column}`,

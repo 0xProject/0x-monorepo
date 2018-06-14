@@ -8,7 +8,7 @@ import { utils } from './utils';
 
 export function getRevertTrace(structLogs: StructLog[], startAddress: string): EvmCallStack {
     const evmCallStack: EvmCallStack = [];
-    let currentAddress = startAddress;
+    const addressStack = [startAddress];
     if (_.isEmpty(structLogs)) {
         return [];
     }
@@ -16,19 +16,17 @@ export function getRevertTrace(structLogs: StructLog[], startAddress: string): E
     // tslint:disable-next-line:prefer-for-of
     for (let i = 0; i < normalizedStructLogs.length; i++) {
         const structLog = normalizedStructLogs[i];
-        if (structLog.depth !== evmCallStack.length) {
+        if (structLog.depth !== addressStack.length - 1) {
             throw new Error("Malformed trace. Trace depth doesn't match call stack depth");
         }
         // After that check we have a guarantee that call stack is never empty
         // If it would: callStack.length - 1 === structLog.depth === -1
         // That means that we can always safely pop from it
 
-        // TODO(albrow): split out isCallLike and isEndOpcode
         if (utils.isCallLike(structLog.op)) {
-            const evmCallStackEntry = _.last(evmCallStack) as EvmCallStackEntry;
-            const prevAddress = _.isUndefined(evmCallStackEntry) ? currentAddress : evmCallStackEntry.address;
+            const currentAddress = _.last(addressStack) as string;
             const jumpAddressOffset = 1;
-            currentAddress = utils.getAddressFromStackEntry(
+            const newAddress = utils.getAddressFromStackEntry(
                 structLog.stack[structLog.stack.length - jumpAddressOffset - 1],
             );
 
@@ -40,8 +38,9 @@ export function getRevertTrace(structLogs: StructLog[], startAddress: string): E
             // function. We manually check if the call depth had changed to handle that case.
             const nextStructLog = normalizedStructLogs[i + 1];
             if (nextStructLog.depth !== structLog.depth) {
+                addressStack.push(newAddress);
                 evmCallStack.push({
-                    address: prevAddress,
+                    address: currentAddress,
                     structLog,
                 });
             }
@@ -50,6 +49,7 @@ export function getRevertTrace(structLogs: StructLog[], startAddress: string): E
             const nextStructLog = normalizedStructLogs[i + 1];
             if (_.isUndefined(nextStructLog) || nextStructLog.depth !== structLog.depth) {
                 evmCallStack.pop();
+                addressStack.pop();
             }
             if (structLog.op === OpCode.SelfDestruct) {
                 // After contract execution, we look at all sub-calls to external contracts, and for each one, fetch
@@ -63,7 +63,7 @@ export function getRevertTrace(structLogs: StructLog[], startAddress: string): E
             }
         } else if (structLog.op === OpCode.Revert) {
             evmCallStack.push({
-                address: currentAddress,
+                address: _.last(addressStack) as string,
                 structLog,
             });
             return evmCallStack;
@@ -73,6 +73,17 @@ export function getRevertTrace(structLogs: StructLog[], startAddress: string): E
                 "Detected a contract created from within another contract. Sol-cov currently doesn't support that scenario. We'll just skip that trace",
             );
             return [];
+        } else {
+            if (structLog !== _.last(normalizedStructLogs)) {
+                const nextStructLog = normalizedStructLogs[i + 1];
+                if (nextStructLog.depth === structLog.depth) {
+                    continue;
+                } else if (nextStructLog.depth === structLog.depth - 1) {
+                    addressStack.pop();
+                } else {
+                    throw new Error('Malformed trace. Unexpected call depth change');
+                }
+            }
         }
     }
     if (evmCallStack.length !== 0) {
