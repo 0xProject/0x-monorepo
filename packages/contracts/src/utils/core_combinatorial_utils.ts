@@ -352,11 +352,14 @@ export class CoreCombinatorialUtils {
         const expZRXAssetBalanceOfFeeRecipient = await lazyStore.getBalanceAsync(this.zrxAssetData, feeRecipient);
 
         const orderHash = orderHashUtils.getOrderHashHex(signedOrder);
-        const initialFilledTakerAmount = await this.exchangeWrapper.getTakerAssetFilledAmountAsync(orderHash);
-        const expFilledTakerAmount = initialFilledTakerAmount.add(takerAssetFillAmount);
+        const alreadyFilledTakerAmount = await this.exchangeWrapper.getTakerAssetFilledAmountAsync(orderHash);
+        const remainingTakerAmountToFill = signedOrder.takerAssetAmount.minus(alreadyFilledTakerAmount);
+        const expFilledTakerAmount = takerAssetFillAmount.gt(remainingTakerAmountToFill)
+            ? remainingTakerAmountToFill
+            : alreadyFilledTakerAmount.add(takerAssetFillAmount);
 
         const expFilledMakerAmount = orderUtils.getPartialAmount(
-            takerAssetFillAmount,
+            expFilledTakerAmount,
             signedOrder.takerAssetAmount,
             signedOrder.makerAssetAmount,
         );
@@ -380,7 +383,7 @@ export class CoreCombinatorialUtils {
             'log.args.makerAssetFilledAmount',
         );
         expect(log.args.takerAssetFilledAmount).to.be.bignumber.equal(
-            takerAssetFillAmount,
+            expFilledTakerAmount,
             'log.args.takerAssetFilledAmount',
         );
         const expMakerFeePaid = orderUtils.getPartialAmount(
