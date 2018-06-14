@@ -255,6 +255,7 @@ export class Portal extends React.Component<PortalProps, PortalState> {
                     translate={this.props.translate}
                     displayType={TopBarDisplayType.Expanded}
                     style={{ backgroundColor: colors.lightestGrey }}
+                    maxWidth={LARGE_LAYOUT_MAX_WIDTH}
                 />
                 <div id="portal" style={styles.body}>
                     <Switch>
