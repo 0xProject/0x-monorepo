@@ -369,7 +369,7 @@ describe('Exchange wrappers', () => {
                 // HACK(albrow): We need to hardcode the gas estimate here because
                 // the Geth gas estimator doesn't work with the way we use
                 // delegatecall and swallow errors.
-                gas: 270000,
+                gas: 280000,
             });
             // Verify post-conditions
             const newOwnerMakerAsset = await erc721Token.ownerOf.callAsync(makerAssetId);

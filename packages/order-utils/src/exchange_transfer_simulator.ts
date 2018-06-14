@@ -91,12 +91,11 @@ export class ExchangeTransferSimulator {
         amountInBaseUnits: BigNumber,
     ): Promise<void> {
         const assetProxyId = assetProxyUtils.decodeAssetDataId(assetData);
-        const isERC721Asset = assetProxyId === AssetProxyId.ERC721;
         const proxyAllowance = await this._store.getProxyAllowanceAsync(assetData, userAddress);
         // HACK: This code assumes that all tokens with an UNLIMITED_ALLOWANCE_IN_BASE_UNITS set,
         // are UnlimitedAllowanceTokens. This is however not true, it just so happens that all
         // DummyERC20Tokens we use in tests are.
-        if (!proxyAllowance.eq(constants.UNLIMITED_ALLOWANCE_IN_BASE_UNITS) && !isERC721Asset) {
+        if (!proxyAllowance.eq(constants.UNLIMITED_ALLOWANCE_IN_BASE_UNITS)) {
             this._store.setProxyAllowance(assetData, userAddress, proxyAllowance.minus(amountInBaseUnits));
         }
     }

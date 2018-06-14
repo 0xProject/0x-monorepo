@@ -473,7 +473,8 @@ describe('Asset Transfer Proxies', () => {
                     txHash,
                     constants.AWAIT_TRANSACTION_MINED_MS,
                 );
-                expect(res.logs.length).to.equal(numTransfers);
+                const numApproveEvents = 2;
+                expect(res.logs.length).to.equal(numTransfers + numApproveEvents);
 
                 const newOwnerMakerAssetA = await erc721Token.ownerOf.callAsync(makerTokenIdA);
                 const newOwnerMakerAssetB = await erc721Token.ownerOf.callAsync(makerTokenIdB);

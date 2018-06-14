@@ -27,6 +27,8 @@ export const constants = {
     LIB_BYTES_GREATER_OR_EQUAL_TO_SOURCE_BYTES_LENGTH_REQUIRED: 'GREATER_OR_EQUAL_TO_SOURCE_BYTES_LENGTH_REQUIRED',
     ERC20_INSUFFICIENT_BALANCE: 'Insufficient balance to complete transfer.',
     ERC20_INSUFFICIENT_ALLOWANCE: 'Insufficient allowance to complete transfer.',
+    ERC20_PROXY_ID: 1,
+    ERC721_PROXY_ID: 2,
     TESTRPC_NETWORK_ID: 50,
     // Note(albrow): In practice V8 and most other engines limit the minimum
     // interval for setInterval to 10ms. We still set it to 0 here in order to
