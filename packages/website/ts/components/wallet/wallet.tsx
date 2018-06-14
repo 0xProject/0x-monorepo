@@ -1,4 +1,9 @@
-import { constants as sharedConstants, EtherscanLinkSuffixes, Styles, utils as sharedUtils } from '@0xproject/react-shared';
+import {
+    constants as sharedConstants,
+    EtherscanLinkSuffixes,
+    Styles,
+    utils as sharedUtils,
+} from '@0xproject/react-shared';
 import { BigNumber, errorUtils } from '@0xproject/utils';
 import { Web3Wrapper } from '@0xproject/web3-wrapper';
 import * as _ from 'lodash';
@@ -13,7 +18,6 @@ import * as React from 'react';
 import { Link } from 'react-router-dom';
 import firstBy = require('thenby');
 
-import { analytics } from 'ts/utils/analytics';
 import { Blockchain } from 'ts/blockchain';
 import { AllowanceToggle } from 'ts/components/inputs/allowance_toggle';
 import { Container } from 'ts/components/ui/container';
@@ -37,6 +41,7 @@ import {
     TokenStateByAddress,
     WebsitePaths,
 } from 'ts/types';
+import { analytics } from 'ts/utils/analytics';
 import { constants } from 'ts/utils/constants';
 import { utils } from 'ts/utils/utils';
 import { styles as walletItemStyles } from 'ts/utils/wallet_item_styles';
@@ -505,7 +510,8 @@ export class Wallet extends React.Component<WalletProps, WalletState> {
     }
     private _openWrappedEtherActionRow(wrappedEtherDirection: Side): void {
         const networkName = sharedConstants.NETWORK_NAME_BY_ID[this.props.networkId];
-        const action = wrappedEtherDirection === Side.Deposit ? 'Wallet - Wrap ETH Opened' : 'Wallet - Unwrap WETH Opened';
+        const action =
+            wrappedEtherDirection === Side.Deposit ? 'Wallet - Wrap ETH Opened' : 'Wallet - Unwrap WETH Opened';
         analytics.logEvent('Portal', action, networkName);
         this.setState({
             wrappedEtherDirection,
@@ -513,7 +519,8 @@ export class Wallet extends React.Component<WalletProps, WalletState> {
     }
     private _closeWrappedEtherActionRow(wrappedEtherDirection: Side): void {
         const networkName = sharedConstants.NETWORK_NAME_BY_ID[this.props.networkId];
-        const action = wrappedEtherDirection === Side.Deposit ? 'Wallet - Wrap ETH Closed' : 'Wallet - Unwrap WETH Closed';
+        const action =
+            wrappedEtherDirection === Side.Deposit ? 'Wallet - Wrap ETH Closed' : 'Wallet - Unwrap WETH Closed';
         analytics.logEvent('Portal', action, networkName);
         this.setState({
             wrappedEtherDirection: undefined,

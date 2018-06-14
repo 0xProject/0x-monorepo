@@ -3,9 +3,9 @@ import * as _ from 'lodash';
 import * as React from 'react';
 
 import { BigNumber } from '@0xproject/utils';
-import { analytics } from 'ts/utils/analytics';
 import { OnboardingFlow, Step } from 'ts/components/onboarding/onboarding_flow';
 import { ProviderType, TokenByAddress, TokenStateByAddress } from 'ts/types';
+import { analytics } from 'ts/utils/analytics';
 import { utils } from 'ts/utils/utils';
 
 export interface PortalOnboardingFlowProps {
