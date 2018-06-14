@@ -1,4 +1,4 @@
-import { JSONRPCRequestPayload, Provider } from '@0xproject/types';
+import { JSONRPCRequestPayload, Provider } from 'ethereum-types';
 import * as Ganache from 'ganache-core';
 
 import { Callback, ErrorCallback } from '../types';

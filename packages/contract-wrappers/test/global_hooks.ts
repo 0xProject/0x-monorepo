@@ -1,5 +1,5 @@
 import { devConstants } from '@0xproject/dev-utils';
-import { runMigrationsAsync } from '@0xproject/migrations';
+import { runV1MigrationsAsync } from '@0xproject/migrations';
 import * as path from 'path';
 
 import { constants } from './utils/constants';
@@ -11,9 +11,9 @@ before('migrate contracts', async function(): Promise<void> {
     const mochaTestTimeoutMs = 20000;
     this.timeout(mochaTestTimeoutMs);
     const txDefaults = {
-        gas: devConstants.GAS_ESTIMATE,
+        gas: devConstants.GAS_LIMIT,
         from: devConstants.TESTRPC_FIRST_ADDRESS,
     };
     const artifactsDir = `../migrations/artifacts/1.0.0`;
-    await runMigrationsAsync(provider, artifactsDir, txDefaults);
+    await runV1MigrationsAsync(provider, artifactsDir, txDefaults);
 });

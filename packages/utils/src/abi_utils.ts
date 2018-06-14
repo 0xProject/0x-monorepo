@@ -1,4 +1,4 @@
-import { AbiDefinition, AbiType, ConstructorAbi, ContractAbi, DataItem, MethodAbi } from '@0xproject/types';
+import { AbiDefinition, AbiType, ConstructorAbi, ContractAbi, DataItem, MethodAbi } from 'ethereum-types';
 import * as _ from 'lodash';
 
 export const abiUtils = {

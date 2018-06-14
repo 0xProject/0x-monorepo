@@ -1,10 +1,12 @@
-import { colors, Styles } from '@0xproject/react-shared';
+import { Styles } from '@0xproject/react-shared';
 import FlatButton from 'material-ui/FlatButton';
 import ActionAccountBalanceWallet from 'material-ui/svg-icons/action/account-balance-wallet';
 import * as React from 'react';
 
 import { ProviderType } from 'ts/types';
+import { colors } from 'ts/utils/colors';
 import { constants } from 'ts/utils/constants';
+import { utils } from 'ts/utils/utils';
 
 export interface WalletDisconnectedItemProps {
     providerType: ProviderType;
@@ -29,7 +31,7 @@ const styles: Styles = {
     },
 };
 
-const ITEM_HEIGHT = 292;
+const ITEM_HEIGHT = 381;
 const METAMASK_ICON_WIDTH = 35;
 const LEDGER_ICON_WIDTH = 30;
 const BUTTON_BOTTOM_PADDING = 80;
@@ -37,8 +39,7 @@ const BUTTON_BOTTOM_PADDING = 80;
 export const WalletDisconnectedItem: React.StatelessComponent<WalletDisconnectedItemProps> = (
     props: WalletDisconnectedItemProps,
 ) => {
-    const isExternallyInjectedProvider =
-        props.providerType === ProviderType.Injected && props.injectedProviderName !== '0x Public';
+    const isExternallyInjectedProvider = utils.isExternallyInjected(props.providerType, props.injectedProviderName);
     return (
         <div className="flex flex-center">
             <div className="mx-auto">

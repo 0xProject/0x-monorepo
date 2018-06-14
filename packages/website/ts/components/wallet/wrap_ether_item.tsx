@@ -1,6 +1,6 @@
-import { ZeroEx } from '0x.js';
-import { colors, Styles } from '@0xproject/react-shared';
+import { Styles } from '@0xproject/react-shared';
 import { BigNumber, logUtils } from '@0xproject/utils';
+import { Web3Wrapper } from '@0xproject/web3-wrapper';
 import * as _ from 'lodash';
 import FlatButton from 'material-ui/FlatButton';
 import { ListItem } from 'material-ui/List';
@@ -11,6 +11,7 @@ import { EthAmountInput } from 'ts/components/inputs/eth_amount_input';
 import { TokenAmountInput } from 'ts/components/inputs/token_amount_input';
 import { Dispatcher } from 'ts/redux/dispatcher';
 import { BlockchainCallErrs, Side, Token } from 'ts/types';
+import { colors } from 'ts/utils/colors';
 import { constants } from 'ts/utils/constants';
 import { errorReporter } from 'ts/utils/error_reporter';
 import { utils } from 'ts/utils/utils';
@@ -31,12 +32,15 @@ export interface WrapEtherItemProps {
 
 interface WrapEtherItemState {
     currentInputAmount?: BigNumber;
-    currentInputHasErrors: boolean;
     isEthConversionHappening: boolean;
+    errorMsg: React.ReactNode;
 }
 
 const styles: Styles = {
-    topLabel: { color: colors.black, fontSize: 11 },
+    topLabel: {
+        color: colors.black,
+        fontSize: 11,
+    },
     inputContainer: {
         backgroundColor: colors.white,
         borderBottomRightRadius: 3,
@@ -44,14 +48,32 @@ const styles: Styles = {
         borderTopRightRadius: 3,
         borderTopLeftRadius: 3,
         padding: 4,
-        width: 125,
     },
-    ethAmountInput: { height: 32 },
-    innerDiv: { paddingLeft: 60, paddingTop: 0 },
-    wrapEtherConfirmationButtonContainer: { width: 128, top: 16 },
+    amountInput: {
+        height: 34,
+    },
+    amountInputLabel: {
+        paddingTop: 10,
+        paddingRight: 10,
+        paddingLeft: 5,
+        color: colors.grey,
+        fontSize: 14,
+    },
+    amountInputHint: {
+        bottom: 18,
+    },
     wrapEtherConfirmationButtonLabel: {
-        fontSize: 10,
+        fontSize: 12,
         color: colors.white,
+    },
+    errorMsg: {
+        fontSize: 12,
+        marginTop: 4,
+        color: colors.red,
+        minHeight: 20,
+    },
+    conversionSpinner: {
+        paddingTop: 26,
     },
 };
 
@@ -60,19 +82,24 @@ export class WrapEtherItem extends React.Component<WrapEtherItemProps, WrapEther
         super(props);
         this.state = {
             currentInputAmount: undefined,
-            currentInputHasErrors: false,
             isEthConversionHappening: false,
+            errorMsg: null,
         };
     }
     public render(): React.ReactNode {
-        const etherBalanceInEth = ZeroEx.toUnitAmount(this.props.userEtherBalanceInWei, constants.DECIMAL_PLACES_ETH);
+        const etherBalanceInEth = Web3Wrapper.toUnitAmount(
+            this.props.userEtherBalanceInWei,
+            constants.DECIMAL_PLACES_ETH,
+        );
         const isWrappingEth = this.props.direction === Side.Deposit;
         const topLabelText = isWrappingEth ? 'Convert ETH into WETH 1:1' : 'Convert WETH into ETH 1:1';
+
         return (
-            <ListItem
-                primaryText={
-                    <div>
-                        <div style={styles.topLabel}>{topLabelText}</div>
+            <div className="flex" style={walletItemStyles.focusedItem}>
+                <div>{this._renderIsEthConversionHappeningSpinner()} </div>
+                <div className="flex flex-column">
+                    <div style={styles.topLabel}>{topLabelText}</div>
+                    <div className="flex items-center">
                         <div style={styles.inputContainer}>
                             {isWrappingEth ? (
                                 <EthAmountInput
@@ -84,7 +111,10 @@ export class WrapEtherItem extends React.Component<WrapEtherItemProps, WrapEther
                                     shouldShowIncompleteErrs={false}
                                     shouldShowErrs={false}
                                     shouldShowUnderline={false}
-                                    style={styles.ethAmountInput}
+                                    style={styles.amountInput}
+                                    labelStyle={styles.amountInputLabel}
+                                    inputHintStyle={styles.amountInputHint}
+                                    onErrorMsgChange={this._onErrorMsgChange.bind(this)}
                                 />
                             ) : (
                                 <TokenAmountInput
@@ -99,41 +129,47 @@ export class WrapEtherItem extends React.Component<WrapEtherItemProps, WrapEther
                                     onChange={this._onValueChange.bind(this)}
                                     amount={this.state.currentInputAmount}
                                     hintText="0.00"
-                                    shouldShowErrs={false} // TODO: error handling
+                                    shouldShowErrs={false}
                                     shouldShowUnderline={false}
-                                    style={styles.ethAmountInput}
+                                    style={styles.amountInput}
+                                    labelStyle={styles.amountInputLabel}
+                                    inputHintStyle={styles.amountInputHint}
+                                    onErrorMsgChange={this._onErrorMsgChange.bind(this)}
                                 />
                             )}
                         </div>
+                        <div>{this._renderWrapEtherConfirmationButton()}</div>
                     </div>
-                }
-                secondaryTextLines={2}
-                disableTouchRipple={true}
-                style={walletItemStyles.focusedItem}
-                innerDivStyle={styles.innerDiv}
-                leftIcon={this._renderIsEthConversionHappeningSpinner()}
-                rightAvatar={this._renderWrapEtherConfirmationButton()}
-            />
+
+                    {this._renderErrorMsg()}
+                </div>
+            </div>
         );
     }
     private _onValueChange(isValid: boolean, amount?: BigNumber): void {
         this.setState({
             currentInputAmount: amount,
-            currentInputHasErrors: !isValid,
+        });
+    }
+    private _onErrorMsgChange(errorMsg: React.ReactNode): void {
+        this.setState({
+            errorMsg,
         });
     }
     private _renderIsEthConversionHappeningSpinner(): React.ReactElement<{}> {
-        return this.state.isEthConversionHappening ? (
-            <div className="pl1" style={{ paddingTop: 10 }}>
+        const visibility = this.state.isEthConversionHappening ? 'visible' : 'hidden';
+        const style: React.CSSProperties = { ...styles.conversionSpinner, visibility };
+        return (
+            <div className="pl3 pr2" style={style}>
                 <i className="zmdi zmdi-spinner zmdi-hc-spin" />
             </div>
-        ) : null;
+        );
     }
     private _renderWrapEtherConfirmationButton(): React.ReactElement<{}> {
         const isWrappingEth = this.props.direction === Side.Deposit;
         const labelText = isWrappingEth ? 'wrap' : 'unwrap';
         return (
-            <div style={styles.wrapEtherConfirmationButtonContainer}>
+            <div className="pl1 pr3">
                 <FlatButton
                     backgroundColor={colors.wrapEtherConfirmationButton}
                     label={labelText}
@@ -144,6 +180,9 @@ export class WrapEtherItem extends React.Component<WrapEtherItemProps, WrapEther
             </div>
         );
     }
+    private _renderErrorMsg(): React.ReactNode {
+        return <div style={styles.errorMsg}>{this.state.errorMsg}</div>;
+    }
     private async _wrapEtherConfirmationActionAsync(): Promise<void> {
         this.setState({
             isEthConversionHappening: true,
@@ -153,11 +192,11 @@ export class WrapEtherItem extends React.Component<WrapEtherItemProps, WrapEther
             const amountToConvert = this.state.currentInputAmount;
             if (this.props.direction === Side.Deposit) {
                 await this.props.blockchain.convertEthToWrappedEthTokensAsync(etherToken.address, amountToConvert);
-                const ethAmount = ZeroEx.toUnitAmount(amountToConvert, constants.DECIMAL_PLACES_ETH);
+                const ethAmount = Web3Wrapper.toUnitAmount(amountToConvert, constants.DECIMAL_PLACES_ETH);
                 this.props.dispatcher.showFlashMessage(`Successfully wrapped ${ethAmount.toString()} ETH to WETH`);
             } else {
                 await this.props.blockchain.convertWrappedEthTokensToEthAsync(etherToken.address, amountToConvert);
-                const tokenAmount = ZeroEx.toUnitAmount(amountToConvert, etherToken.decimals);
+                const tokenAmount = Web3Wrapper.toUnitAmount(amountToConvert, etherToken.decimals);
                 this.props.dispatcher.showFlashMessage(`Successfully unwrapped ${tokenAmount.toString()} WETH to ETH`);
             }
             await this.props.refetchEthTokenStateAsync();

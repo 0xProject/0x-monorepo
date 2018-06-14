@@ -1,4 +1,4 @@
-import { ECSignature } from '0x.js';
+import { ECSignature } from '@0xproject/types';
 import { BigNumber } from '@0xproject/utils';
 import { Dispatch } from 'redux';
 import { State } from 'ts/redux/reducer';
@@ -155,7 +155,7 @@ export class Dispatcher {
             type: ActionTypes.UpdateOrderECSignature,
         });
     }
-    public updateUserWeiBalance(balance: BigNumber): void {
+    public updateUserWeiBalance(balance?: BigNumber): void {
         this._dispatch({
             data: balance,
             type: ActionTypes.UpdateUserEtherBalance,
@@ -171,6 +171,13 @@ export class Dispatcher {
         this._dispatch({
             data: amount,
             type: ActionTypes.UpdateOrderFillAmount,
+        });
+    }
+
+    public updatePortalOnboardingShowing(isShowing: boolean): void {
+        this._dispatch({
+            data: isShowing,
+            type: ActionTypes.UpdatePortalOnboardingShowing,
         });
     }
 

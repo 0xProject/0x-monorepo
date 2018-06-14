@@ -48,20 +48,7 @@ const baseColors = {
     darkYellow: '#caca03',
 };
 
-const appColors = {
-    // wallet specific colors
-    walletBoxShadow: 'rgba(56, 59, 137, 0.2)',
-    walletBorder: '#ededee',
-    walletDefaultItemBackground: '#fbfbfc',
-    walletFocusedItemBackground: '#f0f1f4',
-    allowanceToggleShadow: 'rgba(0, 0, 0, 0)',
-    allowanceToggleOffTrack: '#adadad',
-    allowanceToggleOnTrack: baseColors.mediumBlue,
-    wrapEtherConfirmationButton: baseColors.mediumBlue,
-};
-
 export const colors = {
     ...materialUiColors,
     ...baseColors,
-    ...appColors,
 };

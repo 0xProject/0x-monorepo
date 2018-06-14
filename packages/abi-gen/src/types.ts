@@ -1,4 +1,4 @@
-import { EventAbi, MethodAbi } from '@0xproject/types';
+import { EventAbi, MethodAbi } from 'ethereum-types';
 
 export enum ParamKind {
     Input = 'input',

@@ -9,6 +9,7 @@ import { Link } from 'react-router-dom';
 import ReactTooltip = require('react-tooltip');
 import { Blockchain } from 'ts/blockchain';
 import { LegacyPortalMenu } from 'ts/components/legacy_portal/legacy_portal_menu';
+import { DrawerMenu } from 'ts/components/portal/drawer_menu';
 import { SidebarHeader } from 'ts/components/sidebar_header';
 import { ProviderDisplay } from 'ts/components/top_bar/provider_display';
 import { TopBarMenuItem } from 'ts/components/top_bar/top_bar_menu_item';
@@ -17,7 +18,9 @@ import { Identicon } from 'ts/components/ui/identicon';
 import { Dispatcher } from 'ts/redux/dispatcher';
 import { Deco, Key, ProviderType, WebsiteLegacyPaths, WebsitePaths } from 'ts/types';
 import { constants } from 'ts/utils/constants';
+import { zIndex } from 'ts/utils/style';
 import { Translate } from 'ts/utils/translate';
+import { utils } from 'ts/utils/utils';
 
 export enum TopBarDisplayType {
     Default,
@@ -57,7 +60,7 @@ const styles: Styles = {
         width: '100%',
         position: 'relative',
         top: 0,
-        zIndex: 1100,
+        zIndex: zIndex.topBar,
         paddingBottom: 1,
     },
     bottomBar: {
@@ -92,6 +95,13 @@ export class TopBar extends React.Component<TopBarProps, TopBarState> {
         this.state = {
             isDrawerOpen: false,
         };
+    }
+    public componentWillReceiveProps(nextProps: TopBarProps): void {
+        if (nextProps.location.pathname !== this.props.location.pathname) {
+            this.setState({
+                isDrawerOpen: false,
+            });
+        }
     }
     public render(): React.ReactNode {
         const isNightVersion = this.props.isNightVersion;
@@ -196,6 +206,8 @@ export class TopBar extends React.Component<TopBarProps, TopBarState> {
             </div>
         );
         const popoverContent = <Menu style={{ color: colors.darkGrey }}>{developerSectionMenuItems}</Menu>;
+        // TODO : Remove this once we ship portal v2
+        const shouldShowPortalV2Drawer = this._isViewingPortal() && utils.shouldShowPortalV2();
         return (
             <div style={{ ...styles.topBar, ...bottomBorderStyle, ...this.props.style, ...{ height } }} className="pb1">
                 <div className={parentClassNames}>
@@ -249,7 +261,7 @@ export class TopBar extends React.Component<TopBarProps, TopBarState> {
                             </div>
                         </div>
                     )}
-                    {this.props.blockchainIsLoaded && (
+                    {this._isViewingPortal() && (
                         <div className="sm-hide xs-hide col col-5" style={{ paddingTop: 8, marginRight: 36 }}>
                             <ProviderDisplay
                                 dispatcher={this.props.dispatcher}
@@ -259,6 +271,7 @@ export class TopBar extends React.Component<TopBarProps, TopBarState> {
                                 providerType={this.props.providerType}
                                 onToggleLedgerDialog={this.props.onToggleLedgerDialog}
                                 blockchain={this.props.blockchain}
+                                blockchainIsLoaded={this.props.blockchainIsLoaded}
                             />
                         </div>
                     )}
@@ -268,8 +281,20 @@ export class TopBar extends React.Component<TopBarProps, TopBarState> {
                         </div>
                     </div>
                 </div>
-                {this._renderDrawer()}
+                {shouldShowPortalV2Drawer ? this._renderPortalV2Drawer() : this._renderDrawer()}
             </div>
+        );
+    }
+    private _renderPortalV2Drawer(): React.ReactNode {
+        return (
+            <Drawer
+                open={this.state.isDrawerOpen}
+                docked={false}
+                openSecondary={true}
+                onRequestChange={this._onMenuButtonClick.bind(this)}
+            >
+                <DrawerMenu selectedPath={this.props.location.pathname} userAddress={this.props.userAddress} />
+            </Drawer>
         );
     }
     private _renderDrawer(): React.ReactNode {

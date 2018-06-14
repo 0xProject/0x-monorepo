@@ -114,7 +114,7 @@ declare module 'solc' {
         message: string;
         formattedMessage?: string;
     }
-    import { ContractAbi } from '@0xproject/types';
+    import { ContractAbi } from 'ethereum-types';
     export interface StandardContractOutput {
         abi: ContractAbi;
         evm: {

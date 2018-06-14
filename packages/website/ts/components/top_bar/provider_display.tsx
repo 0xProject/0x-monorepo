@@ -1,14 +1,18 @@
-import { colors, Styles } from '@0xproject/react-shared';
+import { Styles } from '@0xproject/react-shared';
 import * as _ from 'lodash';
+import CircularProgress from 'material-ui/CircularProgress';
 import RaisedButton from 'material-ui/RaisedButton';
 import * as React from 'react';
+
 import { Blockchain } from 'ts/blockchain';
 import { ProviderPicker } from 'ts/components/top_bar/provider_picker';
 import { DropDown } from 'ts/components/ui/drop_down';
 import { Identicon } from 'ts/components/ui/identicon';
 import { Dispatcher } from 'ts/redux/dispatcher';
 import { ProviderType } from 'ts/types';
+import { colors } from 'ts/utils/colors';
 import { constants } from 'ts/utils/constants';
+import { zIndex } from 'ts/utils/style';
 import { utils } from 'ts/utils/utils';
 
 const ROOT_HEIGHT = 24;
@@ -20,7 +24,8 @@ export interface ProviderDisplayProps {
     injectedProviderName: string;
     providerType: ProviderType;
     onToggleLedgerDialog: () => void;
-    blockchain: Blockchain;
+    blockchain?: Blockchain;
+    blockchainIsLoaded: boolean;
 }
 
 interface ProviderDisplayState {}
@@ -37,11 +42,22 @@ const styles: Styles = {
 export class ProviderDisplay extends React.Component<ProviderDisplayProps, ProviderDisplayState> {
     public render(): React.ReactNode {
         const isAddressAvailable = !_.isEmpty(this.props.userAddress);
-        const isExternallyInjectedProvider =
-            this.props.providerType === ProviderType.Injected && this.props.injectedProviderName !== '0x Public';
-        const displayAddress = isAddressAvailable
-            ? utils.getAddressBeginAndEnd(this.props.userAddress)
-            : isExternallyInjectedProvider ? 'Account locked' : '0x0000...0000';
+        const isExternallyInjectedProvider = utils.isExternallyInjected(
+            this.props.providerType,
+            this.props.injectedProviderName,
+        );
+        let displayMessage;
+        if (!this._isBlockchainReady()) {
+            displayMessage = 'loading account';
+        } else if (isAddressAvailable) {
+            displayMessage = utils.getAddressBeginAndEnd(this.props.userAddress);
+            // tslint:disable-next-line: prefer-conditional-expression
+        } else if (isExternallyInjectedProvider) {
+            displayMessage = 'Account locked';
+        } else {
+            displayMessage = '0x0000...0000';
+        }
+
         // If the "injected" provider is our fallback public node, then we want to
         // show the "connect a wallet" message instead of the providerName
         const injectedProviderName = isExternallyInjectedProvider
@@ -53,10 +69,14 @@ export class ProviderDisplay extends React.Component<ProviderDisplayProps, Provi
         const hoverActiveNode = (
             <div className="flex right lg-pr0 md-pr2 sm-pr2 p1" style={styles.root}>
                 <div>
-                    <Identicon address={this.props.userAddress} diameter={ROOT_HEIGHT} />
+                    {this._isBlockchainReady() ? (
+                        <Identicon address={this.props.userAddress} diameter={ROOT_HEIGHT} />
+                    ) : (
+                        <CircularProgress size={ROOT_HEIGHT} thickness={2} />
+                    )}
                 </div>
                 <div style={{ marginLeft: 12, paddingTop: 3 }}>
-                    <div style={{ fontSize: 16, color: colors.darkGrey }}>{displayAddress}</div>
+                    <div style={{ fontSize: 16, color: colors.darkGrey }}>{displayMessage}</div>
                 </div>
                 {isProviderMetamask && (
                     <div style={{ marginLeft: 16 }}>
@@ -65,15 +85,13 @@ export class ProviderDisplay extends React.Component<ProviderDisplayProps, Provi
                 )}
             </div>
         );
-        const hasInjectedProvider =
-            this.props.injectedProviderName !== '0x Public' && this.props.providerType === ProviderType.Injected;
         const hasLedgerProvider = this.props.providerType === ProviderType.Ledger;
-        const horizontalPosition = hasInjectedProvider || hasLedgerProvider ? 'left' : 'middle';
+        const horizontalPosition = isExternallyInjectedProvider || hasLedgerProvider ? 'left' : 'middle';
         return (
             <div style={{ width: 'fit-content', height: 48, float: 'right' }}>
                 <DropDown
                     hoverActiveNode={hoverActiveNode}
-                    popoverContent={this.renderPopoverContent(hasInjectedProvider, hasLedgerProvider)}
+                    popoverContent={this.renderPopoverContent(isExternallyInjectedProvider, hasLedgerProvider)}
                     anchorOrigin={{ horizontal: horizontalPosition, vertical: 'bottom' }}
                     targetOrigin={{ horizontal: horizontalPosition, vertical: 'top' }}
                     zDepth={1}
@@ -82,7 +100,9 @@ export class ProviderDisplay extends React.Component<ProviderDisplayProps, Provi
         );
     }
     public renderPopoverContent(hasInjectedProvider: boolean, hasLedgerProvider: boolean): React.ReactNode {
-        if (hasInjectedProvider || hasLedgerProvider) {
+        if (!this._isBlockchainReady()) {
+            return null;
+        } else if (hasInjectedProvider || hasLedgerProvider) {
             return (
                 <ProviderPicker
                     dispatcher={this.props.dispatcher}
@@ -153,5 +173,8 @@ export class ProviderDisplay extends React.Component<ProviderDisplayProps, Provi
                 </div>
             );
         }
+    }
+    private _isBlockchainReady(): boolean {
+        return this.props.blockchainIsLoaded && !_.isUndefined(this.props.blockchain);
     }
 }

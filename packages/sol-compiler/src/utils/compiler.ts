@@ -71,7 +71,7 @@ export function getNormalizedErrMsg(errMsg: string): string {
     const SOLIDITY_FILE_EXTENSION_REGEX = /(.*\.sol)/;
     const errPathMatch = errMsg.match(SOLIDITY_FILE_EXTENSION_REGEX);
     if (_.isNull(errPathMatch)) {
-        throw new Error('Could not find a path in error message');
+        throw new Error(`Could not find a path in error message: ${errMsg}`);
     }
     const errPath = errPathMatch[0];
     const baseContract = path.basename(errPath);

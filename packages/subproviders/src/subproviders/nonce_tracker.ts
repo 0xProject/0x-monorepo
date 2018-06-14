@@ -1,6 +1,6 @@
 import * as _ from 'lodash';
 
-import { BlockParamLiteral, JSONRPCRequestPayload } from '@0xproject/types';
+import { BlockParamLiteral, JSONRPCRequestPayload } from 'ethereum-types';
 import EthereumTx = require('ethereumjs-tx');
 import ethUtil = require('ethereumjs-util');
 import providerEngineUtils = require('web3-provider-engine/util/rpc-cache-utils');

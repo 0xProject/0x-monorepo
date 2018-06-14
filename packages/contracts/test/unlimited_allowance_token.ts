@@ -1,4 +1,3 @@
-import { ZeroEx } from '0x.js';
 import { BlockchainLifecycle, devConstants, web3Factory } from '@0xproject/dev-utils';
 import { BigNumber } from '@0xproject/utils';
 import { Web3Wrapper } from '@0xproject/web3-wrapper';
@@ -6,13 +5,11 @@ import * as chai from 'chai';
 import 'make-promises-safe';
 import * as Web3 from 'web3';
 
-import { DummyTokenContract } from '../src/contract_wrappers/generated/dummy_token';
-import { artifacts } from '../util/artifacts';
-import { constants } from '../util/constants';
-import { ContractName } from '../util/types';
-
-import { chaiSetup } from './utils/chai_setup';
-import { provider, txDefaults, web3Wrapper } from './utils/web3_wrapper';
+import { DummyERC20TokenContract } from '../src/contract_wrappers/generated/dummy_e_r_c20_token';
+import { artifacts } from '../src/utils/artifacts';
+import { chaiSetup } from '../src/utils/chai_setup';
+import { constants } from '../src/utils/constants';
+import { provider, txDefaults, web3Wrapper } from '../src/utils/web3_wrapper';
 
 chaiSetup.configure();
 const expect = chai.expect;
@@ -21,21 +18,21 @@ const blockchainLifecycle = new BlockchainLifecycle(web3Wrapper);
 describe('UnlimitedAllowanceToken', () => {
     let owner: string;
     let spender: string;
-    const config = {
-        networkId: constants.TESTRPC_NETWORK_ID,
-    };
-    const zeroEx = new ZeroEx(provider, config);
-
     const MAX_MINT_VALUE = new BigNumber(100000000000000000000);
-    let tokenAddress: string;
-    let token: DummyTokenContract;
+    let token: DummyERC20TokenContract;
 
+    before(async () => {
+        await blockchainLifecycle.startAsync();
+    });
+    after(async () => {
+        await blockchainLifecycle.revertAsync();
+    });
     before(async () => {
         const accounts = await web3Wrapper.getAvailableAddressesAsync();
         owner = accounts[0];
         spender = accounts[1];
-        token = await DummyTokenContract.deployFrom0xArtifactAsync(
-            artifacts.DummyToken,
+        token = await DummyERC20TokenContract.deployFrom0xArtifactAsync(
+            artifacts.DummyERC20Token,
             provider,
             txDefaults,
             constants.DUMMY_TOKEN_NAME,
@@ -43,8 +40,10 @@ describe('UnlimitedAllowanceToken', () => {
             constants.DUMMY_TOKEN_DECIMALS,
             constants.DUMMY_TOKEN_TOTAL_SUPPLY,
         );
-        await token.mint.sendTransactionAsync(MAX_MINT_VALUE, { from: owner });
-        tokenAddress = token.address;
+        await web3Wrapper.awaitTransactionSuccessAsync(
+            await token.mint.sendTransactionAsync(MAX_MINT_VALUE, { from: owner }),
+            constants.AWAIT_TRANSACTION_MINED_MS,
+        );
     });
     beforeEach(async () => {
         await blockchainLifecycle.startAsync();
@@ -54,7 +53,7 @@ describe('UnlimitedAllowanceToken', () => {
     });
     describe('transfer', () => {
         it('should throw if owner has insufficient balance', async () => {
-            const ownerBalance = await zeroEx.token.getBalanceAsync(tokenAddress, owner);
+            const ownerBalance = await token.balanceOf.callAsync(owner);
             const amountToTransfer = ownerBalance.plus(1);
             return expect(token.transfer.callAsync(spender, amountToTransfer, { from: owner })).to.be.rejectedWith(
                 constants.REVERT,
@@ -63,11 +62,14 @@ describe('UnlimitedAllowanceToken', () => {
 
         it('should transfer balance from sender to receiver', async () => {
             const receiver = spender;
-            const initOwnerBalance = await zeroEx.token.getBalanceAsync(tokenAddress, owner);
+            const initOwnerBalance = await token.balanceOf.callAsync(owner);
             const amountToTransfer = new BigNumber(1);
-            await zeroEx.token.transferAsync(tokenAddress, owner, receiver, amountToTransfer);
-            const finalOwnerBalance = await zeroEx.token.getBalanceAsync(tokenAddress, owner);
-            const finalReceiverBalance = await zeroEx.token.getBalanceAsync(tokenAddress, receiver);
+            await web3Wrapper.awaitTransactionSuccessAsync(
+                await token.transfer.sendTransactionAsync(receiver, amountToTransfer, { from: owner }),
+                constants.AWAIT_TRANSACTION_MINED_MS,
+            );
+            const finalOwnerBalance = await token.balanceOf.callAsync(owner);
+            const finalReceiverBalance = await token.balanceOf.callAsync(receiver);
 
             const expectedFinalOwnerBalance = initOwnerBalance.minus(amountToTransfer);
             const expectedFinalReceiverBalance = amountToTransfer;
@@ -85,9 +87,12 @@ describe('UnlimitedAllowanceToken', () => {
 
     describe('transferFrom', () => {
         it('should throw if owner has insufficient balance', async () => {
-            const ownerBalance = await zeroEx.token.getBalanceAsync(tokenAddress, owner);
+            const ownerBalance = await token.balanceOf.callAsync(owner);
             const amountToTransfer = ownerBalance.plus(1);
-            await zeroEx.token.setAllowanceAsync(tokenAddress, owner, spender, amountToTransfer);
+            await web3Wrapper.awaitTransactionSuccessAsync(
+                await token.approve.sendTransactionAsync(spender, amountToTransfer, { from: owner }),
+                constants.AWAIT_TRANSACTION_MINED_MS,
+            );
             return expect(
                 token.transferFrom.callAsync(owner, spender, amountToTransfer, {
                     from: spender,
@@ -96,10 +101,10 @@ describe('UnlimitedAllowanceToken', () => {
         });
 
         it('should throw if spender has insufficient allowance', async () => {
-            const ownerBalance = await zeroEx.token.getBalanceAsync(tokenAddress, owner);
+            const ownerBalance = await token.balanceOf.callAsync(owner);
             const amountToTransfer = ownerBalance;
 
-            const spenderAllowance = await zeroEx.token.getAllowanceAsync(tokenAddress, owner, spender);
+            const spenderAllowance = await token.allowance.callAsync(owner, spender);
             const isSpenderAllowanceInsufficient = spenderAllowance.cmp(amountToTransfer) < 0;
             expect(isSpenderAllowanceInsufficient).to.be.true();
 
@@ -119,44 +124,65 @@ describe('UnlimitedAllowanceToken', () => {
         });
 
         it('should not modify spender allowance if spender allowance is 2^256 - 1', async () => {
-            const initOwnerBalance = await zeroEx.token.getBalanceAsync(tokenAddress, owner);
+            const initOwnerBalance = await token.balanceOf.callAsync(owner);
             const amountToTransfer = initOwnerBalance;
-            const initSpenderAllowance = zeroEx.token.UNLIMITED_ALLOWANCE_IN_BASE_UNITS;
-            await zeroEx.token.setAllowanceAsync(tokenAddress, owner, spender, initSpenderAllowance);
-            await zeroEx.token.transferFromAsync(tokenAddress, owner, spender, spender, amountToTransfer, {
-                gasLimit: constants.MAX_TOKEN_TRANSFERFROM_GAS,
-            });
+            const initSpenderAllowance = constants.UNLIMITED_ALLOWANCE_IN_BASE_UNITS;
+            await web3Wrapper.awaitTransactionSuccessAsync(
+                await token.approve.sendTransactionAsync(spender, initSpenderAllowance, { from: owner }),
+                constants.AWAIT_TRANSACTION_MINED_MS,
+            );
+            await web3Wrapper.awaitTransactionSuccessAsync(
+                await token.transferFrom.sendTransactionAsync(owner, spender, amountToTransfer, {
+                    from: spender,
+                    gas: constants.MAX_TOKEN_TRANSFERFROM_GAS,
+                }),
+                constants.AWAIT_TRANSACTION_MINED_MS,
+            );
 
-            const newSpenderAllowance = await zeroEx.token.getAllowanceAsync(tokenAddress, owner, spender);
+            const newSpenderAllowance = await token.allowance.callAsync(owner, spender);
             expect(initSpenderAllowance).to.be.bignumber.equal(newSpenderAllowance);
         });
 
         it('should transfer the correct balances if spender has sufficient allowance', async () => {
-            const initOwnerBalance = await zeroEx.token.getBalanceAsync(tokenAddress, owner);
+            const initOwnerBalance = await token.balanceOf.callAsync(owner);
             const amountToTransfer = initOwnerBalance;
             const initSpenderAllowance = initOwnerBalance;
-            await zeroEx.token.setAllowanceAsync(tokenAddress, owner, spender, initSpenderAllowance);
-            await zeroEx.token.transferFromAsync(tokenAddress, owner, spender, spender, amountToTransfer, {
-                gasLimit: constants.MAX_TOKEN_TRANSFERFROM_GAS,
-            });
+            await web3Wrapper.awaitTransactionSuccessAsync(
+                await token.approve.sendTransactionAsync(spender, initSpenderAllowance, { from: owner }),
+                constants.AWAIT_TRANSACTION_MINED_MS,
+            );
+            await web3Wrapper.awaitTransactionSuccessAsync(
+                await token.transferFrom.sendTransactionAsync(owner, spender, amountToTransfer, {
+                    from: spender,
+                    gas: constants.MAX_TOKEN_TRANSFERFROM_GAS,
+                }),
+                constants.AWAIT_TRANSACTION_MINED_MS,
+            );
 
-            const newOwnerBalance = await zeroEx.token.getBalanceAsync(tokenAddress, owner);
-            const newSpenderBalance = await zeroEx.token.getBalanceAsync(tokenAddress, spender);
+            const newOwnerBalance = await token.balanceOf.callAsync(owner);
+            const newSpenderBalance = await token.balanceOf.callAsync(spender);
 
             expect(newOwnerBalance).to.be.bignumber.equal(0);
             expect(newSpenderBalance).to.be.bignumber.equal(initOwnerBalance);
         });
 
         it('should modify allowance if spender has sufficient allowance less than 2^256 - 1', async () => {
-            const initOwnerBalance = await zeroEx.token.getBalanceAsync(tokenAddress, owner);
+            const initOwnerBalance = await token.balanceOf.callAsync(owner);
             const amountToTransfer = initOwnerBalance;
             const initSpenderAllowance = initOwnerBalance;
-            await zeroEx.token.setAllowanceAsync(tokenAddress, owner, spender, initSpenderAllowance);
-            await zeroEx.token.transferFromAsync(tokenAddress, owner, spender, spender, amountToTransfer, {
-                gasLimit: constants.MAX_TOKEN_TRANSFERFROM_GAS,
-            });
+            await web3Wrapper.awaitTransactionSuccessAsync(
+                await token.approve.sendTransactionAsync(spender, initSpenderAllowance, { from: owner }),
+                constants.AWAIT_TRANSACTION_MINED_MS,
+            );
+            await web3Wrapper.awaitTransactionSuccessAsync(
+                await token.transferFrom.sendTransactionAsync(owner, spender, amountToTransfer, {
+                    from: spender,
+                    gas: constants.MAX_TOKEN_TRANSFERFROM_GAS,
+                }),
+                constants.AWAIT_TRANSACTION_MINED_MS,
+            );
 
-            const newSpenderAllowance = await zeroEx.token.getAllowanceAsync(tokenAddress, owner, spender);
+            const newSpenderAllowance = await token.allowance.callAsync(owner, spender);
             expect(newSpenderAllowance).to.be.bignumber.equal(0);
         });
     });

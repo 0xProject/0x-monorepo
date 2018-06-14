@@ -1,9 +1,9 @@
 import { BlockchainLifecycle, devConstants } from '@0xproject/dev-utils';
 import { ContractArtifact } from '@0xproject/sol-compiler';
-import { LogWithDecodedArgs } from '@0xproject/types';
 import { BigNumber } from '@0xproject/utils';
 import { Web3Wrapper } from '@0xproject/web3-wrapper';
 import * as chai from 'chai';
+import { LogWithDecodedArgs } from 'ethereum-types';
 import 'make-promises-safe';
 
 import * as MetacoinArtifact from '../artifacts/Metacoin.json';
@@ -52,7 +52,7 @@ describe('Metacoin', () => {
                 },
                 { from: devConstants.TESTRPC_FIRST_ADDRESS },
             );
-            const txReceipt = await web3Wrapper.awaitTransactionMinedAsync(txHash);
+            const txReceipt = await web3Wrapper.awaitTransactionSuccessAsync(txHash);
             const transferLogs = txReceipt.logs[0] as LogWithDecodedArgs<TransferContractEventArgs>;
             expect(transferLogs.args).to.be.deep.equal({
                 _to: ZERO_ADDRESS,
@@ -77,7 +77,7 @@ describe('Metacoin', () => {
                 callback,
                 { from: devConstants.TESTRPC_FIRST_ADDRESS },
             );
-            const txReceipt = await web3Wrapper.awaitTransactionMinedAsync(txHash);
+            const txReceipt = await web3Wrapper.awaitTransactionSuccessAsync(txHash);
             const transferLogs = txReceipt.logs[0] as LogWithDecodedArgs<TransferContractEventArgs>;
             expect(transferLogs.args).to.be.deep.equal({
                 _to: ZERO_ADDRESS,
@@ -104,7 +104,7 @@ describe('Metacoin', () => {
                 },
                 { from: devConstants.TESTRPC_FIRST_ADDRESS },
             );
-            const txReceipt = await web3Wrapper.awaitTransactionMinedAsync(txHash);
+            const txReceipt = await web3Wrapper.awaitTransactionSuccessAsync(txHash);
             const transferLogs = txReceipt.logs[0] as LogWithDecodedArgs<TransferContractEventArgs>;
             expect(transferLogs.args).to.be.deep.equal({
                 _to: ZERO_ADDRESS,

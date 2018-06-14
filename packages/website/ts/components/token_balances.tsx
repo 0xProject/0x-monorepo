@@ -1,4 +1,3 @@
-import { ZeroEx } from '0x.js';
 import {
     colors,
     constants as sharedConstants,
@@ -8,6 +7,7 @@ import {
     utils as sharedUtils,
 } from '@0xproject/react-shared';
 import { BigNumber, logUtils } from '@0xproject/utils';
+import { Web3Wrapper } from '@0xproject/web3-wrapper';
 import * as _ from 'lodash';
 import Dialog from 'material-ui/Dialog';
 import Divider from 'material-ui/Divider';
@@ -85,6 +85,9 @@ interface TokenBalancesState {
 }
 
 export class TokenBalances extends React.Component<TokenBalancesProps, TokenBalancesState> {
+    public static defaultProps: Partial<TokenBalancesProps> = {
+        userEtherBalanceInWei: new BigNumber(0),
+    };
     private _isUnmounted: boolean;
     public constructor(props: TokenBalancesProps) {
         super(props);
@@ -111,7 +114,7 @@ export class TokenBalances extends React.Component<TokenBalancesProps, TokenBala
         if (nextProps.userEtherBalanceInWei !== this.props.userEtherBalanceInWei) {
             if (this.state.isBalanceSpinnerVisible) {
                 const receivedAmountInWei = nextProps.userEtherBalanceInWei.minus(this.props.userEtherBalanceInWei);
-                const receivedAmountInEth = ZeroEx.toUnitAmount(receivedAmountInWei, constants.DECIMAL_PLACES_ETH);
+                const receivedAmountInEth = Web3Wrapper.toUnitAmount(receivedAmountInWei, constants.DECIMAL_PLACES_ETH);
                 const networkName = sharedConstants.NETWORK_NAME_BY_ID[this.props.networkId];
                 this.props.dispatcher.showFlashMessage(
                     `Received ${receivedAmountInEth.toString(10)} ${networkName} Ether`,
@@ -180,7 +183,7 @@ export class TokenBalances extends React.Component<TokenBalancesProps, TokenBala
                                   token balances in order to execute trades.<br> \
                                   Toggling sets an allowance for the<br> \
                                   smart contract so you can start trading that token.';
-        const userEtherBalanceInEth = ZeroEx.toUnitAmount(
+        const userEtherBalanceInEth = Web3Wrapper.toUnitAmount(
             this.props.userEtherBalanceInWei,
             constants.DECIMAL_PLACES_ETH,
         );
@@ -445,7 +448,7 @@ export class TokenBalances extends React.Component<TokenBalancesProps, TokenBala
         });
     }
     private _renderAmount(amount: BigNumber, decimals: number): React.ReactNode {
-        const unitAmount = ZeroEx.toUnitAmount(amount, decimals);
+        const unitAmount = Web3Wrapper.toUnitAmount(amount, decimals);
         return unitAmount.toNumber().toFixed(configs.AMOUNT_DISPLAY_PRECSION);
     }
     private _renderTokenName(token: Token): React.ReactNode {
@@ -508,7 +511,7 @@ export class TokenBalances extends React.Component<TokenBalancesProps, TokenBala
         try {
             await this.props.blockchain.mintTestTokensAsync(token);
             await this._refetchTokenStateAsync(token.address);
-            const amount = ZeroEx.toUnitAmount(constants.MINT_AMOUNT, token.decimals);
+            const amount = Web3Wrapper.toUnitAmount(constants.MINT_AMOUNT, token.decimals);
             this.props.dispatcher.showFlashMessage(`Successfully minted ${amount.toString(10)} ${token.symbol}`);
             return true;
         } catch (err) {

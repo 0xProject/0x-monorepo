@@ -3,12 +3,12 @@ import { assert as sharedAssert } from '@0xproject/assert';
 // tslint:disable-next-line:no-unused-variable
 import { Schema } from '@0xproject/json-schemas';
 // tslint:disable-next-line:no-unused-variable
-import { ECSignature } from '@0xproject/types';
+import { ECSignature, SignatureType } from '@0xproject/types';
 import { BigNumber } from '@0xproject/utils';
 import { Web3Wrapper } from '@0xproject/web3-wrapper';
 import * as _ from 'lodash';
 
-import { isValidSignature } from './signature_utils';
+import { utils } from './utils';
 
 export const assert = {
     ...sharedAssert,
@@ -23,5 +23,15 @@ export const assert = {
             isSenderAddressAvailable,
             `Specified ${variableName} ${senderAddressHex} isn't available through the supplied web3 provider`,
         );
+    },
+    isOneOfExpectedSignatureTypes(signature: string, signatureTypes: SignatureType[]): void {
+        sharedAssert.isHexString('signature', signature);
+        const signatureTypeIndexIfExists = utils.getSignatureTypeIndexIfExists(signature);
+        const isExpectedSignatureType = _.includes(signatureTypes, signatureTypeIndexIfExists);
+        if (!isExpectedSignatureType) {
+            throw new Error(
+                `Unexpected signatureType: ${signatureTypeIndexIfExists}. Valid signature types: ${signatureTypes}`,
+            );
+        }
     },
 };

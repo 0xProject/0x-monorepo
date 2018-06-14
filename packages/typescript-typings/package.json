@@ -25,13 +25,12 @@
     },
     "homepage": "https://github.com/0xProject/0x-monorepo/packages/typescript-typings#readme",
     "dependencies": {
-        "@0xproject/types": "^0.7.0",
+        "ethereum-types": "^0.0.1",
         "bignumber.js": "~4.1.0"
     },
     "devDependencies": {
         "@0xproject/monorepo-scripts": "^0.1.20",
         "copyfiles": "^1.2.0",
-        "make-promises-safe": "^1.1.0",
         "shx": "^0.2.2"
     },
     "publishConfig": {

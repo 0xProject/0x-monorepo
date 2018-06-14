@@ -1,16 +1,6 @@
 import { BigNumber } from '@0xproject/utils';
 
-export interface MultiSigConfig {
-    owners: string[];
-    confirmationsRequired: number;
-    secondsRequired: number;
-}
-
-export interface MultiSigConfigByNetwork {
-    [networkName: string]: MultiSigConfig;
-}
-
-export interface Token {
+export interface ERC20Token {
     address?: string;
     name: string;
     symbol: string;
@@ -19,9 +9,9 @@ export interface Token {
     swarmHash: string;
 }
 
-export interface TokenInfoByNetwork {
-    development: Token[];
-    live: Token[];
+export interface ERC721Token {
+    name: string;
+    symbol: string;
 }
 
 export enum ContractName {
@@ -33,7 +23,6 @@ export enum ContractName {
     DummyToken = 'DummyToken',
     WETH9 = 'WETH9',
     MultiSigWalletWithTimeLockExceptRemoveAuthorizedAddress = 'MultiSigWalletWithTimeLockExceptRemoveAuthorizedAddress',
-    MaliciousToken = 'MaliciousToken',
     AccountLevels = 'AccountLevels',
     EtherDelta = 'EtherDelta',
     Arbitrage = 'Arbitrage',

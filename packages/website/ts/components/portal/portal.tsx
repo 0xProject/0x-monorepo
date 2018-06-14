@@ -3,22 +3,49 @@ import { BigNumber } from '@0xproject/utils';
 import * as _ from 'lodash';
 import * as React from 'react';
 import * as DocumentTitle from 'react-document-title';
+import { Link, Route, RouteComponentProps, Switch } from 'react-router-dom';
 
 import { Blockchain } from 'ts/blockchain';
 import { BlockchainErrDialog } from 'ts/components/dialogs/blockchain_err_dialog';
 import { LedgerConfigDialog } from 'ts/components/dialogs/ledger_config_dialog';
 import { PortalDisclaimerDialog } from 'ts/components/dialogs/portal_disclaimer_dialog';
+import { EthWrappers } from 'ts/components/eth_wrappers';
+import { FillOrder } from 'ts/components/fill_order';
 import { AssetPicker } from 'ts/components/generate_order/asset_picker';
+import { BackButton } from 'ts/components/portal/back_button';
+import { Loading } from 'ts/components/portal/loading';
+import { Menu, MenuTheme } from 'ts/components/portal/menu';
+import { Section } from 'ts/components/portal/section';
+import { TextHeader } from 'ts/components/portal/text_header';
 import { RelayerIndex } from 'ts/components/relayer_index/relayer_index';
+import { TokenBalances } from 'ts/components/token_balances';
 import { TopBar, TopBarDisplayType } from 'ts/components/top_bar/top_bar';
+import { TradeHistory } from 'ts/components/trade_history/trade_history';
+import { Container } from 'ts/components/ui/container';
 import { FlashMessage } from 'ts/components/ui/flash_message';
+import { Island } from 'ts/components/ui/island';
 import { Wallet } from 'ts/components/wallet/wallet';
+import { GenerateOrderForm } from 'ts/containers/generate_order_form';
+import { PortalOnboardingFlow } from 'ts/containers/portal_onboarding_flow';
 import { localStorage } from 'ts/local_storage/local_storage';
 import { trackedTokenStorage } from 'ts/local_storage/tracked_token_storage';
+import { FullscreenMessage } from 'ts/pages/fullscreen_message';
 import { Dispatcher } from 'ts/redux/dispatcher';
-import { BlockchainErrs, HashData, Order, ProviderType, ScreenWidths, TokenByAddress, TokenVisibility } from 'ts/types';
+import {
+    BlockchainErrs,
+    HashData,
+    Order,
+    ProviderType,
+    ScreenWidths,
+    Token,
+    TokenByAddress,
+    TokenStateByAddress,
+    TokenVisibility,
+    WebsitePaths,
+} from 'ts/types';
 import { configs } from 'ts/utils/configs';
 import { constants } from 'ts/utils/constants';
+import { orderParser } from 'ts/utils/order_parser';
 import { Translate } from 'ts/utils/translate';
 import { utils } from 'ts/utils/utils';
 
@@ -34,7 +61,7 @@ export interface PortalProps {
     providerType: ProviderType;
     screenWidth: ScreenWidths;
     tokenByAddress: TokenByAddress;
-    userEtherBalanceInWei: BigNumber;
+    userEtherBalanceInWei?: BigNumber;
     userAddress: string;
     shouldBlockchainErrDialogBeOpen: boolean;
     userSuppliedOrderCache: Order;
@@ -52,6 +79,13 @@ interface PortalState {
     isDisclaimerDialogOpen: boolean;
     isLedgerDialogOpen: boolean;
     tokenManagementState: TokenManagementState;
+    trackedTokenStateByAddress: TokenStateByAddress;
+}
+
+interface AccountManagementItem {
+    pathName: string;
+    headerText: string;
+    render: () => React.ReactNode;
 }
 
 enum TokenManagementState {
@@ -62,6 +96,8 @@ enum TokenManagementState {
 
 const THROTTLE_TIMEOUT = 100;
 const TOP_BAR_HEIGHT = TopBar.heightForDisplayType(TopBarDisplayType.Expanded);
+const LEFT_COLUMN_WIDTH = 346;
+const MENU_PADDING_LEFT = 185;
 
 const styles: Styles = {
     root: {
@@ -72,26 +108,31 @@ const styles: Styles = {
     body: {
         height: `calc(100vh - ${TOP_BAR_HEIGHT}px)`,
     },
+    leftColumn: {
+        width: LEFT_COLUMN_WIDTH,
+        height: '100%',
+    },
     scrollContainer: {
         height: `calc(100vh - ${TOP_BAR_HEIGHT}px)`,
         WebkitOverflowScrolling: 'touch',
         overflow: 'auto',
     },
-    title: {
-        fontWeight: 'bold',
-        fontSize: 20,
-    },
 };
 
 export class Portal extends React.Component<PortalProps, PortalState> {
     private _blockchain: Blockchain;
+    private _sharedOrderIfExists: Order;
     private _throttledScreenWidthUpdate: () => void;
     constructor(props: PortalProps) {
         super(props);
+        this._sharedOrderIfExists = orderParser.parse(window.location.search);
         this._throttledScreenWidthUpdate = _.throttle(this._updateScreenWidth.bind(this), THROTTLE_TIMEOUT);
         const didAcceptPortalDisclaimer = localStorage.getItemIfExists(constants.LOCAL_STORAGE_KEY_ACCEPT_DISCLAIMER);
         const hasAcceptedDisclaimer =
             !_.isUndefined(didAcceptPortalDisclaimer) && !_.isEmpty(didAcceptPortalDisclaimer);
+        const initialTrackedTokenStateByAddress = this._getInitialTrackedTokenStateByAddress(
+            this._getCurrentTrackedTokens(),
+        );
         this.state = {
             prevNetworkId: this.props.networkId,
             prevNodeVersion: this.props.nodeVersion,
@@ -100,6 +141,7 @@ export class Portal extends React.Component<PortalProps, PortalState> {
             isDisclaimerDialogOpen: !hasAcceptedDisclaimer,
             tokenManagementState: TokenManagementState.None,
             isLedgerDialogOpen: false,
+            trackedTokenStateByAddress: initialTrackedTokenStateByAddress,
         };
     }
     public componentDidMount(): void {
@@ -108,6 +150,9 @@ export class Portal extends React.Component<PortalProps, PortalState> {
     }
     public componentWillMount(): void {
         this._blockchain = new Blockchain(this.props.dispatcher);
+        const trackedTokenAddresses = _.keys(this.state.trackedTokenStateByAddress);
+        // tslint:disable-next-line:no-floating-promises
+        this._fetchBalancesAndAllowancesAsync(trackedTokenAddresses);
     }
     public componentWillUnmount(): void {
         this._blockchain.destroy();
@@ -143,13 +188,44 @@ export class Portal extends React.Component<PortalProps, PortalState> {
                 prevPathname: nextProps.location.pathname,
             });
         }
+        if (
+            nextProps.userAddress !== this.props.userAddress ||
+            nextProps.networkId !== this.props.networkId ||
+            nextProps.lastForceTokenStateRefetch !== this.props.lastForceTokenStateRefetch
+        ) {
+            const trackedTokenAddresses = _.keys(this.state.trackedTokenStateByAddress);
+            // tslint:disable-next-line:no-floating-promises
+            this._fetchBalancesAndAllowancesAsync(trackedTokenAddresses);
+        }
+
+        const nextTrackedTokens = this._getTrackedTokens(nextProps.tokenByAddress);
+        const trackedTokens = this._getCurrentTrackedTokens();
+
+        if (!_.isEqual(nextTrackedTokens, trackedTokens)) {
+            const newTokens = _.difference(nextTrackedTokens, trackedTokens);
+            const newTokenAddresses = _.map(newTokens, token => token.address);
+            // Add placeholder entry for this token to the state, since fetching the
+            // balance/allowance is asynchronous
+            const trackedTokenStateByAddress = this.state.trackedTokenStateByAddress;
+            for (const tokenAddress of newTokenAddresses) {
+                trackedTokenStateByAddress[tokenAddress] = {
+                    balance: new BigNumber(0),
+                    allowance: new BigNumber(0),
+                    isLoaded: false,
+                };
+            }
+            this.setState({
+                trackedTokenStateByAddress,
+            });
+            // Fetch the actual balance/allowance.
+            // tslint:disable-next-line:no-floating-promises
+            this._fetchBalancesAndAllowancesAsync(newTokenAddresses);
+        }
     }
     public render(): React.ReactNode {
         const updateShouldBlockchainErrDialogBeOpen = this.props.dispatcher.updateShouldBlockchainErrDialogBeOpen.bind(
             this.props.dispatcher,
         );
-        const allTokens = _.values(this.props.tokenByAddress);
-        const trackedTokens = _.filter(allTokens, t => t.isTracked);
         const isAssetPickerDialogOpen = this.state.tokenManagementState !== TokenManagementState.None;
         const tokenVisibility =
             this.state.tokenManagementState === TokenManagementState.Add
@@ -157,6 +233,7 @@ export class Portal extends React.Component<PortalProps, PortalState> {
                 : TokenVisibility.TRACKED;
         return (
             <div style={styles.root}>
+                <PortalOnboardingFlow trackedTokenStateByAddress={this.state.trackedTokenStateByAddress} />
                 <DocumentTitle title="0x Portal DApp" />
                 <TopBar
                     userAddress={this.props.userAddress}
@@ -173,36 +250,14 @@ export class Portal extends React.Component<PortalProps, PortalState> {
                     style={{ backgroundColor: colors.lightestGrey }}
                 />
                 <div id="portal" style={styles.body}>
-                    <div className="sm-flex flex-center">
-                        <div className="flex-last px3">
-                            <div className="py3" style={styles.title}>
-                                Your Account
-                            </div>
-                            <Wallet
-                                userAddress={this.props.userAddress}
-                                networkId={this.props.networkId}
-                                blockchain={this._blockchain}
-                                blockchainIsLoaded={this.props.blockchainIsLoaded}
-                                blockchainErr={this.props.blockchainErr}
-                                dispatcher={this.props.dispatcher}
-                                tokenByAddress={this.props.tokenByAddress}
-                                trackedTokens={trackedTokens}
-                                userEtherBalanceInWei={this.props.userEtherBalanceInWei}
-                                lastForceTokenStateRefetch={this.props.lastForceTokenStateRefetch}
-                                injectedProviderName={this.props.injectedProviderName}
-                                providerType={this.props.providerType}
-                                onToggleLedgerDialog={this._onToggleLedgerDialog.bind(this)}
-                                onAddToken={this._onAddToken.bind(this)}
-                                onRemoveToken={this._onRemoveToken.bind(this)}
-                            />
-                        </div>
-                        <div className="flex-auto px3" style={styles.scrollContainer}>
-                            <div className="py3" style={styles.title}>
-                                Explore 0x Ecosystem
-                            </div>
-                            <RelayerIndex networkId={this.props.networkId} />
-                        </div>
-                    </div>
+                    <Switch>
+                        <Route path={`${WebsitePaths.Portal}/:route`} render={this._renderOtherRoutes.bind(this)} />
+                        <Route
+                            exact={true}
+                            path={`${WebsitePaths.Portal}/`}
+                            render={this._renderMainRoute.bind(this)}
+                        />
+                    </Switch>
                     <BlockchainErrDialog
                         blockchain={this._blockchain}
                         blockchainErr={this.props.blockchainErr}
@@ -239,6 +294,209 @@ export class Portal extends React.Component<PortalProps, PortalState> {
                     />
                 </div>
             </div>
+        );
+    }
+    private _renderMainRoute(): React.ReactNode {
+        if (this._isSmallScreen()) {
+            return <SmallLayout content={this._renderRelayerIndexSection()} />;
+        } else {
+            return <LargeLayout left={this._renderWalletSection()} right={this._renderRelayerIndexSection()} />;
+        }
+    }
+    private _renderOtherRoutes(routeComponentProps: RouteComponentProps<any>): React.ReactNode {
+        if (this._isSmallScreen()) {
+            return <SmallLayout content={this._renderAccountManagement()} />;
+        } else {
+            return <LargeLayout left={this._renderMenu(routeComponentProps)} right={this._renderAccountManagement()} />;
+        }
+    }
+    private _renderMenu(routeComponentProps: RouteComponentProps<any>): React.ReactNode {
+        const menuTheme: MenuTheme = {
+            paddingLeft: MENU_PADDING_LEFT,
+            textColor: colors.darkerGrey,
+            iconColor: colors.darkerGrey,
+            selectedIconColor: colors.yellow800,
+            selectedBackgroundColor: 'transparent',
+        };
+        return (
+            <Section
+                header={<BackButton to={`${WebsitePaths.Portal}`} labelText="back to Relayers" />}
+                body={<Menu selectedPath={routeComponentProps.location.pathname} theme={menuTheme} />}
+            />
+        );
+    }
+    private _renderWallet(): React.ReactNode {
+        return (
+            <div>
+                <Wallet
+                    userAddress={this.props.userAddress}
+                    networkId={this.props.networkId}
+                    blockchain={this._blockchain}
+                    blockchainIsLoaded={this.props.blockchainIsLoaded}
+                    blockchainErr={this.props.blockchainErr}
+                    dispatcher={this.props.dispatcher}
+                    tokenByAddress={this.props.tokenByAddress}
+                    trackedTokens={this._getCurrentTrackedTokens()}
+                    userEtherBalanceInWei={this.props.userEtherBalanceInWei}
+                    lastForceTokenStateRefetch={this.props.lastForceTokenStateRefetch}
+                    injectedProviderName={this.props.injectedProviderName}
+                    providerType={this.props.providerType}
+                    screenWidth={this.props.screenWidth}
+                    location={this.props.location}
+                    trackedTokenStateByAddress={this.state.trackedTokenStateByAddress}
+                    onToggleLedgerDialog={this._onToggleLedgerDialog.bind(this)}
+                    onAddToken={this._onAddToken.bind(this)}
+                    onRemoveToken={this._onRemoveToken.bind(this)}
+                    refetchTokenStateAsync={this._refetchTokenStateAsync.bind(this)}
+                />
+                <Container marginTop="15px">
+                    <Island>
+                        {/** TODO: Implement real styles. */}
+                        <p onClick={this._startOnboarding.bind(this)}>Start onboarding flow.</p>
+                    </Island>
+                </Container>
+            </div>
+        );
+    }
+
+    private _startOnboarding(): void {
+        this.props.dispatcher.updatePortalOnboardingShowing(true);
+    }
+    private _renderWalletSection(): React.ReactNode {
+        return <Section header={<TextHeader labelText="Your Account" />} body={this._renderWallet()} />;
+    }
+    private _renderAccountManagement(): React.ReactNode {
+        const accountManagementItems: AccountManagementItem[] = [
+            {
+                pathName: `${WebsitePaths.Portal}/weth`,
+                headerText: 'Wrapped ETH',
+                render: this._renderEthWrapper.bind(this),
+            },
+            {
+                pathName: `${WebsitePaths.Portal}/account`,
+                headerText: 'Your Account',
+                render: this._isSmallScreen() ? this._renderWallet.bind(this) : this._renderTokenBalances.bind(this),
+            },
+            {
+                pathName: `${WebsitePaths.Portal}/trades`,
+                headerText: 'Trade History',
+                render: this._renderTradeHistory.bind(this),
+            },
+            {
+                pathName: `${WebsitePaths.Portal}/generate`,
+                headerText: 'Generate Order',
+                render: this._renderGenerateOrderForm.bind(this),
+            },
+            {
+                pathName: `${WebsitePaths.Portal}/fill`,
+                headerText: 'Fill Order',
+                render: this._renderFillOrder.bind(this),
+            },
+        ];
+        return (
+            <Switch>
+                {_.map(accountManagementItems, item => {
+                    return (
+                        <Route
+                            key={item.pathName}
+                            path={item.pathName}
+                            render={this._renderAccountManagementItem.bind(this, item)}
+                        />
+                    );
+                })}}
+                <Route render={this._renderNotFoundMessage.bind(this)} />
+            </Switch>
+        );
+    }
+    private _renderAccountManagementItem(item: AccountManagementItem): React.ReactNode {
+        return (
+            <Section
+                header={<TextHeader labelText={item.headerText} />}
+                body={<Loading isLoading={!this.props.blockchainIsLoaded} content={item.render()} />}
+            />
+        );
+    }
+    private _renderEthWrapper(): React.ReactNode {
+        return (
+            <EthWrappers
+                networkId={this.props.networkId}
+                blockchain={this._blockchain}
+                dispatcher={this.props.dispatcher}
+                tokenByAddress={this.props.tokenByAddress}
+                userAddress={this.props.userAddress}
+                userEtherBalanceInWei={this.props.userEtherBalanceInWei}
+                lastForceTokenStateRefetch={this.props.lastForceTokenStateRefetch}
+            />
+        );
+    }
+    private _renderTradeHistory(): React.ReactNode {
+        return (
+            <TradeHistory
+                tokenByAddress={this.props.tokenByAddress}
+                userAddress={this.props.userAddress}
+                networkId={this.props.networkId}
+            />
+        );
+    }
+    private _renderGenerateOrderForm(): React.ReactNode {
+        return (
+            <GenerateOrderForm
+                blockchain={this._blockchain}
+                hashData={this.props.hashData}
+                dispatcher={this.props.dispatcher}
+            />
+        );
+    }
+    private _renderFillOrder(): React.ReactNode {
+        const initialFillOrder = !_.isUndefined(this.props.userSuppliedOrderCache)
+            ? this.props.userSuppliedOrderCache
+            : this._sharedOrderIfExists;
+        return (
+            <FillOrder
+                blockchain={this._blockchain}
+                blockchainErr={this.props.blockchainErr}
+                initialOrder={initialFillOrder}
+                isOrderInUrl={!_.isUndefined(this._sharedOrderIfExists)}
+                orderFillAmount={this.props.orderFillAmount}
+                networkId={this.props.networkId}
+                userAddress={this.props.userAddress}
+                tokenByAddress={this.props.tokenByAddress}
+                dispatcher={this.props.dispatcher}
+                lastForceTokenStateRefetch={this.props.lastForceTokenStateRefetch}
+            />
+        );
+    }
+    private _renderTokenBalances(): React.ReactNode {
+        return (
+            <TokenBalances
+                blockchain={this._blockchain}
+                blockchainErr={this.props.blockchainErr}
+                blockchainIsLoaded={this.props.blockchainIsLoaded}
+                dispatcher={this.props.dispatcher}
+                screenWidth={this.props.screenWidth}
+                tokenByAddress={this.props.tokenByAddress}
+                trackedTokens={this._getCurrentTrackedTokens()}
+                userAddress={this.props.userAddress}
+                userEtherBalanceInWei={this.props.userEtherBalanceInWei}
+                networkId={this.props.networkId}
+                lastForceTokenStateRefetch={this.props.lastForceTokenStateRefetch}
+            />
+        );
+    }
+    private _renderRelayerIndexSection(): React.ReactNode {
+        return (
+            <Section
+                header={<TextHeader labelText="Explore 0x Relayers" />}
+                body={<RelayerIndex networkId={this.props.networkId} screenWidth={this.props.screenWidth} />}
+            />
+        );
+    }
+    private _renderNotFoundMessage(): React.ReactNode {
+        return (
+            <FullscreenMessage
+                headerText="404 Not Found"
+                bodyText="Hm... looks like we couldn't find what you are looking for."
+            />
         );
     }
     private _onTokenChosen(tokenAddress: string): void {
@@ -294,4 +552,87 @@ export class Portal extends React.Component<PortalProps, PortalState> {
         const newScreenWidth = utils.getScreenWidth();
         this.props.dispatcher.updateScreenWidth(newScreenWidth);
     }
+    private _isSmallScreen(): boolean {
+        const isSmallScreen = this.props.screenWidth === ScreenWidths.Sm;
+        return isSmallScreen;
+    }
+
+    private _getCurrentTrackedTokens(): Token[] {
+        return this._getTrackedTokens(this.props.tokenByAddress);
+    }
+
+    private _getTrackedTokens(tokenByAddress: TokenByAddress): Token[] {
+        const allTokens = _.values(tokenByAddress);
+        const trackedTokens = _.filter(allTokens, t => t.isTracked);
+        return trackedTokens;
+    }
+
+    private _getInitialTrackedTokenStateByAddress(trackedTokens: Token[]): TokenStateByAddress {
+        const trackedTokenStateByAddress: TokenStateByAddress = {};
+        _.each(trackedTokens, token => {
+            trackedTokenStateByAddress[token.address] = {
+                balance: new BigNumber(0),
+                allowance: new BigNumber(0),
+                isLoaded: false,
+            };
+        });
+        return trackedTokenStateByAddress;
+    }
+
+    private async _fetchBalancesAndAllowancesAsync(tokenAddresses: string[]): Promise<void> {
+        const trackedTokenStateByAddress = this.state.trackedTokenStateByAddress;
+        const userAddressIfExists = _.isEmpty(this.props.userAddress) ? undefined : this.props.userAddress;
+        const balancesAndAllowances = await Promise.all(
+            tokenAddresses.map(async tokenAddress => {
+                return this._blockchain.getTokenBalanceAndAllowanceAsync(userAddressIfExists, tokenAddress);
+            }),
+        );
+        for (let i = 0; i < tokenAddresses.length; i++) {
+            // Order is preserved in Promise.all
+            const [balance, allowance] = balancesAndAllowances[i];
+            const tokenAddress = tokenAddresses[i];
+            trackedTokenStateByAddress[tokenAddress] = {
+                balance,
+                allowance,
+                isLoaded: true,
+            };
+        }
+        this.setState({
+            trackedTokenStateByAddress,
+        });
+    }
+
+    private async _refetchTokenStateAsync(tokenAddress: string): Promise<void> {
+        await this._fetchBalancesAndAllowancesAsync([tokenAddress]);
+    }
 }
+
+interface LargeLayoutProps {
+    left: React.ReactNode;
+    right: React.ReactNode;
+}
+const LargeLayout = (props: LargeLayoutProps) => {
+    return (
+        <div className="sm-flex flex-center">
+            <div className="flex-last px3">
+                <div style={styles.leftColumn}>{props.left}</div>
+            </div>
+            <div className="flex-auto px3" style={styles.scrollContainer}>
+                {props.right}
+            </div>
+        </div>
+    );
+};
+
+interface SmallLayoutProps {
+    content: React.ReactNode;
+}
+const SmallLayout = (props: SmallLayoutProps) => {
+    return (
+        <div className="sm-flex flex-center">
+            <div className="flex-auto px3" style={styles.scrollContainer}>
+                {props.content}
+            </div>
+        </div>
+    );
+}; // tslint:disable:max-file-line-count

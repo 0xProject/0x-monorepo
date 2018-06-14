@@ -1,7 +1,7 @@
-import { ContractWrappersError, ECSignature, ExchangeContractErrs, ZeroEx } from '0x.js';
+import { ContractWrappersError, ExchangeContractErrs } from '@0xproject/contract-wrappers';
 import { OrderError } from '@0xproject/order-utils';
 import { constants as sharedConstants, EtherscanLinkSuffixes, Networks } from '@0xproject/react-shared';
-import { Provider } from '@0xproject/types';
+import { ECSignature, Provider } from '@0xproject/types';
 import { BigNumber } from '@0xproject/utils';
 import deepEqual = require('deep-equal');
 import * as _ from 'lodash';
@@ -11,6 +11,7 @@ import {
     Environments,
     Order,
     Providers,
+    ProviderType,
     ScreenWidths,
     Side,
     SideToAssetToken,
@@ -313,5 +314,16 @@ export const utils = {
     isStaging(): boolean {
         return _.includes(window.location.href, configs.DOMAIN_STAGING);
     },
+    isExternallyInjected(providerType: ProviderType, injectedProviderName: string): boolean {
+        return providerType === ProviderType.Injected && injectedProviderName !== constants.PROVIDER_NAME_PUBLIC;
+    },
     isDogfood,
+    shouldShowPortalV2(): boolean {
+        return this.isDevelopment() || this.isStaging() || this.isDogfood();
+    },
+    getEthToken(tokenByAddress: TokenByAddress): Token {
+        const tokens = _.values(tokenByAddress);
+        const etherToken = _.find(tokens, { symbol: constants.ETHER_TOKEN_SYMBOL });
+        return etherToken;
+    },
 };

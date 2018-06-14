@@ -1,6 +1,6 @@
 /*
 
-  Copyright 2017 ZeroEx Intl.
+  Copyright 2018 ZeroEx Intl.
 
   Licensed under the Apache License, Version 2.0 (the "License");
   you may not use this file except in compliance with the License.
@@ -16,31 +16,43 @@
 
 */
 
-pragma solidity ^0.4.18;
+pragma solidity ^0.4.24;
+pragma experimental ABIEncoderV2;
 
-import { ERC20Token } from "../ERC20Token/ERC20Token.sol";
+import "../ERC20Token/ERC20Token.sol";
 
 contract UnlimitedAllowanceToken is ERC20Token {
 
-    uint constant MAX_UINT = 2**256 - 1;
+    uint256 constant MAX_UINT = 2**256 - 1;
 
     /// @dev ERC20 transferFrom, modified such that an allowance of MAX_UINT represents an unlimited allowance. See https://github.com/ethereum/EIPs/issues/717
     /// @param _from Address to transfer from.
     /// @param _to Address to transfer to.
     /// @param _value Amount to transfer.
     /// @return Success of transfer.
-    function transferFrom(address _from, address _to, uint _value)
+    function transferFrom(address _from, address _to, uint256 _value)
         public
         returns (bool)
     {
-        uint allowance = allowed[_from][msg.sender];
-        require(balances[_from] >= _value && allowance >= _value && balances[_to] + _value >= balances[_to]);
+        uint256 allowance = allowed[_from][msg.sender];
+        require(
+            balances[_from] >= _value,
+            INSUFFICIENT_BALANCE
+        );
+        require(
+            allowance >= _value,
+            INSUFFICIENT_ALLOWANCE
+        );
+        require(
+            balances[_to] + _value >= balances[_to],
+            OVERFLOW
+        );
         balances[_to] += _value;
         balances[_from] -= _value;
         if (allowance < MAX_UINT) {
             allowed[_from][msg.sender] -= _value;
         }
-        Transfer(_from, _to, _value);
+        emit Transfer(_from, _to, _value);
         return true;
     }
 }

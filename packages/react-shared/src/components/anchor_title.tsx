@@ -27,12 +27,6 @@ const styles: Styles = {
         transform: 'rotate(45deg)',
         cursor: 'pointer',
     },
-    headers: {
-        WebkitMarginStart: 0,
-        WebkitMarginEnd: 0,
-        fontWeight: 'bold',
-        display: 'block',
-    },
     h1: {
         fontSize: '1.8em',
     },
@@ -58,7 +52,18 @@ export class AnchorTitle extends React.Component<AnchorTitleProps, AnchorTitleSt
             opacity = this.state.isHovering ? 0.6 : 1;
         }
         return (
-            <div className="relative flex" style={{ ...styles[this.props.headerSize], ...styles.headers }}>
+            <div
+                className="relative flex"
+                style={
+                    {
+                        ...styles[this.props.headerSize],
+                        fontWeight: 'bold',
+                        display: 'block',
+                        WebkitMarginStart: 0,
+                        WebkitMarginEnd: 0,
+                    } as any
+                }
+            >
                 <div className="inline-block" style={{ paddingRight: 4 }}>
                     {this.props.title}
                 </div>

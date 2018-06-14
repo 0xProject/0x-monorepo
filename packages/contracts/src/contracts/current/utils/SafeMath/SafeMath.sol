@@ -1,4 +1,5 @@
-pragma solidity ^0.4.18;
+pragma solidity ^0.4.24;
+pragma experimental ABIEncoderV2;
 
 contract SafeMath {
     function safeMul(uint a, uint b)

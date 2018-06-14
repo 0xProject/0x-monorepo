@@ -21,7 +21,7 @@ interface ConnectedState {
     providerType: ProviderType;
     tokenByAddress: TokenByAddress;
     lastForceTokenStateRefetch: number;
-    userEtherBalanceInWei: BigNumber;
+    userEtherBalanceInWei?: BigNumber;
     screenWidth: ScreenWidths;
     shouldBlockchainErrDialogBeOpen: boolean;
     userAddress: string;

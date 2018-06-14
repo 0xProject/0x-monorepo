@@ -26,7 +26,8 @@
         "postpublish": {
             "docPublishConfigs": {
                 "extraFileIncludes": [
-                    "../types/src/index.ts"
+                    "../types/src/index.ts",
+                    "../ethereum-types/src/index.ts"
                 ],
                 "s3BucketPath": "s3://doc-jsons/web3-wrapper/",
                 "s3StagingBucketPath": "s3://staging-doc-jsons/web3-wrapper/"
@@ -62,9 +63,9 @@
         "typescript": "2.7.1"
     },
     "dependencies": {
-        "@0xproject/types": "^0.7.0",
         "@0xproject/typescript-typings": "^0.3.2",
         "@0xproject/utils": "^0.6.2",
+        "ethereum-types": "^0.0.1",
         "ethers": "^3.0.15",
         "lodash": "^4.17.4",
         "web3": "^0.20.0"

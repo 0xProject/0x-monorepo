@@ -27,7 +27,13 @@
     },
     "config": {
         "compact_artifacts": "Exchange DummyToken ZRXToken Token EtherToken TokenTransferProxy TokenRegistry",
-        "contracts": "Exchange DummyToken ZRXToken Token WETH9 TokenTransferProxy MultiSigWallet MultiSigWalletWithTimeLock MultiSigWalletWithTimeLockExceptRemoveAuthorizedAddress MaliciousToken TokenRegistry Arbitrage EtherDelta AccountLevels"
+        "contracts": "Exchange DummyToken ZRXToken Token WETH9 TokenTransferProxy_v1 MultiSigWallet MultiSigWalletWithTimeLock MultiSigWalletWithTimeLockExceptRemoveAuthorizedAddress MaliciousToken TokenRegistry Arbitrage EtherDelta AccountLevels",
+        "postpublish": {
+            "assets": [
+                "packages/contract-wrappers/_bundles/index.js",
+                "packages/contract-wrappers/_bundles/index.min.js"
+            ]
+        }
     },
     "repository": {
         "type": "git",
@@ -79,6 +85,7 @@
         "@0xproject/typescript-typings": "^0.3.2",
         "@0xproject/utils": "^0.6.2",
         "@0xproject/web3-wrapper": "^0.6.4",
+        "ethereum-types": "^0.0.1",
         "ethereumjs-blockstream": "^2.0.6",
         "ethereumjs-util": "^5.1.1",
         "ethers": "^3.0.15",

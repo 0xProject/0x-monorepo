@@ -29,7 +29,8 @@
             "docPublishConfigs": {
                 "extraFileIncludes": [
                     "../subproviders/src/types.ts",
-                    "../types/src/index.ts"
+                    "../types/src/index.ts",
+                    "../ethereum-types/src/index.ts"
                 ],
                 "s3BucketPath": "s3://doc-jsons/sol-cov/",
                 "s3StagingBucketPath": "s3://staging-doc-jsons/sol-cov/"
@@ -46,25 +47,31 @@
     },
     "homepage": "https://github.com/0xProject/0x.js/packages/sol-cov/README.md",
     "dependencies": {
+        "@0xproject/sol-compiler": "^0.5.0",
         "@0xproject/subproviders": "^0.10.2",
-        "@0xproject/types": "^0.7.0",
         "@0xproject/typescript-typings": "^0.3.2",
         "@0xproject/utils": "^0.6.2",
+        "ethereum-types": "^0.0.1",
         "ethereumjs-util": "^5.1.1",
         "glob": "^7.1.2",
         "istanbul": "^0.4.5",
         "lodash": "^4.17.4",
+        "loglevel": "^1.6.1",
         "mkdirp": "^0.5.1",
+        "rimraf": "^2.6.2",
         "semaphore-async-await": "^1.5.1",
-        "solidity-parser-antlr": "^0.2.8"
+        "solidity-parser-antlr": "^0.2.11"
     },
     "devDependencies": {
         "@0xproject/monorepo-scripts": "^0.1.20",
         "@0xproject/tslint-config": "^0.4.18",
         "@types/istanbul": "^0.4.30",
+        "@types/loglevel": "^1.5.3",
         "@types/mkdirp": "^0.5.1",
+        "@types/solidity-parser-antlr": "^0.2.0",
         "@types/mocha": "^2.2.42",
         "@types/node": "^8.0.53",
+        "@types/rimraf": "^2.0.2",
         "chai": "^4.0.1",
         "copyfiles": "^1.2.0",
         "dirty-chai": "^2.0.1",

@@ -1,10 +1,28 @@
 [
     {
+        "version": "0.5.1",
+        "changes": [
+            {
+                "note": "Make `opts` constructor parameter optional",
+                "pr": 621
+            },
+            {
+                "note": "Add schema validation for compiler configuration",
+                "pr": 621
+            }
+        ],
+        "timestamp": 1527009133
+    },
+    {
         "version": "0.5.0",
         "changes": [
             {
                 "note": "Properly export the executable binary",
                 "pr": 588
+            },
+            {
+                "note": "Add the ability to define a specific solidity version",
+                "pr": 589
             }
         ],
         "timestamp": 1527009133

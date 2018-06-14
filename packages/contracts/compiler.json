@@ -1,7 +1,11 @@
 {
-    "artifactsDir": "../migrations/artifacts/1.0.0",
+    "artifactsDir": "../migrations/artifacts/2.0.0",
     "contractsDir": "src/contracts",
     "compilerSettings": {
+        "optimizer": {
+            "enabled": true,
+            "runs": 0
+        },
         "outputSelection": {
             "*": {
                 "*": [
@@ -15,19 +19,22 @@
         }
     },
     "contracts": [
+        "AssetProxyOwner",
+        "DummyERC20Token",
+        "DummyERC721Token",
+        "ERC20Proxy",
+        "ERC721Proxy",
         "Exchange",
-        "DummyToken",
-        "ZRXToken",
-        "Token",
-        "WETH9",
-        "TokenTransferProxy",
+        "MixinAuthorizable",
         "MultiSigWallet",
         "MultiSigWalletWithTimeLock",
-        "MultiSigWalletWithTimeLockExceptRemoveAuthorizedAddress",
-        "MaliciousToken",
+        "TestAssetProxyDispatcher",
+        "TestLibBytes",
+        "TestLibs",
+        "TestSignatureValidator",
         "TokenRegistry",
-        "Arbitrage",
-        "EtherDelta",
-        "AccountLevels"
+        "Whitelist",
+        "WETH9",
+        "ZRXToken"
     ]
 }

@@ -1,3 +1,4 @@
+import { assert } from '@0xproject/assert';
 import {
     ContractSource,
     ContractSources,
@@ -10,9 +11,9 @@ import {
     Resolver,
     URLResolver,
 } from '@0xproject/sol-resolver';
-import { ContractAbi } from '@0xproject/types';
 import { logUtils, promisify } from '@0xproject/utils';
 import chalk from 'chalk';
+import { ContractAbi } from 'ethereum-types';
 import * as ethUtil from 'ethereumjs-util';
 import * as fs from 'fs';
 import 'isomorphic-fetch';
@@ -22,6 +23,7 @@ import * as requireFromString from 'require-from-string';
 import * as semver from 'semver';
 import solc = require('solc');
 
+import { compilerOptionsSchema } from './schemas/compiler_options_schema';
 import { binPaths } from './solc/bin_paths';
 import {
     createDirIfDoesNotExistAsync,
@@ -74,20 +76,25 @@ export class Compiler {
     private _contractsDir: string;
     private _compilerSettings: solc.CompilerSettings;
     private _artifactsDir: string;
+    private _solcVersionIfExists: string | undefined;
     private _specifiedContracts: string[] | TYPE_ALL_FILES_IDENTIFIER;
     /**
      * Instantiates a new instance of the Compiler class.
      * @return An instance of the Compiler class.
      */
-    constructor(opts: CompilerOptions) {
+    constructor(opts?: CompilerOptions) {
+        assert.doesConformToSchema('opts', opts, compilerOptionsSchema);
         // TODO: Look for config file in parent directories if not found in current directory
         const config: CompilerOptions = fs.existsSync(CONFIG_FILE)
             ? JSON.parse(fs.readFileSync(CONFIG_FILE).toString())
             : {};
-        this._contractsDir = opts.contractsDir || config.contractsDir || DEFAULT_CONTRACTS_DIR;
-        this._compilerSettings = opts.compilerSettings || config.compilerSettings || DEFAULT_COMPILER_SETTINGS;
-        this._artifactsDir = opts.artifactsDir || config.artifactsDir || DEFAULT_ARTIFACTS_DIR;
-        this._specifiedContracts = opts.contracts || config.contracts || ALL_CONTRACTS_IDENTIFIER;
+        const passedOpts = opts || {};
+        assert.doesConformToSchema('compiler.json', config, compilerOptionsSchema);
+        this._contractsDir = passedOpts.contractsDir || config.contractsDir || DEFAULT_CONTRACTS_DIR;
+        this._solcVersionIfExists = passedOpts.solcVersion || config.solcVersion;
+        this._compilerSettings = passedOpts.compilerSettings || config.compilerSettings || DEFAULT_COMPILER_SETTINGS;
+        this._artifactsDir = passedOpts.artifactsDir || config.artifactsDir || DEFAULT_ARTIFACTS_DIR;
+        this._specifiedContracts = passedOpts.contracts || config.contracts || ALL_CONTRACTS_IDENTIFIER;
         this._nameResolver = new NameResolver(path.resolve(this._contractsDir));
         const resolver = new FallthroughResolver();
         resolver.appendResolver(new URLResolver());
@@ -139,9 +146,12 @@ export class Compiler {
         if (!shouldCompile) {
             return;
         }
-        const solcVersionRange = parseSolidityVersionRange(contractSource.source);
-        const availableCompilerVersions = _.keys(binPaths);
-        const solcVersion = semver.maxSatisfying(availableCompilerVersions, solcVersionRange);
+        let solcVersion = this._solcVersionIfExists;
+        if (_.isUndefined(solcVersion)) {
+            const solcVersionRange = parseSolidityVersionRange(contractSource.source);
+            const availableCompilerVersions = _.keys(binPaths);
+            solcVersion = semver.maxSatisfying(availableCompilerVersions, solcVersionRange);
+        }
         const fullSolcVersion = binPaths[solcVersion];
         const compilerBinFilename = path.join(SOLC_BIN_DIR, fullSolcVersion);
         let solcjs: string;
@@ -229,7 +239,7 @@ export class Compiler {
             sourceTreeHashHex,
             compiler: {
                 name: 'solc',
-                version: solcVersion,
+                version: fullSolcVersion,
                 settings: this._compilerSettings,
             },
         };

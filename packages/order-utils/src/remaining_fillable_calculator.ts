@@ -23,7 +23,7 @@ export class RemainingFillableCalculator {
         this._remainingMakerTokenAmount = remainingMakerTokenAmount;
         this._remainingMakerFeeAmount = remainingMakerTokenAmount
             .times(signedOrder.makerFee)
-            .dividedToIntegerBy(signedOrder.makerTokenAmount);
+            .dividedToIntegerBy(signedOrder.makerAssetAmount);
     }
     public computeRemainingMakerFillable(): BigNumber {
         if (this._hasSufficientFundsForFeeAndTransferAmount()) {
@@ -36,8 +36,8 @@ export class RemainingFillableCalculator {
     }
     public computeRemainingTakerFillable(): BigNumber {
         return this.computeRemainingMakerFillable()
-            .times(this._signedOrder.takerTokenAmount)
-            .dividedToIntegerBy(this._signedOrder.makerTokenAmount);
+            .times(this._signedOrder.takerAssetAmount)
+            .dividedToIntegerBy(this._signedOrder.makerAssetAmount);
     }
     private _hasSufficientFundsForFeeAndTransferAmount(): boolean {
         if (this._isMakerTokenZRX) {
@@ -59,7 +59,7 @@ export class RemainingFillableCalculator {
     }
     private _calculatePartiallyFillableMakerTokenAmount(): BigNumber {
         // Given an order for 200 wei for 2 ZRXwei fee, find 100 wei for 1 ZRXwei. Order ratio is then 100:1
-        const orderToFeeRatio = this._signedOrder.makerTokenAmount.dividedBy(this._signedOrder.makerFee);
+        const orderToFeeRatio = this._signedOrder.makerAssetAmount.dividedBy(this._signedOrder.makerFee);
         // The number of times the maker can fill the order, if each fill only required the transfer of a single
         // baseUnit of fee tokens.
         // Given 2 ZRXwei, the maximum amount of times Maker can fill this order, in terms of fees, is 2
@@ -81,10 +81,10 @@ export class RemainingFillableCalculator {
         // When Ratio is not fully divisible there can be remainders which cannot be represented, so they are floored.
         // This can result in a RoundingError being thrown by the Exchange Contract.
         const partiallyFillableMakerTokenAmount = fillableTimesInMakerTokenUnits
-            .times(this._signedOrder.makerTokenAmount)
+            .times(this._signedOrder.makerAssetAmount)
             .dividedToIntegerBy(this._signedOrder.makerFee);
         const partiallyFillableFeeTokenAmount = fillableTimesInFeeTokenBaseUnits
-            .times(this._signedOrder.makerTokenAmount)
+            .times(this._signedOrder.makerAssetAmount)
             .dividedToIntegerBy(this._signedOrder.makerFee);
         const partiallyFillableAmount = BigNumber.min(
             partiallyFillableMakerTokenAmount,

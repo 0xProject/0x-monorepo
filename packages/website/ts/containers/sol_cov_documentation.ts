@@ -22,6 +22,9 @@ const docSections = {
     installation: 'installation',
     usage: 'usage',
     coverageSubprovider: 'coverageSubprovider',
+    abstractArtifactAdapter: 'abstractArtifactAdapter',
+    solCompilerArtifactAdapter: 'solCompilerArtifactAdapter',
+    truffleArtifactAdapter: 'truffleArtifactAdapter',
     types: docConstants.TYPES_SECTION_NAME,
 };
 
@@ -34,7 +37,10 @@ const docsInfoConfig: DocsInfoConfig = {
         introduction: [docSections.introduction],
         install: [docSections.installation],
         usage: [docSections.usage],
-        coverageSubprovider: [docSections.coverageSubprovider],
+        'coverage-subprovider': [docSections.coverageSubprovider],
+        'abstract-artifact-adapter': [docSections.abstractArtifactAdapter],
+        'sol-compiler-artifact-adapter': [docSections.solCompilerArtifactAdapter],
+        'truffle-artifact-adapter': [docSections.truffleArtifactAdapter],
         types: [docSections.types],
     },
     sectionNameToMarkdown: {
@@ -44,18 +50,40 @@ const docsInfoConfig: DocsInfoConfig = {
     },
     sectionNameToModulePath: {
         [docSections.coverageSubprovider]: ['"sol-cov/src/coverage_subprovider"'],
+        [docSections.abstractArtifactAdapter]: ['"sol-cov/src/artifact_adapters/abstract_artifact_adapter"'],
+        [docSections.solCompilerArtifactAdapter]: ['"sol-cov/src/artifact_adapters/sol_compiler_artifact_adapter"'],
+        [docSections.truffleArtifactAdapter]: ['"sol-cov/src/artifact_adapters/truffle_artifact_adapter"'],
         [docSections.types]: ['"subproviders/src/types"', '"types/src/index"'],
     },
     menuSubsectionToVersionWhenIntroduced: {},
     sections: docSections,
-    visibleConstructors: [docSections.coverageSubprovider],
+    visibleConstructors: [
+        docSections.coverageSubprovider,
+        docSections.abstractArtifactAdapter,
+        docSections.solCompilerArtifactAdapter,
+        docSections.truffleArtifactAdapter,
+    ],
     typeConfigs: {
         // Note: This needs to be kept in sync with the types exported in index.ts. Unfortunately there is
         // currently no way to extract the re-exported types from index.ts via TypeDoc :(
-        publicTypes: ['NextCallback', 'OnNextCompleted', 'ErrorCallback', 'JSONRPCRequestPayload'],
+        publicTypes: [
+            'JSONRPCRequestPayload',
+            'NextCallback',
+            'ErrorCallback',
+            'AbstractArtifactAdapter',
+            'CoverageSubprovider',
+            'TruffleArtifactAdapter',
+            'SolCompilerArtifactAdapter',
+            'ContractData',
+        ],
         typeNameToExternalLink: {},
         typeNameToPrefix: {},
-        typeNameToDocSection: {},
+        typeNameToDocSection: {
+            AbstractArtifactAdapter: docSections.abstractArtifactAdapter,
+            CoverageSubprovider: docSections.coverageSubprovider,
+            TruffleArtifactAdapter: docSections.truffleArtifactAdapter,
+            SolCompilerArtifactAdapter: docSections.solCompilerArtifactAdapter,
+        },
     },
 };
 const docsInfo = new DocsInfo(docsInfoConfig);

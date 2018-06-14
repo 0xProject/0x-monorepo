@@ -1,4 +1,4 @@
-import { ContractAbi, Provider, TxData } from '@0xproject/types';
+import { ContractAbi, Provider, TxData } from 'ethereum-types';
 import * as solc from 'solc';
 import * as Web3 from 'web3';
 import * as yargs from 'yargs';
@@ -55,6 +55,7 @@ export interface CompilerOptions {
     artifactsDir?: string;
     compilerSettings?: solc.CompilerSettings;
     contracts?: string[] | '*';
+    solcVersion?: string;
 }
 
 export interface ContractSourceData {

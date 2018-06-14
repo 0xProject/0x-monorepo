@@ -26,6 +26,16 @@ export const localStorage = {
         }
         window.localStorage.removeItem(key);
     },
+    getObject(key: string): object | undefined {
+        const item = localStorage.getItemIfExists(key);
+        if (item) {
+            return JSON.parse(item);
+        }
+        return undefined;
+    },
+    setObject(key: string, value: object): void {
+        localStorage.setItem(key, JSON.stringify(value));
+    },
     getAllKeys(): string[] {
         if (!this.doesExist) {
             return [];
