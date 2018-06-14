@@ -3,7 +3,7 @@ import { addressUtils } from '@0xproject/utils';
 import { JSONRPCRequestPayload, JSONRPCResponsePayload } from 'ethereum-types';
 import * as _ from 'lodash';
 
-import { Callback, ErrorCallback, PartialTxParams, ResponseWithTxParams, WalletSubproviderErrors } from '../types';
+import { Callback, ErrorCallback, PartialTxParams, WalletSubproviderErrors } from '../types';
 
 import { Subprovider } from './subprovider';
 

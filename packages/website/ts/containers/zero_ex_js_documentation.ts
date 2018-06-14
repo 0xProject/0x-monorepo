@@ -1,13 +1,11 @@
 import { constants as docConstants, DocsInfo, DocsInfoConfig, SupportedDocJson } from '@0xproject/react-docs';
-import * as _ from 'lodash';
 import * as React from 'react';
 import { connect } from 'react-redux';
 import { Dispatch } from 'redux';
 import { DocPage as DocPageComponent, DocPageProps } from 'ts/pages/documentation/doc_page';
 import { Dispatcher } from 'ts/redux/dispatcher';
 import { State } from 'ts/redux/reducer';
-import { DocPackages, Environments, WebsitePaths } from 'ts/types';
-import { configs } from 'ts/utils/configs';
+import { DocPackages } from 'ts/types';
 import { constants } from 'ts/utils/constants';
 import { Translate } from 'ts/utils/translate';
 
@@ -103,6 +101,9 @@ const docsInfoConfig: DocsInfoConfig = {
             '"0x.js/src/contract_wrappers/generated/ether_token"',
             '"0x.js/src/contract_wrappers/generated/token"',
             '"0x.js/src/contract_wrappers/generated/exchange"',
+            '"0x.js/src/generated_contract_wrappers/ether_token"',
+            '"0x.js/src/generated_contract_wrappers/token"',
+            '"0x.js/src/generated_contract_wrappers/exchange"',
         ],
     },
     menuSubsectionToVersionWhenIntroduced: {
@@ -208,7 +209,7 @@ interface ConnectedDispatch {
     dispatcher: Dispatcher;
 }
 
-const mapStateToProps = (state: State, ownProps: DocPageProps): ConnectedState => ({
+const mapStateToProps = (state: State, _ownProps: DocPageProps): ConnectedState => ({
     docsVersion: state.docsVersion,
     availableDocVersions: state.availableDocVersions,
     docsInfo,

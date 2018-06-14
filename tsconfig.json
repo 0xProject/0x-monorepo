@@ -8,6 +8,7 @@
         "experimentalDecorators": true,
         "noImplicitReturns": true,
         "pretty": true,
+        "skipLibCheck": true,
         "typeRoots": ["node_modules/@0xproject/typescript-typings/types", "node_modules/@types"],
         "strict": true
     }

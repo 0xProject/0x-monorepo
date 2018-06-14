@@ -1,7 +1,6 @@
 import { BlockchainLifecycle, devConstants } from '@0xproject/dev-utils';
 import { ContractArtifact } from '@0xproject/sol-compiler';
 import { BigNumber } from '@0xproject/utils';
-import { Web3Wrapper } from '@0xproject/web3-wrapper';
 import * as chai from 'chai';
 import { LogWithDecodedArgs } from 'ethereum-types';
 import 'make-promises-safe';
@@ -11,6 +10,8 @@ import { MetacoinContract, TransferContractEventArgs } from '../src/contract_wra
 
 import { chaiSetup } from './utils/chai_setup';
 import { config } from './utils/config';
+// Comment out the next line enable profiling
+// import { profiler } from './utils/profiler';
 import { provider, web3Wrapper } from './utils/web3_wrapper';
 
 const artifact: ContractArtifact = MetacoinArtifact as any;
@@ -18,7 +19,7 @@ const artifact: ContractArtifact = MetacoinArtifact as any;
 chaiSetup.configure();
 const { expect } = chai;
 const blockchainLifecycle = new BlockchainLifecycle(web3Wrapper);
-
+// tslint:disable:no-unnecessary-type-assertion
 describe('Metacoin', () => {
     let metacoin: MetacoinContract;
     const ownerAddress = devConstants.TESTRPC_FIRST_ADDRESS;
@@ -45,6 +46,7 @@ describe('Metacoin', () => {
             const amount = INITIAL_BALANCE.div(2);
             const oldBalance = await metacoin.balances.callAsync(ZERO_ADDRESS);
             expect(oldBalance).to.be.bignumber.equal(0);
+            // profiler.start();
             const txHash = await metacoin.transfer1.sendTransactionAsync(
                 {
                     to: ZERO_ADDRESS,
@@ -52,6 +54,7 @@ describe('Metacoin', () => {
                 },
                 { from: devConstants.TESTRPC_FIRST_ADDRESS },
             );
+            // profiler.stop();
             const txReceipt = await web3Wrapper.awaitTransactionSuccessAsync(txHash);
             const transferLogs = txReceipt.logs[0] as LogWithDecodedArgs<TransferContractEventArgs>;
             expect(transferLogs.args).to.be.deep.equal({
@@ -116,3 +119,4 @@ describe('Metacoin', () => {
         });
     });
 });
+// tslint:enable:no-unnecessary-type-assertion

@@ -1,14 +1,12 @@
 import { ContractWrappers } from '@0xproject/contract-wrappers';
-import { BlockchainLifecycle, devConstants, web3Factory } from '@0xproject/dev-utils';
+import { BlockchainLifecycle } from '@0xproject/dev-utils';
 import { BigNumber } from '@0xproject/utils';
 import * as chai from 'chai';
 import * as _ from 'lodash';
 import 'make-promises-safe';
 import 'mocha';
-import * as path from 'path';
-import * as Sinon from 'sinon';
 
-import { ApprovalContractEventArgs, LogWithDecodedArgs, Order, TokenEvents, ZeroEx } from '../src';
+import { ApprovalContractEventArgs, LogWithDecodedArgs, TokenEvents, ZeroEx } from '../src';
 
 import { chaiSetup } from './utils/chai_setup';
 import { constants } from './utils/constants';
@@ -137,6 +135,7 @@ describe('ZeroEx library', () => {
             const proxyAddress = zeroEx.proxy.getContractAddress();
             const txHash = await zeroEx.token.setUnlimitedProxyAllowanceAsync(zrxTokenAddress, coinbase);
             const txReceiptWithDecodedLogs = await zeroEx.awaitTransactionMinedAsync(txHash);
+            // tslint:disable-next-line:no-unnecessary-type-assertion
             const log = txReceiptWithDecodedLogs.logs[0] as LogWithDecodedArgs<ApprovalContractEventArgs>;
             expect(log.event).to.be.equal(TokenEvents.Approval);
             expect(log.args._owner).to.be.equal(coinbase);

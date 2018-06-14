@@ -8,7 +8,7 @@
     "description": "A faucet micro-service that dispenses test ERC20 tokens or Ether",
     "main": "server.js",
     "scripts": {
-        "watch": "tsc -w",
+        "watch_without_deps": "tsc -w",
         "build": "node ../../node_modules/gulp/bin/gulp.js build",
         "dev": "node ../../node_modules/gulp/bin/gulp.js run",
         "start": "node ./server/server.js",

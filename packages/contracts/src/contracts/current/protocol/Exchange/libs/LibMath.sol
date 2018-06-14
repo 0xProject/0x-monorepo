@@ -45,26 +45,6 @@ contract LibMath is
         return partialAmount;
     }
 
-    /// @dev Calculates partial value given a numerator and denominator.
-    ///      Throws if there is a rounding error.
-    /// @param numerator Numerator.
-    /// @param denominator Denominator.
-    /// @param target Value to calculate partial of.
-    /// @return Partial value of target.
-    function safeGetPartialAmount(
-        uint256 numerator,
-        uint256 denominator,
-        uint256 target)
-        internal pure
-        returns (uint256 partialAmount)
-    {
-        require(
-            !isRoundingError(numerator, denominator, target),
-            ROUNDING_ERROR_ON_PARTIAL_AMOUNT
-        );
-        return getPartialAmount(numerator, denominator, target);
-    }
-
     /// @dev Checks if rounding error > 0.1%.
     /// @param numerator Numerator.
     /// @param denominator Denominator.

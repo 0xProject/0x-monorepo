@@ -57,7 +57,7 @@ export const tradeHistoryStorage = {
             return {};
         }
         const userFillsByHash = JSON.parse(userFillsJSONString);
-        _.each(userFillsByHash, (fill, hash) => {
+        _.each(userFillsByHash, fill => {
             fill.paidMakerFee = new BigNumber(fill.paidMakerFee);
             fill.paidTakerFee = new BigNumber(fill.paidTakerFee);
             fill.filledTakerTokenAmount = new BigNumber(fill.filledTakerTokenAmount);

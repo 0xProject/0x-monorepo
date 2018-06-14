@@ -19,13 +19,15 @@
 pragma solidity ^0.4.24;
 
 import "../../utils/Ownable/Ownable.sol";
-import "../AssetProxy/interfaces/IAssetProxy.sol";
+import "../../utils/LibBytes/LibBytes.sol";
 import "./libs/LibExchangeErrors.sol";
 import "./mixins/MAssetProxyDispatcher.sol";
+import "../AssetProxy/interfaces/IAssetProxy.sol";
 
 contract MixinAssetProxyDispatcher is
-    LibExchangeErrors,
     Ownable,
+    LibBytes,
+    LibExchangeErrors,
     MAssetProxyDispatcher
 {
     // Mapping from Asset Proxy Id's to their respective Asset Proxy
@@ -45,9 +47,10 @@ contract MixinAssetProxyDispatcher is
         onlyOwner
     {
         // Ensure the existing asset proxy is not unintentionally overwritten
+        address currentAssetProxy = address(assetProxies[assetProxyId]);
         require(
-            oldAssetProxy == address(assetProxies[assetProxyId]),
-            OLD_ASSET_PROXY_MISMATCH
+            oldAssetProxy == currentAssetProxy,
+            ASSET_PROXY_MISMATCH
         );
 
         IAssetProxy assetProxy = IAssetProxy(newAssetProxy);
@@ -57,7 +60,7 @@ contract MixinAssetProxyDispatcher is
             uint8 newAssetProxyId = assetProxy.getProxyId();
             require(
                 newAssetProxyId == assetProxyId,
-                NEW_ASSET_PROXY_MISMATCH
+                ASSET_PROXY_ID_MISMATCH
             );
         }
 
@@ -79,12 +82,14 @@ contract MixinAssetProxyDispatcher is
     }
 
     /// @dev Forwards arguments to assetProxy and calls `transferFrom`. Either succeeds or throws.
-    /// @param assetMetadata Byte array encoded for the respective asset proxy.
+    /// @param assetData Byte array encoded for the respective asset proxy.
+    /// @param assetProxyId Id of assetProxy to dispach to.
     /// @param from Address to transfer token from.
     /// @param to Address to transfer token to.
     /// @param amount Amount of token to transfer.
     function dispatchTransferFrom(
-        bytes memory assetMetadata,
+        bytes memory assetData,
+        uint8 assetProxyId,
         address from,
         address to,
         uint256 amount
@@ -93,18 +98,10 @@ contract MixinAssetProxyDispatcher is
     {
         // Do nothing if no amount should be transferred.
         if (amount > 0) {
-
-            // Lookup asset proxy
-            uint256 length = assetMetadata.length;
-            require(
-                length > 0,
-                GT_ZERO_LENGTH_REQUIRED
-            );
-            uint8 assetProxyId = uint8(assetMetadata[length - 1]);
+            // Lookup assetProxy
             IAssetProxy assetProxy = assetProxies[assetProxyId];
-
             // transferFrom will either succeed or throw.
-            assetProxy.transferFrom(assetMetadata, from, to, amount);
+            assetProxy.transferFrom(assetData, from, to, amount);
         }
     }
 }

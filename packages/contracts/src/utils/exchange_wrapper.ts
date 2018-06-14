@@ -1,10 +1,10 @@
 import { AssetProxyId, SignedOrder } from '@0xproject/types';
 import { BigNumber } from '@0xproject/utils';
 import { Web3Wrapper } from '@0xproject/web3-wrapper';
-import { LogEntry, Provider, TransactionReceiptWithDecodedLogs } from 'ethereum-types';
+import { Provider, TransactionReceiptWithDecodedLogs } from 'ethereum-types';
 import * as _ from 'lodash';
 
-import { ExchangeContract } from '../contract_wrappers/generated/exchange';
+import { ExchangeContract } from '../generated_contract_wrappers/exchange';
 
 import { constants } from './constants';
 import { formatters } from './formatters';
@@ -60,14 +60,14 @@ export class ExchangeWrapper {
     public async fillOrderNoThrowAsync(
         signedOrder: SignedOrder,
         from: string,
-        opts: { takerAssetFillAmount?: BigNumber } = {},
+        opts: { takerAssetFillAmount?: BigNumber; gas?: number } = {},
     ): Promise<TransactionReceiptWithDecodedLogs> {
         const params = orderUtils.createFill(signedOrder, opts.takerAssetFillAmount);
         const txHash = await this._exchange.fillOrderNoThrow.sendTransactionAsync(
             params.order,
             params.takerAssetFillAmount,
             params.signature,
-            { from },
+            { from, gas: opts.gas },
         );
         const tx = await this._logDecoder.getTxWithDecodedLogsAsync(txHash);
         return tx;
@@ -105,14 +105,14 @@ export class ExchangeWrapper {
     public async batchFillOrdersNoThrowAsync(
         orders: SignedOrder[],
         from: string,
-        opts: { takerAssetFillAmounts?: BigNumber[] } = {},
+        opts: { takerAssetFillAmounts?: BigNumber[]; gas?: number } = {},
     ): Promise<TransactionReceiptWithDecodedLogs> {
         const params = formatters.createBatchFill(orders, opts.takerAssetFillAmounts);
         const txHash = await this._exchange.batchFillOrdersNoThrow.sendTransactionAsync(
             params.orders,
             params.takerAssetFillAmounts,
             params.signatures,
-            { from },
+            { from, gas: opts.gas },
         );
         const tx = await this._logDecoder.getTxWithDecodedLogsAsync(txHash);
         return tx;
@@ -135,14 +135,14 @@ export class ExchangeWrapper {
     public async marketSellOrdersNoThrowAsync(
         orders: SignedOrder[],
         from: string,
-        opts: { takerAssetFillAmount: BigNumber },
+        opts: { takerAssetFillAmount: BigNumber; gas?: number },
     ): Promise<TransactionReceiptWithDecodedLogs> {
         const params = formatters.createMarketSellOrders(orders, opts.takerAssetFillAmount);
         const txHash = await this._exchange.marketSellOrdersNoThrow.sendTransactionAsync(
             params.orders,
             params.takerAssetFillAmount,
             params.signatures,
-            { from },
+            { from, gas: opts.gas },
         );
         const tx = await this._logDecoder.getTxWithDecodedLogsAsync(txHash);
         return tx;
@@ -165,14 +165,14 @@ export class ExchangeWrapper {
     public async marketBuyOrdersNoThrowAsync(
         orders: SignedOrder[],
         from: string,
-        opts: { makerAssetFillAmount: BigNumber },
+        opts: { makerAssetFillAmount: BigNumber; gas?: number },
     ): Promise<TransactionReceiptWithDecodedLogs> {
         const params = formatters.createMarketBuyOrders(orders, opts.makerAssetFillAmount);
         const txHash = await this._exchange.marketBuyOrdersNoThrow.sendTransactionAsync(
             params.orders,
             params.makerAssetFillAmount,
             params.signatures,
-            { from },
+            { from, gas: opts.gas },
         );
         const tx = await this._logDecoder.getTxWithDecodedLogsAsync(txHash);
         return tx;

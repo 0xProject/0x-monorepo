@@ -1,14 +1,14 @@
 import { Styles } from '@0xproject/react-shared';
 import * as _ from 'lodash';
 import CircularProgress from 'material-ui/CircularProgress';
-import FlatButton from 'material-ui/FlatButton';
 import { GridList } from 'material-ui/GridList';
 import * as React from 'react';
 
 import { RelayerGridTile } from 'ts/components/relayer_index/relayer_grid_tile';
+import { Retry } from 'ts/components/ui/retry';
+import { colors } from 'ts/style/colors';
 import { ScreenWidths, WebsiteBackendRelayerInfo } from 'ts/types';
 import { backendClient } from 'ts/utils/backend_client';
-import { colors } from 'ts/utils/colors';
 
 export interface RelayerIndexProps {
     networkId: number;
@@ -63,7 +63,8 @@ export class RelayerIndex extends React.Component<RelayerIndexProps, RelayerInde
         const isReadyToRender = _.isUndefined(this.state.error) && !_.isUndefined(this.state.relayerInfos);
         if (!isReadyToRender) {
             return (
-                // TODO: consolidate this loading component with the one in portal
+                // TODO: consolidate this loading component with the one in portal and OpenPositions
+                // TODO: possibly refactor into a generic loading container with spinner and retry UI
                 <div className="center">
                     {_.isUndefined(this.state.error) ? (
                         <CircularProgress size={40} thickness={5} />
@@ -124,31 +125,3 @@ export class RelayerIndex extends React.Component<RelayerIndexProps, RelayerInde
         }
     }
 }
-
-interface RetryProps {
-    onRetry: () => void;
-}
-const Retry = (props: RetryProps) => (
-    <div className="clearfix center" style={{ color: colors.black }}>
-        <div className="mx-auto inline-block align-middle" style={{ lineHeight: '44px', textAlign: 'center' }}>
-            <div className="h2" style={{ fontFamily: 'Roboto Mono' }}>
-                Something went wrong.
-            </div>
-            <div className="py3">
-                <FlatButton
-                    label={'reload'}
-                    backgroundColor={colors.black}
-                    labelStyle={{
-                        fontSize: 18,
-                        fontFamily: 'Roboto Mono',
-                        fontWeight: 'lighter',
-                        color: colors.white,
-                        textTransform: 'lowercase',
-                    }}
-                    style={{ width: 280, height: 62, borderRadius: 5 }}
-                    onClick={props.onRetry}
-                />
-            </div>
-        </div>
-    </div>
-);

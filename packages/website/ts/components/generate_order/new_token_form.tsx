@@ -152,7 +152,7 @@ export class NewTokenForm extends React.Component<NewTokenFormProps, NewTokenFor
         };
         this.props.onNewTokenSubmitted(newToken);
     }
-    private _onTokenNameChanged(e: any, name: string): void {
+    private _onTokenNameChanged(_event: any, name: string): void {
         let nameErrText = '';
         const maxLength = 30;
         const tokens = _.values(this.props.tokenByAddress);
@@ -173,7 +173,7 @@ export class NewTokenForm extends React.Component<NewTokenFormProps, NewTokenFor
             nameErrText,
         });
     }
-    private _onTokenSymbolChanged(e: any, symbol: string): void {
+    private _onTokenSymbolChanged(_event: any, symbol: string): void {
         let symbolErrText = '';
         const maxLength = 5;
         const tokens = _.values(this.props.tokenByAddress);
@@ -193,7 +193,7 @@ export class NewTokenForm extends React.Component<NewTokenFormProps, NewTokenFor
             symbolErrText,
         });
     }
-    private _onTokenDecimalsChanged(e: any, decimals: string): void {
+    private _onTokenDecimalsChanged(_event: any, decimals: string): void {
         let decimalsErrText = '';
         const maxLength = 2;
         if (decimals === '') {

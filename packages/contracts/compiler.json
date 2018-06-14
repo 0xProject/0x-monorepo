@@ -4,7 +4,7 @@
     "compilerSettings": {
         "optimizer": {
             "enabled": true,
-            "runs": 0
+            "runs": 200
         },
         "outputSelection": {
             "*": {
@@ -21,6 +21,7 @@
     "contracts": [
         "AssetProxyOwner",
         "DummyERC20Token",
+        "DummyERC721Receiver",
         "DummyERC721Token",
         "ERC20Proxy",
         "ERC721Proxy",
@@ -28,8 +29,10 @@
         "MixinAuthorizable",
         "MultiSigWallet",
         "MultiSigWalletWithTimeLock",
+        "TestAssetDataDecoders",
         "TestAssetProxyDispatcher",
         "TestLibBytes",
+        "TestLibMem",
         "TestLibs",
         "TestSignatureValidator",
         "TokenRegistry",

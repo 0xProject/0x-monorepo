@@ -90,7 +90,7 @@ export async function isValidPresignedSignatureAsync(
     data: string,
     signerAddress: string,
 ): Promise<boolean> {
-    const exchangeContract = new ExchangeContract(artifacts.Exchange.abi, signerAddress, provider);
+    const exchangeContract = new ExchangeContract(artifacts.Exchange.compilerOutput.abi, signerAddress, provider);
     const isValid = await exchangeContract.preSigned.callAsync(data, signerAddress);
     return isValid;
 }
@@ -110,7 +110,7 @@ export async function isValidWalletSignatureAsync(
 ): Promise<boolean> {
     // tslint:disable-next-line:custom-no-magic-numbers
     const signatureWithoutType = signature.slice(-2);
-    const walletContract = new IWalletContract(artifacts.IWallet.abi, signerAddress, provider);
+    const walletContract = new IWalletContract(artifacts.IWallet.compilerOutput.abi, signerAddress, provider);
     const isValid = await walletContract.isValidSignature.callAsync(data, signatureWithoutType);
     return isValid;
 }
@@ -129,7 +129,7 @@ export async function isValidValidatorSignatureAsync(
     signerAddress: string,
 ): Promise<boolean> {
     const validatorSignature = parseValidatorSignature(signature);
-    const exchangeContract = new ExchangeContract(artifacts.Exchange.abi, signerAddress, provider);
+    const exchangeContract = new ExchangeContract(artifacts.Exchange.compilerOutput.abi, signerAddress, provider);
     const isValidatorApproved = await exchangeContract.allowedValidators.callAsync(
         signerAddress,
         validatorSignature.validatorAddress,
@@ -138,7 +138,7 @@ export async function isValidValidatorSignatureAsync(
         throw new Error(`Validator ${validatorSignature.validatorAddress} was not pre-approved by ${signerAddress}.`);
     }
 
-    const validatorContract = new IValidatorContract(artifacts.IValidator.abi, signerAddress, provider);
+    const validatorContract = new IValidatorContract(artifacts.IValidator.compilerOutput.abi, signerAddress, provider);
     const isValid = await validatorContract.isValidSignature.callAsync(
         data,
         signerAddress,
@@ -159,7 +159,6 @@ export function isValidECSignature(data: string, signature: ECSignature, signerA
     assert.isHexString('data', data);
     assert.doesConformToSchema('signature', signature, schemas.ecSignatureSchema);
     assert.isETHAddressHex('signerAddress', signerAddress);
-    const normalizedSignerAddress = signerAddress.toLowerCase();
 
     const msgHashBuff = ethUtil.toBuffer(data);
     try {
@@ -261,12 +260,12 @@ export function addSignedMessagePrefix(message: string, messagePrefixType: Messa
     }
 }
 
-function hashTrezorPersonalMessage(message: Buffer): Buffer {
-    const prefix = ethUtil.toBuffer('\x19Ethereum Signed Message:\n' + String.fromCharCode(message.length));
-    return ethUtil.sha3(Buffer.concat([prefix, message]));
-}
-
-function parseECSignature(signature: string): ECSignature {
+/**
+ * Parse a 0x protocol hex-encoded signature string into it's ECSignature components
+ * @param signature A hex encoded ecSignature 0x Protocol signature
+ * @return An ECSignature object with r,s,v parameters
+ */
+export function parseECSignature(signature: string): ECSignature {
     const ecSignatureTypes = [SignatureType.EthSign, SignatureType.EIP712, SignatureType.Trezor];
     assert.isOneOfExpectedSignatureTypes(signature, ecSignatureTypes);
 
@@ -275,6 +274,11 @@ function parseECSignature(signature: string): ECSignature {
     const ecSignature = parseSignatureHexAsVRS(vrsHex);
 
     return ecSignature;
+}
+
+function hashTrezorPersonalMessage(message: Buffer): Buffer {
+    const prefix = ethUtil.toBuffer('\x19Ethereum Signed Message:\n' + String.fromCharCode(message.length));
+    return ethUtil.sha3(Buffer.concat([prefix, message]));
 }
 
 function parseValidatorSignature(signature: string): ValidatorSignature {

@@ -1,7 +1,6 @@
 import { ECSignature } from '@0xproject/types';
 import { JSONRPCRequestPayload } from 'ethereum-types';
 import HDNode = require('hdkey');
-import * as _ from 'lodash';
 
 export interface LedgerCommunicationClient {
     close: () => Promise<void>;

@@ -57,6 +57,9 @@ export class ASTVisitor {
     public ContinueStatement(ast: Parser.ContinueStatement): void {
         this._visitStatement(ast);
     }
+    public EmitStatement(ast: any /* TODO: Parser.EmitStatement */): void {
+        this._visitStatement(ast);
+    }
     public VariableDeclarationStatement(ast: Parser.VariableDeclarationStatement): void {
         this._visitStatement(ast);
     }

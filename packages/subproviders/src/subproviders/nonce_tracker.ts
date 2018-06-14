@@ -75,7 +75,7 @@ export class NonceTrackerSubprovider extends Subprovider {
                     return next();
                 }
             case 'eth_sendRawTransaction':
-                return next((sendTransactionError: Error | null, txResult: any, cb: Callback) => {
+                return next((sendTransactionError: Error | null, _txResult: any, cb: Callback) => {
                     if (_.isNull(sendTransactionError)) {
                         this._handleSuccessfulTransaction(payload);
                     } else {

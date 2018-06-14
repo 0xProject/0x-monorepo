@@ -1,4 +1,3 @@
-import * as _ from 'lodash';
 import Popover, { PopoverAnimationVertical } from 'material-ui/Popover';
 import * as React from 'react';
 import { MaterialUIPosition } from 'ts/types';
@@ -43,7 +42,7 @@ export class DropDown extends React.Component<DropDownProps, DropDownState> {
     public componentWillUnmount(): void {
         window.clearInterval(this._popoverCloseCheckIntervalId);
     }
-    public componentWillReceiveProps(nextProps: DropDownProps): void {
+    public componentWillReceiveProps(_nextProps: DropDownProps): void {
         // HACK: If the popoverContent is updated to a different dimension and the users
         // mouse is no longer above it, the dropdown can enter an inconsistent state where
         // it believes the user is still hovering over it. In order to remedy this, we

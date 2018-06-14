@@ -8,10 +8,10 @@
     "main": "lib/index.js",
     "types": "lib/index.d.ts",
     "scripts": {
-        "watch": "tsc -w",
+        "watch_without_deps": "tsc -w",
+        "build": "tsc",
         "lint": "tslint --project .",
         "clean": "shx rm -rf lib",
-        "build": "tsc",
         "test:publish": "run-s build script:publish",
         "find_unused_deps": "run-s build script:find_unused_deps",
         "remove_tags": "run-s build script:remove_tags",

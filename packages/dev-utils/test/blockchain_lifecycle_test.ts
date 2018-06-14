@@ -1,6 +1,5 @@
 import { Web3Wrapper } from '@0xproject/web3-wrapper';
 import * as chai from 'chai';
-import { BlockParamLiteral } from 'ethereum-types';
 import 'make-promises-safe';
 import 'mocha';
 
@@ -18,6 +17,7 @@ describe('BlockchainLifecycle tests', () => {
             await blockchainLifecycle.startAsync();
             await web3Wrapper.mineBlockAsync();
             const blockNumberAfter = await web3Wrapper.getBlockNumberAsync();
+            // tslint:disable-next-line:restrict-plus-operands
             expect(blockNumberAfter).to.be.equal(blockNumberBefore + 1);
             await blockchainLifecycle.revertAsync();
             const blockNumberAfterRevert = await web3Wrapper.getBlockNumberAsync();

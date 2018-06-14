@@ -3,15 +3,14 @@ import { BigNumber, logUtils } from '@0xproject/utils';
 import { Web3Wrapper } from '@0xproject/web3-wrapper';
 import * as _ from 'lodash';
 import FlatButton from 'material-ui/FlatButton';
-import { ListItem } from 'material-ui/List';
 import * as React from 'react';
 
 import { Blockchain } from 'ts/blockchain';
 import { EthAmountInput } from 'ts/components/inputs/eth_amount_input';
 import { TokenAmountInput } from 'ts/components/inputs/token_amount_input';
 import { Dispatcher } from 'ts/redux/dispatcher';
+import { colors } from 'ts/style/colors';
 import { BlockchainCallErrs, Side, Token } from 'ts/types';
-import { colors } from 'ts/utils/colors';
 import { constants } from 'ts/utils/constants';
 import { errorReporter } from 'ts/utils/error_reporter';
 import { utils } from 'ts/utils/utils';
@@ -146,7 +145,7 @@ export class WrapEtherItem extends React.Component<WrapEtherItemProps, WrapEther
             </div>
         );
     }
-    private _onValueChange(isValid: boolean, amount?: BigNumber): void {
+    private _onValueChange(_isValid: boolean, amount?: BigNumber): void {
         this.setState({
             currentInputAmount: amount,
         });

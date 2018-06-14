@@ -19,20 +19,15 @@
 pragma solidity ^0.4.24;
 pragma experimental ABIEncoderV2;
 
-import "./mixins/MAuthorizable.sol";
+import "./libs/LibAssetProxyErrors.sol";
 import "../../utils/Ownable/Ownable.sol";
+import "./mixins/MAuthorizable.sol";
 
 contract MixinAuthorizable is
+    LibAssetProxyErrors,
     Ownable,
     MAuthorizable
 {
-
-    // Revert reasons
-    string constant SENDER_NOT_AUTHORIZED = "Sender not authorized to call this method.";
-    string constant TARGET_NOT_AUTHORIZED = "Target address must be authorized.";
-    string constant TARGET_ALREADY_AUTHORIZED = "Target must not already be authorized.";
-    string constant INDEX_OUT_OF_BOUNDS = "Specified array index is out of bounds.";
-    string constant INDEX_ADDRESS_MISMATCH = "Address found at index does not match target address.";
 
     /// @dev Only authorized addresses can invoke functions with this modifier.
     modifier onlyAuthorized {
@@ -99,7 +94,7 @@ contract MixinAuthorizable is
         );
         require(
             authorities[index] == target,
-            INDEX_ADDRESS_MISMATCH
+            AUTHORIZED_ADDRESS_MISMATCH
         );
 
         delete authorized[target];

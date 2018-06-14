@@ -8,6 +8,15 @@
         ]
     },
     {
+        "version": "0.10.3",
+        "changes": [
+            {
+                "note": "Define engine type as Provider in setEngine",
+                "pr": 675
+            }
+        ]
+    },
+    {
         "timestamp": 1527009133,
         "version": "0.10.2",
         "changes": [

@@ -16,6 +16,7 @@ describe('RPC tests', () => {
             const blockNumberBefore = await web3Wrapper.getBlockNumberAsync();
             await web3Wrapper.mineBlockAsync();
             const blockNumberAfter = await web3Wrapper.getBlockNumberAsync();
+            // tslint:disable-next-line:restrict-plus-operands
             expect(blockNumberAfter).to.be.equal(blockNumberBefore + 1);
         });
     });
@@ -26,6 +27,7 @@ describe('RPC tests', () => {
             await web3Wrapper.increaseTimeAsync(TIME_DELTA);
             await web3Wrapper.mineBlockAsync();
             const blockTimestampAfter = await web3Wrapper.getBlockTimestampAsync(BlockParamLiteral.Latest);
+            // tslint:disable-next-line:restrict-plus-operands
             expect(blockTimestampAfter).to.be.at.least(blockTimestampBefore + TIME_DELTA);
         });
     });

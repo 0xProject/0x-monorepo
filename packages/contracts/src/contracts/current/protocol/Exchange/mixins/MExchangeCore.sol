@@ -26,7 +26,6 @@ import "../interfaces/IExchangeCore.sol";
 contract MExchangeCore is
     IExchangeCore
 {
-
     // Fill event is emitted whenever an order is filled.
     event Fill(
         address indexed makerAddress,
@@ -56,25 +55,6 @@ contract MExchangeCore is
         uint256 makerEpoch
     );
 
-    /// @dev Validates context for fillOrder. Succeeds or throws.
-    /// @param order to be filled.
-    /// @param orderStatus Status of order to be filled.
-    /// @param orderHash Hash of order to be filled.
-    /// @param takerAddress Address of order taker.
-    /// @param orderTakerAssetFilledAmount Amount of order already filled.
-    /// @param takerAssetFillAmount Desired amount of order to fill by taker.
-    /// @param signature Proof that the orders was created by its maker.
-    function assertValidFill(
-        LibOrder.Order memory order,
-        uint8 orderStatus,
-        bytes32 orderHash,
-        address takerAddress,
-        uint256 orderTakerAssetFilledAmount,
-        uint256 takerAssetFillAmount,
-        bytes memory signature
-    )
-        internal;
-
     /// @dev Updates state with results of a fill order.
     /// @param order that was filled.
     /// @param takerAddress Address of taker who filled the order.
@@ -89,29 +69,55 @@ contract MExchangeCore is
     )
         internal;
 
-    /// @dev Validates context for cancelOrder. Succeeds or throws.
-    /// @param order that was cancelled.
-    /// @param orderStatus Status of order that was cancelled.
-    /// @param orderHash Hash of order that was cancelled.
-    function assertValidCancel(
-        LibOrder.Order memory order,
-        uint8 orderStatus,
-        bytes32 orderHash
-    )
-        internal;
-
     /// @dev Updates state with results of cancelling an order.
     ///      State is only updated if the order is currently fillable.
     ///      Otherwise, updating state would have no effect.
     /// @param order that was cancelled.
-    /// @param orderStatus Status of order that was cancelled.
     /// @param orderHash Hash of order that was cancelled.
-    /// @return stateUpdated Returns true only if state was updated.
     function updateCancelledState(
         LibOrder.Order memory order,
-        uint8 orderStatus,
         bytes32 orderHash
     )
+        internal;
+
+    /// @dev Validates context for fillOrder. Succeeds or throws.
+    /// @param order to be filled.
+    /// @param orderInfo Status, orderHash, and amount already filled of order.
+    /// @param takerAddress Address of order taker.
+    /// @param takerAssetFillAmount Desired amount of order to fill by taker.
+    /// @param takerAssetFilledAmount Amount of takerAsset that will be filled.
+    /// @param signature Proof that the orders was created by its maker.
+    function assertValidFill(
+        LibOrder.Order memory order,
+        LibOrder.OrderInfo memory orderInfo,
+        address takerAddress,
+        uint256 takerAssetFillAmount,
+        uint256 takerAssetFilledAmount,
+        bytes memory signature
+    )
         internal
-        returns (bool stateUpdated);
+        view;
+
+
+    /// @dev Validates context for cancelOrder. Succeeds or throws.
+    /// @param order to be cancelled.
+    /// @param orderInfo OrderStatus, orderHash, and amount already filled of order.
+    function assertValidCancel(
+        LibOrder.Order memory order,
+        LibOrder.OrderInfo memory orderInfo
+    )
+        internal
+        view;
+
+    /// @dev Calculates amounts filled and fees paid by maker and taker.
+    /// @param order to be filled.
+    /// @param takerAssetFilledAmount Amount of takerAsset that will be filled.
+    /// @return fillResults Amounts filled and fees paid by maker and taker.
+    function calculateFillResults(
+        LibOrder.Order memory order,
+        uint256 takerAssetFilledAmount
+    )
+        internal
+        pure
+        returns (LibFillResults.FillResults memory fillResults);
 }

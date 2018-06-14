@@ -1,14 +1,14 @@
-import { AbstractBalanceAndProxyAllowanceFetcher } from '@0xproject/order-utils';
 import { BlockParamLiteral } from '@0xproject/types';
 import { BigNumber } from '@0xproject/utils';
 import * as _ from 'lodash';
 
+import { AbstractBalanceAndProxyAllowanceLazyStore } from '../abstract/abstract_balance_and_proxy_allowance_lazy_store';
 import { TokenWrapper } from '../contract_wrappers/token_wrapper';
 
 /**
  * Copy on read store for balances/proxyAllowances of tokens/accounts
  */
-export class BalanceAndProxyAllowanceLazyStore implements AbstractBalanceAndProxyAllowanceFetcher {
+export class BalanceAndProxyAllowanceLazyStore implements AbstractBalanceAndProxyAllowanceLazyStore {
     private _tokenWrapper: TokenWrapper;
     private _defaultBlock: BlockParamLiteral;
     private _balance: {

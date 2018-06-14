@@ -3,10 +3,9 @@ import { Web3Wrapper } from '@0xproject/web3-wrapper';
 import { Provider, TransactionReceiptWithDecodedLogs } from 'ethereum-types';
 import * as _ from 'lodash';
 
-import { AssetProxyOwnerContract } from '../contract_wrappers/generated/asset_proxy_owner';
-import { MultiSigWalletContract } from '../contract_wrappers/generated/multi_sig_wallet';
+import { AssetProxyOwnerContract } from '../generated_contract_wrappers/asset_proxy_owner';
+import { MultiSigWalletContract } from '../generated_contract_wrappers/multi_sig_wallet';
 
-import { constants } from './constants';
 import { LogDecoder } from './log_decoder';
 
 export class MultiSigWrapper {
@@ -45,6 +44,7 @@ export class MultiSigWrapper {
         txId: BigNumber,
         from: string,
     ): Promise<TransactionReceiptWithDecodedLogs> {
+        // tslint:disable-next-line:no-unnecessary-type-assertion
         const txHash = await (this
             ._multiSig as AssetProxyOwnerContract).executeRemoveAuthorizedAddress.sendTransactionAsync(txId, { from });
         const tx = await this._logDecoder.getTxWithDecodedLogsAsync(txHash);

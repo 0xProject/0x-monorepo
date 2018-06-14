@@ -1,5 +1,3 @@
-import { Styles } from '@0xproject/react-shared';
-import * as _ from 'lodash';
 import * as React from 'react';
 import { Footer } from 'ts/components/footer';
 import { TopBar } from 'ts/components/top_bar/top_bar';
@@ -13,7 +11,7 @@ export interface NotFoundProps {
     dispatcher: Dispatcher;
 }
 
-export const NotFound = (props: NotFoundProps) => {
+export const NotFound = (_props: NotFoundProps) => {
     return (
         <div>
             <TopBar blockchainIsLoaded={false} location={this.props.location} translate={this.props.translate} />

@@ -1,4 +1,4 @@
-import { BlockchainLifecycle, devConstants, web3Factory } from '@0xproject/dev-utils';
+import { BlockchainLifecycle } from '@0xproject/dev-utils';
 import { assetProxyUtils } from '@0xproject/order-utils';
 import { AssetProxyId, SignedOrder } from '@0xproject/types';
 import { BigNumber } from '@0xproject/utils';
@@ -6,15 +6,14 @@ import { Web3Wrapper } from '@0xproject/web3-wrapper';
 import * as chai from 'chai';
 import * as _ from 'lodash';
 import 'make-promises-safe';
-import * as Web3 from 'web3';
 
-import { DummyERC20TokenContract } from '../../src/contract_wrappers/generated/dummy_e_r_c20_token';
-import { DummyERC721TokenContract } from '../../src/contract_wrappers/generated/dummy_e_r_c721_token';
-import { ERC20ProxyContract } from '../../src/contract_wrappers/generated/e_r_c20_proxy';
-import { ERC721ProxyContract } from '../../src/contract_wrappers/generated/e_r_c721_proxy';
-import { ExchangeContract } from '../../src/contract_wrappers/generated/exchange';
-import { TokenRegistryContract } from '../../src/contract_wrappers/generated/token_registry';
+import { DummyERC20TokenContract } from '../../src/generated_contract_wrappers/dummy_e_r_c20_token';
+import { DummyERC721TokenContract } from '../../src/generated_contract_wrappers/dummy_e_r_c721_token';
+import { ERC20ProxyContract } from '../../src/generated_contract_wrappers/e_r_c20_proxy';
+import { ERC721ProxyContract } from '../../src/generated_contract_wrappers/e_r_c721_proxy';
+import { ExchangeContract } from '../../src/generated_contract_wrappers/exchange';
 import { artifacts } from '../../src/utils/artifacts';
+import { expectRevertOrAlwaysFailingTransactionAsync } from '../../src/utils/assertions';
 import { chaiSetup } from '../../src/utils/chai_setup';
 import { constants } from '../../src/utils/constants';
 import { ERC20Wrapper } from '../../src/utils/erc20_wrapper';
@@ -82,7 +81,7 @@ describe('Exchange wrappers', () => {
             artifacts.Exchange,
             provider,
             txDefaults,
-            assetProxyUtils.encodeERC20ProxyData(zrxToken.address),
+            zrxToken.address,
         );
         exchangeWrapper = new ExchangeWrapper(exchange, provider);
         await exchangeWrapper.registerAssetProxyAsync(AssetProxyId.ERC20, erc20Proxy.address, owner);
@@ -109,8 +108,8 @@ describe('Exchange wrappers', () => {
             exchangeAddress: exchange.address,
             makerAddress,
             feeRecipientAddress,
-            makerAssetData: assetProxyUtils.encodeERC20ProxyData(defaultMakerAssetAddress),
-            takerAssetData: assetProxyUtils.encodeERC20ProxyData(defaultTakerAssetAddress),
+            makerAssetData: assetProxyUtils.encodeERC20AssetData(defaultMakerAssetAddress),
+            takerAssetData: assetProxyUtils.encodeERC20AssetData(defaultTakerAssetAddress),
         };
         const privateKey = constants.TESTRPC_PRIVATE_KEYS[accounts.indexOf(makerAddress)];
         orderFactory = new OrderFactory(privateKey, defaultOrderParams);
@@ -172,8 +171,8 @@ describe('Exchange wrappers', () => {
                 expirationTimeSeconds: new BigNumber(Math.floor((Date.now() - 10000) / 1000)),
             });
 
-            return expect(exchangeWrapper.fillOrKillOrderAsync(signedOrder, takerAddress)).to.be.rejectedWith(
-                constants.REVERT,
+            return expectRevertOrAlwaysFailingTransactionAsync(
+                exchangeWrapper.fillOrKillOrderAsync(signedOrder, takerAddress),
             );
         });
 
@@ -184,8 +183,8 @@ describe('Exchange wrappers', () => {
                 takerAssetFillAmount: signedOrder.takerAssetAmount.div(2),
             });
 
-            return expect(exchangeWrapper.fillOrKillOrderAsync(signedOrder, takerAddress)).to.be.rejectedWith(
-                constants.REVERT,
+            return expectRevertOrAlwaysFailingTransactionAsync(
+                exchangeWrapper.fillOrKillOrderAsync(signedOrder, takerAddress),
             );
         });
     });
@@ -197,12 +196,16 @@ describe('Exchange wrappers', () => {
                 takerAssetAmount: Web3Wrapper.toBaseUnitAmount(new BigNumber(200), 18),
             });
             const takerAssetFillAmount = signedOrder.takerAssetAmount.div(2);
+
             await exchangeWrapper.fillOrderNoThrowAsync(signedOrder, takerAddress, {
                 takerAssetFillAmount,
+                // HACK(albrow): We need to hardcode the gas estimate here because
+                // the Geth gas estimator doesn't work with the way we use
+                // delegatecall and swallow errors.
+                gas: 250000,
             });
 
             const newBalances = await erc20Wrapper.getBalancesAsync();
-
             const makerAssetFilledAmount = takerAssetFillAmount
                 .times(signedOrder.makerAssetAmount)
                 .dividedToIntegerBy(signedOrder.takerAssetAmount);
@@ -212,6 +215,7 @@ describe('Exchange wrappers', () => {
             const takerFee = signedOrder.takerFee
                 .times(makerAssetFilledAmount)
                 .dividedToIntegerBy(signedOrder.makerAssetAmount);
+
             expect(newBalances[makerAddress][defaultMakerAssetAddress]).to.be.bignumber.equal(
                 erc20Balances[makerAddress][defaultMakerAssetAddress].minus(makerAssetFilledAmount),
             );
@@ -300,7 +304,7 @@ describe('Exchange wrappers', () => {
             const signedOrder = orderFactory.newSignedOrder({
                 makerAssetAmount: makerZRXBalance,
                 makerFee: new BigNumber(1),
-                makerAssetData: assetProxyUtils.encodeERC20ProxyData(zrxToken.address),
+                makerAssetData: assetProxyUtils.encodeERC20AssetData(zrxToken.address),
             });
             await exchangeWrapper.fillOrderNoThrowAsync(signedOrder, takerAddress);
             const newBalances = await erc20Wrapper.getBalancesAsync();
@@ -312,7 +316,7 @@ describe('Exchange wrappers', () => {
             const signedOrder = orderFactory.newSignedOrder({
                 makerAssetAmount: new BigNumber(makerZRXAllowance),
                 makerFee: new BigNumber(1),
-                makerAssetData: assetProxyUtils.encodeERC20ProxyData(zrxToken.address),
+                makerAssetData: assetProxyUtils.encodeERC20AssetData(zrxToken.address),
             });
             await exchangeWrapper.fillOrderNoThrowAsync(signedOrder, takerAddress);
             const newBalances = await erc20Wrapper.getBalancesAsync();
@@ -324,7 +328,7 @@ describe('Exchange wrappers', () => {
             const signedOrder = orderFactory.newSignedOrder({
                 takerAssetAmount: takerZRXBalance,
                 takerFee: new BigNumber(1),
-                takerAssetData: assetProxyUtils.encodeERC20ProxyData(zrxToken.address),
+                takerAssetData: assetProxyUtils.encodeERC20AssetData(zrxToken.address),
             });
             await exchangeWrapper.fillOrderNoThrowAsync(signedOrder, takerAddress);
             const newBalances = await erc20Wrapper.getBalancesAsync();
@@ -336,7 +340,7 @@ describe('Exchange wrappers', () => {
             const signedOrder = orderFactory.newSignedOrder({
                 takerAssetAmount: new BigNumber(takerZRXAllowance),
                 takerFee: new BigNumber(1),
-                takerAssetData: assetProxyUtils.encodeERC20ProxyData(zrxToken.address),
+                takerAssetData: assetProxyUtils.encodeERC20AssetData(zrxToken.address),
             });
             await exchangeWrapper.fillOrderNoThrowAsync(signedOrder, takerAddress);
             const newBalances = await erc20Wrapper.getBalancesAsync();
@@ -350,8 +354,8 @@ describe('Exchange wrappers', () => {
             const signedOrder = orderFactory.newSignedOrder({
                 makerAssetAmount: new BigNumber(1),
                 takerAssetAmount: new BigNumber(1),
-                makerAssetData: assetProxyUtils.encodeERC721ProxyData(erc721Token.address, makerAssetId),
-                takerAssetData: assetProxyUtils.encodeERC721ProxyData(erc721Token.address, takerAssetId),
+                makerAssetData: assetProxyUtils.encodeERC721AssetData(erc721Token.address, makerAssetId),
+                takerAssetData: assetProxyUtils.encodeERC721AssetData(erc721Token.address, takerAssetId),
             });
             // Verify pre-conditions
             const initialOwnerMakerAsset = await erc721Token.ownerOf.callAsync(makerAssetId);
@@ -360,7 +364,13 @@ describe('Exchange wrappers', () => {
             expect(initialOwnerTakerAsset).to.be.bignumber.equal(takerAddress);
             // Call Exchange
             const takerAssetFillAmount = signedOrder.takerAssetAmount;
-            await exchangeWrapper.fillOrderNoThrowAsync(signedOrder, takerAddress, { takerAssetFillAmount });
+            await exchangeWrapper.fillOrderNoThrowAsync(signedOrder, takerAddress, {
+                takerAssetFillAmount,
+                // HACK(albrow): We need to hardcode the gas estimate here because
+                // the Geth gas estimator doesn't work with the way we use
+                // delegatecall and swallow errors.
+                gas: 270000,
+            });
             // Verify post-conditions
             const newOwnerMakerAsset = await erc721Token.ownerOf.callAsync(makerAssetId);
             expect(newOwnerMakerAsset).to.be.bignumber.equal(takerAddress);
@@ -485,11 +495,11 @@ describe('Exchange wrappers', () => {
 
                 await exchangeWrapper.fillOrKillOrderAsync(signedOrders[0], takerAddress);
 
-                return expect(
+                return expectRevertOrAlwaysFailingTransactionAsync(
                     exchangeWrapper.batchFillOrKillOrdersAsync(signedOrders, takerAddress, {
                         takerAssetFillAmounts,
                     }),
-                ).to.be.rejectedWith(constants.REVERT);
+                );
             });
         });
 
@@ -535,6 +545,10 @@ describe('Exchange wrappers', () => {
 
                 await exchangeWrapper.batchFillOrdersNoThrowAsync(signedOrders, takerAddress, {
                     takerAssetFillAmounts,
+                    // HACK(albrow): We need to hardcode the gas estimate here because
+                    // the Geth gas estimator doesn't work with the way we use
+                    // delegatecall and swallow errors.
+                    gas: 600000,
                 });
 
                 const newBalances = await erc20Wrapper.getBalancesAsync();
@@ -591,6 +605,10 @@ describe('Exchange wrappers', () => {
                 const newOrders = [invalidOrder, ...validOrders];
                 await exchangeWrapper.batchFillOrdersNoThrowAsync(newOrders, takerAddress, {
                     takerAssetFillAmounts,
+                    // HACK(albrow): We need to hardcode the gas estimate here because
+                    // the Geth gas estimator doesn't work with the way we use
+                    // delegatecall and swallow errors.
+                    gas: 450000,
                 });
 
                 const newBalances = await erc20Wrapper.getBalancesAsync();
@@ -674,16 +692,16 @@ describe('Exchange wrappers', () => {
                 signedOrders = [
                     orderFactory.newSignedOrder(),
                     orderFactory.newSignedOrder({
-                        takerAssetData: assetProxyUtils.encodeERC20ProxyData(zrxToken.address),
+                        takerAssetData: assetProxyUtils.encodeERC20AssetData(zrxToken.address),
                     }),
                     orderFactory.newSignedOrder(),
                 ];
 
-                return expect(
+                return expectRevertOrAlwaysFailingTransactionAsync(
                     exchangeWrapper.marketSellOrdersAsync(signedOrders, takerAddress, {
                         takerAssetFillAmount: Web3Wrapper.toBaseUnitAmount(new BigNumber(1000), 18),
                     }),
-                ).to.be.rejectedWith(constants.REVERT);
+                );
             });
         });
 
@@ -694,6 +712,10 @@ describe('Exchange wrappers', () => {
                 );
                 await exchangeWrapper.marketSellOrdersNoThrowAsync(signedOrders, takerAddress, {
                     takerAssetFillAmount,
+                    // HACK(albrow): We need to hardcode the gas estimate here because
+                    // the Geth gas estimator doesn't work with the way we use
+                    // delegatecall and swallow errors.
+                    gas: 6000000,
                 });
 
                 const newBalances = await erc20Wrapper.getBalancesAsync();
@@ -753,26 +775,59 @@ describe('Exchange wrappers', () => {
                 });
                 await exchangeWrapper.marketSellOrdersNoThrowAsync(signedOrders, takerAddress, {
                     takerAssetFillAmount,
+                    // HACK(albrow): We need to hardcode the gas estimate here because
+                    // the Geth gas estimator doesn't work with the way we use
+                    // delegatecall and swallow errors.
+                    gas: 600000,
                 });
 
                 const newBalances = await erc20Wrapper.getBalancesAsync();
                 expect(newBalances).to.be.deep.equal(erc20Balances);
             });
 
-            it('should throw when a signedOrder does not use the same takerAssetAddress', async () => {
+            it('should not fill a signedOrder that does not use the same takerAssetAddress', async () => {
                 signedOrders = [
                     orderFactory.newSignedOrder(),
-                    orderFactory.newSignedOrder({
-                        takerAssetData: assetProxyUtils.encodeERC20ProxyData(zrxToken.address),
-                    }),
                     orderFactory.newSignedOrder(),
-                ];
-
-                return expect(
-                    exchangeWrapper.marketSellOrdersNoThrowAsync(signedOrders, takerAddress, {
-                        takerAssetFillAmount: Web3Wrapper.toBaseUnitAmount(new BigNumber(1000), 18),
+                    orderFactory.newSignedOrder({
+                        takerAssetData: assetProxyUtils.encodeERC20AssetData(zrxToken.address),
                     }),
-                ).to.be.rejectedWith(constants.REVERT);
+                ];
+                const takerAssetFillAmount = Web3Wrapper.toBaseUnitAmount(new BigNumber(100000), 18);
+                const filledSignedOrders = signedOrders.slice(0, -1);
+                _.forEach(filledSignedOrders, signedOrder => {
+                    erc20Balances[makerAddress][defaultMakerAssetAddress] = erc20Balances[makerAddress][
+                        defaultMakerAssetAddress
+                    ].minus(signedOrder.makerAssetAmount);
+                    erc20Balances[makerAddress][defaultTakerAssetAddress] = erc20Balances[makerAddress][
+                        defaultTakerAssetAddress
+                    ].add(signedOrder.takerAssetAmount);
+                    erc20Balances[makerAddress][zrxToken.address] = erc20Balances[makerAddress][zrxToken.address].minus(
+                        signedOrder.makerFee,
+                    );
+                    erc20Balances[takerAddress][defaultMakerAssetAddress] = erc20Balances[takerAddress][
+                        defaultMakerAssetAddress
+                    ].add(signedOrder.makerAssetAmount);
+                    erc20Balances[takerAddress][defaultTakerAssetAddress] = erc20Balances[takerAddress][
+                        defaultTakerAssetAddress
+                    ].minus(signedOrder.takerAssetAmount);
+                    erc20Balances[takerAddress][zrxToken.address] = erc20Balances[takerAddress][zrxToken.address].minus(
+                        signedOrder.takerFee,
+                    );
+                    erc20Balances[feeRecipientAddress][zrxToken.address] = erc20Balances[feeRecipientAddress][
+                        zrxToken.address
+                    ].add(signedOrder.makerFee.add(signedOrder.takerFee));
+                });
+                await exchangeWrapper.marketSellOrdersNoThrowAsync(signedOrders, takerAddress, {
+                    takerAssetFillAmount,
+                    // HACK(albrow): We need to hardcode the gas estimate here because
+                    // the Geth gas estimator doesn't work with the way we use
+                    // delegatecall and swallow errors.
+                    gas: 600000,
+                });
+
+                const newBalances = await erc20Wrapper.getBalancesAsync();
+                expect(newBalances).to.be.deep.equal(erc20Balances);
             });
         });
 
@@ -852,16 +907,16 @@ describe('Exchange wrappers', () => {
                 signedOrders = [
                     orderFactory.newSignedOrder(),
                     orderFactory.newSignedOrder({
-                        makerAssetData: assetProxyUtils.encodeERC20ProxyData(zrxToken.address),
+                        makerAssetData: assetProxyUtils.encodeERC20AssetData(zrxToken.address),
                     }),
                     orderFactory.newSignedOrder(),
                 ];
 
-                return expect(
+                return expectRevertOrAlwaysFailingTransactionAsync(
                     exchangeWrapper.marketBuyOrdersAsync(signedOrders, takerAddress, {
                         makerAssetFillAmount: Web3Wrapper.toBaseUnitAmount(new BigNumber(1000), 18),
                     }),
-                ).to.be.rejectedWith(constants.REVERT);
+                );
             });
         });
 
@@ -872,6 +927,10 @@ describe('Exchange wrappers', () => {
                 );
                 await exchangeWrapper.marketBuyOrdersNoThrowAsync(signedOrders, takerAddress, {
                     makerAssetFillAmount,
+                    // HACK(albrow): We need to hardcode the gas estimate here because
+                    // the Geth gas estimator doesn't work with the way we use
+                    // delegatecall and swallow errors.
+                    gas: 600000,
                 });
 
                 const newBalances = await erc20Wrapper.getBalancesAsync();
@@ -904,8 +963,8 @@ describe('Exchange wrappers', () => {
                 );
             });
 
-            it('should fill all signedOrders if cannot fill entire takerAssetFillAmount', async () => {
-                const takerAssetFillAmount = Web3Wrapper.toBaseUnitAmount(new BigNumber(100000), 18);
+            it('should fill all signedOrders if cannot fill entire makerAssetFillAmount', async () => {
+                const makerAssetFillAmount = Web3Wrapper.toBaseUnitAmount(new BigNumber(100000), 18);
                 _.forEach(signedOrders, signedOrder => {
                     erc20Balances[makerAddress][defaultMakerAssetAddress] = erc20Balances[makerAddress][
                         defaultMakerAssetAddress
@@ -929,28 +988,62 @@ describe('Exchange wrappers', () => {
                         zrxToken.address
                     ].add(signedOrder.makerFee.add(signedOrder.takerFee));
                 });
-                await exchangeWrapper.marketSellOrdersNoThrowAsync(signedOrders, takerAddress, {
-                    takerAssetFillAmount,
+                await exchangeWrapper.marketBuyOrdersNoThrowAsync(signedOrders, takerAddress, {
+                    makerAssetFillAmount,
+                    // HACK(albrow): We need to hardcode the gas estimate here because
+                    // the Geth gas estimator doesn't work with the way we use
+                    // delegatecall and swallow errors.
+                    gas: 600000,
                 });
 
                 const newBalances = await erc20Wrapper.getBalancesAsync();
                 expect(newBalances).to.be.deep.equal(erc20Balances);
             });
 
-            it('should throw when a signedOrder does not use the same makerAssetAddress', async () => {
+            it('should not fill a signedOrder that does not use the same makerAssetAddress', async () => {
                 signedOrders = [
                     orderFactory.newSignedOrder(),
-                    orderFactory.newSignedOrder({
-                        makerAssetData: assetProxyUtils.encodeERC20ProxyData(zrxToken.address),
-                    }),
                     orderFactory.newSignedOrder(),
+                    orderFactory.newSignedOrder({
+                        makerAssetData: assetProxyUtils.encodeERC20AssetData(zrxToken.address),
+                    }),
                 ];
 
-                return expect(
-                    exchangeWrapper.marketBuyOrdersNoThrowAsync(signedOrders, takerAddress, {
-                        makerAssetFillAmount: Web3Wrapper.toBaseUnitAmount(new BigNumber(1000), 18),
-                    }),
-                ).to.be.rejectedWith(constants.REVERT);
+                const makerAssetFillAmount = Web3Wrapper.toBaseUnitAmount(new BigNumber(100000), 18);
+                const filledSignedOrders = signedOrders.slice(0, -1);
+                _.forEach(filledSignedOrders, signedOrder => {
+                    erc20Balances[makerAddress][defaultMakerAssetAddress] = erc20Balances[makerAddress][
+                        defaultMakerAssetAddress
+                    ].minus(signedOrder.makerAssetAmount);
+                    erc20Balances[makerAddress][defaultTakerAssetAddress] = erc20Balances[makerAddress][
+                        defaultTakerAssetAddress
+                    ].add(signedOrder.takerAssetAmount);
+                    erc20Balances[makerAddress][zrxToken.address] = erc20Balances[makerAddress][zrxToken.address].minus(
+                        signedOrder.makerFee,
+                    );
+                    erc20Balances[takerAddress][defaultMakerAssetAddress] = erc20Balances[takerAddress][
+                        defaultMakerAssetAddress
+                    ].add(signedOrder.makerAssetAmount);
+                    erc20Balances[takerAddress][defaultTakerAssetAddress] = erc20Balances[takerAddress][
+                        defaultTakerAssetAddress
+                    ].minus(signedOrder.takerAssetAmount);
+                    erc20Balances[takerAddress][zrxToken.address] = erc20Balances[takerAddress][zrxToken.address].minus(
+                        signedOrder.takerFee,
+                    );
+                    erc20Balances[feeRecipientAddress][zrxToken.address] = erc20Balances[feeRecipientAddress][
+                        zrxToken.address
+                    ].add(signedOrder.makerFee.add(signedOrder.takerFee));
+                });
+                await exchangeWrapper.marketBuyOrdersNoThrowAsync(signedOrders, takerAddress, {
+                    makerAssetFillAmount,
+                    // HACK(albrow): We need to hardcode the gas estimate here because
+                    // the Geth gas estimator doesn't work with the way we use
+                    // delegatecall and swallow errors.
+                    gas: 600000,
+                });
+
+                const newBalances = await erc20Wrapper.getBalancesAsync();
+                expect(newBalances).to.be.deep.equal(erc20Balances);
             });
         });
 
@@ -959,7 +1052,7 @@ describe('Exchange wrappers', () => {
                 const takerAssetCancelAmounts = _.map(signedOrders, signedOrder => signedOrder.takerAssetAmount);
                 await exchangeWrapper.batchCancelOrdersAsync(signedOrders, makerAddress);
 
-                await exchangeWrapper.batchFillOrdersAsync(signedOrders, takerAddress, {
+                await exchangeWrapper.batchFillOrdersNoThrowAsync(signedOrders, takerAddress, {
                     takerAssetFillAmounts: takerAssetCancelAmounts,
                 });
                 const newBalances = await erc20Wrapper.getBalancesAsync();

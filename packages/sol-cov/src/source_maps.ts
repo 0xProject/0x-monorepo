@@ -38,10 +38,10 @@ export function parseSourceMap(
     const pcToInstructionIndex: { [programCounter: number]: number } = getPcToInstructionIndexMapping(bytecode);
     const locationByOffsetByFileIndex = _.map(sourceCodes, getLocationByOffset);
     const entries = srcMap.split(';');
-    const parsedEntries: SourceLocation[] = [];
     let lastParsedEntry: SourceLocation = {} as any;
     const instructionIndexToSourceRange: { [instructionIndex: number]: SourceRange } = {};
     _.each(entries, (entry: string, i: number) => {
+        // tslint:disable-next-line:no-unused-variable
         const [instructionIndexStrIfExists, lengthStrIfExists, fileIndexStrIfExists, jumpTypeStrIfExists] = entry.split(
             ':',
         );

@@ -20,7 +20,6 @@ pragma experimental ABIEncoderV2;
 
 import "../libs/LibOrder.sol";
 import "../libs/LibFillResults.sol";
-import "./MExchangeCore.sol";
 import "../interfaces/IMatchOrders.sol";
 
 contract MMatchOrders is
@@ -34,12 +33,8 @@ contract MMatchOrders is
         LibOrder.Order memory leftOrder,
         LibOrder.Order memory rightOrder
     )
-        internal;
-
-    /// @dev Validates matched fill results. Succeeds or throws.
-    /// @param matchedFillResults Amounts to fill and fees to pay by maker and taker of matched orders.
-    function assertValidMatchResults(LibFillResults.MatchedFillResults memory matchedFillResults)
-        internal;
+        internal
+        pure;
 
     /// @dev Calculates fill amounts for the matched orders.
     ///      Each order is filled at their respective price point. However, the calculations are
@@ -47,19 +42,16 @@ contract MMatchOrders is
     ///      The profit made by the leftOrder order goes to the taker (who matched the two orders).
     /// @param leftOrder First order to match.
     /// @param rightOrder Second order to match.
-    /// @param leftOrderStatus Order status of left order.
-    /// @param rightOrderStatus Order status of right order.
-    /// @param leftOrderFilledAmount Amount of left order already filled.
-    /// @param rightOrderFilledAmount Amount of right order already filled.
+    /// @param leftOrderTakerAssetFilledAmount Amount of left order already filled.
+    /// @param rightOrderTakerAssetFilledAmount Amount of right order already filled.
     /// @param matchedFillResults Amounts to fill and fees to pay by maker and taker of matched orders.
     function calculateMatchedFillResults(
         LibOrder.Order memory leftOrder,
         LibOrder.Order memory rightOrder,
-        uint8 leftOrderStatus,
-        uint8 rightOrderStatus,
-        uint256 leftOrderFilledAmount,
-        uint256 rightOrderFilledAmount
+        uint256 leftOrderTakerAssetFilledAmount,
+        uint256 rightOrderTakerAssetFilledAmount
     )
         internal
+        pure
         returns (LibFillResults.MatchedFillResults memory matchedFillResults);
 }

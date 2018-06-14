@@ -1,24 +1,18 @@
 import { BlockchainLifecycle } from '@0xproject/dev-utils';
-import { assetProxyUtils, crypto } from '@0xproject/order-utils';
-import { AssetProxyId, SignedOrder } from '@0xproject/types';
+import { assetProxyUtils } from '@0xproject/order-utils';
+import { AssetProxyId } from '@0xproject/types';
 import { BigNumber } from '@0xproject/utils';
 import { Web3Wrapper } from '@0xproject/web3-wrapper';
 import * as chai from 'chai';
-import { LogWithDecodedArgs } from 'ethereum-types';
-import ethUtil = require('ethereumjs-util');
 import * as _ from 'lodash';
 
-import { DummyERC20TokenContract } from '../../src/contract_wrappers/generated/dummy_e_r_c20_token';
-import { DummyERC721TokenContract } from '../../src/contract_wrappers/generated/dummy_e_r_c721_token';
-import { ERC20ProxyContract } from '../../src/contract_wrappers/generated/e_r_c20_proxy';
-import { ERC721ProxyContract } from '../../src/contract_wrappers/generated/e_r_c721_proxy';
-import {
-    CancelContractEventArgs,
-    ExchangeContract,
-    ExchangeStatusContractEventArgs,
-    FillContractEventArgs,
-} from '../../src/contract_wrappers/generated/exchange';
+import { DummyERC20TokenContract } from '../../src/generated_contract_wrappers/dummy_e_r_c20_token';
+import { DummyERC721TokenContract } from '../../src/generated_contract_wrappers/dummy_e_r_c721_token';
+import { ERC20ProxyContract } from '../../src/generated_contract_wrappers/e_r_c20_proxy';
+import { ERC721ProxyContract } from '../../src/generated_contract_wrappers/e_r_c721_proxy';
+import { ExchangeContract } from '../../src/generated_contract_wrappers/exchange';
 import { artifacts } from '../../src/utils/artifacts';
+import { expectRevertOrAlwaysFailingTransactionAsync } from '../../src/utils/assertions';
 import { chaiSetup } from '../../src/utils/chai_setup';
 import { constants } from '../../src/utils/constants';
 import { ERC20Wrapper } from '../../src/utils/erc20_wrapper';
@@ -26,13 +20,7 @@ import { ERC721Wrapper } from '../../src/utils/erc721_wrapper';
 import { ExchangeWrapper } from '../../src/utils/exchange_wrapper';
 import { MatchOrderTester } from '../../src/utils/match_order_tester';
 import { OrderFactory } from '../../src/utils/order_factory';
-import {
-    ContractName,
-    ERC20BalancesByOwner,
-    ERC721TokenIdsByOwner,
-    ExchangeStatus,
-    OrderInfo,
-} from '../../src/utils/types';
+import { ERC20BalancesByOwner, ERC721TokenIdsByOwner, OrderInfo, OrderStatus } from '../../src/utils/types';
 import { provider, txDefaults, web3Wrapper } from '../../src/utils/web3_wrapper';
 
 chaiSetup.configure();
@@ -65,7 +53,6 @@ describe('matchOrders', () => {
 
     let erc721LeftMakerAssetIds: BigNumber[];
     let erc721RightMakerAssetIds: BigNumber[];
-    let erc721TakerAssetIds: BigNumber[];
 
     let defaultERC20MakerAssetAddress: string;
     let defaultERC20TakerAssetAddress: string;
@@ -104,13 +91,12 @@ describe('matchOrders', () => {
         const erc721Balances = await erc721Wrapper.getBalancesAsync();
         erc721LeftMakerAssetIds = erc721Balances[makerAddressLeft][erc721Token.address];
         erc721RightMakerAssetIds = erc721Balances[makerAddressRight][erc721Token.address];
-        erc721TakerAssetIds = erc721Balances[takerAddress][erc721Token.address];
         // Depoy exchange
         exchange = await ExchangeContract.deployFrom0xArtifactAsync(
             artifacts.Exchange,
             provider,
             txDefaults,
-            assetProxyUtils.encodeERC20ProxyData(zrxToken.address),
+            zrxToken.address,
         );
         exchangeWrapper = new ExchangeWrapper(exchange, provider);
         await exchangeWrapper.registerAssetProxyAsync(AssetProxyId.ERC20, erc20Proxy.address, owner);
@@ -136,8 +122,8 @@ describe('matchOrders', () => {
         const defaultOrderParams = {
             ...constants.STATIC_ORDER_PARAMS,
             exchangeAddress: exchange.address,
-            makerAssetData: assetProxyUtils.encodeERC20ProxyData(defaultERC20MakerAssetAddress),
-            takerAssetData: assetProxyUtils.encodeERC20ProxyData(defaultERC20TakerAssetAddress),
+            makerAssetData: assetProxyUtils.encodeERC20AssetData(defaultERC20MakerAssetAddress),
+            takerAssetData: assetProxyUtils.encodeERC20AssetData(defaultERC20TakerAssetAddress),
         };
         const privateKeyLeft = constants.TESTRPC_PRIVATE_KEYS[accounts.indexOf(makerAddressLeft)];
         orderFactoryLeft = new OrderFactory(privateKeyLeft, defaultOrderParams);
@@ -162,16 +148,14 @@ describe('matchOrders', () => {
             // Create orders to match
             const signedOrderLeft = orderFactoryLeft.newSignedOrder({
                 makerAddress: makerAddressLeft,
-                makerAssetData: assetProxyUtils.encodeERC20ProxyData(defaultERC20MakerAssetAddress),
-                takerAssetData: assetProxyUtils.encodeERC20ProxyData(defaultERC20TakerAssetAddress),
                 makerAssetAmount: Web3Wrapper.toBaseUnitAmount(new BigNumber(5), 18),
                 takerAssetAmount: Web3Wrapper.toBaseUnitAmount(new BigNumber(10), 18),
                 feeRecipientAddress: feeRecipientAddressLeft,
             });
             const signedOrderRight = orderFactoryRight.newSignedOrder({
                 makerAddress: makerAddressRight,
-                makerAssetData: assetProxyUtils.encodeERC20ProxyData(defaultERC20TakerAssetAddress),
-                takerAssetData: assetProxyUtils.encodeERC20ProxyData(defaultERC20MakerAssetAddress),
+                makerAssetData: assetProxyUtils.encodeERC20AssetData(defaultERC20TakerAssetAddress),
+                takerAssetData: assetProxyUtils.encodeERC20AssetData(defaultERC20MakerAssetAddress),
                 makerAssetAmount: Web3Wrapper.toBaseUnitAmount(new BigNumber(10), 18),
                 takerAssetAmount: Web3Wrapper.toBaseUnitAmount(new BigNumber(2), 18),
                 feeRecipientAddress: feeRecipientAddressRight,
@@ -186,26 +170,24 @@ describe('matchOrders', () => {
             );
             // Verify left order was fully filled
             const leftOrderInfo: OrderInfo = await exchangeWrapper.getOrderInfoAsync(signedOrderLeft);
-            expect(leftOrderInfo.orderStatus as ExchangeStatus).to.be.equal(ExchangeStatus.ORDER_FULLY_FILLED);
+            expect(leftOrderInfo.orderStatus as OrderStatus).to.be.equal(OrderStatus.FULLY_FILLED);
             // Verify right order was fully filled
             const rightOrderInfo: OrderInfo = await exchangeWrapper.getOrderInfoAsync(signedOrderRight);
-            expect(rightOrderInfo.orderStatus as ExchangeStatus).to.be.equal(ExchangeStatus.ORDER_FULLY_FILLED);
+            expect(rightOrderInfo.orderStatus as OrderStatus).to.be.equal(OrderStatus.FULLY_FILLED);
         });
 
         it('should transfer the correct amounts when orders completely fill each other and taker doesnt take a profit', async () => {
             // Create orders to match
             const signedOrderLeft = orderFactoryLeft.newSignedOrder({
                 makerAddress: makerAddressLeft,
-                makerAssetData: assetProxyUtils.encodeERC20ProxyData(defaultERC20MakerAssetAddress),
-                takerAssetData: assetProxyUtils.encodeERC20ProxyData(defaultERC20TakerAssetAddress),
                 makerAssetAmount: Web3Wrapper.toBaseUnitAmount(new BigNumber(5), 18),
                 takerAssetAmount: Web3Wrapper.toBaseUnitAmount(new BigNumber(10), 18),
                 feeRecipientAddress: feeRecipientAddressLeft,
             });
             const signedOrderRight = orderFactoryRight.newSignedOrder({
                 makerAddress: makerAddressRight,
-                makerAssetData: assetProxyUtils.encodeERC20ProxyData(defaultERC20TakerAssetAddress),
-                takerAssetData: assetProxyUtils.encodeERC20ProxyData(defaultERC20MakerAssetAddress),
+                makerAssetData: assetProxyUtils.encodeERC20AssetData(defaultERC20TakerAssetAddress),
+                takerAssetData: assetProxyUtils.encodeERC20AssetData(defaultERC20MakerAssetAddress),
                 makerAssetAmount: Web3Wrapper.toBaseUnitAmount(new BigNumber(10), 18),
                 takerAssetAmount: Web3Wrapper.toBaseUnitAmount(new BigNumber(5), 18),
                 feeRecipientAddress: feeRecipientAddressRight,
@@ -227,10 +209,10 @@ describe('matchOrders', () => {
             );
             // Verify left order was fully filled
             const leftOrderInfo: OrderInfo = await exchangeWrapper.getOrderInfoAsync(signedOrderLeft);
-            expect(leftOrderInfo.orderStatus as ExchangeStatus).to.be.equal(ExchangeStatus.ORDER_FULLY_FILLED);
+            expect(leftOrderInfo.orderStatus as OrderStatus).to.be.equal(OrderStatus.FULLY_FILLED);
             // Verify right order was fully filled
             const rightOrderInfo: OrderInfo = await exchangeWrapper.getOrderInfoAsync(signedOrderRight);
-            expect(rightOrderInfo.orderStatus as ExchangeStatus).to.be.equal(ExchangeStatus.ORDER_FULLY_FILLED);
+            expect(rightOrderInfo.orderStatus as OrderStatus).to.be.equal(OrderStatus.FULLY_FILLED);
             // Verify taker did not take a profit
             expect(takerInitialBalances).to.be.deep.equal(
                 newERC20BalancesByOwner[takerAddress][defaultERC20MakerAssetAddress],
@@ -241,16 +223,14 @@ describe('matchOrders', () => {
             // Create orders to match
             const signedOrderLeft = orderFactoryLeft.newSignedOrder({
                 makerAddress: makerAddressLeft,
-                makerAssetData: assetProxyUtils.encodeERC20ProxyData(defaultERC20MakerAssetAddress),
-                takerAssetData: assetProxyUtils.encodeERC20ProxyData(defaultERC20TakerAssetAddress),
                 makerAssetAmount: Web3Wrapper.toBaseUnitAmount(new BigNumber(5), 18),
                 takerAssetAmount: Web3Wrapper.toBaseUnitAmount(new BigNumber(10), 18),
                 feeRecipientAddress: feeRecipientAddressLeft,
             });
             const signedOrderRight = orderFactoryRight.newSignedOrder({
                 makerAddress: makerAddressRight,
-                makerAssetData: assetProxyUtils.encodeERC20ProxyData(defaultERC20TakerAssetAddress),
-                takerAssetData: assetProxyUtils.encodeERC20ProxyData(defaultERC20MakerAssetAddress),
+                makerAssetData: assetProxyUtils.encodeERC20AssetData(defaultERC20TakerAssetAddress),
+                takerAssetData: assetProxyUtils.encodeERC20AssetData(defaultERC20MakerAssetAddress),
                 makerAssetAmount: Web3Wrapper.toBaseUnitAmount(new BigNumber(20), 18),
                 takerAssetAmount: Web3Wrapper.toBaseUnitAmount(new BigNumber(4), 18),
                 feeRecipientAddress: feeRecipientAddressRight,
@@ -265,26 +245,24 @@ describe('matchOrders', () => {
             );
             // Verify left order was fully filled
             const leftOrderInfo: OrderInfo = await exchangeWrapper.getOrderInfoAsync(signedOrderLeft);
-            expect(leftOrderInfo.orderStatus as ExchangeStatus).to.be.equal(ExchangeStatus.ORDER_FULLY_FILLED);
+            expect(leftOrderInfo.orderStatus as OrderStatus).to.be.equal(OrderStatus.FULLY_FILLED);
             // Verify right order was partially filled
             const rightOrderInfo: OrderInfo = await exchangeWrapper.getOrderInfoAsync(signedOrderRight);
-            expect(rightOrderInfo.orderStatus as ExchangeStatus).to.be.equal(ExchangeStatus.ORDER_FILLABLE);
+            expect(rightOrderInfo.orderStatus as OrderStatus).to.be.equal(OrderStatus.FILLABLE);
         });
 
         it('should transfer the correct amounts when right order is completely filled and left order is partially filled', async () => {
             // Create orders to match
             const signedOrderLeft = orderFactoryLeft.newSignedOrder({
                 makerAddress: makerAddressLeft,
-                makerAssetData: assetProxyUtils.encodeERC20ProxyData(defaultERC20MakerAssetAddress),
-                takerAssetData: assetProxyUtils.encodeERC20ProxyData(defaultERC20TakerAssetAddress),
                 makerAssetAmount: Web3Wrapper.toBaseUnitAmount(new BigNumber(50), 18),
                 takerAssetAmount: Web3Wrapper.toBaseUnitAmount(new BigNumber(100), 18),
                 feeRecipientAddress: feeRecipientAddressLeft,
             });
             const signedOrderRight = orderFactoryRight.newSignedOrder({
                 makerAddress: makerAddressRight,
-                makerAssetData: assetProxyUtils.encodeERC20ProxyData(defaultERC20TakerAssetAddress),
-                takerAssetData: assetProxyUtils.encodeERC20ProxyData(defaultERC20MakerAssetAddress),
+                makerAssetData: assetProxyUtils.encodeERC20AssetData(defaultERC20TakerAssetAddress),
+                takerAssetData: assetProxyUtils.encodeERC20AssetData(defaultERC20MakerAssetAddress),
                 makerAssetAmount: Web3Wrapper.toBaseUnitAmount(new BigNumber(10), 18),
                 takerAssetAmount: Web3Wrapper.toBaseUnitAmount(new BigNumber(2), 18),
                 feeRecipientAddress: feeRecipientAddressRight,
@@ -299,26 +277,24 @@ describe('matchOrders', () => {
             );
             // Verify left order was partially filled
             const leftOrderInfo: OrderInfo = await exchangeWrapper.getOrderInfoAsync(signedOrderLeft);
-            expect(leftOrderInfo.orderStatus as ExchangeStatus).to.be.equal(ExchangeStatus.ORDER_FILLABLE);
+            expect(leftOrderInfo.orderStatus as OrderStatus).to.be.equal(OrderStatus.FILLABLE);
             // Verify right order was fully filled
             const rightOrderInfo: OrderInfo = await exchangeWrapper.getOrderInfoAsync(signedOrderRight);
-            expect(rightOrderInfo.orderStatus as ExchangeStatus).to.be.equal(ExchangeStatus.ORDER_FULLY_FILLED);
+            expect(rightOrderInfo.orderStatus as OrderStatus).to.be.equal(OrderStatus.FULLY_FILLED);
         });
 
         it('should transfer the correct amounts when consecutive calls are used to completely fill the left order', async () => {
             // Create orders to match
             const signedOrderLeft = orderFactoryLeft.newSignedOrder({
                 makerAddress: makerAddressLeft,
-                makerAssetData: assetProxyUtils.encodeERC20ProxyData(defaultERC20MakerAssetAddress),
-                takerAssetData: assetProxyUtils.encodeERC20ProxyData(defaultERC20TakerAssetAddress),
                 makerAssetAmount: Web3Wrapper.toBaseUnitAmount(new BigNumber(50), 18),
                 takerAssetAmount: Web3Wrapper.toBaseUnitAmount(new BigNumber(100), 18),
                 feeRecipientAddress: feeRecipientAddressLeft,
             });
             const signedOrderRight = orderFactoryRight.newSignedOrder({
                 makerAddress: makerAddressRight,
-                makerAssetData: assetProxyUtils.encodeERC20ProxyData(defaultERC20TakerAssetAddress),
-                takerAssetData: assetProxyUtils.encodeERC20ProxyData(defaultERC20MakerAssetAddress),
+                makerAssetData: assetProxyUtils.encodeERC20AssetData(defaultERC20TakerAssetAddress),
+                takerAssetData: assetProxyUtils.encodeERC20AssetData(defaultERC20MakerAssetAddress),
                 makerAssetAmount: Web3Wrapper.toBaseUnitAmount(new BigNumber(10), 18),
                 takerAssetAmount: Web3Wrapper.toBaseUnitAmount(new BigNumber(2), 18),
                 feeRecipientAddress: feeRecipientAddressRight,
@@ -338,18 +314,18 @@ describe('matchOrders', () => {
             );
             // Verify left order was partially filled
             const leftOrderInfo: OrderInfo = await exchangeWrapper.getOrderInfoAsync(signedOrderLeft);
-            expect(leftOrderInfo.orderStatus as ExchangeStatus).to.be.equal(ExchangeStatus.ORDER_FILLABLE);
+            expect(leftOrderInfo.orderStatus as OrderStatus).to.be.equal(OrderStatus.FILLABLE);
             // Verify right order was fully filled
             const rightOrderInfo: OrderInfo = await exchangeWrapper.getOrderInfoAsync(signedOrderRight);
-            expect(rightOrderInfo.orderStatus as ExchangeStatus).to.be.equal(ExchangeStatus.ORDER_FULLY_FILLED);
+            expect(rightOrderInfo.orderStatus as OrderStatus).to.be.equal(OrderStatus.FULLY_FILLED);
             // Construct second right order
             // Note: This order needs makerAssetAmount=90/takerAssetAmount=[anything <= 45] to fully fill the right order.
             //       However, we use 100/50 to ensure a partial fill as we want to go down the "left fill"
             //       branch in the contract twice for this test.
             const signedOrderRight2 = orderFactoryRight.newSignedOrder({
                 makerAddress: makerAddressRight,
-                makerAssetData: assetProxyUtils.encodeERC20ProxyData(defaultERC20TakerAssetAddress),
-                takerAssetData: assetProxyUtils.encodeERC20ProxyData(defaultERC20MakerAssetAddress),
+                makerAssetData: assetProxyUtils.encodeERC20AssetData(defaultERC20TakerAssetAddress),
+                takerAssetData: assetProxyUtils.encodeERC20AssetData(defaultERC20MakerAssetAddress),
                 makerAssetAmount: Web3Wrapper.toBaseUnitAmount(new BigNumber(100), 18),
                 takerAssetAmount: Web3Wrapper.toBaseUnitAmount(new BigNumber(50), 18),
                 feeRecipientAddress: feeRecipientAddressRight,
@@ -368,18 +344,16 @@ describe('matchOrders', () => {
             );
             // Verify left order was fully filled
             const leftOrderInfo2: OrderInfo = await exchangeWrapper.getOrderInfoAsync(signedOrderLeft);
-            expect(leftOrderInfo2.orderStatus as ExchangeStatus).to.be.equal(ExchangeStatus.ORDER_FULLY_FILLED);
+            expect(leftOrderInfo2.orderStatus as OrderStatus).to.be.equal(OrderStatus.FULLY_FILLED);
             // Verify second right order was partially filled
             const rightOrderInfo2: OrderInfo = await exchangeWrapper.getOrderInfoAsync(signedOrderRight2);
-            expect(rightOrderInfo2.orderStatus as ExchangeStatus).to.be.equal(ExchangeStatus.ORDER_FILLABLE);
+            expect(rightOrderInfo2.orderStatus as OrderStatus).to.be.equal(OrderStatus.FILLABLE);
         });
 
         it('should transfer the correct amounts when consecutive calls are used to completely fill the right order', async () => {
             // Create orders to match
             const signedOrderLeft = orderFactoryLeft.newSignedOrder({
                 makerAddress: makerAddressLeft,
-                makerAssetData: assetProxyUtils.encodeERC20ProxyData(defaultERC20MakerAssetAddress),
-                takerAssetData: assetProxyUtils.encodeERC20ProxyData(defaultERC20TakerAssetAddress),
                 makerAssetAmount: Web3Wrapper.toBaseUnitAmount(new BigNumber(10), 18),
                 takerAssetAmount: Web3Wrapper.toBaseUnitAmount(new BigNumber(2), 18),
                 feeRecipientAddress: feeRecipientAddressLeft,
@@ -387,8 +361,8 @@ describe('matchOrders', () => {
 
             const signedOrderRight = orderFactoryRight.newSignedOrder({
                 makerAddress: makerAddressRight,
-                makerAssetData: assetProxyUtils.encodeERC20ProxyData(defaultERC20TakerAssetAddress),
-                takerAssetData: assetProxyUtils.encodeERC20ProxyData(defaultERC20MakerAssetAddress),
+                makerAssetData: assetProxyUtils.encodeERC20AssetData(defaultERC20TakerAssetAddress),
+                takerAssetData: assetProxyUtils.encodeERC20AssetData(defaultERC20MakerAssetAddress),
                 makerAssetAmount: Web3Wrapper.toBaseUnitAmount(new BigNumber(50), 18),
                 takerAssetAmount: Web3Wrapper.toBaseUnitAmount(new BigNumber(100), 18),
                 feeRecipientAddress: feeRecipientAddressRight,
@@ -408,18 +382,16 @@ describe('matchOrders', () => {
             );
             // Verify left order was partially filled
             const leftOrderInfo: OrderInfo = await exchangeWrapper.getOrderInfoAsync(signedOrderLeft);
-            expect(leftOrderInfo.orderStatus as ExchangeStatus).to.be.equal(ExchangeStatus.ORDER_FULLY_FILLED);
+            expect(leftOrderInfo.orderStatus as OrderStatus).to.be.equal(OrderStatus.FULLY_FILLED);
             // Verify right order was fully filled
             const rightOrderInfo: OrderInfo = await exchangeWrapper.getOrderInfoAsync(signedOrderRight);
-            expect(rightOrderInfo.orderStatus as ExchangeStatus).to.be.equal(ExchangeStatus.ORDER_FILLABLE);
+            expect(rightOrderInfo.orderStatus as OrderStatus).to.be.equal(OrderStatus.FILLABLE);
             // Create second left order
             // Note: This order needs makerAssetAmount=96/takerAssetAmount=48 to fully fill the right order.
             //       However, we use 100/50 to ensure a partial fill as we want to go down the "right fill"
             //       branch in the contract twice for this test.
             const signedOrderLeft2 = orderFactoryLeft.newSignedOrder({
                 makerAddress: makerAddressLeft,
-                makerAssetData: assetProxyUtils.encodeERC20ProxyData(defaultERC20MakerAssetAddress),
-                takerAssetData: assetProxyUtils.encodeERC20ProxyData(defaultERC20TakerAssetAddress),
                 makerAssetAmount: Web3Wrapper.toBaseUnitAmount(new BigNumber(100), 18),
                 takerAssetAmount: Web3Wrapper.toBaseUnitAmount(new BigNumber(50), 18),
                 feeRecipientAddress: feeRecipientAddressLeft,
@@ -441,26 +413,24 @@ describe('matchOrders', () => {
             );
             // Verify second left order was partially filled
             const leftOrderInfo2: OrderInfo = await exchangeWrapper.getOrderInfoAsync(signedOrderLeft2);
-            expect(leftOrderInfo2.orderStatus as ExchangeStatus).to.be.equal(ExchangeStatus.ORDER_FILLABLE);
+            expect(leftOrderInfo2.orderStatus as OrderStatus).to.be.equal(OrderStatus.FILLABLE);
             // Verify right order was fully filled
             const rightOrderInfo2: OrderInfo = await exchangeWrapper.getOrderInfoAsync(signedOrderRight);
-            expect(rightOrderInfo2.orderStatus as ExchangeStatus).to.be.equal(ExchangeStatus.ORDER_FULLY_FILLED);
+            expect(rightOrderInfo2.orderStatus as OrderStatus).to.be.equal(OrderStatus.FULLY_FILLED);
         });
 
         it('should transfer the correct amounts if fee recipient is the same across both matched orders', async () => {
             const feeRecipientAddress = feeRecipientAddressLeft;
             const signedOrderLeft = orderFactoryLeft.newSignedOrder({
                 makerAddress: makerAddressLeft,
-                makerAssetData: assetProxyUtils.encodeERC20ProxyData(defaultERC20MakerAssetAddress),
-                takerAssetData: assetProxyUtils.encodeERC20ProxyData(defaultERC20TakerAssetAddress),
                 makerAssetAmount: Web3Wrapper.toBaseUnitAmount(new BigNumber(5), 18),
                 takerAssetAmount: Web3Wrapper.toBaseUnitAmount(new BigNumber(10), 18),
                 feeRecipientAddress,
             });
             const signedOrderRight = orderFactoryRight.newSignedOrder({
                 makerAddress: makerAddressRight,
-                makerAssetData: assetProxyUtils.encodeERC20ProxyData(defaultERC20TakerAssetAddress),
-                takerAssetData: assetProxyUtils.encodeERC20ProxyData(defaultERC20MakerAssetAddress),
+                makerAssetData: assetProxyUtils.encodeERC20AssetData(defaultERC20TakerAssetAddress),
+                takerAssetData: assetProxyUtils.encodeERC20AssetData(defaultERC20MakerAssetAddress),
                 makerAssetAmount: Web3Wrapper.toBaseUnitAmount(new BigNumber(10), 18),
                 takerAssetAmount: Web3Wrapper.toBaseUnitAmount(new BigNumber(2), 18),
                 feeRecipientAddress,
@@ -479,16 +449,14 @@ describe('matchOrders', () => {
             // Create orders to match
             const signedOrderLeft = orderFactoryLeft.newSignedOrder({
                 makerAddress: makerAddressLeft,
-                makerAssetData: assetProxyUtils.encodeERC20ProxyData(defaultERC20MakerAssetAddress),
-                takerAssetData: assetProxyUtils.encodeERC20ProxyData(defaultERC20TakerAssetAddress),
                 makerAssetAmount: Web3Wrapper.toBaseUnitAmount(new BigNumber(5), 18),
                 takerAssetAmount: Web3Wrapper.toBaseUnitAmount(new BigNumber(10), 18),
                 feeRecipientAddress: feeRecipientAddressLeft,
             });
             const signedOrderRight = orderFactoryRight.newSignedOrder({
                 makerAddress: makerAddressRight,
-                makerAssetData: assetProxyUtils.encodeERC20ProxyData(defaultERC20TakerAssetAddress),
-                takerAssetData: assetProxyUtils.encodeERC20ProxyData(defaultERC20MakerAssetAddress),
+                makerAssetData: assetProxyUtils.encodeERC20AssetData(defaultERC20TakerAssetAddress),
+                takerAssetData: assetProxyUtils.encodeERC20AssetData(defaultERC20MakerAssetAddress),
                 makerAssetAmount: Web3Wrapper.toBaseUnitAmount(new BigNumber(10), 18),
                 takerAssetAmount: Web3Wrapper.toBaseUnitAmount(new BigNumber(2), 18),
                 feeRecipientAddress: feeRecipientAddressRight,
@@ -508,16 +476,14 @@ describe('matchOrders', () => {
             // Create orders to match
             const signedOrderLeft = orderFactoryLeft.newSignedOrder({
                 makerAddress: makerAddressLeft,
-                makerAssetData: assetProxyUtils.encodeERC20ProxyData(defaultERC20MakerAssetAddress),
-                takerAssetData: assetProxyUtils.encodeERC20ProxyData(defaultERC20TakerAssetAddress),
                 makerAssetAmount: Web3Wrapper.toBaseUnitAmount(new BigNumber(5), 18),
                 takerAssetAmount: Web3Wrapper.toBaseUnitAmount(new BigNumber(10), 18),
                 feeRecipientAddress: feeRecipientAddressLeft,
             });
             const signedOrderRight = orderFactoryRight.newSignedOrder({
                 makerAddress: makerAddressRight,
-                makerAssetData: assetProxyUtils.encodeERC20ProxyData(defaultERC20TakerAssetAddress),
-                takerAssetData: assetProxyUtils.encodeERC20ProxyData(defaultERC20MakerAssetAddress),
+                makerAssetData: assetProxyUtils.encodeERC20AssetData(defaultERC20TakerAssetAddress),
+                takerAssetData: assetProxyUtils.encodeERC20AssetData(defaultERC20MakerAssetAddress),
                 makerAssetAmount: Web3Wrapper.toBaseUnitAmount(new BigNumber(10), 18),
                 takerAssetAmount: Web3Wrapper.toBaseUnitAmount(new BigNumber(2), 18),
                 feeRecipientAddress: feeRecipientAddressRight,
@@ -537,16 +503,14 @@ describe('matchOrders', () => {
             // Create orders to match
             const signedOrderLeft = orderFactoryLeft.newSignedOrder({
                 makerAddress: makerAddressLeft,
-                makerAssetData: assetProxyUtils.encodeERC20ProxyData(defaultERC20MakerAssetAddress),
-                takerAssetData: assetProxyUtils.encodeERC20ProxyData(defaultERC20TakerAssetAddress),
                 makerAssetAmount: Web3Wrapper.toBaseUnitAmount(new BigNumber(5), 18),
                 takerAssetAmount: Web3Wrapper.toBaseUnitAmount(new BigNumber(10), 18),
                 feeRecipientAddress: feeRecipientAddressLeft,
             });
             const signedOrderRight = orderFactoryRight.newSignedOrder({
                 makerAddress: makerAddressRight,
-                makerAssetData: assetProxyUtils.encodeERC20ProxyData(defaultERC20TakerAssetAddress),
-                takerAssetData: assetProxyUtils.encodeERC20ProxyData(defaultERC20MakerAssetAddress),
+                makerAssetData: assetProxyUtils.encodeERC20AssetData(defaultERC20TakerAssetAddress),
+                takerAssetData: assetProxyUtils.encodeERC20AssetData(defaultERC20MakerAssetAddress),
                 makerAssetAmount: Web3Wrapper.toBaseUnitAmount(new BigNumber(10), 18),
                 takerAssetAmount: Web3Wrapper.toBaseUnitAmount(new BigNumber(2), 18),
                 feeRecipientAddress: feeRecipientAddressRight,
@@ -566,16 +530,14 @@ describe('matchOrders', () => {
             // Create orders to match
             const signedOrderLeft = orderFactoryLeft.newSignedOrder({
                 makerAddress: makerAddressLeft,
-                makerAssetData: assetProxyUtils.encodeERC20ProxyData(defaultERC20MakerAssetAddress),
-                takerAssetData: assetProxyUtils.encodeERC20ProxyData(defaultERC20TakerAssetAddress),
                 makerAssetAmount: Web3Wrapper.toBaseUnitAmount(new BigNumber(5), 18),
                 takerAssetAmount: Web3Wrapper.toBaseUnitAmount(new BigNumber(10), 18),
                 feeRecipientAddress: feeRecipientAddressLeft,
             });
             const signedOrderRight = orderFactoryRight.newSignedOrder({
                 makerAddress: makerAddressRight,
-                makerAssetData: assetProxyUtils.encodeERC20ProxyData(defaultERC20TakerAssetAddress),
-                takerAssetData: assetProxyUtils.encodeERC20ProxyData(defaultERC20MakerAssetAddress),
+                makerAssetData: assetProxyUtils.encodeERC20AssetData(defaultERC20TakerAssetAddress),
+                takerAssetData: assetProxyUtils.encodeERC20AssetData(defaultERC20MakerAssetAddress),
                 makerAssetAmount: Web3Wrapper.toBaseUnitAmount(new BigNumber(10), 18),
                 takerAssetAmount: Web3Wrapper.toBaseUnitAmount(new BigNumber(2), 18),
                 feeRecipientAddress: feeRecipientAddressRight,
@@ -595,16 +557,14 @@ describe('matchOrders', () => {
             // Create orders to match
             const signedOrderLeft = orderFactoryLeft.newSignedOrder({
                 makerAddress: makerAddressLeft,
-                makerAssetData: assetProxyUtils.encodeERC20ProxyData(defaultERC20MakerAssetAddress),
-                takerAssetData: assetProxyUtils.encodeERC20ProxyData(defaultERC20TakerAssetAddress),
                 makerAssetAmount: Web3Wrapper.toBaseUnitAmount(new BigNumber(5), 18),
                 takerAssetAmount: Web3Wrapper.toBaseUnitAmount(new BigNumber(10), 18),
                 feeRecipientAddress: makerAddressLeft,
             });
             const signedOrderRight = orderFactoryRight.newSignedOrder({
                 makerAddress: makerAddressRight,
-                makerAssetData: assetProxyUtils.encodeERC20ProxyData(defaultERC20TakerAssetAddress),
-                takerAssetData: assetProxyUtils.encodeERC20ProxyData(defaultERC20MakerAssetAddress),
+                makerAssetData: assetProxyUtils.encodeERC20AssetData(defaultERC20TakerAssetAddress),
+                takerAssetData: assetProxyUtils.encodeERC20AssetData(defaultERC20MakerAssetAddress),
                 makerAssetAmount: Web3Wrapper.toBaseUnitAmount(new BigNumber(10), 18),
                 takerAssetAmount: Web3Wrapper.toBaseUnitAmount(new BigNumber(2), 18),
                 feeRecipientAddress: makerAddressRight,
@@ -623,16 +583,14 @@ describe('matchOrders', () => {
             // Create orders to match
             const signedOrderLeft = orderFactoryLeft.newSignedOrder({
                 makerAddress: makerAddressLeft,
-                makerAssetData: assetProxyUtils.encodeERC20ProxyData(defaultERC20MakerAssetAddress),
-                takerAssetData: assetProxyUtils.encodeERC20ProxyData(defaultERC20TakerAssetAddress),
                 makerAssetAmount: Web3Wrapper.toBaseUnitAmount(new BigNumber(5), 18),
                 takerAssetAmount: Web3Wrapper.toBaseUnitAmount(new BigNumber(10), 18),
                 feeRecipientAddress: feeRecipientAddressLeft,
             });
             const signedOrderRight = orderFactoryRight.newSignedOrder({
                 makerAddress: makerAddressRight,
-                makerAssetData: assetProxyUtils.encodeERC20ProxyData(defaultERC20TakerAssetAddress),
-                takerAssetData: assetProxyUtils.encodeERC20ProxyData(defaultERC20MakerAssetAddress),
+                makerAssetData: assetProxyUtils.encodeERC20AssetData(defaultERC20TakerAssetAddress),
+                takerAssetData: assetProxyUtils.encodeERC20AssetData(defaultERC20MakerAssetAddress),
                 makerAssetAmount: Web3Wrapper.toBaseUnitAmount(new BigNumber(10), 18),
                 takerAssetAmount: Web3Wrapper.toBaseUnitAmount(new BigNumber(2), 18),
                 feeRecipientAddress: feeRecipientAddressRight,
@@ -640,25 +598,23 @@ describe('matchOrders', () => {
             // Cancel left order
             await exchangeWrapper.cancelOrderAsync(signedOrderLeft, signedOrderLeft.makerAddress);
             // Match orders
-            return expect(
+            return expectRevertOrAlwaysFailingTransactionAsync(
                 exchangeWrapper.matchOrdersAsync(signedOrderLeft, signedOrderRight, takerAddress),
-            ).to.be.rejectedWith(constants.REVERT);
+            );
         });
 
         it('Should throw if right order is not fillable', async () => {
             // Create orders to match
             const signedOrderLeft = orderFactoryLeft.newSignedOrder({
                 makerAddress: makerAddressLeft,
-                makerAssetData: assetProxyUtils.encodeERC20ProxyData(defaultERC20MakerAssetAddress),
-                takerAssetData: assetProxyUtils.encodeERC20ProxyData(defaultERC20TakerAssetAddress),
                 makerAssetAmount: Web3Wrapper.toBaseUnitAmount(new BigNumber(5), 18),
                 takerAssetAmount: Web3Wrapper.toBaseUnitAmount(new BigNumber(10), 18),
                 feeRecipientAddress: feeRecipientAddressLeft,
             });
             const signedOrderRight = orderFactoryRight.newSignedOrder({
                 makerAddress: makerAddressRight,
-                makerAssetData: assetProxyUtils.encodeERC20ProxyData(defaultERC20TakerAssetAddress),
-                takerAssetData: assetProxyUtils.encodeERC20ProxyData(defaultERC20MakerAssetAddress),
+                makerAssetData: assetProxyUtils.encodeERC20AssetData(defaultERC20TakerAssetAddress),
+                takerAssetData: assetProxyUtils.encodeERC20AssetData(defaultERC20MakerAssetAddress),
                 makerAssetAmount: Web3Wrapper.toBaseUnitAmount(new BigNumber(10), 18),
                 takerAssetAmount: Web3Wrapper.toBaseUnitAmount(new BigNumber(2), 18),
                 feeRecipientAddress: feeRecipientAddressRight,
@@ -666,31 +622,29 @@ describe('matchOrders', () => {
             // Cancel right order
             await exchangeWrapper.cancelOrderAsync(signedOrderRight, signedOrderRight.makerAddress);
             // Match orders
-            return expect(
+            return expectRevertOrAlwaysFailingTransactionAsync(
                 exchangeWrapper.matchOrdersAsync(signedOrderLeft, signedOrderRight, takerAddress),
-            ).to.be.rejectedWith(constants.REVERT);
+            );
         });
 
         it('should throw if there is not a positive spread', async () => {
             // Create orders to match
             const signedOrderLeft = orderFactoryLeft.newSignedOrder({
                 makerAddress: makerAddressLeft,
-                makerAssetData: assetProxyUtils.encodeERC20ProxyData(defaultERC20MakerAssetAddress),
-                takerAssetData: assetProxyUtils.encodeERC20ProxyData(defaultERC20TakerAssetAddress),
                 makerAssetAmount: Web3Wrapper.toBaseUnitAmount(new BigNumber(5), 18),
                 takerAssetAmount: Web3Wrapper.toBaseUnitAmount(new BigNumber(100), 18),
                 feeRecipientAddress: feeRecipientAddressLeft,
             });
             const signedOrderRight = orderFactoryRight.newSignedOrder({
                 makerAddress: makerAddressRight,
-                makerAssetData: assetProxyUtils.encodeERC20ProxyData(defaultERC20TakerAssetAddress),
-                takerAssetData: assetProxyUtils.encodeERC20ProxyData(defaultERC20MakerAssetAddress),
+                makerAssetData: assetProxyUtils.encodeERC20AssetData(defaultERC20TakerAssetAddress),
+                takerAssetData: assetProxyUtils.encodeERC20AssetData(defaultERC20MakerAssetAddress),
                 makerAssetAmount: Web3Wrapper.toBaseUnitAmount(new BigNumber(1), 18),
                 takerAssetAmount: Web3Wrapper.toBaseUnitAmount(new BigNumber(200), 18),
                 feeRecipientAddress: feeRecipientAddressRight,
             });
             // Match orders
-            return expect(
+            return expectRevertOrAlwaysFailingTransactionAsync(
                 matchOrderTester.matchOrdersAndVerifyBalancesAsync(
                     signedOrderLeft,
                     signedOrderRight,
@@ -698,29 +652,27 @@ describe('matchOrders', () => {
                     erc20BalancesByOwner,
                     erc721TokenIdsByOwner,
                 ),
-            ).to.be.rejectedWith(constants.REVERT);
+            );
         });
 
         it('should throw if the left maker asset is not equal to the right taker asset ', async () => {
             // Create orders to match
             const signedOrderLeft = orderFactoryLeft.newSignedOrder({
                 makerAddress: makerAddressLeft,
-                makerAssetData: assetProxyUtils.encodeERC20ProxyData(defaultERC20MakerAssetAddress),
-                takerAssetData: assetProxyUtils.encodeERC20ProxyData(defaultERC20TakerAssetAddress),
                 makerAssetAmount: Web3Wrapper.toBaseUnitAmount(new BigNumber(5), 18),
                 takerAssetAmount: Web3Wrapper.toBaseUnitAmount(new BigNumber(10), 18),
                 feeRecipientAddress: feeRecipientAddressLeft,
             });
             const signedOrderRight = orderFactoryRight.newSignedOrder({
                 makerAddress: makerAddressRight,
-                makerAssetData: assetProxyUtils.encodeERC20ProxyData(defaultERC20TakerAssetAddress),
-                takerAssetData: assetProxyUtils.encodeERC20ProxyData(defaultERC20TakerAssetAddress),
+                makerAssetData: assetProxyUtils.encodeERC20AssetData(defaultERC20TakerAssetAddress),
+                takerAssetData: assetProxyUtils.encodeERC20AssetData(defaultERC20TakerAssetAddress),
                 makerAssetAmount: Web3Wrapper.toBaseUnitAmount(new BigNumber(10), 18),
                 takerAssetAmount: Web3Wrapper.toBaseUnitAmount(new BigNumber(2), 18),
                 feeRecipientAddress: feeRecipientAddressRight,
             });
             // Match orders
-            return expect(
+            return expectRevertOrAlwaysFailingTransactionAsync(
                 matchOrderTester.matchOrdersAndVerifyBalancesAsync(
                     signedOrderLeft,
                     signedOrderRight,
@@ -728,29 +680,29 @@ describe('matchOrders', () => {
                     erc20BalancesByOwner,
                     erc721TokenIdsByOwner,
                 ),
-            ).to.be.rejectedWith(constants.REVERT);
+            );
         });
 
         it('should throw if the right maker asset is not equal to the left taker asset', async () => {
             // Create orders to match
             const signedOrderLeft = orderFactoryLeft.newSignedOrder({
                 makerAddress: makerAddressLeft,
-                makerAssetData: assetProxyUtils.encodeERC20ProxyData(defaultERC20MakerAssetAddress),
-                takerAssetData: assetProxyUtils.encodeERC20ProxyData(defaultERC20MakerAssetAddress),
+                makerAssetData: assetProxyUtils.encodeERC20AssetData(defaultERC20MakerAssetAddress),
+                takerAssetData: assetProxyUtils.encodeERC20AssetData(defaultERC20MakerAssetAddress),
                 makerAssetAmount: Web3Wrapper.toBaseUnitAmount(new BigNumber(5), 18),
                 takerAssetAmount: Web3Wrapper.toBaseUnitAmount(new BigNumber(10), 18),
                 feeRecipientAddress: feeRecipientAddressLeft,
             });
             const signedOrderRight = orderFactoryRight.newSignedOrder({
                 makerAddress: makerAddressRight,
-                makerAssetData: assetProxyUtils.encodeERC20ProxyData(defaultERC20TakerAssetAddress),
-                takerAssetData: assetProxyUtils.encodeERC20ProxyData(defaultERC20MakerAssetAddress),
+                makerAssetData: assetProxyUtils.encodeERC20AssetData(defaultERC20TakerAssetAddress),
+                takerAssetData: assetProxyUtils.encodeERC20AssetData(defaultERC20MakerAssetAddress),
                 makerAssetAmount: Web3Wrapper.toBaseUnitAmount(new BigNumber(10), 18),
                 takerAssetAmount: Web3Wrapper.toBaseUnitAmount(new BigNumber(2), 18),
                 feeRecipientAddress: feeRecipientAddressRight,
             });
             // Match orders
-            return expect(
+            return expectRevertOrAlwaysFailingTransactionAsync(
                 matchOrderTester.matchOrdersAndVerifyBalancesAsync(
                     signedOrderLeft,
                     signedOrderRight,
@@ -758,7 +710,7 @@ describe('matchOrders', () => {
                     erc20BalancesByOwner,
                     erc721TokenIdsByOwner,
                 ),
-            ).to.be.rejectedWith(constants.REVERT);
+            );
         });
 
         it('should transfer correct amounts when left order maker asset is an ERC721 token', async () => {
@@ -766,16 +718,16 @@ describe('matchOrders', () => {
             const erc721TokenToTransfer = erc721LeftMakerAssetIds[0];
             const signedOrderLeft = orderFactoryLeft.newSignedOrder({
                 makerAddress: makerAddressLeft,
-                makerAssetData: assetProxyUtils.encodeERC721ProxyData(defaultERC721AssetAddress, erc721TokenToTransfer),
-                takerAssetData: assetProxyUtils.encodeERC20ProxyData(defaultERC20TakerAssetAddress),
+                makerAssetData: assetProxyUtils.encodeERC721AssetData(defaultERC721AssetAddress, erc721TokenToTransfer),
+                takerAssetData: assetProxyUtils.encodeERC20AssetData(defaultERC20TakerAssetAddress),
                 makerAssetAmount: new BigNumber(1),
                 takerAssetAmount: Web3Wrapper.toBaseUnitAmount(new BigNumber(10), 18),
                 feeRecipientAddress: feeRecipientAddressLeft,
             });
             const signedOrderRight = orderFactoryRight.newSignedOrder({
                 makerAddress: makerAddressRight,
-                makerAssetData: assetProxyUtils.encodeERC20ProxyData(defaultERC20TakerAssetAddress),
-                takerAssetData: assetProxyUtils.encodeERC721ProxyData(defaultERC721AssetAddress, erc721TokenToTransfer),
+                makerAssetData: assetProxyUtils.encodeERC20AssetData(defaultERC20TakerAssetAddress),
+                takerAssetData: assetProxyUtils.encodeERC721AssetData(defaultERC721AssetAddress, erc721TokenToTransfer),
                 makerAssetAmount: Web3Wrapper.toBaseUnitAmount(new BigNumber(10), 18),
                 takerAssetAmount: new BigNumber(1),
                 feeRecipientAddress: feeRecipientAddressRight,
@@ -790,10 +742,10 @@ describe('matchOrders', () => {
             );
             // Verify left order was fully filled
             const leftOrderInfo: OrderInfo = await exchangeWrapper.getOrderInfoAsync(signedOrderLeft);
-            expect(leftOrderInfo.orderStatus as ExchangeStatus).to.be.equal(ExchangeStatus.ORDER_FULLY_FILLED);
+            expect(leftOrderInfo.orderStatus as OrderStatus).to.be.equal(OrderStatus.FULLY_FILLED);
             // Verify right order was fully filled
             const rightOrderInfo: OrderInfo = await exchangeWrapper.getOrderInfoAsync(signedOrderRight);
-            expect(rightOrderInfo.orderStatus as ExchangeStatus).to.be.equal(ExchangeStatus.ORDER_FULLY_FILLED);
+            expect(rightOrderInfo.orderStatus as OrderStatus).to.be.equal(OrderStatus.FULLY_FILLED);
         });
 
         it('should transfer correct amounts when right order maker asset is an ERC721 token', async () => {
@@ -801,16 +753,16 @@ describe('matchOrders', () => {
             const erc721TokenToTransfer = erc721RightMakerAssetIds[0];
             const signedOrderLeft = orderFactoryLeft.newSignedOrder({
                 makerAddress: makerAddressLeft,
-                makerAssetData: assetProxyUtils.encodeERC20ProxyData(defaultERC20MakerAssetAddress),
-                takerAssetData: assetProxyUtils.encodeERC721ProxyData(defaultERC721AssetAddress, erc721TokenToTransfer),
+                makerAssetData: assetProxyUtils.encodeERC20AssetData(defaultERC20MakerAssetAddress),
+                takerAssetData: assetProxyUtils.encodeERC721AssetData(defaultERC721AssetAddress, erc721TokenToTransfer),
                 makerAssetAmount: Web3Wrapper.toBaseUnitAmount(new BigNumber(10), 18),
                 takerAssetAmount: new BigNumber(1),
                 feeRecipientAddress: feeRecipientAddressLeft,
             });
             const signedOrderRight = orderFactoryRight.newSignedOrder({
                 makerAddress: makerAddressRight,
-                makerAssetData: assetProxyUtils.encodeERC721ProxyData(defaultERC721AssetAddress, erc721TokenToTransfer),
-                takerAssetData: assetProxyUtils.encodeERC20ProxyData(defaultERC20MakerAssetAddress),
+                makerAssetData: assetProxyUtils.encodeERC721AssetData(defaultERC721AssetAddress, erc721TokenToTransfer),
+                takerAssetData: assetProxyUtils.encodeERC20AssetData(defaultERC20MakerAssetAddress),
                 makerAssetAmount: new BigNumber(1),
                 takerAssetAmount: Web3Wrapper.toBaseUnitAmount(new BigNumber(10), 18),
                 feeRecipientAddress: feeRecipientAddressRight,
@@ -825,10 +777,10 @@ describe('matchOrders', () => {
             );
             // Verify left order was fully filled
             const leftOrderInfo: OrderInfo = await exchangeWrapper.getOrderInfoAsync(signedOrderLeft);
-            expect(leftOrderInfo.orderStatus as ExchangeStatus).to.be.equal(ExchangeStatus.ORDER_FULLY_FILLED);
+            expect(leftOrderInfo.orderStatus as OrderStatus).to.be.equal(OrderStatus.FULLY_FILLED);
             // Verify right order was fully filled
             const rightOrderInfo: OrderInfo = await exchangeWrapper.getOrderInfoAsync(signedOrderRight);
-            expect(rightOrderInfo.orderStatus as ExchangeStatus).to.be.equal(ExchangeStatus.ORDER_FULLY_FILLED);
+            expect(rightOrderInfo.orderStatus as OrderStatus).to.be.equal(OrderStatus.FULLY_FILLED);
         });
     });
 }); // tslint:disable-line:max-file-line-count

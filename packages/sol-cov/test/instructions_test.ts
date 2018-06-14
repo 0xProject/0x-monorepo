@@ -1,8 +1,6 @@
 import * as chai from 'chai';
-import * as fs from 'fs';
 import 'make-promises-safe';
 import 'mocha';
-import * as path from 'path';
 
 import { constants } from '../src/constants';
 import { getPcToInstructionIndexMapping } from '../src/instructions';

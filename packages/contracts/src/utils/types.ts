@@ -1,6 +1,6 @@
-import { Order, OrderWithoutExchangeAddress } from '@0xproject/types';
+import { OrderWithoutExchangeAddress } from '@0xproject/types';
 import { BigNumber } from '@0xproject/utils';
-import { AbiDefinition, ContractAbi } from 'ethereum-types';
+import { AbiDefinition } from 'ethereum-types';
 
 export interface ERC20BalancesByOwner {
     [ownerAddress: string]: {
@@ -69,22 +69,14 @@ export interface Token {
     swarmHash: string;
 }
 
-export enum ExchangeStatus {
+export enum OrderStatus {
     INVALID,
-    SUCCESS,
-    ROUNDING_ERROR_TOO_LARGE,
-    INSUFFICIENT_BALANCE_OR_ALLOWANCE,
-    TAKER_ASSET_FILL_AMOUNT_TOO_LOW,
-    INVALID_SIGNATURE,
-    INVALID_SENDER,
-    INVALID_TAKER,
-    INVALID_MAKER,
-    ORDER_INVALID_MAKER_ASSET_AMOUNT,
-    ORDER_INVALID_TAKER_ASSET_AMOUNT,
-    ORDER_FILLABLE,
-    ORDER_EXPIRED,
-    ORDER_FULLY_FILLED,
-    ORDER_CANCELLED,
+    INVALID_MAKER_ASSET_AMOUNT,
+    INVALID_TAKER_ASSET_AMOUNT,
+    FILLABLE,
+    EXPIRED,
+    FULLY_FILLED,
+    CANCELLED,
 }
 
 export enum ContractName {
@@ -98,11 +90,14 @@ export enum ContractName {
     AccountLevels = 'AccountLevels',
     EtherDelta = 'EtherDelta',
     Arbitrage = 'Arbitrage',
+    TestAssetDataDecoders = 'TestAssetDataDecoders',
     TestAssetProxyDispatcher = 'TestAssetProxyDispatcher',
+    TestLibMem = 'TestLibMem',
     TestLibs = 'TestLibs',
     TestSignatureValidator = 'TestSignatureValidator',
     ERC20Proxy = 'ERC20Proxy',
     ERC721Proxy = 'ERC721Proxy',
+    DummyERC721Receiver = 'DummyERC721Receiver',
     DummyERC721Token = 'DummyERC721Token',
     TestLibBytes = 'TestLibBytes',
     Authorizable = 'Authorizable',

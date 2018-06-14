@@ -1,19 +1,17 @@
-import { BigNumber, NULL_BYTES } from '@0xproject/utils';
+import { BigNumber } from '@0xproject/utils';
 import { Web3Wrapper } from '@0xproject/web3-wrapper';
 import { Provider, TxData } from 'ethereum-types';
-import * as _ from 'lodash';
 
 import { ArtifactWriter } from '../artifact_writer';
-import { ContractName } from '../types';
 import { erc20TokenInfo, erc721TokenInfo } from '../utils/token_info';
 
 import { artifacts } from './artifacts';
+import { AssetProxyOwnerContract } from './contract_wrappers/asset_proxy_owner';
 import { DummyERC20TokenContract } from './contract_wrappers/dummy_e_r_c20_token';
 import { DummyERC721TokenContract } from './contract_wrappers/dummy_e_r_c721_token';
 import { ERC20ProxyContract } from './contract_wrappers/e_r_c20_proxy';
 import { ERC721ProxyContract } from './contract_wrappers/e_r_c721_proxy';
 import { ExchangeContract } from './contract_wrappers/exchange';
-import { MultiSigWalletWithTimeLockExceptRemoveAuthorizedAddressContract } from './contract_wrappers/multi_sig_wallet_with_time_lock_except_remove_authorized_address';
 import { WETH9Contract } from './contract_wrappers/weth9';
 import { ZRXTokenContract } from './contract_wrappers/zrx_token';
 
@@ -64,38 +62,34 @@ export const runV2MigrationsAsync = async (provider: Provider, artifactsDir: str
     const secondsRequired = new BigNumber(0);
     const owner = accounts[0];
 
-    // TODO(leonid) use `AssetProxyOwner` after https://github.com/0xProject/0x-monorepo/pull/571 is merged
-    // ERC20 Multisig
-    const multiSigERC20 = await MultiSigWalletWithTimeLockExceptRemoveAuthorizedAddressContract.deployFrom0xArtifactAsync(
-        artifacts.MultiSigWalletWithTimeLockExceptRemoveAuthorizedAddress,
+    // AssetProxyOwner
+    const assetProxyOwner = await AssetProxyOwnerContract.deployFrom0xArtifactAsync(
+        artifacts.AssetProxyOwner,
         provider,
         txDefaults,
         owners,
+        [erc20proxy.address, erc721proxy.address],
         confirmationsRequired,
         secondsRequired,
-        erc20proxy.address,
     );
-    artifactsWriter.saveArtifact(multiSigERC20);
-    await erc20proxy.addAuthorizedAddress.sendTransactionAsync(exchange.address, { from: owner });
-    await erc20proxy.transferOwnership.sendTransactionAsync(multiSigERC20.address, { from: owner });
-
-    // ERC721 Multisig
-    const multiSigERC721 = await MultiSigWalletWithTimeLockExceptRemoveAuthorizedAddressContract.deployFrom0xArtifactAsync(
-        artifacts.MultiSigWalletWithTimeLockExceptRemoveAuthorizedAddress,
-        provider,
-        txDefaults,
-        owners,
-        confirmationsRequired,
-        secondsRequired,
-        erc721proxy.address,
+    artifactsWriter.saveArtifact(assetProxyOwner);
+    await web3Wrapper.awaitTransactionSuccessAsync(
+        await erc20proxy.addAuthorizedAddress.sendTransactionAsync(exchange.address, { from: owner }),
     );
-    artifactsWriter.saveArtifact(multiSigERC721);
-    await erc721proxy.addAuthorizedAddress.sendTransactionAsync(exchange.address, { from: owner });
-    await erc721proxy.transferOwnership.sendTransactionAsync(multiSigERC721.address, { from: owner });
+    await web3Wrapper.awaitTransactionSuccessAsync(
+        await erc20proxy.transferOwnership.sendTransactionAsync(assetProxyOwner.address, { from: owner }),
+    );
+    await web3Wrapper.awaitTransactionSuccessAsync(
+        await erc721proxy.addAuthorizedAddress.sendTransactionAsync(exchange.address, { from: owner }),
+    );
+    await web3Wrapper.awaitTransactionSuccessAsync(
+        await erc721proxy.transferOwnership.sendTransactionAsync(assetProxyOwner.address, { from: owner }),
+    );
 
     // Dummy ERC20 tokens
     for (const token of erc20TokenInfo) {
         const totalSupply = new BigNumber(100000000000000000000);
+        // tslint:disable-next-line:no-unused-variable
         const dummyErc20Token = await DummyERC20TokenContract.deployFrom0xArtifactAsync(
             artifacts.DummyERC20Token,
             provider,
@@ -108,6 +102,7 @@ export const runV2MigrationsAsync = async (provider: Provider, artifactsDir: str
     }
 
     // ERC721
+    // tslint:disable-next-line:no-unused-variable
     const cryptoKittieToken = await DummyERC721TokenContract.deployFrom0xArtifactAsync(
         artifacts.DummyERC721Token,
         provider,

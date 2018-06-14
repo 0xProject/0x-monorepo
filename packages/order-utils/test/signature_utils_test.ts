@@ -1,4 +1,3 @@
-import { web3Factory } from '@0xproject/dev-utils';
 import { BigNumber } from '@0xproject/utils';
 import * as chai from 'chai';
 import { JSONRPCErrorCallback, JSONRPCRequestPayload } from 'ethereum-types';
@@ -7,7 +6,7 @@ import 'make-promises-safe';
 import 'mocha';
 import * as Sinon from 'sinon';
 
-import { ecSignOrderHashAsync, generatePseudoRandomSalt, MessagePrefixType, orderHashUtils } from '../src';
+import { ecSignOrderHashAsync, generatePseudoRandomSalt, MessagePrefixType } from '../src';
 import { isValidECSignature, isValidSignatureAsync } from '../src/signature_utils';
 
 import { chaiSetup } from './utils/chai_setup';

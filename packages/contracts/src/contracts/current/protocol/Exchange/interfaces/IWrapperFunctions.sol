@@ -33,7 +33,8 @@ contract IWrapperFunctions is
     function fillOrKillOrder(
         LibOrder.Order memory order,
         uint256 takerAssetFillAmount,
-        bytes memory signature)
+        bytes memory signature
+    )
         public
         returns (LibFillResults.FillResults memory fillResults);
 
@@ -46,7 +47,8 @@ contract IWrapperFunctions is
     function fillOrderNoThrow(
         LibOrder.Order memory order,
         uint256 takerAssetFillAmount,
-        bytes memory signature)
+        bytes memory signature
+    )
         public
         returns (LibFillResults.FillResults memory fillResults);
 
@@ -57,7 +59,8 @@ contract IWrapperFunctions is
     function batchFillOrders(
         LibOrder.Order[] memory orders,
         uint256[] memory takerAssetFillAmounts,
-        bytes[] memory signatures)
+        bytes[] memory signatures
+    )
         public;
 
     /// @dev Synchronously executes multiple calls of fillOrKill.
@@ -67,7 +70,8 @@ contract IWrapperFunctions is
     function batchFillOrKillOrders(
         LibOrder.Order[] memory orders,
         uint256[] memory takerAssetFillAmounts,
-        bytes[] memory signatures)
+        bytes[] memory signatures
+    )
         public;
 
     /// @dev Fills an order with specified parameters and ECDSA signature.
@@ -78,7 +82,8 @@ contract IWrapperFunctions is
     function batchFillOrdersNoThrow(
         LibOrder.Order[] memory orders,
         uint256[] memory takerAssetFillAmounts,
-        bytes[] memory signatures)
+        bytes[] memory signatures
+    )
         public;
 
     /// @dev Synchronously executes multiple calls of fillOrder until total amount of takerAsset is sold by taker.
@@ -89,7 +94,8 @@ contract IWrapperFunctions is
     function marketSellOrders(
         LibOrder.Order[] memory orders,
         uint256 takerAssetFillAmount,
-        bytes[] memory signatures)
+        bytes[] memory signatures
+    )
         public
         returns (LibFillResults.FillResults memory totalFillResults);
 
@@ -102,7 +108,8 @@ contract IWrapperFunctions is
     function marketSellOrdersNoThrow(
         LibOrder.Order[] memory orders,
         uint256 takerAssetFillAmount,
-        bytes[] memory signatures)
+        bytes[] memory signatures
+    )
         public
         returns (LibFillResults.FillResults memory totalFillResults);
 
@@ -114,7 +121,8 @@ contract IWrapperFunctions is
     function marketBuyOrders(
         LibOrder.Order[] memory orders,
         uint256 makerAssetFillAmount,
-        bytes[] memory signatures)
+        bytes[] memory signatures
+    )
         public
         returns (LibFillResults.FillResults memory totalFillResults);
 
@@ -127,7 +135,8 @@ contract IWrapperFunctions is
     function marketBuyOrdersNoThrow(
         LibOrder.Order[] memory orders,
         uint256 makerAssetFillAmount,
-        bytes[] memory signatures)
+        bytes[] memory signatures
+    )
         public
         returns (LibFillResults.FillResults memory totalFillResults);
 

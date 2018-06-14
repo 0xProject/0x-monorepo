@@ -71,7 +71,7 @@ contract TestLibs is
 
     function getOrderSchemaHash()
         public
-        view
+        pure
         returns (bytes32)
     {
         return ORDER_SCHEMA_HASH;
@@ -79,7 +79,7 @@ contract TestLibs is
 
     function getDomainSeparatorSchemaHash()
         public
-        view
+        pure
         returns (bytes32)
     {
         return DOMAIN_SEPARATOR_SCHEMA_HASH;

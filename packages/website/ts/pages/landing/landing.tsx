@@ -1,11 +1,13 @@
 import { colors } from '@0xproject/react-shared';
 import * as _ from 'lodash';
-import RaisedButton from 'material-ui/RaisedButton';
 import * as React from 'react';
 import DocumentTitle = require('react-document-title');
 import { Link } from 'react-router-dom';
 import { Footer } from 'ts/components/footer';
+import { SubscribeForm } from 'ts/components/forms/subscribe_form';
 import { TopBar } from 'ts/components/top_bar/top_bar';
+import { CallToAction } from 'ts/components/ui/button';
+import { Container } from 'ts/components/ui/container';
 import { Dispatcher } from 'ts/redux/dispatcher';
 import { Deco, Key, Language, ScreenWidths, WebsitePaths } from 'ts/types';
 import { constants } from 'ts/utils/constants';
@@ -220,23 +222,12 @@ export class Landing extends React.Component<LandingProps, LandingState> {
     }
     private _renderHero(): React.ReactNode {
         const isSmallScreen = this.state.screenWidth === ScreenWidths.Sm;
-        const buttonLabelStyle: React.CSSProperties = {
-            textTransform: 'none',
-            fontSize: isSmallScreen ? 12 : 14,
-            fontWeight: 400,
-        };
-        const lightButtonStyle: React.CSSProperties = {
-            borderRadius: 6,
-            border: '1px solid #D8D8D8',
-            lineHeight: '33px',
-            height: 38,
-        };
         const left = 'col lg-col-7 md-col-7 col-12 lg-pl4 md-pl4 sm-pl0 sm-px3 sm-center';
         return (
             <div className="clearfix py4" style={{ backgroundColor: colors.heroGrey }}>
                 <div className="mx-auto max-width-4 clearfix">
                     {this._renderWhatsNew()}
-                    <div className="lg-pt4 md-pt4 sm-pt2 lg-pb4 md-pb4 lg-my4 md-my4 sm-mt2 sm-mb4 clearfix">
+                    <div className="lg-pt4 md-pt4 sm-pt2 lg-pb4 md-pb4 lg-mt4 md-mt4 sm-mt2 sm-mb4 clearfix">
                         <div className="col lg-col-5 md-col-5 col-12 sm-center">
                             <img src="/images/landing/hero_chip_image.png" height={isSmallScreen ? 300 : 395} />
                         </div>
@@ -268,40 +259,31 @@ export class Landing extends React.Component<LandingProps, LandingState> {
                                 >
                                     {this.props.translate.get(Key.TopTagline)}
                                 </div>
-                                <div className="pt3 clearfix sm-mx-auto" style={{ maxWidth: 389 }}>
-                                    <div className="lg-pr2 md-pr2 col col-6 sm-center">
+                                <Container className="pt3 clearfix sm-mx-auto" maxWidth="390px">
+                                    <div className="lg-pr2 md-pr2 lg-col lg-col-6 sm-center sm-col sm-col-12 mb2">
                                         <Link to={WebsitePaths.ZeroExJs} className="text-decoration-none">
-                                            <RaisedButton
-                                                style={{ borderRadius: 6, minWidth: 157.36 }}
-                                                buttonStyle={{ borderRadius: 6 }}
-                                                labelStyle={buttonLabelStyle}
-                                                label={this.props.translate.get(Key.BuildCallToAction, Deco.Cap)}
-                                                onClick={_.noop}
-                                            />
+                                            <CallToAction width="175px" type="light">
+                                                {this.props.translate.get(Key.BuildCallToAction, Deco.Cap)}
+                                            </CallToAction>
                                         </Link>
                                     </div>
-                                    <div className="col col-6 sm-center">
+                                    <div className="lg-col lg-col-6 sm-center sm-col sm-col-12">
                                         <a
                                             href={constants.URL_ZEROEX_CHAT}
                                             target="_blank"
                                             className="text-decoration-none"
                                         >
-                                            <RaisedButton
-                                                style={{ borderRadius: 6, minWidth: 150 }}
-                                                buttonStyle={lightButtonStyle}
-                                                labelColor="white"
-                                                backgroundColor={colors.heroGrey}
-                                                labelStyle={buttonLabelStyle}
-                                                label={this.props.translate.get(Key.CommunityCallToAction, Deco.Cap)}
-                                                onClick={_.noop}
-                                            />
+                                            <CallToAction width="175px">
+                                                {this.props.translate.get(Key.CommunityCallToAction, Deco.Cap)}
+                                            </CallToAction>
                                         </a>
                                     </div>
-                                </div>
+                                </Container>
                             </div>
                         </div>
                     </div>
                 </div>
+                {this.props.translate.getLanguage() === Language.English && <SubscribeForm />}
             </div>
         );
     }
@@ -349,6 +331,9 @@ export class Landing extends React.Component<LandingProps, LandingState> {
                 case ScreenWidths.Lg:
                     colWidth = isRelayersOnly ? 2 : 2 - i % 2;
                     break;
+
+                default:
+                    throw new Error(`Encountered unknown ScreenWidths value: ${this.state.screenWidth}`);
             }
             return (
                 <div key={`project-${project.logoFileName}`} className={`col col-${colWidth} center`}>
@@ -753,17 +738,6 @@ export class Landing extends React.Component<LandingProps, LandingState> {
     }
     private _renderCallToAction(): React.ReactNode {
         const isSmallScreen = this.state.screenWidth === ScreenWidths.Sm;
-        const buttonLabelStyle: React.CSSProperties = {
-            textTransform: 'none',
-            fontSize: 15,
-            fontWeight: 400,
-        };
-        const lightButtonStyle: React.CSSProperties = {
-            borderRadius: 6,
-            border: `1px solid ${colors.grey500}`,
-            lineHeight: '33px',
-            height: 49,
-        };
         const callToActionClassNames =
             'lg-pr3 md-pr3 lg-right-align md-right-align sm-center sm-px3 h4 lg-table-cell md-table-cell';
         return (
@@ -782,15 +756,9 @@ export class Landing extends React.Component<LandingProps, LandingState> {
                         </div>
                         <div className="sm-center sm-pt2 lg-table-cell md-table-cell">
                             <Link to={WebsitePaths.ZeroExJs} className="text-decoration-none">
-                                <RaisedButton
-                                    style={{ borderRadius: 6, minWidth: 150 }}
-                                    buttonStyle={lightButtonStyle}
-                                    labelColor={colors.white}
-                                    backgroundColor={colors.heroGrey}
-                                    labelStyle={buttonLabelStyle}
-                                    label={this.props.translate.get(Key.BuildCallToAction, Deco.Cap)}
-                                    onClick={_.noop}
-                                />
+                                <CallToAction fontSize="15px">
+                                    {this.props.translate.get(Key.BuildCallToAction, Deco.Cap)}
+                                </CallToAction>
                             </Link>
                         </div>
                     </div>
@@ -805,8 +773,5 @@ export class Landing extends React.Component<LandingProps, LandingState> {
                 screenWidth: newScreenWidth,
             });
         }
-    }
-    private _onLanguageSelected(language: Language): void {
-        this.props.dispatcher.updateSelectedLanguage(language);
     }
 } // tslint:disable:max-file-line-count

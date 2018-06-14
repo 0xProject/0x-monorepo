@@ -28,24 +28,24 @@ contract TestLibBytes is
     /// @dev Pops the last byte off of a byte array by modifying its length.
     /// @param b Byte array that will be modified.
     /// @return The byte that was popped off.
-    function publicPopByte(bytes memory b)
+    function publicPopLastByte(bytes memory b)
         public
         pure
         returns (bytes memory, bytes1 result)
     {
-        result = popByte(b);
+        result = popLastByte(b);
         return (b, result);
     }
 
     /// @dev Pops the last 20 bytes off of a byte array by modifying its length.
     /// @param b Byte array that will be modified.
     /// @return The 20 byte address that was popped off.
-    function publicPopAddress(bytes memory b)
+    function publicPopLast20Bytes(bytes memory b)
         public
         pure
         returns (bytes memory, address result)
     {
-        result = popAddress(b);
+        result = popLast20Bytes(b);
         return (b, result);
     }
 
@@ -62,13 +62,29 @@ contract TestLibBytes is
         return equal;
     }
 
+    /// @dev Performs a deep copy of a byte array onto another byte array of greater than or equal length.
+    /// @param dest Byte array that will be overwritten with source bytes.
+    /// @param source Byte array to copy onto dest bytes.
+    function publicDeepCopyBytes(
+        bytes memory dest,
+        bytes memory source
+    )
+        public
+        pure
+        returns (bytes memory)
+    {
+        deepCopyBytes(dest, source);
+        return dest;
+    }
+
     /// @dev Reads an address from a position in a byte array.
     /// @param b Byte array containing an address.
     /// @param index Index in byte array of address.
     /// @return address from byte array.
     function publicReadAddress(
         bytes memory b,
-        uint256 index)
+        uint256 index
+    )
         public
         pure
         returns (address result)
@@ -84,7 +100,8 @@ contract TestLibBytes is
     function publicWriteAddress(
         bytes memory b,
         uint256 index,
-        address input)
+        address input
+    )
         public
         pure
         returns (bytes memory)
@@ -99,7 +116,8 @@ contract TestLibBytes is
     /// @return bytes32 value from byte array.
     function publicReadBytes32(
         bytes memory b,
-        uint256 index)
+        uint256 index
+    )
         public
         pure
         returns (bytes32 result)
@@ -115,7 +133,8 @@ contract TestLibBytes is
     function publicWriteBytes32(
         bytes memory b,
         uint256 index,
-        bytes32 input)
+        bytes32 input
+    )
         public
         pure
         returns (bytes memory)
@@ -130,7 +149,8 @@ contract TestLibBytes is
     /// @return uint256 value from byte array.
     function publicReadUint256(
         bytes memory b,
-        uint256 index)
+        uint256 index
+    )
         public
         pure
         returns (uint256 result)
@@ -146,7 +166,8 @@ contract TestLibBytes is
     function publicWriteUint256(
         bytes memory b,
         uint256 index,
-        uint256 input)
+        uint256 input
+    )
         public
         pure
         returns (bytes memory)
@@ -165,5 +186,39 @@ contract TestLibBytes is
     {
         result = readFirst4(b);
         return result;
+    }
+
+    /// @dev Reads nested bytes from a specific position.
+    /// @param b Byte array containing nested bytes.
+    /// @param index Index of nested bytes.
+    /// @return result Nested bytes.
+    function publicReadBytes(
+        bytes memory b,
+        uint256 index
+    )
+        public
+        pure
+        returns (bytes memory result)
+    {
+        result = readBytes(b, index);
+        return result;
+    }
+
+    /// @dev Inserts bytes at a specific position in a byte array.
+    /// @param b Byte array to insert <input> into.
+    /// @param index Index in byte array of <input>.
+    /// @param input bytes to insert.
+    /// @return b Updated input byte array
+    function publicWriteBytes(
+        bytes memory b,
+        uint256 index,
+        bytes memory input
+    )
+        public
+        pure
+        returns (bytes memory)
+    {
+        writeBytes(b, index, input);
+        return b;
     }
 }

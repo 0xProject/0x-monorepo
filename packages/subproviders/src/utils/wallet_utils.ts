@@ -1,8 +1,7 @@
 import ethUtil = require('ethereumjs-util');
 import HDNode = require('hdkey');
-import * as _ from 'lodash';
 
-import { DerivedHDKeyInfo, WalletSubproviderErrors } from '../types';
+import { DerivedHDKeyInfo } from '../types';
 
 const DEFAULT_ADDRESS_SEARCH_LIMIT = 1000;
 

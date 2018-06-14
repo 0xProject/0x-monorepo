@@ -3,7 +3,6 @@ import {
     constants as sharedConstants,
     EtherscanLinkSuffixes,
     MarkdownSection,
-    MenuSubsectionsBySection,
     NestedSidebarMenu,
     Networks,
     SectionHeader,
@@ -13,13 +12,11 @@ import {
 import * as _ from 'lodash';
 import CircularProgress from 'material-ui/CircularProgress';
 import * as React from 'react';
-import { scroller } from 'react-scroll';
 
 import { DocsInfo } from '../docs_info';
 import {
     AddressByContractName,
     DocAgnosticFormat,
-    DoxityDocObj,
     Event,
     Property,
     SolidityMethod,
@@ -29,7 +26,6 @@ import {
     TypescriptMethod,
 } from '../types';
 import { constants } from '../utils/constants';
-import { utils } from '../utils/utils';
 
 import { Badge } from './badge';
 import { Comment } from './comment';
@@ -77,7 +73,7 @@ export class Documentation extends React.Component<DocumentationProps, Documenta
     public componentWillUnmount(): void {
         window.removeEventListener('hashchange', this._onHashChanged.bind(this), false);
     }
-    public componentDidUpdate(prevProps: DocumentationProps, prevState: DocumentationState): void {
+    public componentDidUpdate(prevProps: DocumentationProps, _prevState: DocumentationState): void {
         if (!_.isEqual(prevProps.docAgnosticFormat, this.props.docAgnosticFormat)) {
             const hash = window.location.hash.slice(1);
             sharedUtils.scrollToHash(hash, sharedConstants.SCROLL_CONTAINER_ID);
@@ -368,7 +364,7 @@ export class Documentation extends React.Component<DocumentationProps, Documenta
             />
         );
     }
-    private _onSidebarHover(event: React.FormEvent<HTMLInputElement>): void {
+    private _onSidebarHover(_event: React.FormEvent<HTMLInputElement>): void {
         this.setState({
             isHoveringSidebar: true,
         });
@@ -378,7 +374,7 @@ export class Documentation extends React.Component<DocumentationProps, Documenta
             isHoveringSidebar: false,
         });
     }
-    private _onHashChanged(event: any): void {
+    private _onHashChanged(_event: any): void {
         const hash = window.location.hash.slice(1);
         sharedUtils.scrollToHash(hash, sharedConstants.SCROLL_CONTAINER_ID);
     }

@@ -20,9 +20,9 @@ pragma solidity ^0.4.24;
 pragma experimental ABIEncoderV2;
 
 import "../../utils/LibBytes/LibBytes.sol";
-import "../../tokens/ERC721Token/ERC721Token.sol";
 import "./MixinAssetProxy.sol";
 import "./MixinAuthorizable.sol";
+import "../../tokens/ERC721Token/ERC721Token.sol";
 
 contract ERC721Proxy is
     LibBytes,
@@ -33,52 +33,39 @@ contract ERC721Proxy is
     // Id of this proxy.
     uint8 constant PROXY_ID = 2;
 
-    // Revert reasons
-    string constant INVALID_TRANSFER_AMOUNT = "Transfer amount must equal 1.";
-    string constant INVALID_METADATA_LENGTH = "Metadata must have a length of 53.";
-    string constant PROXY_ID_MISMATCH = "Proxy id in metadata does not match this proxy id.";
-
     /// @dev Internal version of `transferFrom`.
-    /// @param assetMetadata Encoded byte array.
+    /// @param assetData Encoded byte array.
     /// @param from Address to transfer asset from.
     /// @param to Address to transfer asset to.
     /// @param amount Amount of asset to transfer.
     function transferFromInternal(
-        bytes memory assetMetadata,
+        bytes memory assetData,
         address from,
         address to,
         uint256 amount
     )
         internal
     {
-        // Data must be intended for this proxy.
-        uint256 length = assetMetadata.length;
-
-        require(
-            length == 53,
-            INVALID_METADATA_LENGTH
-        );
-
-        require(
-            uint8(assetMetadata[length - 1]) == PROXY_ID,
-            PROXY_ID_MISMATCH
-        );
-
         // There exists only 1 of each token.
         require(
             amount == 1,
-            INVALID_TRANSFER_AMOUNT
+            INVALID_AMOUNT
         );
+    
+        // Decode asset data.
+        (
+            address token,
+            uint256 tokenId,
+            bytes memory receiverData
+        ) = decodeERC721AssetData(assetData);
 
-        // Decode metadata
-        address token = readAddress(assetMetadata, 0);
-        uint256 tokenId = readUint256(assetMetadata, 20);
-
-        // Transfer token.
-        // Either succeeds or throws.
-        // @TODO: Call safeTransferFrom if there is additional
-        //        data stored in `assetMetadata`.
-        ERC721Token(token).transferFrom(from, to, tokenId);
+        // Transfer token. Saves gas by calling safeTransferFrom only
+        // when there is receiverData present. Either succeeds or throws.
+        if (receiverData.length > 0) {
+            ERC721Token(token).safeTransferFrom(from, to, tokenId, receiverData);
+        } else {
+            ERC721Token(token).transferFrom(from, to, tokenId);
+        }
     }
 
     /// @dev Gets the proxy id associated with the proxy address.
@@ -89,5 +76,35 @@ contract ERC721Proxy is
         returns (uint8)
     {
         return PROXY_ID;
+    }
+
+    /// @dev Decodes ERC721 Asset data.
+    /// @param assetData Encoded byte array.
+    /// @return proxyId Intended ERC721 proxy id.
+    /// @return token ERC721 token address.
+    /// @return tokenId ERC721 token id.
+    /// @return receiverData Additional data with no specific format, which
+    ///                      is passed to the receiving contract's onERC721Received.
+    function decodeERC721AssetData(bytes memory assetData)
+        internal
+        pure
+        returns (
+            address token,
+            uint256 tokenId,
+            bytes memory receiverData
+        )
+    {
+        // Decode asset data.
+        token = readAddress(assetData, 0);
+        tokenId = readUint256(assetData, 20);
+        if (assetData.length > 52) {
+            receiverData = readBytes(assetData, 52);
+        }
+
+        return (
+            token,
+            tokenId,
+            receiverData
+        );
     }
 }

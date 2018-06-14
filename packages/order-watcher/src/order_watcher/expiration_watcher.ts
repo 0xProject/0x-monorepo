@@ -19,6 +19,8 @@ export class ExpirationWatcher {
     private _expirationMarginMs: number;
     private _orderExpirationCheckingIntervalIdIfExists?: NodeJS.Timer;
     constructor(expirationMarginIfExistsMs?: number, orderExpirationCheckingIntervalIfExistsMs?: number) {
+        this._orderExpirationCheckingIntervalMs =
+            orderExpirationCheckingIntervalIfExistsMs || DEFAULT_ORDER_EXPIRATION_CHECKING_INTERVAL_MS;
         this._expirationMarginMs = expirationMarginIfExistsMs || DEFAULT_EXPIRATION_MARGIN_MS;
         this._orderExpirationCheckingIntervalMs =
             expirationMarginIfExistsMs || DEFAULT_ORDER_EXPIRATION_CHECKING_INTERVAL_MS;

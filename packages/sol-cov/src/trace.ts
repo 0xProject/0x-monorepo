@@ -1,7 +1,6 @@
 import { addressUtils, BigNumber, logUtils } from '@0xproject/utils';
-import { OpCode, StructLog, TransactionTrace } from 'ethereum-types';
-import { addHexPrefix, stripHexPrefix } from 'ethereumjs-util';
-import * as fs from 'fs';
+import { OpCode, StructLog } from 'ethereum-types';
+import { addHexPrefix } from 'ethereumjs-util';
 import * as _ from 'lodash';
 
 export interface TraceByContractAddress {
@@ -17,6 +16,13 @@ export function getTracesByContractAddress(structLogs: StructLog[], startAddress
     const traceByContractAddress: TraceByContractAddress = {};
     let currentTraceSegment = [];
     const callStack = [startAddress];
+    if (_.isEmpty(structLogs)) {
+        return traceByContractAddress;
+    }
+    if (structLogs[0].depth === 1) {
+        // Geth uses 1-indexed depth counter whilst ganache starts from 0
+        _.forEach(structLogs, structLog => structLog.depth--);
+    }
     // tslint:disable-next-line:prefer-for-of
     for (let i = 0; i < structLogs.length; i++) {
         const structLog = structLogs[i];
@@ -96,10 +102,15 @@ export function getTracesByContractAddress(structLogs: StructLog[], startAddress
         }
     }
     if (callStack.length !== 0) {
-        throw new Error('Malformed trace. Call stack non empty at the end');
+        logUtils.warn('Malformed trace. Call stack non empty at the end');
     }
     if (currentTraceSegment.length !== 0) {
-        throw new Error('Malformed trace. Current trace segment non empty at the end');
+        const currentAddress = callStack.pop() as string;
+        traceByContractAddress[currentAddress] = (traceByContractAddress[currentAddress] || []).concat(
+            currentTraceSegment,
+        );
+        currentTraceSegment = [];
+        logUtils.warn('Malformed trace. Current trace segment non empty at the end');
     }
     return traceByContractAddress;
 }
