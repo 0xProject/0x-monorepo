@@ -318,6 +318,9 @@ export const utils = {
     shouldShowPortalV2(): boolean {
         return this.isDevelopment() || this.isStaging() || this.isDogfood();
     },
+    shouldShowJobsPage(): boolean {
+        return this.isDevelopment() || this.isStaging() || this.isDogfood();
+    },
     getEthToken(tokenByAddress: TokenByAddress): Token {
         const tokens = _.values(tokenByAddress);
         const etherToken = _.find(tokens, { symbol: constants.ETHER_TOKEN_SYMBOL });
