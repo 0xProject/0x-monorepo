@@ -235,7 +235,11 @@ export class Portal extends React.Component<PortalProps, PortalState> {
                 : TokenVisibility.TRACKED;
         return (
             <div style={styles.root}>
-                <PortalOnboardingFlow trackedTokenStateByAddress={this.state.trackedTokenStateByAddress} />
+                <PortalOnboardingFlow
+                    blockchain={this._blockchain}
+                    trackedTokenStateByAddress={this.state.trackedTokenStateByAddress}
+                    refetchTokenStateAsync={this._refetchTokenStateAsync.bind(this)}
+                />
                 <DocumentTitle title="0x Portal DApp" />
                 <TopBar
                     userAddress={this.props.userAddress}

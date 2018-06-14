@@ -1,5 +1,6 @@
 import { constants as sharedConstants, Styles } from '@0xproject/react-shared';
 import { BigNumber, logUtils } from '@0xproject/utils';
+import * as _ from 'lodash';
 import Toggle from 'material-ui/Toggle';
 import * as React from 'react';
 import { Blockchain } from 'ts/blockchain';
@@ -16,11 +17,11 @@ interface AllowanceToggleProps {
     networkId: number;
     blockchain: Blockchain;
     dispatcher: Dispatcher;
-    onErrorOccurred: (errType: BalanceErrs) => void;
     token: Token;
     tokenState: TokenState;
     userAddress: string;
-    isDisabled: boolean;
+    isDisabled?: boolean;
+    onErrorOccurred?: (errType: BalanceErrs) => void;
     refetchTokenStateAsync: () => Promise<void>;
 }
 
@@ -55,6 +56,10 @@ const styles: Styles = {
 };
 
 export class AllowanceToggle extends React.Component<AllowanceToggleProps, AllowanceToggleState> {
+    public static defaultProps = {
+        onErrorOccurred: _.noop,
+        isDisabled: false,
+    };
     constructor(props: AllowanceToggleProps) {
         super(props);
         this.state = {
