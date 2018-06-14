@@ -66,6 +66,12 @@ export const coverageHandler: SingleFileSubtraceHandler = (
 ): Coverage => {
     const absoluteFileName = contractData.sources[fileIndex];
     const coverageEntriesDescription = collectCoverageEntries(contractData.sourceCodes[fileIndex]);
+
+    // if the source wasn't provided for the fileIndex, we can't cover the file
+    if (_.isUndefined(coverageEntriesDescription)) {
+        return {};
+    }
+
     let sourceRanges = _.map(subtrace, structLog => pcToSourceRange[structLog.pc]);
     sourceRanges = _.compact(sourceRanges); // Some PC's don't map to a source range and we just ignore them.
     // By default lodash does a shallow object comparasion. We JSON.stringify them and compare as strings.

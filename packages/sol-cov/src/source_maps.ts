@@ -12,6 +12,9 @@ export interface SourceLocation {
 }
 
 export function getLocationByOffset(str: string): LocationByOffset {
+    if (_.isUndefined(str)) {
+        return {};
+    }
     const locationByOffset: LocationByOffset = { 0: { line: 1, column: 0 } };
     let currentOffset = 0;
     for (const char of str.split('')) {
@@ -56,7 +59,7 @@ export function parseSourceMap(
             length,
             fileIndex,
         };
-        if (parsedEntry.fileIndex !== -1) {
+        if (parsedEntry.fileIndex !== -1 && !_.isUndefined(locationByOffsetByFileIndex[parsedEntry.fileIndex])) {
             const sourceRange = {
                 location: {
                     start: locationByOffsetByFileIndex[parsedEntry.fileIndex][parsedEntry.offset],

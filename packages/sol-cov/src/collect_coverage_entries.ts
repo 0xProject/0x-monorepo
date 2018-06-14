@@ -10,7 +10,7 @@ const coverageEntriesBySourceHash: { [sourceHash: string]: CoverageEntriesDescri
 
 export const collectCoverageEntries = (contractSource: string) => {
     const sourceHash = ethUtil.sha3(contractSource).toString('hex');
-    if (_.isUndefined(coverageEntriesBySourceHash[sourceHash])) {
+    if (_.isUndefined(coverageEntriesBySourceHash[sourceHash]) && !_.isUndefined(contractSource)) {
         const ast = parser.parse(contractSource, { range: true });
         const locationByOffset = getLocationByOffset(contractSource);
         const visitor = new ASTVisitor(locationByOffset);
