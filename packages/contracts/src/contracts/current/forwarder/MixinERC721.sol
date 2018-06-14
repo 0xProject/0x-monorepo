@@ -19,13 +19,23 @@ contract MixinERC721 is
     }
 
     function transferERC721Token(
-        bytes memory assetMetadata,
+        address token,
         address from,
         address to,
-        uint256 amount
+        uint256 tokenId
+        // bytes memory assetData,
+        // address from,
+        // address to,
+        // uint256 amount
     )
         internal
     {
-        ERC721Proxy.transferFromInternal(assetMetadata, from, to, amount);
+        // (
+        //     address token,
+        //     uint256 tokenId,
+        //     bytes memory receiverData
+        // ) = ERC721Proxy.decodeERC721AssetData(assetData);
+        ERC721Basic(token).transferFrom(from, to, tokenId);
+        // ERC721Proxy.transferFromInternal(assetData, from, to, amount);
     }
 }

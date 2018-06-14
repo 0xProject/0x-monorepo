@@ -15,7 +15,9 @@ contract Forwarder is
         Exchange _exchange,
         EtherToken _etherToken,
         ZRXToken _zrxToken,
-        uint8 erc20AssetProxyId
+        uint8 _erc20AssetProxyId,
+        bytes memory _zrxAssetData,
+        bytes memory _wethAssetData
     )
         public
         Ownable()
@@ -23,7 +25,9 @@ contract Forwarder is
         EXCHANGE = _exchange;
         ETHER_TOKEN = _etherToken;
         ZRX_TOKEN = _zrxToken;
-        setERC20ProxyApproval(erc20AssetProxyId);
+        ZRX_ASSET_DATA = _zrxAssetData;
+        WETH_ASSET_DATA = _wethAssetData;
+        setERC20ProxyApproval(_erc20AssetProxyId);
     }
 
     /// @dev Default payabale function, this allows us to withdraw WETH

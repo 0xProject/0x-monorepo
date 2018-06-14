@@ -23,8 +23,11 @@ export class ForwarderWrapper {
     private static _createOptimizedSellOrders(signedOrders: SignedOrder[]): MarketSellOrders {
         const marketSellOrders = formatters.createMarketSellOrders(signedOrders, ZERO_AMOUNT);
         // Contract will fill this in for us as all of the assetData is assumed to be the same
-        for (let i = 1; i < signedOrders.length; i++) {
-            marketSellOrders.orders[i].makerAssetData = constants.NULL_BYTES;
+        for (let i = 0; i < signedOrders.length; i++) {
+            if (i !== 0) {
+                // Forwarding contract will fill this in from the first order
+                marketSellOrders.orders[i].makerAssetData = constants.NULL_BYTES;
+            }
         }
         return marketSellOrders;
     }
@@ -76,7 +79,8 @@ export class ForwarderWrapper {
             from: opts.from,
             value: opts.fillAmountWei,
         };
-        const params = formatters.createMarketBuyOrders(orders, opts.fillAmountWei);
+        // const params = formatters.createMarketBuyOrders(orders, opts.fillAmountWei);
+        const params = ForwarderWrapper._createOptimizedSellOrders(orders);
         const feeParams = ForwarderWrapper._createOptimizedSellOrders(feeOrders);
         const txHash: string = await this._forwarderContract.buyExactAssets.sendTransactionAsync(
             params.orders,
@@ -127,7 +131,8 @@ export class ForwarderWrapper {
             from: opts.from,
             value: opts.fillAmountWei,
         };
-        const params = formatters.createMarketSellOrders(orders, opts.fillAmountWei);
+        // const params = formatters.createMarketSellOrders(orders, opts.fillAmountWei);
+        const params = ForwarderWrapper._createOptimizedSellOrders(orders);
         const feeParams = ForwarderWrapper._createOptimizedSellOrders(feeOrders);
         const txHash: string = await this._forwarderContract.marketBuyTokens.sendTransactionAsync(
             params.orders,

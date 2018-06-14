@@ -23,6 +23,8 @@ contract MixinForwarderCore is
     Exchange EXCHANGE;
     EtherToken ETHER_TOKEN;
     ZRXToken ZRX_TOKEN;
+    bytes internal ZRX_ASSET_DATA;
+    bytes internal WETH_ASSET_DATA;
 
     /// @dev Deducts and Pays the feeRecipient feeProportion of the total takerTokenAmount
     /// @param takerTokenAmount The total amount that was transacted in WETH, fees are calculated from this value.

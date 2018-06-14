@@ -94,11 +94,13 @@ describe(ContractName.Forwarder, () => {
         weth = new DummyERC20TokenContract(etherTokenInstance.abi, etherTokenInstance.address, provider);
         erc20Wrapper.addDummyTokenContract(weth);
 
+        const wethAssetData = assetProxyUtils.encodeERC20AssetData(etherTokenInstance.address);
+        const zrxAssetData = assetProxyUtils.encodeERC20AssetData(zrxToken.address);
         const exchangeInstance = await ExchangeContract.deployFrom0xArtifactAsync(
             artifacts.Exchange,
             provider,
             txDefaults,
-            assetProxyUtils.encodeERC20AssetData(zrxToken.address),
+            zrxAssetData,
         );
         const exchange = new ExchangeContract(exchangeInstance.abi, exchangeInstance.address, provider);
         const exchangeWrapper = new ExchangeWrapper(exchange, provider);
@@ -128,12 +130,6 @@ describe(ContractName.Forwarder, () => {
         const privateKey = constants.TESTRPC_PRIVATE_KEYS[accounts.indexOf(makerAddress)];
         orderFactory = new OrderFactory(privateKey, defaultOrderParams);
 
-        const forwarderArgs = [
-            exchangeInstance.address,
-            etherTokenInstance.address,
-            zrxToken.address,
-            AssetProxyId.ERC20,
-        ];
         const forwarderInstance = await ForwarderContract.deployFrom0xArtifactAsync(
             artifacts.Forwarder,
             provider,
@@ -142,6 +138,8 @@ describe(ContractName.Forwarder, () => {
             etherTokenInstance.address,
             zrxToken.address,
             AssetProxyId.ERC20,
+            zrxAssetData,
+            wethAssetData,
         );
         forwarderContract = new ForwarderContract(forwarderInstance.abi, forwarderInstance.address, provider);
         await forwarderContract.setERC20ProxyApproval.sendTransactionAsync(AssetProxyId.ERC20, { from: owner });

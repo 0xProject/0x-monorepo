@@ -160,6 +160,7 @@ contract MixinBuyExactAssets is
             totalFillResults.takerFeePaid = feeTokensResult.takerFeePaid;
             totalFillResults.takerAssetFilledAmount = feeTokensResult.takerAssetFilledAmount;
         }
+        address makerTokenAddress = readAddress(orders[0].makerAssetData, 0);
         for (i = 0; i < orders.length; i++) {
             // Fail if it wasn't fully filled otherwise we will keep WETH
             Exchange.FillResults memory fillOrderResults = EXCHANGE.fillOrKillOrder(
@@ -168,7 +169,9 @@ contract MixinBuyExactAssets is
                 signatures[i]
             );
             addFillResults(totalFillResults, fillOrderResults);
-            transferERC721Token(orders[i].makerAssetData, address(this), msg.sender, fillOrderResults.makerAssetFilledAmount);
+            uint256 tokenId = readUint256(orders[i].makerAssetData, 20);
+            // transferERC721Token(assetData, address(this), msg.sender, fillOrderResults.makerAssetFilledAmount);
+            transferERC721Token(makerTokenAddress, address(this), msg.sender, tokenId);
         }
         return totalFillResults;
     }
