@@ -30,8 +30,8 @@ describe('LibMem', () => {
         const memHex = toHex(memory);
 
         // Reference implementation to test against
-        const refMemcpy = (_mem: Uint8Array, dest: number, source: number, length: number): Uint8Array =>
-            Uint8Array.from(memory).copyWithin(dest, source, source + length);
+        const refMemcpy = (mem: Uint8Array, dest: number, source: number, length: number): Uint8Array =>
+            Uint8Array.from(mem).copyWithin(dest, source, source + length);
 
         // Test vectors: destination, source, length, job description
         type Tests = Array<[number, number, number, string]>;
