@@ -2,6 +2,7 @@ import { schemas } from '@0xproject/json-schemas';
 import { formatters, getOrderHashHex, OrderStateUtils } from '@0xproject/order-utils';
 import {
     BlockParamLiteral,
+    ContractAbi
     DecodedLogArgs,
     ECSignature,
     ExchangeContractErrs,
@@ -54,6 +55,7 @@ interface ExchangeContractErrCodesToMsgs {
  * events of the 0x Exchange smart contract.
  */
 export class ExchangeWrapper extends ContractWrapper {
+    public abi: ContractAbi = artifacts.Exchange.abi;
     private _exchangeContractIfExists?: ExchangeContract;
     private _orderValidationUtilsIfExists?: OrderValidationUtils;
     private _tokenWrapper: TokenWrapper;
