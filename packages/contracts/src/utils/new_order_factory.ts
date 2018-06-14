@@ -12,11 +12,15 @@ import {
     FeeRecipientAddressScenario,
     OrderAmountScenario,
     OrderScenario,
+    TakerScenario,
 } from './types';
 
 const TEN_UNITS_EIGHTEEN_DECIMALS = new BigNumber(10000000000000000000);
+const FIVE_UNITS_EIGHTEEN_DECIMALS = new BigNumber(5000000000000000000);
 const POINT_ONE_UNITS_EIGHTEEN_DECIMALS = new BigNumber(100000000000000000);
+const POINT_ZERO_FIVE_UNITS_EIGHTEEN_DECIMALS = new BigNumber(50000000000000000);
 const TEN_UNITS_FIVE_DECIMALS = new BigNumber(1000000);
+const FIVE_UNITS_FIVE_DECIMALS = new BigNumber(500000);
 const ONE_NFT_UNIT = new BigNumber(1);
 
 export class NewOrderFactory {
@@ -46,7 +50,7 @@ export class NewOrderFactory {
     }
     public generateOrder(orderScenario: OrderScenario): Order {
         const makerAddress = this._userAddresses[1];
-        const takerAddress = this._userAddresses[2];
+        let takerAddress = this._userAddresses[2];
         const erc721MakerAssetIds = this._erc721Balances[makerAddress][this._erc721Token.address];
         const erc721TakerAssetIds = this._erc721Balances[takerAddress][this._erc721Token.address];
         let feeRecipientAddress;
@@ -114,7 +118,7 @@ export class NewOrderFactory {
         }
 
         switch (orderScenario.makerAssetAmountScenario) {
-            case OrderAmountScenario.NonZero:
+            case OrderAmountScenario.Large:
                 switch (orderScenario.makerAssetDataScenario) {
                     case AssetDataScenario.ZRXFeeToken:
                     case AssetDataScenario.ERC20NonZRXEighteenDecimals:
@@ -122,6 +126,22 @@ export class NewOrderFactory {
                         break;
                     case AssetDataScenario.ERC20FiveDecimals:
                         makerAssetAmount = TEN_UNITS_FIVE_DECIMALS;
+                        break;
+                    case AssetDataScenario.ERC721:
+                        makerAssetAmount = ONE_NFT_UNIT;
+                        break;
+                    default:
+                        throw errorUtils.spawnSwitchErr('AssetDataScenario', orderScenario.makerAssetDataScenario);
+                }
+                break;
+            case OrderAmountScenario.Small:
+                switch (orderScenario.makerAssetDataScenario) {
+                    case AssetDataScenario.ZRXFeeToken:
+                    case AssetDataScenario.ERC20NonZRXEighteenDecimals:
+                        makerAssetAmount = FIVE_UNITS_EIGHTEEN_DECIMALS;
+                        break;
+                    case AssetDataScenario.ERC20FiveDecimals:
+                        makerAssetAmount = FIVE_UNITS_FIVE_DECIMALS;
                         break;
                     case AssetDataScenario.ERC721:
                         makerAssetAmount = ONE_NFT_UNIT;
@@ -138,7 +158,7 @@ export class NewOrderFactory {
         }
 
         switch (orderScenario.takerAssetAmountScenario) {
-            case OrderAmountScenario.NonZero:
+            case OrderAmountScenario.Large:
                 switch (orderScenario.takerAssetDataScenario) {
                     case AssetDataScenario.ERC20NonZRXEighteenDecimals:
                     case AssetDataScenario.ZRXFeeToken:
@@ -146,6 +166,22 @@ export class NewOrderFactory {
                         break;
                     case AssetDataScenario.ERC20FiveDecimals:
                         takerAssetAmount = TEN_UNITS_FIVE_DECIMALS;
+                        break;
+                    case AssetDataScenario.ERC721:
+                        takerAssetAmount = ONE_NFT_UNIT;
+                        break;
+                    default:
+                        throw errorUtils.spawnSwitchErr('AssetDataScenario', orderScenario.takerAssetDataScenario);
+                }
+                break;
+            case OrderAmountScenario.Small:
+                switch (orderScenario.takerAssetDataScenario) {
+                    case AssetDataScenario.ERC20NonZRXEighteenDecimals:
+                    case AssetDataScenario.ZRXFeeToken:
+                        takerAssetAmount = FIVE_UNITS_EIGHTEEN_DECIMALS;
+                        break;
+                    case AssetDataScenario.ERC20FiveDecimals:
+                        takerAssetAmount = FIVE_UNITS_FIVE_DECIMALS;
                         break;
                     case AssetDataScenario.ERC721:
                         takerAssetAmount = ONE_NFT_UNIT;
@@ -162,8 +198,11 @@ export class NewOrderFactory {
         }
 
         switch (orderScenario.makerFeeScenario) {
-            case OrderAmountScenario.NonZero:
+            case OrderAmountScenario.Large:
                 makerFee = POINT_ONE_UNITS_EIGHTEEN_DECIMALS;
+                break;
+            case OrderAmountScenario.Small:
+                makerFee = POINT_ZERO_FIVE_UNITS_EIGHTEEN_DECIMALS;
                 break;
             case OrderAmountScenario.Zero:
                 makerFee = new BigNumber(0);
@@ -173,8 +212,11 @@ export class NewOrderFactory {
         }
 
         switch (orderScenario.takerFeeScenario) {
-            case OrderAmountScenario.NonZero:
+            case OrderAmountScenario.Large:
                 takerFee = POINT_ONE_UNITS_EIGHTEEN_DECIMALS;
+                break;
+            case OrderAmountScenario.Small:
+                takerFee = POINT_ZERO_FIVE_UNITS_EIGHTEEN_DECIMALS;
                 break;
             case OrderAmountScenario.Zero:
                 takerFee = new BigNumber(0);
@@ -195,6 +237,23 @@ export class NewOrderFactory {
                     'ExpirationTimeSecondsScenario',
                     orderScenario.expirationTimeSecondsScenario,
                 );
+        }
+
+        switch (orderScenario.takerScenario) {
+            case TakerScenario.CorrectlySpecified:
+                break; // noop since takerAddress is already specified
+
+            case TakerScenario.IncorrectlySpecified:
+                const notTaker = this._userAddresses[3];
+                takerAddress = notTaker;
+                break;
+
+            case TakerScenario.Unspecified:
+                takerAddress = constants.NULL_ADDRESS;
+                break;
+
+            default:
+                throw errorUtils.spawnSwitchErr('TakerScenario', orderScenario.takerScenario);
         }
 
         const order: Order = {

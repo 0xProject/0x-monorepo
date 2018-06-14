@@ -160,7 +160,14 @@ export enum FeeRecipientAddressScenario {
 
 export enum OrderAmountScenario {
     Zero = 'ZERO',
-    NonZero = 'NON_ZERO',
+    Large = 'LARGE',
+    Small = 'SMALL',
+}
+
+export enum TakerScenario {
+    CorrectlySpecified = 'CORRECTLY_SPECFIED',
+    IncorrectlySpecified = 'INCORRECTLY_SPECFIED',
+    Unspecified = 'UNSPECIFIED',
 }
 
 export enum ExpirationTimeSecondsScenario {
@@ -175,7 +182,15 @@ export enum AssetDataScenario {
     ERC20NonZRXEighteenDecimals = 'ERC20_NON_ZRX_EIGHTEEN_DECIMALS',
 }
 
+export enum TakerAssetFillAmountScenario {
+    Zero = 'ZERO',
+    GreaterThanRemainingFillableTakerAssetAmount = 'GREATER_THAN_REMAINING_FILLABLE_TAKER_ASSET_AMOUNT',
+    LessThanRemainingFillableTakerAssetAmount = 'GREATER_THAN_REMAINING_FILLABLE_TAKER_ASSET_AMOUNT',
+    ExactlyRemainingFillableTakerAssetAmount = 'GREATER_THAN_REMAINING_FILLABLE_TAKER_ASSET_AMOUNT',
+}
+
 export interface OrderScenario {
+    takerScenario: TakerScenario;
     feeRecipientScenario: FeeRecipientAddressScenario;
     makerAssetAmountScenario: OrderAmountScenario;
     takerAssetAmountScenario: OrderAmountScenario;
@@ -184,4 +199,9 @@ export interface OrderScenario {
     expirationTimeSecondsScenario: ExpirationTimeSecondsScenario;
     makerAssetDataScenario: AssetDataScenario;
     takerAssetDataScenario: AssetDataScenario;
+}
+
+export interface FillScenario {
+    orderScenario: OrderScenario;
+    takerAssetFillAmountScenario: TakerAssetFillAmountScenario;
 }

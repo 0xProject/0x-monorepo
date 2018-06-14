@@ -7,7 +7,7 @@ import {
     OrderValidationUtils,
 } from '@0xproject/order-utils';
 import { AssetProxyId, Order, SignatureType, SignedOrder } from '@0xproject/types';
-import { BigNumber } from '@0xproject/utils';
+import { BigNumber, errorUtils } from '@0xproject/utils';
 import { Web3Wrapper } from '@0xproject/web3-wrapper';
 import * as chai from 'chai';
 import { BlockParamLiteral, LogWithDecodedArgs, Provider, TxData } from 'ethereum-types';
@@ -35,6 +35,9 @@ import {
     FeeRecipientAddressScenario,
     OrderAmountScenario,
     OrderScenario,
+    TakerAssetFillAmountScenario,
+    TakerScenario,
+    FillScenario,
 } from '../utils/types';
 
 chaiSetup.configure();
@@ -142,11 +145,12 @@ export class CoreCombinatorialUtils {
     public exchangeWrapper: ExchangeWrapper;
     public assetWrapper: AssetWrapper;
     public static generateOrderCombinations(): OrderScenario[] {
+        const takerScenarios = [TakerScenario.Unspecified];
         const feeRecipientScenarios = [FeeRecipientAddressScenario.EthUserAddress];
-        const makerAssetAmountScenario = [OrderAmountScenario.NonZero];
-        const takerAssetAmountScenario = [OrderAmountScenario.NonZero];
-        const makerFeeScenario = [OrderAmountScenario.NonZero];
-        const takerFeeScenario = [OrderAmountScenario.NonZero];
+        const makerAssetAmountScenario = [OrderAmountScenario.Large];
+        const takerAssetAmountScenario = [OrderAmountScenario.Large];
+        const makerFeeScenario = [OrderAmountScenario.Large];
+        const takerFeeScenario = [OrderAmountScenario.Large];
         const expirationTimeSecondsScenario = [ExpirationTimeSecondsScenario.InFuture];
         const makerAssetDataScenario = [
             AssetDataScenario.ERC20FiveDecimals,
@@ -161,6 +165,7 @@ export class CoreCombinatorialUtils {
             AssetDataScenario.ZRXFeeToken,
         ];
         const orderScenarioArrays = CoreCombinatorialUtils._allPossibleCases([
+            takerScenarios,
             feeRecipientScenarios,
             makerAssetAmountScenario,
             takerAssetAmountScenario,
@@ -173,14 +178,15 @@ export class CoreCombinatorialUtils {
 
         const orderScenarios = _.map(orderScenarioArrays, orderScenarioArray => {
             const orderScenario: OrderScenario = {
-                feeRecipientScenario: orderScenarioArray[0] as FeeRecipientAddressScenario,
-                makerAssetAmountScenario: orderScenarioArray[1] as OrderAmountScenario,
-                takerAssetAmountScenario: orderScenarioArray[2] as OrderAmountScenario,
-                makerFeeScenario: orderScenarioArray[3] as OrderAmountScenario,
-                takerFeeScenario: orderScenarioArray[4] as OrderAmountScenario,
-                expirationTimeSecondsScenario: orderScenarioArray[5] as ExpirationTimeSecondsScenario,
-                makerAssetDataScenario: orderScenarioArray[6] as AssetDataScenario,
-                takerAssetDataScenario: orderScenarioArray[7] as AssetDataScenario,
+                takerScenario: orderScenarioArray[0] as TakerScenario,
+                feeRecipientScenario: orderScenarioArray[1] as FeeRecipientAddressScenario,
+                makerAssetAmountScenario: orderScenarioArray[2] as OrderAmountScenario,
+                takerAssetAmountScenario: orderScenarioArray[3] as OrderAmountScenario,
+                makerFeeScenario: orderScenarioArray[4] as OrderAmountScenario,
+                takerFeeScenario: orderScenarioArray[5] as OrderAmountScenario,
+                expirationTimeSecondsScenario: orderScenarioArray[6] as ExpirationTimeSecondsScenario,
+                makerAssetDataScenario: orderScenarioArray[7] as AssetDataScenario,
+                takerAssetDataScenario: orderScenarioArray[8] as AssetDataScenario,
             };
             return orderScenario;
         });
@@ -225,7 +231,10 @@ export class CoreCombinatorialUtils {
         this.exchangeWrapper = exchangeWrapper;
         this.assetWrapper = assetWrapper;
     }
-    public async testFillOrderScenarioAsync(order: Order, provider: Provider): Promise<void> {
+    public async testFillOrderScenarioAsync(provider: Provider, fillScenario: FillScenario): Promise<void> {
+        // 1. Generate order
+        const order = this.orderFactory.generateOrder(fillScenario.orderScenario);
+
         // 2. Sign order
         const orderHashBuff = orderHashUtils.getOrderHashBuff(order);
         const signature = signingUtils.signMessage(orderHashBuff, this.makerPrivateKey, SignatureType.EthSign);
@@ -235,8 +244,9 @@ export class CoreCombinatorialUtils {
         };
 
         // 3. Permutate the maker and taker balance/allowance scenarios
+        // TODO(fabio)
 
-        // 4. Figure out fill amount OR error
+        // 4. Figure out fill amount
         const balanceAndProxyAllowanceFetcher = new SimpleAssetBalanceAndProxyAllowanceFetcher(this.assetWrapper);
         const orderFilledCancelledFetcher = new SimpleOrderFilledCancelledFetcher(
             this.exchangeWrapper,
@@ -249,14 +259,37 @@ export class CoreCombinatorialUtils {
             this.takerAddress,
         );
 
-        // If order is fillable, decide how much to fill
-        // TODO: Make this configurable
-        const takerAssetProxyId = assetProxyUtils.decodeAssetDataId(signedOrder.takerAssetData);
-        const makerAssetProxyId = assetProxyUtils.decodeAssetDataId(signedOrder.makerAssetData);
-        const isEitherAssetERC721 = takerAssetProxyId === ERC721_PROXY_ID || makerAssetProxyId === ERC721_PROXY_ID;
-        const takerAssetFillAmount = isEitherAssetERC721
-            ? fillableTakerAssetAmount
-            : fillableTakerAssetAmount.div(2).floor();
+        let takerAssetFillAmount;
+        const takerAssetFillAmountScenario = fillScenario.takerAssetFillAmountScenario;
+        switch (takerAssetFillAmountScenario) {
+            case TakerAssetFillAmountScenario.Zero:
+                takerAssetFillAmount = new BigNumber(0);
+                break;
+
+            case TakerAssetFillAmountScenario.ExactlyRemainingFillableTakerAssetAmount:
+                takerAssetFillAmount = fillableTakerAssetAmount;
+                break;
+
+            case TakerAssetFillAmountScenario.GreaterThanRemainingFillableTakerAssetAmount:
+                takerAssetFillAmount = fillableTakerAssetAmount.add(1);
+                break;
+
+            case TakerAssetFillAmountScenario.LessThanRemainingFillableTakerAssetAmount:
+                const takerAssetProxyId = assetProxyUtils.decodeAssetDataId(signedOrder.takerAssetData);
+                const makerAssetProxyId = assetProxyUtils.decodeAssetDataId(signedOrder.makerAssetData);
+                const isEitherAssetERC721 =
+                    takerAssetProxyId === ERC721_PROXY_ID || makerAssetProxyId === ERC721_PROXY_ID;
+                if (isEitherAssetERC721) {
+                    throw new Error(
+                        'Cannot test `TakerAssetFillAmountScenario.LessThanRemainingFillableTakerAssetAmount` together with ERC721 assets since orders involving ERC721 must always be filled exactly.',
+                    );
+                }
+                takerAssetFillAmount = fillableTakerAssetAmount.div(2).floor();
+                break;
+
+            default:
+                throw errorUtils.spawnSwitchErr('TakerAssetFillAmountScenario', takerAssetFillAmountScenario);
+        }
 
         // 5. If I fill it by X, what are the resulting balances/allowances/filled amounts exp?
         const orderValidationUtils = new OrderValidationUtils(orderFilledCancelledFetcher);
