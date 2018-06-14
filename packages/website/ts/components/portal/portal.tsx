@@ -1,4 +1,4 @@
-import { colors, Styles } from '@0xproject/react-shared';
+import { colors, constants as sharedConstants, Styles } from '@0xproject/react-shared';
 import { BigNumber } from '@0xproject/utils';
 import * as _ from 'lodash';
 import * as React from 'react';
@@ -6,6 +6,7 @@ import * as DocumentTitle from 'react-document-title';
 import { Route, RouteComponentProps, Switch } from 'react-router-dom';
 
 import { Blockchain } from 'ts/blockchain';
+import { analytics } from 'ts/utils/analytics';
 import { BlockchainErrDialog } from 'ts/components/dialogs/blockchain_err_dialog';
 import { LedgerConfigDialog } from 'ts/components/dialogs/ledger_config_dialog';
 import { PortalDisclaimerDialog } from 'ts/components/dialogs/portal_disclaimer_dialog';
@@ -71,6 +72,7 @@ export interface PortalProps {
     flashMessage?: string | React.ReactNode;
     lastForceTokenStateRefetch: number;
     translate: Translate;
+    portalOnboardingStep: number;
 }
 
 interface PortalState {
@@ -358,6 +360,8 @@ export class Portal extends React.Component<PortalProps, PortalState> {
     }
 
     private _startOnboarding(): void {
+        const networkName = sharedConstants.NETWORK_NAME_BY_ID[this.props.networkId];
+        analytics.logEvent('Portal', 'Onboarding Started - Manual', networkName, this.props.portalOnboardingStep);
         this.props.dispatcher.updatePortalOnboardingShowing(true);
     }
     private _renderWalletSection(): React.ReactNode {

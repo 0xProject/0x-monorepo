@@ -1,12 +1,15 @@
+import { constants as sharedConstants } from '@0xproject/react-shared';
 import * as _ from 'lodash';
 import * as React from 'react';
 
 import { BigNumber } from '@0xproject/utils';
+import { analytics } from 'ts/utils/analytics';
 import { OnboardingFlow, Step } from 'ts/components/onboarding/onboarding_flow';
 import { ProviderType, TokenByAddress, TokenStateByAddress } from 'ts/types';
 import { utils } from 'ts/utils/utils';
 
 export interface PortalOnboardingFlowProps {
+    networkId: number;
     stepIndex: number;
     isRunning: boolean;
     userAddress: string;
@@ -34,8 +37,8 @@ export class PortalOnboardingFlow extends React.Component<PortalOnboardingFlowPr
                 steps={this._getSteps()}
                 stepIndex={this.props.stepIndex}
                 isRunning={this.props.isRunning}
-                onClose={this.props.updateIsRunning.bind(this, false)}
-                updateOnboardingStep={this.props.updateOnboardingStep}
+                onClose={this._closeOnboarding.bind(this)}
+                updateOnboardingStep={this._updateOnboardingStep.bind(this)}
             />
         );
     }
@@ -122,7 +125,19 @@ export class PortalOnboardingFlow extends React.Component<PortalOnboardingFlowPr
     }
     private _autoStartOnboardingIfShould(): void {
         if (!this.props.isRunning && !this.props.hasBeenSeen && this.props.blockchainIsLoaded) {
+            const networkName = sharedConstants.NETWORK_NAME_BY_ID[this.props.networkId];
+            analytics.logEvent('Portal', 'Onboarding Started - Automatic', networkName, this.props.stepIndex);
             this.props.updateIsRunning(true);
         }
+    }
+    private _updateOnboardingStep(stepIndex: number): void {
+        const networkName = sharedConstants.NETWORK_NAME_BY_ID[this.props.networkId];
+        this.props.updateOnboardingStep(stepIndex);
+        analytics.logEvent('Portal', 'Update Onboarding Step', networkName, stepIndex);
+    }
+    private _closeOnboarding(): void {
+        const networkName = sharedConstants.NETWORK_NAME_BY_ID[this.props.networkId];
+        this.props.updateIsRunning(false);
+        analytics.logEvent('Portal', 'Onboarding Closed', networkName, this.props.stepIndex);
     }
 }

@@ -1,7 +1,8 @@
-import { Styles } from '@0xproject/react-shared';
+import { constants as sharedConstants, Styles } from '@0xproject/react-shared';
 import * as _ from 'lodash';
 import { GridTile } from 'material-ui/GridList';
 import * as React from 'react';
+import { analytics } from 'ts/utils/analytics';
 
 import { TopTokens } from 'ts/components/relayer_index/relayer_top_tokens';
 import { Container } from 'ts/components/ui/container';
@@ -64,10 +65,14 @@ export const RelayerGridTile: React.StatelessComponent<RelayerGridTileProps> = (
     const link = props.relayerInfo.appUrl || props.relayerInfo.url;
     const topTokens = props.relayerInfo.topTokens;
     const weeklyTxnVolume = props.relayerInfo.weeklyTxnVolume;
+    let trackRelayerClick = (): void => undefined;
+    const networkName = sharedConstants.NETWORK_NAME_BY_ID[props.networkId];
+    const eventLabel = `${props.relayerInfo.name}-${networkName}`;
+    trackRelayerClick = () => analytics.logEvent('Portal', 'Relayer Click', eventLabel);
     return (
         <Island style={styles.root} Component={GridTile}>
             <div style={styles.innerDiv}>
-                <a href={link} target="_blank" style={{ textDecoration: 'none' }}>
+                <a href={link} target="_blank" style={{ textDecoration: 'none' }} onClick={trackRelayerClick}>
                     <ImgWithFallback
                         src={props.relayerInfo.headerImgUrl}
                         fallbackSrc={FALLBACK_IMG_SRC}

@@ -1,6 +1,7 @@
-import { colors, EtherscanLinkSuffixes, Styles, utils as sharedUtils } from '@0xproject/react-shared';
+import { colors, constants as sharedConstants, EtherscanLinkSuffixes, Styles, utils as sharedUtils } from '@0xproject/react-shared';
 import * as _ from 'lodash';
 import * as React from 'react';
+import { analytics } from 'ts/utils/analytics';
 
 import { WebsiteBackendTokenInfo } from 'ts/types';
 
@@ -61,6 +62,9 @@ class TokenLink extends React.Component<TokenLinkProps, TokenLinkState> {
             cursor: 'pointer',
             opacity: this.state.isHovering ? 0.5 : 1,
         };
+        const networkName = sharedConstants.NETWORK_NAME_BY_ID[this.props.networkId];
+        const eventLabel = `${this.props.tokenInfo.symbol}-${networkName}`;
+        const trackTokenClick = () => analytics.logEvent('Portal', 'Token Click', eventLabel);
         return (
             <a
                 href={tokenLinkFromToken(this.props.tokenInfo, this.props.networkId)}
@@ -68,6 +72,7 @@ class TokenLink extends React.Component<TokenLinkProps, TokenLinkState> {
                 style={style}
                 onMouseEnter={this._onToggleHover.bind(this, true)}
                 onMouseLeave={this._onToggleHover.bind(this, false)}
+                onClick={trackTokenClick}
             >
                 {this.props.tokenInfo.symbol}
             </a>
