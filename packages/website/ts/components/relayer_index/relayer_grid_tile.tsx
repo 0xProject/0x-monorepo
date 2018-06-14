@@ -26,7 +26,6 @@ const styles: Styles = {
     header: {
         height: '50%',
         width: '100%',
-        objectFit: 'cover',
         borderBottomRightRadius: 4,
         borderBottomLeftRadius: 4,
         borderTopRightRadius: 4,
@@ -58,21 +57,26 @@ const styles: Styles = {
 };
 
 const FALLBACK_IMG_SRC = '/images/landing/hero_chip_image.png';
+const FALLBACK_PRIMARY_COLOR = colors.grey200;
 const NO_CONTENT_MESSAGE = '--';
+const RELAYER_ICON_HEIGHT = '110px';
 
 export const RelayerGridTile: React.StatelessComponent<RelayerGridTileProps> = (props: RelayerGridTileProps) => {
     const link = props.relayerInfo.appUrl || props.relayerInfo.url;
     const topTokens = props.relayerInfo.topTokens;
     const weeklyTxnVolume = props.relayerInfo.weeklyTxnVolume;
+    const headerImageUrl = props.relayerInfo.logoImgUrl;
+    const headerBackgroundColor =
+        !_.isUndefined(headerImageUrl) && !_.isUndefined(props.relayerInfo.primaryColor)
+            ? props.relayerInfo.primaryColor
+            : FALLBACK_PRIMARY_COLOR;
     return (
         <Island style={styles.root} Component={GridTile}>
             <div style={styles.innerDiv}>
                 <a href={link} target="_blank" style={{ textDecoration: 'none' }}>
-                    <ImgWithFallback
-                        src={props.relayerInfo.headerImgUrl}
-                        fallbackSrc={FALLBACK_IMG_SRC}
-                        style={styles.header}
-                    />
+                    <div style={{ ...styles.header, backgroundColor: headerBackgroundColor }}>
+                        <ImgWithFallback src={props.relayerInfo.logoImgUrl} fallbackSrc={FALLBACK_IMG_SRC} />
+                    </div>
                 </a>
                 <div style={styles.body}>
                     <div className="py1" style={styles.relayerNameLabel}>
@@ -112,7 +116,6 @@ const NoContent = () => <div style={styles.subLabel}>{NO_CONTENT_MESSAGE}</div>;
 interface ImgWithFallbackProps {
     src?: string;
     fallbackSrc: string;
-    style: React.CSSProperties;
 }
 interface ImgWithFallbackState {
     imageLoadFailed: boolean;
@@ -125,11 +128,16 @@ class ImgWithFallback extends React.Component<ImgWithFallbackProps, ImgWithFallb
         };
     }
     public render(): React.ReactNode {
-        if (this.state.imageLoadFailed || _.isUndefined(this.props.src)) {
-            return <img src={this.props.fallbackSrc} style={this.props.style} />;
-        } else {
-            return <img src={this.props.src} onError={this._onError.bind(this)} style={this.props.style} />;
-        }
+        return (
+            <div className="flex items-center" style={{ height: '100%' }}>
+                {this._renderImg()}
+            </div>
+        );
+    }
+    private _renderImg(): React.ReactNode {
+        const src =
+            this.state.imageLoadFailed || _.isUndefined(this.props.src) ? this.props.fallbackSrc : this.props.src;
+        return <img className="mx-auto" onError={this._onError.bind(this)} src={src} height={RELAYER_ICON_HEIGHT} />;
     }
     private _onError(): void {
         this.setState({
