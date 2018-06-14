@@ -37,6 +37,7 @@ export class RevertTraceSubprovider extends TraceCollectionSubprovider {
         this._logger = getLogger('sol-cov');
         this._logger.setLevel(isVerbose ? levels.TRACE : levels.ERROR);
     }
+    // tslint:disable-next-line:no-unused-variable
     protected async _recordTxTraceAsync(address: string, data: string | undefined, txHash: string): Promise<void> {
         await this._web3Wrapper.awaitTransactionMinedAsync(txHash, 0);
         const trace = await this._web3Wrapper.getTransactionTraceAsync(txHash, {
