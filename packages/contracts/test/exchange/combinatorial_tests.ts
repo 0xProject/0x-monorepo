@@ -42,13 +42,7 @@ describe('Combinatorial tests', () => {
         });
     };
 
-    const allOrderScenarios = CoreCombinatorialUtils.generateOrderCombinations();
-    const allFillScenarios = _.map(allOrderScenarios, orderScenario => {
-        return {
-            orderScenario,
-            takerAssetFillAmountScenario: TakerAssetFillAmountScenario.LessThanRemainingFillableTakerAssetAmount,
-        };
-    });
+    const allFillScenarios = CoreCombinatorialUtils.generateFillOrderCombinations();
 
     describe('Fills orders', () => test(allFillScenarios));
 });

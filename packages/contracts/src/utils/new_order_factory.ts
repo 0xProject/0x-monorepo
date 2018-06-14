@@ -10,7 +10,7 @@ import {
     ERC721TokenIdsByOwner,
     ExpirationTimeSecondsScenario,
     FeeRecipientAddressScenario,
-    OrderAmountScenario,
+    OrderAssetAmountScenario,
     OrderScenario,
     TakerScenario,
 } from './types';
@@ -118,7 +118,7 @@ export class NewOrderFactory {
         }
 
         switch (orderScenario.makerAssetAmountScenario) {
-            case OrderAmountScenario.Large:
+            case OrderAssetAmountScenario.Large:
                 switch (orderScenario.makerAssetDataScenario) {
                     case AssetDataScenario.ZRXFeeToken:
                     case AssetDataScenario.ERC20NonZRXEighteenDecimals:
@@ -134,7 +134,7 @@ export class NewOrderFactory {
                         throw errorUtils.spawnSwitchErr('AssetDataScenario', orderScenario.makerAssetDataScenario);
                 }
                 break;
-            case OrderAmountScenario.Small:
+            case OrderAssetAmountScenario.Small:
                 switch (orderScenario.makerAssetDataScenario) {
                     case AssetDataScenario.ZRXFeeToken:
                     case AssetDataScenario.ERC20NonZRXEighteenDecimals:
@@ -150,15 +150,15 @@ export class NewOrderFactory {
                         throw errorUtils.spawnSwitchErr('AssetDataScenario', orderScenario.makerAssetDataScenario);
                 }
                 break;
-            case OrderAmountScenario.Zero:
+            case OrderAssetAmountScenario.Zero:
                 makerAssetAmount = new BigNumber(0);
                 break;
             default:
-                throw errorUtils.spawnSwitchErr('OrderAmountScenario', orderScenario.makerAssetAmountScenario);
+                throw errorUtils.spawnSwitchErr('OrderAssetAmountScenario', orderScenario.makerAssetAmountScenario);
         }
 
         switch (orderScenario.takerAssetAmountScenario) {
-            case OrderAmountScenario.Large:
+            case OrderAssetAmountScenario.Large:
                 switch (orderScenario.takerAssetDataScenario) {
                     case AssetDataScenario.ERC20NonZRXEighteenDecimals:
                     case AssetDataScenario.ZRXFeeToken:
@@ -174,7 +174,7 @@ export class NewOrderFactory {
                         throw errorUtils.spawnSwitchErr('AssetDataScenario', orderScenario.takerAssetDataScenario);
                 }
                 break;
-            case OrderAmountScenario.Small:
+            case OrderAssetAmountScenario.Small:
                 switch (orderScenario.takerAssetDataScenario) {
                     case AssetDataScenario.ERC20NonZRXEighteenDecimals:
                     case AssetDataScenario.ZRXFeeToken:
@@ -190,39 +190,39 @@ export class NewOrderFactory {
                         throw errorUtils.spawnSwitchErr('AssetDataScenario', orderScenario.takerAssetDataScenario);
                 }
                 break;
-            case OrderAmountScenario.Zero:
+            case OrderAssetAmountScenario.Zero:
                 takerAssetAmount = new BigNumber(0);
                 break;
             default:
-                throw errorUtils.spawnSwitchErr('OrderAmountScenario', orderScenario.takerAssetAmountScenario);
+                throw errorUtils.spawnSwitchErr('OrderAssetAmountScenario', orderScenario.takerAssetAmountScenario);
         }
 
         switch (orderScenario.makerFeeScenario) {
-            case OrderAmountScenario.Large:
+            case OrderAssetAmountScenario.Large:
                 makerFee = POINT_ONE_UNITS_EIGHTEEN_DECIMALS;
                 break;
-            case OrderAmountScenario.Small:
+            case OrderAssetAmountScenario.Small:
                 makerFee = POINT_ZERO_FIVE_UNITS_EIGHTEEN_DECIMALS;
                 break;
-            case OrderAmountScenario.Zero:
+            case OrderAssetAmountScenario.Zero:
                 makerFee = new BigNumber(0);
                 break;
             default:
-                throw errorUtils.spawnSwitchErr('OrderAmountScenario', orderScenario.makerFeeScenario);
+                throw errorUtils.spawnSwitchErr('OrderAssetAmountScenario', orderScenario.makerFeeScenario);
         }
 
         switch (orderScenario.takerFeeScenario) {
-            case OrderAmountScenario.Large:
+            case OrderAssetAmountScenario.Large:
                 takerFee = POINT_ONE_UNITS_EIGHTEEN_DECIMALS;
                 break;
-            case OrderAmountScenario.Small:
+            case OrderAssetAmountScenario.Small:
                 takerFee = POINT_ZERO_FIVE_UNITS_EIGHTEEN_DECIMALS;
                 break;
-            case OrderAmountScenario.Zero:
+            case OrderAssetAmountScenario.Zero:
                 takerFee = new BigNumber(0);
                 break;
             default:
-                throw errorUtils.spawnSwitchErr('OrderAmountScenario', orderScenario.takerFeeScenario);
+                throw errorUtils.spawnSwitchErr('OrderAssetAmountScenario', orderScenario.takerFeeScenario);
         }
 
         switch (orderScenario.expirationTimeSecondsScenario) {

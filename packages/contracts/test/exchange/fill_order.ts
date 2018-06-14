@@ -9,7 +9,7 @@ import {
     AssetDataScenario,
     ExpirationTimeSecondsScenario,
     FeeRecipientAddressScenario,
-    OrderAmountScenario,
+    OrderAssetAmountScenario,
     OrderScenario,
     TakerAssetFillAmountScenario,
     TakerScenario,
@@ -22,10 +22,10 @@ const defaultFillScenario = {
     orderScenario: {
         takerScenario: TakerScenario.Unspecified,
         feeRecipientScenario: FeeRecipientAddressScenario.EthUserAddress,
-        makerAssetAmountScenario: OrderAmountScenario.Large,
-        takerAssetAmountScenario: OrderAmountScenario.Large,
-        makerFeeScenario: OrderAmountScenario.Large,
-        takerFeeScenario: OrderAmountScenario.Large,
+        makerAssetAmountScenario: OrderAssetAmountScenario.Large,
+        takerAssetAmountScenario: OrderAssetAmountScenario.Large,
+        makerFeeScenario: OrderAssetAmountScenario.Large,
+        takerFeeScenario: OrderAssetAmountScenario.Large,
         expirationTimeSecondsScenario: ExpirationTimeSecondsScenario.InFuture,
         makerAssetDataScenario: AssetDataScenario.ERC20NonZRXEighteenDecimals,
         takerAssetDataScenario: AssetDataScenario.ERC20NonZRXEighteenDecimals,
@@ -33,7 +33,7 @@ const defaultFillScenario = {
     takerAssetFillAmountScenario: TakerAssetFillAmountScenario.LessThanRemainingFillableTakerAssetAmount,
 };
 
-describe.only('FillOrder Tests', () => {
+describe('FillOrder Tests', () => {
     let coreCombinatorialUtils: CoreCombinatorialUtils;
 
     before(async () => {
@@ -61,7 +61,7 @@ describe.only('FillOrder Tests', () => {
                 ...defaultFillScenario,
                 orderScenario: {
                     ...defaultFillScenario.orderScenario,
-                    takerAssetAmountScenario: OrderAmountScenario.Small,
+                    takerAssetAmountScenario: OrderAssetAmountScenario.Small,
                 },
             };
             await coreCombinatorialUtils.testFillOrderScenarioAsync(provider, fillScenario);
@@ -71,7 +71,7 @@ describe.only('FillOrder Tests', () => {
                 ...defaultFillScenario,
                 orderScenario: {
                     ...defaultFillScenario.orderScenario,
-                    makerAssetAmountScenario: OrderAmountScenario.Small,
+                    makerAssetAmountScenario: OrderAssetAmountScenario.Small,
                 },
             };
             await coreCombinatorialUtils.testFillOrderScenarioAsync(provider, fillScenario);
@@ -109,7 +109,7 @@ describe.only('FillOrder Tests', () => {
                 ...defaultFillScenario,
                 orderScenario: {
                     ...defaultFillScenario.orderScenario,
-                    makerAssetAmountScenario: OrderAmountScenario.Zero,
+                    makerAssetAmountScenario: OrderAssetAmountScenario.Zero,
                 },
             };
             await coreCombinatorialUtils.testFillOrderScenarioAsync(provider, fillScenario);
@@ -120,7 +120,7 @@ describe.only('FillOrder Tests', () => {
                 ...defaultFillScenario,
                 orderScenario: {
                     ...defaultFillScenario.orderScenario,
-                    takerAssetAmountScenario: OrderAmountScenario.Zero,
+                    takerAssetAmountScenario: OrderAssetAmountScenario.Zero,
                 },
             };
             await coreCombinatorialUtils.testFillOrderScenarioAsync(provider, fillScenario);

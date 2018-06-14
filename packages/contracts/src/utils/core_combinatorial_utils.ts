@@ -33,11 +33,11 @@ import {
     AssetDataScenario,
     ExpirationTimeSecondsScenario,
     FeeRecipientAddressScenario,
-    OrderAmountScenario,
+    FillScenario,
+    OrderAssetAmountScenario,
     OrderScenario,
     TakerAssetFillAmountScenario,
     TakerScenario,
-    FillScenario,
 } from '../utils/types';
 
 chaiSetup.configure();
@@ -144,13 +144,13 @@ export class CoreCombinatorialUtils {
     public zrxAssetData: string;
     public exchangeWrapper: ExchangeWrapper;
     public assetWrapper: AssetWrapper;
-    public static generateOrderCombinations(): OrderScenario[] {
+    public static generateFillOrderCombinations(): FillScenario[] {
         const takerScenarios = [TakerScenario.Unspecified];
         const feeRecipientScenarios = [FeeRecipientAddressScenario.EthUserAddress];
-        const makerAssetAmountScenario = [OrderAmountScenario.Large];
-        const takerAssetAmountScenario = [OrderAmountScenario.Large];
-        const makerFeeScenario = [OrderAmountScenario.Large];
-        const takerFeeScenario = [OrderAmountScenario.Large];
+        const makerAssetAmountScenario = [OrderAssetAmountScenario.Large];
+        const takerAssetAmountScenario = [OrderAssetAmountScenario.Large];
+        const makerFeeScenario = [OrderAssetAmountScenario.Large];
+        const takerFeeScenario = [OrderAssetAmountScenario.Large];
         const expirationTimeSecondsScenario = [ExpirationTimeSecondsScenario.InFuture];
         const makerAssetDataScenario = [
             AssetDataScenario.ERC20FiveDecimals,
@@ -164,7 +164,8 @@ export class CoreCombinatorialUtils {
             AssetDataScenario.ERC721,
             AssetDataScenario.ZRXFeeToken,
         ];
-        const orderScenarioArrays = CoreCombinatorialUtils._allPossibleCases([
+        const takerAssetFillAmountScenario = [TakerAssetFillAmountScenario.ExactlyRemainingFillableTakerAssetAmount];
+        const fillScenarioArrays = CoreCombinatorialUtils._allPossibleCases([
             takerScenarios,
             feeRecipientScenarios,
             makerAssetAmountScenario,
@@ -174,24 +175,28 @@ export class CoreCombinatorialUtils {
             expirationTimeSecondsScenario,
             makerAssetDataScenario,
             takerAssetDataScenario,
+            takerAssetFillAmountScenario,
         ]);
 
-        const orderScenarios = _.map(orderScenarioArrays, orderScenarioArray => {
-            const orderScenario: OrderScenario = {
-                takerScenario: orderScenarioArray[0] as TakerScenario,
-                feeRecipientScenario: orderScenarioArray[1] as FeeRecipientAddressScenario,
-                makerAssetAmountScenario: orderScenarioArray[2] as OrderAmountScenario,
-                takerAssetAmountScenario: orderScenarioArray[3] as OrderAmountScenario,
-                makerFeeScenario: orderScenarioArray[4] as OrderAmountScenario,
-                takerFeeScenario: orderScenarioArray[5] as OrderAmountScenario,
-                expirationTimeSecondsScenario: orderScenarioArray[6] as ExpirationTimeSecondsScenario,
-                makerAssetDataScenario: orderScenarioArray[7] as AssetDataScenario,
-                takerAssetDataScenario: orderScenarioArray[8] as AssetDataScenario,
+        const fillScenarios = _.map(fillScenarioArrays, fillScenarioArray => {
+            const fillScenario: FillScenario = {
+                orderScenario: {
+                    takerScenario: fillScenarioArray[0] as TakerScenario,
+                    feeRecipientScenario: fillScenarioArray[1] as FeeRecipientAddressScenario,
+                    makerAssetAmountScenario: fillScenarioArray[2] as OrderAssetAmountScenario,
+                    takerAssetAmountScenario: fillScenarioArray[3] as OrderAssetAmountScenario,
+                    makerFeeScenario: fillScenarioArray[4] as OrderAssetAmountScenario,
+                    takerFeeScenario: fillScenarioArray[5] as OrderAssetAmountScenario,
+                    expirationTimeSecondsScenario: fillScenarioArray[6] as ExpirationTimeSecondsScenario,
+                    makerAssetDataScenario: fillScenarioArray[7] as AssetDataScenario,
+                    takerAssetDataScenario: fillScenarioArray[8] as AssetDataScenario,
+                },
+                takerAssetFillAmountScenario: fillScenarioArray[9] as TakerAssetFillAmountScenario,
             };
-            return orderScenario;
+            return fillScenario;
         });
 
-        return orderScenarios;
+        return fillScenarios;
     }
     private static _allPossibleCases(arrays: string[][]): string[][] {
         if (arrays.length === 1) {

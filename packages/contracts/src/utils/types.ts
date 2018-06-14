@@ -158,7 +158,7 @@ export enum FeeRecipientAddressScenario {
     EthUserAddress = 'ETH_USER_ADDRESS',
 }
 
-export enum OrderAmountScenario {
+export enum OrderAssetAmountScenario {
     Zero = 'ZERO',
     Large = 'LARGE',
     Small = 'SMALL',
@@ -192,10 +192,10 @@ export enum TakerAssetFillAmountScenario {
 export interface OrderScenario {
     takerScenario: TakerScenario;
     feeRecipientScenario: FeeRecipientAddressScenario;
-    makerAssetAmountScenario: OrderAmountScenario;
-    takerAssetAmountScenario: OrderAmountScenario;
-    makerFeeScenario: OrderAmountScenario;
-    takerFeeScenario: OrderAmountScenario;
+    makerAssetAmountScenario: OrderAssetAmountScenario;
+    takerAssetAmountScenario: OrderAssetAmountScenario;
+    makerFeeScenario: OrderAssetAmountScenario;
+    takerFeeScenario: OrderAssetAmountScenario;
     expirationTimeSecondsScenario: ExpirationTimeSecondsScenario;
     makerAssetDataScenario: AssetDataScenario;
     takerAssetDataScenario: AssetDataScenario;
