@@ -228,7 +228,7 @@ export class RevertTraceSubprovider extends Subprovider {
         }
         if (sourceRanges.length > 0) {
             this._logger.error('\n\nStack trace for REVERT:\n');
-            _.forEach(sourceRanges, sourceRange => {
+            _.forEach(_.reverse(sourceRanges), sourceRange => {
                 this._logger.error(
                     `${sourceRange.fileName}:${sourceRange.location.start.line}:${sourceRange.location.start.column}`,
                 );
