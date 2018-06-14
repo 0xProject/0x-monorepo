@@ -322,8 +322,14 @@ export const utils = {
         return this.isDevelopment() || this.isStaging() || this.isDogfood();
     },
     getEthToken(tokenByAddress: TokenByAddress): Token {
+        return utils.getTokenBySymbol(constants.ETHER_TOKEN_SYMBOL, tokenByAddress);
+    },
+    getZrxToken(tokenByAddress: TokenByAddress): Token {
+        return utils.getTokenBySymbol(constants.ZRX_TOKEN_SYMBOL, tokenByAddress);
+    },
+    getTokenBySymbol(symbol: string, tokenByAddress: TokenByAddress): Token {
         const tokens = _.values(tokenByAddress);
-        const etherToken = _.find(tokens, { symbol: constants.ETHER_TOKEN_SYMBOL });
-        return etherToken;
+        const token = _.find(tokens, { symbol });
+        return token;
     },
 };

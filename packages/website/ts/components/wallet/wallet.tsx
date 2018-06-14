@@ -13,7 +13,6 @@ import { Link } from 'react-router-dom';
 import firstBy = require('thenby');
 
 import { Blockchain } from 'ts/blockchain';
-import { AllowanceToggle } from 'ts/components/inputs/allowance_toggle';
 import { Container } from 'ts/components/ui/container';
 import { IconButton } from 'ts/components/ui/icon_button';
 import { Identicon } from 'ts/components/ui/identicon';
@@ -21,6 +20,7 @@ import { Island } from 'ts/components/ui/island';
 import { TokenIcon } from 'ts/components/ui/token_icon';
 import { WalletDisconnectedItem } from 'ts/components/wallet/wallet_disconnected_item';
 import { WrapEtherItem } from 'ts/components/wallet/wrap_ether_item';
+import { AllowanceToggle } from 'ts/containers/inputs/allowance_toggle';
 import { Dispatcher } from 'ts/redux/dispatcher';
 import { colors } from 'ts/style/colors';
 import { zIndex } from 'ts/style/z_index';
@@ -414,15 +414,12 @@ export class Wallet extends React.Component<WalletProps, WalletState> {
         );
     }
     private _renderAllowanceToggle(config: AllowanceToggleConfig): React.ReactNode {
+        // TODO: Error handling
         return (
             <AllowanceToggle
-                networkId={this.props.networkId}
                 blockchain={this.props.blockchain}
-                dispatcher={this.props.dispatcher}
                 token={config.token}
                 tokenState={config.tokenState}
-                onErrorOccurred={_.noop} // TODO: Error handling
-                userAddress={this.props.userAddress}
                 isDisabled={!config.tokenState.isLoaded}
                 refetchTokenStateAsync={async () => this.props.refetchTokenStateAsync(config.token.address)}
             />
