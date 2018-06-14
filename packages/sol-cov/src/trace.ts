@@ -33,9 +33,7 @@ export function getTracesByContractAddress(structLogs: StructLog[], startAddress
             const newAddress = utils.getAddressFromStackEntry(
                 structLog.stack[structLog.stack.length - jumpAddressOffset - 1],
             );
-            if (structLog === _.last(normalizedStructLogs)) {
-                throw new Error('Malformed trace. CALL-like opcode can not be the last one');
-            }
+
             // Sometimes calls don't change the execution context (current address). When we do a transfer to an
             // externally owned account - it does the call and immediately returns because there is no fallback
             // function. We manually check if the call depth had changed to handle that case.
