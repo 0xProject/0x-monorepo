@@ -6,7 +6,7 @@
                 "note": "Expose 'abi' ContractAbi property on all contract wrappers"
             }
         ]
-    },    
+    },
     {
         "version": "0.0.2",
         "changes": [
