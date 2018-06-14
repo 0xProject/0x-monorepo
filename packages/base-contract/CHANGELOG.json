@@ -1,5 +1,14 @@
 [
     {
+        "version": "0.3.3",
+        "changes": [
+            {
+                "note":
+                    "Fix the `value.toLowerCase()` is not a function bug caused by `ethers.js` breaking patch version https://github.com/ethers-io/ethers.js/issues/201"
+            }
+        ]
+    },
+    {
         "timestamp": 1527008270,
         "version": "0.3.2",
         "changes": [

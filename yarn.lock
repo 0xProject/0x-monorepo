@@ -19,6 +19,17 @@
     "@0xproject/types" "^0.5.0"
     bignumber.js "~4.1.0"
 
+"@0xproject/web3-wrapper@^0.6.4":
+  version "0.6.4"
+  resolved "https://registry.yarnpkg.com/@0xproject/web3-wrapper/-/web3-wrapper-0.6.4.tgz#fb15b71cdf4e5001c2b2e0d316b0de485a2be5f8"
+  dependencies:
+    "@0xproject/types" "^0.7.0"
+    "@0xproject/typescript-typings" "^0.3.2"
+    "@0xproject/utils" "^0.6.2"
+    ethers "^3.0.15"
+    lodash "^4.17.4"
+    web3 "^0.20.0"
+
 "@ledgerhq/hw-app-eth@^4.3.0":
   version "4.7.3"
   resolved "https://registry.yarnpkg.com/@ledgerhq/hw-app-eth/-/hw-app-eth-4.7.3.tgz#d352e19658ae296532e522c53c8ec2a1a77b64e5"
