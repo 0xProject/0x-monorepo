@@ -2,7 +2,7 @@ import { schemas } from '@0xproject/json-schemas';
 import { formatters, getOrderHashHex, OrderStateUtils } from '@0xproject/order-utils';
 import {
     BlockParamLiteral,
-    ContractAbi
+    ContractAbi,
     DecodedLogArgs,
     ECSignature,
     ExchangeContractErrs,
