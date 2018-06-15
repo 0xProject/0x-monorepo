@@ -28,10 +28,10 @@
         "@0xproject/dev-utils": "^0.4.2",
         "@0xproject/monorepo-scripts": "^0.1.20",
         "@0xproject/tslint-config": "^0.4.18",
-        "copyfiles": "^1.2.0",
-        "make-promises-safe": "^1.1.0",
-        "shx": "^0.2.2",
-        "tslint": "^5.9.1",
+        "copyfiles": "1.2.0",
+        "make-promises-safe": "1.1.0",
+        "shx": "0.2.2",
+        "tslint": "5.9.1",
         "typescript": "2.7.1"
     },
     "dependencies": {
@@ -39,19 +39,19 @@
         "@0xproject/utils": "^0.6.2",
         "@types/lodash": "4.14.104",
         "@types/material-ui": "0.18.0",
-        "@types/node": "^8.0.53",
+        "@types/node": "9.6.0",
         "@types/react": "16.3.13",
-        "@types/react-dom": "^16.0.3",
+        "@types/react-dom": "16.0.4",
         "@types/react-scroll": "0.0.31",
-        "basscss": "^8.0.3",
-        "compare-versions": "^3.0.1",
-        "lodash": "^4.17.4",
-        "material-ui": "^0.17.1",
+        "bascss": "8.0.4",
+        "compare-versions": "3.1.0",
+        "lodash": "4.17.10",
+        "material-ui": "0.17.4",
         "react": "15.6.1",
         "react-dom": "15.6.1",
-        "react-markdown": "^3.2.2",
-        "react-scroll": "^1.5.2",
-        "react-tooltip": "^3.2.7"
+        "react-markdown": "3.2.2",
+        "react-scroll": "1.7.7",
+        "react-tooltip": "3.4.0"
     },
     "publishConfig": {
         "access": "public"
