@@ -1,9 +1,13 @@
+import { colors } from '@0xproject/react-shared';
 import * as _ from 'lodash';
 import * as React from 'react';
 
 import { BigNumber } from '@0xproject/utils';
+import ActionAccountBalanceWallet from 'material-ui/svg-icons/action/account-balance-wallet';
 import { Blockchain } from 'ts/blockchain';
 import { OnboardingFlow, Step } from 'ts/components/onboarding/onboarding_flow';
+import { Container } from 'ts/components/ui/container';
+import { Text } from 'ts/components/ui/text';
 import { AllowanceToggle } from 'ts/containers/inputs/allowance_toggle';
 import { ProviderType, Token, TokenByAddress, TokenStateByAddress } from 'ts/types';
 import { utils } from 'ts/utils/utils';
@@ -48,8 +52,20 @@ export class PortalOnboardingFlow extends React.Component<PortalOnboardingFlowPr
             {
                 target: '.wallet',
                 title: '0x Ecosystem Setup',
-                content:
-                    'Before you begin, you need to connect to a wallet. This will be used across all 0x relayers and dApps',
+                content: (
+                    <div className="flex items-center flex-column">
+                        <Container marginTop="15px" marginBottom="15px">
+                            <ActionAccountBalanceWallet
+                                style={{ width: '30px', height: '30px' }}
+                                color={colors.orange}
+                            />
+                        </Container>
+                        <Text>
+                            Before you begin, you need to connect to a wallet. This will be used across all 0x relayers
+                            and dApps.
+                        </Text>
+                    </div>
+                ),
                 placement: 'right',
                 shouldHideBackButton: true,
                 shouldHideNextButton: true,
@@ -57,7 +73,14 @@ export class PortalOnboardingFlow extends React.Component<PortalOnboardingFlowPr
             {
                 target: '.wallet',
                 title: '0x Ecosystem Setup',
-                content: 'Unlock your metamask extension to begin',
+                content: (
+                    <div className="flex items-center flex-column">
+                        <Container marginTop="15px" marginBottom="15px">
+                            <img src="/images/metamask_icon.png" height="50px" width="50px" />
+                        </Container>
+                        <Text>Unlock your metamask extension to begin.</Text>
+                    </div>
+                ),
                 placement: 'right',
                 shouldHideBackButton: true,
                 shouldHideNextButton: true,

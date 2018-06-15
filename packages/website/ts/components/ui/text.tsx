@@ -43,7 +43,7 @@ Text.defaultProps = {
     fontFamily: 'Roboto',
     fontWeight: 400,
     fontColor: colors.black,
-    fontSize: '14px',
+    fontSize: '15px',
     Tag: 'div',
 };
 

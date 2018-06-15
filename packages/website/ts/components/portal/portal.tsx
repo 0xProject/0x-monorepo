@@ -1,10 +1,10 @@
 import { colors, Styles } from '@0xproject/react-shared';
 import { BigNumber } from '@0xproject/utils';
 import * as _ from 'lodash';
+import ActionAccountBalanceWallet from 'material-ui/svg-icons/action/account-balance-wallet';
 import * as React from 'react';
 import * as DocumentTitle from 'react-document-title';
 import { Route, RouteComponentProps, Switch } from 'react-router-dom';
-import ActionAccountBalanceWallet from 'material-ui/svg-icons/action/account-balance-wallet';
 
 import { Blockchain } from 'ts/blockchain';
 import { BlockchainErrDialog } from 'ts/components/dialogs/blockchain_err_dialog';
@@ -23,9 +23,9 @@ import { TokenBalances } from 'ts/components/token_balances';
 import { TopBar, TopBarDisplayType } from 'ts/components/top_bar/top_bar';
 import { TradeHistory } from 'ts/components/trade_history/trade_history';
 import { Container } from 'ts/components/ui/container';
-import { Text } from 'ts/components/ui/text';
 import { FlashMessage } from 'ts/components/ui/flash_message';
 import { Island } from 'ts/components/ui/island';
+import { Text } from 'ts/components/ui/text';
 import { Wallet } from 'ts/components/wallet/wallet';
 import { GenerateOrderForm } from 'ts/containers/generate_order_form';
 import { PortalOnboardingFlow } from 'ts/containers/portal_onboarding_flow';
@@ -366,7 +366,12 @@ export class Portal extends React.Component<PortalProps, PortalState> {
                                 style={{ width: '30px', height: '30px' }}
                                 color={colors.orange}
                             />
-                            <Text fontColor={colors.grey} fontSize="16px" onClick={this._startOnboarding.bind(this)}>
+                            <Text
+                                fontColor={colors.grey}
+                                fontSize="16px"
+                                center={true}
+                                onClick={this._startOnboarding.bind(this)}
+                            >
                                 Learn how to set up your account
                             </Text>
                         </Container>
