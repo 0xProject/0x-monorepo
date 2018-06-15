@@ -93,3 +93,5 @@ packages/sol-compiler/solc_bin/
 
 # Monorepo scripts
 packages/*/scripts/
+
+ganache.log
