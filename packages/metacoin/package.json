@@ -35,19 +35,19 @@
         "@0xproject/types": "^0.7.0",
         "@0xproject/utils": "^0.6.2",
         "@0xproject/web3-wrapper": "^0.6.4",
-        "ethers": "^3.0.15",
-        "lodash": "^4.17.4",
-        "web3-provider-engine": "^14.0.4"
+        "ethers": "3.0.15",
+        "lodash": "4.17.10",
+        "web3-provider-engine": "13.8.0"
     },
     "devDependencies": {
         "@0xproject/dev-utils": "^0.4.2",
-        "chai": "^4.0.1",
-        "chai-as-promised": "^7.1.0",
-        "chai-bignumber": "^2.0.1",
-        "dirty-chai": "^2.0.1",
-        "make-promises-safe": "^1.1.0",
-        "npm-run-all": "^4.1.2",
-        "shx": "^0.2.2",
+        "chai": "4.1.2",
+        "chai-as-promised": "7.1.1",
+        "chai-bignumber": "2.0.1",
+        "dirty-chai": "2.0.1",
+        "make-promises-safe": "1.1.0",
+        "npm-run-all": "4.1.2",
+        "shx": "0.2.2",
         "tslint": "5.8.0",
         "typescript": "2.7.1"
     }
