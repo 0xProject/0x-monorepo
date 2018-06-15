@@ -2,6 +2,7 @@ import * as React from 'react';
 
 import { Container } from 'ts/components/ui/container';
 import { Island } from 'ts/components/ui/island';
+import { Pointer } from 'ts/components/ui/pointer';
 
 export type ContinueButtonDisplay = 'enabled' | 'disabled';
 
@@ -34,22 +35,24 @@ export const ContinueButton: React.StatelessComponent<ContinueButtonProps> = (pr
 };
 
 export const OnboardingTooltip: React.StatelessComponent<OnboardingTooltipProps> = (props: OnboardingTooltipProps) => (
-    <Island>
-        <Container paddingRight="30px" paddingLeft="30px" maxWidth={350} paddingTop="15px" paddingBottom="15px">
-            <div className="flex flex-column">
-                {props.title}
-                {props.content}
-                {props.continueButtonDisplay && (
-                    <ContinueButton onClick={props.onClickNext} display={props.continueButtonDisplay}>
-                        Continue
-                    </ContinueButton>
-                )}
-                {!props.hideBackButton && <button onClick={props.onClickBack}>Back</button>}
-                {!props.hideNextButton && <button onClick={props.onClickNext}>Skip</button>}
-                <button onClick={props.onClose}>Close</button>
-            </div>
-        </Container>
-    </Island>
+    <Pointer direction="left">
+        <Island>
+            <Container paddingRight="30px" paddingLeft="30px" maxWidth={350} paddingTop="15px" paddingBottom="15px">
+                <div className="flex flex-column">
+                    {props.title}
+                    {props.content}
+                    {props.continueButtonDisplay && (
+                        <ContinueButton onClick={props.onClickNext} display={props.continueButtonDisplay}>
+                            Continue
+                        </ContinueButton>
+                    )}
+                    {!props.hideBackButton && <button onClick={props.onClickBack}>Back</button>}
+                    {!props.hideNextButton && <button onClick={props.onClickNext}>Skip</button>}
+                    <button onClick={props.onClose}>Close</button>
+                </div>
+            </Container>
+        </Island>
+    </Pointer>
 );
 
 OnboardingTooltip.displayName = 'OnboardingTooltip';
