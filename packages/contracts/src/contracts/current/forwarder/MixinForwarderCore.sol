@@ -97,14 +97,10 @@ contract MixinForwarderCore is
         internal
         returns (Exchange.FillResults memory totalFillResults)
     {
-        address token = readAddress(orders[0].makerAssetData, 0);
-        require(
-            token == address(ZRX_TOKEN),
-            TAKER_ASSET_ZRX_REQUIRED
-        );
         for (uint256 i = 0; i < orders.length; i++) {
-            // All of these are ZRX tokens, we can drop the subsequent makerAssetData from callData as it is duplicated (ZRX)
-            orders[i].makerAssetData = orders[0].makerAssetData;
+            // All of these are ZRX/WETH, we can drop the respective assetData from callData
+            orders[i].makerAssetData = ZRX_ASSET_DATA;
+            orders[i].takerAssetData = WETH_ASSET_DATA;
             // Calculate the remaining amount of makerToken to buy
             uint256 remainingMakerTokenFillAmount = safeSub(feeAmount, totalFillResults.makerAssetFilledAmount);
             // Convert the remaining amount of makerToken to buy into remaining amount

@@ -1,5 +1,5 @@
 import { BlockchainLifecycle } from '@0xproject/dev-utils';
-import { assetProxyUtils, orderHashUtils } from '@0xproject/order-utils';
+import { assetProxyUtils } from '@0xproject/order-utils';
 import { AssetProxyId, SignedOrder } from '@0xproject/types';
 import { BigNumber } from '@0xproject/utils';
 import { Web3Wrapper } from '@0xproject/web3-wrapper';
@@ -10,11 +10,7 @@ import { DummyERC20TokenContract } from '../../src/generated_contract_wrappers/d
 import { DummyERC721TokenContract } from '../../src/generated_contract_wrappers/dummy_e_r_c721_token';
 import { ERC20ProxyContract } from '../../src/generated_contract_wrappers/e_r_c20_proxy';
 import { ERC721ProxyContract } from '../../src/generated_contract_wrappers/e_r_c721_proxy';
-import {
-    CancelContractEventArgs,
-    ExchangeContract,
-    FillContractEventArgs,
-} from '../../src/generated_contract_wrappers/exchange';
+import { ExchangeContract } from '../../src/generated_contract_wrappers/exchange';
 import { ForwarderContract } from '../../src/generated_contract_wrappers/forwarder';
 import { WETH9Contract } from '../../src/generated_contract_wrappers/weth9';
 import { artifacts } from '../../src/utils/artifacts';
@@ -426,6 +422,39 @@ describe(ContractName.Forwarder, () => {
             });
             const newOwnerTakerAsset = await erc721Token.ownerOf.callAsync(makerAssetId);
             expect(newOwnerTakerAsset).to.be.bignumber.equal(takerAddress);
+        });
+        it('buys multiple ERC721 assets with fee abstraction and pays fee to fee recipient', async () => {
+            const makerAssetId1 = erc721MakerAssetIds[0];
+            const makerAssetId2 = erc721MakerAssetIds[1];
+            const signedOrder1 = orderFactory.newSignedOrder({
+                makerAssetAmount: new BigNumber(1),
+                takerFee: Web3Wrapper.toBaseUnitAmount(new BigNumber(1), DECIMALS_DEFAULT),
+                makerAssetData: assetProxyUtils.encodeERC721AssetData(erc721Token.address, makerAssetId1),
+            });
+            const signedOrder2 = orderFactory.newSignedOrder({
+                makerAssetAmount: new BigNumber(1),
+                takerFee: Web3Wrapper.toBaseUnitAmount(new BigNumber(1), DECIMALS_DEFAULT),
+                makerAssetData: assetProxyUtils.encodeERC721AssetData(erc721Token.address, makerAssetId2),
+            });
+            signedOrders = [signedOrder1, signedOrder2];
+            feeProportion = 10;
+            const assetAmount = new BigNumber(signedOrders.length);
+            const fillAmountWei = await forwarderWrapper.calculateBuyExactFillAmountWeiAsync(
+                signedOrders,
+                feeOrders,
+                feeProportion,
+                feeRecipientAddress,
+                assetAmount,
+            );
+            tx = await forwarderWrapper.buyExactAssetsAsync(signedOrders, feeOrders, {
+                from: takerAddress,
+                assetAmount,
+                fillAmountWei,
+            });
+            const newOwnerTakerAsset1 = await erc721Token.ownerOf.callAsync(makerAssetId1);
+            expect(newOwnerTakerAsset1).to.be.bignumber.equal(takerAddress);
+            const newOwnerTakerAsset2 = await erc721Token.ownerOf.callAsync(makerAssetId2);
+            expect(newOwnerTakerAsset2).to.be.bignumber.equal(takerAddress);
         });
     });
 });

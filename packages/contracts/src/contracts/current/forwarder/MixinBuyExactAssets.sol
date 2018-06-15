@@ -46,15 +46,11 @@ contract MixinBuyExactAssets is
             msg.value > 0,
             VALUE_GREATER_THAN_ZERO
         );
-        address takerAsset = readAddress(orders[0].takerAssetData, 0);
-        require(
-            takerAsset == address(ETHER_TOKEN),
-            TAKER_ASSET_WETH_REQUIRED
-        );
+        uint256 remainingTakerAssetAmount = msg.value;
+        // Read the last byte which indicates the proxy id, without popping
         uint8 proxyId = uint8(orders[0].makerAssetData[orders[0].makerAssetData.length - 1]);
         require(proxyId == ERC20_PROXY_ID || proxyId == ERC721_PROXY_ID, UNSUPPORTED_TOKEN_PROXY);
 
-        uint256 remainingTakerAssetAmount = msg.value;
         ETHER_TOKEN.deposit.value(remainingTakerAssetAmount)();
         if (proxyId == ERC20_PROXY_ID) {
             totalFillResults = buyExactERC20TokensInternal(orders, signatures, feeOrders, feeSignatures, makerAssetAmount);
@@ -97,6 +93,11 @@ contract MixinBuyExactAssets is
         returns (Exchange.FillResults memory totalFillResults)
     {
         address makerTokenAddress = readAddress(orders[0].makerAssetData, 0); 
+        // Populate the known assetData, as it is always WETH the caller can provide null bytes to save gas
+        for (uint256 i = 0; i < orders.length; i++) {
+            orders[i].makerAssetData = orders[0].makerAssetData;
+            orders[i].takerAssetData = WETH_ASSET_DATA;
+        }
         // We can short cut here for effeciency and use buyFeeTokensInternal if maker asset token is ZRX
         // this buys us exactly that amount taking into account the fees. This saves gas and calculates the rate correctly
         Exchange.FillResults memory requestedTokensResults;
@@ -151,6 +152,7 @@ contract MixinBuyExactAssets is
             ASSET_AMOUNT_MATCH_ORDER_SIZE
         );
         uint256 totalFeeAmount;
+        // Total up the fees
         for (uint256 i = 0; i < orders.length; i++) {
             totalFeeAmount = safeAdd(totalFeeAmount, orders[i].takerFee);
         }
@@ -161,6 +163,8 @@ contract MixinBuyExactAssets is
             totalFillResults.takerAssetFilledAmount = feeTokensResult.takerAssetFilledAmount;
         }
         for (i = 0; i < orders.length; i++) {
+            // Populate the known takerAssetData as it is always WETH
+            orders[i].takerAssetData = WETH_ASSET_DATA;
             // Fail if it wasn't fully filled otherwise we will keep WETH
             Exchange.FillResults memory fillOrderResults = EXCHANGE.fillOrKillOrder(
                 orders[i],
