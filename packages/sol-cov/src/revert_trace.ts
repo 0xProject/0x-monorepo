@@ -6,6 +6,8 @@ import * as _ from 'lodash';
 import { EvmCallStack } from './types';
 import { utils } from './utils';
 
+const NULL_STACK_ENTRY = '0000000000000000000000000000000000000000000000000000000000000000';
+
 export function getRevertTrace(structLogs: StructLog[], startAddress: string): EvmCallStack {
     const evmCallStack: EvmCallStack = [];
     const addressStack = [startAddress];
@@ -41,11 +43,27 @@ export function getRevertTrace(structLogs: StructLog[], startAddress: string): E
                     structLog,
                 });
             }
+        } else if (structLog.op === OpCode.Jump) {
+            const currentAddress = _.last(addressStack) as string;
+            evmCallStack.push({
+                address: currentAddress,
+                structLog,
+            });
+        } else if (structLog.op === OpCode.JumpI) {
+            const conditionalOffset = 1;
+            const cond = structLog.stack[structLog.stack.length - conditionalOffset - 1];
+            if (cond !== NULL_STACK_ENTRY) {
+                const currentAddress = _.last(addressStack) as string;
+                evmCallStack.push({
+                    address: currentAddress,
+                    structLog,
+                });
+            }
         } else if (utils.isEndOpcode(structLog.op) && structLog.op !== OpCode.Revert) {
+            evmCallStack.pop();
             // Just like with calls, sometimes returns/stops don't change the execution context (current address).
             const nextStructLog = normalizedStructLogs[i + 1];
             if (_.isUndefined(nextStructLog) || nextStructLog.depth !== structLog.depth) {
-                evmCallStack.pop();
                 addressStack.pop();
             }
             if (structLog.op === OpCode.SelfDestruct) {
