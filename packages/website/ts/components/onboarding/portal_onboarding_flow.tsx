@@ -88,8 +88,24 @@ export class PortalOnboardingFlow extends React.Component<PortalOnboardingFlowPr
             {
                 target: '.wallet',
                 title: '0x Ecosystem Account Setup',
-                content:
-                    'In order to start trading on any 0x relayer in the 0x ecosystem, you need to complete two simple steps',
+                content: (
+                    <div className="flex items-center flex-column">
+                        <Text>
+                            In order to start trading on any 0x relayer in the 0x ecosystem, you need to complete two
+                            simple steps.
+                        </Text>
+                        <Container width="100%" marginTop="25px" marginBottom="15px" className="flex justify-around">
+                            <div className="flex flex-column items-center">
+                                <img src="/images/eth_token.svg" height="50px" width="50x" />
+                                <Text> Wrap ETH </Text>
+                            </div>
+                            <div className="flex flex-column items-center">
+                                <img src="/images/fake_toggle.svg" height="50px" width="50px" />
+                                <Text> Unlock tokens </Text>
+                            </div>
+                        </Container>
+                    </div>
+                ),
                 placement: 'right',
                 shouldHideBackButton: true,
                 continueButtonDisplay: 'enabled',
@@ -97,7 +113,18 @@ export class PortalOnboardingFlow extends React.Component<PortalOnboardingFlowPr
             {
                 target: '.eth-row',
                 title: 'Add ETH',
-                content: 'Before you begin you will need to send some ETH to your metamask wallet',
+                content: (
+                    <div className="flex items-center flex-column">
+                        <Text> Before you begin you will need to send some ETH to your metamask wallet.</Text>
+                        <Container marginTop="15px" marginBottom="15px">
+                            <img src="/images/ether_alt.svg" height="50px" width="50px" />
+                        </Container>
+                        <Text>
+                            Click on the <img src="/images/metamask_icon.png" height="20px" width="20px" /> metamask
+                            extension in your browser and click either <b>BUY</b> or <b>DEPOSIT</b>.
+                        </Text>
+                    </div>
+                ),
                 placement: 'right',
                 continueButtonDisplay: this._userHasVisibleEth() ? 'enabled' : 'disabled',
             },

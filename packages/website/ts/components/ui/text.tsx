@@ -44,6 +44,7 @@ Text.defaultProps = {
     fontWeight: 400,
     fontColor: colors.black,
     fontSize: '15px',
+    lineHeight: '1.5em',
     Tag: 'div',
 };
 
