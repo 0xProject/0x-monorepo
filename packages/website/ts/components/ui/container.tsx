@@ -16,6 +16,11 @@ export interface ContainerProps {
     maxWidth?: StringOrNum;
     isHidden?: boolean;
     className?: string;
+    position?: 'absolute' | 'fixed' | 'relative' | 'unset';
+    top?: string;
+    left?: string;
+    right?: string;
+    bottom?: string;
 }
 
 export const Container: React.StatelessComponent<ContainerProps> = ({ children, className, isHidden, ...style }) => {

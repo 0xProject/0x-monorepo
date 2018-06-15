@@ -1,8 +1,9 @@
 import { colors } from '@0xproject/react-shared';
+import { darken } from 'polished';
 import * as React from 'react';
 import { styled } from 'ts/style/theme';
 
-export type TextTag = 'p' | 'div' | 'span' | 'label';
+export type TextTag = 'p' | 'div' | 'span' | 'label' | 'h1' | 'h2' | 'h3' | 'h4';
 
 export interface TextProps {
     className?: string;
@@ -14,10 +15,13 @@ export interface TextProps {
     minHeight?: string;
     center?: boolean;
     fontWeight?: number | string;
+    onClick?: () => void;
 }
 
-const PlainText: React.StatelessComponent<TextProps> = ({ children, className, Tag }) => (
-    <Tag className={className}>{children}</Tag>
+const PlainText: React.StatelessComponent<TextProps> = ({ children, className, onClick, Tag }) => (
+    <Tag className={className} onClick={onClick}>
+        {children}
+    </Tag>
 );
 
 export const Text = styled(PlainText)`
@@ -28,14 +32,30 @@ export const Text = styled(PlainText)`
     ${props => (props.center ? 'text-align: center' : '')};
     color: ${props => props.fontColor};
     ${props => (props.minHeight ? `min-height: ${props.minHeight}` : '')};
+    ${props => (props.onClick ? 'cursor: pointer' : '')};
+    transition: color 0.5s ease;
+    &:hover {
+        ${props => (props.onClick ? `color: ${darken(0.1, props.fontColor)}` : '')};
+    }
 `;
 
 Text.defaultProps = {
     fontFamily: 'Roboto',
     fontWeight: 400,
-    fontColor: colors.white,
+    fontColor: colors.black,
     fontSize: '14px',
     Tag: 'div',
 };
 
 Text.displayName = 'Text';
+
+export const Title: React.StatelessComponent<TextProps> = props => <Text {...props} />;
+
+Title.defaultProps = {
+    Tag: 'h2',
+    fontSize: '20px',
+    fontWeight: 600,
+    fontColor: colors.black,
+};
+
+Title.displayName = 'Title';

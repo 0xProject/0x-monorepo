@@ -1,5 +1,4 @@
 import { colors } from '@0xproject/react-shared';
-import { Island } from 'ts/components/ui/island';
 import * as React from 'react';
 import { styled } from 'ts/style/theme';
 
@@ -12,7 +11,7 @@ export interface PointerProps {
     direction: PointerDirection;
 }
 
-const PlainPointer: React.StatelessComponent<PointerProps> =  props => <div {...props}/>;
+const PlainPointer: React.StatelessComponent<PointerProps> = props => <div {...props} />;
 
 const positionToCss = (props: PointerProps) => {
     const position = {

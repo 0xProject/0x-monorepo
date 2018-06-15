@@ -47,41 +47,47 @@ export class PortalOnboardingFlow extends React.Component<PortalOnboardingFlowPr
         const steps: Step[] = [
             {
                 target: '.wallet',
+                title: '0x Ecosystem Setup',
                 content:
                     'Before you begin, you need to connect to a wallet. This will be used across all 0x relayers and dApps',
                 placement: 'right',
-                hideBackButton: true,
-                hideNextButton: true,
+                shouldHideBackButton: true,
+                shouldHideNextButton: true,
             },
             {
                 target: '.wallet',
+                title: '0x Ecosystem Setup',
                 content: 'Unlock your metamask extension to begin',
                 placement: 'right',
-                hideBackButton: true,
-                hideNextButton: true,
+                shouldHideBackButton: true,
+                shouldHideNextButton: true,
             },
             {
                 target: '.wallet',
+                title: '0x Ecosystem Account Setup',
                 content:
                     'In order to start trading on any 0x relayer in the 0x ecosystem, you need to complete two simple steps',
                 placement: 'right',
-                hideBackButton: true,
+                shouldHideBackButton: true,
                 continueButtonDisplay: 'enabled',
             },
             {
                 target: '.eth-row',
+                title: 'Add ETH',
                 content: 'Before you begin you will need to send some ETH to your metamask wallet',
                 placement: 'right',
                 continueButtonDisplay: this._userHasVisibleEth() ? 'enabled' : 'disabled',
             },
             {
                 target: '.weth-row',
+                title: 'Step 1/2',
                 content: 'You need to convert some of your ETH into tradeable Wrapped ETH (WETH)',
                 placement: 'right',
                 continueButtonDisplay: this._userHasVisibleWeth() ? 'enabled' : 'disabled',
             },
             {
                 target: '.weth-row',
+                title: 'Step 2/2',
                 content: (
                     <div>
                         Unlock your tokens for trading. You only need to do this once for each token.
@@ -94,9 +100,11 @@ export class PortalOnboardingFlow extends React.Component<PortalOnboardingFlowPr
             },
             {
                 target: '.wallet',
-                content: 'Congrats! Your wallet is now set up for trading. Use it on any relayer in the 0x ecosystem.',
+                title: '🎉 Congrats! The ecosystem awaits.',
+                content: 'Your wallet is now set up for trading. Use it on any relayer in the 0x ecosystem.',
                 placement: 'right',
                 continueButtonDisplay: 'enabled',
+                shouldHideNextButton: true,
             },
         ];
         return steps;
