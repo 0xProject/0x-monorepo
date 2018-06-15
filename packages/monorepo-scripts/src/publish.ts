@@ -170,7 +170,7 @@ async function updateChangeLogsAsync(updatedPublicLernaPackages: LernaPackage[])
         const packageName = lernaPackage.package.name;
         const changelogJSONPath = path.join(lernaPackage.location, 'CHANGELOG.json');
         const changelogJSON = utils.getChangelogJSONOrCreateIfMissing(changelogJSONPath);
-        let changelogs: Changelog;
+        let changelog: Changelog;
         try {
             changelog = JSON.parse(changelogJSON);
         } catch (err) {
@@ -180,7 +180,7 @@ async function updateChangeLogsAsync(updatedPublicLernaPackages: LernaPackage[])
         }
 
         const currentVersion = lernaPackage.package.version;
-        const shouldAddNewEntry = changelogUtils.shouldAddNewChangelogEntry(currentVersion, changelogs);
+        const shouldAddNewEntry = changelogUtils.shouldAddNewChangelogEntry(currentVersion, changelog);
         if (shouldAddNewEntry) {
             // Create a new entry for a patch version with generic changelog entry.
             const nextPatchVersion = utils.getNextPatchVersion(currentVersion);
@@ -213,7 +213,7 @@ async function updateChangeLogsAsync(updatedPublicLernaPackages: LernaPackage[])
         await utils.prettifyAsync(changelogJSONPath, constants.monorepoRootPath);
         utils.log(`${packageName}: Updated CHANGELOG.json`);
         // Generate updated CHANGELOG.md
-        const changelogMd = changelogUtils.generateChangelogMd(changelogs);
+        const changelogMd = changelogUtils.generateChangelogMd(changelog);
         const changelogMdPath = path.join(lernaPackage.location, 'CHANGELOG.md');
         fs.writeFileSync(changelogMdPath, changelogMd);
         await utils.prettifyAsync(changelogMdPath, constants.monorepoRootPath);
