@@ -1,13 +1,14 @@
-import { colors } from '@0xproject/react-shared';
 import * as _ from 'lodash';
 import * as React from 'react';
 
 import { BigNumber } from '@0xproject/utils';
-import ActionAccountBalanceWallet from 'material-ui/svg-icons/action/account-balance-wallet';
 import { Blockchain } from 'ts/blockchain';
+import { AddEthOnboardingStep } from 'ts/components/onboarding/add_eth_onboarding_step';
+import { InstallWalletOnboardingStep } from 'ts/components/onboarding/install_wallet_onboarding_step';
+import { IntroOnboardingStep } from 'ts/components/onboarding/intro_onboarding_step';
 import { OnboardingFlow, Step } from 'ts/components/onboarding/onboarding_flow';
-import { Container } from 'ts/components/ui/container';
-import { Text } from 'ts/components/ui/text';
+import { UnlockWalletOnboardingStep } from 'ts/components/onboarding/unlock_wallet_onboarding_step';
+import { WrapEthOnboardingStep } from 'ts/components/onboarding/wrap_eth_onboarding_step';
 import { AllowanceToggle } from 'ts/containers/inputs/allowance_toggle';
 import { ProviderType, Token, TokenByAddress, TokenStateByAddress } from 'ts/types';
 import { utils } from 'ts/utils/utils';
@@ -52,20 +53,7 @@ export class PortalOnboardingFlow extends React.Component<PortalOnboardingFlowPr
             {
                 target: '.wallet',
                 title: '0x Ecosystem Setup',
-                content: (
-                    <div className="flex items-center flex-column">
-                        <Container marginTop="15px" marginBottom="15px">
-                            <ActionAccountBalanceWallet
-                                style={{ width: '30px', height: '30px' }}
-                                color={colors.orange}
-                            />
-                        </Container>
-                        <Text>
-                            Before you begin, you need to connect to a wallet. This will be used across all 0x relayers
-                            and dApps.
-                        </Text>
-                    </div>
-                ),
+                content: <InstallWalletOnboardingStep />,
                 placement: 'right',
                 shouldHideBackButton: true,
                 shouldHideNextButton: true,
@@ -73,14 +61,7 @@ export class PortalOnboardingFlow extends React.Component<PortalOnboardingFlowPr
             {
                 target: '.wallet',
                 title: '0x Ecosystem Setup',
-                content: (
-                    <div className="flex items-center flex-column">
-                        <Container marginTop="15px" marginBottom="15px">
-                            <img src="/images/metamask_icon.png" height="50px" width="50px" />
-                        </Container>
-                        <Text>Unlock your metamask extension to begin.</Text>
-                    </div>
-                ),
+                content: <UnlockWalletOnboardingStep />,
                 placement: 'right',
                 shouldHideBackButton: true,
                 shouldHideNextButton: true,
@@ -88,24 +69,7 @@ export class PortalOnboardingFlow extends React.Component<PortalOnboardingFlowPr
             {
                 target: '.wallet',
                 title: '0x Ecosystem Account Setup',
-                content: (
-                    <div className="flex items-center flex-column">
-                        <Text>
-                            In order to start trading on any 0x relayer in the 0x ecosystem, you need to complete two
-                            simple steps.
-                        </Text>
-                        <Container width="100%" marginTop="25px" marginBottom="15px" className="flex justify-around">
-                            <div className="flex flex-column items-center">
-                                <img src="/images/eth_token.svg" height="50px" width="50x" />
-                                <Text> Wrap ETH </Text>
-                            </div>
-                            <div className="flex flex-column items-center">
-                                <img src="/images/fake_toggle.svg" height="50px" width="50px" />
-                                <Text> Unlock tokens </Text>
-                            </div>
-                        </Container>
-                    </div>
-                ),
+                content: <IntroOnboardingStep />,
                 placement: 'right',
                 shouldHideBackButton: true,
                 continueButtonDisplay: 'enabled',
@@ -113,27 +77,22 @@ export class PortalOnboardingFlow extends React.Component<PortalOnboardingFlowPr
             {
                 target: '.eth-row',
                 title: 'Add ETH',
-                content: (
-                    <div className="flex items-center flex-column">
-                        <Text> Before you begin you will need to send some ETH to your metamask wallet.</Text>
-                        <Container marginTop="15px" marginBottom="15px">
-                            <img src="/images/ether_alt.svg" height="50px" width="50px" />
-                        </Container>
-                        <Text>
-                            Click on the <img src="/images/metamask_icon.png" height="20px" width="20px" /> metamask
-                            extension in your browser and click either <b>BUY</b> or <b>DEPOSIT</b>.
-                        </Text>
-                    </div>
-                ),
+                content: <AddEthOnboardingStep />,
                 placement: 'right',
                 continueButtonDisplay: this._userHasVisibleEth() ? 'enabled' : 'disabled',
             },
             {
                 target: '.weth-row',
                 title: 'Step 1/2',
-                content: 'You need to convert some of your ETH into tradeable Wrapped ETH (WETH)',
+                content: (
+                    <WrapEthOnboardingStep
+                        formattedEthBalanceIfExists={
+                            this._userHasVisibleWeth() ? this._getFormattedWethBalance() : undefined
+                        }
+                    />
+                ),
                 placement: 'right',
-                continueButtonDisplay: this._userHasVisibleWeth() ? 'enabled' : 'disabled',
+                continueButtonDisplay: this._userHasVisibleWeth() ? 'enabled' : undefined,
             },
             {
                 target: '.weth-row',
@@ -165,13 +124,21 @@ export class PortalOnboardingFlow extends React.Component<PortalOnboardingFlowPr
     private _userHasVisibleEth(): boolean {
         return this.props.userEtherBalanceInWei > new BigNumber(0);
     }
-    private _userHasVisibleWeth(): boolean {
+    private _getWethBalance(): BigNumber {
         const ethToken = utils.getEthToken(this.props.tokenByAddress);
         if (!ethToken) {
-            return false;
+            return new BigNumber(0);
         }
-        const wethTokenState = this.props.trackedTokenStateByAddress[ethToken.address];
-        return wethTokenState.balance > new BigNumber(0);
+        const ethTokenState = this.props.trackedTokenStateByAddress[ethToken.address];
+        return ethTokenState.balance;
+    }
+    private _getFormattedWethBalance(): string {
+        const ethToken = utils.getEthToken(this.props.tokenByAddress);
+        const ethTokenState = this.props.trackedTokenStateByAddress[ethToken.address];
+        return utils.getFormattedAmountFromToken(ethToken, ethTokenState);
+    }
+    private _userHasVisibleWeth(): boolean {
+        return this._getWethBalance() > new BigNumber(0);
     }
     private _userHasAllowancesForWethAndZrx(): boolean {
         const ethToken = utils.getEthToken(this.props.tokenByAddress);

@@ -6,6 +6,7 @@ export const constants = {
     ETHER_TOKEN_SYMBOL: 'WETH',
     ZRX_TOKEN_SYMBOL: 'ZRX',
     ETHER_SYMBOL: 'ETH',
+    TOKEN_AMOUNT_DISPLAY_PRECISION: 5,
     GENESIS_ORDER_BLOCK_BY_NETWORK_ID: {
         1: 4145578,
         42: 3117574,
