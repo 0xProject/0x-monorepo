@@ -23,6 +23,7 @@ export class OrderFactory {
             expirationTimeSeconds: randomExpiration,
             salt: generatePseudoRandomSalt(),
             takerAddress: constants.NULL_ADDRESS,
+            userData: constants.NULL_BYTES,
             ...this._defaultOrderParams,
             ...customOrderParams,
         } as any) as Order;

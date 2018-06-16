@@ -54,6 +54,7 @@ export const orderHashUtils = {
     getOrderHashBuff(order: SignedOrder | Order): Buffer {
         const makerAssetDataHash = crypto.solSHA3([ethUtil.toBuffer(order.makerAssetData)]);
         const takerAssetDataHash = crypto.solSHA3([ethUtil.toBuffer(order.takerAssetData)]);
+        const userDataHash = crypto.solSHA3([ethUtil.toBuffer(order.userData)]);
 
         const orderParamsHashBuff = crypto.solSHA3([
             order.makerAddress,
@@ -68,6 +69,7 @@ export const orderHashUtils = {
             order.salt,
             makerAssetDataHash,
             takerAssetDataHash,
+            userDataHash,
         ]);
         const orderParamsHashHex = `0x${orderParamsHashBuff.toString('hex')}`;
         const orderSchemaHashHex = this._getOrderSchemaHex();
@@ -96,6 +98,7 @@ export const orderHashUtils = {
             'uint256 salt,',
             'bytes makerAssetData,',
             'bytes takerAssetData,',
+            'bytes userData,',
             ')',
         ]);
         const schemaHashHex = `0x${orderSchemaHashBuff.toString('hex')}`;

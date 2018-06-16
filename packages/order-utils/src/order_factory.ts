@@ -24,11 +24,13 @@ export const orderFactory = {
         exchangeAddress: string,
         feeRecipientAddress: string,
         expirationTimeSecondsIfExists?: BigNumber,
+        userDataIfExists?: string,
     ): Promise<SignedOrder> {
         const defaultExpirationUnixTimestampSec = new BigNumber(2524604400); // Close to infinite
         const expirationTimeSeconds = _.isUndefined(expirationTimeSecondsIfExists)
             ? defaultExpirationUnixTimestampSec
             : expirationTimeSecondsIfExists;
+        const userData = _.isUndefined(userDataIfExists) ? '0x0' : userDataIfExists;
         const order = {
             makerAddress,
             takerAddress,
@@ -43,6 +45,7 @@ export const orderFactory = {
             exchangeAddress,
             feeRecipientAddress,
             expirationTimeSeconds,
+            userData,
         };
         const orderHash = orderHashUtils.getOrderHashHex(order);
         const messagePrefixOpts = {
