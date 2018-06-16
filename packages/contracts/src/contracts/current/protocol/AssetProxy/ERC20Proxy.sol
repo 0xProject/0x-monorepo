@@ -50,7 +50,35 @@ contract ERC20Proxy is
         address token = readAddress(assetData, 0);
 
         // Transfer tokens.
-        bool success = IERC20Token(token).transferFrom(from, to, amount);
+        // We do a raw call so we can check the success separate
+        // from the return data.
+        bool success = token.call(abi.encodeWithSelector(
+            IERC20Token(token).transferFrom.selector,
+            from,
+            to,
+            amount
+        ));
+        require(
+            success,
+            TRANSFER_FAILED
+        );
+        
+        // Check return data.
+        // If there is no return data, we assume the token incorrectly
+        // does not return a bool. In this case we expect it to revert
+        // on failure, which was handled above.
+        // If the token does return data, we require that it is a single
+        // value that evaluates to true.
+        assembly {
+            if returndatasize {
+                success := 0
+                if eq(returndatasize, 32) {
+                    // First 64 bytes of memory are reserved scratch space
+                    returndatacopy(0, 0, 32)
+                    success := mload(0)
+                }
+            }
+        }
         require(
             success,
             TRANSFER_FAILED
