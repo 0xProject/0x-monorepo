@@ -7,6 +7,7 @@ import { AddEthOnboardingStep } from 'ts/components/onboarding/add_eth_onboardin
 import { InstallWalletOnboardingStep } from 'ts/components/onboarding/install_wallet_onboarding_step';
 import { IntroOnboardingStep } from 'ts/components/onboarding/intro_onboarding_step';
 import { OnboardingFlow, Step } from 'ts/components/onboarding/onboarding_flow';
+import { SetAllowancesOnboardingStep } from 'ts/components/onboarding/set_allowances_onboarding_step';
 import { UnlockWalletOnboardingStep } from 'ts/components/onboarding/unlock_wallet_onboarding_step';
 import { WrapEthOnboardingStep } from 'ts/components/onboarding/wrap_eth_onboarding_step';
 import { AllowanceToggle } from 'ts/containers/inputs/allowance_toggle';
@@ -98,11 +99,10 @@ export class PortalOnboardingFlow extends React.Component<PortalOnboardingFlowPr
                 target: '.weth-row',
                 title: 'Step 2/2',
                 content: (
-                    <div>
-                        Unlock your tokens for trading. You only need to do this once for each token.
-                        <div> ETH: {this._renderEthAllowanceToggle()}</div>
-                        <div> ZRX: {this._renderZrxAllowanceToggle()}</div>
-                    </div>
+                    <SetAllowancesOnboardingStep
+                        zrxAllowanceToggle={this._renderZrxAllowanceToggle()}
+                        ethAllowanceToggle={this._renderEthAllowanceToggle()}
+                    />
                 ),
                 placement: 'right',
                 continueButtonDisplay: this._userHasAllowancesForWethAndZrx() ? 'enabled' : 'disabled',
