@@ -4,6 +4,7 @@ import * as React from 'react';
 import { BigNumber } from '@0xproject/utils';
 import { Blockchain } from 'ts/blockchain';
 import { AddEthOnboardingStep } from 'ts/components/onboarding/add_eth_onboarding_step';
+import { CongratsOnboardingStep } from 'ts/components/onboarding/congrats_onboarding_step';
 import { InstallWalletOnboardingStep } from 'ts/components/onboarding/install_wallet_onboarding_step';
 import { IntroOnboardingStep } from 'ts/components/onboarding/intro_onboarding_step';
 import { OnboardingFlow, Step } from 'ts/components/onboarding/onboarding_flow';
@@ -110,10 +111,11 @@ export class PortalOnboardingFlow extends React.Component<PortalOnboardingFlowPr
             {
                 target: '.wallet',
                 title: '🎉 Congrats! The ecosystem awaits.',
-                content: 'Your wallet is now set up for trading. Use it on any relayer in the 0x ecosystem.',
+                content: <CongratsOnboardingStep />,
                 placement: 'right',
                 continueButtonDisplay: 'enabled',
                 shouldHideNextButton: true,
+                continueButtonText: 'Enter the 0x Ecosystem',
             },
         ];
         return steps;

@@ -21,6 +21,7 @@ export interface OnboardingTooltipProps {
     shouldHideBackButton?: boolean;
     shouldHideNextButton?: boolean;
     pointerDirection?: PointerDirection;
+    continueButtonText?: string;
     className?: string;
 }
 
@@ -28,6 +29,7 @@ export const OnboardingTooltip: React.StatelessComponent<OnboardingTooltipProps>
     title,
     content,
     continueButtonDisplay,
+    continueButtonText,
     onClickNext,
     onClickBack,
     onClose,
@@ -59,7 +61,7 @@ export const OnboardingTooltip: React.StatelessComponent<OnboardingTooltipProps>
                             fontSize="15px"
                             backgroundColor={colors.mediumBlue}
                         >
-                            Continue
+                            {continueButtonText}
                         </Button>
                     )}
                     <Container className="flex justify-between" marginTop="15px">
@@ -82,6 +84,7 @@ export const OnboardingTooltip: React.StatelessComponent<OnboardingTooltipProps>
 
 OnboardingTooltip.defaultProps = {
     pointerDirection: 'left',
+    continueButtonText: 'Continue',
 };
 
 OnboardingTooltip.displayName = 'OnboardingTooltip';
