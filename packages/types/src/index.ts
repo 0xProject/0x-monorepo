@@ -48,6 +48,12 @@ export interface ECSignature {
     s: string;
 }
 
+export interface ECSignatureBuffer {
+    v: number;
+    r: Buffer;
+    s: Buffer;
+}
+
 /**
  * Validator signature components
  */

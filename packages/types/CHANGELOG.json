@@ -5,6 +5,10 @@
             {
                 "note": "Change the order type to v2 format",
                 "pr": 618
+            },
+            {
+                "note": "Add `ECSignatureBuffer`",
+                "pr": 660
             }
         ]
     },

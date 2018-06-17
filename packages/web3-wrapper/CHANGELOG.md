@@ -5,6 +5,10 @@ Edit the package's CHANGELOG.json file only.
 
 CHANGELOG
 
+## v0.7.0 - _Jun 4, 2018_
+
+    * Add default parameters when sending a raw payload
+
 ## v0.6.4 - _May 22, 2018_
 
     * Dependencies updated

@@ -5,6 +5,18 @@ Edit the package's CHANGELOG.json file only.
 
 CHANGELOG
 
+## v0.1.3 - _May 29, 2018_
+
+    * Dependencies updated
+
+## v0.1.2 - _May 29, 2018_
+
+    * Dependencies updated
+
+## v0.1.1 - _May 29, 2018_
+
+    * Dependencies updated
+
 ## v0.1.0 - _May 22, 2018_
 
     * Properly export the executable binary (#588)

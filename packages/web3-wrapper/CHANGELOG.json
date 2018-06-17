@@ -34,6 +34,9 @@
                 "note":
                     "Improve performance of awaitTransactionMinedAsync by immediately checking if the transaction was already mined instead of waiting for the first interval.",
                 "pr": 688
+            },
+            {
+                "note": "Add default parameters when sending a raw payload"
             }
         ]
     },

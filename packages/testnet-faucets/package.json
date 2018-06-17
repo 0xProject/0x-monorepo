@@ -1,7 +1,7 @@
 {
     "private": true,
     "name": "@0xproject/testnet-faucets",
-    "version": "1.0.30",
+    "version": "1.0.33",
     "engines": {
         "node": ">=6.12"
     },
@@ -18,7 +18,7 @@
     "author": "Fabio Berger",
     "license": "Apache-2.0",
     "dependencies": {
-        "0x.js": "^0.38.0",
+        "0x.js": "^0.38.3",
         "@0xproject/subproviders": "^0.10.2",
         "@0xproject/typescript-typings": "^0.3.2",
         "@0xproject/utils": "^0.6.2",

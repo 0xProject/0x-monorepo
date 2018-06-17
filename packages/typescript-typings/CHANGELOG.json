@@ -12,6 +12,10 @@
                 "note":
                     "Remove types for blockies, bn.js, compare-versions, ethereumjs-abi, ethereumjs-tx, find-versions, hdkey, is-mobile, solidity-parser-antlr, xml-js as they were moved to DefinitelyTyped",
                 "pr": 641
+            },
+            {
+                "note": "Add types for `eth-lightwallet`",
+                "pr": 660
             }
         ]
     },
