@@ -263,40 +263,50 @@ contract MixinWrapperFunctions is
     /// @param orders Array of order specifications.
     /// @param takerAssetFillAmounts Array of desired amounts of takerAsset to sell in orders.
     /// @param signatures Proofs that orders have been created by makers.
+    /// @return Amounts filled and fees paid by makers and taker.
+    ///         NOTE: makerAssetFilledAmount and takerAssetFilledAmount may include amounts filled of different assets.
     function batchFillOrders(
         LibOrder.Order[] memory orders,
         uint256[] memory takerAssetFillAmounts,
         bytes[] memory signatures
     )
         public
+        returns (FillResults memory totalFillResults)
     {
         for (uint256 i = 0; i < orders.length; i++) {
-            fillOrder(
+            FillResults memory singleFillResults = fillOrder(
                 orders[i],
                 takerAssetFillAmounts[i],
                 signatures[i]
             );
+            addFillResults(totalFillResults, singleFillResults);
         }
+        return totalFillResults;
     }
 
     /// @dev Synchronously executes multiple calls of fillOrKill.
     /// @param orders Array of order specifications.
     /// @param takerAssetFillAmounts Array of desired amounts of takerAsset to sell in orders.
     /// @param signatures Proofs that orders have been created by makers.
+    /// @return Amounts filled and fees paid by makers and taker.
+    ///         NOTE: makerAssetFilledAmount and takerAssetFilledAmount may include amounts filled of different assets.
     function batchFillOrKillOrders(
         LibOrder.Order[] memory orders,
         uint256[] memory takerAssetFillAmounts,
         bytes[] memory signatures
     )
         public
+        returns (FillResults memory totalFillResults)
     {
         for (uint256 i = 0; i < orders.length; i++) {
-            fillOrKillOrder(
+            FillResults memory singleFillResults = fillOrKillOrder(
                 orders[i],
                 takerAssetFillAmounts[i],
                 signatures[i]
             );
+            addFillResults(totalFillResults, singleFillResults);
         }
+        return totalFillResults;
     }
 
     /// @dev Fills an order with specified parameters and ECDSA signature.
@@ -304,20 +314,25 @@ contract MixinWrapperFunctions is
     /// @param orders Array of order specifications.
     /// @param takerAssetFillAmounts Array of desired amounts of takerAsset to sell in orders.
     /// @param signatures Proofs that orders have been created by makers.
+    /// @return Amounts filled and fees paid by makers and taker.
+    ///         NOTE: makerAssetFilledAmount and takerAssetFilledAmount may include amounts filled of different assets.
     function batchFillOrdersNoThrow(
         LibOrder.Order[] memory orders,
         uint256[] memory takerAssetFillAmounts,
         bytes[] memory signatures
     )
         public
+        returns (FillResults memory totalFillResults)
     {
         for (uint256 i = 0; i < orders.length; i++) {
-            fillOrderNoThrow(
+            FillResults memory singleFillResults = fillOrderNoThrow(
                 orders[i],
                 takerAssetFillAmounts[i],
                 signatures[i]
             );
+            addFillResults(totalFillResults, singleFillResults);
         }
+        return totalFillResults;
     }
 
     /// @dev Synchronously executes multiple calls of fillOrder until total amount of takerAsset is sold by taker.

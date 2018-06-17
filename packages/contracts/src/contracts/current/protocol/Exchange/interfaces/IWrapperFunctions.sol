@@ -22,10 +22,7 @@ pragma experimental ABIEncoderV2;
 import "../libs/LibOrder.sol";
 import "../libs/LibFillResults.sol";
 
-contract IWrapperFunctions is
-    LibOrder,
-    LibFillResults
-{
+contract IWrapperFunctions {
     /// @dev Fills the input order. Reverts if exact takerAssetFillAmount not filled.
     /// @param order LibOrder.Order struct containing order specifications.
     /// @param takerAssetFillAmount Desired amount of takerAsset to sell.
@@ -56,35 +53,41 @@ contract IWrapperFunctions is
     /// @param orders Array of order specifications.
     /// @param takerAssetFillAmounts Array of desired amounts of takerAsset to sell in orders.
     /// @param signatures Proofs that orders have been created by makers.
+    /// @return Amounts filled and fees paid by makers and taker.
     function batchFillOrders(
         LibOrder.Order[] memory orders,
         uint256[] memory takerAssetFillAmounts,
         bytes[] memory signatures
     )
-        public;
+        public
+        returns (LibFillResults.FillResults memory totalFillResults);
 
     /// @dev Synchronously executes multiple calls of fillOrKill.
     /// @param orders Array of order specifications.
     /// @param takerAssetFillAmounts Array of desired amounts of takerAsset to sell in orders.
     /// @param signatures Proofs that orders have been created by makers.
+    /// @return Amounts filled and fees paid by makers and taker.
     function batchFillOrKillOrders(
         LibOrder.Order[] memory orders,
         uint256[] memory takerAssetFillAmounts,
         bytes[] memory signatures
     )
-        public;
+        public
+        returns (LibFillResults.FillResults memory totalFillResults);
 
     /// @dev Fills an order with specified parameters and ECDSA signature.
     ///      Returns false if the transaction would otherwise revert.
     /// @param orders Array of order specifications.
     /// @param takerAssetFillAmounts Array of desired amounts of takerAsset to sell in orders.
     /// @param signatures Proofs that orders have been created by makers.
+    /// @return Amounts filled and fees paid by makers and taker.
     function batchFillOrdersNoThrow(
         LibOrder.Order[] memory orders,
         uint256[] memory takerAssetFillAmounts,
         bytes[] memory signatures
     )
-        public;
+        public
+        returns (LibFillResults.FillResults memory totalFillResults);
 
     /// @dev Synchronously executes multiple calls of fillOrder until total amount of takerAsset is sold by taker.
     /// @param orders Array of order specifications.
