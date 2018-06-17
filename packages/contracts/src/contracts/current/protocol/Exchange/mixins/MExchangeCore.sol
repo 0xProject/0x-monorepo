@@ -52,6 +52,7 @@ contract MExchangeCore is
     // CancelUpTo event is emitted whenever `cancelOrdersUpTo` is executed succesfully.
     event CancelUpTo(
         address indexed makerAddress,
+        address indexed senderAddress,
         uint256 makerEpoch
     );
 

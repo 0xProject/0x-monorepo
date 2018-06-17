@@ -44,9 +44,9 @@ contract MixinExchangeCore is
     // Mapping of orderHash => cancelled
     mapping (bytes32 => bool) public cancelled;
 
-    // Mapping of makerAddress => lowest salt an order can have in order to be fillable
+    // Mapping of makerAddress => senderAddress => lowest salt an order can have in order to be fillable
     // Orders with a salt less than their maker's epoch are considered cancelled
-    mapping (address => uint256) public makerEpoch;
+    mapping (address => mapping (address => uint256)) public makerEpoch;
 
     ////// Core exchange functions //////
 
@@ -56,10 +56,13 @@ contract MixinExchangeCore is
         external
     {
         address makerAddress = getCurrentContextAddress();
+        // If this function is called via `executeTransaction`, we only update the makerEpoch for the makerAddress/msg.sender combination.
+        // This allows external filter contracts to add rules to how orders are cancelled via this function.
+        address senderAddress = makerAddress == msg.sender ? address(0) : msg.sender;
 
         // makerEpoch is initialized to 0, so to cancelUpTo we need salt + 1
         uint256 newMakerEpoch = salt + 1;  
-        uint256 oldMakerEpoch = makerEpoch[makerAddress];
+        uint256 oldMakerEpoch = makerEpoch[makerAddress][senderAddress];
 
         // Ensure makerEpoch is monotonically increasing
         require(
@@ -68,8 +71,8 @@ contract MixinExchangeCore is
         );
 
         // Update makerEpoch
-        makerEpoch[makerAddress] = newMakerEpoch;
-        emit CancelUpTo(makerAddress, newMakerEpoch);
+        makerEpoch[makerAddress][senderAddress] = newMakerEpoch;
+        emit CancelUpTo(makerAddress, senderAddress, newMakerEpoch);
     }
 
     /// @dev Fills the input order.
@@ -180,7 +183,7 @@ contract MixinExchangeCore is
             orderInfo.orderStatus = uint8(OrderStatus.CANCELLED);
             return orderInfo;
         }
-        if (makerEpoch[order.makerAddress] > order.salt) {
+        if (makerEpoch[order.makerAddress][order.senderAddress] > order.salt) {
             orderInfo.orderStatus = uint8(OrderStatus.CANCELLED);
             return orderInfo;
         }
