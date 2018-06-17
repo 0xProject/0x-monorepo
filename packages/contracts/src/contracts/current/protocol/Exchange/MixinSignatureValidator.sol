@@ -82,7 +82,7 @@ contract MixinSignatureValidator is
         address signer,
         bytes memory signature
     )
-        internal
+        public
         view
         returns (bool isValid)
     {
