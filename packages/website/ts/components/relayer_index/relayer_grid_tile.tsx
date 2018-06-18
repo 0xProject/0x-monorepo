@@ -5,6 +5,7 @@ import * as React from 'react';
 
 import { TopTokens } from 'ts/components/relayer_index/relayer_top_tokens';
 import { Container } from 'ts/components/ui/container';
+import { Image } from 'ts/components/ui/image';
 import { Island } from 'ts/components/ui/island';
 import { colors } from 'ts/style/colors';
 import { WebsiteBackendRelayerInfo } from 'ts/types';
@@ -74,8 +75,16 @@ export const RelayerGridTile: React.StatelessComponent<RelayerGridTileProps> = (
         <Island style={styles.root} Component={GridTile}>
             <div style={styles.innerDiv}>
                 <a href={link} target="_blank" style={{ textDecoration: 'none' }}>
-                    <div style={{ ...styles.header, backgroundColor: headerBackgroundColor }}>
-                        <ImgWithFallback src={props.relayerInfo.logoImgUrl} fallbackSrc={FALLBACK_IMG_SRC} />
+                    <div
+                        className="flex items-center"
+                        style={{ ...styles.header, backgroundColor: headerBackgroundColor }}
+                    >
+                        <Image
+                            className="mx-auto"
+                            src={props.relayerInfo.logoImgUrl}
+                            fallbackSrc={FALLBACK_IMG_SRC}
+                            height={RELAYER_ICON_HEIGHT}
+                        />
                     </div>
                 </a>
                 <div style={styles.body}>
@@ -112,36 +121,3 @@ const Section = (props: SectionProps) => {
 };
 
 const NoContent = () => <div style={styles.subLabel}>{NO_CONTENT_MESSAGE}</div>;
-
-interface ImgWithFallbackProps {
-    src?: string;
-    fallbackSrc: string;
-}
-interface ImgWithFallbackState {
-    imageLoadFailed: boolean;
-}
-class ImgWithFallback extends React.Component<ImgWithFallbackProps, ImgWithFallbackState> {
-    constructor(props: ImgWithFallbackProps) {
-        super(props);
-        this.state = {
-            imageLoadFailed: false,
-        };
-    }
-    public render(): React.ReactNode {
-        return (
-            <div className="flex items-center" style={{ height: '100%' }}>
-                {this._renderImg()}
-            </div>
-        );
-    }
-    private _renderImg(): React.ReactNode {
-        const src =
-            this.state.imageLoadFailed || _.isUndefined(this.props.src) ? this.props.fallbackSrc : this.props.src;
-        return <img className="mx-auto" onError={this._onError.bind(this)} src={src} height={RELAYER_ICON_HEIGHT} />;
-    }
-    private _onError(): void {
-        this.setState({
-            imageLoadFailed: true,
-        });
-    }
-}
