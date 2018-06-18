@@ -4,7 +4,6 @@ import * as moment from 'moment';
 import * as path from 'path';
 import { exec as execAsync } from 'promisify-child-process';
 import semver = require('semver');
-import semverSort = require('semver-sort');
 
 import { constants } from '../constants';
 import { Change, Changelog, VersionChangelog } from '../types';
@@ -94,9 +93,9 @@ export const changelogUtils = {
         fs.writeFileSync(changelogJSONPath, JSON.stringify(changelog, null, '\t'));
         await this.prettifyAsync(changelogJSONPath, constants.monorepoRootPath);
     },
-    async writeChangelogMdFileAsync(packageLocation: string, changelog: Changelog): Promise<void> {
+    async writeChangelogMdFileAsync(packageLocation: string, changelogMdString: string): Promise<void> {
         const changelogMarkdownPath = path.join(packageLocation, 'CHANGELOG.md');
-        fs.writeFileSync(changelogMarkdownPath, JSON.stringify(changelog, null, '\t'));
+        fs.writeFileSync(changelogMarkdownPath, changelogMdString);
         await this.prettifyAsync(changelogMarkdownPath, constants.monorepoRootPath);
     },
     async prettifyAsync(filePath: string, cwd: string): Promise<void> {
