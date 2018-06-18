@@ -18,6 +18,7 @@ async function prepublishChecksAsync(): Promise<void> {
     await checkChangelogFormatAsync(updatedPublicLernaPackages);
     await checkGitTagsForNextVersionAndDeleteIfExistAsync(updatedPublicLernaPackages);
     await checkPublishRequiredSetupAsync();
+    throw new Error('Intentional stop!');
 }
 
 async function checkGitTagsForNextVersionAndDeleteIfExistAsync(
@@ -53,6 +54,8 @@ async function checkGitTagsForNextVersionAndDeleteIfExistAsync(
 async function checkCurrentVersionMatchesLatestPublishedNPMPackageAsync(
     updatedPublicLernaPackages: LernaPackage[],
 ): Promise<void> {
+    utils.log('Check package versions against npmjs.org...');
+    const versionMismatches = [];
     for (const lernaPackage of updatedPublicLernaPackages) {
         const packageName = lernaPackage.package.name;
         const packageVersion = lernaPackage.package.version;
@@ -63,16 +66,28 @@ async function checkCurrentVersionMatchesLatestPublishedNPMPackageAsync(
         const allVersionsIncludingUnpublished = npmUtils.getPreviouslyPublishedVersions(packageRegistryJsonIfExists);
         const latestNPMVersion = semverUtils.getLatestVersion(allVersionsIncludingUnpublished);
         if (packageVersion !== latestNPMVersion) {
-            throw new Error(
-                `Found verson ${packageVersion} in package.json but version ${latestNPMVersion}
-                on NPM (could be unpublished version) for ${packageName}. These versions must match. If you update
-                the package.json version, make sure to also update the internal dependency versions too.`,
-            );
+            versionMismatches.push({
+                packageJsonVersion: packageVersion,
+                npmVersion: latestNPMVersion,
+                packageName,
+            });
         }
+    }
+    if (!_.isEmpty(versionMismatches)) {
+        utils.log(`Found version mismatches between package.json and NPM published versions (might be unpublished).`);
+        _.each(versionMismatches, versionMismatch => {
+            utils.log(
+                `${versionMismatch.packageName}: ${versionMismatch.packageJsonVersion} package.json, ${
+                    versionMismatch.npmVersion
+                } on NPM`,
+            );
+        });
+        throw new Error(`Please fix the above package.json/NPM inconsistencies.`);
     }
 }
 
 async function checkChangelogFormatAsync(updatedPublicLernaPackages: LernaPackage[]): Promise<void> {
+    const changeLogInconsistencies = [];
     for (const lernaPackage of updatedPublicLernaPackages) {
         const packageName = lernaPackage.package.name;
         const changelog = changelogUtils.getChangelogOrCreateIfMissing(packageName, lernaPackage.location);
@@ -82,11 +97,11 @@ async function checkChangelogFormatAsync(updatedPublicLernaPackages: LernaPackag
             const lastEntry = changelog[0];
             const doesLastEntryHaveTimestamp = !_.isUndefined(lastEntry.timestamp);
             if (semverUtils.lessThan(lastEntry.version, currentVersion)) {
-                throw new Error(
-                    `CHANGELOG version cannot be below current package version.
-                     Update ${packageName}'s CHANGELOG. It's current version is ${currentVersion}
-                     but the latest CHANGELOG entry is: ${lastEntry.version}`,
-                );
+                changeLogInconsistencies.push({
+                    packageJsonVersion: currentVersion,
+                    changelogVersion: lastEntry.version,
+                    packageName,
+                });
             } else if (semverUtils.greaterThan(lastEntry.version, currentVersion) && doesLastEntryHaveTimestamp) {
                 // Remove incorrectly added timestamp
                 delete changelog[0].timestamp;
@@ -96,6 +111,17 @@ async function checkChangelogFormatAsync(updatedPublicLernaPackages: LernaPackag
             }
         }
     }
+    if (!_.isEmpty(changeLogInconsistencies)) {
+        utils.log(`CHANGELOG versions cannot below package.json versions:`);
+        _.each(changeLogInconsistencies, inconsistency => {
+            utils.log(
+                `${inconsistency.packageName}: ${inconsistency.packageJsonVersion} package.json, ${
+                    inconsistency.changelogVersion
+                } CHANGELOG.json`,
+            );
+        });
+    }
+    throw new Error('Fix the above inconsistencies to continue.');
 }
 
 async function checkPublishRequiredSetupAsync(): Promise<void> {
