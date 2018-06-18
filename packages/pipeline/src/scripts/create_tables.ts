@@ -146,7 +146,7 @@ const tableQueries: any = {
         PRIMARY KEY (token, base, timestamp)
     )`,
     orders: `CREATE TABLE IF NOT EXISTS orders (
-        relayer_id VARCHAR,
+        relayer_name VARCHAR,
         exchange_contract_address CHAR(42),
         maker CHAR(42),
         maker_amount NUMERIC(78),
@@ -160,7 +160,7 @@ const tableQueries: any = {
         expiration_unix_timestamp_sec NUMERIC(78),
         salt VARCHAR,
         order_hash CHAR(66),
-        PRIMARY KEY (relayer_id, order_hash)
+        PRIMARY KEY (relayer_name, order_hash)
     )`,
 };
 
