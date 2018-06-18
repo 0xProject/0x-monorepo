@@ -1,8 +1,102 @@
+import * as fs from 'fs';
 import * as _ from 'lodash';
+import * as path from 'path';
 import { exec as execAsync } from 'promisify-child-process';
 
 import { constants } from './constants';
+import { Changelog, PackageRegistryJson } from './types';
+import { changelogUtils } from './utils/changelog_utils';
+import { npmUtils } from './utils/npm_utils';
+import { semverUtils } from './utils/semver_utils';
 import { utils } from './utils/utils';
+
+async function prepublishChecksAsync(): Promise<void> {
+    const shouldIncludePrivate = false;
+    const updatedPublicLernaPackages = await utils.getUpdatedLernaPackagesAsync(shouldIncludePrivate);
+
+    await checkCurrentVersionMatchesLatestPublishedNPMPackageAsync(updatedPublicLernaPackages);
+    await checkChangelogFormatAsync(updatedPublicLernaPackages);
+    await checkGitTagsForNextVersionAndDeleteIfExistAsync(updatedPublicLernaPackages);
+    await checkPublishRequiredSetupAsync();
+}
+
+async function checkGitTagsForNextVersionAndDeleteIfExistAsync(
+    updatedPublicLernaPackages: LernaPackage[],
+): Promise<void> {
+    const packageNames = _.map(updatedPublicLernaPackages, lernaPackage => lernaPackage.package.name);
+    const localGitTags = await utils.getLocalGitTagsAsync();
+    const localTagVersionsByPackageName = await utils.getGitTagsByPackageNameAsync(packageNames, localGitTags);
+
+    const remoteGitTags = await utils.getRemoteGitTagsAsync();
+    const remoteTagVersionsByPackageName = await utils.getGitTagsByPackageNameAsync(packageNames, remoteGitTags);
+
+    for (const lernaPackage of updatedPublicLernaPackages) {
+        const currentVersion = lernaPackage.package.version;
+        const packageName = lernaPackage.package.name;
+        const packageLocation = lernaPackage.location;
+        const nextVersion = await utils.getNextPackageVersionAsync(currentVersion, packageName, packageLocation);
+
+        const localTagVersions = localTagVersionsByPackageName[packageName];
+        if (_.includes(localTagVersions, nextVersion)) {
+            const tagName = `${packageName}@${nextVersion}`;
+            await utils.removeLocalTagAsync(tagName);
+        }
+
+        const remoteTagVersions = remoteTagVersionsByPackageName[packageName];
+        if (_.includes(remoteTagVersions, nextVersion)) {
+            const tagName = `:refs/tags/${packageName}@${nextVersion}`;
+            await utils.removeRemoteTagAsync(tagName);
+        }
+    }
+}
+
+async function checkCurrentVersionMatchesLatestPublishedNPMPackageAsync(
+    updatedPublicLernaPackages: LernaPackage[],
+): Promise<void> {
+    for (const lernaPackage of updatedPublicLernaPackages) {
+        const packageName = lernaPackage.package.name;
+        const packageVersion = lernaPackage.package.version;
+        const packageRegistryJsonIfExists = await npmUtils.getPackageRegistryJsonIfExistsAsync(packageName);
+        if (_.isUndefined(packageRegistryJsonIfExists)) {
+            continue; // noop for packages not yet published to NPM
+        }
+        const allVersionsIncludingUnpublished = npmUtils.getPreviouslyPublishedVersions(packageRegistryJsonIfExists);
+        const latestNPMVersion = semverUtils.getLatestVersion(allVersionsIncludingUnpublished);
+        if (packageVersion !== latestNPMVersion) {
+            throw new Error(
+                `Found verson ${packageVersion} in package.json but version ${latestNPMVersion}
+                on NPM (could be unpublished version) for ${packageName}. These versions must match. If you update
+                the package.json version, make sure to also update the internal dependency versions too.`,
+            );
+        }
+    }
+}
+
+async function checkChangelogFormatAsync(updatedPublicLernaPackages: LernaPackage[]): Promise<void> {
+    for (const lernaPackage of updatedPublicLernaPackages) {
+        const packageName = lernaPackage.package.name;
+        const changelog = changelogUtils.getChangelogOrCreateIfMissing(packageName, lernaPackage.location);
+
+        const currentVersion = lernaPackage.package.version;
+        if (!_.isEmpty(changelog)) {
+            const lastEntry = changelog[0];
+            const doesLastEntryHaveTimestamp = !_.isUndefined(lastEntry.timestamp);
+            if (semverUtils.lessThan(lastEntry.version, currentVersion)) {
+                throw new Error(
+                    `CHANGELOG version cannot be below current package version.
+                     Update ${packageName}'s CHANGELOG. It's current version is ${currentVersion}
+                     but the latest CHANGELOG entry is: ${lastEntry.version}`,
+                );
+            } else if (semverUtils.greaterThan(lastEntry.version, currentVersion) && doesLastEntryHaveTimestamp) {
+                // Remove incorrectly added timestamp
+                delete changelog[0].timestamp;
+                // Save updated CHANGELOG.json
+                await changelogUtils.writeChangelogJsonFileAsync(lernaPackage.location, changelog);
+                utils.log(`${packageName}: Removed timestamp from latest CHANGELOG.json entry.`);
+            }
+        }
+    }
+}
 
 async function checkPublishRequiredSetupAsync(): Promise<void> {
     // check to see if logged into npm before publishing
@@ -65,7 +159,7 @@ async function checkPublishRequiredSetupAsync(): Promise<void> {
     }
 }
 
-checkPublishRequiredSetupAsync().catch(err => {
+prepublishChecksAsync().catch(err => {
     utils.log(err.message);
     process.exit(1);
 });

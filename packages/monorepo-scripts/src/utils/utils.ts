@@ -1,10 +1,11 @@
-import * as fs from 'fs';
 import lernaGetPackages = require('lerna-get-packages');
 import * as _ from 'lodash';
 import { exec as execAsync } from 'promisify-child-process';
 
 import { constants } from '../constants';
-import { UpdatedPackage } from '../types';
+import { GitTagsByPackageName, UpdatedPackage } from '../types';
+
+import { changelogUtils } from './changelog_utils';
 
 export const utils = {
     log(...args: any[]): void {
@@ -16,11 +17,6 @@ export const utils = {
         const newPatch = patch + 1;
         const newPatchVersion = `${versionSegments[0]}.${versionSegments[1]}.${newPatch}`;
         return newPatchVersion;
-    },
-    async prettifyAsync(filePath: string, cwd: string): Promise<void> {
-        await execAsync(`prettier --write ${filePath} --config .prettierrc`, {
-            cwd,
-        });
     },
     async getUpdatedLernaPackagesAsync(shouldIncludePrivate: boolean): Promise<LernaPackage[]> {
         const updatedPublicPackages = await this.getLernaUpdatedPackagesAsync(shouldIncludePrivate);
@@ -43,22 +39,82 @@ export const utils = {
         }
         return updatedPackages;
     },
-    getChangelogJSONIfExists(changelogPath: string): string | undefined {
-        try {
-            const changelogJSON = fs.readFileSync(changelogPath, 'utf-8');
-            return changelogJSON;
-        } catch (err) {
-            return undefined;
+    async getNextPackageVersionAsync(
+        currentVersion: string,
+        packageName: string,
+        packageLocation: string,
+    ): Promise<string> {
+        let nextVersion;
+        const changelog = changelogUtils.getChangelogOrCreateIfMissing(packageName, packageLocation);
+        if (_.isEmpty(changelog)) {
+            nextVersion = this.getNextPatchVersion(currentVersion);
+        }
+        const lastEntry = changelog[0];
+        nextVersion =
+            lastEntry.version === currentVersion ? this.getNextPatchVersion(currentVersion) : lastEntry.version;
+        return nextVersion;
+    },
+    async getRemoteGitTagsAsync(): Promise<string[]> {
+        const result = await execAsync(`git ls-remote --tags`, {
+            cwd: constants.monorepoRootPath,
+        });
+        const tagsString = result.stdout;
+        const tagOutputs: string[] = tagsString.split('\n');
+        const tags = _.compact(
+            _.map(tagOutputs, tagOutput => {
+                const tag = tagOutput.split('refs/tags/')[1];
+                // Tags with `^{}` are duplicateous so we ignore them
+                // Source: https://stackoverflow.com/questions/15472107/when-listing-git-ls-remote-why-theres-after-the-tag-name
+                if (_.endsWith(tag, '^{}')) {
+                    return undefined;
+                }
+                return tag;
+            }),
+        );
+        return tags;
+    },
+    async getLocalGitTagsAsync(): Promise<string[]> {
+        const result = await execAsync(`git tags`, {
+            cwd: constants.monorepoRootPath,
+        });
+        const tagsString = result.stdout;
+        const tags = tagsString.split('\n');
+        return tags;
+    },
+    async getGitTagsByPackageNameAsync(packageNames: string[], gitTags: string[]): Promise<GitTagsByPackageName> {
+        const tagVersionByPackageName: GitTagsByPackageName = {};
+        _.each(gitTags, tag => {
+            const packageNameIfExists = _.find(packageNames, name => {
+                return _.includes(tag, `${name}@`);
+            });
+            if (_.isUndefined(packageNameIfExists)) {
+                return; // ignore tags not related to a package we care about.
+            }
+            const splitTag = tag.split(`${packageNameIfExists}@`);
+            if (splitTag.length !== 2) {
+                throw new Error(`Unexpected tag name found: ${tag}`);
+            }
+            const version = splitTag[1];
+            (tagVersionByPackageName[packageNameIfExists] || (tagVersionByPackageName[packageNameIfExists] = [])).push(
+                version,
+            );
+        });
+        return tagVersionByPackageName;
+    },
+    async removeLocalTagAsync(tagName: string): Promise<void> {
+        const result = await execAsync(`git tag -d ${tagName}`, {
+            cwd: constants.monorepoRootPath,
+        });
+        if (!_.isEmpty(result.stderr)) {
+            throw new Error(`Failed to delete local git tag. Got err: ${result.stderr}`);
         }
     },
-    getChangelogJSONOrCreateIfMissing(changelogPath: string): string {
-        const changelogIfExists = this.getChangelogJSONIfExists(changelogPath);
-        if (_.isUndefined(changelogIfExists)) {
-            // If none exists, create new, empty one.
-            const emptyChangelogJSON = JSON.stringify([]);
-            fs.writeFileSync(changelogPath, emptyChangelogJSON);
-            return emptyChangelogJSON;
+    async removeRemoteTagAsync(tagName: string): Promise<void> {
+        const result = await execAsync(`git push origin ${tagName}`, {
+            cwd: constants.monorepoRootPath,
+        });
+        if (!_.isEmpty(result.stderr)) {
+            throw new Error(`Failed to delete remote git tag. Got err: ${result.stderr}`);
         }
-        return changelogIfExists;
     },
 };
