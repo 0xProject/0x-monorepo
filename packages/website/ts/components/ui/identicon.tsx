@@ -1,7 +1,8 @@
 import blockies = require('blockies');
 import * as _ from 'lodash';
 import * as React from 'react';
-import { constants } from 'ts/utils/constants';
+
+import { colors } from 'ts/style/colors';
 
 interface IdenticonProps {
     address: string;
@@ -16,14 +17,9 @@ export class Identicon extends React.Component<IdenticonProps, IdenticonState> {
         style: {},
     };
     public render(): React.ReactNode {
-        let address = this.props.address;
-        if (_.isEmpty(address)) {
-            address = constants.NULL_ADDRESS;
-        }
+        const address = this.props.address;
         const diameter = this.props.diameter;
-        const icon = blockies({
-            seed: address.toLowerCase(),
-        });
+        const radius = diameter / 2;
         return (
             <div
                 className="circle mx-auto relative transitionFix"
@@ -34,14 +30,22 @@ export class Identicon extends React.Component<IdenticonProps, IdenticonState> {
                     ...this.props.style,
                 }}
             >
-                <img
-                    src={icon.toDataURL()}
-                    style={{
-                        width: diameter,
-                        height: diameter,
-                        imageRendering: 'pixelated',
-                    }}
-                />
+                {!_.isEmpty(address) ? (
+                    <img
+                        src={blockies({
+                            seed: address.toLowerCase(),
+                        }).toDataURL()}
+                        style={{
+                            width: diameter,
+                            height: diameter,
+                            imageRendering: 'pixelated',
+                        }}
+                    />
+                ) : (
+                    <svg height={diameter} width={diameter}>
+                        <circle cx={radius} cy={radius} r={radius} fill={colors.grey200} />
+                    </svg>
+                )}
             </div>
         );
     }

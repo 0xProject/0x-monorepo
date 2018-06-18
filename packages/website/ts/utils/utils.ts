@@ -190,6 +190,25 @@ export const utils = {
         const truncatedAddress = `${address.substring(0, 6)}...${address.substr(-4)}`; // 0x3d5a...b287
         return truncatedAddress;
     },
+    getReadableAccountState(
+        isBlockchainReady: boolean,
+        providerType: ProviderType,
+        injectedProviderName: string,
+        userAddress?: string,
+    ): string {
+        const isAddressAvailable = !_.isUndefined(userAddress) && !_.isEmpty(userAddress);
+        const isExternallyInjectedProvider = utils.isExternallyInjected(providerType, injectedProviderName);
+        if (!isBlockchainReady) {
+            return 'Loading account';
+        } else if (isAddressAvailable) {
+            return utils.getAddressBeginAndEnd(userAddress);
+            // tslint:disable-next-line: prefer-conditional-expression
+        } else if (isExternallyInjectedProvider) {
+            return 'Account locked';
+        } else {
+            return 'No wallet detected';
+        }
+    },
     hasUniqueNameAndSymbol(tokens: Token[], token: Token): boolean {
         if (token.isRegistered) {
             return true; // Since it's registered, it is the canonical token
