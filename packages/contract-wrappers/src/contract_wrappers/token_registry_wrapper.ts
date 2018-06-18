@@ -1,4 +1,4 @@
-import { Token } from '@0xproject/types';
+import { ContractAbi, Token } from '@0xproject/types';
 import { Web3Wrapper } from '@0xproject/web3-wrapper';
 import * as _ from 'lodash';
 
@@ -14,6 +14,7 @@ import { TokenRegistryContract } from './generated/token_registry';
  * This class includes all the functionality related to interacting with the 0x Token Registry smart contract.
  */
 export class TokenRegistryWrapper extends ContractWrapper {
+    public abi: ContractAbi = artifacts.TokenRegistry.abi;
     private _tokenRegistryContractIfExists?: TokenRegistryContract;
     private _contractAddressIfExists?: string;
     private static _createTokenFromMetadata(metadata: TokenMetadata): Token | undefined {

@@ -625,6 +625,7 @@ export class Blockchain {
         );
         const provider = this._contractWrappers.getProvider();
         const web3Wrapper = new Web3Wrapper(provider);
+        web3Wrapper.abiDecoder.addABI(this._contractWrappers.exchange.abi);
         const receipt = await web3Wrapper.awaitTransactionSuccessAsync(txHash);
         return receipt;
     }

@@ -35,7 +35,8 @@ const CONTRACT_NAME_TO_NOT_FOUND_ERROR: {
     Exchange: ContractWrappersError.ExchangeContractDoesNotExist,
 };
 
-export class ContractWrapper {
+export abstract class ContractWrapper {
+    public abstract abi: ContractAbi;
     protected _web3Wrapper: Web3Wrapper;
     protected _networkId: number;
     private _blockAndLogStreamerIfExists?: BlockAndLogStreamer;

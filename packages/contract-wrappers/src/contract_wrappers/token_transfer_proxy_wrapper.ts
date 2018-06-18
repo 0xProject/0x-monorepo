@@ -1,4 +1,5 @@
 import { Web3Wrapper } from '@0xproject/web3-wrapper';
+import { ContractAbi } from '@0xproject/types';
 import * as _ from 'lodash';
 
 import { artifacts } from '../artifacts';
@@ -11,6 +12,7 @@ import { TokenTransferProxyContract } from './generated/token_transfer_proxy';
  * This class includes the functionality related to interacting with the TokenTransferProxy contract.
  */
 export class TokenTransferProxyWrapper extends ContractWrapper {
+    public abi: ContractAbi = artifacts.TokenTransferProxy.abi;
     private _tokenTransferProxyContractIfExists?: TokenTransferProxyContract;
     private _contractAddressIfExists?: string;
     constructor(web3Wrapper: Web3Wrapper, networkId: number, contractAddressIfExists?: string) {
