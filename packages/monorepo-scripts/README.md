@@ -8,8 +8,6 @@ This repository contains a few helpful scripts for working with this mono repo.
 
 **`yarn find_unused_deps`**: Sometimes we accidentally leave dependencies listed in `package.json` that are no longer being used. This script finds potential dependencies that might no longer be in use. Please verify that it is no longer in use before removing, the `depcheck` package we use under-the-hood doesn't handle some TS quirks perfectly.
 
-**`yarn remove_tags`**: Our publishing script calls `lerna publish` under-the-hood. If this command fails, it might have created new versioned git tags for each package. Removing these manually is tedious, so you can also run this command instead. Before doing so, check to see if `lerna` already created the publish commit. If so, first revert that with `git reset --hard HEAD~1`, then run this command.
-
 **`yarn test:publish`**: Execute a test-run of the publish script. This dry run won't actually publish, nor will it commit/push anything to Github.
 
 ## Usage

@@ -1,18 +1,17 @@
 #!/usr/bin/env node
 
 import * as promisify from 'es6-promisify';
-import * as fs from 'fs';
 import * as _ from 'lodash';
 import * as moment from 'moment';
 import opn = require('opn');
-import * as path from 'path';
 import { exec as execAsync, spawn } from 'promisify-child-process';
 import * as prompt from 'prompt';
+import semver = require('semver');
 import semverDiff = require('semver-diff');
 import semverSort = require('semver-sort');
 
 import { constants } from './constants';
-import { Changelog, PackageToVersionChange, SemVerIndex, VersionChangelog } from './types';
+import { PackageToVersionChange, SemVerIndex, VersionChangelog } from './types';
 import { changelogUtils } from './utils/changelog_utils';
 import { utils } from './utils/utils';
 
@@ -119,25 +118,23 @@ async function updateChangeLogsAsync(updatedPublicLernaPackages: LernaPackage[])
     const packageToVersionChange: PackageToVersionChange = {};
     for (const lernaPackage of updatedPublicLernaPackages) {
         const packageName = lernaPackage.package.name;
-        const changelogJSONPath = path.join(lernaPackage.location, 'CHANGELOG.json');
-        const changelogJSON = utils.getChangelogJSONOrCreateIfMissing(changelogJSONPath);
-        let changelog: Changelog;
-        try {
-            changelog = JSON.parse(changelogJSON);
-        } catch (err) {
-            throw new Error(
-                `${lernaPackage.package.name}'s CHANGELOG.json contains invalid JSON. Please fix and try again.`,
-            );
-        }
+        let changelog = changelogUtils.getChangelogOrCreateIfMissing(packageName, lernaPackage.location);
 
         const currentVersion = lernaPackage.package.version;
-        const shouldAddNewEntry = changelogUtils.shouldAddNewChangelogEntry(currentVersion, changelog);
+        const shouldAddNewEntry = changelogUtils.shouldAddNewChangelogEntry(
+            lernaPackage.package.name,
+            currentVersion,
+            changelog,
+        );
         if (shouldAddNewEntry) {
             // Create a new entry for a patch version with generic changelog entry.
-            const nextPatchVersion = utils.getNextPatchVersion(currentVersion);
+            const nextPatchVersionIfValid = semver.inc(currentVersion, 'patch');
+            if (_.isNull(nextPatchVersionIfValid)) {
+                throw new Error(`Encountered invalid semver version: ${currentVersion} for package: ${packageName}`);
+            }
             const newChangelogEntry: VersionChangelog = {
                 timestamp: TODAYS_TIMESTAMP,
-                version: nextPatchVersion,
+                version: nextPatchVersionIfValid,
                 changes: [
                     {
                         note: 'Dependencies updated',
@@ -145,7 +142,7 @@ async function updateChangeLogsAsync(updatedPublicLernaPackages: LernaPackage[])
                 ],
             };
             changelog = [newChangelogEntry, ...changelog];
-            packageToVersionChange[packageName] = semverDiff(currentVersion, nextPatchVersion);
+            packageToVersionChange[packageName] = semverDiff(currentVersion, nextPatchVersionIfValid);
         } else {
             // Update existing entry with timestamp
             const lastEntry = changelog[0];
@@ -160,14 +157,11 @@ async function updateChangeLogsAsync(updatedPublicLernaPackages: LernaPackage[])
         }
 
         // Save updated CHANGELOG.json
-        fs.writeFileSync(changelogJSONPath, JSON.stringify(changelog, null, '\t'));
-        await utils.prettifyAsync(changelogJSONPath, constants.monorepoRootPath);
+        await changelogUtils.writeChangelogJsonFileAsync(lernaPackage.location, changelog);
         utils.log(`${packageName}: Updated CHANGELOG.json`);
         // Generate updated CHANGELOG.md
         const changelogMd = changelogUtils.generateChangelogMd(changelog);
-        const changelogMdPath = path.join(lernaPackage.location, 'CHANGELOG.md');
-        fs.writeFileSync(changelogMdPath, changelogMd);
-        await utils.prettifyAsync(changelogMdPath, constants.monorepoRootPath);
+        await changelogUtils.writeChangelogMdFileAsync(lernaPackage.location, changelogMd);
         utils.log(`${packageName}: Updated CHANGELOG.md`);
     }
 
@@ -217,12 +211,16 @@ async function lernaPublishAsync(packageToVersionChange: { [name: string]: strin
 }
 
 function updateVersionNumberIfNeeded(currentVersion: string, proposedNextVersion: string): string {
+    const updatedVersionIfValid = semver.inc(currentVersion, 'patch');
+    if (_.isNull(updatedVersionIfValid)) {
+        throw new Error(`Encountered invalid semver: ${currentVersion}`);
+    }
     if (proposedNextVersion === currentVersion) {
-        return utils.getNextPatchVersion(currentVersion);
+        return updatedVersionIfValid;
     }
     const sortedVersions = semverSort.desc([proposedNextVersion, currentVersion]);
     if (sortedVersions[0] !== proposedNextVersion) {
-        return utils.getNextPatchVersion(currentVersion);
+        return updatedVersionIfValid;
     }
     return proposedNextVersion;
 }
