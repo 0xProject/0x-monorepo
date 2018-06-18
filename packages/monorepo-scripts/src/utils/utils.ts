@@ -1,6 +1,7 @@
 import lernaGetPackages = require('lerna-get-packages');
 import * as _ from 'lodash';
 import { exec as execAsync } from 'promisify-child-process';
+import semver = require('semver');
 
 import { constants } from '../constants';
 import { GitTagsByPackageName, UpdatedPackage } from '../types';
@@ -37,15 +38,19 @@ export const utils = {
         packageName: string,
         packageLocation: string,
     ): Promise<string> {
-        let nextVersion;
+        let nextVersionIfValid;
         const changelog = changelogUtils.getChangelogOrCreateIfMissing(packageName, packageLocation);
         if (_.isEmpty(changelog)) {
-            nextVersion = this.getNextPatchVersion(currentVersion);
+            nextVersionIfValid = semver.inc(currentVersion, 'patch');
         }
         const lastEntry = changelog[0];
-        nextVersion =
-            lastEntry.version === currentVersion ? this.getNextPatchVersion(currentVersion) : lastEntry.version;
-        return nextVersion;
+        nextVersionIfValid = semver.eq(lastEntry.version, currentVersion)
+            ? semver.inc(currentVersion, 'patch')
+            : lastEntry.version;
+        if (_.isNull(nextVersionIfValid)) {
+            throw new Error(`Encountered invalid semver: ${currentVersion} associated with ${packageName}`);
+        }
+        return nextVersionIfValid;
     },
     async getRemoteGitTagsAsync(): Promise<string[]> {
         const result = await execAsync(`git ls-remote --tags`, {
