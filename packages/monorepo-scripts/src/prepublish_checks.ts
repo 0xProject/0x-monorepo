@@ -1,12 +1,9 @@
-import * as fs from 'fs';
 import * as _ from 'lodash';
-import * as path from 'path';
 import { exec as execAsync } from 'promisify-child-process';
 import semver = require('semver');
 import semverSort = require('semver-sort');
 
 import { constants } from './constants';
-import { Changelog, PackageRegistryJson } from './types';
 import { changelogUtils } from './utils/changelog_utils';
 import { npmUtils } from './utils/npm_utils';
 import { utils } from './utils/utils';

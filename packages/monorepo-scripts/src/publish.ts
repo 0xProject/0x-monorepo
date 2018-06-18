@@ -1,11 +1,9 @@
 #!/usr/bin/env node
 
 import * as promisify from 'es6-promisify';
-import * as fs from 'fs';
 import * as _ from 'lodash';
 import * as moment from 'moment';
 import opn = require('opn');
-import * as path from 'path';
 import { exec as execAsync, spawn } from 'promisify-child-process';
 import * as prompt from 'prompt';
 import semver = require('semver');
@@ -13,7 +11,7 @@ import semverDiff = require('semver-diff');
 import semverSort = require('semver-sort');
 
 import { constants } from './constants';
-import { Changelog, PackageToVersionChange, SemVerIndex, VersionChangelog } from './types';
+import { PackageToVersionChange, SemVerIndex, VersionChangelog } from './types';
 import { changelogUtils } from './utils/changelog_utils';
 import { utils } from './utils/utils';
 
@@ -163,7 +161,7 @@ async function updateChangeLogsAsync(updatedPublicLernaPackages: LernaPackage[])
         utils.log(`${packageName}: Updated CHANGELOG.json`);
         // Generate updated CHANGELOG.md
         const changelogMd = changelogUtils.generateChangelogMd(changelog);
-        await changelogUtils.writeChangelogMdFileAsync(lernaPackage.location, changelog);
+        await changelogUtils.writeChangelogMdFileAsync(lernaPackage.location, changelogMd);
         utils.log(`${packageName}: Updated CHANGELOG.md`);
     }
 
