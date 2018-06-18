@@ -214,12 +214,16 @@ async function lernaPublishAsync(packageToVersionChange: { [name: string]: strin
 }
 
 function updateVersionNumberIfNeeded(currentVersion: string, proposedNextVersion: string): string {
+    const updatedVersionIfValid = semver.inc(currentVersion, 'patch');
+    if (_.isNull(updatedVersionIfValid)) {
+        throw new Error(`Encountered invalid semver: ${currentVersion}`);
+    }
     if (proposedNextVersion === currentVersion) {
-        return utils.getNextPatchVersion(currentVersion);
+        return updatedVersionIfValid;
     }
     const sortedVersions = semverSort.desc([proposedNextVersion, currentVersion]);
     if (sortedVersions[0] !== proposedNextVersion) {
-        return utils.getNextPatchVersion(currentVersion);
+        return updatedVersionIfValid;
     }
     return proposedNextVersion;
 }
