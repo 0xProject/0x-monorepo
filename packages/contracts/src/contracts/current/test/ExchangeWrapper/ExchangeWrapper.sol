@@ -67,12 +67,13 @@ contract ExchangeWrapper {
         );
     }
 
-    /// @dev Cancels all orders created by sender with a salt less than or equal to the specified salt value.
-    /// @param cancelSalt Orders created with a salt less or equal to this value will be cancelled.
+    /// @dev Cancels all orders created by sender with a salt less than or equal to the targetOrderEpoch
+    ///      and senderAddress equal to this contract.
+    /// @param targetOrderEpoch Orders created with a salt less or equal to this value will be cancelled.
     /// @param salt Arbitrary value to gaurantee uniqueness of 0x transaction hash.
     /// @param makerSignature Proof that maker wishes to call this function with given params.
     function cancelOrdersUpTo(
-        uint256 cancelSalt,
+        uint256 targetOrderEpoch,
         uint256 salt,
         bytes makerSignature
     )
@@ -83,7 +84,7 @@ contract ExchangeWrapper {
         // Encode arguments into byte array.
         bytes memory data = abi.encodeWithSelector(
             EXCHANGE.cancelOrdersUpTo.selector,
-            cancelSalt
+            targetOrderEpoch
         );
 
         // Call `cancelOrdersUpTo` via `executeTransaction`.

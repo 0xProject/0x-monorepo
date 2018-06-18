@@ -53,7 +53,7 @@ contract MExchangeCore is
     event CancelUpTo(
         address indexed makerAddress,
         address indexed senderAddress,
-        uint256 makerEpoch
+        uint256 orderEpoch
     );
 
     /// @dev Updates state with results of a fill order.

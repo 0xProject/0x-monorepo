@@ -24,9 +24,10 @@ import "../libs/LibFillResults.sol";
 
 contract IExchangeCore {
 
-    /// @dev Cancels all orders reated by sender with a salt less than or equal to the specified salt value.
-    /// @param salt Orders created with a salt less or equal to this value will be cancelled.
-    function cancelOrdersUpTo(uint256 salt)
+    /// @dev Cancels all orders created by makerAddress with a salt less than or equal to the targetOrderEpoch
+    ///      and senderAddress equal to msg.sender (or null address if msg.sender == makerAddress).
+    /// @param targetOrderEpoch Orders created with a salt less or equal to this value will be cancelled.
+    function cancelOrdersUpTo(uint256 targetOrderEpoch)
         external;
 
     /// @dev Fills the input order.

@@ -36,7 +36,7 @@ contract LibExchangeErrors {
     string constant SIGNATURE_UNSUPPORTED = "SIGNATURE_UNSUPPORTED";        // Signature type unsupported.
     
     /// cancelOrdersUptTo errors ///
-    string constant INVALID_NEW_MAKER_EPOCH = "INVALID_NEW_MAKER_EPOCH";    // Specified salt must be greater than or equal to existing makerEpoch.
+    string constant INVALID_NEW_ORDER_EPOCH = "INVALID_NEW_ORDER_EPOCH";    // Specified salt must be greater than or equal to existing orderEpoch.
 
     /// fillOrKillOrder errors ///
     string constant COMPLETE_FILL_FAILED = "COMPLETE_FILL_FAILED";          // Desired takerAssetFillAmount could not be completely filled. 
@@ -55,7 +55,7 @@ contract LibExchangeErrors {
     string constant ASSET_PROXY_ID_MISMATCH = "ASSET_PROXY_ID_MISMATCH";    // newAssetProxyId does not match given assetProxyId.
 
     /// Length validation errors ///
-    string constant LENGTH_GREATER_THAN_0_REQUIRED = "LENGTH_GREATER_THAN_0_REQUIRED"; // Byte array must have a length greater than 0.
+    string constant LENGTH_GREATER_THAN_0_REQUIRED = "LENGTH_GREATER_THAN_0_REQUIRED";  // Byte array must have a length greater than 0.
     string constant LENGTH_0_REQUIRED = "LENGTH_1_REQUIRED";                // Byte array must have a length of 1.
     string constant LENGTH_65_REQUIRED = "LENGTH_66_REQUIRED";              // Byte array must have a length of 66.
 }

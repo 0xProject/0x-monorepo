@@ -218,11 +218,11 @@ describe('Exchange transactions', () => {
                     senderAddress: exchangeWrapperContract.address,
                     salt: orderSalt,
                 });
-                const cancelSalt = orderSalt.add(1);
-                const cancelData = exchange.cancelOrdersUpTo.getABIEncodedTransactionData(cancelSalt);
+                const targetOrderEpoch = orderSalt.add(1);
+                const cancelData = exchange.cancelOrdersUpTo.getABIEncodedTransactionData(targetOrderEpoch);
                 const signedCancelTx = makerTransactionFactory.newSignedTransaction(cancelData);
                 await exchangeWrapperContract.cancelOrdersUpTo.sendTransactionAsync(
-                    cancelSalt,
+                    targetOrderEpoch,
                     signedCancelTx.salt,
                     signedCancelTx.signature,
                     {
@@ -256,8 +256,8 @@ describe('Exchange transactions', () => {
                     senderAddress: exchangeWrapperContract.address,
                     salt: orderSalt,
                 });
-                const cancelSalt = orderSalt.add(1);
-                await exchangeWrapper.cancelOrdersUpToAsync(cancelSalt, makerAddress);
+                const targetOrderEpoch = orderSalt.add(1);
+                await exchangeWrapper.cancelOrdersUpToAsync(targetOrderEpoch, makerAddress);
 
                 erc20Balances = await erc20Wrapper.getBalancesAsync();
                 const takerAssetFillAmount = signedOrder.takerAssetAmount;
