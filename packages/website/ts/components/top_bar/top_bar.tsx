@@ -45,6 +45,7 @@ export interface TopBarProps {
     isNightVersion?: boolean;
     onVersionSelected?: (semver: string) => void;
     sidebarHeader?: React.ReactNode;
+    maxWidth?: number;
 }
 
 interface TopBarState {
@@ -213,7 +214,7 @@ export class TopBar extends React.Component<TopBarProps, TopBarState> {
         const shouldShowPortalV2Drawer = this._isViewingPortal() && utils.shouldShowPortalV2();
         return (
             <div style={{ ...styles.topBar, ...bottomBorderStyle, ...this.props.style, ...{ height } }} className="pb1">
-                <div className={parentClassNames}>
+                <div className={parentClassNames} style={{ maxWidth: this.props.maxWidth }}>
                     <div className="col col-2 sm-pl1 md-pl2 lg-pl0" style={{ paddingTop: 15 }}>
                         <Link to={`${WebsitePaths.Home}`} className="text-decoration-none">
                             <img src={logoUrl} height="30" />

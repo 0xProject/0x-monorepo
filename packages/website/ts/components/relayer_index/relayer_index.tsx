@@ -37,8 +37,8 @@ const styles: Styles = {
 };
 
 const CELL_HEIGHT = 290;
-const NUMBER_OF_COLUMNS_LARGE = 4;
-const NUMBER_OF_COLUMNS_MEDIUM = 3;
+const NUMBER_OF_COLUMNS_LARGE = 3;
+const NUMBER_OF_COLUMNS_MEDIUM = 2;
 const NUMBER_OF_COLUMNS_SMALL = 1;
 const GRID_PADDING = 20;
 
