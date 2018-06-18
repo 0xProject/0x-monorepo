@@ -18,7 +18,6 @@ async function prepublishChecksAsync(): Promise<void> {
     await checkChangelogFormatAsync(updatedPublicLernaPackages);
     await checkGitTagsForNextVersionAndDeleteIfExistAsync(updatedPublicLernaPackages);
     await checkPublishRequiredSetupAsync();
-    throw new Error('Intentional stop!');
 }
 
 async function checkGitTagsForNextVersionAndDeleteIfExistAsync(
@@ -87,6 +86,7 @@ async function checkCurrentVersionMatchesLatestPublishedNPMPackageAsync(
 }
 
 async function checkChangelogFormatAsync(updatedPublicLernaPackages: LernaPackage[]): Promise<void> {
+    utils.log('Check CHANGELOGs for inconsistencies...');
     const changeLogInconsistencies = [];
     for (const lernaPackage of updatedPublicLernaPackages) {
         const packageName = lernaPackage.package.name;
@@ -120,8 +120,8 @@ async function checkChangelogFormatAsync(updatedPublicLernaPackages: LernaPackag
                 } CHANGELOG.json`,
             );
         });
+        throw new Error('Fix the above inconsistencies to continue.');
     }
-    throw new Error('Fix the above inconsistencies to continue.');
 }
 
 async function checkPublishRequiredSetupAsync(): Promise<void> {
