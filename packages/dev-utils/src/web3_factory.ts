@@ -7,10 +7,8 @@ import ProviderEngine = require('web3-provider-engine');
 import RpcSubprovider = require('web3-provider-engine/subproviders/rpc');
 
 import { EmptyWalletSubprovider, FakeGasEstimateSubprovider, GanacheSubprovider } from '@0xproject/subproviders';
-import { Provider } from 'ethereum-types';
 import * as fs from 'fs';
 import * as _ from 'lodash';
-import * as process from 'process';
 
 import { constants } from './constants';
 import { env, EnvVars } from './env';
@@ -19,16 +17,22 @@ export interface Web3Config {
     hasAddresses?: boolean; // default: true
     shouldUseInProcessGanache?: boolean; // default: false
     rpcUrl?: string; // default: localhost:8545
+    shouldUseFakeGasEstimate?: boolean; // default: true
 }
 
 export const web3Factory = {
     getRpcProvider(config: Web3Config = {}): ProviderEngine {
         const provider = new ProviderEngine();
         const hasAddresses = _.isUndefined(config.hasAddresses) || config.hasAddresses;
+        config.shouldUseFakeGasEstimate =
+            _.isUndefined(config.shouldUseFakeGasEstimate) || config.shouldUseFakeGasEstimate;
         if (!hasAddresses) {
             provider.addProvider(new EmptyWalletSubprovider());
         }
-        provider.addProvider(new FakeGasEstimateSubprovider(constants.GAS_LIMIT));
+
+        if (config.shouldUseFakeGasEstimate) {
+            provider.addProvider(new FakeGasEstimateSubprovider(constants.GAS_LIMIT));
+        }
         const logger = {
             log: (arg: any) => {
                 fs.appendFileSync('ganache.log', `${arg}\n`);

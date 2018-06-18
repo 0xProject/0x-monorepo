@@ -1,3 +1,5 @@
+import { CompilerOptions, ContractArtifact } from '@0xproject/sol-compiler';
+import { logUtils } from '@0xproject/utils';
 import * as fs from 'fs';
 import * as glob from 'glob';
 import * as _ from 'lodash';
@@ -14,25 +16,30 @@ export class SolCompilerArtifactAdapter extends AbstractArtifactAdapter {
     private _sourcesPath: string;
     constructor(artifactsPath?: string, sourcesPath?: string) {
         super();
-        const config = JSON.parse(fs.readFileSync(CONFIG_FILE).toString());
+        const config: CompilerOptions = fs.existsSync(CONFIG_FILE)
+            ? JSON.parse(fs.readFileSync(CONFIG_FILE).toString())
+            : {};
         if (_.isUndefined(artifactsPath) && _.isUndefined(config.artifactsDir)) {
             throw new Error(`artifactsDir not found in ${CONFIG_FILE}`);
         }
-        this._artifactsPath = config.artifactsDir;
+        this._artifactsPath = (artifactsPath || config.artifactsDir) as string;
         if (_.isUndefined(sourcesPath) && _.isUndefined(config.contractsDir)) {
             throw new Error(`contractsDir not found in ${CONFIG_FILE}`);
         }
-        this._sourcesPath = config.contractsDir;
+        this._sourcesPath = (sourcesPath || config.contractsDir) as string;
     }
     public async collectContractsDataAsync(): Promise<ContractData[]> {
         const artifactsGlob = `${this._artifactsPath}/**/*.json`;
         const artifactFileNames = glob.sync(artifactsGlob, { absolute: true });
         const contractsData: ContractData[] = [];
         for (const artifactFileName of artifactFileNames) {
-            const artifact = JSON.parse(fs.readFileSync(artifactFileName).toString());
+            const artifact: ContractArtifact = JSON.parse(fs.readFileSync(artifactFileName).toString());
+            if (_.isUndefined(artifact.compilerOutput.evm)) {
+                logUtils.warn(`${artifactFileName} doesn't contain bytecode. Skipping...`);
+                continue;
+            }
             let sources = _.keys(artifact.sources);
             sources = _.map(sources, relativeFilePath => path.resolve(this._sourcesPath, relativeFilePath));
-            const contractName = artifact.contractName;
             const sourceCodes = _.map(sources, (source: string) => fs.readFileSync(source).toString());
             const contractData = {
                 sourceCodes,

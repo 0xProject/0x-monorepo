@@ -8,8 +8,8 @@
     "main": "lib/index.js",
     "types": "lib/index.d.ts",
     "scripts": {
-        "watch": "tsc -w",
-        "build": "yarn clean && tsc && copyfiles -u 3 './lib/src/monorepo_scripts/**/*' ./scripts",
+        "watch_without_deps": "tsc -w",
+        "build": "tsc && copyfiles -u 3 './lib/src/monorepo_scripts/**/*' ./scripts",
         "clean": "shx rm -rf lib scripts",
         "lint": "tslint --project .",
         "manual:postpublish": "yarn build; node ./scripts/postpublish.js"

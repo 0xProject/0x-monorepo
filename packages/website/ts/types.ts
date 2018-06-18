@@ -1,6 +1,5 @@
 import { ECSignature } from '@0xproject/types';
 import { BigNumber } from '@0xproject/utils';
-import * as _ from 'lodash';
 import * as React from 'react';
 
 export enum Side {
@@ -370,6 +369,7 @@ export enum WebsitePaths {
     SolCov = '/docs/sol-cov',
     Subproviders = '/docs/subproviders',
     OrderUtils = '/docs/order-utils',
+    EthereumTypes = '/docs/ethereum-types',
     Jobs = '/jobs',
 }
 
@@ -383,6 +383,7 @@ export enum DocPackages {
     SolCov = 'SOL_COV',
     Subproviders = 'SUBPROVIDERS',
     OrderUtils = 'ORDER_UTILS',
+    EthereumTypes = 'ETHEREUM_TYPES',
 }
 
 export enum Key {
@@ -434,6 +435,7 @@ export enum Key {
     SolCompiler = 'SOL_COMPILER',
     JsonSchemas = 'JSON_SCHEMAS',
     SolCov = 'SOL_COV',
+    EthereumTypes = 'ETHEREUM_TYPES',
     Subproviders = 'SUBPROVIDERS',
     Blog = 'BLOG',
     Forum = 'FORUM',
@@ -533,5 +535,13 @@ export interface WebsiteBackendTokenInfo {
 
 export interface WebsiteBackendGasInfo {
     average: number;
+}
+
+export interface WebsiteBackendJobInfo {
+    id: number;
+    title: string;
+    department: string;
+    office: string;
+    url: string;
 }
 // tslint:disable:max-file-line-count

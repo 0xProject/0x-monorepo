@@ -19,7 +19,6 @@
 pragma solidity ^0.4.24;
 pragma experimental ABIEncoderV2;
 
-import "../../utils/LibBytes/LibBytes.sol";
 import "./libs/LibMath.sol";
 import "./libs/LibOrder.sol";
 import "./libs/LibFillResults.sol";
@@ -27,7 +26,6 @@ import "./libs/LibExchangeErrors.sol";
 import "./mixins/MExchangeCore.sol";
 
 contract MixinWrapperFunctions is
-    LibBytes,
     LibMath,
     LibFillResults,
     LibExchangeErrors,
@@ -40,7 +38,8 @@ contract MixinWrapperFunctions is
     function fillOrKillOrder(
         LibOrder.Order memory order,
         uint256 takerAssetFillAmount,
-        bytes memory signature)
+        bytes memory signature
+    )
         public
         returns (FillResults memory fillResults)
     {
@@ -65,7 +64,8 @@ contract MixinWrapperFunctions is
     function fillOrderNoThrow(
         LibOrder.Order memory order,
         uint256 takerAssetFillAmount,
-        bytes memory signature)
+        bytes memory signature
+    )
         public
         returns (FillResults memory fillResults)
     {
@@ -91,12 +91,12 @@ contract MixinWrapperFunctions is
         // |          | 0x0E0  |         |   8.  takerFeeAmount                        |
         // |          | 0x100  |         |   9.  expirationTimeSeconds                 |
         // |          | 0x120  |         |   10. salt                                  |
-        // |          | 0x140  |         |   11. Offset to makerAssetProxyMetadata (*) |
-        // |          | 0x160  |         |   12. Offset to takerAssetProxyMetadata (*) |
-        // |          | 0x180  | 32      | makerAssetProxyMetadata Length              |
-        // |          | 0x1A0  | **      | makerAssetProxyMetadata Contents            |
-        // |          | 0x1C0  | 32      | takerAssetProxyMetadata Length              |
-        // |          | 0x1E0  | **      | takerAssetProxyMetadata Contents            |
+        // |          | 0x140  |         |   11. Offset to makerAssetData (*)          |
+        // |          | 0x160  |         |   12. Offset to takerAssetData (*)          |
+        // |          | 0x180  | 32      | makerAssetData Length                       |
+        // |          | 0x1A0  | **      | makerAssetData Contents                     |
+        // |          | 0x1C0  | 32      | takerAssetData Length                       |
+        // |          | 0x1E0  | **      | takerAssetData Contents                     |
         // |          | 0x200  | 32      | signature Length                            |
         // |          | 0x220  | **      | signature Contents                          |
 
@@ -163,43 +163,45 @@ contract MixinWrapperFunctions is
             mstore(add(dataAreaEnd, 0xE0), mload(add(sourceOffset, 0xE0)))      // takerFeeAmount
             mstore(add(dataAreaEnd, 0x100), mload(add(sourceOffset, 0x100)))    // expirationTimeSeconds
             mstore(add(dataAreaEnd, 0x120), mload(add(sourceOffset, 0x120)))    // salt
-            mstore(add(dataAreaEnd, 0x140), mload(add(sourceOffset, 0x140)))    // Offset to makerAssetProxyMetadata
-            mstore(add(dataAreaEnd, 0x160), mload(add(sourceOffset, 0x160)))    // Offset to takerAssetProxyMetadata
+            mstore(add(dataAreaEnd, 0x140), mload(add(sourceOffset, 0x140)))    // Offset to makerAssetData
+            mstore(add(dataAreaEnd, 0x160), mload(add(sourceOffset, 0x160)))    // Offset to takerAssetData
             dataAreaEnd := add(dataAreaEnd, 0x180)
             sourceOffset := add(sourceOffset, 0x180)
 
-            // Write offset to <order.makerAssetProxyMetadata>
+            // Write offset to <order.makerAssetData>
             mstore(add(dataAreaStart, mul(10, 0x20)), sub(dataAreaEnd, dataAreaStart))
 
-            // Calculate length of <order.makerAssetProxyMetadata>
+            // Calculate length of <order.makerAssetData>
+            sourceOffset := mload(add(order, 0x140)) // makerAssetData
             arrayLenBytes := mload(sourceOffset)
             sourceOffset := add(sourceOffset, 0x20)
             arrayLenWords := div(add(arrayLenBytes, 0x1F), 0x20)
 
-            // Write length of <order.makerAssetProxyMetadata>
+            // Write length of <order.makerAssetData>
             mstore(dataAreaEnd, arrayLenBytes)
             dataAreaEnd := add(dataAreaEnd, 0x20)
 
-            // Write contents of <order.makerAssetProxyMetadata>
+            // Write contents of <order.makerAssetData>
             for {let i := 0} lt(i, arrayLenWords) {i := add(i, 1)} {
                 mstore(dataAreaEnd, mload(sourceOffset))
                 dataAreaEnd := add(dataAreaEnd, 0x20)
                 sourceOffset := add(sourceOffset, 0x20)
             }
 
-            // Write offset to <order.takerAssetProxyMetadata>
+            // Write offset to <order.takerAssetData>
             mstore(add(dataAreaStart, mul(11, 0x20)), sub(dataAreaEnd, dataAreaStart))
 
-            // Calculate length of <order.takerAssetProxyMetadata>
+            // Calculate length of <order.takerAssetData>
+            sourceOffset := mload(add(order, 0x160)) // takerAssetData
             arrayLenBytes := mload(sourceOffset)
             sourceOffset := add(sourceOffset, 0x20)
             arrayLenWords := div(add(arrayLenBytes, 0x1F), 0x20)
 
-            // Write length of <order.takerAssetProxyMetadata>
+            // Write length of <order.takerAssetData>
             mstore(dataAreaEnd, arrayLenBytes)
             dataAreaEnd := add(dataAreaEnd, 0x20)
 
-            // Write contents of  <order.takerAssetProxyMetadata>
+            // Write contents of  <order.takerAssetData>
             for {let i := 0} lt(i, arrayLenWords) {i := add(i, 1)} {
                 mstore(dataAreaEnd, mload(sourceOffset))
                 dataAreaEnd := add(dataAreaEnd, 0x20)
@@ -264,7 +266,8 @@ contract MixinWrapperFunctions is
     function batchFillOrders(
         LibOrder.Order[] memory orders,
         uint256[] memory takerAssetFillAmounts,
-        bytes[] memory signatures)
+        bytes[] memory signatures
+    )
         public
     {
         for (uint256 i = 0; i < orders.length; i++) {
@@ -283,7 +286,8 @@ contract MixinWrapperFunctions is
     function batchFillOrKillOrders(
         LibOrder.Order[] memory orders,
         uint256[] memory takerAssetFillAmounts,
-        bytes[] memory signatures)
+        bytes[] memory signatures
+    )
         public
     {
         for (uint256 i = 0; i < orders.length; i++) {
@@ -303,7 +307,8 @@ contract MixinWrapperFunctions is
     function batchFillOrdersNoThrow(
         LibOrder.Order[] memory orders,
         uint256[] memory takerAssetFillAmounts,
-        bytes[] memory signatures)
+        bytes[] memory signatures
+    )
         public
     {
         for (uint256 i = 0; i < orders.length; i++) {
@@ -323,18 +328,18 @@ contract MixinWrapperFunctions is
     function marketSellOrders(
         LibOrder.Order[] memory orders,
         uint256 takerAssetFillAmount,
-        bytes[] memory signatures)
+        bytes[] memory signatures
+    )
         public
         returns (FillResults memory totalFillResults)
     {
+        bytes memory takerAssetData = orders[0].takerAssetData;
+    
         for (uint256 i = 0; i < orders.length; i++) {
 
-            // Token being sold by taker must be the same for each order
-            // TODO: optimize by only using takerAssetData for first order.
-            require(
-                areBytesEqual(orders[i].takerAssetData, orders[0].takerAssetData),
-                ASSET_DATA_MISMATCH
-            );
+            // We assume that asset being sold by taker is the same for each order.
+            // Rather than passing this in as calldata, we use the takerAssetData from the first order in all later orders.
+            orders[i].takerAssetData = takerAssetData;
 
             // Calculate the remaining amount of takerAsset to sell
             uint256 remainingTakerAssetFillAmount = safeSub(takerAssetFillAmount, totalFillResults.takerAssetFilledAmount);
@@ -345,6 +350,14 @@ contract MixinWrapperFunctions is
                 remainingTakerAssetFillAmount,
                 signatures[i]
             );
+
+            // HACK: the proxyId is "popped" from the byte array before a fill is settled
+            // by subtracting from the length of the array. Since the popped byte is 
+            // still in memory, we can "unpop" it by incrementing the length of the byte array.
+            assembly {
+                let len := mload(takerAssetData)
+                mstore(takerAssetData, add(len, 1))
+            }
 
             // Update amounts filled and fees paid by maker and taker
             addFillResults(totalFillResults, singleFillResults);
@@ -366,18 +379,18 @@ contract MixinWrapperFunctions is
     function marketSellOrdersNoThrow(
         LibOrder.Order[] memory orders,
         uint256 takerAssetFillAmount,
-        bytes[] memory signatures)
+        bytes[] memory signatures
+    )
         public
         returns (FillResults memory totalFillResults)
     {
+        bytes memory takerAssetData = orders[0].takerAssetData;
+
         for (uint256 i = 0; i < orders.length; i++) {
 
-            // Token being sold by taker must be the same for each order
-            // TODO: optimize by only using takerAssetData for first order.
-            require(
-                areBytesEqual(orders[i].takerAssetData, orders[0].takerAssetData),
-                ASSET_DATA_MISMATCH
-            );
+            // We assume that asset being sold by taker is the same for each order.
+            // Rather than passing this in as calldata, we use the takerAssetData from the first order in all later orders.
+            orders[i].takerAssetData = takerAssetData;
 
             // Calculate the remaining amount of takerAsset to sell
             uint256 remainingTakerAssetFillAmount = safeSub(takerAssetFillAmount, totalFillResults.takerAssetFilledAmount);
@@ -408,18 +421,18 @@ contract MixinWrapperFunctions is
     function marketBuyOrders(
         LibOrder.Order[] memory orders,
         uint256 makerAssetFillAmount,
-        bytes[] memory signatures)
+        bytes[] memory signatures
+    )
         public
         returns (FillResults memory totalFillResults)
     {
+        bytes memory makerAssetData = orders[0].makerAssetData;
+
         for (uint256 i = 0; i < orders.length; i++) {
 
-            // Token being bought by taker must be the same for each order
-            // TODO: optimize by only using makerAssetData for first order.
-            require(
-                areBytesEqual(orders[i].makerAssetData, orders[0].makerAssetData),
-                ASSET_DATA_MISMATCH
-            );
+            // We assume that asset being bought by taker is the same for each order.
+            // Rather than passing this in as calldata, we copy the makerAssetData from the first order onto all later orders.
+            orders[i].makerAssetData = makerAssetData;
 
             // Calculate the remaining amount of makerAsset to buy
             uint256 remainingMakerAssetFillAmount = safeSub(makerAssetFillAmount, totalFillResults.makerAssetFilledAmount);
@@ -438,6 +451,14 @@ contract MixinWrapperFunctions is
                 remainingTakerAssetFillAmount,
                 signatures[i]
             );
+
+            // HACK: the proxyId is "popped" from the byte array before a fill is settled
+            // by subtracting from the length of the array. Since the popped byte is 
+            // still in memory, we can "unpop" it by incrementing the length of the byte array.
+            assembly {
+                let len := mload(makerAssetData)
+                mstore(makerAssetData, add(len, 1))
+            }
 
             // Update amounts filled and fees paid by maker and taker
             addFillResults(totalFillResults, singleFillResults);
@@ -459,18 +480,18 @@ contract MixinWrapperFunctions is
     function marketBuyOrdersNoThrow(
         LibOrder.Order[] memory orders,
         uint256 makerAssetFillAmount,
-        bytes[] memory signatures)
+        bytes[] memory signatures
+    )
         public
         returns (FillResults memory totalFillResults)
     {
+        bytes memory makerAssetData = orders[0].makerAssetData;
+
         for (uint256 i = 0; i < orders.length; i++) {
 
-            // Token being bought by taker must be the same for each order
-            // TODO: optimize by only using makerAssetData for first order.
-            require(
-                areBytesEqual(orders[i].makerAssetData, orders[0].makerAssetData),
-                ASSET_DATA_MISMATCH
-            );
+            // We assume that asset being bought by taker is the same for each order.
+            // Rather than passing this in as calldata, we copy the makerAssetData from the first order onto all later orders.
+            orders[i].makerAssetData = makerAssetData;
 
             // Calculate the remaining amount of makerAsset to buy
             uint256 remainingMakerAssetFillAmount = safeSub(makerAssetFillAmount, totalFillResults.makerAssetFilledAmount);

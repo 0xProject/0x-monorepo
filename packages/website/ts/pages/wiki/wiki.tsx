@@ -4,23 +4,19 @@ import {
     HeaderSizes,
     MarkdownSection,
     NestedSidebarMenu,
-    SectionHeader,
     Styles,
     utils as sharedUtils,
 } from '@0xproject/react-shared';
-import { logUtils } from '@0xproject/utils';
 import * as _ from 'lodash';
 import CircularProgress from 'material-ui/CircularProgress';
 import RaisedButton from 'material-ui/RaisedButton';
 import * as React from 'react';
 import DocumentTitle = require('react-document-title');
-import { scroller } from 'react-scroll';
 import { SidebarHeader } from 'ts/components/sidebar_header';
 import { TopBar } from 'ts/components/top_bar/top_bar';
 import { Dispatcher } from 'ts/redux/dispatcher';
-import { Article, ArticlesBySection, WebsitePaths } from 'ts/types';
+import { Article, ArticlesBySection } from 'ts/types';
 import { backendClient } from 'ts/utils/backend_client';
-import { configs } from 'ts/utils/configs';
 import { constants } from 'ts/utils/constants';
 import { Translate } from 'ts/utils/translate';
 import { utils } from 'ts/utils/utils';
@@ -237,7 +233,7 @@ export class Wiki extends React.Component<WikiProps, WikiState> {
         }
         return menuSubsectionsBySection;
     }
-    private _onSidebarHover(event: React.FormEvent<HTMLInputElement>): void {
+    private _onSidebarHover(_event: React.FormEvent<HTMLInputElement>): void {
         this.setState({
             isHoveringSidebar: true,
         });
@@ -247,7 +243,7 @@ export class Wiki extends React.Component<WikiProps, WikiState> {
             isHoveringSidebar: false,
         });
     }
-    private _onHashChanged(event: any): void {
+    private _onHashChanged(_event: any): void {
         const hash = window.location.hash.slice(1);
         sharedUtils.scrollToHash(hash, sharedConstants.SCROLL_CONTAINER_ID);
     }

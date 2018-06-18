@@ -5,10 +5,9 @@ import Toggle from 'material-ui/Toggle';
 import * as React from 'react';
 import { Blockchain } from 'ts/blockchain';
 import { Dispatcher } from 'ts/redux/dispatcher';
+import { colors } from 'ts/style/colors';
 import { BalanceErrs, Token, TokenState } from 'ts/types';
 import { analytics } from 'ts/utils/analytics';
-import { colors } from 'ts/utils/colors';
-import { constants } from 'ts/utils/constants';
 import { errorReporter } from 'ts/utils/error_reporter';
 import { utils } from 'ts/utils/utils';
 
@@ -18,11 +17,11 @@ interface AllowanceToggleProps {
     networkId: number;
     blockchain: Blockchain;
     dispatcher: Dispatcher;
-    onErrorOccurred: (errType: BalanceErrs) => void;
     token: Token;
     tokenState: TokenState;
     userAddress: string;
-    isDisabled: boolean;
+    isDisabled?: boolean;
+    onErrorOccurred?: (errType: BalanceErrs) => void;
     refetchTokenStateAsync: () => Promise<void>;
 }
 
@@ -57,6 +56,10 @@ const styles: Styles = {
 };
 
 export class AllowanceToggle extends React.Component<AllowanceToggleProps, AllowanceToggleState> {
+    public static defaultProps = {
+        onErrorOccurred: _.noop,
+        isDisabled: false,
+    };
     constructor(props: AllowanceToggleProps) {
         super(props);
         this.state = {

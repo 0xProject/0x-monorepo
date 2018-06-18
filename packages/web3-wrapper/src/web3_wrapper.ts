@@ -2,6 +2,7 @@ import { AbiDecoder, addressUtils, BigNumber, intervalUtils, promisify } from '@
 import {
     BlockParam,
     BlockWithoutTransactionData,
+    BlockWithTransactionData,
     CallData,
     ContractAbi,
     FilterObject,
@@ -10,8 +11,10 @@ import {
     LogEntry,
     Provider,
     RawLogEntry,
+    TraceParams,
     TransactionReceipt,
     TransactionReceiptWithDecodedLogs,
+    TransactionTrace,
     TxData,
 } from 'ethereum-types';
 import * as _ from 'lodash';
@@ -20,6 +23,13 @@ import * as Web3 from 'web3';
 import { Web3WrapperErrors } from './types';
 
 const BASE_TEN = 10;
+
+// These are unique identifiers contained in the response of the
+// web3_clientVersion call.
+export const uniqueVersionIds = {
+    geth: 'Geth',
+    ganache: 'EthereumJS TestRPC',
+};
 
 /**
  * A wrapper around the Web3.js 0.x library that provides a consistent, clean promise-based interface.
@@ -180,10 +190,32 @@ export class Web3Wrapper {
      * @returns Whether or not contract code was found at the supplied address
      */
     public async doesContractExistAtAddressAsync(address: string): Promise<boolean> {
-        const code = await promisify<string>(this._web3.eth.getCode)(address);
+        const code = await this.getContractCodeAsync(address);
         // Regex matches 0x0, 0x00, 0x in order to accommodate poorly implemented clients
         const isCodeEmpty = /^0x0{0,40}$/i.test(code);
         return !isCodeEmpty;
+    }
+    /**
+     * Gets the contract code by address
+     * @param  address Address of the contract
+     * @return Code of the contract
+     */
+    public async getContractCodeAsync(address: string): Promise<string> {
+        const code = await promisify<string>(this._web3.eth.getCode)(address);
+        return code;
+    }
+    /**
+     * Gets the debug trace of a transaction
+     * @param  txHash Hash of the transactuon to get a trace for
+     * @param  traceParams Config object allowing you to specify if you need memory/storage/stack traces.
+     * @return Transaction trace
+     */
+    public async getTransactionTraceAsync(txHash: string, traceParams: TraceParams): Promise<TransactionTrace> {
+        const trace = await this._sendRawPayloadAsync<TransactionTrace>({
+            method: 'debug_traceTransaction',
+            params: [txHash, traceParams],
+        });
+        return trace;
     }
     /**
      * Sign a message with a specific address's private key (`eth_sign`)
@@ -204,13 +236,30 @@ export class Web3Wrapper {
         return blockNumber;
     }
     /**
-     * Fetch a specific Ethereum block
+     * Fetch a specific Ethereum block without transaction data
      * @param blockParam The block you wish to fetch (blockHash, blockNumber or blockLiteral)
      * @returns The requested block without transaction data
      */
     public async getBlockAsync(blockParam: string | BlockParam): Promise<BlockWithoutTransactionData> {
-        const block = await promisify<BlockWithoutTransactionData>(this._web3.eth.getBlock)(blockParam);
-        return block;
+        const shouldIncludeTransactionData = false;
+        const blockWithoutTransactionData = await promisify<BlockWithoutTransactionData>(this._web3.eth.getBlock)(
+            blockParam,
+            shouldIncludeTransactionData,
+        );
+        return blockWithoutTransactionData;
+    }
+    /**
+     * Fetch a specific Ethereum block with transaction data
+     * @param blockParam The block you wish to fetch (blockHash, blockNumber or blockLiteral)
+     * @returns The requested block with transaction data
+     */
+    public async getBlockWithTransactionDataAsync(blockParam: string | BlockParam): Promise<BlockWithTransactionData> {
+        const shouldIncludeTransactionData = true;
+        const blockWithTransactionData = await promisify<BlockWithTransactionData>(this._web3.eth.getBlock)(
+            blockParam,
+            shouldIncludeTransactionData,
+        );
+        return blockWithTransactionData;
     }
     /**
      * Fetch a block's timestamp
@@ -254,11 +303,20 @@ export class Web3Wrapper {
         await this._sendRawPayloadAsync<string>({ method: 'evm_mine', params: [] });
     }
     /**
-     * Increase the next blocks timestamp on TestRPC/Ganache local node
+     * Increase the next blocks timestamp on TestRPC/Ganache or Geth local node.
+     * Will throw if provider is neither TestRPC/Ganache or Geth.
      * @param timeDelta Amount of time to add in seconds
      */
-    public async increaseTimeAsync(timeDelta: number): Promise<void> {
-        await this._sendRawPayloadAsync<string>({ method: 'evm_increaseTime', params: [timeDelta] });
+    public async increaseTimeAsync(timeDelta: number): Promise<number> {
+        // Detect Geth vs. Ganache and use appropriate endpoint.
+        const version = await this.getNodeVersionAsync();
+        if (_.includes(version, uniqueVersionIds.geth)) {
+            return this._sendRawPayloadAsync<number>({ method: 'debug_increaseTime', params: [timeDelta] });
+        } else if (_.includes(version, uniqueVersionIds.ganache)) {
+            return this._sendRawPayloadAsync<number>({ method: 'evm_increaseTime', params: [timeDelta] });
+        } else {
+            throw new Error(`Unknown client version: ${version}`);
+        }
     }
     /**
      * Retrieve smart contract logs for a given filter
@@ -281,7 +339,6 @@ export class Web3Wrapper {
         };
         const payload = {
             jsonrpc: '2.0',
-            id: this._jsonRpcRequestId++,
             method: 'eth_getLogs',
             params: [serializedFilter],
         };
@@ -315,6 +372,9 @@ export class Web3Wrapper {
      */
     public async callAsync(callData: CallData, defaultBlock?: BlockParam): Promise<string> {
         const rawCallResult = await promisify<string>(this._web3.eth.call)(callData, defaultBlock);
+        if (rawCallResult === '0x') {
+            throw new Error('Contract call failed (returned null)');
+        }
         return rawCallResult;
     }
     /**
@@ -342,6 +402,21 @@ export class Web3Wrapper {
         pollingIntervalMs: number = 1000,
         timeoutMs?: number,
     ): Promise<TransactionReceiptWithDecodedLogs> {
+        // Immediately check if the transaction has already been mined.
+        let transactionReceipt = await this.getTransactionReceiptAsync(txHash);
+        if (!_.isNull(transactionReceipt)) {
+            const logsWithDecodedArgs = _.map(
+                transactionReceipt.logs,
+                this.abiDecoder.tryToDecodeLogOrNoop.bind(this.abiDecoder),
+            );
+            const transactionReceiptWithDecodedLogArgs: TransactionReceiptWithDecodedLogs = {
+                ...transactionReceipt,
+                logs: logsWithDecodedArgs,
+            };
+            return transactionReceiptWithDecodedLogArgs;
+        }
+
+        // Otherwise, check again every pollingIntervalMs.
         let wasTimeoutExceeded = false;
         if (timeoutMs) {
             setTimeout(() => (wasTimeoutExceeded = true), timeoutMs);
@@ -356,7 +431,7 @@ export class Web3Wrapper {
                             return reject(Web3WrapperErrors.TransactionMiningTimeout);
                         }
 
-                        const transactionReceipt = await this.getTransactionReceiptAsync(txHash);
+                        transactionReceipt = await this.getTransactionReceiptAsync(txHash);
                         if (!_.isNull(transactionReceipt)) {
                             intervalUtils.clearAsyncExcludingInterval(intervalId);
                             const logsWithDecodedArgs = _.map(
@@ -403,8 +478,20 @@ export class Web3Wrapper {
         }
         return receipt;
     }
+    /**
+     * Calls the 'debug_setHead' JSON RPC method, which sets the current head of
+     * the local chain by block number. Note, this is a destructive action and
+     * may severely damage your chain. Use with extreme caution. As of now, this
+     * is only supported by Geth. It sill throw if the 'debug_setHead' method is
+     * not supported.
+     * @param  blockNumber The block number to reset to.
+     */
+    public async setHeadAsync(blockNumber: number): Promise<void> {
+        await this._sendRawPayloadAsync<void>({ method: 'debug_setHead', params: [this._web3.toHex(blockNumber)] });
+    }
     private async _sendRawPayloadAsync<A>(payload: Partial<JSONRPCRequestPayload>): Promise<A> {
         const sendAsync = this._web3.currentProvider.sendAsync.bind(this._web3.currentProvider);
+        payload.id = this._jsonRpcRequestId++;
         const response = await promisify<JSONRPCResponsePayload>(sendAsync)(payload);
         const result = response.result;
         return result;
@@ -439,4 +526,4 @@ export class Web3Wrapper {
         const decimal = this._web3.toDecimal(hex);
         return decimal;
     }
-}
+} // tslint:disable-line:max-file-line-count

@@ -2,6 +2,7 @@ import { BigNumber } from '@0xproject/utils';
 import * as React from 'react';
 import { connect } from 'react-redux';
 import { Dispatch } from 'redux';
+import { Blockchain } from 'ts/blockchain';
 import { ActionTypes, ProviderType, TokenByAddress, TokenStateByAddress } from 'ts/types';
 
 import { PortalOnboardingFlow as PortalOnboardingFlowComponent } from 'ts/components/onboarding/portal_onboarding_flow';
@@ -9,6 +10,8 @@ import { State } from 'ts/redux/reducer';
 
 interface PortalOnboardingFlowProps {
     trackedTokenStateByAddress: TokenStateByAddress;
+    blockchain: Blockchain;
+    refetchTokenStateAsync: (tokenAddress: string) => Promise<void>;
 }
 
 interface ConnectedState {
@@ -28,7 +31,7 @@ interface ConnectedDispatch {
     updateOnboardingStep: (stepIndex: number) => void;
 }
 
-const mapStateToProps = (state: State, ownProps: PortalOnboardingFlowProps): ConnectedState => ({
+const mapStateToProps = (state: State, _ownProps: PortalOnboardingFlowProps): ConnectedState => ({
     stepIndex: state.portalOnboardingStep,
     isRunning: state.isPortalOnboardingShowing,
     userAddress: state.userAddress,

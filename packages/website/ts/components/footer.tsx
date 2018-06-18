@@ -235,7 +235,7 @@ export class Footer extends React.Component<FooterProps, FooterState> {
             </div>
         );
     }
-    private _updateLanguage(e: any, index: number, value: Language): void {
+    private _updateLanguage(_event: any, _index: number, value: Language): void {
         this.setState({
             selectedLanguage: value,
         });

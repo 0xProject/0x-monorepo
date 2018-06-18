@@ -1,6 +1,6 @@
 import { ContractWrappersError, ExchangeContractErrs } from '@0xproject/contract-wrappers';
 import { OrderError } from '@0xproject/order-utils';
-import { constants as sharedConstants, EtherscanLinkSuffixes, Networks } from '@0xproject/react-shared';
+import { constants as sharedConstants, Networks } from '@0xproject/react-shared';
 import { ECSignature, Provider } from '@0xproject/types';
 import { BigNumber } from '@0xproject/utils';
 import deepEqual = require('deep-equal');
@@ -32,9 +32,6 @@ export const utils = {
         if (!condition) {
             throw new Error(message);
         }
-    },
-    spawnSwitchErr(name: string, value: any): Error {
-        return new Error(`Unexpected switch value: ${value} encountered for ${name}`);
     },
     isNumeric(n: string): boolean {
         return !isNaN(parseFloat(n)) && isFinite(Number(n));
@@ -155,7 +152,7 @@ export const utils = {
                 const intervalId = setTimeout(() => {
                     resolve(false);
                 }, getApiVersionTimeoutMs);
-                u2f.getApiVersion((version: number) => {
+                u2f.getApiVersion((_version: number) => {
                     clearTimeout(intervalId);
                     resolve(true);
                 });
@@ -282,7 +279,7 @@ export const utils = {
         if (document.readyState === 'complete') {
             return; // Already loaded
         }
-        return new Promise<void>((resolve, reject) => {
+        return new Promise<void>((resolve, _reject) => {
             window.onload = () => resolve();
         });
     },
@@ -321,9 +318,18 @@ export const utils = {
     shouldShowPortalV2(): boolean {
         return this.isDevelopment() || this.isStaging() || this.isDogfood();
     },
+    shouldShowJobsPage(): boolean {
+        return this.isDevelopment() || this.isStaging() || this.isDogfood();
+    },
     getEthToken(tokenByAddress: TokenByAddress): Token {
+        return utils.getTokenBySymbol(constants.ETHER_TOKEN_SYMBOL, tokenByAddress);
+    },
+    getZrxToken(tokenByAddress: TokenByAddress): Token {
+        return utils.getTokenBySymbol(constants.ZRX_TOKEN_SYMBOL, tokenByAddress);
+    },
+    getTokenBySymbol(symbol: string, tokenByAddress: TokenByAddress): Token {
         const tokens = _.values(tokenByAddress);
-        const etherToken = _.find(tokens, { symbol: constants.ETHER_TOKEN_SYMBOL });
-        return etherToken;
+        const token = _.find(tokens, { symbol });
+        return token;
     },
 };

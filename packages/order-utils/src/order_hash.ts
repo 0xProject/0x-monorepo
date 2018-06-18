@@ -1,9 +1,6 @@
 import { schemas, SchemaValidator } from '@0xproject/json-schemas';
 import { Order, SignedOrder } from '@0xproject/types';
 import { BigNumber } from '@0xproject/utils';
-import BN = require('bn.js');
-import { SolidityTypes } from 'ethereum-types';
-import * as ethABI from 'ethereumjs-abi';
 import * as ethUtil from 'ethereumjs-util';
 import * as _ from 'lodash';
 

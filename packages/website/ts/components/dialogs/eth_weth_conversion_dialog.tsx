@@ -20,7 +20,7 @@ interface EthWethConversionDialogProps {
     onCancelled: () => void;
     isOpen: boolean;
     token: Token;
-    etherBalanceInWei: BigNumber;
+    etherBalanceInWei?: BigNumber;
     lastForceTokenStateRefetch: number;
 }
 
@@ -60,7 +60,7 @@ export class EthWethConversionDialog extends React.Component<
             <FlatButton key="convert" label="Convert" primary={true} onTouchTap={this._onConvertClick.bind(this)} />,
         ];
         const title = this.props.direction === Side.Deposit ? 'Wrap ETH' : 'Unwrap WETH';
-        return (
+        return !_.isUndefined(this.props.etherBalanceInWei) ? (
             <Dialog
                 title={title}
                 titleStyle={{ fontWeight: 100 }}
@@ -70,7 +70,7 @@ export class EthWethConversionDialog extends React.Component<
             >
                 {this._renderConversionDialogBody()}
             </Dialog>
-        );
+        ) : null;
     }
     private _renderConversionDialogBody(): React.ReactNode {
         const explanation =

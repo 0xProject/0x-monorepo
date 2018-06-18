@@ -29,12 +29,9 @@ export class AbiDecoder {
             return log;
         }
         const ethersInterface = new ethers.Interface([event]);
-        const logData = log.data;
         const decodedParams: DecodedLogArgs = {};
         let topicsIndex = 1;
 
-        const nonIndexedInputs = _.filter(event.inputs, input => !input.indexed);
-        const dataTypes = _.map(nonIndexedInputs, input => input.type);
         const decodedData = ethersInterface.events[event.name].parse(log.data);
 
         let didFailToDecode = false;

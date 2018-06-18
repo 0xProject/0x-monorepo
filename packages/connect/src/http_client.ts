@@ -48,7 +48,7 @@ export class HttpClient implements Client {
             return '';
         }
         // format params into a form the api expects
-        const formattedParams = _.mapKeys(params, (value: any, key: string) => {
+        const formattedParams = _.mapKeys(params, (_value: any, key: string) => {
             return _.get(OPTS_TO_QUERY_FIELD_MAP, key, key);
         });
         // stringify the formatted object

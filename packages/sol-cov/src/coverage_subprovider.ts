@@ -1,32 +1,29 @@
-import { Callback, ErrorCallback, NextCallback, Subprovider } from '@0xproject/subproviders';
-import { BlockParam, CallData, JSONRPCRequestPayload, TransactionTrace, TxData } from 'ethereum-types';
-import * as fs from 'fs';
 import * as _ from 'lodash';
-import { Lock } from 'semaphore-async-await';
 
 import { AbstractArtifactAdapter } from './artifact_adapters/abstract_artifact_adapter';
-import { constants } from './constants';
-import { CoverageManager } from './coverage_manager';
-import { getTracesByContractAddress } from './trace';
-import { BlockParamLiteral, TraceInfoExistingContract, TraceInfoNewContract } from './types';
-
-interface MaybeFakeTxData extends TxData {
-    isFakeTransaction?: boolean;
-}
-
-// Because there is no notion of a call trace in the Ethereum rpc - we collect them in a rather non-obvious/hacky way.
-// On each call - we create a snapshot, execute the call as a transaction, get the trace, revert the snapshot.
-// That allows us to avoid influencing test behaviour.
+import { collectCoverageEntries } from './collect_coverage_entries';
+import { SingleFileSubtraceHandler, TraceCollector } from './trace_collector';
+import { TraceInfoSubprovider } from './trace_info_subprovider';
+import {
+    BranchCoverage,
+    ContractData,
+    Coverage,
+    FunctionCoverage,
+    FunctionDescription,
+    SourceRange,
+    StatementCoverage,
+    StatementDescription,
+    Subtrace,
+    TraceInfo,
+} from './types';
+import { utils } from './utils';
 
 /**
  * This class implements the [web3-provider-engine](https://github.com/MetaMask/provider-engine) subprovider interface.
- * It collects traces of all transactions that were sent and all calls that were executed through JSON RPC.
+ * It's used to compute your code coverage while running solidity tests.
  */
-export class CoverageSubprovider extends Subprovider {
-    // Lock is used to not accept normal transactions while doing call/snapshot magic because they'll be reverted later otherwise
-    private _lock: Lock;
-    private _coverageManager: CoverageManager;
-    private _defaultFromAddress: string;
+export class CoverageSubprovider extends TraceInfoSubprovider {
+    private _coverageCollector: TraceCollector;
     /**
      * Instantiates a CoverageSubprovider instance
      * @param artifactAdapter Adapter for used artifacts format (0x, truffle, giveth, etc.)
@@ -34,172 +31,110 @@ export class CoverageSubprovider extends Subprovider {
      * @param isVerbose If true, we will log any unknown transactions. Otherwise we will ignore them
      */
     constructor(artifactAdapter: AbstractArtifactAdapter, defaultFromAddress: string, isVerbose: boolean = true) {
-        super();
-        this._lock = new Lock();
-        this._defaultFromAddress = defaultFromAddress;
-        this._coverageManager = new CoverageManager(artifactAdapter, this._getContractCodeAsync.bind(this), isVerbose);
+        const traceCollectionSubproviderConfig = {
+            shouldCollectTransactionTraces: true,
+            shouldCollectGasEstimateTraces: true,
+            shouldCollectCallTraces: true,
+        };
+        super(defaultFromAddress, traceCollectionSubproviderConfig);
+        this._coverageCollector = new TraceCollector(artifactAdapter, isVerbose, coverageHandler);
+    }
+    protected async _handleTraceInfoAsync(traceInfo: TraceInfo): Promise<void> {
+        await this._coverageCollector.computeSingleTraceCoverageAsync(traceInfo);
     }
     /**
      * Write the test coverage results to a file in Istanbul format.
      */
     public async writeCoverageAsync(): Promise<void> {
-        await this._coverageManager.writeCoverageAsync();
-    }
-    /**
-     * This method conforms to the web3-provider-engine interface.
-     * It is called internally by the ProviderEngine when it is this subproviders
-     * turn to handle a JSON RPC request.
-     * @param payload JSON RPC payload
-     * @param next Callback to call if this subprovider decides not to handle the request
-     * @param end Callback to call if subprovider handled the request and wants to pass back the request.
-     */
-    // tslint:disable-next-line:prefer-function-over-method async-suffix
-    public async handleRequest(payload: JSONRPCRequestPayload, next: NextCallback, end: ErrorCallback): Promise<void> {
-        switch (payload.method) {
-            case 'eth_sendTransaction':
-                const txData = payload.params[0];
-                next(this._onTransactionSentAsync.bind(this, txData));
-                return;
-
-            case 'eth_call':
-                const callData = payload.params[0];
-                const blockNumber = payload.params[1];
-                next(this._onCallExecutedAsync.bind(this, callData, blockNumber));
-                return;
-
-            default:
-                next();
-                return;
-        }
-    }
-    private async _onTransactionSentAsync(
-        txData: MaybeFakeTxData,
-        err: Error | null,
-        txHash: string | undefined,
-        cb: Callback,
-    ): Promise<void> {
-        if (!txData.isFakeTransaction) {
-            // This transaction is a usual ttransaction. Not a call executed as one.
-            // And we don't want it to be executed within a snapshotting period
-            await this._lock.acquire();
-        }
-        if (_.isNull(err)) {
-            const toAddress = _.isUndefined(txData.to) || txData.to === '0x0' ? constants.NEW_CONTRACT : txData.to;
-            await this._recordTxTraceAsync(toAddress, txData.data, txHash as string);
-        } else {
-            const payload = {
-                method: 'eth_getBlockByNumber',
-                params: [BlockParamLiteral.Latest, true],
-            };
-            const jsonRPCResponsePayload = await this.emitPayloadAsync(payload);
-            const transactions = jsonRPCResponsePayload.result.transactions;
-            for (const transaction of transactions) {
-                const toAddress = _.isUndefined(txData.to) || txData.to === '0x0' ? constants.NEW_CONTRACT : txData.to;
-                await this._recordTxTraceAsync(toAddress, transaction.data, transaction.hash);
-            }
-        }
-        if (!txData.isFakeTransaction) {
-            // This transaction is a usual ttransaction. Not a call executed as one.
-            // And we don't want it to be executed within a snapshotting period
-            this._lock.release();
-        }
-        cb();
-    }
-    private async _onCallExecutedAsync(
-        callData: Partial<CallData>,
-        blockNumber: BlockParam,
-        err: Error | null,
-        callResult: string,
-        cb: Callback,
-    ): Promise<void> {
-        await this._recordCallTraceAsync(callData, blockNumber);
-        cb();
-    }
-    private async _recordTxTraceAsync(address: string, data: string | undefined, txHash: string): Promise<void> {
-        let payload = {
-            method: 'debug_traceTransaction',
-            params: [txHash, { disableMemory: true, disableStack: false, disableStorage: true }],
-        };
-        let jsonRPCResponsePayload = await this.emitPayloadAsync(payload);
-        const trace: TransactionTrace = jsonRPCResponsePayload.result;
-        const tracesByContractAddress = getTracesByContractAddress(trace.structLogs, address);
-        const subcallAddresses = _.keys(tracesByContractAddress);
-        if (address === constants.NEW_CONTRACT) {
-            for (const subcallAddress of subcallAddresses) {
-                let traceInfo: TraceInfoNewContract | TraceInfoExistingContract;
-                if (subcallAddress === 'NEW_CONTRACT') {
-                    const traceForThatSubcall = tracesByContractAddress[subcallAddress];
-                    const coveredPcs = _.map(traceForThatSubcall, log => log.pc);
-                    traceInfo = {
-                        coveredPcs,
-                        txHash,
-                        address: constants.NEW_CONTRACT,
-                        bytecode: data as string,
-                    };
-                } else {
-                    payload = { method: 'eth_getCode', params: [subcallAddress, BlockParamLiteral.Latest] };
-                    jsonRPCResponsePayload = await this.emitPayloadAsync(payload);
-                    const runtimeBytecode = jsonRPCResponsePayload.result;
-                    const traceForThatSubcall = tracesByContractAddress[subcallAddress];
-                    const coveredPcs = _.map(traceForThatSubcall, log => log.pc);
-                    traceInfo = {
-                        coveredPcs,
-                        txHash,
-                        address: subcallAddress,
-                        runtimeBytecode,
-                    };
-                }
-                this._coverageManager.appendTraceInfo(traceInfo);
-            }
-        } else {
-            for (const subcallAddress of subcallAddresses) {
-                payload = { method: 'eth_getCode', params: [subcallAddress, BlockParamLiteral.Latest] };
-                jsonRPCResponsePayload = await this.emitPayloadAsync(payload);
-                const runtimeBytecode = jsonRPCResponsePayload.result;
-                const traceForThatSubcall = tracesByContractAddress[subcallAddress];
-                const coveredPcs = _.map(traceForThatSubcall, log => log.pc);
-                const traceInfo: TraceInfoExistingContract = {
-                    coveredPcs,
-                    txHash,
-                    address: subcallAddress,
-                    runtimeBytecode,
-                };
-                this._coverageManager.appendTraceInfo(traceInfo);
-            }
-        }
-    }
-    private async _recordCallTraceAsync(callData: Partial<CallData>, blockNumber: BlockParam): Promise<void> {
-        // We don't want other transactions to be exeucted during snashotting period, that's why we lock the
-        // transaction execution for all transactions except our fake ones.
-        await this._lock.acquire();
-        const snapshotId = Number((await this.emitPayloadAsync({ method: 'evm_snapshot' })).result);
-        const fakeTxData: MaybeFakeTxData = {
-            isFakeTransaction: true, // This transaction (and only it) is allowed to come through when the lock is locked
-            ...callData,
-            from: callData.from || this._defaultFromAddress,
-        };
-        try {
-            await this.emitPayloadAsync({
-                method: 'eth_sendTransaction',
-                params: [fakeTxData],
-            });
-        } catch (err) {
-            // Even if this transaction failed - we've already recorded it's trace.
-        }
-        const jsonRPCResponse = await this.emitPayloadAsync({ method: 'evm_revert', params: [snapshotId] });
-        this._lock.release();
-        const didRevert = jsonRPCResponse.result;
-        if (!didRevert) {
-            throw new Error('Failed to revert the snapshot');
-        }
-    }
-    private async _getContractCodeAsync(address: string): Promise<string> {
-        const payload = {
-            method: 'eth_getCode',
-            params: [address, BlockParamLiteral.Latest],
-        };
-        const jsonRPCResponsePayload = await this.emitPayloadAsync(payload);
-        const contractCode: string = jsonRPCResponsePayload.result;
-        return contractCode;
+        await this._coverageCollector.writeOutputAsync();
     }
 }
+
+/**
+ * Computed partial coverage for a single file & subtrace.
+ * @param contractData      Contract metadata (source, srcMap, bytecode)
+ * @param subtrace          A subset of a transcation/call trace that was executed within that contract
+ * @param pcToSourceRange   A mapping from program counters to source ranges
+ * @param fileIndex         Index of a file to compute coverage for
+ * @return Partial istanbul coverage for that file & subtrace
+ */
+export const coverageHandler: SingleFileSubtraceHandler = (
+    contractData: ContractData,
+    subtrace: Subtrace,
+    pcToSourceRange: { [programCounter: number]: SourceRange },
+    fileIndex: number,
+): Coverage => {
+    const absoluteFileName = contractData.sources[fileIndex];
+    const coverageEntriesDescription = collectCoverageEntries(contractData.sourceCodes[fileIndex]);
+    let sourceRanges = _.map(subtrace, structLog => pcToSourceRange[structLog.pc]);
+    sourceRanges = _.compact(sourceRanges); // Some PC's don't map to a source range and we just ignore them.
+    // By default lodash does a shallow object comparasion. We JSON.stringify them and compare as strings.
+    sourceRanges = _.uniqBy(sourceRanges, s => JSON.stringify(s)); // We don't care if one PC was covered multiple times within a single transaction
+    sourceRanges = _.filter(sourceRanges, sourceRange => sourceRange.fileName === absoluteFileName);
+    const branchCoverage: BranchCoverage = {};
+    const branchIds = _.keys(coverageEntriesDescription.branchMap);
+    for (const branchId of branchIds) {
+        const branchDescription = coverageEntriesDescription.branchMap[branchId];
+        const isBranchCoveredByBranchIndex = _.map(branchDescription.locations, location => {
+            const isBranchCovered = _.some(sourceRanges, range => utils.isRangeInside(range.location, location));
+            const timesBranchCovered = Number(isBranchCovered);
+            return timesBranchCovered;
+        });
+        branchCoverage[branchId] = isBranchCoveredByBranchIndex;
+    }
+    const statementCoverage: StatementCoverage = {};
+    const statementIds = _.keys(coverageEntriesDescription.statementMap);
+    for (const statementId of statementIds) {
+        const statementDescription = coverageEntriesDescription.statementMap[statementId];
+        const isStatementCovered = _.some(sourceRanges, range =>
+            utils.isRangeInside(range.location, statementDescription),
+        );
+        const timesStatementCovered = Number(isStatementCovered);
+        statementCoverage[statementId] = timesStatementCovered;
+    }
+    const functionCoverage: FunctionCoverage = {};
+    const functionIds = _.keys(coverageEntriesDescription.fnMap);
+    for (const fnId of functionIds) {
+        const functionDescription = coverageEntriesDescription.fnMap[fnId];
+        const isFunctionCovered = _.some(sourceRanges, range =>
+            utils.isRangeInside(range.location, functionDescription.loc),
+        );
+        const timesFunctionCovered = Number(isFunctionCovered);
+        functionCoverage[fnId] = timesFunctionCovered;
+    }
+    // HACK: Solidity doesn't emit any opcodes that map back to modifiers with no args, that's why we map back to the
+    // function range and check if there is any covered statement within that range.
+    for (const modifierStatementId of coverageEntriesDescription.modifiersStatementIds) {
+        if (statementCoverage[modifierStatementId]) {
+            // Already detected as covered
+            continue;
+        }
+        const modifierDescription = coverageEntriesDescription.statementMap[modifierStatementId];
+        const enclosingFunction = _.find(coverageEntriesDescription.fnMap, functionDescription =>
+            utils.isRangeInside(modifierDescription, functionDescription.loc),
+        ) as FunctionDescription;
+        const isModifierCovered = _.some(
+            coverageEntriesDescription.statementMap,
+            (statementDescription: StatementDescription, statementId: number) => {
+                const isInsideTheModifierEnclosingFunction = utils.isRangeInside(
+                    statementDescription,
+                    enclosingFunction.loc,
+                );
+                const isCovered = statementCoverage[statementId];
+                return isInsideTheModifierEnclosingFunction && isCovered;
+            },
+        );
+        const timesModifierCovered = Number(isModifierCovered);
+        statementCoverage[modifierStatementId] = timesModifierCovered;
+    }
+    const partialCoverage = {
+        [absoluteFileName]: {
+            ...coverageEntriesDescription,
+            path: absoluteFileName,
+            f: functionCoverage,
+            s: statementCoverage,
+            b: branchCoverage,
+        },
+    };
+    return partialCoverage;
+};

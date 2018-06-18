@@ -24,6 +24,16 @@ export interface MessagePrefixOpts {
     shouldAddPrefixBeforeCallingEthSign: boolean;
 }
 
+export enum TradeSide {
+    Maker = 'maker',
+    Taker = 'taker',
+}
+
+export enum TransferType {
+    Trade = 'trade',
+    Fee = 'fee',
+}
+
 export interface EIP712Parameter {
     name: string;
     type: EIP712Types;
@@ -35,9 +45,9 @@ export interface EIP712Schema {
 }
 
 export enum EIP712Types {
-    String = 'string',
-    Bytes = 'bytes',
     Address = 'address',
+    Bytes = 'bytes',
     Bytes32 = 'bytes32',
+    String = 'string',
     Uint256 = 'uint256',
 }

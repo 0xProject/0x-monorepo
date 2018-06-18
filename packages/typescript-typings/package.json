@@ -6,7 +6,7 @@
     },
     "description": "0x project typescript type definitions",
     "scripts": {
-        "watch": "tsc -w",
+        "watch_without_deps": "tsc -w",
         "build": "tsc && copyfiles -u 1 './lib/**/*' ./scripts",
         "clean": "shx rm -rf scripts",
         "manual:postpublish": "yarn build; node ./scripts/postpublish.js"

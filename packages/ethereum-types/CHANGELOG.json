@@ -1,11 +1,21 @@
 [
     {
-        "version": "0.0.1",
+        "version": "0.0.3",
+        "changes": [
+            {
+                "note": "Add `TraceParams` interface for `debug_traceTransaction` parameters",
+                "pr": 675
+            }
+        ]
+    },
+    {
+        "version": "0.0.2",
         "changes": [
             {
                 "note": "Initial publish",
                 "pr": "642"
             }
-        ]
+        ],
+        "timestamp": 1527811200
     }
 ]

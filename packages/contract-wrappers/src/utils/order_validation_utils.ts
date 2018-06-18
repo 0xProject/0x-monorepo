@@ -3,15 +3,15 @@ import { ExchangeContractErrs, Order, SignedOrder } from '@0xproject/types';
 import { BigNumber } from '@0xproject/utils';
 import * as _ from 'lodash';
 
-import { ExchangeWrapper } from '../contract_wrappers/exchange_wrapper';
-import { ContractWrappersError, TradeSide, TransferType } from '../types';
+import { ExchangeContract } from '../contract_wrappers/generated/exchange';
+import { TradeSide, TransferType } from '../types';
 import { constants } from '../utils/constants';
 import { utils } from '../utils/utils';
 
 import { ExchangeTransferSimulator } from './exchange_transfer_simulator';
 
 export class OrderValidationUtils {
-    private _exchangeWrapper: ExchangeWrapper;
+    private _exchangeContract: ExchangeContract;
     public static validateCancelOrderThrowIfInvalid(
         order: Order,
         cancelTakerTokenAmount: BigNumber,
@@ -104,8 +104,8 @@ export class OrderValidationUtils {
             .round(0);
         return fillMakerTokenAmount;
     }
-    constructor(exchangeWrapper: ExchangeWrapper) {
-        this._exchangeWrapper = exchangeWrapper;
+    constructor(exchangeContract: ExchangeContract) {
+        this._exchangeContract = exchangeContract;
     }
     public async validateOrderFillableOrThrowAsync(
         exchangeTradeEmulator: ExchangeTransferSimulator,
@@ -114,7 +114,9 @@ export class OrderValidationUtils {
         expectedFillTakerTokenAmount?: BigNumber,
     ): Promise<void> {
         const orderHash = getOrderHashHex(signedOrder);
-        const unavailableTakerTokenAmount = await this._exchangeWrapper.getUnavailableTakerAmountAsync(orderHash);
+        const unavailableTakerTokenAmount = await this._exchangeContract.getUnavailableTakerTokenAmount.callAsync(
+            orderHash,
+        );
         OrderValidationUtils._validateRemainingFillAmountNotZeroOrThrow(
             signedOrder.takerTokenAmount,
             unavailableTakerTokenAmount,
@@ -146,7 +148,9 @@ export class OrderValidationUtils {
         if (!isValidSignature(orderHash, signedOrder.ecSignature, signedOrder.maker)) {
             throw new Error(OrderError.InvalidSignature);
         }
-        const unavailableTakerTokenAmount = await this._exchangeWrapper.getUnavailableTakerAmountAsync(orderHash);
+        const unavailableTakerTokenAmount = await this._exchangeContract.getUnavailableTakerTokenAmount.callAsync(
+            orderHash,
+        );
         OrderValidationUtils._validateRemainingFillAmountNotZeroOrThrow(
             signedOrder.takerTokenAmount,
             unavailableTakerTokenAmount,
@@ -167,7 +171,7 @@ export class OrderValidationUtils {
             zrxTokenAddress,
         );
 
-        const wouldRoundingErrorOccur = await this._exchangeWrapper.isRoundingErrorAsync(
+        const wouldRoundingErrorOccur = await this._exchangeContract.isRoundingError.callAsync(
             filledTakerTokenAmount,
             signedOrder.takerTokenAmount,
             signedOrder.makerTokenAmount,

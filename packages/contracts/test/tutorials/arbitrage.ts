@@ -8,12 +8,12 @@
 // import ethUtil = require('ethereumjs-util');
 // import * as Web3 from 'web3';
 
-// import { AccountLevelsContract } from '../../src/contract_wrappers/generated/account_levels';
-// import { ArbitrageContract } from '../../src/contract_wrappers/generated/arbitrage';
-// import { DummyTokenContract } from '../../src/contract_wrappers/generated/dummy_token';
-// import { EtherDeltaContract } from '../../src/contract_wrappers/generated/ether_delta';
-// import { ExchangeContract } from '../../src/contract_wrappers/generated/exchange';
-// import { TokenTransferProxyContract } from '../../src/contract_wrappers/generated/token_transfer_proxy';
+// import { AccountLevelsContract } from '../../src/generated_contract_wrappers/account_levels';
+// import { ArbitrageContract } from '../../src/generated_contract_wrappers/arbitrage';
+// import { DummyTokenContract } from '../../src/generated_contract_wrappers/dummy_token';
+// import { EtherDeltaContract } from '../../src/generated_contract_wrappers/ether_delta';
+// import { ExchangeContract } from '../../src/generated_contract_wrappers/exchange';
+// import { TokenTransferProxyContract } from '../../src/generated_contract_wrappers/token_transfer_proxy';
 // import { artifacts } from '../../util/artifacts';
 // import { Balances } from '../../util/balances';
 // import { constants } from '../../util/constants';

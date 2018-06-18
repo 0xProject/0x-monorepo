@@ -2,7 +2,6 @@ import { logUtils } from '@0xproject/utils';
 import { Environments } from 'ts/types';
 import { configs } from 'ts/utils/configs';
 import { constants } from 'ts/utils/constants';
-import { utils } from 'ts/utils/utils';
 
 // Suggested way to include Rollbar with Webpack
 // https://github.com/rollbar/rollbar.js/tree/master/examples/webpack
@@ -38,7 +37,7 @@ export const errorReporter = {
             return; // Let's not log development errors to rollbar
         }
 
-        return new Promise((resolve, reject) => {
+        return new Promise((resolve, _reject) => {
             rollbar.error(err, (rollbarErr: Error) => {
                 if (rollbarErr) {
                     logUtils.log(`Error reporting to rollbar, ignoring: ${rollbarErr}`);

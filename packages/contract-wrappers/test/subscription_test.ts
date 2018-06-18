@@ -1,4 +1,4 @@
-import { BlockchainLifecycle, callbackErrorReporter, devConstants } from '@0xproject/dev-utils';
+import { BlockchainLifecycle, callbackErrorReporter } from '@0xproject/dev-utils';
 import { DoneCallback } from '@0xproject/types';
 import { BigNumber } from '@0xproject/utils';
 import * as _ from 'lodash';

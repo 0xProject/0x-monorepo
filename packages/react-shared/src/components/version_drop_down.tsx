@@ -3,8 +3,6 @@ import DropDownMenu from 'material-ui/DropDownMenu';
 import MenuItem from 'material-ui/MenuItem';
 import * as React from 'react';
 
-import { utils } from '../utils/utils';
-
 export interface VersionDropDownProps {
     selectedVersion: string;
     versions: string[];
@@ -33,7 +31,7 @@ export class VersionDropDown extends React.Component<VersionDropDownProps, Versi
         });
         return items;
     }
-    private _updateSelectedVersion(e: any, index: number, semver: string): void {
+    private _updateSelectedVersion(_e: any, _index: number, semver: string): void {
         this.props.onVersionSelected(semver);
     }
 }

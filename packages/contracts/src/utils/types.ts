@@ -1,6 +1,6 @@
-import { Order, OrderWithoutExchangeAddress } from '@0xproject/types';
+import { OrderWithoutExchangeAddress } from '@0xproject/types';
 import { BigNumber } from '@0xproject/utils';
-import { AbiDefinition, ContractAbi } from 'ethereum-types';
+import { AbiDefinition } from 'ethereum-types';
 
 export interface ERC20BalancesByOwner {
     [ownerAddress: string]: {
@@ -90,11 +90,14 @@ export enum ContractName {
     AccountLevels = 'AccountLevels',
     EtherDelta = 'EtherDelta',
     Arbitrage = 'Arbitrage',
+    TestAssetDataDecoders = 'TestAssetDataDecoders',
     TestAssetProxyDispatcher = 'TestAssetProxyDispatcher',
+    TestLibMem = 'TestLibMem',
     TestLibs = 'TestLibs',
     TestSignatureValidator = 'TestSignatureValidator',
     ERC20Proxy = 'ERC20Proxy',
     ERC721Proxy = 'ERC721Proxy',
+    DummyERC721Receiver = 'DummyERC721Receiver',
     DummyERC721Token = 'DummyERC721Token',
     TestLibBytes = 'TestLibBytes',
     Authorizable = 'Authorizable',

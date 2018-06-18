@@ -1,26 +1,25 @@
-import { BlockchainLifecycle, web3Factory } from '@0xproject/dev-utils';
+import { BlockchainLifecycle } from '@0xproject/dev-utils';
 import { BigNumber } from '@0xproject/utils';
-import { Web3Wrapper } from '@0xproject/web3-wrapper';
 import * as chai from 'chai';
 import { LogWithDecodedArgs } from 'ethereum-types';
-import * as _ from 'lodash';
 import 'make-promises-safe';
-import * as Web3 from 'web3';
 
 import {
     MultiSigWalletWithTimeLockContract,
     SubmissionContractEventArgs,
-} from '../src/contract_wrappers/generated/multi_sig_wallet_with_time_lock';
+} from '../src/generated_contract_wrappers/multi_sig_wallet_with_time_lock';
 import { artifacts } from '../src/utils/artifacts';
+import { expectRevertOrAlwaysFailingTransactionAsync } from '../src/utils/assertions';
 import { chaiSetup } from '../src/utils/chai_setup';
 import { constants } from '../src/utils/constants';
+import { increaseTimeAndMineBlockAsync } from '../src/utils/increase_time';
 import { MultiSigWrapper } from '../src/utils/multi_sig_wrapper';
 import { provider, txDefaults, web3Wrapper } from '../src/utils/web3_wrapper';
 
 chaiSetup.configure();
 const expect = chai.expect;
 const blockchainLifecycle = new BlockchainLifecycle(web3Wrapper);
-
+// tslint:disable:no-unnecessary-type-assertion
 describe('MultiSigWalletWithTimeLock', () => {
     let owners: string[];
     const REQUIRED_APPROVALS = new BigNumber(2);
@@ -69,9 +68,9 @@ describe('MultiSigWalletWithTimeLock', () => {
             });
 
             it('should throw when not called by wallet', async () => {
-                return expect(
+                return expectRevertOrAlwaysFailingTransactionAsync(
                     multiSig.changeTimeLock.sendTransactionAsync(SECONDS_TIME_LOCKED, { from: owners[0] }),
-                ).to.be.rejectedWith(constants.REVERT);
+                );
             });
 
             it('should throw without enough confirmations', async () => {
@@ -80,10 +79,9 @@ describe('MultiSigWalletWithTimeLock', () => {
                 const res = await multiSigWrapper.submitTransactionAsync(destination, changeTimeLockData, owners[0]);
                 const log = res.logs[0] as LogWithDecodedArgs<SubmissionContractEventArgs>;
                 const txId = log.args.transactionId;
-
-                return expect(
+                return expectRevertOrAlwaysFailingTransactionAsync(
                     multiSig.executeTransaction.sendTransactionAsync(txId, { from: owners[0] }),
-                ).to.be.rejectedWith(constants.REVERT);
+                );
             });
 
             it('should set confirmation time with enough confirmations', async () => {
@@ -148,14 +146,15 @@ describe('MultiSigWalletWithTimeLock', () => {
                 txId = log.args.transactionId;
                 await multiSigWrapper.confirmTransactionAsync(txId, owners[1]);
             });
+
             it('should throw if it has enough confirmations but is not past the time lock', async () => {
-                return expect(
+                return expectRevertOrAlwaysFailingTransactionAsync(
                     multiSig.executeTransaction.sendTransactionAsync(txId, { from: owners[0] }),
-                ).to.be.rejectedWith(constants.REVERT);
+                );
             });
 
             it('should execute if it has enough confirmations and is past the time lock', async () => {
-                await web3Wrapper.increaseTimeAsync(SECONDS_TIME_LOCKED.toNumber());
+                await increaseTimeAndMineBlockAsync(SECONDS_TIME_LOCKED.toNumber());
                 await web3Wrapper.awaitTransactionSuccessAsync(
                     await multiSig.executeTransaction.sendTransactionAsync(txId, { from: owners[0] }),
                     constants.AWAIT_TRANSACTION_MINED_MS,
@@ -167,3 +166,4 @@ describe('MultiSigWalletWithTimeLock', () => {
         });
     });
 });
+// tslint:enable:no-unnecessary-type-assertion

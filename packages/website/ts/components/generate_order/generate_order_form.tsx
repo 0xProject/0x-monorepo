@@ -47,6 +47,8 @@ interface GenerateOrderFormProps {
     sideToAssetToken: SideToAssetToken;
     tokenByAddress: TokenByAddress;
     lastForceTokenStateRefetch: number;
+    isFullWidth?: boolean;
+    shouldHideHeader?: boolean;
 }
 
 interface GenerateOrderFormState {
@@ -56,6 +58,10 @@ interface GenerateOrderFormState {
 }
 
 export class GenerateOrderForm extends React.Component<GenerateOrderFormProps, GenerateOrderFormState> {
+    public static defaultProps: Partial<GenerateOrderFormProps> = {
+        isFullWidth: false,
+        shouldHideHeader: false,
+    };
     constructor(props: GenerateOrderFormProps) {
         super(props);
         this.state = {
@@ -80,10 +86,15 @@ export class GenerateOrderForm extends React.Component<GenerateOrderFormProps, G
         const exchangeContractIfExists = this.props.blockchain.getExchangeContractAddressIfExists();
         const initialTakerAddress =
             this.props.orderTakerAddress === constants.NULL_ADDRESS ? '' : this.props.orderTakerAddress;
+        const rootClassName = this.props.isFullWidth ? 'clearfix mb2' : 'clearfix mb2 lg-px4 md-px4 sm-px2';
         return (
-            <div className="clearfix mb2 lg-px4 md-px4 sm-px2">
-                <h3>Generate an order</h3>
-                <Divider />
+            <div className={rootClassName}>
+                {!this.props.shouldHideHeader && (
+                    <div>
+                        <h3>Generate an order</h3>
+                        <Divider />
+                    </div>
+                )}
                 <div className="mx-auto" style={{ maxWidth: 580 }}>
                     <div className="pt3">
                         <div className="mx-auto clearfix">
@@ -215,7 +226,7 @@ export class GenerateOrderForm extends React.Component<GenerateOrderFormProps, G
             </div>
         );
     }
-    private _onTokenAmountChange(token: Token, side: Side, isValid: boolean, amount?: BigNumber): void {
+    private _onTokenAmountChange(token: Token, side: Side, _isValid: boolean, amount?: BigNumber): void {
         this.props.dispatcher.updateChosenAssetToken(side, {
             address: token.address,
             amount,

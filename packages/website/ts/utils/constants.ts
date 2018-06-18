@@ -1,4 +1,3 @@
-import { Networks } from '@0xproject/react-shared';
 import { BigNumber } from '@0xproject/utils';
 
 export const constants = {

@@ -33,7 +33,7 @@ export class SectionHeader extends React.Component<SectionHeaderProps, SectionHe
         };
     }
     public render(): React.ReactNode {
-        const { sectionName, headerSize } = this.props as PropsWithDefaults;
+        const { headerSize } = this.props as PropsWithDefaults;
 
         const finalSectionName = utils.convertDashesToSpaces(this.props.sectionName);
         const id = utils.getIdFromName(finalSectionName);

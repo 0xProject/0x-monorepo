@@ -28,6 +28,7 @@ contract ITransactions {
         uint256 salt,
         address signer,
         bytes data,
-        bytes signature)
+        bytes signature
+    )
         external;
 }

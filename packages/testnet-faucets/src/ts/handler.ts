@@ -1,4 +1,4 @@
-import { Order, SignedOrder, ZeroEx } from '0x.js';
+import { Order, ZeroEx } from '0x.js';
 import { BigNumber, logUtils } from '@0xproject/utils';
 import { Provider } from 'ethereum-types';
 import * as express from 'express';
@@ -71,9 +71,9 @@ export class Handler {
             };
         });
     }
-    public getQueueInfo(req: express.Request, res: express.Response): void {
+    public getQueueInfo(_req: express.Request, res: express.Response): void {
         res.setHeader('Content-Type', 'application/json');
-        const queueInfo = _.mapValues(rpcUrls, (rpcUrl: string, networkId: string) => {
+        const queueInfo = _.mapValues(rpcUrls, (_rpcUrl: string, networkId: string) => {
             const dispatchQueue = this._networkConfigByNetworkId[networkId].dispatchQueue;
             return {
                 full: dispatchQueue.isFull(),
@@ -95,7 +95,7 @@ export class Handler {
     public async dispenseZRXOrderAsync(
         req: express.Request,
         res: express.Response,
-        next: express.NextFunction,
+        _next: express.NextFunction,
     ): Promise<void> {
         await this._dispenseOrderAsync(req, res, RequestedAssetType.ZRX);
     }
@@ -171,7 +171,6 @@ export class Handler {
             ...order,
             ecSignature: signature,
         };
-        const signedOrderHash = ZeroEx.getOrderHashHex(signedOrder);
         const payload = JSON.stringify(signedOrder);
         logUtils.log(`Dispensed signed order: ${payload}`);
         res.status(constants.SUCCESS_STATUS).send(payload);

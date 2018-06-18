@@ -50,7 +50,7 @@ contract MixinExchangeCore is
 
     ////// Core exchange functions //////
 
-    /// @dev Cancels all orders reated by sender with a salt less than or equal to the specified salt value.
+    /// @dev Cancels all orders created by sender with a salt less than or equal to the specified salt value.
     /// @param salt Orders created with a salt less or equal to this value will be cancelled.
     function cancelOrdersUpTo(uint256 salt)
         external
@@ -108,9 +108,6 @@ contract MixinExchangeCore is
         // Compute proportional fill amounts
         fillResults = calculateFillResults(order, takerAssetFilledAmount);
 
-        // Settle order
-        settleOrder(order, takerAddress, fillResults);
-
         // Update exchange internal state
         updateFilledState(
             order,
@@ -119,6 +116,10 @@ contract MixinExchangeCore is
             orderInfo.orderTakerAssetFilledAmount,
             fillResults
         );
+    
+        // Settle order
+        settleOrder(order, takerAddress, fillResults);
+
         return fillResults;
     }
 

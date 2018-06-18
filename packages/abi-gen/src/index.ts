@@ -12,7 +12,7 @@ import * as yargs from 'yargs';
 
 import toSnakeCase = require('to-snake-case');
 
-import { ContextData, ContractsBackend, Method, ParamKind } from './types';
+import { ContextData, ContractsBackend, ParamKind } from './types';
 import { utils } from './utils';
 
 const ABI_TYPE_CONSTRUCTOR = 'constructor';

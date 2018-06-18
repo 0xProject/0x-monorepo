@@ -132,7 +132,7 @@ export class Blockchain {
 
         return provider;
     }
-    constructor(dispatcher: Dispatcher, isSalePage: boolean = false) {
+    constructor(dispatcher: Dispatcher) {
         this._dispatcher = dispatcher;
         const defaultGasPrice = GWEI_IN_WEI * 30;
         this._defaultGasPrice = new BigNumber(defaultGasPrice);
@@ -577,13 +577,13 @@ export class Blockchain {
                 trackedTokensByAddress[token.address] = token;
             });
             if (!_.isUndefined(this._userAddressIfExists)) {
-                _.each(trackedTokensByAddress, (token: Token, address: string) => {
+                _.each(trackedTokensByAddress, (token: Token) => {
                     trackedTokenStorage.addTrackedTokenToUser(this._userAddressIfExists, this.networkId, token);
                 });
             }
         } else {
             // Properly set all tokenRegistry tokens `isTracked` to true if they are in the existing trackedTokens array
-            _.each(trackedTokensByAddress, (trackedToken: Token, address: string) => {
+            _.each(trackedTokensByAddress, (_trackedToken: Token, address: string) => {
                 if (!_.isUndefined(tokenRegistryTokensByAddress[address])) {
                     tokenRegistryTokensByAddress[address].isTracked = true;
                 }
@@ -754,7 +754,7 @@ export class Blockchain {
         const tokenRegistryTokens = await this._contractWrappers.tokenRegistry.getTokensAsync();
 
         const tokenByAddress: TokenByAddress = {};
-        _.each(tokenRegistryTokens, (t: ZeroExToken, i: number) => {
+        _.each(tokenRegistryTokens, (t: ZeroExToken) => {
             // HACK: For now we have a hard-coded list of iconUrls for the dummyTokens
             // TODO: Refactor this out and pull the iconUrl directly from the TokenRegistry
             const iconUrl = configs.ICON_URL_BY_SYMBOL[t.symbol];
