@@ -33,6 +33,7 @@
         "@types/node": "9.6.0",
         "@types/opn": "5.1.0",
         "@types/rimraf": "2.0.2",
+        "@types/semver": "5.5.0",
         "depcheck": "0.6.9",
         "lerna-get-packages": "1.0.0",
         "make-promises-safe": "1.1.0",
@@ -55,6 +56,7 @@
         "prompt": "1.0.0",
         "publish-release": "0xproject/publish-release",
         "rimraf": "2.6.2",
+        "semver": "5.5.0",
         "semver-diff": "2.1.0",
         "semver-sort": "0.0.4"
     },
