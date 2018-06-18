@@ -17,28 +17,9 @@
 */
 
 pragma solidity ^0.4.24;
-pragma experimental ABIEncoderV2;
 
-import "../../utils/LibBytes/LibBytes.sol";
-import "./MixinAssetProxy.sol";
-import "./MixinAuthorizable.sol";
-import "./MixinERC721Transfer.sol";
-
-contract ERC721Proxy is
-    MixinAssetProxy,
-    MixinAuthorizable,
-    MixinERC721Transfer
-{
-    // Id of this proxy.
-    uint8 constant PROXY_ID = 2;
-
-    /// @dev Gets the proxy id associated with the proxy address.
-    /// @return Proxy id.
-    function getProxyId()
-        external
-        view
-        returns (uint8)
-    {
-        return PROXY_ID;
-    }
+contract LibTransferErrors {
+    /// Transfer errors ///
+    string constant INVALID_AMOUNT = "INVALID_AMOUNT";                            // Transfer amount must equal 1.
+    string constant TRANSFER_FAILED = "TRANSFER_FAILED";                          // Transfer failed.
 }
