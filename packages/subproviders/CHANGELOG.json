@@ -1,5 +1,14 @@
 [
     {
+        "version": "0.10.3",
+        "changes": [
+            {
+                "note": "Incorrect publish that was unpublished"
+            }
+        ],
+        "timestamp": 1527810075
+    },
+    {
         "timestamp": 1527009133,
         "version": "0.10.2",
         "changes": [

@@ -1,6 +1,6 @@
 {
     "name": "@0xproject/abi-gen",
-    "version": "0.3.0",
+    "version": "0.3.1",
     "engines": {
         "node": ">=6.12"
     },
@@ -27,9 +27,9 @@
     },
     "homepage": "https://github.com/0xProject/0x-monorepo/packages/abi-gen/README.md",
     "dependencies": {
-        "@0xproject/types": "^0.7.0",
-        "@0xproject/typescript-typings": "^0.3.2",
-        "@0xproject/utils": "^0.6.2",
+        "@0xproject/types": "^0.8.0",
+        "@0xproject/typescript-typings": "^0.4.0",
+        "@0xproject/utils": "^0.7.0",
         "chalk": "2.3.2",
         "glob": "7.1.1",
         "handlebars": "4.0.11",
@@ -39,8 +39,8 @@
         "yargs": "11.1.0"
     },
     "devDependencies": {
-        "@0xproject/monorepo-scripts": "^0.1.20",
-        "@0xproject/tslint-config": "^0.4.18",
+        "@0xproject/monorepo-scripts": "^0.2.0",
+        "@0xproject/tslint-config": "^0.4.19",
         "@types/glob": "5.0.35",
         "@types/handlebars": "4.0.36",
         "@types/mkdirp": "0.5.2",

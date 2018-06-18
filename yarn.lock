@@ -19,17 +19,6 @@
     "@0xproject/types" "^0.5.0"
     bignumber.js "~4.1.0"
 
-"@0xproject/web3-wrapper@^0.6.4":
-  version "0.6.4"
-  resolved "https://registry.yarnpkg.com/@0xproject/web3-wrapper/-/web3-wrapper-0.6.4.tgz#fb15b71cdf4e5001c2b2e0d316b0de485a2be5f8"
-  dependencies:
-    "@0xproject/types" "^0.7.0"
-    "@0xproject/typescript-typings" "^0.3.2"
-    "@0xproject/utils" "^0.6.2"
-    ethers "^3.0.15"
-    lodash "^4.17.4"
-    web3 "^0.20.0"
-
 "@ledgerhq/hw-app-eth@4.7.3":
   version "4.7.3"
   resolved "https://registry.yarnpkg.com/@ledgerhq/hw-app-eth/-/hw-app-eth-4.7.3.tgz#d352e19658ae296532e522c53c8ec2a1a77b64e5"
@@ -3922,7 +3911,7 @@ ethereumjs-wallet@~0.6.0:
     utf8 "^2.1.1"
     uuid "^2.0.1"
 
-ethers@3.0.15, ethers@^3.0.15:
+ethers@3.0.15:
   version "3.0.15"
   resolved "https://registry.yarnpkg.com/ethers/-/ethers-3.0.15.tgz#7cdea4e23025681f69f575bf481b227315e0e7ab"
   dependencies:
@@ -12202,7 +12191,7 @@ web3-utils@1.0.0-beta.33:
     underscore "1.8.3"
     utf8 "2.1.1"
 
-web3@0.20.6, web3@^0.20.0:
+web3@0.20.6:
   version "0.20.6"
   resolved "https://registry.yarnpkg.com/web3/-/web3-0.20.6.tgz#3e97306ae024fb24e10a3d75c884302562215120"
   dependencies:
