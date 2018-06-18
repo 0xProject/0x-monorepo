@@ -2,12 +2,13 @@ import * as fs from 'fs';
 import * as _ from 'lodash';
 import * as path from 'path';
 import { exec as execAsync } from 'promisify-child-process';
+import semver = require('semver');
+import semverSort = require('semver-sort');
 
 import { constants } from './constants';
 import { Changelog, PackageRegistryJson } from './types';
 import { changelogUtils } from './utils/changelog_utils';
 import { npmUtils } from './utils/npm_utils';
-import { semverUtils } from './utils/semver_utils';
 import { utils } from './utils/utils';
 
 async function prepublishChecksAsync(): Promise<void> {
@@ -63,7 +64,8 @@ async function checkCurrentVersionMatchesLatestPublishedNPMPackageAsync(
             continue; // noop for packages not yet published to NPM
         }
         const allVersionsIncludingUnpublished = npmUtils.getPreviouslyPublishedVersions(packageRegistryJsonIfExists);
-        const latestNPMVersion = semverUtils.getLatestVersion(allVersionsIncludingUnpublished);
+        const sortedVersions = semverSort.desc(allVersionsIncludingUnpublished);
+        const latestNPMVersion = sortedVersions[0];
         if (packageVersion !== latestNPMVersion) {
             versionMismatches.push({
                 packageJsonVersion: packageVersion,
@@ -96,13 +98,13 @@ async function checkChangelogFormatAsync(updatedPublicLernaPackages: LernaPackag
         if (!_.isEmpty(changelog)) {
             const lastEntry = changelog[0];
             const doesLastEntryHaveTimestamp = !_.isUndefined(lastEntry.timestamp);
-            if (semverUtils.lessThan(lastEntry.version, currentVersion)) {
+            if (semver.lt(lastEntry.version, currentVersion)) {
                 changeLogInconsistencies.push({
                     packageJsonVersion: currentVersion,
                     changelogVersion: lastEntry.version,
                     packageName,
                 });
-            } else if (semverUtils.greaterThan(lastEntry.version, currentVersion) && doesLastEntryHaveTimestamp) {
+            } else if (semver.gt(lastEntry.version, currentVersion) && doesLastEntryHaveTimestamp) {
                 // Remove incorrectly added timestamp
                 delete changelog[0].timestamp;
                 // Save updated CHANGELOG.json

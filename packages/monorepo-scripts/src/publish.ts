@@ -8,6 +8,7 @@ import opn = require('opn');
 import * as path from 'path';
 import { exec as execAsync, spawn } from 'promisify-child-process';
 import * as prompt from 'prompt';
+import semver = require('semver');
 import semverDiff = require('semver-diff');
 import semverSort = require('semver-sort');
 
@@ -129,10 +130,13 @@ async function updateChangeLogsAsync(updatedPublicLernaPackages: LernaPackage[])
         );
         if (shouldAddNewEntry) {
             // Create a new entry for a patch version with generic changelog entry.
-            const nextPatchVersion = utils.getNextPatchVersion(currentVersion);
+            const nextPatchVersionIfValid = semver.inc(currentVersion, 'patch');
+            if (_.isNull(nextPatchVersionIfValid)) {
+                throw new Error(`Encountered invalid semver version: ${currentVersion} for package: ${packageName}`);
+            }
             const newChangelogEntry: VersionChangelog = {
                 timestamp: TODAYS_TIMESTAMP,
-                version: nextPatchVersion,
+                version: nextPatchVersionIfValid,
                 changes: [
                     {
                         note: 'Dependencies updated',
@@ -140,7 +144,7 @@ async function updateChangeLogsAsync(updatedPublicLernaPackages: LernaPackage[])
                 ],
             };
             changelog = [newChangelogEntry, ...changelog];
-            packageToVersionChange[packageName] = semverDiff(currentVersion, nextPatchVersion);
+            packageToVersionChange[packageName] = semverDiff(currentVersion, nextPatchVersionIfValid);
         } else {
             // Update existing entry with timestamp
             const lastEntry = changelog[0];

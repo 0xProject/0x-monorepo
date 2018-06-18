@@ -3,12 +3,11 @@ import * as _ from 'lodash';
 import * as moment from 'moment';
 import * as path from 'path';
 import { exec as execAsync } from 'promisify-child-process';
+import semver = require('semver');
 import semverSort = require('semver-sort');
 
 import { constants } from '../constants';
 import { Change, Changelog, VersionChangelog } from '../types';
-
-import { semverUtils } from './semver_utils';
 
 const CHANGELOG_MD_HEADER = `
 <!--
@@ -56,7 +55,7 @@ export const changelogUtils = {
             return true;
         }
         const lastEntry = changelog[0];
-        if (semverUtils.lessThan(lastEntry.version, currentVersion)) {
+        if (semver.lt(lastEntry.version, currentVersion)) {
             throw new Error(
                 `Found CHANGELOG version lower then current package version. ${packageName} current: ${currentVersion}, Changelog: ${
                     lastEntry.version
