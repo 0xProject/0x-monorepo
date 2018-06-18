@@ -4,7 +4,7 @@ import * as _ from 'lodash';
 
 import { assetProxyUtils } from './asset_proxy_utils';
 import { crypto } from './crypto';
-import { EIP712Schema } from './types';
+import { EIP712Schema, EIP712Types } from './types';
 
 const EIP191_PREFIX = '\x19\x01';
 const EIP712_DOMAIN_NAME = '0x Protocol';
@@ -12,21 +12,13 @@ const EIP712_DOMAIN_VERSION = '2';
 const EIP712_VALUE_LENGTH = 32;
 
 const EIP712_DOMAIN_SCHEMA: EIP712Schema = {
-    name: 'DomainSeparator',
+    name: 'EIP712Domain',
     parameters: [
-        { name: 'name', type: 'string' },
-        { name: 'version', type: 'string' },
-        { name: 'contract', type: 'address' },
+        { name: 'name', type: EIP712Types.String },
+        { name: 'version', type: EIP712Types.String },
+        { name: 'verifyingContract', type: EIP712Types.Address },
     ],
 };
-
-enum EIP712Types {
-    String = 'string',
-    Bytes = 'bytes',
-    Address = 'address',
-    Bytes32 = 'bytes32',
-    Uint256 = 'uint256',
-}
 
 export const EIP712Utils = {
     /**
@@ -67,7 +59,7 @@ export const EIP712Utils = {
         const encodedData = EIP712Utils._encodeData(EIP712_DOMAIN_SCHEMA, {
             name: EIP712_DOMAIN_NAME,
             version: EIP712_DOMAIN_VERSION,
-            contract: exchangeAddress,
+            verifyingContract: exchangeAddress,
         });
         const domainSeparatorHashBuff2 = crypto.solSHA3([domainSeparatorSchemaBuffer, ...encodedData]);
         return domainSeparatorHashBuff2;
@@ -79,18 +71,14 @@ export const EIP712Utils = {
         return encodedType;
     },
     _encodeData(schema: EIP712Schema, data: { [key: string]: any }): any {
-        const encodedTypes = [];
         const encodedValues = [];
         for (const parameter of schema.parameters) {
             const value = data[parameter.name];
             if (parameter.type === EIP712Types.String || parameter.type === EIP712Types.Bytes) {
-                encodedTypes.push(EIP712Types.Bytes32);
                 encodedValues.push(crypto.solSHA3([ethUtil.toBuffer(value)]));
             } else if (parameter.type === EIP712Types.Uint256) {
-                encodedTypes.push(EIP712Types.Uint256);
                 encodedValues.push(value);
             } else if (parameter.type === EIP712Types.Address) {
-                encodedTypes.push(EIP712Types.Address);
                 encodedValues.push(EIP712Utils.pad32Address(value));
             } else {
                 throw new Error(`Unable to encode ${parameter.type}`);

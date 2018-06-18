@@ -37,28 +37,31 @@ contract MixinTransactions is
     // Address of current transaction signer
     address public currentContextAddress;
 
-    bytes32 constant EXECUTE_TRANSACTION_SCHEMA_HASH = keccak256(
-        "ExecuteTransaction(",
+    // Hash for the EIP712 ZeroEx Transaction Schema
+    bytes32 constant EIP712_ZEROEX_TRANSACTION_SCHEMA_HASH = keccak256(abi.encodePacked(
+        "ZeroExTransaction(",
         "uint256 salt,",
         "address signer,",
         "bytes data",
         ")"
-    );
+    ));
 
-    function getExecuteTransactionHash(uint256 salt, address signer, bytes data)
+    /// @dev Calculates EIP712 hash of the Transaction.
+    /// @param salt Arbitrary number to ensure uniqueness of transaction hash.
+    /// @param signer Address of transaction signer.
+    /// @param data AbiV2 encoded calldata.
+    /// @return EIP712 hash of the Transaction.
+    function hashZeroExTransaction(uint256 salt, address signer, bytes data)
         internal
         view
-        returns (bytes32 executeTransactionHash)
+        returns (bytes32)
     {
-        executeTransactionHash = createEIP712Message(
-            keccak256(
-                EXECUTE_TRANSACTION_SCHEMA_HASH,
-                salt,
-                bytes32(signer),
-                keccak256(data)
-            )
-        );
-        return executeTransactionHash;
+        return keccak256(abi.encodePacked(
+            EIP712_ZEROEX_TRANSACTION_SCHEMA_HASH,
+            salt,
+            bytes32(signer),
+            keccak256(abi.encodePacked(data))
+        ));
     }
 
     /// @dev Executes an exchange method call in the context of signer.
@@ -80,7 +83,7 @@ contract MixinTransactions is
             REENTRANCY_ILLEGAL
         );
 
-        bytes32 transactionHash = getExecuteTransactionHash(salt, signer, data);
+        bytes32 transactionHash = hashEIP712Message(hashZeroExTransaction(salt, signer, data));
 
         // Validate transaction has not been executed
         require(

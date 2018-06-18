@@ -19,44 +19,37 @@
 pragma solidity ^0.4.24;
 
 contract LibEIP712 {
-    string public constant EIP191_HEADER = "\x19\x01";
+    // EIP191 header for EIP712 prefix
+    string constant EIP191_HEADER = "\x19\x01";
 
-    bytes32 public constant EIP712_DOMAIN_SEPARATOR_NAME_HASH = keccak256("0x Protocol");
+    // Hash of the EIP712 Domain Separator Schema
+    bytes32 public constant EIP712_DOMAIN_SEPARATOR_SCHEMA_HASH = keccak256(abi.encodePacked(
+        "EIP712Domain(",
+        "string name,",
+        "string version,",
+        "address verifyingContract",
+        ")"
+    ));
 
-    bytes32 public constant EIP712_DOMAIN_SEPARATOR_VERSION_HASH = keccak256("2");
+    // Hash of the EIP712 Domain Separator data
+    bytes32 public EIP712_DOMAIN_HASH;
 
-    bytes32 public constant EIP712_DOMAIN_SEPARATOR_SCHEMA_HASH = keccak256(
-        abi.encodePacked(
-            "DomainSeparator(",
-            "string name,",
-            "string version,",
-            "address contract",
-            ")"
-        )
-    );
+    constructor ()
+    public
+    {
+        EIP712_DOMAIN_HASH = keccak256(abi.encodePacked(
+            EIP712_DOMAIN_SEPARATOR_SCHEMA_HASH,
+            keccak256(abi.encodePacked("0x Protocol")),
+            keccak256(abi.encodePacked("2")),
+            bytes32(address(this))
+        ));
+    }
 
-    function createEIP712Message(bytes32 hashStruct)
+    function hashEIP712Message(bytes32 hashStruct)
         internal
         view
-        returns (bytes32 message)
+        returns (bytes32)
     {
-        // TODO: EIP712 is not finalized yet
-        // Source: https://github.com/ethereum/EIPs/pull/712
-        // TODO: Cache the Domain Separator
-        message = keccak256(
-            abi.encodePacked(
-                EIP191_HEADER,
-                keccak256(
-                    abi.encodePacked(
-                        EIP712_DOMAIN_SEPARATOR_SCHEMA_HASH,
-                        EIP712_DOMAIN_SEPARATOR_NAME_HASH,
-                        EIP712_DOMAIN_SEPARATOR_VERSION_HASH,
-                        bytes32(address(this))
-                    )
-                ),
-                hashStruct
-            )
-        );
-        return message;
+        return keccak256(abi.encodePacked(EIP191_HEADER, EIP712_DOMAIN_HASH, hashStruct));
     }
 }

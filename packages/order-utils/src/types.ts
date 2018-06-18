@@ -26,10 +26,18 @@ export interface MessagePrefixOpts {
 
 export interface EIP712Parameter {
     name: string;
-    type: string;
+    type: EIP712Types;
 }
 
 export interface EIP712Schema {
     name: string;
     parameters: EIP712Parameter[];
+}
+
+export enum EIP712Types {
+    String = 'string',
+    Bytes = 'bytes',
+    Address = 'address',
+    Bytes32 = 'bytes32',
+    Uint256 = 'uint256',
 }

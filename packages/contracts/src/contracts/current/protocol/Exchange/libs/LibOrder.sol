@@ -24,8 +24,8 @@ contract LibOrder is
     LibEIP712
 {
 
-    bytes32 constant EIP712_ORDER_SCHEMA_HASH = keccak256(
-        abi.encodePacked(
+    // Hash for the EIP712 Order Schema
+    bytes32 constant EIP712_ORDER_SCHEMA_HASH = keccak256(abi.encodePacked(
             "Order(",
             "address makerAddress,",
             "address takerAddress,",
@@ -40,7 +40,8 @@ contract LibOrder is
             "bytes makerAssetData,",
             "bytes takerAssetData",
             ")"
-    ));
+        )
+    );
 
     // A valid order remains fillable until it is expired, fully filled, or cancelled.
     // An order's state is unaffected by external factors, like account balances.
@@ -86,25 +87,32 @@ contract LibOrder is
         view
         returns (bytes32 orderHash)
     {
-        orderHash = createEIP712Message(
-            keccak256(
-                abi.encodePacked(
-                    EIP712_ORDER_SCHEMA_HASH,
-                    bytes32(order.makerAddress),
-                    bytes32(order.takerAddress),
-                    bytes32(order.feeRecipientAddress),
-                    bytes32(order.senderAddress),
-                    order.makerAssetAmount,
-                    order.takerAssetAmount,
-                    order.makerFee,
-                    order.takerFee,
-                    order.expirationTimeSeconds,
-                    order.salt,
-                    keccak256(abi.encodePacked(order.makerAssetData)),
-                    keccak256(abi.encodePacked(order.takerAssetData))
-                )
-            )
-        );
+        orderHash = hashEIP712Message(hashOrder(order));
         return orderHash;
+    }
+
+    /// @dev Calculates EIP712 hash of the order.
+    /// @param order The order structure.
+    /// @return EIP712 hash of the order.
+    function hashOrder(Order memory order)
+        internal
+        pure
+        returns (bytes32)
+    {
+        return keccak256(abi.encodePacked(
+            EIP712_ORDER_SCHEMA_HASH,
+            bytes32(order.makerAddress),
+            bytes32(order.takerAddress),
+            bytes32(order.feeRecipientAddress),
+            bytes32(order.senderAddress),
+            order.makerAssetAmount,
+            order.takerAssetAmount,
+            order.makerFee,
+            order.takerFee,
+            order.expirationTimeSeconds,
+            order.salt,
+            keccak256(abi.encodePacked(order.makerAssetData)),
+            keccak256(abi.encodePacked(order.takerAssetData))
+        ));
     }
 }

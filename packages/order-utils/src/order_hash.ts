@@ -10,25 +10,25 @@ import * as _ from 'lodash';
 import { assert } from './assert';
 import { crypto } from './crypto';
 import { EIP712Utils } from './eip712_utils';
-import { EIP712Schema } from './types';
+import { EIP712Schema, EIP712Types } from './types';
 
 const INVALID_TAKER_FORMAT = 'instance.takerAddress is not of a type(s) string';
 
 const EIP712_ORDER_SCHEMA: EIP712Schema = {
     name: 'Order',
     parameters: [
-        { name: 'makerAddress', type: 'address' },
-        { name: 'takerAddress', type: 'address' },
-        { name: 'feeRecipientAddress', type: 'address' },
-        { name: 'senderAddress', type: 'address' },
-        { name: 'makerAssetAmount', type: 'uint256' },
-        { name: 'takerAssetAmount', type: 'uint256' },
-        { name: 'makerFee', type: 'uint256' },
-        { name: 'takerFee', type: 'uint256' },
-        { name: 'expirationTimeSeconds', type: 'uint256' },
-        { name: 'salt', type: 'uint256' },
-        { name: 'makerAssetData', type: 'bytes' },
-        { name: 'takerAssetData', type: 'bytes' },
+        { name: 'makerAddress', type: EIP712Types.Address },
+        { name: 'takerAddress', type: EIP712Types.Address },
+        { name: 'feeRecipientAddress', type: EIP712Types.Address },
+        { name: 'senderAddress', type: EIP712Types.Address },
+        { name: 'makerAssetAmount', type: EIP712Types.Uint256 },
+        { name: 'takerAssetAmount', type: EIP712Types.Uint256 },
+        { name: 'makerFee', type: EIP712Types.Uint256 },
+        { name: 'takerFee', type: EIP712Types.Uint256 },
+        { name: 'expirationTimeSeconds', type: EIP712Types.Uint256 },
+        { name: 'salt', type: EIP712Types.Uint256 },
+        { name: 'makerAssetData', type: EIP712Types.Bytes },
+        { name: 'takerAssetData', type: EIP712Types.Bytes },
     ],
 };
 
