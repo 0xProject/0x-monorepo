@@ -66,4 +66,10 @@ export const utils = {
         }
         return structLogs;
     },
+    getRange(sourceCode: string, range: SingleFileSourceRange): string {
+        const lines = sourceCode.split('\n').slice(range.start.line - 1, range.end.line);
+        lines[lines.length - 1] = lines[lines.length - 1].slice(0, range.end.column);
+        lines[0] = lines[0].slice(range.start.column);
+        return lines.join('\n');
+    },
 };
