@@ -340,10 +340,14 @@ export class Portal extends React.Component<PortalProps, PortalState> {
         );
     }
     private _renderWallet(): React.ReactNode {
+        const startOnboarding = this._renderStartOnboarding();
+        const isMobile = this.props.screenWidth === ScreenWidths.Sm;
         return (
             <div>
+                {isMobile && <Container marginBottom="15px">{startOnboarding}</Container>}
                 <Wallet
-                    style={this.props.isPortalOnboardingShowing ? { zIndex: zIndex.aboveOverlay } : undefined}
+                    // style={this.props.isPortalOnboardingShowing ? { zIndex: zIndex.aboveOverlay } : undefined}
+                    style={true ? { zIndex: zIndex.aboveOverlay } : undefined}
                     userAddress={this.props.userAddress}
                     networkId={this.props.networkId}
                     blockchain={this._blockchain}
@@ -364,31 +368,31 @@ export class Portal extends React.Component<PortalProps, PortalState> {
                     onRemoveToken={this._onRemoveToken.bind(this)}
                     refetchTokenStateAsync={this._refetchTokenStateAsync.bind(this)}
                 />
-                <Container marginTop="15px">
-                    <Island>
-                        <Container
-                            marginTop="30px"
-                            marginBottom="30px"
-                            marginLeft="30px"
-                            marginRight="30px"
-                            className="flex justify-around items-center"
-                        >
-                            <ActionAccountBalanceWallet
-                                style={{ width: '30px', height: '30px' }}
-                                color={colors.orange}
-                            />
-                            <Text
-                                fontColor={colors.grey}
-                                fontSize="16px"
-                                center={true}
-                                onClick={this._startOnboarding.bind(this)}
-                            >
-                                Learn how to set up your account
-                            </Text>
-                        </Container>
-                    </Island>
-                </Container>
+                {!isMobile && <Container marginTop="15px">{startOnboarding}</Container>}
             </div>
+        );
+    }
+    private _renderStartOnboarding(): React.ReactNode {
+        return (
+            <Island>
+                <Container
+                    marginTop="30px"
+                    marginBottom="30px"
+                    marginLeft="30px"
+                    marginRight="30px"
+                    className="flex justify-around items-center"
+                >
+                    <ActionAccountBalanceWallet style={{ width: '30px', height: '30px' }} color={colors.orange} />
+                    <Text
+                        fontColor={colors.grey}
+                        fontSize="16px"
+                        center={true}
+                        onClick={this._startOnboarding.bind(this)}
+                    >
+                        Learn how to set up your account
+                    </Text>
+                </Container>
+            </Island>
         );
     }
 
