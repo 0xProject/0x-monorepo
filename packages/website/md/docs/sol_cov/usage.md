@@ -11,9 +11,6 @@ In order to use `CoverageSubprovider` with your favorite framework you need to p
 If you are generating your artifacts with [@0xproject/sol-compiler](LINK) you can use the `SolCompilerArtifactsAdapter` we've implemented for you.
 
 ```typescript
-<<<<<<< HEAD
-import { CoverageSubprovider } from '@0xproject/sol-cov';
-=======
 import { SolCompilerArtifactsAdapter } from '@0xproject/sol-cov';
 const artifactsPath = 'src/artifacts';
 const contractsPath = 'src/contracts';
@@ -42,7 +39,6 @@ Look at the code of the two adapters above for examples.
 ```typescript
 import { CoverageSubprovider } from '@0xproject/sol-cov';
 import ProviderEngine = require('web3-provider-engine');
->>>>>>> Improve sol-cov docs
 
 const provider = new ProviderEngine();
 
@@ -51,12 +47,8 @@ const contractsPath = 'src/contracts';
 const networkId = 50;
 // Some calls might not have `from` address specified. Nevertheless - transactions need to be submitted from an address with at least some funds. defaultFromAddress is the address that will be used to submit those calls as transactions from.
 const defaultFromAddress = '0x5409ed021d9299bf6814279a6a1411a7e866a631';
-<<<<<<< HEAD
-const coverageSubprovider = new CoverageSubprovider(artifactsPath, contractsPath, defaultFromAddress);
-=======
 const isVerbose = true;
 const coverageSubprovider = new CoverageSubprovider(artifactsAdapter, defaultFromAddress, isVerbose);
->>>>>>> Improve sol-cov docs
 
 provider.addProvider(coverageSubprovider);
 ```
