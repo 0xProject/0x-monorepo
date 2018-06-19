@@ -270,7 +270,7 @@ export class Wallet extends React.Component<WalletProps, WalletState> {
                         <ListItem
                             primaryText={
                                 <div className="flex right" style={styles.manageYourWalletText}>
-                                    {'manage your wallet'}
+                                    manage your wallet
                                 </div>
                                 // https://github.com/palantir/tslint-react/issues/140
                                 // tslint:disable-next-line:jsx-curly-spacing
