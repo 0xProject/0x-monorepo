@@ -155,9 +155,6 @@ export class Portal extends React.Component<PortalProps, PortalState> {
     }
     public componentWillMount(): void {
         this._blockchain = new Blockchain(this.props.dispatcher);
-        const trackedTokenAddresses = _.keys(this.state.trackedTokenStateByAddress);
-        // tslint:disable-next-line:no-floating-promises
-        this._fetchBalancesAndAllowancesAsync(trackedTokenAddresses);
     }
     public componentWillUnmount(): void {
         this._blockchain.destroy();
@@ -167,6 +164,13 @@ export class Portal extends React.Component<PortalProps, PortalState> {
         // initialization inconsistencies (i.e While the portal was unrendered, the user might have
         // become disconnected from their backing Ethereum node, changed user accounts, etc...)
         this.props.dispatcher.resetState();
+    }
+    public componentDidUpdate(prevProps: PortalProps): void {
+        if (!prevProps.blockchainIsLoaded && this.props.blockchainIsLoaded) {
+            // tslint:disable-next-line:no-floating-promises
+            const trackedTokenAddresses = _.keys(this.state.trackedTokenStateByAddress);
+            this._fetchBalancesAndAllowancesAsync(trackedTokenAddresses);
+        }
     }
     public componentWillReceiveProps(nextProps: PortalProps): void {
         if (nextProps.networkId !== this.state.prevNetworkId) {
