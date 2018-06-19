@@ -2,8 +2,8 @@ import * as _ from 'lodash';
 
 import { AbstractArtifactAdapter } from './artifact_adapters/abstract_artifact_adapter';
 import { collectCoverageEntries } from './collect_coverage_entries';
-import { TraceCollectionSubprovider } from './trace_collection_subprovider';
 import { SingleFileSubtraceHandler, TraceCollector } from './trace_collector';
+import { TraceInfoSubprovider } from './trace_info_subprovider';
 import { ContractData, Coverage, SourceRange, Subtrace, TraceInfo } from './types';
 import { utils } from './utils';
 
@@ -11,7 +11,7 @@ import { utils } from './utils';
  * This class implements the [web3-provider-engine](https://github.com/MetaMask/provider-engine) subprovider interface.
  * ProfilerSubprovider is used to profile Solidity code while running tests.
  */
-export class ProfilerSubprovider extends TraceCollectionSubprovider {
+export class ProfilerSubprovider extends TraceInfoSubprovider {
     private _profilerCollector: TraceCollector;
     /**
      * Instantiates a ProfilerSubprovider instance
@@ -28,7 +28,7 @@ export class ProfilerSubprovider extends TraceCollectionSubprovider {
         super(defaultFromAddress, traceCollectionSubproviderConfig);
         this._profilerCollector = new TraceCollector(artifactAdapter, isVerbose, profilerHandler);
     }
-    public async handleTraceInfoAsync(traceInfo: TraceInfo): Promise<void> {
+    protected async _handleTraceInfoAsync(traceInfo: TraceInfo): Promise<void> {
         await this._profilerCollector.computeSingleTraceCoverageAsync(traceInfo);
     }
     /**

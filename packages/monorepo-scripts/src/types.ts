@@ -27,3 +27,16 @@ export enum SemVerIndex {
 export interface PackageToVersionChange {
     [name: string]: string;
 }
+
+export interface PackageRegistryJson {
+    versions: {
+        [version: string]: any;
+    };
+    time: {
+        [version: string]: string;
+    };
+}
+
+export interface GitTagsByPackageName {
+    [packageName: string]: string[];
+}

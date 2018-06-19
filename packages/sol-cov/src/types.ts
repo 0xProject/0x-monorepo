@@ -107,3 +107,10 @@ export type TraceInfo = TraceInfoNewContract | TraceInfoExistingContract;
 export enum BlockParamLiteral {
     Latest = 'latest',
 }
+
+export interface EvmCallStackEntry {
+    structLog: StructLog;
+    address: string;
+}
+
+export type EvmCallStack = EvmCallStackEntry[];

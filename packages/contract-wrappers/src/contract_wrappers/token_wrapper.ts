@@ -1,5 +1,5 @@
 import { schemas } from '@0xproject/json-schemas';
-import { LogWithDecodedArgs } from '@0xproject/types';
+import { ContractAbi, LogWithDecodedArgs } from '@0xproject/types';
 import { BigNumber } from '@0xproject/utils';
 import { Web3Wrapper } from '@0xproject/web3-wrapper';
 import * as _ from 'lodash';
@@ -26,6 +26,7 @@ import { TokenTransferProxyWrapper } from './token_transfer_proxy_wrapper';
  * to the 0x Proxy smart contract.
  */
 export class TokenWrapper extends ContractWrapper {
+    public abi: ContractAbi = artifacts.Token.abi;
     public UNLIMITED_ALLOWANCE_IN_BASE_UNITS = constants.UNLIMITED_ALLOWANCE_IN_BASE_UNITS;
     private _tokenContractsByAddress: { [address: string]: TokenContract };
     private _tokenTransferProxyWrapper: TokenTransferProxyWrapper;

@@ -2,8 +2,8 @@ import * as _ from 'lodash';
 
 import { AbstractArtifactAdapter } from './artifact_adapters/abstract_artifact_adapter';
 import { collectCoverageEntries } from './collect_coverage_entries';
-import { TraceCollectionSubprovider } from './trace_collection_subprovider';
 import { SingleFileSubtraceHandler, TraceCollector } from './trace_collector';
+import { TraceInfoSubprovider } from './trace_info_subprovider';
 import {
     BranchCoverage,
     ContractData,
@@ -22,7 +22,7 @@ import { utils } from './utils';
  * This class implements the [web3-provider-engine](https://github.com/MetaMask/provider-engine) subprovider interface.
  * It's used to compute your code coverage while running solidity tests.
  */
-export class CoverageSubprovider extends TraceCollectionSubprovider {
+export class CoverageSubprovider extends TraceInfoSubprovider {
     private _coverageCollector: TraceCollector;
     /**
      * Instantiates a CoverageSubprovider instance
@@ -39,7 +39,7 @@ export class CoverageSubprovider extends TraceCollectionSubprovider {
         super(defaultFromAddress, traceCollectionSubproviderConfig);
         this._coverageCollector = new TraceCollector(artifactAdapter, isVerbose, coverageHandler);
     }
-    public async handleTraceInfoAsync(traceInfo: TraceInfo): Promise<void> {
+    protected async _handleTraceInfoAsync(traceInfo: TraceInfo): Promise<void> {
         await this._coverageCollector.computeSingleTraceCoverageAsync(traceInfo);
     }
     /**

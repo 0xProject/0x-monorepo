@@ -25,8 +25,4 @@ contract LibAssetProxyErrors {
     string constant TARGET_ALREADY_AUTHORIZED = "TARGET_ALREADY_AUTHORIZED";      // Target address must not already be authorized.
     string constant INDEX_OUT_OF_BOUNDS = "INDEX_OUT_OF_BOUNDS";                  // Specified array index is out of bounds.
     string constant AUTHORIZED_ADDRESS_MISMATCH = "AUTHORIZED_ADDRESS_MISMATCH";  // Address at index does not match given target address.
-
-    /// AssetProxy errors ///
-    string constant INVALID_AMOUNT = "INVALID_AMOUNT";                            // Transfer amount must equal 1.
-    string constant TRANSFER_FAILED = "TRANSFER_FAILED";                          // Transfer failed.
 }

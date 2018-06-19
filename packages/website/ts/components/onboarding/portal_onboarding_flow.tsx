@@ -4,7 +4,14 @@ import * as React from 'react';
 
 import { BigNumber } from '@0xproject/utils';
 import { Blockchain } from 'ts/blockchain';
+import { AddEthOnboardingStep } from 'ts/components/onboarding/add_eth_onboarding_step';
+import { CongratsOnboardingStep } from 'ts/components/onboarding/congrats_onboarding_step';
+import { InstallWalletOnboardingStep } from 'ts/components/onboarding/install_wallet_onboarding_step';
+import { IntroOnboardingStep } from 'ts/components/onboarding/intro_onboarding_step';
 import { OnboardingFlow, Step } from 'ts/components/onboarding/onboarding_flow';
+import { SetAllowancesOnboardingStep } from 'ts/components/onboarding/set_allowances_onboarding_step';
+import { UnlockWalletOnboardingStep } from 'ts/components/onboarding/unlock_wallet_onboarding_step';
+import { WrapEthOnboardingStep } from 'ts/components/onboarding/wrap_eth_onboarding_step';
 import { AllowanceToggle } from 'ts/containers/inputs/allowance_toggle';
 import { ProviderType, Token, TokenByAddress, TokenStateByAddress } from 'ts/types';
 import { analytics } from 'ts/utils/analytics';
@@ -50,56 +57,68 @@ export class PortalOnboardingFlow extends React.Component<PortalOnboardingFlowPr
         const steps: Step[] = [
             {
                 target: '.wallet',
-                content:
-                    'Before you begin, you need to connect to a wallet. This will be used across all 0x relayers and dApps',
+                title: '0x Ecosystem Setup',
+                content: <InstallWalletOnboardingStep />,
                 placement: 'right',
-                hideBackButton: true,
-                hideNextButton: true,
+                shouldHideBackButton: true,
+                shouldHideNextButton: true,
             },
             {
                 target: '.wallet',
-                content: 'Unlock your metamask extension to begin',
+                title: '0x Ecosystem Setup',
+                content: <UnlockWalletOnboardingStep />,
                 placement: 'right',
-                hideBackButton: true,
-                hideNextButton: true,
+                shouldHideBackButton: true,
+                shouldHideNextButton: true,
             },
             {
                 target: '.wallet',
-                content:
-                    'In order to start trading on any 0x relayer in the 0x ecosystem, you need to complete two simple steps',
+                title: '0x Ecosystem Account Setup',
+                content: <IntroOnboardingStep />,
                 placement: 'right',
-                hideBackButton: true,
+                shouldHideBackButton: true,
                 continueButtonDisplay: 'enabled',
             },
             {
                 target: '.eth-row',
-                content: 'Before you begin you will need to send some ETH to your metamask wallet',
+                title: 'Add ETH',
+                content: <AddEthOnboardingStep />,
                 placement: 'right',
                 continueButtonDisplay: this._userHasVisibleEth() ? 'enabled' : 'disabled',
             },
             {
                 target: '.weth-row',
-                content: 'You need to convert some of your ETH into tradeable Wrapped ETH (WETH)',
+                title: 'Step 1/2',
+                content: (
+                    <WrapEthOnboardingStep
+                        formattedEthBalanceIfExists={
+                            this._userHasVisibleWeth() ? this._getFormattedWethBalance() : undefined
+                        }
+                    />
+                ),
                 placement: 'right',
-                continueButtonDisplay: this._userHasVisibleWeth() ? 'enabled' : 'disabled',
+                continueButtonDisplay: this._userHasVisibleWeth() ? 'enabled' : undefined,
             },
             {
                 target: '.weth-row',
+                title: 'Step 2/2',
                 content: (
-                    <div>
-                        Unlock your tokens for trading. You only need to do this once for each token.
-                        <div> ETH: {this._renderEthAllowanceToggle()}</div>
-                        <div> ZRX: {this._renderZrxAllowanceToggle()}</div>
-                    </div>
+                    <SetAllowancesOnboardingStep
+                        zrxAllowanceToggle={this._renderZrxAllowanceToggle()}
+                        ethAllowanceToggle={this._renderEthAllowanceToggle()}
+                    />
                 ),
                 placement: 'right',
                 continueButtonDisplay: this._userHasAllowancesForWethAndZrx() ? 'enabled' : 'disabled',
             },
             {
                 target: '.wallet',
-                content: 'Congrats! Your wallet is now set up for trading. Use it on any relayer in the 0x ecosystem.',
+                title: '🎉 Congrats! The ecosystem awaits.',
+                content: <CongratsOnboardingStep />,
                 placement: 'right',
                 continueButtonDisplay: 'enabled',
+                shouldHideNextButton: true,
+                continueButtonText: 'Enter the 0x Ecosystem',
             },
         ];
         return steps;
@@ -110,13 +129,21 @@ export class PortalOnboardingFlow extends React.Component<PortalOnboardingFlowPr
     private _userHasVisibleEth(): boolean {
         return this.props.userEtherBalanceInWei > new BigNumber(0);
     }
-    private _userHasVisibleWeth(): boolean {
+    private _getWethBalance(): BigNumber {
         const ethToken = utils.getEthToken(this.props.tokenByAddress);
         if (!ethToken) {
-            return false;
+            return new BigNumber(0);
         }
-        const wethTokenState = this.props.trackedTokenStateByAddress[ethToken.address];
-        return wethTokenState.balance > new BigNumber(0);
+        const ethTokenState = this.props.trackedTokenStateByAddress[ethToken.address];
+        return ethTokenState.balance;
+    }
+    private _getFormattedWethBalance(): string {
+        const ethToken = utils.getEthToken(this.props.tokenByAddress);
+        const ethTokenState = this.props.trackedTokenStateByAddress[ethToken.address];
+        return utils.getFormattedAmountFromToken(ethToken, ethTokenState);
+    }
+    private _userHasVisibleWeth(): boolean {
+        return this._getWethBalance() > new BigNumber(0);
     }
     private _userHasAllowancesForWethAndZrx(): boolean {
         const ethToken = utils.getEthToken(this.props.tokenByAddress);
