@@ -34,7 +34,7 @@
     "dependencies": {
         "@0xproject/assert": "^0.2.12",
         "@0xproject/types": "^0.8.1",
-        "@0xproject/order-utils": "0.0.7",
+        "@0xproject/order-utils": "^0.0.7",
         "@0xproject/connect": "0.6.15",
         "@0xproject/json-schemas": "0.8.1",
         "@0xproject/typescript-typings": "^0.4.1",

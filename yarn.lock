@@ -6,73 +6,43 @@
   version "0.3.9"
   resolved "https://registry.yarnpkg.com/8fold-marked/-/8fold-marked-0.3.9.tgz#bb89c645612f8ccfaffac1ca6e3c11f168c9cf59"
 
-"@0xproject/connect@0.6.12":
-  version "0.6.12"
-  resolved "https://registry.yarnpkg.com/@0xproject/connect/-/connect-0.6.12.tgz#7d4711804f2c760f0436b5f2ddbf6631aaee36ba"
+"@0xproject/fill-scenarios@^0.0.4":
+  version "0.0.4"
+  resolved "https://registry.yarnpkg.com/@0xproject/fill-scenarios/-/fill-scenarios-0.0.4.tgz#4d23c75abda7e9f117b698c0b8b142af07e0c69e"
   dependencies:
-    "@0xproject/assert" "^0.2.9"
-    "@0xproject/json-schemas" "^0.7.23"
-    "@0xproject/types" "^0.6.3"
-    "@0xproject/typescript-typings" "^0.3.1"
-    "@0xproject/utils" "^0.6.1"
-    isomorphic-fetch "^2.2.1"
-    lodash "^4.17.4"
-    query-string "^5.0.1"
-    websocket "^1.0.25"
+    "@0xproject/base-contract" "^0.3.4"
+    "@0xproject/order-utils" "^0.0.7"
+    "@0xproject/types" "^0.8.1"
+    "@0xproject/typescript-typings" "^0.4.1"
+    "@0xproject/utils" "^0.7.1"
+    "@0xproject/web3-wrapper" "^0.7.1"
+    ethers "3.0.22"
+    lodash "4.17.10"
 
-"@0xproject/fill-scenarios@^0.0.2":
-  version "0.0.2"
-  resolved "https://registry.yarnpkg.com/@0xproject/fill-scenarios/-/fill-scenarios-0.0.2.tgz#176ac2cba13f527e84346fbf06da84965a852bab"
+"@0xproject/json-schemas@0.8.1", "@0xproject/json-schemas@^0.8.1":
+  version "0.8.1"
+  resolved "https://registry.yarnpkg.com/@0xproject/json-schemas/-/json-schemas-0.8.1.tgz#2613fd9405728bc65f2eb78e86258d44b4925ab0"
   dependencies:
-    "@0xproject/base-contract" "^0.3.2"
-    "@0xproject/order-utils" "^0.0.5"
-    "@0xproject/types" "^0.7.0"
-    "@0xproject/typescript-typings" "^0.3.2"
-    "@0xproject/utils" "^0.6.2"
-    "@0xproject/web3-wrapper" "^0.6.4"
-    ethers "^3.0.15"
-    lodash "^4.17.4"
+    "@0xproject/typescript-typings" "^0.4.1"
+    "@types/node" "9.6.0"
+    jsonschema "1.2.2"
+    lodash.values "4.3.0"
 
-"@0xproject/json-schemas@0.7.22":
-  version "0.7.22"
-  resolved "https://registry.yarnpkg.com/@0xproject/json-schemas/-/json-schemas-0.7.22.tgz#95cbdc9ec0eff3d1920903960284d491eb668f28"
+"@0xproject/order-utils@^0.0.7":
+  version "0.0.7"
+  resolved "https://registry.yarnpkg.com/@0xproject/order-utils/-/order-utils-0.0.7.tgz#eaa465782ea5745bdad54e1a851533172d993b7c"
   dependencies:
-    "@0xproject/typescript-typings" "^0.3.0"
-    "@types/node" "^8.0.53"
-    jsonschema "^1.2.0"
-    lodash.values "^4.3.0"
-
-"@0xproject/json-schemas@^0.7.23", "@0xproject/json-schemas@^0.7.24":
-  version "0.7.24"
-  resolved "https://registry.yarnpkg.com/@0xproject/json-schemas/-/json-schemas-0.7.24.tgz#21a12b43ab0ab4aa302d02c4891668cda36b6c64"
-  dependencies:
-    "@0xproject/typescript-typings" "^0.3.2"
-    "@types/node" "^8.0.53"
-    jsonschema "^1.2.0"
-    lodash.values "^4.3.0"
-
-"@0xproject/order-utils@0.0.5", "@0xproject/order-utils@^0.0.5":
-  version "0.0.5"
-  resolved "https://registry.yarnpkg.com/@0xproject/order-utils/-/order-utils-0.0.5.tgz#c8d92a112740b0020e08f13137844f8c183c863b"
-  dependencies:
-    "@0xproject/assert" "^0.2.10"
-    "@0xproject/json-schemas" "^0.7.24"
-    "@0xproject/types" "^0.7.0"
-    "@0xproject/typescript-typings" "^0.3.2"
-    "@0xproject/utils" "^0.6.2"
-    "@0xproject/web3-wrapper" "^0.6.4"
-    "@types/node" "^8.0.53"
-    bn.js "^4.11.8"
-    ethereumjs-abi "^0.6.4"
-    ethereumjs-util "^5.1.1"
-    lodash "^4.17.4"
-
-"@0xproject/types@0.7.0", "@0xproject/types@^0.7.0":
-  version "0.7.0"
-  resolved "https://registry.yarnpkg.com/@0xproject/types/-/types-0.7.0.tgz#fad13925ee92ad4ee1980668a5cb2bed4dcaab8f"
-  dependencies:
-    "@types/node" "^8.0.53"
-    bignumber.js "~4.1.0"
+    "@0xproject/assert" "^0.2.12"
+    "@0xproject/json-schemas" "^0.8.1"
+    "@0xproject/types" "^0.8.1"
+    "@0xproject/typescript-typings" "^0.4.1"
+    "@0xproject/utils" "^0.7.1"
+    "@0xproject/web3-wrapper" "^0.7.1"
+    "@types/node" "9.6.0"
+    bn.js "4.11.7"
+    ethereumjs-abi "0.6.5"
+    ethereumjs-util "5.1.5"
+    lodash "4.17.10"
 
 "@0xproject/types@^0.5.0":
   version "0.5.0"
@@ -80,11 +50,11 @@
   dependencies:
     bignumber.js "~4.1.0"
 
-"@0xproject/types@^0.6.3":
-  version "0.6.3"
-  resolved "https://registry.yarnpkg.com/@0xproject/types/-/types-0.6.3.tgz#0bc066967aad4151011b6e478bb707b1afb8504b"
+"@0xproject/types@^0.8.1":
+  version "0.8.1"
+  resolved "https://registry.yarnpkg.com/@0xproject/types/-/types-0.8.1.tgz#ba436a1054d2ac6362bb0668611af4f52402a54e"
   dependencies:
-    "@types/node" "^8.0.53"
+    "@types/node" "9.6.0"
     bignumber.js "~4.1.0"
 
 "@0xproject/typescript-typings@^0.0.3":
@@ -350,6 +320,10 @@
   version "9.6.5"
   resolved "https://registry.yarnpkg.com/@types/node/-/node-9.6.5.tgz#ee700810fdf49ac1c399fc5980b7559b3e5a381d"
 
+"@types/node@9.6.0":
+  version "9.6.0"
+  resolved "https://registry.yarnpkg.com/@types/node/-/node-9.6.0.tgz#d3480ee666df9784b1001a1872a2f6ccefb6c2d7"
+
 "@types/node@^8.0.53":
   version "8.10.8"
   resolved "https://registry.yarnpkg.com/@types/node/-/node-8.10.8.tgz#794cba23cc9f8d9715f6543fa8827433b5f5cd3b"
@@ -438,7 +412,7 @@
     "@types/glob" "*"
     "@types/node" "*"
 
-"@types/semver@^5.5.0":
+"@types/semver@5.5.0", "@types/semver@^5.5.0":
   version "5.5.0"
   resolved "https://registry.yarnpkg.com/@types/semver/-/semver-5.5.0.tgz#146c2a29ee7d3bae4bf2fcb274636e264c813c45"
 
@@ -4068,7 +4042,7 @@ ethereum-common@^0.0.18:
   version "0.0.18"
   resolved "https://registry.yarnpkg.com/ethereum-common/-/ethereum-common-0.0.18.tgz#2fdc3576f232903358976eb39da783213ff9523f"
 
-ethereumjs-abi@^0.6.4, "ethereumjs-abi@git+https://github.com/ethereumjs/ethereumjs-abi.git":
+ethereumjs-abi@0.6.5, ethereumjs-abi@^0.6.4, "ethereumjs-abi@git+https://github.com/ethereumjs/ethereumjs-abi.git":
   version "0.6.5"
   resolved "git+https://github.com/ethereumjs/ethereumjs-abi.git#4ea2fdfed09e8f99117d9362d17c6b01b64a2bcf"
   dependencies:
@@ -4117,17 +4091,7 @@ ethereumjs-tx@0xProject/ethereumjs-tx#fake-tx-include-signature-by-default, ethe
     ethereum-common "^0.0.18"
     ethereumjs-util "^5.0.0"
 
-ethereumjs-util@^4.0.1, ethereumjs-util@^4.4.0:
-  version "4.5.0"
-  resolved "https://registry.yarnpkg.com/ethereumjs-util/-/ethereumjs-util-4.5.0.tgz#3e9428b317eebda3d7260d854fddda954b1f1bc6"
-  dependencies:
-    bn.js "^4.8.0"
-    create-hash "^1.1.2"
-    keccakjs "^0.2.0"
-    rlp "^2.0.0"
-    secp256k1 "^3.0.1"
-
-ethereumjs-util@^5.0.0, ethereumjs-util@^5.0.1, ethereumjs-util@^5.1.1, ethereumjs-util@^5.1.2, ethereumjs-util@^5.1.3, ethereumjs-util@^5.1.5:
+ethereumjs-util@5.1.5, ethereumjs-util@^5.0.0, ethereumjs-util@^5.0.1, ethereumjs-util@^5.1.1, ethereumjs-util@^5.1.2, ethereumjs-util@^5.1.3, ethereumjs-util@^5.1.5:
   version "5.1.5"
   resolved "https://registry.yarnpkg.com/ethereumjs-util/-/ethereumjs-util-5.1.5.tgz#2f02575852627d45622426f25ee4a0b5f377f27a"
   dependencies:
@@ -4137,6 +4101,16 @@ ethereumjs-util@^5.0.0, ethereumjs-util@^5.0.1, ethereumjs-util@^5.1.1, ethereum
     keccak "^1.0.2"
     rlp "^2.0.0"
     safe-buffer "^5.1.1"
+    secp256k1 "^3.0.1"
+
+ethereumjs-util@^4.0.1, ethereumjs-util@^4.4.0:
+  version "4.5.0"
+  resolved "https://registry.yarnpkg.com/ethereumjs-util/-/ethereumjs-util-4.5.0.tgz#3e9428b317eebda3d7260d854fddda954b1f1bc6"
+  dependencies:
+    bn.js "^4.8.0"
+    create-hash "^1.1.2"
+    keccakjs "^0.2.0"
+    rlp "^2.0.0"
     secp256k1 "^3.0.1"
 
 ethereumjs-vm@2.3.3:
@@ -4183,7 +4157,7 @@ ethereumjs-wallet@~0.6.0:
     utf8 "^2.1.1"
     uuid "^2.0.1"
 
-ethers@0xproject/ethers.js#eip-838-reasons, ethers@^3.0.15:
+ethers@0xproject/ethers.js#eip-838-reasons, ethers@3.0.22:
   version "3.0.18"
   resolved "https://codeload.github.com/0xproject/ethers.js/tar.gz/b91342bd200d142af0165d6befddf783c8ae8447"
   dependencies:
@@ -6353,7 +6327,7 @@ isobject@^3.0.0, isobject@^3.0.1:
   version "3.0.1"
   resolved "https://registry.yarnpkg.com/isobject/-/isobject-3.0.1.tgz#4e431e92b11a9731636aa1f9c8d1ccbcfdab78df"
 
-isomorphic-fetch@^2.1.1, isomorphic-fetch@^2.2.1:
+isomorphic-fetch@2.2.1, isomorphic-fetch@^2.1.1, isomorphic-fetch@^2.2.1:
   version "2.2.1"
   resolved "https://registry.yarnpkg.com/isomorphic-fetch/-/isomorphic-fetch-2.2.1.tgz#611ae1acf14f5e81f729507472819fe9733558a9"
   dependencies:
@@ -6622,6 +6596,10 @@ jsonparse@^1.2.0:
 jsonschema@*, jsonschema@^1.2.0:
   version "1.2.4"
   resolved "https://registry.yarnpkg.com/jsonschema/-/jsonschema-1.2.4.tgz#a46bac5d3506a254465bc548876e267c6d0d6464"
+
+jsonschema@1.2.2:
+  version "1.2.2"
+  resolved "https://registry.yarnpkg.com/jsonschema/-/jsonschema-1.2.2.tgz#83ab9c63d65bf4d596f91d81195e78772f6452bc"
 
 jsprim@^1.2.2:
   version "1.4.1"
@@ -7191,7 +7169,7 @@ lodash.uniq@^4.5.0:
   version "4.5.0"
   resolved "https://registry.yarnpkg.com/lodash.uniq/-/lodash.uniq-4.5.0.tgz#d0225373aeb652adc1bc82e4945339a842754773"
 
-lodash.values@^4.3.0:
+lodash.values@4.3.0, lodash.values@^4.3.0:
   version "4.3.0"
   resolved "https://registry.yarnpkg.com/lodash.values/-/lodash.values-4.3.0.tgz#a3a6c2b0ebecc5c2cba1c17e6e620fe81b53d347"
 
@@ -7200,6 +7178,10 @@ lodash.words@^3.0.0:
   resolved "https://registry.yarnpkg.com/lodash.words/-/lodash.words-3.2.0.tgz#4e2a8649bc08745b17c695b1a3ce8fee596623b3"
   dependencies:
     lodash._root "^3.0.0"
+
+lodash@4.17.10, lodash@^4.17.10:
+  version "4.17.10"
+  resolved "https://registry.yarnpkg.com/lodash/-/lodash-4.17.10.tgz#1b7793cf7259ea38fb3661d4d38b3260af8ae4e7"
 
 lodash@4.17.2:
   version "4.17.2"
@@ -7216,10 +7198,6 @@ lodash@^3.10.1, lodash@^3.3.1, lodash@^3.6.0:
 lodash@^4.13.1, lodash@^4.14.0, lodash@^4.17.2, lodash@^4.17.4, lodash@^4.17.5, lodash@^4.2.1, lodash@^4.3.0, lodash@^4.5.1:
   version "4.17.5"
   resolved "https://registry.yarnpkg.com/lodash/-/lodash-4.17.5.tgz#99a92d65c0272debe8c96b6057bc8fbfa3bed511"
-
-lodash@^4.17.10:
-  version "4.17.10"
-  resolved "https://registry.yarnpkg.com/lodash/-/lodash-4.17.10.tgz#1b7793cf7259ea38fb3661d4d38b3260af8ae4e7"
 
 lodash@~1.0.1:
   version "1.0.2"

@@ -76,7 +76,7 @@
         "zeppelin-solidity": "1.8.0"
     },
     "dependencies": {
-        "@0xproject/assert": "0.2.10",
+        "@0xproject/assert": "0.2.12",
         "@0xproject/json-schemas": "0.8.1",
         "@0xproject/sol-resolver": "^0.0.7",
         "@0xproject/types": "^0.8.1",

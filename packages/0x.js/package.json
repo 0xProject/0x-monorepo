@@ -103,7 +103,7 @@
         "@0xproject/assert": "^0.2.12",
         "@0xproject/base-contract": "^0.3.4",
         "@0xproject/contract-wrappers": "^0.0.5",
-        "@0xproject/order-utils": "0.0.7",
+        "@0xproject/order-utils": "^0.0.7",
         "@0xproject/order-watcher": "^0.0.6",
         "@0xproject/sol-compiler": "^0.5.2",
         "@0xproject/types": "^0.8.1",

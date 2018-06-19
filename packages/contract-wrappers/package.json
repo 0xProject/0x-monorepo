@@ -81,7 +81,7 @@
         "@0xproject/base-contract": "^0.3.4",
         "@0xproject/fill-scenarios": "^0.0.4",
         "@0xproject/json-schemas": "0.8.1",
-        "@0xproject/order-utils": "0.0.7",
+        "@0xproject/order-utils": "^0.0.7",
         "@0xproject/types": "^0.8.1",
         "@0xproject/typescript-typings": "^0.4.1",
         "@0xproject/utils": "^0.7.1",
