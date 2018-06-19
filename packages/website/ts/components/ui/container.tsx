@@ -14,8 +14,15 @@ export interface ContainerProps {
     backgroundColor?: string;
     borderRadius?: StringOrNum;
     maxWidth?: StringOrNum;
+    width?: StringOrNum;
     isHidden?: boolean;
     className?: string;
+    position?: 'absolute' | 'fixed' | 'relative' | 'unset';
+    display?: 'inline-block' | 'block' | 'inline-flex' | 'inline';
+    top?: string;
+    left?: string;
+    right?: string;
+    bottom?: string;
 }
 
 export const Container: React.StatelessComponent<ContainerProps> = ({ children, className, isHidden, ...style }) => {

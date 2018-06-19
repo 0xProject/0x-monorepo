@@ -124,7 +124,6 @@ const styles: Styles = {
 
 const ETHER_ICON_PATH = '/images/ether.png';
 const ICON_DIMENSION = 28;
-const TOKEN_AMOUNT_DISPLAY_PRECISION = 5;
 const BODY_ITEM_KEY = 'BODY';
 const HEADER_ITEM_KEY = 'HEADER';
 const FOOTER_ITEM_KEY = 'FOOTER';
@@ -438,10 +437,7 @@ export class Wallet extends React.Component<WalletProps, WalletState> {
                 </PlaceHolder>
             );
         } else {
-            const unitAmount = Web3Wrapper.toUnitAmount(amount, decimals);
-            const precision = Math.min(TOKEN_AMOUNT_DISPLAY_PRECISION, unitAmount.decimalPlaces());
-            const formattedAmount = unitAmount.toFixed(precision);
-            const result = `${formattedAmount} ${symbol}`;
+            const result = utils.getFormattedAmount(amount, decimals, symbol);
             return <div style={styles.amountLabel}>{result}</div>;
         }
     }

@@ -6,8 +6,7 @@ import * as _ from 'lodash';
 import { Lock } from 'semaphore-async-await';
 
 import { constants } from './constants';
-import { getTracesByContractAddress } from './trace';
-import { BlockParamLiteral, TraceInfo, TraceInfoExistingContract, TraceInfoNewContract } from './types';
+import { BlockParamLiteral } from './types';
 
 interface MaybeFakeTxData extends TxData {
     isFakeTransaction?: boolean;
@@ -27,13 +26,14 @@ export interface TraceCollectionSubproviderConfig {
 
 /**
  * This class implements the [web3-provider-engine](https://github.com/MetaMask/provider-engine) subprovider interface.
- * It collects traces of all transactions that were sent and all calls that were executed through JSON RPC.
+ * It collects traces of all transactions that were sent and all calls that were executed through JSON RPC. It must
+ * be extended by implementing the _recordTxTraceAsync method which is called for every transaction.
  */
 export abstract class TraceCollectionSubprovider extends Subprovider {
+    protected _web3Wrapper!: Web3Wrapper;
     // Lock is used to not accept normal transactions while doing call/snapshot magic because they'll be reverted later otherwise
     private _lock = new Lock();
     private _defaultFromAddress: string;
-    private _web3Wrapper!: Web3Wrapper;
     private _isEnabled = true;
     private _config: TraceCollectionSubproviderConfig;
     /**
@@ -57,11 +57,6 @@ export abstract class TraceCollectionSubprovider extends Subprovider {
     public stop(): void {
         this._isEnabled = false;
     }
-    /**
-     * Called for each subtrace.
-     * @param traceInfo Trace info for this subtrace.
-     */
-    public abstract handleTraceInfoAsync(traceInfo: TraceInfo): Promise<void>;
     /**
      * This method conforms to the web3-provider-engine interface.
      * It is called internally by the ProviderEngine when it is this subproviders
@@ -119,6 +114,11 @@ export abstract class TraceCollectionSubprovider extends Subprovider {
         super.setEngine(engine);
         this._web3Wrapper = new Web3Wrapper(engine);
     }
+    protected abstract async _recordTxTraceAsync(
+        address: string,
+        data: string | undefined,
+        txHash: string,
+    ): Promise<void>;
     private async _onTransactionSentAsync(
         txData: MaybeFakeTxData,
         err: Error | null,
@@ -159,52 +159,6 @@ export abstract class TraceCollectionSubprovider extends Subprovider {
     ): Promise<void> {
         await this._recordCallOrGasEstimateTraceAsync(callData);
         cb();
-    }
-    private async _recordTxTraceAsync(address: string, data: string | undefined, txHash: string): Promise<void> {
-        await this._web3Wrapper.awaitTransactionMinedAsync(txHash, 0);
-        const trace = await this._web3Wrapper.getTransactionTraceAsync(txHash, {
-            disableMemory: true,
-            disableStack: false,
-            disableStorage: true,
-        });
-        const tracesByContractAddress = getTracesByContractAddress(trace.structLogs, address);
-        const subcallAddresses = _.keys(tracesByContractAddress);
-        if (address === constants.NEW_CONTRACT) {
-            for (const subcallAddress of subcallAddresses) {
-                let traceInfo: TraceInfoNewContract | TraceInfoExistingContract;
-                if (subcallAddress === 'NEW_CONTRACT') {
-                    const traceForThatSubcall = tracesByContractAddress[subcallAddress];
-                    traceInfo = {
-                        subtrace: traceForThatSubcall,
-                        txHash,
-                        address: subcallAddress,
-                        bytecode: data as string,
-                    };
-                } else {
-                    const runtimeBytecode = await this._web3Wrapper.getContractCodeAsync(subcallAddress);
-                    const traceForThatSubcall = tracesByContractAddress[subcallAddress];
-                    traceInfo = {
-                        subtrace: traceForThatSubcall,
-                        txHash,
-                        address: subcallAddress,
-                        runtimeBytecode,
-                    };
-                }
-                await this.handleTraceInfoAsync(traceInfo);
-            }
-        } else {
-            for (const subcallAddress of subcallAddresses) {
-                const runtimeBytecode = await this._web3Wrapper.getContractCodeAsync(subcallAddress);
-                const traceForThatSubcall = tracesByContractAddress[subcallAddress];
-                const traceInfo: TraceInfoExistingContract = {
-                    subtrace: traceForThatSubcall,
-                    txHash,
-                    address: subcallAddress,
-                    runtimeBytecode,
-                };
-                await this.handleTraceInfoAsync(traceInfo);
-            }
-        }
     }
     private async _recordCallOrGasEstimateTraceAsync(callData: Partial<CallData>): Promise<void> {
         // We don't want other transactions to be exeucted during snashotting period, that's why we lock the

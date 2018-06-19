@@ -1,6 +1,11 @@
+import * as fs from 'fs';
 import * as _ from 'lodash';
 import * as moment from 'moment';
+import * as path from 'path';
+import { exec as execAsync } from 'promisify-child-process';
+import semver = require('semver');
 
+import { constants } from '../constants';
 import { Change, Changelog, VersionChangelog } from '../types';
 
 const CHANGELOG_MD_HEADER = `
@@ -44,12 +49,58 @@ export const changelogUtils = {
 
         return changelogMd;
     },
-    shouldAddNewChangelogEntry(currentVersion: string, changelog: Changelog): boolean {
+    shouldAddNewChangelogEntry(packageName: string, currentVersion: string, changelog: Changelog): boolean {
         if (_.isEmpty(changelog)) {
             return true;
         }
         const lastEntry = changelog[0];
+        if (semver.lt(lastEntry.version, currentVersion)) {
+            throw new Error(
+                `Found CHANGELOG version lower then current package version. ${packageName} current: ${currentVersion}, Changelog: ${
+                    lastEntry.version
+                }`,
+            );
+        }
         const isLastEntryCurrentVersion = lastEntry.version === currentVersion;
         return isLastEntryCurrentVersion;
+    },
+    getChangelogJSONIfExists(changelogPath: string): string | undefined {
+        try {
+            const changelogJSON = fs.readFileSync(changelogPath, 'utf-8');
+            return changelogJSON;
+        } catch (err) {
+            return undefined;
+        }
+    },
+    getChangelogOrCreateIfMissing(packageName: string, packageLocation: string): Changelog {
+        const changelogJSONPath = path.join(packageLocation, 'CHANGELOG.json');
+        let changelogJsonIfExists = this.getChangelogJSONIfExists(changelogJSONPath);
+        if (_.isUndefined(changelogJsonIfExists)) {
+            // If none exists, create new, empty one.
+            changelogJsonIfExists = '[]';
+            fs.writeFileSync(changelogJSONPath, changelogJsonIfExists);
+        }
+        let changelog: Changelog;
+        try {
+            changelog = JSON.parse(changelogJsonIfExists);
+        } catch (err) {
+            throw new Error(`${packageName}'s CHANGELOG.json contains invalid JSON. Please fix and try again.`);
+        }
+        return changelog;
+    },
+    async writeChangelogJsonFileAsync(packageLocation: string, changelog: Changelog): Promise<void> {
+        const changelogJSONPath = path.join(packageLocation, 'CHANGELOG.json');
+        fs.writeFileSync(changelogJSONPath, JSON.stringify(changelog, null, '\t'));
+        await this.prettifyAsync(changelogJSONPath, constants.monorepoRootPath);
+    },
+    async writeChangelogMdFileAsync(packageLocation: string, changelogMdString: string): Promise<void> {
+        const changelogMarkdownPath = path.join(packageLocation, 'CHANGELOG.md');
+        fs.writeFileSync(changelogMarkdownPath, changelogMdString);
+        await this.prettifyAsync(changelogMarkdownPath, constants.monorepoRootPath);
+    },
+    async prettifyAsync(filePath: string, cwd: string): Promise<void> {
+        await execAsync(`prettier --write ${filePath} --config .prettierrc`, {
+            cwd,
+        });
     },
 };

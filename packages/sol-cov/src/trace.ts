@@ -1,32 +1,25 @@
-import { addressUtils, BigNumber, logUtils } from '@0xproject/utils';
+import { logUtils } from '@0xproject/utils';
 import { OpCode, StructLog } from 'ethereum-types';
-import { addHexPrefix } from 'ethereumjs-util';
 import * as _ from 'lodash';
+
+import { utils } from './utils';
 
 export interface TraceByContractAddress {
     [contractAddress: string]: StructLog[];
 }
 
-function getAddressFromStackEntry(stackEntry: string): string {
-    const hexBase = 16;
-    return addressUtils.padZeros(new BigNumber(addHexPrefix(stackEntry)).toString(hexBase));
-}
-
 export function getTracesByContractAddress(structLogs: StructLog[], startAddress: string): TraceByContractAddress {
     const traceByContractAddress: TraceByContractAddress = {};
     let currentTraceSegment = [];
-    const callStack = [startAddress];
+    const addressStack = [startAddress];
     if (_.isEmpty(structLogs)) {
         return traceByContractAddress;
     }
-    if (structLogs[0].depth === 1) {
-        // Geth uses 1-indexed depth counter whilst ganache starts from 0
-        _.forEach(structLogs, structLog => structLog.depth--);
-    }
+    const normalizedStructLogs = utils.normalizeStructLogs(structLogs);
     // tslint:disable-next-line:prefer-for-of
-    for (let i = 0; i < structLogs.length; i++) {
-        const structLog = structLogs[i];
-        if (structLog.depth !== callStack.length - 1) {
+    for (let i = 0; i < normalizedStructLogs.length; i++) {
+        const structLog = normalizedStructLogs[i];
+        if (structLog.depth !== addressStack.length - 1) {
             throw new Error("Malformed trace. Trace depth doesn't match call stack depth");
         }
         // After that check we have a guarantee that call stack is never empty
@@ -34,36 +27,26 @@ export function getTracesByContractAddress(structLogs: StructLog[], startAddress
         // That means that we can always safely pop from it
         currentTraceSegment.push(structLog);
 
-        const isCallLike = _.includes(
-            [OpCode.CallCode, OpCode.StaticCall, OpCode.Call, OpCode.DelegateCall],
-            structLog.op,
-        );
-        const isEndOpcode = _.includes(
-            [OpCode.Return, OpCode.Stop, OpCode.Revert, OpCode.Invalid, OpCode.SelfDestruct],
-            structLog.op,
-        );
-        if (isCallLike) {
-            const currentAddress = _.last(callStack) as string;
+        if (utils.isCallLike(structLog.op)) {
+            const currentAddress = _.last(addressStack) as string;
             const jumpAddressOffset = 1;
-            const newAddress = getAddressFromStackEntry(
+            const newAddress = utils.getAddressFromStackEntry(
                 structLog.stack[structLog.stack.length - jumpAddressOffset - 1],
             );
-            if (structLog === _.last(structLogs)) {
-                throw new Error('Malformed trace. CALL-like opcode can not be the last one');
-            }
+
             // Sometimes calls don't change the execution context (current address). When we do a transfer to an
             // externally owned account - it does the call and immediately returns because there is no fallback
             // function. We manually check if the call depth had changed to handle that case.
-            const nextStructLog = structLogs[i + 1];
+            const nextStructLog = normalizedStructLogs[i + 1];
             if (nextStructLog.depth !== structLog.depth) {
-                callStack.push(newAddress);
+                addressStack.push(newAddress);
                 traceByContractAddress[currentAddress] = (traceByContractAddress[currentAddress] || []).concat(
                     currentTraceSegment,
                 );
                 currentTraceSegment = [];
             }
-        } else if (isEndOpcode) {
-            const currentAddress = callStack.pop() as string;
+        } else if (utils.isEndOpcode(structLog.op)) {
+            const currentAddress = addressStack.pop() as string;
             traceByContractAddress[currentAddress] = (traceByContractAddress[currentAddress] || []).concat(
                 currentTraceSegment,
             );
@@ -85,12 +68,12 @@ export function getTracesByContractAddress(structLogs: StructLog[], startAddress
             );
             return traceByContractAddress;
         } else {
-            if (structLog !== _.last(structLogs)) {
-                const nextStructLog = structLogs[i + 1];
+            if (structLog !== _.last(normalizedStructLogs)) {
+                const nextStructLog = normalizedStructLogs[i + 1];
                 if (nextStructLog.depth === structLog.depth) {
                     continue;
                 } else if (nextStructLog.depth === structLog.depth - 1) {
-                    const currentAddress = callStack.pop() as string;
+                    const currentAddress = addressStack.pop() as string;
                     traceByContractAddress[currentAddress] = (traceByContractAddress[currentAddress] || []).concat(
                         currentTraceSegment,
                     );
@@ -101,11 +84,11 @@ export function getTracesByContractAddress(structLogs: StructLog[], startAddress
             }
         }
     }
-    if (callStack.length !== 0) {
+    if (addressStack.length !== 0) {
         logUtils.warn('Malformed trace. Call stack non empty at the end');
     }
     if (currentTraceSegment.length !== 0) {
-        const currentAddress = callStack.pop() as string;
+        const currentAddress = addressStack.pop() as string;
         traceByContractAddress[currentAddress] = (traceByContractAddress[currentAddress] || []).concat(
             currentTraceSegment,
         );

@@ -1,3 +1,6 @@
+import { addressUtils, BigNumber } from '@0xproject/utils';
+import { OpCode, StructLog } from 'ethereum-types';
+import { addHexPrefix } from 'ethereumjs-util';
 import * as _ from 'lodash';
 
 import { ContractData, LineColumn, SingleFileSourceRange } from './types';
@@ -41,5 +44,26 @@ export const utils = {
             return !_.isNull(bytecode.match(bytecodeRegex)) || !_.isNull(bytecode.match(runtimeBytecodeRegex));
         });
         return contractData;
+    },
+    isCallLike(op: OpCode): boolean {
+        return _.includes([OpCode.CallCode, OpCode.StaticCall, OpCode.Call, OpCode.DelegateCall], op);
+    },
+    isEndOpcode(op: OpCode): boolean {
+        return _.includes([OpCode.Return, OpCode.Stop, OpCode.Revert, OpCode.Invalid, OpCode.SelfDestruct], op);
+    },
+    getAddressFromStackEntry(stackEntry: string): string {
+        const hexBase = 16;
+        return addressUtils.padZeros(new BigNumber(addHexPrefix(stackEntry)).toString(hexBase));
+    },
+    normalizeStructLogs(structLogs: StructLog[]): StructLog[] {
+        if (structLogs[0].depth === 1) {
+            // Geth uses 1-indexed depth counter whilst ganache starts from 0
+            const newStructLogs = _.map(structLogs, structLog => ({
+                ...structLog,
+                depth: structLog.depth - 1,
+            }));
+            return newStructLogs;
+        }
+        return structLogs;
     },
 };

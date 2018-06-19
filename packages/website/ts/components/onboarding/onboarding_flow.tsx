@@ -10,9 +10,10 @@ export interface Step {
     title?: string;
     content: React.ReactNode;
     placement?: Placement;
-    hideBackButton?: boolean;
-    hideNextButton?: boolean;
+    shouldHideBackButton?: boolean;
+    shouldHideNextButton?: boolean;
     continueButtonDisplay?: ContinueButtonDisplay;
+    continueButtonText?: string;
 }
 
 export interface OnboardingFlowProps {
@@ -54,17 +55,18 @@ export class OnboardingFlow extends React.Component<OnboardingFlowProps> {
         const step = steps[stepIndex];
         const isLastStep = steps.length - 1 === stepIndex;
         return (
-            <Container marginLeft="15px">
+            <Container marginLeft="30px">
                 <OnboardingTooltip
                     title={step.title}
                     content={step.content}
                     isLastStep={isLastStep}
-                    hideBackButton={step.hideBackButton}
-                    hideNextButton={step.hideNextButton}
+                    shouldHideBackButton={step.shouldHideBackButton}
+                    shouldHideNextButton={step.shouldHideNextButton}
                     onClose={this.props.onClose}
                     onClickNext={this._goToNextStep.bind(this)}
                     onClickBack={this._goToPrevStep.bind(this)}
                     continueButtonDisplay={step.continueButtonDisplay}
+                    continueButtonText={step.continueButtonText}
                 />
             </Container>
         );

@@ -5,15 +5,15 @@ import * as React from 'react';
 export interface IconButtonProps {
     iconName: string;
     labelText?: string;
-    onClick: () => void;
+    onClick?: () => void;
     color?: string;
+    display?: string;
 }
 interface IconButtonState {
     isHovering: boolean;
 }
 export class IconButton extends React.Component<IconButtonProps, IconButtonState> {
     public static defaultProps: Partial<IconButtonProps> = {
-        onClick: _.noop,
         labelText: '',
         color: colors.mediumBlue,
     };
@@ -26,8 +26,9 @@ export class IconButton extends React.Component<IconButtonProps, IconButtonState
     public render(): React.ReactNode {
         const styles: Styles = {
             root: {
-                cursor: 'pointer',
-                opacity: this.state.isHovering ? 0.5 : 1,
+                cursor: this.props.onClick ? 'pointer' : 'undefined',
+                opacity: this.state.isHovering && this.props.onClick ? 0.5 : 1,
+                display: this.props.display,
             },
             icon: {
                 color: this.props.color,

@@ -14,12 +14,10 @@
         "clean": "shx rm -rf lib",
         "test:publish": "run-s build script:publish",
         "find_unused_deps": "run-s build script:find_unused_deps",
-        "remove_tags": "run-s build script:remove_tags",
         "script:deps_versions": "node ./lib/deps_versions.js",
         "script:prepublish_checks": "node ./lib/prepublish_checks.js",
         "script:publish": "IS_DRY_RUN=true node ./lib/publish.js",
-        "script:find_unused_deps": "node ./lib/find_unused_dependencies.js",
-        "script:remove_tags": "node ./lib/remove_tags.js"
+        "script:find_unused_deps": "node ./lib/find_unused_dependencies.js"
     },
     "repository": {
         "type": "git",
@@ -40,6 +38,7 @@
         "make-promises-safe": "^1.1.0",
         "npm-run-all": "^4.1.2",
         "shx": "^0.2.2",
+        "@types/semver": "5.5.0",
         "tslint": "5.8.0",
         "typescript": "2.7.1"
     },
@@ -50,6 +49,7 @@
         "es6-promisify": "^5.0.0",
         "glob": "^7.1.2",
         "lodash": "^4.17.4",
+        "isomorphic-fetch": "2.2.1",
         "moment": "2.21.0",
         "opn": "^5.3.0",
         "promisify-child-process": "^1.0.5",
@@ -57,6 +57,7 @@
         "publish-release": "0xproject/publish-release",
         "rimraf": "^2.6.2",
         "semver-diff": "^2.1.0",
+        "semver": "5.5.0",
         "semver-sort": "0.0.4"
     },
     "publishConfig": {

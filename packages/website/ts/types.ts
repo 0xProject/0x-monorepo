@@ -519,6 +519,8 @@ export interface WebsiteBackendRelayerInfo {
     url: string;
     appUrl?: string;
     headerImgUrl?: string;
+    logoImgUrl?: string;
+    primaryColor?: string;
     topTokens: WebsiteBackendTokenInfo[];
 }
 

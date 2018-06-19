@@ -1,6 +1,7 @@
 import { colors, Styles } from '@0xproject/react-shared';
 import { BigNumber } from '@0xproject/utils';
 import * as _ from 'lodash';
+import ActionAccountBalanceWallet from 'material-ui/svg-icons/action/account-balance-wallet';
 import * as React from 'react';
 import * as DocumentTitle from 'react-document-title';
 import { Route, RouteComponentProps, Switch } from 'react-router-dom';
@@ -24,6 +25,7 @@ import { TradeHistory } from 'ts/components/trade_history/trade_history';
 import { Container } from 'ts/components/ui/container';
 import { FlashMessage } from 'ts/components/ui/flash_message';
 import { Island } from 'ts/components/ui/island';
+import { Text } from 'ts/components/ui/text';
 import { Wallet } from 'ts/components/wallet/wallet';
 import { GenerateOrderForm } from 'ts/containers/generate_order_form';
 import { PortalOnboardingFlow } from 'ts/containers/portal_onboarding_flow';
@@ -100,6 +102,7 @@ const THROTTLE_TIMEOUT = 100;
 const TOP_BAR_HEIGHT = TopBar.heightForDisplayType(TopBarDisplayType.Expanded);
 const LEFT_COLUMN_WIDTH = 346;
 const MENU_PADDING_LEFT = 185;
+const LARGE_LAYOUT_MAX_WIDTH = 1200;
 
 const styles: Styles = {
     root: {
@@ -254,6 +257,7 @@ export class Portal extends React.Component<PortalProps, PortalState> {
                     translate={this.props.translate}
                     displayType={TopBarDisplayType.Expanded}
                     style={{ backgroundColor: colors.lightestGrey }}
+                    maxWidth={LARGE_LAYOUT_MAX_WIDTH}
                 />
                 <div id="portal" style={styles.body}>
                     <Switch>
@@ -353,8 +357,26 @@ export class Portal extends React.Component<PortalProps, PortalState> {
                 />
                 <Container marginTop="15px">
                     <Island>
-                        {/** TODO: Implement real styles. */}
-                        <p onClick={this._startOnboarding.bind(this)}>Start onboarding flow.</p>
+                        <Container
+                            marginTop="30px"
+                            marginBottom="30px"
+                            marginLeft="30px"
+                            marginRight="30px"
+                            className="flex justify-around items-center"
+                        >
+                            <ActionAccountBalanceWallet
+                                style={{ width: '30px', height: '30px' }}
+                                color={colors.orange}
+                            />
+                            <Text
+                                fontColor={colors.grey}
+                                fontSize="16px"
+                                center={true}
+                                onClick={this._startOnboarding.bind(this)}
+                            >
+                                Learn how to set up your account
+                            </Text>
+                        </Container>
                     </Island>
                 </Container>
             </div>
@@ -660,11 +682,11 @@ interface LargeLayoutProps {
 }
 const LargeLayout = (props: LargeLayoutProps) => {
     return (
-        <div className="sm-flex flex-center">
-            <div className="flex-last px3">
+        <div className="mx-auto flex flex-center" style={{ maxWidth: LARGE_LAYOUT_MAX_WIDTH }}>
+            <div className="flex-last px2">
                 <div style={styles.leftColumn}>{props.left}</div>
             </div>
-            <div className="flex-auto px3" style={styles.scrollContainer}>
+            <div className="flex-auto px2" style={styles.scrollContainer}>
                 {props.right}
             </div>
         </div>
@@ -676,7 +698,7 @@ interface SmallLayoutProps {
 }
 const SmallLayout = (props: SmallLayoutProps) => {
     return (
-        <div className="sm-flex flex-center">
+        <div className="flex flex-center">
             <div className="flex-auto px3" style={styles.scrollContainer}>
                 {props.content}
             </div>

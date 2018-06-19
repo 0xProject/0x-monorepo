@@ -39,4 +39,18 @@ contract ISignatureValidator {
         bool approval
     )
         external;
+
+    /// @dev Verifies that a signature is valid.
+    /// @param hash Message hash that is signed.
+    /// @param signer Address of signer.
+    /// @param signature Proof of signing.
+    /// @return Validity of order signature.
+    function isValidSignature(
+        bytes32 hash,
+        address signer,
+        bytes memory signature
+    )
+        public
+        view
+        returns (bool isValid);
 }

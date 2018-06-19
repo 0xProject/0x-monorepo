@@ -5,6 +5,7 @@ import * as React from 'react';
 
 import { TopTokens } from 'ts/components/relayer_index/relayer_top_tokens';
 import { Container } from 'ts/components/ui/container';
+import { Image } from 'ts/components/ui/image';
 import { Island } from 'ts/components/ui/island';
 import { colors } from 'ts/style/colors';
 import { WebsiteBackendRelayerInfo } from 'ts/types';
@@ -26,7 +27,6 @@ const styles: Styles = {
     header: {
         height: '50%',
         width: '100%',
-        objectFit: 'cover',
         borderBottomRightRadius: 4,
         borderBottomLeftRadius: 4,
         borderTopRightRadius: 4,
@@ -58,21 +58,34 @@ const styles: Styles = {
 };
 
 const FALLBACK_IMG_SRC = '/images/landing/hero_chip_image.png';
+const FALLBACK_PRIMARY_COLOR = colors.grey200;
 const NO_CONTENT_MESSAGE = '--';
+const RELAYER_ICON_HEIGHT = '110px';
 
 export const RelayerGridTile: React.StatelessComponent<RelayerGridTileProps> = (props: RelayerGridTileProps) => {
     const link = props.relayerInfo.appUrl || props.relayerInfo.url;
     const topTokens = props.relayerInfo.topTokens;
     const weeklyTxnVolume = props.relayerInfo.weeklyTxnVolume;
+    const headerImageUrl = props.relayerInfo.logoImgUrl;
+    const headerBackgroundColor =
+        !_.isUndefined(headerImageUrl) && !_.isUndefined(props.relayerInfo.primaryColor)
+            ? props.relayerInfo.primaryColor
+            : FALLBACK_PRIMARY_COLOR;
     return (
         <Island style={styles.root} Component={GridTile}>
             <div style={styles.innerDiv}>
                 <a href={link} target="_blank" style={{ textDecoration: 'none' }}>
-                    <ImgWithFallback
-                        src={props.relayerInfo.headerImgUrl}
-                        fallbackSrc={FALLBACK_IMG_SRC}
-                        style={styles.header}
-                    />
+                    <div
+                        className="flex items-center"
+                        style={{ ...styles.header, backgroundColor: headerBackgroundColor }}
+                    >
+                        <Image
+                            className="mx-auto"
+                            src={props.relayerInfo.logoImgUrl}
+                            fallbackSrc={FALLBACK_IMG_SRC}
+                            height={RELAYER_ICON_HEIGHT}
+                        />
+                    </div>
                 </a>
                 <div style={styles.body}>
                     <div className="py1" style={styles.relayerNameLabel}>
@@ -108,32 +121,3 @@ const Section = (props: SectionProps) => {
 };
 
 const NoContent = () => <div style={styles.subLabel}>{NO_CONTENT_MESSAGE}</div>;
-
-interface ImgWithFallbackProps {
-    src?: string;
-    fallbackSrc: string;
-    style: React.CSSProperties;
-}
-interface ImgWithFallbackState {
-    imageLoadFailed: boolean;
-}
-class ImgWithFallback extends React.Component<ImgWithFallbackProps, ImgWithFallbackState> {
-    constructor(props: ImgWithFallbackProps) {
-        super(props);
-        this.state = {
-            imageLoadFailed: false,
-        };
-    }
-    public render(): React.ReactNode {
-        if (this.state.imageLoadFailed || _.isUndefined(this.props.src)) {
-            return <img src={this.props.fallbackSrc} style={this.props.style} />;
-        } else {
-            return <img src={this.props.src} onError={this._onError.bind(this)} style={this.props.style} />;
-        }
-    }
-    private _onError(): void {
-        this.setState({
-            imageLoadFailed: true,
-        });
-    }
-}
