@@ -1,7 +1,5 @@
 [
     {
-<<<<<<< HEAD
-=======
         "timestamp": 1529397769,
         "version": "0.7.1",
         "changes": [
@@ -12,7 +10,6 @@
     },
     {
         "timestamp": 1528070400,
->>>>>>> 40a061a5... Updated CHANGELOGS
         "version": "0.7.0",
         "changes": [
             {
