@@ -1,15 +1,7 @@
 [
     {
-        "version": "0.6.3",
-        "changes": [
-            {
-                "note": "Added errorUtils.spawnSwitchErr"
-            }
-        ]
-    },
-    {
-        "timestamp": 1527009133,
-        "version": "0.6.2",
+        "timestamp": 1529397769,
+        "version": "0.7.1",
         "changes": [
             {
                 "note": "Dependencies updated"
@@ -20,8 +12,17 @@
         "version": "0.7.0",
         "changes": [
             {
-                "note": "Add logUtils.warn",
-                "pr": 589
+                "note": "Incorrect publish that was unpublished"
+            }
+        ],
+        "timestamp": 1527810075
+    },
+    {
+        "timestamp": 1527009133,
+        "version": "0.6.2",
+        "changes": [
+            {
+                "note": "Dependencies updated"
             }
         ]
     },

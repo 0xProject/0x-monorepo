@@ -1,5 +1,26 @@
 [
     {
+<<<<<<< HEAD
+=======
+        "timestamp": 1529397769,
+        "version": "0.4.20",
+        "changes": [
+            {
+                "note": "Dependencies updated"
+            }
+        ]
+    },
+    {
+        "version": "0.4.19",
+        "changes": [
+            {
+                "note": "Incorrect publish that was unpublished"
+            }
+        ],
+        "timestamp": 1527810075
+    },
+    {
+>>>>>>> 40a061a5... Updated CHANGELOGS
         "timestamp": 1527009133,
         "version": "0.4.18",
         "changes": [
