@@ -1,4 +1,4 @@
-import { colors, Styles } from '@0xproject/react-shared';
+import { colors, constants as sharedConstants, Styles } from '@0xproject/react-shared';
 import { BigNumber } from '@0xproject/utils';
 import * as _ from 'lodash';
 import ActionAccountBalanceWallet from 'material-ui/svg-icons/action/account-balance-wallet';
@@ -46,6 +46,7 @@ import {
     TokenVisibility,
     WebsitePaths,
 } from 'ts/types';
+import { analytics } from 'ts/utils/analytics';
 import { backendClient } from 'ts/utils/backend_client';
 import { configs } from 'ts/utils/configs';
 import { constants } from 'ts/utils/constants';
@@ -73,6 +74,7 @@ export interface PortalProps {
     flashMessage?: string | React.ReactNode;
     lastForceTokenStateRefetch: number;
     translate: Translate;
+    portalOnboardingStep: number;
 }
 
 interface PortalState {
@@ -384,6 +386,8 @@ export class Portal extends React.Component<PortalProps, PortalState> {
     }
 
     private _startOnboarding(): void {
+        const networkName = sharedConstants.NETWORK_NAME_BY_ID[this.props.networkId];
+        analytics.logEvent('Portal', 'Onboarding Started - Manual', networkName, this.props.portalOnboardingStep);
         this.props.dispatcher.updatePortalOnboardingShowing(true);
     }
     private _renderWalletSection(): React.ReactNode {
