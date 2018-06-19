@@ -80,9 +80,6 @@ contract LibMem
             //
             if (source > dest) {
                 assembly {
-                    // Record the total number of full words to copy
-                    let nWords := div(length, 32)
-
                     // We subtract 32 from `sEnd` and `dEnd` because it
                     // is easier to compare with in the loop, and these
                     // are also the addresses we need for copying the
@@ -98,20 +95,19 @@ contract LibMem
                     let last := mload(sEnd)
 
                     // Copy whole words front to back
-                    for {let i := 0} lt(i, nWords) {i := add(i, 1)} {
+                    // Note: the first check is always true,
+                    // this could have been a do-while loop.
+                    for {} lt(source, sEnd) {} {
                         mstore(dest, mload(source))
                         source := add(source, 32)
                         dest := add(dest, 32)
                     }
-
+                    
                     // Write the last 32 bytes
                     mstore(dEnd, last)
                 }
             } else {
                 assembly {
-                    // Record the total number of full words to copy
-                    let nWords := div(length, 32)
-
                     // We subtract 32 from `sEnd` and `dEnd` because those
                     // are the starting points when copying a word at the end.
                     length := sub(length, 32)
@@ -125,12 +121,18 @@ contract LibMem
                     let first := mload(source)
 
                     // Copy whole words back to front
-                    for {let i := 0} lt(i, nWords) {i := add(i, 1)} {
+                    // We use a signed comparisson here to allow dEnd to become
+                    // negative (happens when source and dest < 32). Valid
+                    // addresses in local memory will never be larger than
+                    // 2**255, so they can be safely re-interpreted as signed.
+                    // Note: the first check is always true,
+                    // this could have been a do-while loop.
+                    for {} slt(dest, dEnd) {} {
                         mstore(dEnd, mload(sEnd))
                         sEnd := sub(sEnd, 32)
                         dEnd := sub(dEnd, 32)
                     }
-
+                    
                     // Write the first 32 bytes
                     mstore(dest, first)
                 }
