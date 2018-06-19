@@ -69,6 +69,8 @@ export enum OpCode {
     Return = 'RETURN',
     Call = 'CALL',
     SelfDestruct = 'SELFDESTRUCT',
+    Jump = 'JUMP',
+    JumpI = 'JUMPI',
 }
 
 export interface StructLog {

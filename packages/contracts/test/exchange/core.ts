@@ -409,7 +409,7 @@ describe('Exchange core', () => {
             expect(orderHashUtils.getOrderHashHex(signedOrder)).to.be.equal(logArgs.orderHash);
         });
 
-        it('should throw when taker is specified and order is claimed by other', async () => {
+        it.only('should throw when taker is specified and order is claimed by other', async () => {
             signedOrder = orderFactory.newSignedOrder({
                 takerAddress: feeRecipientAddress,
                 makerAssetAmount: Web3Wrapper.toBaseUnitAmount(new BigNumber(100), 18),

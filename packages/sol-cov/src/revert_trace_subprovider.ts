@@ -53,7 +53,7 @@ export class RevertTraceSubprovider extends TraceCollectionSubprovider {
         }
     }
     private async _printStackTraceAsync(evmCallStack: EvmCallStack): Promise<void> {
-        const sourceRanges: SourceRange[] = [];
+        const stackTraceStrings: string[] = [];
         if (_.isUndefined(this._contractsData)) {
             this._contractsData = await this._artifactAdapter.collectContractsDataAsync();
         }
@@ -97,18 +97,40 @@ export class RevertTraceSubprovider extends TraceCollectionSubprovider {
                     continue;
                 }
             }
-            sourceRanges.push(sourceRange);
+            const fileIndex = contractData.sources.indexOf(sourceRange.fileName);
+            stackTraceStrings.push(getStackTraceString(sourceRange, contractData.sourceCodes[fileIndex]));
         }
-        if (sourceRanges.length > 0) {
+        const dedupedTraceStrings = filterDuplicateTraceStrings(stackTraceStrings);
+        if (dedupedTraceStrings.length > 0) {
             this._logger.error('\n\nStack trace for REVERT:\n');
-            _.forEach(_.reverse(sourceRanges), sourceRange => {
-                this._logger.error(
-                    `${sourceRange.fileName}:${sourceRange.location.start.line}:${sourceRange.location.start.column}`,
-                );
+            _.forEach(_.reverse(dedupedTraceStrings), traceString => {
+                this._logger.error(traceString);
             });
             this._logger.error('\n');
         } else {
             this._logger.error('Could not determine stack trace');
         }
     }
+}
+
+function filterDuplicateTraceStrings(traceStrings: string[]): string[] {
+    if (traceStrings.length === 0) {
+        return [];
+    }
+    const results: string[] = [traceStrings[0]];
+    let prev = traceStrings[0];
+    _.forEach(traceStrings, traceString => {
+        if (traceString !== prev) {
+            results.push(traceString);
+        }
+        prev = traceString;
+    });
+    return results;
+}
+
+function getStackTraceString(sourceRange: SourceRange, sourceCode: string): string {
+    const sourceCodeInRange = utils.getRange(sourceCode, sourceRange.location);
+    return `${sourceRange.fileName}:${sourceRange.location.start.line}:${sourceRange.location.start.column}: \n\t${
+        sourceCodeInRange.split('\n')[0]
+    }`;
 }
