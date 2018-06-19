@@ -5,6 +5,14 @@ Edit the package's CHANGELOG.json file only.
 
 CHANGELOG
 
+## v0.2.1 - _June 19, 2018_
+
+    * Dependencies updated
+
+## v0.2.0 - _June 15, 2018_
+
+    * Add `prepublish_checks` script (#650)
+
 ## v0.1.20 - _May 22, 2018_
 
     * Dependencies updated
