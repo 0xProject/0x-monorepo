@@ -9,6 +9,7 @@ import { ProviderPicker } from 'ts/components/top_bar/provider_picker';
 import { Container } from 'ts/components/ui/container';
 import { DropDown } from 'ts/components/ui/drop_down';
 import { Identicon } from 'ts/components/ui/identicon';
+import { Image } from 'ts/components/ui/image';
 import { Text } from 'ts/components/ui/text';
 import { Dispatcher } from 'ts/redux/dispatcher';
 import { colors } from 'ts/style/colors';
@@ -75,7 +76,7 @@ export class ProviderDisplay extends React.Component<ProviderDisplayProps, Provi
                     </Text>
                 </Container>
                 {isProviderMetamask && (
-                    <img src="/images/metamask_icon.png" style={{ width: ROOT_HEIGHT, height: ROOT_HEIGHT }} />
+                    <Image src="/images/metamask_icon.png" height={ROOT_HEIGHT} width={ROOT_HEIGHT} />
                 )}
             </div>
         );

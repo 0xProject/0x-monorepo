@@ -2,6 +2,7 @@ import blockies = require('blockies');
 import * as _ from 'lodash';
 import * as React from 'react';
 
+import { Image } from 'ts/components/ui/image';
 import { colors } from 'ts/style/colors';
 
 interface IdenticonProps {
@@ -31,15 +32,12 @@ export class Identicon extends React.Component<IdenticonProps, IdenticonState> {
                 }}
             >
                 {!_.isEmpty(address) ? (
-                    <img
+                    <Image
                         src={blockies({
                             seed: address.toLowerCase(),
                         }).toDataURL()}
-                        style={{
-                            width: diameter,
-                            height: diameter,
-                            imageRendering: 'pixelated',
-                        }}
+                        height={diameter}
+                        width={diameter}
                     />
                 ) : (
                     <svg height={diameter} width={diameter}>
