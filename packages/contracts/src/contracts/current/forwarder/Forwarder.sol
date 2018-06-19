@@ -7,6 +7,7 @@ import "./MixinMarketBuyERC20Tokens.sol";
 import "../utils/Ownable/Ownable.sol";
 
 contract Forwarder is
+    Ownable,
     MixinForwarderCore,
     MixinMarketBuyERC20Tokens,
     MixinBuyExactAssets

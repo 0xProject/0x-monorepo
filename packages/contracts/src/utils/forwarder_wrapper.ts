@@ -10,7 +10,6 @@ import { ForwarderContract } from '../../src/generated_contract_wrappers/forward
 import { formatters } from '../../src/utils/formatters';
 
 import { constants } from './constants';
-import { orderUtils } from './order_utils';
 import { MarketSellOrders } from './types';
 
 const DEFAULT_FEE_PROPORTION = 0;
@@ -169,7 +168,6 @@ export class ForwarderWrapper {
                     orders,
                     feeOrders,
                     feeProportion,
-                    feeRecipient,
                     makerAssetAmount,
                 );
                 return fillAmountWei;
@@ -179,7 +177,6 @@ export class ForwarderWrapper {
                     orders,
                     feeOrders,
                     feeProportion,
-                    feeRecipient,
                 );
                 return fillAmountWei;
             }
@@ -191,7 +188,6 @@ export class ForwarderWrapper {
         orders: SignedOrder[],
         feeOrders: SignedOrder[],
         feeProportion: number,
-        feeRecipient: string,
         makerAssetAmount: BigNumber,
     ): Promise<BigNumber> {
         const makerAssetData = assetProxyUtils.decodeAssetData(orders[0].makerAssetData);
@@ -229,7 +225,6 @@ export class ForwarderWrapper {
         orders: SignedOrder[],
         feeOrders: SignedOrder[],
         feeProportion: number,
-        feeRecipient: string,
     ): Promise<BigNumber> {
         // Total cost when buying ERC721 is the total cost of all ERC721 orders + any fee abstraction
         let fillAmountWei = _.reduce(
@@ -246,8 +241,6 @@ export class ForwarderWrapper {
             },
             ZERO_AMOUNT,
         );
-        const params = formatters.createMarketSellOrders(orders, fillAmountWei);
-        const feeParams = formatters.createMarketSellOrders(feeOrders, ZERO_AMOUNT);
         if (totalFees.greaterThan(ZERO_AMOUNT)) {
             // Calculate the ZRX fee abstraction cost
             const emptyFeeOrders: SignedOrder[] = [];
@@ -255,7 +248,6 @@ export class ForwarderWrapper {
                 feeOrders,
                 emptyFeeOrders,
                 DEFAULT_FEE_PROPORTION,
-                constants.NULL_ADDRESS,
                 totalFees,
             );
             fillAmountWei = fillAmountWei.plus(expectedFeeAmountWei);

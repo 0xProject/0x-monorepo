@@ -2,10 +2,10 @@ pragma solidity ^0.4.24;
 pragma experimental ABIEncoderV2;
 
 import "zeppelin-solidity/contracts/token/ERC721/ERC721Basic.sol";
-import "../protocol/AssetProxy/ERC721Proxy.sol";
+import "../protocol/AssetProxy/MixinERC721Transfer.sol";
 
 contract MixinERC721 is
-    ERC721Proxy
+    MixinERC721Transfer
 {
     // Equals to `bytes4(keccak256("onERC721Received(address,uint256,bytes)"))`
     bytes4 constant ERC721_RECEIVED = 0xf0b9e5ba;
@@ -28,6 +28,6 @@ contract MixinERC721 is
     {
         // Pop off the proxy id as this needs to be done prior
         popLastByte(assetData);
-        ERC721Proxy.transferFromInternal(assetData, from, to, amount);
+        MixinERC721Transfer.transferFromInternal(assetData, from, to, amount);
     }
 }
