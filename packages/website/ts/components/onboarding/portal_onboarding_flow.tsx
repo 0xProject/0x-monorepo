@@ -1,3 +1,4 @@
+import { constants as sharedConstants } from '@0xproject/react-shared';
 import * as _ from 'lodash';
 import * as React from 'react';
 import { RouteComponentProps, withRouter } from 'react-router';
@@ -14,9 +15,11 @@ import { UnlockWalletOnboardingStep } from 'ts/components/onboarding/unlock_wall
 import { WrapEthOnboardingStep } from 'ts/components/onboarding/wrap_eth_onboarding_step';
 import { AllowanceToggle } from 'ts/containers/inputs/allowance_toggle';
 import { ProviderType, Token, TokenByAddress, TokenStateByAddress } from 'ts/types';
+import { analytics } from 'ts/utils/analytics';
 import { utils } from 'ts/utils/utils';
 
 export interface PortalOnboardingFlowProps extends RouteComponentProps<any> {
+    networkId: number;
     blockchain: Blockchain;
     stepIndex: number;
     isRunning: boolean;
@@ -52,8 +55,8 @@ class PlainPortalOnboardingFlow extends React.Component<PortalOnboardingFlowProp
                 steps={this._getSteps()}
                 stepIndex={this.props.stepIndex}
                 isRunning={this.props.isRunning}
-                onClose={this.props.updateIsRunning.bind(this, false)}
-                updateOnboardingStep={this.props.updateOnboardingStep}
+                onClose={this._closeOnboarding.bind(this)}
+                updateOnboardingStep={this._updateOnboardingStep.bind(this)}
             />
         );
     }
@@ -188,8 +191,20 @@ class PlainPortalOnboardingFlow extends React.Component<PortalOnboardingFlowProp
     }
     private _autoStartOnboardingIfShould(): void {
         if (!this.props.isRunning && !this.props.hasBeenSeen && this.props.blockchainIsLoaded) {
+            const networkName = sharedConstants.NETWORK_NAME_BY_ID[this.props.networkId];
+            analytics.logEvent('Portal', 'Onboarding Started - Automatic', networkName, this.props.stepIndex);
             this.props.updateIsRunning(true);
         }
+    }
+    private _updateOnboardingStep(stepIndex: number): void {
+        const networkName = sharedConstants.NETWORK_NAME_BY_ID[this.props.networkId];
+        this.props.updateOnboardingStep(stepIndex);
+        analytics.logEvent('Portal', 'Update Onboarding Step', networkName, stepIndex);
+    }
+    private _closeOnboarding(): void {
+        const networkName = sharedConstants.NETWORK_NAME_BY_ID[this.props.networkId];
+        this.props.updateIsRunning(false);
+        analytics.logEvent('Portal', 'Onboarding Closed', networkName, this.props.stepIndex);
     }
     private _renderZrxAllowanceToggle(): React.ReactNode {
         const zrxToken = utils.getZrxToken(this.props.tokenByAddress);

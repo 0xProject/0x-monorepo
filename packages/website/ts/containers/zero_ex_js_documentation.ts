@@ -173,6 +173,7 @@ const docsInfoConfig: DocsInfoConfig = {
             'OrderStateInvalid',
             'OrderState',
             'OrderStateWatcherConfig',
+            'OrderWatcherConfig',
             'FilterObject',
             'OrderRelevantState',
             'JSONRPCRequestPayload',

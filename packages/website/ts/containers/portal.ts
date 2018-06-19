@@ -29,6 +29,7 @@ interface ConnectedState {
     flashMessage?: string | React.ReactNode;
     translate: Translate;
     isPortalOnboardingShowing: boolean;
+    portalOnboardingStep: number;
 }
 
 interface ConnectedDispatch {
@@ -78,6 +79,7 @@ const mapStateToProps = (state: State, _ownProps: PortalComponentProps): Connect
         flashMessage: state.flashMessage,
         translate: state.translate,
         isPortalOnboardingShowing: state.isPortalOnboardingShowing,
+        portalOnboardingStep: state.portalOnboardingStep,
     };
 };
 

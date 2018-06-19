@@ -297,7 +297,14 @@ export class TopBar extends React.Component<TopBarProps, TopBarState> {
                 openSecondary={true}
                 onRequestChange={this._onMenuButtonClick.bind(this)}
             >
-                <DrawerMenu selectedPath={this.props.location.pathname} userAddress={this.props.userAddress} />
+                <DrawerMenu
+                    selectedPath={this.props.location.pathname}
+                    userAddress={this.props.userAddress}
+                    injectedProviderName={this.props.injectedProviderName}
+                    providerType={this.props.providerType}
+                    blockchainIsLoaded={this.props.blockchainIsLoaded}
+                    blockchain={this.props.blockchain}
+                />
             </Drawer>
         );
     }

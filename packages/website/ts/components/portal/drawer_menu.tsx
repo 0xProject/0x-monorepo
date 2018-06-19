@@ -2,10 +2,12 @@ import { Styles } from '@0xproject/react-shared';
 import * as _ from 'lodash';
 import * as React from 'react';
 
+import { Blockchain } from 'ts/blockchain';
 import { defaultMenuItemEntries, Menu } from 'ts/components/portal/menu';
 import { Identicon } from 'ts/components/ui/identicon';
+import { Text } from 'ts/components/ui/text';
 import { colors } from 'ts/style/colors';
-import { WebsitePaths } from 'ts/types';
+import { ProviderType, WebsitePaths } from 'ts/types';
 import { utils } from 'ts/utils/utils';
 
 const IDENTICON_DIAMETER = 45;
@@ -25,14 +27,15 @@ const styles: Styles = {
         MozBorderRadius: BORDER_RADIUS,
         WebkitBorderRadius: BORDER_RADIUS,
     },
-    userAddress: {
-        color: colors.white,
-    },
 };
 
 export interface DrawerMenuProps {
     selectedPath?: string;
     userAddress?: string;
+    injectedProviderName: string;
+    providerType: ProviderType;
+    blockchain?: Blockchain;
+    blockchainIsLoaded: boolean;
 }
 export const DrawerMenu = (props: DrawerMenuProps) => {
     const relayerItemEntry = {
@@ -41,9 +44,15 @@ export const DrawerMenu = (props: DrawerMenuProps) => {
         iconName: 'zmdi-portable-wifi',
     };
     const menuItemEntries = _.concat(relayerItemEntry, defaultMenuItemEntries);
+    const displayMessage = utils.getReadableAccountState(
+        props.blockchainIsLoaded && !_.isUndefined(props.blockchain),
+        props.providerType,
+        props.injectedProviderName,
+        props.userAddress,
+    );
     return (
         <div style={styles.root}>
-            <Header userAddress={props.userAddress} />
+            <Header userAddress={props.userAddress} displayMessage={displayMessage} />
             <Menu selectedPath={props.selectedPath} menuItemEntries={menuItemEntries} />
         </div>
     );
@@ -51,17 +60,16 @@ export const DrawerMenu = (props: DrawerMenuProps) => {
 
 interface HeaderProps {
     userAddress?: string;
+    displayMessage: string;
 }
 const Header = (props: HeaderProps) => {
     return (
         <div className="flex flex-center py4">
             <div className="flex flex-column mx-auto">
                 <Identicon address={props.userAddress} diameter={IDENTICON_DIAMETER} style={styles.identicon} />
-                {!_.isUndefined(props.userAddress) && (
-                    <div className="pt2" style={styles.userAddress}>
-                        {utils.getAddressBeginAndEnd(props.userAddress)}
-                    </div>
-                )}
+                <Text className="pt2" fontColor={colors.white}>
+                    {props.displayMessage}
+                </Text>
             </div>
         </div>
     );
