@@ -22,6 +22,12 @@ contract LibEIP712 {
     // EIP191 header for EIP712 prefix
     string constant EIP191_HEADER = "\x19\x01";
 
+    // EIP712 Domain Name value
+    string constant EIP712_DOMAIN_NAME = "0x Protocol";
+
+    // EIP712 Domain Version value
+    string constant EIP712_DOMAIN_VERSION = "2";
+
     // Hash of the EIP712 Domain Separator Schema
     bytes32 public constant EIP712_DOMAIN_SEPARATOR_SCHEMA_HASH = keccak256(abi.encodePacked(
         "EIP712Domain(",
@@ -35,16 +41,19 @@ contract LibEIP712 {
     bytes32 public EIP712_DOMAIN_HASH;
 
     constructor ()
-    public
+        public
     {
-        EIP712_DOMAIN_HASH = keccak256(abi.encodePacked(
+        EIP712_DOMAIN_HASH = keccak256(abi.encode(
             EIP712_DOMAIN_SEPARATOR_SCHEMA_HASH,
-            keccak256(abi.encodePacked("0x Protocol")),
-            keccak256(abi.encodePacked("2")),
-            bytes32(address(this))
+            keccak256(bytes(EIP712_DOMAIN_NAME)),
+            keccak256(bytes(EIP712_DOMAIN_VERSION)),
+            address(this)
         ));
     }
 
+    /// @dev Calculates EIP712 encoding for a hash struct in this EIP712 Domain.
+    /// @param hashStruct The EIP712 hash struct.
+    /// @return EIP712 hash applied to this EIP712 Domain.
     function hashEIP712Message(bytes32 hashStruct)
         internal
         view

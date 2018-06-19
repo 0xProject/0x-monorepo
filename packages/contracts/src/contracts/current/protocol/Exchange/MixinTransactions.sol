@@ -53,14 +53,14 @@ contract MixinTransactions is
     /// @return EIP712 hash of the Transaction.
     function hashZeroExTransaction(uint256 salt, address signer, bytes data)
         internal
-        view
+        pure
         returns (bytes32)
     {
-        return keccak256(abi.encodePacked(
+        return keccak256(abi.encode(
             EIP712_ZEROEX_TRANSACTION_SCHEMA_HASH,
             salt,
-            bytes32(signer),
-            keccak256(abi.encodePacked(data))
+            signer,
+            keccak256(data)
         ));
     }
 

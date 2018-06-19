@@ -1,11 +1,8 @@
 import { schemas, SchemaValidator } from '@0xproject/json-schemas';
 import { Order, SignedOrder } from '@0xproject/types';
-import { BigNumber } from '@0xproject/utils';
-import * as ethUtil from 'ethereumjs-util';
 import * as _ from 'lodash';
 
 import { assert } from './assert';
-import { crypto } from './crypto';
 import { EIP712Utils } from './eip712_utils';
 import { EIP712Schema, EIP712Types } from './types';
 

@@ -1,4 +1,4 @@
-import { crypto, EIP712Schema, EIP712Types, EIP712Utils, generatePseudoRandomSalt } from '@0xproject/order-utils';
+import { EIP712Schema, EIP712Types, EIP712Utils, generatePseudoRandomSalt } from '@0xproject/order-utils';
 import { SignatureType } from '@0xproject/types';
 import * as ethUtil from 'ethereumjs-util';
 
@@ -24,7 +24,6 @@ export class TransactionFactory {
         this._signerBuff = ethUtil.privateToAddress(this._privateKey);
     }
     public newSignedTransaction(data: string, signatureType: SignatureType = SignatureType.EthSign): SignedTransaction {
-        const executeTransactionSchemaHashBuff = EIP712Utils.compileSchema(EIP712_ZEROEX_TRANSACTION_SCHEMA);
         const salt = generatePseudoRandomSalt();
         const signer = `0x${this._signerBuff.toString('hex')}`;
         const executeTransactionData = {

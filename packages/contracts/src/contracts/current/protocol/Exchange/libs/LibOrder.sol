@@ -99,6 +99,8 @@ contract LibOrder is
         pure
         returns (bytes32)
     {
+        // Note: changing this to abi.encode results in an error on 0.4.24
+        // UnimplementedFeatureError: Variable inaccessible, too deep inside stack (17)
         return keccak256(abi.encodePacked(
             EIP712_ORDER_SCHEMA_HASH,
             bytes32(order.makerAddress),
@@ -111,8 +113,8 @@ contract LibOrder is
             order.takerFee,
             order.expirationTimeSeconds,
             order.salt,
-            keccak256(abi.encodePacked(order.makerAssetData)),
-            keccak256(abi.encodePacked(order.takerAssetData))
+            keccak256(order.makerAssetData),
+            keccak256(order.takerAssetData)
         ));
     }
 }

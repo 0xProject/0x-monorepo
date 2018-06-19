@@ -1,8 +1,6 @@
-import { BigNumber } from '@0xproject/utils';
 import ethUtil = require('ethereumjs-util');
 import * as _ from 'lodash';
 
-import { assetProxyUtils } from './asset_proxy_utils';
 import { crypto } from './crypto';
 import { EIP712Schema, EIP712Types } from './types';
 
