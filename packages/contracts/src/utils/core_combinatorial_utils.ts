@@ -23,7 +23,7 @@ import { constants } from '../utils/constants';
 import { ERC20Wrapper } from '../utils/erc20_wrapper';
 import { ERC721Wrapper } from '../utils/erc721_wrapper';
 import { ExchangeWrapper } from '../utils/exchange_wrapper';
-import { NewOrderFactory } from '../utils/new_order_factory';
+import { OrderFactoryFromScenario } from '../utils/order_factory_from_scenario';
 import { orderUtils } from '../utils/order_utils';
 import { signingUtils } from '../utils/signing_utils';
 import { SimpleAssetBalanceAndProxyAllowanceFetcher } from '../utils/simple_asset_balance_and_proxy_allowance_fetcher';
@@ -111,7 +111,7 @@ export async function coreCombinatorialUtilsFactoryAsync(
         constants.AWAIT_TRANSACTION_MINED_MS,
     );
 
-    const orderFactory = new NewOrderFactory(
+    const orderFactory = new OrderFactoryFromScenario(
         userAddresses,
         zrxToken.address,
         [erc20EighteenDecimalTokenA.address, erc20EighteenDecimalTokenB.address],
@@ -135,7 +135,7 @@ export async function coreCombinatorialUtilsFactoryAsync(
 }
 
 export class CoreCombinatorialUtils {
-    public orderFactory: NewOrderFactory;
+    public orderFactory: OrderFactoryFromScenario;
     public ownerAddress: string;
     public makerAddress: string;
     public makerPrivateKey: Buffer;
@@ -235,7 +235,7 @@ export class CoreCombinatorialUtils {
         }
     }
     constructor(
-        orderFactory: NewOrderFactory,
+        orderFactory: OrderFactoryFromScenario,
         ownerAddress: string,
         makerAddress: string,
         makerPrivateKey: Buffer,

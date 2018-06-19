@@ -23,7 +23,7 @@ const TEN_UNITS_FIVE_DECIMALS = new BigNumber(1000000);
 const FIVE_UNITS_FIVE_DECIMALS = new BigNumber(500000);
 const ONE_NFT_UNIT = new BigNumber(1);
 
-export class NewOrderFactory {
+export class OrderFactoryFromScenario {
     private _userAddresses: string[];
     private _zrxAddress: string;
     private _nonZrxERC20EighteenDecimalTokenAddresses: string[];
