@@ -7,6 +7,7 @@ import * as chai from 'chai';
 import { DummyERC20TokenContract } from '../../src/generated_contract_wrappers/dummy_e_r_c20_token';
 import { ERC20ProxyContract } from '../../src/generated_contract_wrappers/e_r_c20_proxy';
 import { ExchangeContract } from '../../src/generated_contract_wrappers/exchange';
+import { ExchangeWrapperContract } from '../../src/generated_contract_wrappers/exchange_wrapper';
 import { WhitelistContract } from '../../src/generated_contract_wrappers/whitelist';
 import { artifacts } from '../../src/utils/artifacts';
 import { expectRevertOrAlwaysFailingTransactionAsync } from '../../src/utils/assertions';
@@ -195,6 +196,117 @@ describe('Exchange transactions', () => {
                 await exchangeWrapper.executeTransactionAsync(signedTx, senderAddress);
                 return expectRevertOrAlwaysFailingTransactionAsync(
                     exchangeWrapper.fillOrderAsync(signedOrder, senderAddress),
+                );
+            });
+        });
+
+        describe('cancelOrdersUpTo', () => {
+            let exchangeWrapperContract: ExchangeWrapperContract;
+
+            before(async () => {
+                exchangeWrapperContract = await ExchangeWrapperContract.deployFrom0xArtifactAsync(
+                    artifacts.ExchangeWrapper,
+                    provider,
+                    txDefaults,
+                    exchange.address,
+                );
+            });
+
+            it("should cancel an order if called from the order's sender", async () => {
+                const orderSalt = new BigNumber(0);
+                signedOrder = orderFactory.newSignedOrder({
+                    senderAddress: exchangeWrapperContract.address,
+                    salt: orderSalt,
+                });
+                const targetOrderEpoch = orderSalt.add(1);
+                const cancelData = exchange.cancelOrdersUpTo.getABIEncodedTransactionData(targetOrderEpoch);
+                const signedCancelTx = makerTransactionFactory.newSignedTransaction(cancelData);
+                await exchangeWrapperContract.cancelOrdersUpTo.sendTransactionAsync(
+                    targetOrderEpoch,
+                    signedCancelTx.salt,
+                    signedCancelTx.signature,
+                    {
+                        from: makerAddress,
+                    },
+                );
+
+                const takerAssetFillAmount = signedOrder.takerAssetAmount;
+                orderWithoutExchangeAddress = orderUtils.getOrderWithoutExchangeAddress(signedOrder);
+                const fillData = exchange.fillOrder.getABIEncodedTransactionData(
+                    orderWithoutExchangeAddress,
+                    takerAssetFillAmount,
+                    signedOrder.signature,
+                );
+                const signedFillTx = takerTransactionFactory.newSignedTransaction(fillData);
+                return expectRevertOrAlwaysFailingTransactionAsync(
+                    exchangeWrapperContract.fillOrder.sendTransactionAsync(
+                        orderWithoutExchangeAddress,
+                        takerAssetFillAmount,
+                        signedFillTx.salt,
+                        signedOrder.signature,
+                        signedFillTx.signature,
+                        { from: takerAddress },
+                    ),
+                );
+            });
+
+            it("should not cancel an order if not called from the order's sender", async () => {
+                const orderSalt = new BigNumber(0);
+                signedOrder = orderFactory.newSignedOrder({
+                    senderAddress: exchangeWrapperContract.address,
+                    salt: orderSalt,
+                });
+                const targetOrderEpoch = orderSalt.add(1);
+                await exchangeWrapper.cancelOrdersUpToAsync(targetOrderEpoch, makerAddress);
+
+                erc20Balances = await erc20Wrapper.getBalancesAsync();
+                const takerAssetFillAmount = signedOrder.takerAssetAmount;
+                orderWithoutExchangeAddress = orderUtils.getOrderWithoutExchangeAddress(signedOrder);
+                const data = exchange.fillOrder.getABIEncodedTransactionData(
+                    orderWithoutExchangeAddress,
+                    takerAssetFillAmount,
+                    signedOrder.signature,
+                );
+                signedTx = takerTransactionFactory.newSignedTransaction(data);
+                await exchangeWrapperContract.fillOrder.sendTransactionAsync(
+                    orderWithoutExchangeAddress,
+                    takerAssetFillAmount,
+                    signedTx.salt,
+                    signedOrder.signature,
+                    signedTx.signature,
+                    { from: takerAddress },
+                );
+
+                const newBalances = await erc20Wrapper.getBalancesAsync();
+                const makerAssetFillAmount = takerAssetFillAmount
+                    .times(signedOrder.makerAssetAmount)
+                    .dividedToIntegerBy(signedOrder.takerAssetAmount);
+                const makerFeePaid = signedOrder.makerFee
+                    .times(makerAssetFillAmount)
+                    .dividedToIntegerBy(signedOrder.makerAssetAmount);
+                const takerFeePaid = signedOrder.takerFee
+                    .times(makerAssetFillAmount)
+                    .dividedToIntegerBy(signedOrder.makerAssetAmount);
+                expect(newBalances[makerAddress][defaultMakerTokenAddress]).to.be.bignumber.equal(
+                    erc20Balances[makerAddress][defaultMakerTokenAddress].minus(makerAssetFillAmount),
+                );
+                expect(newBalances[makerAddress][defaultTakerTokenAddress]).to.be.bignumber.equal(
+                    erc20Balances[makerAddress][defaultTakerTokenAddress].add(takerAssetFillAmount),
+                );
+                expect(newBalances[makerAddress][zrxToken.address]).to.be.bignumber.equal(
+                    erc20Balances[makerAddress][zrxToken.address].minus(makerFeePaid),
+                );
+                expect(newBalances[takerAddress][defaultTakerTokenAddress]).to.be.bignumber.equal(
+                    erc20Balances[takerAddress][defaultTakerTokenAddress].minus(takerAssetFillAmount),
+                );
+                expect(newBalances[takerAddress][defaultMakerTokenAddress]).to.be.bignumber.equal(
+                    erc20Balances[takerAddress][defaultMakerTokenAddress].add(makerAssetFillAmount),
+                );
+                expect(newBalances[takerAddress][zrxToken.address]).to.be.bignumber.equal(
+                    erc20Balances[takerAddress][zrxToken.address].minus(takerFeePaid),
+                );
+                expect(newBalances[feeRecipientAddress][zrxToken.address]).to.be.bignumber.equal(
+                    erc20Balances[feeRecipientAddress][zrxToken.address].add(makerFeePaid.add(takerFeePaid)),
                 );
             });
         });

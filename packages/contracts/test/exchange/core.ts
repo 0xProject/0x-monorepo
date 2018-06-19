@@ -620,30 +620,30 @@ describe('Exchange core', () => {
     });
 
     describe('cancelOrdersUpTo', () => {
-        it('should fail to set makerEpoch less than current makerEpoch', async () => {
-            const makerEpoch = new BigNumber(1);
-            await exchangeWrapper.cancelOrdersUpToAsync(makerEpoch, makerAddress);
-            const lesserMakerEpoch = new BigNumber(0);
+        it('should fail to set orderEpoch less than current orderEpoch', async () => {
+            const orderEpoch = new BigNumber(1);
+            await exchangeWrapper.cancelOrdersUpToAsync(orderEpoch, makerAddress);
+            const lesserOrderEpoch = new BigNumber(0);
             return expectRevertOrAlwaysFailingTransactionAsync(
-                exchangeWrapper.cancelOrdersUpToAsync(lesserMakerEpoch, makerAddress),
+                exchangeWrapper.cancelOrdersUpToAsync(lesserOrderEpoch, makerAddress),
             );
         });
 
-        it('should fail to set makerEpoch equal to existing makerEpoch', async () => {
-            const makerEpoch = new BigNumber(1);
-            await exchangeWrapper.cancelOrdersUpToAsync(makerEpoch, makerAddress);
+        it('should fail to set orderEpoch equal to existing orderEpoch', async () => {
+            const orderEpoch = new BigNumber(1);
+            await exchangeWrapper.cancelOrdersUpToAsync(orderEpoch, makerAddress);
             return expectRevertOrAlwaysFailingTransactionAsync(
-                exchangeWrapper.cancelOrdersUpToAsync(makerEpoch, makerAddress),
+                exchangeWrapper.cancelOrdersUpToAsync(orderEpoch, makerAddress),
             );
         });
 
-        it('should cancel only orders with a makerEpoch less than existing makerEpoch', async () => {
-            // Cancel all transactions with a makerEpoch less than 1
-            const makerEpoch = new BigNumber(1);
-            await exchangeWrapper.cancelOrdersUpToAsync(makerEpoch, makerAddress);
+        it('should cancel only orders with a orderEpoch less than existing orderEpoch', async () => {
+            // Cancel all transactions with a orderEpoch less than 1
+            const orderEpoch = new BigNumber(1);
+            await exchangeWrapper.cancelOrdersUpToAsync(orderEpoch, makerAddress);
 
-            // Create 3 orders with makerEpoch values: 0,1,2,3
-            // Since we cancelled with makerEpoch=1, orders with makerEpoch<=1 will not be processed
+            // Create 3 orders with orderEpoch values: 0,1,2,3
+            // Since we cancelled with orderEpoch=1, orders with orderEpoch<=1 will not be processed
             erc20Balances = await erc20Wrapper.getBalancesAsync();
             const signedOrders = [
                 orderFactory.newSignedOrder({
