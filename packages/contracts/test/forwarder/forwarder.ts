@@ -172,7 +172,7 @@ describe(ContractName.Forwarder, () => {
             const takerBalanceBefore = erc20Balances[takerAddress][defaultMakerAssetAddress];
             feeOrders = [];
             tx = await forwarderWrapper.marketBuyTokensAsync(signedOrders, feeOrders, {
-                fillAmountWei: fillAmount,
+                value: fillAmount,
                 from: takerAddress,
             });
             const newBalances = await erc20Wrapper.getBalancesAsync();
@@ -190,7 +190,7 @@ describe(ContractName.Forwarder, () => {
             const fillAmount = signedOrder.takerAssetAmount.div(4);
             const takerBalanceBefore = erc20Balances[takerAddress][defaultMakerAssetAddress];
             tx = await forwarderWrapper.marketBuyTokensAsync(signedOrdersWithFee, feeOrders, {
-                fillAmountWei: fillAmount,
+                value: fillAmount,
                 from: takerAddress,
             });
             const newBalances = await erc20Wrapper.getBalancesAsync();
@@ -214,7 +214,7 @@ describe(ContractName.Forwarder, () => {
             return expectRevertOrAlwaysFailingTransactionAsync(
                 forwarderWrapper.marketBuyTokensAsync(signedOrders, feeOrders, {
                     from: takerAddress,
-                    fillAmountWei,
+                    value: fillAmountWei,
                 }),
             );
         });
@@ -231,8 +231,8 @@ describe(ContractName.Forwarder, () => {
                 feeProportion,
                 feeRecipientAddress,
                 {
-                    fillAmountWei: fillAmount,
                     from: takerAddress,
+                    value: fillAmount,
                 },
             );
             const newBalances = await erc20Wrapper.getBalancesAsync();
@@ -255,8 +255,8 @@ describe(ContractName.Forwarder, () => {
             feeOrders = [];
             expectRevertOrAlwaysFailingTransactionAsync(
                 forwarderWrapper.marketBuyTokensFeeAsync(signedOrders, feeOrders, feeProportion, feeRecipientAddress, {
-                    fillAmountWei: fillAmount,
                     from: takerAddress,
+                    value: fillAmount,
                 }),
             );
             const afterEthBalance = await web3Wrapper.getBalanceInWeiAsync(feeRecipientAddress);
@@ -265,62 +265,60 @@ describe(ContractName.Forwarder, () => {
     });
     describe('buyExactAssets', () => {
         it('should buy the exact amount of assets', async () => {
-            const assetAmount = signedOrder.makerAssetAmount.div(2);
+            const makerAssetAmount = signedOrder.makerAssetAmount.div(2);
             const initEthBalance = await web3Wrapper.getBalanceInWeiAsync(takerAddress);
             const balancesBefore = await erc20Wrapper.getBalancesAsync();
             const rate = signedOrder.makerAssetAmount.dividedBy(signedOrder.takerAssetAmount);
-            const fillAmount = assetAmount.dividedToIntegerBy(rate);
+            const fillAmountWei = makerAssetAmount.dividedToIntegerBy(rate);
             feeOrders = [];
-            tx = await forwarderWrapper.buyExactAssetsAsync(signedOrders, feeOrders, {
+            tx = await forwarderWrapper.buyExactAssetsAsync(signedOrders, feeOrders, makerAssetAmount, {
                 from: takerAddress,
-                assetAmount,
-                fillAmountWei: fillAmount,
+                value: fillAmountWei,
+                gasPrice: new BigNumber(1),
             });
             const newBalances = await erc20Wrapper.getBalancesAsync();
             const takerBalanceBefore = balancesBefore[takerAddress][defaultMakerAssetAddress];
             const takerBalanceAfter = newBalances[takerAddress][defaultMakerAssetAddress];
             const afterEthBalance = await web3Wrapper.getBalanceInWeiAsync(takerAddress);
-            const expectedEthBalanceAfterGasCosts = initEthBalance.minus(fillAmount).minus(tx.gasUsed);
-            expect(takerBalanceAfter).to.be.bignumber.eq(takerBalanceBefore.plus(assetAmount));
+            const expectedEthBalanceAfterGasCosts = initEthBalance.minus(fillAmountWei).minus(tx.gasUsed);
+            expect(takerBalanceAfter).to.be.bignumber.eq(takerBalanceBefore.plus(makerAssetAmount));
             expect(afterEthBalance).to.be.bignumber.eq(expectedEthBalanceAfterGasCosts);
         });
         it('should buy the exact amount of assets and return excess ETH', async () => {
-            const assetAmount = signedOrder.makerAssetAmount.div(2);
+            const makerAssetAmount = signedOrder.makerAssetAmount.div(2);
             const initEthBalance = await web3Wrapper.getBalanceInWeiAsync(takerAddress);
             const balancesBefore = await erc20Wrapper.getBalancesAsync();
             const rate = signedOrder.makerAssetAmount.dividedBy(signedOrder.takerAssetAmount);
-            const fillAmount = assetAmount.dividedToIntegerBy(rate);
+            const fillAmount = makerAssetAmount.dividedToIntegerBy(rate);
             const excessFillAmount = fillAmount.times(2);
             feeOrders = [];
-            tx = await forwarderWrapper.buyExactAssetsAsync(signedOrders, feeOrders, {
+            tx = await forwarderWrapper.buyExactAssetsAsync(signedOrders, feeOrders, makerAssetAmount, {
                 from: takerAddress,
-                assetAmount,
-                fillAmountWei: excessFillAmount,
+                value: excessFillAmount,
+                gasPrice: new BigNumber(1),
             });
             const newBalances = await erc20Wrapper.getBalancesAsync();
             const takerBalanceBefore = balancesBefore[takerAddress][defaultMakerAssetAddress];
             const takerBalanceAfter = newBalances[takerAddress][defaultMakerAssetAddress];
             const afterEthBalance = await web3Wrapper.getBalanceInWeiAsync(takerAddress);
             const expectedEthBalanceAfterGasCosts = initEthBalance.minus(fillAmount).minus(tx.gasUsed);
-            expect(takerBalanceAfter).to.be.bignumber.eq(takerBalanceBefore.plus(assetAmount));
+            expect(takerBalanceAfter).to.be.bignumber.eq(takerBalanceBefore.plus(makerAssetAmount));
             expect(afterEthBalance).to.be.bignumber.eq(expectedEthBalanceAfterGasCosts);
         });
         it('should buy the exact amount of assets with fee abstraction', async () => {
-            const assetAmount = signedOrder.makerAssetAmount.div(2);
-            const initEthBalance = await web3Wrapper.getBalanceInWeiAsync(takerAddress);
+            const makerAssetAmount = signedOrder.makerAssetAmount.div(2);
             const balancesBefore = await erc20Wrapper.getBalancesAsync();
             const rate = signedOrder.makerAssetAmount.dividedBy(signedOrder.takerAssetAmount);
-            const fillAmount = assetAmount.dividedToIntegerBy(rate);
+            const fillAmount = makerAssetAmount.dividedToIntegerBy(rate);
             const excessFillAmount = fillAmount.times(2);
-            tx = await forwarderWrapper.buyExactAssetsAsync(signedOrdersWithFee, feeOrders, {
+            tx = await forwarderWrapper.buyExactAssetsAsync(signedOrdersWithFee, feeOrders, makerAssetAmount, {
                 from: takerAddress,
-                assetAmount,
-                fillAmountWei: excessFillAmount,
+                value: excessFillAmount,
             });
             const newBalances = await erc20Wrapper.getBalancesAsync();
             const takerBalanceBefore = balancesBefore[takerAddress][defaultMakerAssetAddress];
             const takerBalanceAfter = newBalances[takerAddress][defaultMakerAssetAddress];
-            expect(takerBalanceAfter).to.be.bignumber.eq(takerBalanceBefore.plus(assetAmount));
+            expect(takerBalanceAfter).to.be.bignumber.eq(takerBalanceBefore.plus(makerAssetAmount));
         });
         it('should buy the exact amount of assets when buying zrx with fee abstraction', async () => {
             signedOrder = orderFactory.newSignedOrder({
@@ -329,27 +327,26 @@ describe(ContractName.Forwarder, () => {
             });
             signedOrdersWithFee = [signedOrder];
             feeOrders = [];
-            const assetAmount = signedOrder.makerAssetAmount.div(2);
+            const makerAssetAmount = signedOrder.makerAssetAmount.div(2);
             const takerWeiBalanceBefore = await web3Wrapper.getBalanceInWeiAsync(takerAddress);
             const balancesBefore = await erc20Wrapper.getBalancesAsync();
             const fillAmountWei = await forwarderWrapper.calculateBuyExactFillAmountWeiAsync(
                 signedOrdersWithFee,
                 feeOrders,
                 feeProportion,
-                feeRecipientAddress,
-                assetAmount,
+                makerAssetAmount,
             );
-            tx = await forwarderWrapper.buyExactAssetsAsync(signedOrdersWithFee, feeOrders, {
+            tx = await forwarderWrapper.buyExactAssetsAsync(signedOrdersWithFee, feeOrders, makerAssetAmount, {
                 from: takerAddress,
-                assetAmount,
-                fillAmountWei,
+                value: fillAmountWei,
+                gasPrice: new BigNumber(1),
             });
             const newBalances = await erc20Wrapper.getBalancesAsync();
             const takerTokenBalanceBefore = balancesBefore[takerAddress][zrxToken.address];
             const takerTokenBalanceAfter = newBalances[takerAddress][zrxToken.address];
             const takerWeiBalanceAfter = await web3Wrapper.getBalanceInWeiAsync(takerAddress);
             const expectedCostAfterGas = fillAmountWei.plus(tx.gasUsed);
-            expect(takerTokenBalanceAfter).to.be.bignumber.greaterThan(takerTokenBalanceBefore.plus(assetAmount));
+            expect(takerTokenBalanceAfter).to.be.bignumber.greaterThan(takerTokenBalanceBefore.plus(makerAssetAmount));
             expect(takerWeiBalanceAfter).to.be.bignumber.equal(takerWeiBalanceBefore.minus(expectedCostAfterGas));
         });
     });
@@ -362,18 +359,16 @@ describe(ContractName.Forwarder, () => {
             });
             feeOrders = [];
             signedOrders = [signedOrder];
-            const assetAmount = new BigNumber(signedOrders.length);
+            const makerAssetAmount = new BigNumber(signedOrders.length);
             const fillAmountWei = await forwarderWrapper.calculateBuyExactFillAmountWeiAsync(
                 signedOrders,
                 feeOrders,
                 feeProportion,
-                feeRecipientAddress,
-                assetAmount,
+                makerAssetAmount,
             );
-            tx = await forwarderWrapper.buyExactAssetsAsync(signedOrders, feeOrders, {
+            tx = await forwarderWrapper.buyExactAssetsAsync(signedOrders, feeOrders, makerAssetAmount, {
                 from: takerAddress,
-                assetAmount,
-                fillAmountWei,
+                value: fillAmountWei,
             });
             const newOwnerTakerAsset = await erc721Token.ownerOf.callAsync(makerAssetId);
             expect(newOwnerTakerAsset).to.be.bignumber.equal(takerAddress);
@@ -386,18 +381,16 @@ describe(ContractName.Forwarder, () => {
                 makerAssetData: assetProxyUtils.encodeERC721AssetData(erc721Token.address, makerAssetId),
             });
             signedOrders = [signedOrder];
-            const assetAmount = new BigNumber(signedOrders.length);
+            const makerAssetAmount = new BigNumber(signedOrders.length);
             const fillAmountWei = await forwarderWrapper.calculateBuyExactFillAmountWeiAsync(
                 signedOrders,
                 feeOrders,
                 feeProportion,
-                feeRecipientAddress,
-                assetAmount,
+                makerAssetAmount,
             );
-            tx = await forwarderWrapper.buyExactAssetsAsync(signedOrders, feeOrders, {
+            tx = await forwarderWrapper.buyExactAssetsAsync(signedOrders, feeOrders, makerAssetAmount, {
                 from: takerAddress,
-                assetAmount,
-                fillAmountWei,
+                value: fillAmountWei,
             });
             const newOwnerTakerAsset = await erc721Token.ownerOf.callAsync(makerAssetId);
             expect(newOwnerTakerAsset).to.be.bignumber.equal(takerAddress);
@@ -411,18 +404,16 @@ describe(ContractName.Forwarder, () => {
             });
             signedOrders = [signedOrder];
             feeProportion = 10;
-            const assetAmount = new BigNumber(signedOrders.length);
+            const makerAssetAmount = new BigNumber(signedOrders.length);
             const fillAmountWei = await forwarderWrapper.calculateBuyExactFillAmountWeiAsync(
                 signedOrders,
                 feeOrders,
                 feeProportion,
-                feeRecipientAddress,
-                assetAmount,
+                makerAssetAmount,
             );
-            tx = await forwarderWrapper.buyExactAssetsAsync(signedOrders, feeOrders, {
+            tx = await forwarderWrapper.buyExactAssetsAsync(signedOrders, feeOrders, makerAssetAmount, {
                 from: takerAddress,
-                assetAmount,
-                fillAmountWei,
+                value: fillAmountWei,
             });
             const newOwnerTakerAsset = await erc721Token.ownerOf.callAsync(makerAssetId);
             expect(newOwnerTakerAsset).to.be.bignumber.equal(takerAddress);
@@ -442,18 +433,16 @@ describe(ContractName.Forwarder, () => {
             });
             signedOrders = [signedOrder1, signedOrder2];
             feeProportion = 10;
-            const assetAmount = new BigNumber(signedOrders.length);
+            const makerAssetAmount = new BigNumber(signedOrders.length);
             const fillAmountWei = await forwarderWrapper.calculateBuyExactFillAmountWeiAsync(
                 signedOrders,
                 feeOrders,
                 feeProportion,
-                feeRecipientAddress,
-                assetAmount,
+                makerAssetAmount,
             );
-            tx = await forwarderWrapper.buyExactAssetsAsync(signedOrders, feeOrders, {
+            tx = await forwarderWrapper.buyExactAssetsAsync(signedOrders, feeOrders, makerAssetAmount, {
                 from: takerAddress,
-                assetAmount,
-                fillAmountWei,
+                value: fillAmountWei,
             });
             const newOwnerTakerAsset1 = await erc721Token.ownerOf.callAsync(makerAssetId1);
             expect(newOwnerTakerAsset1).to.be.bignumber.equal(takerAddress);
@@ -468,13 +457,12 @@ describe(ContractName.Forwarder, () => {
             });
             const erc20SignedOrder = orderFactory.newSignedOrder();
             signedOrders = [erc721SignedOrder, erc20SignedOrder];
-            const assetAmount = new BigNumber(signedOrders.length);
+            const makerAssetAmount = new BigNumber(signedOrders.length);
             const fillAmountWei = erc20SignedOrder.takerAssetAmount.plus(erc721SignedOrder.takerAssetAmount);
             return expectRevertOrAlwaysFailingTransactionAsync(
-                forwarderWrapper.buyExactAssetsAsync(signedOrders, feeOrders, {
+                forwarderWrapper.buyExactAssetsAsync(signedOrders, feeOrders, makerAssetAmount, {
                     from: takerAddress,
-                    assetAmount,
-                    fillAmountWei,
+                    value: fillAmountWei,
                 }),
             );
         });
@@ -486,30 +474,28 @@ describe(ContractName.Forwarder, () => {
             });
             const erc20SignedOrder = orderFactory.newSignedOrder();
             signedOrders = [erc20SignedOrder, erc721SignedOrder];
-            const assetAmount = new BigNumber(signedOrders.length);
+            const makerAssetAmount = new BigNumber(signedOrders.length);
             const fillAmountWei = erc20SignedOrder.takerAssetAmount.plus(erc721SignedOrder.takerAssetAmount);
             return expectRevertOrAlwaysFailingTransactionAsync(
-                forwarderWrapper.buyExactAssetsAsync(signedOrders, feeOrders, {
+                forwarderWrapper.buyExactAssetsAsync(signedOrders, feeOrders, makerAssetAmount, {
                     from: takerAddress,
-                    assetAmount,
-                    fillAmountWei,
+                    value: fillAmountWei,
                 }),
             );
         });
-        it('throws when assetAmount does not equal ERC721 order size', async () => {
+        it('throws when makerAssetAmount does not equal ERC721 order size', async () => {
             const makerAssetId = erc721MakerAssetIds[0];
             signedOrder = orderFactory.newSignedOrder({
                 makerAssetAmount: new BigNumber(1),
                 makerAssetData: assetProxyUtils.encodeERC721AssetData(erc721Token.address, makerAssetId),
             });
             signedOrders = [signedOrder];
-            const assetAmount = new BigNumber(10);
+            const makerAssetAmount = new BigNumber(10);
             const fillAmountWei = signedOrder.takerAssetAmount;
             return expectRevertOrAlwaysFailingTransactionAsync(
-                forwarderWrapper.buyExactAssetsAsync(signedOrders, feeOrders, {
+                forwarderWrapper.buyExactAssetsAsync(signedOrders, feeOrders, makerAssetAmount, {
                     from: takerAddress,
-                    assetAmount,
-                    fillAmountWei,
+                    value: fillAmountWei,
                 }),
             );
         });

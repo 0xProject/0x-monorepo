@@ -2,7 +2,7 @@ import { assetProxyUtils } from '@0xproject/order-utils';
 import { AssetProxyId, SignedOrder } from '@0xproject/types';
 import { BigNumber } from '@0xproject/utils';
 import { Web3Wrapper } from '@0xproject/web3-wrapper';
-import { Provider, TransactionReceiptWithDecodedLogs } from 'ethereum-types';
+import { Provider, TransactionReceiptWithDecodedLogs, TxDataPayable } from 'ethereum-types';
 import ethUtil = require('ethereumjs-util');
 import * as _ from 'lodash';
 
@@ -60,18 +60,16 @@ export class ForwarderWrapper {
     public async buyExactAssetsAsync(
         orders: SignedOrder[],
         feeOrders: SignedOrder[],
-        opts: {
-            assetAmount: BigNumber;
-            fillAmountWei: BigNumber;
-            from: string;
-        },
+        makerAssetAmount: BigNumber,
+        txOpts?: TxDataPayable,
     ): Promise<TransactionReceiptWithDecodedLogs> {
         const tx = await this.buyExactAssetsFeeAsync(
             orders,
             feeOrders,
             DEFAULT_FEE_PROPORTION,
             constants.NULL_ADDRESS,
-            opts,
+            makerAssetAmount,
+            txOpts,
         );
         return tx;
     }
@@ -80,16 +78,9 @@ export class ForwarderWrapper {
         feeOrders: SignedOrder[],
         feeProportion: number,
         feeRecipient: string,
-        opts: {
-            assetAmount: BigNumber;
-            fillAmountWei: BigNumber;
-            from: string;
-        },
+        makerAssetAmount: BigNumber,
+        txOpts?: TxDataPayable,
     ): Promise<TransactionReceiptWithDecodedLogs> {
-        const txOpts = {
-            from: opts.from,
-            value: opts.fillAmountWei,
-        };
         const params = ForwarderWrapper._createOptimizedSellOrders(orders);
         const feeParams = ForwarderWrapper._createOptimizedZRXSellOrders(feeOrders);
         const txHash: string = await this._forwarderContract.buyExactAssets.sendTransactionAsync(
@@ -97,7 +88,7 @@ export class ForwarderWrapper {
             params.signatures,
             feeParams.orders,
             feeParams.signatures,
-            opts.assetAmount,
+            makerAssetAmount,
             feeProportion,
             feeRecipient,
             txOpts,
@@ -108,17 +99,14 @@ export class ForwarderWrapper {
     public async marketBuyTokensAsync(
         orders: SignedOrder[],
         feeOrders: SignedOrder[],
-        opts: {
-            fillAmountWei: BigNumber;
-            from: string;
-        },
+        txOpts?: TxDataPayable,
     ): Promise<TransactionReceiptWithDecodedLogs> {
         const tx = await this.marketBuyTokensFeeAsync(
             orders,
             feeOrders,
             DEFAULT_FEE_PROPORTION,
             constants.NULL_ADDRESS,
-            opts,
+            txOpts,
         );
         return tx;
     }
@@ -127,10 +115,7 @@ export class ForwarderWrapper {
         feeOrders: SignedOrder[],
         feeProportion: number,
         feeRecipient: string,
-        opts: {
-            fillAmountWei: BigNumber;
-            from: string;
-        },
+        txOpts?: TxDataPayable,
     ): Promise<TransactionReceiptWithDecodedLogs> {
         const proxyId = assetProxyUtils.decodeAssetDataId(orders[0].makerAssetData);
         if (proxyId !== AssetProxyId.ERC20) {
@@ -138,10 +123,6 @@ export class ForwarderWrapper {
         }
         const params = ForwarderWrapper._createOptimizedSellOrders(orders);
         const feeParams = ForwarderWrapper._createOptimizedZRXSellOrders(feeOrders);
-        const txOpts = {
-            from: opts.from,
-            value: opts.fillAmountWei,
-        };
         const txHash: string = await this._forwarderContract.marketBuyTokens.sendTransactionAsync(
             params.orders,
             params.signatures,
@@ -158,7 +139,6 @@ export class ForwarderWrapper {
         orders: SignedOrder[],
         feeOrders: SignedOrder[],
         feeProportion: number,
-        feeRecipient: string,
         makerAssetAmount: BigNumber,
     ): Promise<BigNumber> {
         const proxyId = assetProxyUtils.decodeAssetDataId(orders[0].makerAssetData);
