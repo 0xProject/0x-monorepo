@@ -39,12 +39,6 @@ contract MixinMarketBuyERC20Tokens is
             msg.value > 0,
             VALUE_GREATER_THAN_ZERO
         );
-        // Populate the known assetData, as it is always WETH the caller can provide null bytes to save gas
-        for (uint256 i = 0; i < orders.length; i++) {
-            // Maker asset data is always of one ERC20 token type
-            orders[i].makerAssetData = orders[0].makerAssetData;
-            orders[i].takerAssetData = WETH_ASSET_DATA;
-        }
         uint256 remainingTakerTokenAmount = payAndDeductFee(msg.value, feeProportion, feeRecipient);
         ETHER_TOKEN.deposit.value(remainingTakerTokenAmount)();
         return marketSellTokensInternal(orders, signatures, feeOrders, feeSignatures, remainingTakerTokenAmount);
@@ -69,6 +63,9 @@ contract MixinMarketBuyERC20Tokens is
     {
         uint256 takerTokenBalance = sellTokenAmount;
         address makerTokenAddress = readAddress(orders[0].makerAssetData, 0);
+        // Populate the known assetData, as it is always WETH the caller can provide null bytes to save gas
+        // marketSellOrders fills the remaining
+        orders[0].takerAssetData = WETH_ASSET_DATA;
         Exchange.FillResults memory calculatedMarketSellResults = calculateMarketSellFillResults(orders, sellTokenAmount);
         if (calculatedMarketSellResults.takerFeePaid > 0) {
             // Fees are required for these orders. Buy enough ZRX to cover the future market buy

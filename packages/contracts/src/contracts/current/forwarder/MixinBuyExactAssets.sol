@@ -92,12 +92,11 @@ contract MixinBuyExactAssets is
         private
         returns (Exchange.FillResults memory totalFillResults)
     {
+        // We read the maker token address to check if it is ZRX and later use it for transfer
         address makerTokenAddress = readAddress(orders[0].makerAssetData, 0);
-        // Populate the known assetData, as it is always WETH the caller can provide null bytes to save gas
-        for (uint256 i = 0; i < orders.length; i++) {
-            orders[i].makerAssetData = orders[0].makerAssetData;
-            orders[i].takerAssetData = WETH_ASSET_DATA;
-        }
+        // We assume that asset being bought by taker is the same for each order.
+        // Rather than passing this in as calldata, we copy the makerAssetData from the first order onto all later orders.
+        orders[0].takerAssetData = WETH_ASSET_DATA;
         // We can short cut here for effeciency and use buyFeeTokensInternal if maker asset token is ZRX
         // this buys us exactly that amount taking into account the fees. This saves gas and calculates the rate correctly
         Exchange.FillResults memory requestedTokensResults;
@@ -155,8 +154,8 @@ contract MixinBuyExactAssets is
             ASSET_AMOUNT_MATCH_ORDER_SIZE
         );
         uint256 totalFeeAmount;
-        // Total up the fees
         for (uint256 i = 0; i < orders.length; i++) {
+            // Total up the fees
             totalFeeAmount = safeAdd(totalFeeAmount, orders[i].takerFee);
         }
         if (totalFeeAmount > 0) {
@@ -166,7 +165,8 @@ contract MixinBuyExactAssets is
             totalFillResults.takerAssetFilledAmount = feeTokensResult.takerAssetFilledAmount;
         }
         for (i = 0; i < orders.length; i++) {
-            // Populate the known takerAssetData as it is always WETH
+            // We assume that asset being bought by taker is the same for each order.
+            // Rather than passing this in as calldata, we set the takerAssetData as WETH asset data
             orders[i].takerAssetData = WETH_ASSET_DATA;
             // Fail if it wasn't fully filled otherwise we will keep WETH
             Exchange.FillResults memory fillOrderResults = EXCHANGE.fillOrKillOrder(
