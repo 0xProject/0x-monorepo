@@ -121,11 +121,7 @@ export class BaseContract {
         this._ethersInterfacesByFunctionSignature = {};
         _.each(methodAbis, methodAbi => {
             const functionSignature = abiUtils.getFunctionSignature(methodAbi);
-            // HACK: Ethers.js modifies ABI data passed to it so we need to copy it before passing.
-            // Source https://github.com/ethers-io/ethers.js/blob/884593ab76004a808bf8097e9753fb5f8dcc3067/utils/abi-coder.js#L855
-            // Source: https://github.com/ethers-io/ethers.js/issues/201
-            const methodAbiCopy = _.cloneDeep(methodAbi);
-            this._ethersInterfacesByFunctionSignature[functionSignature] = new ethers.Interface([methodAbiCopy]);
+            this._ethersInterfacesByFunctionSignature[functionSignature] = new ethers.Interface([methodAbi]);
         });
     }
 }

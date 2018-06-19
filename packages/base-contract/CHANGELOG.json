@@ -1,10 +1,19 @@
 [
     {
-        "version": "0.3.3",
+        "version": "0.3.4",
         "changes": [
             {
                 "note":
-                    "Fix the `value.toLowerCase()` is not a function bug caused by `ethers.js` breaking patch version https://github.com/ethers-io/ethers.js/issues/201"
+                    "Update EthersJs to fix the `value.toLowerCase()` is not a function bug caused by `ethers.js` breaking patch version https://github.com/ethers-io/ethers.js/issues/201"
+            }
+        ]
+    },
+    {
+        "timestamp": 1527810075,
+        "version": "0.3.3",
+        "changes": [
+            {
+                "note": "Incorrect publish that was unpublished"
             }
         ]
     },
