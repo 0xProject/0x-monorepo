@@ -34,62 +34,63 @@ export class BlockchainWatcher {
     public updatePrevUserAddress(userAddress: string): void {
         this._prevUserAddressIfExists = userAddress;
     }
-    public startEmittingNetworkConnectionAndUserBalanceState(): void {
+    public async startEmittingNetworkConnectionAndUserBalanceStateAsync(): Promise<void> {
         if (!_.isUndefined(this._watchNetworkAndBalanceIntervalId)) {
             return; // we are already emitting the state
         }
-
-        let prevNodeVersion: string;
         this._prevUserEtherBalanceInWei = undefined;
         this._dispatcher.updateNetworkId(this._prevNetworkId);
+        await this._updateNetworkAndBalanceAsync();
         this._watchNetworkAndBalanceIntervalId = intervalUtils.setAsyncExcludingInterval(
-            async () => {
-                // Check for network state changes
-                let currentNetworkId;
-                try {
-                    currentNetworkId = await this._web3Wrapper.getNetworkIdAsync();
-                } catch (err) {
-                    // Noop
-                }
-                if (currentNetworkId !== this._prevNetworkId) {
-                    this._prevNetworkId = currentNetworkId;
-                    this._dispatcher.updateNetworkId(currentNetworkId);
-                }
-
-                // Check for node version changes
-                const currentNodeVersion = await this._web3Wrapper.getNodeVersionAsync();
-                if (currentNodeVersion !== prevNodeVersion) {
-                    prevNodeVersion = currentNodeVersion;
-                    this._dispatcher.updateNodeVersion(currentNodeVersion);
-                }
-
-                if (this._shouldPollUserAddress) {
-                    const addresses = await this._web3Wrapper.getAvailableAddressesAsync();
-                    const userAddressIfExists = addresses[0];
-                    // Update makerAddress on network change
-                    if (this._prevUserAddressIfExists !== userAddressIfExists) {
-                        this._prevUserAddressIfExists = userAddressIfExists;
-                        this._dispatcher.updateUserAddress(userAddressIfExists);
-                    }
-
-                    // Check for user ether balance changes
-                    if (!_.isUndefined(userAddressIfExists)) {
-                        await this._updateUserWeiBalanceAsync(userAddressIfExists);
-                    }
-                } else {
-                    // This logic is primarily for the Ledger, since we don't regularly poll for the address
-                    // we simply update the balance for the last fetched address.
-                    if (!_.isUndefined(this._prevUserAddressIfExists)) {
-                        await this._updateUserWeiBalanceAsync(this._prevUserAddressIfExists);
-                    }
-                }
-            },
+            this._updateNetworkAndBalanceAsync.bind(this),
             5000,
             (err: Error) => {
                 logUtils.log(`Watching network and balances failed: ${err.stack}`);
                 this._stopEmittingNetworkConnectionAndUserBalanceState();
             },
         );
+    }
+    private async _updateNetworkAndBalanceAsync(): Promise<void> {
+        // Check for network state changes
+        let prevNodeVersion: string;
+        let currentNetworkId;
+        try {
+            currentNetworkId = await this._web3Wrapper.getNetworkIdAsync();
+        } catch (err) {
+            // Noop
+        }
+        if (currentNetworkId !== this._prevNetworkId) {
+            this._prevNetworkId = currentNetworkId;
+            this._dispatcher.updateNetworkId(currentNetworkId);
+        }
+
+        // Check for node version changes
+        const currentNodeVersion = await this._web3Wrapper.getNodeVersionAsync();
+        if (currentNodeVersion !== prevNodeVersion) {
+            prevNodeVersion = currentNodeVersion;
+            this._dispatcher.updateNodeVersion(currentNodeVersion);
+        }
+
+        if (this._shouldPollUserAddress) {
+            const addresses = await this._web3Wrapper.getAvailableAddressesAsync();
+            const userAddressIfExists = addresses[0];
+            // Update makerAddress on network change
+            if (this._prevUserAddressIfExists !== userAddressIfExists) {
+                this._prevUserAddressIfExists = userAddressIfExists;
+                this._dispatcher.updateUserAddress(userAddressIfExists);
+            }
+
+            // Check for user ether balance changes
+            if (!_.isUndefined(userAddressIfExists)) {
+                await this._updateUserWeiBalanceAsync(userAddressIfExists);
+            }
+        } else {
+            // This logic is primarily for the Ledger, since we don't regularly poll for the address
+            // we simply update the balance for the last fetched address.
+            if (!_.isUndefined(this._prevUserAddressIfExists)) {
+                await this._updateUserWeiBalanceAsync(this._prevUserAddressIfExists);
+            }
+        }
     }
     private async _updateUserWeiBalanceAsync(userAddress: string): Promise<void> {
         const balanceInWei = await this._web3Wrapper.getBalanceInWeiAsync(userAddress);
