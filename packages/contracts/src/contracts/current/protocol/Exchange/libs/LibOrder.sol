@@ -97,24 +97,28 @@ contract LibOrder is
     function hashOrder(Order memory order)
         internal
         pure
-        returns (bytes32)
+        returns (bytes32 result)
     {
-        // Note: changing this to abi.encode results in an error on 0.4.24
-        // UnimplementedFeatureError: Variable inaccessible, too deep inside stack (17)
-        return keccak256(abi.encodePacked(
-            EIP712_ORDER_SCHEMA_HASH,
-            bytes32(order.makerAddress),
-            bytes32(order.takerAddress),
-            bytes32(order.feeRecipientAddress),
-            bytes32(order.senderAddress),
-            order.makerAssetAmount,
-            order.takerAssetAmount,
-            order.makerFee,
-            order.takerFee,
-            order.expirationTimeSeconds,
-            order.salt,
-            keccak256(order.makerAssetData),
-            keccak256(order.takerAssetData)
-        ));
+        bytes32 schemaHash = EIP712_ORDER_SCHEMA_HASH;
+        bytes32 makerAssetDataHash = keccak256(order.makerAssetData);
+        bytes32 takerAssetDataHash = keccak256(order.takerAssetData);
+        assembly {
+            // Backup
+            let temp1 := mload(sub(order,  32))
+            let temp2 := mload(add(order, 320))
+            let temp3 := mload(add(order, 352))
+            
+            // Hash in place
+            mstore(sub(order,  32), schemaHash)
+            mstore(add(order, 320), makerAssetDataHash)
+            mstore(add(order, 352), takerAssetDataHash)
+            result := keccak256(sub(order, 32), 416)
+            
+            // Restore
+            mstore(sub(order,  32), temp1)
+            mstore(add(order, 320), temp2)
+            mstore(add(order, 352), temp3)
+        }
+        return result;
     }
 }
