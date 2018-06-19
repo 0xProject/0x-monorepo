@@ -165,8 +165,8 @@ export enum OrderAssetAmountScenario {
 }
 
 export enum TakerScenario {
-    CorrectlySpecified = 'CORRECTLY_SPECFIED',
-    IncorrectlySpecified = 'INCORRECTLY_SPECFIED',
+    CorrectlySpecified = 'CORRECTLY_SPECIFIED',
+    IncorrectlySpecified = 'INCORRECTLY_SPECIFIED',
     Unspecified = 'UNSPECIFIED',
 }
 
