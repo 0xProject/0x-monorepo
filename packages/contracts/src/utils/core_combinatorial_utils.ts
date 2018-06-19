@@ -11,7 +11,6 @@ import { BigNumber, errorUtils } from '@0xproject/utils';
 import { Web3Wrapper } from '@0xproject/web3-wrapper';
 import * as chai from 'chai';
 import { BlockParamLiteral, LogWithDecodedArgs, Provider, TxData } from 'ethereum-types';
-// import ethUtil = require('ethereumjs-util');
 import * as _ from 'lodash';
 import 'make-promises-safe';
 
@@ -165,7 +164,7 @@ export class CoreCombinatorialUtils {
             AssetDataScenario.ZRXFeeToken,
         ];
         const takerAssetFillAmountScenario = [TakerAssetFillAmountScenario.ExactlyRemainingFillableTakerAssetAmount];
-        const fillScenarioArrays = CoreCombinatorialUtils._allPossibleCases([
+        const fillScenarioArrays = CoreCombinatorialUtils._getAllCombinations([
             takerScenarios,
             feeRecipientScenarios,
             makerAssetAmountScenario,
@@ -210,19 +209,25 @@ export class CoreCombinatorialUtils {
 
         return fillScenarios;
     }
-    private static _allPossibleCases(arrays: string[][]): string[][] {
+    /**
+     * Recursive implementation of generating all combinations of the supplied
+     * string-containing arrays.
+     */
+    private static _getAllCombinations(arrays: string[][]): string[][] {
+        // Base case
         if (arrays.length === 1) {
-            const remainingVals = _.map(arrays[0], val => {
+            const remainingValues = _.map(arrays[0], val => {
                 return [val];
             });
-            return remainingVals;
+            return remainingValues;
         } else {
             const result = [];
-            const allCasesOfRest = CoreCombinatorialUtils._allPossibleCases(arrays.slice(1)); // recur with the rest of array
+            const restOfArrays = arrays.slice(1);
+            const allCombinationsOfRemaining = CoreCombinatorialUtils._getAllCombinations(restOfArrays); // recur with the rest of array
             // tslint:disable:prefer-for-of
-            for (let i = 0; i < allCasesOfRest.length; i++) {
+            for (let i = 0; i < allCombinationsOfRemaining.length; i++) {
                 for (let j = 0; j < arrays[0].length; j++) {
-                    result.push([arrays[0][j], ...allCasesOfRest[i]]);
+                    result.push([arrays[0][j], ...allCombinationsOfRemaining[i]]);
                 }
             }
             // tslint:enable:prefer-for-of
@@ -283,7 +288,7 @@ export class CoreCombinatorialUtils {
             balanceAndProxyAllowanceFetcher,
         );
 
-        // 5. If I fill it by X, what are the resulting balances/allowances/filled amounts exp?
+        // 5. If I fill it by X, what are the resulting balances/allowances/filled amounts expected?
         const orderValidationUtils = new OrderValidationUtils(orderFilledCancelledFetcher);
         const lazyStore = new BalanceAndProxyAllowanceLazyStore(balanceAndProxyAllowanceFetcher);
         const exchangeTransferSimulator = new ExchangeTransferSimulator(lazyStore);
@@ -302,6 +307,7 @@ export class CoreCombinatorialUtils {
             isFillFailureExpected = true;
         }
 
+        // 6. Fill the order
         await this._fillOrderAndAssertOutcomeAsync(
             signedOrder,
             takerAssetFillAmount,
@@ -309,6 +315,216 @@ export class CoreCombinatorialUtils {
             isFillFailureExpected,
             provider,
         );
+    }
+    private async _fillOrderAndAssertOutcomeAsync(
+        signedOrder: SignedOrder,
+        takerAssetFillAmount: BigNumber,
+        lazyStore: BalanceAndProxyAllowanceLazyStore,
+        isFillFailureExpected: boolean,
+        provider: Provider,
+    ): Promise<void> {
+        if (isFillFailureExpected) {
+            return expectRevertOrAlwaysFailingTransactionAsync(
+                this.exchangeWrapper.fillOrderAsync(signedOrder, this.takerAddress, { takerAssetFillAmount }),
+            );
+        }
+
+        const makerAddress = signedOrder.makerAddress;
+        const makerAssetData = signedOrder.makerAssetData;
+        const takerAssetData = signedOrder.takerAssetData;
+        const feeRecipient = signedOrder.feeRecipientAddress;
+
+        const expMakerAssetBalanceOfMaker = await lazyStore.getBalanceAsync(makerAssetData, makerAddress);
+        const expMakerAssetAllowanceOfMaker = await lazyStore.getProxyAllowanceAsync(makerAssetData, makerAddress);
+        const expTakerAssetBalanceOfMaker = await lazyStore.getBalanceAsync(takerAssetData, makerAddress);
+        const expZRXAssetBalanceOfMaker = await lazyStore.getBalanceAsync(this.zrxAssetData, makerAddress);
+        const expZRXAssetAllowanceOfMaker = await lazyStore.getProxyAllowanceAsync(this.zrxAssetData, makerAddress);
+        const expTakerAssetBalanceOfTaker = await lazyStore.getBalanceAsync(takerAssetData, this.takerAddress);
+        const expTakerAssetAllowanceOfTaker = await lazyStore.getProxyAllowanceAsync(takerAssetData, this.takerAddress);
+        const expMakerAssetBalanceOfTaker = await lazyStore.getBalanceAsync(makerAssetData, this.takerAddress);
+        const expZRXAssetBalanceOfTaker = await lazyStore.getBalanceAsync(this.zrxAssetData, this.takerAddress);
+        const expZRXAssetAllowanceOfTaker = await lazyStore.getProxyAllowanceAsync(
+            this.zrxAssetData,
+            this.takerAddress,
+        );
+        const expZRXAssetBalanceOfFeeRecipient = await lazyStore.getBalanceAsync(this.zrxAssetData, feeRecipient);
+
+        const orderHash = orderHashUtils.getOrderHashHex(signedOrder);
+        const alreadyFilledTakerAmount = await this.exchangeWrapper.getTakerAssetFilledAmountAsync(orderHash);
+        const remainingTakerAmountToFill = signedOrder.takerAssetAmount.minus(alreadyFilledTakerAmount);
+        const expFilledTakerAmount = takerAssetFillAmount.gt(remainingTakerAmountToFill)
+            ? remainingTakerAmountToFill
+            : alreadyFilledTakerAmount.add(takerAssetFillAmount);
+
+        const expFilledMakerAmount = orderUtils.getPartialAmount(
+            expFilledTakerAmount,
+            signedOrder.takerAssetAmount,
+            signedOrder.makerAssetAmount,
+        );
+
+        const beforeMakerAssetAllowanceOfMaker = await this.assetWrapper.getProxyAllowanceAsync(
+            makerAddress,
+            makerAssetData,
+        );
+
+        // - Let's fill the order!
+        const txReceipt = await this.exchangeWrapper.fillOrderAsync(signedOrder, this.takerAddress, {
+            takerAssetFillAmount,
+        });
+
+        const actFilledTakerAmount = await this.exchangeWrapper.getTakerAssetFilledAmountAsync(orderHash);
+        expect(actFilledTakerAmount).to.be.bignumber.equal(expFilledTakerAmount, 'filledTakerAmount');
+
+        expect(txReceipt.logs.length).to.be.equal(1, 'logs length');
+        // tslint:disable-next-line:no-unnecessary-type-assertion
+        const log = txReceipt.logs[0] as LogWithDecodedArgs<FillContractEventArgs>;
+        expect(log.args.makerAddress).to.be.equal(makerAddress, 'log.args.makerAddress');
+        expect(log.args.takerAddress).to.be.equal(this.takerAddress, 'log.args.this.takerAddress');
+        expect(log.args.feeRecipientAddress).to.be.equal(feeRecipient, 'log.args.feeRecipientAddress');
+        expect(log.args.makerAssetFilledAmount).to.be.bignumber.equal(
+            expFilledMakerAmount,
+            'log.args.makerAssetFilledAmount',
+        );
+        expect(log.args.takerAssetFilledAmount).to.be.bignumber.equal(
+            expFilledTakerAmount,
+            'log.args.takerAssetFilledAmount',
+        );
+        const expMakerFeePaid = orderUtils.getPartialAmount(
+            expFilledTakerAmount,
+            signedOrder.takerAssetAmount,
+            signedOrder.makerFee,
+        );
+        expect(log.args.makerFeePaid).to.be.bignumber.equal(expMakerFeePaid, 'log.args.makerFeePaid');
+        const expTakerFeePaid = orderUtils.getPartialAmount(
+            expFilledTakerAmount,
+            signedOrder.takerAssetAmount,
+            signedOrder.takerFee,
+        );
+        expect(log.args.takerFeePaid).to.be.bignumber.equal(expTakerFeePaid, 'logs.args.takerFeePaid');
+        expect(log.args.orderHash).to.be.equal(orderHash, 'log.args.orderHash');
+        expect(log.args.makerAssetData).to.be.equal(makerAssetData, 'log.args.makerAssetData');
+        expect(log.args.takerAssetData).to.be.equal(takerAssetData, 'log.args.takerAssetData');
+
+        const actMakerAssetBalanceOfMaker = await this.assetWrapper.getBalanceAsync(makerAddress, makerAssetData);
+        expect(actMakerAssetBalanceOfMaker).to.be.bignumber.equal(
+            expMakerAssetBalanceOfMaker,
+            'makerAssetBalanceOfMaker',
+        );
+
+        const actMakerAssetAllowanceOfMaker = await this.assetWrapper.getProxyAllowanceAsync(
+            makerAddress,
+            makerAssetData,
+        );
+        expect(actMakerAssetAllowanceOfMaker).to.be.bignumber.equal(
+            expMakerAssetAllowanceOfMaker,
+            'makerAssetAllowanceOfMaker',
+        );
+
+        const actTakerAssetBalanceOfMaker = await this.assetWrapper.getBalanceAsync(makerAddress, takerAssetData);
+        expect(actTakerAssetBalanceOfMaker).to.be.bignumber.equal(
+            expTakerAssetBalanceOfMaker,
+            'takerAssetBalanceOfMaker',
+        );
+
+        const actZRXAssetBalanceOfMaker = await this.assetWrapper.getBalanceAsync(makerAddress, this.zrxAssetData);
+        expect(actZRXAssetBalanceOfMaker).to.be.bignumber.equal(expZRXAssetBalanceOfMaker, 'ZRXAssetBalanceOfMaker');
+
+        const actZRXAssetAllowanceOfMaker = await this.assetWrapper.getProxyAllowanceAsync(
+            makerAddress,
+            this.zrxAssetData,
+        );
+        expect(actZRXAssetAllowanceOfMaker).to.be.bignumber.equal(
+            expZRXAssetAllowanceOfMaker,
+            'ZRXAssetAllowanceOfMaker',
+        );
+
+        const actTakerAssetBalanceOfTaker = await this.assetWrapper.getBalanceAsync(this.takerAddress, takerAssetData);
+        expect(actTakerAssetBalanceOfTaker).to.be.bignumber.equal(
+            expTakerAssetBalanceOfTaker,
+            'TakerAssetBalanceOfTaker',
+        );
+
+        const actTakerAssetAllowanceOfTaker = await this.assetWrapper.getProxyAllowanceAsync(
+            this.takerAddress,
+            takerAssetData,
+        );
+
+        expect(actTakerAssetAllowanceOfTaker).to.be.bignumber.equal(
+            expTakerAssetAllowanceOfTaker,
+            'TakerAssetAllowanceOfTaker',
+        );
+
+        const actMakerAssetBalanceOfTaker = await this.assetWrapper.getBalanceAsync(this.takerAddress, makerAssetData);
+        expect(actMakerAssetBalanceOfTaker).to.be.bignumber.equal(
+            expMakerAssetBalanceOfTaker,
+            'MakerAssetBalanceOfTaker',
+        );
+
+        const actZRXAssetBalanceOfTaker = await this.assetWrapper.getBalanceAsync(this.takerAddress, this.zrxAssetData);
+        expect(actZRXAssetBalanceOfTaker).to.be.bignumber.equal(expZRXAssetBalanceOfTaker, 'ZRXAssetBalanceOfTaker');
+
+        const actZRXAssetAllowanceOfTaker = await this.assetWrapper.getProxyAllowanceAsync(
+            this.takerAddress,
+            this.zrxAssetData,
+        );
+        expect(actZRXAssetAllowanceOfTaker).to.be.bignumber.equal(
+            expZRXAssetAllowanceOfTaker,
+            'ZRXAssetAllowanceOfTaker',
+        );
+
+        const actZRXAssetBalanceOfFeeRecipient = await this.assetWrapper.getBalanceAsync(
+            feeRecipient,
+            this.zrxAssetData,
+        );
+        expect(actZRXAssetBalanceOfFeeRecipient).to.be.bignumber.equal(
+            expZRXAssetBalanceOfFeeRecipient,
+            'ZRXAssetBalanceOfFeeRecipient',
+        );
+    }
+    private async _getTakerAssetFillAmountAsync(
+        signedOrder: SignedOrder,
+        takerAssetFillAmountScenario: TakerAssetFillAmountScenario,
+        balanceAndProxyAllowanceFetcher: SimpleAssetBalanceAndProxyAllowanceFetcher,
+        orderFilledCancelledFetcher: SimpleOrderFilledCancelledFetcher,
+    ): Promise<BigNumber> {
+        const orderStateUtils = new OrderStateUtils(balanceAndProxyAllowanceFetcher, orderFilledCancelledFetcher);
+        const fillableTakerAssetAmount = await orderStateUtils.getMaxFillableTakerAssetAmountAsync(
+            signedOrder,
+            this.takerAddress,
+        );
+
+        let takerAssetFillAmount;
+        switch (takerAssetFillAmountScenario) {
+            case TakerAssetFillAmountScenario.Zero:
+                takerAssetFillAmount = new BigNumber(0);
+                break;
+
+            case TakerAssetFillAmountScenario.ExactlyRemainingFillableTakerAssetAmount:
+                takerAssetFillAmount = fillableTakerAssetAmount;
+                break;
+
+            case TakerAssetFillAmountScenario.GreaterThanRemainingFillableTakerAssetAmount:
+                takerAssetFillAmount = fillableTakerAssetAmount.add(1);
+                break;
+
+            case TakerAssetFillAmountScenario.LessThanRemainingFillableTakerAssetAmount:
+                const takerAssetProxyId = assetProxyUtils.decodeAssetDataId(signedOrder.takerAssetData);
+                const makerAssetProxyId = assetProxyUtils.decodeAssetDataId(signedOrder.makerAssetData);
+                const isEitherAssetERC721 =
+                    takerAssetProxyId === constants.ERC721_PROXY_ID || makerAssetProxyId === constants.ERC721_PROXY_ID;
+                if (isEitherAssetERC721) {
+                    throw new Error(
+                        'Cannot test `TakerAssetFillAmountScenario.LessThanRemainingFillableTakerAssetAmount` together with ERC721 assets since orders involving ERC721 must always be filled exactly.',
+                    );
+                }
+                takerAssetFillAmount = fillableTakerAssetAmount.div(2).floor();
+                break;
+
+            default:
+                throw errorUtils.spawnSwitchErr('TakerAssetFillAmountScenario', takerAssetFillAmountScenario);
+        }
+
+        return takerAssetFillAmount;
     }
     private async _modifyTraderStateAsync(
         makerStateScenario: TraderStateScenario,
@@ -546,214 +762,4 @@ export class CoreCombinatorialUtils {
                 );
         }
     }
-    private async _getTakerAssetFillAmountAsync(
-        signedOrder: SignedOrder,
-        takerAssetFillAmountScenario: TakerAssetFillAmountScenario,
-        balanceAndProxyAllowanceFetcher: SimpleAssetBalanceAndProxyAllowanceFetcher,
-        orderFilledCancelledFetcher: SimpleOrderFilledCancelledFetcher,
-    ): Promise<BigNumber> {
-        const orderStateUtils = new OrderStateUtils(balanceAndProxyAllowanceFetcher, orderFilledCancelledFetcher);
-        const fillableTakerAssetAmount = await orderStateUtils.getMaxFillableTakerAssetAmountAsync(
-            signedOrder,
-            this.takerAddress,
-        );
-
-        let takerAssetFillAmount;
-        switch (takerAssetFillAmountScenario) {
-            case TakerAssetFillAmountScenario.Zero:
-                takerAssetFillAmount = new BigNumber(0);
-                break;
-
-            case TakerAssetFillAmountScenario.ExactlyRemainingFillableTakerAssetAmount:
-                takerAssetFillAmount = fillableTakerAssetAmount;
-                break;
-
-            case TakerAssetFillAmountScenario.GreaterThanRemainingFillableTakerAssetAmount:
-                takerAssetFillAmount = fillableTakerAssetAmount.add(1);
-                break;
-
-            case TakerAssetFillAmountScenario.LessThanRemainingFillableTakerAssetAmount:
-                const takerAssetProxyId = assetProxyUtils.decodeAssetDataId(signedOrder.takerAssetData);
-                const makerAssetProxyId = assetProxyUtils.decodeAssetDataId(signedOrder.makerAssetData);
-                const isEitherAssetERC721 =
-                    takerAssetProxyId === constants.ERC721_PROXY_ID || makerAssetProxyId === constants.ERC721_PROXY_ID;
-                if (isEitherAssetERC721) {
-                    throw new Error(
-                        'Cannot test `TakerAssetFillAmountScenario.LessThanRemainingFillableTakerAssetAmount` together with ERC721 assets since orders involving ERC721 must always be filled exactly.',
-                    );
-                }
-                takerAssetFillAmount = fillableTakerAssetAmount.div(2).floor();
-                break;
-
-            default:
-                throw errorUtils.spawnSwitchErr('TakerAssetFillAmountScenario', takerAssetFillAmountScenario);
-        }
-
-        return takerAssetFillAmount;
-    }
-    private async _fillOrderAndAssertOutcomeAsync(
-        signedOrder: SignedOrder,
-        takerAssetFillAmount: BigNumber,
-        lazyStore: BalanceAndProxyAllowanceLazyStore,
-        isFillFailureExpected: boolean,
-        provider: Provider,
-    ): Promise<void> {
-        if (isFillFailureExpected) {
-            return expectRevertOrAlwaysFailingTransactionAsync(
-                this.exchangeWrapper.fillOrderAsync(signedOrder, this.takerAddress, { takerAssetFillAmount }),
-            );
-        }
-
-        const makerAddress = signedOrder.makerAddress;
-        const makerAssetData = signedOrder.makerAssetData;
-        const takerAssetData = signedOrder.takerAssetData;
-        const feeRecipient = signedOrder.feeRecipientAddress;
-
-        const expMakerAssetBalanceOfMaker = await lazyStore.getBalanceAsync(makerAssetData, makerAddress);
-        const expMakerAssetAllowanceOfMaker = await lazyStore.getProxyAllowanceAsync(makerAssetData, makerAddress);
-        const expTakerAssetBalanceOfMaker = await lazyStore.getBalanceAsync(takerAssetData, makerAddress);
-        const expZRXAssetBalanceOfMaker = await lazyStore.getBalanceAsync(this.zrxAssetData, makerAddress);
-        const expZRXAssetAllowanceOfMaker = await lazyStore.getProxyAllowanceAsync(this.zrxAssetData, makerAddress);
-        const expTakerAssetBalanceOfTaker = await lazyStore.getBalanceAsync(takerAssetData, this.takerAddress);
-        const expTakerAssetAllowanceOfTaker = await lazyStore.getProxyAllowanceAsync(takerAssetData, this.takerAddress);
-        const expMakerAssetBalanceOfTaker = await lazyStore.getBalanceAsync(makerAssetData, this.takerAddress);
-        const expZRXAssetBalanceOfTaker = await lazyStore.getBalanceAsync(this.zrxAssetData, this.takerAddress);
-        const expZRXAssetAllowanceOfTaker = await lazyStore.getProxyAllowanceAsync(
-            this.zrxAssetData,
-            this.takerAddress,
-        );
-        const expZRXAssetBalanceOfFeeRecipient = await lazyStore.getBalanceAsync(this.zrxAssetData, feeRecipient);
-
-        const orderHash = orderHashUtils.getOrderHashHex(signedOrder);
-        const alreadyFilledTakerAmount = await this.exchangeWrapper.getTakerAssetFilledAmountAsync(orderHash);
-        const remainingTakerAmountToFill = signedOrder.takerAssetAmount.minus(alreadyFilledTakerAmount);
-        const expFilledTakerAmount = takerAssetFillAmount.gt(remainingTakerAmountToFill)
-            ? remainingTakerAmountToFill
-            : alreadyFilledTakerAmount.add(takerAssetFillAmount);
-
-        const expFilledMakerAmount = orderUtils.getPartialAmount(
-            expFilledTakerAmount,
-            signedOrder.takerAssetAmount,
-            signedOrder.makerAssetAmount,
-        );
-
-        const beforeMakerAssetAllowanceOfMaker = await this.assetWrapper.getProxyAllowanceAsync(
-            makerAddress,
-            makerAssetData,
-        );
-
-        // - Let's fill the order!
-        const txReceipt = await this.exchangeWrapper.fillOrderAsync(signedOrder, this.takerAddress, {
-            takerAssetFillAmount,
-        });
-
-        const actFilledTakerAmount = await this.exchangeWrapper.getTakerAssetFilledAmountAsync(orderHash);
-        expect(actFilledTakerAmount).to.be.bignumber.equal(expFilledTakerAmount, 'filledTakerAmount');
-
-        expect(txReceipt.logs.length).to.be.equal(1, 'logs length');
-        // tslint:disable-next-line:no-unnecessary-type-assertion
-        const log = txReceipt.logs[0] as LogWithDecodedArgs<FillContractEventArgs>;
-        expect(log.args.makerAddress).to.be.equal(makerAddress, 'log.args.makerAddress');
-        expect(log.args.takerAddress).to.be.equal(this.takerAddress, 'log.args.this.takerAddress');
-        expect(log.args.feeRecipientAddress).to.be.equal(feeRecipient, 'log.args.feeRecipientAddress');
-        expect(log.args.makerAssetFilledAmount).to.be.bignumber.equal(
-            expFilledMakerAmount,
-            'log.args.makerAssetFilledAmount',
-        );
-        expect(log.args.takerAssetFilledAmount).to.be.bignumber.equal(
-            expFilledTakerAmount,
-            'log.args.takerAssetFilledAmount',
-        );
-        const expMakerFeePaid = orderUtils.getPartialAmount(
-            expFilledTakerAmount,
-            signedOrder.takerAssetAmount,
-            signedOrder.makerFee,
-        );
-        expect(log.args.makerFeePaid).to.be.bignumber.equal(expMakerFeePaid, 'log.args.makerFeePaid');
-        const expTakerFeePaid = orderUtils.getPartialAmount(
-            expFilledTakerAmount,
-            signedOrder.takerAssetAmount,
-            signedOrder.takerFee,
-        );
-        expect(log.args.takerFeePaid).to.be.bignumber.equal(expTakerFeePaid, 'logs.args.takerFeePaid');
-        expect(log.args.orderHash).to.be.equal(orderHash, 'log.args.orderHash');
-        expect(log.args.makerAssetData).to.be.equal(makerAssetData, 'log.args.makerAssetData');
-        expect(log.args.takerAssetData).to.be.equal(takerAssetData, 'log.args.takerAssetData');
-
-        const actMakerAssetBalanceOfMaker = await this.assetWrapper.getBalanceAsync(makerAddress, makerAssetData);
-        expect(actMakerAssetBalanceOfMaker).to.be.bignumber.equal(
-            expMakerAssetBalanceOfMaker,
-            'makerAssetBalanceOfMaker',
-        );
-
-        const actMakerAssetAllowanceOfMaker = await this.assetWrapper.getProxyAllowanceAsync(
-            makerAddress,
-            makerAssetData,
-        );
-        expect(actMakerAssetAllowanceOfMaker).to.be.bignumber.equal(
-            expMakerAssetAllowanceOfMaker,
-            'makerAssetAllowanceOfMaker',
-        );
-
-        const actTakerAssetBalanceOfMaker = await this.assetWrapper.getBalanceAsync(makerAddress, takerAssetData);
-        expect(actTakerAssetBalanceOfMaker).to.be.bignumber.equal(
-            expTakerAssetBalanceOfMaker,
-            'takerAssetBalanceOfMaker',
-        );
-
-        const actZRXAssetBalanceOfMaker = await this.assetWrapper.getBalanceAsync(makerAddress, this.zrxAssetData);
-        expect(actZRXAssetBalanceOfMaker).to.be.bignumber.equal(expZRXAssetBalanceOfMaker, 'ZRXAssetBalanceOfMaker');
-
-        const actZRXAssetAllowanceOfMaker = await this.assetWrapper.getProxyAllowanceAsync(
-            makerAddress,
-            this.zrxAssetData,
-        );
-        expect(actZRXAssetAllowanceOfMaker).to.be.bignumber.equal(
-            expZRXAssetAllowanceOfMaker,
-            'ZRXAssetAllowanceOfMaker',
-        );
-
-        const actTakerAssetBalanceOfTaker = await this.assetWrapper.getBalanceAsync(this.takerAddress, takerAssetData);
-        expect(actTakerAssetBalanceOfTaker).to.be.bignumber.equal(
-            expTakerAssetBalanceOfTaker,
-            'TakerAssetBalanceOfTaker',
-        );
-
-        const actTakerAssetAllowanceOfTaker = await this.assetWrapper.getProxyAllowanceAsync(
-            this.takerAddress,
-            takerAssetData,
-        );
-
-        expect(actTakerAssetAllowanceOfTaker).to.be.bignumber.equal(
-            expTakerAssetAllowanceOfTaker,
-            'TakerAssetAllowanceOfTaker',
-        );
-
-        const actMakerAssetBalanceOfTaker = await this.assetWrapper.getBalanceAsync(this.takerAddress, makerAssetData);
-        expect(actMakerAssetBalanceOfTaker).to.be.bignumber.equal(
-            expMakerAssetBalanceOfTaker,
-            'MakerAssetBalanceOfTaker',
-        );
-
-        const actZRXAssetBalanceOfTaker = await this.assetWrapper.getBalanceAsync(this.takerAddress, this.zrxAssetData);
-        expect(actZRXAssetBalanceOfTaker).to.be.bignumber.equal(expZRXAssetBalanceOfTaker, 'ZRXAssetBalanceOfTaker');
-
-        const actZRXAssetAllowanceOfTaker = await this.assetWrapper.getProxyAllowanceAsync(
-            this.takerAddress,
-            this.zrxAssetData,
-        );
-        expect(actZRXAssetAllowanceOfTaker).to.be.bignumber.equal(
-            expZRXAssetAllowanceOfTaker,
-            'ZRXAssetAllowanceOfTaker',
-        );
-
-        const actZRXAssetBalanceOfFeeRecipient = await this.assetWrapper.getBalanceAsync(
-            feeRecipient,
-            this.zrxAssetData,
-        );
-        expect(actZRXAssetBalanceOfFeeRecipient).to.be.bignumber.equal(
-            expZRXAssetBalanceOfFeeRecipient,
-            'ZRXAssetBalanceOfFeeRecipient',
-        );
-    }
-}
+} // tslint:disable:max-file-line-count
