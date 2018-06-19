@@ -64,7 +64,10 @@ describe('Exchange transactions', () => {
 
         erc20Wrapper = new ERC20Wrapper(provider, usedAddresses, owner);
 
-        [erc20TokenA, erc20TokenB, zrxToken] = await erc20Wrapper.deployDummyTokensAsync();
+        [erc20TokenA, erc20TokenB, zrxToken] = await erc20Wrapper.deployDummyTokensAsync(
+            constants.NUM_DUMMY_ERC20_TO_DEPLOY,
+            constants.DUMMY_TOKEN_DECIMALS,
+        );
         erc20Proxy = await erc20Wrapper.deployProxyAsync();
         await erc20Wrapper.setBalancesAndAllowancesAsync();
 

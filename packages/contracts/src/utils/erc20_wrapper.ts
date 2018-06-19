@@ -27,11 +27,11 @@ export class ERC20Wrapper {
         this._tokenOwnerAddresses = tokenOwnerAddresses;
         this._contractOwnerAddress = contractOwnerAddress;
     }
-    public async deployDummyTokensAsync(num?: number, decimals?: BigNumber): Promise<DummyERC20TokenContract[]> {
-        // TODO(fabio): Remove and refactor all tests
-        const finalNum = _.isUndefined(num) ? constants.NUM_DUMMY_ERC20_TO_DEPLOY : num;
-        const finalDecimals = _.isUndefined(decimals) ? constants.DUMMY_TOKEN_DECIMALS : decimals;
-        for (let i = 0; i < finalNum; i++) {
+    public async deployDummyTokensAsync(
+        numberToDeploy: number,
+        decimals: BigNumber,
+    ): Promise<DummyERC20TokenContract[]> {
+        for (let i = 0; i < numberToDeploy; i++) {
             this._dummyTokenContracts.push(
                 await DummyERC20TokenContract.deployFrom0xArtifactAsync(
                     artifacts.DummyERC20Token,
@@ -39,7 +39,7 @@ export class ERC20Wrapper {
                     txDefaults,
                     constants.DUMMY_TOKEN_NAME,
                     constants.DUMMY_TOKEN_SYMBOL,
-                    finalDecimals,
+                    decimals,
                     constants.DUMMY_TOKEN_TOTAL_SUPPLY,
                 ),
             );
