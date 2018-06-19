@@ -1,6 +1,6 @@
 {
     "name": "@0xproject/utils",
-    "version": "0.7.0",
+    "version": "0.7.1",
     "engines": {
         "node": ">=6.12"
     },
@@ -24,8 +24,8 @@
     },
     "homepage": "https://github.com/0xProject/0x-monorepo/packages/utils/README.md",
     "devDependencies": {
-        "@0xproject/monorepo-scripts": "^0.2.0",
-        "@0xproject/tslint-config": "^0.4.19",
+        "@0xproject/monorepo-scripts": "^0.2.1",
+        "@0xproject/tslint-config": "^0.4.20",
         "@types/lodash": "4.14.104",
         "copyfiles": "1.2.0",
         "make-promises-safe": "1.1.0",
@@ -35,8 +35,8 @@
         "typescript": "2.7.1"
     },
     "dependencies": {
-        "@0xproject/types": "^0.8.0",
-        "@0xproject/typescript-typings": "^0.4.0",
+        "@0xproject/types": "^0.8.1",
+        "@0xproject/typescript-typings": "^0.4.1",
         "@types/node": "9.6.0",
         "bignumber.js": "~4.1.0",
         "ethers": "3.0.22",

@@ -1,6 +1,6 @@
 {
     "name": "@0xproject/website",
-    "version": "0.0.36",
+    "version": "0.0.37",
     "engines": {
         "node": ">=6.12"
     },
@@ -18,13 +18,13 @@
     "author": "Fabio Berger",
     "license": "Apache-2.0",
     "dependencies": {
-        "0x.js": "^0.38.3",
-        "@0xproject/react-docs": "^0.0.13",
-        "@0xproject/react-shared": "^0.2.0",
-        "@0xproject/subproviders": "^0.10.3",
-        "@0xproject/typescript-typings": "^0.4.0",
-        "@0xproject/utils": "^0.7.0",
-        "@0xproject/web3-wrapper": "^0.7.0",
+        "0x.js": "^0.38.4",
+        "@0xproject/react-docs": "^0.0.14",
+        "@0xproject/react-shared": "^0.2.1",
+        "@0xproject/subproviders": "^0.10.4",
+        "@0xproject/typescript-typings": "^0.4.1",
+        "@0xproject/utils": "^0.7.1",
+        "@0xproject/web3-wrapper": "^0.7.1",
         "accounting": "0.4.1",
         "basscss": "8.0.4",
         "blockies": "0.0.2",

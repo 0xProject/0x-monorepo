@@ -1,6 +1,6 @@
 {
     "name": "@0xproject/assert",
-    "version": "0.2.11",
+    "version": "0.2.12",
     "engines": {
         "node": ">=6.12"
     },
@@ -30,8 +30,8 @@
     },
     "homepage": "https://github.com/0xProject/0x-monorepo/packages/assert/README.md",
     "devDependencies": {
-        "@0xproject/monorepo-scripts": "^0.2.0",
-        "@0xproject/tslint-config": "^0.4.19",
+        "@0xproject/monorepo-scripts": "^0.2.1",
+        "@0xproject/tslint-config": "^0.4.20",
         "@types/lodash": "4.14.104",
         "@types/mocha": "2.2.48",
         "@types/valid-url": "1.0.2",
@@ -47,9 +47,9 @@
         "typescript": "2.7.1"
     },
     "dependencies": {
-        "@0xproject/json-schemas": "^0.8.0",
-        "@0xproject/typescript-typings": "^0.4.0",
-        "@0xproject/utils": "^0.7.0",
+        "@0xproject/json-schemas": "^0.8.1",
+        "@0xproject/typescript-typings": "^0.4.1",
+        "@0xproject/utils": "^0.7.1",
         "lodash": "4.17.10",
         "valid-url": "1.0.9"
     },

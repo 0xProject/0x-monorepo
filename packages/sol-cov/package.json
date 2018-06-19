@@ -1,6 +1,6 @@
 {
     "name": "@0xproject/sol-cov",
-    "version": "0.1.0",
+    "version": "0.1.1",
     "engines": {
         "node": ">=6.12"
     },
@@ -46,10 +46,10 @@
     },
     "homepage": "https://github.com/0xProject/0x.js/packages/sol-cov/README.md",
     "dependencies": {
-        "@0xproject/subproviders": "^0.10.3",
-        "@0xproject/types": "^0.8.0",
-        "@0xproject/typescript-typings": "^0.4.0",
-        "@0xproject/utils": "^0.7.0",
+        "@0xproject/subproviders": "^0.10.4",
+        "@0xproject/types": "^0.8.1",
+        "@0xproject/typescript-typings": "^0.4.1",
+        "@0xproject/utils": "^0.7.1",
         "ethereumjs-util": "5.1.5",
         "glob": "7.1.1",
         "istanbul": "0.4.5",
@@ -59,8 +59,8 @@
         "solidity-parser-antlr": "0.2.8"
     },
     "devDependencies": {
-        "@0xproject/monorepo-scripts": "^0.2.0",
-        "@0xproject/tslint-config": "^0.4.19",
+        "@0xproject/monorepo-scripts": "^0.2.1",
+        "@0xproject/tslint-config": "^0.4.20",
         "@types/istanbul": "0.4.30",
         "@types/mkdirp": "0.5.2",
         "@types/mocha": "2.2.48",

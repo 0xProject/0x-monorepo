@@ -1,6 +1,6 @@
 {
     "name": "@0xproject/react-docs",
-    "version": "0.0.13",
+    "version": "0.0.14",
     "engines": {
         "node": ">=6.12"
     },
@@ -25,9 +25,9 @@
         "url": "https://github.com/0xProject/0x-monorepo.git"
     },
     "devDependencies": {
-        "@0xproject/dev-utils": "^0.4.3",
-        "@0xproject/monorepo-scripts": "^0.2.0",
-        "@0xproject/tslint-config": "^0.4.19",
+        "@0xproject/dev-utils": "^0.4.4",
+        "@0xproject/monorepo-scripts": "^0.2.1",
+        "@0xproject/tslint-config": "^0.4.20",
         "copyfiles": "1.2.0",
         "make-promises-safe": "1.1.0",
         "shx": "0.2.2",
@@ -35,8 +35,8 @@
         "typescript": "2.7.1"
     },
     "dependencies": {
-        "@0xproject/react-shared": "^0.2.0",
-        "@0xproject/utils": "^0.7.0",
+        "@0xproject/react-shared": "^0.2.1",
+        "@0xproject/utils": "^0.7.1",
         "@types/lodash": "4.14.104",
         "@types/material-ui": "0.18.0",
         "@types/node": "9.6.0",

@@ -1,7 +1,7 @@
 {
     "private": true,
     "name": "@0xproject/react-docs-example",
-    "version": "0.0.12",
+    "version": "0.0.13",
     "engines": {
         "node": ">=6.12"
     },
@@ -26,7 +26,7 @@
         "url": "https://github.com/0xProject/0x-monorepo.git"
     },
     "devDependencies": {
-        "@0xproject/tslint-config": "^0.4.19",
+        "@0xproject/tslint-config": "^0.4.20",
         "@types/lodash": "4.14.104",
         "@types/material-ui": "0.18.0",
         "@types/node": "9.6.0",
@@ -50,7 +50,7 @@
         "webpack-dev-server": "2.11.2"
     },
     "dependencies": {
-        "@0xproject/react-docs": "^0.0.13",
+        "@0xproject/react-docs": "^0.0.14",
         "basscss": "8.0.4",
         "lodash": "4.17.10",
         "material-ui": "0.17.4",
