@@ -9,7 +9,7 @@ interface ASTInfo {
     type: string;
     node: Parser.ASTNode;
     name: string | null;
-    range: SingleFileSourceRange;
+    range?: SingleFileSourceRange;
 }
 
 // Parsing source code for each transaction/code is slow and therefore we cache it
@@ -30,13 +30,13 @@ export function getSourceRangeSnippet(sourceRange: SourceRange, sourceCode: stri
     const sourceCodeInRange = utils.getRange(sourceCode, sourceRange.location);
     return {
         ...astInfo,
+        range: astInfo.range as SingleFileSourceRange,
         source: sourceCodeInRange,
         fileName: sourceRange.fileName,
     };
 }
 
-// A visitor which collects ASTInfo for contract definitions, function
-// definitions, and other types of statements.
+// A visitor which collects ASTInfo for most nodes in the AST.
 class ASTInfoVisitor {
     private _astInfos: ASTInfo[] = [];
     public getASTInfoForRange(sourceRange: SourceRange): ASTInfo | null {
@@ -165,11 +165,12 @@ class ASTInfoVisitor {
             },
         };
         for (const astInfo of this._astInfos) {
+            const astInfoRange = astInfo.range as SingleFileSourceRange;
             if (
-                astInfo.range.start.column === offsetSourceRange.location.start.column &&
-                astInfo.range.start.line === offsetSourceRange.location.start.line &&
-                astInfo.range.end.column === offsetSourceRange.location.end.column &&
-                astInfo.range.end.line === offsetSourceRange.location.end.line
+                astInfoRange.start.column === offsetSourceRange.location.start.column &&
+                astInfoRange.start.line === offsetSourceRange.location.start.line &&
+                astInfoRange.end.column === offsetSourceRange.location.end.column &&
+                astInfoRange.end.line === offsetSourceRange.location.end.line
             ) {
                 return astInfo;
             }
