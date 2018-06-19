@@ -1,6 +1,7 @@
 import { constants as sharedConstants } from '@0xproject/react-shared';
 import * as _ from 'lodash';
 import * as React from 'react';
+import { RouteComponentProps, withRouter } from 'react-router';
 
 import { BigNumber } from '@0xproject/utils';
 import { Blockchain } from 'ts/blockchain';
@@ -17,7 +18,7 @@ import { ProviderType, Token, TokenByAddress, TokenStateByAddress } from 'ts/typ
 import { analytics } from 'ts/utils/analytics';
 import { utils } from 'ts/utils/utils';
 
-export interface PortalOnboardingFlowProps {
+export interface PortalOnboardingFlowProps extends RouteComponentProps<any> {
     networkId: number;
     blockchain: Blockchain;
     stepIndex: number;
@@ -35,9 +36,15 @@ export interface PortalOnboardingFlowProps {
     refetchTokenStateAsync: (tokenAddress: string) => Promise<void>;
 }
 
-export class PortalOnboardingFlow extends React.Component<PortalOnboardingFlowProps> {
+class PlainPortalOnboardingFlow extends React.Component<PortalOnboardingFlowProps> {
+    private _unlisten: () => void;
     public componentDidMount(): void {
         this._overrideOnboardingStateIfShould();
+        // If there is a route change, just close onboarding.
+        this._unlisten = this.props.history.listen(() => this.props.updateIsRunning(false));
+    }
+    public componentWillUnmount(): void {
+        this._unlisten();
     }
     public componentDidUpdate(): void {
         this._overrideOnboardingStateIfShould();
@@ -224,3 +231,5 @@ export class PortalOnboardingFlow extends React.Component<PortalOnboardingFlowPr
         );
     }
 }
+
+export const PortalOnboardingFlow = withRouter(PlainPortalOnboardingFlow);

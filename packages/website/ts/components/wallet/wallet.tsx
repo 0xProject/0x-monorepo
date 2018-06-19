@@ -29,7 +29,6 @@ import { WrapEtherItem } from 'ts/components/wallet/wrap_ether_item';
 import { AllowanceToggle } from 'ts/containers/inputs/allowance_toggle';
 import { Dispatcher } from 'ts/redux/dispatcher';
 import { colors } from 'ts/style/colors';
-import { zIndex } from 'ts/style/z_index';
 import {
     BlockchainErrs,
     ProviderType,
@@ -66,6 +65,7 @@ export interface WalletProps {
     onAddToken: () => void;
     onRemoveToken: () => void;
     refetchTokenStateAsync: (tokenAddress: string) => Promise<void>;
+    style: React.CSSProperties;
 }
 
 interface WalletState {
@@ -86,7 +86,6 @@ interface AccessoryItemConfig {
 const styles: Styles = {
     root: {
         width: '100%',
-        zIndex: zIndex.aboveOverlay,
         position: 'relative',
     },
     footerItemInnerDiv: {
@@ -141,6 +140,9 @@ const NO_ALLOWANCE_TOGGLE_SPACE_WIDTH = 56;
 const ACCOUNT_PATH = `${WebsitePaths.Portal}/account`;
 
 export class Wallet extends React.Component<WalletProps, WalletState> {
+    public static defaultProps = {
+        style: {},
+    };
     constructor(props: WalletProps) {
         super(props);
         this.state = {
@@ -148,11 +150,10 @@ export class Wallet extends React.Component<WalletProps, WalletState> {
             isHoveringSidebar: false,
         };
     }
-
     public render(): React.ReactNode {
         const isBlockchainLoaded = this.props.blockchainIsLoaded && this.props.blockchainErr === BlockchainErrs.NoError;
         return (
-            <Island className="flex flex-column wallet" style={styles.root}>
+            <Island className="flex flex-column wallet" style={{ ...styles.root, ...this.props.style }}>
                 {isBlockchainLoaded ? this._renderLoadedRows() : this._renderLoadingRows()}
             </Island>
         );
@@ -276,7 +277,7 @@ export class Wallet extends React.Component<WalletProps, WalletState> {
                         <ListItem
                             primaryText={
                                 <div className="flex right" style={styles.manageYourWalletText}>
-                                    {'manage your wallet'}
+                                    manage your wallet
                                 </div>
                                 // https://github.com/palantir/tslint-react/issues/140
                                 // tslint:disable-next-line:jsx-curly-spacing

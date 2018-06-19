@@ -33,6 +33,7 @@ import { localStorage } from 'ts/local_storage/local_storage';
 import { trackedTokenStorage } from 'ts/local_storage/tracked_token_storage';
 import { FullscreenMessage } from 'ts/pages/fullscreen_message';
 import { Dispatcher } from 'ts/redux/dispatcher';
+import { zIndex } from 'ts/style/z_index';
 import {
     BlockchainErrs,
     HashData,
@@ -74,6 +75,7 @@ export interface PortalProps {
     flashMessage?: string | React.ReactNode;
     lastForceTokenStateRefetch: number;
     translate: Translate;
+    isPortalOnboardingShowing: boolean;
     portalOnboardingStep: number;
 }
 
@@ -341,6 +343,7 @@ export class Portal extends React.Component<PortalProps, PortalState> {
         return (
             <div>
                 <Wallet
+                    style={this.props.isPortalOnboardingShowing ? { zIndex: zIndex.aboveOverlay } : undefined}
                     userAddress={this.props.userAddress}
                     networkId={this.props.networkId}
                     blockchain={this._blockchain}
