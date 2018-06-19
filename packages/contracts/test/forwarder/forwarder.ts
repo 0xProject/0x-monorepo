@@ -14,6 +14,7 @@ import { ExchangeContract } from '../../src/generated_contract_wrappers/exchange
 import { ForwarderContract } from '../../src/generated_contract_wrappers/forwarder';
 import { WETH9Contract } from '../../src/generated_contract_wrappers/weth9';
 import { artifacts } from '../../src/utils/artifacts';
+import { expectRevertOrAlwaysFailingTransactionAsync } from '../../src/utils/assertions';
 import { chaiSetup } from '../../src/utils/chai_setup';
 import { constants } from '../../src/utils/constants';
 import { ERC20Wrapper } from '../../src/utils/erc20_wrapper';
@@ -203,6 +204,23 @@ describe(ContractName.Forwarder, () => {
             const isWithinThreshold = takerBalanceAfter.greaterThanOrEqualTo(acceptableThreshold);
             expect(isWithinThreshold).to.be.true();
             expect(newBalances[forwarderContract.address][weth.address]).to.be.bignumber.equal(new BigNumber(0));
+        });
+        it('throws when mixed ERC721 and ERC20 assets with ERC20 first', async () => {
+            const makerAssetId = erc721MakerAssetIds[0];
+            const erc721SignedOrder = orderFactory.newSignedOrder({
+                makerAssetAmount: new BigNumber(1),
+                makerAssetData: assetProxyUtils.encodeERC721AssetData(erc721Token.address, makerAssetId),
+            });
+            const erc20SignedOrder = orderFactory.newSignedOrder();
+            signedOrders = [erc20SignedOrder, erc721SignedOrder];
+            const assetAmount = new BigNumber(signedOrders.length);
+            const fillAmountWei = erc20SignedOrder.takerAssetAmount.plus(erc721SignedOrder.takerAssetAmount);
+            return expectRevertOrAlwaysFailingTransactionAsync(
+                forwarderWrapper.marketBuyTokensAsync(signedOrders, feeOrders, {
+                    from: takerAddress,
+                    fillAmountWei,
+                }),
+            );
         });
     });
     describe('marketBuyTokensFee', () => {
@@ -428,12 +446,12 @@ describe(ContractName.Forwarder, () => {
             const makerAssetId2 = erc721MakerAssetIds[1];
             const signedOrder1 = orderFactory.newSignedOrder({
                 makerAssetAmount: new BigNumber(1),
-                takerFee: Web3Wrapper.toBaseUnitAmount(new BigNumber(1), DECIMALS_DEFAULT),
+                takerFee: Web3Wrapper.toBaseUnitAmount(new BigNumber(3), DECIMALS_DEFAULT),
                 makerAssetData: assetProxyUtils.encodeERC721AssetData(erc721Token.address, makerAssetId1),
             });
             const signedOrder2 = orderFactory.newSignedOrder({
                 makerAssetAmount: new BigNumber(1),
-                takerFee: Web3Wrapper.toBaseUnitAmount(new BigNumber(1), DECIMALS_DEFAULT),
+                takerFee: Web3Wrapper.toBaseUnitAmount(new BigNumber(4), DECIMALS_DEFAULT),
                 makerAssetData: assetProxyUtils.encodeERC721AssetData(erc721Token.address, makerAssetId2),
             });
             signedOrders = [signedOrder1, signedOrder2];
@@ -456,5 +474,60 @@ describe(ContractName.Forwarder, () => {
             const newOwnerTakerAsset2 = await erc721Token.ownerOf.callAsync(makerAssetId2);
             expect(newOwnerTakerAsset2).to.be.bignumber.equal(takerAddress);
         });
+        it('throws when mixed ERC721 and ERC20 assets', async () => {
+            const makerAssetId = erc721MakerAssetIds[0];
+            const erc721SignedOrder = orderFactory.newSignedOrder({
+                makerAssetAmount: new BigNumber(1),
+                makerAssetData: assetProxyUtils.encodeERC721AssetData(erc721Token.address, makerAssetId),
+            });
+            const erc20SignedOrder = orderFactory.newSignedOrder();
+            signedOrders = [erc721SignedOrder, erc20SignedOrder];
+            const assetAmount = new BigNumber(signedOrders.length);
+            const fillAmountWei = erc20SignedOrder.takerAssetAmount.plus(erc721SignedOrder.takerAssetAmount);
+            return expectRevertOrAlwaysFailingTransactionAsync(
+                forwarderWrapper.buyExactAssetsAsync(signedOrders, feeOrders, {
+                    from: takerAddress,
+                    assetAmount,
+                    fillAmountWei,
+                }),
+            );
+        });
+        it('throws when mixed ERC721 and ERC20 assets with ERC20 first', async () => {
+            const makerAssetId = erc721MakerAssetIds[0];
+            const erc721SignedOrder = orderFactory.newSignedOrder({
+                makerAssetAmount: new BigNumber(1),
+                makerAssetData: assetProxyUtils.encodeERC721AssetData(erc721Token.address, makerAssetId),
+            });
+            const erc20SignedOrder = orderFactory.newSignedOrder();
+            signedOrders = [erc20SignedOrder, erc721SignedOrder];
+            const assetAmount = new BigNumber(signedOrders.length);
+            const fillAmountWei = erc20SignedOrder.takerAssetAmount.plus(erc721SignedOrder.takerAssetAmount);
+            return expectRevertOrAlwaysFailingTransactionAsync(
+                forwarderWrapper.buyExactAssetsAsync(signedOrders, feeOrders, {
+                    from: takerAddress,
+                    assetAmount,
+                    fillAmountWei,
+                }),
+            );
+        });
+        it('throws when assetAmount does not equal ERC721 order size', async () => {
+            const makerAssetId = erc721MakerAssetIds[0];
+            signedOrder = orderFactory.newSignedOrder({
+                makerAssetAmount: new BigNumber(1),
+                makerAssetData: assetProxyUtils.encodeERC721AssetData(erc721Token.address, makerAssetId),
+            });
+            signedOrders = [signedOrder];
+            const assetAmount = new BigNumber(10);
+            const fillAmountWei = signedOrder.takerAssetAmount;
+            return expectRevertOrAlwaysFailingTransactionAsync(
+                forwarderWrapper.buyExactAssetsAsync(signedOrders, feeOrders, {
+                    from: takerAddress,
+                    assetAmount,
+                    fillAmountWei,
+                }),
+            );
+        });
     });
 });
+// tslint:disable:max-file-line-count
+// tslint:enable:no-unnecessary-type-assertion

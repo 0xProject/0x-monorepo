@@ -17,7 +17,6 @@ contract MixinForwarderExpectedResults is MixinForwarderCore {
         view
         returns (Exchange.FillResults memory fillResults)
     {
-        // Exchange.OrderInfo memory orderInfo = EXCHANGE.getOrderInfo(order);
         fillResults = EXCHANGE.calculateFillResults(order, takerAssetFillAmount);
         return fillResults;
     }
@@ -36,10 +35,6 @@ contract MixinForwarderExpectedResults is MixinForwarderCore {
         returns (Exchange.FillResults memory totalFillResults)
     {
         for (uint256 i = 0; i < orders.length; i++) {
-            require(
-                areBytesEqual(orders[i].makerAssetData, orders[0].makerAssetData),
-                SAME_ASSET_TYPE_REQUIRED
-            );
             uint256 remainingTakerAssetFillAmount = safeSub(takerAssetFillAmount, totalFillResults.takerAssetFilledAmount);
 
             Exchange.FillResults memory fillOrderExpectedResults = calculateFillOrderFillResults(orders[i], remainingTakerAssetFillAmount);
@@ -66,10 +61,6 @@ contract MixinForwarderExpectedResults is MixinForwarderCore {
         returns (Exchange.FillResults memory totalFillResults)
     {
         for (uint256 i = 0; i < orders.length; i++) {
-            require(
-                areBytesEqual(orders[i].makerAssetData, orders[0].makerAssetData), 
-                SAME_ASSET_TYPE_REQUIRED
-            );
             uint256 remainingMakerAssetFillAmount = safeSub(makerAssetFillAmount, totalFillResults.makerAssetFilledAmount);
             uint256 remainingTakerAssetFillAmount = getPartialAmount(
                 orders[i].takerAssetAmount,
@@ -104,10 +95,6 @@ contract MixinForwarderExpectedResults is MixinForwarderCore {
             TAKER_ASSET_ZRX_REQUIRED
         );
         for (uint256 i = 0; i < orders.length; i++) {
-            require(
-                areBytesEqual(orders[i].makerAssetData, orders[0].makerAssetData),
-                SAME_ASSET_TYPE_REQUIRED
-            );
             uint256 remainingMakerAssetFillAmount = safeSub(zrxAmount, totalFillResults.makerAssetFilledAmount);
             // Convert the remaining amount of makerToken to buy into remaining amount
             // of takerToken to sell, assuming entire amount can be sold in the current order

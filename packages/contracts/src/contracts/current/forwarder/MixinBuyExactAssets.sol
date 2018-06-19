@@ -92,7 +92,7 @@ contract MixinBuyExactAssets is
         private
         returns (Exchange.FillResults memory totalFillResults)
     {
-        address makerTokenAddress = readAddress(orders[0].makerAssetData, 0); 
+        address makerTokenAddress = readAddress(orders[0].makerAssetData, 0);
         // Populate the known assetData, as it is always WETH the caller can provide null bytes to save gas
         for (uint256 i = 0; i < orders.length; i++) {
             orders[i].makerAssetData = orders[0].makerAssetData;
@@ -113,7 +113,10 @@ contract MixinBuyExactAssets is
             if (calculatedMarketBuyResults.takerFeePaid > 0) {
                 // Fees are required for these orders. Buy enough ZRX to cover the future market buy
                 Exchange.FillResults memory feeTokensResult = buyFeeTokensInternal(
-                    feeOrders, feeSignatures, calculatedMarketBuyResults.takerFeePaid);
+                    feeOrders,
+                    feeSignatures,
+                    calculatedMarketBuyResults.takerFeePaid
+                );
                 totalFillResults.takerAssetFilledAmount = feeTokensResult.takerAssetFilledAmount;
                 totalFillResults.takerFeePaid = feeTokensResult.takerFeePaid;
             }
