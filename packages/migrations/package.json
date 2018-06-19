@@ -1,6 +1,6 @@
 {
     "name": "@0xproject/migrations",
-    "version": "0.0.6",
+    "version": "0.0.8",
     "engines": {
         "node": ">=6.12"
     },
@@ -36,10 +36,10 @@
     },
     "license": "Apache-2.0",
     "devDependencies": {
-        "@0xproject/abi-gen": "^0.3.0",
-        "@0xproject/dev-utils": "^0.4.2",
-        "@0xproject/tslint-config": "^0.4.18",
-        "@0xproject/types": "^0.7.0",
+        "@0xproject/abi-gen": "^0.3.2",
+        "@0xproject/dev-utils": "^0.4.4",
+        "@0xproject/tslint-config": "^0.4.20",
+        "@0xproject/types": "^0.8.1",
         "@types/yargs": "^10.0.0",
         "yargs": "^10.0.3",
         "make-promises-safe": "^1.1.0",
@@ -49,13 +49,13 @@
         "typescript": "2.7.1"
     },
     "dependencies": {
-        "@0xproject/base-contract": "^0.3.2",
-        "@0xproject/sol-compiler": "^0.5.0",
-        "@0xproject/typescript-typings": "^0.3.2",
-        "@0xproject/utils": "^0.6.2",
-        "@0xproject/web3-wrapper": "^0.6.4",
+        "@0xproject/base-contract": "^0.3.4",
+        "@0xproject/sol-compiler": "^0.5.2",
+        "@0xproject/typescript-typings": "^0.4.1",
+        "@0xproject/utils": "^0.7.1",
+        "@0xproject/web3-wrapper": "^0.7.1",
         "ethereum-types": "^0.0.1",
-        "ethers": "^3.0.15",
+        "ethers": "3.0.22",
         "lodash": "^4.17.4"
     },
     "publishConfig": {
