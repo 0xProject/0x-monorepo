@@ -18,13 +18,14 @@
 
 pragma solidity ^0.4.24;
 
-contract LibOrder {
+import "./LibEIP712.sol";
 
-    bytes32 constant DOMAIN_SEPARATOR_SCHEMA_HASH = keccak256(abi.encodePacked(
-        "DomainSeparator(address contract)"
-    ));
+contract LibOrder is
+    LibEIP712
+{
 
-    bytes32 constant ORDER_SCHEMA_HASH = keccak256(abi.encodePacked(
+    // Hash for the EIP712 Order Schema
+    bytes32 constant EIP712_ORDER_SCHEMA_HASH = keccak256(abi.encodePacked(
         "Order(",
         "address makerAddress,",
         "address takerAddress,",
@@ -37,7 +38,7 @@ contract LibOrder {
         "uint256 expirationTimeSeconds,",
         "uint256 salt,",
         "bytes makerAssetData,",
-        "bytes takerAssetData,",
+        "bytes takerAssetData",
         ")"
     ));
 
@@ -85,27 +86,38 @@ contract LibOrder {
         view
         returns (bytes32 orderHash)
     {
-        // TODO: EIP712 is not finalized yet
-        // Source: https://github.com/ethereum/EIPs/pull/712
-        orderHash = keccak256(abi.encodePacked(
-            DOMAIN_SEPARATOR_SCHEMA_HASH,
-            keccak256(abi.encodePacked(address(this))),
-            ORDER_SCHEMA_HASH,
-            keccak256(abi.encodePacked(
-                order.makerAddress,
-                order.takerAddress,
-                order.feeRecipientAddress,
-                order.senderAddress,
-                order.makerAssetAmount,
-                order.takerAssetAmount,
-                order.makerFee,
-                order.takerFee,
-                order.expirationTimeSeconds,
-                order.salt,
-                keccak256(abi.encodePacked(order.makerAssetData)),
-                keccak256(abi.encodePacked(order.takerAssetData))
-            ))
-        ));
+        orderHash = hashEIP712Message(hashOrder(order));
         return orderHash;
+    }
+
+    /// @dev Calculates EIP712 hash of the order.
+    /// @param order The order structure.
+    /// @return EIP712 hash of the order.
+    function hashOrder(Order memory order)
+        internal
+        pure
+        returns (bytes32 result)
+    {
+        bytes32 schemaHash = EIP712_ORDER_SCHEMA_HASH;
+        bytes32 makerAssetDataHash = keccak256(order.makerAssetData);
+        bytes32 takerAssetDataHash = keccak256(order.takerAssetData);
+        assembly {
+            // Backup
+            let temp1 := mload(sub(order,  32))
+            let temp2 := mload(add(order, 320))
+            let temp3 := mload(add(order, 352))
+            
+            // Hash in place
+            mstore(sub(order,  32), schemaHash)
+            mstore(add(order, 320), makerAssetDataHash)
+            mstore(add(order, 352), takerAssetDataHash)
+            result := keccak256(sub(order, 32), 416)
+            
+            // Restore
+            mstore(sub(order,  32), temp1)
+            mstore(add(order, 320), temp2)
+            mstore(add(order, 352), temp3)
+        }
+        return result;
     }
 }
