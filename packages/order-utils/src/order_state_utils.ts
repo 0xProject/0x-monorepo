@@ -14,6 +14,7 @@ import { AbstractOrderFilledCancelledFetcher } from './abstract/abstract_order_f
 import { constants } from './constants';
 import { orderHashUtils } from './order_hash';
 import { RemainingFillableCalculator } from './remaining_fillable_calculator';
+import { utils } from './utils';
 
 interface SidedOrderRelevantState {
     isMakerSide: boolean;
@@ -161,7 +162,13 @@ export class OrderStateUtils {
             signedOrder,
             signedOrder.takerAddress,
         );
-        const remainingFillableTakerAssetAmountGivenMakersStatus = orderRelevantMakerState.remainingFillableAssetAmount;
+        const remainingFillableTakerAssetAmountGivenMakersStatus = signedOrder.makerAssetAmount.eq(0)
+            ? new BigNumber(0)
+            : utils.getPartialAmount(
+                  orderRelevantMakerState.remainingFillableAssetAmount,
+                  signedOrder.makerAssetAmount,
+                  signedOrder.takerAssetAmount,
+              );
 
         // Get max fillable amount for an order, considering the takers ability to fill
         isMaker = false;

@@ -54,7 +54,7 @@ export class OrderValidationUtils {
         senderAddress: string,
         zrxAssetData: string,
     ): Promise<void> {
-        const fillMakerTokenAmount = OrderValidationUtils._getPartialAmount(
+        const fillMakerTokenAmount = utils.getPartialAmount(
             fillTakerAssetAmount,
             signedOrder.takerAssetAmount,
             signedOrder.makerAssetAmount,
@@ -75,7 +75,7 @@ export class OrderValidationUtils {
             TradeSide.Taker,
             TransferType.Trade,
         );
-        const makerFeeAmount = OrderValidationUtils._getPartialAmount(
+        const makerFeeAmount = utils.getPartialAmount(
             fillTakerAssetAmount,
             signedOrder.takerAssetAmount,
             signedOrder.makerFee,
@@ -88,7 +88,7 @@ export class OrderValidationUtils {
             TradeSide.Maker,
             TransferType.Fee,
         );
-        const takerFeeAmount = OrderValidationUtils._getPartialAmount(
+        const takerFeeAmount = utils.getPartialAmount(
             fillTakerAssetAmount,
             signedOrder.takerAssetAmount,
             signedOrder.takerFee,
@@ -115,13 +115,6 @@ export class OrderValidationUtils {
         if (expirationTimeSeconds.lessThan(currentUnixTimestampSec)) {
             throw new Error(ExchangeContractErrs.OrderFillExpired);
         }
-    }
-    private static _getPartialAmount(numerator: BigNumber, denominator: BigNumber, target: BigNumber): BigNumber {
-        const fillMakerTokenAmount = numerator
-            .mul(target)
-            .div(denominator)
-            .round(0);
-        return fillMakerTokenAmount;
     }
     constructor(orderFilledCancelledFetcher: AbstractOrderFilledCancelledFetcher) {
         this._orderFilledCancelledFetcher = orderFilledCancelledFetcher;
