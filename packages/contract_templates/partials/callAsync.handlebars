@@ -15,6 +15,7 @@ async callAsync(
     const callDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
         {
             to: self.address,
+            ...callData,
             data: encodedData,
         },
         self._web3Wrapper.getContractDefaults(),
