@@ -211,6 +211,7 @@ export enum AllowanceAmountScenario {
     Exact = 'EXACT',
     TooLow = 'TOO_LOW',
     Higher = 'HIGHER',
+    Unlimited = 'UNLIMITED',
 }
 
 export interface TraderStateScenario {

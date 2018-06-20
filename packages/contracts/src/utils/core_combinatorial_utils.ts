@@ -630,6 +630,14 @@ export class CoreCombinatorialUtils {
                 );
                 break;
 
+            case AllowanceAmountScenario.Unlimited:
+                await this.assetWrapper.setProxyAllowanceAsync(
+                    signedOrder.makerAddress,
+                    signedOrder.makerAssetData,
+                    constants.UNLIMITED_ALLOWANCE_IN_BASE_UNITS,
+                );
+                break;
+
             default:
                 throw errorUtils.spawnSwitchErr(
                     'makerStateScenario.traderAssetAllowance',
@@ -656,6 +664,14 @@ export class CoreCombinatorialUtils {
                     signedOrder.makerAddress,
                     this.zrxAssetData,
                     exactAllowance,
+                );
+                break;
+
+            case AllowanceAmountScenario.Unlimited:
+                await this.assetWrapper.setProxyAllowanceAsync(
+                    signedOrder.makerAddress,
+                    this.zrxAssetData,
+                    constants.UNLIMITED_ALLOWANCE_IN_BASE_UNITS,
                 );
                 break;
 
@@ -738,6 +754,14 @@ export class CoreCombinatorialUtils {
                 );
                 break;
 
+            case AllowanceAmountScenario.Unlimited:
+                await this.assetWrapper.setProxyAllowanceAsync(
+                    this.takerAddress,
+                    signedOrder.takerAssetData,
+                    constants.UNLIMITED_ALLOWANCE_IN_BASE_UNITS,
+                );
+                break;
+
             default:
                 throw errorUtils.spawnSwitchErr(
                     'takerStateScenario.traderAssetAllowance',
@@ -764,6 +788,14 @@ export class CoreCombinatorialUtils {
                     signedOrder.takerAddress,
                     this.zrxAssetData,
                     exactAllowance,
+                );
+                break;
+
+            case AllowanceAmountScenario.Unlimited:
+                await this.assetWrapper.setProxyAllowanceAsync(
+                    signedOrder.takerAddress,
+                    this.zrxAssetData,
+                    constants.UNLIMITED_ALLOWANCE_IN_BASE_UNITS,
                 );
                 break;
 

@@ -228,7 +228,7 @@ describe('FillOrder Tests', () => {
                 },
                 takerAssetFillAmountScenario: TakerAssetFillAmountScenario.ExactlyRemainingFillableTakerAssetAmount,
             };
-            await coreCombinatorialUtils.testFillOrderScenarioAsync(provider, fillScenario);
+            await coreCombinatorialUtils.testFillOrderScenarioAsync(provider, fillScenario, true);
         });
 
         it('should successfully fill order when makerAsset is ERC20 and takerAsset is ERC721', async () => {
@@ -240,6 +240,44 @@ describe('FillOrder Tests', () => {
                     takerAssetDataScenario: AssetDataScenario.ERC721,
                 },
                 takerAssetFillAmountScenario: TakerAssetFillAmountScenario.ExactlyRemainingFillableTakerAssetAmount,
+            };
+            await coreCombinatorialUtils.testFillOrderScenarioAsync(provider, fillScenario);
+        });
+
+        it('should successfully fill order when makerAsset is ERC721 and approveAll is set for it', async () => {
+            const fillScenario = {
+                ...defaultFillScenario,
+                orderScenario: {
+                    ...defaultFillScenario.orderScenario,
+                    makerAssetDataScenario: AssetDataScenario.ERC721,
+                    takerAssetDataScenario: AssetDataScenario.ERC20NonZRXEighteenDecimals,
+                },
+                takerAssetFillAmountScenario: TakerAssetFillAmountScenario.ExactlyRemainingFillableTakerAssetAmount,
+                makerStateScenario: {
+                    ...defaultFillScenario.makerStateScenario,
+                    traderAssetAllowance: AllowanceAmountScenario.Unlimited,
+                },
+            };
+            await coreCombinatorialUtils.testFillOrderScenarioAsync(provider, fillScenario);
+        });
+
+        it('should successfully fill order when makerAsset and takerAsset are ERC721 and approveAll is set for them', async () => {
+            const fillScenario = {
+                ...defaultFillScenario,
+                orderScenario: {
+                    ...defaultFillScenario.orderScenario,
+                    makerAssetDataScenario: AssetDataScenario.ERC721,
+                    takerAssetDataScenario: AssetDataScenario.ERC721,
+                },
+                takerAssetFillAmountScenario: TakerAssetFillAmountScenario.ExactlyRemainingFillableTakerAssetAmount,
+                makerStateScenario: {
+                    ...defaultFillScenario.makerStateScenario,
+                    traderAssetAllowance: AllowanceAmountScenario.Unlimited,
+                },
+                takerStateScenario: {
+                    ...defaultFillScenario.takerStateScenario,
+                    traderAssetAllowance: AllowanceAmountScenario.Unlimited,
+                },
             };
             await coreCombinatorialUtils.testFillOrderScenarioAsync(provider, fillScenario);
         });

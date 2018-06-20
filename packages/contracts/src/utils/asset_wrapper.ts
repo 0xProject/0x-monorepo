@@ -110,16 +110,20 @@ export class AssetWrapper {
             case constants.ERC721_PROXY_ID: {
                 const assetWrapper = this._proxyIdToAssetWrappers[proxyId] as ERC721Wrapper;
                 const erc721ProxyData = assetProxyUtils.decodeERC721AssetData(assetData);
-                const isProxyApproved = await assetWrapper.isProxyApprovedAsync(
-                    erc721ProxyData.tokenAddress,
-                    erc721ProxyData.tokenId,
-                );
-                const isProxyApprovedForAllAsync = await assetWrapper.isProxyApprovedForAllAsync(
+                const isProxyApprovedForAll = await assetWrapper.isProxyApprovedForAllAsync(
                     userAddress,
                     erc721ProxyData.tokenAddress,
                     erc721ProxyData.tokenId,
                 );
-                const allowance = isProxyApproved || isProxyApprovedForAllAsync ? new BigNumber(1) : new BigNumber(0);
+                if (isProxyApprovedForAll) {
+                    return constants.UNLIMITED_ALLOWANCE_IN_BASE_UNITS;
+                }
+
+                const isProxyApproved = await assetWrapper.isProxyApprovedAsync(
+                    erc721ProxyData.tokenAddress,
+                    erc721ProxyData.tokenId,
+                );
+                const allowance = isProxyApproved ? new BigNumber(1) : new BigNumber(0);
                 return allowance;
             }
             default:
