@@ -1,7 +1,6 @@
 pragma solidity ^0.4.24;
 pragma experimental ABIEncoderV2;
 
-import "zeppelin-solidity/contracts/token/ERC721/ERC721Basic.sol";
 import "../protocol/AssetProxy/MixinERC721Transfer.sol";
 
 contract MixinERC721 is

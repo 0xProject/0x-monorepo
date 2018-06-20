@@ -154,9 +154,16 @@ contract MixinBuyExactAssets is
             ASSET_AMOUNT_MATCH_ORDER_SIZE
         );
         uint256 totalFeeAmount;
-        for (uint256 i = 0; i < orders.length; i++) {
+        uint256 ordersLength = orders.length;
+        uint256[] memory takerAssetFillAmounts = new uint256[](ordersLength);
+        for (uint256 i = 0; i < ordersLength; i++) {
             // Total up the fees
             totalFeeAmount = safeAdd(totalFeeAmount, orders[i].takerFee);
+            // We assume that asset being bought by taker is the same for each order.
+            // Rather than passing this in as calldata, we set the takerAssetData as WETH asset data
+            orders[i].takerAssetData = WETH_ASSET_DATA;
+            // Populate takerAssetFillAmounts for later batchFill
+            takerAssetFillAmounts[i] = orders[i].takerAssetAmount;
         }
         if (totalFeeAmount > 0) {
             // Fees are required for these orders. Buy enough ZRX to cover the future fill
@@ -164,18 +171,15 @@ contract MixinBuyExactAssets is
             totalFillResults.takerFeePaid = feeTokensResult.takerFeePaid;
             totalFillResults.takerAssetFilledAmount = feeTokensResult.takerAssetFilledAmount;
         }
-        for (i = 0; i < orders.length; i++) {
-            // We assume that asset being bought by taker is the same for each order.
-            // Rather than passing this in as calldata, we set the takerAssetData as WETH asset data
-            orders[i].takerAssetData = WETH_ASSET_DATA;
-            // Fail if it wasn't fully filled otherwise we will keep WETH
-            Exchange.FillResults memory fillOrderResults = EXCHANGE.fillOrKillOrder(
-                orders[i],
-                orders[i].takerAssetAmount,
-                signatures[i]
-            );
-            addFillResults(totalFillResults, fillOrderResults);
-            transferERC721Token(orders[i].makerAssetData, address(this), msg.sender, fillOrderResults.makerAssetFilledAmount);
+        Exchange.FillResults memory fillOrderResults = EXCHANGE.batchFillOrKillOrders(
+            orders,
+            takerAssetFillAmounts,
+            signatures
+        );
+        addFillResults(totalFillResults, fillOrderResults);
+        // Transfer all of the tokens filled from the batchFill
+        for (i = 0; i < ordersLength; i++) {
+            transferERC721Token(orders[i].makerAssetData, address(this), msg.sender, orders[i].makerAssetAmount);
         }
         return totalFillResults;
     }
