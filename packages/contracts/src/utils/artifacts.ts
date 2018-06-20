@@ -17,6 +17,8 @@ import * as TestLibBytes from '../artifacts/TestLibBytes.json';
 import * as TestLibMem from '../artifacts/TestLibMem.json';
 import * as TestLibs from '../artifacts/TestLibs.json';
 import * as TestSignatureValidator from '../artifacts/TestSignatureValidator.json';
+import * as TestValidator from '../artifacts/TestValidator.json';
+import * as TestWallet from '../artifacts/TestWallet.json';
 import * as TokenRegistry from '../artifacts/TokenRegistry.json';
 import * as EtherToken from '../artifacts/WETH9.json';
 import * as Whitelist from '../artifacts/Whitelist.json';
@@ -41,6 +43,8 @@ export const artifacts = {
     TestLibMem: (TestLibMem as any) as ContractArtifact,
     TestLibs: (TestLibs as any) as ContractArtifact,
     TestSignatureValidator: (TestSignatureValidator as any) as ContractArtifact,
+    TestValidator: (TestValidator as any) as ContractArtifact,
+    TestWallet: (TestWallet as any) as ContractArtifact,
     TokenRegistry: (TokenRegistry as any) as ContractArtifact,
     Whitelist: (Whitelist as any) as ContractArtifact,
     ZRX: (ZRX as any) as ContractArtifact,

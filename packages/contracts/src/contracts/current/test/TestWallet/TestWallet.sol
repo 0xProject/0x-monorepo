@@ -1,0 +1,65 @@
+/*
+
+  Copyright 2018 ZeroEx Intl.
+
+  Licensed under the Apache License, Version 2.0 (the "License");
+  you may not use this file except in compliance with the License.
+  You may obtain a copy of the License at
+
+    http://www.apache.org/licenses/LICENSE-2.0
+
+  Unless required by applicable law or agreed to in writing, software
+  distributed under the License is distributed on an "AS IS" BASIS,
+  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  See the License for the specific language governing permissions and
+  limitations under the License.
+
+*/
+
+pragma solidity ^0.4.24;
+
+import "../../protocol/Exchange/interfaces/IWallet.sol";
+import "../../utils/LibBytes/LibBytes.sol";
+
+contract TestWallet is 
+    IWallet,
+    LibBytes
+{
+
+    string constant LENGTH_65_REQUIRED = "LENGTH_65_REQUIRED";
+
+    // The owner of this wallet.
+    address walletOwner;
+
+    /// @dev constructs a new `TestWallet` with a single owner.
+    /// @param _walletOwner The owner of this wallet.
+    constructor (address _walletOwner) public {
+        walletOwner = _walletOwner;
+    }
+
+    /// @dev Validates an EIP712 signature.
+    ///      The signer must match the signer of this wallet.
+    /// @param hash Message hash that is signed.
+    /// @param eip721Signature Proof of signing.
+    /// @return Validity of order signature.
+    function isValidSignature(
+        bytes32 hash,
+        bytes eip721Signature
+    )
+        external
+        view
+        returns (bool isValid)
+    {
+        require(
+            eip721Signature.length == 65,
+            LENGTH_65_REQUIRED
+        );
+
+        uint8 v = uint8(eip721Signature[0]);
+        bytes32 r = readBytes32(eip721Signature, 1);
+        bytes32 s = readBytes32(eip721Signature, 33);
+        address recoveredAddress = ecrecover(hash, v, r, s);
+        isValid = walletOwner == recoveredAddress;
+        return isValid;
+    }
+}

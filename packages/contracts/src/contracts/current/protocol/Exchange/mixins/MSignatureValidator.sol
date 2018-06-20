@@ -25,14 +25,15 @@ contract MSignatureValidator is
 {
     // Allowed signature types.
     enum SignatureType {
-        Illegal,    // 0x00, default value
-        Invalid,    // 0x01
-        EIP712,     // 0x02
-        EthSign,    // 0x03
-        Caller,     // 0x04
-        Wallet,     // 0x05
-        Validator,  // 0x06
-        PreSigned,  // 0x07
-        Trezor      // 0x08
+        Illegal,        // 0x00, default value
+        Invalid,        // 0x01
+        EIP712,         // 0x02
+        EthSign,        // 0x03
+        Caller,         // 0x04
+        Wallet,         // 0x05
+        Validator,      // 0x06
+        PreSigned,      // 0x07
+        Trezor,         // 0x08
+        NSignatureTypes // 0x09, always leave at end.
     }
 }

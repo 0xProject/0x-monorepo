@@ -34,7 +34,7 @@
     },
     "config": {
         "abis":
-            "../migrations/artifacts/2.0.0/@(AssetProxyOwner|DummyERC20Token|DummyERC721Receiver|DummyERC721Token|ERC20Proxy|ERC721Proxy|Exchange|ExchangeWrapper|MixinAuthorizable|MultiSigWallet|MultiSigWalletWithTimeLock|TestAssetDataDecoders|TestAssetProxyDispatcher|TestLibBytes|TestLibMem|TestLibs|TestSignatureValidator|TokenRegistry|Whitelist|WETH9|ZRXToken).json"
+            "../migrations/artifacts/2.0.0/@(AssetProxyOwner|DummyERC20Token|DummyERC721Receiver|DummyERC721Token|ERC20Proxy|ERC721Proxy|Exchange|ExchangeWrapper|MixinAuthorizable|MultiSigWallet|MultiSigWalletWithTimeLock|TestAssetDataDecoders|TestAssetProxyDispatcher|TestLibBytes|TestLibMem|TestLibs|TestSignatureValidator|TestValidator|TestWallet|TokenRegistry|Whitelist|WETH9|ZRXToken).json"
     },
     "repository": {
         "type": "git",
