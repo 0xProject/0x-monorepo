@@ -345,29 +345,30 @@ export class Portal extends React.Component<PortalProps, PortalState> {
         return (
             <div>
                 {isMobile && <Container marginBottom="15px">{startOnboarding}</Container>}
-                <Wallet
-                    // style={this.props.isPortalOnboardingShowing ? { zIndex: zIndex.aboveOverlay } : undefined}
-                    style={true ? { zIndex: zIndex.aboveOverlay } : undefined}
-                    userAddress={this.props.userAddress}
-                    networkId={this.props.networkId}
-                    blockchain={this._blockchain}
-                    blockchainIsLoaded={this.props.blockchainIsLoaded}
-                    blockchainErr={this.props.blockchainErr}
-                    dispatcher={this.props.dispatcher}
-                    tokenByAddress={this.props.tokenByAddress}
-                    trackedTokens={this._getCurrentTrackedTokens()}
-                    userEtherBalanceInWei={this.props.userEtherBalanceInWei}
-                    lastForceTokenStateRefetch={this.props.lastForceTokenStateRefetch}
-                    injectedProviderName={this.props.injectedProviderName}
-                    providerType={this.props.providerType}
-                    screenWidth={this.props.screenWidth}
-                    location={this.props.location}
-                    trackedTokenStateByAddress={this.state.trackedTokenStateByAddress}
-                    onToggleLedgerDialog={this._onToggleLedgerDialog.bind(this)}
-                    onAddToken={this._onAddToken.bind(this)}
-                    onRemoveToken={this._onRemoveToken.bind(this)}
-                    refetchTokenStateAsync={this._refetchTokenStateAsync.bind(this)}
-                />
+                <Container marginBottom="15px">
+                    <Wallet
+                        style={this.props.isPortalOnboardingShowing ? { zIndex: zIndex.aboveOverlay } : undefined}
+                        userAddress={this.props.userAddress}
+                        networkId={this.props.networkId}
+                        blockchain={this._blockchain}
+                        blockchainIsLoaded={this.props.blockchainIsLoaded}
+                        blockchainErr={this.props.blockchainErr}
+                        dispatcher={this.props.dispatcher}
+                        tokenByAddress={this.props.tokenByAddress}
+                        trackedTokens={this._getCurrentTrackedTokens()}
+                        userEtherBalanceInWei={this.props.userEtherBalanceInWei}
+                        lastForceTokenStateRefetch={this.props.lastForceTokenStateRefetch}
+                        injectedProviderName={this.props.injectedProviderName}
+                        providerType={this.props.providerType}
+                        screenWidth={this.props.screenWidth}
+                        location={this.props.location}
+                        trackedTokenStateByAddress={this.state.trackedTokenStateByAddress}
+                        onToggleLedgerDialog={this._onToggleLedgerDialog.bind(this)}
+                        onAddToken={this._onAddToken.bind(this)}
+                        onRemoveToken={this._onRemoveToken.bind(this)}
+                        refetchTokenStateAsync={this._refetchTokenStateAsync.bind(this)}
+                    />
+                </Container>
                 {!isMobile && <Container marginTop="15px">{startOnboarding}</Container>}
             </div>
         );
@@ -400,6 +401,10 @@ export class Portal extends React.Component<PortalProps, PortalState> {
         const networkName = sharedConstants.NETWORK_NAME_BY_ID[this.props.networkId];
         analytics.logEvent('Portal', 'Onboarding Started - Manual', networkName, this.props.portalOnboardingStep);
         this.props.dispatcher.updatePortalOnboardingShowing(true);
+        // On mobile, make sure the wallet is completely visible.
+        if (this.props.screenWidth === ScreenWidths.Sm) {
+            document.querySelector('.wallet').scrollIntoView();
+        }
     }
     private _renderWalletSection(): React.ReactNode {
         return <Section header={<TextHeader labelText="Your Account" />} body={this._renderWallet()} />;
