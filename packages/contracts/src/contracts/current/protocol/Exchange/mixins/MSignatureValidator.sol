@@ -34,6 +34,6 @@ contract MSignatureValidator is
         Validator,      // 0x06
         PreSigned,      // 0x07
         Trezor,         // 0x08
-        NSignatureTypes // 0x09, always leave at end.
+        NSignatureTypes // 0x09, number of signature types. Always leave at end.
     }
 }

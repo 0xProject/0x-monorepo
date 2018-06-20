@@ -40,24 +40,24 @@ contract TestWallet is
     /// @dev Validates an EIP712 signature.
     ///      The signer must match the signer of this wallet.
     /// @param hash Message hash that is signed.
-    /// @param eip721Signature Proof of signing.
+    /// @param eip712Signature Proof of signing.
     /// @return Validity of order signature.
     function isValidSignature(
         bytes32 hash,
-        bytes eip721Signature
+        bytes eip712Signature
     )
         external
         view
         returns (bool isValid)
     {
         require(
-            eip721Signature.length == 65,
+            eip712Signature.length == 65,
             LENGTH_65_REQUIRED
         );
 
-        uint8 v = uint8(eip721Signature[0]);
-        bytes32 r = readBytes32(eip721Signature, 1);
-        bytes32 s = readBytes32(eip721Signature, 33);
+        uint8 v = uint8(eip712Signature[0]);
+        bytes32 r = readBytes32(eip712Signature, 1);
+        bytes32 s = readBytes32(eip712Signature, 33);
         address recoveredAddress = ecrecover(hash, v, r, s);
         isValid = walletOwner == recoveredAddress;
         return isValid;

@@ -33,7 +33,7 @@ contract TestValidator is
         validSigner = _validSigner;
     }
 
-     /// @dev Verifies that a signature is valid.
+    /// @dev Verifies that a signature is valid.
     /// @param hash Message hash that is signed.
     /// @param signer Address that should have signed the given hash.
     /// @param signature Proof of signing.
