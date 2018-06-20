@@ -3,14 +3,13 @@ import { addSignedMessagePrefix, assetProxyUtils, MessagePrefixType, orderHashUt
 import { SignatureType, SignedOrder } from '@0xproject/types';
 import * as chai from 'chai';
 import ethUtil = require('ethereumjs-util');
-import * as _ from 'lodash';
 
 import { TestSignatureValidatorContract } from '../../src/generated_contract_wrappers/test_signature_validator';
 import { TestValidatorContract } from '../../src/generated_contract_wrappers/test_validator';
 import { TestWalletContract } from '../../src/generated_contract_wrappers/test_wallet';
 import { addressUtils } from '../../src/utils/address_utils';
 import { artifacts } from '../../src/utils/artifacts';
-import { expectRevertOrOtherErrorAsync, expectRevertOrAlwaysFailingTransactionAsync } from '../../src/utils/assertions';
+import { expectRevertOrOtherErrorAsync } from '../../src/utils/assertions';
 import { chaiSetup } from '../../src/utils/chai_setup';
 import { constants } from '../../src/utils/constants';
 import { OrderFactory } from '../../src/utils/order_factory';
