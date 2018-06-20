@@ -3,6 +3,22 @@
         "version": "0.2.0",
         "changes": [
             {
+                "note": "Add artifact adapter as a parameter for CoverageSubprovider. Export AbstractArtifactAdapter",
+                "pr": 589
+            },
+            {
+                "note": "Implement SolCompilerArtifactAdapter and TruffleArtifactAdapter",
+                "pr": 589
+            },
+            {
+                "note": "Properly parse multi-level traces",
+                "pr": 589
+            },
+            {
+                "note": "Add support for solidity libraries",
+                "pr": 589
+            },
+            {
                 "note": "Fixed a bug causing RegExp to crash if contract code is longer that 32767 characters",
                 "pr": 675
             },
@@ -51,20 +67,12 @@
                 "pr": 690
             },
             {
-                "note": "Add artifact adapter as a parameter for CoverageSubprovider. Export AbstractArtifactAdapter",
-                "pr": 589
+                "note": "Create `RevertTraceSubprovider` which prints a stack trace when a REVERT is detected",
+                "pr": 705
             },
             {
-                "note": "Implement SolCompilerArtifactAdapter and TruffleArtifactAdapter",
-                "pr": 589
-            },
-            {
-                "note": "Properly parse multi-level traces",
-                "pr": 589
-            },
-            {
-                "note": "Add support for solidity libraries",
-                "pr": 589
+                "note": "Add source code snippets to stack traces printed by `RevertTraceSubprovider`",
+                "pr": 725
             }
         ]
     },
