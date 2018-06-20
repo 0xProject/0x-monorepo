@@ -308,12 +308,15 @@ export class CoreCombinatorialUtils {
                 this.takerAddress,
                 this.zrxAssetData,
             );
-        } catch (err) {
             if (isVerbose) {
-                logUtils.log(`Expecting order to ${isFillFailureExpected ? 'fail' : 'succeed'} with:`);
+                logUtils.log(`Expecting fillOrder to succeed.`);
+            }
+        } catch (err) {
+            isFillFailureExpected = true;
+            if (isVerbose) {
+                logUtils.log(`Expecting fillOrder to fail with:`);
                 logUtils.log(err);
             }
-            isFillFailureExpected = true;
         }
 
         // 6. Fill the order
