@@ -92,7 +92,7 @@ describe('MixinSignatureValidator', () => {
             signedOrder = orderFactory.newSignedOrder();
         });
 
-        it('should revert with an empty signature', async () => {
+        it('should revert when signature is empty', async () => {
             const emptySignature = '0x';
             const orderHashHex = orderHashUtils.getOrderHashHex(signedOrder);
             return expectRevertOrOtherErrorAsync(
@@ -105,7 +105,7 @@ describe('MixinSignatureValidator', () => {
             );
         });
 
-        it('should revert with an unsupported signature type', async () => {
+        it('should revert when signature type is unsupported', async () => {
             const unsupportedSignatureType = SignatureType.NSignatureTypes;
             const unsupportedSignatureHex = `0x${unsupportedSignatureType}`;
             const orderHashHex = orderHashUtils.getOrderHashHex(signedOrder);
