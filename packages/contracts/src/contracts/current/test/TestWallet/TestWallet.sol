@@ -29,12 +29,12 @@ contract TestWallet is
     string constant LENGTH_65_REQUIRED = "LENGTH_65_REQUIRED";
 
     // The owner of this wallet.
-    address walletOwner;
+    address WALLET_OWNER;
 
     /// @dev constructs a new `TestWallet` with a single owner.
-    /// @param _walletOwner The owner of this wallet.
-    constructor (address _walletOwner) public {
-        walletOwner = _walletOwner;
+    /// @param walletOwner The owner of this wallet.
+    constructor (address walletOwner) public {
+        WALLET_OWNER = walletOwner;
     }
 
     /// @dev Validates an EIP712 signature.
@@ -59,7 +59,7 @@ contract TestWallet is
         bytes32 r = readBytes32(eip712Signature, 1);
         bytes32 s = readBytes32(eip712Signature, 33);
         address recoveredAddress = ecrecover(hash, v, r, s);
-        isValid = walletOwner == recoveredAddress;
+        isValid = WALLET_OWNER == recoveredAddress;
         return isValid;
     }
 }

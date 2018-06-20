@@ -25,15 +25,15 @@ contract TestValidator is
 {
 
     // The single valid signer for this wallet.
-    address validSigner;
+    address VALID_SIGNER;
 
     /// @dev constructs a new `TestValidator` with a single valid signer.
-    /// @param _validSigner The sole, valid signer.
-    constructor (address _validSigner) public {
-        validSigner = _validSigner;
+    /// @param validSigner The sole, valid signer.
+    constructor (address validSigner) public {
+        VALID_SIGNER = validSigner;
     }
 
-    /// @dev Verifies that a signature is valid. `signer` must match `validSigner`.
+    /// @dev Verifies that a signature is valid. `signer` must match `VALID_SIGNER`.
     /// @param hash Message hash that is signed.
     /// @param signer Address that should have signed the given hash.
     /// @param signature Proof of signing.
@@ -47,6 +47,6 @@ contract TestValidator is
         view
         returns (bool isValid)
     {
-        return (signer == validSigner);
+        return (signer == VALID_SIGNER);
     }
 }
