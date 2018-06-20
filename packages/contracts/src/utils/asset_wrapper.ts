@@ -87,6 +87,11 @@ export class AssetWrapper {
                     // Burn token
                     await erc721Wrapper.burnAsync(assetProxyData.tokenAddress, assetProxyData.tokenId, userAddress);
                     return;
+                } else if (
+                    (userAddress !== tokenOwner && desiredBalance.eq(0)) ||
+                    (tokenOwner === userAddress && desiredBalance.eq(1))
+                ) {
+                    return; // noop
                 }
                 break;
             }
@@ -176,6 +181,11 @@ export class AssetWrapper {
                         assetProxyData.tokenAddress,
                         assetProxyData.tokenId,
                     );
+                } else if (
+                    (!isProxyApproved && desiredAllowance.eq(0)) ||
+                    (isProxyApproved && desiredAllowance.eq(1))
+                ) {
+                    return; // noop
                 }
 
                 break;
