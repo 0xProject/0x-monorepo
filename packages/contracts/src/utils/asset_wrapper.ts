@@ -139,8 +139,14 @@ export class AssetWrapper {
                 return;
             }
             case constants.ERC721_PROXY_ID: {
-                if (!desiredAllowance.eq(0) && !desiredAllowance.eq(1)) {
-                    throw new Error(`Allowance for ERC721 token can only be set to 0 or 1. Got: ${desiredAllowance}`);
+                if (
+                    !desiredAllowance.eq(0) &&
+                    !desiredAllowance.eq(1) &&
+                    !desiredAllowance.eq(constants.UNLIMITED_ALLOWANCE_IN_BASE_UNITS)
+                ) {
+                    throw new Error(
+                        `Allowance for ERC721 token can only be set to 0, 1 or 2^256-1. Got: ${desiredAllowance}`,
+                    );
                 }
                 const erc721Wrapper = this._proxyIdToAssetWrappers[proxyId] as ERC721Wrapper;
                 const assetProxyData = assetProxyUtils.decodeERC721AssetData(assetData);
@@ -161,11 +167,22 @@ export class AssetWrapper {
                     assetProxyData.tokenAddress,
                     assetProxyData.tokenId,
                 );
-                // HACK: We do not currently support ApprovedForAll when setting proxy allowance
-                // This was intentional since unsetting ApprovedForAll, will unset approval for unrelated
-                // tokens other then the one specified in the call to this method.
-                if (isProxyApprovedForAll) {
-                    throw new Error(`We don't currently support the use of "approveAll" functionality for ERC721.`);
+                if (!isProxyApprovedForAll && desiredAllowance.eq(constants.UNLIMITED_ALLOWANCE_IN_BASE_UNITS)) {
+                    const isApproved = true;
+                    await erc721Wrapper.approveProxyForAllAsync(
+                        assetProxyData.tokenAddress,
+                        assetProxyData.tokenId,
+                        isApproved,
+                    );
+                } else if (isProxyApprovedForAll && desiredAllowance.eq(0)) {
+                    const isApproved = false;
+                    await erc721Wrapper.approveProxyForAllAsync(
+                        assetProxyData.tokenAddress,
+                        assetProxyData.tokenId,
+                        isApproved,
+                    );
+                } else if (isProxyApprovedForAll && desiredAllowance.eq(constants.UNLIMITED_ALLOWANCE_IN_BASE_UNITS)) {
+                    return; // Noop
                 }
 
                 const isProxyApproved = await erc721Wrapper.isProxyApprovedAsync(
