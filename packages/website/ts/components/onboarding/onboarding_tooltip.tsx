@@ -10,16 +10,14 @@ export interface OnboardingTooltipProps extends OnboardingCardProps {
     pointerDirection?: PointerDirection;
 }
 
-export const OnboardingTooltip: React.StatelessComponent<OnboardingTooltipProps> = ({
-    pointerDirection,
-    className,
-    ...cardProps,
-}) => (
-    <Pointer className={className} direction={pointerDirection}>
-        <OnboardingCard {...cardProps} />
-    </Pointer>
-);
-
+export const OnboardingTooltip: React.StatelessComponent<OnboardingTooltipProps> = props => {
+    const { pointerDirection, className, ...cardProps } = props;
+    return (
+        <Pointer className={className} direction={pointerDirection}>
+            <OnboardingCard {...cardProps} />
+        </Pointer>
+    );
+};
 OnboardingTooltip.defaultProps = {
     pointerDirection: 'left',
 };
