@@ -263,7 +263,7 @@ export class CoreCombinatorialUtils {
         const order = this.orderFactory.generateOrder(fillScenario.orderScenario);
 
         // 2. Sign order
-        const orderHashBuff = orderHashUtils.getOrderHashBuff(order);
+        const orderHashBuff = orderHashUtils.getOrderHashBuffer(order);
         const signature = signingUtils.signMessage(orderHashBuff, this.makerPrivateKey, SignatureType.EthSign);
         const signedOrder = {
             ...order,
