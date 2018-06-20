@@ -21,7 +21,7 @@ const expect = chai.expect;
 
 const blockchainLifecycle = new BlockchainLifecycle(web3Wrapper);
 
-describe.only('MixinSignatureValidator', () => {
+describe('MixinSignatureValidator', () => {
     let signedOrder: SignedOrder;
     let orderFactory: OrderFactory;
     let signatureValidator: TestSignatureValidatorContract;
