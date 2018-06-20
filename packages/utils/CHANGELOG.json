@@ -1,5 +1,17 @@
 [
     {
+        "version": "0.7.2",
+        "changes": [
+            {
+                "note": "Added errorUtils.spawnSwitchErr"
+            },
+            {
+                "note": "Add logUtils.warn",
+                "pr": 589
+            }
+        ]
+    },
+    {
         "timestamp": 1529397769,
         "version": "0.7.1",
         "changes": [
