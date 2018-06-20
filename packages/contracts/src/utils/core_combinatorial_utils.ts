@@ -7,7 +7,7 @@ import {
     OrderValidationUtils,
 } from '@0xproject/order-utils';
 import { AssetProxyId, Order, SignatureType, SignedOrder } from '@0xproject/types';
-import { BigNumber, errorUtils } from '@0xproject/utils';
+import { BigNumber, errorUtils, logUtils } from '@0xproject/utils';
 import { Web3Wrapper } from '@0xproject/web3-wrapper';
 import * as chai from 'chai';
 import { BlockParamLiteral, LogWithDecodedArgs, Provider, TxData } from 'ethereum-types';
@@ -253,7 +253,11 @@ export class CoreCombinatorialUtils {
         this.exchangeWrapper = exchangeWrapper;
         this.assetWrapper = assetWrapper;
     }
-    public async testFillOrderScenarioAsync(provider: Provider, fillScenario: FillScenario): Promise<void> {
+    public async testFillOrderScenarioAsync(
+        provider: Provider,
+        fillScenario: FillScenario,
+        isVerbose: boolean = false,
+    ): Promise<void> {
         // 1. Generate order
         const order = this.orderFactory.generateOrder(fillScenario.orderScenario);
 
@@ -304,6 +308,10 @@ export class CoreCombinatorialUtils {
                 this.zrxAssetData,
             );
         } catch (err) {
+            if (isVerbose) {
+                logUtils.log(`Expecting order to ${isFillFailureExpected ? 'fail' : 'succeed'} with:`);
+                logUtils.log(err);
+            }
             isFillFailureExpected = true;
         }
 
