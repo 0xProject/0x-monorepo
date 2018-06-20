@@ -10,7 +10,7 @@ import { TestValidatorContract } from '../../src/generated_contract_wrappers/tes
 import { TestWalletContract } from '../../src/generated_contract_wrappers/test_wallet';
 import { addressUtils } from '../../src/utils/address_utils';
 import { artifacts } from '../../src/utils/artifacts';
-import { expectRevertOrAlwaysFailingTransactionAsync } from '../../src/utils/assertions';
+import { expectRevertOrOtherErrorAsync, expectRevertOrAlwaysFailingTransactionAsync } from '../../src/utils/assertions';
 import { chaiSetup } from '../../src/utils/chai_setup';
 import { constants } from '../../src/utils/constants';
 import { OrderFactory } from '../../src/utils/order_factory';
@@ -21,7 +21,7 @@ const expect = chai.expect;
 
 const blockchainLifecycle = new BlockchainLifecycle(web3Wrapper);
 
-describe('MixinSignatureValidator', () => {
+describe.only('MixinSignatureValidator', () => {
     let signedOrder: SignedOrder;
     let orderFactory: OrderFactory;
     let signatureValidator: TestSignatureValidatorContract;
@@ -95,12 +95,13 @@ describe('MixinSignatureValidator', () => {
         it('should revert with an empty signature', async () => {
             const emptySignature = '0x';
             const orderHashHex = orderHashUtils.getOrderHashHex(signedOrder);
-            return expectRevertOrAlwaysFailingTransactionAsync(
+            return expectRevertOrOtherErrorAsync(
                 signatureValidator.publicIsValidSignature.callAsync(
                     orderHashHex,
                     signedOrder.makerAddress,
                     emptySignature,
                 ),
+                constants.EXCHANGE_LENGTH_GREATER_THAN_0_REQUIRED,
             );
         });
 
@@ -108,24 +109,26 @@ describe('MixinSignatureValidator', () => {
             const unsupportedSignatureType = SignatureType.NSignatureTypes;
             const unsupportedSignatureHex = `0x${unsupportedSignatureType}`;
             const orderHashHex = orderHashUtils.getOrderHashHex(signedOrder);
-            return expectRevertOrAlwaysFailingTransactionAsync(
+            return expectRevertOrOtherErrorAsync(
                 signatureValidator.publicIsValidSignature.callAsync(
                     orderHashHex,
                     signedOrder.makerAddress,
                     unsupportedSignatureHex,
                 ),
+                constants.EXCHANGE_SIGNATURE_UNSUPPORTED,
             );
         });
 
         it('should revert when SignatureType=Illegal', async () => {
             const unsupportedSignatureHex = `0x${SignatureType.Illegal}`;
             const orderHashHex = orderHashUtils.getOrderHashHex(signedOrder);
-            return expectRevertOrAlwaysFailingTransactionAsync(
+            return expectRevertOrOtherErrorAsync(
                 signatureValidator.publicIsValidSignature.callAsync(
                     orderHashHex,
                     signedOrder.makerAddress,
                     unsupportedSignatureHex,
                 ),
+                constants.EXCHANGE_SIGNATURE_ILLEGAL,
             );
         });
 
@@ -146,12 +149,13 @@ describe('MixinSignatureValidator', () => {
             const signatureBuffer = Buffer.concat([fillerData, signatureType]);
             const signatureHex = ethUtil.bufferToHex(signatureBuffer);
             const orderHashHex = orderHashUtils.getOrderHashHex(signedOrder);
-            return expectRevertOrAlwaysFailingTransactionAsync(
+            return expectRevertOrOtherErrorAsync(
                 signatureValidator.publicIsValidSignature.callAsync(
                     orderHashHex,
                     signedOrder.makerAddress,
                     signatureHex,
                 ),
+                constants.EXCHANGE_LENGTH_0_REQUIRED,
             );
         });
 

@@ -56,6 +56,6 @@ contract LibExchangeErrors {
 
     /// Length validation errors ///
     string constant LENGTH_GREATER_THAN_0_REQUIRED = "LENGTH_GREATER_THAN_0_REQUIRED";  // Byte array must have a length greater than 0.
-    string constant LENGTH_0_REQUIRED = "LENGTH_1_REQUIRED";                // Byte array must have a length of 1.
-    string constant LENGTH_65_REQUIRED = "LENGTH_66_REQUIRED";              // Byte array must have a length of 66.
+    string constant LENGTH_0_REQUIRED = "LENGTH_0_REQUIRED";                // Byte array must have a length of 0.
+    string constant LENGTH_65_REQUIRED = "LENGTH_65_REQUIRED";              // Byte array must have a length of 65.
 }
