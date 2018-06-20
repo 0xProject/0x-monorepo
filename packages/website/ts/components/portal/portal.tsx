@@ -246,11 +246,6 @@ export class Portal extends React.Component<PortalProps, PortalState> {
                 : TokenVisibility.TRACKED;
         return (
             <div style={styles.root}>
-                <PortalOnboardingFlow
-                    blockchain={this._blockchain}
-                    trackedTokenStateByAddress={this.state.trackedTokenStateByAddress}
-                    refetchTokenStateAsync={this._refetchTokenStateAsync.bind(this)}
-                />
                 <DocumentTitle title="0x Portal DApp" />
                 <TopBar
                     userAddress={this.props.userAddress}
@@ -307,6 +302,11 @@ export class Portal extends React.Component<PortalProps, PortalState> {
                         tokenVisibility={tokenVisibility}
                     />
                 </div>
+                <PortalOnboardingFlow
+                    blockchain={this._blockchain}
+                    trackedTokenStateByAddress={this.state.trackedTokenStateByAddress}
+                    refetchTokenStateAsync={this._refetchTokenStateAsync.bind(this)}
+                />
             </div>
         );
     }
@@ -342,12 +342,18 @@ export class Portal extends React.Component<PortalProps, PortalState> {
     private _renderWallet(): React.ReactNode {
         const startOnboarding = this._renderStartOnboarding();
         const isMobile = this.props.screenWidth === ScreenWidths.Sm;
+        // We need room to scroll down for mobile onboarding
+        const marginBottom = isMobile ? '200px' : '15px';
         return (
             <div>
                 {isMobile && <Container marginBottom="15px">{startOnboarding}</Container>}
-                <Container marginBottom="15px">
+                <Container marginBottom={marginBottom}>
                     <Wallet
-                        style={this.props.isPortalOnboardingShowing ? { zIndex: zIndex.aboveOverlay } : undefined}
+                        style={
+                            !isMobile && this.props.isPortalOnboardingShowing
+                                ? { zIndex: zIndex.aboveOverlay, position: 'relative' }
+                                : undefined
+                        }
                         userAddress={this.props.userAddress}
                         networkId={this.props.networkId}
                         blockchain={this._blockchain}

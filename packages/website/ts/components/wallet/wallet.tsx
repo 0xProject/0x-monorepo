@@ -86,7 +86,6 @@ interface AccessoryItemConfig {
 const styles: Styles = {
     root: {
         width: '100%',
-        position: 'relative',
     },
     footerItemInnerDiv: {
         paddingLeft: 24,
