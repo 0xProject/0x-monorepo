@@ -362,4 +362,7 @@ export const utils = {
         const formattedAmount = unitAmount.toFixed(precision);
         return `${formattedAmount} ${symbol}`;
     },
+    openUrl(url: string): void {
+        window.open(url, '_blank');
+    },
 };

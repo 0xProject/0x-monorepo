@@ -551,7 +551,7 @@ export class Portal extends React.Component<PortalProps, PortalState> {
     private _renderRelayerIndexSection(): React.ReactNode {
         return (
             <Section
-                header={<TextHeader labelText="Explore 0x Relayers" />}
+                header={<TextHeader labelText="0x Relayers" />}
                 body={<RelayerIndex networkId={this.props.networkId} screenWidth={this.props.screenWidth} />}
             />
         );

@@ -11,6 +11,7 @@ import { colors } from 'ts/style/colors';
 import { styled } from 'ts/style/theme';
 import { ScreenWidths, WebsiteBackendJobInfo } from 'ts/types';
 import { backendClient } from 'ts/utils/backend_client';
+import { utils } from 'ts/utils/utils';
 
 const labelStyle = { fontFamily: 'Roboto Mono', fontSize: 18 };
 const HEADER_TEXT = 'Open Positions';
@@ -161,7 +162,7 @@ export class OpenPositions extends React.Component<OpenPositionsProps, OpenPosit
 
     private _openJobInfoUrl(jobInfo: WebsiteBackendJobInfo): void {
         const url = jobInfo.url;
-        window.open(url, '_blank');
+        utils.openUrl(url);
     }
 }
 
