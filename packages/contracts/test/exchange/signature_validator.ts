@@ -181,7 +181,7 @@ describe('MixinSignatureValidator', () => {
             expect(isValidSignature).to.be.true();
         });
 
-        it('should return true when SignatureType=EIP712 and signature is valid', async () => {
+        it('should return false when SignatureType=EIP712 and signature is invalid', async () => {
             // Create EIP712 signature
             const orderHashHex = orderHashUtils.getOrderHashHex(signedOrder);
             const orderHashBuffer = ethUtil.toBuffer(orderHashHex);
@@ -194,7 +194,8 @@ describe('MixinSignatureValidator', () => {
                 ethUtil.toBuffer(`0x${SignatureType.EIP712}`),
             ]);
             const signatureHex = ethUtil.bufferToHex(signature);
-            // Validate signature
+            // Validate signature.
+            // This will fail because `signerAddress` signed the message, but we're passing in `notSignerAddress`
             const isValidSignature = await signatureValidator.publicIsValidSignature.callAsync(
                 orderHashHex,
                 notSignerAddress,
@@ -226,7 +227,7 @@ describe('MixinSignatureValidator', () => {
             expect(isValidSignature).to.be.true();
         });
 
-        it('should return true when SignatureType=EthSign and signature is invalid', async () => {
+        it('should return false when SignatureType=EthSign and signature is invalid', async () => {
             // Create EthSign signature
             const orderHashHex = orderHashUtils.getOrderHashHex(signedOrder);
             const orderHashWithEthSignPrefixHex = addSignedMessagePrefix(orderHashHex, MessagePrefixType.EthSign);
@@ -341,6 +342,8 @@ describe('MixinSignatureValidator', () => {
             const signature = Buffer.concat([validatorAddress, signatureType]);
             const signatureHex = ethUtil.bufferToHex(signature);
             const orderHashHex = orderHashUtils.getOrderHashHex(signedOrder);
+            // This will return false because we signed the message with `signerAddress`, but
+            // are validating against `notSignerAddress`
             const isValidSignature = await signatureValidator.publicIsValidSignature.callAsync(
                 orderHashHex,
                 notSignerAddress,
@@ -371,15 +374,6 @@ describe('MixinSignatureValidator', () => {
                 signatureHex,
             );
             expect(isValidSignature).to.be.false();
-            // Set approval of signature validator back to true
-            await web3Wrapper.awaitTransactionSuccessAsync(
-                await signatureValidator.setSignatureValidatorApproval.sendTransactionAsync(
-                    testValidator.address,
-                    true,
-                    { from: signerAddress },
-                ),
-                constants.AWAIT_TRANSACTION_MINED_MS,
-            );
         });
 
         it('should return true when SignatureType=Trezor and signature is valid', async () => {
@@ -405,7 +399,7 @@ describe('MixinSignatureValidator', () => {
             expect(isValidSignature).to.be.true();
         });
 
-        it('should return true when SignatureType=Trezor and signature is invalid', async () => {
+        it('should return false when SignatureType=Trezor and signature is invalid', async () => {
             // Create Trezor signature
             const orderHashHex = orderHashUtils.getOrderHashHex(signedOrder);
             const orderHashWithTrezorPrefixHex = addSignedMessagePrefix(orderHashHex, MessagePrefixType.Trezor);
@@ -451,7 +445,7 @@ describe('MixinSignatureValidator', () => {
             expect(isValidSignature).to.be.true();
         });
 
-        it('should return false when SignatureType=Presigned has not presigned hash', async () => {
+        it('should return false when SignatureType=Presigned and signer has not presigned hash', async () => {
             const signature = ethUtil.toBuffer(`0x${SignatureType.PreSigned}`);
             const signatureHex = ethUtil.bufferToHex(signature);
             const orderHashHex = orderHashUtils.getOrderHashHex(signedOrder);
