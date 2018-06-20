@@ -26,22 +26,21 @@ contract LibOrder is
 
     // Hash for the EIP712 Order Schema
     bytes32 constant EIP712_ORDER_SCHEMA_HASH = keccak256(abi.encodePacked(
-            "Order(",
-            "address makerAddress,",
-            "address takerAddress,",
-            "address feeRecipientAddress,",
-            "address senderAddress,",
-            "uint256 makerAssetAmount,",
-            "uint256 takerAssetAmount,",
-            "uint256 makerFee,",
-            "uint256 takerFee,",
-            "uint256 expirationTimeSeconds,",
-            "uint256 salt,",
-            "bytes makerAssetData,",
-            "bytes takerAssetData",
-            ")"
-        )
-    );
+        "Order(",
+        "address makerAddress,",
+        "address takerAddress,",
+        "address feeRecipientAddress,",
+        "address senderAddress,",
+        "uint256 makerAssetAmount,",
+        "uint256 takerAssetAmount,",
+        "uint256 makerFee,",
+        "uint256 takerFee,",
+        "uint256 expirationTimeSeconds,",
+        "uint256 salt,",
+        "bytes makerAssetData,",
+        "bytes takerAssetData",
+        ")"
+    ));
 
     // A valid order remains fillable until it is expired, fully filled, or cancelled.
     // An order's state is unaffected by external factors, like account balances.
