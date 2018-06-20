@@ -6,8 +6,11 @@ import * as React from 'react';
 
 import { Blockchain } from 'ts/blockchain';
 import { ProviderPicker } from 'ts/components/top_bar/provider_picker';
+import { Container } from 'ts/components/ui/container';
 import { DropDown } from 'ts/components/ui/drop_down';
 import { Identicon } from 'ts/components/ui/identicon';
+import { Image } from 'ts/components/ui/image';
+import { Text } from 'ts/components/ui/text';
 import { Dispatcher } from 'ts/redux/dispatcher';
 import { colors } from 'ts/style/colors';
 import { ProviderType } from 'ts/types';
@@ -40,23 +43,16 @@ const styles: Styles = {
 
 export class ProviderDisplay extends React.Component<ProviderDisplayProps, ProviderDisplayState> {
     public render(): React.ReactNode {
-        const isAddressAvailable = !_.isEmpty(this.props.userAddress);
         const isExternallyInjectedProvider = utils.isExternallyInjected(
             this.props.providerType,
             this.props.injectedProviderName,
         );
-        let displayMessage;
-        if (!this._isBlockchainReady()) {
-            displayMessage = 'loading account';
-        } else if (isAddressAvailable) {
-            displayMessage = utils.getAddressBeginAndEnd(this.props.userAddress);
-            // tslint:disable-next-line: prefer-conditional-expression
-        } else if (isExternallyInjectedProvider) {
-            displayMessage = 'Account locked';
-        } else {
-            displayMessage = '0x0000...0000';
-        }
-
+        const displayMessage = utils.getReadableAccountState(
+            this._isBlockchainReady(),
+            this.props.providerType,
+            this.props.injectedProviderName,
+            this.props.userAddress,
+        );
         // If the "injected" provider is our fallback public node, then we want to
         // show the "connect a wallet" message instead of the providerName
         const injectedProviderName = isExternallyInjectedProvider
@@ -66,7 +62,7 @@ export class ProviderDisplay extends React.Component<ProviderDisplayProps, Provi
             this.props.providerType === ProviderType.Injected ? injectedProviderName : 'Ledger Nano S';
         const isProviderMetamask = providerTitle === constants.PROVIDER_NAME_METAMASK;
         const hoverActiveNode = (
-            <div className="flex right lg-pr0 md-pr2 sm-pr2 p1" style={styles.root}>
+            <div className="flex items-center p1" style={styles.root}>
                 <div>
                     {this._isBlockchainReady() ? (
                         <Identicon address={this.props.userAddress} diameter={ROOT_HEIGHT} />
@@ -74,13 +70,13 @@ export class ProviderDisplay extends React.Component<ProviderDisplayProps, Provi
                         <CircularProgress size={ROOT_HEIGHT} thickness={2} />
                     )}
                 </div>
-                <div style={{ marginLeft: 12, paddingTop: 3 }}>
-                    <div style={{ fontSize: 16, color: colors.darkGrey }}>{displayMessage}</div>
-                </div>
+                <Container marginLeft="12px" marginRight="12px">
+                    <Text fontSize="14px" fontColor={colors.darkGrey}>
+                        {displayMessage}
+                    </Text>
+                </Container>
                 {isProviderMetamask && (
-                    <div style={{ marginLeft: 16 }}>
-                        <img src="/images/metamask_icon.png" style={{ width: ROOT_HEIGHT, height: ROOT_HEIGHT }} />
-                    </div>
+                    <Image src="/images/metamask_icon.png" height={ROOT_HEIGHT} width={ROOT_HEIGHT} />
                 )}
             </div>
         );

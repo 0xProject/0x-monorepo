@@ -5,7 +5,8 @@ export interface ImageProps {
     className?: string;
     src?: string;
     fallbackSrc?: string;
-    height?: string;
+    height?: string | number;
+    width?: string | number;
 }
 interface ImageState {
     imageLoadFailed: boolean;
@@ -26,6 +27,7 @@ export class Image extends React.Component<ImageProps, ImageState> {
                 onError={this._onError.bind(this)}
                 src={src}
                 height={this.props.height}
+                width={this.props.width}
             />
         );
     }

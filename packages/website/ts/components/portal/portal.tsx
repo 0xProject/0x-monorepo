@@ -1,4 +1,4 @@
-import { colors, Styles } from '@0xproject/react-shared';
+import { colors, constants as sharedConstants, Styles } from '@0xproject/react-shared';
 import { BigNumber } from '@0xproject/utils';
 import * as _ from 'lodash';
 import ActionAccountBalanceWallet from 'material-ui/svg-icons/action/account-balance-wallet';
@@ -33,6 +33,7 @@ import { localStorage } from 'ts/local_storage/local_storage';
 import { trackedTokenStorage } from 'ts/local_storage/tracked_token_storage';
 import { FullscreenMessage } from 'ts/pages/fullscreen_message';
 import { Dispatcher } from 'ts/redux/dispatcher';
+import { zIndex } from 'ts/style/z_index';
 import {
     BlockchainErrs,
     HashData,
@@ -46,6 +47,7 @@ import {
     TokenVisibility,
     WebsitePaths,
 } from 'ts/types';
+import { analytics } from 'ts/utils/analytics';
 import { backendClient } from 'ts/utils/backend_client';
 import { configs } from 'ts/utils/configs';
 import { constants } from 'ts/utils/constants';
@@ -73,6 +75,8 @@ export interface PortalProps {
     flashMessage?: string | React.ReactNode;
     lastForceTokenStateRefetch: number;
     translate: Translate;
+    isPortalOnboardingShowing: boolean;
+    portalOnboardingStep: number;
 }
 
 interface PortalState {
@@ -155,9 +159,6 @@ export class Portal extends React.Component<PortalProps, PortalState> {
     }
     public componentWillMount(): void {
         this._blockchain = new Blockchain(this.props.dispatcher);
-        const trackedTokenAddresses = _.keys(this.state.trackedTokenStateByAddress);
-        // tslint:disable-next-line:no-floating-promises
-        this._fetchBalancesAndAllowancesAsync(trackedTokenAddresses);
     }
     public componentWillUnmount(): void {
         this._blockchain.destroy();
@@ -167,6 +168,13 @@ export class Portal extends React.Component<PortalProps, PortalState> {
         // initialization inconsistencies (i.e While the portal was unrendered, the user might have
         // become disconnected from their backing Ethereum node, changed user accounts, etc...)
         this.props.dispatcher.resetState();
+    }
+    public componentDidUpdate(prevProps: PortalProps): void {
+        if (!prevProps.blockchainIsLoaded && this.props.blockchainIsLoaded) {
+            const trackedTokenAddresses = _.keys(this.state.trackedTokenStateByAddress);
+            // tslint:disable-next-line:no-floating-promises
+            this._fetchBalancesAndAllowancesAsync(trackedTokenAddresses);
+        }
     }
     public componentWillReceiveProps(nextProps: PortalProps): void {
         if (nextProps.networkId !== this.state.prevNetworkId) {
@@ -335,6 +343,7 @@ export class Portal extends React.Component<PortalProps, PortalState> {
         return (
             <div>
                 <Wallet
+                    style={this.props.isPortalOnboardingShowing ? { zIndex: zIndex.aboveOverlay } : undefined}
                     userAddress={this.props.userAddress}
                     networkId={this.props.networkId}
                     blockchain={this._blockchain}
@@ -384,6 +393,8 @@ export class Portal extends React.Component<PortalProps, PortalState> {
     }
 
     private _startOnboarding(): void {
+        const networkName = sharedConstants.NETWORK_NAME_BY_ID[this.props.networkId];
+        analytics.logEvent('Portal', 'Onboarding Started - Manual', networkName, this.props.portalOnboardingStep);
         this.props.dispatcher.updatePortalOnboardingShowing(true);
     }
     private _renderWalletSection(): React.ReactNode {

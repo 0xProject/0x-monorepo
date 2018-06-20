@@ -1,9 +1,15 @@
-import { EtherscanLinkSuffixes, Styles, utils as sharedUtils } from '@0xproject/react-shared';
+import {
+    constants as sharedConstants,
+    EtherscanLinkSuffixes,
+    Styles,
+    utils as sharedUtils,
+} from '@0xproject/react-shared';
 import { BigNumber, errorUtils } from '@0xproject/utils';
 import { Web3Wrapper } from '@0xproject/web3-wrapper';
 import * as _ from 'lodash';
 import CircularProgress from 'material-ui/CircularProgress';
 import FloatingActionButton from 'material-ui/FloatingActionButton';
+
 import { ListItem } from 'material-ui/List';
 import ActionAccountBalanceWallet from 'material-ui/svg-icons/action/account-balance-wallet';
 import ContentAdd from 'material-ui/svg-icons/content/add';
@@ -23,7 +29,6 @@ import { WrapEtherItem } from 'ts/components/wallet/wrap_ether_item';
 import { AllowanceToggle } from 'ts/containers/inputs/allowance_toggle';
 import { Dispatcher } from 'ts/redux/dispatcher';
 import { colors } from 'ts/style/colors';
-import { zIndex } from 'ts/style/z_index';
 import {
     BlockchainErrs,
     ProviderType,
@@ -35,6 +40,7 @@ import {
     TokenStateByAddress,
     WebsitePaths,
 } from 'ts/types';
+import { analytics } from 'ts/utils/analytics';
 import { constants } from 'ts/utils/constants';
 import { utils } from 'ts/utils/utils';
 import { styles as walletItemStyles } from 'ts/utils/wallet_item_styles';
@@ -59,6 +65,7 @@ export interface WalletProps {
     onAddToken: () => void;
     onRemoveToken: () => void;
     refetchTokenStateAsync: (tokenAddress: string) => Promise<void>;
+    style: React.CSSProperties;
 }
 
 interface WalletState {
@@ -79,7 +86,6 @@ interface AccessoryItemConfig {
 const styles: Styles = {
     root: {
         width: '100%',
-        zIndex: zIndex.aboveOverlay,
         position: 'relative',
     },
     footerItemInnerDiv: {
@@ -134,6 +140,9 @@ const NO_ALLOWANCE_TOGGLE_SPACE_WIDTH = 56;
 const ACCOUNT_PATH = `${WebsitePaths.Portal}/account`;
 
 export class Wallet extends React.Component<WalletProps, WalletState> {
+    public static defaultProps = {
+        style: {},
+    };
     constructor(props: WalletProps) {
         super(props);
         this.state = {
@@ -141,11 +150,10 @@ export class Wallet extends React.Component<WalletProps, WalletState> {
             isHoveringSidebar: false,
         };
     }
-
     public render(): React.ReactNode {
         const isBlockchainLoaded = this.props.blockchainIsLoaded && this.props.blockchainErr === BlockchainErrs.NoError;
         return (
-            <Island className="flex flex-column wallet" style={styles.root}>
+            <Island className="flex flex-column wallet" style={{ ...styles.root, ...this.props.style }}>
                 {isBlockchainLoaded ? this._renderLoadedRows() : this._renderLoadingRows()}
             </Island>
         );
@@ -269,7 +277,7 @@ export class Wallet extends React.Component<WalletProps, WalletState> {
                         <ListItem
                             primaryText={
                                 <div className="flex right" style={styles.manageYourWalletText}>
-                                    {'manage your wallet'}
+                                    manage your wallet
                                 </div>
                                 // https://github.com/palantir/tslint-react/issues/140
                                 // tslint:disable-next-line:jsx-curly-spacing
@@ -488,18 +496,26 @@ export class Wallet extends React.Component<WalletProps, WalletState> {
             }
         }
         const onClick = isWrappedEtherDirectionOpen
-            ? this._closeWrappedEtherActionRow.bind(this)
+            ? this._closeWrappedEtherActionRow.bind(this, wrappedEtherDirection)
             : this._openWrappedEtherActionRow.bind(this, wrappedEtherDirection);
         return (
             <IconButton iconName={buttonIconName} labelText={buttonLabel} onClick={onClick} color={colors.mediumBlue} />
         );
     }
     private _openWrappedEtherActionRow(wrappedEtherDirection: Side): void {
+        const networkName = sharedConstants.NETWORK_NAME_BY_ID[this.props.networkId];
+        const action =
+            wrappedEtherDirection === Side.Deposit ? 'Wallet - Wrap ETH Opened' : 'Wallet - Unwrap WETH Opened';
+        analytics.logEvent('Portal', action, networkName);
         this.setState({
             wrappedEtherDirection,
         });
     }
-    private _closeWrappedEtherActionRow(): void {
+    private _closeWrappedEtherActionRow(wrappedEtherDirection: Side): void {
+        const networkName = sharedConstants.NETWORK_NAME_BY_ID[this.props.networkId];
+        const action =
+            wrappedEtherDirection === Side.Deposit ? 'Wallet - Wrap ETH Closed' : 'Wallet - Unwrap WETH Closed';
+        analytics.logEvent('Portal', action, networkName);
         this.setState({
             wrappedEtherDirection: undefined,
         });

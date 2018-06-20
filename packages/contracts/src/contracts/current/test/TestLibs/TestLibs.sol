@@ -74,7 +74,7 @@ contract TestLibs is
         pure
         returns (bytes32)
     {
-        return ORDER_SCHEMA_HASH;
+        return EIP712_ORDER_SCHEMA_HASH;
     }
 
     function getDomainSeparatorSchemaHash()
@@ -82,7 +82,7 @@ contract TestLibs is
         pure
         returns (bytes32)
     {
-        return DOMAIN_SEPARATOR_SCHEMA_HASH;
+        return EIP712_DOMAIN_SEPARATOR_SCHEMA_HASH;
     }
 
     function publicAddFillResults(FillResults memory totalFillResults, FillResults memory singleFillResults)

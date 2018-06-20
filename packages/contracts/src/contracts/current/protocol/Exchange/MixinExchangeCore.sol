@@ -44,32 +44,36 @@ contract MixinExchangeCore is
     // Mapping of orderHash => cancelled
     mapping (bytes32 => bool) public cancelled;
 
-    // Mapping of makerAddress => lowest salt an order can have in order to be fillable
-    // Orders with a salt less than their maker's epoch are considered cancelled
-    mapping (address => uint256) public makerEpoch;
+    // Mapping of makerAddress => senderAddress => lowest salt an order can have in order to be fillable
+    // Orders with specified senderAddress and with a salt less than their epoch to are considered cancelled
+    mapping (address => mapping (address => uint256)) public orderEpoch;
 
     ////// Core exchange functions //////
 
-    /// @dev Cancels all orders created by sender with a salt less than or equal to the specified salt value.
-    /// @param salt Orders created with a salt less or equal to this value will be cancelled.
-    function cancelOrdersUpTo(uint256 salt)
+    /// @dev Cancels all orders created by makerAddress with a salt less than or equal to the targetOrderEpoch
+    ///      and senderAddress equal to msg.sender (or null address if msg.sender == makerAddress).
+    /// @param targetOrderEpoch Orders created with a salt less or equal to this value will be cancelled.
+    function cancelOrdersUpTo(uint256 targetOrderEpoch)
         external
     {
         address makerAddress = getCurrentContextAddress();
+        // If this function is called via `executeTransaction`, we only update the orderEpoch for the makerAddress/msg.sender combination.
+        // This allows external filter contracts to add rules to how orders are cancelled via this function.
+        address senderAddress = makerAddress == msg.sender ? address(0) : msg.sender;
 
-        // makerEpoch is initialized to 0, so to cancelUpTo we need salt + 1
-        uint256 newMakerEpoch = salt + 1;  
-        uint256 oldMakerEpoch = makerEpoch[makerAddress];
+        // orderEpoch is initialized to 0, so to cancelUpTo we need salt + 1
+        uint256 newOrderEpoch = targetOrderEpoch + 1;  
+        uint256 oldOrderEpoch = orderEpoch[makerAddress][senderAddress];
 
-        // Ensure makerEpoch is monotonically increasing
+        // Ensure orderEpoch is monotonically increasing
         require(
-            newMakerEpoch > oldMakerEpoch, 
-            INVALID_NEW_MAKER_EPOCH
+            newOrderEpoch > oldOrderEpoch, 
+            INVALID_NEW_ORDER_EPOCH
         );
 
-        // Update makerEpoch
-        makerEpoch[makerAddress] = newMakerEpoch;
-        emit CancelUpTo(makerAddress, newMakerEpoch);
+        // Update orderEpoch
+        orderEpoch[makerAddress][senderAddress] = newOrderEpoch;
+        emit CancelUpTo(makerAddress, senderAddress, newOrderEpoch);
     }
 
     /// @dev Fills the input order.
@@ -180,7 +184,7 @@ contract MixinExchangeCore is
             orderInfo.orderStatus = uint8(OrderStatus.CANCELLED);
             return orderInfo;
         }
-        if (makerEpoch[order.makerAddress] > order.salt) {
+        if (orderEpoch[order.makerAddress][order.senderAddress] > order.salt) {
             orderInfo.orderStatus = uint8(OrderStatus.CANCELLED);
             return orderInfo;
         }

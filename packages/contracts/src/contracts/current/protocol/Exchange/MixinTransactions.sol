@@ -20,8 +20,11 @@ pragma solidity ^0.4.24;
 import "./libs/LibExchangeErrors.sol";
 import "./mixins/MSignatureValidator.sol";
 import "./mixins/MTransactions.sol";
+import "./libs/LibExchangeErrors.sol";
+import "./libs/LibEIP712.sol";
 
 contract MixinTransactions is
+    LibEIP712,
     LibExchangeErrors,
     MSignatureValidator,
     MTransactions
@@ -33,6 +36,33 @@ contract MixinTransactions is
 
     // Address of current transaction signer
     address public currentContextAddress;
+
+    // Hash for the EIP712 ZeroEx Transaction Schema
+    bytes32 constant EIP712_ZEROEX_TRANSACTION_SCHEMA_HASH = keccak256(abi.encodePacked(
+        "ZeroExTransaction(",
+        "uint256 salt,",
+        "address signer,",
+        "bytes data",
+        ")"
+    ));
+
+    /// @dev Calculates EIP712 hash of the Transaction.
+    /// @param salt Arbitrary number to ensure uniqueness of transaction hash.
+    /// @param signer Address of transaction signer.
+    /// @param data AbiV2 encoded calldata.
+    /// @return EIP712 hash of the Transaction.
+    function hashZeroExTransaction(uint256 salt, address signer, bytes data)
+        internal
+        pure
+        returns (bytes32)
+    {
+        return keccak256(abi.encode(
+            EIP712_ZEROEX_TRANSACTION_SCHEMA_HASH,
+            salt,
+            signer,
+            keccak256(data)
+        ));
+    }
 
     /// @dev Executes an exchange method call in the context of signer.
     /// @param salt Arbitrary number to ensure uniqueness of transaction hash.
@@ -53,13 +83,7 @@ contract MixinTransactions is
             REENTRANCY_ILLEGAL
         );
 
-        // Calculate transaction hash
-        bytes32 transactionHash = keccak256(abi.encodePacked(
-            address(this),
-            signer,
-            salt,
-            data
-        ));
+        bytes32 transactionHash = hashEIP712Message(hashZeroExTransaction(salt, signer, data));
 
         // Validate transaction has not been executed
         require(

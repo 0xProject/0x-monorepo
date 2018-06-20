@@ -15,6 +15,7 @@ interface PortalOnboardingFlowProps {
 }
 
 interface ConnectedState {
+    networkId: number;
     stepIndex: number;
     isRunning: boolean;
     userAddress: string;
@@ -32,6 +33,7 @@ interface ConnectedDispatch {
 }
 
 const mapStateToProps = (state: State, _ownProps: PortalOnboardingFlowProps): ConnectedState => ({
+    networkId: state.networkId,
     stepIndex: state.portalOnboardingStep,
     isRunning: state.isPortalOnboardingShowing,
     userAddress: state.userAddress,
