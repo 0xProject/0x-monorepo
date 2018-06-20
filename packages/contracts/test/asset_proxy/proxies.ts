@@ -276,7 +276,7 @@ describe('Asset Transfer Proxies', () => {
                 expect(newOwnerMakerAsset).to.be.bignumber.equal(takerAddress);
             });
 
-            it('should not call onERC721Received when transferring to a smart contract without receiver data', async () => {
+            it('should call onERC721Received when transferring to a smart contract without receiver data', async () => {
                 // Construct ERC721 asset data
                 const encodedAssetData = assetProxyUtils.encodeERC721AssetData(erc721Token.address, erc721MakerTokenId);
                 const encodedAssetDataWithoutProxyId = encodedAssetData.slice(0, -2);
@@ -297,7 +297,11 @@ describe('Asset Transfer Proxies', () => {
                 const logDecoder = new LogDecoder(web3Wrapper, erc721Receiver.address);
                 const tx = await logDecoder.getTxWithDecodedLogsAsync(txHash);
                 // Verify that no log was emitted by erc721 receiver
-                expect(tx.logs.length).to.be.equal(0);
+                expect(tx.logs.length).to.be.equal(1);
+                const tokenReceivedLog = tx.logs[0] as LogWithDecodedArgs<TokenReceivedContractEventArgs>;
+                expect(tokenReceivedLog.args.from).to.be.equal(makerAddress);
+                expect(tokenReceivedLog.args.tokenId).to.be.bignumber.equal(erc721MakerTokenId);
+                expect(tokenReceivedLog.args.data).to.be.equal(constants.NULL_BYTES);
                 // Verify transfer was successful
                 const newOwnerMakerAsset = await erc721Token.ownerOf.callAsync(erc721MakerTokenId);
                 expect(newOwnerMakerAsset).to.be.bignumber.equal(erc721Receiver.address);
