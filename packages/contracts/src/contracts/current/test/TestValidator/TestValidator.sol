@@ -28,16 +28,16 @@ contract TestValidator is
     address validSigner;
 
     /// @dev constructs a new `TestValidator` with a single valid signer.
-    /// @param _validSigner The sole signer for this wallet.
+    /// @param _validSigner The sole, valid signer.
     constructor (address _validSigner) public {
         validSigner = _validSigner;
     }
 
-    /// @dev Verifies that a signature is valid.
+    /// @dev Verifies that a signature is valid. `signer` must match `validSigner`.
     /// @param hash Message hash that is signed.
     /// @param signer Address that should have signed the given hash.
     /// @param signature Proof of signing.
-    /// @return Validity of order signature.
+    /// @return Validity of signature.
     function isValidSignature(
         bytes32 hash,
         address signer,

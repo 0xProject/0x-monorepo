@@ -38,10 +38,10 @@ contract TestWallet is
     }
 
     /// @dev Validates an EIP712 signature.
-    ///      The signer must match the signer of this wallet.
+    ///      The signer must match the owner of this wallet.
     /// @param hash Message hash that is signed.
     /// @param eip712Signature Proof of signing.
-    /// @return Validity of order signature.
+    /// @return Validity of signature.
     function isValidSignature(
         bytes32 hash,
         bytes eip712Signature
