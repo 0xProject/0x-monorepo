@@ -256,7 +256,7 @@ export class OrderFactoryFromScenario {
                 throw errorUtils.spawnSwitchErr('TakerScenario', orderScenario.takerScenario);
         }
 
-        const order: Order = {
+        const order = {
             senderAddress: constants.NULL_ADDRESS,
             makerAddress,
             takerAddress,
