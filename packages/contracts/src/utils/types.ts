@@ -201,17 +201,23 @@ export interface OrderScenario {
     takerAssetDataScenario: AssetDataScenario;
 }
 
-export enum TokenAmountScenario {
+export enum BalanceAmountScenario {
+    Exact = 'EXACT',
+    TooLow = 'TOO_LOW',
+    Higher = 'HIGHER',
+}
+
+export enum AllowanceAmountScenario {
     Exact = 'EXACT',
     TooLow = 'TOO_LOW',
     Higher = 'HIGHER',
 }
 
 export interface TraderStateScenario {
-    traderAssetBalance: TokenAmountScenario;
-    traderAssetAllowance: TokenAmountScenario;
-    zrxFeeBalance: TokenAmountScenario;
-    zrxFeeAllowance: TokenAmountScenario;
+    traderAssetBalance: BalanceAmountScenario;
+    traderAssetAllowance: AllowanceAmountScenario;
+    zrxFeeBalance: BalanceAmountScenario;
+    zrxFeeAllowance: AllowanceAmountScenario;
 }
 
 export interface FillScenario {

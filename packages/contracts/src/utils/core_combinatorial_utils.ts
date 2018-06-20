@@ -29,7 +29,9 @@ import { signingUtils } from '../utils/signing_utils';
 import { SimpleAssetBalanceAndProxyAllowanceFetcher } from '../utils/simple_asset_balance_and_proxy_allowance_fetcher';
 import { SimpleOrderFilledCancelledFetcher } from '../utils/simple_order_filled_cancelled_fetcher';
 import {
+    AllowanceAmountScenario,
     AssetDataScenario,
+    BalanceAmountScenario,
     ExpirationTimeSecondsScenario,
     FeeRecipientAddressScenario,
     FillScenario,
@@ -37,7 +39,6 @@ import {
     OrderScenario,
     TakerAssetFillAmountScenario,
     TakerScenario,
-    TokenAmountScenario,
     TraderStateScenario,
 } from '../utils/types';
 
@@ -192,16 +193,16 @@ export class CoreCombinatorialUtils {
                 },
                 takerAssetFillAmountScenario: fillScenarioArray[9] as TakerAssetFillAmountScenario,
                 makerStateScenario: {
-                    traderAssetBalance: TokenAmountScenario.Higher,
-                    traderAssetAllowance: TokenAmountScenario.Higher,
-                    zrxFeeBalance: TokenAmountScenario.Higher,
-                    zrxFeeAllowance: TokenAmountScenario.Higher,
+                    traderAssetBalance: BalanceAmountScenario.Higher,
+                    traderAssetAllowance: AllowanceAmountScenario.Higher,
+                    zrxFeeBalance: BalanceAmountScenario.Higher,
+                    zrxFeeAllowance: AllowanceAmountScenario.Higher,
                 },
                 takerStateScenario: {
-                    traderAssetBalance: TokenAmountScenario.Higher,
-                    traderAssetAllowance: TokenAmountScenario.Higher,
-                    zrxFeeBalance: TokenAmountScenario.Higher,
-                    zrxFeeAllowance: TokenAmountScenario.Higher,
+                    traderAssetBalance: BalanceAmountScenario.Higher,
+                    traderAssetAllowance: AllowanceAmountScenario.Higher,
+                    zrxFeeBalance: BalanceAmountScenario.Higher,
+                    zrxFeeAllowance: AllowanceAmountScenario.Higher,
                 },
             };
             return fillScenario;
@@ -547,10 +548,10 @@ export class CoreCombinatorialUtils {
             signedOrder.makerAssetAmount,
         );
         switch (makerStateScenario.traderAssetBalance) {
-            case TokenAmountScenario.Higher:
+            case BalanceAmountScenario.Higher:
                 break; // Noop since this is already the default
 
-            case TokenAmountScenario.TooLow:
+            case BalanceAmountScenario.TooLow:
                 if (makerAssetFillAmount.eq(0)) {
                     throw new Error(`Cannot set makerAssetBalanceOfMaker TooLow if makerAssetFillAmount is 0`);
                 }
@@ -562,7 +563,7 @@ export class CoreCombinatorialUtils {
                 );
                 break;
 
-            case TokenAmountScenario.Exact:
+            case BalanceAmountScenario.Exact:
                 const exactBalance = makerAssetFillAmount;
                 await this.assetWrapper.setBalanceAsync(
                     signedOrder.makerAddress,
@@ -584,10 +585,10 @@ export class CoreCombinatorialUtils {
             signedOrder.makerFee,
         );
         switch (makerStateScenario.zrxFeeBalance) {
-            case TokenAmountScenario.Higher:
+            case BalanceAmountScenario.Higher:
                 break; // Noop since this is already the default
 
-            case TokenAmountScenario.TooLow:
+            case BalanceAmountScenario.TooLow:
                 if (makerFee.eq(0)) {
                     throw new Error(`Cannot set zrxAsserBalanceOfMaker TooLow if makerFee is 0`);
                 }
@@ -595,7 +596,7 @@ export class CoreCombinatorialUtils {
                 await this.assetWrapper.setBalanceAsync(signedOrder.makerAddress, this.zrxAssetData, tooLowBalance);
                 break;
 
-            case TokenAmountScenario.Exact:
+            case BalanceAmountScenario.Exact:
                 const exactBalance = makerFee;
                 await this.assetWrapper.setBalanceAsync(signedOrder.makerAddress, this.zrxAssetData, exactBalance);
                 break;
@@ -605,10 +606,10 @@ export class CoreCombinatorialUtils {
         }
 
         switch (makerStateScenario.traderAssetAllowance) {
-            case TokenAmountScenario.Higher:
+            case AllowanceAmountScenario.Higher:
                 break; // Noop since this is already the default
 
-            case TokenAmountScenario.TooLow:
+            case AllowanceAmountScenario.TooLow:
                 const tooLowAllowance = makerAssetFillAmount.minus(1);
                 await this.assetWrapper.setProxyAllowanceAsync(
                     signedOrder.makerAddress,
@@ -617,7 +618,7 @@ export class CoreCombinatorialUtils {
                 );
                 break;
 
-            case TokenAmountScenario.Exact:
+            case AllowanceAmountScenario.Exact:
                 const exactAllowance = makerAssetFillAmount;
                 await this.assetWrapper.setProxyAllowanceAsync(
                     signedOrder.makerAddress,
@@ -634,10 +635,10 @@ export class CoreCombinatorialUtils {
         }
 
         switch (makerStateScenario.zrxFeeAllowance) {
-            case TokenAmountScenario.Higher:
+            case AllowanceAmountScenario.Higher:
                 break; // Noop since this is already the default
 
-            case TokenAmountScenario.TooLow:
+            case AllowanceAmountScenario.TooLow:
                 const tooLowAllowance = makerFee.minus(1);
                 await this.assetWrapper.setProxyAllowanceAsync(
                     signedOrder.makerAddress,
@@ -646,7 +647,7 @@ export class CoreCombinatorialUtils {
                 );
                 break;
 
-            case TokenAmountScenario.Exact:
+            case AllowanceAmountScenario.Exact:
                 const exactAllowance = makerFee;
                 await this.assetWrapper.setProxyAllowanceAsync(
                     signedOrder.makerAddress,
@@ -663,10 +664,10 @@ export class CoreCombinatorialUtils {
         }
 
         switch (takerStateScenario.traderAssetBalance) {
-            case TokenAmountScenario.Higher:
+            case BalanceAmountScenario.Higher:
                 break; // Noop since this is already the default
 
-            case TokenAmountScenario.TooLow:
+            case BalanceAmountScenario.TooLow:
                 if (takerAssetFillAmount.eq(0)) {
                     throw new Error(`Cannot set takerAssetBalanceOfTaker TooLow if takerAssetFillAmount is 0`);
                 }
@@ -674,7 +675,7 @@ export class CoreCombinatorialUtils {
                 await this.assetWrapper.setBalanceAsync(this.takerAddress, signedOrder.takerAssetData, tooLowBalance);
                 break;
 
-            case TokenAmountScenario.Exact:
+            case BalanceAmountScenario.Exact:
                 const exactBalance = takerAssetFillAmount;
                 await this.assetWrapper.setBalanceAsync(this.takerAddress, signedOrder.takerAssetData, exactBalance);
                 break;
@@ -692,10 +693,10 @@ export class CoreCombinatorialUtils {
             signedOrder.takerFee,
         );
         switch (takerStateScenario.zrxFeeBalance) {
-            case TokenAmountScenario.Higher:
+            case BalanceAmountScenario.Higher:
                 break; // Noop since this is already the default
 
-            case TokenAmountScenario.TooLow:
+            case BalanceAmountScenario.TooLow:
                 if (takerFee.eq(0)) {
                     throw new Error(`Cannot set zrxAssetBalanceOfTaker TooLow if takerFee is 0`);
                 }
@@ -703,7 +704,7 @@ export class CoreCombinatorialUtils {
                 await this.assetWrapper.setBalanceAsync(this.takerAddress, this.zrxAssetData, tooLowBalance);
                 break;
 
-            case TokenAmountScenario.Exact:
+            case BalanceAmountScenario.Exact:
                 const exactBalance = takerFee;
                 await this.assetWrapper.setBalanceAsync(this.takerAddress, this.zrxAssetData, exactBalance);
                 break;
@@ -713,10 +714,10 @@ export class CoreCombinatorialUtils {
         }
 
         switch (takerStateScenario.traderAssetAllowance) {
-            case TokenAmountScenario.Higher:
+            case AllowanceAmountScenario.Higher:
                 break; // Noop since this is already the default
 
-            case TokenAmountScenario.TooLow:
+            case AllowanceAmountScenario.TooLow:
                 const tooLowAllowance = takerAssetFillAmount.minus(1);
                 await this.assetWrapper.setProxyAllowanceAsync(
                     this.takerAddress,
@@ -725,7 +726,7 @@ export class CoreCombinatorialUtils {
                 );
                 break;
 
-            case TokenAmountScenario.Exact:
+            case AllowanceAmountScenario.Exact:
                 const exactAllowance = takerAssetFillAmount;
                 await this.assetWrapper.setProxyAllowanceAsync(
                     this.takerAddress,
@@ -742,10 +743,10 @@ export class CoreCombinatorialUtils {
         }
 
         switch (takerStateScenario.zrxFeeAllowance) {
-            case TokenAmountScenario.Higher:
+            case AllowanceAmountScenario.Higher:
                 break; // Noop since this is already the default
 
-            case TokenAmountScenario.TooLow:
+            case AllowanceAmountScenario.TooLow:
                 const tooLowAllowance = takerFee.minus(1);
                 await this.assetWrapper.setProxyAllowanceAsync(
                     signedOrder.takerAddress,
@@ -754,7 +755,7 @@ export class CoreCombinatorialUtils {
                 );
                 break;
 
-            case TokenAmountScenario.Exact:
+            case AllowanceAmountScenario.Exact:
                 const exactAllowance = takerFee;
                 await this.assetWrapper.setProxyAllowanceAsync(
                     signedOrder.takerAddress,

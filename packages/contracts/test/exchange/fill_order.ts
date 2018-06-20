@@ -6,14 +6,15 @@ import { CoreCombinatorialUtils, coreCombinatorialUtilsFactoryAsync } from '../.
 import { provider, txDefaults, web3Wrapper } from '../../src/utils/web3_wrapper';
 
 import {
+    AllowanceAmountScenario,
     AssetDataScenario,
+    BalanceAmountScenario,
     ExpirationTimeSecondsScenario,
     FeeRecipientAddressScenario,
     OrderAssetAmountScenario,
     OrderScenario,
     TakerAssetFillAmountScenario,
     TakerScenario,
-    TokenAmountScenario,
 } from '../../src/utils/types';
 
 chaiSetup.configure();
@@ -33,16 +34,16 @@ const defaultFillScenario = {
     },
     takerAssetFillAmountScenario: TakerAssetFillAmountScenario.LessThanRemainingFillableTakerAssetAmount,
     makerStateScenario: {
-        traderAssetBalance: TokenAmountScenario.Higher,
-        traderAssetAllowance: TokenAmountScenario.Higher,
-        zrxFeeBalance: TokenAmountScenario.Higher,
-        zrxFeeAllowance: TokenAmountScenario.Higher,
+        traderAssetBalance: BalanceAmountScenario.Higher,
+        traderAssetAllowance: AllowanceAmountScenario.Higher,
+        zrxFeeBalance: BalanceAmountScenario.Higher,
+        zrxFeeAllowance: AllowanceAmountScenario.Higher,
     },
     takerStateScenario: {
-        traderAssetBalance: TokenAmountScenario.Higher,
-        traderAssetAllowance: TokenAmountScenario.Higher,
-        zrxFeeBalance: TokenAmountScenario.Higher,
-        zrxFeeAllowance: TokenAmountScenario.Higher,
+        traderAssetBalance: BalanceAmountScenario.Higher,
+        traderAssetAllowance: AllowanceAmountScenario.Higher,
+        zrxFeeBalance: BalanceAmountScenario.Higher,
+        zrxFeeAllowance: AllowanceAmountScenario.Higher,
     },
 };
 
@@ -163,7 +164,7 @@ describe('FillOrder Tests', () => {
                 ...defaultFillScenario,
                 makerStateScenario: {
                     ...defaultFillScenario.makerStateScenario,
-                    traderAssetBalance: TokenAmountScenario.TooLow,
+                    traderAssetBalance: BalanceAmountScenario.TooLow,
                 },
             };
             await coreCombinatorialUtils.testFillOrderScenarioAsync(provider, fillScenario);
@@ -174,7 +175,7 @@ describe('FillOrder Tests', () => {
                 ...defaultFillScenario,
                 takerStateScenario: {
                     ...defaultFillScenario.makerStateScenario,
-                    traderAssetBalance: TokenAmountScenario.TooLow,
+                    traderAssetBalance: BalanceAmountScenario.TooLow,
                 },
             };
             await coreCombinatorialUtils.testFillOrderScenarioAsync(provider, fillScenario);
@@ -185,7 +186,7 @@ describe('FillOrder Tests', () => {
                 ...defaultFillScenario,
                 makerStateScenario: {
                     ...defaultFillScenario.makerStateScenario,
-                    traderAssetAllowance: TokenAmountScenario.TooLow,
+                    traderAssetAllowance: AllowanceAmountScenario.TooLow,
                 },
             };
             await coreCombinatorialUtils.testFillOrderScenarioAsync(provider, fillScenario);
@@ -196,7 +197,7 @@ describe('FillOrder Tests', () => {
                 ...defaultFillScenario,
                 takerStateScenario: {
                     ...defaultFillScenario.makerStateScenario,
-                    traderAssetAllowance: TokenAmountScenario.TooLow,
+                    traderAssetAllowance: AllowanceAmountScenario.TooLow,
                 },
             };
             await coreCombinatorialUtils.testFillOrderScenarioAsync(provider, fillScenario);
