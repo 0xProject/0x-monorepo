@@ -22,6 +22,7 @@ import { RelayerIndex } from 'ts/components/relayer_index/relayer_index';
 import { TokenBalances } from 'ts/components/token_balances';
 import { TopBar, TopBarDisplayType } from 'ts/components/top_bar/top_bar';
 import { TradeHistory } from 'ts/components/trade_history/trade_history';
+import { Background } from 'ts/components/ui/background';
 import { Container } from 'ts/components/ui/container';
 import { FlashMessage } from 'ts/components/ui/flash_message';
 import { Island } from 'ts/components/ui/island';
@@ -109,22 +110,16 @@ const MENU_PADDING_LEFT = 185;
 const LARGE_LAYOUT_MAX_WIDTH = 1200;
 
 const styles: Styles = {
-    root: {
-        width: '100%',
-        height: '100%',
-        backgroundColor: colors.lightestGrey,
-    },
     body: {
-        height: `calc(100vh - ${TOP_BAR_HEIGHT}px)`,
+        marginTop: TOP_BAR_HEIGHT,
     },
     leftColumn: {
         width: LEFT_COLUMN_WIDTH,
-        height: '100%',
+        position: 'fixed',
     },
     scrollContainer: {
-        height: `calc(100vh - ${TOP_BAR_HEIGHT}px)`,
-        WebkitOverflowScrolling: 'touch',
-        overflow: 'auto',
+        marginLeft: LEFT_COLUMN_WIDTH + 30,
+        marginRight: 30,
     },
 };
 
@@ -245,7 +240,8 @@ export class Portal extends React.Component<PortalProps, PortalState> {
                 ? TokenVisibility.UNTRACKED
                 : TokenVisibility.TRACKED;
         return (
-            <div style={styles.root}>
+            <div>
+                <Background />
                 <DocumentTitle title="0x Portal DApp" />
                 <TopBar
                     userAddress={this.props.userAddress}
@@ -259,7 +255,7 @@ export class Portal extends React.Component<PortalProps, PortalState> {
                     blockchain={this._blockchain}
                     translate={this.props.translate}
                     displayType={TopBarDisplayType.Expanded}
-                    style={{ backgroundColor: colors.lightestGrey }}
+                    style={{ backgroundColor: colors.lightestGrey, position: 'fixed' }}
                     maxWidth={LARGE_LAYOUT_MAX_WIDTH}
                 />
                 <div id="portal" style={styles.body}>
@@ -709,10 +705,10 @@ interface LargeLayoutProps {
 const LargeLayout = (props: LargeLayoutProps) => {
     return (
         <div className="mx-auto flex flex-center" style={{ maxWidth: LARGE_LAYOUT_MAX_WIDTH }}>
-            <div className="flex-last px2">
+            <div className="flex-last">
                 <div style={styles.leftColumn}>{props.left}</div>
             </div>
-            <div className="flex-auto px2" style={styles.scrollContainer}>
+            <div className="flex-auto" style={styles.scrollContainer}>
                 {props.right}
             </div>
         </div>
