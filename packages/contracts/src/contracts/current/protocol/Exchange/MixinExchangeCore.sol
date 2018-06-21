@@ -20,7 +20,6 @@ pragma solidity ^0.4.24;
 pragma experimental ABIEncoderV2;
 
 import "./libs/LibConstants.sol";
-import "../../utils/LibBytes/LibBytes.sol";
 import "./libs/LibFillResults.sol";
 import "./libs/LibOrder.sol";
 import "./libs/LibMath.sol";
@@ -41,8 +40,6 @@ contract MixinExchangeCore is
     MSignatureValidator,
     MTransactions
 {
-    using LibBytes for bytes;
-    
     // Mapping of orderHash => amount of takerAsset already bought by maker
     mapping (bytes32 => uint256) public filled;
 
@@ -412,33 +409,27 @@ contract MixinExchangeCore is
     )
         private
     {
-        uint8 makerAssetProxyId = uint8(order.makerAssetData.popLastByte());
-        uint8 takerAssetProxyId = uint8(order.takerAssetData.popLastByte());
         bytes memory zrxAssetData = ZRX_ASSET_DATA;
         dispatchTransferFrom(
             order.makerAssetData,
-            makerAssetProxyId,
             order.makerAddress,
             takerAddress,
             fillResults.makerAssetFilledAmount
         );
         dispatchTransferFrom(
             order.takerAssetData,
-            takerAssetProxyId,
             takerAddress,
             order.makerAddress,
             fillResults.takerAssetFilledAmount
         );
         dispatchTransferFrom(
             zrxAssetData,
-            ZRX_PROXY_ID,
             order.makerAddress,
             order.feeRecipientAddress,
             fillResults.makerFeePaid
         );
         dispatchTransferFrom(
             zrxAssetData,
-            ZRX_PROXY_ID,
             takerAddress,
             order.feeRecipientAddress,
             fillResults.takerFeePaid

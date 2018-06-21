@@ -15,7 +15,6 @@ pragma solidity ^0.4.24;
 pragma experimental ABIEncoderV2;
 
 import "./libs/LibConstants.sol";
-import "../../utils/LibBytes/LibBytes.sol";
 import "./libs/LibMath.sol";
 import "./libs/LibOrder.sol";
 import "./libs/LibFillResults.sol";
@@ -34,8 +33,6 @@ contract MixinMatchOrders is
     MMatchOrders,
     MTransactions
 {
-    using LibBytes for bytes;
-
     /// @dev Match two complementary orders that have a profitable spread.
     ///      Each order is filled at their respective price point. However, the calculations are
     ///      carried out as though the orders are both being filled at the right order's price point.
@@ -242,27 +239,22 @@ contract MixinMatchOrders is
     )
         private
     {
-        uint8 leftMakerAssetProxyId = uint8(leftOrder.makerAssetData.popLastByte());
-        uint8 rightMakerAssetProxyId = uint8(rightOrder.makerAssetData.popLastByte());
         bytes memory zrxAssetData = ZRX_ASSET_DATA;
         // Order makers and taker
         dispatchTransferFrom(
             leftOrder.makerAssetData,
-            leftMakerAssetProxyId,
             leftOrder.makerAddress,
             rightOrder.makerAddress,
             matchedFillResults.right.takerAssetFilledAmount
         );
         dispatchTransferFrom(
             rightOrder.makerAssetData,
-            rightMakerAssetProxyId,
             rightOrder.makerAddress,
             leftOrder.makerAddress,
             matchedFillResults.left.takerAssetFilledAmount
         );
         dispatchTransferFrom(
             leftOrder.makerAssetData,
-            leftMakerAssetProxyId,
             leftOrder.makerAddress,
             takerAddress,
             matchedFillResults.leftMakerAssetSpreadAmount
@@ -271,14 +263,12 @@ contract MixinMatchOrders is
         // Maker fees
         dispatchTransferFrom(
             zrxAssetData,
-            ZRX_PROXY_ID,
             leftOrder.makerAddress,
             leftOrder.feeRecipientAddress,
             matchedFillResults.left.makerFeePaid
         );
         dispatchTransferFrom(
             zrxAssetData,
-            ZRX_PROXY_ID,
             rightOrder.makerAddress,
             rightOrder.feeRecipientAddress,
             matchedFillResults.right.makerFeePaid
@@ -288,7 +278,6 @@ contract MixinMatchOrders is
         if (leftOrder.feeRecipientAddress == rightOrder.feeRecipientAddress) {
             dispatchTransferFrom(
                 zrxAssetData,
-                ZRX_PROXY_ID,
                 takerAddress,
                 leftOrder.feeRecipientAddress,
                 safeAdd(
@@ -299,14 +288,12 @@ contract MixinMatchOrders is
         } else {
             dispatchTransferFrom(
                 zrxAssetData,
-                ZRX_PROXY_ID,
                 takerAddress,
                 leftOrder.feeRecipientAddress,
                 matchedFillResults.left.takerFeePaid
             );
             dispatchTransferFrom(
                 zrxAssetData,
-                ZRX_PROXY_ID,
                 takerAddress,
                 rightOrder.feeRecipientAddress,
                 matchedFillResults.right.takerFeePaid
