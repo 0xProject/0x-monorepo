@@ -20,6 +20,7 @@ export interface OnboardingCardProps {
     shouldHideBackButton?: boolean;
     shouldHideNextButton?: boolean;
     continueButtonText?: string;
+    borderRadius?: string;
 }
 
 export const OnboardingCard: React.StatelessComponent<OnboardingCardProps> = ({
@@ -32,8 +33,9 @@ export const OnboardingCard: React.StatelessComponent<OnboardingCardProps> = ({
     onClose,
     shouldHideBackButton,
     shouldHideNextButton,
+    borderRadius,
 }) => (
-    <Island>
+    <Island borderRadius={borderRadius}>
         <Container paddingRight="30px" paddingLeft="30px" maxWidth={350} paddingTop="15px" paddingBottom="15px">
             <div className="flex flex-column">
                 <div className="flex justify-between">

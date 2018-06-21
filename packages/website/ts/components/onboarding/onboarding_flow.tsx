@@ -67,7 +67,7 @@ export class OnboardingFlow extends React.Component<OnboardingFlowProps> {
         const step = steps[stepIndex];
         const isLastStep = steps.length - 1 === stepIndex;
         return (
-            <Container marginLeft="30px">
+            <Container marginLeft="30px" maxWidth={350}>
                 <OnboardingTooltip
                     title={step.title}
                     content={step.content}
@@ -101,6 +101,7 @@ export class OnboardingFlow extends React.Component<OnboardingFlowProps> {
                     onClickBack={this._goToPrevStep.bind(this)}
                     continueButtonDisplay={step.continueButtonDisplay}
                     continueButtonText={step.continueButtonText}
+                    borderRadius="10px 10px 0px 0px"
                 />
             </Container>
         );

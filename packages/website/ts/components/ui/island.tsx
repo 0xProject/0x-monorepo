@@ -6,19 +6,23 @@ export interface IslandProps {
     style?: React.CSSProperties;
     className?: string;
     Component?: string | React.ComponentClass<any> | React.StatelessComponent<any>;
+    borderRadius?: string;
 }
 
-const PlainIsland: React.StatelessComponent<IslandProps> = ({ Component, ...rest }) => <Component {...rest} />;
+const PlainIsland: React.StatelessComponent<IslandProps> = ({ Component, borderRadius, ...rest }) => (
+    <Component {...rest} />
+);
 
 export const Island = styled(PlainIsland)`
     background-color: ${colors.white};
-    border-radius: 10px;
+    border-radius: ${props => props.borderRadius};
     box-shadow: 0px 4px 6px ${colors.walletBoxShadow};
     overflow: hidden;
 `;
 
 Island.defaultProps = {
     Component: 'div',
+    borderRadius: '10px',
     style: {},
 };
 
