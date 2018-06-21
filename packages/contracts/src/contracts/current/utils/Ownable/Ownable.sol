@@ -22,7 +22,7 @@ contract Ownable is IOwnable {
     modifier onlyOwner() {
         require(
             msg.sender == owner,
-            "Only contract owner is allowed to call this method."
+            'ONLY_CONTRACT_OWNER'
         );
         _;
     }
