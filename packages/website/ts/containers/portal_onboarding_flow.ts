@@ -3,7 +3,7 @@ import * as React from 'react';
 import { connect } from 'react-redux';
 import { Dispatch } from 'redux';
 import { Blockchain } from 'ts/blockchain';
-import { ActionTypes, ProviderType, TokenByAddress, TokenStateByAddress } from 'ts/types';
+import { ActionTypes, ProviderType, ScreenWidths, TokenByAddress, TokenStateByAddress } from 'ts/types';
 
 import { PortalOnboardingFlow as PortalOnboardingFlowComponent } from 'ts/components/onboarding/portal_onboarding_flow';
 import { State } from 'ts/redux/reducer';
@@ -25,6 +25,7 @@ interface ConnectedState {
     blockchainIsLoaded: boolean;
     userEtherBalanceInWei?: BigNumber;
     tokenByAddress: TokenByAddress;
+    screenWidth: ScreenWidths;
 }
 
 interface ConnectedDispatch {
@@ -43,6 +44,7 @@ const mapStateToProps = (state: State, _ownProps: PortalOnboardingFlowProps): Co
     userEtherBalanceInWei: state.userEtherBalanceInWei,
     tokenByAddress: state.tokenByAddress,
     hasBeenSeen: state.hasPortalOnboardingBeenSeen,
+    screenWidth: state.screenWidth,
 });
 
 const mapDispatchToProps = (dispatch: Dispatch<State>): ConnectedDispatch => ({

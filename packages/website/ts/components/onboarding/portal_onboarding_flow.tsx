@@ -14,7 +14,7 @@ import { SetAllowancesOnboardingStep } from 'ts/components/onboarding/set_allowa
 import { UnlockWalletOnboardingStep } from 'ts/components/onboarding/unlock_wallet_onboarding_step';
 import { WrapEthOnboardingStep } from 'ts/components/onboarding/wrap_eth_onboarding_step';
 import { AllowanceToggle } from 'ts/containers/inputs/allowance_toggle';
-import { ProviderType, Token, TokenByAddress, TokenStateByAddress } from 'ts/types';
+import { ProviderType, ScreenWidths, Token, TokenByAddress, TokenStateByAddress } from 'ts/types';
 import { analytics } from 'ts/utils/analytics';
 import { utils } from 'ts/utils/utils';
 
@@ -34,6 +34,7 @@ export interface PortalOnboardingFlowProps extends RouteComponentProps<any> {
     updateIsRunning: (isRunning: boolean) => void;
     updateOnboardingStep: (stepIndex: number) => void;
     refetchTokenStateAsync: (tokenAddress: string) => Promise<void>;
+    screenWidth: ScreenWidths;
 }
 
 class PlainPortalOnboardingFlow extends React.Component<PortalOnboardingFlowProps> {
@@ -57,6 +58,8 @@ class PlainPortalOnboardingFlow extends React.Component<PortalOnboardingFlowProp
                 isRunning={this.props.isRunning}
                 onClose={this._closeOnboarding.bind(this)}
                 updateOnboardingStep={this._updateOnboardingStep.bind(this)}
+                disableOverlay={this.props.screenWidth === ScreenWidths.Sm}
+                isMobile={this.props.screenWidth === ScreenWidths.Sm}
             />
         );
     }

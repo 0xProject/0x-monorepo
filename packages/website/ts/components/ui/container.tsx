@@ -23,6 +23,7 @@ export interface ContainerProps {
     left?: string;
     right?: string;
     bottom?: string;
+    zIndex?: number;
 }
 
 export const Container: React.StatelessComponent<ContainerProps> = ({ children, className, isHidden, ...style }) => {

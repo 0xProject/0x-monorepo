@@ -246,11 +246,6 @@ export class Portal extends React.Component<PortalProps, PortalState> {
                 : TokenVisibility.TRACKED;
         return (
             <div style={styles.root}>
-                <PortalOnboardingFlow
-                    blockchain={this._blockchain}
-                    trackedTokenStateByAddress={this.state.trackedTokenStateByAddress}
-                    refetchTokenStateAsync={this._refetchTokenStateAsync.bind(this)}
-                />
                 <DocumentTitle title="0x Portal DApp" />
                 <TopBar
                     userAddress={this.props.userAddress}
@@ -307,6 +302,11 @@ export class Portal extends React.Component<PortalProps, PortalState> {
                         tokenVisibility={tokenVisibility}
                     />
                 </div>
+                <PortalOnboardingFlow
+                    blockchain={this._blockchain}
+                    trackedTokenStateByAddress={this.state.trackedTokenStateByAddress}
+                    refetchTokenStateAsync={this._refetchTokenStateAsync.bind(this)}
+                />
             </div>
         );
     }
@@ -340,55 +340,66 @@ export class Portal extends React.Component<PortalProps, PortalState> {
         );
     }
     private _renderWallet(): React.ReactNode {
+        const startOnboarding = this._renderStartOnboarding();
+        const isMobile = this.props.screenWidth === ScreenWidths.Sm;
+        // We need room to scroll down for mobile onboarding
+        const marginBottom = isMobile ? '200px' : '15px';
         return (
             <div>
-                <Wallet
-                    style={this.props.isPortalOnboardingShowing ? { zIndex: zIndex.aboveOverlay } : undefined}
-                    userAddress={this.props.userAddress}
-                    networkId={this.props.networkId}
-                    blockchain={this._blockchain}
-                    blockchainIsLoaded={this.props.blockchainIsLoaded}
-                    blockchainErr={this.props.blockchainErr}
-                    dispatcher={this.props.dispatcher}
-                    tokenByAddress={this.props.tokenByAddress}
-                    trackedTokens={this._getCurrentTrackedTokens()}
-                    userEtherBalanceInWei={this.props.userEtherBalanceInWei}
-                    lastForceTokenStateRefetch={this.props.lastForceTokenStateRefetch}
-                    injectedProviderName={this.props.injectedProviderName}
-                    providerType={this.props.providerType}
-                    screenWidth={this.props.screenWidth}
-                    location={this.props.location}
-                    trackedTokenStateByAddress={this.state.trackedTokenStateByAddress}
-                    onToggleLedgerDialog={this._onToggleLedgerDialog.bind(this)}
-                    onAddToken={this._onAddToken.bind(this)}
-                    onRemoveToken={this._onRemoveToken.bind(this)}
-                    refetchTokenStateAsync={this._refetchTokenStateAsync.bind(this)}
-                />
-                <Container marginTop="15px">
-                    <Island>
-                        <Container
-                            marginTop="30px"
-                            marginBottom="30px"
-                            marginLeft="30px"
-                            marginRight="30px"
-                            className="flex justify-around items-center"
-                        >
-                            <ActionAccountBalanceWallet
-                                style={{ width: '30px', height: '30px' }}
-                                color={colors.orange}
-                            />
-                            <Text
-                                fontColor={colors.grey}
-                                fontSize="16px"
-                                center={true}
-                                onClick={this._startOnboarding.bind(this)}
-                            >
-                                Learn how to set up your account
-                            </Text>
-                        </Container>
-                    </Island>
+                {isMobile && <Container marginBottom="15px">{startOnboarding}</Container>}
+                <Container marginBottom={marginBottom}>
+                    <Wallet
+                        style={
+                            !isMobile && this.props.isPortalOnboardingShowing
+                                ? { zIndex: zIndex.aboveOverlay, position: 'relative' }
+                                : undefined
+                        }
+                        userAddress={this.props.userAddress}
+                        networkId={this.props.networkId}
+                        blockchain={this._blockchain}
+                        blockchainIsLoaded={this.props.blockchainIsLoaded}
+                        blockchainErr={this.props.blockchainErr}
+                        dispatcher={this.props.dispatcher}
+                        tokenByAddress={this.props.tokenByAddress}
+                        trackedTokens={this._getCurrentTrackedTokens()}
+                        userEtherBalanceInWei={this.props.userEtherBalanceInWei}
+                        lastForceTokenStateRefetch={this.props.lastForceTokenStateRefetch}
+                        injectedProviderName={this.props.injectedProviderName}
+                        providerType={this.props.providerType}
+                        screenWidth={this.props.screenWidth}
+                        location={this.props.location}
+                        trackedTokenStateByAddress={this.state.trackedTokenStateByAddress}
+                        onToggleLedgerDialog={this._onToggleLedgerDialog.bind(this)}
+                        onAddToken={this._onAddToken.bind(this)}
+                        onRemoveToken={this._onRemoveToken.bind(this)}
+                        refetchTokenStateAsync={this._refetchTokenStateAsync.bind(this)}
+                    />
                 </Container>
+                {!isMobile && <Container marginTop="15px">{startOnboarding}</Container>}
             </div>
+        );
+    }
+    private _renderStartOnboarding(): React.ReactNode {
+        return (
+            <Island>
+                <Container
+                    marginTop="30px"
+                    marginBottom="30px"
+                    marginLeft="30px"
+                    marginRight="30px"
+                    className="flex justify-around items-center"
+                >
+                    <ActionAccountBalanceWallet style={{ width: '30px', height: '30px' }} color={colors.orange} />
+                    <Text
+                        fontColor={colors.grey}
+                        fontSize="16px"
+                        center={true}
+                        onClick={this._startOnboarding.bind(this)}
+                    >
+                        Learn how to set up your account
+                    </Text>
+                </Container>
+            </Island>
         );
     }
 
@@ -396,6 +407,10 @@ export class Portal extends React.Component<PortalProps, PortalState> {
         const networkName = sharedConstants.NETWORK_NAME_BY_ID[this.props.networkId];
         analytics.logEvent('Portal', 'Onboarding Started - Manual', networkName, this.props.portalOnboardingStep);
         this.props.dispatcher.updatePortalOnboardingShowing(true);
+        // On mobile, make sure the wallet is completely visible.
+        if (this.props.screenWidth === ScreenWidths.Sm) {
+            document.querySelector('.wallet').scrollIntoView();
+        }
     }
     private _renderWalletSection(): React.ReactNode {
         return <Section header={<TextHeader labelText="Your Account" />} body={this._renderWallet()} />;
