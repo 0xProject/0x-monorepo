@@ -37,20 +37,20 @@ export class OnboardingFlow extends React.Component<OnboardingFlowProps> {
         if (!this.props.isRunning) {
             return null;
         }
-        let onboardingEl = null;
+        let onboardingElement = null;
         if (this.props.isMobile) {
-            onboardingEl = <Animation type="easeUpFromBottom">{this._renderOnboardignCard()}</Animation>;
+            onboardingElement = <Animation type="easeUpFromBottom">{this._renderOnboardignCard()}</Animation>;
         } else {
-            onboardingEl = (
+            onboardingElement = (
                 <Popper referenceElement={this._getElementForStep()} placement={this._getCurrentStep().placement}>
                     {this._renderPopperChildren.bind(this)}
                 </Popper>
             );
         }
         if (this.props.disableOverlay) {
-            return onboardingEl;
+            return onboardingElement;
         }
-        return <Overlay>{onboardingEl}</Overlay>;
+        return <Overlay>{onboardingElement}</Overlay>;
     }
     private _getElementForStep(): Element {
         return document.querySelector(this._getCurrentStep().target);
