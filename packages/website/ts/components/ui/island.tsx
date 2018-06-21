@@ -14,7 +14,7 @@ const defaultStyle: React.CSSProperties = {
     borderBottomLeftRadius: 10,
     borderTopRightRadius: 10,
     borderTopLeftRadius: 10,
-    boxShadow: `0px 4px 6px ${colors.walletBoxShadow}`,
+    boxShadow: `0px 3px 4px ${colors.walletBoxShadow}`,
     overflow: 'hidden',
 };
 
