@@ -129,7 +129,7 @@ describe('Exchange core', () => {
     afterEach(async () => {
         await blockchainLifecycle.revertAsync();
     });
-    describe.only('fillOrder', () => {
+    describe('fillOrder', () => {
         beforeEach(async () => {
             erc20Balances = await erc20Wrapper.getBalancesAsync();
             signedOrder = orderFactory.newSignedOrder();
