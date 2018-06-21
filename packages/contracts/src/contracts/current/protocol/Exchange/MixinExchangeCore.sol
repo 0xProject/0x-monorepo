@@ -19,22 +19,26 @@
 pragma solidity ^0.4.24;
 pragma experimental ABIEncoderV2;
 
+import "./libs/LibConstants.sol";
+import "../../utils/LibBytes/LibBytes.sol";
 import "./libs/LibFillResults.sol";
 import "./libs/LibOrder.sol";
 import "./libs/LibMath.sol";
 import "./libs/LibExchangeErrors.sol";
 import "./mixins/MExchangeCore.sol";
-import "./mixins/MSettlement.sol";
 import "./mixins/MSignatureValidator.sol";
 import "./mixins/MTransactions.sol";
+import "./mixins/MAssetProxyDispatcher.sol";
 
 contract MixinExchangeCore is
+    LibConstants,
+    LibBytes,
     LibMath,
     LibOrder,
     LibFillResults,
     LibExchangeErrors,
+    MAssetProxyDispatcher,
     MExchangeCore,
-    MSettlement,
     MSignatureValidator,
     MTransactions
 {
@@ -388,5 +392,49 @@ contract MixinExchangeCore is
         );
 
         return fillResults;
+    }
+
+   /// @dev Settles an order by transferring assets between counterparties.
+    /// @param order Order struct containing order specifications.
+    /// @param takerAddress Address selling takerAsset and buying makerAsset.
+    /// @param fillResults Amounts to be filled and fees paid by maker and taker.
+    function settleOrder(
+        LibOrder.Order memory order,
+        address takerAddress,
+        LibFillResults.FillResults memory fillResults
+    )
+        private
+    {
+        uint8 makerAssetProxyId = uint8(popLastByte(order.makerAssetData));
+        uint8 takerAssetProxyId = uint8(popLastByte(order.takerAssetData));
+        bytes memory zrxAssetData = ZRX_ASSET_DATA;
+        dispatchTransferFrom(
+            order.makerAssetData,
+            makerAssetProxyId,
+            order.makerAddress,
+            takerAddress,
+            fillResults.makerAssetFilledAmount
+        );
+        dispatchTransferFrom(
+            order.takerAssetData,
+            takerAssetProxyId,
+            takerAddress,
+            order.makerAddress,
+            fillResults.takerAssetFilledAmount
+        );
+        dispatchTransferFrom(
+            zrxAssetData,
+            ZRX_PROXY_ID,
+            order.makerAddress,
+            order.feeRecipientAddress,
+            fillResults.makerFeePaid
+        );
+        dispatchTransferFrom(
+            zrxAssetData,
+            ZRX_PROXY_ID,
+            takerAddress,
+            order.feeRecipientAddress,
+            fillResults.takerFeePaid
+        );
     }
 }
