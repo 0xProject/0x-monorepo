@@ -232,10 +232,6 @@ contract MixinSignatureValidator is
             isValid = signer == recovered;
             return isValid;
 
-        // Signer signed hash previously using the preSign function
-        } else if (signatureType == SignatureType.PreSigned) {
-            isValid = preSigned[hash][signer];
-            return isValid;
         }
 
         // Anything else is illegal (We do not return false because
