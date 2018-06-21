@@ -79,11 +79,9 @@ contract MixinERC721Transfer is
         )
     {
         // Decode asset data.
-        token = assetData.readAddress(0);
-        tokenId = assetData.readUint256(20);
-        if (assetData.length > 52) {
-            receiverData = assetData.readBytesWithLength(52);
-        }
+        token = assetData.readAddress(16);
+        tokenId = assetData.readUint256(36);
+        receiverData = assetData.readBytesWithLength(100);
 
         return (
             token,

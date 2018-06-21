@@ -42,7 +42,7 @@ contract MixinERC20Transfer is
         internal
     {
         // Decode asset data.
-        address token = assetData.readAddress(0);
+        address token = assetData.readAddress(16);
 
         // Transfer tokens.
         // We do a raw call so we can check the success separate

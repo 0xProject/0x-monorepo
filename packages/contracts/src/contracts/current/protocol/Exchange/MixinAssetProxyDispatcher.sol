@@ -32,7 +32,7 @@ contract MixinAssetProxyDispatcher is
     using LibBytes for bytes;
     
     // Mapping from Asset Proxy Id's to their respective Asset Proxy
-    mapping (uint8 => IAssetProxy) public assetProxies;
+    mapping (bytes4 => IAssetProxy) public assetProxies;
 
     /// @dev Registers an asset proxy to an asset proxy id.
     ///      An id can only be assigned to a single proxy at a given time.
@@ -40,7 +40,7 @@ contract MixinAssetProxyDispatcher is
     /// @param newAssetProxy Address of new asset proxy to register, or 0x0 to unset assetProxyId.
     /// @param oldAssetProxy Existing asset proxy to overwrite, or 0x0 if assetProxyId is currently unused.
     function registerAssetProxy(
-        uint8 assetProxyId,
+        bytes4 assetProxyId,
         address newAssetProxy,
         address oldAssetProxy
     )
@@ -58,7 +58,7 @@ contract MixinAssetProxyDispatcher is
 
         // Ensure that the id of newAssetProxy matches the passed in assetProxyId, unless it is being reset to 0.
         if (newAssetProxy != address(0)) {
-            uint8 newAssetProxyId = assetProxy.getProxyId();
+            bytes4 newAssetProxyId = assetProxy.getProxyId();
             require(
                 newAssetProxyId == assetProxyId,
                 ASSET_PROXY_ID_MISMATCH
@@ -77,7 +77,7 @@ contract MixinAssetProxyDispatcher is
     /// @dev Gets an asset proxy.
     /// @param assetProxyId Id of the asset proxy.
     /// @return The asset proxy registered to assetProxyId. Returns 0x0 if no proxy is registered.
-    function getAssetProxy(uint8 assetProxyId)
+    function getAssetProxy(bytes4 assetProxyId)
         external
         view
         returns (address)
@@ -101,15 +101,7 @@ contract MixinAssetProxyDispatcher is
         // Do nothing if no amount should be transferred.
         if (amount > 0) {
             // Lookup assetProxy
-            uint8 assetProxyId = uint8(assetData[assetData.length - 1]);
-            
-            bytes memory assetDataP = new bytes(assetData.length - 1);
-            LibBytes.memCopy(
-                assetDataP.contentAddress(),
-                assetData.contentAddress(),
-                assetDataP.length
-            );
-            
+            bytes4 assetProxyId = assetData.readBytes4(0);
             IAssetProxy assetProxy = assetProxies[assetProxyId];
             // Ensure that assetProxy exists
             require(
@@ -118,7 +110,7 @@ contract MixinAssetProxyDispatcher is
             );
             // transferFrom will either succeed or throw.
             assetProxy.transferFrom(
-                assetDataP,
+                assetData,
                 from,
                 to,
                 amount

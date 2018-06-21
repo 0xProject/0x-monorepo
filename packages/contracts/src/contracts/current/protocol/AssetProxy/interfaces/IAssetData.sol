@@ -16,29 +16,18 @@
 
 */
 
-pragma solidity ^0.4.24;
-pragma experimental ABIEncoderV2;
+pragma solidity ^0.4.23;
 
-import "../../utils/LibBytes/LibBytes.sol";
-import "./MixinAssetProxy.sol";
-import "./MixinAuthorizable.sol";
-import "./MixinERC20Transfer.sol";
-
-contract ERC20Proxy is
-    MixinAssetProxy,
-    MixinAuthorizable,
-    MixinERC20Transfer
-{
-    // Id of this proxy.
-    bytes4 constant PROXY_ID = 1;
-
-    /// @dev Gets the proxy id associated with the proxy address.
-    /// @return Proxy id.
-    function getProxyId()
-        external
-        view
-        returns (bytes4)
-    {
-        return PROXY_ID;
-    }
+interface IAssetData {
+    
+    function ERC20Token(
+        address tokenContract)
+        external pure;
+    
+    function ERC721Token(
+        address tokenContract,
+        uint256 tokenId,
+        bytes receiverData)
+        external pure;
+    
 }
