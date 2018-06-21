@@ -29,17 +29,17 @@ contract AssetProxyOwner is
     event AssetProxyRegistration(address assetProxyContract, bool isRegistered);
 
     // Mapping of AssetProxy contract address =>
-    // if this contract is allowed to call the AssetProxy's removeAuthorizedAddress method without a time lock.
+    // if this contract is allowed to call the AssetProxy's `removeAuthorizedAddressAtIndex` method without a time lock.
     mapping (address => bool) public isAssetProxyRegistered;
 
-    bytes4 constant REMOVE_AUTHORIZED_ADDRESS_SELECTOR = bytes4(keccak256("removeAuthorizedAddress(address)"));
+    bytes4 constant REMOVE_AUTHORIZED_ADDRESS_AT_INDEX_SELECTOR = bytes4(keccak256("removeAuthorizedAddressAtIndex(address,uint256)"));
 
-    /// @dev Function will revert if the transaction does not call `removeAuthorizedAddress`
+    /// @dev Function will revert if the transaction does not call `removeAuthorizedAddressAtIndex`
     ///      on an approved AssetProxy contract.
-    modifier validRemoveAuthorizedAddressTx(uint256 transactionId) {
+    modifier validRemoveAuthorizedAddressAtIndexTx(uint256 transactionId) {
         Transaction storage tx = transactions[transactionId];
         require(isAssetProxyRegistered[tx.destination]);
-        require(tx.data.readBytes4(0) == REMOVE_AUTHORIZED_ADDRESS_SELECTOR);
+        require(tx.data.readBytes4(0) == REMOVE_AUTHORIZED_ADDRESS_AT_INDEX_SELECTOR);
         _;
     }
 
@@ -66,7 +66,7 @@ contract AssetProxyOwner is
     }
 
     /// @dev Registers or deregisters an AssetProxy to be able to execute
-    ///      removeAuthorizedAddress without a timelock.
+    ///      `removeAuthorizedAddressAtIndex` without a timelock.
     /// @param assetProxyContract Address of AssetProxy contract.
     /// @param isRegistered Status of approval for AssetProxy contract.
     function registerAssetProxy(address assetProxyContract, bool isRegistered)
@@ -78,13 +78,13 @@ contract AssetProxyOwner is
         AssetProxyRegistration(assetProxyContract, isRegistered);
     }
 
-    /// @dev Allows execution of removeAuthorizedAddress without time lock.
+    /// @dev Allows execution of `removeAuthorizedAddressAtIndex` without time lock.
     /// @param transactionId Transaction ID.
-    function executeRemoveAuthorizedAddress(uint256 transactionId)
+    function executeRemoveAuthorizedAddressAtIndex(uint256 transactionId)
         public
         notExecuted(transactionId)
         fullyConfirmed(transactionId)
-        validRemoveAuthorizedAddressTx(transactionId)
+        validRemoveAuthorizedAddressAtIndexTx(transactionId)
     {
         Transaction storage tx = transactions[transactionId];
         tx.executed = true;
