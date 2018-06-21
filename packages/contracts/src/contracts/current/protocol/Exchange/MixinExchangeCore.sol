@@ -403,7 +403,7 @@ contract MixinExchangeCore is
         address takerAddress,
         LibFillResults.FillResults memory fillResults
     )
-        internal
+        private
     {
         uint8 makerAssetProxyId = uint8(popLastByte(order.makerAssetData));
         uint8 takerAssetProxyId = uint8(popLastByte(order.takerAssetData));

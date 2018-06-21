@@ -240,7 +240,7 @@ contract MixinMatchOrders is
         address takerAddress,
         LibFillResults.MatchedFillResults memory matchedFillResults
     )
-        internal
+        private
     {
         uint8 leftMakerAssetProxyId = uint8(popLastByte(leftOrder.makerAssetData));
         uint8 rightMakerAssetProxyId = uint8(popLastByte(rightOrder.makerAssetData));
