@@ -70,6 +70,7 @@ contract MixinSignatureValidator is
     {
         address signer = getCurrentContextAddress();
         allowedValidators[signer][validator] = approval;
+        emit SetValidatorStatus(signer, validator, approval);
     }
 
     /// @dev Verifies that a hash has been signed by the given signer.
