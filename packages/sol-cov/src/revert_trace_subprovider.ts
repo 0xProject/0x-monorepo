@@ -75,6 +75,7 @@ export class RevertTraceSubprovider extends TraceCollectionSubprovider {
             }
             const bytecodeHex = stripHexPrefix(bytecode);
             const sourceMap = isContractCreation ? contractData.sourceMap : contractData.sourceMapRuntime;
+
             const pcToSourceRange = parseSourceMap(
                 contractData.sourceCodes,
                 sourceMap,
@@ -88,16 +89,19 @@ export class RevertTraceSubprovider extends TraceCollectionSubprovider {
             // actually happens in assembly). In that case, we want to keep
             // searching backwards by decrementing the pc until we find a
             // mapped source range.
-            while (_.isUndefined(sourceRange)) {
+            while (_.isUndefined(sourceRange) && pc > 0) {
                 sourceRange = pcToSourceRange[pc];
                 pc -= 1;
-                if (pc <= 0) {
-                    this._logger.warn(
-                        `could not find matching sourceRange for structLog: ${evmCallStackEntry.structLog}`,
-                    );
-                    continue;
-                }
             }
+            if (_.isUndefined(sourceRange)) {
+                this._logger.warn(
+                    `could not find matching sourceRange for structLog: ${JSON.stringify(
+                        _.omit(evmCallStackEntry.structLog, 'stack'),
+                    )}`,
+                );
+                continue;
+            }
+
             const fileIndex = contractData.sources.indexOf(sourceRange.fileName);
             const sourceSnippet = getSourceRangeSnippet(sourceRange, contractData.sourceCodes[fileIndex]);
             if (sourceSnippet !== null) {
