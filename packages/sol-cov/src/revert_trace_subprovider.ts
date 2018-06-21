@@ -4,10 +4,11 @@ import { getLogger, levels, Logger } from 'loglevel';
 
 import { AbstractArtifactAdapter } from './artifact_adapters/abstract_artifact_adapter';
 import { constants } from './constants';
+import { getSourceRangeSnippet } from './get_source_range_snippet';
 import { getRevertTrace } from './revert_trace';
 import { parseSourceMap } from './source_maps';
 import { TraceCollectionSubprovider } from './trace_collection_subprovider';
-import { ContractData, EvmCallStack, SourceRange } from './types';
+import { ContractData, EvmCallStack, SourceRange, SourceSnippet } from './types';
 import { utils } from './utils';
 
 /**
@@ -53,7 +54,7 @@ export class RevertTraceSubprovider extends TraceCollectionSubprovider {
         }
     }
     private async _printStackTraceAsync(evmCallStack: EvmCallStack): Promise<void> {
-        const sourceRanges: SourceRange[] = [];
+        const sourceSnippets: SourceSnippet[] = [];
         if (_.isUndefined(this._contractsData)) {
             this._contractsData = await this._artifactAdapter.collectContractsDataAsync();
         }
@@ -97,18 +98,62 @@ export class RevertTraceSubprovider extends TraceCollectionSubprovider {
                     continue;
                 }
             }
-            sourceRanges.push(sourceRange);
+            const fileIndex = contractData.sources.indexOf(sourceRange.fileName);
+            const sourceSnippet = getSourceRangeSnippet(sourceRange, contractData.sourceCodes[fileIndex]);
+            if (sourceSnippet !== null) {
+                sourceSnippets.push(sourceSnippet);
+            }
         }
-        if (sourceRanges.length > 0) {
+        const filteredSnippets = filterSnippets(sourceSnippets);
+        if (filteredSnippets.length > 0) {
             this._logger.error('\n\nStack trace for REVERT:\n');
-            _.forEach(_.reverse(sourceRanges), sourceRange => {
-                this._logger.error(
-                    `${sourceRange.fileName}:${sourceRange.location.start.line}:${sourceRange.location.start.column}`,
-                );
+            _.forEach(_.reverse(filteredSnippets), snippet => {
+                const traceString = getStackTraceString(snippet);
+                this._logger.error(traceString);
             });
             this._logger.error('\n');
         } else {
-            this._logger.error('Could not determine stack trace');
+            this._logger.error('REVERT detected but could not determine stack trace');
         }
+    }
+}
+
+// removes duplicates and if statements
+function filterSnippets(sourceSnippets: SourceSnippet[]): SourceSnippet[] {
+    if (sourceSnippets.length === 0) {
+        return [];
+    }
+    const results: SourceSnippet[] = [sourceSnippets[0]];
+    let prev = sourceSnippets[0];
+    for (const sourceSnippet of sourceSnippets) {
+        if (sourceSnippet.type === 'IfStatement') {
+            continue;
+        } else if (sourceSnippet.source === prev.source) {
+            prev = sourceSnippet;
+            continue;
+        }
+        results.push(sourceSnippet);
+        prev = sourceSnippet;
+    }
+    return results;
+}
+
+function getStackTraceString(sourceSnippet: SourceSnippet): string {
+    let result = `${sourceSnippet.fileName}:${sourceSnippet.range.start.line}:${sourceSnippet.range.start.column}`;
+    const snippetString = getSourceSnippetString(sourceSnippet);
+    if (snippetString !== '') {
+        result += `:\n        ${snippetString}`;
+    }
+    return result;
+}
+
+function getSourceSnippetString(sourceSnippet: SourceSnippet): string {
+    switch (sourceSnippet.type) {
+        case 'ContractDefinition':
+            return `contract ${sourceSnippet.name}`;
+        case 'FunctionDefinition':
+            return `function ${sourceSnippet.name}`;
+        default:
+            return `${sourceSnippet.source}`;
     }
 }

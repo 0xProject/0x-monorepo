@@ -33,7 +33,7 @@ contract MixinSignatureValidator is
 {
     // Personal message headers
     string constant ETH_PERSONAL_MESSAGE = "\x19Ethereum Signed Message:\n32";
-    string constant TREZOR_PERSONAL_MESSAGE = "\x19Ethereum Signed Message:\n\x41";
+    string constant TREZOR_PERSONAL_MESSAGE = "\x19Ethereum Signed Message:\n\x20";
 
     // Mapping of hash => signer => signed
     mapping (bytes32 => mapping (address => bool)) public preSigned;
@@ -92,8 +92,15 @@ contract MixinSignatureValidator is
             LENGTH_GREATER_THAN_0_REQUIRED
         );
 
+        // Ensure signature is supported
+        uint8 signatureTypeRaw = uint8(popLastByte(signature));
+        require(
+            signatureTypeRaw < uint8(SignatureType.NSignatureTypes),
+            SIGNATURE_UNSUPPORTED
+        );
+
         // Pop last byte off of signature byte array.
-        SignatureType signatureType = SignatureType(uint8(popLastByte(signature)));
+        SignatureType signatureType = SignatureType(signatureTypeRaw);
 
         // Variables are not scoped in Solidity.
         uint8 v;

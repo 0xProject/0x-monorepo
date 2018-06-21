@@ -139,6 +139,7 @@ export enum SignatureType {
     Validator,
     PreSigned,
     Trezor,
+    NSignatureTypes,
 }
 
 /**

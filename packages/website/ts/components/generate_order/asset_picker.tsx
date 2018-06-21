@@ -151,12 +151,12 @@ export class AssetPicker extends React.Component<AssetPickerProps, AssetPickerSt
                         height: TILE_DIMENSION,
                         ...tileStyles,
                     }}
-                    className="p2 mx-auto"
+                    className="p2 flex flex-column items-center"
                     onClick={this._onChooseToken.bind(this, address)}
                     onMouseEnter={this._onToggleHover.bind(this, address, true)}
                     onMouseLeave={this._onToggleHover.bind(this, address, false)}
                 >
-                    <div className="p1 center">
+                    <div className="p1">
                         <TokenIcon token={token} diameter={TOKEN_ICON_DIMENSION} />
                     </div>
                     <div className="center">{token.name}</div>

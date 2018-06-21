@@ -277,7 +277,7 @@ export function parseECSignature(signature: string): ECSignature {
 }
 
 function hashTrezorPersonalMessage(message: Buffer): Buffer {
-    const prefix = ethUtil.toBuffer('\x19Ethereum Signed Message:\n' + String.fromCharCode(message.length));
+    const prefix = ethUtil.toBuffer('\x19Ethereum Signed Message:\n' + String.fromCharCode(message.byteLength));
     return ethUtil.sha3(Buffer.concat([prefix, message]));
 }
 

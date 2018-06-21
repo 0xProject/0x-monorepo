@@ -1,4 +1,5 @@
 import { StructLog } from 'ethereum-types';
+import * as Parser from 'solidity-parser-antlr';
 
 export interface LineColumn {
     line: number;
@@ -114,3 +115,12 @@ export interface EvmCallStackEntry {
 }
 
 export type EvmCallStack = EvmCallStackEntry[];
+
+export interface SourceSnippet {
+    source: string;
+    fileName: string;
+    type: string;
+    node: Parser.ASTNode;
+    name: string | null;
+    range: SingleFileSourceRange;
+}
