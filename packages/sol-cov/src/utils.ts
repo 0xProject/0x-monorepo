@@ -5,6 +5,10 @@ import * as _ from 'lodash';
 
 import { ContractData, LineColumn, SingleFileSourceRange } from './types';
 
+// This is the minimum length of valid contract bytecode. The Solidity compiler
+// metadata is 86 bytes. If you add the '0x' prefix, we get 88.
+const MIN_CONTRACT_BYTECODE_LENGTH = 88;
+
 export const utils = {
     compareLineColumn(lhs: LineColumn, rhs: LineColumn): number {
         return lhs.line !== rhs.line ? lhs.line - rhs.line : lhs.column - rhs.column;
@@ -38,7 +42,15 @@ export const utils = {
         }
         const contractData = _.find(contractsData, contractDataCandidate => {
             const bytecodeRegex = utils.bytecodeToBytecodeRegex(contractDataCandidate.bytecode);
+            // If the bytecode is less than the minimum length, we are probably
+            // dealing with an interface. This isn't what we're looking for.
+            if (bytecodeRegex.length < MIN_CONTRACT_BYTECODE_LENGTH) {
+                return false;
+            }
             const runtimeBytecodeRegex = utils.bytecodeToBytecodeRegex(contractDataCandidate.runtimeBytecode);
+            if (runtimeBytecodeRegex.length < MIN_CONTRACT_BYTECODE_LENGTH) {
+                return false;
+            }
             // We use that function to find by bytecode or runtimeBytecode. Those are quasi-random strings so
             // collisions are practically impossible and it allows us to reuse that code
             return !_.isNull(bytecode.match(bytecodeRegex)) || !_.isNull(bytecode.match(runtimeBytecodeRegex));
