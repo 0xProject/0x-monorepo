@@ -34,14 +34,23 @@ contract TestAssetProxyOwner is
     {
     }
     
-    /// @dev Compares first 4 bytes of byte array to removeAuthorizedAddress function selector.
+    function testValidRemoveAuthorizedAddressTx(uint256 id)
+        public
+        validRemoveAuthorizedAddressAtIndexTx(id)
+        returns (bool)
+    {
+        // Do nothing. We expect reverts through the modifier
+        return true;
+    }
+    
+    /// @dev Compares first 4 bytes of byte array to `removeAuthorizedAddressAtIndex` function selector.
     /// @param data Transaction data.
-    /// @return Successful if data is a call to removeAuthorizedAddress.
-    function isFunctionRemoveAuthorizedAddress(bytes memory data)
+    /// @return Successful if data is a call to `removeAuthorizedAddressAtIndex`.
+    function isFunctionRemoveAuthorizedAddressAtIndex(bytes memory data)
         public
         pure
         returns (bool)
     {
-        return data.readBytes4(0) == REMOVE_AUTHORIZED_ADDRESS_SELECTOR;
+        return data.readBytes4(0) == REMOVE_AUTHORIZED_ADDRESS_AT_INDEX_SELECTOR;
     }
 }
