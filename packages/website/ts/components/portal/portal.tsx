@@ -1,4 +1,4 @@
-import { colors, constants as sharedConstants, Styles } from '@0xproject/react-shared';
+import { colors, constants as sharedConstants } from '@0xproject/react-shared';
 import { BigNumber } from '@0xproject/utils';
 import * as _ from 'lodash';
 import ActionAccountBalanceWallet from 'material-ui/svg-icons/action/account-balance-wallet';
@@ -108,20 +108,7 @@ const TOP_BAR_HEIGHT = TopBar.heightForDisplayType(TopBarDisplayType.Expanded);
 const LEFT_COLUMN_WIDTH = 346;
 const MENU_PADDING_LEFT = 185;
 const LARGE_LAYOUT_MAX_WIDTH = 1200;
-
-const styles: Styles = {
-    body: {
-        marginTop: TOP_BAR_HEIGHT,
-    },
-    leftColumn: {
-        width: LEFT_COLUMN_WIDTH,
-        position: 'fixed',
-    },
-    scrollContainer: {
-        marginLeft: LEFT_COLUMN_WIDTH + 30,
-        marginRight: 30,
-    },
-};
+const LARGE_LAYOUT_MARGIN = 30;
 
 export class Portal extends React.Component<PortalProps, PortalState> {
     private _blockchain: Blockchain;
@@ -258,7 +245,7 @@ export class Portal extends React.Component<PortalProps, PortalState> {
                     style={{ backgroundColor: colors.lightestGrey, position: 'fixed' }}
                     maxWidth={LARGE_LAYOUT_MAX_WIDTH}
                 />
-                <div id="portal" style={styles.body}>
+                <Container marginTop={TOP_BAR_HEIGHT}>
                     <Switch>
                         <Route path={`${WebsitePaths.Portal}/:route`} render={this._renderOtherRoutes.bind(this)} />
                         <Route
@@ -297,7 +284,7 @@ export class Portal extends React.Component<PortalProps, PortalState> {
                         tokenByAddress={this.props.tokenByAddress}
                         tokenVisibility={tokenVisibility}
                     />
-                </div>
+                </Container>
                 <PortalOnboardingFlow
                     blockchain={this._blockchain}
                     trackedTokenStateByAddress={this.state.trackedTokenStateByAddress}
@@ -706,11 +693,15 @@ const LargeLayout = (props: LargeLayoutProps) => {
     return (
         <div className="mx-auto flex flex-center" style={{ maxWidth: LARGE_LAYOUT_MAX_WIDTH }}>
             <div className="flex-last">
-                <div style={styles.leftColumn}>{props.left}</div>
+                <Container width={LEFT_COLUMN_WIDTH} position="fixed" marginLeft={LARGE_LAYOUT_MARGIN}>
+                    {props.left}
+                </Container>
             </div>
-            <div className="flex-auto" style={styles.scrollContainer}>
-                {props.right}
-            </div>
+            <Container className="flex-auto" marginLeft={LEFT_COLUMN_WIDTH + LARGE_LAYOUT_MARGIN}>
+                <Container className="flex-auto" marginLeft={LARGE_LAYOUT_MARGIN} marginRight={LARGE_LAYOUT_MARGIN}>
+                    {props.right}
+                </Container>
+            </Container>
         </div>
     );
 };
@@ -721,9 +712,7 @@ interface SmallLayoutProps {
 const SmallLayout = (props: SmallLayoutProps) => {
     return (
         <div className="flex flex-center">
-            <div className="flex-auto px3" style={styles.scrollContainer}>
-                {props.content}
-            </div>
+            <div className="flex-auto px3">{props.content}</div>
         </div>
     );
 }; // tslint:disable:max-file-line-count
