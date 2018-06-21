@@ -34,6 +34,7 @@ const styles: Styles = {
         height: '50%',
         width: '100%',
         boxSizing: 'border-box',
+        padding: 12,
     },
     weeklyTradeVolumeLabel: {
         fontSize: 14,
@@ -81,7 +82,7 @@ export const RelayerGridTile: React.StatelessComponent<RelayerGridTileProps> = (
                         height={RELAYER_ICON_HEIGHT}
                     />
                 </div>
-                <div className="p2" style={styles.body}>
+                <div style={styles.body}>
                     <div className="pb1" style={styles.relayerNameLabel}>
                         {props.relayerInfo.name}
                     </div>
