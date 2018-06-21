@@ -23,6 +23,13 @@ import "../interfaces/ISignatureValidator.sol";
 contract MSignatureValidator is
     ISignatureValidator
 {
+    // Emitted when a signer adds or removes a validator
+    event SetValidatorStatus(
+        address indexed signerAddress,
+        address indexed validatorAddress,
+        bool approvalStatus
+    );
+
     // Allowed signature types.
     enum SignatureType {
         Illegal,        // 0x00, default value
