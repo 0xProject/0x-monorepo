@@ -17,7 +17,7 @@ chaiSetup.configure();
 const expect = chai.expect;
 const blockchainLifecycle = new BlockchainLifecycle(web3Wrapper);
 
-describe.only('Authorizable', () => {
+describe('Authorizable', () => {
     let owner: string;
     let notOwner: string;
     let address: string;
