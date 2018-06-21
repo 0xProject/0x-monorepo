@@ -246,6 +246,14 @@ export class AssetPicker extends React.Component<AssetPickerProps, AssetPickerSt
         });
         const tokenAddress = this.state.chosenTrackTokenAddress;
         const token = this.props.tokenByAddress[tokenAddress];
+        if (_.isUndefined(tokenAddress)) {
+            this.setState({
+                isAddingTokenToTracked: false,
+                assetView: AssetViews.ASSET_PICKER,
+                chosenTrackTokenAddress: undefined,
+            });
+            return;
+        }
         const newTokenEntry = {
             ...token,
         };
