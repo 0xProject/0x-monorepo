@@ -1,4 +1,3 @@
-import { Styles } from '@0xproject/react-shared';
 import * as _ from 'lodash';
 import CircularProgress from 'material-ui/CircularProgress';
 import { GridList } from 'material-ui/GridList';
@@ -19,22 +18,6 @@ interface RelayerIndexState {
     relayerInfos?: WebsiteBackendRelayerInfo[];
     error?: Error;
 }
-
-const styles: Styles = {
-    root: {
-        width: '100%',
-    },
-    item: {
-        backgroundColor: colors.white,
-        borderBottomRightRadius: 10,
-        borderBottomLeftRadius: 10,
-        borderTopRightRadius: 10,
-        borderTopLeftRadius: 10,
-        boxShadow: `0px 4px 6px ${colors.walletBoxShadow}`,
-        overflow: 'hidden',
-        padding: 4,
-    },
-};
 
 const CELL_HEIGHT = 290;
 const NUMBER_OF_COLUMNS_LARGE = 3;
@@ -76,18 +59,16 @@ export class RelayerIndex extends React.Component<RelayerIndexProps, RelayerInde
         } else {
             const numberOfColumns = this._numberOfColumnsForScreenWidth(this.props.screenWidth);
             return (
-                <div style={styles.root}>
-                    <GridList
-                        cellHeight={CELL_HEIGHT}
-                        cols={numberOfColumns}
-                        padding={GRID_PADDING}
-                        style={styles.gridList}
-                    >
-                        {this.state.relayerInfos.map((relayerInfo: WebsiteBackendRelayerInfo, index) => (
-                            <RelayerGridTile key={index} relayerInfo={relayerInfo} networkId={this.props.networkId} />
-                        ))}
-                    </GridList>
-                </div>
+                <GridList
+                    cellHeight={CELL_HEIGHT}
+                    cols={numberOfColumns}
+                    padding={GRID_PADDING}
+                    style={{ marginTop: -10, marginBottom: 0 }}
+                >
+                    {this.state.relayerInfos.map((relayerInfo: WebsiteBackendRelayerInfo, index) => (
+                        <RelayerGridTile key={index} relayerInfo={relayerInfo} networkId={this.props.networkId} />
+                    ))}
+                </GridList>
             );
         }
     }

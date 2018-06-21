@@ -22,7 +22,6 @@ import { RelayerIndex } from 'ts/components/relayer_index/relayer_index';
 import { TokenBalances } from 'ts/components/token_balances';
 import { TopBar, TopBarDisplayType } from 'ts/components/top_bar/top_bar';
 import { TradeHistory } from 'ts/components/trade_history/trade_history';
-import { Background } from 'ts/components/ui/background';
 import { Container } from 'ts/components/ui/container';
 import { FlashMessage } from 'ts/components/ui/flash_message';
 import { Island } from 'ts/components/ui/island';
@@ -228,7 +227,6 @@ export class Portal extends React.Component<PortalProps, PortalState> {
                 : TokenVisibility.TRACKED;
         return (
             <div>
-                <Background />
                 <DocumentTitle title="0x Portal DApp" />
                 <TopBar
                     userAddress={this.props.userAddress}
@@ -245,7 +243,7 @@ export class Portal extends React.Component<PortalProps, PortalState> {
                     style={{ backgroundColor: colors.lightestGrey, position: 'fixed' }}
                     maxWidth={LARGE_LAYOUT_MAX_WIDTH}
                 />
-                <Container marginTop={TOP_BAR_HEIGHT}>
+                <Container marginTop={TOP_BAR_HEIGHT} minHeight="110vh" backgroundColor={colors.lightestGrey}>
                     <Switch>
                         <Route path={`${WebsitePaths.Portal}/:route`} render={this._renderOtherRoutes.bind(this)} />
                         <Route
