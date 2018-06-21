@@ -52,6 +52,18 @@ export function expectRevertOrAlwaysFailingTransactionAsync<T>(p: Promise<T>): P
 }
 
 /**
+ * Rejects if the given Promise does not reject with the given revert reason or "always
+ * failing transaction" error.
+ * @param p the Promise which is expected to reject
+ * @param reason a specific revert reason
+ * @returns a new Promise which will reject if the conditions are not met and
+ * otherwise resolve with no value.
+ */
+export function expectRevertReasonOrAlwaysFailingTransactionAsync<T>(p: Promise<T>, reason: string): PromiseLike<void> {
+    return _expectEitherErrorAsync(p, 'always failing transaction', reason);
+}
+
+/**
  * Rejects if the given Promise does not reject with a "revert" or "Contract
  * call failed" error.
  * @param p the Promise which is expected to reject

@@ -150,3 +150,35 @@ export interface MatchOrder {
     leftSignature: string;
     rightSignature: string;
 }
+
+export enum ContractLibErrors {
+    OrderUnfillable = 'ORDER_UNFILLABLE',
+    InvalidMaker = 'INVALID_MAKER',
+    InvalidTaker = 'INVALID_TAKER',
+    InvalidSender = 'INVALID_SENDER',
+    InvalidOrderSignature = 'INVALID_ORDER_SIGNATURE',
+    InvalidTakerAmount = 'INVALID_TAKER_AMOUNT',
+    RoundingError = 'ROUNDING_ERROR',
+    InvalidSignature = 'INVALID_SIGNATURE',
+    SignatureIllegal = 'SIGNATURE_ILLEGAL',
+    SignatureUnsupported = 'SIGNATURE_UNSUPPORTED',
+    InvalidNewOrderEpoch = 'INVALID_NEW_ORDER_EPOCH',
+    CompleteFillFailed = 'COMPLETE_FILL_FAILED',
+    NegativeSpreadRequired = 'NEGATIVE_SPREAD_REQUIRED',
+    ReentrancyIllegal = 'REENTRANCY_ILLEGAL',
+    InvalidTxHash = 'INVALID_TX_HASH',
+    InvalidTxSignature = 'INVALID_TX_SIGNATURE',
+    FailedExecution = 'FAILED_EXECUTION',
+    AssetProxyMismatch = 'ASSET_PROXY_MISMATCH',
+    AssetProxyIdMismatch = 'ASSET_PROXY_ID_MISMATCH',
+    LengthGreaterThan0Required = 'LENGTH_GREATER_THAN_0_REQUIRED',
+    Length1Required = 'LENGTH_1_REQUIRED',
+    Length66Required = 'LENGTH_66_REQUIRED',
+    InvalidAmount = 'INVALID_AMOUNT',
+    TransferFailed = 'TRANSFER_FAILED',
+    SenderNotAuthorized = 'SENDER_NOT_AUTHORIZED',
+    TargetNotAuthorized = 'TARGET_NOT_AUTHORIZED',
+    TargetAlreadyAuthorized = 'TARGET_ALREADY_AUTHORIZED',
+    IndexOutOfBounds = 'INDEX_OUT_OF_BOUNDS',
+    AuthorizedAddressMismatch = 'AUTHORIZED_ADDRESS_MISMATCH',
+}
