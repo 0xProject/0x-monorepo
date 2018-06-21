@@ -181,4 +181,5 @@ export enum ContractLibErrors {
     TargetAlreadyAuthorized = 'TARGET_ALREADY_AUTHORIZED',
     IndexOutOfBounds = 'INDEX_OUT_OF_BOUNDS',
     AuthorizedAddressMismatch = 'AUTHORIZED_ADDRESS_MISMATCH',
+    OnlyContractOwner = 'ONLY_CONTRACT_OWNER',
 }
