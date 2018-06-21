@@ -226,7 +226,7 @@ export class Portal extends React.Component<PortalProps, PortalState> {
                 ? TokenVisibility.UNTRACKED
                 : TokenVisibility.TRACKED;
         return (
-            <div>
+            <Container position="relative">
                 <DocumentTitle title="0x Portal DApp" />
                 <TopBar
                     userAddress={this.props.userAddress}
@@ -243,7 +243,7 @@ export class Portal extends React.Component<PortalProps, PortalState> {
                     style={{ backgroundColor: colors.lightestGrey, position: 'fixed' }}
                     maxWidth={LARGE_LAYOUT_MAX_WIDTH}
                 />
-                <Container marginTop={TOP_BAR_HEIGHT} minHeight="110vh" backgroundColor={colors.lightestGrey}>
+                <Container marginTop={TOP_BAR_HEIGHT} minHeight="100vh" backgroundColor={colors.lightestGrey}>
                     <Switch>
                         <Route path={`${WebsitePaths.Portal}/:route`} render={this._renderOtherRoutes.bind(this)} />
                         <Route
@@ -288,7 +288,7 @@ export class Portal extends React.Component<PortalProps, PortalState> {
                     trackedTokenStateByAddress={this.state.trackedTokenStateByAddress}
                     refetchTokenStateAsync={this._refetchTokenStateAsync.bind(this)}
                 />
-            </div>
+            </Container>
         );
     }
     private _renderMainRoute(): React.ReactNode {
