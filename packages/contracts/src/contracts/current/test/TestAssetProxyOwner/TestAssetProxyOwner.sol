@@ -34,7 +34,7 @@ contract TestAssetProxyOwner is
     {
     }
     
-    function testValidRemoveAuthorizedAddressTx(uint256 id)
+    function testValidRemoveAuthorizedAddressAtIndexTx(uint256 id)
         public
         validRemoveAuthorizedAddressAtIndexTx(id)
         returns (bool)
