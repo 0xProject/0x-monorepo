@@ -12,9 +12,6 @@ export interface SourceLocation {
 }
 
 export function getLocationByOffset(str: string): LocationByOffset {
-    if (_.isUndefined(str)) {
-        return {};
-    }
     const locationByOffset: LocationByOffset = { 0: { line: 1, column: 0 } };
     let currentOffset = 0;
     for (const char of str.split('')) {
@@ -39,7 +36,7 @@ export function parseSourceMap(
 ): { [programCounter: number]: SourceRange } {
     const bytecode = Uint8Array.from(Buffer.from(bytecodeHex, 'hex'));
     const pcToInstructionIndex: { [programCounter: number]: number } = getPcToInstructionIndexMapping(bytecode);
-    const locationByOffsetByFileIndex = _.map(sourceCodes, getLocationByOffset);
+    const locationByOffsetByFileIndex = _.map(sourceCodes, (s) => _.isUndefined(s) ? {} : getLocationByOffset(s));
     const entries = srcMap.split(';');
     let lastParsedEntry: SourceLocation = {} as any;
     const instructionIndexToSourceRange: { [instructionIndex: number]: SourceRange } = {};
