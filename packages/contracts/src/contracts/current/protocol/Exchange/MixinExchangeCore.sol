@@ -312,7 +312,11 @@ contract MixinExchangeCore is
         // Validate Maker signature (check only if first time seen)
         if (orderInfo.orderTakerAssetFilledAmount == 0) {
             require(
-                isValidSignature(orderInfo.orderHash, order.makerAddress, signature),
+                isValidSignature(
+                    orderInfo.orderHash,
+                    order.makerAddress,
+                    signature
+                ),
                 INVALID_ORDER_SIGNATURE
             );
         }

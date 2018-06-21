@@ -108,7 +108,7 @@ export enum ContractName {
 export interface SignedTransaction {
     exchangeAddress: string;
     salt: BigNumber;
-    signer: string;
+    signerAddress: string;
     data: string;
     signature: string;
 }

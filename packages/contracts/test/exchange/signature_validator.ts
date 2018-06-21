@@ -2,9 +2,13 @@ import { BlockchainLifecycle } from '@0xproject/dev-utils';
 import { addSignedMessagePrefix, assetProxyUtils, MessagePrefixType, orderHashUtils } from '@0xproject/order-utils';
 import { SignatureType, SignedOrder } from '@0xproject/types';
 import * as chai from 'chai';
+import { LogWithDecodedArgs } from 'ethereum-types';
 import ethUtil = require('ethereumjs-util');
 
-import { TestSignatureValidatorContract } from '../../src/generated_contract_wrappers/test_signature_validator';
+import {
+    SignatureValidatorApprovalContractEventArgs,
+    TestSignatureValidatorContract,
+} from '../../src/generated_contract_wrappers/test_signature_validator';
 import { TestValidatorContract } from '../../src/generated_contract_wrappers/test_validator';
 import { TestWalletContract } from '../../src/generated_contract_wrappers/test_wallet';
 import { addressUtils } from '../../src/utils/address_utils';
@@ -12,6 +16,7 @@ import { artifacts } from '../../src/utils/artifacts';
 import { expectRevertOrOtherErrorAsync } from '../../src/utils/assertions';
 import { chaiSetup } from '../../src/utils/chai_setup';
 import { constants } from '../../src/utils/constants';
+import { LogDecoder } from '../../src/utils/log_decoder';
 import { OrderFactory } from '../../src/utils/order_factory';
 import { provider, txDefaults, web3Wrapper } from '../../src/utils/web3_wrapper';
 
@@ -19,7 +24,7 @@ chaiSetup.configure();
 const expect = chai.expect;
 
 const blockchainLifecycle = new BlockchainLifecycle(web3Wrapper);
-
+// tslint:disable:no-unnecessary-type-assertion
 describe('MixinSignatureValidator', () => {
     let signedOrder: SignedOrder;
     let orderFactory: OrderFactory;
@@ -30,6 +35,7 @@ describe('MixinSignatureValidator', () => {
     let signerPrivateKey: Buffer;
     let notSignerAddress: string;
     let notSignerPrivateKey: Buffer;
+    let signatureValidatorLogDecoder: LogDecoder;
 
     before(async () => {
         await blockchainLifecycle.startAsync();
@@ -59,6 +65,7 @@ describe('MixinSignatureValidator', () => {
             txDefaults,
             signerAddress,
         );
+        signatureValidatorLogDecoder = new LogDecoder(web3Wrapper, signatureValidator.address);
         await web3Wrapper.awaitTransactionSuccessAsync(
             await signatureValidator.setSignatureValidatorApproval.sendTransactionAsync(testValidator.address, true, {
                 from: signerAddress,
@@ -456,4 +463,45 @@ describe('MixinSignatureValidator', () => {
             expect(isValidSignature).to.be.false();
         });
     });
+
+    describe('setSignatureValidatorApproval', () => {
+        it('should emit a SignatureValidatorApprovalSet with correct args when a validator is approved', async () => {
+            const approval = true;
+            const res = await signatureValidatorLogDecoder.getTxWithDecodedLogsAsync(
+                await signatureValidator.setSignatureValidatorApproval.sendTransactionAsync(
+                    testValidator.address,
+                    approval,
+                    {
+                        from: signerAddress,
+                    },
+                ),
+            );
+            expect(res.logs.length).to.equal(1);
+            const log = res.logs[0] as LogWithDecodedArgs<SignatureValidatorApprovalContractEventArgs>;
+            const logArgs = log.args;
+            expect(logArgs.signerAddress).to.equal(signerAddress);
+            expect(logArgs.validatorAddress).to.equal(testValidator.address);
+            expect(logArgs.approved).to.equal(approval);
+        });
+        it('should emit a SignatureValidatorApprovalSet with correct args when a validator is disapproved', async () => {
+            const approval = false;
+            const res = await signatureValidatorLogDecoder.getTxWithDecodedLogsAsync(
+                await signatureValidator.setSignatureValidatorApproval.sendTransactionAsync(
+                    testValidator.address,
+                    approval,
+                    {
+                        from: signerAddress,
+                    },
+                ),
+            );
+            expect(res.logs.length).to.equal(1);
+            const log = res.logs[0] as LogWithDecodedArgs<SignatureValidatorApprovalContractEventArgs>;
+            const logArgs = log.args;
+            expect(logArgs.signerAddress).to.equal(signerAddress);
+            expect(logArgs.validatorAddress).to.equal(testValidator.address);
+            expect(logArgs.approved).to.equal(approval);
+        });
+    });
 });
+// tslint:disable:max-file-line-count
+// tslint:enable:no-unnecessary-type-assertion

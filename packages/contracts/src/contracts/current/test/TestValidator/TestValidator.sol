@@ -35,18 +35,18 @@ contract TestValidator is
 
     /// @dev Verifies that a signature is valid. `signer` must match `VALID_SIGNER`.
     /// @param hash Message hash that is signed.
-    /// @param signer Address that should have signed the given hash.
+    /// @param signerAddress Address that should have signed the given hash.
     /// @param signature Proof of signing.
     /// @return Validity of signature.
     function isValidSignature(
         bytes32 hash,
-        address signer,
+        address signerAddress,
         bytes signature
     )
         external
         view
         returns (bool isValid)
     {
-        return (signer == VALID_SIGNER);
+        return (signerAddress == VALID_SIGNER);
     }
 }
