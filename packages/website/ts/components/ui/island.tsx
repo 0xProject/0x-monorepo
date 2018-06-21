@@ -9,8 +9,8 @@ export interface IslandProps {
     borderRadius?: string;
 }
 
-const PlainIsland: React.StatelessComponent<IslandProps> = ({ Component, style, className }) => (
-    <Component style={style} className={className} />
+const PlainIsland: React.StatelessComponent<IslandProps> = ({ Component, style, className, children }) => (
+    <Component style={style} className={className} children={children} />
 );
 
 export const Island = styled(PlainIsland)`
