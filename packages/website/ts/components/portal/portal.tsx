@@ -240,7 +240,12 @@ export class Portal extends React.Component<PortalProps, PortalState> {
                     blockchain={this._blockchain}
                     translate={this.props.translate}
                     displayType={TopBarDisplayType.Expanded}
-                    style={{ backgroundColor: colors.lightestGrey, position: 'fixed' }}
+                    style={{
+                        backgroundColor: colors.lightestGrey,
+                        position: 'fixed',
+                        // Hack: used to make onboarding z-index logi work for both mobile and desktop
+                        zIndex: utils.isMobile(this.props.screenWidth) ? zIndex.topBar : undefined,
+                    }}
                     maxWidth={LARGE_LAYOUT_MAX_WIDTH}
                 />
                 <Container marginTop={TOP_BAR_HEIGHT} minHeight="100vh" backgroundColor={colors.lightestGrey}>
@@ -283,11 +288,6 @@ export class Portal extends React.Component<PortalProps, PortalState> {
                         tokenVisibility={tokenVisibility}
                     />
                 </Container>
-                <PortalOnboardingFlow
-                    blockchain={this._blockchain}
-                    trackedTokenStateByAddress={this.state.trackedTokenStateByAddress}
-                    refetchTokenStateAsync={this._refetchTokenStateAsync.bind(this)}
-                />
             </Container>
         );
     }
@@ -322,41 +322,48 @@ export class Portal extends React.Component<PortalProps, PortalState> {
     }
     private _renderWallet(): React.ReactNode {
         const startOnboarding = this._renderStartOnboarding();
-        const isMobile = this.props.screenWidth === ScreenWidths.Sm;
+        const isMobile = utils.isMobile(this.props.screenWidth);
         // We need room to scroll down for mobile onboarding
         const marginBottom = isMobile ? '200px' : '15px';
         return (
             <div>
-                {isMobile && <Container marginBottom="15px">{startOnboarding}</Container>}
-                <Container marginBottom={marginBottom}>
-                    <Wallet
-                        style={
-                            !isMobile && this.props.isPortalOnboardingShowing
-                                ? { zIndex: zIndex.aboveOverlay, position: 'relative' }
-                                : undefined
-                        }
-                        userAddress={this.props.userAddress}
-                        networkId={this.props.networkId}
-                        blockchain={this._blockchain}
-                        blockchainIsLoaded={this.props.blockchainIsLoaded}
-                        blockchainErr={this.props.blockchainErr}
-                        dispatcher={this.props.dispatcher}
-                        tokenByAddress={this.props.tokenByAddress}
-                        trackedTokens={this._getCurrentTrackedTokens()}
-                        userEtherBalanceInWei={this.props.userEtherBalanceInWei}
-                        lastForceTokenStateRefetch={this.props.lastForceTokenStateRefetch}
-                        injectedProviderName={this.props.injectedProviderName}
-                        providerType={this.props.providerType}
-                        screenWidth={this.props.screenWidth}
-                        location={this.props.location}
-                        trackedTokenStateByAddress={this.state.trackedTokenStateByAddress}
-                        onToggleLedgerDialog={this._onToggleLedgerDialog.bind(this)}
-                        onAddToken={this._onAddToken.bind(this)}
-                        onRemoveToken={this._onRemoveToken.bind(this)}
-                        refetchTokenStateAsync={this._refetchTokenStateAsync.bind(this)}
-                    />
+                <Container position="relative">
+                    {isMobile && <Container marginBottom="15px">{startOnboarding}</Container>}
+                    <Container marginBottom={marginBottom}>
+                        <Wallet
+                            style={
+                                !isMobile && this.props.isPortalOnboardingShowing
+                                    ? { zIndex: zIndex.aboveOverlay, position: 'relative' }
+                                    : undefined
+                            }
+                            userAddress={this.props.userAddress}
+                            networkId={this.props.networkId}
+                            blockchain={this._blockchain}
+                            blockchainIsLoaded={this.props.blockchainIsLoaded}
+                            blockchainErr={this.props.blockchainErr}
+                            dispatcher={this.props.dispatcher}
+                            tokenByAddress={this.props.tokenByAddress}
+                            trackedTokens={this._getCurrentTrackedTokens()}
+                            userEtherBalanceInWei={this.props.userEtherBalanceInWei}
+                            lastForceTokenStateRefetch={this.props.lastForceTokenStateRefetch}
+                            injectedProviderName={this.props.injectedProviderName}
+                            providerType={this.props.providerType}
+                            screenWidth={this.props.screenWidth}
+                            location={this.props.location}
+                            trackedTokenStateByAddress={this.state.trackedTokenStateByAddress}
+                            onToggleLedgerDialog={this._onToggleLedgerDialog.bind(this)}
+                            onAddToken={this._onAddToken.bind(this)}
+                            onRemoveToken={this._onRemoveToken.bind(this)}
+                            refetchTokenStateAsync={this._refetchTokenStateAsync.bind(this)}
+                        />
+                    </Container>
+                    {!isMobile && <Container marginTop="15px">{startOnboarding}</Container>}
                 </Container>
-                {!isMobile && <Container marginTop="15px">{startOnboarding}</Container>}
+                <PortalOnboardingFlow
+                    blockchain={this._blockchain}
+                    trackedTokenStateByAddress={this.state.trackedTokenStateByAddress}
+                    refetchTokenStateAsync={this._refetchTokenStateAsync.bind(this)}
+                />
             </div>
         );
     }

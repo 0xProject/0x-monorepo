@@ -365,4 +365,7 @@ export const utils = {
     openUrl(url: string): void {
         window.open(url, '_blank');
     },
+    isMobile(screenWidth: ScreenWidths): boolean {
+        return screenWidth === ScreenWidths.Sm;
+    },
 };

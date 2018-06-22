@@ -21,6 +21,7 @@ export interface RelayerGridTileProps {
 const styles: Styles = {
     root: {
         boxSizing: 'border-box',
+        position: 'static',
     },
     innerDiv: {
         height: '100%',
@@ -102,7 +103,7 @@ export const RelayerGridTile: React.StatelessComponent<RelayerGridTileProps> = (
     );
 };
 
-export const GridTile = styled(PlainGridTile)`
+const GridTile = styled(PlainGridTile)`
     cursor: pointer;
     transition: transform 0.2s ease;
     &:hover {

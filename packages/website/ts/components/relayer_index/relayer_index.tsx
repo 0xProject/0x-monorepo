@@ -5,7 +5,6 @@ import * as React from 'react';
 
 import { RelayerGridTile } from 'ts/components/relayer_index/relayer_grid_tile';
 import { Retry } from 'ts/components/ui/retry';
-import { colors } from 'ts/style/colors';
 import { ScreenWidths, WebsiteBackendRelayerInfo } from 'ts/types';
 import { backendClient } from 'ts/utils/backend_client';
 
