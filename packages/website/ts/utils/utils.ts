@@ -362,4 +362,10 @@ export const utils = {
         const formattedAmount = unitAmount.toFixed(precision);
         return `${formattedAmount} ${symbol}`;
     },
+    openUrl(url: string): void {
+        window.open(url, '_blank');
+    },
+    isMobile(screenWidth: ScreenWidths): boolean {
+        return screenWidth === ScreenWidths.Sm;
+    },
 };

@@ -1,21 +1,16 @@
-import { Styles } from '@0xproject/react-shared';
+import { colors } from '@0xproject/react-shared';
 import * as React from 'react';
+
+import { Text } from 'ts/components/ui/text';
 
 export interface TextHeaderProps {
     labelText: string;
 }
 
-const styles: Styles = {
-    title: {
-        fontWeight: 'bold',
-        fontSize: 20,
-    },
-};
-
 export const TextHeader = (props: TextHeaderProps) => {
     return (
-        <div className="py3" style={styles.title}>
+        <Text className="pt3 pb2" fontWeight="bold" fontSize="16px" fontColor={colors.darkestGrey}>
             {props.labelText}
-        </div>
+        </Text>
     );
 };

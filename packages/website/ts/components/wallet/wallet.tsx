@@ -29,6 +29,7 @@ import { WrapEtherItem } from 'ts/components/wallet/wrap_ether_item';
 import { AllowanceToggle } from 'ts/containers/inputs/allowance_toggle';
 import { Dispatcher } from 'ts/redux/dispatcher';
 import { colors } from 'ts/style/colors';
+import { styled } from 'ts/style/theme';
 import {
     BlockchainErrs,
     ProviderType,
@@ -138,6 +139,12 @@ const USD_DECIMAL_PLACES = 2;
 const NO_ALLOWANCE_TOGGLE_SPACE_WIDTH = 56;
 const ACCOUNT_PATH = `${WebsitePaths.Portal}/account`;
 
+const ActionButton = styled(FloatingActionButton)`
+    button {
+        position: static !important;
+    }
+`;
+
 export class Wallet extends React.Component<WalletProps, WalletState> {
     public static defaultProps = {
         style: {},
@@ -244,17 +251,12 @@ export class Wallet extends React.Component<WalletProps, WalletState> {
                 <ListItem
                     primaryText={
                         <div className="flex">
-                            <FloatingActionButton mini={true} zDepth={0} onClick={this.props.onAddToken}>
+                            <ActionButton mini={true} zDepth={0} onClick={this.props.onAddToken}>
                                 <ContentAdd />
-                            </FloatingActionButton>
-                            <FloatingActionButton
-                                mini={true}
-                                zDepth={0}
-                                className="px1"
-                                onClick={this.props.onRemoveToken}
-                            >
+                            </ActionButton>
+                            <ActionButton mini={true} zDepth={0} className="px1" onClick={this.props.onRemoveToken}>
                                 <ContentRemove />
-                            </FloatingActionButton>
+                            </ActionButton>
                             <div
                                 style={{
                                     paddingLeft: 10,
