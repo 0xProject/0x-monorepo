@@ -311,7 +311,7 @@ export class Wallet extends React.Component<WalletProps, WalletState> {
             wrappedEtherDirection: Side.Deposit,
         };
         const key = ETHER_ITEM_KEY;
-        return this._renderBalanceRow(key, icon, primaryText, secondaryText, accessoryItemConfig, 'eth-row');
+        return this._renderBalanceRow(key, icon, primaryText, secondaryText, accessoryItemConfig, false, 'eth-row');
     }
     private _renderTokenRows(): React.ReactNode {
         const trackedTokens = this.props.trackedTokens;
@@ -322,7 +322,7 @@ export class Wallet extends React.Component<WalletProps, WalletState> {
         );
         return _.map(trackedTokensStartingWithEtherToken, this._renderTokenRow.bind(this));
     }
-    private _renderTokenRow(token: Token, _index: number): React.ReactNode {
+    private _renderTokenRow(token: Token, index: number): React.ReactNode {
         const tokenState = this.props.trackedTokenStateByAddress[token.address];
         if (_.isUndefined(tokenState)) {
             return null;
@@ -350,12 +350,14 @@ export class Wallet extends React.Component<WalletProps, WalletState> {
             },
         };
         const key = token.address;
+        const isLastRow = index === this.props.trackedTokens.length - 1;
         return this._renderBalanceRow(
             key,
             icon,
             primaryText,
             secondaryText,
             accessoryItemConfig,
+            isLastRow,
             isWeth ? 'weth-row' : undefined,
         );
     }
@@ -365,13 +367,19 @@ export class Wallet extends React.Component<WalletProps, WalletState> {
         primaryText: React.ReactNode,
         secondaryText: React.ReactNode,
         accessoryItemConfig: AccessoryItemConfig,
+        isLastRow: boolean,
         className?: string,
     ): React.ReactNode {
         const shouldShowWrapEtherItem =
             !_.isUndefined(this.state.wrappedEtherDirection) &&
             this.state.wrappedEtherDirection === accessoryItemConfig.wrappedEtherDirection &&
             !_.isUndefined(this.props.userEtherBalanceInWei);
-        const additionalStyle = shouldShowWrapEtherItem ? walletItemStyles.focusedItem : styles.borderedItem;
+        let additionalStyle;
+        if (shouldShowWrapEtherItem) {
+            additionalStyle = walletItemStyles.focusedItem;
+        } else if (!isLastRow) {
+            additionalStyle = styles.borderedItem;
+        }
         const style = { ...styles.tokenItem, ...additionalStyle };
         const etherToken = this._getEthToken();
         return (
