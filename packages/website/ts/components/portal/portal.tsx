@@ -192,7 +192,7 @@ export class Portal extends React.Component<PortalProps, PortalState> {
             this._fetchBalancesAndAllowancesAsync(trackedTokenAddresses);
         }
 
-        const nextTrackedTokens = this._getTrackedTokens(nextProps.tokenByAddress);
+        const nextTrackedTokens = utils.getTrackedTokens(nextProps.tokenByAddress);
         const trackedTokens = this._getCurrentTrackedTokens();
 
         if (!_.isEqual(nextTrackedTokens, trackedTokens)) {
@@ -610,13 +610,7 @@ export class Portal extends React.Component<PortalProps, PortalState> {
     }
 
     private _getCurrentTrackedTokens(): Token[] {
-        return this._getTrackedTokens(this.props.tokenByAddress);
-    }
-
-    private _getTrackedTokens(tokenByAddress: TokenByAddress): Token[] {
-        const allTokens = _.values(tokenByAddress);
-        const trackedTokens = _.filter(allTokens, t => t.isTracked);
-        return trackedTokens;
+        return utils.getTrackedTokens(this.props.tokenByAddress);
     }
 
     private _getInitialTrackedTokenStateByAddress(trackedTokens: Token[]): TokenStateByAddress {

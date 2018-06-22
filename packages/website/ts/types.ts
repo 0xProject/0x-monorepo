@@ -15,6 +15,7 @@ export interface Token {
     decimals: number;
     isTracked: boolean;
     isRegistered: boolean;
+    trackedTimestamp?: number;
 }
 
 export interface TokenByAddress {

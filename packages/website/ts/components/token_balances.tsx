@@ -308,7 +308,7 @@ export class TokenBalances extends React.Component<TokenBalancesProps, TokenBala
         const trackedTokensStartingWithEtherToken = trackedTokens.sort(
             firstBy((t: Token) => t.symbol !== ETHER_TOKEN_SYMBOL)
                 .thenBy((t: Token) => t.symbol !== ZRX_TOKEN_SYMBOL)
-                .thenBy('address'),
+                .thenBy('trackedTimestamp'),
         );
         const tableRows = _.map(
             trackedTokensStartingWithEtherToken,

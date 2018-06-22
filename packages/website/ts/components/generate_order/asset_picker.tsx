@@ -260,6 +260,7 @@ export class AssetPicker extends React.Component<AssetPickerProps, AssetPickerSt
         };
 
         newTokenEntry.isTracked = true;
+        newTokenEntry.trackedTimestamp = Date.now();
         trackedTokenStorage.addTrackedTokenToUser(this.props.userAddress, this.props.networkId, newTokenEntry);
 
         this.props.dispatcher.updateTokenByAddress([newTokenEntry]);

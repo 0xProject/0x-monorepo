@@ -355,6 +355,11 @@ export const utils = {
         const token = _.find(tokens, { symbol });
         return token;
     },
+    getTrackedTokens(tokenByAddress: TokenByAddress): Token[] {
+        const allTokens = _.values(tokenByAddress);
+        const trackedTokens = _.filter(allTokens, t => t.isTracked);
+        return trackedTokens;
+    },
     getFormattedAmountFromToken(token: Token, tokenState: TokenState): string {
         return utils.getFormattedAmount(tokenState.balance, token.decimals, token.symbol);
     },
