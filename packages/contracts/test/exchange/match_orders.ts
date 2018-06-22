@@ -21,11 +21,11 @@ import { ExchangeWrapper } from '../../src/utils/exchange_wrapper';
 import { MatchOrderTester } from '../../src/utils/match_order_tester';
 import { OrderFactory } from '../../src/utils/order_factory';
 import {
-    RevertReasons,
     ERC20BalancesByOwner,
     ERC721TokenIdsByOwner,
     OrderInfo,
     OrderStatus,
+    RevertReasons,
 } from '../../src/utils/types';
 import { provider, txDefaults, web3Wrapper } from '../../src/utils/web3_wrapper';
 
