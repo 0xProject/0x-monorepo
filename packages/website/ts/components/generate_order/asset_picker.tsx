@@ -9,6 +9,7 @@ import { TokenIcon } from 'ts/components/ui/token_icon';
 import { trackedTokenStorage } from 'ts/local_storage/tracked_token_storage';
 import { Dispatcher } from 'ts/redux/dispatcher';
 import { DialogConfigs, Token, TokenByAddress, TokenVisibility } from 'ts/types';
+import { constants } from 'ts/utils/constants';
 
 const TOKEN_ICON_DIMENSION = 100;
 const TILE_DIMENSION = 146;
@@ -134,7 +135,9 @@ export class AssetPicker extends React.Component<AssetPickerProps, AssetPickerSt
         const gridTiles = _.map(this.props.tokenByAddress, (token: Token, address: string) => {
             if (
                 (this.props.tokenVisibility === TokenVisibility.TRACKED && !token.isTracked) ||
-                (this.props.tokenVisibility === TokenVisibility.UNTRACKED && token.isTracked)
+                (this.props.tokenVisibility === TokenVisibility.UNTRACKED && token.isTracked) ||
+                token.symbol === constants.ZRX_TOKEN_SYMBOL ||
+                token.symbol === constants.ETHER_TOKEN_SYMBOL
             ) {
                 return null; // Skip
             }
