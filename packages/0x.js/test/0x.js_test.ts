@@ -3,7 +3,6 @@ import { BlockchainLifecycle } from '@0xproject/dev-utils';
 import { BigNumber } from '@0xproject/utils';
 import * as chai from 'chai';
 import * as _ from 'lodash';
-import 'make-promises-safe';
 import 'mocha';
 
 import { ApprovalContractEventArgs, LogWithDecodedArgs, TokenEvents, ZeroEx } from '../src';

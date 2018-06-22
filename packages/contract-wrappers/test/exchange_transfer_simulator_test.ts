@@ -2,7 +2,6 @@ import { BlockchainLifecycle } from '@0xproject/dev-utils';
 import { BlockParamLiteral, Token } from '@0xproject/types';
 import { BigNumber } from '@0xproject/utils';
 import * as chai from 'chai';
-import 'make-promises-safe';
 
 import { ContractWrappers, ExchangeContractErrs } from '../src';
 import { BalanceAndProxyAllowanceLazyStore } from '../src/stores/balance_proxy_allowance_lazy_store';

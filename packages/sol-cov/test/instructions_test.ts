@@ -1,5 +1,4 @@
 import * as chai from 'chai';
-import 'make-promises-safe';
 import 'mocha';
 
 import { constants } from '../src/constants';

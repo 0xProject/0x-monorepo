@@ -1,7 +1,6 @@
 import { DoneCallback } from '@0xproject/types';
 import * as chai from 'chai';
 import { JSONRPCResponsePayload } from 'ethereum-types';
-import 'make-promises-safe';
 import Web3ProviderEngine = require('web3-provider-engine');
 import RpcSubprovider = require('web3-provider-engine/subproviders/rpc');
 
