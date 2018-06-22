@@ -99,9 +99,78 @@ contract MixinAssetProxyDispatcher is
         // Do nothing if no amount should be transferred.
         if (amount > 0) {
             // Lookup assetProxy
-            IAssetProxy assetProxy = assetProxies[assetProxyId];
+            address assetProxy = assetProxies[assetProxyId];
             // transferFrom will either succeed or throw.
-            assetProxy.transferFrom(assetData, from, to, amount);
+            bytes memory data = encodeProxyTransferFrom(
+                assetData,
+                assetProxy,
+                from,
+                to,
+                amount
+            );
+            require(
+                assetProxy.call(data),
+                TRANSFER_FAILED
+            );
         }
+    }
+
+    function encodeProxyTransferFrom(
+        bytes memory assetData,
+        address assetProxy,
+        address from,
+        address to,
+        uint256 amount
+    )
+        internal
+        pure
+        returns (bytes memory result)
+    {
+        // | Area     | Offset | Length  | Contents                                    |
+        // | -------- |--------|---------|-------------------------------------------- |
+        // | Length   | 0x00   | 32      | result Length                               |
+        // | Header   | 0x00   | 4       | function selector                           |
+        // | Params   |        | 4 * 32  | function parameters:                        |
+        // |          | 0x00   |         |   1. offset to assetData (*)                |
+        // |          | 0x20   |         |   2. from                                   |
+        // |          | 0x40   |         |   3. to                                     |
+        // |          | 0x60   |         |   4. amount                                 |
+        // | Data     |        |         | assetData:                                  |
+        // |          | 0x00   | 32      | assetData Length                            |
+        // |          | 0x20   | **      | assetData Contents                          |
+
+        bytes4 transferFromSelector = IAssetProxy(assetProxy).transferFrom.selector;
+        assembly {
+            /////// Setup Header Area ///////
+            let headerStart := add(result, 32)
+            // Length stored in first 32 bytes
+            mstore(headerStart, transferFromSelector)
+            let headerAreaEnd := add(headerStart, 4)
+
+            /////// Setup Params Area ///////
+            let paramsAreaStart := headerAreaEnd
+            let paramsAreaEnd := add(headerAreaEnd, 128)
+            // Write offset to assetData
+            mstore(paramsAreaStart, paramsAreaEnd)
+            mstore(add(paramsAreaStart, 32), from)
+            mstore(add(paramsAreaStart, 64), to)
+            mstore(add(paramsAreaStart, 96), amount)
+
+            /////// Setup Data Area ///////
+            let dataAreaStart := paramsAreaEnd
+            let assetDataStart := assetData
+            let assetDataLen := mload(assetDataStart)
+            mstore(dataAreaStart, assetDataLen)
+            // Write assetData byte array
+            let assetDataSrcStart := add(assetDataStart, 32)
+            let assetDataDestStart := add(dataAreaStart, 32)
+            for {let i := 0} lt(i, assetDataLen) {i := add(i, 32)} {
+                mstore(add(assetDataDestStart, i), mload(add(assetDataSrcStart, i)))
+            }
+            // Write result length
+            let resultLen := add(assetDataLen, 164)
+            mstore(result, resultLen)
+        }
+        return result;
     }
 }

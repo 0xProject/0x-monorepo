@@ -54,6 +54,9 @@ contract LibExchangeErrors {
     string constant ASSET_PROXY_MISMATCH = "ASSET_PROXY_MISMATCH";          // oldAssetProxy proxy does not match currentAssetProxy. 
     string constant ASSET_PROXY_ID_MISMATCH = "ASSET_PROXY_ID_MISMATCH";    // newAssetProxyId does not match given assetProxyId.
 
+    /// dispatchTransferFrom errors ///
+    string constant TRANSFER_FAILED = "TRANSFER_FAILED";
+
     /// Length validation errors ///
     string constant LENGTH_GREATER_THAN_0_REQUIRED = "LENGTH_GREATER_THAN_0_REQUIRED";  // Byte array must have a length greater than 0.
     string constant LENGTH_0_REQUIRED = "LENGTH_0_REQUIRED";                // Byte array must have a length of 0.
