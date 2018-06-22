@@ -225,8 +225,9 @@ contract MixinExchangeCore is
         // Log order
         emit Fill(
             order.makerAddress,
-            takerAddress,
             order.feeRecipientAddress,
+            takerAddress,
+            msg.sender,
             fillResults.makerAssetFilledAmount,
             fillResults.takerAssetFilledAmount,
             fillResults.makerFeePaid,
@@ -255,6 +256,7 @@ contract MixinExchangeCore is
         emit Cancel(
             order.makerAddress,
             order.feeRecipientAddress,
+            msg.sender,
             orderHash,
             order.makerAssetData,
             order.takerAssetData
@@ -310,7 +312,11 @@ contract MixinExchangeCore is
         // Validate Maker signature (check only if first time seen)
         if (orderInfo.orderTakerAssetFilledAmount == 0) {
             require(
-                isValidSignature(orderInfo.orderHash, order.makerAddress, signature),
+                isValidSignature(
+                    orderInfo.orderHash,
+                    order.makerAddress,
+                    signature
+                ),
                 INVALID_ORDER_SIGNATURE
             );
         }

@@ -399,6 +399,7 @@ describe('Exchange core', () => {
 
             expect(signedOrder.makerAddress).to.be.equal(logArgs.makerAddress);
             expect(takerAddress).to.be.equal(logArgs.takerAddress);
+            expect(takerAddress).to.be.equal(logArgs.senderAddress);
             expect(signedOrder.feeRecipientAddress).to.be.equal(logArgs.feeRecipientAddress);
             expect(signedOrder.makerAssetData).to.be.equal(logArgs.makerAssetData);
             expect(signedOrder.takerAssetData).to.be.equal(logArgs.takerAssetData);
@@ -577,6 +578,7 @@ describe('Exchange core', () => {
             const logArgs = log.args;
 
             expect(signedOrder.makerAddress).to.be.equal(logArgs.makerAddress);
+            expect(signedOrder.makerAddress).to.be.equal(logArgs.senderAddress);
             expect(signedOrder.feeRecipientAddress).to.be.equal(logArgs.feeRecipientAddress);
             expect(signedOrder.makerAssetData).to.be.equal(logArgs.makerAssetData);
             expect(signedOrder.takerAssetData).to.be.equal(logArgs.takerAssetData);

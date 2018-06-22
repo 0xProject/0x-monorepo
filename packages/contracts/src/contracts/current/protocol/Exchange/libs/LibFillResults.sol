@@ -25,16 +25,16 @@ contract LibFillResults is
 {
 
     struct FillResults {
-        uint256 makerAssetFilledAmount;
-        uint256 takerAssetFilledAmount;
-        uint256 makerFeePaid;
-        uint256 takerFeePaid;
+        uint256 makerAssetFilledAmount;  // Total amount of makerAsset(s) filled.
+        uint256 takerAssetFilledAmount;  // Total amount of takerAsset(s) filled.
+        uint256 makerFeePaid;            // Total amount of ZRX paid by maker(s) to feeRecipient(s).
+        uint256 takerFeePaid;            // Total amount of ZRX paid by taker to feeRecipients(s).
     }
 
     struct MatchedFillResults {
-        FillResults left;
-        FillResults right;
-        uint256 leftMakerAssetSpreadAmount;
+        FillResults left;                    // Amounts filled and fees paid of left order.
+        FillResults right;                   // Amounts filled and fees paid of right order.
+        uint256 leftMakerAssetSpreadAmount;  // Spread between price of left and right order, denominated in the left order's makerAsset, paid to taker.
     }
 
     /// @dev Adds properties of both FillResults instances.
