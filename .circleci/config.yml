@@ -80,7 +80,7 @@ jobs:
       - run: yarn wsrun test:circleci @0xproject/subproviders
       - run: yarn wsrun test:circleci @0xproject/web3-wrapper
       - save_cache:
-          key: coverage-0x-js-{{ .Environment.CIRCLE_SHA1 }}
+          key: coverage-0xjs-{{ .Environment.CIRCLE_SHA1 }}
           paths:
             - ~/repo/packages/0x.js/coverage/lcov.info
       - save_cache:
