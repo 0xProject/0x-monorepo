@@ -259,9 +259,9 @@ export class About extends React.Component<AboutProps, AboutState> {
                                 lineHeight: 1.5,
                             }}
                         >
-                            Our team is a diverse and globally distributed group with backgrounds in engineering,
-                            research, business and design. We are passionate about decentralized technology and its
-                            potential to act as an equalizing force in the world.
+                            Our team is a globally distributed group with backgrounds in engineering, research, business
+                            and design. We are passionate about decentralized technology and its potential to act as an
+                            equalizing force in the world.
                         </div>
                     </div>
                     <div className="pt3 md-px4 lg-px0">
