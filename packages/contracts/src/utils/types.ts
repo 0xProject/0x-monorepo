@@ -152,7 +152,7 @@ export interface MatchOrder {
     rightSignature: string;
 }
 
-export enum ContractLibErrors {
+export enum RevertReasons {
     OrderUnfillable = 'ORDER_UNFILLABLE',
     InvalidMaker = 'INVALID_MAKER',
     InvalidTaker = 'INVALID_TAKER',

@@ -21,7 +21,7 @@ import { ERC20Wrapper } from '../../src/utils/erc20_wrapper';
 import { ERC721Wrapper } from '../../src/utils/erc721_wrapper';
 import { ExchangeWrapper } from '../../src/utils/exchange_wrapper';
 import { OrderFactory } from '../../src/utils/order_factory';
-import { ContractLibErrors, ERC20BalancesByOwner } from '../../src/utils/types';
+import { RevertReasons, ERC20BalancesByOwner } from '../../src/utils/types';
 import { provider, txDefaults, web3Wrapper } from '../../src/utils/web3_wrapper';
 
 chaiSetup.configure();
@@ -174,7 +174,7 @@ describe('Exchange wrappers', () => {
 
             return expectRevertReasonOrAlwaysFailingTransactionAsync(
                 exchangeWrapper.fillOrKillOrderAsync(signedOrder, takerAddress),
-                ContractLibErrors.OrderUnfillable,
+                RevertReasons.OrderUnfillable,
             );
         });
 
@@ -187,7 +187,7 @@ describe('Exchange wrappers', () => {
 
             return expectRevertReasonOrAlwaysFailingTransactionAsync(
                 exchangeWrapper.fillOrKillOrderAsync(signedOrder, takerAddress),
-                ContractLibErrors.CompleteFillFailed,
+                RevertReasons.CompleteFillFailed,
             );
         });
     });
@@ -502,7 +502,7 @@ describe('Exchange wrappers', () => {
                     exchangeWrapper.batchFillOrKillOrdersAsync(signedOrders, takerAddress, {
                         takerAssetFillAmounts,
                     }),
-                    ContractLibErrors.OrderUnfillable,
+                    RevertReasons.OrderUnfillable,
                 );
             });
         });
@@ -707,7 +707,7 @@ describe('Exchange wrappers', () => {
                     }),
                     // We simply use the takerAssetData from the first order for all orders.
                     // If they are not the same, the contract throws when validating the order signature
-                    ContractLibErrors.InvalidOrderSignature,
+                    RevertReasons.InvalidOrderSignature,
                 );
             });
         });
@@ -923,7 +923,7 @@ describe('Exchange wrappers', () => {
                     exchangeWrapper.marketBuyOrdersAsync(signedOrders, takerAddress, {
                         makerAssetFillAmount: Web3Wrapper.toBaseUnitAmount(new BigNumber(1000), 18),
                     }),
-                    ContractLibErrors.InvalidOrderSignature,
+                    RevertReasons.InvalidOrderSignature,
                 );
             });
         });

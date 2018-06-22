@@ -20,7 +20,7 @@ import { ExchangeWrapper } from '../../src/utils/exchange_wrapper';
 import { OrderFactory } from '../../src/utils/order_factory';
 import { orderUtils } from '../../src/utils/order_utils';
 import { TransactionFactory } from '../../src/utils/transaction_factory';
-import { ContractLibErrors, ERC20BalancesByOwner, SignedTransaction } from '../../src/utils/types';
+import { RevertReasons, ERC20BalancesByOwner, SignedTransaction } from '../../src/utils/types';
 import { provider, txDefaults, web3Wrapper } from '../../src/utils/web3_wrapper';
 
 chaiSetup.configure();
@@ -129,7 +129,7 @@ describe('Exchange transactions', () => {
             it('should throw if not called by specified sender', async () => {
                 return expectRevertReasonOrAlwaysFailingTransactionAsync(
                     exchangeWrapper.executeTransactionAsync(signedTx, takerAddress),
-                    ContractLibErrors.FailedExecution,
+                    RevertReasons.FailedExecution,
                 );
             });
 
@@ -172,7 +172,7 @@ describe('Exchange transactions', () => {
                 await exchangeWrapper.executeTransactionAsync(signedTx, senderAddress);
                 return expectRevertReasonOrAlwaysFailingTransactionAsync(
                     exchangeWrapper.executeTransactionAsync(signedTx, senderAddress),
-                    ContractLibErrors.InvalidTxHash,
+                    RevertReasons.InvalidTxHash,
                 );
             });
 
@@ -192,7 +192,7 @@ describe('Exchange transactions', () => {
             it('should throw if not called by specified sender', async () => {
                 return expectRevertReasonOrAlwaysFailingTransactionAsync(
                     exchangeWrapper.executeTransactionAsync(signedTx, makerAddress),
-                    ContractLibErrors.FailedExecution,
+                    RevertReasons.FailedExecution,
                 );
             });
 
@@ -200,7 +200,7 @@ describe('Exchange transactions', () => {
                 await exchangeWrapper.executeTransactionAsync(signedTx, senderAddress);
                 return expectRevertReasonOrAlwaysFailingTransactionAsync(
                     exchangeWrapper.fillOrderAsync(signedOrder, senderAddress),
-                    ContractLibErrors.OrderUnfillable,
+                    RevertReasons.OrderUnfillable,
                 );
             });
         });
@@ -252,7 +252,7 @@ describe('Exchange transactions', () => {
                         signedFillTx.signature,
                         { from: takerAddress },
                     ),
-                    ContractLibErrors.FailedExecution,
+                    RevertReasons.FailedExecution,
                 );
             });
 
@@ -371,7 +371,7 @@ describe('Exchange transactions', () => {
                     signedOrder.signature,
                     { from: takerAddress },
                 ),
-                ContractLibErrors.MakerNotWhitelisted,
+                RevertReasons.MakerNotWhitelisted,
             );
         });
 
@@ -393,7 +393,7 @@ describe('Exchange transactions', () => {
                     signedOrder.signature,
                     { from: takerAddress },
                 ),
-                ContractLibErrors.TakerNotWhitelisted,
+                RevertReasons.TakerNotWhitelisted,
             );
         });
 

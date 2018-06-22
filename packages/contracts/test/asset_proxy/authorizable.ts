@@ -8,7 +8,7 @@ import {
 } from '../../src/utils/assertions';
 import { chaiSetup } from '../../src/utils/chai_setup';
 import { constants } from '../../src/utils/constants';
-import { ContractLibErrors } from '../../src/utils/types';
+import { RevertReasons } from '../../src/utils/types';
 import { provider, txDefaults, web3Wrapper } from '../../src/utils/web3_wrapper';
 
 chaiSetup.configure();
@@ -47,7 +47,7 @@ describe('Authorizable', () => {
         it('should throw if not called by owner', async () => {
             return expectRevertReasonOrAlwaysFailingTransactionAsync(
                 authorizable.addAuthorizedAddress.sendTransactionAsync(notOwner, { from: notOwner }),
-                ContractLibErrors.OnlyContractOwner,
+                RevertReasons.OnlyContractOwner,
             );
         });
         it('should allow owner to add an authorized address', async () => {
@@ -65,7 +65,7 @@ describe('Authorizable', () => {
             );
             return expectRevertReasonOrAlwaysFailingTransactionAsync(
                 authorizable.addAuthorizedAddress.sendTransactionAsync(address, { from: owner }),
-                ContractLibErrors.TargetAlreadyAuthorized,
+                RevertReasons.TargetAlreadyAuthorized,
             );
         });
     });
@@ -80,7 +80,7 @@ describe('Authorizable', () => {
                 authorizable.removeAuthorizedAddress.sendTransactionAsync(address, {
                     from: notOwner,
                 }),
-                ContractLibErrors.OnlyContractOwner,
+                RevertReasons.OnlyContractOwner,
             );
         });
 
@@ -104,7 +104,7 @@ describe('Authorizable', () => {
                 authorizable.removeAuthorizedAddress.sendTransactionAsync(address, {
                     from: owner,
                 }),
-                ContractLibErrors.TargetNotAuthorized,
+                RevertReasons.TargetNotAuthorized,
             );
         });
     });

@@ -18,7 +18,7 @@ import { chaiSetup } from '../../src/utils/chai_setup';
 import { constants } from '../../src/utils/constants';
 import { LogDecoder } from '../../src/utils/log_decoder';
 import { OrderFactory } from '../../src/utils/order_factory';
-import { ContractLibErrors } from '../../src/utils/types';
+import { RevertReasons } from '../../src/utils/types';
 import { provider, txDefaults, web3Wrapper } from '../../src/utils/web3_wrapper';
 
 chaiSetup.configure();
@@ -108,7 +108,7 @@ describe('MixinSignatureValidator', () => {
                     signedOrder.makerAddress,
                     emptySignature,
                 ),
-                ContractLibErrors.LengthGreaterThan0Required,
+                RevertReasons.LengthGreaterThan0Required,
             );
         });
 
@@ -122,7 +122,7 @@ describe('MixinSignatureValidator', () => {
                     signedOrder.makerAddress,
                     unsupportedSignatureHex,
                 ),
-                ContractLibErrors.SignatureUnsupported,
+                RevertReasons.SignatureUnsupported,
             );
         });
 
@@ -135,7 +135,7 @@ describe('MixinSignatureValidator', () => {
                     signedOrder.makerAddress,
                     unsupportedSignatureHex,
                 ),
-                ContractLibErrors.SignatureIllegal,
+                RevertReasons.SignatureIllegal,
             );
         });
 
@@ -162,7 +162,7 @@ describe('MixinSignatureValidator', () => {
                     signedOrder.makerAddress,
                     signatureHex,
                 ),
-                ContractLibErrors.Length0Required,
+                RevertReasons.Length0Required,
             );
         });
 

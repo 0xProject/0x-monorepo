@@ -14,7 +14,7 @@ import { chaiSetup } from '../../src/utils/chai_setup';
 import { constants } from '../../src/utils/constants';
 import { ERC20Wrapper } from '../../src/utils/erc20_wrapper';
 import { ERC721Wrapper } from '../../src/utils/erc721_wrapper';
-import { ContractLibErrors } from '../../src/utils/types';
+import { RevertReasons } from '../../src/utils/types';
 import { provider, txDefaults, web3Wrapper } from '../../src/utils/web3_wrapper';
 
 chaiSetup.configure();
@@ -183,7 +183,7 @@ describe('AssetProxyDispatcher', () => {
                     constants.NULL_ADDRESS,
                     { from: owner },
                 ),
-                ContractLibErrors.AssetProxyMismatch,
+                RevertReasons.AssetProxyMismatch,
             );
         });
 
@@ -225,7 +225,7 @@ describe('AssetProxyDispatcher', () => {
                     prevProxyAddress,
                     { from: notOwner },
                 ),
-                ContractLibErrors.OnlyContractOwner,
+                RevertReasons.OnlyContractOwner,
             );
         });
 
@@ -238,7 +238,7 @@ describe('AssetProxyDispatcher', () => {
                     prevProxyAddress,
                     { from: owner },
                 ),
-                ContractLibErrors.AssetProxyIdMismatch,
+                RevertReasons.AssetProxyIdMismatch,
             );
         });
     });
@@ -320,7 +320,7 @@ describe('AssetProxyDispatcher', () => {
                     amount,
                     { from: owner },
                 ),
-                ContractLibErrors.AssetProxyDoesNotExist,
+                RevertReasons.AssetProxyDoesNotExist,
             );
         });
     });

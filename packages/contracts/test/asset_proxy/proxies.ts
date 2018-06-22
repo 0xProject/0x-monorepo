@@ -24,7 +24,7 @@ import { constants } from '../../src/utils/constants';
 import { ERC20Wrapper } from '../../src/utils/erc20_wrapper';
 import { ERC721Wrapper } from '../../src/utils/erc721_wrapper';
 import { LogDecoder } from '../../src/utils/log_decoder';
-import { ContractLibErrors } from '../../src/utils/types';
+import { RevertReasons } from '../../src/utils/types';
 import { provider, txDefaults, web3Wrapper } from '../../src/utils/web3_wrapper';
 
 chaiSetup.configure();
@@ -172,7 +172,7 @@ describe('Asset Transfer Proxies', () => {
                         transferAmount,
                         { from: exchangeAddress },
                     ),
-                    ContractLibErrors.TransferFailed,
+                    RevertReasons.TransferFailed,
                 );
             });
 
@@ -192,7 +192,7 @@ describe('Asset Transfer Proxies', () => {
                             from: notAuthorized,
                         },
                     ),
-                    ContractLibErrors.SenderNotAuthorized,
+                    RevertReasons.SenderNotAuthorized,
                 );
             });
         });
@@ -246,7 +246,7 @@ describe('Asset Transfer Proxies', () => {
                     erc20Proxy.batchTransferFrom.sendTransactionAsync(assetData, fromAddresses, toAddresses, amounts, {
                         from: notAuthorized,
                     }),
-                    ContractLibErrors.SenderNotAuthorized,
+                    RevertReasons.SenderNotAuthorized,
                 );
             });
         });
@@ -392,7 +392,7 @@ describe('Asset Transfer Proxies', () => {
                         amount,
                         { from: exchangeAddress },
                     ),
-                    ContractLibErrors.InvalidAmount,
+                    RevertReasons.InvalidAmount,
                 );
             });
 
@@ -413,7 +413,7 @@ describe('Asset Transfer Proxies', () => {
                         amount,
                         { from: exchangeAddress },
                     ),
-                    ContractLibErrors.InvalidAmount,
+                    RevertReasons.InvalidAmount,
                 );
             });
 
@@ -440,7 +440,7 @@ describe('Asset Transfer Proxies', () => {
                             from: exchangeAddress,
                         },
                     ),
-                    ContractLibErrors.TransferFailed,
+                    RevertReasons.TransferFailed,
                 );
             });
 
@@ -458,7 +458,7 @@ describe('Asset Transfer Proxies', () => {
                         amount,
                         { from: notAuthorized },
                     ),
-                    ContractLibErrors.SenderNotAuthorized,
+                    RevertReasons.SenderNotAuthorized,
                 );
             });
         });
@@ -513,7 +513,7 @@ describe('Asset Transfer Proxies', () => {
                     erc721Proxy.batchTransferFrom.sendTransactionAsync(assetData, fromAddresses, toAddresses, amounts, {
                         from: notAuthorized,
                     }),
-                    ContractLibErrors.SenderNotAuthorized,
+                    RevertReasons.SenderNotAuthorized,
                 );
             });
         });
