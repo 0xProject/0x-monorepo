@@ -13,10 +13,29 @@ export const collectCoverageEntries = (contractSource: string) => {
     if (_.isUndefined(coverageEntriesBySourceHash[sourceHash]) && !_.isUndefined(contractSource)) {
         const ast = parser.parse(contractSource, { range: true });
         const locationByOffset = getLocationByOffset(contractSource);
-        const visitor = new ASTVisitor(locationByOffset);
+        const ignoreRangesBegingingAt = gatherRangesToIgnore(contractSource);
+        const visitor = new ASTVisitor(locationByOffset, ignoreRangesBegingingAt);
         parser.visit(ast, visitor);
         coverageEntriesBySourceHash[sourceHash] = visitor.getCollectedCoverageEntries();
     }
     const coverageEntriesDescription = coverageEntriesBySourceHash[sourceHash];
     return coverageEntriesDescription;
 };
+
+const IGNORE_RE = /\/\*\s*solcov\s+ignore\s+next\s*\*\/\s*/gm;
+
+// Gather the start index of all code blocks preceeded by "/* solcov ignore next */"
+function gatherRangesToIgnore(contractSource: string): number[] {
+    const ignoreRangesStart = [];
+
+    let match;
+    do {
+        match = IGNORE_RE.exec(contractSource);
+        if (match) {
+            const matchLen = match[0].length;
+            ignoreRangesStart.push(match.index + matchLen);
+        }
+    } while (match);
+
+    return ignoreRangesStart;
+}

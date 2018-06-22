@@ -23,8 +23,11 @@ export class ASTVisitor {
     private _modifiersStatementIds: number[] = [];
     private _statementMap: StatementMap = {};
     private _locationByOffset: LocationByOffset;
-    constructor(locationByOffset: LocationByOffset) {
+    private _ignoreRangesBeginingAt: number[];
+    private _ignoreRangesWithin: Array<[number, number]> = [];
+    constructor(locationByOffset: LocationByOffset, ignoreRangesBeginingAt: number[] = []) {
         this._locationByOffset = locationByOffset;
+        this._ignoreRangesBeginingAt = ignoreRangesBeginingAt;
     }
     public getCollectedCoverageEntries(): CoverageEntriesDescription {
         const coverageEntriesDescription = {
@@ -96,6 +99,9 @@ export class ASTVisitor {
     public ModifierInvocation(ast: Parser.ModifierInvocation): void {
         const BUILTIN_MODIFIERS = ['public', 'view', 'payable', 'external', 'internal', 'pure', 'constant'];
         if (!_.includes(BUILTIN_MODIFIERS, ast.name)) {
+            if (this._ignoreExpression(ast)) {
+                return;
+            }
             this._modifiersStatementIds.push(this._entryId);
             this._visitStatement(ast);
         }
@@ -106,6 +112,9 @@ export class ASTVisitor {
         right: Parser.ASTNode,
         type: BranchType,
     ): void {
+        if (this._ignoreExpression(ast)) {
+            return;
+        }
         this._branchMap[this._entryId++] = {
             line: this._getExpressionRange(ast).start.line,
             type,
@@ -113,6 +122,9 @@ export class ASTVisitor {
         };
     }
     private _visitStatement(ast: Parser.ASTNode): void {
+        if (this._ignoreExpression(ast)) {
+            return;
+        }
         this._statementMap[this._entryId++] = this._getExpressionRange(ast);
     }
     private _getExpressionRange(ast: Parser.ASTNode): SingleFileSourceRange {
@@ -125,7 +137,22 @@ export class ASTVisitor {
         };
         return range;
     }
+    private _ignoreExpression(ast: Parser.ASTNode): boolean {
+        const [astStart, astEnd] = ast.range as [number, number];
+        const isRangeIgnored = _.some(
+            this._ignoreRangesWithin,
+            ([rangeStart, rangeEnd]: [number, number]) => astStart >= rangeStart && astEnd <= rangeEnd,
+        );
+        return this._ignoreRangesBeginingAt.includes(astStart) || isRangeIgnored;
+    }
     private _visitFunctionLikeDefinition(ast: Parser.ModifierDefinition | Parser.FunctionDefinition): void {
+        if (this._ignoreExpression(ast)) {
+            // we want to ignore everything within this function
+            // add this nodes range to the ignoreRangesWithin array
+            // so we can ignore any later nodes that are children of this node
+            this._ignoreRangesWithin.push(ast.range as [number, number]);
+            return;
+        }
         const loc = this._getExpressionRange(ast);
         this._fnMap[this._entryId++] = {
             name: ast.name,
