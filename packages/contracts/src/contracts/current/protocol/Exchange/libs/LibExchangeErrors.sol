@@ -56,6 +56,7 @@ contract LibExchangeErrors {
 
     /// dispatchTransferFrom errors ///
     string constant ASSET_PROXY_DOES_NOT_EXIST = "ASSET_PROXY_DOES_NOT_EXIST";          // No assetProxy registered at given id.
+    string constant TRANSFER_FAILED = "TRANSFER_FAILED";                                // Failed to transfer assets.
 
     /// Length validation errors ///
     string constant LENGTH_GREATER_THAN_0_REQUIRED = "LENGTH_GREATER_THAN_0_REQUIRED";  // Byte array must have a length greater than 0.

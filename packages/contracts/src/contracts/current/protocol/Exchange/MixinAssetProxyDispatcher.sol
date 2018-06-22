@@ -108,12 +108,77 @@ contract MixinAssetProxyDispatcher is
                 assetProxy != address(0),
                 ASSET_PROXY_DOES_NOT_EXIST
             );
-            // transferFrom will either succeed or throw.
-            assetProxy.transferFrom(
-                assetData,
-                from,
-                to,
-                amount
+
+            // We construct calldata for the `assetProxy.transferFrom` ABI.
+            // The layout of this calldata is in the table below.
+            // 
+            // | Area     | Offset | Length  | Contents                                    |
+            // | -------- |--------|---------|-------------------------------------------- |
+            // | Header   | 0      | 4       | function selector                           |
+            // | Params   |        | 4 * 32  | function parameters:                        |
+            // |          | 4      |         |   1. offset to assetData (*)                |
+            // |          | 36     |         |   2. from                                   |
+            // |          | 68     |         |   3. to                                     |
+            // |          | 100    |         |   4. amount                                 |
+            // | Data     |        |         | assetData:                                  |
+            // |          | 132    | 32      | assetData Length                            |
+            // |          | 164    | **      | assetData Contents                          |
+
+            bytes4 transferFromSelector = IAssetProxy(assetProxy).transferFrom.selector;
+            bool success;
+            assembly {
+                /////// Setup State ///////
+                // `cdStart` is the start of the calldata for `assetProxy.transferFrom` (equal to free memory ptr).
+                let cdStart := mload(64)
+                // `dataAreaLength` is the total number of words needed to store `assetData`
+                //  As-per the ABI spec, this value is padded up to the nearest multiple of 32,
+                //  and includes 32-bytes for length.
+                //  It's calculated as folows:
+                //      - Unpadded length in bytes = `mload(assetData) + 32`
+                //      - Add 31 to this value then divide by 32 to get the length in words.
+                //      - Multiply this value by 32 to get the padded length in bytes.
+                let dataAreaLength := mul(div(add(mload(assetData), 63), 32), 32)
+                // `cdEnd` is the end of the calldata for `assetProxy.transferFrom`.
+                let cdEnd := add(cdStart, add(132, dataAreaLength))
+
+                /////// Setup Header Area ///////
+                // This area holds the 4-byte `transferFromSelector`.
+                mstore(cdStart, transferFromSelector)
+                
+                /////// Setup Params Area ///////
+                // Each parameter is padded to 32-bytes. The entire Params Area is 128 bytes.
+                // Notes:
+                //   1. The offset to `assetData` is the length of the Params Area (128 bytes).
+                //   2. A 20-byte mask is applied to addresses to zero-out the unused bytes.
+                mstore(add(cdStart, 4), 128)
+                mstore(add(cdStart, 36), and(from, 0xffffffffffffffffffffffffffffffffffffffff))
+                mstore(add(cdStart, 68), and(to, 0xffffffffffffffffffffffffffffffffffffffff))
+                mstore(add(cdStart, 100), amount)
+
+                /////// Setup Data Area ///////
+                // This area holds `assetData`.
+                let dataArea := add(cdStart, 132)
+                for {} lt(dataArea, cdEnd) {} {
+                    mstore(dataArea, mload(assetData))
+                    dataArea := add(dataArea, 32)
+                    assetData := add(assetData, 32)
+                }
+
+                /////// Call `assetProxy.transferFrom` using the constructed calldata ///////
+                success := call(
+                    gas,
+                    assetProxy,
+                    0,
+                    cdStart,
+                    sub(cdEnd, cdStart),
+                    cdStart,
+                    0
+                )
+            }
+
+            require(
+                success,
+                TRANSFER_FAILED
             );
         }
     }
