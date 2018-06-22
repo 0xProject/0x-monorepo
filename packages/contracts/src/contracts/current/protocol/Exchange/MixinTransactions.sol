@@ -66,7 +66,7 @@ contract MixinTransactions is
             let memPtr := mload(64)
             mstore(memPtr, schemaHash)
             mstore(add(memPtr, 32), salt)
-            mstore(add(memPtr, 64), signerAddress)
+            mstore(add(memPtr, 64), and(signerAddress, 0xffffffffffffffffffffffffffffffffffffffff))
             mstore(add(memPtr, 96), dataHash)
             result := keccak256(memPtr, 128)
         }
