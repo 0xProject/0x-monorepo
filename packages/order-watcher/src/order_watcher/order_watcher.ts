@@ -249,6 +249,7 @@ export class OrderWatcher {
           if (error.code === ethers.errors.INVALID_ARGUMENT) {
             return; // noop
           }
+          throw error;
         }
         const isLogDecoded = !_.isUndefined(((maybeDecodedLog as any) as LogWithDecodedArgs<ContractEventArgs>).event);
         if (!isLogDecoded) {
