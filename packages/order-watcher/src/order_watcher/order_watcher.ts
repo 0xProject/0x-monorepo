@@ -16,6 +16,7 @@ import {
 } from '@0xproject/types';
 import { errorUtils, intervalUtils } from '@0xproject/utils';
 import { Web3Wrapper } from '@0xproject/web3-wrapper';
+import * as ethers from 'ethers';
 import * as _ from 'lodash';
 
 import { artifacts } from '../artifacts';
@@ -241,7 +242,14 @@ export class OrderWatcher {
             return;
         }
         const log = logIfExists as LogEntryEvent; // At this moment we are sure that no error occured and log is defined.
-        const maybeDecodedLog = this._web3Wrapper.abiDecoder.tryToDecodeLogOrNoop<ContractEventArgs>(log);
+        let maybeDecodedLog;
+        try {
+            maybeDecodedLog = this._web3Wrapper.abiDecoder.tryToDecodeLogOrNoop<ContractEventArgs>(log);
+        } catch (error) {
+          if (error.code === ethers.errors.INVALID_ARGUMENT) {
+            return; // noop
+          }
+        }
         const isLogDecoded = !_.isUndefined(((maybeDecodedLog as any) as LogWithDecodedArgs<ContractEventArgs>).event);
         if (!isLogDecoded) {
             return; // noop

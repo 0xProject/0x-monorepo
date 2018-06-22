@@ -31,4 +31,7 @@ declare module 'ethers' {
         public static getDeployTransaction(bytecode: string, abi: any, ...args: any[]): Partial<TxData>;
         constructor(address: string, abi: any, provider: any);
     }
+    const enum errors {
+      INVALID_ARGUMENT = 'INVALID_ARGUMENT',
+    }
 }
