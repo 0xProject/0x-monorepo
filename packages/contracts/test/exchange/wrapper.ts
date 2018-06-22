@@ -12,14 +12,16 @@ import { ERC20ProxyContract } from '../../src/generated_contract_wrappers/e_r_c2
 import { ERC721ProxyContract } from '../../src/generated_contract_wrappers/e_r_c721_proxy';
 import { ExchangeContract } from '../../src/generated_contract_wrappers/exchange';
 import { artifacts } from '../../src/utils/artifacts';
-import { expectRevertOrAlwaysFailingTransactionAsync } from '../../src/utils/assertions';
+import {
+    expectRevertReasonOrAlwaysFailingTransactionAsync,
+} from '../../src/utils/assertions';
 import { chaiSetup } from '../../src/utils/chai_setup';
 import { constants } from '../../src/utils/constants';
 import { ERC20Wrapper } from '../../src/utils/erc20_wrapper';
 import { ERC721Wrapper } from '../../src/utils/erc721_wrapper';
 import { ExchangeWrapper } from '../../src/utils/exchange_wrapper';
 import { OrderFactory } from '../../src/utils/order_factory';
-import { ERC20BalancesByOwner } from '../../src/utils/types';
+import { ContractLibErrors, ERC20BalancesByOwner } from '../../src/utils/types';
 import { provider, txDefaults, web3Wrapper } from '../../src/utils/web3_wrapper';
 
 chaiSetup.configure();
@@ -165,13 +167,14 @@ describe('Exchange wrappers', () => {
             );
         });
 
-        it('should throw if an signedOrder is expired', async () => {
+        it('should throw if a signedOrder is expired', async () => {
             const signedOrder = orderFactory.newSignedOrder({
                 expirationTimeSeconds: new BigNumber(Math.floor((Date.now() - 10000) / 1000)),
             });
 
-            return expectRevertOrAlwaysFailingTransactionAsync(
+            return expectRevertReasonOrAlwaysFailingTransactionAsync(
                 exchangeWrapper.fillOrKillOrderAsync(signedOrder, takerAddress),
+                ContractLibErrors.OrderUnfillable,
             );
         });
 
@@ -182,8 +185,9 @@ describe('Exchange wrappers', () => {
                 takerAssetFillAmount: signedOrder.takerAssetAmount.div(2),
             });
 
-            return expectRevertOrAlwaysFailingTransactionAsync(
+            return expectRevertReasonOrAlwaysFailingTransactionAsync(
                 exchangeWrapper.fillOrKillOrderAsync(signedOrder, takerAddress),
+                ContractLibErrors.CompleteFillFailed,
             );
         });
     });
@@ -494,10 +498,11 @@ describe('Exchange wrappers', () => {
 
                 await exchangeWrapper.fillOrKillOrderAsync(signedOrders[0], takerAddress);
 
-                return expectRevertOrAlwaysFailingTransactionAsync(
+                return expectRevertReasonOrAlwaysFailingTransactionAsync(
                     exchangeWrapper.batchFillOrKillOrdersAsync(signedOrders, takerAddress, {
                         takerAssetFillAmounts,
                     }),
+                    ContractLibErrors.OrderUnfillable,
                 );
             });
         });
@@ -687,7 +692,7 @@ describe('Exchange wrappers', () => {
                 expect(newBalances).to.be.deep.equal(erc20Balances);
             });
 
-            it('should throw when an signedOrder does not use the same takerAssetAddress', async () => {
+            it('should throw when a signedOrder does not use the same takerAssetAddress', async () => {
                 signedOrders = [
                     orderFactory.newSignedOrder(),
                     orderFactory.newSignedOrder({
@@ -696,10 +701,13 @@ describe('Exchange wrappers', () => {
                     orderFactory.newSignedOrder(),
                 ];
 
-                return expectRevertOrAlwaysFailingTransactionAsync(
+                return expectRevertReasonOrAlwaysFailingTransactionAsync(
                     exchangeWrapper.marketSellOrdersAsync(signedOrders, takerAddress, {
                         takerAssetFillAmount: Web3Wrapper.toBaseUnitAmount(new BigNumber(1000), 18),
                     }),
+                    // We simply use the takerAssetData from the first order for all orders.
+                    // If they are not the same, the contract throws when validating the order signature
+                    ContractLibErrors.InvalidOrderSignature,
                 );
             });
         });
@@ -902,7 +910,7 @@ describe('Exchange wrappers', () => {
                 expect(newBalances).to.be.deep.equal(erc20Balances);
             });
 
-            it('should throw when an signedOrder does not use the same makerAssetAddress', async () => {
+            it('should throw when a signedOrder does not use the same makerAssetAddress', async () => {
                 signedOrders = [
                     orderFactory.newSignedOrder(),
                     orderFactory.newSignedOrder({
@@ -911,10 +919,11 @@ describe('Exchange wrappers', () => {
                     orderFactory.newSignedOrder(),
                 ];
 
-                return expectRevertOrAlwaysFailingTransactionAsync(
+                return expectRevertReasonOrAlwaysFailingTransactionAsync(
                     exchangeWrapper.marketBuyOrdersAsync(signedOrders, takerAddress, {
                         makerAssetFillAmount: Web3Wrapper.toBaseUnitAmount(new BigNumber(1000), 18),
                     }),
+                    ContractLibErrors.InvalidOrderSignature,
                 );
             });
         });
