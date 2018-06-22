@@ -689,7 +689,7 @@ describe('matchOrders', () => {
                 // reverse of the left order, rather than checking equality. This
                 // saves a bunch of gas, but as a result if the assetData fields are
                 // off then the failure ends up happening at signature validation
-                ContractLibErrors.InvalidSignature,
+                ContractLibErrors.InvalidOrderSignature,
             );
         });
 
@@ -720,7 +720,7 @@ describe('matchOrders', () => {
                     erc20BalancesByOwner,
                     erc721TokenIdsByOwner,
                 ),
-                ContractLibErrors.InvalidSignature,
+                ContractLibErrors.InvalidOrderSignature,
             );
         });
 
