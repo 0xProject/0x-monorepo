@@ -162,7 +162,7 @@ describe('MixinSignatureValidator', () => {
                     signedOrder.makerAddress,
                     signatureHex,
                 ),
-                ContractLibErrors.ExchangeLength0Required,
+                ContractLibErrors.Length0Required,
             );
         });
 
