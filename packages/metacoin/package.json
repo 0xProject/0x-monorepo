@@ -37,7 +37,7 @@
         "@0xproject/web3-wrapper": "^0.7.1",
         "ethers": "3.0.22",
         "lodash": "4.17.10",
-        "web3-provider-engine": "13.8.0"
+        "web3-provider-engine": "^14.0.6"
     },
     "devDependencies": {
         "@0xproject/dev-utils": "^0.4.4",
