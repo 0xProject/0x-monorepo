@@ -156,7 +156,7 @@ export function reducer(state: State = INITIAL_STATE, action: Action): State {
         }
 
         case ActionTypes.AddTokenToTokenByAddress: {
-            const newTokenByAddress = state.tokenByAddress;
+            const newTokenByAddress = { ...state.tokenByAddress };
             newTokenByAddress[action.data.address] = action.data;
             return {
                 ...state,
@@ -165,7 +165,7 @@ export function reducer(state: State = INITIAL_STATE, action: Action): State {
         }
 
         case ActionTypes.RemoveTokenFromTokenByAddress: {
-            const newTokenByAddress = state.tokenByAddress;
+            const newTokenByAddress = { ...state.tokenByAddress };
             delete newTokenByAddress[action.data.address];
             return {
                 ...state,
@@ -174,7 +174,7 @@ export function reducer(state: State = INITIAL_STATE, action: Action): State {
         }
 
         case ActionTypes.UpdateTokenByAddress: {
-            const tokenByAddress = state.tokenByAddress;
+            const tokenByAddress = { ...state.tokenByAddress };
             const tokens = action.data;
             _.each(tokens, token => {
                 const updatedToken = {
@@ -253,7 +253,7 @@ export function reducer(state: State = INITIAL_STATE, action: Action): State {
         }
 
         case ActionTypes.UpdateChosenAssetTokenAddress: {
-            const newAssetToken = state.sideToAssetToken[action.data.side];
+            const newAssetToken = { ...state.sideToAssetToken[action.data.side] };
             newAssetToken.address = action.data.address;
             const newSideToAssetToken = {
                 ...state.sideToAssetToken,
