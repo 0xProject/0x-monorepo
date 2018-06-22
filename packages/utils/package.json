@@ -36,7 +36,7 @@
     },
     "dependencies": {
         "ethereum-types": "^0.0.1",
-        "@0xproject/typescript-typings": "^0.4.1",
+        "@0xproject/typescript-typings": "^0.4.2",
         "@types/node": "^8.0.53",
         "ethereumjs-util": "^5.1.1",
         "bignumber.js": "~4.1.0",
