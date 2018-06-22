@@ -2,6 +2,7 @@ import { logUtils } from '@0xproject/utils';
 import { OpCode, StructLog } from 'ethereum-types';
 import * as _ from 'lodash';
 
+import { constants } from './constants';
 import { utils } from './utils';
 
 export interface TraceByContractAddress {
@@ -51,6 +52,15 @@ export function getTracesByContractAddress(structLogs: StructLog[], startAddress
                 currentTraceSegment,
             );
             currentTraceSegment = [];
+            if (currentAddress.startsWith(constants.CREATE_PLACEHOLDER_PREFIX) && structLog.op === OpCode.Return) {
+                // we now know the address of the contract deployed in the CREATE opcode
+                const nextLog = normalizedStructLogs[i + 1];
+                const createAddress = utils.getAddressFromStackEntry(_.last(nextLog.stack) as string);
+
+                // replace the placeholder with the correct address
+                traceByContractAddress[createAddress] = traceByContractAddress[currentAddress];
+                delete traceByContractAddress[currentAddress];
+            }
             if (structLog.op === OpCode.SelfDestruct) {
                 // After contract execution, we look at all sub-calls to external contracts, and for each one, fetch
                 // the bytecode and compute the coverage for the call. If the contract is destroyed with a call
@@ -62,11 +72,15 @@ export function getTracesByContractAddress(structLogs: StructLog[], startAddress
                 );
             }
         } else if (structLog.op === OpCode.Create) {
-            // TODO: Extract the new contract address from the stack and handle that scenario
-            logUtils.warn(
-                "Detected a contract created from within another contract. Sol-cov currently doesn't support that scenario. We'll just skip that trace",
+            const currentAddress = _.last(addressStack) as string;
+            // We don't the know the new address until the return,
+            // here we create a placeholder so that we don't overwrite the trace for this contract
+            // if we have nested CREATE opCodes
+            const newAddress = `${constants.CREATE_PLACEHOLDER_PREFIX}${structLog.depth}`;
+            addressStack.push(newAddress);
+            traceByContractAddress[currentAddress] = (traceByContractAddress[currentAddress] || []).concat(
+                currentTraceSegment,
             );
-            return traceByContractAddress;
         } else {
             if (structLog !== _.last(normalizedStructLogs)) {
                 const nextStructLog = normalizedStructLogs[i + 1];
