@@ -243,8 +243,7 @@ export class Portal extends React.Component<PortalProps, PortalState> {
                     style={{
                         backgroundColor: colors.lightestGrey,
                         position: 'fixed',
-                        // Hack: used to make onboarding z-index logic work for both mobile and desktop
-                        zIndex: utils.isMobile(this.props.screenWidth) ? zIndex.topBar : undefined,
+                        zIndex: zIndex.topBar,
                     }}
                     maxWidth={LARGE_LAYOUT_MAX_WIDTH}
                 />
@@ -696,9 +695,14 @@ interface LargeLayoutProps {
 }
 const LargeLayout = (props: LargeLayoutProps) => {
     return (
-        <div className="mx-auto flex flex-center" style={{ maxWidth: LARGE_LAYOUT_MAX_WIDTH }}>
+        <Container className="mx-auto flex flex-center" maxWidth={LARGE_LAYOUT_MAX_WIDTH}>
             <div className="flex-last">
-                <Container width={LEFT_COLUMN_WIDTH} position="fixed" marginLeft={LARGE_LAYOUT_MARGIN}>
+                <Container
+                    width={LEFT_COLUMN_WIDTH}
+                    position="fixed"
+                    zIndex={zIndex.aboveTopBar}
+                    marginLeft={LARGE_LAYOUT_MARGIN}
+                >
                     {props.left}
                 </Container>
             </div>
@@ -707,7 +711,7 @@ const LargeLayout = (props: LargeLayoutProps) => {
                     {props.right}
                 </Container>
             </Container>
-        </div>
+        </Container>
     );
 };
 
