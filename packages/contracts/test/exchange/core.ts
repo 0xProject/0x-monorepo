@@ -817,7 +817,7 @@ describe('Exchange core', () => {
             const takerAssetFillAmount = signedOrder.takerAssetAmount;
             return expectRevertReasonOrAlwaysFailingTransactionAsync(
                 exchangeWrapper.fillOrderAsync(signedOrder, takerAddress, { takerAssetFillAmount }),
-                ContractLibErrors.OrderUnfillable,
+                ContractLibErrors.InvalidAmount,
             );
         });
 
@@ -840,7 +840,7 @@ describe('Exchange core', () => {
             const takerAssetFillAmount = signedOrder.takerAssetAmount;
             return expectRevertReasonOrAlwaysFailingTransactionAsync(
                 exchangeWrapper.fillOrderAsync(signedOrder, takerAddress, { takerAssetFillAmount }),
-                ContractLibErrors.OrderUnfillable,
+                ContractLibErrors.InvalidAmount,
             );
         });
 
