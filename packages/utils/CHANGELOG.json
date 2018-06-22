@@ -4,7 +4,7 @@
         "changes": [
             {
                 "note": "Fixes uncaught Error in abi_decoder",
-				        "pr": 763
+                "pr": 763
             }
         ]
     },
