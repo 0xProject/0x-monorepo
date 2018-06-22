@@ -39,7 +39,7 @@ const RELAYER_REGISTRY_JSON = 'https://raw.githubusercontent.com/0xProject/0x-re
 const METAMASK_ETH_CONTRACT_METADATA_JSON =
     'https://raw.githubusercontent.com/MetaMask/eth-contract-metadata/master/contract-map.json';
 const ETHPLORER_BASE_URL = 'http://api.ethplorer.io';
-const ETHPLORER_TOP_TOKENS_JSON = `${ETHPLORER_BASE_URL}/getTopTokens?apiKey=freekey`;
+const ETHPLORER_TOP_TOKENS_JSON = `${ETHPLORER_BASE_URL}/getTopTokens?apiKey=dyijm5418TjOJe34`;
 // const HIST_PRICE_API_ENDPOINT = 'https://min-api.cryptocompare.com/data/histoday';
 
 const AIRTABLE_RELAYER_INFO = 'Relayer Info';
@@ -133,12 +133,17 @@ export const pullDataScripts = {
     },
     getEthplorerToken(tokenAddress: string): any {
         return new Promise((resolve, reject) => {
-            const url = `${ETHPLORER_BASE_URL}/getTokenInfo/${tokenAddress}?apiKey=freekey`;
+            const url = `${ETHPLORER_BASE_URL}/getTokenInfo/${tokenAddress}?apiKey=dyijm5418TjOJe34`;
             request(url, (error, response, body) => {
                 if (error) {
                     reject(error);
                 } else {
-                    resolve(JSON.parse(body));
+                    try {
+                        const json = JSON.parse(body);
+                        resolve(json);
+                    } catch (err) {
+                        resolve({error: 'error'});
+                    }
                 }
             });
         });
@@ -273,9 +278,9 @@ function _scrapeEventsToDB(fromBlock: number, toBlock: number): any {
                                 'events_raw',
                                 parsedEvents[event_type],
                                 Object.keys(parsedEvents[event_type][0]),
-                            )
-                            .then(() => {})
-                            .catch((error: any) => {});
+                        )
+                            .then(() => { })
+                            .catch((error: any) => { });
                     }
                 }
                 cb();
