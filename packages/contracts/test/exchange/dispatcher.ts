@@ -9,10 +9,7 @@ import { ERC20ProxyContract } from '../../src/generated_contract_wrappers/e_r_c2
 import { ERC721ProxyContract } from '../../src/generated_contract_wrappers/e_r_c721_proxy';
 import { TestAssetProxyDispatcherContract } from '../../src/generated_contract_wrappers/test_asset_proxy_dispatcher';
 import { artifacts } from '../../src/utils/artifacts';
-import {
-    expectRevertOrAlwaysFailingTransactionAsync,
-    expectRevertReasonOrAlwaysFailingTransactionAsync,
-} from '../../src/utils/assertions';
+import { expectRevertReasonOrAlwaysFailingTransactionAsync } from '../../src/utils/assertions';
 import { chaiSetup } from '../../src/utils/chai_setup';
 import { constants } from '../../src/utils/constants';
 import { ERC20Wrapper } from '../../src/utils/erc20_wrapper';
@@ -314,7 +311,7 @@ describe('AssetProxyDispatcher', () => {
             const encodedAssetDataWithoutProxyId = encodedAssetData.slice(0, -2);
             // Perform a transfer from makerAddress to takerAddress
             const amount = new BigNumber(10);
-            return expectRevertOrAlwaysFailingTransactionAsync(
+            return expectRevertReasonOrAlwaysFailingTransactionAsync(
                 assetProxyDispatcher.publicDispatchTransferFrom.sendTransactionAsync(
                     encodedAssetDataWithoutProxyId,
                     AssetProxyId.ERC20,
@@ -323,6 +320,7 @@ describe('AssetProxyDispatcher', () => {
                     amount,
                     { from: owner },
                 ),
+                ContractLibErrors.AssetProxyDoesNotExist,
             );
         });
     });

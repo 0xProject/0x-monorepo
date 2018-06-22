@@ -185,4 +185,5 @@ export enum ContractLibErrors {
     OnlyContractOwner = 'ONLY_CONTRACT_OWNER',
     MakerNotWhitelisted = 'MAKER_NOT_WHITELISTED',
     TakerNotWhitelisted = 'TAKER_NOT_WHITELISTED',
+    AssetProxyDoesNotExist = 'ASSET_PROXY_DOES_NOT_EXIST',
 }
