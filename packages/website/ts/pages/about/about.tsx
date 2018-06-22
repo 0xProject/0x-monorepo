@@ -158,7 +158,7 @@ const teamRow5: ProfileInfo[] = [
     },
     {
         name: 'Mel Oberto',
-        title: 'Office Operations / Executive Assistant',
+        title: 'Office Ops / Executive Assistant',
         description: `Daily Operations. Previously People Operations Associate at Heap. Marketing and MBA at Sacred Heart University.`,
         image: 'images/team/mel.png',
         linkedIn: 'https://www.linkedin.com/in/melanieoberto',
