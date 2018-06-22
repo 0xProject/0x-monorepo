@@ -226,7 +226,7 @@ export class Portal extends React.Component<PortalProps, PortalState> {
                 ? TokenVisibility.UNTRACKED
                 : TokenVisibility.TRACKED;
         return (
-            <Container position="relative">
+            <Container>
                 <DocumentTitle title="0x Portal DApp" />
                 <TopBar
                     userAddress={this.props.userAddress}
@@ -327,7 +327,7 @@ export class Portal extends React.Component<PortalProps, PortalState> {
         const marginBottom = isMobile ? '200px' : '15px';
         return (
             <div>
-                <Container position="relative">
+                <Container>
                     {isMobile && <Container marginBottom="15px">{startOnboarding}</Container>}
                     <Container marginBottom={marginBottom}>
                         <Wallet

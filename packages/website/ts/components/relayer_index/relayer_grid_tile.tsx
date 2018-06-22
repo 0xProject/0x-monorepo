@@ -21,6 +21,8 @@ export interface RelayerGridTileProps {
 const styles: Styles = {
     root: {
         boxSizing: 'border-box',
+        // All material UI components have position: relative
+        // which creates a new stacking context and makes z-index stuff impossible. So reset.
         position: 'static',
     },
     innerDiv: {
