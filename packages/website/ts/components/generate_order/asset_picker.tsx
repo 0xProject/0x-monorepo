@@ -232,12 +232,14 @@ export class AssetPicker extends React.Component<AssetPickerProps, AssetPickerSt
         this.props.onTokenChosen(newToken.address);
     }
     private async _onTrackConfirmationRespondedAsync(didUserAcceptTracking: boolean): Promise<void> {
+        const resetState: AssetPickerState = {
+            ...this.state,
+            isAddingTokenToTracked: false,
+            assetView: AssetViews.ASSET_PICKER,
+            chosenTrackTokenAddress: undefined,
+        };
         if (!didUserAcceptTracking) {
-            this.setState({
-                isAddingTokenToTracked: false,
-                assetView: AssetViews.ASSET_PICKER,
-                chosenTrackTokenAddress: undefined,
-            });
+            this.setState(resetState);
             this._onCloseDialog();
             return;
         }
@@ -247,11 +249,7 @@ export class AssetPicker extends React.Component<AssetPickerProps, AssetPickerSt
         const tokenAddress = this.state.chosenTrackTokenAddress;
         const token = this.props.tokenByAddress[tokenAddress];
         if (_.isUndefined(tokenAddress)) {
-            this.setState({
-                isAddingTokenToTracked: false,
-                assetView: AssetViews.ASSET_PICKER,
-                chosenTrackTokenAddress: undefined,
-            });
+            this.setState(resetState);
             return;
         }
         const newTokenEntry = {
@@ -262,11 +260,7 @@ export class AssetPicker extends React.Component<AssetPickerProps, AssetPickerSt
         trackedTokenStorage.addTrackedTokenToUser(this.props.userAddress, this.props.networkId, newTokenEntry);
 
         this.props.dispatcher.updateTokenByAddress([newTokenEntry]);
-        this.setState({
-            isAddingTokenToTracked: false,
-            assetView: AssetViews.ASSET_PICKER,
-            chosenTrackTokenAddress: undefined,
-        });
+        this.setState(resetState);
         this.props.onTokenChosen(tokenAddress);
     }
 }
