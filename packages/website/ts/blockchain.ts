@@ -229,7 +229,7 @@ export class Blockchain {
             shouldPollUserAddress,
         );
         this._contractWrappers.setProvider(provider, this.networkId);
-        await this._blockchainWatcher.startEmittingNetworkConnectionAndUserBalanceStateAsync();
+        await this._blockchainWatcher.startEmittingUserBalanceStateAsync();
         this._dispatcher.updateProviderType(ProviderType.Ledger);
     }
     public async updateProviderToInjectedAsync(): Promise<void> {
@@ -259,7 +259,7 @@ export class Blockchain {
         this._contractWrappers.setProvider(provider, this.networkId);
 
         await this.fetchTokenInformationAsync();
-        await this._blockchainWatcher.startEmittingNetworkConnectionAndUserBalanceStateAsync();
+        await this._blockchainWatcher.startEmittingUserBalanceStateAsync();
         this._dispatcher.updateProviderType(ProviderType.Injected);
         delete this._ledgerSubprovider;
         delete this._cachedProvider;
@@ -816,7 +816,7 @@ export class Blockchain {
         this._userAddressIfExists = userAddresses[0];
         this._dispatcher.updateUserAddress(this._userAddressIfExists);
         await this.fetchTokenInformationAsync();
-        await this._blockchainWatcher.startEmittingNetworkConnectionAndUserBalanceStateAsync();
+        await this._blockchainWatcher.startEmittingUserBalanceStateAsync();
         await this._rehydrateStoreWithContractEventsAsync();
     }
     private _updateProviderName(injectedWeb3: Web3): void {
