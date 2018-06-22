@@ -90,7 +90,7 @@ export const assetProxyUtils = {
         return ethUtil.bufferToHex(ethAbi.simpleEncode(
             'ERC721Token(address,uint256,bytes)',
             tokenAddress,
-            tokenId.toString(16),
+            '0x' + tokenId.toString(16),
             ethUtil.toBuffer(receiverData || '0x'),
         ));
     },
