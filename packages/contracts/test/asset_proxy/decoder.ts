@@ -45,7 +45,6 @@ describe('TestAssetDataDecoders', () => {
             const tokenId = generatePseudoRandomSalt();
             const encodedAssetData = assetProxyUtils.encodeERC721AssetData(testAddress, tokenId);
             console.log(encodedAssetData);
-            const encodedAssetDataWithoutProxyId = encodedAssetData.slice(0, -2);
             const expectedDecodedAssetData = assetProxyUtils.decodeERC721AssetData(encodedAssetData);
             let decodedTokenAddress: string;
             let decodedTokenId: BigNumber;
@@ -54,8 +53,8 @@ describe('TestAssetDataDecoders', () => {
                 decodedTokenAddress,
                 decodedTokenId,
                 decodedData,
-            ] = await testAssetProxyDecoder.publicDecodeERC721Data.callAsync(encodedAssetDataWithoutProxyId);
-            expect(decodedTokenAddress).to.be.equal(expectedDecodedAssetData.tokenAddress);
+            ] = await testAssetProxyDecoder.publicDecodeERC721Data.callAsync(encodedAssetData);
+            expect(decodedTokenAddress).to.be.equal( expectedDecodedAssetData.tokenAddress);
             expect(decodedTokenId).to.be.bignumber.equal(expectedDecodedAssetData.tokenId);
             expect(decodedData).to.be.equal(expectedDecodedAssetData.receiverData);
         });
