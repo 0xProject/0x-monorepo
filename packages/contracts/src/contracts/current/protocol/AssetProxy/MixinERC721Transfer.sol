@@ -53,7 +53,12 @@ contract MixinERC721Transfer is
             bytes memory receiverData
         ) = decodeERC721AssetData(assetData);
 
-        ERC721Token(token).safeTransferFrom(from, to, tokenId, receiverData);
+        ERC721Token(token).safeTransferFrom(
+            from,
+            to,
+            tokenId,
+            receiverData
+        );
     }
 
     /// @dev Decodes ERC721 Asset data.
