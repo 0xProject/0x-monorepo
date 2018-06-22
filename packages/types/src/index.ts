@@ -152,18 +152,18 @@ export interface ECSignature {
 }
 
 export enum AssetProxyId {
-    INVALID,
-    ERC20,
-    ERC721,
+    INVALID = '0x00000000',
+    ERC20 = '0xf47261b0',
+    ERC721 = '0x08e937fa',
 }
 
 export interface ERC20AssetData {
-    assetProxyId: AssetProxyId;
+    assetProxyId: string;
     tokenAddress: string;
 }
 
 export interface ERC721AssetData {
-    assetProxyId: AssetProxyId;
+    assetProxyId: string;
     tokenAddress: string;
     tokenId: BigNumber;
     receiverData: string;

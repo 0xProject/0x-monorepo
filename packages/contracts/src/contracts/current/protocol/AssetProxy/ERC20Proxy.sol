@@ -30,7 +30,7 @@ contract ERC20Proxy is
     MixinERC20Transfer
 {
     // Id of this proxy.
-    bytes4 constant PROXY_ID = 1;
+    bytes4 constant PROXY_ID = 0xf47261b0;
 
     /// @dev Gets the proxy id associated with the proxy address.
     /// @return Proxy id.

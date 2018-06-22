@@ -44,6 +44,7 @@ describe('TestAssetDataDecoders', () => {
         it('should correctly decode ERC721 asset data', async () => {
             const tokenId = generatePseudoRandomSalt();
             const encodedAssetData = assetProxyUtils.encodeERC721AssetData(testAddress, tokenId);
+            console.log(encodedAssetData);
             const encodedAssetDataWithoutProxyId = encodedAssetData.slice(0, -2);
             const expectedDecodedAssetData = assetProxyUtils.decodeERC721AssetData(encodedAssetData);
             let decodedTokenAddress: string;
