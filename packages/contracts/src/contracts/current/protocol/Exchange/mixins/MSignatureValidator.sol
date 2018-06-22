@@ -23,16 +23,23 @@ import "../interfaces/ISignatureValidator.sol";
 contract MSignatureValidator is
     ISignatureValidator
 {
+    event SignatureValidatorApproval(
+        address indexed signerAddress,     // Address that approves or disapproves a contract to verify signatures.
+        address indexed validatorAddress,  // Address of signature validator contract.
+        bool approved                      // Approval or disapproval of validator contract.
+    );
+
     // Allowed signature types.
     enum SignatureType {
-        Illegal,    // 0x00, default value
-        Invalid,    // 0x01
-        EIP712,     // 0x02
-        EthSign,    // 0x03
-        Caller,     // 0x04
-        Wallet,     // 0x05
-        Validator,  // 0x06
-        PreSigned,  // 0x07
-        Trezor      // 0x08
+        Illegal,         // 0x00, default value
+        Invalid,         // 0x01
+        EIP712,          // 0x02
+        EthSign,         // 0x03
+        Caller,          // 0x04
+        Wallet,          // 0x05
+        Validator,       // 0x06
+        PreSigned,       // 0x07
+        Trezor,          // 0x08
+        NSignatureTypes  // 0x09, number of signature types. Always leave at end.
     }
 }

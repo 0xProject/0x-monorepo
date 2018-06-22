@@ -2,7 +2,6 @@ import { BlockchainLifecycle } from '@0xproject/dev-utils';
 import { schemas, SchemaValidator } from '@0xproject/json-schemas';
 import * as chai from 'chai';
 import * as _ from 'lodash';
-import 'make-promises-safe';
 import 'mocha';
 
 import { ContractWrappers, Token } from '../src';

@@ -2,7 +2,6 @@ import { BigNumber } from '@0xproject/utils';
 import * as chai from 'chai';
 import * as dirtyChai from 'dirty-chai';
 import forEach = require('lodash.foreach');
-import 'make-promises-safe';
 import 'mocha';
 
 import { schemas, SchemaValidator } from '../src/index';

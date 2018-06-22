@@ -1,5 +1,4 @@
 import * as chai from 'chai';
-import 'make-promises-safe';
 import Web3ProviderEngine = require('web3-provider-engine');
 import FixtureSubprovider = require('web3-provider-engine/subproviders/fixture');
 

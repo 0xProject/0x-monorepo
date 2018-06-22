@@ -1,6 +1,5 @@
 import { BlockchainLifecycle } from '@0xproject/dev-utils';
 import * as chai from 'chai';
-import 'make-promises-safe';
 
 import { MixinAuthorizableContract } from '../../src/generated_contract_wrappers/mixin_authorizable';
 import { artifacts } from '../../src/utils/artifacts';

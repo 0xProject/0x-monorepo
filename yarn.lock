@@ -441,9 +441,9 @@
   version "2.3.7"
   resolved "https://registry.yarnpkg.com/@types/sinon/-/sinon-2.3.7.tgz#e92c2fed3297eae078d78d1da032b26788b4af86"
 
-"@types/solidity-parser-antlr@^0.2.0":
-  version "0.2.0"
-  resolved "https://registry.yarnpkg.com/@types/solidity-parser-antlr/-/solidity-parser-antlr-0.2.0.tgz#52b2df98d8d529adfd7188adc62a854bb77f0fb3"
+"@types/solidity-parser-antlr@^0.2.1":
+  version "0.2.1"
+  resolved "https://registry.yarnpkg.com/@types/solidity-parser-antlr/-/solidity-parser-antlr-0.2.1.tgz#29ff386773a72a06c8a9c40c666d2a1cea53c2ed"
 
 "@types/uuid@^3.4.2":
   version "3.4.3"

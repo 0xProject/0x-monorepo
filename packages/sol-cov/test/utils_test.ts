@@ -1,6 +1,5 @@
 import * as chai from 'chai';
 import * as dirtyChai from 'dirty-chai';
-import 'make-promises-safe';
 import 'mocha';
 
 import { utils } from '../src/utils';

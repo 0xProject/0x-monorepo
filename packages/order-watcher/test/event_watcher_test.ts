@@ -3,7 +3,6 @@ import { DoneCallback, LogEntry, LogEntryEvent } from '@0xproject/types';
 import { Web3Wrapper } from '@0xproject/web3-wrapper';
 import * as chai from 'chai';
 import * as _ from 'lodash';
-import 'make-promises-safe';
 import 'mocha';
 import * as Sinon from 'sinon';
 

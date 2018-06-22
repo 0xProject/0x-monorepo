@@ -86,7 +86,6 @@ interface AccessoryItemConfig {
 const styles: Styles = {
     root: {
         width: '100%',
-        position: 'relative',
     },
     footerItemInnerDiv: {
         paddingLeft: 24,
@@ -323,6 +322,9 @@ export class Wallet extends React.Component<WalletProps, WalletState> {
     }
     private _renderTokenRow(token: Token, _index: number): React.ReactNode {
         const tokenState = this.props.trackedTokenStateByAddress[token.address];
+        if (_.isUndefined(tokenState)) {
+            return null;
+        }
         const tokenLink = sharedUtils.getEtherScanLinkIfExists(
             token.address,
             this.props.networkId,

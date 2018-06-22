@@ -2,7 +2,6 @@ import { BlockchainLifecycle } from '@0xproject/dev-utils';
 import { BigNumber } from '@0xproject/utils';
 import * as chai from 'chai';
 import { LogWithDecodedArgs } from 'ethereum-types';
-import 'make-promises-safe';
 
 import {
     AssetProxyOwnerContract,

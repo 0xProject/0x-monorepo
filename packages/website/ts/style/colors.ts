@@ -1,7 +1,7 @@
 import { colors as sharedColors } from '@0xproject/react-shared';
 
 const appColors = {
-    walletBoxShadow: 'rgba(56, 59, 137, 0.2)',
+    walletBoxShadow: 'rgba(0, 0, 0, 0.05)',
     walletBorder: '#ededee',
     walletDefaultItemBackground: '#fbfbfc',
     walletFocusedItemBackground: '#f0f1f4',
