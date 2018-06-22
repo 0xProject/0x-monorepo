@@ -5,7 +5,6 @@ import 'make-promises-safe';
 import { MixinAuthorizableContract } from '../../src/generated_contract_wrappers/mixin_authorizable';
 import { artifacts } from '../../src/utils/artifacts';
 import {
-    expectRevertOrAlwaysFailingTransactionAsync,
     expectRevertReasonOrAlwaysFailingTransactionAsync,
 } from '../../src/utils/assertions';
 import { chaiSetup } from '../../src/utils/chai_setup';
