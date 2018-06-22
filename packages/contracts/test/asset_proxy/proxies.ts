@@ -447,8 +447,8 @@ describe('Asset Transfer Proxies', () => {
 
                 const numTransfers = 2;
                 const assetData = [
-                    assetProxyUtils.encodeERC721AssetData(erc721Token.address, makerTokenIdA).slice(0, -2),
-                    assetProxyUtils.encodeERC721AssetData(erc721Token.address, makerTokenIdB).slice(0, -2),
+                    assetProxyUtils.encodeERC721AssetData(erc721Token.address, makerTokenIdA),
+                    assetProxyUtils.encodeERC721AssetData(erc721Token.address, makerTokenIdB),
                 ];
                 const fromAddresses = _.times(numTransfers, () => makerAddress);
                 const toAddresses = _.times(numTransfers, () => takerAddress);
