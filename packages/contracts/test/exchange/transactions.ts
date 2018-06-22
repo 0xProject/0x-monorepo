@@ -10,9 +10,7 @@ import { ExchangeContract } from '../../src/generated_contract_wrappers/exchange
 import { ExchangeWrapperContract } from '../../src/generated_contract_wrappers/exchange_wrapper';
 import { WhitelistContract } from '../../src/generated_contract_wrappers/whitelist';
 import { artifacts } from '../../src/utils/artifacts';
-import {
-    expectRevertReasonOrAlwaysFailingTransactionAsync,
-} from '../../src/utils/assertions';
+import { expectRevertReasonOrAlwaysFailingTransactionAsync } from '../../src/utils/assertions';
 import { chaiSetup } from '../../src/utils/chai_setup';
 import { constants } from '../../src/utils/constants';
 import { ERC20Wrapper } from '../../src/utils/erc20_wrapper';

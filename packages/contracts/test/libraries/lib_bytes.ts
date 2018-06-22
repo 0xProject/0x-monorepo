@@ -112,7 +112,7 @@ describe('LibBytes', () => {
         it('should revert if length is less than 20', async () => {
             return expectRevertOrOtherErrorAsync(
                 libBytes.publicPopLast20Bytes.callAsync(byteArrayShorterThan20Bytes),
-                RevertReasons.LibBytesGreaterOrEqualTo20LengthRequired
+                RevertReasons.LibBytesGreaterOrEqualTo20LengthRequired,
             );
         });
         it('should pop the last 20 bytes from the input and return it', async () => {
@@ -173,7 +173,7 @@ describe('LibBytes', () => {
         it('should revert if dest is shorter than source', async () => {
             return expectRevertOrOtherErrorAsync(
                 libBytes.publicDeepCopyBytes.callAsync(byteArrayShorterThan32Bytes, byteArrayLongerThan32Bytes),
-                RevertReasons.LibBytesGreaterOrEqualToSourceBytesLengthRequired
+                RevertReasons.LibBytesGreaterOrEqualToSourceBytesLengthRequired,
             );
         });
         it('should overwrite dest with source if source and dest have equal length', async () => {

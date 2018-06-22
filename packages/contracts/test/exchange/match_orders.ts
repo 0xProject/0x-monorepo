@@ -12,9 +12,7 @@ import { ERC20ProxyContract } from '../../src/generated_contract_wrappers/e_r_c2
 import { ERC721ProxyContract } from '../../src/generated_contract_wrappers/e_r_c721_proxy';
 import { ExchangeContract } from '../../src/generated_contract_wrappers/exchange';
 import { artifacts } from '../../src/utils/artifacts';
-import {
-    expectRevertReasonOrAlwaysFailingTransactionAsync,
-} from '../../src/utils/assertions';
+import { expectRevertReasonOrAlwaysFailingTransactionAsync } from '../../src/utils/assertions';
 import { chaiSetup } from '../../src/utils/chai_setup';
 import { constants } from '../../src/utils/constants';
 import { ERC20Wrapper } from '../../src/utils/erc20_wrapper';
@@ -22,7 +20,13 @@ import { ERC721Wrapper } from '../../src/utils/erc721_wrapper';
 import { ExchangeWrapper } from '../../src/utils/exchange_wrapper';
 import { MatchOrderTester } from '../../src/utils/match_order_tester';
 import { OrderFactory } from '../../src/utils/order_factory';
-import { RevertReasons, ERC20BalancesByOwner, ERC721TokenIdsByOwner, OrderInfo, OrderStatus } from '../../src/utils/types';
+import {
+    RevertReasons,
+    ERC20BalancesByOwner,
+    ERC721TokenIdsByOwner,
+    OrderInfo,
+    OrderStatus,
+} from '../../src/utils/types';
 import { provider, txDefaults, web3Wrapper } from '../../src/utils/web3_wrapper';
 
 chaiSetup.configure();

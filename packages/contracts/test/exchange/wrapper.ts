@@ -12,9 +12,7 @@ import { ERC20ProxyContract } from '../../src/generated_contract_wrappers/e_r_c2
 import { ERC721ProxyContract } from '../../src/generated_contract_wrappers/e_r_c721_proxy';
 import { ExchangeContract } from '../../src/generated_contract_wrappers/exchange';
 import { artifacts } from '../../src/utils/artifacts';
-import {
-    expectRevertReasonOrAlwaysFailingTransactionAsync,
-} from '../../src/utils/assertions';
+import { expectRevertReasonOrAlwaysFailingTransactionAsync } from '../../src/utils/assertions';
 import { chaiSetup } from '../../src/utils/chai_setup';
 import { constants } from '../../src/utils/constants';
 import { ERC20Wrapper } from '../../src/utils/erc20_wrapper';
