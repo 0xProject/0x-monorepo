@@ -1,5 +1,14 @@
 [
     {
+        "version": "0.7.3",
+        "changes": [
+            {
+                "note": "Fixes uncaught Error in abi_decoder",
+				        "pr": 763
+            }
+        ]
+    },
+    {
         "version": "0.7.2",
         "changes": [
             {

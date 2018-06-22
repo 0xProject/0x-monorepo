@@ -1,11 +1,9 @@
 [
     {
-        "timestamp": 1529701469,
         "version": "0.0.7",
         "changes": [
             {
-                "note": "Fixes Uncaught Error in OrderWatcher",
-                "pr": 763
+                "note": "Dependencies updated"
             }
         ]
     },

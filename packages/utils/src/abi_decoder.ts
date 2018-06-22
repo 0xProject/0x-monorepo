@@ -32,7 +32,15 @@ export class AbiDecoder {
         const decodedParams: DecodedLogArgs = {};
         let topicsIndex = 1;
 
-        const decodedData = ethersInterface.events[event.name].parse(log.data);
+        let decodedData: any[];
+        try {
+          decodedData = ethersInterface.events[event.name].parse(log.data);
+        } catch (error) {
+          if (error.code === ethers.errors.INVALID_ARGUMENT) {
+            return log;
+          }
+          throw error;
+        }
 
         let didFailToDecode = false;
         _.forEach(event.inputs, (param: EventParameter, i: number) => {
