@@ -183,4 +183,6 @@ export enum ContractLibErrors {
     IndexOutOfBounds = 'INDEX_OUT_OF_BOUNDS',
     AuthorizedAddressMismatch = 'AUTHORIZED_ADDRESS_MISMATCH',
     OnlyContractOwner = 'ONLY_CONTRACT_OWNER',
+    MakerNotWhitelisted = 'MAKER_NOT_WHITELISTED',
+    TakerNotWhitelisted = 'TAKER_NOT_WHITELISTED',
 }
