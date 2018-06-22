@@ -243,7 +243,7 @@ export class Portal extends React.Component<PortalProps, PortalState> {
                     style={{
                         backgroundColor: colors.lightestGrey,
                         position: 'fixed',
-                        // Hack: used to make onboarding z-index logi work for both mobile and desktop
+                        // Hack: used to make onboarding z-index logic work for both mobile and desktop
                         zIndex: utils.isMobile(this.props.screenWidth) ? zIndex.topBar : undefined,
                     }}
                     maxWidth={LARGE_LAYOUT_MAX_WIDTH}

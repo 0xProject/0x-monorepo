@@ -29,6 +29,7 @@ import { WrapEtherItem } from 'ts/components/wallet/wrap_ether_item';
 import { AllowanceToggle } from 'ts/containers/inputs/allowance_toggle';
 import { Dispatcher } from 'ts/redux/dispatcher';
 import { colors } from 'ts/style/colors';
+import { styled } from 'ts/style/theme';
 import {
     BlockchainErrs,
     ProviderType,
@@ -43,7 +44,6 @@ import {
 import { analytics } from 'ts/utils/analytics';
 import { constants } from 'ts/utils/constants';
 import { utils } from 'ts/utils/utils';
-import { styled } from 'ts/style/theme';
 import { styles as walletItemStyles } from 'ts/utils/wallet_item_styles';
 
 export interface WalletProps {
