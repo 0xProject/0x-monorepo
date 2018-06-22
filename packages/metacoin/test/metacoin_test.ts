@@ -3,7 +3,6 @@ import { ContractArtifact } from '@0xproject/sol-compiler';
 import { BigNumber } from '@0xproject/utils';
 import * as chai from 'chai';
 import { LogWithDecodedArgs } from 'ethereum-types';
-import 'make-promises-safe';
 
 import * as MetacoinArtifact from '../artifacts/Metacoin.json';
 import { MetacoinContract, TransferContractEventArgs } from '../src/contract_wrappers/metacoin';
