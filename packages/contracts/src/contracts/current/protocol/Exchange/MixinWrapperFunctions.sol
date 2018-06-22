@@ -366,14 +366,6 @@ contract MixinWrapperFunctions is
                 signatures[i]
             );
 
-            // HACK: the proxyId is "popped" from the byte array before a fill is settled
-            // by subtracting from the length of the array. Since the popped byte is 
-            // still in memory, we can "unpop" it by incrementing the length of the byte array.
-            assembly {
-                let len := mload(takerAssetData)
-                mstore(takerAssetData, add(len, 1))
-            }
-
             // Update amounts filled and fees paid by maker and taker
             addFillResults(totalFillResults, singleFillResults);
 
@@ -466,14 +458,6 @@ contract MixinWrapperFunctions is
                 remainingTakerAssetFillAmount,
                 signatures[i]
             );
-
-            // HACK: the proxyId is "popped" from the byte array before a fill is settled
-            // by subtracting from the length of the array. Since the popped byte is 
-            // still in memory, we can "unpop" it by incrementing the length of the byte array.
-            assembly {
-                let len := mload(makerAssetData)
-                mstore(makerAssetData, add(len, 1))
-            }
 
             // Update amounts filled and fees paid by maker and taker
             addFillResults(totalFillResults, singleFillResults);
