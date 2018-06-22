@@ -7,6 +7,7 @@ import { artifacts } from '../src/utils/artifacts';
 import { expectRevertOrOtherErrorAsync } from '../src/utils/assertions';
 import { chaiSetup } from '../src/utils/chai_setup';
 import { constants } from '../src/utils/constants';
+import { ContractLibErrors } from '../src/utils/types';
 import { provider, txDefaults, web3Wrapper } from '../src/utils/web3_wrapper';
 
 chaiSetup.configure();
@@ -55,7 +56,7 @@ describe('UnlimitedAllowanceToken', () => {
             const amountToTransfer = ownerBalance.plus(1);
             return expectRevertOrOtherErrorAsync(
                 token.transfer.callAsync(spender, amountToTransfer, { from: owner }),
-                constants.ERC20_INSUFFICIENT_BALANCE,
+                ContractLibErrors.Erc20InsufficientBalance,
             );
         });
 
@@ -96,7 +97,7 @@ describe('UnlimitedAllowanceToken', () => {
                 token.transferFrom.callAsync(owner, spender, amountToTransfer, {
                     from: spender,
                 }),
-                constants.ERC20_INSUFFICIENT_BALANCE,
+                ContractLibErrors.Erc20InsufficientBalance,
             );
         });
 
@@ -112,7 +113,7 @@ describe('UnlimitedAllowanceToken', () => {
                 token.transferFrom.callAsync(owner, spender, amountToTransfer, {
                     from: spender,
                 }),
-                constants.ERC20_INSUFFICIENT_ALLOWANCE,
+                ContractLibErrors.Erc20InsufficientAllowance,
             );
         });
 
