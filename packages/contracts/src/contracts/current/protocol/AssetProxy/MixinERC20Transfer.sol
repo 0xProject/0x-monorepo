@@ -77,7 +77,7 @@ contract MixinERC20Transfer is
             mstore(add(cdStart, 36), and(to, 0xffffffffffffffffffffffffffffffffffffffff))
             mstore(add(cdStart, 68), amount)
 
-            /////// Call `assetProxy.transferFrom` using the constructed calldata ///////
+            /////// Call `token.transferFrom` using the constructed calldata ///////
             success := call(
                 gas,
                 token,
@@ -85,10 +85,9 @@ contract MixinERC20Transfer is
                 cdStart,
                 sub(cdEnd, cdStart),
                 cdStart,
-                0
+                32
             )
         }
-
         require(
             success,
             TRANSFER_FAILED
