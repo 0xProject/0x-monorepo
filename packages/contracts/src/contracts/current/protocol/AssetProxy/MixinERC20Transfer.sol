@@ -46,12 +46,49 @@ contract MixinERC20Transfer is
         // Transfer tokens.
         // We do a raw call so we can check the success separate
         // from the return data.
-        bool success = token.call(abi.encodeWithSelector(
-            IERC20Token(token).transferFrom.selector,
-            from,
-            to,
-            amount
-        ));
+        // We construct calldata for the `token.transferFrom` ABI.
+        // The layout of this calldata is in the table below.
+        // 
+        // | Area     | Offset | Length  | Contents                                    |
+        // | -------- |--------|---------|-------------------------------------------- |
+        // | Header   | 0      | 4       | function selector                           |
+        // | Params   |        | 3 * 32  | function parameters:                        |
+        // |          | 4      |         |   1. from                                   |
+        // |          | 36     |         |   2. to                                     |
+        // |          | 68     |         |   3. amount                                 |
+
+        bytes4 transferFromSelector = IERC20Token(token).transferFrom.selector;
+        bool success;
+        assembly {
+            /////// Setup State ///////
+            // `cdStart` is the start of the calldata for `token.transferFrom` (equal to free memory ptr).
+            let cdStart := mload(64)
+            // `cdEnd` is the end of the calldata for `token.transferFrom`.
+            let cdEnd := add(cdStart, 100)
+
+            /////// Setup Header Area ///////
+            // This area holds the 4-byte `transferFromSelector`.
+            mstore(cdStart, transferFromSelector)
+            
+            /////// Setup Params Area ///////
+            // Each parameter is padded to 32-bytes. The entire Params Area is 96 bytes.
+            // A 20-byte mask is applied to addresses to zero-out the unused bytes.
+            mstore(add(cdStart, 4), and(from, 0xffffffffffffffffffffffffffffffffffffffff))
+            mstore(add(cdStart, 36), and(to, 0xffffffffffffffffffffffffffffffffffffffff))
+            mstore(add(cdStart, 68), amount)
+
+            /////// Call `assetProxy.transferFrom` using the constructed calldata ///////
+            success := call(
+                gas,
+                token,
+                0,
+                cdStart,
+                sub(cdEnd, cdStart),
+                cdStart,
+                0
+            )
+        }
+
         require(
             success,
             TRANSFER_FAILED
