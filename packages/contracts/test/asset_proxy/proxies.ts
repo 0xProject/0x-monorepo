@@ -176,15 +176,9 @@ describe('Asset Transfer Proxies', () => {
                 // Perform a transfer from makerAddress to takerAddress
                 const amount = new BigNumber(10);
                 return expectRevertOrAlwaysFailingTransactionAsync(
-                    erc20Proxy.transferFrom.sendTransactionAsync(
-                        encodedAssetData,
-                        makerAddress,
-                        takerAddress,
-                        amount,
-                        {
-                            from: notAuthorized,
-                        },
-                    ),
+                    erc20Proxy.transferFrom.sendTransactionAsync(encodedAssetData, makerAddress, takerAddress, amount, {
+                        from: notAuthorized,
+                    }),
                 );
             });
         });
@@ -411,15 +405,9 @@ describe('Asset Transfer Proxies', () => {
                 // Perform a transfer; expect this to fail.
                 const amount = new BigNumber(1);
                 return expectRevertOrAlwaysFailingTransactionAsync(
-                    erc20Proxy.transferFrom.sendTransactionAsync(
-                        encodedAssetData,
-                        makerAddress,
-                        takerAddress,
-                        amount,
-                        {
-                            from: notAuthorized,
-                        },
-                    ),
+                    erc20Proxy.transferFrom.sendTransactionAsync(encodedAssetData, makerAddress, takerAddress, amount, {
+                        from: notAuthorized,
+                    }),
                 );
             });
 
