@@ -74,17 +74,16 @@ contract MixinERC20Transfer is
                 cdStart,
                 32
             )
-            if success {
-                if returndatasize {
-                    success := 0
-                    if eq(returndatasize, 32) {
-                        // First 64 bytes of memory are reserved scratch space
-                        returndatacopy(0, 0, 32)
-                        success := mload(0)
-                    }
-                }
-                
-            }
+
+            // The transfer succeeded if the call succeeded and either
+            // returned nothing, or returned a non-zero 32 byte value. 
+            success := and(success, or(
+                iszero(returndatasize),
+                and(
+                    eq(returndatasize, 32),
+                    gt(mload(cdStart), 0)
+                )
+            ))
         }
         require(
             success,
