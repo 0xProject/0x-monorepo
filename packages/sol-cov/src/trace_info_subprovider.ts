@@ -44,14 +44,31 @@ export abstract class TraceInfoSubprovider extends TraceCollectionSubprovider {
             }
         } else {
             for (const subcallAddress of subcallAddresses) {
-                const runtimeBytecode = await this._web3Wrapper.getContractCodeAsync(subcallAddress);
-                const traceForThatSubcall = tracesByContractAddress[subcallAddress];
-                const traceInfo: TraceInfoExistingContract = {
-                    subtrace: traceForThatSubcall,
-                    txHash,
-                    address: subcallAddress,
-                    runtimeBytecode,
-                };
+                let traceInfo: TraceInfoNewContract | TraceInfoExistingContract;
+                if (subcallAddress.startsWith(constants.CREATE_PLACEHOLDER_PREFIX)) {
+                    const deployedAddress = subcallAddress.replace(constants.CREATE_PLACEHOLDER_PREFIX, '');
+                    const runtimeBytecode = await this._web3Wrapper.getContractCodeAsync(deployedAddress);
+                    const traceForThatSubcall = tracesByContractAddress[subcallAddress];
+                    traceInfo = {
+                        subtrace: traceForThatSubcall,
+                        txHash,
+                        address: 'NEW_CONTRACT',
+                        // we use runtimeBytecode here b/c it is what we can fetch.
+                        // the later call to `utils.getContractDataIfExists` in TraceCollector
+                        // will compare the bytecode to the contractData bytecode & runtimeBytecode
+                        // so the contract will still find a match
+                        bytecode: runtimeBytecode,
+                    };
+                } else {
+                    const runtimeBytecode = await this._web3Wrapper.getContractCodeAsync(subcallAddress);
+                    const traceForThatSubcall = tracesByContractAddress[subcallAddress];
+                    traceInfo = {
+                        subtrace: traceForThatSubcall,
+                        txHash,
+                        address: subcallAddress,
+                        runtimeBytecode,
+                    };
+                }
                 await this._handleTraceInfoAsync(traceInfo);
             }
         }

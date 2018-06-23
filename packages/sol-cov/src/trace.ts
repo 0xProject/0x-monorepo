@@ -55,7 +55,9 @@ export function getTracesByContractAddress(structLogs: StructLog[], startAddress
             if (currentAddress.startsWith(constants.CREATE_PLACEHOLDER_PREFIX) && structLog.op === OpCode.Return) {
                 // we now know the address of the contract deployed in the CREATE opcode
                 const nextLog = normalizedStructLogs[i + 1];
-                const createAddress = utils.getAddressFromStackEntry(_.last(nextLog.stack) as string);
+                const createAddress = `${constants.CREATE_PLACEHOLDER_PREFIX}${utils.getAddressFromStackEntry(_.last(
+                    nextLog.stack,
+                ) as string)}`;
 
                 // replace the placeholder with the correct address
                 traceByContractAddress[createAddress] = traceByContractAddress[currentAddress];
@@ -81,6 +83,7 @@ export function getTracesByContractAddress(structLogs: StructLog[], startAddress
             traceByContractAddress[currentAddress] = (traceByContractAddress[currentAddress] || []).concat(
                 currentTraceSegment,
             );
+            currentTraceSegment = [];
         } else {
             if (structLog !== _.last(normalizedStructLogs)) {
                 const nextStructLog = normalizedStructLogs[i + 1];
