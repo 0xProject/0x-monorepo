@@ -27,7 +27,6 @@ import "./mixins/MAssetProxyDispatcher.sol";
 
 contract MixinMatchOrders is
     LibConstants,
-    LibBytes,
     LibMath,
     LibExchangeErrors,
     MAssetProxyDispatcher,
@@ -35,6 +34,7 @@ contract MixinMatchOrders is
     MMatchOrders,
     MTransactions
 {
+    using LibBytes for bytes;
 
     /// @dev Match two complementary orders that have a profitable spread.
     ///      Each order is filled at their respective price point. However, the calculations are
@@ -242,8 +242,8 @@ contract MixinMatchOrders is
     )
         private
     {
-        uint8 leftMakerAssetProxyId = uint8(popLastByte(leftOrder.makerAssetData));
-        uint8 rightMakerAssetProxyId = uint8(popLastByte(rightOrder.makerAssetData));
+        uint8 leftMakerAssetProxyId = uint8(leftOrder.makerAssetData.popLastByte());
+        uint8 rightMakerAssetProxyId = uint8(rightOrder.makerAssetData.popLastByte());
         bytes memory zrxAssetData = ZRX_ASSET_DATA;
         // Order makers and taker
         dispatchTransferFrom(

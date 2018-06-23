@@ -21,9 +21,9 @@ pragma experimental ABIEncoderV2;
 
 import "../../utils/LibBytes/LibBytes.sol";
 
-contract TestLibBytes is
-    LibBytes
-{
+contract TestLibBytes {
+    
+    using LibBytes for bytes;
 
     /// @dev Pops the last byte off of a byte array by modifying its length.
     /// @param b Byte array that will be modified.
@@ -33,7 +33,7 @@ contract TestLibBytes is
         pure
         returns (bytes memory, bytes1 result)
     {
-        result = popLastByte(b);
+        result = b.popLastByte();
         return (b, result);
     }
 
@@ -45,7 +45,7 @@ contract TestLibBytes is
         pure
         returns (bytes memory, address result)
     {
-        result = popLast20Bytes(b);
+        result = b.popLast20Bytes();
         return (b, result);
     }
 
@@ -53,12 +53,23 @@ contract TestLibBytes is
     /// @param lhs First byte array to compare.
     /// @param rhs Second byte array to compare.
     /// @return True if arrays are the same. False otherwise.
-    function publicAreBytesEqual(bytes memory lhs, bytes memory rhs)
+    function publicEquals(bytes memory lhs, bytes memory rhs)
         public
         pure
         returns (bool equal)
     {
-        equal = areBytesEqual(lhs, rhs);
+        equal = lhs.equals(rhs);
+        return equal;
+    }
+    
+    function publicEqualsPop1(bytes memory lhs, bytes memory rhs)
+        public
+        pure
+        returns (bool equal)
+    {
+        lhs.popLastByte();
+        rhs.popLastByte();
+        equal = lhs.equals(rhs);
         return equal;
     }
 
@@ -73,7 +84,7 @@ contract TestLibBytes is
         pure
         returns (bytes memory)
     {
-        deepCopyBytes(dest, source);
+        LibBytes.deepCopyBytes(dest, source);
         return dest;
     }
 
@@ -89,7 +100,7 @@ contract TestLibBytes is
         pure
         returns (address result)
     {
-        result = readAddress(b, index);
+        result = b.readAddress(index);
         return result;
     }
 
@@ -106,7 +117,7 @@ contract TestLibBytes is
         pure
         returns (bytes memory)
     {
-        writeAddress(b, index, input);
+        b.writeAddress(index, input);
         return b;
     }
 
@@ -122,7 +133,7 @@ contract TestLibBytes is
         pure
         returns (bytes32 result)
     {
-        result = readBytes32(b, index);
+        result = b.readBytes32(index);
         return result;
     }
 
@@ -139,7 +150,7 @@ contract TestLibBytes is
         pure
         returns (bytes memory)
     {
-        writeBytes32(b, index, input);
+        b.writeBytes32(index, input);
         return b;
     }
 
@@ -155,7 +166,7 @@ contract TestLibBytes is
         pure
         returns (uint256 result)
     {
-        result = readUint256(b, index);
+        result = b.readUint256(index);
         return result;
     }
 
@@ -172,19 +183,23 @@ contract TestLibBytes is
         pure
         returns (bytes memory)
     {
-        writeUint256(b, index, input);
+        b.writeUint256(index, input);
         return b;
     }
 
-    /// @dev Reads the first 4 bytes from a byte array of arbitrary length.
-    /// @param b Byte array to read first 4 bytes from.
-    /// @return First 4 bytes of data.
-    function publicReadFirst4(bytes memory b)
+    /// @dev Reads an unpadded bytes4 value from a position in a byte array.
+    /// @param b Byte array containing a bytes4 value.
+    /// @param index Index in byte array of bytes4 value.
+    /// @return bytes4 value from byte array.
+    function publicReadBytes4(
+        bytes memory b,
+        uint256 index
+    )
         public
         pure
         returns (bytes4 result)
     {
-        result = readFirst4(b);
+        result = b.readBytes4(index);
         return result;
     }
 
@@ -192,7 +207,7 @@ contract TestLibBytes is
     /// @param b Byte array containing nested bytes.
     /// @param index Index of nested bytes.
     /// @return result Nested bytes.
-    function publicReadBytes(
+    function publicReadBytesWithLength(
         bytes memory b,
         uint256 index
     )
@@ -200,7 +215,7 @@ contract TestLibBytes is
         pure
         returns (bytes memory result)
     {
-        result = readBytes(b, index);
+        result = b.readBytesWithLength(index);
         return result;
     }
 
@@ -209,7 +224,7 @@ contract TestLibBytes is
     /// @param index Index in byte array of <input>.
     /// @param input bytes to insert.
     /// @return b Updated input byte array
-    function publicWriteBytes(
+    function publicWriteBytesWithLength(
         bytes memory b,
         uint256 index,
         bytes memory input
@@ -218,7 +233,37 @@ contract TestLibBytes is
         pure
         returns (bytes memory)
     {
-        writeBytes(b, index, input);
+        b.writeBytesWithLength(index, input);
         return b;
+    }
+    
+    /// @dev Copies a block of memory from one location to another.
+    /// @param mem Memory contents we want to apply memCopy to
+    /// @param dest Destination offset into <mem>.
+    /// @param source Source offset into <mem>.
+    /// @param length Length of bytes to copy from <source> to <dest>
+    /// @return mem Memory contents after calling memCopy.
+    function testMemcpy(
+        bytes mem,
+        uint256 dest,
+        uint256 source,
+        uint256 length
+    )
+        public // not external, we need input in memory
+        pure
+        returns (bytes)
+    {
+        // Sanity check. Overflows are not checked.
+        require(source + length <= mem.length);
+        require(dest + length <= mem.length);
+
+        // Get pointer to memory contents
+        uint256 offset = mem.contentAddress();
+
+        // Execute memCopy adjusted for memory array location
+        LibBytes.memCopy(offset + dest, offset + source, length);
+
+        // Return modified memory contents
+        return mem;
     }
 }

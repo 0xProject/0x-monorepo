@@ -32,7 +32,6 @@ import "./mixins/MAssetProxyDispatcher.sol";
 
 contract MixinExchangeCore is
     LibConstants,
-    LibBytes,
     LibMath,
     LibOrder,
     LibFillResults,
@@ -42,6 +41,8 @@ contract MixinExchangeCore is
     MSignatureValidator,
     MTransactions
 {
+    using LibBytes for bytes;
+    
     // Mapping of orderHash => amount of takerAsset already bought by maker
     mapping (bytes32 => uint256) public filled;
 
@@ -411,8 +412,8 @@ contract MixinExchangeCore is
     )
         private
     {
-        uint8 makerAssetProxyId = uint8(popLastByte(order.makerAssetData));
-        uint8 takerAssetProxyId = uint8(popLastByte(order.takerAssetData));
+        uint8 makerAssetProxyId = uint8(order.makerAssetData.popLastByte());
+        uint8 takerAssetProxyId = uint8(order.takerAssetData.popLastByte());
         bytes memory zrxAssetData = ZRX_ASSET_DATA;
         dispatchTransferFrom(
             order.makerAssetData,

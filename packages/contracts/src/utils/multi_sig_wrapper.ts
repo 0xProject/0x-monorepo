@@ -40,13 +40,15 @@ export class MultiSigWrapper {
         const tx = await this._logDecoder.getTxWithDecodedLogsAsync(txHash);
         return tx;
     }
-    public async executeRemoveAuthorizedAddressAsync(
+    public async executeRemoveAuthorizedAddressAtIndexAsync(
         txId: BigNumber,
         from: string,
     ): Promise<TransactionReceiptWithDecodedLogs> {
         // tslint:disable-next-line:no-unnecessary-type-assertion
         const txHash = await (this
-            ._multiSig as AssetProxyOwnerContract).executeRemoveAuthorizedAddress.sendTransactionAsync(txId, { from });
+            ._multiSig as AssetProxyOwnerContract).executeRemoveAuthorizedAddressAtIndex.sendTransactionAsync(txId, {
+            from,
+        });
         const tx = await this._logDecoder.getTxWithDecodedLogsAsync(txHash);
         return tx;
     }

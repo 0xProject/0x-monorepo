@@ -26,11 +26,12 @@ import "./interfaces/IWallet.sol";
 import "./interfaces/IValidator.sol";
 
 contract MixinSignatureValidator is
-    LibBytes,
     LibExchangeErrors,
     MSignatureValidator,
     MTransactions
 {
+    using LibBytes for bytes;
+    
     // Personal message headers
     string constant ETH_PERSONAL_MESSAGE = "\x19Ethereum Signed Message:\n32";
     string constant TREZOR_PERSONAL_MESSAGE = "\x19Ethereum Signed Message:\n\x20";
@@ -102,7 +103,7 @@ contract MixinSignatureValidator is
         );
 
         // Ensure signature is supported
-        uint8 signatureTypeRaw = uint8(popLastByte(signature));
+        uint8 signatureTypeRaw = uint8(signature.popLastByte());
         require(
             signatureTypeRaw < uint8(SignatureType.NSignatureTypes),
             SIGNATURE_UNSUPPORTED
@@ -144,8 +145,8 @@ contract MixinSignatureValidator is
                 LENGTH_65_REQUIRED
             );
             v = uint8(signature[0]);
-            r = readBytes32(signature, 1);
-            s = readBytes32(signature, 33);
+            r = signature.readBytes32(1);
+            s = signature.readBytes32(33);
             recovered = ecrecover(hash, v, r, s);
             isValid = signerAddress == recovered;
             return isValid;
@@ -157,8 +158,8 @@ contract MixinSignatureValidator is
                 LENGTH_65_REQUIRED
             );
             v = uint8(signature[0]);
-            r = readBytes32(signature, 1);
-            s = readBytes32(signature, 33);
+            r = signature.readBytes32(1);
+            s = signature.readBytes32(33);
             recovered = ecrecover(
                 keccak256(abi.encodePacked(ETH_PERSONAL_MESSAGE, hash)),
                 v,
@@ -199,7 +200,9 @@ contract MixinSignatureValidator is
         // | 0x14 + x | 1      | Signature type is always "\x06" |
         } else if (signatureType == SignatureType.Validator) {
             // Pop last 20 bytes off of signature byte array.
-            address validatorAddress = popLast20Bytes(signature);
+
+            address validatorAddress = signature.popLast20Bytes();
+            
             // Ensure signer has approved validator.
             if (!allowedValidators[signerAddress][validatorAddress]) {
                 return false;
@@ -230,8 +233,8 @@ contract MixinSignatureValidator is
                 LENGTH_65_REQUIRED
             );
             v = uint8(signature[0]);
-            r = readBytes32(signature, 1);
-            s = readBytes32(signature, 33);
+            r = signature.readBytes32(1);
+            s = signature.readBytes32(33);
             recovered = ecrecover(
                 keccak256(abi.encodePacked(TREZOR_PERSONAL_MESSAGE, hash)),
                 v,
