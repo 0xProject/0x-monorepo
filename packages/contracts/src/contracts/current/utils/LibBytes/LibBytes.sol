@@ -188,12 +188,12 @@ library LibBytes {
         return result;
     }
     
-    /// @dev Returns a slices from a byte array without preserving the input.
+    /// @dev Returns a slice from a byte array without preserving the input.
     /// @param b The byte array to take a slice from. Will be destroyed in the process.
     /// @param from The starting index for the slice (inclusive).
     /// @param to The final index for the slice (exclusive).
     /// @return result The slice containing bytes at indices [from, to)
-    /// @dev When `from == 0`, the original array will match the slice. In other cases it's state will be corrupted.
+    /// @dev When `from == 0`, the original array will match the slice. In other cases its state will be corrupted.
     function sliceDestructive(bytes memory b, uint256 from, uint256 to)
         internal
         pure
