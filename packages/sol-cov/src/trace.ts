@@ -59,7 +59,7 @@ export function getTracesByContractAddress(structLogs: StructLog[], startAddress
                     nextLog.stack,
                 ) as string)}`;
 
-                // replace the placeholder with the correct address
+                // update the placeholder to include the deployed address
                 traceByContractAddress[createAddress] = traceByContractAddress[currentAddress];
                 delete traceByContractAddress[currentAddress];
             }
