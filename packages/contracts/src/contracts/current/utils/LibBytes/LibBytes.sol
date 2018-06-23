@@ -459,6 +459,8 @@ library LibBytes {
     }
 
     /// @dev Reads nested bytes from a specific position.
+    /// @dev NOTE: the returned value overlaps with the input value.
+    ///            Both should be treated as immutable.
     /// @param b Byte array containing nested bytes.
     /// @param index Index of nested bytes.
     /// @return result Nested bytes.
@@ -480,15 +482,11 @@ library LibBytes {
             b.length >= index + nestedBytesLength,
             GREATER_OR_EQUAL_TO_NESTED_BYTES_LENGTH_REQUIRED
         );
-
-        // Allocate memory and copy value to result
-        result = new bytes(nestedBytesLength);
-        memCopy(
-            result.contentAddress(),
-            b.contentAddress() + index,
-            nestedBytesLength
-        );
-
+        
+        // Return a pointer to the byte array as it exists inside `b`
+        assembly {
+            result := add(b, index)
+        }
         return result;
     }
 
