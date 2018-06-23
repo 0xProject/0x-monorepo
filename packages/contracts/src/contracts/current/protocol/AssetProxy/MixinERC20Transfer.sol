@@ -43,35 +43,47 @@ contract MixinERC20Transfer is
     {
         // Decode asset data.
         address token = assetData.readAddress(16);
-
-        // Transfer tokens.
-        // We do a raw call so we can check the success separate
-        // from the return data.
-        bool success = token.call(abi.encodeWithSelector(
-            IERC20Token(token).transferFrom.selector,
-            from,
-            to,
-            amount
-        ));
-        require(
-            success,
-            TRANSFER_FAILED
-        );
         
-        // Check return data.
-        // If there is no return data, we assume the token incorrectly
-        // does not return a bool. In this case we expect it to revert
-        // on failure, which was handled above.
-        // If the token does return data, we require that it is a single
-        // value that evaluates to true.
+        bytes4 transferFromSelector = IERC20Token(token).transferFrom.selector;
+        bool success;
         assembly {
-            if returndatasize {
-                success := 0
-                if eq(returndatasize, 32) {
-                    // First 64 bytes of memory are reserved scratch space
-                    returndatacopy(0, 0, 32)
-                    success := mload(0)
+            /////// Setup State ///////
+            // `cdStart` is the start of the calldata for `token.transferFrom` (equal to free memory ptr).
+            let cdStart := mload(64)
+            // `cdEnd` is the end of the calldata for `token.transferFrom`.
+            let cdEnd := add(cdStart, 100)
+
+            /////// Setup Header Area ///////
+            // This area holds the 4-byte `transferFromSelector`.
+            mstore(cdStart, transferFromSelector)
+
+            /////// Setup Params Area ///////
+            // Each parameter is padded to 32-bytes. The entire Params Area is 96 bytes.
+            // A 20-byte mask is applied to addresses to zero-out the unused bytes.
+            mstore(add(cdStart, 4), and(from, 0xffffffffffffffffffffffffffffffffffffffff))
+            mstore(add(cdStart, 36), and(to, 0xffffffffffffffffffffffffffffffffffffffff))
+            mstore(add(cdStart, 68), amount)
+
+            /////// Call `token.transferFrom` using the constructed calldata ///////
+            success := call(
+                gas,
+                token,
+                0,
+                cdStart,
+                sub(cdEnd, cdStart),
+                cdStart,
+                32
+            )
+            if success {
+                if returndatasize {
+                    success := 0
+                    if eq(returndatasize, 32) {
+                        // First 64 bytes of memory are reserved scratch space
+                        returndatacopy(0, 0, 32)
+                        success := mload(0)
+                    }
                 }
+                
             }
         }
         require(

@@ -100,20 +100,66 @@ contract MixinAssetProxyDispatcher is
     {
         // Do nothing if no amount should be transferred.
         if (amount > 0) {
+            require(assetData.length >= 4, "ASSET_DATA_LENGTH");
+            
             // Lookup assetProxy
-            bytes4 assetProxyId = assetData.readBytes4(0);
+            bytes4 assetProxyId;
+            assembly {
+                assetProxyId := and(mload(add(assetData, 32)),
+0xFFFFFFFF00000000000000000000000000000000000000000000000000000000
+                )
+            }
             IAssetProxy assetProxy = assetProxies[assetProxyId];
             // Ensure that assetProxy exists
             require(
                 assetProxy != address(0),
                 ASSET_PROXY_DOES_NOT_EXIST
             );
-            // transferFrom will either succeed or throw.
+            
+            /*
             assetProxy.transferFrom(
                 assetData,
                 from,
                 to,
                 amount
+            );
+            return;
+            */
+            
+            bytes4 transferFromSelector = IAssetProxy(assetProxy).transferFrom.selector;
+             bool success;
+            assembly {
+                
+                let cdStart := mload(0x40)
+                let dataAreaLength := mul(div(add(mload(assetData), 63), 32), 32)
+                let cdEnd := add(cdStart, add(132, dataAreaLength))
+                
+                mstore(cdStart, transferFromSelector)
+                mstore(add(cdStart, 4), 128)
+                mstore(add(cdStart, 36), and(from, 0xffffffffffffffffffffffffffffffffffffffff))
+                mstore(add(cdStart, 68), and(to, 0xffffffffffffffffffffffffffffffffffffffff))
+                mstore(add(cdStart, 100), amount)
+                
+                let dataArea := add(cdStart, 132)
+                for {} lt(dataArea, cdEnd) {} {
+                    mstore(dataArea, mload(assetData))
+                    dataArea := add(dataArea, 32)
+                    assetData := add(assetData, 32)
+                }
+                
+                success := call(
+                     gas,
+                     assetProxy,
+                     0,
+                     cdStart,
+                     sub(cdEnd, cdStart),
+                     cdStart,
+                     0
+                )
+            }
+            require(
+                success,
+                "TRANSFER_FAILED"
             );
         }
     }

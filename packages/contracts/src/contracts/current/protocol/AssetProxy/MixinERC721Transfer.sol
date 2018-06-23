@@ -27,7 +27,7 @@ contract MixinERC721Transfer is
     LibTransferErrors
 {
     using LibBytes for bytes;
-    
+     bytes4 constant SAFE_TRANSFER_FROM_SELECTOR = bytes4(keccak256("safeTransferFrom(address,address,uint256,bytes)"));
     /// @dev Internal version of `transferFrom`.
     /// @param assetData Encoded byte array.
     /// @param from Address to transfer asset from.
@@ -54,11 +54,76 @@ contract MixinERC721Transfer is
             bytes memory receiverData
         ) = decodeERC721AssetData(assetData);
 
-        ERC721Token(token).safeTransferFrom(
-            from,
-            to,
-            tokenId,
-            receiverData
+        // We construct calldata for the `token.safeTransferFrom` ABI.
+        // The layout of this calldata is in the table below.
+        // 
+        // | Area     | Offset | Length  | Contents                                    |
+        // | -------- |--------|---------|-------------------------------------------- |
+        // | Header   | 0      | 4       | function selector                           |
+        // | Params   |        | 4 * 32  | function parameters:                        |
+        // |          | 4      |         |   1. from                                   |
+        // |          | 36     |         |   2. to                                     |
+        // |          | 68     |         |   3. tokenId                                |
+        // |          | 100    |         |   4. offset to receiverData (*)             |
+        // | Data     |        |         | receiverData:                               |
+        // |          | 132    | 32      | receiverData Length                         |
+        // |          | 164    | **      | receiverData Contents                       |
+
+        bytes4 safeTransferFromSelector = SAFE_TRANSFER_FROM_SELECTOR;
+        bool success;
+        assembly {
+            /////// Setup State ///////
+            // `cdStart` is the start of the calldata for `token.safeTransferFrom` (equal to free memory ptr).
+            let cdStart := mload(64)
+            // `dataAreaLength` is the total number of words needed to store `receiverData`
+            //  As-per the ABI spec, this value is padded up to the nearest multiple of 32,
+            //  and includes 32-bytes for length.
+            //  It's calculated as folows:
+            //      - Unpadded length in bytes = `mload(receiverData) + 32`
+            //      - Add 31 to this value then divide by 32 to get the length in words.
+            //      - Multiply this value by 32 to get the padded length in bytes.
+            let dataAreaLength := mul(div(add(mload(receiverData), 63), 32), 32)
+            // `cdEnd` is the end of the calldata for `token.safeTransferFrom`.
+            let cdEnd := add(cdStart, add(132, dataAreaLength))
+
+            /////// Setup Header Area ///////
+            // This area holds the 4-byte `transferFromSelector`.
+            mstore(cdStart, safeTransferFromSelector)
+            
+            /////// Setup Params Area ///////
+            // Each parameter is padded to 32-bytes. The entire Params Area is 128 bytes.
+            // Notes:
+            //   1. A 20-byte mask is applied to addresses to zero-out the unused bytes.
+            //   2. The offset to `receiverData` is the length of the Params Area (128 bytes).
+            mstore(add(cdStart, 4), and(from, 0xffffffffffffffffffffffffffffffffffffffff))
+            mstore(add(cdStart, 36), and(to, 0xffffffffffffffffffffffffffffffffffffffff))
+            mstore(add(cdStart, 68), tokenId)
+            mstore(add(cdStart, 100), 128)
+
+            /////// Setup Data Area ///////
+            // This area holds `receiverData`.
+            let dataArea := add(cdStart, 132)
+            for {} lt(dataArea, cdEnd) {} {
+                mstore(dataArea, mload(receiverData))
+                dataArea := add(dataArea, 32)
+                receiverData := add(receiverData, 32)
+            }
+
+            /////// Call `token.safeTransferFrom` using the constructed calldata ///////
+            success := call(
+                gas,
+                token,
+                0,
+                cdStart,
+                sub(cdEnd, cdStart),
+                cdStart,
+                0
+            )
+        }
+
+        require(
+            success,
+            TRANSFER_FAILED
         );
     }
 
