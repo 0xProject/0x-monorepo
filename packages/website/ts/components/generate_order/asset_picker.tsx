@@ -11,6 +11,7 @@ import { trackedTokenStorage } from 'ts/local_storage/tracked_token_storage';
 import { Dispatcher } from 'ts/redux/dispatcher';
 import { DialogConfigs, Token, TokenByAddress, TokenVisibility } from 'ts/types';
 import { constants } from 'ts/utils/constants';
+import { utils } from 'ts/utils/utils';
 
 const TOKEN_ICON_DIMENSION = 100;
 const TILE_DIMENSION = 146;
@@ -135,8 +136,8 @@ export class AssetPicker extends React.Component<AssetPickerProps, AssetPickerSt
         let tileStyles;
         const gridTiles = _.map(this.props.tokenByAddress, (token: Token, address: string) => {
             if (
-                (this.props.tokenVisibility === TokenVisibility.TRACKED && !token.isTracked) ||
-                (this.props.tokenVisibility === TokenVisibility.UNTRACKED && token.isTracked) ||
+                (this.props.tokenVisibility === TokenVisibility.TRACKED && !utils.isTokenTracked(token)) ||
+                (this.props.tokenVisibility === TokenVisibility.UNTRACKED && utils.isTokenTracked(token)) ||
                 token.symbol === constants.ZRX_TOKEN_SYMBOL ||
                 token.symbol === constants.ETHER_TOKEN_SYMBOL
             ) {
@@ -213,7 +214,7 @@ export class AssetPicker extends React.Component<AssetPickerProps, AssetPickerSt
     }
     private _onChooseToken(tokenAddress: string): void {
         const token = this.props.tokenByAddress[tokenAddress];
-        if (token.isTracked) {
+        if (utils.isTokenTracked(token)) {
             this.props.onTokenChosen(tokenAddress);
         } else {
             this.setState({
@@ -258,10 +259,8 @@ export class AssetPicker extends React.Component<AssetPickerProps, AssetPickerSt
         }
         const newTokenEntry = {
             ...token,
+            trackedTimestamp: moment().unix(),
         };
-
-        newTokenEntry.isTracked = true;
-        newTokenEntry.trackedTimestamp = moment().unix();
         trackedTokenStorage.addTrackedTokenToUser(this.props.userAddress, this.props.networkId, newTokenEntry);
 
         this.props.dispatcher.updateTokenByAddress([newTokenEntry]);

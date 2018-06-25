@@ -424,9 +424,9 @@ export class TokenBalances extends React.Component<TokenBalancesProps, TokenBala
         if (!this.state.isAddingToken && !isDefaultTrackedToken) {
             if (token.isRegistered) {
                 // Remove the token from tracked tokens
-                const newToken = {
+                const newToken: Token = {
                     ...token,
-                    isTracked: false,
+                    trackedTimestamp: undefined,
                 };
                 this.props.dispatcher.updateTokenByAddress([newToken]);
             } else {

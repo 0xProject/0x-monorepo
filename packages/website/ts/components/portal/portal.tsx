@@ -563,9 +563,9 @@ export class Portal extends React.Component<PortalProps, PortalState> {
         if (this.state.tokenManagementState === TokenManagementState.Remove && !isDefaultTrackedToken) {
             if (token.isRegistered) {
                 // Remove the token from tracked tokens
-                const newToken = {
+                const newToken: Token = {
                     ...token,
-                    isTracked: false,
+                    trackedTimestamp: undefined,
                 };
                 this.props.dispatcher.updateTokenByAddress([newToken]);
             } else {

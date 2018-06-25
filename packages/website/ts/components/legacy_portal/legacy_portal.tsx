@@ -292,8 +292,7 @@ export class LegacyPortal extends React.Component<LegacyPortalProps, LegacyPorta
         );
     }
     private _renderTokenBalances(): React.ReactNode {
-        const allTokens = _.values(this.props.tokenByAddress);
-        const trackedTokens = _.filter(allTokens, t => t.isTracked);
+        const trackedTokens = utils.getTrackedTokens(this.props.tokenByAddress);
         return (
             <TokenBalances
                 blockchain={this._blockchain}
