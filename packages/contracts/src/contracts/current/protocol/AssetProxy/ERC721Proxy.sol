@@ -30,14 +30,14 @@ contract ERC721Proxy is
     MixinERC721Transfer
 {
     // Id of this proxy.
-    uint8 constant PROXY_ID = 2;
+    bytes4 constant PROXY_ID = bytes4(keccak256("ERC721Token(address,uint256,bytes)"));
 
     /// @dev Gets the proxy id associated with the proxy address.
     /// @return Proxy id.
     function getProxyId()
         external
         view
-        returns (uint8)
+        returns (bytes4)
     {
         return PROXY_ID;
     }

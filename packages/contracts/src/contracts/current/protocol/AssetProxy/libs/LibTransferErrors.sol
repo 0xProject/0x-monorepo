@@ -18,7 +18,10 @@
 
 pragma solidity ^0.4.24;
 
+/// @dev This contract documents the revert reasons used in the `transferFrom` methods of different AssetProxy contracts.
+/// This contract is intended to serve as a reference, but is not actually used for efficiency reasons.
 contract LibTransferErrors {
+
     /// Transfer errors ///
     string constant INVALID_AMOUNT = "INVALID_AMOUNT";                            // Transfer amount must equal 1.
     string constant TRANSFER_FAILED = "TRANSFER_FAILED";                          // Transfer failed.

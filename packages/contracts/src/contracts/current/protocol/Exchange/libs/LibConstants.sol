@@ -25,9 +25,6 @@ contract LibConstants {
     //        not constant to make testing easier.
     bytes public ZRX_ASSET_DATA;
 
-    // Proxy Id for ZRX token.
-    uint8 constant ZRX_PROXY_ID = 1;
-
     // @TODO: Remove when we deploy.
     constructor (bytes memory zrxAssetData)
         public
