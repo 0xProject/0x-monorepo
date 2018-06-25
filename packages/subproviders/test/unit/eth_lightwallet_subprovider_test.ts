@@ -33,6 +33,9 @@ describe('EthLightwalletSubprovider', () => {
             return new Promise<lightwallet.keystore>(resolve => {
                 // Create Vault
                 lightwallet.keystore.createVault(vaultOptions, (err: Error, vaultKeystore) => {
+                    if (err) {
+                        throw new Error(`Failed to createVault: ${err}`);
+                    }
                     resolve(vaultKeystore);
                 });
             });
@@ -41,6 +44,9 @@ describe('EthLightwalletSubprovider', () => {
         const deriveKeyFromPasswordAsync = async (vaultKeystore: lightwallet.keystore) => {
             return new Promise<Uint8Array>(resolve => {
                 vaultKeystore.keyFromPassword(PASSWORD, (err: Error, passwordDerivedKey: Uint8Array) => {
+                    if (err) {
+                        throw new Error(`Failed to get key from password: ${err}`);
+                    }
                     resolve(passwordDerivedKey);
                 });
             });
@@ -154,7 +160,7 @@ describe('EthLightwalletSubprovider', () => {
                     params: ['0x0000000000000000000000000000000000000000', nonHexMessage],
                     id: 1,
                 };
-                const callback = reportCallbackErrors(done)((err: Error, response: JSONRPCResponsePayload) => {
+                const callback = reportCallbackErrors(done)((err: Error, _response: JSONRPCResponsePayload) => {
                     expect(err).to.not.be.a('null');
                     expect(err.message).to.be.equal('Expected data to be of type HexString, encountered: hello world');
                     done();
@@ -169,7 +175,7 @@ describe('EthLightwalletSubprovider', () => {
                     params: [nonHexMessage, '0x0000000000000000000000000000000000000000'],
                     id: 1,
                 };
-                const callback = reportCallbackErrors(done)((err: Error, response: JSONRPCResponsePayload) => {
+                const callback = reportCallbackErrors(done)((err: Error, _response: JSONRPCResponsePayload) => {
                     expect(err).to.not.be.a('null');
                     expect(err.message).to.be.equal('Expected data to be of type HexString, encountered: hello world');
                     done();

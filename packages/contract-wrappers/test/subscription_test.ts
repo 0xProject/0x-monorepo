@@ -80,7 +80,7 @@ describe('SubscriptionTest', () => {
         });
         it('Should allow unsubscribeAll to be called successfully after an error', (done: DoneCallback) => {
             (async () => {
-                const callback = (err: Error | null, logEvent?: DecodedLogEvent<ApprovalContractEventArgs>) => _.noop;
+                const callback = (_err: Error | null, _logEvent?: DecodedLogEvent<ApprovalContractEventArgs>) => _.noop;
                 contractWrappers.token.subscribe(tokenAddress, TokenEvents.Approval, indexFilterValues, callback);
                 stubs = [
                     Sinon.stub((contractWrappers as any)._web3Wrapper, 'getBlockAsync').throws(

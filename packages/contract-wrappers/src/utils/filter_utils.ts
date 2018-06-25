@@ -30,7 +30,7 @@ export const filterUtils = {
         blockRange?: BlockRange,
     ): FilterObject {
         const eventAbi = _.find(abi, { name: eventName }) as EventAbi;
-        const eventSignature = filterUtils.getEventSignatureFromAbiByName(eventAbi, eventName);
+        const eventSignature = filterUtils.getEventSignatureFromAbiByName(eventAbi);
         const topicForEventSignature = ethUtil.addHexPrefix(jsSHA3.keccak256(eventSignature));
         const topicsForIndexedArgs = filterUtils.getTopicsForIndexedArgs(eventAbi, indexFilterValues);
         const topics = [topicForEventSignature, ...topicsForIndexedArgs];
@@ -46,7 +46,7 @@ export const filterUtils = {
         }
         return filter;
     },
-    getEventSignatureFromAbiByName(eventAbi: EventAbi, eventName: ContractEvents): string {
+    getEventSignatureFromAbiByName(eventAbi: EventAbi): string {
         const types = _.map(eventAbi.inputs, 'type');
         const signature = `${eventAbi.name}(${types.join(',')})`;
         return signature;
