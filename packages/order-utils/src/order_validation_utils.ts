@@ -32,22 +32,6 @@ export class OrderValidationUtils {
         const isError = errPercentageTimes1000000.gt(1000);
         return isError;
     }
-    public static validateCancelOrderThrowIfInvalid(
-        order: Order,
-        cancelTakerTokenAmount: BigNumber,
-        filledTakerTokenAmount: BigNumber,
-    ): void {
-        if (cancelTakerTokenAmount.eq(0)) {
-            throw new Error(ExchangeContractErrs.OrderCancelAmountZero);
-        }
-        if (order.takerAssetAmount.eq(filledTakerTokenAmount)) {
-            throw new Error(ExchangeContractErrs.OrderAlreadyCancelledOrFilled);
-        }
-        const currentUnixTimestampSec = utils.getCurrentUnixTimestampSec();
-        if (order.expirationTimeSeconds.lessThan(currentUnixTimestampSec)) {
-            throw new Error(ExchangeContractErrs.OrderCancelExpired);
-        }
-    }
     public static async validateFillOrderBalancesAllowancesThrowIfInvalidAsync(
         exchangeTradeEmulator: ExchangeTransferSimulator,
         signedOrder: SignedOrder,
