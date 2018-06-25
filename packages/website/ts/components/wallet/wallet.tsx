@@ -165,7 +165,7 @@ export class Wallet extends React.Component<WalletProps, WalletState> {
         if (
             !_.isUndefined(firstDifferentTrackedToken) &&
             _.size(differentTrackedTokens) === 1 &&
-            currentTrackedTokens.includes(firstDifferentTrackedToken)
+            _.includes(currentTrackedTokens, firstDifferentTrackedToken)
         ) {
             document.getElementById(firstDifferentTrackedToken.address).scrollIntoView();
         }

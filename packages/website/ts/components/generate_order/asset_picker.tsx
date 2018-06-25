@@ -1,6 +1,7 @@
 import * as _ from 'lodash';
 import Dialog from 'material-ui/Dialog';
 import FlatButton from 'material-ui/FlatButton';
+import * as moment from 'moment';
 import * as React from 'react';
 import { Blockchain } from 'ts/blockchain';
 import { NewTokenForm } from 'ts/components/generate_order/new_token_form';
@@ -260,7 +261,7 @@ export class AssetPicker extends React.Component<AssetPickerProps, AssetPickerSt
         };
 
         newTokenEntry.isTracked = true;
-        newTokenEntry.trackedTimestamp = Date.now();
+        newTokenEntry.trackedTimestamp = moment().unix();
         trackedTokenStorage.addTrackedTokenToUser(this.props.userAddress, this.props.networkId, newTokenEntry);
 
         this.props.dispatcher.updateTokenByAddress([newTokenEntry]);
