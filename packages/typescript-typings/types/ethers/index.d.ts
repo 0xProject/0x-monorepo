@@ -32,6 +32,6 @@ declare module 'ethers' {
         constructor(address: string, abi: any, provider: any);
     }
     const enum errors {
-      INVALID_ARGUMENT = 'INVALID_ARGUMENT',
+        INVALID_ARGUMENT = 'INVALID_ARGUMENT',
     }
 }

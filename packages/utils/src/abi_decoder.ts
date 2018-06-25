@@ -34,17 +34,17 @@ export class AbiDecoder {
 
         let decodedData: any[];
         try {
-          decodedData = ethersInterface.events[event.name].parse(log.data);
+            decodedData = ethersInterface.events[event.name].parse(log.data);
         } catch (error) {
-          if (error.code === ethers.errors.INVALID_ARGUMENT) {
-            // Because we index events by Method ID, and Method IDs are derived from the method
-            // name and the input parameters, it's possible that the return value of the event
-            // does not match our ABI. If that's the case, then ethers will throw an error
-            // when we try to parse the event. We handle that case here by returning the log rather
-            // than throwing an error.
-            return log;
-          }
-          throw error;
+            if (error.code === ethers.errors.INVALID_ARGUMENT) {
+                // Because we index events by Method ID, and Method IDs are derived from the method
+                // name and the input parameters, it's possible that the return value of the event
+                // does not match our ABI. If that's the case, then ethers will throw an error
+                // when we try to parse the event. We handle that case here by returning the log rather
+                // than throwing an error.
+                return log;
+            }
+            throw error;
         }
 
         let didFailToDecode = false;
