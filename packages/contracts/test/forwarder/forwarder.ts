@@ -202,6 +202,61 @@ describe(ContractName.Forwarder, () => {
             expect(isWithinThreshold).to.be.true();
             expect(newBalances[forwarderContract.address][weth.address]).to.be.bignumber.equal(new BigNumber(0));
         });
+        it('should fill the order when token is ZRX with fees', async () => {
+            orderWithFee = orderFactory.newSignedOrder({
+                makerAssetData: assetProxyUtils.encodeERC20AssetData(zrxToken.address),
+                takerFee: Web3Wrapper.toBaseUnitAmount(new BigNumber(1), DECIMALS_DEFAULT),
+            });
+            signedOrdersWithFee = [orderWithFee];
+            feeOrders = [];
+            const fillAmount = signedOrder.takerAssetAmount.div(4);
+            const takerBalanceBefore = erc20Balances[takerAddress][zrxToken.address];
+            tx = await forwarderWrapper.marketBuyTokensAsync(signedOrdersWithFee, feeOrders, {
+                value: fillAmount,
+                from: takerAddress,
+            });
+            const newBalances = await erc20Wrapper.getBalancesAsync();
+            const takerBalanceAfter = newBalances[takerAddress][zrxToken.address];
+
+            const acceptPercentage = 98;
+            const acceptableThreshold = takerBalanceBefore.plus(fillAmount.times(acceptPercentage).dividedBy(100));
+            const isWithinThreshold = takerBalanceAfter.greaterThanOrEqualTo(acceptableThreshold);
+            expect(isWithinThreshold).to.be.true();
+            expect(newBalances[forwarderContract.address][weth.address]).to.be.bignumber.equal(new BigNumber(0));
+        });
+        it('should fail if sent an ETH amount too high', async () => {
+            signedOrder = orderFactory.newSignedOrder({
+                makerAssetData: assetProxyUtils.encodeERC20AssetData(zrxToken.address),
+                takerFee: Web3Wrapper.toBaseUnitAmount(new BigNumber(1), DECIMALS_DEFAULT),
+            });
+            const fillAmount = signedOrder.takerAssetAmount.times(2);
+            const takerBalanceBefore = erc20Balances[takerAddress][defaultMakerAssetAddress];
+            return expectRevertOrAlwaysFailingTransactionAsync(
+                forwarderWrapper.marketBuyTokensAsync(signedOrdersWithFee, feeOrders, {
+                    value: fillAmount,
+                    from: takerAddress,
+                }),
+            );
+        });
+        it('should fail if fee abstraction amount is too high', async () => {
+            orderWithFee = orderFactory.newSignedOrder({
+                takerFee: Web3Wrapper.toBaseUnitAmount(new BigNumber(50), DECIMALS_DEFAULT),
+            });
+            signedOrdersWithFee = [orderWithFee];
+            feeOrder = orderFactory.newSignedOrder({
+                makerAssetData: assetProxyUtils.encodeERC20AssetData(zrxToken.address),
+                makerAssetAmount: Web3Wrapper.toBaseUnitAmount(new BigNumber(1), DECIMALS_DEFAULT),
+            });
+            feeOrders = [feeOrder];
+            const fillAmount = signedOrder.takerAssetAmount.div(4);
+            const takerBalanceBefore = erc20Balances[takerAddress][defaultMakerAssetAddress];
+            return expectRevertOrAlwaysFailingTransactionAsync(
+                forwarderWrapper.marketBuyTokensAsync(signedOrdersWithFee, feeOrders, {
+                    value: fillAmount,
+                    from: takerAddress,
+                }),
+            );
+        });
         it('throws when mixed ERC721 and ERC20 assets with ERC20 first', async () => {
             const makerAssetId = erc721MakerAssetIds[0];
             const erc721SignedOrder = orderFactory.newSignedOrder({
