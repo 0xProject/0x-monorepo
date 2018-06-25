@@ -1,5 +1,4 @@
-import { Order, SignedOrder } from '@0xproject/types';
-import { RevertReasons } from '@0xproject/types';
+import { RevertReasons, SignedOrder } from '@0xproject/types';
 import { BigNumber } from '@0xproject/utils';
 import { Provider } from 'ethereum-types';
 import * as _ from 'lodash';

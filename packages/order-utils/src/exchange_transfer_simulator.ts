@@ -1,4 +1,4 @@
-import { AssetProxyId, ExchangeContractErrs } from '@0xproject/types';
+import { ExchangeContractErrs } from '@0xproject/types';
 import { BigNumber } from '@0xproject/utils';
 
 import { AbstractBalanceAndProxyAllowanceLazyStore } from './abstract/abstract_balance_and_proxy_allowance_lazy_store';
@@ -90,7 +90,6 @@ export class ExchangeTransferSimulator {
         userAddress: string,
         amountInBaseUnits: BigNumber,
     ): Promise<void> {
-        const assetProxyId = assetProxyUtils.decodeAssetDataId(assetData);
         const proxyAllowance = await this._store.getProxyAllowanceAsync(assetData, userAddress);
         // HACK: This code assumes that all tokens with an UNLIMITED_ALLOWANCE_IN_BASE_UNITS set,
         // are UnlimitedAllowanceTokens. This is however not true, it just so happens that all

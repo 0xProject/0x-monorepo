@@ -7,7 +7,6 @@ import {
     SignedOrder,
 } from '@0xproject/types';
 import { BigNumber } from '@0xproject/utils';
-import * as _ from 'lodash';
 
 import { AbstractBalanceAndProxyAllowanceFetcher } from './abstract/abstract_balance_and_proxy_allowance_fetcher';
 import { AbstractOrderFilledCancelledFetcher } from './abstract/abstract_order_filled_cancelled_fetcher';
