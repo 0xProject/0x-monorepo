@@ -407,7 +407,6 @@ contract MixinExchangeCore is
     )
         private
     {
-        bytes memory zrxAssetData = ZRX_ASSET_DATA;
         dispatchTransferFrom(
             order.makerAssetData,
             order.makerAddress,
@@ -421,13 +420,13 @@ contract MixinExchangeCore is
             fillResults.takerAssetFilledAmount
         );
         dispatchTransferFrom(
-            zrxAssetData,
+            ZRX_ASSET_DATA,
             order.makerAddress,
             order.feeRecipientAddress,
             fillResults.makerFeePaid
         );
         dispatchTransferFrom(
-            zrxAssetData,
+            ZRX_ASSET_DATA,
             takerAddress,
             order.feeRecipientAddress,
             fillResults.takerFeePaid

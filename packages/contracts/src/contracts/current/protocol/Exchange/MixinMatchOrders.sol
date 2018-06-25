@@ -237,7 +237,6 @@ contract MixinMatchOrders is
     )
         private
     {
-        bytes memory zrxAssetData = ZRX_ASSET_DATA;
         // Order makers and taker
         dispatchTransferFrom(
             leftOrder.makerAssetData,
@@ -260,13 +259,13 @@ contract MixinMatchOrders is
 
         // Maker fees
         dispatchTransferFrom(
-            zrxAssetData,
+            ZRX_ASSET_DATA,
             leftOrder.makerAddress,
             leftOrder.feeRecipientAddress,
             matchedFillResults.left.makerFeePaid
         );
         dispatchTransferFrom(
-            zrxAssetData,
+            ZRX_ASSET_DATA,
             rightOrder.makerAddress,
             rightOrder.feeRecipientAddress,
             matchedFillResults.right.makerFeePaid
@@ -275,7 +274,7 @@ contract MixinMatchOrders is
         // Taker fees
         if (leftOrder.feeRecipientAddress == rightOrder.feeRecipientAddress) {
             dispatchTransferFrom(
-                zrxAssetData,
+                ZRX_ASSET_DATA,
                 takerAddress,
                 leftOrder.feeRecipientAddress,
                 safeAdd(
@@ -285,13 +284,13 @@ contract MixinMatchOrders is
             );
         } else {
             dispatchTransferFrom(
-                zrxAssetData,
+                ZRX_ASSET_DATA,
                 takerAddress,
                 leftOrder.feeRecipientAddress,
                 matchedFillResults.left.takerFeePaid
             );
             dispatchTransferFrom(
-                zrxAssetData,
+                ZRX_ASSET_DATA,
                 takerAddress,
                 rightOrder.feeRecipientAddress,
                 matchedFillResults.right.takerFeePaid
