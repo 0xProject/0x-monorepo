@@ -31,7 +31,7 @@ chaiSetup.configure();
 const expect = chai.expect;
 const blockchainLifecycle = new BlockchainLifecycle(web3Wrapper);
 // tslint:disable:no-unnecessary-type-assertion
-describe('Exchange core', () => {
+describe.only('Exchange core', () => {
     let makerAddress: string;
     let owner: string;
     let takerAddress: string;
@@ -125,12 +125,12 @@ describe('Exchange core', () => {
     afterEach(async () => {
         await blockchainLifecycle.revertAsync();
     });
-    describe('fillOrder', () => {
+    describe.only('fillOrder', () => {
         beforeEach(async () => {
             erc20Balances = await erc20Wrapper.getBalancesAsync();
             signedOrder = orderFactory.newSignedOrder();
         });
-        it('should transfer the correct amounts when makerAssetAmount === takerAssetAmount', async () => {
+        it.only('should transfer the correct amounts when makerAssetAmount === takerAssetAmount', async () => {
             signedOrder = orderFactory.newSignedOrder({
                 makerAssetAmount: Web3Wrapper.toBaseUnitAmount(new BigNumber(100), 18),
                 takerAssetAmount: Web3Wrapper.toBaseUnitAmount(new BigNumber(100), 18),
@@ -142,7 +142,8 @@ describe('Exchange core', () => {
             expect(takerAssetFilledAmountBefore).to.be.bignumber.equal(0);
 
             const takerAssetFillAmount = signedOrder.takerAssetAmount.div(2);
-            await exchangeWrapper.fillOrderAsync(signedOrder, takerAddress, { takerAssetFillAmount });
+            const res = await exchangeWrapper.fillOrderAsync(signedOrder, takerAddress, { takerAssetFillAmount });
+            console.log(res.gasUsed);
 
             const makerAmountBoughtAfter = await exchangeWrapper.getTakerAssetFilledAmountAsync(
                 orderHashUtils.getOrderHashHex(signedOrder),

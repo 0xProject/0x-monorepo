@@ -22,11 +22,100 @@ pragma experimental ABIEncoderV2;
 import "../../utils/LibBytes/LibBytes.sol";
 import "../../tokens/ERC20Token/IERC20Token.sol";
 import "./libs/LibTransferErrors.sol";
+import "./mixins/MAuthorizable.sol";
 
 contract MixinERC20Transfer is
     LibBytes,
-    LibTransferErrors
+    LibTransferErrors,
+    MAuthorizable
 {
+    /// @dev Transfers assets. Either succeeds or throws.
+    /// @param assetData Encoded byte array.
+    /// @param from Address to transfer asset from.
+    /// @param to Address to transfer asset to.
+    /// @param amount Amount of asset to transfer.
+    function transferFrom(
+        bytes assetData,
+        address from,
+        address to,
+        uint256 amount
+    )
+        external
+        onlyAuthorized()
+    {
+        require(
+            assetData.length == 20,
+            LibBytes.GREATER_OR_EQUAL_TO_20_LENGTH_REQUIRED
+        );
+        
+        // Transfer tokens.
+        // We do a raw call so we can check the success separate
+        // from the return data.
+        // We construct calldata for the `token.transferFrom` ABI.
+        // The layout of this calldata is in the table below.
+        // 
+        // | Area     | Offset | Length  | Contents                                    |
+        // | -------- |--------|---------|-------------------------------------------- |
+        // | Header   | 0      | 4       | function selector                           |
+        // | Params   |        | 3 * 32  | function parameters:                        |
+        // |          | 4      |         |   1. from                                   |
+        // |          | 36     |         |   2. to                                     |
+        // |          | 68     |         |   3. amount                                 |
+        bool success;
+        bytes4 transferFromSelector = IERC20Token(0).transferFrom.selector;
+        assembly {
+            // <selector:4> <offset to assetData> <from> <to> <amount> <assetData <length> <token> <padding 12 bytes> >
+            // 4 + offset + 32
+            let token := calldataload(add(calldataload(4), 24))
+            token := and(token, 0xffffffffffffffffffffffffffffffffffffffff)
+            
+            /////// Setup State ///////
+            // `cdStart` is the start of the calldata for `token.transferFrom` (equal to free memory ptr).
+            let cdStart := mload(64)
+
+            /////// Setup Header Area ///////
+            // This area holds the 4-byte `transferFromSelector`.
+            mstore(cdStart, transferFromSelector)
+            
+            /////// Setup Params Area ///////
+            // Each parameter is padded to 32-bytes. The entire Params Area is 96 bytes.
+            // A 20-byte mask is applied to addresses to zero-out the unused bytes.
+            // Copy `from`, `to` and `amount` from our own calldata
+            calldatacopy(add(cdStart, 4), 36, 96)
+
+            /////// Call `token.transferFrom` using the constructed calldata ///////
+            success := call(
+                gas,
+                token,
+                0,
+                cdStart,
+                100,
+                cdStart,
+                32
+            )
+            if success {
+                // Check return data.
+                // If there is no return data, we assume the token incorrectly
+                // does not return a bool. In this case we expect it to revert
+                // on failure, which was handled above.
+                // If the token does return data, we require that it is a single
+                // value that evaluates to true.
+                if returndatasize {
+                    success := 0
+                    if eq(returndatasize, 32) {
+                        // First 64 bytes of memory are reserved scratch space
+                        returndatacopy(0, 0, 32)
+                        success := mload(0)
+                    }
+                }
+            }
+        }
+        require(
+            success,
+            TRANSFER_FAILED
+        );
+    }
+    
     /// @dev Internal version of `transferFrom`.
     /// @param assetData Encoded byte array.
     /// @param from Address to transfer asset from.
