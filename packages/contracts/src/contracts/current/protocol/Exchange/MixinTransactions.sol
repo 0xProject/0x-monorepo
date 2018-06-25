@@ -62,6 +62,13 @@ contract MixinTransactions is
     {
         bytes32 schemaHash = EIP712_ZEROEX_TRANSACTION_SCHEMA_HASH;
         bytes32 dataHash = keccak256(data);
+        // Assembly for more efficiently computing:
+        // keccak256(abi.encode(
+        //   EIP712_ZEROEX_TRANSACTION_SCHEMA_HASH,
+        //   salt,
+        //   signerAddress,
+        //   keccak256(data)
+        //  ));
         assembly {
             let memPtr := mload(64)
             mstore(memPtr, schemaHash)

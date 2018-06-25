@@ -98,6 +98,26 @@ contract LibOrder is
         bytes32 schemaHash = EIP712_ORDER_SCHEMA_HASH;
         bytes32 makerAssetDataHash = keccak256(order.makerAssetData);
         bytes32 takerAssetDataHash = keccak256(order.takerAssetData);
+        // Assembly for more efficiently computing:
+        // keccak256(abi.encodePacked(
+        //   DOMAIN_SEPARATOR_SCHEMA_HASH,
+        //   keccak256(abi.encodePacked(address(this))),
+        //   ORDER_SCHEMA_HASH,
+        //   keccak256(abi.encodePacked(
+        //       order.makerAddress,
+        //       order.takerAddress,
+        //       order.feeRecipientAddress,
+        //       order.senderAddress,
+        //       order.makerAssetAmount,
+        //       order.takerAssetAmount,
+        //       order.makerFee,
+        //       order.takerFee,
+        //       order.expirationTimeSeconds,
+        //       order.salt,
+        //       keccak256(abi.encodePacked(order.makerAssetData)),
+        //       keccak256(abi.encodePacked(order.takerAssetData))
+        //   ))
+        // ));
         assembly {
             // Backup
             let temp1 := mload(sub(order,  32))
