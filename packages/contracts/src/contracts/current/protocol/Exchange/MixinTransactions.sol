@@ -51,17 +51,27 @@ contract MixinTransactions is
     /// @param signerAddress Address of transaction signer.
     /// @param data AbiV2 encoded calldata.
     /// @return EIP712 hash of the Transaction.
-    function hashZeroExTransaction(uint256 salt, address signerAddress, bytes data)
+    function hashZeroExTransaction(
+        uint256 salt,
+        address signerAddress,
+        bytes memory data
+    )
         internal
         pure
-        returns (bytes32)
+        returns (bytes32 result)
     {
-        return keccak256(abi.encode(
-            EIP712_ZEROEX_TRANSACTION_SCHEMA_HASH,
-            salt,
-            signerAddress,
-            keccak256(data)
-        ));
+        bytes32 schemaHash = EIP712_ZEROEX_TRANSACTION_SCHEMA_HASH;
+        bytes32 dataHash = keccak256(data);
+        assembly {
+            let memPtr := mload(64)
+            mstore(memPtr, schemaHash)
+            mstore(add(memPtr, 32), salt)
+            mstore(add(memPtr, 64), and(signerAddress, 0xffffffffffffffffffffffffffffffffffffffff))
+            mstore(add(memPtr, 96), dataHash)
+            result := keccak256(memPtr, 128)
+        }
+
+        return result;
     }
 
     /// @dev Executes an exchange method call in the context of signer.

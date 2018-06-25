@@ -18,6 +18,12 @@ chaiSetup.configure();
 const expect = chai.expect;
 const blockchainLifecycle = new BlockchainLifecycle(web3Wrapper);
 
+// BUG: Ideally we would use Buffer.from(memory).toString('hex')
+// https://github.com/Microsoft/TypeScript/issues/23155
+const toHex = (buf: Uint8Array): string => buf.reduce((a, v) => a + ('00' + v.toString(16)).slice(-2), '0x');
+
+const fromHex = (str: string): Uint8Array => Uint8Array.from(Buffer.from(str.slice(2), 'hex'));
+
 describe('LibBytes', () => {
     let libBytes: TestLibBytesContract;
     const byteArrayShorterThan32Bytes = '0x012345';
@@ -124,48 +130,55 @@ describe('LibBytes', () => {
         });
     });
 
-    describe('areBytesEqual', () => {
+    describe('equals', () => {
         it('should return true if byte arrays are equal (both arrays < 32 bytes)', async () => {
-            const areBytesEqual = await libBytes.publicAreBytesEqual.callAsync(
+            const isEqual = await libBytes.publicEquals.callAsync(
                 byteArrayShorterThan32Bytes,
                 byteArrayShorterThan32Bytes,
             );
-            return expect(areBytesEqual).to.be.true();
+            return expect(isEqual).to.be.true();
         });
         it('should return true if byte arrays are equal (both arrays > 32 bytes)', async () => {
-            const areBytesEqual = await libBytes.publicAreBytesEqual.callAsync(
+            const isEqual = await libBytes.publicEquals.callAsync(
                 byteArrayLongerThan32Bytes,
                 byteArrayLongerThan32Bytes,
             );
-            return expect(areBytesEqual).to.be.true();
+            return expect(isEqual).to.be.true();
         });
         it('should return false if byte arrays are not equal (first array < 32 bytes, second array > 32 bytes)', async () => {
-            const areBytesEqual = await libBytes.publicAreBytesEqual.callAsync(
+            const isEqual = await libBytes.publicEquals.callAsync(
                 byteArrayShorterThan32Bytes,
                 byteArrayLongerThan32Bytes,
             );
-            return expect(areBytesEqual).to.be.false();
+            return expect(isEqual).to.be.false();
         });
         it('should return false if byte arrays are not equal (first array > 32 bytes, second array < 32 bytes)', async () => {
-            const areBytesEqual = await libBytes.publicAreBytesEqual.callAsync(
+            const isEqual = await libBytes.publicEquals.callAsync(
                 byteArrayLongerThan32Bytes,
                 byteArrayShorterThan32Bytes,
             );
-            return expect(areBytesEqual).to.be.false();
+            return expect(isEqual).to.be.false();
         });
         it('should return false if byte arrays are not equal (same length, but a byte in first word differs)', async () => {
-            const areBytesEqual = await libBytes.publicAreBytesEqual.callAsync(
+            const isEqual = await libBytes.publicEquals.callAsync(
                 byteArrayLongerThan32BytesFirstBytesSwapped,
                 byteArrayLongerThan32Bytes,
             );
-            return expect(areBytesEqual).to.be.false();
+            return expect(isEqual).to.be.false();
         });
         it('should return false if byte arrays are not equal (same length, but a byte in last word differs)', async () => {
-            const areBytesEqual = await libBytes.publicAreBytesEqual.callAsync(
+            const isEqual = await libBytes.publicEquals.callAsync(
                 byteArrayLongerThan32BytesLastBytesSwapped,
                 byteArrayLongerThan32Bytes,
             );
-            return expect(areBytesEqual).to.be.false();
+            return expect(isEqual).to.be.false();
+        });
+
+        describe('should ignore trailing data', () => {
+            it('should return true when both < 32 bytes', async () => {
+                const isEqual = await libBytes.publicEqualsPop1.callAsync('0x0102', '0x0103');
+                return expect(isEqual).to.be.true();
+            });
         });
     });
 
@@ -444,26 +457,26 @@ describe('LibBytes', () => {
         });
     });
 
-    describe('readFirst4', () => {
+    describe('readBytes4', () => {
         // AssertionError: expected promise to be rejected with an error including 'revert' but it was fulfilled with '0x08c379a0'
         it('should revert if byte array has a length < 4', async () => {
             const byteArrayLessThan4Bytes = '0x010101';
             return expectRevertOrOtherErrorAsync(
-                libBytes.publicReadFirst4.callAsync(byteArrayLessThan4Bytes),
+                libBytes.publicReadBytes4.callAsync(byteArrayLessThan4Bytes, new BigNumber(0)),
                 RevertReasons.LibBytesGreaterOrEqualTo4LengthRequired,
             );
         });
         it('should return the first 4 bytes of a byte array of arbitrary length', async () => {
-            const first4Bytes = await libBytes.publicReadFirst4.callAsync(byteArrayLongerThan32Bytes);
+            const first4Bytes = await libBytes.publicReadBytes4.callAsync(byteArrayLongerThan32Bytes, new BigNumber(0));
             const expectedFirst4Bytes = byteArrayLongerThan32Bytes.slice(0, 10);
             expect(first4Bytes).to.equal(expectedFirst4Bytes);
         });
     });
 
-    describe('readBytes', () => {
+    describe('readBytesWithLength', () => {
         it('should successfully read short, nested array of bytes when it takes up the whole array', async () => {
             const testBytesOffset = new BigNumber(0);
-            const bytes = await libBytes.publicReadBytes.callAsync(shortTestBytes, testBytesOffset);
+            const bytes = await libBytes.publicReadBytesWithLength.callAsync(shortTestBytes, testBytesOffset);
             return expect(bytes).to.be.equal(shortData);
         });
         it('should successfully read short, nested array of bytes when it is offset in the array', async () => {
@@ -471,12 +484,12 @@ describe('LibBytes', () => {
             const combinedByteArrayBuffer = Buffer.concat([prefixByteArrayBuffer, shortTestBytesAsBuffer]);
             const combinedByteArray = ethUtil.bufferToHex(combinedByteArrayBuffer);
             const testUint256Offset = new BigNumber(prefixByteArrayBuffer.byteLength);
-            const bytes = await libBytes.publicReadBytes.callAsync(combinedByteArray, testUint256Offset);
+            const bytes = await libBytes.publicReadBytesWithLength.callAsync(combinedByteArray, testUint256Offset);
             return expect(bytes).to.be.equal(shortData);
         });
         it('should successfully read a nested array of bytes - one word in length - when it takes up the whole array', async () => {
             const testBytesOffset = new BigNumber(0);
-            const bytes = await libBytes.publicReadBytes.callAsync(wordOfTestBytes, testBytesOffset);
+            const bytes = await libBytes.publicReadBytesWithLength.callAsync(wordOfTestBytes, testBytesOffset);
             return expect(bytes).to.be.equal(wordOfData);
         });
         it('should successfully read a nested array of bytes - one word in length - when it is offset in the array', async () => {
@@ -484,12 +497,12 @@ describe('LibBytes', () => {
             const combinedByteArrayBuffer = Buffer.concat([prefixByteArrayBuffer, wordOfTestBytesAsBuffer]);
             const combinedByteArray = ethUtil.bufferToHex(combinedByteArrayBuffer);
             const testUint256Offset = new BigNumber(prefixByteArrayBuffer.byteLength);
-            const bytes = await libBytes.publicReadBytes.callAsync(combinedByteArray, testUint256Offset);
+            const bytes = await libBytes.publicReadBytesWithLength.callAsync(combinedByteArray, testUint256Offset);
             return expect(bytes).to.be.equal(wordOfData);
         });
         it('should successfully read long, nested array of bytes when it takes up the whole array', async () => {
             const testBytesOffset = new BigNumber(0);
-            const bytes = await libBytes.publicReadBytes.callAsync(longTestBytes, testBytesOffset);
+            const bytes = await libBytes.publicReadBytesWithLength.callAsync(longTestBytes, testBytesOffset);
             return expect(bytes).to.be.equal(longData);
         });
         it('should successfully read long, nested array of bytes when it is offset in the array', async () => {
@@ -497,46 +510,50 @@ describe('LibBytes', () => {
             const combinedByteArrayBuffer = Buffer.concat([prefixByteArrayBuffer, longTestBytesAsBuffer]);
             const combinedByteArray = ethUtil.bufferToHex(combinedByteArrayBuffer);
             const testUint256Offset = new BigNumber(prefixByteArrayBuffer.byteLength);
-            const bytes = await libBytes.publicReadBytes.callAsync(combinedByteArray, testUint256Offset);
+            const bytes = await libBytes.publicReadBytesWithLength.callAsync(combinedByteArray, testUint256Offset);
             return expect(bytes).to.be.equal(longData);
         });
         it('should fail if the byte array is too short to hold the length of a nested byte array', async () => {
             // The length of the nested array is 32 bytes. By storing less than 32 bytes, a length cannot be read.
             const offset = new BigNumber(0);
             return expectRevertOrOtherErrorAsync(
-                libBytes.publicReadBytes.callAsync(byteArrayShorterThan32Bytes, offset),
+                libBytes.publicReadBytesWithLength.callAsync(byteArrayShorterThan32Bytes, offset),
                 RevertReasons.LibBytesGreaterOrEqualTo32LengthRequired,
             );
         });
         it('should fail if we store a nested byte array length, without a nested byte array', async () => {
             const offset = new BigNumber(0);
             return expectRevertOrOtherErrorAsync(
-                libBytes.publicReadBytes.callAsync(testBytes32, offset),
+                libBytes.publicReadBytesWithLength.callAsync(testBytes32, offset),
                 RevertReasons.LibBytesGreaterOrEqualToNestedBytesLengthRequired,
             );
         });
         it('should fail if the length between the offset and end of the byte array is too short to hold the length of a nested byte array', async () => {
             const badOffset = new BigNumber(ethUtil.toBuffer(byteArrayShorterThan32Bytes).byteLength);
             return expectRevertOrOtherErrorAsync(
-                libBytes.publicReadBytes.callAsync(byteArrayShorterThan32Bytes, badOffset),
+                libBytes.publicReadBytesWithLength.callAsync(byteArrayShorterThan32Bytes, badOffset),
                 RevertReasons.LibBytesGreaterOrEqualTo32LengthRequired,
             );
         });
         it('should fail if the length between the offset and end of the byte array is too short to hold the nested byte array', async () => {
             const badOffset = new BigNumber(ethUtil.toBuffer(testBytes32).byteLength);
             return expectRevertOrOtherErrorAsync(
-                libBytes.publicReadBytes.callAsync(testBytes32, badOffset),
+                libBytes.publicReadBytesWithLength.callAsync(testBytes32, badOffset),
                 RevertReasons.LibBytesGreaterOrEqualTo32LengthRequired,
             );
         });
     });
 
-    describe('writeBytes', () => {
+    describe('writeBytesWithLength', () => {
         it('should successfully write short, nested array of bytes when it takes up the whole array)', async () => {
             const testBytesOffset = new BigNumber(0);
             const emptyByteArray = ethUtil.bufferToHex(new Buffer(shortTestBytesAsBuffer.byteLength));
-            const bytesWritten = await libBytes.publicWriteBytes.callAsync(emptyByteArray, testBytesOffset, shortData);
-            const bytesRead = await libBytes.publicReadBytes.callAsync(bytesWritten, testBytesOffset);
+            const bytesWritten = await libBytes.publicWriteBytesWithLength.callAsync(
+                emptyByteArray,
+                testBytesOffset,
+                shortData,
+            );
+            const bytesRead = await libBytes.publicReadBytesWithLength.callAsync(bytesWritten, testBytesOffset);
             return expect(bytesRead).to.be.equal(shortData);
         });
         it('should successfully write short, nested array of bytes when it is offset in the array', async () => {
@@ -547,19 +564,31 @@ describe('LibBytes', () => {
             const emptyByteArray = ethUtil.bufferToHex(
                 new Buffer(prefixDataAsBuffer.byteLength + shortTestBytesAsBuffer.byteLength),
             );
-            let bytesWritten = await libBytes.publicWriteBytes.callAsync(emptyByteArray, prefixOffset, prefixData);
+            let bytesWritten = await libBytes.publicWriteBytesWithLength.callAsync(
+                emptyByteArray,
+                prefixOffset,
+                prefixData,
+            );
             // Write data after prefix
             const testBytesOffset = new BigNumber(prefixDataAsBuffer.byteLength);
-            bytesWritten = await libBytes.publicWriteBytes.callAsync(bytesWritten, testBytesOffset, shortData);
+            bytesWritten = await libBytes.publicWriteBytesWithLength.callAsync(
+                bytesWritten,
+                testBytesOffset,
+                shortData,
+            );
             // Read data after prefix and validate
-            const bytes = await libBytes.publicReadBytes.callAsync(bytesWritten, testBytesOffset);
+            const bytes = await libBytes.publicReadBytesWithLength.callAsync(bytesWritten, testBytesOffset);
             return expect(bytes).to.be.equal(shortData);
         });
         it('should successfully write a nested array of bytes - one word in length - when it takes up the whole array', async () => {
             const testBytesOffset = new BigNumber(0);
             const emptyByteArray = ethUtil.bufferToHex(new Buffer(wordOfTestBytesAsBuffer.byteLength));
-            const bytesWritten = await libBytes.publicWriteBytes.callAsync(emptyByteArray, testBytesOffset, wordOfData);
-            const bytesRead = await libBytes.publicReadBytes.callAsync(bytesWritten, testBytesOffset);
+            const bytesWritten = await libBytes.publicWriteBytesWithLength.callAsync(
+                emptyByteArray,
+                testBytesOffset,
+                wordOfData,
+            );
+            const bytesRead = await libBytes.publicReadBytesWithLength.callAsync(bytesWritten, testBytesOffset);
             return expect(bytesRead).to.be.equal(wordOfData);
         });
         it('should successfully write a nested array of bytes - one word in length - when it is offset in the array', async () => {
@@ -570,19 +599,31 @@ describe('LibBytes', () => {
             const emptyByteArray = ethUtil.bufferToHex(
                 new Buffer(prefixDataAsBuffer.byteLength + wordOfTestBytesAsBuffer.byteLength),
             );
-            let bytesWritten = await libBytes.publicWriteBytes.callAsync(emptyByteArray, prefixOffset, prefixData);
+            let bytesWritten = await libBytes.publicWriteBytesWithLength.callAsync(
+                emptyByteArray,
+                prefixOffset,
+                prefixData,
+            );
             // Write data after prefix
             const testBytesOffset = new BigNumber(prefixDataAsBuffer.byteLength);
-            bytesWritten = await libBytes.publicWriteBytes.callAsync(bytesWritten, testBytesOffset, wordOfData);
+            bytesWritten = await libBytes.publicWriteBytesWithLength.callAsync(
+                bytesWritten,
+                testBytesOffset,
+                wordOfData,
+            );
             // Read data after prefix and validate
-            const bytes = await libBytes.publicReadBytes.callAsync(bytesWritten, testBytesOffset);
+            const bytes = await libBytes.publicReadBytesWithLength.callAsync(bytesWritten, testBytesOffset);
             return expect(bytes).to.be.equal(wordOfData);
         });
         it('should successfully write a long, nested bytes when it takes up the whole array', async () => {
             const testBytesOffset = new BigNumber(0);
             const emptyByteArray = ethUtil.bufferToHex(new Buffer(longTestBytesAsBuffer.byteLength));
-            const bytesWritten = await libBytes.publicWriteBytes.callAsync(emptyByteArray, testBytesOffset, longData);
-            const bytesRead = await libBytes.publicReadBytes.callAsync(bytesWritten, testBytesOffset);
+            const bytesWritten = await libBytes.publicWriteBytesWithLength.callAsync(
+                emptyByteArray,
+                testBytesOffset,
+                longData,
+            );
+            const bytesRead = await libBytes.publicReadBytesWithLength.callAsync(bytesWritten, testBytesOffset);
             return expect(bytesRead).to.be.equal(longData);
         });
         it('should successfully write long, nested array of bytes when it is offset in the array', async () => {
@@ -593,19 +634,23 @@ describe('LibBytes', () => {
             const emptyByteArray = ethUtil.bufferToHex(
                 new Buffer(prefixDataAsBuffer.byteLength + longTestBytesAsBuffer.byteLength),
             );
-            let bytesWritten = await libBytes.publicWriteBytes.callAsync(emptyByteArray, prefixOffset, prefixData);
+            let bytesWritten = await libBytes.publicWriteBytesWithLength.callAsync(
+                emptyByteArray,
+                prefixOffset,
+                prefixData,
+            );
             // Write data after prefix
             const testBytesOffset = new BigNumber(prefixDataAsBuffer.byteLength);
-            bytesWritten = await libBytes.publicWriteBytes.callAsync(bytesWritten, testBytesOffset, longData);
+            bytesWritten = await libBytes.publicWriteBytesWithLength.callAsync(bytesWritten, testBytesOffset, longData);
             // Read data after prefix and validate
-            const bytes = await libBytes.publicReadBytes.callAsync(bytesWritten, testBytesOffset);
+            const bytes = await libBytes.publicReadBytesWithLength.callAsync(bytesWritten, testBytesOffset);
             return expect(bytes).to.be.equal(longData);
         });
         it('should fail if the byte array is too short to hold the length of a nested byte array', async () => {
             const offset = new BigNumber(0);
             const emptyByteArray = ethUtil.bufferToHex(new Buffer(1));
             return expectRevertOrOtherErrorAsync(
-                libBytes.publicWriteBytes.callAsync(emptyByteArray, offset, longData),
+                libBytes.publicWriteBytesWithLength.callAsync(emptyByteArray, offset, longData),
                 RevertReasons.LibBytesGreaterOrEqualToNestedBytesLengthRequired,
             );
         });
@@ -613,10 +658,176 @@ describe('LibBytes', () => {
             const emptyByteArray = ethUtil.bufferToHex(new Buffer(shortTestBytesAsBuffer.byteLength));
             const badOffset = new BigNumber(ethUtil.toBuffer(shortTestBytesAsBuffer).byteLength);
             return expectRevertOrOtherErrorAsync(
-                libBytes.publicWriteBytes.callAsync(emptyByteArray, badOffset, shortData),
+                libBytes.publicWriteBytesWithLength.callAsync(emptyByteArray, badOffset, shortData),
                 RevertReasons.LibBytesGreaterOrEqualToNestedBytesLengthRequired,
             );
         });
+    });
+
+    describe('memCopy', () => {
+        // Create memory 0x000102...FF
+        const memSize = 256;
+        // tslint:disable:no-shadowed-variable
+        const memory = new Uint8Array(memSize).map((_, i) => i);
+        const memHex = toHex(memory);
+
+        // Reference implementation to test against
+        const refMemcpy = (mem: Uint8Array, dest: number, source: number, length: number): Uint8Array =>
+            Uint8Array.from(mem).copyWithin(dest, source, source + length);
+
+        // Test vectors: destination, source, length, job description
+        type Tests = Array<[number, number, number, string]>;
+
+        const test = (tests: Tests) =>
+            tests.forEach(([dest, source, length, job]) =>
+                it(job, async () => {
+                    const expected = refMemcpy(memory, dest, source, length);
+                    const resultStr = await libBytes.testMemcpy.callAsync(
+                        memHex,
+                        new BigNumber(dest),
+                        new BigNumber(source),
+                        new BigNumber(length),
+                    );
+                    const result = fromHex(resultStr);
+                    expect(result).to.deep.equal(expected);
+                }),
+            );
+
+        test([[0, 0, 0, 'copies zero bytes with overlap']]);
+
+        describe('copies forward', () =>
+            test([
+                [128, 0, 0, 'zero bytes'],
+                [128, 0, 1, 'one byte'],
+                [128, 0, 11, 'eleven bytes'],
+                [128, 0, 31, 'thirty-one bytes'],
+                [128, 0, 32, 'one word'],
+                [128, 0, 64, 'two words'],
+                [128, 0, 96, 'three words'],
+                [128, 0, 33, 'one word and one byte'],
+                [128, 0, 72, 'two words and eight bytes'],
+                [128, 0, 100, 'three words and four bytes'],
+            ]));
+
+        describe('copies forward within one word', () =>
+            test([
+                [16, 0, 0, 'zero bytes'],
+                [16, 0, 1, 'one byte'],
+                [16, 0, 11, 'eleven bytes'],
+                [16, 0, 16, 'sixteen bytes'],
+            ]));
+
+        describe('copies forward with one byte overlap', () =>
+            test([
+                [0, 0, 1, 'one byte'],
+                [10, 0, 11, 'eleven bytes'],
+                [30, 0, 31, 'thirty-one bytes'],
+                [31, 0, 32, 'one word'],
+                [32, 0, 33, 'one word and one byte'],
+                [71, 0, 72, 'two words and eight bytes'],
+                [99, 0, 100, 'three words and four bytes'],
+            ]));
+
+        describe('copies forward with thirty-one bytes overlap', () =>
+            test([
+                [0, 0, 31, 'thirty-one bytes'],
+                [1, 0, 32, 'one word'],
+                [2, 0, 33, 'one word and one byte'],
+                [41, 0, 72, 'two words and eight bytes'],
+                [69, 0, 100, 'three words and four bytes'],
+            ]));
+
+        describe('copies forward with one word overlap', () =>
+            test([
+                [0, 0, 32, 'one word'],
+                [1, 0, 33, 'one word and one byte'],
+                [41, 0, 72, 'two words and eight bytes'],
+                [69, 0, 100, 'three words and four bytes'],
+            ]));
+
+        describe('copies forward with one word and one byte overlap', () =>
+            test([
+                [0, 0, 33, 'one word and one byte'],
+                [40, 0, 72, 'two words and eight bytes'],
+                [68, 0, 100, 'three words and four bytes'],
+            ]));
+
+        describe('copies forward with two words overlap', () =>
+            test([
+                [0, 0, 64, 'two words'],
+                [8, 0, 72, 'two words and eight bytes'],
+                [36, 0, 100, 'three words and four bytes'],
+            ]));
+
+        describe('copies forward within one word and one byte overlap', () =>
+            test([[0, 0, 1, 'one byte'], [10, 0, 11, 'eleven bytes'], [15, 0, 16, 'sixteen bytes']]));
+
+        describe('copies backward', () =>
+            test([
+                [0, 128, 0, 'zero bytes'],
+                [0, 128, 1, 'one byte'],
+                [0, 128, 11, 'eleven bytes'],
+                [0, 128, 31, 'thirty-one bytes'],
+                [0, 128, 32, 'one word'],
+                [0, 128, 64, 'two words'],
+                [0, 128, 96, 'three words'],
+                [0, 128, 33, 'one word and one byte'],
+                [0, 128, 72, 'two words and eight bytes'],
+                [0, 128, 100, 'three words and four bytes'],
+            ]));
+
+        describe('copies backward within one word', () =>
+            test([
+                [0, 16, 0, 'zero bytes'],
+                [0, 16, 1, 'one byte'],
+                [0, 16, 11, 'eleven bytes'],
+                [0, 16, 16, 'sixteen bytes'],
+            ]));
+
+        describe('copies backward with one byte overlap', () =>
+            test([
+                [0, 0, 1, 'one byte'],
+                [0, 10, 11, 'eleven bytes'],
+                [0, 30, 31, 'thirty-one bytes'],
+                [0, 31, 32, 'one word'],
+                [0, 32, 33, 'one word and one byte'],
+                [0, 71, 72, 'two words and eight bytes'],
+                [0, 99, 100, 'three words and four bytes'],
+            ]));
+
+        describe('copies backward with thirty-one bytes overlap', () =>
+            test([
+                [0, 0, 31, 'thirty-one bytes'],
+                [0, 1, 32, 'one word'],
+                [0, 2, 33, 'one word and one byte'],
+                [0, 41, 72, 'two words and eight bytes'],
+                [0, 69, 100, 'three words and four bytes'],
+            ]));
+
+        describe('copies backward with one word overlap', () =>
+            test([
+                [0, 0, 32, 'one word'],
+                [0, 1, 33, 'one word and one byte'],
+                [0, 41, 72, 'two words and eight bytes'],
+                [0, 69, 100, 'three words and four bytes'],
+            ]));
+
+        describe('copies backward with one word and one byte overlap', () =>
+            test([
+                [0, 0, 33, 'one word and one byte'],
+                [0, 40, 72, 'two words and eight bytes'],
+                [0, 68, 100, 'three words and four bytes'],
+            ]));
+
+        describe('copies backward with two words overlap', () =>
+            test([
+                [0, 0, 64, 'two words'],
+                [0, 8, 72, 'two words and eight bytes'],
+                [0, 36, 100, 'three words and four bytes'],
+            ]));
+
+        describe('copies forward within one word and one byte overlap', () =>
+            test([[0, 0, 1, 'one byte'], [0, 10, 11, 'eleven bytes'], [0, 15, 16, 'sixteen bytes']]));
     });
 });
 // tslint:disable:max-file-line-count

@@ -39,6 +39,7 @@ export const Profile = (props: ProfileProps) => {
                             fontSize: 14,
                             fontFamily: 'Roboto Mono',
                             color: colors.darkGrey,
+                            whiteSpace: 'nowrap',
                         }}
                     >
                         {props.profileInfo.title.toUpperCase()}

@@ -92,7 +92,6 @@ export enum ContractName {
     Arbitrage = 'Arbitrage',
     TestAssetDataDecoders = 'TestAssetDataDecoders',
     TestAssetProxyDispatcher = 'TestAssetProxyDispatcher',
-    TestLibMem = 'TestLibMem',
     TestLibs = 'TestLibs',
     TestSignatureValidator = 'TestSignatureValidator',
     ERC20Proxy = 'ERC20Proxy',

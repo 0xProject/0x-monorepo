@@ -1,6 +1,6 @@
 import { constants as sharedConstants, Styles } from '@0xproject/react-shared';
 import * as _ from 'lodash';
-import { GridTile } from 'material-ui/GridList';
+import { GridTile as PlainGridTile } from 'material-ui/GridList';
 import * as React from 'react';
 import { analytics } from 'ts/utils/analytics';
 
@@ -9,7 +9,9 @@ import { Container } from 'ts/components/ui/container';
 import { Image } from 'ts/components/ui/image';
 import { Island } from 'ts/components/ui/island';
 import { colors } from 'ts/style/colors';
+import { styled } from 'ts/style/theme';
 import { WebsiteBackendRelayerInfo } from 'ts/types';
+import { utils } from 'ts/utils/utils';
 
 export interface RelayerGridTileProps {
     relayerInfo: WebsiteBackendRelayerInfo;
@@ -19,29 +21,23 @@ export interface RelayerGridTileProps {
 const styles: Styles = {
     root: {
         boxSizing: 'border-box',
+        // All material UI components have position: relative
+        // which creates a new stacking context and makes z-index stuff impossible. So reset.
+        position: 'static',
     },
     innerDiv: {
-        padding: 6,
         height: '100%',
         boxSizing: 'border-box',
     },
     header: {
         height: '50%',
         width: '100%',
-        borderBottomRightRadius: 4,
-        borderBottomLeftRadius: 4,
-        borderTopRightRadius: 4,
-        borderTopLeftRadius: 4,
-        borderWidth: 1,
-        borderStyle: 'solid',
-        borderColor: colors.walletBorder,
     },
     body: {
-        paddingLeft: 6,
-        paddingRight: 6,
         height: '50%',
         width: '100%',
         boxSizing: 'border-box',
+        padding: 12,
     },
     weeklyTradeVolumeLabel: {
         fontSize: 14,
@@ -69,7 +65,10 @@ export const RelayerGridTile: React.StatelessComponent<RelayerGridTileProps> = (
     const weeklyTxnVolume = props.relayerInfo.weeklyTxnVolume;
     const networkName = sharedConstants.NETWORK_NAME_BY_ID[props.networkId];
     const eventLabel = `${props.relayerInfo.name}-${networkName}`;
-    const trackRelayerClick = () => analytics.logEvent('Portal', 'Relayer Click', eventLabel);
+    const onClick = () => {
+        analytics.logEvent('Portal', 'Relayer Click', eventLabel);
+        utils.openUrl(link);
+    };
     const headerImageUrl = props.relayerInfo.logoImgUrl;
     const headerBackgroundColor =
         !_.isUndefined(headerImageUrl) && !_.isUndefined(props.relayerInfo.primaryColor)
@@ -77,22 +76,17 @@ export const RelayerGridTile: React.StatelessComponent<RelayerGridTileProps> = (
             : FALLBACK_PRIMARY_COLOR;
     return (
         <Island style={styles.root} Component={GridTile}>
-            <div style={styles.innerDiv}>
-                <a href={link} target="_blank" style={{ textDecoration: 'none' }} onClick={trackRelayerClick}>
-                    <div
-                        className="flex items-center"
-                        style={{ ...styles.header, backgroundColor: headerBackgroundColor }}
-                    >
-                        <Image
-                            className="mx-auto"
-                            src={props.relayerInfo.logoImgUrl}
-                            fallbackSrc={FALLBACK_IMG_SRC}
-                            height={RELAYER_ICON_HEIGHT}
-                        />
-                    </div>
-                </a>
+            <div style={styles.innerDiv} onClick={onClick}>
+                <div className="flex items-center" style={{ ...styles.header, backgroundColor: headerBackgroundColor }}>
+                    <Image
+                        className="mx-auto"
+                        src={props.relayerInfo.logoImgUrl}
+                        fallbackSrc={FALLBACK_IMG_SRC}
+                        height={RELAYER_ICON_HEIGHT}
+                    />
+                </div>
                 <div style={styles.body}>
-                    <div className="py1" style={styles.relayerNameLabel}>
+                    <div className="pb1" style={styles.relayerNameLabel}>
                         {props.relayerInfo.name}
                     </div>
                     <Section titleText="Weekly Trade Volume">
@@ -110,6 +104,14 @@ export const RelayerGridTile: React.StatelessComponent<RelayerGridTileProps> = (
         </Island>
     );
 };
+
+const GridTile = styled(PlainGridTile)`
+    cursor: pointer;
+    transition: transform 0.2s ease;
+    &:hover {
+        transform: translate(0px, -3px);
+    }
+`;
 
 interface SectionProps {
     titleText: string;

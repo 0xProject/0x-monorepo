@@ -15,6 +15,7 @@ export interface ContainerProps {
     borderRadius?: StringOrNum;
     maxWidth?: StringOrNum;
     width?: StringOrNum;
+    minHeight?: StringOrNum;
     isHidden?: boolean;
     className?: string;
     position?: 'absolute' | 'fixed' | 'relative' | 'unset';
