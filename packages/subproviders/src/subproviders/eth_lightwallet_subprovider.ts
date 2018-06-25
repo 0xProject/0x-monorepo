@@ -15,14 +15,12 @@ import { BaseWalletSubprovider } from './base_wallet_subprovider';
  * Source: https://github.com/MetaMask/provider-engine/blob/master/subproviders/subprovider.js
  */
 export class EthLightwalletSubprovider extends BaseWalletSubprovider {
-    private _signing: any;
-    private _keystore: any;
+    private _keystore: lightwallet.keystore;
     private _pwDerivedKey: Uint8Array;
 
-    constructor(signing: lightwallet.signing, keystore: lightwallet.keystore, pwDerivedKey: Uint8Array) {
+    constructor(keystore: lightwallet.keystore, pwDerivedKey: Uint8Array) {
         super();
 
-        this._signing = signing;
         this._keystore = keystore;
         this._pwDerivedKey = pwDerivedKey;
     }
@@ -54,8 +52,7 @@ export class EthLightwalletSubprovider extends BaseWalletSubprovider {
 
         const tx = new EthereumTx(txParams);
         const txHex = tx.serialize().toString('hex');
-        let signedTxHex: string = this._signing.signTx(
-            this._keystore, this._pwDerivedKey, txHex, txParams.from, this._keystore.hdPathString);
+        let signedTxHex: string = lightwallet.signing.signTx(this._keystore, this._pwDerivedKey, txHex, txParams.from);
 
         signedTxHex = `0x${signedTxHex}`;
 
@@ -78,10 +75,14 @@ export class EthLightwalletSubprovider extends BaseWalletSubprovider {
         }
         assert.isHexString('data', data);
         assert.isETHAddressHex('address', address);
-        const result: ECSignatureBuffer = await this._signing.signMsgHash(
-            this._keystore, this._pwDerivedKey, data, address, this._keystore.hdPathString);
+        const result: ECSignatureBuffer = lightwallet.signing.signMsgHash(
+            this._keystore,
+            this._pwDerivedKey,
+            data,
+            address,
+        );
 
-        const signature = this._signing.concatSig(result);
+        const signature = lightwallet.signing.concatSig(result);
 
         return signature;
     }

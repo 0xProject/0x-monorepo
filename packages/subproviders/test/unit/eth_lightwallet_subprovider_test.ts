@@ -1,8 +1,7 @@
-import { JSONRPCResponsePayload } from '@0xproject/types';
 import * as chai from 'chai';
 import * as lightwallet from 'eth-lightwallet';
+import { JSONRPCResponsePayload } from 'ethereum-types';
 import Web3ProviderEngine = require('web3-provider-engine');
-import RpcSubprovider = require('web3-provider-engine/subproviders/rpc');
 
 import { EthLightwalletSubprovider } from '../../src';
 import { DoneCallback } from '../../src/types';
@@ -59,7 +58,7 @@ describe('EthLightwalletSubprovider', () => {
         keystore.generateNewAddress(pwDerivedKey, NUM_GENERATED_ADDRESSES);
 
         // Initialize Subprovider
-        ethLightwalletSubprovider = new EthLightwalletSubprovider(lightwallet.signing, keystore, pwDerivedKey);
+        ethLightwalletSubprovider = new EthLightwalletSubprovider(keystore, pwDerivedKey);
     });
     describe('direct method calls', () => {
         describe('success cases', () => {
@@ -73,8 +72,10 @@ describe('EthLightwalletSubprovider', () => {
 
                 // Keccak-256 hash of 'hello world'
                 const messageHash = '0x47173285a8d7341e5e972fc677286384f802f8ef42a5ec5f03bbfa254cb01fad';
-                const ecSignatureHex =
-                    await ethLightwalletSubprovider.signPersonalMessageAsync(messageHash, signingAccount);
+                const ecSignatureHex = await ethLightwalletSubprovider.signPersonalMessageAsync(
+                    messageHash,
+                    signingAccount,
+                );
                 expect(ecSignatureHex).to.be.equal(
                     // tslint:disable-next-line:max-line-length
                     '0xa46b696c1aa8f91dbb33d1a66f6440bf3cf334c9dc45dc389668c1e60e2db31e259400b41f31632fa994837054c5345c88dc455c13931332489029adee6fd24d1b',
