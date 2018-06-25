@@ -4,7 +4,10 @@ import * as chai from 'chai';
 
 import { MixinAuthorizableContract } from '../../src/generated_contract_wrappers/mixin_authorizable';
 import { artifacts } from '../../src/utils/artifacts';
-import { expectRevertReasonOrAlwaysFailingTransactionAsync } from '../../src/utils/assertions';
+import {
+    expectRevertOrAlwaysFailingTransactionAsync,
+    expectRevertReasonOrAlwaysFailingTransactionAsync,
+} from '../../src/utils/assertions';
 import { chaiSetup } from '../../src/utils/chai_setup';
 import { constants } from '../../src/utils/constants';
 import { RevertReasons } from '../../src/utils/types';
