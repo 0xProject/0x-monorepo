@@ -70,6 +70,9 @@ export const constants = {
     URL_GITHUB_ORG: 'https://github.com/0xProject',
     URL_GITHUB_WIKI: 'https://github.com/0xProject/wiki',
     URL_METAMASK_CHROME_STORE: 'https://chrome.google.com/webstore/detail/metamask/nkbihfbeogaeaoehlefnkodbefgpgknn',
+    URL_METAMASK_FIREFOX_STORE: 'https://addons.mozilla.org/en-US/firefox/addon/ether-metamask/',
+    URL_METAMASK_HOMEPAGE: 'https://metamask.io/',
+    URL_METAMASK_OPERA_STORE: 'https://addons.opera.com/en/extensions/details/metamask/',
     URL_MIST_DOWNLOAD: 'https://github.com/ethereum/mist/releases',
     URL_PARITY_CHROME_STORE:
         'https://chrome.google.com/webstore/detail/parity-ethereum-integrati/himekenlppkgeaoeddcliojfddemadig',
