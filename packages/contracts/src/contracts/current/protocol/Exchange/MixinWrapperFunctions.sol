@@ -22,13 +22,11 @@ pragma experimental ABIEncoderV2;
 import "./libs/LibMath.sol";
 import "./libs/LibOrder.sol";
 import "./libs/LibFillResults.sol";
-import "./libs/LibExchangeErrors.sol";
 import "./mixins/MExchangeCore.sol";
 
 contract MixinWrapperFunctions is
     LibMath,
     LibFillResults,
-    LibExchangeErrors,
     MExchangeCore
 {
     /// @dev Fills the input order. Reverts if exact takerAssetFillAmount not filled.
@@ -50,7 +48,7 @@ contract MixinWrapperFunctions is
         );
         require(
             fillResults.takerAssetFilledAmount == takerAssetFillAmount,
-            COMPLETE_FILL_FAILED
+            "COMPLETE_FILL_FAILED"
         );
         return fillResults;
     }

@@ -18,7 +18,6 @@ import "./libs/LibConstants.sol";
 import "./libs/LibMath.sol";
 import "./libs/LibOrder.sol";
 import "./libs/LibFillResults.sol";
-import "./libs/LibExchangeErrors.sol";
 import "./mixins/MExchangeCore.sol";
 import "./mixins/MMatchOrders.sol";
 import "./mixins/MTransactions.sol";
@@ -27,7 +26,6 @@ import "./mixins/MAssetProxyDispatcher.sol";
 contract MixinMatchOrders is
     LibConstants,
     LibMath,
-    LibExchangeErrors,
     MAssetProxyDispatcher,
     MExchangeCore,
     MMatchOrders,
@@ -141,7 +139,7 @@ contract MixinMatchOrders is
         require(
             safeMul(leftOrder.makerAssetAmount, rightOrder.makerAssetAmount) >=
             safeMul(leftOrder.takerAssetAmount, rightOrder.takerAssetAmount),
-            NEGATIVE_SPREAD_REQUIRED
+            "NEGATIVE_SPREAD_REQUIRED"
         );
     }
 

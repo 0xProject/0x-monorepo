@@ -18,7 +18,10 @@
 
 pragma solidity ^0.4.24;
 
+/// @dev This contract documents the revert reasons used in the Exchange contract.
+/// This contract is intended to serve as a reference, but is not actually used for efficiency reasons.
 contract LibExchangeErrors {
+
     /// Order validation errors ///
     string constant ORDER_UNFILLABLE = "ORDER_UNFILLABLE";                              // Order cannot be filled.
     string constant INVALID_MAKER = "INVALID_MAKER";                                    // Invalid makerAddress.
@@ -56,9 +59,11 @@ contract LibExchangeErrors {
 
     /// dispatchTransferFrom errors ///
     string constant ASSET_PROXY_DOES_NOT_EXIST = "ASSET_PROXY_DOES_NOT_EXIST";          // No assetProxy registered at given id.
+    string constant TRANSFER_FAILED = "TRANSFER_FAILED";                                // Asset transfer unsuccesful.
 
     /// Length validation errors ///
     string constant LENGTH_GREATER_THAN_0_REQUIRED = "LENGTH_GREATER_THAN_0_REQUIRED";  // Byte array must have a length greater than 0.
+    string constant LENGTH_GREATER_THAN_3_REQUIRED = "LENGTH_GREATER_THAN_3_REQUIRED";  // Byte array must have a length greater than 3.
     string constant LENGTH_0_REQUIRED = "LENGTH_0_REQUIRED";                            // Byte array must have a length of 0.
     string constant LENGTH_65_REQUIRED = "LENGTH_65_REQUIRED";                          // Byte array must have a length of 65.
 }

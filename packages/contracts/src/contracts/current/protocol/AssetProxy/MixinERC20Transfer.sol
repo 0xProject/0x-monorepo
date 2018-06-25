@@ -21,11 +21,9 @@ pragma experimental ABIEncoderV2;
 
 import "../../utils/LibBytes/LibBytes.sol";
 import "../../tokens/ERC20Token/IERC20Token.sol";
-import "./libs/LibTransferErrors.sol";
 
-contract MixinERC20Transfer is
-    LibTransferErrors
-{
+contract MixinERC20Transfer {
+
     using LibBytes for bytes;
 
     /// @dev Internal version of `transferFrom`.
@@ -109,7 +107,7 @@ contract MixinERC20Transfer is
         }
         require(
             success,
-            TRANSFER_FAILED
+            "TRANSFER_FAILED"
         );
     }
 }

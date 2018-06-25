@@ -23,7 +23,6 @@ import "./libs/LibConstants.sol";
 import "./libs/LibFillResults.sol";
 import "./libs/LibOrder.sol";
 import "./libs/LibMath.sol";
-import "./libs/LibExchangeErrors.sol";
 import "./mixins/MExchangeCore.sol";
 import "./mixins/MSignatureValidator.sol";
 import "./mixins/MTransactions.sol";
@@ -34,7 +33,6 @@ contract MixinExchangeCore is
     LibMath,
     LibOrder,
     LibFillResults,
-    LibExchangeErrors,
     MAssetProxyDispatcher,
     MExchangeCore,
     MSignatureValidator,
@@ -70,7 +68,7 @@ contract MixinExchangeCore is
         // Ensure orderEpoch is monotonically increasing
         require(
             newOrderEpoch > oldOrderEpoch, 
-            INVALID_NEW_ORDER_EPOCH
+            "INVALID_NEW_ORDER_EPOCH"
         );
 
         // Update orderEpoch
@@ -282,20 +280,20 @@ contract MixinExchangeCore is
         // An order can only be filled if its status is FILLABLE.
         require(
             orderInfo.orderStatus == uint8(OrderStatus.FILLABLE),
-            ORDER_UNFILLABLE
+            "ORDER_UNFILLABLE"
         );
 
         // Revert if fill amount is invalid
         require(
             takerAssetFillAmount != 0,
-            INVALID_TAKER_AMOUNT
+            "INVALID_TAKER_AMOUNT"
         );
 
         // Validate sender is allowed to fill this order
         if (order.senderAddress != address(0)) {
             require(
                 order.senderAddress == msg.sender,
-                INVALID_SENDER
+                "INVALID_SENDER"
             );
         }
 
@@ -303,7 +301,7 @@ contract MixinExchangeCore is
         if (order.takerAddress != address(0)) {
             require(
                 order.takerAddress == takerAddress,
-                INVALID_TAKER
+                "INVALID_TAKER"
             );
         }
 
@@ -315,7 +313,7 @@ contract MixinExchangeCore is
                     order.makerAddress,
                     signature
                 ),
-                INVALID_ORDER_SIGNATURE
+                "INVALID_ORDER_SIGNATURE"
             );
         }
 
@@ -326,7 +324,7 @@ contract MixinExchangeCore is
                 order.takerAssetAmount,
                 order.makerAssetAmount
             ),
-            ROUNDING_ERROR
+            "ROUNDING_ERROR"
         );
     }
 
@@ -344,14 +342,14 @@ contract MixinExchangeCore is
         // An order can only be cancelled if its status is FILLABLE.
         require(
             orderInfo.orderStatus == uint8(OrderStatus.FILLABLE),
-            ORDER_UNFILLABLE
+            "ORDER_UNFILLABLE"
         );
 
         // Validate sender is allowed to cancel this order
         if (order.senderAddress != address(0)) {
             require(
                 order.senderAddress == msg.sender,
-                INVALID_SENDER
+                "INVALID_SENDER"
             );
         }
 
@@ -359,7 +357,7 @@ contract MixinExchangeCore is
         address makerAddress = getCurrentContextAddress();
         require(
             order.makerAddress == makerAddress,
-            INVALID_MAKER
+            "INVALID_MAKER"
         );
     }
 
