@@ -11,13 +11,15 @@ const PlainAnimation: React.StatelessComponent<AnimationProps> = props => <div {
 
 const appearFromBottomFrames = keyframes`
     from {
-        position: absolute;
+        position: fixed;
         bottom: -500px;
+        left: 0px;
     }
 
     to {
-        position: absolute;
+        position: fixed;
         bottom: 0px;
+        left: 0px;
     }
 `;
 

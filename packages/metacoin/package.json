@@ -17,7 +17,7 @@
         "rebuild_and_test": "run-s build test",
         "test:coverage": "SOLIDITY_COVERAGE=true run-s build run_mocha coverage:report:text coverage:report:lcov",
         "test:profile": "SOLIDITY_PROFILER=true run-s build run_mocha profiler:report:html",
-        "run_mocha": "mocha --require source-map-support/register lib/test/**/*_test.js lib/test/global_hooks.js --bail --exit --timeout 10000",
+        "run_mocha": "mocha --require source-map-support/register --require make-promises-safe lib/test/**/*_test.js lib/test/global_hooks.js --bail --exit --timeout 10000",
         "generate_contract_wrappers": "abi-gen --abis 'artifacts/Metacoin.json' --template ../contract_templates/contract.handlebars --partials '../contract_templates/partials/**/*.handlebars' --output src/contract_wrappers --backend ethers",
         "coverage:report:text": "istanbul report text",
         "coverage:report:html": "istanbul report html && open coverage/index.html",
@@ -36,12 +36,16 @@
         "@0xproject/subproviders": "^0.10.4",
         "@0xproject/tslint-config": "^0.4.20",
         "@0xproject/types": "^0.8.1",
+        "@0xproject/typescript-typings": "^0.4.1",
         "@0xproject/utils": "^0.7.1",
         "@0xproject/web3-wrapper": "^0.7.1",
-        "ethereum-types": "^0.0.1",
+        "@types/mocha": "^5.2.2",
+        "copyfiles": "^2.0.0",
+        "ethereum-types": "^0.0.2",
         "ethers": "3.0.22",
         "lodash": "^4.17.4",
-        "web3-provider-engine": "^14.0.6"
+        "web3-provider-engine": "^14.0.6",
+        "run-s": "^0.0.0"
     },
     "devDependencies": {
         "@0xproject/dev-utils": "^0.4.4",

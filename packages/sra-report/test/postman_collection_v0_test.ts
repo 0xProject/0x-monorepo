@@ -1,4 +1,3 @@
-import 'make-promises-safe';
 import 'mocha';
 import * as nock from 'nock';
 

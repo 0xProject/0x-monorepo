@@ -2,7 +2,6 @@ import { BlockchainLifecycle } from '@0xproject/dev-utils';
 import { BigNumber } from '@0xproject/utils';
 import { Web3Wrapper } from '@0xproject/web3-wrapper';
 import * as chai from 'chai';
-import 'make-promises-safe';
 
 import { WETH9Contract } from '../src/generated_contract_wrappers/weth9';
 import { artifacts } from '../src/utils/artifacts';

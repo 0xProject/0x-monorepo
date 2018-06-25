@@ -42,7 +42,11 @@ export class OnboardingFlow extends React.Component<OnboardingFlowProps> {
             onboardingElement = <Animation type="easeUpFromBottom">{this._renderOnboardignCard()}</Animation>;
         } else {
             onboardingElement = (
-                <Popper referenceElement={this._getElementForStep()} placement={this._getCurrentStep().placement}>
+                <Popper
+                    referenceElement={this._getElementForStep()}
+                    placement={this._getCurrentStep().placement}
+                    positionFixed={true}
+                >
                     {this._renderPopperChildren.bind(this)}
                 </Popper>
             );

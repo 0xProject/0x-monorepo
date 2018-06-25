@@ -69,7 +69,7 @@ contract MixinAuthorizable is
         );
 
         delete authorized[target];
-        for (uint i = 0; i < authorities.length; i++) {
+        for (uint256 i = 0; i < authorities.length; i++) {
             if (authorities[i] == target) {
                 authorities[i] = authorities[authorities.length - 1];
                 authorities.length -= 1;
@@ -87,7 +87,12 @@ contract MixinAuthorizable is
         uint256 index
     )
         external
+        onlyOwner
     {
+        require(
+            authorized[target],
+            TARGET_NOT_AUTHORIZED
+        );
         require(
             index < authorities.length,
             INDEX_OUT_OF_BOUNDS

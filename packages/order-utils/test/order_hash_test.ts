@@ -1,7 +1,6 @@
 import { Order } from '@0xproject/types';
 import { BigNumber } from '@0xproject/utils';
 import * as chai from 'chai';
-import 'make-promises-safe';
 import 'mocha';
 
 import { constants, orderHashUtils } from '../src';
@@ -13,8 +12,8 @@ const expect = chai.expect;
 
 describe('Order hashing', () => {
     describe('#getOrderHashHex', () => {
-        const expectedOrderHash = '0x367ad7730eb8b5feab8a9c9f47c6fcba77a2d4df125ee6a59cc26ac955710f7e';
-        const fakeExchangeContractAddress = '0xb69e673309512a9d726f87304c6984054f87a93b';
+        const expectedOrderHash = '0x434c6b41e2fb6dfcfe1b45c4492fb03700798e9c1afc6f801ba6203f948c1fa7';
+        const fakeExchangeContractAddress = '0x1dc4c1cefef38a777b15aa20260a54e584b16c48';
         const order: Order = {
             makerAddress: constants.NULL_ADDRESS,
             takerAddress: constants.NULL_ADDRESS,

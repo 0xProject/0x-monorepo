@@ -3,7 +3,6 @@ import { BigNumber, NULL_BYTES } from '@0xproject/utils';
 import * as chai from 'chai';
 import ethUtil = require('ethereumjs-util');
 import * as _ from 'lodash';
-import 'make-promises-safe';
 
 import { TokenRegistryContract } from '../src/generated_contract_wrappers/token_registry';
 import { artifacts } from '../src/utils/artifacts';
