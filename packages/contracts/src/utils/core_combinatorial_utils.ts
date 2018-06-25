@@ -16,7 +16,7 @@ import 'make-promises-safe';
 
 import { ExchangeContract, FillContractEventArgs } from '../generated_contract_wrappers/exchange';
 import { artifacts } from '../utils/artifacts';
-import { expectRevertOrAlwaysFailingTransactionAsync } from '../utils/assertions';
+import { expectRevertReasonOrAlwaysFailingTransactionAsync } from '../utils/assertions';
 import { AssetWrapper } from '../utils/asset_wrapper';
 import { chaiSetup } from '../utils/chai_setup';
 import { constants } from '../utils/constants';
@@ -298,7 +298,7 @@ export class CoreCombinatorialUtils {
         const lazyStore = new BalanceAndProxyAllowanceLazyStore(balanceAndProxyAllowanceFetcher);
         const exchangeTransferSimulator = new ExchangeTransferSimulator(lazyStore);
 
-        let isFillFailureExpected = false;
+        let fillRevertReasonIfExists;
         try {
             await orderValidationUtils.validateFillOrderThrowIfInvalidAsync(
                 exchangeTransferSimulator,
@@ -312,7 +312,7 @@ export class CoreCombinatorialUtils {
                 logUtils.log(`Expecting fillOrder to succeed.`);
             }
         } catch (err) {
-            isFillFailureExpected = true;
+            fillRevertReasonIfExists = err.message;
             if (isVerbose) {
                 logUtils.log(`Expecting fillOrder to fail with:`);
                 logUtils.log(err);
@@ -324,7 +324,7 @@ export class CoreCombinatorialUtils {
             signedOrder,
             takerAssetFillAmount,
             lazyStore,
-            isFillFailureExpected,
+            fillRevertReasonIfExists,
             provider,
         );
     }
@@ -332,12 +332,13 @@ export class CoreCombinatorialUtils {
         signedOrder: SignedOrder,
         takerAssetFillAmount: BigNumber,
         lazyStore: BalanceAndProxyAllowanceLazyStore,
-        isFillFailureExpected: boolean,
+        fillRevertReasonIfExists: string | undefined,
         provider: Provider,
     ): Promise<void> {
-        if (isFillFailureExpected) {
-            return expectRevertOrAlwaysFailingTransactionAsync(
+        if (!_.isUndefined(fillRevertReasonIfExists)) {
+            return expectRevertReasonOrAlwaysFailingTransactionAsync(
                 this.exchangeWrapper.fillOrderAsync(signedOrder, this.takerAddress, { takerAssetFillAmount }),
+                fillRevertReasonIfExists,
             );
         }
 
