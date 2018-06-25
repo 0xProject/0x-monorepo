@@ -25,4 +25,5 @@ contract LibTransferErrors {
     /// Transfer errors ///
     string constant INVALID_AMOUNT = "INVALID_AMOUNT";                            // Transfer amount must equal 1.
     string constant TRANSFER_FAILED = "TRANSFER_FAILED";                          // Transfer failed.
+    string constant ASSET_DATA_TO_SHORT = "ASSET_DATA_TO_SHORT";                      // Asset data to short
 }
