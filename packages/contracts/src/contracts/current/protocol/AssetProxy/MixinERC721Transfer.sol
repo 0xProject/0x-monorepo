@@ -55,14 +55,6 @@ contract MixinERC721Transfer is
             bytes memory receiverData
         ) = decodeERC721AssetData(assetData);
 
-/*
-        (token).safeTransferFrom(
-            from,
-            to,
-            tokenId,
-            receiverData
-        );*/
-
         // We construct calldata for the `token.safeTransferFrom` ABI.
         // The layout of this calldata is in the table below.
         // 
@@ -87,11 +79,7 @@ contract MixinERC721Transfer is
             // `dataAreaLength` is the total number of words needed to store `receiverData`
             //  As-per the ABI spec, this value is padded up to the nearest multiple of 32,
             //  and includes 32-bytes for length.
-            //  It's calculated as folows:
-            //      - Unpadded length in bytes = `mload(receiverData) + 32`
-            //      - Add 31 to this value then divide by 32 to get the length in words.
-            //      - Multiply this value by 32 to get the padded length in bytes.
-            let dataAreaLength := mul(div(add(mload(receiverData), 63), 32), 32)
+            let dataAreaLength := and(add(mload(receiverData), 63), 0xFFFFFFFFFFFE0)
             // `cdEnd` is the end of the calldata for `token.safeTransferFrom`.
             let cdEnd := add(cdStart, add(132, dataAreaLength))
 
@@ -120,13 +108,13 @@ contract MixinERC721Transfer is
 
             /////// Call `token.safeTransferFrom` using the constructed calldata ///////
             success := call(
-                gas,
-                token,
-                0,
-                cdStart,
-                sub(cdEnd, cdStart),
-                cdStart,
-                0
+                gas,                    // forward all gas
+                token,                  // call address of token contract
+                0,                      // don't send any ETH
+                cdStart,                // pointer to start of input
+                sub(cdEnd, cdStart),    // length of input
+                cdStart,                // write output over input
+                0                       // output size is 0 bytes
             )
         }
 

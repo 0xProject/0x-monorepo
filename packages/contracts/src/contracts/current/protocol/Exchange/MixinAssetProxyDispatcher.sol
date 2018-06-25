@@ -133,11 +133,7 @@ contract MixinAssetProxyDispatcher is
                 // `dataAreaLength` is the total number of words needed to store `assetData`
                 //  As-per the ABI spec, this value is padded up to the nearest multiple of 32,
                 //  and includes 32-bytes for length.
-                //  It's calculated as folows:
-                //      - Unpadded length in bytes = `mload(assetData) + 32`
-                //      - Add 31 to this value then divide by 32 to get the length in words.
-                //      - Multiply this value by 32 to get the padded length in bytes.
-                let dataAreaLength := mul(div(add(mload(assetData), 63), 32), 32)
+                let dataAreaLength := and(add(mload(assetData), 63), 0xFFFFFFFFFFFE0)
                 // `cdEnd` is the end of the calldata for `assetProxy.transferFrom`.
                 let cdEnd := add(cdStart, add(132, dataAreaLength))
 
@@ -166,13 +162,13 @@ contract MixinAssetProxyDispatcher is
 
                 /////// Call `assetProxy.transferFrom` using the constructed calldata ///////
                 success := call(
-                    gas,
-                    assetProxy,
-                    0,
-                    cdStart,
-                    sub(cdEnd, cdStart),
-                    cdStart,
-                    0
+                    gas,                    // forward all gas
+                    assetProxy,             // call address of asset proxy
+                    0,                      // don't send any ETH
+                    cdStart,                // pointer to start of input
+                    sub(cdEnd, cdStart),    // length of input  
+                    cdStart,                // write output over input
+                    0                       // output size is 0 bytes
                 )
             }
 

@@ -63,8 +63,6 @@ contract MixinERC20Transfer is
             /////// Setup State ///////
             // `cdStart` is the start of the calldata for `token.transferFrom` (equal to free memory ptr).
             let cdStart := mload(64)
-            // `cdEnd` is the end of the calldata for `token.transferFrom`.
-            let cdEnd := add(cdStart, 100)
 
             /////// Setup Header Area ///////
             // This area holds the 4-byte `transferFromSelector`.
@@ -79,36 +77,33 @@ contract MixinERC20Transfer is
 
             /////// Call `token.transferFrom` using the constructed calldata ///////
             success := call(
-                gas,
-                token,
-                0,
-                cdStart,
-                sub(cdEnd, cdStart),
-                cdStart,
-                32
+                gas,            // forward all gas
+                token,          // call address of token contract
+                0,              // don't send any ETH
+                cdStart,        // pointer to start of input
+                100,            // length of input
+                cdStart,        // write output over input
+                32              // output size is 32 bytes
             )
-        }
-        require(
-            success,
-            TRANSFER_FAILED
-        );
         
-        // Check return data.
-        // If there is no return data, we assume the token incorrectly
-        // does not return a bool. In this case we expect it to revert
-        // on failure, which was handled above.
-        // If the token does return data, we require that it is a single
-        // value that evaluates to true.
-        assembly {
-            if returndatasize {
-                success := 0
-                if eq(returndatasize, 32) {
-                    // First 64 bytes of memory are reserved scratch space
-                    returndatacopy(0, 0, 32)
-                    success := mload(0)
+            if success {
+                // Check return data.
+                // If there is no return data, we assume the token incorrectly
+                // does not return a bool. In this case we expect it to revert
+                // on failure, which was handled above.
+                // If the token does return data, we require that it is a single
+                // value that evaluates to true.
+                if returndatasize {
+                    success := 0
+                    if eq(returndatasize, 32) {
+                        // First 64 bytes of memory are reserved scratch space
+                        returndatacopy(0, 0, 32)
+                        success := mload(0)
+                    }
                 }
             }
         }
+
         require(
             success,
             TRANSFER_FAILED
