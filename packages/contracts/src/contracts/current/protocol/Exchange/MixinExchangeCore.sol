@@ -414,7 +414,6 @@ contract MixinExchangeCore is
     {
         uint8 makerAssetProxyId = uint8(order.makerAssetData.popLastByte());
         uint8 takerAssetProxyId = uint8(order.takerAssetData.popLastByte());
-        bytes memory zrxAssetData = ZRX_ASSET_DATA;
         dispatchTransferFrom(
             order.makerAssetData,
             makerAssetProxyId,
@@ -430,14 +429,14 @@ contract MixinExchangeCore is
             fillResults.takerAssetFilledAmount
         );
         dispatchTransferFrom(
-            zrxAssetData,
+            ZRX_ASSET_DATA,
             ZRX_PROXY_ID,
             order.makerAddress,
             order.feeRecipientAddress,
             fillResults.makerFeePaid
         );
         dispatchTransferFrom(
-            zrxAssetData,
+            ZRX_ASSET_DATA,
             ZRX_PROXY_ID,
             takerAddress,
             order.feeRecipientAddress,

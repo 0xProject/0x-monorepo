@@ -244,7 +244,6 @@ contract MixinMatchOrders is
     {
         uint8 leftMakerAssetProxyId = uint8(leftOrder.makerAssetData.popLastByte());
         uint8 rightMakerAssetProxyId = uint8(rightOrder.makerAssetData.popLastByte());
-        bytes memory zrxAssetData = ZRX_ASSET_DATA;
         // Order makers and taker
         dispatchTransferFrom(
             leftOrder.makerAssetData,
@@ -270,14 +269,14 @@ contract MixinMatchOrders is
 
         // Maker fees
         dispatchTransferFrom(
-            zrxAssetData,
+            ZRX_ASSET_DATA,
             ZRX_PROXY_ID,
             leftOrder.makerAddress,
             leftOrder.feeRecipientAddress,
             matchedFillResults.left.makerFeePaid
         );
         dispatchTransferFrom(
-            zrxAssetData,
+            ZRX_ASSET_DATA,
             ZRX_PROXY_ID,
             rightOrder.makerAddress,
             rightOrder.feeRecipientAddress,
@@ -287,7 +286,7 @@ contract MixinMatchOrders is
         // Taker fees
         if (leftOrder.feeRecipientAddress == rightOrder.feeRecipientAddress) {
             dispatchTransferFrom(
-                zrxAssetData,
+                ZRX_ASSET_DATA,
                 ZRX_PROXY_ID,
                 takerAddress,
                 leftOrder.feeRecipientAddress,
@@ -298,14 +297,14 @@ contract MixinMatchOrders is
             );
         } else {
             dispatchTransferFrom(
-                zrxAssetData,
+                ZRX_ASSET_DATA,
                 ZRX_PROXY_ID,
                 takerAddress,
                 leftOrder.feeRecipientAddress,
                 matchedFillResults.left.takerFeePaid
             );
             dispatchTransferFrom(
-                zrxAssetData,
+                ZRX_ASSET_DATA,
                 ZRX_PROXY_ID,
                 takerAddress,
                 rightOrder.feeRecipientAddress,

@@ -21,17 +21,9 @@ pragma solidity ^0.4.24;
 contract LibConstants {
    
     // Asset data for ZRX token. Used for fee transfers.
-    // @TODO: Hardcode constant when we deploy. Currently 
-    //        not constant to make testing easier.
-    bytes public ZRX_ASSET_DATA;
+    // Kovan ZRX address is 0x6ff6c0ff1d68b964901f986d4c9fa3ac68346570.
+    bytes constant ZRX_ASSET_DATA = "\x6f\xf6\xc0\xff\x1d\x68\xb9\x64\x90\x1f\x98\x6d\x4c\x9f\xa3\xac\x68\x34\x65\x70";
 
     // Proxy Id for ZRX token.
     uint8 constant ZRX_PROXY_ID = 1;
-
-    // @TODO: Remove when we deploy.
-    constructor (bytes memory zrxAssetData)
-        public
-    {
-        ZRX_ASSET_DATA = zrxAssetData;
-    }
 }
