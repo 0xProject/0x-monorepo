@@ -79,7 +79,8 @@ export class ASTVisitor {
         this._visitStatement(ast);
     }
     public ExpressionStatement(ast: Parser.ExpressionStatement): void {
-        if (ast.expression.type === 'Identifier' && ast.expression.name === '_') {
+        // TODO update types
+        if (ast.expression.type === 'Identifier' && (ast as any).expression.name === '_') {
             // this is "_;" in a modifier
             // add to the modifiersStatementdIds so we can collect coverage info
             this._modifiersStatementIds.push(this._entryId);
