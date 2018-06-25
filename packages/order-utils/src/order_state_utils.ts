@@ -10,7 +10,6 @@ import { BigNumber } from '@0xproject/utils';
 
 import { AbstractBalanceAndProxyAllowanceFetcher } from './abstract/abstract_balance_and_proxy_allowance_fetcher';
 import { AbstractOrderFilledCancelledFetcher } from './abstract/abstract_order_filled_cancelled_fetcher';
-import { constants } from './constants';
 import { orderHashUtils } from './order_hash';
 import { RemainingFillableCalculator } from './remaining_fillable_calculator';
 import { utils } from './utils';

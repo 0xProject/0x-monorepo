@@ -1,5 +1,4 @@
 import { BlockchainLifecycle } from '@0xproject/dev-utils';
-import * as _ from 'lodash';
 
 import { chaiSetup } from '../../src/utils/chai_setup';
 import { CoreCombinatorialUtils, coreCombinatorialUtilsFactoryAsync } from '../../src/utils/core_combinatorial_utils';
@@ -12,7 +11,6 @@ import {
     ExpirationTimeSecondsScenario,
     FeeRecipientAddressScenario,
     OrderAssetAmountScenario,
-    OrderScenario,
     TakerAssetFillAmountScenario,
     TakerScenario,
 } from '../../src/utils/types';

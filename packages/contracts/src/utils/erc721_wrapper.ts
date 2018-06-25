@@ -1,4 +1,4 @@
-import { assetProxyUtils, generatePseudoRandomSalt } from '@0xproject/order-utils';
+import { generatePseudoRandomSalt } from '@0xproject/order-utils';
 import { BigNumber } from '@0xproject/utils';
 import { Web3Wrapper } from '@0xproject/web3-wrapper';
 import { Provider } from 'ethereum-types';
@@ -155,7 +155,6 @@ export class ERC721Wrapper {
     public async isProxyApprovedForAllAsync(
         userAddress: string,
         tokenAddress: string,
-        tokenId: BigNumber,
     ): Promise<boolean> {
         this._validateProxyContractExistsOrThrow();
         const tokenContract = this._getTokenContractFromAssetData(tokenAddress);

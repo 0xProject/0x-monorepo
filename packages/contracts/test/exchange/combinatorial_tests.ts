@@ -5,7 +5,7 @@ import { chaiSetup } from '../../src/utils/chai_setup';
 import { CoreCombinatorialUtils, coreCombinatorialUtilsFactoryAsync } from '../../src/utils/core_combinatorial_utils';
 import { provider, txDefaults, web3Wrapper } from '../../src/utils/web3_wrapper';
 
-import { FillScenario, OrderScenario, TakerAssetFillAmountScenario } from '../../src/utils/types';
+import { FillScenario } from '../../src/utils/types';
 
 chaiSetup.configure();
 const blockchainLifecycle = new BlockchainLifecycle(web3Wrapper);

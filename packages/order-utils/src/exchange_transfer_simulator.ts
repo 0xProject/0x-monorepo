@@ -2,7 +2,6 @@ import { ExchangeContractErrs } from '@0xproject/types';
 import { BigNumber } from '@0xproject/utils';
 
 import { AbstractBalanceAndProxyAllowanceLazyStore } from './abstract/abstract_balance_and_proxy_allowance_lazy_store';
-import { assetProxyUtils } from './asset_proxy_utils';
 import { constants } from './constants';
 import { TradeSide, TransferType } from './types';
 

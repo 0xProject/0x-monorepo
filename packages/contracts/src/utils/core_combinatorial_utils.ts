@@ -6,11 +6,11 @@ import {
     OrderStateUtils,
     OrderValidationUtils,
 } from '@0xproject/order-utils';
-import { AssetProxyId, Order, SignatureType, SignedOrder } from '@0xproject/types';
+import { AssetProxyId, SignatureType, SignedOrder } from '@0xproject/types';
 import { BigNumber, errorUtils, logUtils } from '@0xproject/utils';
 import { Web3Wrapper } from '@0xproject/web3-wrapper';
 import * as chai from 'chai';
-import { BlockParamLiteral, LogWithDecodedArgs, Provider, TxData } from 'ethereum-types';
+import { LogWithDecodedArgs, Provider, TxData } from 'ethereum-types';
 import * as _ from 'lodash';
 import 'make-promises-safe';
 
@@ -36,7 +36,6 @@ import {
     FeeRecipientAddressScenario,
     FillScenario,
     OrderAssetAmountScenario,
-    OrderScenario,
     TakerAssetFillAmountScenario,
     TakerScenario,
     TraderStateScenario,
@@ -290,7 +289,6 @@ export class CoreCombinatorialUtils {
             fillScenario.takerStateScenario,
             signedOrder,
             takerAssetFillAmount,
-            balanceAndProxyAllowanceFetcher,
         );
 
         // 5. If I fill it by X, what are the resulting balances/allowances/filled amounts expected?
@@ -325,7 +323,6 @@ export class CoreCombinatorialUtils {
             takerAssetFillAmount,
             lazyStore,
             fillRevertReasonIfExists,
-            provider,
         );
     }
     private async _fillOrderAndAssertOutcomeAsync(
@@ -333,7 +330,6 @@ export class CoreCombinatorialUtils {
         takerAssetFillAmount: BigNumber,
         lazyStore: BalanceAndProxyAllowanceLazyStore,
         fillRevertReasonIfExists: string | undefined,
-        provider: Provider,
     ): Promise<void> {
         if (!_.isUndefined(fillRevertReasonIfExists)) {
             return expectRevertReasonOrAlwaysFailingTransactionAsync(
@@ -373,11 +369,6 @@ export class CoreCombinatorialUtils {
             expFilledTakerAmount,
             signedOrder.takerAssetAmount,
             signedOrder.makerAssetAmount,
-        );
-
-        const beforeMakerAssetAllowanceOfMaker = await this.assetWrapper.getProxyAllowanceAsync(
-            makerAddress,
-            makerAssetData,
         );
 
         // - Let's fill the order!
@@ -544,7 +535,6 @@ export class CoreCombinatorialUtils {
         takerStateScenario: TraderStateScenario,
         signedOrder: SignedOrder,
         takerAssetFillAmount: BigNumber,
-        balanceAndProxyAllowanceFetcher: SimpleAssetBalanceAndProxyAllowanceFetcher,
     ): Promise<void> {
         const makerAssetFillAmount = orderUtils.getPartialAmount(
             takerAssetFillAmount,

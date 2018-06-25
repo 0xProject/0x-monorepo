@@ -113,7 +113,6 @@ export class AssetWrapper {
                 const isProxyApprovedForAll = await assetWrapper.isProxyApprovedForAllAsync(
                     userAddress,
                     erc721ProxyData.tokenAddress,
-                    erc721ProxyData.tokenId,
                 );
                 if (isProxyApprovedForAll) {
                     return constants.UNLIMITED_ALLOWANCE_IN_BASE_UNITS;
@@ -169,7 +168,6 @@ export class AssetWrapper {
                 const isProxyApprovedForAll = await erc721Wrapper.isProxyApprovedForAllAsync(
                     userAddress,
                     assetProxyData.tokenAddress,
-                    assetProxyData.tokenId,
                 );
                 if (!isProxyApprovedForAll && desiredAllowance.eq(constants.UNLIMITED_ALLOWANCE_IN_BASE_UNITS)) {
                     const isApproved = true;

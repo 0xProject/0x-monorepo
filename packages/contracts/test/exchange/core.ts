@@ -14,7 +14,6 @@ import { ERC721ProxyContract } from '../../src/generated_contract_wrappers/e_r_c
 import {
     CancelContractEventArgs,
     ExchangeContract,
-    FillContractEventArgs,
 } from '../../src/generated_contract_wrappers/exchange';
 import { artifacts } from '../../src/utils/artifacts';
 import {
