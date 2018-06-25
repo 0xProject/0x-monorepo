@@ -92,7 +92,6 @@ export enum ContractName {
     Arbitrage = 'Arbitrage',
     TestAssetDataDecoders = 'TestAssetDataDecoders',
     TestAssetProxyDispatcher = 'TestAssetProxyDispatcher',
-    TestLibMem = 'TestLibMem',
     TestLibs = 'TestLibs',
     TestSignatureValidator = 'TestSignatureValidator',
     ERC20Proxy = 'ERC20Proxy',
@@ -100,6 +99,7 @@ export enum ContractName {
     DummyERC721Receiver = 'DummyERC721Receiver',
     DummyERC721Token = 'DummyERC721Token',
     TestLibBytes = 'TestLibBytes',
+    TestWallet = 'TestWallet',
     Authorizable = 'Authorizable',
     Whitelist = 'Whitelist',
 }
@@ -107,7 +107,7 @@ export enum ContractName {
 export interface SignedTransaction {
     exchangeAddress: string;
     salt: BigNumber;
-    signer: string;
+    signerAddress: string;
     data: string;
     signature: string;
 }

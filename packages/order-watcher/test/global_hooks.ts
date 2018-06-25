@@ -1,6 +1,5 @@
 import { devConstants } from '@0xproject/dev-utils';
 import { runV1MigrationsAsync } from '@0xproject/migrations';
-import 'make-promises-safe';
 
 import { provider } from './utils/web3_wrapper';
 

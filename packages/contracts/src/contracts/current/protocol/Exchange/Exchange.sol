@@ -19,9 +19,9 @@
 pragma solidity ^0.4.24;
 pragma experimental ABIEncoderV2;
 
+import "./libs/LibConstants.sol";
 import "./MixinExchangeCore.sol";
 import "./MixinSignatureValidator.sol";
-import "./MixinSettlement.sol";
 import "./MixinWrapperFunctions.sol";
 import "./MixinAssetProxyDispatcher.sol";
 import "./MixinTransactions.sol";
@@ -30,7 +30,6 @@ import "./MixinMatchOrders.sol";
 contract Exchange is
     MixinExchangeCore,
     MixinMatchOrders,
-    MixinSettlement,
     MixinSignatureValidator,
     MixinTransactions,
     MixinAssetProxyDispatcher,
@@ -42,9 +41,9 @@ contract Exchange is
     // Mixins are instantiated in the order they are inherited
     constructor (bytes memory _zrxAssetData)
         public
+        LibConstants(_zrxAssetData) // @TODO: Remove when we deploy.
         MixinExchangeCore()
         MixinMatchOrders()
-        MixinSettlement(_zrxAssetData)
         MixinSignatureValidator()
         MixinTransactions()
         MixinAssetProxyDispatcher()

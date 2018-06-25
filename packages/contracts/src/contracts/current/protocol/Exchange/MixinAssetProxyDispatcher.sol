@@ -19,14 +19,12 @@
 pragma solidity ^0.4.24;
 
 import "../../utils/Ownable/Ownable.sol";
-import "../../utils/LibBytes/LibBytes.sol";
 import "./libs/LibExchangeErrors.sol";
 import "./mixins/MAssetProxyDispatcher.sol";
 import "../AssetProxy/interfaces/IAssetProxy.sol";
 
 contract MixinAssetProxyDispatcher is
     Ownable,
-    LibBytes,
     LibExchangeErrors,
     MAssetProxyDispatcher
 {
@@ -47,7 +45,7 @@ contract MixinAssetProxyDispatcher is
         onlyOwner
     {
         // Ensure the existing asset proxy is not unintentionally overwritten
-        address currentAssetProxy = address(assetProxies[assetProxyId]);
+        address currentAssetProxy = assetProxies[assetProxyId];
         require(
             oldAssetProxy == currentAssetProxy,
             ASSET_PROXY_MISMATCH
@@ -66,7 +64,11 @@ contract MixinAssetProxyDispatcher is
 
         // Add asset proxy and log registration.
         assetProxies[assetProxyId] = assetProxy;
-        emit AssetProxySet(assetProxyId, newAssetProxy, oldAssetProxy);
+        emit AssetProxySet(
+            assetProxyId,
+            newAssetProxy,
+            oldAssetProxy
+        );
     }
 
     /// @dev Gets an asset proxy.
@@ -77,8 +79,7 @@ contract MixinAssetProxyDispatcher is
         view
         returns (address)
     {
-        address assetProxy = address(assetProxies[assetProxyId]);
-        return assetProxy;
+        return assetProxies[assetProxyId];
     }
 
     /// @dev Forwards arguments to assetProxy and calls `transferFrom`. Either succeeds or throws.
@@ -100,8 +101,18 @@ contract MixinAssetProxyDispatcher is
         if (amount > 0) {
             // Lookup assetProxy
             IAssetProxy assetProxy = assetProxies[assetProxyId];
+            // Ensure that assetProxy exists
+            require(
+                assetProxy != address(0),
+                ASSET_PROXY_DOES_NOT_EXIST
+            );
             // transferFrom will either succeed or throw.
-            assetProxy.transferFrom(assetData, from, to, amount);
+            assetProxy.transferFrom(
+                assetData,
+                from,
+                to,
+                amount
+            );
         }
     }
 }

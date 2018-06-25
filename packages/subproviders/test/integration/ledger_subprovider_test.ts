@@ -7,7 +7,6 @@ import TransportNodeHid from '@ledgerhq/hw-transport-node-hid';
 import * as chai from 'chai';
 import { JSONRPCResponsePayload } from 'ethereum-types';
 import * as ethUtils from 'ethereumjs-util';
-import 'make-promises-safe';
 import Web3ProviderEngine = require('web3-provider-engine');
 import RpcSubprovider = require('web3-provider-engine/subproviders/rpc');
 

@@ -23,7 +23,7 @@ export class Identicon extends React.Component<IdenticonProps, IdenticonState> {
         const radius = diameter / 2;
         return (
             <div
-                className="circle mx-auto relative transitionFix"
+                className="circle relative transitionFix"
                 style={{
                     width: diameter,
                     height: diameter,

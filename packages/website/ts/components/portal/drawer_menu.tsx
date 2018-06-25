@@ -65,7 +65,7 @@ interface HeaderProps {
 const Header = (props: HeaderProps) => {
     return (
         <div className="flex flex-center py4">
-            <div className="flex flex-column mx-auto">
+            <div className="flex flex-column mx-auto items-center">
                 <Identicon address={props.userAddress} diameter={IDENTICON_DIAMETER} style={styles.identicon} />
                 <Text className="pt2" fontColor={colors.white}>
                     {props.displayMessage}

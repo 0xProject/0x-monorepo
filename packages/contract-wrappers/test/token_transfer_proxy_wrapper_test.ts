@@ -1,5 +1,4 @@
 import * as chai from 'chai';
-import 'make-promises-safe';
 
 import { ContractWrappers } from '../src';
 

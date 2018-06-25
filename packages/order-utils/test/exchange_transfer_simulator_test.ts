@@ -2,7 +2,6 @@ import { BlockchainLifecycle, devConstants } from '@0xproject/dev-utils';
 import { ExchangeContractErrs } from '@0xproject/types';
 import { BigNumber } from '@0xproject/utils';
 import * as chai from 'chai';
-import 'make-promises-safe';
 
 import { artifacts } from '../src/artifacts';
 import { assetProxyUtils } from '../src/asset_proxy_utils';

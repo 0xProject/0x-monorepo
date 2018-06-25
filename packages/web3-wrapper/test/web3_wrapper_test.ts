@@ -1,6 +1,5 @@
 import * as chai from 'chai';
 import * as Ganache from 'ganache-core';
-import 'make-promises-safe';
 import 'mocha';
 
 import { Web3Wrapper } from '../src';
@@ -27,7 +26,7 @@ describe('Web3Wrapper tests', () => {
     describe('#getNodeVersionAsync', () => {
         it('gets the node version', async () => {
             const nodeVersion = await web3Wrapper.getNodeVersionAsync();
-            const NODE_VERSION = 'EthereumJS TestRPC/v2.1.0/ethereum-js';
+            const NODE_VERSION = 'EthereumJS TestRPC/v2.1.2/ethereum-js';
             expect(nodeVersion).to.be.equal(NODE_VERSION);
         });
     });

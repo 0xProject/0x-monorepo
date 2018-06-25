@@ -41,37 +41,47 @@ contract MixinTransactions is
     bytes32 constant EIP712_ZEROEX_TRANSACTION_SCHEMA_HASH = keccak256(abi.encodePacked(
         "ZeroExTransaction(",
         "uint256 salt,",
-        "address signer,",
+        "address signerAddress,",
         "bytes data",
         ")"
     ));
 
     /// @dev Calculates EIP712 hash of the Transaction.
     /// @param salt Arbitrary number to ensure uniqueness of transaction hash.
-    /// @param signer Address of transaction signer.
+    /// @param signerAddress Address of transaction signer.
     /// @param data AbiV2 encoded calldata.
     /// @return EIP712 hash of the Transaction.
-    function hashZeroExTransaction(uint256 salt, address signer, bytes data)
+    function hashZeroExTransaction(
+        uint256 salt,
+        address signerAddress,
+        bytes memory data
+    )
         internal
         pure
-        returns (bytes32)
+        returns (bytes32 result)
     {
-        return keccak256(abi.encode(
-            EIP712_ZEROEX_TRANSACTION_SCHEMA_HASH,
-            salt,
-            signer,
-            keccak256(data)
-        ));
+        bytes32 schemaHash = EIP712_ZEROEX_TRANSACTION_SCHEMA_HASH;
+        bytes32 dataHash = keccak256(data);
+        assembly {
+            let memPtr := mload(64)
+            mstore(memPtr, schemaHash)
+            mstore(add(memPtr, 32), salt)
+            mstore(add(memPtr, 64), and(signerAddress, 0xffffffffffffffffffffffffffffffffffffffff))
+            mstore(add(memPtr, 96), dataHash)
+            result := keccak256(memPtr, 128)
+        }
+
+        return result;
     }
 
     /// @dev Executes an exchange method call in the context of signer.
     /// @param salt Arbitrary number to ensure uniqueness of transaction hash.
-    /// @param signer Address of transaction signer.
+    /// @param signerAddress Address of transaction signer.
     /// @param data AbiV2 encoded calldata.
     /// @param signature Proof of signer transaction by signer.
     function executeTransaction(
         uint256 salt,
-        address signer,
+        address signerAddress,
         bytes data,
         bytes signature
     )
@@ -83,7 +93,11 @@ contract MixinTransactions is
             REENTRANCY_ILLEGAL
         );
 
-        bytes32 transactionHash = hashEIP712Message(hashZeroExTransaction(salt, signer, data));
+        bytes32 transactionHash = hashEIP712Message(hashZeroExTransaction(
+            salt,
+            signerAddress,
+            data
+        ));
 
         // Validate transaction has not been executed
         require(
@@ -92,15 +106,19 @@ contract MixinTransactions is
         );
 
         // Transaction always valid if signer is sender of transaction
-        if (signer != msg.sender) {
+        if (signerAddress != msg.sender) {
             // Validate signature
             require(
-                isValidSignature(transactionHash, signer, signature),
+                isValidSignature(
+                    transactionHash,
+                    signerAddress,
+                    signature
+                ),
                 INVALID_TX_SIGNATURE
             );
 
             // Set the current transaction signer
-            currentContextAddress = signer;
+            currentContextAddress = signerAddress;
         }
 
         // Execute transaction

@@ -4,10 +4,11 @@ import { getLogger, levels, Logger } from 'loglevel';
 
 import { AbstractArtifactAdapter } from './artifact_adapters/abstract_artifact_adapter';
 import { constants } from './constants';
+import { getSourceRangeSnippet } from './get_source_range_snippet';
 import { getRevertTrace } from './revert_trace';
 import { parseSourceMap } from './source_maps';
 import { TraceCollectionSubprovider } from './trace_collection_subprovider';
-import { ContractData, EvmCallStack, SourceRange } from './types';
+import { ContractData, EvmCallStack, SourceRange, SourceSnippet } from './types';
 import { utils } from './utils';
 
 /**
@@ -53,7 +54,7 @@ export class RevertTraceSubprovider extends TraceCollectionSubprovider {
         }
     }
     private async _printStackTraceAsync(evmCallStack: EvmCallStack): Promise<void> {
-        const sourceRanges: SourceRange[] = [];
+        const sourceSnippets: SourceSnippet[] = [];
         if (_.isUndefined(this._contractsData)) {
             this._contractsData = await this._artifactAdapter.collectContractsDataAsync();
         }
@@ -74,6 +75,7 @@ export class RevertTraceSubprovider extends TraceCollectionSubprovider {
             }
             const bytecodeHex = stripHexPrefix(bytecode);
             const sourceMap = isContractCreation ? contractData.sourceMap : contractData.sourceMapRuntime;
+
             const pcToSourceRange = parseSourceMap(
                 contractData.sourceCodes,
                 sourceMap,
@@ -87,28 +89,75 @@ export class RevertTraceSubprovider extends TraceCollectionSubprovider {
             // actually happens in assembly). In that case, we want to keep
             // searching backwards by decrementing the pc until we find a
             // mapped source range.
-            while (_.isUndefined(sourceRange)) {
+            while (_.isUndefined(sourceRange) && pc > 0) {
                 sourceRange = pcToSourceRange[pc];
                 pc -= 1;
-                if (pc <= 0) {
-                    this._logger.warn(
-                        `could not find matching sourceRange for structLog: ${evmCallStackEntry.structLog}`,
-                    );
-                    continue;
-                }
             }
-            sourceRanges.push(sourceRange);
-        }
-        if (sourceRanges.length > 0) {
-            this._logger.error('\n\nStack trace for REVERT:\n');
-            _.forEach(_.reverse(sourceRanges), sourceRange => {
-                this._logger.error(
-                    `${sourceRange.fileName}:${sourceRange.location.start.line}:${sourceRange.location.start.column}`,
+            if (_.isUndefined(sourceRange)) {
+                this._logger.warn(
+                    `could not find matching sourceRange for structLog: ${JSON.stringify(
+                        _.omit(evmCallStackEntry.structLog, 'stack'),
+                    )}`,
                 );
+                continue;
+            }
+
+            const fileIndex = contractData.sources.indexOf(sourceRange.fileName);
+            const sourceSnippet = getSourceRangeSnippet(sourceRange, contractData.sourceCodes[fileIndex]);
+            if (sourceSnippet !== null) {
+                sourceSnippets.push(sourceSnippet);
+            }
+        }
+        const filteredSnippets = filterSnippets(sourceSnippets);
+        if (filteredSnippets.length > 0) {
+            this._logger.error('\n\nStack trace for REVERT:\n');
+            _.forEach(_.reverse(filteredSnippets), snippet => {
+                const traceString = getStackTraceString(snippet);
+                this._logger.error(traceString);
             });
             this._logger.error('\n');
         } else {
-            this._logger.error('Could not determine stack trace');
+            this._logger.error('REVERT detected but could not determine stack trace');
         }
+    }
+}
+
+// removes duplicates and if statements
+function filterSnippets(sourceSnippets: SourceSnippet[]): SourceSnippet[] {
+    if (sourceSnippets.length === 0) {
+        return [];
+    }
+    const results: SourceSnippet[] = [sourceSnippets[0]];
+    let prev = sourceSnippets[0];
+    for (const sourceSnippet of sourceSnippets) {
+        if (sourceSnippet.type === 'IfStatement') {
+            continue;
+        } else if (sourceSnippet.source === prev.source) {
+            prev = sourceSnippet;
+            continue;
+        }
+        results.push(sourceSnippet);
+        prev = sourceSnippet;
+    }
+    return results;
+}
+
+function getStackTraceString(sourceSnippet: SourceSnippet): string {
+    let result = `${sourceSnippet.fileName}:${sourceSnippet.range.start.line}:${sourceSnippet.range.start.column}`;
+    const snippetString = getSourceSnippetString(sourceSnippet);
+    if (snippetString !== '') {
+        result += `:\n        ${snippetString}`;
+    }
+    return result;
+}
+
+function getSourceSnippetString(sourceSnippet: SourceSnippet): string {
+    switch (sourceSnippet.type) {
+        case 'ContractDefinition':
+            return `contract ${sourceSnippet.name}`;
+        case 'FunctionDefinition':
+            return `function ${sourceSnippet.name}`;
+        default:
+            return `${sourceSnippet.source}`;
     }
 }

@@ -14,23 +14,27 @@
 pragma solidity ^0.4.24;
 pragma experimental ABIEncoderV2;
 
+import "./libs/LibConstants.sol";
+import "../../utils/LibBytes/LibBytes.sol";
 import "./libs/LibMath.sol";
 import "./libs/LibOrder.sol";
 import "./libs/LibFillResults.sol";
 import "./libs/LibExchangeErrors.sol";
 import "./mixins/MExchangeCore.sol";
 import "./mixins/MMatchOrders.sol";
-import "./mixins/MSettlement.sol";
 import "./mixins/MTransactions.sol";
+import "./mixins/MAssetProxyDispatcher.sol";
 
 contract MixinMatchOrders is
+    LibConstants,
     LibMath,
     LibExchangeErrors,
+    MAssetProxyDispatcher,
     MExchangeCore,
     MMatchOrders,
-    MSettlement,
     MTransactions
 {
+    using LibBytes for bytes;
 
     /// @dev Match two complementary orders that have a profitable spread.
     ///      Each order is filled at their respective price point. However, the calculations are
@@ -223,5 +227,90 @@ contract MixinMatchOrders is
 
         // Return fill results
         return matchedFillResults;
+    }
+
+    /// @dev Settles matched order by transferring appropriate funds between order makers, taker, and fee recipient.
+    /// @param leftOrder First matched order.
+    /// @param rightOrder Second matched order.
+    /// @param takerAddress Address that matched the orders. The taker receives the spread between orders as profit.
+    /// @param matchedFillResults Struct holding amounts to transfer between makers, taker, and fee recipients.
+    function settleMatchedOrders(
+        LibOrder.Order memory leftOrder,
+        LibOrder.Order memory rightOrder,
+        address takerAddress,
+        LibFillResults.MatchedFillResults memory matchedFillResults
+    )
+        private
+    {
+        uint8 leftMakerAssetProxyId = uint8(leftOrder.makerAssetData.popLastByte());
+        uint8 rightMakerAssetProxyId = uint8(rightOrder.makerAssetData.popLastByte());
+        bytes memory zrxAssetData = ZRX_ASSET_DATA;
+        // Order makers and taker
+        dispatchTransferFrom(
+            leftOrder.makerAssetData,
+            leftMakerAssetProxyId,
+            leftOrder.makerAddress,
+            rightOrder.makerAddress,
+            matchedFillResults.right.takerAssetFilledAmount
+        );
+        dispatchTransferFrom(
+            rightOrder.makerAssetData,
+            rightMakerAssetProxyId,
+            rightOrder.makerAddress,
+            leftOrder.makerAddress,
+            matchedFillResults.left.takerAssetFilledAmount
+        );
+        dispatchTransferFrom(
+            leftOrder.makerAssetData,
+            leftMakerAssetProxyId,
+            leftOrder.makerAddress,
+            takerAddress,
+            matchedFillResults.leftMakerAssetSpreadAmount
+        );
+
+        // Maker fees
+        dispatchTransferFrom(
+            zrxAssetData,
+            ZRX_PROXY_ID,
+            leftOrder.makerAddress,
+            leftOrder.feeRecipientAddress,
+            matchedFillResults.left.makerFeePaid
+        );
+        dispatchTransferFrom(
+            zrxAssetData,
+            ZRX_PROXY_ID,
+            rightOrder.makerAddress,
+            rightOrder.feeRecipientAddress,
+            matchedFillResults.right.makerFeePaid
+        );
+
+        // Taker fees
+        if (leftOrder.feeRecipientAddress == rightOrder.feeRecipientAddress) {
+            dispatchTransferFrom(
+                zrxAssetData,
+                ZRX_PROXY_ID,
+                takerAddress,
+                leftOrder.feeRecipientAddress,
+                safeAdd(
+                    matchedFillResults.left.takerFeePaid,
+                    matchedFillResults.right.takerFeePaid
+                )
+            );
+        } else {
+            dispatchTransferFrom(
+                zrxAssetData,
+                ZRX_PROXY_ID,
+                takerAddress,
+                leftOrder.feeRecipientAddress,
+                matchedFillResults.left.takerFeePaid
+            );
+            dispatchTransferFrom(
+                zrxAssetData,
+                ZRX_PROXY_ID,
+                takerAddress,
+                rightOrder.feeRecipientAddress,
+                matchedFillResults.right.takerFeePaid
+            );
+        }
     }
 }

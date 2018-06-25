@@ -2,7 +2,6 @@ import * as chai from 'chai';
 import { JSONRPCResponsePayload } from 'ethereum-types';
 import * as ethUtils from 'ethereumjs-util';
 import * as _ from 'lodash';
-import 'make-promises-safe';
 import Web3ProviderEngine = require('web3-provider-engine');
 
 import { LedgerSubprovider } from '../../src';

@@ -1,7 +1,6 @@
 import { BlockchainLifecycle } from '@0xproject/dev-utils';
 import { BigNumber } from '@0xproject/utils';
 import * as chai from 'chai';
-import 'make-promises-safe';
 
 import { DummyERC20TokenContract } from '../src/generated_contract_wrappers/dummy_e_r_c20_token';
 import { artifacts } from '../src/utils/artifacts';

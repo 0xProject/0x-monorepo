@@ -9,7 +9,7 @@ const EIP712_ZEROEX_TRANSACTION_SCHEMA: EIP712Schema = {
     name: 'ZeroExTransaction',
     parameters: [
         { name: 'salt', type: EIP712Types.Uint256 },
-        { name: 'signer', type: EIP712Types.Address },
+        { name: 'signerAddress', type: EIP712Types.Address },
         { name: 'data', type: EIP712Types.Bytes },
     ],
 };
@@ -25,10 +25,10 @@ export class TransactionFactory {
     }
     public newSignedTransaction(data: string, signatureType: SignatureType = SignatureType.EthSign): SignedTransaction {
         const salt = generatePseudoRandomSalt();
-        const signer = `0x${this._signerBuff.toString('hex')}`;
+        const signerAddress = `0x${this._signerBuff.toString('hex')}`;
         const executeTransactionData = {
             salt,
-            signer,
+            signerAddress,
             data,
         };
         const executeTransactionHashBuff = EIP712Utils.structHash(

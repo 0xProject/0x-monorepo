@@ -1,6 +1,5 @@
 import * as chai from 'chai';
 import * as dirtyChai from 'dirty-chai';
-import 'make-promises-safe';
 import 'mocha';
 
 import { orderbookChannelMessageParser } from '../src/utils/orderbook_channel_message_parser';

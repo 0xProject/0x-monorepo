@@ -26,14 +26,15 @@ import "./interfaces/IWallet.sol";
 import "./interfaces/IValidator.sol";
 
 contract MixinSignatureValidator is
-    LibBytes,
     LibExchangeErrors,
     MSignatureValidator,
     MTransactions
 {
+    using LibBytes for bytes;
+    
     // Personal message headers
     string constant ETH_PERSONAL_MESSAGE = "\x19Ethereum Signed Message:\n32";
-    string constant TREZOR_PERSONAL_MESSAGE = "\x19Ethereum Signed Message:\n\x41";
+    string constant TREZOR_PERSONAL_MESSAGE = "\x19Ethereum Signed Message:\n\x20";
 
     // Mapping of hash => signer => signed
     mapping (bytes32 => mapping (address => bool)) public preSigned;
@@ -43,43 +44,52 @@ contract MixinSignatureValidator is
 
     /// @dev Approves a hash on-chain using any valid signature type.
     ///      After presigning a hash, the preSign signature type will become valid for that hash and signer.
-    /// @param signer Address that should have signed the given hash.
+    /// @param signerAddress Address that should have signed the given hash.
     /// @param signature Proof that the hash has been signed by signer.
     function preSign(
         bytes32 hash,
-        address signer,
+        address signerAddress,
         bytes signature
     )
         external
     {
         require(
-            isValidSignature(hash, signer, signature),
+            isValidSignature(
+                hash,
+                signerAddress,
+                signature
+            ),
             INVALID_SIGNATURE
         );
-        preSigned[hash][signer] = true;
+        preSigned[hash][signerAddress] = true;
     }
 
     /// @dev Approves/unnapproves a Validator contract to verify signatures on signer's behalf.
-    /// @param validator Address of Validator contract.
+    /// @param validatorAddress Address of Validator contract.
     /// @param approval Approval or disapproval of  Validator contract.
     function setSignatureValidatorApproval(
-        address validator,
+        address validatorAddress,
         bool approval
     )
         external
     {
-        address signer = getCurrentContextAddress();
-        allowedValidators[signer][validator] = approval;
+        address signerAddress = getCurrentContextAddress();
+        allowedValidators[signerAddress][validatorAddress] = approval;
+        emit SignatureValidatorApproval(
+            signerAddress,
+            validatorAddress,
+            approval
+        );
     }
 
     /// @dev Verifies that a hash has been signed by the given signer.
     /// @param hash Any 32 byte hash.
-    /// @param signer Address that should have signed the given hash.
+    /// @param signerAddress Address that should have signed the given hash.
     /// @param signature Proof that the hash has been signed by signer.
     /// @return True if the address recovered from the provided signature matches the input signer address.
     function isValidSignature(
         bytes32 hash,
-        address signer,
+        address signerAddress,
         bytes memory signature
     )
         public
@@ -92,8 +102,15 @@ contract MixinSignatureValidator is
             LENGTH_GREATER_THAN_0_REQUIRED
         );
 
+        // Ensure signature is supported
+        uint8 signatureTypeRaw = uint8(signature.popLastByte());
+        require(
+            signatureTypeRaw < uint8(SignatureType.NSignatureTypes),
+            SIGNATURE_UNSUPPORTED
+        );
+
         // Pop last byte off of signature byte array.
-        SignatureType signatureType = SignatureType(uint8(popLastByte(signature)));
+        SignatureType signatureType = SignatureType(signatureTypeRaw);
 
         // Variables are not scoped in Solidity.
         uint8 v;
@@ -128,10 +145,10 @@ contract MixinSignatureValidator is
                 LENGTH_65_REQUIRED
             );
             v = uint8(signature[0]);
-            r = readBytes32(signature, 1);
-            s = readBytes32(signature, 33);
+            r = signature.readBytes32(1);
+            s = signature.readBytes32(33);
             recovered = ecrecover(hash, v, r, s);
-            isValid = signer == recovered;
+            isValid = signerAddress == recovered;
             return isValid;
 
         // Signed using web3.eth_sign
@@ -141,15 +158,15 @@ contract MixinSignatureValidator is
                 LENGTH_65_REQUIRED
             );
             v = uint8(signature[0]);
-            r = readBytes32(signature, 1);
-            s = readBytes32(signature, 33);
+            r = signature.readBytes32(1);
+            s = signature.readBytes32(33);
             recovered = ecrecover(
                 keccak256(abi.encodePacked(ETH_PERSONAL_MESSAGE, hash)),
                 v,
                 r,
                 s
             );
-            isValid = signer == recovered;
+            isValid = signerAddress == recovered;
             return isValid;
 
         // Implicitly signed by caller.
@@ -165,13 +182,13 @@ contract MixinSignatureValidator is
                 signature.length == 0,
                 LENGTH_0_REQUIRED
             );
-            isValid = signer == msg.sender;
+            isValid = signerAddress == msg.sender;
             return isValid;
 
         // Signature verified by wallet contract.
         // If used with an order, the maker of the order is the wallet contract.
         } else if (signatureType == SignatureType.Wallet) {
-            isValid = IWallet(signer).isValidSignature(hash, signature);
+            isValid = IWallet(signerAddress).isValidSignature(hash, signature);
             return isValid;
 
         // Signature verified by validator contract.
@@ -183,21 +200,23 @@ contract MixinSignatureValidator is
         // | 0x14 + x | 1      | Signature type is always "\x06" |
         } else if (signatureType == SignatureType.Validator) {
             // Pop last 20 bytes off of signature byte array.
-            address validator = popLast20Bytes(signature);
+
+            address validatorAddress = signature.popLast20Bytes();
+            
             // Ensure signer has approved validator.
-            if (!allowedValidators[signer][validator]) {
+            if (!allowedValidators[signerAddress][validatorAddress]) {
                 return false;
             }
-            isValid = IValidator(validator).isValidSignature(
+            isValid = IValidator(validatorAddress).isValidSignature(
                 hash,
-                signer,
+                signerAddress,
                 signature
             );
             return isValid;
 
         // Signer signed hash previously using the preSign function.
         } else if (signatureType == SignatureType.PreSigned) {
-            isValid = preSigned[hash][signer];
+            isValid = preSigned[hash][signerAddress];
             return isValid;
 
         // Signature from Trezor hardware wallet.
@@ -214,20 +233,15 @@ contract MixinSignatureValidator is
                 LENGTH_65_REQUIRED
             );
             v = uint8(signature[0]);
-            r = readBytes32(signature, 1);
-            s = readBytes32(signature, 33);
+            r = signature.readBytes32(1);
+            s = signature.readBytes32(33);
             recovered = ecrecover(
                 keccak256(abi.encodePacked(TREZOR_PERSONAL_MESSAGE, hash)),
                 v,
                 r,
                 s
             );
-            isValid = signer == recovered;
-            return isValid;
-
-        // Signer signed hash previously using the preSign function
-        } else if (signatureType == SignatureType.PreSigned) {
-            isValid = preSigned[hash][signer];
+            isValid = signerAddress == recovered;
             return isValid;
         }
 

@@ -4,7 +4,7 @@
     "compilerSettings": {
         "optimizer": {
             "enabled": true,
-            "runs": 200
+            "runs": 1000000
         },
         "outputSelection": {
             "*": {
@@ -30,12 +30,14 @@
         "MixinAuthorizable",
         "MultiSigWallet",
         "MultiSigWalletWithTimeLock",
+        "TestAssetProxyOwner",
         "TestAssetDataDecoders",
         "TestAssetProxyDispatcher",
         "TestLibBytes",
-        "TestLibMem",
         "TestLibs",
         "TestSignatureValidator",
+        "TestValidator",
+        "TestWallet",
         "TokenRegistry",
         "Whitelist",
         "WETH9",

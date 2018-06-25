@@ -19,25 +19,30 @@
 pragma solidity ^0.4.24;
 pragma experimental ABIEncoderV2;
 
+import "./libs/LibConstants.sol";
+import "../../utils/LibBytes/LibBytes.sol";
 import "./libs/LibFillResults.sol";
 import "./libs/LibOrder.sol";
 import "./libs/LibMath.sol";
 import "./libs/LibExchangeErrors.sol";
 import "./mixins/MExchangeCore.sol";
-import "./mixins/MSettlement.sol";
 import "./mixins/MSignatureValidator.sol";
 import "./mixins/MTransactions.sol";
+import "./mixins/MAssetProxyDispatcher.sol";
 
 contract MixinExchangeCore is
+    LibConstants,
     LibMath,
     LibOrder,
     LibFillResults,
     LibExchangeErrors,
+    MAssetProxyDispatcher,
     MExchangeCore,
-    MSettlement,
     MSignatureValidator,
     MTransactions
 {
+    using LibBytes for bytes;
+    
     // Mapping of orderHash => amount of takerAsset already bought by maker
     mapping (bytes32 => uint256) public filled;
 
@@ -221,8 +226,9 @@ contract MixinExchangeCore is
         // Log order
         emit Fill(
             order.makerAddress,
-            takerAddress,
             order.feeRecipientAddress,
+            takerAddress,
+            msg.sender,
             fillResults.makerAssetFilledAmount,
             fillResults.takerAssetFilledAmount,
             fillResults.makerFeePaid,
@@ -251,6 +257,7 @@ contract MixinExchangeCore is
         emit Cancel(
             order.makerAddress,
             order.feeRecipientAddress,
+            msg.sender,
             orderHash,
             order.makerAssetData,
             order.takerAssetData
@@ -306,7 +313,11 @@ contract MixinExchangeCore is
         // Validate Maker signature (check only if first time seen)
         if (orderInfo.orderTakerAssetFilledAmount == 0) {
             require(
-                isValidSignature(orderInfo.orderHash, order.makerAddress, signature),
+                isValidSignature(
+                    orderInfo.orderHash,
+                    order.makerAddress,
+                    signature
+                ),
                 INVALID_ORDER_SIGNATURE
             );
         }
@@ -388,5 +399,49 @@ contract MixinExchangeCore is
         );
 
         return fillResults;
+    }
+
+   /// @dev Settles an order by transferring assets between counterparties.
+    /// @param order Order struct containing order specifications.
+    /// @param takerAddress Address selling takerAsset and buying makerAsset.
+    /// @param fillResults Amounts to be filled and fees paid by maker and taker.
+    function settleOrder(
+        LibOrder.Order memory order,
+        address takerAddress,
+        LibFillResults.FillResults memory fillResults
+    )
+        private
+    {
+        uint8 makerAssetProxyId = uint8(order.makerAssetData.popLastByte());
+        uint8 takerAssetProxyId = uint8(order.takerAssetData.popLastByte());
+        bytes memory zrxAssetData = ZRX_ASSET_DATA;
+        dispatchTransferFrom(
+            order.makerAssetData,
+            makerAssetProxyId,
+            order.makerAddress,
+            takerAddress,
+            fillResults.makerAssetFilledAmount
+        );
+        dispatchTransferFrom(
+            order.takerAssetData,
+            takerAssetProxyId,
+            takerAddress,
+            order.makerAddress,
+            fillResults.takerAssetFilledAmount
+        );
+        dispatchTransferFrom(
+            zrxAssetData,
+            ZRX_PROXY_ID,
+            order.makerAddress,
+            order.feeRecipientAddress,
+            fillResults.makerFeePaid
+        );
+        dispatchTransferFrom(
+            zrxAssetData,
+            ZRX_PROXY_ID,
+            takerAddress,
+            order.feeRecipientAddress,
+            fillResults.takerFeePaid
+        );
     }
 }

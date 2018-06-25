@@ -1,31 +1,28 @@
 import * as React from 'react';
 import { colors } from 'ts/style/colors';
+import { styled } from 'ts/style/theme';
 
 export interface IslandProps {
     style?: React.CSSProperties;
-    children?: React.ReactNode;
     className?: string;
     Component?: string | React.ComponentClass<any> | React.StatelessComponent<any>;
+    borderRadius?: string;
 }
 
-const defaultStyle: React.CSSProperties = {
-    backgroundColor: colors.white,
-    borderBottomRightRadius: 10,
-    borderBottomLeftRadius: 10,
-    borderTopRightRadius: 10,
-    borderTopLeftRadius: 10,
-    boxShadow: `0px 4px 6px ${colors.walletBoxShadow}`,
-    overflow: 'hidden',
-};
-
-export const Island: React.StatelessComponent<IslandProps> = (props: IslandProps) => (
-    <props.Component style={{ ...defaultStyle, ...props.style }} className={props.className}>
-        {props.children}
-    </props.Component>
+const PlainIsland: React.StatelessComponent<IslandProps> = ({ Component, style, className, children }) => (
+    <Component style={style} className={className} children={children} />
 );
+
+export const Island = styled(PlainIsland)`
+    background-color: ${colors.white};
+    border-radius: ${props => props.borderRadius};
+    box-shadow: 0px 4px 6px ${colors.walletBoxShadow};
+    overflow: hidden;
+`;
 
 Island.defaultProps = {
     Component: 'div',
+    borderRadius: '10px',
     style: {},
 };
 

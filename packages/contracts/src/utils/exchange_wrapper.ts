@@ -215,7 +215,7 @@ export class ExchangeWrapper {
     ): Promise<TransactionReceiptWithDecodedLogs> {
         const txHash = await this._exchange.executeTransaction.sendTransactionAsync(
             signedTx.salt,
-            signedTx.signer,
+            signedTx.signerAddress,
             signedTx.data,
             signedTx.signature,
             { from },

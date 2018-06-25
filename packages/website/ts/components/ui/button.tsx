@@ -1,5 +1,5 @@
 import { colors } from '@0xproject/react-shared';
-import { darken, grayscale } from 'polished';
+import { darken, saturate } from 'polished';
 import * as React from 'react';
 import { styled } from 'ts/style/theme';
 
@@ -17,7 +17,7 @@ export interface ButtonProps {
 }
 
 const PlainButton: React.StatelessComponent<ButtonProps> = ({ children, isDisabled, onClick, type, className }) => (
-    <button type={type} className={className} onClick={isDisabled ? undefined : onClick}>
+    <button type={type} className={className} onClick={isDisabled ? undefined : onClick} disabled={isDisabled}>
         {children}
     </button>
 );
@@ -26,20 +26,28 @@ export const Button = styled(PlainButton)`
     cursor: ${props => (props.isDisabled ? 'default' : 'pointer')};
     font-size: ${props => props.fontSize};
     color: ${props => props.fontColor};
-    transition: background-color 0.5s ease;
+    transition: background-color, opacity 0.5s ease;
     padding: 0.8em 2.2em;
     border-radius: 6px;
     box-shadow: 0px 0px 4px rgba(0, 0, 0, 0.25);
     font-weight: 500;
+    outline: none;
     font-family: ${props => props.fontFamily};
     width: ${props => props.width};
-    background-color: ${props => (props.isDisabled ? grayscale(props.backgroundColor) : props.backgroundColor)};
+    background-color: ${props => props.backgroundColor};
     border: ${props => (props.borderColor ? `1px solid ${props.borderColor}` : 'none')};
     &:hover {
         background-color: ${props => (!props.isDisabled ? darken(0.1, props.backgroundColor) : '')};
     }
     &:active {
         background-color: ${props => (!props.isDisabled ? darken(0.2, props.backgroundColor) : '')};
+    }
+    &:disabled {
+        opacity: 0.5;
+        box-shadow: none;
+    }
+    &:focus {
+        background-color: ${props => saturate(0.2, props.backgroundColor)};
     }
 `;
 

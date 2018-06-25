@@ -29,6 +29,11 @@ export const constants = {
     ERC20_INSUFFICIENT_ALLOWANCE: 'Insufficient allowance to complete transfer.',
     ERC20_PROXY_ID: 1,
     ERC721_PROXY_ID: 2,
+    EXCHANGE_LENGTH_GREATER_THAN_0_REQUIRED: 'LENGTH_GREATER_THAN_0_REQUIRED',
+    EXCHANGE_SIGNATURE_UNSUPPORTED: 'SIGNATURE_UNSUPPORTED',
+    EXCHANGE_SIGNATURE_ILLEGAL: 'SIGNATURE_ILLEGAL',
+    EXCHANGE_LENGTH_0_REQUIRED: 'LENGTH_0_REQUIRED',
+    EXCHANGE_LENGTH_65_REQUIRED: 'LENGTH_65_REQUIRED',
     TESTRPC_NETWORK_ID: 50,
     // Note(albrow): In practice V8 and most other engines limit the minimum
     // interval for setInterval to 10ms. We still set it to 0 here in order to

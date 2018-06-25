@@ -10,7 +10,7 @@ export const UnlockWalletOnboardingStep: React.StatelessComponent<UnlockWalletOn
             <Container marginTop="15px" marginBottom="15px">
                 <img src="/images/metamask_icon.png" height="50px" width="50px" />
             </Container>
-            <Text>Unlock your metamask extension to begin.</Text>
+            <Text center={true}>Unlock your metamask extension to get started.</Text>
         </div>
     </div>
 );

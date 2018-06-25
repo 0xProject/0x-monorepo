@@ -13,10 +13,12 @@ import * as MultiSigWallet from '../artifacts/MultiSigWallet.json';
 import * as MultiSigWalletWithTimeLock from '../artifacts/MultiSigWalletWithTimeLock.json';
 import * as TestAssetDataDecoders from '../artifacts/TestAssetDataDecoders.json';
 import * as TestAssetProxyDispatcher from '../artifacts/TestAssetProxyDispatcher.json';
+import * as TestAssetProxyOwner from '../artifacts/TestAssetProxyOwner.json';
 import * as TestLibBytes from '../artifacts/TestLibBytes.json';
-import * as TestLibMem from '../artifacts/TestLibMem.json';
 import * as TestLibs from '../artifacts/TestLibs.json';
 import * as TestSignatureValidator from '../artifacts/TestSignatureValidator.json';
+import * as TestValidator from '../artifacts/TestValidator.json';
+import * as TestWallet from '../artifacts/TestWallet.json';
 import * as TokenRegistry from '../artifacts/TokenRegistry.json';
 import * as EtherToken from '../artifacts/WETH9.json';
 import * as Whitelist from '../artifacts/Whitelist.json';
@@ -35,12 +37,14 @@ export const artifacts = {
     MixinAuthorizable: (MixinAuthorizable as any) as ContractArtifact,
     MultiSigWallet: (MultiSigWallet as any) as ContractArtifact,
     MultiSigWalletWithTimeLock: (MultiSigWalletWithTimeLock as any) as ContractArtifact,
+    TestAssetProxyOwner: (TestAssetProxyOwner as any) as ContractArtifact,
     TestAssetProxyDispatcher: (TestAssetProxyDispatcher as any) as ContractArtifact,
     TestAssetDataDecoders: (TestAssetDataDecoders as any) as ContractArtifact,
     TestLibBytes: (TestLibBytes as any) as ContractArtifact,
-    TestLibMem: (TestLibMem as any) as ContractArtifact,
     TestLibs: (TestLibs as any) as ContractArtifact,
     TestSignatureValidator: (TestSignatureValidator as any) as ContractArtifact,
+    TestValidator: (TestValidator as any) as ContractArtifact,
+    TestWallet: (TestWallet as any) as ContractArtifact,
     TokenRegistry: (TokenRegistry as any) as ContractArtifact,
     Whitelist: (Whitelist as any) as ContractArtifact,
     ZRX: (ZRX as any) as ContractArtifact,

@@ -150,13 +150,31 @@ const teamRow5: ProfileInfo[] = [
     },
     {
         name: 'Francesco Agosti',
-        title: 'Senior Frontend Engineer',
+        title: 'Engineer',
         description: `Full-stack engineer. Previously senior software engineer at Yelp. Computer Science at Duke.`,
         image: 'images/team/fragosti.png',
         linkedIn: 'https://www.linkedin.com/in/fragosti/',
         github: 'http://github.com/fragosti',
     },
+    {
+        name: 'Mel Oberto',
+        title: 'Office Ops / Executive Assistant',
+        description: `Daily Operations. Previously People Operations Associate at Heap. Marketing and MBA at Sacred Heart University.`,
+        image: 'images/team/mel.png',
+        linkedIn: 'https://www.linkedin.com/in/melanieoberto',
+    },
 ];
+
+// const teamRow6: ProfileInfo[] = [
+//     {
+//         name: 'Chris Kalani',
+//         title: 'Director of Design',
+//         description: `Previously founded Wake (acquired by InVision). Early Facebook product designer.`,
+//         image: 'images/team/chris.png',
+//         linkedIn: 'https://www.linkedin.com/in/chriskalani/',
+//         github: 'https://github.com/chriskalani',
+//     },
+// ];
 
 const advisors: ProfileInfo[] = [
     {
@@ -241,9 +259,9 @@ export class About extends React.Component<AboutProps, AboutState> {
                                 lineHeight: 1.5,
                             }}
                         >
-                            Our team is a diverse and globally distributed group with backgrounds in engineering,
-                            research, business and design. We are passionate about decentralized technology and its
-                            potential to act as an equalizing force in the world.
+                            Our team is a globally distributed group with backgrounds in engineering, research, business
+                            and design. We are passionate about decentralized technology and its potential to act as an
+                            equalizing force in the world.
                         </div>
                     </div>
                     <div className="pt3 md-px4 lg-px0">

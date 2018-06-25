@@ -1,6 +1,6 @@
 import { BlockchainLifecycle } from '@0xproject/dev-utils';
+import { BigNumber } from '@0xproject/utils';
 import * as chai from 'chai';
-import 'make-promises-safe';
 
 import { MixinAuthorizableContract } from '../../src/generated_contract_wrappers/mixin_authorizable';
 import { artifacts } from '../../src/utils/artifacts';
@@ -100,6 +100,74 @@ describe('Authorizable', () => {
                     from: owner,
                 }),
             );
+        });
+    });
+
+    describe('removeAuthorizedAddressAtIndex', () => {
+        it('should throw if not called by owner', async () => {
+            await web3Wrapper.awaitTransactionSuccessAsync(
+                await authorizable.addAuthorizedAddress.sendTransactionAsync(address, { from: owner }),
+                constants.AWAIT_TRANSACTION_MINED_MS,
+            );
+            const index = new BigNumber(0);
+            return expectRevertOrAlwaysFailingTransactionAsync(
+                authorizable.removeAuthorizedAddressAtIndex.sendTransactionAsync(address, index, {
+                    from: notOwner,
+                }),
+            );
+        });
+        it('should throw if index is >= authorities.length', async () => {
+            await web3Wrapper.awaitTransactionSuccessAsync(
+                await authorizable.addAuthorizedAddress.sendTransactionAsync(address, { from: owner }),
+                constants.AWAIT_TRANSACTION_MINED_MS,
+            );
+            const index = new BigNumber(1);
+            return expectRevertOrAlwaysFailingTransactionAsync(
+                authorizable.removeAuthorizedAddressAtIndex.sendTransactionAsync(address, index, {
+                    from: owner,
+                }),
+            );
+        });
+        it('should throw if owner attempts to remove an address that is not authorized', async () => {
+            const index = new BigNumber(0);
+            return expectRevertOrAlwaysFailingTransactionAsync(
+                authorizable.removeAuthorizedAddressAtIndex.sendTransactionAsync(address, index, {
+                    from: owner,
+                }),
+            );
+        });
+        it('should throw if address at index does not match target', async () => {
+            const address1 = address;
+            const address2 = notOwner;
+            await web3Wrapper.awaitTransactionSuccessAsync(
+                await authorizable.addAuthorizedAddress.sendTransactionAsync(address1, { from: owner }),
+                constants.AWAIT_TRANSACTION_MINED_MS,
+            );
+            await web3Wrapper.awaitTransactionSuccessAsync(
+                await authorizable.addAuthorizedAddress.sendTransactionAsync(address2, { from: owner }),
+                constants.AWAIT_TRANSACTION_MINED_MS,
+            );
+            const address1Index = new BigNumber(0);
+            return expectRevertOrAlwaysFailingTransactionAsync(
+                authorizable.removeAuthorizedAddressAtIndex.sendTransactionAsync(address2, address1Index, {
+                    from: owner,
+                }),
+            );
+        });
+        it('should allow owner to remove an authorized address', async () => {
+            await web3Wrapper.awaitTransactionSuccessAsync(
+                await authorizable.addAuthorizedAddress.sendTransactionAsync(address, { from: owner }),
+                constants.AWAIT_TRANSACTION_MINED_MS,
+            );
+            const index = new BigNumber(0);
+            await web3Wrapper.awaitTransactionSuccessAsync(
+                await authorizable.removeAuthorizedAddressAtIndex.sendTransactionAsync(address, index, {
+                    from: owner,
+                }),
+                constants.AWAIT_TRANSACTION_MINED_MS,
+            );
+            const isAuthorized = await authorizable.authorized.callAsync(address);
+            expect(isAuthorized).to.be.false();
         });
     });
 

@@ -116,18 +116,18 @@ contract Whitelist is
     /// @dev Verifies signer is same as signer of current Ethereum transaction.
     ///      NOTE: This function can currently be used to validate signatures coming from outside of this contract.
     ///      Extra safety checks can be added for a production contract.
-    /// @param signer Address that should have signed the given hash.
+    /// @param signerAddress Address that should have signed the given hash.
     /// @param signature Proof of signing.
     /// @return Validity of order signature.
     function isValidSignature(
         bytes32 hash,
-        address signer,
+        address signerAddress,
         bytes signature
     )
         external
         view
         returns (bool isValid)
     {
-        return signer == tx.origin;
+        return signerAddress == tx.origin;
     }
 }

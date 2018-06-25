@@ -6,7 +6,6 @@ import { Web3Wrapper } from '@0xproject/web3-wrapper';
 import * as chai from 'chai';
 import { LogWithDecodedArgs } from 'ethereum-types';
 import ethUtil = require('ethereumjs-util');
-import 'make-promises-safe';
 
 import { DummyERC20TokenContract } from '../../src/generated_contract_wrappers/dummy_e_r_c20_token';
 import { DummyERC721TokenContract } from '../../src/generated_contract_wrappers/dummy_e_r_c721_token';
@@ -134,6 +133,7 @@ describe('Exchange core', () => {
             erc20Balances = await erc20Wrapper.getBalancesAsync();
             signedOrder = orderFactory.newSignedOrder();
         });
+
         it('should throw if signature is invalid', async () => {
             signedOrder = orderFactory.newSignedOrder({
                 makerAssetAmount: Web3Wrapper.toBaseUnitAmount(new BigNumber(10), 18),
@@ -209,6 +209,7 @@ describe('Exchange core', () => {
             const logArgs = log.args;
 
             expect(signedOrder.makerAddress).to.be.equal(logArgs.makerAddress);
+            expect(signedOrder.makerAddress).to.be.equal(logArgs.senderAddress);
             expect(signedOrder.feeRecipientAddress).to.be.equal(logArgs.feeRecipientAddress);
             expect(signedOrder.makerAssetData).to.be.equal(logArgs.makerAssetData);
             expect(signedOrder.takerAssetData).to.be.equal(logArgs.takerAssetData);
