@@ -11,10 +11,7 @@ import { DummyERC20TokenContract } from '../../src/generated_contract_wrappers/d
 import { DummyERC721TokenContract } from '../../src/generated_contract_wrappers/dummy_e_r_c721_token';
 import { ERC20ProxyContract } from '../../src/generated_contract_wrappers/e_r_c20_proxy';
 import { ERC721ProxyContract } from '../../src/generated_contract_wrappers/e_r_c721_proxy';
-import {
-    CancelContractEventArgs,
-    ExchangeContract,
-} from '../../src/generated_contract_wrappers/exchange';
+import { CancelContractEventArgs, ExchangeContract } from '../../src/generated_contract_wrappers/exchange';
 import { artifacts } from '../../src/utils/artifacts';
 import {
     expectRevertOrAlwaysFailingTransactionAsync,

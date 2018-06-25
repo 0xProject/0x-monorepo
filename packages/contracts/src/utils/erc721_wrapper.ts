@@ -152,10 +152,7 @@ export class ERC721Wrapper {
         const isOwner = tokenOwner === userAddress;
         return isOwner;
     }
-    public async isProxyApprovedForAllAsync(
-        userAddress: string,
-        tokenAddress: string,
-    ): Promise<boolean> {
+    public async isProxyApprovedForAllAsync(userAddress: string, tokenAddress: string): Promise<boolean> {
         this._validateProxyContractExistsOrThrow();
         const tokenContract = this._getTokenContractFromAssetData(tokenAddress);
         const operator = (this._proxyContract as ERC721ProxyContract).address;
