@@ -99,29 +99,25 @@ contract MixinERC20Transfer is
             // So we read location 4 and add 32 + 4 + 4 to it.
             let token := calldataload(add(calldataload(4), 40))
             
-            /////// Setup State ///////
-            // `cdStart` is the start of the calldata for `token.transferFrom` (equal to free memory ptr).
-            let cdStart := mload(64)
-            
             /////// Setup Header Area ///////
             // This area holds the 4-byte `transferFrom` selector.
             // Any trailing data in transferFromSelector will be
             // overwritten in the next `mstore` call.
-            mstore(cdStart, 0x23b872dd00000000000000000000000000000000000000000000000000000000)
+            mstore(0, 0x23b872dd00000000000000000000000000000000000000000000000000000000)
             
             /////// Setup Params Area ///////
             // We copy the fields `from`, `to` and `amount` in bulk
             // from our own calldata to the new calldata.
-            calldatacopy(add(cdStart, 4), 36, 96)
+            calldatacopy(4, 36, 96)
 
             /////// Call `token.transferFrom` using the calldata ///////
             let success := call(
                 gas,            // forward all gas
                 token,          // call address of token contract
                 0,              // don't send any ETH
-                cdStart,        // pointer to start of input
+                0,              // pointer to start of input
                 100,            // length of input
-                cdStart,        // write output over input
+                0,              // write output over input
                 32              // output size should be 32 bytes
             )
 
@@ -137,7 +133,7 @@ contract MixinERC20Transfer is
                 iszero(returndatasize),
                 and(
                     eq(returndatasize, 32),
-                    gt(mload(cdStart), 0)
+                    gt(mload(0), 0)
                 )
             ))
             if success {
@@ -152,8 +148,7 @@ contract MixinERC20Transfer is
             revert(0, 100)
         }
     }
-
-
+    
     /// @dev Internal version of `transferFrom`.
     /// @param assetData Encoded byte array.
     /// @param from Address to transfer asset from.
