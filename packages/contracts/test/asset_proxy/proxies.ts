@@ -1,5 +1,6 @@
 import { BlockchainLifecycle } from '@0xproject/dev-utils';
 import { assetProxyUtils, generatePseudoRandomSalt } from '@0xproject/order-utils';
+import { RevertReasons } from '@0xproject/types';
 import { BigNumber } from '@0xproject/utils';
 import * as chai from 'chai';
 import { LogWithDecodedArgs } from 'ethereum-types';
@@ -24,7 +25,6 @@ import { constants } from '../../src/utils/constants';
 import { ERC20Wrapper } from '../../src/utils/erc20_wrapper';
 import { ERC721Wrapper } from '../../src/utils/erc721_wrapper';
 import { LogDecoder } from '../../src/utils/log_decoder';
-import { RevertReasons } from '../../src/utils/types';
 import { provider, txDefaults, web3Wrapper } from '../../src/utils/web3_wrapper';
 
 chaiSetup.configure();

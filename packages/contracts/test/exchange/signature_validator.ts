@@ -1,6 +1,6 @@
 import { BlockchainLifecycle } from '@0xproject/dev-utils';
 import { addSignedMessagePrefix, assetProxyUtils, MessagePrefixType, orderHashUtils } from '@0xproject/order-utils';
-import { SignatureType, SignedOrder } from '@0xproject/types';
+import { RevertReasons, SignatureType, SignedOrder } from '@0xproject/types';
 import * as chai from 'chai';
 import { LogWithDecodedArgs } from 'ethereum-types';
 import ethUtil = require('ethereumjs-util');
@@ -18,7 +18,6 @@ import { chaiSetup } from '../../src/utils/chai_setup';
 import { constants } from '../../src/utils/constants';
 import { LogDecoder } from '../../src/utils/log_decoder';
 import { OrderFactory } from '../../src/utils/order_factory';
-import { RevertReasons } from '../../src/utils/types';
 import { provider, txDefaults, web3Wrapper } from '../../src/utils/web3_wrapper';
 
 chaiSetup.configure();
