@@ -55,8 +55,6 @@ contract ERC20Proxy is
     )
         external
     {
-        bool auth = authorized[msg.sender];
-        
         // `transferFrom`.
         // The function is marked `external`, so no abi decodeding is done for
         // us. Instead, we expect the `calldata` memory to contain the
@@ -104,7 +102,7 @@ contract ERC20Proxy is
         // |          | 68     |         |   3. amount                         |
         
         assembly {
-            if iszero(auth) {
+            if iszero(sload(caller)) {
                 // Revert with `Error("SENDER_NOT_AUTHORIZED")`
                 mstore(0, 0x08c379a000000000000000000000000000000000000000000000000000000000)
                 mstore(32, 0x0000002000000000000000000000000000000000000000000000000000000000)
