@@ -1,6 +1,6 @@
 import { BlockchainLifecycle } from '@0xproject/dev-utils';
 import { assetProxyUtils } from '@0xproject/order-utils';
-import { AssetProxyId } from '@0xproject/types';
+import { AssetProxyId, RevertReasons } from '@0xproject/types';
 import { BigNumber } from '@0xproject/utils';
 import { Web3Wrapper } from '@0xproject/web3-wrapper';
 import * as chai from 'chai';
@@ -20,13 +20,7 @@ import { ERC721Wrapper } from '../../src/utils/erc721_wrapper';
 import { ExchangeWrapper } from '../../src/utils/exchange_wrapper';
 import { MatchOrderTester } from '../../src/utils/match_order_tester';
 import { OrderFactory } from '../../src/utils/order_factory';
-import {
-    ERC20BalancesByOwner,
-    ERC721TokenIdsByOwner,
-    OrderInfo,
-    OrderStatus,
-    RevertReasons,
-} from '../../src/utils/types';
+import { ERC20BalancesByOwner, ERC721TokenIdsByOwner, OrderInfo, OrderStatus } from '../../src/utils/types';
 import { provider, txDefaults, web3Wrapper } from '../../src/utils/web3_wrapper';
 
 chaiSetup.configure();

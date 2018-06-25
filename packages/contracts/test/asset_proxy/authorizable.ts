@@ -1,4 +1,5 @@
 import { BlockchainLifecycle } from '@0xproject/dev-utils';
+import { RevertReasons } from '@0xproject/types';
 import { BigNumber } from '@0xproject/utils';
 import * as chai from 'chai';
 
@@ -10,7 +11,6 @@ import {
 } from '../../src/utils/assertions';
 import { chaiSetup } from '../../src/utils/chai_setup';
 import { constants } from '../../src/utils/constants';
-import { RevertReasons } from '../../src/utils/types';
 import { provider, txDefaults, web3Wrapper } from '../../src/utils/web3_wrapper';
 
 chaiSetup.configure();
