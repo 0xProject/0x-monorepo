@@ -23,11 +23,13 @@ export class ASTVisitor {
     private _modifiersStatementIds: number[] = [];
     private _statementMap: StatementMap = {};
     private _locationByOffset: LocationByOffset;
-    private _ignoreRangesBeginingAt: number[];
+    private _ignoreRangesBeginningAt: number[];
+    // keep track of contract/function ranges that are to be ignored
+    // so we can also ignore any children nodes within the contract/function
     private _ignoreRangesWithin: Array<[number, number]> = [];
-    constructor(locationByOffset: LocationByOffset, ignoreRangesBeginingAt: number[] = []) {
+    constructor(locationByOffset: LocationByOffset, ignoreRangesBeginningAt: number[] = []) {
         this._locationByOffset = locationByOffset;
-        this._ignoreRangesBeginingAt = ignoreRangesBeginingAt;
+        this._ignoreRangesBeginningAt = ignoreRangesBeginningAt;
     }
     public getCollectedCoverageEntries(): CoverageEntriesDescription {
         const coverageEntriesDescription = {
@@ -44,6 +46,11 @@ export class ASTVisitor {
     }
     public FunctionDefinition(ast: Parser.FunctionDefinition): void {
         this._visitFunctionLikeDefinition(ast);
+    }
+    public ContractDefinition(ast: Parser.ContractDefinition): void {
+        if (this._ignoreExpression(ast)) {
+            this._ignoreRangesWithin.push(ast.range as [number, number]);
+        }
     }
     public ModifierDefinition(ast: Parser.ModifierDefinition): void {
         this._visitFunctionLikeDefinition(ast);
@@ -143,13 +150,10 @@ export class ASTVisitor {
             this._ignoreRangesWithin,
             ([rangeStart, rangeEnd]: [number, number]) => astStart >= rangeStart && astEnd <= rangeEnd,
         );
-        return this._ignoreRangesBeginingAt.includes(astStart) || isRangeIgnored;
+        return this._ignoreRangesBeginningAt.includes(astStart) || isRangeIgnored;
     }
     private _visitFunctionLikeDefinition(ast: Parser.ModifierDefinition | Parser.FunctionDefinition): void {
         if (this._ignoreExpression(ast)) {
-            // we want to ignore everything within this function
-            // add this nodes range to the ignoreRangesWithin array
-            // so we can ignore any later nodes that are children of this node
             this._ignoreRangesWithin.push(ast.range as [number, number]);
             return;
         }
