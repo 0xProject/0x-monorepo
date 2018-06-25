@@ -17,14 +17,17 @@ import {
     FillContractEventArgs,
 } from '../../src/generated_contract_wrappers/exchange';
 import { artifacts } from '../../src/utils/artifacts';
-import { expectRevertOrAlwaysFailingTransactionAsync } from '../../src/utils/assertions';
+import {
+    expectRevertOrAlwaysFailingTransactionAsync,
+    expectRevertReasonOrAlwaysFailingTransactionAsync,
+} from '../../src/utils/assertions';
 import { chaiSetup } from '../../src/utils/chai_setup';
 import { constants } from '../../src/utils/constants';
 import { ERC20Wrapper } from '../../src/utils/erc20_wrapper';
 import { ERC721Wrapper } from '../../src/utils/erc721_wrapper';
 import { ExchangeWrapper } from '../../src/utils/exchange_wrapper';
 import { OrderFactory } from '../../src/utils/order_factory';
-import { ERC20BalancesByOwner } from '../../src/utils/types';
+import { ERC20BalancesByOwner, RevertReasons } from '../../src/utils/types';
 import { provider, txDefaults, web3Wrapper } from '../../src/utils/web3_wrapper';
 
 chaiSetup.configure();
@@ -146,16 +149,18 @@ describe('Exchange core', () => {
             const invalidSigBuff = Buffer.concat([v, invalidR, invalidS, signatureType]);
             const invalidSigHex = `0x${invalidSigBuff.toString('hex')}`;
             signedOrder.signature = invalidSigHex;
-            return expectRevertOrAlwaysFailingTransactionAsync(
+            return expectRevertReasonOrAlwaysFailingTransactionAsync(
                 exchangeWrapper.fillOrderAsync(signedOrder, takerAddress),
+                RevertReasons.InvalidOrderSignature,
             );
         });
 
         it('should throw if no value is filled', async () => {
             signedOrder = orderFactory.newSignedOrder();
             await exchangeWrapper.fillOrderAsync(signedOrder, takerAddress);
-            return expectRevertOrAlwaysFailingTransactionAsync(
+            return expectRevertReasonOrAlwaysFailingTransactionAsync(
                 exchangeWrapper.fillOrderAsync(signedOrder, takerAddress),
+                RevertReasons.OrderUnfillable,
             );
         });
     });
@@ -167,8 +172,9 @@ describe('Exchange core', () => {
         });
 
         it('should throw if not sent by maker', async () => {
-            return expectRevertOrAlwaysFailingTransactionAsync(
+            return expectRevertReasonOrAlwaysFailingTransactionAsync(
                 exchangeWrapper.cancelOrderAsync(signedOrder, takerAddress),
+                RevertReasons.InvalidMaker,
             );
         });
 
@@ -177,8 +183,9 @@ describe('Exchange core', () => {
                 makerAssetAmount: new BigNumber(0),
             });
 
-            return expectRevertOrAlwaysFailingTransactionAsync(
+            return expectRevertReasonOrAlwaysFailingTransactionAsync(
                 exchangeWrapper.cancelOrderAsync(signedOrder, makerAddress),
+                RevertReasons.OrderUnfillable,
             );
         });
 
@@ -187,17 +194,19 @@ describe('Exchange core', () => {
                 takerAssetAmount: new BigNumber(0),
             });
 
-            return expectRevertOrAlwaysFailingTransactionAsync(
+            return expectRevertReasonOrAlwaysFailingTransactionAsync(
                 exchangeWrapper.cancelOrderAsync(signedOrder, makerAddress),
+                RevertReasons.OrderUnfillable,
             );
         });
 
         it('should be able to cancel a full order', async () => {
             await exchangeWrapper.cancelOrderAsync(signedOrder, makerAddress);
-            return expectRevertOrAlwaysFailingTransactionAsync(
+            return expectRevertReasonOrAlwaysFailingTransactionAsync(
                 exchangeWrapper.fillOrderAsync(signedOrder, takerAddress, {
                     takerAssetFillAmount: signedOrder.takerAssetAmount.div(2),
                 }),
+                RevertReasons.OrderUnfillable,
             );
         });
 
@@ -218,8 +227,9 @@ describe('Exchange core', () => {
 
         it('should throw if already cancelled', async () => {
             await exchangeWrapper.cancelOrderAsync(signedOrder, makerAddress);
-            return expectRevertOrAlwaysFailingTransactionAsync(
+            return expectRevertReasonOrAlwaysFailingTransactionAsync(
                 exchangeWrapper.cancelOrderAsync(signedOrder, makerAddress),
+                RevertReasons.OrderUnfillable,
             );
         });
 
@@ -227,8 +237,9 @@ describe('Exchange core', () => {
             signedOrder = orderFactory.newSignedOrder({
                 expirationTimeSeconds: new BigNumber(Math.floor((Date.now() - 10000) / 1000)),
             });
-            return expectRevertOrAlwaysFailingTransactionAsync(
+            return expectRevertReasonOrAlwaysFailingTransactionAsync(
                 exchangeWrapper.cancelOrderAsync(signedOrder, makerAddress),
+                RevertReasons.OrderUnfillable,
             );
         });
 
@@ -244,10 +255,11 @@ describe('Exchange core', () => {
             });
 
             const fillTakerAssetAmount2 = new BigNumber(1);
-            return expectRevertOrAlwaysFailingTransactionAsync(
+            return expectRevertReasonOrAlwaysFailingTransactionAsync(
                 exchangeWrapper.fillOrderAsync(signedOrder, takerAddress, {
                     takerAssetFillAmount: fillTakerAssetAmount2,
                 }),
+                RevertReasons.RoundingError,
             );
         });
     });
@@ -257,16 +269,18 @@ describe('Exchange core', () => {
             const orderEpoch = new BigNumber(1);
             await exchangeWrapper.cancelOrdersUpToAsync(orderEpoch, makerAddress);
             const lesserOrderEpoch = new BigNumber(0);
-            return expectRevertOrAlwaysFailingTransactionAsync(
+            return expectRevertReasonOrAlwaysFailingTransactionAsync(
                 exchangeWrapper.cancelOrdersUpToAsync(lesserOrderEpoch, makerAddress),
+                RevertReasons.InvalidNewOrderEpoch,
             );
         });
 
         it('should fail to set orderEpoch equal to existing orderEpoch', async () => {
             const orderEpoch = new BigNumber(1);
             await exchangeWrapper.cancelOrdersUpToAsync(orderEpoch, makerAddress);
-            return expectRevertOrAlwaysFailingTransactionAsync(
+            return expectRevertReasonOrAlwaysFailingTransactionAsync(
                 exchangeWrapper.cancelOrdersUpToAsync(orderEpoch, makerAddress),
+                RevertReasons.InvalidNewOrderEpoch,
             );
         });
 
@@ -398,8 +412,9 @@ describe('Exchange core', () => {
             expect(initialOwnerTakerAsset).to.be.bignumber.equal(takerAddress);
             // Call Exchange
             const takerAssetFillAmount = signedOrder.takerAssetAmount;
-            return expectRevertOrAlwaysFailingTransactionAsync(
+            return expectRevertReasonOrAlwaysFailingTransactionAsync(
                 exchangeWrapper.fillOrderAsync(signedOrder, takerAddress, { takerAssetFillAmount }),
+                RevertReasons.InvalidAmount,
             );
         });
 
@@ -420,30 +435,26 @@ describe('Exchange core', () => {
             expect(initialOwnerTakerAsset).to.be.bignumber.equal(takerAddress);
             // Call Exchange
             const takerAssetFillAmount = signedOrder.takerAssetAmount;
-            return expectRevertOrAlwaysFailingTransactionAsync(
+            return expectRevertReasonOrAlwaysFailingTransactionAsync(
                 exchangeWrapper.fillOrderAsync(signedOrder, takerAddress, { takerAssetFillAmount }),
+                RevertReasons.InvalidAmount,
             );
         });
 
         it('should throw on partial fill', async () => {
             // Construct Exchange parameters
             const makerAssetId = erc721MakerAssetIds[0];
-            const takerAssetId = erc721TakerAssetIds[0];
             signedOrder = orderFactory.newSignedOrder({
                 makerAssetAmount: new BigNumber(1),
-                takerAssetAmount: new BigNumber(0),
+                takerAssetAmount: Web3Wrapper.toBaseUnitAmount(new BigNumber(100), 18),
                 makerAssetData: assetProxyUtils.encodeERC721AssetData(erc721Token.address, makerAssetId),
-                takerAssetData: assetProxyUtils.encodeERC721AssetData(erc721Token.address, takerAssetId),
+                takerAssetData: assetProxyUtils.encodeERC20AssetData(defaultTakerAssetAddress),
             });
-            // Verify pre-conditions
-            const initialOwnerMakerAsset = await erc721Token.ownerOf.callAsync(makerAssetId);
-            expect(initialOwnerMakerAsset).to.be.bignumber.equal(makerAddress);
-            const initialOwnerTakerAsset = await erc721Token.ownerOf.callAsync(takerAssetId);
-            expect(initialOwnerTakerAsset).to.be.bignumber.equal(takerAddress);
             // Call Exchange
-            const takerAssetFillAmount = signedOrder.takerAssetAmount;
-            return expectRevertOrAlwaysFailingTransactionAsync(
+            const takerAssetFillAmount = signedOrder.takerAssetAmount.div(2);
+            return expectRevertReasonOrAlwaysFailingTransactionAsync(
                 exchangeWrapper.fillOrderAsync(signedOrder, takerAddress, { takerAssetFillAmount }),
+                RevertReasons.RoundingError,
             );
         });
     });

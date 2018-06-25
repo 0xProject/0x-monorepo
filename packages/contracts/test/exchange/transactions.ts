@@ -10,7 +10,7 @@ import { ExchangeContract } from '../../src/generated_contract_wrappers/exchange
 import { ExchangeWrapperContract } from '../../src/generated_contract_wrappers/exchange_wrapper';
 import { WhitelistContract } from '../../src/generated_contract_wrappers/whitelist';
 import { artifacts } from '../../src/utils/artifacts';
-import { expectRevertOrAlwaysFailingTransactionAsync } from '../../src/utils/assertions';
+import { expectRevertReasonOrAlwaysFailingTransactionAsync } from '../../src/utils/assertions';
 import { chaiSetup } from '../../src/utils/chai_setup';
 import { constants } from '../../src/utils/constants';
 import { ERC20Wrapper } from '../../src/utils/erc20_wrapper';
@@ -18,7 +18,7 @@ import { ExchangeWrapper } from '../../src/utils/exchange_wrapper';
 import { OrderFactory } from '../../src/utils/order_factory';
 import { orderUtils } from '../../src/utils/order_utils';
 import { TransactionFactory } from '../../src/utils/transaction_factory';
-import { ERC20BalancesByOwner, SignedTransaction } from '../../src/utils/types';
+import { ERC20BalancesByOwner, RevertReasons, SignedTransaction } from '../../src/utils/types';
 import { provider, txDefaults, web3Wrapper } from '../../src/utils/web3_wrapper';
 
 chaiSetup.configure();
@@ -57,6 +57,12 @@ describe('Exchange transactions', () => {
         await blockchainLifecycle.startAsync();
     });
     after(async () => {
+        await blockchainLifecycle.revertAsync();
+    });
+    beforeEach(async () => {
+        await blockchainLifecycle.startAsync();
+    });
+    afterEach(async () => {
         await blockchainLifecycle.revertAsync();
     });
     before(async () => {
@@ -104,13 +110,6 @@ describe('Exchange transactions', () => {
         makerTransactionFactory = new TransactionFactory(makerPrivateKey, exchange.address);
         takerTransactionFactory = new TransactionFactory(takerPrivateKey, exchange.address);
     });
-    beforeEach(async () => {
-        await blockchainLifecycle.startAsync();
-    });
-    afterEach(async () => {
-        await blockchainLifecycle.revertAsync();
-    });
-
     describe('executeTransaction', () => {
         describe('fillOrder', () => {
             let takerAssetFillAmount: BigNumber;
@@ -129,8 +128,9 @@ describe('Exchange transactions', () => {
             });
 
             it('should throw if not called by specified sender', async () => {
-                return expectRevertOrAlwaysFailingTransactionAsync(
+                return expectRevertReasonOrAlwaysFailingTransactionAsync(
                     exchangeWrapper.executeTransactionAsync(signedTx, takerAddress),
+                    RevertReasons.FailedExecution,
                 );
             });
 
@@ -171,8 +171,9 @@ describe('Exchange transactions', () => {
 
             it('should throw if the a 0x transaction with the same transactionHash has already been executed', async () => {
                 await exchangeWrapper.executeTransactionAsync(signedTx, senderAddress);
-                return expectRevertOrAlwaysFailingTransactionAsync(
+                return expectRevertReasonOrAlwaysFailingTransactionAsync(
                     exchangeWrapper.executeTransactionAsync(signedTx, senderAddress),
+                    RevertReasons.InvalidTxHash,
                 );
             });
 
@@ -190,15 +191,17 @@ describe('Exchange transactions', () => {
             });
 
             it('should throw if not called by specified sender', async () => {
-                return expectRevertOrAlwaysFailingTransactionAsync(
+                return expectRevertReasonOrAlwaysFailingTransactionAsync(
                     exchangeWrapper.executeTransactionAsync(signedTx, makerAddress),
+                    RevertReasons.FailedExecution,
                 );
             });
 
             it('should cancel the order when signed by maker and called by sender', async () => {
                 await exchangeWrapper.executeTransactionAsync(signedTx, senderAddress);
-                return expectRevertOrAlwaysFailingTransactionAsync(
+                return expectRevertReasonOrAlwaysFailingTransactionAsync(
                     exchangeWrapper.fillOrderAsync(signedOrder, senderAddress),
+                    RevertReasons.OrderUnfillable,
                 );
             });
         });
@@ -241,7 +244,7 @@ describe('Exchange transactions', () => {
                     signedOrder.signature,
                 );
                 const signedFillTx = takerTransactionFactory.newSignedTransaction(fillData);
-                return expectRevertOrAlwaysFailingTransactionAsync(
+                return expectRevertReasonOrAlwaysFailingTransactionAsync(
                     exchangeWrapperContract.fillOrder.sendTransactionAsync(
                         orderWithoutExchangeAddress,
                         takerAssetFillAmount,
@@ -250,6 +253,7 @@ describe('Exchange transactions', () => {
                         signedFillTx.signature,
                         { from: takerAddress },
                     ),
+                    RevertReasons.FailedExecution,
                 );
             });
 
@@ -360,7 +364,7 @@ describe('Exchange transactions', () => {
             orderWithoutExchangeAddress = orderUtils.getOrderWithoutExchangeAddress(signedOrder);
             const takerAssetFillAmount = signedOrder.takerAssetAmount;
             const salt = generatePseudoRandomSalt();
-            return expectRevertOrAlwaysFailingTransactionAsync(
+            return expectRevertReasonOrAlwaysFailingTransactionAsync(
                 whitelist.fillOrderIfWhitelisted.sendTransactionAsync(
                     orderWithoutExchangeAddress,
                     takerAssetFillAmount,
@@ -368,6 +372,7 @@ describe('Exchange transactions', () => {
                     signedOrder.signature,
                     { from: takerAddress },
                 ),
+                RevertReasons.MakerNotWhitelisted,
             );
         });
 
@@ -381,7 +386,7 @@ describe('Exchange transactions', () => {
             orderWithoutExchangeAddress = orderUtils.getOrderWithoutExchangeAddress(signedOrder);
             const takerAssetFillAmount = signedOrder.takerAssetAmount;
             const salt = generatePseudoRandomSalt();
-            return expectRevertOrAlwaysFailingTransactionAsync(
+            return expectRevertReasonOrAlwaysFailingTransactionAsync(
                 whitelist.fillOrderIfWhitelisted.sendTransactionAsync(
                     orderWithoutExchangeAddress,
                     takerAssetFillAmount,
@@ -389,6 +394,7 @@ describe('Exchange transactions', () => {
                     signedOrder.signature,
                     { from: takerAddress },
                 ),
+                RevertReasons.TakerNotWhitelisted,
             );
         });
 
