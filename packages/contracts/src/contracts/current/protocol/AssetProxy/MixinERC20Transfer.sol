@@ -88,7 +88,6 @@ contract MixinERC20Transfer is
         // |          | 36     |         |   2. to                             |
         // |          | 68     |         |   3. amount                         |
         
-        bytes4 transferFromSelector = IERC20Token(0).transferFrom.selector;
         bool success;
         assembly {
             /////// Token contract address ///////
@@ -106,11 +105,11 @@ contract MixinERC20Transfer is
             let cdStart := mload(64)
             
             /////// Setup Header Area ///////
-            // This area holds the 4-byte `transferFromSelector`.
+            // This area holds the 4-byte `transferFrom` selector.
             // Any trailing data in transferFromSelector will be
             // overwritten in the next `mstore` call.
-            mstore(cdStart, transferFromSelector)
-
+            mstore(cdStart, 0x23b872dd00000000000000000000000000000000000000000000000000000000)
+            
             /////// Setup Params Area ///////
             // We copy the fields `from`, `to` and `amount` in bulk
             // from our own calldata to the new calldata.
