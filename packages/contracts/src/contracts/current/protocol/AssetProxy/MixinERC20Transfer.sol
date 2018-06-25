@@ -88,7 +88,6 @@ contract MixinERC20Transfer is
         // |          | 36     |         |   2. to                             |
         // |          | 68     |         |   3. amount                         |
         
-        bool success;
         assembly {
             /////// Token contract address ///////
             // The token address is found as follows:
@@ -116,7 +115,7 @@ contract MixinERC20Transfer is
             calldatacopy(add(cdStart, 4), 36, 96)
 
             /////// Call `token.transferFrom` using the calldata ///////
-            success := call(
+            let success := call(
                 gas,            // forward all gas
                 token,          // call address of token contract
                 0,              // don't send any ETH
@@ -141,11 +140,17 @@ contract MixinERC20Transfer is
                     gt(mload(cdStart), 0)
                 )
             ))
+            if success {
+                return(0, 0)
+            }
+            
+            // Revert with `Error("TRANSFER_FAILED")`
+            mstore(0, 0x08c379a000000000000000000000000000000000000000000000000000000000)
+            mstore(32, 0x0000002000000000000000000000000000000000000000000000000000000000)
+            mstore(64, 0x0000000f5452414e534645525f4641494c454400000000000000000000000000)
+            mstore(96, 0)
+            revert(0, 100)
         }
-        require(
-            success,
-            "TRANSFER_FAILED"
-        );
     }
 
 
