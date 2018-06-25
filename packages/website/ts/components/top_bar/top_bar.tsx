@@ -58,7 +58,6 @@ const styles: Styles = {
         width: '100%',
         position: 'relative',
         top: 0,
-        zIndex: zIndex.topBar,
         paddingBottom: 1,
     },
     bottomBar: {

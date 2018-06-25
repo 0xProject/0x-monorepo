@@ -151,11 +151,11 @@ export class Portal extends React.Component<PortalProps, PortalState> {
         this.props.dispatcher.resetState();
     }
     public componentDidUpdate(prevProps: PortalProps): void {
-        if (!prevProps.blockchainIsLoaded && this.props.blockchainIsLoaded) {
-            const trackedTokenAddresses = _.keys(this.state.trackedTokenStateByAddress);
-            // tslint:disable-next-line:no-floating-promises
-            this._fetchBalancesAndAllowancesAsync(trackedTokenAddresses);
-        }
+        // if (!prevProps.blockchainIsLoaded && this.props.blockchainIsLoaded) {
+        //     const trackedTokenAddresses = _.keys(this.state.trackedTokenStateByAddress);
+        //     // tslint:disable-next-line:no-floating-promises
+        //     this._fetchBalancesAndAllowancesAsync(trackedTokenAddresses);
+        // }
     }
     public componentWillReceiveProps(nextProps: PortalProps): void {
         if (nextProps.networkId !== this.state.prevNetworkId) {

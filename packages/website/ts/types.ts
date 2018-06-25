@@ -488,6 +488,16 @@ export enum Providers {
     Mist = 'MIST',
 }
 
+export interface InjectedProviderUpdate {
+    selectedAddress: string;
+    networkVersion: string;
+}
+
+export interface InjectedProviderObservable {
+    subscribe(updateHandler: (update: InjectedProviderUpdate) => void): void;
+    unsubscribe(updateHandler: (update: InjectedProviderUpdate) => void): void;
+}
+
 export interface TimestampMsRange {
     startTimestampMs: number;
     endTimestampMs: number;

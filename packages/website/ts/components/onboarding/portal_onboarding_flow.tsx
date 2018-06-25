@@ -159,9 +159,11 @@ class PlainPortalOnboardingFlow extends React.Component<PortalOnboardingFlowProp
         const ethToken = utils.getEthToken(this.props.tokenByAddress);
         const zrxToken = utils.getZrxToken(this.props.tokenByAddress);
         if (ethToken && zrxToken) {
-            const ethTokenAllowance = this.props.trackedTokenStateByAddress[ethToken.address].allowance;
-            const zrxTokenAllowance = this.props.trackedTokenStateByAddress[zrxToken.address].allowance;
-            return ethTokenAllowance > new BigNumber(0) && zrxTokenAllowance > new BigNumber(0);
+            const ethTokenState = this.props.trackedTokenStateByAddress[ethToken.address];
+            const zrxTokenState = this.props.trackedTokenStateByAddress[zrxToken.address];
+            if (ethTokenState && zrxTokenState) {
+                return ethTokenState.allowance > new BigNumber(0) && zrxTokenState.allowance > new BigNumber(0);
+            }
         }
         return false;
     }
@@ -222,6 +224,9 @@ class PlainPortalOnboardingFlow extends React.Component<PortalOnboardingFlowProp
             return null;
         }
         const tokenState = this.props.trackedTokenStateByAddress[token.address];
+        if (!tokenState) {
+            return null;
+        }
         return (
             <AllowanceToggle
                 token={token}

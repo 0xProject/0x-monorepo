@@ -50,6 +50,8 @@ import {
     SideToAssetToken,
     Token,
     TokenByAddress,
+    InjectedProviderObservable,
+    InjectedProviderUpdate,
 } from 'ts/types';
 import { backendClient } from 'ts/utils/backend_client';
 import { configs } from 'ts/utils/configs';
@@ -79,9 +81,8 @@ export class Blockchain {
     private _dispatcher: Dispatcher;
     private _web3Wrapper?: Web3Wrapper;
     private _blockchainWatcher?: BlockchainWatcher;
+    private _injectedProviderObservable?: InjectedProviderObservable;
     private _userAddressIfExists: string;
-    private _cachedProvider: Provider;
-    private _cachedProviderNetworkId: number;
     private _ledgerSubprovider: LedgerSubprovider;
     private _defaultGasPrice: BigNumber;
     private static _getNameGivenProvider(provider: Provider): string {
@@ -92,13 +93,62 @@ export class Blockchain {
         }
         return providerNameIfExists;
     }
-    private static async _getProviderAsync(injectedWeb3: Web3, networkIdIfExists: number): Promise<Provider> {
+    private static _getInjectedWeb3(): any {
+        return (window as any).web3;
+    }
+    private static _getFallbackNetworkId(): number {
+        return configs.IS_MAINNET_ENABLED ? constants.NETWORK_ID_MAINNET : constants.NETWORK_ID_KOVAN;
+    }
+    private static async _getInjectedWeb3ProviderNetworkIdIfExistsAsync(): Promise<number> {
+        // Hack: We need to know the networkId the injectedWeb3 is connected to (if it is defined) in
+        // order to properly instantiate the web3Wrapper. Since we must use the async call, we cannot
+        // retrieve it from within the web3Wrapper constructor. This is and should remain the only
+        // call to a web3 instance outside of web3Wrapper in the entire dapp.
+        // In addition, if the user has an injectedWeb3 instance that is disconnected from a backing
+        // Ethereum node, this call will throw. We need to handle this case gracefully
+        const injectedWeb3 = Blockchain._getInjectedWeb3();
+        let networkIdIfExists: number;
+        if (!_.isUndefined(injectedWeb3)) {
+            try {
+                networkIdIfExists = _.parseInt(await promisify<string>(injectedWeb3.version.getNetwork)());
+            } catch (err) {
+                // Ignore error and proceed with networkId undefined
+            }
+        }
+        return networkIdIfExists;
+    }
+    private static async _getProviderAsync(
+        injectedWeb3: Web3,
+        networkIdIfExists: number,
+        userLedgerProvider: boolean = false,
+    ): Promise<Provider> {
         const doesInjectedWeb3Exist = !_.isUndefined(injectedWeb3);
+        const isNetworkIdDefined = !_.isUndefined(networkIdIfExists);
         const publicNodeUrlsIfExistsForNetworkId = configs.PUBLIC_NODE_URLS_BY_NETWORK_ID[networkIdIfExists];
         const isPublicNodeAvailableForNetworkId = !_.isUndefined(publicNodeUrlsIfExistsForNetworkId);
 
         let provider;
-        if (doesInjectedWeb3Exist && isPublicNodeAvailableForNetworkId) {
+        if (userLedgerProvider && isNetworkIdDefined) {
+            const isU2FSupported = await utils.isU2FSupportedAsync();
+            if (!isU2FSupported) {
+                throw new Error('Cannot update providerType to LEDGER without U2F support');
+            }
+            provider = new ProviderEngine();
+            const ledgerWalletConfigs = {
+                networkId: networkIdIfExists,
+                ledgerEthereumClientFactoryAsync: ledgerEthereumBrowserClientFactoryAsync,
+            };
+            const ledgerSubprovider = new LedgerSubprovider(ledgerWalletConfigs);
+            provider.addProvider(ledgerSubprovider);
+            provider.addProvider(new FilterSubprovider());
+            const rpcSubproviders = _.map(configs.PUBLIC_NODE_URLS_BY_NETWORK_ID[networkIdIfExists], publicNodeUrl => {
+                return new RpcSubprovider({
+                    rpcUrl: publicNodeUrl,
+                });
+            });
+            provider.addProvider(new RedundantSubprovider(rpcSubproviders as Subprovider[]));
+            provider.start();
+        } else if (doesInjectedWeb3Exist && isPublicNodeAvailableForNetworkId) {
             // We catch all requests involving a users account and send it to the injectedWeb3
             // instance. All other requests go to the public hosted node.
             provider = new ProviderEngine();
@@ -120,7 +170,7 @@ export class Blockchain {
             // injected into their browser.
             provider = new ProviderEngine();
             provider.addProvider(new FilterSubprovider());
-            const networkId = configs.IS_MAINNET_ENABLED ? constants.NETWORK_ID_MAINNET : constants.NETWORK_ID_KOVAN;
+            const networkId = Blockchain._getFallbackNetworkId();
             const rpcSubproviders = _.map(configs.PUBLIC_NODE_URLS_BY_NETWORK_ID[networkId], publicNodeUrl => {
                 return new RpcSubprovider({
                     rpcUrl: publicNodeUrl,
@@ -141,6 +191,7 @@ export class Blockchain {
         // tslint:disable-next-line:no-floating-promises
         this._onPageLoadInitFireAndForgetAsync();
     }
+    // TODO: Investigate if we need this.
     public async networkIdUpdatedFireAndForgetAsync(newNetworkId: number): Promise<void> {
         const isConnected = !_.isUndefined(newNetworkId);
         if (!isConnected) {
@@ -185,84 +236,14 @@ export class Blockchain {
         this._ledgerSubprovider.setPath(path);
     }
     public async updateProviderToLedgerAsync(networkId: number): Promise<void> {
-        utils.assert(!_.isUndefined(this._contractWrappers), 'Contract Wrappers must be instantiated.');
-
-        const isU2FSupported = await utils.isU2FSupportedAsync();
-        if (!isU2FSupported) {
-            throw new Error('Cannot update providerType to LEDGER without U2F support');
-        }
-
-        // Cache injected provider so that we can switch the user back to it easily
-        if (_.isUndefined(this._cachedProvider)) {
-            this._cachedProvider = this._web3Wrapper.getProvider();
-            this._cachedProviderNetworkId = this.networkId;
-        }
-
-        this._blockchainWatcher.destroy();
-
-        delete this._userAddressIfExists;
-        this._dispatcher.updateUserAddress(undefined); // Clear old userAddress
-
-        const provider = new ProviderEngine();
-        const ledgerWalletConfigs = {
-            networkId,
-            ledgerEthereumClientFactoryAsync: ledgerEthereumBrowserClientFactoryAsync,
-        };
-        this._ledgerSubprovider = new LedgerSubprovider(ledgerWalletConfigs);
-        provider.addProvider(this._ledgerSubprovider);
-        provider.addProvider(new FilterSubprovider());
-        const rpcSubproviders = _.map(configs.PUBLIC_NODE_URLS_BY_NETWORK_ID[networkId], publicNodeUrl => {
-            return new RpcSubprovider({
-                rpcUrl: publicNodeUrl,
-            });
-        });
-        provider.addProvider(new RedundantSubprovider(rpcSubproviders as Subprovider[]));
-        provider.start();
-        this.networkId = networkId;
-        this._dispatcher.updateNetworkId(this.networkId);
         const shouldPollUserAddress = false;
-        this._web3Wrapper = new Web3Wrapper(provider);
-        this._blockchainWatcher = new BlockchainWatcher(
-            this._dispatcher,
-            this._web3Wrapper,
-            this.networkId,
-            shouldPollUserAddress,
-        );
-        this._contractWrappers.setProvider(provider, this.networkId);
-        await this._blockchainWatcher.startEmittingUserBalanceStateAsync();
-        this._dispatcher.updateProviderType(ProviderType.Ledger);
+        const useLedgerProvider = true;
+        await this._resetOrInitializeAsync(networkId, shouldPollUserAddress, useLedgerProvider);
     }
     public async updateProviderToInjectedAsync(): Promise<void> {
-        utils.assert(!_.isUndefined(this._contractWrappers), 'Contract Wrappers must be instantiated.');
-
-        if (_.isUndefined(this._cachedProvider)) {
-            return; // Going from injected to injected, so we noop
-        }
-
-        this._blockchainWatcher.destroy();
-
-        const provider = this._cachedProvider;
-        this.networkId = this._cachedProviderNetworkId;
-
         const shouldPollUserAddress = true;
-        this._web3Wrapper = new Web3Wrapper(provider);
-        this._blockchainWatcher = new BlockchainWatcher(
-            this._dispatcher,
-            this._web3Wrapper,
-            this.networkId,
-            shouldPollUserAddress,
-        );
-
-        const userAddresses = await this._web3Wrapper.getAvailableAddressesAsync();
-        this._userAddressIfExists = userAddresses[0];
-
-        this._contractWrappers.setProvider(provider, this.networkId);
-
-        await this.fetchTokenInformationAsync();
-        await this._blockchainWatcher.startEmittingUserBalanceStateAsync();
-        this._dispatcher.updateProviderType(ProviderType.Injected);
-        delete this._ledgerSubprovider;
-        delete this._cachedProvider;
+        const userLedgerProvider = false;
+        await this._resetOrInitializeAsync(this.networkId, shouldPollUserAddress, userLedgerProvider);
     }
     public async setProxyAllowanceAsync(token: Token, amountInBaseUnits: BigNumber): Promise<void> {
         utils.assert(this.isValidAddress(token.address), BlockchainCallErrs.TokenAddressIsInvalid);
@@ -632,6 +613,19 @@ export class Blockchain {
     private _doesUserAddressExist(): boolean {
         return !_.isUndefined(this._userAddressIfExists);
     }
+    private async _handleInjectedProviderUpdateAsync(update: InjectedProviderUpdate): Promise<void> {
+        if (update.networkVersion === 'loading') {
+            // Who comes up with this stuff.
+            return;
+        }
+        const updatedNetworkId = _.parseInt(update.networkVersion);
+        if (this.networkId === updatedNetworkId) {
+            return;
+        }
+        const shouldPollUserAddress = true;
+        const useLedgerProvider = false;
+        await this._resetOrInitializeAsync(updatedNetworkId, shouldPollUserAddress, useLedgerProvider);
+    }
     private async _rehydrateStoreWithContractEventsAsync(): Promise<void> {
         // Ensure we are only ever listening to one set of events
         this._stopWatchingExchangeLogFillEvents();
@@ -774,36 +768,37 @@ export class Blockchain {
     }
     private async _onPageLoadInitFireAndForgetAsync(): Promise<void> {
         await utils.onPageLoadAsync(); // wait for page to load
-
-        // Hack: We need to know the networkId the injectedWeb3 is connected to (if it is defined) in
-        // order to properly instantiate the web3Wrapper. Since we must use the async call, we cannot
-        // retrieve it from within the web3Wrapper constructor. This is and should remain the only
-        // call to a web3 instance outside of web3Wrapper in the entire dapp.
-        // In addition, if the user has an injectedWeb3 instance that is disconnected from a backing
-        // Ethereum node, this call will throw. We need to handle this case gracefully
-        const injectedWeb3 = (window as any).web3;
-        let networkIdIfExists: number;
-        if (!_.isUndefined(injectedWeb3)) {
-            try {
-                networkIdIfExists = _.parseInt(await promisify<string>(injectedWeb3.version.getNetwork)());
-            } catch (err) {
-                // Ignore error and proceed with networkId undefined
+        const networkIdIfExists = await Blockchain._getInjectedWeb3ProviderNetworkIdIfExistsAsync();
+        this.networkId = !_.isUndefined(networkIdIfExists) ? networkIdIfExists : Blockchain._getFallbackNetworkId();
+        const injectedWeb3 = Blockchain._getInjectedWeb3();
+        if (injectedWeb3) {
+            const injectedProviderObservable = injectedWeb3.currentProvider.publicConfigStore;
+            if (injectedProviderObservable && !this._injectedProviderObservable) {
+                this._injectedProviderObservable = injectedProviderObservable;
+                this._injectedProviderObservable.subscribe(this._handleInjectedProviderUpdateAsync.bind(this));
             }
         }
-
-        const provider = await Blockchain._getProviderAsync(injectedWeb3, networkIdIfExists);
-        this.networkId = !_.isUndefined(networkIdIfExists)
-            ? networkIdIfExists
-            : configs.IS_MAINNET_ENABLED
-                ? constants.NETWORK_ID_MAINNET
-                : constants.NETWORK_ID_KOVAN;
-        this._dispatcher.updateNetworkId(this.networkId);
-        const zeroExConfigs = {
-            networkId: this.networkId,
-        };
-        this._contractWrappers = new ContractWrappers(provider, zeroExConfigs);
-        this._updateProviderName(injectedWeb3);
         const shouldPollUserAddress = true;
+        const shouldUseLedger = false;
+        await this._resetOrInitializeAsync(this.networkId, shouldPollUserAddress, shouldUseLedger);
+    }
+    private async _resetOrInitializeAsync(
+        networkId: number,
+        shouldPollUserAddress: boolean = false,
+        useLedgerProvider: boolean = false,
+    ): Promise<void> {
+        this.networkId = networkId;
+        this._dispatcher.updateNetworkId(networkId);
+        const injectedWeb3 = Blockchain._getInjectedWeb3();
+        const provider = await Blockchain._getProviderAsync(injectedWeb3, networkId, useLedgerProvider);
+        // if (!_.isUndefined(this._contractWrappers)) {
+        //     this._contractWrappers.setProvider(provider, networkId);
+        // } else {
+        // }
+        this._contractWrappers = new ContractWrappers(provider, { networkId });
+        if (!_.isUndefined(this._blockchainWatcher)) {
+            this._blockchainWatcher.destroy();
+        }
         this._web3Wrapper = new Web3Wrapper(provider);
         this._blockchainWatcher = new BlockchainWatcher(
             this._dispatcher,
@@ -811,10 +806,19 @@ export class Blockchain {
             this.networkId,
             shouldPollUserAddress,
         );
-
-        const userAddresses = await this._web3Wrapper.getAvailableAddressesAsync();
-        this._userAddressIfExists = userAddresses[0];
-        this._dispatcher.updateUserAddress(this._userAddressIfExists);
+        if (useLedgerProvider) {
+            // TODO: why?
+            delete this._userAddressIfExists;
+            this._dispatcher.updateUserAddress(undefined);
+            this._dispatcher.updateProviderType(ProviderType.Ledger);
+        } else {
+            delete this._ledgerSubprovider;
+            const userAddresses = await this._web3Wrapper.getAvailableAddressesAsync();
+            this._userAddressIfExists = userAddresses[0];
+            this._dispatcher.updateUserAddress(this._userAddressIfExists);
+            this._updateProviderName(injectedWeb3);
+        }
+        // TOOD: should not call this in ledger case?
         await this.fetchTokenInformationAsync();
         await this._blockchainWatcher.startEmittingUserBalanceStateAsync();
         await this._rehydrateStoreWithContractEventsAsync();
