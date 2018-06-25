@@ -18,6 +18,9 @@
 
 pragma solidity ^0.4.23;
 
+// @dev Interface of the asset proxy's assetData.
+// The asset proxies take an ABI encoded `bytes assetData` as argument.
+// This argument is ABI encoded as one of the methods of this interface.
 interface IAssetData {
     
     function ERC20Token(
