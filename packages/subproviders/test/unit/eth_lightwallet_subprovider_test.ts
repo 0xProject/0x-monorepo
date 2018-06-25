@@ -11,6 +11,7 @@ import { reportCallbackErrors } from '../utils/report_callback_errors';
 
 chaiSetup.configure();
 const expect = chai.expect;
+
 const FAKE_ADDRESS = '0x44be42fd88e22387c43ba9b75941aa3e680dae25';
 const NUM_GENERATED_ADDRESSES = 10;
 const PASSWORD = 'supersecretpassword99';
@@ -30,7 +31,6 @@ describe('EthLightwalletSubprovider', () => {
 
         const createVaultAsync = async (vaultOptions: lightwallet.VaultOptions) => {
             return new Promise<lightwallet.keystore>(resolve => {
-                // Create Vault
                 lightwallet.keystore.createVault(vaultOptions, (err: Error, vaultKeystore) => {
                     if (err) {
                         throw new Error(`Failed to createVault: ${err}`);
@@ -39,7 +39,6 @@ describe('EthLightwalletSubprovider', () => {
                 });
             });
         };
-
         const deriveKeyFromPasswordAsync = async (vaultKeystore: lightwallet.keystore) => {
             return new Promise<Uint8Array>(resolve => {
                 vaultKeystore.keyFromPassword(PASSWORD, (err: Error, passwordDerivedKey: Uint8Array) => {
@@ -50,14 +49,12 @@ describe('EthLightwalletSubprovider', () => {
                 });
             });
         };
-
         const keystore: lightwallet.keystore = await createVaultAsync(options);
         const pwDerivedKey: Uint8Array = await deriveKeyFromPasswordAsync(keystore);
 
         // Generate 10 addresses
         keystore.generateNewAddress(pwDerivedKey, NUM_GENERATED_ADDRESSES);
 
-        // Initialize Subprovider
         ethLightwalletSubprovider = new EthLightwalletSubprovider(keystore, pwDerivedKey);
     });
     describe('direct method calls', () => {

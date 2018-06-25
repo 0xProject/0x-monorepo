@@ -41,7 +41,6 @@ declare module 'eth-lightwallet' {
         public exportPrivateKey(address: string, pwDerivedKey: Uint8Array): string;
         public getAddresses(): string[];
     }
-
     interface VaultOptions {
         password: string;
         seedPhrase: string;

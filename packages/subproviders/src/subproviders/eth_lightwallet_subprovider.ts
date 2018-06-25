@@ -17,14 +17,11 @@ import { BaseWalletSubprovider } from './base_wallet_subprovider';
 export class EthLightwalletSubprovider extends BaseWalletSubprovider {
     private _keystore: lightwallet.keystore;
     private _pwDerivedKey: Uint8Array;
-
     constructor(keystore: lightwallet.keystore, pwDerivedKey: Uint8Array) {
         super();
-
         this._keystore = keystore;
         this._pwDerivedKey = pwDerivedKey;
     }
-
     /**
      * Retrieve the accounts associated with the eth-lightwallet instance.
      * This method is implicitly called when issuing a `eth_accounts` JSON RPC request
@@ -36,7 +33,6 @@ export class EthLightwalletSubprovider extends BaseWalletSubprovider {
         const accounts = this._keystore.getAddresses();
         return accounts;
     }
-
     /**
      * Signs a transaction with the account specificed by the `from` field in txParams.
      * If you've added this Subprovider to your app's provider, you can simply send
@@ -58,7 +54,6 @@ export class EthLightwalletSubprovider extends BaseWalletSubprovider {
 
         return signedTxHex;
     }
-
     /**
      * Sign a personal Ethereum signed message. The signing account will be the account
      * associated with the provided address.
@@ -83,7 +78,6 @@ export class EthLightwalletSubprovider extends BaseWalletSubprovider {
         );
 
         const signature = lightwallet.signing.concatSig(result);
-
         return signature;
     }
 }
