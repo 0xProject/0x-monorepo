@@ -1,3 +1,4 @@
+import { RevertReason } from '@0xproject/types';
 import * as chai from 'chai';
 import * as _ from 'lodash';
 
@@ -59,7 +60,10 @@ export function expectRevertOrAlwaysFailingTransactionAsync<T>(p: Promise<T>): P
  * @returns a new Promise which will reject if the conditions are not met and
  * otherwise resolve with no value.
  */
-export function expectRevertReasonOrAlwaysFailingTransactionAsync<T>(p: Promise<T>, reason: string): PromiseLike<void> {
+export function expectRevertReasonOrAlwaysFailingTransactionAsync<T>(
+    p: Promise<T>,
+    reason: RevertReason,
+): PromiseLike<void> {
     return _expectEitherErrorAsync(p, 'always failing transaction', reason);
 }
 
