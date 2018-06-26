@@ -6,7 +6,7 @@ import {
     OrderStateUtils,
     OrderValidationUtils,
 } from '@0xproject/order-utils';
-import { AssetProxyId, SignatureType, SignedOrder } from '@0xproject/types';
+import { AssetProxyId, RevertReason, SignatureType, SignedOrder } from '@0xproject/types';
 import { BigNumber, errorUtils, logUtils } from '@0xproject/utils';
 import { Web3Wrapper } from '@0xproject/web3-wrapper';
 import * as chai from 'chai';
@@ -329,7 +329,7 @@ export class CoreCombinatorialUtils {
         signedOrder: SignedOrder,
         takerAssetFillAmount: BigNumber,
         lazyStore: BalanceAndProxyAllowanceLazyStore,
-        fillRevertReasonIfExists: string | undefined,
+        fillRevertReasonIfExists: RevertReason | undefined,
     ): Promise<void> {
         if (!_.isUndefined(fillRevertReasonIfExists)) {
             return expectRevertReasonOrAlwaysFailingTransactionAsync(
