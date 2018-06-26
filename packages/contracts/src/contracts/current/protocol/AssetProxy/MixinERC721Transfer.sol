@@ -152,7 +152,7 @@ contract MixinERC721Transfer is
             //   2. The offset to `receiverData` is the length
             //      of the Params Area (128 bytes).
             
-            let length := calldataload(add(offset, 104))
+            let length := calldataload(add(offset, 136))
             let token := calldataload(add(offset, 40))
             
             // Round length up to multiple of 32
@@ -168,7 +168,7 @@ contract MixinERC721Transfer is
             mstore(add(cdStart, 100), 128)
             
             // receiverData (including length)
-            calldatacopy(add(cdStart, 132), add(offset, 104), add(length, 32))
+            calldatacopy(add(cdStart, 132), add(offset, 136), add(length, 32))
             
             /////// Call `token.safeTransferFrom` using the calldata ///////
             let success := call(
