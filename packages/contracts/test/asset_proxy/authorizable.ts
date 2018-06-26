@@ -1,5 +1,5 @@
 import { BlockchainLifecycle } from '@0xproject/dev-utils';
-import { RevertReasons } from '@0xproject/types';
+import { RevertReason } from '@0xproject/types';
 import { BigNumber } from '@0xproject/utils';
 import * as chai from 'chai';
 
@@ -49,7 +49,7 @@ describe('Authorizable', () => {
         it('should throw if not called by owner', async () => {
             return expectRevertReasonOrAlwaysFailingTransactionAsync(
                 authorizable.addAuthorizedAddress.sendTransactionAsync(notOwner, { from: notOwner }),
-                RevertReasons.OnlyContractOwner,
+                RevertReason.OnlyContractOwner,
             );
         });
         it('should allow owner to add an authorized address', async () => {
@@ -67,7 +67,7 @@ describe('Authorizable', () => {
             );
             return expectRevertReasonOrAlwaysFailingTransactionAsync(
                 authorizable.addAuthorizedAddress.sendTransactionAsync(address, { from: owner }),
-                RevertReasons.TargetAlreadyAuthorized,
+                RevertReason.TargetAlreadyAuthorized,
             );
         });
     });
@@ -82,7 +82,7 @@ describe('Authorizable', () => {
                 authorizable.removeAuthorizedAddress.sendTransactionAsync(address, {
                     from: notOwner,
                 }),
-                RevertReasons.OnlyContractOwner,
+                RevertReason.OnlyContractOwner,
             );
         });
 
@@ -106,7 +106,7 @@ describe('Authorizable', () => {
                 authorizable.removeAuthorizedAddress.sendTransactionAsync(address, {
                     from: owner,
                 }),
-                RevertReasons.TargetNotAuthorized,
+                RevertReason.TargetNotAuthorized,
             );
         });
     });

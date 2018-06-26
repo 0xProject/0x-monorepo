@@ -1,6 +1,6 @@
 import { BlockchainLifecycle } from '@0xproject/dev-utils';
 import { assetProxyUtils } from '@0xproject/order-utils';
-import { AssetProxyId, RevertReasons } from '@0xproject/types';
+import { AssetProxyId, RevertReason } from '@0xproject/types';
 import { BigNumber } from '@0xproject/utils';
 import * as chai from 'chai';
 
@@ -185,7 +185,7 @@ describe('AssetProxyDispatcher', () => {
                     constants.NULL_ADDRESS,
                     { from: owner },
                 ),
-                RevertReasons.AssetProxyMismatch,
+                RevertReason.AssetProxyMismatch,
             );
         });
 
@@ -227,7 +227,7 @@ describe('AssetProxyDispatcher', () => {
                     prevProxyAddress,
                     { from: notOwner },
                 ),
-                RevertReasons.OnlyContractOwner,
+                RevertReason.OnlyContractOwner,
             );
         });
 
@@ -240,7 +240,7 @@ describe('AssetProxyDispatcher', () => {
                     prevProxyAddress,
                     { from: owner },
                 ),
-                RevertReasons.AssetProxyIdMismatch,
+                RevertReason.AssetProxyIdMismatch,
             );
         });
     });
@@ -319,7 +319,7 @@ describe('AssetProxyDispatcher', () => {
                     amount,
                     { from: owner },
                 ),
-                RevertReasons.AssetProxyDoesNotExist,
+                RevertReason.AssetProxyDoesNotExist,
             );
         });
     });

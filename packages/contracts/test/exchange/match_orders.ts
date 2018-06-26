@@ -1,6 +1,6 @@
 import { BlockchainLifecycle } from '@0xproject/dev-utils';
 import { assetProxyUtils } from '@0xproject/order-utils';
-import { AssetProxyId, RevertReasons } from '@0xproject/types';
+import { AssetProxyId, RevertReason } from '@0xproject/types';
 import { BigNumber } from '@0xproject/utils';
 import { Web3Wrapper } from '@0xproject/web3-wrapper';
 import * as chai from 'chai';
@@ -603,7 +603,7 @@ describe('matchOrders', () => {
             // Match orders
             return expectRevertReasonOrAlwaysFailingTransactionAsync(
                 exchangeWrapper.matchOrdersAsync(signedOrderLeft, signedOrderRight, takerAddress),
-                RevertReasons.OrderUnfillable,
+                RevertReason.OrderUnfillable,
             );
         });
 
@@ -628,7 +628,7 @@ describe('matchOrders', () => {
             // Match orders
             return expectRevertReasonOrAlwaysFailingTransactionAsync(
                 exchangeWrapper.matchOrdersAsync(signedOrderLeft, signedOrderRight, takerAddress),
-                RevertReasons.OrderUnfillable,
+                RevertReason.OrderUnfillable,
             );
         });
 
@@ -657,7 +657,7 @@ describe('matchOrders', () => {
                     erc20BalancesByOwner,
                     erc721TokenIdsByOwner,
                 ),
-                RevertReasons.NegativeSpreadRequired,
+                RevertReason.NegativeSpreadRequired,
             );
         });
 
@@ -690,7 +690,7 @@ describe('matchOrders', () => {
                 // reverse of the left order, rather than checking equality. This
                 // saves a bunch of gas, but as a result if the assetData fields are
                 // off then the failure ends up happening at signature validation
-                RevertReasons.InvalidOrderSignature,
+                RevertReason.InvalidOrderSignature,
             );
         });
 
@@ -721,7 +721,7 @@ describe('matchOrders', () => {
                     erc20BalancesByOwner,
                     erc721TokenIdsByOwner,
                 ),
-                RevertReasons.InvalidOrderSignature,
+                RevertReason.InvalidOrderSignature,
             );
         });
 

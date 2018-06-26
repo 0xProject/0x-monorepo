@@ -1,6 +1,6 @@
 import { BlockchainLifecycle } from '@0xproject/dev-utils';
 import { assetProxyUtils, generatePseudoRandomSalt } from '@0xproject/order-utils';
-import { AssetProxyId, OrderWithoutExchangeAddress, RevertReasons, SignedOrder } from '@0xproject/types';
+import { AssetProxyId, OrderWithoutExchangeAddress, RevertReason, SignedOrder } from '@0xproject/types';
 import { BigNumber } from '@0xproject/utils';
 import * as chai from 'chai';
 
@@ -130,7 +130,7 @@ describe('Exchange transactions', () => {
             it('should throw if not called by specified sender', async () => {
                 return expectRevertReasonOrAlwaysFailingTransactionAsync(
                     exchangeWrapper.executeTransactionAsync(signedTx, takerAddress),
-                    RevertReasons.FailedExecution,
+                    RevertReason.FailedExecution,
                 );
             });
 
@@ -173,7 +173,7 @@ describe('Exchange transactions', () => {
                 await exchangeWrapper.executeTransactionAsync(signedTx, senderAddress);
                 return expectRevertReasonOrAlwaysFailingTransactionAsync(
                     exchangeWrapper.executeTransactionAsync(signedTx, senderAddress),
-                    RevertReasons.InvalidTxHash,
+                    RevertReason.InvalidTxHash,
                 );
             });
 
@@ -193,7 +193,7 @@ describe('Exchange transactions', () => {
             it('should throw if not called by specified sender', async () => {
                 return expectRevertReasonOrAlwaysFailingTransactionAsync(
                     exchangeWrapper.executeTransactionAsync(signedTx, makerAddress),
-                    RevertReasons.FailedExecution,
+                    RevertReason.FailedExecution,
                 );
             });
 
@@ -201,7 +201,7 @@ describe('Exchange transactions', () => {
                 await exchangeWrapper.executeTransactionAsync(signedTx, senderAddress);
                 return expectRevertReasonOrAlwaysFailingTransactionAsync(
                     exchangeWrapper.fillOrderAsync(signedOrder, senderAddress),
-                    RevertReasons.OrderUnfillable,
+                    RevertReason.OrderUnfillable,
                 );
             });
         });
@@ -253,7 +253,7 @@ describe('Exchange transactions', () => {
                         signedFillTx.signature,
                         { from: takerAddress },
                     ),
-                    RevertReasons.FailedExecution,
+                    RevertReason.FailedExecution,
                 );
             });
 
@@ -372,7 +372,7 @@ describe('Exchange transactions', () => {
                     signedOrder.signature,
                     { from: takerAddress },
                 ),
-                RevertReasons.MakerNotWhitelisted,
+                RevertReason.MakerNotWhitelisted,
             );
         });
 
@@ -394,7 +394,7 @@ describe('Exchange transactions', () => {
                     signedOrder.signature,
                     { from: takerAddress },
                 ),
-                RevertReasons.TakerNotWhitelisted,
+                RevertReason.TakerNotWhitelisted,
             );
         });
 

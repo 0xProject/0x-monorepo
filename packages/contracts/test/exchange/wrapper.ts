@@ -1,6 +1,6 @@
 import { BlockchainLifecycle } from '@0xproject/dev-utils';
 import { assetProxyUtils } from '@0xproject/order-utils';
-import { AssetProxyId, RevertReasons, SignedOrder } from '@0xproject/types';
+import { AssetProxyId, RevertReason, SignedOrder } from '@0xproject/types';
 import { BigNumber } from '@0xproject/utils';
 import { Web3Wrapper } from '@0xproject/web3-wrapper';
 import * as chai from 'chai';
@@ -175,7 +175,7 @@ describe('Exchange wrappers', () => {
 
             return expectRevertReasonOrAlwaysFailingTransactionAsync(
                 exchangeWrapper.fillOrKillOrderAsync(signedOrder, takerAddress),
-                RevertReasons.OrderUnfillable,
+                RevertReason.OrderUnfillable,
             );
         });
 
@@ -188,7 +188,7 @@ describe('Exchange wrappers', () => {
 
             return expectRevertReasonOrAlwaysFailingTransactionAsync(
                 exchangeWrapper.fillOrKillOrderAsync(signedOrder, takerAddress),
-                RevertReasons.CompleteFillFailed,
+                RevertReason.CompleteFillFailed,
             );
         });
     });
@@ -503,7 +503,7 @@ describe('Exchange wrappers', () => {
                     exchangeWrapper.batchFillOrKillOrdersAsync(signedOrders, takerAddress, {
                         takerAssetFillAmounts,
                     }),
-                    RevertReasons.OrderUnfillable,
+                    RevertReason.OrderUnfillable,
                 );
             });
         });
@@ -708,7 +708,7 @@ describe('Exchange wrappers', () => {
                     }),
                     // We simply use the takerAssetData from the first order for all orders.
                     // If they are not the same, the contract throws when validating the order signature
-                    RevertReasons.InvalidOrderSignature,
+                    RevertReason.InvalidOrderSignature,
                 );
             });
         });
@@ -924,7 +924,7 @@ describe('Exchange wrappers', () => {
                     exchangeWrapper.marketBuyOrdersAsync(signedOrders, takerAddress, {
                         makerAssetFillAmount: Web3Wrapper.toBaseUnitAmount(new BigNumber(1000), 18),
                     }),
-                    RevertReasons.InvalidOrderSignature,
+                    RevertReason.InvalidOrderSignature,
                 );
             });
         });
