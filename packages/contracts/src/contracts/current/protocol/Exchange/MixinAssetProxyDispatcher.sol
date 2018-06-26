@@ -180,13 +180,12 @@ contract MixinAssetProxyDispatcher is
                     cdStart,                // pointer to start of input
                     sub(cdEnd, cdStart),    // length of input  
                     cdStart,                // write output over input
-                    0                       // output size is 0 bytes
+                    512                     // reserve 512 bytes for output
                 )
+                if eq(success, 0) {
+                    revert(cdStart, returndatasize())
+                }
             }
-            require(
-                success,
-                "TRANSFER_FAILED"
-            );
         }
     }
 }
