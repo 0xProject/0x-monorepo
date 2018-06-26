@@ -23,13 +23,13 @@ import "../../protocol/Exchange/interfaces/IExchange.sol";
 import "../../protocol/Exchange/libs/LibOrder.sol";
 import "../../utils/Ownable/Ownable.sol";
 
-contract Whitelist is 
+contract Whitelist is
     Ownable
 {
     // Revert reasons
-    string constant MAKER_NOT_WHITELISTED = "Maker address not whitelisted.";
-    string constant TAKER_NOT_WHITELISTED = "Taker address not whitelisted.";
-    string constant INVALID_SENDER = "Sender must equal transaction origin.";
+    string constant MAKER_NOT_WHITELISTED = "MAKER_NOT_WHITELISTED"; // Maker address not whitelisted.
+    string constant TAKER_NOT_WHITELISTED = "TAKER_NOT_WHITELISTED"; // Taker address not whitelisted.
+    string constant INVALID_SENDER = "INVALID_SENDER"; // Sender must equal transaction origin.
 
     // Mapping of address => whitelist status.
     mapping (address => bool) public isWhitelisted;
@@ -77,7 +77,7 @@ contract Whitelist is
         public
     {
         address takerAddress = msg.sender;
-    
+
         // This contract must be the entry point for the transaction.
         require(
             takerAddress == tx.origin,

@@ -1,5 +1,6 @@
 import { BlockchainLifecycle } from '@0xproject/dev-utils';
 import { assetProxyUtils, generatePseudoRandomSalt } from '@0xproject/order-utils';
+import { RevertReason } from '@0xproject/types';
 import { BigNumber } from '@0xproject/utils';
 import * as chai from 'chai';
 import { LogWithDecodedArgs } from 'ethereum-types';
@@ -15,7 +16,10 @@ import { DummyERC721TokenContract } from '../../src/generated_contract_wrappers/
 import { ERC20ProxyContract } from '../../src/generated_contract_wrappers/e_r_c20_proxy';
 import { ERC721ProxyContract } from '../../src/generated_contract_wrappers/e_r_c721_proxy';
 import { artifacts } from '../../src/utils/artifacts';
-import { expectRevertOrAlwaysFailingTransactionAsync } from '../../src/utils/assertions';
+import {
+    expectRevertOrAlwaysFailingTransactionAsync,
+    expectRevertReasonOrAlwaysFailingTransactionAsync,
+} from '../../src/utils/assertions';
 import { chaiSetup } from '../../src/utils/chai_setup';
 import { constants } from '../../src/utils/constants';
 import { ERC20Wrapper } from '../../src/utils/erc20_wrapper';
@@ -158,14 +162,15 @@ describe('Asset Transfer Proxies', () => {
                     constants.AWAIT_TRANSACTION_MINED_MS,
                 );
                 // Perform a transfer; expect this to fail.
-                return expectRevertOrAlwaysFailingTransactionAsync(
+                return expectRevertReasonOrAlwaysFailingTransactionAsync(
                     erc20Proxy.transferFrom.sendTransactionAsync(
                         encodedAssetData,
                         makerAddress,
                         takerAddress,
                         transferAmount,
-                        { from: notAuthorized },
+                        { from: exchangeAddress },
                     ),
+                    RevertReason.TransferFailed,
                 );
             });
 
@@ -175,10 +180,11 @@ describe('Asset Transfer Proxies', () => {
 
                 // Perform a transfer from makerAddress to takerAddress
                 const amount = new BigNumber(10);
-                return expectRevertOrAlwaysFailingTransactionAsync(
+                return expectRevertReasonOrAlwaysFailingTransactionAsync(
                     erc20Proxy.transferFrom.sendTransactionAsync(encodedAssetData, makerAddress, takerAddress, amount, {
                         from: notAuthorized,
                     }),
+                    RevertReason.SenderNotAuthorized,
                 );
             });
         });
@@ -226,10 +232,11 @@ describe('Asset Transfer Proxies', () => {
                 const toAddresses = _.times(numTransfers, () => takerAddress);
                 const amounts = _.times(numTransfers, () => amount);
 
-                return expectRevertOrAlwaysFailingTransactionAsync(
+                return expectRevertReasonOrAlwaysFailingTransactionAsync(
                     erc20Proxy.batchTransferFrom.sendTransactionAsync(assetData, fromAddresses, toAddresses, amounts, {
                         from: notAuthorized,
                     }),
+                    RevertReason.SenderNotAuthorized,
                 );
             });
         });
@@ -363,7 +370,7 @@ describe('Asset Transfer Proxies', () => {
                 expect(ownerMakerAsset).to.be.bignumber.equal(makerAddress);
                 // Perform a transfer from makerAddress to takerAddress
                 const amount = new BigNumber(0);
-                return expectRevertOrAlwaysFailingTransactionAsync(
+                return expectRevertReasonOrAlwaysFailingTransactionAsync(
                     erc721Proxy.transferFrom.sendTransactionAsync(
                         encodedAssetData,
                         makerAddress,
@@ -371,6 +378,7 @@ describe('Asset Transfer Proxies', () => {
                         amount,
                         { from: exchangeAddress },
                     ),
+                    RevertReason.InvalidAmount,
                 );
             });
 
@@ -382,7 +390,7 @@ describe('Asset Transfer Proxies', () => {
                 expect(ownerMakerAsset).to.be.bignumber.equal(makerAddress);
                 // Perform a transfer from makerAddress to takerAddress
                 const amount = new BigNumber(500);
-                return expectRevertOrAlwaysFailingTransactionAsync(
+                return expectRevertReasonOrAlwaysFailingTransactionAsync(
                     erc721Proxy.transferFrom.sendTransactionAsync(
                         encodedAssetData,
                         makerAddress,
@@ -390,6 +398,7 @@ describe('Asset Transfer Proxies', () => {
                         amount,
                         { from: exchangeAddress },
                     ),
+                    RevertReason.InvalidAmount,
                 );
             });
 
@@ -405,10 +414,11 @@ describe('Asset Transfer Proxies', () => {
                 );
                 // Perform a transfer; expect this to fail.
                 const amount = new BigNumber(1);
-                return expectRevertOrAlwaysFailingTransactionAsync(
+                return expectRevertReasonOrAlwaysFailingTransactionAsync(
                     erc20Proxy.transferFrom.sendTransactionAsync(encodedAssetData, makerAddress, takerAddress, amount, {
-                        from: notAuthorized,
+                        from: exchangeAddress,
                     }),
+                    RevertReason.TransferFailed,
                 );
             });
 
@@ -417,7 +427,7 @@ describe('Asset Transfer Proxies', () => {
                 const encodedAssetData = assetProxyUtils.encodeERC721AssetData(erc721Token.address, erc721MakerTokenId);
                 // Perform a transfer from makerAddress to takerAddress
                 const amount = new BigNumber(1);
-                return expectRevertOrAlwaysFailingTransactionAsync(
+                return expectRevertReasonOrAlwaysFailingTransactionAsync(
                     erc721Proxy.transferFrom.sendTransactionAsync(
                         encodedAssetData,
                         makerAddress,
@@ -425,6 +435,7 @@ describe('Asset Transfer Proxies', () => {
                         amount,
                         { from: notAuthorized },
                     ),
+                    RevertReason.SenderNotAuthorized,
                 );
             });
         });
@@ -475,10 +486,11 @@ describe('Asset Transfer Proxies', () => {
                 const toAddresses = _.times(numTransfers, () => takerAddress);
                 const amounts = _.times(numTransfers, () => new BigNumber(1));
 
-                return expectRevertOrAlwaysFailingTransactionAsync(
+                return expectRevertReasonOrAlwaysFailingTransactionAsync(
                     erc721Proxy.batchTransferFrom.sendTransactionAsync(assetData, fromAddresses, toAddresses, amounts, {
                         from: notAuthorized,
                     }),
+                    RevertReason.SenderNotAuthorized,
                 );
             });
         });
