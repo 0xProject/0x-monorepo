@@ -96,7 +96,7 @@ describe('matchOrders', () => {
             artifacts.Exchange,
             provider,
             txDefaults,
-            zrxToken.address,
+            assetProxyUtils.encodeERC20AssetData(zrxToken.address),
         );
         exchangeWrapper = new ExchangeWrapper(exchange, provider);
         await exchangeWrapper.registerAssetProxyAsync(AssetProxyId.ERC20, erc20Proxy.address, owner);

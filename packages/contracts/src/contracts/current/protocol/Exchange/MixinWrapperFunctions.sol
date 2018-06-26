@@ -22,13 +22,11 @@ pragma experimental ABIEncoderV2;
 import "./libs/LibMath.sol";
 import "./libs/LibOrder.sol";
 import "./libs/LibFillResults.sol";
-import "./libs/LibExchangeErrors.sol";
 import "./mixins/MExchangeCore.sol";
 
 contract MixinWrapperFunctions is
     LibMath,
     LibFillResults,
-    LibExchangeErrors,
     MExchangeCore
 {
     /// @dev Fills the input order. Reverts if exact takerAssetFillAmount not filled.
@@ -50,7 +48,7 @@ contract MixinWrapperFunctions is
         );
         require(
             fillResults.takerAssetFilledAmount == takerAssetFillAmount,
-            COMPLETE_FILL_FAILED
+            "COMPLETE_FILL_FAILED"
         );
         return fillResults;
     }
@@ -366,14 +364,6 @@ contract MixinWrapperFunctions is
                 signatures[i]
             );
 
-            // HACK: the proxyId is "popped" from the byte array before a fill is settled
-            // by subtracting from the length of the array. Since the popped byte is 
-            // still in memory, we can "unpop" it by incrementing the length of the byte array.
-            assembly {
-                let len := mload(takerAssetData)
-                mstore(takerAssetData, add(len, 1))
-            }
-
             // Update amounts filled and fees paid by maker and taker
             addFillResults(totalFillResults, singleFillResults);
 
@@ -466,14 +456,6 @@ contract MixinWrapperFunctions is
                 remainingTakerAssetFillAmount,
                 signatures[i]
             );
-
-            // HACK: the proxyId is "popped" from the byte array before a fill is settled
-            // by subtracting from the length of the array. Since the popped byte is 
-            // still in memory, we can "unpop" it by incrementing the length of the byte array.
-            assembly {
-                let len := mload(makerAssetData)
-                mstore(makerAssetData, add(len, 1))
-            }
 
             // Update amounts filled and fees paid by maker and taker
             addFillResults(totalFillResults, singleFillResults);

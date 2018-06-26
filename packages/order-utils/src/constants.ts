@@ -5,4 +5,10 @@ export const constants = {
     // tslint:disable-next-line:custom-no-magic-numbers
     UNLIMITED_ALLOWANCE_IN_BASE_UNITS: new BigNumber(2).pow(256).minus(1),
     TESTRPC_NETWORK_ID: 50,
+    ADDRESS_LENGTH: 20,
+    WORD_LENGTH: 32,
+    ERC20_ASSET_DATA_BYTE_LENGTH: 36,
+    ERC721_ASSET_DATA_MINIMUM_BYTE_LENGTH: 53,
+    SELECTOR_LENGTH: 4,
+    BASE_16: 16,
 };

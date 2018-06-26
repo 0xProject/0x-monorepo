@@ -18,7 +18,10 @@
 
 pragma solidity ^0.4.24;
 
+/// @dev This contract documents the revert reasons used in the AssetProxy contracts.
+/// This contract is intended to serve as a reference, but is not actually used for efficiency reasons.
 contract LibAssetProxyErrors {
+
     /// Authorizable errors ///
     string constant SENDER_NOT_AUTHORIZED = "SENDER_NOT_AUTHORIZED";              // Sender not authorized to call this method.
     string constant TARGET_NOT_AUTHORIZED = "TARGET_NOT_AUTHORIZED";              // Target address not authorized to call this method.

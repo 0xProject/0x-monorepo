@@ -23,7 +23,6 @@ import "../../../utils/SafeMath/SafeMath.sol";
 contract LibMath is
     SafeMath
 {
-    string constant ROUNDING_ERROR_ON_PARTIAL_AMOUNT = "A rounding error occurred when calculating partial transfer amounts.";
 
     /// @dev Calculates partial value given a numerator and denominator.
     /// @param numerator Numerator.

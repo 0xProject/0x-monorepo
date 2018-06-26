@@ -30,14 +30,14 @@ contract ERC20Proxy is
     MixinERC20Transfer
 {
     // Id of this proxy.
-    uint8 constant PROXY_ID = 1;
+    bytes4 constant PROXY_ID = bytes4(keccak256("ERC20Token(address)"));
 
     /// @dev Gets the proxy id associated with the proxy address.
     /// @return Proxy id.
     function getProxyId()
         external
         view
-        returns (uint8)
+        returns (bytes4)
     {
         return PROXY_ID;
     }
