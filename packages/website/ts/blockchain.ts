@@ -43,6 +43,8 @@ import {
     BlockchainErrs,
     ContractInstance,
     Fill,
+    InjectedProviderObservable,
+    InjectedProviderUpdate,
     Order as PortalOrder,
     Providers,
     ProviderType,
@@ -50,8 +52,6 @@ import {
     SideToAssetToken,
     Token,
     TokenByAddress,
-    InjectedProviderObservable,
-    InjectedProviderUpdate,
 } from 'ts/types';
 import { backendClient } from 'ts/utils/backend_client';
 import { configs } from 'ts/utils/configs';
@@ -811,14 +811,8 @@ export class Blockchain {
             this._blockchainWatcher.destroy();
         }
         this._web3Wrapper = new Web3Wrapper(provider);
-        this._blockchainWatcher = new BlockchainWatcher(
-            this._dispatcher,
-            this._web3Wrapper,
-            this.networkId,
-            shouldPollUserAddress,
-        );
+        this._blockchainWatcher = new BlockchainWatcher(this._dispatcher, this._web3Wrapper, shouldPollUserAddress);
         if (useLedgerProvider && !_.isUndefined(ledgerSubproviderIfExists)) {
-            // TODO: why?
             delete this._userAddressIfExists;
             this._ledgerSubprovider = ledgerSubproviderIfExists;
             this._dispatcher.updateUserAddress(undefined);

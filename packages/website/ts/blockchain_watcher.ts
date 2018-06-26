@@ -6,21 +6,13 @@ import { Dispatcher } from 'ts/redux/dispatcher';
 export class BlockchainWatcher {
     private _dispatcher: Dispatcher;
     private _web3Wrapper: Web3Wrapper;
-    private _prevNetworkId: number;
-    private _isWatchingNetworkId: boolean = false;
     private _shouldPollUserAddress: boolean;
     private _watchBalanceIntervalId: NodeJS.Timer;
     private _prevUserEtherBalanceInWei?: BigNumber;
     private _prevUserAddressIfExists: string;
-    constructor(
-        dispatcher: Dispatcher,
-        web3Wrapper: Web3Wrapper,
-        networkIdIfExists: number,
-        shouldPollUserAddress: boolean,
-    ) {
+    constructor(dispatcher: Dispatcher, web3Wrapper: Web3Wrapper, shouldPollUserAddress: boolean) {
         this._dispatcher = dispatcher;
         this._shouldPollUserAddress = shouldPollUserAddress;
-        this._prevNetworkId = networkIdIfExists;
         this._web3Wrapper = web3Wrapper;
     }
     public destroy(): void {
