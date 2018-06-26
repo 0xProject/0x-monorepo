@@ -82,6 +82,7 @@ export class Blockchain {
     private _web3Wrapper?: Web3Wrapper;
     private _blockchainWatcher?: BlockchainWatcher;
     private _injectedProviderObservable?: InjectedProviderObservable;
+    private _injectedProviderUpdateHandler: (update: InjectedProviderUpdate) => Promise<void>;
     private _userAddressIfExists: string;
     private _ledgerSubprovider: LedgerSubprovider;
     private _defaultGasPrice: BigNumber;
@@ -186,6 +187,8 @@ export class Blockchain {
         this._dispatcher = dispatcher;
         const defaultGasPrice = GWEI_IN_WEI * 30;
         this._defaultGasPrice = new BigNumber(defaultGasPrice);
+        // We need a unique reference to this function so we can use it to unsubcribe.
+        this._injectedProviderUpdateHandler = this._handleInjectedProviderUpdateAsync.bind(this);
         // tslint:disable-next-line:no-floating-promises
         this._updateDefaultGasPriceAsync();
         // tslint:disable-next-line:no-floating-promises
@@ -521,6 +524,7 @@ export class Blockchain {
     }
     public destroy(): void {
         this._blockchainWatcher.destroy();
+        this._injectedProviderObservable.unsubscribe(this._injectedProviderUpdateHandler);
         this._stopWatchingExchangeLogFillEvents();
     }
     public async fetchTokenInformationAsync(): Promise<void> {
@@ -776,7 +780,7 @@ export class Blockchain {
             const injectedProviderObservable = injectedWeb3.currentProvider.publicConfigStore;
             if (injectedProviderObservable && !this._injectedProviderObservable) {
                 this._injectedProviderObservable = injectedProviderObservable;
-                this._injectedProviderObservable.subscribe(this._handleInjectedProviderUpdateAsync.bind(this));
+                this._injectedProviderObservable.subscribe(this._injectedProviderUpdateHandler);
             }
         }
         this._updateProviderName(injectedWeb3);
