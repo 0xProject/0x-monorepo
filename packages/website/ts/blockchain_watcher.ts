@@ -35,16 +35,6 @@ export class BlockchainWatcher {
     public updatePrevUserAddress(userAddress: string): void {
         this._prevUserAddressIfExists = userAddress;
     }
-    // public async startEmittingInjectedProviderNetworkIdAsync(injectedProvider: any): Promise<void> {
-    //     if (this._isWatchingNetworkId) {
-    //         return; // we are already watching the network id
-    //     }
-    //     const observable = injectedProvider.publicConfigStore;
-    //     if (observable && observable.subscribe) {
-    //         observable.subscribe(this._handleInjectedProviderUpdate.bind(this));
-    //         this._isWatchingNetworkId = true;
-    //     }
-    // }
     public async startEmittingUserBalanceStateAsync(): Promise<void> {
         if (!_.isUndefined(this._watchBalanceIntervalId)) {
             return; // we are already emitting the state
@@ -60,15 +50,6 @@ export class BlockchainWatcher {
             },
         );
     }
-    // private _handleInjectedProviderUpdate(update: InjectedProviderUpdate): void {
-    //     const updatedNetworkId = _.parseInt(update.networkVersion);
-    //     if (this._prevNetworkId === updatedNetworkId) {
-    //         return;
-    //     }
-    //     this._prevNetworkId = updatedNetworkId;
-    //     this._dispatcher.updateNetworkId(updatedNetworkId);
-    //     this._updateBalanceAsync();
-    // }
     private async _updateBalanceAsync(): Promise<void> {
         let prevNodeVersion: string;
         // Check for node version changes

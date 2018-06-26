@@ -182,9 +182,10 @@ export class Portal extends React.Component<PortalProps, PortalState> {
                 prevPathname: nextProps.location.pathname,
             });
         }
+
+        // If the address changed, but the network did not, we can just refetch the currently tracked tokens.
         if (
-            nextProps.userAddress !== this.props.userAddress ||
-            nextProps.networkId !== this.props.networkId ||
+            (nextProps.userAddress !== this.props.userAddress && nextProps.networkId === this.props.networkId) ||
             nextProps.lastForceTokenStateRefetch !== this.props.lastForceTokenStateRefetch
         ) {
             const trackedTokenAddresses = _.keys(this.state.trackedTokenStateByAddress);
@@ -200,7 +201,7 @@ export class Portal extends React.Component<PortalProps, PortalState> {
             const newTokenAddresses = _.map(newTokens, token => token.address);
             // Add placeholder entry for this token to the state, since fetching the
             // balance/allowance is asynchronous
-            const trackedTokenStateByAddress = this.state.trackedTokenStateByAddress;
+            const trackedTokenStateByAddress = { ...this.state.trackedTokenStateByAddress };
             for (const tokenAddress of newTokenAddresses) {
                 trackedTokenStateByAddress[tokenAddress] = {
                     balance: new BigNumber(0),
