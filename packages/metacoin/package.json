@@ -44,8 +44,8 @@
         "ethereum-types": "^0.0.2",
         "ethers": "3.0.22",
         "lodash": "^4.17.4",
-        "run-s": "^0.0.0",
-        "web3-provider-engine": "^14.0.4"
+        "web3-provider-engine": "^14.0.6",
+        "run-s": "^0.0.0"
     },
     "devDependencies": {
         "@0xproject/dev-utils": "^0.4.4",
