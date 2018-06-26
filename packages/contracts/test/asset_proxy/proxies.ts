@@ -192,7 +192,7 @@ describe('Asset Transfer Proxies', () => {
             });
         });
 
-        describe('batchTransferFrom', () => {
+        describe('batchTransferFrom ERC20', () => {
             it('should succesfully make multiple token transfers', async () => {
                 const erc20Balances = await erc20Wrapper.getBalancesAsync();
 
@@ -443,7 +443,7 @@ describe('Asset Transfer Proxies', () => {
             });
         });
 
-        describe('batchTransferFrom', () => {
+        describe('batchTransferFrom ERC721', () => {
             it('should succesfully make multiple token transfers', async () => {
                 const erc721TokensById = await erc721Wrapper.getBalancesAsync();
                 const [makerTokenIdA, makerTokenIdB] = erc721TokensById[makerAddress][erc721Token.address];
@@ -468,7 +468,10 @@ describe('Asset Transfer Proxies', () => {
                     txHash,
                     constants.AWAIT_TRANSACTION_MINED_MS,
                 );
-                expect(res.logs.length).to.equal(numTransfers);
+                // During an ERC721 transfer enabled by a specific token approval,
+                // the approval is cleared, emitting an event
+                const numApprovals = 2;
+                expect(res.logs.length).to.equal(numTransfers + numApprovals);
 
                 const newOwnerMakerAssetA = await erc721Token.ownerOf.callAsync(makerTokenIdA);
                 const newOwnerMakerAssetB = await erc721Token.ownerOf.callAsync(makerTokenIdB);
