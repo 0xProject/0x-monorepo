@@ -266,16 +266,16 @@ export class Portal extends React.Component<PortalProps, PortalState> {
                         networkId={this.props.networkId}
                     />
                     <FlashMessage dispatcher={this.props.dispatcher} flashMessage={this.props.flashMessage} />
-                    {this.props.blockchainIsLoaded && (
-                        <LedgerConfigDialog
-                            providerType={this.props.providerType}
-                            networkId={this.props.networkId}
-                            blockchain={this._blockchain}
-                            dispatcher={this.props.dispatcher}
-                            toggleDialogFn={this._onToggleLedgerDialog.bind(this)}
-                            isOpen={this.state.isLedgerDialogOpen}
-                        />
-                    )}
+
+                    <LedgerConfigDialog
+                        providerType={this.props.providerType}
+                        networkId={this.props.networkId}
+                        blockchain={this._blockchain}
+                        dispatcher={this.props.dispatcher}
+                        toggleDialogFn={this._onToggleLedgerDialog.bind(this)}
+                        isOpen={this.state.isLedgerDialogOpen}
+                    />
+
                     <AssetPicker
                         userAddress={this.props.userAddress}
                         networkId={this.props.networkId}

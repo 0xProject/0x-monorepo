@@ -828,8 +828,8 @@ export class Blockchain {
             if (!_.isUndefined(injectedWeb3)) {
                 this._dispatcher.updateProviderType(ProviderType.Injected);
             }
+            await this.fetchTokenInformationAsync();
         }
-        await this.fetchTokenInformationAsync();
         await this._blockchainWatcher.startEmittingUserBalanceStateAsync();
         this._dispatcher.updateNetworkId(networkId);
         await this._rehydrateStoreWithContractEventsAsync();
