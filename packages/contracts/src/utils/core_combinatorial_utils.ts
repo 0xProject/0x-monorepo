@@ -515,7 +515,7 @@ export class CoreCombinatorialUtils {
                 const takerAssetProxyId = assetProxyUtils.decodeAssetDataId(signedOrder.takerAssetData);
                 const makerAssetProxyId = assetProxyUtils.decodeAssetDataId(signedOrder.makerAssetData);
                 const isEitherAssetERC721 =
-                    takerAssetProxyId === constants.ERC721_PROXY_ID || makerAssetProxyId === constants.ERC721_PROXY_ID;
+                    takerAssetProxyId === AssetProxyId.ERC721 || makerAssetProxyId === AssetProxyId.ERC721;
                 if (isEitherAssetERC721) {
                     throw new Error(
                         'Cannot test `TakerAssetFillAmountScenario.LessThanRemainingFillableTakerAssetAmount` together with ERC721 assets since orders involving ERC721 must always be filled exactly.',

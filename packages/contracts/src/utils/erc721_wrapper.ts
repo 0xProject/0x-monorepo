@@ -19,7 +19,7 @@ export class ERC721Wrapper {
     private _provider: Provider;
     private _dummyTokenContracts: DummyERC721TokenContract[];
     private _proxyContract?: ERC721ProxyContract;
-    private _proxyIdIfExists?: number;
+    private _proxyIdIfExists?: string;
     private _initialTokenIdsByOwner: ERC721TokenIdsByOwner = {};
     constructor(provider: Provider, tokenOwnerAddresses: string[], contractOwnerAddress: string) {
         this._web3Wrapper = new Web3Wrapper(provider);
@@ -51,9 +51,9 @@ export class ERC721Wrapper {
         this._proxyIdIfExists = await this._proxyContract.getProxyId.callAsync();
         return this._proxyContract;
     }
-    public getProxyId(): number {
+    public getProxyId(): string {
         this._validateProxyContractExistsOrThrow();
-        return this._proxyIdIfExists as number;
+        return this._proxyIdIfExists as string;
     }
     public async setBalancesAndAllowancesAsync(): Promise<void> {
         this._validateDummyTokenContractsExistOrThrow();

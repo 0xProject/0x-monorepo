@@ -19,7 +19,7 @@ export class ERC20Wrapper {
     private _provider: Provider;
     private _dummyTokenContracts: DummyERC20TokenContract[];
     private _proxyContract?: ERC20ProxyContract;
-    private _proxyIdIfExists?: number;
+    private _proxyIdIfExists?: string;
     constructor(provider: Provider, tokenOwnerAddresses: string[], contractOwnerAddress: string) {
         this._dummyTokenContracts = [];
         this._web3Wrapper = new Web3Wrapper(provider);
@@ -55,9 +55,9 @@ export class ERC20Wrapper {
         this._proxyIdIfExists = await this._proxyContract.getProxyId.callAsync();
         return this._proxyContract;
     }
-    public getProxyId(): number {
+    public getProxyId(): string {
         this._validateProxyContractExistsOrThrow();
-        return this._proxyIdIfExists as number;
+        return this._proxyIdIfExists as string;
     }
     public async setBalancesAndAllowancesAsync(): Promise<void> {
         this._validateDummyTokenContractsExistOrThrow();

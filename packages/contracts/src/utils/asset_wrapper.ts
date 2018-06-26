@@ -1,4 +1,5 @@
 import { assetProxyUtils } from '@0xproject/order-utils';
+import { AssetProxyId } from '@0xproject/types';
 import { BigNumber, errorUtils } from '@0xproject/utils';
 import * as _ from 'lodash';
 
@@ -9,7 +10,7 @@ import { ERC20Wrapper } from './erc20_wrapper';
 import { ERC721Wrapper } from './erc721_wrapper';
 
 interface ProxyIdToAssetWrappers {
-    [proxyId: number]: AbstractAssetWrapper;
+    [proxyId: string]: AbstractAssetWrapper;
 }
 
 /**
@@ -28,12 +29,12 @@ export class AssetWrapper {
     public async getBalanceAsync(userAddress: string, assetData: string): Promise<BigNumber> {
         const proxyId = assetProxyUtils.decodeAssetDataId(assetData);
         switch (proxyId) {
-            case constants.ERC20_PROXY_ID: {
+            case AssetProxyId.ERC20: {
                 const erc20Wrapper = this._proxyIdToAssetWrappers[proxyId] as ERC20Wrapper;
                 const balance = await erc20Wrapper.getBalanceAsync(userAddress, assetData);
                 return balance;
             }
-            case constants.ERC721_PROXY_ID: {
+            case AssetProxyId.ERC721: {
                 const assetWrapper = this._proxyIdToAssetWrappers[proxyId] as ERC721Wrapper;
                 const assetProxyData = assetProxyUtils.decodeERC721AssetData(assetData);
                 const isOwner = await assetWrapper.isOwnerAsync(
@@ -51,12 +52,12 @@ export class AssetWrapper {
     public async setBalanceAsync(userAddress: string, assetData: string, desiredBalance: BigNumber): Promise<void> {
         const proxyId = assetProxyUtils.decodeAssetDataId(assetData);
         switch (proxyId) {
-            case constants.ERC20_PROXY_ID: {
+            case AssetProxyId.ERC20: {
                 const erc20Wrapper = this._proxyIdToAssetWrappers[proxyId] as ERC20Wrapper;
                 await erc20Wrapper.setBalanceAsync(userAddress, assetData, desiredBalance);
                 return;
             }
-            case constants.ERC721_PROXY_ID: {
+            case AssetProxyId.ERC721: {
                 if (!desiredBalance.eq(0) && !desiredBalance.eq(1)) {
                     throw new Error(`Balance for ERC721 token can only be set to 0 or 1. Got: ${desiredBalance}`);
                 }
@@ -102,12 +103,12 @@ export class AssetWrapper {
     public async getProxyAllowanceAsync(userAddress: string, assetData: string): Promise<BigNumber> {
         const proxyId = assetProxyUtils.decodeAssetDataId(assetData);
         switch (proxyId) {
-            case constants.ERC20_PROXY_ID: {
+            case AssetProxyId.ERC20: {
                 const erc20Wrapper = this._proxyIdToAssetWrappers[proxyId] as ERC20Wrapper;
                 const allowance = await erc20Wrapper.getProxyAllowanceAsync(userAddress, assetData);
                 return allowance;
             }
-            case constants.ERC721_PROXY_ID: {
+            case AssetProxyId.ERC721: {
                 const assetWrapper = this._proxyIdToAssetWrappers[proxyId] as ERC721Wrapper;
                 const erc721ProxyData = assetProxyUtils.decodeERC721AssetData(assetData);
                 const isProxyApprovedForAll = await assetWrapper.isProxyApprovedForAllAsync(
@@ -136,12 +137,12 @@ export class AssetWrapper {
     ): Promise<void> {
         const proxyId = assetProxyUtils.decodeAssetDataId(assetData);
         switch (proxyId) {
-            case constants.ERC20_PROXY_ID: {
+            case AssetProxyId.ERC20: {
                 const erc20Wrapper = this._proxyIdToAssetWrappers[proxyId] as ERC20Wrapper;
                 await erc20Wrapper.setAllowanceAsync(userAddress, assetData, desiredAllowance);
                 return;
             }
-            case constants.ERC721_PROXY_ID: {
+            case AssetProxyId.ERC721: {
                 if (
                     !desiredAllowance.eq(0) &&
                     !desiredAllowance.eq(1) &&
