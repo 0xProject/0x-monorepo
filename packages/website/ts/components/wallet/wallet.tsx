@@ -110,7 +110,7 @@ const styles: Styles = {
         color: colors.black,
     },
     valueLabel: {
-        color: colors.grey,
+        color: colors.darkGrey,
         fontSize: 14,
     },
     paddedItem: {
@@ -238,12 +238,26 @@ export class Wallet extends React.Component<WalletProps, WalletState> {
     }
     private _renderConnectedHeaderRows(): React.ReactElement<{}> {
         const userAddress = this.props.userAddress;
-        const primaryText = utils.getAddressBeginAndEnd(userAddress);
+        const main = (
+            <div className="flex flex-column">
+                <Text fontSize="16px" lineHeight="19px" fontWeight={800}>
+                    {utils.getAddressBeginAndEnd(userAddress)}
+                </Text>
+                <Container className="flex items-center">
+                    <Circle diameter={6} fillColor="#37D400" />
+                    <Container marginLeft="6px">
+                        <Text fontSize="12px" lineHeight="14px" fontColor={colors.darkGrey}>
+                            {this.props.injectedProviderName}
+                        </Text>
+                    </Container>
+                </Container>
+            </div>
+        );
         return (
             <Link key={HEADER_ITEM_KEY} to={ACCOUNT_PATH} style={{ textDecoration: 'none' }}>
                 <StandardIconRow
                     icon={<Identicon address={userAddress} diameter={ICON_DIMENSION} />}
-                    main={primaryText}
+                    main={main}
                     style={styles.borderedItem}
                 />
             </Link>
