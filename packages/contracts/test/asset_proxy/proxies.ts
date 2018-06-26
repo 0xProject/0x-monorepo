@@ -1,6 +1,6 @@
 import { BlockchainLifecycle } from '@0xproject/dev-utils';
 import { assetProxyUtils, generatePseudoRandomSalt } from '@0xproject/order-utils';
-import { RevertReason } from '@0xproject/types';
+import { RevertReasons } from '@0xproject/types';
 import { BigNumber } from '@0xproject/utils';
 import * as chai from 'chai';
 import { LogWithDecodedArgs } from 'ethereum-types';
@@ -173,7 +173,7 @@ describe('Asset Transfer Proxies', () => {
                         transferAmount,
                         { from: exchangeAddress },
                     ),
-                    RevertReason.TransferFailed,
+                    RevertReasons.TransferFailed,
                 );
             });
 
@@ -187,7 +187,7 @@ describe('Asset Transfer Proxies', () => {
                     erc20Proxy.transferFrom.sendTransactionAsync(encodedAssetData, makerAddress, takerAddress, amount, {
                         from: notAuthorized,
                     }),
-                    RevertReason.SenderNotAuthorized,
+                    RevertReasons.SenderNotAuthorized,
                 );
             });
         });
@@ -239,7 +239,7 @@ describe('Asset Transfer Proxies', () => {
                     erc20Proxy.batchTransferFrom.sendTransactionAsync(assetData, fromAddresses, toAddresses, amounts, {
                         from: notAuthorized,
                     }),
-                    RevertReason.SenderNotAuthorized,
+                    RevertReasons.SenderNotAuthorized,
                 );
             });
         });
@@ -381,7 +381,7 @@ describe('Asset Transfer Proxies', () => {
                         amount,
                         { from: exchangeAddress },
                     ),
-                    RevertReason.InvalidAmount,
+                    RevertReasons.InvalidAmount,
                 );
             });
 
@@ -401,7 +401,7 @@ describe('Asset Transfer Proxies', () => {
                         amount,
                         { from: exchangeAddress },
                     ),
-                    RevertReason.InvalidAmount,
+                    RevertReasons.InvalidAmount,
                 );
             });
 
@@ -421,7 +421,7 @@ describe('Asset Transfer Proxies', () => {
                     erc20Proxy.transferFrom.sendTransactionAsync(encodedAssetData, makerAddress, takerAddress, amount, {
                         from: exchangeAddress,
                     }),
-                    RevertReason.TransferFailed,
+                    RevertReasons.TransferFailed,
                 );
             });
 
@@ -438,7 +438,7 @@ describe('Asset Transfer Proxies', () => {
                         amount,
                         { from: notAuthorized },
                     ),
-                    RevertReason.SenderNotAuthorized,
+                    RevertReasons.SenderNotAuthorized,
                 );
             });
         });
@@ -493,7 +493,7 @@ describe('Asset Transfer Proxies', () => {
                     erc721Proxy.batchTransferFrom.sendTransactionAsync(assetData, fromAddresses, toAddresses, amounts, {
                         from: notAuthorized,
                     }),
-                    RevertReason.SenderNotAuthorized,
+                    RevertReasons.SenderNotAuthorized,
                 );
             });
         });
