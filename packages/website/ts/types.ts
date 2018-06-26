@@ -546,4 +546,11 @@ export interface WebsiteBackendJobInfo {
     office: string;
     url: string;
 }
+
+export enum BrowserType {
+    Chrome = 'Chrome',
+    Firefox = 'Firefox',
+    Opera = 'Opera',
+    Other = 'Other',
+}
 // tslint:disable:max-file-line-count
