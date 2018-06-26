@@ -123,6 +123,7 @@ describe('FillOrder Tests', () => {
                     ...defaultFillScenario.orderScenario,
                     makerAssetAmountScenario: OrderAssetAmountScenario.Zero,
                 },
+                takerAssetFillAmountScenario: TakerAssetFillAmountScenario.GreaterThanRemainingFillableTakerAssetAmount,
             };
             await coreCombinatorialUtils.testFillOrderScenarioAsync(provider, fillScenario);
         });
@@ -134,6 +135,7 @@ describe('FillOrder Tests', () => {
                     ...defaultFillScenario.orderScenario,
                     takerAssetAmountScenario: OrderAssetAmountScenario.Zero,
                 },
+                takerAssetFillAmountScenario: TakerAssetFillAmountScenario.GreaterThanRemainingFillableTakerAssetAmount,
             };
             await coreCombinatorialUtils.testFillOrderScenarioAsync(provider, fillScenario);
         });

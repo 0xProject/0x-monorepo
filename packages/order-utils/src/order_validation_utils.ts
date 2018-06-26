@@ -143,6 +143,9 @@ export class OrderValidationUtils {
         if (fillTakerAssetAmount.eq(0)) {
             throw new Error(RevertReasons.InvalidTakerAmount);
         }
+        if (signedOrder.makerAssetAmount.eq(0) || signedOrder.takerAssetAmount.eq(0)) {
+            throw new Error(RevertReasons.OrderUnfillable);
+        }
         const orderHash = orderHashUtils.getOrderHashHex(signedOrder);
         const isValid = await isValidSignatureAsync(
             provider,
