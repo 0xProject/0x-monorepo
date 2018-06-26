@@ -1,0 +1,45 @@
+{
+    "name": "@0xproject/contract-scripts",
+    "private": true,
+    "version": "0.0.1",
+    "engines": {
+        "node": ">=6.12"
+    },
+    "description": "Helper scripts for common contract tasks",
+    "main": "lib/index.js",
+    "types": "lib/index.d.ts",
+    "scripts": {
+        "watch_without_deps": "tsc -w",
+        "build": "tsc",
+        "lint": "tslint --project .",
+        "clean": "shx rm -rf lib",
+        "dev": "tsc && node ./lib/token_registry/index.js"
+    },
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/0xProject/0x-monorepo.git"
+    },
+    "license": "Apache-2.0",
+    "bugs": {
+        "url": "https://github.com/0xProject/0x-monorepo/issues"
+    },
+    "homepage": "https://github.com/0xProject/0x-monorepo/packages/contract-scripts/README.md",
+    "devDependencies": {
+        "make-promises-safe": "^1.1.0",
+        "npm-run-all": "^4.1.2",
+        "shx": "^0.2.2",
+        "tslint": "5.8.0",
+        "typescript": "2.7.1"
+    },
+    "dependencies": {
+        "0x.js": "^0.38.4",
+        "@0xproject/subproviders": "^0.10.4",
+        "@0xproject/utils": "^0.7.1",
+        "@ledgerhq/hw-app-eth": "^4.3.0",
+        "lodash": "^4.17.4",
+        "web3-provider-engine": "^14.0.6"
+    },
+    "publishConfig": {
+        "access": "public"
+    }
+}

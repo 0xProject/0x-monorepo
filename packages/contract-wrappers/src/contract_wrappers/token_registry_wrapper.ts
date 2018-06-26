@@ -1,4 +1,4 @@
-import { ContractAbi, Token } from '@0xproject/types';
+import { ContractAbi, Token, TxData } from '@0xproject/types';
 import { Web3Wrapper } from '@0xproject/web3-wrapper';
 import * as _ from 'lodash';
 
@@ -9,6 +9,7 @@ import { constants } from '../utils/constants';
 
 import { ContractWrapper } from './contract_wrapper';
 import { TokenRegistryContract } from './generated/token_registry';
+import { BigNumber } from 'bignumber.js';
 
 /**
  * This class includes all the functionality related to interacting with the 0x Token Registry smart contract.
@@ -55,6 +56,37 @@ export class TokenRegistryWrapper extends ContractWrapper {
         const lowerCaseAddresses = _.map(addresses, address => address.toLowerCase());
         return lowerCaseAddresses;
     }
+
+    public async addTokenAsync(token: Token, senderAddress: string): Promise<string> {
+        const tokenRegistryContract = await this._getTokenRegistryContractAsync();
+        const txData: Partial<TxData> = {
+            from: senderAddress,
+            gas: 300000,
+            gasPrice: Web3Wrapper.toBaseUnitAmount(new BigNumber(60), 9),
+        };
+        const txHash = await tokenRegistryContract.addToken.sendTransactionAsync(
+            token.address,
+            token.name,
+            token.symbol,
+            token.decimals,
+            '',
+            '',
+            txData,
+        );
+        return txHash;
+    }
+
+    public async removeTokenAsync(tokenAddress: string, index: BigNumber, senderAddress: string): Promise<string> {
+        const tokenRegistryContract = await this._getTokenRegistryContractAsync();
+        const txData: Partial<TxData> = {
+            from: senderAddress,
+            gas: 300000,
+            gasPrice: Web3Wrapper.toBaseUnitAmount(new BigNumber(60), 9),
+        };
+        const txHash = await tokenRegistryContract.removeToken.sendTransactionAsync(tokenAddress, index, txData);
+        return txHash;
+    }
+
     /**
      * Retrieves a token by address currently listed in the Token Registry smart contract
      * @return  An object that conforms to the Token interface or undefined if token not found.
