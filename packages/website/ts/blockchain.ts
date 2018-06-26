@@ -191,7 +191,6 @@ export class Blockchain {
         // tslint:disable-next-line:no-floating-promises
         this._onPageLoadInitFireAndForgetAsync();
     }
-    // TODO: Investigate if we need this.
     public async networkIdUpdatedFireAndForgetAsync(newNetworkId: number): Promise<void> {
         const isConnected = !_.isUndefined(newNetworkId);
         if (!isConnected) {
@@ -246,7 +245,7 @@ export class Blockchain {
         this._dispatcher.updateBlockchainIsLoaded(false);
         // We don't want to be out of sync with the network metamask declares.
         const networkId = await Blockchain._getInjectedWeb3ProviderNetworkIdIfExistsAsync();
-        await this._resetOrInitializeAsync(this.networkId, shouldPollUserAddress, userLedgerProvider);
+        await this._resetOrInitializeAsync(networkId, shouldPollUserAddress, userLedgerProvider);
     }
     public async setProxyAllowanceAsync(token: Token, amountInBaseUnits: BigNumber): Promise<void> {
         utils.assert(this.isValidAddress(token.address), BlockchainCallErrs.TokenAddressIsInvalid);

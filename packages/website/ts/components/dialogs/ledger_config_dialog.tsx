@@ -282,6 +282,7 @@ export class LedgerConfigDialog extends React.Component<LedgerConfigDialogProps,
         if (didSucceed) {
             this.setState({
                 stepIndex: LedgerSteps.SELECT_ADDRESS,
+                connectionErrMsg: '',
             });
         } else {
             this.props.dispatcher.updateBlockchainIsLoaded(true);
