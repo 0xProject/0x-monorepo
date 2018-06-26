@@ -6,8 +6,6 @@ const appColors = {
     walletDefaultItemBackground: '#fbfbfc',
     walletFocusedItemBackground: '#f0f1f4',
     allowanceToggleShadow: 'rgba(0, 0, 0, 0)',
-    allowanceToggleOffTrack: '#adadad',
-    allowanceToggleOnTrack: sharedColors.mediumBlue,
     wrapEtherConfirmationButton: sharedColors.mediumBlue,
     drawerMenuBackground: '#4a4a4a',
     menuItemDefaultSelectedBackground: '#424242',

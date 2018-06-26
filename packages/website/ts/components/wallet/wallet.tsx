@@ -19,10 +19,12 @@ import { Link } from 'react-router-dom';
 import firstBy = require('thenby');
 
 import { Blockchain } from 'ts/blockchain';
+import { Circle } from 'ts/components/ui/circle';
 import { Container } from 'ts/components/ui/container';
 import { IconButton } from 'ts/components/ui/icon_button';
 import { Identicon } from 'ts/components/ui/identicon';
 import { Island } from 'ts/components/ui/island';
+import { Text } from 'ts/components/ui/text';
 import { TokenIcon } from 'ts/components/ui/token_icon';
 import { WalletDisconnectedItem } from 'ts/components/wallet/wallet_disconnected_item';
 import { WrapEtherItem } from 'ts/components/wallet/wrap_ether_item';
@@ -123,9 +125,6 @@ const styles: Styles = {
         color: colors.mediumBlue,
         fontWeight: 'bold',
     },
-    loadingBody: {
-        height: 381,
-    },
 };
 
 const ETHER_ICON_PATH = '/images/ether.png';
@@ -138,6 +137,8 @@ const ETHER_ITEM_KEY = 'ETHER';
 const USD_DECIMAL_PLACES = 2;
 const NO_ALLOWANCE_TOGGLE_SPACE_WIDTH = 56;
 const ACCOUNT_PATH = `${WebsitePaths.Portal}/account`;
+const PLACEHOLDER_COLOR = colors.grey300;
+const LOADING_ROWS_COUNT = 5;
 
 const ActionButton = styled(FloatingActionButton)`
     button {
@@ -178,31 +179,49 @@ export class Wallet extends React.Component<WalletProps, WalletState> {
             </Island>
         );
     }
-    private _renderLoadedRows(): React.ReactNode {
-        const isAddressAvailable = !_.isEmpty(this.props.userAddress);
-        return isAddressAvailable
-            ? _.concat(this._renderConnectedHeaderRows(), this._renderBody(), this._renderFooterRows())
-            : _.concat(this._renderDisconnectedHeaderRows(), this._renderDisconnectedRows());
-    }
     private _renderLoadingRows(): React.ReactNode {
-        return _.concat(this._renderDisconnectedHeaderRows(), this._renderLoadingBodyRows());
+        return _.concat(this._renderLoadingHeaderRows(), this._renderLoadingBodyRows());
+    }
+    private _renderLoadingHeaderRows(): React.ReactElement<{}> {
+        return this._renderPlainHeaderRow('Loading...');
     }
     private _renderLoadingBodyRows(): React.ReactElement<{}> {
+        const bodyStyle = this._getBodyStyle();
+        const loadingRowsRange = _.range(LOADING_ROWS_COUNT + 1);
         return (
-            <div key={BODY_ITEM_KEY} className="flex items-center" style={styles.loadingBody}>
-                <div className="mx-auto">
-                    <CircularProgress size={40} thickness={5} />
-                </div>
+            <div key={BODY_ITEM_KEY} className="flex flex-column" style={bodyStyle}>
+                {_.map(loadingRowsRange, index => {
+                    return <NullTokenRow />;
+                })}
             </div>
         );
     }
+    private _renderLoadedRows(): React.ReactNode {
+        const isAddressAvailable = !_.isEmpty(this.props.userAddress);
+        return isAddressAvailable
+            ? _.concat(this._renderConnectedHeaderRows(), this._renderBody())
+            : _.concat(this._renderDisconnectedHeaderRows(), this._renderLoadingBodyRows());
+    }
     private _renderDisconnectedHeaderRows(): React.ReactElement<{}> {
-        const primaryText = 'wallet';
+        const isExternallyInjectedProvider = utils.isExternallyInjected(
+            this.props.providerType,
+            this.props.injectedProviderName,
+        );
+        const text = isExternallyInjectedProvider ? 'Please unlock MetaMask...' : 'Please connect a wallet...';
+        return this._renderPlainHeaderRow(text);
+    }
+    private _renderPlainHeaderRow(text: string): React.ReactElement<{}> {
         return (
             <StandardIconRow
                 key={HEADER_ITEM_KEY}
-                icon={<ActionAccountBalanceWallet color={colors.mediumBlue} />}
-                main={primaryText.toUpperCase()}
+                icon={<ActionAccountBalanceWallet color={colors.grey} />}
+                main={
+                    <Text fontSize="16px" fontColor={colors.grey}>
+                        {text}
+                    </Text>
+                    // https://github.com/palantir/tslint-react/issues/140
+                    // tslint:disable-next-line:jsx-curly-spacing
+                }
                 style={styles.borderedItem}
             />
         );
@@ -231,12 +250,7 @@ export class Wallet extends React.Component<WalletProps, WalletState> {
         );
     }
     private _renderBody(): React.ReactElement<{}> {
-        const bodyStyle: React.CSSProperties = {
-            ...styles.bodyInnerDiv,
-            overflow: this.state.isHoveringSidebar ? 'auto' : 'hidden',
-            // TODO: make this completely responsive
-            maxHeight: this.props.screenWidth !== ScreenWidths.Sm ? 475 : undefined,
-        };
+        const bodyStyle = this._getBodyStyle();
         return (
             <div
                 style={bodyStyle}
@@ -248,6 +262,14 @@ export class Wallet extends React.Component<WalletProps, WalletState> {
                 {this._renderTokenRows()}
             </div>
         );
+    }
+    private _getBodyStyle(): React.CSSProperties {
+        return {
+            ...styles.bodyInnerDiv,
+            overflow: this.state.isHoveringSidebar ? 'auto' : 'hidden',
+            // TODO: make this completely responsive
+            maxHeight: this.props.screenWidth !== ScreenWidths.Sm ? 475 : undefined,
+        };
     }
     private _onSidebarHover(_event: React.FormEvent<HTMLInputElement>): void {
         this.setState({
@@ -572,7 +594,7 @@ interface PlaceHolderProps {
     children?: React.ReactNode;
 }
 const PlaceHolder = (props: PlaceHolderProps) => {
-    const rootBackgroundColor = props.hideChildren ? colors.lightGrey : 'transparent';
+    const rootBackgroundColor = props.hideChildren ? PLACEHOLDER_COLOR : 'transparent';
     const rootStyle: React.CSSProperties = {
         backgroundColor: rootBackgroundColor,
         display: 'inline-block',
@@ -584,6 +606,37 @@ const PlaceHolder = (props: PlaceHolderProps) => {
         <div style={rootStyle}>
             <div style={childrenStyle}>{props.children}</div>
         </div>
+    );
+};
+
+const NullTokenRow = () => {
+    const icon = <Circle diameter={ICON_DIMENSION} fillColor={PLACEHOLDER_COLOR} />;
+    const main = (
+        <div className="flex flex-column">
+            <PlaceHolder hideChildren={true}>
+                <div style={styles.amountLabel}>0.00 XXX</div>
+            </PlaceHolder>
+            <Container marginTop="3px">
+                <PlaceHolder hideChildren={true}>
+                    <div style={styles.valueLabel}>0.00</div>
+                </PlaceHolder>
+            </Container>
+        </div>
+    );
+    const accessory = (
+        <Container marginRight="12px">
+            <PlaceHolder hideChildren={true}>
+                <Container width="20px" height="14px" />
+            </PlaceHolder>
+        </Container>
+    );
+    return (
+        <StandardIconRow
+            icon={icon}
+            main={main}
+            accessory={accessory}
+            style={{ ...styles.tokenItem, ...styles.borderedItem }}
+        />
     );
 };
 // tslint:disable:max-file-line-count
