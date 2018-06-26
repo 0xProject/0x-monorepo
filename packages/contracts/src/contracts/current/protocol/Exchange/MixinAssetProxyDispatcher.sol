@@ -135,7 +135,6 @@ contract MixinAssetProxyDispatcher is
             // |          | 132    | 32      | assetData Length                            |
             // |          | 164    | **      | assetData Contents                          |
 
-            bytes4 transferFromSelector = IAssetProxy(assetProxy).transferFrom.selector;
             bool success;
             assembly {
                 /////// Setup State ///////
@@ -151,7 +150,8 @@ contract MixinAssetProxyDispatcher is
                 
                 /////// Setup Header Area ///////
                 // This area holds the 4-byte `transferFromSelector`.
-                mstore(cdStart, transferFromSelector)
+                // bytes4(keccak256("transferFrom(bytes,address,address,uint256)")) = 0xa85e59e4
+                mstore(cdStart, 0xa85e59e400000000000000000000000000000000000000000000000000000000)
                 
                 /////// Setup Params Area ///////
                 // Each parameter is padded to 32-bytes. The entire Params Area is 128 bytes.

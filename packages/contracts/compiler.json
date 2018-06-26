@@ -32,7 +32,6 @@
         "MultiSigWallet",
         "MultiSigWalletWithTimeLock",
         "TestAssetProxyOwner",
-        "TestAssetDataDecoders",
         "TestAssetProxyDispatcher",
         "TestLibBytes",
         "TestLibs",

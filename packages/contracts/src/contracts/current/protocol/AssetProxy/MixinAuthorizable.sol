@@ -49,10 +49,6 @@ contract MixinAuthorizable is
             !authorized[target],
             "TARGET_ALREADY_AUTHORIZED"
         );
-        
-        assembly {
-            sstore(target, 1)
-        }
 
         authorized[target] = true;
         authorities.push(target);

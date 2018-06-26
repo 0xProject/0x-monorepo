@@ -20,27 +20,15 @@ pragma solidity ^0.4.24;
 pragma experimental ABIEncoderV2;
 
 import "../../utils/LibBytes/LibBytes.sol";
-import "./MixinAssetProxy.sol";
+import "./interfaces/IAssetProxy.sol";
 import "./MixinAuthorizable.sol";
-import "./MixinERC20Transfer.sol";
 
 contract ERC20Proxy is
-    MixinAssetProxy,
-    MixinAuthorizable,
-    MixinERC20Transfer
+    IAssetProxy,
+    MixinAuthorizable
 {
     // Id of this proxy.
     bytes4 constant PROXY_ID = bytes4(keccak256("ERC20Token(address)"));
-    
-    /// @dev Gets the proxy id associated with the proxy address.
-    /// @return Proxy id.
-    function getProxyId()
-        external
-        view
-        returns (bytes4)
-    {
-        return PROXY_ID;
-    }
     
     /// @dev Internal version of `transferFrom`.
     /// @param assetData Encoded byte array.
@@ -55,6 +43,11 @@ contract ERC20Proxy is
     )
         external
     {
+        require(
+            authorized[msg.sender],
+            "SENDER_NOT_AUTHORIZED"
+        );
+
         // `transferFrom`.
         // The function is marked `external`, so no abi decodeding is done for
         // us. Instead, we expect the `calldata` memory to contain the
@@ -102,15 +95,6 @@ contract ERC20Proxy is
         // |          | 68     |         |   3. amount                         |
         
         assembly {
-            if iszero(sload(caller)) {
-                // Revert with `Error("SENDER_NOT_AUTHORIZED")`
-                mstore(0, 0x08c379a000000000000000000000000000000000000000000000000000000000)
-                mstore(32, 0x0000002000000000000000000000000000000000000000000000000000000000)
-                mstore(64, 0x0000001553454e4445525f4e4f545f415554484f52495a454400000000000000)
-                mstore(96, 0)
-                revert(0, 100)
-            }
-            
             /////// Token contract address ///////
             // The token address is found as follows:
             // * It is stored at offset 4 in `assetData` contents.
@@ -169,5 +153,15 @@ contract ERC20Proxy is
             mstore(96, 0)
             revert(0, 100)
         }
+    }
+
+    /// @dev Gets the proxy id associated with the proxy address.
+    /// @return Proxy id.
+    function getProxyId()
+        external
+        view
+        returns (bytes4)
+    {
+        return PROXY_ID;
     }
 }
