@@ -23,7 +23,7 @@
         "@0xproject/typescript-typings": "^0.4.1",
         "@0xproject/utils": "^0.7.1",
         "body-parser": "^1.17.1",
-        "ethereumjs-tx": "^1.3.3",
+        "ethereumjs-tx": "^1.3.5",
         "ethereumjs-util": "^5.1.1",
         "express": "^4.15.2",
         "lodash": "^4.17.4",
