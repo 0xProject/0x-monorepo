@@ -27,20 +27,18 @@ contract MAssetProxyDispatcher is
 
     // Logs registration of new asset proxy
     event AssetProxySet(
-        uint8 id,               // Id of new registered AssetProxy.
+        bytes4 id,              // Id of new registered AssetProxy.
         address newAssetProxy,  // Address of new registered AssetProxy.
         address oldAssetProxy   // Address of AssetProxy that was overwritten at given id (or null address).
     );
 
     /// @dev Forwards arguments to assetProxy and calls `transferFrom`. Either succeeds or throws.
-    /// @param assetData Byte array encoded for the respective asset proxy.
-    /// @param assetProxyId Id of assetProxy to dispach to.
+    /// @param assetData Byte array encoded for the asset.
     /// @param from Address to transfer token from.
     /// @param to Address to transfer token to.
     /// @param amount Amount of token to transfer.
     function dispatchTransferFrom(
         bytes memory assetData,
-        uint8 assetProxyId,
         address from,
         address to,
         uint256 amount

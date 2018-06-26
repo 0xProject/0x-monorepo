@@ -19,17 +19,8 @@
 pragma solidity ^0.4.24;
 
 library LibBytes {
-    using LibBytes for bytes;
 
-    // Revert reasons
-    string constant GREATER_THAN_ZERO_LENGTH_REQUIRED = "GREATER_THAN_ZERO_LENGTH_REQUIRED";
-    string constant GREATER_OR_EQUAL_TO_4_LENGTH_REQUIRED = "GREATER_OR_EQUAL_TO_4_LENGTH_REQUIRED";
-    string constant GREATER_OR_EQUAL_TO_20_LENGTH_REQUIRED = "GREATER_OR_EQUAL_TO_20_LENGTH_REQUIRED";
-    string constant GREATER_OR_EQUAL_TO_32_LENGTH_REQUIRED = "GREATER_OR_EQUAL_TO_32_LENGTH_REQUIRED";
-    string constant GREATER_OR_EQUAL_TO_NESTED_BYTES_LENGTH_REQUIRED = "GREATER_OR_EQUAL_TO_NESTED_BYTES_LENGTH_REQUIRED";
-    string constant GREATER_OR_EQUAL_TO_SOURCE_BYTES_LENGTH_REQUIRED = "GREATER_OR_EQUAL_TO_SOURCE_BYTES_LENGTH_REQUIRED";
-    string constant FROM_LESS_THAN_TO_REQUIRED = "FROM_LESS_THAN_TO_REQUIRED";
-    string constant TO_LESS_THAN_LENGTH_REQUIRED = "TO_LESS_THAN_LENGTH_REQUIRED";
+    using LibBytes for bytes;
 
     /// @dev Gets the memory address for a byte array.
     /// @param input Byte array to lookup.
@@ -176,8 +167,14 @@ library LibBytes {
         pure
         returns (bytes memory result)
     {
-        require(from <= to, FROM_LESS_THAN_TO_REQUIRED);
-        require(to < b.length, TO_LESS_THAN_LENGTH_REQUIRED);
+        require(
+            from <= to,
+            "FROM_LESS_THAN_TO_REQUIRED"
+        );
+        require(
+            to < b.length,
+            "TO_LESS_THAN_LENGTH_REQUIRED"
+        );
         
         // Create a new bytes structure and copy contents
         result = new bytes(to - from);
@@ -199,8 +196,14 @@ library LibBytes {
         pure
         returns (bytes memory result)
     {
-        require(from <= to, FROM_LESS_THAN_TO_REQUIRED);
-        require(to < b.length, TO_LESS_THAN_LENGTH_REQUIRED);
+        require(
+            from <= to,
+            "FROM_LESS_THAN_TO_REQUIRED"
+        );
+        require(
+            to < b.length,
+            "TO_LESS_THAN_LENGTH_REQUIRED"
+        );
         
         // Create a new bytes structure around [from, to) in-place.
         assembly {
@@ -220,7 +223,7 @@ library LibBytes {
     {
         require(
             b.length > 0,
-            GREATER_THAN_ZERO_LENGTH_REQUIRED
+            "GREATER_THAN_ZERO_LENGTH_REQUIRED"
         );
 
         // Store last byte.
@@ -244,7 +247,7 @@ library LibBytes {
     {
         require(
             b.length >= 20,
-            GREATER_OR_EQUAL_TO_20_LENGTH_REQUIRED
+            "GREATER_OR_EQUAL_TO_20_LENGTH_REQUIRED"
         );
 
         // Store last 20 bytes.
@@ -290,7 +293,7 @@ library LibBytes {
     {
         require(
             b.length >= index + 20,  // 20 is length of address
-            GREATER_OR_EQUAL_TO_20_LENGTH_REQUIRED
+            "GREATER_OR_EQUAL_TO_20_LENGTH_REQUIRED"
         );
 
         // Add offset to index:
@@ -322,7 +325,7 @@ library LibBytes {
     {
         require(
             b.length >= index + 20,  // 20 is length of address
-            GREATER_OR_EQUAL_TO_20_LENGTH_REQUIRED
+            "GREATER_OR_EQUAL_TO_20_LENGTH_REQUIRED"
         );
 
         // Add offset to index:
@@ -365,7 +368,7 @@ library LibBytes {
     {
         require(
             b.length >= index + 32,
-            GREATER_OR_EQUAL_TO_32_LENGTH_REQUIRED
+            "GREATER_OR_EQUAL_TO_32_LENGTH_REQUIRED"
         );
 
         // Arrays are prefixed by a 256 bit length parameter
@@ -392,7 +395,7 @@ library LibBytes {
     {
         require(
             b.length >= index + 32,
-            GREATER_OR_EQUAL_TO_32_LENGTH_REQUIRED
+            "GREATER_OR_EQUAL_TO_32_LENGTH_REQUIRED"
         );
 
         // Arrays are prefixed by a 256 bit length parameter
@@ -447,7 +450,7 @@ library LibBytes {
     {
         require(
             b.length >= index + 4,
-            GREATER_OR_EQUAL_TO_4_LENGTH_REQUIRED
+            "GREATER_OR_EQUAL_TO_4_LENGTH_REQUIRED"
         );
         assembly {
             result := mload(add(b, 32))
@@ -459,6 +462,8 @@ library LibBytes {
     }
 
     /// @dev Reads nested bytes from a specific position.
+    /// @dev NOTE: the returned value overlaps with the input value.
+    ///            Both should be treated as immutable.
     /// @param b Byte array containing nested bytes.
     /// @param index Index of nested bytes.
     /// @return result Nested bytes.
@@ -478,17 +483,13 @@ library LibBytes {
         // length of nested bytes
         require(
             b.length >= index + nestedBytesLength,
-            GREATER_OR_EQUAL_TO_NESTED_BYTES_LENGTH_REQUIRED
+            "GREATER_OR_EQUAL_TO_NESTED_BYTES_LENGTH_REQUIRED"
         );
-
-        // Allocate memory and copy value to result
-        result = new bytes(nestedBytesLength);
-        memCopy(
-            result.contentAddress(),
-            b.contentAddress() + index,
-            nestedBytesLength
-        );
-
+        
+        // Return a pointer to the byte array as it exists inside `b`
+        assembly {
+            result := add(b, index)
+        }
         return result;
     }
 
@@ -508,7 +509,7 @@ library LibBytes {
         // length of input
         require(
             b.length >= index + 32 /* 32 bytes to store length */ + input.length,
-            GREATER_OR_EQUAL_TO_NESTED_BYTES_LENGTH_REQUIRED
+            "GREATER_OR_EQUAL_TO_NESTED_BYTES_LENGTH_REQUIRED"
         );
 
         // Copy <input> into <b>
@@ -533,7 +534,7 @@ library LibBytes {
         // Dest length must be >= source length, or some bytes would not be copied.
         require(
             dest.length >= sourceLen,
-            GREATER_OR_EQUAL_TO_SOURCE_BYTES_LENGTH_REQUIRED
+            "GREATER_OR_EQUAL_TO_SOURCE_BYTES_LENGTH_REQUIRED"
         );
         memCopy(
             dest.contentAddress(),

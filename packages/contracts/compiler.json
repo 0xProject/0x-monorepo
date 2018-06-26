@@ -27,6 +27,7 @@
         "ERC721Proxy",
         "Exchange",
         "ExchangeWrapper",
+        "IAssetData",
         "MixinAuthorizable",
         "MultiSigWallet",
         "MultiSigWalletWithTimeLock",

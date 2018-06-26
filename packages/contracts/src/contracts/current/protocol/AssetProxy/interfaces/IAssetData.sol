@@ -16,19 +16,21 @@
 
 */
 
-pragma solidity ^0.4.24;
-pragma experimental ABIEncoderV2;
+pragma solidity ^0.4.23;
 
-import "../../protocol/Exchange/MixinAssetProxyDispatcher.sol";
-
-contract TestAssetProxyDispatcher is MixinAssetProxyDispatcher {
-    function publicDispatchTransferFrom(
-        bytes memory assetData,
-        address from,
-        address to,
-        uint256 amount)
-        public
-    {
-        dispatchTransferFrom(assetData, from, to, amount);
-    }
+// @dev Interface of the asset proxy's assetData.
+// The asset proxies take an ABI encoded `bytes assetData` as argument.
+// This argument is ABI encoded as one of the methods of this interface.
+interface IAssetData {
+    
+    function ERC20Token(
+        address tokenContract)
+        external pure;
+    
+    function ERC721Token(
+        address tokenContract,
+        uint256 tokenId,
+        bytes receiverData)
+        external pure;
+    
 }
