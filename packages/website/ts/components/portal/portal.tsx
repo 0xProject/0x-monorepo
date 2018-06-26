@@ -152,7 +152,7 @@ export class Portal extends React.Component<PortalProps, PortalState> {
     }
     public componentDidUpdate(prevProps: PortalProps): void {
         if (!prevProps.blockchainIsLoaded && this.props.blockchainIsLoaded) {
-            const trackedTokenAddresses = _.keys(this.state.trackedTokenStateByAddress);
+            const trackedTokenAddresses = _.map(this._getCurrentTrackedTokens(), token => token.address);
             // tslint:disable-next-line:no-floating-promises
             this._fetchBalancesAndAllowancesAsync(trackedTokenAddresses);
         }
