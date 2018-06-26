@@ -1,6 +1,6 @@
 import { BlockchainLifecycle } from '@0xproject/dev-utils';
 import { assetProxyUtils, orderHashUtils } from '@0xproject/order-utils';
-import { AssetProxyId, RevertReasons, SignedOrder } from '@0xproject/types';
+import { AssetProxyId, RevertReason, SignedOrder } from '@0xproject/types';
 import { BigNumber } from '@0xproject/utils';
 import { Web3Wrapper } from '@0xproject/web3-wrapper';
 import * as chai from 'chai';
@@ -420,7 +420,7 @@ describe('Exchange core', () => {
             });
             return expectRevertReasonOrAlwaysFailingTransactionAsync(
                 exchangeWrapper.fillOrderAsync(signedOrder, takerAddress),
-                RevertReasons.InvalidTaker,
+                RevertReason.InvalidTaker,
             );
         });
 
@@ -438,7 +438,7 @@ describe('Exchange core', () => {
             signedOrder.signature = invalidSigHex;
             return expectRevertReasonOrAlwaysFailingTransactionAsync(
                 exchangeWrapper.fillOrderAsync(signedOrder, takerAddress),
-                RevertReasons.InvalidOrderSignature,
+                RevertReason.InvalidOrderSignature,
             );
         });
 
@@ -449,7 +449,7 @@ describe('Exchange core', () => {
 
             return expectRevertReasonOrAlwaysFailingTransactionAsync(
                 exchangeWrapper.fillOrderAsync(signedOrder, takerAddress),
-                RevertReasons.OrderUnfillable,
+                RevertReason.OrderUnfillable,
             );
         });
 
@@ -460,7 +460,7 @@ describe('Exchange core', () => {
 
             return expectRevertReasonOrAlwaysFailingTransactionAsync(
                 exchangeWrapper.fillOrderAsync(signedOrder, takerAddress),
-                RevertReasons.OrderUnfillable,
+                RevertReason.OrderUnfillable,
             );
         });
 
@@ -471,7 +471,7 @@ describe('Exchange core', () => {
                 exchangeWrapper.fillOrderAsync(signedOrder, takerAddress, {
                     takerAssetFillAmount: new BigNumber(0),
                 }),
-                RevertReasons.InvalidTakerAmount,
+                RevertReason.InvalidTakerAmount,
             );
         });
 
@@ -482,7 +482,7 @@ describe('Exchange core', () => {
 
             return expectRevertReasonOrAlwaysFailingTransactionAsync(
                 exchangeWrapper.fillOrderAsync(signedOrder, takerAddress),
-                RevertReasons.TransferFailed,
+                RevertReason.TransferFailed,
             );
         });
 
@@ -492,7 +492,7 @@ describe('Exchange core', () => {
             });
             return expectRevertReasonOrAlwaysFailingTransactionAsync(
                 exchangeWrapper.fillOrderAsync(signedOrder, takerAddress),
-                RevertReasons.TransferFailed,
+                RevertReason.TransferFailed,
             );
         });
 
@@ -505,7 +505,7 @@ describe('Exchange core', () => {
             );
             return expectRevertReasonOrAlwaysFailingTransactionAsync(
                 exchangeWrapper.fillOrderAsync(signedOrder, takerAddress),
-                RevertReasons.TransferFailed,
+                RevertReason.TransferFailed,
             );
         });
 
@@ -518,7 +518,7 @@ describe('Exchange core', () => {
             );
             return expectRevertReasonOrAlwaysFailingTransactionAsync(
                 exchangeWrapper.fillOrderAsync(signedOrder, takerAddress),
-                RevertReasons.TransferFailed,
+                RevertReason.TransferFailed,
             );
         });
 
@@ -528,7 +528,7 @@ describe('Exchange core', () => {
             });
             return expectRevertReasonOrAlwaysFailingTransactionAsync(
                 exchangeWrapper.fillOrderAsync(signedOrder, takerAddress),
-                RevertReasons.OrderUnfillable,
+                RevertReason.OrderUnfillable,
             );
         });
 
@@ -537,7 +537,7 @@ describe('Exchange core', () => {
             await exchangeWrapper.fillOrderAsync(signedOrder, takerAddress);
             return expectRevertReasonOrAlwaysFailingTransactionAsync(
                 exchangeWrapper.fillOrderAsync(signedOrder, takerAddress),
-                RevertReasons.OrderUnfillable,
+                RevertReason.OrderUnfillable,
             );
         });
     });
@@ -551,7 +551,7 @@ describe('Exchange core', () => {
         it('should throw if not sent by maker', async () => {
             return expectRevertReasonOrAlwaysFailingTransactionAsync(
                 exchangeWrapper.cancelOrderAsync(signedOrder, takerAddress),
-                RevertReasons.InvalidMaker,
+                RevertReason.InvalidMaker,
             );
         });
 
@@ -562,7 +562,7 @@ describe('Exchange core', () => {
 
             return expectRevertReasonOrAlwaysFailingTransactionAsync(
                 exchangeWrapper.cancelOrderAsync(signedOrder, makerAddress),
-                RevertReasons.OrderUnfillable,
+                RevertReason.OrderUnfillable,
             );
         });
 
@@ -573,7 +573,7 @@ describe('Exchange core', () => {
 
             return expectRevertReasonOrAlwaysFailingTransactionAsync(
                 exchangeWrapper.cancelOrderAsync(signedOrder, makerAddress),
-                RevertReasons.OrderUnfillable,
+                RevertReason.OrderUnfillable,
             );
         });
 
@@ -583,7 +583,7 @@ describe('Exchange core', () => {
                 exchangeWrapper.fillOrderAsync(signedOrder, takerAddress, {
                     takerAssetFillAmount: signedOrder.takerAssetAmount.div(2),
                 }),
-                RevertReasons.OrderUnfillable,
+                RevertReason.OrderUnfillable,
             );
         });
 
@@ -606,7 +606,7 @@ describe('Exchange core', () => {
             await exchangeWrapper.cancelOrderAsync(signedOrder, makerAddress);
             return expectRevertReasonOrAlwaysFailingTransactionAsync(
                 exchangeWrapper.cancelOrderAsync(signedOrder, makerAddress),
-                RevertReasons.OrderUnfillable,
+                RevertReason.OrderUnfillable,
             );
         });
 
@@ -616,7 +616,7 @@ describe('Exchange core', () => {
             });
             return expectRevertReasonOrAlwaysFailingTransactionAsync(
                 exchangeWrapper.cancelOrderAsync(signedOrder, makerAddress),
-                RevertReasons.OrderUnfillable,
+                RevertReason.OrderUnfillable,
             );
         });
 
@@ -636,7 +636,7 @@ describe('Exchange core', () => {
                 exchangeWrapper.fillOrderAsync(signedOrder, takerAddress, {
                     takerAssetFillAmount: fillTakerAssetAmount2,
                 }),
-                RevertReasons.RoundingError,
+                RevertReason.RoundingError,
             );
         });
     });
@@ -648,7 +648,7 @@ describe('Exchange core', () => {
             const lesserOrderEpoch = new BigNumber(0);
             return expectRevertReasonOrAlwaysFailingTransactionAsync(
                 exchangeWrapper.cancelOrdersUpToAsync(lesserOrderEpoch, makerAddress),
-                RevertReasons.InvalidNewOrderEpoch,
+                RevertReason.InvalidNewOrderEpoch,
             );
         });
 
@@ -657,7 +657,7 @@ describe('Exchange core', () => {
             await exchangeWrapper.cancelOrdersUpToAsync(orderEpoch, makerAddress);
             return expectRevertReasonOrAlwaysFailingTransactionAsync(
                 exchangeWrapper.cancelOrdersUpToAsync(orderEpoch, makerAddress),
-                RevertReasons.InvalidNewOrderEpoch,
+                RevertReason.InvalidNewOrderEpoch,
             );
         });
 
@@ -817,7 +817,7 @@ describe('Exchange core', () => {
             const takerAssetFillAmount = signedOrder.takerAssetAmount;
             return expectRevertReasonOrAlwaysFailingTransactionAsync(
                 exchangeWrapper.fillOrderAsync(signedOrder, takerAddress, { takerAssetFillAmount }),
-                RevertReasons.InvalidAmount,
+                RevertReason.InvalidAmount,
             );
         });
 
@@ -840,7 +840,7 @@ describe('Exchange core', () => {
             const takerAssetFillAmount = signedOrder.takerAssetAmount;
             return expectRevertReasonOrAlwaysFailingTransactionAsync(
                 exchangeWrapper.fillOrderAsync(signedOrder, takerAddress, { takerAssetFillAmount }),
-                RevertReasons.InvalidAmount,
+                RevertReason.InvalidAmount,
             );
         });
 
@@ -857,7 +857,7 @@ describe('Exchange core', () => {
             const takerAssetFillAmount = signedOrder.takerAssetAmount.div(2);
             return expectRevertReasonOrAlwaysFailingTransactionAsync(
                 exchangeWrapper.fillOrderAsync(signedOrder, takerAddress, { takerAssetFillAmount }),
-                RevertReasons.RoundingError,
+                RevertReason.RoundingError,
             );
         });
 

@@ -169,7 +169,7 @@ export interface ERC721AssetData {
     receiverData: string;
 }
 
-export enum RevertReasons {
+export enum RevertReason {
     OrderUnfillable = 'ORDER_UNFILLABLE',
     InvalidMaker = 'INVALID_MAKER',
     InvalidTaker = 'INVALID_TAKER',

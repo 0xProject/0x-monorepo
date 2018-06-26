@@ -1,6 +1,6 @@
 import { BlockchainLifecycle } from '@0xproject/dev-utils';
 import { addSignedMessagePrefix, assetProxyUtils, MessagePrefixType, orderHashUtils } from '@0xproject/order-utils';
-import { RevertReasons, SignatureType, SignedOrder } from '@0xproject/types';
+import { RevertReason, SignatureType, SignedOrder } from '@0xproject/types';
 import * as chai from 'chai';
 import { LogWithDecodedArgs } from 'ethereum-types';
 import ethUtil = require('ethereumjs-util');
@@ -107,7 +107,7 @@ describe('MixinSignatureValidator', () => {
                     signedOrder.makerAddress,
                     emptySignature,
                 ),
-                RevertReasons.LengthGreaterThan0Required,
+                RevertReason.LengthGreaterThan0Required,
             );
         });
 
@@ -121,7 +121,7 @@ describe('MixinSignatureValidator', () => {
                     signedOrder.makerAddress,
                     unsupportedSignatureHex,
                 ),
-                RevertReasons.SignatureUnsupported,
+                RevertReason.SignatureUnsupported,
             );
         });
 
@@ -134,7 +134,7 @@ describe('MixinSignatureValidator', () => {
                     signedOrder.makerAddress,
                     unsupportedSignatureHex,
                 ),
-                RevertReasons.SignatureIllegal,
+                RevertReason.SignatureIllegal,
             );
         });
 
@@ -161,7 +161,7 @@ describe('MixinSignatureValidator', () => {
                     signedOrder.makerAddress,
                     signatureHex,
                 ),
-                RevertReasons.Length0Required,
+                RevertReason.Length0Required,
             );
         });
 
