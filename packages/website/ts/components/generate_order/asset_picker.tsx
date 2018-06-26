@@ -117,7 +117,7 @@ export class AssetPicker extends React.Component<AssetPickerProps, AssetPickerSt
     private _renderAssetPicker(): React.ReactNode {
         return (
             <div
-                className="clearfix flex flex-wrap"
+                className="flex flex-wrap"
                 style={{
                     overflowY: 'auto',
                     maxWidth: 720,
@@ -154,7 +154,7 @@ export class AssetPicker extends React.Component<AssetPickerProps, AssetPickerSt
                         height: TILE_DIMENSION,
                         ...tileStyles,
                     }}
-                    className="p2 flex flex-column items-center"
+                    className="p2 flex sm-col-6 md-col-3 lg-col-3 flex-column items-center mx-auto"
                     onClick={this._onChooseToken.bind(this, address)}
                     onMouseEnter={this._onToggleHover.bind(this, address, true)}
                     onMouseLeave={this._onToggleHover.bind(this, address, false)}
@@ -162,7 +162,7 @@ export class AssetPicker extends React.Component<AssetPickerProps, AssetPickerSt
                     <div className="p1">
                         <TokenIcon token={token} diameter={TOKEN_ICON_DIMENSION} />
                     </div>
-                    <div className="center">{token.name}</div>
+                    <div className="center">{token.symbol}</div>
                 </div>
             );
         });
@@ -181,7 +181,7 @@ export class AssetPicker extends React.Component<AssetPickerProps, AssetPickerSt
                         height: TILE_DIMENSION,
                         ...tileStyles,
                     }}
-                    className="p2 mx-auto"
+                    className="p2 flex sm-col-6 md-col-3 lg-col-3 flex-column items-center mx-auto"
                     onClick={this._onCustomAssetChosen.bind(this)}
                     onMouseEnter={this._onToggleHover.bind(this, otherTokenKey, true)}
                     onMouseLeave={this._onToggleHover.bind(this, otherTokenKey, false)}
