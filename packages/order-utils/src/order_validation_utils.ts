@@ -1,4 +1,4 @@
-import { RevertReasons, SignedOrder } from '@0xproject/types';
+import { RevertReason, SignedOrder } from '@0xproject/types';
 import { BigNumber } from '@0xproject/utils';
 import { Provider } from 'ethereum-types';
 import * as _ from 'lodash';
@@ -87,7 +87,7 @@ export class OrderValidationUtils {
                 TransferType.Fee,
             );
         } catch (err) {
-            throw new Error(RevertReasons.TransferFailed);
+            throw new Error(RevertReason.TransferFailed);
         }
     }
     private static _validateRemainingFillAmountNotZeroOrThrow(
@@ -95,13 +95,13 @@ export class OrderValidationUtils {
         filledTakerTokenAmount: BigNumber,
     ): void {
         if (takerAssetAmount.eq(filledTakerTokenAmount)) {
-            throw new Error(RevertReasons.OrderUnfillable);
+            throw new Error(RevertReason.OrderUnfillable);
         }
     }
     private static _validateOrderNotExpiredOrThrow(expirationTimeSeconds: BigNumber): void {
         const currentUnixTimestampSec = utils.getCurrentUnixTimestampSec();
         if (expirationTimeSeconds.lessThan(currentUnixTimestampSec)) {
-            throw new Error(RevertReasons.OrderUnfillable);
+            throw new Error(RevertReason.OrderUnfillable);
         }
     }
     constructor(orderFilledCancelledFetcher: AbstractOrderFilledCancelledFetcher) {
@@ -141,10 +141,10 @@ export class OrderValidationUtils {
         zrxAssetData: string,
     ): Promise<BigNumber> {
         if (fillTakerAssetAmount.eq(0)) {
-            throw new Error(RevertReasons.InvalidTakerAmount);
+            throw new Error(RevertReason.InvalidTakerAmount);
         }
         if (signedOrder.makerAssetAmount.eq(0) || signedOrder.takerAssetAmount.eq(0)) {
-            throw new Error(RevertReasons.OrderUnfillable);
+            throw new Error(RevertReason.OrderUnfillable);
         }
         const orderHash = orderHashUtils.getOrderHashHex(signedOrder);
         const isValid = await isValidSignatureAsync(
@@ -162,7 +162,7 @@ export class OrderValidationUtils {
             filledTakerTokenAmount,
         );
         if (signedOrder.takerAddress !== constants.NULL_ADDRESS && signedOrder.takerAddress !== takerAddress) {
-            throw new Error(RevertReasons.InvalidTaker);
+            throw new Error(RevertReason.InvalidTaker);
         }
         OrderValidationUtils._validateOrderNotExpiredOrThrow(signedOrder.expirationTimeSeconds);
         const remainingTakerTokenAmount = signedOrder.takerAssetAmount.minus(filledTakerTokenAmount);
@@ -183,7 +183,7 @@ export class OrderValidationUtils {
             signedOrder.makerAssetAmount,
         );
         if (wouldRoundingErrorOccur) {
-            throw new Error(RevertReasons.RoundingError);
+            throw new Error(RevertReason.RoundingError);
         }
         return filledTakerTokenAmount;
     }
@@ -204,7 +204,7 @@ export class OrderValidationUtils {
             zrxAssetData,
         );
         if (filledTakerTokenAmount !== fillTakerAssetAmount) {
-            throw new Error(RevertReasons.OrderUnfillable);
+            throw new Error(RevertReason.OrderUnfillable);
         }
     }
 }
