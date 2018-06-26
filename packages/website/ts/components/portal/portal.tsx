@@ -152,9 +152,8 @@ export class Portal extends React.Component<PortalProps, PortalState> {
     }
     public componentDidUpdate(prevProps: PortalProps): void {
         if (!prevProps.blockchainIsLoaded && this.props.blockchainIsLoaded) {
-            const trackedTokenAddresses = _.map(this._getCurrentTrackedTokens(), token => token.address);
             // tslint:disable-next-line:no-floating-promises
-            this._fetchBalancesAndAllowancesAsync(trackedTokenAddresses);
+            this._fetchBalancesAndAllowancesAsync(this._getCurrentTrackedTokensAddresses());
         }
     }
     public componentWillReceiveProps(nextProps: PortalProps): void {
@@ -188,9 +187,8 @@ export class Portal extends React.Component<PortalProps, PortalState> {
             (nextProps.userAddress !== this.props.userAddress && nextProps.networkId === this.props.networkId) ||
             nextProps.lastForceTokenStateRefetch !== this.props.lastForceTokenStateRefetch
         ) {
-            const trackedTokenAddresses = _.keys(this.state.trackedTokenStateByAddress);
             // tslint:disable-next-line:no-floating-promises
-            this._fetchBalancesAndAllowancesAsync(trackedTokenAddresses);
+            this._fetchBalancesAndAllowancesAsync(this._getCurrentTrackedTokensAddresses());
         }
 
         const nextTrackedTokens = this._getTrackedTokens(nextProps.tokenByAddress);
@@ -609,11 +607,12 @@ export class Portal extends React.Component<PortalProps, PortalState> {
         const isSmallScreen = this.props.screenWidth === ScreenWidths.Sm;
         return isSmallScreen;
     }
-
     private _getCurrentTrackedTokens(): Token[] {
         return this._getTrackedTokens(this.props.tokenByAddress);
     }
-
+    private _getCurrentTrackedTokensAddresses(): string[] {
+        return _.map(this._getCurrentTrackedTokens(), token => token.address);
+    }
     private _getTrackedTokens(tokenByAddress: TokenByAddress): Token[] {
         const allTokens = _.values(tokenByAddress);
         const trackedTokens = _.filter(allTokens, t => t.isTracked);
