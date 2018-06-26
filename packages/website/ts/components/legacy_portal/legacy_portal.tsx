@@ -249,16 +249,14 @@ export class LegacyPortal extends React.Component<LegacyPortalProps, LegacyPorta
                         onToggleDialog={this._onPortalDisclaimerAccepted.bind(this)}
                     />
                     <FlashMessage dispatcher={this.props.dispatcher} flashMessage={this.props.flashMessage} />
-                    {this.props.blockchainIsLoaded && (
-                        <LedgerConfigDialog
-                            providerType={this.props.providerType}
-                            networkId={this.props.networkId}
-                            blockchain={this._blockchain}
-                            dispatcher={this.props.dispatcher}
-                            toggleDialogFn={this.onToggleLedgerDialog.bind(this)}
-                            isOpen={this.state.isLedgerDialogOpen}
-                        />
-                    )}
+                    <LedgerConfigDialog
+                        providerType={this.props.providerType}
+                        networkId={this.props.networkId}
+                        blockchain={this._blockchain}
+                        dispatcher={this.props.dispatcher}
+                        toggleDialogFn={this.onToggleLedgerDialog.bind(this)}
+                        isOpen={this.state.isLedgerDialogOpen}
+                    />
                 </div>
                 <Footer translate={this.props.translate} dispatcher={this.props.dispatcher} />
             </div>
