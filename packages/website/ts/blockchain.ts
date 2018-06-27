@@ -773,9 +773,9 @@ export class Blockchain {
         const networkIdIfExists = await Blockchain._getInjectedWeb3ProviderNetworkIdIfExistsAsync();
         this.networkId = !_.isUndefined(networkIdIfExists) ? networkIdIfExists : constants.NETWORK_ID_MAINNET;
         const injectedWeb3IfExists = Blockchain._getInjectedWeb3();
-        if (injectedWeb3IfExists) {
+        if (!_.isUndefined(injectedWeb3IfExists) && !_.isUndefined(injectedWeb3IfExists.currentProvider)) {
             const injectedProviderObservable = injectedWeb3IfExists.currentProvider.publicConfigStore;
-            if (injectedProviderObservable && !this._injectedProviderObservable) {
+            if (!_.isUndefined(injectedProviderObservable) && _.isUndefined(this._injectedProviderObservable)) {
                 this._injectedProviderObservable = injectedProviderObservable;
                 this._injectedProviderObservable.subscribe(this._injectedProviderUpdateHandler);
             }
@@ -790,7 +790,9 @@ export class Blockchain {
         shouldPollUserAddress: boolean = false,
         shouldUserLedgerProvider: boolean = false,
     ): Promise<void> {
-        this._dispatcher.updateBlockchainIsLoaded(false);
+        if (!shouldUserLedgerProvider) {
+            this._dispatcher.updateBlockchainIsLoaded(false);
+        }
         this._dispatcher.updateUserWeiBalance(undefined);
         this.networkId = networkId;
         const injectedWeb3IfExists = Blockchain._getInjectedWeb3();
