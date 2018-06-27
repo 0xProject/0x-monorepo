@@ -110,7 +110,7 @@ export const runV2MigrationsAsync = async (provider: Provider, artifactsDir: str
 
     // Dummy ERC20 tokens
     for (const token of erc20TokenInfo) {
-        const totalSupply = new BigNumber(100000000000000000000);
+        const totalSupply = new BigNumber(1000000000000000000000000000);
         // tslint:disable-next-line:no-unused-variable
         const dummyErc20Token = await DummyERC20TokenContract.deployFrom0xArtifactAsync(
             artifacts.DummyERC20Token,
