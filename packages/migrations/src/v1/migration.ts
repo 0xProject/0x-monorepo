@@ -6,7 +6,7 @@ import { ArtifactWriter } from '../artifact_writer';
 import { erc20TokenInfo } from '../utils/token_info';
 
 import { artifacts } from './artifacts';
-import { DummyERC20TokenContract } from './contract_wrappers/dummy_e_r_c20_token';
+import { DummyERC20TokenContract } from './contract_wrappers/dummy_erc20_token';
 import { Exchange_v1Contract } from './contract_wrappers/exchange_v1';
 import { MultiSigWalletWithTimeLockExceptRemoveAuthorizedAddressContract } from './contract_wrappers/multi_sig_wallet_with_time_lock_except_remove_authorized_address';
 import { TokenRegistryContract } from './contract_wrappers/token_registry';
