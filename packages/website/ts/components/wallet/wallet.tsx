@@ -27,7 +27,6 @@ import { Island } from 'ts/components/ui/island';
 import { Text } from 'ts/components/ui/text';
 import { TokenIcon } from 'ts/components/ui/token_icon';
 import { BodyOverlay } from 'ts/components/wallet/body_overlay';
-import { WalletDisconnectedItem } from 'ts/components/wallet/wallet_disconnected_item';
 import { WrapEtherItem } from 'ts/components/wallet/wrap_ether_item';
 import { AllowanceToggle } from 'ts/containers/inputs/allowance_toggle';
 import { Dispatcher } from 'ts/redux/dispatcher';
@@ -195,7 +194,7 @@ export class Wallet extends React.Component<WalletProps, WalletState> {
         return (
             <div key={BODY_ITEM_KEY} className="flex flex-column" style={bodyStyle}>
                 {_.map(loadingRowsRange, index => {
-                    return <NullTokenRow />;
+                    return <NullTokenRow key={index} />;
                 })}
                 <Container
                     className="flex items-center"
@@ -246,16 +245,6 @@ export class Wallet extends React.Component<WalletProps, WalletState> {
                     // tslint:disable-next-line:jsx-curly-spacing
                 }
                 style={{ ...styles.borderedItem, ...styles.headerItem }}
-            />
-        );
-    }
-    private _renderDisconnectedRows(): React.ReactElement<{}> {
-        return (
-            <WalletDisconnectedItem
-                key={DISCONNECTED_ITEM_KEY}
-                providerType={this.props.providerType}
-                injectedProviderName={this.props.injectedProviderName}
-                onToggleLedgerDialog={this.props.onToggleLedgerDialog}
             />
         );
     }
