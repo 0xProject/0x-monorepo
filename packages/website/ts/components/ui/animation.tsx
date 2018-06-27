@@ -25,12 +25,18 @@ const appearFromBottomFrames = keyframes`
     }
 `;
 
+const stylesForAnimation: { [K in AnimationType]: string } = {
+    // Needed for safari
+    easeUpFromBottom: `position: fixed`,
+};
+
 const animations: { [K in AnimationType]: string } = {
     easeUpFromBottom: `${appearFromBottomFrames} 1s ease 0s 1 forwards`,
 };
 
 export const Animation = styled(PlainAnimation)`
     animation: ${props => animations[props.type]};
+    ${props => stylesForAnimation[props.type]};
 `;
 
 Animation.displayName = 'Animation';
