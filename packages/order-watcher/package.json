@@ -77,7 +77,7 @@
         "typescript": "2.7.1"
     },
     "dependencies": {
-        "@0xproject/assert": "^0.2.12",
+        "@0xproject/assert": "0.2.12",
         "@0xproject/base-contract": "^0.3.4",
         "@0xproject/contract-wrappers": "0.0.5",
         "@0xproject/fill-scenarios": "^0.0.4",
