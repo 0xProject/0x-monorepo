@@ -6,7 +6,7 @@ export interface AddEthOnboardingStepProps {}
 
 export const AddEthOnboardingStep: React.StatelessComponent<AddEthOnboardingStepProps> = () => (
     <div className="flex items-center flex-column">
-        <Text> Before you begin you will need to send some ETH to your metamask wallet.</Text>
+        <Text> Before you begin you will need to send some ETH to your wallet.</Text>
         <Container marginTop="15px" marginBottom="15px">
             <img src="/images/ether_alt.svg" height="50px" width="50px" />
         </Container>
