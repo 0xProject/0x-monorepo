@@ -60,17 +60,21 @@ export const OnboardingCard: React.StatelessComponent<OnboardingCardProps> = ({
                         {continueButtonText}
                     </Button>
                 )}
-                <Container className="flex justify-between" marginTop="15px">
-                    {!shouldHideBackButton && (
-                        <Text fontColor={colors.grey} onClick={onClickBack}>
-                            Back
-                        </Text>
-                    )}
-                    {!shouldHideNextButton && (
-                        <Text fontColor={colors.grey} onClick={onClickNext}>
-                            Skip
-                        </Text>
-                    )}
+                <Container className="clearfix" marginTop="15px">
+                    <div className="left">
+                        {!shouldHideBackButton && (
+                            <Text fontColor={colors.grey} onClick={onClickBack}>
+                                Back
+                            </Text>
+                        )}
+                    </div>
+                    <div className="right">
+                        {!shouldHideNextButton && (
+                            <Text fontColor={colors.grey} onClick={onClickNext}>
+                                Skip
+                            </Text>
+                        )}
+                    </div>
                 </Container>
             </div>
         </Container>
