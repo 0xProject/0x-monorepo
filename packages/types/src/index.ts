@@ -190,6 +190,7 @@ export enum RevertReason {
     AssetProxyMismatch = 'ASSET_PROXY_MISMATCH',
     AssetProxyIdMismatch = 'ASSET_PROXY_ID_MISMATCH',
     LengthGreaterThan0Required = 'LENGTH_GREATER_THAN_0_REQUIRED',
+    LengthGreaterThan131Required = 'LENGTH_GREATER_THAN_131_REQUIRED',
     Length0Required = 'LENGTH_0_REQUIRED',
     Length65Required = 'LENGTH_65_REQUIRED',
     InvalidAmount = 'INVALID_AMOUNT',

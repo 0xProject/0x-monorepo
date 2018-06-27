@@ -1831,7 +1831,7 @@ boom@5.x.x:
   dependencies:
     hoek "4.x.x"
 
-bowser@^1.7.3:
+bowser@^1.7.3, bowser@^1.9.3:
   version "1.9.3"
   resolved "https://registry.yarnpkg.com/bowser/-/bowser-1.9.3.tgz#6643ae4d783f31683f6d23156976b74183862162"
 
@@ -4102,9 +4102,16 @@ ethereumjs-blockstream@^2.0.6:
     source-map-support "0.4.14"
     uuid "3.0.1"
 
-ethereumjs-tx@0xProject/ethereumjs-tx#fake-tx-include-signature-by-default, ethereumjs-tx@^1.0.0, ethereumjs-tx@^1.1.1, ethereumjs-tx@^1.2.0, ethereumjs-tx@^1.2.2, ethereumjs-tx@^1.3.3:
+ethereumjs-tx@0xProject/ethereumjs-tx#fake-tx-include-signature-by-default:
   version "1.3.4"
-  resolved "https://codeload.github.com/0xProject/ethereumjs-tx/tar.gz/5f0a610849de09f922f8ccee5af1aae4bec36e51"
+  resolved "https://codeload.github.com/0xProject/ethereumjs-tx/tar.gz/29d1153889c389591f74b2401da8a0c6ad40f9a7"
+  dependencies:
+    ethereum-common "^0.0.18"
+    ethereumjs-util "^5.0.0"
+
+ethereumjs-tx@^1.0.0, ethereumjs-tx@^1.1.1, ethereumjs-tx@^1.2.0, ethereumjs-tx@^1.2.2, ethereumjs-tx@^1.3.3, ethereumjs-tx@^1.3.5:
+  version "1.3.5"
+  resolved "https://registry.yarnpkg.com/ethereumjs-tx/-/ethereumjs-tx-1.3.5.tgz#c5ab252977ed2b13fb2fca195fdfa95a7d54f858"
   dependencies:
     ethereum-common "^0.0.18"
     ethereumjs-util "^5.0.0"

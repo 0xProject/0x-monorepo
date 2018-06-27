@@ -1,6 +1,12 @@
 declare module 'web3-provider-engine' {
     import { Provider, JSONRPCRequestPayload, JSONRPCResponsePayload } from 'ethereum-types';
+    interface Web3ProviderEngineOptions {
+        pollingInterval?: number;
+        blockTracker?: any;
+        blockTrackerProvider?: any;
+    }
     class Web3ProviderEngine implements Provider {
+        constructor(options?: Web3ProviderEngineOptions);
         public on(event: string, handler: () => void): void;
         public send(payload: JSONRPCRequestPayload): void;
         public sendAsync(
@@ -8,7 +14,9 @@ declare module 'web3-provider-engine' {
             callback: (error: null | Error, response: JSONRPCResponsePayload) => void,
         ): void;
         public addProvider(provider: any): void;
-        public start(): void;
+        // start block polling
+        public start(callback?: () => void): void;
+        // stop block polling
         public stop(): void;
     }
     export = Web3ProviderEngine;
