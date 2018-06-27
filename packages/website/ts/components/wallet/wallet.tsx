@@ -87,15 +87,6 @@ interface AccessoryItemConfig {
 }
 
 const styles: Styles = {
-    root: {
-        width: '100%',
-    },
-    footerItemInnerDiv: {
-        paddingLeft: 24,
-        borderTopColor: colors.walletBorder,
-        borderTopStyle: 'solid',
-        borderWidth: 1,
-    },
     borderedItem: {
         borderBottomColor: colors.walletBorder,
         borderBottomStyle: 'solid',
@@ -116,18 +107,10 @@ const styles: Styles = {
         color: colors.darkGrey,
         fontSize: 14,
     },
-    paddedItem: {
-        paddingTop: 8,
-        paddingBottom: 8,
-    },
     bodyInnerDiv: {
         overflow: 'auto',
         WebkitOverflowScrolling: 'touch',
         position: 'relative',
-    },
-    manageYourWalletText: {
-        color: colors.mediumBlue,
-        fontWeight: 'bold',
     },
 };
 
@@ -135,8 +118,6 @@ const ETHER_ICON_PATH = '/images/ether.png';
 const ICON_DIMENSION = 28;
 const BODY_ITEM_KEY = 'BODY';
 const HEADER_ITEM_KEY = 'HEADER';
-const FOOTER_ITEM_KEY = 'FOOTER';
-const DISCONNECTED_ITEM_KEY = 'DISCONNECTED';
 const ETHER_ITEM_KEY = 'ETHER';
 const USD_DECIMAL_PLACES = 2;
 const NO_ALLOWANCE_TOGGLE_SPACE_WIDTH = 56;
@@ -178,7 +159,7 @@ export class Wallet extends React.Component<WalletProps, WalletState> {
     public render(): React.ReactNode {
         const isBlockchainLoaded = this.props.blockchainIsLoaded && this.props.blockchainErr === BlockchainErrs.NoError;
         return (
-            <Island className="flex flex-column wallet" style={{ ...styles.root, ...this.props.style }}>
+            <Island className="flex flex-column wallet" style={this.props.style}>
                 {isBlockchainLoaded ? this._renderLoadedRows() : this._renderLoadingRows()}
             </Island>
         );
@@ -308,51 +289,6 @@ export class Wallet extends React.Component<WalletProps, WalletState> {
         this.setState({
             isHoveringSidebar: false,
         });
-    }
-    private _renderFooterRows(): React.ReactElement<{}> {
-        return (
-            <div key={FOOTER_ITEM_KEY}>
-                <ListItem
-                    primaryText={
-                        <div className="flex">
-                            <ActionButton mini={true} zDepth={0} onClick={this.props.onAddToken}>
-                                <ContentAdd />
-                            </ActionButton>
-                            <ActionButton mini={true} zDepth={0} className="px1" onClick={this.props.onRemoveToken}>
-                                <ContentRemove />
-                            </ActionButton>
-                            <div
-                                style={{
-                                    paddingLeft: 10,
-                                    position: 'relative',
-                                    top: '50%',
-                                    transform: 'translateY(33%)',
-                                }}
-                            >
-                                add/remove tokens
-                            </div>
-                        </div>
-                    }
-                    disabled={true}
-                    innerDivStyle={styles.footerItemInnerDiv}
-                    style={styles.borderedItem}
-                />
-                {this.props.location.pathname !== ACCOUNT_PATH && (
-                    <Link to={ACCOUNT_PATH} style={{ textDecoration: 'none' }}>
-                        <ListItem
-                            primaryText={
-                                <div className="flex right" style={styles.manageYourWalletText}>
-                                    manage your wallet
-                                </div>
-                                // https://github.com/palantir/tslint-react/issues/140
-                                // tslint:disable-next-line:jsx-curly-spacing
-                            }
-                            style={{ ...styles.paddedItem, ...styles.borderedItem }}
-                        />
-                    </Link>
-                )}
-            </div>
-        );
     }
     private _renderEthRows(): React.ReactNode {
         const icon = <img style={{ width: ICON_DIMENSION, height: ICON_DIMENSION }} src={ETHER_ICON_PATH} />;
