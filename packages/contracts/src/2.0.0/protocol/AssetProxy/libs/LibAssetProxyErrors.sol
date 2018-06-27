@@ -18,6 +18,7 @@
 
 pragma solidity ^0.4.24;
 
+
 /// @dev This contract documents the revert reasons used in the AssetProxy contracts.
 /// This contract is intended to serve as a reference, but is not actually used for efficiency reasons.
 contract LibAssetProxyErrors {

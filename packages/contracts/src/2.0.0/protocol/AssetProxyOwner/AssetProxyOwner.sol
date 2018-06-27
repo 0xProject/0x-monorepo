@@ -21,6 +21,7 @@ pragma solidity ^0.4.10;
 import "../../multisig/MultiSigWalletWithTimeLock.sol";
 import "../../utils/LibBytes/LibBytes.sol";
 
+
 contract AssetProxyOwner is
     MultiSigWalletWithTimeLock
 {

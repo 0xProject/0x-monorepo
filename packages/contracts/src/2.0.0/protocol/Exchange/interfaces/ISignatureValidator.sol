@@ -18,6 +18,7 @@
 
 pragma solidity ^0.4.24;
 
+
 contract ISignatureValidator {
 
     /// @dev Approves a hash on-chain using any valid signature type.

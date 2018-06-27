@@ -21,6 +21,7 @@ pragma experimental ABIEncoderV2;
 
 import "../interfaces/IAuthorizable.sol";
 
+
 contract MAuthorizable is
     IAuthorizable
 {
