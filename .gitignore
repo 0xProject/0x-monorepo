@@ -81,7 +81,7 @@ packages/contract-wrappers/test/artifacts/
 
 # generated contract wrappers
 packages/0x.js/src/generated_contract_wrappers/
-packages/contracts/src/generated_contract_wrappers/
+packages/contracts/generated_contract_wrappers/
 packages/contract-wrappers/src/contract_wrappers/generated/
 packages/metacoin/src/contract_wrappers
 packages/fill-scenarios/src/generated_contract_wrappers/

@@ -6,14 +6,14 @@ import { LogWithDecodedArgs } from 'ethereum-types';
 import {
     MultiSigWalletWithTimeLockContract,
     SubmissionContractEventArgs,
-} from '../src/generated_contract_wrappers/multi_sig_wallet_with_time_lock';
-import { artifacts } from '../src/utils/artifacts';
-import { expectRevertOrAlwaysFailingTransactionAsync } from '../src/utils/assertions';
-import { chaiSetup } from '../src/utils/chai_setup';
-import { constants } from '../src/utils/constants';
-import { increaseTimeAndMineBlockAsync } from '../src/utils/increase_time';
-import { MultiSigWrapper } from '../src/utils/multi_sig_wrapper';
-import { provider, txDefaults, web3Wrapper } from '../src/utils/web3_wrapper';
+} from '../../generated_contract_wrappers/multi_sig_wallet_with_time_lock';
+import { artifacts } from '../utils/artifacts';
+import { expectRevertOrAlwaysFailingTransactionAsync } from '../utils/assertions';
+import { chaiSetup } from '../utils/chai_setup';
+import { constants } from '../utils/constants';
+import { increaseTimeAndMineBlockAsync } from '../utils/increase_time';
+import { MultiSigWrapper } from '../utils/multi_sig_wrapper';
+import { provider, txDefaults, web3Wrapper } from '../utils/web3_wrapper';
 
 chaiSetup.configure();
 const expect = chai.expect;

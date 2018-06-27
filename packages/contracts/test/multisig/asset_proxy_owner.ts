@@ -9,19 +9,19 @@ import {
     ExecutionContractEventArgs,
     ExecutionFailureContractEventArgs,
     SubmissionContractEventArgs,
-} from '../src/generated_contract_wrappers/asset_proxy_owner';
-import { MixinAuthorizableContract } from '../src/generated_contract_wrappers/mixin_authorizable';
-import { TestAssetProxyOwnerContract } from '../src/generated_contract_wrappers/test_asset_proxy_owner';
-import { artifacts } from '../src/utils/artifacts';
+} from '../../generated_contract_wrappers/asset_proxy_owner';
+import { MixinAuthorizableContract } from '../../generated_contract_wrappers/mixin_authorizable';
+import { TestAssetProxyOwnerContract } from '../../generated_contract_wrappers/test_asset_proxy_owner';
+import { artifacts } from '../utils/artifacts';
 import {
     expectRevertOrAlwaysFailingTransactionAsync,
     expectRevertOrContractCallFailedAsync,
-} from '../src/utils/assertions';
-import { chaiSetup } from '../src/utils/chai_setup';
-import { constants } from '../src/utils/constants';
-import { increaseTimeAndMineBlockAsync } from '../src/utils/increase_time';
-import { MultiSigWrapper } from '../src/utils/multi_sig_wrapper';
-import { provider, txDefaults, web3Wrapper } from '../src/utils/web3_wrapper';
+} from '../utils/assertions';
+import { chaiSetup } from '../utils/chai_setup';
+import { constants } from '../utils/constants';
+import { increaseTimeAndMineBlockAsync } from '../utils/increase_time';
+import { MultiSigWrapper } from '../utils/multi_sig_wrapper';
+import { provider, txDefaults, web3Wrapper } from '../utils/web3_wrapper';
 
 chaiSetup.configure();
 const expect = chai.expect;

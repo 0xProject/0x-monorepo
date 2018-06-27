@@ -4,15 +4,11 @@ import { BigNumber } from '@0xproject/utils';
 import * as chai from 'chai';
 import * as _ from 'lodash';
 
-import { chaiSetup } from '../utils/chai_setup';
-import { ERC20Wrapper } from '../utils/erc20_wrapper';
-import { ERC721Wrapper } from '../utils/erc721_wrapper';
-import { ExchangeWrapper } from '../utils/exchange_wrapper';
-import {
-    ERC20BalancesByOwner,
-    ERC721TokenIdsByOwner,
-    TransferAmountsByMatchOrders as TransferAmounts,
-} from '../utils/types';
+import { chaiSetup } from './chai_setup';
+import { ERC20Wrapper } from './erc20_wrapper';
+import { ERC721Wrapper } from './erc721_wrapper';
+import { ExchangeWrapper } from './exchange_wrapper';
+import { ERC20BalancesByOwner, ERC721TokenIdsByOwner, TransferAmountsByMatchOrders as TransferAmounts } from './types';
 
 chaiSetup.configure();
 const expect = chai.expect;

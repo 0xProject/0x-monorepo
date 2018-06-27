@@ -4,13 +4,14 @@ import * as chai from 'chai';
 import ethUtil = require('ethereumjs-util');
 import * as _ from 'lodash';
 
-import { TokenRegistryContract } from '../src/generated_contract_wrappers/token_registry';
-import { artifacts } from '../src/utils/artifacts';
-import { expectRevertOrAlwaysFailingTransactionAsync } from '../src/utils/assertions';
-import { chaiSetup } from '../src/utils/chai_setup';
-import { constants } from '../src/utils/constants';
-import { TokenRegWrapper } from '../src/utils/token_registry_wrapper';
-import { provider, txDefaults, web3Wrapper } from '../src/utils/web3_wrapper';
+import { TokenRegistryContract } from '../generated_contract_wrappers/token_registry';
+
+import { artifacts } from './utils/artifacts';
+import { expectRevertOrAlwaysFailingTransactionAsync } from './utils/assertions';
+import { chaiSetup } from './utils/chai_setup';
+import { constants } from './utils/constants';
+import { TokenRegWrapper } from './utils/token_registry_wrapper';
+import { provider, txDefaults, web3Wrapper } from './utils/web3_wrapper';
 
 chaiSetup.configure();
 const expect = chai.expect;

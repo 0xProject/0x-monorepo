@@ -7,12 +7,12 @@ import * as chai from 'chai';
 import ethUtil = require('ethereumjs-util');
 import * as _ from 'lodash';
 
-import { TestLibBytesContract } from '../../src/generated_contract_wrappers/test_lib_bytes';
-import { artifacts } from '../../src/utils/artifacts';
-import { expectRevertOrOtherErrorAsync } from '../../src/utils/assertions';
-import { chaiSetup } from '../../src/utils/chai_setup';
-import { constants } from '../../src/utils/constants';
-import { provider, txDefaults, web3Wrapper } from '../../src/utils/web3_wrapper';
+import { TestLibBytesContract } from '../../generated_contract_wrappers/test_lib_bytes';
+import { artifacts } from '../utils/artifacts';
+import { expectRevertOrOtherErrorAsync } from '../utils/assertions';
+import { chaiSetup } from '../utils/chai_setup';
+import { constants } from '../utils/constants';
+import { provider, txDefaults, web3Wrapper } from '../utils/web3_wrapper';
 
 chaiSetup.configure();
 const expect = chai.expect;

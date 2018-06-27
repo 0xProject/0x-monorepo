@@ -3,12 +3,12 @@ import { RevertReason } from '@0xproject/types';
 import { BigNumber } from '@0xproject/utils';
 import * as chai from 'chai';
 
-import { DummyERC20TokenContract } from '../src/generated_contract_wrappers/dummy_e_r_c20_token';
-import { artifacts } from '../src/utils/artifacts';
-import { expectRevertOrOtherErrorAsync } from '../src/utils/assertions';
-import { chaiSetup } from '../src/utils/chai_setup';
-import { constants } from '../src/utils/constants';
-import { provider, txDefaults, web3Wrapper } from '../src/utils/web3_wrapper';
+import { DummyERC20TokenContract } from '../../generated_contract_wrappers/dummy_e_r_c20_token';
+import { artifacts } from '../utils/artifacts';
+import { expectRevertOrOtherErrorAsync } from '../utils/assertions';
+import { chaiSetup } from '../utils/chai_setup';
+import { constants } from '../utils/constants';
+import { provider, txDefaults, web3Wrapper } from '../utils/web3_wrapper';
 
 chaiSetup.configure();
 const expect = chai.expect;

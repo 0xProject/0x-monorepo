@@ -3,11 +3,11 @@ import { BigNumber } from '@0xproject/utils';
 import { Web3Wrapper } from '@0xproject/web3-wrapper';
 import * as chai from 'chai';
 
-import { ZRXTokenContract } from '../src/generated_contract_wrappers/zrx_token';
-import { artifacts } from '../src/utils/artifacts';
-import { chaiSetup } from '../src/utils/chai_setup';
-import { constants } from '../src/utils/constants';
-import { provider, txDefaults, web3Wrapper } from '../src/utils/web3_wrapper';
+import { ZRXTokenContract } from '../../generated_contract_wrappers/zrx_token';
+import { artifacts } from '../utils/artifacts';
+import { chaiSetup } from '../utils/chai_setup';
+import { constants } from '../utils/constants';
+import { provider, txDefaults, web3Wrapper } from '../utils/web3_wrapper';
 
 chaiSetup.configure();
 const expect = chai.expect;
