@@ -201,7 +201,7 @@ export const utils = {
                 return utils.getAddressBeginAndEnd(userAddress);
             case AccountState.Locked:
                 return 'Please Unlock';
-            case AccountState.Unconnected:
+            case AccountState.Disconnected:
                 return 'Connect a Wallet';
             default:
                 return '';
@@ -223,7 +223,7 @@ export const utils = {
         } else if (isExternallyInjectedProvider) {
             return AccountState.Locked;
         } else {
-            return AccountState.Unconnected;
+            return AccountState.Disconnected;
         }
     },
     hasUniqueNameAndSymbol(tokens: Token[], token: Token): boolean {

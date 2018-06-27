@@ -15,6 +15,7 @@ export interface TextProps {
     minHeight?: string;
     center?: boolean;
     fontWeight?: number | string;
+    textDecorationLine?: string;
     onClick?: () => void;
 }
 
@@ -28,6 +29,7 @@ export const Text = styled(PlainText)`
     font-family: ${props => props.fontFamily};
     font-weight: ${props => props.fontWeight};
     font-size: ${props => props.fontSize};
+    text-decoration-line: ${props => props.textDecorationLine};
     ${props => (props.lineHeight ? `line-height: ${props.lineHeight}` : '')};
     ${props => (props.center ? 'text-align: center' : '')};
     color: ${props => props.fontColor};
@@ -45,6 +47,7 @@ Text.defaultProps = {
     fontColor: colors.black,
     fontSize: '15px',
     lineHeight: '1.5em',
+    textDecorationLine: 'none',
     Tag: 'div',
 };
 

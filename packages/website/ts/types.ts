@@ -565,7 +565,7 @@ export enum BrowserType {
 }
 
 export enum AccountState {
-    Unconnected = 'Unconnected',
+    Disconnected = 'Disconnected',
     Ready = 'Ready',
     Loading = 'Loading',
     Locked = 'Locked',

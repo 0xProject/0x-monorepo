@@ -26,6 +26,7 @@ import { Identicon } from 'ts/components/ui/identicon';
 import { Island } from 'ts/components/ui/island';
 import { Text } from 'ts/components/ui/text';
 import { TokenIcon } from 'ts/components/ui/token_icon';
+import { BodyOverlay } from 'ts/components/wallet/body_overlay';
 import { WalletDisconnectedItem } from 'ts/components/wallet/wallet_disconnected_item';
 import { WrapEtherItem } from 'ts/components/wallet/wrap_ether_item';
 import { AllowanceToggle } from 'ts/containers/inputs/allowance_toggle';
@@ -196,6 +197,25 @@ export class Wallet extends React.Component<WalletProps, WalletState> {
                 {_.map(loadingRowsRange, index => {
                     return <NullTokenRow />;
                 })}
+                <Container
+                    className="flex items-center"
+                    position="absolute"
+                    width="100%"
+                    height="100%"
+                    maxHeight={bodyStyle.maxHeight}
+                >
+                    <div className="mx-auto">
+                        <BodyOverlay
+                            dispatcher={this.props.dispatcher}
+                            userAddress={this.props.userAddress}
+                            injectedProviderName={this.props.injectedProviderName}
+                            providerType={this.props.providerType}
+                            onToggleLedgerDialog={this.props.onToggleLedgerDialog}
+                            blockchain={this.props.blockchain}
+                            blockchainIsLoaded={this.props.blockchainIsLoaded}
+                        />
+                    </div>
+                </Container>
             </div>
         );
     }

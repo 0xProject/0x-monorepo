@@ -156,7 +156,7 @@ export class ProviderDisplay extends React.Component<ProviderDisplayProps, Provi
                 return <CircularProgress size={ROOT_HEIGHT} thickness={2} />;
             case AccountState.Locked:
                 return <Lock color={colors.black} />;
-            case AccountState.Unconnected:
+            case AccountState.Disconnected:
                 return <ActionAccountBalanceWallet color={colors.mediumBlue} />;
             default:
                 return null;
@@ -179,7 +179,7 @@ export class ProviderDisplay extends React.Component<ProviderDisplayProps, Provi
                 return colors.darkGrey;
             case AccountState.Ready:
             case AccountState.Locked:
-            case AccountState.Unconnected:
+            case AccountState.Disconnected:
             default:
                 return colors.black;
         }
@@ -200,7 +200,7 @@ export class ProviderDisplay extends React.Component<ProviderDisplayProps, Provi
                         </Container>
                     </Container>
                 );
-            case AccountState.Unconnected:
+            case AccountState.Disconnected:
             case AccountState.Loading:
             default:
                 return null;
@@ -213,7 +213,7 @@ export class ProviderDisplay extends React.Component<ProviderDisplayProps, Provi
                 return colors.green;
             case AccountState.Locked:
             case AccountState.Loading:
-            case AccountState.Unconnected:
+            case AccountState.Disconnected:
             default:
                 return colors.red;
         }
