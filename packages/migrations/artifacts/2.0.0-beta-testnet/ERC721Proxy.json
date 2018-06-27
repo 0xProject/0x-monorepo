@@ -277,11 +277,5 @@
 			}
 		}
 	},
-	"networks": {
-		"42": {
-			"address": "0x83989bb5bda10bf67b0529117fab5f26487d0ef2",
-			"links": {},
-			"constructorArgs": "[]"
-		}
-	}
+	"networks": {}
 }

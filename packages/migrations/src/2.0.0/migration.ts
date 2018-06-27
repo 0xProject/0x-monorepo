@@ -51,7 +51,7 @@ export const runV2MigrationsAsync = async (provider: Provider, artifactsDir: str
         artifacts.Exchange,
         provider,
         txDefaults,
-        zrxToken.address,
+        // zrxToken.address,
     );
     artifactsWriter.saveArtifact(exchange);
 

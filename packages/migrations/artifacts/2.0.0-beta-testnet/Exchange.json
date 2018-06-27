@@ -2059,11 +2059,5 @@
 			}
 		}
 	},
-	"networks": {
-		"42": {
-			"address": "0x6013732754571cefd2922661e669f2517f387101",
-			"links": {},
-			"constructorArgs": "[]"
-		}
-	}
+	"networks": {}
 }
