@@ -1,10 +1,18 @@
 declare module 'web3-provider-engine' {
+    interface Web3ProviderEngineOptions {
+        pollingInterval?: number;
+        blockTracker?: any;
+        blockTrackerProvider?: any;
+    }
     class Web3ProviderEngine {
+        constructor(options?: Web3ProviderEngineOptions);
         public on(event: string, handler: () => void): void;
         public send(payload: any): void;
         public sendAsync(payload: any, callback: (error: any, response: any) => void): void;
         public addProvider(provider: any): void;
-        public start(): void;
+        // start block polling
+        public start(callback?: () => void): void;
+        // stop block polling
         public stop(): void;
     }
     export = Web3ProviderEngine;
