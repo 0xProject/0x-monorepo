@@ -9,6 +9,7 @@ import { runV1MigrationsAsync } from './1.0.0/migration';
 import { runV2TestnetMigrationsAsync } from './2.0.0-beta-testnet/migration';
 import { runV2MigrationsAsync } from './2.0.0/migration';
 
+import { constants } from './utils/constants';
 import { providerFactory } from './utils/provider_factory';
 
 enum ContractVersions {
@@ -39,6 +40,7 @@ const args = yargs.argv;
             const accounts = await web3Wrapper.getAvailableAddressesAsync();
             const testnetTxDefaults = {
                 from: accounts[0],
+                gas: devConstants.GAS_LIMIT,
             };
             await runV2TestnetMigrationsAsync(ledgerProvider, artifactsDir, testnetTxDefaults);
             break;
