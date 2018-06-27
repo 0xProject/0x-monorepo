@@ -90,11 +90,6 @@ contract MixinForwarderExpectedResults is MixinForwarderCore {
         view
         returns (Exchange.FillResults memory totalFillResults)
     {
-        address token = LibBytes.readAddress(orders[0].makerAssetData, 16);
-        require(
-            token == address(ZRX_TOKEN),
-            TAKER_ASSET_ZRX_REQUIRED
-        );
         for (uint256 i = 0; i < orders.length; i++) {
             uint256 remainingMakerAssetFillAmount = safeSub(zrxAmount, totalFillResults.makerAssetFilledAmount);
             // Convert the remaining amount of makerToken to buy into remaining amount

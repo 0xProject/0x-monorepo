@@ -22,10 +22,10 @@ export class ForwarderWrapper {
     private _zrxAddressBuffer: Buffer;
     private static _createOptimizedSellOrders(signedOrders: SignedOrder[]): MarketSellOrders {
         const marketSellOrders = formatters.createMarketSellOrders(signedOrders, ZERO_AMOUNT);
-        const proxyId = assetProxyUtils.decodeAssetDataId(signedOrders[0].makerAssetData);
+        const assetDataId = assetProxyUtils.decodeAssetDataId(signedOrders[0].makerAssetData);
         // Contract will fill this in for us as all of the assetData is assumed to be the same
         for (let i = 0; i < signedOrders.length; i++) {
-            if (i !== 0 && proxyId === AssetProxyId.ERC20) {
+            if (i !== 0 && assetDataId === AssetProxyId.ERC20) {
                 // Forwarding contract will fill this in from the first order
                 marketSellOrders.orders[i].makerAssetData = constants.NULL_BYTES;
             }
@@ -117,8 +117,8 @@ export class ForwarderWrapper {
         feeRecipient: string,
         txOpts?: TxDataPayable,
     ): Promise<TransactionReceiptWithDecodedLogs> {
-        const proxyId = assetProxyUtils.decodeAssetDataId(orders[0].makerAssetData);
-        if (proxyId !== AssetProxyId.ERC20) {
+        const assetDataId = assetProxyUtils.decodeAssetDataId(orders[0].makerAssetData);
+        if (assetDataId !== AssetProxyId.ERC20) {
             throw new Error('Asset type not supported by marketBuyTokens');
         }
         const params = ForwarderWrapper._createOptimizedSellOrders(orders);
@@ -141,8 +141,8 @@ export class ForwarderWrapper {
         feeProportion: number,
         makerAssetAmount: BigNumber,
     ): Promise<BigNumber> {
-        const proxyId = assetProxyUtils.decodeAssetDataId(orders[0].makerAssetData);
-        switch (proxyId) {
+        const assetProxyId = assetProxyUtils.decodeAssetDataId(orders[0].makerAssetData);
+        switch (assetProxyId) {
             case AssetProxyId.ERC20: {
                 const fillAmountWei = await this._calculateBuyExactERC20FillAmountAsync(
                     orders,
@@ -161,7 +161,7 @@ export class ForwarderWrapper {
                 return fillAmountWei;
             }
             default:
-                throw new Error(`Invalid Asset Proxy Id: ${proxyId}`);
+                throw new Error(`Invalid Asset Proxy Id: ${assetProxyId}`);
         }
     }
     private async _calculateBuyExactERC20FillAmountAsync(
@@ -173,7 +173,7 @@ export class ForwarderWrapper {
         const makerAssetData = assetProxyUtils.decodeAssetData(orders[0].makerAssetData);
         const makerAssetToken = ethUtil.toBuffer(makerAssetData.tokenAddress);
         const params = formatters.createMarketBuyOrders(orders, makerAssetAmount);
-        const feeParams = ForwarderWrapper._createOptimizedZRXSellOrders(feeOrders);
+        const feeParams = formatters.createMarketBuyOrders(feeOrders, ZERO_AMOUNT);
 
         let fillAmountWei;
         if (makerAssetToken.equals(this._zrxAddressBuffer)) {

@@ -58,14 +58,6 @@ contract MixinBuyExactAssets is
             totalFillResults = buyExactERC721TokensInternal(orders, signatures, feeOrders, feeSignatures, makerAssetAmount);
         }
         remainingTakerAssetAmount = safeSub(remainingTakerAssetAmount, totalFillResults.takerAssetFilledAmount);
-        // Prevent a user from paying too much in fees through fee abstraction
-        require(
-            isAcceptableThreshold(
-                remainingTakerAssetAmount,
-                totalFillResults.takerAssetFilledAmount
-            ),
-            UNACCEPTABLE_THRESHOLD
-        );
         withdrawPayAndDeductFee(
             remainingTakerAssetAmount,
             totalFillResults.takerAssetFilledAmount,
@@ -107,6 +99,14 @@ contract MixinBuyExactAssets is
                 requestedTokensResults.makerAssetFilledAmount >= makerAssetAmount,
                 UNACCEPTABLE_THRESHOLD
             );
+            addFillResults(totalFillResults, requestedTokensResults);
+            require(
+                isAcceptableThreshold(
+                    safeAdd(totalFillResults.makerAssetFilledAmount, totalFillResults.takerFeePaid), // Total ZRX
+                    totalFillResults.makerAssetFilledAmount // amount going to msg.sender
+                ),
+                UNACCEPTABLE_THRESHOLD
+            );
         } else {
             Exchange.FillResults memory calculatedMarketBuyResults = calculateMarketBuyFillResults(orders, makerAssetAmount);
             if (calculatedMarketBuyResults.takerFeePaid > 0) {
@@ -125,8 +125,15 @@ contract MixinBuyExactAssets is
                 requestedTokensResults.makerAssetFilledAmount == makerAssetAmount,
                 UNACCEPTABLE_THRESHOLD
             );
+            addFillResults(totalFillResults, requestedTokensResults);
+            require(
+                isAcceptableThreshold(
+                    totalFillResults.takerAssetFilledAmount,
+                    requestedTokensResults.takerAssetFilledAmount
+                ),
+                UNACCEPTABLE_THRESHOLD
+            );
         }
-        addFillResults(totalFillResults, requestedTokensResults);
         // Transfer all tokens to msg.sender
         transferToken(makerTokenAddress, msg.sender, requestedTokensResults.makerAssetFilledAmount);
         return totalFillResults;
@@ -177,6 +184,13 @@ contract MixinBuyExactAssets is
             signatures
         );
         addFillResults(totalFillResults, fillOrderResults);
+        require(
+            isAcceptableThreshold(
+                totalFillResults.takerAssetFilledAmount,
+                fillOrderResults.takerAssetFilledAmount
+            ),
+            UNACCEPTABLE_THRESHOLD
+        );
         // Transfer all of the tokens filled from the batchFill
         for (i = 0; i < ordersLength; i++) {
             transferERC721Token(orders[i].makerAssetData, address(this), msg.sender, orders[i].makerAssetAmount);

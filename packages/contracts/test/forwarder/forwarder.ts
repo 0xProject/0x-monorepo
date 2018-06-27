@@ -404,6 +404,48 @@ describe(ContractName.Forwarder, () => {
             expect(takerTokenBalanceAfter).to.be.bignumber.greaterThan(takerTokenBalanceBefore.plus(makerAssetAmount));
             expect(takerWeiBalanceAfter).to.be.bignumber.equal(takerWeiBalanceBefore.minus(expectedCostAfterGas));
         });
+        it('throws if fees are higher than 5% when buying zrx', async () => {
+            const highFeeZRXOrder = orderFactory.newSignedOrder({
+                makerAssetData: assetProxyUtils.encodeERC20AssetData(zrxToken.address),
+                makerAssetAmount: signedOrder.makerAssetAmount,
+                takerFee: signedOrder.makerAssetAmount.times(0.06),
+            });
+            signedOrdersWithFee = [highFeeZRXOrder];
+            feeOrders = [];
+            const makerAssetAmount = signedOrder.makerAssetAmount.div(2);
+            const fillAmountWei = await forwarderWrapper.calculateBuyExactFillAmountWeiAsync(
+                signedOrdersWithFee,
+                feeOrders,
+                feeProportion,
+                makerAssetAmount,
+            );
+            return expectRevertOrAlwaysFailingTransactionAsync(
+                forwarderWrapper.buyExactAssetsAsync(signedOrdersWithFee, feeOrders, makerAssetAmount, {
+                    from: takerAddress,
+                    value: fillAmountWei,
+                }),
+            );
+        });
+        it('throws if fees are higher than 5% when buying erc20', async () => {
+            const highFeeERC20Order = orderFactory.newSignedOrder({
+                takerFee: signedOrder.makerAssetAmount.times(0.06),
+            });
+            signedOrdersWithFee = [highFeeERC20Order];
+            feeOrders = [feeOrder];
+            const makerAssetAmount = signedOrder.makerAssetAmount.div(2);
+            const fillAmountWei = await forwarderWrapper.calculateBuyExactFillAmountWeiAsync(
+                signedOrdersWithFee,
+                feeOrders,
+                feeProportion,
+                makerAssetAmount,
+            );
+            return expectRevertOrAlwaysFailingTransactionAsync(
+                forwarderWrapper.buyExactAssetsAsync(signedOrdersWithFee, feeOrders, makerAssetAmount, {
+                    from: takerAddress,
+                    value: fillAmountWei,
+                }),
+            );
+        });
     });
     describe('buyExactAssets - ERC721', async () => {
         it('buys ERC721 assets', async () => {
