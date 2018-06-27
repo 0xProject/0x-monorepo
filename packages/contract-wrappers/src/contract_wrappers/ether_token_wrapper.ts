@@ -1,7 +1,7 @@
 import { schemas } from '@0xproject/json-schemas';
-import { ContractAbi, LogWithDecodedArgs } from '@0xproject/types';
 import { BigNumber } from '@0xproject/utils';
 import { Web3Wrapper } from '@0xproject/web3-wrapper';
+import { ContractAbi, LogWithDecodedArgs } from 'ethereum-types';
 import * as _ from 'lodash';
 
 import { artifacts } from '../artifacts';
@@ -9,22 +9,22 @@ import { BlockRange, ContractWrappersError, EventCallback, IndexedFilterValues, 
 import { assert } from '../utils/assert';
 
 import { ContractWrapper } from './contract_wrapper';
-import { EtherTokenContract, EtherTokenContractEventArgs, EtherTokenEvents } from './generated/ether_token';
-import { TokenWrapper } from './token_wrapper';
+import { ERC20TokenWrapper } from './erc20_token_wrapper';
+import { WETH9Contract, WETH9EventArgs, WETH9Events } from './generated/weth9';
 
 /**
  * This class includes all the functionality related to interacting with a wrapped Ether ERC20 token contract.
  * The caller can convert ETH into the equivalent number of wrapped ETH ERC20 tokens and back.
  */
 export class EtherTokenWrapper extends ContractWrapper {
-    public abi: ContractAbi = artifacts.EtherToken.abi;
+    public abi: ContractAbi = artifacts.EtherToken.compilerOutput.abi;
     private _etherTokenContractsByAddress: {
-        [address: string]: EtherTokenContract;
+        [address: string]: WETH9Contract;
     } = {};
-    private _tokenWrapper: TokenWrapper;
-    constructor(web3Wrapper: Web3Wrapper, networkId: number, tokenWrapper: TokenWrapper) {
+    private _erc20TokenWrapper: ERC20TokenWrapper;
+    constructor(web3Wrapper: Web3Wrapper, networkId: number, erc20TokenWrapper: ERC20TokenWrapper) {
         super(web3Wrapper, networkId);
-        this._tokenWrapper = tokenWrapper;
+        this._erc20TokenWrapper = erc20TokenWrapper;
     }
     /**
      * Deposit ETH into the Wrapped ETH smart contract and issues the equivalent number of wrapped ETH tokens
@@ -81,7 +81,7 @@ export class EtherTokenWrapper extends ContractWrapper {
         const normalizedEtherTokenAddress = etherTokenAddress.toLowerCase();
         const normalizedWithdrawerAddress = withdrawer.toLowerCase();
 
-        const WETHBalanceInBaseUnits = await this._tokenWrapper.getBalanceAsync(
+        const WETHBalanceInBaseUnits = await this._erc20TokenWrapper.getBalanceAsync(
             normalizedEtherTokenAddress,
             normalizedWithdrawerAddress,
         );
@@ -107,15 +107,15 @@ export class EtherTokenWrapper extends ContractWrapper {
      *                              the value is the value you are interested in. E.g `{_owner: aUserAddressHex}`
      * @return  Array of logs that match the parameters
      */
-    public async getLogsAsync<ArgsType extends EtherTokenContractEventArgs>(
+    public async getLogsAsync<ArgsType extends WETH9EventArgs>(
         etherTokenAddress: string,
-        eventName: EtherTokenEvents,
+        eventName: WETH9Events,
         blockRange: BlockRange,
         indexFilterValues: IndexedFilterValues,
     ): Promise<Array<LogWithDecodedArgs<ArgsType>>> {
         assert.isETHAddressHex('etherTokenAddress', etherTokenAddress);
         const normalizedEtherTokenAddress = etherTokenAddress.toLowerCase();
-        assert.doesBelongToStringEnum('eventName', eventName, EtherTokenEvents);
+        assert.doesBelongToStringEnum('eventName', eventName, WETH9Events);
         assert.doesConformToSchema('blockRange', blockRange, schemas.blockRangeSchema);
         assert.doesConformToSchema('indexFilterValues', indexFilterValues, schemas.indexFilterValuesSchema);
         const logs = await this._getLogsAsync<ArgsType>(
@@ -123,7 +123,7 @@ export class EtherTokenWrapper extends ContractWrapper {
             eventName,
             blockRange,
             indexFilterValues,
-            artifacts.EtherToken.abi,
+            artifacts.EtherToken.compilerOutput.abi,
         );
         return logs;
     }
@@ -136,22 +136,22 @@ export class EtherTokenWrapper extends ContractWrapper {
      * @param   callback            Callback that gets called when a log is added/removed
      * @return Subscription token used later to unsubscribe
      */
-    public subscribe<ArgsType extends EtherTokenContractEventArgs>(
+    public subscribe<ArgsType extends WETH9EventArgs>(
         etherTokenAddress: string,
-        eventName: EtherTokenEvents,
+        eventName: WETH9Events,
         indexFilterValues: IndexedFilterValues,
         callback: EventCallback<ArgsType>,
     ): string {
         assert.isETHAddressHex('etherTokenAddress', etherTokenAddress);
         const normalizedEtherTokenAddress = etherTokenAddress.toLowerCase();
-        assert.doesBelongToStringEnum('eventName', eventName, EtherTokenEvents);
+        assert.doesBelongToStringEnum('eventName', eventName, WETH9Events);
         assert.doesConformToSchema('indexFilterValues', indexFilterValues, schemas.indexFilterValuesSchema);
         assert.isFunction('callback', callback);
         const subscriptionToken = this._subscribe<ArgsType>(
             normalizedEtherTokenAddress,
             eventName,
             indexFilterValues,
-            artifacts.EtherToken.abi,
+            artifacts.EtherToken.compilerOutput.abi,
             callback,
         );
         return subscriptionToken;
@@ -187,7 +187,7 @@ export class EtherTokenWrapper extends ContractWrapper {
         this.unsubscribeAll();
         this._etherTokenContractsByAddress = {};
     }
-    private async _getEtherTokenContractAsync(etherTokenAddress: string): Promise<EtherTokenContract> {
+    private async _getEtherTokenContractAsync(etherTokenAddress: string): Promise<WETH9Contract> {
         let etherTokenContract = this._etherTokenContractsByAddress[etherTokenAddress];
         if (!_.isUndefined(etherTokenContract)) {
             return etherTokenContract;
@@ -196,7 +196,7 @@ export class EtherTokenWrapper extends ContractWrapper {
             artifacts.EtherToken,
             etherTokenAddress,
         );
-        const contractInstance = new EtherTokenContract(
+        const contractInstance = new WETH9Contract(
             abi,
             address,
             this._web3Wrapper.getProvider(),
