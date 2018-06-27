@@ -23,7 +23,6 @@ import { GenerateOrderForm } from 'ts/containers/generate_order_form';
 import { localStorage } from 'ts/local_storage/local_storage';
 import { Dispatcher } from 'ts/redux/dispatcher';
 import { BlockchainErrs, HashData, Order, ProviderType, ScreenWidths, TokenByAddress, WebsitePaths } from 'ts/types';
-import { configs } from 'ts/utils/configs';
 import { constants } from 'ts/utils/constants';
 import { orderParser } from 'ts/utils/order_parser';
 import { Translate } from 'ts/utils/translate';
@@ -170,67 +169,53 @@ export class LegacyPortal extends React.Component<LegacyPortalProps, LegacyPorta
                 />
                 <div id="portal" className="mx-auto max-width-4" style={{ width: '100%' }}>
                     <Paper className="mb3 mt2">
-                        {!configs.IS_MAINNET_ENABLED && this.props.networkId === constants.NETWORK_ID_MAINNET ? (
-                            <div className="p3 center">
-                                <div className="h2 py2">Mainnet unavailable</div>
-                                <div className="mx-auto pb2 pt2">
-                                    <img src="/images/zrx_token.png" style={{ width: 150 }} />
-                                </div>
-                                <div>
-                                    0x portal is currently unavailable on the Ethereum mainnet.
-                                    <div>To try it out, switch to the Kovan test network (networkId: 42).</div>
-                                    <div className="py2">Check back soon!</div>
-                                </div>
+                        <div className="mx-auto flex">
+                            <div className="col col-2 pr2 pt1 sm-hide xs-hide" style={portalMenuContainerStyle}>
+                                <LegacyPortalMenu menuItemStyle={{ color: colors.white }} />
                             </div>
-                        ) : (
-                            <div className="mx-auto flex">
-                                <div className="col col-2 pr2 pt1 sm-hide xs-hide" style={portalMenuContainerStyle}>
-                                    <LegacyPortalMenu menuItemStyle={{ color: colors.white }} />
-                                </div>
-                                <div className="col col-12 lg-col-10 md-col-10 sm-col sm-col-12">
-                                    <div className="py2" style={{ backgroundColor: colors.grey50 }}>
-                                        {this.props.blockchainIsLoaded ? (
-                                            <Switch>
-                                                <Route
-                                                    path={`${WebsitePaths.Portal}/weth`}
-                                                    render={this._renderEthWrapper.bind(this)}
-                                                />
-                                                <Route
-                                                    path={`${WebsitePaths.Portal}/fill`}
-                                                    render={this._renderFillOrder.bind(this)}
-                                                />
-                                                <Route
-                                                    path={`${WebsitePaths.Portal}/balances`}
-                                                    render={this._renderTokenBalances.bind(this)}
-                                                />
-                                                <Route
-                                                    path={`${WebsitePaths.Portal}/trades`}
-                                                    render={this._renderTradeHistory.bind(this)}
-                                                />
-                                                <Route
-                                                    path={`${WebsitePaths.Home}`}
-                                                    render={this._renderGenerateOrderForm.bind(this)}
-                                                />
-                                            </Switch>
-                                        ) : (
-                                            <div className="pt4 sm-px2 sm-pt2 sm-m1" style={{ height: 500 }}>
-                                                <div
-                                                    className="relative sm-px2 sm-pt2 sm-m1"
-                                                    style={{ height: 122, top: '50%', transform: 'translateY(-50%)' }}
-                                                >
-                                                    <div className="center pb2">
-                                                        <CircularProgress size={40} thickness={5} />
-                                                    </div>
-                                                    <div className="center pt2" style={{ paddingBottom: 11 }}>
-                                                        Loading Portal...
-                                                    </div>
+                            <div className="col col-12 lg-col-10 md-col-10 sm-col sm-col-12">
+                                <div className="py2" style={{ backgroundColor: colors.grey50 }}>
+                                    {this.props.blockchainIsLoaded ? (
+                                        <Switch>
+                                            <Route
+                                                path={`${WebsitePaths.Portal}/weth`}
+                                                render={this._renderEthWrapper.bind(this)}
+                                            />
+                                            <Route
+                                                path={`${WebsitePaths.Portal}/fill`}
+                                                render={this._renderFillOrder.bind(this)}
+                                            />
+                                            <Route
+                                                path={`${WebsitePaths.Portal}/balances`}
+                                                render={this._renderTokenBalances.bind(this)}
+                                            />
+                                            <Route
+                                                path={`${WebsitePaths.Portal}/trades`}
+                                                render={this._renderTradeHistory.bind(this)}
+                                            />
+                                            <Route
+                                                path={`${WebsitePaths.Home}`}
+                                                render={this._renderGenerateOrderForm.bind(this)}
+                                            />
+                                        </Switch>
+                                    ) : (
+                                        <div className="pt4 sm-px2 sm-pt2 sm-m1" style={{ height: 500 }}>
+                                            <div
+                                                className="relative sm-px2 sm-pt2 sm-m1"
+                                                style={{ height: 122, top: '50%', transform: 'translateY(-50%)' }}
+                                            >
+                                                <div className="center pb2">
+                                                    <CircularProgress size={40} thickness={5} />
+                                                </div>
+                                                <div className="center pt2" style={{ paddingBottom: 11 }}>
+                                                    Loading Portal...
                                                 </div>
                                             </div>
-                                        )}
-                                    </div>
+                                        </div>
+                                    )}
                                 </div>
                             </div>
-                        )}
+                        </div>
                     </Paper>
                     <BlockchainErrDialog
                         blockchain={this._blockchain}

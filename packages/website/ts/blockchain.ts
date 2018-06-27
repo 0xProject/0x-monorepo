@@ -97,9 +97,6 @@ export class Blockchain {
     private static _getInjectedWeb3(): any {
         return (window as any).web3;
     }
-    private static _getFallbackNetworkId(): number {
-        return configs.IS_MAINNET_ENABLED ? constants.NETWORK_ID_MAINNET : constants.NETWORK_ID_KOVAN;
-    }
     private static async _getInjectedWeb3ProviderNetworkIdIfExistsAsync(): Promise<number> {
         // Hack: We need to know the networkId the injectedWeb3 is connected to (if it is defined) in
         // order to properly instantiate the web3Wrapper. Since we must use the async call, we cannot
@@ -172,7 +169,7 @@ export class Blockchain {
             // injected into their browser.
             const provider = new ProviderEngine();
             provider.addProvider(new FilterSubprovider());
-            const networkId = Blockchain._getFallbackNetworkId();
+            const networkId = constants.NETWORK_ID_MAINNET;
             const rpcSubproviders = _.map(configs.PUBLIC_NODE_URLS_BY_NETWORK_ID[networkId], publicNodeUrl => {
                 return new RpcSubprovider({
                     rpcUrl: publicNodeUrl,
@@ -774,7 +771,7 @@ export class Blockchain {
     private async _onPageLoadInitFireAndForgetAsync(): Promise<void> {
         await utils.onPageLoadAsync(); // wait for page to load
         const networkIdIfExists = await Blockchain._getInjectedWeb3ProviderNetworkIdIfExistsAsync();
-        this.networkId = !_.isUndefined(networkIdIfExists) ? networkIdIfExists : Blockchain._getFallbackNetworkId();
+        this.networkId = !_.isUndefined(networkIdIfExists) ? networkIdIfExists : constants.NETWORK_ID_MAINNET;
         const injectedWeb3 = Blockchain._getInjectedWeb3();
         if (injectedWeb3) {
             const injectedProviderObservable = injectedWeb3.currentProvider.publicConfigStore;
