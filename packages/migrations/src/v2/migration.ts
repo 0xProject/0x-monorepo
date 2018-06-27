@@ -1,3 +1,4 @@
+import { assetProxyUtils } from '@0xproject/order-utils';
 import { BigNumber } from '@0xproject/utils';
 import { Web3Wrapper } from '@0xproject/web3-wrapper';
 import { Provider, TxData } from 'ethereum-types';
@@ -51,7 +52,7 @@ export const runV2MigrationsAsync = async (provider: Provider, artifactsDir: str
         artifacts.Exchange,
         provider,
         txDefaults,
-        zrxToken.address,
+        assetProxyUtils.encodeERC20AssetData(zrxToken.address),
     );
     artifactsWriter.saveArtifact(exchange);
 
