@@ -10,7 +10,7 @@ chaiSetup.configure();
 // Those tests are slower cause they're talking to a remote node
 const TIMEOUT = 10000;
 
-describe('Artifacts', () => {
+describe.skip('Artifacts', () => {
     describe('contracts are deployed on kovan', () => {
         const kovanRpcUrl = constants.KOVAN_RPC_URL;
         const provider = web3Factory.getRpcProvider({ rpcUrl: kovanRpcUrl });
@@ -18,14 +18,11 @@ describe('Artifacts', () => {
             networkId: constants.KOVAN_NETWORK_ID,
         };
         const contractWrappers = new ContractWrappers(provider, config);
-        it('token registry contract is deployed', async () => {
-            await (contractWrappers.tokenRegistry as any)._getTokenRegistryContractAsync();
+        it('erc20 proxy contract is deployed', async () => {
+            await (contractWrappers.erc20Proxy as any)._getTokenTransferProxyContractAsync();
         }).timeout(TIMEOUT);
-        it('proxy contract is deployed', async () => {
-            await (contractWrappers.proxy as any)._getTokenTransferProxyContractAsync();
-        }).timeout(TIMEOUT);
-        it('exchange contract is deployed', async () => {
-            await (contractWrappers.exchange as any)._getExchangeContractAsync();
+        it('erc721 proxy contract is deployed', async () => {
+            await (contractWrappers.erc721Proxy as any)._getTokenTransferProxyContractAsync();
         }).timeout(TIMEOUT);
     });
     describe('contracts are deployed on ropsten', () => {
@@ -35,14 +32,11 @@ describe('Artifacts', () => {
             networkId: constants.ROPSTEN_NETWORK_ID,
         };
         const contractWrappers = new ContractWrappers(provider, config);
-        it('token registry contract is deployed', async () => {
-            await (contractWrappers.tokenRegistry as any)._getTokenRegistryContractAsync();
+        it('erc20 proxy contract is deployed', async () => {
+            await (contractWrappers.erc20Proxy as any)._getTokenTransferProxyContractAsync();
         }).timeout(TIMEOUT);
-        it('proxy contract is deployed', async () => {
-            await (contractWrappers.proxy as any)._getTokenTransferProxyContractAsync();
-        }).timeout(TIMEOUT);
-        it('exchange contract is deployed', async () => {
-            await (contractWrappers.exchange as any)._getExchangeContractAsync();
+        it('erc721 proxy contract is deployed', async () => {
+            await (contractWrappers.erc721Proxy as any)._getTokenTransferProxyContractAsync();
         }).timeout(TIMEOUT);
     });
 });
