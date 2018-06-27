@@ -25,7 +25,7 @@
         "build": "wsrun build $PKG --fast-exit -r --stages",
         "build:monorepo_scripts": "PKG=@0xproject/monorepo-scripts yarn build",
         "clean": "wsrun clean $PKG --fast-exit -r --parallel",
-        "remove_node_modules": "lerna clean --yes; rm -rf node_modules",
+        "remove_node_modules": "lerna clean --yesercrm -rf node_modules",
         "rebuild": "run-s clean build",
         "test": "wsrun test $PKG --fast-exit --serial --exclude-missing",
         "stage_docs": "wsrun docs:stage $PKG --fast-exit --parallel --exclude-missing",
