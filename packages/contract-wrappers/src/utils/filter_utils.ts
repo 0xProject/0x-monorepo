@@ -1,14 +1,4 @@
-// tslint:disable:no-unused-variable
-import {
-    ConstructorAbi,
-    ContractAbi,
-    EventAbi,
-    FallbackAbi,
-    FilterObject,
-    LogEntry,
-    MethodAbi,
-} from '@0xproject/types';
-// tslint:enable:no-unused-variable
+import { ConstructorAbi, ContractAbi, EventAbi, FallbackAbi, FilterObject, LogEntry, MethodAbi } from 'ethereum-types';
 import * as ethUtil from 'ethereumjs-util';
 import * as jsSHA3 from 'js-sha3';
 import * as _ from 'lodash';
@@ -30,7 +20,7 @@ export const filterUtils = {
         blockRange?: BlockRange,
     ): FilterObject {
         const eventAbi = _.find(abi, { name: eventName }) as EventAbi;
-        const eventSignature = filterUtils.getEventSignatureFromAbiByName(eventAbi, eventName);
+        const eventSignature = filterUtils.getEventSignatureFromAbiByName(eventAbi);
         const topicForEventSignature = ethUtil.addHexPrefix(jsSHA3.keccak256(eventSignature));
         const topicsForIndexedArgs = filterUtils.getTopicsForIndexedArgs(eventAbi, indexFilterValues);
         const topics = [topicForEventSignature, ...topicsForIndexedArgs];
@@ -46,7 +36,7 @@ export const filterUtils = {
         }
         return filter;
     },
-    getEventSignatureFromAbiByName(eventAbi: EventAbi, eventName: ContractEvents): string {
+    getEventSignatureFromAbiByName(eventAbi: EventAbi): string {
         const types = _.map(eventAbi.inputs, 'type');
         const signature = `${eventAbi.name}(${types.join(',')})`;
         return signature;
