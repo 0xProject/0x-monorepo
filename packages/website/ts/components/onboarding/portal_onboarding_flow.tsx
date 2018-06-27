@@ -90,14 +90,14 @@ class PlainPortalOnboardingFlow extends React.Component<PortalOnboardingFlowProp
                 continueButtonDisplay: 'enabled',
             },
             {
-                target: '.eth-row',
+                target: '.wallet',
                 title: 'Add ETH',
                 content: <AddEthOnboardingStep />,
                 placement: 'right',
                 continueButtonDisplay: this._userHasVisibleEth() ? 'enabled' : 'disabled',
             },
             {
-                target: '.weth-row',
+                target: '.wallet',
                 title: 'Step 1/2',
                 content: (
                     <WrapEthOnboardingStep
@@ -110,7 +110,7 @@ class PlainPortalOnboardingFlow extends React.Component<PortalOnboardingFlowProp
                 continueButtonDisplay: this._userHasVisibleWeth() ? 'enabled' : undefined,
             },
             {
-                target: '.weth-row',
+                target: '.wallet',
                 title: 'Step 2/2',
                 content: (
                     <SetAllowancesOnboardingStep
