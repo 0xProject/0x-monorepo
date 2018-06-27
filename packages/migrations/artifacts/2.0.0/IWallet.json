@@ -26,7 +26,21 @@
 				"stateMutability": "view",
 				"type": "function"
 			}
-		]
+		],
+		"evm": {
+			"bytecode": {
+				"linkReferences": {},
+				"object": "0x",
+				"opcodes": "",
+				"sourceMap": ""
+			},
+			"deployedBytecode": {
+				"linkReferences": {},
+				"object": "0x",
+				"opcodes": "",
+				"sourceMap": ""
+			}
+		}
 	},
 	"sources": {
 		"current/protocol/Exchange/interfaces/IWallet.sol": {
@@ -41,6 +55,10 @@
 		"name": "solc",
 		"version": "soljson-v0.4.24+commit.e67f0147.js",
 		"settings": {
+			"optimizer": {
+				"enabled": true,
+				"runs": 1000000
+			},
 			"outputSelection": {
 				"*": {
 					"*": [

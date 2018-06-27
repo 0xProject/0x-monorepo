@@ -5,7 +5,6 @@ import { BigNumber } from '@0xproject/utils';
 import * as chai from 'chai';
 import { LogWithDecodedArgs } from 'ethereum-types';
 import ethUtil = require('ethereumjs-util');
-import * as _ from 'lodash';
 
 import { DummyERC20TokenContract } from '../../src/generated_contract_wrappers/dummy_e_r_c20_token';
 import {
@@ -16,10 +15,7 @@ import { DummyERC721TokenContract } from '../../src/generated_contract_wrappers/
 import { ERC20ProxyContract } from '../../src/generated_contract_wrappers/e_r_c20_proxy';
 import { ERC721ProxyContract } from '../../src/generated_contract_wrappers/e_r_c721_proxy';
 import { artifacts } from '../../src/utils/artifacts';
-import {
-    expectRevertOrAlwaysFailingTransactionAsync,
-    expectRevertReasonOrAlwaysFailingTransactionAsync,
-} from '../../src/utils/assertions';
+import { expectRevertReasonOrAlwaysFailingTransactionAsync } from '../../src/utils/assertions';
 import { chaiSetup } from '../../src/utils/chai_setup';
 import { constants } from '../../src/utils/constants';
 import { ERC20Wrapper } from '../../src/utils/erc20_wrapper';
@@ -189,58 +185,6 @@ describe('Asset Transfer Proxies', () => {
             });
         });
 
-        describe('batchTransferFrom', () => {
-            it('should succesfully make multiple token transfers', async () => {
-                const erc20Balances = await erc20Wrapper.getBalancesAsync();
-
-                const encodedAssetData = assetProxyUtils.encodeERC20AssetData(zrxToken.address);
-                const amount = new BigNumber(10);
-                const numTransfers = 2;
-                const assetData = _.times(numTransfers, () => encodedAssetData);
-                const fromAddresses = _.times(numTransfers, () => makerAddress);
-                const toAddresses = _.times(numTransfers, () => takerAddress);
-                const amounts = _.times(numTransfers, () => amount);
-
-                const txHash = await erc20Proxy.batchTransferFrom.sendTransactionAsync(
-                    assetData,
-                    fromAddresses,
-                    toAddresses,
-                    amounts,
-                    { from: exchangeAddress },
-                );
-                const res = await web3Wrapper.awaitTransactionSuccessAsync(
-                    txHash,
-                    constants.AWAIT_TRANSACTION_MINED_MS,
-                );
-                const newBalances = await erc20Wrapper.getBalancesAsync();
-
-                expect(res.logs.length).to.equal(numTransfers);
-                expect(newBalances[makerAddress][zrxToken.address]).to.be.bignumber.equal(
-                    erc20Balances[makerAddress][zrxToken.address].minus(amount.times(numTransfers)),
-                );
-                expect(newBalances[takerAddress][zrxToken.address]).to.be.bignumber.equal(
-                    erc20Balances[takerAddress][zrxToken.address].add(amount.times(numTransfers)),
-                );
-            });
-
-            it('should throw if not called by an authorized address', async () => {
-                const encodedAssetData = assetProxyUtils.encodeERC20AssetData(zrxToken.address);
-                const amount = new BigNumber(10);
-                const numTransfers = 2;
-                const assetData = _.times(numTransfers, () => encodedAssetData);
-                const fromAddresses = _.times(numTransfers, () => makerAddress);
-                const toAddresses = _.times(numTransfers, () => takerAddress);
-                const amounts = _.times(numTransfers, () => amount);
-
-                return expectRevertReasonOrAlwaysFailingTransactionAsync(
-                    erc20Proxy.batchTransferFrom.sendTransactionAsync(assetData, fromAddresses, toAddresses, amounts, {
-                        from: notAuthorized,
-                    }),
-                    RevertReason.SenderNotAuthorized,
-                );
-            });
-        });
-
         it('should have an id of 0xf47261b0', async () => {
             const proxyId = await erc20Proxy.getProxyId.callAsync();
             const expectedProxyId = '0xf47261b0';
@@ -351,7 +295,7 @@ describe('Asset Transfer Proxies', () => {
                 expect(ownerMakerAsset).to.be.bignumber.equal(makerAddress);
                 // Perform a transfer from makerAddress to takerAddress
                 const amount = new BigNumber(1);
-                return expectRevertOrAlwaysFailingTransactionAsync(
+                return expectRevertReasonOrAlwaysFailingTransactionAsync(
                     erc721Proxy.transferFrom.sendTransactionAsync(
                         encodedAssetData,
                         makerAddress,
@@ -359,6 +303,7 @@ describe('Asset Transfer Proxies', () => {
                         amount,
                         { from: exchangeAddress },
                     ),
+                    RevertReason.TransferFailed,
                 );
             });
 
@@ -435,61 +380,6 @@ describe('Asset Transfer Proxies', () => {
                         amount,
                         { from: notAuthorized },
                     ),
-                    RevertReason.SenderNotAuthorized,
-                );
-            });
-        });
-
-        describe('batchTransferFrom', () => {
-            it('should succesfully make multiple token transfers', async () => {
-                const erc721TokensById = await erc721Wrapper.getBalancesAsync();
-                const [makerTokenIdA, makerTokenIdB] = erc721TokensById[makerAddress][erc721Token.address];
-
-                const numTransfers = 2;
-                const assetData = [
-                    assetProxyUtils.encodeERC721AssetData(erc721Token.address, makerTokenIdA),
-                    assetProxyUtils.encodeERC721AssetData(erc721Token.address, makerTokenIdB),
-                ];
-                const fromAddresses = _.times(numTransfers, () => makerAddress);
-                const toAddresses = _.times(numTransfers, () => takerAddress);
-                const amounts = _.times(numTransfers, () => new BigNumber(1));
-
-                const txHash = await erc721Proxy.batchTransferFrom.sendTransactionAsync(
-                    assetData,
-                    fromAddresses,
-                    toAddresses,
-                    amounts,
-                    { from: exchangeAddress },
-                );
-                const res = await web3Wrapper.awaitTransactionSuccessAsync(
-                    txHash,
-                    constants.AWAIT_TRANSACTION_MINED_MS,
-                );
-                expect(res.logs.length).to.equal(numTransfers);
-
-                const newOwnerMakerAssetA = await erc721Token.ownerOf.callAsync(makerTokenIdA);
-                const newOwnerMakerAssetB = await erc721Token.ownerOf.callAsync(makerTokenIdB);
-                expect(newOwnerMakerAssetA).to.be.bignumber.equal(takerAddress);
-                expect(newOwnerMakerAssetB).to.be.bignumber.equal(takerAddress);
-            });
-
-            it('should throw if not called by an authorized address', async () => {
-                const erc721TokensById = await erc721Wrapper.getBalancesAsync();
-                const [makerTokenIdA, makerTokenIdB] = erc721TokensById[makerAddress][erc721Token.address];
-
-                const numTransfers = 2;
-                const assetData = [
-                    assetProxyUtils.encodeERC721AssetData(erc721Token.address, makerTokenIdA).slice(0, -2),
-                    assetProxyUtils.encodeERC721AssetData(erc721Token.address, makerTokenIdB).slice(0, -2),
-                ];
-                const fromAddresses = _.times(numTransfers, () => makerAddress);
-                const toAddresses = _.times(numTransfers, () => takerAddress);
-                const amounts = _.times(numTransfers, () => new BigNumber(1));
-
-                return expectRevertReasonOrAlwaysFailingTransactionAsync(
-                    erc721Proxy.batchTransferFrom.sendTransactionAsync(assetData, fromAddresses, toAddresses, amounts, {
-                        from: notAuthorized,
-                    }),
                     RevertReason.SenderNotAuthorized,
                 );
             });
