@@ -6,6 +6,26 @@
   version "0.3.9"
   resolved "https://registry.yarnpkg.com/8fold-marked/-/8fold-marked-0.3.9.tgz#bb89c645612f8ccfaffac1ca6e3c11f168c9cf59"
 
+"@0xproject/contract-wrappers@0.0.5", "@0xproject/contract-wrappers@^0.0.5":
+  version "0.0.5"
+  resolved "https://registry.yarnpkg.com/@0xproject/contract-wrappers/-/contract-wrappers-0.0.5.tgz#36f91afb7de51478f9d2e4e0a3c4e685b3d18f28"
+  dependencies:
+    "@0xproject/assert" "^0.2.12"
+    "@0xproject/base-contract" "^0.3.4"
+    "@0xproject/fill-scenarios" "^0.0.4"
+    "@0xproject/json-schemas" "^0.8.1"
+    "@0xproject/order-utils" "^0.0.7"
+    "@0xproject/types" "^0.8.1"
+    "@0xproject/typescript-typings" "^0.4.1"
+    "@0xproject/utils" "^0.7.1"
+    "@0xproject/web3-wrapper" "^0.7.1"
+    ethereumjs-blockstream "2.0.7"
+    ethereumjs-util "5.1.5"
+    ethers "3.0.22"
+    js-sha3 "0.7.0"
+    lodash "4.17.10"
+    uuid "3.2.1"
+
 "@0xproject/fill-scenarios@^0.0.4":
   version "0.0.4"
   resolved "https://registry.yarnpkg.com/@0xproject/fill-scenarios/-/fill-scenarios-0.0.4.tgz#4d23c75abda7e9f117b698c0b8b142af07e0c69e"
@@ -4112,7 +4132,7 @@ ethereumjs-block@~1.2.2:
     ethereumjs-util "^4.0.1"
     merkle-patricia-tree "^2.1.2"
 
-ethereumjs-blockstream@^2.0.6:
+ethereumjs-blockstream@2.0.7, ethereumjs-blockstream@^2.0.6:
   version "2.0.7"
   resolved "https://registry.yarnpkg.com/ethereumjs-blockstream/-/ethereumjs-blockstream-2.0.7.tgz#8e791d18d517f13e0ba928892dda545dc930936b"
   dependencies:
@@ -6476,13 +6496,13 @@ js-sha3@0.5.7:
   version "0.5.7"
   resolved "https://registry.yarnpkg.com/js-sha3/-/js-sha3-0.5.7.tgz#0d4ffd8002d5333aabaf4a23eed2f6374c9f28e7"
 
+js-sha3@0.7.0, js-sha3@^0.7.0:
+  version "0.7.0"
+  resolved "https://registry.yarnpkg.com/js-sha3/-/js-sha3-0.7.0.tgz#0a5c57b36f79882573b2d84051f8bb85dd1bd63a"
+
 js-sha3@^0.3.1:
   version "0.3.1"
   resolved "https://registry.yarnpkg.com/js-sha3/-/js-sha3-0.3.1.tgz#86122802142f0828502a0d1dee1d95e253bb0243"
-
-js-sha3@^0.7.0:
-  version "0.7.0"
-  resolved "https://registry.yarnpkg.com/js-sha3/-/js-sha3-0.7.0.tgz#0a5c57b36f79882573b2d84051f8bb85dd1bd63a"
 
 js-tokens@^3.0.0, js-tokens@^3.0.2:
   version "3.0.2"
@@ -12187,13 +12207,13 @@ uuid@3.1.0:
   version "3.1.0"
   resolved "https://registry.yarnpkg.com/uuid/-/uuid-3.1.0.tgz#3dd3d3e790abc24d7b0d3a034ffababe28ebbc04"
 
+uuid@3.2.1, uuid@^3.0.0, uuid@^3.0.1, uuid@^3.1.0:
+  version "3.2.1"
+  resolved "https://registry.yarnpkg.com/uuid/-/uuid-3.2.1.tgz#12c528bb9d58d0b9265d9a2f6f0fe8be17ff1f14"
+
 uuid@^2.0.1:
   version "2.0.3"
   resolved "https://registry.yarnpkg.com/uuid/-/uuid-2.0.3.tgz#67e2e863797215530dff318e5bf9dcebfd47b21a"
-
-uuid@^3.0.0, uuid@^3.0.1, uuid@^3.1.0:
-  version "3.2.1"
-  resolved "https://registry.yarnpkg.com/uuid/-/uuid-3.2.1.tgz#12c528bb9d58d0b9265d9a2f6f0fe8be17ff1f14"
 
 uvm@1.7.0:
   version "1.7.0"
