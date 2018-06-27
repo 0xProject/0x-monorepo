@@ -2,12 +2,10 @@ import { BlockchainLifecycle } from '@0xproject/dev-utils';
 import { BigNumber } from '@0xproject/utils';
 import * as chai from 'chai';
 import { LogWithDecodedArgs } from 'ethereum-types';
-import { SubmissionContractEventArgs } from 'src/utils/types';
 
 import {
     AssetProxyOwnerAssetProxyRegistrationEventArgs,
     AssetProxyOwnerContract,
-    AssetProxyOwnerExecutionEventArgs,
     AssetProxyOwnerExecutionFailureEventArgs,
     AssetProxyOwnerSubmissionEventArgs,
 } from '../src/generated_contract_wrappers/asset_proxy_owner';
