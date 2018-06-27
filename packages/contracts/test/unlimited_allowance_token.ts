@@ -1,4 +1,5 @@
 import { BlockchainLifecycle } from '@0xproject/dev-utils';
+import { RevertReason } from '@0xproject/types';
 import { BigNumber } from '@0xproject/utils';
 import * as chai from 'chai';
 
@@ -55,7 +56,7 @@ describe('UnlimitedAllowanceToken', () => {
             const amountToTransfer = ownerBalance.plus(1);
             return expectRevertOrOtherErrorAsync(
                 token.transfer.callAsync(spender, amountToTransfer, { from: owner }),
-                constants.ERC20_INSUFFICIENT_BALANCE,
+                RevertReason.Erc20InsufficientBalance,
             );
         });
 
@@ -96,7 +97,7 @@ describe('UnlimitedAllowanceToken', () => {
                 token.transferFrom.callAsync(owner, spender, amountToTransfer, {
                     from: spender,
                 }),
-                constants.ERC20_INSUFFICIENT_BALANCE,
+                RevertReason.Erc20InsufficientBalance,
             );
         });
 
@@ -112,7 +113,7 @@ describe('UnlimitedAllowanceToken', () => {
                 token.transferFrom.callAsync(owner, spender, amountToTransfer, {
                     from: spender,
                 }),
-                constants.ERC20_INSUFFICIENT_ALLOWANCE,
+                RevertReason.Erc20InsufficientAllowance,
             );
         });
 

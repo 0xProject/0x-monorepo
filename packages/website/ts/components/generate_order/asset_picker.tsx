@@ -9,6 +9,7 @@ import { TokenIcon } from 'ts/components/ui/token_icon';
 import { trackedTokenStorage } from 'ts/local_storage/tracked_token_storage';
 import { Dispatcher } from 'ts/redux/dispatcher';
 import { DialogConfigs, Token, TokenByAddress, TokenVisibility } from 'ts/types';
+import { constants } from 'ts/utils/constants';
 
 const TOKEN_ICON_DIMENSION = 100;
 const TILE_DIMENSION = 146;
@@ -116,7 +117,7 @@ export class AssetPicker extends React.Component<AssetPickerProps, AssetPickerSt
     private _renderAssetPicker(): React.ReactNode {
         return (
             <div
-                className="clearfix flex flex-wrap"
+                className="flex flex-wrap"
                 style={{
                     overflowY: 'auto',
                     maxWidth: 720,
@@ -134,7 +135,9 @@ export class AssetPicker extends React.Component<AssetPickerProps, AssetPickerSt
         const gridTiles = _.map(this.props.tokenByAddress, (token: Token, address: string) => {
             if (
                 (this.props.tokenVisibility === TokenVisibility.TRACKED && !token.isTracked) ||
-                (this.props.tokenVisibility === TokenVisibility.UNTRACKED && token.isTracked)
+                (this.props.tokenVisibility === TokenVisibility.UNTRACKED && token.isTracked) ||
+                token.symbol === constants.ZRX_TOKEN_SYMBOL ||
+                token.symbol === constants.ETHER_TOKEN_SYMBOL
             ) {
                 return null; // Skip
             }
@@ -151,7 +154,7 @@ export class AssetPicker extends React.Component<AssetPickerProps, AssetPickerSt
                         height: TILE_DIMENSION,
                         ...tileStyles,
                     }}
-                    className="p2 flex flex-column items-center"
+                    className="p2 flex sm-col-6 md-col-3 lg-col-3 flex-column items-center mx-auto"
                     onClick={this._onChooseToken.bind(this, address)}
                     onMouseEnter={this._onToggleHover.bind(this, address, true)}
                     onMouseLeave={this._onToggleHover.bind(this, address, false)}
@@ -159,7 +162,7 @@ export class AssetPicker extends React.Component<AssetPickerProps, AssetPickerSt
                     <div className="p1">
                         <TokenIcon token={token} diameter={TOKEN_ICON_DIMENSION} />
                     </div>
-                    <div className="center">{token.name}</div>
+                    <div className="center">{token.symbol}</div>
                 </div>
             );
         });
@@ -178,7 +181,7 @@ export class AssetPicker extends React.Component<AssetPickerProps, AssetPickerSt
                         height: TILE_DIMENSION,
                         ...tileStyles,
                     }}
-                    className="p2 mx-auto"
+                    className="p2 flex sm-col-6 md-col-3 lg-col-3 flex-column items-center mx-auto"
                     onClick={this._onCustomAssetChosen.bind(this)}
                     onMouseEnter={this._onToggleHover.bind(this, otherTokenKey, true)}
                     onMouseLeave={this._onToggleHover.bind(this, otherTokenKey, false)}
@@ -232,12 +235,14 @@ export class AssetPicker extends React.Component<AssetPickerProps, AssetPickerSt
         this.props.onTokenChosen(newToken.address);
     }
     private async _onTrackConfirmationRespondedAsync(didUserAcceptTracking: boolean): Promise<void> {
+        const resetState: AssetPickerState = {
+            ...this.state,
+            isAddingTokenToTracked: false,
+            assetView: AssetViews.ASSET_PICKER,
+            chosenTrackTokenAddress: undefined,
+        };
         if (!didUserAcceptTracking) {
-            this.setState({
-                isAddingTokenToTracked: false,
-                assetView: AssetViews.ASSET_PICKER,
-                chosenTrackTokenAddress: undefined,
-            });
+            this.setState(resetState);
             this._onCloseDialog();
             return;
         }
@@ -246,6 +251,10 @@ export class AssetPicker extends React.Component<AssetPickerProps, AssetPickerSt
         });
         const tokenAddress = this.state.chosenTrackTokenAddress;
         const token = this.props.tokenByAddress[tokenAddress];
+        if (_.isUndefined(tokenAddress)) {
+            this.setState(resetState);
+            return;
+        }
         const newTokenEntry = {
             ...token,
         };
@@ -254,11 +263,7 @@ export class AssetPicker extends React.Component<AssetPickerProps, AssetPickerSt
         trackedTokenStorage.addTrackedTokenToUser(this.props.userAddress, this.props.networkId, newTokenEntry);
 
         this.props.dispatcher.updateTokenByAddress([newTokenEntry]);
-        this.setState({
-            isAddingTokenToTracked: false,
-            assetView: AssetViews.ASSET_PICKER,
-            chosenTrackTokenAddress: undefined,
-        });
+        this.setState(resetState);
         this.props.onTokenChosen(tokenAddress);
     }
 }

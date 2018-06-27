@@ -20,11 +20,9 @@ pragma solidity ^0.4.24;
 pragma experimental ABIEncoderV2;
 
 import "./libs/LibConstants.sol";
-import "../../utils/LibBytes/LibBytes.sol";
 import "./libs/LibFillResults.sol";
 import "./libs/LibOrder.sol";
 import "./libs/LibMath.sol";
-import "./libs/LibExchangeErrors.sol";
 import "./mixins/MExchangeCore.sol";
 import "./mixins/MSignatureValidator.sol";
 import "./mixins/MTransactions.sol";
@@ -32,11 +30,9 @@ import "./mixins/MAssetProxyDispatcher.sol";
 
 contract MixinExchangeCore is
     LibConstants,
-    LibBytes,
     LibMath,
     LibOrder,
     LibFillResults,
-    LibExchangeErrors,
     MAssetProxyDispatcher,
     MExchangeCore,
     MSignatureValidator,
@@ -72,7 +68,7 @@ contract MixinExchangeCore is
         // Ensure orderEpoch is monotonically increasing
         require(
             newOrderEpoch > oldOrderEpoch, 
-            INVALID_NEW_ORDER_EPOCH
+            "INVALID_NEW_ORDER_EPOCH"
         );
 
         // Update orderEpoch
@@ -284,20 +280,20 @@ contract MixinExchangeCore is
         // An order can only be filled if its status is FILLABLE.
         require(
             orderInfo.orderStatus == uint8(OrderStatus.FILLABLE),
-            ORDER_UNFILLABLE
+            "ORDER_UNFILLABLE"
         );
 
         // Revert if fill amount is invalid
         require(
             takerAssetFillAmount != 0,
-            INVALID_TAKER_AMOUNT
+            "INVALID_TAKER_AMOUNT"
         );
 
         // Validate sender is allowed to fill this order
         if (order.senderAddress != address(0)) {
             require(
                 order.senderAddress == msg.sender,
-                INVALID_SENDER
+                "INVALID_SENDER"
             );
         }
 
@@ -305,7 +301,7 @@ contract MixinExchangeCore is
         if (order.takerAddress != address(0)) {
             require(
                 order.takerAddress == takerAddress,
-                INVALID_TAKER
+                "INVALID_TAKER"
             );
         }
 
@@ -317,7 +313,7 @@ contract MixinExchangeCore is
                     order.makerAddress,
                     signature
                 ),
-                INVALID_ORDER_SIGNATURE
+                "INVALID_ORDER_SIGNATURE"
             );
         }
 
@@ -328,7 +324,7 @@ contract MixinExchangeCore is
                 order.takerAssetAmount,
                 order.makerAssetAmount
             ),
-            ROUNDING_ERROR
+            "ROUNDING_ERROR"
         );
     }
 
@@ -346,14 +342,14 @@ contract MixinExchangeCore is
         // An order can only be cancelled if its status is FILLABLE.
         require(
             orderInfo.orderStatus == uint8(OrderStatus.FILLABLE),
-            ORDER_UNFILLABLE
+            "ORDER_UNFILLABLE"
         );
 
         // Validate sender is allowed to cancel this order
         if (order.senderAddress != address(0)) {
             require(
                 order.senderAddress == msg.sender,
-                INVALID_SENDER
+                "INVALID_SENDER"
             );
         }
 
@@ -361,7 +357,7 @@ contract MixinExchangeCore is
         address makerAddress = getCurrentContextAddress();
         require(
             order.makerAddress == makerAddress,
-            INVALID_MAKER
+            "INVALID_MAKER"
         );
     }
 
@@ -411,33 +407,27 @@ contract MixinExchangeCore is
     )
         private
     {
-        uint8 makerAssetProxyId = uint8(popLastByte(order.makerAssetData));
-        uint8 takerAssetProxyId = uint8(popLastByte(order.takerAssetData));
         bytes memory zrxAssetData = ZRX_ASSET_DATA;
         dispatchTransferFrom(
             order.makerAssetData,
-            makerAssetProxyId,
             order.makerAddress,
             takerAddress,
             fillResults.makerAssetFilledAmount
         );
         dispatchTransferFrom(
             order.takerAssetData,
-            takerAssetProxyId,
             takerAddress,
             order.makerAddress,
             fillResults.takerAssetFilledAmount
         );
         dispatchTransferFrom(
             zrxAssetData,
-            ZRX_PROXY_ID,
             order.makerAddress,
             order.feeRecipientAddress,
             fillResults.makerFeePaid
         );
         dispatchTransferFrom(
             zrxAssetData,
-            ZRX_PROXY_ID,
             takerAddress,
             order.feeRecipientAddress,
             fillResults.takerFeePaid

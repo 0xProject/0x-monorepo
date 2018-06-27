@@ -19,22 +19,17 @@
 pragma solidity ^0.4.24;
 
 import "../../utils/LibBytes/LibBytes.sol";
-import "./libs/LibExchangeErrors.sol";
 import "./mixins/MSignatureValidator.sol";
 import "./mixins/MTransactions.sol";
 import "./interfaces/IWallet.sol";
 import "./interfaces/IValidator.sol";
 
 contract MixinSignatureValidator is
-    LibBytes,
-    LibExchangeErrors,
     MSignatureValidator,
     MTransactions
 {
-    // Personal message headers
-    string constant ETH_PERSONAL_MESSAGE = "\x19Ethereum Signed Message:\n32";
-    string constant TREZOR_PERSONAL_MESSAGE = "\x19Ethereum Signed Message:\n\x20";
-
+    using LibBytes for bytes;
+    
     // Mapping of hash => signer => signed
     mapping (bytes32 => mapping (address => bool)) public preSigned;
 
@@ -58,7 +53,7 @@ contract MixinSignatureValidator is
                 signerAddress,
                 signature
             ),
-            INVALID_SIGNATURE
+            "INVALID_SIGNATURE"
         );
         preSigned[hash][signerAddress] = true;
     }
@@ -98,14 +93,14 @@ contract MixinSignatureValidator is
         // TODO: Domain separation: make hash depend on role. (Taker sig should not be valid as maker sig, etc.)
         require(
             signature.length > 0,
-            LENGTH_GREATER_THAN_0_REQUIRED
+            "LENGTH_GREATER_THAN_0_REQUIRED"
         );
 
         // Ensure signature is supported
-        uint8 signatureTypeRaw = uint8(popLastByte(signature));
+        uint8 signatureTypeRaw = uint8(signature.popLastByte());
         require(
             signatureTypeRaw < uint8(SignatureType.NSignatureTypes),
-            SIGNATURE_UNSUPPORTED
+            "SIGNATURE_UNSUPPORTED"
         );
 
         // Pop last byte off of signature byte array.
@@ -123,7 +118,7 @@ contract MixinSignatureValidator is
         // it an explicit option. This aids testing and analysis. It is
         // also the initialization value for the enum type.
         if (signatureType == SignatureType.Illegal) {
-            revert(SIGNATURE_ILLEGAL);
+            revert("SIGNATURE_ILLEGAL");
 
         // Always invalid signature.
         // Like Illegal, this is always implicitly available and therefore
@@ -132,7 +127,7 @@ contract MixinSignatureValidator is
         } else if (signatureType == SignatureType.Invalid) {
             require(
                 signature.length == 0,
-                LENGTH_0_REQUIRED
+                "LENGTH_0_REQUIRED"
             );
             isValid = false;
             return isValid;
@@ -141,11 +136,11 @@ contract MixinSignatureValidator is
         } else if (signatureType == SignatureType.EIP712) {
             require(
                 signature.length == 65,
-                LENGTH_65_REQUIRED
+                "LENGTH_65_REQUIRED"
             );
             v = uint8(signature[0]);
-            r = readBytes32(signature, 1);
-            s = readBytes32(signature, 33);
+            r = signature.readBytes32(1);
+            s = signature.readBytes32(33);
             recovered = ecrecover(hash, v, r, s);
             isValid = signerAddress == recovered;
             return isValid;
@@ -154,13 +149,16 @@ contract MixinSignatureValidator is
         } else if (signatureType == SignatureType.EthSign) {
             require(
                 signature.length == 65,
-                LENGTH_65_REQUIRED
+                "LENGTH_65_REQUIRED"
             );
             v = uint8(signature[0]);
-            r = readBytes32(signature, 1);
-            s = readBytes32(signature, 33);
+            r = signature.readBytes32(1);
+            s = signature.readBytes32(33);
             recovered = ecrecover(
-                keccak256(abi.encodePacked(ETH_PERSONAL_MESSAGE, hash)),
+                keccak256(abi.encodePacked(
+                    "\x19Ethereum Signed Message:\n32",
+                    hash
+                )),
                 v,
                 r,
                 s
@@ -179,7 +177,7 @@ contract MixinSignatureValidator is
         } else if (signatureType == SignatureType.Caller) {
             require(
                 signature.length == 0,
-                LENGTH_0_REQUIRED
+                "LENGTH_0_REQUIRED"
             );
             isValid = signerAddress == msg.sender;
             return isValid;
@@ -199,7 +197,9 @@ contract MixinSignatureValidator is
         // | 0x14 + x | 1      | Signature type is always "\x06" |
         } else if (signatureType == SignatureType.Validator) {
             // Pop last 20 bytes off of signature byte array.
-            address validatorAddress = popLast20Bytes(signature);
+
+            address validatorAddress = signature.popLast20Bytes();
+            
             // Ensure signer has approved validator.
             if (!allowedValidators[signerAddress][validatorAddress]) {
                 return false;
@@ -227,13 +227,16 @@ contract MixinSignatureValidator is
         } else if (signatureType == SignatureType.Trezor) {
             require(
                 signature.length == 65,
-                LENGTH_65_REQUIRED
+                "LENGTH_65_REQUIRED"
             );
             v = uint8(signature[0]);
-            r = readBytes32(signature, 1);
-            s = readBytes32(signature, 33);
+            r = signature.readBytes32(1);
+            s = signature.readBytes32(33);
             recovered = ecrecover(
-                keccak256(abi.encodePacked(TREZOR_PERSONAL_MESSAGE, hash)),
+                keccak256(abi.encodePacked(
+                    "\x19Ethereum Signed Message:\n\x20",
+                    hash
+                )),
                 v,
                 r,
                 s
@@ -247,6 +250,6 @@ contract MixinSignatureValidator is
         // that we currently support. In this case returning false
         // may lead the caller to incorrectly believe that the
         // signature was invalid.)
-        revert(SIGNATURE_UNSUPPORTED);
+        revert("SIGNATURE_UNSUPPORTED");
     }
 }

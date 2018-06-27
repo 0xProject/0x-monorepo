@@ -20,12 +20,10 @@ pragma solidity ^0.4.24;
 import "./libs/LibExchangeErrors.sol";
 import "./mixins/MSignatureValidator.sol";
 import "./mixins/MTransactions.sol";
-import "./libs/LibExchangeErrors.sol";
 import "./libs/LibEIP712.sol";
 
 contract MixinTransactions is
     LibEIP712,
-    LibExchangeErrors,
     MSignatureValidator,
     MTransactions
 {
@@ -51,17 +49,27 @@ contract MixinTransactions is
     /// @param signerAddress Address of transaction signer.
     /// @param data AbiV2 encoded calldata.
     /// @return EIP712 hash of the Transaction.
-    function hashZeroExTransaction(uint256 salt, address signerAddress, bytes data)
+    function hashZeroExTransaction(
+        uint256 salt,
+        address signerAddress,
+        bytes memory data
+    )
         internal
         pure
-        returns (bytes32)
+        returns (bytes32 result)
     {
-        return keccak256(abi.encode(
-            EIP712_ZEROEX_TRANSACTION_SCHEMA_HASH,
-            salt,
-            signerAddress,
-            keccak256(data)
-        ));
+        bytes32 schemaHash = EIP712_ZEROEX_TRANSACTION_SCHEMA_HASH;
+        bytes32 dataHash = keccak256(data);
+        assembly {
+            let memPtr := mload(64)
+            mstore(memPtr, schemaHash)
+            mstore(add(memPtr, 32), salt)
+            mstore(add(memPtr, 64), and(signerAddress, 0xffffffffffffffffffffffffffffffffffffffff))
+            mstore(add(memPtr, 96), dataHash)
+            result := keccak256(memPtr, 128)
+        }
+
+        return result;
     }
 
     /// @dev Executes an exchange method call in the context of signer.
@@ -80,7 +88,7 @@ contract MixinTransactions is
         // Prevent reentrancy
         require(
             currentContextAddress == address(0),
-            REENTRANCY_ILLEGAL
+            "REENTRANCY_ILLEGAL"
         );
 
         bytes32 transactionHash = hashEIP712Message(hashZeroExTransaction(
@@ -92,7 +100,7 @@ contract MixinTransactions is
         // Validate transaction has not been executed
         require(
             !transactions[transactionHash],
-            INVALID_TX_HASH
+            "INVALID_TX_HASH"
         );
 
         // Transaction always valid if signer is sender of transaction
@@ -104,7 +112,7 @@ contract MixinTransactions is
                     signerAddress,
                     signature
                 ),
-                INVALID_TX_SIGNATURE
+                "INVALID_TX_SIGNATURE"
             );
 
             // Set the current transaction signer
@@ -115,7 +123,7 @@ contract MixinTransactions is
         transactions[transactionHash] = true;
         require(
             address(this).delegatecall(data),
-            FAILED_EXECUTION
+            "FAILED_EXECUTION"
         );
 
         // Reset current transaction signer

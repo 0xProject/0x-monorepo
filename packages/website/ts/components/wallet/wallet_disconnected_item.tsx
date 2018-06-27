@@ -3,7 +3,7 @@ import FlatButton from 'material-ui/FlatButton';
 import * as React from 'react';
 
 import { colors } from 'ts/style/colors';
-import { ProviderType } from 'ts/types';
+import { BrowserType, ProviderType } from 'ts/types';
 import { constants } from 'ts/utils/constants';
 import { utils } from 'ts/utils/utils';
 
@@ -66,16 +66,35 @@ interface ProviderButtonProps {
     isExternallyInjectedProvider: boolean;
 }
 
-const ProviderButton: React.StatelessComponent<ProviderButtonProps> = (props: ProviderButtonProps) => (
-    <FlatButton
-        label={props.isExternallyInjectedProvider ? 'Please unlock account' : 'Get Metamask Wallet Extension'}
-        labelStyle={{ color: colors.black }}
-        labelPosition="after"
-        primary={true}
-        icon={<img src="/images/metamask_icon.png" width={METAMASK_ICON_WIDTH.toString()} />}
-        style={props.isExternallyInjectedProvider ? styles.button : { ...styles.button, ...styles.hrefAdjustment }}
-        href={props.isExternallyInjectedProvider ? undefined : constants.URL_METAMASK_CHROME_STORE}
-        target={props.isExternallyInjectedProvider ? undefined : '_blank'}
-        disabled={props.isExternallyInjectedProvider}
-    />
-);
+const ProviderButton: React.StatelessComponent<ProviderButtonProps> = (props: ProviderButtonProps) => {
+    const browserType = utils.getBrowserType();
+    let extensionLink;
+    if (!props.isExternallyInjectedProvider) {
+        switch (browserType) {
+            case BrowserType.Chrome:
+                extensionLink = constants.URL_METAMASK_CHROME_STORE;
+                break;
+            case BrowserType.Firefox:
+                extensionLink = constants.URL_METAMASK_FIREFOX_STORE;
+                break;
+            case BrowserType.Opera:
+                extensionLink = constants.URL_METAMASK_OPERA_STORE;
+                break;
+            default:
+                extensionLink = constants.URL_METAMASK_HOMEPAGE;
+        }
+    }
+    return (
+        <FlatButton
+            label={props.isExternallyInjectedProvider ? 'Please unlock account' : 'Get Metamask Wallet Extension'}
+            labelStyle={{ color: colors.black }}
+            labelPosition="after"
+            primary={true}
+            icon={<img src="/images/metamask_icon.png" width={METAMASK_ICON_WIDTH.toString()} />}
+            style={props.isExternallyInjectedProvider ? styles.button : { ...styles.button, ...styles.hrefAdjustment }}
+            href={extensionLink}
+            target={props.isExternallyInjectedProvider ? undefined : '_blank'}
+            disabled={props.isExternallyInjectedProvider}
+        />
+    );
+};

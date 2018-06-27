@@ -23,8 +23,8 @@ import "./IERC20Token.sol";
 
 contract ERC20Token is IERC20Token {
 
-    string constant INSUFFICIENT_BALANCE = "Insufficient balance to complete transfer.";
-    string constant INSUFFICIENT_ALLOWANCE = "Insufficient allowance to complete transfer.";
+    string constant INSUFFICIENT_BALANCE = "ERC20_INSUFFICIENT_BALANCE";
+    string constant INSUFFICIENT_ALLOWANCE = "ERC20_INSUFFICIENT_ALLOWANCE";
     string constant OVERFLOW = "Transfer would result in an overflow.";
 
     mapping (address => uint256) balances;
@@ -97,4 +97,3 @@ contract ERC20Token is IERC20Token {
         return allowed[_owner][_spender];
     }
 }
-
