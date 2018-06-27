@@ -1,5 +1,8 @@
 {
-    "contract_name": "ZRX",
+    "contractName": "ZRXToken",
+    "compilerOutput": {
+        "abi": []
+    },
     "networks": {
         "1": {
             "address": "0xe41d2489571d322189246dafa5ebde1f4699f498"
@@ -14,7 +17,7 @@
             "address": "0x6ff6c0ff1d68b964901f986d4c9fa3ac68346570"
         },
         "50": {
-            "address": "0x1d7022f5b17d2f8b695918fb48fa1089c9f85401"
+            "address": "0x0b1ba0af832d7c05fd64161e0db78e85978e8082"
         }
     }
 }
