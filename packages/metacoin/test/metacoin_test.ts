@@ -5,7 +5,7 @@ import * as chai from 'chai';
 import { LogWithDecodedArgs } from 'ethereum-types';
 
 import * as MetacoinArtifact from '../artifacts/Metacoin.json';
-import { MetacoinContract, TransferContractEventArgs } from '../src/contract_wrappers/metacoin';
+import { MetacoinContract, MetacoinTransferEventArgs } from '../src/contract_wrappers/metacoin';
 
 import { chaiSetup } from './utils/chai_setup';
 import { config } from './utils/config';
@@ -55,7 +55,7 @@ describe('Metacoin', () => {
             );
             // profiler.stop();
             const txReceipt = await web3Wrapper.awaitTransactionSuccessAsync(txHash);
-            const transferLogs = txReceipt.logs[0] as LogWithDecodedArgs<TransferContractEventArgs>;
+            const transferLogs = txReceipt.logs[0] as LogWithDecodedArgs<MetacoinTransferEventArgs>;
             expect(transferLogs.args).to.be.deep.equal({
                 _to: ZERO_ADDRESS,
                 _from: devConstants.TESTRPC_FIRST_ADDRESS,
@@ -80,7 +80,7 @@ describe('Metacoin', () => {
                 { from: devConstants.TESTRPC_FIRST_ADDRESS },
             );
             const txReceipt = await web3Wrapper.awaitTransactionSuccessAsync(txHash);
-            const transferLogs = txReceipt.logs[0] as LogWithDecodedArgs<TransferContractEventArgs>;
+            const transferLogs = txReceipt.logs[0] as LogWithDecodedArgs<MetacoinTransferEventArgs>;
             expect(transferLogs.args).to.be.deep.equal({
                 _to: ZERO_ADDRESS,
                 _from: devConstants.TESTRPC_FIRST_ADDRESS,
@@ -107,7 +107,7 @@ describe('Metacoin', () => {
                 { from: devConstants.TESTRPC_FIRST_ADDRESS },
             );
             const txReceipt = await web3Wrapper.awaitTransactionSuccessAsync(txHash);
-            const transferLogs = txReceipt.logs[0] as LogWithDecodedArgs<TransferContractEventArgs>;
+            const transferLogs = txReceipt.logs[0] as LogWithDecodedArgs<MetacoinTransferEventArgs>;
             expect(transferLogs.args).to.be.deep.equal({
                 _to: ZERO_ADDRESS,
                 _from: devConstants.TESTRPC_FIRST_ADDRESS,
