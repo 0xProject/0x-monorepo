@@ -14,12 +14,14 @@ const appearFromBottomFrames = keyframes`
         position: fixed;
         bottom: -500px;
         left: 0px;
+        right: 0px;
     }
 
     to {
         position: fixed;
         bottom: 0px;
         left: 0px;
+        right: 0px;
     }
 `;
 

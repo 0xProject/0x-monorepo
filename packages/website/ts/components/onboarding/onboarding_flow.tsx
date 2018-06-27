@@ -100,7 +100,7 @@ export class OnboardingFlow extends React.Component<OnboardingFlowProps> {
         const step = steps[stepIndex];
         const isLastStep = steps.length - 1 === stepIndex;
         return (
-            <Container position="relative" zIndex={1} maxWidth="100vw">
+            <Container position="relative" zIndex={1}>
                 <OnboardingCard
                     title={step.title}
                     content={step.content}
