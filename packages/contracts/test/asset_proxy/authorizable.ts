@@ -5,10 +5,7 @@ import * as chai from 'chai';
 
 import { MixinAuthorizableContract } from '../../src/generated_contract_wrappers/mixin_authorizable';
 import { artifacts } from '../../src/utils/artifacts';
-import {
-    expectRevertOrAlwaysFailingTransactionAsync,
-    expectRevertReasonOrAlwaysFailingTransactionAsync,
-} from '../../src/utils/assertions';
+import { expectRevertReasonOrAlwaysFailingTransactionAsync } from '../../src/utils/assertions';
 import { chaiSetup } from '../../src/utils/chai_setup';
 import { constants } from '../../src/utils/constants';
 import { provider, txDefaults, web3Wrapper } from '../../src/utils/web3_wrapper';
@@ -118,10 +115,11 @@ describe('Authorizable', () => {
                 constants.AWAIT_TRANSACTION_MINED_MS,
             );
             const index = new BigNumber(0);
-            return expectRevertOrAlwaysFailingTransactionAsync(
+            return expectRevertReasonOrAlwaysFailingTransactionAsync(
                 authorizable.removeAuthorizedAddressAtIndex.sendTransactionAsync(address, index, {
                     from: notOwner,
                 }),
+                RevertReason.OnlyContractOwner,
             );
         });
         it('should throw if index is >= authorities.length', async () => {
@@ -130,18 +128,20 @@ describe('Authorizable', () => {
                 constants.AWAIT_TRANSACTION_MINED_MS,
             );
             const index = new BigNumber(1);
-            return expectRevertOrAlwaysFailingTransactionAsync(
+            return expectRevertReasonOrAlwaysFailingTransactionAsync(
                 authorizable.removeAuthorizedAddressAtIndex.sendTransactionAsync(address, index, {
                     from: owner,
                 }),
+                RevertReason.IndexOutOfBounds,
             );
         });
         it('should throw if owner attempts to remove an address that is not authorized', async () => {
             const index = new BigNumber(0);
-            return expectRevertOrAlwaysFailingTransactionAsync(
+            return expectRevertReasonOrAlwaysFailingTransactionAsync(
                 authorizable.removeAuthorizedAddressAtIndex.sendTransactionAsync(address, index, {
                     from: owner,
                 }),
+                RevertReason.TargetNotAuthorized,
             );
         });
         it('should throw if address at index does not match target', async () => {
@@ -156,10 +156,11 @@ describe('Authorizable', () => {
                 constants.AWAIT_TRANSACTION_MINED_MS,
             );
             const address1Index = new BigNumber(0);
-            return expectRevertOrAlwaysFailingTransactionAsync(
+            return expectRevertReasonOrAlwaysFailingTransactionAsync(
                 authorizable.removeAuthorizedAddressAtIndex.sendTransactionAsync(address2, address1Index, {
                     from: owner,
                 }),
+                RevertReason.AuthorizedAddressMismatch,
             );
         });
         it('should allow owner to remove an authorized address', async () => {

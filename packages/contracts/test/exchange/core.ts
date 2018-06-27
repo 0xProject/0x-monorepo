@@ -17,10 +17,7 @@ import {
     FillContractEventArgs,
 } from '../../src/generated_contract_wrappers/exchange';
 import { artifacts } from '../../src/utils/artifacts';
-import {
-    expectRevertOrAlwaysFailingTransactionAsync,
-    expectRevertReasonOrAlwaysFailingTransactionAsync,
-} from '../../src/utils/assertions';
+import { expectRevertReasonOrAlwaysFailingTransactionAsync } from '../../src/utils/assertions';
 import { chaiSetup } from '../../src/utils/chai_setup';
 import { constants } from '../../src/utils/constants';
 import { ERC20Wrapper } from '../../src/utils/erc20_wrapper';
@@ -771,8 +768,9 @@ describe('Exchange core', () => {
             expect(initialOwnerTakerAsset).to.be.bignumber.equal(takerAddress);
             // Call Exchange
             const takerAssetFillAmount = signedOrder.takerAssetAmount;
-            return expectRevertOrAlwaysFailingTransactionAsync(
+            return expectRevertReasonOrAlwaysFailingTransactionAsync(
                 exchangeWrapper.fillOrderAsync(signedOrder, takerAddress, { takerAssetFillAmount }),
+                RevertReason.TransferFailed,
             );
         });
 
@@ -793,8 +791,9 @@ describe('Exchange core', () => {
             expect(initialOwnerTakerAsset).to.be.bignumber.not.equal(takerAddress);
             // Call Exchange
             const takerAssetFillAmount = signedOrder.takerAssetAmount;
-            return expectRevertOrAlwaysFailingTransactionAsync(
+            return expectRevertReasonOrAlwaysFailingTransactionAsync(
                 exchangeWrapper.fillOrderAsync(signedOrder, takerAddress, { takerAssetFillAmount }),
+                RevertReason.TransferFailed,
             );
         });
 
@@ -858,6 +857,32 @@ describe('Exchange core', () => {
             return expectRevertReasonOrAlwaysFailingTransactionAsync(
                 exchangeWrapper.fillOrderAsync(signedOrder, takerAddress, { takerAssetFillAmount }),
                 RevertReason.RoundingError,
+            );
+        });
+
+        it('should throw if assetData has a length < 132', async () => {
+            // Construct Exchange parameters
+            const makerAssetId = erc721MakerAssetIds[0];
+            const takerAssetId = erc721TakerAssetIds[0];
+            const makerAssetData = assetProxyUtils
+                .encodeERC721AssetData(erc721Token.address, makerAssetId)
+                .slice(0, -2);
+            signedOrder = orderFactory.newSignedOrder({
+                makerAssetAmount: new BigNumber(1),
+                takerAssetAmount: new BigNumber(1),
+                makerAssetData,
+                takerAssetData: assetProxyUtils.encodeERC721AssetData(erc721Token.address, takerAssetId),
+            });
+            // Verify pre-conditions
+            const initialOwnerMakerAsset = await erc721Token.ownerOf.callAsync(makerAssetId);
+            expect(initialOwnerMakerAsset).to.be.bignumber.equal(makerAddress);
+            const initialOwnerTakerAsset = await erc721Token.ownerOf.callAsync(takerAssetId);
+            expect(initialOwnerTakerAsset).to.be.bignumber.equal(takerAddress);
+            // Call Exchange
+            const takerAssetFillAmount = signedOrder.takerAssetAmount;
+            return expectRevertReasonOrAlwaysFailingTransactionAsync(
+                exchangeWrapper.fillOrderAsync(signedOrder, takerAddress, { takerAssetFillAmount }),
+                RevertReason.LengthGreaterThan131Required,
             );
         });
 
