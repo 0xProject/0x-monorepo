@@ -1,11 +1,12 @@
 pragma solidity ^0.4.24;
 pragma experimental ABIEncoderV2;
 
-import "../protocol/AssetProxy/MixinERC721Transfer.sol";
+import "../utils/LibBytes/LibBytes.sol";
+import "../tokens/ERC721Token/ERC721Token.sol";
 
-contract MixinERC721 is
-    MixinERC721Transfer
+contract MixinERC721
 {
+    using LibBytes for bytes;
     // Equals to `bytes4(keccak256("onERC721Received(address,uint256,bytes)"))`
     bytes4 constant ERC721_RECEIVED = 0xf0b9e5ba;
 
@@ -25,8 +26,15 @@ contract MixinERC721 is
     )
         internal
     {
-        // Pop off the proxy id as this needs to be done prior
-        popLastByte(assetData);
-        MixinERC721Transfer.transferFromInternal(assetData, from, to, amount);
+        // Decode asset data.
+        address token = assetData.readAddress(16);
+        uint256 tokenId = assetData.readUint256(36);
+        bytes memory receiverData = assetData.readBytesWithLength(100);
+        ERC721Token(token).safeTransferFrom(
+            from,
+            to,
+            tokenId,
+            receiverData
+        );
     }
 }

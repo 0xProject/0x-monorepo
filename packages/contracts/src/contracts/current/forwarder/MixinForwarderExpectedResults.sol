@@ -2,6 +2,7 @@ pragma solidity ^0.4.24;
 pragma experimental ABIEncoderV2;
 
 import "./MixinForwarderCore.sol";
+import "../utils/LibBytes/LibBytes.sol";
 
 contract MixinForwarderExpectedResults is MixinForwarderCore {
 
@@ -89,7 +90,7 @@ contract MixinForwarderExpectedResults is MixinForwarderCore {
         view
         returns (Exchange.FillResults memory totalFillResults)
     {
-        address token = readAddress(orders[0].makerAssetData, 0);
+        address token = LibBytes.readAddress(orders[0].makerAssetData, 16);
         require(
             token == address(ZRX_TOKEN),
             TAKER_ASSET_ZRX_REQUIRED

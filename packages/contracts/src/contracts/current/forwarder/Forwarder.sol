@@ -16,7 +16,7 @@ contract Forwarder is
         Exchange _exchange,
         EtherToken _etherToken,
         ZRXToken _zrxToken,
-        uint8 _erc20AssetProxyId,
+        bytes4 _erc20AssetProxyId,
         bytes memory _zrxAssetData,
         bytes memory _wethAssetData
     )
@@ -43,7 +43,7 @@ contract Forwarder is
     }
 
     /// @dev Sets the allowances to the proxy for this contract
-    function setERC20ProxyApproval(uint8 erc20AssetProxyId)
+    function setERC20ProxyApproval(bytes4 erc20AssetProxyId)
         public
         onlyOwner
     {

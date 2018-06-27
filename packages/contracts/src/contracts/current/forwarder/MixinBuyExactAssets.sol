@@ -1,6 +1,7 @@
 pragma solidity ^0.4.24;
 pragma experimental ABIEncoderV2;
 
+import "../utils/LibBytes/LibBytes.sol";
 import "./MixinForwarderCore.sol";
 import "./MixinForwarderExpectedResults.sol";
 import "./MixinERC20.sol";
@@ -12,8 +13,8 @@ contract MixinBuyExactAssets is
     MixinERC20,
     MixinERC721
 {
-    uint8 public constant ERC20_PROXY_ID = 1;
-    uint8 public constant ERC721_PROXY_ID = 2;
+    bytes4 public constant ERC20_PROXY_ID = bytes4(keccak256("ERC20Token(address)"));
+    bytes4 public constant ERC721_PROXY_ID = bytes4(keccak256("ERC721Token(address,uint256,bytes)"));
 
     /// @dev Buys the exact amount of assets (ERC20 and ERC721), performing fee abstraction if required.
     ///      All order assets must be of the same type. Deducts a proportional fee to fee recipient.
@@ -47,14 +48,13 @@ contract MixinBuyExactAssets is
             VALUE_GREATER_THAN_ZERO
         );
         uint256 remainingTakerAssetAmount = msg.value;
-        // Read the last byte which indicates the proxy id, without popping
-        uint8 proxyId = uint8(orders[0].makerAssetData[orders[0].makerAssetData.length - 1]);
-        require(proxyId == ERC20_PROXY_ID || proxyId == ERC721_PROXY_ID, UNSUPPORTED_TOKEN_PROXY);
+        bytes4 assetProxyId = LibBytes.readBytes4(orders[0].makerAssetData, 0);
+        require(assetProxyId == ERC20_PROXY_ID || assetProxyId == ERC721_PROXY_ID, UNSUPPORTED_TOKEN_PROXY);
 
         ETHER_TOKEN.deposit.value(remainingTakerAssetAmount)();
-        if (proxyId == ERC20_PROXY_ID) {
+        if (assetProxyId == ERC20_PROXY_ID) {
             totalFillResults = buyExactERC20TokensInternal(orders, signatures, feeOrders, feeSignatures, makerAssetAmount);
-        } else if (proxyId == ERC721_PROXY_ID) {
+        } else if (assetProxyId == ERC721_PROXY_ID) {
             totalFillResults = buyExactERC721TokensInternal(orders, signatures, feeOrders, feeSignatures, makerAssetAmount);
         }
         remainingTakerAssetAmount = safeSub(remainingTakerAssetAmount, totalFillResults.takerAssetFilledAmount);
@@ -93,7 +93,7 @@ contract MixinBuyExactAssets is
         returns (Exchange.FillResults memory totalFillResults)
     {
         // We read the maker token address to check if it is ZRX and later use it for transfer
-        address makerTokenAddress = readAddress(orders[0].makerAssetData, 0);
+        address makerTokenAddress = LibBytes.readAddress(orders[0].makerAssetData, 16);
         // We assume that asset being bought by taker is the same for each order.
         // Rather than passing this in as calldata, we copy the makerAssetData from the first order onto all later orders.
         orders[0].takerAssetData = WETH_ASSET_DATA;

@@ -10,7 +10,6 @@ import "../tokens/ZRXToken/ZRXToken.sol";
 import "../utils/LibBytes/LibBytes.sol";
 
 contract MixinForwarderCore is
-    LibBytes,
     MixinErrorMessages,
     MixinBuyFeeTokens
 {

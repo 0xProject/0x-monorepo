@@ -1,6 +1,7 @@
 pragma solidity ^0.4.24;
 pragma experimental ABIEncoderV2;
 
+import "../utils/LibBytes/LibBytes.sol";
 import "./MixinForwarderCore.sol";
 import "./MixinForwarderExpectedResults.sol";
 import "./MixinERC20.sol";
@@ -45,7 +46,7 @@ contract MixinMarketBuyERC20Tokens is
         ETHER_TOKEN.deposit.value(remainingTakerTokenAmount)();
         // Populate the known assetData, as it is always WETH the caller can provide null bytes to save gas
         // marketSellOrders fills the remaining
-        address makerTokenAddress = readAddress(orders[0].makerAssetData, 0);
+        address makerTokenAddress = LibBytes.readAddress(orders[0].makerAssetData, 16);
         orders[0].takerAssetData = WETH_ASSET_DATA;
         if (makerTokenAddress == address(ZRX_TOKEN)) {
             // If this is ZRX then we market sell from the orders, rather than a 2 step of buying ZRX fees from feeOrders
