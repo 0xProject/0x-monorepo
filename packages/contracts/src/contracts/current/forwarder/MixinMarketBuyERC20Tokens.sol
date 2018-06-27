@@ -55,6 +55,11 @@ contract MixinMarketBuyERC20Tokens is
         } else {
             totalFillResults = marketSellTokensForERC20Internal(orders, signatures, feeOrders, feeSignatures, remainingTakerTokenAmount);
         }
+        // Prevent accidental WETH owned by this contract and it being spent
+        require(
+            msg.value >= totalFillResults.takerAssetFilledAmount,
+            INVALID_MSG_VALUE
+        );
         // Ensure no WETH is left in this contract
         require(
             remainingTakerTokenAmount == totalFillResults.takerAssetFilledAmount,

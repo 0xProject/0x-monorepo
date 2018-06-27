@@ -20,6 +20,7 @@ import { constants } from '../../src/utils/constants';
 import { ERC20Wrapper } from '../../src/utils/erc20_wrapper';
 import { ERC721Wrapper } from '../../src/utils/erc721_wrapper';
 import { ExchangeWrapper } from '../../src/utils/exchange_wrapper';
+import { formatters } from '../../src/utils/formatters';
 import { ForwarderWrapper } from '../../src/utils/forwarder_wrapper';
 import { OrderFactory } from '../../src/utils/order_factory';
 import { ContractName, ERC20BalancesByOwner } from '../../src/utils/types';
@@ -44,6 +45,7 @@ describe(ContractName.Forwarder, () => {
     let zrxToken: DummyERC20TokenContract;
     let erc721Token: DummyERC721TokenContract;
     let forwarderContract: ForwarderContract;
+    let wethContract: WETH9Contract;
     let forwarderWrapper: ForwarderWrapper;
     let erc20Proxy: ERC20ProxyContract;
     let erc721Proxy: ERC721ProxyContract;
@@ -81,15 +83,11 @@ describe(ContractName.Forwarder, () => {
         const erc721Balances = await erc721Wrapper.getBalancesAsync();
         erc721MakerAssetIds = erc721Balances[makerAddress][erc721Token.address];
 
-        const etherTokenInstance = await WETH9Contract.deployFrom0xArtifactAsync(
-            artifacts.EtherToken,
-            provider,
-            txDefaults,
-        );
-        weth = new DummyERC20TokenContract(etherTokenInstance.abi, etherTokenInstance.address, provider);
+        wethContract = await WETH9Contract.deployFrom0xArtifactAsync(artifacts.EtherToken, provider, txDefaults);
+        weth = new DummyERC20TokenContract(wethContract.abi, wethContract.address, provider);
         erc20Wrapper.addDummyTokenContract(weth);
 
-        const wethAssetData = assetProxyUtils.encodeERC20AssetData(etherTokenInstance.address);
+        const wethAssetData = assetProxyUtils.encodeERC20AssetData(wethContract.address);
         const zrxAssetData = assetProxyUtils.encodeERC20AssetData(zrxToken.address);
         const exchangeInstance = await ExchangeContract.deployFrom0xArtifactAsync(
             artifacts.Exchange,
@@ -110,7 +108,7 @@ describe(ContractName.Forwarder, () => {
         });
 
         defaultMakerAssetAddress = erc20TokenA.address;
-        defaultTakerAssetAddress = etherTokenInstance.address;
+        defaultTakerAssetAddress = wethContract.address;
         const defaultOrderParams = {
             exchangeAddress: exchangeInstance.address,
             makerAddress,
@@ -130,7 +128,7 @@ describe(ContractName.Forwarder, () => {
             provider,
             txDefaults,
             exchangeInstance.address,
-            etherTokenInstance.address,
+            wethContract.address,
             zrxToken.address,
             AssetProxyId.ERC20,
             zrxAssetData,
@@ -230,7 +228,6 @@ describe(ContractName.Forwarder, () => {
                 takerFee: Web3Wrapper.toBaseUnitAmount(new BigNumber(1), DECIMALS_DEFAULT),
             });
             const fillAmount = signedOrder.takerAssetAmount.times(2);
-            const takerBalanceBefore = erc20Balances[takerAddress][defaultMakerAssetAddress];
             return expectRevertOrAlwaysFailingTransactionAsync(
                 forwarderWrapper.marketBuyTokensAsync(signedOrdersWithFee, feeOrders, {
                     value: fillAmount,
@@ -249,7 +246,6 @@ describe(ContractName.Forwarder, () => {
             });
             feeOrders = [feeOrder];
             const fillAmount = signedOrder.takerAssetAmount.div(4);
-            const takerBalanceBefore = erc20Balances[takerAddress][defaultMakerAssetAddress];
             return expectRevertOrAlwaysFailingTransactionAsync(
                 forwarderWrapper.marketBuyTokensAsync(signedOrdersWithFee, feeOrders, {
                     value: fillAmount,
@@ -444,6 +440,54 @@ describe(ContractName.Forwarder, () => {
                     from: takerAddress,
                     value: fillAmountWei,
                 }),
+            );
+        });
+        it('throws if makerAssetAmount is 0', async () => {
+            const makerAssetAmount = new BigNumber(0);
+            const fillAmountWei = await forwarderWrapper.calculateBuyExactFillAmountWeiAsync(
+                signedOrdersWithFee,
+                feeOrders,
+                feeProportion,
+                makerAssetAmount,
+            );
+            return expectRevertOrAlwaysFailingTransactionAsync(
+                forwarderWrapper.buyExactAssetsAsync(signedOrdersWithFee, feeOrders, makerAssetAmount, {
+                    from: takerAddress,
+                    value: fillAmountWei,
+                }),
+            );
+        });
+        it('throws if the amount of ETH sent in is less than the takerAssetFilledAmount', async () => {
+            const makerAssetAmount = signedOrder.makerAssetAmount;
+            const fillAmount = signedOrder.takerAssetAmount.div(2);
+            const zero = new BigNumber(0);
+            // Deposit enough taker balance to fill the order
+            const wethDepositTxHash = await wethContract.deposit.sendTransactionAsync({
+                from: takerAddress,
+                value: signedOrder.takerAssetAmount,
+            });
+            await web3Wrapper.awaitTransactionSuccessAsync(wethDepositTxHash);
+            // Transfer all of this WETH to the forwarding contract
+            const wethTransferTxHash = await wethContract.transfer.sendTransactionAsync(
+                forwarderContract.address,
+                signedOrder.takerAssetAmount,
+                { from: takerAddress },
+            );
+            await web3Wrapper.awaitTransactionSuccessAsync(wethTransferTxHash);
+            // We use the contract directly to get around wrapper validations and calculations
+            const formattedOrders = formatters.createMarketSellOrders(signedOrders, zero);
+            const formattedFeeOrders = formatters.createMarketSellOrders(feeOrders, zero);
+            return expectRevertOrAlwaysFailingTransactionAsync(
+                forwarderContract.buyExactAssets.sendTransactionAsync(
+                    formattedOrders.orders,
+                    formattedOrders.signatures,
+                    formattedFeeOrders.orders,
+                    formattedFeeOrders.signatures,
+                    makerAssetAmount,
+                    zero,
+                    constants.NULL_ADDRESS,
+                    { value: fillAmount, from: takerAddress },
+                ),
             );
         });
     });

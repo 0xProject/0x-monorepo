@@ -13,8 +13,8 @@ contract MixinBuyExactAssets is
     MixinERC20,
     MixinERC721
 {
-    bytes4 public constant ERC20_PROXY_ID = bytes4(keccak256("ERC20Token(address)"));
-    bytes4 public constant ERC721_PROXY_ID = bytes4(keccak256("ERC721Token(address,uint256,bytes)"));
+    bytes4 public constant ERC20_DATA_ID = bytes4(keccak256("ERC20Token(address)"));
+    bytes4 public constant ERC721_DATA_ID = bytes4(keccak256("ERC721Token(address,uint256,bytes)"));
 
     /// @dev Buys the exact amount of assets (ERC20 and ERC721), performing fee abstraction if required.
     ///      All order assets must be of the same type. Deducts a proportional fee to fee recipient.
@@ -47,19 +47,26 @@ contract MixinBuyExactAssets is
             msg.value > 0,
             VALUE_GREATER_THAN_ZERO
         );
-        uint256 remainingTakerAssetAmount = msg.value;
-        bytes4 assetProxyId = LibBytes.readBytes4(orders[0].makerAssetData, 0);
-        require(assetProxyId == ERC20_PROXY_ID || assetProxyId == ERC721_PROXY_ID, UNSUPPORTED_TOKEN_PROXY);
+        require(
+            makerAssetAmount > 0,
+            VALUE_GREATER_THAN_ZERO
+        );
+        bytes4 assetDataId = LibBytes.readBytes4(orders[0].makerAssetData, 0);
+        require(assetDataId == ERC20_DATA_ID || assetDataId == ERC721_DATA_ID, UNSUPPORTED_TOKEN_PROXY);
 
-        ETHER_TOKEN.deposit.value(remainingTakerAssetAmount)();
-        if (assetProxyId == ERC20_PROXY_ID) {
+        ETHER_TOKEN.deposit.value(msg.value)();
+        if (assetDataId == ERC20_DATA_ID) {
             totalFillResults = buyExactERC20TokensInternal(orders, signatures, feeOrders, feeSignatures, makerAssetAmount);
-        } else if (assetProxyId == ERC721_PROXY_ID) {
+        } else if (assetDataId == ERC721_DATA_ID) {
             totalFillResults = buyExactERC721TokensInternal(orders, signatures, feeOrders, feeSignatures, makerAssetAmount);
         }
-        remainingTakerAssetAmount = safeSub(remainingTakerAssetAmount, totalFillResults.takerAssetFilledAmount);
+        // Prevent accidental WETH owned by this contract and it being spent
+        require(
+            msg.value >= totalFillResults.takerAssetFilledAmount,
+            INVALID_MSG_VALUE
+        );
         withdrawPayAndDeductFee(
-            remainingTakerAssetAmount,
+            safeSub(msg.value, totalFillResults.takerAssetFilledAmount),
             totalFillResults.takerAssetFilledAmount,
             feeProportion,
             feeRecipient
