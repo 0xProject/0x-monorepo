@@ -5,6 +5,10 @@
             {
                 "note": "Improve 'web3-provider-engine' typings",
                 "pr": 768
+            },
+            {
+                "note": "Additional error type for `ethers.js`",
+                "pr": 763
             }
         ]
     },
