@@ -18,19 +18,200 @@
 
 pragma solidity ^0.4.24;
 
-import "../LibMem/LibMem.sol";
+library LibBytes {
 
-contract LibBytes is
-    LibMem
-{
+    using LibBytes for bytes;
 
-    // Revert reasons
-    string constant GREATER_THAN_ZERO_LENGTH_REQUIRED = "GREATER_THAN_ZERO_LENGTH_REQUIRED";
-    string constant GREATER_OR_EQUAL_TO_4_LENGTH_REQUIRED = "GREATER_OR_EQUAL_TO_4_LENGTH_REQUIRED";
-    string constant GREATER_OR_EQUAL_TO_20_LENGTH_REQUIRED = "GREATER_OR_EQUAL_TO_20_LENGTH_REQUIRED";
-    string constant GREATER_OR_EQUAL_TO_32_LENGTH_REQUIRED = "GREATER_OR_EQUAL_TO_32_LENGTH_REQUIRED";
-    string constant GREATER_OR_EQUAL_TO_NESTED_BYTES_LENGTH_REQUIRED = "GREATER_OR_EQUAL_TO_NESTED_BYTES_LENGTH_REQUIRED";
-    string constant GREATER_OR_EQUAL_TO_SOURCE_BYTES_LENGTH_REQUIRED = "GREATER_OR_EQUAL_TO_SOURCE_BYTES_LENGTH_REQUIRED";
+    /// @dev Gets the memory address for a byte array.
+    /// @param input Byte array to lookup.
+    /// @return memoryAddress Memory address of byte array. This
+    ///         points to the header of the byte array which contains
+    ///         the length.
+    function rawAddress(bytes memory input)
+        internal
+        pure
+        returns (uint256 memoryAddress)
+    {
+        assembly {
+            memoryAddress := input
+        }
+        return memoryAddress;
+    }
+    
+    /// @dev Gets the memory address for the contents of a byte array.
+    /// @param input Byte array to lookup.
+    /// @return memoryAddress Memory address of the contents of the byte array.
+    function contentAddress(bytes memory input)
+        internal
+        pure
+        returns (uint256 memoryAddress)
+    {
+        assembly {
+            memoryAddress := add(input, 32)
+        }
+        return memoryAddress;
+    }
+
+    /// @dev Copies `length` bytes from memory location `source` to `dest`.
+    /// @param dest memory address to copy bytes to.
+    /// @param source memory address to copy bytes from.
+    /// @param length number of bytes to copy.
+    function memCopy(
+        uint256 dest,
+        uint256 source,
+        uint256 length
+    )
+        internal
+        pure
+    {
+        if (length < 32) {
+            // Handle a partial word by reading destination and masking
+            // off the bits we are interested in.
+            // This correctly handles overlap, zero lengths and source == dest
+            assembly {
+                let mask := sub(exp(256, sub(32, length)), 1)
+                let s := and(mload(source), not(mask))
+                let d := and(mload(dest), mask)
+                mstore(dest, or(s, d))
+            }
+        } else {
+            // Skip the O(length) loop when source == dest.
+            if (source == dest) {
+                return;
+            }
+
+            // For large copies we copy whole words at a time. The final
+            // word is aligned to the end of the range (instead of after the
+            // previous) to handle partial words. So a copy will look like this:
+            //
+            //  ####
+            //      ####
+            //          ####
+            //            ####
+            //
+            // We handle overlap in the source and destination range by
+            // changing the copying direction. This prevents us from
+            // overwriting parts of source that we still need to copy.
+            //
+            // This correctly handles source == dest
+            //
+            if (source > dest) {
+                assembly {
+                    // We subtract 32 from `sEnd` and `dEnd` because it
+                    // is easier to compare with in the loop, and these
+                    // are also the addresses we need for copying the
+                    // last bytes.
+                    length := sub(length, 32)
+                    let sEnd := add(source, length)
+                    let dEnd := add(dest, length)
+
+                    // Remember the last 32 bytes of source
+                    // This needs to be done here and not after the loop
+                    // because we may have overwritten the last bytes in
+                    // source already due to overlap.
+                    let last := mload(sEnd)
+
+                    // Copy whole words front to back
+                    // Note: the first check is always true,
+                    // this could have been a do-while loop.
+                    for {} lt(source, sEnd) {} {
+                        mstore(dest, mload(source))
+                        source := add(source, 32)
+                        dest := add(dest, 32)
+                    }
+                    
+                    // Write the last 32 bytes
+                    mstore(dEnd, last)
+                }
+            } else {
+                assembly {
+                    // We subtract 32 from `sEnd` and `dEnd` because those
+                    // are the starting points when copying a word at the end.
+                    length := sub(length, 32)
+                    let sEnd := add(source, length)
+                    let dEnd := add(dest, length)
+
+                    // Remember the first 32 bytes of source
+                    // This needs to be done here and not after the loop
+                    // because we may have overwritten the first bytes in
+                    // source already due to overlap.
+                    let first := mload(source)
+
+                    // Copy whole words back to front
+                    // We use a signed comparisson here to allow dEnd to become
+                    // negative (happens when source and dest < 32). Valid
+                    // addresses in local memory will never be larger than
+                    // 2**255, so they can be safely re-interpreted as signed.
+                    // Note: the first check is always true,
+                    // this could have been a do-while loop.
+                    for {} slt(dest, dEnd) {} {
+                        mstore(dEnd, mload(sEnd))
+                        sEnd := sub(sEnd, 32)
+                        dEnd := sub(dEnd, 32)
+                    }
+                    
+                    // Write the first 32 bytes
+                    mstore(dest, first)
+                }
+            }
+        }
+    }
+    
+    /// @dev Returns a slices from a byte array.
+    /// @param b The byte array to take a slice from.
+    /// @param from The starting index for the slice (inclusive).
+    /// @param to The final index for the slice (exclusive).
+    /// @return result The slice containing bytes at indices [from, to)
+    function slice(bytes memory b, uint256 from, uint256 to)
+        internal
+        pure
+        returns (bytes memory result)
+    {
+        require(
+            from <= to,
+            "FROM_LESS_THAN_TO_REQUIRED"
+        );
+        require(
+            to < b.length,
+            "TO_LESS_THAN_LENGTH_REQUIRED"
+        );
+        
+        // Create a new bytes structure and copy contents
+        result = new bytes(to - from);
+        memCopy(
+            result.contentAddress(),
+            b.contentAddress() + from,
+            result.length);
+        return result;
+    }
+    
+    /// @dev Returns a slice from a byte array without preserving the input.
+    /// @param b The byte array to take a slice from. Will be destroyed in the process.
+    /// @param from The starting index for the slice (inclusive).
+    /// @param to The final index for the slice (exclusive).
+    /// @return result The slice containing bytes at indices [from, to)
+    /// @dev When `from == 0`, the original array will match the slice. In other cases its state will be corrupted.
+    function sliceDestructive(bytes memory b, uint256 from, uint256 to)
+        internal
+        pure
+        returns (bytes memory result)
+    {
+        require(
+            from <= to,
+            "FROM_LESS_THAN_TO_REQUIRED"
+        );
+        require(
+            to < b.length,
+            "TO_LESS_THAN_LENGTH_REQUIRED"
+        );
+        
+        // Create a new bytes structure around [from, to) in-place.
+        assembly {
+            result := add(b, from)
+            mstore(result, sub(to, from))
+        }
+        return result;
+    }
 
     /// @dev Pops the last byte off of a byte array by modifying its length.
     /// @param b Byte array that will be modified.
@@ -42,7 +223,7 @@ contract LibBytes is
     {
         require(
             b.length > 0,
-            GREATER_THAN_ZERO_LENGTH_REQUIRED
+            "GREATER_THAN_ZERO_LENGTH_REQUIRED"
         );
 
         // Store last byte.
@@ -66,7 +247,7 @@ contract LibBytes is
     {
         require(
             b.length >= 20,
-            GREATER_OR_EQUAL_TO_20_LENGTH_REQUIRED
+            "GREATER_OR_EQUAL_TO_20_LENGTH_REQUIRED"
         );
 
         // Store last 20 bytes.
@@ -78,6 +259,24 @@ contract LibBytes is
             mstore(b, newLen)
         }
         return result;
+    }
+
+    /// @dev Tests equality of two byte arrays.
+    /// @param lhs First byte array to compare.
+    /// @param rhs Second byte array to compare.
+    /// @return True if arrays are the same. False otherwise.
+    function equals(
+        bytes memory lhs,
+        bytes memory rhs
+    )
+        internal
+        pure
+        returns (bool equal)
+    {
+        // Keccak gas cost is 30 + numWords * 6. This is a cheap way to compare.
+        // We early exit on unequal lengths, but keccak would also correctly
+        // handle this.
+        return lhs.length == rhs.length && keccak256(lhs) == keccak256(rhs);
     }
 
     /// @dev Reads an address from a position in a byte array.
@@ -94,7 +293,7 @@ contract LibBytes is
     {
         require(
             b.length >= index + 20,  // 20 is length of address
-            GREATER_OR_EQUAL_TO_20_LENGTH_REQUIRED
+            "GREATER_OR_EQUAL_TO_20_LENGTH_REQUIRED"
         );
 
         // Add offset to index:
@@ -126,7 +325,7 @@ contract LibBytes is
     {
         require(
             b.length >= index + 20,  // 20 is length of address
-            GREATER_OR_EQUAL_TO_20_LENGTH_REQUIRED
+            "GREATER_OR_EQUAL_TO_20_LENGTH_REQUIRED"
         );
 
         // Add offset to index:
@@ -145,6 +344,10 @@ contract LibBytes is
             // 2. Load 32-byte word from memory
             // 3. Apply 12-byte mask to obtain extra bytes occupying word of memory where we'll store the address
             let neighbors := and(mload(add(b, index)), 0xffffffffffffffffffffffff0000000000000000000000000000000000000000)
+            
+            // Make sure input address is clean.
+            // (Solidity does not guarantee this)
+            input := and(input, 0xffffffffffffffffffffffffffffffffffffffff)
 
             // Store the neighbors and address into memory
             mstore(add(b, index), xor(input, neighbors))
@@ -165,7 +368,7 @@ contract LibBytes is
     {
         require(
             b.length >= index + 32,
-            GREATER_OR_EQUAL_TO_32_LENGTH_REQUIRED
+            "GREATER_OR_EQUAL_TO_32_LENGTH_REQUIRED"
         );
 
         // Arrays are prefixed by a 256 bit length parameter
@@ -192,7 +395,7 @@ contract LibBytes is
     {
         require(
             b.length >= index + 32,
-            GREATER_OR_EQUAL_TO_32_LENGTH_REQUIRED
+            "GREATER_OR_EQUAL_TO_32_LENGTH_REQUIRED"
         );
 
         // Arrays are prefixed by a 256 bit length parameter
@@ -234,29 +437,37 @@ contract LibBytes is
         writeBytes32(b, index, bytes32(input));
     }
 
-    /// @dev Reads the first 4 bytes from a byte array of arbitrary length.
-    /// @param b Byte array to read first 4 bytes from.
-    /// @return First 4 bytes of data.
-    function readFirst4(bytes memory b)
+    /// @dev Reads an unpadded bytes4 value from a position in a byte array.
+    /// @param b Byte array containing a bytes4 value.
+    /// @param index Index in byte array of bytes4 value.
+    /// @return bytes4 value from byte array.
+    function readBytes4(
+        bytes memory b,
+        uint256 index)
         internal
         pure
         returns (bytes4 result)
     {
         require(
-            b.length >= 4,
-            GREATER_OR_EQUAL_TO_4_LENGTH_REQUIRED
+            b.length >= index + 4,
+            "GREATER_OR_EQUAL_TO_4_LENGTH_REQUIRED"
         );
         assembly {
             result := mload(add(b, 32))
+            // Solidity does not require us to clean the trailing bytes.
+            // We do it anyway
+            result := and(result, 0xFFFFFFFF00000000000000000000000000000000000000000000000000000000)
         }
         return result;
     }
 
     /// @dev Reads nested bytes from a specific position.
+    /// @dev NOTE: the returned value overlaps with the input value.
+    ///            Both should be treated as immutable.
     /// @param b Byte array containing nested bytes.
     /// @param index Index of nested bytes.
     /// @return result Nested bytes.
-    function readBytes(
+    function readBytesWithLength(
         bytes memory b,
         uint256 index
     )
@@ -272,17 +483,13 @@ contract LibBytes is
         // length of nested bytes
         require(
             b.length >= index + nestedBytesLength,
-            GREATER_OR_EQUAL_TO_NESTED_BYTES_LENGTH_REQUIRED
+            "GREATER_OR_EQUAL_TO_NESTED_BYTES_LENGTH_REQUIRED"
         );
-
-        // Allocate memory and copy value to result
-        result = new bytes(nestedBytesLength);
-        memCopy(
-            getMemAddress(result) + 32, // +32 skips array length
-            getMemAddress(b) + index + 32,
-            nestedBytesLength
-        );
-
+        
+        // Return a pointer to the byte array as it exists inside `b`
+        assembly {
+            result := add(b, index)
+        }
         return result;
     }
 
@@ -290,7 +497,7 @@ contract LibBytes is
     /// @param b Byte array to insert <input> into.
     /// @param index Index in byte array of <input>.
     /// @param input bytes to insert.
-    function writeBytes(
+    function writeBytesWithLength(
         bytes memory b,
         uint256 index,
         bytes memory input
@@ -302,50 +509,15 @@ contract LibBytes is
         // length of input
         require(
             b.length >= index + 32 /* 32 bytes to store length */ + input.length,
-            GREATER_OR_EQUAL_TO_NESTED_BYTES_LENGTH_REQUIRED
+            "GREATER_OR_EQUAL_TO_NESTED_BYTES_LENGTH_REQUIRED"
         );
 
         // Copy <input> into <b>
         memCopy(
-            getMemAddress(b) + 32 + index,  // +32 to skip length of <b>
-            getMemAddress(input),           // includes length of <input>
-            input.length + 32               // +32 bytes to store <input> length
+            b.contentAddress() + index,
+            input.rawAddress(), // includes length of <input>
+            input.length + 32   // +32 bytes to store <input> length
         );
-    }
-
-    /// @dev Tests equality of two byte arrays.
-    /// @param lhs First byte array to compare.
-    /// @param rhs Second byte array to compare.
-    /// @return True if arrays are the same. False otherwise.
-    function areBytesEqual(
-        bytes memory lhs,
-        bytes memory rhs
-    )
-        internal
-        pure
-        returns (bool equal)
-    {
-        assembly {
-            // Get the number of words occupied by <lhs>
-            let lenFullWords := div(add(mload(lhs), 0x1F), 0x20)
-
-            // Add 1 to the number of words, to account for the length field
-            lenFullWords := add(lenFullWords, 0x1)
-
-            // Test equality word-by-word.
-            // Terminates early if there is a mismatch.
-            for {let i := 0} lt(i, lenFullWords) {i := add(i, 1)} {
-                let lhsWord := mload(add(lhs, mul(i, 0x20)))
-                let rhsWord := mload(add(rhs, mul(i, 0x20)))
-                equal := eq(lhsWord, rhsWord)
-                if eq(equal, 0) {
-                    // Break
-                    i := lenFullWords
-                }
-            }
-       }
-
-       return equal;
     }
 
     /// @dev Performs a deep copy of a byte array onto another byte array of greater than or equal length.
@@ -362,11 +534,11 @@ contract LibBytes is
         // Dest length must be >= source length, or some bytes would not be copied.
         require(
             dest.length >= sourceLen,
-            GREATER_OR_EQUAL_TO_SOURCE_BYTES_LENGTH_REQUIRED
+            "GREATER_OR_EQUAL_TO_SOURCE_BYTES_LENGTH_REQUIRED"
         );
         memCopy(
-            getMemAddress(dest) + 32,    // +32 to skip length of <dest>
-            getMemAddress(source) + 32,  // +32 to skip length of <source>
+            dest.contentAddress(),
+            source.contentAddress(),
             sourceLen
         );
     }

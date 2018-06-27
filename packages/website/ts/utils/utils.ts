@@ -4,11 +4,13 @@ import { constants as sharedConstants, Networks } from '@0xproject/react-shared'
 import { ECSignature, Provider } from '@0xproject/types';
 import { BigNumber } from '@0xproject/utils';
 import { Web3Wrapper } from '@0xproject/web3-wrapper';
+import * as bowser from 'bowser';
 import deepEqual = require('deep-equal');
 import * as _ from 'lodash';
 import * as moment from 'moment';
 import {
     BlockchainCallErrs,
+    BrowserType,
     Environments,
     Order,
     Providers,
@@ -361,5 +363,22 @@ export const utils = {
         const precision = Math.min(constants.TOKEN_AMOUNT_DISPLAY_PRECISION, unitAmount.decimalPlaces());
         const formattedAmount = unitAmount.toFixed(precision);
         return `${formattedAmount} ${symbol}`;
+    },
+    openUrl(url: string): void {
+        window.open(url, '_blank');
+    },
+    isMobile(screenWidth: ScreenWidths): boolean {
+        return screenWidth === ScreenWidths.Sm;
+    },
+    getBrowserType(): BrowserType {
+        if (bowser.chrome) {
+            return BrowserType.Chrome;
+        } else if (bowser.firefox) {
+            return BrowserType.Firefox;
+        } else if (bowser.opera) {
+            return BrowserType.Opera;
+        } else {
+            return BrowserType.Other;
+        }
     },
 };

@@ -70,7 +70,10 @@ class TokenLink extends React.Component<TokenLinkProps, TokenLinkState> {
         };
         const networkName = sharedConstants.NETWORK_NAME_BY_ID[this.props.networkId];
         const eventLabel = `${this.props.tokenInfo.symbol}-${networkName}`;
-        const trackTokenClick = () => analytics.logEvent('Portal', 'Token Click', eventLabel);
+        const onClick = (event: React.MouseEvent<HTMLElement>) => {
+            event.stopPropagation();
+            analytics.logEvent('Portal', 'Token Click', eventLabel);
+        };
         return (
             <a
                 href={tokenLinkFromToken(this.props.tokenInfo, this.props.networkId)}
@@ -78,7 +81,7 @@ class TokenLink extends React.Component<TokenLinkProps, TokenLinkState> {
                 style={style}
                 onMouseEnter={this._onToggleHover.bind(this, true)}
                 onMouseLeave={this._onToggleHover.bind(this, false)}
-                onClick={trackTokenClick}
+                onClick={onClick}
             >
                 {this.props.tokenInfo.symbol}
             </a>

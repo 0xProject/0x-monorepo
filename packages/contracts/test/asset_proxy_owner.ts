@@ -11,6 +11,7 @@ import {
     SubmissionContractEventArgs,
 } from '../src/generated_contract_wrappers/asset_proxy_owner';
 import { MixinAuthorizableContract } from '../src/generated_contract_wrappers/mixin_authorizable';
+import { TestAssetProxyOwnerContract } from '../src/generated_contract_wrappers/test_asset_proxy_owner';
 import { artifacts } from '../src/utils/artifacts';
 import {
     expectRevertOrAlwaysFailingTransactionAsync,
@@ -34,7 +35,7 @@ describe('AssetProxyOwner', () => {
 
     let erc20Proxy: MixinAuthorizableContract;
     let erc721Proxy: MixinAuthorizableContract;
-    let multiSig: AssetProxyOwnerContract;
+    let testAssetProxyOwner: TestAssetProxyOwnerContract;
     let multiSigWrapper: MultiSigWrapper;
 
     before(async () => {
@@ -58,8 +59,8 @@ describe('AssetProxyOwner', () => {
             txDefaults,
         );
         const defaultAssetProxyContractAddresses: string[] = [];
-        multiSig = await AssetProxyOwnerContract.deployFrom0xArtifactAsync(
-            artifacts.AssetProxyOwner,
+        testAssetProxyOwner = await TestAssetProxyOwnerContract.deployFrom0xArtifactAsync(
+            artifacts.TestAssetProxyOwner,
             provider,
             txDefaults,
             owners,
@@ -67,13 +68,17 @@ describe('AssetProxyOwner', () => {
             REQUIRED_APPROVALS,
             SECONDS_TIME_LOCKED,
         );
-        multiSigWrapper = new MultiSigWrapper(multiSig, provider);
+        multiSigWrapper = new MultiSigWrapper(testAssetProxyOwner, provider);
         await web3Wrapper.awaitTransactionSuccessAsync(
-            await erc20Proxy.transferOwnership.sendTransactionAsync(multiSig.address, { from: initialOwner }),
+            await erc20Proxy.transferOwnership.sendTransactionAsync(testAssetProxyOwner.address, {
+                from: initialOwner,
+            }),
             constants.AWAIT_TRANSACTION_MINED_MS,
         );
         await web3Wrapper.awaitTransactionSuccessAsync(
-            await erc721Proxy.transferOwnership.sendTransactionAsync(multiSig.address, { from: initialOwner }),
+            await erc721Proxy.transferOwnership.sendTransactionAsync(testAssetProxyOwner.address, {
+                from: initialOwner,
+            }),
             constants.AWAIT_TRANSACTION_MINED_MS,
         );
     });
@@ -117,24 +122,28 @@ describe('AssetProxyOwner', () => {
         });
     });
 
-    describe('isFunctionRemoveAuthorizedAddress', () => {
-        it('should throw if data is not for removeAuthorizedAddress', async () => {
+    describe('isFunctionRemoveAuthorizedAddressAtIndex', () => {
+        it('should return false if data is not for removeAuthorizedAddressAtIndex', async () => {
             const notRemoveAuthorizedAddressData = erc20Proxy.addAuthorizedAddress.getABIEncodedTransactionData(
                 owners[0],
             );
-            return expectRevertOrContractCallFailedAsync(
-                multiSig.isFunctionRemoveAuthorizedAddress.callAsync(notRemoveAuthorizedAddressData),
+
+            const isFunctionRemoveAuthorizedAddressAtIndex = await testAssetProxyOwner.isFunctionRemoveAuthorizedAddressAtIndex.callAsync(
+                notRemoveAuthorizedAddressData,
             );
+            expect(isFunctionRemoveAuthorizedAddressAtIndex).to.be.false();
         });
 
-        it('should return true if data is for removeAuthorizedAddress', async () => {
-            const removeAuthorizedAddressData = erc20Proxy.removeAuthorizedAddress.getABIEncodedTransactionData(
+        it('should return true if data is for removeAuthorizedAddressAtIndex', async () => {
+            const index = new BigNumber(0);
+            const removeAuthorizedAddressAtIndexData = erc20Proxy.removeAuthorizedAddressAtIndex.getABIEncodedTransactionData(
                 owners[0],
+                index,
             );
-            const isFunctionRemoveAuthorizedAddress = await multiSig.isFunctionRemoveAuthorizedAddress.callAsync(
-                removeAuthorizedAddressData,
+            const isFunctionRemoveAuthorizedAddressAtIndex = await testAssetProxyOwner.isFunctionRemoveAuthorizedAddressAtIndex.callAsync(
+                removeAuthorizedAddressAtIndexData,
             );
-            expect(isFunctionRemoveAuthorizedAddress).to.be.true();
+            expect(isFunctionRemoveAuthorizedAddressAtIndex).to.be.true();
         });
     });
 
@@ -142,19 +151,21 @@ describe('AssetProxyOwner', () => {
         it('should throw if not called by multisig', async () => {
             const isRegistered = true;
             return expectRevertOrAlwaysFailingTransactionAsync(
-                multiSig.registerAssetProxy.sendTransactionAsync(erc20Proxy.address, isRegistered, { from: owners[0] }),
+                testAssetProxyOwner.registerAssetProxy.sendTransactionAsync(erc20Proxy.address, isRegistered, {
+                    from: owners[0],
+                }),
             );
         });
 
         it('should register an address if called by multisig after timelock', async () => {
             const addressToRegister = erc20Proxy.address;
             const isRegistered = true;
-            const registerAssetProxyData = multiSig.registerAssetProxy.getABIEncodedTransactionData(
+            const registerAssetProxyData = testAssetProxyOwner.registerAssetProxy.getABIEncodedTransactionData(
                 addressToRegister,
                 isRegistered,
             );
             const submitTxRes = await multiSigWrapper.submitTransactionAsync(
-                multiSig.address,
+                testAssetProxyOwner.address,
                 registerAssetProxyData,
                 owners[0],
             );
@@ -170,19 +181,21 @@ describe('AssetProxyOwner', () => {
             expect(registerLog.args.assetProxyContract).to.equal(addressToRegister);
             expect(registerLog.args.isRegistered).to.equal(isRegistered);
 
-            const isAssetProxyRegistered = await multiSig.isAssetProxyRegistered.callAsync(addressToRegister);
+            const isAssetProxyRegistered = await testAssetProxyOwner.isAssetProxyRegistered.callAsync(
+                addressToRegister,
+            );
             expect(isAssetProxyRegistered).to.equal(isRegistered);
         });
 
         it('should fail if registering a null address', async () => {
             const addressToRegister = constants.NULL_ADDRESS;
             const isRegistered = true;
-            const registerAssetProxyData = multiSig.registerAssetProxy.getABIEncodedTransactionData(
+            const registerAssetProxyData = testAssetProxyOwner.registerAssetProxy.getABIEncodedTransactionData(
                 addressToRegister,
                 isRegistered,
             );
             const submitTxRes = await multiSigWrapper.submitTransactionAsync(
-                multiSig.address,
+                testAssetProxyOwner.address,
                 registerAssetProxyData,
                 owners[0],
             );
@@ -196,22 +209,26 @@ describe('AssetProxyOwner', () => {
             const failureLog = executeTxRes.logs[0] as LogWithDecodedArgs<ExecutionFailureContractEventArgs>;
             expect(failureLog.args.transactionId).to.be.bignumber.equal(txId);
 
-            const isAssetProxyRegistered = await multiSig.isAssetProxyRegistered.callAsync(addressToRegister);
+            const isAssetProxyRegistered = await testAssetProxyOwner.isAssetProxyRegistered.callAsync(
+                addressToRegister,
+            );
             expect(isAssetProxyRegistered).to.equal(false);
         });
     });
 
-    describe('executeRemoveAuthorizedAddress', () => {
+    describe('Calling removeAuthorizedAddressAtIndex', () => {
+        const erc20Index = new BigNumber(0);
+        const erc721Index = new BigNumber(1);
         before('authorize both proxies and register erc20 proxy', async () => {
             // Only register ERC20 proxy
             const addressToRegister = erc20Proxy.address;
             const isRegistered = true;
-            const registerAssetProxyData = multiSig.registerAssetProxy.getABIEncodedTransactionData(
+            const registerAssetProxyData = testAssetProxyOwner.registerAssetProxy.getABIEncodedTransactionData(
                 addressToRegister,
                 isRegistered,
             );
             const registerAssetProxySubmitRes = await multiSigWrapper.submitTransactionAsync(
-                multiSig.address,
+                testAssetProxyOwner.address,
                 registerAssetProxyData,
                 owners[0],
             );
@@ -248,113 +265,180 @@ describe('AssetProxyOwner', () => {
             await multiSigWrapper.executeTransactionAsync(erc721AddAuthorizedAddressTxId, owners[0]);
         });
 
-        it('should throw without the required confirmations', async () => {
-            const removeAuthorizedAddressData = erc20Proxy.removeAuthorizedAddress.getABIEncodedTransactionData(
-                authorized,
-            );
-            const res = await multiSigWrapper.submitTransactionAsync(
-                erc20Proxy.address,
-                removeAuthorizedAddressData,
-                owners[0],
-            );
-            const log = res.logs[0] as LogWithDecodedArgs<SubmissionContractEventArgs>;
-            const txId = log.args.transactionId;
+        describe('validRemoveAuthorizedAddressAtIndexTx', () => {
+            it('should revert if data is not for removeAuthorizedAddressAtIndex and proxy is registered', async () => {
+                const notRemoveAuthorizedAddressData = erc20Proxy.addAuthorizedAddress.getABIEncodedTransactionData(
+                    authorized,
+                );
+                const submitTxRes = await multiSigWrapper.submitTransactionAsync(
+                    erc20Proxy.address,
+                    notRemoveAuthorizedAddressData,
+                    owners[0],
+                );
+                const log = submitTxRes.logs[0] as LogWithDecodedArgs<SubmissionContractEventArgs>;
+                const txId = log.args.transactionId;
+                return expectRevertOrContractCallFailedAsync(
+                    testAssetProxyOwner.testValidRemoveAuthorizedAddressAtIndexTx.callAsync(txId),
+                );
+            });
 
-            return expectRevertOrAlwaysFailingTransactionAsync(
-                multiSig.executeRemoveAuthorizedAddress.sendTransactionAsync(txId, { from: owners[1] }),
-            );
+            it('should return true if data is for removeAuthorizedAddressAtIndex and proxy is registered', async () => {
+                const removeAuthorizedAddressAtIndexData = erc20Proxy.removeAuthorizedAddressAtIndex.getABIEncodedTransactionData(
+                    authorized,
+                    erc20Index,
+                );
+                const submitTxRes = await multiSigWrapper.submitTransactionAsync(
+                    erc20Proxy.address,
+                    removeAuthorizedAddressAtIndexData,
+                    owners[0],
+                );
+                const log = submitTxRes.logs[0] as LogWithDecodedArgs<SubmissionContractEventArgs>;
+                const txId = log.args.transactionId;
+                const isValidRemoveAuthorizedAddressAtIndexTx = await testAssetProxyOwner.testValidRemoveAuthorizedAddressAtIndexTx.callAsync(
+                    txId,
+                );
+                expect(isValidRemoveAuthorizedAddressAtIndexTx).to.be.true();
+            });
+
+            it('should revert if data is for removeAuthorizedAddressAtIndex and proxy is not registered', async () => {
+                const removeAuthorizedAddressAtIndexData = erc721Proxy.removeAuthorizedAddressAtIndex.getABIEncodedTransactionData(
+                    authorized,
+                    erc721Index,
+                );
+                const submitTxRes = await multiSigWrapper.submitTransactionAsync(
+                    erc721Proxy.address,
+                    removeAuthorizedAddressAtIndexData,
+                    owners[0],
+                );
+                const log = submitTxRes.logs[0] as LogWithDecodedArgs<SubmissionContractEventArgs>;
+                const txId = log.args.transactionId;
+                return expectRevertOrContractCallFailedAsync(
+                    testAssetProxyOwner.testValidRemoveAuthorizedAddressAtIndexTx.callAsync(txId),
+                );
+            });
         });
 
-        it('should throw if tx destination is not registered', async () => {
-            const removeAuthorizedAddressData = erc721Proxy.removeAuthorizedAddress.getABIEncodedTransactionData(
-                authorized,
-            );
-            const res = await multiSigWrapper.submitTransactionAsync(
-                erc721Proxy.address,
-                removeAuthorizedAddressData,
-                owners[0],
-            );
-            const log = res.logs[0] as LogWithDecodedArgs<SubmissionContractEventArgs>;
-            const txId = log.args.transactionId;
+        describe('executeRemoveAuthorizedAddressAtIndex', () => {
+            it('should throw without the required confirmations', async () => {
+                const removeAuthorizedAddressAtIndexData = erc20Proxy.removeAuthorizedAddressAtIndex.getABIEncodedTransactionData(
+                    authorized,
+                    erc20Index,
+                );
+                const res = await multiSigWrapper.submitTransactionAsync(
+                    erc20Proxy.address,
+                    removeAuthorizedAddressAtIndexData,
+                    owners[0],
+                );
+                const log = res.logs[0] as LogWithDecodedArgs<SubmissionContractEventArgs>;
+                const txId = log.args.transactionId;
 
-            await multiSigWrapper.confirmTransactionAsync(txId, owners[1]);
+                return expectRevertOrAlwaysFailingTransactionAsync(
+                    testAssetProxyOwner.executeRemoveAuthorizedAddressAtIndex.sendTransactionAsync(txId, {
+                        from: owners[1],
+                    }),
+                );
+            });
 
-            return expectRevertOrAlwaysFailingTransactionAsync(
-                multiSig.executeRemoveAuthorizedAddress.sendTransactionAsync(txId, { from: owners[1] }),
-            );
-        });
+            it('should throw if tx destination is not registered', async () => {
+                const removeAuthorizedAddressAtIndexData = erc721Proxy.removeAuthorizedAddressAtIndex.getABIEncodedTransactionData(
+                    authorized,
+                    erc721Index,
+                );
+                const res = await multiSigWrapper.submitTransactionAsync(
+                    erc721Proxy.address,
+                    removeAuthorizedAddressAtIndexData,
+                    owners[0],
+                );
+                const log = res.logs[0] as LogWithDecodedArgs<SubmissionContractEventArgs>;
+                const txId = log.args.transactionId;
 
-        it('should throw if tx data is not for removeAuthorizedAddress', async () => {
-            const newAuthorized = owners[1];
-            const addAuthorizedAddressData = erc20Proxy.addAuthorizedAddress.getABIEncodedTransactionData(
-                newAuthorized,
-            );
-            const res = await multiSigWrapper.submitTransactionAsync(
-                erc20Proxy.address,
-                addAuthorizedAddressData,
-                owners[0],
-            );
-            const log = res.logs[0] as LogWithDecodedArgs<SubmissionContractEventArgs>;
-            const txId = log.args.transactionId;
+                await multiSigWrapper.confirmTransactionAsync(txId, owners[1]);
 
-            await multiSigWrapper.confirmTransactionAsync(txId, owners[1]);
+                return expectRevertOrAlwaysFailingTransactionAsync(
+                    testAssetProxyOwner.executeRemoveAuthorizedAddressAtIndex.sendTransactionAsync(txId, {
+                        from: owners[1],
+                    }),
+                );
+            });
 
-            return expectRevertOrAlwaysFailingTransactionAsync(
-                multiSig.executeRemoveAuthorizedAddress.sendTransactionAsync(txId, { from: owners[1] }),
-            );
-        });
+            it('should throw if tx data is not for removeAuthorizedAddressAtIndex', async () => {
+                const newAuthorized = owners[1];
+                const addAuthorizedAddressData = erc20Proxy.addAuthorizedAddress.getABIEncodedTransactionData(
+                    newAuthorized,
+                );
+                const res = await multiSigWrapper.submitTransactionAsync(
+                    erc20Proxy.address,
+                    addAuthorizedAddressData,
+                    owners[0],
+                );
+                const log = res.logs[0] as LogWithDecodedArgs<SubmissionContractEventArgs>;
+                const txId = log.args.transactionId;
 
-        it('should execute removeAuthorizedAddress for registered address if fully confirmed', async () => {
-            const removeAuthorizedAddressData = erc20Proxy.removeAuthorizedAddress.getABIEncodedTransactionData(
-                authorized,
-            );
-            const submitRes = await multiSigWrapper.submitTransactionAsync(
-                erc20Proxy.address,
-                removeAuthorizedAddressData,
-                owners[0],
-            );
-            const submitLog = submitRes.logs[0] as LogWithDecodedArgs<SubmissionContractEventArgs>;
-            const txId = submitLog.args.transactionId;
+                await multiSigWrapper.confirmTransactionAsync(txId, owners[1]);
 
-            await multiSigWrapper.confirmTransactionAsync(txId, owners[1]);
+                return expectRevertOrAlwaysFailingTransactionAsync(
+                    testAssetProxyOwner.executeRemoveAuthorizedAddressAtIndex.sendTransactionAsync(txId, {
+                        from: owners[1],
+                    }),
+                );
+            });
 
-            const execRes = await multiSigWrapper.executeRemoveAuthorizedAddressAsync(txId, owners[0]);
-            const execLog = execRes.logs[0] as LogWithDecodedArgs<ExecutionContractEventArgs>;
-            expect(execLog.args.transactionId).to.be.bignumber.equal(txId);
+            it('should execute removeAuthorizedAddressAtIndex for registered address if fully confirmed', async () => {
+                const removeAuthorizedAddressAtIndexData = erc20Proxy.removeAuthorizedAddressAtIndex.getABIEncodedTransactionData(
+                    authorized,
+                    erc20Index,
+                );
+                const submitRes = await multiSigWrapper.submitTransactionAsync(
+                    erc20Proxy.address,
+                    removeAuthorizedAddressAtIndexData,
+                    owners[0],
+                );
+                const submitLog = submitRes.logs[0] as LogWithDecodedArgs<SubmissionContractEventArgs>;
+                const txId = submitLog.args.transactionId;
 
-            const tx = await multiSig.transactions.callAsync(txId);
-            const isExecuted = tx[3];
-            expect(isExecuted).to.equal(true);
+                await multiSigWrapper.confirmTransactionAsync(txId, owners[1]);
 
-            const isAuthorized = await erc20Proxy.authorized.callAsync(authorized);
-            expect(isAuthorized).to.equal(false);
-        });
+                const execRes = await multiSigWrapper.executeRemoveAuthorizedAddressAtIndexAsync(txId, owners[0]);
+                const execLog = execRes.logs[0] as LogWithDecodedArgs<ExecutionContractEventArgs>;
+                expect(execLog.args.transactionId).to.be.bignumber.equal(txId);
 
-        it('should throw if already executed', async () => {
-            const removeAuthorizedAddressData = erc20Proxy.removeAuthorizedAddress.getABIEncodedTransactionData(
-                authorized,
-            );
-            const submitRes = await multiSigWrapper.submitTransactionAsync(
-                erc20Proxy.address,
-                removeAuthorizedAddressData,
-                owners[0],
-            );
-            const submitLog = submitRes.logs[0] as LogWithDecodedArgs<SubmissionContractEventArgs>;
-            const txId = submitLog.args.transactionId;
+                const tx = await testAssetProxyOwner.transactions.callAsync(txId);
+                const isExecuted = tx[3];
+                expect(isExecuted).to.equal(true);
 
-            await multiSigWrapper.confirmTransactionAsync(txId, owners[1]);
+                const isAuthorized = await erc20Proxy.authorized.callAsync(authorized);
+                expect(isAuthorized).to.equal(false);
+            });
 
-            const execRes = await multiSigWrapper.executeRemoveAuthorizedAddressAsync(txId, owners[0]);
-            const execLog = execRes.logs[0] as LogWithDecodedArgs<ExecutionContractEventArgs>;
-            expect(execLog.args.transactionId).to.be.bignumber.equal(txId);
+            it('should throw if already executed', async () => {
+                const removeAuthorizedAddressAtIndexData = erc20Proxy.removeAuthorizedAddressAtIndex.getABIEncodedTransactionData(
+                    authorized,
+                    erc20Index,
+                );
+                const submitRes = await multiSigWrapper.submitTransactionAsync(
+                    erc20Proxy.address,
+                    removeAuthorizedAddressAtIndexData,
+                    owners[0],
+                );
+                const submitLog = submitRes.logs[0] as LogWithDecodedArgs<SubmissionContractEventArgs>;
+                const txId = submitLog.args.transactionId;
 
-            const tx = await multiSig.transactions.callAsync(txId);
-            const isExecuted = tx[3];
-            expect(isExecuted).to.equal(true);
+                await multiSigWrapper.confirmTransactionAsync(txId, owners[1]);
 
-            return expectRevertOrAlwaysFailingTransactionAsync(
-                multiSig.executeRemoveAuthorizedAddress.sendTransactionAsync(txId, { from: owners[1] }),
-            );
+                const execRes = await multiSigWrapper.executeRemoveAuthorizedAddressAtIndexAsync(txId, owners[0]);
+                const execLog = execRes.logs[0] as LogWithDecodedArgs<ExecutionContractEventArgs>;
+                expect(execLog.args.transactionId).to.be.bignumber.equal(txId);
+
+                const tx = await testAssetProxyOwner.transactions.callAsync(txId);
+                const isExecuted = tx[3];
+                expect(isExecuted).to.equal(true);
+
+                return expectRevertOrAlwaysFailingTransactionAsync(
+                    testAssetProxyOwner.executeRemoveAuthorizedAddressAtIndex.sendTransactionAsync(txId, {
+                        from: owners[1],
+                    }),
+                );
+            });
         });
     });
 });
