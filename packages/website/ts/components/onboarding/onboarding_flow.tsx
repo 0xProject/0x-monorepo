@@ -3,6 +3,7 @@ import { Placement, Popper, PopperChildrenProps } from 'react-popper';
 
 import { OnboardingCard } from 'ts/components/onboarding/onboarding_card';
 import { ContinueButtonDisplay, OnboardingTooltip } from 'ts/components/onboarding/onboarding_tooltip';
+import { zIndex } from 'ts/style/z_index';
 import { Animation } from 'ts/components/ui/animation';
 import { Container } from 'ts/components/ui/container';
 import { Overlay } from 'ts/components/ui/overlay';
@@ -54,14 +55,20 @@ export class OnboardingFlow extends React.Component<OnboardingFlowProps> {
         if (this.props.disableOverlay) {
             return onboardingElement;
         }
-        return <Overlay>{onboardingElement}</Overlay>;
+        return (
+            <div>
+                <Overlay onClick={this.props.onClose} />
+                {onboardingElement}
+            </div>
+        );
     }
     private _getElementForStep(): Element {
         return document.querySelector(this._getCurrentStep().target);
     }
     private _renderPopperChildren(props: PopperChildrenProps): React.ReactNode {
+        const customStyles = { zIndex: zIndex.aboveOverlay };
         return (
-            <div ref={props.ref} style={props.style} data-placement={props.placement}>
+            <div ref={props.ref} style={{ ...props.style, ...customStyles }} data-placement={props.placement}>
                 {this._renderToolTip()}
             </div>
         );
