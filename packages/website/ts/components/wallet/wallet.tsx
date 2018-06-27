@@ -105,6 +105,9 @@ const styles: Styles = {
         backgroundColor: colors.walletDefaultItemBackground,
         minHeight: 85,
     },
+    headerItem: {
+        minHeight: 60,
+    },
     amountLabel: {
         fontWeight: 'bold',
         color: colors.black,
@@ -222,7 +225,7 @@ export class Wallet extends React.Component<WalletProps, WalletState> {
                     // https://github.com/palantir/tslint-react/issues/140
                     // tslint:disable-next-line:jsx-curly-spacing
                 }
-                style={styles.borderedItem}
+                style={{ ...styles.borderedItem, ...styles.headerItem }}
             />
         );
     }
@@ -258,7 +261,7 @@ export class Wallet extends React.Component<WalletProps, WalletState> {
                 <StandardIconRow
                     icon={<Identicon address={userAddress} diameter={ICON_DIMENSION} />}
                     main={main}
-                    style={styles.borderedItem}
+                    style={{ ...styles.borderedItem, ...styles.headerItem }}
                 />
             </Link>
         );
@@ -597,8 +600,8 @@ interface StandardIconRowProps {
 const StandardIconRow = (props: StandardIconRowProps) => {
     return (
         <div className="flex items-center" style={props.style}>
-            <div className="p2">{props.icon}</div>
-            <div className="flex-none pr2 pt2 pb2">{props.main}</div>
+            <div className="flex items-center px2">{props.icon}</div>
+            <div className="flex-none pr2">{props.main}</div>
             <div className="flex-auto" />
             <div>{props.accessory}</div>
         </div>
