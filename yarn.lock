@@ -44,6 +44,24 @@
     ethereumjs-util "5.1.5"
     lodash "4.17.10"
 
+"@0xproject/order-watcher@^0.0.6":
+  version "0.0.6"
+  resolved "https://registry.npmjs.org/@0xproject/order-watcher/-/order-watcher-0.0.6.tgz#85a8fb21e5755bb555f427b12d64d10b89b332e6"
+  dependencies:
+    "@0xproject/assert" "^0.2.12"
+    "@0xproject/base-contract" "^0.3.4"
+    "@0xproject/contract-wrappers" "^0.0.5"
+    "@0xproject/fill-scenarios" "^0.0.4"
+    "@0xproject/json-schemas" "^0.8.1"
+    "@0xproject/order-utils" "^0.0.7"
+    "@0xproject/types" "^0.8.1"
+    "@0xproject/typescript-typings" "^0.4.1"
+    "@0xproject/utils" "^0.7.1"
+    "@0xproject/web3-wrapper" "^0.7.1"
+    bintrees "1.0.2"
+    ethers "3.0.22"
+    lodash "4.17.10"
+
 "@0xproject/types@^0.5.0":
   version "0.5.0"
   resolved "https://registry.yarnpkg.com/@0xproject/types/-/types-0.5.0.tgz#ba3cfbc11a8c6344b57c9680aa7df2ea84b9bf05"
@@ -312,7 +330,7 @@
 
 "@types/mocha@^5.2.2":
   version "5.2.3"
-  resolved "https://registry.yarnpkg.com/@types/mocha/-/mocha-5.2.3.tgz#11f3a5629d67cd444fa6c94536576244e6a52ea9"
+  resolved "https://registry.npmjs.org/@types/mocha/-/mocha-5.2.3.tgz#11f3a5629d67cd444fa6c94536576244e6a52ea9"
 
 "@types/nock@^9.1.2":
   version "9.1.3"
@@ -1708,7 +1726,7 @@ bindings@^1.2.1, bindings@^1.3.0:
   version "1.3.0"
   resolved "https://registry.yarnpkg.com/bindings/-/bindings-1.3.0.tgz#b346f6ecf6a95f5a815c5839fc7cdb22502f1ed7"
 
-bintrees@^1.0.2:
+bintrees@1.0.2, bintrees@^1.0.2:
   version "1.0.2"
   resolved "https://registry.yarnpkg.com/bintrees/-/bintrees-1.0.2.tgz#49f896d6e858a4a499df85c38fb399b9aff840f8"
 
@@ -2881,7 +2899,7 @@ copyfiles@^1.2.0:
 
 copyfiles@^2.0.0:
   version "2.0.0"
-  resolved "https://registry.yarnpkg.com/copyfiles/-/copyfiles-2.0.0.tgz#bbd78bb78e8fd6db5c67adf54249317b24560f2a"
+  resolved "https://registry.npmjs.org/copyfiles/-/copyfiles-2.0.0.tgz#bbd78bb78e8fd6db5c67adf54249317b24560f2a"
   dependencies:
     glob "^7.0.5"
     minimatch "^3.0.3"
@@ -4055,7 +4073,7 @@ ethereum-common@^0.0.18:
 
 ethereum-types@^0.0.2:
   version "0.0.2"
-  resolved "https://registry.yarnpkg.com/ethereum-types/-/ethereum-types-0.0.2.tgz#6ef6faf46a24697cbf66b6c8a0ecf2095ce58c38"
+  resolved "https://registry.npmjs.org/ethereum-types/-/ethereum-types-0.0.2.tgz#6ef6faf46a24697cbf66b6c8a0ecf2095ce58c38"
   dependencies:
     "@types/node" "^8.0.53"
     bignumber.js "~4.1.0"
@@ -10197,7 +10215,7 @@ run-queue@^1.0.0, run-queue@^1.0.3:
 
 run-s@^0.0.0:
   version "0.0.0"
-  resolved "https://registry.yarnpkg.com/run-s/-/run-s-0.0.0.tgz#599912be20c00ba7698655c9936d075d31b71754"
+  resolved "https://registry.npmjs.org/run-s/-/run-s-0.0.0.tgz#599912be20c00ba7698655c9936d075d31b71754"
 
 rustbn.js@~0.1.1:
   version "0.1.2"
@@ -13150,7 +13168,7 @@ yargs@^10.0.3:
 
 yargs@^11.0.0:
   version "11.0.0"
-  resolved "https://registry.yarnpkg.com/yargs/-/yargs-11.0.0.tgz#c052931006c5eee74610e5fc0354bedfd08a201b"
+  resolved "https://registry.npmjs.org/yargs/-/yargs-11.0.0.tgz#c052931006c5eee74610e5fc0354bedfd08a201b"
   dependencies:
     cliui "^4.0.0"
     decamelize "^1.1.1"

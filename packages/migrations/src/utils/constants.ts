@@ -8,7 +8,8 @@ export const constants = {
     ],
     ASSET_PROXY_OWNER_TIMELOCK: new BigNumber(0),
     ASSET_PROXY_OWNER_CONFIRMATIONS: new BigNumber(1),
-    ERC20_PROXY_ID: new BigNumber(0),
-    ERC721_PROXY_ID: new BigNumber(1),
+    ERC20_PROXY_ID: '0xf47261b0',
+    ERC721_PROXY_ID: '0x08e937fa',
     NULL_ADDRESS: '0x0000000000000000000000000000000000000000',
+    RPC_URL: 'http://localhost:8545',
 };
