@@ -71,7 +71,7 @@ export class OnboardingFlow extends React.Component<OnboardingFlowProps> {
         const step = steps[stepIndex];
         const isLastStep = steps.length - 1 === stepIndex;
         return (
-            <Container marginLeft="30px" maxWidth={350}>
+            <Container marginLeft="30px" width="400px">
                 <OnboardingTooltip
                     title={step.title}
                     content={step.content}

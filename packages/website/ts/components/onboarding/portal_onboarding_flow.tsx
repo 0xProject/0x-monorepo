@@ -12,7 +12,7 @@ import { IntroOnboardingStep } from 'ts/components/onboarding/intro_onboarding_s
 import { OnboardingFlow, Step } from 'ts/components/onboarding/onboarding_flow';
 import { SetAllowancesOnboardingStep } from 'ts/components/onboarding/set_allowances_onboarding_step';
 import { UnlockWalletOnboardingStep } from 'ts/components/onboarding/unlock_wallet_onboarding_step';
-import { WrapEthOnboardingStep } from 'ts/components/onboarding/wrap_eth_onboarding_step';
+import { WrapEthOnboardingStep1, WrapEthOnboardingStep2 } from 'ts/components/onboarding/wrap_eth_onboarding_step';
 import { AllowanceToggle } from 'ts/containers/inputs/allowance_toggle';
 import { ProviderType, ScreenWidths, Token, TokenByAddress, TokenStateByAddress } from 'ts/types';
 import { analytics } from 'ts/utils/analytics';
@@ -98,16 +98,21 @@ class PlainPortalOnboardingFlow extends React.Component<PortalOnboardingFlowProp
             },
             {
                 target: '.wallet',
-                title: 'Step 1/2',
+                title: 'Step 1: Wrap ETH',
+                content: <WrapEthOnboardingStep1 />,
+                placement: 'right',
+                continueButtonDisplay: this._userHasVisibleWeth() ? 'enabled' : undefined,
+            },
+            {
+                target: '.wallet',
+                title: 'Step 1: Wrap ETH',
                 content: (
-                    <WrapEthOnboardingStep
-                        formattedEthBalanceIfExists={
-                            this._userHasVisibleWeth() ? this._getFormattedWethBalance() : undefined
-                        }
+                    <WrapEthOnboardingStep2
+                        formattedEthBalance={this._userHasVisibleWeth() ? this._getFormattedWethBalance() : '0 WETH'}
                     />
                 ),
                 placement: 'right',
-                continueButtonDisplay: this._userHasVisibleWeth() ? 'enabled' : undefined,
+                continueButtonDisplay: 'enabled',
             },
             {
                 target: '.wallet',
