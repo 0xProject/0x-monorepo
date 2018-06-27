@@ -2,7 +2,7 @@ import { BigNumber, NULL_BYTES } from '@0xproject/utils';
 import { Web3Wrapper } from '@0xproject/web3-wrapper';
 import { Provider, TxData } from 'ethereum-types';
 
-import { ArtifactWriter } from '../artifact_writer';
+import { ArtifactWriter } from '../utils/artifact_writer';
 import { erc20TokenInfo } from '../utils/token_info';
 
 import { artifacts } from './artifacts';

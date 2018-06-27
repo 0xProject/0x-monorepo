@@ -6,13 +6,15 @@ import { Provider } from 'ethereum-types';
 import * as yargs from 'yargs';
 
 import { runV1MigrationsAsync } from './1.0.0/migration';
-import { runV2BetaKovanMigrationsAsync } from './2.0.0-beta-kovan/migration';
+import { runV2TestnetMigrationsAsync } from './2.0.0-beta-testnet/migration';
 import { runV2MigrationsAsync } from './2.0.0/migration';
+
+import { providerFactory } from './utils/provider_factory';
 
 enum ContractVersions {
     V1 = '1.0.0',
     V2 = '2.0.0',
-    V2BetaKovan = '2.0.0-beta-kovan',
+    V2Testnet = '2.0.0-beta-testnet',
 }
 const args = yargs.argv;
 
@@ -24,17 +26,24 @@ const args = yargs.argv;
     };
     const contractsVersion = args.contractsVersion;
     const artifactsDir = `artifacts/${contractsVersion}`;
-    if (contractsVersion === ContractVersions.V1) {
-        await runV1MigrationsAsync(provider, artifactsDir, txDefaults);
-    } else if (contractsVersion === ContractVersions.V2) {
-        await runV2MigrationsAsync(provider, artifactsDir, txDefaults);
-    } else {
-        const web3Wrapper = new Web3Wrapper(provider);
-        const accounts = await web3Wrapper.getAvailableAddressesAsync();
-        const kovanTxDefaults = {
-            from: accounts[0],
-        };
-        await runV2BetaKovanMigrationsAsync(provider, artifactsDir, kovanTxDefaults);
+    switch (contractsVersion) {
+        case ContractVersions.V1:
+            await runV1MigrationsAsync(provider, artifactsDir, txDefaults);
+            break;
+        case ContractVersions.V2:
+            await runV2MigrationsAsync(provider, artifactsDir, txDefaults);
+            break;
+        case ContractVersions.V2Testnet:
+            const ledgerProvider = await providerFactory.getLedgerProviderAsync();
+            const web3Wrapper = new Web3Wrapper(ledgerProvider);
+            const accounts = await web3Wrapper.getAvailableAddressesAsync();
+            const testnetTxDefaults = {
+                from: accounts[0],
+            };
+            await runV2TestnetMigrationsAsync(ledgerProvider, artifactsDir, testnetTxDefaults);
+            break;
+        default:
+            throw new Error(`Unsupported contract version: ${contractsVersion}`);
     }
     process.exit(0);
 })().catch(err => {

@@ -1,25 +1,25 @@
-import { BigNumber } from '@0xproject/utils';
 import { Web3Wrapper } from '@0xproject/web3-wrapper';
 import { Provider, TxData } from 'ethereum-types';
 
-import { ArtifactWriter } from '../artifact_writer';
+import { ArtifactWriter } from '../utils/artifact_writer';
+
+import { constants } from '../utils/constants';
 
 import { artifacts } from './artifacts';
-import { constants } from './constants';
 import { AssetProxyOwnerContract } from './contract_wrappers/asset_proxy_owner';
 import { ERC20ProxyContract } from './contract_wrappers/e_r_c20_proxy';
 import { ERC721ProxyContract } from './contract_wrappers/e_r_c721_proxy';
 import { ExchangeContract } from './contract_wrappers/exchange';
 
 /**
- * Custom migrations should be defined in this function. This will be called with the CLI 'migrate:v2' command.
+ * Custom migrations should be defined in this function. This will be called with the CLI 'migrate:v2-beta-testnet' command.
  * Migrations could be written to run in parallel, but if you want contract addresses to be created deterministically,
  * the migration should be written to run synchronously.
  * @param provider  Web3 provider instance.
  * @param artifactsDir The directory with compiler artifact files.
  * @param txDefaults Default transaction values to use when deploying contracts.
  */
-export const runV2BetaKovanMigrationsAsync = async (
+export const runV2TestnetMigrationsAsync = async (
     provider: Provider,
     artifactsDir: string,
     txDefaults: Partial<TxData>,
@@ -43,18 +43,19 @@ export const runV2BetaKovanMigrationsAsync = async (
     artifactsWriter.saveArtifact(exchange);
 
     // Register AssetProxies in Exchange
+    const oldAssetProxy = constants.NULL_ADDRESS;
     await web3Wrapper.awaitTransactionSuccessAsync(
         await exchange.registerAssetProxy.sendTransactionAsync(
             constants.ERC20_PROXY_ID,
             erc20proxy.address,
-            constants.NULL_ADDRESS,
+            oldAssetProxy,
         ),
     );
     await web3Wrapper.awaitTransactionSuccessAsync(
         await exchange.registerAssetProxy.sendTransactionAsync(
             constants.ERC721_PROXY_ID,
             erc721proxy.address,
-            constants.NULL_ADDRESS,
+            oldAssetProxy,
         ),
     );
 
