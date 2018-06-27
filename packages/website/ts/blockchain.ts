@@ -97,18 +97,18 @@ export class Blockchain {
     private static _getInjectedWeb3(): any {
         return (window as any).web3;
     }
-    private static async _getInjectedWeb3ProviderNetworkIdIfExistsAsync(): Promise<number> {
+    private static async _getInjectedWeb3ProviderNetworkIdIfExistsAsync(): Promise<number | undefined> {
         // Hack: We need to know the networkId the injectedWeb3 is connected to (if it is defined) in
         // order to properly instantiate the web3Wrapper. Since we must use the async call, we cannot
         // retrieve it from within the web3Wrapper constructor. This is and should remain the only
         // call to a web3 instance outside of web3Wrapper in the entire dapp.
         // In addition, if the user has an injectedWeb3 instance that is disconnected from a backing
         // Ethereum node, this call will throw. We need to handle this case gracefully
-        const injectedWeb3 = Blockchain._getInjectedWeb3();
+        const injectedWeb3IfExists = Blockchain._getInjectedWeb3();
         let networkIdIfExists: number;
-        if (!_.isUndefined(injectedWeb3)) {
+        if (!_.isUndefined(injectedWeb3IfExists)) {
             try {
-                networkIdIfExists = _.parseInt(await promisify<string>(injectedWeb3.version.getNetwork)());
+                networkIdIfExists = _.parseInt(await promisify<string>(injectedWeb3IfExists.version.getNetwork)());
             } catch (err) {
                 // Ignore error and proceed with networkId undefined
             }
@@ -119,13 +119,13 @@ export class Blockchain {
         injectedWeb3: Web3,
         networkIdIfExists: number,
         shouldUserLedgerProvider: boolean = false,
-    ): Promise<[Provider, LedgerSubprovider]> {
+    ): Promise<[Provider, LedgerSubprovider | undefined]> {
         const doesInjectedWeb3Exist = !_.isUndefined(injectedWeb3);
-        const isNetworkIdDefined = !_.isUndefined(networkIdIfExists);
+        const isNetworkIdAvailable = !_.isUndefined(networkIdIfExists);
         const publicNodeUrlsIfExistsForNetworkId = configs.PUBLIC_NODE_URLS_BY_NETWORK_ID[networkIdIfExists];
         const isPublicNodeAvailableForNetworkId = !_.isUndefined(publicNodeUrlsIfExistsForNetworkId);
 
-        if (shouldUserLedgerProvider && isNetworkIdDefined) {
+        if (shouldUserLedgerProvider && isNetworkIdAvailable) {
             const isU2FSupported = await utils.isU2FSupportedAsync();
             if (!isU2FSupported) {
                 throw new Error('Cannot update providerType to LEDGER without U2F support');
@@ -243,7 +243,7 @@ export class Blockchain {
         const shouldPollUserAddress = true;
         const shouldUserLedgerProvider = false;
         this._dispatcher.updateBlockchainIsLoaded(false);
-        // We don't want to be out of sync with the network metamask declares.
+        // We don't want to be out of sync with the network the injected provider declares.
         const networkId = await Blockchain._getInjectedWeb3ProviderNetworkIdIfExistsAsync();
         await this._resetOrInitializeAsync(networkId, shouldPollUserAddress, shouldUserLedgerProvider);
     }
@@ -772,15 +772,15 @@ export class Blockchain {
         await utils.onPageLoadAsync(); // wait for page to load
         const networkIdIfExists = await Blockchain._getInjectedWeb3ProviderNetworkIdIfExistsAsync();
         this.networkId = !_.isUndefined(networkIdIfExists) ? networkIdIfExists : constants.NETWORK_ID_MAINNET;
-        const injectedWeb3 = Blockchain._getInjectedWeb3();
-        if (injectedWeb3) {
-            const injectedProviderObservable = injectedWeb3.currentProvider.publicConfigStore;
+        const injectedWeb3IfExists = Blockchain._getInjectedWeb3();
+        if (injectedWeb3IfExists) {
+            const injectedProviderObservable = injectedWeb3IfExists.currentProvider.publicConfigStore;
             if (injectedProviderObservable && !this._injectedProviderObservable) {
                 this._injectedProviderObservable = injectedProviderObservable;
                 this._injectedProviderObservable.subscribe(this._injectedProviderUpdateHandler);
             }
         }
-        this._updateProviderName(injectedWeb3);
+        this._updateProviderName(injectedWeb3IfExists);
         const shouldPollUserAddress = true;
         const shouldUseLedgerProvider = false;
         await this._resetOrInitializeAsync(this.networkId, shouldPollUserAddress, shouldUseLedgerProvider);
@@ -793,9 +793,9 @@ export class Blockchain {
         this._dispatcher.updateBlockchainIsLoaded(false);
         this._dispatcher.updateUserWeiBalance(undefined);
         this.networkId = networkId;
-        const injectedWeb3 = Blockchain._getInjectedWeb3();
+        const injectedWeb3IfExists = Blockchain._getInjectedWeb3();
         const [provider, ledgerSubproviderIfExists] = await Blockchain._getProviderAsync(
-            injectedWeb3,
+            injectedWeb3IfExists,
             networkId,
             shouldUserLedgerProvider,
         );
@@ -819,7 +819,7 @@ export class Blockchain {
             const userAddresses = await this._web3Wrapper.getAvailableAddressesAsync();
             this._userAddressIfExists = userAddresses[0];
             this._dispatcher.updateUserAddress(this._userAddressIfExists);
-            if (!_.isUndefined(injectedWeb3)) {
+            if (!_.isUndefined(injectedWeb3IfExists)) {
                 this._dispatcher.updateProviderType(ProviderType.Injected);
             }
             await this.fetchTokenInformationAsync();
