@@ -5,6 +5,7 @@ import { EtherDelta } from "../EtherDelta/EtherDelta.sol";
 import { Ownable_v1 as Ownable } from "../Ownable/Ownable_v1.sol";
 import { IToken_v1 as Token } from "../Token/IToken_v1.sol";
 
+
 /// @title Arbitrage - Facilitates atomic arbitrage of ERC20 tokens between EtherDelta and 0x Exchange contract.
 /// @author Leonid Logvinov - <leo@0xProject.com>
 contract Arbitrage is Ownable {

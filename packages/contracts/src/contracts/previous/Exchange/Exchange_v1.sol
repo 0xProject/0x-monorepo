@@ -22,8 +22,10 @@ import { TokenTransferProxy_v1 as TokenTransferProxy } from "../TokenTransferPro
 import { Token_v1 as Token } from "../Token/Token_v1.sol";
 import { SafeMath_v1 as SafeMath } from "../SafeMath/SafeMath_v1.sol";
 
+
 /// @title Exchange - Facilitates exchange of ERC20 tokens.
 /// @author Amir Bandeali - <amir@0xProject.com>, Will Warren - <will@0xProject.com>
+// solhint-disable-next-line contract-name-camelcase
 contract Exchange_v1 is SafeMath {
 
     // Error Codes
@@ -37,7 +39,9 @@ contract Exchange_v1 is SafeMath {
     string constant public VERSION = "1.0.0";
     uint16 constant public EXTERNAL_QUERY_GAS_LIMIT = 4999;    // Changes to state require at least 5000 gas
 
+    // solhint-disable-next-line var-name-mixedcase
     address public ZRX_TOKEN_CONTRACT;
+    // solhint-disable-next-line var-name-mixedcase
     address public TOKEN_TRANSFER_PROXY_CONTRACT;
 
     // Mappings of orderHash => amounts of takerTokenAmount filled or cancelled.
@@ -104,15 +108,15 @@ contract Exchange_v1 is SafeMath {
     /// @param s ECDSA signature parameters s.
     /// @return Total amount of takerToken filled in trade.
     function fillOrder(
-          address[5] orderAddresses,
-          uint[6] orderValues,
-          uint fillTakerTokenAmount,
-          bool shouldThrowOnInsufficientBalanceOrAllowance,
-          uint8 v,
-          bytes32 r,
-          bytes32 s)
-          public
-          returns (uint filledTakerTokenAmount)
+        address[5] orderAddresses,
+        uint[6] orderValues,
+        uint fillTakerTokenAmount,
+        bool shouldThrowOnInsufficientBalanceOrAllowance,
+        uint8 v,
+        bytes32 r,
+        bytes32 s)
+        public
+        returns (uint filledTakerTokenAmount)
     {
         Order memory order = Order({
             maker: orderAddresses[0],
