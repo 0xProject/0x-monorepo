@@ -20,8 +20,10 @@ pragma solidity ^0.4.10;
 
 import "../../current/multisig/MultiSigWalletWithTimeLock.sol";
 
+
 contract MultiSigWalletWithTimeLockExceptRemoveAuthorizedAddress is MultiSigWalletWithTimeLock {
 
+// solhint-disable-next-line var-name-mixedcase
     address public TOKEN_TRANSFER_PROXY_CONTRACT;
 
     modifier validRemoveAuthorizedAddressTx(uint transactionId) {
@@ -73,7 +75,7 @@ contract MultiSigWalletWithTimeLockExceptRemoveAuthorizedAddress is MultiSigWall
         constant
         returns (bool)
     {
-        bytes4 removeAuthorizedAddressSignature = bytes4(sha3("removeAuthorizedAddress(address)"));
+        bytes4 removeAuthorizedAddressSignature = bytes4(keccak256("removeAuthorizedAddress(address)"));
         for (uint i = 0; i < 4; i++) {
             require(data[i] == removeAuthorizedAddressSignature[i]);
         }

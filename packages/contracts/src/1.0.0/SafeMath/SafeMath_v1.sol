@@ -1,5 +1,7 @@
 pragma solidity ^0.4.11;
 
+
+// solhint-disable-next-line contract-name-camelcase
 contract SafeMath_v1 {
     function safeMul(uint a, uint b)
         internal

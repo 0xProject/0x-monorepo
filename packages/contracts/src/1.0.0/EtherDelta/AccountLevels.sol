@@ -1,5 +1,6 @@
 pragma solidity ^0.4.19;
 
+
 contract AccountLevels {
     //given a user, returns an account level
     //0 = regular user (pays take fee and make fee)

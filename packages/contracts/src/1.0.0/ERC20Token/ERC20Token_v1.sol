@@ -2,6 +2,8 @@ pragma solidity ^0.4.11;
 
 import { Token_v1 as Token } from "../Token/Token_v1.sol";
 
+
+// solhint-disable-next-line contract-name-camelcase
 contract ERC20Token_v1 is Token {
 
     function transfer(address _to, uint _value) returns (bool) {
