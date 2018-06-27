@@ -44,12 +44,13 @@ export const DrawerMenu = (props: DrawerMenuProps) => {
         iconName: 'zmdi-portable-wifi',
     };
     const menuItemEntries = _.concat(relayerItemEntry, defaultMenuItemEntries);
-    const displayMessage = utils.getReadableAccountState(
+    const accountState = utils.getAccountState(
         props.blockchainIsLoaded && !_.isUndefined(props.blockchain),
         props.providerType,
         props.injectedProviderName,
         props.userAddress,
     );
+    const displayMessage = utils.getReadableAccountState(accountState, props.userAddress);
     return (
         <div style={styles.root}>
             <Header userAddress={props.userAddress} displayMessage={displayMessage} />

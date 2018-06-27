@@ -2,10 +2,13 @@ import { Styles } from '@0xproject/react-shared';
 import * as _ from 'lodash';
 import CircularProgress from 'material-ui/CircularProgress';
 import RaisedButton from 'material-ui/RaisedButton';
+import ActionAccountBalanceWallet from 'material-ui/svg-icons/action/account-balance-wallet';
+import Lock from 'material-ui/svg-icons/action/lock';
 import * as React from 'react';
 
 import { Blockchain } from 'ts/blockchain';
 import { ProviderPicker } from 'ts/components/top_bar/provider_picker';
+import { Circle } from 'ts/components/ui/circle';
 import { Container } from 'ts/components/ui/container';
 import { DropDown } from 'ts/components/ui/drop_down';
 import { Identicon } from 'ts/components/ui/identicon';
@@ -14,7 +17,7 @@ import { Island } from 'ts/components/ui/island';
 import { Text } from 'ts/components/ui/text';
 import { Dispatcher } from 'ts/redux/dispatcher';
 import { colors } from 'ts/style/colors';
-import { ProviderType } from 'ts/types';
+import { AccountState, ProviderType } from 'ts/types';
 import { constants } from 'ts/utils/constants';
 import { utils } from 'ts/utils/utils';
 
@@ -46,37 +49,13 @@ export class ProviderDisplay extends React.Component<ProviderDisplayProps, Provi
             this.props.providerType,
             this.props.injectedProviderName,
         );
-        const displayMessage = utils.getReadableAccountState(
-            this._isBlockchainReady(),
-            this.props.providerType,
-            this.props.injectedProviderName,
-            this.props.userAddress,
-        );
-        // If the "injected" provider is our fallback public node, then we want to
-        // show the "connect a wallet" message instead of the providerName
-        const injectedProviderName = isExternallyInjectedProvider
-            ? this.props.injectedProviderName
-            : 'Connect a wallet';
-        const providerTitle =
-            this.props.providerType === ProviderType.Injected ? injectedProviderName : 'Ledger Nano S';
-        const isProviderMetamask = providerTitle === constants.PROVIDER_NAME_METAMASK;
         const hoverActiveNode = (
-            <Island className="flex items-center p1" style={styles.root}>
-                <div>
-                    {this._isBlockchainReady() ? (
-                        <Identicon address={this.props.userAddress} diameter={ROOT_HEIGHT} />
-                    ) : (
-                        <CircularProgress size={ROOT_HEIGHT} thickness={2} />
-                    )}
-                </div>
+            <Island className="flex items-center py1 px2" style={styles.root}>
+                {this._renderIcon()}
                 <Container marginLeft="12px" marginRight="12px">
-                    <Text fontSize="14px" fontColor={colors.darkGrey}>
-                        {displayMessage}
-                    </Text>
+                    {this._renderDisplayMessage()}
                 </Container>
-                {isProviderMetamask && (
-                    <Image src="/images/metamask_icon.png" height={ROOT_HEIGHT} width={ROOT_HEIGHT} />
-                )}
+                {this._renderInjectedProvider()}
             </Island>
         );
         const hasLedgerProvider = this.props.providerType === ProviderType.Ledger;
@@ -168,7 +147,86 @@ export class ProviderDisplay extends React.Component<ProviderDisplayProps, Provi
             );
         }
     }
+    private _renderIcon(): React.ReactNode {
+        const accountState = this._getAccountState();
+        switch (accountState) {
+            case AccountState.Ready:
+                return <Identicon address={this.props.userAddress} diameter={ROOT_HEIGHT} />;
+            case AccountState.Loading:
+                return <CircularProgress size={ROOT_HEIGHT} thickness={2} />;
+            case AccountState.Locked:
+                return <Lock color={colors.black} />;
+            case AccountState.Unconnected:
+                return <ActionAccountBalanceWallet color={colors.mediumBlue} />;
+            default:
+                return null;
+        }
+    }
+    private _renderDisplayMessage(): React.ReactNode {
+        const accountState = this._getAccountState();
+        const displayMessage = utils.getReadableAccountState(accountState, this.props.userAddress);
+        const fontColor = this._getDisplayMessageFontColor();
+        return (
+            <Text fontSize="16px" fontColor={fontColor} fontWeight={500}>
+                {displayMessage}
+            </Text>
+        );
+    }
+    private _getDisplayMessageFontColor(): string {
+        const accountState = this._getAccountState();
+        switch (accountState) {
+            case AccountState.Loading:
+                return colors.darkGrey;
+            case AccountState.Ready:
+            case AccountState.Locked:
+            case AccountState.Unconnected:
+            default:
+                return colors.black;
+        }
+    }
+    private _renderInjectedProvider(): React.ReactNode {
+        const accountState = this._getAccountState();
+        switch (accountState) {
+            case AccountState.Ready:
+            case AccountState.Locked:
+                const circleColor = this._getInjectedProviderColor();
+                return (
+                    <Container className="flex items-center">
+                        <Circle diameter={6} fillColor={circleColor} />
+                        <Container marginLeft="6px">
+                            <Text fontSize="12px" lineHeight="14px" fontColor={colors.darkGrey}>
+                                {this.props.injectedProviderName}
+                            </Text>
+                        </Container>
+                    </Container>
+                );
+            case AccountState.Unconnected:
+            case AccountState.Loading:
+            default:
+                return null;
+        }
+    }
+    private _getInjectedProviderColor(): string {
+        const accountState = this._getAccountState();
+        switch (accountState) {
+            case AccountState.Ready:
+                return colors.green;
+            case AccountState.Locked:
+            case AccountState.Loading:
+            case AccountState.Unconnected:
+            default:
+                return colors.red;
+        }
+    }
     private _isBlockchainReady(): boolean {
         return this.props.blockchainIsLoaded && !_.isUndefined(this.props.blockchain);
+    }
+    private _getAccountState(): AccountState {
+        return utils.getAccountState(
+            this._isBlockchainReady(),
+            this.props.providerType,
+            this.props.injectedProviderName,
+            this.props.userAddress,
+        );
     }
 }

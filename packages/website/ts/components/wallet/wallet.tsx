@@ -240,7 +240,7 @@ export class Wallet extends React.Component<WalletProps, WalletState> {
         const userAddress = this.props.userAddress;
         const main = (
             <div className="flex flex-column">
-                <Text fontSize="16px" lineHeight="19px" fontWeight={800}>
+                <Text fontSize="16px" lineHeight="19px" fontWeight={500}>
                     {utils.getAddressBeginAndEnd(userAddress)}
                 </Text>
                 <Container className="flex items-center">
