@@ -7,14 +7,15 @@ import { LogWithDecodedArgs } from 'ethereum-types';
 import ethUtil = require('ethereumjs-util');
 import * as _ from 'lodash';
 
-import { DummyERC20TokenContract } from '../../src/generated_contract_wrappers/dummy_e_r_c20_token';
+import { DummyERC20TokenContract } from '../../src/generated_contract_wrappers/dummy_erc20_token';
 import {
     DummyERC721ReceiverContract,
-    TokenReceivedContractEventArgs,
-} from '../../src/generated_contract_wrappers/dummy_e_r_c721_receiver';
-import { DummyERC721TokenContract } from '../../src/generated_contract_wrappers/dummy_e_r_c721_token';
-import { ERC20ProxyContract } from '../../src/generated_contract_wrappers/e_r_c20_proxy';
-import { ERC721ProxyContract } from '../../src/generated_contract_wrappers/e_r_c721_proxy';
+    DummyERC721ReceiverEventArgs,
+    DummyERC721ReceiverTokenReceivedEventArgs,
+} from '../../src/generated_contract_wrappers/dummy_erc721_receiver';
+import { DummyERC721TokenContract } from '../../src/generated_contract_wrappers/dummy_erc721_token';
+import { ERC20ProxyContract } from '../../src/generated_contract_wrappers/erc20_proxy';
+import { ERC721ProxyContract } from '../../src/generated_contract_wrappers/erc721_proxy';
 import { artifacts } from '../../src/utils/artifacts';
 import { expectRevertReasonOrAlwaysFailingTransactionAsync } from '../../src/utils/assertions';
 import { chaiSetup } from '../../src/utils/chai_setup';
@@ -244,7 +245,7 @@ describe('Asset Transfer Proxies', () => {
                 const tx = await logDecoder.getTxWithDecodedLogsAsync(txHash);
                 // Verify that no log was emitted by erc721 receiver
                 expect(tx.logs.length).to.be.equal(1);
-                const tokenReceivedLog = tx.logs[0] as LogWithDecodedArgs<TokenReceivedContractEventArgs>;
+                const tokenReceivedLog = tx.logs[0] as LogWithDecodedArgs<DummyERC721ReceiverTokenReceivedEventArgs>;
                 expect(tokenReceivedLog.args.from).to.be.equal(makerAddress);
                 expect(tokenReceivedLog.args.tokenId).to.be.bignumber.equal(erc721MakerTokenId);
                 expect(tokenReceivedLog.args.data).to.be.equal(constants.NULL_BYTES);
@@ -279,7 +280,7 @@ describe('Asset Transfer Proxies', () => {
                 const tx = await logDecoder.getTxWithDecodedLogsAsync(txHash);
                 // Validate log emitted by erc721 receiver
                 expect(tx.logs.length).to.be.equal(1);
-                const tokenReceivedLog = tx.logs[0] as LogWithDecodedArgs<TokenReceivedContractEventArgs>;
+                const tokenReceivedLog = tx.logs[0] as LogWithDecodedArgs<DummyERC721ReceiverEventArgs>;
                 expect(tokenReceivedLog.args.from).to.be.equal(makerAddress);
                 expect(tokenReceivedLog.args.tokenId).to.be.bignumber.equal(erc721MakerTokenId);
                 expect(tokenReceivedLog.args.data).to.be.equal(receiverData);
