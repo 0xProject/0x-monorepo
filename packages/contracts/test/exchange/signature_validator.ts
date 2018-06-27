@@ -6,8 +6,8 @@ import { LogWithDecodedArgs } from 'ethereum-types';
 import ethUtil = require('ethereumjs-util');
 
 import {
-    SignatureValidatorApprovalContractEventArgs,
     TestSignatureValidatorContract,
+    TestSignatureValidatorSignatureValidatorApprovalEventArgs,
 } from '../../src/generated_contract_wrappers/test_signature_validator';
 import { TestValidatorContract } from '../../src/generated_contract_wrappers/test_validator';
 import { TestWalletContract } from '../../src/generated_contract_wrappers/test_wallet';
@@ -477,7 +477,7 @@ describe('MixinSignatureValidator', () => {
                 ),
             );
             expect(res.logs.length).to.equal(1);
-            const log = res.logs[0] as LogWithDecodedArgs<SignatureValidatorApprovalContractEventArgs>;
+            const log = res.logs[0] as LogWithDecodedArgs<TestSignatureValidatorSignatureValidatorApprovalEventArgs>;
             const logArgs = log.args;
             expect(logArgs.signerAddress).to.equal(signerAddress);
             expect(logArgs.validatorAddress).to.equal(testValidator.address);
@@ -495,7 +495,7 @@ describe('MixinSignatureValidator', () => {
                 ),
             );
             expect(res.logs.length).to.equal(1);
-            const log = res.logs[0] as LogWithDecodedArgs<SignatureValidatorApprovalContractEventArgs>;
+            const log = res.logs[0] as LogWithDecodedArgs<TestSignatureValidatorSignatureValidatorApprovalEventArgs>;
             const logArgs = log.args;
             expect(logArgs.signerAddress).to.equal(signerAddress);
             expect(logArgs.validatorAddress).to.equal(testValidator.address);
