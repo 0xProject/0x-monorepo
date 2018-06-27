@@ -20,6 +20,7 @@ pragma solidity ^0.4.24;
 
 import "../interfaces/ISignatureValidator.sol";
 
+
 contract MSignatureValidator is
     ISignatureValidator
 {

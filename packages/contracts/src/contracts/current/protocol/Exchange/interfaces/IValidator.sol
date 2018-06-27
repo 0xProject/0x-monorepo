@@ -18,6 +18,7 @@
 
 pragma solidity ^0.4.23;
 
+
 contract IValidator {
 
     /// @dev Verifies that a signature is valid.

@@ -17,6 +17,7 @@
 */
 pragma solidity ^0.4.24;
 
+
 contract ITransactions {
 
     /// @dev Executes an exchange method call in the context of signer.

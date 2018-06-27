@@ -22,6 +22,7 @@ pragma experimental ABIEncoderV2;
 import "../../tokens/ERC721Token/ERC721Token.sol";
 import "../../utils/Ownable/Ownable.sol";
 
+
 contract DummyERC721Token is
     Ownable,
     ERC721Token

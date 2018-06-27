@@ -18,6 +18,7 @@
 
 pragma solidity ^0.4.24;
 
+
 contract IAssetProxyDispatcher {
 
     /// @dev Registers an asset proxy to an asset proxy id.

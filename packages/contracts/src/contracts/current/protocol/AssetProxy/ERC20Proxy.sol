@@ -23,6 +23,7 @@ import "../../utils/LibBytes/LibBytes.sol";
 import "./interfaces/IAssetProxy.sol";
 import "./MixinAuthorizable.sol";
 
+
 contract ERC20Proxy is
     IAssetProxy,
     MixinAuthorizable

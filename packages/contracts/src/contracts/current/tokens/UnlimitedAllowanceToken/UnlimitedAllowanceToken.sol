@@ -21,6 +21,7 @@ pragma experimental ABIEncoderV2;
 
 import "../ERC20Token/ERC20Token.sol";
 
+
 contract UnlimitedAllowanceToken is ERC20Token {
 
     uint256 constant MAX_UINT = 2**256 - 1;
