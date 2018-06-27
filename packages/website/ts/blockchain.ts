@@ -121,14 +121,14 @@ export class Blockchain {
     private static async _getProviderAsync(
         injectedWeb3: Web3,
         networkIdIfExists: number,
-        userLedgerProvider: boolean = false,
+        shouldUserLedgerProvider: boolean = false,
     ): Promise<[Provider, LedgerSubprovider]> {
         const doesInjectedWeb3Exist = !_.isUndefined(injectedWeb3);
         const isNetworkIdDefined = !_.isUndefined(networkIdIfExists);
         const publicNodeUrlsIfExistsForNetworkId = configs.PUBLIC_NODE_URLS_BY_NETWORK_ID[networkIdIfExists];
         const isPublicNodeAvailableForNetworkId = !_.isUndefined(publicNodeUrlsIfExistsForNetworkId);
 
-        if (userLedgerProvider && isNetworkIdDefined) {
+        if (shouldUserLedgerProvider && isNetworkIdDefined) {
             const isU2FSupported = await utils.isU2FSupportedAsync();
             if (!isU2FSupported) {
                 throw new Error('Cannot update providerType to LEDGER without U2F support');
@@ -239,16 +239,16 @@ export class Blockchain {
     }
     public async updateProviderToLedgerAsync(networkId: number): Promise<void> {
         const shouldPollUserAddress = false;
-        const useLedgerProvider = true;
-        await this._resetOrInitializeAsync(networkId, shouldPollUserAddress, useLedgerProvider);
+        const shouldUserLedgerProvider = true;
+        await this._resetOrInitializeAsync(networkId, shouldPollUserAddress, shouldUserLedgerProvider);
     }
     public async updateProviderToInjectedAsync(): Promise<void> {
         const shouldPollUserAddress = true;
-        const userLedgerProvider = false;
+        const shouldUserLedgerProvider = false;
         this._dispatcher.updateBlockchainIsLoaded(false);
         // We don't want to be out of sync with the network metamask declares.
         const networkId = await Blockchain._getInjectedWeb3ProviderNetworkIdIfExistsAsync();
-        await this._resetOrInitializeAsync(networkId, shouldPollUserAddress, userLedgerProvider);
+        await this._resetOrInitializeAsync(networkId, shouldPollUserAddress, shouldUserLedgerProvider);
     }
     public async setProxyAllowanceAsync(token: Token, amountInBaseUnits: BigNumber): Promise<void> {
         utils.assert(this.isValidAddress(token.address), BlockchainCallErrs.TokenAddressIsInvalid);
@@ -628,8 +628,8 @@ export class Blockchain {
             return;
         }
         const shouldPollUserAddress = true;
-        const useLedgerProvider = false;
-        await this._resetOrInitializeAsync(updatedNetworkId, shouldPollUserAddress, useLedgerProvider);
+        const shouldUserLedgerProvider = false;
+        await this._resetOrInitializeAsync(updatedNetworkId, shouldPollUserAddress, shouldUserLedgerProvider);
     }
     private async _rehydrateStoreWithContractEventsAsync(): Promise<void> {
         // Ensure we are only ever listening to one set of events
@@ -785,13 +785,13 @@ export class Blockchain {
         }
         this._updateProviderName(injectedWeb3);
         const shouldPollUserAddress = true;
-        const shouldUseLedger = false;
-        await this._resetOrInitializeAsync(this.networkId, shouldPollUserAddress, shouldUseLedger);
+        const shouldUseLedgerProvider = false;
+        await this._resetOrInitializeAsync(this.networkId, shouldPollUserAddress, shouldUseLedgerProvider);
     }
     private async _resetOrInitializeAsync(
         networkId: number,
         shouldPollUserAddress: boolean = false,
-        useLedgerProvider: boolean = false,
+        shouldUserLedgerProvider: boolean = false,
     ): Promise<void> {
         this._dispatcher.updateBlockchainIsLoaded(false);
         this._dispatcher.updateUserWeiBalance(undefined);
@@ -800,7 +800,7 @@ export class Blockchain {
         const [provider, ledgerSubproviderIfExists] = await Blockchain._getProviderAsync(
             injectedWeb3,
             networkId,
-            useLedgerProvider,
+            shouldUserLedgerProvider,
         );
         if (!_.isUndefined(this._contractWrappers)) {
             this._contractWrappers.setProvider(provider, networkId);
@@ -812,7 +812,7 @@ export class Blockchain {
         }
         this._web3Wrapper = new Web3Wrapper(provider);
         this._blockchainWatcher = new BlockchainWatcher(this._dispatcher, this._web3Wrapper, shouldPollUserAddress);
-        if (useLedgerProvider && !_.isUndefined(ledgerSubproviderIfExists)) {
+        if (shouldUserLedgerProvider && !_.isUndefined(ledgerSubproviderIfExists)) {
             delete this._userAddressIfExists;
             this._ledgerSubprovider = ledgerSubproviderIfExists;
             this._dispatcher.updateUserAddress(undefined);
