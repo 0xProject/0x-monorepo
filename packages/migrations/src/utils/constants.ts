@@ -12,4 +12,5 @@ export const constants = {
     ERC721_PROXY_ID: '0x08e937fa',
     NULL_ADDRESS: '0x0000000000000000000000000000000000000000',
     RPC_URL: 'http://localhost:8545',
+    KOVAN_NETWORK_ID: 42,
 };
