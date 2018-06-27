@@ -34,6 +34,7 @@
         "glob": "^7.1.2",
         "handlebars": "^4.0.11",
         "lodash": "^4.17.4",
+        "rimraf": "^2.6.2",
         "mkdirp": "^0.5.1",
         "to-snake-case": "^1.0.0",
         "yargs": "^10.0.3"
@@ -42,6 +43,7 @@
         "@0xproject/monorepo-scripts": "^0.2.1",
         "@0xproject/tslint-config": "^0.4.20",
         "@types/glob": "^5.0.33",
+        "@types/rimraf": "^2.0.2",
         "@types/handlebars": "^4.0.36",
         "@types/mkdirp": "^0.5.1",
         "@types/node": "^8.0.53",
