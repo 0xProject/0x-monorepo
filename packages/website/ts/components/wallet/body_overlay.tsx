@@ -137,7 +137,7 @@ const GetMetaMask = () => {
                 <Image src={METAMASK_IMG_SRC} width="28px" />
                 <Container marginLeft="8px" marginRight="12px">
                     <Text fontColor={colors.white} fontSize="16px" fontWeight={500}>
-                        Get Metamask Wallet
+                        Get MetaMask Wallet
                     </Text>
                 </Container>
             </Island>
