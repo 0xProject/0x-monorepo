@@ -7,8 +7,8 @@
                 "pr": 768
             },
             {
-              "note": "Additional error type for `ethers.js`",
-               "pr": 763
+                "note": "Additional error type for `ethers.js`",
+                "pr": 763
             }
         ]
     },
