@@ -1,14 +1,7 @@
-import {
-    Artifact,
-    BlockParamLiteral,
-    ContractAbi,
-    FilterObject,
-    LogEntry,
-    LogWithDecodedArgs,
-    RawLog,
-} from '@0xproject/types';
-import { intervalUtils } from '@0xproject/utils';
+import { ContractArtifact } from '@0xproject/sol-compiler';
+import { AbiDecoder, intervalUtils } from '@0xproject/utils';
 import { Web3Wrapper } from '@0xproject/web3-wrapper';
+import { BlockParamLiteral, ContractAbi, FilterObject, LogEntry, LogWithDecodedArgs, RawLog } from 'ethereum-types';
 import { Block, BlockAndLogStreamer } from 'ethereumjs-blockstream';
 import * as _ from 'lodash';
 
@@ -29,9 +22,10 @@ const CONTRACT_NAME_TO_NOT_FOUND_ERROR: {
 } = {
     ZRX: ContractWrappersError.ZRXContractDoesNotExist,
     EtherToken: ContractWrappersError.EtherTokenContractDoesNotExist,
-    Token: ContractWrappersError.TokenContractDoesNotExist,
-    TokenRegistry: ContractWrappersError.TokenRegistryContractDoesNotExist,
-    TokenTransferProxy: ContractWrappersError.TokenTransferProxyContractDoesNotExist,
+    ERC20Token: ContractWrappersError.ERC20TokenContractDoesNotExist,
+    ERC20Proxy: ContractWrappersError.ERC20ProxyContractDoesNotExist,
+    ERC721Token: ContractWrappersError.ERC721TokenContractDoesNotExist,
+    ERC721Proxy: ContractWrappersError.ERC721ProxyContractDoesNotExist,
     Exchange: ContractWrappersError.ExchangeContractDoesNotExist,
 };
 
@@ -107,14 +101,12 @@ export abstract class ContractWrapper {
     protected _tryToDecodeLogOrNoop<ArgsType extends ContractEventArgs>(
         log: LogEntry,
     ): LogWithDecodedArgs<ArgsType> | RawLog {
-        if (_.isUndefined(this._web3Wrapper.abiDecoder)) {
-            throw new Error(InternalContractWrappersError.NoAbiDecoder);
-        }
-        const logWithDecodedArgs = this._web3Wrapper.abiDecoder.tryToDecodeLogOrNoop(log);
+        const abiDecoder = new AbiDecoder([this.abi]);
+        const logWithDecodedArgs = abiDecoder.tryToDecodeLogOrNoop(log);
         return logWithDecodedArgs;
     }
     protected async _getContractAbiAndAddressFromArtifactsAsync(
-        artifact: Artifact,
+        artifact: ContractArtifact,
         addressIfExists?: string,
     ): Promise<[ContractAbi, string]> {
         let contractAddress: string;
@@ -128,12 +120,12 @@ export abstract class ContractWrapper {
         }
         const doesContractExist = await this._web3Wrapper.doesContractExistAtAddressAsync(contractAddress);
         if (!doesContractExist) {
-            throw new Error(CONTRACT_NAME_TO_NOT_FOUND_ERROR[artifact.contract_name]);
+            throw new Error(CONTRACT_NAME_TO_NOT_FOUND_ERROR[artifact.contractName]);
         }
-        const abiAndAddress: [ContractAbi, string] = [artifact.abi, contractAddress];
+        const abiAndAddress: [ContractAbi, string] = [artifact.compilerOutput.abi, contractAddress];
         return abiAndAddress;
     }
-    protected _getContractAddress(artifact: Artifact, addressIfExists?: string): string {
+    protected _getContractAddress(artifact: ContractArtifact, addressIfExists?: string): string {
         if (_.isUndefined(addressIfExists)) {
             const contractAddress = artifact.networks[this._networkId].address;
             if (_.isUndefined(contractAddress)) {
