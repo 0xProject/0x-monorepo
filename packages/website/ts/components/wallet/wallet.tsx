@@ -123,6 +123,7 @@ const styles: Styles = {
     bodyInnerDiv: {
         overflow: 'auto',
         WebkitOverflowScrolling: 'touch',
+        position: 'relative',
     },
     manageYourWalletText: {
         color: colors.mediumBlue,
@@ -141,7 +142,7 @@ const USD_DECIMAL_PLACES = 2;
 const NO_ALLOWANCE_TOGGLE_SPACE_WIDTH = 56;
 const ACCOUNT_PATH = `${WebsitePaths.Portal}/account`;
 const PLACEHOLDER_COLOR = colors.grey300;
-const LOADING_ROWS_COUNT = 5;
+const LOADING_ROWS_COUNT = 6;
 
 const ActionButton = styled(FloatingActionButton)`
     button {
@@ -190,7 +191,7 @@ export class Wallet extends React.Component<WalletProps, WalletState> {
     }
     private _renderLoadingBodyRows(): React.ReactElement<{}> {
         const bodyStyle = this._getBodyStyle();
-        const loadingRowsRange = _.range(LOADING_ROWS_COUNT + 1);
+        const loadingRowsRange = _.range(LOADING_ROWS_COUNT);
         return (
             <div key={BODY_ITEM_KEY} className="flex flex-column" style={bodyStyle}>
                 {_.map(loadingRowsRange, index => {

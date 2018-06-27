@@ -83,7 +83,6 @@ const PlainLockedOverlay: React.StatelessComponent<LockedOverlayProps> = ({
 const LockedOverlay = styled(PlainLockedOverlay)`
     background: rgba(255, 248, 242, 0.8);
     border: 1px solid #f68c24;
-    box-sizing: border-box;
     border-radius: 10px;
 `;
 
