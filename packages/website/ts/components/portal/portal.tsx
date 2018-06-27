@@ -1,7 +1,7 @@
 import { colors, constants as sharedConstants } from '@0xproject/react-shared';
 import { BigNumber } from '@0xproject/utils';
 import * as _ from 'lodash';
-import ActionAccountBalanceWallet from 'material-ui/svg-icons/action/account-balance-wallet';
+import Help from 'material-ui/svg-icons/action/help';
 import * as React from 'react';
 import * as DocumentTitle from 'react-document-title';
 import { Route, RouteComponentProps, Switch } from 'react-router-dom';
@@ -319,14 +319,13 @@ export class Portal extends React.Component<PortalProps, PortalState> {
         );
     }
     private _renderWallet(): React.ReactNode {
-        const startOnboarding = this._renderStartOnboarding();
         const isMobile = utils.isMobile(this.props.screenWidth);
         // We need room to scroll down for mobile onboarding
         const marginBottom = isMobile ? '200px' : '15px';
         return (
             <div>
                 <Container>
-                    {isMobile && <Container marginBottom="15px">{startOnboarding}</Container>}
+                    {isMobile && <Container marginBottom="20px">{this._renderStartOnboarding()}</Container>}
                     <Container marginBottom={marginBottom}>
                         <Wallet
                             style={
@@ -355,7 +354,7 @@ export class Portal extends React.Component<PortalProps, PortalState> {
                             refetchTokenStateAsync={this._refetchTokenStateAsync.bind(this)}
                         />
                     </Container>
-                    {!isMobile && <Container marginTop="15px">{startOnboarding}</Container>}
+                    {!isMobile && <Container marginTop="20px">{this._renderStartOnboarding()}</Container>}
                 </Container>
                 <PortalOnboardingFlow
                     blockchain={this._blockchain}
@@ -367,25 +366,12 @@ export class Portal extends React.Component<PortalProps, PortalState> {
     }
     private _renderStartOnboarding(): React.ReactNode {
         return (
-            <Island>
-                <Container
-                    marginTop="30px"
-                    marginBottom="30px"
-                    marginLeft="30px"
-                    marginRight="30px"
-                    className="flex justify-around items-center"
-                >
-                    <ActionAccountBalanceWallet style={{ width: '30px', height: '30px' }} color={colors.orange} />
-                    <Text
-                        fontColor={colors.grey}
-                        fontSize="16px"
-                        center={true}
-                        onClick={this._startOnboarding.bind(this)}
-                    >
-                        Learn how to set up your account
-                    </Text>
-                </Container>
-            </Island>
+            <Container marginLeft="20px" marginRight="20px" className="flex justify-around items-center">
+                <Help style={{ width: '20px', height: '20px' }} color={colors.mediumBlue} />
+                <Text fontColor={colors.mediumBlue} fontSize="16px" onClick={this._startOnboarding.bind(this)}>
+                    Learn how to set up your account
+                </Text>
+            </Container>
         );
     }
 
@@ -535,11 +521,15 @@ export class Portal extends React.Component<PortalProps, PortalState> {
         );
     }
     private _renderRelayerIndexSection(): React.ReactNode {
+        return <Section header={<TextHeader labelText="0x Relayers" />} body={this._renderRelayerIndex()} />;
+    }
+    private _renderRelayerIndex(): React.ReactNode {
+        const isMobile = utils.isMobile(this.props.screenWidth);
         return (
-            <Section
-                header={<TextHeader labelText="0x Relayers" />}
-                body={<RelayerIndex networkId={this.props.networkId} screenWidth={this.props.screenWidth} />}
-            />
+            <div>
+                {isMobile && <Container marginBottom="20px">{this._renderStartOnboarding()}</Container>}
+                <RelayerIndex networkId={this.props.networkId} screenWidth={this.props.screenWidth} />
+            </div>
         );
     }
     private _renderNotFoundMessage(): React.ReactNode {
