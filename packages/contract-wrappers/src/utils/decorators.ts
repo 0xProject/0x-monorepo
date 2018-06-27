@@ -30,8 +30,8 @@ const schemaErrorTransformer = (error: Error) => {
  */
 const asyncErrorHandlerFactory = (errorTransformer: ErrorTransformer) => {
     const asyncErrorHandlingDecorator = (
-        target: object,
-        key: string | symbol,
+        _target: object,
+        _key: string | symbol,
         descriptor: TypedPropertyDescriptor<AsyncMethod>,
     ) => {
         const originalMethod = descriptor.value as AsyncMethod;
@@ -57,8 +57,8 @@ const asyncErrorHandlerFactory = (errorTransformer: ErrorTransformer) => {
 
 const syncErrorHandlerFactory = (errorTransformer: ErrorTransformer) => {
     const syncErrorHandlingDecorator = (
-        target: object,
-        key: string | symbol,
+        _target: object,
+        _key: string | symbol,
         descriptor: TypedPropertyDescriptor<SyncMethod>,
     ) => {
         const originalMethod = descriptor.value as SyncMethod;
