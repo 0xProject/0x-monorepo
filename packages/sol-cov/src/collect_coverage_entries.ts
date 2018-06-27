@@ -5,6 +5,8 @@ import * as parser from 'solidity-parser-antlr';
 import { ASTVisitor, CoverageEntriesDescription } from './ast_visitor';
 import { getLocationByOffset } from './source_maps';
 
+const IGNORE_RE = /\/\*\s*solcov\s+ignore\s+next\s*\*\/\s*/gm;
+
 // Parsing source code for each transaction/code is slow and therefore we cache it
 const coverageEntriesBySourceHash: { [sourceHash: string]: CoverageEntriesDescription } = {};
 
@@ -21,8 +23,6 @@ export const collectCoverageEntries = (contractSource: string) => {
     const coverageEntriesDescription = coverageEntriesBySourceHash[sourceHash];
     return coverageEntriesDescription;
 };
-
-const IGNORE_RE = /\/\*\s*solcov\s+ignore\s+next\s*\*\/\s*/gm;
 
 // Gather the start index of all code blocks preceeded by "/* solcov ignore next */"
 function gatherRangesToIgnore(contractSource: string): number[] {

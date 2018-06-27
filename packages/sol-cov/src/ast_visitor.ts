@@ -48,7 +48,7 @@ export class ASTVisitor {
         this._visitFunctionLikeDefinition(ast);
     }
     public ContractDefinition(ast: Parser.ContractDefinition): void {
-        if (this._ignoreExpression(ast)) {
+        if (this._shouldIgnoreExpression(ast)) {
             this._ignoreRangesWithin.push(ast.range as [number, number]);
         }
     }
@@ -106,7 +106,7 @@ export class ASTVisitor {
     public ModifierInvocation(ast: Parser.ModifierInvocation): void {
         const BUILTIN_MODIFIERS = ['public', 'view', 'payable', 'external', 'internal', 'pure', 'constant'];
         if (!_.includes(BUILTIN_MODIFIERS, ast.name)) {
-            if (this._ignoreExpression(ast)) {
+            if (this._shouldIgnoreExpression(ast)) {
                 return;
             }
             this._modifiersStatementIds.push(this._entryId);
@@ -119,7 +119,7 @@ export class ASTVisitor {
         right: Parser.ASTNode,
         type: BranchType,
     ): void {
-        if (this._ignoreExpression(ast)) {
+        if (this._shouldIgnoreExpression(ast)) {
             return;
         }
         this._branchMap[this._entryId++] = {
@@ -129,7 +129,7 @@ export class ASTVisitor {
         };
     }
     private _visitStatement(ast: Parser.ASTNode): void {
-        if (this._ignoreExpression(ast)) {
+        if (this._shouldIgnoreExpression(ast)) {
             return;
         }
         this._statementMap[this._entryId++] = this._getExpressionRange(ast);
@@ -144,7 +144,7 @@ export class ASTVisitor {
         };
         return range;
     }
-    private _ignoreExpression(ast: Parser.ASTNode): boolean {
+    private _shouldIgnoreExpression(ast: Parser.ASTNode): boolean {
         const [astStart, astEnd] = ast.range as [number, number];
         const isRangeIgnored = _.some(
             this._ignoreRangesWithin,
@@ -153,7 +153,7 @@ export class ASTVisitor {
         return this._ignoreRangesBeginningAt.includes(astStart) || isRangeIgnored;
     }
     private _visitFunctionLikeDefinition(ast: Parser.ModifierDefinition | Parser.FunctionDefinition): void {
-        if (this._ignoreExpression(ast)) {
+        if (this._shouldIgnoreExpression(ast)) {
             this._ignoreRangesWithin.push(ast.range as [number, number]);
             return;
         }
