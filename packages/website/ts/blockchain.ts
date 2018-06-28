@@ -30,6 +30,7 @@ import {
 import { BigNumber, intervalUtils, logUtils, promisify } from '@0xproject/utils';
 import { Web3Wrapper } from '@0xproject/web3-wrapper';
 import * as _ from 'lodash';
+import * as moment from 'moment';
 import * as React from 'react';
 import contract = require('truffle-contract');
 import { BlockchainWatcher } from 'ts/blockchain_watcher';
@@ -559,6 +560,7 @@ export class Blockchain {
             tokenRegistryTokenSymbols,
             configs.DEFAULT_TRACKED_TOKEN_SYMBOLS,
         );
+        const currentTimestamp = moment().unix();
         if (defaultTrackedTokensInRegistry.length !== configs.DEFAULT_TRACKED_TOKEN_SYMBOLS.length) {
             this._dispatcher.updateShouldBlockchainErrDialogBeOpen(true);
             this._dispatcher.encounteredBlockchainError(BlockchainErrs.DefaultTokensNotInTokenRegistry);
@@ -573,7 +575,7 @@ export class Blockchain {
         if (_.isEmpty(trackedTokensByAddress)) {
             _.each(configs.DEFAULT_TRACKED_TOKEN_SYMBOLS, symbol => {
                 const token = _.find(tokenRegistryTokens, t => t.symbol === symbol);
-                token.isTracked = true;
+                token.trackedTimestamp = currentTimestamp;
                 trackedTokensByAddress[token.address] = token;
             });
             if (!_.isUndefined(this._userAddressIfExists)) {
@@ -582,10 +584,10 @@ export class Blockchain {
                 });
             }
         } else {
-            // Properly set all tokenRegistry tokens `isTracked` to true if they are in the existing trackedTokens array
-            _.each(trackedTokensByAddress, (_trackedToken: Token, address: string) => {
+            // Properly set all tokenRegistry tokens `trackedTimestamp` if they are in the existing trackedTokens array
+            _.each(trackedTokensByAddress, (trackedToken: Token, address: string) => {
                 if (!_.isUndefined(tokenRegistryTokensByAddress[address])) {
-                    tokenRegistryTokensByAddress[address].isTracked = true;
+                    tokenRegistryTokensByAddress[address].trackedTimestamp = trackedToken.trackedTimestamp;
                 }
             });
         }
@@ -765,7 +767,7 @@ export class Blockchain {
                 name: t.name,
                 symbol: t.symbol,
                 decimals: t.decimals,
-                isTracked: false,
+                trackedTimestamp: undefined,
                 isRegistered: true,
             };
             tokenByAddress[token.address] = token;
