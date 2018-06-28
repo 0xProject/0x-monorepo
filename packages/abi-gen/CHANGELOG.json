@@ -1,5 +1,14 @@
 [
     {
+        "version": "0.4.1",
+        "changes": [
+            {
+                "note": "skip generation of wrappers that are already up to date",
+                "pr": 788
+            }
+        ]
+    },
+    {
         "version": "0.4.0",
         "changes": [
             {
