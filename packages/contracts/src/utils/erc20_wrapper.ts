@@ -94,6 +94,7 @@ export class ERC20Wrapper {
             await tokenContract.setBalance.sendTransactionAsync(userAddress, amount, {
                 from: this._contractOwnerAddress,
             }),
+            constants.AWAIT_TRANSACTION_MINED_MS,
         );
     }
     public async getProxyAllowanceAsync(userAddress: string, assetData: string): Promise<BigNumber> {
@@ -109,6 +110,7 @@ export class ERC20Wrapper {
             await tokenContract.approve.sendTransactionAsync(proxyAddress, amount, {
                 from: userAddress,
             }),
+            constants.AWAIT_TRANSACTION_MINED_MS,
         );
     }
     public async getBalancesAsync(): Promise<ERC20BalancesByOwner> {
