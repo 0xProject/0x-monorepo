@@ -99,11 +99,7 @@ contract LibOrder is
         bytes32 makerAssetDataHash = keccak256(order.makerAssetData);
         bytes32 takerAssetDataHash = keccak256(order.takerAssetData);
         // Assembly for more efficiently computing:
-        // keccak256(abi.encodePacked(
-        //   DOMAIN_SEPARATOR_SCHEMA_HASH,
-        //   keccak256(abi.encodePacked(address(this))),
-        //   ORDER_SCHEMA_HASH,
-        //   keccak256(abi.encodePacked(
+        //   keccak256(abi.encode(
         //       order.makerAddress,
         //       order.takerAddress,
         //       order.feeRecipientAddress,
@@ -114,10 +110,9 @@ contract LibOrder is
         //       order.takerFee,
         //       order.expirationTimeSeconds,
         //       order.salt,
-        //       keccak256(abi.encodePacked(order.makerAssetData)),
-        //       keccak256(abi.encodePacked(order.takerAssetData))
-        //   ))
-        // ));
+        //       keccak256(order.makerAssetData),
+        //       keccak256(order.takerAssetData)
+        //   ));
         assembly {
             // Backup
             let temp1 := mload(sub(order,  32))
