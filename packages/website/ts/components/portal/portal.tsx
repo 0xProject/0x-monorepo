@@ -324,9 +324,9 @@ export class Portal extends React.Component<PortalProps, PortalState> {
         const marginBottom = isMobile ? '200px' : '15px';
         return (
             <div>
-                <Container>
+                <Container className="flex flex-column items-center">
                     {isMobile && <Container marginBottom="20px">{this._renderStartOnboarding()}</Container>}
-                    <Container marginBottom={marginBottom}>
+                    <Container marginBottom={marginBottom} width="100%">
                         <Wallet
                             style={
                                 !isMobile && this.props.isPortalOnboardingShowing
@@ -354,7 +354,7 @@ export class Portal extends React.Component<PortalProps, PortalState> {
                             refetchTokenStateAsync={this._refetchTokenStateAsync.bind(this)}
                         />
                     </Container>
-                    {!isMobile && <Container marginTop="20px">{this._renderStartOnboarding()}</Container>}
+                    {!isMobile && <Container marginTop="8px">{this._renderStartOnboarding()}</Container>}
                 </Container>
                 <PortalOnboardingFlow
                     blockchain={this._blockchain}
@@ -366,11 +366,13 @@ export class Portal extends React.Component<PortalProps, PortalState> {
     }
     private _renderStartOnboarding(): React.ReactNode {
         return (
-            <Container marginLeft="20px" marginRight="20px" className="flex justify-around items-center">
+            <Container className="flex items-center center">
                 <Help style={{ width: '20px', height: '20px' }} color={colors.mediumBlue} />
-                <Text fontColor={colors.mediumBlue} fontSize="16px" onClick={this._startOnboarding.bind(this)}>
-                    Learn how to set up your account
-                </Text>
+                <Container marginLeft="8px">
+                    <Text fontColor={colors.mediumBlue} fontSize="16px" onClick={this._startOnboarding.bind(this)}>
+                        Learn how to set up your account
+                    </Text>
+                </Container>
             </Container>
         );
     }
@@ -526,10 +528,10 @@ export class Portal extends React.Component<PortalProps, PortalState> {
     private _renderRelayerIndex(): React.ReactNode {
         const isMobile = utils.isMobile(this.props.screenWidth);
         return (
-            <div>
+            <Container className="flex flex-column items-center">
                 {isMobile && <Container marginBottom="20px">{this._renderStartOnboarding()}</Container>}
                 <RelayerIndex networkId={this.props.networkId} screenWidth={this.props.screenWidth} />
-            </div>
+            </Container>
         );
     }
     private _renderNotFoundMessage(): React.ReactNode {
