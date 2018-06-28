@@ -5,6 +5,7 @@ import { BigNumber } from '@0xproject/utils';
 import * as chai from 'chai';
 import { LogWithDecodedArgs } from 'ethereum-types';
 import ethUtil = require('ethereumjs-util');
+import * as _ from 'lodash';
 
 import { DummyERC20TokenContract } from '../../src/generated_contract_wrappers/dummy_e_r_c20_token';
 import {
@@ -53,15 +54,17 @@ describe('Asset Transfer Proxies', () => {
     });
     before(async () => {
         const accounts = await web3Wrapper.getAvailableAddressesAsync();
-        const usedAddresses = ([owner, notAuthorized, exchangeAddress, makerAddress, takerAddress] = accounts);
+        const usedAddresses = ([owner, notAuthorized, exchangeAddress, makerAddress, takerAddress] = _.slice(
+            accounts,
+            0,
+            5,
+        ));
 
         erc20Wrapper = new ERC20Wrapper(provider, usedAddresses, owner);
         erc721Wrapper = new ERC721Wrapper(provider, usedAddresses, owner);
 
-        [zrxToken] = await erc20Wrapper.deployDummyTokensAsync(
-            constants.NUM_DUMMY_ERC20_TO_DEPLOY,
-            constants.DUMMY_TOKEN_DECIMALS,
-        );
+        const numDummyErc20ToDeploy = 1;
+        [zrxToken] = await erc20Wrapper.deployDummyTokensAsync(numDummyErc20ToDeploy, constants.DUMMY_TOKEN_DECIMALS);
         erc20Proxy = await erc20Wrapper.deployProxyAsync();
         await erc20Wrapper.setBalancesAndAllowancesAsync();
         await web3Wrapper.awaitTransactionSuccessAsync(

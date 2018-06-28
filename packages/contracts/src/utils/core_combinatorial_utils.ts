@@ -55,7 +55,8 @@ export async function coreCombinatorialUtilsFactoryAsync(
     web3Wrapper: Web3Wrapper,
     txDefaults: Partial<TxData>,
 ): Promise<CoreCombinatorialUtils> {
-    const userAddresses = await web3Wrapper.getAvailableAddressesAsync();
+    const accounts = await web3Wrapper.getAvailableAddressesAsync();
+    const userAddresses = _.slice(accounts, 0, 5);
     const [ownerAddress, makerAddress, takerAddress] = userAddresses;
     const makerPrivateKey = constants.TESTRPC_PRIVATE_KEYS[userAddresses.indexOf(makerAddress)];
 

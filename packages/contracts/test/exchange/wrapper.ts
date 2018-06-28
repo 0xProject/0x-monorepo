@@ -60,13 +60,14 @@ describe('Exchange wrappers', () => {
     });
     before(async () => {
         const accounts = await web3Wrapper.getAvailableAddressesAsync();
-        const usedAddresses = ([owner, makerAddress, takerAddress, feeRecipientAddress] = accounts);
+        const usedAddresses = ([owner, makerAddress, takerAddress, feeRecipientAddress] = _.slice(accounts, 0, 4));
 
         erc20Wrapper = new ERC20Wrapper(provider, usedAddresses, owner);
         erc721Wrapper = new ERC721Wrapper(provider, usedAddresses, owner);
 
+        const numDummyErc20ToDeploy = 3;
         [erc20TokenA, erc20TokenB, zrxToken] = await erc20Wrapper.deployDummyTokensAsync(
-            constants.NUM_DUMMY_ERC20_TO_DEPLOY,
+            numDummyErc20ToDeploy,
             constants.DUMMY_TOKEN_DECIMALS,
         );
         erc20Proxy = await erc20Wrapper.deployProxyAsync();

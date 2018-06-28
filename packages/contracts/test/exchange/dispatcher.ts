@@ -3,6 +3,7 @@ import { assetProxyUtils } from '@0xproject/order-utils';
 import { AssetProxyId, RevertReason } from '@0xproject/types';
 import { BigNumber } from '@0xproject/utils';
 import * as chai from 'chai';
+import * as _ from 'lodash';
 
 import { DummyERC20TokenContract } from '../../src/generated_contract_wrappers/dummy_e_r_c20_token';
 import { ERC20ProxyContract } from '../../src/generated_contract_wrappers/e_r_c20_proxy';
@@ -43,15 +44,13 @@ describe('AssetProxyDispatcher', () => {
     before(async () => {
         // Setup accounts & addresses
         const accounts = await web3Wrapper.getAvailableAddressesAsync();
-        const usedAddresses = ([owner, notOwner, makerAddress, takerAddress] = accounts);
+        const usedAddresses = ([owner, notOwner, makerAddress, takerAddress] = _.slice(accounts, 0, 4));
 
         erc20Wrapper = new ERC20Wrapper(provider, usedAddresses, owner);
         erc721Wrapper = new ERC721Wrapper(provider, usedAddresses, owner);
 
-        [zrxToken] = await erc20Wrapper.deployDummyTokensAsync(
-            constants.NUM_DUMMY_ERC20_TO_DEPLOY,
-            constants.DUMMY_TOKEN_DECIMALS,
-        );
+        const numDummyErc20ToDeploy = 1;
+        [zrxToken] = await erc20Wrapper.deployDummyTokensAsync(numDummyErc20ToDeploy, constants.DUMMY_TOKEN_DECIMALS);
         erc20Proxy = await erc20Wrapper.deployProxyAsync();
         await erc20Wrapper.setBalancesAndAllowancesAsync();
 

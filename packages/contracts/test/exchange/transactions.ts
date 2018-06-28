@@ -3,6 +3,7 @@ import { assetProxyUtils, generatePseudoRandomSalt } from '@0xproject/order-util
 import { AssetProxyId, OrderWithoutExchangeAddress, RevertReason, SignedOrder } from '@0xproject/types';
 import { BigNumber } from '@0xproject/utils';
 import * as chai from 'chai';
+import * as _ from 'lodash';
 
 import { DummyERC20TokenContract } from '../../src/generated_contract_wrappers/dummy_e_r_c20_token';
 import { ERC20ProxyContract } from '../../src/generated_contract_wrappers/e_r_c20_proxy';
@@ -67,12 +68,17 @@ describe('Exchange transactions', () => {
     });
     before(async () => {
         const accounts = await web3Wrapper.getAvailableAddressesAsync();
-        const usedAddresses = ([owner, senderAddress, makerAddress, takerAddress, feeRecipientAddress] = accounts);
+        const usedAddresses = ([owner, senderAddress, makerAddress, takerAddress, feeRecipientAddress] = _.slice(
+            accounts,
+            0,
+            5,
+        ));
 
         erc20Wrapper = new ERC20Wrapper(provider, usedAddresses, owner);
 
+        const numDummyErc20ToDeploy = 3;
         [erc20TokenA, erc20TokenB, zrxToken] = await erc20Wrapper.deployDummyTokensAsync(
-            constants.NUM_DUMMY_ERC20_TO_DEPLOY,
+            numDummyErc20ToDeploy,
             constants.DUMMY_TOKEN_DECIMALS,
         );
         erc20Proxy = await erc20Wrapper.deployProxyAsync();
