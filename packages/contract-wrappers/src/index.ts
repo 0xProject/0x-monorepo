@@ -56,3 +56,12 @@ export {
     ERC721TokenTransferEventArgs,
     ERC721TokenEvents,
 } from './contract_wrappers/generated/erc721_token';
+
+export {
+    ExchangeCancelUpToEventArgs,
+    ExchangeAssetProxySetEventArgs,
+    ExchangeFillEventArgs,
+    ExchangeCancelEventArgs,
+    ExchangeEventArgs,
+    ExchangeEvents,
+} from './contract_wrappers/generated/exchange';

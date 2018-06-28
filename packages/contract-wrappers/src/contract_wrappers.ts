@@ -8,6 +8,7 @@ import { ERC20TokenWrapper } from './contract_wrappers/erc20_token_wrapper';
 import { ERC721ProxyWrapper } from './contract_wrappers/erc721_proxy_wrapper';
 import { ERC721TokenWrapper } from './contract_wrappers/erc721_token_wrapper';
 import { EtherTokenWrapper } from './contract_wrappers/ether_token_wrapper';
+import { ExchangeWrapper } from './contract_wrappers/exchange_wrapper';
 import { ContractWrappersConfigSchema } from './schemas/contract_wrappers_config_schema';
 import { contractWrappersPrivateNetworkConfigSchema } from './schemas/contract_wrappers_private_network_config_schema';
 import { contractWrappersPublicNetworkConfigSchema } from './schemas/contract_wrappers_public_network_config_schema';
@@ -17,6 +18,10 @@ import { assert } from './utils/assert';
  * The ContractWrappers class contains smart contract wrappers helpful when building on 0x protocol.
  */
 export class ContractWrappers {
+    /**
+     * An instance of the ExchangeWrapper class containing methods for interacting with the 0x Exchange smart contract.
+     */
+    public exchange: ExchangeWrapper;
     /**
      * An instance of the ERC20TokenWrapper class containing methods for interacting with any ERC20 token smart contract.
      */
@@ -76,6 +81,12 @@ export class ContractWrappers {
         this.erc20Token = new ERC20TokenWrapper(this._web3Wrapper, config.networkId, this.erc20Proxy);
         this.erc721Token = new ERC721TokenWrapper(this._web3Wrapper, config.networkId, this.erc721Proxy);
         this.etherToken = new EtherTokenWrapper(this._web3Wrapper, config.networkId, this.erc20Token);
+        this.exchange = new ExchangeWrapper(
+            this._web3Wrapper,
+            config.networkId,
+            config.exchangeContractAddress,
+            config.zrxContractAddress,
+        );
     }
     /**
      * Sets a new web3 provider for 0x.js. Updating the provider will stop all
@@ -85,6 +96,8 @@ export class ContractWrappers {
      */
     public setProvider(provider: Provider, networkId: number): void {
         this._web3Wrapper.setProvider(provider);
+        (this.exchange as any)._invalidateContractInstances();
+        (this.exchange as any)._setNetworkId(networkId);
         (this.erc20Token as any)._invalidateContractInstances();
         (this.erc20Token as any)._setNetworkId(networkId);
         (this.erc20Proxy as any)._invalidateContractInstance();

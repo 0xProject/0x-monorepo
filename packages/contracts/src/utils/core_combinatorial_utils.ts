@@ -14,7 +14,7 @@ import { LogWithDecodedArgs, Provider, TxData } from 'ethereum-types';
 import * as _ from 'lodash';
 import 'make-promises-safe';
 
-import { ExchangeContract, FillContractEventArgs } from '../generated_contract_wrappers/exchange';
+import { ExchangeContract, ExchangeFillEventArgs } from '../generated_contract_wrappers/exchange';
 import { artifacts } from '../utils/artifacts';
 import { expectRevertReasonOrAlwaysFailingTransactionAsync } from '../utils/assertions';
 import { AssetWrapper } from '../utils/asset_wrapper';
@@ -382,7 +382,7 @@ export class CoreCombinatorialUtils {
 
         expect(txReceipt.logs.length).to.be.equal(1, 'logs length');
         // tslint:disable-next-line:no-unnecessary-type-assertion
-        const log = txReceipt.logs[0] as LogWithDecodedArgs<FillContractEventArgs>;
+        const log = txReceipt.logs[0] as LogWithDecodedArgs<ExchangeFillEventArgs>;
         expect(log.args.makerAddress).to.be.equal(makerAddress, 'log.args.makerAddress');
         expect(log.args.takerAddress).to.be.equal(this.takerAddress, 'log.args.this.takerAddress');
         expect(log.args.feeRecipientAddress).to.be.equal(feeRecipient, 'log.args.feeRecipientAddress');
