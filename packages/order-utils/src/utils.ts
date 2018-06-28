@@ -12,4 +12,11 @@ export const utils = {
         const milisecondsInSecond = 1000;
         return new BigNumber(Date.now() / milisecondsInSecond).round();
     },
+    getPartialAmount(numerator: BigNumber, denominator: BigNumber, target: BigNumber): BigNumber {
+        const fillMakerTokenAmount = numerator
+            .mul(target)
+            .div(denominator)
+            .round(0);
+        return fillMakerTokenAmount;
+    },
 };

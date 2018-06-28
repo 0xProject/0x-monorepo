@@ -19,6 +19,7 @@ export class ERC721Wrapper {
     private _provider: Provider;
     private _dummyTokenContracts: DummyERC721TokenContract[];
     private _proxyContract?: ERC721ProxyContract;
+    private _proxyIdIfExists?: string;
     private _initialTokenIdsByOwner: ERC721TokenIdsByOwner = {};
     constructor(provider: Provider, tokenOwnerAddresses: string[], contractOwnerAddress: string) {
         this._web3Wrapper = new Web3Wrapper(provider);
@@ -47,7 +48,12 @@ export class ERC721Wrapper {
             this._provider,
             txDefaults,
         );
+        this._proxyIdIfExists = await this._proxyContract.getProxyId.callAsync();
         return this._proxyContract;
+    }
+    public getProxyId(): string {
+        this._validateProxyContractExistsOrThrow();
+        return this._proxyIdIfExists as string;
     }
     public async setBalancesAndAllowancesAsync(): Promise<void> {
         this._validateDummyTokenContractsExistOrThrow();
@@ -57,12 +63,7 @@ export class ERC721Wrapper {
             for (const tokenOwnerAddress of this._tokenOwnerAddresses) {
                 for (let i = 0; i < constants.NUM_ERC721_TOKENS_TO_MINT; i++) {
                     const tokenId = generatePseudoRandomSalt();
-                    await this._web3Wrapper.awaitTransactionSuccessAsync(
-                        await dummyTokenContract.mint.sendTransactionAsync(tokenOwnerAddress, tokenId, {
-                            from: this._contractOwnerAddress,
-                        }),
-                        constants.AWAIT_TRANSACTION_MINED_MS,
-                    );
+                    await this.mintAsync(dummyTokenContract.address, tokenId, tokenOwnerAddress);
                     if (_.isUndefined(this._initialTokenIdsByOwner[tokenOwnerAddress])) {
                         this._initialTokenIdsByOwner[tokenOwnerAddress] = {
                             [dummyTokenContract.address]: [],
@@ -72,18 +73,99 @@ export class ERC721Wrapper {
                         this._initialTokenIdsByOwner[tokenOwnerAddress][dummyTokenContract.address] = [];
                     }
                     this._initialTokenIdsByOwner[tokenOwnerAddress][dummyTokenContract.address].push(tokenId);
+
+                    await this.approveProxyAsync(dummyTokenContract.address, tokenId);
                 }
-                const shouldApprove = true;
-                await this._web3Wrapper.awaitTransactionSuccessAsync(
-                    await dummyTokenContract.setApprovalForAll.sendTransactionAsync(
-                        (this._proxyContract as ERC721ProxyContract).address,
-                        shouldApprove,
-                        { from: tokenOwnerAddress },
-                    ),
-                    constants.AWAIT_TRANSACTION_MINED_MS,
-                );
             }
         }
+    }
+    public async doesTokenExistAsync(tokenAddress: string, tokenId: BigNumber): Promise<boolean> {
+        const tokenContract = this._getTokenContractFromAssetData(tokenAddress);
+        const doesExist = await tokenContract.exists.callAsync(tokenId);
+        return doesExist;
+    }
+    public async approveProxyAsync(tokenAddress: string, tokenId: BigNumber): Promise<void> {
+        const proxyAddress = (this._proxyContract as ERC721ProxyContract).address;
+        await this.approveAsync(proxyAddress, tokenAddress, tokenId);
+    }
+    public async approveProxyForAllAsync(tokenAddress: string, tokenId: BigNumber, isApproved: boolean): Promise<void> {
+        const tokenContract = this._getTokenContractFromAssetData(tokenAddress);
+        const tokenOwner = await this.ownerOfAsync(tokenAddress, tokenId);
+        const proxyAddress = (this._proxyContract as ERC721ProxyContract).address;
+        await this._web3Wrapper.awaitTransactionSuccessAsync(
+            await tokenContract.setApprovalForAll.sendTransactionAsync(proxyAddress, isApproved, {
+                from: tokenOwner,
+            }),
+            constants.AWAIT_TRANSACTION_MINED_MS,
+        );
+    }
+    public async approveAsync(to: string, tokenAddress: string, tokenId: BigNumber): Promise<void> {
+        const tokenContract = this._getTokenContractFromAssetData(tokenAddress);
+        const tokenOwner = await this.ownerOfAsync(tokenAddress, tokenId);
+        await this._web3Wrapper.awaitTransactionSuccessAsync(
+            await tokenContract.approve.sendTransactionAsync(to, tokenId, {
+                from: tokenOwner,
+            }),
+            constants.AWAIT_TRANSACTION_MINED_MS,
+        );
+    }
+    public async transferFromAsync(
+        tokenAddress: string,
+        tokenId: BigNumber,
+        currentOwner: string,
+        userAddress: string,
+    ): Promise<void> {
+        const tokenContract = this._getTokenContractFromAssetData(tokenAddress);
+        await this._web3Wrapper.awaitTransactionSuccessAsync(
+            await tokenContract.transferFrom.sendTransactionAsync(currentOwner, userAddress, tokenId, {
+                from: currentOwner,
+            }),
+            constants.AWAIT_TRANSACTION_MINED_MS,
+        );
+    }
+    public async mintAsync(tokenAddress: string, tokenId: BigNumber, userAddress: string): Promise<void> {
+        const tokenContract = this._getTokenContractFromAssetData(tokenAddress);
+        await this._web3Wrapper.awaitTransactionSuccessAsync(
+            await tokenContract.mint.sendTransactionAsync(userAddress, tokenId, {
+                from: this._contractOwnerAddress,
+            }),
+            constants.AWAIT_TRANSACTION_MINED_MS,
+        );
+    }
+    public async burnAsync(tokenAddress: string, tokenId: BigNumber, owner: string): Promise<void> {
+        const tokenContract = this._getTokenContractFromAssetData(tokenAddress);
+        await this._web3Wrapper.awaitTransactionSuccessAsync(
+            await tokenContract.burn.sendTransactionAsync(owner, tokenId, {
+                from: this._contractOwnerAddress,
+            }),
+            constants.AWAIT_TRANSACTION_MINED_MS,
+        );
+    }
+    public async ownerOfAsync(tokenAddress: string, tokenId: BigNumber): Promise<string> {
+        const tokenContract = this._getTokenContractFromAssetData(tokenAddress);
+        const owner = await tokenContract.ownerOf.callAsync(tokenId);
+        return owner;
+    }
+    public async isOwnerAsync(userAddress: string, tokenAddress: string, tokenId: BigNumber): Promise<boolean> {
+        const tokenContract = this._getTokenContractFromAssetData(tokenAddress);
+        const tokenOwner = await tokenContract.ownerOf.callAsync(tokenId);
+        const isOwner = tokenOwner === userAddress;
+        return isOwner;
+    }
+    public async isProxyApprovedForAllAsync(userAddress: string, tokenAddress: string): Promise<boolean> {
+        this._validateProxyContractExistsOrThrow();
+        const tokenContract = this._getTokenContractFromAssetData(tokenAddress);
+        const operator = (this._proxyContract as ERC721ProxyContract).address;
+        const didApproveAll = await tokenContract.isApprovedForAll.callAsync(userAddress, operator);
+        return didApproveAll;
+    }
+    public async isProxyApprovedAsync(tokenAddress: string, tokenId: BigNumber): Promise<boolean> {
+        this._validateProxyContractExistsOrThrow();
+        const tokenContract = this._getTokenContractFromAssetData(tokenAddress);
+        const approvedAddress = await tokenContract.getApproved.callAsync(tokenId);
+        const proxyAddress = (this._proxyContract as ERC721ProxyContract).address;
+        const isProxyAnApprovedOperator = approvedAddress === proxyAddress;
+        return isProxyAnApprovedOperator;
     }
     public async getBalancesAsync(): Promise<ERC721TokenIdsByOwner> {
         this._validateDummyTokenContractsExistOrThrow();
@@ -126,6 +208,13 @@ export class ERC721Wrapper {
     public getTokenAddresses(): string[] {
         const tokenAddresses = _.map(this._dummyTokenContracts, dummyTokenContract => dummyTokenContract.address);
         return tokenAddresses;
+    }
+    private _getTokenContractFromAssetData(tokenAddress: string): DummyERC721TokenContract {
+        const tokenContractIfExists = _.find(this._dummyTokenContracts, c => c.address === tokenAddress);
+        if (_.isUndefined(tokenContractIfExists)) {
+            throw new Error(`Token: ${tokenAddress} was not deployed through ERC20Wrapper`);
+        }
+        return tokenContractIfExists;
     }
     private _validateDummyTokenContractsExistOrThrow(): void {
         if (_.isUndefined(this._dummyTokenContracts)) {
