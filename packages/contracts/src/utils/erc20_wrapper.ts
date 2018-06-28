@@ -90,9 +90,11 @@ export class ERC20Wrapper {
     }
     public async setBalanceAsync(userAddress: string, assetData: string, amount: BigNumber): Promise<void> {
         const tokenContract = this._getTokenContractFromAssetData(assetData);
-        await tokenContract.setBalance.sendTransactionAsync(userAddress, amount, {
-            from: this._contractOwnerAddress,
-        });
+        await this._web3Wrapper.awaitTransactionSuccessAsync(
+            await tokenContract.setBalance.sendTransactionAsync(userAddress, amount, {
+                from: this._contractOwnerAddress,
+            }),
+        );
     }
     public async getProxyAllowanceAsync(userAddress: string, assetData: string): Promise<BigNumber> {
         const tokenContract = this._getTokenContractFromAssetData(assetData);
@@ -103,9 +105,11 @@ export class ERC20Wrapper {
     public async setAllowanceAsync(userAddress: string, assetData: string, amount: BigNumber): Promise<void> {
         const tokenContract = this._getTokenContractFromAssetData(assetData);
         const proxyAddress = (this._proxyContract as ERC20ProxyContract).address;
-        await tokenContract.approve.sendTransactionAsync(proxyAddress, amount, {
-            from: userAddress,
-        });
+        await this._web3Wrapper.awaitTransactionSuccessAsync(
+            await tokenContract.approve.sendTransactionAsync(proxyAddress, amount, {
+                from: userAddress,
+            }),
+        );
     }
     public async getBalancesAsync(): Promise<ERC20BalancesByOwner> {
         this._validateDummyTokenContractsExistOrThrow();
