@@ -120,7 +120,7 @@ class PlainPortalOnboardingFlow extends React.Component<PortalOnboardingFlowProp
                 title: 'Step 1: Wrap ETH',
                 content: <WrapEthOnboardingStep2 />,
                 placement: 'right',
-                continueButtonDisplay: this._userHasVisibleWeth() ? 'enabled' : undefined,
+                continueButtonDisplay: this._userHasVisibleWeth() ? 'enabled' : 'disabled',
             },
             {
                 target: '.wallet',
@@ -133,7 +133,7 @@ class PlainPortalOnboardingFlow extends React.Component<PortalOnboardingFlowProp
                     />
                 ),
                 placement: 'right',
-                continueButtonDisplay: this._userHasVisibleWeth() ? 'enabled' : undefined,
+                continueButtonDisplay: this._userHasVisibleWeth() ? 'enabled' : 'disabled',
             },
             {
                 target: '.wallet',
@@ -149,7 +149,7 @@ class PlainPortalOnboardingFlow extends React.Component<PortalOnboardingFlowProp
             },
             {
                 target: '.wallet',
-                title: '🎉 Congrats! The ecosystem awaits.',
+                title: '🎉  The Ecosystem Awaits.',
                 content: <CongratsOnboardingStep />,
                 placement: 'right',
                 continueButtonDisplay: 'enabled',

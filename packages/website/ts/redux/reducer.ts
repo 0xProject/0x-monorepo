@@ -312,6 +312,8 @@ export function reducer(state: State = INITIAL_STATE, action: Action): State {
                 ...state,
                 isPortalOnboardingShowing,
                 hasPortalOnboardingBeenSeen: true,
+                // always start onboarding from the beginning
+                portalOnboardingStep: 0,
             };
         }
 
