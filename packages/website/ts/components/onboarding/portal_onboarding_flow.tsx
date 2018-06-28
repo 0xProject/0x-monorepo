@@ -265,6 +265,7 @@ class PlainPortalOnboardingFlow extends React.Component<PortalOnboardingFlowProp
     }
     private _handleFinalStepContinueClick(): void {
         if (utils.isMobile(this.props.screenWidth)) {
+            window.scrollTo(0, 0);
             this.props.history.push('/portal');
         }
         this._closeOnboarding();
