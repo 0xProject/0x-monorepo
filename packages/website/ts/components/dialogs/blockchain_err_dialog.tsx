@@ -4,7 +4,6 @@ import FlatButton from 'material-ui/FlatButton';
 import * as React from 'react';
 import { Blockchain } from 'ts/blockchain';
 import { BlockchainErrs } from 'ts/types';
-import { configs } from 'ts/utils/configs';
 import { constants } from 'ts/utils/constants';
 
 interface BlockchainErrDialogProps {
@@ -125,8 +124,7 @@ export class BlockchainErrDialog extends React.Component<BlockchainErrDialogProp
                         Parity Signer Chrome extension
                     </a>{' '}
                     lets you connect to a locally running Parity node. Make sure you have started your local Parity node
-                    with {configs.IS_MAINNET_ENABLED && '`parity ui` or'} `parity --chain kovan ui` in order to connect
-                    to {configs.IS_MAINNET_ENABLED ? 'mainnet or Kovan respectively.' : 'Kovan.'}
+                    with `parity ui` or `parity --chain kovan ui` in order to connect to mainnet or Kovan respectively.
                 </div>
                 <div className="pt2">
                     <span className="bold">Note:</span> If you have done one of the above steps and are still seeing
@@ -142,10 +140,8 @@ export class BlockchainErrDialog extends React.Component<BlockchainErrDialogProp
                 <div>
                     The 0x smart contracts are not deployed on the Ethereum network you are currently connected to
                     (network Id: {this.props.networkId}). In order to use the 0x portal dApp, please connect to the{' '}
-                    {Networks.Kovan} testnet (network Id: {constants.NETWORK_ID_KOVAN})
-                    {configs.IS_MAINNET_ENABLED
-                        ? ` or ${constants.MAINNET_NAME} (network Id: ${constants.NETWORK_ID_MAINNET}).`
-                        : `.`}
+                    {Networks.Kovan} testnet (network Id: {constants.NETWORK_ID_KOVAN}) or ${constants.MAINNET_NAME}{' '}
+                    (network Id: ${constants.NETWORK_ID_MAINNET}).
                 </div>
                 <h4>Metamask</h4>
                 <div>
@@ -159,11 +155,8 @@ export class BlockchainErrDialog extends React.Component<BlockchainErrDialogProp
                     If using the{' '}
                     <a href={constants.URL_PARITY_CHROME_STORE} target="_blank">
                         Parity Signer Chrome extension
-                    </a>, make sure to start your local Parity node with{' '}
-                    {configs.IS_MAINNET_ENABLED
-                        ? '`parity ui` or `parity --chain Kovan ui` in order to connect to mainnet \
-                         or Kovan respectively.'
-                        : '`parity --chain kovan ui` in order to connect to Kovan.'}
+                    </a>, make sure to start your local Parity node with `parity ui` or `parity --chain Kovan ui` in
+                    order to connect to mainnet \ or Kovan respectively.
                 </div>
             </div>
         );
