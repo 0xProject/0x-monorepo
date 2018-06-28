@@ -149,7 +149,7 @@ class PlainPortalOnboardingFlow extends React.Component<PortalOnboardingFlowProp
             },
             {
                 target: '.wallet',
-                title: '🎉  The Ecosystem Awaits.',
+                title: '🎉  The Ecosystem Awaits',
                 content: <CongratsOnboardingStep />,
                 placement: 'right',
                 continueButtonDisplay: 'enabled',
