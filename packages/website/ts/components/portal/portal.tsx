@@ -4,7 +4,7 @@ import * as _ from 'lodash';
 import Help from 'material-ui/svg-icons/action/help';
 import * as React from 'react';
 import * as DocumentTitle from 'react-document-title';
-import { Route, RouteComponentProps, Switch } from 'react-router-dom';
+import { Link, Route, RouteComponentProps, Switch } from 'react-router-dom';
 
 import { Blockchain } from 'ts/blockchain';
 import { BlockchainErrDialog } from 'ts/components/dialogs/blockchain_err_dialog';
@@ -154,6 +154,12 @@ export class Portal extends React.Component<PortalProps, PortalState> {
         if (!prevProps.blockchainIsLoaded && this.props.blockchainIsLoaded) {
             // tslint:disable-next-line:no-floating-promises
             this._fetchBalancesAndAllowancesAsync(this._getCurrentTrackedTokensAddresses());
+        }
+        if (!prevProps.isPortalOnboardingShowing && this.props.isPortalOnboardingShowing) {
+            // On mobile, make sure the wallet is completely visible.
+            if (this.props.screenWidth === ScreenWidths.Sm) {
+                document.querySelector('.wallet').scrollIntoView();
+            }
         }
     }
     public componentWillReceiveProps(nextProps: PortalProps): void {
@@ -365,7 +371,9 @@ export class Portal extends React.Component<PortalProps, PortalState> {
         );
     }
     private _renderStartOnboarding(): React.ReactNode {
-        return (
+        const isMobile = utils.isMobile(this.props.screenWidth);
+        const shouldStartOnboarding = !isMobile || this.props.location.pathname === `${WebsitePaths.Portal}/account`;
+        const startOnboarding = (
             <Container className="flex items-center center">
                 <Help style={{ width: '20px', height: '20px' }} color={colors.mediumBlue} />
                 <Container marginLeft="8px">
@@ -375,16 +383,22 @@ export class Portal extends React.Component<PortalProps, PortalState> {
                 </Container>
             </Container>
         );
+        return !shouldStartOnboarding ? (
+            <Link
+                to={{ pathname: `${WebsitePaths.Portal}/account`, state: { startOnboarding: true } }}
+                style={{ textDecoration: 'none' }}
+            >
+                {startOnboarding}
+            </Link>
+        ) : (
+            startOnboarding
+        );
     }
 
     private _startOnboarding(): void {
         const networkName = sharedConstants.NETWORK_NAME_BY_ID[this.props.networkId];
         analytics.logEvent('Portal', 'Onboarding Started - Manual', networkName, this.props.portalOnboardingStep);
         this.props.dispatcher.updatePortalOnboardingShowing(true);
-        // On mobile, make sure the wallet is completely visible.
-        if (this.props.screenWidth === ScreenWidths.Sm) {
-            document.querySelector('.wallet').scrollIntoView();
-        }
     }
     private _renderWalletSection(): React.ReactNode {
         return <Section header={<TextHeader labelText="Your Account" />} body={this._renderWallet()} />;
