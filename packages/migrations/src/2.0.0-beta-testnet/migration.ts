@@ -1,3 +1,4 @@
+import { logUtils } from '@0xproject/utils';
 import { Web3Wrapper } from '@0xproject/web3-wrapper';
 import { Provider, TxData } from 'ethereum-types';
 
@@ -42,22 +43,26 @@ export const runV2TestnetMigrationsAsync = async (
     const exchange = await ExchangeContract.deployFrom0xArtifactAsync(artifacts.Exchange, provider, txDefaults);
     artifactsWriter.saveArtifact(exchange);
 
+    let txHash;
     // Register AssetProxies in Exchange
     const oldAssetProxy = constants.NULL_ADDRESS;
-    await web3Wrapper.awaitTransactionSuccessAsync(
-        await exchange.registerAssetProxy.sendTransactionAsync(
-            constants.ERC20_PROXY_ID,
-            erc20proxy.address,
-            oldAssetProxy,
-        ),
+    txHash = await exchange.registerAssetProxy.sendTransactionAsync(
+        constants.ERC20_PROXY_ID,
+        erc20proxy.address,
+        oldAssetProxy,
     );
-    await web3Wrapper.awaitTransactionSuccessAsync(
-        await exchange.registerAssetProxy.sendTransactionAsync(
-            constants.ERC721_PROXY_ID,
-            erc721proxy.address,
-            oldAssetProxy,
-        ),
+    logUtils.log(`transactionHash: ${txHash}`);
+    logUtils.log('Registering ERC20Proxy');
+    await web3Wrapper.awaitTransactionSuccessAsync(txHash);
+
+    txHash = await exchange.registerAssetProxy.sendTransactionAsync(
+        constants.ERC721_PROXY_ID,
+        erc721proxy.address,
+        oldAssetProxy,
     );
+    logUtils.log(`transactionHash: ${txHash}`);
+    logUtils.log('Registering ERC721Proxy');
+    await web3Wrapper.awaitTransactionSuccessAsync(txHash);
 
     // Deploy AssetProxyOwner
     const assetProxyOwner = await AssetProxyOwnerContract.deployFrom0xArtifactAsync(
@@ -72,21 +77,29 @@ export const runV2TestnetMigrationsAsync = async (
     artifactsWriter.saveArtifact(assetProxyOwner);
 
     // Authorize Exchange contracts to call AssetProxies
-    await web3Wrapper.awaitTransactionSuccessAsync(
-        await erc20proxy.addAuthorizedAddress.sendTransactionAsync(exchange.address),
-    );
-    await web3Wrapper.awaitTransactionSuccessAsync(
-        await erc721proxy.addAuthorizedAddress.sendTransactionAsync(exchange.address),
-    );
+    txHash = await erc20proxy.addAuthorizedAddress.sendTransactionAsync(exchange.address);
+    logUtils.log(`transactionHash: ${txHash}`);
+    logUtils.log('Authorizing Exchange on ERC20Proxy');
+    await web3Wrapper.awaitTransactionSuccessAsync(txHash);
+
+    txHash = await erc721proxy.addAuthorizedAddress.sendTransactionAsync(exchange.address);
+    logUtils.log(`transactionHash: ${txHash}`);
+    logUtils.log('Authorizing Exchange on ERC721Proxy');
+    await web3Wrapper.awaitTransactionSuccessAsync(txHash);
 
     // Transfer ownership of AssetProxies and Exchange to AssetProxyOwner
-    await web3Wrapper.awaitTransactionSuccessAsync(
-        await erc20proxy.transferOwnership.sendTransactionAsync(assetProxyOwner.address),
-    );
-    await web3Wrapper.awaitTransactionSuccessAsync(
-        await erc721proxy.transferOwnership.sendTransactionAsync(assetProxyOwner.address),
-    );
-    await web3Wrapper.awaitTransactionSuccessAsync(
-        await exchange.transferOwnership.sendTransactionAsync(assetProxyOwner.address),
-    );
+    txHash = await erc20proxy.transferOwnership.sendTransactionAsync(assetProxyOwner.address);
+    logUtils.log(`transactionHash: ${txHash}`);
+    logUtils.log('Transferring ownership of ERC20Proxy');
+    await web3Wrapper.awaitTransactionSuccessAsync(txHash);
+
+    txHash = await erc721proxy.transferOwnership.sendTransactionAsync(assetProxyOwner.address);
+    logUtils.log(`transactionHash: ${txHash}`);
+    logUtils.log('Transferring ownership of ERC721Proxy');
+    await web3Wrapper.awaitTransactionSuccessAsync(txHash);
+
+    txHash = await exchange.transferOwnership.sendTransactionAsync(assetProxyOwner.address);
+    logUtils.log(`transactionHash: ${txHash}`);
+    logUtils.log('Transferring ownership of Exchange');
+    await web3Wrapper.awaitTransactionSuccessAsync(txHash);
 };
