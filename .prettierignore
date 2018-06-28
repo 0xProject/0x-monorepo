@@ -17,5 +17,6 @@ lib
 /packages/order-watcher/test/artifacts
 /packages/migrations/artifacts/1.0.0
 /packages/migrations/artifacts/2.0.0
+/packages/migrations/artifacts/2.0.0-beta-testnet
 package.json
 scripts/postpublish_utils.js
