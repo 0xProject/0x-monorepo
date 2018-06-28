@@ -17,6 +17,7 @@ export interface Step {
     shouldHideNextButton?: boolean;
     continueButtonDisplay?: ContinueButtonDisplay;
     continueButtonText?: string;
+    onContinueButtonClick?: () => void;
 }
 
 export interface OnboardingFlowProps {
@@ -90,6 +91,7 @@ export class OnboardingFlow extends React.Component<OnboardingFlowProps> {
                     onClickBack={this._goToPrevStep.bind(this)}
                     continueButtonDisplay={step.continueButtonDisplay}
                     continueButtonText={step.continueButtonText}
+                    onContinueButtonClick={step.onContinueButtonClick}
                 />
             </Container>
         );
@@ -112,6 +114,7 @@ export class OnboardingFlow extends React.Component<OnboardingFlowProps> {
                     onClickBack={this._goToPrevStep.bind(this)}
                     continueButtonDisplay={step.continueButtonDisplay}
                     continueButtonText={step.continueButtonText}
+                    onContinueButtonClick={step.onContinueButtonClick}
                     borderRadius="10px 10px 0px 0px"
                 />
             </Container>

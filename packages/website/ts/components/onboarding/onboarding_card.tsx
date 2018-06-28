@@ -6,6 +6,7 @@ import { Container } from 'ts/components/ui/container';
 import { IconButton } from 'ts/components/ui/icon_button';
 import { Island } from 'ts/components/ui/island';
 import { Text, Title } from 'ts/components/ui/text';
+import * as _ from 'lodash';
 
 export type ContinueButtonDisplay = 'enabled' | 'disabled';
 
@@ -16,6 +17,7 @@ export interface OnboardingCardProps {
     onClose: () => void;
     onClickNext: () => void;
     onClickBack: () => void;
+    onContinueButtonClick?: () => void;
     continueButtonDisplay?: ContinueButtonDisplay;
     shouldHideBackButton?: boolean;
     shouldHideNextButton?: boolean;
@@ -28,6 +30,7 @@ export const OnboardingCard: React.StatelessComponent<OnboardingCardProps> = ({
     content,
     continueButtonDisplay,
     continueButtonText,
+    onContinueButtonClick,
     onClickNext,
     onClickBack,
     onClose,
@@ -52,7 +55,7 @@ export const OnboardingCard: React.StatelessComponent<OnboardingCardProps> = ({
                 {continueButtonDisplay && (
                     <Button
                         isDisabled={continueButtonDisplay === 'disabled'}
-                        onClick={onClickNext}
+                        onClick={!_.isUndefined(onContinueButtonClick) ? onContinueButtonClick : onClickNext}
                         fontColor={colors.white}
                         fontSize="15px"
                         backgroundColor={colors.mediumBlue}

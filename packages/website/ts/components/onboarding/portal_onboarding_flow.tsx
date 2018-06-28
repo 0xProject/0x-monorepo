@@ -155,6 +155,7 @@ class PlainPortalOnboardingFlow extends React.Component<PortalOnboardingFlowProp
                 continueButtonDisplay: 'enabled',
                 shouldHideNextButton: true,
                 continueButtonText: 'Enter the 0x Ecosystem',
+                onContinueButtonClick: this._handleFinalStepContinueClick.bind(this),
             },
         ];
         return steps;
@@ -261,6 +262,12 @@ class PlainPortalOnboardingFlow extends React.Component<PortalOnboardingFlowProp
                 refetchTokenStateAsync={async () => this.props.refetchTokenStateAsync(token.address)}
             />
         );
+    }
+    private _handleFinalStepContinueClick(): void {
+        if (utils.isMobile(this.props.screenWidth)) {
+            this.props.history.push('/portal');
+        }
+        this._closeOnboarding();
     }
 }
 
