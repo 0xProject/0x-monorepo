@@ -11,15 +11,15 @@ export interface NotFoundProps {
     dispatcher: Dispatcher;
 }
 
-export const NotFound = (_props: NotFoundProps) => {
+export const NotFound = (props: NotFoundProps) => {
     return (
         <div>
-            <TopBar blockchainIsLoaded={false} location={this.props.location} translate={this.props.translate} />
+            <TopBar blockchainIsLoaded={false} location={props.location} translate={props.translate} />
             <FullscreenMessage
                 headerText={'404 Not Found'}
                 bodyText={"Hm... looks like we couldn't find what you are looking for."}
             />
-            <Footer translate={this.props.translate} dispatcher={this.props.dispatcher} />
+            <Footer translate={props.translate} dispatcher={props.dispatcher} />
         </div>
     );
 };

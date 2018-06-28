@@ -356,6 +356,7 @@ export enum WebsiteLegacyPaths {
 export enum WebsitePaths {
     Portal = '/portal',
     Wiki = '/wiki',
+    Docs = '/docs',
     ZeroExJs = '/docs/0x.js',
     Home = '/',
     FAQ = '/faq',
