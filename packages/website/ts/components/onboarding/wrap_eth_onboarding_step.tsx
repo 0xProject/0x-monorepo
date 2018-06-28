@@ -27,6 +27,14 @@ export const WrapEthOnboardingStep1: React.StatelessComponent<WrapEthOnboardingS
         <Text>
             Think of it like the coin version of a paper note. It has the same value, but some machines only take coins.
         </Text>
+    </div>
+);
+
+export interface WrapEthOnboardingStep2Props {}
+
+export const WrapEthOnboardingStep2: React.StatelessComponent<WrapEthOnboardingStep2Props> = () => (
+    <div className="flex items-center flex-column">
+        <Text>Wrapping your ETH is a reversable transaction, so don't worry about losing your ETH.</Text>
         <Text>
             Click
             <Container display="inline-block" marginLeft="10px" marginRight="10px">
@@ -42,11 +50,11 @@ export const WrapEthOnboardingStep1: React.StatelessComponent<WrapEthOnboardingS
     </div>
 );
 
-export interface WrapEthOnboardingStep2Props {
+export interface WrapEthOnboardingStep3Props {
     formattedEthBalance: string;
 }
 
-export const WrapEthOnboardingStep2: React.StatelessComponent<WrapEthOnboardingStep2Props> = ({
+export const WrapEthOnboardingStep3: React.StatelessComponent<WrapEthOnboardingStep3Props> = ({
     formattedEthBalance,
 }) => (
     <div className="flex items-center flex-column">
