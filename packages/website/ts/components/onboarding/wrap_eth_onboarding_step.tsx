@@ -51,14 +51,17 @@ export const WrapEthOnboardingStep2: React.StatelessComponent<WrapEthOnboardingS
 );
 
 export interface WrapEthOnboardingStep3Props {
-    formattedEthBalance: string;
+    formattedWethBalanceIfExists?: string;
 }
 
 export const WrapEthOnboardingStep3: React.StatelessComponent<WrapEthOnboardingStep3Props> = ({
-    formattedEthBalance,
+    formattedWethBalanceIfExists,
 }) => (
     <div className="flex items-center flex-column">
-        <Text>You currently have {formattedEthBalance} in your wallet.</Text>
+        <Text>
+            You have {formattedWethBalanceIfExists || '0 WETH'} in your wallet.
+            {formattedWethBalanceIfExists && ' Great!'}
+        </Text>
         <Container width="100%" marginTop="25px" marginBottom="15px" className="flex justify-center">
             <div className="flex flex-column items-center">
                 <Text fontWeight={700}> 1 ETH </Text>

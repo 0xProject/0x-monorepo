@@ -96,7 +96,15 @@ class PlainPortalOnboardingFlow extends React.Component<PortalOnboardingFlowProp
             {
                 target: '.wallet',
                 title: 'Add ETH',
-                content: <AddEthOnboardingStep />,
+                content: (
+                    <AddEthOnboardingStep
+                        hasEth={
+                            !_.isUndefined(this.props.userEtherBalanceInWei)
+                                ? this.props.userEtherBalanceInWei.gt(0)
+                                : false
+                        }
+                    />
+                ),
                 placement: 'right',
                 continueButtonDisplay: this._userHasVisibleEth() ? 'enabled' : 'disabled',
             },
@@ -119,7 +127,9 @@ class PlainPortalOnboardingFlow extends React.Component<PortalOnboardingFlowProp
                 title: 'Step 1: Wrap ETH',
                 content: (
                     <WrapEthOnboardingStep3
-                        formattedEthBalance={this._userHasVisibleWeth() ? this._getFormattedWethBalance() : '0 WETH'}
+                        formattedWethBalanceIfExists={
+                            this._userHasVisibleWeth() ? this._getFormattedWethBalance() : undefined
+                        }
                     />
                 ),
                 placement: 'right',
@@ -127,7 +137,7 @@ class PlainPortalOnboardingFlow extends React.Component<PortalOnboardingFlowProp
             },
             {
                 target: '.wallet',
-                title: 'Step 2/2',
+                title: 'Step 2: Unlock Tokens',
                 content: (
                     <SetAllowancesOnboardingStep
                         zrxAllowanceToggle={this._renderZrxAllowanceToggle()}
