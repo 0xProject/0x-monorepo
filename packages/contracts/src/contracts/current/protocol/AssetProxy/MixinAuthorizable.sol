@@ -19,12 +19,10 @@
 pragma solidity ^0.4.24;
 pragma experimental ABIEncoderV2;
 
-import "./libs/LibAssetProxyErrors.sol";
 import "../../utils/Ownable/Ownable.sol";
 import "./mixins/MAuthorizable.sol";
 
 contract MixinAuthorizable is
-    LibAssetProxyErrors,
     Ownable,
     MAuthorizable
 {
@@ -33,7 +31,7 @@ contract MixinAuthorizable is
     modifier onlyAuthorized {
         require(
             authorized[msg.sender],
-            SENDER_NOT_AUTHORIZED
+            "SENDER_NOT_AUTHORIZED"
         );
         _;
     }
@@ -49,7 +47,7 @@ contract MixinAuthorizable is
     {
         require(
             !authorized[target],
-            TARGET_ALREADY_AUTHORIZED
+            "TARGET_ALREADY_AUTHORIZED"
         );
 
         authorized[target] = true;
@@ -65,7 +63,7 @@ contract MixinAuthorizable is
     {
         require(
             authorized[target],
-            TARGET_NOT_AUTHORIZED
+            "TARGET_NOT_AUTHORIZED"
         );
 
         delete authorized[target];
@@ -91,15 +89,15 @@ contract MixinAuthorizable is
     {
         require(
             authorized[target],
-            TARGET_NOT_AUTHORIZED
+            "TARGET_NOT_AUTHORIZED"
         );
         require(
             index < authorities.length,
-            INDEX_OUT_OF_BOUNDS
+            "INDEX_OUT_OF_BOUNDS"
         );
         require(
             authorities[index] == target,
-            AUTHORIZED_ADDRESS_MISMATCH
+            "AUTHORIZED_ADDRESS_MISMATCH"
         );
 
         delete authorized[target];

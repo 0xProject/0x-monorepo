@@ -13,9 +13,6 @@ import "./IOwnable.sol";
 contract Ownable is IOwnable {
     address public owner;
 
-    // Revert reasons
-    string constant ONLY_CONTRACT_OWNER = "ONLY_CONTRACT_OWNER";
-
     constructor ()
         public
     {
@@ -25,7 +22,7 @@ contract Ownable is IOwnable {
     modifier onlyOwner() {
         require(
             msg.sender == owner,
-            ONLY_CONTRACT_OWNER
+            "ONLY_CONTRACT_OWNER"
         );
         _;
     }

@@ -54,7 +54,7 @@ const styles: Styles = {
     },
 };
 
-const FALLBACK_IMG_SRC = '/images/landing/hero_chip_image.png';
+const FALLBACK_IMG_SRC = '/images/relayer_fallback.png';
 const FALLBACK_PRIMARY_COLOR = colors.grey200;
 const NO_CONTENT_MESSAGE = '--';
 const RELAYER_ICON_HEIGHT = '110px';

@@ -1,6 +1,6 @@
 import { BlockchainLifecycle } from '@0xproject/dev-utils';
 import { assetProxyUtils } from '@0xproject/order-utils';
-import { AssetProxyId } from '@0xproject/types';
+import { AssetProxyId, RevertReason } from '@0xproject/types';
 import { BigNumber } from '@0xproject/utils';
 import { Web3Wrapper } from '@0xproject/web3-wrapper';
 import * as chai from 'chai';
@@ -12,7 +12,7 @@ import { ERC20ProxyContract } from '../../src/generated_contract_wrappers/e_r_c2
 import { ERC721ProxyContract } from '../../src/generated_contract_wrappers/e_r_c721_proxy';
 import { ExchangeContract } from '../../src/generated_contract_wrappers/exchange';
 import { artifacts } from '../../src/utils/artifacts';
-import { expectRevertOrAlwaysFailingTransactionAsync } from '../../src/utils/assertions';
+import { expectRevertReasonOrAlwaysFailingTransactionAsync } from '../../src/utils/assertions';
 import { chaiSetup } from '../../src/utils/chai_setup';
 import { constants } from '../../src/utils/constants';
 import { ERC20Wrapper } from '../../src/utils/erc20_wrapper';
@@ -76,12 +76,16 @@ describe('matchOrders', () => {
             takerAddress,
             feeRecipientAddressLeft,
             feeRecipientAddressRight,
-        ] = accounts);
+        ] = _.slice(accounts, 0, 6));
         // Create wrappers
         erc20Wrapper = new ERC20Wrapper(provider, usedAddresses, owner);
         erc721Wrapper = new ERC721Wrapper(provider, usedAddresses, owner);
         // Deploy ERC20 token & ERC20 proxy
-        [erc20TokenA, erc20TokenB, zrxToken] = await erc20Wrapper.deployDummyTokensAsync();
+        const numDummyErc20ToDeploy = 3;
+        [erc20TokenA, erc20TokenB, zrxToken] = await erc20Wrapper.deployDummyTokensAsync(
+            numDummyErc20ToDeploy,
+            constants.DUMMY_TOKEN_DECIMALS,
+        );
         erc20Proxy = await erc20Wrapper.deployProxyAsync();
         await erc20Wrapper.setBalancesAndAllowancesAsync();
         // Deploy ERC721 token and proxy
@@ -96,7 +100,7 @@ describe('matchOrders', () => {
             artifacts.Exchange,
             provider,
             txDefaults,
-            zrxToken.address,
+            assetProxyUtils.encodeERC20AssetData(zrxToken.address),
         );
         exchangeWrapper = new ExchangeWrapper(exchange, provider);
         await exchangeWrapper.registerAssetProxyAsync(AssetProxyId.ERC20, erc20Proxy.address, owner);
@@ -598,8 +602,9 @@ describe('matchOrders', () => {
             // Cancel left order
             await exchangeWrapper.cancelOrderAsync(signedOrderLeft, signedOrderLeft.makerAddress);
             // Match orders
-            return expectRevertOrAlwaysFailingTransactionAsync(
+            return expectRevertReasonOrAlwaysFailingTransactionAsync(
                 exchangeWrapper.matchOrdersAsync(signedOrderLeft, signedOrderRight, takerAddress),
+                RevertReason.OrderUnfillable,
             );
         });
 
@@ -622,8 +627,9 @@ describe('matchOrders', () => {
             // Cancel right order
             await exchangeWrapper.cancelOrderAsync(signedOrderRight, signedOrderRight.makerAddress);
             // Match orders
-            return expectRevertOrAlwaysFailingTransactionAsync(
+            return expectRevertReasonOrAlwaysFailingTransactionAsync(
                 exchangeWrapper.matchOrdersAsync(signedOrderLeft, signedOrderRight, takerAddress),
+                RevertReason.OrderUnfillable,
             );
         });
 
@@ -644,7 +650,7 @@ describe('matchOrders', () => {
                 feeRecipientAddress: feeRecipientAddressRight,
             });
             // Match orders
-            return expectRevertOrAlwaysFailingTransactionAsync(
+            return expectRevertReasonOrAlwaysFailingTransactionAsync(
                 matchOrderTester.matchOrdersAndVerifyBalancesAsync(
                     signedOrderLeft,
                     signedOrderRight,
@@ -652,6 +658,7 @@ describe('matchOrders', () => {
                     erc20BalancesByOwner,
                     erc721TokenIdsByOwner,
                 ),
+                RevertReason.NegativeSpreadRequired,
             );
         });
 
@@ -672,7 +679,7 @@ describe('matchOrders', () => {
                 feeRecipientAddress: feeRecipientAddressRight,
             });
             // Match orders
-            return expectRevertOrAlwaysFailingTransactionAsync(
+            return expectRevertReasonOrAlwaysFailingTransactionAsync(
                 matchOrderTester.matchOrdersAndVerifyBalancesAsync(
                     signedOrderLeft,
                     signedOrderRight,
@@ -680,6 +687,11 @@ describe('matchOrders', () => {
                     erc20BalancesByOwner,
                     erc721TokenIdsByOwner,
                 ),
+                // We are assuming assetData fields of the right order are the
+                // reverse of the left order, rather than checking equality. This
+                // saves a bunch of gas, but as a result if the assetData fields are
+                // off then the failure ends up happening at signature validation
+                RevertReason.InvalidOrderSignature,
             );
         });
 
@@ -702,7 +714,7 @@ describe('matchOrders', () => {
                 feeRecipientAddress: feeRecipientAddressRight,
             });
             // Match orders
-            return expectRevertOrAlwaysFailingTransactionAsync(
+            return expectRevertReasonOrAlwaysFailingTransactionAsync(
                 matchOrderTester.matchOrdersAndVerifyBalancesAsync(
                     signedOrderLeft,
                     signedOrderRight,
@@ -710,6 +722,7 @@ describe('matchOrders', () => {
                     erc20BalancesByOwner,
                     erc721TokenIdsByOwner,
                 ),
+                RevertReason.InvalidOrderSignature,
             );
         });
 

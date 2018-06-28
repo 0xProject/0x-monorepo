@@ -26,7 +26,7 @@ contract IAssetProxyDispatcher {
     /// @param newAssetProxy Address of new asset proxy to register, or 0x0 to unset assetProxyId.
     /// @param oldAssetProxy Existing asset proxy to overwrite, or 0x0 if assetProxyId is currently unused.
     function registerAssetProxy(
-        uint8 assetProxyId,
+        bytes4 assetProxyId,
         address newAssetProxy,
         address oldAssetProxy
     )
@@ -35,7 +35,7 @@ contract IAssetProxyDispatcher {
     /// @dev Gets an asset proxy.
     /// @param assetProxyId Id of the asset proxy.
     /// @return The asset proxy registered to assetProxyId. Returns 0x0 if no proxy is registered.
-    function getAssetProxy(uint8 assetProxyId)
+    function getAssetProxy(bytes4 assetProxyId)
         external
         view
         returns (address);

@@ -56,4 +56,20 @@ contract DummyERC721Token is
         );
         _mint(to, tokenId);
     }
+
+    /**
+    * @dev Function to burn a token
+    * @dev Reverts if the given token ID doesn't exist
+    * @param tokenId uint256 ID of the token to be minted by the msg.sender
+    */
+    function burn(address owner, uint256 tokenId)
+        public
+        onlyOwner
+    {
+        require(
+            exists(tokenId),
+            "Token with tokenId does not exist."
+        );
+        _burn(owner, tokenId);
+    }
 }

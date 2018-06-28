@@ -150,3 +150,80 @@ export interface MatchOrder {
     leftSignature: string;
     rightSignature: string;
 }
+
+// Combinatorial testing types
+
+export enum FeeRecipientAddressScenario {
+    BurnAddress = 'BURN_ADDRESS',
+    EthUserAddress = 'ETH_USER_ADDRESS',
+}
+
+export enum OrderAssetAmountScenario {
+    Zero = 'ZERO',
+    Large = 'LARGE',
+    Small = 'SMALL',
+}
+
+export enum TakerScenario {
+    CorrectlySpecified = 'CORRECTLY_SPECIFIED',
+    IncorrectlySpecified = 'INCORRECTLY_SPECIFIED',
+    Unspecified = 'UNSPECIFIED',
+}
+
+export enum ExpirationTimeSecondsScenario {
+    InPast = 'IN_PAST',
+    InFuture = 'IN_FUTURE',
+}
+
+export enum AssetDataScenario {
+    ERC721 = 'ERC721',
+    ZRXFeeToken = 'ZRX_FEE_TOKEN',
+    ERC20FiveDecimals = 'ERC20_FIVE_DECIMALS',
+    ERC20NonZRXEighteenDecimals = 'ERC20_NON_ZRX_EIGHTEEN_DECIMALS',
+}
+
+export enum TakerAssetFillAmountScenario {
+    Zero = 'ZERO',
+    GreaterThanRemainingFillableTakerAssetAmount = 'GREATER_THAN_REMAINING_FILLABLE_TAKER_ASSET_AMOUNT',
+    LessThanRemainingFillableTakerAssetAmount = 'LESS_THAN_REMAINING_FILLABLE_TAKER_ASSET_AMOUNT',
+    ExactlyRemainingFillableTakerAssetAmount = 'EXACTLY_REMAINING_FILLABLE_TAKER_ASSET_AMOUNT',
+}
+
+export interface OrderScenario {
+    takerScenario: TakerScenario;
+    feeRecipientScenario: FeeRecipientAddressScenario;
+    makerAssetAmountScenario: OrderAssetAmountScenario;
+    takerAssetAmountScenario: OrderAssetAmountScenario;
+    makerFeeScenario: OrderAssetAmountScenario;
+    takerFeeScenario: OrderAssetAmountScenario;
+    expirationTimeSecondsScenario: ExpirationTimeSecondsScenario;
+    makerAssetDataScenario: AssetDataScenario;
+    takerAssetDataScenario: AssetDataScenario;
+}
+
+export enum BalanceAmountScenario {
+    Exact = 'EXACT',
+    TooLow = 'TOO_LOW',
+    Higher = 'HIGHER',
+}
+
+export enum AllowanceAmountScenario {
+    Exact = 'EXACT',
+    TooLow = 'TOO_LOW',
+    Higher = 'HIGHER',
+    Unlimited = 'UNLIMITED',
+}
+
+export interface TraderStateScenario {
+    traderAssetBalance: BalanceAmountScenario;
+    traderAssetAllowance: AllowanceAmountScenario;
+    zrxFeeBalance: BalanceAmountScenario;
+    zrxFeeAllowance: AllowanceAmountScenario;
+}
+
+export interface FillScenario {
+    orderScenario: OrderScenario;
+    takerAssetFillAmountScenario: TakerAssetFillAmountScenario;
+    makerStateScenario: TraderStateScenario;
+    takerStateScenario: TraderStateScenario;
+}

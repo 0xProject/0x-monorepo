@@ -38,24 +38,10 @@ contract IAssetProxy is
     )
         external;
     
-    /// @dev Makes multiple transfers of assets. Either succeeds or throws.
-    /// @param assetData Array of byte arrays encoded for the respective asset proxy.
-    /// @param from Array of addresses to transfer assets from.
-    /// @param to Array of addresses to transfer assets to.
-    /// @param amounts Array of amounts of assets to transfer.
-    function batchTransferFrom(
-        bytes[] memory assetData,
-        address[] memory from,
-        address[] memory to,
-        uint256[] memory amounts
-    )
-        public;
-
     /// @dev Gets the proxy id associated with the proxy address.
     /// @return Proxy id.
     function getProxyId()
         external
         view
-        returns (uint8);
+        returns (bytes4);
 }
-

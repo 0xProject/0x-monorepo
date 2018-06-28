@@ -1,15 +1,16 @@
 import { BlockchainLifecycle } from '@0xproject/dev-utils';
 import { assetProxyUtils } from '@0xproject/order-utils';
-import { AssetProxyId } from '@0xproject/types';
+import { AssetProxyId, RevertReason } from '@0xproject/types';
 import { BigNumber } from '@0xproject/utils';
 import * as chai from 'chai';
+import * as _ from 'lodash';
 
 import { DummyERC20TokenContract } from '../../src/generated_contract_wrappers/dummy_e_r_c20_token';
 import { ERC20ProxyContract } from '../../src/generated_contract_wrappers/e_r_c20_proxy';
 import { ERC721ProxyContract } from '../../src/generated_contract_wrappers/e_r_c721_proxy';
 import { TestAssetProxyDispatcherContract } from '../../src/generated_contract_wrappers/test_asset_proxy_dispatcher';
 import { artifacts } from '../../src/utils/artifacts';
-import { expectRevertOrAlwaysFailingTransactionAsync } from '../../src/utils/assertions';
+import { expectRevertReasonOrAlwaysFailingTransactionAsync } from '../../src/utils/assertions';
 import { chaiSetup } from '../../src/utils/chai_setup';
 import { constants } from '../../src/utils/constants';
 import { ERC20Wrapper } from '../../src/utils/erc20_wrapper';
@@ -43,12 +44,13 @@ describe('AssetProxyDispatcher', () => {
     before(async () => {
         // Setup accounts & addresses
         const accounts = await web3Wrapper.getAvailableAddressesAsync();
-        const usedAddresses = ([owner, notOwner, makerAddress, takerAddress] = accounts);
+        const usedAddresses = ([owner, notOwner, makerAddress, takerAddress] = _.slice(accounts, 0, 4));
 
         erc20Wrapper = new ERC20Wrapper(provider, usedAddresses, owner);
         erc721Wrapper = new ERC721Wrapper(provider, usedAddresses, owner);
 
-        [zrxToken] = await erc20Wrapper.deployDummyTokensAsync();
+        const numDummyErc20ToDeploy = 1;
+        [zrxToken] = await erc20Wrapper.deployDummyTokensAsync(numDummyErc20ToDeploy, constants.DUMMY_TOKEN_DECIMALS);
         erc20Proxy = await erc20Wrapper.deployProxyAsync();
         await erc20Wrapper.setBalancesAndAllowancesAsync();
 
@@ -175,13 +177,14 @@ describe('AssetProxyDispatcher', () => {
             const proxyAddress = await assetProxyDispatcher.getAssetProxy.callAsync(AssetProxyId.ERC20);
             expect(proxyAddress).to.be.equal(erc20Proxy.address);
             // The following transaction will throw because the currentAddress is no longer constants.NULL_ADDRESS
-            return expectRevertOrAlwaysFailingTransactionAsync(
+            return expectRevertReasonOrAlwaysFailingTransactionAsync(
                 assetProxyDispatcher.registerAssetProxy.sendTransactionAsync(
                     AssetProxyId.ERC20,
                     erc20Proxy.address,
                     constants.NULL_ADDRESS,
                     { from: owner },
                 ),
+                RevertReason.AssetProxyMismatch,
             );
         });
 
@@ -216,25 +219,27 @@ describe('AssetProxyDispatcher', () => {
 
         it('should throw if requesting address is not owner', async () => {
             const prevProxyAddress = constants.NULL_ADDRESS;
-            return expectRevertOrAlwaysFailingTransactionAsync(
+            return expectRevertReasonOrAlwaysFailingTransactionAsync(
                 assetProxyDispatcher.registerAssetProxy.sendTransactionAsync(
                     AssetProxyId.ERC20,
                     erc20Proxy.address,
                     prevProxyAddress,
                     { from: notOwner },
                 ),
+                RevertReason.OnlyContractOwner,
             );
         });
 
         it('should throw if attempting to register a proxy to the incorrect id', async () => {
             const prevProxyAddress = constants.NULL_ADDRESS;
-            return expectRevertOrAlwaysFailingTransactionAsync(
+            return expectRevertReasonOrAlwaysFailingTransactionAsync(
                 assetProxyDispatcher.registerAssetProxy.sendTransactionAsync(
                     AssetProxyId.ERC721,
                     erc20Proxy.address,
                     prevProxyAddress,
                     { from: owner },
                 ),
+                RevertReason.AssetProxyIdMismatch,
             );
         });
     });
@@ -276,14 +281,13 @@ describe('AssetProxyDispatcher', () => {
             );
             // Construct metadata for ERC20 proxy
             const encodedAssetData = assetProxyUtils.encodeERC20AssetData(zrxToken.address);
-            const encodedAssetDataWithoutProxyId = encodedAssetData.slice(0, -2);
+
             // Perform a transfer from makerAddress to takerAddress
             const erc20Balances = await erc20Wrapper.getBalancesAsync();
             const amount = new BigNumber(10);
             await web3Wrapper.awaitTransactionSuccessAsync(
                 await assetProxyDispatcher.publicDispatchTransferFrom.sendTransactionAsync(
-                    encodedAssetDataWithoutProxyId,
-                    AssetProxyId.ERC20,
+                    encodedAssetData,
                     makerAddress,
                     takerAddress,
                     amount,
@@ -304,18 +308,17 @@ describe('AssetProxyDispatcher', () => {
         it('should throw if dispatching to unregistered proxy', async () => {
             // Construct metadata for ERC20 proxy
             const encodedAssetData = assetProxyUtils.encodeERC20AssetData(zrxToken.address);
-            const encodedAssetDataWithoutProxyId = encodedAssetData.slice(0, -2);
             // Perform a transfer from makerAddress to takerAddress
             const amount = new BigNumber(10);
-            return expectRevertOrAlwaysFailingTransactionAsync(
+            return expectRevertReasonOrAlwaysFailingTransactionAsync(
                 assetProxyDispatcher.publicDispatchTransferFrom.sendTransactionAsync(
-                    encodedAssetDataWithoutProxyId,
-                    AssetProxyId.ERC20,
+                    encodedAssetData,
                     makerAddress,
                     takerAddress,
                     amount,
                     { from: owner },
                 ),
+                RevertReason.AssetProxyDoesNotExist,
             );
         });
     });

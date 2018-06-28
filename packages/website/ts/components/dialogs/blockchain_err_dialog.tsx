@@ -4,7 +4,6 @@ import FlatButton from 'material-ui/FlatButton';
 import * as React from 'react';
 import { Blockchain } from 'ts/blockchain';
 import { BlockchainErrs } from 'ts/types';
-import { configs } from 'ts/utils/configs';
 import { constants } from 'ts/utils/constants';
 
 interface BlockchainErrDialogProps {

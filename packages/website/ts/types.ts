@@ -13,8 +13,8 @@ export interface Token {
     address: string;
     symbol: string;
     decimals: number;
-    isTracked: boolean;
     isRegistered: boolean;
+    trackedTimestamp?: number;
 }
 
 export interface TokenByAddress {
@@ -555,5 +555,12 @@ export interface WebsiteBackendJobInfo {
     department: string;
     office: string;
     url: string;
+}
+
+export enum BrowserType {
+    Chrome = 'Chrome',
+    Firefox = 'Firefox',
+    Opera = 'Opera',
+    Other = 'Other',
 }
 // tslint:disable:max-file-line-count

@@ -33,8 +33,8 @@ export class ExchangeWrapper {
             params.signature,
             { from },
         );
-        const tx = await this._logDecoder.getTxWithDecodedLogsAsync(txHash);
-        return tx;
+        const txReceipt = await this._logDecoder.getTxWithDecodedLogsAsync(txHash);
+        return txReceipt;
     }
     public async cancelOrderAsync(signedOrder: SignedOrder, from: string): Promise<TransactionReceiptWithDecodedLogs> {
         const params = orderUtils.createCancel(signedOrder);
@@ -226,6 +226,10 @@ export class ExchangeWrapper {
     public async getTakerAssetFilledAmountAsync(orderHashHex: string): Promise<BigNumber> {
         const filledAmount = new BigNumber(await this._exchange.filled.callAsync(orderHashHex));
         return filledAmount;
+    }
+    public async isCancelledAsync(orderHashHex: string): Promise<boolean> {
+        const isCancelled = await this._exchange.cancelled.callAsync(orderHashHex);
+        return isCancelled;
     }
     public async getOrderInfoAsync(signedOrder: SignedOrder): Promise<OrderInfo> {
         const orderInfo = (await this._exchange.getOrderInfo.callAsync(signedOrder)) as OrderInfo;
