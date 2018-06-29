@@ -7,6 +7,8 @@ import { DummyERC721TokenContract } from '../../src/contract_wrappers/generated/
 import { constants } from './constants';
 import { provider, txDefaults, web3Wrapper } from './web3_wrapper';
 
+// Those addresses come from migrations. They're deterministic so it's relatively safe to hard-code them here.
+// Before we were fetching them from the TokenRegistry but now we can't as it's deprecated and removed.
 const DUMMY_ERC_20_ADRESSES = [
     '0x07f96aa816c1f244cbc6ef114bb2b023ba54a2eb',
     '0x6a4a62e5a7ed13c361b176a5f62c2ee620ac0df8',
