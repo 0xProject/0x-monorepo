@@ -8,6 +8,7 @@ import * as React from 'react';
 
 import { Blockchain } from 'ts/blockchain';
 import { ProviderPicker } from 'ts/components/top_bar/provider_picker';
+import { AccountConnection } from 'ts/components/ui/account_connection';
 import { Circle } from 'ts/components/ui/circle';
 import { Container } from 'ts/components/ui/container';
 import { DropDown } from 'ts/components/ui/drop_down';
@@ -189,33 +190,16 @@ export class ProviderDisplay extends React.Component<ProviderDisplayProps, Provi
         switch (accountState) {
             case AccountState.Ready:
             case AccountState.Locked:
-                const circleColor = this._getInjectedProviderColor();
                 return (
-                    <Container className="flex items-center">
-                        <Circle diameter={6} fillColor={circleColor} />
-                        <Container marginLeft="6px">
-                            <Text fontSize="12px" lineHeight="14px" fontColor={colors.darkGrey}>
-                                {this.props.injectedProviderName}
-                            </Text>
-                        </Container>
-                    </Container>
+                    <AccountConnection
+                        accountState={accountState}
+                        injectedProviderName={this.props.injectedProviderName}
+                    />
                 );
             case AccountState.Disconnected:
             case AccountState.Loading:
             default:
                 return null;
-        }
-    }
-    private _getInjectedProviderColor(): string {
-        const accountState = this._getAccountState();
-        switch (accountState) {
-            case AccountState.Ready:
-                return colors.green;
-            case AccountState.Locked:
-            case AccountState.Loading:
-            case AccountState.Disconnected:
-            default:
-                return colors.red;
         }
     }
     private _isBlockchainReady(): boolean {

@@ -19,6 +19,7 @@ import { Link } from 'react-router-dom';
 import firstBy = require('thenby');
 
 import { Blockchain } from 'ts/blockchain';
+import { AccountConnection } from 'ts/components/ui/account_connection';
 import { Circle } from 'ts/components/ui/circle';
 import { Container } from 'ts/components/ui/container';
 import { IconButton } from 'ts/components/ui/icon_button';
@@ -33,6 +34,7 @@ import { Dispatcher } from 'ts/redux/dispatcher';
 import { colors } from 'ts/style/colors';
 import { styled } from 'ts/style/theme';
 import {
+    AccountState,
     BlockchainErrs,
     ProviderType,
     ScreenWidths,
@@ -157,10 +159,9 @@ export class Wallet extends React.Component<WalletProps, WalletState> {
         }
     }
     public render(): React.ReactNode {
-        const isBlockchainLoaded = this.props.blockchainIsLoaded && this.props.blockchainErr === BlockchainErrs.NoError;
         return (
             <Island className="flex flex-column wallet" style={this.props.style}>
-                {isBlockchainLoaded ? this._renderLoadedRows() : this._renderLoadingRows()}
+                {this._isBlockchainReady() ? this._renderLoadedRows() : this._renderLoadingRows()}
             </Island>
         );
     }
@@ -232,19 +233,13 @@ export class Wallet extends React.Component<WalletProps, WalletState> {
     }
     private _renderConnectedHeaderRows(): React.ReactElement<{}> {
         const userAddress = this.props.userAddress;
+        const accountState = this._getAccountState();
         const main = (
             <div className="flex flex-column">
                 <Text fontSize="16px" lineHeight="19px" fontWeight={500}>
                     {utils.getAddressBeginAndEnd(userAddress)}
                 </Text>
-                <Container className="flex items-center">
-                    <Circle diameter={6} fillColor="#37D400" />
-                    <Container marginLeft="6px">
-                        <Text fontSize="12px" lineHeight="14px" fontColor={colors.darkGrey}>
-                            {this.props.injectedProviderName}
-                        </Text>
-                    </Container>
-                </Container>
+                <AccountConnection accountState={accountState} injectedProviderName={this.props.injectedProviderName} />
             </div>
         );
         return (
@@ -534,6 +529,17 @@ export class Wallet extends React.Component<WalletProps, WalletState> {
     }
     private _getEthToken(): Token {
         return utils.getEthToken(this.props.tokenByAddress);
+    }
+    private _isBlockchainReady(): boolean {
+        return this.props.blockchainIsLoaded && !_.isUndefined(this.props.blockchain);
+    }
+    private _getAccountState(): AccountState {
+        return utils.getAccountState(
+            this._isBlockchainReady(),
+            this.props.providerType,
+            this.props.injectedProviderName,
+            this.props.userAddress,
+        );
     }
 }
 
