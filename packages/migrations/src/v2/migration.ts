@@ -1,4 +1,4 @@
-import { assetProxyUtils } from '@0xproject/order-utils';
+import { assetProxyUtils, constants } from '@0xproject/order-utils';
 import { BigNumber } from '@0xproject/utils';
 import { Web3Wrapper } from '@0xproject/web3-wrapper';
 import { Provider, TxData } from 'ethereum-types';
@@ -75,16 +75,37 @@ export const runV2MigrationsAsync = async (provider: Provider, artifactsDir: str
     );
     artifactsWriter.saveArtifact(assetProxyOwner);
     await web3Wrapper.awaitTransactionSuccessAsync(
-        await erc20proxy.addAuthorizedAddress.sendTransactionAsync(exchange.address, { from: owner }),
+        await erc20proxy.addAuthorizedAddress.sendTransactionAsync(exchange.address, {
+            from: owner,
+        }),
     );
     await web3Wrapper.awaitTransactionSuccessAsync(
-        await erc20proxy.transferOwnership.sendTransactionAsync(assetProxyOwner.address, { from: owner }),
+        await erc20proxy.transferOwnership.sendTransactionAsync(assetProxyOwner.address, {
+            from: owner,
+        }),
     );
     await web3Wrapper.awaitTransactionSuccessAsync(
-        await erc721proxy.addAuthorizedAddress.sendTransactionAsync(exchange.address, { from: owner }),
+        await erc721proxy.addAuthorizedAddress.sendTransactionAsync(exchange.address, {
+            from: owner,
+        }),
     );
     await web3Wrapper.awaitTransactionSuccessAsync(
-        await erc721proxy.transferOwnership.sendTransactionAsync(assetProxyOwner.address, { from: owner }),
+        await erc721proxy.transferOwnership.sendTransactionAsync(assetProxyOwner.address, {
+            from: owner,
+        }),
+    );
+
+    // Register the Asset Proxies to the Exchange
+    // HACK: These are exposed in the types package but migrations currently uses an older version
+    // but we can pull the asset data id from the proxies
+    const erc20ProxyId = await erc20proxy.getProxyId.callAsync();
+    const erc721ProxyId = await erc721proxy.getProxyId.callAsync();
+    const oldAddress = constants.NULL_ADDRESS;
+    await web3Wrapper.awaitTransactionSuccessAsync(
+        await exchange.registerAssetProxy.sendTransactionAsync(erc20ProxyId, erc20proxy.address, oldAddress),
+    );
+    await web3Wrapper.awaitTransactionSuccessAsync(
+        await exchange.registerAssetProxy.sendTransactionAsync(erc721ProxyId, erc721proxy.address, oldAddress),
     );
 
     // Dummy ERC20 tokens
