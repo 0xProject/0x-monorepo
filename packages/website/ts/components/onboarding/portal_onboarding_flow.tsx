@@ -136,6 +136,7 @@ class PlainPortalOnboardingFlow extends React.Component<PortalOnboardingFlowProp
                     <SetAllowancesOnboardingStep
                         zrxAllowanceToggle={this._renderZrxAllowanceToggle()}
                         ethAllowanceToggle={this._renderEthAllowanceToggle()}
+                        userHasAllowancesForWethAndZrx={this._userHasAllowancesForWethAndZrx()}
                     />
                 ),
                 placement: 'right',

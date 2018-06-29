@@ -5,11 +5,13 @@ import { Text } from 'ts/components/ui/text';
 export interface SetAllowancesOnboardingStepProps {
     zrxAllowanceToggle: React.ReactNode;
     ethAllowanceToggle: React.ReactNode;
+    userHasAllowancesForWethAndZrx: boolean;
 }
 
 export const SetAllowancesOnboardingStep: React.StatelessComponent<SetAllowancesOnboardingStepProps> = ({
     ethAllowanceToggle,
     zrxAllowanceToggle,
+    userHasAllowancesForWethAndZrx,
 }) => (
     <div className="flex items-center flex-column">
         <Text>Unlock your tokens for trading. You only need to do this once for each token.</Text>
@@ -23,5 +25,6 @@ export const SetAllowancesOnboardingStep: React.StatelessComponent<SetAllowances
                 <Container marginTop="10px">{zrxAllowanceToggle}</Container>
             </div>
         </Container>
+        {userHasAllowancesForWethAndZrx && <Text>Perfect! Both your ZRX and WETH tokens are unlocked.</Text>}
     </div>
 );
