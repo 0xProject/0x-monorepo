@@ -63,15 +63,11 @@ export class ContractWrappers {
         _.forEach(abiArrays, abi => {
             this._web3Wrapper.abiDecoder.addABI(abi);
         });
-        this.erc20Proxy = new ERC20ProxyWrapper(
-            this._web3Wrapper,
-            config.networkId,
-            config.tokenTransferProxyContractAddress,
-        );
+        this.erc20Proxy = new ERC20ProxyWrapper(this._web3Wrapper, config.networkId, config.erc20ProxyContractAddress);
         this.erc721Proxy = new ERC721ProxyWrapper(
             this._web3Wrapper,
             config.networkId,
-            config.tokenTransferProxyContractAddress,
+            config.erc721ProxyContractAddress,
         );
         this.erc20Token = new ERC20TokenWrapper(this._web3Wrapper, config.networkId, this.erc20Proxy);
         this.erc721Token = new ERC721TokenWrapper(this._web3Wrapper, config.networkId, this.erc721Proxy);

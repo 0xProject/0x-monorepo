@@ -105,8 +105,8 @@ export type SyncMethod = (...args: any[]) => any;
  * gasPrice: Gas price to use with every transaction
  * exchangeContractAddress: The address of an exchange contract to use
  * zrxContractAddress: The address of the ZRX contract to use
- * tokenRegistryContractAddress: The address of a token registry contract to use
- * tokenTransferProxyContractAddress: The address of the token transfer proxy contract to use
+ * erc20ProxyContractAddress: The address of the erc20 token transfer proxy contract to use
+ * erc721ProxyContractAddress: The address of the erc721 token transfer proxy contract to use
  * orderWatcherConfig: All the configs related to the orderWatcher
  */
 export interface ContractWrappersConfig {
@@ -114,8 +114,8 @@ export interface ContractWrappersConfig {
     gasPrice?: BigNumber;
     exchangeContractAddress?: string;
     zrxContractAddress?: string;
-    tokenRegistryContractAddress?: string;
-    tokenTransferProxyContractAddress?: string;
+    erc20ProxyContractAddress?: string;
+    erc721ProxyContractAddress?: string;
 }
 
 /**
