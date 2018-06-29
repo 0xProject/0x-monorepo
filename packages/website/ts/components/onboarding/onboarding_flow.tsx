@@ -68,6 +68,8 @@ export class OnboardingFlow extends React.Component<OnboardingFlowProps> {
     }
     private _renderPopperChildren(props: PopperChildrenProps): React.ReactNode {
         const customStyles = { zIndex: zIndex.aboveOverlay };
+        // On re-render, we want to re-center the popper.
+        props.scheduleUpdate();
         return (
             <div ref={props.ref} style={{ ...props.style, ...customStyles }} data-placement={props.placement}>
                 {this._renderToolTip()}

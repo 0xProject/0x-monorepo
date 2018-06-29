@@ -156,20 +156,6 @@ export class Wallet extends React.Component<WalletProps, WalletState> {
             isHoveringSidebar: false,
         };
     }
-    public componentDidUpdate(prevProps: WalletProps): void {
-        const currentTrackedTokens = this.props.trackedTokens;
-        const differentTrackedTokens = _.difference(currentTrackedTokens, prevProps.trackedTokens);
-        const firstDifferentTrackedToken = _.head(differentTrackedTokens);
-        // check if there is only one different token, and if that token is a member of the current tracked tokens
-        // this means that the token was added, not removed
-        if (
-            !_.isUndefined(firstDifferentTrackedToken) &&
-            _.size(differentTrackedTokens) === 1 &&
-            _.includes(currentTrackedTokens, firstDifferentTrackedToken)
-        ) {
-            document.getElementById(firstDifferentTrackedToken.address).scrollIntoView();
-        }
-    }
     public render(): React.ReactNode {
         const isBlockchainLoaded = this.props.blockchainIsLoaded && this.props.blockchainErr === BlockchainErrs.NoError;
         return (
@@ -332,7 +318,7 @@ export class Wallet extends React.Component<WalletProps, WalletState> {
         const trackedTokensStartingWithEtherToken = trackedTokens.sort(
             firstBy((t: Token) => t.symbol !== constants.ETHER_TOKEN_SYMBOL)
                 .thenBy((t: Token) => t.symbol !== constants.ZRX_TOKEN_SYMBOL)
-                .thenBy('trackedTimestamp'),
+                .thenBy('address'),
         );
         return _.map(trackedTokensStartingWithEtherToken, this._renderTokenRow.bind(this));
     }
@@ -389,7 +375,7 @@ export class Wallet extends React.Component<WalletProps, WalletState> {
         const style = { ...styles.tokenItem, ...additionalStyle };
         const etherToken = this._getEthToken();
         return (
-            <div id={key} key={key} className={`flex flex-column ${className || ''}`}>
+            <div key={key} className={`flex flex-column ${className || ''}`}>
                 <StandardIconRow
                     icon={icon}
                     main={
