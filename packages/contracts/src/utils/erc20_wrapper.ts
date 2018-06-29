@@ -1,3 +1,4 @@
+import { assetProxyUtils } from '@0xproject/order-utils';
 import { BigNumber } from '@0xproject/utils';
 import { Web3Wrapper } from '@0xproject/web3-wrapper';
 import { Provider } from 'ethereum-types';
@@ -18,6 +19,7 @@ export class ERC20Wrapper {
     private _provider: Provider;
     private _dummyTokenContracts: DummyERC20TokenContract[];
     private _proxyContract?: ERC20ProxyContract;
+    private _proxyIdIfExists?: string;
     constructor(provider: Provider, tokenOwnerAddresses: string[], contractOwnerAddress: string) {
         this._dummyTokenContracts = [];
         this._web3Wrapper = new Web3Wrapper(provider);
@@ -25,8 +27,11 @@ export class ERC20Wrapper {
         this._tokenOwnerAddresses = tokenOwnerAddresses;
         this._contractOwnerAddress = contractOwnerAddress;
     }
-    public async deployDummyTokensAsync(): Promise<DummyERC20TokenContract[]> {
-        for (let i = 0; i < constants.NUM_DUMMY_ERC20_TO_DEPLOY; i++) {
+    public async deployDummyTokensAsync(
+        numberToDeploy: number,
+        decimals: BigNumber,
+    ): Promise<DummyERC20TokenContract[]> {
+        for (let i = 0; i < numberToDeploy; i++) {
             this._dummyTokenContracts.push(
                 await DummyERC20TokenContract.deployFrom0xArtifactAsync(
                     artifacts.DummyERC20Token,
@@ -34,7 +39,7 @@ export class ERC20Wrapper {
                     txDefaults,
                     constants.DUMMY_TOKEN_NAME,
                     constants.DUMMY_TOKEN_SYMBOL,
-                    constants.DUMMY_TOKEN_DECIMALS,
+                    decimals,
                     constants.DUMMY_TOKEN_TOTAL_SUPPLY,
                 ),
             );
@@ -47,7 +52,12 @@ export class ERC20Wrapper {
             this._provider,
             txDefaults,
         );
+        this._proxyIdIfExists = await this._proxyContract.getProxyId.callAsync();
         return this._proxyContract;
+    }
+    public getProxyId(): string {
+        this._validateProxyContractExistsOrThrow();
+        return this._proxyIdIfExists as string;
     }
     public async setBalancesAndAllowancesAsync(): Promise<void> {
         this._validateDummyTokenContractsExistOrThrow();
@@ -72,6 +82,36 @@ export class ERC20Wrapper {
                 );
             }
         }
+    }
+    public async getBalanceAsync(userAddress: string, assetData: string): Promise<BigNumber> {
+        const tokenContract = this._getTokenContractFromAssetData(assetData);
+        const balance = new BigNumber(await tokenContract.balanceOf.callAsync(userAddress));
+        return balance;
+    }
+    public async setBalanceAsync(userAddress: string, assetData: string, amount: BigNumber): Promise<void> {
+        const tokenContract = this._getTokenContractFromAssetData(assetData);
+        await this._web3Wrapper.awaitTransactionSuccessAsync(
+            await tokenContract.setBalance.sendTransactionAsync(userAddress, amount, {
+                from: this._contractOwnerAddress,
+            }),
+            constants.AWAIT_TRANSACTION_MINED_MS,
+        );
+    }
+    public async getProxyAllowanceAsync(userAddress: string, assetData: string): Promise<BigNumber> {
+        const tokenContract = this._getTokenContractFromAssetData(assetData);
+        const proxyAddress = (this._proxyContract as ERC20ProxyContract).address;
+        const allowance = new BigNumber(await tokenContract.allowance.callAsync(userAddress, proxyAddress));
+        return allowance;
+    }
+    public async setAllowanceAsync(userAddress: string, assetData: string, amount: BigNumber): Promise<void> {
+        const tokenContract = this._getTokenContractFromAssetData(assetData);
+        const proxyAddress = (this._proxyContract as ERC20ProxyContract).address;
+        await this._web3Wrapper.awaitTransactionSuccessAsync(
+            await tokenContract.approve.sendTransactionAsync(proxyAddress, amount, {
+                from: userAddress,
+            }),
+            constants.AWAIT_TRANSACTION_MINED_MS,
+        );
     }
     public async getBalancesAsync(): Promise<ERC20BalancesByOwner> {
         this._validateDummyTokenContractsExistOrThrow();
@@ -104,6 +144,15 @@ export class ERC20Wrapper {
     public getTokenAddresses(): string[] {
         const tokenAddresses = _.map(this._dummyTokenContracts, dummyTokenContract => dummyTokenContract.address);
         return tokenAddresses;
+    }
+    private _getTokenContractFromAssetData(assetData: string): DummyERC20TokenContract {
+        const erc20ProxyData = assetProxyUtils.decodeERC20AssetData(assetData);
+        const tokenAddress = erc20ProxyData.tokenAddress;
+        const tokenContractIfExists = _.find(this._dummyTokenContracts, c => c.address === tokenAddress);
+        if (_.isUndefined(tokenContractIfExists)) {
+            throw new Error(`Token: ${tokenAddress} was not deployed through ERC20Wrapper`);
+        }
+        return tokenContractIfExists;
     }
     private _validateDummyTokenContractsExistOrThrow(): void {
         if (_.isUndefined(this._dummyTokenContracts)) {

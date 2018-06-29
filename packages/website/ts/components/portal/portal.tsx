@@ -152,9 +152,8 @@ export class Portal extends React.Component<PortalProps, PortalState> {
     }
     public componentDidUpdate(prevProps: PortalProps): void {
         if (!prevProps.blockchainIsLoaded && this.props.blockchainIsLoaded) {
-            const trackedTokenAddresses = _.keys(this.state.trackedTokenStateByAddress);
             // tslint:disable-next-line:no-floating-promises
-            this._fetchBalancesAndAllowancesAsync(trackedTokenAddresses);
+            this._fetchBalancesAndAllowancesAsync(this._getCurrentTrackedTokensAddresses());
         }
     }
     public componentWillReceiveProps(nextProps: PortalProps): void {
@@ -182,17 +181,17 @@ export class Portal extends React.Component<PortalProps, PortalState> {
                 prevPathname: nextProps.location.pathname,
             });
         }
+
+        // If the address changed, but the network did not, we can just refetch the currently tracked tokens.
         if (
-            nextProps.userAddress !== this.props.userAddress ||
-            nextProps.networkId !== this.props.networkId ||
+            (nextProps.userAddress !== this.props.userAddress && nextProps.networkId === this.props.networkId) ||
             nextProps.lastForceTokenStateRefetch !== this.props.lastForceTokenStateRefetch
         ) {
-            const trackedTokenAddresses = _.keys(this.state.trackedTokenStateByAddress);
             // tslint:disable-next-line:no-floating-promises
-            this._fetchBalancesAndAllowancesAsync(trackedTokenAddresses);
+            this._fetchBalancesAndAllowancesAsync(this._getCurrentTrackedTokensAddresses());
         }
 
-        const nextTrackedTokens = this._getTrackedTokens(nextProps.tokenByAddress);
+        const nextTrackedTokens = utils.getTrackedTokens(nextProps.tokenByAddress);
         const trackedTokens = this._getCurrentTrackedTokens();
 
         if (!_.isEqual(nextTrackedTokens, trackedTokens)) {
@@ -200,7 +199,7 @@ export class Portal extends React.Component<PortalProps, PortalState> {
             const newTokenAddresses = _.map(newTokens, token => token.address);
             // Add placeholder entry for this token to the state, since fetching the
             // balance/allowance is asynchronous
-            const trackedTokenStateByAddress = this.state.trackedTokenStateByAddress;
+            const trackedTokenStateByAddress = { ...this.state.trackedTokenStateByAddress };
             for (const tokenAddress of newTokenAddresses) {
                 trackedTokenStateByAddress[tokenAddress] = {
                     balance: new BigNumber(0),
@@ -265,16 +264,16 @@ export class Portal extends React.Component<PortalProps, PortalState> {
                         networkId={this.props.networkId}
                     />
                     <FlashMessage dispatcher={this.props.dispatcher} flashMessage={this.props.flashMessage} />
-                    {this.props.blockchainIsLoaded && (
-                        <LedgerConfigDialog
-                            providerType={this.props.providerType}
-                            networkId={this.props.networkId}
-                            blockchain={this._blockchain}
-                            dispatcher={this.props.dispatcher}
-                            toggleDialogFn={this._onToggleLedgerDialog.bind(this)}
-                            isOpen={this.state.isLedgerDialogOpen}
-                        />
-                    )}
+
+                    <LedgerConfigDialog
+                        providerType={this.props.providerType}
+                        networkId={this.props.networkId}
+                        blockchain={this._blockchain}
+                        dispatcher={this.props.dispatcher}
+                        toggleDialogFn={this._onToggleLedgerDialog.bind(this)}
+                        isOpen={this.state.isLedgerDialogOpen}
+                    />
+
                     <AssetPicker
                         userAddress={this.props.userAddress}
                         networkId={this.props.networkId}
@@ -563,9 +562,9 @@ export class Portal extends React.Component<PortalProps, PortalState> {
         if (this.state.tokenManagementState === TokenManagementState.Remove && !isDefaultTrackedToken) {
             if (token.isRegistered) {
                 // Remove the token from tracked tokens
-                const newToken = {
+                const newToken: Token = {
                     ...token,
-                    isTracked: false,
+                    trackedTimestamp: undefined,
                 };
                 this.props.dispatcher.updateTokenByAddress([newToken]);
             } else {
@@ -608,17 +607,12 @@ export class Portal extends React.Component<PortalProps, PortalState> {
         const isSmallScreen = this.props.screenWidth === ScreenWidths.Sm;
         return isSmallScreen;
     }
-
     private _getCurrentTrackedTokens(): Token[] {
-        return this._getTrackedTokens(this.props.tokenByAddress);
+        return utils.getTrackedTokens(this.props.tokenByAddress);
     }
-
-    private _getTrackedTokens(tokenByAddress: TokenByAddress): Token[] {
-        const allTokens = _.values(tokenByAddress);
-        const trackedTokens = _.filter(allTokens, t => t.isTracked);
-        return trackedTokens;
+    private _getCurrentTrackedTokensAddresses(): string[] {
+        return _.map(this._getCurrentTrackedTokens(), token => token.address);
     }
-
     private _getInitialTrackedTokenStateByAddress(trackedTokens: Token[]): TokenStateByAddress {
         const trackedTokenStateByAddress: TokenStateByAddress = {};
         _.each(trackedTokens, token => {

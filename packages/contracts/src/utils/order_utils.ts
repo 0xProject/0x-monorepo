@@ -5,6 +5,13 @@ import { constants } from './constants';
 import { CancelOrder, MatchOrder } from './types';
 
 export const orderUtils = {
+    getPartialAmount(numerator: BigNumber, denominator: BigNumber, target: BigNumber): BigNumber {
+        const partialAmount = numerator
+            .mul(target)
+            .div(denominator)
+            .floor();
+        return partialAmount;
+    },
     createFill: (signedOrder: SignedOrder, takerAssetFillAmount?: BigNumber) => {
         const fill = {
             order: orderUtils.getOrderWithoutExchangeAddress(signedOrder),
