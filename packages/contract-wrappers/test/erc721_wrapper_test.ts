@@ -166,7 +166,7 @@ describe('ERC721Wrapper', () => {
             );
             expect(isApprovedForAll).to.be.false();
             // set
-            const isApprovedForAll = true;
+            isApprovedForAll = true;
             let txHash = await contractWrappers.erc721Token.setApprovalForAllAsync(
                 tokenAddress,
                 ownerAddress,
