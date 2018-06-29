@@ -137,11 +137,11 @@ class PlainPortalOnboardingFlow extends React.Component<PortalOnboardingFlowProp
                     <SetAllowancesOnboardingStep
                         zrxAllowanceToggle={this._renderZrxAllowanceToggle()}
                         ethAllowanceToggle={this._renderEthAllowanceToggle()}
-                        userHasAllowancesForWethAndZrx={this._userHasAllowancesForWethAndZrx()}
+                        doesUserHaveAllowancesForWethAndZrx={this._doesUserHaveAllowancesForWethAndZrx()}
                     />
                 ),
                 placement: 'right',
-                continueButtonDisplay: this._userHasAllowancesForWethAndZrx() ? 'enabled' : 'disabled',
+                continueButtonDisplay: this._doesUserHaveAllowancesForWethAndZrx() ? 'enabled' : 'disabled',
             },
             {
                 target: '.wallet',
@@ -178,7 +178,7 @@ class PlainPortalOnboardingFlow extends React.Component<PortalOnboardingFlowProp
     private _userHasVisibleWeth(): boolean {
         return this._getWethBalance() > new BigNumber(0);
     }
-    private _userHasAllowancesForWethAndZrx(): boolean {
+    private _doesUserHaveAllowancesForWethAndZrx(): boolean {
         const ethToken = utils.getEthToken(this.props.tokenByAddress);
         const zrxToken = utils.getZrxToken(this.props.tokenByAddress);
         if (ethToken && zrxToken) {
