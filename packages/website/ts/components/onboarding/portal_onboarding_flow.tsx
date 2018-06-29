@@ -46,7 +46,7 @@ class PlainPortalOnboardingFlow extends React.Component<PortalOnboardingFlowProp
     public componentDidMount(): void {
         this._adjustStepIfShould();
         // Wait until the step is adjusted to decide whether we should show onboarding.
-        setTimeout(this._autoStartOnboardingIfShould.bind(this), 250);
+        setTimeout(this._autoStartOnboardingIfShould.bind(this), 1000);
         // If there is a route change, just close onboarding.
         this._unlisten = this.props.history.listen(() => this.props.updateIsRunning(false));
     }
