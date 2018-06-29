@@ -154,12 +154,6 @@ export class Portal extends React.Component<PortalProps, PortalState> {
             // tslint:disable-next-line:no-floating-promises
             this._fetchBalancesAndAllowancesAsync(this._getCurrentTrackedTokensAddresses());
         }
-        if (!prevProps.isPortalOnboardingShowing && this.props.isPortalOnboardingShowing) {
-            // On mobile, make sure the wallet is completely visible.
-            if (this.props.screenWidth === ScreenWidths.Sm) {
-                document.querySelector('.wallet').scrollIntoView();
-            }
-        }
     }
     public componentWillReceiveProps(nextProps: PortalProps): void {
         if (nextProps.networkId !== this.state.prevNetworkId) {
