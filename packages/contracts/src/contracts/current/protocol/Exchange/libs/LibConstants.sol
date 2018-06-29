@@ -23,5 +23,6 @@ contract LibConstants {
     // Asset data for ZRX token. Used for fee transfers.
     // ERC20 proxy id is 0xf47261b0.
     // Kovan ZRX address is 0x6ff6c0ff1d68b964901f986d4c9fa3ac68346570.
-    bytes constant ZRX_ASSET_DATA = "\xf4\x72\x61\b0\x6f\xf6\xc0\xff\x1d\x68\xb9\x64\x90\x1f\x98\x6d\x4c\x9f\xa3\xac\x68\x34\x65\x70";
+    // If we ABI encode these, we get 0xf47261b00000000000000000000000006ff6c0ff1d68b964901f986d4c9fa3ac68346570
+    bytes constant public ZRX_ASSET_DATA = "\xf4\x72\x61\xb0\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x6f\xf6\xc0\xff\x1d\x68\xb9\x64\x90\x1f\x98\x6d\x4c\x9f\xa3\xac\x68\x34\x65\x70";
 }
