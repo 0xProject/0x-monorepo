@@ -44,8 +44,9 @@ export interface PortalOnboardingFlowProps extends RouteComponentProps<any> {
 class PlainPortalOnboardingFlow extends React.Component<PortalOnboardingFlowProps> {
     private _unlisten: () => void;
     public componentDidMount(): void {
-        this._autoStartOnboardingIfShould();
         this._adjustStepIfShould();
+        // Wait until the step is adjusted to decide whether we should show onboarding.
+        setTimeout(this._autoStartOnboardingIfShould.bind(this), 250);
         // If there is a route change, just close onboarding.
         this._unlisten = this.props.history.listen(() => this.props.updateIsRunning(false));
     }
