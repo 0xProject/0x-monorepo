@@ -74,7 +74,7 @@ export async function expectRevertReasonOrAlwaysFailingTransactionAsync(
             let txReceiptStatus: string | 0 | 1 | null;
             if (typeof result === 'string') {
                 // Result is a txHash. We need to make a web3 call to get the receipt.
-                const txReceipt = await web3Wrapper.getTransactionReceiptAsync(result);
+                const txReceipt = await web3Wrapper.awaitTransactionMinedAsync(result);
                 txReceiptStatus = txReceipt.status;
             } else if ('status' in result) {
                 // Result is a TransactionReceiptWithDecodedLogs or TransactionReceipt
