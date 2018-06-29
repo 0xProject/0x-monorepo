@@ -9,7 +9,6 @@ import { runV1MigrationsAsync } from './1.0.0/migration';
 import { runV2TestnetMigrationsAsync } from './2.0.0-beta-testnet/migration';
 import { runV2MigrationsAsync } from './2.0.0/migration';
 
-import { constants } from './utils/constants';
 import { providerFactory } from './utils/provider_factory';
 
 enum ContractVersions {
@@ -20,29 +19,37 @@ enum ContractVersions {
 const args = yargs.argv;
 
 (async () => {
-    const providerConfigs = { shouldUseInProcessGanache: false };
-    const provider: Provider = web3Factory.getRpcProvider(providerConfigs);
-    const txDefaults = {
-        from: devConstants.TESTRPC_FIRST_ADDRESS,
-    };
     const contractsVersion = args.contractsVersion;
     const artifactsDir = `artifacts/${contractsVersion}`;
+    let providerConfigs;
+    let provider: Provider;
+    let txDefaults;
     switch (contractsVersion) {
         case ContractVersions.V1:
+            providerConfigs = { shouldUseInProcessGanache: false };
+            provider = web3Factory.getRpcProvider(providerConfigs);
+            txDefaults = {
+                from: devConstants.TESTRPC_FIRST_ADDRESS,
+            };
             await runV1MigrationsAsync(provider, artifactsDir, txDefaults);
             break;
         case ContractVersions.V2:
+            providerConfigs = { shouldUseInProcessGanache: false };
+            provider = web3Factory.getRpcProvider(providerConfigs);
+            txDefaults = {
+                from: devConstants.TESTRPC_FIRST_ADDRESS,
+            };
             await runV2MigrationsAsync(provider, artifactsDir, txDefaults);
             break;
         case ContractVersions.V2Testnet:
-            const ledgerProvider = await providerFactory.getLedgerProviderAsync();
-            const web3Wrapper = new Web3Wrapper(ledgerProvider);
+            provider = await providerFactory.getLedgerProviderAsync();
+            const web3Wrapper = new Web3Wrapper(provider);
             const accounts = await web3Wrapper.getAvailableAddressesAsync();
-            const testnetTxDefaults = {
+            txDefaults = {
                 from: accounts[0],
                 gas: devConstants.GAS_LIMIT,
             };
-            await runV2TestnetMigrationsAsync(ledgerProvider, artifactsDir, testnetTxDefaults);
+            await runV2TestnetMigrationsAsync(provider, artifactsDir, txDefaults);
             break;
         default:
             throw new Error(`Unsupported contract version: ${contractsVersion}`);

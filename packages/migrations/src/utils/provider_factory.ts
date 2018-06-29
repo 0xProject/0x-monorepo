@@ -1,11 +1,9 @@
-import { LedgerSubprovider } from '@0xproject/subproviders';
+import { LedgerEthereumClient, LedgerSubprovider } from '@0xproject/subproviders';
 import Eth from '@ledgerhq/hw-app-eth';
 import TransportNodeHid from '@ledgerhq/hw-transport-node-hid';
 import { Provider } from 'ethereum-types';
 import ProviderEngine = require('web3-provider-engine');
 import RpcSubprovider = require('web3-provider-engine/subproviders/rpc');
-
-import { LedgerEthereumClient } from '../types';
 
 import { constants } from './constants';
 
