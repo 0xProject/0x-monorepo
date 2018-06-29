@@ -24,7 +24,7 @@ export const NullTokenRow: React.StatelessComponent<NullTokenRowProps> = ({ icon
             <Container marginTop="3px">
                 <PlaceHolder hideChildren={true} fillColor={fillColor}>
                     <Text fontSize="14px" fontColor={colors.darkGrey} lineHeight="1em">
-                        0.00
+                        $0.00
                     </Text>
                 </PlaceHolder>
             </Container>
