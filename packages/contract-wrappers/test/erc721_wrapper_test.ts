@@ -4,7 +4,6 @@ import { DoneCallback } from '@0xproject/types';
 import { BigNumber } from '@0xproject/utils';
 import * as chai from 'chai';
 import { Provider } from 'ethereum-types';
-import 'make-promises-safe';
 import 'mocha';
 import Web3ProviderEngine = require('web3-provider-engine');
 
