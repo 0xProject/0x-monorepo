@@ -179,7 +179,7 @@ describe('ERC721Wrapper', () => {
                 operatorAddress,
             );
             expect(isApprovedForAll).to.be.true();
-            // usnset
+            // unset
             txHash = await contractWrappers.erc721Token.setApprovalForAllAsync(
                 tokenAddress,
                 ownerAddress,
