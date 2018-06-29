@@ -411,6 +411,7 @@ export class ERC721TokenWrapper extends ContractWrapper {
      * @param   subscriptionToken Subscription token returned by `subscribe()`
      */
     public unsubscribe(subscriptionToken: string): void {
+        assert.isValidSubscriptionToken('subscriptionToken', subscriptionToken);
         this._unsubscribe(subscriptionToken);
     }
     /**

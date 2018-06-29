@@ -18,6 +18,11 @@ export const assert = {
         const isValid = await isValidSignatureAsync(provider, orderHash, signature, signerAddress);
         this.assert(isValid, `Expected order with hash '${orderHash}' to have a valid signature`);
     },
+    isValidSubscriptionToken(variableName: string, subscriptionToken: string): void {
+        const uuidRegex = new RegExp('^[a-fA-F0-9]{8}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{12}$');
+        const isValid = uuidRegex.test(subscriptionToken);
+        this.assert(isValid, `Expected ${variableName} to be a valid subscription token`);
+    },
     async isSenderAddressAsync(
         variableName: string,
         senderAddressHex: string,
