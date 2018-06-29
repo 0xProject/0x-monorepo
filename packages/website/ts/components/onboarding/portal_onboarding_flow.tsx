@@ -227,10 +227,6 @@ class PlainPortalOnboardingFlow extends React.Component<PortalOnboardingFlowProp
             const networkName = sharedConstants.NETWORK_NAME_BY_ID[this.props.networkId];
             analytics.logEvent('Portal', 'Onboarding Started - Automatic', networkName, this.props.stepIndex);
             this.props.updateIsRunning(true);
-            // On mobile, make sure the wallet is completely visible.
-            if (utils.isMobile(this.props.screenWidth)) {
-                document.querySelector('.wallet').scrollIntoView();
-            }
         }
     }
     private _updateOnboardingStep(stepIndex: number): void {
