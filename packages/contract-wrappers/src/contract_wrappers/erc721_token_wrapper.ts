@@ -442,6 +442,8 @@ export class ERC721TokenWrapper extends ContractWrapper {
         );
         return logs;
     }
+    // HACK: We don't want this method to be visible to the other units within that package but not to the end user.
+    // TS doesn't give that possibility and therefore we make it private and access it over an any cast. Because of that tslint sees it as unused.
     // tslint:disable-next-line:no-unused-variable
     private _invalidateContractInstances(): void {
         this.unsubscribeAll();
