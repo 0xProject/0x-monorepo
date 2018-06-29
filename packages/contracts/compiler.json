@@ -29,6 +29,7 @@
         "Exchange",
         "ExchangeWrapper",
         "IAssetData",
+        "IAssetProxy",
         "IValidator",
         "IWallet",
         "MixinAuthorizable",
