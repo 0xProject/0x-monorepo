@@ -746,9 +746,9 @@
 	},
 	"networks": {
 		"42": {
-			"address": "0x43c20f5b889f9a24ed9bc134daaf9a4a87cc5238",
+			"address": "0x02f13c68a06477eee87fdcf3e1d80f9c45f254a3",
 			"links": {},
-			"constructorArgs": "[[\"0x9df8137872ac09a8fee71d0da5c7539923fb9bf0\",\"0xcf34d44db312d188789f43a63d11cf2bebb4da15\",\"0x73fd50f2a6beac9cdac9fe87ef68a18edc415831\"],[\"0xeb89396a921a931fbb5157109b1c8b696a36d7db\",\"0x83989bb5bda10bf67b0529117fab5f26487d0ef2\"],\"1\",\"0\"]"
+			"constructorArgs": "[[\"0x9df8137872ac09a8fee71d0da5c7539923fb9bf0\",\"0xcf34d44db312d188789f43a63d11cf2bebb4da15\",\"0x73fd50f2a6beac9cdac9fe87ef68a18edc415831\"],[\"0x5bc0de240e1c1b211538ca077a82bb39f4179087\",\"0x6b17ec0b94810e58eac961e501dba27ff35da0fb\"],\"1\",\"0\"]"
 		}
 	}
 }

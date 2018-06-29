@@ -279,7 +279,7 @@
 	},
 	"networks": {
 		"42": {
-			"address": "0xeb89396a921a931fbb5157109b1c8b696a36d7db",
+			"address": "0x5bc0de240e1c1b211538ca077a82bb39f4179087",
 			"links": {},
 			"constructorArgs": "[]"
 		}
