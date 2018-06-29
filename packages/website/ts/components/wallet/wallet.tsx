@@ -1,9 +1,4 @@
-import {
-    constants as sharedConstants,
-    EtherscanLinkSuffixes,
-    Styles,
-    utils as sharedUtils,
-} from '@0xproject/react-shared';
+import { constants as sharedConstants, EtherscanLinkSuffixes, utils as sharedUtils } from '@0xproject/react-shared';
 import { BigNumber, errorUtils } from '@0xproject/utils';
 import { Web3Wrapper } from '@0xproject/web3-wrapper';
 import * as _ from 'lodash';
@@ -28,6 +23,9 @@ import { Island } from 'ts/components/ui/island';
 import { Text } from 'ts/components/ui/text';
 import { TokenIcon } from 'ts/components/ui/token_icon';
 import { BodyOverlay } from 'ts/components/wallet/body_overlay';
+import { NullTokenRow } from 'ts/components/wallet/null_token_row';
+import { PlaceHolder } from 'ts/components/wallet/placeholder';
+import { StandardIconRow } from 'ts/components/wallet/standard_icon_row';
 import { WrapEtherItem } from 'ts/components/wallet/wrap_ether_item';
 import { AllowanceToggle } from 'ts/containers/inputs/allowance_toggle';
 import { Dispatcher } from 'ts/redux/dispatcher';
@@ -48,7 +46,6 @@ import {
 import { analytics } from 'ts/utils/analytics';
 import { constants } from 'ts/utils/constants';
 import { utils } from 'ts/utils/utils';
-import { styles as walletItemStyles } from 'ts/utils/wallet_item_styles';
 
 export interface WalletProps {
     userAddress: string;
@@ -87,34 +84,6 @@ interface AccessoryItemConfig {
     wrappedEtherDirection?: Side;
     allowanceToggleConfig?: AllowanceToggleConfig;
 }
-
-const styles: Styles = {
-    borderedItem: {
-        borderBottomColor: colors.walletBorder,
-        borderBottomStyle: 'solid',
-        borderWidth: 1,
-    },
-    tokenItem: {
-        backgroundColor: colors.walletDefaultItemBackground,
-        minHeight: 85,
-    },
-    headerItem: {
-        minHeight: 60,
-    },
-    amountLabel: {
-        fontWeight: 'bold',
-        color: colors.black,
-    },
-    valueLabel: {
-        color: colors.darkGrey,
-        fontSize: 14,
-    },
-    bodyInnerDiv: {
-        overflow: 'auto',
-        WebkitOverflowScrolling: 'touch',
-        position: 'relative',
-    },
-};
 
 const ETHER_ICON_PATH = '/images/ether.png';
 const ICON_DIMENSION = 28;
@@ -177,7 +146,7 @@ export class Wallet extends React.Component<WalletProps, WalletState> {
         return (
             <div key={BODY_ITEM_KEY} className="flex flex-column" style={bodyStyle}>
                 {_.map(loadingRowsRange, index => {
-                    return <NullTokenRow key={index} />;
+                    return <NullTokenRow key={index} iconDimension={ICON_DIMENSION} fillColor={PLACEHOLDER_COLOR} />;
                 })}
                 <Container
                     className="flex items-center"
@@ -227,7 +196,8 @@ export class Wallet extends React.Component<WalletProps, WalletState> {
                     // https://github.com/palantir/tslint-react/issues/140
                     // tslint:disable-next-line:jsx-curly-spacing
                 }
-                style={{ ...styles.borderedItem, ...styles.headerItem }}
+                minHeight="60px"
+                backgroundColor={colors.white}
             />
         );
     }
@@ -247,7 +217,8 @@ export class Wallet extends React.Component<WalletProps, WalletState> {
                 <StandardIconRow
                     icon={<Identicon address={userAddress} diameter={ICON_DIMENSION} />}
                     main={main}
-                    style={{ ...styles.borderedItem, ...styles.headerItem }}
+                    minHeight="60px"
+                    backgroundColor={colors.white}
                 />
             </Link>
         );
@@ -268,7 +239,9 @@ export class Wallet extends React.Component<WalletProps, WalletState> {
     }
     private _getBodyStyle(): React.CSSProperties {
         return {
-            ...styles.bodyInnerDiv,
+            overflow: 'auto',
+            WebkitOverflowScrolling: 'touch',
+            position: 'relative',
             overflowY: this.state.isHoveringSidebar ? 'scroll' : 'hidden',
             marginRight: this.state.isHoveringSidebar ? 0 : 4,
             // TODO: make this completely responsive
@@ -306,7 +279,7 @@ export class Wallet extends React.Component<WalletProps, WalletState> {
             wrappedEtherDirection: Side.Deposit,
         };
         const key = ETHER_ITEM_KEY;
-        return this._renderBalanceRow(key, icon, primaryText, secondaryText, accessoryItemConfig, false, 'eth-row');
+        return this._renderBalanceRow(key, icon, primaryText, secondaryText, accessoryItemConfig, 'eth-row');
     }
     private _renderTokenRows(): React.ReactNode {
         const trackedTokens = this.props.trackedTokens;
@@ -352,7 +325,6 @@ export class Wallet extends React.Component<WalletProps, WalletState> {
             primaryText,
             secondaryText,
             accessoryItemConfig,
-            isLastRow,
             isWeth ? 'weth-row' : undefined,
         );
     }
@@ -362,20 +334,12 @@ export class Wallet extends React.Component<WalletProps, WalletState> {
         primaryText: React.ReactNode,
         secondaryText: React.ReactNode,
         accessoryItemConfig: AccessoryItemConfig,
-        isLastRow: boolean,
         className?: string,
     ): React.ReactNode {
         const shouldShowWrapEtherItem =
             !_.isUndefined(this.state.wrappedEtherDirection) &&
             this.state.wrappedEtherDirection === accessoryItemConfig.wrappedEtherDirection &&
             !_.isUndefined(this.props.userEtherBalanceInWei);
-        let additionalStyle;
-        if (shouldShowWrapEtherItem) {
-            additionalStyle = walletItemStyles.focusedItem;
-        } else if (!isLastRow) {
-            additionalStyle = styles.borderedItem;
-        }
-        const style = { ...styles.tokenItem, ...additionalStyle };
         const etherToken = this._getEthToken();
         return (
             <div id={key} key={key} className={`flex flex-column ${className || ''}`}>
@@ -388,7 +352,7 @@ export class Wallet extends React.Component<WalletProps, WalletState> {
                         </div>
                     }
                     accessory={this._renderAccessoryItems(accessoryItemConfig)}
-                    style={style}
+                    backgroundColor={shouldShowWrapEtherItem ? colors.walletFocusedItemBackground : undefined}
                 />
                 {shouldShowWrapEtherItem && (
                     <WrapEtherItem
@@ -447,13 +411,19 @@ export class Wallet extends React.Component<WalletProps, WalletState> {
     ): React.ReactNode {
         if (isLoading) {
             return (
-                <PlaceHolder hideChildren={isLoading}>
-                    <div style={styles.amountLabel}>0.00 XXX</div>
+                <PlaceHolder hideChildren={isLoading} fillColor={PLACEHOLDER_COLOR}>
+                    <Text fontSize="16px" fontWeight="bold" lineHeight="1em">
+                        0.00 XXX
+                    </Text>
                 </PlaceHolder>
             );
         } else {
             const result = utils.getFormattedAmount(amount, decimals, symbol);
-            return <div style={styles.amountLabel}>{result}</div>;
+            return (
+                <Text fontSize="16px" fontWeight="bold" lineHeight="1em">
+                    {result}
+                </Text>
+            );
         }
     }
     private _renderValue(
@@ -476,8 +446,10 @@ export class Wallet extends React.Component<WalletProps, WalletState> {
             result = '$0.00';
         }
         return (
-            <PlaceHolder hideChildren={isLoading}>
-                <div style={styles.valueLabel}>{result}</div>
+            <PlaceHolder hideChildren={isLoading} fillColor={PLACEHOLDER_COLOR}>
+                <Text fontSize="14px" fontColor={colors.darkGrey} lineHeight="1em">
+                    {result}
+                </Text>
             </PlaceHolder>
         );
     }
@@ -543,70 +515,4 @@ export class Wallet extends React.Component<WalletProps, WalletState> {
     }
 }
 
-interface StandardIconRowProps {
-    icon: React.ReactNode;
-    main: React.ReactNode;
-    accessory?: React.ReactNode;
-    style?: React.CSSProperties;
-}
-const StandardIconRow = (props: StandardIconRowProps) => {
-    return (
-        <div className="flex items-center" style={props.style}>
-            <div className="flex items-center px2">{props.icon}</div>
-            <div className="flex-none pr2">{props.main}</div>
-            <div className="flex-auto" />
-            <div>{props.accessory}</div>
-        </div>
-    );
-};
-interface PlaceHolderProps {
-    hideChildren: React.ReactNode;
-    children?: React.ReactNode;
-}
-const PlaceHolder = (props: PlaceHolderProps) => {
-    const rootBackgroundColor = props.hideChildren ? PLACEHOLDER_COLOR : 'transparent';
-    const rootStyle: React.CSSProperties = {
-        backgroundColor: rootBackgroundColor,
-        display: 'inline-block',
-        borderRadius: 2,
-    };
-    const childrenVisibility = props.hideChildren ? 'hidden' : 'visible';
-    const childrenStyle: React.CSSProperties = { visibility: childrenVisibility };
-    return (
-        <div style={rootStyle}>
-            <div style={childrenStyle}>{props.children}</div>
-        </div>
-    );
-};
-
-const NullTokenRow = () => {
-    const icon = <Circle diameter={ICON_DIMENSION} fillColor={PLACEHOLDER_COLOR} />;
-    const main = (
-        <div className="flex flex-column">
-            <PlaceHolder hideChildren={true}>
-                <div style={styles.amountLabel}>0.00 XXX</div>
-            </PlaceHolder>
-            <Container marginTop="3px">
-                <PlaceHolder hideChildren={true}>
-                    <div style={styles.valueLabel}>0.00</div>
-                </PlaceHolder>
-            </Container>
-        </div>
-    );
-    const accessory = (
-        <Container marginRight="12px">
-            <PlaceHolder hideChildren={true}>
-                <Container width="20px" height="14px" />
-            </PlaceHolder>
-        </Container>
-    );
-    return (
-        <StandardIconRow
-            icon={icon}
-            main={main}
-            accessory={accessory}
-            style={{ ...styles.tokenItem, ...styles.borderedItem }}
-        />
-    );
-};
 // tslint:disable:max-file-line-count
