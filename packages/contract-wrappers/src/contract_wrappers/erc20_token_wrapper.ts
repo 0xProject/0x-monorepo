@@ -5,6 +5,8 @@ import { ContractAbi, LogWithDecodedArgs } from 'ethereum-types';
 import * as _ from 'lodash';
 
 import { artifacts } from '../artifacts';
+import { methodOptsSchema } from '../schemas/method_opts_schema';
+import { txOptsSchema } from '../schemas/tx_opts_schema';
 import {
     BlockRange,
     ContractWrappersError,
@@ -49,6 +51,9 @@ export class ERC20TokenWrapper extends ContractWrapper {
     ): Promise<BigNumber> {
         assert.isETHAddressHex('ownerAddress', ownerAddress);
         assert.isETHAddressHex('tokenAddress', tokenAddress);
+        if (!_.isUndefined(methodOpts)) {
+            assert.doesConformToSchema('methodOpts', methodOpts, methodOptsSchema);
+        }
         const normalizedTokenAddress = tokenAddress.toLowerCase();
         const normalizedOwnerAddress = ownerAddress.toLowerCase();
 
@@ -81,6 +86,9 @@ export class ERC20TokenWrapper extends ContractWrapper {
         assert.isETHAddressHex('spenderAddress', spenderAddress);
         assert.isETHAddressHex('tokenAddress', tokenAddress);
         await assert.isSenderAddressAsync('ownerAddress', ownerAddress, this._web3Wrapper);
+        if (!_.isUndefined(txOpts)) {
+            assert.doesConformToSchema('txOpts', txOpts, txOptsSchema);
+        }
         const normalizedTokenAddress = tokenAddress.toLowerCase();
         const normalizedSpenderAddress = spenderAddress.toLowerCase();
         const normalizedOwnerAddress = ownerAddress.toLowerCase();
@@ -112,16 +120,10 @@ export class ERC20TokenWrapper extends ContractWrapper {
         spenderAddress: string,
         txOpts: TransactionOpts = {},
     ): Promise<string> {
-        assert.isETHAddressHex('ownerAddress', ownerAddress);
-        assert.isETHAddressHex('tokenAddress', tokenAddress);
-        assert.isETHAddressHex('spenderAddress', spenderAddress);
-        const normalizedTokenAddress = tokenAddress.toLowerCase();
-        const normalizedOwnerAddress = ownerAddress.toLowerCase();
-        const normalizedSpenderAddress = spenderAddress.toLowerCase();
         const txHash = await this.setAllowanceAsync(
-            normalizedTokenAddress,
-            normalizedOwnerAddress,
-            normalizedSpenderAddress,
+            tokenAddress,
+            ownerAddress,
+            spenderAddress,
             this.UNLIMITED_ALLOWANCE_IN_BASE_UNITS,
             txOpts,
         );
@@ -144,6 +146,9 @@ export class ERC20TokenWrapper extends ContractWrapper {
         assert.isETHAddressHex('ownerAddress', ownerAddress);
         assert.isETHAddressHex('tokenAddress', tokenAddress);
         assert.isETHAddressHex('spenderAddress', spenderAddress);
+        if (!_.isUndefined(methodOpts)) {
+            assert.doesConformToSchema('methodOpts', methodOpts, methodOptsSchema);
+        }
         const normalizedTokenAddress = tokenAddress.toLowerCase();
         const normalizedOwnerAddress = ownerAddress.toLowerCase();
         const normalizedSpenderAddress = spenderAddress.toLowerCase();
@@ -172,18 +177,8 @@ export class ERC20TokenWrapper extends ContractWrapper {
         ownerAddress: string,
         methodOpts?: MethodOpts,
     ): Promise<BigNumber> {
-        assert.isETHAddressHex('ownerAddress', ownerAddress);
-        assert.isETHAddressHex('tokenAddress', tokenAddress);
-        const normalizedTokenAddress = tokenAddress.toLowerCase();
-        const normalizedOwnerAddress = ownerAddress.toLowerCase();
-
         const proxyAddress = this._erc20ProxyWrapper.getContractAddress();
-        const allowanceInBaseUnits = await this.getAllowanceAsync(
-            normalizedTokenAddress,
-            normalizedOwnerAddress,
-            proxyAddress,
-            methodOpts,
-        );
+        const allowanceInBaseUnits = await this.getAllowanceAsync(tokenAddress, ownerAddress, proxyAddress, methodOpts);
         return allowanceInBaseUnits;
     }
     /**
@@ -202,16 +197,10 @@ export class ERC20TokenWrapper extends ContractWrapper {
         amountInBaseUnits: BigNumber,
         txOpts: TransactionOpts = {},
     ): Promise<string> {
-        assert.isETHAddressHex('ownerAddress', ownerAddress);
-        assert.isETHAddressHex('tokenAddress', tokenAddress);
-        const normalizedTokenAddress = tokenAddress.toLowerCase();
-        const normalizedOwnerAddress = ownerAddress.toLowerCase();
-        assert.isValidBaseUnitAmount('amountInBaseUnits', amountInBaseUnits);
-
         const proxyAddress = this._erc20ProxyWrapper.getContractAddress();
         const txHash = await this.setAllowanceAsync(
-            normalizedTokenAddress,
-            normalizedOwnerAddress,
+            tokenAddress,
+            ownerAddress,
             proxyAddress,
             amountInBaseUnits,
             txOpts,
@@ -234,13 +223,9 @@ export class ERC20TokenWrapper extends ContractWrapper {
         ownerAddress: string,
         txOpts: TransactionOpts = {},
     ): Promise<string> {
-        assert.isETHAddressHex('ownerAddress', ownerAddress);
-        assert.isETHAddressHex('tokenAddress', tokenAddress);
-        const normalizedTokenAddress = tokenAddress.toLowerCase();
-        const normalizedOwnerAddress = ownerAddress.toLowerCase();
         const txHash = await this.setProxyAllowanceAsync(
-            normalizedTokenAddress,
-            normalizedOwnerAddress,
+            tokenAddress,
+            ownerAddress,
             this.UNLIMITED_ALLOWANCE_IN_BASE_UNITS,
             txOpts,
         );
@@ -265,6 +250,9 @@ export class ERC20TokenWrapper extends ContractWrapper {
         assert.isETHAddressHex('tokenAddress', tokenAddress);
         assert.isETHAddressHex('toAddress', toAddress);
         await assert.isSenderAddressAsync('fromAddress', fromAddress, this._web3Wrapper);
+        if (!_.isUndefined(txOpts)) {
+            assert.doesConformToSchema('txOpts', txOpts, txOptsSchema);
+        }
         const normalizedTokenAddress = tokenAddress.toLowerCase();
         const normalizedFromAddress = fromAddress.toLowerCase();
         const normalizedToAddress = toAddress.toLowerCase();
@@ -310,6 +298,9 @@ export class ERC20TokenWrapper extends ContractWrapper {
         assert.isETHAddressHex('fromAddress', fromAddress);
         assert.isETHAddressHex('tokenAddress', tokenAddress);
         await assert.isSenderAddressAsync('senderAddress', senderAddress, this._web3Wrapper);
+        if (!_.isUndefined(txOpts)) {
+            assert.doesConformToSchema('txOpts', txOpts, txOptsSchema);
+        }
         const normalizedToAddress = toAddress.toLowerCase();
         const normalizedFromAddress = fromAddress.toLowerCase();
         const normalizedTokenAddress = tokenAddress.toLowerCase();
