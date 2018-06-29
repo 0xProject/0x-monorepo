@@ -12,6 +12,8 @@ import { ContractWrapper } from './contract_wrapper';
 import { ERC20TokenWrapper } from './erc20_token_wrapper';
 import { WETH9Contract, WETH9EventArgs, WETH9Events } from './generated/weth9';
 
+const removeUndefinedProperties = _.pickBy;
+
 /**
  * This class includes all the functionality related to interacting with a wrapped Ether ERC20 token contract.
  * The caller can convert ETH into the equivalent number of wrapped ETH ERC20 tokens and back.
@@ -52,12 +54,14 @@ export class EtherTokenWrapper extends ContractWrapper {
         assert.assert(ethBalanceInWei.gte(amountInWei), ContractWrappersError.InsufficientEthBalanceForDeposit);
 
         const wethContract = await this._getEtherTokenContractAsync(normalizedEtherTokenAddress);
-        const txHash = await wethContract.deposit.sendTransactionAsync({
-            from: normalizedDepositorAddress,
-            value: amountInWei,
-            gas: txOpts.gasLimit,
-            gasPrice: txOpts.gasPrice,
-        });
+        const txHash = await wethContract.deposit.sendTransactionAsync(
+            removeUndefinedProperties({
+                from: normalizedDepositorAddress,
+                value: amountInWei,
+                gas: txOpts.gasLimit,
+                gasPrice: txOpts.gasPrice,
+            }),
+        );
         return txHash;
     }
     /**
@@ -91,11 +95,14 @@ export class EtherTokenWrapper extends ContractWrapper {
         );
 
         const wethContract = await this._getEtherTokenContractAsync(normalizedEtherTokenAddress);
-        const txHash = await wethContract.withdraw.sendTransactionAsync(amountInWei, {
-            from: normalizedWithdrawerAddress,
-            gas: txOpts.gasLimit,
-            gasPrice: txOpts.gasPrice,
-        });
+        const txHash = await wethContract.withdraw.sendTransactionAsync(
+            amountInWei,
+            removeUndefinedProperties({
+                from: normalizedWithdrawerAddress,
+                gas: txOpts.gasLimit,
+                gasPrice: txOpts.gasPrice,
+            }),
+        );
         return txHash;
     }
     /**
