@@ -564,4 +564,11 @@ export enum BrowserType {
     Opera = 'Opera',
     Other = 'Other',
 }
+
+export enum AccountState {
+    Disconnected = 'Disconnected',
+    Ready = 'Ready',
+    Loading = 'Loading',
+    Locked = 'Locked',
+}
 // tslint:disable:max-file-line-count

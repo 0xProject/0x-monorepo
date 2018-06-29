@@ -1,36 +1,31 @@
-import {
-    constants as sharedConstants,
-    EtherscanLinkSuffixes,
-    Styles,
-    utils as sharedUtils,
-} from '@0xproject/react-shared';
+import { constants as sharedConstants, EtherscanLinkSuffixes, utils as sharedUtils } from '@0xproject/react-shared';
 import { BigNumber, errorUtils } from '@0xproject/utils';
 import { Web3Wrapper } from '@0xproject/web3-wrapper';
 import * as _ from 'lodash';
-import CircularProgress from 'material-ui/CircularProgress';
-import FloatingActionButton from 'material-ui/FloatingActionButton';
 
-import { ListItem } from 'material-ui/List';
 import ActionAccountBalanceWallet from 'material-ui/svg-icons/action/account-balance-wallet';
-import ContentAdd from 'material-ui/svg-icons/content/add';
-import ContentRemove from 'material-ui/svg-icons/content/remove';
 import * as React from 'react';
 import { Link } from 'react-router-dom';
 import firstBy = require('thenby');
 
 import { Blockchain } from 'ts/blockchain';
+import { AccountConnection } from 'ts/components/ui/account_connection';
 import { Container } from 'ts/components/ui/container';
 import { IconButton } from 'ts/components/ui/icon_button';
 import { Identicon } from 'ts/components/ui/identicon';
 import { Island } from 'ts/components/ui/island';
+import { Text } from 'ts/components/ui/text';
 import { TokenIcon } from 'ts/components/ui/token_icon';
-import { WalletDisconnectedItem } from 'ts/components/wallet/wallet_disconnected_item';
+import { BodyOverlay } from 'ts/components/wallet/body_overlay';
+import { NullTokenRow } from 'ts/components/wallet/null_token_row';
+import { PlaceHolder } from 'ts/components/wallet/placeholder';
+import { StandardIconRow } from 'ts/components/wallet/standard_icon_row';
 import { WrapEtherItem } from 'ts/components/wallet/wrap_ether_item';
 import { AllowanceToggle } from 'ts/containers/inputs/allowance_toggle';
 import { Dispatcher } from 'ts/redux/dispatcher';
 import { colors } from 'ts/style/colors';
-import { styled } from 'ts/style/theme';
 import {
+    AccountState,
     BlockchainErrs,
     ProviderType,
     ScreenWidths,
@@ -44,7 +39,6 @@ import {
 import { analytics } from 'ts/utils/analytics';
 import { constants } from 'ts/utils/constants';
 import { utils } from 'ts/utils/utils';
-import { styles as walletItemStyles } from 'ts/utils/wallet_item_styles';
 
 export interface WalletProps {
     userAddress: string;
@@ -84,66 +78,16 @@ interface AccessoryItemConfig {
     allowanceToggleConfig?: AllowanceToggleConfig;
 }
 
-const styles: Styles = {
-    root: {
-        width: '100%',
-    },
-    footerItemInnerDiv: {
-        paddingLeft: 24,
-        borderTopColor: colors.walletBorder,
-        borderTopStyle: 'solid',
-        borderWidth: 1,
-    },
-    borderedItem: {
-        borderBottomColor: colors.walletBorder,
-        borderBottomStyle: 'solid',
-        borderWidth: 1,
-    },
-    tokenItem: {
-        backgroundColor: colors.walletDefaultItemBackground,
-        minHeight: 85,
-    },
-    amountLabel: {
-        fontWeight: 'bold',
-        color: colors.black,
-    },
-    valueLabel: {
-        color: colors.grey,
-        fontSize: 14,
-    },
-    paddedItem: {
-        paddingTop: 8,
-        paddingBottom: 8,
-    },
-    bodyInnerDiv: {
-        overflow: 'auto',
-        WebkitOverflowScrolling: 'touch',
-    },
-    manageYourWalletText: {
-        color: colors.mediumBlue,
-        fontWeight: 'bold',
-    },
-    loadingBody: {
-        height: 381,
-    },
-};
-
 const ETHER_ICON_PATH = '/images/ether.png';
 const ICON_DIMENSION = 28;
 const BODY_ITEM_KEY = 'BODY';
 const HEADER_ITEM_KEY = 'HEADER';
-const FOOTER_ITEM_KEY = 'FOOTER';
-const DISCONNECTED_ITEM_KEY = 'DISCONNECTED';
 const ETHER_ITEM_KEY = 'ETHER';
 const USD_DECIMAL_PLACES = 2;
 const NO_ALLOWANCE_TOGGLE_SPACE_WIDTH = 56;
 const ACCOUNT_PATH = `${WebsitePaths.Portal}/account`;
-
-const ActionButton = styled(FloatingActionButton)`
-    button {
-        position: static !important;
-    }
-`;
+const PLACEHOLDER_COLOR = colors.grey300;
+const LOADING_ROWS_COUNT = 6;
 
 export class Wallet extends React.Component<WalletProps, WalletState> {
     public static defaultProps = {
@@ -171,72 +115,103 @@ export class Wallet extends React.Component<WalletProps, WalletState> {
         }
     }
     public render(): React.ReactNode {
-        const isBlockchainLoaded = this.props.blockchainIsLoaded && this.props.blockchainErr === BlockchainErrs.NoError;
         return (
-            <Island className="flex flex-column wallet" style={{ ...styles.root, ...this.props.style }}>
-                {isBlockchainLoaded ? this._renderLoadedRows() : this._renderLoadingRows()}
+            <Island className="flex flex-column wallet" style={this.props.style}>
+                {this._isBlockchainReady() ? this._renderLoadedRows() : this._renderLoadingRows()}
             </Island>
+        );
+    }
+    private _renderLoadingRows(): React.ReactNode {
+        return _.concat(this._renderLoadingHeaderRows(), this._renderLoadingBodyRows());
+    }
+    private _renderLoadingHeaderRows(): React.ReactElement<{}> {
+        return this._renderPlainHeaderRow('Loading...');
+    }
+    private _renderLoadingBodyRows(): React.ReactElement<{}> {
+        const bodyStyle = this._getBodyStyle();
+        const loadingRowsRange = _.range(LOADING_ROWS_COUNT);
+        return (
+            <div key={BODY_ITEM_KEY} className="flex flex-column" style={bodyStyle}>
+                {_.map(loadingRowsRange, index => {
+                    return <NullTokenRow key={index} iconDimension={ICON_DIMENSION} fillColor={PLACEHOLDER_COLOR} />;
+                })}
+                <Container
+                    className="flex items-center"
+                    position="absolute"
+                    width="100%"
+                    height="100%"
+                    maxHeight={bodyStyle.maxHeight}
+                >
+                    <div className="mx-auto">
+                        <BodyOverlay
+                            dispatcher={this.props.dispatcher}
+                            userAddress={this.props.userAddress}
+                            injectedProviderName={this.props.injectedProviderName}
+                            providerType={this.props.providerType}
+                            onToggleLedgerDialog={this.props.onToggleLedgerDialog}
+                            blockchain={this.props.blockchain}
+                            blockchainIsLoaded={this.props.blockchainIsLoaded}
+                        />
+                    </div>
+                </Container>
+            </div>
         );
     }
     private _renderLoadedRows(): React.ReactNode {
         const isAddressAvailable = !_.isEmpty(this.props.userAddress);
         return isAddressAvailable
-            ? _.concat(this._renderConnectedHeaderRows(), this._renderBody(), this._renderFooterRows())
-            : _.concat(this._renderDisconnectedHeaderRows(), this._renderDisconnectedRows());
-    }
-    private _renderLoadingRows(): React.ReactNode {
-        return _.concat(this._renderDisconnectedHeaderRows(), this._renderLoadingBodyRows());
-    }
-    private _renderLoadingBodyRows(): React.ReactElement<{}> {
-        return (
-            <div key={BODY_ITEM_KEY} className="flex items-center" style={styles.loadingBody}>
-                <div className="mx-auto">
-                    <CircularProgress size={40} thickness={5} />
-                </div>
-            </div>
-        );
+            ? _.concat(this._renderConnectedHeaderRows(), this._renderBody())
+            : _.concat(this._renderDisconnectedHeaderRows(), this._renderLoadingBodyRows());
     }
     private _renderDisconnectedHeaderRows(): React.ReactElement<{}> {
-        const primaryText = 'wallet';
+        const isExternallyInjectedProvider = utils.isExternallyInjected(
+            this.props.providerType,
+            this.props.injectedProviderName,
+        );
+        const text = isExternallyInjectedProvider ? 'Please unlock MetaMask...' : 'Please connect a wallet...';
+        return this._renderPlainHeaderRow(text);
+    }
+    private _renderPlainHeaderRow(text: string): React.ReactElement<{}> {
         return (
             <StandardIconRow
                 key={HEADER_ITEM_KEY}
-                icon={<ActionAccountBalanceWallet color={colors.mediumBlue} />}
-                main={primaryText.toUpperCase()}
-                style={styles.borderedItem}
-            />
-        );
-    }
-    private _renderDisconnectedRows(): React.ReactElement<{}> {
-        return (
-            <WalletDisconnectedItem
-                key={DISCONNECTED_ITEM_KEY}
-                providerType={this.props.providerType}
-                injectedProviderName={this.props.injectedProviderName}
-                onToggleLedgerDialog={this.props.onToggleLedgerDialog}
+                icon={<ActionAccountBalanceWallet color={colors.grey} />}
+                main={
+                    <Text fontSize="16px" fontColor={colors.grey}>
+                        {text}
+                    </Text>
+                    // https://github.com/palantir/tslint-react/issues/140
+                    // tslint:disable-next-line:jsx-curly-spacing
+                }
+                minHeight="60px"
+                backgroundColor={colors.white}
             />
         );
     }
     private _renderConnectedHeaderRows(): React.ReactElement<{}> {
         const userAddress = this.props.userAddress;
-        const primaryText = utils.getAddressBeginAndEnd(userAddress);
+        const accountState = this._getAccountState();
+        const main = (
+            <div className="flex flex-column">
+                <Text fontSize="16px" lineHeight="19px" fontWeight={500}>
+                    {utils.getAddressBeginAndEnd(userAddress)}
+                </Text>
+                <AccountConnection accountState={accountState} injectedProviderName={this.props.injectedProviderName} />
+            </div>
+        );
         return (
             <Link key={HEADER_ITEM_KEY} to={ACCOUNT_PATH} style={{ textDecoration: 'none' }}>
                 <StandardIconRow
                     icon={<Identicon address={userAddress} diameter={ICON_DIMENSION} />}
-                    main={primaryText}
-                    style={styles.borderedItem}
+                    main={main}
+                    minHeight="60px"
+                    backgroundColor={colors.white}
                 />
             </Link>
         );
     }
     private _renderBody(): React.ReactElement<{}> {
-        const bodyStyle: React.CSSProperties = {
-            ...styles.bodyInnerDiv,
-            overflow: this.state.isHoveringSidebar ? 'auto' : 'hidden',
-            // TODO: make this completely responsive
-            maxHeight: this.props.screenWidth !== ScreenWidths.Sm ? 475 : undefined,
-        };
+        const bodyStyle = this._getBodyStyle();
         return (
             <div
                 style={bodyStyle}
@@ -249,6 +224,17 @@ export class Wallet extends React.Component<WalletProps, WalletState> {
             </div>
         );
     }
+    private _getBodyStyle(): React.CSSProperties {
+        return {
+            overflow: 'auto',
+            WebkitOverflowScrolling: 'touch',
+            position: 'relative',
+            overflowY: this.state.isHoveringSidebar ? 'scroll' : 'hidden',
+            marginRight: this.state.isHoveringSidebar ? 0 : 4,
+            // TODO: make this completely responsive
+            maxHeight: this.props.screenWidth !== ScreenWidths.Sm ? 475 : undefined,
+        };
+    }
     private _onSidebarHover(_event: React.FormEvent<HTMLInputElement>): void {
         this.setState({
             isHoveringSidebar: true,
@@ -258,51 +244,6 @@ export class Wallet extends React.Component<WalletProps, WalletState> {
         this.setState({
             isHoveringSidebar: false,
         });
-    }
-    private _renderFooterRows(): React.ReactElement<{}> {
-        return (
-            <div key={FOOTER_ITEM_KEY}>
-                <ListItem
-                    primaryText={
-                        <div className="flex">
-                            <ActionButton mini={true} zDepth={0} onClick={this.props.onAddToken}>
-                                <ContentAdd />
-                            </ActionButton>
-                            <ActionButton mini={true} zDepth={0} className="px1" onClick={this.props.onRemoveToken}>
-                                <ContentRemove />
-                            </ActionButton>
-                            <div
-                                style={{
-                                    paddingLeft: 10,
-                                    position: 'relative',
-                                    top: '50%',
-                                    transform: 'translateY(33%)',
-                                }}
-                            >
-                                add/remove tokens
-                            </div>
-                        </div>
-                    }
-                    disabled={true}
-                    innerDivStyle={styles.footerItemInnerDiv}
-                    style={styles.borderedItem}
-                />
-                {this.props.location.pathname !== ACCOUNT_PATH && (
-                    <Link to={ACCOUNT_PATH} style={{ textDecoration: 'none' }}>
-                        <ListItem
-                            primaryText={
-                                <div className="flex right" style={styles.manageYourWalletText}>
-                                    manage your wallet
-                                </div>
-                                // https://github.com/palantir/tslint-react/issues/140
-                                // tslint:disable-next-line:jsx-curly-spacing
-                            }
-                            style={{ ...styles.paddedItem, ...styles.borderedItem }}
-                        />
-                    </Link>
-                )}
-            </div>
-        );
     }
     private _renderEthRows(): React.ReactNode {
         const icon = <img style={{ width: ICON_DIMENSION, height: ICON_DIMENSION }} src={ETHER_ICON_PATH} />;
@@ -325,7 +266,7 @@ export class Wallet extends React.Component<WalletProps, WalletState> {
             wrappedEtherDirection: Side.Deposit,
         };
         const key = ETHER_ITEM_KEY;
-        return this._renderBalanceRow(key, icon, primaryText, secondaryText, accessoryItemConfig, false, 'eth-row');
+        return this._renderBalanceRow(key, icon, primaryText, secondaryText, accessoryItemConfig, 'eth-row');
     }
     private _renderTokenRows(): React.ReactNode {
         const trackedTokens = this.props.trackedTokens;
@@ -336,7 +277,7 @@ export class Wallet extends React.Component<WalletProps, WalletState> {
         );
         return _.map(trackedTokensStartingWithEtherToken, this._renderTokenRow.bind(this));
     }
-    private _renderTokenRow(token: Token, index: number): React.ReactNode {
+    private _renderTokenRow(token: Token): React.ReactNode {
         const tokenState = this.props.trackedTokenStateByAddress[token.address];
         if (_.isUndefined(tokenState)) {
             return null;
@@ -364,14 +305,12 @@ export class Wallet extends React.Component<WalletProps, WalletState> {
             },
         };
         const key = token.address;
-        const isLastRow = index === this.props.trackedTokens.length - 1;
         return this._renderBalanceRow(
             key,
             icon,
             primaryText,
             secondaryText,
             accessoryItemConfig,
-            isLastRow,
             isWeth ? 'weth-row' : undefined,
         );
     }
@@ -381,20 +320,12 @@ export class Wallet extends React.Component<WalletProps, WalletState> {
         primaryText: React.ReactNode,
         secondaryText: React.ReactNode,
         accessoryItemConfig: AccessoryItemConfig,
-        isLastRow: boolean,
         className?: string,
     ): React.ReactNode {
         const shouldShowWrapEtherItem =
             !_.isUndefined(this.state.wrappedEtherDirection) &&
             this.state.wrappedEtherDirection === accessoryItemConfig.wrappedEtherDirection &&
             !_.isUndefined(this.props.userEtherBalanceInWei);
-        let additionalStyle;
-        if (shouldShowWrapEtherItem) {
-            additionalStyle = walletItemStyles.focusedItem;
-        } else if (!isLastRow) {
-            additionalStyle = styles.borderedItem;
-        }
-        const style = { ...styles.tokenItem, ...additionalStyle };
         const etherToken = this._getEthToken();
         return (
             <div id={key} key={key} className={`flex flex-column ${className || ''}`}>
@@ -407,7 +338,7 @@ export class Wallet extends React.Component<WalletProps, WalletState> {
                         </div>
                     }
                     accessory={this._renderAccessoryItems(accessoryItemConfig)}
-                    style={style}
+                    backgroundColor={shouldShowWrapEtherItem ? colors.walletFocusedItemBackground : undefined}
                 />
                 {shouldShowWrapEtherItem && (
                     <WrapEtherItem
@@ -466,13 +397,19 @@ export class Wallet extends React.Component<WalletProps, WalletState> {
     ): React.ReactNode {
         if (isLoading) {
             return (
-                <PlaceHolder hideChildren={isLoading}>
-                    <div style={styles.amountLabel}>0.00 XXX</div>
+                <PlaceHolder hideChildren={isLoading} fillColor={PLACEHOLDER_COLOR}>
+                    <Text fontSize="16px" fontWeight="bold" lineHeight="1em">
+                        0.00 XXX
+                    </Text>
                 </PlaceHolder>
             );
         } else {
             const result = utils.getFormattedAmount(amount, decimals, symbol);
-            return <div style={styles.amountLabel}>{result}</div>;
+            return (
+                <Text fontSize="16px" fontWeight="bold" lineHeight="1em">
+                    {result}
+                </Text>
+            );
         }
     }
     private _renderValue(
@@ -495,8 +432,10 @@ export class Wallet extends React.Component<WalletProps, WalletState> {
             result = '$0.00';
         }
         return (
-            <PlaceHolder hideChildren={isLoading}>
-                <div style={styles.valueLabel}>{result}</div>
+            <PlaceHolder hideChildren={isLoading} fillColor={PLACEHOLDER_COLOR}>
+                <Text fontSize="14px" fontColor={colors.darkGrey} lineHeight="1em">
+                    {result}
+                </Text>
             </PlaceHolder>
         );
     }
@@ -549,41 +488,17 @@ export class Wallet extends React.Component<WalletProps, WalletState> {
     private _getEthToken(): Token {
         return utils.getEthToken(this.props.tokenByAddress);
     }
+    private _isBlockchainReady(): boolean {
+        return this.props.blockchainIsLoaded && !_.isUndefined(this.props.blockchain);
+    }
+    private _getAccountState(): AccountState {
+        return utils.getAccountState(
+            this._isBlockchainReady(),
+            this.props.providerType,
+            this.props.injectedProviderName,
+            this.props.userAddress,
+        );
+    }
 }
 
-interface StandardIconRowProps {
-    icon: React.ReactNode;
-    main: React.ReactNode;
-    accessory?: React.ReactNode;
-    style?: React.CSSProperties;
-}
-const StandardIconRow = (props: StandardIconRowProps) => {
-    return (
-        <div className="flex items-center" style={props.style}>
-            <div className="p2">{props.icon}</div>
-            <div className="flex-none pr2 pt2 pb2">{props.main}</div>
-            <div className="flex-auto" />
-            <div>{props.accessory}</div>
-        </div>
-    );
-};
-interface PlaceHolderProps {
-    hideChildren: React.ReactNode;
-    children?: React.ReactNode;
-}
-const PlaceHolder = (props: PlaceHolderProps) => {
-    const rootBackgroundColor = props.hideChildren ? colors.lightGrey : 'transparent';
-    const rootStyle: React.CSSProperties = {
-        backgroundColor: rootBackgroundColor,
-        display: 'inline-block',
-        borderRadius: 2,
-    };
-    const childrenVisibility = props.hideChildren ? 'hidden' : 'visible';
-    const childrenStyle: React.CSSProperties = { visibility: childrenVisibility };
-    return (
-        <div style={rootStyle}>
-            <div style={childrenStyle}>{props.children}</div>
-        </div>
-    );
-};
 // tslint:disable:max-file-line-count
