@@ -211,14 +211,17 @@ describe('ERC721Wrapper', () => {
             expect(isApprovedForAll).to.be.true();
         });
     });
-    describe('#setApprovalAsync/getApprovedAsync', () => {
+    describe('#setApprovalAsync/getApprovedIfExistsAsync', () => {
         it("should set the spender's approval", async () => {
             const tokenId = await tokenUtils.mintDummyERC721Async(tokenAddress, ownerAddress);
 
-            const approvalBeforeSet = await contractWrappers.erc721Token.getApprovedAsync(tokenAddress, tokenId);
+            const approvalBeforeSet = await contractWrappers.erc721Token.getApprovedIfExistsAsync(
+                tokenAddress,
+                tokenId,
+            );
             expect(approvalBeforeSet).to.be.undefined();
             await contractWrappers.erc721Token.setApprovalAsync(tokenAddress, approvedAddress, tokenId);
-            const approvalAfterSet = await contractWrappers.erc721Token.getApprovedAsync(tokenAddress, tokenId);
+            const approvalAfterSet = await contractWrappers.erc721Token.getApprovedIfExistsAsync(tokenAddress, tokenId);
             expect(approvalAfterSet).to.be.equal(approvedAddress);
         });
     });

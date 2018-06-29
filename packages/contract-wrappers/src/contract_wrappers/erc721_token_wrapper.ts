@@ -155,14 +155,14 @@ export class ERC721TokenWrapper extends ContractWrapper {
         return isProxyApprovedForAll;
     }
     /**
-     * Get the approved address for a single NFT
+     * Get the approved address for a single NFT. Returns undefined if no approval was set
      * Throws if `_tokenId` is not a valid NFT
      * @param   tokenAddress    The hex encoded contract Ethereum address where the ERC721 token is deployed.
      * @param   tokenId         The identifier for an NFT
      * @param   methodOpts      Optional arguments this method accepts.
-     * @return  The approved address for this NFT, or the zero address if there is none
+     * @return  The approved address for this NFT, or the undefined if there is none
      */
-    public async getApprovedAsync(
+    public async getApprovedIfExistsAsync(
         tokenAddress: string,
         tokenId: BigNumber,
         methodOpts?: MethodOpts,
@@ -197,7 +197,7 @@ export class ERC721TokenWrapper extends ContractWrapper {
         methodOpts?: MethodOpts,
     ): Promise<boolean> {
         const proxyAddress = this._erc721ProxyWrapper.getContractAddress();
-        const approvedAddress = await this.getApprovedAsync(tokenAddress, tokenId, methodOpts);
+        const approvedAddress = await this.getApprovedIfExistsAsync(tokenAddress, tokenId, methodOpts);
         const isProxyApproved = approvedAddress === proxyAddress;
         return isProxyApproved;
     }
@@ -354,7 +354,7 @@ export class ERC721TokenWrapper extends ContractWrapper {
             normalizedSenderAddress,
         );
         if (!isApprovedForAll) {
-            const approved = await this.getApprovedAsync(normalizedTokenAddress, tokenId);
+            const approved = await this.getApprovedIfExistsAsync(normalizedTokenAddress, tokenId);
             if (approved !== senderAddress) {
                 throw new Error(ContractWrappersError.ERC721NoApproval);
             }
