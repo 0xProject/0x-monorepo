@@ -651,13 +651,7 @@ describe('matchOrders', () => {
             });
             // Match orders
             return expectRevertReasonOrAlwaysFailingTransactionAsync(
-                matchOrderTester.matchOrdersAndVerifyBalancesAsync(
-                    signedOrderLeft,
-                    signedOrderRight,
-                    takerAddress,
-                    erc20BalancesByOwner,
-                    erc721TokenIdsByOwner,
-                ),
+                exchangeWrapper.matchOrdersAsync(signedOrderLeft, signedOrderRight, takerAddress),
                 RevertReason.NegativeSpreadRequired,
             );
         });
@@ -680,13 +674,7 @@ describe('matchOrders', () => {
             });
             // Match orders
             return expectRevertReasonOrAlwaysFailingTransactionAsync(
-                matchOrderTester.matchOrdersAndVerifyBalancesAsync(
-                    signedOrderLeft,
-                    signedOrderRight,
-                    takerAddress,
-                    erc20BalancesByOwner,
-                    erc721TokenIdsByOwner,
-                ),
+                exchangeWrapper.matchOrdersAsync(signedOrderLeft, signedOrderRight, takerAddress),
                 // We are assuming assetData fields of the right order are the
                 // reverse of the left order, rather than checking equality. This
                 // saves a bunch of gas, but as a result if the assetData fields are
@@ -715,13 +703,7 @@ describe('matchOrders', () => {
             });
             // Match orders
             return expectRevertReasonOrAlwaysFailingTransactionAsync(
-                matchOrderTester.matchOrdersAndVerifyBalancesAsync(
-                    signedOrderLeft,
-                    signedOrderRight,
-                    takerAddress,
-                    erc20BalancesByOwner,
-                    erc721TokenIdsByOwner,
-                ),
+                exchangeWrapper.matchOrdersAsync(signedOrderLeft, signedOrderRight, takerAddress),
                 RevertReason.InvalidOrderSignature,
             );
         });
