@@ -1,6 +1,5 @@
 import * as React from 'react';
 
-import { colors } from 'ts/style/colors';
 import { styled } from 'ts/style/theme';
 
 export interface PlaceHolderProps {

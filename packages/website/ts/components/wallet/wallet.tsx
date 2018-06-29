@@ -2,20 +2,14 @@ import { constants as sharedConstants, EtherscanLinkSuffixes, utils as sharedUti
 import { BigNumber, errorUtils } from '@0xproject/utils';
 import { Web3Wrapper } from '@0xproject/web3-wrapper';
 import * as _ from 'lodash';
-import CircularProgress from 'material-ui/CircularProgress';
-import FloatingActionButton from 'material-ui/FloatingActionButton';
 
-import { ListItem } from 'material-ui/List';
 import ActionAccountBalanceWallet from 'material-ui/svg-icons/action/account-balance-wallet';
-import ContentAdd from 'material-ui/svg-icons/content/add';
-import ContentRemove from 'material-ui/svg-icons/content/remove';
 import * as React from 'react';
 import { Link } from 'react-router-dom';
 import firstBy = require('thenby');
 
 import { Blockchain } from 'ts/blockchain';
 import { AccountConnection } from 'ts/components/ui/account_connection';
-import { Circle } from 'ts/components/ui/circle';
 import { Container } from 'ts/components/ui/container';
 import { IconButton } from 'ts/components/ui/icon_button';
 import { Identicon } from 'ts/components/ui/identicon';
@@ -30,7 +24,6 @@ import { WrapEtherItem } from 'ts/components/wallet/wrap_ether_item';
 import { AllowanceToggle } from 'ts/containers/inputs/allowance_toggle';
 import { Dispatcher } from 'ts/redux/dispatcher';
 import { colors } from 'ts/style/colors';
-import { styled } from 'ts/style/theme';
 import {
     AccountState,
     BlockchainErrs,
@@ -95,12 +88,6 @@ const NO_ALLOWANCE_TOGGLE_SPACE_WIDTH = 56;
 const ACCOUNT_PATH = `${WebsitePaths.Portal}/account`;
 const PLACEHOLDER_COLOR = colors.grey300;
 const LOADING_ROWS_COUNT = 6;
-
-const ActionButton = styled(FloatingActionButton)`
-    button {
-        position: static !important;
-    }
-`;
 
 export class Wallet extends React.Component<WalletProps, WalletState> {
     public static defaultProps = {
@@ -290,7 +277,7 @@ export class Wallet extends React.Component<WalletProps, WalletState> {
         );
         return _.map(trackedTokensStartingWithEtherToken, this._renderTokenRow.bind(this));
     }
-    private _renderTokenRow(token: Token, index: number): React.ReactNode {
+    private _renderTokenRow(token: Token): React.ReactNode {
         const tokenState = this.props.trackedTokenStateByAddress[token.address];
         if (_.isUndefined(tokenState)) {
             return null;
@@ -318,7 +305,6 @@ export class Wallet extends React.Component<WalletProps, WalletState> {
             },
         };
         const key = token.address;
-        const isLastRow = index === this.props.trackedTokens.length - 1;
         return this._renderBalanceRow(
             key,
             icon,

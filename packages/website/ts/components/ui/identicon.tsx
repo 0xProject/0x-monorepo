@@ -21,7 +21,6 @@ export class Identicon extends React.Component<IdenticonProps, IdenticonState> {
     public render(): React.ReactNode {
         const address = this.props.address;
         const diameter = this.props.diameter;
-        const radius = diameter / 2;
         return (
             <div
                 className="circle relative transitionFix"

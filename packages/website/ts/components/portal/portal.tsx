@@ -24,7 +24,6 @@ import { TopBar, TopBarDisplayType } from 'ts/components/top_bar/top_bar';
 import { TradeHistory } from 'ts/components/trade_history/trade_history';
 import { Container } from 'ts/components/ui/container';
 import { FlashMessage } from 'ts/components/ui/flash_message';
-import { Island } from 'ts/components/ui/island';
 import { Text } from 'ts/components/ui/text';
 import { Wallet } from 'ts/components/wallet/wallet';
 import { GenerateOrderForm } from 'ts/containers/generate_order_form';
