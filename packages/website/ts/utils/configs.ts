@@ -63,10 +63,9 @@ export const configs = {
         TKN: '/images/token_icons/tokencard.png',
         TRST: '/images/token_icons/trust.png',
     } as { [symbol: string]: string },
-    IS_MAINNET_ENABLED: true,
     GOOGLE_ANALYTICS_ID: 'UA-98720122-1',
     LAST_LOCAL_STORAGE_FILL_CLEARANCE_DATE: '2017-11-22',
-    LAST_LOCAL_STORAGE_TRACKED_TOKEN_CLEARANCE_DATE: '2017-12-19',
+    LAST_LOCAL_STORAGE_TRACKED_TOKEN_CLEARANCE_DATE: '2018-6-25',
     OUTDATED_WRAPPED_ETHERS: [
         {
             42: {

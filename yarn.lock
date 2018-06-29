@@ -46,7 +46,11 @@
 
 "@0xproject/order-watcher@^0.0.6":
   version "0.0.6"
+<<<<<<< HEAD
   resolved "https://registry.yarnpkg.com/@0xproject/order-watcher/-/order-watcher-0.0.6.tgz#85a8fb21e5755bb555f427b12d64d10b89b332e6"
+=======
+  resolved "https://registry.npmjs.org/@0xproject/order-watcher/-/order-watcher-0.0.6.tgz#85a8fb21e5755bb555f427b12d64d10b89b332e6"
+>>>>>>> v2-prototype
   dependencies:
     "@0xproject/assert" "^0.2.12"
     "@0xproject/base-contract" "^0.3.4"

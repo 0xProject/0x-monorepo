@@ -121,5 +121,35 @@ describe('Collect coverage entries', () => {
             const branchTypes = _.map(branchDescriptions, branchDescription => branchDescription.type);
             expect(branchTypes).to.be.deep.equal(['if', 'if', 'if', 'if', 'binary-expr', 'if']);
         });
+
+        it('correctly ignores all coverage entries for Ignore contract', () => {
+            const solcovIgnoreContractBaseName = 'SolcovIgnore.sol';
+            const solcovIgnoreContractFileName = path.resolve(
+                __dirname,
+                'fixtures/contracts',
+                solcovIgnoreContractBaseName,
+            );
+            const solcovIgnoreContract = fs.readFileSync(solcovIgnoreContractFileName).toString();
+            const coverageEntries = collectCoverageEntries(solcovIgnoreContract);
+            const fnIds = _.keys(coverageEntries.fnMap);
+
+            expect(fnIds.length).to.be.equal(1);
+            expect(coverageEntries.fnMap[fnIds[0]].name).to.be.equal('set');
+            // tslint:disable-next-line:custom-no-magic-numbers
+            expect(coverageEntries.fnMap[fnIds[0]].line).to.be.equal(6);
+            const setFunction = `function set(uint x) public {
+        /* solcov ignore next */
+        storedData = x;
+    }`;
+            expect(utils.getRange(solcovIgnoreContract, coverageEntries.fnMap[fnIds[0]].loc)).to.be.equal(setFunction);
+
+            expect(coverageEntries.branchMap).to.be.deep.equal({});
+            const statementIds = _.keys(coverageEntries.statementMap);
+            expect(utils.getRange(solcovIgnoreContract, coverageEntries.statementMap[statementIds[0]])).to.be.equal(
+                setFunction,
+            );
+            expect(statementIds.length).to.be.equal(1);
+            expect(coverageEntries.modifiersStatementIds.length).to.be.equal(0);
+        });
     });
 });

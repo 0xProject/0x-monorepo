@@ -19,8 +19,8 @@ export class BalanceAndProxyAllowanceLazyStore implements AbstractBalanceAndProx
             [userAddress: string]: BigNumber;
         };
     };
-    constructor(token: AbstractBalanceAndProxyAllowanceFetcher) {
-        this._balanceAndProxyAllowanceFetcher = token;
+    constructor(balanceAndProxyAllowanceFetcher: AbstractBalanceAndProxyAllowanceFetcher) {
+        this._balanceAndProxyAllowanceFetcher = balanceAndProxyAllowanceFetcher;
         this._balance = {};
         this._proxyAllowance = {};
     }

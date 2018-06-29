@@ -1,6 +1,7 @@
 import { colors } from '@0xproject/react-shared';
 import * as _ from 'lodash';
 import TextField from 'material-ui/TextField';
+import * as moment from 'moment';
 import * as React from 'react';
 import { Blockchain } from 'ts/blockchain';
 import { AddressInput } from 'ts/components/inputs/address_input';
@@ -147,7 +148,7 @@ export class NewTokenForm extends React.Component<NewTokenFormProps, NewTokenFor
             iconUrl: undefined,
             name: this.state.name,
             symbol: this.state.symbol.toUpperCase(),
-            isTracked: true,
+            trackedTimestamp: moment().unix(),
             isRegistered: false,
         };
         this.props.onNewTokenSubmitted(newToken);

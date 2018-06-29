@@ -13,8 +13,8 @@ export interface Token {
     address: string;
     symbol: string;
     decimals: number;
-    isTracked: boolean;
     isRegistered: boolean;
+    trackedTimestamp?: number;
 }
 
 export interface TokenByAddress {
@@ -356,6 +356,7 @@ export enum WebsiteLegacyPaths {
 export enum WebsitePaths {
     Portal = '/portal',
     Wiki = '/wiki',
+    Docs = '/docs',
     ZeroExJs = '/docs/0x.js',
     Home = '/',
     FAQ = '/faq',
@@ -486,6 +487,16 @@ export enum Providers {
     Parity = 'PARITY',
     Metamask = 'METAMASK',
     Mist = 'MIST',
+}
+
+export interface InjectedProviderUpdate {
+    selectedAddress: string;
+    networkVersion: string;
+}
+
+export interface InjectedProviderObservable {
+    subscribe(updateHandler: (update: InjectedProviderUpdate) => void): void;
+    unsubscribe(updateHandler: (update: InjectedProviderUpdate) => void): void;
 }
 
 export interface TimestampMsRange {
