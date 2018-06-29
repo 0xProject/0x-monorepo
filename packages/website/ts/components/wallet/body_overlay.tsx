@@ -72,7 +72,7 @@ const PlainLockedOverlay: React.StatelessComponent<LockedOverlayProps> = ({
         >
             <Image src={METAMASK_IMG_SRC} height="70px" />
             <Container marginTop="12px">
-                <Text fontColor="#F68C24" fontSize="16px" fontWeight="bold">
+                <Text fontColor={colors.metaMaskOrange} fontSize="16px" fontWeight="bold">
                     Please Unlock MetaMask
                 </Text>
             </Container>
@@ -81,8 +81,8 @@ const PlainLockedOverlay: React.StatelessComponent<LockedOverlayProps> = ({
     </div>
 );
 const LockedOverlay = styled(PlainLockedOverlay)`
-    background: rgba(255, 248, 242, 0.8);
-    border: 1px solid #f68c24;
+    background: ${colors.metaMaskTransparentOrange};
+    border: 1px solid ${colors.metaMaskOrange};
     border-radius: 10px;
 `;
 

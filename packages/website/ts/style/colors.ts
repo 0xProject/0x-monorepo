@@ -11,6 +11,8 @@ const appColors = {
     menuItemDefaultSelectedBackground: '#424242',
     jobsPageBackground: sharedColors.grey50,
     jobsPageOpenPositionRow: sharedColors.grey100,
+    metaMaskOrange: '#f68c24',
+    metaMaskTransparentOrange: 'rgba(255, 248, 242, 0.8)',
 };
 
 export const colors = {
