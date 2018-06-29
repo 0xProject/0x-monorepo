@@ -59,7 +59,7 @@ export const WrapEthOnboardingStep3: React.StatelessComponent<WrapEthOnboardingS
 }) => (
     <div className="flex items-center flex-column">
         <Text>
-            You have {formattedWethBalanceIfExists || '0 WETH'} in your wallet.
+            You have <b>{formattedWethBalanceIfExists || '0 WETH'}</b> in your wallet.
             {formattedWethBalanceIfExists && ' Great!'}
         </Text>
         <Container width="100%" marginTop="25px" marginBottom="15px" className="flex justify-center">

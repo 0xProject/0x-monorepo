@@ -14,11 +14,13 @@ export const AddEthOnboardingStep: React.StatelessComponent<AddEthOnboardingStep
         <div className="flex items-center flex-column">
             <Text>
                 Great! Looks like you already have{' '}
-                {utils.getFormattedAmount(
-                    props.userEthBalanceInWei,
-                    constants.DECIMAL_PLACES_ETH,
-                    constants.ETHER_SYMBOL,
-                )}{' '}
+                <b>
+                    {utils.getFormattedAmount(
+                        props.userEthBalanceInWei,
+                        constants.DECIMAL_PLACES_ETH,
+                        constants.ETHER_SYMBOL,
+                    )}{' '}
+                </b>
                 in your wallet.
             </Text>
             <Container marginTop="15px" marginBottom="15px">
