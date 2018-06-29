@@ -8,6 +8,7 @@ import * as ERC20Proxy from '../artifacts/ERC20Proxy.json';
 import * as ERC721Proxy from '../artifacts/ERC721Proxy.json';
 import * as Exchange from '../artifacts/Exchange.json';
 import * as ExchangeWrapper from '../artifacts/ExchangeWrapper.json';
+import * as IAssetProxy from '../artifacts/IAssetProxy.json';
 import * as MixinAuthorizable from '../artifacts/MixinAuthorizable.json';
 import * as MultiSigWallet from '../artifacts/MultiSigWallet.json';
 import * as MultiSigWalletWithTimeLock from '../artifacts/MultiSigWalletWithTimeLock.json';
@@ -33,6 +34,7 @@ export const artifacts = {
     Exchange: (Exchange as any) as ContractArtifact,
     ExchangeWrapper: (ExchangeWrapper as any) as ContractArtifact,
     EtherToken: (EtherToken as any) as ContractArtifact,
+    IAssetProxy: (IAssetProxy as any) as ContractArtifact,
     MixinAuthorizable: (MixinAuthorizable as any) as ContractArtifact,
     MultiSigWallet: (MultiSigWallet as any) as ContractArtifact,
     MultiSigWalletWithTimeLock: (MultiSigWalletWithTimeLock as any) as ContractArtifact,

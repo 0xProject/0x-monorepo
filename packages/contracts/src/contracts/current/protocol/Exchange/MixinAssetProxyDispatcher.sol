@@ -135,7 +135,6 @@ contract MixinAssetProxyDispatcher is
             // |          | 132    | 32      | assetData Length                            |
             // |          | 164    | **      | assetData Contents                          |
 
-            bool success;
             assembly {
                 /////// Setup State ///////
                 // `cdStart` is the start of the calldata for `assetProxy.transferFrom` (equal to free memory ptr).
@@ -173,7 +172,7 @@ contract MixinAssetProxyDispatcher is
                 }
 
                 /////// Call `assetProxy.transferFrom` using the constructed calldata ///////
-                success := call(
+                let success := call(
                     gas,                    // forward all gas
                     assetProxy,             // call address of asset proxy
                     0,                      // don't send any ETH
@@ -182,7 +181,7 @@ contract MixinAssetProxyDispatcher is
                     cdStart,                // write output over input
                     512                     // reserve 512 bytes for output
                 )
-                if eq(success, 0) {
+                if iszero(success) {
                     revert(cdStart, returndatasize())
                 }
             }

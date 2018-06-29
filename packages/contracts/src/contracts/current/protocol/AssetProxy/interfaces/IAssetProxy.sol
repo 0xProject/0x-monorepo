@@ -42,6 +42,6 @@ contract IAssetProxy is
     /// @return Proxy id.
     function getProxyId()
         external
-        view
+        pure
         returns (bytes4);
 }

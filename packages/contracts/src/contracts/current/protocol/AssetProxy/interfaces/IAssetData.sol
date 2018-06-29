@@ -23,14 +23,16 @@ pragma solidity ^0.4.23;
 // This argument is ABI encoded as one of the methods of this interface.
 interface IAssetData {
     
-    function ERC20Token(
-        address tokenContract)
-        external pure;
+    function ERC20Token(address tokenContract)
+        external
+        pure;
     
     function ERC721Token(
         address tokenContract,
         uint256 tokenId,
-        bytes receiverData)
-        external pure;
+        bytes receiverData
+    )
+        external
+        pure;
     
 }
