@@ -68,7 +68,7 @@ contract ERC721Token is
     * @param _tokenId uint256 ID of the token to validate
     */
     modifier canTransfer(uint256 _tokenId) {
-        require(isApprovedOrOwner(msg.sender, _tokenId));
+        require(isApprovedOrOwner(msg.sender, _tokenId), "3");
         _;
     }
 
@@ -222,8 +222,8 @@ contract ERC721Token is
         public
         canTransfer(_tokenId)
     {
-        require(_from != address(0));
-        require(_to != address(0));
+        require(_from != address(0), "1");
+        require(_to != address(0), "2");
 
         clearApproval(_from, _tokenId);
         removeTokenFrom(_from, _tokenId);
@@ -276,7 +276,7 @@ contract ERC721Token is
     {
         transferFrom(_from, _to, _tokenId);
         // solium-disable-next-line arg-overflow
-        require(checkAndCallSafeTransfer(_from, _to, _tokenId, _data));
+        require(checkAndCallSafeTransfer(_from, _to, _tokenId, _data), "7");
     }
 
     /**
@@ -331,7 +331,7 @@ contract ERC721Token is
     function clearApproval(address _owner, uint256 _tokenId)
         internal
     {
-        require(ownerOf(_tokenId) == _owner);
+        require(ownerOf(_tokenId) == _owner, "4");
         if (tokenApprovals[_tokenId] != address(0)) {
             tokenApprovals[_tokenId] = address(0);
             emit Approval(_owner, address(0), _tokenId);
@@ -346,7 +346,7 @@ contract ERC721Token is
     function addTokenTo(address _to, uint256 _tokenId)
         internal
     {
-        require(tokenOwner[_tokenId] == address(0));
+        require(tokenOwner[_tokenId] == address(0), "6");
         tokenOwner[_tokenId] = _to;
         ownedTokensCount[_to] = safeAdd(ownedTokensCount[_to], 1);
     }
@@ -359,7 +359,7 @@ contract ERC721Token is
     function removeTokenFrom(address _from, uint256 _tokenId)
         internal
     {
-        require(ownerOf(_tokenId) == _from);
+        require(ownerOf(_tokenId) == _from, "5");
         ownedTokensCount[_from] = safeSub(ownedTokensCount[_from], 1);
         tokenOwner[_tokenId] = address(0);
     }
