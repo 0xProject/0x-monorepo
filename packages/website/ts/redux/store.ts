@@ -15,7 +15,7 @@ store.subscribe(
     _.throttle(() => {
         // Persisted state
         stateStorage.saveState({
-            hasPortalOnboardingBeenSeen: store.getState().hasPortalOnboardingBeenSeen,
+            hasPortalOnboardingBeenClosed: store.getState().hasPortalOnboardingBeenClosed,
         });
     }, ONE_SECOND),
 );

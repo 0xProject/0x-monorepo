@@ -28,7 +28,7 @@ export interface PortalOnboardingFlowProps extends RouteComponentProps<any> {
     stepIndex: number;
     isRunning: boolean;
     userAddress: string;
-    hasBeenSeen: boolean;
+    hasBeenClosed: boolean;
     providerType: ProviderType;
     injectedProviderName: string;
     blockchainIsLoaded: boolean;
@@ -44,7 +44,8 @@ export interface PortalOnboardingFlowProps extends RouteComponentProps<any> {
 class PlainPortalOnboardingFlow extends React.Component<PortalOnboardingFlowProps> {
     private _unlisten: () => void;
     public componentDidMount(): void {
-        this._overrideOnboardingStateIfShould();
+        this._autoStartOnboardingIfShould();
+        this._adjustStepIfShould();
         // If there is a route change, just close onboarding.
         this._unlisten = this.props.history.listen(() => this.props.updateIsRunning(false));
     }
@@ -52,7 +53,7 @@ class PlainPortalOnboardingFlow extends React.Component<PortalOnboardingFlowProp
         this._unlisten();
     }
     public componentDidUpdate(): void {
-        this._overrideOnboardingStateIfShould();
+        this._adjustStepIfShould();
     }
     public render(): React.ReactNode {
         return (
@@ -189,10 +190,6 @@ class PlainPortalOnboardingFlow extends React.Component<PortalOnboardingFlowProp
         }
         return false;
     }
-    private _overrideOnboardingStateIfShould(): void {
-        this._autoStartOnboardingIfShould();
-        this._adjustStepIfShould();
-    }
     private _adjustStepIfShould(): void {
         const stepIndex = this.props.stepIndex;
         if (this._isAddressAvailable()) {
@@ -216,7 +213,10 @@ class PlainPortalOnboardingFlow extends React.Component<PortalOnboardingFlowProp
         }
     }
     private _autoStartOnboardingIfShould(): void {
-        if (!this.props.isRunning && !this.props.hasBeenSeen && this.props.blockchainIsLoaded) {
+        if (
+            (this.props.stepIndex === 0 && !this.props.isRunning) ||
+            (!this.props.isRunning && !this.props.hasBeenClosed && this.props.blockchainIsLoaded)
+        ) {
             const networkName = sharedConstants.NETWORK_NAME_BY_ID[this.props.networkId];
             analytics.logEvent('Portal', 'Onboarding Started - Automatic', networkName, this.props.stepIndex);
             this.props.updateIsRunning(true);

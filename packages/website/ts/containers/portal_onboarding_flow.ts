@@ -19,7 +19,7 @@ interface ConnectedState {
     stepIndex: number;
     isRunning: boolean;
     userAddress: string;
-    hasBeenSeen: boolean;
+    hasBeenClosed: boolean;
     providerType: ProviderType;
     injectedProviderName: string;
     blockchainIsLoaded: boolean;
@@ -43,7 +43,7 @@ const mapStateToProps = (state: State, _ownProps: PortalOnboardingFlowProps): Co
     blockchainIsLoaded: state.blockchainIsLoaded,
     userEtherBalanceInWei: state.userEtherBalanceInWei,
     tokenByAddress: state.tokenByAddress,
-    hasBeenSeen: state.hasPortalOnboardingBeenSeen,
+    hasBeenClosed: state.hasPortalOnboardingBeenClosed,
     screenWidth: state.screenWidth,
 });
 
