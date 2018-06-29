@@ -181,7 +181,7 @@ contract MixinAssetProxyDispatcher is
                     cdStart,                // write output over input
                     512                     // reserve 512 bytes for output
                 )
-                if eq(success, 0) {
+                if iszero(success) {
                     revert(cdStart, returndatasize())
                 }
             }

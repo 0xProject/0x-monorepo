@@ -28,6 +28,11 @@ import { provider, txDefaults, web3Wrapper } from '../../src/utils/web3_wrapper'
 chaiSetup.configure();
 const expect = chai.expect;
 const blockchainLifecycle = new BlockchainLifecycle(web3Wrapper);
+const assetProxyInterface = new IAssetProxyContract(
+    artifacts.IAssetProxy.compilerOutput.abi,
+    constants.NULL_ADDRESS,
+    provider,
+);
 
 // tslint:disable:no-unnecessary-type-assertion
 describe('Asset Transfer Proxies', () => {
@@ -42,7 +47,6 @@ describe('Asset Transfer Proxies', () => {
     let erc721Receiver: DummyERC721ReceiverContract;
     let erc20Proxy: ERC20ProxyContract;
     let erc721Proxy: ERC721ProxyContract;
-    let assetProxyInterface: IAssetProxyContract;
 
     let erc20Wrapper: ERC20Wrapper;
     let erc721Wrapper: ERC721Wrapper;
@@ -89,11 +93,6 @@ describe('Asset Transfer Proxies', () => {
         );
         erc721Receiver = await DummyERC721ReceiverContract.deployFrom0xArtifactAsync(
             artifacts.DummyERC721Receiver,
-            provider,
-            txDefaults,
-        );
-        assetProxyInterface = await IAssetProxyContract.deployFrom0xArtifactAsync(
-            artifacts.IAssetProxy,
             provider,
             txDefaults,
         );
