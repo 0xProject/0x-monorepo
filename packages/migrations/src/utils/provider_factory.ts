@@ -1,5 +1,6 @@
 import { LedgerEthereumClient, LedgerSubprovider } from '@0xproject/subproviders';
 import Eth from '@ledgerhq/hw-app-eth';
+// tslint:disable:no-implicit-dependencies
 import TransportNodeHid from '@ledgerhq/hw-transport-node-hid';
 import { Provider } from 'ethereum-types';
 import ProviderEngine = require('web3-provider-engine');

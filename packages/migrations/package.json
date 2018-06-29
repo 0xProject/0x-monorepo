@@ -63,7 +63,7 @@
         "@0xproject/order-utils": "^1.0.0",
         "@0xproject/sol-compiler": "^0.5.2",
         "@0xproject/subproviders": "^0.10.4",
-        "@0xproject/typescript-typings": "^0.4.1",
+        "@0xproject/typescript-typings": "^0.4.2",
         "@0xproject/utils": "^0.7.1",
         "@0xproject/web3-wrapper": "^0.7.1",
         "@ledgerhq/hw-app-eth": "^4.3.0",
