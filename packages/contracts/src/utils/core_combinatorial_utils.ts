@@ -96,8 +96,8 @@ export async function coreCombinatorialUtilsFactoryAsync(
         zrxAssetData,
     );
     const exchangeWrapper = new ExchangeWrapper(exchangeContract, provider);
-    await exchangeWrapper.registerAssetProxyAsync(AssetProxyId.ERC20, erc20Proxy.address, ownerAddress);
-    await exchangeWrapper.registerAssetProxyAsync(AssetProxyId.ERC721, erc721Proxy.address, ownerAddress);
+    await exchangeWrapper.registerAssetProxyAsync(erc20Proxy.address, ownerAddress);
+    await exchangeWrapper.registerAssetProxyAsync(erc721Proxy.address, ownerAddress);
 
     await web3Wrapper.awaitTransactionSuccessAsync(
         await erc20Proxy.addAuthorizedAddress.sendTransactionAsync(exchangeContract.address, {

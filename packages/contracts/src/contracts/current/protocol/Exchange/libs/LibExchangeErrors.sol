@@ -54,8 +54,7 @@ contract LibExchangeErrors {
     string constant FAILED_EXECUTION = "FAILED_EXECUTION";                              // Transaction execution failed. 
     
     /// registerAssetProxy errors ///
-    string constant ASSET_PROXY_MISMATCH = "ASSET_PROXY_MISMATCH";                      // oldAssetProxy proxy does not match currentAssetProxy. 
-    string constant ASSET_PROXY_ID_MISMATCH = "ASSET_PROXY_ID_MISMATCH";                // newAssetProxyId does not match given assetProxyId.
+    string constant ASSET_PROXY_ALREADY_EXISTS = "ASSET_PROXY_ALREADY_EXISTS";          // AssetProxy with same id already exists.
 
     /// dispatchTransferFrom errors ///
     string constant ASSET_PROXY_DOES_NOT_EXIST = "ASSET_PROXY_DOES_NOT_EXIST";          // No assetProxy registered at given id.

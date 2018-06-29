@@ -26,10 +26,9 @@ contract MAssetProxyDispatcher is
 {
 
     // Logs registration of new asset proxy
-    event AssetProxySet(
+    event AssetProxyRegistered(
         bytes4 id,              // Id of new registered AssetProxy.
-        address newAssetProxy,  // Address of new registered AssetProxy.
-        address oldAssetProxy   // Address of AssetProxy that was overwritten at given id (or null address).
+        address assetProxy      // Address of new registered AssetProxy.
     );
 
     /// @dev Forwards arguments to assetProxy and calls `transferFrom`. Either succeeds or throws.

@@ -1,12 +1,10 @@
-import { AssetProxyId, SignedOrder } from '@0xproject/types';
+import { SignedOrder } from '@0xproject/types';
 import { BigNumber } from '@0xproject/utils';
 import { Web3Wrapper } from '@0xproject/web3-wrapper';
 import { Provider, TransactionReceiptWithDecodedLogs } from 'ethereum-types';
-import * as _ from 'lodash';
 
 import { ExchangeContract } from '../generated_contract_wrappers/exchange';
 
-import { constants } from './constants';
 import { formatters } from './formatters';
 import { LogDecoder } from './log_decoder';
 import { orderUtils } from './order_utils';
@@ -192,20 +190,10 @@ export class ExchangeWrapper {
         return tx;
     }
     public async registerAssetProxyAsync(
-        assetProxyId: AssetProxyId,
         assetProxyAddress: string,
         from: string,
-        opts: { oldAssetProxyAddressIfExists?: string } = {},
     ): Promise<TransactionReceiptWithDecodedLogs> {
-        const oldAssetProxyAddress = _.isUndefined(opts.oldAssetProxyAddressIfExists)
-            ? constants.NULL_ADDRESS
-            : opts.oldAssetProxyAddressIfExists;
-        const txHash = await this._exchange.registerAssetProxy.sendTransactionAsync(
-            assetProxyId,
-            assetProxyAddress,
-            oldAssetProxyAddress,
-            { from },
-        );
+        const txHash = await this._exchange.registerAssetProxy.sendTransactionAsync(assetProxyAddress, { from });
         const tx = await this._logDecoder.getTxWithDecodedLogsAsync(txHash);
         return tx;
     }
