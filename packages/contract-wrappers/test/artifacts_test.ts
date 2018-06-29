@@ -10,6 +10,7 @@ chaiSetup.configure();
 // Those tests are slower cause they're talking to a remote node
 const TIMEOUT = 10000;
 
+// TODO: Re-enable those tests after final kovan and ropsten deployments are done.
 describe.skip('Artifacts', () => {
     describe('contracts are deployed on kovan', () => {
         const kovanRpcUrl = constants.KOVAN_RPC_URL;
