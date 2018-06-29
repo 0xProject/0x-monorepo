@@ -1,12 +1,12 @@
 import { colors } from '@0xproject/react-shared';
 import * as React from 'react';
 
+import * as _ from 'lodash';
 import { Button } from 'ts/components/ui/button';
 import { Container } from 'ts/components/ui/container';
 import { IconButton } from 'ts/components/ui/icon_button';
 import { Island } from 'ts/components/ui/island';
 import { Text, Title } from 'ts/components/ui/text';
-import * as _ from 'lodash';
 
 export type ContinueButtonDisplay = 'enabled' | 'disabled';
 

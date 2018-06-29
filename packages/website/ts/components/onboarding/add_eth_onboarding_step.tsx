@@ -1,15 +1,26 @@
+import { BigNumber } from '@0xproject/utils';
 import * as React from 'react';
 import { Container } from 'ts/components/ui/container';
 import { Text } from 'ts/components/ui/text';
+import { constants } from 'ts/utils/constants';
+import { utils } from 'ts/utils/utils';
 
 export interface AddEthOnboardingStepProps {
-    hasEth: boolean;
+    userEthBalanceInWei: BigNumber;
 }
 
 export const AddEthOnboardingStep: React.StatelessComponent<AddEthOnboardingStepProps> = props =>
-    props.hasEth ? (
+    props.userEthBalanceInWei.gt(0) ? (
         <div className="flex items-center flex-column">
-            <Text> Great! Looks like you already have ETH in your wallet.</Text>
+            <Text>
+                Great! Looks like you already have{' '}
+                {utils.getFormattedAmount(
+                    props.userEthBalanceInWei,
+                    constants.DECIMAL_PLACES_ETH,
+                    constants.ETHER_SYMBOL,
+                )}{' '}
+                in your wallet.
+            </Text>
             <Container marginTop="15px" marginBottom="15px">
                 <img src="/images/ether_alt.svg" height="50px" width="50px" />
             </Container>

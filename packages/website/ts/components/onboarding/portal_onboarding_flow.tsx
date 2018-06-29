@@ -97,13 +97,7 @@ class PlainPortalOnboardingFlow extends React.Component<PortalOnboardingFlowProp
                 target: '.wallet',
                 title: 'Step 1: Add ETH',
                 content: (
-                    <AddEthOnboardingStep
-                        hasEth={
-                            !_.isUndefined(this.props.userEtherBalanceInWei)
-                                ? this.props.userEtherBalanceInWei.gt(0)
-                                : false
-                        }
-                    />
+                    <AddEthOnboardingStep userEthBalanceInWei={this.props.userEtherBalanceInWei || new BigNumber(0)} />
                 ),
                 placement: 'right',
                 continueButtonDisplay: this._userHasVisibleEth() ? 'enabled' : 'disabled',
