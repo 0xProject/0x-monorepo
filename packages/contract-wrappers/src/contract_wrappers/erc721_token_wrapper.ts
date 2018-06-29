@@ -360,8 +360,8 @@ export class ERC721TokenWrapper extends ContractWrapper {
             normalizedSenderAddress,
         );
         if (!isApprovedForAll) {
-            const approved = await this.getApprovedIfExistsAsync(normalizedTokenAddress, tokenId);
-            if (approved !== senderAddress) {
+            const approvedAddress = await this.getApprovedIfExistsAsync(normalizedTokenAddress, tokenId);
+            if (approvedAddress !== senderAddress) {
                 throw new Error(ContractWrappersError.ERC721NoApproval);
             }
         }
