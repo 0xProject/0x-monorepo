@@ -274,7 +274,7 @@ export class Wallet extends React.Component<WalletProps, WalletState> {
     private _getBodyStyle(): React.CSSProperties {
         return {
             ...styles.bodyInnerDiv,
-            overflow: this.state.isHoveringSidebar ? 'auto' : 'hidden',
+            overflowY: this.state.isHoveringSidebar ? 'scroll' : 'hidden',
             marginRight: this.state.isHoveringSidebar ? 0 : 4,
             // TODO: make this completely responsive
             maxHeight: this.props.screenWidth !== ScreenWidths.Sm ? 475 : undefined,
