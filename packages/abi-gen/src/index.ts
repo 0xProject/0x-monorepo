@@ -73,6 +73,8 @@ function registerPartials(partialsGlob: string): void {
 
 function writeOutputFile(name: string, renderedTsCode: string): void {
     let fileName = toSnakeCase(name);
+    // HACK: Snake case doesn't make a lot of sense for abbreviated names but we can't reliably detect abbreviations
+    // so we special-case the abbreviations we use.
     fileName = fileName.replace('z_r_x', 'zrx').replace('e_r_c', 'erc');
     const filePath = `${args.output}/${fileName}.ts`;
     fs.writeFileSync(filePath, renderedTsCode);
