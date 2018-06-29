@@ -27,7 +27,7 @@ export const AccountConnection: React.StatelessComponent<AccountConnectionProps>
     );
 };
 
-function getInjectedProviderColor(accountState: AccountState): string {
+const getInjectedProviderColor = (accountState: AccountState) => {
     switch (accountState) {
         case AccountState.Ready:
             return colors.limeGreen;
@@ -37,4 +37,4 @@ function getInjectedProviderColor(accountState: AccountState): string {
         default:
             return colors.red;
     }
-}
+};
