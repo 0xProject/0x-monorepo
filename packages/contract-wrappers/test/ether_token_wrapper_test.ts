@@ -94,7 +94,7 @@ describe('EtherTokenWrapper', () => {
                 depositWeiAmount,
                 addressWithETH,
             );
-            await web3Wrapper.awaitTransactionSuccessAsync(txHash);
+            await web3Wrapper.awaitTransactionSuccessAsync(txHash, constants.AWAIT_TRANSACTION_MINED_MS);
 
             const postETHBalanceInWei = await web3Wrapper.getBalanceInWeiAsync(addressWithETH);
             const postWETHBalanceInBaseUnits = await contractWrappers.erc20Token.getBalanceAsync(
@@ -139,7 +139,7 @@ describe('EtherTokenWrapper', () => {
                 depositWeiAmount,
                 addressWithETH,
             );
-            await web3Wrapper.awaitTransactionSuccessAsync(txHash);
+            await web3Wrapper.awaitTransactionSuccessAsync(txHash, constants.AWAIT_TRANSACTION_MINED_MS);
 
             const postETHBalance = await web3Wrapper.getBalanceInWeiAsync(addressWithETH);
             const postWETHBalanceInBaseUnits = await contractWrappers.erc20Token.getBalanceAsync(
@@ -351,7 +351,7 @@ describe('EtherTokenWrapper', () => {
                 etherTokenAddress,
                 addressWithETH,
             );
-            await web3Wrapper.awaitTransactionSuccessAsync(txHash);
+            await web3Wrapper.awaitTransactionSuccessAsync(txHash, constants.AWAIT_TRANSACTION_MINED_MS);
             const eventName = WETH9Events.Approval;
             const indexFilterValues = {};
             const logs = await contractWrappers.etherToken.getLogsAsync<WETH9ApprovalEventArgs>(
@@ -388,7 +388,7 @@ describe('EtherTokenWrapper', () => {
                 etherTokenAddress,
                 addressWithETH,
             );
-            await web3Wrapper.awaitTransactionSuccessAsync(txHash);
+            await web3Wrapper.awaitTransactionSuccessAsync(txHash, constants.AWAIT_TRANSACTION_MINED_MS);
             const differentEventName = WETH9Events.Transfer;
             const indexFilterValues = {};
             const logs = await contractWrappers.etherToken.getLogsAsync(
@@ -404,12 +404,12 @@ describe('EtherTokenWrapper', () => {
                 etherTokenAddress,
                 addressWithETH,
             );
-            await web3Wrapper.awaitTransactionSuccessAsync(txHash);
+            await web3Wrapper.awaitTransactionSuccessAsync(txHash, constants.AWAIT_TRANSACTION_MINED_MS);
             txHash = await contractWrappers.erc20Token.setUnlimitedProxyAllowanceAsync(
                 etherTokenAddress,
                 addressWithoutFunds,
             );
-            await web3Wrapper.awaitTransactionSuccessAsync(txHash);
+            await web3Wrapper.awaitTransactionSuccessAsync(txHash, constants.AWAIT_TRANSACTION_MINED_MS);
             const eventName = WETH9Events.Approval;
             const indexFilterValues = {
                 _owner: addressWithETH,

@@ -592,7 +592,7 @@ describe('ERC20Wrapper', () => {
         });
         it('should get logs with decoded args emitted by Approval', async () => {
             txHash = await contractWrappers.erc20Token.setUnlimitedProxyAllowanceAsync(tokenAddress, coinbase);
-            await web3Wrapper.awaitTransactionSuccessAsync(txHash);
+            await web3Wrapper.awaitTransactionSuccessAsync(txHash, constants.AWAIT_TRANSACTION_MINED_MS);
             const eventName = ERC20TokenEvents.Approval;
             const indexFilterValues = {};
             const logs = await contractWrappers.erc20Token.getLogsAsync<ERC20TokenApprovalEventArgs>(
@@ -610,7 +610,7 @@ describe('ERC20Wrapper', () => {
         });
         it('should only get the logs with the correct event name', async () => {
             txHash = await contractWrappers.erc20Token.setUnlimitedProxyAllowanceAsync(tokenAddress, coinbase);
-            await web3Wrapper.awaitTransactionSuccessAsync(txHash);
+            await web3Wrapper.awaitTransactionSuccessAsync(txHash, constants.AWAIT_TRANSACTION_MINED_MS);
             const differentEventName = ERC20TokenEvents.Transfer;
             const indexFilterValues = {};
             const logs = await contractWrappers.erc20Token.getLogsAsync(
@@ -623,12 +623,12 @@ describe('ERC20Wrapper', () => {
         });
         it('should only get the logs with the correct indexed fields', async () => {
             txHash = await contractWrappers.erc20Token.setUnlimitedProxyAllowanceAsync(tokenAddress, coinbase);
-            await web3Wrapper.awaitTransactionSuccessAsync(txHash);
+            await web3Wrapper.awaitTransactionSuccessAsync(txHash, constants.AWAIT_TRANSACTION_MINED_MS);
             txHash = await contractWrappers.erc20Token.setUnlimitedProxyAllowanceAsync(
                 tokenAddress,
                 addressWithoutFunds,
             );
-            await web3Wrapper.awaitTransactionSuccessAsync(txHash);
+            await web3Wrapper.awaitTransactionSuccessAsync(txHash, constants.AWAIT_TRANSACTION_MINED_MS);
             const eventName = ERC20TokenEvents.Approval;
             const indexFilterValues = {
                 _owner: coinbase,
