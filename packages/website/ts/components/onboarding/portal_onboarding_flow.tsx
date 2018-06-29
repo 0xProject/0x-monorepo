@@ -53,8 +53,14 @@ class PlainPortalOnboardingFlow extends React.Component<PortalOnboardingFlowProp
     public componentWillUnmount(): void {
         this._unlisten();
     }
-    public componentDidUpdate(): void {
+    public componentDidUpdate(prevProps: PortalOnboardingFlowProps): void {
         this._adjustStepIfShould();
+        if (!prevProps.isRunning && this.props.isRunning) {
+            // On mobile, make sure the wallet is completely visible.
+            if (this.props.screenWidth === ScreenWidths.Sm) {
+                document.querySelector('.wallet').scrollIntoView();
+            }
+        }
     }
     public render(): React.ReactNode {
         return (

@@ -9,6 +9,7 @@ import deepEqual = require('deep-equal');
 import * as _ from 'lodash';
 import * as moment from 'moment';
 import {
+    AccountState,
     BlockchainCallErrs,
     BrowserType,
     Environments,
@@ -192,23 +193,37 @@ export const utils = {
         const truncatedAddress = `${address.substring(0, 6)}...${address.substr(-4)}`; // 0x3d5a...b287
         return truncatedAddress;
     },
-    getReadableAccountState(
+    getReadableAccountState(accountState: AccountState, userAddress: string): string {
+        switch (accountState) {
+            case AccountState.Loading:
+                return 'Loading...';
+            case AccountState.Ready:
+                return utils.getAddressBeginAndEnd(userAddress);
+            case AccountState.Locked:
+                return 'Please Unlock';
+            case AccountState.Disconnected:
+                return 'Connect a Wallet';
+            default:
+                return '';
+        }
+    },
+    getAccountState(
         isBlockchainReady: boolean,
         providerType: ProviderType,
         injectedProviderName: string,
         userAddress?: string,
-    ): string {
+    ): AccountState {
         const isAddressAvailable = !_.isUndefined(userAddress) && !_.isEmpty(userAddress);
         const isExternallyInjectedProvider = utils.isExternallyInjected(providerType, injectedProviderName);
         if (!isBlockchainReady) {
-            return 'Loading account';
+            return AccountState.Loading;
         } else if (isAddressAvailable) {
-            return utils.getAddressBeginAndEnd(userAddress);
+            return AccountState.Ready;
             // tslint:disable-next-line: prefer-conditional-expression
         } else if (isExternallyInjectedProvider) {
-            return 'Account locked';
+            return AccountState.Locked;
         } else {
-            return 'No wallet detected';
+            return AccountState.Disconnected;
         }
     },
     hasUniqueNameAndSymbol(tokens: Token[], token: Token): boolean {

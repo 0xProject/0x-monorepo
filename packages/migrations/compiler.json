@@ -1,6 +1,10 @@
 {
     "contractsDir": "../contracts/src/contracts",
     "compilerSettings": {
+        "optimizer": {
+            "enabled": true,
+            "runs": 1000000
+        },
         "outputSelection": {
             "*": {
                 "*": [

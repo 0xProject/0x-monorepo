@@ -6,9 +6,9 @@ export interface SectionProps {
 }
 export const Section = (props: SectionProps) => {
     return (
-        <div className="flex flex-column" style={{ height: '100%' }}>
+        <div className="flex flex-column">
             {props.header}
-            <div className="flex-auto">{props.body}</div>
+            {props.body}
         </div>
     );
 };
