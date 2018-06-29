@@ -24,7 +24,7 @@
         "generate_contract_wrappers:v2":
             "abi-gen --abis  ${npm_package_config_abis_v2} --template ../contract_templates/contract.handlebars --partials '../contract_templates/partials/**/*.handlebars' --output src/v2/contract_wrappers --backend ethers",
         "compile:v1": "sol-compiler --artifacts-dir artifacts/1.0.0 --contracts Exchange_v1,DummyERC20Token,ZRXToken,WETH9,TokenTransferProxy_v1,MultiSigWallet,MultiSigWalletWithTimeLock,MultiSigWalletWithTimeLockExceptRemoveAuthorizedAddress,TokenRegistry",
-        "compile:v2": "sol-compiler --artifacts-dir artifacts/2.0.0 --contracts ERC20Token,DummyERC20Token,ERC721Token,DummyERC721Token,ERC20Proxy,ERC721Proxy,Exchange,MultiSigWalletWithTimeLockExceptRemoveAuthorizedAddress,ZRXToken,WETH9,IWallet,IValidator"
+        "compile:v2": "sol-compiler --artifacts-dir artifacts/2.0.0 --contracts AssetProxyOwner,ERC20Token,DummyERC20Token,ERC721Token,DummyERC721Token,ERC20Proxy,ERC721Proxy,Exchange,MultiSigWalletWithTimeLockExceptRemoveAuthorizedAddress,ZRXToken,WETH9,IWallet,IValidator"
     },
     "config": {
         "abis": {
@@ -50,6 +50,7 @@
     },
     "dependencies": {
         "@0xproject/base-contract": "^0.3.4",
+        "@0xproject/order-utils": "^1.0.0",
         "@0xproject/sol-compiler": "^0.5.2",
         "@0xproject/typescript-typings": "^0.4.1",
         "@0xproject/utils": "^0.7.1",
