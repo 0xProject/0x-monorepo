@@ -166,11 +166,12 @@ describe('ERC721Wrapper', () => {
             );
             expect(isApprovedForAll).to.be.false();
             // set
+            const isApprovedForAll = true;
             let txHash = await contractWrappers.erc721Token.setApprovalForAllAsync(
                 tokenAddress,
                 ownerAddress,
                 operatorAddress,
-                true,
+                isApprovedForAll,
             );
             await web3Wrapper.awaitTransactionSuccessAsync(txHash, constants.AWAIT_TRANSACTION_MINED_MS);
             isApprovedForAll = await contractWrappers.erc721Token.isApprovedForAllAsync(
@@ -197,13 +198,14 @@ describe('ERC721Wrapper', () => {
     });
     describe('#setProxyApprovalForAllAsync/isProxyApprovedForAllAsync', () => {
         it('should check if proxy address is approved', async () => {
+            let isApprovedForAll = true;
             const txHash = await contractWrappers.erc721Token.setProxyApprovalForAllAsync(
                 tokenAddress,
                 ownerAddress,
-                true,
+                isApprovedForAll,
             );
             await web3Wrapper.awaitTransactionSuccessAsync(txHash, constants.AWAIT_TRANSACTION_MINED_MS);
-            const isApprovedForAll = await contractWrappers.erc721Token.isProxyApprovedForAllAsync(
+            isApprovedForAll = await contractWrappers.erc721Token.isProxyApprovedForAllAsync(
                 tokenAddress,
                 ownerAddress,
             );
@@ -382,11 +384,12 @@ describe('ERC721Wrapper', () => {
             tokenTransferProxyAddress = contractWrappers.erc721Proxy.getContractAddress();
         });
         it('should get logs with decoded args emitted by ApprovalForAll', async () => {
+            const isApprovedForAll = true;
             txHash = await contractWrappers.erc721Token.setApprovalForAllAsync(
                 tokenAddress,
                 ownerAddress,
                 operatorAddress,
-                true,
+                isApprovedForAll,
             );
             await web3Wrapper.awaitTransactionSuccessAsync(txHash, constants.AWAIT_TRANSACTION_MINED_MS);
             const eventName = ERC721TokenEvents.ApprovalForAll;
@@ -402,14 +405,15 @@ describe('ERC721Wrapper', () => {
             expect(logs[0].event).to.be.equal(eventName);
             expect(args._owner).to.be.equal(ownerAddress);
             expect(args._operator).to.be.equal(operatorAddress);
-            expect(args._approved).to.be.equal(true);
+            expect(args._approved).to.be.equal(isApprovedForAll);
         });
         it('should only get the logs with the correct event name', async () => {
+            const isApprovedForAll = true;
             txHash = await contractWrappers.erc721Token.setApprovalForAllAsync(
                 tokenAddress,
                 ownerAddress,
                 operatorAddress,
-                true,
+                isApprovedForAll,
             );
             await web3Wrapper.awaitTransactionSuccessAsync(txHash, constants.AWAIT_TRANSACTION_MINED_MS);
             const differentEventName = ERC721TokenEvents.Transfer;
@@ -423,18 +427,19 @@ describe('ERC721Wrapper', () => {
             expect(logs).to.have.length(0);
         });
         it.only('should only get the logs with the correct indexed fields', async () => {
+            const isApprovedForAll = true;
             txHash = await contractWrappers.erc721Token.setApprovalForAllAsync(
                 tokenAddress,
                 ownerAddress,
                 operatorAddress,
-                true,
+                isApprovedForAll,
             );
             await web3Wrapper.awaitTransactionSuccessAsync(txHash, constants.AWAIT_TRANSACTION_MINED_MS);
             txHash = await contractWrappers.erc721Token.setApprovalForAllAsync(
                 tokenAddress,
                 anotherOwnerAddress,
                 operatorAddress,
-                true,
+                isApprovedForAll,
             );
             await web3Wrapper.awaitTransactionSuccessAsync(txHash, constants.AWAIT_TRANSACTION_MINED_MS);
             const eventName = ERC721TokenEvents.ApprovalForAll;
