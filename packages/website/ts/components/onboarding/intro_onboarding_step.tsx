@@ -1,5 +1,6 @@
 import * as React from 'react';
 import { Container } from 'ts/components/ui/container';
+import { Image } from 'ts/components/ui/image';
 import { Text } from 'ts/components/ui/text';
 
 export interface IntroOnboardingStepProps {}
@@ -11,15 +12,15 @@ export const IntroOnboardingStep: React.StatelessComponent<IntroOnboardingStepPr
         </Text>
         <Container width="100%" marginTop="25px" marginBottom="15px" className="flex justify-around">
             <div className="flex flex-column items-center">
-                <img src="/images/ether.png" height="50px" width="50px" />
+                <Image src="/images/ether.png" height="50px" width="50px" />
                 <Text> Add ETH </Text>
             </div>
             <div className="flex flex-column items-center">
-                <img src="/images/eth_token.svg" height="50px" width="50x" />
+                <Image src="/images/eth_token.svg" height="50px" width="50x" />
                 <Text> Wrap ETH </Text>
             </div>
             <div className="flex flex-column items-center">
-                <img src="/images/fake_toggle.svg" height="50px" width="50px" />
+                <Image src="/images/fake_toggle.svg" height="50px" width="50px" />
                 <Text> Unlock tokens </Text>
             </div>
         </Container>
