@@ -3251,6 +3251,10 @@ dbug@~0.4.2:
   version "0.4.2"
   resolved "https://registry.yarnpkg.com/dbug/-/dbug-0.4.2.tgz#32b4b3105e8861043a6f9ac755d80e542d365b31"
 
+debounce@^1.1.0:
+  version "1.1.0"
+  resolved "https://registry.yarnpkg.com/debounce/-/debounce-1.1.0.tgz#6a1a4ee2a9dc4b7c24bb012558dbcdb05b37f408"
+
 debug-log@^1.0.1:
   version "1.0.1"
   resolved "https://registry.yarnpkg.com/debug-log/-/debug-log-1.0.1.tgz#2307632d4c04382b8df8a32f70b895046d52745f"
@@ -5060,6 +5064,14 @@ github-username@^4.0.0:
   resolved "https://registry.yarnpkg.com/github-username/-/github-username-4.1.0.tgz#cbe280041883206da4212ae9e4b5f169c30bf417"
   dependencies:
     gh-got "^6.0.0"
+
+gl-mat4@1.1.4:
+  version "1.1.4"
+  resolved "https://registry.yarnpkg.com/gl-mat4/-/gl-mat4-1.1.4.tgz#1e895b55892e56a896867abd837d38f37a178086"
+
+gl-vec3@1.0.3:
+  version "1.0.3"
+  resolved "https://registry.yarnpkg.com/gl-vec3/-/gl-vec3-1.0.3.tgz#110fd897d0729f6398307381567d0944941bf22b"
 
 glob-all@^3.1.0:
   version "3.1.0"
@@ -7518,6 +7530,13 @@ merkle-patricia-tree@^2.1.2, merkle-patricia-tree@^2.2.0:
     readable-stream "^2.0.0"
     rlp "^2.0.0"
     semaphore ">=1.0.1"
+
+metamask-logo@^2.1.4:
+  version "2.1.4"
+  resolved "https://registry.yarnpkg.com/metamask-logo/-/metamask-logo-2.1.4.tgz#0612b2b0ffc7eeb6be480c310785426ad9599e3c"
+  dependencies:
+    gl-mat4 "1.1.4"
+    gl-vec3 "1.0.3"
 
 methods@~1.1.2:
   version "1.1.2"

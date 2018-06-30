@@ -1,3 +1,4 @@
+import { EventEmitter } from 'events';
 import * as _ from 'lodash';
 import * as React from 'react';
 
@@ -5,6 +6,7 @@ import { Blockchain } from 'ts/blockchain';
 import { Container } from 'ts/components/ui/container';
 import { Image } from 'ts/components/ui/image';
 import { Island } from 'ts/components/ui/island';
+import { MetaMaskMascot } from 'ts/components/ui/metamask_mascot';
 import { Text } from 'ts/components/ui/text';
 import { Dispatcher } from 'ts/redux/dispatcher';
 import { colors } from 'ts/style/colors';
@@ -28,11 +30,17 @@ export interface BodyOverlayProps {
 interface BodyOverlayState {}
 
 export class BodyOverlay extends React.Component<BodyOverlayProps, BodyOverlayState> {
+    private _animationEventEmitter = new EventEmitter();
     public render(): React.ReactNode {
         const accountState = this._getAccountState();
         switch (accountState) {
             case AccountState.Locked:
-                return <LockedOverlay onUseDifferentWalletClicked={this.props.onToggleLedgerDialog} />;
+                return (
+                    <LockedOverlay
+                        eventEmitter={this._animationEventEmitter}
+                        onUseDifferentWalletClicked={this.props.onToggleLedgerDialog}
+                    />
+                );
             case AccountState.Disconnected:
                 return <DisconnectedOverlay onUseDifferentWalletClicked={this.props.onToggleLedgerDialog} />;
             case AccountState.Ready:
@@ -56,10 +64,12 @@ export class BodyOverlay extends React.Component<BodyOverlayProps, BodyOverlaySt
 
 interface LockedOverlayProps {
     className?: string;
+    eventEmitter: EventEmitter;
     onUseDifferentWalletClicked?: () => void;
 }
 const PlainLockedOverlay: React.StatelessComponent<LockedOverlayProps> = ({
     className,
+    eventEmitter,
     onUseDifferentWalletClicked,
 }) => (
     <div className={className}>
@@ -70,7 +80,8 @@ const PlainLockedOverlay: React.StatelessComponent<LockedOverlayProps> = ({
             marginLeft="48px"
             marginRight="48px"
         >
-            <Image src={METAMASK_IMG_SRC} height="70px" />
+            {/* <Image src={METAMASK_IMG_SRC} height="70px" /> */}
+            <MetaMaskMascot height="70" width="70" animationEventEmitter={eventEmitter} />
             <Container marginTop="12px">
                 <Text fontColor={colors.metaMaskOrange} fontSize="16px" fontWeight="bold">
                     Please Unlock MetaMask
