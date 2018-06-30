@@ -199,11 +199,26 @@ export class Wallet extends React.Component<WalletProps, WalletState> {
                 <AccountConnection accountState={accountState} injectedProviderName={this.props.injectedProviderName} />
             </div>
         );
+        const onClick = _.noop;
+        const accessory = (
+            <Container marginRight="15px">
+                <Text
+                    className="zmdi zmdi-more-horiz"
+                    Tag="i"
+                    fontSize="32px"
+                    fontFamily="Material-Design-Iconic-Font"
+                    fontColor={colors.darkGrey}
+                    onClick={onClick}
+                    hoverColor={colors.mediumBlue}
+                />
+            </Container>
+        );
         return (
             <Link key={HEADER_ITEM_KEY} to={ACCOUNT_PATH} style={{ textDecoration: 'none' }}>
                 <StandardIconRow
                     icon={<Identicon address={userAddress} diameter={ICON_DIMENSION} />}
                     main={main}
+                    accessory={accessory}
                     minHeight="60px"
                     backgroundColor={colors.white}
                 />
