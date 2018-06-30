@@ -5,19 +5,21 @@ import RaisedButton from 'material-ui/RaisedButton';
 import ActionAccountBalanceWallet from 'material-ui/svg-icons/action/account-balance-wallet';
 import Lock from 'material-ui/svg-icons/action/lock';
 import * as React from 'react';
+import * as CopyToClipboard from 'react-copy-to-clipboard';
+import { Link } from 'react-router-dom';
 
 import { Blockchain } from 'ts/blockchain';
 import { InstallPrompt } from 'ts/components/top_bar/install_prompt';
-import { ProviderPicker } from 'ts/components/top_bar/provider_picker';
 import { AccountConnection } from 'ts/components/ui/account_connection';
 import { Container } from 'ts/components/ui/container';
 import { DropDown } from 'ts/components/ui/drop_down';
 import { Identicon } from 'ts/components/ui/identicon';
 import { Island } from 'ts/components/ui/island';
+import { SimpleMenu, SimpleMenuItem } from 'ts/components/ui/simple_menu';
 import { Text } from 'ts/components/ui/text';
 import { Dispatcher } from 'ts/redux/dispatcher';
 import { colors } from 'ts/style/colors';
-import { AccountState, ProviderType } from 'ts/types';
+import { AccountState, ProviderType, WebsitePaths } from 'ts/types';
 import { constants } from 'ts/utils/constants';
 import { utils } from 'ts/utils/utils';
 
@@ -76,19 +78,20 @@ export class ProviderDisplay extends React.Component<ProviderDisplayProps, Provi
         const accountState = this._getAccountState();
         switch (accountState) {
             case AccountState.Ready:
-            case AccountState.Locked:
                 return (
-                    <ProviderPicker
-                        dispatcher={this.props.dispatcher}
-                        networkId={this.props.networkId}
-                        injectedProviderName={this.props.injectedProviderName}
-                        providerType={this.props.providerType}
-                        onToggleLedgerDialog={this.props.onToggleLedgerDialog}
-                        blockchain={this.props.blockchain}
-                    />
+                    <SimpleMenu>
+                        <CopyToClipboard text={this.props.userAddress}>
+                            <SimpleMenuItem text="Copy Address to Clipboard" onClick={_.noop} />
+                        </CopyToClipboard>
+                        <SimpleMenuItem text="Use a Different Wallet..." onClick={this.props.onToggleLedgerDialog} />
+                        <Link to={`${WebsitePaths.Portal}/account`} style={{ textDecoration: 'none' }}>
+                            <SimpleMenuItem text="Manage Account" onClick={_.noop} />
+                        </Link>
+                    </SimpleMenu>
                 );
             case AccountState.Disconnected:
                 return <InstallPrompt onToggleLedgerDialog={this.props.onToggleLedgerDialog} />;
+            case AccountState.Locked:
             case AccountState.Loading:
             default:
                 return null;

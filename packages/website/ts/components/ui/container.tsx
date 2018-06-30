@@ -17,6 +17,7 @@ export interface ContainerProps {
     maxHeight?: StringOrNum;
     width?: StringOrNum;
     height?: StringOrNum;
+    minWidth?: StringOrNum;
     minHeight?: StringOrNum;
     isHidden?: boolean;
     className?: string;

@@ -49,7 +49,7 @@ export class DropDown extends React.Component<DropDownProps, DropDownState> {
         // call hoverOff whenever the dropdown receives updated props. This is a hack
         // because it will effectively close the dropdown on any prop update, barring
         // dropdowns from having dynamic content.
-        this._onHoverOff();
+        // this._onHoverOff();
     }
     public render(): React.ReactNode {
         return (
