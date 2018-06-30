@@ -32,43 +32,28 @@ contract MixinAssetProxyDispatcher is
     // Mapping from Asset Proxy Id's to their respective Asset Proxy
     mapping (bytes4 => IAssetProxy) public assetProxies;
 
-    /// @dev Registers an asset proxy to an asset proxy id.
-    ///      An id can only be assigned to a single proxy at a given time.
-    /// @param assetProxyId Id to register`newAssetProxy` under.
-    /// @param newAssetProxy Address of new asset proxy to register, or 0x0 to unset assetProxyId.
-    /// @param oldAssetProxy Existing asset proxy to overwrite, or 0x0 if assetProxyId is currently unused.
-    function registerAssetProxy(
-        bytes4 assetProxyId,
-        address newAssetProxy,
-        address oldAssetProxy
-    )
+    /// @dev Registers an asset proxy to its asset proxy id.
+    ///      Once an asset proxy is registered, it cannot be unregistered.
+    /// @param assetProxy Address of new asset proxy to register.
+    function registerAssetProxy(address assetProxy)
         external
         onlyOwner
     {
-        // Ensure the existing asset proxy is not unintentionally overwritten
+        IAssetProxy assetProxyContract = IAssetProxy(assetProxy);
+
+        // Ensure that no asset proxy exists with current id.
+        bytes4 assetProxyId = assetProxyContract.getProxyId();
         address currentAssetProxy = assetProxies[assetProxyId];
         require(
-            oldAssetProxy == currentAssetProxy,
-            "ASSET_PROXY_MISMATCH"
+            currentAssetProxy == address(0),
+            "ASSET_PROXY_ALREADY_EXISTS"
         );
 
-        IAssetProxy assetProxy = IAssetProxy(newAssetProxy);
-
-        // Ensure that the id of newAssetProxy matches the passed in assetProxyId, unless it is being reset to 0.
-        if (newAssetProxy != address(0)) {
-            bytes4 newAssetProxyId = assetProxy.getProxyId();
-            require(
-                newAssetProxyId == assetProxyId,
-                "ASSET_PROXY_ID_MISMATCH"
-            );
-        }
-
         // Add asset proxy and log registration.
-        assetProxies[assetProxyId] = assetProxy;
-        emit AssetProxySet(
+        assetProxies[assetProxyId] = assetProxyContract;
+        emit AssetProxyRegistered(
             assetProxyId,
-            newAssetProxy,
-            oldAssetProxy
+            assetProxy
         );
     }
 
@@ -112,7 +97,7 @@ contract MixinAssetProxyDispatcher is
                     0xFFFFFFFF00000000000000000000000000000000000000000000000000000000
                 )
             }
-            IAssetProxy assetProxy = assetProxies[assetProxyId];
+            address assetProxy = assetProxies[assetProxyId];
 
             // Ensure that assetProxy exists
             require(
