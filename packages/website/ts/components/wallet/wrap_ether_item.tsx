@@ -172,6 +172,7 @@ export class WrapEtherItem extends React.Component<WrapEtherItemProps, WrapEther
                 <FlatButton
                     backgroundColor={colors.wrapEtherConfirmationButton}
                     label={labelText}
+                    style={{ zIndex: 0 }}
                     labelStyle={styles.wrapEtherConfirmationButtonLabel}
                     onClick={this._wrapEtherConfirmationActionAsync.bind(this)}
                     disabled={this.state.isEthConversionHappening}

@@ -377,10 +377,7 @@ export class Portal extends React.Component<PortalProps, PortalState> {
             </Container>
         );
         return !shouldStartOnboarding ? (
-            <Link
-                to={{ pathname: `${WebsitePaths.Portal}/account`, state: { startOnboarding: true } }}
-                style={{ textDecoration: 'none' }}
-            >
+            <Link to={{ pathname: `${WebsitePaths.Portal}/account` }} style={{ textDecoration: 'none' }}>
                 {startOnboarding}
             </Link>
         ) : (

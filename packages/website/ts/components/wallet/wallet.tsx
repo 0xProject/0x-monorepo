@@ -266,7 +266,7 @@ export class Wallet extends React.Component<WalletProps, WalletState> {
             wrappedEtherDirection: Side.Deposit,
         };
         const key = ETHER_ITEM_KEY;
-        return this._renderBalanceRow(key, icon, primaryText, secondaryText, accessoryItemConfig, 'eth-row');
+        return this._renderBalanceRow(key, icon, primaryText, secondaryText, accessoryItemConfig);
     }
     private _renderTokenRows(): React.ReactNode {
         const trackedTokens = this.props.trackedTokens;
@@ -305,14 +305,7 @@ export class Wallet extends React.Component<WalletProps, WalletState> {
             },
         };
         const key = token.address;
-        return this._renderBalanceRow(
-            key,
-            icon,
-            primaryText,
-            secondaryText,
-            accessoryItemConfig,
-            isWeth ? 'weth-row' : undefined,
-        );
+        return this._renderBalanceRow(key, icon, primaryText, secondaryText, accessoryItemConfig);
     }
     private _renderBalanceRow(
         key: string,
