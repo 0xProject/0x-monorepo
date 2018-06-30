@@ -16,7 +16,7 @@ export interface TextProps {
     center?: boolean;
     fontWeight?: number | string;
     textDecorationLine?: string;
-    onClick?: () => void;
+    onClick?: (event: React.MouseEvent<HTMLElement>) => void;
 }
 
 const PlainText: React.StatelessComponent<TextProps> = ({ children, className, onClick, Tag }) => (
@@ -37,7 +37,7 @@ export const Text = styled(PlainText)`
     ${props => (props.onClick ? 'cursor: pointer' : '')};
     transition: color 0.5s ease;
     &:hover {
-        ${props => (props.onClick ? `color: ${darken(0.1, props.fontColor)}` : '')};
+        ${props => (props.onClick ? `color: ${darken(0.3, props.fontColor)}` : '')};
     }
 `;
 
