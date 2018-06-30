@@ -1,4 +1,4 @@
-import { assetProxyUtils, constants } from '@0xproject/order-utils';
+import { assetProxyUtils } from '@0xproject/order-utils';
 import { BigNumber } from '@0xproject/utils';
 import { Web3Wrapper } from '@0xproject/web3-wrapper';
 import { Provider, TxData } from 'ethereum-types';
@@ -96,16 +96,11 @@ export const runV2MigrationsAsync = async (provider: Provider, artifactsDir: str
     );
 
     // Register the Asset Proxies to the Exchange
-    // HACK: These are exposed in the types package but migrations currently uses an older version
-    // but we can pull the asset data id from the proxies
-    const erc20ProxyId = await erc20proxy.getProxyId.callAsync();
-    const erc721ProxyId = await erc721proxy.getProxyId.callAsync();
-    const oldAddress = constants.NULL_ADDRESS;
     await web3Wrapper.awaitTransactionSuccessAsync(
-        await exchange.registerAssetProxy.sendTransactionAsync(erc20ProxyId, erc20proxy.address, oldAddress),
+        await exchange.registerAssetProxy.sendTransactionAsync(erc20proxy.address),
     );
     await web3Wrapper.awaitTransactionSuccessAsync(
-        await exchange.registerAssetProxy.sendTransactionAsync(erc721ProxyId, erc721proxy.address, oldAddress),
+        await exchange.registerAssetProxy.sendTransactionAsync(erc721proxy.address),
     );
 
     // Dummy ERC20 tokens
