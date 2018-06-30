@@ -66,7 +66,7 @@ export class DropDown extends React.Component<DropDownProps, DropDownState> {
                     targetOrigin={this.props.targetOrigin}
                     onRequestClose={this._closePopover.bind(this)}
                     useLayerForClickAway={false}
-                    animation={PopoverAnimationVertical}
+                    animated={false}
                     zDepth={this.props.zDepth}
                 >
                     <div onMouseEnter={this._onHover.bind(this)} onMouseLeave={this._onHoverOff.bind(this)}>
