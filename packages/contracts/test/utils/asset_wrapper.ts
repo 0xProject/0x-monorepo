@@ -3,8 +3,7 @@ import { AssetProxyId } from '@0xproject/types';
 import { BigNumber, errorUtils } from '@0xproject/utils';
 import * as _ from 'lodash';
 
-import { AbstractAssetWrapper } from '../abstract/abstract_asset_wrapper';
-
+import { AbstractAssetWrapper } from './abstract_asset_wrapper';
 import { constants } from './constants';
 import { ERC20Wrapper } from './erc20_wrapper';
 import { ERC721Wrapper } from './erc721_wrapper';

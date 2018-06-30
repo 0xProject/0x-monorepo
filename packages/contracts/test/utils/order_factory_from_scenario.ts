@@ -2,7 +2,7 @@ import { assetProxyUtils, generatePseudoRandomSalt } from '@0xproject/order-util
 import { Order } from '@0xproject/types';
 import { BigNumber, errorUtils } from '@0xproject/utils';
 
-import { DummyERC721TokenContract } from '../generated_contract_wrappers/dummy_e_r_c721_token';
+import { DummyERC721TokenContract } from '../../generated_contract_wrappers/dummy_e_r_c721_token';
 
 import { constants } from './constants';
 import {

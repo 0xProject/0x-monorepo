@@ -14,20 +14,21 @@ import { LogWithDecodedArgs, Provider, TxData } from 'ethereum-types';
 import * as _ from 'lodash';
 import 'make-promises-safe';
 
-import { ExchangeContract, FillContractEventArgs } from '../generated_contract_wrappers/exchange';
-import { artifacts } from '../utils/artifacts';
-import { expectRevertReasonOrAlwaysFailingTransactionAsync } from '../utils/assertions';
-import { AssetWrapper } from '../utils/asset_wrapper';
-import { chaiSetup } from '../utils/chai_setup';
-import { constants } from '../utils/constants';
-import { ERC20Wrapper } from '../utils/erc20_wrapper';
-import { ERC721Wrapper } from '../utils/erc721_wrapper';
-import { ExchangeWrapper } from '../utils/exchange_wrapper';
-import { OrderFactoryFromScenario } from '../utils/order_factory_from_scenario';
-import { orderUtils } from '../utils/order_utils';
-import { signingUtils } from '../utils/signing_utils';
-import { SimpleAssetBalanceAndProxyAllowanceFetcher } from '../utils/simple_asset_balance_and_proxy_allowance_fetcher';
-import { SimpleOrderFilledCancelledFetcher } from '../utils/simple_order_filled_cancelled_fetcher';
+import { ExchangeContract, FillContractEventArgs } from '../../generated_contract_wrappers/exchange';
+
+import { artifacts } from './artifacts';
+import { expectRevertReasonOrAlwaysFailingTransactionAsync } from './assertions';
+import { AssetWrapper } from './asset_wrapper';
+import { chaiSetup } from './chai_setup';
+import { constants } from './constants';
+import { ERC20Wrapper } from './erc20_wrapper';
+import { ERC721Wrapper } from './erc721_wrapper';
+import { ExchangeWrapper } from './exchange_wrapper';
+import { OrderFactoryFromScenario } from './order_factory_from_scenario';
+import { orderUtils } from './order_utils';
+import { signingUtils } from './signing_utils';
+import { SimpleAssetBalanceAndProxyAllowanceFetcher } from './simple_asset_balance_and_proxy_allowance_fetcher';
+import { SimpleOrderFilledCancelledFetcher } from './simple_order_filled_cancelled_fetcher';
 import {
     AllowanceAmountScenario,
     AssetDataScenario,
@@ -39,7 +40,7 @@ import {
     TakerAssetFillAmountScenario,
     TakerScenario,
     TraderStateScenario,
-} from '../utils/types';
+} from './types';
 
 chaiSetup.configure();
 const expect = chai.expect;

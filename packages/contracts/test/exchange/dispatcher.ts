@@ -6,21 +6,21 @@ import * as chai from 'chai';
 import { LogWithDecodedArgs } from 'ethereum-types';
 import * as _ from 'lodash';
 
-import { DummyERC20TokenContract } from '../../src/generated_contract_wrappers/dummy_e_r_c20_token';
-import { ERC20ProxyContract } from '../../src/generated_contract_wrappers/e_r_c20_proxy';
-import { ERC721ProxyContract } from '../../src/generated_contract_wrappers/e_r_c721_proxy';
+import { DummyERC20TokenContract } from '../../generated_contract_wrappers/dummy_e_r_c20_token';
+import { ERC20ProxyContract } from '../../generated_contract_wrappers/e_r_c20_proxy';
+import { ERC721ProxyContract } from '../../generated_contract_wrappers/e_r_c721_proxy';
 import {
     AssetProxyRegisteredContractEventArgs,
     TestAssetProxyDispatcherContract,
-} from '../../src/generated_contract_wrappers/test_asset_proxy_dispatcher';
-import { artifacts } from '../../src/utils/artifacts';
-import { expectRevertReasonOrAlwaysFailingTransactionAsync } from '../../src/utils/assertions';
-import { chaiSetup } from '../../src/utils/chai_setup';
-import { constants } from '../../src/utils/constants';
-import { ERC20Wrapper } from '../../src/utils/erc20_wrapper';
-import { ERC721Wrapper } from '../../src/utils/erc721_wrapper';
-import { LogDecoder } from '../../src/utils/log_decoder';
-import { provider, txDefaults, web3Wrapper } from '../../src/utils/web3_wrapper';
+} from '../../generated_contract_wrappers/test_asset_proxy_dispatcher';
+import { artifacts } from '../utils/artifacts';
+import { expectRevertReasonOrAlwaysFailingTransactionAsync } from '../utils/assertions';
+import { chaiSetup } from '../utils/chai_setup';
+import { constants } from '../utils/constants';
+import { ERC20Wrapper } from '../utils/erc20_wrapper';
+import { ERC721Wrapper } from '../utils/erc721_wrapper';
+import { LogDecoder } from '../utils/log_decoder';
+import { provider, txDefaults, web3Wrapper } from '../utils/web3_wrapper';
 
 chaiSetup.configure();
 const expect = chai.expect;
