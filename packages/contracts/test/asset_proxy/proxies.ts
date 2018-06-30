@@ -15,6 +15,7 @@ import {
 import { DummyERC721TokenContract } from '../../generated_contract_wrappers/dummy_e_r_c721_token';
 import { ERC20ProxyContract } from '../../generated_contract_wrappers/e_r_c20_proxy';
 import { ERC721ProxyContract } from '../../generated_contract_wrappers/e_r_c721_proxy';
+import { IAssetProxyContract } from '../../generated_contract_wrappers/i_asset_proxy';
 import { artifacts } from '../utils/artifacts';
 import { expectRevertReasonOrAlwaysFailingTransactionAsync } from '../utils/assertions';
 import { chaiSetup } from '../utils/chai_setup';
