@@ -3,14 +3,11 @@
 import { abiUtils, logUtils } from '@0xproject/utils';
 import chalk from 'chalk';
 import { AbiDefinition, ConstructorAbi, EventAbi, MethodAbi } from 'ethereum-types';
-import * as fs from 'fs';
 import { sync as globSync } from 'glob';
 import * as Handlebars from 'handlebars';
 import * as _ from 'lodash';
 import * as mkdirp from 'mkdirp';
 import * as yargs from 'yargs';
-
-import toSnakeCase = require('to-snake-case');
 
 import { ContextData, ContractsBackend, ParamKind } from './types';
 import { utils } from './utils';
@@ -70,34 +67,6 @@ function registerPartials(partialsGlob: string): void {
     }
 }
 
-function makeOutputFilePath(name: string): string {
-    let fileName = toSnakeCase(name);
-    // HACK: Snake case doesn't make a lot of sense for abbreviated names but we can't reliably detect abbreviations
-    // so we special-case the abbreviations we use.
-    fileName = fileName.replace('z_r_x', 'zrx').replace('e_r_c', 'erc');
-    return `${args.output}/${fileName}.ts`;
-}
-
-function writeOutputFile(name: string, renderedTsCode: string): void {
-    const filePath = makeOutputFilePath(name);
-    fs.writeFileSync(filePath, renderedTsCode);
-    logUtils.log(`Created: ${chalk.bold(filePath)}`);
-}
-
-function isOutputFileUpToDate(abiFile: string, outFile: string): boolean {
-    const abiFileModTimeMs = fs.statSync(abiFile).mtimeMs;
-    try {
-        const outFileModTimeMs = fs.statSync(makeOutputFilePath(outFile)).mtimeMs;
-        return outFileModTimeMs > abiFileModTimeMs;
-    } catch (err) {
-        if (err.code === 'ENOENT') {
-            return false;
-        } else {
-            throw err;
-        }
-    }
-}
-
 Handlebars.registerHelper('parameterType', utils.solTypeToTsType.bind(utils, ParamKind.Input, args.backend));
 Handlebars.registerHelper('returnType', utils.solTypeToTsType.bind(utils, ParamKind.Output, args.backend));
 if (args.partials) {
@@ -136,8 +105,11 @@ for (const abiFileName of abiFileNames) {
         process.exit(1);
     }
 
-    if (isOutputFileUpToDate(abiFileName, namedContent.name)) {
-        logUtils.log(`Already up to date: ${chalk.bold(makeOutputFilePath(namedContent.name))}`);
+    const outFileName = utils.makeOutputFileName(namedContent.name);
+    const outFilePath = `${args.output}/${outFileName}.ts`;
+
+    if (utils.isOutputFileUpToDate(abiFileName, outFilePath)) {
+        logUtils.log(`Aready up to date: ${chalk.bold(outFilePath)}`);
         continue;
     }
 
@@ -175,5 +147,6 @@ for (const abiFileName of abiFileNames) {
         events: eventAbis,
     };
     const renderedTsCode = template(contextData);
-    writeOutputFile(namedContent.name, renderedTsCode);
+    utils.writeOutputFile(outFilePath, renderedTsCode);
+    logUtils.log(`Created: ${chalk.bold(outFilePath)}`);
 }
