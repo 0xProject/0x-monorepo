@@ -8,12 +8,13 @@ const DEFAULT_STYLE = {
 };
 
 interface DropDownProps {
-    hoverActiveNode: React.ReactNode;
+    activeNode: React.ReactNode;
     popoverContent: React.ReactNode;
     anchorOrigin: MaterialUIPosition;
     targetOrigin: MaterialUIPosition;
     style?: React.CSSProperties;
     zDepth?: number;
+    shouldWaitForClickToActivate?: boolean;
 }
 
 interface DropDownState {
@@ -25,6 +26,7 @@ export class DropDown extends React.Component<DropDownProps, DropDownState> {
     public static defaultProps: Partial<DropDownProps> = {
         style: DEFAULT_STYLE,
         zDepth: 1,
+        shouldWaitForClickToActivate: false,
     };
     private _isHovering: boolean;
     private _popoverCloseCheckIntervalId: number;
@@ -49,7 +51,7 @@ export class DropDown extends React.Component<DropDownProps, DropDownState> {
         // call hoverOff whenever the dropdown receives updated props. This is a hack
         // because it will effectively close the dropdown on any prop update, barring
         // dropdowns from having dynamic content.
-        // this._onHoverOff();
+        this._onHoverOff();
     }
     public render(): React.ReactNode {
         return (
@@ -58,7 +60,7 @@ export class DropDown extends React.Component<DropDownProps, DropDownState> {
                 onMouseEnter={this._onHover.bind(this)}
                 onMouseLeave={this._onHoverOff.bind(this)}
             >
-                {this.props.hoverActiveNode}
+                <div onClick={this._onActiveNodeClick.bind(this)}>{this.props.activeNode}</div>
                 <Popover
                     open={this.state.isDropDownOpen}
                     anchorEl={this.state.anchorEl}
@@ -69,16 +71,31 @@ export class DropDown extends React.Component<DropDownProps, DropDownState> {
                     animated={false}
                     zDepth={this.props.zDepth}
                 >
-                    <div onMouseEnter={this._onHover.bind(this)} onMouseLeave={this._onHoverOff.bind(this)}>
+                    <div
+                        onMouseEnter={this._onHover.bind(this)}
+                        onMouseLeave={this._onHoverOff.bind(this)}
+                        onClick={this._closePopover.bind(this)}
+                    >
                         {this.props.popoverContent}
                     </div>
                 </Popover>
             </div>
         );
     }
+    private _onActiveNodeClick(event: React.FormEvent<HTMLInputElement>): void {
+        event.stopPropagation();
+        if (this.props.shouldWaitForClickToActivate) {
+            this.setState({
+                isDropDownOpen: true,
+                anchorEl: event.currentTarget,
+            });
+        }
+    }
     private _onHover(event: React.FormEvent<HTMLInputElement>): void {
         this._isHovering = true;
-        this._checkIfShouldOpenPopover(event);
+        if (!this.props.shouldWaitForClickToActivate) {
+            this._checkIfShouldOpenPopover(event);
+        }
     }
     private _checkIfShouldOpenPopover(event: React.FormEvent<HTMLInputElement>): void {
         if (this.state.isDropDownOpen) {

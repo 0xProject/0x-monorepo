@@ -206,7 +206,7 @@ export class Wallet extends React.Component<WalletProps, WalletState> {
         const accessory = (
             <Container marginRight="15px">
                 <DropDown
-                    hoverActiveNode={
+                    activeNode={
                         <Text
                             className="zmdi zmdi-more-horiz"
                             Tag="i"
@@ -218,7 +218,7 @@ export class Wallet extends React.Component<WalletProps, WalletState> {
                         />
                     }
                     popoverContent={
-                        <SimpleMenu>
+                        <SimpleMenu minWidth="150px">
                             <CopyToClipboard text={this.props.userAddress}>
                                 <SimpleMenuItem text="Copy Address to Clipboard" onClick={_.noop} />
                             </CopyToClipboard>
@@ -234,19 +234,19 @@ export class Wallet extends React.Component<WalletProps, WalletState> {
                     anchorOrigin={{ horizontal: 'right', vertical: 'bottom' }}
                     targetOrigin={{ horizontal: 'right', vertical: 'top' }}
                     zDepth={1}
+                    shouldWaitForClickToActivate={true}
                 />
             </Container>
         );
         return (
-            <Link key={HEADER_ITEM_KEY} to={ACCOUNT_PATH} style={{ textDecoration: 'none' }}>
-                <StandardIconRow
-                    icon={<Identicon address={userAddress} diameter={ICON_DIMENSION} />}
-                    main={main}
-                    accessory={accessory}
-                    minHeight="60px"
-                    backgroundColor={colors.white}
-                />
-            </Link>
+            <StandardIconRow
+                key={HEADER_ITEM_KEY}
+                icon={<Identicon address={userAddress} diameter={ICON_DIMENSION} />}
+                main={main}
+                accessory={accessory}
+                minHeight="60px"
+                backgroundColor={colors.white}
+            />
         );
     }
     private _renderBody(): React.ReactElement<{}> {

@@ -5,15 +5,17 @@ import { Container } from 'ts/components/ui/container';
 import { Text } from 'ts/components/ui/text';
 import { colors } from 'ts/style/colors';
 
-export interface SimpleMenuProps {}
+export interface SimpleMenuProps {
+    minWidth?: number | string;
+}
 
-export const SimpleMenu: React.StatelessComponent<SimpleMenuProps> = ({ children }) => {
+export const SimpleMenu: React.StatelessComponent<SimpleMenuProps> = ({ children, minWidth }) => {
     return (
         <Container
             marginLeft="16px"
             marginRight="16px"
             marginBottom="16px"
-            minWidth="220px"
+            minWidth={minWidth}
             className="flex flex-column"
         >
             {children}
@@ -26,9 +28,13 @@ export interface SimpleMenuItemProps {
     onClick?: () => void;
 }
 export const SimpleMenuItem: React.StatelessComponent<SimpleMenuItemProps> = ({ text, onClick }) => (
-    <Container marginTop="16px" minWidth="220px" className="flex flex-column">
+    <Container marginTop="16px" className="flex flex-column">
         <Text fontSize="14px" fontColor={colors.darkGrey} onClick={onClick} hoverColor={colors.mediumBlue}>
             {text}
         </Text>
     </Container>
 );
+
+SimpleMenu.defaultProps = {
+    minWidth: '220px',
+};

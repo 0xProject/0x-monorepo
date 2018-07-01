@@ -51,7 +51,7 @@ export class ProviderDisplay extends React.Component<ProviderDisplayProps, Provi
             this.props.providerType,
             this.props.injectedProviderName,
         );
-        const hoverActiveNode = (
+        const activeNode = (
             <Island className="flex items-center py1 px2" style={styles.root}>
                 {this._renderIcon()}
                 <Container marginLeft="12px" marginRight="12px">
@@ -61,14 +61,13 @@ export class ProviderDisplay extends React.Component<ProviderDisplayProps, Provi
             </Island>
         );
         const hasLedgerProvider = this.props.providerType === ProviderType.Ledger;
-        const horizontalPosition = isExternallyInjectedProvider || hasLedgerProvider ? 'left' : 'middle';
         return (
             <div style={{ width: 'fit-content', height: 48, float: 'right' }}>
                 <DropDown
-                    hoverActiveNode={hoverActiveNode}
+                    activeNode={activeNode}
                     popoverContent={this.renderPopoverContent(isExternallyInjectedProvider, hasLedgerProvider)}
-                    anchorOrigin={{ horizontal: horizontalPosition, vertical: 'bottom' }}
-                    targetOrigin={{ horizontal: horizontalPosition, vertical: 'top' }}
+                    anchorOrigin={{ horizontal: 'middle', vertical: 'bottom' }}
+                    targetOrigin={{ horizontal: 'middle', vertical: 'top' }}
                     zDepth={1}
                 />
             </div>
