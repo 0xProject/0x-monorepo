@@ -21,6 +21,7 @@ import {
     DifferentWalletSimpleMenuItem,
     GoToAccountManagementSimpleMenuItem,
     SimpleMenu,
+    SimpleMenuItem,
 } from 'ts/components/ui/simple_menu';
 import { Text } from 'ts/components/ui/text';
 import { TokenIcon } from 'ts/components/ui/token_icon';
@@ -207,36 +208,36 @@ export class Wallet extends React.Component<WalletProps, WalletState> {
         );
         const onClick = _.noop;
         const accessory = (
-            <Container marginRight="15px">
-                <DropDown
-                    activeNode={
-                        // this container gives the menu button more of a hover target for the drop down
-                        // it prevents accidentally closing the menu by moving off of the button
-                        <Container paddingLeft="100px">
-                            <Text
-                                className="zmdi zmdi-more-horiz"
-                                Tag="i"
-                                fontSize="32px"
-                                fontFamily="Material-Design-Iconic-Font"
-                                fontColor={colors.darkGrey}
-                                onClick={onClick}
-                                hoverColor={colors.mediumBlue}
-                            />
-                        </Container>
-                    }
-                    popoverContent={
-                        <SimpleMenu minWidth="150px">
-                            <CopyAddressSimpleMenuItem userAddress={this.props.userAddress} />
-                            <DifferentWalletSimpleMenuItem onClick={this.props.onToggleLedgerDialog} />
-                            <GoToAccountManagementSimpleMenuItem />
-                        </SimpleMenu>
-                    }
-                    anchorOrigin={{ horizontal: 'right', vertical: 'bottom' }}
-                    targetOrigin={{ horizontal: 'right', vertical: 'top' }}
-                    zDepth={1}
-                    shouldWaitForClickToActivate={true}
-                />
-            </Container>
+            <DropDown
+                activeNode={
+                    // this container gives the menu button more of a hover target for the drop down
+                    // it prevents accidentally closing the menu by moving off of the button
+                    <Container paddingLeft="100px" paddingRight="15px">
+                        <Text
+                            className="zmdi zmdi-more-horiz"
+                            Tag="i"
+                            fontSize="32px"
+                            fontFamily="Material-Design-Iconic-Font"
+                            fontColor={colors.darkGrey}
+                            onClick={onClick}
+                            hoverColor={colors.mediumBlue}
+                        />
+                    </Container>
+                }
+                popoverContent={
+                    <SimpleMenu minWidth="150px">
+                        <CopyAddressSimpleMenuItem userAddress={this.props.userAddress} />
+                        <DifferentWalletSimpleMenuItem onClick={this.props.onToggleLedgerDialog} />
+                        <SimpleMenuItem displayText="Add Tokens..." onClick={this.props.onAddToken} />
+                        <SimpleMenuItem displayText="Remove Tokens..." onClick={this.props.onRemoveToken} />
+                        <GoToAccountManagementSimpleMenuItem />
+                    </SimpleMenu>
+                }
+                anchorOrigin={{ horizontal: 'right', vertical: 'bottom' }}
+                targetOrigin={{ horizontal: 'right', vertical: 'top' }}
+                zDepth={1}
+                shouldWaitForClickToActivate={true}
+            />
         );
         return (
             <StandardIconRow
