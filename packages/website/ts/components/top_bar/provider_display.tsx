@@ -5,8 +5,6 @@ import RaisedButton from 'material-ui/RaisedButton';
 import ActionAccountBalanceWallet from 'material-ui/svg-icons/action/account-balance-wallet';
 import Lock from 'material-ui/svg-icons/action/lock';
 import * as React from 'react';
-import * as CopyToClipboard from 'react-copy-to-clipboard';
-import { Link } from 'react-router-dom';
 
 import { Blockchain } from 'ts/blockchain';
 import { InstallPrompt } from 'ts/components/top_bar/install_prompt';
@@ -15,7 +13,12 @@ import { Container } from 'ts/components/ui/container';
 import { DropDown } from 'ts/components/ui/drop_down';
 import { Identicon } from 'ts/components/ui/identicon';
 import { Island } from 'ts/components/ui/island';
-import { SimpleMenu, SimpleMenuItem } from 'ts/components/ui/simple_menu';
+import {
+    CopyAddressSimpleMenuItem,
+    DifferentWalletSimpleMenuItem,
+    GoToAccountManagementSimpleMenuItem,
+    SimpleMenu,
+} from 'ts/components/ui/simple_menu';
 import { Text } from 'ts/components/ui/text';
 import { Dispatcher } from 'ts/redux/dispatcher';
 import { colors } from 'ts/style/colors';
@@ -79,13 +82,9 @@ export class ProviderDisplay extends React.Component<ProviderDisplayProps, Provi
             case AccountState.Ready:
                 return (
                     <SimpleMenu>
-                        <CopyToClipboard text={this.props.userAddress}>
-                            <SimpleMenuItem text="Copy Address to Clipboard" onClick={_.noop} />
-                        </CopyToClipboard>
-                        <SimpleMenuItem text="Use a Different Wallet..." onClick={this.props.onToggleLedgerDialog} />
-                        <Link to={`${WebsitePaths.Portal}/account`} style={{ textDecoration: 'none' }}>
-                            <SimpleMenuItem text="Manage Account" onClick={_.noop} />
-                        </Link>
+                        <CopyAddressSimpleMenuItem userAddress={this.props.userAddress} />
+                        <DifferentWalletSimpleMenuItem onClick={this.props.onToggleLedgerDialog} />
+                        <GoToAccountManagementSimpleMenuItem />
                     </SimpleMenu>
                 );
             case AccountState.Disconnected:

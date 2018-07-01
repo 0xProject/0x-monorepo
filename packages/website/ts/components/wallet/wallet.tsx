@@ -16,7 +16,12 @@ import { DropDown } from 'ts/components/ui/drop_down';
 import { IconButton } from 'ts/components/ui/icon_button';
 import { Identicon } from 'ts/components/ui/identicon';
 import { Island } from 'ts/components/ui/island';
-import { SimpleMenu, SimpleMenuItem } from 'ts/components/ui/simple_menu';
+import {
+    CopyAddressSimpleMenuItem,
+    DifferentWalletSimpleMenuItem,
+    GoToAccountManagementSimpleMenuItem,
+    SimpleMenu,
+} from 'ts/components/ui/simple_menu';
 import { Text } from 'ts/components/ui/text';
 import { TokenIcon } from 'ts/components/ui/token_icon';
 import { BodyOverlay } from 'ts/components/wallet/body_overlay';
@@ -37,7 +42,6 @@ import {
     TokenByAddress,
     TokenState,
     TokenStateByAddress,
-    WebsitePaths,
 } from 'ts/types';
 import { analytics } from 'ts/utils/analytics';
 import { constants } from 'ts/utils/constants';
@@ -88,7 +92,6 @@ const HEADER_ITEM_KEY = 'HEADER';
 const ETHER_ITEM_KEY = 'ETHER';
 const USD_DECIMAL_PLACES = 2;
 const NO_ALLOWANCE_TOGGLE_SPACE_WIDTH = 56;
-const ACCOUNT_PATH = `${WebsitePaths.Portal}/account`;
 const PLACEHOLDER_COLOR = colors.grey300;
 const LOADING_ROWS_COUNT = 6;
 
@@ -223,16 +226,9 @@ export class Wallet extends React.Component<WalletProps, WalletState> {
                     }
                     popoverContent={
                         <SimpleMenu minWidth="150px">
-                            <CopyToClipboard text={this.props.userAddress}>
-                                <SimpleMenuItem text="Copy Address to Clipboard" onClick={_.noop} />
-                            </CopyToClipboard>
-                            <SimpleMenuItem
-                                text="Use a Different Wallet..."
-                                onClick={this.props.onToggleLedgerDialog}
-                            />
-                            <Link to={`${WebsitePaths.Portal}/account`} style={{ textDecoration: 'none' }}>
-                                <SimpleMenuItem text="Manage Account" onClick={_.noop} />
-                            </Link>
+                            <CopyAddressSimpleMenuItem userAddress={this.props.userAddress} />
+                            <DifferentWalletSimpleMenuItem onClick={this.props.onToggleLedgerDialog} />
+                            <GoToAccountManagementSimpleMenuItem />
                         </SimpleMenu>
                     }
                     anchorOrigin={{ horizontal: 'right', vertical: 'bottom' }}
