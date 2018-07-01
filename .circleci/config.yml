@@ -65,6 +65,7 @@ jobs:
           keys:
             - repo-{{ .Environment.CIRCLE_SHA1 }}
       - run: yarn wsrun test:circleci @0xproject/0x.js
+      - run: yarn wsrun test:circleci @0xproject/abi-gen
       - run: yarn wsrun test:circleci @0xproject/assert
       - run: yarn wsrun test:circleci @0xproject/base-contract
       - run: yarn wsrun test:circleci @0xproject/connect
@@ -83,6 +84,10 @@ jobs:
           key: coverage-0xjs-{{ .Environment.CIRCLE_SHA1 }}
           paths:
             - ~/repo/packages/0x.js/coverage/lcov.info
+      - save_cache:
+          key: coverage-abi-gen-{{ .Environment.CIRCLE_SHA1 }}
+          paths:
+            - ~/repo/packages/abi-gen/coverage/lcov.info
       - save_cache:
           key: coverage-assert-{{ .Environment.CIRCLE_SHA1 }}
           paths:
@@ -160,6 +165,9 @@ jobs:
       - restore_cache:
           keys:
             - coverage-0xjs-{{ .Environment.CIRCLE_SHA1 }}
+      - restore_cache:
+          keys:
+            - coverage-abi-gen-{{ .Environment.CIRCLE_SHA1 }}
       - restore_cache:
           keys:
             - coverage-assert-{{ .Environment.CIRCLE_SHA1 }}
