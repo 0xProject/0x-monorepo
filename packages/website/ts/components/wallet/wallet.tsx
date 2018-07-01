@@ -5,15 +5,18 @@ import * as _ from 'lodash';
 
 import ActionAccountBalanceWallet from 'material-ui/svg-icons/action/account-balance-wallet';
 import * as React from 'react';
+import * as CopyToClipboard from 'react-copy-to-clipboard';
 import { Link } from 'react-router-dom';
 import firstBy = require('thenby');
 
 import { Blockchain } from 'ts/blockchain';
 import { AccountConnection } from 'ts/components/ui/account_connection';
 import { Container } from 'ts/components/ui/container';
+import { DropDown } from 'ts/components/ui/drop_down';
 import { IconButton } from 'ts/components/ui/icon_button';
 import { Identicon } from 'ts/components/ui/identicon';
 import { Island } from 'ts/components/ui/island';
+import { SimpleMenu, SimpleMenuItem } from 'ts/components/ui/simple_menu';
 import { Text } from 'ts/components/ui/text';
 import { TokenIcon } from 'ts/components/ui/token_icon';
 import { BodyOverlay } from 'ts/components/wallet/body_overlay';
@@ -202,14 +205,35 @@ export class Wallet extends React.Component<WalletProps, WalletState> {
         const onClick = _.noop;
         const accessory = (
             <Container marginRight="15px">
-                <Text
-                    className="zmdi zmdi-more-horiz"
-                    Tag="i"
-                    fontSize="32px"
-                    fontFamily="Material-Design-Iconic-Font"
-                    fontColor={colors.darkGrey}
-                    onClick={onClick}
-                    hoverColor={colors.mediumBlue}
+                <DropDown
+                    hoverActiveNode={
+                        <Text
+                            className="zmdi zmdi-more-horiz"
+                            Tag="i"
+                            fontSize="32px"
+                            fontFamily="Material-Design-Iconic-Font"
+                            fontColor={colors.darkGrey}
+                            onClick={onClick}
+                            hoverColor={colors.mediumBlue}
+                        />
+                    }
+                    popoverContent={
+                        <SimpleMenu>
+                            <CopyToClipboard text={this.props.userAddress}>
+                                <SimpleMenuItem text="Copy Address to Clipboard" onClick={_.noop} />
+                            </CopyToClipboard>
+                            <SimpleMenuItem
+                                text="Use a Different Wallet..."
+                                onClick={this.props.onToggleLedgerDialog}
+                            />
+                            <Link to={`${WebsitePaths.Portal}/account`} style={{ textDecoration: 'none' }}>
+                                <SimpleMenuItem text="Manage Account" onClick={_.noop} />
+                            </Link>
+                        </SimpleMenu>
+                    }
+                    anchorOrigin={{ horizontal: 'right', vertical: 'bottom' }}
+                    targetOrigin={{ horizontal: 'right', vertical: 'top' }}
+                    zDepth={1}
                 />
             </Container>
         );
