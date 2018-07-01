@@ -1,4 +1,4 @@
-import Popover, { PopoverAnimationVertical } from 'material-ui/Popover';
+import Popover from 'material-ui/Popover';
 import * as React from 'react';
 import { MaterialUIPosition } from 'ts/types';
 

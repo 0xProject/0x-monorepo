@@ -5,8 +5,6 @@ import * as _ from 'lodash';
 
 import ActionAccountBalanceWallet from 'material-ui/svg-icons/action/account-balance-wallet';
 import * as React from 'react';
-import * as CopyToClipboard from 'react-copy-to-clipboard';
-import { Link } from 'react-router-dom';
 import firstBy = require('thenby');
 
 import { Blockchain } from 'ts/blockchain';

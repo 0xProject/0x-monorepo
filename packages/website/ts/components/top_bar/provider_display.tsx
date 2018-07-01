@@ -1,7 +1,6 @@
 import { Styles } from '@0xproject/react-shared';
 import * as _ from 'lodash';
 import CircularProgress from 'material-ui/CircularProgress';
-import RaisedButton from 'material-ui/RaisedButton';
 import ActionAccountBalanceWallet from 'material-ui/svg-icons/action/account-balance-wallet';
 import Lock from 'material-ui/svg-icons/action/lock';
 import * as React from 'react';
@@ -22,8 +21,7 @@ import {
 import { Text } from 'ts/components/ui/text';
 import { Dispatcher } from 'ts/redux/dispatcher';
 import { colors } from 'ts/style/colors';
-import { AccountState, ProviderType, WebsitePaths } from 'ts/types';
-import { constants } from 'ts/utils/constants';
+import { AccountState, ProviderType } from 'ts/types';
 import { utils } from 'ts/utils/utils';
 
 const ROOT_HEIGHT = 24;
@@ -50,10 +48,6 @@ const styles: Styles = {
 
 export class ProviderDisplay extends React.Component<ProviderDisplayProps, ProviderDisplayState> {
     public render(): React.ReactNode {
-        const isExternallyInjectedProvider = utils.isExternallyInjected(
-            this.props.providerType,
-            this.props.injectedProviderName,
-        );
         const activeNode = (
             <Island className="flex items-center py1 px2" style={styles.root}>
                 {this._renderIcon()}
@@ -63,12 +57,11 @@ export class ProviderDisplay extends React.Component<ProviderDisplayProps, Provi
                 {this._renderInjectedProvider()}
             </Island>
         );
-        const hasLedgerProvider = this.props.providerType === ProviderType.Ledger;
         return (
             <div style={{ width: 'fit-content', height: 48, float: 'right' }}>
                 <DropDown
                     activeNode={activeNode}
-                    popoverContent={this.renderPopoverContent(isExternallyInjectedProvider, hasLedgerProvider)}
+                    popoverContent={this._renderPopoverContent()}
                     anchorOrigin={{ horizontal: 'middle', vertical: 'bottom' }}
                     targetOrigin={{ horizontal: 'middle', vertical: 'top' }}
                     zDepth={1}
@@ -76,7 +69,7 @@ export class ProviderDisplay extends React.Component<ProviderDisplayProps, Provi
             </div>
         );
     }
-    public renderPopoverContent(hasInjectedProvider: boolean, hasLedgerProvider: boolean): React.ReactNode {
+    private _renderPopoverContent(): React.ReactNode {
         const accountState = this._getAccountState();
         switch (accountState) {
             case AccountState.Ready:
