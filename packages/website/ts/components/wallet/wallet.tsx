@@ -207,15 +207,19 @@ export class Wallet extends React.Component<WalletProps, WalletState> {
             <Container marginRight="15px">
                 <DropDown
                     activeNode={
-                        <Text
-                            className="zmdi zmdi-more-horiz"
-                            Tag="i"
-                            fontSize="32px"
-                            fontFamily="Material-Design-Iconic-Font"
-                            fontColor={colors.darkGrey}
-                            onClick={onClick}
-                            hoverColor={colors.mediumBlue}
-                        />
+                        // this container gives the menu button more of a hover target for the drop down
+                        // it prevents accidentally closing the menu by moving off of the button
+                        <Container paddingLeft="100px">
+                            <Text
+                                className="zmdi zmdi-more-horiz"
+                                Tag="i"
+                                fontSize="32px"
+                                fontFamily="Material-Design-Iconic-Font"
+                                fontColor={colors.darkGrey}
+                                onClick={onClick}
+                                hoverColor={colors.mediumBlue}
+                            />
+                        </Container>
                     }
                     popoverContent={
                         <SimpleMenu minWidth="150px">
