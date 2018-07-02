@@ -4,11 +4,14 @@ import { constants as sharedConstants, Networks } from '@0xproject/react-shared'
 import { ECSignature, Provider } from '@0xproject/types';
 import { BigNumber } from '@0xproject/utils';
 import { Web3Wrapper } from '@0xproject/web3-wrapper';
+import * as bowser from 'bowser';
 import deepEqual = require('deep-equal');
 import * as _ from 'lodash';
 import * as moment from 'moment';
 import {
+    AccountState,
     BlockchainCallErrs,
+    BrowserType,
     Environments,
     Order,
     Providers,
@@ -190,23 +193,37 @@ export const utils = {
         const truncatedAddress = `${address.substring(0, 6)}...${address.substr(-4)}`; // 0x3d5a...b287
         return truncatedAddress;
     },
-    getReadableAccountState(
+    getReadableAccountState(accountState: AccountState, userAddress: string): string {
+        switch (accountState) {
+            case AccountState.Loading:
+                return 'Loading...';
+            case AccountState.Ready:
+                return utils.getAddressBeginAndEnd(userAddress);
+            case AccountState.Locked:
+                return 'Please Unlock';
+            case AccountState.Disconnected:
+                return 'Connect a Wallet';
+            default:
+                return '';
+        }
+    },
+    getAccountState(
         isBlockchainReady: boolean,
         providerType: ProviderType,
         injectedProviderName: string,
         userAddress?: string,
-    ): string {
+    ): AccountState {
         const isAddressAvailable = !_.isUndefined(userAddress) && !_.isEmpty(userAddress);
         const isExternallyInjectedProvider = utils.isExternallyInjected(providerType, injectedProviderName);
         if (!isBlockchainReady) {
-            return 'Loading account';
+            return AccountState.Loading;
         } else if (isAddressAvailable) {
-            return utils.getAddressBeginAndEnd(userAddress);
+            return AccountState.Ready;
             // tslint:disable-next-line: prefer-conditional-expression
         } else if (isExternallyInjectedProvider) {
-            return 'Account locked';
+            return AccountState.Locked;
         } else {
-            return 'No wallet detected';
+            return AccountState.Disconnected;
         }
     },
     hasUniqueNameAndSymbol(tokens: Token[], token: Token): boolean {
@@ -353,6 +370,11 @@ export const utils = {
         const token = _.find(tokens, { symbol });
         return token;
     },
+    getTrackedTokens(tokenByAddress: TokenByAddress): Token[] {
+        const allTokens = _.values(tokenByAddress);
+        const trackedTokens = _.filter(allTokens, t => this.isTokenTracked(t));
+        return trackedTokens;
+    },
     getFormattedAmountFromToken(token: Token, tokenState: TokenState): string {
         return utils.getFormattedAmount(tokenState.balance, token.decimals, token.symbol);
     },
@@ -367,5 +389,19 @@ export const utils = {
     },
     isMobile(screenWidth: ScreenWidths): boolean {
         return screenWidth === ScreenWidths.Sm;
+    },
+    getBrowserType(): BrowserType {
+        if (bowser.chrome) {
+            return BrowserType.Chrome;
+        } else if (bowser.firefox) {
+            return BrowserType.Firefox;
+        } else if (bowser.opera) {
+            return BrowserType.Opera;
+        } else {
+            return BrowserType.Other;
+        }
+    },
+    isTokenTracked(token: Token): boolean {
+        return !_.isUndefined(token.trackedTimestamp);
     },
 };

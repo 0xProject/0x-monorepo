@@ -158,19 +158,63 @@ export interface ECSignature {
 }
 
 export enum AssetProxyId {
-    INVALID,
-    ERC20,
-    ERC721,
+    INVALID = '0x00000000',
+    ERC20 = '0xf47261b0',
+    ERC721 = '0x08e937fa',
 }
 
 export interface ERC20AssetData {
-    assetProxyId: AssetProxyId;
+    assetProxyId: string;
     tokenAddress: string;
 }
 
 export interface ERC721AssetData {
-    assetProxyId: AssetProxyId;
+    assetProxyId: string;
     tokenAddress: string;
     tokenId: BigNumber;
     receiverData: string;
+}
+
+export enum RevertReason {
+    OrderUnfillable = 'ORDER_UNFILLABLE',
+    InvalidMaker = 'INVALID_MAKER',
+    InvalidTaker = 'INVALID_TAKER',
+    InvalidSender = 'INVALID_SENDER',
+    InvalidOrderSignature = 'INVALID_ORDER_SIGNATURE',
+    InvalidTakerAmount = 'INVALID_TAKER_AMOUNT',
+    RoundingError = 'ROUNDING_ERROR',
+    InvalidSignature = 'INVALID_SIGNATURE',
+    SignatureIllegal = 'SIGNATURE_ILLEGAL',
+    SignatureUnsupported = 'SIGNATURE_UNSUPPORTED',
+    InvalidNewOrderEpoch = 'INVALID_NEW_ORDER_EPOCH',
+    CompleteFillFailed = 'COMPLETE_FILL_FAILED',
+    NegativeSpreadRequired = 'NEGATIVE_SPREAD_REQUIRED',
+    ReentrancyIllegal = 'REENTRANCY_ILLEGAL',
+    InvalidTxHash = 'INVALID_TX_HASH',
+    InvalidTxSignature = 'INVALID_TX_SIGNATURE',
+    FailedExecution = 'FAILED_EXECUTION',
+    AssetProxyAlreadyExists = 'ASSET_PROXY_ALREADY_EXISTS',
+    LengthGreaterThan0Required = 'LENGTH_GREATER_THAN_0_REQUIRED',
+    LengthGreaterThan131Required = 'LENGTH_GREATER_THAN_131_REQUIRED',
+    Length0Required = 'LENGTH_0_REQUIRED',
+    Length65Required = 'LENGTH_65_REQUIRED',
+    InvalidAmount = 'INVALID_AMOUNT',
+    TransferFailed = 'TRANSFER_FAILED',
+    SenderNotAuthorized = 'SENDER_NOT_AUTHORIZED',
+    TargetNotAuthorized = 'TARGET_NOT_AUTHORIZED',
+    TargetAlreadyAuthorized = 'TARGET_ALREADY_AUTHORIZED',
+    IndexOutOfBounds = 'INDEX_OUT_OF_BOUNDS',
+    AuthorizedAddressMismatch = 'AUTHORIZED_ADDRESS_MISMATCH',
+    OnlyContractOwner = 'ONLY_CONTRACT_OWNER',
+    MakerNotWhitelisted = 'MAKER_NOT_WHITELISTED',
+    TakerNotWhitelisted = 'TAKER_NOT_WHITELISTED',
+    AssetProxyDoesNotExist = 'ASSET_PROXY_DOES_NOT_EXIST',
+    LibBytesGreaterThanZeroLengthRequired = 'GREATER_THAN_ZERO_LENGTH_REQUIRED',
+    LibBytesGreaterOrEqualTo4LengthRequired = 'GREATER_OR_EQUAL_TO_4_LENGTH_REQUIRED',
+    LibBytesGreaterOrEqualTo20LengthRequired = 'GREATER_OR_EQUAL_TO_20_LENGTH_REQUIRED',
+    LibBytesGreaterOrEqualTo32LengthRequired = 'GREATER_OR_EQUAL_TO_32_LENGTH_REQUIRED',
+    LibBytesGreaterOrEqualToNestedBytesLengthRequired = 'GREATER_OR_EQUAL_TO_NESTED_BYTES_LENGTH_REQUIRED',
+    LibBytesGreaterOrEqualToSourceBytesLengthRequired = 'GREATER_OR_EQUAL_TO_SOURCE_BYTES_LENGTH_REQUIRED',
+    Erc20InsufficientBalance = 'ERC20_INSUFFICIENT_BALANCE',
+    Erc20InsufficientAllowance = 'ERC20_INSUFFICIENT_ALLOWANCE',
 }

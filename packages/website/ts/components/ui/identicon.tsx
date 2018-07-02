@@ -2,6 +2,7 @@ import blockies = require('blockies');
 import * as _ from 'lodash';
 import * as React from 'react';
 
+import { Circle } from 'ts/components/ui/circle';
 import { Image } from 'ts/components/ui/image';
 import { colors } from 'ts/style/colors';
 
@@ -20,7 +21,6 @@ export class Identicon extends React.Component<IdenticonProps, IdenticonState> {
     public render(): React.ReactNode {
         const address = this.props.address;
         const diameter = this.props.diameter;
-        const radius = diameter / 2;
         return (
             <div
                 className="circle relative transitionFix"
@@ -40,9 +40,7 @@ export class Identicon extends React.Component<IdenticonProps, IdenticonState> {
                         width={diameter}
                     />
                 ) : (
-                    <svg height={diameter} width={diameter}>
-                        <circle cx={radius} cy={radius} r={radius} fill={colors.grey200} />
-                    </svg>
+                    <Circle diameter={diameter} fillColor={colors.grey200} />
                 )}
             </div>
         );

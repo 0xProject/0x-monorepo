@@ -13,8 +13,8 @@ export interface Token {
     address: string;
     symbol: string;
     decimals: number;
-    isTracked: boolean;
     isRegistered: boolean;
+    trackedTimestamp?: number;
 }
 
 export interface TokenByAddress {
@@ -356,6 +356,7 @@ export enum WebsiteLegacyPaths {
 export enum WebsitePaths {
     Portal = '/portal',
     Wiki = '/wiki',
+    Docs = '/docs',
     ZeroExJs = '/docs/0x.js',
     Home = '/',
     FAQ = '/faq',
@@ -488,6 +489,16 @@ export enum Providers {
     Mist = 'MIST',
 }
 
+export interface InjectedProviderUpdate {
+    selectedAddress: string;
+    networkVersion: string;
+}
+
+export interface InjectedProviderObservable {
+    subscribe(updateHandler: (update: InjectedProviderUpdate) => void): void;
+    unsubscribe(updateHandler: (update: InjectedProviderUpdate) => void): void;
+}
+
 export interface TimestampMsRange {
     startTimestampMs: number;
     endTimestampMs: number;
@@ -545,5 +556,19 @@ export interface WebsiteBackendJobInfo {
     department: string;
     office: string;
     url: string;
+}
+
+export enum BrowserType {
+    Chrome = 'Chrome',
+    Firefox = 'Firefox',
+    Opera = 'Opera',
+    Other = 'Other',
+}
+
+export enum AccountState {
+    Disconnected = 'Disconnected',
+    Ready = 'Ready',
+    Loading = 'Loading',
+    Locked = 'Locked',
 }
 // tslint:disable:max-file-line-count

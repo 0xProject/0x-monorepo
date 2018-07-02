@@ -48,10 +48,10 @@ const styles: Styles = {
         width: 25,
     },
     offTrackStyle: {
-        backgroundColor: colors.allowanceToggleOffTrack,
+        backgroundColor: colors.grey300,
     },
     onTrackStyle: {
-        backgroundColor: colors.allowanceToggleOnTrack,
+        backgroundColor: colors.mediumBlue,
     },
 };
 

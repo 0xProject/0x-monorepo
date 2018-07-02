@@ -1,6 +1,6 @@
 import { BlockchainLifecycle } from '@0xproject/dev-utils';
 import { addSignedMessagePrefix, assetProxyUtils, MessagePrefixType, orderHashUtils } from '@0xproject/order-utils';
-import { SignatureType, SignedOrder } from '@0xproject/types';
+import { RevertReason, SignatureType, SignedOrder } from '@0xproject/types';
 import * as chai from 'chai';
 import { LogWithDecodedArgs } from 'ethereum-types';
 import ethUtil = require('ethereumjs-util');
@@ -8,17 +8,17 @@ import ethUtil = require('ethereumjs-util');
 import {
     SignatureValidatorApprovalContractEventArgs,
     TestSignatureValidatorContract,
-} from '../../src/generated_contract_wrappers/test_signature_validator';
-import { TestValidatorContract } from '../../src/generated_contract_wrappers/test_validator';
-import { TestWalletContract } from '../../src/generated_contract_wrappers/test_wallet';
-import { addressUtils } from '../../src/utils/address_utils';
-import { artifacts } from '../../src/utils/artifacts';
-import { expectRevertOrOtherErrorAsync } from '../../src/utils/assertions';
-import { chaiSetup } from '../../src/utils/chai_setup';
-import { constants } from '../../src/utils/constants';
-import { LogDecoder } from '../../src/utils/log_decoder';
-import { OrderFactory } from '../../src/utils/order_factory';
-import { provider, txDefaults, web3Wrapper } from '../../src/utils/web3_wrapper';
+} from '../../generated_contract_wrappers/test_signature_validator';
+import { TestValidatorContract } from '../../generated_contract_wrappers/test_validator';
+import { TestWalletContract } from '../../generated_contract_wrappers/test_wallet';
+import { addressUtils } from '../utils/address_utils';
+import { artifacts } from '../utils/artifacts';
+import { expectRevertOrOtherErrorAsync } from '../utils/assertions';
+import { chaiSetup } from '../utils/chai_setup';
+import { constants } from '../utils/constants';
+import { LogDecoder } from '../utils/log_decoder';
+import { OrderFactory } from '../utils/order_factory';
+import { provider, txDefaults, web3Wrapper } from '../utils/web3_wrapper';
 
 chaiSetup.configure();
 const expect = chai.expect;
@@ -107,7 +107,7 @@ describe('MixinSignatureValidator', () => {
                     signedOrder.makerAddress,
                     emptySignature,
                 ),
-                constants.EXCHANGE_LENGTH_GREATER_THAN_0_REQUIRED,
+                RevertReason.LengthGreaterThan0Required,
             );
         });
 
@@ -121,7 +121,7 @@ describe('MixinSignatureValidator', () => {
                     signedOrder.makerAddress,
                     unsupportedSignatureHex,
                 ),
-                constants.EXCHANGE_SIGNATURE_UNSUPPORTED,
+                RevertReason.SignatureUnsupported,
             );
         });
 
@@ -134,7 +134,7 @@ describe('MixinSignatureValidator', () => {
                     signedOrder.makerAddress,
                     unsupportedSignatureHex,
                 ),
-                constants.EXCHANGE_SIGNATURE_ILLEGAL,
+                RevertReason.SignatureIllegal,
             );
         });
 
@@ -161,7 +161,7 @@ describe('MixinSignatureValidator', () => {
                     signedOrder.makerAddress,
                     signatureHex,
                 ),
-                constants.EXCHANGE_LENGTH_0_REQUIRED,
+                RevertReason.Length0Required,
             );
         });
 

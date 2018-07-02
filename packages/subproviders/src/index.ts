@@ -21,6 +21,7 @@ export {
     ErrorCallback,
     NextCallback,
     LedgerCommunicationClient,
+    LedgerEthereumClient,
     NonceSubproviderErrors,
     LedgerSubproviderConfigs,
 } from './types';

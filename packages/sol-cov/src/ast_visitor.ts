@@ -23,8 +23,13 @@ export class ASTVisitor {
     private _modifiersStatementIds: number[] = [];
     private _statementMap: StatementMap = {};
     private _locationByOffset: LocationByOffset;
-    constructor(locationByOffset: LocationByOffset) {
+    private _ignoreRangesBeginningAt: number[];
+    // keep track of contract/function ranges that are to be ignored
+    // so we can also ignore any children nodes within the contract/function
+    private _ignoreRangesWithin: Array<[number, number]> = [];
+    constructor(locationByOffset: LocationByOffset, ignoreRangesBeginningAt: number[] = []) {
         this._locationByOffset = locationByOffset;
+        this._ignoreRangesBeginningAt = ignoreRangesBeginningAt;
     }
     public getCollectedCoverageEntries(): CoverageEntriesDescription {
         const coverageEntriesDescription = {
@@ -41,6 +46,11 @@ export class ASTVisitor {
     }
     public FunctionDefinition(ast: Parser.FunctionDefinition): void {
         this._visitFunctionLikeDefinition(ast);
+    }
+    public ContractDefinition(ast: Parser.ContractDefinition): void {
+        if (this._shouldIgnoreExpression(ast)) {
+            this._ignoreRangesWithin.push(ast.range as [number, number]);
+        }
     }
     public ModifierDefinition(ast: Parser.ModifierDefinition): void {
         this._visitFunctionLikeDefinition(ast);
@@ -96,6 +106,9 @@ export class ASTVisitor {
     public ModifierInvocation(ast: Parser.ModifierInvocation): void {
         const BUILTIN_MODIFIERS = ['public', 'view', 'payable', 'external', 'internal', 'pure', 'constant'];
         if (!_.includes(BUILTIN_MODIFIERS, ast.name)) {
+            if (this._shouldIgnoreExpression(ast)) {
+                return;
+            }
             this._modifiersStatementIds.push(this._entryId);
             this._visitStatement(ast);
         }
@@ -106,6 +119,9 @@ export class ASTVisitor {
         right: Parser.ASTNode,
         type: BranchType,
     ): void {
+        if (this._shouldIgnoreExpression(ast)) {
+            return;
+        }
         this._branchMap[this._entryId++] = {
             line: this._getExpressionRange(ast).start.line,
             type,
@@ -113,6 +129,9 @@ export class ASTVisitor {
         };
     }
     private _visitStatement(ast: Parser.ASTNode): void {
+        if (this._shouldIgnoreExpression(ast)) {
+            return;
+        }
         this._statementMap[this._entryId++] = this._getExpressionRange(ast);
     }
     private _getExpressionRange(ast: Parser.ASTNode): SingleFileSourceRange {
@@ -125,7 +144,19 @@ export class ASTVisitor {
         };
         return range;
     }
+    private _shouldIgnoreExpression(ast: Parser.ASTNode): boolean {
+        const [astStart, astEnd] = ast.range as [number, number];
+        const isRangeIgnored = _.some(
+            this._ignoreRangesWithin,
+            ([rangeStart, rangeEnd]: [number, number]) => astStart >= rangeStart && astEnd <= rangeEnd,
+        );
+        return this._ignoreRangesBeginningAt.includes(astStart) || isRangeIgnored;
+    }
     private _visitFunctionLikeDefinition(ast: Parser.ModifierDefinition | Parser.FunctionDefinition): void {
+        if (this._shouldIgnoreExpression(ast)) {
+            this._ignoreRangesWithin.push(ast.range as [number, number]);
+            return;
+        }
         const loc = this._getExpressionRange(ast);
         this._fnMap[this._entryId++] = {
             name: ast.name,

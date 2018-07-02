@@ -15,7 +15,6 @@ import { analytics } from 'ts/utils/analytics';
 import { constants } from 'ts/utils/constants';
 import { errorReporter } from 'ts/utils/error_reporter';
 import { utils } from 'ts/utils/utils';
-import { styles as walletItemStyles } from 'ts/utils/wallet_item_styles';
 
 export interface WrapEtherItemProps {
     userAddress: string;
@@ -95,7 +94,7 @@ export class WrapEtherItem extends React.Component<WrapEtherItemProps, WrapEther
         const topLabelText = isWrappingEth ? 'Convert ETH into WETH 1:1' : 'Convert WETH into ETH 1:1';
 
         return (
-            <div className="flex" style={walletItemStyles.focusedItem}>
+            <div className="flex" style={{ backgroundColor: colors.walletFocusedItemBackground }}>
                 <div>{this._renderIsEthConversionHappeningSpinner()} </div>
                 <div className="flex flex-column">
                     <div style={styles.topLabel}>{topLabelText}</div>
@@ -173,6 +172,7 @@ export class WrapEtherItem extends React.Component<WrapEtherItemProps, WrapEther
                 <FlatButton
                     backgroundColor={colors.wrapEtherConfirmationButton}
                     label={labelText}
+                    style={{ zIndex: 0 }}
                     labelStyle={styles.wrapEtherConfirmationButtonLabel}
                     onClick={this._wrapEtherConfirmationActionAsync.bind(this)}
                     disabled={this.state.isEthConversionHappening}

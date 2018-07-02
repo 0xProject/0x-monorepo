@@ -23,9 +23,9 @@ export class RemainingFillableCalculator {
         this._transferrableAssetAmount = transferrableAssetAmount;
         this._transferrableFeeAmount = transferrableFeeAmount;
         this._remainingOrderAssetAmount = remainingOrderAssetAmount;
-        this._remainingOrderFeeAmount = remainingOrderAssetAmount
-            .times(this._orderFee)
-            .dividedToIntegerBy(this._orderAssetAmount);
+        this._remainingOrderFeeAmount = orderAssetAmount.eq(0)
+            ? new BigNumber(0)
+            : remainingOrderAssetAmount.times(orderFee).dividedToIntegerBy(orderAssetAmount);
     }
     public computeRemainingFillable(): BigNumber {
         if (this._hasSufficientFundsForFeeAndTransferAmount()) {

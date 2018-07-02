@@ -26,7 +26,7 @@ export const constants = {
     NETWORK_ID_TESTRPC: 50,
     NULL_ADDRESS: '0x0000000000000000000000000000000000000000',
     PROVIDER_NAME_LEDGER: 'Ledger',
-    PROVIDER_NAME_METAMASK: 'Metamask',
+    PROVIDER_NAME_METAMASK: 'MetaMask',
     PROVIDER_NAME_PARITY_SIGNER: 'Parity Signer',
     PROVIDER_NAME_MIST: 'Mist',
     PROVIDER_NAME_GENERIC: 'Injected Web3',
@@ -70,6 +70,9 @@ export const constants = {
     URL_GITHUB_ORG: 'https://github.com/0xProject',
     URL_GITHUB_WIKI: 'https://github.com/0xProject/wiki',
     URL_METAMASK_CHROME_STORE: 'https://chrome.google.com/webstore/detail/metamask/nkbihfbeogaeaoehlefnkodbefgpgknn',
+    URL_METAMASK_FIREFOX_STORE: 'https://addons.mozilla.org/en-US/firefox/addon/ether-metamask/',
+    URL_METAMASK_HOMEPAGE: 'https://metamask.io/',
+    URL_METAMASK_OPERA_STORE: 'https://addons.opera.com/en/extensions/details/metamask/',
     URL_MIST_DOWNLOAD: 'https://github.com/ethereum/mist/releases',
     URL_PARITY_CHROME_STORE:
         'https://chrome.google.com/webstore/detail/parity-ethereum-integrati/himekenlppkgeaoeddcliojfddemadig',

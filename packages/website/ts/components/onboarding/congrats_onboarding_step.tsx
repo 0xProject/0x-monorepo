@@ -10,6 +10,6 @@ export const CongratsOnboardingStep: React.StatelessComponent<CongratsOnboarding
         <Container marginTop="25px" marginBottom="15px" className="flex justify-center">
             <img src="/images/zrx_ecosystem.svg" height="150px" />
         </Container>
-        <Text>No need to log in. Each relayer automatically detects and connects to your metamask wallet.</Text>
+        <Text>No need to log in. Each relayer automatically detects and connects to your wallet.</Text>
     </div>
 );

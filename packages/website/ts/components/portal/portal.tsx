@@ -1,10 +1,10 @@
 import { colors, constants as sharedConstants } from '@0xproject/react-shared';
 import { BigNumber } from '@0xproject/utils';
 import * as _ from 'lodash';
-import ActionAccountBalanceWallet from 'material-ui/svg-icons/action/account-balance-wallet';
+import Help from 'material-ui/svg-icons/action/help';
 import * as React from 'react';
 import * as DocumentTitle from 'react-document-title';
-import { Route, RouteComponentProps, Switch } from 'react-router-dom';
+import { Link, Route, RouteComponentProps, Switch } from 'react-router-dom';
 
 import { Blockchain } from 'ts/blockchain';
 import { BlockchainErrDialog } from 'ts/components/dialogs/blockchain_err_dialog';
@@ -24,7 +24,6 @@ import { TopBar, TopBarDisplayType } from 'ts/components/top_bar/top_bar';
 import { TradeHistory } from 'ts/components/trade_history/trade_history';
 import { Container } from 'ts/components/ui/container';
 import { FlashMessage } from 'ts/components/ui/flash_message';
-import { Island } from 'ts/components/ui/island';
 import { Text } from 'ts/components/ui/text';
 import { Wallet } from 'ts/components/wallet/wallet';
 import { GenerateOrderForm } from 'ts/containers/generate_order_form';
@@ -152,9 +151,8 @@ export class Portal extends React.Component<PortalProps, PortalState> {
     }
     public componentDidUpdate(prevProps: PortalProps): void {
         if (!prevProps.blockchainIsLoaded && this.props.blockchainIsLoaded) {
-            const trackedTokenAddresses = _.keys(this.state.trackedTokenStateByAddress);
             // tslint:disable-next-line:no-floating-promises
-            this._fetchBalancesAndAllowancesAsync(trackedTokenAddresses);
+            this._fetchBalancesAndAllowancesAsync(this._getCurrentTrackedTokensAddresses());
         }
     }
     public componentWillReceiveProps(nextProps: PortalProps): void {
@@ -182,17 +180,17 @@ export class Portal extends React.Component<PortalProps, PortalState> {
                 prevPathname: nextProps.location.pathname,
             });
         }
+
+        // If the address changed, but the network did not, we can just refetch the currently tracked tokens.
         if (
-            nextProps.userAddress !== this.props.userAddress ||
-            nextProps.networkId !== this.props.networkId ||
+            (nextProps.userAddress !== this.props.userAddress && nextProps.networkId === this.props.networkId) ||
             nextProps.lastForceTokenStateRefetch !== this.props.lastForceTokenStateRefetch
         ) {
-            const trackedTokenAddresses = _.keys(this.state.trackedTokenStateByAddress);
             // tslint:disable-next-line:no-floating-promises
-            this._fetchBalancesAndAllowancesAsync(trackedTokenAddresses);
+            this._fetchBalancesAndAllowancesAsync(this._getCurrentTrackedTokensAddresses());
         }
 
-        const nextTrackedTokens = this._getTrackedTokens(nextProps.tokenByAddress);
+        const nextTrackedTokens = utils.getTrackedTokens(nextProps.tokenByAddress);
         const trackedTokens = this._getCurrentTrackedTokens();
 
         if (!_.isEqual(nextTrackedTokens, trackedTokens)) {
@@ -200,7 +198,7 @@ export class Portal extends React.Component<PortalProps, PortalState> {
             const newTokenAddresses = _.map(newTokens, token => token.address);
             // Add placeholder entry for this token to the state, since fetching the
             // balance/allowance is asynchronous
-            const trackedTokenStateByAddress = this.state.trackedTokenStateByAddress;
+            const trackedTokenStateByAddress = { ...this.state.trackedTokenStateByAddress };
             for (const tokenAddress of newTokenAddresses) {
                 trackedTokenStateByAddress[tokenAddress] = {
                     balance: new BigNumber(0),
@@ -265,16 +263,16 @@ export class Portal extends React.Component<PortalProps, PortalState> {
                         networkId={this.props.networkId}
                     />
                     <FlashMessage dispatcher={this.props.dispatcher} flashMessage={this.props.flashMessage} />
-                    {this.props.blockchainIsLoaded && (
-                        <LedgerConfigDialog
-                            providerType={this.props.providerType}
-                            networkId={this.props.networkId}
-                            blockchain={this._blockchain}
-                            dispatcher={this.props.dispatcher}
-                            toggleDialogFn={this._onToggleLedgerDialog.bind(this)}
-                            isOpen={this.state.isLedgerDialogOpen}
-                        />
-                    )}
+
+                    <LedgerConfigDialog
+                        providerType={this.props.providerType}
+                        networkId={this.props.networkId}
+                        blockchain={this._blockchain}
+                        dispatcher={this.props.dispatcher}
+                        toggleDialogFn={this._onToggleLedgerDialog.bind(this)}
+                        isOpen={this.state.isLedgerDialogOpen}
+                    />
+
                     <AssetPicker
                         userAddress={this.props.userAddress}
                         networkId={this.props.networkId}
@@ -320,15 +318,14 @@ export class Portal extends React.Component<PortalProps, PortalState> {
         );
     }
     private _renderWallet(): React.ReactNode {
-        const startOnboarding = this._renderStartOnboarding();
         const isMobile = utils.isMobile(this.props.screenWidth);
         // We need room to scroll down for mobile onboarding
         const marginBottom = isMobile ? '200px' : '15px';
         return (
             <div>
-                <Container>
-                    {isMobile && <Container marginBottom="15px">{startOnboarding}</Container>}
-                    <Container marginBottom={marginBottom}>
+                <Container className="flex flex-column items-center">
+                    {isMobile && <Container marginBottom="20px">{this._renderStartOnboarding()}</Container>}
+                    <Container marginBottom={marginBottom} width="100%">
                         <Wallet
                             style={
                                 !isMobile && this.props.isPortalOnboardingShowing
@@ -356,7 +353,7 @@ export class Portal extends React.Component<PortalProps, PortalState> {
                             refetchTokenStateAsync={this._refetchTokenStateAsync.bind(this)}
                         />
                     </Container>
-                    {!isMobile && <Container marginTop="15px">{startOnboarding}</Container>}
+                    {!isMobile && <Container marginTop="8px">{this._renderStartOnboarding()}</Container>}
                 </Container>
                 <PortalOnboardingFlow
                     blockchain={this._blockchain}
@@ -367,26 +364,24 @@ export class Portal extends React.Component<PortalProps, PortalState> {
         );
     }
     private _renderStartOnboarding(): React.ReactNode {
-        return (
-            <Island>
-                <Container
-                    marginTop="30px"
-                    marginBottom="30px"
-                    marginLeft="30px"
-                    marginRight="30px"
-                    className="flex justify-around items-center"
-                >
-                    <ActionAccountBalanceWallet style={{ width: '30px', height: '30px' }} color={colors.orange} />
-                    <Text
-                        fontColor={colors.grey}
-                        fontSize="16px"
-                        center={true}
-                        onClick={this._startOnboarding.bind(this)}
-                    >
+        const isMobile = utils.isMobile(this.props.screenWidth);
+        const shouldStartOnboarding = !isMobile || this.props.location.pathname === `${WebsitePaths.Portal}/account`;
+        const startOnboarding = (
+            <Container className="flex items-center center">
+                <Help style={{ width: '20px', height: '20px' }} color={colors.mediumBlue} />
+                <Container marginLeft="8px">
+                    <Text fontColor={colors.mediumBlue} fontSize="16px" onClick={this._startOnboarding.bind(this)}>
                         Learn how to set up your account
                     </Text>
                 </Container>
-            </Island>
+            </Container>
+        );
+        return !shouldStartOnboarding ? (
+            <Link to={{ pathname: `${WebsitePaths.Portal}/account` }} style={{ textDecoration: 'none' }}>
+                {startOnboarding}
+            </Link>
+        ) : (
+            startOnboarding
         );
     }
 
@@ -394,10 +389,6 @@ export class Portal extends React.Component<PortalProps, PortalState> {
         const networkName = sharedConstants.NETWORK_NAME_BY_ID[this.props.networkId];
         analytics.logEvent('Portal', 'Onboarding Started - Manual', networkName, this.props.portalOnboardingStep);
         this.props.dispatcher.updatePortalOnboardingShowing(true);
-        // On mobile, make sure the wallet is completely visible.
-        if (this.props.screenWidth === ScreenWidths.Sm) {
-            document.querySelector('.wallet').scrollIntoView();
-        }
     }
     private _renderWalletSection(): React.ReactNode {
         return <Section header={<TextHeader labelText="Your Account" />} body={this._renderWallet()} />;
@@ -536,11 +527,15 @@ export class Portal extends React.Component<PortalProps, PortalState> {
         );
     }
     private _renderRelayerIndexSection(): React.ReactNode {
+        return <Section header={<TextHeader labelText="0x Relayers" />} body={this._renderRelayerIndex()} />;
+    }
+    private _renderRelayerIndex(): React.ReactNode {
+        const isMobile = utils.isMobile(this.props.screenWidth);
         return (
-            <Section
-                header={<TextHeader labelText="0x Relayers" />}
-                body={<RelayerIndex networkId={this.props.networkId} screenWidth={this.props.screenWidth} />}
-            />
+            <Container className="flex flex-column items-center">
+                {isMobile && <Container marginBottom="20px">{this._renderStartOnboarding()}</Container>}
+                <RelayerIndex networkId={this.props.networkId} screenWidth={this.props.screenWidth} />
+            </Container>
         );
     }
     private _renderNotFoundMessage(): React.ReactNode {
@@ -563,9 +558,9 @@ export class Portal extends React.Component<PortalProps, PortalState> {
         if (this.state.tokenManagementState === TokenManagementState.Remove && !isDefaultTrackedToken) {
             if (token.isRegistered) {
                 // Remove the token from tracked tokens
-                const newToken = {
+                const newToken: Token = {
                     ...token,
-                    isTracked: false,
+                    trackedTimestamp: undefined,
                 };
                 this.props.dispatcher.updateTokenByAddress([newToken]);
             } else {
@@ -608,17 +603,12 @@ export class Portal extends React.Component<PortalProps, PortalState> {
         const isSmallScreen = this.props.screenWidth === ScreenWidths.Sm;
         return isSmallScreen;
     }
-
     private _getCurrentTrackedTokens(): Token[] {
-        return this._getTrackedTokens(this.props.tokenByAddress);
+        return utils.getTrackedTokens(this.props.tokenByAddress);
     }
-
-    private _getTrackedTokens(tokenByAddress: TokenByAddress): Token[] {
-        const allTokens = _.values(tokenByAddress);
-        const trackedTokens = _.filter(allTokens, t => t.isTracked);
-        return trackedTokens;
+    private _getCurrentTrackedTokensAddresses(): string[] {
+        return _.map(this._getCurrentTrackedTokens(), token => token.address);
     }
-
     private _getInitialTrackedTokenStateByAddress(trackedTokens: Token[]): TokenStateByAddress {
         const trackedTokenStateByAddress: TokenStateByAddress = {};
         _.each(trackedTokens, token => {

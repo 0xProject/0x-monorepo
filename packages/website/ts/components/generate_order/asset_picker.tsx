@@ -1,6 +1,7 @@
 import * as _ from 'lodash';
 import Dialog from 'material-ui/Dialog';
 import FlatButton from 'material-ui/FlatButton';
+import * as moment from 'moment';
 import * as React from 'react';
 import { Blockchain } from 'ts/blockchain';
 import { NewTokenForm } from 'ts/components/generate_order/new_token_form';
@@ -10,6 +11,7 @@ import { trackedTokenStorage } from 'ts/local_storage/tracked_token_storage';
 import { Dispatcher } from 'ts/redux/dispatcher';
 import { DialogConfigs, Token, TokenByAddress, TokenVisibility } from 'ts/types';
 import { constants } from 'ts/utils/constants';
+import { utils } from 'ts/utils/utils';
 
 const TOKEN_ICON_DIMENSION = 100;
 const TILE_DIMENSION = 146;
@@ -117,7 +119,7 @@ export class AssetPicker extends React.Component<AssetPickerProps, AssetPickerSt
     private _renderAssetPicker(): React.ReactNode {
         return (
             <div
-                className="clearfix flex flex-wrap"
+                className="flex flex-wrap"
                 style={{
                     overflowY: 'auto',
                     maxWidth: 720,
@@ -134,8 +136,8 @@ export class AssetPicker extends React.Component<AssetPickerProps, AssetPickerSt
         let tileStyles;
         const gridTiles = _.map(this.props.tokenByAddress, (token: Token, address: string) => {
             if (
-                (this.props.tokenVisibility === TokenVisibility.TRACKED && !token.isTracked) ||
-                (this.props.tokenVisibility === TokenVisibility.UNTRACKED && token.isTracked) ||
+                (this.props.tokenVisibility === TokenVisibility.TRACKED && !utils.isTokenTracked(token)) ||
+                (this.props.tokenVisibility === TokenVisibility.UNTRACKED && utils.isTokenTracked(token)) ||
                 token.symbol === constants.ZRX_TOKEN_SYMBOL ||
                 token.symbol === constants.ETHER_TOKEN_SYMBOL
             ) {
@@ -154,7 +156,7 @@ export class AssetPicker extends React.Component<AssetPickerProps, AssetPickerSt
                         height: TILE_DIMENSION,
                         ...tileStyles,
                     }}
-                    className="p2 flex flex-column items-center"
+                    className="p2 flex sm-col-6 md-col-3 lg-col-3 flex-column items-center mx-auto"
                     onClick={this._onChooseToken.bind(this, address)}
                     onMouseEnter={this._onToggleHover.bind(this, address, true)}
                     onMouseLeave={this._onToggleHover.bind(this, address, false)}
@@ -162,7 +164,7 @@ export class AssetPicker extends React.Component<AssetPickerProps, AssetPickerSt
                     <div className="p1">
                         <TokenIcon token={token} diameter={TOKEN_ICON_DIMENSION} />
                     </div>
-                    <div className="center">{token.name}</div>
+                    <div className="center">{token.symbol}</div>
                 </div>
             );
         });
@@ -181,7 +183,7 @@ export class AssetPicker extends React.Component<AssetPickerProps, AssetPickerSt
                         height: TILE_DIMENSION,
                         ...tileStyles,
                     }}
-                    className="p2 mx-auto"
+                    className="p2 flex sm-col-6 md-col-3 lg-col-3 flex-column items-center mx-auto"
                     onClick={this._onCustomAssetChosen.bind(this)}
                     onMouseEnter={this._onToggleHover.bind(this, otherTokenKey, true)}
                     onMouseLeave={this._onToggleHover.bind(this, otherTokenKey, false)}
@@ -212,7 +214,7 @@ export class AssetPicker extends React.Component<AssetPickerProps, AssetPickerSt
     }
     private _onChooseToken(tokenAddress: string): void {
         const token = this.props.tokenByAddress[tokenAddress];
-        if (token.isTracked) {
+        if (utils.isTokenTracked(token)) {
             this.props.onTokenChosen(tokenAddress);
         } else {
             this.setState({
@@ -257,9 +259,8 @@ export class AssetPicker extends React.Component<AssetPickerProps, AssetPickerSt
         }
         const newTokenEntry = {
             ...token,
+            trackedTimestamp: moment().unix(),
         };
-
-        newTokenEntry.isTracked = true;
         trackedTokenStorage.addTrackedTokenToUser(this.props.userAddress, this.props.networkId, newTokenEntry);
 
         this.props.dispatcher.updateTokenByAddress([newTokenEntry]);

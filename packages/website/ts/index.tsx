@@ -143,6 +143,7 @@ render(
                                 component={LazySolCompilerDocumentation}
                             />
 
+                            <Route path={`${WebsitePaths.Docs}`} component={LazyZeroExJSDocumentation} />
                             <Route component={NotFound as any} />
                         </Switch>
                     </div>
