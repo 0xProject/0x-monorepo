@@ -324,6 +324,7 @@ export const utils = {
     getProviderType(provider: Provider): Providers | string {
         const constructorName = provider.constructor.name;
         let parsedProviderName = constructorName;
+        // https://ethereum.stackexchange.com/questions/24266/elegant-way-to-detect-current-provider-int-web3-js
         switch (constructorName) {
             case 'EthereumProvider':
                 parsedProviderName = Providers.Mist;
@@ -337,6 +338,10 @@ export const utils = {
             parsedProviderName = Providers.Parity;
         } else if ((provider as any).isMetaMask) {
             parsedProviderName = Providers.Metamask;
+        } else if (!_.isUndefined(_.get(window, 'SOFA'))) {
+            parsedProviderName = Providers.Toshi;
+        } else if (!_.isUndefined(_.get(window, '__CIPHER__'))) {
+            parsedProviderName = Providers.Cipher;
         }
         return parsedProviderName;
     },

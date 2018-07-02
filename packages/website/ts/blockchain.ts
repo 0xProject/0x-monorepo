@@ -73,6 +73,8 @@ const providerToName: { [provider: string]: string } = {
     [Providers.Metamask]: constants.PROVIDER_NAME_METAMASK,
     [Providers.Parity]: constants.PROVIDER_NAME_PARITY_SIGNER,
     [Providers.Mist]: constants.PROVIDER_NAME_MIST,
+    [Providers.Toshi]: constants.PROVIDER_NAME_TOSHI,
+    [Providers.Cipher]: constants.PROVIDER_NAME_CIPHER,
 };
 
 export class Blockchain {
