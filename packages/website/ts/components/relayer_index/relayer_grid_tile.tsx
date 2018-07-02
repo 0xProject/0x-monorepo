@@ -55,7 +55,7 @@ const styles: Styles = {
 };
 
 const FALLBACK_IMG_SRC = '/images/relayer_fallback.png';
-const FALLBACK_PRIMARY_COLOR = colors.grey200;
+const FALLBACK_PRIMARY_COLOR = colors.grey300;
 const NO_CONTENT_MESSAGE = '--';
 const RELAYER_ICON_HEIGHT = '110px';
 

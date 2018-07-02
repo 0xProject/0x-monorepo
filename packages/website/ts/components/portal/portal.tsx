@@ -1,7 +1,6 @@
 import { colors, constants as sharedConstants } from '@0xproject/react-shared';
 import { BigNumber } from '@0xproject/utils';
 import * as _ from 'lodash';
-import Help from 'material-ui/svg-icons/action/help';
 import * as React from 'react';
 import * as DocumentTitle from 'react-document-title';
 import { Link, Route, RouteComponentProps, Switch } from 'react-router-dom';
@@ -24,6 +23,7 @@ import { TopBar, TopBarDisplayType } from 'ts/components/top_bar/top_bar';
 import { TradeHistory } from 'ts/components/trade_history/trade_history';
 import { Container } from 'ts/components/ui/container';
 import { FlashMessage } from 'ts/components/ui/flash_message';
+import { Image } from 'ts/components/ui/image';
 import { Text } from 'ts/components/ui/text';
 import { Wallet } from 'ts/components/wallet/wallet';
 import { GenerateOrderForm } from 'ts/containers/generate_order_form';
@@ -368,11 +368,11 @@ export class Portal extends React.Component<PortalProps, PortalState> {
         const shouldStartOnboarding = !isMobile || this.props.location.pathname === `${WebsitePaths.Portal}/account`;
         const startOnboarding = (
             <Container className="flex items-center center">
-                <Help style={{ width: '20px', height: '20px' }} color={colors.mediumBlue} />
-                <Container marginLeft="8px">
-                    <Text fontColor={colors.mediumBlue} fontSize="16px" onClick={this._startOnboarding.bind(this)}>
-                        Learn how to set up your account
-                    </Text>
+                <Text fontColor={colors.mediumBlue} fontSize="16px" onClick={this._startOnboarding.bind(this)}>
+                    Set up your account to start trading
+                </Text>
+                <Container marginLeft="8px" paddingTop="3px">
+                    <Image src="/images/setup_account_icon.svg" height="20px" width="20x" />
                 </Container>
             </Container>
         );
