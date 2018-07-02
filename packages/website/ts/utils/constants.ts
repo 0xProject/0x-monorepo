@@ -6,7 +6,7 @@ export const constants = {
     ETHER_TOKEN_SYMBOL: 'WETH',
     ZRX_TOKEN_SYMBOL: 'ZRX',
     ETHER_SYMBOL: 'ETH',
-    TOKEN_AMOUNT_DISPLAY_PRECISION: 5,
+    TOKEN_AMOUNT_DISPLAY_PRECISION: 4,
     GENESIS_ORDER_BLOCK_BY_NETWORK_ID: {
         1: 4145578,
         42: 3117574,
@@ -38,6 +38,7 @@ export const constants = {
     UNAVAILABLE_STATUS: 503,
     TAKER_FEE: new BigNumber(0),
     TESTNET_NAME: 'Kovan',
+    NUMERAL_USD_FORMAT: '$0,0.00',
     PROJECT_URL_ETHFINEX: 'https://www.ethfinex.com/',
     PROJECT_URL_AMADEUS: 'http://amadeusrelay.org',
     PROJECT_URL_DDEX: 'https://ddex.io',
