@@ -145,13 +145,39 @@ export class CoreCombinatorialUtils {
     public exchangeWrapper: ExchangeWrapper;
     public assetWrapper: AssetWrapper;
     public static generateFillOrderCombinations(): FillScenario[] {
-        const takerScenarios = [TakerScenario.Unspecified];
-        const feeRecipientScenarios = [FeeRecipientAddressScenario.EthUserAddress];
-        const makerAssetAmountScenario = [OrderAssetAmountScenario.Large];
-        const takerAssetAmountScenario = [OrderAssetAmountScenario.Large];
-        const makerFeeScenario = [OrderAssetAmountScenario.Large];
-        const takerFeeScenario = [OrderAssetAmountScenario.Large];
-        const expirationTimeSecondsScenario = [ExpirationTimeSecondsScenario.InFuture];
+        const takerScenarios = [
+            TakerScenario.Unspecified,
+            // TakerScenario.CorrectlySpecified,
+            // TakerScenario.IncorrectlySpecified,
+        ];
+        const feeRecipientScenarios = [
+            FeeRecipientAddressScenario.EthUserAddress,
+            // FeeRecipientAddressScenario.BurnAddress,
+        ];
+        const makerAssetAmountScenario = [
+            OrderAssetAmountScenario.Large,
+            // OrderAssetAmountScenario.Zero,
+            // OrderAssetAmountScenario.Small,
+        ];
+        const takerAssetAmountScenario = [
+            OrderAssetAmountScenario.Large,
+            // OrderAssetAmountScenario.Zero,
+            // OrderAssetAmountScenario.Small,
+        ];
+        const makerFeeScenario = [
+            OrderAssetAmountScenario.Large,
+            // OrderAssetAmountScenario.Small,
+            // OrderAssetAmountScenario.Zero,
+        ];
+        const takerFeeScenario = [
+            OrderAssetAmountScenario.Large,
+            // OrderAssetAmountScenario.Small,
+            // OrderAssetAmountScenario.Zero,
+        ];
+        const expirationTimeSecondsScenario = [
+            ExpirationTimeSecondsScenario.InFuture,
+            ExpirationTimeSecondsScenario.InPast,
+        ];
         const makerAssetDataScenario = [
             AssetDataScenario.ERC20FiveDecimals,
             AssetDataScenario.ERC20NonZRXEighteenDecimals,
@@ -164,15 +190,55 @@ export class CoreCombinatorialUtils {
             AssetDataScenario.ERC721,
             AssetDataScenario.ZRXFeeToken,
         ];
-        const takerAssetFillAmountScenario = [TakerAssetFillAmountScenario.ExactlyRemainingFillableTakerAssetAmount];
-        const makerAssetBalanceScenario = [BalanceAmountScenario.Higher];
-        const makerAssetAllowanceScenario = [AllowanceAmountScenario.Higher];
-        const makerZRXBalanceScenario = [BalanceAmountScenario.Higher];
-        const makerZRXAllowanceScenario = [AllowanceAmountScenario.Higher];
-        const takerAssetBalanceScenario = [BalanceAmountScenario.Higher];
-        const takerAssetAllowanceScenario = [AllowanceAmountScenario.Higher];
-        const takerZRXBalanceScenario = [BalanceAmountScenario.Higher];
-        const takerZRXAllowanceScenario = [AllowanceAmountScenario.Higher];
+        const takerAssetFillAmountScenario = [
+            TakerAssetFillAmountScenario.ExactlyRemainingFillableTakerAssetAmount,
+            // TakerAssetFillAmountScenario.GreaterThanRemainingFillableTakerAssetAmount,
+            // TakerAssetFillAmountScenario.LessThanRemainingFillableTakerAssetAmount,
+        ];
+        const makerAssetBalanceScenario = [
+            BalanceAmountScenario.Higher,
+            // BalanceAmountScenario.Exact,
+            // BalanceAmountScenario.TooLow,
+        ];
+        const makerAssetAllowanceScenario = [
+            AllowanceAmountScenario.Higher,
+            // AllowanceAmountScenario.Exact,
+            // AllowanceAmountScenario.TooLow,
+            // AllowanceAmountScenario.Unlimited,
+        ];
+        const makerZRXBalanceScenario = [
+            BalanceAmountScenario.Higher,
+            // BalanceAmountScenario.Exact,
+            // BalanceAmountScenario.TooLow,
+        ];
+        const makerZRXAllowanceScenario = [
+            AllowanceAmountScenario.Higher,
+            // AllowanceAmountScenario.Exact,
+            // AllowanceAmountScenario.TooLow,
+            // AllowanceAmountScenario.Unlimited,
+        ];
+        const takerAssetBalanceScenario = [
+            BalanceAmountScenario.Higher,
+            // BalanceAmountScenario.Exact,
+            // BalanceAmountScenario.TooLow,
+        ];
+        const takerAssetAllowanceScenario = [
+            AllowanceAmountScenario.Higher,
+            // AllowanceAmountScenario.Exact,
+            // AllowanceAmountScenario.TooLow,
+            // AllowanceAmountScenario.Unlimited,
+        ];
+        const takerZRXBalanceScenario = [
+            BalanceAmountScenario.Higher,
+            // BalanceAmountScenario.Exact,
+            // BalanceAmountScenario.TooLow,
+        ];
+        const takerZRXAllowanceScenario = [
+            AllowanceAmountScenario.Higher,
+            // AllowanceAmountScenario.Exact,
+            // AllowanceAmountScenario.TooLow,
+            // AllowanceAmountScenario.Unlimited,
+        ];
         const fillScenarioArrays = CoreCombinatorialUtils._getAllCombinations([
             takerScenarios,
             feeRecipientScenarios,
