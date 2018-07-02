@@ -6,10 +6,10 @@ import { Provider, TransactionReceiptWithDecodedLogs, TxDataPayable } from 'ethe
 import ethUtil = require('ethereumjs-util');
 import * as _ from 'lodash';
 
-import { ForwarderContract } from '../../src/generated_contract_wrappers/forwarder';
-import { formatters } from '../../src/utils/formatters';
+import { ForwarderContract } from '../../generated_contract_wrappers/forwarder';
 
 import { constants } from './constants';
+import { formatters } from './formatters';
 import { MarketSellOrders } from './types';
 
 const DEFAULT_FEE_PROPORTION = 0;

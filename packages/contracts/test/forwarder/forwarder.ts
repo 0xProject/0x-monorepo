@@ -6,25 +6,25 @@ import { Web3Wrapper } from '@0xproject/web3-wrapper';
 import * as chai from 'chai';
 import { TransactionReceiptWithDecodedLogs } from 'ethereum-types';
 
-import { DummyERC20TokenContract } from '../../src/generated_contract_wrappers/dummy_e_r_c20_token';
-import { DummyERC721TokenContract } from '../../src/generated_contract_wrappers/dummy_e_r_c721_token';
-import { ERC20ProxyContract } from '../../src/generated_contract_wrappers/e_r_c20_proxy';
-import { ERC721ProxyContract } from '../../src/generated_contract_wrappers/e_r_c721_proxy';
-import { ExchangeContract } from '../../src/generated_contract_wrappers/exchange';
-import { ForwarderContract } from '../../src/generated_contract_wrappers/forwarder';
-import { WETH9Contract } from '../../src/generated_contract_wrappers/weth9';
-import { artifacts } from '../../src/utils/artifacts';
-import { expectRevertOrAlwaysFailingTransactionAsync } from '../../src/utils/assertions';
-import { chaiSetup } from '../../src/utils/chai_setup';
-import { constants } from '../../src/utils/constants';
-import { ERC20Wrapper } from '../../src/utils/erc20_wrapper';
-import { ERC721Wrapper } from '../../src/utils/erc721_wrapper';
-import { ExchangeWrapper } from '../../src/utils/exchange_wrapper';
-import { formatters } from '../../src/utils/formatters';
-import { ForwarderWrapper } from '../../src/utils/forwarder_wrapper';
-import { OrderFactory } from '../../src/utils/order_factory';
-import { ContractName, ERC20BalancesByOwner } from '../../src/utils/types';
-import { provider, txDefaults, web3Wrapper } from '../../src/utils/web3_wrapper';
+import { DummyERC20TokenContract } from '../../generated_contract_wrappers/dummy_e_r_c20_token';
+import { DummyERC721TokenContract } from '../../generated_contract_wrappers/dummy_e_r_c721_token';
+import { ERC20ProxyContract } from '../../generated_contract_wrappers/e_r_c20_proxy';
+import { ERC721ProxyContract } from '../../generated_contract_wrappers/e_r_c721_proxy';
+import { ExchangeContract } from '../../generated_contract_wrappers/exchange';
+import { ForwarderContract } from '../../generated_contract_wrappers/forwarder';
+import { WETH9Contract } from '../../generated_contract_wrappers/weth9';
+import { artifacts } from '../utils/artifacts';
+import { expectRevertOrAlwaysFailingTransactionAsync } from '../utils/assertions';
+import { chaiSetup } from '../utils/chai_setup';
+import { constants } from '../utils/constants';
+import { ERC20Wrapper } from '../utils/erc20_wrapper';
+import { ERC721Wrapper } from '../utils/erc721_wrapper';
+import { ExchangeWrapper } from '../utils/exchange_wrapper';
+import { formatters } from '../utils/formatters';
+import { ForwarderWrapper } from '../utils/forwarder_wrapper';
+import { OrderFactory } from '../utils/order_factory';
+import { ContractName, ERC20BalancesByOwner } from '../utils/types';
+import { provider, txDefaults, web3Wrapper } from '../utils/web3_wrapper';
 
 chaiSetup.configure();
 const expect = chai.expect;
@@ -73,7 +73,11 @@ describe(ContractName.Forwarder, () => {
         erc20Wrapper = new ERC20Wrapper(provider, usedAddresses, owner);
         erc721Wrapper = new ERC721Wrapper(provider, usedAddresses, owner);
 
-        [erc20TokenA, erc20TokenB, zrxToken] = await erc20Wrapper.deployDummyTokensAsync();
+        const numDummyErc20ToDeploy = 3;
+        [erc20TokenA, erc20TokenB, zrxToken] = await erc20Wrapper.deployDummyTokensAsync(
+            numDummyErc20ToDeploy,
+            constants.DUMMY_TOKEN_DECIMALS,
+        );
         erc20Proxy = await erc20Wrapper.deployProxyAsync();
         await erc20Wrapper.setBalancesAndAllowancesAsync();
 
@@ -97,8 +101,8 @@ describe(ContractName.Forwarder, () => {
         );
         const exchange = new ExchangeContract(exchangeInstance.abi, exchangeInstance.address, provider);
         const exchangeWrapper = new ExchangeWrapper(exchange, provider);
-        await exchangeWrapper.registerAssetProxyAsync(AssetProxyId.ERC20, erc20Proxy.address, owner);
-        await exchangeWrapper.registerAssetProxyAsync(AssetProxyId.ERC721, erc721Proxy.address, owner);
+        await exchangeWrapper.registerAssetProxyAsync(erc20Proxy.address, owner);
+        await exchangeWrapper.registerAssetProxyAsync(erc721Proxy.address, owner);
 
         await erc20Proxy.addAuthorizedAddress.sendTransactionAsync(exchangeInstance.address, {
             from: owner,
