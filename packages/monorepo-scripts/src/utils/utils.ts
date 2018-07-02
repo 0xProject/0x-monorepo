@@ -44,6 +44,9 @@ export const utils = {
             nextVersionIfValid = semver.inc(currentVersion, 'patch');
         }
         const lastEntry = changelog[0];
+        if (semver.gt(currentVersion, lastEntry.version)) {
+            throw new Error(`Package.json version cannot be greater then last CHANGELOG entry. Check: ${packageName}`);
+        }
         nextVersionIfValid = semver.eq(lastEntry.version, currentVersion)
             ? semver.inc(currentVersion, 'patch')
             : lastEntry.version;
