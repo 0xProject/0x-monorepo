@@ -109,6 +109,7 @@ export const utils = {
         if (!_.isEmpty(result.stderr)) {
             throw new Error(`Failed to delete local git tag. Got err: ${result.stderr}`);
         }
+        this.log(`Removed local tag: ${tagName}`);
     },
     async removeRemoteTagAsync(tagName: string): Promise<void> {
         const result = await execAsync(`git push origin ${tagName}`, {
@@ -117,5 +118,6 @@ export const utils = {
         if (!_.isEmpty(result.stderr)) {
             throw new Error(`Failed to delete remote git tag. Got err: ${result.stderr}`);
         }
+        this.log(`Removed remote tag: ${tagName}`);
     },
 };
