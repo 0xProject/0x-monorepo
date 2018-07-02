@@ -75,7 +75,7 @@ export async function coreCombinatorialUtilsFactoryAsync(
     const zrxAssetData = assetProxyUtils.encodeERC20AssetData(zrxToken.address);
 
     const erc20FiveDecimalTokenCount = 2;
-    const fiveDecimals = new BigNumber(18);
+    const fiveDecimals = new BigNumber(5);
     const [erc20FiveDecimalTokenA, erc20FiveDecimalTokenB] = await erc20Wrapper.deployDummyTokensAsync(
         erc20FiveDecimalTokenCount,
         fiveDecimals,
