@@ -103,20 +103,22 @@ export const utils = {
         return tagVersionByPackageName;
     },
     async removeLocalTagAsync(tagName: string): Promise<void> {
-        const result = await execAsync(`git tag -d ${tagName}`, {
+        try {
+            await execAsync(`git tag -d ${tagName}`, {
             cwd: constants.monorepoRootPath,
         });
-        if (!_.isEmpty(result.stderr)) {
-            throw new Error(`Failed to delete local git tag. Got err: ${result.stderr}`);
+        } catch (err) {
+            throw new Error(`Failed to delete local git tag. Got err: ${err}`);
         }
         this.log(`Removed local tag: ${tagName}`);
     },
     async removeRemoteTagAsync(tagName: string): Promise<void> {
-        const result = await execAsync(`git push origin ${tagName}`, {
+        try {
+            await execAsync(`git push origin ${tagName}`, {
             cwd: constants.monorepoRootPath,
         });
-        if (!_.isEmpty(result.stderr)) {
-            throw new Error(`Failed to delete remote git tag. Got err: ${result.stderr}`);
+        } catch (err) {
+            throw new Error(`Failed to delete remote git tag. Got err: ${err}`);
         }
         this.log(`Removed remote tag: ${tagName}`);
     },
