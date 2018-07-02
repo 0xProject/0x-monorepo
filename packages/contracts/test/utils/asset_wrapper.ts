@@ -84,8 +84,15 @@ export class AssetWrapper {
                         userAddress,
                     );
                 } else if (tokenOwner === userAddress && desiredBalance.eq(0)) {
-                    // Burn token
-                    await erc721Wrapper.burnAsync(assetProxyData.tokenAddress, assetProxyData.tokenId, userAddress);
+                    // Transfer token to someone else
+                    const userAddresses = await (erc721Wrapper as any)._web3Wrapper.getAvailableAddressesAsync();
+                    const nonOwner = _.find(userAddresses, a => a !== userAddress);
+                    await erc721Wrapper.transferFromAsync(
+                        assetProxyData.tokenAddress,
+                        assetProxyData.tokenId,
+                        tokenOwner,
+                        nonOwner,
+                    );
                     return;
                 } else if (
                     (userAddress !== tokenOwner && desiredBalance.eq(0)) ||
