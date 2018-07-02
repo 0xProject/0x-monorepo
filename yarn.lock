@@ -4071,13 +4071,6 @@ ethereum-common@^0.0.18:
   version "0.0.18"
   resolved "https://registry.yarnpkg.com/ethereum-common/-/ethereum-common-0.0.18.tgz#2fdc3576f232903358976eb39da783213ff9523f"
 
-ethereum-types@^0.0.2:
-  version "0.0.2"
-  resolved "https://registry.npmjs.org/ethereum-types/-/ethereum-types-0.0.2.tgz#6ef6faf46a24697cbf66b6c8a0ecf2095ce58c38"
-  dependencies:
-    "@types/node" "^8.0.53"
-    bignumber.js "~4.1.0"
-
 ethereumjs-abi@0.6.5, ethereumjs-abi@^0.6.4, "ethereumjs-abi@git+https://github.com/ethereumjs/ethereumjs-abi.git":
   version "0.6.5"
   resolved "git+https://github.com/ethereumjs/ethereumjs-abi.git#4ea2fdfed09e8f99117d9362d17c6b01b64a2bcf"
