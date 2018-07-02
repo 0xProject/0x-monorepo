@@ -46,7 +46,7 @@ class PlainPortalOnboardingFlow extends React.Component<PortalOnboardingFlowProp
     public componentDidMount(): void {
         this._adjustStepIfShould();
         // Wait until the step is adjusted to decide whether we should show onboarding.
-        setTimeout(this._autoStartOnboardingIfShould.bind(this), 1000);
+        // setTimeout(this._autoStartOnboardingIfShould.bind(this), 1000);
         // If there is a route change, just close onboarding.
         this._unlisten = this.props.history.listen(() => this.props.updateIsRunning(false));
     }
@@ -60,6 +60,9 @@ class PlainPortalOnboardingFlow extends React.Component<PortalOnboardingFlowProp
             if (this.props.screenWidth === ScreenWidths.Sm) {
                 document.querySelector('.wallet').scrollIntoView();
             }
+        }
+        if (!prevProps.blockchainIsLoaded && this.props.blockchainIsLoaded) {
+            this._autoStartOnboardingIfShould();
         }
     }
     public render(): React.ReactNode {
@@ -221,7 +224,7 @@ class PlainPortalOnboardingFlow extends React.Component<PortalOnboardingFlowProp
     }
     private _autoStartOnboardingIfShould(): void {
         if (
-            (this.props.stepIndex === 0 && !this.props.isRunning) ||
+            (this.props.stepIndex === 0 && !this.props.isRunning && this.props.blockchainIsLoaded) ||
             (!this.props.isRunning && !this.props.hasBeenClosed && this.props.blockchainIsLoaded)
         ) {
             const networkName = sharedConstants.NETWORK_NAME_BY_ID[this.props.networkId];
