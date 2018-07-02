@@ -165,6 +165,14 @@ export class CoreCombinatorialUtils {
             AssetDataScenario.ZRXFeeToken,
         ];
         const takerAssetFillAmountScenario = [TakerAssetFillAmountScenario.ExactlyRemainingFillableTakerAssetAmount];
+        const makerAssetBalanceScenario = [BalanceAmountScenario.Higher];
+        const makerAssetAllowanceScenario = [AllowanceAmountScenario.Higher];
+        const makerZRXBalanceScenario = [BalanceAmountScenario.Higher];
+        const makerZRXAllowanceScenario = [AllowanceAmountScenario.Higher];
+        const takerAssetBalanceScenario = [BalanceAmountScenario.Higher];
+        const takerAssetAllowanceScenario = [AllowanceAmountScenario.Higher];
+        const takerZRXBalanceScenario = [BalanceAmountScenario.Higher];
+        const takerZRXAllowanceScenario = [AllowanceAmountScenario.Higher];
         const fillScenarioArrays = CoreCombinatorialUtils._getAllCombinations([
             takerScenarios,
             feeRecipientScenarios,
@@ -176,6 +184,14 @@ export class CoreCombinatorialUtils {
             makerAssetDataScenario,
             takerAssetDataScenario,
             takerAssetFillAmountScenario,
+            makerAssetBalanceScenario,
+            makerAssetAllowanceScenario,
+            makerZRXBalanceScenario,
+            makerZRXAllowanceScenario,
+            takerAssetBalanceScenario,
+            takerAssetAllowanceScenario,
+            takerZRXBalanceScenario,
+            takerZRXAllowanceScenario,
         ]);
 
         const fillScenarios = _.map(fillScenarioArrays, fillScenarioArray => {
@@ -193,16 +209,16 @@ export class CoreCombinatorialUtils {
                 },
                 takerAssetFillAmountScenario: fillScenarioArray[9] as TakerAssetFillAmountScenario,
                 makerStateScenario: {
-                    traderAssetBalance: BalanceAmountScenario.Higher,
-                    traderAssetAllowance: AllowanceAmountScenario.Higher,
-                    zrxFeeBalance: BalanceAmountScenario.Higher,
-                    zrxFeeAllowance: AllowanceAmountScenario.Higher,
+                    traderAssetBalance: fillScenarioArray[10] as BalanceAmountScenario,
+                    traderAssetAllowance: fillScenarioArray[11] as AllowanceAmountScenario,
+                    zrxFeeBalance: fillScenarioArray[12] as BalanceAmountScenario,
+                    zrxFeeAllowance: fillScenarioArray[13] as AllowanceAmountScenario,
                 },
                 takerStateScenario: {
-                    traderAssetBalance: BalanceAmountScenario.Higher,
-                    traderAssetAllowance: AllowanceAmountScenario.Higher,
-                    zrxFeeBalance: BalanceAmountScenario.Higher,
-                    zrxFeeAllowance: AllowanceAmountScenario.Higher,
+                    traderAssetBalance: fillScenarioArray[14] as BalanceAmountScenario,
+                    traderAssetAllowance: fillScenarioArray[15] as AllowanceAmountScenario,
+                    zrxFeeBalance: fillScenarioArray[16] as BalanceAmountScenario,
+                    zrxFeeAllowance: fillScenarioArray[17] as AllowanceAmountScenario,
                 },
             };
             return fillScenario;
