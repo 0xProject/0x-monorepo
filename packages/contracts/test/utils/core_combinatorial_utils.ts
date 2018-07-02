@@ -262,6 +262,7 @@ export class CoreCombinatorialUtils {
         ]);
 
         const fillScenarios = _.map(fillScenarioArrays, fillScenarioArray => {
+            // tslint:disable:custom-no-magic-numbers
             const fillScenario: FillScenario = {
                 orderScenario: {
                     takerScenario: fillScenarioArray[0] as TakerScenario,
@@ -288,6 +289,7 @@ export class CoreCombinatorialUtils {
                     zrxFeeAllowance: fillScenarioArray[17] as AllowanceAmountScenario,
                 },
             };
+            // tslint:enable:custom-no-magic-numbers
             return fillScenario;
         });
 
