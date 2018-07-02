@@ -49,8 +49,8 @@ export class EthLightwalletSubprovider extends BaseWalletSubprovider {
         // respects this as it uses the parameters passed in
         let privKey = this._keystore.exportPrivateKey(txParams.from, this._pwDerivedKey);
         const privKeyWallet = new PrivateKeyWalletSubprovider(privKey);
-        const privKeySignature = await privKeyWallet.signTransactionAsync(txParams);
         privKey = '';
+        const privKeySignature = await privKeyWallet.signTransactionAsync(txParams);
         return privKeySignature;
     }
     /**
