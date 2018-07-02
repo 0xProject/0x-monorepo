@@ -37,7 +37,7 @@ export const Button = styled(PlainButton)`
     background-color: ${props => props.backgroundColor};
     border: ${props => (props.borderColor ? `1px solid ${props.borderColor}` : 'none')};
     &:hover {
-        background-color: ${props => (!props.isDisabled ? darken(0.1, props.backgroundColor) : '')};
+        background-color: ${props => (!props.isDisabled ? darken(0.1, props.backgroundColor) : '')} !important;
     }
     &:active {
         background-color: ${props => (!props.isDisabled ? darken(0.2, props.backgroundColor) : '')};

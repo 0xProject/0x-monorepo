@@ -12,7 +12,11 @@ import { IntroOnboardingStep } from 'ts/components/onboarding/intro_onboarding_s
 import { OnboardingFlow, Step } from 'ts/components/onboarding/onboarding_flow';
 import { SetAllowancesOnboardingStep } from 'ts/components/onboarding/set_allowances_onboarding_step';
 import { UnlockWalletOnboardingStep } from 'ts/components/onboarding/unlock_wallet_onboarding_step';
-import { WrapEthOnboardingStep } from 'ts/components/onboarding/wrap_eth_onboarding_step';
+import {
+    WrapEthOnboardingStep1,
+    WrapEthOnboardingStep2,
+    WrapEthOnboardingStep3,
+} from 'ts/components/onboarding/wrap_eth_onboarding_step';
 import { AllowanceToggle } from 'ts/containers/inputs/allowance_toggle';
 import { ProviderType, ScreenWidths, Token, TokenByAddress, TokenStateByAddress } from 'ts/types';
 import { analytics } from 'ts/utils/analytics';
@@ -24,7 +28,7 @@ export interface PortalOnboardingFlowProps extends RouteComponentProps<any> {
     stepIndex: number;
     isRunning: boolean;
     userAddress: string;
-    hasBeenSeen: boolean;
+    hasBeenClosed: boolean;
     providerType: ProviderType;
     injectedProviderName: string;
     blockchainIsLoaded: boolean;
@@ -40,15 +44,23 @@ export interface PortalOnboardingFlowProps extends RouteComponentProps<any> {
 class PlainPortalOnboardingFlow extends React.Component<PortalOnboardingFlowProps> {
     private _unlisten: () => void;
     public componentDidMount(): void {
-        this._overrideOnboardingStateIfShould();
+        this._adjustStepIfShould();
+        // Wait until the step is adjusted to decide whether we should show onboarding.
+        setTimeout(this._autoStartOnboardingIfShould.bind(this), 1000);
         // If there is a route change, just close onboarding.
         this._unlisten = this.props.history.listen(() => this.props.updateIsRunning(false));
     }
     public componentWillUnmount(): void {
         this._unlisten();
     }
-    public componentDidUpdate(): void {
-        this._overrideOnboardingStateIfShould();
+    public componentDidUpdate(prevProps: PortalOnboardingFlowProps): void {
+        this._adjustStepIfShould();
+        if (!prevProps.isRunning && this.props.isRunning) {
+            // On mobile, make sure the wallet is completely visible.
+            if (this.props.screenWidth === ScreenWidths.Sm) {
+                document.querySelector('.wallet').scrollIntoView();
+            }
+        }
     }
     public render(): React.ReactNode {
         return (
@@ -90,45 +102,63 @@ class PlainPortalOnboardingFlow extends React.Component<PortalOnboardingFlowProp
                 continueButtonDisplay: 'enabled',
             },
             {
-                target: '.eth-row',
-                title: 'Add ETH',
-                content: <AddEthOnboardingStep />,
+                target: '.wallet',
+                title: 'Step 1: Add ETH',
+                content: (
+                    <AddEthOnboardingStep userEthBalanceInWei={this.props.userEtherBalanceInWei || new BigNumber(0)} />
+                ),
                 placement: 'right',
                 continueButtonDisplay: this._userHasVisibleEth() ? 'enabled' : 'disabled',
             },
             {
-                target: '.weth-row',
-                title: 'Step 1/2',
+                target: '.wallet',
+                title: 'Step 2: Wrap ETH',
+                content: <WrapEthOnboardingStep1 />,
+                placement: 'right',
+                continueButtonDisplay: 'enabled',
+            },
+            {
+                target: '.wallet',
+                title: 'Step 2: Wrap ETH',
+                content: <WrapEthOnboardingStep2 />,
+                placement: 'right',
+                continueButtonDisplay: this._userHasVisibleWeth() ? 'enabled' : 'disabled',
+            },
+            {
+                target: '.wallet',
+                title: 'Step 2: Wrap ETH',
                 content: (
-                    <WrapEthOnboardingStep
-                        formattedEthBalanceIfExists={
+                    <WrapEthOnboardingStep3
+                        formattedWethBalanceIfExists={
                             this._userHasVisibleWeth() ? this._getFormattedWethBalance() : undefined
                         }
                     />
                 ),
                 placement: 'right',
-                continueButtonDisplay: this._userHasVisibleWeth() ? 'enabled' : undefined,
+                continueButtonDisplay: this._userHasVisibleWeth() ? 'enabled' : 'disabled',
             },
             {
-                target: '.weth-row',
-                title: 'Step 2/2',
+                target: '.wallet',
+                title: 'Step 3: Unlock Tokens',
                 content: (
                     <SetAllowancesOnboardingStep
                         zrxAllowanceToggle={this._renderZrxAllowanceToggle()}
                         ethAllowanceToggle={this._renderEthAllowanceToggle()}
+                        doesUserHaveAllowancesForWethAndZrx={this._doesUserHaveAllowancesForWethAndZrx()}
                     />
                 ),
                 placement: 'right',
-                continueButtonDisplay: this._userHasAllowancesForWethAndZrx() ? 'enabled' : 'disabled',
+                continueButtonDisplay: this._doesUserHaveAllowancesForWethAndZrx() ? 'enabled' : 'disabled',
             },
             {
                 target: '.wallet',
-                title: '🎉 Congrats! The ecosystem awaits.',
+                title: '🎉  The Ecosystem Awaits',
                 content: <CongratsOnboardingStep />,
                 placement: 'right',
                 continueButtonDisplay: 'enabled',
                 shouldHideNextButton: true,
                 continueButtonText: 'Enter the 0x Ecosystem',
+                onContinueButtonClick: this._handleFinalStepContinueClick.bind(this),
             },
         ];
         return steps;
@@ -155,7 +185,7 @@ class PlainPortalOnboardingFlow extends React.Component<PortalOnboardingFlowProp
     private _userHasVisibleWeth(): boolean {
         return this._getWethBalance() > new BigNumber(0);
     }
-    private _userHasAllowancesForWethAndZrx(): boolean {
+    private _doesUserHaveAllowancesForWethAndZrx(): boolean {
         const ethToken = utils.getEthToken(this.props.tokenByAddress);
         const zrxToken = utils.getZrxToken(this.props.tokenByAddress);
         if (ethToken && zrxToken) {
@@ -167,11 +197,6 @@ class PlainPortalOnboardingFlow extends React.Component<PortalOnboardingFlowProp
         }
         return false;
     }
-    private _overrideOnboardingStateIfShould(): void {
-        this._autoStartOnboardingIfShould();
-        this._adjustStepIfShould();
-    }
-
     private _adjustStepIfShould(): void {
         const stepIndex = this.props.stepIndex;
         if (this._isAddressAvailable()) {
@@ -195,7 +220,10 @@ class PlainPortalOnboardingFlow extends React.Component<PortalOnboardingFlowProp
         }
     }
     private _autoStartOnboardingIfShould(): void {
-        if (!this.props.isRunning && !this.props.hasBeenSeen && this.props.blockchainIsLoaded) {
+        if (
+            (this.props.stepIndex === 0 && !this.props.isRunning) ||
+            (!this.props.isRunning && !this.props.hasBeenClosed && this.props.blockchainIsLoaded)
+        ) {
             const networkName = sharedConstants.NETWORK_NAME_BY_ID[this.props.networkId];
             analytics.logEvent('Portal', 'Onboarding Started - Automatic', networkName, this.props.stepIndex);
             this.props.updateIsRunning(true);
@@ -237,6 +265,13 @@ class PlainPortalOnboardingFlow extends React.Component<PortalOnboardingFlowProp
                 refetchTokenStateAsync={async () => this.props.refetchTokenStateAsync(token.address)}
             />
         );
+    }
+    private _handleFinalStepContinueClick(): void {
+        if (utils.isMobile(this.props.screenWidth)) {
+            window.scrollTo(0, 0);
+            this.props.history.push('/portal');
+        }
+        this._closeOnboarding();
     }
 }
 

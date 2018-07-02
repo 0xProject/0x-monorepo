@@ -9,6 +9,10 @@
             {
                 "note": "Additional error type for `ethers.js`",
                 "pr": 763
+            },
+            {
+                "note": "Add @ledgerhq typings",
+                "pr": 770
             }
         ]
     },

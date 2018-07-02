@@ -53,9 +53,9 @@ jobs:
       - restore_cache:
           keys:
             - repo-{{ .Environment.CIRCLE_SHA1 }}
-      # HACK(albrow): we need to sleep 15 seconds to ensure the devnet is
+      # HACK(albrow): we need to sleep 10 seconds to ensure the devnet is
       # initialized
-      - run: sleep 15 && TEST_PROVIDER=geth yarn wsrun test contracts
+      - run: sleep 10 && TEST_PROVIDER=geth yarn wsrun test contracts
   test-rest:
     docker:
       - image: circleci/node:9

@@ -2,44 +2,30 @@ import {
     colors,
     constants as sharedConstants,
     EtherscanLinkSuffixes,
-    Styles,
     utils as sharedUtils,
 } from '@0xproject/react-shared';
 import * as _ from 'lodash';
 import * as React from 'react';
-import { analytics } from 'ts/utils/analytics';
 
+import { Container } from 'ts/components/ui/container';
+import { Text } from 'ts/components/ui/text';
 import { WebsiteBackendTokenInfo } from 'ts/types';
+import { analytics } from 'ts/utils/analytics';
+import { utils } from 'ts/utils/utils';
 
 export interface TopTokensProps {
     tokens: WebsiteBackendTokenInfo[];
     networkId: number;
 }
 
-const styles: Styles = {
-    tokenLabel: {
-        textDecoration: 'none',
-        color: colors.mediumBlue,
-        fontSize: 14,
-    },
-    followingTokenLabel: {
-        paddingLeft: 16,
-    },
-};
-
 export const TopTokens: React.StatelessComponent<TopTokensProps> = (props: TopTokensProps) => {
     return (
         <div className="flex">
-            {_.map(props.tokens, (tokenInfo: WebsiteBackendTokenInfo, index: number) => {
-                const firstItemStyle = { ...styles.tokenLabel, ...styles.followingTokenLabel };
-                const style = index !== 0 ? firstItemStyle : styles.tokenLabel;
+            {_.map(props.tokens, (tokenInfo: WebsiteBackendTokenInfo) => {
                 return (
-                    <TokenLink
-                        key={tokenInfo.address}
-                        tokenInfo={tokenInfo}
-                        style={style}
-                        networkId={props.networkId}
-                    />
+                    <Container key={tokenInfo.address} marginRight="16px">
+                        <TokenLink tokenInfo={tokenInfo} networkId={props.networkId} />
+                    </Container>
                 );
             })}
         </div>
@@ -48,12 +34,9 @@ export const TopTokens: React.StatelessComponent<TopTokensProps> = (props: TopTo
 
 interface TokenLinkProps {
     tokenInfo: WebsiteBackendTokenInfo;
-    style: React.CSSProperties;
     networkId: number;
 }
-interface TokenLinkState {
-    isHovering: boolean;
-}
+interface TokenLinkState {}
 
 class TokenLink extends React.Component<TokenLinkProps, TokenLinkState> {
     constructor(props: TokenLinkProps) {
@@ -63,37 +46,21 @@ class TokenLink extends React.Component<TokenLinkProps, TokenLinkState> {
         };
     }
     public render(): React.ReactNode {
-        const style = {
-            ...this.props.style,
-            cursor: 'pointer',
-            opacity: this.state.isHovering ? 0.5 : 1,
-        };
         const networkName = sharedConstants.NETWORK_NAME_BY_ID[this.props.networkId];
         const eventLabel = `${this.props.tokenInfo.symbol}-${networkName}`;
         const onClick = (event: React.MouseEvent<HTMLElement>) => {
             event.stopPropagation();
             analytics.logEvent('Portal', 'Token Click', eventLabel);
+            const tokenLink = this._tokenLinkFromToken(this.props.tokenInfo, this.props.networkId);
+            utils.openUrl(tokenLink);
         };
         return (
-            <a
-                href={tokenLinkFromToken(this.props.tokenInfo, this.props.networkId)}
-                target="_blank"
-                style={style}
-                onMouseEnter={this._onToggleHover.bind(this, true)}
-                onMouseLeave={this._onToggleHover.bind(this, false)}
-                onClick={onClick}
-            >
+            <Text fontSize="14px" fontColor={colors.mediumBlue} onClick={onClick}>
                 {this.props.tokenInfo.symbol}
-            </a>
+            </Text>
         );
     }
-    private _onToggleHover(isHovering: boolean): void {
-        this.setState({
-            isHovering,
-        });
+    private _tokenLinkFromToken(tokenInfo: WebsiteBackendTokenInfo, networkId: number): string {
+        return sharedUtils.getEtherScanLinkIfExists(tokenInfo.address, networkId, EtherscanLinkSuffixes.Address);
     }
-}
-
-function tokenLinkFromToken(tokenInfo: WebsiteBackendTokenInfo, networkId: number): string {
-    return sharedUtils.getEtherScanLinkIfExists(tokenInfo.address, networkId, EtherscanLinkSuffixes.Address);
 }
