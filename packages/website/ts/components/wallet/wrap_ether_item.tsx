@@ -8,6 +8,7 @@ import * as React from 'react';
 import { Blockchain } from 'ts/blockchain';
 import { EthAmountInput } from 'ts/components/inputs/eth_amount_input';
 import { TokenAmountInput } from 'ts/components/inputs/token_amount_input';
+import { Container } from 'ts/components/ui/container';
 import { Dispatcher } from 'ts/redux/dispatcher';
 import { colors } from 'ts/style/colors';
 import { BlockchainCallErrs, Side, Token } from 'ts/types';
@@ -94,7 +95,7 @@ export class WrapEtherItem extends React.Component<WrapEtherItemProps, WrapEther
         const topLabelText = isWrappingEth ? 'Convert ETH into WETH 1:1' : 'Convert WETH into ETH 1:1';
 
         return (
-            <div className="flex" style={{ backgroundColor: colors.walletFocusedItemBackground }}>
+            <Container className="flex" backgroundColor={colors.walletFocusedItemBackground} paddingTop="25px">
                 <div>{this._renderIsEthConversionHappeningSpinner()} </div>
                 <div className="flex flex-column">
                     <div style={styles.topLabel}>{topLabelText}</div>
@@ -142,7 +143,7 @@ export class WrapEtherItem extends React.Component<WrapEtherItemProps, WrapEther
 
                     {this._renderErrorMsg()}
                 </div>
-            </div>
+            </Container>
         );
     }
     private _onValueChange(_isValid: boolean, amount?: BigNumber): void {

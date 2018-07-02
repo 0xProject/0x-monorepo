@@ -320,8 +320,24 @@ export class Wallet extends React.Component<WalletProps, WalletState> {
             this.state.wrappedEtherDirection === accessoryItemConfig.wrappedEtherDirection &&
             !_.isUndefined(this.props.userEtherBalanceInWei);
         const etherToken = this._getEthToken();
+        const wrapEtherItem = shouldShowWrapEtherItem ? (
+            <WrapEtherItem
+                userAddress={this.props.userAddress}
+                networkId={this.props.networkId}
+                blockchain={this.props.blockchain}
+                dispatcher={this.props.dispatcher}
+                userEtherBalanceInWei={this.props.userEtherBalanceInWei}
+                direction={accessoryItemConfig.wrappedEtherDirection}
+                etherToken={etherToken}
+                lastForceTokenStateRefetch={this.props.lastForceTokenStateRefetch}
+                onConversionSuccessful={this._closeWrappedEtherActionRow.bind(this)}
+                // tslint:disable:jsx-no-lambda
+                refetchEthTokenStateAsync={async () => this.props.refetchTokenStateAsync(etherToken.address)}
+            />
+        ) : null;
         return (
             <div id={key} key={key} className={`flex flex-column ${className || ''}`}>
+                {this.state.wrappedEtherDirection === Side.Receive && wrapEtherItem}
                 <StandardIconRow
                     icon={icon}
                     main={
@@ -331,23 +347,8 @@ export class Wallet extends React.Component<WalletProps, WalletState> {
                         </div>
                     }
                     accessory={this._renderAccessoryItems(accessoryItemConfig)}
-                    backgroundColor={shouldShowWrapEtherItem ? colors.walletFocusedItemBackground : undefined}
                 />
-                {shouldShowWrapEtherItem && (
-                    <WrapEtherItem
-                        userAddress={this.props.userAddress}
-                        networkId={this.props.networkId}
-                        blockchain={this.props.blockchain}
-                        dispatcher={this.props.dispatcher}
-                        userEtherBalanceInWei={this.props.userEtherBalanceInWei}
-                        direction={accessoryItemConfig.wrappedEtherDirection}
-                        etherToken={etherToken}
-                        lastForceTokenStateRefetch={this.props.lastForceTokenStateRefetch}
-                        onConversionSuccessful={this._closeWrappedEtherActionRow.bind(this)}
-                        // tslint:disable:jsx-no-lambda
-                        refetchEthTokenStateAsync={async () => this.props.refetchTokenStateAsync(etherToken.address)}
-                    />
-                )}
+                {this.state.wrappedEtherDirection === Side.Deposit && wrapEtherItem}
             </div>
         );
     }
