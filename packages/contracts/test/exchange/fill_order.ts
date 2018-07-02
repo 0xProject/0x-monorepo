@@ -65,7 +65,6 @@ describe('FillOrder Tests', () => {
     describe('fillOrder', () => {
         const test = (fillScenarios: FillScenario[]) => {
             _.forEach(fillScenarios, fillScenario => {
-                const orderScenario = fillScenario.orderScenario;
                 const description = `Combinatorial OrderFill: ${JSON.stringify(fillScenario)}`;
                 it(description, async () => {
                     await coreCombinatorialUtils.testFillOrderScenarioAsync(provider, fillScenario);
