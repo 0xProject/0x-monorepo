@@ -783,25 +783,17 @@ export class CoreCombinatorialUtils {
 
             case AllowanceAmountScenario.TooLow:
                 const tooLowAllowance = takerFee.minus(1);
-                await this.assetWrapper.setProxyAllowanceAsync(
-                    signedOrder.takerAddress,
-                    this.zrxAssetData,
-                    tooLowAllowance,
-                );
+                await this.assetWrapper.setProxyAllowanceAsync(this.takerAddress, this.zrxAssetData, tooLowAllowance);
                 break;
 
             case AllowanceAmountScenario.Exact:
                 const exactAllowance = takerFee;
-                await this.assetWrapper.setProxyAllowanceAsync(
-                    signedOrder.takerAddress,
-                    this.zrxAssetData,
-                    exactAllowance,
-                );
+                await this.assetWrapper.setProxyAllowanceAsync(this.takerAddress, this.zrxAssetData, exactAllowance);
                 break;
 
             case AllowanceAmountScenario.Unlimited:
                 await this.assetWrapper.setProxyAllowanceAsync(
-                    signedOrder.takerAddress,
+                    this.takerAddress,
                     this.zrxAssetData,
                     constants.UNLIMITED_ALLOWANCE_IN_BASE_UNITS,
                 );
