@@ -2,11 +2,13 @@ import { assert } from '@0xproject/assert';
 import { addressUtils } from '@0xproject/utils';
 import * as lightwallet from 'eth-lightwallet';
 import EthereumTx = require('ethereumjs-tx');
+import * as ethUtil from 'ethereumjs-util';
 import * as _ from 'lodash';
 
 import { PartialTxParams, WalletSubproviderErrors } from '../types';
 
 import { BaseWalletSubprovider } from './base_wallet_subprovider';
+import { PrivateKeyWalletSubprovider } from './private_key_wallet';
 
 /*
  * This class implements the web3-provider-engine subprovider interface and forwards
@@ -42,17 +44,14 @@ export class EthLightwalletSubprovider extends BaseWalletSubprovider {
      * @return Signed transaction hex string
      */
     public async signTransactionAsync(txParams: PartialTxParams): Promise<string> {
-        if (_.isUndefined(txParams.from) || !addressUtils.isAddress(txParams.from)) {
-            throw new Error(WalletSubproviderErrors.FromAddressMissingOrInvalid);
-        }
-
-        const tx = new EthereumTx(txParams);
-        const txHex = tx.serialize().toString('hex');
-        let signedTxHex: string = lightwallet.signing.signTx(this._keystore, this._pwDerivedKey, txHex, txParams.from);
-
-        signedTxHex = `0x${signedTxHex}`;
-
-        return signedTxHex;
+        // Lightwallet loses the chain id information when hex encoding the transaction
+        // this results in a different signature on certain networks. PrivateKeyWallet
+        // respects this as it uses the parameters passed in
+        let privKey = this._keystore.exportPrivateKey(txParams.from, this._pwDerivedKey);
+        const privKeyWallet = new PrivateKeyWalletSubprovider(privKey);
+        const privKeySignature = await privKeyWallet.signTransactionAsync(txParams);
+        privKey = '';
+        return privKeySignature;
     }
     /**
      * Sign a personal Ethereum signed message. The signing account will be the account
@@ -65,19 +64,10 @@ export class EthLightwalletSubprovider extends BaseWalletSubprovider {
      * @return Signature hex string (order: rsv)
      */
     public async signPersonalMessageAsync(data: string, address: string): Promise<string> {
-        if (_.isUndefined(data)) {
-            throw new Error(WalletSubproviderErrors.DataMissingForSignPersonalMessage);
-        }
-        assert.isHexString('data', data);
-        assert.isETHAddressHex('address', address);
-        const result: ECSignatureBuffer = lightwallet.signing.signMsgHash(
-            this._keystore,
-            this._pwDerivedKey,
-            data,
-            address,
-        );
-
-        const signature = lightwallet.signing.concatSig(result);
-        return signature;
+        let privKey = this._keystore.exportPrivateKey(address, this._pwDerivedKey);
+        const privKeyWallet = new PrivateKeyWalletSubprovider(privKey);
+        privKey = '';
+        const result = privKeyWallet.signPersonalMessageAsync(data, address);
+        return result;
     }
 }
