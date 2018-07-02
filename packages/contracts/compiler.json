@@ -42,12 +42,14 @@
         "TestConstants",
         "TestLibBytes",
         "TestLibs",
+        "TestMixinExchangeCore",
         "TestSignatureValidator",
         "TokenRegistry",
         "Validator",
         "Wallet",
         "Whitelist",
         "WETH9",
+        "Whitelist",
         "ZRXToken"
     ]
 }
