@@ -12,14 +12,14 @@ import { Subprovider } from './subprovider';
  * are passed onwards for subsequent subproviders to handle.
  */
 export class SignerSubprovider extends Subprovider {
-    private _SignerWrapper: Web3Wrapper;
+    private _web3Wrapper: Web3Wrapper;
     /**
      * Instantiates a new SignerSubprovider
      * @param provider Web3 provider that should handle  all user account related requests
      */
     constructor(provider: Provider) {
         super();
-        this._SignerWrapper = new Web3Wrapper(provider);
+        this._web3Wrapper = new Web3Wrapper(provider);
     }
     /**
      * This method conforms to the web3-provider-engine interface.
@@ -34,7 +34,7 @@ export class SignerSubprovider extends Subprovider {
         switch (payload.method) {
             case 'web3_clientVersion':
                 try {
-                    const nodeVersion = await this._SignerWrapper.getNodeVersionAsync();
+                    const nodeVersion = await this._web3Wrapper.getNodeVersionAsync();
                     end(null, nodeVersion);
                 } catch (err) {
                     end(err);
@@ -42,7 +42,7 @@ export class SignerSubprovider extends Subprovider {
                 return;
             case 'eth_accounts':
                 try {
-                    const accounts = await this._SignerWrapper.getAvailableAddressesAsync();
+                    const accounts = await this._web3Wrapper.getAvailableAddressesAsync();
                     end(null, accounts);
                 } catch (err) {
                     end(err);
@@ -51,7 +51,7 @@ export class SignerSubprovider extends Subprovider {
             case 'eth_sendTransaction':
                 const [txParams] = payload.params;
                 try {
-                    const txHash = await this._SignerWrapper.sendTransactionAsync(txParams);
+                    const txHash = await this._web3Wrapper.sendTransactionAsync(txParams);
                     end(null, txHash);
                 } catch (err) {
                     end(err);
@@ -60,7 +60,7 @@ export class SignerSubprovider extends Subprovider {
             case 'eth_sign':
                 const [address, message] = payload.params;
                 try {
-                    const signature = await this._SignerWrapper.signMessageAsync(address, message);
+                    const signature = await this._web3Wrapper.signMessageAsync(address, message);
                     end(null, signature);
                 } catch (err) {
                     end(err);
