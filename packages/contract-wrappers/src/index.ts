@@ -19,6 +19,8 @@ export {
     LogEvent,
     DecodedLogEvent,
     OnOrderStateChangeCallback,
+    OrderStatus,
+    OrderInfo,
 } from './types';
 
 export { Order, SignedOrder, ECSignature, OrderStateValid, OrderStateInvalid, OrderState } from '@0xproject/types';
