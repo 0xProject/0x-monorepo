@@ -575,13 +575,13 @@ export enum AccountState {
     Locked = 'Locked',
 }
 
-export interface MetamaskProvider extends Provider {
-    publicConfigStore: InjectedProviderObservable;
+export interface InjectedProvider extends Provider {
+    publicConfigStore?: InjectedProviderObservable;
 }
 
 // Minimal interface expected for an injected web3 object
 export interface InjectedWeb3 {
-    currentProvider: MetamaskProvider;
+    currentProvider: InjectedProvider;
     version: {
         getNetwork(cd: (err: Error, networkId: string) => void): void;
     };
