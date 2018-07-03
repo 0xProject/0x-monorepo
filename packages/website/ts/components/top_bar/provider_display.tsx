@@ -6,7 +6,6 @@ import Lock from 'material-ui/svg-icons/action/lock';
 import * as React from 'react';
 
 import { Blockchain } from 'ts/blockchain';
-import { InstallPrompt } from 'ts/components/top_bar/install_prompt';
 import { AccountConnection } from 'ts/components/ui/account_connection';
 import { Container } from 'ts/components/ui/container';
 import { DropDown } from 'ts/components/ui/drop_down';
@@ -81,7 +80,6 @@ export class ProviderDisplay extends React.Component<ProviderDisplayProps, Provi
                     </SimpleMenu>
                 );
             case AccountState.Disconnected:
-                return <InstallPrompt onToggleLedgerDialog={this.props.onToggleLedgerDialog} />;
             case AccountState.Locked:
             case AccountState.Loading:
             default:
