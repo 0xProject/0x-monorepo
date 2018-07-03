@@ -6,11 +6,11 @@ import * as chai from 'chai';
 import { LogWithDecodedArgs } from 'ethereum-types';
 import * as _ from 'lodash';
 
-import { DummyERC20TokenContract } from '../../generated_contract_wrappers/dummy_e_r_c20_token';
-import { ERC20ProxyContract } from '../../generated_contract_wrappers/e_r_c20_proxy';
-import { ERC721ProxyContract } from '../../generated_contract_wrappers/e_r_c721_proxy';
+import { DummyERC20TokenContract } from '../../generated_contract_wrappers/dummy_erc20_token';
+import { ERC20ProxyContract } from '../../generated_contract_wrappers/erc20_proxy';
+import { ERC721ProxyContract } from '../../generated_contract_wrappers/erc721_proxy';
 import {
-    AssetProxyRegisteredContractEventArgs,
+    TestAssetProxyDispatcherAssetProxyRegisteredEventArgs,
     TestAssetProxyDispatcherContract,
 } from '../../generated_contract_wrappers/test_asset_proxy_dispatcher';
 import { artifacts } from '../utils/artifacts';
@@ -150,7 +150,7 @@ describe('AssetProxyDispatcher', () => {
                 await assetProxyDispatcher.registerAssetProxy.sendTransactionAsync(erc20Proxy.address, { from: owner }),
             );
             const logs = txReceipt.logs;
-            const log = logs[0] as LogWithDecodedArgs<AssetProxyRegisteredContractEventArgs>;
+            const log = logs[0] as LogWithDecodedArgs<TestAssetProxyDispatcherAssetProxyRegisteredEventArgs>;
             expect(log.args.id).to.equal(AssetProxyId.ERC20);
             expect(log.args.assetProxy).to.equal(erc20Proxy.address);
         });

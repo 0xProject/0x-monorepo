@@ -6,10 +6,10 @@ import { Web3Wrapper } from '@0xproject/web3-wrapper';
 import * as chai from 'chai';
 import * as _ from 'lodash';
 
-import { DummyERC20TokenContract } from '../../generated_contract_wrappers/dummy_e_r_c20_token';
-import { DummyERC721TokenContract } from '../../generated_contract_wrappers/dummy_e_r_c721_token';
-import { ERC20ProxyContract } from '../../generated_contract_wrappers/e_r_c20_proxy';
-import { ERC721ProxyContract } from '../../generated_contract_wrappers/e_r_c721_proxy';
+import { DummyERC20TokenContract } from '../../generated_contract_wrappers/dummy_erc20_token';
+import { DummyERC721TokenContract } from '../../generated_contract_wrappers/dummy_erc721_token';
+import { ERC20ProxyContract } from '../../generated_contract_wrappers/erc20_proxy';
+import { ERC721ProxyContract } from '../../generated_contract_wrappers/erc721_proxy';
 import { ExchangeContract } from '../../generated_contract_wrappers/exchange';
 import { artifacts } from '../utils/artifacts';
 import { expectTransactionFailedAsync } from '../utils/assertions';

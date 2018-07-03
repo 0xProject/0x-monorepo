@@ -4202,6 +4202,14 @@ ethereumjs-block@~1.2.2:
     ethereumjs-util "^4.0.1"
     merkle-patricia-tree "^2.1.2"
 
+ethereumjs-blockstream@2.0.7:
+  version "2.0.7"
+  resolved "https://registry.yarnpkg.com/ethereumjs-blockstream/-/ethereumjs-blockstream-2.0.7.tgz#8e791d18d517f13e0ba928892dda545dc930936b"
+  dependencies:
+    immutable "3.8.1"
+    source-map-support "0.4.14"
+    uuid "3.0.1"
+
 ethereumjs-blockstream@5.0.0:
   version "5.0.0"
   resolved "https://registry.yarnpkg.com/ethereumjs-blockstream/-/ethereumjs-blockstream-5.0.0.tgz#63bfe9185757329a32822d5815562eb1dcd75d71"
@@ -5892,6 +5900,10 @@ image-size@~0.5.0:
 immediate@^3.2.3:
   version "3.2.3"
   resolved "https://registry.yarnpkg.com/immediate/-/immediate-3.2.3.tgz#d140fa8f614659bd6541233097ddaac25cdd991c"
+
+immutable@3.8.1:
+  version "3.8.1"
+  resolved "https://registry.yarnpkg.com/immutable/-/immutable-3.8.1.tgz#200807f11ab0f72710ea485542de088075f68cd2"
 
 immutable@3.8.2:
   version "3.8.2"
@@ -10853,6 +10865,12 @@ source-map-resolve@^0.5.0:
     resolve-url "^0.2.1"
     source-map-url "^0.4.0"
     urix "^0.1.0"
+
+source-map-support@0.4.14:
+  version "0.4.14"
+  resolved "https://registry.yarnpkg.com/source-map-support/-/source-map-support-0.4.14.tgz#9d4463772598b86271b4f523f6c1f4e02a7d6aef"
+  dependencies:
+    source-map "^0.5.6"
 
 source-map-support@0.5.6, source-map-support@^0.5.6:
   version "0.5.6"
