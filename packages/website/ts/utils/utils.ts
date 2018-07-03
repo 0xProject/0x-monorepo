@@ -8,6 +8,8 @@ import * as bowser from 'bowser';
 import deepEqual = require('deep-equal');
 import * as _ from 'lodash';
 import * as moment from 'moment';
+import * as numeral from 'numeral';
+
 import {
     AccountState,
     BlockchainCallErrs,
@@ -380,9 +382,19 @@ export const utils = {
     },
     getFormattedAmount(amount: BigNumber, decimals: number, symbol: string): string {
         const unitAmount = Web3Wrapper.toUnitAmount(amount, decimals);
-        const precision = Math.min(constants.TOKEN_AMOUNT_DISPLAY_PRECISION, unitAmount.decimalPlaces());
-        const formattedAmount = unitAmount.toFixed(precision);
+        // if the unit amount is less than 1, show the natural number of decimal places with a max of 4
+        // if the unit amount is greater than or equal to 1, show only 2 decimal places
+        const precision = unitAmount.lt(1)
+            ? Math.min(constants.TOKEN_AMOUNT_DISPLAY_PRECISION, unitAmount.decimalPlaces())
+            : 2;
+        const format = `0,0.${_.repeat('0', precision)}`;
+        const formattedAmount = numeral(unitAmount).format(format);
         return `${formattedAmount} ${symbol}`;
+    },
+    getUsdValueFormattedAmount(amount: BigNumber, decimals: number, price: BigNumber): string {
+        const unitAmount = Web3Wrapper.toUnitAmount(amount, decimals);
+        const value = unitAmount.mul(price);
+        return numeral(value).format(constants.NUMERAL_USD_FORMAT);
     },
     openUrl(url: string): void {
         window.open(url, '_blank');
