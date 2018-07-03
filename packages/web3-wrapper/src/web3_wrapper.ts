@@ -49,6 +49,7 @@ export class Web3Wrapper {
     private _web3: Web3;
     private _txDefaults: Partial<TxData>;
     private _jsonRpcRequestId: number;
+    private _nodeType: NodeType | undefined;
     /**
      * Check if an address is a valid Ethereum address
      * @param address Address to check
@@ -501,10 +502,15 @@ export class Web3Wrapper {
      * function caches the result and so subsequent calls are fast.
      */
     public async getNodeTypeAsync(): Promise<NodeType> {
+        if (!_.isUndefined(this._nodeType)) {
+            return this._nodeType;
+        }
         const version = await this.getNodeVersionAsync();
         if (_.includes(version, uniqueVersionIds.geth)) {
+            this._nodeType = NodeType.Geth;
             return NodeType.Geth;
         } else if (_.includes(version, uniqueVersionIds.ganache)) {
+            this._nodeType = NodeType.Ganache;
             return NodeType.Ganache;
         } else {
             throw new Error(`Unknown client version: ${version}`);
