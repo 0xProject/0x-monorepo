@@ -3,7 +3,7 @@ import { darken } from 'polished';
 import * as React from 'react';
 import { styled } from 'ts/style/theme';
 
-export type TextTag = 'p' | 'div' | 'span' | 'label' | 'h1' | 'h2' | 'h3' | 'h4';
+export type TextTag = 'p' | 'div' | 'span' | 'label' | 'h1' | 'h2' | 'h3' | 'h4' | 'i';
 
 export interface TextProps {
     className?: string;
@@ -17,6 +17,7 @@ export interface TextProps {
     fontWeight?: number | string;
     textDecorationLine?: string;
     onClick?: (event: React.MouseEvent<HTMLElement>) => void;
+    hoverColor?: string;
 }
 
 const PlainText: React.StatelessComponent<TextProps> = ({ children, className, onClick, Tag }) => (
@@ -37,7 +38,7 @@ export const Text = styled(PlainText)`
     ${props => (props.onClick ? 'cursor: pointer' : '')};
     transition: color 0.5s ease;
     &:hover {
-        ${props => (props.onClick ? `color: ${darken(0.3, props.fontColor)}` : '')};
+        ${props => (props.onClick ? `color: ${props.hoverColor || darken(0.3, props.fontColor)}` : '')};
     }
 `;
 

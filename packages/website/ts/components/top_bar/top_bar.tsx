@@ -199,7 +199,7 @@ export class TopBar extends React.Component<TopBarProps, TopBarState> {
             cursor: 'pointer',
             paddingTop: 16,
         };
-        const hoverActiveNode = (
+        const activeNode = (
             <div className="flex relative" style={{ color: menuIconStyle.color }}>
                 <div style={{ paddingRight: 10 }}>{this.props.translate.get(Key.Developers, Deco.Cap)}</div>
                 <div className="absolute" style={{ paddingLeft: 3, right: 3, top: -2 }}>
@@ -224,7 +224,7 @@ export class TopBar extends React.Component<TopBarProps, TopBarState> {
                         <div className={menuClasses}>
                             <div className="flex justify-between">
                                 <DropDown
-                                    hoverActiveNode={hoverActiveNode}
+                                    activeNode={activeNode}
                                     popoverContent={popoverContent}
                                     anchorOrigin={{ horizontal: 'middle', vertical: 'bottom' }}
                                     targetOrigin={{ horizontal: 'middle', vertical: 'top' }}

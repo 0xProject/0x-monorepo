@@ -5,6 +5,10 @@
             {
                 "note": "Add `TraceParams` interface for `debug_traceTransaction` parameters",
                 "pr": 675
+            },
+            {
+                "note": "Add `TransactionReceiptStatus` type",
+                "pr": 812
             }
         ]
     },

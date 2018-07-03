@@ -12,7 +12,7 @@ import { ERC20ProxyContract } from '../../generated_contract_wrappers/e_r_c20_pr
 import { ERC721ProxyContract } from '../../generated_contract_wrappers/e_r_c721_proxy';
 import { ExchangeContract } from '../../generated_contract_wrappers/exchange';
 import { artifacts } from '../utils/artifacts';
-import { expectRevertReasonOrAlwaysFailingTransactionAsync } from '../utils/assertions';
+import { expectTransactionFailedAsync } from '../utils/assertions';
 import { chaiSetup } from '../utils/chai_setup';
 import { constants } from '../utils/constants';
 import { ERC20Wrapper } from '../utils/erc20_wrapper';
@@ -174,7 +174,7 @@ describe('Exchange wrappers', () => {
                 expirationTimeSeconds: new BigNumber(Math.floor((Date.now() - 10000) / 1000)),
             });
 
-            return expectRevertReasonOrAlwaysFailingTransactionAsync(
+            return expectTransactionFailedAsync(
                 exchangeWrapper.fillOrKillOrderAsync(signedOrder, takerAddress),
                 RevertReason.OrderUnfillable,
             );
@@ -187,7 +187,7 @@ describe('Exchange wrappers', () => {
                 takerAssetFillAmount: signedOrder.takerAssetAmount.div(2),
             });
 
-            return expectRevertReasonOrAlwaysFailingTransactionAsync(
+            return expectTransactionFailedAsync(
                 exchangeWrapper.fillOrKillOrderAsync(signedOrder, takerAddress),
                 RevertReason.CompleteFillFailed,
             );
@@ -500,7 +500,7 @@ describe('Exchange wrappers', () => {
 
                 await exchangeWrapper.fillOrKillOrderAsync(signedOrders[0], takerAddress);
 
-                return expectRevertReasonOrAlwaysFailingTransactionAsync(
+                return expectTransactionFailedAsync(
                     exchangeWrapper.batchFillOrKillOrdersAsync(signedOrders, takerAddress, {
                         takerAssetFillAmounts,
                     }),
@@ -703,7 +703,7 @@ describe('Exchange wrappers', () => {
                     orderFactory.newSignedOrder(),
                 ];
 
-                return expectRevertReasonOrAlwaysFailingTransactionAsync(
+                return expectTransactionFailedAsync(
                     exchangeWrapper.marketSellOrdersAsync(signedOrders, takerAddress, {
                         takerAssetFillAmount: Web3Wrapper.toBaseUnitAmount(new BigNumber(1000), 18),
                     }),
@@ -921,7 +921,7 @@ describe('Exchange wrappers', () => {
                     orderFactory.newSignedOrder(),
                 ];
 
-                return expectRevertReasonOrAlwaysFailingTransactionAsync(
+                return expectTransactionFailedAsync(
                     exchangeWrapper.marketBuyOrdersAsync(signedOrders, takerAddress, {
                         makerAssetFillAmount: Web3Wrapper.toBaseUnitAmount(new BigNumber(1000), 18),
                     }),
