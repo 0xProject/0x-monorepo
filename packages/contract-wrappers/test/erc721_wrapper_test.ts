@@ -426,7 +426,7 @@ describe('ERC721Wrapper', () => {
             );
             expect(logs).to.have.length(0);
         });
-        it.only('should only get the logs with the correct indexed fields', async () => {
+        it('should only get the logs with the correct indexed fields', async () => {
             const isApprovedForAll = true;
             txHash = await contractWrappers.erc721Token.setApprovalForAllAsync(
                 tokenAddress,
