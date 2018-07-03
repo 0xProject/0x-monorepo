@@ -20,6 +20,15 @@ export class ERC20ProxyWrapper extends ContractWrapper {
         this._contractAddressIfExists = contractAddressIfExists;
     }
     /**
+     * Get the 4 bytes ID of this asset proxy
+     * @return  Proxy id
+     */
+    public async getProxyIdAsync(): Promise<string> {
+        const ERC20ProxyContractInstance = await this._getERC20ProxyContractAsync();
+        const proxyId = await ERC20ProxyContractInstance.getProxyId.callAsync();
+        return proxyId;
+    }
+    /**
      * Check if the Exchange contract address is authorized by the ERC20Proxy contract.
      * @param   exchangeContractAddress     The hex encoded address of the Exchange contract to call.
      * @return  Whether the exchangeContractAddress is authorized.
