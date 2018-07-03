@@ -1,7 +1,10 @@
 [
     {
-        "version": "0.8.2",
+        "version": "1.0.0",
         "changes": [
+            {
+                "notes": "Updated types for V2 of 0x protocol"
+            },
             {
                 "note": "Add `ECSignatureBuffer`"
             }

@@ -350,6 +350,10 @@
   version "8.10.8"
   resolved "https://registry.yarnpkg.com/@types/node/-/node-8.10.8.tgz#794cba23cc9f8d9715f6543fa8827433b5f5cd3b"
 
+"@types/numeral@^0.0.22":
+  version "0.0.22"
+  resolved "https://registry.yarnpkg.com/@types/numeral/-/numeral-0.0.22.tgz#86bef1f0a2d743afdc2ef3168d45f2905e1a0b93"
+
 "@types/opn@^5.1.0":
   version "5.1.0"
   resolved "https://registry.yarnpkg.com/@types/opn/-/opn-5.1.0.tgz#bff7bc371677f4bdbb37884400e03fd81f743927"
@@ -4133,13 +4137,6 @@ ethereum-common@0.2.0:
 ethereum-common@^0.0.18:
   version "0.0.18"
   resolved "https://registry.yarnpkg.com/ethereum-common/-/ethereum-common-0.0.18.tgz#2fdc3576f232903358976eb39da783213ff9523f"
-
-ethereum-types@^0.0.2:
-  version "0.0.2"
-  resolved "https://registry.yarnpkg.com/ethereum-types/-/ethereum-types-0.0.2.tgz#6ef6faf46a24697cbf66b6c8a0ecf2095ce58c38"
-  dependencies:
-    "@types/node" "^8.0.53"
-    bignumber.js "~4.1.0"
 
 ethereumjs-abi@0.6.5, ethereumjs-abi@^0.6.4, "ethereumjs-abi@git+https://github.com/ethereumjs/ethereumjs-abi.git":
   version "0.6.5"
@@ -8188,6 +8185,10 @@ number-to-bn@1.7.0:
   dependencies:
     bn.js "4.11.6"
     strip-hex-prefix "1.0.0"
+
+numeral@^2.0.6:
+  version "2.0.6"
+  resolved "https://registry.yarnpkg.com/numeral/-/numeral-2.0.6.tgz#4ad080936d443c2561aed9f2197efffe25f4e506"
 
 nyc@^11.0.1:
   version "11.7.1"

@@ -75,7 +75,7 @@ export async function coreCombinatorialUtilsFactoryAsync(
     const zrxAssetData = assetProxyUtils.encodeERC20AssetData(zrxToken.address);
 
     const erc20FiveDecimalTokenCount = 2;
-    const fiveDecimals = new BigNumber(18);
+    const fiveDecimals = new BigNumber(5);
     const [erc20FiveDecimalTokenA, erc20FiveDecimalTokenB] = await erc20Wrapper.deployDummyTokensAsync(
         erc20FiveDecimalTokenCount,
         fiveDecimals,
@@ -146,13 +146,39 @@ export class CoreCombinatorialUtils {
     public exchangeWrapper: ExchangeWrapper;
     public assetWrapper: AssetWrapper;
     public static generateFillOrderCombinations(): FillScenario[] {
-        const takerScenarios = [TakerScenario.Unspecified];
-        const feeRecipientScenarios = [FeeRecipientAddressScenario.EthUserAddress];
-        const makerAssetAmountScenario = [OrderAssetAmountScenario.Large];
-        const takerAssetAmountScenario = [OrderAssetAmountScenario.Large];
-        const makerFeeScenario = [OrderAssetAmountScenario.Large];
-        const takerFeeScenario = [OrderAssetAmountScenario.Large];
-        const expirationTimeSecondsScenario = [ExpirationTimeSecondsScenario.InFuture];
+        const takerScenarios = [
+            TakerScenario.Unspecified,
+            // TakerScenario.CorrectlySpecified,
+            // TakerScenario.IncorrectlySpecified,
+        ];
+        const feeRecipientScenarios = [
+            FeeRecipientAddressScenario.EthUserAddress,
+            // FeeRecipientAddressScenario.BurnAddress,
+        ];
+        const makerAssetAmountScenario = [
+            OrderAssetAmountScenario.Large,
+            // OrderAssetAmountScenario.Zero,
+            // OrderAssetAmountScenario.Small,
+        ];
+        const takerAssetAmountScenario = [
+            OrderAssetAmountScenario.Large,
+            // OrderAssetAmountScenario.Zero,
+            // OrderAssetAmountScenario.Small,
+        ];
+        const makerFeeScenario = [
+            OrderAssetAmountScenario.Large,
+            // OrderAssetAmountScenario.Small,
+            // OrderAssetAmountScenario.Zero,
+        ];
+        const takerFeeScenario = [
+            OrderAssetAmountScenario.Large,
+            // OrderAssetAmountScenario.Small,
+            // OrderAssetAmountScenario.Zero,
+        ];
+        const expirationTimeSecondsScenario = [
+            ExpirationTimeSecondsScenario.InFuture,
+            ExpirationTimeSecondsScenario.InPast,
+        ];
         const makerAssetDataScenario = [
             AssetDataScenario.ERC20FiveDecimals,
             AssetDataScenario.ERC20NonZRXEighteenDecimals,
@@ -165,7 +191,55 @@ export class CoreCombinatorialUtils {
             AssetDataScenario.ERC721,
             AssetDataScenario.ZRXFeeToken,
         ];
-        const takerAssetFillAmountScenario = [TakerAssetFillAmountScenario.ExactlyRemainingFillableTakerAssetAmount];
+        const takerAssetFillAmountScenario = [
+            TakerAssetFillAmountScenario.ExactlyRemainingFillableTakerAssetAmount,
+            // TakerAssetFillAmountScenario.GreaterThanRemainingFillableTakerAssetAmount,
+            // TakerAssetFillAmountScenario.LessThanRemainingFillableTakerAssetAmount,
+        ];
+        const makerAssetBalanceScenario = [
+            BalanceAmountScenario.Higher,
+            // BalanceAmountScenario.Exact,
+            // BalanceAmountScenario.TooLow,
+        ];
+        const makerAssetAllowanceScenario = [
+            AllowanceAmountScenario.Higher,
+            // AllowanceAmountScenario.Exact,
+            // AllowanceAmountScenario.TooLow,
+            // AllowanceAmountScenario.Unlimited,
+        ];
+        const makerZRXBalanceScenario = [
+            BalanceAmountScenario.Higher,
+            // BalanceAmountScenario.Exact,
+            // BalanceAmountScenario.TooLow,
+        ];
+        const makerZRXAllowanceScenario = [
+            AllowanceAmountScenario.Higher,
+            // AllowanceAmountScenario.Exact,
+            // AllowanceAmountScenario.TooLow,
+            // AllowanceAmountScenario.Unlimited,
+        ];
+        const takerAssetBalanceScenario = [
+            BalanceAmountScenario.Higher,
+            // BalanceAmountScenario.Exact,
+            // BalanceAmountScenario.TooLow,
+        ];
+        const takerAssetAllowanceScenario = [
+            AllowanceAmountScenario.Higher,
+            // AllowanceAmountScenario.Exact,
+            // AllowanceAmountScenario.TooLow,
+            // AllowanceAmountScenario.Unlimited,
+        ];
+        const takerZRXBalanceScenario = [
+            BalanceAmountScenario.Higher,
+            // BalanceAmountScenario.Exact,
+            // BalanceAmountScenario.TooLow,
+        ];
+        const takerZRXAllowanceScenario = [
+            AllowanceAmountScenario.Higher,
+            // AllowanceAmountScenario.Exact,
+            // AllowanceAmountScenario.TooLow,
+            // AllowanceAmountScenario.Unlimited,
+        ];
         const fillScenarioArrays = CoreCombinatorialUtils._getAllCombinations([
             takerScenarios,
             feeRecipientScenarios,
@@ -177,9 +251,18 @@ export class CoreCombinatorialUtils {
             makerAssetDataScenario,
             takerAssetDataScenario,
             takerAssetFillAmountScenario,
+            makerAssetBalanceScenario,
+            makerAssetAllowanceScenario,
+            makerZRXBalanceScenario,
+            makerZRXAllowanceScenario,
+            takerAssetBalanceScenario,
+            takerAssetAllowanceScenario,
+            takerZRXBalanceScenario,
+            takerZRXAllowanceScenario,
         ]);
 
         const fillScenarios = _.map(fillScenarioArrays, fillScenarioArray => {
+            // tslint:disable:custom-no-magic-numbers
             const fillScenario: FillScenario = {
                 orderScenario: {
                     takerScenario: fillScenarioArray[0] as TakerScenario,
@@ -194,18 +277,19 @@ export class CoreCombinatorialUtils {
                 },
                 takerAssetFillAmountScenario: fillScenarioArray[9] as TakerAssetFillAmountScenario,
                 makerStateScenario: {
-                    traderAssetBalance: BalanceAmountScenario.Higher,
-                    traderAssetAllowance: AllowanceAmountScenario.Higher,
-                    zrxFeeBalance: BalanceAmountScenario.Higher,
-                    zrxFeeAllowance: AllowanceAmountScenario.Higher,
+                    traderAssetBalance: fillScenarioArray[10] as BalanceAmountScenario,
+                    traderAssetAllowance: fillScenarioArray[11] as AllowanceAmountScenario,
+                    zrxFeeBalance: fillScenarioArray[12] as BalanceAmountScenario,
+                    zrxFeeAllowance: fillScenarioArray[13] as AllowanceAmountScenario,
                 },
                 takerStateScenario: {
-                    traderAssetBalance: BalanceAmountScenario.Higher,
-                    traderAssetAllowance: AllowanceAmountScenario.Higher,
-                    zrxFeeBalance: BalanceAmountScenario.Higher,
-                    zrxFeeAllowance: AllowanceAmountScenario.Higher,
+                    traderAssetBalance: fillScenarioArray[14] as BalanceAmountScenario,
+                    traderAssetAllowance: fillScenarioArray[15] as AllowanceAmountScenario,
+                    zrxFeeBalance: fillScenarioArray[16] as BalanceAmountScenario,
+                    zrxFeeAllowance: fillScenarioArray[17] as AllowanceAmountScenario,
                 },
             };
+            // tslint:enable:custom-no-magic-numbers
             return fillScenario;
         });
 
@@ -768,25 +852,17 @@ export class CoreCombinatorialUtils {
 
             case AllowanceAmountScenario.TooLow:
                 const tooLowAllowance = takerFee.minus(1);
-                await this.assetWrapper.setProxyAllowanceAsync(
-                    signedOrder.takerAddress,
-                    this.zrxAssetData,
-                    tooLowAllowance,
-                );
+                await this.assetWrapper.setProxyAllowanceAsync(this.takerAddress, this.zrxAssetData, tooLowAllowance);
                 break;
 
             case AllowanceAmountScenario.Exact:
                 const exactAllowance = takerFee;
-                await this.assetWrapper.setProxyAllowanceAsync(
-                    signedOrder.takerAddress,
-                    this.zrxAssetData,
-                    exactAllowance,
-                );
+                await this.assetWrapper.setProxyAllowanceAsync(this.takerAddress, this.zrxAssetData, exactAllowance);
                 break;
 
             case AllowanceAmountScenario.Unlimited:
                 await this.assetWrapper.setProxyAllowanceAsync(
-                    signedOrder.takerAddress,
+                    this.takerAddress,
                     this.zrxAssetData,
                     constants.UNLIMITED_ALLOWANCE_IN_BASE_UNITS,
                 );

@@ -1,6 +1,5 @@
 import { constants as sharedConstants, EtherscanLinkSuffixes, utils as sharedUtils } from '@0xproject/react-shared';
 import { BigNumber, errorUtils } from '@0xproject/utils';
-import { Web3Wrapper } from '@0xproject/web3-wrapper';
 import * as _ from 'lodash';
 
 import ActionAccountBalanceWallet from 'material-ui/svg-icons/action/account-balance-wallet';
@@ -83,7 +82,6 @@ const ICON_DIMENSION = 28;
 const BODY_ITEM_KEY = 'BODY';
 const HEADER_ITEM_KEY = 'HEADER';
 const ETHER_ITEM_KEY = 'ETHER';
-const USD_DECIMAL_PLACES = 2;
 const NO_ALLOWANCE_TOGGLE_SPACE_WIDTH = 56;
 const ACCOUNT_PATH = `${WebsitePaths.Portal}/account`;
 const PLACEHOLDER_COLOR = colors.grey300;
@@ -320,8 +318,24 @@ export class Wallet extends React.Component<WalletProps, WalletState> {
             this.state.wrappedEtherDirection === accessoryItemConfig.wrappedEtherDirection &&
             !_.isUndefined(this.props.userEtherBalanceInWei);
         const etherToken = this._getEthToken();
+        const wrapEtherItem = shouldShowWrapEtherItem ? (
+            <WrapEtherItem
+                userAddress={this.props.userAddress}
+                networkId={this.props.networkId}
+                blockchain={this.props.blockchain}
+                dispatcher={this.props.dispatcher}
+                userEtherBalanceInWei={this.props.userEtherBalanceInWei}
+                direction={accessoryItemConfig.wrappedEtherDirection}
+                etherToken={etherToken}
+                lastForceTokenStateRefetch={this.props.lastForceTokenStateRefetch}
+                onConversionSuccessful={this._closeWrappedEtherActionRow.bind(this)}
+                // tslint:disable:jsx-no-lambda
+                refetchEthTokenStateAsync={async () => this.props.refetchTokenStateAsync(etherToken.address)}
+            />
+        ) : null;
         return (
             <div id={key} key={key} className={`flex flex-column ${className || ''}`}>
+                {this.state.wrappedEtherDirection === Side.Receive && wrapEtherItem}
                 <StandardIconRow
                     icon={icon}
                     main={
@@ -331,23 +345,8 @@ export class Wallet extends React.Component<WalletProps, WalletState> {
                         </div>
                     }
                     accessory={this._renderAccessoryItems(accessoryItemConfig)}
-                    backgroundColor={shouldShowWrapEtherItem ? colors.walletFocusedItemBackground : undefined}
                 />
-                {shouldShowWrapEtherItem && (
-                    <WrapEtherItem
-                        userAddress={this.props.userAddress}
-                        networkId={this.props.networkId}
-                        blockchain={this.props.blockchain}
-                        dispatcher={this.props.dispatcher}
-                        userEtherBalanceInWei={this.props.userEtherBalanceInWei}
-                        direction={accessoryItemConfig.wrappedEtherDirection}
-                        etherToken={etherToken}
-                        lastForceTokenStateRefetch={this.props.lastForceTokenStateRefetch}
-                        onConversionSuccessful={this._closeWrappedEtherActionRow.bind(this)}
-                        // tslint:disable:jsx-no-lambda
-                        refetchEthTokenStateAsync={async () => this.props.refetchTokenStateAsync(etherToken.address)}
-                    />
-                )}
+                {this.state.wrappedEtherDirection === Side.Deposit && wrapEtherItem}
             </div>
         );
     }
@@ -411,19 +410,11 @@ export class Wallet extends React.Component<WalletProps, WalletState> {
         price?: BigNumber,
         isLoading: boolean = false,
     ): React.ReactNode {
-        let result;
-        if (!isLoading) {
-            if (_.isUndefined(price)) {
-                result = '--';
-            } else {
-                const unitAmount = Web3Wrapper.toUnitAmount(amount, decimals);
-                const value = unitAmount.mul(price);
-                const formattedAmount = value.toFixed(USD_DECIMAL_PLACES);
-                result = `$${formattedAmount}`;
-            }
-        } else {
-            result = '$0.00';
-        }
+        const result = !isLoading
+            ? _.isUndefined(price)
+                ? '--'
+                : utils.getUsdValueFormattedAmount(amount, decimals, price)
+            : '$0.00';
         return (
             <PlaceHolder hideChildren={isLoading} fillColor={PLACEHOLDER_COLOR}>
                 <Text fontSize="14px" fontColor={colors.darkGrey} lineHeight="1em">

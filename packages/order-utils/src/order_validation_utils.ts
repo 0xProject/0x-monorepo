@@ -140,11 +140,11 @@ export class OrderValidationUtils {
         takerAddress: string,
         zrxAssetData: string,
     ): Promise<BigNumber> {
-        if (fillTakerAssetAmount.eq(0)) {
-            throw new Error(RevertReason.InvalidTakerAmount);
-        }
         if (signedOrder.makerAssetAmount.eq(0) || signedOrder.takerAssetAmount.eq(0)) {
             throw new Error(RevertReason.OrderUnfillable);
+        }
+        if (fillTakerAssetAmount.eq(0)) {
+            throw new Error(RevertReason.InvalidTakerAmount);
         }
         const orderHash = orderHashUtils.getOrderHashHex(signedOrder);
         const isValid = await isValidSignatureAsync(

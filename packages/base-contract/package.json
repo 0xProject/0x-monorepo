@@ -43,7 +43,7 @@
         "typescript": "2.7.1"
     },
     "dependencies": {
-        "ethereum-types": "^0.0.1",
+        "ethereum-types": "^0.0.2",
         "@0xproject/typescript-typings": "^0.4.1",
         "@0xproject/utils": "^0.7.1",
         "@0xproject/web3-wrapper": "^0.7.1",
