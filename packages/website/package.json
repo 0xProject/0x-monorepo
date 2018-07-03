@@ -59,7 +59,7 @@
         "thenby": "^1.2.3",
         "truffle-contract": "2.0.1",
         "web3": "^0.20.0",
-        "web3-provider-engine": "^14.0.4",
+       "web3-provider-engine": "^14.0.6",
         "whatwg-fetch": "^2.0.3",
         "xml-js": "^1.6.4"
     },
