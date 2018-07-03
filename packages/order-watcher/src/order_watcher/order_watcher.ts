@@ -1,7 +1,10 @@
 import {
     BalanceAndProxyAllowanceLazyStore,
     ContractWrappers,
+    LogCancelContractEventArgs,
+    LogFillContractEventArgs,
     OrderFilledCancelledLazyStore,
+    WithdrawalContractEventArgs,
 } from '@0xproject/contract-wrappers';
 import { schemas } from '@0xproject/json-schemas';
 import { getOrderHashHex, OrderStateUtils } from '@0xproject/order-utils';
@@ -19,9 +22,18 @@ import { Web3Wrapper } from '@0xproject/web3-wrapper';
 import * as _ from 'lodash';
 
 import { artifacts } from '../artifacts';
-import { EtherTokenContractEventArgs, EtherTokenEvents } from '../generated_contract_wrappers/ether_token';
+import {
+    DepositContractEventArgs,
+    EtherTokenContractEventArgs,
+    EtherTokenEvents,
+} from '../generated_contract_wrappers/ether_token';
 import { ExchangeContractEventArgs, ExchangeEvents } from '../generated_contract_wrappers/exchange';
-import { TokenContractEventArgs, TokenEvents } from '../generated_contract_wrappers/token';
+import {
+    ApprovalContractEventArgs,
+    TokenContractEventArgs,
+    TokenEvents,
+    TransferContractEventArgs,
+} from '../generated_contract_wrappers/token';
 import { OnOrderStateChangeCallback, OrderWatcherConfig, OrderWatcherError } from '../types';
 import { assert } from '../utils/assert';
 
@@ -237,7 +249,7 @@ export class OrderWatcher {
         switch (decodedLog.event) {
             case TokenEvents.Approval: {
                 // Invalidate cache
-                const args = decodedLog.args;
+                const args = decodedLog.args as ApprovalContractEventArgs;
                 this._balanceAndProxyAllowanceLazyStore.deleteProxyAllowance(decodedLog.address, args._owner);
                 // Revalidate orders
                 makerToken = decodedLog.address;
@@ -253,7 +265,7 @@ export class OrderWatcher {
             }
             case TokenEvents.Transfer: {
                 // Invalidate cache
-                const args = decodedLog.args;
+                const args = decodedLog.args as TransferContractEventArgs;
                 this._balanceAndProxyAllowanceLazyStore.deleteBalance(decodedLog.address, args._from);
                 this._balanceAndProxyAllowanceLazyStore.deleteBalance(decodedLog.address, args._to);
                 // Revalidate orders
@@ -270,7 +282,7 @@ export class OrderWatcher {
             }
             case EtherTokenEvents.Deposit: {
                 // Invalidate cache
-                const args = decodedLog.args;
+                const args = decodedLog.args as DepositContractEventArgs;
                 this._balanceAndProxyAllowanceLazyStore.deleteBalance(decodedLog.address, args._owner);
                 // Revalidate orders
                 makerToken = decodedLog.address;
@@ -286,7 +298,8 @@ export class OrderWatcher {
             }
             case EtherTokenEvents.Withdrawal: {
                 // Invalidate cache
-                const args = decodedLog.args;
+                // tslint:disable-next-line
+                const args = decodedLog.args as WithdrawalContractEventArgs;
                 this._balanceAndProxyAllowanceLazyStore.deleteBalance(decodedLog.address, args._owner);
                 // Revalidate orders
                 makerToken = decodedLog.address;
@@ -302,7 +315,8 @@ export class OrderWatcher {
             }
             case ExchangeEvents.LogFill: {
                 // Invalidate cache
-                const args = decodedLog.args;
+                // tslint:disable-next-line
+                const args = decodedLog.args as LogFillContractEventArgs;
                 this._orderFilledCancelledLazyStore.deleteFilledTakerAmount(args.orderHash);
                 // Revalidate orders
                 const orderHash = args.orderHash;
@@ -314,7 +328,8 @@ export class OrderWatcher {
             }
             case ExchangeEvents.LogCancel: {
                 // Invalidate cache
-                const args = decodedLog.args;
+                // tslint:disable-next-line
+                const args = decodedLog.args as LogCancelContractEventArgs;
                 this._orderFilledCancelledLazyStore.deleteCancelledTakerAmount(args.orderHash);
                 // Revalidate orders
                 const orderHash = args.orderHash;
