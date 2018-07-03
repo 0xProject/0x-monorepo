@@ -1,5 +1,5 @@
 import { ZeroEx } from '0x.js';
-import { BigNumber, logUtils, promisify } from '@0xproject/utils';
+import { BigNumber, logUtils } from '@0xproject/utils';
 import { Web3Wrapper } from '@0xproject/web3-wrapper';
 import * as _ from 'lodash';
 
