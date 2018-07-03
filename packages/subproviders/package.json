@@ -42,6 +42,7 @@
     "dependencies": {
         "@0xproject/assert": "^0.2.12",
         "@0xproject/types": "^0.8.1",
+        "@0xproject/web3-wrapper": "^0.7.1",
         "@0xproject/typescript-typings": "^0.4.2",
         "@0xproject/utils": "^0.7.1",
         "@ledgerhq/hw-app-eth": "^4.3.0",
@@ -55,7 +56,6 @@
         "hdkey": "^0.7.1",
         "lodash": "^4.17.4",
         "semaphore-async-await": "^1.5.1",
-        "web3": "^0.20.0",
         "web3-provider-engine": "14.0.6"
     },
     "devDependencies": {

@@ -1,5 +1,5 @@
+import { Web3Wrapper } from '@0project/web3-wrapper';
 import { JSONRPCRequestPayload, Provider } from 'ethereum-types';
-import * as Web3 from 'web3';
 
 import { Callback, ErrorCallback } from '../types';
 
@@ -7,19 +7,19 @@ import { Subprovider } from './subprovider';
 
 /**
  * This class implements the [web3-provider-engine](https://github.com/MetaMask/provider-engine)
- * subprovider interface. It forwards JSON RPC requests involving user accounts (getAccounts,
- * sendTransaction, etc...) to the provider instance supplied at instantiation. All other requests
+ * subprovider interface. It forwards JSON RPC requests involving the domain of a signer (getAccounts,
+ * sendTransaction, signMessage etc...) to the provider instance supplied at instantiation. All other requests
  * are passed onwards for subsequent subproviders to handle.
  */
-export class InjectedWeb3Subprovider extends Subprovider {
-    private _injectedWeb3: Web3;
+export class SignerSubprovider extends Subprovider {
+    private _SignerWrapper: Web3Wrapper;
     /**
-     * Instantiates a new InjectedWeb3Subprovider
+     * Instantiates a new SignerSubprovider
      * @param provider Web3 provider that should handle  all user account related requests
      */
     constructor(provider: Provider) {
         super();
-        this._injectedWeb3 = new Web3(provider);
+        this._SignerWrapper = new Web3Wrapper(provider);
     }
     /**
      * This method conforms to the web3-provider-engine interface.
@@ -33,22 +33,39 @@ export class InjectedWeb3Subprovider extends Subprovider {
     public async handleRequest(payload: JSONRPCRequestPayload, next: Callback, end: ErrorCallback): Promise<void> {
         switch (payload.method) {
             case 'web3_clientVersion':
-                this._injectedWeb3.version.getNode(end);
+                try {
+                    const nodeVersion = await this._SignerWrapper.getNodeVersionAsync();
+                    end(null, nodeVersion);
+                } catch (err) {
+                    end(err);
+                }
                 return;
             case 'eth_accounts':
-                this._injectedWeb3.eth.getAccounts(end);
+                try {
+                    const accounts = await this._SignerWrapper.getAvailableAddressesAsync();
+                    end(null, accounts);
+                } catch (err) {
+                    end(err);
+                }
                 return;
-
             case 'eth_sendTransaction':
                 const [txParams] = payload.params;
-                this._injectedWeb3.eth.sendTransaction(txParams, end);
+                try {
+                    const txHash = await this._SignerWrapper.sendTransactionAsync(txParams);
+                    end(null, txHash);
+                } catch (err) {
+                    end(err);
+                }
                 return;
-
             case 'eth_sign':
                 const [address, message] = payload.params;
-                this._injectedWeb3.eth.sign(address, message, end);
+                try {
+                    const signature = await this._SignerWrapper.signMessageAsync(address, message);
+                    end(null, signature);
+                } catch (err) {
+                    end(err);
+                }
                 return;
-
             default:
                 next();
                 return;
