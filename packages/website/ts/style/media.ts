@@ -1,4 +1,3 @@
-import * as _ from 'lodash';
 import { css } from 'ts/style/theme';
 import { ScreenWidths } from 'ts/types';
 
