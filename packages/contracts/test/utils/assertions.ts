@@ -9,12 +9,16 @@ import { web3Wrapper } from './web3_wrapper';
 
 const expect = chai.expect;
 
+let nodeType: NodeType | undefined;
+
 // Represents the return value of a `sendTransaction` call. The Promise should
 // resolve with either a transaction receipt or a transaction hash.
 export type sendTransactionResult = Promise<TransactionReceipt | TransactionReceiptWithDecodedLogs | string>;
 
 async function _getGanacheOrGethError(ganacheError: string, gethError: string): Promise<string> {
-    const nodeType = await web3Wrapper.getNodeTypeAsync();
+    if (_.isUndefined(nodeType)) {
+        nodeType = await web3Wrapper.getNodeTypeAsync();
+    }
     switch (nodeType) {
         case NodeType.Ganache:
             return ganacheError;
@@ -68,7 +72,9 @@ export async function expectTransactionFailedAsync(p: sendTransactionResult, rea
         _.noop(e);
     });
 
-    const nodeType = await web3Wrapper.getNodeTypeAsync();
+    if (_.isUndefined(nodeType)) {
+        nodeType = await web3Wrapper.getNodeTypeAsync();
+    }
     switch (nodeType) {
         case NodeType.Ganache:
             return expect(p).to.be.rejectedWith(reason);

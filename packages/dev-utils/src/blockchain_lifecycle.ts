@@ -1,5 +1,6 @@
 import { logUtils } from '@0xproject/utils';
 import { NodeType, Web3Wrapper } from '@0xproject/web3-wrapper';
+import * as _ from 'lodash';
 
 // HACK(albrow): 🐉 We have to do this so that debug.setHead works correctly.
 // (Geth does not seem to like debug.setHead(0), so by sending some transactions
@@ -12,12 +13,13 @@ export class BlockchainLifecycle {
     private _web3Wrapper: Web3Wrapper;
     private _snapshotIdsStack: number[];
     private _addresses: string[] = [];
+    private _nodeType: NodeType | undefined;
     constructor(web3Wrapper: Web3Wrapper) {
         this._web3Wrapper = web3Wrapper;
         this._snapshotIdsStack = [];
     }
     public async startAsync(): Promise<void> {
-        const nodeType = await this._web3Wrapper.getNodeTypeAsync();
+        const nodeType = await this._getNodeTypeAsync();
         switch (nodeType) {
             case NodeType.Ganache:
                 const snapshotId = await this._web3Wrapper.takeSnapshotAsync();
@@ -38,7 +40,7 @@ export class BlockchainLifecycle {
         }
     }
     public async revertAsync(): Promise<void> {
-        const nodeType = await this._web3Wrapper.getNodeTypeAsync();
+        const nodeType = await this._getNodeTypeAsync();
         switch (nodeType) {
             case NodeType.Ganache:
                 const snapshotId = this._snapshotIdsStack.pop() as number;
@@ -75,5 +77,11 @@ export class BlockchainLifecycle {
             );
         }
         logUtils.warn('Done mining the minimum number of blocks.');
+    }
+    private async _getNodeTypeAsync(): Promise<NodeType> {
+        if (_.isUndefined(this._nodeType)) {
+            this._nodeType = await this._web3Wrapper.getNodeTypeAsync();
+        }
+        return this._nodeType;
     }
 }
