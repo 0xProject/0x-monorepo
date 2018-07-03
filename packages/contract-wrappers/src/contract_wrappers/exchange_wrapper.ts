@@ -17,8 +17,8 @@ import { ContractWrapper } from './contract_wrapper';
 import { ExchangeContract, ExchangeEventArgs, ExchangeEvents } from './generated/exchange';
 
 /**
- * This class includes all the functionality related to calling methods and subscribing to
- * events of the 0x Exchange smart contract.
+ * This class includes all the functionality related to calling methods, sending transactions and subscribing to
+ * events of the 0x V2 Exchange smart contract.
  */
 export class ExchangeWrapper extends ContractWrapper {
     public abi: ContractAbi = artifacts.Exchange.compilerOutput.abi;
@@ -42,15 +42,17 @@ export class ExchangeWrapper extends ContractWrapper {
      * @param   methodOpts     Optional arguments this method accepts.
      * @return  The address of an asset proxy for a given signature
      */
-    public async getAssetProxieBySignatureAsync(proxySignature: string, methodOpts?: MethodOpts): Promise<string> {
+    public async getAssetProxieBySignatureAsync(proxySignature: string, methodOpts: MethodOpts = {}): Promise<string> {
         assert.isHexString('proxySignature', proxySignature);
-        if (!_.isUndefined(methodOpts)) {
-            assert.doesConformToSchema('methodOpts', methodOpts, methodOptsSchema);
-        }
+        assert.doesConformToSchema('methodOpts', methodOpts, methodOptsSchema);
         const exchangeContract = await this._getExchangeContractAsync();
-        const defaultBlock = _.isUndefined(methodOpts) ? undefined : methodOpts.defaultBlock;
+
         const txData = {};
-        const assetProxy = await exchangeContract.getAssetProxy.callAsync(proxySignature, txData, defaultBlock);
+        const assetProxy = await exchangeContract.getAssetProxy.callAsync(
+            proxySignature,
+            txData,
+            methodOpts.defaultBlock,
+        );
         return assetProxy;
     }
     /**
@@ -59,17 +61,17 @@ export class ExchangeWrapper extends ContractWrapper {
      * @param   methodOpts   Optional arguments this method accepts.
      * @return  The amount of the order (in taker tokens) that has already been filled.
      */
-    public async getFilledTakerAmountAsync(orderHash: string, methodOpts?: MethodOpts): Promise<BigNumber> {
+    public async getFilledTakerAmountAsync(orderHash: string, methodOpts: MethodOpts = {}): Promise<BigNumber> {
         assert.doesConformToSchema('orderHash', orderHash, schemas.orderHashSchema);
-        if (!_.isUndefined(methodOpts)) {
-            assert.doesConformToSchema('methodOpts', methodOpts, methodOptsSchema);
-        }
+        assert.doesConformToSchema('methodOpts', methodOpts, methodOptsSchema);
         const exchangeContract = await this._getExchangeContractAsync();
-        const defaultBlock = _.isUndefined(methodOpts) ? undefined : methodOpts.defaultBlock;
+
         const txData = {};
-        let fillAmountInBaseUnits = await exchangeContract.filled.callAsync(orderHash, txData, defaultBlock);
-        // Wrap BigNumbers returned from web3 with our own (later) version of BigNumber
-        fillAmountInBaseUnits = new BigNumber(fillAmountInBaseUnits);
+        const fillAmountInBaseUnits = await exchangeContract.filled.callAsync(
+            orderHash,
+            txData,
+            methodOpts.defaultBlock,
+        );
         return fillAmountInBaseUnits;
     }
     /**
@@ -77,14 +79,15 @@ export class ExchangeWrapper extends ContractWrapper {
      * @param   methodOpts   Optional arguments this method accepts.
      * @return  Current context address
      */
-    public async getCurrentContextAddressAsync(methodOpts?: MethodOpts): Promise<string> {
-        if (!_.isUndefined(methodOpts)) {
-            assert.doesConformToSchema('methodOpts', methodOpts, methodOptsSchema);
-        }
+    public async getCurrentContextAddressAsync(methodOpts: MethodOpts = {}): Promise<string> {
+        assert.doesConformToSchema('methodOpts', methodOpts, methodOptsSchema);
         const exchangeContract = await this._getExchangeContractAsync();
-        const defaultBlock = _.isUndefined(methodOpts) ? undefined : methodOpts.defaultBlock;
+
         const txData = {};
-        const currentContextAddress = await exchangeContract.currentContextAddress.callAsync(txData, defaultBlock);
+        const currentContextAddress = await exchangeContract.currentContextAddress.callAsync(
+            txData,
+            methodOpts.defaultBlock,
+        );
         return currentContextAddress;
     }
     /**
@@ -92,14 +95,12 @@ export class ExchangeWrapper extends ContractWrapper {
      * @param   methodOpts   Optional arguments this method accepts.
      * @return  Version
      */
-    public async getVersionAsync(methodOpts?: MethodOpts): Promise<string> {
-        if (!_.isUndefined(methodOpts)) {
-            assert.doesConformToSchema('methodOpts', methodOpts, methodOptsSchema);
-        }
+    public async getVersionAsync(methodOpts: MethodOpts = {}): Promise<string> {
+        assert.doesConformToSchema('methodOpts', methodOpts, methodOptsSchema);
         const exchangeContract = await this._getExchangeContractAsync();
-        const defaultBlock = _.isUndefined(methodOpts) ? undefined : methodOpts.defaultBlock;
+
         const txData = {};
-        const version = await exchangeContract.VERSION.callAsync(txData, defaultBlock);
+        const version = await exchangeContract.VERSION.callAsync(txData, methodOpts.defaultBlock);
         return version;
     }
     /**
@@ -107,26 +108,24 @@ export class ExchangeWrapper extends ContractWrapper {
      * @param   makerAddress  Maker address
      * @param   senderAddress Sender address
      * @param   methodOpts    Optional arguments this method accepts.
-     * @return  Version
+     * @return  Order epoch
      */
     public async getOrderEpochAsync(
         makerAddress: string,
         senderAddress: string,
-        methodOpts?: MethodOpts,
+        methodOpts: MethodOpts = {},
     ): Promise<BigNumber> {
         assert.isETHAddressHex('makerAddress', makerAddress);
         assert.isETHAddressHex('senderAddress', senderAddress);
-        if (!_.isUndefined(methodOpts)) {
-            assert.doesConformToSchema('methodOpts', methodOpts, methodOptsSchema);
-        }
+        assert.doesConformToSchema('methodOpts', methodOpts, methodOptsSchema);
         const exchangeContract = await this._getExchangeContractAsync();
-        const defaultBlock = _.isUndefined(methodOpts) ? undefined : methodOpts.defaultBlock;
+
         const txData = {};
         const orderEpoch = await exchangeContract.orderEpoch.callAsync(
             makerAddress,
             senderAddress,
             txData,
-            defaultBlock,
+            methodOpts.defaultBlock,
         );
         return orderEpoch;
     }
@@ -137,24 +136,20 @@ export class ExchangeWrapper extends ContractWrapper {
      * @param   methodOpts   Optional arguments this method accepts.
      * @return  If the order has been cancelled.
      */
-    public async isCancelledAsync(orderHash: string, methodOpts?: MethodOpts): Promise<boolean> {
+    public async isCancelledAsync(orderHash: string, methodOpts: MethodOpts = {}): Promise<boolean> {
         assert.doesConformToSchema('orderHash', orderHash, schemas.orderHashSchema);
-        if (!_.isUndefined(methodOpts)) {
-            assert.doesConformToSchema('methodOpts', methodOpts, methodOptsSchema);
-        }
+        assert.doesConformToSchema('methodOpts', methodOpts, methodOptsSchema);
         const exchangeContract = await this._getExchangeContractAsync();
-        const defaultBlock = _.isUndefined(methodOpts) ? undefined : methodOpts.defaultBlock;
+
         const txData = {};
-        const isCancelled = await exchangeContract.cancelled.callAsync(orderHash, txData, defaultBlock);
+        const isCancelled = await exchangeContract.cancelled.callAsync(orderHash, txData, methodOpts.defaultBlock);
         return isCancelled;
     }
     /**
      * Fills a signed order with an amount denominated in baseUnits of the taker asset.
      * @param   signedOrder                                 An object that conforms to the SignedOrder interface.
-     * @param   fillTakerTokenAmount                        The amount of the order (in taker tokens baseUnits) that
+     * @param   takerAssetFillAmount                        The amount of the order (in taker asset baseUnits) that
      *                                                      you wish to fill.
-     * @param   shouldThrowOnInsufficientBalanceOrAllowance Whether or not you wish for the contract call to throw
-     *                                                      if upon execution the tokens cannot be transferred.
      * @param   takerAddress                                The user Ethereum address who would like to fill this order.
      *                                                      Must be available via the supplied Provider
      *                                                      passed to 0x.js.
@@ -164,12 +159,12 @@ export class ExchangeWrapper extends ContractWrapper {
     @decorators.asyncZeroExErrorHandler
     public async fillOrderAsync(
         signedOrder: SignedOrder,
-        fillTakerTokenAmount: BigNumber,
+        takerAssetFillAmount: BigNumber,
         takerAddress: string,
         orderTransactionOpts: OrderTransactionOpts = {},
     ): Promise<string> {
         assert.doesConformToSchema('signedOrder', signedOrder, schemas.signedOrderSchema);
-        assert.isValidBaseUnitAmount('fillTakerTokenAmount', fillTakerTokenAmount);
+        assert.isValidBaseUnitAmount('takerAssetFillAmount', takerAssetFillAmount);
         await assert.isSenderAddressAsync('takerAddress', takerAddress, this._web3Wrapper);
         assert.doesConformToSchema('orderTransactionOpts', orderTransactionOpts, orderTxOptsSchema, [txOptsSchema]);
         const normalizedTakerAddress = takerAddress.toLowerCase();
@@ -178,7 +173,7 @@ export class ExchangeWrapper extends ContractWrapper {
 
         const txHash = await exchangeInstance.fillOrder.sendTransactionAsync(
             signedOrder,
-            fillTakerTokenAmount,
+            takerAssetFillAmount,
             signedOrder.signature,
             {
                 from: normalizedTakerAddress,
@@ -191,10 +186,8 @@ export class ExchangeWrapper extends ContractWrapper {
     /**
      * No-throw version of fillOrderAsync
      * @param   signedOrder                                 An object that conforms to the SignedOrder interface.
-     * @param   fillTakerTokenAmount                        The amount of the order (in taker tokens baseUnits) that
+     * @param   takerAssetFillAmount                        The amount of the order (in taker asset baseUnits) that
      *                                                      you wish to fill.
-     * @param   shouldThrowOnInsufficientBalanceOrAllowance Whether or not you wish for the contract call to throw
-     *                                                      if upon execution the tokens cannot be transferred.
      * @param   takerAddress                                The user Ethereum address who would like to fill this order.
      *                                                      Must be available via the supplied Provider
      *                                                      passed to 0x.js.
@@ -204,12 +197,12 @@ export class ExchangeWrapper extends ContractWrapper {
     @decorators.asyncZeroExErrorHandler
     public async fillOrderNoThrowAsync(
         signedOrder: SignedOrder,
-        fillTakerTokenAmount: BigNumber,
+        takerAssetFillAmount: BigNumber,
         takerAddress: string,
         orderTransactionOpts: OrderTransactionOpts = {},
     ): Promise<string> {
         assert.doesConformToSchema('signedOrder', signedOrder, schemas.signedOrderSchema);
-        assert.isValidBaseUnitAmount('fillTakerTokenAmount', fillTakerTokenAmount);
+        assert.isValidBaseUnitAmount('takerAssetFillAmount', takerAssetFillAmount);
         await assert.isSenderAddressAsync('takerAddress', takerAddress, this._web3Wrapper);
         assert.doesConformToSchema('orderTransactionOpts', orderTransactionOpts, orderTxOptsSchema, [txOptsSchema]);
         const normalizedTakerAddress = takerAddress.toLowerCase();
@@ -218,7 +211,7 @@ export class ExchangeWrapper extends ContractWrapper {
 
         const txHash = await exchangeInstance.fillOrderNoThrow.sendTransactionAsync(
             signedOrder,
-            fillTakerTokenAmount,
+            takerAssetFillAmount,
             signedOrder.signature,
             {
                 from: normalizedTakerAddress,
@@ -750,9 +743,14 @@ export class ExchangeWrapper extends ContractWrapper {
             assert.doesConformToSchema('methodOpts', methodOpts, methodOptsSchema);
         }
         const exchangeInstance = await this._getExchangeContractAsync();
-        const defaultBlock = _.isUndefined(methodOpts) ? undefined : methodOpts.defaultBlock;
+
         const txData = {};
-        const isPreSigned = await exchangeInstance.preSigned.callAsync(hash, signerAddress, txData, defaultBlock);
+        const isPreSigned = await exchangeInstance.preSigned.callAsync(
+            hash,
+            signerAddress,
+            txData,
+            methodOpts.defaultBlock,
+        );
         return isPreSigned;
     }
     /**
@@ -784,14 +782,14 @@ export class ExchangeWrapper extends ContractWrapper {
      * @returns Order info
      */
     @decorators.asyncZeroExErrorHandler
-    public async getOrderInfoAsync(order: Order, methodOpts?: MethodOpts): Promise<OrderInfo> {
+    public async getOrderInfoAsync(order: Order, methodOpts: MethodOpts = {}): Promise<OrderInfo> {
         if (!_.isUndefined(methodOpts)) {
             assert.doesConformToSchema('methodOpts', methodOpts, methodOptsSchema);
         }
         const exchangeInstance = await this._getExchangeContractAsync();
-        const defaultBlock = _.isUndefined(methodOpts) ? undefined : methodOpts.defaultBlock;
+
         const txData = {};
-        const orderInfo = await exchangeInstance.getOrderInfo.callAsync(order, txData, defaultBlock);
+        const orderInfo = await exchangeInstance.getOrderInfo.callAsync(order, txData, methodOpts.defaultBlock);
         return orderInfo;
     }
     /**

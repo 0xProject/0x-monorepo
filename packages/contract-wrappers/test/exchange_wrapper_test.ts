@@ -80,7 +80,7 @@ describe('ExchangeWrapper', () => {
         anotherSignedOrder = await fillScenarios.createFillableSignedOrderAsync(
             makerAssetData,
             takerAssetData,
-            anotherMakerAddress,
+            makerAddress,
             takerAddress,
             fillableAmount,
         );
@@ -244,7 +244,7 @@ describe('ExchangeWrapper', () => {
                 await web3Wrapper.awaitTransactionSuccessAsync(txHash, constants.AWAIT_TRANSACTION_MINED_MS);
             });
         });
-        describe.skip('#batchCancelOrdersAsync', () => {
+        describe('#batchCancelOrdersAsync', () => {
             it('should cancel a batch of valid orders', async () => {
                 const orders = [signedOrder, anotherSignedOrder];
                 txHash = await contractWrappers.exchange.batchCancelOrdersAsync(orders);
@@ -252,13 +252,15 @@ describe('ExchangeWrapper', () => {
             });
         });
         describe('#cancelOrdersUpTo/getOrderEpochAsync', () => {
-            it.skip('should cancel orders up to target order epoch', async () => {
+            it('should cancel orders up to target order epoch', async () => {
                 const targetOrderEpoch = new BigNumber(42);
-                txHash = await contractWrappers.exchange.cancelOrdersUpToAsync(targetOrderEpoch, takerAddress);
+                txHash = await contractWrappers.exchange.cancelOrdersUpToAsync(targetOrderEpoch, makerAddress);
                 await web3Wrapper.awaitTransactionSuccessAsync(txHash, constants.AWAIT_TRANSACTION_MINED_MS);
-                const senderAddress = constants.NULL_ADDRESS;
-                const orderEpoch = await contractWrappers.exchange.getOrderEpochAsync(makerAddress, senderAddress);
-                expect(orderEpoch).to.be.bignumber.equal(targetOrderEpoch);
+                const orderEpoch = await contractWrappers.exchange.getOrderEpochAsync(
+                    makerAddress,
+                    constants.NULL_ADDRESS,
+                );
+                expect(orderEpoch).to.be.bignumber.equal(targetOrderEpoch.plus(1));
             });
         });
     });
