@@ -42,7 +42,7 @@
         "bignumber.js": "~4.1.0",
         "ethers": "3.0.22",
         "js-sha3": "^0.7.0",
-        "lodash": "^4.17.4",
+        "lodash": "^4.17.4"
     },
     "publishConfig": {
         "access": "public"
