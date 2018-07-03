@@ -12,10 +12,10 @@ import {
 import { isValidOrderHash, signOrderHashAsync } from '@0xproject/order-utils';
 import { EtherscanLinkSuffixes, utils as sharedUtils } from '@0xproject/react-shared';
 import {
-    InjectedWeb3Subprovider,
     ledgerEthereumBrowserClientFactoryAsync,
     LedgerSubprovider,
     RedundantSubprovider,
+    SignerSubprovider,
     Subprovider,
 } from '@0xproject/subproviders';
 import {
@@ -163,7 +163,7 @@ export class Blockchain {
             // We catch all requests involving a users account and send it to the injectedWeb3
             // instance. All other requests go to the public hosted node.
             const provider = new ProviderEngine();
-            provider.addProvider(new InjectedWeb3Subprovider(injectedWeb3.currentProvider));
+            provider.addProvider(new SignerSubprovider(injectedWeb3.currentProvider));
             provider.addProvider(new FilterSubprovider());
             const rpcSubproviders = _.map(publicNodeUrlsIfExistsForNetworkId, publicNodeUrl => {
                 return new RpcSubprovider({
