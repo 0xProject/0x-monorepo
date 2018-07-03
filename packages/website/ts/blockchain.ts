@@ -102,9 +102,9 @@ export class Blockchain {
         // Our core assumptions about the injected web3 object is that it has the following
         // properties and methods.
         if (
-            !_.isUndefined(injectedWeb3IfExists.version) &&
-            !_.isUndefined(injectedWeb3IfExists.version.getNetwork) &&
-            !_.isUndefined(injectedWeb3IfExists.currentProvider)
+            _.isUndefined(injectedWeb3IfExists.version) ||
+            _.isUndefined(injectedWeb3IfExists.version.getNetwork) ||
+            _.isUndefined(injectedWeb3IfExists.currentProvider)
         ) {
             return undefined;
         }
@@ -787,6 +787,7 @@ export class Blockchain {
         const networkIdIfExists = await Blockchain._getInjectedWeb3ProviderNetworkIdIfExistsAsync();
         this.networkId = !_.isUndefined(networkIdIfExists) ? networkIdIfExists : constants.NETWORK_ID_MAINNET;
         const injectedWeb3IfExists = Blockchain._getInjectedWeb3();
+        console.log(injectedWeb3IfExists);
         if (!_.isUndefined(injectedWeb3IfExists) && !_.isUndefined(injectedWeb3IfExists.currentProvider)) {
             const injectedProviderObservable = injectedWeb3IfExists.currentProvider.publicConfigStore;
             if (!_.isUndefined(injectedProviderObservable) && _.isUndefined(this._injectedProviderObservable)) {
