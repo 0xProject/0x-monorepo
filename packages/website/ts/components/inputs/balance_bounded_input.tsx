@@ -3,9 +3,8 @@ import { BigNumber } from '@0xproject/utils';
 import * as _ from 'lodash';
 import TextField from 'material-ui/TextField';
 import * as React from 'react';
-import { Link } from 'react-router-dom';
 import { RequiredLabel } from 'ts/components/ui/required_label';
-import { ValidatedBigNumberCallback, WebsitePaths } from 'ts/types';
+import { ValidatedBigNumberCallback } from 'ts/types';
 import { utils } from 'ts/utils/utils';
 
 interface BalanceBoundedInputProps {
@@ -18,8 +17,6 @@ interface BalanceBoundedInputProps {
     shouldShowIncompleteErrs?: boolean;
     shouldCheckBalance: boolean;
     validate?: (amount: BigNumber) => React.ReactNode;
-    onVisitBalancesPageClick?: () => void;
-    shouldHideVisitBalancesLink?: boolean;
     isDisabled?: boolean;
     shouldShowErrs?: boolean;
     shouldShowUnderline?: boolean;
@@ -35,7 +32,6 @@ interface BalanceBoundedInputState {
 export class BalanceBoundedInput extends React.Component<BalanceBoundedInputProps, BalanceBoundedInputState> {
     public static defaultProps: Partial<BalanceBoundedInputProps> = {
         shouldShowIncompleteErrs: false,
-        shouldHideVisitBalancesLink: false,
         isDisabled: false,
         shouldShowErrs: true,
         hintText: 'amount',
@@ -124,38 +120,11 @@ export class BalanceBoundedInput extends React.Component<BalanceBoundedInputProp
             return 'Cannot be zero';
         }
         if (this.props.shouldCheckBalance && amount.gt(balance)) {
-            return <span>Insufficient balance. {this._renderIncreaseBalanceLink()}</span>;
+            return <span>Insufficient balance.</span>;
         }
         const errMsg = _.isUndefined(this.props.validate) ? undefined : this.props.validate(amount);
         return errMsg;
     }
-    private _renderIncreaseBalanceLink(): React.ReactNode {
-        if (this.props.shouldHideVisitBalancesLink) {
-            return null;
-        }
-
-        const increaseBalanceText = 'Increase balance';
-        const linkStyle = {
-            cursor: 'pointer',
-            color: colors.darkestGrey,
-            textDecoration: 'underline',
-            display: 'inline',
-        };
-        if (_.isUndefined(this.props.onVisitBalancesPageClick)) {
-            return (
-                <Link to={`${WebsitePaths.Portal}/balances`} style={linkStyle}>
-                    {increaseBalanceText}
-                </Link>
-            );
-        } else {
-            return (
-                <div onClick={this.props.onVisitBalancesPageClick} style={linkStyle}>
-                    {increaseBalanceText}
-                </div>
-            );
-        }
-    }
-
     private _setAmountState(amount: string, balance: BigNumber, callback: () => void = _.noop): void {
         const errorMsg = this._validate(amount, balance);
         this.props.onErrorMsgChange(errorMsg);
