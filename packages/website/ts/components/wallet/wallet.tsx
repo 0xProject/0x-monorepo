@@ -10,7 +10,7 @@ import firstBy = require('thenby');
 import { Blockchain } from 'ts/blockchain';
 import { AccountConnection } from 'ts/components/ui/account_connection';
 import { Container } from 'ts/components/ui/container';
-import { DropDown } from 'ts/components/ui/drop_down';
+import { DropDown, DropdownMouseEvent } from 'ts/components/ui/drop_down';
 import { IconButton } from 'ts/components/ui/icon_button';
 import { Identicon } from 'ts/components/ui/identicon';
 import { Island } from 'ts/components/ui/island';
@@ -194,6 +194,7 @@ export class Wallet extends React.Component<WalletProps, WalletState> {
         );
     }
     private _renderConnectedHeaderRows(): React.ReactElement<{}> {
+        const isMobile = this.props.screenWidth === ScreenWidths.Sm;
         const userAddress = this.props.userAddress;
         const accountState = this._getAccountState();
         const main = (
@@ -234,7 +235,8 @@ export class Wallet extends React.Component<WalletProps, WalletState> {
                 anchorOrigin={{ horizontal: 'right', vertical: 'bottom' }}
                 targetOrigin={{ horizontal: 'right', vertical: 'top' }}
                 zDepth={1}
-                shouldWaitForClickToActivate={true}
+                activateEvent={DropdownMouseEvent.Click}
+                closeEvent={isMobile ? DropdownMouseEvent.Click : DropdownMouseEvent.Hover}
             />
         );
         return (
