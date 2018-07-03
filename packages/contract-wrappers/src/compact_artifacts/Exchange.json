@@ -4,6 +4,20 @@
         "abi": [
             {
                 "constant": true,
+                "inputs": [],
+                "name": "EIP712_DOMAIN_SEPARATOR_SCHEMA_HASH",
+                "outputs": [
+                    {
+                        "name": "",
+                        "type": "bytes32"
+                    }
+                ],
+                "payable": false,
+                "stateMutability": "view",
+                "type": "function"
+            },
+            {
+                "constant": true,
                 "inputs": [
                     {
                         "name": "",
@@ -88,7 +102,30 @@
                     }
                 ],
                 "name": "batchFillOrders",
-                "outputs": [],
+                "outputs": [
+                    {
+                        "components": [
+                            {
+                                "name": "makerAssetFilledAmount",
+                                "type": "uint256"
+                            },
+                            {
+                                "name": "takerAssetFilledAmount",
+                                "type": "uint256"
+                            },
+                            {
+                                "name": "makerFeePaid",
+                                "type": "uint256"
+                            },
+                            {
+                                "name": "takerFeePaid",
+                                "type": "uint256"
+                            }
+                        ],
+                        "name": "totalFillResults",
+                        "type": "tuple"
+                    }
+                ],
                 "payable": false,
                 "stateMutability": "nonpayable",
                 "type": "function"
@@ -113,20 +150,6 @@
                 "type": "function"
             },
             {
-                "constant": true,
-                "inputs": [],
-                "name": "zrxAssetData",
-                "outputs": [
-                    {
-                        "name": "",
-                        "type": "bytes"
-                    }
-                ],
-                "payable": false,
-                "stateMutability": "view",
-                "type": "function"
-            },
-            {
                 "constant": false,
                 "inputs": [
                     {
@@ -134,7 +157,7 @@
                         "type": "bytes32"
                     },
                     {
-                        "name": "signer",
+                        "name": "signerAddress",
                         "type": "address"
                     },
                     {
@@ -146,25 +169,6 @@
                 "outputs": [],
                 "payable": false,
                 "stateMutability": "nonpayable",
-                "type": "function"
-            },
-            {
-                "constant": true,
-                "inputs": [
-                    {
-                        "name": "",
-                        "type": "uint8"
-                    }
-                ],
-                "name": "assetProxies",
-                "outputs": [
-                    {
-                        "name": "",
-                        "type": "address"
-                    }
-                ],
-                "payable": false,
-                "stateMutability": "view",
                 "type": "function"
             },
             {
@@ -444,6 +448,25 @@
                 "type": "function"
             },
             {
+                "constant": true,
+                "inputs": [
+                    {
+                        "name": "",
+                        "type": "bytes4"
+                    }
+                ],
+                "name": "assetProxies",
+                "outputs": [
+                    {
+                        "name": "",
+                        "type": "address"
+                    }
+                ],
+                "payable": false,
+                "stateMutability": "view",
+                "type": "function"
+            },
+            {
                 "constant": false,
                 "inputs": [
                     {
@@ -574,7 +597,30 @@
                     }
                 ],
                 "name": "batchFillOrKillOrders",
-                "outputs": [],
+                "outputs": [
+                    {
+                        "components": [
+                            {
+                                "name": "makerAssetFilledAmount",
+                                "type": "uint256"
+                            },
+                            {
+                                "name": "takerAssetFilledAmount",
+                                "type": "uint256"
+                            },
+                            {
+                                "name": "makerFeePaid",
+                                "type": "uint256"
+                            },
+                            {
+                                "name": "takerFeePaid",
+                                "type": "uint256"
+                            }
+                        ],
+                        "name": "totalFillResults",
+                        "type": "tuple"
+                    }
+                ],
                 "payable": false,
                 "stateMutability": "nonpayable",
                 "type": "function"
@@ -583,7 +629,7 @@
                 "constant": false,
                 "inputs": [
                     {
-                        "name": "salt",
+                        "name": "targetOrderEpoch",
                         "type": "uint256"
                     }
                 ],
@@ -660,31 +706,51 @@
                     }
                 ],
                 "name": "batchFillOrdersNoThrow",
-                "outputs": [],
+                "outputs": [
+                    {
+                        "components": [
+                            {
+                                "name": "makerAssetFilledAmount",
+                                "type": "uint256"
+                            },
+                            {
+                                "name": "takerAssetFilledAmount",
+                                "type": "uint256"
+                            },
+                            {
+                                "name": "makerFeePaid",
+                                "type": "uint256"
+                            },
+                            {
+                                "name": "takerFeePaid",
+                                "type": "uint256"
+                            }
+                        ],
+                        "name": "totalFillResults",
+                        "type": "tuple"
+                    }
+                ],
                 "payable": false,
                 "stateMutability": "nonpayable",
                 "type": "function"
             },
             {
-                "constant": false,
+                "constant": true,
                 "inputs": [
                     {
                         "name": "assetProxyId",
-                        "type": "uint8"
-                    },
+                        "type": "bytes4"
+                    }
+                ],
+                "name": "getAssetProxy",
+                "outputs": [
                     {
-                        "name": "newAssetProxy",
-                        "type": "address"
-                    },
-                    {
-                        "name": "oldAssetProxy",
+                        "name": "",
                         "type": "address"
                     }
                 ],
-                "name": "registerAssetProxy",
-                "outputs": [],
                 "payable": false,
-                "stateMutability": "nonpayable",
+                "stateMutability": "view",
                 "type": "function"
             },
             {
@@ -802,29 +868,10 @@
                 "type": "function"
             },
             {
-                "constant": true,
-                "inputs": [
-                    {
-                        "name": "",
-                        "type": "address"
-                    }
-                ],
-                "name": "makerEpoch",
-                "outputs": [
-                    {
-                        "name": "",
-                        "type": "uint256"
-                    }
-                ],
-                "payable": false,
-                "stateMutability": "view",
-                "type": "function"
-            },
-            {
                 "constant": false,
                 "inputs": [
                     {
-                        "name": "validator",
+                        "name": "validatorAddress",
                         "type": "address"
                     },
                     {
@@ -980,6 +1027,28 @@
                 "type": "function"
             },
             {
+                "constant": false,
+                "inputs": [
+                    {
+                        "name": "assetProxyId",
+                        "type": "bytes4"
+                    },
+                    {
+                        "name": "newAssetProxy",
+                        "type": "address"
+                    },
+                    {
+                        "name": "oldAssetProxy",
+                        "type": "address"
+                    }
+                ],
+                "name": "registerAssetProxy",
+                "outputs": [],
+                "payable": false,
+                "stateMutability": "nonpayable",
+                "type": "function"
+            },
+            {
                 "constant": true,
                 "inputs": [],
                 "name": "owner",
@@ -997,15 +1066,23 @@
                 "constant": true,
                 "inputs": [
                     {
-                        "name": "assetProxyId",
-                        "type": "uint8"
+                        "name": "hash",
+                        "type": "bytes32"
+                    },
+                    {
+                        "name": "signerAddress",
+                        "type": "address"
+                    },
+                    {
+                        "name": "signature",
+                        "type": "bytes"
                     }
                 ],
-                "name": "getAssetProxy",
+                "name": "isValidSignature",
                 "outputs": [
                     {
-                        "name": "",
-                        "type": "address"
+                        "name": "isValid",
+                        "type": "bool"
                     }
                 ],
                 "payable": false,
@@ -1210,7 +1287,7 @@
                         "type": "uint256"
                     },
                     {
-                        "name": "signer",
+                        "name": "signerAddress",
                         "type": "address"
                     },
                     {
@@ -1376,6 +1453,43 @@
                 "type": "function"
             },
             {
+                "constant": true,
+                "inputs": [
+                    {
+                        "name": "",
+                        "type": "address"
+                    },
+                    {
+                        "name": "",
+                        "type": "address"
+                    }
+                ],
+                "name": "orderEpoch",
+                "outputs": [
+                    {
+                        "name": "",
+                        "type": "uint256"
+                    }
+                ],
+                "payable": false,
+                "stateMutability": "view",
+                "type": "function"
+            },
+            {
+                "constant": true,
+                "inputs": [],
+                "name": "ZRX_ASSET_DATA",
+                "outputs": [
+                    {
+                        "name": "",
+                        "type": "bytes"
+                    }
+                ],
+                "payable": false,
+                "stateMutability": "view",
+                "type": "function"
+            },
+            {
                 "constant": false,
                 "inputs": [
                     {
@@ -1468,6 +1582,20 @@
                 ],
                 "payable": false,
                 "stateMutability": "nonpayable",
+                "type": "function"
+            },
+            {
+                "constant": true,
+                "inputs": [],
+                "name": "EIP712_DOMAIN_HASH",
+                "outputs": [
+                    {
+                        "name": "",
+                        "type": "bytes32"
+                    }
+                ],
+                "payable": false,
+                "stateMutability": "view",
                 "type": "function"
             },
             {
@@ -1622,22 +1750,22 @@
                 "anonymous": false,
                 "inputs": [
                     {
-                        "indexed": false,
-                        "name": "id",
-                        "type": "uint8"
+                        "indexed": true,
+                        "name": "signerAddress",
+                        "type": "address"
                     },
                     {
-                        "indexed": false,
-                        "name": "newAssetProxy",
+                        "indexed": true,
+                        "name": "validatorAddress",
                         "type": "address"
                     },
                     {
                         "indexed": false,
-                        "name": "oldAssetProxy",
-                        "type": "address"
+                        "name": "approved",
+                        "type": "bool"
                     }
                 ],
-                "name": "AssetProxySet",
+                "name": "SignatureValidatorApproval",
                 "type": "event"
             },
             {
@@ -1649,13 +1777,18 @@
                         "type": "address"
                     },
                     {
+                        "indexed": true,
+                        "name": "feeRecipientAddress",
+                        "type": "address"
+                    },
+                    {
                         "indexed": false,
                         "name": "takerAddress",
                         "type": "address"
                     },
                     {
-                        "indexed": true,
-                        "name": "feeRecipientAddress",
+                        "indexed": false,
+                        "name": "senderAddress",
                         "type": "address"
                     },
                     {
@@ -1711,6 +1844,11 @@
                         "type": "address"
                     },
                     {
+                        "indexed": false,
+                        "name": "senderAddress",
+                        "type": "address"
+                    },
+                    {
                         "indexed": true,
                         "name": "orderHash",
                         "type": "bytes32"
@@ -1738,12 +1876,39 @@
                         "type": "address"
                     },
                     {
+                        "indexed": true,
+                        "name": "senderAddress",
+                        "type": "address"
+                    },
+                    {
                         "indexed": false,
-                        "name": "makerEpoch",
+                        "name": "orderEpoch",
                         "type": "uint256"
                     }
                 ],
                 "name": "CancelUpTo",
+                "type": "event"
+            },
+            {
+                "anonymous": false,
+                "inputs": [
+                    {
+                        "indexed": false,
+                        "name": "id",
+                        "type": "bytes4"
+                    },
+                    {
+                        "indexed": false,
+                        "name": "newAssetProxy",
+                        "type": "address"
+                    },
+                    {
+                        "indexed": false,
+                        "name": "oldAssetProxy",
+                        "type": "address"
+                    }
+                ],
+                "name": "AssetProxySet",
                 "type": "event"
             }
         ]
