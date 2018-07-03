@@ -487,6 +487,8 @@ export enum Providers {
     Parity = 'PARITY',
     Metamask = 'METAMASK',
     Mist = 'MIST',
+    Toshi = 'TOSHI',
+    Cipher = 'CIPHER',
 }
 
 export interface InjectedProviderUpdate {
