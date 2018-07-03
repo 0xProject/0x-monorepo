@@ -29,7 +29,7 @@
         "lodash": "^4.17.4",
         "rollbar": "^0.6.5",
         "web3": "^0.20.0",
-       "web3-provider-engine": "^14.0.6"
+       "web3-provider-engine": "14.0.6"
     },
     "devDependencies": {
         "@0xproject/tslint-config": "^0.4.20",
