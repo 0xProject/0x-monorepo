@@ -13,9 +13,11 @@ export const store: ReduxStore<State> = createStore(
 );
 store.subscribe(
     _.throttle(() => {
+        const state = store.getState();
         // Persisted state
         stateStorage.saveState({
-            hasPortalOnboardingBeenClosed: store.getState().hasPortalOnboardingBeenClosed,
+            hasPortalOnboardingBeenClosed: state.hasPortalOnboardingBeenClosed,
+            isPortalOnboardingShowing: state.isPortalOnboardingShowing,
         });
     }, ONE_SECOND),
 );
