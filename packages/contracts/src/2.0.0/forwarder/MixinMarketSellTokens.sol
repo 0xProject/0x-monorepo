@@ -1,17 +1,40 @@
+/*
+
+  Copyright 2018 ZeroEx Intl.
+
+  Licensed under the Apache License, Version 2.0 (the "License");
+  you may not use this file except in compliance with the License.
+  You may obtain a copy of the License at
+
+    http://www.apache.org/licenses/LICENSE-2.0
+
+  Unless required by applicable law or agreed to in writing, software
+  distributed under the License is distributed on an "AS IS" BASIS,
+  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  See the License for the specific language governing permissions and
+  limitations under the License.
+
+*/
+
 pragma solidity ^0.4.24;
 pragma experimental ABIEncoderV2;
 
+import "../protocol/Exchange/libs/LibOrder.sol";
 import "../utils/LibBytes/LibBytes.sol";
-import "./MixinForwarderCore.sol";
-import "./MixinForwarderExpectedResults.sol";
+import "./MixinWethFees.sol";
+import "./MixinExpectedResults.sol";
 import "./MixinERC20.sol";
+import "./MixinConstants.sol";
+import "./MixinMarketBuyZrx.sol";
 
-contract MixinMarketBuyERC20Tokens is
-    MixinForwarderCore,
-    MixinForwarderExpectedResults,
+contract MixinMarketSellTokens is
+    MixinConstants,
+    MixinWethFees,
+    MixinMarketBuyZrx,
+    MixinExpectedResults,
     MixinERC20
 {
-    /// @dev Market buys ERC20 tokens, performing fee abstraction if required. This does not support ERC721 tokens. This function is payable
+    /// @dev Market sells ETH for ERC20 tokens, performing fee abstraction if required. This does not support ERC721 tokens. This function is payable
     ///      and will convert all incoming ETH into WETH and perform the trade on behalf of the caller.
     ///      This function allows for a deduction of a proportion of incoming ETH sent to the feeRecipient.
     ///      The caller is sent all tokens from the operation.
@@ -24,26 +47,33 @@ contract MixinMarketBuyERC20Tokens is
     ///        is 1000, aka 10%. Supports up to 2 decimal places. I.e 0.59% is 59.
     /// @param feeRecipient An address of the fee recipient whom receives feeProportion of ETH.
     /// @return FillResults amounts filled and fees paid by maker and taker.
-    function marketBuyTokens(
-        Order[] memory orders,
+    function marketSellEthForERC20(
+        LibOrder.Order[] memory orders,
         bytes[] memory signatures,
-        Order[] memory feeOrders,
+        LibOrder.Order[] memory feeOrders,
         bytes[] memory feeSignatures,
         uint16  feeProportion,
         address feeRecipient
     )
         payable
         public
-        returns (Exchange.FillResults memory totalFillResults)
+        returns (FillResults memory totalFillResults)
     {
+        uint256 takerEthAmount = msg.value;
         require(
-            msg.value > 0,
-            VALUE_GREATER_THAN_ZERO
+            takerEthAmount > 0,
+            "VALUE_GREATER_THAN_ZERO"
         );
         // Deduct the fee from the total amount of ETH sent in
-        uint256 remainingTakerTokenAmount = payAndDeductFee(msg.value, feeProportion, feeRecipient);
+        uint256 ethFeeAmount = payEthFee(
+            takerEthAmount,
+            feeProportion,
+            feeRecipient
+        );
+        uint256 wethSellAmount = safeSub(takerEthAmount, ethFeeAmount);
+
         // Deposit the remaining to be used for trading
-        ETHER_TOKEN.deposit.value(remainingTakerTokenAmount)();
+        ETHER_TOKEN.deposit.value(wethSellAmount)();
         // Populate the known assetData, as it is always WETH the caller can provide null bytes to save gas
         // marketSellOrders fills the remaining
         address makerTokenAddress = LibBytes.readAddress(orders[0].makerAssetData, 16);
@@ -51,22 +81,36 @@ contract MixinMarketBuyERC20Tokens is
         if (makerTokenAddress == address(ZRX_TOKEN)) {
             // If this is ZRX then we market sell from the orders, rather than a 2 step of buying ZRX fees from feeOrders
             // then buying ZRX from orders
-            totalFillResults = marketSellTokensForZRXInternal(orders, signatures, remainingTakerTokenAmount);
+            totalFillResults = marketSellEthForZRXInternal(
+                orders,
+                signatures,
+                wethSellAmount
+            );
         } else {
-            totalFillResults = marketSellTokensForERC20Internal(orders, signatures, feeOrders, feeSignatures, remainingTakerTokenAmount);
+            totalFillResults = marketSellEthForERC20Internal(
+                orders,
+                signatures,
+                feeOrders,
+                feeSignatures,
+                wethSellAmount
+            );
         }
         // Prevent accidental WETH owned by this contract and it being spent
         require(
-            msg.value >= totalFillResults.takerAssetFilledAmount,
-            INVALID_MSG_VALUE
+            takerEthAmount >= totalFillResults.takerAssetFilledAmount,
+            "INVALID_MSG_VALUE"
         );
         // Ensure no WETH is left in this contract
         require(
-            remainingTakerTokenAmount == totalFillResults.takerAssetFilledAmount,
-            UNACCEPTABLE_THRESHOLD
+            wethSellAmount == totalFillResults.takerAssetFilledAmount,
+            "UNACCEPTABLE_THRESHOLD"
         );
         // Transfer all tokens to msg.sender
-        transferToken(makerTokenAddress, msg.sender, totalFillResults.makerAssetFilledAmount);
+        transferToken(
+            makerTokenAddress,
+            msg.sender,
+            totalFillResults.makerAssetFilledAmount
+        );
         return totalFillResults;
     }
 
@@ -75,38 +119,45 @@ contract MixinMarketBuyERC20Tokens is
     /// @param signatures An array of Proof that order has been created by maker.
     /// @param feeOrders An array of Order struct containing order specifications for fees.
     /// @param feeSignatures An array of Proof that order has been created by maker for the fee orders.
-    /// @param sellTokenAmount The amount of WETH to sell.
+    /// @param wethSellAmount The amount of WETH to sell.
     /// @return FillResults amounts filled and fees paid by maker and taker.
-    function marketSellTokensForERC20Internal(
-        Order[] memory orders,
+    function marketSellEthForERC20Internal(
+        LibOrder.Order[] memory orders,
         bytes[] memory signatures,
-        Order[] memory feeOrders,
+        LibOrder.Order[] memory feeOrders,
         bytes[] memory feeSignatures,
-        uint256 sellTokenAmount
+        uint256 wethSellAmount
     )
         internal
-        returns (Exchange.FillResults memory totalFillResults)
+        returns (FillResults memory totalFillResults)
     {
-        uint256 takerTokenBalance = sellTokenAmount;
-        Exchange.FillResults memory calculatedMarketSellResults = calculateMarketSellFillResults(orders, sellTokenAmount);
+        uint256 remainingWethSellAmount = wethSellAmount;
+        FillResults memory calculatedMarketSellResults = calculateMarketSellResults(orders, wethSellAmount);
         if (calculatedMarketSellResults.takerFeePaid > 0) {
             // Fees are required for these orders. Buy enough ZRX to cover the future market buy
-            Exchange.FillResults memory feeTokensResults = buyFeeTokensInternal(
+            FillResults memory feeTokensResults = marketBuyZrxInternal(
                 feeOrders,
                 feeSignatures,
                 calculatedMarketSellResults.takerFeePaid
             );
             // Ensure the token abstraction was fair if fees were proportionally too high, we fail
             require(
-                isAcceptableThreshold(sellTokenAmount, safeSub(sellTokenAmount, feeTokensResults.takerAssetFilledAmount)),
-                UNACCEPTABLE_THRESHOLD
+                isAcceptableThreshold(
+                    wethSellAmount,
+                    safeSub(wethSellAmount, feeTokensResults.takerAssetFilledAmount)
+                ),
+                "UNACCEPTABLE_THRESHOLD"
             );
-            takerTokenBalance = safeSub(takerTokenBalance, feeTokensResults.takerAssetFilledAmount);
+            remainingWethSellAmount = safeSub(remainingWethSellAmount, feeTokensResults.takerAssetFilledAmount);
             totalFillResults.takerFeePaid = feeTokensResults.takerFeePaid;
             totalFillResults.takerAssetFilledAmount = feeTokensResults.takerAssetFilledAmount;
         }
         // Make our market sell to buy the requested tokens with the remaining balance
-        Exchange.FillResults memory requestedTokensResults = EXCHANGE.marketSellOrders(orders, takerTokenBalance, signatures);
+        FillResults memory requestedTokensResults = EXCHANGE.marketSellOrders(
+            orders,
+            remainingWethSellAmount,
+            signatures
+        );
         // Update our return FillResult with the market sell
         addFillResults(totalFillResults, requestedTokensResults);
         return totalFillResults;
@@ -115,26 +166,30 @@ contract MixinMarketBuyERC20Tokens is
     /// @dev Market sells WETH for ZRX tokens.
     /// @param orders An array of Order struct containing order specifications.
     /// @param signatures An array of Proof that order has been created by maker.
-    /// @param sellTokenAmount The amount of WETH to sell.
+    /// @param wethSellAmount The amount of WETH to sell.
     /// @return FillResults amounts filled and fees paid by maker and taker.
-    function marketSellTokensForZRXInternal(
-        Order[] memory orders,
+    function marketSellEthForZRXInternal(
+        LibOrder.Order[] memory orders,
         bytes[] memory signatures,
-        uint256 sellTokenAmount
+        uint256 wethSellAmount
     )
         internal
-        returns (Exchange.FillResults memory totalFillResults)
+        returns (FillResults memory totalFillResults)
     {
         // Make our market sell to buy the requested tokens with the remaining balance
-        totalFillResults = EXCHANGE.marketSellOrders(orders, sellTokenAmount, signatures);
+        totalFillResults = EXCHANGE.marketSellOrders(
+            orders,
+            wethSellAmount,
+            signatures
+        );
         // Exchange does not special case ZRX in the makerAssetFilledAmount, if fees were deducted then using this amount
         // for future transfers is invalid.
-        uint256 totalZRXAmount = safeSub(totalFillResults.makerAssetFilledAmount, totalFillResults.takerFeePaid);
+        uint256 zrxAmountBought = safeSub(totalFillResults.makerAssetFilledAmount, totalFillResults.takerFeePaid);
         require(
-            isAcceptableThreshold(totalFillResults.makerAssetFilledAmount, totalZRXAmount),
-            UNACCEPTABLE_THRESHOLD
+            isAcceptableThreshold(totalFillResults.makerAssetFilledAmount, zrxAmountBought),
+            "UNACCEPTABLE_THRESHOLD"
         );
-        totalFillResults.makerAssetFilledAmount = totalZRXAmount;
+        totalFillResults.makerAssetFilledAmount = zrxAmountBought;
         return totalFillResults;
     }
 

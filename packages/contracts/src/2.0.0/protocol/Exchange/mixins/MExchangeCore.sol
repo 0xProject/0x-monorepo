@@ -120,7 +120,7 @@ contract MExchangeCore is
         LibOrder.Order memory order,
         uint256 takerAssetFilledAmount
     )
-        public
+        internal
         pure
         returns (LibFillResults.FillResults memory fillResults);
 
