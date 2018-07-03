@@ -10,10 +10,10 @@ import { CongratsOnboardingStep } from 'ts/components/onboarding/congrats_onboar
 import { InstallWalletOnboardingStep } from 'ts/components/onboarding/install_wallet_onboarding_step';
 import { IntroOnboardingStep } from 'ts/components/onboarding/intro_onboarding_step';
 import {
+    FixedPositionSettings,
     OnboardingFlow,
     Step,
     TargetPositionSettings,
-    FixedPositionSettings,
 } from 'ts/components/onboarding/onboarding_flow';
 import { SetAllowancesOnboardingStep } from 'ts/components/onboarding/set_allowances_onboarding_step';
 import { UnlockWalletOnboardingStep } from 'ts/components/onboarding/unlock_wallet_onboarding_step';
