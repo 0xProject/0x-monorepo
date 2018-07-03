@@ -1,11 +1,6 @@
-import { assert } from '@0xproject/assert';
-import { addressUtils } from '@0xproject/utils';
 import * as lightwallet from 'eth-lightwallet';
-import EthereumTx = require('ethereumjs-tx');
-import * as ethUtil from 'ethereumjs-util';
-import * as _ from 'lodash';
 
-import { PartialTxParams, WalletSubproviderErrors } from '../types';
+import { PartialTxParams } from '../types';
 
 import { BaseWalletSubprovider } from './base_wallet_subprovider';
 import { PrivateKeyWalletSubprovider } from './private_key_wallet';
