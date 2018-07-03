@@ -1,6 +1,16 @@
 [
     {
         "timestamp": 1529397769,
+        "version": "0.7.2",
+        "changes": [
+            {
+                "note": "Add `getNodeTypeAsync` method",
+                "pr": 812
+            }
+        ]
+    },
+    {
+        "timestamp": 1529397769,
         "version": "0.7.1",
         "changes": [
             {
