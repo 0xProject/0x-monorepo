@@ -65,10 +65,15 @@ export const CopyAddressSimpleMenuItem: React.StatelessComponent<CopyAddressSimp
     );
 };
 
-export const GoToAccountManagementSimpleMenuItem: React.StatelessComponent<{}> = () => {
+export interface GoToAccountManagementSimpleMenuItemProps {
+    onClick?: () => void;
+}
+export const GoToAccountManagementSimpleMenuItem: React.StatelessComponent<
+    GoToAccountManagementSimpleMenuItemProps
+> = ({ onClick }) => {
     return (
         <Link to={`${WebsitePaths.Portal}/account`} style={{ textDecoration: 'none' }}>
-            <SimpleMenuItem displayText="Manage Account..." onClick={_.noop} />
+            <SimpleMenuItem displayText="Manage Account..." onClick={onClick} />
         </Link>
     );
 };
