@@ -9,11 +9,12 @@ import { Text } from 'ts/components/ui/text';
 import { Dispatcher } from 'ts/redux/dispatcher';
 import { colors } from 'ts/style/colors';
 import { styled } from 'ts/style/theme';
-import { AccountState, BrowserType, ProviderType } from 'ts/types';
+import { AccountState, BrowserType, ProviderType, OperatingSystemType } from 'ts/types';
 import { constants } from 'ts/utils/constants';
 import { utils } from 'ts/utils/utils';
 
 const METAMASK_IMG_SRC = '/images/metamask_icon.png';
+const TOSHI_IMG_SRC = '/images/toshi_logo.jpg';
 
 export interface BodyOverlayProps {
     dispatcher: Dispatcher;
@@ -92,8 +93,10 @@ interface DisconnectedOverlayProps {
 const DisconnectedOverlay = (props: DisconnectedOverlayProps) => {
     return (
         <div className="flex flex-column items-center">
-            <GetMetaMask />
-            <UseDifferentWallet fontColor={colors.mediumBlue} onClick={props.onUseDifferentWalletClicked} />
+            <GetWalletCallToAction />
+            {!utils.isMobileOperatingSystem() && (
+                <UseDifferentWallet fontColor={colors.mediumBlue} onClick={props.onUseDifferentWalletClicked} />
+            )}
         </div>
     );
 };
@@ -112,32 +115,50 @@ const UseDifferentWallet = (props: UseDifferentWallet) => {
     );
 };
 
-const GetMetaMask = () => {
+const GetWalletCallToAction = () => {
     const browserType = utils.getBrowserType();
-    let extensionLink;
-    switch (browserType) {
-        case BrowserType.Chrome:
-            extensionLink = constants.URL_METAMASK_CHROME_STORE;
-            break;
-        case BrowserType.Firefox:
-            extensionLink = constants.URL_METAMASK_FIREFOX_STORE;
-            break;
-        case BrowserType.Opera:
-            extensionLink = constants.URL_METAMASK_OPERA_STORE;
-            break;
-        default:
-            extensionLink = constants.URL_METAMASK_HOMEPAGE;
+    const isOnMobile = utils.isMobileOperatingSystem();
+    const operatingSystem = utils.getOperatingSystem();
+    const imageUrl = isOnMobile ? TOSHI_IMG_SRC : METAMASK_IMG_SRC;
+    const text = isOnMobile ? 'Get Toshi Wallet' : 'Get MetaMask Wallet';
+    let downloadLink;
+    if (isOnMobile) {
+        switch (operatingSystem) {
+            case OperatingSystemType.Android:
+                downloadLink = constants.URL_TOSHI_ANDROID_APP_STORE;
+                break;
+            case OperatingSystemType.iOS:
+                downloadLink = constants.URL_TOSHI_IOS_APP_STORE;
+                break;
+            default:
+                // Toshi is only supported on these mobile OSes - just default to iOS
+                downloadLink = constants.URL_TOSHI_IOS_APP_STORE;
+        }
+    } else {
+        switch (browserType) {
+            case BrowserType.Chrome:
+                downloadLink = constants.URL_METAMASK_CHROME_STORE;
+                break;
+            case BrowserType.Firefox:
+                downloadLink = constants.URL_METAMASK_FIREFOX_STORE;
+                break;
+            case BrowserType.Opera:
+                downloadLink = constants.URL_METAMASK_OPERA_STORE;
+                break;
+            default:
+                downloadLink = constants.URL_METAMASK_HOMEPAGE;
+        }
     }
     return (
-        <a href={extensionLink} target="_blank" style={{ textDecoration: 'none' }}>
+        <a href={downloadLink} target="_blank" style={{ textDecoration: 'none' }}>
             <Island
                 className="flex items-center py1 px2"
                 style={{ height: 28, borderRadius: 28, backgroundColor: colors.mediumBlue }}
             >
-                <Image src={METAMASK_IMG_SRC} width="28px" />
+                <Image src={imageUrl} width="28px" borderRadius="22%" />
                 <Container marginLeft="8px" marginRight="12px">
                     <Text fontColor={colors.white} fontSize="16px" fontWeight={500}>
-                        Get MetaMask Wallet
+                        {text}
                     </Text>
                 </Container>
             </Island>
