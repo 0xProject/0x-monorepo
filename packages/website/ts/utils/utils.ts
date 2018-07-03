@@ -24,6 +24,7 @@ import {
     Token,
     TokenByAddress,
     TokenState,
+    OperatingSystemType,
 } from 'ts/types';
 import { configs } from 'ts/utils/configs';
 import { constants } from 'ts/utils/constants';
@@ -416,6 +417,23 @@ export const utils = {
             return BrowserType.Opera;
         } else {
             return BrowserType.Other;
+        }
+    },
+    getOperatingSystem(): OperatingSystemType {
+        if (bowser.android) {
+            return OperatingSystemType.Android;
+        } else if (bowser.ios) {
+            return OperatingSystemType.iOS;
+        } else if (bowser.mac) {
+            return OperatingSystemType.Mac;
+        } else if (bowser.windows) {
+            return OperatingSystemType.Windows;
+        } else if (bowser.windowsphone) {
+            return OperatingSystemType.WindowsPhone;
+        } else if (bowser.linux) {
+            return OperatingSystemType.Linux;
+        } else {
+            return OperatingSystemType.Other;
         }
     },
     isTokenTracked(token: Token): boolean {
