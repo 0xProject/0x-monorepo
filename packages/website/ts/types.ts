@@ -579,7 +579,7 @@ export interface InjectedProvider extends Provider {
     publicConfigStore?: InjectedProviderObservable;
 }
 
-// Minimal interface expected for an injected web3 object
+// Minimal expected interface for an injected web3 object
 export interface InjectedWeb3 {
     currentProvider: InjectedProvider;
     version: {
