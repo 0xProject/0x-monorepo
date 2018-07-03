@@ -31,7 +31,7 @@ contract MixinExpectedResults is
 
     /// @dev Simulates the 0x Exchange fillOrder validation and calculations, without performing any state changes.
     /// @param order An Order struct containing order specifications.
-    /// @param takerAssetFillAmount A number representing the amount of this order to fill.
+    /// @param takerAssetFilledAmount A number representing the amount of this order to fill.
     /// @return fillResults Amounts filled and fees paid by maker and taker.
     function calculateFillResults(
         LibOrder.Order memory order,
