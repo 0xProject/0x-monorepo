@@ -15,7 +15,7 @@ export class GanacheSubprovider extends Subprovider {
      * Instantiates a GanacheSubprovider
      * @param opts The desired opts with which to instantiate the Ganache provider
      */
-    constructor(opts: any) {
+    constructor(opts: Ganache.GanacheOpts) {
         super();
         this._ganacheProvider = Ganache.provider(opts);
     }

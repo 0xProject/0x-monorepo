@@ -7,8 +7,8 @@ import * as _ from 'lodash';
 
 import { artifacts } from './artifacts';
 import { constants } from './constants';
-import { DummyERC20TokenContract } from './generated_contract_wrappers/dummy_e_r_c20_token';
-import { ERC20TokenContract } from './generated_contract_wrappers/e_r_c20_token';
+import { DummyERC20TokenContract } from './generated_contract_wrappers/dummy_erc20_token';
+import { ERC20TokenContract } from './generated_contract_wrappers/erc20_token';
 import { ExchangeContract } from './generated_contract_wrappers/exchange';
 
 const INITIAL_COINBASE_TOKEN_SUPPLY_IN_UNITS = new BigNumber(100);

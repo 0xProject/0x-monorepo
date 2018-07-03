@@ -52,7 +52,6 @@
     "homepage": "https://github.com/0xProject/0x-monorepo/packages/order-utils/README.md",
     "devDependencies": {
         "@0xproject/dev-utils": "^0.4.4",
-        "@0xproject/migrations": "^0.0.8",
         "@0xproject/monorepo-scripts": "^0.2.1",
         "@0xproject/tslint-config": "^0.4.20",
         "@types/ethereumjs-abi": "^0.6.0",
@@ -73,7 +72,7 @@
         "typescript": "2.7.1"
     },
     "dependencies": {
-        "@0xproject/assert": "^0.2.12",
+        "@0xproject/assert": "^0.3.0",
         "@0xproject/base-contract": "^0.3.4",
         "@0xproject/json-schemas": "1.0.0",
         "@0xproject/sol-compiler": "^0.5.2",

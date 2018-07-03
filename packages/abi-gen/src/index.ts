@@ -8,6 +8,7 @@ import { sync as globSync } from 'glob';
 import * as Handlebars from 'handlebars';
 import * as _ from 'lodash';
 import * as mkdirp from 'mkdirp';
+import * as rimraf from 'rimraf';
 import * as yargs from 'yargs';
 
 import toSnakeCase = require('to-snake-case');
@@ -72,9 +73,9 @@ function registerPartials(partialsGlob: string): void {
 
 function writeOutputFile(name: string, renderedTsCode: string): void {
     let fileName = toSnakeCase(name);
-    if (fileName === 'z_r_x_token') {
-        fileName = 'zrx_token';
-    }
+    // HACK: Snake case doesn't make a lot of sense for abbreviated names but we can't reliably detect abbreviations
+    // so we special-case the abbreviations we use.
+    fileName = fileName.replace('z_r_x', 'zrx').replace('e_r_c', 'erc');
     const filePath = `${args.output}/${fileName}.ts`;
     fs.writeFileSync(filePath, renderedTsCode);
     logUtils.log(`Created: ${chalk.bold(filePath)}`);
@@ -96,6 +97,7 @@ if (_.isEmpty(abiFileNames)) {
     process.exit(1);
 } else {
     logUtils.log(`Found ${chalk.green(`${abiFileNames.length}`)} ${chalk.bold('ABI')} files`);
+    rimraf.sync(args.output);
     mkdirp.sync(args.output);
 }
 for (const abiFileName of abiFileNames) {

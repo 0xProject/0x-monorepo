@@ -1,37 +1,36 @@
 import { BlockchainLifecycle, callbackErrorReporter } from '@0xproject/dev-utils';
 import { EmptyWalletSubprovider } from '@0xproject/subproviders';
-import { DoneCallback, Provider } from '@0xproject/types';
+import { DoneCallback } from '@0xproject/types';
 import { BigNumber } from '@0xproject/utils';
 import * as chai from 'chai';
+import { Provider } from 'ethereum-types';
 import 'mocha';
 import Web3ProviderEngine = require('web3-provider-engine');
 
 import {
-    ApprovalContractEventArgs,
     BlockParamLiteral,
     BlockRange,
     ContractWrappers,
     ContractWrappersError,
     DecodedLogEvent,
-    Token,
-    TokenEvents,
-    TransferContractEventArgs,
+    ERC20TokenApprovalEventArgs,
+    ERC20TokenEvents,
+    ERC20TokenTransferEventArgs,
 } from '../src';
 
 import { chaiSetup } from './utils/chai_setup';
 import { constants } from './utils/constants';
-import { TokenUtils } from './utils/token_utils';
+import { tokenUtils } from './utils/token_utils';
 import { provider, web3Wrapper } from './utils/web3_wrapper';
 
 chaiSetup.configure();
 const expect = chai.expect;
 const blockchainLifecycle = new BlockchainLifecycle(web3Wrapper);
 
-describe('TokenWrapper', () => {
+describe('ERC20Wrapper', () => {
     let contractWrappers: ContractWrappers;
     let userAddresses: string[];
-    let tokens: Token[];
-    let tokenUtils: TokenUtils;
+    let tokens: string[];
     let coinbase: string;
     let addressWithoutFunds: string;
     const config = {
@@ -40,8 +39,7 @@ describe('TokenWrapper', () => {
     before(async () => {
         contractWrappers = new ContractWrappers(provider, config);
         userAddresses = await web3Wrapper.getAvailableAddressesAsync();
-        tokens = await contractWrappers.tokenRegistry.getTokensAsync();
-        tokenUtils = new TokenUtils(tokens);
+        tokens = tokenUtils.getDummyERC20TokenAddresses();
         coinbase = userAddresses[0];
         addressWithoutFunds = userAddresses[1];
     });
@@ -52,26 +50,26 @@ describe('TokenWrapper', () => {
         await blockchainLifecycle.revertAsync();
     });
     describe('#transferAsync', () => {
-        let token: Token;
+        let tokenAddress: string;
         let transferAmount: BigNumber;
         before(() => {
-            token = tokens[0];
+            tokenAddress = tokens[0];
             transferAmount = new BigNumber(42);
         });
         it('should successfully transfer tokens', async () => {
             const fromAddress = coinbase;
             const toAddress = addressWithoutFunds;
-            const preBalance = await contractWrappers.token.getBalanceAsync(token.address, toAddress);
+            const preBalance = await contractWrappers.erc20Token.getBalanceAsync(tokenAddress, toAddress);
             expect(preBalance).to.be.bignumber.equal(0);
-            await contractWrappers.token.transferAsync(token.address, fromAddress, toAddress, transferAmount);
-            const postBalance = await contractWrappers.token.getBalanceAsync(token.address, toAddress);
+            await contractWrappers.erc20Token.transferAsync(tokenAddress, fromAddress, toAddress, transferAmount);
+            const postBalance = await contractWrappers.erc20Token.getBalanceAsync(tokenAddress, toAddress);
             return expect(postBalance).to.be.bignumber.equal(transferAmount);
         });
         it('should fail to transfer tokens if fromAddress has an insufficient balance', async () => {
             const fromAddress = addressWithoutFunds;
             const toAddress = coinbase;
             return expect(
-                contractWrappers.token.transferAsync(token.address, fromAddress, toAddress, transferAmount),
+                contractWrappers.erc20Token.transferAsync(tokenAddress, fromAddress, toAddress, transferAmount),
             ).to.be.rejectedWith(ContractWrappersError.InsufficientBalanceForTransfer);
         });
         it('should throw a CONTRACT_DOES_NOT_EXIST error for a non-existent token contract', async () => {
@@ -79,16 +77,21 @@ describe('TokenWrapper', () => {
             const fromAddress = coinbase;
             const toAddress = coinbase;
             return expect(
-                contractWrappers.token.transferAsync(nonExistentTokenAddress, fromAddress, toAddress, transferAmount),
-            ).to.be.rejectedWith(ContractWrappersError.TokenContractDoesNotExist);
+                contractWrappers.erc20Token.transferAsync(
+                    nonExistentTokenAddress,
+                    fromAddress,
+                    toAddress,
+                    transferAmount,
+                ),
+            ).to.be.rejectedWith(ContractWrappersError.ERC20TokenContractDoesNotExist);
         });
     });
     describe('#transferFromAsync', () => {
-        let token: Token;
+        let tokenAddress: string;
         let toAddress: string;
         let senderAddress: string;
         before(async () => {
-            token = tokens[0];
+            tokenAddress = tokens[0];
             toAddress = addressWithoutFunds;
             senderAddress = userAddresses[2];
         });
@@ -96,19 +99,19 @@ describe('TokenWrapper', () => {
             const fromAddress = coinbase;
             const transferAmount = new BigNumber(42);
 
-            const fromAddressBalance = await contractWrappers.token.getBalanceAsync(token.address, fromAddress);
+            const fromAddressBalance = await contractWrappers.erc20Token.getBalanceAsync(tokenAddress, fromAddress);
             expect(fromAddressBalance).to.be.bignumber.greaterThan(transferAmount);
 
-            const fromAddressAllowance = await contractWrappers.token.getAllowanceAsync(
-                token.address,
+            const fromAddressAllowance = await contractWrappers.erc20Token.getAllowanceAsync(
+                tokenAddress,
                 fromAddress,
                 toAddress,
             );
             expect(fromAddressAllowance).to.be.bignumber.equal(0);
 
             return expect(
-                contractWrappers.token.transferFromAsync(
-                    token.address,
+                contractWrappers.erc20Token.transferFromAsync(
+                    tokenAddress,
                     fromAddress,
                     toAddress,
                     senderAddress,
@@ -120,11 +123,11 @@ describe('TokenWrapper', () => {
             const fromAddress = coinbase;
             const transferAmount = new BigNumber(42);
 
-            await contractWrappers.token.setAllowanceAsync(token.address, fromAddress, toAddress, transferAmount);
+            await contractWrappers.erc20Token.setAllowanceAsync(tokenAddress, fromAddress, toAddress, transferAmount);
 
             return expect(
-                contractWrappers.token.transferFromAsync(
-                    token.address,
+                contractWrappers.erc20Token.transferFromAsync(
+                    tokenAddress,
                     fromAddress,
                     toAddress,
                     senderAddress,
@@ -136,20 +139,25 @@ describe('TokenWrapper', () => {
             const fromAddress = addressWithoutFunds;
             const transferAmount = new BigNumber(42);
 
-            const fromAddressBalance = await contractWrappers.token.getBalanceAsync(token.address, fromAddress);
+            const fromAddressBalance = await contractWrappers.erc20Token.getBalanceAsync(tokenAddress, fromAddress);
             expect(fromAddressBalance).to.be.bignumber.equal(0);
 
-            await contractWrappers.token.setAllowanceAsync(token.address, fromAddress, senderAddress, transferAmount);
-            const fromAddressAllowance = await contractWrappers.token.getAllowanceAsync(
-                token.address,
+            await contractWrappers.erc20Token.setAllowanceAsync(
+                tokenAddress,
+                fromAddress,
+                senderAddress,
+                transferAmount,
+            );
+            const fromAddressAllowance = await contractWrappers.erc20Token.getAllowanceAsync(
+                tokenAddress,
                 fromAddress,
                 senderAddress,
             );
             expect(fromAddressAllowance).to.be.bignumber.equal(transferAmount);
 
             return expect(
-                contractWrappers.token.transferFromAsync(
-                    token.address,
+                contractWrappers.erc20Token.transferFromAsync(
+                    tokenAddress,
                     fromAddress,
                     toAddress,
                     senderAddress,
@@ -160,42 +168,47 @@ describe('TokenWrapper', () => {
         it('should successfully transfer tokens', async () => {
             const fromAddress = coinbase;
 
-            const preBalance = await contractWrappers.token.getBalanceAsync(token.address, toAddress);
+            const preBalance = await contractWrappers.erc20Token.getBalanceAsync(tokenAddress, toAddress);
             expect(preBalance).to.be.bignumber.equal(0);
 
             const transferAmount = new BigNumber(42);
-            await contractWrappers.token.setAllowanceAsync(token.address, fromAddress, senderAddress, transferAmount);
+            await contractWrappers.erc20Token.setAllowanceAsync(
+                tokenAddress,
+                fromAddress,
+                senderAddress,
+                transferAmount,
+            );
 
-            await contractWrappers.token.transferFromAsync(
-                token.address,
+            await contractWrappers.erc20Token.transferFromAsync(
+                tokenAddress,
                 fromAddress,
                 toAddress,
                 senderAddress,
                 transferAmount,
             );
-            const postBalance = await contractWrappers.token.getBalanceAsync(token.address, toAddress);
+            const postBalance = await contractWrappers.erc20Token.getBalanceAsync(tokenAddress, toAddress);
             return expect(postBalance).to.be.bignumber.equal(transferAmount);
         });
         it('should throw a CONTRACT_DOES_NOT_EXIST error for a non-existent token contract', async () => {
             const fromAddress = coinbase;
             const nonExistentTokenAddress = '0x9dd402f14d67e001d8efbe6583e51bf9706aa065';
             return expect(
-                contractWrappers.token.transferFromAsync(
+                contractWrappers.erc20Token.transferFromAsync(
                     nonExistentTokenAddress,
                     fromAddress,
                     toAddress,
                     senderAddress,
                     new BigNumber(42),
                 ),
-            ).to.be.rejectedWith(ContractWrappersError.TokenContractDoesNotExist);
+            ).to.be.rejectedWith(ContractWrappersError.ERC20TokenContractDoesNotExist);
         });
     });
     describe('#getBalanceAsync', () => {
         describe('With provider with accounts', () => {
             it('should return the balance for an existing ERC20 token', async () => {
-                const token = tokens[0];
+                const tokenAddress = tokens[0];
                 const ownerAddress = coinbase;
-                const balance = await contractWrappers.token.getBalanceAsync(token.address, ownerAddress);
+                const balance = await contractWrappers.erc20Token.getBalanceAsync(tokenAddress, ownerAddress);
                 const expectedBalance = new BigNumber('1000000000000000000000000000');
                 return expect(balance).to.be.bignumber.equal(expectedBalance);
             });
@@ -203,13 +216,13 @@ describe('TokenWrapper', () => {
                 const nonExistentTokenAddress = '0x9dd402f14d67e001d8efbe6583e51bf9706aa065';
                 const ownerAddress = coinbase;
                 return expect(
-                    contractWrappers.token.getBalanceAsync(nonExistentTokenAddress, ownerAddress),
-                ).to.be.rejectedWith(ContractWrappersError.TokenContractDoesNotExist);
+                    contractWrappers.erc20Token.getBalanceAsync(nonExistentTokenAddress, ownerAddress),
+                ).to.be.rejectedWith(ContractWrappersError.ERC20TokenContractDoesNotExist);
             });
             it('should return a balance of 0 for a non-existent owner address', async () => {
-                const token = tokens[0];
+                const tokenAddress = tokens[0];
                 const nonExistentOwner = '0x198c6ad858f213fb31b6fe809e25040e6b964593';
-                const balance = await contractWrappers.token.getBalanceAsync(token.address, nonExistentOwner);
+                const balance = await contractWrappers.erc20Token.getBalanceAsync(tokenAddress, nonExistentOwner);
                 const expectedBalance = new BigNumber(0);
                 return expect(balance).to.be.bignumber.equal(expectedBalance);
             });
@@ -221,9 +234,12 @@ describe('TokenWrapper', () => {
                 zeroExContractWithoutAccounts = new ContractWrappers(emptyWalletProvider, config);
             });
             it('should return balance even when called with provider instance without addresses', async () => {
-                const token = tokens[0];
+                const tokenAddress = tokens[0];
                 const ownerAddress = coinbase;
-                const balance = await zeroExContractWithoutAccounts.token.getBalanceAsync(token.address, ownerAddress);
+                const balance = await zeroExContractWithoutAccounts.erc20Token.getBalanceAsync(
+                    tokenAddress,
+                    ownerAddress,
+                );
                 const expectedBalance = new BigNumber('1000000000000000000000000000');
                 return expect(balance).to.be.bignumber.equal(expectedBalance);
             });
@@ -231,12 +247,12 @@ describe('TokenWrapper', () => {
     });
     describe('#setAllowanceAsync', () => {
         it("should set the spender's allowance", async () => {
-            const token = tokens[0];
+            const tokenAddress = tokens[0];
             const ownerAddress = coinbase;
             const spenderAddress = addressWithoutFunds;
 
-            const allowanceBeforeSet = await contractWrappers.token.getAllowanceAsync(
-                token.address,
+            const allowanceBeforeSet = await contractWrappers.erc20Token.getAllowanceAsync(
+                tokenAddress,
                 ownerAddress,
                 spenderAddress,
             );
@@ -244,15 +260,15 @@ describe('TokenWrapper', () => {
             expect(allowanceBeforeSet).to.be.bignumber.equal(expectedAllowanceBeforeAllowanceSet);
 
             const amountInBaseUnits = new BigNumber(50);
-            await contractWrappers.token.setAllowanceAsync(
-                token.address,
+            await contractWrappers.erc20Token.setAllowanceAsync(
+                tokenAddress,
                 ownerAddress,
                 spenderAddress,
                 amountInBaseUnits,
             );
 
-            const allowanceAfterSet = await contractWrappers.token.getAllowanceAsync(
-                token.address,
+            const allowanceAfterSet = await contractWrappers.erc20Token.getAllowanceAsync(
+                tokenAddress,
                 ownerAddress,
                 spenderAddress,
             );
@@ -262,44 +278,50 @@ describe('TokenWrapper', () => {
     });
     describe('#setUnlimitedAllowanceAsync', () => {
         it("should set the unlimited spender's allowance", async () => {
-            const token = tokens[0];
+            const tokenAddress = tokens[0];
             const ownerAddress = coinbase;
             const spenderAddress = addressWithoutFunds;
 
-            await contractWrappers.token.setUnlimitedAllowanceAsync(token.address, ownerAddress, spenderAddress);
-            const allowance = await contractWrappers.token.getAllowanceAsync(
-                token.address,
+            await contractWrappers.erc20Token.setUnlimitedAllowanceAsync(tokenAddress, ownerAddress, spenderAddress);
+            const allowance = await contractWrappers.erc20Token.getAllowanceAsync(
+                tokenAddress,
                 ownerAddress,
                 spenderAddress,
             );
-            return expect(allowance).to.be.bignumber.equal(contractWrappers.token.UNLIMITED_ALLOWANCE_IN_BASE_UNITS);
+            return expect(allowance).to.be.bignumber.equal(
+                contractWrappers.erc20Token.UNLIMITED_ALLOWANCE_IN_BASE_UNITS,
+            );
         });
         it('should reduce the gas cost for transfers including tokens with unlimited allowance support', async () => {
             const transferAmount = new BigNumber(5);
-            const zrx = tokenUtils.getProtocolTokenOrThrow();
+            const zrxAddress = tokenUtils.getProtocolTokenAddress();
             const [, userWithNormalAllowance, userWithUnlimitedAllowance] = userAddresses;
-            await contractWrappers.token.setAllowanceAsync(
-                zrx.address,
+            await contractWrappers.erc20Token.setAllowanceAsync(
+                zrxAddress,
                 coinbase,
                 userWithNormalAllowance,
                 transferAmount,
             );
-            await contractWrappers.token.setUnlimitedAllowanceAsync(zrx.address, coinbase, userWithUnlimitedAllowance);
+            await contractWrappers.erc20Token.setUnlimitedAllowanceAsync(
+                zrxAddress,
+                coinbase,
+                userWithUnlimitedAllowance,
+            );
 
             const initBalanceWithNormalAllowance = await web3Wrapper.getBalanceInWeiAsync(userWithNormalAllowance);
             const initBalanceWithUnlimitedAllowance = await web3Wrapper.getBalanceInWeiAsync(
                 userWithUnlimitedAllowance,
             );
 
-            await contractWrappers.token.transferFromAsync(
-                zrx.address,
+            await contractWrappers.erc20Token.transferFromAsync(
+                zrxAddress,
                 coinbase,
                 userWithNormalAllowance,
                 userWithNormalAllowance,
                 transferAmount,
             );
-            await contractWrappers.token.transferFromAsync(
-                zrx.address,
+            await contractWrappers.erc20Token.transferFromAsync(
+                zrxAddress,
                 coinbase,
                 userWithUnlimitedAllowance,
                 userWithUnlimitedAllowance,
@@ -323,20 +345,20 @@ describe('TokenWrapper', () => {
     describe('#getAllowanceAsync', () => {
         describe('With provider with accounts', () => {
             it('should get the proxy allowance', async () => {
-                const token = tokens[0];
+                const tokenAddress = tokens[0];
                 const ownerAddress = coinbase;
                 const spenderAddress = addressWithoutFunds;
 
                 const amountInBaseUnits = new BigNumber(50);
-                await contractWrappers.token.setAllowanceAsync(
-                    token.address,
+                await contractWrappers.erc20Token.setAllowanceAsync(
+                    tokenAddress,
                     ownerAddress,
                     spenderAddress,
                     amountInBaseUnits,
                 );
 
-                const allowance = await contractWrappers.token.getAllowanceAsync(
-                    token.address,
+                const allowance = await contractWrappers.erc20Token.getAllowanceAsync(
+                    tokenAddress,
                     ownerAddress,
                     spenderAddress,
                 );
@@ -344,11 +366,11 @@ describe('TokenWrapper', () => {
                 return expect(allowance).to.be.bignumber.equal(expectedAllowance);
             });
             it('should return 0 if no allowance set yet', async () => {
-                const token = tokens[0];
+                const tokenAddress = tokens[0];
                 const ownerAddress = coinbase;
                 const spenderAddress = addressWithoutFunds;
-                const allowance = await contractWrappers.token.getAllowanceAsync(
-                    token.address,
+                const allowance = await contractWrappers.erc20Token.getAllowanceAsync(
+                    tokenAddress,
                     ownerAddress,
                     spenderAddress,
                 );
@@ -363,20 +385,20 @@ describe('TokenWrapper', () => {
                 zeroExContractWithoutAccounts = new ContractWrappers(emptyWalletProvider, config);
             });
             it('should get the proxy allowance', async () => {
-                const token = tokens[0];
+                const tokenAddress = tokens[0];
                 const ownerAddress = coinbase;
                 const spenderAddress = addressWithoutFunds;
 
                 const amountInBaseUnits = new BigNumber(50);
-                await contractWrappers.token.setAllowanceAsync(
-                    token.address,
+                await contractWrappers.erc20Token.setAllowanceAsync(
+                    tokenAddress,
                     ownerAddress,
                     spenderAddress,
                     amountInBaseUnits,
                 );
 
-                const allowance = await zeroExContractWithoutAccounts.token.getAllowanceAsync(
-                    token.address,
+                const allowance = await zeroExContractWithoutAccounts.erc20Token.getAllowanceAsync(
+                    tokenAddress,
                     ownerAddress,
                     spenderAddress,
                 );
@@ -387,42 +409,50 @@ describe('TokenWrapper', () => {
     });
     describe('#getProxyAllowanceAsync', () => {
         it('should get the proxy allowance', async () => {
-            const token = tokens[0];
+            const tokenAddress = tokens[0];
             const ownerAddress = coinbase;
 
             const amountInBaseUnits = new BigNumber(50);
-            await contractWrappers.token.setProxyAllowanceAsync(token.address, ownerAddress, amountInBaseUnits);
+            await contractWrappers.erc20Token.setProxyAllowanceAsync(tokenAddress, ownerAddress, amountInBaseUnits);
 
-            const allowance = await contractWrappers.token.getProxyAllowanceAsync(token.address, ownerAddress);
+            const allowance = await contractWrappers.erc20Token.getProxyAllowanceAsync(tokenAddress, ownerAddress);
             const expectedAllowance = amountInBaseUnits;
             return expect(allowance).to.be.bignumber.equal(expectedAllowance);
         });
     });
     describe('#setProxyAllowanceAsync', () => {
         it('should set the proxy allowance', async () => {
-            const token = tokens[0];
+            const tokenAddress = tokens[0];
             const ownerAddress = coinbase;
 
-            const allowanceBeforeSet = await contractWrappers.token.getProxyAllowanceAsync(token.address, ownerAddress);
+            const allowanceBeforeSet = await contractWrappers.erc20Token.getProxyAllowanceAsync(
+                tokenAddress,
+                ownerAddress,
+            );
             const expectedAllowanceBeforeAllowanceSet = new BigNumber(0);
             expect(allowanceBeforeSet).to.be.bignumber.equal(expectedAllowanceBeforeAllowanceSet);
 
             const amountInBaseUnits = new BigNumber(50);
-            await contractWrappers.token.setProxyAllowanceAsync(token.address, ownerAddress, amountInBaseUnits);
+            await contractWrappers.erc20Token.setProxyAllowanceAsync(tokenAddress, ownerAddress, amountInBaseUnits);
 
-            const allowanceAfterSet = await contractWrappers.token.getProxyAllowanceAsync(token.address, ownerAddress);
+            const allowanceAfterSet = await contractWrappers.erc20Token.getProxyAllowanceAsync(
+                tokenAddress,
+                ownerAddress,
+            );
             const expectedAllowanceAfterAllowanceSet = amountInBaseUnits;
             return expect(allowanceAfterSet).to.be.bignumber.equal(expectedAllowanceAfterAllowanceSet);
         });
     });
     describe('#setUnlimitedProxyAllowanceAsync', () => {
         it('should set the unlimited proxy allowance', async () => {
-            const token = tokens[0];
+            const tokenAddress = tokens[0];
             const ownerAddress = coinbase;
 
-            await contractWrappers.token.setUnlimitedProxyAllowanceAsync(token.address, ownerAddress);
-            const allowance = await contractWrappers.token.getProxyAllowanceAsync(token.address, ownerAddress);
-            return expect(allowance).to.be.bignumber.equal(contractWrappers.token.UNLIMITED_ALLOWANCE_IN_BASE_UNITS);
+            await contractWrappers.erc20Token.setUnlimitedProxyAllowanceAsync(tokenAddress, ownerAddress);
+            const allowance = await contractWrappers.erc20Token.getProxyAllowanceAsync(tokenAddress, ownerAddress);
+            return expect(allowance).to.be.bignumber.equal(
+                contractWrappers.erc20Token.UNLIMITED_ALLOWANCE_IN_BASE_UNITS,
+            );
         });
     });
     describe('#subscribe', () => {
@@ -431,11 +461,10 @@ describe('TokenWrapper', () => {
         const transferAmount = new BigNumber(42);
         const allowanceAmount = new BigNumber(42);
         before(() => {
-            const token = tokens[0];
-            tokenAddress = token.address;
+            tokenAddress = tokens[0];
         });
         afterEach(() => {
-            contractWrappers.token.unsubscribeAll();
+            contractWrappers.erc20Token.unsubscribeAll();
         });
         // Hack: Mocha does not allow a test to be both async and have a `done` callback
         // Since we need to await the receipt of the event in the `subscribe` callback,
@@ -445,7 +474,7 @@ describe('TokenWrapper', () => {
         it('Should receive the Transfer event when tokens are transfered', (done: DoneCallback) => {
             (async () => {
                 const callback = callbackErrorReporter.reportNodeCallbackErrors(done)(
-                    (logEvent: DecodedLogEvent<TransferContractEventArgs>) => {
+                    (logEvent: DecodedLogEvent<ERC20TokenTransferEventArgs>) => {
                         expect(logEvent.isRemoved).to.be.false();
                         expect(logEvent.log.logIndex).to.be.equal(0);
                         expect(logEvent.log.transactionIndex).to.be.equal(0);
@@ -456,14 +485,24 @@ describe('TokenWrapper', () => {
                         expect(args._value).to.be.bignumber.equal(transferAmount);
                     },
                 );
-                contractWrappers.token.subscribe(tokenAddress, TokenEvents.Transfer, indexFilterValues, callback);
-                await contractWrappers.token.transferAsync(tokenAddress, coinbase, addressWithoutFunds, transferAmount);
+                contractWrappers.erc20Token.subscribe(
+                    tokenAddress,
+                    ERC20TokenEvents.Transfer,
+                    indexFilterValues,
+                    callback,
+                );
+                await contractWrappers.erc20Token.transferAsync(
+                    tokenAddress,
+                    coinbase,
+                    addressWithoutFunds,
+                    transferAmount,
+                );
             })().catch(done);
         });
         it('Should receive the Approval event when allowance is being set', (done: DoneCallback) => {
             (async () => {
                 const callback = callbackErrorReporter.reportNodeCallbackErrors(done)(
-                    (logEvent: DecodedLogEvent<ApprovalContractEventArgs>) => {
+                    (logEvent: DecodedLogEvent<ERC20TokenApprovalEventArgs>) => {
                         expect(logEvent).to.not.be.undefined();
                         expect(logEvent.isRemoved).to.be.false();
                         const args = logEvent.log.args;
@@ -472,8 +511,13 @@ describe('TokenWrapper', () => {
                         expect(args._value).to.be.bignumber.equal(allowanceAmount);
                     },
                 );
-                contractWrappers.token.subscribe(tokenAddress, TokenEvents.Approval, indexFilterValues, callback);
-                await contractWrappers.token.setAllowanceAsync(
+                contractWrappers.erc20Token.subscribe(
+                    tokenAddress,
+                    ERC20TokenEvents.Approval,
+                    indexFilterValues,
+                    callback,
+                );
+                await contractWrappers.erc20Token.setAllowanceAsync(
                     tokenAddress,
                     coinbase,
                     addressWithoutFunds,
@@ -484,42 +528,52 @@ describe('TokenWrapper', () => {
         it('Outstanding subscriptions are cancelled when contractWrappers.setProvider called', (done: DoneCallback) => {
             (async () => {
                 const callbackNeverToBeCalled = callbackErrorReporter.reportNodeCallbackErrors(done)(
-                    (logEvent: DecodedLogEvent<ApprovalContractEventArgs>) => {
+                    (logEvent: DecodedLogEvent<ERC20TokenApprovalEventArgs>) => {
                         done(new Error('Expected this subscription to have been cancelled'));
                     },
                 );
-                contractWrappers.token.subscribe(
+                contractWrappers.erc20Token.subscribe(
                     tokenAddress,
-                    TokenEvents.Transfer,
+                    ERC20TokenEvents.Transfer,
                     indexFilterValues,
                     callbackNeverToBeCalled,
                 );
                 const callbackToBeCalled = callbackErrorReporter.reportNodeCallbackErrors(done)();
                 contractWrappers.setProvider(provider, constants.TESTRPC_NETWORK_ID);
-                contractWrappers.token.subscribe(
+                contractWrappers.erc20Token.subscribe(
                     tokenAddress,
-                    TokenEvents.Transfer,
+                    ERC20TokenEvents.Transfer,
                     indexFilterValues,
                     callbackToBeCalled,
                 );
-                await contractWrappers.token.transferAsync(tokenAddress, coinbase, addressWithoutFunds, transferAmount);
+                await contractWrappers.erc20Token.transferAsync(
+                    tokenAddress,
+                    coinbase,
+                    addressWithoutFunds,
+                    transferAmount,
+                );
             })().catch(done);
         });
         it('Should cancel subscription when unsubscribe called', (done: DoneCallback) => {
             (async () => {
                 const callbackNeverToBeCalled = callbackErrorReporter.reportNodeCallbackErrors(done)(
-                    (logEvent: DecodedLogEvent<ApprovalContractEventArgs>) => {
+                    (logEvent: DecodedLogEvent<ERC20TokenApprovalEventArgs>) => {
                         done(new Error('Expected this subscription to have been cancelled'));
                     },
                 );
-                const subscriptionToken = contractWrappers.token.subscribe(
+                const subscriptionToken = contractWrappers.erc20Token.subscribe(
                     tokenAddress,
-                    TokenEvents.Transfer,
+                    ERC20TokenEvents.Transfer,
                     indexFilterValues,
                     callbackNeverToBeCalled,
                 );
-                contractWrappers.token.unsubscribe(subscriptionToken);
-                await contractWrappers.token.transferAsync(tokenAddress, coinbase, addressWithoutFunds, transferAmount);
+                contractWrappers.erc20Token.unsubscribe(subscriptionToken);
+                await contractWrappers.erc20Token.transferAsync(
+                    tokenAddress,
+                    coinbase,
+                    addressWithoutFunds,
+                    transferAmount,
+                );
                 done();
             })().catch(done);
         });
@@ -533,16 +587,15 @@ describe('TokenWrapper', () => {
         };
         let txHash: string;
         before(() => {
-            const token = tokens[0];
-            tokenAddress = token.address;
-            tokenTransferProxyAddress = contractWrappers.proxy.getContractAddress();
+            tokenAddress = tokens[0];
+            tokenTransferProxyAddress = contractWrappers.erc20Proxy.getContractAddress();
         });
         it('should get logs with decoded args emitted by Approval', async () => {
-            txHash = await contractWrappers.token.setUnlimitedProxyAllowanceAsync(tokenAddress, coinbase);
-            await web3Wrapper.awaitTransactionSuccessAsync(txHash);
-            const eventName = TokenEvents.Approval;
+            txHash = await contractWrappers.erc20Token.setUnlimitedProxyAllowanceAsync(tokenAddress, coinbase);
+            await web3Wrapper.awaitTransactionSuccessAsync(txHash, constants.AWAIT_TRANSACTION_MINED_MS);
+            const eventName = ERC20TokenEvents.Approval;
             const indexFilterValues = {};
-            const logs = await contractWrappers.token.getLogsAsync<ApprovalContractEventArgs>(
+            const logs = await contractWrappers.erc20Token.getLogsAsync<ERC20TokenApprovalEventArgs>(
                 tokenAddress,
                 eventName,
                 blockRange,
@@ -553,14 +606,14 @@ describe('TokenWrapper', () => {
             expect(logs[0].event).to.be.equal(eventName);
             expect(args._owner).to.be.equal(coinbase);
             expect(args._spender).to.be.equal(tokenTransferProxyAddress);
-            expect(args._value).to.be.bignumber.equal(contractWrappers.token.UNLIMITED_ALLOWANCE_IN_BASE_UNITS);
+            expect(args._value).to.be.bignumber.equal(contractWrappers.erc20Token.UNLIMITED_ALLOWANCE_IN_BASE_UNITS);
         });
         it('should only get the logs with the correct event name', async () => {
-            txHash = await contractWrappers.token.setUnlimitedProxyAllowanceAsync(tokenAddress, coinbase);
-            await web3Wrapper.awaitTransactionSuccessAsync(txHash);
-            const differentEventName = TokenEvents.Transfer;
+            txHash = await contractWrappers.erc20Token.setUnlimitedProxyAllowanceAsync(tokenAddress, coinbase);
+            await web3Wrapper.awaitTransactionSuccessAsync(txHash, constants.AWAIT_TRANSACTION_MINED_MS);
+            const differentEventName = ERC20TokenEvents.Transfer;
             const indexFilterValues = {};
-            const logs = await contractWrappers.token.getLogsAsync(
+            const logs = await contractWrappers.erc20Token.getLogsAsync(
                 tokenAddress,
                 differentEventName,
                 blockRange,
@@ -569,15 +622,18 @@ describe('TokenWrapper', () => {
             expect(logs).to.have.length(0);
         });
         it('should only get the logs with the correct indexed fields', async () => {
-            txHash = await contractWrappers.token.setUnlimitedProxyAllowanceAsync(tokenAddress, coinbase);
-            await web3Wrapper.awaitTransactionSuccessAsync(txHash);
-            txHash = await contractWrappers.token.setUnlimitedProxyAllowanceAsync(tokenAddress, addressWithoutFunds);
-            await web3Wrapper.awaitTransactionSuccessAsync(txHash);
-            const eventName = TokenEvents.Approval;
+            txHash = await contractWrappers.erc20Token.setUnlimitedProxyAllowanceAsync(tokenAddress, coinbase);
+            await web3Wrapper.awaitTransactionSuccessAsync(txHash, constants.AWAIT_TRANSACTION_MINED_MS);
+            txHash = await contractWrappers.erc20Token.setUnlimitedProxyAllowanceAsync(
+                tokenAddress,
+                addressWithoutFunds,
+            );
+            await web3Wrapper.awaitTransactionSuccessAsync(txHash, constants.AWAIT_TRANSACTION_MINED_MS);
+            const eventName = ERC20TokenEvents.Approval;
             const indexFilterValues = {
                 _owner: coinbase,
             };
-            const logs = await contractWrappers.token.getLogsAsync<ApprovalContractEventArgs>(
+            const logs = await contractWrappers.erc20Token.getLogsAsync<ERC20TokenApprovalEventArgs>(
                 tokenAddress,
                 eventName,
                 blockRange,

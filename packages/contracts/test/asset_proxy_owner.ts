@@ -4,11 +4,10 @@ import * as chai from 'chai';
 import { LogWithDecodedArgs } from 'ethereum-types';
 
 import {
+    AssetProxyOwnerAssetProxyRegistrationEventArgs,
     AssetProxyOwnerContract,
-    AssetProxyRegistrationContractEventArgs,
-    ExecutionContractEventArgs,
-    ExecutionFailureContractEventArgs,
-    SubmissionContractEventArgs,
+    AssetProxyOwnerExecutionFailureEventArgs,
+    AssetProxyOwnerSubmissionEventArgs,
 } from '../src/generated_contract_wrappers/asset_proxy_owner';
 import { MixinAuthorizableContract } from '../src/generated_contract_wrappers/mixin_authorizable';
 import { TestAssetProxyOwnerContract } from '../src/generated_contract_wrappers/test_asset_proxy_owner';
@@ -170,14 +169,16 @@ describe('AssetProxyOwner', () => {
                 owners[0],
             );
 
-            const log = submitTxRes.logs[0] as LogWithDecodedArgs<SubmissionContractEventArgs>;
+            const log = submitTxRes.logs[0] as LogWithDecodedArgs<AssetProxyOwnerSubmissionEventArgs>;
             const txId = log.args.transactionId;
 
             await multiSigWrapper.confirmTransactionAsync(txId, owners[1]);
             await increaseTimeAndMineBlockAsync(SECONDS_TIME_LOCKED.toNumber());
 
             const executeTxRes = await multiSigWrapper.executeTransactionAsync(txId, owners[0]);
-            const registerLog = executeTxRes.logs[0] as LogWithDecodedArgs<AssetProxyRegistrationContractEventArgs>;
+            const registerLog = executeTxRes.logs[0] as LogWithDecodedArgs<
+                AssetProxyOwnerAssetProxyRegistrationEventArgs
+            >;
             expect(registerLog.args.assetProxyContract).to.equal(addressToRegister);
             expect(registerLog.args.isRegistered).to.equal(isRegistered);
 
@@ -199,14 +200,14 @@ describe('AssetProxyOwner', () => {
                 registerAssetProxyData,
                 owners[0],
             );
-            const log = submitTxRes.logs[0] as LogWithDecodedArgs<SubmissionContractEventArgs>;
+            const log = submitTxRes.logs[0] as LogWithDecodedArgs<AssetProxyOwnerSubmissionEventArgs>;
             const txId = log.args.transactionId;
 
             await multiSigWrapper.confirmTransactionAsync(txId, owners[1]);
             await increaseTimeAndMineBlockAsync(SECONDS_TIME_LOCKED.toNumber());
 
             const executeTxRes = await multiSigWrapper.executeTransactionAsync(txId, owners[0]);
-            const failureLog = executeTxRes.logs[0] as LogWithDecodedArgs<ExecutionFailureContractEventArgs>;
+            const failureLog = executeTxRes.logs[0] as LogWithDecodedArgs<AssetProxyOwnerExecutionFailureEventArgs>;
             expect(failureLog.args.transactionId).to.be.bignumber.equal(txId);
 
             const isAssetProxyRegistered = await testAssetProxyOwner.isAssetProxyRegistered.callAsync(
@@ -233,7 +234,7 @@ describe('AssetProxyOwner', () => {
                 owners[0],
             );
             const registerAssetProxySubmitLog = registerAssetProxySubmitRes.logs[0] as LogWithDecodedArgs<
-                SubmissionContractEventArgs
+                AssetProxyOwnerSubmissionEventArgs
             >;
             const registerAssetProxyTxId = registerAssetProxySubmitLog.args.transactionId;
             await multiSigWrapper.confirmTransactionAsync(registerAssetProxyTxId, owners[1]);
@@ -250,10 +251,10 @@ describe('AssetProxyOwner', () => {
                 owners[0],
             );
             const erc20AddAuthorizedAddressSubmitLog = erc20AddAuthorizedAddressSubmitRes.logs[0] as LogWithDecodedArgs<
-                SubmissionContractEventArgs
+                AssetProxyOwnerSubmissionEventArgs
             >;
             const erc721AddAuthorizedAddressSubmitLog = erc721AddAuthorizedAddressSubmitRes
-                .logs[0] as LogWithDecodedArgs<SubmissionContractEventArgs>;
+                .logs[0] as LogWithDecodedArgs<AssetProxyOwnerSubmissionEventArgs>;
             const erc20AddAuthorizedAddressTxId = erc20AddAuthorizedAddressSubmitLog.args.transactionId;
             const erc721AddAuthorizedAddressTxId = erc721AddAuthorizedAddressSubmitLog.args.transactionId;
 
@@ -275,7 +276,7 @@ describe('AssetProxyOwner', () => {
                     notRemoveAuthorizedAddressData,
                     owners[0],
                 );
-                const log = submitTxRes.logs[0] as LogWithDecodedArgs<SubmissionContractEventArgs>;
+                const log = submitTxRes.logs[0] as LogWithDecodedArgs<AssetProxyOwnerSubmissionEventArgs>;
                 const txId = log.args.transactionId;
                 return expectRevertOrContractCallFailedAsync(
                     testAssetProxyOwner.testValidRemoveAuthorizedAddressAtIndexTx.callAsync(txId),
@@ -292,7 +293,7 @@ describe('AssetProxyOwner', () => {
                     removeAuthorizedAddressAtIndexData,
                     owners[0],
                 );
-                const log = submitTxRes.logs[0] as LogWithDecodedArgs<SubmissionContractEventArgs>;
+                const log = submitTxRes.logs[0] as LogWithDecodedArgs<AssetProxyOwnerSubmissionEventArgs>;
                 const txId = log.args.transactionId;
                 const isValidRemoveAuthorizedAddressAtIndexTx = await testAssetProxyOwner.testValidRemoveAuthorizedAddressAtIndexTx.callAsync(
                     txId,
@@ -310,7 +311,7 @@ describe('AssetProxyOwner', () => {
                     removeAuthorizedAddressAtIndexData,
                     owners[0],
                 );
-                const log = submitTxRes.logs[0] as LogWithDecodedArgs<SubmissionContractEventArgs>;
+                const log = submitTxRes.logs[0] as LogWithDecodedArgs<AssetProxyOwnerSubmissionEventArgs>;
                 const txId = log.args.transactionId;
                 return expectRevertOrContractCallFailedAsync(
                     testAssetProxyOwner.testValidRemoveAuthorizedAddressAtIndexTx.callAsync(txId),
@@ -329,7 +330,7 @@ describe('AssetProxyOwner', () => {
                     removeAuthorizedAddressAtIndexData,
                     owners[0],
                 );
-                const log = res.logs[0] as LogWithDecodedArgs<SubmissionContractEventArgs>;
+                const log = res.logs[0] as LogWithDecodedArgs<AssetProxyOwnerSubmissionEventArgs>;
                 const txId = log.args.transactionId;
 
                 return expectRevertOrAlwaysFailingTransactionAsync(
@@ -349,7 +350,7 @@ describe('AssetProxyOwner', () => {
                     removeAuthorizedAddressAtIndexData,
                     owners[0],
                 );
-                const log = res.logs[0] as LogWithDecodedArgs<SubmissionContractEventArgs>;
+                const log = res.logs[0] as LogWithDecodedArgs<AssetProxyOwnerSubmissionEventArgs>;
                 const txId = log.args.transactionId;
 
                 await multiSigWrapper.confirmTransactionAsync(txId, owners[1]);
@@ -371,7 +372,7 @@ describe('AssetProxyOwner', () => {
                     addAuthorizedAddressData,
                     owners[0],
                 );
-                const log = res.logs[0] as LogWithDecodedArgs<SubmissionContractEventArgs>;
+                const log = res.logs[0] as LogWithDecodedArgs<AssetProxyOwnerSubmissionEventArgs>;
                 const txId = log.args.transactionId;
 
                 await multiSigWrapper.confirmTransactionAsync(txId, owners[1]);
@@ -393,13 +394,13 @@ describe('AssetProxyOwner', () => {
                     removeAuthorizedAddressAtIndexData,
                     owners[0],
                 );
-                const submitLog = submitRes.logs[0] as LogWithDecodedArgs<SubmissionContractEventArgs>;
+                const submitLog = submitRes.logs[0] as LogWithDecodedArgs<AssetProxyOwnerSubmissionEventArgs>;
                 const txId = submitLog.args.transactionId;
 
                 await multiSigWrapper.confirmTransactionAsync(txId, owners[1]);
 
                 const execRes = await multiSigWrapper.executeRemoveAuthorizedAddressAtIndexAsync(txId, owners[0]);
-                const execLog = execRes.logs[0] as LogWithDecodedArgs<ExecutionContractEventArgs>;
+                const execLog = execRes.logs[0] as LogWithDecodedArgs<AssetProxyOwnerSubmissionEventArgs>;
                 expect(execLog.args.transactionId).to.be.bignumber.equal(txId);
 
                 const tx = await testAssetProxyOwner.transactions.callAsync(txId);
@@ -420,13 +421,13 @@ describe('AssetProxyOwner', () => {
                     removeAuthorizedAddressAtIndexData,
                     owners[0],
                 );
-                const submitLog = submitRes.logs[0] as LogWithDecodedArgs<SubmissionContractEventArgs>;
+                const submitLog = submitRes.logs[0] as LogWithDecodedArgs<AssetProxyOwnerSubmissionEventArgs>;
                 const txId = submitLog.args.transactionId;
 
                 await multiSigWrapper.confirmTransactionAsync(txId, owners[1]);
 
                 const execRes = await multiSigWrapper.executeRemoveAuthorizedAddressAtIndexAsync(txId, owners[0]);
-                const execLog = execRes.logs[0] as LogWithDecodedArgs<ExecutionContractEventArgs>;
+                const execLog = execRes.logs[0] as LogWithDecodedArgs<AssetProxyOwnerSubmissionEventArgs>;
                 expect(execLog.args.transactionId).to.be.bignumber.equal(txId);
 
                 const tx = await testAssetProxyOwner.transactions.callAsync(txId);
