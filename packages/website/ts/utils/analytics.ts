@@ -1,8 +1,8 @@
 import * as _ from 'lodash';
 import * as ReactGA from 'react-ga';
+import { InjectedWeb3 } from 'ts/types';
 import { configs } from 'ts/utils/configs';
 import { utils } from 'ts/utils/utils';
-import * as Web3 from 'web3';
 
 export const analytics = {
     init(): void {
@@ -16,11 +16,12 @@ export const analytics = {
             value,
         });
     },
-    async logProviderAsync(web3IfExists: Web3): Promise<void> {
+    async logProviderAsync(web3IfExists: InjectedWeb3): Promise<void> {
         await utils.onPageLoadAsync();
-        const providerType = !_.isUndefined(web3IfExists)
-            ? utils.getProviderType(web3IfExists.currentProvider)
-            : 'NONE';
+        const providerType =
+            !_.isUndefined(web3IfExists) && !_.isUndefined(web3IfExists.currentProvider)
+                ? utils.getProviderType(web3IfExists.currentProvider)
+                : 'NONE';
         ReactGA.ga('set', 'dimension1', providerType);
     },
 };

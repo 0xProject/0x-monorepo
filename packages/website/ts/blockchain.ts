@@ -46,6 +46,7 @@ import {
     Fill,
     InjectedProviderObservable,
     InjectedProviderUpdate,
+    InjectedWeb3,
     Order as PortalOrder,
     Providers,
     ProviderType,
@@ -59,7 +60,6 @@ import { configs } from 'ts/utils/configs';
 import { constants } from 'ts/utils/constants';
 import { errorReporter } from 'ts/utils/error_reporter';
 import { utils } from 'ts/utils/utils';
-import Web3 = require('web3');
 import ProviderEngine = require('web3-provider-engine');
 import FilterSubprovider = require('web3-provider-engine/subproviders/filters');
 import RpcSubprovider = require('web3-provider-engine/subproviders/rpc');
@@ -97,8 +97,18 @@ export class Blockchain {
         }
         return providerNameIfExists;
     }
-    private static _getInjectedWeb3(): any {
-        return (window as any).web3;
+    private static _getInjectedWeb3(): InjectedWeb3 {
+        const injectedWeb3IfExists = (window as any).web3;
+        // Our core assumptions about the injected web3 object is that it has the following
+        // properties and methods.
+        if (
+            !_.isUndefined(injectedWeb3IfExists.version) &&
+            !_.isUndefined(injectedWeb3IfExists.version.getNetwork) &&
+            !_.isUndefined(injectedWeb3IfExists.currentProvider)
+        ) {
+            return undefined;
+        }
+        return injectedWeb3IfExists;
     }
     private static async _getInjectedWeb3ProviderNetworkIdIfExistsAsync(): Promise<number | undefined> {
         // Hack: We need to know the networkId the injectedWeb3 is connected to (if it is defined) in
@@ -119,7 +129,7 @@ export class Blockchain {
         return networkIdIfExists;
     }
     private static async _getProviderAsync(
-        injectedWeb3: Web3,
+        injectedWeb3: InjectedWeb3,
         networkIdIfExists: number,
         shouldUserLedgerProvider: boolean = false,
     ): Promise<[Provider, LedgerSubprovider | undefined]> {
@@ -834,10 +844,10 @@ export class Blockchain {
         this._dispatcher.updateNetworkId(networkId);
         await this._rehydrateStoreWithContractEventsAsync();
     }
-    private _updateProviderName(injectedWeb3: Web3): void {
-        const doesInjectedWeb3Exist = !_.isUndefined(injectedWeb3);
+    private _updateProviderName(injectedWeb3IfExists: InjectedWeb3): void {
+        const doesInjectedWeb3Exist = !_.isUndefined(injectedWeb3IfExists);
         const providerName = doesInjectedWeb3Exist
-            ? Blockchain._getNameGivenProvider(injectedWeb3.currentProvider)
+            ? Blockchain._getNameGivenProvider(injectedWeb3IfExists.currentProvider)
             : constants.PROVIDER_NAME_PUBLIC;
         this._dispatcher.updateInjectedProviderName(providerName);
     }
