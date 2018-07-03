@@ -27,9 +27,6 @@ import { configs } from 'ts/utils/configs';
 import { constants } from 'ts/utils/constants';
 import * as u2f from 'ts/vendor/u2f_api';
 
-const LG_MIN_EM = 64;
-const MD_MIN_EM = 52;
-
 const isDogfood = (): boolean => _.includes(window.location.href, configs.DOMAIN_DOGFOOD);
 
 export const utils = {
@@ -134,9 +131,9 @@ export const utils = {
 
         // This logic mirrors the CSS media queries in BassCSS for the `lg-`, `md-` and `sm-` CSS
         // class prefixes. Do not edit these.
-        if (widthInEm > LG_MIN_EM) {
+        if (widthInEm > ScreenWidths.Lg) {
             return ScreenWidths.Lg;
-        } else if (widthInEm > MD_MIN_EM) {
+        } else if (widthInEm > ScreenWidths.Md) {
             return ScreenWidths.Md;
         } else {
             return ScreenWidths.Sm;
