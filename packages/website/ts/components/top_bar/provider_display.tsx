@@ -3,7 +3,6 @@ import * as _ from 'lodash';
 import CircularProgress from 'material-ui/CircularProgress';
 import RaisedButton from 'material-ui/RaisedButton';
 import ActionAccountBalanceWallet from 'material-ui/svg-icons/action/account-balance-wallet';
-import Lock from 'material-ui/svg-icons/action/lock';
 import * as React from 'react';
 
 import { Blockchain } from 'ts/blockchain';
@@ -12,6 +11,7 @@ import { AccountConnection } from 'ts/components/ui/account_connection';
 import { Container } from 'ts/components/ui/container';
 import { DropDown } from 'ts/components/ui/drop_down';
 import { Identicon } from 'ts/components/ui/identicon';
+import { Image } from 'ts/components/ui/image';
 import { Island } from 'ts/components/ui/island';
 import { Text } from 'ts/components/ui/text';
 import { Dispatcher } from 'ts/redux/dispatcher';
@@ -154,7 +154,7 @@ export class ProviderDisplay extends React.Component<ProviderDisplayProps, Provi
             case AccountState.Loading:
                 return <CircularProgress size={ROOT_HEIGHT} thickness={2} />;
             case AccountState.Locked:
-                return <Lock color={colors.black} />;
+                return <Image src="/images/lock_icon.svg" height="20px" width="20px" />;
             case AccountState.Disconnected:
                 return <ActionAccountBalanceWallet color={colors.mediumBlue} />;
             default:
