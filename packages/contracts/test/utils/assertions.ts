@@ -2,7 +2,7 @@ import { RevertReason } from '@0xproject/types';
 import { logUtils } from '@0xproject/utils';
 import { NodeType } from '@0xproject/web3-wrapper';
 import * as chai from 'chai';
-import { TransactionReceipt, TransactionReceiptWithDecodedLogs } from 'ethereum-types';
+import { TransactionReceipt, TransactionReceiptStatus, TransactionReceiptWithDecodedLogs } from 'ethereum-types';
 import * as _ from 'lodash';
 
 import { web3Wrapper } from './web3_wrapper';
@@ -93,7 +93,7 @@ export async function expectTransactionFailedAsync(p: sendTransactionResult, rea
 export async function expectTransactionFailedWithoutReasonAsync(p: sendTransactionResult): Promise<void> {
     return p
         .then(async result => {
-            let txReceiptStatus: null | string | 0 | 1;
+            let txReceiptStatus: TransactionReceiptStatus;
             if (_.isString(result)) {
                 // Result is a txHash. We need to make a web3 call to get the
                 // receipt, then get the status from the receipt.
