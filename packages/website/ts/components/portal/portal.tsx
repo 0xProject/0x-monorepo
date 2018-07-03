@@ -318,7 +318,7 @@ export class Portal extends React.Component<PortalProps, PortalState> {
         );
     }
     private _renderWallet(): React.ReactNode {
-        const isMobile = utils.isMobile(this.props.screenWidth);
+        const isMobile = utils.isMobileWidth(this.props.screenWidth);
         // We need room to scroll down for mobile onboarding
         const marginBottom = isMobile ? '200px' : '15px';
         return (
@@ -364,7 +364,7 @@ export class Portal extends React.Component<PortalProps, PortalState> {
         );
     }
     private _renderStartOnboarding(): React.ReactNode {
-        const isMobile = utils.isMobile(this.props.screenWidth);
+        const isMobile = utils.isMobileWidth(this.props.screenWidth);
         const shouldStartOnboarding = !isMobile || this.props.location.pathname === `${WebsitePaths.Portal}/account`;
         const startOnboarding = (
             <Container className="flex items-center center">
@@ -530,7 +530,7 @@ export class Portal extends React.Component<PortalProps, PortalState> {
         return <Section header={<TextHeader labelText="0x Relayers" />} body={this._renderRelayerIndex()} />;
     }
     private _renderRelayerIndex(): React.ReactNode {
-        const isMobile = utils.isMobile(this.props.screenWidth);
+        const isMobile = utils.isMobileWidth(this.props.screenWidth);
         return (
             <Container className="flex flex-column items-center">
                 {isMobile && <Container marginBottom="20px">{this._renderStartOnboarding()}</Container>}

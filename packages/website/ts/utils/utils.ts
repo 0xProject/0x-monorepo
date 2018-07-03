@@ -405,8 +405,11 @@ export const utils = {
     openUrl(url: string): void {
         window.open(url, '_blank');
     },
-    isMobile(screenWidth: ScreenWidths): boolean {
+    isMobileWidth(screenWidth: ScreenWidths): boolean {
         return screenWidth === ScreenWidths.Sm;
+    },
+    isMobileOperatingSystem(): boolean {
+        return bowser.mobile;
     },
     getBrowserType(): BrowserType {
         if (bowser.chrome) {
