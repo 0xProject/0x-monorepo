@@ -228,3 +228,10 @@ export interface FillScenario {
     makerStateScenario: TraderStateScenario;
     takerStateScenario: TraderStateScenario;
 }
+
+export interface FillResults {
+    makerAssetFilledAmount: BigNumber;
+    takerAssetFilledAmount: BigNumber;
+    makerFeePaid: BigNumber;
+    takerFeePaid: BigNumber;
+}

@@ -1,16 +1,16 @@
 import { assetProxyUtils } from '@0xproject/order-utils';
-import { AssetProxyId, SignedOrder } from '@0xproject/types';
+import { AssetProxyId, OrderWithoutExchangeAddress, SignedOrder } from '@0xproject/types';
 import { BigNumber } from '@0xproject/utils';
 import { Web3Wrapper } from '@0xproject/web3-wrapper';
 import { Provider, TransactionReceiptWithDecodedLogs, TxDataPayable } from 'ethereum-types';
-import ethUtil = require('ethereumjs-util');
 import * as _ from 'lodash';
 
 import { ForwarderContract } from '../../generated_contract_wrappers/forwarder';
 
 import { constants } from './constants';
 import { formatters } from './formatters';
-import { MarketSellOrders } from './types';
+import { LogDecoder } from './log_decoder';
+import { FillResults, MarketSellOrders } from './types';
 
 const DEFAULT_FEE_PROPORTION = 0;
 const PERCENTAGE_DENOMINATOR = 10000;
@@ -19,7 +19,8 @@ const ZERO_AMOUNT = new BigNumber(0);
 export class ForwarderWrapper {
     private _web3Wrapper: Web3Wrapper;
     private _forwarderContract: ForwarderContract;
-    private _zrxAddressBuffer: Buffer;
+    private _logDecoder: LogDecoder;
+    private _zrxAddress: string;
     private static _createOptimizedSellOrders(signedOrders: SignedOrder[]): MarketSellOrders {
         const marketSellOrders = formatters.createMarketSellOrders(signedOrders, ZERO_AMOUNT);
         const assetDataId = assetProxyUtils.decodeAssetDataId(signedOrders[0].makerAssetData);
@@ -47,151 +48,207 @@ export class ForwarderWrapper {
             // Add to the total ETH transaction to ensure all NFTs can be filled after fees
             // 150 = 1.5% = 0.015
             const denominator = new BigNumber(1).minus(new BigNumber(feeProportion).dividedBy(PERCENTAGE_DENOMINATOR));
-            return fillAmountWei.dividedBy(denominator).round(0, BigNumber.ROUND_UP);
+            return fillAmountWei.dividedBy(denominator).round(0, BigNumber.ROUND_FLOOR);
         }
         return fillAmountWei;
+    }
+    private static _calculateFillResults(
+        order: OrderWithoutExchangeAddress,
+        takerAssetFilledAmount: BigNumber,
+    ): FillResults {
+        const makerAssetFilledAmount = takerAssetFilledAmount
+            .times(order.makerAssetAmount)
+            .dividedBy(order.takerAssetAmount)
+            .round(0, BigNumber.ROUND_FLOOR);
+        const makerFeePaid = takerAssetFilledAmount
+            .times(order.makerFee)
+            .dividedBy(order.takerAssetAmount)
+            .round(0, BigNumber.ROUND_FLOOR);
+        const takerFeePaid = takerAssetFilledAmount
+            .times(order.takerFee)
+            .dividedBy(order.takerAssetAmount)
+            .round(0, BigNumber.ROUND_FLOOR);
+        return {
+            makerAssetFilledAmount,
+            takerAssetFilledAmount,
+            makerFeePaid,
+            takerFeePaid,
+        };
+    }
+    private static _addFillResults(totalFillResults: FillResults, singleFillResults: FillResults): FillResults {
+        const combinedFillResults = {
+            makerAssetFilledAmount: totalFillResults.makerAssetFilledAmount.plus(
+                singleFillResults.makerAssetFilledAmount,
+            ),
+            takerAssetFilledAmount: totalFillResults.takerAssetFilledAmount.plus(
+                singleFillResults.takerAssetFilledAmount,
+            ),
+            makerFeePaid: totalFillResults.makerFeePaid.plus(singleFillResults.makerFeePaid),
+            takerFeePaid: totalFillResults.takerFeePaid.plus(totalFillResults.takerFeePaid),
+        };
+        return combinedFillResults;
+    }
+    private static _calculateMarketBuyZrxResults(
+        orders: OrderWithoutExchangeAddress[],
+        zrxFillAmount: BigNumber,
+    ): FillResults {
+        let totalFillResults: FillResults = {
+            makerAssetFilledAmount: new BigNumber(0),
+            takerAssetFilledAmount: new BigNumber(0),
+            makerFeePaid: new BigNumber(0),
+            takerFeePaid: new BigNumber(0),
+        };
+        _.forEach(orders, order => {
+            if (totalFillResults.makerAssetFilledAmount.comparedTo(zrxFillAmount) === -1) {
+                const remainingZrxFillAmount = zrxFillAmount.minus(totalFillResults.makerAssetFilledAmount);
+                const remainingWethSellAmount = order.takerAssetAmount
+                    .times(remainingZrxFillAmount)
+                    .dividedBy(order.makerAssetAmount.minus(order.takerFee))
+                    .round(0, BigNumber.ROUND_FLOOR);
+                const singleFillResults = ForwarderWrapper._calculateFillResults(
+                    order,
+                    remainingWethSellAmount.plus(1),
+                );
+                totalFillResults = ForwarderWrapper._addFillResults(totalFillResults, singleFillResults);
+            }
+        });
+        return totalFillResults;
+    }
+    private static _calculateMarketBuyResults(
+        orders: OrderWithoutExchangeAddress[],
+        makerAssetFillAmount: BigNumber,
+    ): FillResults {
+        let totalFillResults: FillResults = {
+            makerAssetFilledAmount: new BigNumber(0),
+            takerAssetFilledAmount: new BigNumber(0),
+            makerFeePaid: new BigNumber(0),
+            takerFeePaid: new BigNumber(0),
+        };
+        _.forEach(orders, order => {
+            if (totalFillResults.makerAssetFilledAmount.comparedTo(makerAssetFillAmount) === -1) {
+                const remainingMakerAssetFillAmount = makerAssetFillAmount.minus(
+                    totalFillResults.makerAssetFilledAmount,
+                );
+                const remainingTakerAssetFillAmount = order.takerAssetAmount
+                    .times(remainingMakerAssetFillAmount)
+                    .dividedBy(order.makerAssetAmount)
+                    .round(0, BigNumber.ROUND_FLOOR);
+                const singleFillResults = ForwarderWrapper._calculateFillResults(order, remainingTakerAssetFillAmount);
+                totalFillResults = ForwarderWrapper._addFillResults(totalFillResults, singleFillResults);
+            }
+        });
+        return totalFillResults;
     }
     constructor(contractInstance: ForwarderContract, provider: Provider, zrxAddress: string) {
         this._forwarderContract = contractInstance;
         this._web3Wrapper = new Web3Wrapper(provider);
-        this._web3Wrapper.abiDecoder.addABI(contractInstance.abi);
-        this._zrxAddressBuffer = ethUtil.toBuffer(zrxAddress);
+        this._logDecoder = new LogDecoder(this._web3Wrapper, this._forwarderContract.address);
+        // this._web3Wrapper.abiDecoder.addABI(contractInstance.abi);
+        this._zrxAddress = zrxAddress;
     }
-    public async buyExactAssetsAsync(
+    public async marketBuyTokensWithEthAsync(
         orders: SignedOrder[],
         feeOrders: SignedOrder[],
-        makerAssetAmount: BigNumber,
-        txOpts?: TxDataPayable,
-    ): Promise<TransactionReceiptWithDecodedLogs> {
-        const tx = await this.buyExactAssetsFeeAsync(
-            orders,
-            feeOrders,
-            DEFAULT_FEE_PROPORTION,
-            constants.NULL_ADDRESS,
-            makerAssetAmount,
-            txOpts,
-        );
-        return tx;
-    }
-    public async buyExactAssetsFeeAsync(
-        orders: SignedOrder[],
-        feeOrders: SignedOrder[],
-        feeProportion: number,
-        feeRecipient: string,
-        makerAssetAmount: BigNumber,
-        txOpts?: TxDataPayable,
+        makerTokenBuyAmount: BigNumber,
+        txData: TxDataPayable,
+        opts: { feeProportion?: number; feeRecipient?: string } = {},
     ): Promise<TransactionReceiptWithDecodedLogs> {
         const params = ForwarderWrapper._createOptimizedSellOrders(orders);
         const feeParams = ForwarderWrapper._createOptimizedZRXSellOrders(feeOrders);
-        const txHash: string = await this._forwarderContract.buyExactAssets.sendTransactionAsync(
+        const feeProportion = _.isUndefined(opts.feeProportion) ? DEFAULT_FEE_PROPORTION : opts.feeProportion;
+        const feeRecipient = _.isUndefined(opts.feeRecipient) ? constants.NULL_ADDRESS : opts.feeRecipient;
+        const txHash: string = await this._forwarderContract.marketBuyTokensWithEth.sendTransactionAsync(
             params.orders,
             params.signatures,
             feeParams.orders,
             feeParams.signatures,
-            makerAssetAmount,
+            makerTokenBuyAmount,
             feeProportion,
             feeRecipient,
-            txOpts,
+            txData,
         );
-        const tx = await this._getTxWithDecodedLogsAsync(txHash);
+        const tx = await this._logDecoder.getTxWithDecodedLogsAsync(txHash);
         return tx;
     }
-    public async marketBuyTokensAsync(
+    public async marketSellEthForERC20Async(
         orders: SignedOrder[],
         feeOrders: SignedOrder[],
-        txOpts?: TxDataPayable,
-    ): Promise<TransactionReceiptWithDecodedLogs> {
-        const tx = await this.marketBuyTokensFeeAsync(
-            orders,
-            feeOrders,
-            DEFAULT_FEE_PROPORTION,
-            constants.NULL_ADDRESS,
-            txOpts,
-        );
-        return tx;
-    }
-    public async marketBuyTokensFeeAsync(
-        orders: SignedOrder[],
-        feeOrders: SignedOrder[],
-        feeProportion: number,
-        feeRecipient: string,
-        txOpts?: TxDataPayable,
+        txData: TxDataPayable,
+        opts: { feeProportion?: number; feeRecipient?: string } = {},
     ): Promise<TransactionReceiptWithDecodedLogs> {
         const assetDataId = assetProxyUtils.decodeAssetDataId(orders[0].makerAssetData);
         if (assetDataId !== AssetProxyId.ERC20) {
-            throw new Error('Asset type not supported by marketBuyTokens');
+            throw new Error('Asset type not supported by marketSellEthForERC20');
         }
         const params = ForwarderWrapper._createOptimizedSellOrders(orders);
         const feeParams = ForwarderWrapper._createOptimizedZRXSellOrders(feeOrders);
-        const txHash: string = await this._forwarderContract.marketBuyTokens.sendTransactionAsync(
+        const feeProportion = _.isUndefined(opts.feeProportion) ? DEFAULT_FEE_PROPORTION : opts.feeProportion;
+        const feeRecipient = _.isUndefined(opts.feeRecipient) ? constants.NULL_ADDRESS : opts.feeRecipient;
+        const txHash: string = await this._forwarderContract.marketSellEthForERC20.sendTransactionAsync(
             params.orders,
             params.signatures,
             feeParams.orders,
             feeParams.signatures,
             feeProportion,
             feeRecipient,
-            txOpts,
+            txData,
         );
-        const tx = await this._getTxWithDecodedLogsAsync(txHash);
+        const tx = await this._logDecoder.getTxWithDecodedLogsAsync(txHash);
         return tx;
     }
-    public async calculateBuyExactFillAmountWeiAsync(
+    public calculateMarketBuyFillAmountWei(
         orders: SignedOrder[],
         feeOrders: SignedOrder[],
         feeProportion: number,
-        makerAssetAmount: BigNumber,
-    ): Promise<BigNumber> {
+        makerAssetFillAmount: BigNumber,
+    ): BigNumber {
         const assetProxyId = assetProxyUtils.decodeAssetDataId(orders[0].makerAssetData);
         switch (assetProxyId) {
             case AssetProxyId.ERC20: {
-                const fillAmountWei = await this._calculateBuyExactERC20FillAmountAsync(
+                const fillAmountWei = this._calculateMarketBuyERC20FillAmount(
                     orders,
                     feeOrders,
                     feeProportion,
-                    makerAssetAmount,
+                    makerAssetFillAmount,
                 );
                 return fillAmountWei;
             }
             case AssetProxyId.ERC721: {
-                const fillAmountWei = await this._calculateBuyExactERC721FillAmountAsync(
-                    orders,
-                    feeOrders,
-                    feeProportion,
-                );
+                const fillAmountWei = this._calculateMarketBuyERC721FillAmount(orders, feeOrders, feeProportion);
                 return fillAmountWei;
             }
             default:
                 throw new Error(`Invalid Asset Proxy Id: ${assetProxyId}`);
         }
     }
-    private async _calculateBuyExactERC20FillAmountAsync(
+    private _calculateMarketBuyERC20FillAmount(
         orders: SignedOrder[],
         feeOrders: SignedOrder[],
         feeProportion: number,
-        makerAssetAmount: BigNumber,
-    ): Promise<BigNumber> {
+        makerAssetFillAmount: BigNumber,
+    ): BigNumber {
         const makerAssetData = assetProxyUtils.decodeAssetData(orders[0].makerAssetData);
-        const makerAssetToken = ethUtil.toBuffer(makerAssetData.tokenAddress);
-        const params = formatters.createMarketBuyOrders(orders, makerAssetAmount);
+        const makerAssetToken = makerAssetData.tokenAddress;
+        const params = formatters.createMarketBuyOrders(orders, makerAssetFillAmount);
         const feeParams = formatters.createMarketBuyOrders(feeOrders, ZERO_AMOUNT);
 
         let fillAmountWei;
-        if (makerAssetToken.equals(this._zrxAddressBuffer)) {
+        if (makerAssetToken === this._zrxAddress) {
             // If buying ZRX we buy the tokens and fees from the ZRX order in one step
-            const expectedBuyFeeTokensFillResults = await this._forwarderContract.calculateBuyFeesFillResults.callAsync(
+            const expectedBuyFeeTokensFillResults = ForwarderWrapper._calculateMarketBuyZrxResults(
                 params.orders,
-                makerAssetAmount,
+                makerAssetFillAmount,
             );
             fillAmountWei = expectedBuyFeeTokensFillResults.takerAssetFilledAmount;
         } else {
-            const expectedMarketBuyFillResults = await this._forwarderContract.calculateMarketBuyFillResults.callAsync(
+            const expectedMarketBuyFillResults = ForwarderWrapper._calculateMarketBuyResults(
                 params.orders,
-                makerAssetAmount,
+                makerAssetFillAmount,
             );
             fillAmountWei = expectedMarketBuyFillResults.takerAssetFilledAmount;
             const expectedFeeAmount = expectedMarketBuyFillResults.takerFeePaid;
             if (expectedFeeAmount.greaterThan(ZERO_AMOUNT)) {
-                const expectedFeeFillResults = await this._forwarderContract.calculateBuyFeesFillResults.callAsync(
+                const expectedFeeFillResults = ForwarderWrapper._calculateMarketBuyZrxResults(
                     feeParams.orders,
                     expectedFeeAmount,
                 );
@@ -201,11 +258,11 @@ export class ForwarderWrapper {
         fillAmountWei = ForwarderWrapper._calculateAdditionalFeeProportionAmount(feeProportion, fillAmountWei);
         return fillAmountWei;
     }
-    private async _calculateBuyExactERC721FillAmountAsync(
+    private _calculateMarketBuyERC721FillAmount(
         orders: SignedOrder[],
         feeOrders: SignedOrder[],
         feeProportion: number,
-    ): Promise<BigNumber> {
+    ): BigNumber {
         // Total cost when buying ERC721 is the total cost of all ERC721 orders + any fee abstraction
         let fillAmountWei = _.reduce(
             orders,
@@ -224,7 +281,7 @@ export class ForwarderWrapper {
         if (totalFees.greaterThan(ZERO_AMOUNT)) {
             // Calculate the ZRX fee abstraction cost
             const emptyFeeOrders: SignedOrder[] = [];
-            const expectedFeeAmountWei = await this._calculateBuyExactERC20FillAmountAsync(
+            const expectedFeeAmountWei = this._calculateMarketBuyERC20FillAmount(
                 feeOrders,
                 emptyFeeOrders,
                 DEFAULT_FEE_PROPORTION,
@@ -234,10 +291,5 @@ export class ForwarderWrapper {
         }
         fillAmountWei = ForwarderWrapper._calculateAdditionalFeeProportionAmount(feeProportion, fillAmountWei);
         return fillAmountWei;
-    }
-    private async _getTxWithDecodedLogsAsync(txHash: string): Promise<TransactionReceiptWithDecodedLogs> {
-        const tx = await this._web3Wrapper.awaitTransactionMinedAsync(txHash);
-        tx.logs = _.filter(tx.logs, log => log.address === this._forwarderContract.address);
-        return tx;
     }
 }
