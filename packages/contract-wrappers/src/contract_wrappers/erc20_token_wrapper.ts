@@ -34,8 +34,13 @@ export class ERC20TokenWrapper extends ContractWrapper {
     public UNLIMITED_ALLOWANCE_IN_BASE_UNITS = constants.UNLIMITED_ALLOWANCE_IN_BASE_UNITS;
     private _tokenContractsByAddress: { [address: string]: ERC20TokenContract };
     private _erc20ProxyWrapper: ERC20ProxyWrapper;
-    constructor(web3Wrapper: Web3Wrapper, networkId: number, erc20ProxyWrapper: ERC20ProxyWrapper) {
-        super(web3Wrapper, networkId);
+    constructor(
+        web3Wrapper: Web3Wrapper,
+        networkId: number,
+        erc20ProxyWrapper: ERC20ProxyWrapper,
+        blockPollingIntervalMs?: number,
+    ) {
+        super(web3Wrapper, networkId, blockPollingIntervalMs);
         this._tokenContractsByAddress = {};
         this._erc20ProxyWrapper = erc20ProxyWrapper;
     }

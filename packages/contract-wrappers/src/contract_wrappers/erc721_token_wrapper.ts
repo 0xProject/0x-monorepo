@@ -33,8 +33,13 @@ export class ERC721TokenWrapper extends ContractWrapper {
     public abi: ContractAbi = artifacts.ERC721Token.compilerOutput.abi;
     private _tokenContractsByAddress: { [address: string]: ERC721TokenContract };
     private _erc721ProxyWrapper: ERC721ProxyWrapper;
-    constructor(web3Wrapper: Web3Wrapper, networkId: number, erc721ProxyWrapper: ERC721ProxyWrapper) {
-        super(web3Wrapper, networkId);
+    constructor(
+        web3Wrapper: Web3Wrapper,
+        networkId: number,
+        erc721ProxyWrapper: ERC721ProxyWrapper,
+        blockPollingIntervalMs?: number,
+    ) {
+        super(web3Wrapper, networkId, blockPollingIntervalMs);
         this._tokenContractsByAddress = {};
         this._erc721ProxyWrapper = erc721ProxyWrapper;
     }
