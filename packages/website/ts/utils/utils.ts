@@ -15,6 +15,7 @@ import {
     BlockchainCallErrs,
     BrowserType,
     Environments,
+    OperatingSystemType,
     Order,
     Providers,
     ProviderType,
@@ -24,7 +25,6 @@ import {
     Token,
     TokenByAddress,
     TokenState,
-    OperatingSystemType,
 } from 'ts/types';
 import { configs } from 'ts/utils/configs';
 import { constants } from 'ts/utils/constants';
@@ -441,5 +441,40 @@ export const utils = {
     },
     isTokenTracked(token: Token): boolean {
         return !_.isUndefined(token.trackedTimestamp);
+    },
+    // Returns a [downloadLink, isOnMobile] tuple.
+    getBestWalletDownloadLink(): [string, boolean] {
+        const browserType = utils.getBrowserType();
+        const isOnMobile = utils.isMobileOperatingSystem();
+        const operatingSystem = utils.getOperatingSystem();
+        let downloadLink;
+        if (isOnMobile) {
+            switch (operatingSystem) {
+                case OperatingSystemType.Android:
+                    downloadLink = constants.URL_TOSHI_ANDROID_APP_STORE;
+                    break;
+                case OperatingSystemType.iOS:
+                    downloadLink = constants.URL_TOSHI_IOS_APP_STORE;
+                    break;
+                default:
+                    // Toshi is only supported on these mobile OSes - just default to iOS
+                    downloadLink = constants.URL_TOSHI_IOS_APP_STORE;
+            }
+        } else {
+            switch (browserType) {
+                case BrowserType.Chrome:
+                    downloadLink = constants.URL_METAMASK_CHROME_STORE;
+                    break;
+                case BrowserType.Firefox:
+                    downloadLink = constants.URL_METAMASK_FIREFOX_STORE;
+                    break;
+                case BrowserType.Opera:
+                    downloadLink = constants.URL_METAMASK_OPERA_STORE;
+                    break;
+                default:
+                    downloadLink = constants.URL_METAMASK_HOMEPAGE;
+            }
+        }
+        return [downloadLink, isOnMobile];
     },
 };

@@ -9,8 +9,7 @@ import { Text } from 'ts/components/ui/text';
 import { Dispatcher } from 'ts/redux/dispatcher';
 import { colors } from 'ts/style/colors';
 import { styled } from 'ts/style/theme';
-import { AccountState, BrowserType, ProviderType, OperatingSystemType } from 'ts/types';
-import { constants } from 'ts/utils/constants';
+import { AccountState, ProviderType } from 'ts/types';
 import { utils } from 'ts/utils/utils';
 
 const METAMASK_IMG_SRC = '/images/metamask_icon.png';
@@ -116,39 +115,9 @@ const UseDifferentWallet = (props: UseDifferentWallet) => {
 };
 
 const GetWalletCallToAction = () => {
-    const browserType = utils.getBrowserType();
-    const isOnMobile = utils.isMobileOperatingSystem();
-    const operatingSystem = utils.getOperatingSystem();
+    const [downloadLink, isOnMobile] = utils.getBestWalletDownloadLink();
     const imageUrl = isOnMobile ? TOSHI_IMG_SRC : METAMASK_IMG_SRC;
     const text = isOnMobile ? 'Get Toshi Wallet' : 'Get MetaMask Wallet';
-    let downloadLink;
-    if (isOnMobile) {
-        switch (operatingSystem) {
-            case OperatingSystemType.Android:
-                downloadLink = constants.URL_TOSHI_ANDROID_APP_STORE;
-                break;
-            case OperatingSystemType.iOS:
-                downloadLink = constants.URL_TOSHI_IOS_APP_STORE;
-                break;
-            default:
-                // Toshi is only supported on these mobile OSes - just default to iOS
-                downloadLink = constants.URL_TOSHI_IOS_APP_STORE;
-        }
-    } else {
-        switch (browserType) {
-            case BrowserType.Chrome:
-                downloadLink = constants.URL_METAMASK_CHROME_STORE;
-                break;
-            case BrowserType.Firefox:
-                downloadLink = constants.URL_METAMASK_FIREFOX_STORE;
-                break;
-            case BrowserType.Opera:
-                downloadLink = constants.URL_METAMASK_OPERA_STORE;
-                break;
-            default:
-                downloadLink = constants.URL_METAMASK_HOMEPAGE;
-        }
-    }
     return (
         <a href={downloadLink} target="_blank" style={{ textDecoration: 'none' }}>
             <Island
