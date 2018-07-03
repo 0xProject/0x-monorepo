@@ -625,7 +625,9 @@ export class ExchangeWrapper extends ContractWrapper {
         await assert.isSenderAddressAsync('takerAddress', takerAddress, this._web3Wrapper);
         assert.doesConformToSchema('orderTransactionOpts', orderTransactionOpts, orderTxOptsSchema, [txOptsSchema]);
         const normalizedTakerAddress = takerAddress.toLowerCase();
-
+        // TODO(logvinov): Check that:
+        // rightOrder.makerAssetData === leftOrder.takerAssetData;
+        // rightOrder.takerAssetData === leftOrder.makerAssetData;
         const exchangeInstance = await this._getExchangeContractAsync();
         const txHash = await exchangeInstance.matchOrders.sendTransactionAsync(
             leftSignedOrder,

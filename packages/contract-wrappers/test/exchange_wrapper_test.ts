@@ -220,10 +220,17 @@ describe('ExchangeWrapper', () => {
             });
         });
         describe('#matchOrdersAsync', () => {
-            it.skip('should match two valid ordersr', async () => {
+            it('should match two valid ordersr', async () => {
+                const matchingSignedOrder = await fillScenarios.createFillableSignedOrderAsync(
+                    takerAssetData,
+                    makerAssetData,
+                    makerAddress,
+                    takerAddress,
+                    fillableAmount,
+                );
                 txHash = await contractWrappers.exchange.matchOrdersAsync(
                     signedOrder,
-                    anotherSignedOrder,
+                    matchingSignedOrder,
                     takerAddress,
                 );
                 await web3Wrapper.awaitTransactionSuccessAsync(txHash, constants.AWAIT_TRANSACTION_MINED_MS);
