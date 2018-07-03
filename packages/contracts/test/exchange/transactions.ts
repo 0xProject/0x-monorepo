@@ -11,7 +11,7 @@ import { ExchangeContract } from '../../generated_contract_wrappers/exchange';
 import { ExchangeWrapperContract } from '../../generated_contract_wrappers/exchange_wrapper';
 import { WhitelistContract } from '../../generated_contract_wrappers/whitelist';
 import { artifacts } from '../utils/artifacts';
-import { expectRevertReasonOrAlwaysFailingTransactionAsync } from '../utils/assertions';
+import { expectTransactionFailedAsync } from '../utils/assertions';
 import { chaiSetup } from '../utils/chai_setup';
 import { constants } from '../utils/constants';
 import { ERC20Wrapper } from '../utils/erc20_wrapper';
@@ -134,7 +134,7 @@ describe('Exchange transactions', () => {
             });
 
             it('should throw if not called by specified sender', async () => {
-                return expectRevertReasonOrAlwaysFailingTransactionAsync(
+                return expectTransactionFailedAsync(
                     exchangeWrapper.executeTransactionAsync(signedTx, takerAddress),
                     RevertReason.FailedExecution,
                 );
@@ -177,7 +177,7 @@ describe('Exchange transactions', () => {
 
             it('should throw if the a 0x transaction with the same transactionHash has already been executed', async () => {
                 await exchangeWrapper.executeTransactionAsync(signedTx, senderAddress);
-                return expectRevertReasonOrAlwaysFailingTransactionAsync(
+                return expectTransactionFailedAsync(
                     exchangeWrapper.executeTransactionAsync(signedTx, senderAddress),
                     RevertReason.InvalidTxHash,
                 );
@@ -197,7 +197,7 @@ describe('Exchange transactions', () => {
             });
 
             it('should throw if not called by specified sender', async () => {
-                return expectRevertReasonOrAlwaysFailingTransactionAsync(
+                return expectTransactionFailedAsync(
                     exchangeWrapper.executeTransactionAsync(signedTx, makerAddress),
                     RevertReason.FailedExecution,
                 );
@@ -205,7 +205,7 @@ describe('Exchange transactions', () => {
 
             it('should cancel the order when signed by maker and called by sender', async () => {
                 await exchangeWrapper.executeTransactionAsync(signedTx, senderAddress);
-                return expectRevertReasonOrAlwaysFailingTransactionAsync(
+                return expectTransactionFailedAsync(
                     exchangeWrapper.fillOrderAsync(signedOrder, senderAddress),
                     RevertReason.OrderUnfillable,
                 );
@@ -250,7 +250,7 @@ describe('Exchange transactions', () => {
                     signedOrder.signature,
                 );
                 const signedFillTx = takerTransactionFactory.newSignedTransaction(fillData);
-                return expectRevertReasonOrAlwaysFailingTransactionAsync(
+                return expectTransactionFailedAsync(
                     exchangeWrapperContract.fillOrder.sendTransactionAsync(
                         orderWithoutExchangeAddress,
                         takerAssetFillAmount,
@@ -370,7 +370,7 @@ describe('Exchange transactions', () => {
             orderWithoutExchangeAddress = orderUtils.getOrderWithoutExchangeAddress(signedOrder);
             const takerAssetFillAmount = signedOrder.takerAssetAmount;
             const salt = generatePseudoRandomSalt();
-            return expectRevertReasonOrAlwaysFailingTransactionAsync(
+            return expectTransactionFailedAsync(
                 whitelist.fillOrderIfWhitelisted.sendTransactionAsync(
                     orderWithoutExchangeAddress,
                     takerAssetFillAmount,
@@ -392,7 +392,7 @@ describe('Exchange transactions', () => {
             orderWithoutExchangeAddress = orderUtils.getOrderWithoutExchangeAddress(signedOrder);
             const takerAssetFillAmount = signedOrder.takerAssetAmount;
             const salt = generatePseudoRandomSalt();
-            return expectRevertReasonOrAlwaysFailingTransactionAsync(
+            return expectTransactionFailedAsync(
                 whitelist.fillOrderIfWhitelisted.sendTransactionAsync(
                     orderWithoutExchangeAddress,
                     takerAssetFillAmount,

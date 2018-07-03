@@ -5,7 +5,7 @@ import * as chai from 'chai';
 
 import { WETH9Contract } from '../../generated_contract_wrappers/weth9';
 import { artifacts } from '../utils/artifacts';
-import { expectInsufficientFundsAsync, expectRevertOrAlwaysFailingTransactionAsync } from '../utils/assertions';
+import { expectInsufficientFundsAsync, expectTransactionFailedWithoutReasonAsync } from '../utils/assertions';
 import { chaiSetup } from '../utils/chai_setup';
 import { constants } from '../utils/constants';
 import { provider, txDefaults, web3Wrapper } from '../utils/web3_wrapper';
@@ -74,7 +74,7 @@ describe('EtherToken', () => {
             const initEthTokenBalance = await etherToken.balanceOf.callAsync(account);
             const ethTokensToWithdraw = initEthTokenBalance.plus(1);
 
-            return expectRevertOrAlwaysFailingTransactionAsync(
+            return expectTransactionFailedWithoutReasonAsync(
                 etherToken.withdraw.sendTransactionAsync(ethTokensToWithdraw),
             );
         });

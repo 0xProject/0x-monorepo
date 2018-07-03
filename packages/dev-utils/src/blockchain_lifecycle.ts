@@ -1,11 +1,5 @@
 import { logUtils } from '@0xproject/utils';
-import { uniqueVersionIds, Web3Wrapper } from '@0xproject/web3-wrapper';
-import { includes } from 'lodash';
-
-enum NodeType {
-    Geth = 'GETH',
-    Ganache = 'GANACHE',
-}
+import { NodeType, Web3Wrapper } from '@0xproject/web3-wrapper';
 
 // HACK(albrow): 🐉 We have to do this so that debug.setHead works correctly.
 // (Geth does not seem to like debug.setHead(0), so by sending some transactions
@@ -23,7 +17,7 @@ export class BlockchainLifecycle {
         this._snapshotIdsStack = [];
     }
     public async startAsync(): Promise<void> {
-        const nodeType = await this._getNodeTypeAsync();
+        const nodeType = await this._web3Wrapper.getNodeTypeAsync();
         switch (nodeType) {
             case NodeType.Ganache:
                 const snapshotId = await this._web3Wrapper.takeSnapshotAsync();
@@ -44,7 +38,7 @@ export class BlockchainLifecycle {
         }
     }
     public async revertAsync(): Promise<void> {
-        const nodeType = await this._getNodeTypeAsync();
+        const nodeType = await this._web3Wrapper.getNodeTypeAsync();
         switch (nodeType) {
             case NodeType.Ganache:
                 const snapshotId = this._snapshotIdsStack.pop() as number;
@@ -59,16 +53,6 @@ export class BlockchainLifecycle {
                 break;
             default:
                 throw new Error(`Unknown node type: ${nodeType}`);
-        }
-    }
-    private async _getNodeTypeAsync(): Promise<NodeType> {
-        const version = await this._web3Wrapper.getNodeVersionAsync();
-        if (includes(version, uniqueVersionIds.geth)) {
-            return NodeType.Geth;
-        } else if (includes(version, uniqueVersionIds.ganache)) {
-            return NodeType.Ganache;
-        } else {
-            throw new Error(`Unknown client version: ${version}`);
         }
     }
     private async _mineMinimumBlocksAsync(): Promise<void> {

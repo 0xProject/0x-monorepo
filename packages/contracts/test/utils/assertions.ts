@@ -1,108 +1,153 @@
 import { RevertReason } from '@0xproject/types';
+import { logUtils } from '@0xproject/utils';
+import { NodeType } from '@0xproject/web3-wrapper';
 import * as chai from 'chai';
 import { TransactionReceipt, TransactionReceiptWithDecodedLogs } from 'ethereum-types';
 import * as _ from 'lodash';
 
-import { constants } from './constants';
 import { web3Wrapper } from './web3_wrapper';
 
 const expect = chai.expect;
 
-function _expectEitherErrorAsync<T>(p: Promise<T>, error1: string, error2: string): PromiseLike<void> {
-    return expect(p)
-        .to.be.rejected()
-        .then(e => {
-            expect(e).to.satisfy(
-                (err: Error) => _.includes(err.message, error1) || _.includes(err.message, error2),
-                `expected promise to reject with error message that includes "${error1}" or "${error2}", but got: ` +
-                    `"${e.message}"\n`,
-            );
-        });
+// Represents the return value of a `sendTransaction` call. The Promise should
+// resolve with either a transaction receipt or a transaction hash.
+export type sendTransactionResult = Promise<TransactionReceipt | TransactionReceiptWithDecodedLogs | string>;
+
+async function _getGanacheOrGethError(ganacheError: string, gethError: string): Promise<string> {
+    const nodeType = await web3Wrapper.getNodeTypeAsync();
+    switch (nodeType) {
+        case NodeType.Ganache:
+            return ganacheError;
+        case NodeType.Geth:
+            return gethError;
+        default:
+            throw new Error(`Unknown node type: ${nodeType}`);
+    }
+}
+
+async function _getInsufficientFundsErrorMessageAsync(): Promise<string> {
+    return _getGanacheOrGethError("sender doesn't have enough funds", 'insufficient funds');
+}
+
+async function _getTransactionFailedErrorMessageAsync(): Promise<string> {
+    return _getGanacheOrGethError('revert', 'always failing transaction');
+}
+
+async function _getContractCallFailedErrorMessageAsync(): Promise<string> {
+    return _getGanacheOrGethError('revert', 'Contract call failed');
 }
 
 /**
  * Rejects if the given Promise does not reject with an error indicating
  * insufficient funds.
- * @param p the Promise which is expected to reject
+ * @param p a promise resulting from a contract call or sendTransaction call.
  * @returns a new Promise which will reject if the conditions are not met and
  * otherwise resolve with no value.
  */
-export function expectInsufficientFundsAsync<T>(p: Promise<T>): PromiseLike<void> {
-    return _expectEitherErrorAsync(p, 'insufficient funds', "sender doesn't have enough funds");
+export async function expectInsufficientFundsAsync<T>(p: Promise<T>): Promise<void> {
+    const errMessage = await _getInsufficientFundsErrorMessageAsync();
+    return expect(p).to.be.rejectedWith(errMessage);
 }
 
 /**
- * Rejects if the given Promise does not reject with a "revert" error or the
- * given otherError.
- * @param p the Promise which is expected to reject
- * @param otherError the other error which is accepted as a valid reject error.
- * @returns a new Promise which will reject if the conditions are not met and
- * otherwise resolve with no value.
- */
-export function expectRevertOrOtherErrorAsync<T>(p: Promise<T>, otherError: string): PromiseLike<void> {
-    return _expectEitherErrorAsync(p, constants.REVERT, otherError);
-}
-
-/**
- * Rejects if the given Promise does not reject with a "revert" or "always
- * failing transaction" error.
- * @param p the Promise which is expected to reject
- * @returns a new Promise which will reject if the conditions are not met and
- * otherwise resolve with no value.
- */
-export function expectRevertOrAlwaysFailingTransactionAsync<T>(p: Promise<T>): PromiseLike<void> {
-    return expectRevertOrOtherErrorAsync(p, 'always failing transaction');
-}
-
-/**
- * Rejects if at least one the following conditions is not met:
- * 1) The given Promise rejects with the given revert reason.
- * 2) The given Promise rejects with an error containing "always failing transaction"
- * 3) The given Promise fulfills with a txReceipt that has a status of 0 or '0', indicating the transaction failed.
- * 4) The given Promise fulfills with a txHash and corresponding txReceipt has a status of 0 or '0'.
- * @param p the Promise which is expected to reject
+ * Resolves if the the sendTransaction call fails with the given revert reason.
+ * However, since Geth does not support revert reasons for sendTransaction, this
+ * falls back to expectTransactionFailedWithoutReasonAsync if the backing
+ * Ethereum node is Geth.
+ * @param p a Promise resulting from a sendTransaction call
  * @param reason a specific revert reason
  * @returns a new Promise which will reject if the conditions are not met and
  * otherwise resolve with no value.
  */
-export async function expectRevertReasonOrAlwaysFailingTransactionAsync(
-    p: Promise<string | TransactionReceiptWithDecodedLogs | TransactionReceipt>,
-    reason: RevertReason,
-): Promise<void> {
+export async function expectTransactionFailedAsync(p: sendTransactionResult, reason: RevertReason): Promise<void> {
+    // HACK(albrow): This dummy `catch` should not be necessary, but if you
+    // remove it, there is an uncaught exception and the Node process will
+    // forcibly exit. It's possible this is a false positive in
+    // make-promises-safe.
+    p.catch(e => {
+        _.noop(e);
+    });
+
+    const nodeType = await web3Wrapper.getNodeTypeAsync();
+    switch (nodeType) {
+        case NodeType.Ganache:
+            return expect(p).to.be.rejectedWith(reason);
+        case NodeType.Geth:
+            logUtils.warn(
+                'WARNING: Geth does not support revert reasons for sendTransaction. This test will pass if the transaction fails for any reason.',
+            );
+            return expectTransactionFailedWithoutReasonAsync(p);
+        default:
+            throw new Error(`Unknown node type: ${nodeType}`);
+    }
+}
+
+/**
+ * Resolves if the transaction fails without a revert reason, or if the
+ * corresponding transactionReceipt has a status of 0 or '0', indicating
+ * failure.
+ * @param p a Promise resulting from a sendTransaction call
+ * @returns a new Promise which will reject if the conditions are not met and
+ * otherwise resolve with no value.
+ */
+export async function expectTransactionFailedWithoutReasonAsync(p: sendTransactionResult): Promise<void> {
     return p
         .then(async result => {
-            let txReceiptStatus: string | 0 | 1 | null;
-            if (typeof result === 'string') {
-                // Result is a txHash. We need to make a web3 call to get the receipt.
+            let txReceiptStatus: null | string | 0 | 1;
+            if (_.isString(result)) {
+                // Result is a txHash. We need to make a web3 call to get the
+                // receipt, then get the status from the receipt.
                 const txReceipt = await web3Wrapper.awaitTransactionMinedAsync(result);
                 txReceiptStatus = txReceipt.status;
             } else if ('status' in result) {
-                // Result is a TransactionReceiptWithDecodedLogs or TransactionReceipt
-                // and status is a field of result.
+                // Result is a transaction receipt, so we can get the status
+                // directly.
                 txReceiptStatus = result.status;
             } else {
-                throw new Error('Unexpected result type');
+                throw new Error('Unexpected result type: ' + typeof result);
             }
             expect(_.toString(txReceiptStatus)).to.equal(
                 '0',
-                'transactionReceipt had a non-zero status, indicating success',
+                'Expected transaction to fail but receipt had a non-zero status, indicating success',
             );
         })
-        .catch(err => {
-            expect(err.message).to.satisfy(
-                (msg: string) => _.includes(msg, reason) || _.includes(msg, 'always failing transaction'),
-                `Expected ${reason} or 'always failing transaction' but error message was ${err.message}`,
-            );
+        .catch(async err => {
+            // If the promise rejects, we expect a specific error message,
+            // depending on the backing Ethereum node type.
+            const errMessage = await _getTransactionFailedErrorMessageAsync();
+            expect(err.message).to.include(errMessage);
         });
 }
 
 /**
- * Rejects if the given Promise does not reject with a "revert" or "Contract
- * call failed" error.
- * @param p the Promise which is expected to reject
+ * Resolves if the the contract call fails with the given revert reason.
+ * @param p a Promise resulting from a contract call
+ * @param reason a specific revert reason
  * @returns a new Promise which will reject if the conditions are not met and
  * otherwise resolve with no value.
  */
-export function expectRevertOrContractCallFailedAsync<T>(p: Promise<T>): PromiseLike<void> {
-    return expectRevertOrOtherErrorAsync<T>(p, 'Contract call failed');
+export async function expectContractCallFailed<T>(p: Promise<T>, reason: RevertReason): Promise<void> {
+    return expect(p).to.be.rejectedWith(reason);
+}
+
+/**
+ * Resolves if the contract call fails without a revert reason.
+ * @param p a Promise resulting from a contract call
+ * @returns a new Promise which will reject if the conditions are not met and
+ * otherwise resolve with no value.
+ */
+export async function expectContractCallFailedWithoutReasonAsync<T>(p: Promise<T>): Promise<void> {
+    const errMessage = await _getContractCallFailedErrorMessageAsync();
+    return expect(p).to.be.rejectedWith(errMessage);
+}
+
+/**
+ * Resolves if the contract creation/deployment fails without a revert reason.
+ * @param p a Promise resulting from a contract creation/deployment
+ * @returns a new Promise which will reject if the conditions are not met and
+ * otherwise resolve with no value.
+ */
+export async function expectContractCreationFailedWithoutReason<T>(p: Promise<T>): Promise<void> {
+    const errMessage = await _getTransactionFailedErrorMessageAsync();
+    return expect(p).to.be.rejectedWith(errMessage);
 }
