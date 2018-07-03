@@ -7,6 +7,7 @@ import { orderFillOrKillRequestsSchema } from '../schemas/order_fill_or_kill_req
 import { orderFillRequestsSchema } from '../schemas/order_fill_requests_schema';
 import { orderHashSchema } from '../schemas/order_hash_schema';
 import { orderSchema, signedOrderSchema } from '../schemas/order_schemas';
+import { ordersSchema } from '../schemas/orders_schema';
 import { relayerApiErrorResponseSchema } from '../schemas/relayer_api_error_response_schema';
 import { relayerApiFeesPayloadSchema } from '../schemas/relayer_api_fees_payload_schema';
 import { relayerApiFeesResponseSchema } from '../schemas/relayer_api_fees_response_schema';
@@ -41,6 +42,7 @@ export const schemas = {
     orderSchema,
     signedOrderSchema,
     signedOrdersSchema,
+    ordersSchema,
     blockParamSchema,
     blockRangeSchema,
     tokenSchema,
