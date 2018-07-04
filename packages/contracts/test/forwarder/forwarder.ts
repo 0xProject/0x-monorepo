@@ -180,7 +180,7 @@ describe(ContractName.Forwarder, () => {
                 feeProportion,
                 makerTokenFillAmount,
             );
-            // Fill the firstFeeOrder
+            // Fill the feeOrder
             tx = await forwarderWrapper.marketBuyTokensWithEthAsync(feeOrders, [], makerTokenFillAmount, {
                 from: takerAddress,
                 value: fillAmountWei,
@@ -191,6 +191,19 @@ describe(ContractName.Forwarder, () => {
                     [],
                     feeProportion,
                     makerTokenFillAmount,
+                ),
+                'Unable to satisfy makerAssetFillAmount with provided orders',
+            );
+        });
+        it('throws if orders passed are cancelled', async () => {
+            tx = await exchangeWrapper.cancelOrderAsync(feeOrder, makerAddress);
+            // Cancel the feeOrder
+            return expectRevertOrOtherErrorAsync(
+                forwarderWrapper.calculateMarketBuyFillAmountWeiAsync(
+                    feeOrders,
+                    [],
+                    feeProportion,
+                    feeOrder.makerAssetAmount.div(2),
                 ),
                 'Unable to satisfy makerAssetFillAmount with provided orders',
             );

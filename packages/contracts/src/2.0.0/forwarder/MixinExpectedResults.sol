@@ -44,6 +44,9 @@ contract MixinExpectedResults is
         returns (FillResults memory fillResults)
     {
         LibOrder.OrderInfo memory orderInfo = EXCHANGE.getOrderInfo(order);
+        if (orderInfo.orderStatus != uint8(LibOrder.OrderStatus.FILLABLE)) {
+            return fillResults;
+        }
         uint256 remainingTakerAssetAmount = safeSub(order.takerAssetAmount, orderInfo.orderTakerAssetFilledAmount);
         uint256 takerAssetFilledAmount = min256(takerAssetFillAmount, remainingTakerAssetAmount);
 
