@@ -23,22 +23,24 @@ import "../utils/LibBytes/LibBytes.sol";
 import "../protocol/Exchange/libs/LibFillResults.sol";
 import "../protocol/Exchange/libs/LibMath.sol";
 import "../protocol/Exchange/libs/LibOrder.sol";
+import "./MixinConstants.sol";
 
 contract MixinExpectedResults is
     LibMath,
-    LibFillResults
+    LibFillResults,
+    MixinConstants
 {
 
     /// @dev Simulates the 0x Exchange fillOrder validation and calculations, without performing any state changes.
     /// @param order An Order struct containing order specifications.
-    /// @param takerAssetFilledAmount A number representing the amount of this order to fill.
+    /// @param takerAssetFillAmount A number representing the amount of this order to fill.
     /// @return fillResults Amounts filled and fees paid by maker and taker.
     function calculateFillResults(
         LibOrder.Order memory order,
         uint256 takerAssetFillAmount
     )
         internal
-        pure
+        view
         returns (FillResults memory fillResults)
     {
         LibOrder.OrderInfo memory orderInfo = EXCHANGE.getOrderInfo(order);
@@ -74,7 +76,7 @@ contract MixinExpectedResults is
         uint256 takerAssetFillAmount
     )
         internal
-        pure
+        view
         returns (FillResults memory totalFillResults)
     {
         for (uint256 i = 0; i < orders.length; i++) {
@@ -98,7 +100,7 @@ contract MixinExpectedResults is
         uint256 makerAssetFillAmount
     )
         internal
-        pure
+        view
         returns (FillResults memory totalFillResults)
     {
         for (uint256 i = 0; i < orders.length; i++) {
@@ -127,7 +129,7 @@ contract MixinExpectedResults is
         uint256 zrxFillAmount
     )
         internal
-        pure
+        view
         returns (FillResults memory totalFillResults)
     {
         for (uint256 i = 0; i < orders.length; i++) {
