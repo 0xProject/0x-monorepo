@@ -12,7 +12,7 @@ import { ERC20ProxyContract } from '../../generated_contract_wrappers/e_r_c20_pr
 import { ERC721ProxyContract } from '../../generated_contract_wrappers/e_r_c721_proxy';
 import { ExchangeContract } from '../../generated_contract_wrappers/exchange';
 import { artifacts } from '../utils/artifacts';
-import { expectRevertReasonOrAlwaysFailingTransactionAsync } from '../utils/assertions';
+import { expectTransactionFailedAsync } from '../utils/assertions';
 import { chaiSetup } from '../utils/chai_setup';
 import { constants } from '../utils/constants';
 import { ERC20Wrapper } from '../utils/erc20_wrapper';
@@ -602,7 +602,7 @@ describe('matchOrders', () => {
             // Cancel left order
             await exchangeWrapper.cancelOrderAsync(signedOrderLeft, signedOrderLeft.makerAddress);
             // Match orders
-            return expectRevertReasonOrAlwaysFailingTransactionAsync(
+            return expectTransactionFailedAsync(
                 exchangeWrapper.matchOrdersAsync(signedOrderLeft, signedOrderRight, takerAddress),
                 RevertReason.OrderUnfillable,
             );
@@ -627,7 +627,7 @@ describe('matchOrders', () => {
             // Cancel right order
             await exchangeWrapper.cancelOrderAsync(signedOrderRight, signedOrderRight.makerAddress);
             // Match orders
-            return expectRevertReasonOrAlwaysFailingTransactionAsync(
+            return expectTransactionFailedAsync(
                 exchangeWrapper.matchOrdersAsync(signedOrderLeft, signedOrderRight, takerAddress),
                 RevertReason.OrderUnfillable,
             );
@@ -650,7 +650,7 @@ describe('matchOrders', () => {
                 feeRecipientAddress: feeRecipientAddressRight,
             });
             // Match orders
-            return expectRevertReasonOrAlwaysFailingTransactionAsync(
+            return expectTransactionFailedAsync(
                 exchangeWrapper.matchOrdersAsync(signedOrderLeft, signedOrderRight, takerAddress),
                 RevertReason.NegativeSpreadRequired,
             );
@@ -673,7 +673,7 @@ describe('matchOrders', () => {
                 feeRecipientAddress: feeRecipientAddressRight,
             });
             // Match orders
-            return expectRevertReasonOrAlwaysFailingTransactionAsync(
+            return expectTransactionFailedAsync(
                 exchangeWrapper.matchOrdersAsync(signedOrderLeft, signedOrderRight, takerAddress),
                 // We are assuming assetData fields of the right order are the
                 // reverse of the left order, rather than checking equality. This
@@ -702,7 +702,7 @@ describe('matchOrders', () => {
                 feeRecipientAddress: feeRecipientAddressRight,
             });
             // Match orders
-            return expectRevertReasonOrAlwaysFailingTransactionAsync(
+            return expectTransactionFailedAsync(
                 exchangeWrapper.matchOrdersAsync(signedOrderLeft, signedOrderRight, takerAddress),
                 RevertReason.InvalidOrderSignature,
             );

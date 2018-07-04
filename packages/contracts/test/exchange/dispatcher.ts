@@ -14,7 +14,7 @@ import {
     TestAssetProxyDispatcherContract,
 } from '../../generated_contract_wrappers/test_asset_proxy_dispatcher';
 import { artifacts } from '../utils/artifacts';
-import { expectRevertReasonOrAlwaysFailingTransactionAsync } from '../utils/assertions';
+import { expectTransactionFailedAsync } from '../utils/assertions';
 import { chaiSetup } from '../utils/chai_setup';
 import { constants } from '../utils/constants';
 import { ERC20Wrapper } from '../utils/erc20_wrapper';
@@ -129,7 +129,7 @@ describe('AssetProxyDispatcher', () => {
                 txDefaults,
             );
             // Register new ERC20 Transfer Proxy contract
-            return expectRevertReasonOrAlwaysFailingTransactionAsync(
+            return expectTransactionFailedAsync(
                 assetProxyDispatcher.registerAssetProxy.sendTransactionAsync(newErc20TransferProxy.address, {
                     from: owner,
                 }),
@@ -138,7 +138,7 @@ describe('AssetProxyDispatcher', () => {
         });
 
         it('should throw if requesting address is not owner', async () => {
-            return expectRevertReasonOrAlwaysFailingTransactionAsync(
+            return expectTransactionFailedAsync(
                 assetProxyDispatcher.registerAssetProxy.sendTransactionAsync(erc20Proxy.address, { from: notOwner }),
                 RevertReason.OnlyContractOwner,
             );
@@ -210,7 +210,7 @@ describe('AssetProxyDispatcher', () => {
             const encodedAssetData = assetProxyUtils.encodeERC20AssetData(zrxToken.address);
             // Perform a transfer from makerAddress to takerAddress
             const amount = new BigNumber(10);
-            return expectRevertReasonOrAlwaysFailingTransactionAsync(
+            return expectTransactionFailedAsync(
                 assetProxyDispatcher.publicDispatchTransferFrom.sendTransactionAsync(
                     encodedAssetData,
                     makerAddress,

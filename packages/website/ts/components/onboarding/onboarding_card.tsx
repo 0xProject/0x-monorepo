@@ -39,7 +39,7 @@ export const OnboardingCard: React.StatelessComponent<OnboardingCardProps> = ({
     borderRadius,
 }) => (
     <Island borderRadius={borderRadius}>
-        <Container paddingRight="30px" paddingLeft="30px" maxWidth={350} paddingTop="15px" paddingBottom="15px">
+        <Container paddingRight="30px" paddingLeft="30px" paddingTop="15px" paddingBottom="15px">
             <div className="flex flex-column">
                 <div className="flex justify-between">
                     <Title>{title}</Title>

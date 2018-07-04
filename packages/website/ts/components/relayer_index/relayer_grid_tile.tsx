@@ -9,6 +9,7 @@ import { Container } from 'ts/components/ui/container';
 import { Image } from 'ts/components/ui/image';
 import { Island } from 'ts/components/ui/island';
 import { colors } from 'ts/style/colors';
+import { media } from 'ts/style/media';
 import { styled } from 'ts/style/theme';
 import { WebsiteBackendRelayerInfo } from 'ts/types';
 import { utils } from 'ts/utils/utils';
@@ -111,6 +112,9 @@ const GridTile = styled(PlainGridTile)`
     &:hover {
         transform: translate(0px, -3px);
     }
+    ${media.small`
+        transform: none;
+    `};
 `;
 
 interface SectionProps {

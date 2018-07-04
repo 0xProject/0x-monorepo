@@ -18,7 +18,6 @@ const TESTRPC_PRIVATE_KEYS_STRINGS = [
 
 export const constants = {
     INVALID_OPCODE: 'invalid opcode',
-    REVERT: 'revert',
     TESTRPC_NETWORK_ID: 50,
     // Note(albrow): In practice V8 and most other engines limit the minimum
     // interval for setInterval to 10ms. We still set it to 0 here in order to
