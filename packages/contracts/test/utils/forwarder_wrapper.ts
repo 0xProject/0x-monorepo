@@ -1,5 +1,5 @@
 import { assetProxyUtils } from '@0xproject/order-utils';
-import { AssetProxyId, OrderWithoutExchangeAddress, SignedOrder } from '@0xproject/types';
+import { AssetProxyId, SignedOrder } from '@0xproject/types';
 import { BigNumber } from '@0xproject/utils';
 import { Web3Wrapper } from '@0xproject/web3-wrapper';
 import { Provider, TransactionReceiptWithDecodedLogs, TxDataPayable } from 'ethereum-types';
@@ -10,7 +10,7 @@ import { ForwarderContract } from '../../generated_contract_wrappers/forwarder';
 import { constants } from './constants';
 import { formatters } from './formatters';
 import { LogDecoder } from './log_decoder';
-import { FillResults, MarketSellOrders } from './types';
+import { MarketSellOrders } from './types';
 
 const DEFAULT_FEE_PROPORTION = 0;
 const PERCENTAGE_DENOMINATOR = 10000;
@@ -148,7 +148,6 @@ export class ForwarderWrapper {
         const makerAssetData = assetProxyUtils.decodeAssetData(orders[0].makerAssetData);
         const makerAssetToken = makerAssetData.tokenAddress;
         const params = formatters.createMarketBuyOrders(orders, makerAssetFillAmount);
-        const feeParams = formatters.createMarketBuyOrders(feeOrders, ZERO_AMOUNT);
 
         let fillAmountWei;
         if (makerAssetToken === this._zrxAddress) {
