@@ -260,6 +260,7 @@ export class Web3Wrapper {
     /**
      * Gets the contract code by address
      * @param  address Address of the contract
+     * @param defaultBlock Block height at which to make the call. Defaults to `latest`
      * @return Code of the contract
      */
     public async getContractCodeAsync(address: string, defaultBlock?: BlockParam): Promise<string> {
