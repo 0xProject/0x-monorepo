@@ -2,7 +2,7 @@ import { css } from 'ts/style/theme';
 import { ScreenWidths } from 'ts/types';
 
 const generateMediaWrapper = (screenWidth: ScreenWidths) => (...args: any[]) => css`
-    @media (max-width: ${screenWidth}) {
+    @media (max-width: ${screenWidth}em) {
         ${css.apply(css, args)};
     }
 `;
