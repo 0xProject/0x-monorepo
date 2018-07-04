@@ -1,4 +1,4 @@
-import { addressUtils, BigNumber } from '@0xproject/utils';
+import { addressUtils } from '@0xproject/utils';
 import {
     BlockParam,
     BlockParamLiteral,
@@ -17,7 +17,6 @@ import * as _ from 'lodash';
 import { utils } from './utils';
 
 import {
-    AbstractBlockRPC,
     BlockWithoutTransactionDataRPC,
     BlockWithTransactionDataRPC,
     CallDataRPC,

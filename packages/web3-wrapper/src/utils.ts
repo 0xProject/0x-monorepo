@@ -3,7 +3,7 @@ import * as _ from 'lodash';
 
 export const utils = {
     isBigNumber(value: any): boolean {
-        const isBigNumber = _.isObject(value) && (value as any).isBigNumber;
+        const isBigNumber = _.isObject(value) && value.isBigNumber;
         return isBigNumber;
     },
     convertHexToNumber(value: string): number {
@@ -41,7 +41,7 @@ export const utils = {
     },
     numberToHex(value: number): string {
         if (!isFinite(value) && !this.isHexStrict(value)) {
-            throw new Error('Given input "' + value + '" is not a number.');
+            throw new Error(`Given input ${value} is not a number.`);
         }
 
         const valueBigNumber = new BigNumber(value);

@@ -6,7 +6,6 @@ import {
     BlockWithoutTransactionData,
     BlockWithTransactionData,
     CallData,
-    ContractAbi,
     FilterObject,
     JSONRPCRequestPayload,
     JSONRPCResponsePayload,
@@ -22,12 +21,7 @@ import {
 import * as _ from 'lodash';
 
 import { marshaller } from './marshaller';
-import {
-    BlockWithoutTransactionDataRPC,
-    BlockWithTransactionDataRPC,
-    TransactionRPC,
-    Web3WrapperErrors,
-} from './types';
+import { BlockWithoutTransactionDataRPC, BlockWithTransactionDataRPC, Web3WrapperErrors } from './types';
 import { utils } from './utils';
 
 const BASE_TEN = 10;
