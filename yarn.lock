@@ -12649,7 +12649,7 @@ web3-typescript-typings@^0.10.2:
   dependencies:
     bignumber.js "~4.1.0"
 
-web3-utils@1.0.0-beta.34:
+web3-utils@1.0.0-beta.34, web3-utils@^1.0.0-beta.34:
   version "1.0.0-beta.34"
   resolved "https://registry.yarnpkg.com/web3-utils/-/web3-utils-1.0.0-beta.34.tgz#9411fc39aaef39ca4e06169f762297d9ff020970"
   dependencies:

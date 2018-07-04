@@ -67,10 +67,13 @@
         "@0xproject/assert": "^0.2.12",
         "@0xproject/typescript-typings": "^0.4.1",
         "@0xproject/utils": "^0.7.1",
+        "bn.js": "^4.11.8",
         "ethereum-types": "^0.0.1",
+        "ethereumjs-util": "^5.1.1",
         "ethers": "3.0.22",
         "lodash": "^4.17.4",
-        "web3": "^0.20.0"
+        "web3": "^0.20.0",
+        "web3-utils": "^1.0.0-beta.34"
     },
     "publishConfig": {
         "access": "public"
