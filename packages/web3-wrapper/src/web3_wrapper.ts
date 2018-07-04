@@ -1,6 +1,8 @@
+import { assert } from '@0xproject/assert';
 import { AbiDecoder, addressUtils, BigNumber, intervalUtils, promisify } from '@0xproject/utils';
 import {
     BlockParam,
+    BlockParamLiteral,
     BlockWithoutTransactionData,
     BlockWithTransactionData,
     CallData,
@@ -60,6 +62,8 @@ export class Web3Wrapper {
      * @return  The amount in units.
      */
     public static toUnitAmount(amount: BigNumber, decimals: number): BigNumber {
+        assert.isValidBaseUnitAmount('amount', amount);
+        assert.isNumber('decimals', decimals);
         const aUnit = new BigNumber(BASE_TEN).pow(decimals);
         const unit = amount.div(aUnit);
         return unit;
@@ -73,6 +77,8 @@ export class Web3Wrapper {
      * @return  The amount in baseUnits.
      */
     public static toBaseUnitAmount(amount: BigNumber, decimals: number): BigNumber {
+        assert.isBigNumber('amount', amount);
+        assert.isNumber('decimals', decimals);
         const unit = new BigNumber(BASE_TEN).pow(decimals);
         const baseUnitAmount = amount.times(unit);
         const hasDecimals = baseUnitAmount.decimalPlaces() !== 0;
@@ -87,9 +93,29 @@ export class Web3Wrapper {
      * @returns Amount in wei
      */
     public static toWei(ethAmount: BigNumber): BigNumber {
+        assert.isBigNumber('ethAmount', ethAmount);
         const ETH_DECIMALS = 18;
         const balanceWei = Web3Wrapper.toBaseUnitAmount(ethAmount, ETH_DECIMALS);
         return balanceWei;
+    }
+    private static _assertBlockParam(blockParam: string | BlockParam): void {
+        if (_.isNumber(blockParam)) {
+            return;
+        } else if (_.isString(blockParam)) {
+            assert.doesBelongToStringEnum('blockParam', blockParam, BlockParamLiteral);
+        }
+    }
+    private static _assertBlockParamOrString(blockParam: string | BlockParam): void {
+        try {
+            Web3Wrapper._assertBlockParam(blockParam);
+        } catch (err) {
+            try {
+                assert.isHexString('blockParam', blockParam as string);
+                return;
+            } catch (err) {
+                throw new Error(`Expected blockParam to be of type "string | BlockParam", encountered ${blockParam}`);
+            }
+        }
     }
     /**
      * Instantiates a new Web3Wrapper.
@@ -99,6 +125,7 @@ export class Web3Wrapper {
      * @return  An instance of the Web3Wrapper class.
      */
     constructor(provider: Provider, txDefaults?: Partial<TxData>) {
+        assert.isWeb3Provider('provider', provider);
         if (_.isUndefined((provider as any).sendAsync)) {
             // Web3@1.0 provider doesn't support synchronous http requests,
             // so it only has an async `send` method, instead of a `send` and `sendAsync` in web3@0.x.x`
@@ -130,6 +157,7 @@ export class Web3Wrapper {
      * @param provider The new Web3 provider to be set
      */
     public setProvider(provider: Provider): void {
+        assert.isWeb3Provider('provider', provider);
         this._web3.setProvider(provider);
     }
     /**
@@ -140,6 +168,7 @@ export class Web3Wrapper {
      * @returns Whether the address is available through the provider.
      */
     public async isSenderAddressAvailableAsync(senderAddress: string): Promise<boolean> {
+        assert.isETHAddressHex('senderAddress', senderAddress);
         const addresses = await this.getAvailableAddressesAsync();
         const normalizedAddress = senderAddress.toLowerCase();
         return _.includes(addresses, normalizedAddress);
@@ -179,10 +208,13 @@ export class Web3Wrapper {
      * @returns Balance in wei
      */
     public async getBalanceInWeiAsync(owner: string): Promise<BigNumber> {
-        let balanceInWei = await promisify<BigNumber>(this._web3.eth.getBalance)(owner);
+        assert.isETHAddressHex('owner', owner);
+        const balanceInWei = await this._sendRawPayloadAsync<string>({
+            method: 'eth_getBalance',
+            params: [owner],
+        });
         // Rewrap in a new BigNumber
-        balanceInWei = new BigNumber(balanceInWei);
-        return balanceInWei;
+        return new BigNumber(balanceInWei);
     }
     /**
      * Check if a contract exists at a given address
@@ -190,6 +222,7 @@ export class Web3Wrapper {
      * @returns Whether or not contract code was found at the supplied address
      */
     public async doesContractExistAtAddressAsync(address: string): Promise<boolean> {
+        assert.isETHAddressHex('address', address);
         const code = await this.getContractCodeAsync(address);
         // Regex matches 0x0, 0x00, 0x in order to accommodate poorly implemented clients
         const isCodeEmpty = /^0x0{0,40}$/i.test(code);
@@ -201,6 +234,7 @@ export class Web3Wrapper {
      * @return Code of the contract
      */
     public async getContractCodeAsync(address: string): Promise<string> {
+        assert.isETHAddressHex('address', address);
         const code = await promisify<string>(this._web3.eth.getCode)(address);
         return code;
     }
@@ -211,6 +245,7 @@ export class Web3Wrapper {
      * @return Transaction trace
      */
     public async getTransactionTraceAsync(txHash: string, traceParams: TraceParams): Promise<TransactionTrace> {
+        assert.isHexString('txHash', txHash);
         const trace = await this._sendRawPayloadAsync<TransactionTrace>({
             method: 'debug_traceTransaction',
             params: [txHash, traceParams],
@@ -224,6 +259,8 @@ export class Web3Wrapper {
      * @returns Signature string (might be VRS or RSV depending on the Signer)
      */
     public async signMessageAsync(address: string, message: string): Promise<string> {
+        assert.isETHAddressHex('address', address);
+        assert.isString('message', message); // TODO: Should this be stricter? Hex string?
         const signData = await promisify<string>(this._web3.eth.sign)(address, message);
         return signData;
     }
@@ -241,6 +278,7 @@ export class Web3Wrapper {
      * @returns The requested block without transaction data
      */
     public async getBlockAsync(blockParam: string | BlockParam): Promise<BlockWithoutTransactionData> {
+        Web3Wrapper._assertBlockParamOrString(blockParam);
         const shouldIncludeTransactionData = false;
         const blockWithoutTransactionData = await promisify<BlockWithoutTransactionData>(this._web3.eth.getBlock)(
             blockParam,
@@ -254,6 +292,7 @@ export class Web3Wrapper {
      * @returns The requested block with transaction data
      */
     public async getBlockWithTransactionDataAsync(blockParam: string | BlockParam): Promise<BlockWithTransactionData> {
+        Web3Wrapper._assertBlockParamOrString(blockParam);
         const shouldIncludeTransactionData = true;
         const blockWithTransactionData = await promisify<BlockWithTransactionData>(this._web3.eth.getBlock)(
             blockParam,
@@ -267,6 +306,7 @@ export class Web3Wrapper {
      * @returns The block's timestamp
      */
     public async getBlockTimestampAsync(blockParam: string | BlockParam): Promise<number> {
+        Web3Wrapper._assertBlockParamOrString(blockParam);
         const { timestamp } = await this.getBlockAsync(blockParam);
         return timestamp;
     }
@@ -293,6 +333,7 @@ export class Web3Wrapper {
      * @returns Whether the revert was successful
      */
     public async revertSnapshotAsync(snapshotId: number): Promise<boolean> {
+        assert.isNumber('snapshotId', snapshotId);
         const didRevert = await this._sendRawPayloadAsync<boolean>({ method: 'evm_revert', params: [snapshotId] });
         return didRevert;
     }
@@ -308,6 +349,7 @@ export class Web3Wrapper {
      * @param timeDelta Amount of time to add in seconds
      */
     public async increaseTimeAsync(timeDelta: number): Promise<number> {
+        assert.isNumber('timeDelta', timeDelta);
         // Detect Geth vs. Ganache and use appropriate endpoint.
         const version = await this.getNodeVersionAsync();
         if (_.includes(version, uniqueVersionIds.geth)) {
@@ -371,6 +413,9 @@ export class Web3Wrapper {
      * @returns The raw call result
      */
     public async callAsync(callData: CallData, defaultBlock?: BlockParam): Promise<string> {
+        if (!_.isUndefined(defaultBlock)) {
+            Web3Wrapper._assertBlockParam(defaultBlock);
+        }
         const rawCallResult = await promisify<string>(this._web3.eth.call)(callData, defaultBlock);
         if (rawCallResult === '0x') {
             throw new Error('Contract call failed (returned null)');
@@ -402,6 +447,11 @@ export class Web3Wrapper {
         pollingIntervalMs: number = 1000,
         timeoutMs?: number,
     ): Promise<TransactionReceiptWithDecodedLogs> {
+        assert.isHexString('txHash', txHash);
+        assert.isNumber('pollingIntervalMs', pollingIntervalMs);
+        if (!_.isUndefined(timeoutMs)) {
+            assert.isNumber('timeoutMs', timeoutMs);
+        }
         // Immediately check if the transaction has already been mined.
         let transactionReceipt = await this.getTransactionReceiptAsync(txHash);
         if (!_.isNull(transactionReceipt)) {
@@ -487,6 +537,7 @@ export class Web3Wrapper {
      * @param  blockNumber The block number to reset to.
      */
     public async setHeadAsync(blockNumber: number): Promise<void> {
+        assert.isNumber('blockNumber', blockNumber);
         await this._sendRawPayloadAsync<void>({ method: 'debug_setHead', params: [this._web3.toHex(blockNumber)] });
     }
     private async _sendRawPayloadAsync<A>(payload: Partial<JSONRPCRequestPayload>): Promise<A> {
