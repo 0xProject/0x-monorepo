@@ -18,7 +18,10 @@ contract MixinForwarderExpectedResults is MixinForwarderCore {
         view
         returns (Exchange.FillResults memory fillResults)
     {
-        fillResults = EXCHANGE.calculateFillResults(order, takerAssetFillAmount);
+        LibOrder.OrderInfo memory orderInfo = EXCHANGE.getOrderInfo(order);
+        uint256 remainingTakerAssetAmount = safeSub(order.takerAssetAmount, orderInfo.orderTakerAssetFilledAmount);
+        uint256 takerAssetFilledAmount = min256(takerAssetFillAmount, remainingTakerAssetAmount);
+        fillResults = EXCHANGE.calculateFillResults(order, takerAssetFilledAmount);
         return fillResults;
     }
 
