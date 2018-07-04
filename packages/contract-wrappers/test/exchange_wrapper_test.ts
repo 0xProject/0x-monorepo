@@ -999,7 +999,7 @@ describe('ExchangeWrapper', () => {
         it('Outstanding subscriptions are cancelled when contractWrappers.setProvider called', (done: DoneCallback) => {
             (async () => {
                 const callbackNeverToBeCalled = callbackErrorReporter.reportNodeCallbackErrors(done)(
-                    (logEvent: DecodedLogEvent<LogFillContractEventArgs>) => {
+                    (_logEvent: DecodedLogEvent<LogFillContractEventArgs>) => {
                         done(new Error('Expected this subscription to have been cancelled'));
                     },
                 );
@@ -1024,7 +1024,7 @@ describe('ExchangeWrapper', () => {
         it('Should cancel subscription when unsubscribe called', (done: DoneCallback) => {
             (async () => {
                 const callbackNeverToBeCalled = callbackErrorReporter.reportNodeCallbackErrors(done)(
-                    (logEvent: DecodedLogEvent<LogFillContractEventArgs>) => {
+                    (_logEvent: DecodedLogEvent<LogFillContractEventArgs>) => {
                         done(new Error('Expected this subscription to have been cancelled'));
                     },
                 );

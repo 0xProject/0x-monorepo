@@ -9,7 +9,12 @@ import { AddEthOnboardingStep } from 'ts/components/onboarding/add_eth_onboardin
 import { CongratsOnboardingStep } from 'ts/components/onboarding/congrats_onboarding_step';
 import { InstallWalletOnboardingStep } from 'ts/components/onboarding/install_wallet_onboarding_step';
 import { IntroOnboardingStep } from 'ts/components/onboarding/intro_onboarding_step';
-import { OnboardingFlow, Step } from 'ts/components/onboarding/onboarding_flow';
+import {
+    FixedPositionSettings,
+    OnboardingFlow,
+    Step,
+    TargetPositionSettings,
+} from 'ts/components/onboarding/onboarding_flow';
 import { SetAllowancesOnboardingStep } from 'ts/components/onboarding/set_allowances_onboarding_step';
 import { UnlockWalletOnboardingStep } from 'ts/components/onboarding/unlock_wallet_onboarding_step';
 import {
@@ -45,8 +50,6 @@ class PlainPortalOnboardingFlow extends React.Component<PortalOnboardingFlowProp
     private _unlisten: () => void;
     public componentDidMount(): void {
         this._adjustStepIfShould();
-        // Wait until the step is adjusted to decide whether we should show onboarding.
-        setTimeout(this._autoStartOnboardingIfShould.bind(this), 1000);
         // If there is a route change, just close onboarding.
         this._unlisten = this.props.history.listen(() => this.props.updateIsRunning(false));
     }
@@ -60,6 +63,9 @@ class PlainPortalOnboardingFlow extends React.Component<PortalOnboardingFlowProp
             if (this.props.screenWidth === ScreenWidths.Sm) {
                 document.querySelector('.wallet').scrollIntoView();
             }
+        }
+        if (!prevProps.blockchainIsLoaded && this.props.blockchainIsLoaded) {
+            this._autoStartOnboardingIfShould();
         }
     }
     public render(): React.ReactNode {
@@ -76,56 +82,61 @@ class PlainPortalOnboardingFlow extends React.Component<PortalOnboardingFlowProp
         );
     }
     private _getSteps(): Step[] {
+        const nextToWalletPosition: TargetPositionSettings = {
+            type: 'target',
+            target: '.wallet',
+            placement: 'right',
+        };
+        const underMetamaskExtension: FixedPositionSettings = {
+            type: 'fixed',
+            top: '30px',
+            right: '10px',
+            pointerDirection: 'top',
+        };
         const steps: Step[] = [
             {
-                target: '.wallet',
+                position: nextToWalletPosition,
                 title: '0x Ecosystem Setup',
                 content: <InstallWalletOnboardingStep />,
-                placement: 'right',
                 shouldHideBackButton: true,
                 shouldHideNextButton: true,
             },
             {
-                target: '.wallet',
+                position: underMetamaskExtension,
                 title: '0x Ecosystem Setup',
                 content: <UnlockWalletOnboardingStep />,
-                placement: 'right',
                 shouldHideBackButton: true,
                 shouldHideNextButton: true,
             },
             {
-                target: '.wallet',
+                position: nextToWalletPosition,
                 title: '0x Ecosystem Account Setup',
                 content: <IntroOnboardingStep />,
-                placement: 'right',
                 shouldHideBackButton: true,
                 continueButtonDisplay: 'enabled',
             },
             {
-                target: '.wallet',
+                position: nextToWalletPosition,
                 title: 'Step 1: Add ETH',
                 content: (
                     <AddEthOnboardingStep userEthBalanceInWei={this.props.userEtherBalanceInWei || new BigNumber(0)} />
                 ),
-                placement: 'right',
                 continueButtonDisplay: this._userHasVisibleEth() ? 'enabled' : 'disabled',
             },
             {
-                target: '.wallet',
+                position: nextToWalletPosition,
                 title: 'Step 2: Wrap ETH',
                 content: <WrapEthOnboardingStep1 />,
-                placement: 'right',
                 continueButtonDisplay: 'enabled',
             },
             {
-                target: '.wallet',
+                position: nextToWalletPosition,
                 title: 'Step 2: Wrap ETH',
                 content: <WrapEthOnboardingStep2 />,
-                placement: 'right',
                 continueButtonDisplay: this._userHasVisibleWeth() ? 'enabled' : 'disabled',
             },
             {
-                target: '.wallet',
+                position: nextToWalletPosition,
                 title: 'Step 2: Wrap ETH',
                 content: (
                     <WrapEthOnboardingStep3
@@ -134,11 +145,10 @@ class PlainPortalOnboardingFlow extends React.Component<PortalOnboardingFlowProp
                         }
                     />
                 ),
-                placement: 'right',
                 continueButtonDisplay: this._userHasVisibleWeth() ? 'enabled' : 'disabled',
             },
             {
-                target: '.wallet',
+                position: nextToWalletPosition,
                 title: 'Step 3: Unlock Tokens',
                 content: (
                     <SetAllowancesOnboardingStep
@@ -147,14 +157,12 @@ class PlainPortalOnboardingFlow extends React.Component<PortalOnboardingFlowProp
                         doesUserHaveAllowancesForWethAndZrx={this._doesUserHaveAllowancesForWethAndZrx()}
                     />
                 ),
-                placement: 'right',
                 continueButtonDisplay: this._doesUserHaveAllowancesForWethAndZrx() ? 'enabled' : 'disabled',
             },
             {
-                target: '.wallet',
+                position: nextToWalletPosition,
                 title: '🎉  The Ecosystem Awaits',
                 content: <CongratsOnboardingStep />,
-                placement: 'right',
                 continueButtonDisplay: 'enabled',
                 shouldHideNextButton: true,
                 continueButtonText: 'Enter the 0x Ecosystem',
@@ -221,7 +229,7 @@ class PlainPortalOnboardingFlow extends React.Component<PortalOnboardingFlowProp
     }
     private _autoStartOnboardingIfShould(): void {
         if (
-            (this.props.stepIndex === 0 && !this.props.isRunning) ||
+            (this.props.stepIndex === 0 && !this.props.isRunning && this.props.blockchainIsLoaded) ||
             (!this.props.isRunning && !this.props.hasBeenClosed && this.props.blockchainIsLoaded)
         ) {
             const networkName = sharedConstants.NETWORK_NAME_BY_ID[this.props.networkId];

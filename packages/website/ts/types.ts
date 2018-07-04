@@ -216,10 +216,11 @@ export interface ContractEvent {
 }
 
 export type ValidatedBigNumberCallback = (isValid: boolean, amount?: BigNumber) => void;
+// Associated values are in `em` units
 export enum ScreenWidths {
-    Sm = 'SM',
-    Md = 'MD',
-    Lg = 'LG',
+    Sm = 40,
+    Md = 52,
+    Lg = 64,
 }
 
 export enum AlertTypes {
