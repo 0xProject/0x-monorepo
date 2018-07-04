@@ -30,6 +30,8 @@ chaiSetup.configure();
 const expect = chai.expect;
 const blockchainLifecycle = new BlockchainLifecycle(web3Wrapper);
 const DECIMALS_DEFAULT = 18;
+// Set a gasPrice so when checking balance of msg.sender we can accurately calculate gasPrice*gasUsed
+const DEFAULT_GAS_PRICE = new BigNumber(1);
 
 describe(ContractName.Forwarder, () => {
     let makerAddress: string;
@@ -328,6 +330,7 @@ describe(ContractName.Forwarder, () => {
                 {
                     from: takerAddress,
                     value: fillAmount,
+                    gasPrice: DEFAULT_GAS_PRICE,
                 },
                 {
                     feeProportion,
@@ -359,6 +362,7 @@ describe(ContractName.Forwarder, () => {
                     {
                         from: takerAddress,
                         value: fillAmount,
+                        gasPrice: DEFAULT_GAS_PRICE,
                     },
                     {
                         feeProportion,
@@ -381,6 +385,7 @@ describe(ContractName.Forwarder, () => {
             tx = await forwarderWrapper.marketBuyTokensWithEthAsync(signedOrders, feeOrders, makerAssetAmount, {
                 from: takerAddress,
                 value: fillAmountWei,
+                gasPrice: DEFAULT_GAS_PRICE,
             });
             const newBalances = await erc20Wrapper.getBalancesAsync();
             const takerBalanceBefore = balancesBefore[takerAddress][defaultMakerAssetAddress];
@@ -401,6 +406,7 @@ describe(ContractName.Forwarder, () => {
             tx = await forwarderWrapper.marketBuyTokensWithEthAsync(signedOrders, feeOrders, makerAssetAmount, {
                 from: takerAddress,
                 value: excessFillAmount,
+                gasPrice: DEFAULT_GAS_PRICE,
             });
             const newBalances = await erc20Wrapper.getBalancesAsync();
             const takerBalanceBefore = balancesBefore[takerAddress][defaultMakerAssetAddress];
@@ -444,6 +450,7 @@ describe(ContractName.Forwarder, () => {
             tx = await forwarderWrapper.marketBuyTokensWithEthAsync(signedOrdersWithFee, feeOrders, makerAssetAmount, {
                 from: takerAddress,
                 value: fillAmountWei,
+                gasPrice: DEFAULT_GAS_PRICE,
             });
             const newBalances = await erc20Wrapper.getBalancesAsync();
             const takerTokenBalanceBefore = balancesBefore[takerAddress][zrxToken.address];
@@ -699,6 +706,7 @@ describe(ContractName.Forwarder, () => {
             tx = await forwarderWrapper.marketBuyTokensWithEthAsync(signedOrders, feeOrders, makerAssetAmount, {
                 from: takerAddress,
                 value: slippageFillAmountWei,
+                gasPrice: DEFAULT_GAS_PRICE,
             });
             const afterEthBalance = await web3Wrapper.getBalanceInWeiAsync(takerAddress);
             const expectedEthBalanceAfterGasCosts = initEthBalance.minus(expectedFillAmountWei).minus(tx.gasUsed);
