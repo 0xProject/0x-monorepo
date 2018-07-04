@@ -1,7 +1,7 @@
 import { ZeroEx } from '0x.js';
-import { BigNumber, logUtils, promisify } from '@0xproject/utils';
+import { BigNumber, logUtils } from '@0xproject/utils';
+import { Web3Wrapper } from '@0xproject/web3-wrapper';
 import * as _ from 'lodash';
-import * as Web3 from 'web3';
 
 import { configs } from './configs';
 
@@ -13,22 +13,21 @@ const DISPENSE_MAX_AMOUNT_ETHER = 2;
 type AsyncTask = () => Promise<void>;
 
 export const dispenseAssetTasks = {
-    dispenseEtherTask(recipientAddress: string, web3: Web3): AsyncTask {
+    dispenseEtherTask(recipientAddress: string, web3Wrapper: Web3Wrapper): AsyncTask {
         return async () => {
             logUtils.log(`Processing ETH ${recipientAddress}`);
-            const userBalance = await promisify<BigNumber>(web3.eth.getBalance)(recipientAddress);
-            const maxAmountInWei = new BigNumber(web3.toWei(DISPENSE_MAX_AMOUNT_ETHER, 'ether'));
+            const userBalance = await web3Wrapper.getBalanceInWeiAsync(recipientAddress);
+            const maxAmountInWei = Web3Wrapper.toWei(new BigNumber(DISPENSE_MAX_AMOUNT_ETHER));
             if (userBalance.greaterThanOrEqualTo(maxAmountInWei)) {
                 logUtils.log(
                     `User exceeded ETH balance maximum (${maxAmountInWei}) ${recipientAddress} ${userBalance} `,
                 );
                 return;
             }
-            const sendTransactionAsync = promisify(web3.eth.sendTransaction);
-            const txHash = await sendTransactionAsync({
+            const txHash = await web3Wrapper.sendTransactionAsync({
                 from: configs.DISPENSER_ADDRESS,
                 to: recipientAddress,
-                value: web3.toWei(DISPENSE_AMOUNT_ETHER, 'ether'),
+                value: Web3Wrapper.toWei(new BigNumber(DISPENSE_AMOUNT_ETHER)),
             });
             logUtils.log(`Sent ${DISPENSE_AMOUNT_ETHER} ETH to ${recipientAddress} tx: ${txHash}`);
         };

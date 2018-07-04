@@ -1,5 +1,6 @@
 import { ECSignature } from '@0xproject/types';
 import { BigNumber } from '@0xproject/utils';
+import { Provider } from 'ethereum-types';
 import * as React from 'react';
 
 export enum Side {
@@ -573,5 +574,17 @@ export enum AccountState {
     Ready = 'Ready',
     Loading = 'Loading',
     Locked = 'Locked',
+}
+
+export interface InjectedProvider extends Provider {
+    publicConfigStore?: InjectedProviderObservable;
+}
+
+// Minimal expected interface for an injected web3 object
+export interface InjectedWeb3 {
+    currentProvider: InjectedProvider;
+    version: {
+        getNetwork(cd: (err: Error, networkId: string) => void): void;
+    };
 }
 // tslint:disable:max-file-line-count

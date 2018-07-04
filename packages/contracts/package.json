@@ -85,7 +85,6 @@
         "ethereumjs-abi": "^0.6.4",
         "ethereumjs-util": "^5.1.1",
         "ethers": "3.0.22",
-        "lodash": "^4.17.4",
-        "web3": "^0.20.0"
+        "lodash": "^4.17.4"
     }
 }

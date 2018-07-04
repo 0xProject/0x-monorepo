@@ -20,6 +20,7 @@
     "dependencies": {
         "0x.js": "^0.38.0",
         "@0xproject/subproviders": "^0.10.4",
+        "@0xproject/web3-wrapper": "^0.7.1",
         "@0xproject/typescript-typings": "^0.4.1",
         "@0xproject/utils": "^0.7.1",
         "body-parser": "^1.17.1",
@@ -28,7 +29,6 @@
         "express": "^4.15.2",
         "lodash": "^4.17.4",
         "rollbar": "^0.6.5",
-        "web3": "^0.20.0",
         "web3-provider-engine": "14.0.6"
     },
     "devDependencies": {
