@@ -102,6 +102,7 @@ export class Blockchain {
         // Our core assumptions about the injected web3 object is that it has the following
         // properties and methods.
         if (
+            _.isUndefined(injectedWeb3IfExists) ||
             _.isUndefined(injectedWeb3IfExists.version) ||
             _.isUndefined(injectedWeb3IfExists.version.getNetwork) ||
             _.isUndefined(injectedWeb3IfExists.currentProvider)
