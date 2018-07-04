@@ -15,6 +15,7 @@ import { FillResults, MarketSellOrders } from './types';
 const DEFAULT_FEE_PROPORTION = 0;
 const PERCENTAGE_DENOMINATOR = 10000;
 const ZERO_AMOUNT = new BigNumber(0);
+const INSUFFICENT_ORDERS_FOR_MAKER_AMOUNT = 'Unable to satisfy makerAssetFillAmount with provided orders';
 
 export class ForwarderWrapper {
     private _web3Wrapper: Web3Wrapper;
@@ -51,93 +52,6 @@ export class ForwarderWrapper {
             return fillAmountWei.dividedBy(denominator).round(0, BigNumber.ROUND_FLOOR);
         }
         return fillAmountWei;
-    }
-    private static _calculateFillResults(
-        order: OrderWithoutExchangeAddress,
-        takerAssetFilledAmount: BigNumber,
-    ): FillResults {
-        const makerAssetFilledAmount = takerAssetFilledAmount
-            .times(order.makerAssetAmount)
-            .dividedBy(order.takerAssetAmount)
-            .round(0, BigNumber.ROUND_FLOOR);
-        const makerFeePaid = takerAssetFilledAmount
-            .times(order.makerFee)
-            .dividedBy(order.takerAssetAmount)
-            .round(0, BigNumber.ROUND_FLOOR);
-        const takerFeePaid = takerAssetFilledAmount
-            .times(order.takerFee)
-            .dividedBy(order.takerAssetAmount)
-            .round(0, BigNumber.ROUND_FLOOR);
-        return {
-            makerAssetFilledAmount,
-            takerAssetFilledAmount,
-            makerFeePaid,
-            takerFeePaid,
-        };
-    }
-    private static _addFillResults(totalFillResults: FillResults, singleFillResults: FillResults): FillResults {
-        const combinedFillResults = {
-            makerAssetFilledAmount: totalFillResults.makerAssetFilledAmount.plus(
-                singleFillResults.makerAssetFilledAmount,
-            ),
-            takerAssetFilledAmount: totalFillResults.takerAssetFilledAmount.plus(
-                singleFillResults.takerAssetFilledAmount,
-            ),
-            makerFeePaid: totalFillResults.makerFeePaid.plus(singleFillResults.makerFeePaid),
-            takerFeePaid: totalFillResults.takerFeePaid.plus(totalFillResults.takerFeePaid),
-        };
-        return combinedFillResults;
-    }
-    private static _calculateMarketBuyZrxResults(
-        orders: OrderWithoutExchangeAddress[],
-        zrxFillAmount: BigNumber,
-    ): FillResults {
-        let totalFillResults: FillResults = {
-            makerAssetFilledAmount: new BigNumber(0),
-            takerAssetFilledAmount: new BigNumber(0),
-            makerFeePaid: new BigNumber(0),
-            takerFeePaid: new BigNumber(0),
-        };
-        _.forEach(orders, order => {
-            if (totalFillResults.makerAssetFilledAmount.comparedTo(zrxFillAmount) === -1) {
-                const remainingZrxFillAmount = zrxFillAmount.minus(totalFillResults.makerAssetFilledAmount);
-                const remainingWethSellAmount = order.takerAssetAmount
-                    .times(remainingZrxFillAmount)
-                    .dividedBy(order.makerAssetAmount.minus(order.takerFee))
-                    .round(0, BigNumber.ROUND_FLOOR);
-                const singleFillResults = ForwarderWrapper._calculateFillResults(
-                    order,
-                    remainingWethSellAmount.plus(1),
-                );
-                totalFillResults = ForwarderWrapper._addFillResults(totalFillResults, singleFillResults);
-            }
-        });
-        return totalFillResults;
-    }
-    private static _calculateMarketBuyResults(
-        orders: OrderWithoutExchangeAddress[],
-        makerAssetFillAmount: BigNumber,
-    ): FillResults {
-        let totalFillResults: FillResults = {
-            makerAssetFilledAmount: new BigNumber(0),
-            takerAssetFilledAmount: new BigNumber(0),
-            makerFeePaid: new BigNumber(0),
-            takerFeePaid: new BigNumber(0),
-        };
-        _.forEach(orders, order => {
-            if (totalFillResults.makerAssetFilledAmount.comparedTo(makerAssetFillAmount) === -1) {
-                const remainingMakerAssetFillAmount = makerAssetFillAmount.minus(
-                    totalFillResults.makerAssetFilledAmount,
-                );
-                const remainingTakerAssetFillAmount = order.takerAssetAmount
-                    .times(remainingMakerAssetFillAmount)
-                    .dividedBy(order.makerAssetAmount)
-                    .round(0, BigNumber.ROUND_FLOOR);
-                const singleFillResults = ForwarderWrapper._calculateFillResults(order, remainingTakerAssetFillAmount);
-                totalFillResults = ForwarderWrapper._addFillResults(totalFillResults, singleFillResults);
-            }
-        });
-        return totalFillResults;
     }
     constructor(contractInstance: ForwarderContract, provider: Provider, zrxAddress: string) {
         this._forwarderContract = contractInstance;
@@ -196,16 +110,16 @@ export class ForwarderWrapper {
         const tx = await this._logDecoder.getTxWithDecodedLogsAsync(txHash);
         return tx;
     }
-    public calculateMarketBuyFillAmountWei(
+    public async calculateMarketBuyFillAmountWeiAsync(
         orders: SignedOrder[],
         feeOrders: SignedOrder[],
         feeProportion: number,
         makerAssetFillAmount: BigNumber,
-    ): BigNumber {
+    ): Promise<BigNumber> {
         const assetProxyId = assetProxyUtils.decodeAssetDataId(orders[0].makerAssetData);
         switch (assetProxyId) {
             case AssetProxyId.ERC20: {
-                const fillAmountWei = this._calculateMarketBuyERC20FillAmount(
+                const fillAmountWei = this._calculateMarketBuyERC20FillAmountAsync(
                     orders,
                     feeOrders,
                     feeProportion,
@@ -214,19 +128,23 @@ export class ForwarderWrapper {
                 return fillAmountWei;
             }
             case AssetProxyId.ERC721: {
-                const fillAmountWei = this._calculateMarketBuyERC721FillAmount(orders, feeOrders, feeProportion);
+                const fillAmountWei = await this._calculateMarketBuyERC721FillAmountAsync(
+                    orders,
+                    feeOrders,
+                    feeProportion,
+                );
                 return fillAmountWei;
             }
             default:
                 throw new Error(`Invalid Asset Proxy Id: ${assetProxyId}`);
         }
     }
-    private _calculateMarketBuyERC20FillAmount(
+    private async _calculateMarketBuyERC20FillAmountAsync(
         orders: SignedOrder[],
         feeOrders: SignedOrder[],
         feeProportion: number,
         makerAssetFillAmount: BigNumber,
-    ): BigNumber {
+    ): Promise<BigNumber> {
         const makerAssetData = assetProxyUtils.decodeAssetData(orders[0].makerAssetData);
         const makerAssetToken = makerAssetData.tokenAddress;
         const params = formatters.createMarketBuyOrders(orders, makerAssetFillAmount);
@@ -235,34 +153,42 @@ export class ForwarderWrapper {
         let fillAmountWei;
         if (makerAssetToken === this._zrxAddress) {
             // If buying ZRX we buy the tokens and fees from the ZRX order in one step
-            const expectedBuyFeeTokensFillResults = ForwarderWrapper._calculateMarketBuyZrxResults(
+            const expectedBuyFeeTokensFillResults = await this._forwarderContract.calculateMarketBuyZrxResults.callAsync(
                 params.orders,
                 makerAssetFillAmount,
             );
+            if (expectedBuyFeeTokensFillResults.makerAssetFilledAmount.lessThan(makerAssetFillAmount)) {
+                throw new Error(INSUFFICENT_ORDERS_FOR_MAKER_AMOUNT);
+            }
             fillAmountWei = expectedBuyFeeTokensFillResults.takerAssetFilledAmount;
         } else {
-            const expectedMarketBuyFillResults = ForwarderWrapper._calculateMarketBuyResults(
+            const expectedMarketBuyFillResults = await this._forwarderContract.calculateMarketBuyResults.callAsync(
                 params.orders,
                 makerAssetFillAmount,
             );
+            if (expectedMarketBuyFillResults.makerAssetFilledAmount.lessThan(makerAssetFillAmount)) {
+                throw new Error(INSUFFICENT_ORDERS_FOR_MAKER_AMOUNT);
+            }
             fillAmountWei = expectedMarketBuyFillResults.takerAssetFilledAmount;
             const expectedFeeAmount = expectedMarketBuyFillResults.takerFeePaid;
             if (expectedFeeAmount.greaterThan(ZERO_AMOUNT)) {
-                const expectedFeeFillResults = ForwarderWrapper._calculateMarketBuyZrxResults(
-                    feeParams.orders,
+                const expectedFeeFillFillAmountWei = await this._calculateMarketBuyERC20FillAmountAsync(
+                    feeOrders,
+                    [],
+                    DEFAULT_FEE_PROPORTION,
                     expectedFeeAmount,
                 );
-                fillAmountWei = fillAmountWei.plus(expectedFeeFillResults.takerAssetFilledAmount);
+                fillAmountWei = fillAmountWei.plus(expectedFeeFillFillAmountWei);
             }
         }
         fillAmountWei = ForwarderWrapper._calculateAdditionalFeeProportionAmount(feeProportion, fillAmountWei);
         return fillAmountWei;
     }
-    private _calculateMarketBuyERC721FillAmount(
+    private async _calculateMarketBuyERC721FillAmountAsync(
         orders: SignedOrder[],
         feeOrders: SignedOrder[],
         feeProportion: number,
-    ): BigNumber {
+    ): Promise<BigNumber> {
         // Total cost when buying ERC721 is the total cost of all ERC721 orders + any fee abstraction
         let fillAmountWei = _.reduce(
             orders,
@@ -281,7 +207,7 @@ export class ForwarderWrapper {
         if (totalFees.greaterThan(ZERO_AMOUNT)) {
             // Calculate the ZRX fee abstraction cost
             const emptyFeeOrders: SignedOrder[] = [];
-            const expectedFeeAmountWei = this._calculateMarketBuyERC20FillAmount(
+            const expectedFeeAmountWei = await this._calculateMarketBuyERC20FillAmountAsync(
                 feeOrders,
                 emptyFeeOrders,
                 DEFAULT_FEE_PROPORTION,

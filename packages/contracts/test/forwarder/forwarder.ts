@@ -14,7 +14,7 @@ import { ExchangeContract } from '../../generated_contract_wrappers/exchange';
 import { ForwarderContract } from '../../generated_contract_wrappers/forwarder';
 import { WETH9Contract } from '../../generated_contract_wrappers/weth9';
 import { artifacts } from '../utils/artifacts';
-import { expectRevertOrAlwaysFailingTransactionAsync } from '../utils/assertions';
+import { expectRevertOrAlwaysFailingTransactionAsync, expectRevertOrOtherErrorAsync } from '../utils/assertions';
 import { chaiSetup } from '../utils/chai_setup';
 import { constants } from '../utils/constants';
 import { ERC20Wrapper } from '../utils/erc20_wrapper';
@@ -36,6 +36,7 @@ describe(ContractName.Forwarder, () => {
     let owner: string;
     let takerAddress: string;
     let feeRecipientAddress: string;
+    let otherAddress: string;
     let defaultTakerAssetAddress: string;
     let defaultMakerAssetAddress: string;
 
@@ -47,6 +48,8 @@ describe(ContractName.Forwarder, () => {
     let forwarderContract: ForwarderContract;
     let wethContract: WETH9Contract;
     let forwarderWrapper: ForwarderWrapper;
+    let exchangeWrapper: ExchangeWrapper;
+    let exchangeContract: ExchangeContract;
     let erc20Proxy: ERC20ProxyContract;
     let erc721Proxy: ERC721ProxyContract;
 
@@ -68,7 +71,7 @@ describe(ContractName.Forwarder, () => {
     before(async () => {
         await blockchainLifecycle.startAsync();
         const accounts = await web3Wrapper.getAvailableAddressesAsync();
-        const usedAddresses = ([owner, makerAddress, takerAddress, feeRecipientAddress] = accounts);
+        const usedAddresses = ([owner, makerAddress, takerAddress, feeRecipientAddress, otherAddress] = accounts);
 
         erc20Wrapper = new ERC20Wrapper(provider, usedAddresses, owner);
         erc721Wrapper = new ERC721Wrapper(provider, usedAddresses, owner);
@@ -99,8 +102,8 @@ describe(ContractName.Forwarder, () => {
             txDefaults,
             zrxAssetData,
         );
-        const exchange = new ExchangeContract(exchangeInstance.abi, exchangeInstance.address, provider);
-        const exchangeWrapper = new ExchangeWrapper(exchange, provider);
+        exchangeContract = new ExchangeContract(exchangeInstance.abi, exchangeInstance.address, provider);
+        exchangeWrapper = new ExchangeWrapper(exchangeContract, provider);
         await exchangeWrapper.registerAssetProxyAsync(erc20Proxy.address, owner);
         await exchangeWrapper.registerAssetProxyAsync(erc721Proxy.address, owner);
 
@@ -166,6 +169,32 @@ describe(ContractName.Forwarder, () => {
     });
     afterEach(async () => {
         await blockchainLifecycle.revertAsync();
+    });
+    describe('calculations', () => {
+        it('throws if orders passed in are not enough to satisfy requested amount', async () => {
+            feeOrders = [feeOrder];
+            const makerTokenFillAmount = feeOrder.makerAssetAmount.div(2);
+            const fillAmountWei = await forwarderWrapper.calculateMarketBuyFillAmountWeiAsync(
+                feeOrders,
+                [],
+                feeProportion,
+                makerTokenFillAmount,
+            );
+            // Fill the firstFeeOrder
+            tx = await forwarderWrapper.marketBuyTokensWithEthAsync(feeOrders, [], makerTokenFillAmount, {
+                from: takerAddress,
+                value: fillAmountWei,
+            });
+            return expectRevertOrOtherErrorAsync(
+                forwarderWrapper.calculateMarketBuyFillAmountWeiAsync(
+                    feeOrders,
+                    [],
+                    feeProportion,
+                    makerTokenFillAmount,
+                ),
+                'Unable to satisfy makerAssetFillAmount with provided orders',
+            );
+        });
     });
     describe('marketSellEthForERC20 without extra fees', () => {
         it('should fill the order', async () => {
@@ -393,7 +422,7 @@ describe(ContractName.Forwarder, () => {
             const makerAssetAmount = signedOrder.makerAssetAmount.div(2);
             const takerWeiBalanceBefore = await web3Wrapper.getBalanceInWeiAsync(takerAddress);
             const balancesBefore = await erc20Wrapper.getBalancesAsync();
-            const fillAmountWei = forwarderWrapper.calculateMarketBuyFillAmountWei(
+            const fillAmountWei = await forwarderWrapper.calculateMarketBuyFillAmountWeiAsync(
                 signedOrdersWithFee,
                 feeOrders,
                 feeProportion,
@@ -420,7 +449,7 @@ describe(ContractName.Forwarder, () => {
             signedOrdersWithFee = [highFeeZRXOrder];
             feeOrders = [];
             const makerAssetAmount = signedOrder.makerAssetAmount.div(2);
-            const fillAmountWei = forwarderWrapper.calculateMarketBuyFillAmountWei(
+            const fillAmountWei = await forwarderWrapper.calculateMarketBuyFillAmountWeiAsync(
                 signedOrdersWithFee,
                 feeOrders,
                 feeProportion,
@@ -440,7 +469,7 @@ describe(ContractName.Forwarder, () => {
             signedOrdersWithFee = [highFeeERC20Order];
             feeOrders = [feeOrder];
             const makerAssetAmount = signedOrder.makerAssetAmount.div(2);
-            const fillAmountWei = forwarderWrapper.calculateMarketBuyFillAmountWei(
+            const fillAmountWei = await forwarderWrapper.calculateMarketBuyFillAmountWeiAsync(
                 signedOrdersWithFee,
                 feeOrders,
                 feeProportion,
@@ -455,7 +484,7 @@ describe(ContractName.Forwarder, () => {
         });
         it('throws if makerAssetAmount is 0', async () => {
             const makerAssetAmount = new BigNumber(0);
-            const fillAmountWei = forwarderWrapper.calculateMarketBuyFillAmountWei(
+            const fillAmountWei = await forwarderWrapper.calculateMarketBuyFillAmountWeiAsync(
                 signedOrdersWithFee,
                 feeOrders,
                 feeProportion,
@@ -512,7 +541,7 @@ describe(ContractName.Forwarder, () => {
             feeOrders = [];
             signedOrders = [signedOrder];
             const makerAssetAmount = new BigNumber(signedOrders.length);
-            const fillAmountWei = forwarderWrapper.calculateMarketBuyFillAmountWei(
+            const fillAmountWei = await forwarderWrapper.calculateMarketBuyFillAmountWeiAsync(
                 signedOrders,
                 feeOrders,
                 feeProportion,
@@ -534,7 +563,7 @@ describe(ContractName.Forwarder, () => {
             });
             signedOrders = [signedOrder];
             const makerAssetAmount = new BigNumber(signedOrders.length);
-            const fillAmountWei = forwarderWrapper.calculateMarketBuyFillAmountWei(
+            const fillAmountWei = await forwarderWrapper.calculateMarketBuyFillAmountWeiAsync(
                 signedOrders,
                 feeOrders,
                 feeProportion,
@@ -557,7 +586,7 @@ describe(ContractName.Forwarder, () => {
             signedOrders = [signedOrder];
             feeProportion = 10;
             const makerAssetAmount = new BigNumber(signedOrders.length);
-            const fillAmountWei = forwarderWrapper.calculateMarketBuyFillAmountWei(
+            const fillAmountWei = await forwarderWrapper.calculateMarketBuyFillAmountWeiAsync(
                 signedOrders,
                 feeOrders,
                 feeProportion,
@@ -586,7 +615,7 @@ describe(ContractName.Forwarder, () => {
             signedOrders = [signedOrder1, signedOrder2];
             feeProportion = 10;
             const makerAssetAmount = new BigNumber(signedOrders.length);
-            const fillAmountWei = forwarderWrapper.calculateMarketBuyFillAmountWei(
+            const fillAmountWei = await forwarderWrapper.calculateMarketBuyFillAmountWeiAsync(
                 signedOrders,
                 feeOrders,
                 feeProportion,
@@ -600,6 +629,123 @@ describe(ContractName.Forwarder, () => {
             expect(newOwnerTakerAsset1).to.be.bignumber.equal(takerAddress);
             const newOwnerTakerAsset2 = await erc721Token.ownerOf.callAsync(makerAssetId2);
             expect(newOwnerTakerAsset2).to.be.bignumber.equal(takerAddress);
+        });
+        it('buys ERC721 assets with fee abstraction and handles fee orders filled and excess eth', async () => {
+            const makerAssetId = erc721MakerAssetIds[0];
+            feeProportion = 0;
+            // In this scenario a total of 6 ZRX fees need to be paid.
+            // There are two fee orders, but the first fee order is partially filled while
+            // the Forwarding contract tx is in the mempool.
+            const erc721MakerAssetAmount = new BigNumber(1);
+            signedOrder = orderFactory.newSignedOrder({
+                makerAssetAmount: erc721MakerAssetAmount,
+                takerAssetAmount: Web3Wrapper.toBaseUnitAmount(new BigNumber(10), DECIMALS_DEFAULT),
+                takerFee: Web3Wrapper.toBaseUnitAmount(new BigNumber(6), DECIMALS_DEFAULT),
+                makerAssetData: assetProxyUtils.encodeERC721AssetData(erc721Token.address, makerAssetId),
+            });
+            signedOrders = [signedOrder];
+            const firstFeeOrder = orderFactory.newSignedOrder({
+                makerAssetAmount: Web3Wrapper.toBaseUnitAmount(new BigNumber(8), DECIMALS_DEFAULT),
+                takerAssetAmount: Web3Wrapper.toBaseUnitAmount(new BigNumber(0.1), DECIMALS_DEFAULT),
+                makerAssetData: assetProxyUtils.encodeERC20AssetData(zrxToken.address),
+                takerFee: Web3Wrapper.toBaseUnitAmount(new BigNumber(0), DECIMALS_DEFAULT),
+            });
+            const secondFeeOrder = orderFactory.newSignedOrder({
+                makerAssetAmount: Web3Wrapper.toBaseUnitAmount(new BigNumber(8), DECIMALS_DEFAULT),
+                takerAssetAmount: Web3Wrapper.toBaseUnitAmount(new BigNumber(0.12), DECIMALS_DEFAULT),
+                makerAssetData: assetProxyUtils.encodeERC20AssetData(zrxToken.address),
+                takerFee: Web3Wrapper.toBaseUnitAmount(new BigNumber(0), DECIMALS_DEFAULT),
+            });
+            feeOrders = [firstFeeOrder, secondFeeOrder];
+            const makerAssetAmount = new BigNumber(signedOrders.length);
+            const fillAmountWei = await forwarderWrapper.calculateMarketBuyFillAmountWeiAsync(
+                signedOrders,
+                feeOrders,
+                feeProportion,
+                erc721MakerAssetAmount,
+            );
+            // Simulate another otherAddress user partially filling firstFeeOrder
+            const firstFeeOrderFillAmount = firstFeeOrder.makerAssetAmount.div(2);
+            tx = await forwarderWrapper.marketBuyTokensWithEthAsync([firstFeeOrder], [], firstFeeOrderFillAmount, {
+                from: otherAddress,
+                value: fillAmountWei,
+            });
+            // For tests we calculate how much this should've cost given that firstFeeOrder was filled
+            const expectedFillAmountWei = await forwarderWrapper.calculateMarketBuyFillAmountWeiAsync(
+                signedOrders,
+                feeOrders,
+                feeProportion,
+                erc721MakerAssetAmount,
+            );
+            // With 4 ZRX remaining in firstFeeOrder, the secondFeeOrder will need to be filled to make up
+            // the total amount of fees required (6)
+            // Since the fee orders can be filled while the transaction is pending the user safely sends in
+            // extra ether to cover any slippage
+            const initEthBalance = await web3Wrapper.getBalanceInWeiAsync(takerAddress);
+            const slippageFillAmountWei = fillAmountWei.times(2);
+            tx = await forwarderWrapper.marketBuyTokensWithEthAsync(signedOrders, feeOrders, makerAssetAmount, {
+                from: takerAddress,
+                value: slippageFillAmountWei,
+            });
+            const afterEthBalance = await web3Wrapper.getBalanceInWeiAsync(takerAddress);
+            const expectedEthBalanceAfterGasCosts = initEthBalance.minus(expectedFillAmountWei).minus(tx.gasUsed);
+            const newOwnerTakerAsset = await erc721Token.ownerOf.callAsync(makerAssetId);
+            expect(newOwnerTakerAsset).to.be.bignumber.equal(takerAddress);
+            expect(afterEthBalance).to.be.bignumber.equal(expectedEthBalanceAfterGasCosts);
+        });
+        it('buys ERC721 assets with fee abstraction and handles fee orders filled', async () => {
+            const makerAssetId = erc721MakerAssetIds[0];
+            feeProportion = 0;
+            // In this scenario a total of 6 ZRX fees need to be paid.
+            // There are two fee orders, but the first fee order is partially filled while
+            // the Forwarding contract tx is in the mempool.
+            const erc721MakerAssetAmount = new BigNumber(1);
+            signedOrder = orderFactory.newSignedOrder({
+                makerAssetAmount: erc721MakerAssetAmount,
+                takerAssetAmount: Web3Wrapper.toBaseUnitAmount(new BigNumber(10), DECIMALS_DEFAULT),
+                takerFee: Web3Wrapper.toBaseUnitAmount(new BigNumber(6), DECIMALS_DEFAULT),
+                makerAssetData: assetProxyUtils.encodeERC721AssetData(erc721Token.address, makerAssetId),
+            });
+            const zrxMakerAssetAmount = Web3Wrapper.toBaseUnitAmount(new BigNumber(8), DECIMALS_DEFAULT);
+            signedOrders = [signedOrder];
+            const firstFeeOrder = orderFactory.newSignedOrder({
+                makerAssetAmount: zrxMakerAssetAmount,
+                takerAssetAmount: Web3Wrapper.toBaseUnitAmount(new BigNumber(0.1), DECIMALS_DEFAULT),
+                makerAssetData: assetProxyUtils.encodeERC20AssetData(zrxToken.address),
+                takerFee: Web3Wrapper.toBaseUnitAmount(new BigNumber(0), DECIMALS_DEFAULT),
+            });
+            const secondFeeOrder = orderFactory.newSignedOrder({
+                makerAssetAmount: zrxMakerAssetAmount,
+                takerAssetAmount: Web3Wrapper.toBaseUnitAmount(new BigNumber(0.12), DECIMALS_DEFAULT),
+                makerAssetData: assetProxyUtils.encodeERC20AssetData(zrxToken.address),
+                takerFee: Web3Wrapper.toBaseUnitAmount(new BigNumber(0), DECIMALS_DEFAULT),
+            });
+            feeOrders = [firstFeeOrder, secondFeeOrder];
+            const makerAssetAmount = new BigNumber(signedOrders.length);
+            const fillAmountWei = await forwarderWrapper.calculateMarketBuyFillAmountWeiAsync(
+                signedOrders,
+                feeOrders,
+                feeProportion,
+                erc721MakerAssetAmount,
+            );
+            // Simulate another otherAddress user partially filling firstFeeOrder
+            const firstFeeOrderFillAmount = firstFeeOrder.makerAssetAmount.div(2);
+            tx = await forwarderWrapper.marketBuyTokensWithEthAsync([firstFeeOrder], [], firstFeeOrderFillAmount, {
+                from: otherAddress,
+                value: fillAmountWei,
+            });
+            const expectedFillAmountWei = await forwarderWrapper.calculateMarketBuyFillAmountWeiAsync(
+                signedOrders,
+                feeOrders,
+                feeProportion,
+                erc721MakerAssetAmount,
+            );
+            tx = await forwarderWrapper.marketBuyTokensWithEthAsync(signedOrders, feeOrders, makerAssetAmount, {
+                from: takerAddress,
+                value: expectedFillAmountWei,
+            });
+            const newOwnerTakerAsset = await erc721Token.ownerOf.callAsync(makerAssetId);
+            expect(newOwnerTakerAsset).to.be.bignumber.equal(takerAddress);
         });
         it('throws when mixed ERC721 and ERC20 assets', async () => {
             const makerAssetId = erc721MakerAssetIds[0];

@@ -46,6 +46,7 @@ contract MixinExpectedResults is
         LibOrder.OrderInfo memory orderInfo = EXCHANGE.getOrderInfo(order);
         uint256 remainingTakerAssetAmount = safeSub(order.takerAssetAmount, orderInfo.orderTakerAssetFilledAmount);
         uint256 takerAssetFilledAmount = min256(takerAssetFillAmount, remainingTakerAssetAmount);
+
         fillResults.takerAssetFilledAmount = takerAssetFilledAmount;
         fillResults.makerAssetFilledAmount = getPartialAmount(
             fillResults.takerAssetFilledAmount,
@@ -62,7 +63,6 @@ contract MixinExpectedResults is
             order.takerAssetAmount,
             order.takerFee
         );
-
         return fillResults;
     }
 
@@ -99,7 +99,7 @@ contract MixinExpectedResults is
         LibOrder.Order[] memory orders,
         uint256 makerAssetFillAmount
     )
-        internal
+        public
         view
         returns (FillResults memory totalFillResults)
     {
@@ -128,7 +128,7 @@ contract MixinExpectedResults is
         LibOrder.Order[] memory orders,
         uint256 zrxFillAmount
     )
-        internal
+        public
         view
         returns (FillResults memory totalFillResults)
     {
