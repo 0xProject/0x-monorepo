@@ -7,7 +7,6 @@ export const utils = {
         return isBigNumber;
     },
     convertHexToNumber(value: string): number {
-        console.log('value', value);
         const valueBigNumber = new BigNumber(value);
         const valueNumber = valueBigNumber.toNumber();
         return valueNumber;
