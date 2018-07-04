@@ -224,10 +224,10 @@ export class Wallet extends React.Component<WalletProps, WalletState> {
                 popoverContent={
                     <SimpleMenu minWidth="150px">
                         <CopyAddressSimpleMenuItem userAddress={this.props.userAddress} />
-                        <DifferentWalletSimpleMenuItem onClick={this.props.onToggleLedgerDialog} />
+                        {!isMobile && <DifferentWalletSimpleMenuItem onClick={this.props.onToggleLedgerDialog} />}
                         <SimpleMenuItem displayText="Add Tokens..." onClick={this.props.onAddToken} />
                         <SimpleMenuItem displayText="Remove Tokens..." onClick={this.props.onRemoveToken} />
-                        <GoToAccountManagementSimpleMenuItem />
+                        {!isMobile && <GoToAccountManagementSimpleMenuItem />}
                     </SimpleMenu>
                 }
                 anchorOrigin={{ horizontal: 'right', vertical: 'bottom' }}

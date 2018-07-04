@@ -91,7 +91,7 @@ interface PortalState {
 
 interface AccountManagementItem {
     pathName: string;
-    headerText: string;
+    headerText?: string;
     render: () => React.ReactNode;
 }
 
@@ -106,7 +106,8 @@ const TOP_BAR_HEIGHT = TopBar.heightForDisplayType(TopBarDisplayType.Expanded);
 const LEFT_COLUMN_WIDTH = 346;
 const MENU_PADDING_LEFT = 185;
 const LARGE_LAYOUT_MAX_WIDTH = 1200;
-const LARGE_LAYOUT_MARGIN = 30;
+const LARGE_LAYOUT_SIDE_PADDING = 30;
+const SMALL_LAYOUT_SIDE_PADDING = 20;
 
 export class Portal extends React.Component<PortalProps, PortalState> {
     private _blockchain: Blockchain;
@@ -243,7 +244,9 @@ export class Portal extends React.Component<PortalProps, PortalState> {
                         position: 'fixed',
                         zIndex: zIndex.topBar,
                     }}
-                    maxWidth={LARGE_LAYOUT_MAX_WIDTH}
+                    maxWidth={!this._isSmallScreen() ? LARGE_LAYOUT_MAX_WIDTH : undefined}
+                    paddingLeft={!this._isSmallScreen() ? LARGE_LAYOUT_SIDE_PADDING : SMALL_LAYOUT_SIDE_PADDING}
+                    paddingRight={!this._isSmallScreen() ? LARGE_LAYOUT_SIDE_PADDING : SMALL_LAYOUT_SIDE_PADDING}
                 />
                 <Container marginTop={TOP_BAR_HEIGHT} minHeight="100vh" backgroundColor={colors.lightestGrey}>
                     <Switch>
@@ -324,7 +327,11 @@ export class Portal extends React.Component<PortalProps, PortalState> {
         return (
             <div>
                 <Container className="flex flex-column items-center">
-                    {isMobile && <Container marginBottom="20px">{this._renderStartOnboarding()}</Container>}
+                    {isMobile && (
+                        <Container marginTop="20px" marginBottom="20px">
+                            {this._renderStartOnboarding()}
+                        </Container>
+                    )}
                     <Container marginBottom={marginBottom} width="100%">
                         <Wallet
                             style={
@@ -402,7 +409,7 @@ export class Portal extends React.Component<PortalProps, PortalState> {
             },
             {
                 pathName: `${WebsitePaths.Portal}/account`,
-                headerText: 'Your Account',
+                headerText: this._isSmallScreen() ? undefined : 'Your Account',
                 render: this._isSmallScreen() ? this._renderWallet.bind(this) : this._renderTokenBalances.bind(this),
             },
             {
@@ -445,7 +452,7 @@ export class Portal extends React.Component<PortalProps, PortalState> {
     private _renderAccountManagementItem(item: AccountManagementItem): React.ReactNode {
         return (
             <Section
-                header={<TextHeader labelText={item.headerText} />}
+                header={!_.isUndefined(item.headerText) && <TextHeader labelText={item.headerText} />}
                 body={<Loading isLoading={!this.props.blockchainIsLoaded} content={item.render()} />}
             />
         );
@@ -527,15 +534,21 @@ export class Portal extends React.Component<PortalProps, PortalState> {
         );
     }
     private _renderRelayerIndexSection(): React.ReactNode {
-        return <Section header={<TextHeader labelText="0x Relayers" />} body={this._renderRelayerIndex()} />;
-    }
-    private _renderRelayerIndex(): React.ReactNode {
         const isMobile = utils.isMobileWidth(this.props.screenWidth);
         return (
-            <Container className="flex flex-column items-center">
-                {isMobile && <Container marginBottom="20px">{this._renderStartOnboarding()}</Container>}
-                <RelayerIndex networkId={this.props.networkId} screenWidth={this.props.screenWidth} />
-            </Container>
+            <Section
+                header={!isMobile && <TextHeader labelText="0x Relayers" />}
+                body={
+                    <Container className="flex flex-column items-center">
+                        {isMobile && (
+                            <Container marginTop="20px" marginBottom="20px">
+                                {this._renderStartOnboarding()}
+                            </Container>
+                        )}
+                        <RelayerIndex networkId={this.props.networkId} screenWidth={this.props.screenWidth} />
+                    </Container>
+                }
+            />
         );
     }
     private _renderNotFoundMessage(): React.ReactNode {
@@ -685,19 +698,19 @@ interface LargeLayoutProps {
 }
 const LargeLayout = (props: LargeLayoutProps) => {
     return (
-        <Container className="mx-auto flex flex-center" maxWidth={LARGE_LAYOUT_MAX_WIDTH}>
+        <Container
+            className="mx-auto flex flex-center"
+            maxWidth={LARGE_LAYOUT_MAX_WIDTH}
+            paddingLeft={LARGE_LAYOUT_SIDE_PADDING}
+            paddingRight={LARGE_LAYOUT_SIDE_PADDING}
+        >
             <div className="flex-last">
-                <Container
-                    width={LEFT_COLUMN_WIDTH}
-                    position="fixed"
-                    zIndex={zIndex.aboveTopBar}
-                    marginLeft={LARGE_LAYOUT_MARGIN}
-                >
+                <Container width={LEFT_COLUMN_WIDTH} position="fixed" zIndex={zIndex.aboveTopBar}>
                     {props.left}
                 </Container>
             </div>
-            <Container className="flex-auto" marginLeft={LEFT_COLUMN_WIDTH + LARGE_LAYOUT_MARGIN}>
-                <Container className="flex-auto" marginLeft={LARGE_LAYOUT_MARGIN} marginRight={LARGE_LAYOUT_MARGIN}>
+            <Container className="flex-auto" marginLeft={LEFT_COLUMN_WIDTH}>
+                <Container className="flex-auto" marginLeft={LARGE_LAYOUT_SIDE_PADDING}>
                     {props.right}
                 </Container>
             </Container>
@@ -711,7 +724,13 @@ interface SmallLayoutProps {
 const SmallLayout = (props: SmallLayoutProps) => {
     return (
         <div className="flex flex-center">
-            <div className="flex-auto px3">{props.content}</div>
+            <Container
+                className="flex-auto"
+                paddingLeft={SMALL_LAYOUT_SIDE_PADDING}
+                paddingRight={SMALL_LAYOUT_SIDE_PADDING}
+            >
+                {props.content}
+            </Container>
         </div>
     );
 }; // tslint:disable:max-file-line-count
