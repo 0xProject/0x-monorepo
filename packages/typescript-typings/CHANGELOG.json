@@ -3,6 +3,10 @@
         "version": "0.4.2",
         "changes": [
             {
+                "note": "Add types for `eth-lightwallet`",
+                "pr": 775
+            },
+            {
                 "note": "Improve 'web3-provider-engine' typings",
                 "pr": 768
             },

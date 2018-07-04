@@ -1,8 +1,7 @@
-import { BlockParamLiteral, ExchangeContractErrs } from '@0xproject/types';
+import { ExchangeContractErrs } from '@0xproject/types';
 import { BigNumber } from '@0xproject/utils';
 
 import { AbstractBalanceAndProxyAllowanceLazyStore } from '../abstract/abstract_balance_and_proxy_allowance_lazy_store';
-import { TokenWrapper } from '../contract_wrappers/token_wrapper';
 import { TradeSide, TransferType } from '../types';
 import { constants } from '../utils/constants';
 

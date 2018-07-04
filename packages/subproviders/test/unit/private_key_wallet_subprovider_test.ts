@@ -60,6 +60,20 @@ describe('PrivateKeyWalletSubprovider', () => {
                 });
                 provider.sendAsync(payload, callback);
             });
+            it('signs a transaction', (done: DoneCallback) => {
+                const payload = {
+                    jsonrpc: '2.0',
+                    method: 'eth_signTransaction',
+                    params: [fixtureData.TX_DATA],
+                    id: 1,
+                };
+                const callback = reportCallbackErrors(done)((err: Error, response: JSONRPCResponsePayload) => {
+                    expect(err).to.be.a('null');
+                    expect(response.result.raw).to.be.equal(fixtureData.TX_DATA_SIGNED_RESULT);
+                    done();
+                });
+                provider.sendAsync(payload, callback);
+            });
             it('signs a personal message with eth_sign', (done: DoneCallback) => {
                 const messageHex = ethUtils.bufferToHex(ethUtils.toBuffer(fixtureData.PERSONAL_MESSAGE_STRING));
                 const payload = {

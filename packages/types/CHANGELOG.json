@@ -4,6 +4,9 @@
         "changes": [
             {
                 "notes": "Updated types for V2 of 0x protocol"
+            },
+            {
+                "note": "Add `ECSignatureBuffer`"
             }
         ]
     },
