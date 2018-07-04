@@ -14,8 +14,9 @@ import { MixinAuthorizableContract } from '../../generated_contract_wrappers/mix
 import { TestAssetProxyOwnerContract } from '../../generated_contract_wrappers/test_asset_proxy_owner';
 import { artifacts } from '../utils/artifacts';
 import {
-    expectRevertOrAlwaysFailingTransactionAsync,
-    expectRevertOrContractCallFailedAsync,
+    expectContractCallFailedWithoutReasonAsync,
+    expectContractCreationFailedWithoutReason,
+    expectTransactionFailedWithoutReasonAsync,
 } from '../utils/assertions';
 import { chaiSetup } from '../utils/chai_setup';
 import { constants } from '../utils/constants';
@@ -108,7 +109,7 @@ describe('AssetProxyOwner', () => {
         });
         it('should throw if a null address is included in assetProxyContracts', async () => {
             const assetProxyContractAddresses = [erc20Proxy.address, constants.NULL_ADDRESS];
-            return expectRevertOrAlwaysFailingTransactionAsync(
+            return expectContractCreationFailedWithoutReason(
                 AssetProxyOwnerContract.deployFrom0xArtifactAsync(
                     artifacts.AssetProxyOwner,
                     provider,
@@ -150,7 +151,7 @@ describe('AssetProxyOwner', () => {
     describe('registerAssetProxy', () => {
         it('should throw if not called by multisig', async () => {
             const isRegistered = true;
-            return expectRevertOrAlwaysFailingTransactionAsync(
+            return expectTransactionFailedWithoutReasonAsync(
                 testAssetProxyOwner.registerAssetProxy.sendTransactionAsync(erc20Proxy.address, isRegistered, {
                     from: owners[0],
                 }),
@@ -277,7 +278,7 @@ describe('AssetProxyOwner', () => {
                 );
                 const log = submitTxRes.logs[0] as LogWithDecodedArgs<SubmissionContractEventArgs>;
                 const txId = log.args.transactionId;
-                return expectRevertOrContractCallFailedAsync(
+                return expectContractCallFailedWithoutReasonAsync(
                     testAssetProxyOwner.testValidRemoveAuthorizedAddressAtIndexTx.callAsync(txId),
                 );
             });
@@ -312,7 +313,7 @@ describe('AssetProxyOwner', () => {
                 );
                 const log = submitTxRes.logs[0] as LogWithDecodedArgs<SubmissionContractEventArgs>;
                 const txId = log.args.transactionId;
-                return expectRevertOrContractCallFailedAsync(
+                return expectContractCallFailedWithoutReasonAsync(
                     testAssetProxyOwner.testValidRemoveAuthorizedAddressAtIndexTx.callAsync(txId),
                 );
             });
@@ -332,7 +333,7 @@ describe('AssetProxyOwner', () => {
                 const log = res.logs[0] as LogWithDecodedArgs<SubmissionContractEventArgs>;
                 const txId = log.args.transactionId;
 
-                return expectRevertOrAlwaysFailingTransactionAsync(
+                return expectTransactionFailedWithoutReasonAsync(
                     testAssetProxyOwner.executeRemoveAuthorizedAddressAtIndex.sendTransactionAsync(txId, {
                         from: owners[1],
                     }),
@@ -354,7 +355,7 @@ describe('AssetProxyOwner', () => {
 
                 await multiSigWrapper.confirmTransactionAsync(txId, owners[1]);
 
-                return expectRevertOrAlwaysFailingTransactionAsync(
+                return expectTransactionFailedWithoutReasonAsync(
                     testAssetProxyOwner.executeRemoveAuthorizedAddressAtIndex.sendTransactionAsync(txId, {
                         from: owners[1],
                     }),
@@ -376,7 +377,7 @@ describe('AssetProxyOwner', () => {
 
                 await multiSigWrapper.confirmTransactionAsync(txId, owners[1]);
 
-                return expectRevertOrAlwaysFailingTransactionAsync(
+                return expectTransactionFailedWithoutReasonAsync(
                     testAssetProxyOwner.executeRemoveAuthorizedAddressAtIndex.sendTransactionAsync(txId, {
                         from: owners[1],
                     }),
@@ -433,7 +434,7 @@ describe('AssetProxyOwner', () => {
                 const isExecuted = tx[3];
                 expect(isExecuted).to.equal(true);
 
-                return expectRevertOrAlwaysFailingTransactionAsync(
+                return expectTransactionFailedWithoutReasonAsync(
                     testAssetProxyOwner.executeRemoveAuthorizedAddressAtIndex.sendTransactionAsync(txId, {
                         from: owners[1],
                     }),

@@ -39,6 +39,12 @@ export const uniqueVersionIds = {
     ganache: 'EthereumJS TestRPC',
 };
 
+// NodeType represents the type of the backing Ethereum node.
+export enum NodeType {
+    Geth = 'GETH',
+    Ganache = 'GANACHE',
+}
+
 /**
  * An alternative to the Web3.js library that provides a consistent, clean, promise-based interface.
  */
@@ -594,6 +600,20 @@ export class Web3Wrapper {
     public async setHeadAsync(blockNumber: number): Promise<void> {
         assert.isNumber('blockNumber', blockNumber);
         await this._sendRawPayloadAsync<void>({ method: 'debug_setHead', params: [web3Utils.toHex(blockNumber)] });
+    }
+    /**
+     * Returns either NodeType.Geth or NodeType.Ganache depending on the type of
+     * the backing Ethereum node. Throws for any other type of node.
+     */
+    public async getNodeTypeAsync(): Promise<NodeType> {
+        const version = await this.getNodeVersionAsync();
+        if (_.includes(version, uniqueVersionIds.geth)) {
+            return NodeType.Geth;
+        } else if (_.includes(version, uniqueVersionIds.ganache)) {
+            return NodeType.Ganache;
+        } else {
+            throw new Error(`Unknown client version: ${version}`);
+        }
     }
     private async _sendRawPayloadAsync<A>(payload: Partial<JSONRPCRequestPayload>): Promise<A> {
         const sendAsync = this._provider.sendAsync.bind(this._provider);

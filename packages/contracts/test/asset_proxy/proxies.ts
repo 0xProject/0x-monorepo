@@ -17,7 +17,7 @@ import { ERC20ProxyContract } from '../../generated_contract_wrappers/e_r_c20_pr
 import { ERC721ProxyContract } from '../../generated_contract_wrappers/e_r_c721_proxy';
 import { IAssetProxyContract } from '../../generated_contract_wrappers/i_asset_proxy';
 import { artifacts } from '../utils/artifacts';
-import { expectRevertReasonOrAlwaysFailingTransactionAsync } from '../utils/assertions';
+import { expectTransactionFailedAsync } from '../utils/assertions';
 import { chaiSetup } from '../utils/chai_setup';
 import { constants } from '../utils/constants';
 import { ERC20Wrapper } from '../utils/erc20_wrapper';
@@ -184,7 +184,7 @@ describe('Asset Transfer Proxies', () => {
                     constants.AWAIT_TRANSACTION_MINED_MS,
                 );
                 // Perform a transfer; expect this to fail.
-                return expectRevertReasonOrAlwaysFailingTransactionAsync(
+                await expectTransactionFailedAsync(
                     web3Wrapper.sendTransactionAsync({
                         to: erc20Proxy.address,
                         data,
@@ -205,7 +205,7 @@ describe('Asset Transfer Proxies', () => {
                     takerAddress,
                     amount,
                 );
-                return expectRevertReasonOrAlwaysFailingTransactionAsync(
+                await expectTransactionFailedAsync(
                     web3Wrapper.sendTransactionAsync({
                         to: erc20Proxy.address,
                         data,
@@ -344,7 +344,7 @@ describe('Asset Transfer Proxies', () => {
                     erc20Proxy.address, // the ERC20 proxy does not have an ERC721 receiver
                     amount,
                 );
-                return expectRevertReasonOrAlwaysFailingTransactionAsync(
+                return expectTransactionFailedAsync(
                     web3Wrapper.sendTransactionAsync({
                         to: erc721Proxy.address,
                         data,
@@ -369,7 +369,7 @@ describe('Asset Transfer Proxies', () => {
                     takerAddress,
                     amount,
                 );
-                return expectRevertReasonOrAlwaysFailingTransactionAsync(
+                return expectTransactionFailedAsync(
                     web3Wrapper.sendTransactionAsync({
                         to: erc721Proxy.address,
                         data,
@@ -393,7 +393,7 @@ describe('Asset Transfer Proxies', () => {
                     takerAddress,
                     amount,
                 );
-                return expectRevertReasonOrAlwaysFailingTransactionAsync(
+                return expectTransactionFailedAsync(
                     web3Wrapper.sendTransactionAsync({
                         to: erc721Proxy.address,
                         data,
@@ -421,7 +421,7 @@ describe('Asset Transfer Proxies', () => {
                     takerAddress,
                     amount,
                 );
-                return expectRevertReasonOrAlwaysFailingTransactionAsync(
+                return expectTransactionFailedAsync(
                     web3Wrapper.sendTransactionAsync({
                         to: erc721Proxy.address,
                         data,
@@ -442,7 +442,7 @@ describe('Asset Transfer Proxies', () => {
                     takerAddress,
                     amount,
                 );
-                return expectRevertReasonOrAlwaysFailingTransactionAsync(
+                return expectTransactionFailedAsync(
                     web3Wrapper.sendTransactionAsync({
                         to: erc721Proxy.address,
                         data,

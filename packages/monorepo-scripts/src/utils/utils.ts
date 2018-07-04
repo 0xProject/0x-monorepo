@@ -44,6 +44,9 @@ export const utils = {
             nextVersionIfValid = semver.inc(currentVersion, 'patch');
         }
         const lastEntry = changelog[0];
+        if (semver.gt(currentVersion, lastEntry.version)) {
+            throw new Error(`Package.json version cannot be greater then last CHANGELOG entry. Check: ${packageName}`);
+        }
         nextVersionIfValid = semver.eq(lastEntry.version, currentVersion)
             ? semver.inc(currentVersion, 'patch')
             : lastEntry.version;
@@ -100,19 +103,23 @@ export const utils = {
         return tagVersionByPackageName;
     },
     async removeLocalTagAsync(tagName: string): Promise<void> {
-        const result = await execAsync(`git tag -d ${tagName}`, {
-            cwd: constants.monorepoRootPath,
-        });
-        if (!_.isEmpty(result.stderr)) {
-            throw new Error(`Failed to delete local git tag. Got err: ${result.stderr}`);
+        try {
+            await execAsync(`git tag -d ${tagName}`, {
+                cwd: constants.monorepoRootPath,
+            });
+        } catch (err) {
+            throw new Error(`Failed to delete local git tag. Got err: ${err}`);
         }
+        this.log(`Removed local tag: ${tagName}`);
     },
     async removeRemoteTagAsync(tagName: string): Promise<void> {
-        const result = await execAsync(`git push origin ${tagName}`, {
-            cwd: constants.monorepoRootPath,
-        });
-        if (!_.isEmpty(result.stderr)) {
-            throw new Error(`Failed to delete remote git tag. Got err: ${result.stderr}`);
+        try {
+            await execAsync(`git push origin ${tagName}`, {
+                cwd: constants.monorepoRootPath,
+            });
+        } catch (err) {
+            throw new Error(`Failed to delete remote git tag. Got err: ${err}`);
         }
+        this.log(`Removed remote tag: ${tagName}`);
     },
 };

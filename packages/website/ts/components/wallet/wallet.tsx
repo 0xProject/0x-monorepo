@@ -1,19 +1,25 @@
 import { constants as sharedConstants, EtherscanLinkSuffixes, utils as sharedUtils } from '@0xproject/react-shared';
 import { BigNumber, errorUtils } from '@0xproject/utils';
-import { Web3Wrapper } from '@0xproject/web3-wrapper';
 import * as _ from 'lodash';
 
 import ActionAccountBalanceWallet from 'material-ui/svg-icons/action/account-balance-wallet';
 import * as React from 'react';
-import { Link } from 'react-router-dom';
 import firstBy = require('thenby');
 
 import { Blockchain } from 'ts/blockchain';
 import { AccountConnection } from 'ts/components/ui/account_connection';
 import { Container } from 'ts/components/ui/container';
+import { DropDown, DropdownMouseEvent } from 'ts/components/ui/drop_down';
 import { IconButton } from 'ts/components/ui/icon_button';
 import { Identicon } from 'ts/components/ui/identicon';
 import { Island } from 'ts/components/ui/island';
+import {
+    CopyAddressSimpleMenuItem,
+    DifferentWalletSimpleMenuItem,
+    GoToAccountManagementSimpleMenuItem,
+    SimpleMenu,
+    SimpleMenuItem,
+} from 'ts/components/ui/simple_menu';
 import { Text } from 'ts/components/ui/text';
 import { TokenIcon } from 'ts/components/ui/token_icon';
 import { BodyOverlay } from 'ts/components/wallet/body_overlay';
@@ -34,7 +40,6 @@ import {
     TokenByAddress,
     TokenState,
     TokenStateByAddress,
-    WebsitePaths,
 } from 'ts/types';
 import { analytics } from 'ts/utils/analytics';
 import { constants } from 'ts/utils/constants';
@@ -83,9 +88,7 @@ const ICON_DIMENSION = 28;
 const BODY_ITEM_KEY = 'BODY';
 const HEADER_ITEM_KEY = 'HEADER';
 const ETHER_ITEM_KEY = 'ETHER';
-const USD_DECIMAL_PLACES = 2;
 const NO_ALLOWANCE_TOGGLE_SPACE_WIDTH = 56;
-const ACCOUNT_PATH = `${WebsitePaths.Portal}/account`;
 const PLACEHOLDER_COLOR = colors.grey300;
 const LOADING_ROWS_COUNT = 6;
 
@@ -189,6 +192,7 @@ export class Wallet extends React.Component<WalletProps, WalletState> {
         );
     }
     private _renderConnectedHeaderRows(): React.ReactElement<{}> {
+        const isMobile = this.props.screenWidth === ScreenWidths.Sm;
         const userAddress = this.props.userAddress;
         const accountState = this._getAccountState();
         const main = (
@@ -199,15 +203,49 @@ export class Wallet extends React.Component<WalletProps, WalletState> {
                 <AccountConnection accountState={accountState} injectedProviderName={this.props.injectedProviderName} />
             </div>
         );
+        const onClick = _.noop;
+        const accessory = (
+            <DropDown
+                activeNode={
+                    // this container gives the menu button more of a hover target for the drop down
+                    // it prevents accidentally closing the menu by moving off of the button
+                    <Container paddingLeft="100px" paddingRight="15px">
+                        <Text
+                            className="zmdi zmdi-more-horiz"
+                            Tag="i"
+                            fontSize="32px"
+                            fontFamily="Material-Design-Iconic-Font"
+                            fontColor={colors.darkGrey}
+                            onClick={onClick}
+                            hoverColor={colors.mediumBlue}
+                        />
+                    </Container>
+                }
+                popoverContent={
+                    <SimpleMenu minWidth="150px">
+                        <CopyAddressSimpleMenuItem userAddress={this.props.userAddress} />
+                        <DifferentWalletSimpleMenuItem onClick={this.props.onToggleLedgerDialog} />
+                        <SimpleMenuItem displayText="Add Tokens..." onClick={this.props.onAddToken} />
+                        <SimpleMenuItem displayText="Remove Tokens..." onClick={this.props.onRemoveToken} />
+                        <GoToAccountManagementSimpleMenuItem />
+                    </SimpleMenu>
+                }
+                anchorOrigin={{ horizontal: 'right', vertical: 'bottom' }}
+                targetOrigin={{ horizontal: 'right', vertical: 'top' }}
+                zDepth={1}
+                activateEvent={DropdownMouseEvent.Click}
+                closeEvent={isMobile ? DropdownMouseEvent.Click : DropdownMouseEvent.Hover}
+            />
+        );
         return (
-            <Link key={HEADER_ITEM_KEY} to={ACCOUNT_PATH} style={{ textDecoration: 'none' }}>
-                <StandardIconRow
-                    icon={<Identicon address={userAddress} diameter={ICON_DIMENSION} />}
-                    main={main}
-                    minHeight="60px"
-                    backgroundColor={colors.white}
-                />
-            </Link>
+            <StandardIconRow
+                key={HEADER_ITEM_KEY}
+                icon={<Identicon address={userAddress} diameter={ICON_DIMENSION} />}
+                main={main}
+                accessory={accessory}
+                minHeight="60px"
+                backgroundColor={colors.white}
+            />
         );
     }
     private _renderBody(): React.ReactElement<{}> {
@@ -320,8 +358,24 @@ export class Wallet extends React.Component<WalletProps, WalletState> {
             this.state.wrappedEtherDirection === accessoryItemConfig.wrappedEtherDirection &&
             !_.isUndefined(this.props.userEtherBalanceInWei);
         const etherToken = this._getEthToken();
+        const wrapEtherItem = shouldShowWrapEtherItem ? (
+            <WrapEtherItem
+                userAddress={this.props.userAddress}
+                networkId={this.props.networkId}
+                blockchain={this.props.blockchain}
+                dispatcher={this.props.dispatcher}
+                userEtherBalanceInWei={this.props.userEtherBalanceInWei}
+                direction={accessoryItemConfig.wrappedEtherDirection}
+                etherToken={etherToken}
+                lastForceTokenStateRefetch={this.props.lastForceTokenStateRefetch}
+                onConversionSuccessful={this._closeWrappedEtherActionRow.bind(this)}
+                // tslint:disable:jsx-no-lambda
+                refetchEthTokenStateAsync={async () => this.props.refetchTokenStateAsync(etherToken.address)}
+            />
+        ) : null;
         return (
             <div id={key} key={key} className={`flex flex-column ${className || ''}`}>
+                {this.state.wrappedEtherDirection === Side.Receive && wrapEtherItem}
                 <StandardIconRow
                     icon={icon}
                     main={
@@ -331,23 +385,8 @@ export class Wallet extends React.Component<WalletProps, WalletState> {
                         </div>
                     }
                     accessory={this._renderAccessoryItems(accessoryItemConfig)}
-                    backgroundColor={shouldShowWrapEtherItem ? colors.walletFocusedItemBackground : undefined}
                 />
-                {shouldShowWrapEtherItem && (
-                    <WrapEtherItem
-                        userAddress={this.props.userAddress}
-                        networkId={this.props.networkId}
-                        blockchain={this.props.blockchain}
-                        dispatcher={this.props.dispatcher}
-                        userEtherBalanceInWei={this.props.userEtherBalanceInWei}
-                        direction={accessoryItemConfig.wrappedEtherDirection}
-                        etherToken={etherToken}
-                        lastForceTokenStateRefetch={this.props.lastForceTokenStateRefetch}
-                        onConversionSuccessful={this._closeWrappedEtherActionRow.bind(this)}
-                        // tslint:disable:jsx-no-lambda
-                        refetchEthTokenStateAsync={async () => this.props.refetchTokenStateAsync(etherToken.address)}
-                    />
-                )}
+                {this.state.wrappedEtherDirection === Side.Deposit && wrapEtherItem}
             </div>
         );
     }
@@ -411,19 +450,11 @@ export class Wallet extends React.Component<WalletProps, WalletState> {
         price?: BigNumber,
         isLoading: boolean = false,
     ): React.ReactNode {
-        let result;
-        if (!isLoading) {
-            if (_.isUndefined(price)) {
-                result = '--';
-            } else {
-                const unitAmount = Web3Wrapper.toUnitAmount(amount, decimals);
-                const value = unitAmount.mul(price);
-                const formattedAmount = value.toFixed(USD_DECIMAL_PLACES);
-                result = `$${formattedAmount}`;
-            }
-        } else {
-            result = '$0.00';
-        }
+        const result = !isLoading
+            ? _.isUndefined(price)
+                ? '--'
+                : utils.getUsdValueFormattedAmount(amount, decimals, price)
+            : '$0.00';
         return (
             <PlaceHolder hideChildren={isLoading} fillColor={PLACEHOLDER_COLOR}>
                 <Text fontSize="14px" fontColor={colors.darkGrey} lineHeight="1em">

@@ -103,7 +103,6 @@ export class EthWethConversionDialog extends React.Component<
                                 shouldCheckAllowance={false}
                                 onChange={this._onValueChange.bind(this)}
                                 amount={this.state.value}
-                                onVisitBalancesPageClick={this.props.onCancelled}
                             />
                         ) : (
                             <EthAmountInput
@@ -112,7 +111,6 @@ export class EthWethConversionDialog extends React.Component<
                                 onChange={this._onValueChange.bind(this)}
                                 shouldCheckBalance={true}
                                 shouldShowIncompleteErrs={this.state.shouldShowIncompleteErrs}
-                                onVisitBalancesPageClick={this.props.onCancelled}
                             />
                         )}
                         <div className="pt1" style={{ fontSize: 12 }}>

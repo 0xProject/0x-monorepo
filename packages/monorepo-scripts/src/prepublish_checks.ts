@@ -34,16 +34,16 @@ async function checkGitTagsForNextVersionAndDeleteIfExistAsync(
         const packageLocation = lernaPackage.location;
         const nextVersion = await utils.getNextPackageVersionAsync(currentVersion, packageName, packageLocation);
 
-        const localTagVersions = localTagVersionsByPackageName[packageName];
-        if (_.includes(localTagVersions, nextVersion)) {
-            const tagName = `${packageName}@${nextVersion}`;
-            await utils.removeLocalTagAsync(tagName);
-        }
-
         const remoteTagVersions = remoteTagVersionsByPackageName[packageName];
         if (_.includes(remoteTagVersions, nextVersion)) {
             const tagName = `:refs/tags/${packageName}@${nextVersion}`;
             await utils.removeRemoteTagAsync(tagName);
+        }
+
+        const localTagVersions = localTagVersionsByPackageName[packageName];
+        if (_.includes(localTagVersions, nextVersion)) {
+            const tagName = `${packageName}@${nextVersion}`;
+            await utils.removeLocalTagAsync(tagName);
         }
     }
 }

@@ -10,6 +10,7 @@ export class BlockchainWatcher {
     private _watchBalanceIntervalId: NodeJS.Timer;
     private _prevUserEtherBalanceInWei?: BigNumber;
     private _prevUserAddressIfExists: string;
+    private _prevNodeVersionIfExists: string;
     constructor(dispatcher: Dispatcher, web3Wrapper: Web3Wrapper, shouldPollUserAddress: boolean) {
         this._dispatcher = dispatcher;
         this._shouldPollUserAddress = shouldPollUserAddress;
@@ -43,11 +44,9 @@ export class BlockchainWatcher {
         );
     }
     private async _updateBalanceAsync(): Promise<void> {
-        let prevNodeVersion: string;
-        // Check for node version changes
         const currentNodeVersion = await this._web3Wrapper.getNodeVersionAsync();
-        if (currentNodeVersion !== prevNodeVersion) {
-            prevNodeVersion = currentNodeVersion;
+        if (this._prevNodeVersionIfExists !== currentNodeVersion) {
+            this._prevNodeVersionIfExists = currentNodeVersion;
             this._dispatcher.updateNodeVersion(currentNodeVersion);
         }
 

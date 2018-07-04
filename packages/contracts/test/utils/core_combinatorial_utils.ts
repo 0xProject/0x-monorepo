@@ -17,7 +17,7 @@ import 'make-promises-safe';
 import { ExchangeContract, FillContractEventArgs } from '../../generated_contract_wrappers/exchange';
 
 import { artifacts } from './artifacts';
-import { expectRevertReasonOrAlwaysFailingTransactionAsync } from './assertions';
+import { expectTransactionFailedAsync } from './assertions';
 import { AssetWrapper } from './asset_wrapper';
 import { chaiSetup } from './chai_setup';
 import { constants } from './constants';
@@ -75,7 +75,7 @@ export async function coreCombinatorialUtilsFactoryAsync(
     const zrxAssetData = assetProxyUtils.encodeERC20AssetData(zrxToken.address);
 
     const erc20FiveDecimalTokenCount = 2;
-    const fiveDecimals = new BigNumber(18);
+    const fiveDecimals = new BigNumber(5);
     const [erc20FiveDecimalTokenA, erc20FiveDecimalTokenB] = await erc20Wrapper.deployDummyTokensAsync(
         erc20FiveDecimalTokenCount,
         fiveDecimals,
@@ -418,7 +418,7 @@ export class CoreCombinatorialUtils {
         fillRevertReasonIfExists: RevertReason | undefined,
     ): Promise<void> {
         if (!_.isUndefined(fillRevertReasonIfExists)) {
-            return expectRevertReasonOrAlwaysFailingTransactionAsync(
+            return expectTransactionFailedAsync(
                 this.exchangeWrapper.fillOrderAsync(signedOrder, this.takerAddress, { takerAssetFillAmount }),
                 fillRevertReasonIfExists,
             );

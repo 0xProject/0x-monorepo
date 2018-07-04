@@ -1,5 +1,6 @@
 import { ECSignature } from '@0xproject/types';
 import { BigNumber } from '@0xproject/utils';
+import { Provider } from 'ethereum-types';
 import * as React from 'react';
 
 export enum Side {
@@ -215,10 +216,11 @@ export interface ContractEvent {
 }
 
 export type ValidatedBigNumberCallback = (isValid: boolean, amount?: BigNumber) => void;
+// Associated values are in `em` units
 export enum ScreenWidths {
-    Sm = 'SM',
-    Md = 'MD',
-    Lg = 'LG',
+    Sm = 40,
+    Md = 52,
+    Lg = 64,
 }
 
 export enum AlertTypes {
@@ -487,6 +489,8 @@ export enum Providers {
     Parity = 'PARITY',
     Metamask = 'METAMASK',
     Mist = 'MIST',
+    Toshi = 'TOSHI',
+    Cipher = 'CIPHER',
 }
 
 export interface InjectedProviderUpdate {
@@ -570,5 +574,17 @@ export enum AccountState {
     Ready = 'Ready',
     Loading = 'Loading',
     Locked = 'Locked',
+}
+
+export interface InjectedProvider extends Provider {
+    publicConfigStore?: InjectedProviderObservable;
+}
+
+// Minimal expected interface for an injected web3 object
+export interface InjectedWeb3 {
+    currentProvider: InjectedProvider;
+    version: {
+        getNetwork(cd: (err: Error, networkId: string) => void): void;
+    };
 }
 // tslint:disable:max-file-line-count

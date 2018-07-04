@@ -48,12 +48,11 @@
         "@0xproject/subproviders": "^0.10.4",
         "@0xproject/types": "^0.8.1",
         "@0xproject/utils": "^0.7.1",
-        "ethereum-types": "^0.0.1",
+        "ethereum-types": "^0.0.2",
         "@0xproject/typescript-typings": "^0.4.1",
         "@0xproject/web3-wrapper": "^0.7.1",
         "lodash": "^4.17.4",
-        "web3": "^0.20.0",
-        "web3-provider-engine": "^14.0.4"
+        "web3-provider-engine": "14.0.6"
     },
     "publishConfig": {
         "access": "public"
