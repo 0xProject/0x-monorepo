@@ -41,8 +41,8 @@ export const assert = {
         value: string,
         stringEnum: any /* There is no base type for every string enum */,
     ): void {
-        const doesBelongToStringEnum = !_.isUndefined(stringEnum[value]);
-        const enumValues = _.keys(stringEnum);
+        const enumValues = _.values(stringEnum);
+        const doesBelongToStringEnum = _.includes(enumValues, value);
         const enumValuesAsStrings = _.map(enumValues, enumValue => `'${enumValue}'`);
         const enumValuesAsString = enumValuesAsStrings.join(', ');
         assert.assert(
