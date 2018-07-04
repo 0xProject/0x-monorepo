@@ -13,7 +13,6 @@ import {
 } from 'ethereum-types';
 import ethUtil = require('ethereumjs-util');
 import * as _ from 'lodash';
-import web3Utils = require('web3-utils');
 
 import { utils } from './utils';
 
@@ -33,26 +32,26 @@ export const marshaller = {
     ): BlockWithoutTransactionData {
         const block = {
             ...blockWithHexValues,
-            gasLimit: web3Utils.toDecimal(blockWithHexValues.gasLimit),
-            gasUsed: web3Utils.toDecimal(blockWithHexValues.gasUsed),
-            size: web3Utils.toDecimal(blockWithHexValues.size),
-            timestamp: web3Utils.toDecimal(blockWithHexValues.timestamp),
-            number: _.isNull(blockWithHexValues.number) ? null : web3Utils.toDecimal(blockWithHexValues.number),
-            difficulty: this._convertAmountToBigNumber(blockWithHexValues.difficulty),
-            totalDifficulty: this._convertAmountToBigNumber(blockWithHexValues.totalDifficulty),
+            gasLimit: utils.convertHexToNumber(blockWithHexValues.gasLimit),
+            gasUsed: utils.convertHexToNumber(blockWithHexValues.gasUsed),
+            size: utils.convertHexToNumber(blockWithHexValues.size),
+            timestamp: utils.convertHexToNumber(blockWithHexValues.timestamp),
+            number: _.isNull(blockWithHexValues.number) ? null : utils.convertHexToNumber(blockWithHexValues.number),
+            difficulty: utils.convertAmountToBigNumber(blockWithHexValues.difficulty),
+            totalDifficulty: utils.convertAmountToBigNumber(blockWithHexValues.totalDifficulty),
         };
         return block;
     },
     unmarshalIntoBlockWithTransactionData(blockWithHexValues: BlockWithTransactionDataRPC): BlockWithTransactionData {
         const block = {
             ...blockWithHexValues,
-            gasLimit: web3Utils.toDecimal(blockWithHexValues.gasLimit),
-            gasUsed: web3Utils.toDecimal(blockWithHexValues.gasUsed),
-            size: web3Utils.toDecimal(blockWithHexValues.size),
-            timestamp: web3Utils.toDecimal(blockWithHexValues.timestamp),
-            number: _.isNull(blockWithHexValues.number) ? null : web3Utils.toDecimal(blockWithHexValues.number),
-            difficulty: this._convertAmountToBigNumber(blockWithHexValues.difficulty),
-            totalDifficulty: this._convertAmountToBigNumber(blockWithHexValues.totalDifficulty),
+            gasLimit: utils.convertHexToNumber(blockWithHexValues.gasLimit),
+            gasUsed: utils.convertHexToNumber(blockWithHexValues.gasUsed),
+            size: utils.convertHexToNumber(blockWithHexValues.size),
+            timestamp: utils.convertHexToNumber(blockWithHexValues.timestamp),
+            number: _.isNull(blockWithHexValues.number) ? null : utils.convertHexToNumber(blockWithHexValues.number),
+            difficulty: utils.convertAmountToBigNumber(blockWithHexValues.difficulty),
+            totalDifficulty: utils.convertAmountToBigNumber(blockWithHexValues.totalDifficulty),
             transactions: [] as Transaction[],
         };
         block.transactions = _.map(blockWithHexValues.transactions, (tx: TransactionRPC) => {
@@ -64,12 +63,14 @@ export const marshaller = {
     unmarshalTransaction(txRpc: TransactionRPC): Transaction {
         const tx = {
             ...txRpc,
-            blockNumber: !_.isNull(txRpc.blockNumber) ? web3Utils.toDecimal(txRpc.blockNumber) : null,
-            transactionIndex: !_.isNull(txRpc.transactionIndex) ? web3Utils.toDecimal(txRpc.transactionIndex) : null,
-            nonce: web3Utils.toDecimal(txRpc.nonce),
-            gas: web3Utils.toDecimal(txRpc.gas),
-            gasPrice: this._convertAmountToBigNumber(txRpc.gasPrice),
-            value: this._convertAmountToBigNumber(txRpc.value),
+            blockNumber: !_.isNull(txRpc.blockNumber) ? utils.convertHexToNumber(txRpc.blockNumber) : null,
+            transactionIndex: !_.isNull(txRpc.transactionIndex)
+                ? utils.convertHexToNumber(txRpc.transactionIndex)
+                : null,
+            nonce: utils.convertHexToNumber(txRpc.nonce),
+            gas: utils.convertHexToNumber(txRpc.gas),
+            gasPrice: utils.convertAmountToBigNumber(txRpc.gasPrice),
+            value: utils.convertAmountToBigNumber(txRpc.value),
         };
         return tx;
     },
@@ -116,15 +117,15 @@ export const marshaller = {
         if (_.isUndefined(blockParam)) {
             return BlockParamLiteral.Latest;
         }
-        const encodedBlockParam = _.isNumber(blockParam) ? web3Utils.toHex(blockParam) : blockParam;
+        const encodedBlockParam = _.isNumber(blockParam) ? utils.numberToHex(blockParam) : blockParam;
         return encodedBlockParam;
     },
     unmarshalLog(rawLog: RawLogEntry): LogEntry {
         const formattedLog = {
             ...rawLog,
-            logIndex: this.convertHexToNumberOrNull(rawLog.logIndex),
-            blockNumber: this.convertHexToNumberOrNull(rawLog.blockNumber),
-            transactionIndex: this.convertHexToNumberOrNull(rawLog.transactionIndex),
+            logIndex: utils.convertHexToNumberOrNull(rawLog.logIndex),
+            blockNumber: utils.convertHexToNumberOrNull(rawLog.blockNumber),
+            transactionIndex: utils.convertHexToNumberOrNull(rawLog.transactionIndex),
         };
         return formattedLog;
     },
@@ -134,44 +135,16 @@ export const marshaller = {
             to: _.isUndefined(callTxDataBase.to) ? undefined : this.marshalAddress(callTxDataBase.to),
             gasPrice: _.isUndefined(callTxDataBase.gasPrice)
                 ? undefined
-                : this._encodeAmountAsHexString(callTxDataBase.gasPrice),
-            gas: _.isUndefined(callTxDataBase.gas) ? undefined : this._encodeAmountAsHexString(callTxDataBase.gas),
+                : utils.encodeAmountAsHexString(callTxDataBase.gasPrice),
+            gas: _.isUndefined(callTxDataBase.gas) ? undefined : utils.encodeAmountAsHexString(callTxDataBase.gas),
             value: _.isUndefined(callTxDataBase.value)
                 ? undefined
-                : this._encodeAmountAsHexString(callTxDataBase.value),
+                : utils.encodeAmountAsHexString(callTxDataBase.value),
             nonce: _.isUndefined(callTxDataBase.nonce)
                 ? undefined
-                : this._encodeAmountAsHexString(callTxDataBase.nonce),
+                : utils.encodeAmountAsHexString(callTxDataBase.nonce),
         };
 
         return callTxDataBaseRPC;
-    },
-    convertHexToNumberOrNull(hex: string | null): number | null {
-        if (_.isNull(hex)) {
-            return null;
-        }
-        const decimal = web3Utils.toDecimal(hex);
-        return decimal;
-    },
-    _convertAmountToBigNumber(value: string | number | BigNumber): BigNumber {
-        const num = value || 0;
-        const isBigNumber = utils.isBigNumber(num);
-        if (isBigNumber) {
-            return num as BigNumber;
-        }
-
-        if (_.isString(num) && (num.indexOf('0x') === 0 || num.indexOf('-0x') === 0)) {
-            return new BigNumber(num.replace('0x', ''), 16);
-        }
-
-        const baseTen = 10;
-        return new BigNumber((num as number).toString(baseTen), baseTen);
-    },
-    _encodeAmountAsHexString(value: string | number | BigNumber): string {
-        const valueBigNumber = this._convertAmountToBigNumber(value);
-        const hexBase = 16;
-        const valueHex = valueBigNumber.toString(hexBase);
-
-        return valueBigNumber.lessThan(0) ? '-0x' + valueHex.substr(1) : '0x' + valueHex;
     },
 };

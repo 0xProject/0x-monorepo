@@ -29,7 +29,7 @@ export interface BlockWithTransactionDataRPC extends AbstractBlockRPC {
 }
 export interface TransactionRPC {
     hash: string;
-    nonce: number;
+    nonce: string;
     blockHash: string | null;
     blockNumber: string | null;
     transactionIndex: string | null;

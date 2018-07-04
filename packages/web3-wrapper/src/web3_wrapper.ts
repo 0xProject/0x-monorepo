@@ -20,7 +20,6 @@ import {
     TxData,
 } from 'ethereum-types';
 import * as _ from 'lodash';
-import * as web3Utils from 'web3-utils';
 
 import { marshaller } from './marshaller';
 import {
@@ -29,6 +28,7 @@ import {
     TransactionRPC,
     Web3WrapperErrors,
 } from './types';
+import { utils } from './utils';
 
 const BASE_TEN = 10;
 
@@ -136,7 +136,7 @@ export class Web3Wrapper {
         // number - Parity
         // hex - Geth
         if (_.isString(status)) {
-            return web3Utils.toDecimal(status) as 0 | 1;
+            return utils.convertHexToNumber(status) as 0 | 1;
         } else if (_.isUndefined(status)) {
             return null;
         } else {
@@ -315,7 +315,7 @@ export class Web3Wrapper {
             method: 'eth_blockNumber',
             params: [],
         });
-        const blockNumber = marshaller.convertHexToNumberOrNull(blockNumberHex);
+        const blockNumber = utils.convertHexToNumberOrNull(blockNumberHex);
         return blockNumber as number;
     }
     /**
@@ -326,7 +326,7 @@ export class Web3Wrapper {
     public async getBlockAsync(blockParam: string | BlockParam): Promise<BlockWithoutTransactionData> {
         Web3Wrapper._assertBlockParamOrString(blockParam);
         const encodedBlockParam = marshaller.marshalBlockParam(blockParam);
-        const method = web3Utils.isHexStrict(blockParam) ? 'eth_getBlockByHash' : 'eth_getBlockByNumber';
+        const method = utils.isHexStrict(blockParam) ? 'eth_getBlockByHash' : 'eth_getBlockByNumber';
         const shouldIncludeTransactionData = false;
         const blockWithoutTransactionDataWithHexValues = await this._sendRawPayloadAsync<
             BlockWithoutTransactionDataRPC
@@ -348,9 +348,9 @@ export class Web3Wrapper {
         Web3Wrapper._assertBlockParamOrString(blockParam);
         let encodedBlockParam = blockParam;
         if (_.isNumber(blockParam)) {
-            encodedBlockParam = web3Utils.toHex(blockParam);
+            encodedBlockParam = utils.numberToHex(blockParam);
         }
-        const method = web3Utils.isHexStrict(blockParam) ? 'eth_getBlockByHash' : 'eth_getBlockByNumber';
+        const method = utils.isHexStrict(blockParam) ? 'eth_getBlockByHash' : 'eth_getBlockByNumber';
         const shouldIncludeTransactionData = true;
         const blockWithTransactionDataWithHexValues = await this._sendRawPayloadAsync<BlockWithTransactionDataRPC>({
             method,
@@ -432,11 +432,11 @@ export class Web3Wrapper {
     public async getLogsAsync(filter: FilterObject): Promise<LogEntry[]> {
         let fromBlock = filter.fromBlock;
         if (_.isNumber(fromBlock)) {
-            fromBlock = web3Utils.toHex(fromBlock);
+            fromBlock = utils.numberToHex(fromBlock);
         }
         let toBlock = filter.toBlock;
         if (_.isNumber(toBlock)) {
-            toBlock = web3Utils.toHex(toBlock);
+            toBlock = utils.numberToHex(toBlock);
         }
         const serializedFilter = {
             ...filter,
@@ -459,7 +459,7 @@ export class Web3Wrapper {
     public async estimateGasAsync(txData: Partial<TxData>): Promise<number> {
         const txDataHex = marshaller.marshalTxData(txData);
         const gasHex = await this._sendRawPayloadAsync<string>({ method: 'eth_estimateGas', params: [txDataHex] });
-        const gas = web3Utils.toDecimal(gasHex);
+        const gas = utils.convertHexToNumber(gasHex);
         return gas;
     }
     /**
@@ -600,7 +600,7 @@ export class Web3Wrapper {
      */
     public async setHeadAsync(blockNumber: number): Promise<void> {
         assert.isNumber('blockNumber', blockNumber);
-        await this._sendRawPayloadAsync<void>({ method: 'debug_setHead', params: [web3Utils.toHex(blockNumber)] });
+        await this._sendRawPayloadAsync<void>({ method: 'debug_setHead', params: [utils.numberToHex(blockNumber)] });
     }
     /**
      * Returns either NodeType.Geth or NodeType.Ganache depending on the type of
