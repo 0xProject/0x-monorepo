@@ -389,15 +389,6 @@ export class Web3Wrapper {
         return formattedLogs;
     }
     /**
-     * Get a Web3 contract factory instance for a given ABI
-     * @param abi Smart contract ABI
-     * @returns Web3 contract factory which can create Web3 Contract instances from the supplied ABI
-     */
-    public getContractFromAbi(abi: ContractAbi): Web3.Contract<any> {
-        const web3Contract = this._web3.eth.contract(abi);
-        return web3Contract;
-    }
-    /**
      * Calculate the estimated gas cost for a given transaction
      * @param txData Transaction data
      * @returns Estimated gas cost
