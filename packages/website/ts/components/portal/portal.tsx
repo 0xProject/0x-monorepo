@@ -320,7 +320,7 @@ export class Portal extends React.Component<PortalProps, PortalState> {
     private _renderWallet(): React.ReactNode {
         const isMobile = utils.isMobileWidth(this.props.screenWidth);
         // We need room to scroll down for mobile onboarding
-        const marginBottom = isMobile ? '200px' : '15px';
+        const marginBottom = isMobile ? '250px' : '15px';
         return (
             <div>
                 <Container className="flex flex-column items-center">

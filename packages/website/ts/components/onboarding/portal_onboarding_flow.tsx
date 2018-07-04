@@ -57,13 +57,12 @@ class PlainPortalOnboardingFlow extends React.Component<PortalOnboardingFlowProp
         this._unlisten();
     }
     public componentDidUpdate(prevProps: PortalOnboardingFlowProps): void {
-        this._adjustStepIfShould();
-        if (!prevProps.isRunning && this.props.isRunning) {
+        // Any one of steps 0-3 could be the starting step, and we only want to reset the scroll on the starting step.
+        if (this.props.isRunning && utils.isMobileWidth(this.props.screenWidth) && this.props.stepIndex < 3) {
             // On mobile, make sure the wallet is completely visible.
-            if (this.props.screenWidth === ScreenWidths.Sm) {
-                document.querySelector('.wallet').scrollIntoView();
-            }
+            document.querySelector('.wallet').scrollIntoView();
         }
+        this._adjustStepIfShould();
         if (!prevProps.blockchainIsLoaded && this.props.blockchainIsLoaded) {
             this._autoStartOnboardingIfShould();
         }
