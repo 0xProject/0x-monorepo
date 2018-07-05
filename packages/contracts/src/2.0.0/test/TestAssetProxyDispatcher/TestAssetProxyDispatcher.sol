@@ -21,6 +21,7 @@ pragma experimental ABIEncoderV2;
 
 import "../../protocol/Exchange/MixinAssetProxyDispatcher.sol";
 
+
 contract TestAssetProxyDispatcher is MixinAssetProxyDispatcher {
     function publicDispatchTransferFrom(
         bytes memory assetData,

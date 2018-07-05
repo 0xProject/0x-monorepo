@@ -22,6 +22,7 @@ pragma experimental ABIEncoderV2;
 import "../../utils/Ownable/Ownable.sol";
 import "./mixins/MAuthorizable.sol";
 
+
 contract MixinAuthorizable is
     Ownable,
     MAuthorizable

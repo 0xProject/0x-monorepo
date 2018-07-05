@@ -20,6 +20,7 @@ pragma solidity ^0.4.24;
 
 import "../../protocol/AssetProxyOwner/AssetProxyOwner.sol";
 
+
 contract TestAssetProxyOwner is
     AssetProxyOwner
 {

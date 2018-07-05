@@ -1,5 +1,7 @@
 pragma solidity ^0.4.11;
 
+
+// solhint-disable-next-line contract-name-camelcase
 contract Token_v1 {
 
     /// @return total amount of tokens

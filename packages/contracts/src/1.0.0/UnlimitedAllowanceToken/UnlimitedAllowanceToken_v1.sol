@@ -20,6 +20,8 @@ pragma solidity ^0.4.11;
 
 import { ERC20Token_v1 as ERC20Token } from "../ERC20Token/ERC20Token_v1.sol";
 
+
+// solhint-disable-next-line contract-name-camelcase
 contract UnlimitedAllowanceToken_v1 is ERC20Token {
 
     uint constant MAX_UINT = 2**256 - 1;

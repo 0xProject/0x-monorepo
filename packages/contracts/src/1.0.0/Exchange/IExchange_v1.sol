@@ -1,5 +1,7 @@
 pragma solidity ^0.4.19;
 
+
+// solhint-disable-next-line contract-name-camelcase
 contract IExchange_v1 {
 
     // Error Codes
@@ -37,29 +39,33 @@ contract IExchange_v1 {
         bytes32 orderHash
     );
     
+    // solhint-disable-next-line func-name-mixedcase
     function ZRX_TOKEN_CONTRACT()
-      public view
-      returns (address);
-      
+        public view
+        returns (address);
+    
+    // solhint-disable-next-line func-name-mixedcase
     function TOKEN_TRANSFER_PROXY_CONTRACT()
-      public view
-      returns (address);
+        public view
+        returns (address);
       
+    // solhint-disable-next-line func-name-mixedcase
     function EXTERNAL_QUERY_GAS_LIMIT()
-      public view
-      returns (uint16);
+        public view
+        returns (uint16);
       
+    // solhint-disable-next-line func-name-mixedcase
     function VERSION()
-      public view
-      returns (string);
+        public view
+        returns (string);
     
     function filled(bytes32)
-      public view
-      returns (uint256);
+        public view
+        returns (uint256);
       
     function cancelled(bytes32)
-      public view
-      returns (uint256);
+        public view
+        returns (uint256);
     
     /// @dev Calculates the sum of values already filled and cancelled for a given order.
     /// @param orderHash The Keccak-256 hash of the given order.
@@ -121,15 +127,15 @@ contract IExchange_v1 {
     /// @param s ECDSA signature parameters s.
     /// @return Total amount of takerToken filled in trade.
     function fillOrder(
-          address[5] orderAddresses,
-          uint[6] orderValues,
-          uint fillTakerTokenAmount,
-          bool shouldThrowOnInsufficientBalanceOrAllowance,
-          uint8 v,
-          bytes32 r,
-          bytes32 s)
-          public
-          returns (uint filledTakerTokenAmount);
+        address[5] orderAddresses,
+        uint[6] orderValues,
+        uint fillTakerTokenAmount,
+        bool shouldThrowOnInsufficientBalanceOrAllowance,
+        uint8 v,
+        bytes32 r,
+        bytes32 s)
+        public
+        returns (uint filledTakerTokenAmount);
       
     /// @dev Cancels the input order.
     /// @param orderAddresses Array of order's maker, taker, makerToken, takerToken, and feeRecipient.

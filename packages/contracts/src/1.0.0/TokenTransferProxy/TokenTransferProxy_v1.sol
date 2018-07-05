@@ -21,8 +21,10 @@ pragma solidity ^0.4.11;
 import { Token_v1 as Token } from "../Token/Token_v1.sol";
 import { Ownable_v1 as Ownable } from "../Ownable/Ownable_v1.sol";
 
+
 /// @title TokenTransferProxy - Transfers tokens on behalf of contracts that have been approved via decentralized governance.
 /// @author Amir Bandeali - <amir@0xProject.com>, Will Warren - <will@0xProject.com>
+// solhint-disable-next-line contract-name-camelcase
 contract TokenTransferProxy_v1 is Ownable {
 
     /// @dev Only authorized addresses can invoke functions with this modifier.

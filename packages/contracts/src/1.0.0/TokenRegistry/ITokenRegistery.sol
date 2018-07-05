@@ -20,6 +20,7 @@ pragma solidity ^0.4.21;
 
 import { IOwnable_v1 as IOwnable } from "../Ownable/IOwnable_v1.sol";
 
+
 /// @title Token Registry - Stores metadata associated with ERC20 tokens. See ERC22 https://github.com/ethereum/EIPs/issues/22
 /// @author Amir Bandeali - <amir@0xProject.com>, Will Warren - <will@0xProject.com>
 contract ITokenRegistery is IOwnable {
