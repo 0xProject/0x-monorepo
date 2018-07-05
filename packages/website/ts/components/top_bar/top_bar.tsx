@@ -11,6 +11,7 @@ import { LegacyPortalMenu } from 'ts/components/legacy_portal/legacy_portal_menu
 import { DrawerMenu } from 'ts/components/portal/drawer_menu';
 import { ProviderDisplay } from 'ts/components/top_bar/provider_display';
 import { TopBarMenuItem } from 'ts/components/top_bar/top_bar_menu_item';
+import { Container } from 'ts/components/ui/container';
 import { DropDown } from 'ts/components/ui/drop_down';
 import { Dispatcher } from 'ts/redux/dispatcher';
 import { Deco, Key, ProviderType, WebsiteLegacyPaths, WebsitePaths } from 'ts/types';
@@ -45,6 +46,8 @@ export interface TopBarProps {
     onVersionSelected?: (semver: string) => void;
     sidebarHeader?: React.ReactNode;
     maxWidth?: number;
+    paddingLeft?: number;
+    paddingRight?: number;
 }
 
 interface TopBarState {
@@ -67,13 +70,12 @@ const styles: Styles = {
         color: colors.darkestGrey,
         paddingTop: 6,
         paddingBottom: 6,
-        marginTop: 17,
         cursor: 'pointer',
         fontWeight: 400,
     },
 };
 
-const DEFAULT_HEIGHT = 59;
+const DEFAULT_HEIGHT = 68;
 const EXPANDED_HEIGHT = 75;
 
 export class TopBar extends React.Component<TopBarProps, TopBarState> {
@@ -81,6 +83,8 @@ export class TopBar extends React.Component<TopBarProps, TopBarState> {
         displayType: TopBarDisplayType.Default,
         style: {},
         isNightVersion: false,
+        paddingLeft: 20,
+        paddingRight: 20,
     };
     public static heightForDisplayType(displayType: TopBarDisplayType): number {
         const result = displayType === TopBarDisplayType.Expanded ? EXPANDED_HEIGHT : DEFAULT_HEIGHT;
@@ -102,7 +106,9 @@ export class TopBar extends React.Component<TopBarProps, TopBarState> {
     public render(): React.ReactNode {
         const isNightVersion = this.props.isNightVersion;
         const isExpandedDisplayType = this.props.displayType === TopBarDisplayType.Expanded;
-        const parentClassNames = `flex mx-auto ${isExpandedDisplayType ? 'pl3 py1' : 'max-width-4'}`;
+        const parentClassNames = !isExpandedDisplayType
+            ? 'flex mx-auto items-center max-width-4'
+            : 'flex mx-auto items-center';
         const height = isExpandedDisplayType ? EXPANDED_HEIGHT : DEFAULT_HEIGHT;
         const developerSectionMenuItems = [
             <Link key="subMenuItem-zeroEx" to={WebsitePaths.ZeroExJs} className="text-decoration-none">
@@ -197,7 +203,6 @@ export class TopBar extends React.Component<TopBarProps, TopBarState> {
             fontSize: 25,
             color: isNightVersion ? 'white' : 'black',
             cursor: 'pointer',
-            paddingTop: 16,
         };
         const activeNode = (
             <div className="flex relative" style={{ color: menuIconStyle.color }}>
@@ -211,15 +216,21 @@ export class TopBar extends React.Component<TopBarProps, TopBarState> {
         // TODO : Remove this once we ship portal v2
         const shouldShowPortalV2Drawer = this._isViewingPortal() && utils.shouldShowPortalV2();
         return (
-            <div style={{ ...styles.topBar, ...bottomBorderStyle, ...this.props.style, ...{ height } }} className="pb1">
-                <div className={parentClassNames} style={{ maxWidth: this.props.maxWidth }}>
-                    <div className="col col-2 sm-pl1 md-pl2 lg-pl0" style={{ paddingTop: 15 }}>
-                        <Link to={`${WebsitePaths.Home}`} className="text-decoration-none">
-                            <img src={logoUrl} height="30" />
-                        </Link>
-                    </div>
-                    <div className={`col col-${isExpandedDisplayType ? '8' : '9'} lg-hide md-hide`} />
-                    <div className={`col col-${isExpandedDisplayType ? '6' : '5'} sm-hide xs-hide`} />
+            <div
+                style={{ ...styles.topBar, ...bottomBorderStyle, ...this.props.style, ...{ height } }}
+                className="pb1 flex items-center"
+            >
+                <Container
+                    className={parentClassNames}
+                    width="100%"
+                    maxWidth={this.props.maxWidth}
+                    paddingLeft={this.props.paddingLeft}
+                    paddingRight={this.props.paddingRight}
+                >
+                    <Link to={`${WebsitePaths.Home}`} className="text-decoration-none">
+                        <img src={logoUrl} height="30" />
+                    </Link>
+                    <div className="flex-auto" />
                     {!this._isViewingPortal() && (
                         <div className={menuClasses}>
                             <div className="flex justify-between">
@@ -264,7 +275,7 @@ export class TopBar extends React.Component<TopBarProps, TopBarState> {
                         </div>
                     )}
                     {this._isViewingPortal() && (
-                        <div className="sm-hide xs-hide col col-5" style={{ paddingTop: 8, marginRight: 36 }}>
+                        <div className="sm-hide xs-hide">
                             <ProviderDisplay
                                 dispatcher={this.props.dispatcher}
                                 userAddress={this.props.userAddress}
@@ -277,12 +288,12 @@ export class TopBar extends React.Component<TopBarProps, TopBarState> {
                             />
                         </div>
                     )}
-                    <div className={`col ${isExpandedDisplayType ? 'col-2 pl2' : 'col-1'} md-hide lg-hide`}>
+                    <div className={'md-hide lg-hide'}>
                         <div style={menuIconStyle}>
                             <i className="zmdi zmdi-menu" onClick={this._onMenuButtonClick.bind(this)} />
                         </div>
                     </div>
-                </div>
+                </Container>
                 {shouldShowPortalV2Drawer ? this._renderPortalV2Drawer() : this._renderDrawer()}
             </div>
         );
