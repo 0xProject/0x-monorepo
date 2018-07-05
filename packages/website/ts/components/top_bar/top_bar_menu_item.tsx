@@ -3,6 +3,8 @@ import * as _ from 'lodash';
 import * as React from 'react';
 import { Link } from 'react-router-dom';
 
+import { CallToAction } from 'ts/components/ui/button';
+
 const DEFAULT_STYLE = {
     color: colors.darkestGrey,
 };
@@ -27,22 +29,15 @@ export class TopBarMenuItem extends React.Component<TopBarMenuItemProps, TopBarM
         isNightVersion: false,
     };
     public render(): React.ReactNode {
-        const primaryStyles = this.props.isPrimary
-            ? {
-                  borderRadius: 4,
-                  border: `1px solid ${this.props.isNightVersion ? colors.grey : colors.greyishPink}`,
-                  paddingLeft: 9,
-                  paddingRight: 9,
-                  minWidth: 77,
-              }
-            : {};
         const menuItemColor = this.props.isNightVersion ? 'white' : this.props.style.color;
         const linkColor = _.isUndefined(menuItemColor) ? colors.darkestGrey : menuItemColor;
+        const itemContent = this.props.isPrimary ? (
+            <CallToAction padding="0.8em 1.5em">{this.props.title}</CallToAction>
+        ) : (
+            this.props.title
+        );
         return (
-            <div
-                className={`center ${this.props.className}`}
-                style={{ ...this.props.style, ...primaryStyles, color: menuItemColor }}
-            >
+            <div className={`center ${this.props.className}`} style={{ ...this.props.style, color: menuItemColor }}>
                 {this.props.isExternal ? (
                     <a
                         className="text-decoration-none"
@@ -50,11 +45,11 @@ export class TopBarMenuItem extends React.Component<TopBarMenuItemProps, TopBarM
                         target="_blank"
                         href={this.props.path}
                     >
-                        {this.props.title}
+                        {itemContent}
                     </a>
                 ) : (
                     <Link to={this.props.path} className="text-decoration-none" style={{ color: linkColor }}>
-                        {this.props.title}
+                        {itemContent}
                     </Link>
                 )}
             </div>

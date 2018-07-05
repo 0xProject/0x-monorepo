@@ -55,6 +55,19 @@ export class Translate {
     }
     public get(key: Key, decoration?: Deco): string {
         let text = this._translation[key];
+        // if a translation does not exist for a certain language, fallback to english
+        // if it still doesn't exist in english, throw an error
+        if (_.isUndefined(text)) {
+            const englishTranslation: Translation = languageToTranslations[Language.English];
+            const englishText = englishTranslation[key];
+            if (!_.isUndefined(englishText)) {
+                text = englishText;
+            } else {
+                throw new Error(
+                    `Translation key not available in ${this._selectedLanguage} or ${Language.English}: ${key}`,
+                );
+            }
+        }
         if (!_.isUndefined(decoration) && !_.includes(languagesWithoutCaps, this._selectedLanguage)) {
             switch (decoration) {
                 case Deco.Cap:

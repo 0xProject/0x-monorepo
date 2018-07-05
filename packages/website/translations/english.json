@@ -76,5 +76,6 @@
     "WEBSITE": "website",
     "DEVELOPERS": "developers",
     "HOME": "home",
-    "ROCKETCHAT": "rocket.chat"
+    "ROCKETCHAT": "rocket.chat",
+    "TRADE_CALL_TO_ACTION": "trade on 0x"
 }

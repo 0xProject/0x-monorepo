@@ -274,7 +274,7 @@ export class Landing extends React.Component<LandingProps, LandingState> {
                                             className="text-decoration-none"
                                         >
                                             <CallToAction width="175px">
-                                                {this.props.translate.get(Key.CommunityCallToAction, Deco.Cap)}
+                                                {this.props.translate.get(Key.TradeCallToAction, Deco.Cap)}
                                             </CallToAction>
                                         </a>
                                     </div>
@@ -295,7 +295,7 @@ export class Landing extends React.Component<LandingProps, LandingState> {
                         <div
                             className="mr1 px1"
                             style={{
-                                backgroundColor: colors.lightTurquois,
+                                backgroundColor: colors.white,
                                 borderRadius: 3,
                                 color: colors.heroGrey,
                                 height: 23,

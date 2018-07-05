@@ -233,7 +233,7 @@ export class TopBar extends React.Component<TopBarProps, TopBarState> {
                     <div className="flex-auto" />
                     {!this._isViewingPortal() && (
                         <div className={menuClasses}>
-                            <div className="flex justify-between">
+                            <div className="flex items-center justify-between">
                                 <DropDown
                                     activeNode={activeNode}
                                     popoverContent={popoverContent}
@@ -263,7 +263,7 @@ export class TopBar extends React.Component<TopBarProps, TopBarState> {
                                     isExternal={false}
                                 />
                                 <TopBarMenuItem
-                                    title={this.props.translate.get(Key.PortalDApp, Deco.CapWords)}
+                                    title={this.props.translate.get(Key.TradeCallToAction, Deco.Cap)}
                                     path={`${WebsitePaths.Portal}`}
                                     isPrimary={true}
                                     style={styles.menuItem}

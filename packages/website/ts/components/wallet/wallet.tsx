@@ -234,7 +234,7 @@ export class Wallet extends React.Component<WalletProps, WalletState> {
                 targetOrigin={{ horizontal: 'right', vertical: 'top' }}
                 zDepth={1}
                 activateEvent={DropdownMouseEvent.Click}
-                closeEvent={isMobile ? DropdownMouseEvent.Click : DropdownMouseEvent.Hover}
+                closeEvent={DropdownMouseEvent.Click}
             />
         );
         return (

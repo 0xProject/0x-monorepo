@@ -226,7 +226,7 @@ export class Portal extends React.Component<PortalProps, PortalState> {
                 : TokenVisibility.TRACKED;
         return (
             <Container>
-                <DocumentTitle title="0x Portal DApp" />
+                <DocumentTitle title="0x Portal" />
                 <TopBar
                     userAddress={this.props.userAddress}
                     networkId={this.props.networkId}

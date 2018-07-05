@@ -456,6 +456,7 @@ export enum Key {
     Developers = 'DEVELOPERS',
     Home = 'HOME',
     RocketChat = 'ROCKETCHAT',
+    TradeCallToAction = 'TRADE_CALL_TO_ACTION',
 }
 
 export enum SmartContractDocSections {
