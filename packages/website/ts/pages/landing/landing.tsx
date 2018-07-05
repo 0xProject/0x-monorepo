@@ -268,15 +268,11 @@ export class Landing extends React.Component<LandingProps, LandingState> {
                                         </Link>
                                     </div>
                                     <div className="lg-col lg-col-6 sm-center sm-col sm-col-12">
-                                        <a
-                                            href={constants.URL_ZEROEX_CHAT}
-                                            target="_blank"
-                                            className="text-decoration-none"
-                                        >
+                                        <Link to={WebsitePaths.Portal} className="text-decoration-none">
                                             <CallToAction width="175px">
                                                 {this.props.translate.get(Key.TradeCallToAction, Deco.Cap)}
                                             </CallToAction>
-                                        </a>
+                                        </Link>
                                     </div>
                                 </Container>
                             </div>
