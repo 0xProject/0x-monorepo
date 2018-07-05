@@ -87,6 +87,7 @@
         "@0xproject/typescript-typings": "^0.4.1",
         "@0xproject/utils": "^0.7.2",
         "@0xproject/web3-wrapper": "^0.7.1",
+        "ethereumjs-blockstream": "5.0.0",
         "ethereum-types": "^0.0.2",
         "bintrees": "^1.0.2",
         "ethers": "3.0.22",
