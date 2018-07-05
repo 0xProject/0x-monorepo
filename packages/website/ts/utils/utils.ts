@@ -440,7 +440,7 @@ export const utils = {
         return !_.isUndefined(token.trackedTimestamp);
     },
     // Returns a [downloadLink, isOnMobile] tuple.
-    getBestWalletDownloadLink(): [string, boolean] {
+    getBestWalletDownloadLinkAndIsMobile(): [string, boolean] {
         const browserType = utils.getBrowserType();
         const isOnMobile = utils.isMobileOperatingSystem();
         const operatingSystem = utils.getOperatingSystem();

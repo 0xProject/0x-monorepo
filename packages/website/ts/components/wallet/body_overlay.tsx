@@ -115,7 +115,7 @@ const UseDifferentWallet = (props: UseDifferentWallet) => {
 };
 
 const GetWalletCallToAction = () => {
-    const [downloadLink, isOnMobile] = utils.getBestWalletDownloadLink();
+    const [downloadLink, isOnMobile] = utils.getBestWalletDownloadLinkAndIsMobile();
     const imageUrl = isOnMobile ? TOSHI_IMG_SRC : METAMASK_IMG_SRC;
     const text = isOnMobile ? 'Get Toshi Wallet' : 'Get MetaMask Wallet';
     return (

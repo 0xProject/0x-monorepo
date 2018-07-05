@@ -8,7 +8,7 @@ import { utils } from 'ts/utils/utils';
 export interface InstallWalletOnboardingStepProps {}
 
 export const InstallWalletOnboardingStep: React.StatelessComponent<InstallWalletOnboardingStepProps> = () => {
-    const [downloadLink, isOnMobile] = utils.getBestWalletDownloadLink();
+    const [downloadLink, isOnMobile] = utils.getBestWalletDownloadLinkAndIsMobile();
     const followupText = isOnMobile
         ? `Please revisit this site in your mobile dApp browser to continue!`
         : `Please refresh the page once you've done this to continue!`;
