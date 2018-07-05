@@ -8,17 +8,17 @@ import ethUtil = require('ethereumjs-util');
 import {
     SignatureValidatorApprovalContractEventArgs,
     TestSignatureValidatorContract,
-} from '../../src/generated_contract_wrappers/test_signature_validator';
-import { TestValidatorContract } from '../../src/generated_contract_wrappers/test_validator';
-import { TestWalletContract } from '../../src/generated_contract_wrappers/test_wallet';
-import { addressUtils } from '../../src/utils/address_utils';
-import { artifacts } from '../../src/utils/artifacts';
-import { expectRevertOrOtherErrorAsync } from '../../src/utils/assertions';
-import { chaiSetup } from '../../src/utils/chai_setup';
-import { constants } from '../../src/utils/constants';
-import { LogDecoder } from '../../src/utils/log_decoder';
-import { OrderFactory } from '../../src/utils/order_factory';
-import { provider, txDefaults, web3Wrapper } from '../../src/utils/web3_wrapper';
+} from '../../generated_contract_wrappers/test_signature_validator';
+import { TestValidatorContract } from '../../generated_contract_wrappers/test_validator';
+import { TestWalletContract } from '../../generated_contract_wrappers/test_wallet';
+import { addressUtils } from '../utils/address_utils';
+import { artifacts } from '../utils/artifacts';
+import { expectContractCallFailed } from '../utils/assertions';
+import { chaiSetup } from '../utils/chai_setup';
+import { constants } from '../utils/constants';
+import { LogDecoder } from '../utils/log_decoder';
+import { OrderFactory } from '../utils/order_factory';
+import { provider, txDefaults, web3Wrapper } from '../utils/web3_wrapper';
 
 chaiSetup.configure();
 const expect = chai.expect;
@@ -101,7 +101,7 @@ describe('MixinSignatureValidator', () => {
         it('should revert when signature is empty', async () => {
             const emptySignature = '0x';
             const orderHashHex = orderHashUtils.getOrderHashHex(signedOrder);
-            return expectRevertOrOtherErrorAsync(
+            return expectContractCallFailed(
                 signatureValidator.publicIsValidSignature.callAsync(
                     orderHashHex,
                     signedOrder.makerAddress,
@@ -115,7 +115,7 @@ describe('MixinSignatureValidator', () => {
             const unsupportedSignatureType = SignatureType.NSignatureTypes;
             const unsupportedSignatureHex = `0x${unsupportedSignatureType}`;
             const orderHashHex = orderHashUtils.getOrderHashHex(signedOrder);
-            return expectRevertOrOtherErrorAsync(
+            return expectContractCallFailed(
                 signatureValidator.publicIsValidSignature.callAsync(
                     orderHashHex,
                     signedOrder.makerAddress,
@@ -128,7 +128,7 @@ describe('MixinSignatureValidator', () => {
         it('should revert when SignatureType=Illegal', async () => {
             const unsupportedSignatureHex = `0x${SignatureType.Illegal}`;
             const orderHashHex = orderHashUtils.getOrderHashHex(signedOrder);
-            return expectRevertOrOtherErrorAsync(
+            return expectContractCallFailed(
                 signatureValidator.publicIsValidSignature.callAsync(
                     orderHashHex,
                     signedOrder.makerAddress,
@@ -155,7 +155,7 @@ describe('MixinSignatureValidator', () => {
             const signatureBuffer = Buffer.concat([fillerData, signatureType]);
             const signatureHex = ethUtil.bufferToHex(signatureBuffer);
             const orderHashHex = orderHashUtils.getOrderHashHex(signedOrder);
-            return expectRevertOrOtherErrorAsync(
+            return expectContractCallFailed(
                 signatureValidator.publicIsValidSignature.callAsync(
                     orderHashHex,
                     signedOrder.makerAddress,

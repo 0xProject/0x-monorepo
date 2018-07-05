@@ -1,14 +1,19 @@
-import { uniqueVersionIds, Web3Wrapper } from '@0xproject/web3-wrapper';
-import { includes } from 'lodash';
+import { logUtils } from '@0xproject/utils';
+import { NodeType, Web3Wrapper } from '@0xproject/web3-wrapper';
+import * as _ from 'lodash';
 
-enum NodeType {
-    Geth = 'GETH',
-    Ganache = 'GANACHE',
-}
+// HACK(albrow): 🐉 We have to do this so that debug.setHead works correctly.
+// (Geth does not seem to like debug.setHead(0), so by sending some transactions
+// we increase the current block number beyond 0). Additionally, some tests seem
+// to break when there are fewer than 3 blocks in the chain. (We have no idea
+// why, but it was consistently reproducible).
+const MINIMUM_BLOCKS = 3;
 
 export class BlockchainLifecycle {
     private _web3Wrapper: Web3Wrapper;
     private _snapshotIdsStack: number[];
+    private _addresses: string[] = [];
+    private _nodeType: NodeType | undefined;
     constructor(web3Wrapper: Web3Wrapper) {
         this._web3Wrapper = web3Wrapper;
         this._snapshotIdsStack = [];
@@ -21,7 +26,13 @@ export class BlockchainLifecycle {
                 this._snapshotIdsStack.push(snapshotId);
                 break;
             case NodeType.Geth:
-                const blockNumber = await this._web3Wrapper.getBlockNumberAsync();
+                let blockNumber = await this._web3Wrapper.getBlockNumberAsync();
+                if (blockNumber < MINIMUM_BLOCKS) {
+                    // If the minimum block number is not met, force Geth to
+                    // mine some blocks by sending some dummy transactions.
+                    await this._mineMinimumBlocksAsync();
+                    blockNumber = await this._web3Wrapper.getBlockNumberAsync();
+                }
                 this._snapshotIdsStack.push(blockNumber);
                 break;
             default:
@@ -46,14 +57,31 @@ export class BlockchainLifecycle {
                 throw new Error(`Unknown node type: ${nodeType}`);
         }
     }
-    private async _getNodeTypeAsync(): Promise<NodeType> {
-        const version = await this._web3Wrapper.getNodeVersionAsync();
-        if (includes(version, uniqueVersionIds.geth)) {
-            return NodeType.Geth;
-        } else if (includes(version, uniqueVersionIds.ganache)) {
-            return NodeType.Ganache;
-        } else {
-            throw new Error(`Unknown client version: ${version}`);
+    private async _mineMinimumBlocksAsync(): Promise<void> {
+        logUtils.warn('WARNING: minimum block number for tests not met. Mining additional blocks...');
+        if (this._addresses.length === 0) {
+            this._addresses = await this._web3Wrapper.getAvailableAddressesAsync();
+            if (this._addresses.length === 0) {
+                throw new Error('No accounts found');
+            }
         }
+        while ((await this._web3Wrapper.getBlockNumberAsync()) < MINIMUM_BLOCKS) {
+            logUtils.warn('Mining block...');
+            await this._web3Wrapper.awaitTransactionMinedAsync(
+                await this._web3Wrapper.sendTransactionAsync({
+                    from: this._addresses[0],
+                    to: this._addresses[0],
+                    value: '0',
+                }),
+                0,
+            );
+        }
+        logUtils.warn('Done mining the minimum number of blocks.');
+    }
+    private async _getNodeTypeAsync(): Promise<NodeType> {
+        if (_.isUndefined(this._nodeType)) {
+            this._nodeType = await this._web3Wrapper.getNodeTypeAsync();
+        }
+        return this._nodeType;
     }
 }

@@ -1,7 +1,11 @@
 [
     {
-        "version": "0.1.0",
+        "version": "1.0.0",
         "changes": [
+            {
+                "note": "Refactor to work with V2 of 0x protocol",
+                "pr": 636
+            },
             {
                 "note": "Export parseECSignature method",
                 "pr": 684

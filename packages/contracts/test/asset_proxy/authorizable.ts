@@ -3,12 +3,12 @@ import { RevertReason } from '@0xproject/types';
 import { BigNumber } from '@0xproject/utils';
 import * as chai from 'chai';
 
-import { MixinAuthorizableContract } from '../../src/generated_contract_wrappers/mixin_authorizable';
-import { artifacts } from '../../src/utils/artifacts';
-import { expectRevertReasonOrAlwaysFailingTransactionAsync } from '../../src/utils/assertions';
-import { chaiSetup } from '../../src/utils/chai_setup';
-import { constants } from '../../src/utils/constants';
-import { provider, txDefaults, web3Wrapper } from '../../src/utils/web3_wrapper';
+import { MixinAuthorizableContract } from '../../generated_contract_wrappers/mixin_authorizable';
+import { artifacts } from '../utils/artifacts';
+import { expectTransactionFailedAsync } from '../utils/assertions';
+import { chaiSetup } from '../utils/chai_setup';
+import { constants } from '../utils/constants';
+import { provider, txDefaults, web3Wrapper } from '../utils/web3_wrapper';
 
 chaiSetup.configure();
 const expect = chai.expect;
@@ -44,7 +44,7 @@ describe('Authorizable', () => {
     });
     describe('addAuthorizedAddress', () => {
         it('should throw if not called by owner', async () => {
-            return expectRevertReasonOrAlwaysFailingTransactionAsync(
+            return expectTransactionFailedAsync(
                 authorizable.addAuthorizedAddress.sendTransactionAsync(notOwner, { from: notOwner }),
                 RevertReason.OnlyContractOwner,
             );
@@ -62,7 +62,7 @@ describe('Authorizable', () => {
                 await authorizable.addAuthorizedAddress.sendTransactionAsync(address, { from: owner }),
                 constants.AWAIT_TRANSACTION_MINED_MS,
             );
-            return expectRevertReasonOrAlwaysFailingTransactionAsync(
+            return expectTransactionFailedAsync(
                 authorizable.addAuthorizedAddress.sendTransactionAsync(address, { from: owner }),
                 RevertReason.TargetAlreadyAuthorized,
             );
@@ -75,7 +75,7 @@ describe('Authorizable', () => {
                 await authorizable.addAuthorizedAddress.sendTransactionAsync(address, { from: owner }),
                 constants.AWAIT_TRANSACTION_MINED_MS,
             );
-            return expectRevertReasonOrAlwaysFailingTransactionAsync(
+            return expectTransactionFailedAsync(
                 authorizable.removeAuthorizedAddress.sendTransactionAsync(address, {
                     from: notOwner,
                 }),
@@ -99,7 +99,7 @@ describe('Authorizable', () => {
         });
 
         it('should throw if owner attempts to remove an address that is not authorized', async () => {
-            return expectRevertReasonOrAlwaysFailingTransactionAsync(
+            return expectTransactionFailedAsync(
                 authorizable.removeAuthorizedAddress.sendTransactionAsync(address, {
                     from: owner,
                 }),
@@ -115,7 +115,7 @@ describe('Authorizable', () => {
                 constants.AWAIT_TRANSACTION_MINED_MS,
             );
             const index = new BigNumber(0);
-            return expectRevertReasonOrAlwaysFailingTransactionAsync(
+            return expectTransactionFailedAsync(
                 authorizable.removeAuthorizedAddressAtIndex.sendTransactionAsync(address, index, {
                     from: notOwner,
                 }),
@@ -128,7 +128,7 @@ describe('Authorizable', () => {
                 constants.AWAIT_TRANSACTION_MINED_MS,
             );
             const index = new BigNumber(1);
-            return expectRevertReasonOrAlwaysFailingTransactionAsync(
+            return expectTransactionFailedAsync(
                 authorizable.removeAuthorizedAddressAtIndex.sendTransactionAsync(address, index, {
                     from: owner,
                 }),
@@ -137,7 +137,7 @@ describe('Authorizable', () => {
         });
         it('should throw if owner attempts to remove an address that is not authorized', async () => {
             const index = new BigNumber(0);
-            return expectRevertReasonOrAlwaysFailingTransactionAsync(
+            return expectTransactionFailedAsync(
                 authorizable.removeAuthorizedAddressAtIndex.sendTransactionAsync(address, index, {
                     from: owner,
                 }),
@@ -156,7 +156,7 @@ describe('Authorizable', () => {
                 constants.AWAIT_TRANSACTION_MINED_MS,
             );
             const address1Index = new BigNumber(0);
-            return expectRevertReasonOrAlwaysFailingTransactionAsync(
+            return expectTransactionFailedAsync(
                 authorizable.removeAuthorizedAddressAtIndex.sendTransactionAsync(address2, address1Index, {
                     from: owner,
                 }),

@@ -4,13 +4,13 @@ import { SignedOrder } from '@0xproject/types';
 import { BigNumber } from '@0xproject/utils';
 import * as chai from 'chai';
 
-import { TestLibsContract } from '../../src/generated_contract_wrappers/test_libs';
-import { addressUtils } from '../../src/utils/address_utils';
-import { artifacts } from '../../src/utils/artifacts';
-import { chaiSetup } from '../../src/utils/chai_setup';
-import { constants } from '../../src/utils/constants';
-import { OrderFactory } from '../../src/utils/order_factory';
-import { provider, txDefaults, web3Wrapper } from '../../src/utils/web3_wrapper';
+import { TestLibsContract } from '../../generated_contract_wrappers/test_libs';
+import { addressUtils } from '../utils/address_utils';
+import { artifacts } from '../utils/artifacts';
+import { chaiSetup } from '../utils/chai_setup';
+import { constants } from '../utils/constants';
+import { OrderFactory } from '../utils/order_factory';
+import { provider, txDefaults, web3Wrapper } from '../utils/web3_wrapper';
 
 chaiSetup.configure();
 const expect = chai.expect;

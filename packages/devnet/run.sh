@@ -3,7 +3,7 @@ set -e
 # Create log directory for Geth
 mkdir -p /var/log
 
-# Start Geth in background and redirect output to log file
+# Start Geth and direct output to stdout
 /geth \
     --verbosity 5 \
     --datadir node0/ \
@@ -22,23 +22,4 @@ mkdir -p /var/log
     --mine \
     --etherbase '0xe8816898d851d5b61b7f950627d04d794c07ca37' \
     --unlock '0xe8816898d851d5b61b7f950627d04d794c07ca37,0x5409ed021d9299bf6814279a6a1411a7e866a631,0x6ecbe1db9ef729cbe972c83fb886247691fb6beb,0xe36ea790bc9d7ab70c55260c66d52b1eca985f84,0xe834ec434daba538cd1b9fe1582052b880bd7e63,0x78dc5d2d739606d31509c31d654056a45185ecb6,0xa8dda8d7f5310e4a9e24f8eba77e091ac264f872,0x06cef8e666768cc40cc78cf93d9611019ddcb628,0x4404ac8bd8f9618d27ad2f1485aa1b2cfd82482d,0x7457d5e02197480db681d3fdf256c7aca21bdc12,0x91c987bf62d25945db517bdaa840a6c661374402' \
-    --password=node0/password.txt \
-    > /var/log/geth &
-
-# Wait for Geth to unlock the first account
-sleep 10
-
-# Send some transactions.
-# HACK(albrow): 🐉 We have to do this so that debug.setHead works correctly.
-# (Geth does not seem to like debug.setHead(0), so by sending some transactions
-# we increase the current block number beyond 0). Additionally, some tests seem
-# to break when there are fewer than 3 blocks in the chain. (We have no idea
-# why, but it was consistently reproducible).
-/geth --datadir node0/ attach --exec 'eth.sendTransaction({"from": "0x5409ED021D9299bf6814279A6A1411A7e866A631", "to": "0x84bd1cfa409cb0bb9b23b8b1a33515b4ac00a0af", "value": "0x1"})'
-sleep 3
-/geth --datadir node0/ attach --exec 'eth.sendTransaction({"from": "0x5409ED021D9299bf6814279A6A1411A7e866A631", "to": "0x84bd1cfa409cb0bb9b23b8b1a33515b4ac00a0af", "value": "0x1"})'
-sleep 3
-/geth --datadir node0/ attach --exec 'eth.sendTransaction({"from": "0x5409ED021D9299bf6814279A6A1411A7e866A631", "to": "0x84bd1cfa409cb0bb9b23b8b1a33515b4ac00a0af", "value": "0x1"})'
-
-# Use tail to re-attach to the log file and actually see the output.
-tail -f /var/log/geth
+    --password=node0/password.txt

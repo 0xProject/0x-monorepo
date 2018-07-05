@@ -3,7 +3,7 @@ import { darken } from 'polished';
 import * as React from 'react';
 import { styled } from 'ts/style/theme';
 
-export type TextTag = 'p' | 'div' | 'span' | 'label' | 'h1' | 'h2' | 'h3' | 'h4';
+export type TextTag = 'p' | 'div' | 'span' | 'label' | 'h1' | 'h2' | 'h3' | 'h4' | 'i';
 
 export interface TextProps {
     className?: string;
@@ -15,7 +15,9 @@ export interface TextProps {
     minHeight?: string;
     center?: boolean;
     fontWeight?: number | string;
-    onClick?: () => void;
+    textDecorationLine?: string;
+    onClick?: (event: React.MouseEvent<HTMLElement>) => void;
+    hoverColor?: string;
 }
 
 const PlainText: React.StatelessComponent<TextProps> = ({ children, className, onClick, Tag }) => (
@@ -28,6 +30,7 @@ export const Text = styled(PlainText)`
     font-family: ${props => props.fontFamily};
     font-weight: ${props => props.fontWeight};
     font-size: ${props => props.fontSize};
+    text-decoration-line: ${props => props.textDecorationLine};
     ${props => (props.lineHeight ? `line-height: ${props.lineHeight}` : '')};
     ${props => (props.center ? 'text-align: center' : '')};
     color: ${props => props.fontColor};
@@ -35,7 +38,7 @@ export const Text = styled(PlainText)`
     ${props => (props.onClick ? 'cursor: pointer' : '')};
     transition: color 0.5s ease;
     &:hover {
-        ${props => (props.onClick ? `color: ${darken(0.1, props.fontColor)}` : '')};
+        ${props => (props.onClick ? `color: ${props.hoverColor || darken(0.3, props.fontColor)}` : '')};
     }
 `;
 
@@ -45,6 +48,7 @@ Text.defaultProps = {
     fontColor: colors.black,
     fontSize: '15px',
     lineHeight: '1.5em',
+    textDecorationLine: 'none',
     Tag: 'div',
 };
 

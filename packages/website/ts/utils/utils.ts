@@ -8,7 +8,10 @@ import * as bowser from 'bowser';
 import deepEqual = require('deep-equal');
 import * as _ from 'lodash';
 import * as moment from 'moment';
+import * as numeral from 'numeral';
+
 import {
+    AccountState,
     BlockchainCallErrs,
     BrowserType,
     Environments,
@@ -25,9 +28,6 @@ import {
 import { configs } from 'ts/utils/configs';
 import { constants } from 'ts/utils/constants';
 import * as u2f from 'ts/vendor/u2f_api';
-
-const LG_MIN_EM = 64;
-const MD_MIN_EM = 52;
 
 const isDogfood = (): boolean => _.includes(window.location.href, configs.DOMAIN_DOGFOOD);
 
@@ -133,9 +133,9 @@ export const utils = {
 
         // This logic mirrors the CSS media queries in BassCSS for the `lg-`, `md-` and `sm-` CSS
         // class prefixes. Do not edit these.
-        if (widthInEm > LG_MIN_EM) {
+        if (widthInEm > ScreenWidths.Lg) {
             return ScreenWidths.Lg;
-        } else if (widthInEm > MD_MIN_EM) {
+        } else if (widthInEm > ScreenWidths.Md) {
             return ScreenWidths.Md;
         } else {
             return ScreenWidths.Sm;
@@ -192,23 +192,37 @@ export const utils = {
         const truncatedAddress = `${address.substring(0, 6)}...${address.substr(-4)}`; // 0x3d5a...b287
         return truncatedAddress;
     },
-    getReadableAccountState(
+    getReadableAccountState(accountState: AccountState, userAddress: string): string {
+        switch (accountState) {
+            case AccountState.Loading:
+                return 'Loading...';
+            case AccountState.Ready:
+                return utils.getAddressBeginAndEnd(userAddress);
+            case AccountState.Locked:
+                return 'Please Unlock';
+            case AccountState.Disconnected:
+                return 'Connect a Wallet';
+            default:
+                return '';
+        }
+    },
+    getAccountState(
         isBlockchainReady: boolean,
         providerType: ProviderType,
         injectedProviderName: string,
         userAddress?: string,
-    ): string {
+    ): AccountState {
         const isAddressAvailable = !_.isUndefined(userAddress) && !_.isEmpty(userAddress);
         const isExternallyInjectedProvider = utils.isExternallyInjected(providerType, injectedProviderName);
         if (!isBlockchainReady) {
-            return 'Loading account';
+            return AccountState.Loading;
         } else if (isAddressAvailable) {
-            return utils.getAddressBeginAndEnd(userAddress);
+            return AccountState.Ready;
             // tslint:disable-next-line: prefer-conditional-expression
         } else if (isExternallyInjectedProvider) {
-            return 'Account locked';
+            return AccountState.Locked;
         } else {
-            return 'No wallet detected';
+            return AccountState.Disconnected;
         }
     },
     hasUniqueNameAndSymbol(tokens: Token[], token: Token): boolean {
@@ -309,6 +323,7 @@ export const utils = {
     getProviderType(provider: Provider): Providers | string {
         const constructorName = provider.constructor.name;
         let parsedProviderName = constructorName;
+        // https://ethereum.stackexchange.com/questions/24266/elegant-way-to-detect-current-provider-int-web3-js
         switch (constructorName) {
             case 'EthereumProvider':
                 parsedProviderName = Providers.Mist;
@@ -322,6 +337,10 @@ export const utils = {
             parsedProviderName = Providers.Parity;
         } else if ((provider as any).isMetaMask) {
             parsedProviderName = Providers.Metamask;
+        } else if (!_.isUndefined(_.get(window, 'SOFA'))) {
+            parsedProviderName = Providers.Toshi;
+        } else if (!_.isUndefined(_.get(window, '__CIPHER__'))) {
+            parsedProviderName = Providers.Cipher;
         }
         return parsedProviderName;
     },
@@ -365,9 +384,19 @@ export const utils = {
     },
     getFormattedAmount(amount: BigNumber, decimals: number, symbol: string): string {
         const unitAmount = Web3Wrapper.toUnitAmount(amount, decimals);
-        const precision = Math.min(constants.TOKEN_AMOUNT_DISPLAY_PRECISION, unitAmount.decimalPlaces());
-        const formattedAmount = unitAmount.toFixed(precision);
+        // if the unit amount is less than 1, show the natural number of decimal places with a max of 4
+        // if the unit amount is greater than or equal to 1, show only 2 decimal places
+        const precision = unitAmount.lt(1)
+            ? Math.min(constants.TOKEN_AMOUNT_DISPLAY_PRECISION, unitAmount.decimalPlaces())
+            : 2;
+        const format = `0,0.${_.repeat('0', precision)}`;
+        const formattedAmount = numeral(unitAmount).format(format);
         return `${formattedAmount} ${symbol}`;
+    },
+    getUsdValueFormattedAmount(amount: BigNumber, decimals: number, price: BigNumber): string {
+        const unitAmount = Web3Wrapper.toUnitAmount(amount, decimals);
+        const value = unitAmount.mul(price);
+        return numeral(value).format(constants.NUMERAL_USD_FORMAT);
     },
     openUrl(url: string): void {
         window.open(url, '_blank');

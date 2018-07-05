@@ -1,26 +1,26 @@
 import { BlockchainLifecycle } from '@0xproject/dev-utils';
 import { assetProxyUtils } from '@0xproject/order-utils';
-import { AssetProxyId, RevertReason, SignedOrder } from '@0xproject/types';
+import { RevertReason, SignedOrder } from '@0xproject/types';
 import { BigNumber } from '@0xproject/utils';
 import { Web3Wrapper } from '@0xproject/web3-wrapper';
 import * as chai from 'chai';
 import * as _ from 'lodash';
 
-import { DummyERC20TokenContract } from '../../src/generated_contract_wrappers/dummy_e_r_c20_token';
-import { DummyERC721TokenContract } from '../../src/generated_contract_wrappers/dummy_e_r_c721_token';
-import { ERC20ProxyContract } from '../../src/generated_contract_wrappers/e_r_c20_proxy';
-import { ERC721ProxyContract } from '../../src/generated_contract_wrappers/e_r_c721_proxy';
-import { ExchangeContract } from '../../src/generated_contract_wrappers/exchange';
-import { artifacts } from '../../src/utils/artifacts';
-import { expectRevertReasonOrAlwaysFailingTransactionAsync } from '../../src/utils/assertions';
-import { chaiSetup } from '../../src/utils/chai_setup';
-import { constants } from '../../src/utils/constants';
-import { ERC20Wrapper } from '../../src/utils/erc20_wrapper';
-import { ERC721Wrapper } from '../../src/utils/erc721_wrapper';
-import { ExchangeWrapper } from '../../src/utils/exchange_wrapper';
-import { OrderFactory } from '../../src/utils/order_factory';
-import { ERC20BalancesByOwner } from '../../src/utils/types';
-import { provider, txDefaults, web3Wrapper } from '../../src/utils/web3_wrapper';
+import { DummyERC20TokenContract } from '../../generated_contract_wrappers/dummy_e_r_c20_token';
+import { DummyERC721TokenContract } from '../../generated_contract_wrappers/dummy_e_r_c721_token';
+import { ERC20ProxyContract } from '../../generated_contract_wrappers/e_r_c20_proxy';
+import { ERC721ProxyContract } from '../../generated_contract_wrappers/e_r_c721_proxy';
+import { ExchangeContract } from '../../generated_contract_wrappers/exchange';
+import { artifacts } from '../utils/artifacts';
+import { expectTransactionFailedAsync } from '../utils/assertions';
+import { chaiSetup } from '../utils/chai_setup';
+import { constants } from '../utils/constants';
+import { ERC20Wrapper } from '../utils/erc20_wrapper';
+import { ERC721Wrapper } from '../utils/erc721_wrapper';
+import { ExchangeWrapper } from '../utils/exchange_wrapper';
+import { OrderFactory } from '../utils/order_factory';
+import { ERC20BalancesByOwner } from '../utils/types';
+import { provider, txDefaults, web3Wrapper } from '../utils/web3_wrapper';
 
 chaiSetup.configure();
 const expect = chai.expect;
@@ -87,8 +87,8 @@ describe('Exchange wrappers', () => {
             assetProxyUtils.encodeERC20AssetData(zrxToken.address),
         );
         exchangeWrapper = new ExchangeWrapper(exchange, provider);
-        await exchangeWrapper.registerAssetProxyAsync(AssetProxyId.ERC20, erc20Proxy.address, owner);
-        await exchangeWrapper.registerAssetProxyAsync(AssetProxyId.ERC721, erc721Proxy.address, owner);
+        await exchangeWrapper.registerAssetProxyAsync(erc20Proxy.address, owner);
+        await exchangeWrapper.registerAssetProxyAsync(erc721Proxy.address, owner);
 
         await web3Wrapper.awaitTransactionSuccessAsync(
             await erc20Proxy.addAuthorizedAddress.sendTransactionAsync(exchange.address, {
@@ -174,7 +174,7 @@ describe('Exchange wrappers', () => {
                 expirationTimeSeconds: new BigNumber(Math.floor((Date.now() - 10000) / 1000)),
             });
 
-            return expectRevertReasonOrAlwaysFailingTransactionAsync(
+            return expectTransactionFailedAsync(
                 exchangeWrapper.fillOrKillOrderAsync(signedOrder, takerAddress),
                 RevertReason.OrderUnfillable,
             );
@@ -187,7 +187,7 @@ describe('Exchange wrappers', () => {
                 takerAssetFillAmount: signedOrder.takerAssetAmount.div(2),
             });
 
-            return expectRevertReasonOrAlwaysFailingTransactionAsync(
+            return expectTransactionFailedAsync(
                 exchangeWrapper.fillOrKillOrderAsync(signedOrder, takerAddress),
                 RevertReason.CompleteFillFailed,
             );
@@ -500,7 +500,7 @@ describe('Exchange wrappers', () => {
 
                 await exchangeWrapper.fillOrKillOrderAsync(signedOrders[0], takerAddress);
 
-                return expectRevertReasonOrAlwaysFailingTransactionAsync(
+                return expectTransactionFailedAsync(
                     exchangeWrapper.batchFillOrKillOrdersAsync(signedOrders, takerAddress, {
                         takerAssetFillAmounts,
                     }),
@@ -703,7 +703,7 @@ describe('Exchange wrappers', () => {
                     orderFactory.newSignedOrder(),
                 ];
 
-                return expectRevertReasonOrAlwaysFailingTransactionAsync(
+                return expectTransactionFailedAsync(
                     exchangeWrapper.marketSellOrdersAsync(signedOrders, takerAddress, {
                         takerAssetFillAmount: Web3Wrapper.toBaseUnitAmount(new BigNumber(1000), 18),
                     }),
@@ -921,7 +921,7 @@ describe('Exchange wrappers', () => {
                     orderFactory.newSignedOrder(),
                 ];
 
-                return expectRevertReasonOrAlwaysFailingTransactionAsync(
+                return expectTransactionFailedAsync(
                     exchangeWrapper.marketBuyOrdersAsync(signedOrders, takerAddress, {
                         makerAssetFillAmount: Web3Wrapper.toBaseUnitAmount(new BigNumber(1000), 18),
                     }),

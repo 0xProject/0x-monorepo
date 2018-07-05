@@ -165,16 +165,24 @@ const teamRow5: ProfileInfo[] = [
     },
 ];
 
-// const teamRow6: ProfileInfo[] = [
-//     {
-//         name: 'Chris Kalani',
-//         title: 'Director of Design',
-//         description: `Previously founded Wake (acquired by InVision). Early Facebook product designer.`,
-//         image: 'images/team/chris.png',
-//         linkedIn: 'https://www.linkedin.com/in/chriskalani/',
-//         github: 'https://github.com/chriskalani',
-//     },
-// ];
+const teamRow6: ProfileInfo[] = [
+    {
+        name: 'Alex Browne',
+        title: 'Engineer in Residence',
+        description: `Full-stack blockchain engineer. Previously at Plaid. Open source guru and footgun dismantler. Computer Science and Electrical Engineering at Duke.`,
+        image: 'images/team/alexbrowne.png',
+        linkedIn: 'https://www.linkedin.com/in/stephenalexbrowne/',
+        github: 'http://github.com/albrow',
+    },
+    // {
+    //     name: 'Chris Kalani',
+    //     title: 'Director of Design',
+    //     description: `Previously founded Wake (acquired by InVision). Early Facebook product designer.`,
+    //     image: 'images/team/chris.png',
+    //     linkedIn: 'https://www.linkedin.com/in/chriskalani/',
+    //     github: 'https://github.com/chriskalani',
+    // },
+];
 
 const advisors: ProfileInfo[] = [
     {
@@ -270,6 +278,7 @@ export class About extends React.Component<AboutProps, AboutState> {
                         <div className="clearfix">{this._renderProfiles(teamRow3)}</div>
                         <div className="clearfix">{this._renderProfiles(teamRow4)}</div>
                         <div className="clearfix">{this._renderProfiles(teamRow5)}</div>
+                        <div className="clearfix">{this._renderProfiles(teamRow6)}</div>
                     </div>
                     <div className="pt3 pb2">
                         <div

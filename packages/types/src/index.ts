@@ -48,6 +48,12 @@ export interface ECSignature {
     s: string;
 }
 
+export interface ECSignatureBuffer {
+    v: number;
+    r: Buffer;
+    s: Buffer;
+}
+
 /**
  * Validator signature components
  */
@@ -187,8 +193,7 @@ export enum RevertReason {
     InvalidTxHash = 'INVALID_TX_HASH',
     InvalidTxSignature = 'INVALID_TX_SIGNATURE',
     FailedExecution = 'FAILED_EXECUTION',
-    AssetProxyMismatch = 'ASSET_PROXY_MISMATCH',
-    AssetProxyIdMismatch = 'ASSET_PROXY_ID_MISMATCH',
+    AssetProxyAlreadyExists = 'ASSET_PROXY_ALREADY_EXISTS',
     LengthGreaterThan0Required = 'LENGTH_GREATER_THAN_0_REQUIRED',
     LengthGreaterThan131Required = 'LENGTH_GREATER_THAN_131_REQUIRED',
     Length0Required = 'LENGTH_0_REQUIRED',

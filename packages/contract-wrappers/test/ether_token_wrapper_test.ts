@@ -281,7 +281,7 @@ describe('EtherTokenWrapper', () => {
         it('should cancel outstanding subscriptions when ZeroEx.setProvider is called', (done: DoneCallback) => {
             (async () => {
                 const callbackNeverToBeCalled = callbackErrorReporter.reportNodeCallbackErrors(done)(
-                    (logEvent: DecodedLogEvent<WETH9ApprovalEventArgs>) => {
+                    (_logEvent: DecodedLogEvent<WETH9ApprovalEventArgs>) => {
                         done(new Error('Expected this subscription to have been cancelled'));
                     },
                 );
@@ -311,7 +311,7 @@ describe('EtherTokenWrapper', () => {
         it('Should cancel subscription when unsubscribe called', (done: DoneCallback) => {
             (async () => {
                 const callbackNeverToBeCalled = callbackErrorReporter.reportNodeCallbackErrors(done)(
-                    (logEvent: DecodedLogEvent<WETH9ApprovalEventArgs>) => {
+                    (_logEvent: DecodedLogEvent<WETH9ApprovalEventArgs>) => {
                         done(new Error('Expected this subscription to have been cancelled'));
                     },
                 );

@@ -89,7 +89,7 @@ describe('SubscriptionTest', () => {
         });
         it('Should allow unsubscribeAll to be called successfully after an error', (done: DoneCallback) => {
             (async () => {
-                const callback = (err: Error | null, logEvent?: DecodedLogEvent<ERC20TokenApprovalEventArgs>) => _.noop;
+                const callback = (err: Error | null, _logEvent?: DecodedLogEvent<ERC20TokenApprovalEventArgs>) => _.noop;
                 contractWrappers.erc20Token.subscribe(
                     tokenAddress,
                     ERC20TokenEvents.Approval,

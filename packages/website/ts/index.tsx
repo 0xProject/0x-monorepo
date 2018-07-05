@@ -97,7 +97,6 @@ render(
                             <Route path={WebsitePaths.FAQ} component={FAQ as any} />
                             <Route path={WebsitePaths.About} component={About as any} />
                             <Route path={WebsitePaths.Wiki} component={Wiki as any} />
-                            <Route path={`${WebsitePaths.Docs}`} component={LazyZeroExJSDocumentation} />
                             <Route path={`${WebsitePaths.ZeroExJs}/:version?`} component={LazyZeroExJSDocumentation} />
                             <Route path={`${WebsitePaths.Connect}/:version?`} component={LazyConnectDocumentation} />
                             <Route
@@ -144,6 +143,7 @@ render(
                                 component={LazySolCompilerDocumentation}
                             />
 
+                            <Route path={`${WebsitePaths.Docs}`} component={LazyZeroExJSDocumentation} />
                             <Route component={NotFound as any} />
                         </Switch>
                     </div>

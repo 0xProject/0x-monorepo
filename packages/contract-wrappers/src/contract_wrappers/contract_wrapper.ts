@@ -2,7 +2,7 @@ import { ContractArtifact } from '@0xproject/sol-compiler';
 import { AbiDecoder, intervalUtils } from '@0xproject/utils';
 import { Web3Wrapper } from '@0xproject/web3-wrapper';
 import { BlockParamLiteral, ContractAbi, FilterObject, LogEntry, LogWithDecodedArgs, RawLog } from 'ethereum-types';
-import { Block, BlockAndLogStreamer } from 'ethereumjs-blockstream';
+import { Block, BlockAndLogStreamer, Log } from 'ethereumjs-blockstream';
 import * as _ from 'lodash';
 
 import {
@@ -33,7 +33,7 @@ export abstract class ContractWrapper {
     public abstract abi: ContractAbi;
     protected _web3Wrapper: Web3Wrapper;
     protected _networkId: number;
-    private _blockAndLogStreamerIfExists?: BlockAndLogStreamer;
+    private _blockAndLogStreamerIfExists: BlockAndLogStreamer<Block, Log> | undefined;
     private _blockAndLogStreamIntervalIfExists?: NodeJS.Timer;
     private _filters: { [filterToken: string]: FilterObject };
     private _filterCallbacks: {
@@ -155,6 +155,7 @@ export abstract class ContractWrapper {
         this._blockAndLogStreamerIfExists = new BlockAndLogStreamer(
             this._web3Wrapper.getBlockAsync.bind(this._web3Wrapper),
             this._web3Wrapper.getLogsAsync.bind(this._web3Wrapper),
+            this._onBlockAndLogStreamerError.bind(this),
         );
         const catchAllLogFilter = {};
         this._blockAndLogStreamerIfExists.addLogFilter(catchAllLogFilter);
@@ -171,6 +172,14 @@ export abstract class ContractWrapper {
         this._onLogRemovedSubscriptionToken = this._blockAndLogStreamerIfExists.subscribeToOnLogRemoved(
             this._onLogStateChanged.bind(this, isRemoved),
         );
+    }
+    private _onBlockAndLogStreamerError(err: Error): void {
+        // Propogate all Blockstream subscriber errors to all
+        // top-level subscriptions
+        const filterCallbacks = _.values(this._filterCallbacks);
+        _.each(filterCallbacks, filterCallback => {
+            filterCallback(err);
+        });
     }
     private _onReconcileBlockError(err: Error): void {
         const filterTokens = _.keys(this._filterCallbacks);

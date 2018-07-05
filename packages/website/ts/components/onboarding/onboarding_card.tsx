@@ -1,6 +1,7 @@
 import { colors } from '@0xproject/react-shared';
 import * as React from 'react';
 
+import * as _ from 'lodash';
 import { Button } from 'ts/components/ui/button';
 import { Container } from 'ts/components/ui/container';
 import { IconButton } from 'ts/components/ui/icon_button';
@@ -16,6 +17,7 @@ export interface OnboardingCardProps {
     onClose: () => void;
     onClickNext: () => void;
     onClickBack: () => void;
+    onContinueButtonClick?: () => void;
     continueButtonDisplay?: ContinueButtonDisplay;
     shouldHideBackButton?: boolean;
     shouldHideNextButton?: boolean;
@@ -28,6 +30,7 @@ export const OnboardingCard: React.StatelessComponent<OnboardingCardProps> = ({
     content,
     continueButtonDisplay,
     continueButtonText,
+    onContinueButtonClick,
     onClickNext,
     onClickBack,
     onClose,
@@ -36,7 +39,7 @@ export const OnboardingCard: React.StatelessComponent<OnboardingCardProps> = ({
     borderRadius,
 }) => (
     <Island borderRadius={borderRadius}>
-        <Container paddingRight="30px" paddingLeft="30px" maxWidth={350} paddingTop="15px" paddingBottom="15px">
+        <Container paddingRight="30px" paddingLeft="30px" paddingTop="15px" paddingBottom="15px">
             <div className="flex flex-column">
                 <div className="flex justify-between">
                     <Title>{title}</Title>
@@ -52,7 +55,7 @@ export const OnboardingCard: React.StatelessComponent<OnboardingCardProps> = ({
                 {continueButtonDisplay && (
                     <Button
                         isDisabled={continueButtonDisplay === 'disabled'}
-                        onClick={onClickNext}
+                        onClick={!_.isUndefined(onContinueButtonClick) ? onContinueButtonClick : onClickNext}
                         fontColor={colors.white}
                         fontSize="15px"
                         backgroundColor={colors.mediumBlue}
@@ -60,17 +63,21 @@ export const OnboardingCard: React.StatelessComponent<OnboardingCardProps> = ({
                         {continueButtonText}
                     </Button>
                 )}
-                <Container className="flex justify-between" marginTop="15px">
-                    {!shouldHideBackButton && (
-                        <Text fontColor={colors.grey} onClick={onClickBack}>
-                            Back
-                        </Text>
-                    )}
-                    {!shouldHideNextButton && (
-                        <Text fontColor={colors.grey} onClick={onClickNext}>
-                            Skip
-                        </Text>
-                    )}
+                <Container className="clearfix" marginTop="15px">
+                    <div className="left">
+                        {!shouldHideBackButton && (
+                            <Text fontColor={colors.grey} onClick={onClickBack}>
+                                Back
+                            </Text>
+                        )}
+                    </div>
+                    <div className="right">
+                        {!shouldHideNextButton && (
+                            <Text fontColor={colors.grey} onClick={onClickNext}>
+                                Skip
+                            </Text>
+                        )}
+                    </div>
                 </Container>
             </div>
         </Container>

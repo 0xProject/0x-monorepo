@@ -1,5 +1,16 @@
 [
     {
+        "version": "1.0.0",
+        "changes": [
+            {
+                "notes": "Updated types for V2 of 0x protocol"
+            },
+            {
+                "note": "Add `ECSignatureBuffer`"
+            }
+        ]
+    },
+    {
         "timestamp": 1529397769,
         "version": "0.8.1",
         "changes": [

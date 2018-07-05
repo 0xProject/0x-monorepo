@@ -80,7 +80,6 @@ export class SendDialog extends React.Component<SendDialogProps, SendDialogState
                     shouldCheckAllowance={false}
                     onChange={this._onValueChange.bind(this)}
                     amount={this.state.value}
-                    onVisitBalancesPageClick={this.props.onCancelled}
                     lastForceTokenStateRefetch={this.props.lastForceTokenStateRefetch}
                 />
             </div>
