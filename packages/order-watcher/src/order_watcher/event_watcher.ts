@@ -52,15 +52,6 @@ export class EventWatcher {
             throw new Error(OrderWatcherError.SubscriptionAlreadyPresent);
         }
         this._startBlockAndLogStream(callback);
-        // TODO: IS the above the correct refactor of this?
-        // this._intervalIdIfExists = intervalUtils.setAsyncExcludingInterval(
-        //     this._pollForBlockchainEventsAsync.bind(this, callback),
-        //     this._pollingIntervalMs,
-        //     (err: Error) => {
-        //         this.unsubscribe();
-        //         callback(err);
-        //     },
-        // );
     }
     public unsubscribe(): void {
         if (!_.isUndefined(this._blockAndLogStreamIntervalIfExists)) {
@@ -113,32 +104,6 @@ export class EventWatcher {
             await this._blockAndLogStreamerIfExists.reconcileNewBlock((latestBlock as any) as Block);
         }
     }
-    // private async _pollForBlockchainEventsAsync(callback: EventWatcherCallback): Promise<void> {
-    //     const pendingEvents = await this._getEventsAsync();
-    //     if (_.isUndefined(pendingEvents)) {
-    //         // HACK: This should never happen, but happens frequently on CI due to a ganache bug
-    //         return;
-    //     }
-    //     if (pendingEvents.length === 0) {
-    //         // HACK: Sometimes when node rebuilds the pending block we get back the empty result.
-    //         // We don't want to emit a lot of removal events and bring them back after a couple of miliseconds,
-    //         // that's why we just ignore those cases.
-    //         return;
-    //     }
-    //     const removedEvents = _.differenceBy(this._lastEvents, pendingEvents, JSON.stringify);
-    //     const newEvents = _.differenceBy(pendingEvents, this._lastEvents, JSON.stringify);
-    //     await this._emitDifferencesAsync(removedEvents, LogEventState.Removed, callback);
-    //     await this._emitDifferencesAsync(newEvents, LogEventState.Added, callback);
-    //     this._lastEvents = pendingEvents;
-    // }
-    // private async _getEventsAsync(): Promise<LogEntry[]> {
-    //     const eventFilter = {
-    //         fromBlock: this._stateLayer,
-    //         toBlock: this._stateLayer,
-    //     };
-    //     const events = await this._web3Wrapper.getLogsAsync(eventFilter);
-    //     return events;
-    // }
     private async _emitDifferencesAsync(
         log: LogEntry,
         logEventState: LogEventState,
