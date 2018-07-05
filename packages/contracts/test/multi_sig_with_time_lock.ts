@@ -5,7 +5,7 @@ import { LogWithDecodedArgs } from 'ethereum-types';
 
 import {
     MultiSigWalletWithTimeLockContract,
-    MultiSigWalletWithTimeLockSubmissionEventArgs,
+    SubmissionContractEventArgs,
 } from '../src/generated_contract_wrappers/multi_sig_wallet_with_time_lock';
 import { artifacts } from '../src/utils/artifacts';
 import { expectRevertOrAlwaysFailingTransactionAsync } from '../src/utils/assertions';
@@ -76,7 +76,7 @@ describe('MultiSigWalletWithTimeLock', () => {
                 const destination = multiSig.address;
                 const changeTimeLockData = multiSig.changeTimeLock.getABIEncodedTransactionData(SECONDS_TIME_LOCKED);
                 const res = await multiSigWrapper.submitTransactionAsync(destination, changeTimeLockData, owners[0]);
-                const log = res.logs[0] as LogWithDecodedArgs<MultiSigWalletWithTimeLockSubmissionEventArgs>;
+                const log = res.logs[0] as LogWithDecodedArgs<SubmissionContractEventArgs>;
                 const txId = log.args.transactionId;
                 return expectRevertOrAlwaysFailingTransactionAsync(
                     multiSig.executeTransaction.sendTransactionAsync(txId, { from: owners[0] }),
@@ -87,7 +87,7 @@ describe('MultiSigWalletWithTimeLock', () => {
                 const destination = multiSig.address;
                 const changeTimeLockData = multiSig.changeTimeLock.getABIEncodedTransactionData(SECONDS_TIME_LOCKED);
                 const subRes = await multiSigWrapper.submitTransactionAsync(destination, changeTimeLockData, owners[0]);
-                const subLog = subRes.logs[0] as LogWithDecodedArgs<MultiSigWalletWithTimeLockSubmissionEventArgs>;
+                const subLog = subRes.logs[0] as LogWithDecodedArgs<SubmissionContractEventArgs>;
                 const txId = subLog.args.transactionId;
 
                 const confirmRes = await multiSigWrapper.confirmTransactionAsync(txId, owners[1]);
@@ -105,7 +105,7 @@ describe('MultiSigWalletWithTimeLock', () => {
                 const destination = multiSig.address;
                 const changeTimeLockData = multiSig.changeTimeLock.getABIEncodedTransactionData(SECONDS_TIME_LOCKED);
                 const subRes = await multiSigWrapper.submitTransactionAsync(destination, changeTimeLockData, owners[0]);
-                const subLog = subRes.logs[0] as LogWithDecodedArgs<MultiSigWalletWithTimeLockSubmissionEventArgs>;
+                const subLog = subRes.logs[0] as LogWithDecodedArgs<SubmissionContractEventArgs>;
                 const txId = subLog.args.transactionId;
 
                 await multiSigWrapper.confirmTransactionAsync(txId, owners[1]);
@@ -141,7 +141,7 @@ describe('MultiSigWalletWithTimeLock', () => {
                     changeTimeLockData,
                     owners[0],
                 );
-                const log = res.logs[0] as LogWithDecodedArgs<MultiSigWalletWithTimeLockSubmissionEventArgs>;
+                const log = res.logs[0] as LogWithDecodedArgs<SubmissionContractEventArgs>;
                 txId = log.args.transactionId;
                 await multiSigWrapper.confirmTransactionAsync(txId, owners[1]);
             });
