@@ -17,7 +17,6 @@
 */
 
 pragma solidity 0.4.24;
-pragma experimental ABIEncoderV2;
 
 import "../../protocol/Exchange/MixinAssetProxyDispatcher.sol";
 
@@ -27,7 +26,8 @@ contract TestAssetProxyDispatcher is MixinAssetProxyDispatcher {
         bytes memory assetData,
         address from,
         address to,
-        uint256 amount)
+        uint256 amount
+    )
         public
     {
         dispatchTransferFrom(assetData, from, to, amount);
