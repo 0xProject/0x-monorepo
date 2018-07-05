@@ -74,7 +74,7 @@ export class EventWatcher {
         this._blockAndLogStreamIntervalIfExists = intervalUtils.setAsyncExcludingInterval(
             this._reconcileBlockAsync.bind(this),
             this._pollingIntervalMs,
-            this._onReconcileBlockError.bind(this, callback),
+            EventWatcher._onBlockAndLogStreamerError.bind(this, callback),
         );
         let isRemoved = false;
         this._onLogAddedSubscriptionToken = this._blockAndLogStreamerIfExists.subscribeToOnLogAdded(
@@ -84,10 +84,6 @@ export class EventWatcher {
         this._onLogRemovedSubscriptionToken = this._blockAndLogStreamerIfExists.subscribeToOnLogRemoved(
             this._onLogStateChangedAsync.bind(this, callback, isRemoved),
         );
-    }
-    private _onReconcileBlockError(callback: EventWatcherCallback, err: Error): void {
-        this.unsubscribe();
-        callback(err);
     }
     private async _onLogStateChangedAsync(
         callback: EventWatcherCallback,

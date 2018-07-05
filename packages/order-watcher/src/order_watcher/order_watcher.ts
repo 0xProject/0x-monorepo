@@ -233,7 +233,6 @@ export class OrderWatcher {
         if (!_.isNull(err)) {
             if (!_.isUndefined(this._callbackIfExists)) {
                 this._callbackIfExists(err);
-                this.unsubscribe();
             }
             return;
         }
