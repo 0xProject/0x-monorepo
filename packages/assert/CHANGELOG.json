@@ -3,8 +3,9 @@
         "version": "0.2.13",
         "changes": [
             {
-                "note": "Fix bug in string enum assertion. We erroneously were checking against the enum keys, not values",
-                "pr": 821      
+                "note":
+                    "Fix bug in string enum assertion. We erroneously were checking against the enum keys, not values",
+                "pr": 821
             }
         ]
     },

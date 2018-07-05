@@ -457,7 +457,11 @@ export class Web3Wrapper {
      * @returns Estimated gas cost
      */
     public async estimateGasAsync(txData: Partial<TxData>): Promise<number> {
-        assert.doesConformToSchema('txData', txData, schemas.txDataSchema, [schemas.addressSchema, schemas.numberSchema, schemas.jsNumber]);
+        assert.doesConformToSchema('txData', txData, schemas.txDataSchema, [
+            schemas.addressSchema,
+            schemas.numberSchema,
+            schemas.jsNumber,
+        ]);
         const txDataHex = marshaller.marshalTxData(txData);
         const gasHex = await this._sendRawPayloadAsync<string>({ method: 'eth_estimateGas', params: [txDataHex] });
         const gas = utils.convertHexToNumber(gasHex);
@@ -470,7 +474,11 @@ export class Web3Wrapper {
      * @returns The raw call result
      */
     public async callAsync(callData: CallData, defaultBlock?: BlockParam): Promise<string> {
-        assert.doesConformToSchema('callData', callData, schemas.callDataSchema, [schemas.addressSchema, schemas.numberSchema, schemas.jsNumber]);
+        assert.doesConformToSchema('callData', callData, schemas.callDataSchema, [
+            schemas.addressSchema,
+            schemas.numberSchema,
+            schemas.jsNumber,
+        ]);
         if (!_.isUndefined(defaultBlock)) {
             Web3Wrapper._assertBlockParam(defaultBlock);
         }
@@ -491,7 +499,11 @@ export class Web3Wrapper {
      * @returns Transaction hash
      */
     public async sendTransactionAsync(txData: TxData): Promise<string> {
-        assert.doesConformToSchema('txData', txData, schemas.txDataSchema, [schemas.addressSchema, schemas.numberSchema, schemas.jsNumber]);
+        assert.doesConformToSchema('txData', txData, schemas.txDataSchema, [
+            schemas.addressSchema,
+            schemas.numberSchema,
+            schemas.jsNumber,
+        ]);
         const txDataHex = marshaller.marshalTxData(txData);
         const txHash = await this._sendRawPayloadAsync<string>({ method: 'eth_sendTransaction', params: [txDataHex] });
         return txHash;
