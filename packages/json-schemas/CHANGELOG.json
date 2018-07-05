@@ -5,6 +5,10 @@
             {
                 "note": "Update schemas for V2",
                 "pr": 615
+            },
+            {
+                "note": "Added CallData schema",
+                "pr": 821
             }
         ]
     },
