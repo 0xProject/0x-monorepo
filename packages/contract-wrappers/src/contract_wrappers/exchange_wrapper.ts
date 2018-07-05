@@ -56,23 +56,23 @@ export class ExchangeWrapper extends ContractWrapper {
         return assetProxy;
     }
     /**
-     * Retrieve the takerAmount of an order that has already been filled.
+     * Retrieve the takerAssetAmount of an order that has already been filled.
      * @param   orderHash    The hex encoded orderHash for which you would like to retrieve the filled takerAmount.
      * @param   methodOpts   Optional arguments this method accepts.
-     * @return  The amount of the order (in taker tokens) that has already been filled.
+     * @return  The amount of the order (in taker asset base units) that has already been filled.
      */
-    public async getFilledTakerAmountAsync(orderHash: string, methodOpts: MethodOpts = {}): Promise<BigNumber> {
+    public async getFilledTakerAssetAmountAsync(orderHash: string, methodOpts: MethodOpts = {}): Promise<BigNumber> {
         assert.doesConformToSchema('orderHash', orderHash, schemas.orderHashSchema);
         assert.doesConformToSchema('methodOpts', methodOpts, methodOptsSchema);
         const exchangeContract = await this._getExchangeContractAsync();
 
         const txData = {};
-        const fillAmountInBaseUnits = await exchangeContract.filled.callAsync(
+        const filledTakerAssetAmountInBaseUnits = await exchangeContract.filled.callAsync(
             orderHash,
             txData,
             methodOpts.defaultBlock,
         );
-        return fillAmountInBaseUnits;
+        return filledTakerAssetAmountInBaseUnits;
     }
     /**
      * Retrieve the current context address
