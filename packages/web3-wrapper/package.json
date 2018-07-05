@@ -64,12 +64,14 @@
         "typescript": "2.7.1"
     },
     "dependencies": {
+        "@0xproject/assert": "^0.2.12",
+        "@0xproject/json-schemas": "^1.0.0",
         "@0xproject/typescript-typings": "^0.4.1",
         "@0xproject/utils": "^0.7.1",
         "ethereum-types": "^0.0.2",
+        "ethereumjs-util": "^5.1.1",
         "ethers": "3.0.22",
-        "lodash": "^4.17.4",
-        "web3": "^0.20.0"
+        "lodash": "^4.17.4"
     },
     "publishConfig": {
         "access": "public"
