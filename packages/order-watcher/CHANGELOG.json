@@ -3,7 +3,10 @@
         "version": "0.0.7",
         "changes": [
             {
-                "note": "Dependencies updated"
+                "note": "Switch out simple getLogs polling with ethereumjs-blockstream"
+            },
+            {
+                "note": "Do not stop subscription if error is encountered"
             }
         ]
     },
