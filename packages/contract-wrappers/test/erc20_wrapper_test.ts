@@ -528,11 +528,7 @@ describe('ERC20Wrapper', () => {
         it('Outstanding subscriptions are cancelled when contractWrappers.setProvider called', (done: DoneCallback) => {
             (async () => {
                 const callbackNeverToBeCalled = callbackErrorReporter.reportNodeCallbackErrors(done)(
-<<<<<<< HEAD:packages/contract-wrappers/test/erc20_wrapper_test.ts
-                    (logEvent: DecodedLogEvent<ERC20TokenApprovalEventArgs>) => {
-=======
-                    (_logEvent: DecodedLogEvent<ApprovalContractEventArgs>) => {
->>>>>>> v2-prototype:packages/contract-wrappers/test/token_wrapper_test.ts
+                    (_logEvent: DecodedLogEvent<ERC20TokenApprovalEventArgs>) => {
                         done(new Error('Expected this subscription to have been cancelled'));
                     },
                 );
@@ -561,11 +557,7 @@ describe('ERC20Wrapper', () => {
         it('Should cancel subscription when unsubscribe called', (done: DoneCallback) => {
             (async () => {
                 const callbackNeverToBeCalled = callbackErrorReporter.reportNodeCallbackErrors(done)(
-<<<<<<< HEAD:packages/contract-wrappers/test/erc20_wrapper_test.ts
-                    (logEvent: DecodedLogEvent<ERC20TokenApprovalEventArgs>) => {
-=======
-                    (_logEvent: DecodedLogEvent<ApprovalContractEventArgs>) => {
->>>>>>> v2-prototype:packages/contract-wrappers/test/token_wrapper_test.ts
+                    (_logEvent: DecodedLogEvent<ERC20TokenApprovalEventArgs>) => {
                         done(new Error('Expected this subscription to have been cancelled'));
                     },
                 );

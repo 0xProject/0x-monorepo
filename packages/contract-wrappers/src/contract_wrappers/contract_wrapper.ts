@@ -32,7 +32,7 @@ export abstract class ContractWrapper {
     public abstract abi: ContractAbi;
     protected _web3Wrapper: Web3Wrapper;
     protected _networkId: number;
-    private _blockAndLogStreamerIfExists: BlockAndLogStreamer<Block, Log> | undefined;
+    private _blockAndLogStreamerIfExists: BlockAndLogStreamer | undefined;
     private _blockPollingIntervalMs: number;
     private _blockAndLogStreamIntervalIfExists?: NodeJS.Timer;
     private _filters: { [filterToken: string]: FilterObject };
