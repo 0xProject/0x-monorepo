@@ -8,11 +8,11 @@ import { LogWithDecodedArgs } from 'ethereum-types';
 import ethUtil = require('ethereumjs-util');
 import * as _ from 'lodash';
 
-import { DummyERC20TokenContract } from '../../generated_contract_wrappers/dummy_e_r_c20_token';
-import { DummyERC721TokenContract } from '../../generated_contract_wrappers/dummy_e_r_c721_token';
-import { ERC20ProxyContract } from '../../generated_contract_wrappers/e_r_c20_proxy';
-import { ERC721ProxyContract } from '../../generated_contract_wrappers/e_r_c721_proxy';
-import { CancelContractEventArgs, ExchangeContract } from '../../generated_contract_wrappers/exchange';
+import { DummyERC20TokenContract } from '../../generated_contract_wrappers/dummy_erc20_token';
+import { DummyERC721TokenContract } from '../../generated_contract_wrappers/dummy_erc721_token';
+import { ERC20ProxyContract } from '../../generated_contract_wrappers/erc20_proxy';
+import { ERC721ProxyContract } from '../../generated_contract_wrappers/erc721_proxy';
+import { ExchangeCancelEventArgs, ExchangeContract } from '../../generated_contract_wrappers/exchange';
 import { artifacts } from '../utils/artifacts';
 import { expectTransactionFailedAsync } from '../utils/assertions';
 import { chaiSetup } from '../utils/chai_setup';
@@ -209,7 +209,7 @@ describe('Exchange core', () => {
             const res = await exchangeWrapper.cancelOrderAsync(signedOrder, makerAddress);
             expect(res.logs).to.have.length(1);
 
-            const log = res.logs[0] as LogWithDecodedArgs<CancelContractEventArgs>;
+            const log = res.logs[0] as LogWithDecodedArgs<ExchangeCancelEventArgs>;
             const logArgs = log.args;
 
             expect(signedOrder.makerAddress).to.be.equal(logArgs.makerAddress);

@@ -24,8 +24,13 @@ export class EtherTokenWrapper extends ContractWrapper {
         [address: string]: WETH9Contract;
     } = {};
     private _erc20TokenWrapper: ERC20TokenWrapper;
-    constructor(web3Wrapper: Web3Wrapper, networkId: number, erc20TokenWrapper: ERC20TokenWrapper) {
-        super(web3Wrapper, networkId);
+    constructor(
+        web3Wrapper: Web3Wrapper,
+        networkId: number,
+        erc20TokenWrapper: ERC20TokenWrapper,
+        blockPollingIntervalMs?: number,
+    ) {
+        super(web3Wrapper, networkId, blockPollingIntervalMs);
         this._erc20TokenWrapper = erc20TokenWrapper;
     }
     /**

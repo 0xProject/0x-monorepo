@@ -1,5 +1,5 @@
 import { assetProxyUtils, orderFactory } from '@0xproject/order-utils';
-import { OrderWithoutExchangeAddress, SignedOrder, Token } from '@0xproject/types';
+import { OrderWithoutExchangeAddress, SignedOrder } from '@0xproject/types';
 import { BigNumber } from '@0xproject/utils';
 import { Web3Wrapper } from '@0xproject/web3-wrapper';
 import { Provider } from 'ethereum-types';
@@ -7,52 +7,29 @@ import * as _ from 'lodash';
 
 import { artifacts } from './artifacts';
 import { constants } from './constants';
-import { DummyERC20TokenContract } from './generated_contract_wrappers/dummy_erc20_token';
 import { ERC20TokenContract } from './generated_contract_wrappers/erc20_token';
 import { ExchangeContract } from './generated_contract_wrappers/exchange';
-
-const INITIAL_COINBASE_TOKEN_SUPPLY_IN_UNITS = new BigNumber(100);
 
 export class FillScenarios {
     private _web3Wrapper: Web3Wrapper;
     private _userAddresses: string[];
-    private _tokens: Token[];
     private _coinbase: string;
     private _zrxTokenAddress: string;
     private _exchangeAddress: string;
+    private _erc20ProxyAddress: string;
     constructor(
         provider: Provider,
         userAddresses: string[],
-        tokens: Token[],
         zrxTokenAddress: string,
         exchangeAddress: string,
+        erc20ProxyAddress: string,
     ) {
         this._web3Wrapper = new Web3Wrapper(provider);
         this._userAddresses = userAddresses;
-        this._tokens = tokens;
         this._coinbase = userAddresses[0];
         this._zrxTokenAddress = zrxTokenAddress;
         this._exchangeAddress = exchangeAddress;
-    }
-    public async initTokenBalancesAsync(): Promise<void> {
-        for (const token of this._tokens) {
-            if (token.symbol !== 'ZRX' && token.symbol !== 'WETH') {
-                const dummyERC20Token = new DummyERC20TokenContract(
-                    artifacts.DummyToken.abi,
-                    token.address,
-                    this._web3Wrapper.getProvider(),
-                    this._web3Wrapper.getContractDefaults(),
-                );
-                const tokenSupply = Web3Wrapper.toBaseUnitAmount(
-                    INITIAL_COINBASE_TOKEN_SUPPLY_IN_UNITS,
-                    token.decimals,
-                );
-                const txHash = await dummyERC20Token.setBalance.sendTransactionAsync(this._coinbase, tokenSupply, {
-                    from: this._coinbase,
-                });
-                await this._web3Wrapper.awaitTransactionSuccessAsync(txHash);
-            }
-        }
+        this._erc20ProxyAddress = erc20ProxyAddress;
     }
     public async createFillableSignedOrderAsync(
         makerAssetData: string,
@@ -138,7 +115,7 @@ export class FillScenarios {
             fillableAmount,
         );
         const exchangeInstance = new ExchangeContract(
-            artifacts.Exchange.abi,
+            artifacts.Exchange.compilerOutput.abi,
             signedOrder.exchangeAddress,
             this._web3Wrapper.getProvider(),
             this._web3Wrapper.getContractDefaults(),
@@ -215,7 +192,7 @@ export class FillScenarios {
     }
     private async _increaseERC20BalanceAsync(tokenAddress: string, address: string, amount: BigNumber): Promise<void> {
         const token = new ERC20TokenContract(
-            artifacts.Token.abi,
+            artifacts.ERC20Token.compilerOutput.abi,
             tokenAddress,
             this._web3Wrapper.getProvider(),
             this._web3Wrapper.getContractDefaults(),
@@ -230,21 +207,15 @@ export class FillScenarios {
         amount: BigNumber,
     ): Promise<void> {
         const tokenInstance = new ERC20TokenContract(
-            artifacts.Token.abi,
+            artifacts.ERC20Token.compilerOutput.abi,
             tokenAddress,
             this._web3Wrapper.getProvider(),
             this._web3Wrapper.getContractDefaults(),
         );
-        const networkId = await this._web3Wrapper.getNetworkIdAsync();
-        const networkArtifactsIfExists = artifacts.TokenTransferProxy.networks[networkId];
-        if (_.isUndefined(networkArtifactsIfExists)) {
-            throw new Error(`Did not find network artifacts for networkId: ${networkId}`);
-        }
-        const proxyAddress = networkArtifactsIfExists.address;
-        const oldMakerAllowance = await tokenInstance.allowance.callAsync(address, proxyAddress);
+        const oldMakerAllowance = await tokenInstance.allowance.callAsync(address, this._erc20ProxyAddress);
         const newMakerAllowance = oldMakerAllowance.plus(amount);
 
-        await tokenInstance.approve.sendTransactionAsync(proxyAddress, newMakerAllowance, {
+        await tokenInstance.approve.sendTransactionAsync(this._erc20ProxyAddress, newMakerAllowance, {
             from: address,
         });
     }

@@ -1,0 +1,210 @@
+{
+    "contractName": "ERC20Proxy",
+    "compilerOutput": {
+        "abi": [
+            {
+                "constant": false,
+                "inputs": [
+                    {
+                        "name": "target",
+                        "type": "address"
+                    }
+                ],
+                "name": "addAuthorizedAddress",
+                "outputs": [],
+                "payable": false,
+                "stateMutability": "nonpayable",
+                "type": "function"
+            },
+            {
+                "constant": true,
+                "inputs": [
+                    {
+                        "name": "",
+                        "type": "uint256"
+                    }
+                ],
+                "name": "authorities",
+                "outputs": [
+                    {
+                        "name": "",
+                        "type": "address"
+                    }
+                ],
+                "payable": false,
+                "stateMutability": "view",
+                "type": "function"
+            },
+            {
+                "constant": false,
+                "inputs": [
+                    {
+                        "name": "target",
+                        "type": "address"
+                    }
+                ],
+                "name": "removeAuthorizedAddress",
+                "outputs": [],
+                "payable": false,
+                "stateMutability": "nonpayable",
+                "type": "function"
+            },
+            {
+                "constant": true,
+                "inputs": [],
+                "name": "owner",
+                "outputs": [
+                    {
+                        "name": "",
+                        "type": "address"
+                    }
+                ],
+                "payable": false,
+                "stateMutability": "view",
+                "type": "function"
+            },
+            {
+                "constant": false,
+                "inputs": [
+                    {
+                        "name": "target",
+                        "type": "address"
+                    },
+                    {
+                        "name": "index",
+                        "type": "uint256"
+                    }
+                ],
+                "name": "removeAuthorizedAddressAtIndex",
+                "outputs": [],
+                "payable": false,
+                "stateMutability": "nonpayable",
+                "type": "function"
+            },
+            {
+                "constant": false,
+                "inputs": [
+                    {
+                        "name": "assetData",
+                        "type": "bytes"
+                    },
+                    {
+                        "name": "from",
+                        "type": "address"
+                    },
+                    {
+                        "name": "to",
+                        "type": "address"
+                    },
+                    {
+                        "name": "amount",
+                        "type": "uint256"
+                    }
+                ],
+                "name": "transferFrom",
+                "outputs": [],
+                "payable": false,
+                "stateMutability": "nonpayable",
+                "type": "function"
+            },
+            {
+                "constant": true,
+                "inputs": [],
+                "name": "getProxyId",
+                "outputs": [
+                    {
+                        "name": "",
+                        "type": "bytes4"
+                    }
+                ],
+                "payable": false,
+                "stateMutability": "view",
+                "type": "function"
+            },
+            {
+                "constant": true,
+                "inputs": [
+                    {
+                        "name": "",
+                        "type": "address"
+                    }
+                ],
+                "name": "authorized",
+                "outputs": [
+                    {
+                        "name": "",
+                        "type": "bool"
+                    }
+                ],
+                "payable": false,
+                "stateMutability": "view",
+                "type": "function"
+            },
+            {
+                "constant": true,
+                "inputs": [],
+                "name": "getAuthorizedAddresses",
+                "outputs": [
+                    {
+                        "name": "",
+                        "type": "address[]"
+                    }
+                ],
+                "payable": false,
+                "stateMutability": "view",
+                "type": "function"
+            },
+            {
+                "constant": false,
+                "inputs": [
+                    {
+                        "name": "newOwner",
+                        "type": "address"
+                    }
+                ],
+                "name": "transferOwnership",
+                "outputs": [],
+                "payable": false,
+                "stateMutability": "nonpayable",
+                "type": "function"
+            },
+            {
+                "anonymous": false,
+                "inputs": [
+                    {
+                        "indexed": true,
+                        "name": "target",
+                        "type": "address"
+                    },
+                    {
+                        "indexed": true,
+                        "name": "caller",
+                        "type": "address"
+                    }
+                ],
+                "name": "AuthorizedAddressAdded",
+                "type": "event"
+            },
+            {
+                "anonymous": false,
+                "inputs": [
+                    {
+                        "indexed": true,
+                        "name": "target",
+                        "type": "address"
+                    },
+                    {
+                        "indexed": true,
+                        "name": "caller",
+                        "type": "address"
+                    }
+                ],
+                "name": "AuthorizedAddressRemoved",
+                "type": "event"
+            }
+        ]
+    },
+    "networks": {
+        "50": { "address": "0x1d7022f5b17d2f8b695918fb48fa1089c9f85401" }
+    }
+}

@@ -24,6 +24,7 @@ export const contractWrappersPublicNetworkConfigSchema = {
         exchangeContractAddress: { $ref: '/Address' },
         tokenRegistryContractAddress: { $ref: '/Address' },
         tokenTransferProxyContractAddress: { $ref: '/Address' },
+        blockPollingIntervalMs: { type: 'number' },
         orderWatcherConfig: {
             type: 'object',
             properties: {

@@ -19,6 +19,8 @@ export {
     LogEvent,
     DecodedLogEvent,
     OnOrderStateChangeCallback,
+    OrderStatus,
+    OrderInfo,
 } from './types';
 
 export { Order, SignedOrder, ECSignature, OrderStateValid, OrderStateInvalid, OrderState } from '@0xproject/types';
@@ -56,3 +58,12 @@ export {
     ERC721TokenTransferEventArgs,
     ERC721TokenEvents,
 } from './contract_wrappers/generated/erc721_token';
+
+export {
+    ExchangeCancelUpToEventArgs,
+    ExchangeAssetProxySetEventArgs,
+    ExchangeFillEventArgs,
+    ExchangeCancelEventArgs,
+    ExchangeEventArgs,
+    ExchangeEvents,
+} from './contract_wrappers/generated/exchange';

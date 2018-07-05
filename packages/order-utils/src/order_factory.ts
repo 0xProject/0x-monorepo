@@ -57,9 +57,10 @@ export const orderFactory = {
 };
 
 function getVRSHexString(ecSignature: ECSignature): string {
-    const vrs = `0x${intToHex(ecSignature.v)}${ethUtil.stripHexPrefix(ecSignature.r)}${ethUtil.stripHexPrefix(
+    const ETH_SIGN_SIGNATURE_TYPE = '03';
+    const vrs = `${intToHex(ecSignature.v)}${ethUtil.stripHexPrefix(ecSignature.r)}${ethUtil.stripHexPrefix(
         ecSignature.s,
-    )}`;
+    )}${ETH_SIGN_SIGNATURE_TYPE}`;
     return vrs;
 }
 

@@ -12,7 +12,6 @@ import {
     ContractWrappersError,
     EventCallback,
     IndexedFilterValues,
-    InternalContractWrappersError,
 } from '../types';
 import { constants } from '../utils/constants';
 import { filterUtils } from '../utils/filter_utils';
@@ -34,6 +33,7 @@ export abstract class ContractWrapper {
     protected _web3Wrapper: Web3Wrapper;
     protected _networkId: number;
     private _blockAndLogStreamerIfExists: BlockAndLogStreamer<Block, Log> | undefined;
+    private _blockPollingIntervalMs: number;
     private _blockAndLogStreamIntervalIfExists?: NodeJS.Timer;
     private _filters: { [filterToken: string]: FilterObject };
     private _filterCallbacks: {
@@ -41,9 +41,12 @@ export abstract class ContractWrapper {
     };
     private _onLogAddedSubscriptionToken: string | undefined;
     private _onLogRemovedSubscriptionToken: string | undefined;
-    constructor(web3Wrapper: Web3Wrapper, networkId: number) {
+    constructor(web3Wrapper: Web3Wrapper, networkId: number, blockPollingIntervalMs?: number) {
         this._web3Wrapper = web3Wrapper;
         this._networkId = networkId;
+        this._blockPollingIntervalMs = _.isUndefined(blockPollingIntervalMs)
+            ? constants.DEFAULT_BLOCK_POLLING_INTERVAL
+            : blockPollingIntervalMs;
         this._filters = {};
         this._filterCallbacks = {};
         this._blockAndLogStreamerIfExists = undefined;
@@ -161,7 +164,7 @@ export abstract class ContractWrapper {
         this._blockAndLogStreamerIfExists.addLogFilter(catchAllLogFilter);
         this._blockAndLogStreamIntervalIfExists = intervalUtils.setAsyncExcludingInterval(
             this._reconcileBlockAsync.bind(this),
-            constants.DEFAULT_BLOCK_POLLING_INTERVAL,
+            this._blockPollingIntervalMs,
             this._onReconcileBlockError.bind(this),
         );
         let isRemoved = false;

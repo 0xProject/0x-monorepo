@@ -9,14 +9,14 @@
         "build": "yarn pre_build && tsc",
         "pre_build": "run-s update_artifacts generate_contract_wrappers",
         "update_artifacts": "for i in ${npm_package_config_contracts}; do copyfiles -u 4 ../migrations/artifacts/2.0.0/$i.json lib/artifacts; done;",
-        "generate_contract_wrappers": "abi-gen --abis 'lib/artifacts/@(Exchange|ERC20Token|DummyERC20Token).json' --template ../contract_templates/contract.handlebars --partials '../contract_templates/partials/**/*.handlebars' --output src/generated_contract_wrappers --backend ethers",
+        "generate_contract_wrappers": "abi-gen --abis 'lib/artifacts/@(Exchange|ERC20Token).json' --template ../contract_templates/contract.handlebars --partials '../contract_templates/partials/**/*.handlebars' --output src/generated_contract_wrappers --backend ethers",
         "copy_monorepo_scripts": "copyfiles -u 3 './lib/src/monorepo_scripts/**/*' ./scripts",
         "clean": "shx rm -rf lib scripts src/generated_contract_wrappers",
         "lint": "tslint --project . --exclude **/src/generated_contract_wrappers/**/*",
         "manual:postpublish": "yarn build; node ./scripts/postpublish.js"
     },
     "config": {
-        "contracts": "Exchange ERC20Token DummyERC20Token"
+        "contracts": "Exchange ERC20Token"
     },
     "license": "Apache-2.0",
     "repository": {

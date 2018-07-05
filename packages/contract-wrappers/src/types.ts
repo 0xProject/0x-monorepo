@@ -108,6 +108,7 @@ export type SyncMethod = (...args: any[]) => any;
  * erc20ProxyContractAddress: The address of the erc20 token transfer proxy contract to use
  * erc721ProxyContractAddress: The address of the erc721 token transfer proxy contract to use
  * orderWatcherConfig: All the configs related to the orderWatcher
+ * blockPollingIntervalMs: The interval to use for block polling in event watching methods (defaults to 1000)
  */
 export interface ContractWrappersConfig {
     networkId: number;
@@ -116,6 +117,7 @@ export interface ContractWrappersConfig {
     zrxContractAddress?: string;
     erc20ProxyContractAddress?: string;
     erc721ProxyContractAddress?: string;
+    blockPollingIntervalMs?: number;
 }
 
 /**
@@ -166,3 +168,19 @@ export enum TransferType {
 }
 
 export type OnOrderStateChangeCallback = (err: Error | null, orderState?: OrderState) => void;
+
+export interface OrderInfo {
+    orderStatus: number;
+    orderHash: string;
+    orderTakerAssetFilledAmount: BigNumber;
+}
+
+export enum OrderStatus {
+    INVALID,
+    INVALID_MAKER_ASSET_AMOUNT,
+    INVALID_TAKER_ASSET_AMOUNT,
+    FILLABLE,
+    EXPIRED,
+    FULLY_FILLED,
+    CANCELLED,
+}
