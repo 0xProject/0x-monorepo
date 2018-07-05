@@ -37,7 +37,7 @@ export class ExchangeWrapper extends ContractWrapper {
         this._zrxContractAddressIfExists = zrxContractAddressIfExists;
     }
     /**
-     * Retrieve the available asset proxies.
+     * Retrieve the address of an asset proxy by signature.
      * @param   proxySignature The 4 bytes signature of an asset proxy
      * @param   methodOpts     Optional arguments this method accepts.
      * @return  The address of an asset proxy for a given signature
