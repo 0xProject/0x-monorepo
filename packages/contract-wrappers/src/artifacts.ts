@@ -1,14 +1,14 @@
 import { ContractArtifact } from '@0xproject/sol-compiler';
 
-import * as DummyERC20Token from './compact_artifacts/DummyERC20Token.json';
-import * as DummyERC721Token from './compact_artifacts/DummyERC721Token.json';
-import * as ERC20Proxy from './compact_artifacts/ERC20Proxy.json';
-import * as ERC20Token from './compact_artifacts/ERC20Token.json';
-import * as ERC721Proxy from './compact_artifacts/ERC721Proxy.json';
-import * as ERC721Token from './compact_artifacts/ERC721Token.json';
-import * as Exchange from './compact_artifacts/Exchange.json';
-import * as EtherToken from './compact_artifacts/WETH9.json';
-import * as ZRXToken from './compact_artifacts/ZRXToken.json';
+import * as DummyERC20Token from './artifacts/DummyERC20Token.json';
+import * as DummyERC721Token from './artifacts/DummyERC721Token.json';
+import * as ERC20Proxy from './artifacts/ERC20Proxy.json';
+import * as ERC20Token from './artifacts/ERC20Token.json';
+import * as ERC721Proxy from './artifacts/ERC721Proxy.json';
+import * as ERC721Token from './artifacts/ERC721Token.json';
+import * as Exchange from './artifacts/Exchange.json';
+import * as EtherToken from './artifacts/WETH9.json';
+import * as ZRXToken from './artifacts/ZRXToken.json';
 
 export const artifacts = {
     ZRXToken: (ZRXToken as any) as ContractArtifact,
