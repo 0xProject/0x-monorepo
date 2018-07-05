@@ -551,7 +551,10 @@ export interface WebsiteBackendTokenInfo {
 }
 
 export interface WebsiteBackendGasInfo {
+    safeSlow: number;
     average: number;
+    fast: number;
+    fastest: number;
 }
 
 export interface WebsiteBackendJobInfo {

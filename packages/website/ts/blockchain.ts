@@ -89,6 +89,7 @@ export class Blockchain {
     private _userAddressIfExists: string;
     private _ledgerSubprovider: LedgerSubprovider;
     private _defaultGasPrice: BigNumber;
+    private _watchGasPriceIntervalId: NodeJS.Timer;
     private static _getNameGivenProvider(provider: Provider): string {
         const providerType = utils.getProviderType(provider);
         const providerNameIfExists = providerToName[providerType];
@@ -196,12 +197,10 @@ export class Blockchain {
     }
     constructor(dispatcher: Dispatcher) {
         this._dispatcher = dispatcher;
-        const defaultGasPrice = GWEI_IN_WEI * 30;
+        const defaultGasPrice = GWEI_IN_WEI * 40;
         this._defaultGasPrice = new BigNumber(defaultGasPrice);
         // We need a unique reference to this function so we can use it to unsubcribe.
         this._injectedProviderUpdateHandler = this._handleInjectedProviderUpdateAsync.bind(this);
-        // tslint:disable-next-line:no-floating-promises
-        this._updateDefaultGasPriceAsync();
         // tslint:disable-next-line:no-floating-promises
         this._onPageLoadInitFireAndForgetAsync();
     }
@@ -537,6 +536,7 @@ export class Blockchain {
         this._blockchainWatcher.destroy();
         this._injectedProviderObservable.unsubscribe(this._injectedProviderUpdateHandler);
         this._stopWatchingExchangeLogFillEvents();
+        this._stopWatchingGasPrice();
     }
     public async fetchTokenInformationAsync(): Promise<void> {
         utils.assert(
@@ -798,7 +798,29 @@ export class Blockchain {
         this._updateProviderName(injectedWeb3IfExists);
         const shouldPollUserAddress = true;
         const shouldUseLedgerProvider = false;
+        this._startWatchingGasPrice();
         await this._resetOrInitializeAsync(this.networkId, shouldPollUserAddress, shouldUseLedgerProvider);
+    }
+    private _startWatchingGasPrice(): void {
+        if (!_.isUndefined(this._watchGasPriceIntervalId)) {
+            return; // we are already watching
+        }
+        // tslint:disable-next-line:no-floating-promises
+        this._updateDefaultGasPriceAsync();
+        this._watchGasPriceIntervalId = intervalUtils.setAsyncExcludingInterval(
+            this._updateDefaultGasPriceAsync.bind(this),
+            // 1 minute
+            60000,
+            (err: Error) => {
+                logUtils.log(`Watching gas price failed: ${err.stack}`);
+                this._stopWatchingGasPrice();
+            },
+        );
+    }
+    private _stopWatchingGasPrice(): void {
+        if (!_.isUndefined(this._watchGasPriceIntervalId)) {
+            intervalUtils.clearAsyncExcludingInterval(this._watchGasPriceIntervalId);
+        }
     }
     private async _resetOrInitializeAsync(
         networkId: number,
@@ -895,7 +917,7 @@ export class Blockchain {
     private async _updateDefaultGasPriceAsync(): Promise<void> {
         try {
             const gasInfo = await backendClient.getGasInfoAsync();
-            const gasPriceInGwei = new BigNumber(gasInfo.average / 10);
+            const gasPriceInGwei = new BigNumber(gasInfo.fast / 10);
             const gasPriceInWei = gasPriceInGwei.mul(1000000000);
             this._defaultGasPrice = gasPriceInWei;
         } catch (err) {
