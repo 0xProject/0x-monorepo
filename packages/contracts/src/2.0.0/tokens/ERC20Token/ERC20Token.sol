@@ -21,6 +21,7 @@ pragma experimental ABIEncoderV2;
 
 import "./IERC20Token.sol";
 
+
 contract ERC20Token is IERC20Token {
 
     string constant INSUFFICIENT_BALANCE = "ERC20_INSUFFICIENT_BALANCE";

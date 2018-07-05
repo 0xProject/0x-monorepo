@@ -24,6 +24,7 @@ import "./mixins/MTransactions.sol";
 import "./interfaces/IWallet.sol";
 import "./interfaces/IValidator.sol";
 
+
 contract MixinSignatureValidator is
     MSignatureValidator,
     MTransactions

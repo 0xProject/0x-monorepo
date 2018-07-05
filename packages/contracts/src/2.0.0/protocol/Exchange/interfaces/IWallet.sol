@@ -18,6 +18,7 @@
 
 pragma solidity ^0.4.24;
 
+
 contract IWallet {
 
     /// @dev Verifies that a signature is valid.

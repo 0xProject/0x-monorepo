@@ -20,11 +20,13 @@ pragma solidity ^0.4.24;
 
 import "../../protocol/Exchange/interfaces/IValidator.sol";
 
+
 contract TestValidator is 
     IValidator
 {
 
     // The single valid signer for this wallet.
+    // solhint-disable-next-line var-name-mixedcase
     address VALID_SIGNER;
 
     /// @dev constructs a new `TestValidator` with a single valid signer.

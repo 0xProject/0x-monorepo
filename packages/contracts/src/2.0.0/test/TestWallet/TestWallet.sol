@@ -21,6 +21,7 @@ pragma solidity ^0.4.24;
 import "../../protocol/Exchange/interfaces/IWallet.sol";
 import "../../utils/LibBytes/LibBytes.sol";
 
+
 contract TestWallet is 
     IWallet
 {
@@ -29,6 +30,7 @@ contract TestWallet is
     string constant LENGTH_65_REQUIRED = "LENGTH_65_REQUIRED";
 
     // The owner of this wallet.
+    // solhint-disable-next-line var-name-mixedcase
     address WALLET_OWNER;
 
     /// @dev constructs a new `TestWallet` with a single owner.

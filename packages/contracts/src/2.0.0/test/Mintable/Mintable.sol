@@ -22,6 +22,7 @@ pragma experimental ABIEncoderV2;
 import "../../tokens/UnlimitedAllowanceToken/UnlimitedAllowanceToken.sol";
 import "../../utils/SafeMath/SafeMath.sol";
 
+
 /*
  * Mintable
  * Base contract that creates a mintable UnlimitedAllowanceToken

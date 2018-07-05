@@ -21,6 +21,7 @@ pragma experimental ABIEncoderV2;
 
 import "./IAuthorizable.sol";
 
+
 contract IAssetProxy is
     IAuthorizable
 {

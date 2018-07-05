@@ -20,6 +20,7 @@ pragma solidity ^0.4.24;
 
 import "./LibEIP712.sol";
 
+
 contract LibOrder is
     LibEIP712
 {
@@ -115,17 +116,20 @@ contract LibOrder is
         //   ));
         assembly {
             // Backup
+            // solhint-disable-next-line space-after-comma
             let temp1 := mload(sub(order,  32))
             let temp2 := mload(add(order, 320))
             let temp3 := mload(add(order, 352))
             
             // Hash in place
+            // solhint-disable-next-line space-after-comma
             mstore(sub(order,  32), schemaHash)
             mstore(add(order, 320), makerAssetDataHash)
             mstore(add(order, 352), takerAssetDataHash)
             result := keccak256(sub(order, 32), 416)
             
             // Restore
+            // solhint-disable-next-line space-after-comma
             mstore(sub(order,  32), temp1)
             mstore(add(order, 320), temp2)
             mstore(add(order, 352), temp3)
