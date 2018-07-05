@@ -230,11 +230,16 @@ export class Web3Wrapper {
      * @param owner Account whose balance you wish to check
      * @returns Balance in wei
      */
-    public async getBalanceInWeiAsync(owner: string): Promise<BigNumber> {
+    public async getBalanceInWeiAsync(owner: string, defaultBlock?: BlockParam): Promise<BigNumber> {
         assert.isETHAddressHex('owner', owner);
+        if (!_.isUndefined(defaultBlock)) {
+            Web3Wrapper._assertBlockParam(defaultBlock);
+        }
+        const marshalledDefaultBlock = marshaller.marshalBlockParam(defaultBlock);
+        const encodedOwner = marshaller.marshalAddress(owner);
         const balanceInWei = await this._sendRawPayloadAsync<string>({
             method: 'eth_getBalance',
-            params: [owner],
+            params: [encodedOwner, marshalledDefaultBlock],
         });
         // Rewrap in a new BigNumber
         return new BigNumber(balanceInWei);
