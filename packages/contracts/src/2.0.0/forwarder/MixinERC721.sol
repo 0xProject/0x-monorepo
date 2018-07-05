@@ -25,8 +25,8 @@ import "../tokens/ERC721Token/IERC721Token.sol";
 contract MixinERC721 {
 
     using LibBytes for bytes;
-    // Equals to `bytes4(keccak256("onERC721Received(address,uint256,bytes)"))`
-    bytes4 constant ERC721_RECEIVED = 0xf0b9e5ba;
+    bytes4 constant ERC721_RECEIVED = bytes4(keccak256("onERC721Received(address,uint256,bytes)"));
+    bytes4 constant ERC721_RECEIVED_OPERATOR = bytes4(keccak256("onERC721Received(address,address,uint256,bytes)"));
 
     function onERC721Received(address, uint256, bytes memory)
         public
@@ -34,6 +34,14 @@ contract MixinERC721 {
         returns(bytes4)
     {
         return ERC721_RECEIVED;
+    }
+
+    function onERC721Received(address, address, uint256, bytes memory)
+        public
+        pure
+        returns(bytes4)
+    {
+        return ERC721_RECEIVED_OPERATOR;
     }
 
     function transferERC721Token(
