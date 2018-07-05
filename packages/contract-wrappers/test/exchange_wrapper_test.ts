@@ -326,13 +326,11 @@ describe('ExchangeWrapper', () => {
     describe('#getAssetProxyBySignatureAsync', () => {
         it('should fill or kill a valid order', async () => {
             const erc20ProxyId = await contractWrappers.erc20Proxy.getProxyIdAsync();
-            const erc20ProxyAddressById = await contractWrappers.exchange.getAssetProxieBySignatureAsync(erc20ProxyId);
+            const erc20ProxyAddressById = await contractWrappers.exchange.getAssetProxyBySignatureAsync(erc20ProxyId);
             const erc20ProxyAddress = contractWrappers.erc20Proxy.getContractAddress();
             expect(erc20ProxyAddressById).to.be.equal(erc20ProxyAddress);
             const erc721ProxyId = await contractWrappers.erc721Proxy.getProxyIdAsync();
-            const erc721ProxyAddressById = await contractWrappers.exchange.getAssetProxieBySignatureAsync(
-                erc721ProxyId,
-            );
+            const erc721ProxyAddressById = await contractWrappers.exchange.getAssetProxyBySignatureAsync(erc721ProxyId);
             const erc721ProxyAddress = contractWrappers.erc721Proxy.getContractAddress();
             expect(erc721ProxyAddressById).to.be.equal(erc721ProxyAddress);
         });

@@ -42,7 +42,7 @@ export class ExchangeWrapper extends ContractWrapper {
      * @param   methodOpts     Optional arguments this method accepts.
      * @return  The address of an asset proxy for a given signature
      */
-    public async getAssetProxieBySignatureAsync(proxySignature: string, methodOpts: MethodOpts = {}): Promise<string> {
+    public async getAssetProxyBySignatureAsync(proxySignature: string, methodOpts: MethodOpts = {}): Promise<string> {
         assert.isHexString('proxySignature', proxySignature);
         assert.doesConformToSchema('methodOpts', methodOpts, methodOptsSchema);
         const exchangeContract = await this._getExchangeContractAsync();
