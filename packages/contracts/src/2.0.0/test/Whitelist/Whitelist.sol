@@ -23,6 +23,7 @@ import "../../protocol/Exchange/interfaces/IExchange.sol";
 import "../../protocol/Exchange/libs/LibOrder.sol";
 import "../../utils/Ownable/Ownable.sol";
 
+
 contract Whitelist is
     Ownable
 {
@@ -35,15 +36,19 @@ contract Whitelist is
     mapping (address => bool) public isWhitelisted;
 
     // Exchange contract.
+    // solhint-disable-next-line var-name-mixedcase
     IExchange EXCHANGE;
 
     byte constant VALIDATOR_SIGNATURE_BYTE = "\x06";
+    // solhint-disable-next-line var-name-mixedcase
     bytes TX_ORIGIN_SIGNATURE;
 
     constructor (address _exchange)
         public
     {
+        // solhint-disable-next-line var-name-mixedcase
         EXCHANGE = IExchange(_exchange);
+        // solhint-disable-next-line var-name-mixedcase
         TX_ORIGIN_SIGNATURE = abi.encodePacked(address(this), VALIDATOR_SIGNATURE_BYTE);
     }
 

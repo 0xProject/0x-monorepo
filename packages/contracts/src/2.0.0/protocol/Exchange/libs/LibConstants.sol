@@ -18,11 +18,13 @@
 
 pragma solidity ^0.4.24;
 
+
 contract LibConstants {
    
     // Asset data for ZRX token. Used for fee transfers.
     // @TODO: Hardcode constant when we deploy. Currently 
     //        not constant to make testing easier.
+    // solhint-disable-next-line var-name-mixedcase
     bytes public ZRX_ASSET_DATA;
 
     // @TODO: Remove when we deploy.

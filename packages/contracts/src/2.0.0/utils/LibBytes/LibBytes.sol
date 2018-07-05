@@ -18,6 +18,7 @@
 
 pragma solidity ^0.4.24;
 
+
 library LibBytes {
 
     using LibBytes for bytes;

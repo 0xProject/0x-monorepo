@@ -22,6 +22,7 @@ pragma experimental ABIEncoderV2;
 import "../../protocol/Exchange/MixinSignatureValidator.sol";
 import "../../protocol/Exchange/MixinTransactions.sol";
 
+
 contract TestSignatureValidator is
     MixinSignatureValidator,
     MixinTransactions

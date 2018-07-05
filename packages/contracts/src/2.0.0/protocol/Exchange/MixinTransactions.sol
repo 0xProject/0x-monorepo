@@ -22,6 +22,7 @@ import "./mixins/MSignatureValidator.sol";
 import "./mixins/MTransactions.sol";
 import "./libs/LibEIP712.sol";
 
+
 contract MixinTransactions is
     LibEIP712,
     MSignatureValidator,

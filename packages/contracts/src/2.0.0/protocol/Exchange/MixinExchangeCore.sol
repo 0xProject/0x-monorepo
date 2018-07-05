@@ -28,6 +28,7 @@ import "./mixins/MSignatureValidator.sol";
 import "./mixins/MTransactions.sol";
 import "./mixins/MAssetProxyDispatcher.sol";
 
+
 contract MixinExchangeCore is
     LibConstants,
     LibMath,
