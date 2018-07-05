@@ -46,16 +46,15 @@ describe('OrderWatcher', () => {
     let taker: string;
     let signedOrder: SignedOrder;
     let orderWatcher: OrderWatcher;
-    const config = {
-        networkId: constants.TESTRPC_NETWORK_ID,
-    };
     const decimals = constants.ZRX_DECIMALS;
     const fillableAmount = Web3Wrapper.toBaseUnitAmount(new BigNumber(5), decimals);
     before(async () => {
-        contractWrappers = new ContractWrappers(provider, config);
-        // tslint:disable-next-line:no-unused-variable
         const networkId = await web3Wrapper.getNetworkIdAsync();
-        orderWatcher = new OrderWatcher(provider, constants.TESTRPC_NETWORK_ID);
+        const config = {
+            networkId,
+        };
+        contractWrappers = new ContractWrappers(provider, config);
+        orderWatcher = new OrderWatcher(provider, networkId);
         exchangeContractAddress = contractWrappers.exchange.getContractAddress();
         userAddresses = await web3Wrapper.getAvailableAddressesAsync();
         [, maker, taker] = userAddresses;
