@@ -56,7 +56,9 @@ contract LibMath is
         
         // Handle non-overflow cases
         if (prod1 == 0) {
-            partialAmount = prod0 / denominator;
+            assembly {
+                partialAmount := div(prod0, denominator)
+            }
             return partialAmount;
         }
         
@@ -65,21 +67,31 @@ contract LibMath is
         ///////////////////////////////////////////////
         
         // Make division exact by subtracting the remainder from [prod1 prod0]
+        // Compute remainder using mulmod
         uint256 remainder = mulmod(numerator, denominator, target);
+        // Subtract 256 bit number from 512 bit number
         assembly {
             prod1 := sub(prod1, gt(remainder, prod0))
             prod0 := sub(prod0, remainder)
         }
         
         // Factor powers of two out of denominator
+        // Compute largest power of two divisor of denominator (>= 1)
         uint256 twos = -denominator & denominator;
-        denominator /= twos;
+        // Divide denominator by power of two
+        assembly {
+            denominator := div(denominator, twos)
+        }
         
         // Divide [prod1 prod0] by the factors of two
-        prod0 /= twos;
+        assembly {
+            prod0 := div(prod0, twos)
+        }
         // Shift in bits from prod1 into prod0. For this we need
         // to flip `twos` such that it is 2**256 / twos.
-        twos = (-twos) / twos + 1;
+        assembly {
+            twos := add(div(sub(0, twos), twos), 1)
+        }
         prod0 |= prod1 * twos;
         
         // Invert denominator mod 2**256
@@ -107,7 +119,7 @@ contract LibMath is
         partialAmount = prod0 * inv;
         return partialAmount;
     }
-
+    
     /// @dev Checks if rounding error > 0.1%.
     /// @param numerator Numerator.
     /// @param denominator Denominator.
