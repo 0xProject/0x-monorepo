@@ -74,9 +74,6 @@ export const marshaller = {
         return tx;
     },
     marshalTxData(txData: Partial<TxData>): Partial<TxDataRPC> {
-        if (_.isUndefined(txData.from)) {
-            throw new Error(`txData is missing required "from" address.`);
-        }
         const callTxDataBase = {
             ...txData,
         };

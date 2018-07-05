@@ -483,6 +483,9 @@ export class Web3Wrapper {
      * @returns Transaction hash
      */
     public async sendTransactionAsync(txData: TxData): Promise<string> {
+        if (_.isUndefined(txData.from)) {
+            throw new Error(`txData is missing required "from" address.`);
+        }
         const txDataHex = marshaller.marshalTxData(txData);
         const txHash = await this._sendRawPayloadAsync<string>({ method: 'eth_sendTransaction', params: [txDataHex] });
         return txHash;
