@@ -23,7 +23,7 @@ pragma solidity ^0.4.23;
 // The asset proxies take an ABI encoded `bytes assetData` as argument.
 // This argument is ABI encoded as one of the methods of this interface.
 interface IAssetData {
-    
+
     // solhint-disable-next-line func-name-mixedcase
     function ERC20Token(address tokenContract)
         external
