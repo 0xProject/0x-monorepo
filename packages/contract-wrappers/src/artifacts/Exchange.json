@@ -1027,28 +1027,6 @@
                 "type": "function"
             },
             {
-                "constant": false,
-                "inputs": [
-                    {
-                        "name": "assetProxyId",
-                        "type": "bytes4"
-                    },
-                    {
-                        "name": "newAssetProxy",
-                        "type": "address"
-                    },
-                    {
-                        "name": "oldAssetProxy",
-                        "type": "address"
-                    }
-                ],
-                "name": "registerAssetProxy",
-                "outputs": [],
-                "payable": false,
-                "stateMutability": "nonpayable",
-                "type": "function"
-            },
-            {
                 "constant": true,
                 "inputs": [],
                 "name": "owner",
@@ -1300,6 +1278,20 @@
                     }
                 ],
                 "name": "executeTransaction",
+                "outputs": [],
+                "payable": false,
+                "stateMutability": "nonpayable",
+                "type": "function"
+            },
+            {
+                "constant": false,
+                "inputs": [
+                    {
+                        "name": "assetProxy",
+                        "type": "address"
+                    }
+                ],
+                "name": "registerAssetProxy",
                 "outputs": [],
                 "payable": false,
                 "stateMutability": "nonpayable",
@@ -1899,16 +1891,11 @@
                     },
                     {
                         "indexed": false,
-                        "name": "newAssetProxy",
-                        "type": "address"
-                    },
-                    {
-                        "indexed": false,
-                        "name": "oldAssetProxy",
+                        "name": "assetProxy",
                         "type": "address"
                     }
                 ],
-                "name": "AssetProxySet",
+                "name": "AssetProxyRegistered",
                 "type": "event"
             }
         ]

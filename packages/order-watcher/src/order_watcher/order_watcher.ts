@@ -1,10 +1,7 @@
 import {
     BalanceAndProxyAllowanceLazyStore,
     ContractWrappers,
-    LogCancelContractEventArgs,
-    LogFillContractEventArgs,
     OrderFilledCancelledLazyStore,
-    WithdrawalContractEventArgs,
 } from '@0xproject/contract-wrappers';
 import { schemas } from '@0xproject/json-schemas';
 import { getOrderHashHex, OrderStateUtils } from '@0xproject/order-utils';

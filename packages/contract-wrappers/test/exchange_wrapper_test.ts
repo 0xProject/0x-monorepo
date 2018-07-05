@@ -486,9 +486,15 @@ describe('ExchangeWrapper', () => {
         it('should only get the logs with the correct indexed fields', async () => {
             txHash = await contractWrappers.exchange.fillOrderAsync(signedOrder, takerTokenFillAmount, takerAddress);
             await web3Wrapper.awaitTransactionSuccessAsync(txHash, constants.AWAIT_TRANSACTION_MINED_MS);
-
+            const signedOrderWithAnotherMakerAddress = await fillScenarios.createFillableSignedOrderAsync(
+                makerAssetData,
+                takerAssetData,
+                anotherMakerAddress,
+                takerAddress,
+                fillableAmount,
+            );
             txHash = await contractWrappers.exchange.fillOrderAsync(
-                anotherSignedOrder,
+                signedOrderWithAnotherMakerAddress,
                 takerTokenFillAmount,
                 takerAddress,
             );
