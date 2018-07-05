@@ -65,6 +65,7 @@
     },
     "dependencies": {
         "@0xproject/assert": "^0.2.12",
+        "@0xproject/json-schemas": "^1.0.0",
         "@0xproject/typescript-typings": "^0.4.1",
         "@0xproject/utils": "^0.7.1",
         "ethereum-types": "^0.0.2",
