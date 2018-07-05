@@ -15,6 +15,7 @@ import {
     BlockchainCallErrs,
     BrowserType,
     Environments,
+    OperatingSystemType,
     Order,
     Providers,
     ProviderType,
@@ -401,8 +402,11 @@ export const utils = {
     openUrl(url: string): void {
         window.open(url, '_blank');
     },
-    isMobile(screenWidth: ScreenWidths): boolean {
+    isMobileWidth(screenWidth: ScreenWidths): boolean {
         return screenWidth === ScreenWidths.Sm;
+    },
+    isMobileOperatingSystem(): boolean {
+        return bowser.mobile;
     },
     getBrowserType(): BrowserType {
         if (bowser.chrome) {
@@ -415,7 +419,59 @@ export const utils = {
             return BrowserType.Other;
         }
     },
+    getOperatingSystem(): OperatingSystemType {
+        if (bowser.android) {
+            return OperatingSystemType.Android;
+        } else if (bowser.ios) {
+            return OperatingSystemType.iOS;
+        } else if (bowser.mac) {
+            return OperatingSystemType.Mac;
+        } else if (bowser.windows) {
+            return OperatingSystemType.Windows;
+        } else if (bowser.windowsphone) {
+            return OperatingSystemType.WindowsPhone;
+        } else if (bowser.linux) {
+            return OperatingSystemType.Linux;
+        } else {
+            return OperatingSystemType.Other;
+        }
+    },
     isTokenTracked(token: Token): boolean {
         return !_.isUndefined(token.trackedTimestamp);
+    },
+    // Returns a [downloadLink, isOnMobile] tuple.
+    getBestWalletDownloadLinkAndIsMobile(): [string, boolean] {
+        const browserType = utils.getBrowserType();
+        const isOnMobile = utils.isMobileOperatingSystem();
+        const operatingSystem = utils.getOperatingSystem();
+        let downloadLink;
+        if (isOnMobile) {
+            switch (operatingSystem) {
+                case OperatingSystemType.Android:
+                    downloadLink = constants.URL_TOSHI_ANDROID_APP_STORE;
+                    break;
+                case OperatingSystemType.iOS:
+                    downloadLink = constants.URL_TOSHI_IOS_APP_STORE;
+                    break;
+                default:
+                    // Toshi is only supported on these mobile OSes - just default to iOS
+                    downloadLink = constants.URL_TOSHI_IOS_APP_STORE;
+            }
+        } else {
+            switch (browserType) {
+                case BrowserType.Chrome:
+                    downloadLink = constants.URL_METAMASK_CHROME_STORE;
+                    break;
+                case BrowserType.Firefox:
+                    downloadLink = constants.URL_METAMASK_FIREFOX_STORE;
+                    break;
+                case BrowserType.Opera:
+                    downloadLink = constants.URL_METAMASK_OPERA_STORE;
+                    break;
+                default:
+                    downloadLink = constants.URL_METAMASK_HOMEPAGE;
+            }
+        }
+        return [downloadLink, isOnMobile];
     },
 };

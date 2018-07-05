@@ -108,12 +108,13 @@ export const RelayerGridTile: React.StatelessComponent<RelayerGridTileProps> = (
 
 const GridTile = styled(PlainGridTile)`
     cursor: pointer;
-    transition: transform 0.2s ease;
     &:hover {
+        transition: transform 0.2s ease;
         transform: translate(0px, -3px);
     }
     ${media.small`
-        transform: none;
+        transform: none !important;
+        transition: none !important;
     `};
 `;
 

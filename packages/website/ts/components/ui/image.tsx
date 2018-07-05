@@ -6,6 +6,7 @@ export interface ImageProps {
     src?: string;
     fallbackSrc?: string;
     height?: string | number;
+    borderRadius?: string;
     width?: string | number;
 }
 interface ImageState {
@@ -26,6 +27,9 @@ export class Image extends React.Component<ImageProps, ImageState> {
                 className={this.props.className}
                 onError={this._onError.bind(this)}
                 src={src}
+                style={{
+                    borderRadius: this.props.borderRadius,
+                }}
                 height={this.props.height}
                 width={this.props.width}
             />

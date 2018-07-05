@@ -569,6 +569,16 @@ export enum BrowserType {
     Other = 'Other',
 }
 
+export enum OperatingSystemType {
+    Android = 'Android',
+    iOS = 'iOS',
+    Mac = 'Mac',
+    Windows = 'Windows',
+    WindowsPhone = 'WindowsPhone',
+    Linux = 'Linux',
+    Other = 'Other',
+}
+
 export enum AccountState {
     Disconnected = 'Disconnected',
     Ready = 'Ready',

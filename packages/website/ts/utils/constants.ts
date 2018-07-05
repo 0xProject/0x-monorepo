@@ -74,6 +74,8 @@ export const constants = {
     URL_GITHUB_WIKI: 'https://github.com/0xProject/wiki',
     URL_METAMASK_CHROME_STORE: 'https://chrome.google.com/webstore/detail/metamask/nkbihfbeogaeaoehlefnkodbefgpgknn',
     URL_METAMASK_FIREFOX_STORE: 'https://addons.mozilla.org/en-US/firefox/addon/ether-metamask/',
+    URL_TOSHI_IOS_APP_STORE: 'https://itunes.apple.com/us/app/toshi-ethereum-wallet/id1278383455?mt=8',
+    URL_TOSHI_ANDROID_APP_STORE: 'https://play.google.com/store/apps/details?id=org.toshi&hl=en_US',
     URL_METAMASK_HOMEPAGE: 'https://metamask.io/',
     URL_METAMASK_OPERA_STORE: 'https://addons.opera.com/en/extensions/details/metamask/',
     URL_MIST_DOWNLOAD: 'https://github.com/ethereum/mist/releases',
