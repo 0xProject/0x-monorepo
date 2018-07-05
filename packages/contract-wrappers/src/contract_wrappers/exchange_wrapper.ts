@@ -57,7 +57,7 @@ export class ExchangeWrapper extends ContractWrapper {
     }
     /**
      * Retrieve the takerAssetAmount of an order that has already been filled.
-     * @param   orderHash    The hex encoded orderHash for which you would like to retrieve the filled takerAmount.
+     * @param   orderHash    The hex encoded orderHash for which you would like to retrieve the filled takerAssetAmount.
      * @param   methodOpts   Optional arguments this method accepts.
      * @return  The amount of the order (in taker asset base units) that has already been filled.
      */
@@ -75,23 +75,7 @@ export class ExchangeWrapper extends ContractWrapper {
         return filledTakerAssetAmountInBaseUnits;
     }
     /**
-     * Retrieve the current context address
-     * @param   methodOpts   Optional arguments this method accepts.
-     * @return  Current context address
-     */
-    public async getCurrentContextAddressAsync(methodOpts: MethodOpts = {}): Promise<string> {
-        assert.doesConformToSchema('methodOpts', methodOpts, methodOptsSchema);
-        const exchangeContract = await this._getExchangeContractAsync();
-
-        const txData = {};
-        const currentContextAddress = await exchangeContract.currentContextAddress.callAsync(
-            txData,
-            methodOpts.defaultBlock,
-        );
-        return currentContextAddress;
-    }
-    /**
-     * Retrieve the version
+     * Retrieve the exchange contract version
      * @param   methodOpts   Optional arguments this method accepts.
      * @return  Version
      */
@@ -104,11 +88,12 @@ export class ExchangeWrapper extends ContractWrapper {
         return version;
     }
     /**
-     * Retrieve the order epoch
+     * Retrieve the set order epoch for a given makerAddress & senderAddress pair.
+     * Orders can be bulk cancelled by setting the order epoch to a value lower then the salt value of orders one wishes to cancel.
      * @param   makerAddress  Maker address
      * @param   senderAddress Sender address
      * @param   methodOpts    Optional arguments this method accepts.
-     * @return  Order epoch
+     * @return  Order epoch. Defaults to 0.
      */
     public async getOrderEpochAsync(
         makerAddress: string,
@@ -130,11 +115,10 @@ export class ExchangeWrapper extends ContractWrapper {
         return orderEpoch;
     }
     /**
-     * Check if the order has been cancelled.
-     * @param   orderHash    The hex encoded orderHash for which you would like to retrieve the
-     *                       cancelled takerAmount.
+     * Check if an order has been cancelled. Order cancellations are binary
+     * @param   orderHash    The hex encoded orderHash for which you would like to retrieve the cancelled takerAmount.
      * @param   methodOpts   Optional arguments this method accepts.
-     * @return  If the order has been cancelled.
+     * @return  Whether the order has been cancelled.
      */
     public async isCancelledAsync(orderHash: string, methodOpts: MethodOpts = {}): Promise<boolean> {
         assert.doesConformToSchema('orderHash', orderHash, schemas.orderHashSchema);
@@ -147,13 +131,11 @@ export class ExchangeWrapper extends ContractWrapper {
     }
     /**
      * Fills a signed order with an amount denominated in baseUnits of the taker asset.
-     * @param   signedOrder                                 An object that conforms to the SignedOrder interface.
-     * @param   takerAssetFillAmount                        The amount of the order (in taker asset baseUnits) that
-     *                                                      you wish to fill.
-     * @param   takerAddress                                The user Ethereum address who would like to fill this order.
-     *                                                      Must be available via the supplied Provider
-     *                                                      passed to 0x.js.
-     * @param   orderTransactionOpts                        Optional arguments this method accepts.
+     * @param   signedOrder           An object that conforms to the SignedOrder interface.
+     * @param   takerAssetFillAmount  The amount of the order (in taker asset baseUnits) that you wish to fill.
+     * @param   takerAddress          The user Ethereum address who would like to fill this order. Must be available via the supplied
+     *                                Provider provided at instantiation.
+     * @param   orderTransactionOpts  Optional arguments this method accepts.
      * @return  Transaction hash.
      */
     @decorators.asyncZeroExErrorHandler
@@ -184,14 +166,12 @@ export class ExchangeWrapper extends ContractWrapper {
         return txHash;
     }
     /**
-     * No-throw version of fillOrderAsync
-     * @param   signedOrder                                 An object that conforms to the SignedOrder interface.
-     * @param   takerAssetFillAmount                        The amount of the order (in taker asset baseUnits) that
-     *                                                      you wish to fill.
-     * @param   takerAddress                                The user Ethereum address who would like to fill this order.
-     *                                                      Must be available via the supplied Provider
-     *                                                      passed to 0x.js.
-     * @param   orderTransactionOpts                        Optional arguments this method accepts.
+     * No-throw version of fillOrderAsync. This version will not throw if the fill fails. This allows the caller to save gas at the expense of not knowing the reason the fill failed.
+     * @param   signedOrder          An object that conforms to the SignedOrder interface.
+     * @param   takerAssetFillAmount The amount of the order (in taker asset baseUnits) that you wish to fill.
+     * @param   takerAddress         The user Ethereum address who would like to fill this order.
+     *                               Must be available via the supplied Provider provided at instantiation.
+     * @param   orderTransactionOpts Optional arguments this method accepts.
      * @return  Transaction hash.
      */
     @decorators.asyncZeroExErrorHandler
@@ -224,13 +204,11 @@ export class ExchangeWrapper extends ContractWrapper {
     /**
      * Attempts to fill a specific amount of an order. If the entire amount specified cannot be filled,
      * the fill order is abandoned.
-     * @param   signedOrder                                 An object that conforms to the SignedOrder interface.
-     * @param   takerAssetFillAmount                        The amount of the order (in taker asset baseUnits) that
-     *                                                      you wish to fill.
-     * @param   takerAddress                                The user Ethereum address who would like to fill this order.
-     *                                                      Must be available via the supplied Provider
-     *                                                      passed to 0x.js.
-     * @param   orderTransactionOpts                        Optional arguments this method accepts.
+     * @param   signedOrder          An object that conforms to the SignedOrder interface.
+     * @param   takerAssetFillAmount The amount of the order (in taker asset baseUnits) that you wish to fill.
+     * @param   takerAddress         The user Ethereum address who would like to fill this order. Must be available via the supplied
+     *                               Provider provided at instantiation.
+     * @param   orderTransactionOpts Optional arguments this method accepts.
      * @return  Transaction hash.
      */
     @decorators.asyncZeroExErrorHandler
@@ -261,7 +239,9 @@ export class ExchangeWrapper extends ContractWrapper {
         return txHash;
     }
     /**
-     * Executes tehe transaction
+     * Executes a 0x transaction. Transaction messages exist for the purpose of calling methods on the Exchange contract
+     * in the context of another address (see [ZEIP18](https://github.com/0xProject/ZEIPs/issues/18)).
+     * This is especially useful for implementing filter contracts.
      * @param   salt                  Salt
      * @param   signerAddress         Signer address
      * @param   data                  Transaction data
@@ -304,13 +284,11 @@ export class ExchangeWrapper extends ContractWrapper {
     }
     /**
      * Batch version of fillOrderAsync. Executes multiple fills atomically in a single transaction.
-     * @param   signedOrders                                    An array of signed orders to fill.
-     * @param   takerAssetFillAmounts                           The amounts of the orders (in taker asset baseUnits) that
-     *                                                          you wish to fill.
-     * @param   takerAddress                                    The user Ethereum address who would like to fill
-     *                                                          these orders. Must be available via the supplied
-     *                                                          Provider passed to 0x.js.
-     * @param   orderTransactionOpts                            Optional arguments this method accepts.
+     * @param   signedOrders          An array of signed orders to fill.
+     * @param   takerAssetFillAmounts The amounts of the orders (in taker asset baseUnits) that you wish to fill.
+     * @param   takerAddress          The user Ethereum address who would like to fill these orders. Must be available via the supplied
+     *                                Provider provided at instantiation.
+     * @param   orderTransactionOpts  Optional arguments this method accepts.
      * @return  Transaction hash.
      */
     @decorators.asyncZeroExErrorHandler
@@ -343,13 +321,12 @@ export class ExchangeWrapper extends ContractWrapper {
         return txHash;
     }
     /**
-     * Synchronously executes multiple calls of fillOrder until total amount of makerAsset is bought by taker.
-     * @param   signedOrders                                    An array of signed orders to fill.
-     * @param   makerAssetFillAmount                            Maker asset fill amount.
-     * @param   takerAddress                                    The user Ethereum address who would like to fill
-     *                                                          these orders. Must be available via the supplied
-     *                                                          Provider passed to 0x.js.
-     * @param   orderTransactionOpts                            Optional arguments this method accepts.
+     * Synchronously executes multiple calls to fillOrder until total amount of makerAsset is bought by taker.
+     * @param   signedOrders         An array of signed orders to fill.
+     * @param   makerAssetFillAmount Maker asset fill amount.
+     * @param   takerAddress         The user Ethereum address who would like to fill these orders. Must be available via the supplied
+     *                               Provider provided at instantiation.
+     * @param   orderTransactionOpts Optional arguments this method accepts.
      * @return  Transaction hash.
      */
     @decorators.asyncZeroExErrorHandler
@@ -380,13 +357,12 @@ export class ExchangeWrapper extends ContractWrapper {
         return txHash;
     }
     /**
-     * Synchronously executes multiple calls of fillOrder until total amount of makerAsset is bought by taker.
-     * @param   signedOrders                                    An array of signed orders to fill.
-     * @param   takerAssetFillAmount                            Taker asset fill amount.
-     * @param   takerAddress                                    The user Ethereum address who would like to fill
-     *                                                          these orders. Must be available via the supplied
-     *                                                          Provider passed to 0x.js.
-     * @param   orderTransactionOpts                            Optional arguments this method accepts.
+     * Synchronously executes multiple calls to fillOrder until total amount of makerAsset is bought by taker.
+     * @param   signedOrders         An array of signed orders to fill.
+     * @param   takerAssetFillAmount Taker asset fill amount.
+     * @param   takerAddress         The user Ethereum address who would like to fill these orders. Must be available via the supplied
+     *                               Provider provided at instantiation.
+     * @param   orderTransactionOpts Optional arguments this method accepts.
      * @return  Transaction hash.
      */
     @decorators.asyncZeroExErrorHandler
@@ -418,12 +394,11 @@ export class ExchangeWrapper extends ContractWrapper {
     }
     /**
      * No throw version of marketBuyOrdersAsync
-     * @param   signedOrders                                    An array of signed orders to fill.
-     * @param   makerAssetFillAmount                            Maker asset fill amount.
-     * @param   takerAddress                                    The user Ethereum address who would like to fill
-     *                                                          these orders. Must be available via the supplied
-     *                                                          Provider passed to 0x.js.
-     * @param   orderTransactionOpts                            Optional arguments this method accepts.
+     * @param   signedOrders         An array of signed orders to fill.
+     * @param   makerAssetFillAmount Maker asset fill amount.
+     * @param   takerAddress         The user Ethereum address who would like to fill these orders. Must be available via the supplied
+     *                               Provider provided at instantiation.
+     * @param   orderTransactionOpts Optional arguments this method accepts.
      * @return  Transaction hash.
      */
     @decorators.asyncZeroExErrorHandler
@@ -455,12 +430,11 @@ export class ExchangeWrapper extends ContractWrapper {
     }
     /**
      * No throw version of marketSellOrdersAsync
-     * @param   signedOrders                                    An array of signed orders to fill.
-     * @param   takerAssetFillAmount                            Taker asset fill amount.
-     * @param   takerAddress                                    The user Ethereum address who would like to fill
-     *                                                          these orders. Must be available via the supplied
-     *                                                          Provider passed to 0x.js.
-     * @param   orderTransactionOpts                            Optional arguments this method accepts.
+     * @param   signedOrders         An array of signed orders to fill.
+     * @param   takerAssetFillAmount Taker asset fill amount.
+     * @param   takerAddress         The user Ethereum address who would like to fill these orders. Must be available via the supplied
+     *                               Provider provided at instantiation.
+     * @param   orderTransactionOpts Optional arguments this method accepts.
      * @return  Transaction hash.
      */
     @decorators.asyncZeroExErrorHandler
@@ -492,13 +466,11 @@ export class ExchangeWrapper extends ContractWrapper {
     }
     /**
      * No throw version of batchFillOrdersAsync
-     * @param   signedOrders                                    An array of signed orders to fill.
-     * @param   takerAssetFillAmounts                           The amounts of the orders (in taker asset baseUnits) that
-     *                                                          you wish to fill.
-     * @param   takerAddress                                    The user Ethereum address who would like to fill
-     *                                                          these orders. Must be available via the supplied
-     *                                                          Provider passed to 0x.js.
-     * @param   orderTransactionOpts                            Optional arguments this method accepts.
+     * @param   signedOrders          An array of signed orders to fill.
+     * @param   takerAssetFillAmounts The amounts of the orders (in taker asset baseUnits) that you wish to fill.
+     * @param   takerAddress          The user Ethereum address who would like to fill these orders. Must be available via the supplied
+     *                                Provider provided at instantiation.
+     * @param   orderTransactionOpts  Optional arguments this method accepts.
      * @return  Transaction hash.
      */
     @decorators.asyncZeroExErrorHandler
@@ -532,13 +504,11 @@ export class ExchangeWrapper extends ContractWrapper {
     }
     /**
      * Batch version of fillOrKillOrderAsync. Executes multiple fills atomically in a single transaction.
-     * @param   signedOrders                                    An array of signed orders to fill.
-     * @param   takerAssetFillAmounts                           The amounts of the orders (in taker asset baseUnits) that
-     *                                                          you wish to fill.
-     * @param   takerAddress                                    The user Ethereum address who would like to fill
-     *                                                          these orders. Must be available via the supplied
-     *                                                          Provider passed to 0x.js.
-     * @param   orderTransactionOpts                            Optional arguments this method accepts.
+     * @param   signedOrders          An array of signed orders to fill.
+     * @param   takerAssetFillAmounts The amounts of the orders (in taker asset baseUnits) that you wish to fill.
+     * @param   takerAddress          The user Ethereum address who would like to fill these orders. Must be available via the supplied
+     *                                Provider provided at instantiation.
+     * @param   orderTransactionOpts  Optional arguments this method accepts.
      * @return  Transaction hash.
      */
     @decorators.asyncZeroExErrorHandler
@@ -572,13 +542,13 @@ export class ExchangeWrapper extends ContractWrapper {
     }
     /**
      * Batch version of cancelOrderAsync. Executes multiple cancels atomically in a single transaction.
-     * @param   orders                                          An array of orders to cancel.
-     * @param   orderTransactionOpts                            Optional arguments this method accepts.
+     * @param   orders                An array of orders to cancel.
+     * @param   orderTransactionOpts  Optional arguments this method accepts.
      * @return  Transaction hash.
      */
     @decorators.asyncZeroExErrorHandler
     public async batchCancelOrdersAsync(
-        orders: Order[],
+        orders: Array<Order | SignedOrder>,
         orderTransactionOpts: OrderTransactionOpts = {},
     ): Promise<string> {
         assert.doesConformToSchema('orders', orders, schemas.ordersSchema);
@@ -600,10 +570,10 @@ export class ExchangeWrapper extends ContractWrapper {
      * Match two complementary orders that have a profitable spread.
      * Each order is filled at their respective price point. However, the calculations are carried out as though
      * the orders are both being filled at the right order's price point.
-     * The profit made by the left order goes to the taker (who matched the two orders).
-     * @param leftSignedOrder         First order to match.
-     * @param rightSignedOrder        Second order to match.
-     * @param takerAddress      The address that sends the transaction and gets the spread.
+     * The profit made by the left order goes to the taker (whoever matched the two orders).
+     * @param leftSignedOrder  First order to match.
+     * @param rightSignedOrder Second order to match.
+     * @param takerAddress     The address that sends the transaction and gets the spread.
      * @return Transaction hash.
      */
     @decorators.asyncZeroExErrorHandler
@@ -683,9 +653,8 @@ export class ExchangeWrapper extends ContractWrapper {
     ): Promise<boolean> {
         assert.isHexString('hash', hash);
         assert.isETHAddressHex('signerAddress', signerAddress);
-        if (!_.isUndefined(methodOpts)) {
-            assert.doesConformToSchema('methodOpts', methodOpts, methodOptsSchema);
-        }
+        assert.isHexString('signature', signature);
+        assert.doesConformToSchema('methodOpts', methodOpts, methodOptsSchema);
         const exchangeInstance = await this._getExchangeContractAsync();
         const txData = {};
         const isValidSignature = await exchangeInstance.isValidSignature.callAsync(
@@ -698,7 +667,7 @@ export class ExchangeWrapper extends ContractWrapper {
         return isValidSignature;
     }
     /**
-     * Checks if the is allowed by the signer.
+     * Checks if the validator is allowed by the signer.
      * @param validatorAddress  Address of a validator
      * @param signerAddress     Address of a signer
      * @param methodOpts        Optional arguments this method accepts.
@@ -728,12 +697,11 @@ export class ExchangeWrapper extends ContractWrapper {
         return isValidSignature;
     }
     /**
-     * Approves a hash on-chain using any valid signature type.
-     * After presigning a hash, the preSign signature type will become valid for that hash and signer.
+     * Check whether the hash is pre-signed on-chain.
      * @param hash          Hash to check if pre-signed
      * @param signerAddress Address that should have signed the given hash.
      * @param methodOpts    Optional arguments this method accepts.
-     * @returns Is pre-signed
+     * @returns Whether the hash is pre-signed.
      */
     @decorators.asyncZeroExErrorHandler
     public async isPreSignedAsync(hash: string, signerAddress: string, methodOpts: MethodOpts = {}): Promise<boolean> {
@@ -782,7 +750,7 @@ export class ExchangeWrapper extends ContractWrapper {
      * @returns Order info
      */
     @decorators.asyncZeroExErrorHandler
-    public async getOrderInfoAsync(order: Order, methodOpts: MethodOpts = {}): Promise<OrderInfo> {
+    public async getOrderInfoAsync(order: Order | SignedOrder, methodOpts: MethodOpts = {}): Promise<OrderInfo> {
         if (!_.isUndefined(methodOpts)) {
             assert.doesConformToSchema('methodOpts', methodOpts, methodOptsSchema);
         }
@@ -794,9 +762,8 @@ export class ExchangeWrapper extends ContractWrapper {
     }
     /**
      * Cancel a given order.
-     * @param   order                   An object that conforms to the Order or SignedOrder interface.
-     *                                  The order you would like to cancel.
-     * @param   transactionOpts         Optional arguments this method accepts.
+     * @param   order           An object that conforms to the Order or SignedOrder interface. The order you would like to cancel.
+     * @param   transactionOpts Optional arguments this method accepts.
      * @return  Transaction hash.
      */
     @decorators.asyncZeroExErrorHandler
@@ -965,8 +932,8 @@ export class ExchangeWrapper extends ContractWrapper {
      */
     public async getZRXAssetDataAsync(): Promise<string> {
         const exchangeInstance = await this._getExchangeContractAsync();
-        const ZRX_ASSET_DATA = exchangeInstance.ZRX_ASSET_DATA.callAsync();
-        return ZRX_ASSET_DATA;
+        const zrxAssetData = exchangeInstance.ZRX_ASSET_DATA.callAsync();
+        return zrxAssetData;
     }
     // tslint:disable:no-unused-variable
     private _invalidateContractInstances(): void {

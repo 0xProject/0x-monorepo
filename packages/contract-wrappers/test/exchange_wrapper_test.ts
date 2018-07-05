@@ -25,7 +25,6 @@ chaiSetup.configure();
 const expect = chai.expect;
 const blockchainLifecycle = new BlockchainLifecycle(web3Wrapper);
 
-// TODO(logvinov): Check coverage
 describe('ExchangeWrapper', () => {
     let contractWrappers: ContractWrappers;
     let userAddresses: string[];
@@ -351,12 +350,6 @@ describe('ExchangeWrapper', () => {
             await web3Wrapper.awaitTransactionSuccessAsync(txHash, constants.AWAIT_TRANSACTION_MINED_MS);
             isPreSigned = await contractWrappers.exchange.isPreSignedAsync(hash, signerAddress);
             expect(isPreSigned).to.be.true();
-        });
-    });
-    describe('#getCurrentContextAddressAsync', () => {
-        it('should return current context address', async () => {
-            const contextAddress = await contractWrappers.exchange.getCurrentContextAddressAsync();
-            expect(contextAddress).to.be.equal(constants.NULL_ADDRESS);
         });
     });
     describe('#getVersionAsync', () => {
