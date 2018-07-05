@@ -78,9 +78,7 @@ class PlainPortalOnboardingFlow extends React.Component<PortalOnboardingFlowProp
                 disableOverlay={this.props.screenWidth === ScreenWidths.Sm}
                 isMobile={this.props.screenWidth === ScreenWidths.Sm}
                 // This is necessary to ensure onboarding stays open once the user unlocks metamask and clicks away
-                disableCloseOnClickOutside={
-                    utils.getBrowserType() === BrowserType.Firefox && this.props.stepIndex === 1
-                }
+                disableCloseOnClickOutside={utils.getBrowserType() === BrowserType.Firefox}
             />
         );
     }
