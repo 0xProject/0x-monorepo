@@ -54,19 +54,22 @@ export class EventWatcher {
         this._startBlockAndLogStream(callback);
     }
     public unsubscribe(): void {
-        if (!_.isUndefined(this._blockAndLogStreamIntervalIfExists)) {
-            intervalUtils.clearAsyncExcludingInterval(this._blockAndLogStreamIntervalIfExists);
-            delete this._blockAndLogStreamIntervalIfExists;
-            delete this._blockAndLogStreamerIfExists;
+        if (_.isUndefined(this._blockAndLogStreamIntervalIfExists)) {
+            throw new Error(OrderWatcherError.SubscriptionNotFound);
         }
+        this._stopBlockAndLogStream();
     }
     private _startBlockAndLogStream(callback: EventWatcherCallback): void {
         if (!_.isUndefined(this._blockAndLogStreamerIfExists)) {
             throw new Error(OrderWatcherError.SubscriptionAlreadyPresent);
         }
+        const eventFilter = {
+            fromBlock: this._stateLayer,
+            toBlock: this._stateLayer,
+        };
         this._blockAndLogStreamerIfExists = new BlockAndLogStreamer(
-            this._web3Wrapper.getBlockAsync.bind(this._web3Wrapper),
-            this._web3Wrapper.getLogsAsync.bind(this._web3Wrapper),
+            this._web3Wrapper.getBlockAsync.bind(this._web3Wrapper, this._stateLayer),
+            this._web3Wrapper.getLogsAsync.bind(this._web3Wrapper, eventFilter),
             EventWatcher._onBlockAndLogStreamerError.bind(this, callback),
         );
         const catchAllLogFilter = {};
@@ -84,6 +87,16 @@ export class EventWatcher {
         this._onLogRemovedSubscriptionToken = this._blockAndLogStreamerIfExists.subscribeToOnLogRemoved(
             this._onLogStateChangedAsync.bind(this, callback, isRemoved),
         );
+    }
+    private _stopBlockAndLogStream(): void {
+        if (_.isUndefined(this._blockAndLogStreamerIfExists)) {
+            throw new Error(OrderWatcherError.SubscriptionNotFound);
+        }
+        this._blockAndLogStreamerIfExists.unsubscribeFromOnLogAdded(this._onLogAddedSubscriptionToken as string);
+        this._blockAndLogStreamerIfExists.unsubscribeFromOnLogRemoved(this._onLogRemovedSubscriptionToken as string);
+        intervalUtils.clearAsyncExcludingInterval(this._blockAndLogStreamIntervalIfExists as NodeJS.Timer);
+        delete this._blockAndLogStreamerIfExists;
+        delete this._blockAndLogStreamIntervalIfExists;
     }
     private async _onLogStateChangedAsync(
         callback: EventWatcherCallback,
