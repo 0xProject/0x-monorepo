@@ -12,6 +12,10 @@
             {
                 "note": "Fixes uncaught Error in abi_decoder",
                 "pr": 763
+            },
+            {
+                "note": "Add formatUtils",
+                "pr": 829
             }
         ]
     },

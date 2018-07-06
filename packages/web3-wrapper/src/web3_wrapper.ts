@@ -1,6 +1,6 @@
 import { assert } from '@0xproject/assert';
 import { schemas } from '@0xproject/json-schemas';
-import { AbiDecoder, addressUtils, BigNumber, intervalUtils, promisify, conversion as utils } from '@0xproject/utils';
+import { AbiDecoder, addressUtils, BigNumber, formatUtils as utils, intervalUtils, promisify } from '@0xproject/utils';
 import {
     BlockParam,
     BlockParamLiteral,
