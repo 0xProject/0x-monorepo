@@ -12,7 +12,7 @@ const expect = chai.expect;
 
 const blockchainLifecycle = new BlockchainLifecycle(web3Wrapper);
 
-describe.only('LibMath', () => {
+describe('LibMath', () => {
     let libs: TestLibsContract;
 
     const toHex = (number: BigNumber): string =>
