@@ -6,11 +6,6 @@ import { chaiSetup } from './chai_setup';
 chaiSetup.configure();
 const expect = chai.expect;
 
-export async function testWithReferenceFuncAsync<P, R>(
-    referenceFunc: (p: P) => Promise<R>,
-    testFunc: (p: P) => Promise<R>,
-    values: [P],
-): Promise<void>;
 export async function testWithReferenceFuncAsync<P0, P1, R>(
     referenceFunc: (p0: P0, p1: P1) => Promise<R>,
     testFunc: (p0: P0, p1: P1) => Promise<R>,

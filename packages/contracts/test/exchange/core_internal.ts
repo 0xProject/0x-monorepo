@@ -8,9 +8,9 @@ import * as _ from 'lodash';
 import { TestExchangeInternalsContract } from '../../generated_contract_wrappers/test_exchange_internals';
 import { artifacts } from '../utils/artifacts';
 import { chaiSetup } from '../utils/chai_setup';
-import { bytes32Values, uint256Values } from '../utils/combinatorial_sets';
+import { bytes32Values, uint256Values, testCombinatoriallyWithReferenceFuncAsync } from '../utils/combinatorial_sets';
 import { constants } from '../utils/constants';
-import { testWithReferenceFuncAsync } from '../utils/reference_test';
+import { testWithReferenceFuncAsync } from '../utils/test_with_reference';
 import { provider, txDefaults, web3Wrapper } from '../utils/web3_wrapper';
 
 chaiSetup.configure();
@@ -67,15 +67,25 @@ describe.only('Exchange core internal functions', () => {
     });
 
     describe('addFillResults', async () => {
+        function makeFillResults(value: BigNumber): FillResults {
+            return {
+                makerAssetFilledAmount: value,
+                takerAssetFilledAmount: value,
+                makerFeePaid: value,
+                takerFeePaid: value,
+            };
+        }
         async function referenceAddFillResultsAsync(
-            totalFillResults: FillResults,
-            singlFillResults: FillResults,
+            totalValue: BigNumber,
+            singleValue: BigNumber,
         ): Promise<FillResults> {
+            const totalFillResults = makeFillResults(totalValue);
+            const singleFillResults = makeFillResults(singleValue);
             // Note(albrow): _.mergeWith mutates the first argument! To
             // workaround this we use _.cloneDeep.
             return _.mergeWith(
                 _.cloneDeep(totalFillResults),
-                singlFillResults,
+                singleFillResults,
                 (totalVal: BigNumber, singleVal: BigNumber) => {
                     const newTotal = totalVal.add(singleVal);
                     if (newTotal.greaterThan(MAX_UINT256)) {
@@ -85,36 +95,17 @@ describe.only('Exchange core internal functions', () => {
                 },
             );
         }
-        async function testAddFillResultsAsync(
-            totalFillResults: FillResults,
-            singleFillResults: FillResults,
-        ): Promise<FillResults> {
+        async function testAddFillResultsAsync(totalValue: BigNumber, singleValue: BigNumber): Promise<FillResults> {
+            const totalFillResults = makeFillResults(totalValue);
+            const singleFillResults = makeFillResults(singleValue);
             return testExchange.publicAddFillResults.callAsync(totalFillResults, singleFillResults);
         }
-        const testCases = combinatorics.cartesianProduct(uint256Values, uint256Values);
-        logUtils.warn(`Generated ${testCases.length} combinatorial test cases.`);
-        let counter = -1;
-        testCases.forEach(async testCase => {
-            counter += 1;
-            it(`addFillResults test case ${counter}`, async () => {
-                const totalFillResults = {
-                    makerAssetFilledAmount: testCase[0],
-                    takerAssetFilledAmount: testCase[0],
-                    makerFeePaid: testCase[0],
-                    takerFeePaid: testCase[0],
-                };
-                const singleFillResults = {
-                    makerAssetFilledAmount: testCase[1],
-                    takerAssetFilledAmount: testCase[1],
-                    makerFeePaid: testCase[1],
-                    takerFeePaid: testCase[1],
-                };
-                await testWithReferenceFuncAsync(referenceAddFillResultsAsync, testAddFillResultsAsync, [
-                    totalFillResults,
-                    singleFillResults,
-                ]);
-            });
-        });
+        await testCombinatoriallyWithReferenceFuncAsync(
+            'addFillResults',
+            referenceAddFillResultsAsync,
+            testAddFillResultsAsync,
+            [uint256Values, uint256Values],
+        );
     });
 
     describe('getPartialAmount', async () => {
@@ -145,15 +136,12 @@ describe.only('Exchange core internal functions', () => {
         ): Promise<BigNumber> {
             return testExchange.publicGetPartialAmount.callAsync(numerator, denominator, target);
         }
-        const testCases = combinatorics.cartesianProduct(uint256Values, uint256Values, uint256Values);
-        logUtils.warn(`Generated ${testCases.length} combinatorial test cases.`);
-        let counter = -1;
-        testCases.forEach(async testCase => {
-            counter += 1;
-            it(`GetPartialAmount test case ${counter}`, async () => {
-                await testWithReferenceFuncAsync(referenceGetPartialAmountAsync, testGetPartialAmountAsync, testCase);
-            });
-        });
+        await testCombinatoriallyWithReferenceFuncAsync(
+            'getPartialAmount',
+            referenceGetPartialAmountAsync,
+            testGetPartialAmountAsync,
+            [uint256Values, uint256Values, uint256Values],
+        );
     });
 
     describe('updateFilledState', async () => {
@@ -195,15 +183,11 @@ describe.only('Exchange core internal functions', () => {
             );
             return testExchange.filled.callAsync(orderHash);
         }
-        const testCases = combinatorics.cartesianProduct(uint256Values, uint256Values, bytes32Values);
-        logUtils.warn(`Generated ${testCases.length} combinatorial test cases.`);
-        let counter = -1;
-        testCases.forEach(async testCase => {
-            counter += 1;
-            const testCaseString = JSON.stringify(testCase);
-            it(`updateFilledState test case ${counter}`, async () => {
-                await testWithReferenceFuncAsync(referenceUpdateFilledStateAsync, testUpdateFilledStateAsync, testCase);
-            });
-        });
+        await testCombinatoriallyWithReferenceFuncAsync(
+            'updateFilledState',
+            referenceUpdateFilledStateAsync,
+            testUpdateFilledStateAsync,
+            [uint256Values, uint256Values, bytes32Values],
+        );
     });
 });

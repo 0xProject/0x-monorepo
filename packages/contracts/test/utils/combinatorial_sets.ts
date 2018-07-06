@@ -1,4 +1,7 @@
 import { BigNumber } from '@0xproject/utils';
+import * as combinatorics from 'js-combinatorics';
+
+import { testWithReferenceFuncAsync } from './test_with_reference';
 
 export const uint256Values = [
     new BigNumber(0),
@@ -32,3 +35,32 @@ export const bytes32Values = [
     // Min that overflows
     '0x100000000000000000000000000000000',
 ];
+
+export async function testCombinatoriallyWithReferenceFuncAsync<P0, P1, R>(
+    name: string,
+    referenceFunc: (p0: P0, p1: P1) => Promise<R>,
+    testFunc: (p0: P0, p1: P1) => Promise<R>,
+    values: [P0[], P1[]],
+): Promise<void>;
+export async function testCombinatoriallyWithReferenceFuncAsync<P0, P1, P2, R>(
+    name: string,
+    referenceFunc: (p0: P0, p1: P1, p2: P2) => Promise<R>,
+    testFunc: (p0: P0, p1: P1, p2: P2) => Promise<R>,
+    values: [P0[], P1[], P2[]],
+): Promise<void>;
+
+export async function testCombinatoriallyWithReferenceFuncAsync(
+    name: string,
+    referenceFuncAsync: (...args: any[]) => Promise<any>,
+    testFuncAsync: (...args: any[]) => Promise<any>,
+    values: any[],
+): Promise<void> {
+    const testCases = combinatorics.cartesianProduct(...values);
+    let counter = -1;
+    testCases.forEach(async testCase => {
+        counter += 1;
+        it(`${name} ${counter}/${testCases.length}`, async () => {
+            await testWithReferenceFuncAsync(referenceFuncAsync, testFuncAsync, testCase as any);
+        });
+    });
+}
