@@ -16,7 +16,7 @@ const expect = chai.expect;
 
 const blockchainLifecycle = new BlockchainLifecycle(web3Wrapper);
 
-describe.only('LibOrder', () => {
+describe('LibOrder', () => {
     let signedOrder: SignedOrder;
     let orderFactory: OrderFactory;
     let libs: TestLibsContract;
