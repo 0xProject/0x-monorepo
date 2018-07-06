@@ -40,6 +40,10 @@ contract LibMath is
         returns (uint256 partialAmount)
     {
         // Preconditions
+        // The fraction needs to be <= 1. This guarantees that the resulting
+        // partialAmount <= target and always fits in a 256 bit response.
+        // We do not check for denominator > 0. When denominator is zero we
+        // require numerator == 0 and return partialAmount == 0.
         require(numerator <= denominator, NUMERATOR_GT_DENOMINATOR);
         
         // 512-bit multiply [prod1 prod0] = target * numerator
