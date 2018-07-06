@@ -12,7 +12,7 @@ import { ExchangeContract } from '../../generated_contract_wrappers/exchange';
 import { ForwarderContract } from '../../generated_contract_wrappers/forwarder';
 import { WETH9Contract } from '../../generated_contract_wrappers/weth9';
 import { artifacts } from '../utils/artifacts';
-import { expectRevertOrAlwaysFailingTransactionAsync, expectRevertOrOtherErrorAsync } from '../utils/assertions';
+import { expectTransactionFailedAsync, expectTransactionFailedWithoutReasonAsync } from '../utils/assertions';
 import { chaiSetup } from '../utils/chai_setup';
 import { constants } from '../utils/constants';
 import { ERC20Wrapper } from '../utils/erc20_wrapper';
@@ -165,7 +165,7 @@ describe(ContractName.Forwarder, () => {
         await blockchainLifecycle.revertAsync();
     });
     describe('calculations', () => {
-        it('throws if orders passed in are not enough to satisfy requested amount', async () => {
+        it('throws if partially filled orders passed in are not enough to satisfy requested amount', async () => {
             feeOrders = [feeOrder];
             const makerTokenFillAmount = feeOrder.makerAssetAmount.div(2);
             const fillAmountWei = await forwarderWrapper.calculateMarketBuyFillAmountWeiAsync(
@@ -179,28 +179,26 @@ describe(ContractName.Forwarder, () => {
                 from: takerAddress,
                 value: fillAmountWei,
             });
-            return expectRevertOrOtherErrorAsync(
+            return expect(
                 forwarderWrapper.calculateMarketBuyFillAmountWeiAsync(
                     feeOrders,
                     [],
                     feeProportion,
                     makerTokenFillAmount,
                 ),
-                'Unable to satisfy makerAssetFillAmount with provided orders',
-            );
+            ).to.be.rejectedWith('Unable to satisfy makerAssetFillAmount with provided orders');
         });
         it('throws if orders passed are cancelled', async () => {
             tx = await exchangeWrapper.cancelOrderAsync(feeOrder, makerAddress);
             // Cancel the feeOrder
-            return expectRevertOrOtherErrorAsync(
+            return expect(
                 forwarderWrapper.calculateMarketBuyFillAmountWeiAsync(
                     feeOrders,
                     [],
                     feeProportion,
                     feeOrder.makerAssetAmount.div(2),
                 ),
-                'Unable to satisfy makerAssetFillAmount with provided orders',
-            );
+            ).to.be.rejectedWith('Unable to satisfy makerAssetFillAmount with provided orders');
         });
     });
     describe('marketSellEthForERC20 without extra fees', () => {
@@ -268,7 +266,7 @@ describe(ContractName.Forwarder, () => {
                 takerFee: Web3Wrapper.toBaseUnitAmount(new BigNumber(1), DECIMALS_DEFAULT),
             });
             const fillAmount = signedOrder.takerAssetAmount.times(2);
-            return expectRevertOrAlwaysFailingTransactionAsync(
+            return expectTransactionFailedWithoutReasonAsync(
                 forwarderWrapper.marketSellEthForERC20Async(signedOrdersWithFee, feeOrders, {
                     value: fillAmount,
                     from: takerAddress,
@@ -286,7 +284,7 @@ describe(ContractName.Forwarder, () => {
             });
             feeOrders = [feeOrder];
             const fillAmount = signedOrder.takerAssetAmount.div(4);
-            return expectRevertOrAlwaysFailingTransactionAsync(
+            return expectTransactionFailedWithoutReasonAsync(
                 forwarderWrapper.marketSellEthForERC20Async(signedOrdersWithFee, feeOrders, {
                     value: fillAmount,
                     from: takerAddress,
@@ -302,7 +300,7 @@ describe(ContractName.Forwarder, () => {
             const erc20SignedOrder = orderFactory.newSignedOrder();
             signedOrders = [erc20SignedOrder, erc721SignedOrder];
             const fillAmountWei = erc20SignedOrder.takerAssetAmount.plus(erc721SignedOrder.takerAssetAmount);
-            return expectRevertOrAlwaysFailingTransactionAsync(
+            return expectTransactionFailedWithoutReasonAsync(
                 forwarderWrapper.marketSellEthForERC20Async(signedOrders, feeOrders, {
                     from: takerAddress,
                     value: fillAmountWei,
@@ -347,7 +345,7 @@ describe(ContractName.Forwarder, () => {
             const fillAmount = signedOrder.takerAssetAmount.div(2);
             feeProportion = 1500; // 15.0%
             feeOrders = [];
-            expectRevertOrAlwaysFailingTransactionAsync(
+            await expectTransactionFailedWithoutReasonAsync(
                 forwarderWrapper.marketSellEthForERC20Async(
                     signedOrders,
                     feeOrders,
@@ -467,7 +465,7 @@ describe(ContractName.Forwarder, () => {
                 feeProportion,
                 makerAssetAmount,
             );
-            return expectRevertOrAlwaysFailingTransactionAsync(
+            return expectTransactionFailedWithoutReasonAsync(
                 forwarderWrapper.marketBuyTokensWithEthAsync(signedOrdersWithFee, feeOrders, makerAssetAmount, {
                     from: takerAddress,
                     value: fillAmountWei,
@@ -487,7 +485,7 @@ describe(ContractName.Forwarder, () => {
                 feeProportion,
                 makerAssetAmount,
             );
-            return expectRevertOrAlwaysFailingTransactionAsync(
+            return expectTransactionFailedWithoutReasonAsync(
                 forwarderWrapper.marketBuyTokensWithEthAsync(signedOrdersWithFee, feeOrders, makerAssetAmount, {
                     from: takerAddress,
                     value: fillAmountWei,
@@ -502,7 +500,7 @@ describe(ContractName.Forwarder, () => {
                 feeProportion,
                 makerAssetAmount,
             );
-            return expectRevertOrAlwaysFailingTransactionAsync(
+            return expectTransactionFailedWithoutReasonAsync(
                 forwarderWrapper.marketBuyTokensWithEthAsync(signedOrdersWithFee, feeOrders, makerAssetAmount, {
                     from: takerAddress,
                     value: fillAmountWei,
@@ -529,7 +527,7 @@ describe(ContractName.Forwarder, () => {
             // We use the contract directly to get around wrapper validations and calculations
             const formattedOrders = formatters.createMarketSellOrders(signedOrders, zero);
             const formattedFeeOrders = formatters.createMarketSellOrders(feeOrders, zero);
-            return expectRevertOrAlwaysFailingTransactionAsync(
+            return expectTransactionFailedWithoutReasonAsync(
                 forwarderContract.marketBuyTokensWithEth.sendTransactionAsync(
                     formattedOrders.orders,
                     formattedOrders.signatures,
@@ -788,7 +786,7 @@ describe(ContractName.Forwarder, () => {
             signedOrders = [erc721SignedOrder, erc20SignedOrder];
             const makerAssetAmount = new BigNumber(signedOrders.length);
             const fillAmountWei = erc20SignedOrder.takerAssetAmount.plus(erc721SignedOrder.takerAssetAmount);
-            return expectRevertOrAlwaysFailingTransactionAsync(
+            return expectTransactionFailedWithoutReasonAsync(
                 forwarderWrapper.marketBuyTokensWithEthAsync(signedOrders, feeOrders, makerAssetAmount, {
                     from: takerAddress,
                     value: fillAmountWei,
@@ -805,7 +803,7 @@ describe(ContractName.Forwarder, () => {
             signedOrders = [erc20SignedOrder, erc721SignedOrder];
             const makerAssetAmount = new BigNumber(signedOrders.length);
             const fillAmountWei = erc20SignedOrder.takerAssetAmount.plus(erc721SignedOrder.takerAssetAmount);
-            return expectRevertOrAlwaysFailingTransactionAsync(
+            return expectTransactionFailedWithoutReasonAsync(
                 forwarderWrapper.marketBuyTokensWithEthAsync(signedOrders, feeOrders, makerAssetAmount, {
                     from: takerAddress,
                     value: fillAmountWei,
