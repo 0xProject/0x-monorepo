@@ -39,7 +39,6 @@ contract LibMath is
     {
         // Preconditions
         require(numerator <= denominator);
-        require(denominator > 0);
         
         // 512-bit multiply [prod1 prod0] = target * numerator
         // Compute the product mod 2**256 and mod 2**256 - 1
@@ -57,6 +56,9 @@ contract LibMath is
         // Handle non-overflow cases
         if (prod1 == 0) {
             assembly {
+                // If denominator is zero then by the precodition
+                // numerator is also zero and therefore prod is
+                // zero. We get div(_, 0), which evaluates to 0.
                 partialAmount := div(prod0, denominator)
             }
             return partialAmount;
@@ -77,7 +79,8 @@ contract LibMath is
         }
         
         // Factor powers of two out of denominator
-        // Compute largest power of two divisor of denominator (>= 1)
+        // Compute largest power of two divisor of denominator.
+        // Always >= 1 unless denominator is zero, then twos is zero.
         uint256 twos = -denominator & denominator;
         // Divide denominator by power of two
         assembly {
@@ -90,6 +93,7 @@ contract LibMath is
         }
         // Shift in bits from prod1 into prod0. For this we need
         // to flip `twos` such that it is 2**256 / twos.
+        // If twos is zero, then it becomes one
         assembly {
             twos := add(div(sub(0, twos), twos), 1)
         }
@@ -100,6 +104,7 @@ contract LibMath is
         // modulo 2**256 such that denominator * inv = 1 mod 2**256.
         // Compute the inverse by starting with a seed that is correct
         // correct for four bits. That is, denominator * inv = 1 mod 2**4
+        // If denominator is zero the inverse starts with 2
         uint256 inv = 3 * denominator ^ 2;
         // Now use Newton-Raphson itteration to improve the precision.
         // Thanks to Hensel's lifting lemma, this also works in modular
@@ -110,6 +115,7 @@ contract LibMath is
         inv *= 2 - denominator * inv; // inverse mod 2**64
         inv *= 2 - denominator * inv; // inverse mod 2**128
         inv *= 2 - denominator * inv; // inverse mod 2**256
+        // If denominator is zero, inv is now 128
         
         // Because the division is now exact we can divide by multiplying
         // with the modular inverse of denominator. This will give us the
@@ -117,6 +123,7 @@ contract LibMath is
         // that the outcome is less than 2**256, this is the final result.
         // We don't need to compute the high bits of the result and prod1
         // is no longer required.
+        // If denominator is zero, prod0 is zero and the result is zero.
         partialAmount = prod0 * inv;
         return partialAmount;
     }
