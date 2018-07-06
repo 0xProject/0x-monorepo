@@ -10,6 +10,7 @@ import { artifacts } from '../utils/artifacts';
 import { chaiSetup } from '../utils/chai_setup';
 import { bytes32Values, uint256Values } from '../utils/combinatorial_sets';
 import { constants } from '../utils/constants';
+import { testWithReferenceFuncAsync } from '../utils/reference_test';
 import { provider, txDefaults, web3Wrapper } from '../utils/web3_wrapper';
 
 chaiSetup.configure();
@@ -66,7 +67,10 @@ describe.only('Exchange core internal functions', () => {
     });
 
     describe('addFillResults', async () => {
-        function referenceAddFillResults(totalFillResults: FillResults, singlFillResults: FillResults): FillResults {
+        async function referenceAddFillResultsAsync(
+            totalFillResults: FillResults,
+            singlFillResults: FillResults,
+        ): Promise<FillResults> {
             // Note(albrow): _.mergeWith mutates the first argument! To
             // workaround this we use _.cloneDeep.
             return _.mergeWith(
@@ -92,10 +96,7 @@ describe.only('Exchange core internal functions', () => {
         let counter = -1;
         testCases.forEach(async testCase => {
             counter += 1;
-            const testCaseString = JSON.stringify(testCase);
             it(`addFillResults test case ${counter}`, async () => {
-                let expectedErr: string | undefined;
-                let expectedTotalFillResults: FillResults | undefined;
                 const totalFillResults = {
                     makerAssetFilledAmount: testCase[0],
                     takerAssetFilledAmount: testCase[0],
@@ -108,30 +109,20 @@ describe.only('Exchange core internal functions', () => {
                     makerFeePaid: testCase[1],
                     takerFeePaid: testCase[1],
                 };
-                try {
-                    expectedTotalFillResults = referenceAddFillResults(totalFillResults, singleFillResults);
-                } catch (e) {
-                    expectedErr = e.message;
-                }
-                try {
-                    const actualTotalFillResults = await testAddFillResultsAsync(totalFillResults, singleFillResults);
-                    if (!_.isUndefined(expectedErr)) {
-                        throw new Error(`Expected error containing ${expectedErr} but got no error`);
-                    }
-                    expect(JSON.stringify(actualTotalFillResults)).to.equal(JSON.stringify(expectedTotalFillResults));
-                } catch (e) {
-                    if (_.isUndefined(expectedErr)) {
-                        throw new Error(`Unexpected error:  ${e.message}\n\tTest case: ${testCaseString}`);
-                    } else {
-                        expect(e.message).to.contain(expectedErr, `${e.message}\n\tTest case: ${testCaseString}`);
-                    }
-                }
+                await testWithReferenceFuncAsync(referenceAddFillResultsAsync, testAddFillResultsAsync, [
+                    totalFillResults,
+                    singleFillResults,
+                ]);
             });
         });
     });
 
-    describe.only('getPartialAmount', async () => {
-        function referenceGetPartialAmount(numerator: BigNumber, denominator: BigNumber, target: BigNumber): BigNumber {
+    describe('getPartialAmount', async () => {
+        async function referenceGetPartialAmountAsync(
+            numerator: BigNumber,
+            denominator: BigNumber,
+            target: BigNumber,
+        ): Promise<BigNumber> {
             if (numerator.greaterThan(MAX_UINT256)) {
                 throw new Error('invalid opcode');
             } else if (denominator.greaterThan(MAX_UINT256)) {
@@ -159,38 +150,18 @@ describe.only('Exchange core internal functions', () => {
         let counter = -1;
         testCases.forEach(async testCase => {
             counter += 1;
-            const testCaseString = JSON.stringify(testCase);
             it(`GetPartialAmount test case ${counter}`, async () => {
-                let expectedErr: string | undefined;
-                let expectedPartial: BigNumber | undefined;
-                try {
-                    expectedPartial = referenceGetPartialAmount(testCase[0], testCase[1], testCase[2]);
-                } catch (e) {
-                    expectedErr = e.message;
-                }
-                try {
-                    const actualPartial = await testGetPartialAmountAsync(testCase[0], testCase[1], testCase[2]);
-                    if (!_.isUndefined(expectedErr)) {
-                        throw new Error(`Expected error containing ${expectedErr} but got no error`);
-                    }
-                    expect(actualPartial.toString()).to.equal((expectedPartial as BigNumber).toString());
-                } catch (e) {
-                    if (_.isUndefined(expectedErr)) {
-                        throw new Error(`Unexpected error:  ${e.message}\n\tTest case: ${testCaseString}`);
-                    } else {
-                        expect(e.message).to.contain(expectedErr, `${e.message}\n\tTest case: ${testCaseString}`);
-                    }
-                }
+                await testWithReferenceFuncAsync(referenceGetPartialAmountAsync, testGetPartialAmountAsync, testCase);
             });
         });
     });
 
     describe('updateFilledState', async () => {
-        function referenceUpdateFilledState(
+        async function referenceUpdateFilledStateAsync(
             takerAssetFilledAmount: BigNumber,
             orderTakerAssetFilledAmount: BigNumber,
             orderHash: string,
-        ): BigNumber {
+        ): Promise<BigNumber> {
             const totalFilledAmount = takerAssetFilledAmount.add(orderTakerAssetFilledAmount);
             if (totalFilledAmount.greaterThan(MAX_UINT256)) {
                 throw new Error('invalid opcode');
@@ -231,32 +202,7 @@ describe.only('Exchange core internal functions', () => {
             counter += 1;
             const testCaseString = JSON.stringify(testCase);
             it(`updateFilledState test case ${counter}`, async () => {
-                let expectedErr: string | undefined;
-                let expectedTotalFilledAmount: BigNumber | undefined;
-                try {
-                    expectedTotalFilledAmount = referenceUpdateFilledState(testCase[0], testCase[1], testCase[2]);
-                } catch (e) {
-                    expectedErr = e.message;
-                }
-                try {
-                    const actualTotalFilledAmount = await testUpdateFilledStateAsync(
-                        testCase[0],
-                        testCase[1],
-                        testCase[2],
-                    );
-                    if (!_.isUndefined(expectedErr)) {
-                        throw new Error(`Expected error containing ${expectedErr} but got no error`);
-                    }
-                    expect(actualTotalFilledAmount.toString()).to.equal(
-                        (expectedTotalFilledAmount as BigNumber).toString(),
-                    );
-                } catch (e) {
-                    if (_.isUndefined(expectedErr)) {
-                        throw new Error(`Unexpected error:  ${e.message}\n\tTest case: ${testCaseString}`);
-                    } else {
-                        expect(e.message).to.contain(expectedErr, `${e.message}\n\tTest case: ${testCaseString}`);
-                    }
-                }
+                await testWithReferenceFuncAsync(referenceUpdateFilledStateAsync, testUpdateFilledStateAsync, testCase);
             });
         });
     });
