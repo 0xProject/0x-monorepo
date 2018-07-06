@@ -440,12 +440,17 @@ contract MixinWrapperFunctions is
             orders[i].makerAssetData = makerAssetData;
 
             // Calculate the remaining amount of makerAsset to buy
-            uint256 remainingMakerAssetFillAmount = safeSub(makerAssetFillAmount, totalFillResults.makerAssetFilledAmount);
+            uint256 currentMakerAssetFillAmount = safeSub(makerAssetFillAmount, totalFillResults.makerAssetFilledAmount);
+            
+            // Limit the current amount to buy to the current order maker amount
+            if (currentMakerAssetFillAmount > orders[i].makerAssetAmount) {
+                currentMakerAssetFillAmount = orders[i].makerAssetAmount;
+            }
 
             // Convert the remaining amount of makerAsset to buy into remaining amount
             // of takerAsset to sell, assuming entire amount can be sold in the current order
             uint256 remainingTakerAssetFillAmount = getPartialAmount(
-                remainingMakerAssetFillAmount,
+                currentMakerAssetFillAmount,
                 orders[i].makerAssetAmount,
                 orders[i].takerAssetAmount
             );
@@ -491,12 +496,17 @@ contract MixinWrapperFunctions is
             orders[i].makerAssetData = makerAssetData;
 
             // Calculate the remaining amount of makerAsset to buy
-            uint256 remainingMakerAssetFillAmount = safeSub(makerAssetFillAmount, totalFillResults.makerAssetFilledAmount);
+            uint256 currentMakerAssetFillAmount = safeSub(makerAssetFillAmount, totalFillResults.makerAssetFilledAmount);
+            
+            // Limit the current amount to buy to the current order maker amount
+            if (currentMakerAssetFillAmount > orders[i].makerAssetAmount) {
+                currentMakerAssetFillAmount = orders[i].makerAssetAmount;
+            }
 
             // Convert the remaining amount of makerAsset to buy into remaining amount
             // of takerAsset to sell, assuming entire amount can be sold in the current order
             uint256 remainingTakerAssetFillAmount = getPartialAmount(
-                remainingMakerAssetFillAmount,
+                currentMakerAssetFillAmount,
                 orders[i].makerAssetAmount,
                 orders[i].takerAssetAmount
             );
