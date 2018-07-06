@@ -102,6 +102,7 @@ export enum ContractName {
     TestWallet = 'TestWallet',
     Authorizable = 'Authorizable',
     Whitelist = 'Whitelist',
+    Forwarder = 'Forwarder',
 }
 
 export interface SignedTransaction {
@@ -226,4 +227,11 @@ export interface FillScenario {
     takerAssetFillAmountScenario: TakerAssetFillAmountScenario;
     makerStateScenario: TraderStateScenario;
     takerStateScenario: TraderStateScenario;
+}
+
+export interface FillResults {
+    makerAssetFilledAmount: BigNumber;
+    takerAssetFilledAmount: BigNumber;
+    makerFeePaid: BigNumber;
+    takerFeePaid: BigNumber;
 }

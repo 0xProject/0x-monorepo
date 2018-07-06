@@ -28,6 +28,7 @@
         "ERC721Proxy",
         "Exchange",
         "ExchangeWrapper",
+        "Forwarder",
         "IAssetData",
         "IAssetProxy",
         "IValidator",

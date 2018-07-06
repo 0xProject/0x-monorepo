@@ -396,7 +396,7 @@ contract MixinExchangeCore is
         return fillResults;
     }
 
-   /// @dev Settles an order by transferring assets between counterparties.
+    /// @dev Settles an order by transferring assets between counterparties.
     /// @param order Order struct containing order specifications.
     /// @param takerAddress Address selling takerAsset and buying makerAsset.
     /// @param fillResults Amounts to be filled and fees paid by maker and taker.
