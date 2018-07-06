@@ -44,12 +44,14 @@ export interface OnboardingFlowProps {
     updateOnboardingStep: (stepIndex: number) => void;
     disableOverlay?: boolean;
     isMobile: boolean;
+    disableCloseOnClickOutside?: boolean;
 }
 
 export class OnboardingFlow extends React.Component<OnboardingFlowProps> {
     public static defaultProps = {
         disableOverlay: false,
         isMobile: false,
+        disableCloseOnClickOutside: false,
     };
     public render(): React.ReactNode {
         if (!this.props.isRunning) {
@@ -86,7 +88,7 @@ export class OnboardingFlow extends React.Component<OnboardingFlowProps> {
         }
         return (
             <div>
-                <Overlay onClick={this.props.onClose} />
+                <Overlay onClick={this.props.disableCloseOnClickOutside ? undefined : this.props.onClose} />
                 {onboardingElement}
             </div>
         );

@@ -23,7 +23,7 @@ import {
     WrapEthOnboardingStep3,
 } from 'ts/components/onboarding/wrap_eth_onboarding_step';
 import { AllowanceToggle } from 'ts/containers/inputs/allowance_toggle';
-import { ProviderType, ScreenWidths, Token, TokenByAddress, TokenStateByAddress } from 'ts/types';
+import { BrowserType, ProviderType, ScreenWidths, Token, TokenByAddress, TokenStateByAddress } from 'ts/types';
 import { analytics } from 'ts/utils/analytics';
 import { utils } from 'ts/utils/utils';
 
@@ -68,6 +68,7 @@ class PlainPortalOnboardingFlow extends React.Component<PortalOnboardingFlowProp
         }
     }
     public render(): React.ReactNode {
+        const browserType = utils.getBrowserType();
         return (
             <OnboardingFlow
                 steps={this._getSteps()}
@@ -77,6 +78,8 @@ class PlainPortalOnboardingFlow extends React.Component<PortalOnboardingFlowProp
                 updateOnboardingStep={this._updateOnboardingStep.bind(this)}
                 disableOverlay={this.props.screenWidth === ScreenWidths.Sm}
                 isMobile={this.props.screenWidth === ScreenWidths.Sm}
+                // This is necessary to ensure onboarding stays open once the user unlocks metamask and clicks away
+                disableCloseOnClickOutside={browserType === BrowserType.Firefox || browserType === BrowserType.Opera}
             />
         );
     }
