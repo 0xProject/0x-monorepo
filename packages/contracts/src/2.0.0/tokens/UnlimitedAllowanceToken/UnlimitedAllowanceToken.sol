@@ -16,7 +16,7 @@
 
 */
 
-pragma solidity ^0.4.24;
+pragma solidity 0.4.24;
 pragma experimental ABIEncoderV2;
 
 import "../ERC20Token/ERC20Token.sol";
@@ -24,7 +24,7 @@ import "../ERC20Token/ERC20Token.sol";
 
 contract UnlimitedAllowanceToken is ERC20Token {
 
-    uint256 constant MAX_UINT = 2**256 - 1;
+    uint256 constant internal MAX_UINT = 2**256 - 1;
 
     /// @dev ERC20 transferFrom, modified such that an allowance of MAX_UINT represents an unlimited allowance. See https://github.com/ethereum/EIPs/issues/717
     /// @param _from Address to transfer from.
@@ -38,15 +38,15 @@ contract UnlimitedAllowanceToken is ERC20Token {
         uint256 allowance = allowed[_from][msg.sender];
         require(
             balances[_from] >= _value,
-            INSUFFICIENT_BALANCE
+            "ERC20_INSUFFICIENT_BALANCE"
         );
         require(
             allowance >= _value,
-            INSUFFICIENT_ALLOWANCE
+            "ERC20_INSUFFICIENT_ALLOWANCE"
         );
         require(
             balances[_to] + _value >= balances[_to],
-            OVERFLOW
+            "OVERFLOW"
         );
         balances[_to] += _value;
         balances[_from] -= _value;

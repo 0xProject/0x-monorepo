@@ -16,7 +16,7 @@
 
 */
 
-pragma solidity ^0.4.24;
+pragma solidity 0.4.24;
 
 import "../../protocol/Exchange/interfaces/IWallet.sol";
 import "../../utils/LibBytes/LibBytes.sol";
@@ -27,11 +27,9 @@ contract TestWallet is
 {
     using LibBytes for bytes;
 
-    string constant LENGTH_65_REQUIRED = "LENGTH_65_REQUIRED";
-
     // The owner of this wallet.
     // solhint-disable-next-line var-name-mixedcase
-    address WALLET_OWNER;
+    address internal WALLET_OWNER;
 
     /// @dev constructs a new `TestWallet` with a single owner.
     /// @param walletOwner The owner of this wallet.
@@ -54,7 +52,7 @@ contract TestWallet is
     {
         require(
             eip712Signature.length == 65,
-            LENGTH_65_REQUIRED
+            "LENGTH_65_REQUIRED"
         );
 
         uint8 v = uint8(eip712Signature[0]);

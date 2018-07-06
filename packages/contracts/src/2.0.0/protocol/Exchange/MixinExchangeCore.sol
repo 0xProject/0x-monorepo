@@ -16,7 +16,7 @@
 
 */
 
-pragma solidity ^0.4.24;
+pragma solidity 0.4.24;
 pragma experimental ABIEncoderV2;
 
 import "./libs/LibConstants.sol";
@@ -48,8 +48,6 @@ contract MixinExchangeCore is
     // Mapping of makerAddress => senderAddress => lowest salt an order can have in order to be fillable
     // Orders with specified senderAddress and with a salt less than their epoch to are considered cancelled
     mapping (address => mapping (address => uint256)) public orderEpoch;
-
-    ////// Core exchange functions //////
 
     /// @dev Cancels all orders created by makerAddress with a salt less than or equal to the targetOrderEpoch
     ///      and senderAddress equal to msg.sender (or null address if msg.sender == makerAddress).
@@ -175,6 +173,7 @@ contract MixinExchangeCore is
         }
 
         // Validate order expiration
+        // solhint-disable-next-line not-rely-on-time
         if (block.timestamp >= order.expirationTimeSeconds) {
             orderInfo.orderStatus = uint8(OrderStatus.EXPIRED);
             return orderInfo;

@@ -23,7 +23,7 @@ TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
 SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 */
 
-pragma solidity ^0.4.24;
+pragma solidity 0.4.24;
 
 import "./IERC721Token.sol";
 import "./IERC721Receiver.sol";
@@ -41,7 +41,7 @@ contract ERC721Token is
 {
     // Equals to `bytes4(keccak256("onERC721Received(address,uint256,bytes)"))`
     // which can be also obtained as `ERC721Receiver(0).onERC721Received.selector`
-    bytes4 constant ERC721_RECEIVED = 0xf0b9e5ba;
+    bytes4 constant internal ERC721_RECEIVED = 0xf0b9e5ba;
 
     // Mapping from token ID to owner
     mapping (uint256 => address) internal tokenOwner;
@@ -73,7 +73,7 @@ contract ERC721Token is
         _;
     }
 
-    function ERC721Token(
+    constructor (
         string _name,
         string _symbol)
         public

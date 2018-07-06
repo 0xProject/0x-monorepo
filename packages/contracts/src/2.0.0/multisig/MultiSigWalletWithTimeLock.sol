@@ -16,11 +16,11 @@
 
 */
 
+// solhint-disable
 pragma solidity ^0.4.10;
 
 import "./MultiSigWallet.sol";
 
-// solhint-disable
 
 /// @title Multisignature wallet with time lock- Allows multiple parties to execute a transaction after a time lock has passed.
 /// @author Amir Bandeali - <amir@0xProject.com>

@@ -16,12 +16,13 @@
 
 */
 
-pragma solidity ^0.4.24;
+pragma solidity 0.4.24;
 pragma experimental ABIEncoderV2;
 
 import { WETH9 as EtherToken } from "../tokens/WETH9/WETH9.sol";
 import "../protocol/Exchange/libs/LibMath.sol";
 import "./MixinConstants.sol";
+
 
 contract MixinWethFees is
     LibMath,

@@ -16,18 +16,20 @@
 
 */
 
-pragma solidity ^0.4.24;
+pragma solidity 0.4.24;
 pragma experimental ABIEncoderV2;
 
 import "../../utils/LibBytes/LibBytes.sol";
 import "./MixinAuthorizable.sol";
 
+
 contract ERC20Proxy is
     MixinAuthorizable
 {
     // Id of this proxy.
-    bytes4 constant PROXY_ID = bytes4(keccak256("ERC20Token(address)"));
+    bytes4 constant internal PROXY_ID = bytes4(keccak256("ERC20Token(address)"));
     
+    // solhint-disable-next-line payable-fallback
     function () 
         external
     {

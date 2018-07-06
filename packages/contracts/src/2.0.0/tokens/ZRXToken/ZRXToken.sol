@@ -16,20 +16,24 @@
 
 */
 
-pragma solidity ^0.4.11;
+pragma solidity 0.4.11;
 
+// solhint-disable-next-line max-line-length
 import { UnlimitedAllowanceToken_v1 as UnlimitedAllowanceToken } from "../../../1.0.0/UnlimitedAllowanceToken/UnlimitedAllowanceToken_v1.sol";
-
 
 
 contract ZRXToken is UnlimitedAllowanceToken {
 
+    // solhint-disable const-name-snakecase
     uint8 constant public decimals = 18;
     uint public totalSupply = 10**27; // 1 billion tokens, 18 decimal places
     string constant public name = "0x Protocol Token";
     string constant public symbol = "ZRX";
+    // solhint-enableconst-name-snakecase
 
-    function ZRXToken() {
+    function ZRXToken()
+        public
+    {
         balances[msg.sender] = totalSupply;
     }
 }

@@ -16,18 +16,18 @@
 
 */
 
-pragma solidity ^0.4.24;
+pragma solidity 0.4.24;
 
 
 contract LibEIP712 {
     // EIP191 header for EIP712 prefix
-    string constant EIP191_HEADER = "\x19\x01";
+    string constant internal EIP191_HEADER = "\x19\x01";
 
     // EIP712 Domain Name value
-    string constant EIP712_DOMAIN_NAME = "0x Protocol";
+    string constant internal EIP712_DOMAIN_NAME = "0x Protocol";
 
     // EIP712 Domain Version value
-    string constant EIP712_DOMAIN_VERSION = "2";
+    string constant internal EIP712_DOMAIN_VERSION = "2";
 
     // Hash of the EIP712 Domain Separator Schema
     bytes32 public constant EIP712_DOMAIN_SEPARATOR_SCHEMA_HASH = keccak256(abi.encodePacked(

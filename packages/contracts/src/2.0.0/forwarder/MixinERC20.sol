@@ -16,13 +16,13 @@
 
 */
 
-pragma solidity ^0.4.24;
+pragma solidity 0.4.24;
 pragma experimental ABIEncoderV2;
+
 
 contract MixinERC20 {
 
-    string constant ERROR_TRANSFER_FAILED = "TRANSFER_FAILED";
-    bytes4 constant ERC20_TRANSFER_SELECTOR = bytes4(keccak256("transfer(address,uint256)"));
+    bytes4 constant internal ERC20_TRANSFER_SELECTOR = bytes4(keccak256("transfer(address,uint256)"));
 
     function transferToken(
         address token,

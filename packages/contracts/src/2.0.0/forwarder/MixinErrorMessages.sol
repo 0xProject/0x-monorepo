@@ -16,7 +16,9 @@
 
 */
 
-pragma solidity ^0.4.24;
+// solhint-disable
+pragma solidity 0.4.24;
+
 
 /// This contract is intended to serve as a reference, but is not actually used for efficiency reasons.
 contract MixinErrorMessages {

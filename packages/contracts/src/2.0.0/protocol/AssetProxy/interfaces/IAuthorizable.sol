@@ -16,7 +16,7 @@
 
 */
 
-pragma solidity ^0.4.24;
+pragma solidity 0.4.24;
 pragma experimental ABIEncoderV2;
 
 import "../../../utils/Ownable/IOwnable.sol";
@@ -25,13 +25,6 @@ import "../../../utils/Ownable/IOwnable.sol";
 contract IAuthorizable is
     IOwnable
 {
-
-    /// @dev Gets all authorized addresses.
-    /// @return Array of authorized addresses.
-    function getAuthorizedAddresses()
-        external
-        view
-        returns (address[]);
 
     /// @dev Authorizes an address.
     /// @param target Address to authorize.
@@ -51,4 +44,11 @@ contract IAuthorizable is
         uint256 index
     )
         external;
+    
+    /// @dev Gets all authorized addresses.
+    /// @return Array of authorized addresses.
+    function getAuthorizedAddresses()
+        external
+        view
+        returns (address[] memory);
 }

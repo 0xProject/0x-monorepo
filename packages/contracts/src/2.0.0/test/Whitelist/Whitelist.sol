@@ -16,7 +16,7 @@
 
 */
 
-pragma solidity ^0.4.24;
+pragma solidity 0.4.24;
 pragma experimental ABIEncoderV2;
 
 import "../../protocol/Exchange/interfaces/IExchange.sol";
@@ -27,28 +27,22 @@ import "../../utils/Ownable/Ownable.sol";
 contract Whitelist is
     Ownable
 {
-    // Revert reasons
-    string constant MAKER_NOT_WHITELISTED = "MAKER_NOT_WHITELISTED"; // Maker address not whitelisted.
-    string constant TAKER_NOT_WHITELISTED = "TAKER_NOT_WHITELISTED"; // Taker address not whitelisted.
-    string constant INVALID_SENDER = "INVALID_SENDER"; // Sender must equal transaction origin.
 
     // Mapping of address => whitelist status.
     mapping (address => bool) public isWhitelisted;
 
     // Exchange contract.
-    // solhint-disable-next-line var-name-mixedcase
-    IExchange EXCHANGE;
+    // solhint-disable var-name-mixedcase
+    IExchange internal EXCHANGE;
+    bytes internal TX_ORIGIN_SIGNATURE;
+    // solhint-enable var-name-mixedcase
 
-    byte constant VALIDATOR_SIGNATURE_BYTE = "\x06";
-    // solhint-disable-next-line var-name-mixedcase
-    bytes TX_ORIGIN_SIGNATURE;
+    byte constant internal VALIDATOR_SIGNATURE_BYTE = "\x06";
 
     constructor (address _exchange)
         public
     {
-        // solhint-disable-next-line var-name-mixedcase
         EXCHANGE = IExchange(_exchange);
-        // solhint-disable-next-line var-name-mixedcase
         TX_ORIGIN_SIGNATURE = abi.encodePacked(address(this), VALIDATOR_SIGNATURE_BYTE);
     }
 
@@ -64,6 +58,27 @@ contract Whitelist is
     {
         isWhitelisted[target] = isApproved;
     }
+
+    /// @dev Verifies signer is same as signer of current Ethereum transaction.
+    ///      NOTE: This function can currently be used to validate signatures coming from outside of this contract.
+    ///      Extra safety checks can be added for a production contract.
+    /// @param signerAddress Address that should have signed the given hash.
+    /// @param signature Proof of signing.
+    /// @return Validity of order signature.
+    // solhint-disable no-unused-vars
+    function isValidSignature(
+        bytes32 hash,
+        address signerAddress,
+        bytes signature
+    )
+        external
+        view
+        returns (bool isValid)
+    {
+        // solhint-disable-next-line avoid-tx-origin
+        return signerAddress == tx.origin;
+    }
+    // solhint-enable no-unused-vars
 
     /// @dev Fills an order using `msg.sender` as the taker.
     ///      The transaction will revert if both the maker and taker are not whitelisted.
@@ -85,20 +100,21 @@ contract Whitelist is
 
         // This contract must be the entry point for the transaction.
         require(
+            // solhint-disable-next-line avoid-tx-origin
             takerAddress == tx.origin,
-            INVALID_SENDER
+            "INVALID_SENDER"
         );
 
         // Check if maker is on the whitelist.
         require(
             isWhitelisted[order.makerAddress],
-            MAKER_NOT_WHITELISTED
+            "MAKER_NOT_WHITELISTED"
         );
 
         // Check if taker is on the whitelist.
         require(
             isWhitelisted[takerAddress],
-            TAKER_NOT_WHITELISTED
+            "TAKER_NOT_WHITELISTED"
         );
 
         // Encode arguments into byte array.
@@ -116,23 +132,5 @@ contract Whitelist is
             data,
             TX_ORIGIN_SIGNATURE
         );
-    }
-
-    /// @dev Verifies signer is same as signer of current Ethereum transaction.
-    ///      NOTE: This function can currently be used to validate signatures coming from outside of this contract.
-    ///      Extra safety checks can be added for a production contract.
-    /// @param signerAddress Address that should have signed the given hash.
-    /// @param signature Proof of signing.
-    /// @return Validity of order signature.
-    function isValidSignature(
-        bytes32 hash,
-        address signerAddress,
-        bytes signature
-    )
-        external
-        view
-        returns (bool isValid)
-    {
-        return signerAddress == tx.origin;
     }
 }
