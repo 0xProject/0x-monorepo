@@ -474,4 +474,8 @@ export const utils = {
         }
         return [downloadLink, isOnMobile];
     },
+    getTokenIconUrl(symbol: string): string {
+        const result = `/images/token_icons/${symbol}.png`;
+        return result;
+    },
 };

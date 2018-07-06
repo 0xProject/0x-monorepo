@@ -774,7 +774,7 @@ export class Blockchain {
         _.each(tokenRegistryTokens, (t: ZeroExToken) => {
             // HACK: For now we have a hard-coded list of iconUrls for the dummyTokens
             // TODO: Refactor this out and pull the iconUrl directly from the TokenRegistry
-            const iconUrl = configs.ICON_URL_BY_SYMBOL[t.symbol];
+            const iconUrl = utils.getTokenIconUrl(t.symbol);
             const token: Token = {
                 iconUrl,
                 address: t.address,
