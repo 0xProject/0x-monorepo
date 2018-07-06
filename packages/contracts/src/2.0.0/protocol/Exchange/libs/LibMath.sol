@@ -23,6 +23,8 @@ import "../../../utils/SafeMath/SafeMath.sol";
 contract LibMath is
     SafeMath
 {
+    // Errors
+    string constant NUMERATOR_GT_DENOMINATOR = "NUMERATOR_GT_DENOMINATOR";
 
     /// @dev Calculates partial value given a numerator and denominator.
     /// @param numerator Numerator.
@@ -38,7 +40,7 @@ contract LibMath is
         returns (uint256 partialAmount)
     {
         // Preconditions
-        require(numerator <= denominator);
+        require(numerator <= denominator, NUMERATOR_GT_DENOMINATOR);
         
         // 512-bit multiply [prod1 prod0] = target * numerator
         // Compute the product mod 2**256 and mod 2**256 - 1
@@ -53,7 +55,7 @@ contract LibMath is
             prod1 := sub(sub(mm, prod0), lt(mm, prod0))
         }
         
-        // Handle non-overflow cases
+        // Handle non-overflow cases, 256 by 256 division
         if (prod1 == 0) {
             assembly {
                 // If denominator is zero then by the precodition
