@@ -141,58 +141,44 @@ describe.only('LibMath', () => {
         for (const a in uint256Tests) {
             for (const b in uint256Tests) {
                 for (const c in uint256Tests) {
-                    createTest(
-                        () => libs.publicGetPartialAmount,
-                        reference,
-                        `(${a}, ${b}, ${c})`,
-                        [
-                            uint256Tests[a],
-                            uint256Tests[b],
-                            uint256Tests[c],
-                        ],
-                    );
+                    createTest(() => libs.publicGetPartialAmount, reference, `(${a}, ${b}, ${c})`, [
+                        uint256Tests[a],
+                        uint256Tests[b],
+                        uint256Tests[c],
+                    ]);
                 }
             }
         }
     });
 
-    describe('isRoundingError(numerator, denominator, target)', () => {
-
-        function reference(
-            numerator: BigNumber,
-            denominator: BigNumber,
-            target: BigNumber): boolean {
+    describe.only('isRoundingError(numerator, denominator, target)', () => {
+        function reference(numerator: BigNumber, denominator: BigNumber, target: BigNumber): boolean {
             require(numerator.lte(denominator), 'NUMERATOR_GT_DENOMINATOR');
 
-            const error = target.mul(numerator).mod(denominator);
-            const ideal = target.mul(numerator).div(denominator);
+            // All numbers are scaled by a factor of denominator to
+            // avoid fractions and associated precision loss.
+            const ideal = target.mul(numerator);
+            const actual = target.mul(numerator).divToInt(denominator).mul(denominator);
+            const error = ideal.sub(actual); // always positive
 
             // Return true iff error is >0.1% of ideal
-            const treshold = ideal.mul(0.001);
-            return error.gt(treshold);
+            return error.mul(1000).gt(ideal);
         }
 
         for (const a in uint256Tests) {
             for (const b in uint256Tests) {
                 for (const c in uint256Tests) {
-                    createTest(
-                        () => libs.publicIsRoundingError,
-                        reference,
-                        `(${a}, ${b}, ${c})`,
-                        [
-                            uint256Tests[a],
-                            uint256Tests[b],
-                            uint256Tests[c],
-                        ],
-                    );
+                    createTest(() => libs.publicIsRoundingError, reference, `(${a}, ${b}, ${c})`, [
+                        uint256Tests[a],
+                        uint256Tests[b],
+                        uint256Tests[c],
+                    ]);
                 }
             }
         }
-
     });
 
-    describe('isRoundingError', () => {
-
+    describe.only('isRoundingError', () => {
         it('should return false if there is a rounding error of 0.1%', async () => {
             const numerator = new BigNumber(20);
             const denominator = new BigNumber(999);
