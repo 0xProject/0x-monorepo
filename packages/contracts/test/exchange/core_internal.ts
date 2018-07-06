@@ -61,27 +61,27 @@ describe.only('Exchange core internal', () => {
             takerAssetFilledAmount: BigNumber,
             orderTakerAssetFilledAmount: BigNumber,
             orderHash: string,
-        ): void {
-            if (
-                takerAssetFilledAmount.add(orderTakerAssetFilledAmount).greaterThan(new BigNumber(2).pow(256).minus(1))
-            ) {
+        ): BigNumber {
+            const totalFilledAmount = takerAssetFilledAmount.add(orderTakerAssetFilledAmount);
+            if (totalFilledAmount.greaterThan(new BigNumber(2).pow(256).minus(1))) {
                 throw new Error('invalid opcode');
             }
             // TODO(albrow): Test orderHash overflowing bytes32.
             _.identity(orderHash);
+            return totalFilledAmount;
         }
         async function testUpdateFilledStateAsync(
             takerAssetFilledAmount: BigNumber,
             orderTakerAssetFilledAmount: BigNumber,
             orderHash: string,
-        ): Promise<void> {
+        ): Promise<BigNumber> {
             const fillResults = {
                 makerAssetFilledAmount: new BigNumber(0),
                 takerAssetFilledAmount,
                 makerFeePaid: new BigNumber(0),
                 takerFeePaid: new BigNumber(0),
             };
-            web3Wrapper.awaitTransactionSuccessAsync(
+            await web3Wrapper.awaitTransactionSuccessAsync(
                 // TODO(albrow): Move emptySignedOrder and the zero address to a
                 // utility library.
                 await testExchange.publicUpdateFilledState.sendTransactionAsync(
@@ -93,6 +93,7 @@ describe.only('Exchange core internal', () => {
                 ),
                 constants.AWAIT_TRANSACTION_MINED_MS,
             );
+            return testExchange.filled.callAsync(orderHash);
         }
         const testCases = combinatorics.cartesianProduct(uint256Values, uint256Values, bytes32Values);
         logUtils.warn(`Generated ${testCases.length} combinatorial test cases.`);
@@ -102,13 +103,24 @@ describe.only('Exchange core internal', () => {
             const testCaseString = JSON.stringify(testCase);
             it(`updateFilledState test case ${counter}`, async () => {
                 let expectedErr: string | undefined;
+                let expectedTotalFilledAmount: BigNumber | undefined;
                 try {
-                    referenceUpdateFilledState(testCase[0], testCase[1], testCase[2]);
+                    expectedTotalFilledAmount = referenceUpdateFilledState(testCase[0], testCase[1], testCase[2]);
                 } catch (e) {
                     expectedErr = e.message;
                 }
                 try {
-                    await testUpdateFilledStateAsync(testCase[0], testCase[1], testCase[2]);
+                    const actualTotalFilledAmount = await testUpdateFilledStateAsync(
+                        testCase[0],
+                        testCase[1],
+                        testCase[2],
+                    );
+                    if (!_.isUndefined(expectedErr)) {
+                        throw new Error(`Expected error containing ${expectedErr} but got no error`);
+                    }
+                    expect(actualTotalFilledAmount.toString()).to.equal(
+                        (expectedTotalFilledAmount as BigNumber).toString(),
+                    );
                 } catch (e) {
                     if (_.isUndefined(expectedErr)) {
                         throw new Error(`Unexpected error:  ${e.message}\n\tTest case: ${testCaseString}`);
