@@ -1,4 +1,5 @@
-import { Web3Wrapper } from '@0xproject/web3-wrapper';
+import { Web3Wrapper, marshaller } from '@0xproject/web3-wrapper';
+
 import { JSONRPCRequestPayload, Provider } from 'ethereum-types';
 
 import { Callback, ErrorCallback } from '../types';
@@ -51,7 +52,8 @@ export class SignerSubprovider extends Subprovider {
             case 'eth_sendTransaction':
                 const [txParams] = payload.params;
                 try {
-                    const txHash = await this._web3Wrapper.sendTransactionAsync(txParams);
+                    const txData = marshaller.unmarshalTxData(txParams);
+                    const txHash = await this._web3Wrapper.sendTransactionAsync(txData);
                     end(null, txHash);
                 } catch (err) {
                     end(err);

@@ -1,4 +1,4 @@
-import { addressUtils } from '@0xproject/utils';
+import { addressUtils, conversion } from '@0xproject/utils';
 import {
     BlockParam,
     BlockParamLiteral,
@@ -13,8 +13,6 @@ import {
 } from 'ethereum-types';
 import ethUtil = require('ethereumjs-util');
 import * as _ from 'lodash';
-
-import { utils } from './utils';
 
 import {
     BlockWithoutTransactionDataRPC,
@@ -31,26 +29,30 @@ export const marshaller = {
     ): BlockWithoutTransactionData {
         const block = {
             ...blockWithHexValues,
-            gasLimit: utils.convertHexToNumber(blockWithHexValues.gasLimit),
-            gasUsed: utils.convertHexToNumber(blockWithHexValues.gasUsed),
-            size: utils.convertHexToNumber(blockWithHexValues.size),
-            timestamp: utils.convertHexToNumber(blockWithHexValues.timestamp),
-            number: _.isNull(blockWithHexValues.number) ? null : utils.convertHexToNumber(blockWithHexValues.number),
-            difficulty: utils.convertAmountToBigNumber(blockWithHexValues.difficulty),
-            totalDifficulty: utils.convertAmountToBigNumber(blockWithHexValues.totalDifficulty),
+            gasLimit: conversion.convertHexToNumber(blockWithHexValues.gasLimit),
+            gasUsed: conversion.convertHexToNumber(blockWithHexValues.gasUsed),
+            size: conversion.convertHexToNumber(blockWithHexValues.size),
+            timestamp: conversion.convertHexToNumber(blockWithHexValues.timestamp),
+            number: _.isNull(blockWithHexValues.number)
+                ? null
+                : conversion.convertHexToNumber(blockWithHexValues.number),
+            difficulty: conversion.convertAmountToBigNumber(blockWithHexValues.difficulty),
+            totalDifficulty: conversion.convertAmountToBigNumber(blockWithHexValues.totalDifficulty),
         };
         return block;
     },
     unmarshalIntoBlockWithTransactionData(blockWithHexValues: BlockWithTransactionDataRPC): BlockWithTransactionData {
         const block = {
             ...blockWithHexValues,
-            gasLimit: utils.convertHexToNumber(blockWithHexValues.gasLimit),
-            gasUsed: utils.convertHexToNumber(blockWithHexValues.gasUsed),
-            size: utils.convertHexToNumber(blockWithHexValues.size),
-            timestamp: utils.convertHexToNumber(blockWithHexValues.timestamp),
-            number: _.isNull(blockWithHexValues.number) ? null : utils.convertHexToNumber(blockWithHexValues.number),
-            difficulty: utils.convertAmountToBigNumber(blockWithHexValues.difficulty),
-            totalDifficulty: utils.convertAmountToBigNumber(blockWithHexValues.totalDifficulty),
+            gasLimit: conversion.convertHexToNumber(blockWithHexValues.gasLimit),
+            gasUsed: conversion.convertHexToNumber(blockWithHexValues.gasUsed),
+            size: conversion.convertHexToNumber(blockWithHexValues.size),
+            timestamp: conversion.convertHexToNumber(blockWithHexValues.timestamp),
+            number: _.isNull(blockWithHexValues.number)
+                ? null
+                : conversion.convertHexToNumber(blockWithHexValues.number),
+            difficulty: conversion.convertAmountToBigNumber(blockWithHexValues.difficulty),
+            totalDifficulty: conversion.convertAmountToBigNumber(blockWithHexValues.totalDifficulty),
             transactions: [] as Transaction[],
         };
         block.transactions = _.map(blockWithHexValues.transactions, (tx: TransactionRPC) => {
@@ -62,14 +64,14 @@ export const marshaller = {
     unmarshalTransaction(txRpc: TransactionRPC): Transaction {
         const tx = {
             ...txRpc,
-            blockNumber: !_.isNull(txRpc.blockNumber) ? utils.convertHexToNumber(txRpc.blockNumber) : null,
+            blockNumber: !_.isNull(txRpc.blockNumber) ? conversion.convertHexToNumber(txRpc.blockNumber) : null,
             transactionIndex: !_.isNull(txRpc.transactionIndex)
-                ? utils.convertHexToNumber(txRpc.transactionIndex)
+                ? conversion.convertHexToNumber(txRpc.transactionIndex)
                 : null,
-            nonce: utils.convertHexToNumber(txRpc.nonce),
-            gas: utils.convertHexToNumber(txRpc.gas),
-            gasPrice: utils.convertAmountToBigNumber(txRpc.gasPrice),
-            value: utils.convertAmountToBigNumber(txRpc.value),
+            nonce: conversion.convertHexToNumber(txRpc.nonce),
+            gas: conversion.convertHexToNumber(txRpc.gas),
+            gasPrice: conversion.convertAmountToBigNumber(txRpc.gasPrice),
+            value: conversion.convertAmountToBigNumber(txRpc.value),
         };
         return tx;
     },
@@ -79,10 +81,12 @@ export const marshaller = {
         }
         const txData = {
             ...txDataRpc,
-            value: !_.isUndefined(txDataRpc.value) ? utils.convertHexToNumber(txDataRpc.value) : undefined,
-            gas: !_.isUndefined(txDataRpc.gas) ? utils.convertHexToNumber(txDataRpc.gas) : undefined,
-            gasPrice: !_.isUndefined(txDataRpc.gasPrice) ? utils.convertHexToNumber(txDataRpc.gasPrice) : undefined,
-            nonce: !_.isUndefined(txDataRpc.nonce) ? utils.convertHexToNumber(txDataRpc.nonce) : undefined,
+            value: !_.isUndefined(txDataRpc.value) ? conversion.convertHexToNumber(txDataRpc.value) : undefined,
+            gas: !_.isUndefined(txDataRpc.gas) ? conversion.convertHexToNumber(txDataRpc.gas) : undefined,
+            gasPrice: !_.isUndefined(txDataRpc.gasPrice)
+                ? conversion.convertHexToNumber(txDataRpc.gasPrice)
+                : undefined,
+            nonce: !_.isUndefined(txDataRpc.nonce) ? conversion.convertHexToNumber(txDataRpc.nonce) : undefined,
         };
         return txData;
     },
@@ -129,15 +133,15 @@ export const marshaller = {
         if (_.isUndefined(blockParam)) {
             return BlockParamLiteral.Latest;
         }
-        const encodedBlockParam = _.isNumber(blockParam) ? utils.numberToHex(blockParam) : blockParam;
+        const encodedBlockParam = _.isNumber(blockParam) ? conversion.numberToHex(blockParam) : blockParam;
         return encodedBlockParam;
     },
     unmarshalLog(rawLog: RawLogEntry): LogEntry {
         const formattedLog = {
             ...rawLog,
-            logIndex: utils.convertHexToNumberOrNull(rawLog.logIndex),
-            blockNumber: utils.convertHexToNumberOrNull(rawLog.blockNumber),
-            transactionIndex: utils.convertHexToNumberOrNull(rawLog.transactionIndex),
+            logIndex: conversion.convertHexToNumberOrNull(rawLog.logIndex),
+            blockNumber: conversion.convertHexToNumberOrNull(rawLog.blockNumber),
+            transactionIndex: conversion.convertHexToNumberOrNull(rawLog.transactionIndex),
         };
         return formattedLog;
     },
@@ -147,14 +151,14 @@ export const marshaller = {
             to: _.isUndefined(callTxDataBase.to) ? undefined : this.marshalAddress(callTxDataBase.to),
             gasPrice: _.isUndefined(callTxDataBase.gasPrice)
                 ? undefined
-                : utils.encodeAmountAsHexString(callTxDataBase.gasPrice),
-            gas: _.isUndefined(callTxDataBase.gas) ? undefined : utils.encodeAmountAsHexString(callTxDataBase.gas),
+                : conversion.encodeAmountAsHexString(callTxDataBase.gasPrice),
+            gas: _.isUndefined(callTxDataBase.gas) ? undefined : conversion.encodeAmountAsHexString(callTxDataBase.gas),
             value: _.isUndefined(callTxDataBase.value)
                 ? undefined
-                : utils.encodeAmountAsHexString(callTxDataBase.value),
+                : conversion.encodeAmountAsHexString(callTxDataBase.value),
             nonce: _.isUndefined(callTxDataBase.nonce)
                 ? undefined
-                : utils.encodeAmountAsHexString(callTxDataBase.nonce),
+                : conversion.encodeAmountAsHexString(callTxDataBase.nonce),
         };
 
         return callTxDataBaseRPC;

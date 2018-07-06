@@ -1,6 +1,6 @@
 import { assert } from '@0xproject/assert';
 import { schemas } from '@0xproject/json-schemas';
-import { AbiDecoder, addressUtils, BigNumber, intervalUtils, promisify } from '@0xproject/utils';
+import { AbiDecoder, addressUtils, BigNumber, intervalUtils, promisify, conversion as utils } from '@0xproject/utils';
 import {
     BlockParam,
     BlockParamLiteral,
@@ -23,7 +23,6 @@ import * as _ from 'lodash';
 
 import { marshaller } from './marshaller';
 import { BlockWithoutTransactionDataRPC, BlockWithTransactionDataRPC, Web3WrapperErrors } from './types';
-import { utils } from './utils';
 
 const BASE_TEN = 10;
 
