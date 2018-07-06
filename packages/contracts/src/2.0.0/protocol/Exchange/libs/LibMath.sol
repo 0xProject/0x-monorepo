@@ -68,7 +68,8 @@ contract LibMath is
         
         // Make division exact by subtracting the remainder from [prod1 prod0]
         // Compute remainder using mulmod
-        uint256 remainder = mulmod(numerator, denominator, target);
+        // mulmod(_, _, 0) == 0
+        uint256 remainder = mulmod(target, numerator, denominator);
         // Subtract 256 bit number from 512 bit number
         assembly {
             prod1 := sub(prod1, gt(remainder, prod0))
