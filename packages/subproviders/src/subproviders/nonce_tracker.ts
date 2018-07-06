@@ -10,6 +10,7 @@ import { Callback, ErrorCallback, NextCallback, NonceSubproviderErrors } from '.
 import { Subprovider } from './subprovider';
 
 const NONCE_TOO_LOW_ERROR_MESSAGE = 'Transaction nonce is too low';
+const OTHER_ERROR_MESSAGE = 'nonce too low';
 
 /**
  * This class implements the [web3-provider-engine](https://github.com/MetaMask/provider-engine) subprovider interface.
@@ -103,7 +104,10 @@ export class NonceTrackerSubprovider extends Subprovider {
     }
     private _handleSendTransactionError(payload: JSONRPCRequestPayload, err: Error): void {
         const address = NonceTrackerSubprovider._determineAddress(payload);
-        if (this._nonceCache[address] && _.includes(err.message, NONCE_TOO_LOW_ERROR_MESSAGE)) {
+        console.log(err.message);
+        const isNonceTooLowMsg =
+            _.includes(err.message, NONCE_TOO_LOW_ERROR_MESSAGE) || _.includes(err.message, OTHER_ERROR_MESSAGE);
+        if (this._nonceCache[address] && isNonceTooLowMsg) {
             delete this._nonceCache[address];
         }
     }

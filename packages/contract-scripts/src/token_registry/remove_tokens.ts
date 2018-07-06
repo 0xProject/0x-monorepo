@@ -4,7 +4,7 @@ import * as _ from 'lodash';
 
 import { providerFactory } from '../utils/provider_factory';
 
-const TOKEN_ADDRESSES_TO_REMOVE: string[] = [];
+const TOKEN_ADDRESSES_TO_REMOVE: string[] = ['0xe94327d07fc17907b4db788e5adf2ed424addff6'];
 
 const ZERO_EX_CONFIG = {
     networkId: 1,

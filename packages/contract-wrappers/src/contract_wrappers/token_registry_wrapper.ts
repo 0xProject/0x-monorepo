@@ -69,8 +69,8 @@ export class TokenRegistryWrapper extends ContractWrapper {
             token.name,
             token.symbol,
             token.decimals,
-            '',
-            '',
+            '0x',
+            '0x',
             txData,
         );
         return txHash;

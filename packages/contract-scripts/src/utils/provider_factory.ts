@@ -24,13 +24,13 @@ export const providerFactory = {
             ledgerEthereumClientFactoryAsync: ledgerEthereumNodeJsClientFactoryAsync,
         };
         const ledgerSubprovider = new LedgerSubprovider(ledgerWalletConfigs);
+        provider.addProvider(new NonceTrackerSubprovider());
         provider.addProvider(ledgerSubprovider);
         provider.addProvider(
             new RpcSubprovider({
                 rpcUrl: 'https://mainnet.infura.io/',
             }),
         );
-        provider.addProvider(new NonceTrackerSubprovider());
         provider.start();
         return provider;
     },
