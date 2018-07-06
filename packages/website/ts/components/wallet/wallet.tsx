@@ -8,6 +8,7 @@ import firstBy = require('thenby');
 
 import { Blockchain } from 'ts/blockchain';
 import { AccountConnection } from 'ts/components/ui/account_connection';
+import { Balance } from 'ts/components/ui/balance';
 import { Container } from 'ts/components/ui/container';
 import { DropDown, DropdownMouseEvent } from 'ts/components/ui/drop_down';
 import { IconButton } from 'ts/components/ui/icon_button';
@@ -436,12 +437,7 @@ export class Wallet extends React.Component<WalletProps, WalletState> {
                 </PlaceHolder>
             );
         } else {
-            const result = utils.getFormattedAmount(amount, decimals, symbol);
-            return (
-                <Text fontSize="16px" fontWeight="bold" lineHeight="1em">
-                    {result}
-                </Text>
-            );
+            return <Balance amount={amount} decimals={decimals} symbol={symbol} />;
         }
     }
     private _renderValue(
