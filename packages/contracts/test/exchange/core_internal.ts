@@ -12,6 +12,7 @@ import { bytes32Values, uint256Values, testCombinatoriallyWithReferenceFuncAsync
 import { constants } from '../utils/constants';
 import { testWithReferenceFuncAsync } from '../utils/test_with_reference';
 import { provider, txDefaults, web3Wrapper } from '../utils/web3_wrapper';
+import { removeInterceptor } from 'nock';
 
 chaiSetup.configure();
 const expect = chai.expect;
@@ -140,6 +141,54 @@ describe.only('Exchange core internal functions', () => {
             'getPartialAmount',
             referenceGetPartialAmountAsync,
             testGetPartialAmountAsync,
+            [uint256Values, uint256Values, uint256Values],
+        );
+    });
+
+    describe('isRoundingError', async () => {
+        async function referenceIsRoundingErrorAsync(
+            numerator: BigNumber,
+            denominator: BigNumber,
+            target: BigNumber,
+        ): Promise<boolean> {
+            if (numerator.greaterThan(MAX_UINT256)) {
+                throw new Error('invalid opcode');
+            } else if (denominator.greaterThan(MAX_UINT256)) {
+                throw new Error('invalid opcode');
+            } else if (denominator.eq(new BigNumber(0))) {
+                throw new Error('invalid opcode');
+            } else if (target.greaterThan(MAX_UINT256)) {
+                throw new Error('invalid opcode');
+            }
+            const product = numerator.mul(target);
+            const remainder = product.mod(denominator);
+            if (remainder.eq(new BigNumber(0))) {
+                return false;
+            }
+            if (product.greaterThan(MAX_UINT256)) {
+                throw new Error('invalid opcode');
+            }
+            if (product.eq(new BigNumber(0))) {
+                throw new Error('invalid opcode');
+            }
+            const remainderTimes1000000 = remainder.mul(new BigNumber('1000000'));
+            if (remainderTimes1000000.greaterThan(MAX_UINT256)) {
+                throw new Error('invalid opcode');
+            }
+            const errPercentageTimes1000000 = remainderTimes1000000.dividedToIntegerBy(product);
+            return errPercentageTimes1000000.greaterThan(new BigNumber('1000'));
+        }
+        async function testIsRoundingErrorAsync(
+            numerator: BigNumber,
+            denominator: BigNumber,
+            target: BigNumber,
+        ): Promise<boolean> {
+            return testExchange.publicIsRoundingError.callAsync(numerator, denominator, target);
+        }
+        await testCombinatoriallyWithReferenceFuncAsync(
+            'isRoundingError',
+            referenceIsRoundingErrorAsync,
+            testIsRoundingErrorAsync,
             [uint256Values, uint256Values, uint256Values],
         );
     });

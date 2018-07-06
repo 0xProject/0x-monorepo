@@ -56,6 +56,22 @@ contract TestExchangeInternals is
     {
         return getPartialAmount(numerator, denominator, target);
     }
+
+    /// @dev Checks if rounding error > 0.1%.
+    /// @param numerator Numerator.
+    /// @param denominator Denominator.
+    /// @param target Value to multiply with numerator/denominator.
+    /// @return Rounding error is present.
+    function publicIsRoundingError(
+        uint256 numerator,
+        uint256 denominator,
+        uint256 target)
+        public
+        pure
+        returns (bool isError)
+    {
+        return isRoundingError(numerator, denominator, target);
+    }
  
     /// @dev Updates state with results of a fill order.
     /// @param order that was filled.
