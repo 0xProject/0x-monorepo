@@ -146,16 +146,16 @@ contract LibMath is
         pure
         returns (bool isError)
     {
-        uint256 remainder = mulmod(target, numerator, denominator);
-        if (remainder == 0) {
-            return false; // No rounding error.
+        // Preconditions
+        require(numerator <= denominator, NUMERATOR_GT_DENOMINATOR);
+        
+        // Compute remainder
+        uint256 remainder;
+        assembly {
+            remainder := mulmod(target, numerator, denominator)
         }
-
-        uint256 errPercentageTimes1000000 = safeDiv(
-            safeMul(remainder, 1000000),
-            safeMul(numerator, target)
-        );
-        isError = errPercentageTimes1000000 > 1000;
+        
+        isError = safeMul(remainder, 1000) > safeMul(target, numerator);
         return isError;
     }
 }
