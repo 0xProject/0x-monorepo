@@ -91,9 +91,9 @@ class PlainPortalOnboardingFlow extends React.Component<PortalOnboardingFlowProp
         };
         const underMetamaskExtension: FixedPositionSettings = {
             type: 'fixed',
-            top: '30px',
-            right: '10px',
-            pointerDirection: 'top',
+            top: '5px',
+            right: '5px',
+            tooltipPointerDisplay: 'none',
         };
         const steps: Step[] = [
             {
@@ -105,7 +105,7 @@ class PlainPortalOnboardingFlow extends React.Component<PortalOnboardingFlowProp
             },
             {
                 position: underMetamaskExtension,
-                title: '0x Ecosystem Setup',
+                title: 'Please Unlock Metamask...',
                 content: <UnlockWalletOnboardingStep />,
                 shouldHideBackButton: true,
                 shouldHideNextButton: true,
