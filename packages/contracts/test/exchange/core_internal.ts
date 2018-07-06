@@ -1,45 +1,41 @@
 import { BlockchainLifecycle } from '@0xproject/dev-utils';
-import { assetProxyUtils, orderHashUtils } from '@0xproject/order-utils';
 import { SignedOrder } from '@0xproject/types';
-import { BigNumber } from '@0xproject/utils';
+import { BigNumber, logUtils } from '@0xproject/utils';
 import * as chai from 'chai';
 import * as combinatorics from 'js-combinatorics';
 import * as _ from 'lodash';
 
-import { DummyERC20TokenContract } from '../../generated_contract_wrappers/dummy_e_r_c20_token';
-import { ERC20ProxyContract } from '../../generated_contract_wrappers/e_r_c20_proxy';
 import { TestMixinExchangeCoreContract } from '../../generated_contract_wrappers/test_mixin_exchange_core';
 import { artifacts } from '../utils/artifacts';
 import { chaiSetup } from '../utils/chai_setup';
-import { positiveNaturalBigNumbers } from '../utils/combinatorial_sets';
+import { bytes32Values, uint256Values } from '../utils/combinatorial_sets';
 import { constants } from '../utils/constants';
-import { ERC20Wrapper } from '../utils/erc20_wrapper';
-import { OrderFactory } from '../utils/order_factory';
 import { provider, txDefaults, web3Wrapper } from '../utils/web3_wrapper';
 
 chaiSetup.configure();
 const expect = chai.expect;
 const blockchainLifecycle = new BlockchainLifecycle(web3Wrapper);
 
+const emptySignedOrder: SignedOrder = {
+    senderAddress: '0x0000000000000000000000000000000000000000',
+    makerAddress: '0x0000000000000000000000000000000000000000',
+    takerAddress: '0x0000000000000000000000000000000000000000',
+    makerFee: new BigNumber(0),
+    takerFee: new BigNumber(0),
+    makerAssetAmount: new BigNumber(0),
+    takerAssetAmount: new BigNumber(0),
+    makerAssetData: '0x',
+    takerAssetData: '0x',
+    salt: new BigNumber(0),
+    exchangeAddress: '0x0000000000000000000000000000000000000000',
+    feeRecipientAddress: '0x0000000000000000000000000000000000000000',
+    expirationTimeSeconds: new BigNumber(0),
+    signature: '',
+};
+
 describe.only('Exchange core internal', () => {
     let testExchange: TestMixinExchangeCoreContract;
 
-    let makerAddress: string;
-    let owner: string;
-    let takerAddress: string;
-    let feeRecipientAddress: string;
-
-    let erc20TokenA: DummyERC20TokenContract;
-    let erc20TokenB: DummyERC20TokenContract;
-    let zrxToken: DummyERC20TokenContract;
-    let erc20Proxy: ERC20ProxyContract;
-
-    let signedOrder: SignedOrder;
-    let erc20Wrapper: ERC20Wrapper;
-    let orderFactory: OrderFactory;
-
-    let defaultMakerAssetAddress: string;
-    let defaultTakerAssetAddress: string;
     before(async () => {
         await blockchainLifecycle.startAsync();
     });
@@ -52,40 +48,6 @@ describe.only('Exchange core internal', () => {
             provider,
             txDefaults,
         );
-
-        const accounts = await web3Wrapper.getAvailableAddressesAsync();
-        const usedAddresses = ([owner, makerAddress, takerAddress, feeRecipientAddress] = _.slice(accounts, 0, 4));
-
-        erc20Wrapper = new ERC20Wrapper(provider, usedAddresses, owner);
-
-        const numDummyErc20ToDeploy = 3;
-        [erc20TokenA, erc20TokenB, zrxToken] = await erc20Wrapper.deployDummyTokensAsync(
-            numDummyErc20ToDeploy,
-            constants.DUMMY_TOKEN_DECIMALS,
-        );
-        erc20Proxy = await erc20Wrapper.deployProxyAsync();
-        await erc20Wrapper.setBalancesAndAllowancesAsync();
-
-        await web3Wrapper.awaitTransactionSuccessAsync(
-            await erc20Proxy.addAuthorizedAddress.sendTransactionAsync(testExchange.address, {
-                from: owner,
-            }),
-            constants.AWAIT_TRANSACTION_MINED_MS,
-        );
-
-        defaultMakerAssetAddress = erc20TokenA.address;
-        defaultTakerAssetAddress = erc20TokenB.address;
-
-        const defaultOrderParams = {
-            ...constants.STATIC_ORDER_PARAMS,
-            exchangeAddress: testExchange.address,
-            makerAddress,
-            feeRecipientAddress,
-            makerAssetData: assetProxyUtils.encodeERC20AssetData(defaultMakerAssetAddress),
-            takerAssetData: assetProxyUtils.encodeERC20AssetData(defaultTakerAssetAddress),
-        };
-        const privateKey = constants.TESTRPC_PRIVATE_KEYS[accounts.indexOf(makerAddress)];
-        orderFactory = new OrderFactory(privateKey, defaultOrderParams);
     });
     beforeEach(async () => {
         await blockchainLifecycle.startAsync();
@@ -95,38 +57,64 @@ describe.only('Exchange core internal', () => {
     });
 
     describe.only('updateFilledState', async () => {
-        const testCases = combinatorics.cartesianProduct(
-            positiveNaturalBigNumbers,
-            positiveNaturalBigNumbers,
-            positiveNaturalBigNumbers,
-            positiveNaturalBigNumbers,
-        );
-        console.log(`Generated ${testCases.length} combinatoric test cases.`);
+        function referenceUpdateFilledState(
+            takerAssetFilledAmount: BigNumber,
+            orderTakerAssetFilledAmount: BigNumber,
+            orderHash: string,
+        ): void {
+            if (
+                takerAssetFilledAmount.add(orderTakerAssetFilledAmount).greaterThan(new BigNumber(2).pow(256).minus(1))
+            ) {
+                throw new Error('invalid opcode');
+            }
+            // TODO(albrow): Test orderHash overflowing bytes32.
+            _.identity(orderHash);
+        }
+        async function testUpdateFilledStateAsync(
+            takerAssetFilledAmount: BigNumber,
+            orderTakerAssetFilledAmount: BigNumber,
+            orderHash: string,
+        ): Promise<void> {
+            const fillResults = {
+                makerAssetFilledAmount: new BigNumber(0),
+                takerAssetFilledAmount,
+                makerFeePaid: new BigNumber(0),
+                takerFeePaid: new BigNumber(0),
+            };
+            web3Wrapper.awaitTransactionSuccessAsync(
+                // TODO(albrow): Move emptySignedOrder and the zero address to a
+                // utility library.
+                await testExchange.publicUpdateFilledState.sendTransactionAsync(
+                    emptySignedOrder,
+                    '0x0000000000000000000000000000000000000000',
+                    orderHash,
+                    orderTakerAssetFilledAmount,
+                    fillResults,
+                ),
+                constants.AWAIT_TRANSACTION_MINED_MS,
+            );
+        }
+        const testCases = combinatorics.cartesianProduct(uint256Values, uint256Values, bytes32Values);
+        logUtils.warn(`Generated ${testCases.length} combinatorial test cases.`);
         let counter = -1;
         testCases.forEach(async testCase => {
             counter += 1;
             const testCaseString = JSON.stringify(testCase);
-            it('generated test case ' + counter, async () => {
-                const fillResults = {
-                    makerAssetFilledAmount: testCase[0],
-                    takerAssetFilledAmount: testCase[1],
-                    makerFeePaid: testCase[2],
-                    takerFeePaid: testCase[3],
-                };
-                signedOrder = orderFactory.newSignedOrder();
+            it(`updateFilledState test case ${counter}`, async () => {
+                let expectedErr: string | undefined;
                 try {
-                    web3Wrapper.awaitTransactionSuccessAsync(
-                        await testExchange.publicUpdateFilledState.sendTransactionAsync(
-                            signedOrder,
-                            defaultTakerAssetAddress,
-                            orderHashUtils.getOrderHashHex(signedOrder),
-                            new BigNumber(10),
-                            fillResults,
-                        ),
-                        constants.AWAIT_TRANSACTION_MINED_MS,
-                    );
+                    referenceUpdateFilledState(testCase[0], testCase[1], testCase[2]);
                 } catch (e) {
-                    throw new Error(e.message + '\n\tTest case: ' + testCaseString);
+                    expectedErr = e.message;
+                }
+                try {
+                    await testUpdateFilledStateAsync(testCase[0], testCase[1], testCase[2]);
+                } catch (e) {
+                    if (_.isUndefined(expectedErr)) {
+                        throw new Error(`Unexpected error:  ${e.message}\n\tTest case: ${testCaseString}`);
+                    } else {
+                        expect(e.message).to.contain(expectedErr, `${e.message}\n\tTest case: ${testCaseString}`);
+                    }
                 }
             });
         });

@@ -1,25 +1,34 @@
 import { BigNumber } from '@0xproject/utils';
-import * as _ from 'lodash';
 
-export const BigNumbers = [];
-
-const MAX_256_BIT_NUMBER = new BigNumber(2).pow(256).minus(1);
-
-export const positiveNaturalBigNumbers = [
+export const uint256Values = [
     new BigNumber(0),
     new BigNumber(1),
     new BigNumber(2),
+    // Non-trivial big number.
     new BigNumber(2).pow(64),
-    MAX_256_BIT_NUMBER,
-    MAX_256_BIT_NUMBER.div(2).floor(),
-    MAX_256_BIT_NUMBER.sqrt().floor(),
+    // Max that does not overflow when squared.
+    new BigNumber(2).pow(128).minus(1),
+    // Min that does overflow when squared.
+    new BigNumber(2).pow(128),
+    // Max that does not overflow when doubled.
+    new BigNumber(2).pow(255).minus(1),
+    // Min that does overflow when doubled.
+    new BigNumber(2).pow(255),
+    // Max that does not overflow.
+    new BigNumber(2).pow(256).minus(1),
+    // Min that does overflow.
+    new BigNumber(2).pow(256),
 ];
 
-export const negativeNaturalNumbers = _.map(positiveNaturalBigNumbers, n => n.neg());
-export const naturalBigNumbers = _.concat(positiveNaturalBigNumbers, negativeNaturalNumbers);
-
-function bigNumbersToNumbers(bigNumbers: BigNumber[]): number[] {
-    return _.map(bigNumbers, (x: BigNumber) => x.toNumber());
-}
-export const positiveNaturalNumbers = bigNumbersToNumbers(positiveNaturalBigNumbers);
-export const naturalNumbers = bigNumbersToNumbers(naturalBigNumbers);
+export const bytes32Values = [
+    // Min
+    '0x00000000000000000000000000000000',
+    '0x00000000000000000000000000000001',
+    '0x00000000000000000000000000000002',
+    // Non-trivial big number.
+    '0x000000000f0000000000000000000000',
+    // Max that does not overflow
+    '0xffffffffffffffffffffffffffffffff',
+    // Min that overflows
+    '0x100000000000000000000000000000000',
+];
