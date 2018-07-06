@@ -201,13 +201,14 @@ contract LibMath is
         // multiplied by 1000. We compute both products as 512 bit numbers.
         // and then compare them.
         
-        // Compute remainder = product mod denominator
+        // Compute remainder = target * numerator mod denominator
         uint256 remainder;
         assembly {
             remainder := mulmod(target, numerator, denominator)
         }
         
         // Compute prod = target * numerator in 512 bits
+        // See getPartialAmount for documentation
         uint256 prod0; // Least significant 256 bits of the product
         uint256 prod1; // Most siginificant 256 bits of the product
         assembly {
@@ -217,8 +218,9 @@ contract LibMath is
         }
         
         // Compute rem = remainder * 1000 in 512 bits
-        uint256 rem0; // Least significant 256 bits of the product
-        uint256 rem1; // Most siginificant 256 bits of the product
+        // See getPartialAmount for documentation
+        uint256 rem0; // Least significant 256 bits of the rem
+        uint256 rem1; // Most siginificant 256 bits of the rem
         assembly {
             let mm := mulmod(remainder, 1000, not(0))
             rem0 := mul(remainder, 1000)
