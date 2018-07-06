@@ -150,9 +150,6 @@ contract LibMath is
         pure
         returns (bool isError)
     {
-        // Preconditions
-        require(numerator <= denominator, NUMERATOR_GT_DENOMINATOR);
-        
         // The relative error is defined as the difference between
         // the actual value and ideal value divided by the ideal value.
         // If the error must be less than or equal to 0.1% of the ideal

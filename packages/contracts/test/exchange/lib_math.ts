@@ -153,8 +153,6 @@ describe.only('LibMath', () => {
 
     describe.only('isRoundingError(numerator, denominator, target)', () => {
         function reference(numerator: BigNumber, denominator: BigNumber, target: BigNumber): boolean {
-            require(numerator.lte(denominator), 'NUMERATOR_GT_DENOMINATOR');
-
             // All numbers are scaled by a factor of denominator to
             // avoid fractions and associated precision loss.
             const ideal = target.mul(numerator);
