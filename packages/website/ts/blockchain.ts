@@ -805,12 +805,12 @@ export class Blockchain {
         if (!_.isUndefined(this._watchGasPriceIntervalId)) {
             return; // we are already watching
         }
+        const oneMinuteInMs = 60000;
         // tslint:disable-next-line:no-floating-promises
         this._updateDefaultGasPriceAsync();
         this._watchGasPriceIntervalId = intervalUtils.setAsyncExcludingInterval(
             this._updateDefaultGasPriceAsync.bind(this),
-            // 1 minute
-            60000,
+            oneMinuteInMs,
             (err: Error) => {
                 logUtils.log(`Watching gas price failed: ${err.stack}`);
                 this._stopWatchingGasPrice();

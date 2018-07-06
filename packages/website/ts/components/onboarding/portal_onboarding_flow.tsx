@@ -68,6 +68,7 @@ class PlainPortalOnboardingFlow extends React.Component<PortalOnboardingFlowProp
         }
     }
     public render(): React.ReactNode {
+        const browserType = utils.getBrowserType();
         return (
             <OnboardingFlow
                 steps={this._getSteps()}
@@ -78,7 +79,7 @@ class PlainPortalOnboardingFlow extends React.Component<PortalOnboardingFlowProp
                 disableOverlay={this.props.screenWidth === ScreenWidths.Sm}
                 isMobile={this.props.screenWidth === ScreenWidths.Sm}
                 // This is necessary to ensure onboarding stays open once the user unlocks metamask and clicks away
-                disableCloseOnClickOutside={utils.getBrowserType() === BrowserType.Firefox}
+                disableCloseOnClickOutside={browserType === BrowserType.Firefox || browserType === BrowserType.Opera}
             />
         );
     }
