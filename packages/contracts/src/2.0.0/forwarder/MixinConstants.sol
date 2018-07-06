@@ -18,16 +18,16 @@
 
 pragma solidity 0.4.24;
 
-import "../protocol/Exchange/Exchange.sol";
-import { WETH9 as EtherToken } from "../tokens/WETH9/WETH9.sol";
+import "../protocol/Exchange/interfaces/IExchange.sol";
+import "../tokens/EtherToken/IEtherToken.sol";
 import "../tokens/ERC20Token/IERC20Token.sol";
 
 
 contract MixinConstants {
 
     // solhint-disable var-name-mixedcase
-    Exchange internal EXCHANGE;
-    EtherToken internal ETHER_TOKEN;
+    IExchange internal EXCHANGE;
+    IEtherToken internal ETHER_TOKEN;
     IERC20Token internal ZRX_TOKEN;
     bytes internal ZRX_ASSET_DATA;
     bytes internal WETH_ASSET_DATA;
@@ -42,8 +42,8 @@ contract MixinConstants {
     )
         public
     {
-        EXCHANGE = Exchange(_exchange);
-        ETHER_TOKEN = EtherToken(_etherToken);
+        EXCHANGE = IExchange(_exchange);
+        ETHER_TOKEN = IEtherToken(_etherToken);
         ZRX_TOKEN = IERC20Token(_zrxToken);
         ZRX_ASSET_DATA = _zrxAssetData;
         WETH_ASSET_DATA = _wethAssetData;

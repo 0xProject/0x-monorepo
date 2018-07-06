@@ -18,7 +18,6 @@
 
 pragma solidity 0.4.24;
 
-import { WETH9 as EtherToken } from "../tokens/WETH9/WETH9.sol";
 import "../protocol/Exchange/libs/LibMath.sol";
 import "./MixinConstants.sol";
 
