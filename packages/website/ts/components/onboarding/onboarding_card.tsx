@@ -3,7 +3,7 @@ import * as React from 'react';
 
 import * as _ from 'lodash';
 import { Button } from 'ts/components/ui/button';
-import { Container, ContainerProps } from 'ts/components/ui/container';
+import { Container } from 'ts/components/ui/container';
 import { IconButton } from 'ts/components/ui/icon_button';
 import { Island } from 'ts/components/ui/island';
 import { Text, Title } from 'ts/components/ui/text';
