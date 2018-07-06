@@ -1,5 +1,5 @@
 import { BlockParamLiteral, LogEntry } from '@0xproject/types';
-import { intervalUtils } from '@0xproject/utils';
+import { intervalUtils, logUtils } from '@0xproject/utils';
 import { Web3Wrapper } from '@0xproject/web3-wrapper';
 import { Block, BlockAndLogStreamer, Log } from 'ethereumjs-blockstream';
 import * as _ from 'lodash';
@@ -26,16 +26,14 @@ export class EventWatcher {
     private _onLogRemovedSubscriptionToken: string | undefined;
     private _pollingIntervalMs: number;
     private _stateLayer: BlockParamLiteral;
-    private static _onBlockAndLogStreamerError(callback: EventWatcherCallback, err: Error): void {
-        // Propogate all Blockstream subscriber errors to
-        // top-level subscription
-        callback(err);
-    }
+    private _isVerbose: boolean;
     constructor(
         web3Wrapper: Web3Wrapper,
         pollingIntervalIfExistsMs: undefined | number,
         stateLayer: BlockParamLiteral = BlockParamLiteral.Latest,
+        isVerbose: boolean,
     ) {
+        this._isVerbose = isVerbose;
         this._web3Wrapper = web3Wrapper;
         this._stateLayer = stateLayer;
         this._pollingIntervalMs = _.isUndefined(pollingIntervalIfExistsMs)
@@ -70,14 +68,14 @@ export class EventWatcher {
         this._blockAndLogStreamerIfExists = new BlockAndLogStreamer(
             this._web3Wrapper.getBlockAsync.bind(this._web3Wrapper, this._stateLayer),
             this._web3Wrapper.getLogsAsync.bind(this._web3Wrapper, eventFilter),
-            EventWatcher._onBlockAndLogStreamerError.bind(this, callback),
+            this._onBlockAndLogStreamerError.bind(this),
         );
         const catchAllLogFilter = {};
         this._blockAndLogStreamerIfExists.addLogFilter(catchAllLogFilter);
         this._blockAndLogStreamIntervalIfExists = intervalUtils.setAsyncExcludingInterval(
             this._reconcileBlockAsync.bind(this),
             this._pollingIntervalMs,
-            EventWatcher._onBlockAndLogStreamerError.bind(this, callback),
+            this._onBlockAndLogStreamerError.bind(this),
         );
         let isRemoved = false;
         this._onLogAddedSubscriptionToken = this._blockAndLogStreamerIfExists.subscribeToOnLogAdded(
@@ -124,6 +122,13 @@ export class EventWatcher {
         };
         if (!_.isUndefined(this._blockAndLogStreamIntervalIfExists)) {
             callback(null, logEvent);
+        }
+    }
+    private _onBlockAndLogStreamerError(err: Error): void {
+        // Since Blockstream errors are all recoverable, we simply log them if the verbose
+        // config is passed in.
+        if (this._isVerbose) {
+            logUtils.warn(err);
         }
     }
 }

@@ -90,7 +90,8 @@ export class OrderWatcher {
         const pollingIntervalIfExistsMs = _.isUndefined(config) ? undefined : config.eventPollingIntervalMs;
         const stateLayer =
             _.isUndefined(config) || _.isUndefined(config.stateLayer) ? BlockParamLiteral.Latest : config.stateLayer;
-        this._eventWatcher = new EventWatcher(this._web3Wrapper, pollingIntervalIfExistsMs, stateLayer);
+        const isVerbose = !_.isUndefined(config) && !_.isUndefined(config.isVerbose) ? config.isVerbose : false;
+        this._eventWatcher = new EventWatcher(this._web3Wrapper, pollingIntervalIfExistsMs, stateLayer, isVerbose);
         this._balanceAndProxyAllowanceLazyStore = new BalanceAndProxyAllowanceLazyStore(
             this._contractWrappers.token,
             stateLayer,
