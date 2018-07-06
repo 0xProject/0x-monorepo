@@ -58,7 +58,8 @@ export function parseSolidityVersionRange(source: string): string {
 }
 
 /**
- * Normalizes the path found in the error message.
+ * Normalizes the path found in the error message. If it cannot be normalized
+ * the original error message is returned.
  * Example: converts 'base/Token.sol:6:46: Warning: Unused local variable'
  *          to 'Token.sol:6:46: Warning: Unused local variable'
  * This is used to prevent logging the same error multiple times.
@@ -69,7 +70,9 @@ export function getNormalizedErrMsg(errMsg: string): string {
     const SOLIDITY_FILE_EXTENSION_REGEX = /(.*\.sol)/;
     const errPathMatch = errMsg.match(SOLIDITY_FILE_EXTENSION_REGEX);
     if (_.isNull(errPathMatch)) {
-        throw new Error(`Could not find a path in error message: ${errMsg}`);
+        // This can occur if solidity outputs a general warning, e.g
+        // Warning: This is a pre-release compiler version, please do not use it in production.
+        return errMsg;
     }
     const errPath = errPathMatch[0];
     const baseContract = path.basename(errPath);
