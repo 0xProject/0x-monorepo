@@ -20,12 +20,27 @@ pragma solidity ^0.4.24;
 pragma experimental ABIEncoderV2;
 
 import "../../protocol/Exchange/Exchange.sol";
-import "../../protocol/Exchange/libs/LibFillResults.sol";
-import "../../protocol/Exchange/libs/LibOrder.sol";
 
-contract TestMixinExchangeCore is
+contract TestExchangeInternals is
     Exchange
 {
+
+    /// @dev Adds properties of both FillResults instances.
+    ///      Modifies the first FillResults instance specified.
+    ///      Note that this function has been modified from the original
+    //       internal version to return the FillResults.
+    /// @param totalFillResults Fill results instance that will be added onto.
+    /// @param singleFillResults Fill results instance that will be added to totalFillResults.
+    /// @return newTotalFillResults The result of adding singleFillResults to totalFilResults.
+    function publicAddFillResults(FillResults memory totalFillResults, FillResults memory singleFillResults)
+        public
+        pure
+        returns (FillResults)
+    {
+        addFillResults(totalFillResults, singleFillResults);
+        return totalFillResults;
+    }
+
     /// @dev Updates state with results of a fill order.
     /// @param order that was filled.
     /// @param takerAddress Address of taker who filled the order.

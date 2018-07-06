@@ -42,7 +42,7 @@
         "TestConstants",
         "TestLibBytes",
         "TestLibs",
-        "TestMixinExchangeCore",
+        "TestExchangeInternals",
         "TestSignatureValidator",
         "TokenRegistry",
         "Validator",

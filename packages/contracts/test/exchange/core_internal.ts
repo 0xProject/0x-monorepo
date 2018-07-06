@@ -5,7 +5,7 @@ import * as chai from 'chai';
 import * as combinatorics from 'js-combinatorics';
 import * as _ from 'lodash';
 
-import { TestMixinExchangeCoreContract } from '../../generated_contract_wrappers/test_mixin_exchange_core';
+import { TestExchangeInternalsContract } from '../../generated_contract_wrappers/test_exchange_internals';
 import { artifacts } from '../utils/artifacts';
 import { chaiSetup } from '../utils/chai_setup';
 import { bytes32Values, uint256Values } from '../utils/combinatorial_sets';
@@ -15,6 +15,8 @@ import { provider, txDefaults, web3Wrapper } from '../utils/web3_wrapper';
 chaiSetup.configure();
 const expect = chai.expect;
 const blockchainLifecycle = new BlockchainLifecycle(web3Wrapper);
+
+const MAX_UINT256 = new BigNumber(2).pow(256).minus(1);
 
 const emptySignedOrder: SignedOrder = {
     senderAddress: '0x0000000000000000000000000000000000000000',
@@ -33,8 +35,15 @@ const emptySignedOrder: SignedOrder = {
     signature: '',
 };
 
-describe.only('Exchange core internal', () => {
-    let testExchange: TestMixinExchangeCoreContract;
+interface FillResults {
+    makerAssetFilledAmount: BigNumber;
+    takerAssetFilledAmount: BigNumber;
+    makerFeePaid: BigNumber;
+    takerFeePaid: BigNumber;
+}
+
+describe.only('Exchange core internal functions', () => {
+    let testExchange: TestExchangeInternalsContract;
 
     before(async () => {
         await blockchainLifecycle.startAsync();
@@ -43,8 +52,8 @@ describe.only('Exchange core internal', () => {
         await blockchainLifecycle.revertAsync();
     });
     before(async () => {
-        testExchange = await TestMixinExchangeCoreContract.deployFrom0xArtifactAsync(
-            artifacts.TestMixinExchangeCore,
+        testExchange = await TestExchangeInternalsContract.deployFrom0xArtifactAsync(
+            artifacts.TestExchangeInternals,
             provider,
             txDefaults,
         );
@@ -56,17 +65,82 @@ describe.only('Exchange core internal', () => {
         await blockchainLifecycle.revertAsync();
     });
 
-    describe.only('updateFilledState', async () => {
+    describe.only('addFillResults', async () => {
+        function referenceAddFillResults(totalFillResults: FillResults, singlFillResults: FillResults): FillResults {
+            // Note(albrow): _.mergeWith mutates the first argument! To
+            // workaround this we use _.cloneDeep.
+            return _.mergeWith(
+                _.cloneDeep(totalFillResults),
+                singlFillResults,
+                (totalVal: BigNumber, singleVal: BigNumber) => {
+                    const newTotal = totalVal.add(singleVal);
+                    if (newTotal.greaterThan(MAX_UINT256)) {
+                        throw new Error('invalid opcode');
+                    }
+                    return newTotal;
+                },
+            );
+        }
+        async function testAddFillResultsAsync(
+            totalFillResults: FillResults,
+            singleFillResults: FillResults,
+        ): Promise<FillResults> {
+            return testExchange.publicAddFillResults.callAsync(totalFillResults, singleFillResults);
+        }
+        const testCases = combinatorics.cartesianProduct(uint256Values, uint256Values);
+        logUtils.warn(`Generated ${testCases.length} combinatorial test cases.`);
+        let counter = -1;
+        testCases.forEach(async testCase => {
+            counter += 1;
+            const testCaseString = JSON.stringify(testCase);
+            it(`addFillResults test case ${counter}`, async () => {
+                let expectedErr: string | undefined;
+                let expectedTotalFillResults: FillResults | undefined;
+                const totalFillResults = {
+                    makerAssetFilledAmount: testCase[0],
+                    takerAssetFilledAmount: testCase[0],
+                    makerFeePaid: testCase[0],
+                    takerFeePaid: testCase[0],
+                };
+                const singleFillResults = {
+                    makerAssetFilledAmount: testCase[1],
+                    takerAssetFilledAmount: testCase[1],
+                    makerFeePaid: testCase[1],
+                    takerFeePaid: testCase[1],
+                };
+                try {
+                    expectedTotalFillResults = referenceAddFillResults(totalFillResults, singleFillResults);
+                } catch (e) {
+                    expectedErr = e.message;
+                }
+                try {
+                    const actualTotalFillResults = await testAddFillResultsAsync(totalFillResults, singleFillResults);
+                    if (!_.isUndefined(expectedErr)) {
+                        throw new Error(`Expected error containing ${expectedErr} but got no error`);
+                    }
+                    expect(JSON.stringify(actualTotalFillResults)).to.equal(JSON.stringify(expectedTotalFillResults));
+                } catch (e) {
+                    if (_.isUndefined(expectedErr)) {
+                        throw new Error(`Unexpected error:  ${e.message}\n\tTest case: ${testCaseString}`);
+                    } else {
+                        expect(e.message).to.contain(expectedErr, `${e.message}\n\tTest case: ${testCaseString}`);
+                    }
+                }
+            });
+        });
+    });
+
+    describe('updateFilledState', async () => {
         function referenceUpdateFilledState(
             takerAssetFilledAmount: BigNumber,
             orderTakerAssetFilledAmount: BigNumber,
             orderHash: string,
         ): BigNumber {
             const totalFilledAmount = takerAssetFilledAmount.add(orderTakerAssetFilledAmount);
-            if (totalFilledAmount.greaterThan(new BigNumber(2).pow(256).minus(1))) {
+            if (totalFilledAmount.greaterThan(MAX_UINT256)) {
                 throw new Error('invalid opcode');
             }
-            // TODO(albrow): Test orderHash overflowing bytes32.
+            // TODO(albrow): Test orderHash overflowing bytes32?
             _.identity(orderHash);
             return totalFilledAmount;
         }

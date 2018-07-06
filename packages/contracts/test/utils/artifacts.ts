@@ -18,7 +18,7 @@ import * as TestAssetProxyOwner from '../../artifacts/TestAssetProxyOwner.json';
 import * as TestConstants from '../../artifacts/TestConstants.json';
 import * as TestLibBytes from '../../artifacts/TestLibBytes.json';
 import * as TestLibs from '../../artifacts/TestLibs.json';
-import * as TestMixinExchangeCore from '../../artifacts/TestMixinExchangeCore.json';
+import * as TestExchangeInternals from '../../artifacts/TestExchangeInternals.json';
 import * as TestSignatureValidator from '../../artifacts/TestSignatureValidator.json';
 import * as TokenRegistry from '../../artifacts/TokenRegistry.json';
 import * as Validator from '../../artifacts/Validator.json';
@@ -47,7 +47,7 @@ export const artifacts = {
     TestConstants: (TestConstants as any) as ContractArtifact,
     TestLibBytes: (TestLibBytes as any) as ContractArtifact,
     TestLibs: (TestLibs as any) as ContractArtifact,
-    TestMixinExchangeCore: (TestMixinExchangeCore as any) as ContractArtifact,
+    TestExchangeInternals: (TestExchangeInternals as any) as ContractArtifact,
     TestSignatureValidator: (TestSignatureValidator as any) as ContractArtifact,
     Validator: (Validator as any) as ContractArtifact,
     Wallet: (Wallet as any) as ContractArtifact,
