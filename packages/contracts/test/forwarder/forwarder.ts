@@ -1,6 +1,6 @@
 import { BlockchainLifecycle } from '@0xproject/dev-utils';
 import { assetProxyUtils } from '@0xproject/order-utils';
-import { AssetProxyId, SignedOrder } from '@0xproject/types';
+import { AssetProxyId, RevertReason, SignedOrder } from '@0xproject/types';
 import { BigNumber } from '@0xproject/utils';
 import { Web3Wrapper } from '@0xproject/web3-wrapper';
 import * as chai from 'chai';
@@ -12,7 +12,7 @@ import { ExchangeContract } from '../../generated_contract_wrappers/exchange';
 import { ForwarderContract } from '../../generated_contract_wrappers/forwarder';
 import { WETH9Contract } from '../../generated_contract_wrappers/weth9';
 import { artifacts } from '../utils/artifacts';
-import { expectTransactionFailedWithoutReasonAsync } from '../utils/assertions';
+import { expectTransactionFailedAsync } from '../utils/assertions';
 import { chaiSetup } from '../utils/chai_setup';
 import { constants } from '../utils/constants';
 import { ERC20Wrapper } from '../utils/erc20_wrapper';
@@ -30,6 +30,13 @@ const blockchainLifecycle = new BlockchainLifecycle(web3Wrapper);
 const DECIMALS_DEFAULT = 18;
 // Set a gasPrice so when checking balance of msg.sender we can accurately calculate gasPrice*gasUsed
 const DEFAULT_GAS_PRICE = new BigNumber(1);
+
+enum ForwarderRevertReason {
+    UnacceptableThreshold = 'UNACCEPTABLE_THRESHOLD',
+    FeeProportionTooLarge = 'FEE_PROPORTION_TOO_LARGE',
+    ValueGreaterThanZero = 'VALUE_GREATER_THAN_ZERO',
+    InvalidMsgValue = 'INVALID_MSG_VALUE',
+}
 
 describe(ContractName.Forwarder, () => {
     let makerAddress: string;
@@ -266,11 +273,12 @@ describe(ContractName.Forwarder, () => {
                 takerFee: Web3Wrapper.toBaseUnitAmount(new BigNumber(1), DECIMALS_DEFAULT),
             });
             const fillAmount = signedOrder.takerAssetAmount.times(2);
-            return expectTransactionFailedWithoutReasonAsync(
+            return expectTransactionFailedAsync(
                 forwarderWrapper.marketSellEthForERC20Async(signedOrdersWithFee, feeOrders, {
                     value: fillAmount,
                     from: takerAddress,
                 }),
+                ForwarderRevertReason.UnacceptableThreshold as any,
             );
         });
         it('should fail if fee abstraction amount is too high', async () => {
@@ -284,11 +292,12 @@ describe(ContractName.Forwarder, () => {
             });
             feeOrders = [feeOrder];
             const fillAmount = signedOrder.takerAssetAmount.div(4);
-            return expectTransactionFailedWithoutReasonAsync(
+            return expectTransactionFailedAsync(
                 forwarderWrapper.marketSellEthForERC20Async(signedOrdersWithFee, feeOrders, {
                     value: fillAmount,
                     from: takerAddress,
                 }),
+                RevertReason.TransferFailed,
             );
         });
         it('throws when mixed ERC721 and ERC20 assets with ERC20 first', async () => {
@@ -300,11 +309,12 @@ describe(ContractName.Forwarder, () => {
             const erc20SignedOrder = orderFactory.newSignedOrder();
             signedOrders = [erc20SignedOrder, erc721SignedOrder];
             const fillAmountWei = erc20SignedOrder.takerAssetAmount.plus(erc721SignedOrder.takerAssetAmount);
-            return expectTransactionFailedWithoutReasonAsync(
+            return expectTransactionFailedAsync(
                 forwarderWrapper.marketSellEthForERC20Async(signedOrders, feeOrders, {
                     from: takerAddress,
                     value: fillAmountWei,
                 }),
+                RevertReason.InvalidOrderSignature,
             );
         });
     });
@@ -345,20 +355,14 @@ describe(ContractName.Forwarder, () => {
             const fillAmount = signedOrder.takerAssetAmount.div(2);
             feeProportion = 1500; // 15.0%
             feeOrders = [];
-            await expectTransactionFailedWithoutReasonAsync(
+            await expectTransactionFailedAsync(
                 forwarderWrapper.marketSellEthForERC20Async(
                     signedOrders,
                     feeOrders,
-                    {
-                        from: takerAddress,
-                        value: fillAmount,
-                        gasPrice: DEFAULT_GAS_PRICE,
-                    },
-                    {
-                        feeProportion,
-                        feeRecipient: feeRecipientAddress,
-                    },
+                    { from: takerAddress, value: fillAmount, gasPrice: DEFAULT_GAS_PRICE },
+                    { feeProportion, feeRecipient: feeRecipientAddress },
                 ),
+                ForwarderRevertReason.FeeProportionTooLarge as any,
             );
             const afterEthBalance = await web3Wrapper.getBalanceInWeiAsync(feeRecipientAddress);
             expect(afterEthBalance).to.be.bignumber.equal(initEthBalance);
@@ -465,11 +469,12 @@ describe(ContractName.Forwarder, () => {
                 feeProportion,
                 makerAssetAmount,
             );
-            return expectTransactionFailedWithoutReasonAsync(
+            return expectTransactionFailedAsync(
                 forwarderWrapper.marketBuyTokensWithEthAsync(signedOrdersWithFee, feeOrders, makerAssetAmount, {
                     from: takerAddress,
                     value: fillAmountWei,
                 }),
+                ForwarderRevertReason.UnacceptableThreshold as any,
             );
         });
         it('throws if fees are higher than 5% when buying erc20', async () => {
@@ -485,11 +490,12 @@ describe(ContractName.Forwarder, () => {
                 feeProportion,
                 makerAssetAmount,
             );
-            return expectTransactionFailedWithoutReasonAsync(
+            return expectTransactionFailedAsync(
                 forwarderWrapper.marketBuyTokensWithEthAsync(signedOrdersWithFee, feeOrders, makerAssetAmount, {
                     from: takerAddress,
                     value: fillAmountWei,
                 }),
+                ForwarderRevertReason.UnacceptableThreshold as any,
             );
         });
         it('throws if makerAssetAmount is 0', async () => {
@@ -500,11 +506,12 @@ describe(ContractName.Forwarder, () => {
                 feeProportion,
                 makerAssetAmount,
             );
-            return expectTransactionFailedWithoutReasonAsync(
+            return expectTransactionFailedAsync(
                 forwarderWrapper.marketBuyTokensWithEthAsync(signedOrdersWithFee, feeOrders, makerAssetAmount, {
                     from: takerAddress,
                     value: fillAmountWei,
                 }),
+                ForwarderRevertReason.ValueGreaterThanZero as any,
             );
         });
         it('throws if the amount of ETH sent in is less than the takerAssetFilledAmount', async () => {
@@ -527,7 +534,7 @@ describe(ContractName.Forwarder, () => {
             // We use the contract directly to get around wrapper validations and calculations
             const formattedOrders = formatters.createMarketSellOrders(signedOrders, zero);
             const formattedFeeOrders = formatters.createMarketSellOrders(feeOrders, zero);
-            return expectTransactionFailedWithoutReasonAsync(
+            return expectTransactionFailedAsync(
                 forwarderContract.marketBuyTokensWithEth.sendTransactionAsync(
                     formattedOrders.orders,
                     formattedOrders.signatures,
@@ -538,6 +545,7 @@ describe(ContractName.Forwarder, () => {
                     constants.NULL_ADDRESS,
                     { value: fillAmount, from: takerAddress },
                 ),
+                ForwarderRevertReason.InvalidMsgValue as any,
             );
         });
     });
@@ -786,11 +794,12 @@ describe(ContractName.Forwarder, () => {
             signedOrders = [erc721SignedOrder, erc20SignedOrder];
             const makerAssetAmount = new BigNumber(signedOrders.length);
             const fillAmountWei = erc20SignedOrder.takerAssetAmount.plus(erc721SignedOrder.takerAssetAmount);
-            return expectTransactionFailedWithoutReasonAsync(
+            return expectTransactionFailedAsync(
                 forwarderWrapper.marketBuyTokensWithEthAsync(signedOrders, feeOrders, makerAssetAmount, {
                     from: takerAddress,
                     value: fillAmountWei,
                 }),
+                RevertReason.LibBytesGreaterOrEqualTo32LengthRequired,
             );
         });
         it('throws when mixed ERC721 and ERC20 assets with ERC20 first', async () => {
@@ -803,11 +812,12 @@ describe(ContractName.Forwarder, () => {
             signedOrders = [erc20SignedOrder, erc721SignedOrder];
             const makerAssetAmount = new BigNumber(signedOrders.length);
             const fillAmountWei = erc20SignedOrder.takerAssetAmount.plus(erc721SignedOrder.takerAssetAmount);
-            return expectTransactionFailedWithoutReasonAsync(
+            return expectTransactionFailedAsync(
                 forwarderWrapper.marketBuyTokensWithEthAsync(signedOrders, feeOrders, makerAssetAmount, {
                     from: takerAddress,
                     value: fillAmountWei,
                 }),
+                RevertReason.InvalidTakerAmount,
             );
         });
     });
