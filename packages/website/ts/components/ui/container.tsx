@@ -2,6 +2,8 @@ import * as React from 'react';
 
 type StringOrNum = string | number;
 
+export type ContainerTag = 'div' | 'span';
+
 export interface ContainerProps {
     marginTop?: StringOrNum;
     marginBottom?: StringOrNum;
@@ -28,15 +30,21 @@ export interface ContainerProps {
     right?: string;
     bottom?: string;
     zIndex?: number;
+    Tag?: ContainerTag;
 }
 
-export const Container: React.StatelessComponent<ContainerProps> = ({ children, className, isHidden, ...style }) => {
+export const Container: React.StatelessComponent<ContainerProps> = props => {
+    const { children, className, Tag, isHidden, ...style } = props;
     const visibility = isHidden ? 'hidden' : undefined;
     return (
-        <div style={{ ...style, visibility }} className={className}>
+        <Tag style={{ ...style, visibility }} className={className}>
             {children}
-        </div>
+        </Tag>
     );
+};
+
+Container.defaultProps = {
+    Tag: 'div',
 };
 
 Container.displayName = 'Container';

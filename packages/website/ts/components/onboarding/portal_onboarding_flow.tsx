@@ -91,9 +91,9 @@ class PlainPortalOnboardingFlow extends React.Component<PortalOnboardingFlowProp
         };
         const underMetamaskExtension: FixedPositionSettings = {
             type: 'fixed',
-            top: '30px',
+            top: '10px',
             right: '10px',
-            pointerDirection: 'top',
+            tooltipPointerDisplay: 'none',
         };
         const steps: Step[] = [
             {
@@ -105,10 +105,12 @@ class PlainPortalOnboardingFlow extends React.Component<PortalOnboardingFlowProp
             },
             {
                 position: underMetamaskExtension,
-                title: '0x Ecosystem Setup',
+                title: 'Please Unlock Metamask...',
                 content: <UnlockWalletOnboardingStep />,
                 shouldHideBackButton: true,
                 shouldHideNextButton: true,
+                shouldCenterTitle: true,
+                shouldRemoveExtraSpacing: true,
             },
             {
                 position: nextToWalletPosition,
@@ -140,13 +142,7 @@ class PlainPortalOnboardingFlow extends React.Component<PortalOnboardingFlowProp
             {
                 position: nextToWalletPosition,
                 title: 'Step 2: Wrap ETH',
-                content: (
-                    <WrapEthOnboardingStep3
-                        formattedWethBalanceIfExists={
-                            this._userHasVisibleWeth() ? this._getFormattedWethBalance() : undefined
-                        }
-                    />
-                ),
+                content: <WrapEthOnboardingStep3 wethAmount={this._getWethBalance()} />,
                 continueButtonDisplay: this._userHasVisibleWeth() ? 'enabled' : 'disabled',
             },
             {
@@ -186,11 +182,6 @@ class PlainPortalOnboardingFlow extends React.Component<PortalOnboardingFlowProp
         }
         const ethTokenState = this.props.trackedTokenStateByAddress[ethToken.address];
         return ethTokenState.balance;
-    }
-    private _getFormattedWethBalance(): string {
-        const ethToken = utils.getEthToken(this.props.tokenByAddress);
-        const ethTokenState = this.props.trackedTokenStateByAddress[ethToken.address];
-        return utils.getFormattedAmountFromToken(ethToken, ethTokenState);
     }
     private _userHasVisibleWeth(): boolean {
         return this._getWethBalance() > new BigNumber(0);

@@ -2,11 +2,14 @@ import * as React from 'react';
 import { Placement, Popper, PopperChildrenProps } from 'react-popper';
 
 import { OnboardingCard } from 'ts/components/onboarding/onboarding_card';
-import { ContinueButtonDisplay, OnboardingTooltip } from 'ts/components/onboarding/onboarding_tooltip';
+import {
+    ContinueButtonDisplay,
+    OnboardingTooltip,
+    TooltipPointerDisplay,
+} from 'ts/components/onboarding/onboarding_tooltip';
 import { Animation } from 'ts/components/ui/animation';
 import { Container } from 'ts/components/ui/container';
 import { Overlay } from 'ts/components/ui/overlay';
-import { PointerDirection } from 'ts/components/ui/pointer';
 import { zIndex } from 'ts/style/z_index';
 
 export interface FixedPositionSettings {
@@ -15,7 +18,7 @@ export interface FixedPositionSettings {
     bottom?: string;
     left?: string;
     right?: string;
-    pointerDirection?: PointerDirection;
+    tooltipPointerDisplay?: TooltipPointerDisplay;
 }
 
 export interface TargetPositionSettings {
@@ -28,12 +31,15 @@ export interface Step {
     // Provide either a CSS selector, or fixed position settings. Only applies to desktop.
     position: TargetPositionSettings | FixedPositionSettings;
     title?: string;
+    shouldCenterTitle?: boolean;
     content: React.ReactNode;
     shouldHideBackButton?: boolean;
     shouldHideNextButton?: boolean;
     continueButtonDisplay?: ContinueButtonDisplay;
     continueButtonText?: string;
     onContinueButtonClick?: () => void;
+    // Only used for very custom steps.
+    shouldRemoveExtraSpacing?: boolean;
 }
 
 export interface OnboardingFlowProps {
@@ -69,7 +75,7 @@ export class OnboardingFlow extends React.Component<OnboardingFlowProps> {
                 </Popper>
             );
         } else if (currentStep.position.type === 'fixed') {
-            const { top, right, bottom, left, pointerDirection } = currentStep.position;
+            const { top, right, bottom, left, tooltipPointerDisplay } = currentStep.position;
             onboardingElement = (
                 <Container
                     position="fixed"
@@ -79,7 +85,7 @@ export class OnboardingFlow extends React.Component<OnboardingFlowProps> {
                     bottom={bottom}
                     left={left}
                 >
-                    {this._renderToolTip(pointerDirection)}
+                    {this._renderToolTip(tooltipPointerDisplay)}
                 </Container>
             );
         }
@@ -103,7 +109,7 @@ export class OnboardingFlow extends React.Component<OnboardingFlowProps> {
             </div>
         );
     }
-    private _renderToolTip(pointerDirection?: PointerDirection): React.ReactNode {
+    private _renderToolTip(tooltipPointerDisplay?: TooltipPointerDisplay): React.ReactNode {
         const { steps, stepIndex } = this.props;
         const step = steps[stepIndex];
         const isLastStep = steps.length - 1 === stepIndex;
@@ -111,6 +117,7 @@ export class OnboardingFlow extends React.Component<OnboardingFlowProps> {
             <Container marginLeft="30px" width="400px">
                 <OnboardingTooltip
                     title={step.title}
+                    shouldCenterTitle={step.shouldCenterTitle}
                     content={step.content}
                     isLastStep={isLastStep}
                     shouldHideBackButton={step.shouldHideBackButton}
@@ -121,7 +128,8 @@ export class OnboardingFlow extends React.Component<OnboardingFlowProps> {
                     continueButtonDisplay={step.continueButtonDisplay}
                     continueButtonText={step.continueButtonText}
                     onContinueButtonClick={step.onContinueButtonClick}
-                    pointerDirection={pointerDirection}
+                    pointerDisplay={tooltipPointerDisplay}
+                    shouldRemoveExtraSpacing={step.shouldRemoveExtraSpacing}
                 />
             </Container>
         );
@@ -135,6 +143,7 @@ export class OnboardingFlow extends React.Component<OnboardingFlowProps> {
             <Container position="relative" zIndex={1}>
                 <OnboardingCard
                     title={step.title}
+                    shouldCenterTitle={step.shouldCenterTitle}
                     content={step.content}
                     isLastStep={isLastStep}
                     shouldHideBackButton={step.shouldHideBackButton}
@@ -146,6 +155,7 @@ export class OnboardingFlow extends React.Component<OnboardingFlowProps> {
                     continueButtonText={step.continueButtonText}
                     onContinueButtonClick={step.onContinueButtonClick}
                     borderRadius="10px 10px 0px 0px"
+                    shouldRemoveExtraSpacing={step.shouldRemoveExtraSpacing}
                 />
             </Container>
         );
