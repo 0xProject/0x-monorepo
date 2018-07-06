@@ -1,17 +1,20 @@
 {
     "extends": "default",
     "rules": {
-        "bracket-align": "warn",
-        "code-complexity": "warn",
-        "const-name-snakecase": "warn",
-        "expression-indent": "warn",
-        "function-max-lines": "warn",
-        "statement-indent": "warn",
-        "indent": ["warn", 4],
+        "avoid-low-level-calls": false,
+        "avoid-tx-origin": "warn",
+        "bracket-align": false,
+        "code-complexity": "false",
+        "const-name-snakecase": "error",
+        "expression-indent": "error",
+        "function-max-lines": false,
+        "func-order": "error",
+        "indent": ["error", 4],
+        "max-line-length": ["warn", 160],
+        "no-inline-assembly": false,
         "quotes": ["error", "double"],
-        "max-line-length": ["warn", 120],
-        "separate-by-one-line-in-contract": "warn",
+        "separate-by-one-line-in-contract": "error",
         "space-after-comma": "error",
-        "func-order": "warn"
+        "statement-indent": "error"
     }
 }

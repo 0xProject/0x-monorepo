@@ -30,7 +30,7 @@
         "profiler:report:html": "istanbul report html && open coverage/index.html",
         "coverage:report:lcov": "istanbul report lcov",
         "test:circleci": "yarn test",
-        "lint-contracts": "solhint src/2.0.0/**/*.sol"
+        "lint-contracts": "solhint src/2.0.0/**/**/**/**/*.sol"
     },
     "config": {
         "abis": "../migrations/artifacts/2.0.0/@(AssetProxyOwner|DummyERC20Token|DummyERC721Receiver|DummyERC721Token|ERC20Proxy|ERC721Proxy|Forwarder|Exchange|ExchangeWrapper|IAssetData|IAssetProxy|MixinAuthorizable|MultiSigWallet|MultiSigWalletWithTimeLock|TestAssetProxyOwner|TestAssetProxyDispatcher|TestLibBytes|TestLibs|TestSignatureValidator|TestValidator|TestWallet|TokenRegistry|Whitelist|WETH9|ZRXToken).json"
