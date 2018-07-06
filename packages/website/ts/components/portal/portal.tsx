@@ -106,8 +106,7 @@ const TOP_BAR_HEIGHT = TopBar.heightForDisplayType(TopBarDisplayType.Expanded);
 const LEFT_COLUMN_WIDTH = 346;
 const MENU_PADDING_LEFT = 185;
 const LARGE_LAYOUT_MAX_WIDTH = 1200;
-const LARGE_LAYOUT_SIDE_PADDING = 30;
-const SMALL_LAYOUT_SIDE_PADDING = 20;
+const SIDE_PADDING = 20;
 
 export class Portal extends React.Component<PortalProps, PortalState> {
     private _blockchain: Blockchain;
@@ -226,7 +225,7 @@ export class Portal extends React.Component<PortalProps, PortalState> {
                 : TokenVisibility.TRACKED;
         return (
             <Container>
-                <DocumentTitle title="0x Portal DApp" />
+                <DocumentTitle title="0x Portal" />
                 <TopBar
                     userAddress={this.props.userAddress}
                     networkId={this.props.networkId}
@@ -244,9 +243,7 @@ export class Portal extends React.Component<PortalProps, PortalState> {
                         position: 'fixed',
                         zIndex: zIndex.topBar,
                     }}
-                    maxWidth={!this._isSmallScreen() ? LARGE_LAYOUT_MAX_WIDTH : undefined}
-                    paddingLeft={!this._isSmallScreen() ? LARGE_LAYOUT_SIDE_PADDING : SMALL_LAYOUT_SIDE_PADDING}
-                    paddingRight={!this._isSmallScreen() ? LARGE_LAYOUT_SIDE_PADDING : SMALL_LAYOUT_SIDE_PADDING}
+                    maxWidth={LARGE_LAYOUT_MAX_WIDTH}
                 />
                 <Container marginTop={TOP_BAR_HEIGHT} minHeight="100vh" backgroundColor={colors.lightestGrey}>
                     <Switch>
@@ -701,8 +698,8 @@ const LargeLayout = (props: LargeLayoutProps) => {
         <Container
             className="mx-auto flex flex-center"
             maxWidth={LARGE_LAYOUT_MAX_WIDTH}
-            paddingLeft={LARGE_LAYOUT_SIDE_PADDING}
-            paddingRight={LARGE_LAYOUT_SIDE_PADDING}
+            paddingLeft={SIDE_PADDING}
+            paddingRight={SIDE_PADDING}
         >
             <div className="flex-last">
                 <Container width={LEFT_COLUMN_WIDTH} position="fixed" zIndex={zIndex.aboveTopBar}>
@@ -710,7 +707,7 @@ const LargeLayout = (props: LargeLayoutProps) => {
                 </Container>
             </div>
             <Container className="flex-auto" marginLeft={LEFT_COLUMN_WIDTH}>
-                <Container className="flex-auto" marginLeft={LARGE_LAYOUT_SIDE_PADDING}>
+                <Container className="flex-auto" marginLeft={SIDE_PADDING}>
                     {props.right}
                 </Container>
             </Container>
@@ -724,11 +721,7 @@ interface SmallLayoutProps {
 const SmallLayout = (props: SmallLayoutProps) => {
     return (
         <div className="flex flex-center">
-            <Container
-                className="flex-auto"
-                paddingLeft={SMALL_LAYOUT_SIDE_PADDING}
-                paddingRight={SMALL_LAYOUT_SIDE_PADDING}
-            >
+            <Container className="flex-auto" paddingLeft={SIDE_PADDING} paddingRight={SIDE_PADDING}>
                 {props.content}
             </Container>
         </div>

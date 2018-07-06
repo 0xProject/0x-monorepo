@@ -11,6 +11,7 @@ export interface ButtonProps {
     backgroundColor?: string;
     borderColor?: string;
     width?: string;
+    padding?: string;
     type?: string;
     isDisabled?: boolean;
     onClick?: (event: React.MouseEvent<HTMLElement>) => void;
@@ -27,9 +28,8 @@ export const Button = styled(PlainButton)`
     font-size: ${props => props.fontSize};
     color: ${props => props.fontColor};
     transition: background-color, opacity 0.5s ease;
-    padding: 0.8em 2.2em;
+    padding: ${props => props.padding};
     border-radius: 6px;
-    box-shadow: 0px 0px 4px rgba(0, 0, 0, 0.25);
     font-weight: 500;
     outline: none;
     font-family: ${props => props.fontFamily};
@@ -44,7 +44,6 @@ export const Button = styled(PlainButton)`
     }
     &:disabled {
         opacity: 0.5;
-        box-shadow: none;
     }
     &:focus {
         background-color: ${props => saturate(0.2, props.backgroundColor)};
@@ -57,6 +56,7 @@ Button.defaultProps = {
     width: 'auto',
     fontFamily: 'Roboto',
     isDisabled: false,
+    padding: '0.8em 2.2em',
 };
 
 Button.displayName = 'Button';
@@ -67,20 +67,26 @@ export interface CallToActionProps {
     type?: CallToActionType;
     fontSize?: string;
     width?: string;
+    padding?: string;
 }
 
-export const CallToAction: React.StatelessComponent<CallToActionProps> = ({ children, type, fontSize, width }) => {
+export const CallToAction: React.StatelessComponent<CallToActionProps> = ({
+    children,
+    type,
+    fontSize,
+    padding,
+    width,
+}) => {
     const isLight = type === 'light';
-    const backgroundColor = isLight ? colors.white : colors.heroGrey;
+    const backgroundColor = isLight ? colors.white : colors.mediumBlue;
     const fontColor = isLight ? colors.heroGrey : colors.white;
-    const borderColor = isLight ? undefined : colors.white;
     return (
         <Button
             fontSize={fontSize}
+            padding={padding}
             backgroundColor={backgroundColor}
             fontColor={fontColor}
             width={width}
-            borderColor={borderColor}
         >
             {children}
         </Button>
@@ -89,4 +95,5 @@ export const CallToAction: React.StatelessComponent<CallToActionProps> = ({ chil
 
 CallToAction.defaultProps = {
     type: 'dark',
+    fontSize: '14px',
 };
