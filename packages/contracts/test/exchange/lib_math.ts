@@ -151,7 +151,7 @@ describe('LibMath', () => {
         }
     });
 
-    describe.only('isRoundingError(numerator, denominator, target)', () => {
+    describe('isRoundingError(numerator, denominator, target)', () => {
         function reference(numerator: BigNumber, denominator: BigNumber, target: BigNumber): boolean {
             // All numbers are scaled by a factor of denominator to
             // avoid fractions and associated precision loss.
@@ -176,7 +176,7 @@ describe('LibMath', () => {
         }
     });
 
-    describe.only('isRoundingError', () => {
+    describe('isRoundingError', () => {
         it('should return false if there is a rounding error of 0.1%', async () => {
             const numerator = new BigNumber(20);
             const denominator = new BigNumber(999);
