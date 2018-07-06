@@ -65,7 +65,7 @@ describe.only('Exchange core internal functions', () => {
         await blockchainLifecycle.revertAsync();
     });
 
-    describe.only('addFillResults', async () => {
+    describe('addFillResults', async () => {
         function referenceAddFillResults(totalFillResults: FillResults, singlFillResults: FillResults): FillResults {
             // Note(albrow): _.mergeWith mutates the first argument! To
             // workaround this we use _.cloneDeep.
@@ -119,6 +119,61 @@ describe.only('Exchange core internal functions', () => {
                         throw new Error(`Expected error containing ${expectedErr} but got no error`);
                     }
                     expect(JSON.stringify(actualTotalFillResults)).to.equal(JSON.stringify(expectedTotalFillResults));
+                } catch (e) {
+                    if (_.isUndefined(expectedErr)) {
+                        throw new Error(`Unexpected error:  ${e.message}\n\tTest case: ${testCaseString}`);
+                    } else {
+                        expect(e.message).to.contain(expectedErr, `${e.message}\n\tTest case: ${testCaseString}`);
+                    }
+                }
+            });
+        });
+    });
+
+    describe.only('getPartialAmount', async () => {
+        function referenceGetPartialAmount(numerator: BigNumber, denominator: BigNumber, target: BigNumber): BigNumber {
+            if (numerator.greaterThan(MAX_UINT256)) {
+                throw new Error('invalid opcode');
+            } else if (denominator.greaterThan(MAX_UINT256)) {
+                throw new Error('invalid opcode');
+            } else if (denominator.eq(new BigNumber(0))) {
+                throw new Error('invalid opcode');
+            } else if (target.greaterThan(MAX_UINT256)) {
+                throw new Error('invalid opcode');
+            }
+            const product = numerator.mul(target);
+            if (product.greaterThan(MAX_UINT256)) {
+                throw new Error('invalid opcode');
+            }
+            return product.dividedToIntegerBy(denominator);
+        }
+        async function testGetPartialAmountAsync(
+            numerator: BigNumber,
+            denominator: BigNumber,
+            target: BigNumber,
+        ): Promise<BigNumber> {
+            return testExchange.publicGetPartialAmount.callAsync(numerator, denominator, target);
+        }
+        const testCases = combinatorics.cartesianProduct(uint256Values, uint256Values, uint256Values);
+        logUtils.warn(`Generated ${testCases.length} combinatorial test cases.`);
+        let counter = -1;
+        testCases.forEach(async testCase => {
+            counter += 1;
+            const testCaseString = JSON.stringify(testCase);
+            it(`GetPartialAmount test case ${counter}`, async () => {
+                let expectedErr: string | undefined;
+                let expectedPartial: BigNumber | undefined;
+                try {
+                    expectedPartial = referenceGetPartialAmount(testCase[0], testCase[1], testCase[2]);
+                } catch (e) {
+                    expectedErr = e.message;
+                }
+                try {
+                    const actualPartial = await testGetPartialAmountAsync(testCase[0], testCase[1], testCase[2]);
+                    if (!_.isUndefined(expectedErr)) {
+                        throw new Error(`Expected error containing ${expectedErr} but got no error`);
+                    }
+                    expect(actualPartial.toString()).to.equal((expectedPartial as BigNumber).toString());
                 } catch (e) {
                     if (_.isUndefined(expectedErr)) {
                         throw new Error(`Unexpected error:  ${e.message}\n\tTest case: ${testCaseString}`);
