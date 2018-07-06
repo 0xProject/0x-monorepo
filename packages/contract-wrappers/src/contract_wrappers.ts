@@ -1,13 +1,16 @@
-import { Provider } from '@0xproject/types';
 import { Web3Wrapper } from '@0xproject/web3-wrapper';
+import { Provider } from 'ethereum-types';
 import * as _ from 'lodash';
 
+import { constants } from './utils/constants';
+
 import { artifacts } from './artifacts';
+import { ERC20ProxyWrapper } from './contract_wrappers/erc20_proxy_wrapper';
+import { ERC20TokenWrapper } from './contract_wrappers/erc20_token_wrapper';
+import { ERC721ProxyWrapper } from './contract_wrappers/erc721_proxy_wrapper';
+import { ERC721TokenWrapper } from './contract_wrappers/erc721_token_wrapper';
 import { EtherTokenWrapper } from './contract_wrappers/ether_token_wrapper';
 import { ExchangeWrapper } from './contract_wrappers/exchange_wrapper';
-import { TokenRegistryWrapper } from './contract_wrappers/token_registry_wrapper';
-import { TokenTransferProxyWrapper } from './contract_wrappers/token_transfer_proxy_wrapper';
-import { TokenWrapper } from './contract_wrappers/token_wrapper';
 import { ContractWrappersConfigSchema } from './schemas/contract_wrappers_config_schema';
 import { contractWrappersPrivateNetworkConfigSchema } from './schemas/contract_wrappers_private_network_config_schema';
 import { contractWrappersPublicNetworkConfigSchema } from './schemas/contract_wrappers_public_network_config_schema';
@@ -22,24 +25,28 @@ export class ContractWrappers {
      */
     public exchange: ExchangeWrapper;
     /**
-     * An instance of the TokenRegistryWrapper class containing methods for interacting with the 0x
-     * TokenRegistry smart contract.
+     * An instance of the ERC20TokenWrapper class containing methods for interacting with any ERC20 token smart contract.
      */
-    public tokenRegistry: TokenRegistryWrapper;
+    public erc20Token: ERC20TokenWrapper;
     /**
-     * An instance of the TokenWrapper class containing methods for interacting with any ERC20 token smart contract.
+     * An instance of the ERC721TokenWrapper class containing methods for interacting with any ERC721 token smart contract.
      */
-    public token: TokenWrapper;
+    public erc721Token: ERC721TokenWrapper;
     /**
      * An instance of the EtherTokenWrapper class containing methods for interacting with the
      * wrapped ETH ERC20 token smart contract.
      */
     public etherToken: EtherTokenWrapper;
     /**
-     * An instance of the TokenTransferProxyWrapper class containing methods for interacting with the
-     * tokenTransferProxy smart contract.
+     * An instance of the ERC20ProxyWrapper class containing methods for interacting with the
+     * erc20Proxy smart contract.
      */
-    public proxy: TokenTransferProxyWrapper;
+    public erc20Proxy: ERC20ProxyWrapper;
+    /**
+     * An instance of the ERC721ProxyWrapper class containing methods for interacting with the
+     * erc721Proxy smart contract.
+     */
+    public erc721Proxy: ERC721ProxyWrapper;
     private _web3Wrapper: Web3Wrapper;
     /**
      * Instantiates a new ContractWrappers instance.
@@ -55,7 +62,7 @@ export class ContractWrappers {
             contractWrappersPublicNetworkConfigSchema,
         ]);
         const artifactJSONs = _.values(artifacts);
-        const abiArrays = _.map(artifactJSONs, artifact => artifact.abi);
+        const abiArrays = _.map(artifactJSONs, artifact => artifact.compilerOutput.abi);
         const txDefaults = {
             gasPrice: config.gasPrice,
         };
@@ -63,25 +70,40 @@ export class ContractWrappers {
         _.forEach(abiArrays, abi => {
             this._web3Wrapper.abiDecoder.addABI(abi);
         });
-        this.proxy = new TokenTransferProxyWrapper(
+        const blockPollingIntervalMs = _.isUndefined(config.blockPollingIntervalMs)
+            ? constants.DEFAULT_BLOCK_POLLING_INTERVAL
+            : config.blockPollingIntervalMs;
+        this.erc20Proxy = new ERC20ProxyWrapper(this._web3Wrapper, config.networkId, config.erc20ProxyContractAddress);
+        this.erc721Proxy = new ERC721ProxyWrapper(
             this._web3Wrapper,
             config.networkId,
-            config.tokenTransferProxyContractAddress,
+            config.erc721ProxyContractAddress,
         );
-        this.token = new TokenWrapper(this._web3Wrapper, config.networkId, this.proxy);
+        this.erc20Token = new ERC20TokenWrapper(
+            this._web3Wrapper,
+            config.networkId,
+            this.erc20Proxy,
+            blockPollingIntervalMs,
+        );
+        this.erc721Token = new ERC721TokenWrapper(
+            this._web3Wrapper,
+            config.networkId,
+            this.erc721Proxy,
+            blockPollingIntervalMs,
+        );
+        this.etherToken = new EtherTokenWrapper(
+            this._web3Wrapper,
+            config.networkId,
+            this.erc20Token,
+            blockPollingIntervalMs,
+        );
         this.exchange = new ExchangeWrapper(
             this._web3Wrapper,
             config.networkId,
-            this.token,
             config.exchangeContractAddress,
             config.zrxContractAddress,
+            blockPollingIntervalMs,
         );
-        this.tokenRegistry = new TokenRegistryWrapper(
-            this._web3Wrapper,
-            config.networkId,
-            config.tokenRegistryContractAddress,
-        );
-        this.etherToken = new EtherTokenWrapper(this._web3Wrapper, config.networkId, this.token);
     }
     /**
      * Sets a new web3 provider for 0x.js. Updating the provider will stop all
@@ -93,12 +115,10 @@ export class ContractWrappers {
         this._web3Wrapper.setProvider(provider);
         (this.exchange as any)._invalidateContractInstances();
         (this.exchange as any)._setNetworkId(networkId);
-        (this.tokenRegistry as any)._invalidateContractInstance();
-        (this.tokenRegistry as any)._setNetworkId(networkId);
-        (this.token as any)._invalidateContractInstances();
-        (this.token as any)._setNetworkId(networkId);
-        (this.proxy as any)._invalidateContractInstance();
-        (this.proxy as any)._setNetworkId(networkId);
+        (this.erc20Token as any)._invalidateContractInstances();
+        (this.erc20Token as any)._setNetworkId(networkId);
+        (this.erc20Proxy as any)._invalidateContractInstance();
+        (this.erc20Proxy as any)._setNetworkId(networkId);
         (this.etherToken as any)._invalidateContractInstance();
         (this.etherToken as any)._setNetworkId(networkId);
     }

@@ -8,8 +8,8 @@ import { constants } from '../utils/constants';
 
 import { artifacts } from './artifacts';
 import { AssetProxyOwnerContract } from './contract_wrappers/asset_proxy_owner';
-import { ERC20ProxyContract } from './contract_wrappers/e_r_c20_proxy';
-import { ERC721ProxyContract } from './contract_wrappers/e_r_c721_proxy';
+import { ERC20ProxyContract } from './contract_wrappers/erc20_proxy';
+import { ERC721ProxyContract } from './contract_wrappers/erc721_proxy';
 import { ExchangeContract } from './contract_wrappers/exchange';
 
 /**

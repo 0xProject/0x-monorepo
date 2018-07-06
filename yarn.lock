@@ -6,6 +6,36 @@
   version "0.3.9"
   resolved "https://registry.yarnpkg.com/8fold-marked/-/8fold-marked-0.3.9.tgz#bb89c645612f8ccfaffac1ca6e3c11f168c9cf59"
 
+"@0xproject/assert@0.2.12", "@0xproject/assert@^0.2.12":
+  version "0.2.12"
+  resolved "https://registry.yarnpkg.com/@0xproject/assert/-/assert-0.2.12.tgz#0e53de4eb598ecc6138aec82d4609c0e46f433b3"
+  dependencies:
+    "@0xproject/json-schemas" "^0.8.1"
+    "@0xproject/typescript-typings" "^0.4.1"
+    "@0xproject/utils" "^0.7.1"
+    lodash "4.17.10"
+    valid-url "1.0.9"
+
+"@0xproject/contract-wrappers@0.0.5", "@0xproject/contract-wrappers@^0.0.5":
+  version "0.0.5"
+  resolved "https://registry.yarnpkg.com/@0xproject/contract-wrappers/-/contract-wrappers-0.0.5.tgz#36f91afb7de51478f9d2e4e0a3c4e685b3d18f28"
+  dependencies:
+    "@0xproject/assert" "^0.2.12"
+    "@0xproject/base-contract" "^0.3.4"
+    "@0xproject/fill-scenarios" "^0.0.4"
+    "@0xproject/json-schemas" "^0.8.1"
+    "@0xproject/order-utils" "^0.0.7"
+    "@0xproject/types" "^0.8.1"
+    "@0xproject/typescript-typings" "^0.4.1"
+    "@0xproject/utils" "^0.7.1"
+    "@0xproject/web3-wrapper" "^0.7.1"
+    ethereumjs-blockstream "2.0.7"
+    ethereumjs-util "5.1.5"
+    ethers "3.0.22"
+    js-sha3 "0.7.0"
+    lodash "4.17.10"
+    uuid "3.2.1"
+
 "@0xproject/fill-scenarios@^0.0.4":
   version "0.0.4"
   resolved "https://registry.yarnpkg.com/@0xproject/fill-scenarios/-/fill-scenarios-0.0.4.tgz#4d23c75abda7e9f117b698c0b8b142af07e0c69e"
@@ -46,7 +76,7 @@
 
 "@0xproject/order-watcher@^0.0.6":
   version "0.0.6"
-  resolved "https://registry.npmjs.org/@0xproject/order-watcher/-/order-watcher-0.0.6.tgz#85a8fb21e5755bb555f427b12d64d10b89b332e6"
+  resolved "https://registry.yarnpkg.com/@0xproject/order-watcher/-/order-watcher-0.0.6.tgz#85a8fb21e5755bb555f427b12d64d10b89b332e6"
   dependencies:
     "@0xproject/assert" "^0.2.12"
     "@0xproject/base-contract" "^0.3.4"
@@ -4293,6 +4323,14 @@ ethereumjs-block@~1.2.2:
     ethereumjs-util "^4.0.1"
     merkle-patricia-tree "^2.1.2"
 
+ethereumjs-blockstream@2.0.7:
+  version "2.0.7"
+  resolved "https://registry.yarnpkg.com/ethereumjs-blockstream/-/ethereumjs-blockstream-2.0.7.tgz#8e791d18d517f13e0ba928892dda545dc930936b"
+  dependencies:
+    immutable "3.8.1"
+    source-map-support "0.4.14"
+    uuid "3.0.1"
+
 ethereumjs-blockstream@5.0.0:
   version "5.0.0"
   resolved "https://registry.yarnpkg.com/ethereumjs-blockstream/-/ethereumjs-blockstream-5.0.0.tgz#63bfe9185757329a32822d5815562eb1dcd75d71"
@@ -6019,6 +6057,10 @@ immediate@^3.2.3:
   version "3.2.3"
   resolved "https://registry.yarnpkg.com/immediate/-/immediate-3.2.3.tgz#d140fa8f614659bd6541233097ddaac25cdd991c"
 
+immutable@3.8.1:
+  version "3.8.1"
+  resolved "https://registry.yarnpkg.com/immutable/-/immutable-3.8.1.tgz#200807f11ab0f72710ea485542de088075f68cd2"
+
 immutable@3.8.2:
   version "3.8.2"
   resolved "https://registry.yarnpkg.com/immutable/-/immutable-3.8.2.tgz#c2439951455bb39913daf281376f1530e104adf3"
@@ -6696,13 +6738,13 @@ js-sha3@0.5.7:
   version "0.5.7"
   resolved "https://registry.yarnpkg.com/js-sha3/-/js-sha3-0.5.7.tgz#0d4ffd8002d5333aabaf4a23eed2f6374c9f28e7"
 
+js-sha3@0.7.0, js-sha3@^0.7.0:
+  version "0.7.0"
+  resolved "https://registry.yarnpkg.com/js-sha3/-/js-sha3-0.7.0.tgz#0a5c57b36f79882573b2d84051f8bb85dd1bd63a"
+
 js-sha3@^0.3.1:
   version "0.3.1"
   resolved "https://registry.yarnpkg.com/js-sha3/-/js-sha3-0.3.1.tgz#86122802142f0828502a0d1dee1d95e253bb0243"
-
-js-sha3@^0.7.0:
-  version "0.7.0"
-  resolved "https://registry.yarnpkg.com/js-sha3/-/js-sha3-0.7.0.tgz#0a5c57b36f79882573b2d84051f8bb85dd1bd63a"
 
 js-tokens@^3.0.0, js-tokens@^3.0.2:
   version "3.0.2"
@@ -11035,6 +11077,12 @@ source-map-resolve@^0.5.0:
     source-map-url "^0.4.0"
     urix "^0.1.0"
 
+source-map-support@0.4.14:
+  version "0.4.14"
+  resolved "https://registry.yarnpkg.com/source-map-support/-/source-map-support-0.4.14.tgz#9d4463772598b86271b4f523f6c1f4e02a7d6aef"
+  dependencies:
+    source-map "^0.5.6"
+
 source-map-support@0.5.6, source-map-support@^0.5.6:
   version "0.5.6"
   resolved "https://registry.yarnpkg.com/source-map-support/-/source-map-support-0.5.6.tgz#4435cee46b1aab62b8e8610ce60f788091c51c13"
@@ -12502,7 +12550,7 @@ v8flags@^2.0.2:
   dependencies:
     user-home "^1.1.1"
 
-valid-url@^1.0.9:
+valid-url@1.0.9, valid-url@^1.0.9:
   version "1.0.9"
   resolved "https://registry.yarnpkg.com/valid-url/-/valid-url-1.0.9.tgz#1c14479b40f1397a75782f115e4086447433a200"
 

@@ -1,9 +1,13 @@
 [
     {
-        "version": "0.0.6",
+        "version": "1.0.0",
         "changes": [
             {
                 "note": "Update blockstream to v5.0 and propogate up caught errors to active subscriptions"
+            },
+            {
+                "note": "Update to v2 of 0x rpotocol",
+                "pr": 822
             }
         ]
     },

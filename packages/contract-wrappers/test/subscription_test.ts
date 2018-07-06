@@ -5,10 +5,11 @@ import * as _ from 'lodash';
 import 'mocha';
 import * as Sinon from 'sinon';
 
-import { ApprovalContractEventArgs, ContractWrappers, DecodedLogEvent, Token, TokenEvents } from '../src';
+import { ContractWrappers, DecodedLogEvent, ERC20TokenApprovalEventArgs, ERC20TokenEvents, Token } from '../src';
 
 import { chaiSetup } from './utils/chai_setup';
 import { constants } from './utils/constants';
+import { tokenUtils } from './utils/token_utils';
 import { provider, web3Wrapper } from './utils/web3_wrapper';
 
 chaiSetup.configure();
@@ -17,7 +18,6 @@ const blockchainLifecycle = new BlockchainLifecycle(web3Wrapper);
 describe('SubscriptionTest', () => {
     let contractWrappers: ContractWrappers;
     let userAddresses: string[];
-    let tokens: Token[];
     let coinbase: string;
     let addressWithoutFunds: string;
     const config = {
@@ -26,7 +26,6 @@ describe('SubscriptionTest', () => {
     before(async () => {
         contractWrappers = new ContractWrappers(provider, config);
         userAddresses = await web3Wrapper.getAvailableAddressesAsync();
-        tokens = await contractWrappers.tokenRegistry.getTokensAsync();
         coinbase = userAddresses[0];
         addressWithoutFunds = userAddresses[1];
     });
@@ -42,11 +41,11 @@ describe('SubscriptionTest', () => {
         const allowanceAmount = new BigNumber(42);
         let stubs: Sinon.SinonStub[] = [];
         before(() => {
-            const token = tokens[0];
-            tokenAddress = token.address;
+            const tokenAddresses = tokenUtils.getDummyERC20TokenAddresses();
+            tokenAddress = tokenAddresses[0];
         });
         afterEach(() => {
-            contractWrappers.token.unsubscribeAll();
+            contractWrappers.erc20Token.unsubscribeAll();
             _.each(stubs, s => s.restore());
             stubs = [];
         });
@@ -55,8 +54,13 @@ describe('SubscriptionTest', () => {
                 const errMsg = 'Error fetching block';
                 const callback = callbackErrorReporter.assertNodeCallbackError(done, errMsg);
                 stubs = [Sinon.stub((contractWrappers as any)._web3Wrapper, 'getBlockAsync').throws(new Error(errMsg))];
-                contractWrappers.token.subscribe(tokenAddress, TokenEvents.Approval, indexFilterValues, callback);
-                await contractWrappers.token.setAllowanceAsync(
+                contractWrappers.erc20Token.subscribe(
+                    tokenAddress,
+                    ERC20TokenEvents.Approval,
+                    indexFilterValues,
+                    callback,
+                );
+                await contractWrappers.erc20Token.setAllowanceAsync(
                     tokenAddress,
                     coinbase,
                     addressWithoutFunds,
@@ -69,8 +73,13 @@ describe('SubscriptionTest', () => {
                 const errMsg = 'Error fetching logs';
                 const callback = callbackErrorReporter.assertNodeCallbackError(done, errMsg);
                 stubs = [Sinon.stub((contractWrappers as any)._web3Wrapper, 'getLogsAsync').throws(new Error(errMsg))];
-                contractWrappers.token.subscribe(tokenAddress, TokenEvents.Approval, indexFilterValues, callback);
-                await contractWrappers.token.setAllowanceAsync(
+                contractWrappers.erc20Token.subscribe(
+                    tokenAddress,
+                    ERC20TokenEvents.Approval,
+                    indexFilterValues,
+                    callback,
+                );
+                await contractWrappers.erc20Token.setAllowanceAsync(
                     tokenAddress,
                     coinbase,
                     addressWithoutFunds,
@@ -80,14 +89,20 @@ describe('SubscriptionTest', () => {
         });
         it('Should allow unsubscribeAll to be called successfully after an error', (done: DoneCallback) => {
             (async () => {
-                const callback = (_err: Error | null, _logEvent?: DecodedLogEvent<ApprovalContractEventArgs>) => _.noop;
-                contractWrappers.token.subscribe(tokenAddress, TokenEvents.Approval, indexFilterValues, callback);
+                const callback = (err: Error | null, _logEvent?: DecodedLogEvent<ERC20TokenApprovalEventArgs>) =>
+                    _.noop;
+                contractWrappers.erc20Token.subscribe(
+                    tokenAddress,
+                    ERC20TokenEvents.Approval,
+                    indexFilterValues,
+                    callback,
+                );
                 stubs = [
                     Sinon.stub((contractWrappers as any)._web3Wrapper, 'getBlockAsync').throws(
                         new Error('JSON RPC error'),
                     ),
                 ];
-                contractWrappers.token.unsubscribeAll();
+                contractWrappers.erc20Token.unsubscribeAll();
                 done();
             })().catch(done);
         });

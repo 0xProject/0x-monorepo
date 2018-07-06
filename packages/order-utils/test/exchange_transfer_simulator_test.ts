@@ -7,9 +7,9 @@ import { artifacts } from '../src/artifacts';
 import { assetProxyUtils } from '../src/asset_proxy_utils';
 import { constants } from '../src/constants';
 import { ExchangeTransferSimulator } from '../src/exchange_transfer_simulator';
-import { DummyERC20TokenContract } from '../src/generated_contract_wrappers/dummy_e_r_c20_token';
-import { ERC20ProxyContract } from '../src/generated_contract_wrappers/e_r_c20_proxy';
-import { ERC20TokenContract } from '../src/generated_contract_wrappers/e_r_c20_token';
+import { DummyERC20TokenContract } from '../src/generated_contract_wrappers/dummy_erc20_token';
+import { ERC20ProxyContract } from '../src/generated_contract_wrappers/erc20_proxy';
+import { ERC20TokenContract } from '../src/generated_contract_wrappers/erc20_token';
 import { BalanceAndProxyAllowanceLazyStore } from '../src/store/balance_and_proxy_allowance_lazy_store';
 import { TradeSide, TransferType } from '../src/types';
 
