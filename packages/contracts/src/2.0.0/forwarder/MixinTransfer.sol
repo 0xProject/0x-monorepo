@@ -17,13 +17,37 @@
 */
 
 pragma solidity 0.4.24;
+pragma experimental ABIEncoderV2;
+
+import "../utils/LibBytes/LibBytes.sol";
+import "../tokens/ERC721Token/IERC721Token.sol";
 
 
-contract MixinERC20 {
+contract MixinTransfer {
+
+    using LibBytes for bytes;
 
     bytes4 constant internal ERC20_TRANSFER_SELECTOR = bytes4(keccak256("transfer(address,uint256)"));
+    bytes4 constant internal ERC721_RECEIVED = bytes4(keccak256("onERC721Received(address,uint256,bytes)"));
+    bytes4 constant internal ERC721_RECEIVED_OPERATOR = bytes4(keccak256("onERC721Received(address,address,uint256,bytes)"));
 
-    function transferToken(
+    function onERC721Received(address, uint256, bytes memory)
+        public
+        pure
+        returns(bytes4)
+    {
+        return ERC721_RECEIVED;
+    }
+
+    function onERC721Received(address, address, uint256, bytes memory)
+        public
+        pure
+        returns(bytes4)
+    {
+        return ERC721_RECEIVED_OPERATOR;
+    }
+
+    function transferERC20Token(
         address token,
         address to,
         uint256 amount
@@ -62,6 +86,24 @@ contract MixinERC20 {
         require(
             success,
             "TRANSFER_FAILED"
+        );
+    }
+
+    function transferERC721Token(
+        bytes memory assetData,
+        address to
+    )
+        internal
+    {
+        // Decode asset data.
+        address token = assetData.readAddress(16);
+        uint256 tokenId = assetData.readUint256(36);
+        bytes memory receiverData = assetData.readBytesWithLength(100);
+        IERC721Token(token).safeTransferFrom(
+            address(this),
+            to,
+            tokenId,
+            receiverData
         );
     }
 }

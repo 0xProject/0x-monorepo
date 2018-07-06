@@ -19,9 +19,8 @@
 pragma solidity 0.4.24;
 pragma experimental ABIEncoderV2;
 
-import "./MixinWethFees.sol";
-import "./MixinMarketSellTokens.sol";
-import "./MixinMarketBuyTokens.sol";
+import "./MixinFees.sol";
+import "./MixinForwarderCore.sol";
 import "./MixinConstants.sol";
 import "../utils/Ownable/Ownable.sol";
 
@@ -29,10 +28,9 @@ import "../utils/Ownable/Ownable.sol";
 contract Forwarder is
     Ownable,
     MixinConstants,
-    MixinWethFees,
+    MixinFees,
     MixinMarketBuyZrx,
-    MixinMarketBuyTokens,
-    MixinMarketSellTokens
+    MixinForwarderCore
 {
     uint256 constant internal MAX_UINT = 2**256 - 1;
 
