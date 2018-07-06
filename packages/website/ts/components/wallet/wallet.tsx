@@ -270,7 +270,7 @@ export class Wallet extends React.Component<WalletProps, WalletState> {
             overflowY: this.state.isHoveringSidebar ? 'scroll' : 'hidden',
             marginRight: this.state.isHoveringSidebar ? 0 : 4,
             // TODO: make this completely responsive
-            maxHeight: this.props.screenWidth !== ScreenWidths.Sm ? 475 : undefined,
+            maxHeight: !utils.isMobileWidth(this.props.screenWidth) ? 'calc(90vh - 300px)' : undefined,
         };
     }
     private _onSidebarHover(_event: React.FormEvent<HTMLInputElement>): void {
