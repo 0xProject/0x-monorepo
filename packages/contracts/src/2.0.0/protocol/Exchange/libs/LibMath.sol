@@ -149,13 +149,87 @@ contract LibMath is
         // Preconditions
         require(numerator <= denominator, NUMERATOR_GT_DENOMINATOR);
         
-        // Compute remainder
+        // The relative error is defined as the difference between
+        // the actual value and ideal value divided by the ideal value.
+        // If the error must be less than or equal to 0.1% of the ideal
+        // value.
+        //
+        //   ideal value - actual value
+        //   --------------------------   <  0.001
+        //          ideal value
+        //
+        // where 
+        //
+        //                  target * numerator        product 
+        // ideal value  =   ------------------  =  -------------
+        //                     denominator          denominator
+        //
+        //
+        // actual value  =  |_  ideal value _|    (i.e. floor)
+        //
+        // The actual value can also be written as:
+        //
+        //                      product - (product mod denominator)
+        //                =   --------------------------------------
+        //                                 denominator
+        //
+        //  Subsituting all of this back in the first equation:
+        //
+        //       product           product - (product mod denominator)
+        //   ---------------  -  --------------------------------------
+        //     denominator                    denominator
+        // --------------------------------------------------------------
+        //                            product
+        //                        --------------
+        //                          denominator
+        //
+        //  And this cancels out to:
+        //
+        //            product mod denominator
+        //           -------------------------   <   0.001
+        //                   product
+        //
+        // Multiply both sides by 1000 * product:
+        //
+        //      1000 * (product mod denominator)  <  product
+        //
+        // This is the equation we use to check for rounding errors.
+        //
+        // The product is a 512 bit number and while the remainder
+        // (product mod denominator) is 256 bit, it can overflow when
+        // multiplied by 1000. We compute both products as 512 bit numbers.
+        // and then compare them.
+        
+        // Compute remainder = product mod denominator
         uint256 remainder;
         assembly {
             remainder := mulmod(target, numerator, denominator)
         }
         
-        isError = safeMul(remainder, 1000) > safeMul(target, numerator);
+        // Compute prod = target * numerator in 512 bits
+        uint256 prod0; // Least significant 256 bits of the product
+        uint256 prod1; // Most siginificant 256 bits of the product
+        assembly {
+            let mm := mulmod(target, numerator, not(0))
+            prod0 := mul(target, numerator)
+            prod1 := sub(sub(mm, prod0), lt(mm, prod0))
+        }
+        
+        // Compute rem = remainder * 1000 in 512 bits
+        uint256 rem0; // Least significant 256 bits of the product
+        uint256 rem1; // Most siginificant 256 bits of the product
+        assembly {
+            let mm := mulmod(remainder, 1000, not(0))
+            rem0 := mul(remainder, 1000)
+            rem1 := sub(sub(mm, rem0), lt(mm, rem0))
+        }
+        
+        // Compare rem > prod in 512 bits
+        if (rem1 == prod1) {
+            isError = rem0 > prod0;
+        } else {
+            isError = rem1 > prod1;
+        }
         return isError;
     }
 }
