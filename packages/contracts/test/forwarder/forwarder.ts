@@ -6,8 +6,8 @@ import { Web3Wrapper } from '@0xproject/web3-wrapper';
 import * as chai from 'chai';
 import { TransactionReceiptWithDecodedLogs } from 'ethereum-types';
 
-import { DummyERC20TokenContract } from '../../generated_contract_wrappers/dummy_e_r_c20_token';
-import { DummyERC721TokenContract } from '../../generated_contract_wrappers/dummy_e_r_c721_token';
+import { DummyERC20TokenContract } from '../../generated_contract_wrappers/dummy_erc20_token';
+import { DummyERC721TokenContract } from '../../generated_contract_wrappers/dummy_erc721_token';
 import { ExchangeContract } from '../../generated_contract_wrappers/exchange';
 import { ForwarderContract } from '../../generated_contract_wrappers/forwarder';
 import { WETH9Contract } from '../../generated_contract_wrappers/weth9';
