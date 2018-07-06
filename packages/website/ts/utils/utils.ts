@@ -359,7 +359,9 @@ export const utils = {
     },
     isDogfood,
     shouldShowPortalV2(): boolean {
-        return this.isDevelopment() || this.isStaging() || this.isDogfood();
+        // return this.isDevelopment() || this.isStaging() || this.isDogfood();
+        // TODO: Remove this method entirely after launch.
+        return true;
     },
     shouldShowJobsPage(): boolean {
         return this.isDevelopment() || this.isStaging() || this.isDogfood();
