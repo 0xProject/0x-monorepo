@@ -1,26 +1,21 @@
 import { BlockchainLifecycle } from '@0xproject/dev-utils';
-import { SignedOrder } from '@0xproject/types';
-import { BigNumber, logUtils } from '@0xproject/utils';
-import * as chai from 'chai';
-import * as combinatorics from 'js-combinatorics';
+import { Order, SignedOrder } from '@0xproject/types';
+import { BigNumber } from '@0xproject/utils';
 import * as _ from 'lodash';
 
 import { TestExchangeInternalsContract } from '../../generated_contract_wrappers/test_exchange_internals';
 import { artifacts } from '../utils/artifacts';
 import { chaiSetup } from '../utils/chai_setup';
-import { bytes32Values, uint256Values, testCombinatoriallyWithReferenceFuncAsync } from '../utils/combinatorial_sets';
+import { bytes32Values, testCombinatoriallyWithReferenceFuncAsync, uint256Values } from '../utils/combinatorial_sets';
 import { constants } from '../utils/constants';
-import { testWithReferenceFuncAsync } from '../utils/test_with_reference';
 import { provider, txDefaults, web3Wrapper } from '../utils/web3_wrapper';
-import { removeInterceptor } from 'nock';
 
 chaiSetup.configure();
-const expect = chai.expect;
 const blockchainLifecycle = new BlockchainLifecycle(web3Wrapper);
 
 const MAX_UINT256 = new BigNumber(2).pow(256).minus(1);
 
-const emptySignedOrder: SignedOrder = {
+const emptyOrder: Order = {
     senderAddress: '0x0000000000000000000000000000000000000000',
     makerAddress: '0x0000000000000000000000000000000000000000',
     takerAddress: '0x0000000000000000000000000000000000000000',
@@ -34,6 +29,10 @@ const emptySignedOrder: SignedOrder = {
     exchangeAddress: '0x0000000000000000000000000000000000000000',
     feeRecipientAddress: '0x0000000000000000000000000000000000000000',
     expirationTimeSeconds: new BigNumber(0),
+};
+
+const emptySignedOrder: SignedOrder = {
+    ...emptyOrder,
     signature: '',
 };
 
@@ -42,6 +41,27 @@ interface FillResults {
     takerAssetFilledAmount: BigNumber;
     makerFeePaid: BigNumber;
     takerFeePaid: BigNumber;
+}
+
+async function referenceGetPartialAmountAsync(
+    numerator: BigNumber,
+    denominator: BigNumber,
+    target: BigNumber,
+): Promise<BigNumber> {
+    if (numerator.greaterThan(MAX_UINT256)) {
+        throw new Error('invalid opcode');
+    } else if (denominator.greaterThan(MAX_UINT256)) {
+        throw new Error('invalid opcode');
+    } else if (denominator.eq(new BigNumber(0))) {
+        throw new Error('invalid opcode');
+    } else if (target.greaterThan(MAX_UINT256)) {
+        throw new Error('invalid opcode');
+    }
+    const product = numerator.mul(target);
+    if (product.greaterThan(MAX_UINT256)) {
+        throw new Error('invalid opcode');
+    }
+    return product.dividedToIntegerBy(denominator);
 }
 
 describe.only('Exchange core internal functions', () => {
@@ -80,6 +100,12 @@ describe.only('Exchange core internal functions', () => {
             totalValue: BigNumber,
             singleValue: BigNumber,
         ): Promise<FillResults> {
+            // Note(albrow): Here, each of totalFillResults and
+            // singleFillResults will consist of fields with the same values.
+            // This should be safe because none of the fields in a given
+            // FillResults are ever used together in a mathemetical operation.
+            // They are only used with the corresponding feild from *the other*
+            // FillResults, which are different.
             const totalFillResults = makeFillResults(totalValue);
             const singleFillResults = makeFillResults(singleValue);
             // Note(albrow): _.mergeWith mutates the first argument! To
@@ -109,27 +135,68 @@ describe.only('Exchange core internal functions', () => {
         );
     });
 
-    describe('getPartialAmount', async () => {
-        async function referenceGetPartialAmountAsync(
-            numerator: BigNumber,
-            denominator: BigNumber,
-            target: BigNumber,
-        ): Promise<BigNumber> {
-            if (numerator.greaterThan(MAX_UINT256)) {
-                throw new Error('invalid opcode');
-            } else if (denominator.greaterThan(MAX_UINT256)) {
-                throw new Error('invalid opcode');
-            } else if (denominator.eq(new BigNumber(0))) {
-                throw new Error('invalid opcode');
-            } else if (target.greaterThan(MAX_UINT256)) {
-                throw new Error('invalid opcode');
-            }
-            const product = numerator.mul(target);
-            if (product.greaterThan(MAX_UINT256)) {
-                throw new Error('invalid opcode');
-            }
-            return product.dividedToIntegerBy(denominator);
+    describe('calculateFillResults', async () => {
+        function makeOrder(
+            makerAssetAmount: BigNumber,
+            takerAssetAmount: BigNumber,
+            makerFee: BigNumber,
+            takerFee: BigNumber,
+        ): Order {
+            return {
+                ...emptyOrder,
+                makerAssetAmount,
+                takerAssetAmount,
+                makerFee,
+                takerFee,
+            };
         }
+        async function referenceCalculateFillResultsAsync(
+            orderTakerAssetAmount: BigNumber,
+            takerAssetFilledAmount: BigNumber,
+            otherAmount: BigNumber,
+        ): Promise<FillResults> {
+            // Note(albrow): Here we are re-using the same value (otherAmount)
+            // for order.makerAssetAmount, order.makerFee, and order.takerFee.
+            // This should be safe because they are never used with each other
+            // in any mathematical operation in either the reference TypeScript
+            // implementation or the Solidity implementation of
+            // calculateFillResults.
+            return {
+                makerAssetFilledAmount: await referenceGetPartialAmountAsync(
+                    takerAssetFilledAmount,
+                    orderTakerAssetAmount,
+                    otherAmount,
+                ),
+                takerAssetFilledAmount,
+                makerFeePaid: await referenceGetPartialAmountAsync(
+                    takerAssetFilledAmount,
+                    orderTakerAssetAmount,
+                    otherAmount,
+                ),
+                takerFeePaid: await referenceGetPartialAmountAsync(
+                    takerAssetFilledAmount,
+                    orderTakerAssetAmount,
+                    otherAmount,
+                ),
+            };
+        }
+        async function testCalculateFillResultsAsync(
+            orderTakerAssetAmount: BigNumber,
+            takerAssetFilledAmount: BigNumber,
+            otherAmount: BigNumber,
+        ): Promise<FillResults> {
+            const order = makeOrder(otherAmount, orderTakerAssetAmount, otherAmount, otherAmount);
+            return testExchange.publicCalculateFillResults.callAsync(order, takerAssetFilledAmount);
+        }
+        await testCombinatoriallyWithReferenceFuncAsync(
+            'calculateFillResults',
+            referenceCalculateFillResultsAsync,
+            testCalculateFillResultsAsync,
+            [uint256Values, uint256Values, uint256Values],
+        );
+    });
+
+    describe('getPartialAmount', async () => {
         async function testGetPartialAmountAsync(
             numerator: BigNumber,
             denominator: BigNumber,

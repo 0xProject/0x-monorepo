@@ -41,6 +41,21 @@ contract TestExchangeInternals is
         return totalFillResults;
     }
 
+    /// @dev Calculates amounts filled and fees paid by maker and taker.
+    /// @param order to be filled.
+    /// @param takerAssetFilledAmount Amount of takerAsset that will be filled.
+    /// @return fillResults Amounts filled and fees paid by maker and taker.
+    function publicCalculateFillResults(
+        Order memory order,
+        uint256 takerAssetFilledAmount
+    )
+        public
+        pure
+        returns (FillResults memory fillResults)
+    {
+        return calculateFillResults(order, takerAssetFilledAmount);
+    }
+
     /// @dev Calculates partial value given a numerator and denominator.
     /// @param numerator Numerator.
     /// @param denominator Denominator.
