@@ -15,16 +15,15 @@ const blockchainLifecycle = new BlockchainLifecycle(web3Wrapper);
 describe('LibMath', () => {
     let libs: TestLibsContract;
 
-    const toHex = (number: BigNumber): string =>
-        `0x${number.toString(16).padStart(64, '0')}`;
+    const toHex = (number: BigNumber): string => `0x${number.toString(16).padStart(64, '0')}`;
 
-    const uint256Tests: {[label: string]: BigNumber}  = {
-        '0':        new BigNumber(0),
-        '1':        new BigNumber(1),
-        '2':        new BigNumber(2),
-        '2²⁵⁶-1':   new BigNumber(2).pow(256).sub(1),
-        '2²⁵⁵':     new BigNumber(2).pow(255),
-        '2¹²⁸':     new BigNumber(2).pow(128),
+    const uint256Tests: { [label: string]: BigNumber } = {
+        '0': new BigNumber(0),
+        '1': new BigNumber(1),
+        '2': new BigNumber(2),
+        '2²⁵⁶-1': new BigNumber(2).pow(256).sub(1),
+        '2²⁵⁵': new BigNumber(2).pow(255),
+        '2¹²⁸': new BigNumber(2).pow(128),
         /*
         '2⁶⁴':      new BigNumber(2).pow(64),
         '2¹²⁸-1':   new BigNumber(2).pow(128).sub(1),
@@ -126,11 +125,7 @@ describe('LibMath', () => {
     });
 
     describe('getPartialAmount(numerator, denominator, target)', () => {
-
-        function reference(
-            numerator: BigNumber,
-            denominator: BigNumber,
-            target: BigNumber): BigNumber {
+        function reference(numerator: BigNumber, denominator: BigNumber, target: BigNumber): BigNumber {
             require(numerator.lte(denominator), 'NUMERATOR_GT_DENOMINATOR');
             if (denominator.eq(0)) {
                 return new BigNumber(0);
@@ -156,7 +151,10 @@ describe('LibMath', () => {
             // All numbers are scaled by a factor of denominator to
             // avoid fractions and associated precision loss.
             const ideal = target.mul(numerator);
-            const actual = target.mul(numerator).divToInt(denominator).mul(denominator);
+            const actual = target
+                .mul(numerator)
+                .divToInt(denominator)
+                .mul(denominator);
             const error = ideal.sub(actual); // always positive
 
             // Return true iff error is >0.1% of ideal
@@ -233,5 +231,4 @@ describe('LibMath', () => {
             expect(isRoundingError).to.be.false();
         });
     });
-
 });
