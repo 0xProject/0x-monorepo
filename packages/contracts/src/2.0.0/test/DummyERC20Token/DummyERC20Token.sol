@@ -17,7 +17,6 @@
 */
 
 pragma solidity 0.4.24;
-pragma experimental ABIEncoderV2;
 
 import "../Mintable/Mintable.sol";
 import "../../utils/Ownable/Ownable.sol";

@@ -24,7 +24,7 @@
         "compile": "sol-compiler --contracts-dir src",
         "clean": "shx rm -rf lib generated_contract_wrappers",
         "generate_contract_wrappers": "abi-gen --abis  ${npm_package_config_abis} --template ../contract_templates/contract.handlebars --partials '../contract_templates/partials/**/*.handlebars' --output generated_contract_wrappers --backend ethers",
-        "lint": "tslint --project . --exclude **/src/generated_contract_wrappers/**/* --exclude **/lib/**/*",
+        "lint": "tslint --project . --exclude **/src/generated_contract_wrappers/**/* --exclude **/lib/**/* && yarn lint-contracts",
         "coverage:report:text": "istanbul report text",
         "coverage:report:html": "istanbul report html && open coverage/index.html",
         "profiler:report:html": "istanbul report html && open coverage/index.html",

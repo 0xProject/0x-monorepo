@@ -41,7 +41,6 @@ contract MixinMatchOrders is
     /// @param leftSignature Proof that order was created by the left maker.
     /// @param rightSignature Proof that order was created by the right maker.
     /// @return matchedFillResults Amounts filled and fees paid by maker and taker of matched orders.
-    /// TODO: Make this function external once supported by Solidity (See Solidity Issues #3199, #1603)
     function matchOrders(
         LibOrder.Order memory leftOrder,
         LibOrder.Order memory rightOrder,
@@ -184,7 +183,6 @@ contract MixinMatchOrders is
             leftTakerAssetFilledAmount = leftTakerAssetAmountRemaining;
 
             // The right order receives an amount proportional to how much was spent.
-            // TODO: Can we ensure rounding error is in the correct direction?
             rightTakerAssetFilledAmount = getPartialAmount(
                 rightOrder.takerAssetAmount,
                 rightOrder.makerAssetAmount,
@@ -195,7 +193,6 @@ contract MixinMatchOrders is
             rightTakerAssetFilledAmount = rightTakerAssetAmountRemaining;
 
             // The left order receives an amount proportional to how much was spent.
-            // TODO: Can we ensure rounding error is in the correct direction?
             leftTakerAssetFilledAmount = getPartialAmount(
                 rightOrder.makerAssetAmount,
                 rightOrder.takerAssetAmount,

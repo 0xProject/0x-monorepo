@@ -374,21 +374,19 @@ contract MixinExchangeCore is
         returns (FillResults memory fillResults)
     {
         // Compute proportional transfer amounts
-        // TODO: All three are multiplied by the same fraction. This can
-        // potentially be optimized.
         fillResults.takerAssetFilledAmount = takerAssetFilledAmount;
         fillResults.makerAssetFilledAmount = getPartialAmount(
-            fillResults.takerAssetFilledAmount,
+            takerAssetFilledAmount,
             order.takerAssetAmount,
             order.makerAssetAmount
         );
         fillResults.makerFeePaid = getPartialAmount(
-            fillResults.takerAssetFilledAmount,
+            takerAssetFilledAmount,
             order.takerAssetAmount,
             order.makerFee
         );
         fillResults.takerFeePaid = getPartialAmount(
-            fillResults.takerAssetFilledAmount,
+            takerAssetFilledAmount,
             order.takerAssetAmount,
             order.takerFee
         );

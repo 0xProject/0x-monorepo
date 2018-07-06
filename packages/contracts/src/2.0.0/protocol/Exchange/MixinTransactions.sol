@@ -99,9 +99,10 @@ contract MixinTransactions is
             "FAILED_EXECUTION"
         );
 
-        // Reset current transaction signer
-        // TODO: Check if gas is paid when currentContextAddress is already 0.
-        currentContextAddress = address(0);
+        // Reset current transaction signer if it was previously updated
+        if (signerAddress != msg.sender) {
+            currentContextAddress = address(0);
+        }
     }
 
     /// @dev Calculates EIP712 hash of the Transaction.
@@ -120,13 +121,15 @@ contract MixinTransactions is
     {
         bytes32 schemaHash = EIP712_ZEROEX_TRANSACTION_SCHEMA_HASH;
         bytes32 dataHash = keccak256(data);
+
         // Assembly for more efficiently computing:
         // keccak256(abi.encode(
-        //   EIP712_ZEROEX_TRANSACTION_SCHEMA_HASH,
-        //   salt,
-        //   signerAddress,
-        //   keccak256(data)
-        //  ));
+        //     EIP712_ZEROEX_TRANSACTION_SCHEMA_HASH,
+        //     salt,
+        //     signerAddress,
+        //     keccak256(data)
+        // ));
+
         assembly {
             let memPtr := mload(64)
             mstore(memPtr, schemaHash)
