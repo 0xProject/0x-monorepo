@@ -1,9 +1,7 @@
+import { BigNumber } from '@0xproject/utils';
 import * as _ from 'lodash';
 
-import { BigNumber } from './configured_bignumber';
-
-// tslint:disable:restrict-plus-operands
-export const formatUtils = {
+export const utils = {
     isBigNumber(value: any): boolean {
         const isBigNumber = _.isObject(value) && value.isBigNumber;
         return isBigNumber;
@@ -22,7 +20,7 @@ export const formatUtils = {
     },
     convertAmountToBigNumber(value: string | number | BigNumber): BigNumber {
         const num = value || 0;
-        const isBigNumber = formatUtils.isBigNumber(num);
+        const isBigNumber = utils.isBigNumber(num);
         if (isBigNumber) {
             return num as BigNumber;
         }
@@ -35,7 +33,7 @@ export const formatUtils = {
         return new BigNumber((num as number).toString(baseTen), baseTen);
     },
     encodeAmountAsHexString(value: string | number | BigNumber): string {
-        const valueBigNumber = formatUtils.convertAmountToBigNumber(value);
+        const valueBigNumber = utils.convertAmountToBigNumber(value);
         const hexBase = 16;
         const valueHex = valueBigNumber.toString(hexBase);
 
@@ -58,4 +56,3 @@ export const formatUtils = {
         );
     },
 };
-// tslint:enable:restrict-plus-operands
