@@ -31,13 +31,6 @@ const DECIMALS_DEFAULT = 18;
 // Set a gasPrice so when checking balance of msg.sender we can accurately calculate gasPrice*gasUsed
 const DEFAULT_GAS_PRICE = new BigNumber(1);
 
-enum ForwarderRevertReason {
-    UnacceptableThreshold = 'UNACCEPTABLE_THRESHOLD',
-    FeeProportionTooLarge = 'FEE_PROPORTION_TOO_LARGE',
-    ValueGreaterThanZero = 'VALUE_GREATER_THAN_ZERO',
-    InvalidMsgValue = 'INVALID_MSG_VALUE',
-}
-
 describe(ContractName.Forwarder, () => {
     let makerAddress: string;
     let owner: string;
@@ -278,7 +271,7 @@ describe(ContractName.Forwarder, () => {
                     value: fillAmount,
                     from: takerAddress,
                 }),
-                ForwarderRevertReason.UnacceptableThreshold as any,
+                RevertReason.UnacceptableThreshold,
             );
         });
         it('should fail if fee abstraction amount is too high', async () => {
@@ -362,7 +355,7 @@ describe(ContractName.Forwarder, () => {
                     { from: takerAddress, value: fillAmount, gasPrice: DEFAULT_GAS_PRICE },
                     { feeProportion, feeRecipient: feeRecipientAddress },
                 ),
-                ForwarderRevertReason.FeeProportionTooLarge as any,
+                RevertReason.FeeProportionTooLarge,
             );
             const afterEthBalance = await web3Wrapper.getBalanceInWeiAsync(feeRecipientAddress);
             expect(afterEthBalance).to.be.bignumber.equal(initEthBalance);
@@ -474,7 +467,7 @@ describe(ContractName.Forwarder, () => {
                     from: takerAddress,
                     value: fillAmountWei,
                 }),
-                ForwarderRevertReason.UnacceptableThreshold as any,
+                RevertReason.UnacceptableThreshold,
             );
         });
         it('throws if fees are higher than 5% when buying erc20', async () => {
@@ -495,7 +488,7 @@ describe(ContractName.Forwarder, () => {
                     from: takerAddress,
                     value: fillAmountWei,
                 }),
-                ForwarderRevertReason.UnacceptableThreshold as any,
+                RevertReason.UnacceptableThreshold as any,
             );
         });
         it('throws if makerAssetAmount is 0', async () => {
@@ -511,7 +504,7 @@ describe(ContractName.Forwarder, () => {
                     from: takerAddress,
                     value: fillAmountWei,
                 }),
-                ForwarderRevertReason.ValueGreaterThanZero as any,
+                RevertReason.ValueGreaterThanZero as any,
             );
         });
         it('throws if the amount of ETH sent in is less than the takerAssetFilledAmount', async () => {
@@ -545,7 +538,7 @@ describe(ContractName.Forwarder, () => {
                     constants.NULL_ADDRESS,
                     { value: fillAmount, from: takerAddress },
                 ),
-                ForwarderRevertReason.InvalidMsgValue as any,
+                RevertReason.InvalidMsgValue,
             );
         });
     });

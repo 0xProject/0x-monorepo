@@ -7,6 +7,9 @@
             },
             {
                 "note": "Add `ECSignatureBuffer`"
+            },
+            {
+                "note": "Add Forwarder contract revert reasons"
             }
         ]
     },
