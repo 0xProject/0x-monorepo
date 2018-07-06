@@ -16,7 +16,7 @@
 
 */
 
-pragma solidity ^0.4.24;
+pragma solidity 0.4.24;
 
 import "../../utils/LibBytes/LibBytes.sol";
 import "./mixins/MSignatureValidator.sol";

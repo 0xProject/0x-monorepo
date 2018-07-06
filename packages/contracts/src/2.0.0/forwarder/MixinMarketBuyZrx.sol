@@ -16,7 +16,7 @@
 
 */
 
-pragma solidity ^0.4.24;
+pragma solidity 0.4.24;
 pragma experimental ABIEncoderV2;
 
 import "../protocol/Exchange/Exchange.sol";
@@ -25,11 +25,13 @@ import "../protocol/Exchange/libs/LibOrder.sol";
 import "../protocol/Exchange/libs/LibMath.sol";
 import "./MixinConstants.sol";
 
+
 contract MixinMarketBuyZrx is
     LibMath,
     LibFillResults,
     MixinConstants
 {
+
     /// @dev Buys zrxBuyAmount of ZRX fee tokens, taking into account the fees on buying fee tokens. This will guarantee
     ///      At least zrxBuyAmount of ZRX fee tokens are purchased (sometimes slightly over due to rounding issues).
     ///      It is possible that a request to buy 200 ZRX fee tokens will require purchasing 202 ZRX tokens

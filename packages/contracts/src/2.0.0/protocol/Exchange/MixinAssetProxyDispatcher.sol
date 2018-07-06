@@ -16,7 +16,7 @@
 
 */
 
-pragma solidity ^0.4.24;
+pragma solidity 0.4.24;
 
 import "../../utils/Ownable/Ownable.sol";
 import "../../utils/LibBytes/LibBytes.sol";
@@ -151,6 +151,7 @@ contract MixinAssetProxyDispatcher is
                 /////// Setup Data Area ///////
                 // This area holds `assetData`.
                 let dataArea := add(cdStart, 132)
+                // solhint-disable-next-line no-empty-blocks
                 for {} lt(dataArea, cdEnd) {} {
                     mstore(dataArea, mload(assetData))
                     dataArea := add(dataArea, 32)

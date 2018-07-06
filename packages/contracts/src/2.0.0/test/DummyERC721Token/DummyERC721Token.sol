@@ -16,13 +16,14 @@
 
 */
 
-pragma solidity ^0.4.24;
+pragma solidity 0.4.24;
 pragma experimental ABIEncoderV2;
 
 import "../../tokens/ERC721Token/ERC721Token.sol";
 import "../../utils/Ownable/Ownable.sol";
 
 
+// solhint-disable no-empty-blocks
 contract DummyERC721Token is
     Ownable,
     ERC721Token

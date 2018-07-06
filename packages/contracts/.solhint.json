@@ -4,7 +4,7 @@
         "avoid-low-level-calls": false,
         "avoid-tx-origin": "warn",
         "bracket-align": false,
-        "code-complexity": "false",
+        "code-complexity": false,
         "const-name-snakecase": "error",
         "expression-indent": "error",
         "function-max-lines": false,

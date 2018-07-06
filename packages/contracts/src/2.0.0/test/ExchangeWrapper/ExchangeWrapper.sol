@@ -16,7 +16,7 @@
 
 */
 
-pragma solidity ^0.4.24;
+pragma solidity 0.4.24;
 pragma experimental ABIEncoderV2;
 
 import "../../protocol/Exchange/interfaces/IExchange.sol";
@@ -27,12 +27,41 @@ contract ExchangeWrapper {
 
     // Exchange contract.
     // solhint-disable-next-line var-name-mixedcase
-    IExchange EXCHANGE;
+    IExchange internal EXCHANGE;
 
     constructor (address _exchange)
         public
     {
         EXCHANGE = IExchange(_exchange);
+    }
+
+    /// @dev Cancels all orders created by sender with a salt less than or equal to the targetOrderEpoch
+    ///      and senderAddress equal to this contract.
+    /// @param targetOrderEpoch Orders created with a salt less or equal to this value will be cancelled.
+    /// @param salt Arbitrary value to gaurantee uniqueness of 0x transaction hash.
+    /// @param makerSignature Proof that maker wishes to call this function with given params.
+    function cancelOrdersUpTo(
+        uint256 targetOrderEpoch,
+        uint256 salt,
+        bytes makerSignature
+    )
+        external
+    {
+        address makerAddress = msg.sender;
+
+        // Encode arguments into byte array.
+        bytes memory data = abi.encodeWithSelector(
+            EXCHANGE.cancelOrdersUpTo.selector,
+            targetOrderEpoch
+        );
+
+        // Call `cancelOrdersUpTo` via `executeTransaction`.
+        EXCHANGE.executeTransaction(
+            salt,
+            makerAddress,
+            data,
+            makerSignature
+        );
     }
 
     /// @dev Fills an order using `msg.sender` as the taker.
@@ -66,35 +95,6 @@ contract ExchangeWrapper {
             takerAddress,
             data,
             takerSignature
-        );
-    }
-
-    /// @dev Cancels all orders created by sender with a salt less than or equal to the targetOrderEpoch
-    ///      and senderAddress equal to this contract.
-    /// @param targetOrderEpoch Orders created with a salt less or equal to this value will be cancelled.
-    /// @param salt Arbitrary value to gaurantee uniqueness of 0x transaction hash.
-    /// @param makerSignature Proof that maker wishes to call this function with given params.
-    function cancelOrdersUpTo(
-        uint256 targetOrderEpoch,
-        uint256 salt,
-        bytes makerSignature
-    )
-        external
-    {
-        address makerAddress = msg.sender;
-
-        // Encode arguments into byte array.
-        bytes memory data = abi.encodeWithSelector(
-            EXCHANGE.cancelOrdersUpTo.selector,
-            targetOrderEpoch
-        );
-
-        // Call `cancelOrdersUpTo` via `executeTransaction`.
-        EXCHANGE.executeTransaction(
-            salt,
-            makerAddress,
-            data,
-            makerSignature
         );
     }
 }

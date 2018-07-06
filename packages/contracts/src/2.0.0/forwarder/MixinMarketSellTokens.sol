@@ -16,7 +16,7 @@
 
 */
 
-pragma solidity ^0.4.24;
+pragma solidity 0.4.24;
 pragma experimental ABIEncoderV2;
 
 import "../protocol/Exchange/libs/LibOrder.sol";
@@ -26,6 +26,7 @@ import "./MixinExpectedResults.sol";
 import "./MixinERC20.sol";
 import "./MixinConstants.sol";
 import "./MixinMarketBuyZrx.sol";
+
 
 contract MixinMarketSellTokens is
     MixinConstants,
@@ -55,8 +56,8 @@ contract MixinMarketSellTokens is
         uint16  feeProportion,
         address feeRecipient
     )
-        payable
         public
+        payable
         returns (FillResults memory totalFillResults)
     {
         uint256 takerEthAmount = msg.value;

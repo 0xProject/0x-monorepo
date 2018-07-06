@@ -16,7 +16,7 @@
 
 */
 
-pragma solidity ^0.4.24;
+pragma solidity 0.4.24;
 pragma experimental ABIEncoderV2;
 
 import "./libs/LibConstants.sol";
@@ -28,6 +28,7 @@ import "./MixinTransactions.sol";
 import "./MixinMatchOrders.sol";
 
 
+// solhint-disable no-empty-blocks
 contract Exchange is
     MixinExchangeCore,
     MixinMatchOrders,
