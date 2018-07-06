@@ -185,9 +185,9 @@ contract MixinMatchOrders is
             // The right order receives an amount proportional to how much was spent.
             // TODO: Can we ensure rounding error is in the correct direction?
             rightTakerAssetFilledAmount = getPartialAmount(
-                rightOrder.takerAssetAmount,
+                leftTakerAssetFilledAmount,
                 rightOrder.makerAssetAmount,
-                leftTakerAssetFilledAmount
+                rightOrder.takerAssetAmount
             );
         } else {
             // Right order will be fully filled: maximally fill right
@@ -196,9 +196,9 @@ contract MixinMatchOrders is
             // The left order receives an amount proportional to how much was spent.
             // TODO: Can we ensure rounding error is in the correct direction?
             leftTakerAssetFilledAmount = getPartialAmount(
-                rightOrder.makerAssetAmount,
+                rightTakerAssetFilledAmount,
                 rightOrder.takerAssetAmount,
-                rightTakerAssetFilledAmount
+                rightOrder.makerAssetAmount
             );
         }
 
