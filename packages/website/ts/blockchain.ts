@@ -66,6 +66,9 @@ import RpcSubprovider = require('web3-provider-engine/subproviders/rpc');
 
 import * as MintableArtifacts from '../contracts/Mintable.json';
 
+// HACK: remove this hard-coded abi and use @0xproject/contract-wrappers
+import * as Exchange from './artifacts/Exchange.json';
+
 const BLOCK_NUMBER_BACK_TRACK = 50;
 const GWEI_IN_WEI = 1000000000;
 
@@ -624,7 +627,9 @@ export class Blockchain {
         );
         const provider = this._contractWrappers.getProvider();
         const web3Wrapper = new Web3Wrapper(provider);
-        web3Wrapper.abiDecoder.addABI(this._contractWrappers.exchange.abi);
+        // HACK: remove this hard-coded abi and use @0xproject/contract-wrappers
+        const exchangeAbi = _.get(Exchange, 'abi', []);
+        web3Wrapper.abiDecoder.addABI(exchangeAbi);
         const receipt = await web3Wrapper.awaitTransactionSuccessAsync(txHash);
         return receipt;
     }
