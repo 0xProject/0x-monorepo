@@ -91,8 +91,8 @@ class PlainPortalOnboardingFlow extends React.Component<PortalOnboardingFlowProp
         };
         const underMetamaskExtension: FixedPositionSettings = {
             type: 'fixed',
-            top: '5px',
-            right: '5px',
+            top: '10px',
+            right: '10px',
             tooltipPointerDisplay: 'none',
         };
         const steps: Step[] = [
@@ -109,6 +109,8 @@ class PlainPortalOnboardingFlow extends React.Component<PortalOnboardingFlowProp
                 content: <UnlockWalletOnboardingStep />,
                 shouldHideBackButton: true,
                 shouldHideNextButton: true,
+                shouldCenterTitle: true,
+                shouldRemoveExtraSpacing: true,
             },
             {
                 position: nextToWalletPosition,

@@ -31,12 +31,15 @@ export interface Step {
     // Provide either a CSS selector, or fixed position settings. Only applies to desktop.
     position: TargetPositionSettings | FixedPositionSettings;
     title?: string;
+    shouldCenterTitle?: boolean;
     content: React.ReactNode;
     shouldHideBackButton?: boolean;
     shouldHideNextButton?: boolean;
     continueButtonDisplay?: ContinueButtonDisplay;
     continueButtonText?: string;
     onContinueButtonClick?: () => void;
+    // Only used for very custom steps.
+    shouldRemoveExtraSpacing?: boolean;
 }
 
 export interface OnboardingFlowProps {
@@ -114,6 +117,7 @@ export class OnboardingFlow extends React.Component<OnboardingFlowProps> {
             <Container marginLeft="30px" width="400px">
                 <OnboardingTooltip
                     title={step.title}
+                    shouldCenterTitle={step.shouldCenterTitle}
                     content={step.content}
                     isLastStep={isLastStep}
                     shouldHideBackButton={step.shouldHideBackButton}
@@ -125,6 +129,7 @@ export class OnboardingFlow extends React.Component<OnboardingFlowProps> {
                     continueButtonText={step.continueButtonText}
                     onContinueButtonClick={step.onContinueButtonClick}
                     pointerDisplay={tooltipPointerDisplay}
+                    shouldRemoveExtraSpacing={step.shouldRemoveExtraSpacing}
                 />
             </Container>
         );
@@ -138,6 +143,7 @@ export class OnboardingFlow extends React.Component<OnboardingFlowProps> {
             <Container position="relative" zIndex={1}>
                 <OnboardingCard
                     title={step.title}
+                    shouldCenterTitle={step.shouldCenterTitle}
                     content={step.content}
                     isLastStep={isLastStep}
                     shouldHideBackButton={step.shouldHideBackButton}
@@ -149,6 +155,7 @@ export class OnboardingFlow extends React.Component<OnboardingFlowProps> {
                     continueButtonText={step.continueButtonText}
                     onContinueButtonClick={step.onContinueButtonClick}
                     borderRadius="10px 10px 0px 0px"
+                    shouldRemoveExtraSpacing={step.shouldRemoveExtraSpacing}
                 />
             </Container>
         );
