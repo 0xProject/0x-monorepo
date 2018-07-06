@@ -445,9 +445,9 @@ contract MixinWrapperFunctions is
             // Convert the remaining amount of makerAsset to buy into remaining amount
             // of takerAsset to sell, assuming entire amount can be sold in the current order
             uint256 remainingTakerAssetFillAmount = getPartialAmount(
-                orders[i].takerAssetAmount,
+                remainingMakerAssetFillAmount,
                 orders[i].makerAssetAmount,
-                remainingMakerAssetFillAmount
+                orders[i].takerAssetAmount
             );
 
             // Attempt to sell the remaining amount of takerAsset
@@ -496,9 +496,9 @@ contract MixinWrapperFunctions is
             // Convert the remaining amount of makerAsset to buy into remaining amount
             // of takerAsset to sell, assuming entire amount can be sold in the current order
             uint256 remainingTakerAssetFillAmount = getPartialAmount(
-                orders[i].takerAssetAmount,
+                remainingMakerAssetFillAmount,
                 orders[i].makerAssetAmount,
-                remainingMakerAssetFillAmount
+                orders[i].takerAssetAmount
             );
 
             // Attempt to sell the remaining amount of takerAsset
