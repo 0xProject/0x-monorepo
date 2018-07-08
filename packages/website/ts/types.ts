@@ -243,8 +243,8 @@ export enum BlockchainCallErrs {
 }
 
 export enum Environments {
-    DEVELOPMENT,
-    PRODUCTION,
+    DEVELOPMENT = 'DEVELOPMENT',
+    PRODUCTION = 'PRODUCTION',
 }
 
 export type ContractInstance = any; // TODO: add type definition for Contract
