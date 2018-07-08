@@ -39,8 +39,19 @@ contract MixinForwarderCore is
     MTransfer,
     MForwarderCore
 {
-    bytes4 public constant ERC20_DATA_ID = bytes4(keccak256("ERC20Token(address)"));
-    bytes4 public constant ERC721_DATA_ID = bytes4(keccak256("ERC721Token(address,uint256,bytes)"));
+    bytes4 constant internal ERC20_DATA_ID = bytes4(keccak256("ERC20Token(address)"));
+    bytes4 constant internal ERC721_DATA_ID = bytes4(keccak256("ERC721Token(address,uint256,bytes)"));
+    uint256 constant internal MAX_UINT = 2**256 - 1;
+
+    constructor ()
+        public
+    {
+        address proxyAddress = EXCHANGE.getAssetProxy(ERC20_DATA_ID);
+        if (proxyAddress != address(0)) {
+            ETHER_TOKEN.approve(proxyAddress, MAX_UINT);
+            ZRX_TOKEN.approve(proxyAddress, MAX_UINT);
+        }
+    }
 
     /// @dev Market sells ETH for ERC20 tokens, performing fee abstraction if required. This does not support ERC721 tokens. This function is payable
     ///      and will convert all incoming ETH into WETH and perform the trade on behalf of the caller.

@@ -33,6 +33,17 @@ contract MixinFees is
     uint16 constant public MAX_FEE = 1000; // 10%
     uint16 constant public ALLOWABLE_EXCHANGE_PERCENTAGE = 9500; // 95%
 
+    /// @dev Default payabale function, this allows us to withdraw WETH
+    function ()
+        public
+        payable
+    {
+        require(
+            msg.sender == address(ETHER_TOKEN),
+            "DEFAULT_FUNCTION_WETH_CONTRACT_ONLY"
+        );
+    }
+
     /// @dev Pays the feeRecipient feeProportion of the total takerEthAmount, denominated in ETH
     /// @param takerEthAmount The total amount that was transacted in WETH, fees are calculated from this value.
     /// @param feeProportion The proportion of fees

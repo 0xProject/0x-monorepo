@@ -40,5 +40,4 @@ contract MixinConstants is
         ZRX_ASSET_DATA = _zrxAssetData;
         WETH_ASSET_DATA = _wethAssetData;
     }
-
 }
