@@ -20,20 +20,24 @@ pragma solidity 0.4.24;
 pragma experimental ABIEncoderV2;
 
 import "../utils/LibBytes/LibBytes.sol";
-import "./MixinFees.sol";
-import "./MixinMarketBuyZrx.sol";
-import "./MixinExpectedResults.sol";
-import "./MixinTransfer.sol";
-import "./MixinConstants.sol";
+import "./mixins/MFees.sol";
+import "./mixins/MMarketBuyZrx.sol";
+import "./mixins/MExpectedResults.sol";
+import "./mixins/MTransfer.sol";
+import "./mixins/MConstants.sol";
+import "./mixins/MForwarderCore.sol";
 import "../protocol/Exchange/libs/LibOrder.sol";
+import "../protocol/Exchange/libs/LibFillResults.sol";
 
 
 contract MixinForwarderCore is
-    MixinConstants,
-    MixinExpectedResults,
-    MixinFees,
-    MixinMarketBuyZrx,
-    MixinTransfer
+    LibFillResults,
+    MConstants,
+    MExpectedResults,
+    MFees,
+    MMarketBuyZrx,
+    MTransfer,
+    MForwarderCore
 {
     bytes4 public constant ERC20_DATA_ID = bytes4(keccak256("ERC20Token(address)"));
     bytes4 public constant ERC721_DATA_ID = bytes4(keccak256("ERC721Token(address,uint256,bytes)"));
@@ -284,8 +288,8 @@ contract MixinForwarderCore is
         bytes[] memory feeSignatures,
         uint256 makerTokenFillAmount
     )
-        private
-        returns (FillResults memory totalFillResults)
+        internal
+        returns (LibFillResults.FillResults memory totalFillResults)
     {
         // We read the maker token address to check if it is ZRX and later use it for transfer
         address makerTokenAddress = LibBytes.readAddress(orders[0].makerAssetData, 16);
@@ -366,8 +370,8 @@ contract MixinForwarderCore is
         LibOrder.Order[] memory feeOrders,
         bytes[] memory feeSignatures
     )
-        private
-        returns (FillResults memory totalFillResults)
+        internal
+        returns (LibFillResults.FillResults memory totalFillResults)
     {
         uint256 totalZrxFeeAmount;
         uint256 ordersLength = orders.length;

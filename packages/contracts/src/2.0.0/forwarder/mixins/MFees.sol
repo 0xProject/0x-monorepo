@@ -18,20 +18,8 @@
 
 pragma solidity 0.4.24;
 
-import "../protocol/Exchange/libs/LibMath.sol";
-import "./mixins/MConstants.sol";
-import "./mixins/MFees.sol";
 
-
-contract MixinFees is
-    LibMath,
-    MConstants,
-    MFees
-{
-
-    uint16 constant public PERCENTAGE_DENOMINATOR = 10000; // 9800 == 98%, 10000 == 100%
-    uint16 constant public MAX_FEE = 1000; // 10%
-    uint16 constant public ALLOWABLE_EXCHANGE_PERCENTAGE = 9500; // 95%
+contract MFees {
 
     /// @dev Pays the feeRecipient feeProportion of the total takerEthAmount, denominated in ETH
     /// @param takerEthAmount The total amount that was transacted in WETH, fees are calculated from this value.
@@ -44,23 +32,7 @@ contract MixinFees is
         address feeRecipient
     )
         internal
-        returns (uint256 ethFeeAmount)
-    {
-        if (feeProportion > 0 && feeRecipient != address(0)) {
-            require(
-                feeProportion <= MAX_FEE,
-                "FEE_PROPORTION_TOO_LARGE"
-            );
-            // 1.5% is 150, allowing for 2 decimal precision, i.e 0.05% is 5
-            ethFeeAmount = getPartialAmount(
-                feeProportion,
-                PERCENTAGE_DENOMINATOR,
-                takerEthAmount
-            );
-            feeRecipient.transfer(ethFeeAmount);
-        }
-        return ethFeeAmount;
-    }
+        returns (uint256 ethFeeAmount);
 
     /// @dev Withdraws the remaining WETH, deduct and pay fees from this amount based on the takerTokenAmount to the feeRecipient.
     ///      If a user overpaid ETH initially, the fees are calculated from the amount traded and deducted from withdrawAmount.
@@ -75,23 +47,7 @@ contract MixinFees is
         uint16 feeProportion,
         address feeRecipient
     )
-        internal
-    {
-        // Return all of the excess WETH if any after deducting fees on the amount
-        if (ethWithdrawAmount > 0) {
-            ETHER_TOKEN.withdraw(ethWithdrawAmount);
-            // Fees proportional to the amount traded
-            uint256 ethFeeAmount = payEthFee(
-                wethAmountSold,
-                feeProportion,
-                feeRecipient
-            );
-            uint256 unspentEthAmount = safeSub(ethWithdrawAmount, ethFeeAmount);
-            if (unspentEthAmount > 0) {
-                msg.sender.transfer(unspentEthAmount);
-            }
-        }
-    }
+        internal;
 
     /// @dev Checks whether the amount of tokens sold against the amount of tokens requested
     ///      is within a certain threshold. This ensures the caller gets a fair deal when
@@ -103,13 +59,5 @@ contract MixinFees is
     function isAcceptableThreshold(uint256 requestedSellAmount, uint256 tokenAmountSold)
         internal
         pure
-        returns (bool)
-    {
-        uint256 acceptableSellAmount = getPartialAmount(
-            ALLOWABLE_EXCHANGE_PERCENTAGE,
-            PERCENTAGE_DENOMINATOR,
-            requestedSellAmount
-        );
-        return tokenAmountSold >= acceptableSellAmount;
-    }
+        returns (bool);
 }

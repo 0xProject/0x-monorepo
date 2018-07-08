@@ -22,14 +22,19 @@ pragma experimental ABIEncoderV2;
 import "./MixinFees.sol";
 import "./MixinForwarderCore.sol";
 import "./MixinConstants.sol";
+import "./MixinMarketBuyZrx.sol";
+import "./MixinExpectedResults.sol";
+import "./MixinTransfer.sol";
 import "../utils/Ownable/Ownable.sol";
 
 
 contract Forwarder is
     Ownable,
     MixinConstants,
+    MixinExpectedResults,
     MixinFees,
     MixinMarketBuyZrx,
+    MixinTransfer,
     MixinForwarderCore
 {
     uint256 constant internal MAX_UINT = 2**256 - 1;

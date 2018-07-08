@@ -17,13 +17,15 @@
 */
 
 pragma solidity 0.4.24;
-pragma experimental ABIEncoderV2;
 
 import "../utils/LibBytes/LibBytes.sol";
 import "../tokens/ERC721Token/IERC721Token.sol";
+import "./mixins/MTransfer.sol";
 
 
-contract MixinTransfer {
+contract MixinTransfer is
+    MTransfer
+{
 
     using LibBytes for bytes;
 
@@ -31,7 +33,11 @@ contract MixinTransfer {
     bytes4 constant internal ERC721_RECEIVED = bytes4(keccak256("onERC721Received(address,uint256,bytes)"));
     bytes4 constant internal ERC721_RECEIVED_OPERATOR = bytes4(keccak256("onERC721Received(address,address,uint256,bytes)"));
 
-    function onERC721Received(address, uint256, bytes memory)
+    function onERC721Received(
+        address,
+        uint256,
+        bytes memory
+    )
         public
         pure
         returns(bytes4)
@@ -39,7 +45,12 @@ contract MixinTransfer {
         return ERC721_RECEIVED;
     }
 
-    function onERC721Received(address, address, uint256, bytes memory)
+    function onERC721Received(
+        address,
+        address,
+        uint256,
+        bytes memory
+    )
         public
         pure
         returns(bytes4)

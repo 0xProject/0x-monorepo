@@ -18,27 +18,29 @@
 
 pragma solidity 0.4.24;
 
-import "./mixins/MConstants.sol";
 
+contract MTransfer {
 
-contract MixinConstants is
-    MConstants
-{
-
-    constructor (
-        address _exchange,
-        address _etherToken,
-        address _zrxToken,
-        bytes memory _zrxAssetData,
-        bytes memory _wethAssetData
-    )
+    function onERC721Received(address, uint256, bytes memory)
         public
-    {
-        EXCHANGE = IExchange(_exchange);
-        ETHER_TOKEN = IEtherToken(_etherToken);
-        ZRX_TOKEN = IERC20Token(_zrxToken);
-        ZRX_ASSET_DATA = _zrxAssetData;
-        WETH_ASSET_DATA = _wethAssetData;
-    }
+        pure
+        returns(bytes4);
 
+    function onERC721Received(address, address, uint256, bytes memory)
+        public
+        pure
+        returns(bytes4);
+    
+    function transferERC20Token(
+        address token,
+        address to,
+        uint256 amount
+    )
+        internal;
+
+    function transferERC721Token(
+        bytes memory assetData,
+        address to
+    )
+        internal;
 }
