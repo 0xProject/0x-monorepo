@@ -96,12 +96,8 @@ describe.only('Exchange core internal functions', () => {
         overflowErrorForCall = await _getOverflowErrorForCall();
         overflowErrorForSendTransaction = await _getOverflowErrorForSendTransaction();
     });
-    beforeEach(async () => {
-        await blockchainLifecycle.startAsync();
-    });
-    afterEach(async () => {
-        await blockchainLifecycle.revertAsync();
-    });
+    // Note(albrow): Don't forget to add beforeEach and afterEach calls to reset
+    // the blockchain state for any tests which modify it!
 
     describe('addFillResults', async () => {
         function makeFillResults(value: BigNumber): FillResults {
@@ -277,6 +273,14 @@ describe.only('Exchange core internal functions', () => {
     });
 
     describe('updateFilledState', async () => {
+        // Note(albrow): Since updateFilledState modifies the state by calling
+        // sendTransaction, we must reset the state after each test.
+        beforeEach(async () => {
+            await blockchainLifecycle.startAsync();
+        });
+        afterEach(async () => {
+            await blockchainLifecycle.revertAsync();
+        });
         async function referenceUpdateFilledStateAsync(
             takerAssetFilledAmount: BigNumber,
             orderTakerAssetFilledAmount: BigNumber,
