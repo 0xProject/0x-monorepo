@@ -1,5 +1,18 @@
 [
     {
+        "version": "0.0.7",
+        "changes": [
+            {
+                "note": "Switch out simple getLogs polling with ethereumjs-blockstream",
+                "pr": 825
+            },
+            {
+                "note": "Do not stop subscription if error is encountered",
+                "pr": 825
+            }
+        ]
+    },
+    {
         "timestamp": 1529397769,
         "version": "0.0.6",
         "changes": [

@@ -1,5 +1,5 @@
 declare module 'ethers' {
-    import { TxData } from '@0xproject/types';
+    import { TxData } from 'ethereum-types';
 
     export interface TransactionDescription {
         name: string;
@@ -30,5 +30,8 @@ declare module 'ethers' {
     export class Contract {
         public static getDeployTransaction(bytecode: string, abi: any, ...args: any[]): Partial<TxData>;
         constructor(address: string, abi: any, provider: any);
+    }
+    const enum errors {
+        INVALID_ARGUMENT = 'INVALID_ARGUMENT',
     }
 }

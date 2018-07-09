@@ -1,18 +1,4 @@
-import { BigNumber } from '@0xproject/utils';
-
-import {
-    BlockParam,
-    BlockParamLiteral,
-    ContractAbi,
-    ContractEventArg,
-    ExchangeContractErrs,
-    FilterObject,
-    LogEntryEvent,
-    LogWithDecodedArgs,
-    Order,
-    OrderState,
-    SignedOrder,
-} from '@0xproject/types';
+import { BlockParamLiteral, LogEntryEvent, OrderState } from '@0xproject/types';
 
 export enum OrderWatcherError {
     SubscriptionAlreadyPresent = 'SUBSCRIPTION_ALREADY_PRESENT',
@@ -30,11 +16,12 @@ export type EventWatcherCallback = (err: null | Error, log?: LogEntryEvent) => v
  * stateLayer: Optional blockchain state layer OrderWatcher will monitor for new events. Default=latest.
  */
 export interface OrderWatcherConfig {
+    stateLayer: BlockParamLiteral;
     orderExpirationCheckingIntervalMs?: number;
     eventPollingIntervalMs?: number;
     expirationMarginMs?: number;
     cleanupJobIntervalMs?: number;
-    stateLayer: BlockParamLiteral;
+    isVerbose?: boolean;
 }
 
 export type OnOrderStateChangeCallback = (err: Error | null, orderState?: OrderState) => void;
