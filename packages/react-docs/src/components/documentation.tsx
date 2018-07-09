@@ -182,10 +182,16 @@ export class Documentation extends React.Component<DocumentationProps, Documenta
     }
     private _renderSection(typeDefinitionByName: TypeDefinitionByName, sectionName: string): React.ReactNode {
         const markdownVersions = _.keys(this.props.docsInfo.sectionNameToMarkdownByVersion);
-        // Get version LTE to selectedVersion
         const eligibleVersions = _.filter(markdownVersions, mdVersion => {
             return semver.lte(mdVersion, this.props.selectedVersion);
         });
+        if (_.isEmpty(eligibleVersions)) {
+            throw new Error(
+                `No eligible markdown sections found for ${this.props.docsInfo.displayName} version ${
+                    this.props.selectedVersion
+                }.`,
+            );
+        }
         const sortedEligibleVersions = eligibleVersions.sort(semver.rcompare.bind(semver));
         const closestVersion = sortedEligibleVersions[0];
         const markdownFileIfExists = this.props.docsInfo.sectionNameToMarkdownByVersion[closestVersion][sectionName];
