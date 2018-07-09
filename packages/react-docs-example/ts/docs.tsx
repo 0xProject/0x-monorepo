@@ -14,7 +14,7 @@ import * as v0TypeDocJson from './json/0.1.12.json';
 import * as v2TypeDocJson from './json/0.2.0.json';
 
 // tslint:disable-next-line:no-implicit-dependencies no-var-requires
-const IntroMarkdown = require('md/introduction');
+const IntroMarkdownV1 = require('md/introduction');
 
 const docSections = {
     introduction: 'introduction',
@@ -32,8 +32,10 @@ const docsInfoConfig: DocsInfoConfig = {
         web3Wrapper: [docSections.web3Wrapper],
         types: [docSections.types],
     },
-    sectionNameToMarkdown: {
-        [docSections.introduction]: IntroMarkdown,
+    sectionNameToMarkdownByVersion: {
+        '0.0.1': {
+            [docSections.introduction]: IntroMarkdownV1,
+        },
     },
     sectionNameToModulePath: {
         [docSections.web3Wrapper]: ['"web3-wrapper/src/index"'],

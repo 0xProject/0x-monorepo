@@ -10,7 +10,7 @@ import { DocPackages, SmartContractDocSections as Sections } from 'ts/types';
 import { Translate } from 'ts/utils/translate';
 
 /* tslint:disable:no-var-requires */
-const IntroMarkdown = require('md/docs/smart_contracts/introduction');
+const IntroMarkdownV1 = require('md/docs/smart_contracts/1.0.0/introduction');
 /* tslint:enable:no-var-requires */
 
 const docsInfoConfig: DocsInfoConfig = {
@@ -22,8 +22,10 @@ const docsInfoConfig: DocsInfoConfig = {
         introduction: [Sections.Introduction],
         contracts: [Sections.Exchange, Sections.TokenRegistry, Sections.ZRXToken, Sections.TokenTransferProxy],
     },
-    sectionNameToMarkdown: {
-        [Sections.Introduction]: IntroMarkdown,
+    sectionNameToMarkdownByVersion: {
+        '0.0.1': {
+            [Sections.Introduction]: IntroMarkdownV1,
+        },
     },
     sections: {
         Introduction: Sections.Introduction,

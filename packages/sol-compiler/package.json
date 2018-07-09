@@ -91,7 +91,7 @@
         "lodash": "^4.17.4",
         "mkdirp": "^0.5.1",
         "require-from-string": "^2.0.1",
-        "semver": "^5.5.0",
+        "semver": "5.5.0",
         "solc": "^0.4.23",
         "web3-eth-abi": "^1.0.0-beta.24",
         "yargs": "^10.0.3"

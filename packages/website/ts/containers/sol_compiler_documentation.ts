@@ -9,8 +9,8 @@ import { DocPackages } from 'ts/types';
 import { Translate } from 'ts/utils/translate';
 
 /* tslint:disable:no-var-requires */
-const IntroMarkdown = require('md/docs/sol-compiler/introduction');
-const InstallationMarkdown = require('md/docs/sol-compiler/installation');
+const IntroMarkdownV1 = require('md/docs/sol-compiler/introduction');
+const InstallationMarkdownV1 = require('md/docs/sol-compiler/installation');
 const UsageMarkdown = require('md/docs/sol-compiler/usage');
 /* tslint:enable:no-var-requires */
 
@@ -34,10 +34,12 @@ const docsInfoConfig: DocsInfoConfig = {
         compiler: [docSections.compiler],
         types: [docSections.types],
     },
-    sectionNameToMarkdown: {
-        [docSections.introduction]: IntroMarkdown,
-        [docSections.installation]: InstallationMarkdown,
-        [docSections.usage]: UsageMarkdown,
+    sectionNameToMarkdownByVersion: {
+        '0.0.1': {
+            [docSections.introduction]: IntroMarkdownV1,
+            [docSections.installation]: InstallationMarkdownV1,
+            [docSections.usage]: UsageMarkdown,
+        },
     },
     sectionNameToModulePath: {
         [docSections.compiler]: ['"sol-compiler/src/compiler"'],

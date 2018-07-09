@@ -24,7 +24,7 @@ export class DocsInfo {
     public packageUrl: string;
     public menu: DocsMenu;
     public sections: SectionsMap;
-    public sectionNameToMarkdown: { [sectionName: string]: string };
+    public sectionNameToMarkdownByVersion: SectionNameToMarkdownByVersion;
     public contractsByVersionByNetworkId?: ContractsByVersionByNetworkId;
     public typeConfigs: DocsInfoTypeConfigs;
     private _docsInfo: DocsInfoConfig;
@@ -34,7 +34,7 @@ export class DocsInfo {
         this.displayName = config.displayName;
         this.packageUrl = config.packageUrl;
         this.sections = config.sections;
-        this.sectionNameToMarkdown = config.sectionNameToMarkdown;
+        this.sectionNameToMarkdownByVersion = config.sectionNameToMarkdownByVersion;
         this.contractsByVersionByNetworkId = config.contractsByVersionByNetworkId;
         this.typeConfigs = config.typeConfigs;
         this._docsInfo = config;
