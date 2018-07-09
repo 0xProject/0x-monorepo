@@ -43,7 +43,9 @@ export async function testWithReferenceFuncAsync(
     try {
         const actualResult = await testFuncAsync(...values);
         if (!_.isUndefined(expectedErr)) {
-            throw new Error(`Expected error containing ${expectedErr} but got no error`);
+            throw new Error(
+                `Expected error containing ${expectedErr} but got no error\n\tTest case: ${testCaseString}`,
+            );
         }
         expect(JSON.stringify(actualResult)).to.equal(JSON.stringify(expectedResult));
     } catch (e) {

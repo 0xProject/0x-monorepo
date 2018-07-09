@@ -5,6 +5,7 @@ import * as _ from 'lodash';
 
 import { TestExchangeInternalsContract } from '../../generated_contract_wrappers/test_exchange_internals';
 import { artifacts } from '../utils/artifacts';
+import { getGanacheOrGethError } from '../utils/assertions';
 import { chaiSetup } from '../utils/chai_setup';
 import { bytes32Values, testCombinatoriallyWithReferenceFuncAsync, uint256Values } from '../utils/combinatorial_sets';
 import { constants } from '../utils/constants';
@@ -43,29 +44,42 @@ interface FillResults {
     takerFeePaid: BigNumber;
 }
 
+async function _getOverflowErrorForCall(): Promise<Error> {
+    const errMsg = await getGanacheOrGethError('invalid opcode', 'Contract call failed');
+    return new Error(errMsg);
+}
+
+async function _getOverflowErrorForSendTransaction(): Promise<Error> {
+    const errMsg = await getGanacheOrGethError('invalid opcode', 'always failing transaction');
+    return new Error(errMsg);
+}
+
 async function referenceGetPartialAmountAsync(
     numerator: BigNumber,
     denominator: BigNumber,
     target: BigNumber,
 ): Promise<BigNumber> {
+    const overflowError = await _getOverflowErrorForCall();
     if (numerator.greaterThan(MAX_UINT256)) {
-        throw new Error('invalid opcode');
+        throw overflowError;
     } else if (denominator.greaterThan(MAX_UINT256)) {
-        throw new Error('invalid opcode');
+        throw overflowError;
     } else if (denominator.eq(new BigNumber(0))) {
-        throw new Error('invalid opcode');
+        throw overflowError;
     } else if (target.greaterThan(MAX_UINT256)) {
-        throw new Error('invalid opcode');
+        throw overflowError;
     }
     const product = numerator.mul(target);
     if (product.greaterThan(MAX_UINT256)) {
-        throw new Error('invalid opcode');
+        throw overflowError;
     }
     return product.dividedToIntegerBy(denominator);
 }
 
 describe.only('Exchange core internal functions', () => {
     let testExchange: TestExchangeInternalsContract;
+    let overflowErrorForCall: Error | undefined;
+    let overflowErrorForSendTransaction: Error | undefined;
 
     before(async () => {
         await blockchainLifecycle.startAsync();
@@ -79,6 +93,8 @@ describe.only('Exchange core internal functions', () => {
             provider,
             txDefaults,
         );
+        overflowErrorForCall = await _getOverflowErrorForCall();
+        overflowErrorForSendTransaction = await _getOverflowErrorForSendTransaction();
     });
     beforeEach(async () => {
         await blockchainLifecycle.startAsync();
@@ -116,7 +132,7 @@ describe.only('Exchange core internal functions', () => {
                 (totalVal: BigNumber, singleVal: BigNumber) => {
                     const newTotal = totalVal.add(singleVal);
                     if (newTotal.greaterThan(MAX_UINT256)) {
-                        throw new Error('invalid opcode');
+                        throw overflowErrorForCall;
                     }
                     return newTotal;
                 },
@@ -219,13 +235,13 @@ describe.only('Exchange core internal functions', () => {
             target: BigNumber,
         ): Promise<boolean> {
             if (numerator.greaterThan(MAX_UINT256)) {
-                throw new Error('invalid opcode');
+                throw overflowErrorForCall;
             } else if (denominator.greaterThan(MAX_UINT256)) {
-                throw new Error('invalid opcode');
+                throw overflowErrorForCall;
             } else if (denominator.eq(new BigNumber(0))) {
-                throw new Error('invalid opcode');
+                throw overflowErrorForCall;
             } else if (target.greaterThan(MAX_UINT256)) {
-                throw new Error('invalid opcode');
+                throw overflowErrorForCall;
             }
             const product = numerator.mul(target);
             const remainder = product.mod(denominator);
@@ -233,14 +249,14 @@ describe.only('Exchange core internal functions', () => {
                 return false;
             }
             if (product.greaterThan(MAX_UINT256)) {
-                throw new Error('invalid opcode');
+                throw overflowErrorForCall;
             }
             if (product.eq(new BigNumber(0))) {
-                throw new Error('invalid opcode');
+                throw overflowErrorForCall;
             }
             const remainderTimes1000000 = remainder.mul(new BigNumber('1000000'));
             if (remainderTimes1000000.greaterThan(MAX_UINT256)) {
-                throw new Error('invalid opcode');
+                throw overflowErrorForCall;
             }
             const errPercentageTimes1000000 = remainderTimes1000000.dividedToIntegerBy(product);
             return errPercentageTimes1000000.greaterThan(new BigNumber('1000'));
@@ -268,7 +284,7 @@ describe.only('Exchange core internal functions', () => {
         ): Promise<BigNumber> {
             const totalFilledAmount = takerAssetFilledAmount.add(orderTakerAssetFilledAmount);
             if (totalFilledAmount.greaterThan(MAX_UINT256)) {
-                throw new Error('invalid opcode');
+                throw overflowErrorForSendTransaction;
             }
             // TODO(albrow): Test orderHash overflowing bytes32?
             _.identity(orderHash);

@@ -15,7 +15,7 @@ let nodeType: NodeType | undefined;
 // resolve with either a transaction receipt or a transaction hash.
 export type sendTransactionResult = Promise<TransactionReceipt | TransactionReceiptWithDecodedLogs | string>;
 
-async function _getGanacheOrGethError(ganacheError: string, gethError: string): Promise<string> {
+export async function getGanacheOrGethError(ganacheError: string, gethError: string): Promise<string> {
     if (_.isUndefined(nodeType)) {
         nodeType = await web3Wrapper.getNodeTypeAsync();
     }
@@ -30,15 +30,15 @@ async function _getGanacheOrGethError(ganacheError: string, gethError: string): 
 }
 
 async function _getInsufficientFundsErrorMessageAsync(): Promise<string> {
-    return _getGanacheOrGethError("sender doesn't have enough funds", 'insufficient funds');
+    return getGanacheOrGethError("sender doesn't have enough funds", 'insufficient funds');
 }
 
 async function _getTransactionFailedErrorMessageAsync(): Promise<string> {
-    return _getGanacheOrGethError('revert', 'always failing transaction');
+    return getGanacheOrGethError('revert', 'always failing transaction');
 }
 
 async function _getContractCallFailedErrorMessageAsync(): Promise<string> {
-    return _getGanacheOrGethError('revert', 'Contract call failed');
+    return getGanacheOrGethError('revert', 'Contract call failed');
 }
 
 /**
