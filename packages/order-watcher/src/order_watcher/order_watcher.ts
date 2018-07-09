@@ -14,7 +14,7 @@ import {
     Provider,
     SignedOrder,
 } from '@0xproject/types';
-import { AbiDecoder, intervalUtils } from '@0xproject/utils';
+import { errorUtils, intervalUtils } from '@0xproject/utils';
 import { Web3Wrapper } from '@0xproject/web3-wrapper';
 import * as _ from 'lodash';
 
@@ -39,7 +39,6 @@ import {
 } from '../generated_contract_wrappers/token';
 import { OnOrderStateChangeCallback, OrderWatcherConfig, OrderWatcherError } from '../types';
 import { assert } from '../utils/assert';
-import { utils } from '../utils/utils';
 
 import { EventWatcher } from './event_watcher';
 import { ExpirationWatcher } from './expiration_watcher';
@@ -94,7 +93,8 @@ export class OrderWatcher {
         const pollingIntervalIfExistsMs = _.isUndefined(config) ? undefined : config.eventPollingIntervalMs;
         const stateLayer =
             _.isUndefined(config) || _.isUndefined(config.stateLayer) ? BlockParamLiteral.Latest : config.stateLayer;
-        this._eventWatcher = new EventWatcher(this._web3Wrapper, pollingIntervalIfExistsMs, stateLayer);
+        const isVerbose = !_.isUndefined(config) && !_.isUndefined(config.isVerbose) ? config.isVerbose : false;
+        this._eventWatcher = new EventWatcher(this._web3Wrapper, pollingIntervalIfExistsMs, stateLayer, isVerbose);
         this._balanceAndProxyAllowanceLazyStore = new BalanceAndProxyAllowanceLazyStore(
             this._contractWrappers.token,
             stateLayer,
@@ -237,7 +237,6 @@ export class OrderWatcher {
         if (!_.isNull(err)) {
             if (!_.isUndefined(this._callbackIfExists)) {
                 this._callbackIfExists(err);
-                this.unsubscribe();
             }
             return;
         }
@@ -344,7 +343,7 @@ export class OrderWatcher {
                 return; // noop
 
             default:
-                throw utils.spawnSwitchErr('decodedLog.event', decodedLog.event);
+                throw errorUtils.spawnSwitchErr('decodedLog.event', decodedLog.event);
         }
     }
     private async _emitRevalidateOrdersAsync(orderHashes: string[]): Promise<void> {

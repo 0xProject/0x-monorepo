@@ -5,15 +5,27 @@
             {
                 "note": "Improve 'web3-provider-engine' typings",
                 "pr": 768
+            },
+            {
+                "note": "Additional error type for `ethers.js`",
+                "pr": 763
             }
         ]
     },
     {
         "timestamp": 1529397769,
-        "version": "0.4.1",
+        "version": "0.4.0",
         "changes": [
             {
-                "note": "Dependencies updated"
+                "note": "Add types for `react-joyride`"
+            },
+            {
+                "note": "Add types for `react-popper`, remove types for `react-joyride`"
+            },
+            {
+                "note":
+                    "Remove types for blockies, bn.js, compare-versions, ethereumjs-abi, ethereumjs-tx, find-versions, hdkey, is-mobile, solidity-parser-antlr, xml-js as they were moved to DefinitelyTyped",
+                "pr": 641
             }
         ]
     },

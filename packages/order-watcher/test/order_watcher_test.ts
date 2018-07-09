@@ -1,5 +1,6 @@
+// tslint:disable:no-unnecessary-type-assertion
 import { ContractWrappers } from '@0xproject/contract-wrappers';
-import { BlockchainLifecycle, callbackErrorReporter, devConstants } from '@0xproject/dev-utils';
+import { BlockchainLifecycle, callbackErrorReporter } from '@0xproject/dev-utils';
 import { FillScenarios } from '@0xproject/fill-scenarios';
 import { getOrderHashHex } from '@0xproject/order-utils';
 import {
@@ -15,7 +16,6 @@ import { BigNumber } from '@0xproject/utils';
 import { Web3Wrapper } from '@0xproject/web3-wrapper';
 import * as chai from 'chai';
 import * as _ from 'lodash';
-import 'make-promises-safe';
 import 'mocha';
 
 import { OrderWatcher } from '../src/order_watcher/order_watcher';
@@ -46,15 +46,15 @@ describe('OrderWatcher', () => {
     let taker: string;
     let signedOrder: SignedOrder;
     let orderWatcher: OrderWatcher;
-    const config = {
-        networkId: constants.TESTRPC_NETWORK_ID,
-    };
     const decimals = constants.ZRX_DECIMALS;
     const fillableAmount = Web3Wrapper.toBaseUnitAmount(new BigNumber(5), decimals);
     before(async () => {
-        contractWrappers = new ContractWrappers(provider, config);
         const networkId = await web3Wrapper.getNetworkIdAsync();
-        orderWatcher = new OrderWatcher(provider, constants.TESTRPC_NETWORK_ID);
+        const config = {
+            networkId,
+        };
+        contractWrappers = new ContractWrappers(provider, config);
+        orderWatcher = new OrderWatcher(provider, networkId);
         exchangeContractAddress = contractWrappers.exchange.getContractAddress();
         userAddresses = await web3Wrapper.getAvailableAddressesAsync();
         [, maker, taker] = userAddresses;
@@ -157,7 +157,7 @@ describe('OrderWatcher', () => {
                     fillableAmount,
                 );
                 orderWatcher.addOrder(signedOrder);
-                const callback = callbackErrorReporter.reportNodeCallbackErrors(done)((orderState: OrderState) => {
+                const callback = callbackErrorReporter.reportNodeCallbackErrors(done)((_orderState: OrderState) => {
                     throw new Error('OrderState callback fired for irrelevant order');
                 });
                 orderWatcher.subscribe(callback);

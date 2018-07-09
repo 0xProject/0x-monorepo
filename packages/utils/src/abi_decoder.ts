@@ -8,43 +8,43 @@ import {
     LogWithDecodedArgs,
     RawLog,
     SolidityTypes,
-} from '@0xproject/types';
+} from 'ethereum-types';
 import * as ethers from 'ethers';
 import * as _ from 'lodash';
 
+import { addressUtils } from './address_utils';
 import { BigNumber } from './configured_bignumber';
 
 export class AbiDecoder {
-    private _savedABIs: AbiDefinition[] = [];
     private _methodIds: { [signatureHash: string]: EventAbi } = {};
-    private static _padZeros(address: string): string {
-        let formatted = address;
-        if (_.startsWith(formatted, '0x')) {
-            formatted = formatted.slice(2);
-        }
-
-        const addressLength = 40;
-        formatted = _.padStart(formatted, addressLength, '0');
-        return `0x${formatted}`;
-    }
     constructor(abiArrays: AbiDefinition[][]) {
         _.forEach(abiArrays, this.addABI.bind(this));
     }
     // This method can only decode logs from the 0x & ERC20 smart contracts
-    public tryToDecodeLogOrNoop<ArgsType>(log: LogEntry): LogWithDecodedArgs<ArgsType> | RawLog {
+    public tryToDecodeLogOrNoop<ArgsType extends DecodedLogArgs>(log: LogEntry): LogWithDecodedArgs<ArgsType> | RawLog {
         const methodId = log.topics[0];
         const event = this._methodIds[methodId];
         if (_.isUndefined(event)) {
             return log;
         }
         const ethersInterface = new ethers.Interface([event]);
-        const logData = log.data;
         const decodedParams: DecodedLogArgs = {};
         let topicsIndex = 1;
 
-        const nonIndexedInputs = _.filter(event.inputs, input => !input.indexed);
-        const dataTypes = _.map(nonIndexedInputs, input => input.type);
-        const decodedData = ethersInterface.events[event.name].parse(log.data);
+        let decodedData: any[];
+        try {
+            decodedData = ethersInterface.events[event.name].parse(log.data);
+        } catch (error) {
+            if (error.code === ethers.errors.INVALID_ARGUMENT) {
+                // Because we index events by Method ID, and Method IDs are derived fromthe method
+                // name and the input parameters, it's possible that the return value ofthe event
+                // does not match our ABI. If that's the case, then ethers will throw anerror
+                // when we try to parse the event. We handle that case here by returningthe log rather
+                // than throwing an error.
+                return log;
+            }
+            throw error;
+        }
 
         let didFailToDecode = false;
         _.forEach(event.inputs, (param: EventParameter, i: number) => {
@@ -56,7 +56,7 @@ export class AbiDecoder {
             }
             if (param.type === SolidityTypes.Address) {
                 const baseHex = 16;
-                value = AbiDecoder._padZeros(new BigNumber(value).toString(baseHex));
+                value = addressUtils.padZeros(new BigNumber(value).toString(baseHex));
             } else if (param.type === SolidityTypes.Uint256 || param.type === SolidityTypes.Uint) {
                 value = new BigNumber(value);
             } else if (param.type === SolidityTypes.Uint8) {
@@ -86,6 +86,5 @@ export class AbiDecoder {
                 this._methodIds[topic] = abi;
             }
         });
-        this._savedABIs = this._savedABIs.concat(abiArray);
     }
 }
