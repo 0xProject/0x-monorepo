@@ -18,26 +18,16 @@
 
 pragma solidity 0.4.24;
 
-import "./mixins/MConstants.sol";
+import "../ERC20Token/IERC20Token.sol";
 
 
-contract MixinConstants is
-    MConstants
+contract IEtherToken is
+    IERC20Token
 {
-
-    constructor (
-        address _exchange,
-        address _etherToken,
-        address _zrxToken,
-        bytes memory _zrxAssetData,
-        bytes memory _wethAssetData
-    )
+    function deposit()
         public
-    {
-        EXCHANGE = IExchange(_exchange);
-        ETHER_TOKEN = IEtherToken(_etherToken);
-        ZRX_TOKEN = IERC20Token(_zrxToken);
-        ZRX_ASSET_DATA = _zrxAssetData;
-        WETH_ASSET_DATA = _wethAssetData;
-    }
+        payable;
+    
+    function withdraw(uint256 amount)
+        public;
 }

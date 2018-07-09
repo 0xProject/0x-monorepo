@@ -23,13 +23,15 @@ import "../utils/LibBytes/LibBytes.sol";
 import "../protocol/Exchange/libs/LibFillResults.sol";
 import "../protocol/Exchange/libs/LibMath.sol";
 import "../protocol/Exchange/libs/LibOrder.sol";
-import "./MixinConstants.sol";
+import "./mixins/MConstants.sol";
+import "./mixins/MExpectedResults.sol";
 
 
 contract MixinExpectedResults is
     LibMath,
     LibFillResults,
-    MixinConstants
+    MConstants,
+    MExpectedResults
 {
 
     /// @dev Calculates a total FillResults for buying makerAssetFillAmount over all orders.
@@ -55,6 +57,30 @@ contract MixinExpectedResults is
             FillResults memory singleFillResult = calculateFillResults(orders[i], remainingTakerAssetFillAmount);
             addFillResults(totalFillResults, singleFillResult);
             if (totalFillResults.makerAssetFilledAmount == makerAssetFillAmount) {
+                break;
+            }
+        }
+        return totalFillResults;
+    }
+
+    /// @dev Calculates a FillResults total for selling takerAssetFillAmount over all orders. 
+    ///      Including the fees required to be paid. 
+    /// @param orders An array of Order struct containing order specifications.
+    /// @param takerAssetFillAmount A number representing the amount of this order to fill.
+    /// @return totalFillResults Amounts filled and fees paid by maker and taker.
+    function calculateMarketSellResults(
+        LibOrder.Order[] memory orders,
+        uint256 takerAssetFillAmount
+    )
+        public
+        view
+        returns (FillResults memory totalFillResults)
+    {
+        for (uint256 i = 0; i < orders.length; i++) {
+            uint256 remainingTakerAssetFillAmount = safeSub(takerAssetFillAmount, totalFillResults.takerAssetFilledAmount);
+            FillResults memory singleFillResult = calculateFillResults(orders[i], remainingTakerAssetFillAmount);
+            addFillResults(totalFillResults, singleFillResult);
+            if (totalFillResults.takerAssetFilledAmount == takerAssetFillAmount) {
                 break;
             }
         }
@@ -131,29 +157,5 @@ contract MixinExpectedResults is
             order.takerFee
         );
         return fillResults;
-    }
-
-    /// @dev Calculates a FillResults total for selling takerAssetFillAmount over all orders. 
-    ///      Including the fees required to be paid. 
-    /// @param orders An array of Order struct containing order specifications.
-    /// @param takerAssetFillAmount A number representing the amount of this order to fill.
-    /// @return totalFillResults Amounts filled and fees paid by maker and taker.
-    function calculateMarketSellResults(
-        LibOrder.Order[] memory orders,
-        uint256 takerAssetFillAmount
-    )
-        internal
-        view
-        returns (FillResults memory totalFillResults)
-    {
-        for (uint256 i = 0; i < orders.length; i++) {
-            uint256 remainingTakerAssetFillAmount = safeSub(takerAssetFillAmount, totalFillResults.takerAssetFilledAmount);
-            FillResults memory singleFillResult = calculateFillResults(orders[i], remainingTakerAssetFillAmount);
-            addFillResults(totalFillResults, singleFillResult);
-            if (totalFillResults.takerAssetFilledAmount == takerAssetFillAmount) {
-                break;
-            }
-        }
-        return totalFillResults;
     }
 }

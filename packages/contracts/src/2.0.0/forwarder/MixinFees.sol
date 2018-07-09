@@ -18,19 +18,31 @@
 
 pragma solidity 0.4.24;
 
-import { WETH9 as EtherToken } from "../tokens/WETH9/WETH9.sol";
 import "../protocol/Exchange/libs/LibMath.sol";
-import "./MixinConstants.sol";
+import "./mixins/MConstants.sol";
+import "./mixins/MFees.sol";
 
 
-contract MixinWethFees is
+contract MixinFees is
     LibMath,
-    MixinConstants
+    MConstants,
+    MFees
 {
 
-    uint16  constant public PERCENTAGE_DENOMINATOR = 10000; // 9800 == 98%, 10000 == 100%
-    uint16  constant public MAX_FEE = 1000; // 10%
-    uint16  constant public ALLOWABLE_EXCHANGE_PERCENTAGE = 9500; // 95%
+    uint16 constant public PERCENTAGE_DENOMINATOR = 10000; // 9800 == 98%, 10000 == 100%
+    uint16 constant public MAX_FEE = 1000; // 10%
+    uint16 constant public ALLOWABLE_EXCHANGE_PERCENTAGE = 9500; // 95%
+
+    /// @dev Default payabale function, this allows us to withdraw WETH
+    function ()
+        public
+        payable
+    {
+        require(
+            msg.sender == address(ETHER_TOKEN),
+            "DEFAULT_FUNCTION_WETH_CONTRACT_ONLY"
+        );
+    }
 
     /// @dev Pays the feeRecipient feeProportion of the total takerEthAmount, denominated in ETH
     /// @param takerEthAmount The total amount that was transacted in WETH, fees are calculated from this value.

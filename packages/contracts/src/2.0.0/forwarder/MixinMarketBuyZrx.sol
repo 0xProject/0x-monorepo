@@ -19,17 +19,18 @@
 pragma solidity 0.4.24;
 pragma experimental ABIEncoderV2;
 
-import "../protocol/Exchange/Exchange.sol";
 import "../protocol/Exchange/libs/LibFillResults.sol";
 import "../protocol/Exchange/libs/LibOrder.sol";
 import "../protocol/Exchange/libs/LibMath.sol";
-import "./MixinConstants.sol";
+import "./mixins/MConstants.sol";
+import "./mixins/MMarketBuyZrx.sol";
 
 
 contract MixinMarketBuyZrx is
     LibMath,
     LibFillResults,
-    MixinConstants
+    MConstants,
+    MMarketBuyZrx
 {
 
     /// @dev Buys zrxBuyAmount of ZRX fee tokens, taking into account the fees on buying fee tokens. This will guarantee

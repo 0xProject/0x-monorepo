@@ -19,22 +19,22 @@
 pragma solidity 0.4.24;
 pragma experimental ABIEncoderV2;
 
-import "./MixinWethFees.sol";
-import "./MixinMarketSellTokens.sol";
-import "./MixinMarketBuyTokens.sol";
+import "./MixinFees.sol";
+import "./MixinForwarderCore.sol";
 import "./MixinConstants.sol";
-import "../utils/Ownable/Ownable.sol";
+import "./MixinMarketBuyZrx.sol";
+import "./MixinExpectedResults.sol";
+import "./MixinTransfer.sol";
 
 
 contract Forwarder is
-    Ownable,
     MixinConstants,
-    MixinWethFees,
+    MixinExpectedResults,
+    MixinFees,
     MixinMarketBuyZrx,
-    MixinMarketBuyTokens,
-    MixinMarketSellTokens
+    MixinTransfer,
+    MixinForwarderCore
 {
-    uint256 constant internal MAX_UINT = 2**256 - 1;
 
     constructor (
         address _exchange,
@@ -45,7 +45,6 @@ contract Forwarder is
         bytes memory _wethAssetData
     )
         public
-        Ownable()
         MixinConstants(
             _exchange,
             _etherToken,
@@ -53,30 +52,6 @@ contract Forwarder is
             _zrxAssetData,
             _wethAssetData
         )
-    {
-        setERC20ProxyApproval(_erc20AssetProxyId);
-    }
-
-    /// @dev Default payabale function, this allows us to withdraw WETH
-    function ()
-        public
-        payable
-    {
-        require(
-            msg.sender == address(ETHER_TOKEN),
-            "DEFAULT_FUNCTION_WETH_CONTRACT_ONLY"
-        );
-    }
-
-    /// @dev Sets the allowances to the proxy for this contract
-    function setERC20ProxyApproval(bytes4 erc20AssetProxyId)
-        public
-        onlyOwner
-    {
-        address proxyAddress = EXCHANGE.getAssetProxy(erc20AssetProxyId);
-        if (proxyAddress != address(0)) {
-            ETHER_TOKEN.approve(proxyAddress, MAX_UINT);
-            ZRX_TOKEN.approve(proxyAddress, MAX_UINT);
-        }
-    }
+        MixinForwarderCore()
+    {}
 }

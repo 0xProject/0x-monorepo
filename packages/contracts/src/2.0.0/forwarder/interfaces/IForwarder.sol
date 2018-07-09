@@ -17,27 +17,14 @@
 */
 
 pragma solidity 0.4.24;
+pragma experimental ABIEncoderV2;
 
-import "./mixins/MConstants.sol";
+import "./IForwarderCore.sol";
+import "./IExpectedResults.sol";
 
 
-contract MixinConstants is
-    MConstants
-{
-
-    constructor (
-        address _exchange,
-        address _etherToken,
-        address _zrxToken,
-        bytes memory _zrxAssetData,
-        bytes memory _wethAssetData
-    )
-        public
-    {
-        EXCHANGE = IExchange(_exchange);
-        ETHER_TOKEN = IEtherToken(_etherToken);
-        ZRX_TOKEN = IERC20Token(_zrxToken);
-        ZRX_ASSET_DATA = _zrxAssetData;
-        WETH_ASSET_DATA = _wethAssetData;
-    }
-}
+// solhint-disable no-empty-blocks
+contract IForwarder is
+    IForwarderCore,
+    IExpectedResults
+{}

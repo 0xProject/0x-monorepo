@@ -18,26 +18,18 @@
 
 pragma solidity 0.4.24;
 
-import "./mixins/MConstants.sol";
+import "../../protocol/Exchange/interfaces/IExchange.sol";
+import "../../tokens/EtherToken/IEtherToken.sol";
+import "../../tokens/ERC20Token/IERC20Token.sol";
 
 
-contract MixinConstants is
-    MConstants
-{
+contract MConstants {
 
-    constructor (
-        address _exchange,
-        address _etherToken,
-        address _zrxToken,
-        bytes memory _zrxAssetData,
-        bytes memory _wethAssetData
-    )
-        public
-    {
-        EXCHANGE = IExchange(_exchange);
-        ETHER_TOKEN = IEtherToken(_etherToken);
-        ZRX_TOKEN = IERC20Token(_zrxToken);
-        ZRX_ASSET_DATA = _zrxAssetData;
-        WETH_ASSET_DATA = _wethAssetData;
-    }
+    // solhint-disable var-name-mixedcase
+    IExchange internal EXCHANGE;
+    IEtherToken internal ETHER_TOKEN;
+    IERC20Token internal ZRX_TOKEN;
+    bytes internal ZRX_ASSET_DATA;
+    bytes internal WETH_ASSET_DATA;
+    // solhint-enable var-name-mixedcase
 }
