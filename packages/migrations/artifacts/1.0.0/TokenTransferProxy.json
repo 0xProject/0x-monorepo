@@ -226,5 +226,11 @@
 			}
 		}
 	},
-	"networks": {}
+	"networks": {
+		"50": {
+			"address": "0x1dc4c1cefef38a777b15aa20260a54e584b16c48",
+			"links": {},
+			"constructorArgs": "[]"
+		}
+	}
 }

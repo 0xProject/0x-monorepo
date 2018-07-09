@@ -6,7 +6,8 @@
                 "note":
                     "Update Blockstream dep. to V5.0 and no longer force unsubscribe on blockstream error (which are not recoverable)"
             }
-        ]
+        ],
+        "timestamp": 1531149657
     },
     {
         "timestamp": 1529397769,
