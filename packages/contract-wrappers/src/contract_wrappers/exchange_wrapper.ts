@@ -1,5 +1,5 @@
 import { schemas } from '@0xproject/json-schemas';
-import { ExchangeContractErrs, Order, SignedOrder } from '@0xproject/types';
+import { AssetProxyId, Order, SignedOrder } from '@0xproject/types';
 import { BigNumber } from '@0xproject/utils';
 import { Web3Wrapper } from '@0xproject/web3-wrapper';
 import { ContractAbi, LogWithDecodedArgs } from 'ethereum-types';
@@ -10,7 +10,6 @@ import { methodOptsSchema } from '../schemas/method_opts_schema';
 import { orderTxOptsSchema } from '../schemas/order_tx_opts_schema';
 import { txOptsSchema } from '../schemas/tx_opts_schema';
 import {
-    AssetProxyId,
     BlockRange,
     EventCallback,
     ExchangeWrapperError,
