@@ -1,6 +1,6 @@
 {
     "name": "@0xproject/sra-report",
-    "version": "0.1.4",
+    "version": "0.1.5",
     "engines": {
         "node": ">=6.12"
     },
@@ -36,20 +36,20 @@
     "homepage": "https://github.com/0xProject/0x-monorepo/packages/sra-report/README.md",
     "dependencies": {
         "@0xproject/assert": "^0.3.0",
-        "@0xproject/types": "^0.8.1",
-        "@0xproject/order-utils": "^0.0.7",
-        "@0xproject/connect": "0.6.15",
-        "@0xproject/json-schemas": "0.8.1",
-        "@0xproject/typescript-typings": "^0.4.1",
-        "@0xproject/utils": "^0.7.1",
+        "@0xproject/types": "^0.8.2",
+        "@0xproject/order-utils": "^0.0.8",
+        "@0xproject/connect": "0.6.16",
+        "@0xproject/json-schemas": "0.8.2",
+        "@0xproject/typescript-typings": "^0.4.2",
+        "@0xproject/utils": "^0.7.2",
         "chalk": "^2.3.0",
         "lodash": "^4.17.4",
         "newman": "^3.9.3",
         "yargs": "^10.0.3"
     },
     "devDependencies": {
-        "@0xproject/monorepo-scripts": "^0.2.1",
-        "@0xproject/tslint-config": "^0.4.20",
+        "@0xproject/monorepo-scripts": "^0.2.2",
+        "@0xproject/tslint-config": "^0.4.21",
         "@types/lodash": "4.14.104",
         "@types/mocha": "^2.2.48",
         "@types/nock": "^9.1.2",

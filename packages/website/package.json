@@ -1,6 +1,6 @@
 {
     "name": "@0xproject/website",
-    "version": "0.0.37",
+    "version": "0.0.38",
     "engines": {
         "node": ">=6.12"
     },
@@ -19,13 +19,13 @@
     "license": "Apache-2.0",
     "dependencies": {
         "@0xproject/contract-wrappers": "^0.0.5",
-        "@0xproject/react-docs": "^0.0.14",
-        "@0xproject/react-shared": "^0.2.1",
-        "@0xproject/subproviders": "^0.10.4",
+        "@0xproject/react-docs": "^0.0.15",
+        "@0xproject/react-shared": "^0.2.2",
+        "@0xproject/subproviders": "^0.10.5",
         "@0xproject/types": "^0.8.1",
-        "@0xproject/typescript-typings": "^0.4.1",
-        "@0xproject/utils": "^0.7.1",
-        "@0xproject/web3-wrapper": "^0.7.1",
+        "@0xproject/typescript-typings": "^0.4.2",
+        "@0xproject/utils": "^0.7.2",
+        "@0xproject/web3-wrapper": "^0.7.2",
         "accounting": "^0.4.1",
         "basscss": "^8.0.3",
         "blockies": "^0.0.2",
