@@ -5,6 +5,8 @@
             {
                 "note": "Fix git remote tag removal step & add an additional sanity assertion",
                 "pr": 803
+            }
+        ]
     },
     {
         "timestamp": 1531149657,

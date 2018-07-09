@@ -9,6 +9,8 @@
             {
                 "note": "Remove the output directory before writing to it",
                 "pr": 822
+            }
+        ]
     },
     {
         "timestamp": 1531149657,

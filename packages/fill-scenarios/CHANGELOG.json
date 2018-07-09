@@ -5,6 +5,8 @@
             {
                 "note": "Make fill-scenarios compatible with V2 of 0x protocol",
                 "pr": 656
+            }
+        ]
     },
     {
         "timestamp": 1531149657,

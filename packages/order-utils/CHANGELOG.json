@@ -9,6 +9,8 @@
             {
                 "note": "Export parseECSignature method",
                 "pr": 684
+            }
+        ]
     },
     {
         "timestamp": 1531149657,

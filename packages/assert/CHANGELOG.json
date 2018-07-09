@@ -6,6 +6,8 @@
                 "note":
                     "Fix bug in string enum assertion. We erroneously were checking against the enum keys, not values",
                 "pr": 821
+            }
+        ]
     },
     {
         "timestamp": 1531149657,
