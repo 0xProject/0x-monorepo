@@ -685,7 +685,7 @@ export class ExchangeWrapper extends ContractWrapper {
         ) {
             throw new Error(ExchangeWrapperError.AssetDataMismatch);
         } else {
-            // Smart contracts assigns the asset data from the left order to the right one so we can save gas on redicing the size of call data
+            // Smart contracts assigns the asset data from the left order to the right one so we can save gas on reducing the size of call data
             rightSignedOrder.makerAssetData = '0x';
             rightSignedOrder.takerAssetData = '0x';
         }
