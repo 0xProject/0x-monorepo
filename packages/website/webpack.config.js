@@ -1,6 +1,13 @@
 const path = require('path');
 const webpack = require('webpack');
 const UglifyJsPlugin = require('uglifyjs-webpack-plugin');
+const RollbarSourceMapPlugin = require('rollbar-sourcemap-webpack-plugin');
+const childProcess = require('child_process');
+
+const GIT_SHA = childProcess
+    .execSync('git rev-parse HEAD')
+    .toString()
+    .trim();
 
 module.exports = {
     entry: ['./ts/index.tsx'],
@@ -80,6 +87,7 @@ module.exports = {
                   new webpack.DefinePlugin({
                       'process.env': {
                           NODE_ENV: JSON.stringify(process.env.NODE_ENV),
+                          GIT_SHA: GIT_SHA,
                       },
                   }),
                   // TODO: Revert to webpack bundled version with webpack v4.
@@ -91,6 +99,11 @@ module.exports = {
                               reserved: ['BigNumber'],
                           },
                       },
+                  }),
+                  new RollbarSourceMapPlugin({
+                      accessToken: 'a6619002b51c4464928201e6ea94de65',
+                      version: GIT_SHA,
+                      publicPath: 'https://0xproject.com/',
                   }),
               ]
             : [],

@@ -13,6 +13,14 @@ const rollbarConfig = {
     maxItems: 500,
     payload: {
         environment: configs.ENVIRONMENT,
+        client: {
+            javascript: {
+                source_map_enabled: true,
+                // This is only defined in production environments.
+                code_version: process.env.GIT_SHA,
+                guess_uncaught_frames: true,
+            },
+        },
     },
     uncaughtErrorLevel: 'error',
     hostWhiteList: [configs.DOMAIN_PRODUCTION, configs.DOMAIN_STAGING],
