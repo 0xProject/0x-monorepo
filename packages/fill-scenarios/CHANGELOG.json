@@ -5,6 +5,13 @@
             {
                 "note": "Make fill-scenarios compatible with V2 of 0x protocol",
                 "pr": 656
+    },
+    {
+        "timestamp": 1531149657,
+        "version": "0.0.5",
+        "changes": [
+            {
+                "note": "Dependencies updated"
             }
         ]
     },
