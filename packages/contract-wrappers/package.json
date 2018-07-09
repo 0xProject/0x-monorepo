@@ -79,7 +79,7 @@
         "@0xproject/typescript-typings": "^0.4.1",
         "@0xproject/utils": "^0.7.1",
         "@0xproject/web3-wrapper": "^0.7.1",
-        "ethereumjs-blockstream": "2.0.7",
+        "ethereumjs-blockstream": "5.0.0",
         "ethereumjs-util": "5.1.5",
         "ethers": "3.0.22",
         "js-sha3": "0.7.0",

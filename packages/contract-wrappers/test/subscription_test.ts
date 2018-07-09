@@ -51,34 +51,6 @@ describe('SubscriptionTest', () => {
             _.each(stubs, s => s.restore());
             stubs = [];
         });
-        it('Should receive the Error when an error occurs while fetching the block', (done: DoneCallback) => {
-            (async () => {
-                const errMsg = 'Error fetching block';
-                const callback = callbackErrorReporter.assertNodeCallbackError(done, errMsg);
-                stubs = [Sinon.stub((contractWrappers as any)._web3Wrapper, 'getBlockAsync').throws(new Error(errMsg))];
-                contractWrappers.token.subscribe(tokenAddress, TokenEvents.Approval, indexFilterValues, callback);
-                await contractWrappers.token.setAllowanceAsync(
-                    tokenAddress,
-                    coinbase,
-                    addressWithoutFunds,
-                    allowanceAmount,
-                );
-            })().catch(done);
-        });
-        it('Should receive the Error when an error occurs while reconciling the new block', (done: DoneCallback) => {
-            (async () => {
-                const errMsg = 'Error fetching logs';
-                const callback = callbackErrorReporter.assertNodeCallbackError(done, errMsg);
-                stubs = [Sinon.stub((contractWrappers as any)._web3Wrapper, 'getLogsAsync').throws(new Error(errMsg))];
-                contractWrappers.token.subscribe(tokenAddress, TokenEvents.Approval, indexFilterValues, callback);
-                await contractWrappers.token.setAllowanceAsync(
-                    tokenAddress,
-                    coinbase,
-                    addressWithoutFunds,
-                    allowanceAmount,
-                );
-            })().catch(done);
-        });
         it('Should allow unsubscribeAll to be called successfully after an error', (done: DoneCallback) => {
             (async () => {
                 const callback = (err: Error | null, logEvent?: DecodedLogEvent<ApprovalContractEventArgs>) => _.noop;

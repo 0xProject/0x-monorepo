@@ -9,7 +9,7 @@ import {
 } from '@0xproject/types';
 import { AbiDecoder, intervalUtils } from '@0xproject/utils';
 import { Web3Wrapper } from '@0xproject/web3-wrapper';
-import { Block, BlockAndLogStreamer } from 'ethereumjs-blockstream';
+import { Block, BlockAndLogStreamer, Log } from 'ethereumjs-blockstream';
 import * as _ from 'lodash';
 
 import {
@@ -38,7 +38,7 @@ const CONTRACT_NAME_TO_NOT_FOUND_ERROR: {
 export class ContractWrapper {
     protected _web3Wrapper: Web3Wrapper;
     protected _networkId: number;
-    private _blockAndLogStreamerIfExists?: BlockAndLogStreamer;
+    private _blockAndLogStreamerIfExists?: BlockAndLogStreamer<Block, Log> | undefined;
     private _blockAndLogStreamIntervalIfExists?: NodeJS.Timer;
     private _filters: { [filterToken: string]: FilterObject };
     private _filterCallbacks: {
@@ -46,6 +46,10 @@ export class ContractWrapper {
     };
     private _onLogAddedSubscriptionToken: string | undefined;
     private _onLogRemovedSubscriptionToken: string | undefined;
+    private static _onBlockstreamError(err: Error): void {
+        // Noop on blockstream errors since they are automatically
+        // recovered from and don't cause Blockstream to exit.
+    }
     constructor(web3Wrapper: Web3Wrapper, networkId: number) {
         this._web3Wrapper = web3Wrapper;
         this._networkId = networkId;
@@ -162,13 +166,14 @@ export class ContractWrapper {
         this._blockAndLogStreamerIfExists = new BlockAndLogStreamer(
             this._web3Wrapper.getBlockAsync.bind(this._web3Wrapper),
             this._web3Wrapper.getLogsAsync.bind(this._web3Wrapper),
+            ContractWrapper._onBlockstreamError.bind(this),
         );
         const catchAllLogFilter = {};
         this._blockAndLogStreamerIfExists.addLogFilter(catchAllLogFilter);
         this._blockAndLogStreamIntervalIfExists = intervalUtils.setAsyncExcludingInterval(
             this._reconcileBlockAsync.bind(this),
             constants.DEFAULT_BLOCK_POLLING_INTERVAL,
-            this._onReconcileBlockError.bind(this),
+            ContractWrapper._onBlockstreamError.bind(this),
         );
         let isRemoved = false;
         this._onLogAddedSubscriptionToken = this._blockAndLogStreamerIfExists.subscribeToOnLogAdded(
@@ -178,12 +183,6 @@ export class ContractWrapper {
         this._onLogRemovedSubscriptionToken = this._blockAndLogStreamerIfExists.subscribeToOnLogRemoved(
             this._onLogStateChanged.bind(this, isRemoved),
         );
-    }
-    private _onReconcileBlockError(err: Error): void {
-        const filterTokens = _.keys(this._filterCallbacks);
-        _.each(filterTokens, filterToken => {
-            this._unsubscribe(filterToken, err);
-        });
     }
     private _setNetworkId(networkId: number): void {
         this._networkId = networkId;
