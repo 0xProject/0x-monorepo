@@ -29,6 +29,11 @@ export enum ContractWrappersError {
     ERC721NoApproval = 'ERC_721_NO_APPROVAL',
 }
 
+export declare enum AssetProxyId {
+    ERC20 = '0xf47261b0',
+    ERC721 = '0x08e937fa',
+}
+
 export enum InternalContractWrappersError {
     NoAbiDecoder = 'NO_ABI_DECODER',
     ZrxNotInTokenRegistry = 'ZRX_NOT_IN_TOKEN_REGISTRY',
