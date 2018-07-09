@@ -1,5 +1,5 @@
 import { schemas } from '@0xproject/json-schemas';
-import { Order, SignedOrder } from '@0xproject/types';
+import { ExchangeContractErrs, Order, SignedOrder } from '@0xproject/types';
 import { BigNumber } from '@0xproject/utils';
 import { Web3Wrapper } from '@0xproject/web3-wrapper';
 import { ContractAbi, LogWithDecodedArgs } from 'ethereum-types';
@@ -9,7 +9,16 @@ import { artifacts } from '../artifacts';
 import { methodOptsSchema } from '../schemas/method_opts_schema';
 import { orderTxOptsSchema } from '../schemas/order_tx_opts_schema';
 import { txOptsSchema } from '../schemas/tx_opts_schema';
-import { BlockRange, EventCallback, IndexedFilterValues, MethodOpts, OrderInfo, OrderTransactionOpts } from '../types';
+import {
+    AssetProxyId,
+    BlockRange,
+    EventCallback,
+    ExchangeWrapperError,
+    IndexedFilterValues,
+    MethodOpts,
+    OrderInfo,
+    OrderTransactionOpts,
+} from '../types';
 import { assert } from '../utils/assert';
 import { decorators } from '../utils/decorators';
 
@@ -38,21 +47,17 @@ export class ExchangeWrapper extends ContractWrapper {
     }
     /**
      * Retrieve the address of an asset proxy by signature.
-     * @param   proxySignature The 4 bytes signature of an asset proxy
+     * @param   proxyId        The 4 bytes signature of an asset proxy
      * @param   methodOpts     Optional arguments this method accepts.
      * @return  The address of an asset proxy for a given signature
      */
-    public async getAssetProxyBySignatureAsync(proxySignature: string, methodOpts: MethodOpts = {}): Promise<string> {
-        assert.isHexString('proxySignature', proxySignature);
+    public async getAssetProxyBySignatureAsync(proxyId: AssetProxyId, methodOpts: MethodOpts = {}): Promise<string> {
+        assert.doesBelongToStringEnum('proxyId', proxyId, AssetProxyId);
         assert.doesConformToSchema('methodOpts', methodOpts, methodOptsSchema);
         const exchangeContract = await this._getExchangeContractAsync();
 
         const txData = {};
-        const assetProxy = await exchangeContract.getAssetProxy.callAsync(
-            proxySignature,
-            txData,
-            methodOpts.defaultBlock,
-        );
+        const assetProxy = await exchangeContract.getAssetProxy.callAsync(proxyId, txData, methodOpts.defaultBlock);
         return assetProxy;
     }
     /**
@@ -152,6 +157,13 @@ export class ExchangeWrapper extends ContractWrapper {
         const normalizedTakerAddress = takerAddress.toLowerCase();
 
         const exchangeInstance = await this._getExchangeContractAsync();
+        if (orderTransactionOpts.shouldValidate) {
+            await exchangeInstance.fillOrder.callAsync(signedOrder, takerAssetFillAmount, signedOrder.signature, {
+                from: normalizedTakerAddress,
+                gas: orderTransactionOpts.gasLimit,
+                gasPrice: orderTransactionOpts.gasPrice,
+            });
+        }
 
         const txHash = await exchangeInstance.fillOrder.sendTransactionAsync(
             signedOrder,
@@ -188,7 +200,18 @@ export class ExchangeWrapper extends ContractWrapper {
         const normalizedTakerAddress = takerAddress.toLowerCase();
 
         const exchangeInstance = await this._getExchangeContractAsync();
-
+        if (orderTransactionOpts.shouldValidate) {
+            await exchangeInstance.fillOrderNoThrow.callAsync(
+                signedOrder,
+                takerAssetFillAmount,
+                signedOrder.signature,
+                {
+                    from: normalizedTakerAddress,
+                    gas: orderTransactionOpts.gasLimit,
+                    gasPrice: orderTransactionOpts.gasPrice,
+                },
+            );
+        }
         const txHash = await exchangeInstance.fillOrderNoThrow.sendTransactionAsync(
             signedOrder,
             takerAssetFillAmount,
@@ -225,7 +248,13 @@ export class ExchangeWrapper extends ContractWrapper {
         const normalizedTakerAddress = takerAddress.toLowerCase();
 
         const exchangeInstance = await this._getExchangeContractAsync();
-
+        if (orderTransactionOpts.shouldValidate) {
+            await exchangeInstance.fillOrKillOrder.callAsync(signedOrder, takerAssetFillAmount, signedOrder.signature, {
+                from: normalizedTakerAddress,
+                gas: orderTransactionOpts.gasLimit,
+                gasPrice: orderTransactionOpts.gasPrice,
+            });
+        }
         const txHash = await exchangeInstance.fillOrKillOrder.sendTransactionAsync(
             signedOrder,
             takerAssetFillAmount,
@@ -268,7 +297,13 @@ export class ExchangeWrapper extends ContractWrapper {
         const normalizedSenderAddress = senderAddress.toLowerCase();
 
         const exchangeInstance = await this._getExchangeContractAsync();
-
+        if (orderTransactionOpts.shouldValidate) {
+            await exchangeInstance.executeTransaction.callAsync(salt, signerAddress, data, signature, {
+                from: normalizedSenderAddress,
+                gas: orderTransactionOpts.gasLimit,
+                gasPrice: orderTransactionOpts.gasPrice,
+            });
+        }
         const txHash = await exchangeInstance.executeTransaction.sendTransactionAsync(
             salt,
             signerAddress,
@@ -308,6 +343,13 @@ export class ExchangeWrapper extends ContractWrapper {
 
         const exchangeInstance = await this._getExchangeContractAsync();
         const signatures = _.map(signedOrders, signedOrder => signedOrder.signature);
+        if (orderTransactionOpts.shouldValidate) {
+            await exchangeInstance.batchFillOrders.callAsync(signedOrders, takerAssetFillAmounts, signatures, {
+                from: normalizedTakerAddress,
+                gas: orderTransactionOpts.gasLimit,
+                gasPrice: orderTransactionOpts.gasPrice,
+            });
+        }
         const txHash = await exchangeInstance.batchFillOrders.sendTransactionAsync(
             signedOrders,
             takerAssetFillAmounts,
@@ -344,6 +386,13 @@ export class ExchangeWrapper extends ContractWrapper {
 
         const exchangeInstance = await this._getExchangeContractAsync();
         const signatures = _.map(signedOrders, signedOrder => signedOrder.signature);
+        if (orderTransactionOpts.shouldValidate) {
+            await exchangeInstance.marketBuyOrders.callAsync(signedOrders, makerAssetFillAmount, signatures, {
+                from: normalizedTakerAddress,
+                gas: orderTransactionOpts.gasLimit,
+                gasPrice: orderTransactionOpts.gasPrice,
+            });
+        }
         const txHash = await exchangeInstance.marketBuyOrders.sendTransactionAsync(
             signedOrders,
             makerAssetFillAmount,
@@ -380,6 +429,13 @@ export class ExchangeWrapper extends ContractWrapper {
 
         const exchangeInstance = await this._getExchangeContractAsync();
         const signatures = _.map(signedOrders, signedOrder => signedOrder.signature);
+        if (orderTransactionOpts.shouldValidate) {
+            await exchangeInstance.marketSellOrders.callAsync(signedOrders, takerAssetFillAmount, signatures, {
+                from: normalizedTakerAddress,
+                gas: orderTransactionOpts.gasLimit,
+                gasPrice: orderTransactionOpts.gasPrice,
+            });
+        }
         const txHash = await exchangeInstance.marketSellOrders.sendTransactionAsync(
             signedOrders,
             takerAssetFillAmount,
@@ -416,6 +472,13 @@ export class ExchangeWrapper extends ContractWrapper {
 
         const exchangeInstance = await this._getExchangeContractAsync();
         const signatures = _.map(signedOrders, signedOrder => signedOrder.signature);
+        if (orderTransactionOpts.shouldValidate) {
+            await exchangeInstance.marketBuyOrdersNoThrow.callAsync(signedOrders, makerAssetFillAmount, signatures, {
+                from: normalizedTakerAddress,
+                gas: orderTransactionOpts.gasLimit,
+                gasPrice: orderTransactionOpts.gasPrice,
+            });
+        }
         const txHash = await exchangeInstance.marketBuyOrdersNoThrow.sendTransactionAsync(
             signedOrders,
             makerAssetFillAmount,
@@ -452,6 +515,13 @@ export class ExchangeWrapper extends ContractWrapper {
 
         const exchangeInstance = await this._getExchangeContractAsync();
         const signatures = _.map(signedOrders, signedOrder => signedOrder.signature);
+        if (orderTransactionOpts.shouldValidate) {
+            await exchangeInstance.marketSellOrdersNoThrow.callAsync(signedOrders, takerAssetFillAmount, signatures, {
+                from: normalizedTakerAddress,
+                gas: orderTransactionOpts.gasLimit,
+                gasPrice: orderTransactionOpts.gasPrice,
+            });
+        }
         const txHash = await exchangeInstance.marketSellOrdersNoThrow.sendTransactionAsync(
             signedOrders,
             takerAssetFillAmount,
@@ -490,6 +560,13 @@ export class ExchangeWrapper extends ContractWrapper {
 
         const exchangeInstance = await this._getExchangeContractAsync();
         const signatures = _.map(signedOrders, signedOrder => signedOrder.signature);
+        if (orderTransactionOpts.shouldValidate) {
+            await exchangeInstance.batchFillOrdersNoThrow.callAsync(signedOrders, takerAssetFillAmounts, signatures, {
+                from: normalizedTakerAddress,
+                gas: orderTransactionOpts.gasLimit,
+                gasPrice: orderTransactionOpts.gasPrice,
+            });
+        }
         const txHash = await exchangeInstance.batchFillOrdersNoThrow.sendTransactionAsync(
             signedOrders,
             takerAssetFillAmounts,
@@ -528,6 +605,13 @@ export class ExchangeWrapper extends ContractWrapper {
 
         const exchangeInstance = await this._getExchangeContractAsync();
         const signatures = _.map(signedOrders, signedOrder => signedOrder.signature);
+        if (orderTransactionOpts.shouldValidate) {
+            await exchangeInstance.batchFillOrKillOrders.callAsync(signedOrders, takerAssetFillAmounts, signatures, {
+                from: normalizedTakerAddress,
+                gas: orderTransactionOpts.gasLimit,
+                gasPrice: orderTransactionOpts.gasPrice,
+            });
+        }
         const txHash = await exchangeInstance.batchFillOrKillOrders.sendTransactionAsync(
             signedOrders,
             takerAssetFillAmounts,
@@ -559,6 +643,13 @@ export class ExchangeWrapper extends ContractWrapper {
         const normalizedMakerAddress = makerAddress.toLowerCase();
 
         const exchangeInstance = await this._getExchangeContractAsync();
+        if (orderTransactionOpts.shouldValidate) {
+            await exchangeInstance.batchCancelOrders.callAsync(orders, {
+                from: normalizedMakerAddress,
+                gas: orderTransactionOpts.gasLimit,
+                gasPrice: orderTransactionOpts.gasPrice,
+            });
+        }
         const txHash = await exchangeInstance.batchCancelOrders.sendTransactionAsync(orders, {
             from: normalizedMakerAddress,
             gas: orderTransactionOpts.gasLimit,
@@ -588,10 +679,30 @@ export class ExchangeWrapper extends ContractWrapper {
         await assert.isSenderAddressAsync('takerAddress', takerAddress, this._web3Wrapper);
         assert.doesConformToSchema('orderTransactionOpts', orderTransactionOpts, orderTxOptsSchema, [txOptsSchema]);
         const normalizedTakerAddress = takerAddress.toLowerCase();
-        // TODO(logvinov): Check that:
-        // rightOrder.makerAssetData === leftOrder.takerAssetData;
-        // rightOrder.takerAssetData === leftOrder.makerAssetData;
+        if (
+            rightSignedOrder.makerAssetData !== leftSignedOrder.takerAssetData ||
+            rightSignedOrder.takerAssetData !== leftSignedOrder.makerAssetData
+        ) {
+            throw new Error(ExchangeWrapperError.AssetDataMismatch);
+        } else {
+            // Smart contracts assigns the asset data from the left order to the right one so we can save gas on redicing the size of call data
+            rightSignedOrder.makerAssetData = '0x';
+            rightSignedOrder.takerAssetData = '0x';
+        }
         const exchangeInstance = await this._getExchangeContractAsync();
+        if (orderTransactionOpts.shouldValidate) {
+            await exchangeInstance.matchOrders.callAsync(
+                leftSignedOrder,
+                rightSignedOrder,
+                leftSignedOrder.signature,
+                rightSignedOrder.signature,
+                {
+                    from: normalizedTakerAddress,
+                    gas: orderTransactionOpts.gasLimit,
+                    gasPrice: orderTransactionOpts.gasPrice,
+                },
+            );
+        }
         const txHash = await exchangeInstance.matchOrders.sendTransactionAsync(
             leftSignedOrder,
             rightSignedOrder,
@@ -629,6 +740,13 @@ export class ExchangeWrapper extends ContractWrapper {
         assert.doesConformToSchema('orderTransactionOpts', orderTransactionOpts, orderTxOptsSchema, [txOptsSchema]);
         const normalizedTakerAddress = senderAddress.toLowerCase();
         const exchangeInstance = await this._getExchangeContractAsync();
+        if (orderTransactionOpts.shouldValidate) {
+            await exchangeInstance.preSign.callAsync(hash, signerAddress, signature, {
+                from: normalizedTakerAddress,
+                gas: orderTransactionOpts.gasLimit,
+                gasPrice: orderTransactionOpts.gasPrice,
+            });
+        }
         const txHash = await exchangeInstance.preSign.sendTransactionAsync(hash, signerAddress, signature, {
             from: normalizedTakerAddress,
             gas: orderTransactionOpts.gasLimit,
@@ -777,6 +895,13 @@ export class ExchangeWrapper extends ContractWrapper {
         const normalizedMakerAddress = order.makerAddress.toLowerCase();
 
         const exchangeInstance = await this._getExchangeContractAsync();
+        if (orderTransactionOpts.shouldValidate) {
+            await exchangeInstance.cancelOrder.callAsync(order, {
+                from: normalizedMakerAddress,
+                gas: orderTransactionOpts.gasLimit,
+                gasPrice: orderTransactionOpts.gasPrice,
+            });
+        }
         const txHash = await exchangeInstance.cancelOrder.sendTransactionAsync(order, {
             from: normalizedMakerAddress,
             gas: orderTransactionOpts.gasLimit,
@@ -806,6 +931,13 @@ export class ExchangeWrapper extends ContractWrapper {
         const normalizedSenderAddress = senderAddress.toLowerCase();
 
         const exchangeInstance = await this._getExchangeContractAsync();
+        if (orderTransactionOpts.shouldValidate) {
+            await exchangeInstance.setSignatureValidatorApproval.callAsync(validatorAddress, isApproved, {
+                from: normalizedSenderAddress,
+                gas: orderTransactionOpts.gasLimit,
+                gasPrice: orderTransactionOpts.gasPrice,
+            });
+        }
         const txHash = await exchangeInstance.setSignatureValidatorApproval.sendTransactionAsync(
             validatorAddress,
             isApproved,
@@ -837,6 +969,13 @@ export class ExchangeWrapper extends ContractWrapper {
         const normalizedSenderAddress = senderAddress.toLowerCase();
 
         const exchangeInstance = await this._getExchangeContractAsync();
+        if (orderTransactionOpts.shouldValidate) {
+            await exchangeInstance.cancelOrdersUpTo.callAsync(targetOrderEpoch, {
+                from: normalizedSenderAddress,
+                gas: orderTransactionOpts.gasLimit,
+                gasPrice: orderTransactionOpts.gasPrice,
+            });
+        }
         const txHash = await exchangeInstance.cancelOrdersUpTo.sendTransactionAsync(targetOrderEpoch, {
             from: normalizedSenderAddress,
             gas: orderTransactionOpts.gasLimit,

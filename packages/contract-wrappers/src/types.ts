@@ -8,6 +8,10 @@ import { ERC721TokenEventArgs, ERC721TokenEvents } from './contract_wrappers/gen
 import { ExchangeEventArgs, ExchangeEvents } from './contract_wrappers/generated/exchange';
 import { WETH9EventArgs, WETH9Events } from './contract_wrappers/generated/weth9';
 
+export enum ExchangeWrapperError {
+    AssetDataMismatch = 'ASSET_DATA_MISMATCH',
+}
+
 export enum ContractWrappersError {
     ExchangeContractDoesNotExist = 'EXCHANGE_CONTRACT_DOES_NOT_EXIST',
     ZRXContractDoesNotExist = 'ZRX_CONTRACT_DOES_NOT_EXIST',
@@ -36,8 +40,6 @@ export declare enum AssetProxyId {
 
 export enum InternalContractWrappersError {
     NoAbiDecoder = 'NO_ABI_DECODER',
-    ZrxNotInTokenRegistry = 'ZRX_NOT_IN_TOKEN_REGISTRY',
-    WethNotInTokenRegistry = 'WETH_NOT_IN_TOKEN_REGISTRY',
 }
 
 export type LogEvent = LogEntryEvent;
