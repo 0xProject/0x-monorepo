@@ -1,4 +1,3 @@
-{{#hasReturnValue}}
 async callAsync(
 {{> typed_params inputs=inputs}}
     callData: Partial<CallData> = {},
@@ -27,4 +26,3 @@ async callAsync(
     resultArray = BaseContract._formatABIDataItemList(outputAbi, resultArray, BaseContract._bnToBigNumber.bind(this));
     return resultArray{{#singleReturnValue}}[0]{{/singleReturnValue}};
 },
-{{/hasReturnValue}}

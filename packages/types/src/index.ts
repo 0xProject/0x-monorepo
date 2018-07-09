@@ -158,7 +158,6 @@ export interface ECSignature {
 }
 
 export enum AssetProxyId {
-    INVALID = '0x00000000',
     ERC20 = '0xf47261b0',
     ERC721 = '0x08e937fa',
 }

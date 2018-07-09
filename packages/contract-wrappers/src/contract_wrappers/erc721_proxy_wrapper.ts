@@ -1,3 +1,4 @@
+import { AssetProxyId } from '@0xproject/types';
 import { Web3Wrapper } from '@0xproject/web3-wrapper';
 import { ContractAbi } from 'ethereum-types';
 import * as _ from 'lodash';
@@ -23,9 +24,9 @@ export class ERC721ProxyWrapper extends ContractWrapper {
      * Get the 4 bytes ID of this asset proxy
      * @return  Proxy id
      */
-    public async getProxyIdAsync(): Promise<string> {
+    public async getProxyIdAsync(): Promise<AssetProxyId> {
         const ERC721ProxyContractInstance = await this._getERC721ProxyContractAsync();
-        const proxyId = await ERC721ProxyContractInstance.getProxyId.callAsync();
+        const proxyId = (await ERC721ProxyContractInstance.getProxyId.callAsync()) as AssetProxyId;
         return proxyId;
     }
     /**

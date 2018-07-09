@@ -1,3 +1,4 @@
+import { RevertReason } from '@0xproject/types';
 import * as _ from 'lodash';
 
 import { AsyncMethod, ContractWrappersError, SyncMethod } from '../types';
@@ -12,6 +13,10 @@ const contractCallErrorTransformer = (error: Error) => {
     }
     if (_.includes(error.message, constants.OUT_OF_GAS_PATTERN)) {
         return new Error(ContractWrappersError.OutOfGas);
+    }
+    if (_.includes(error.message, constants.REVERT)) {
+        const revertReason = error.message.split(constants.REVERT)[1].trim();
+        return new Error(revertReason);
     }
     return error;
 };
