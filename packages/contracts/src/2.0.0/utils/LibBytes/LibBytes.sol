@@ -16,7 +16,7 @@
 
 */
 
-pragma solidity ^0.4.24;
+pragma solidity 0.4.24;
 
 
 library LibBytes {
@@ -115,6 +115,7 @@ library LibBytes {
                     // Copy whole words front to back
                     // Note: the first check is always true,
                     // this could have been a do-while loop.
+                    // solhint-disable-next-line no-empty-blocks
                     for {} lt(source, sEnd) {} {
                         mstore(dest, mload(source))
                         source := add(source, 32)
@@ -145,6 +146,7 @@ library LibBytes {
                     // 2**255, so they can be safely re-interpreted as signed.
                     // Note: the first check is always true,
                     // this could have been a do-while loop.
+                    // solhint-disable-next-line no-empty-blocks
                     for {} slt(dest, dEnd) {} {
                         mstore(dEnd, mload(sEnd))
                         sEnd := sub(sEnd, 32)
@@ -157,13 +159,17 @@ library LibBytes {
             }
         }
     }
-    
+
     /// @dev Returns a slices from a byte array.
     /// @param b The byte array to take a slice from.
     /// @param from The starting index for the slice (inclusive).
     /// @param to The final index for the slice (exclusive).
     /// @return result The slice containing bytes at indices [from, to)
-    function slice(bytes memory b, uint256 from, uint256 to)
+    function slice(
+        bytes memory b,
+        uint256 from,
+        uint256 to
+    )
         internal
         pure
         returns (bytes memory result)
@@ -192,7 +198,11 @@ library LibBytes {
     /// @param to The final index for the slice (exclusive).
     /// @return result The slice containing bytes at indices [from, to)
     /// @dev When `from == 0`, the original array will match the slice. In other cases its state will be corrupted.
-    function sliceDestructive(bytes memory b, uint256 from, uint256 to)
+    function sliceDestructive(
+        bytes memory b,
+        uint256 from,
+        uint256 to
+    )
         internal
         pure
         returns (bytes memory result)
@@ -344,7 +354,10 @@ library LibBytes {
             // 1. Add index to address of bytes array
             // 2. Load 32-byte word from memory
             // 3. Apply 12-byte mask to obtain extra bytes occupying word of memory where we'll store the address
-            let neighbors := and(mload(add(b, index)), 0xffffffffffffffffffffffff0000000000000000000000000000000000000000)
+            let neighbors := and(
+                mload(add(b, index)),
+                0xffffffffffffffffffffffff0000000000000000000000000000000000000000
+            )
             
             // Make sure input address is clean.
             // (Solidity does not guarantee this)
@@ -509,7 +522,7 @@ library LibBytes {
         // Assert length of <b> is valid, given
         // length of input
         require(
-            b.length >= index + 32 /* 32 bytes to store length */ + input.length,
+            b.length >= index + 32 + input.length,  // 32 bytes to store length
             "GREATER_OR_EQUAL_TO_NESTED_BYTES_LENGTH_REQUIRED"
         );
 

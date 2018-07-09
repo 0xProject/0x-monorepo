@@ -359,7 +359,9 @@ export const utils = {
     },
     isDogfood,
     shouldShowPortalV2(): boolean {
-        return this.isDevelopment() || this.isStaging() || this.isDogfood();
+        // return this.isDevelopment() || this.isStaging() || this.isDogfood();
+        // TODO: Remove this method entirely after launch.
+        return true;
     },
     shouldShowJobsPage(): boolean {
         return this.isDevelopment() || this.isStaging() || this.isDogfood();
@@ -381,9 +383,9 @@ export const utils = {
         return trackedTokens;
     },
     getFormattedAmountFromToken(token: Token, tokenState: TokenState): string {
-        return utils.getFormattedAmount(tokenState.balance, token.decimals, token.symbol);
+        return utils.getFormattedAmount(tokenState.balance, token.decimals);
     },
-    getFormattedAmount(amount: BigNumber, decimals: number, symbol: string): string {
+    getFormattedAmount(amount: BigNumber, decimals: number): string {
         const unitAmount = Web3Wrapper.toUnitAmount(amount, decimals);
         // if the unit amount is less than 1, show the natural number of decimal places with a max of 4
         // if the unit amount is greater than or equal to 1, show only 2 decimal places
@@ -392,7 +394,7 @@ export const utils = {
             : 2;
         const format = `0,0.${_.repeat('0', precision)}`;
         const formattedAmount = numeral(unitAmount).format(format);
-        return `${formattedAmount} ${symbol}`;
+        return formattedAmount;
     },
     getUsdValueFormattedAmount(amount: BigNumber, decimals: number, price: BigNumber): string {
         const unitAmount = Web3Wrapper.toUnitAmount(amount, decimals);
@@ -473,5 +475,9 @@ export const utils = {
             }
         }
         return [downloadLink, isOnMobile];
+    },
+    getTokenIconUrl(symbol: string): string {
+        const result = `/images/token_icons/${symbol}.png`;
+        return result;
     },
 };

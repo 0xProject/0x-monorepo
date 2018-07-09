@@ -16,19 +16,14 @@
 
 */
 
-pragma solidity ^0.4.24;
+pragma solidity 0.4.24;
 
-import "../protocol/Exchange/Exchange.sol";
-import { WETH9 as EtherToken } from "../tokens/WETH9/WETH9.sol";
-import "../tokens/ERC20Token/IERC20Token.sol";
+import "./mixins/MConstants.sol";
 
-contract MixinConstants {
 
-    Exchange EXCHANGE;
-    EtherToken ETHER_TOKEN;
-    IERC20Token ZRX_TOKEN;
-    bytes ZRX_ASSET_DATA;
-    bytes WETH_ASSET_DATA;
+contract MixinConstants is
+    MConstants
+{
 
     constructor (
         address _exchange,
@@ -39,11 +34,10 @@ contract MixinConstants {
     )
         public
     {
-        EXCHANGE = Exchange(_exchange);
-        ETHER_TOKEN = EtherToken(_etherToken);
+        EXCHANGE = IExchange(_exchange);
+        ETHER_TOKEN = IEtherToken(_etherToken);
         ZRX_TOKEN = IERC20Token(_zrxToken);
         ZRX_ASSET_DATA = _zrxAssetData;
         WETH_ASSET_DATA = _wethAssetData;
     }
-
 }

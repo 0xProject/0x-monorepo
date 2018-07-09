@@ -243,8 +243,8 @@ export enum BlockchainCallErrs {
 }
 
 export enum Environments {
-    DEVELOPMENT,
-    PRODUCTION,
+    DEVELOPMENT = 'DEVELOPMENT',
+    PRODUCTION = 'PRODUCTION',
 }
 
 export type ContractInstance = any; // TODO: add type definition for Contract
@@ -552,7 +552,10 @@ export interface WebsiteBackendTokenInfo {
 }
 
 export interface WebsiteBackendGasInfo {
+    safeSlow: number;
     average: number;
+    fast: number;
+    fastest: number;
 }
 
 export interface WebsiteBackendJobInfo {

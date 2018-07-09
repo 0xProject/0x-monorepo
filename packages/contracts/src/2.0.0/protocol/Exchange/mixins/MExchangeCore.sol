@@ -16,7 +16,7 @@
 
 */
 
-pragma solidity ^0.4.24;
+pragma solidity 0.4.24;
 pragma experimental ABIEncoderV2;
 
 import "../libs/LibOrder.sol";
@@ -101,7 +101,6 @@ contract MExchangeCore is
     )
         internal
         view;
-
 
     /// @dev Validates context for cancelOrder. Succeeds or throws.
     /// @param order to be cancelled.

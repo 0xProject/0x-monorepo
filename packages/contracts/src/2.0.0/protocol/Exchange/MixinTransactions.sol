@@ -15,7 +15,7 @@
   limitations under the License.
 
 */
-pragma solidity ^0.4.24;
+pragma solidity 0.4.24;
 
 import "./libs/LibExchangeErrors.sol";
 import "./mixins/MSignatureValidator.sol";
@@ -37,48 +37,13 @@ contract MixinTransactions is
     address public currentContextAddress;
 
     // Hash for the EIP712 ZeroEx Transaction Schema
-    bytes32 constant EIP712_ZEROEX_TRANSACTION_SCHEMA_HASH = keccak256(abi.encodePacked(
+    bytes32 constant internal EIP712_ZEROEX_TRANSACTION_SCHEMA_HASH = keccak256(abi.encodePacked(
         "ZeroExTransaction(",
         "uint256 salt,",
         "address signerAddress,",
         "bytes data",
         ")"
     ));
-
-    /// @dev Calculates EIP712 hash of the Transaction.
-    /// @param salt Arbitrary number to ensure uniqueness of transaction hash.
-    /// @param signerAddress Address of transaction signer.
-    /// @param data AbiV2 encoded calldata.
-    /// @return EIP712 hash of the Transaction.
-    function hashZeroExTransaction(
-        uint256 salt,
-        address signerAddress,
-        bytes memory data
-    )
-        internal
-        pure
-        returns (bytes32 result)
-    {
-        bytes32 schemaHash = EIP712_ZEROEX_TRANSACTION_SCHEMA_HASH;
-        bytes32 dataHash = keccak256(data);
-        // Assembly for more efficiently computing:
-        // keccak256(abi.encode(
-        //   EIP712_ZEROEX_TRANSACTION_SCHEMA_HASH,
-        //   salt,
-        //   signerAddress,
-        //   keccak256(data)
-        //  ));
-        assembly {
-            let memPtr := mload(64)
-            mstore(memPtr, schemaHash)
-            mstore(add(memPtr, 32), salt)
-            mstore(add(memPtr, 64), and(signerAddress, 0xffffffffffffffffffffffffffffffffffffffff))
-            mstore(add(memPtr, 96), dataHash)
-            result := keccak256(memPtr, 128)
-        }
-
-        return result;
-    }
 
     /// @dev Executes an exchange method call in the context of signer.
     /// @param salt Arbitrary number to ensure uniqueness of transaction hash.
@@ -134,9 +99,47 @@ contract MixinTransactions is
             "FAILED_EXECUTION"
         );
 
-        // Reset current transaction signer
-        // TODO: Check if gas is paid when currentContextAddress is already 0.
-        currentContextAddress = address(0);
+        // Reset current transaction signer if it was previously updated
+        if (signerAddress != msg.sender) {
+            currentContextAddress = address(0);
+        }
+    }
+
+    /// @dev Calculates EIP712 hash of the Transaction.
+    /// @param salt Arbitrary number to ensure uniqueness of transaction hash.
+    /// @param signerAddress Address of transaction signer.
+    /// @param data AbiV2 encoded calldata.
+    /// @return EIP712 hash of the Transaction.
+    function hashZeroExTransaction(
+        uint256 salt,
+        address signerAddress,
+        bytes memory data
+    )
+        internal
+        pure
+        returns (bytes32 result)
+    {
+        bytes32 schemaHash = EIP712_ZEROEX_TRANSACTION_SCHEMA_HASH;
+        bytes32 dataHash = keccak256(data);
+
+        // Assembly for more efficiently computing:
+        // keccak256(abi.encode(
+        //     EIP712_ZEROEX_TRANSACTION_SCHEMA_HASH,
+        //     salt,
+        //     signerAddress,
+        //     keccak256(data)
+        // ));
+
+        assembly {
+            let memPtr := mload(64)
+            mstore(memPtr, schemaHash)
+            mstore(add(memPtr, 32), salt)
+            mstore(add(memPtr, 64), and(signerAddress, 0xffffffffffffffffffffffffffffffffffffffff))
+            mstore(add(memPtr, 96), dataHash)
+            result := keccak256(memPtr, 128)
+        }
+
+        return result;
     }
 
     /// @dev The current function will be called in the context of this address (either 0x transaction signer or `msg.sender`).

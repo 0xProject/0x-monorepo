@@ -1,6 +1,6 @@
 [
     {
-        "version": "0.0.8",
+        "version": "0.0.9",
         "changes": [
             {
                 "note": "Fix a bug in FsResolver where it tries to read directories as files",
@@ -9,6 +9,15 @@
             {
                 "note": "Fix a bug in NameResolver where it is not ignoring .sol files",
                 "pr": 589
+            }
+        ]
+    },
+    {
+        "timestamp": 1531149657,
+        "version": "0.0.8",
+        "changes": [
+            {
+                "note": "Dependencies updated"
             }
         ]
     },

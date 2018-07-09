@@ -8,6 +8,7 @@ import firstBy = require('thenby');
 
 import { Blockchain } from 'ts/blockchain';
 import { AccountConnection } from 'ts/components/ui/account_connection';
+import { Balance } from 'ts/components/ui/balance';
 import { Container } from 'ts/components/ui/container';
 import { DropDown, DropdownMouseEvent } from 'ts/components/ui/drop_down';
 import { IconButton } from 'ts/components/ui/icon_button';
@@ -269,8 +270,8 @@ export class Wallet extends React.Component<WalletProps, WalletState> {
             position: 'relative',
             overflowY: this.state.isHoveringSidebar ? 'scroll' : 'hidden',
             marginRight: this.state.isHoveringSidebar ? 0 : 4,
-            // TODO: make this completely responsive
-            maxHeight: this.props.screenWidth !== ScreenWidths.Sm ? 475 : undefined,
+            minHeight: '250px',
+            maxHeight: !utils.isMobileWidth(this.props.screenWidth) ? 'calc(90vh - 300px)' : undefined,
         };
     }
     private _onSidebarHover(_event: React.FormEvent<HTMLInputElement>): void {
@@ -436,12 +437,7 @@ export class Wallet extends React.Component<WalletProps, WalletState> {
                 </PlaceHolder>
             );
         } else {
-            const result = utils.getFormattedAmount(amount, decimals, symbol);
-            return (
-                <Text fontSize="16px" fontWeight="bold" lineHeight="1em">
-                    {result}
-                </Text>
-            );
+            return <Balance amount={amount} decimals={decimals} symbol={symbol} />;
         }
     }
     private _renderValue(

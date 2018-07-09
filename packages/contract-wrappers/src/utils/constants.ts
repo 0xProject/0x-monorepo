@@ -4,6 +4,7 @@ export const constants = {
     NULL_ADDRESS: '0x0000000000000000000000000000000000000000',
     TESTRPC_NETWORK_ID: 50,
     INVALID_JUMP_PATTERN: 'invalid JUMP at',
+    REVERT: 'revert',
     OUT_OF_GAS_PATTERN: 'out of gas',
     INVALID_TAKER_FORMAT: 'instance.taker is not of a type(s) string',
     // tslint:disable-next-line:custom-no-magic-numbers

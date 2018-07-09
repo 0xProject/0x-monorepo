@@ -4,22 +4,27 @@ import { OnboardingCard, OnboardingCardProps } from 'ts/components/onboarding/on
 import { Pointer, PointerDirection } from 'ts/components/ui/pointer';
 
 export type ContinueButtonDisplay = 'enabled' | 'disabled';
+export type TooltipPointerDisplay = PointerDirection | 'none';
 
 export interface OnboardingTooltipProps extends OnboardingCardProps {
     className?: string;
-    pointerDirection?: PointerDirection;
+    pointerDisplay?: TooltipPointerDisplay;
 }
 
 export const OnboardingTooltip: React.StatelessComponent<OnboardingTooltipProps> = props => {
-    const { pointerDirection, className, ...cardProps } = props;
+    const { pointerDisplay, className, ...cardProps } = props;
+    const card = <OnboardingCard {...cardProps} />;
+    if (pointerDisplay === 'none') {
+        return card;
+    }
     return (
-        <Pointer className={className} direction={pointerDirection}>
+        <Pointer className={className} direction={pointerDisplay}>
             <OnboardingCard {...cardProps} />
         </Pointer>
     );
 };
 OnboardingTooltip.defaultProps = {
-    pointerDirection: 'left',
+    pointerDisplay: 'left',
 };
 
 OnboardingTooltip.displayName = 'OnboardingTooltip';

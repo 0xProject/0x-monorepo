@@ -16,8 +16,7 @@
 
 */
 
-pragma solidity ^0.4.24;
-pragma experimental ABIEncoderV2;
+pragma solidity 0.4.24;
 
 import "../../utils/Ownable/Ownable.sol";
 import "./mixins/MAuthorizable.sol";

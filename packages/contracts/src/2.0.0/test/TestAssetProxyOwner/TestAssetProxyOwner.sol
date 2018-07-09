@@ -16,14 +16,16 @@
 
 */
 
-pragma solidity ^0.4.24;
+pragma solidity 0.4.24;
 
 import "../../protocol/AssetProxyOwner/AssetProxyOwner.sol";
 
 
+// solhint-disable no-empty-blocks
 contract TestAssetProxyOwner is
     AssetProxyOwner
 {
+
     constructor(
         address[] memory _owners,
         address[] memory _assetProxyContracts,
@@ -32,11 +34,11 @@ contract TestAssetProxyOwner is
     )
         public
         AssetProxyOwner(_owners, _assetProxyContracts, _required, _secondsTimeLocked)
-    {
-    }
+    {}
     
     function testValidRemoveAuthorizedAddressAtIndexTx(uint256 id)
         public
+        view
         validRemoveAuthorizedAddressAtIndexTx(id)
         returns (bool)
     {

@@ -1,8 +1,11 @@
 import { colors } from '@0xproject/react-shared';
+import { BigNumber } from '@0xproject/utils';
 import * as React from 'react';
+import { Balance } from 'ts/components/ui/balance';
 import { Container } from 'ts/components/ui/container';
 import { IconButton } from 'ts/components/ui/icon_button';
 import { Text } from 'ts/components/ui/text';
+import { constants } from 'ts/utils/constants';
 
 export interface WrapEthOnboardingStep1Props {}
 
@@ -51,16 +54,20 @@ export const WrapEthOnboardingStep2: React.StatelessComponent<WrapEthOnboardingS
 );
 
 export interface WrapEthOnboardingStep3Props {
-    formattedWethBalanceIfExists?: string;
+    wethAmount: BigNumber;
 }
 
-export const WrapEthOnboardingStep3: React.StatelessComponent<WrapEthOnboardingStep3Props> = ({
-    formattedWethBalanceIfExists,
-}) => (
+export const WrapEthOnboardingStep3: React.StatelessComponent<WrapEthOnboardingStep3Props> = ({ wethAmount }) => (
     <div className="flex items-center flex-column">
         <Text>
-            You have <b>{formattedWethBalanceIfExists || '0 WETH'}</b> in your wallet.
-            {formattedWethBalanceIfExists && ' Great!'}
+            You have{' '}
+            <Balance
+                amount={wethAmount}
+                decimals={constants.DECIMAL_PLACES_ETH}
+                symbol={constants.ETHER_TOKEN_SYMBOL}
+            />{' '}
+            in your wallet.
+            {wethAmount.gt(0) && ' Great!'}
         </Text>
         <Container width="100%" marginTop="25px" marginBottom="15px" className="flex justify-center">
             <div className="flex flex-column items-center">

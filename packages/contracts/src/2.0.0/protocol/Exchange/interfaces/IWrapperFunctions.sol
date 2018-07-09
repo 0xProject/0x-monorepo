@@ -16,7 +16,7 @@
 
 */
 
-pragma solidity ^0.4.24;
+pragma solidity 0.4.24;
 pragma experimental ABIEncoderV2;
 
 import "../libs/LibOrder.sol";
@@ -24,6 +24,7 @@ import "../libs/LibFillResults.sol";
 
 
 contract IWrapperFunctions {
+
     /// @dev Fills the input order. Reverts if exact takerAssetFillAmount not filled.
     /// @param order LibOrder.Order struct containing order specifications.
     /// @param takerAssetFillAmount Desired amount of takerAsset to sell.

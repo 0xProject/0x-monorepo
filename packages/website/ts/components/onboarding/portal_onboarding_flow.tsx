@@ -23,7 +23,7 @@ import {
     WrapEthOnboardingStep3,
 } from 'ts/components/onboarding/wrap_eth_onboarding_step';
 import { AllowanceToggle } from 'ts/containers/inputs/allowance_toggle';
-import { ProviderType, ScreenWidths, Token, TokenByAddress, TokenStateByAddress } from 'ts/types';
+import { BrowserType, ProviderType, ScreenWidths, Token, TokenByAddress, TokenStateByAddress } from 'ts/types';
 import { analytics } from 'ts/utils/analytics';
 import { utils } from 'ts/utils/utils';
 
@@ -68,6 +68,7 @@ class PlainPortalOnboardingFlow extends React.Component<PortalOnboardingFlowProp
         }
     }
     public render(): React.ReactNode {
+        const browserType = utils.getBrowserType();
         return (
             <OnboardingFlow
                 steps={this._getSteps()}
@@ -77,6 +78,8 @@ class PlainPortalOnboardingFlow extends React.Component<PortalOnboardingFlowProp
                 updateOnboardingStep={this._updateOnboardingStep.bind(this)}
                 disableOverlay={this.props.screenWidth === ScreenWidths.Sm}
                 isMobile={this.props.screenWidth === ScreenWidths.Sm}
+                // This is necessary to ensure onboarding stays open once the user unlocks metamask and clicks away
+                disableCloseOnClickOutside={browserType === BrowserType.Firefox || browserType === BrowserType.Opera}
             />
         );
     }
@@ -88,9 +91,9 @@ class PlainPortalOnboardingFlow extends React.Component<PortalOnboardingFlowProp
         };
         const underMetamaskExtension: FixedPositionSettings = {
             type: 'fixed',
-            top: '30px',
+            top: '10px',
             right: '10px',
-            pointerDirection: 'top',
+            tooltipPointerDisplay: 'none',
         };
         const steps: Step[] = [
             {
@@ -102,10 +105,12 @@ class PlainPortalOnboardingFlow extends React.Component<PortalOnboardingFlowProp
             },
             {
                 position: underMetamaskExtension,
-                title: '0x Ecosystem Setup',
+                title: 'Please Unlock Metamask...',
                 content: <UnlockWalletOnboardingStep />,
                 shouldHideBackButton: true,
                 shouldHideNextButton: true,
+                shouldCenterTitle: true,
+                shouldRemoveExtraSpacing: true,
             },
             {
                 position: nextToWalletPosition,
@@ -137,13 +142,7 @@ class PlainPortalOnboardingFlow extends React.Component<PortalOnboardingFlowProp
             {
                 position: nextToWalletPosition,
                 title: 'Step 2: Wrap ETH',
-                content: (
-                    <WrapEthOnboardingStep3
-                        formattedWethBalanceIfExists={
-                            this._userHasVisibleWeth() ? this._getFormattedWethBalance() : undefined
-                        }
-                    />
-                ),
+                content: <WrapEthOnboardingStep3 wethAmount={this._getWethBalance()} />,
                 continueButtonDisplay: this._userHasVisibleWeth() ? 'enabled' : 'disabled',
             },
             {
@@ -183,11 +182,6 @@ class PlainPortalOnboardingFlow extends React.Component<PortalOnboardingFlowProp
         }
         const ethTokenState = this.props.trackedTokenStateByAddress[ethToken.address];
         return ethTokenState.balance;
-    }
-    private _getFormattedWethBalance(): string {
-        const ethToken = utils.getEthToken(this.props.tokenByAddress);
-        const ethTokenState = this.props.trackedTokenStateByAddress[ethToken.address];
-        return utils.getFormattedAmountFromToken(ethToken, ethTokenState);
     }
     private _userHasVisibleWeth(): boolean {
         return this._getWethBalance() > new BigNumber(0);

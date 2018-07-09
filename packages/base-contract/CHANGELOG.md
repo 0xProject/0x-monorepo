@@ -5,6 +5,10 @@ Edit the package's CHANGELOG.json file only.
 
 CHANGELOG
 
+## v0.3.5 - _July 9, 2018_
+
+    * Dependencies updated
+
 ## v0.3.4 - _June 19, 2018_
 
     * Update EthersJs to fix the `value.toLowerCase()` is not a function bug caused by `ethers.js` breaking patch version https://github.com/ethers-io/ethers.js/issues/201

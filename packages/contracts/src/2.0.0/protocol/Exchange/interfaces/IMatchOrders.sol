@@ -15,7 +15,7 @@
   limitations under the License.
 
 */
-pragma solidity ^0.4.24;
+pragma solidity 0.4.24;
 pragma experimental ABIEncoderV2;
 
 import "../libs/LibOrder.sol";
@@ -33,7 +33,6 @@ contract IMatchOrders {
     /// @param leftSignature Proof that order was created by the left maker.
     /// @param rightSignature Proof that order was created by the right maker.
     /// @return matchedFillResults Amounts filled and fees paid by maker and taker of matched orders.
-    /// TODO: Make this function external once supported by Solidity (See Solidity Issues #3199, #1603)
     function matchOrders(
         LibOrder.Order memory leftOrder,
         LibOrder.Order memory rightOrder,

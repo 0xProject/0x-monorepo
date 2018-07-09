@@ -23,7 +23,7 @@ TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
 SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 */
 
-pragma solidity ^0.4.24;
+pragma solidity 0.4.24;
 
 
 /**
@@ -40,11 +40,13 @@ contract IERC721Token {
         address indexed _to,
         uint256 _tokenId
     );
+
     event Approval(
         address indexed _owner,
         address indexed _approved,
         uint256 _tokenId
     );
+
     event ApprovalForAll(
         address indexed _owner,
         address indexed _operator,
@@ -55,6 +57,7 @@ contract IERC721Token {
         public
         view
         returns (string);
+
     function symbol()
         public
         view
@@ -64,10 +67,12 @@ contract IERC721Token {
         public
         view
         returns (uint256 _balance);
+
     function ownerOf(uint256 _tokenId)
         public
         view
         returns (address _owner);
+
     function exists(uint256 _tokenId)
         public
         view
@@ -75,6 +80,7 @@ contract IERC721Token {
 
     function approve(address _to, uint256 _tokenId)
         public;
+
     function getApproved(uint256 _tokenId)
         public
         view
@@ -82,6 +88,7 @@ contract IERC721Token {
 
     function setApprovalForAll(address _operator, bool _approved)
         public;
+
     function isApprovedForAll(address _owner, address _operator)
         public
         view
@@ -90,17 +97,22 @@ contract IERC721Token {
     function transferFrom(
         address _from,
         address _to,
-        uint256 _tokenId)
+        uint256 _tokenId
+    )
         public;
+
     function safeTransferFrom(
         address _from,
         address _to,
-        uint256 _tokenId)
+        uint256 _tokenId
+    )
         public;
+
     function safeTransferFrom(
         address _from,
         address _to,
         uint256 _tokenId,
-        bytes _data)
+        bytes _data
+    )
         public;
 }

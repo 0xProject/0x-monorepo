@@ -16,8 +16,7 @@
 
 */
 
-pragma solidity ^0.4.24;
-pragma experimental ABIEncoderV2;
+pragma solidity 0.4.24;
 
 import "../../protocol/Exchange/MixinSignatureValidator.sol";
 import "../../protocol/Exchange/MixinTransactions.sol";

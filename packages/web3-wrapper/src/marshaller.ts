@@ -73,6 +73,19 @@ export const marshaller = {
         };
         return tx;
     },
+    unmarshalTxData(txDataRpc: TxDataRPC): TxData {
+        if (_.isUndefined(txDataRpc.from)) {
+            throw new Error(`txData must include valid 'from' value.`);
+        }
+        const txData = {
+            ...txDataRpc,
+            value: !_.isUndefined(txDataRpc.value) ? utils.convertHexToNumber(txDataRpc.value) : undefined,
+            gas: !_.isUndefined(txDataRpc.gas) ? utils.convertHexToNumber(txDataRpc.gas) : undefined,
+            gasPrice: !_.isUndefined(txDataRpc.gasPrice) ? utils.convertHexToNumber(txDataRpc.gasPrice) : undefined,
+            nonce: !_.isUndefined(txDataRpc.nonce) ? utils.convertHexToNumber(txDataRpc.nonce) : undefined,
+        };
+        return txData;
+    },
     marshalTxData(txData: Partial<TxData>): Partial<TxDataRPC> {
         if (_.isUndefined(txData.from)) {
             throw new Error(`txData must include valid 'from' value.`);

@@ -14,6 +14,15 @@
         ]
     },
     {
+        "timestamp": 1531149657,
+        "version": "0.8.2",
+        "changes": [
+            {
+                "note": "Dependencies updated"
+            }
+        ]
+    },
+    {
         "timestamp": 1529397769,
         "version": "0.8.1",
         "changes": [

@@ -16,7 +16,7 @@
 
 */
 
-pragma solidity ^0.4.24;
+pragma solidity 0.4.24;
 pragma experimental ABIEncoderV2;
 
 import "./IExchangeCore.sol";
@@ -27,6 +27,7 @@ import "./IAssetProxyDispatcher.sol";
 import "./IWrapperFunctions.sol";
 
 
+// solhint-disable no-empty-blocks
 contract IExchange is
     IExchangeCore,
     IMatchOrders,

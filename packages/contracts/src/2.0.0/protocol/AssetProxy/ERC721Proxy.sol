@@ -16,18 +16,19 @@
 
 */
 
-pragma solidity ^0.4.24;
-pragma experimental ABIEncoderV2;
+pragma solidity 0.4.24;
 
 import "../../utils/LibBytes/LibBytes.sol";
 import "./MixinAuthorizable.sol";
+
 
 contract ERC721Proxy is
     MixinAuthorizable
 {
     // Id of this proxy.
-    bytes4 constant PROXY_ID = bytes4(keccak256("ERC721Token(address,uint256,bytes)"));
+    bytes4 constant internal PROXY_ID = bytes4(keccak256("ERC721Token(address,uint256,bytes)"));
 
+    // solhint-disable-next-line payable-fallback
     function () 
         external
     {

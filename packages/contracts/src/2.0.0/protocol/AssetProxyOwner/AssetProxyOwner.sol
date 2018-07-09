@@ -33,7 +33,7 @@ contract AssetProxyOwner is
     // if this contract is allowed to call the AssetProxy's `removeAuthorizedAddressAtIndex` method without a time lock.
     mapping (address => bool) public isAssetProxyRegistered;
 
-    bytes4 constant REMOVE_AUTHORIZED_ADDRESS_AT_INDEX_SELECTOR = bytes4(keccak256("removeAuthorizedAddressAtIndex(address,uint256)"));
+    bytes4 constant internal REMOVE_AUTHORIZED_ADDRESS_AT_INDEX_SELECTOR = bytes4(keccak256("removeAuthorizedAddressAtIndex(address,uint256)"));
 
     /// @dev Function will revert if the transaction does not call `removeAuthorizedAddressAtIndex`
     ///      on an approved AssetProxy contract.
@@ -89,6 +89,7 @@ contract AssetProxyOwner is
     {
         Transaction storage tx = transactions[transactionId];
         tx.executed = true;
+        // solhint-disable-next-line avoid-call-value
         if (tx.destination.call.value(tx.value)(tx.data))
             Execution(transactionId);
         else {

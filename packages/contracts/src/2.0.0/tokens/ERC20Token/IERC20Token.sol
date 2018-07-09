@@ -16,8 +16,7 @@
 
 */
 
-pragma solidity ^0.4.24;
-pragma experimental ABIEncoderV2;
+pragma solidity 0.4.24;
 
 
 contract IERC20Token {
@@ -60,6 +59,7 @@ contract IERC20Token {
         public view
         returns (uint256);
 
+    // solhint-disable-next-line no-simple-event-func-name
     event Transfer(
         address indexed _from,
         address indexed _to,

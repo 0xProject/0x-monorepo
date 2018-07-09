@@ -16,8 +16,7 @@
 
 */
 
-pragma solidity ^0.4.24;
-pragma experimental ABIEncoderV2;
+pragma solidity 0.4.24;
 
 import "../../tokens/UnlimitedAllowanceToken/UnlimitedAllowanceToken.sol";
 import "../../utils/SafeMath/SafeMath.sol";
@@ -27,7 +26,10 @@ import "../../utils/SafeMath/SafeMath.sol";
  * Mintable
  * Base contract that creates a mintable UnlimitedAllowanceToken
  */
-contract Mintable is UnlimitedAllowanceToken, SafeMath {
+contract Mintable is 
+    UnlimitedAllowanceToken,
+    SafeMath
+{
     function mint(uint256 _value)
         public
     {

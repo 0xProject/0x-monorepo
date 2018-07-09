@@ -1,10 +1,10 @@
 import { BigNumber } from '@0xproject/utils';
 import * as React from 'react';
+import { Balance } from 'ts/components/ui/balance';
 import { Container } from 'ts/components/ui/container';
 import { Image } from 'ts/components/ui/image';
 import { Text } from 'ts/components/ui/text';
 import { constants } from 'ts/utils/constants';
-import { utils } from 'ts/utils/utils';
 
 export interface AddEthOnboardingStepProps {
     userEthBalanceInWei: BigNumber;
@@ -15,13 +15,11 @@ export const AddEthOnboardingStep: React.StatelessComponent<AddEthOnboardingStep
         <div className="flex items-center flex-column">
             <Text>
                 Great! Looks like you already have{' '}
-                <b>
-                    {utils.getFormattedAmount(
-                        props.userEthBalanceInWei,
-                        constants.DECIMAL_PLACES_ETH,
-                        constants.ETHER_SYMBOL,
-                    )}{' '}
-                </b>
+                <Balance
+                    amount={props.userEthBalanceInWei}
+                    decimals={constants.DECIMAL_PLACES_ETH}
+                    symbol={constants.ETHER_SYMBOL}
+                />{' '}
                 in your wallet.
             </Text>
             <Container marginTop="15px" marginBottom="15px">

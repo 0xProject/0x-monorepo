@@ -16,7 +16,8 @@
 
 */
 
-pragma solidity ^0.4.23;
+// solhint-disable
+pragma solidity 0.4.24;
 
 
 // @dev Interface of the asset proxy's assetData.
@@ -24,12 +25,10 @@ pragma solidity ^0.4.23;
 // This argument is ABI encoded as one of the methods of this interface.
 interface IAssetData {
 
-    // solhint-disable-next-line func-name-mixedcase
     function ERC20Token(address tokenContract)
         external
         pure;
     
-    // solhint-disable-next-line func-name-mixedcase
     function ERC721Token(
         address tokenContract,
         uint256 tokenId,

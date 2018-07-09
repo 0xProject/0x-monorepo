@@ -16,7 +16,7 @@
 
 */
 
-pragma solidity ^0.4.24;
+pragma solidity 0.4.24;
 pragma experimental ABIEncoderV2;
 
 import "../../protocol/Exchange/libs/LibMath.sol";
@@ -32,7 +32,8 @@ contract TestLibs is
     function publicGetPartialAmount(
         uint256 numerator,
         uint256 denominator,
-        uint256 target)
+        uint256 target
+    )
         public
         pure
         returns (uint256 partialAmount)
@@ -48,7 +49,8 @@ contract TestLibs is
     function publicIsRoundingError(
         uint256 numerator,
         uint256 denominator,
-        uint256 target)
+        uint256 target
+    )
         public
         pure
         returns (bool isError)

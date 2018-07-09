@@ -23,7 +23,7 @@ TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
 SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 */
 
-pragma solidity ^0.4.24;
+pragma solidity 0.4.24;
 
 
 /**
@@ -38,7 +38,7 @@ contract IERC721Receiver {
     *  Equals to `bytes4(keccak256("onERC721Received(address,uint256,bytes)"))`,
     *  which can be also obtained as `ERC721Receiver(0).onERC721Received.selector`
     */
-    bytes4 constant ERC721_RECEIVED = 0xf0b9e5ba;
+    bytes4 constant internal ERC721_RECEIVED = 0xf0b9e5ba;
 
     /**
     * @notice Handle the receipt of an NFT

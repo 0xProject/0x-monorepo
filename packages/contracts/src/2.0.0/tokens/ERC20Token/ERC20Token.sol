@@ -16,20 +16,15 @@
 
 */
 
-pragma solidity ^0.4.24;
-pragma experimental ABIEncoderV2;
+pragma solidity 0.4.24;
 
 import "./IERC20Token.sol";
 
 
 contract ERC20Token is IERC20Token {
 
-    string constant INSUFFICIENT_BALANCE = "ERC20_INSUFFICIENT_BALANCE";
-    string constant INSUFFICIENT_ALLOWANCE = "ERC20_INSUFFICIENT_ALLOWANCE";
-    string constant OVERFLOW = "Transfer would result in an overflow.";
-
-    mapping (address => uint256) balances;
-    mapping (address => mapping (address => uint256)) allowed;
+    mapping (address => uint256) internal balances;
+    mapping (address => mapping (address => uint256)) internal allowed;
 
     uint256 public totalSupply;
 
@@ -39,11 +34,11 @@ contract ERC20Token is IERC20Token {
     {
         require(
             balances[msg.sender] >= _value,
-            INSUFFICIENT_BALANCE
+            "ERC20_INSUFFICIENT_BALANCE"
         );
         require(
             balances[_to] + _value >= balances[_to],
-            OVERFLOW
+            "OVERFLOW"
         );
         balances[msg.sender] -= _value;
         balances[_to] += _value;
@@ -57,15 +52,15 @@ contract ERC20Token is IERC20Token {
     {
         require(
             balances[_from] >= _value,
-            INSUFFICIENT_BALANCE
+            "ERC20_INSUFFICIENT_BALANCE"
         );
         require(
             allowed[_from][msg.sender] >= _value,
-            INSUFFICIENT_ALLOWANCE
+            "ERC20_INSUFFICIENT_ALLOWANCE"
         );
         require(
             balances[_to] + _value >= balances[_to],
-            OVERFLOW
+            "OVERFLOW"
         );
         balances[_to] += _value;
         balances[_from] -= _value;
@@ -84,7 +79,8 @@ contract ERC20Token is IERC20Token {
     }
 
     function balanceOf(address _owner)
-        public view
+        public
+        view
         returns (uint256)
     {
         return balances[_owner];

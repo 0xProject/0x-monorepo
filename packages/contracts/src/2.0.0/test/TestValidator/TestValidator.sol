@@ -16,7 +16,7 @@
 
 */
 
-pragma solidity ^0.4.24;
+pragma solidity 0.4.24;
 
 import "../../protocol/Exchange/interfaces/IValidator.sol";
 
@@ -27,7 +27,7 @@ contract TestValidator is
 
     // The single valid signer for this wallet.
     // solhint-disable-next-line var-name-mixedcase
-    address VALID_SIGNER;
+    address internal VALID_SIGNER;
 
     /// @dev constructs a new `TestValidator` with a single valid signer.
     /// @param validSigner The sole, valid signer.
@@ -40,6 +40,7 @@ contract TestValidator is
     /// @param signerAddress Address that should have signed the given hash.
     /// @param signature Proof of signing.
     /// @return Validity of signature.
+    // solhint-disable no-unused-vars
     function isValidSignature(
         bytes32 hash,
         address signerAddress,
@@ -51,4 +52,5 @@ contract TestValidator is
     {
         return (signerAddress == VALID_SIGNER);
     }
+    // solhint-enable no-unused-vars
 }

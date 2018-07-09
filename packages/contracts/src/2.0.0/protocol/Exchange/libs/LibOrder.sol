@@ -16,7 +16,7 @@
 
 */
 
-pragma solidity ^0.4.24;
+pragma solidity 0.4.24;
 
 import "./LibEIP712.sol";
 
@@ -26,7 +26,7 @@ contract LibOrder is
 {
 
     // Hash for the EIP712 Order Schema
-    bytes32 constant EIP712_ORDER_SCHEMA_HASH = keccak256(abi.encodePacked(
+    bytes32 constant internal EIP712_ORDER_SCHEMA_HASH = keccak256(abi.encodePacked(
         "Order(",
         "address makerAddress,",
         "address takerAddress,",
@@ -55,6 +55,7 @@ contract LibOrder is
         CANCELLED                    // Order has been cancelled
     }
 
+    // solhint-disable max-line-length
     struct Order {
         address makerAddress;           // Address that created the order.      
         address takerAddress;           // Address that is allowed to fill the order. If set to 0, any address is allowed to fill the order.          
@@ -69,6 +70,7 @@ contract LibOrder is
         bytes makerAssetData;           // Encoded data that can be decoded by a specified proxy contract when transferring makerAsset. The last byte references the id of this proxy.
         bytes takerAssetData;           // Encoded data that can be decoded by a specified proxy contract when transferring takerAsset. The last byte references the id of this proxy.
     }
+    // solhint-enable max-line-length
 
     struct OrderInfo {
         uint8 orderStatus;                    // Status that describes order's validity and fillability.
@@ -99,21 +101,23 @@ contract LibOrder is
         bytes32 schemaHash = EIP712_ORDER_SCHEMA_HASH;
         bytes32 makerAssetDataHash = keccak256(order.makerAssetData);
         bytes32 takerAssetDataHash = keccak256(order.takerAssetData);
+
         // Assembly for more efficiently computing:
-        //   keccak256(abi.encode(
-        //       order.makerAddress,
-        //       order.takerAddress,
-        //       order.feeRecipientAddress,
-        //       order.senderAddress,
-        //       order.makerAssetAmount,
-        //       order.takerAssetAmount,
-        //       order.makerFee,
-        //       order.takerFee,
-        //       order.expirationTimeSeconds,
-        //       order.salt,
-        //       keccak256(order.makerAssetData),
-        //       keccak256(order.takerAssetData)
-        //   ));
+        //    keccak256(abi.encode(
+        //        order.makerAddress,
+        //        order.takerAddress,
+        //        order.feeRecipientAddress,
+        //        order.senderAddress,
+        //        order.makerAssetAmount,
+        //        order.takerAssetAmount,
+        //        order.makerFee,
+        //        order.takerFee,
+        //        order.expirationTimeSeconds,
+        //        order.salt,
+        //        keccak256(order.makerAssetData),
+        //        keccak256(order.takerAssetData)
+        //    ));
+
         assembly {
             // Backup
             // solhint-disable-next-line space-after-comma
