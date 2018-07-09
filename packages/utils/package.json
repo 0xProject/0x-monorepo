@@ -1,6 +1,6 @@
 {
     "name": "@0xproject/utils",
-    "version": "0.7.1",
+    "version": "0.7.2",
     "engines": {
         "node": ">=6.12"
     },
@@ -24,8 +24,8 @@
     },
     "homepage": "https://github.com/0xProject/0x-monorepo/packages/utils/README.md",
     "devDependencies": {
-        "@0xproject/monorepo-scripts": "^0.2.1",
-        "@0xproject/tslint-config": "^0.4.20",
+        "@0xproject/monorepo-scripts": "^0.2.2",
+        "@0xproject/tslint-config": "^0.4.21",
         "@types/lodash": "4.14.104",
         "copyfiles": "1.2.0",
         "make-promises-safe": "1.1.0",
@@ -35,11 +35,11 @@
         "typescript": "2.7.1"
     },
     "dependencies": {
-        "@0xproject/typescript-typings": "^0.4.1",
+        "@0xproject/typescript-typings": "^0.4.2",
         "@types/node": "9.6.0",
-        "ethereumjs-util": "^5.1.1",
-        "ethereum-types": "^0.0.2",
         "bignumber.js": "~4.1.0",
+        "ethereum-types": "^0.0.2",
+        "ethereumjs-util": "^5.1.1",
         "ethers": "3.0.22",
         "js-sha3": "0.7.0",
         "lodash": "4.17.10",

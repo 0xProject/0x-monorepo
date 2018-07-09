@@ -1,6 +1,6 @@
 {
     "name": "@0xproject/migrations",
-    "version": "0.0.8",
+    "version": "0.0.9",
     "engines": {
         "node": ">=6.12"
     },
@@ -24,10 +24,10 @@
     },
     "license": "Apache-2.0",
     "devDependencies": {
-        "@0xproject/abi-gen": "^0.3.2",
-        "@0xproject/dev-utils": "^0.4.4",
-        "@0xproject/tslint-config": "^0.4.20",
-        "@0xproject/types": "^0.8.1",
+        "@0xproject/abi-gen": "^0.3.3",
+        "@0xproject/dev-utils": "^0.4.5",
+        "@0xproject/tslint-config": "^0.4.21",
+        "@0xproject/types": "^0.8.2",
         "make-promises-safe": "1.1.0",
         "npm-run-all": "4.1.2",
         "shx": "0.2.2",
@@ -35,11 +35,11 @@
         "typescript": "2.7.1"
     },
     "dependencies": {
-        "@0xproject/base-contract": "^0.3.4",
-        "@0xproject/sol-compiler": "^0.5.2",
-        "@0xproject/typescript-typings": "^0.4.1",
-        "@0xproject/utils": "^0.7.1",
-        "@0xproject/web3-wrapper": "^0.7.1",
+        "@0xproject/base-contract": "^0.3.5",
+        "@0xproject/sol-compiler": "^0.5.3",
+        "@0xproject/typescript-typings": "^0.4.2",
+        "@0xproject/utils": "^0.7.2",
+        "@0xproject/web3-wrapper": "^0.7.2",
         "ethers": "3.0.22",
         "lodash": "4.17.10"
     },

@@ -1,6 +1,6 @@
 {
     "name": "@0xproject/subproviders",
-    "version": "0.10.4",
+    "version": "0.10.5",
     "engines": {
         "node": ">=6.12"
     },
@@ -39,10 +39,10 @@
         }
     },
     "dependencies": {
-        "@0xproject/assert": "^0.2.12",
-        "@0xproject/types": "^0.8.1",
-        "@0xproject/typescript-typings": "^0.4.1",
-        "@0xproject/utils": "^0.7.1",
+        "@0xproject/assert": "^0.2.13",
+        "@0xproject/types": "^0.8.2",
+        "@0xproject/typescript-typings": "^0.4.2",
+        "@0xproject/utils": "^0.7.2",
         "@ledgerhq/hw-app-eth": "4.7.3",
         "@ledgerhq/hw-transport-u2f": "4.7.3",
         "bip39": "2.5.0",
@@ -54,12 +54,12 @@
         "lodash": "4.17.10",
         "semaphore-async-await": "1.5.1",
         "web3": "0.20.6",
-        "web3-provider-engine": "14.0.6" 
+        "web3-provider-engine": "14.0.6"
     },
     "devDependencies": {
-        "@0xproject/monorepo-scripts": "^0.2.1",
-        "@0xproject/tslint-config": "^0.4.20",
-        "@0xproject/utils": "^0.7.1",
+        "@0xproject/monorepo-scripts": "^0.2.2",
+        "@0xproject/tslint-config": "^0.4.21",
+        "@0xproject/utils": "^0.7.2",
         "@types/bip39": "2.4.0",
         "@types/lodash": "4.14.104",
         "@types/mocha": "2.2.48",
