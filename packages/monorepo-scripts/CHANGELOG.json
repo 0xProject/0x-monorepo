@@ -1,10 +1,19 @@
 [
     {
-        "version": "0.2.2",
+        "version": "0.2.3",
         "changes": [
             {
                 "note": "Fix git remote tag removal step & add an additional sanity assertion",
                 "pr": 803
+            }
+        ]
+    },
+    {
+        "timestamp": 1531149657,
+        "version": "0.2.2",
+        "changes": [
+            {
+                "note": "Dependencies updated"
             }
         ]
     },

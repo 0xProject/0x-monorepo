@@ -1,9 +1,18 @@
 [
     {
-        "version": "0.0.15",
+        "version": "0.0.16",
         "changes": [
             {
                 "note": "Nest MD files under versions so that you can update them for future versions"
+            }
+        ]
+    },
+    {
+        "timestamp": 1531149657,
+        "version": "0.0.15",
+        "changes": [
+            {
+                "note": "Dependencies updated"
             }
         ]
     },
