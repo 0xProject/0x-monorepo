@@ -87,7 +87,7 @@ module.exports = {
                   new webpack.DefinePlugin({
                       'process.env': {
                           NODE_ENV: JSON.stringify(process.env.NODE_ENV),
-                          GIT_SHA: GIT_SHA,
+                          GIT_SHA: JSON.stringify(GIT_SHA),
                       },
                   }),
                   // TODO: Revert to webpack bundled version with webpack v4.
