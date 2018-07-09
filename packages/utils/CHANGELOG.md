@@ -5,6 +5,12 @@ Edit the package's CHANGELOG.json file only.
 
 CHANGELOG
 
+## v0.7.2 - _July 9, 2018_
+
+    * Added errorUtils.spawnSwitchErr
+    * Add logUtils.warn (#589)
+    * Fixes uncaught Error in abi_decoder (#763)
+
 ## v0.7.1 - _June 19, 2018_
 
     * Dependencies updated
