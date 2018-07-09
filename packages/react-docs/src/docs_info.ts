@@ -9,6 +9,7 @@ import {
     DocsInfoTypeConfigs,
     DocsMenu,
     DoxityDocObj,
+    SectionNameToMarkdownByVersion,
     SectionsMap,
     SupportedDocJson,
     TypeDefinitionByName,
