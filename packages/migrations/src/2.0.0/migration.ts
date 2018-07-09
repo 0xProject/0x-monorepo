@@ -130,7 +130,6 @@ export const runV2MigrationsAsync = async (provider: Provider, artifactsDir: str
     );
 
     // Forwarder
-    const erc20ProxyId = await erc20proxy.getProxyId.callAsync();
     const forwarder = await ForwarderContract.deployFrom0xArtifactAsync(
         artifacts.Forwarder,
         provider,
@@ -138,7 +137,6 @@ export const runV2MigrationsAsync = async (provider: Provider, artifactsDir: str
         exchange.address,
         etherToken.address,
         zrxToken.address,
-        erc20ProxyId,
         assetProxyUtils.encodeERC20AssetData(zrxToken.address),
         assetProxyUtils.encodeERC20AssetData(etherToken.address),
     );

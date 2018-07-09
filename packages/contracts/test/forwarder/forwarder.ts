@@ -1,6 +1,6 @@
 import { BlockchainLifecycle } from '@0xproject/dev-utils';
 import { assetProxyUtils } from '@0xproject/order-utils';
-import { AssetProxyId, RevertReason, SignedOrder } from '@0xproject/types';
+import { RevertReason, SignedOrder } from '@0xproject/types';
 import { BigNumber } from '@0xproject/utils';
 import { Web3Wrapper } from '@0xproject/web3-wrapper';
 import * as chai from 'chai';
@@ -131,7 +131,6 @@ describe(ContractName.Forwarder, () => {
             exchangeInstance.address,
             wethContract.address,
             zrxToken.address,
-            AssetProxyId.ERC20,
             zrxAssetData,
             wethAssetData,
         );
