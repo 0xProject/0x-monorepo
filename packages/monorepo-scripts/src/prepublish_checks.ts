@@ -34,16 +34,16 @@ async function checkGitTagsForNextVersionAndDeleteIfExistAsync(
         const packageLocation = lernaPackage.location;
         const nextVersion = await utils.getNextPackageVersionAsync(currentVersion, packageName, packageLocation);
 
-        const localTagVersions = localTagVersionsByPackageName[packageName];
-        if (_.includes(localTagVersions, nextVersion)) {
-            const tagName = `${packageName}@${nextVersion}`;
-            await utils.removeLocalTagAsync(tagName);
-        }
-
         const remoteTagVersions = remoteTagVersionsByPackageName[packageName];
         if (_.includes(remoteTagVersions, nextVersion)) {
             const tagName = `:refs/tags/${packageName}@${nextVersion}`;
             await utils.removeRemoteTagAsync(tagName);
+        }
+
+        const localTagVersions = localTagVersionsByPackageName[packageName];
+        if (_.includes(localTagVersions, nextVersion)) {
+            const tagName = `${packageName}@${nextVersion}`;
+            await utils.removeLocalTagAsync(tagName);
         }
     }
 }
@@ -166,9 +166,25 @@ async function checkPublishRequiredSetupAsync(): Promise<void> {
     } catch (err) {
         throw new Error('You must setup your AWS credentials by running `aws configure`. Do this and try again.');
     }
+
+    utils.log('Checking that git branch is up to date with upstream...');
+    await execAsync('git fetch');
+    const res = await execAsync('git status -bs'); // s - short format, b - branch info
+    /**
+     * Possible outcomes
+     * ## branch_name...origin/branch_name [behind n]
+     * ## branch_name...origin/branch_name [ahead n]
+     * ## branch_name...origin/branch_name
+     */
+    const gitShortStatusHeader = res.stdout.split('\n')[0];
+    if (gitShortStatusHeader.includes('behind')) {
+        throw new Error('Your branch is behind upstream. Please pull before publishing.');
+    } else if (gitShortStatusHeader.includes('ahead')) {
+        throw new Error('Your branch is ahead of upstream. Please push before publishing.');
+    }
 }
 
 prepublishChecksAsync().catch(err => {
-    utils.log(err);
+    utils.log(err.message);
     process.exit(1);
 });
