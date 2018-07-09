@@ -27,6 +27,33 @@ export async function testWithReferenceFuncAsync<P0, P1, P2, P3, P4, R>(
     values: [P0, P1, P2, P3, P4],
 ): Promise<void>;
 
+/**
+ * Tests the behavior of a test function by comparing it to the expected
+ * behavior (defined by a reference function).
+ *
+ * First the reference function will be called to obtain an "expected result",
+ * or if the reference function throws/rejects, an "expected error". Next, the
+ * test function will be called to obtain an "actual result", or if the test
+ * function throws/rejects, an "actual error". The test passes if at least one
+ * of the following conditions is met:
+ *
+ * 1) Neither the reference function or the test function throw and the
+ * "expected result" equals the "actual result".
+ *
+ * 2) Both the reference function and the test function throw and the "actual
+ * error" message *contains* the "expected error" message.
+ *
+ * @param referenceFuncAsync a reference function implemented in pure
+ * JavaScript/TypeScript which accepts N arguments and returns the "expected
+ * result" or throws/rejects with the "expected error".
+ * @param testFuncAsync a test function which, e.g., makes a call or sends a
+ * transaction to a contract. It accepts the same N arguments returns the
+ * "actual result" or throws/rejects with the "actual error".
+ * @param values an array of N values, where each value corresponds in-order to
+ * an argument to both the test function and the reference function.
+ * @return A Promise that resolves if the test passes and rejects if the test
+ * fails, according to the rules described above.
+ */
 export async function testWithReferenceFuncAsync(
     referenceFunc: (...args: any[]) => Promise<any>,
     testFuncAsync: (...args: any[]) => Promise<any>,
