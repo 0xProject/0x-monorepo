@@ -148,7 +148,7 @@ export class ExchangeWrapper extends ContractWrapper {
         signedOrder: SignedOrder,
         takerAssetFillAmount: BigNumber,
         takerAddress: string,
-        orderTransactionOpts: OrderTransactionOpts = {},
+        orderTransactionOpts: OrderTransactionOpts = { shouldValidate: true },
     ): Promise<string> {
         assert.doesConformToSchema('signedOrder', signedOrder, schemas.signedOrderSchema);
         assert.isValidBaseUnitAmount('takerAssetFillAmount', takerAssetFillAmount);
@@ -191,7 +191,7 @@ export class ExchangeWrapper extends ContractWrapper {
         signedOrder: SignedOrder,
         takerAssetFillAmount: BigNumber,
         takerAddress: string,
-        orderTransactionOpts: OrderTransactionOpts = {},
+        orderTransactionOpts: OrderTransactionOpts = { shouldValidate: true },
     ): Promise<string> {
         assert.doesConformToSchema('signedOrder', signedOrder, schemas.signedOrderSchema);
         assert.isValidBaseUnitAmount('takerAssetFillAmount', takerAssetFillAmount);
@@ -239,7 +239,7 @@ export class ExchangeWrapper extends ContractWrapper {
         signedOrder: SignedOrder,
         takerAssetFillAmount: BigNumber,
         takerAddress: string,
-        orderTransactionOpts: OrderTransactionOpts = {},
+        orderTransactionOpts: OrderTransactionOpts = { shouldValidate: true },
     ): Promise<string> {
         assert.doesConformToSchema('signedOrder', signedOrder, schemas.signedOrderSchema);
         assert.isValidBaseUnitAmount('takerAssetFillAmount', takerAssetFillAmount);
@@ -286,7 +286,7 @@ export class ExchangeWrapper extends ContractWrapper {
         data: string,
         signature: string,
         senderAddress: string,
-        orderTransactionOpts: OrderTransactionOpts = {},
+        orderTransactionOpts: OrderTransactionOpts = { shouldValidate: true },
     ): Promise<string> {
         assert.isBigNumber('salt', salt);
         assert.isETHAddressHex('signerAddress', signerAddress);
@@ -331,7 +331,7 @@ export class ExchangeWrapper extends ContractWrapper {
         signedOrders: SignedOrder[],
         takerAssetFillAmounts: BigNumber[],
         takerAddress: string,
-        orderTransactionOpts: OrderTransactionOpts = {},
+        orderTransactionOpts: OrderTransactionOpts = { shouldValidate: true },
     ): Promise<string> {
         assert.doesConformToSchema('signedOrders', signedOrders, schemas.signedOrdersSchema);
         _.forEach(takerAssetFillAmounts, takerAssetFillAmount =>
@@ -376,7 +376,7 @@ export class ExchangeWrapper extends ContractWrapper {
         signedOrders: SignedOrder[],
         makerAssetFillAmount: BigNumber,
         takerAddress: string,
-        orderTransactionOpts: OrderTransactionOpts = {},
+        orderTransactionOpts: OrderTransactionOpts = { shouldValidate: true },
     ): Promise<string> {
         assert.doesConformToSchema('signedOrders', signedOrders, schemas.signedOrdersSchema);
         assert.isBigNumber('makerAssetFillAmount', makerAssetFillAmount);
@@ -419,7 +419,7 @@ export class ExchangeWrapper extends ContractWrapper {
         signedOrders: SignedOrder[],
         takerAssetFillAmount: BigNumber,
         takerAddress: string,
-        orderTransactionOpts: OrderTransactionOpts = {},
+        orderTransactionOpts: OrderTransactionOpts = { shouldValidate: true },
     ): Promise<string> {
         assert.doesConformToSchema('signedOrders', signedOrders, schemas.signedOrdersSchema);
         assert.isBigNumber('takerAssetFillAmount', takerAssetFillAmount);
@@ -462,7 +462,7 @@ export class ExchangeWrapper extends ContractWrapper {
         signedOrders: SignedOrder[],
         makerAssetFillAmount: BigNumber,
         takerAddress: string,
-        orderTransactionOpts: OrderTransactionOpts = {},
+        orderTransactionOpts: OrderTransactionOpts = { shouldValidate: true },
     ): Promise<string> {
         assert.doesConformToSchema('signedOrders', signedOrders, schemas.signedOrdersSchema);
         assert.isBigNumber('makerAssetFillAmount', makerAssetFillAmount);
@@ -505,7 +505,7 @@ export class ExchangeWrapper extends ContractWrapper {
         signedOrders: SignedOrder[],
         takerAssetFillAmount: BigNumber,
         takerAddress: string,
-        orderTransactionOpts: OrderTransactionOpts = {},
+        orderTransactionOpts: OrderTransactionOpts = { shouldValidate: true },
     ): Promise<string> {
         assert.doesConformToSchema('signedOrders', signedOrders, schemas.signedOrdersSchema);
         assert.isBigNumber('takerAssetFillAmount', takerAssetFillAmount);
@@ -548,7 +548,7 @@ export class ExchangeWrapper extends ContractWrapper {
         signedOrders: SignedOrder[],
         takerAssetFillAmounts: BigNumber[],
         takerAddress: string,
-        orderTransactionOpts: OrderTransactionOpts = {},
+        orderTransactionOpts: OrderTransactionOpts = { shouldValidate: true },
     ): Promise<string> {
         assert.doesConformToSchema('signedOrders', signedOrders, schemas.signedOrdersSchema);
         _.forEach(takerAssetFillAmounts, takerAssetFillAmount =>
@@ -593,7 +593,7 @@ export class ExchangeWrapper extends ContractWrapper {
         signedOrders: SignedOrder[],
         takerAssetFillAmounts: BigNumber[],
         takerAddress: string,
-        orderTransactionOpts: OrderTransactionOpts = {},
+        orderTransactionOpts: OrderTransactionOpts = { shouldValidate: true },
     ): Promise<string> {
         assert.doesConformToSchema('signedOrders', signedOrders, schemas.signedOrdersSchema);
         _.forEach(takerAssetFillAmounts, takerAssetFillAmount =>
@@ -633,7 +633,7 @@ export class ExchangeWrapper extends ContractWrapper {
     @decorators.asyncZeroExErrorHandler
     public async batchCancelOrdersAsync(
         orders: Array<Order | SignedOrder>,
-        orderTransactionOpts: OrderTransactionOpts = {},
+        orderTransactionOpts: OrderTransactionOpts = { shouldValidate: true },
     ): Promise<string> {
         assert.doesConformToSchema('orders', orders, schemas.ordersSchema);
         assert.doesConformToSchema('orderTransactionOpts', orderTransactionOpts, orderTxOptsSchema, [txOptsSchema]);
@@ -672,7 +672,7 @@ export class ExchangeWrapper extends ContractWrapper {
         leftSignedOrder: SignedOrder,
         rightSignedOrder: SignedOrder,
         takerAddress: string,
-        orderTransactionOpts: OrderTransactionOpts = {},
+        orderTransactionOpts: OrderTransactionOpts = { shouldValidate: true },
     ): Promise<string> {
         assert.doesConformToSchema('leftSignedOrder', leftSignedOrder, schemas.signedOrderSchema);
         assert.doesConformToSchema('rightSignedOrder', rightSignedOrder, schemas.signedOrderSchema);
@@ -731,7 +731,7 @@ export class ExchangeWrapper extends ContractWrapper {
         signerAddress: string,
         signature: string,
         senderAddress: string,
-        orderTransactionOpts: OrderTransactionOpts = {},
+        orderTransactionOpts: OrderTransactionOpts = { shouldValidate: true },
     ): Promise<string> {
         assert.isHexString('hash', hash);
         assert.isETHAddressHex('signerAddress', signerAddress);
@@ -887,7 +887,7 @@ export class ExchangeWrapper extends ContractWrapper {
     @decorators.asyncZeroExErrorHandler
     public async cancelOrderAsync(
         order: Order | SignedOrder,
-        orderTransactionOpts: OrderTransactionOpts = {},
+        orderTransactionOpts: OrderTransactionOpts = { shouldValidate: true },
     ): Promise<string> {
         assert.doesConformToSchema('order', order, schemas.orderSchema);
         await assert.isSenderAddressAsync('order.maker', order.makerAddress, this._web3Wrapper);
@@ -922,7 +922,7 @@ export class ExchangeWrapper extends ContractWrapper {
         validatorAddress: string,
         isApproved: boolean,
         senderAddress: string,
-        orderTransactionOpts: OrderTransactionOpts = {},
+        orderTransactionOpts: OrderTransactionOpts = { shouldValidate: true },
     ): Promise<string> {
         assert.isETHAddressHex('validatorAddress', validatorAddress);
         assert.isBoolean('isApproved', isApproved);
@@ -961,7 +961,7 @@ export class ExchangeWrapper extends ContractWrapper {
     public async cancelOrdersUpToAsync(
         targetOrderEpoch: BigNumber,
         senderAddress: string,
-        orderTransactionOpts: OrderTransactionOpts = {},
+        orderTransactionOpts: OrderTransactionOpts = { shouldValidate: true },
     ): Promise<string> {
         assert.isBigNumber('targetOrderEpoch', targetOrderEpoch);
         await assert.isSenderAddressAsync('senderAddress', senderAddress, this._web3Wrapper);
