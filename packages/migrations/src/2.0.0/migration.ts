@@ -13,6 +13,7 @@ import { DummyERC721TokenContract } from './contract_wrappers/dummy_erc721_token
 import { ERC20ProxyContract } from './contract_wrappers/erc20_proxy';
 import { ERC721ProxyContract } from './contract_wrappers/erc721_proxy';
 import { ExchangeContract } from './contract_wrappers/exchange';
+import { ForwarderContract } from './contract_wrappers/forwarder';
 import { WETH9Contract } from './contract_wrappers/weth9';
 import { ZRXTokenContract } from './contract_wrappers/zrx_token';
 
@@ -127,4 +128,19 @@ export const runV2MigrationsAsync = async (provider: Provider, artifactsDir: str
         erc721TokenInfo[0].name,
         erc721TokenInfo[0].symbol,
     );
+
+    // Forwarder
+    const erc20ProxyId = await erc20proxy.getProxyId.callAsync();
+    const forwarder = await ForwarderContract.deployFrom0xArtifactAsync(
+        artifacts.Forwarder,
+        provider,
+        txDefaults,
+        exchange.address,
+        etherToken.address,
+        zrxToken.address,
+        erc20ProxyId,
+        assetProxyUtils.encodeERC20AssetData(zrxToken.address),
+        assetProxyUtils.encodeERC20AssetData(etherToken.address),
+    );
+    artifactsWriter.saveArtifact(forwarder);
 };
