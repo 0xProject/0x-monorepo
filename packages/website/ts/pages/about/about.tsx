@@ -99,7 +99,7 @@ const teamRow3: ProfileInfo[] = [
     },
     {
         name: 'Jacob Evans',
-        title: 'Blockchain Engineer',
+        title: 'Ecosystem Engineer',
         description: `Previously software engineer at Qantas and RSA Security.`,
         image: '/images/team/jacob.jpg',
         linkedIn: 'https://www.linkedin.com/in/dekzter/',
