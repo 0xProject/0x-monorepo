@@ -94,6 +94,7 @@ module.exports = {
                   // The v3 series bundled version does not support ES6 and
                   // fails to build.
                   new UglifyJsPlugin({
+                      sourceMap: true,
                       uglifyOptions: {
                           mangle: {
                               reserved: ['BigNumber'],
@@ -101,7 +102,7 @@ module.exports = {
                       },
                   }),
                   new RollbarSourceMapPlugin({
-                      accessToken: 'a6619002b51c4464928201e6ea94de65',
+                      accessToken: '32c39bfa4bb6440faedc1612a9c13d28',
                       version: GIT_SHA,
                       publicPath: 'https://0xproject.com/',
                   }),
