@@ -80,7 +80,7 @@ contract MixinForwarderCore is
 
         // Attempt to sell 95% of WETH.
         // ZRX fees are payed with this contract's balance.
-        marketSellEth(
+        orderFillResults = marketSellEth(
             orders,
             wethAvailable,
             signatures
@@ -258,6 +258,7 @@ contract MixinForwarderCore is
 
             bytes memory zrxAssetData = ZRX_ASSET_DATA;
             bytes memory wethAssetData = WETH_ASSET_DATA;
+            uint256 zrxPurchased = 0;
 
             for (uint256 i = 0; i < orders.length; i++) {
 
@@ -266,10 +267,7 @@ contract MixinForwarderCore is
                 orders[i].takerAssetData = wethAssetData;
 
                 // Calculate the remaining amount of ZRX to buy.
-                uint256 remainingZrxBuyAmount = safeAdd(
-                    safeSub(zrxBuyAmount, totalFillResults.makerAssetFilledAmount),
-                    totalFillResults.takerFeePaid
-                );
+                uint256 remainingZrxBuyAmount = safeSub(zrxBuyAmount, zrxPurchased);
     
                 // Convert the remaining amount of ZRX to buy into remaining amount
                 // of WETH to sell, assuming entire amount can be sold in the current order.
@@ -288,16 +286,17 @@ contract MixinForwarderCore is
 
                 // Update amounts filled and fees paid by maker and taker.
                 addFillResults(totalFillResults, singleFillResult);
+                zrxPurchased = safeSub(totalFillResults.makerAssetFilledAmount, totalFillResults.takerFeePaid);
 
                 // Stop execution if the entire amount of ZRX has been bought.
-                if (totalFillResults.makerAssetFilledAmount == zrxBuyAmount) {
+                if (zrxPurchased == zrxBuyAmount) {
                     break;
                 }
             }
 
             // Ensure that all ZRX spent while filling primary orders has been repurchased.
             require(
-                totalFillResults.makerAssetFilledAmount == zrxBuyAmount,
+                zrxPurchased == zrxBuyAmount,
                 "COMPLETE_FILL_FAILED"
             );
         }

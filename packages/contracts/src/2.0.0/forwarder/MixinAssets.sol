@@ -95,7 +95,7 @@ contract MixinAssets is
         if (proxyId == ERC20_DATA_ID) {
             transferERC20Token(assetData, amount);
         } else if (proxyId == ERC721_DATA_ID) {
-            transferERC721Token(assetData);
+            transferERC721Token(assetData, amount);
         } else {
             revert("UNSUPPORTED_TOKEN_PROXY");
         }
@@ -149,9 +149,17 @@ contract MixinAssets is
 
     /// @dev Decodes ERC721 assetData and transfers given amount to sender.
     /// @param assetData Byte array encoded for the respective asset proxy.
-    function transferERC721Token(bytes memory assetData)
+    /// @param amount Amount of asset to transfer to sender.
+    function transferERC721Token(
+        bytes memory assetData,
+        uint256 amount
+    )
         internal
     {
+        require(
+            amount == 1,
+            "INVALID_AMOUNT"
+        );
         // Decode asset data.
         address token = assetData.readAddress(16);
         uint256 tokenId = assetData.readUint256(36);

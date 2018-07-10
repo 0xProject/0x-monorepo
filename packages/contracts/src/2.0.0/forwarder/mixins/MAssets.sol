@@ -45,6 +45,10 @@ contract MAssets is
 
     /// @dev Decodes ERC721 assetData and transfers given amount to sender.
     /// @param assetData Byte array encoded for the respective asset proxy.
-    function transferERC721Token(bytes memory assetData)
+    /// @param amount Amount of asset to transfer to sender.
+    function transferERC721Token(
+        bytes memory assetData,
+        uint256 amount
+    )
         internal;
 }

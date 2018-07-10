@@ -78,32 +78,46 @@ contract MixinWeth is
     )
         internal
     {
-        uint256 wethRemaining = safeSub(
-            msg.value,
-            safeAdd(wethSoldExcludingFeeOrders, wethSoldForZrx)
-        );
-        ETHER_TOKEN.withdraw(wethRemaining);
-
+        // Ensure feePercentage is less than 5%.
         require(
             feePercentage <= MAX_FEE_PERCENTAGE,
             "FEE_PERCENTAGE_TOO_LARGE"
         );
+
+        // Calculate amount of WETH that hasn't been sold.
+        uint256 wethRemaining = safeSub(
+            msg.value,
+            safeAdd(wethSoldExcludingFeeOrders, wethSoldForZrx)
+        );
+
+        // Calculate ETH fee to pay to feeRecipient.
         uint256 ethFee = getPartialAmount(
             feePercentage,
             PERCENTAGE_DENOMINATOR,
             wethSoldExcludingFeeOrders
         );
+
+        // Ensure fee is less than amount of WETH remaining.
         require(
-            ethFee < wethRemaining,
+            ethFee <= wethRemaining,
             "MAX_FEE_EXCEEDED"
         );
-        if (ethFee > 0) {
-            feeRecipient.transfer(ethFee);
-        }
+    
+        // Do nothing if no WETH remaining
+        if (wethRemaining > 0) {
+            // Convert remaining WETH to ETH
+            ETHER_TOKEN.withdraw(wethRemaining);
 
-        uint256 ethRefund = safeSub(wethRemaining, ethFee);
-        if (ethRefund > 0) {
-            msg.sender.transfer(ethRefund);
+            // Pay ETH to feeRecipient
+            if (ethFee > 0) {
+                feeRecipient.transfer(ethFee);
+            }
+
+            // Refund remaining ETH to msg.sender.
+            uint256 ethRefund = safeSub(wethRemaining, ethFee);
+            if (ethRefund > 0) {
+                msg.sender.transfer(ethRefund);
+            }
         }
     }
 }

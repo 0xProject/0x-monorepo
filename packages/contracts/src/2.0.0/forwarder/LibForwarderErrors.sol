@@ -21,7 +21,7 @@ pragma solidity 0.4.24;
 
 
 /// This contract is intended to serve as a reference, but is not actually used for efficiency reasons.
-contract MixinErrorMessages {
+contract LibForwarderErrors {
     string constant FEE_PERCENTAGE_TOO_LARGE = "FEE_PROPORTION_TOO_LARGE";                        // Provided fee percentage greater than 5%.
     string constant MAX_FEE_EXCEEDED = "MAX_FEE_EXCEEDED";                                        // Not enough ETH remaining to pay feeRecipient.
     string constant OVERSOLD_WETH = "OVERSOLD_WETH";                                              // More WETH sold than provided with current message call.
@@ -30,4 +30,5 @@ contract MixinErrorMessages {
     string constant UNSUPPORTED_TOKEN_PROXY = "UNSUPPORTED_TOKEN_PROXY";                          // Proxy in assetData not supported.
     string constant DEFAULT_FUNCTION_WETH_CONTRACT_ONLY = "DEFAULT_FUNCTION_WETH_CONTRACT_ONLY";  // Fallback function may only be used for WETH withdrawals.
     string constant INVALID_MSG_VALUE = "INVALID_MSG_VALUE";                                      // msg.value must be greater than 0.
+    string constant INVALID_AMOUNT = "INVALID_AMOUNT";                                            // Amount must equal 1.
 }
