@@ -179,6 +179,7 @@ const teamRow6: ProfileInfo[] = [
         title: 'Research Fellow',
         description: `Researching decentralized governance. Previously Assistant Professor of Economics at National University of Singapore Business School. PhD in Economics at UCLA.`,
         image: 'images/team/peter.jpg',
+        linkedIn: 'https://www.linkedin.com/in/peter-z-7b9595163/',
     },
     // {
     //     name: 'Chris Kalani',
