@@ -84,5 +84,5 @@ export interface DifferentWalletSimpleMenuItemProps {
 export const DifferentWalletSimpleMenuItem: React.StatelessComponent<DifferentWalletSimpleMenuItemProps> = ({
     onClick,
 }) => {
-    return <SimpleMenuItem displayText="Use a Different Wallet..." onClick={onClick} />;
+    return <SimpleMenuItem displayText="Use Ledger Wallet..." onClick={onClick} />;
 };

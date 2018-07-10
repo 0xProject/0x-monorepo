@@ -1,6 +1,13 @@
 const path = require('path');
 const webpack = require('webpack');
 const UglifyJsPlugin = require('uglifyjs-webpack-plugin');
+const RollbarSourceMapPlugin = require('rollbar-sourcemap-webpack-plugin');
+const childProcess = require('child_process');
+
+const GIT_SHA = childProcess
+    .execSync('git rev-parse HEAD')
+    .toString()
+    .trim();
 
 module.exports = {
     entry: ['./ts/index.tsx'],
@@ -80,17 +87,24 @@ module.exports = {
                   new webpack.DefinePlugin({
                       'process.env': {
                           NODE_ENV: JSON.stringify(process.env.NODE_ENV),
+                          GIT_SHA: JSON.stringify(GIT_SHA),
                       },
                   }),
                   // TODO: Revert to webpack bundled version with webpack v4.
                   // The v3 series bundled version does not support ES6 and
                   // fails to build.
                   new UglifyJsPlugin({
+                      sourceMap: true,
                       uglifyOptions: {
                           mangle: {
                               reserved: ['BigNumber'],
                           },
                       },
+                  }),
+                  new RollbarSourceMapPlugin({
+                      accessToken: '32c39bfa4bb6440faedc1612a9c13d28',
+                      version: GIT_SHA,
+                      publicPath: 'https://0xproject.com/',
                   }),
               ]
             : [],

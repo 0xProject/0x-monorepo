@@ -537,7 +537,9 @@ export class Blockchain {
     }
     public destroy(): void {
         this._blockchainWatcher.destroy();
-        this._injectedProviderObservable.unsubscribe(this._injectedProviderUpdateHandler);
+        if (this._injectedProviderObservable) {
+            this._injectedProviderObservable.unsubscribe(this._injectedProviderUpdateHandler);
+        }
         this._stopWatchingExchangeLogFillEvents();
         this._stopWatchingGasPrice();
     }
