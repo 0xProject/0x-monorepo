@@ -15,6 +15,14 @@ let nodeType: NodeType | undefined;
 // resolve with either a transaction receipt or a transaction hash.
 export type sendTransactionResult = Promise<TransactionReceipt | TransactionReceiptWithDecodedLogs | string>;
 
+/**
+ * Returns ganacheError if the backing Ethereum node is Ganache and gethError
+ * if it is Geth.
+ * @param ganacheError the error to be returned if the backing node is Ganache.
+ * @param gethError the error to be returned if the backing node is Geth.
+ * @returns either the given ganacheError or gethError depending on the backing
+ * node.
+ */
 export async function getGanacheOrGethError(ganacheError: string, gethError: string): Promise<string> {
     if (_.isUndefined(nodeType)) {
         nodeType = await web3Wrapper.getNodeTypeAsync();

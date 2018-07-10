@@ -16,9 +16,9 @@ import * as MultiSigWalletWithTimeLock from '../../artifacts/MultiSigWalletWithT
 import * as TestAssetProxyDispatcher from '../../artifacts/TestAssetProxyDispatcher.json';
 import * as TestAssetProxyOwner from '../../artifacts/TestAssetProxyOwner.json';
 import * as TestConstants from '../../artifacts/TestConstants.json';
+import * as TestExchangeInternals from '../../artifacts/TestExchangeInternals.json';
 import * as TestLibBytes from '../../artifacts/TestLibBytes.json';
 import * as TestLibs from '../../artifacts/TestLibs.json';
-import * as TestExchangeInternals from '../../artifacts/TestExchangeInternals.json';
 import * as TestSignatureValidator from '../../artifacts/TestSignatureValidator.json';
 import * as TokenRegistry from '../../artifacts/TokenRegistry.json';
 import * as Validator from '../../artifacts/Validator.json';

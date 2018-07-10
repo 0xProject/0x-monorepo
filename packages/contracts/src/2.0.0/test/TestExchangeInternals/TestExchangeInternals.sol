@@ -16,14 +16,16 @@
 
 */
 
-pragma solidity ^0.4.24;
+pragma solidity 0.4.24;
 pragma experimental ABIEncoderV2;
 
 import "../../protocol/Exchange/Exchange.sol";
 
+
 contract TestExchangeInternals is
     Exchange
 {
+    constructor() public Exchange("") {}
 
     /// @dev Adds properties of both FillResults instances.
     ///      Modifies the first FillResults instance specified.
@@ -104,6 +106,4 @@ contract TestExchangeInternals is
     {
         updateFilledState(order, takerAddress, orderHash, orderTakerAssetFilledAmount, fillResults);
     }
-
-    constructor() public Exchange("") {}
 }
