@@ -22,14 +22,12 @@ pragma solidity 0.4.24;
 
 /// This contract is intended to serve as a reference, but is not actually used for efficiency reasons.
 contract MixinErrorMessages {
-    string constant VALUE_GREATER_THAN_ZERO = "VALUE_GREATER_THAN_ZERO";
-    string constant FEE_PROPORTION_TOO_LARGE = "FEE_PROPORTION_TOO_LARGE";
-    string constant TAKER_ASSET_ZRX_REQUIRED = "TAKER_ASSET_ZRX_REQUIRED";
-    string constant TAKER_ASSET_WETH_REQUIRED = "TAKER_ASSET_WETH_REQUIRED";
-    string constant SAME_ASSET_TYPE_REQUIRED = "SAME_ASSET_TYPE_REQUIRED";
-    string constant UNACCEPTABLE_THRESHOLD = "UNACCEPTABLE_THRESHOLD";
-    string constant UNSUPPORTED_TOKEN_PROXY = "UNSUPPORTED_TOKEN_PROXY";
-    string constant ASSET_AMOUNT_MATCH_ORDER_SIZE = "ASSET_AMOUNT_MUST_MATCH_ORDER_SIZE";
-    string constant DEFAULT_FUNCTION_WETH_CONTRACT_ONLY = "DEFAULT_FUNCTION_WETH_CONTRACT_ONLY";
-    string constant INVALID_MSG_VALUE = "INVALID_MSG_VALUE";
+    string constant FEE_PERCENTAGE_TOO_LARGE = "FEE_PROPORTION_TOO_LARGE";                        // Provided fee percentage greater than 5%.
+    string constant MAX_FEE_EXCEEDED = "MAX_FEE_EXCEEDED";                                        // Not enough ETH remaining to pay feeRecipient.
+    string constant OVERSOLD_WETH = "OVERSOLD_WETH";                                              // More WETH sold than provided with current message call.
+    string constant COMPLETE_FILL_FAILED = "COMPLETE_FILL_FAILED";                                // Desired purchase amount not completely filled (required for ZRX fees only).
+    string constant TRANSFER_FAILED = "TRANSFER_FAILED";                                          // Asset transfer failed.
+    string constant UNSUPPORTED_TOKEN_PROXY = "UNSUPPORTED_TOKEN_PROXY";                          // Proxy in assetData not supported.
+    string constant DEFAULT_FUNCTION_WETH_CONTRACT_ONLY = "DEFAULT_FUNCTION_WETH_CONTRACT_ONLY";  // Fallback function may only be used for WETH withdrawals.
+    string constant INVALID_MSG_VALUE = "INVALID_MSG_VALUE";                                      // msg.value must be greater than 0.
 }

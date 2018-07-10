@@ -25,6 +25,10 @@ import "../../tokens/ERC20Token/IERC20Token.sol";
 
 contract MConstants {
 
+    bytes4 constant internal ERC20_DATA_ID = bytes4(keccak256("ERC20Token(address)"));
+    bytes4 constant internal ERC721_DATA_ID = bytes4(keccak256("ERC721Token(address,uint256,bytes)"));
+    uint256 constant internal MAX_UINT = 2**256 - 1;
+
     // solhint-disable var-name-mixedcase
     IExchange internal EXCHANGE;
     IEtherToken internal ETHER_TOKEN;

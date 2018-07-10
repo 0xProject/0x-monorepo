@@ -25,55 +25,56 @@ import "../../protocol/Exchange/libs/LibFillResults.sol";
 
 contract IForwarderCore {
 
-    /// @dev Market sells ETH for ERC20 tokens, performing fee abstraction if required. This does not support ERC721 tokens. This function is payable
-    ///      and will convert all incoming ETH into WETH and perform the trade on behalf of the caller.
-    ///      This function allows for a deduction of a proportion of incoming ETH sent to the feeRecipient.
-    ///      The caller is sent all tokens from the operation.
-    ///      If the purchased token amount does not meet an acceptable threshold then this function reverts.
-    /// @param orders An array of Order struct containing order specifications.
-    /// @param signatures An array of Proof that order has been created by maker.
-    /// @param feeOrders An array of Order struct containing order specifications for fees.
-    /// @param feeSignatures An array of Proof that order has been created by maker for the fee orders.
-    /// @param feeProportion A proportion deducted off the incoming ETH and sent to feeRecipient. The maximum value for this
-    ///        is 1000, aka 10%. Supports up to 2 decimal places. I.e 0.59% is 59.
-    /// @param feeRecipient An address of the fee recipient whom receives feeProportion of ETH.
-    /// @return FillResults amounts filled and fees paid by maker and taker.
-    function marketSellEthForERC20(
+    /// @dev Purchases as much of orders' makerAssets as possible by selling up to 95% of transaction's ETH value.
+    ///      Any ZRX required to pay fees for primary orders will automatically be purchased by this contract.
+    ///      5% of ETH value is reserved for paying fees to order feeRecipients (in ZRX) and forwarding contract feeRecipient (in ETH).
+    ///      Any ETH not spent will be refunded to sender.
+    /// @param orders Array of order specifications used containing desired makerAsset and WETH as takerAsset. 
+    /// @param signatures Proofs that orders have been created by makers.
+    /// @param feeOrders Array of order specifications containing ZRX as makerAsset and WETH as takerAsset. Used to purchase ZRX for primary order fees.
+    /// @param feeSignatures Proofs that feeOrders have been created by makers.
+    /// @param feePercentage Percentage of WETH sold that will payed as fee to forwarding contract feeRecipient.
+    /// @param feeRecipient Address that will receive ETH when orders are filled.
+    /// @return Amounts filled and fees paid by maker and taker for both sets of orders.
+    function marketSellOrdersWithEth(
         LibOrder.Order[] memory orders,
         bytes[] memory signatures,
         LibOrder.Order[] memory feeOrders,
         bytes[] memory feeSignatures,
-        uint16  feeProportion,
+        uint256  feePercentage,
         address feeRecipient
     )
         public
         payable
-        returns (LibFillResults.FillResults memory totalFillResults);
+        returns (
+            LibFillResults.FillResults memory orderFillResults,
+            LibFillResults.FillResults memory feeOrderFillResults
+        );
 
-    /// @dev Buys the exact amount of assets (ERC20 and ERC721), performing fee abstraction if required.
-    ///      All order assets must be of the same type. Deducts a proportional fee to fee recipient.
-    ///      This function is payable and will convert all incoming ETH into WETH and perform the trade on behalf of the caller.
-    ///      The caller is sent all assets from the fill of orders. This function will revert unless the requested amount of assets are purchased.
-    ///      Any excess ETH sent will be returned to the caller
-    /// @param orders An array of Order struct containing order specifications.
-    /// @param signatures An array of Proof that order has been created by maker.
-    /// @param feeOrders An array of Order struct containing order specifications for fees.
-    /// @param makerTokenFillAmount The amount of maker asset to buy.
-    /// @param feeSignatures An array of Proof that order has been created by maker for the fee orders.
-    /// @param feeProportion A proportion deducted off the ETH spent and sent to feeRecipient. The maximum value for this
-    ///        is 1000, aka 10%. Supports up to 2 decimal places. I.e 0.59% is 59.
-    /// @param feeRecipient An address of the fee recipient whom receives feeProportion of ETH.
-    /// @return FillResults amounts filled and fees paid by maker and taker.
-    function marketBuyTokensWithEth(
+    /// @dev Attempt to purchase makerAssetFillAmount of makerAsset by selling ETH provided with transaction.
+    ///      Any ZRX required to pay fees for primary orders will automatically be purchased by this contract.
+    ///      Any ETH not spent will be refunded to sender.
+    /// @param orders Array of order specifications used containing desired makerAsset and WETH as takerAsset. 
+    /// @param makerAssetFillAmount Desired amount of makerAsset to purchase.
+    /// @param signatures Proofs that orders have been created by makers.
+    /// @param feeOrders Array of order specifications containing ZRX as makerAsset and WETH as takerAsset. Used to purchase ZRX for primary order fees.
+    /// @param feeSignatures Proofs that feeOrders have been created by makers.
+    /// @param feePercentage Percentage of WETH sold that will payed as fee to forwarding contract feeRecipient.
+    /// @param feeRecipient Address that will receive ETH when orders are filled.
+    /// @return Amounts filled and fees paid by maker and taker for both sets of orders.
+    function marketBuyOrdersWithEth(
         LibOrder.Order[] memory orders,
+        uint256 makerAssetFillAmount,
         bytes[] memory signatures,
         LibOrder.Order[] memory feeOrders,
         bytes[] memory feeSignatures,
-        uint256 makerTokenFillAmount,
-        uint16  feeProportion,
+        uint256  feePercentage,
         address feeRecipient
     )
         public
         payable
-        returns (LibFillResults.FillResults memory totalFillResults);
+        returns (
+            LibFillResults.FillResults memory orderFillResults,
+            LibFillResults.FillResults memory feeOrderFillResults
+        );
 }

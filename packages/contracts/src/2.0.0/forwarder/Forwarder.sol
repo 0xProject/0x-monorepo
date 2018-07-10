@@ -19,20 +19,17 @@
 pragma solidity 0.4.24;
 pragma experimental ABIEncoderV2;
 
-import "./MixinFees.sol";
+import "./MixinWeth.sol";
 import "./MixinForwarderCore.sol";
 import "./MixinConstants.sol";
-import "./MixinMarketBuyZrx.sol";
-import "./MixinExpectedResults.sol";
-import "./MixinTransfer.sol";
+import "./MixinAssets.sol";
 
 
+// solhint-disable no-empty-blocks
 contract Forwarder is
     MixinConstants,
-    MixinExpectedResults,
-    MixinFees,
-    MixinMarketBuyZrx,
-    MixinTransfer,
+    MixinWeth,
+    MixinAssets,
     MixinForwarderCore
 {
 
