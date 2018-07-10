@@ -59,7 +59,8 @@ export async function testWithReferenceFuncAsync(
     testFuncAsync: (...args: any[]) => Promise<any>,
     values: any[],
 ): Promise<void> {
-    const testCaseString = JSON.stringify(values);
+    const paramNames = _getParameterNames(referenceFunc);
+    const testCaseString = JSON.stringify(_.zipObject(paramNames, values));
     let expectedResult: any;
     let expectedErr: string | undefined;
     try {
@@ -77,9 +78,21 @@ export async function testWithReferenceFuncAsync(
         expect(JSON.stringify(actualResult)).to.equal(JSON.stringify(expectedResult));
     } catch (e) {
         if (_.isUndefined(expectedErr)) {
-            throw new Error(`Unexpected error:  ${e.message}\n\tTest case: ${testCaseString}`);
+            throw new Error(`${e.message}\n\tTest case: ${testCaseString}`);
         } else {
             expect(e.message).to.contain(expectedErr, `${e.message}\n\tTest case: ${testCaseString}`);
         }
     }
+}
+
+function _getParameterNames(func: (...args: any[]) => any): string[] {
+    return _.toString(func)
+        .replace(/[/][/].*$/gm, '') // strip single-line comments
+        .replace(/\s+/g, '') // strip white space
+        .replace(/[/][*][^/*]*[*][/]/g, '') // strip multi-line comments
+        .split('){', 1)[0]
+        .replace(/^[^(]*[(]/, '') // extract the parameters
+        .replace(/=[^,]+/g, '') // strip any ES6 defaults
+        .split(',')
+        .filter(Boolean); // split & filter [""]
 }
