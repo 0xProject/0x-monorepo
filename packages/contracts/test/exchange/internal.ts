@@ -7,7 +7,7 @@ import { TestExchangeInternalsContract } from '../../generated_contract_wrappers
 import { artifacts } from '../utils/artifacts';
 import { getGanacheOrGethError } from '../utils/assertions';
 import { chaiSetup } from '../utils/chai_setup';
-import { bytes32Values, testCombinatoriallyWithReferenceFuncAsync, uint256Values } from '../utils/combinatorial_sets';
+import { bytes32Values, testCombinatoriallyWithReferenceFuncAsync, uint256Values } from '../utils/combinatorial_utils';
 import { constants } from '../utils/constants';
 import { provider, txDefaults, web3Wrapper } from '../utils/web3_wrapper';
 

@@ -2,7 +2,7 @@ import { BlockchainLifecycle } from '@0xproject/dev-utils';
 import * as _ from 'lodash';
 
 import { chaiSetup } from '../utils/chai_setup';
-import { CoreCombinatorialUtils, coreCombinatorialUtilsFactoryAsync } from '../utils/core_combinatorial_utils';
+import { CoreCombinatorialUtils, coreCombinatorialUtilsFactoryAsync } from '../utils/fill_order_combinatorial_utils';
 import {
     AllowanceAmountScenario,
     AssetDataScenario,
