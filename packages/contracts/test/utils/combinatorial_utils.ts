@@ -97,7 +97,7 @@ export async function testCombinatoriallyWithReferenceFuncAsync<P0, P1, P2, P3, 
  * transaction to a contract. It accepts the same N arguments returns the
  * "actual result" or "actual error" for a given test case.
  * @param values an array of N arrays. Each inner array is a set of possible
- * values which are each passed into both the reference function and the test
+ * values which are passed into both the reference function and the test
  * function.
  * @return A Promise that resolves if the test passes and rejects if the test
  * fails, according to the rules described above.

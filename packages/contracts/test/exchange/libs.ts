@@ -1,6 +1,7 @@
 import { BlockchainLifecycle } from '@0xproject/dev-utils';
 import { assetDataUtils, EIP712Utils, orderHashUtils } from '@0xproject/order-utils';
 import { SignedOrder } from '@0xproject/types';
+import { BigNumber } from '@0xproject/utils';
 import * as chai from 'chai';
 
 import { TestConstantsContract } from '../../generated_contract_wrappers/test_constants';
@@ -64,6 +65,35 @@ describe('Exchange libs', () => {
                 const isValid = await testConstants.assertValidZrxAssetData.callAsync();
                 expect(isValid).to.be.equal(true);
             });
+        });
+    });
+    // Note(albrow): These tests are designed to be supplemental to the
+    // combinatorial tests in test/exchange/internal. They test specific edge
+    // cases that are not covered by the combinatorial tests.
+    describe('LibMath', () => {
+        it('should return false if there is a rounding error of 0.1%', async () => {
+            const numerator = new BigNumber(20);
+            const denominator = new BigNumber(999);
+            const target = new BigNumber(50);
+            // rounding error = ((20*50/999) - floor(20*50/999)) / (20*50/999) = 0.1%
+            const isRoundingError = await libs.publicIsRoundingError.callAsync(numerator, denominator, target);
+            expect(isRoundingError).to.be.false();
+        });
+        it('should return false if there is a rounding of 0.09%', async () => {
+            const numerator = new BigNumber(20);
+            const denominator = new BigNumber(9991);
+            const target = new BigNumber(500);
+            // rounding error = ((20*500/9991) - floor(20*500/9991)) / (20*500/9991) = 0.09%
+            const isRoundingError = await libs.publicIsRoundingError.callAsync(numerator, denominator, target);
+            expect(isRoundingError).to.be.false();
+        });
+        it('should return true if there is a rounding error of 0.11%', async () => {
+            const numerator = new BigNumber(20);
+            const denominator = new BigNumber(9989);
+            const target = new BigNumber(500);
+            // rounding error = ((20*500/9989) - floor(20*500/9989)) / (20*500/9989) = 0.011%
+            const isRoundingError = await libs.publicIsRoundingError.callAsync(numerator, denominator, target);
+            expect(isRoundingError).to.be.true();
         });
     });
 
