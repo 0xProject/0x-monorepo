@@ -36,7 +36,7 @@ const rollbarConfig = {
         'SecurityError (DOM Exception 18)',
     ],
 };
-import Rollbar = require('../../public/js/rollbar.umd.nojson.min.js');
+import Rollbar = require('../../public/js/rollbar.umd.min.js');
 const rollbar = Rollbar.init(rollbarConfig);
 
 export const errorReporter = {
