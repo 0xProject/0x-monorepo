@@ -284,14 +284,13 @@ describe('Exchange core internal functions', () => {
         async function referenceUpdateFilledStateAsync(
             takerAssetFilledAmount: BigNumber,
             orderTakerAssetFilledAmount: BigNumber,
+            // tslint:disable-next-line:no-unused-variable
             orderHash: string,
         ): Promise<BigNumber> {
             const totalFilledAmount = takerAssetFilledAmount.add(orderTakerAssetFilledAmount);
             if (totalFilledAmount.greaterThan(MAX_UINT256)) {
                 throw overflowErrorForSendTransaction;
             }
-            // TODO(albrow): Test orderHash overflowing bytes32?
-            _.identity(orderHash);
             return totalFilledAmount;
         }
         async function testUpdateFilledStateAsync(
@@ -306,8 +305,6 @@ describe('Exchange core internal functions', () => {
                 takerFeePaid: new BigNumber(0),
             };
             await web3Wrapper.awaitTransactionSuccessAsync(
-                // TODO(albrow): Move emptySignedOrder and the zero address to a
-                // utility library.
                 await testExchange.publicUpdateFilledState.sendTransactionAsync(
                     emptySignedOrder,
                     '0x0000000000000000000000000000000000000000',
