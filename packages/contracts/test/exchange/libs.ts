@@ -1,7 +1,6 @@
 import { BlockchainLifecycle } from '@0xproject/dev-utils';
 import { assetDataUtils, EIP712Utils, orderHashUtils } from '@0xproject/order-utils';
 import { SignedOrder } from '@0xproject/types';
-import { BigNumber } from '@0xproject/utils';
 import * as chai from 'chai';
 
 import { TestConstantsContract } from '../../generated_contract_wrappers/test_constants';
