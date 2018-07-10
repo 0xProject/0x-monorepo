@@ -116,11 +116,11 @@ describe('Exchange core internal functions', () => {
             // singleFillResults will consist of fields with the same values.
             // This should be safe because none of the fields in a given
             // FillResults are ever used together in a mathemetical operation.
-            // They are only used with the corresponding feild from *the other*
+            // They are only used with the corresponding field from *the other*
             // FillResults, which are different.
             const totalFillResults = makeFillResults(totalValue);
             const singleFillResults = makeFillResults(singleValue);
-            // Note(albrow): _.mergeWith mutates the first argument! To
+            // HACK(albrow): _.mergeWith mutates the first argument! To
             // workaround this we use _.cloneDeep.
             return _.mergeWith(
                 _.cloneDeep(totalFillResults),

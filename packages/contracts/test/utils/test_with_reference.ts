@@ -6,6 +6,11 @@ import { chaiSetup } from './chai_setup';
 chaiSetup.configure();
 const expect = chai.expect;
 
+export async function testWithReferenceFuncAsync<P0, R>(
+    referenceFunc: (p0: P0) => Promise<R>,
+    testFunc: (p0: P0) => Promise<R>,
+    values: [P0],
+): Promise<void>;
 export async function testWithReferenceFuncAsync<P0, P1, R>(
     referenceFunc: (p0: P0, p1: P1) => Promise<R>,
     testFunc: (p0: P0, p1: P1) => Promise<R>,
@@ -75,7 +80,10 @@ export async function testWithReferenceFuncAsync(
                 `Expected error containing ${expectedErr} but got no error\n\tTest case: ${testCaseString}`,
             );
         }
-        expect(JSON.stringify(actualResult)).to.equal(JSON.stringify(expectedResult));
+        expect(JSON.stringify(actualResult)).to.equal(
+            JSON.stringify(expectedResult),
+            `\n\tTest case: ${testCaseString}`,
+        );
     } catch (e) {
         if (_.isUndefined(expectedErr)) {
             throw new Error(`${e.message}\n\tTest case: ${testCaseString}`);
@@ -85,6 +93,7 @@ export async function testWithReferenceFuncAsync(
     }
 }
 
+// Source: https://stackoverflow.com/questions/1007981/how-to-get-function-parameter-names-values-dynamically
 function _getParameterNames(func: (...args: any[]) => any): string[] {
     return _.toString(func)
         .replace(/[/][/].*$/gm, '') // strip single-line comments

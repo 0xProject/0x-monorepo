@@ -46,25 +46,25 @@ export async function testCombinatoriallyWithReferenceFuncAsync<P0, P1, R>(
     name: string,
     referenceFunc: (p0: P0, p1: P1) => Promise<R>,
     testFunc: (p0: P0, p1: P1) => Promise<R>,
-    values: [P0[], P1[]],
+    allValues: [P0[], P1[]],
 ): Promise<void>;
 export async function testCombinatoriallyWithReferenceFuncAsync<P0, P1, P2, R>(
     name: string,
     referenceFunc: (p0: P0, p1: P1, p2: P2) => Promise<R>,
     testFunc: (p0: P0, p1: P1, p2: P2) => Promise<R>,
-    values: [P0[], P1[], P2[]],
+    allValues: [P0[], P1[], P2[]],
 ): Promise<void>;
 export async function testCombinatoriallyWithReferenceFuncAsync<P0, P1, P2, P3, R>(
     name: string,
     referenceFunc: (p0: P0, p1: P1, p2: P2, p3: P3) => Promise<R>,
     testFunc: (p0: P0, p1: P1, p2: P2, p3: P3) => Promise<R>,
-    values: [P0[], P1[], P2[], P3[]],
+    allValues: [P0[], P1[], P2[], P3[]],
 ): Promise<void>;
 export async function testCombinatoriallyWithReferenceFuncAsync<P0, P1, P2, P3, P4, R>(
     name: string,
     referenceFunc: (p0: P0, p1: P1, p2: P2, p3: P3, p4: P4) => Promise<R>,
     testFunc: (p0: P0, p1: P1, p2: P2, p3: P3, p4: P4) => Promise<R>,
-    values: [P0[], P1[], P2[], P3[], P4[]],
+    allValues: [P0[], P1[], P2[], P3[], P4[]],
 ): Promise<void>;
 
 /**
@@ -106,9 +106,9 @@ export async function testCombinatoriallyWithReferenceFuncAsync(
     name: string,
     referenceFuncAsync: (...args: any[]) => Promise<any>,
     testFuncAsync: (...args: any[]) => Promise<any>,
-    values: any[],
+    allValues: any[],
 ): Promise<void> {
-    const testCases = combinatorics.cartesianProduct(...values);
+    const testCases = combinatorics.cartesianProduct(...allValues);
     let counter = -1;
     testCases.forEach(async testCase => {
         counter += 1;
