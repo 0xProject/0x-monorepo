@@ -76,7 +76,7 @@ async function referenceGetPartialAmountAsync(
     return product.dividedToIntegerBy(denominator);
 }
 
-describe.only('Exchange core internal functions', () => {
+describe('Exchange core internal functions', () => {
     let testExchange: TestExchangeInternalsContract;
     let overflowErrorForCall: Error | undefined;
     let overflowErrorForSendTransaction: Error | undefined;
