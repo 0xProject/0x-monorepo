@@ -44,13 +44,15 @@ interface FillResults {
     takerFeePaid: BigNumber;
 }
 
-async function _getOverflowErrorForCall(): Promise<Error> {
+const overflowErrorForCall = new Error('UINT256_OVERFLOW');
+
+async function _getInvalidOpcodeErrorForCall(): Promise<Error> {
     const errMsg = await getGanacheOrGethError('invalid opcode', 'Contract call failed');
     return new Error(errMsg);
 }
 
 async function _getOverflowErrorForSendTransaction(): Promise<Error> {
-    const errMsg = await getGanacheOrGethError('invalid opcode', 'always failing transaction');
+    const errMsg = await getGanacheOrGethError('UINT256_OVERFLOW', 'always failing transaction');
     return new Error(errMsg);
 }
 
@@ -59,26 +61,27 @@ async function referenceGetPartialAmountAsync(
     denominator: BigNumber,
     target: BigNumber,
 ): Promise<BigNumber> {
-    const overflowError = await _getOverflowErrorForCall();
+    const invalidOpcodeErrorForCall = await _getInvalidOpcodeErrorForCall();
     if (numerator.greaterThan(MAX_UINT256)) {
-        throw overflowError;
-    } else if (denominator.greaterThan(MAX_UINT256)) {
-        throw overflowError;
-    } else if (denominator.eq(new BigNumber(0))) {
-        throw overflowError;
+        throw invalidOpcodeErrorForCall;
     } else if (target.greaterThan(MAX_UINT256)) {
-        throw overflowError;
+        throw invalidOpcodeErrorForCall;
     }
     const product = numerator.mul(target);
     if (product.greaterThan(MAX_UINT256)) {
-        throw overflowError;
+        throw overflowErrorForCall;
+    }
+    if (denominator.eq(new BigNumber(0))) {
+        throw invalidOpcodeErrorForCall;
+    } else if (denominator.greaterThan(MAX_UINT256)) {
+        throw invalidOpcodeErrorForCall;
     }
     return product.dividedToIntegerBy(denominator);
 }
 
 describe('Exchange core internal functions', () => {
     let testExchange: TestExchangeInternalsContract;
-    let overflowErrorForCall: Error | undefined;
+    let invalidOpcodeErrorForCall: Error | undefined;
     let overflowErrorForSendTransaction: Error | undefined;
 
     before(async () => {
@@ -93,8 +96,8 @@ describe('Exchange core internal functions', () => {
             provider,
             txDefaults,
         );
-        overflowErrorForCall = await _getOverflowErrorForCall();
         overflowErrorForSendTransaction = await _getOverflowErrorForSendTransaction();
+        invalidOpcodeErrorForCall = await _getInvalidOpcodeErrorForCall();
     });
     // Note(albrow): Don't forget to add beforeEach and afterEach calls to reset
     // the blockchain state for any tests which modify it!
@@ -231,13 +234,13 @@ describe('Exchange core internal functions', () => {
             target: BigNumber,
         ): Promise<boolean> {
             if (numerator.greaterThan(MAX_UINT256)) {
-                throw overflowErrorForCall;
+                throw invalidOpcodeErrorForCall;
             } else if (denominator.greaterThan(MAX_UINT256)) {
-                throw overflowErrorForCall;
+                throw invalidOpcodeErrorForCall;
             } else if (denominator.eq(new BigNumber(0))) {
-                throw overflowErrorForCall;
+                throw invalidOpcodeErrorForCall;
             } else if (target.greaterThan(MAX_UINT256)) {
-                throw overflowErrorForCall;
+                throw invalidOpcodeErrorForCall;
             }
             const product = numerator.mul(target);
             const remainder = product.mod(denominator);
@@ -248,7 +251,7 @@ describe('Exchange core internal functions', () => {
                 throw overflowErrorForCall;
             }
             if (product.eq(new BigNumber(0))) {
-                throw overflowErrorForCall;
+                throw invalidOpcodeErrorForCall;
             }
             const remainderTimes1000000 = remainder.mul(new BigNumber('1000000'));
             if (remainderTimes1000000.greaterThan(MAX_UINT256)) {
