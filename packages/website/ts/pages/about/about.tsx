@@ -174,6 +174,12 @@ const teamRow6: ProfileInfo[] = [
         linkedIn: 'https://www.linkedin.com/in/stephenalexbrowne/',
         github: 'http://github.com/albrow',
     },
+    {
+        name: 'Peter Zeitz',
+        title: 'Research Fellow',
+        description: `Researching decentralized governance. Previously Assistant Professor of Economics at National University of Singapore Business School. PhD in Economics at UCLA.`,
+        image: 'images/team/peter.jpg',
+    },
     // {
     //     name: 'Chris Kalani',
     //     title: 'Director of Design',
