@@ -769,9 +769,13 @@ export class Blockchain {
         this._contractWrappers.exchange.unsubscribeAll();
     }
     private async _getTokenRegistryTokensByAddressAsync(): Promise<TokenByAddress> {
-        utils.assert(!_.isUndefined(this._contractWrappers), 'ContractWrappers must be instantiated.');
-        const tokenRegistryTokens = await this._contractWrappers.tokenRegistry.getTokensAsync();
-
+        let tokenRegistryTokens;
+        if (this.networkId === constants.NETWORK_ID_MAINNET) {
+            tokenRegistryTokens = await backendClient.getTokenInfosAsync();
+        } else {
+            utils.assert(!_.isUndefined(this._contractWrappers), 'ContractWrappers must be instantiated.');
+            tokenRegistryTokens = await this._contractWrappers.tokenRegistry.getTokensAsync();
+        }
         const tokenByAddress: TokenByAddress = {};
         _.each(tokenRegistryTokens, (t: ZeroExToken) => {
             // HACK: For now we have a hard-coded list of iconUrls for the dummyTokens
