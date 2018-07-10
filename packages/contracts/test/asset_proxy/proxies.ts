@@ -272,7 +272,7 @@ describe('Asset Transfer Proxies', () => {
                         to: erc721Proxy.address,
                         data,
                         from: exchangeAddress,
-                        gas: constants.TRANSFER_FROM_GAS,
+                        gas: constants.MAX_TRANSFER_FROM_GAS,
                     }),
                 );
                 // Verify that no log was emitted by erc721 receiver
@@ -311,7 +311,7 @@ describe('Asset Transfer Proxies', () => {
                         to: erc721Proxy.address,
                         data,
                         from: exchangeAddress,
-                        gas: constants.TRANSFER_FROM_GAS,
+                        gas: constants.MAX_TRANSFER_FROM_GAS,
                     }),
                 );
                 // Validate log emitted by erc721 receiver
@@ -349,7 +349,7 @@ describe('Asset Transfer Proxies', () => {
                         to: erc721Proxy.address,
                         data,
                         from: exchangeAddress,
-                        gas: constants.TRANSFER_FROM_GAS,
+                        gas: constants.MAX_TRANSFER_FROM_GAS,
                     }),
                     RevertReason.TransferFailed,
                 );

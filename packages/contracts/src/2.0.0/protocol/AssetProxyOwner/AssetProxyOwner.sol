@@ -16,16 +16,14 @@
 
 */
 
-pragma solidity ^0.4.10;
+pragma solidity 0.4.10;
 
 import "../../multisig/MultiSigWalletWithTimeLock.sol";
-import "../../utils/LibBytes/LibBytes.sol";
 
 
 contract AssetProxyOwner is
     MultiSigWalletWithTimeLock
 {
-    using LibBytes for bytes;
 
     event AssetProxyRegistration(address assetProxyContract, bool isRegistered);
 
@@ -40,7 +38,7 @@ contract AssetProxyOwner is
     modifier validRemoveAuthorizedAddressAtIndexTx(uint256 transactionId) {
         Transaction storage tx = transactions[transactionId];
         require(isAssetProxyRegistered[tx.destination]);
-        require(tx.data.readBytes4(0) == REMOVE_AUTHORIZED_ADDRESS_AT_INDEX_SELECTOR);
+        require(readBytes4(tx.data, 0) == REMOVE_AUTHORIZED_ADDRESS_AT_INDEX_SELECTOR);
         _;
     }
 
@@ -96,5 +94,26 @@ contract AssetProxyOwner is
             ExecutionFailure(transactionId);
             tx.executed = false;
         }
+    }
+
+    /// @dev Reads an unpadded bytes4 value from a position in a byte array.
+    /// @param b Byte array containing a bytes4 value.
+    /// @param index Index in byte array of bytes4 value.
+    /// @return bytes4 value from byte array.
+    function readBytes4(
+        bytes memory b,
+        uint256 index
+    )
+        internal
+        returns (bytes4 result)
+    {
+        require(b.length >= index + 4);
+        assembly {
+            result := mload(add(b, 32))
+            // Solidity does not require us to clean the trailing bytes.
+            // We do it anyway
+            result := and(result, 0xFFFFFFFF00000000000000000000000000000000000000000000000000000000)
+        }
+        return result;
     }
 }

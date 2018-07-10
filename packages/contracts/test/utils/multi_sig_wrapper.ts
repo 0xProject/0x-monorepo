@@ -6,6 +6,7 @@ import * as _ from 'lodash';
 import { AssetProxyOwnerContract } from '../../generated_contract_wrappers/asset_proxy_owner';
 import { MultiSigWalletContract } from '../../generated_contract_wrappers/multi_sig_wallet';
 
+import { constants } from './constants';
 import { LogDecoder } from './log_decoder';
 
 export class MultiSigWrapper {
@@ -36,7 +37,10 @@ export class MultiSigWrapper {
         return tx;
     }
     public async executeTransactionAsync(txId: BigNumber, from: string): Promise<TransactionReceiptWithDecodedLogs> {
-        const txHash = await this._multiSig.executeTransaction.sendTransactionAsync(txId, { from });
+        const txHash = await this._multiSig.executeTransaction.sendTransactionAsync(txId, {
+            from,
+            gas: constants.MAX_EXECUTE_TRANSACTION_GAS,
+        });
         const tx = await this._logDecoder.getTxWithDecodedLogsAsync(txHash);
         return tx;
     }
@@ -48,6 +52,7 @@ export class MultiSigWrapper {
         const txHash = await (this
             ._multiSig as AssetProxyOwnerContract).executeRemoveAuthorizedAddressAtIndex.sendTransactionAsync(txId, {
             from,
+            gas: constants.MAX_EXECUTE_TRANSACTION_GAS,
         });
         const tx = await this._logDecoder.getTxWithDecodedLogsAsync(txHash);
         return tx;
