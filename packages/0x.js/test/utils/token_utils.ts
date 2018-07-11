@@ -1,34 +1,12 @@
-import { Token } from '@0xproject/types';
-import * as _ from 'lodash';
+import { generatePseudoRandomSalt } from '@0xproject/order-utils';
+import { BigNumber } from '@0xproject/utils';
 
-import { InternalZeroExError } from '../../src/types';
+import { artifacts } from '../../src/artifacts';
 
-const PROTOCOL_TOKEN_SYMBOL = 'ZRX';
-const WETH_TOKEN_SYMBOL = 'WETH';
+import { constants } from './constants';
 
-export class TokenUtils {
-    private _tokens: Token[];
-    constructor(tokens: Token[]) {
-        this._tokens = tokens;
-    }
-    public getProtocolTokenOrThrow(): Token {
-        const zrxToken = _.find(this._tokens, { symbol: PROTOCOL_TOKEN_SYMBOL });
-        if (_.isUndefined(zrxToken)) {
-            throw new Error(InternalZeroExError.ZrxNotInTokenRegistry);
-        }
-        return zrxToken;
-    }
-    public getWethTokenOrThrow(): Token {
-        const wethToken = _.find(this._tokens, { symbol: WETH_TOKEN_SYMBOL });
-        if (_.isUndefined(wethToken)) {
-            throw new Error(InternalZeroExError.WethNotInTokenRegistry);
-        }
-        return wethToken;
-    }
-    public getDummyTokens(): Token[] {
-        const dummyTokens = _.filter(this._tokens, token => {
-            return !_.includes([PROTOCOL_TOKEN_SYMBOL, WETH_TOKEN_SYMBOL], token.symbol);
-        });
-        return dummyTokens;
-    }
-}
+export const tokenUtils = {
+    getProtocolTokenAddress(): string {
+        return artifacts.ZRXToken.networks[constants.TESTRPC_NETWORK_ID].address;
+    },
+};

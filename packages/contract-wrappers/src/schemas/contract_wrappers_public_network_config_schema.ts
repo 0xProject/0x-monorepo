@@ -22,7 +22,7 @@ export const contractWrappersPublicNetworkConfigSchema = {
         gasPrice: { $ref: '/Number' },
         zrxContractAddress: { $ref: '/Address' },
         exchangeContractAddress: { $ref: '/Address' },
-        tokenTransferProxyContractAddress: { $ref: '/Address' },
+        erc20ProxyContractAddress: { $ref: '/Address' },
         blockPollingIntervalMs: { type: 'number' },
         orderWatcherConfig: {
             type: 'object',
