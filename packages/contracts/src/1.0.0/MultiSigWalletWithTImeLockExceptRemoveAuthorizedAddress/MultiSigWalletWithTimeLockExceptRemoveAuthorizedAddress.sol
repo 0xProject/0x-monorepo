@@ -18,7 +18,7 @@
 
 pragma solidity ^0.4.10;
 
-import "../../current/multisig/MultiSigWalletWithTimeLock.sol";
+import "../../2.0.0/multisig/MultiSigWalletWithTimeLock.sol";
 
 contract MultiSigWalletWithTimeLockExceptRemoveAuthorizedAddress is MultiSigWalletWithTimeLock {
 

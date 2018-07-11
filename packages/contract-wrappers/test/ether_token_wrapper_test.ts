@@ -336,15 +336,19 @@ describe('EtherTokenWrapper', () => {
     describe('#getLogsAsync', () => {
         let etherTokenAddress: string;
         let erc20ProxyAddress: string;
-        const blockRange: BlockRange = {
-            fromBlock: 0,
-            toBlock: BlockParamLiteral.Latest,
-        };
+        let blockRange: BlockRange;
         let txHash: string;
-        before(() => {
+        before(async () => {
             addressWithETH = userAddresses[0];
             etherTokenAddress = tokenUtils.getWethTokenAddress();
             erc20ProxyAddress = contractWrappers.erc20Proxy.getContractAddress();
+            // Start the block range after all migrations to avoid unexpected logs
+            const currentBlock = await web3Wrapper.getBlockNumberAsync();
+            const fromBlock = currentBlock + 1;
+            blockRange = {
+                fromBlock,
+                toBlock: BlockParamLiteral.Latest,
+            };
         });
         it('should get logs with decoded args emitted by Approval', async () => {
             txHash = await contractWrappers.erc20Token.setUnlimitedProxyAllowanceAsync(
