@@ -34,7 +34,6 @@ export const constants = {
     PROVIDER_NAME_GENERIC: 'Injected Web3',
     PROVIDER_NAME_PUBLIC: '0x Public',
     ROLLBAR_ACCESS_TOKEN: '32c39bfa4bb6440faedc1612a9c13d28',
-    HEAP_APP_ID: '410099666',
     S3_DOC_BUCKET_ROOT: 'https://s3.amazonaws.com/doc-jsons',
     S3_STAGING_DOC_BUCKET_ROOT: 'https://s3.amazonaws.com/staging-doc-jsons',
     SUCCESS_STATUS: 200,
