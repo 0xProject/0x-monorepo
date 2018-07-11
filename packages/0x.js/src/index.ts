@@ -19,8 +19,6 @@ export {
     TransactionReceiptWithDecodedLogs,
 } from '@0xproject/types';
 
-export { OrderWatcherConfig } from '@0xproject/order-watcher';
-
 export {
     EventCallback,
     ContractEvent,

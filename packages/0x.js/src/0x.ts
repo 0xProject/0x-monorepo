@@ -15,7 +15,6 @@ import {
     isValidSignature,
     signOrderHashAsync,
 } from '@0xproject/order-utils';
-import { OrderWatcher, OrderWatcherConfig } from '@0xproject/order-watcher';
 import { ECSignature, Order, Provider, SignedOrder, TransactionReceiptWithDecodedLogs } from '@0xproject/types';
 import { BigNumber } from '@0xproject/utils';
 import { Web3Wrapper } from '@0xproject/web3-wrapper';
@@ -210,19 +209,5 @@ export class ZeroEx {
             timeoutMs,
         );
         return transactionReceiptWithDecodedLogs;
-    }
-    /**
-     * Instantiates and returns a new OrderWatcher instance.
-     * Defaults to watching the pending state.
-     * @param   config      The configuration object. Look up the type for the description.
-     * @return  An instance of the 0x.js OrderWatcher class.
-     */
-    public async createOrderWatcherAsync(config?: OrderWatcherConfig): Promise<OrderWatcher> {
-        // Hack: Get Web3Wrapper from ContractWrappers
-        const web3Wrapper: Web3Wrapper = (this._contractWrappers as any)._web3Wrapper;
-        const networkId = await web3Wrapper.getNetworkIdAsync();
-        const provider = this._contractWrappers.getProvider();
-        const orderWatcher = new OrderWatcher(provider, networkId, config);
-        return orderWatcher;
     }
 }
