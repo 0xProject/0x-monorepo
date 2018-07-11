@@ -7,7 +7,6 @@ import MenuItem from 'material-ui/MenuItem';
 import * as React from 'react';
 import { Link } from 'react-router-dom';
 import { Blockchain } from 'ts/blockchain';
-import { LegacyPortalMenu } from 'ts/components/legacy_portal/legacy_portal_menu';
 import { DrawerMenu } from 'ts/components/portal/drawer_menu';
 import { ProviderDisplay } from 'ts/components/top_bar/provider_display';
 import { TopBarMenuItem } from 'ts/components/top_bar/top_bar_menu_item';
@@ -17,7 +16,6 @@ import { Dispatcher } from 'ts/redux/dispatcher';
 import { Deco, Key, ProviderType, WebsiteLegacyPaths, WebsitePaths } from 'ts/types';
 import { constants } from 'ts/utils/constants';
 import { Translate } from 'ts/utils/translate';
-import { utils } from 'ts/utils/utils';
 
 export enum TopBarDisplayType {
     Default,
@@ -213,8 +211,6 @@ export class TopBar extends React.Component<TopBarProps, TopBarState> {
             </div>
         );
         const popoverContent = <Menu style={{ color: colors.darkGrey }}>{developerSectionMenuItems}</Menu>;
-        // TODO : Remove this once we ship portal v2
-        const shouldShowPortalV2Drawer = this._isViewingPortal() && utils.shouldShowPortalV2();
         return (
             <div
                 style={{ ...styles.topBar, ...bottomBorderStyle, ...this.props.style, ...{ height } }}
@@ -294,11 +290,11 @@ export class TopBar extends React.Component<TopBarProps, TopBarState> {
                         </div>
                     </div>
                 </Container>
-                {shouldShowPortalV2Drawer ? this._renderPortalV2Drawer() : this._renderDrawer()}
+                {this._isViewingPortal() ? this._renderPortalDrawer() : this._renderDrawer()}
             </div>
         );
     }
-    private _renderPortalV2Drawer(): React.ReactNode {
+    private _renderPortalDrawer(): React.ReactNode {
         return (
             <Drawer
                 open={this.state.isDrawerOpen}
@@ -326,7 +322,6 @@ export class TopBar extends React.Component<TopBarProps, TopBarState> {
                 onRequestChange={this._onMenuButtonClick.bind(this)}
             >
                 <div className="clearfix">
-                    {this._renderPortalMenu()}
                     {this._renderDocsMenu()}
                     {this._renderWiki()}
                     <div className="pl1 py1 mt3" style={{ backgroundColor: colors.lightGrey }}>
@@ -475,20 +470,6 @@ export class TopBar extends React.Component<TopBarProps, TopBarState> {
                     shouldDisplaySectionHeaders={false}
                     onMenuItemClick={this._onMenuButtonClick.bind(this)}
                 />
-            </div>
-        );
-    }
-    private _renderPortalMenu(): React.ReactNode {
-        if (!this._isViewingPortal()) {
-            return undefined;
-        }
-
-        return (
-            <div className="lg-hide md-hide">
-                <div className="pl1 py1" style={{ backgroundColor: colors.lightGrey }}>
-                    {this.props.translate.get(Key.PortalDApp, Deco.CapWords)}
-                </div>
-                <LegacyPortalMenu menuItemStyle={{ color: 'black' }} onClick={this._onMenuButtonClick.bind(this)} />
             </div>
         );
     }
