@@ -10,7 +10,7 @@ lib
 /packages/migrations/src/1.0.0/contract_wrappers
 /packages/migrations/src/2.0.0/contract_wrappers
 /packages/migrations/src/2.0.0-beta-testnet/contract_wrappers
-/packages/0x.js/test/artifacts
+/packages/0x.js/src/artifacts
 /packages/contracts/src/artifacts
 /packages/metacoin/artifacts
 /packages/contract-wrappers/test/artifacts
