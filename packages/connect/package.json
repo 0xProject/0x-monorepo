@@ -59,6 +59,7 @@
         "isomorphic-fetch": "^2.2.1",
         "lodash": "^4.17.4",
         "query-string": "^5.0.1",
+        "sinon": "^4.0.0",
         "websocket": "^1.0.25"
     },
     "devDependencies": {
@@ -68,7 +69,8 @@
         "@types/lodash": "4.14.104",
         "@types/mocha": "^2.2.42",
         "@types/query-string": "^5.0.1",
-        "@types/websocket": "^0.0.34",
+        "@types/sinon": "^2.2.2",
+        "@types/websocket": "^0.0.39",
         "async-child-process": "^1.1.1",
         "chai": "^4.0.1",
         "chai-as-promised": "^7.1.0",

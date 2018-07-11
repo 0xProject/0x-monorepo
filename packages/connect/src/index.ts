@@ -1,5 +1,5 @@
 export { HttpClient } from './http_client';
-export { WebSocketOrderbookChannel } from './ws_orderbook_channel';
+export { orderbookChannelFactory } from './orderbook_channel_factory';
 export {
     Client,
     FeesRequest,
@@ -14,7 +14,6 @@ export {
     TokenPairsItem,
     TokenPairsRequestOpts,
     TokenTradeInfo,
-    WebSocketOrderbookChannelConfig,
 } from './types';
 
 export { Order, SignedOrder } from '@0xproject/types';

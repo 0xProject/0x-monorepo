@@ -1,5 +1,14 @@
 [
     {
+        "version": "1.0.0",
+        "changes": [
+            {
+                "note":
+                    "Remove WebSocketOrderbookChannel from the public interface and replace with orderbookChannelFactory"
+            }
+        ]
+    },
+    {
         "timestamp": 1531149657,
         "version": "0.6.16",
         "changes": [
