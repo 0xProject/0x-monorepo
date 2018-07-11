@@ -3,28 +3,35 @@
         "version": "1.0.0",
         "changes": [
             {
-                "note": "Remove tokenRegistry wrapper"
+                "note": "Remove tokenRegistry wrapper",
+                "pr": 863
             },
             {
-                "note": "Rename zeroEx.token to zeroEx.erc20Token, and add zeroEx.erc721Token"
+                "note": "Rename zeroEx.token to zeroEx.erc20Token, and add zeroEx.erc721Token",
+                "pr": 863
             },
             {
-                "note": "Rename zeroEx.proxy to zeroEx.erc20Proxy and add zeroEx.erc721Proxy"
-            },
-            {
-                "note":
-                    "Refactored ZeroEx.isValidSignature to zeroEx.isValidSignatureAsync. It is now async so that it can verify contract-dependent signature types"
-            },
-            {
-                "note":
-                    "Refactored signOrderHashAsync to ecSignOrderHashAsync. There are now many non-ECSignature ways to sign orders too."
+                "note": "Rename zeroEx.proxy to zeroEx.erc20Proxy and add zeroEx.erc721Proxy",
+                "pr": 863
             },
             {
                 "note":
-                    "Removed createOrderWatcherAsync method. Will be added back once OrderWatcher is refactored for V2"
+                    "Refactored ZeroEx.isValidSignature to zeroEx.isValidSignatureAsync. It is now async so that it can verify contract-dependent signature types",
+                "pr": 863
             },
             {
-                "note": "0x.js exports renamed contract events and event arg types"
+                "note":
+                    "Refactored signOrderHashAsync to ecSignOrderHashAsync. There are now many non-ECSignature ways to sign orders too.",
+                "pr": 863
+            },
+            {
+                "note":
+                    "Removed createOrderWatcherAsync method. Will be added back once OrderWatcher is refactored for V2",
+                "pr": 863
+            },
+            {
+                "note": "0x.js exports renamed contract events and event arg types",
+                "pr": 863
             }
         ]
     },
