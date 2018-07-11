@@ -4471,6 +4471,7 @@ ethereumjs-wallet@~0.6.0:
 
 ethers@0xproject/ethers.js#eip-838-reasons, ethers@3.0.22:
   version "3.0.18"
+  uid b91342bd200d142af0165d6befddf783c8ae8447
   resolved "https://codeload.github.com/0xproject/ethers.js/tar.gz/b91342bd200d142af0165d6befddf783c8ae8447"
   dependencies:
     aes-js "3.0.0"
@@ -8311,9 +8312,9 @@ node-uuid@^1.4.7:
   version "1.4.8"
   resolved "https://registry.yarnpkg.com/node-uuid/-/node-uuid-1.4.8.tgz#b040eb0923968afabf8d32fb1f17f1167fdab907"
 
-nodemon@^1.11.0:
-  version "1.17.3"
-  resolved "https://registry.yarnpkg.com/nodemon/-/nodemon-1.17.3.tgz#3b0bbc2ee05ccb43b1aef15ba05c63c7bc9b8530"
+nodemon@1.18.0:
+  version "1.18.0"
+  resolved "https://registry.yarnpkg.com/nodemon/-/nodemon-1.18.0.tgz#44b75d5f19065c47a262d4ab21990da3b6f8feae"
   dependencies:
     chokidar "^2.0.2"
     debug "^3.1.0"
