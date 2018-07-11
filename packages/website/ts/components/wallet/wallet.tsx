@@ -490,6 +490,7 @@ export class Wallet extends React.Component<WalletProps, WalletState> {
     private _openWrappedEtherActionRow(wrappedEtherDirection: Side): void {
         const action =
             wrappedEtherDirection === Side.Deposit ? 'Wallet - Wrap ETH Opened' : 'Wallet - Unwrap WETH Opened';
+        // tslint:disable-next-line:no-floating-promises
         analytics.trackAsync(action);
         this.setState({
             wrappedEtherDirection,
@@ -498,6 +499,7 @@ export class Wallet extends React.Component<WalletProps, WalletState> {
     private _closeWrappedEtherActionRow(wrappedEtherDirection: Side): void {
         const action =
             wrappedEtherDirection === Side.Deposit ? 'Wallet - Wrap ETH Closed' : 'Wallet - Unwrap WETH Closed';
+        // tslint:disable-next-line:no-floating-promises
         analytics.trackAsync(action);
         this.setState({
             wrappedEtherDirection: undefined,

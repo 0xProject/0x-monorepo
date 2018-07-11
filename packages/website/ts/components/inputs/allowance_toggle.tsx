@@ -117,9 +117,11 @@ export class AllowanceToggle extends React.Component<AllowanceToggleProps, Allow
         };
         try {
             await this.props.blockchain.setProxyAllowanceAsync(this.props.token, newAllowanceAmountInBaseUnits);
+            // tslint:disable-next-line:no-floating-promises
             analytics.trackAsync('Set Allowances Success', logData);
             await this.props.refetchTokenStateAsync();
         } catch (err) {
+            // tslint:disable-next-line:no-floating-promises
             analytics.trackAsync('Set Allowance Failure', logData);
             this.setState({
                 isSpinnerVisible: false,

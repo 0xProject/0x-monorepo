@@ -389,6 +389,7 @@ export class Portal extends React.Component<PortalProps, PortalState> {
         );
     }
     private _startOnboarding(): void {
+        // tslint:disable-next-line:no-floating-promises
         analytics.trackAsync('Onboarding Started', {
             reason: 'manual',
             stepIndex: this.props.portalOnboardingStep,

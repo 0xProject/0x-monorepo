@@ -65,6 +65,7 @@ export const RelayerGridTile: React.StatelessComponent<RelayerGridTileProps> = (
     const topTokens = props.relayerInfo.topTokens;
     const weeklyTxnVolume = props.relayerInfo.weeklyTxnVolume;
     const onClick = () => {
+        // tslint:disable-next-line:no-floating-promises
         analytics.trackAsync('Relayer Click', {
             name: props.relayerInfo.name,
         });

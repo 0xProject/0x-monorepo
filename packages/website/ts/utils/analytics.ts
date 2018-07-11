@@ -66,6 +66,7 @@ export class Analytics {
             takerToken: order.metadata.takerToken.symbol,
             makerToken: order.metadata.makerToken.symbol,
         };
+        // tslint:disable-next-line:no-floating-promises
         this.trackAsync(eventName, orderLoggingData);
     }
     /**

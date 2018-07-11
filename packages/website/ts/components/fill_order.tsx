@@ -508,6 +508,7 @@ export class FillOrder extends React.Component<FillOrderProps, FillOrderState> {
     }
     private _trackOrderEvent(eventName: string): void {
         const parsedOrder = this.state.parsedOrder;
+        // tslint:disable-next-line:no-floating-promises
         analytics.trackOrderEventAsync(eventName, parsedOrder);
     }
     private async _onFillOrderClickFireAndForgetAsync(): Promise<void> {
