@@ -4,6 +4,7 @@ import { assert as sharedAssert } from '@0xproject/assert';
 import { Schema, schemas } from '@0xproject/json-schemas';
 // tslint:disable-next-line:no-unused-variable
 import { ECSignature } from '@0xproject/types';
+// tslint:disable-next-line:no-unused-variable
 import { BigNumber } from '@0xproject/utils';
 import * as _ from 'lodash';
 
@@ -11,7 +12,7 @@ export const assert = {
     ...sharedAssert,
     isOrderbookChannelSubscriptionOpts(variableName: string, subscriptionOpts: any): void {
         sharedAssert.doesConformToSchema(
-            'subscriptionOpts',
+            variableName,
             subscriptionOpts,
             schemas.relayerApiOrderbookChannelSubscribePayload,
         );

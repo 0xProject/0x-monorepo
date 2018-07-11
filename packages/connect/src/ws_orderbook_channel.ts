@@ -6,8 +6,6 @@ import {
     OrderbookChannelHandler,
     OrderbookChannelMessageTypes,
     OrderbookChannelSubscriptionOpts,
-    WebsocketClientEventType,
-    WebsocketConnectionEventType,
 } from './types';
 import { assert } from './utils/assert';
 import { orderbookChannelMessageParser } from './utils/orderbook_channel_message_parser';

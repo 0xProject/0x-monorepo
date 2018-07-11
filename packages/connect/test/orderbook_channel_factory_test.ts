@@ -2,7 +2,6 @@ import * as chai from 'chai';
 import * as dirtyChai from 'dirty-chai';
 import * as _ from 'lodash';
 import 'mocha';
-import * as WebSocket from 'websocket';
 
 import { orderbookChannelFactory } from '../src/orderbook_channel_factory';
 
