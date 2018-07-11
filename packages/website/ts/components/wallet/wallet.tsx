@@ -491,7 +491,7 @@ export class Wallet extends React.Component<WalletProps, WalletState> {
         const networkName = sharedConstants.NETWORK_NAME_BY_ID[this.props.networkId];
         const action =
             wrappedEtherDirection === Side.Deposit ? 'Wallet - Wrap ETH Opened' : 'Wallet - Unwrap WETH Opened';
-        analytics.logEvent('Portal', action, networkName);
+        analytics.track(action);
         this.setState({
             wrappedEtherDirection,
         });
@@ -500,7 +500,7 @@ export class Wallet extends React.Component<WalletProps, WalletState> {
         const networkName = sharedConstants.NETWORK_NAME_BY_ID[this.props.networkId];
         const action =
             wrappedEtherDirection === Side.Deposit ? 'Wallet - Wrap ETH Closed' : 'Wallet - Unwrap WETH Closed';
-        analytics.logEvent('Portal', action, networkName);
+        analytics.track(action);
         this.setState({
             wrappedEtherDirection: undefined,
         });

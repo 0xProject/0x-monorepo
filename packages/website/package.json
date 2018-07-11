@@ -11,12 +11,9 @@
         "clean": "shx rm -f public/bundle*",
         "lint": "tslint --project . 'ts/**/*.ts' 'ts/**/*.tsx'",
         "watch_without_deps": "webpack-dev-server --content-base public --https",
-        "deploy_dogfood":
-            "npm run build; aws s3 sync ./public/. s3://dogfood.0xproject.com --profile 0xproject --region us-east-1 --grants read=uri=http://acs.amazonaws.com/groups/global/AllUsers",
-        "deploy_staging":
-            "npm run build; aws s3 sync ./public/. s3://staging-0xproject --profile 0xproject --region us-east-1 --grants read=uri=http://acs.amazonaws.com/groups/global/AllUsers",
-        "deploy_live":
-            "npm run build; aws s3 sync ./public/. s3://0xproject.com --profile 0xproject --region us-east-1 --grants read=uri=http://acs.amazonaws.com/groups/global/AllUsers --exclude *.map.js"
+        "deploy_dogfood": "npm run build; aws s3 sync ./public/. s3://dogfood.0xproject.com --profile 0xproject --region us-east-1 --grants read=uri=http://acs.amazonaws.com/groups/global/AllUsers",
+        "deploy_staging": "npm run build; aws s3 sync ./public/. s3://staging-0xproject --profile 0xproject --region us-east-1 --grants read=uri=http://acs.amazonaws.com/groups/global/AllUsers",
+        "deploy_live": "npm run build; aws s3 sync ./public/. s3://0xproject.com --profile 0xproject --region us-east-1 --grants read=uri=http://acs.amazonaws.com/groups/global/AllUsers --exclude *.map.js"
     },
     "author": "Fabio Berger",
     "license": "Apache-2.0",
@@ -49,7 +46,6 @@
         "react-copy-to-clipboard": "^4.2.3",
         "react-document-title": "^2.0.3",
         "react-dom": "15.6.1",
-        "react-ga": "^2.4.1",
         "react-popper": "^1.0.0-beta.6",
         "react-redux": "^5.0.3",
         "react-router-dom": "^4.1.1",

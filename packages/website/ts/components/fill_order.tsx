@@ -506,6 +506,10 @@ export class FillOrder extends React.Component<FillOrderProps, FillOrderState> {
 
         await this._checkForUntrackedTokensAndAskToAddAsync();
     }
+    private _trackOrderEvent(eventName: string): void {
+        const parsedOrder = this.state.parsedOrder;
+        analytics.trackOrderEvent(eventName, parsedOrder);
+    }
     private async _onFillOrderClickFireAndForgetAsync(): Promise<void> {
         if (this.props.blockchainErr !== BlockchainErrs.NoError || _.isEmpty(this.props.userAddress)) {
             this.props.dispatcher.updateShouldBlockchainErrDialogBeOpen(true);
@@ -552,14 +556,12 @@ export class FillOrder extends React.Component<FillOrderProps, FillOrderState> {
             });
             return;
         }
-        const networkName = sharedConstants.NETWORK_NAME_BY_ID[this.props.networkId];
-        const eventLabel = `${parsedOrder.metadata.takerToken.symbol}-${networkName}`;
         try {
             const orderFilledAmount: BigNumber = await this.props.blockchain.fillOrderAsync(
                 signedOrder,
                 this.props.orderFillAmount,
             );
-            analytics.logEvent('Portal', 'Fill Order Success', eventLabel, parsedOrder.signedOrder.takerTokenAmount);
+            this._trackOrderEvent('Fill Order Success');
             // After fill completes, let's force fetch the token balances
             this.props.dispatcher.forceTokenStateRefetch();
             this.setState({
@@ -573,7 +575,7 @@ export class FillOrder extends React.Component<FillOrderProps, FillOrderState> {
             this.setState({
                 isFilling: false,
             });
-            analytics.logEvent('Portal', 'Fill Order Failure', eventLabel, parsedOrder.signedOrder.takerTokenAmount);
+            this._trackOrderEvent('Fill Order Failure');
             const errMsg = `${err}`;
             if (utils.didUserDenyWeb3Request(errMsg)) {
                 return;
@@ -638,7 +640,7 @@ export class FillOrder extends React.Component<FillOrderProps, FillOrderState> {
                 globalErrMsg: '',
                 unavailableTakerAmount: takerTokenAmount,
             });
-            analytics.logEvent('Portal', 'Cancel Order Success', eventLabel, parsedOrder.signedOrder.makerTokenAmount);
+            this._trackOrderEvent('Cancel Order Success');
             return;
         } catch (err) {
             this.setState({
@@ -648,7 +650,7 @@ export class FillOrder extends React.Component<FillOrderProps, FillOrderState> {
             if (utils.didUserDenyWeb3Request(errMsg)) {
                 return;
             }
-            analytics.logEvent('Portal', 'Cancel Order Failure', eventLabel, parsedOrder.signedOrder.makerTokenAmount);
+            this._trackOrderEvent('Cancel Order Failure');
             globalErrMsg = 'Failed to cancel order, please refresh and try again';
             logUtils.log(`${err}`);
             this.setState({

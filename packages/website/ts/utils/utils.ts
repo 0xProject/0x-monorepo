@@ -313,6 +313,7 @@ export const utils = {
         const baseUrl = `https://${window.location.hostname}${hasPort ? `:${port}` : ''}`;
         return baseUrl;
     },
+    // TODO: Fix this, it's a lie.
     async onPageLoadAsync(): Promise<void> {
         if (document.readyState === 'complete') {
             return; // Already loaded

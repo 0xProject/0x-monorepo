@@ -111,14 +111,16 @@ export class AllowanceToggle extends React.Component<AllowanceToggleProps, Allow
         if (!this._isAllowanceSet()) {
             newAllowanceAmountInBaseUnits = DEFAULT_ALLOWANCE_AMOUNT_IN_BASE_UNITS;
         }
-        const networkName = sharedConstants.NETWORK_NAME_BY_ID[this.props.networkId];
-        const eventLabel = `${this.props.token.symbol}-${networkName}`;
+        const logData = {
+            tokenSymbol: this.props.token.symbol,
+            newAllowance: newAllowanceAmountInBaseUnits.toNumber(),
+        };
         try {
             await this.props.blockchain.setProxyAllowanceAsync(this.props.token, newAllowanceAmountInBaseUnits);
-            analytics.logEvent('Portal', 'Set Allowance Success', eventLabel, newAllowanceAmountInBaseUnits.toNumber());
+            analytics.track('Set Allowances Success', logData);
             await this.props.refetchTokenStateAsync();
         } catch (err) {
-            analytics.logEvent('Portal', 'Set Allowance Failure', eventLabel, newAllowanceAmountInBaseUnits.toNumber());
+            analytics.track('Set Allowance Failure', logData);
             this.setState({
                 isSpinnerVisible: false,
             });

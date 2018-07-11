@@ -74,10 +74,6 @@ const LazyEthereumTypesDocumentation = createLazyComponent('Documentation', asyn
     System.import<any>(/* webpackChunkName: "ethereumTypesDocs" */ 'ts/containers/ethereum_types_documentation'),
 );
 
-analytics.init();
-// tslint:disable-next-line:no-floating-promises
-analytics.logProviderAsync((window as any).web3);
-
 render(
     <Router>
         <div>
