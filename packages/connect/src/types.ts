@@ -39,7 +39,7 @@ export interface OrderbookChannelHandler {
         subscriptionOpts: OrderbookChannelSubscriptionOpts,
         order: SignedOrder,
     ) => void;
-    onError: (channel: OrderbookChannel, err: Error) => void;
+    onError: (channel: OrderbookChannel, err: Error, subscriptionOpts?: OrderbookChannelSubscriptionOpts) => void;
     onClose: (channel: OrderbookChannel) => void;
 }
 

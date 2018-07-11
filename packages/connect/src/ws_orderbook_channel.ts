@@ -69,15 +69,18 @@ export class WebSocketOrderbookChannel implements OrderbookChannel {
     }
     private _handleWebSocketMessage(message: any): void {
         if (_.isUndefined(message.data)) {
-            this._handler.onError(this, new Error(`Message does not contain utf8Data`));
+            this._handler.onError(this, new Error(`Message does not contain data. Url: ${this._client.url}`));
             return;
         }
         try {
-            const utf8Data = message.data;
-            const parserResult = orderbookChannelMessageParser.parse(utf8Data);
+            const data = message.data;
+            const parserResult = orderbookChannelMessageParser.parse(data);
             const subscriptionOpts = this._subscriptionOptsList[parserResult.requestId];
             if (_.isUndefined(subscriptionOpts)) {
-                this._handler.onError(this, new Error(`Message has unknown requestId: ${utf8Data}`));
+                this._handler.onError(
+                    this,
+                    new Error(`Message has unknown requestId. Url: ${this._client.url} Message: ${data}`),
+                );
                 return;
             }
             switch (parserResult.type) {
@@ -90,7 +93,11 @@ export class WebSocketOrderbookChannel implements OrderbookChannel {
                     break;
                 }
                 default: {
-                    this._handler.onError(this, new Error(`Message has unknown type parameter: ${utf8Data}`));
+                    this._handler.onError(
+                        this,
+                        new Error(`Message has unknown type parameter. Url: ${this._client.url} Message: ${data}`),
+                        subscriptionOpts,
+                    );
                 }
             }
         } catch (error) {
