@@ -8,7 +8,6 @@ export const zeroExPrivateNetworkConfigSchema = {
         gasPrice: { $ref: '/Number' },
         zrxContractAddress: { $ref: '/Address' },
         exchangeContractAddress: { $ref: '/Address' },
-        tokenRegistryContractAddress: { $ref: '/Address' },
         tokenTransferProxyContractAddress: { $ref: '/Address' },
         orderWatcherConfig: {
             type: 'object',
@@ -29,7 +28,6 @@ export const zeroExPrivateNetworkConfigSchema = {
         'networkId',
         'zrxContractAddress',
         'exchangeContractAddress',
-        'tokenRegistryContractAddress',
         'tokenTransferProxyContractAddress',
     ],
 };

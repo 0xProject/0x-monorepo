@@ -8,7 +8,6 @@ export const contractWrappersPrivateNetworkConfigSchema = {
         gasPrice: { $ref: '/Number' },
         zrxContractAddress: { $ref: '/Address' },
         exchangeContractAddress: { $ref: '/Address' },
-        tokenRegistryContractAddress: { $ref: '/Address' },
         tokenTransferProxyContractAddress: { $ref: '/Address' },
         blockPollingIntervalMs: { type: 'number' },
         orderWatcherConfig: {
@@ -30,7 +29,6 @@ export const contractWrappersPrivateNetworkConfigSchema = {
         'networkId',
         'zrxContractAddress',
         'exchangeContractAddress',
-        'tokenRegistryContractAddress',
         'tokenTransferProxyContractAddress',
     ],
 };

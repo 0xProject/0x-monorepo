@@ -28,9 +28,7 @@ describe('ZeroEx library', () => {
         it('overrides provider in nested web3s and invalidates contractInstances', async () => {
             // Instantiate the contract instances with the current provider
             await (zeroEx.exchange as any)._getExchangeContractAsync();
-            await (zeroEx.tokenRegistry as any)._getTokenRegistryContractAsync();
             expect((zeroEx.exchange as any)._exchangeContractIfExists).to.not.be.undefined();
-            expect((zeroEx.tokenRegistry as any)._tokenRegistryContractIfExists).to.not.be.undefined();
 
             // Add property to newProvider so that we can differentiate it from old provider
             (provider as any).zeroExTestId = 1;
@@ -38,15 +36,12 @@ describe('ZeroEx library', () => {
 
             // Check that contractInstances with old provider are removed after provider update
             expect((zeroEx.exchange as any)._exchangeContractIfExists).to.be.undefined();
-            expect((zeroEx.tokenRegistry as any)._tokenRegistryContractIfExists).to.be.undefined();
 
             // Check that all nested zeroExContract/web3Wrapper instances return the updated provider
             const nestedWeb3WrapperProvider = ((zeroEx as any)._contractWrappers as ContractWrappers).getProvider();
             expect((nestedWeb3WrapperProvider as any).zeroExTestId).to.be.a('number');
             const exchangeWeb3WrapperProvider = (zeroEx.exchange as any)._web3Wrapper.getProvider();
             expect(exchangeWeb3WrapperProvider.zeroExTestId).to.be.a('number');
-            const tokenRegistryWeb3WrapperProvider = (zeroEx.tokenRegistry as any)._web3Wrapper.getProvider();
-            expect(tokenRegistryWeb3WrapperProvider.zeroExTestId).to.be.a('number');
         });
     });
     describe('#isValidSignature', () => {

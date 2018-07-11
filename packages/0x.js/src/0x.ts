@@ -2,11 +2,10 @@ import { assert } from '@0xproject/assert';
 import {
     ContractWrappers,
     ContractWrappersConfig,
+    ERC20ProxyWrapper,
+    ERC20TokenWrapper,
     EtherTokenWrapper,
     ExchangeWrapper,
-    TokenRegistryWrapper,
-    TokenTransferProxyWrapper,
-    TokenWrapper,
 } from '@0xproject/contract-wrappers';
 import {
     generatePseudoRandomSalt,
@@ -37,10 +36,7 @@ export class ZeroEx {
      */
     public exchange: ExchangeWrapper;
     /**
-     * An instance of the TokenRegistryWrapper class containing methods for interacting with the 0x
-     * TokenRegistry smart contract.
      */
-    public tokenRegistry: TokenRegistryWrapper;
     /**
      * An instance of the TokenWrapper class containing methods for interacting with any ERC20 token smart contract.
      */
@@ -136,7 +132,6 @@ export class ZeroEx {
         this.proxy = this._contractWrappers.proxy;
         this.token = this._contractWrappers.token;
         this.exchange = this._contractWrappers.exchange;
-        this.tokenRegistry = this._contractWrappers.tokenRegistry;
         this.etherToken = this._contractWrappers.etherToken;
     }
     /**
