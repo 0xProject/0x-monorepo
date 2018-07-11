@@ -74,7 +74,6 @@
         "@0xproject/migrations": "^0.0.9",
         "@0xproject/monorepo-scripts": "^0.2.2",
         "@0xproject/tslint-config": "^0.4.21",
-        "@0xproject/sol-compiler": "^0.5.2",
         "@types/lodash": "4.14.104",
         "@types/mocha": "^2.2.42",
         "@types/node": "^8.0.53",
