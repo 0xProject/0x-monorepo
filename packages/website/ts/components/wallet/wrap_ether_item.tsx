@@ -1,4 +1,4 @@
-import { constants as sharedConstants, Styles } from '@0xproject/react-shared';
+import { Styles } from '@0xproject/react-shared';
 import { BigNumber, logUtils } from '@0xproject/utils';
 import { Web3Wrapper } from '@0xproject/web3-wrapper';
 import * as _ from 'lodash';
@@ -196,13 +196,13 @@ export class WrapEtherItem extends React.Component<WrapEtherItemProps, WrapEther
             if (this.props.direction === Side.Deposit) {
                 await this.props.blockchain.convertEthToWrappedEthTokensAsync(etherToken.address, amountToConvert);
                 this.props.dispatcher.showFlashMessage(`Successfully wrapped ${ethAmount} ETH to WETH`);
-                analytics.track('Wrap ETH Success', {
+                analytics.trackAsync('Wrap ETH Success', {
                     amount: ethAmount,
                 });
             } else {
                 await this.props.blockchain.convertWrappedEthTokensToEthAsync(etherToken.address, amountToConvert);
                 this.props.dispatcher.showFlashMessage(`Successfully unwrapped ${tokenAmount} WETH to ETH`);
-                analytics.track('Unwrap WETH Success', {
+                analytics.trackAsync('Unwrap WETH Success', {
                     amount: tokenAmount,
                 });
             }
@@ -217,12 +217,12 @@ export class WrapEtherItem extends React.Component<WrapEtherItemProps, WrapEther
                 logUtils.log(err.stack);
                 if (this.props.direction === Side.Deposit) {
                     this.props.dispatcher.showFlashMessage('Failed to wrap your ETH. Please try again.');
-                    analytics.track('Wrap ETH Failure', {
+                    analytics.trackAsync('Wrap ETH Failure', {
                         amount: ethAmount,
                     });
                 } else {
                     this.props.dispatcher.showFlashMessage('Failed to unwrap your WETH. Please try again.');
-                    analytics.track('Unwrap WETH Failed', {
+                    analytics.trackAsync('Unwrap WETH Failed', {
                         amount: tokenAmount,
                     });
                 }

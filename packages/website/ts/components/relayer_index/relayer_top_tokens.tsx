@@ -1,6 +1,5 @@
 import {
     colors,
-    constants as sharedConstants,
     EtherscanLinkSuffixes,
     utils as sharedUtils,
 } from '@0xproject/react-shared';
@@ -48,7 +47,7 @@ class TokenLink extends React.Component<TokenLinkProps, TokenLinkState> {
     public render(): React.ReactNode {
         const onClick = (event: React.MouseEvent<HTMLElement>) => {
             event.stopPropagation();
-            analytics.track('Token Click', {
+            analytics.trackAsync('Token Click', {
                 tokenSymbol: this.props.tokenInfo.symbol,
             });
             const tokenLink = this._tokenLinkFromToken(this.props.tokenInfo, this.props.networkId);

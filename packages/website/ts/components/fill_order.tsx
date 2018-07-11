@@ -1,5 +1,5 @@
 import { getOrderHashHex, isValidSignature } from '@0xproject/order-utils';
-import { colors, constants as sharedConstants } from '@0xproject/react-shared';
+import { colors } from '@0xproject/react-shared';
 import { Order as ZeroExOrder } from '@0xproject/types';
 import { BigNumber, logUtils } from '@0xproject/utils';
 import { Web3Wrapper } from '@0xproject/web3-wrapper';
@@ -508,7 +508,7 @@ export class FillOrder extends React.Component<FillOrderProps, FillOrderState> {
     }
     private _trackOrderEvent(eventName: string): void {
         const parsedOrder = this.state.parsedOrder;
-        analytics.trackOrderEvent(eventName, parsedOrder);
+        analytics.trackOrderEventAsync(eventName, parsedOrder);
     }
     private async _onFillOrderClickFireAndForgetAsync(): Promise<void> {
         if (this.props.blockchainErr !== BlockchainErrs.NoError || _.isEmpty(this.props.userAddress)) {
@@ -630,8 +630,6 @@ export class FillOrder extends React.Component<FillOrderProps, FillOrderState> {
             });
             return;
         }
-        const networkName = sharedConstants.NETWORK_NAME_BY_ID[this.props.networkId];
-        const eventLabel = `${parsedOrder.metadata.makerToken.symbol}-${networkName}`;
         try {
             await this.props.blockchain.cancelOrderAsync(signedOrder, availableTakerTokenAmount);
             this.setState({

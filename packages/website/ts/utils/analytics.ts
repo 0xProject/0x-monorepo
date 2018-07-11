@@ -1,9 +1,9 @@
 import * as _ from 'lodash';
-import { InjectedWeb3, ObjectMap, Order } from 'ts/types';
-import { configs } from 'ts/utils/configs';
+import { ObjectMap, Order } from 'ts/types';
 import { utils } from 'ts/utils/utils';
 
 export interface HeapAnalytics {
+    loaded: boolean;
     indentify(id: string, idType: string): void;
     track(eventName: string, eventProperties?: ObjectMap<string | number>): void;
     resetIdentity(): void;
@@ -13,12 +13,15 @@ export interface HeapAnalytics {
     clearEventProperties(): void;
 }
 
-export class Analytics implements HeapAnalytics {
+export class Analytics {
     private _heap: HeapAnalytics;
     public static init(): Analytics {
+        return new Analytics(Analytics.getHeap());
+    }
+    public static getHeap(): HeapAnalytics {
         const heap = (window as any).heap;
         if (!_.isUndefined(heap)) {
-            return new Analytics(heap);
+            return heap;
         } else {
             throw new Error('Could not find the Heap SDK on the page.');
         }
@@ -27,45 +30,58 @@ export class Analytics implements HeapAnalytics {
         this._heap = heap;
     }
     // HeapAnalytics Wrappers
-    public indentify(id: string, idType: string): void {
+    public async indentifyAsync(id: string, idType: string): Promise<void> {
+        await this._heapLoadedGuardAsync();
         this._heap.indentify(id, idType);
     }
-    public track(eventName: string, eventProperties?: ObjectMap<string | number>): void {
+    public async trackAsync(eventName: string, eventProperties?: ObjectMap<string | number>): Promise<void> {
+        await this._heapLoadedGuardAsync();
         this._heap.track(eventName, eventProperties);
     }
-    public resetIdentity(): void {
+    public async resetIdentityAsync(): Promise<void> {
+        await this._heapLoadedGuardAsync();
         this._heap.resetIdentity();
     }
-    public addUserProperties(properties: ObjectMap<string | number>): void {
+    public async addUserPropertiesAsync(properties: ObjectMap<string | number>): Promise<void> {
+        await this._heapLoadedGuardAsync();
         this._heap.addUserProperties(properties);
     }
-    public addEventProperties(properties: ObjectMap<string | number>): void {
+    public async addEventPropertiesAsync(properties: ObjectMap<string | number>): Promise<void> {
+        await this._heapLoadedGuardAsync();
         this._heap.addEventProperties(properties);
     }
-    public removeEventProperty(property: string): void {
+    public async removeEventPropertyAsync(property: string): Promise<void> {
+        await this._heapLoadedGuardAsync();
         this._heap.removeEventProperty(property);
     }
-    public clearEventProperties(): void {
+    public async clearEventPropertiesAsync(): Promise<void> {
+        await this._heapLoadedGuardAsync();
         this._heap.clearEventProperties();
     }
     // Custom methods
-    public trackOrderEvent(eventName: string, order: Order): void {
+    public async trackOrderEventAsync(eventName: string, order: Order): Promise<void> {
         const orderLoggingData = {
             takerTokenAmount: order.signedOrder.takerTokenAmount,
             makeTokenAmount: order.signedOrder.makerTokenAmount,
             takerToken: order.metadata.takerToken.symbol,
             makerToken: order.metadata.makerToken.symbol,
         };
-        this.track(eventName, orderLoggingData);
+        this.trackAsync(eventName, orderLoggingData);
     }
-    public async logProviderAsync(web3IfExists: InjectedWeb3): Promise<void> {
-        await utils.onPageLoadAsync();
-        const providerType =
-            !_.isUndefined(web3IfExists) && !_.isUndefined(web3IfExists.currentProvider)
-                ? utils.getProviderType(web3IfExists.currentProvider)
-                : 'NONE';
+    /**
+     * Heap is not available as a UMD module, and additionally has the strange property of replacing itself with
+     * a different object once it's loaded.
+     * Instead of having an await call before every analytics use, we opt to have the awaiting logic in here by
+     * guarding every API call with the guard below.
+     */
+    private async _heapLoadedGuardAsync(): Promise<void> {
+        if (this._heap.loaded) {
+            return undefined;
+        }
+        await utils.onPageLoadPromise;
+        // HACK: Reset heap to loaded heap
+        this._heap = (window as any).heap;
     }
 }
 
-// Assume heap library has loaded.
 export const analytics = Analytics.init();

@@ -205,7 +205,7 @@ export class Wiki extends React.Component<WikiProps, WikiState> {
                         articlesBySection,
                     },
                     async () => {
-                        await utils.onPageLoadAsync();
+                        await utils.onPageLoadPromise;
                         const hash = this.props.location.hash.slice(1);
                         sharedUtils.scrollToHash(hash, sharedConstants.SCROLL_CONTAINER_ID);
                     },

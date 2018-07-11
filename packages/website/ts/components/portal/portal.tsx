@@ -1,4 +1,4 @@
-import { colors, constants as sharedConstants } from '@0xproject/react-shared';
+import { colors } from '@0xproject/react-shared';
 import { BigNumber } from '@0xproject/utils';
 import * as _ from 'lodash';
 import * as React from 'react';
@@ -388,9 +388,8 @@ export class Portal extends React.Component<PortalProps, PortalState> {
             startOnboarding
         );
     }
-
     private _startOnboarding(): void {
-        analytics.track('Onboarding Started', {
+        analytics.trackAsync('Onboarding Started', {
             reason: 'manual',
             stepIndex: this.props.portalOnboardingStep,
         });

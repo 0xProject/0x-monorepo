@@ -1,5 +1,5 @@
 import { generatePseudoRandomSalt, getOrderHashHex } from '@0xproject/order-utils';
-import { colors, constants as sharedConstants } from '@0xproject/react-shared';
+import { colors } from '@0xproject/react-shared';
 import { ECSignature, Order as ZeroExOrder } from '@0xproject/types';
 import { BigNumber, logUtils } from '@0xproject/utils';
 import * as _ from 'lodash';
@@ -20,7 +20,7 @@ import { SwapIcon } from 'ts/components/ui/swap_icon';
 import { Dispatcher } from 'ts/redux/dispatcher';
 import { portalOrderSchema } from 'ts/schemas/portal_order_schema';
 import { validator } from 'ts/schemas/validator';
-import { AlertTypes, BlockchainErrs, HashData, Side, SideToAssetToken, Token, TokenByAddress, Order } from 'ts/types';
+import { AlertTypes, BlockchainErrs, HashData, Order, Side, SideToAssetToken, Token, TokenByAddress } from 'ts/types';
 import { analytics } from 'ts/utils/analytics';
 import { constants } from 'ts/utils/constants';
 import { errorReporter } from 'ts/utils/error_reporter';
@@ -268,7 +268,7 @@ export class GenerateOrderForm extends React.Component<GenerateOrderFormProps, G
             const signedOrder = await this._signTransactionAsync();
             const doesSignedOrderExist = !_.isUndefined(signedOrder);
             if (doesSignedOrderExist) {
-                analytics.trackOrderEvent('Sign Order Success', signedOrder);
+                analytics.trackOrderEventAsync('Sign Order Success', signedOrder);
                 this.setState({
                     globalErrMsg: '',
                     shouldShowIncompleteErrs: false,
@@ -281,7 +281,7 @@ export class GenerateOrderForm extends React.Component<GenerateOrderFormProps, G
                 globalErrMsg = 'You must enable wallet communication';
                 this.props.dispatcher.updateShouldBlockchainErrDialogBeOpen(true);
             }
-            analytics.track('Sign Order Failure', {
+            analytics.trackAsync('Sign Order Failure', {
                 makerTokenAmount: debitToken.amount.toString(),
                 makerToken: this.props.tokenByAddress[debitToken.address].symbol,
                 takerTokenAmount: receiveToken.amount.toString(),

@@ -1,4 +1,4 @@
-import { constants as sharedConstants, Styles } from '@0xproject/react-shared';
+import { Styles } from '@0xproject/react-shared';
 import { BigNumber, logUtils } from '@0xproject/utils';
 import * as _ from 'lodash';
 import Toggle from 'material-ui/Toggle';
@@ -117,10 +117,10 @@ export class AllowanceToggle extends React.Component<AllowanceToggleProps, Allow
         };
         try {
             await this.props.blockchain.setProxyAllowanceAsync(this.props.token, newAllowanceAmountInBaseUnits);
-            analytics.track('Set Allowances Success', logData);
+            analytics.trackAsync('Set Allowances Success', logData);
             await this.props.refetchTokenStateAsync();
         } catch (err) {
-            analytics.track('Set Allowance Failure', logData);
+            analytics.trackAsync('Set Allowance Failure', logData);
             this.setState({
                 isSpinnerVisible: false,
             });

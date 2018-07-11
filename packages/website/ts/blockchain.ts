@@ -795,7 +795,7 @@ export class Blockchain {
         return tokenByAddress;
     }
     private async _onPageLoadInitFireAndForgetAsync(): Promise<void> {
-        await utils.onPageLoadAsync(); // wait for page to load
+        await utils.onPageLoadPromise; // wait for page to load
         const networkIdIfExists = await Blockchain._getInjectedWeb3ProviderNetworkIdIfExistsAsync();
         this.networkId = !_.isUndefined(networkIdIfExists) ? networkIdIfExists : constants.NETWORK_ID_MAINNET;
         const injectedWeb3IfExists = Blockchain._getInjectedWeb3();

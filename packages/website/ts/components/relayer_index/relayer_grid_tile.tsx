@@ -1,4 +1,4 @@
-import { constants as sharedConstants, Styles } from '@0xproject/react-shared';
+import { Styles } from '@0xproject/react-shared';
 import * as _ from 'lodash';
 import { GridTile as PlainGridTile } from 'material-ui/GridList';
 import * as React from 'react';
@@ -65,7 +65,7 @@ export const RelayerGridTile: React.StatelessComponent<RelayerGridTileProps> = (
     const topTokens = props.relayerInfo.topTokens;
     const weeklyTxnVolume = props.relayerInfo.weeklyTxnVolume;
     const onClick = () => {
-        analytics.track('Relayer Click', {
+        analytics.trackAsync('Relayer Click', {
             name: props.relayerInfo.name,
         });
         utils.openUrl(link);

@@ -1,4 +1,3 @@
-import { constants as sharedConstants } from '@0xproject/react-shared';
 import * as _ from 'lodash';
 import * as React from 'react';
 import { RouteComponentProps, withRouter } from 'react-router';
@@ -225,7 +224,7 @@ class PlainPortalOnboardingFlow extends React.Component<PortalOnboardingFlowProp
             (this.props.stepIndex === 0 && !this.props.isRunning && this.props.blockchainIsLoaded) ||
             (!this.props.isRunning && !this.props.hasBeenClosed && this.props.blockchainIsLoaded)
         ) {
-            analytics.track('Onboarding Started', {
+            analytics.trackAsync('Onboarding Started', {
                 reason: 'automatic',
                 stepIndex: this.props.stepIndex,
             });
@@ -234,14 +233,10 @@ class PlainPortalOnboardingFlow extends React.Component<PortalOnboardingFlowProp
     }
     private _updateOnboardingStep(stepIndex: number): void {
         this.props.updateOnboardingStep(stepIndex);
-        analytics.track('Update Onboarding Step', {
-            stepIndex,
-        });
     }
     private _closeOnboarding(): void {
-        const networkName = sharedConstants.NETWORK_NAME_BY_ID[this.props.networkId];
         this.props.updateIsRunning(false);
-        analytics.track('OnboardingClosed', {
+        analytics.trackAsync('OnboardingClosed', {
             stepIndex: this.props.stepIndex,
         });
     }
