@@ -2,7 +2,6 @@ import { ContractWrappers } from '@0xproject/contract-wrappers';
 import { BlockchainLifecycle } from '@0xproject/dev-utils';
 import { BigNumber } from '@0xproject/utils';
 import * as chai from 'chai';
-import * as _ from 'lodash';
 import 'mocha';
 
 import { ERC20TokenApprovalEventArgs, ERC20TokenEvents, LogWithDecodedArgs, ZeroEx } from '../src';

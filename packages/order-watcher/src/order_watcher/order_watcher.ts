@@ -252,6 +252,7 @@ export class OrderWatcher {
         switch (decodedLog.event) {
             case TokenEvents.Approval: {
                 // Invalidate cache
+                // tslint:disable-next-line:no-unnecessary-type-assertion
                 const args = decodedLog.args as TokenApprovalEventArgs;
                 this._balanceAndProxyAllowanceLazyStore.deleteProxyAllowance(decodedLog.address, args._owner);
                 // Revalidate orders
@@ -268,6 +269,7 @@ export class OrderWatcher {
             }
             case TokenEvents.Transfer: {
                 // Invalidate cache
+                // tslint:disable-next-line:no-unnecessary-type-assertion
                 const args = decodedLog.args as TokenTransferEventArgs;
                 this._balanceAndProxyAllowanceLazyStore.deleteBalance(decodedLog.address, args._from);
                 this._balanceAndProxyAllowanceLazyStore.deleteBalance(decodedLog.address, args._to);
@@ -285,6 +287,7 @@ export class OrderWatcher {
             }
             case EtherTokenEvents.Deposit: {
                 // Invalidate cache
+                // tslint:disable-next-line:no-unnecessary-type-assertion
                 const args = decodedLog.args as EtherTokenDepositEventArgs;
                 this._balanceAndProxyAllowanceLazyStore.deleteBalance(decodedLog.address, args._owner);
                 // Revalidate orders
@@ -301,6 +304,7 @@ export class OrderWatcher {
             }
             case EtherTokenEvents.Withdrawal: {
                 // Invalidate cache
+                // tslint:disable-next-line:no-unnecessary-type-assertion
                 const args = decodedLog.args as EtherTokenWithdrawalEventArgs;
                 this._balanceAndProxyAllowanceLazyStore.deleteBalance(decodedLog.address, args._owner);
                 // Revalidate orders
@@ -317,6 +321,7 @@ export class OrderWatcher {
             }
             case ExchangeEvents.LogFill: {
                 // Invalidate cache
+                // tslint:disable-next-line:no-unnecessary-type-assertion
                 const args = decodedLog.args as ExchangeLogFillEventArgs;
                 this._orderFilledCancelledLazyStore.deleteFilledTakerAmount(args.orderHash);
                 // Revalidate orders
@@ -329,6 +334,7 @@ export class OrderWatcher {
             }
             case ExchangeEvents.LogCancel: {
                 // Invalidate cache
+                // tslint:disable-next-line:no-unnecessary-type-assertion
                 const args = decodedLog.args as ExchangeLogCancelEventArgs;
                 this._orderFilledCancelledLazyStore.deleteCancelledTakerAmount(args.orderHash);
                 // Revalidate orders
