@@ -43,8 +43,7 @@ class TokenLink extends React.Component<TokenLinkProps, TokenLinkState> {
     public render(): React.ReactNode {
         const onClick = (event: React.MouseEvent<HTMLElement>) => {
             event.stopPropagation();
-            // tslint:disable-next-line:no-floating-promises
-            analytics.trackAsync('Token Click', {
+            analytics.track('Token Click', {
                 tokenSymbol: this.props.tokenInfo.symbol,
             });
             const tokenLink = this._tokenLinkFromToken(this.props.tokenInfo, this.props.networkId);

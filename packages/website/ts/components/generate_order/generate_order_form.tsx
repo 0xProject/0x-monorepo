@@ -268,8 +268,7 @@ export class GenerateOrderForm extends React.Component<GenerateOrderFormProps, G
             const signedOrder = await this._signTransactionAsync();
             const doesSignedOrderExist = !_.isUndefined(signedOrder);
             if (doesSignedOrderExist) {
-                // tslint:disable-next-line:no-floating-promises
-                analytics.trackOrderEventAsync('Sign Order Success', signedOrder);
+                analytics.trackOrderEvent('Sign Order Success', signedOrder);
                 this.setState({
                     globalErrMsg: '',
                     shouldShowIncompleteErrs: false,
@@ -282,8 +281,7 @@ export class GenerateOrderForm extends React.Component<GenerateOrderFormProps, G
                 globalErrMsg = 'You must enable wallet communication';
                 this.props.dispatcher.updateShouldBlockchainErrDialogBeOpen(true);
             }
-            // tslint:disable-next-line:no-floating-promises
-            analytics.trackAsync('Sign Order Failure', {
+            analytics.track('Sign Order Failure', {
                 makerTokenAmount: debitToken.amount.toString(),
                 makerToken: this.props.tokenByAddress[debitToken.address].symbol,
                 takerTokenAmount: receiveToken.amount.toString(),

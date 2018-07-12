@@ -508,8 +508,7 @@ export class FillOrder extends React.Component<FillOrderProps, FillOrderState> {
     }
     private _trackOrderEvent(eventName: string): void {
         const parsedOrder = this.state.parsedOrder;
-        // tslint:disable-next-line:no-floating-promises
-        analytics.trackOrderEventAsync(eventName, parsedOrder);
+        analytics.trackOrderEvent(eventName, parsedOrder);
     }
     private async _onFillOrderClickFireAndForgetAsync(): Promise<void> {
         if (this.props.blockchainErr !== BlockchainErrs.NoError || _.isEmpty(this.props.userAddress)) {

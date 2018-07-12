@@ -12,7 +12,6 @@ export interface HeapAnalytics {
     removeEventProperty(property: string): void;
     clearEventProperties(): void;
 }
-
 export class Analytics {
     private _heap: HeapAnalytics;
     public static init(): Analytics {
@@ -29,45 +28,39 @@ export class Analytics {
     constructor(heap: HeapAnalytics) {
         this._heap = heap;
     }
+    // tslint:disable:no-floating-promises
     // HeapAnalytics Wrappers
-    public async indentifyAsync(id: string, idType: string): Promise<void> {
-        await this._heapLoadedGuardAsync();
-        this._heap.indentify(id, idType);
+    public indentify(id: string, idType: string): void {
+        this._heapLoadedGuardAsync(() => this._heap.indentify(id, idType));
     }
-    public async trackAsync(eventName: string, eventProperties?: ObjectMap<string | number>): Promise<void> {
-        await this._heapLoadedGuardAsync();
-        this._heap.track(eventName, eventProperties);
+    public track(eventName: string, eventProperties?: ObjectMap<string | number>): void {
+        this._heapLoadedGuardAsync(() => this._heap.track(eventName, eventProperties));
     }
-    public async resetIdentityAsync(): Promise<void> {
-        await this._heapLoadedGuardAsync();
-        this._heap.resetIdentity();
+    public resetIdentity(): void {
+        this._heapLoadedGuardAsync(() => this._heap.resetIdentity());
     }
-    public async addUserPropertiesAsync(properties: ObjectMap<string | number>): Promise<void> {
-        await this._heapLoadedGuardAsync();
-        this._heap.addUserProperties(properties);
+    public addUserProperties(properties: ObjectMap<string | number>): void {
+        this._heapLoadedGuardAsync(() => this._heap.addUserProperties(properties));
     }
-    public async addEventPropertiesAsync(properties: ObjectMap<string | number>): Promise<void> {
-        await this._heapLoadedGuardAsync();
-        this._heap.addEventProperties(properties);
+    public addEventProperties(properties: ObjectMap<string | number>): void {
+        this._heapLoadedGuardAsync(() => this._heap.addEventProperties(properties));
     }
-    public async removeEventPropertyAsync(property: string): Promise<void> {
-        await this._heapLoadedGuardAsync();
-        this._heap.removeEventProperty(property);
+    public removeEventProperty(property: string): void {
+        this._heapLoadedGuardAsync(() => this._heap.removeEventProperty(property));
     }
-    public async clearEventPropertiesAsync(): Promise<void> {
-        await this._heapLoadedGuardAsync();
-        this._heap.clearEventProperties();
+    public clearEventProperties(): void {
+        this._heapLoadedGuardAsync(() => this._heap.clearEventProperties());
     }
+    // tslint:enable:no-floating-promises
     // Custom methods
-    public async trackOrderEventAsync(eventName: string, order: Order): Promise<void> {
+    public trackOrderEvent(eventName: string, order: Order): void {
         const orderLoggingData = {
             takerTokenAmount: order.signedOrder.takerTokenAmount,
             makeTokenAmount: order.signedOrder.makerTokenAmount,
             takerToken: order.metadata.takerToken.symbol,
             makerToken: order.metadata.makerToken.symbol,
         };
-        // tslint:disable-next-line:no-floating-promises
-        this.trackAsync(eventName, orderLoggingData);
+        this.track(eventName, orderLoggingData);
     }
     /**
      * Heap is not available as a UMD module, and additionally has the strange property of replacing itself with
@@ -75,13 +68,15 @@ export class Analytics {
      * Instead of having an await call before every analytics use, we opt to have the awaiting logic in here by
      * guarding every API call with the guard below.
      */
-    private async _heapLoadedGuardAsync(): Promise<void> {
+    private async _heapLoadedGuardAsync(callback: () => void): Promise<void> {
         if (this._heap.loaded) {
+            callback();
             return undefined;
         }
         await utils.onPageLoadPromise;
         // HACK: Reset heap to loaded heap
         this._heap = (window as any).heap;
+        callback();
     }
 }
 

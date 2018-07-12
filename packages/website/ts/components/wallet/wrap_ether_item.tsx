@@ -196,15 +196,13 @@ export class WrapEtherItem extends React.Component<WrapEtherItemProps, WrapEther
             if (this.props.direction === Side.Deposit) {
                 await this.props.blockchain.convertEthToWrappedEthTokensAsync(etherToken.address, amountToConvert);
                 this.props.dispatcher.showFlashMessage(`Successfully wrapped ${ethAmount} ETH to WETH`);
-                // tslint:disable-next-line:no-floating-promises
-                analytics.trackAsync('Wrap ETH Success', {
+                analytics.track('Wrap ETH Success', {
                     amount: ethAmount,
                 });
             } else {
                 await this.props.blockchain.convertWrappedEthTokensToEthAsync(etherToken.address, amountToConvert);
                 this.props.dispatcher.showFlashMessage(`Successfully unwrapped ${tokenAmount} WETH to ETH`);
-                // tslint:disable-next-line:no-floating-promises
-                analytics.trackAsync('Unwrap WETH Success', {
+                analytics.track('Unwrap WETH Success', {
                     amount: tokenAmount,
                 });
             }
@@ -219,14 +217,12 @@ export class WrapEtherItem extends React.Component<WrapEtherItemProps, WrapEther
                 logUtils.log(err.stack);
                 if (this.props.direction === Side.Deposit) {
                     this.props.dispatcher.showFlashMessage('Failed to wrap your ETH. Please try again.');
-                    // tslint:disable-next-line:no-floating-promises
-                    analytics.trackAsync('Wrap ETH Failure', {
+                    analytics.track('Wrap ETH Failure', {
                         amount: ethAmount,
                     });
                 } else {
                     this.props.dispatcher.showFlashMessage('Failed to unwrap your WETH. Please try again.');
-                    // tslint:disable-next-line:no-floating-promises
-                    analytics.trackAsync('Unwrap WETH Failed', {
+                    analytics.track('Unwrap WETH Failed', {
                         amount: tokenAmount,
                     });
                 }

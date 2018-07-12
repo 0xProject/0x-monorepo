@@ -318,7 +318,7 @@ export const utils = {
             resolve();
             return;
         }
-        window.onload = () => resolve();
+        window.onload = resolve;
     }),
     getProviderType(provider: Provider): Providers | string {
         const constructorName = provider.constructor.name;

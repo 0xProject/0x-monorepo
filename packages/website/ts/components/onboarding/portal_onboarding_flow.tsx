@@ -224,8 +224,7 @@ class PlainPortalOnboardingFlow extends React.Component<PortalOnboardingFlowProp
             (this.props.stepIndex === 0 && !this.props.isRunning && this.props.blockchainIsLoaded) ||
             (!this.props.isRunning && !this.props.hasBeenClosed && this.props.blockchainIsLoaded)
         ) {
-            // tslint:disable-next-line:no-floating-promises
-            analytics.trackAsync('Onboarding Started', {
+            analytics.track('Onboarding Started', {
                 reason: 'automatic',
                 stepIndex: this.props.stepIndex,
             });
@@ -237,8 +236,7 @@ class PlainPortalOnboardingFlow extends React.Component<PortalOnboardingFlowProp
     }
     private _closeOnboarding(): void {
         this.props.updateIsRunning(false);
-        // tslint:disable-next-line:no-floating-promises
-        analytics.trackAsync('OnboardingClosed', {
+        analytics.track('OnboardingClosed', {
             stepIndex: this.props.stepIndex,
         });
     }

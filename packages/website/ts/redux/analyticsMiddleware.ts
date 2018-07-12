@@ -8,34 +8,29 @@ export const analyticsMiddleware: Middleware = store => next => action => {
     const nextState = (store.getState() as any) as State;
     switch (action.type) {
         case ActionTypes.UpdateInjectedProviderName:
-            // tslint:disable-next-line:no-floating-promises
-            analytics.addEventPropertiesAsync({
+            analytics.addEventProperties({
                 injectedProviderName: nextState.injectedProviderName,
             });
             break;
         case ActionTypes.UpdateNetworkId:
-            // tslint:disable-next-line:no-floating-promises
-            analytics.addEventPropertiesAsync({
+            analytics.addEventProperties({
                 networkId: nextState.networkId,
             });
             break;
         case ActionTypes.UpdateUserAddress:
-            // tslint:disable-next-line:no-floating-promises
-            analytics.addUserPropertiesAsync({
+            analytics.addUserProperties({
                 ethAddress: nextState.userAddress,
             });
             break;
         case ActionTypes.UpdateUserEtherBalance:
             if (nextState.userEtherBalanceInWei) {
-                // tslint:disable-next-line:no-floating-promises
-                analytics.addUserPropertiesAsync({
+                analytics.addUserProperties({
                     ethBalance: nextState.userEtherBalanceInWei.toString(),
                 });
             }
             break;
         case ActionTypes.UpdatePortalOnboardingStep:
-            // tslint:disable-next-line:no-floating-promises
-            analytics.trackAsync('Update Onboarding Step', {
+            analytics.track('Update Onboarding Step', {
                 stepIndex: nextState.portalOnboardingStep,
             });
             break;
