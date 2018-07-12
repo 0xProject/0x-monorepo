@@ -28,7 +28,6 @@ import {
 } from 'ts/types';
 import { configs } from 'ts/utils/configs';
 import { constants } from 'ts/utils/constants';
-import { errorReporter } from 'ts/utils/error_reporter';
 import * as u2f from 'ts/vendor/u2f_api';
 
 export const utils = {
@@ -501,4 +500,4 @@ export const utils = {
         const result = `/images/token_icons/${symbol}.png`;
         return result;
     },
-};
+}; // tslint:disable:max-file-line-count
