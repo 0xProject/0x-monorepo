@@ -34,8 +34,10 @@ export class RPCSubprovider extends Subprovider {
             Accept: 'application/json',
             'Content-Type': 'application/json',
         });
-        const timeoutMs = 1000;
 
+        // Since Ethereum nodes have a proclivity for accepting requests and never
+        // returning a response, we set this quite low (10 seconds).
+        const timeoutMs = 10000;
         let response;
         try {
             response = await fetchAsync(
