@@ -154,7 +154,7 @@ You can see and fill it here: ${this.state.shareLink}`);
         if (response.status !== 200 || bodyObj.status_code !== 200) {
             // TODO: Show error message in UI
             logUtils.log(`Unexpected status code: ${response.status} -> ${responseBody}`);
-            await errorReporter.reportAsync(new Error(`Bitly returned non-200: ${JSON.stringify(response)}`));
+            errorReporter.report(new Error(`Bitly returned non-200: ${JSON.stringify(response)}`));
             return '';
         }
         return bodyObj.data.url;

@@ -2,6 +2,7 @@ import { logUtils } from '@0xproject/utils';
 import { Environments } from 'ts/types';
 import { configs } from 'ts/utils/configs';
 import { constants } from 'ts/utils/constants';
+import { utils } from 'ts/utils/utils';
 
 // Suggested way to include Rollbar with Webpack
 // https://github.com/rollbar/rollbar.js/tree/master/examples/webpack
@@ -12,7 +13,7 @@ const rollbarConfig = {
     itemsPerMinute: 10,
     maxItems: 500,
     payload: {
-        environment: configs.ENVIRONMENT,
+        environment: utils.getEnvironment(),
         client: {
             javascript: {
                 source_map_enabled: true,
@@ -40,21 +41,14 @@ import Rollbar = require('../../public/js/rollbar.umd.min.js');
 const rollbar = Rollbar.init(rollbarConfig);
 
 export const errorReporter = {
-    async reportAsync(err: Error): Promise<any> {
-        if (configs.ENVIRONMENT === Environments.DEVELOPMENT) {
+    report(err: Error): void {
+        if (utils.getEnvironment() === Environments.DEVELOPMENT) {
             return; // Let's not log development errors to rollbar
         }
-
-        return new Promise((resolve, _reject) => {
-            rollbar.error(err, (rollbarErr: Error) => {
-                if (rollbarErr) {
-                    logUtils.log(`Error reporting to rollbar, ignoring: ${rollbarErr}`);
-                    // We never want to reject and cause the app to throw because of rollbar
-                    resolve();
-                } else {
-                    resolve();
-                }
-            });
+        rollbar.error(err, (rollbarErr: Error) => {
+            if (rollbarErr) {
+                logUtils.log(`Error reporting to rollbar, ignoring: ${rollbarErr}`);
+            }
         });
     },
 };

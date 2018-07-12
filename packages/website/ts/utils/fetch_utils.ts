@@ -9,8 +9,7 @@ const logErrorIfPresent = (response: Response, requestedURL: string) => {
         const errorText = `Error requesting url: ${requestedURL}, ${response.status}: ${response.statusText}`;
         logUtils.log(errorText);
         const error = Error(errorText);
-        // tslint:disable-next-line:no-floating-promises
-        errorReporter.reportAsync(error);
+        errorReporter.report(error);
         throw error;
     }
 };

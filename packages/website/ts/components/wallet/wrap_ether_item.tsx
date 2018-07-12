@@ -219,7 +219,7 @@ export class WrapEtherItem extends React.Component<WrapEtherItemProps, WrapEther
                     this.props.dispatcher.showFlashMessage('Failed to unwrap your WETH. Please try again.');
                     analytics.logEvent('Portal', 'Unwrap WETH Failed', networkName);
                 }
-                await errorReporter.reportAsync(err);
+                errorReporter.report(err);
             }
         }
         this.setState({

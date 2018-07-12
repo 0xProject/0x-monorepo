@@ -583,7 +583,7 @@ export class FillOrder extends React.Component<FillOrderProps, FillOrderState> {
             this.setState({
                 globalErrMsg,
             });
-            await errorReporter.reportAsync(err);
+            errorReporter.report(err);
             return;
         }
     }
@@ -654,7 +654,7 @@ export class FillOrder extends React.Component<FillOrderProps, FillOrderState> {
             this.setState({
                 globalErrMsg,
             });
-            await errorReporter.reportAsync(err);
+            errorReporter.report(err);
             return;
         }
     }

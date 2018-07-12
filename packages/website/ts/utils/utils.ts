@@ -31,8 +31,6 @@ import { constants } from 'ts/utils/constants';
 import { errorReporter } from 'ts/utils/error_reporter';
 import * as u2f from 'ts/vendor/u2f_api';
 
-const isDogfood = (): boolean => _.includes(window.location.href, configs.DOMAIN_DOGFOOD);
-
 export const utils = {
     assert(condition: boolean, message: string): void {
         if (!condition) {
@@ -347,10 +345,13 @@ export const utils = {
         return parsedProviderName;
     },
     getBackendBaseUrl(): string {
-        return isDogfood() ? configs.BACKEND_BASE_STAGING_URL : configs.BACKEND_BASE_PROD_URL;
+        return utils.isDogfood() ? configs.BACKEND_BASE_STAGING_URL : configs.BACKEND_BASE_PROD_URL;
     },
     isDevelopment(): boolean {
-        return configs.ENVIRONMENT === Environments.DEVELOPMENT;
+        return _.includes(
+            ['https://0xproject.localhost:3572', 'https://localhost:3572', 'https://127.0.0.1'],
+            window.location.origin,
+        );
     },
     isStaging(): boolean {
         return _.includes(window.location.href, configs.DOMAIN_STAGING);
@@ -358,7 +359,27 @@ export const utils = {
     isExternallyInjected(providerType: ProviderType, injectedProviderName: string): boolean {
         return providerType === ProviderType.Injected && injectedProviderName !== constants.PROVIDER_NAME_PUBLIC;
     },
-    isDogfood,
+    isDogfood(): boolean {
+        return _.includes(window.location.href, configs.DOMAIN_DOGFOOD);
+    },
+    isProduction(): boolean {
+        return _.includes(window.location.href, configs.DOMAIN_PRODUCTION);
+    },
+    getEnvironment(): Environments {
+        if (utils.isDogfood()) {
+            return Environments.DOGFOOD;
+        }
+        if (utils.isDevelopment()) {
+            return Environments.DEVELOPMENT;
+        }
+        if (utils.isStaging()) {
+            return Environments.STAGING;
+        }
+        if (utils.isProduction()) {
+            return Environments.PRODUCTION;
+        }
+        return undefined;
+    },
     shouldShowJobsPage(): boolean {
         return this.isDevelopment() || this.isStaging() || this.isDogfood();
     },
@@ -391,10 +412,7 @@ export const utils = {
         const format = `0,0.${_.repeat('0', precision)}`;
         const formattedAmount = numeral(unitAmount).format(format);
         if (_.isNaN(formattedAmount)) {
-            // tslint:disable-next-line:no-floating-promises
-            errorReporter.reportAsync(
-                new Error(`amount ${BigNumber}, decimals ${decimals} could not be formatted and returned NaN.`),
-            );
+            // https://github.com/adamwdraper/Numeral-js/issues/596
             return format;
         }
         return formattedAmount;
