@@ -137,7 +137,6 @@ export class ZeroEx {
     }
     /**
      * Verifies that the provided signature is valid according to the 0x Protocol smart contracts
-     * @param   provider      The Web3Provider to use. Some signature types involve checking contract state.
      * @param   data          The hex encoded data signed by the supplied signature.
      * @param   signature     The hex encoded signature.
      * @param   signerAddress The hex encoded address that signed the data, producing the supplied signature.
