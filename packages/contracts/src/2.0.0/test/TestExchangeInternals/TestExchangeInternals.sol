@@ -25,7 +25,10 @@ import "../../protocol/Exchange/Exchange.sol";
 contract TestExchangeInternals is
     Exchange
 {
-    constructor() public Exchange("") {}
+    constructor ()
+        public
+        Exchange("")
+    {}
 
     /// @dev Adds properties of both FillResults instances.
     ///      Modifies the first FillResults instance specified.
@@ -37,7 +40,7 @@ contract TestExchangeInternals is
     function publicAddFillResults(FillResults memory totalFillResults, FillResults memory singleFillResults)
         public
         pure
-        returns (FillResults)
+        returns (FillResults memory)
     {
         addFillResults(totalFillResults, singleFillResults);
         return totalFillResults;
@@ -66,7 +69,8 @@ contract TestExchangeInternals is
     function publicGetPartialAmount(
         uint256 numerator,
         uint256 denominator,
-        uint256 target)
+        uint256 target
+    )
         public
         pure
         returns (uint256 partialAmount)
@@ -82,7 +86,8 @@ contract TestExchangeInternals is
     function publicIsRoundingError(
         uint256 numerator,
         uint256 denominator,
-        uint256 target)
+        uint256 target
+    )
         public
         pure
         returns (bool isError)
@@ -104,6 +109,12 @@ contract TestExchangeInternals is
     )
         public
     {
-        updateFilledState(order, takerAddress, orderHash, orderTakerAssetFilledAmount, fillResults);
+        updateFilledState(
+            order,
+            takerAddress,
+            orderHash,
+            orderTakerAssetFilledAmount,
+            fillResults
+        );
     }
 }

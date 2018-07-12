@@ -73,23 +73,26 @@ export async function testWithReferenceFuncAsync(
     } catch (e) {
         expectedErr = e.message;
     }
+    let actualResult: any | undefined;
     try {
-        const actualResult = await testFuncAsync(...values);
+        actualResult = await testFuncAsync(...values);
         if (!_.isUndefined(expectedErr)) {
             throw new Error(
                 `Expected error containing ${expectedErr} but got no error\n\tTest case: ${testCaseString}`,
             );
         }
-        expect(JSON.stringify(actualResult)).to.equal(
-            JSON.stringify(expectedResult),
-            `\n\tTest case: ${testCaseString}`,
-        );
     } catch (e) {
         if (_.isUndefined(expectedErr)) {
             throw new Error(`${e.message}\n\tTest case: ${testCaseString}`);
         } else {
             expect(e.message).to.contain(expectedErr, `${e.message}\n\tTest case: ${testCaseString}`);
         }
+    }
+    if (!_.isUndefined(actualResult) && !_.isUndefined(expectedResult)) {
+        expect(JSON.stringify(actualResult)).to.equal(
+            JSON.stringify(expectedResult),
+            `\n\tTest case: ${testCaseString}`,
+        );
     }
 }
 

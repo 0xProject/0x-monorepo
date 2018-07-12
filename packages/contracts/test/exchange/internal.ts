@@ -9,17 +9,19 @@ import { getGanacheOrGethError } from '../utils/assertions';
 import { chaiSetup } from '../utils/chai_setup';
 import { bytes32Values, testCombinatoriallyWithReferenceFuncAsync, uint256Values } from '../utils/combinatorial_utils';
 import { constants } from '../utils/constants';
+import { FillResults } from '../utils/types';
 import { provider, txDefaults, web3Wrapper } from '../utils/web3_wrapper';
 
 chaiSetup.configure();
 const blockchainLifecycle = new BlockchainLifecycle(web3Wrapper);
 
 const MAX_UINT256 = new BigNumber(2).pow(256).minus(1);
+const MAX_BYTES32_STRING_LENGTH = 64 + 2; // '0x' prefix + 64 hex characters
 
 const emptyOrder: Order = {
-    senderAddress: '0x0000000000000000000000000000000000000000',
-    makerAddress: '0x0000000000000000000000000000000000000000',
-    takerAddress: '0x0000000000000000000000000000000000000000',
+    senderAddress: constants.NULL_ADDRESS,
+    makerAddress: constants.NULL_ADDRESS,
+    takerAddress: constants.NULL_ADDRESS,
     makerFee: new BigNumber(0),
     takerFee: new BigNumber(0),
     makerAssetAmount: new BigNumber(0),
@@ -27,8 +29,8 @@ const emptyOrder: Order = {
     makerAssetData: '0x',
     takerAssetData: '0x',
     salt: new BigNumber(0),
-    exchangeAddress: '0x0000000000000000000000000000000000000000',
-    feeRecipientAddress: '0x0000000000000000000000000000000000000000',
+    exchangeAddress: constants.NULL_ADDRESS,
+    feeRecipientAddress: constants.NULL_ADDRESS,
     expirationTimeSeconds: new BigNumber(0),
 };
 
@@ -36,13 +38,6 @@ const emptySignedOrder: SignedOrder = {
     ...emptyOrder,
     signature: '',
 };
-
-interface FillResults {
-    makerAssetFilledAmount: BigNumber;
-    takerAssetFilledAmount: BigNumber;
-    makerFeePaid: BigNumber;
-    takerFeePaid: BigNumber;
-}
 
 const overflowErrorForCall = new Error('UINT256_OVERFLOW');
 
@@ -79,7 +74,7 @@ async function referenceGetPartialAmountAsync(
     return product.dividedToIntegerBy(denominator);
 }
 
-describe('Exchange core internal functions', () => {
+describe.only('Exchange core internal functions', () => {
     let testExchange: TestExchangeInternalsContract;
     let invalidOpcodeErrorForCall: Error | undefined;
     let overflowErrorForSendTransaction: Error | undefined;
@@ -294,7 +289,12 @@ describe('Exchange core internal functions', () => {
             if (totalFilledAmount.greaterThan(MAX_UINT256)) {
                 throw overflowErrorForSendTransaction;
             }
-            return totalFilledAmount;
+            // Note(albrow): In the Solidity implementation, if orderHash
+            // overflows bytes32, the return value is always 0.
+            if (orderHash.length <= MAX_BYTES32_STRING_LENGTH) {
+                return totalFilledAmount;
+            }
+            return new BigNumber(0);
         }
         async function testUpdateFilledStateAsync(
             takerAssetFilledAmount: BigNumber,
@@ -310,7 +310,7 @@ describe('Exchange core internal functions', () => {
             await web3Wrapper.awaitTransactionSuccessAsync(
                 await testExchange.publicUpdateFilledState.sendTransactionAsync(
                     emptySignedOrder,
-                    '0x0000000000000000000000000000000000000000',
+                    constants.NULL_ADDRESS,
                     orderHash,
                     orderTakerAssetFilledAmount,
                     fillResults,
