@@ -23,6 +23,7 @@ export const contractWrappersPublicNetworkConfigSchema = {
         zrxContractAddress: { $ref: '/Address' },
         exchangeContractAddress: { $ref: '/Address' },
         erc20ProxyContractAddress: { $ref: '/Address' },
+        erc721ProxyContractAddress: { $ref: '/Address' },
         blockPollingIntervalMs: { type: 'number' },
         orderWatcherConfig: {
             type: 'object',
