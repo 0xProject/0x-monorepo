@@ -16,7 +16,7 @@
         "deploy_staging":
             "npm run build; aws s3 sync ./public/. s3://staging-0xproject --profile 0xproject --region us-east-1 --grants read=uri=http://acs.amazonaws.com/groups/global/AllUsers",
         "deploy_live":
-            "npm run build; aws s3 sync ./public/. s3://0xproject.com --profile 0xproject --region us-east-1 --grants read=uri=http://acs.amazonaws.com/groups/global/AllUsers --exclude *.map.js"
+            "DEPLOY_ROLLBAR_SOURCEMAPS=true npm run build; aws s3 sync ./public/. s3://0xproject.com --profile 0xproject --region us-east-1 --grants read=uri=http://acs.amazonaws.com/groups/global/AllUsers --exclude *.map.js"
     },
     "author": "Fabio Berger",
     "license": "Apache-2.0",

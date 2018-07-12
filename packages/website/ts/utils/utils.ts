@@ -29,6 +29,7 @@ import {
 import { configs } from 'ts/utils/configs';
 import { constants } from 'ts/utils/constants';
 import * as u2f from 'ts/vendor/u2f_api';
+import { errorReporter } from './error_reporter';
 
 const isDogfood = (): boolean => _.includes(window.location.href, configs.DOMAIN_DOGFOOD);
 
@@ -389,6 +390,9 @@ export const utils = {
             : 2;
         const format = `0,0.${_.repeat('0', precision)}`;
         const formattedAmount = numeral(unitAmount).format(format);
+        if (_.isNaN(formattedAmount)) {
+            throw new Error(`amount ${BigNumber}, decimals ${decimals} could not be formatted and returned NaN.`);
+        }
         return formattedAmount;
     },
     getUsdValueFormattedAmount(amount: BigNumber, decimals: number, price: BigNumber): string {
