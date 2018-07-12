@@ -27,6 +27,10 @@ export async function isValidSignatureAsync(
     signature: string,
     signerAddress: string,
 ): Promise<boolean> {
+    assert.isWeb3Provider('provider', provider);
+    assert.isHexString('data', data);
+    assert.isHexString('signature', signature);
+    assert.isETHAddressHex('signerAddress', signerAddress);
     const signatureTypeIndexIfExists = utils.getSignatureTypeIndexIfExists(signature);
     if (_.isUndefined(signatureTypeIndexIfExists)) {
         throw new Error(`Unrecognized signatureType in signature: ${signature}`);
@@ -90,6 +94,9 @@ export async function isValidPresignedSignatureAsync(
     data: string,
     signerAddress: string,
 ): Promise<boolean> {
+    assert.isWeb3Provider('provider', provider);
+    assert.isHexString('data', data);
+    assert.isETHAddressHex('signerAddress', signerAddress);
     const exchangeContract = new ExchangeContract(artifacts.Exchange.compilerOutput.abi, signerAddress, provider);
     const isValid = await exchangeContract.preSigned.callAsync(data, signerAddress);
     return isValid;
@@ -108,6 +115,10 @@ export async function isValidWalletSignatureAsync(
     signature: string,
     signerAddress: string,
 ): Promise<boolean> {
+    assert.isWeb3Provider('provider', provider);
+    assert.isHexString('data', data);
+    assert.isHexString('signature', signature);
+    assert.isETHAddressHex('signerAddress', signerAddress);
     // tslint:disable-next-line:custom-no-magic-numbers
     const signatureWithoutType = signature.slice(-2);
     const walletContract = new IWalletContract(artifacts.IWallet.compilerOutput.abi, signerAddress, provider);
@@ -128,6 +139,10 @@ export async function isValidValidatorSignatureAsync(
     signature: string,
     signerAddress: string,
 ): Promise<boolean> {
+    assert.isWeb3Provider('provider', provider);
+    assert.isHexString('data', data);
+    assert.isHexString('signature', signature);
+    assert.isETHAddressHex('signerAddress', signerAddress);
     const validatorSignature = parseValidatorSignature(signature);
     const exchangeContract = new ExchangeContract(artifacts.Exchange.compilerOutput.abi, signerAddress, provider);
     const isValidatorApproved = await exchangeContract.allowedValidators.callAsync(
@@ -192,7 +207,9 @@ export async function ecSignOrderHashAsync(
     signerAddress: string,
     messagePrefixOpts: MessagePrefixOpts,
 ): Promise<ECSignature> {
+    assert.isWeb3Provider('provider', provider);
     assert.isHexString('orderHash', orderHash);
+    assert.isETHAddressHex('signerAddress', signerAddress);
     const web3Wrapper = new Web3Wrapper(provider);
     await assert.isSenderAddressAsync('signerAddress', signerAddress, web3Wrapper);
     const normalizedSignerAddress = signerAddress.toLowerCase();
@@ -237,6 +254,8 @@ export async function ecSignOrderHashAsync(
  * @return Prefixed message
  */
 export function addSignedMessagePrefix(message: string, messagePrefixType: MessagePrefixType): string {
+    assert.isString('message', message);
+    assert.doesBelongToStringEnum('messagePrefixType', messagePrefixType, MessagePrefixType);
     switch (messagePrefixType) {
         case MessagePrefixType.None:
             return message;
@@ -266,6 +285,7 @@ export function addSignedMessagePrefix(message: string, messagePrefixType: Messa
  * @return An ECSignature object with r,s,v parameters
  */
 export function parseECSignature(signature: string): ECSignature {
+    assert.isHexString('signature', signature);
     const ecSignatureTypes = [SignatureType.EthSign, SignatureType.EIP712, SignatureType.Trezor];
     assert.isOneOfExpectedSignatureTypes(signature, ecSignatureTypes);
 
