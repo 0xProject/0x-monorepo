@@ -2,23 +2,24 @@ import { assert } from '@0xproject/assert';
 import {
     ContractWrappers,
     ContractWrappersConfig,
+    ERC20ProxyWrapper,
+    ERC20TokenWrapper,
+    ERC721ProxyWrapper,
+    ERC721TokenWrapper,
     EtherTokenWrapper,
     ExchangeWrapper,
-    TokenRegistryWrapper,
-    TokenTransferProxyWrapper,
-    TokenWrapper,
 } from '@0xproject/contract-wrappers';
 import {
+    ecSignOrderHashAsync,
     generatePseudoRandomSalt,
-    getOrderHashHex,
-    isValidOrderHash,
-    isValidSignature,
-    signOrderHashAsync,
+    isValidSignatureAsync,
+    MessagePrefixOpts,
+    orderHashUtils,
 } from '@0xproject/order-utils';
-import { OrderWatcher, OrderWatcherConfig } from '@0xproject/order-watcher';
-import { ECSignature, Order, Provider, SignedOrder, TransactionReceiptWithDecodedLogs } from '@0xproject/types';
+import { ECSignature, Order, SignedOrder } from '@0xproject/types';
 import { BigNumber } from '@0xproject/utils';
 import { Web3Wrapper } from '@0xproject/web3-wrapper';
+import { Provider, TransactionReceiptWithDecodedLogs } from 'ethereum-types';
 
 import { constants } from './utils/constants';
 
@@ -38,24 +39,28 @@ export class ZeroEx {
      */
     public exchange: ExchangeWrapper;
     /**
-     * An instance of the TokenRegistryWrapper class containing methods for interacting with the 0x
-     * TokenRegistry smart contract.
+     * An instance of the ERC20TokenWrapper class containing methods for interacting with any ERC20 token smart contract.
      */
-    public tokenRegistry: TokenRegistryWrapper;
+    public erc20Token: ERC20TokenWrapper;
     /**
-     * An instance of the TokenWrapper class containing methods for interacting with any ERC20 token smart contract.
+     * An instance of the ERC721TokenWrapper class containing methods for interacting with any ERC721 token smart contract.
      */
-    public token: TokenWrapper;
+    public erc721Token: ERC721TokenWrapper;
     /**
      * An instance of the EtherTokenWrapper class containing methods for interacting with the
      * wrapped ETH ERC20 token smart contract.
      */
     public etherToken: EtherTokenWrapper;
     /**
-     * An instance of the TokenTransferProxyWrapper class containing methods for interacting with the
-     * tokenTransferProxy smart contract.
+     * An instance of the ERC20ProxyWrapper class containing methods for interacting with the
+     * ERC20 proxy smart contract.
      */
-    public proxy: TokenTransferProxyWrapper;
+    public erc20Proxy: ERC20ProxyWrapper;
+    /**
+     * An instance of the ERC721ProxyWrapper class containing methods for interacting with the
+     * ERC721 proxy smart contract.
+     */
+    public erc721Proxy: ERC721ProxyWrapper;
     private _contractWrappers: ContractWrappers;
     /**
      * Generates a pseudo-random 256-bit salt.
@@ -67,23 +72,12 @@ export class ZeroEx {
         return generatePseudoRandomSalt();
     }
     /**
-     * Verifies that the elliptic curve signature `signature` was generated
-     * by signing `data` with the private key corresponding to the `signerAddress` address.
-     * @param   data          The hex encoded data signed by the supplied signature.
-     * @param   signature     An object containing the elliptic curve signature parameters.
-     * @param   signerAddress The hex encoded address that signed the data, producing the supplied signature.
-     * @return  Whether the signature is valid for the supplied signerAddress and data.
-     */
-    public static isValidSignature(data: string, signature: ECSignature, signerAddress: string): boolean {
-        return isValidSignature(data, signature, signerAddress);
-    }
-    /**
      * Computes the orderHash for a supplied order.
      * @param   order   An object that conforms to the Order or SignedOrder interface definitions.
      * @return  The resulting orderHash from hashing the supplied order.
      */
     public static getOrderHashHex(order: Order | SignedOrder): string {
-        return getOrderHashHex(order);
+        return orderHashUtils.getOrderHashHex(order);
     }
     /**
      * Checks if the supplied hex encoded order hash is valid.
@@ -93,7 +87,7 @@ export class ZeroEx {
      * @return  Whether the supplied orderHash has the expected format.
      */
     public static isValidOrderHash(orderHash: string): boolean {
-        return isValidOrderHash(orderHash);
+        return orderHashUtils.isValidOrderHash(orderHash);
     }
     /**
      * A unit amount is defined as the amount of a token above the specified decimal places (integer part).
@@ -134,11 +128,28 @@ export class ZeroEx {
         assert.isWeb3Provider('provider', provider);
         this._contractWrappers = new ContractWrappers(provider, config);
 
-        this.proxy = this._contractWrappers.proxy;
-        this.token = this._contractWrappers.token;
+        this.erc20Proxy = this._contractWrappers.erc20Proxy;
+        this.erc721Proxy = this._contractWrappers.erc721Proxy;
+        this.erc20Token = this._contractWrappers.erc20Token;
+        this.erc721Token = this._contractWrappers.erc721Token;
         this.exchange = this._contractWrappers.exchange;
-        this.tokenRegistry = this._contractWrappers.tokenRegistry;
         this.etherToken = this._contractWrappers.etherToken;
+    }
+    /**
+     * Verifies that the provided signature is valid according to the 0x Protocol smart contracts
+     * @param   data          The hex encoded data signed by the supplied signature.
+     * @param   signature     The hex encoded signature.
+     * @param   signerAddress The hex encoded address that signed the data, producing the supplied signature.
+     * @return  Whether the signature is valid for the supplied signerAddress and data.
+     */
+    public async isValidSignatureAsync(data: string, signature: string, signerAddress: string): Promise<boolean> {
+        const isValid = await isValidSignatureAsync(
+            this._contractWrappers.getProvider(),
+            data,
+            signature,
+            signerAddress,
+        );
+        return isValid;
     }
     /**
      * Sets a new web3 provider for 0x.js. Updating the provider will stop all
@@ -172,23 +183,21 @@ export class ZeroEx {
      * @param   orderHash       Hex encoded orderHash to sign.
      * @param   signerAddress   The hex encoded Ethereum address you wish to sign it with. This address
      *          must be available via the Provider supplied to 0x.js.
-     * @param   shouldAddPersonalMessagePrefix  Some signers add the personal message prefix `\x19Ethereum Signed Message`
-     *          themselves (e.g Parity Signer, Ledger, TestRPC) and others expect it to already be done by the client
-     *          (e.g Metamask). Depending on which signer this request is going to, decide on whether to add the prefix
-     *          before sending the request.
+     * @param   MessagePrefixOpts  Options regarding the desired prefix and whether to add it before calling `eth_sign`
      * @return  An object containing the Elliptic curve signature parameters generated by signing the orderHash.
      */
-    public async signOrderHashAsync(
+    public async ecSignOrderHashAsync(
         orderHash: string,
         signerAddress: string,
-        shouldAddPersonalMessagePrefix: boolean,
+        messagePrefixOpts: MessagePrefixOpts,
     ): Promise<ECSignature> {
-        return signOrderHashAsync(
+        const signature = await ecSignOrderHashAsync(
             this._contractWrappers.getProvider(),
             orderHash,
             signerAddress,
-            shouldAddPersonalMessagePrefix,
+            messagePrefixOpts,
         );
+        return signature;
     }
     /**
      * Waits for a transaction to be mined and returns the transaction receipt.
@@ -210,19 +219,5 @@ export class ZeroEx {
             timeoutMs,
         );
         return transactionReceiptWithDecodedLogs;
-    }
-    /**
-     * Instantiates and returns a new OrderWatcher instance.
-     * Defaults to watching the pending state.
-     * @param   config      The configuration object. Look up the type for the description.
-     * @return  An instance of the 0x.js OrderWatcher class.
-     */
-    public async createOrderWatcherAsync(config?: OrderWatcherConfig): Promise<OrderWatcher> {
-        // Hack: Get Web3Wrapper from ContractWrappers
-        const web3Wrapper: Web3Wrapper = (this._contractWrappers as any)._web3Wrapper;
-        const networkId = await web3Wrapper.getNetworkIdAsync();
-        const provider = this._contractWrappers.getProvider();
-        const orderWatcher = new OrderWatcher(provider, networkId, config);
-        return orderWatcher;
     }
 }
