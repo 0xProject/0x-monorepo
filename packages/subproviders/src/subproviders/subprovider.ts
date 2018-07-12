@@ -9,18 +9,7 @@ import { Callback, ErrorCallback, JSONRPCRequestPayloadWithMethod } from '../typ
 export abstract class Subprovider {
     // tslint:disable-next-line:underscore-private-and-protected
     private engine!: Provider;
-    // Ported from: https://github.com/MetaMask/provider-engine/blob/master/util/random-id.js
-    private static _getRandomId(): number {
-        const extraDigits = 3;
-        const baseTen = 10;
-        // 13 time digits
-        const datePart = new Date().getTime() * Math.pow(baseTen, extraDigits);
-        // 3 random digits
-        const extraPart = Math.floor(Math.random() * Math.pow(baseTen, extraDigits));
-        // 16 digits
-        return datePart + extraPart;
-    }
-    private static _createFinalPayload(
+    public static createFinalPayload(
         payload: Partial<JSONRPCRequestPayloadWithMethod>,
     ): Partial<JSONRPCRequestPayloadWithMethod> {
         const finalPayload = {
@@ -31,6 +20,17 @@ export abstract class Subprovider {
             ...payload,
         };
         return finalPayload;
+    }
+    // Ported from: https://github.com/MetaMask/provider-engine/blob/master/util/random-id.js
+    private static _getRandomId(): number {
+        const extraDigits = 3;
+        const baseTen = 10;
+        // 13 time digits
+        const datePart = new Date().getTime() * Math.pow(baseTen, extraDigits);
+        // 3 random digits
+        const extraPart = Math.floor(Math.random() * Math.pow(baseTen, extraDigits));
+        // 16 digits
+        return datePart + extraPart;
     }
     // tslint:disable-next-line:async-suffix
     public abstract async handleRequest(
@@ -47,7 +47,7 @@ export abstract class Subprovider {
      * @returns JSON RPC response payload
      */
     public async emitPayloadAsync(payload: Partial<JSONRPCRequestPayloadWithMethod>): Promise<JSONRPCResponsePayload> {
-        const finalPayload = Subprovider._createFinalPayload(payload);
+        const finalPayload = Subprovider.createFinalPayload(payload);
         const response = await promisify<JSONRPCResponsePayload>(this.engine.sendAsync, this.engine)(finalPayload);
         return response;
     }

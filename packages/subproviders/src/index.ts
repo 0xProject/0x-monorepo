@@ -10,6 +10,7 @@ export { FakeGasEstimateSubprovider } from './subproviders/fake_gas_estimate_sub
 export { SignerSubprovider } from './subproviders/signer';
 export { RedundantSubprovider } from './subproviders/redundant_subprovider';
 export { LedgerSubprovider } from './subproviders/ledger';
+export { RPCSubprovider } from './subproviders/rpc_subprovider';
 export { GanacheSubprovider } from './subproviders/ganache';
 export { Subprovider } from './subproviders/subprovider';
 export { NonceTrackerSubprovider } from './subproviders/nonce_tracker';
