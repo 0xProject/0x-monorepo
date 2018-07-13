@@ -15,6 +15,7 @@ import {
     ledgerEthereumBrowserClientFactoryAsync,
     LedgerSubprovider,
     RedundantSubprovider,
+    RPCSubprovider,
     SignerSubprovider,
     Subprovider,
 } from '@0xproject/subproviders';
@@ -62,7 +63,6 @@ import { errorReporter } from 'ts/utils/error_reporter';
 import { utils } from 'ts/utils/utils';
 import ProviderEngine = require('web3-provider-engine');
 import FilterSubprovider = require('web3-provider-engine/subproviders/filters');
-import RpcSubprovider = require('web3-provider-engine/subproviders/rpc');
 
 import * as MintableArtifacts from '../contracts/Mintable.json';
 
@@ -157,9 +157,7 @@ export class Blockchain {
             provider.addProvider(ledgerSubprovider);
             provider.addProvider(new FilterSubprovider());
             const rpcSubproviders = _.map(configs.PUBLIC_NODE_URLS_BY_NETWORK_ID[networkIdIfExists], publicNodeUrl => {
-                return new RpcSubprovider({
-                    rpcUrl: publicNodeUrl,
-                });
+                return new RPCSubprovider(publicNodeUrl);
             });
             provider.addProvider(new RedundantSubprovider(rpcSubproviders as Subprovider[]));
             provider.start();
@@ -171,9 +169,7 @@ export class Blockchain {
             provider.addProvider(new SignerSubprovider(injectedWeb3.currentProvider));
             provider.addProvider(new FilterSubprovider());
             const rpcSubproviders = _.map(publicNodeUrlsIfExistsForNetworkId, publicNodeUrl => {
-                return new RpcSubprovider({
-                    rpcUrl: publicNodeUrl,
-                });
+                return new RPCSubprovider(publicNodeUrl);
             });
             provider.addProvider(new RedundantSubprovider(rpcSubproviders as Subprovider[]));
             provider.start();
@@ -189,9 +185,7 @@ export class Blockchain {
             provider.addProvider(new FilterSubprovider());
             const networkId = constants.NETWORK_ID_MAINNET;
             const rpcSubproviders = _.map(configs.PUBLIC_NODE_URLS_BY_NETWORK_ID[networkId], publicNodeUrl => {
-                return new RpcSubprovider({
-                    rpcUrl: publicNodeUrl,
-                });
+                return new RPCSubprovider(publicNodeUrl);
             });
             provider.addProvider(new RedundantSubprovider(rpcSubproviders as Subprovider[]));
             provider.start();

@@ -9,4 +9,3 @@ export { abiUtils } from './abi_utils';
 export { NULL_BYTES } from './constants';
 export { errorUtils } from './error_utils';
 export { fetchAsync } from './fetchAsync';
-export { FetchRequest } from '@0xproject/types';

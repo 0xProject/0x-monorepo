@@ -229,7 +229,3 @@ export enum StatusCodes {
     MethodNotAllowed = 405,
     GatewayTimeout = 504,
 }
-
-export interface FetchRequest extends RequestInit {
-    timeout?: number;
-}

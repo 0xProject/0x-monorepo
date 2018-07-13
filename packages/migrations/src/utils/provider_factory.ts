@@ -1,10 +1,9 @@
-import { LedgerEthereumClient, LedgerSubprovider } from '@0xproject/subproviders';
+import { LedgerEthereumClient, LedgerSubprovider, RPCSubprovider } from '@0xproject/subproviders';
 import Eth from '@ledgerhq/hw-app-eth';
 // tslint:disable:no-implicit-dependencies
 import TransportNodeHid from '@ledgerhq/hw-transport-node-hid';
 import { Provider } from 'ethereum-types';
 import ProviderEngine = require('web3-provider-engine');
-import RpcSubprovider = require('web3-provider-engine/subproviders/rpc');
 
 import { constants } from './constants';
 
@@ -22,11 +21,7 @@ export const providerFactory = {
         };
         const ledgerSubprovider = new LedgerSubprovider(ledgerWalletConfigs);
         provider.addProvider(ledgerSubprovider);
-        provider.addProvider(
-            new RpcSubprovider({
-                rpcUrl: constants.RPC_URL,
-            }),
-        );
+        provider.addProvider(new RPCSubprovider(constants.RPC_URL));
         provider.start();
         return provider;
     },
