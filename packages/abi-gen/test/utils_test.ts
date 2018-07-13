@@ -2,7 +2,6 @@ import * as chai from 'chai';
 import * as dirtyChai from 'dirty-chai';
 import * as fs from 'fs';
 import 'mocha';
-import * as sleep from 'sleep';
 import * as tmp from 'tmp';
 
 import { utils } from '../src/utils';
