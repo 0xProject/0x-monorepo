@@ -80,7 +80,7 @@ contract MixinForwarderCore is
 
         // Attempt to sell 95% of WETH.
         // ZRX fees are payed with this contract's balance.
-        orderFillResults = marketSellEth(
+        orderFillResults = marketSellWeth(
             orders,
             wethAvailable,
             signatures
@@ -182,7 +182,7 @@ contract MixinForwarderCore is
     /// @param wethSellAmount Desired amount of WETH to sell.
     /// @param signatures Proofs that orders have been created by makers.
     /// @return Amounts filled and fees paid by maker and taker.
-    function marketSellEth(
+    function marketSellWeth(
         LibOrder.Order[] memory orders,
         uint256 wethSellAmount,
         bytes[] memory signatures

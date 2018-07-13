@@ -32,7 +32,7 @@ contract MForwarderCore is
     /// @param wethSellAmount Desired amount of WETH to sell.
     /// @param signatures Proofs that orders have been created by makers.
     /// @return Amounts filled and fees paid by maker and taker.
-    function marketSellEth(
+    function marketSellWeth(
         LibOrder.Order[] memory orders,
         uint256 wethSellAmount,
         bytes[] memory signatures
