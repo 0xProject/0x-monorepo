@@ -17,7 +17,6 @@ import {
     RedundantSubprovider,
     RPCSubprovider,
     SignerSubprovider,
-    Subprovider,
     Web3ProviderEngine,
 } from '@0xproject/subproviders';
 import {
@@ -159,7 +158,7 @@ export class Blockchain {
             const rpcSubproviders = _.map(configs.PUBLIC_NODE_URLS_BY_NETWORK_ID[networkIdIfExists], publicNodeUrl => {
                 return new RPCSubprovider(publicNodeUrl);
             });
-            provider.addProvider(new RedundantSubprovider(rpcSubproviders as Subprovider[]));
+            provider.addProvider(new RedundantSubprovider(rpcSubproviders));
             provider.start();
             return [provider, ledgerSubprovider];
         } else if (doesInjectedWeb3Exist && isPublicNodeAvailableForNetworkId) {
@@ -171,7 +170,7 @@ export class Blockchain {
             const rpcSubproviders = _.map(publicNodeUrlsIfExistsForNetworkId, publicNodeUrl => {
                 return new RPCSubprovider(publicNodeUrl);
             });
-            provider.addProvider(new RedundantSubprovider(rpcSubproviders as Subprovider[]));
+            provider.addProvider(new RedundantSubprovider(rpcSubproviders));
             provider.start();
             return [provider, undefined];
         } else if (doesInjectedWeb3Exist) {
@@ -187,7 +186,7 @@ export class Blockchain {
             const rpcSubproviders = _.map(configs.PUBLIC_NODE_URLS_BY_NETWORK_ID[networkId], publicNodeUrl => {
                 return new RPCSubprovider(publicNodeUrl);
             });
-            provider.addProvider(new RedundantSubprovider(rpcSubproviders as Subprovider[]));
+            provider.addProvider(new RedundantSubprovider(rpcSubproviders));
             provider.start();
             return [provider, undefined];
         }
