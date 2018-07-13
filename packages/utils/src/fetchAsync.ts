@@ -6,6 +6,9 @@ export const fetchAsync = async (
     options: RequestInit = {},
     timeoutMs: number = 20000,
 ): Promise<Response> => {
+    if (options.signal || (options as any).timeout) {
+        throw new Error('Cannot call fetchAsync with options.signal or options.timeout. To set a timeout, please use the supplied "timeoutMs" parameter.');
+    }
     let optionsWithAbortParam;
     if (!isNode) {
         const controller = new AbortController();
