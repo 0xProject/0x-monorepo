@@ -358,11 +358,6 @@ export const utils = {
         return providerType === ProviderType.Injected && injectedProviderName !== constants.PROVIDER_NAME_PUBLIC;
     },
     isDogfood,
-    shouldShowPortalV2(): boolean {
-        // return this.isDevelopment() || this.isStaging() || this.isDogfood();
-        // TODO: Remove this method entirely after launch.
-        return true;
-    },
     shouldShowJobsPage(): boolean {
         return this.isDevelopment() || this.isStaging() || this.isDogfood();
     },
