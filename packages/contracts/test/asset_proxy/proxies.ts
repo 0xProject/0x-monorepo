@@ -1,17 +1,13 @@
 import { BlockchainLifecycle } from '@0xproject/dev-utils';
-import { assetDataUtils, generatePseudoRandomSalt } from '@0xproject/order-utils';
+import { assetDataUtils } from '@0xproject/order-utils';
 import { RevertReason } from '@0xproject/types';
 import { BigNumber } from '@0xproject/utils';
 import * as chai from 'chai';
 import { LogWithDecodedArgs } from 'ethereum-types';
-import ethUtil = require('ethereumjs-util');
 import * as _ from 'lodash';
 
 import { DummyERC20TokenContract } from '../../generated_contract_wrappers/dummy_erc20_token';
-import {
-    DummyERC721ReceiverContract,
-    DummyERC721ReceiverTokenReceivedEventArgs,
-} from '../../generated_contract_wrappers/dummy_erc721_receiver';
+import { DummyERC721ReceiverContract } from '../../generated_contract_wrappers/dummy_erc721_receiver';
 import { DummyERC721TokenContract } from '../../generated_contract_wrappers/dummy_erc721_token';
 import { ERC20ProxyContract } from '../../generated_contract_wrappers/erc20_proxy';
 import { ERC721ProxyContract } from '../../generated_contract_wrappers/erc721_proxy';
@@ -253,7 +249,7 @@ describe('Asset Transfer Proxies', () => {
                 expect(newOwnerMakerAsset).to.be.bignumber.equal(takerAddress);
             });
 
-            it('should call onERC721Received when transferring to a smart contract without receiver data', async () => {
+            it('should not call onERC721Received when transferring to a smart contract', async () => {
                 // Construct ERC721 asset data
                 const encodedAssetData = assetDataUtils.encodeERC721AssetData(erc721Token.address, erc721MakerTokenId);
                 // Verify pre-condition
@@ -277,83 +273,10 @@ describe('Asset Transfer Proxies', () => {
                     }),
                 );
                 // Verify that no log was emitted by erc721 receiver
-                expect(tx.logs.length).to.be.equal(1);
-                const tokenReceivedLog = tx.logs[0] as LogWithDecodedArgs<DummyERC721ReceiverTokenReceivedEventArgs>;
-                expect(tokenReceivedLog.args.from).to.be.equal(makerAddress);
-                expect(tokenReceivedLog.args.tokenId).to.be.bignumber.equal(erc721MakerTokenId);
-                expect(tokenReceivedLog.args.data).to.be.equal(constants.NULL_BYTES);
+                expect(tx.logs.length).to.be.equal(0);
                 // Verify transfer was successful
                 const newOwnerMakerAsset = await erc721Token.ownerOf.callAsync(erc721MakerTokenId);
                 expect(newOwnerMakerAsset).to.be.bignumber.equal(erc721Receiver.address);
-            });
-
-            it('should call onERC721Received when transferring to a smart contract with receiver data', async () => {
-                // Construct ERC721 asset data
-                const receiverData = ethUtil.bufferToHex(typeEncodingUtils.encodeUint256(generatePseudoRandomSalt()));
-                const encodedAssetData = assetDataUtils.encodeERC721AssetData(
-                    erc721Token.address,
-                    erc721MakerTokenId,
-                    receiverData,
-                );
-                // Verify pre-condition
-                const ownerMakerAsset = await erc721Token.ownerOf.callAsync(erc721MakerTokenId);
-                expect(ownerMakerAsset).to.be.bignumber.equal(makerAddress);
-                // Perform a transfer from makerAddress to takerAddress
-                const amount = new BigNumber(1);
-                const data = assetProxyInterface.transferFrom.getABIEncodedTransactionData(
-                    encodedAssetData,
-                    makerAddress,
-                    erc721Receiver.address,
-                    amount,
-                );
-                const logDecoder = new LogDecoder(web3Wrapper, erc721Receiver.address);
-                const tx = await logDecoder.getTxWithDecodedLogsAsync(
-                    await web3Wrapper.sendTransactionAsync({
-                        to: erc721Proxy.address,
-                        data,
-                        from: exchangeAddress,
-                        gas: constants.MAX_TRANSFER_FROM_GAS,
-                    }),
-                );
-                // Validate log emitted by erc721 receiver
-                expect(tx.logs.length).to.be.equal(1);
-                const tokenReceivedLog = tx.logs[0] as LogWithDecodedArgs<DummyERC721ReceiverTokenReceivedEventArgs>;
-                expect(tokenReceivedLog.args.from).to.be.equal(makerAddress);
-                expect(tokenReceivedLog.args.tokenId).to.be.bignumber.equal(erc721MakerTokenId);
-                expect(tokenReceivedLog.args.data).to.be.equal(receiverData);
-                // Verify transfer was successful
-                const newOwnerMakerAsset = await erc721Token.ownerOf.callAsync(erc721MakerTokenId);
-                expect(newOwnerMakerAsset).to.be.bignumber.equal(erc721Receiver.address);
-            });
-
-            it('should throw if there is receiver data but contract does not have onERC721Received', async () => {
-                // Construct ERC721 asset data
-                const receiverData = ethUtil.bufferToHex(typeEncodingUtils.encodeUint256(generatePseudoRandomSalt()));
-                const encodedAssetData = assetDataUtils.encodeERC721AssetData(
-                    erc721Token.address,
-                    erc721MakerTokenId,
-                    receiverData,
-                );
-                // Verify pre-condition
-                const ownerMakerAsset = await erc721Token.ownerOf.callAsync(erc721MakerTokenId);
-                expect(ownerMakerAsset).to.be.bignumber.equal(makerAddress);
-                // Perform a transfer from makerAddress to takerAddress
-                const amount = new BigNumber(1);
-                const data = assetProxyInterface.transferFrom.getABIEncodedTransactionData(
-                    encodedAssetData,
-                    makerAddress,
-                    erc20Proxy.address, // the ERC20 proxy does not have an ERC721 receiver
-                    amount,
-                );
-                return expectTransactionFailedAsync(
-                    web3Wrapper.sendTransactionAsync({
-                        to: erc721Proxy.address,
-                        data,
-                        from: exchangeAddress,
-                        gas: constants.MAX_TRANSFER_FROM_GAS,
-                    }),
-                    RevertReason.TransferFailed,
-                );
             });
 
             it('should throw if transferring 0 amount of a token', async () => {
