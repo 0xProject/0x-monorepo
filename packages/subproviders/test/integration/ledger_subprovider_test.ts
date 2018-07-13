@@ -7,9 +7,8 @@ import TransportNodeHid from '@ledgerhq/hw-transport-node-hid';
 import * as chai from 'chai';
 import { JSONRPCResponsePayload } from 'ethereum-types';
 import * as ethUtils from 'ethereumjs-util';
-import Web3ProviderEngine = require('web3-provider-engine');
 
-import { LedgerSubprovider, RPCSubprovider } from '../../src';
+import { LedgerSubprovider, RPCSubprovider, Web3ProviderEngine } from '../../src';
 import { LedgerEthereumClient } from '../../src/types';
 import { chaiSetup } from '../chai_setup';
 import { fixtureData } from '../utils/fixture_data';

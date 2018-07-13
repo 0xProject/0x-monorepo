@@ -2,9 +2,8 @@ import * as chai from 'chai';
 import { JSONRPCResponsePayload } from 'ethereum-types';
 import * as ethUtils from 'ethereumjs-util';
 import * as _ from 'lodash';
-import Web3ProviderEngine = require('web3-provider-engine');
 
-import { LedgerSubprovider } from '../../src';
+import { LedgerSubprovider, Web3ProviderEngine } from '../../src';
 import {
     DoneCallback,
     LedgerCommunicationClient,

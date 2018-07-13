@@ -1,10 +1,9 @@
-import ProviderEngine = require('web3-provider-engine');
-
 import {
     EmptyWalletSubprovider,
     FakeGasEstimateSubprovider,
     GanacheSubprovider,
     RPCSubprovider,
+    Web3ProviderEngine,
 } from '@0xproject/subproviders';
 import * as fs from 'fs';
 import * as _ from 'lodash';
@@ -20,8 +19,8 @@ export interface Web3Config {
 }
 
 export const web3Factory = {
-    getRpcProvider(config: Web3Config = {}): ProviderEngine {
-        const provider = new ProviderEngine();
+    getRpcProvider(config: Web3Config = {}): Web3ProviderEngine {
+        const provider = new Web3ProviderEngine();
         const hasAddresses = _.isUndefined(config.hasAddresses) || config.hasAddresses;
         config.shouldUseFakeGasEstimate =
             _.isUndefined(config.shouldUseFakeGasEstimate) || config.shouldUseFakeGasEstimate;

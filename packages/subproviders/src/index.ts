@@ -1,5 +1,6 @@
 import Eth from '@ledgerhq/hw-app-eth';
 import TransportU2F from '@ledgerhq/hw-transport-u2f';
+export import Web3ProviderEngine = require('web3-provider-engine');
 export { ECSignature } from '@0xproject/types';
 
 import { LedgerEthereumClient } from './types';

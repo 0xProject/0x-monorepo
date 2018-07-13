@@ -1,9 +1,8 @@
 import * as chai from 'chai';
 import { JSONRPCResponsePayload } from 'ethereum-types';
 import * as ethUtils from 'ethereumjs-util';
-import Web3ProviderEngine = require('web3-provider-engine');
 
-import { GanacheSubprovider, MnemonicWalletSubprovider } from '../../src/';
+import { GanacheSubprovider, MnemonicWalletSubprovider, Web3ProviderEngine } from '../../src/';
 import { DoneCallback, WalletSubproviderErrors } from '../../src/types';
 import { chaiSetup } from '../chai_setup';
 import { fixtureData } from '../utils/fixture_data';

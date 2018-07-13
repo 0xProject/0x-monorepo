@@ -2,9 +2,8 @@ import { DoneCallback } from '@0xproject/types';
 import * as chai from 'chai';
 import { JSONRPCResponsePayload } from 'ethereum-types';
 import * as Sinon from 'sinon';
-import Web3ProviderEngine = require('web3-provider-engine');
 
-import { RedundantSubprovider, RPCSubprovider } from '../../src';
+import { RedundantSubprovider, RPCSubprovider, Web3ProviderEngine } from '../../src';
 import { Subprovider } from '../../src/subproviders/subprovider';
 import { chaiSetup } from '../chai_setup';
 import { ganacheSubprovider } from '../utils/ganache_subprovider';

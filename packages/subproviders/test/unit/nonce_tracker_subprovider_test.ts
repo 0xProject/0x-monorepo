@@ -1,11 +1,10 @@
 import * as chai from 'chai';
-import Web3ProviderEngine = require('web3-provider-engine');
 import FixtureSubprovider = require('web3-provider-engine/subproviders/fixture');
 
 import { promisify } from '@0xproject/utils';
 import EthereumTx = require('ethereumjs-tx');
 
-import { NonceTrackerSubprovider } from '../../src';
+import { NonceTrackerSubprovider, Web3ProviderEngine } from '../../src';
 import { chaiSetup } from '../chai_setup';
 
 const expect = chai.expect;

@@ -18,6 +18,7 @@ import {
     RPCSubprovider,
     SignerSubprovider,
     Subprovider,
+    Web3ProviderEngine,
 } from '@0xproject/subproviders';
 import {
     BlockParam,
@@ -61,7 +62,6 @@ import { configs } from 'ts/utils/configs';
 import { constants } from 'ts/utils/constants';
 import { errorReporter } from 'ts/utils/error_reporter';
 import { utils } from 'ts/utils/utils';
-import ProviderEngine = require('web3-provider-engine');
 import FilterSubprovider = require('web3-provider-engine/subproviders/filters');
 
 import * as MintableArtifacts from '../contracts/Mintable.json';
@@ -148,7 +148,7 @@ export class Blockchain {
             if (!isU2FSupported) {
                 throw new Error('Cannot update providerType to LEDGER without U2F support');
             }
-            const provider = new ProviderEngine();
+            const provider = new Web3ProviderEngine();
             const ledgerWalletConfigs = {
                 networkId: networkIdIfExists,
                 ledgerEthereumClientFactoryAsync: ledgerEthereumBrowserClientFactoryAsync,
@@ -165,7 +165,7 @@ export class Blockchain {
         } else if (doesInjectedWeb3Exist && isPublicNodeAvailableForNetworkId) {
             // We catch all requests involving a users account and send it to the injectedWeb3
             // instance. All other requests go to the public hosted node.
-            const provider = new ProviderEngine();
+            const provider = new Web3ProviderEngine();
             provider.addProvider(new SignerSubprovider(injectedWeb3.currentProvider));
             provider.addProvider(new FilterSubprovider());
             const rpcSubproviders = _.map(publicNodeUrlsIfExistsForNetworkId, publicNodeUrl => {
@@ -181,7 +181,7 @@ export class Blockchain {
             // If no injectedWeb3 instance, all requests fallback to our public hosted mainnet/testnet node
             // We do this so that users can still browse the 0x Portal DApp even if they do not have web3
             // injected into their browser.
-            const provider = new ProviderEngine();
+            const provider = new Web3ProviderEngine();
             provider.addProvider(new FilterSubprovider());
             const networkId = constants.NETWORK_ID_MAINNET;
             const rpcSubproviders = _.map(configs.PUBLIC_NODE_URLS_BY_NETWORK_ID[networkId], publicNodeUrl => {
