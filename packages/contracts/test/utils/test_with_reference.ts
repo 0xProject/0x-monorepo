@@ -60,16 +60,14 @@ export async function testWithReferenceFuncAsync<P0, P1, P2, P3, P4, R>(
  * fails, according to the rules described above.
  */
 export async function testWithReferenceFuncAsync(
-    referenceFunc: (...args: any[]) => Promise<any>,
+    referenceFuncAsync: (...args: any[]) => Promise<any>,
     testFuncAsync: (...args: any[]) => Promise<any>,
     values: any[],
 ): Promise<void> {
-    const paramNames = _getParameterNames(referenceFunc);
-    const testCaseString = JSON.stringify(_.zipObject(paramNames, values));
     let expectedResult: any;
     let expectedErr: string | undefined;
     try {
-        expectedResult = await referenceFunc(...values);
+        expectedResult = await referenceFuncAsync(...values);
     } catch (e) {
         expectedErr = e.message;
     }
@@ -78,22 +76,33 @@ export async function testWithReferenceFuncAsync(
         actualResult = await testFuncAsync(...values);
         if (!_.isUndefined(expectedErr)) {
             throw new Error(
-                `Expected error containing ${expectedErr} but got no error\n\tTest case: ${testCaseString}`,
+                `Expected error containing ${expectedErr} but got no error\n\tTest case: ${_getTestCaseString(
+                    referenceFuncAsync,
+                    values,
+                )}`,
             );
         }
     } catch (e) {
         if (_.isUndefined(expectedErr)) {
-            throw new Error(`${e.message}\n\tTest case: ${testCaseString}`);
+            throw new Error(`${e.message}\n\tTest case: ${_getTestCaseString(referenceFuncAsync, values)}`);
         } else {
-            expect(e.message).to.contain(expectedErr, `${e.message}\n\tTest case: ${testCaseString}`);
+            expect(e.message).to.contain(
+                expectedErr,
+                `${e.message}\n\tTest case: ${_getTestCaseString(referenceFuncAsync, values)}`,
+            );
         }
     }
     if (!_.isUndefined(actualResult) && !_.isUndefined(expectedResult)) {
-        expect(JSON.stringify(actualResult)).to.equal(
-            JSON.stringify(expectedResult),
-            `\n\tTest case: ${testCaseString}`,
+        expect(actualResult).to.deep.equal(
+            expectedResult,
+            `Test case: ${_getTestCaseString(referenceFuncAsync, values)}`,
         );
     }
+}
+
+function _getTestCaseString(referenceFuncAsync: (...args: any[]) => Promise<any>, values: any[]): string {
+    const paramNames = _getParameterNames(referenceFuncAsync);
+    return JSON.stringify(_.zipObject(paramNames, values));
 }
 
 // Source: https://stackoverflow.com/questions/1007981/how-to-get-function-parameter-names-values-dynamically

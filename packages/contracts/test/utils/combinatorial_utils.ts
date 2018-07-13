@@ -5,7 +5,7 @@ import { testWithReferenceFuncAsync } from './test_with_reference';
 
 // A set of values corresponding to the uint256 type in Solidity. This set
 // contains some notable edge cases, including some values which will overflow
-// the uint256 type.
+// the uint256 type when used in different mathematical operations.
 export const uint256Values = [
     new BigNumber(0),
     new BigNumber(1),
@@ -22,13 +22,9 @@ export const uint256Values = [
     new BigNumber(2).pow(255),
     // Max that does not overflow.
     new BigNumber(2).pow(256).minus(1),
-    // Min that does overflow.
-    new BigNumber(2).pow(256),
 ];
 
-// A set of values corresponding to the bytes32 type in Solidity. This set
-// contains some notable edge cases, including some values which will overflow
-// the bytes32 type.
+// A set of values corresponding to the bytes32 type in Solidity.
 export const bytes32Values = [
     // Min
     '0x0000000000000000000000000000000000000000000000000000000000000000',
@@ -36,10 +32,8 @@ export const bytes32Values = [
     '0x0000000000000000000000000000000000000000000000000000000000000002',
     // Non-trivial big number.
     '0x000000000000f000000000000000000000000000000000000000000000000000',
-    // Max that does not overflow
+    // Max
     '0xffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff',
-    // Min that overflows
-    '0x10000000000000000000000000000000000000000000000000000000000000000',
 ];
 
 export async function testCombinatoriallyWithReferenceFuncAsync<P0, P1, R>(
@@ -109,7 +103,7 @@ export async function testCombinatoriallyWithReferenceFuncAsync(
     allValues: any[],
 ): Promise<void> {
     const testCases = combinatorics.cartesianProduct(...allValues);
-    let counter = -1;
+    let counter = 0;
     testCases.forEach(async testCase => {
         counter += 1;
         it(`${name} ${counter}/${testCases.length}`, async () => {

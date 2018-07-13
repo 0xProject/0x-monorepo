@@ -23,7 +23,7 @@ export type sendTransactionResult = Promise<TransactionReceipt | TransactionRece
  * @returns either the given ganacheError or gethError depending on the backing
  * node.
  */
-export async function getGanacheOrGethError(ganacheError: string, gethError: string): Promise<string> {
+async function _getGanacheOrGethError(ganacheError: string, gethError: string): Promise<string> {
     if (_.isUndefined(nodeType)) {
         nodeType = await web3Wrapper.getNodeTypeAsync();
     }
@@ -38,15 +38,34 @@ export async function getGanacheOrGethError(ganacheError: string, gethError: str
 }
 
 async function _getInsufficientFundsErrorMessageAsync(): Promise<string> {
-    return getGanacheOrGethError("sender doesn't have enough funds", 'insufficient funds');
+    return _getGanacheOrGethError("sender doesn't have enough funds", 'insufficient funds');
 }
 
 async function _getTransactionFailedErrorMessageAsync(): Promise<string> {
-    return getGanacheOrGethError('revert', 'always failing transaction');
+    return _getGanacheOrGethError('revert', 'always failing transaction');
 }
 
 async function _getContractCallFailedErrorMessageAsync(): Promise<string> {
-    return getGanacheOrGethError('revert', 'Contract call failed');
+    return _getGanacheOrGethError('revert', 'Contract call failed');
+}
+
+/**
+ * Returns the expected error message for an 'invalid opcode' resulting from a
+ * contract call. The exact error message depends on the backing Ethereum node.
+ */
+export async function getInvalidOpcodeErrorMessageForCallAsync(): Promise<string> {
+    return _getGanacheOrGethError('invalid opcode', 'Contract call failed');
+}
+
+/**
+ * Returns the expected error message for the given revert reason resulting from
+ * a sendTransaction call. The exact error message depends on the backing
+ * Ethereum node and whether it supports revert reasons.
+ * @param reason a specific revert reason.
+ * @returns the expected error message.
+ */
+export async function getRevertReasonOrErrorMessageForSendTransactionAsync(reason: RevertReason): Promise<string> {
+    return _getGanacheOrGethError(reason, 'always failing transaction');
 }
 
 /**

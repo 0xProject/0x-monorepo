@@ -1,11 +1,14 @@
 import { BlockchainLifecycle } from '@0xproject/dev-utils';
-import { Order, SignedOrder } from '@0xproject/types';
+import { Order, RevertReason, SignedOrder } from '@0xproject/types';
 import { BigNumber } from '@0xproject/utils';
 import * as _ from 'lodash';
 
 import { TestExchangeInternalsContract } from '../../generated_contract_wrappers/test_exchange_internals';
 import { artifacts } from '../utils/artifacts';
-import { getGanacheOrGethError } from '../utils/assertions';
+import {
+    getInvalidOpcodeErrorMessageForCallAsync,
+    getRevertReasonOrErrorMessageForSendTransactionAsync,
+} from '../utils/assertions';
 import { chaiSetup } from '../utils/chai_setup';
 import { bytes32Values, testCombinatoriallyWithReferenceFuncAsync, uint256Values } from '../utils/combinatorial_utils';
 import { constants } from '../utils/constants';
@@ -16,7 +19,6 @@ chaiSetup.configure();
 const blockchainLifecycle = new BlockchainLifecycle(web3Wrapper);
 
 const MAX_UINT256 = new BigNumber(2).pow(256).minus(1);
-const MAX_BYTES32_STRING_LENGTH = 64 + 2; // '0x' prefix + 64 hex characters
 
 const emptyOrder: Order = {
     senderAddress: constants.NULL_ADDRESS,
@@ -39,42 +41,25 @@ const emptySignedOrder: SignedOrder = {
     signature: '',
 };
 
-const overflowErrorForCall = new Error('UINT256_OVERFLOW');
-
-async function _getInvalidOpcodeErrorForCall(): Promise<Error> {
-    const errMsg = await getGanacheOrGethError('invalid opcode', 'Contract call failed');
-    return new Error(errMsg);
-}
-
-async function _getOverflowErrorForSendTransaction(): Promise<Error> {
-    const errMsg = await getGanacheOrGethError('UINT256_OVERFLOW', 'always failing transaction');
-    return new Error(errMsg);
-}
+const overflowErrorForCall = new Error(RevertReason.Uint256Overflow);
 
 async function referenceGetPartialAmountAsync(
     numerator: BigNumber,
     denominator: BigNumber,
     target: BigNumber,
 ): Promise<BigNumber> {
-    const invalidOpcodeErrorForCall = await _getInvalidOpcodeErrorForCall();
-    if (numerator.greaterThan(MAX_UINT256)) {
-        throw invalidOpcodeErrorForCall;
-    } else if (target.greaterThan(MAX_UINT256)) {
-        throw invalidOpcodeErrorForCall;
-    }
+    const invalidOpcodeErrorForCall = new Error(await getInvalidOpcodeErrorMessageForCallAsync());
     const product = numerator.mul(target);
     if (product.greaterThan(MAX_UINT256)) {
         throw overflowErrorForCall;
     }
-    if (denominator.eq(new BigNumber(0))) {
-        throw invalidOpcodeErrorForCall;
-    } else if (denominator.greaterThan(MAX_UINT256)) {
+    if (denominator.eq(0)) {
         throw invalidOpcodeErrorForCall;
     }
     return product.dividedToIntegerBy(denominator);
 }
 
-describe.only('Exchange core internal functions', () => {
+describe('Exchange core internal functions', () => {
     let testExchange: TestExchangeInternalsContract;
     let invalidOpcodeErrorForCall: Error | undefined;
     let overflowErrorForSendTransaction: Error | undefined;
@@ -91,8 +76,10 @@ describe.only('Exchange core internal functions', () => {
             provider,
             txDefaults,
         );
-        overflowErrorForSendTransaction = await _getOverflowErrorForSendTransaction();
-        invalidOpcodeErrorForCall = await _getInvalidOpcodeErrorForCall();
+        overflowErrorForSendTransaction = new Error(
+            await getRevertReasonOrErrorMessageForSendTransactionAsync(RevertReason.Uint256Overflow),
+        );
+        invalidOpcodeErrorForCall = new Error(await getInvalidOpcodeErrorMessageForCallAsync());
     });
     // Note(albrow): Don't forget to add beforeEach and afterEach calls to reset
     // the blockchain state for any tests which modify it!
@@ -228,32 +215,26 @@ describe.only('Exchange core internal functions', () => {
             denominator: BigNumber,
             target: BigNumber,
         ): Promise<boolean> {
-            if (numerator.greaterThan(MAX_UINT256)) {
-                throw invalidOpcodeErrorForCall;
-            } else if (denominator.greaterThan(MAX_UINT256)) {
-                throw invalidOpcodeErrorForCall;
-            } else if (denominator.eq(new BigNumber(0))) {
-                throw invalidOpcodeErrorForCall;
-            } else if (target.greaterThan(MAX_UINT256)) {
+            const product = numerator.mul(target);
+            if (denominator.eq(0)) {
                 throw invalidOpcodeErrorForCall;
             }
-            const product = numerator.mul(target);
             const remainder = product.mod(denominator);
-            if (remainder.eq(new BigNumber(0))) {
+            if (remainder.eq(0)) {
                 return false;
             }
             if (product.greaterThan(MAX_UINT256)) {
                 throw overflowErrorForCall;
             }
-            if (product.eq(new BigNumber(0))) {
+            if (product.eq(0)) {
                 throw invalidOpcodeErrorForCall;
             }
-            const remainderTimes1000000 = remainder.mul(new BigNumber('1000000'));
+            const remainderTimes1000000 = remainder.mul('1000000');
             if (remainderTimes1000000.greaterThan(MAX_UINT256)) {
                 throw overflowErrorForCall;
             }
             const errPercentageTimes1000000 = remainderTimes1000000.dividedToIntegerBy(product);
-            return errPercentageTimes1000000.greaterThan(new BigNumber('1000'));
+            return errPercentageTimes1000000.greaterThan('1000');
         }
         async function testIsRoundingErrorAsync(
             numerator: BigNumber,
@@ -289,12 +270,7 @@ describe.only('Exchange core internal functions', () => {
             if (totalFilledAmount.greaterThan(MAX_UINT256)) {
                 throw overflowErrorForSendTransaction;
             }
-            // Note(albrow): In the Solidity implementation, if orderHash
-            // overflows bytes32, the return value is always 0.
-            if (orderHash.length <= MAX_BYTES32_STRING_LENGTH) {
-                return totalFilledAmount;
-            }
-            return new BigNumber(0);
+            return totalFilledAmount;
         }
         async function testUpdateFilledStateAsync(
             takerAssetFilledAmount: BigNumber,
