@@ -4,4 +4,5 @@ export { OrderStateValid, OrderStateInvalid, OrderState } from '@0xproject/types
 
 export { OnOrderStateChangeCallback, OrderWatcherConfig } from './types';
 
-export { BlockParamLiteral, BlockParam, Order, Provider, SignedOrder } from '@0xproject/types';
+export { Order, SignedOrder } from '@0xproject/types';
+export { BlockParamLiteral, BlockParam, Provider } from 'ethereum-types';

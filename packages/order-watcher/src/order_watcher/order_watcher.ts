@@ -1,55 +1,53 @@
+// tslint:disable:no-unnecessary-type-assertion
 import {
-    BalanceAndProxyAllowanceLazyStore,
     ContractWrappers,
-    OrderFilledCancelledLazyStore,
+    ERC20TokenApprovalEventArgs,
+    ERC20TokenEventArgs,
+    ERC20TokenEvents,
+    ERC20TokenTransferEventArgs,
+    ERC721TokenApprovalEventArgs,
+    ERC721TokenApprovalForAllEventArgs,
+    ERC721TokenEventArgs,
+    ERC721TokenEvents,
+    ERC721TokenTransferEventArgs,
+    ExchangeCancelEventArgs,
+    ExchangeCancelUpToEventArgs,
+    ExchangeEventArgs,
+    ExchangeEvents,
+    ExchangeFillEventArgs,
+    WETH9DepositEventArgs,
+    WETH9EventArgs,
+    WETH9Events,
+    WETH9WithdrawalEventArgs,
 } from '@0xproject/contract-wrappers';
 import { schemas } from '@0xproject/json-schemas';
-import { getOrderHashHex, OrderStateUtils } from '@0xproject/order-utils';
 import {
-    BlockParamLiteral,
-    ExchangeContractErrs,
-    LogEntryEvent,
-    LogWithDecodedArgs,
-    OrderState,
-    Provider,
-    SignedOrder,
-} from '@0xproject/types';
+    assetProxyUtils,
+    BalanceAndProxyAllowanceLazyStore,
+    OrderFilledCancelledLazyStore,
+    orderHashUtils,
+    OrderStateUtils,
+} from '@0xproject/order-utils';
+import { ExchangeContractErrs, OrderState, SignedOrder } from '@0xproject/types';
 import { errorUtils, intervalUtils } from '@0xproject/utils';
-import { Web3Wrapper } from '@0xproject/web3-wrapper';
+import { BlockParamLiteral, LogEntryEvent, LogWithDecodedArgs, Provider } from 'ethereum-types';
 import * as _ from 'lodash';
 
 import { artifacts } from '../artifacts';
-import {
-    EtherTokenDepositEventArgs,
-    EtherTokenEventArgs,
-    EtherTokenEvents,
-    EtherTokenWithdrawalEventArgs,
-} from '../generated_contract_wrappers/ether_token';
-import {
-    ExchangeEventArgs,
-    ExchangeEvents,
-    ExchangeLogCancelEventArgs,
-    ExchangeLogFillEventArgs,
-} from '../generated_contract_wrappers/exchange';
-import {
-    TokenApprovalEventArgs,
-    TokenEventArgs,
-    TokenEvents,
-    TokenTransferEventArgs,
-} from '../generated_contract_wrappers/token';
+import { AssetBalanceAndProxyAllowanceFetcher } from '../fetchers/asset_balance_and_proxy_allowance_fetcher';
+import { OrderFilledCancelledFetcher } from '../fetchers/order_filled_cancelled_fetcher';
+import { orderWatcherPartialConfigSchema } from '../schemas/order_watcher_partial_config_schema';
 import { OnOrderStateChangeCallback, OrderWatcherConfig, OrderWatcherError } from '../types';
 import { assert } from '../utils/assert';
 
+import { CollisionResistanceAbiDecoder } from './collision_resistant_abi_decoder';
+import { DependentOrderHashesTracker } from './dependent_order_hashes_tracker';
 import { EventWatcher } from './event_watcher';
 import { ExpirationWatcher } from './expiration_watcher';
 
-type ContractEventArgs = EtherTokenEventArgs | ExchangeEventArgs | TokenEventArgs;
+const MILLISECONDS_IN_A_SECOND = 1000;
 
-interface DependentOrderHashes {
-    [makerAddress: string]: {
-        [makerToken: string]: Set<string>;
-    };
-}
+type ContractEventArgs = WETH9EventArgs | ExchangeEventArgs | ERC20TokenEventArgs | ERC721TokenEventArgs;
 
 interface OrderByOrderHash {
     [orderHash: string]: SignedOrder;
@@ -59,8 +57,15 @@ interface OrderStateByOrderHash {
     [orderHash: string]: OrderState;
 }
 
-// tslint:disable-next-line:custom-no-magic-numbers
-const DEFAULT_CLEANUP_JOB_INTERVAL_MS = 1000 * 60 * 60; // 1h
+const DEFAULT_ORDER_WATCHER_CONFIG: OrderWatcherConfig = {
+    stateLayer: BlockParamLiteral.Latest,
+    orderExpirationCheckingIntervalMs: 50,
+    eventPollingIntervalMs: 200,
+    expirationMarginMs: 0,
+    // tslint:disable-next-line:custom-no-magic-numbers
+    cleanupJobIntervalMs: 1000 * 60 * 60, // 1h
+    isVerbose: true,
+};
 
 /**
  * This class includes all the functionality related to watching a set of orders
@@ -69,56 +74,68 @@ const DEFAULT_CLEANUP_JOB_INTERVAL_MS = 1000 * 60 * 60; // 1h
  * the order should be deemed invalid.
  */
 export class OrderWatcher {
-    private _contractWrappers: ContractWrappers;
-    private _orderStateByOrderHashCache: OrderStateByOrderHash = {};
-    private _orderByOrderHash: OrderByOrderHash = {};
-    private _dependentOrderHashes: DependentOrderHashes = {};
-    private _callbackIfExists?: OnOrderStateChangeCallback;
-    private _eventWatcher: EventWatcher;
-    private _web3Wrapper: Web3Wrapper;
-    private _expirationWatcher: ExpirationWatcher;
-    private _orderStateUtils: OrderStateUtils;
-    private _orderFilledCancelledLazyStore: OrderFilledCancelledLazyStore;
-    private _balanceAndProxyAllowanceLazyStore: BalanceAndProxyAllowanceLazyStore;
-    private _cleanupJobInterval: number;
+    private readonly _dependentOrderHashesTracker: DependentOrderHashesTracker;
+    private readonly _orderStateByOrderHashCache: OrderStateByOrderHash = {};
+    private readonly _orderByOrderHash: OrderByOrderHash = {};
+    private readonly _eventWatcher: EventWatcher;
+    private readonly _provider: Provider;
+    private readonly _collisionResistantAbiDecoder: CollisionResistanceAbiDecoder;
+    private readonly _expirationWatcher: ExpirationWatcher;
+    private readonly _orderStateUtils: OrderStateUtils;
+    private readonly _orderFilledCancelledLazyStore: OrderFilledCancelledLazyStore;
+    private readonly _balanceAndProxyAllowanceLazyStore: BalanceAndProxyAllowanceLazyStore;
+    private readonly _cleanupJobInterval: number;
     private _cleanupJobIntervalIdIfExists?: NodeJS.Timer;
-    constructor(provider: Provider, networkId: number, config?: OrderWatcherConfig) {
-        this._web3Wrapper = new Web3Wrapper(provider);
-        const artifactJSONs = _.values(artifacts);
-        const abiArrays = _.map(artifactJSONs, artifact => artifact.abi);
-        _.forEach(abiArrays, abi => {
-            this._web3Wrapper.abiDecoder.addABI(abi);
-        });
-        this._contractWrappers = new ContractWrappers(provider, { networkId });
-        const pollingIntervalIfExistsMs = _.isUndefined(config) ? undefined : config.eventPollingIntervalMs;
-        const stateLayer =
-            _.isUndefined(config) || _.isUndefined(config.stateLayer) ? BlockParamLiteral.Latest : config.stateLayer;
-        const isVerbose = !_.isUndefined(config) && !_.isUndefined(config.isVerbose) ? config.isVerbose : false;
-        this._eventWatcher = new EventWatcher(this._web3Wrapper, pollingIntervalIfExistsMs, stateLayer, isVerbose);
+    private _callbackIfExists?: OnOrderStateChangeCallback;
+    constructor(
+        provider: Provider,
+        networkId: number,
+        partialConfig: Partial<OrderWatcherConfig> = DEFAULT_ORDER_WATCHER_CONFIG,
+    ) {
+        assert.isWeb3Provider('provider', provider);
+        assert.isNumber('networkId', networkId);
+        assert.doesConformToSchema('partialConfig', partialConfig, orderWatcherPartialConfigSchema);
+        const config = {
+            ...DEFAULT_ORDER_WATCHER_CONFIG,
+            ...partialConfig,
+        };
+
+        this._provider = provider;
+        this._collisionResistantAbiDecoder = new CollisionResistanceAbiDecoder(
+            artifacts.ERC20Token.abi,
+            artifacts.ERC721Token.abi,
+            [artifacts.EtherToken.abi, artifacts.Exchange.abi],
+        );
+        const contractWrappers = new ContractWrappers(provider, { networkId });
+        this._eventWatcher = new EventWatcher(
+            provider,
+            config.eventPollingIntervalMs,
+            config.stateLayer,
+            config.isVerbose,
+        );
+        const balanceAndProxyAllowanceFetcher = new AssetBalanceAndProxyAllowanceFetcher(
+            contractWrappers.erc20Token,
+            contractWrappers.erc721Token,
+            config.stateLayer,
+        );
         this._balanceAndProxyAllowanceLazyStore = new BalanceAndProxyAllowanceLazyStore(
-            this._contractWrappers.token,
-            stateLayer,
+            balanceAndProxyAllowanceFetcher,
         );
-        this._orderFilledCancelledLazyStore = new OrderFilledCancelledLazyStore(
-            this._contractWrappers.exchange,
-            stateLayer,
+        const orderFilledCancelledFetcher = new OrderFilledCancelledFetcher(
+            contractWrappers.exchange,
+            config.stateLayer,
         );
-        this._orderStateUtils = new OrderStateUtils(
-            this._balanceAndProxyAllowanceLazyStore,
-            this._orderFilledCancelledLazyStore,
-        );
-        const orderExpirationCheckingIntervalMsIfExists = _.isUndefined(config)
-            ? undefined
-            : config.orderExpirationCheckingIntervalMs;
+        this._orderFilledCancelledLazyStore = new OrderFilledCancelledLazyStore(orderFilledCancelledFetcher);
+        this._orderStateUtils = new OrderStateUtils(balanceAndProxyAllowanceFetcher, orderFilledCancelledFetcher);
         const expirationMarginIfExistsMs = _.isUndefined(config) ? undefined : config.expirationMarginMs;
         this._expirationWatcher = new ExpirationWatcher(
             expirationMarginIfExistsMs,
-            orderExpirationCheckingIntervalMsIfExists,
+            config.orderExpirationCheckingIntervalMs,
         );
-        this._cleanupJobInterval =
-            _.isUndefined(config) || _.isUndefined(config.cleanupJobIntervalMs)
-                ? DEFAULT_CLEANUP_JOB_INTERVAL_MS
-                : config.cleanupJobIntervalMs;
+        this._cleanupJobInterval = config.cleanupJobIntervalMs;
+        const zrxTokenAddress = assetProxyUtils.decodeERC20AssetData(orderFilledCancelledFetcher.getZRXAssetData())
+            .tokenAddress;
+        this._dependentOrderHashesTracker = new DependentOrderHashesTracker(zrxTokenAddress);
     }
     /**
      * Add an order to the orderWatcher. Before the order is added, it's
@@ -127,13 +144,14 @@ export class OrderWatcher {
      */
     public addOrder(signedOrder: SignedOrder): void {
         assert.doesConformToSchema('signedOrder', signedOrder, schemas.signedOrderSchema);
-        const orderHash = getOrderHashHex(signedOrder);
-        assert.isValidSignature(orderHash, signedOrder.ecSignature, signedOrder.maker);
-        this._orderByOrderHash[orderHash] = signedOrder;
-        this._addToDependentOrderHashes(signedOrder, orderHash);
-        const milisecondsInASecond = 1000;
-        const expirationUnixTimestampMs = signedOrder.expirationUnixTimestampSec.times(milisecondsInASecond);
+        const orderHash = orderHashUtils.getOrderHashHex(signedOrder);
+        assert.isValidSignatureAsync(this._provider, orderHash, signedOrder.signature, signedOrder.makerAddress);
+
+        const expirationUnixTimestampMs = signedOrder.expirationTimeSeconds.times(MILLISECONDS_IN_A_SECOND);
         this._expirationWatcher.addOrder(orderHash, expirationUnixTimestampMs);
+
+        this._orderByOrderHash[orderHash] = signedOrder;
+        this._dependentOrderHashesTracker.addToDependentOrderHashes(signedOrder);
     }
     /**
      * Removes an order from the orderWatcher
@@ -145,16 +163,10 @@ export class OrderWatcher {
         if (_.isUndefined(signedOrder)) {
             return; // noop
         }
+        this._dependentOrderHashesTracker.removeFromDependentOrderHashes(signedOrder);
         delete this._orderByOrderHash[orderHash];
-        delete this._orderStateByOrderHashCache[orderHash];
-        const zrxTokenAddress = this._orderFilledCancelledLazyStore.getZRXTokenAddress();
-
-        this._removeFromDependentOrderHashes(signedOrder.maker, zrxTokenAddress, orderHash);
-        if (zrxTokenAddress !== signedOrder.makerTokenAddress) {
-            this._removeFromDependentOrderHashes(signedOrder.maker, signedOrder.makerTokenAddress, orderHash);
-        }
-
         this._expirationWatcher.removeOrder(orderHash);
+        delete this._orderStateByOrderHashCache[orderHash];
     }
     /**
      * Starts an orderWatcher subscription. The callback will be called every time a watched order's
@@ -203,21 +215,27 @@ export class OrderWatcher {
         const signedOrder = this._orderByOrderHash[orderHash];
 
         this._orderFilledCancelledLazyStore.deleteFilledTakerAmount(orderHash);
-        this._orderFilledCancelledLazyStore.deleteCancelledTakerAmount(orderHash);
+        this._orderFilledCancelledLazyStore.deleteIsCancelled(orderHash);
 
-        this._balanceAndProxyAllowanceLazyStore.deleteBalance(signedOrder.makerTokenAddress, signedOrder.maker);
-        this._balanceAndProxyAllowanceLazyStore.deleteProxyAllowance(signedOrder.makerTokenAddress, signedOrder.maker);
-        this._balanceAndProxyAllowanceLazyStore.deleteBalance(signedOrder.takerTokenAddress, signedOrder.taker);
-        this._balanceAndProxyAllowanceLazyStore.deleteProxyAllowance(signedOrder.takerTokenAddress, signedOrder.taker);
+        this._balanceAndProxyAllowanceLazyStore.deleteBalance(signedOrder.makerAssetData, signedOrder.makerAddress);
+        this._balanceAndProxyAllowanceLazyStore.deleteProxyAllowance(
+            signedOrder.makerAssetData,
+            signedOrder.makerAddress,
+        );
+        this._balanceAndProxyAllowanceLazyStore.deleteBalance(signedOrder.takerAssetData, signedOrder.takerAddress);
+        this._balanceAndProxyAllowanceLazyStore.deleteProxyAllowance(
+            signedOrder.takerAssetData,
+            signedOrder.takerAddress,
+        );
 
-        const zrxTokenAddress = this._getZRXTokenAddress();
+        const zrxAssetData = this._orderFilledCancelledLazyStore.getZRXAssetData();
         if (!signedOrder.makerFee.isZero()) {
-            this._balanceAndProxyAllowanceLazyStore.deleteBalance(zrxTokenAddress, signedOrder.maker);
-            this._balanceAndProxyAllowanceLazyStore.deleteProxyAllowance(zrxTokenAddress, signedOrder.maker);
+            this._balanceAndProxyAllowanceLazyStore.deleteBalance(zrxAssetData, signedOrder.makerAddress);
+            this._balanceAndProxyAllowanceLazyStore.deleteProxyAllowance(zrxAssetData, signedOrder.makerAddress);
         }
         if (!signedOrder.takerFee.isZero()) {
-            this._balanceAndProxyAllowanceLazyStore.deleteBalance(zrxTokenAddress, signedOrder.taker);
-            this._balanceAndProxyAllowanceLazyStore.deleteProxyAllowance(zrxTokenAddress, signedOrder.taker);
+            this._balanceAndProxyAllowanceLazyStore.deleteBalance(zrxAssetData, signedOrder.takerAddress);
+            this._balanceAndProxyAllowanceLazyStore.deleteProxyAllowance(zrxAssetData, signedOrder.takerAddress);
         }
     }
     private _onOrderExpired(orderHash: string): void {
@@ -240,89 +258,122 @@ export class OrderWatcher {
             }
             return;
         }
-        const log = logIfExists as LogEntryEvent; // At this moment we are sure that no error occured and log is defined.
-        const maybeDecodedLog = this._web3Wrapper.abiDecoder.tryToDecodeLogOrNoop<ContractEventArgs>(log);
+        const maybeDecodedLog = this._collisionResistantAbiDecoder.tryToDecodeLogOrNoop<ContractEventArgs>(
+            // At this moment we are sure that no error occured and log is defined.
+            logIfExists as LogEntryEvent,
+        );
         const isLogDecoded = !_.isUndefined(((maybeDecodedLog as any) as LogWithDecodedArgs<ContractEventArgs>).event);
         if (!isLogDecoded) {
             return; // noop
         }
         const decodedLog = (maybeDecodedLog as any) as LogWithDecodedArgs<ContractEventArgs>;
-        let makerToken: string;
-        let makerAddress: string;
         switch (decodedLog.event) {
-            case TokenEvents.Approval: {
-                // Invalidate cache
-                // tslint:disable-next-line:no-unnecessary-type-assertion
-                const args = decodedLog.args as TokenApprovalEventArgs;
-                this._balanceAndProxyAllowanceLazyStore.deleteProxyAllowance(decodedLog.address, args._owner);
-                // Revalidate orders
-                makerToken = decodedLog.address;
-                makerAddress = args._owner;
-                if (
-                    !_.isUndefined(this._dependentOrderHashes[makerAddress]) &&
-                    !_.isUndefined(this._dependentOrderHashes[makerAddress][makerToken])
-                ) {
-                    const orderHashes = Array.from(this._dependentOrderHashes[makerAddress][makerToken]);
+            case ERC20TokenEvents.Approval:
+            case ERC721TokenEvents.Approval: {
+                // ERC20 and ERC721 Transfer events have the same name so we need to distinguish them by args
+                if (!_.isUndefined(decodedLog.args._value)) {
+                    // ERC20
+                    // Invalidate cache
+                    const args = decodedLog.args as ERC20TokenApprovalEventArgs;
+                    const tokenAssetData = assetProxyUtils.encodeERC20AssetData(decodedLog.address);
+                    this._balanceAndProxyAllowanceLazyStore.deleteProxyAllowance(tokenAssetData, args._owner);
+                    // Revalidate orders
+                    const orderHashes = this._dependentOrderHashesTracker.getDependentOrderHashesByAssetDataByMaker(
+                        args._owner,
+                        tokenAssetData,
+                    );
                     await this._emitRevalidateOrdersAsync(orderHashes);
+                    break;
+                } else {
+                    // ERC721
+                    // Invalidate cache
+                    const args = decodedLog.args as ERC721TokenApprovalEventArgs;
+                    const tokenAssetData = assetProxyUtils.encodeERC721AssetData(decodedLog.address, args._tokenId);
+                    this._balanceAndProxyAllowanceLazyStore.deleteProxyAllowance(tokenAssetData, args._owner);
+                    // Revalidate orders
+                    const orderHashes = this._dependentOrderHashesTracker.getDependentOrderHashesByAssetDataByMaker(
+                        args._owner,
+                        tokenAssetData,
+                    );
+                    await this._emitRevalidateOrdersAsync(orderHashes);
+                    break;
                 }
+            }
+            case ERC20TokenEvents.Transfer:
+            case ERC721TokenEvents.Transfer: {
+                // ERC20 and ERC721 Transfer events have the same name so we need to distinguish them by args
+                if (!_.isUndefined(decodedLog.args._value)) {
+                    // ERC20
+                    // Invalidate cache
+                    const args = decodedLog.args as ERC20TokenTransferEventArgs;
+                    const tokenAssetData = assetProxyUtils.encodeERC20AssetData(decodedLog.address);
+                    this._balanceAndProxyAllowanceLazyStore.deleteBalance(tokenAssetData, args._from);
+                    this._balanceAndProxyAllowanceLazyStore.deleteBalance(tokenAssetData, args._to);
+                    // Revalidate orders
+                    const orderHashes = this._dependentOrderHashesTracker.getDependentOrderHashesByAssetDataByMaker(
+                        args._from,
+                        tokenAssetData,
+                    );
+                    await this._emitRevalidateOrdersAsync(orderHashes);
+                    break;
+                } else {
+                    // ERC721
+                    // Invalidate cache
+                    const args = decodedLog.args as ERC721TokenTransferEventArgs;
+                    const tokenAssetData = assetProxyUtils.encodeERC721AssetData(decodedLog.address, args._tokenId);
+                    this._balanceAndProxyAllowanceLazyStore.deleteBalance(tokenAssetData, args._from);
+                    this._balanceAndProxyAllowanceLazyStore.deleteBalance(tokenAssetData, args._to);
+                    // Revalidate orders
+                    const orderHashes = this._dependentOrderHashesTracker.getDependentOrderHashesByAssetDataByMaker(
+                        args._from,
+                        tokenAssetData,
+                    );
+                    await this._emitRevalidateOrdersAsync(orderHashes);
+                    break;
+                }
+            }
+            case ERC721TokenEvents.ApprovalForAll: {
+                // Invalidate cache
+                const args = decodedLog.args as ERC721TokenApprovalForAllEventArgs;
+                const tokenAddress = decodedLog.address;
+                this._balanceAndProxyAllowanceLazyStore.deleteAllERC721ProxyAllowance(tokenAddress, args._owner);
+                // Revalidate orders
+                const orderHashes = this._dependentOrderHashesTracker.getDependentOrderHashesByERC721ByMaker(
+                    args._owner,
+                    tokenAddress,
+                );
+                await this._emitRevalidateOrdersAsync(orderHashes);
                 break;
             }
-            case TokenEvents.Transfer: {
+            case WETH9Events.Deposit: {
                 // Invalidate cache
-                // tslint:disable-next-line:no-unnecessary-type-assertion
-                const args = decodedLog.args as TokenTransferEventArgs;
-                this._balanceAndProxyAllowanceLazyStore.deleteBalance(decodedLog.address, args._from);
-                this._balanceAndProxyAllowanceLazyStore.deleteBalance(decodedLog.address, args._to);
+                const args = decodedLog.args as WETH9DepositEventArgs;
+                const tokenAssetData = assetProxyUtils.encodeERC20AssetData(decodedLog.address);
+                this._balanceAndProxyAllowanceLazyStore.deleteBalance(tokenAssetData, args._owner);
                 // Revalidate orders
-                makerToken = decodedLog.address;
-                makerAddress = args._from;
-                if (
-                    !_.isUndefined(this._dependentOrderHashes[makerAddress]) &&
-                    !_.isUndefined(this._dependentOrderHashes[makerAddress][makerToken])
-                ) {
-                    const orderHashes = Array.from(this._dependentOrderHashes[makerAddress][makerToken]);
-                    await this._emitRevalidateOrdersAsync(orderHashes);
-                }
+                const orderHashes = this._dependentOrderHashesTracker.getDependentOrderHashesByAssetDataByMaker(
+                    args._owner,
+                    tokenAssetData,
+                );
+                await this._emitRevalidateOrdersAsync(orderHashes);
                 break;
             }
-            case EtherTokenEvents.Deposit: {
+            case WETH9Events.Withdrawal: {
                 // Invalidate cache
-                // tslint:disable-next-line:no-unnecessary-type-assertion
-                const args = decodedLog.args as EtherTokenDepositEventArgs;
-                this._balanceAndProxyAllowanceLazyStore.deleteBalance(decodedLog.address, args._owner);
+                const args = decodedLog.args as WETH9WithdrawalEventArgs;
+                const tokenAssetData = assetProxyUtils.encodeERC20AssetData(decodedLog.address);
+                this._balanceAndProxyAllowanceLazyStore.deleteBalance(tokenAssetData, args._owner);
                 // Revalidate orders
-                makerToken = decodedLog.address;
-                makerAddress = args._owner;
-                if (
-                    !_.isUndefined(this._dependentOrderHashes[makerAddress]) &&
-                    !_.isUndefined(this._dependentOrderHashes[makerAddress][makerToken])
-                ) {
-                    const orderHashes = Array.from(this._dependentOrderHashes[makerAddress][makerToken]);
-                    await this._emitRevalidateOrdersAsync(orderHashes);
-                }
+                const orderHashes = this._dependentOrderHashesTracker.getDependentOrderHashesByAssetDataByMaker(
+                    args._owner,
+                    tokenAssetData,
+                );
+                await this._emitRevalidateOrdersAsync(orderHashes);
                 break;
             }
-            case EtherTokenEvents.Withdrawal: {
+            case ExchangeEvents.Fill: {
                 // Invalidate cache
-                // tslint:disable-next-line:no-unnecessary-type-assertion
-                const args = decodedLog.args as EtherTokenWithdrawalEventArgs;
-                this._balanceAndProxyAllowanceLazyStore.deleteBalance(decodedLog.address, args._owner);
-                // Revalidate orders
-                makerToken = decodedLog.address;
-                makerAddress = args._owner;
-                if (
-                    !_.isUndefined(this._dependentOrderHashes[makerAddress]) &&
-                    !_.isUndefined(this._dependentOrderHashes[makerAddress][makerToken])
-                ) {
-                    const orderHashes = Array.from(this._dependentOrderHashes[makerAddress][makerToken]);
-                    await this._emitRevalidateOrdersAsync(orderHashes);
-                }
-                break;
-            }
-            case ExchangeEvents.LogFill: {
-                // Invalidate cache
-                // tslint:disable-next-line:no-unnecessary-type-assertion
-                const args = decodedLog.args as ExchangeLogFillEventArgs;
+                const args = decodedLog.args as ExchangeFillEventArgs;
                 this._orderFilledCancelledLazyStore.deleteFilledTakerAmount(args.orderHash);
                 // Revalidate orders
                 const orderHash = args.orderHash;
@@ -332,11 +383,10 @@ export class OrderWatcher {
                 }
                 break;
             }
-            case ExchangeEvents.LogCancel: {
+            case ExchangeEvents.Cancel: {
                 // Invalidate cache
-                // tslint:disable-next-line:no-unnecessary-type-assertion
-                const args = decodedLog.args as ExchangeLogCancelEventArgs;
-                this._orderFilledCancelledLazyStore.deleteCancelledTakerAmount(args.orderHash);
+                const args = decodedLog.args as ExchangeCancelEventArgs;
+                this._orderFilledCancelledLazyStore.deleteIsCancelled(args.orderHash);
                 // Revalidate orders
                 const orderHash = args.orderHash;
                 const isOrderWatched = !_.isUndefined(this._orderByOrderHash[orderHash]);
@@ -345,8 +395,16 @@ export class OrderWatcher {
                 }
                 break;
             }
-            case ExchangeEvents.LogError:
-                return; // noop
+            case ExchangeEvents.CancelUpTo: {
+                // TODO(logvinov): Do it smarter and actually look at the salt and order epoch
+                // Invalidate cache
+                const args = decodedLog.args as ExchangeCancelUpToEventArgs;
+                this._orderFilledCancelledLazyStore.deleteAllIsCancelled();
+                // Revalidate orders
+                const orderHashes = this._dependentOrderHashesTracker.getDependentOrderHashesByMaker(args.makerAddress);
+                await this._emitRevalidateOrdersAsync(orderHashes);
+                break;
+            }
 
             default:
                 throw errorUtils.spawnSwitchErr('decodedLog.event', decodedLog.event);
@@ -357,7 +415,7 @@ export class OrderWatcher {
             const signedOrder = this._orderByOrderHash[orderHash];
             // Most of these calls will never reach the network because the data is fetched from stores
             // and only updated when cache is invalidated
-            const orderState = await this._orderStateUtils.getOrderStateAsync(signedOrder);
+            const orderState = await this._orderStateUtils.getOpenOrderStateAsync(signedOrder);
             if (_.isUndefined(this._callbackIfExists)) {
                 break; // Unsubscribe was called
             }
@@ -369,32 +427,5 @@ export class OrderWatcher {
             }
             this._callbackIfExists(null, orderState);
         }
-    }
-    private _addToDependentOrderHashes(signedOrder: SignedOrder, orderHash: string): void {
-        if (_.isUndefined(this._dependentOrderHashes[signedOrder.maker])) {
-            this._dependentOrderHashes[signedOrder.maker] = {};
-        }
-        if (_.isUndefined(this._dependentOrderHashes[signedOrder.maker][signedOrder.makerTokenAddress])) {
-            this._dependentOrderHashes[signedOrder.maker][signedOrder.makerTokenAddress] = new Set();
-        }
-        this._dependentOrderHashes[signedOrder.maker][signedOrder.makerTokenAddress].add(orderHash);
-        const zrxTokenAddress = this._getZRXTokenAddress();
-        if (_.isUndefined(this._dependentOrderHashes[signedOrder.maker][zrxTokenAddress])) {
-            this._dependentOrderHashes[signedOrder.maker][zrxTokenAddress] = new Set();
-        }
-        this._dependentOrderHashes[signedOrder.maker][zrxTokenAddress].add(orderHash);
-    }
-    private _removeFromDependentOrderHashes(makerAddress: string, tokenAddress: string, orderHash: string): void {
-        this._dependentOrderHashes[makerAddress][tokenAddress].delete(orderHash);
-        if (this._dependentOrderHashes[makerAddress][tokenAddress].size === 0) {
-            delete this._dependentOrderHashes[makerAddress][tokenAddress];
-        }
-        if (_.isEmpty(this._dependentOrderHashes[makerAddress])) {
-            delete this._dependentOrderHashes[makerAddress];
-        }
-    }
-    private _getZRXTokenAddress(): string {
-        const zrxTokenAddress = this._orderFilledCancelledLazyStore.getZRXTokenAddress();
-        return zrxTokenAddress;
     }
 }
