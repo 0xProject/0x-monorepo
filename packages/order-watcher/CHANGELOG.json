@@ -12,10 +12,12 @@
             },
             {
                 "note":
-                    "Add blockRetention config to OrderWatcher, so user can define how many blocks and they corresp. logs to store in-memory"
+                    "Add blockRetention config to OrderWatcher, so user can define how many blocks and they corresp. logs to store in-memory",
+                "pr": 875
             },
             {
-                "note": "Fixed a bug that caused the incorrect block to be fetched via JSON-RPC within Blockstream"
+                "note": "Fixed a bug that caused the incorrect block to be fetched via JSON-RPC within Blockstream",
+                "pr": 875
             }
         ],
         "timestamp": 1531149657
