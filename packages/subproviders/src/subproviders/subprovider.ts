@@ -9,7 +9,7 @@ import { Callback, ErrorCallback, JSONRPCRequestPayloadWithMethod } from '../typ
 export abstract class Subprovider {
     // tslint:disable-next-line:underscore-private-and-protected
     private engine!: Provider;
-    public static createFinalPayload(
+    protected static _createFinalPayload(
         payload: Partial<JSONRPCRequestPayloadWithMethod>,
     ): Partial<JSONRPCRequestPayloadWithMethod> {
         const finalPayload = {
@@ -47,7 +47,7 @@ export abstract class Subprovider {
      * @returns JSON RPC response payload
      */
     public async emitPayloadAsync(payload: Partial<JSONRPCRequestPayloadWithMethod>): Promise<JSONRPCResponsePayload> {
-        const finalPayload = Subprovider.createFinalPayload(payload);
+        const finalPayload = Subprovider._createFinalPayload(payload);
         const response = await promisify<JSONRPCResponsePayload>(this.engine.sendAsync, this.engine)(finalPayload);
         return response;
     }

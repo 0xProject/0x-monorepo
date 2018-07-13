@@ -31,7 +31,7 @@ export class RPCSubprovider extends Subprovider {
      */
     // tslint:disable-next-line:prefer-function-over-method async-suffix
     public async handleRequest(payload: JSONRPCRequestPayload, next: Callback, end: ErrorCallback): Promise<void> {
-        const finalPayload = Subprovider.createFinalPayload(payload);
+        const finalPayload = Subprovider._createFinalPayload(payload);
         const headers = new Headers({
             Accept: 'application/json',
             'Content-Type': 'application/json',
