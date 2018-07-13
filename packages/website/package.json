@@ -99,7 +99,7 @@
         "shx": "^0.2.2",
         "source-map-loader": "^0.1.6",
         "style-loader": "0.13.x",
-        "tslint": "5.8.0",
+        "tslint": "5.10.0",
         "tslint-config-0xproject": "^0.0.2",
         "typescript": "2.7.1",
         "uglifyjs-webpack-plugin": "^1.2.5",
