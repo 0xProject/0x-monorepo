@@ -56,7 +56,6 @@
         "@0xproject/types": "^0.8.2",
         "@0xproject/typescript-typings": "^0.4.2",
         "@0xproject/utils": "^0.7.2",
-        "isomorphic-fetch": "^2.2.1",
         "lodash": "^4.17.4",
         "query-string": "^5.0.1",
         "sinon": "^4.0.0",
