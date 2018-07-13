@@ -7,7 +7,7 @@ export const fetchAsync = async (
     timeoutMs: number = 20000,
 ): Promise<Response> => {
     let optionsWithAbortParam;
-    if (isNode) {
+    if (!isNode) {
         const controller = new AbortController();
         const signal = controller.signal;
         setTimeout(() => {
