@@ -29,9 +29,9 @@ contract MixinWeth is
     MWeth
 {
 
-    uint256 constant internal PERCENTAGE_DENOMINATOR = 10000; // 9800 == 98%, 10000 == 100%
-    uint256 constant internal MAX_FEE_PERCENTAGE = 500;  // 5%
-    uint256 constant internal MAX_WETH_FILL_PERCENTAGE = 9500;  // 95%
+    uint256 constant internal PERCENTAGE_DENOMINATOR = 10**18; 
+    uint256 constant internal MAX_FEE_PERCENTAGE = 5 * PERCENTAGE_DENOMINATOR / 100;         // 5%
+    uint256 constant internal MAX_WETH_FILL_PERCENTAGE = 95 * PERCENTAGE_DENOMINATOR / 100;  // 95%
 
     /// @dev Default payabale function, this allows us to withdraw WETH
     function ()
