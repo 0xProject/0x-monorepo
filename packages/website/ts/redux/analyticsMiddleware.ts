@@ -29,11 +29,6 @@ export const analyticsMiddleware: Middleware = store => next => action => {
                 });
             }
             break;
-        case ActionTypes.UpdatePortalOnboardingStep:
-            analytics.track('Update Onboarding Step', {
-                stepIndex: nextState.portalOnboardingStep,
-            });
-            break;
         default:
             break;
     }
