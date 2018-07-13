@@ -27,13 +27,16 @@ export class EventWatcher {
     private _pollingIntervalMs: number;
     private _stateLayer: BlockParamLiteral;
     private _isVerbose: boolean;
+    private _blockRetention: number;
     constructor(
         web3Wrapper: Web3Wrapper,
         pollingIntervalIfExistsMs: undefined | number,
         stateLayer: BlockParamLiteral = BlockParamLiteral.Latest,
+        blockRetention: number,
         isVerbose: boolean,
     ) {
         this._isVerbose = isVerbose;
+        this._blockRetention = blockRetention;
         this._web3Wrapper = web3Wrapper;
         this._stateLayer = stateLayer;
         this._pollingIntervalMs = _.isUndefined(pollingIntervalIfExistsMs)
@@ -69,6 +72,9 @@ export class EventWatcher {
             this._web3Wrapper.getBlockAsync.bind(this._web3Wrapper, this._stateLayer),
             this._web3Wrapper.getLogsAsync.bind(this._web3Wrapper, eventFilter),
             this._onBlockAndLogStreamerError.bind(this),
+            {
+                blockRetention: this._blockRetention,
+            },
         );
         const catchAllLogFilter = {};
         this._blockAndLogStreamerIfExists.addLogFilter(catchAllLogFilter);
