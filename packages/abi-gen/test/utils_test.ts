@@ -13,8 +13,6 @@ chai.use(dirtyChai);
 
 const expect = chai.expect;
 
-const SLEEP_MS = 10; // time to wait before re-timestamping a file
-
 describe('makeOutputFileName()', () => {
     it('should handle Metacoin usage', () => {
         expect(utils.makeOutputFileName('Metacoin')).to.equal('metacoin');
@@ -65,19 +63,22 @@ describe('isOutputFileUpToDate()', () => {
         describe('with an existing output file', () => {
             let outputFile: string;
             before(() => {
-                sleep.msleep(SLEEP_MS); // to ensure different timestamp
                 outputFile = tmp.fileSync(
                     { discardDescriptor: true }, // close file (set timestamp)
                 ).name;
+                const abiFileModTimeMs = fs.statSync(abiFile).mtimeMs;
+                const outfileModTimeMs = abiFileModTimeMs + 1;
+                fs.utimesSync(outputFile, outfileModTimeMs, outfileModTimeMs);
             });
 
-            it('should return true when output file and is newer than abi file', async () => {
+            it('should return true when output file is newer than abi file', async () => {
                 expect(utils.isOutputFileUpToDate(abiFile, outputFile)).to.be.true();
             });
 
             it('should return false when output file exists but is older than abi file', () => {
-                sleep.msleep(SLEEP_MS); // to ensure different timestamp
-                fs.closeSync(fs.openSync(abiFile, 'w')); // touch abi file
+                const outFileModTimeMs = fs.statSync(outputFile).mtimeMs;
+                const abiFileModTimeMs = outFileModTimeMs + 1;
+                fs.utimesSync(abiFile, abiFileModTimeMs, abiFileModTimeMs);
 
                 expect(utils.isOutputFileUpToDate(abiFile, outputFile)).to.be.false();
             });
