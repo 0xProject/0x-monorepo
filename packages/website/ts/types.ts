@@ -247,6 +247,7 @@ export enum Environments {
     DOGFOOD = 'DOGFOOD',
     STAGING = 'STAGING',
     PRODUCTION = 'PRODUCTION',
+    UNKNOWN = 'UNKNOWN',
 }
 
 export type ContractInstance = any; // TODO: add type definition for Contract

@@ -682,7 +682,6 @@ export class Blockchain {
                     // Note: it's not entirely clear from the documentation which
                     // errors will be thrown by `watch`. For now, let's log the error
                     // to rollbar and stop watching when one occurs
-                    // tslint:disable-next-line:no-floating-promises
                     errorReporter.report(err); // fire and forget
                     return;
                 } else {

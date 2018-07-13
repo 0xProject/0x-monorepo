@@ -1,5 +1,4 @@
 import { logUtils } from '@0xproject/utils';
-import { Environments } from 'ts/types';
 import { configs } from 'ts/utils/configs';
 import { constants } from 'ts/utils/constants';
 import { utils } from 'ts/utils/utils';
@@ -42,7 +41,7 @@ const rollbar = Rollbar.init(rollbarConfig);
 
 export const errorReporter = {
     report(err: Error): void {
-        if (utils.getEnvironment() === Environments.DEVELOPMENT) {
+        if (utils.isDevelopment()) {
             return; // Let's not log development errors to rollbar
         }
         rollbar.error(err, (rollbarErr: Error) => {

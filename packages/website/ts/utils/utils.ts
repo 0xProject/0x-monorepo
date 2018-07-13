@@ -175,18 +175,6 @@ export const utils = {
             _.includes(errMsg, ledgerDenialErrMsg);
         return isUserDeniedErrMsg;
     },
-    getCurrentEnvironment(): string {
-        switch (location.host) {
-            case configs.DOMAIN_DEVELOPMENT:
-                return 'development';
-            case configs.DOMAIN_STAGING:
-                return 'staging';
-            case configs.DOMAIN_PRODUCTION:
-                return 'production';
-            default:
-                return 'production';
-        }
-    },
     getAddressBeginAndEnd(address: string): string {
         const truncatedAddress = `${address.substring(0, 6)}...${address.substr(-4)}`; // 0x3d5a...b287
         return truncatedAddress;
@@ -347,10 +335,7 @@ export const utils = {
         return utils.isDogfood() ? configs.BACKEND_BASE_STAGING_URL : configs.BACKEND_BASE_PROD_URL;
     },
     isDevelopment(): boolean {
-        return _.includes(
-            ['https://0xproject.localhost:3572', 'https://localhost:3572', 'https://127.0.0.1'],
-            window.location.origin,
-        );
+        return _.includes(configs.DOMAINS_DEVELOPMENT, window.location.origin);
     },
     isStaging(): boolean {
         return _.includes(window.location.href, configs.DOMAIN_STAGING);
@@ -377,7 +362,7 @@ export const utils = {
         if (utils.isProduction()) {
             return Environments.PRODUCTION;
         }
-        return undefined;
+        return Environments.UNKNOWN;
     },
     shouldShowJobsPage(): boolean {
         return this.isDevelopment() || this.isStaging() || this.isDogfood();
@@ -405,21 +390,26 @@ export const utils = {
         const unitAmount = Web3Wrapper.toUnitAmount(amount, decimals);
         // if the unit amount is less than 1, show the natural number of decimal places with a max of 4
         // if the unit amount is greater than or equal to 1, show only 2 decimal places
-        const precision = unitAmount.lt(1)
-            ? Math.min(constants.TOKEN_AMOUNT_DISPLAY_PRECISION, unitAmount.decimalPlaces())
-            : 2;
+        const lessThanOnePrecision = Math.min(constants.TOKEN_AMOUNT_DISPLAY_PRECISION, unitAmount.decimalPlaces());
+        const greaterThanOnePrecision = 2;
+        const precision = unitAmount.lt(1) ? lessThanOnePrecision : greaterThanOnePrecision;
         const format = `0,0.${_.repeat('0', precision)}`;
         const formattedAmount = numeral(unitAmount).format(format);
         if (_.isNaN(formattedAmount)) {
             // https://github.com/adamwdraper/Numeral-js/issues/596
-            return format;
+            return '0';
         }
         return formattedAmount;
     },
     getUsdValueFormattedAmount(amount: BigNumber, decimals: number, price: BigNumber): string {
         const unitAmount = Web3Wrapper.toUnitAmount(amount, decimals);
         const value = unitAmount.mul(price);
-        return numeral(value).format(constants.NUMERAL_USD_FORMAT);
+        const formattedAmount = numeral(value).format(constants.NUMERAL_USD_FORMAT);
+        if (_.isNaN(formattedAmount)) {
+            // https://github.com/adamwdraper/Numeral-js/issues/596
+            return numeral(new BigNumber(0)).format(constants.NUMERAL_USD_FORMAT);
+        }
+        return formattedAmount;
     },
     openUrl(url: string): void {
         window.open(url, '_blank');
@@ -500,4 +490,4 @@ export const utils = {
         const result = `/images/token_icons/${symbol}.png`;
         return result;
     },
-}; // tslint:disable:max-file-line-count
+};

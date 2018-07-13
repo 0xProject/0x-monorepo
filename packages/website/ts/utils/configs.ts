@@ -14,7 +14,7 @@ export const configs = {
     DEFAULT_TRACKED_TOKEN_SYMBOLS: ['WETH', 'ZRX'],
     DOMAIN_STAGING: 'staging-0xproject.s3-website-us-east-1.amazonaws.com',
     DOMAIN_DOGFOOD: 'dogfood.0xproject.com',
-    DOMAIN_DEVELOPMENT: '0xproject.localhost:3572',
+    DOMAINS_DEVELOPMENT: ['0xproject.localhost:3572', 'localhost:3572', '127.0.0.1'],
     DOMAIN_PRODUCTION: '0xproject.com',
     GOOGLE_ANALYTICS_ID: 'UA-98720122-1',
     LAST_LOCAL_STORAGE_FILL_CLEARANCE_DATE: '2017-11-22',
