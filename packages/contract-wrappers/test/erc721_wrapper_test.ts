@@ -1,11 +1,10 @@
 import { BlockchainLifecycle, callbackErrorReporter } from '@0xproject/dev-utils';
-import { EmptyWalletSubprovider } from '@0xproject/subproviders';
+import { EmptyWalletSubprovider, Web3ProviderEngine } from '@0xproject/subproviders';
 import { DoneCallback } from '@0xproject/types';
 import { BigNumber } from '@0xproject/utils';
 import * as chai from 'chai';
 import { Provider } from 'ethereum-types';
 import 'mocha';
-import Web3ProviderEngine = require('web3-provider-engine');
 
 import {
     BlockParamLiteral,

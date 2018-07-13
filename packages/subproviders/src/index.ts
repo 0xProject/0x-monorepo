@@ -1,5 +1,6 @@
 import Eth from '@ledgerhq/hw-app-eth';
 import TransportU2F from '@ledgerhq/hw-transport-u2f';
+export import Web3ProviderEngine = require('web3-provider-engine');
 export { ECSignature } from '@0xproject/types';
 
 import { LedgerEthereumClient } from './types';
@@ -10,6 +11,7 @@ export { FakeGasEstimateSubprovider } from './subproviders/fake_gas_estimate_sub
 export { SignerSubprovider } from './subproviders/signer';
 export { RedundantSubprovider } from './subproviders/redundant_subprovider';
 export { LedgerSubprovider } from './subproviders/ledger';
+export { RPCSubprovider } from './subproviders/rpc_subprovider';
 export { GanacheSubprovider } from './subproviders/ganache';
 export { Subprovider } from './subproviders/subprovider';
 export { NonceTrackerSubprovider } from './subproviders/nonce_tracker';

@@ -1,4 +1,4 @@
-import { constants as sharedConstants, Styles } from '@0xproject/react-shared';
+import { Styles } from '@0xproject/react-shared';
 import { BigNumber, logUtils } from '@0xproject/utils';
 import { Web3Wrapper } from '@0xproject/web3-wrapper';
 import * as _ from 'lodash';
@@ -188,20 +188,23 @@ export class WrapEtherItem extends React.Component<WrapEtherItemProps, WrapEther
         this.setState({
             isEthConversionHappening: true,
         });
-        const networkName = sharedConstants.NETWORK_NAME_BY_ID[this.props.networkId];
+        const etherToken = this.props.etherToken;
+        const amountToConvert = this.state.currentInputAmount;
+        const ethAmount = Web3Wrapper.toUnitAmount(amountToConvert, constants.DECIMAL_PLACES_ETH).toString();
+        const tokenAmount = Web3Wrapper.toUnitAmount(amountToConvert, etherToken.decimals).toString();
         try {
-            const etherToken = this.props.etherToken;
-            const amountToConvert = this.state.currentInputAmount;
             if (this.props.direction === Side.Deposit) {
                 await this.props.blockchain.convertEthToWrappedEthTokensAsync(etherToken.address, amountToConvert);
-                const ethAmount = Web3Wrapper.toUnitAmount(amountToConvert, constants.DECIMAL_PLACES_ETH);
-                this.props.dispatcher.showFlashMessage(`Successfully wrapped ${ethAmount.toString()} ETH to WETH`);
-                analytics.logEvent('Portal', 'Wrap ETH Successfully', networkName);
+                this.props.dispatcher.showFlashMessage(`Successfully wrapped ${ethAmount} ETH to WETH`);
+                analytics.track('Wrap ETH Success', {
+                    amount: ethAmount,
+                });
             } else {
                 await this.props.blockchain.convertWrappedEthTokensToEthAsync(etherToken.address, amountToConvert);
-                const tokenAmount = Web3Wrapper.toUnitAmount(amountToConvert, etherToken.decimals);
-                this.props.dispatcher.showFlashMessage(`Successfully unwrapped ${tokenAmount.toString()} WETH to ETH`);
-                analytics.logEvent('Portal', 'Unwrap WETH Successfully', networkName);
+                this.props.dispatcher.showFlashMessage(`Successfully unwrapped ${tokenAmount} WETH to ETH`);
+                analytics.track('Unwrap WETH Success', {
+                    amount: tokenAmount,
+                });
             }
             await this.props.refetchEthTokenStateAsync();
             this.props.onConversionSuccessful();
@@ -214,10 +217,14 @@ export class WrapEtherItem extends React.Component<WrapEtherItemProps, WrapEther
                 logUtils.log(err.stack);
                 if (this.props.direction === Side.Deposit) {
                     this.props.dispatcher.showFlashMessage('Failed to wrap your ETH. Please try again.');
-                    analytics.logEvent('Portal', 'Wrap ETH Failed', networkName);
+                    analytics.track('Wrap ETH Failure', {
+                        amount: ethAmount,
+                    });
                 } else {
                     this.props.dispatcher.showFlashMessage('Failed to unwrap your WETH. Please try again.');
-                    analytics.logEvent('Portal', 'Unwrap WETH Failed', networkName);
+                    analytics.track('Unwrap WETH Failed', {
+                        amount: tokenAmount,
+                    });
                 }
                 errorReporter.report(err);
             }

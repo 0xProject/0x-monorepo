@@ -5,7 +5,7 @@ import {
     Styles,
     utils as sharedUtils,
 } from '@0xproject/react-shared';
-import { BigNumber, errorUtils, logUtils } from '@0xproject/utils';
+import { BigNumber, errorUtils, fetchAsync, logUtils } from '@0xproject/utils';
 import { Web3Wrapper } from '@0xproject/web3-wrapper';
 import * as _ from 'lodash';
 import Dialog from 'material-ui/Dialog';
@@ -548,7 +548,7 @@ export class TokenBalances extends React.Component<TokenBalancesProps, TokenBala
         await utils.sleepAsync(ARTIFICIAL_FAUCET_REQUEST_DELAY);
 
         const segment = isEtherRequest ? 'ether' : 'zrx';
-        const response = await fetch(
+        const response = await fetchAsync(
             `${constants.URL_TESTNET_FAUCET}/${segment}/${this.props.userAddress}?networkId=${this.props.networkId}`,
         );
         const responseBody = await response.text();

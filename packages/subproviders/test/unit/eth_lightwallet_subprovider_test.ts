@@ -2,9 +2,8 @@ import * as chai from 'chai';
 import * as lightwallet from 'eth-lightwallet';
 import { JSONRPCResponsePayload } from 'ethereum-types';
 import * as ethUtils from 'ethereumjs-util';
-import Web3ProviderEngine = require('web3-provider-engine');
 
-import { EthLightwalletSubprovider } from '../../src';
+import { EthLightwalletSubprovider, Web3ProviderEngine } from '../../src';
 import { DoneCallback } from '../../src/types';
 import { chaiSetup } from '../chai_setup';
 import { fixtureData } from '../utils/fixture_data';

@@ -105,6 +105,7 @@
         "@0xproject/contract-wrappers": "^0.1.0",
         "@0xproject/order-utils": "^1.0.0",
         "@0xproject/sol-compiler": "^0.5.3",
+        "@0xproject/subproviders": "^0.10.5",
         "@0xproject/types": "^1.0.0",
         "@0xproject/typescript-typings": "^0.4.2",
         "@0xproject/utils": "^0.7.2",
