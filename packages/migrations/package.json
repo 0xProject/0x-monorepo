@@ -60,8 +60,7 @@
         "@ledgerhq/hw-app-eth": "^4.3.0",
         "ethereum-types": "^0.0.2",
         "ethers": "3.0.22",
-        "lodash": "^4.17.4",
-        "web3-provider-engine": "14.0.6"
+        "lodash": "^4.17.4"
     },
     "optionalDependencies": {
         "@ledgerhq/hw-transport-node-hid": "^4.3.0"

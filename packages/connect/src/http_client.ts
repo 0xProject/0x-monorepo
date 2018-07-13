@@ -1,7 +1,7 @@
 import { assert } from '@0xproject/assert';
 import { schemas } from '@0xproject/json-schemas';
 import { SignedOrder } from '@0xproject/types';
-import 'isomorphic-fetch';
+import { fetchAsync } from '@0xproject/utils';
 import * as _ from 'lodash';
 import * as queryString from 'query-string';
 
@@ -167,7 +167,7 @@ export class HttpClient implements Client {
         const headers = new Headers({
             'content-type': 'application/json',
         });
-        const response = await fetch(url, {
+        const response = await fetchAsync(url, {
             method: requestType,
             body: JSON.stringify(payload),
             headers,
