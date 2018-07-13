@@ -264,8 +264,8 @@ describe('ExchangeWrapper', () => {
         });
     });
     describe('#getZRXAssetData', () => {
-        it('should get the asset data', async () => {
-            const ZRX_ASSET_DATA = await contractWrappers.exchange.getZRXAssetDataAsync();
+        it('should get the asset data', () => {
+            const ZRX_ASSET_DATA = contractWrappers.exchange.getZRXAssetData();
             const ASSET_DATA_HEX_LENGTH = 74;
             expect(ZRX_ASSET_DATA).to.have.length(ASSET_DATA_HEX_LENGTH);
         });
