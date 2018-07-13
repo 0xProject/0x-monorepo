@@ -233,6 +233,9 @@ class PlainPortalOnboardingFlow extends React.Component<PortalOnboardingFlowProp
     }
     private _updateOnboardingStep(stepIndex: number): void {
         this.props.updateOnboardingStep(stepIndex);
+        analytics.track('Update Onboarding Step', {
+            stepIndex,
+        });
     }
     private _closeOnboarding(): void {
         this.props.updateIsRunning(false);
