@@ -18,6 +18,7 @@ export class RPCSubprovider extends Subprovider {
     constructor(rpcUrl: string, requestTimeoutMs: number = 20000) {
         super();
         assert.isString('rpcUrl', rpcUrl);
+        assert.isNumber('requestTimeoutMs', requestTimeoutMs);
         this._rpcUrl = rpcUrl;
         this._requestTimeoutMs = requestTimeoutMs;
     }
