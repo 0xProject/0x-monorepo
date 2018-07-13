@@ -17,6 +17,7 @@ export { OrderError, MessagePrefixType, MessagePrefixOpts, EIP712Parameter, EIP7
 export { AbstractBalanceAndProxyAllowanceFetcher } from './abstract/abstract_balance_and_proxy_allowance_fetcher';
 export { AbstractOrderFilledCancelledFetcher } from './abstract/abstract_order_filled_cancelled_fetcher';
 export { BalanceAndProxyAllowanceLazyStore } from './store/balance_and_proxy_allowance_lazy_store';
+export { OrderFilledCancelledLazyStore } from './store/order_filled_cancelled_lazy_store';
 export { RemainingFillableCalculator } from './remaining_fillable_calculator';
 export { OrderStateUtils } from './order_state_utils';
 export { assetProxyUtils } from './asset_proxy_utils';
