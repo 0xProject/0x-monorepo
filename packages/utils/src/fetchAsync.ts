@@ -1,3 +1,4 @@
+import isNode = require('detect-node');
 import 'isomorphic-fetch';
 
 export const fetchAsync = async (
@@ -6,7 +7,7 @@ export const fetchAsync = async (
     timeoutMs: number = 20000,
 ): Promise<Response> => {
     let optionsWithAbortParam;
-    if ((process as any).browser === true) {
+    if (isNode) {
         const controller = new AbortController();
         const signal = controller.signal;
         setTimeout(() => {

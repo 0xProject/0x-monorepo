@@ -4,3 +4,7 @@ declare module '*.json' {
     export default json;
     /* tslint:enable */
 }
+
+declare module 'detect-node' {
+    export const isNode: boolean;
+}
