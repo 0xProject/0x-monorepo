@@ -386,6 +386,14 @@ export const utils = {
     getFormattedAmountFromToken(token: Token, tokenState: TokenState): string {
         return utils.getFormattedAmount(tokenState.balance, token.decimals);
     },
+    format(value: BigNumber, format: string): string {
+        const formattedAmount = numeral(value).format(format);
+        if (_.isNaN(formattedAmount)) {
+            // https://github.com/adamwdraper/Numeral-js/issues/596
+            return numeral(new BigNumber(0)).format(format);
+        }
+        return formattedAmount;
+    },
     getFormattedAmount(amount: BigNumber, decimals: number): string {
         const unitAmount = Web3Wrapper.toUnitAmount(amount, decimals);
         // if the unit amount is less than 1, show the natural number of decimal places with a max of 4
@@ -394,22 +402,12 @@ export const utils = {
         const greaterThanOnePrecision = 2;
         const precision = unitAmount.lt(1) ? lessThanOnePrecision : greaterThanOnePrecision;
         const format = `0,0.${_.repeat('0', precision)}`;
-        const formattedAmount = numeral(unitAmount).format(format);
-        if (_.isNaN(formattedAmount)) {
-            // https://github.com/adamwdraper/Numeral-js/issues/596
-            return '0';
-        }
-        return formattedAmount;
+        return utils.format(unitAmount, format);
     },
     getUsdValueFormattedAmount(amount: BigNumber, decimals: number, price: BigNumber): string {
         const unitAmount = Web3Wrapper.toUnitAmount(amount, decimals);
         const value = unitAmount.mul(price);
-        const formattedAmount = numeral(value).format(constants.NUMERAL_USD_FORMAT);
-        if (_.isNaN(formattedAmount)) {
-            // https://github.com/adamwdraper/Numeral-js/issues/596
-            return numeral(new BigNumber(0)).format(constants.NUMERAL_USD_FORMAT);
-        }
-        return formattedAmount;
+        return utils.format(value, constants.NUMERAL_USD_FORMAT);
     },
     openUrl(url: string): void {
         window.open(url, '_blank');
