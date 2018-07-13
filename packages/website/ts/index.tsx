@@ -16,7 +16,6 @@ import { trackedTokenStorage } from 'ts/local_storage/tracked_token_storage';
 import { tradeHistoryStorage } from 'ts/local_storage/trade_history_storage';
 import { store } from 'ts/redux/store';
 import { WebsiteLegacyPaths, WebsitePaths } from 'ts/types';
-import { analytics } from 'ts/utils/analytics';
 import { muiTheme } from 'ts/utils/mui_theme';
 import { utils } from 'ts/utils/utils';
 // Polyfills
@@ -67,10 +66,6 @@ const LazyOrderUtilsDocumentation = createLazyComponent('Documentation', async (
 const LazyEthereumTypesDocumentation = createLazyComponent('Documentation', async () =>
     System.import<any>(/* webpackChunkName: "ethereumTypesDocs" */ 'ts/containers/ethereum_types_documentation'),
 );
-
-analytics.init();
-// tslint:disable-next-line:no-floating-promises
-analytics.logProviderAsync((window as any).web3);
 
 render(
     <Router>

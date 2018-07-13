@@ -313,14 +313,13 @@ export const utils = {
         const baseUrl = `https://${window.location.hostname}${hasPort ? `:${port}` : ''}`;
         return baseUrl;
     },
-    async onPageLoadAsync(): Promise<void> {
+    onPageLoadPromise: new Promise((resolve, _reject) => {
         if (document.readyState === 'complete') {
-            return; // Already loaded
+            resolve();
+            return;
         }
-        return new Promise<void>((resolve, _reject) => {
-            window.onload = () => resolve();
-        });
-    },
+        window.onload = resolve;
+    }),
     getProviderType(provider: Provider): Providers | string {
         const constructorName = provider.constructor.name;
         let parsedProviderName = constructorName;
