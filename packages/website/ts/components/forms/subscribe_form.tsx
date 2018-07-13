@@ -114,7 +114,7 @@ export class SubscribeForm extends React.Component<SubscribeFormProps, Subscribe
             const response = await backendClient.subscribeToNewsletterAsync(this.state.emailText);
             const status = response.status === 200 ? SubscribeFormStatus.Success : SubscribeFormStatus.Error;
             if (status === SubscribeFormStatus.Success) {
-                analytics.indentify(this.state.emailText, 'email');
+                analytics.identify(this.state.emailText, 'email');
             }
             this.setState({ status, emailText: '' });
         } catch (error) {

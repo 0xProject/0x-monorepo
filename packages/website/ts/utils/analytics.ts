@@ -4,7 +4,7 @@ import { utils } from 'ts/utils/utils';
 
 export interface HeapAnalytics {
     loaded: boolean;
-    indentify(id: string, idType: string): void;
+    identify(id: string, idType: string): void;
     track(eventName: string, eventProperties?: ObjectMap<string | number>): void;
     resetIdentity(): void;
     addUserProperties(properties: ObjectMap<string | number>): void;
@@ -30,8 +30,8 @@ export class Analytics {
     }
     // tslint:disable:no-floating-promises
     // HeapAnalytics Wrappers
-    public indentify(id: string, idType: string): void {
-        this._heapLoadedGuardAsync(() => this._heap.indentify(id, idType));
+    public identify(id: string, idType: string): void {
+        this._heapLoadedGuardAsync(() => this._heap.identify(id, idType));
     }
     public track(eventName: string, eventProperties?: ObjectMap<string | number>): void {
         this._heapLoadedGuardAsync(() => this._heap.track(eventName, eventProperties));
