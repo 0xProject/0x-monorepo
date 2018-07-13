@@ -14,10 +14,12 @@ import { Subprovider } from './subprovider';
  */
 export class RPCSubprovider extends Subprovider {
     private _rpcUrl: string;
-    constructor(rpcUrl: string) {
+    private _requestTimeoutMs: number;
+    constructor(rpcUrl: string, requestTimeoutMs: number = 20000) {
         super();
         assert.isString('rpcUrl', rpcUrl);
         this._rpcUrl = rpcUrl;
+        this._requestTimeoutMs = requestTimeoutMs;
     }
     /**
      * This method conforms to the web3-provider-engine interface.
@@ -35,9 +37,6 @@ export class RPCSubprovider extends Subprovider {
             'Content-Type': 'application/json',
         });
 
-        // Since Ethereum nodes have a proclivity for accepting requests and never
-        // returning a response, we set this quite low (10 seconds).
-        const timeoutMs = 10000;
         let response;
         try {
             response = await fetchAsync(
@@ -47,7 +46,7 @@ export class RPCSubprovider extends Subprovider {
                     headers,
                     body: JSON.stringify(finalPayload),
                 },
-                timeoutMs,
+                this._requestTimeoutMs,
             );
         } catch (err) {
             end(new JsonRpcError.InternalError(err));
