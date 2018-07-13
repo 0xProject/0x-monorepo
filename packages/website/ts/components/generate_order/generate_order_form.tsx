@@ -355,7 +355,7 @@ export class GenerateOrderForm extends React.Component<GenerateOrderFormProps, G
                 globalErrMsg = 'An unexpected error occured. Please try refreshing the page';
                 logUtils.log(`Unexpected error occured: ${err}`);
                 logUtils.log(err.stack);
-                await errorReporter.reportAsync(err);
+                errorReporter.report(err);
             }
         }
         this.setState({

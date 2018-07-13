@@ -226,7 +226,7 @@ export class WrapEtherItem extends React.Component<WrapEtherItemProps, WrapEther
                         amount: tokenAmount,
                     });
                 }
-                await errorReporter.reportAsync(err);
+                errorReporter.report(err);
             }
         }
         this.setState({

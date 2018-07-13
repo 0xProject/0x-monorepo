@@ -9,6 +9,43 @@ const GIT_SHA = childProcess
     .toString()
     .trim();
 
+const generatePlugins = () => {
+    let plugins = [];
+    if (process.env.NODE_ENV === 'production') {
+        plugins = plugins.concat([
+            // Since we do not use moment's locale feature, we exclude them from the bundle.
+            // This reduces the bundle size by 0.4MB.
+            new webpack.IgnorePlugin(/^\.\/locale$/, /moment$/),
+            new webpack.DefinePlugin({
+                'process.env': {
+                    NODE_ENV: JSON.stringify(process.env.NODE_ENV),
+                    GIT_SHA: JSON.stringify(GIT_SHA),
+                },
+            }),
+            // TODO: Revert to webpack bundled version with webpack v4.
+            // The v3 series bundled version does not support ES6 and
+            // fails to build.
+            new UglifyJsPlugin({
+                sourceMap: true,
+                uglifyOptions: {
+                    mangle: {
+                        reserved: ['BigNumber'],
+                    },
+                },
+            }),
+        ]);
+        if (process.env.DEPLOY_ROLLBAR_SOURCEMAPS === 'true') {
+            plugins = plugins.concat([
+                new RollbarSourceMapPlugin({
+                    accessToken: '32c39bfa4bb6440faedc1612a9c13d28',
+                    version: GIT_SHA,
+                    publicPath: 'https://0xproject.com/',
+                }),
+            ]);
+        }
+    }
+    return plugins;
+};
 module.exports = {
     entry: ['./ts/index.tsx'],
     output: {
@@ -78,34 +115,5 @@ module.exports = {
         },
         disableHostCheck: true,
     },
-    plugins:
-        process.env.NODE_ENV === 'production'
-            ? [
-                  // Since we do not use moment's locale feature, we exclude them from the bundle.
-                  // This reduces the bundle size by 0.4MB.
-                  new webpack.IgnorePlugin(/^\.\/locale$/, /moment$/),
-                  new webpack.DefinePlugin({
-                      'process.env': {
-                          NODE_ENV: JSON.stringify(process.env.NODE_ENV),
-                          GIT_SHA: JSON.stringify(GIT_SHA),
-                      },
-                  }),
-                  // TODO: Revert to webpack bundled version with webpack v4.
-                  // The v3 series bundled version does not support ES6 and
-                  // fails to build.
-                  new UglifyJsPlugin({
-                      sourceMap: true,
-                      uglifyOptions: {
-                          mangle: {
-                              reserved: ['BigNumber'],
-                          },
-                      },
-                  }),
-                  new RollbarSourceMapPlugin({
-                      accessToken: '32c39bfa4bb6440faedc1612a9c13d28',
-                      version: GIT_SHA,
-                      publicPath: 'https://0xproject.com/',
-                  }),
-              ]
-            : [],
+    plugins: generatePlugins(),
 };

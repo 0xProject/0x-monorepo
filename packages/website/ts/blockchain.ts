@@ -564,7 +564,7 @@ export class Blockchain {
                     configs.DEFAULT_TRACKED_TOKEN_SYMBOLS,
                 )}) not found in tokenRegistry: ${JSON.stringify(tokenRegistryTokens)}`,
             );
-            await errorReporter.reportAsync(err);
+            errorReporter.report(err);
             return;
         }
         if (_.isEmpty(trackedTokensByAddress)) {
@@ -675,8 +675,7 @@ export class Blockchain {
                     // Note: it's not entirely clear from the documentation which
                     // errors will be thrown by `watch`. For now, let's log the error
                     // to rollbar and stop watching when one occurs
-                    // tslint:disable-next-line:no-floating-promises
-                    errorReporter.reportAsync(err); // fire and forget
+                    errorReporter.report(err); // fire and forget
                     return;
                 } else {
                     const decodedLog = decodedLogEvent.log;
@@ -908,7 +907,7 @@ export class Blockchain {
             if (_.includes(errMsg, 'not been deployed to detected network')) {
                 throw new Error(BlockchainCallErrs.ContractDoesNotExist);
             } else {
-                await errorReporter.reportAsync(err);
+                errorReporter.report(err);
                 throw new Error(BlockchainCallErrs.UnhandledError);
             }
         }

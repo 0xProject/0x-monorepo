@@ -118,7 +118,7 @@ export class EthWethConversionButton extends React.Component<
                         ? 'Failed to wrap your ETH. Please try again.'
                         : 'Failed to unwrap your WETH. Please try again.';
                 this.props.dispatcher.showFlashMessage(errorMsg);
-                await errorReporter.reportAsync(err);
+                errorReporter.report(err);
             }
         }
         this.setState({

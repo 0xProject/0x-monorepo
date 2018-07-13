@@ -526,7 +526,7 @@ export class TokenBalances extends React.Component<TokenBalancesProps, TokenBala
             this.setState({
                 errorType: BalanceErrs.mintingFailed,
             });
-            await errorReporter.reportAsync(err);
+            errorReporter.report(err);
             return false;
         }
     }
@@ -561,7 +561,7 @@ export class TokenBalances extends React.Component<TokenBalancesProps, TokenBala
             this.setState({
                 errorType,
             });
-            await errorReporter.reportAsync(new Error(`Faucet returned non-200: ${JSON.stringify(response)}`));
+            errorReporter.report(new Error(`Faucet returned non-200: ${JSON.stringify(response)}`));
             return false;
         }
 
