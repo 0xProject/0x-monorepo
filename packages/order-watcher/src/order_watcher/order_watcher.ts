@@ -152,6 +152,20 @@ export class OrderWatcher {
 
         this._orderByOrderHash[orderHash] = signedOrder;
         this._dependentOrderHashesTracker.addToDependentOrderHashes(signedOrder);
+
+        const decodedMakerAssetData = assetProxyUtils.decodeAssetData(signedOrder.makerAssetData);
+        if (decodedMakerAssetData.assetProxyId === AssetProxyId.ERC20) {
+            this._collisionResistantAbiDecoder.addERC20Token(decodedMakerAssetData.tokenAddress);
+        } else if (decodedMakerAssetData.assetProxyId === AssetProxyId.ERC721) {
+            this._collisionResistantAbiDecoder.addERC721Token(decodedMakerAssetData.tokenAddress);
+        }
+
+        const decodedTakerAssetData = assetProxyUtils.decodeAssetData(signedOrder.takerAssetData);
+        if (decodedTakerAssetData.assetProxyId === AssetProxyId.ERC20) {
+            this._collisionResistantAbiDecoder.addERC20Token(decodedTakerAssetData.tokenAddress);
+        } else if (decodedTakerAssetData.assetProxyId === AssetProxyId.ERC721) {
+            this._collisionResistantAbiDecoder.addERC721Token(decodedTakerAssetData.tokenAddress);
+        }
     }
     /**
      * Removes an order from the orderWatcher
