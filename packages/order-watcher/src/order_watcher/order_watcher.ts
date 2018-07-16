@@ -28,7 +28,7 @@ import {
     orderHashUtils,
     OrderStateUtils,
 } from '@0xproject/order-utils';
-import { ExchangeContractErrs, OrderState, SignedOrder } from '@0xproject/types';
+import { AssetProxyId, ExchangeContractErrs, OrderState, SignedOrder } from '@0xproject/types';
 import { errorUtils, intervalUtils } from '@0xproject/utils';
 import { BlockParamLiteral, LogEntryEvent, LogWithDecodedArgs, Provider } from 'ethereum-types';
 import * as _ from 'lodash';
