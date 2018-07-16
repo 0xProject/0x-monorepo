@@ -50,14 +50,13 @@ export const assetDataUtils = {
      * @param tokenId  The ERC721 tokenId to encode
      * @return The hex encoded assetData string
      */
-    encodeERC721AssetData(tokenAddress: string, tokenId: BigNumber, receiverData?: string): string {
+    encodeERC721AssetData(tokenAddress: string, tokenId: BigNumber): string {
         // TODO: Pass `tokendId` as a BigNumber.
         return ethUtil.bufferToHex(
             ethAbi.simpleEncode(
-                'ERC721Token(address,uint256,bytes)',
+                'ERC721Token(address,uint256)',
                 tokenAddress,
                 `0x${tokenId.toString(constants.BASE_16)}`,
-                ethUtil.toBuffer(receiverData || '0x'),
             ),
         );
     },
@@ -83,15 +82,14 @@ export const assetDataUtils = {
                 }), but got ${assetProxyId}`,
             );
         }
-        const [tokenAddress, tokenId, receiverData] = ethAbi.rawDecode(
-            ['address', 'uint256', 'bytes'],
+        const [tokenAddress, tokenId] = ethAbi.rawDecode(
+            ['address', 'uint256'],
             data.slice(constants.SELECTOR_LENGTH),
         );
         return {
             assetProxyId,
             tokenAddress: ethUtil.addHexPrefix(tokenAddress),
             tokenId: new BigNumber(tokenId.toString()),
-            receiverData: ethUtil.bufferToHex(receiverData),
         };
     },
     /**

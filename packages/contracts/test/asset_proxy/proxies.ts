@@ -377,9 +377,9 @@ describe('Asset Transfer Proxies', () => {
             });
         });
 
-        it('should have an id of 0x08e937fa', async () => {
+        it('should have an id of 0x02571792', async () => {
             const proxyId = await erc721Proxy.getProxyId.callAsync();
-            const expectedProxyId = '0x08e937fa';
+            const expectedProxyId = '0x02571792';
             expect(proxyId).to.equal(expectedProxyId);
         });
     });

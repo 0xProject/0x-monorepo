@@ -159,7 +159,7 @@ export interface ECSignature {
 
 export enum AssetProxyId {
     ERC20 = '0xf47261b0',
-    ERC721 = '0x08e937fa',
+    ERC721 = '0x02571792',
 }
 
 export interface ERC20AssetData {
@@ -171,7 +171,6 @@ export interface ERC721AssetData {
     assetProxyId: string;
     tokenAddress: string;
     tokenId: BigNumber;
-    receiverData: string;
 }
 
 export enum RevertReason {

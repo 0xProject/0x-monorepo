@@ -26,7 +26,7 @@ contract ERC721Proxy is
     MixinAuthorizable
 {
     // Id of this proxy.
-    bytes4 constant internal PROXY_ID = bytes4(keccak256("ERC721Token(address,uint256,bytes)"));
+    bytes4 constant internal PROXY_ID = bytes4(keccak256("ERC721Token(address,uint256)"));
 
     // solhint-disable-next-line payable-fallback
     function () 
