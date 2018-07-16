@@ -82,10 +82,7 @@ export const assetDataUtils = {
                 }), but got ${assetProxyId}`,
             );
         }
-        const [tokenAddress, tokenId] = ethAbi.rawDecode(
-            ['address', 'uint256'],
-            data.slice(constants.SELECTOR_LENGTH),
-        );
+        const [tokenAddress, tokenId] = ethAbi.rawDecode(['address', 'uint256'], data.slice(constants.SELECTOR_LENGTH));
         return {
             assetProxyId,
             tokenAddress: ethUtil.addHexPrefix(tokenAddress),
