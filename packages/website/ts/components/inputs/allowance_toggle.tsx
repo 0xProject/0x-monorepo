@@ -1,4 +1,4 @@
-import { constants as sharedConstants, Styles } from '@0xproject/react-shared';
+import { Styles } from '@0xproject/react-shared';
 import { BigNumber, logUtils } from '@0xproject/utils';
 import * as _ from 'lodash';
 import Toggle from 'material-ui/Toggle';
@@ -111,14 +111,16 @@ export class AllowanceToggle extends React.Component<AllowanceToggleProps, Allow
         if (!this._isAllowanceSet()) {
             newAllowanceAmountInBaseUnits = DEFAULT_ALLOWANCE_AMOUNT_IN_BASE_UNITS;
         }
-        const networkName = sharedConstants.NETWORK_NAME_BY_ID[this.props.networkId];
-        const eventLabel = `${this.props.token.symbol}-${networkName}`;
+        const logData = {
+            tokenSymbol: this.props.token.symbol,
+            newAllowance: newAllowanceAmountInBaseUnits.toNumber(),
+        };
         try {
             await this.props.blockchain.setProxyAllowanceAsync(this.props.token, newAllowanceAmountInBaseUnits);
-            analytics.logEvent('Portal', 'Set Allowance Success', eventLabel, newAllowanceAmountInBaseUnits.toNumber());
+            analytics.track('Set Allowances Success', logData);
             await this.props.refetchTokenStateAsync();
         } catch (err) {
-            analytics.logEvent('Portal', 'Set Allowance Failure', eventLabel, newAllowanceAmountInBaseUnits.toNumber());
+            analytics.track('Set Allowance Failure', logData);
             this.setState({
                 isSpinnerVisible: false,
             });
@@ -129,7 +131,7 @@ export class AllowanceToggle extends React.Component<AllowanceToggleProps, Allow
             logUtils.log(`Unexpected error encountered: ${err}`);
             logUtils.log(err.stack);
             this.props.onErrorOccurred(BalanceErrs.allowanceSettingFailed);
-            await errorReporter.reportAsync(err);
+            errorReporter.report(err);
         }
     }
     private _isAllowanceSet(): boolean {

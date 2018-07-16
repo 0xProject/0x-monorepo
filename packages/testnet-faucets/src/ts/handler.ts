@@ -5,9 +5,12 @@ import { Provider } from 'ethereum-types';
 import * as express from 'express';
 import * as _ from 'lodash';
 
-import { NonceTrackerSubprovider, PrivateKeyWalletSubprovider } from '@0xproject/subproviders';
-import ProviderEngine = require('web3-provider-engine');
-import RpcSubprovider = require('web3-provider-engine/subproviders/rpc');
+import {
+    NonceTrackerSubprovider,
+    PrivateKeyWalletSubprovider,
+    RPCSubprovider,
+    Web3ProviderEngine,
+} from '@0xproject/subproviders';
 
 import { configs } from './configs';
 import { constants } from './constants';
@@ -39,14 +42,10 @@ export class Handler {
         if (_.isUndefined(configs.DISPENSER_PRIVATE_KEY)) {
             throw new Error('Dispenser Private key not found');
         }
-        const engine = new ProviderEngine();
+        const engine = new Web3ProviderEngine();
         engine.addProvider(new NonceTrackerSubprovider());
         engine.addProvider(new PrivateKeyWalletSubprovider(configs.DISPENSER_PRIVATE_KEY));
-        engine.addProvider(
-            new RpcSubprovider({
-                rpcUrl,
-            }),
-        );
+        engine.addProvider(new RPCSubprovider(rpcUrl));
         engine.start();
         return engine;
     }

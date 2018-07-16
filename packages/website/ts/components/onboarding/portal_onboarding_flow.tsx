@@ -1,4 +1,3 @@
-import { constants as sharedConstants } from '@0xproject/react-shared';
 import * as _ from 'lodash';
 import * as React from 'react';
 import { RouteComponentProps, withRouter } from 'react-router';
@@ -225,20 +224,24 @@ class PlainPortalOnboardingFlow extends React.Component<PortalOnboardingFlowProp
             (this.props.stepIndex === 0 && !this.props.isRunning && this.props.blockchainIsLoaded) ||
             (!this.props.isRunning && !this.props.hasBeenClosed && this.props.blockchainIsLoaded)
         ) {
-            const networkName = sharedConstants.NETWORK_NAME_BY_ID[this.props.networkId];
-            analytics.logEvent('Portal', 'Onboarding Started - Automatic', networkName, this.props.stepIndex);
+            analytics.track('Onboarding Started', {
+                reason: 'automatic',
+                stepIndex: this.props.stepIndex,
+            });
             this.props.updateIsRunning(true);
         }
     }
     private _updateOnboardingStep(stepIndex: number): void {
-        const networkName = sharedConstants.NETWORK_NAME_BY_ID[this.props.networkId];
         this.props.updateOnboardingStep(stepIndex);
-        analytics.logEvent('Portal', 'Update Onboarding Step', networkName, stepIndex);
+        analytics.track('Update Onboarding Step', {
+            stepIndex,
+        });
     }
     private _closeOnboarding(): void {
-        const networkName = sharedConstants.NETWORK_NAME_BY_ID[this.props.networkId];
         this.props.updateIsRunning(false);
-        analytics.logEvent('Portal', 'Onboarding Closed', networkName, this.props.stepIndex);
+        analytics.track('Onboarding Closed', {
+            stepIndex: this.props.stepIndex,
+        });
     }
     private _renderZrxAllowanceToggle(): React.ReactNode {
         const zrxToken = utils.getZrxToken(this.props.tokenByAddress);

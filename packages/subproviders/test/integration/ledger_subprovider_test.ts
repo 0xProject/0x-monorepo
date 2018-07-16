@@ -7,10 +7,8 @@ import TransportNodeHid from '@ledgerhq/hw-transport-node-hid';
 import * as chai from 'chai';
 import { JSONRPCResponsePayload } from 'ethereum-types';
 import * as ethUtils from 'ethereumjs-util';
-import Web3ProviderEngine = require('web3-provider-engine');
-import RpcSubprovider = require('web3-provider-engine/subproviders/rpc');
 
-import { LedgerSubprovider } from '../../src';
+import { LedgerSubprovider, RPCSubprovider, Web3ProviderEngine } from '../../src';
 import { LedgerEthereumClient } from '../../src/types';
 import { chaiSetup } from '../chai_setup';
 import { fixtureData } from '../utils/fixture_data';
@@ -86,9 +84,7 @@ describe('LedgerSubprovider', () => {
         before(() => {
             ledgerProvider = new Web3ProviderEngine();
             ledgerProvider.addProvider(ledgerSubprovider);
-            const httpProvider = new RpcSubprovider({
-                rpcUrl: 'http://localhost:8545',
-            });
+            const httpProvider = new RPCSubprovider('http://localhost:8545');
             ledgerProvider.addProvider(httpProvider);
             ledgerProvider.start();
 

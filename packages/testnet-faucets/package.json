@@ -18,7 +18,7 @@
     "author": "Fabio Berger",
     "license": "Apache-2.0",
     "dependencies": {
-        "0x.js": "^0.38.0",
+        "0x.js": "0.38.4",
         "@0xproject/subproviders": "^0.10.5",
         "@0xproject/web3-wrapper": "^0.7.2",
         "@0xproject/typescript-typings": "^0.4.2",
@@ -28,8 +28,7 @@
         "ethereumjs-util": "^5.1.1",
         "express": "^4.15.2",
         "lodash": "^4.17.4",
-        "rollbar": "^0.6.5",
-        "web3-provider-engine": "14.0.6"
+        "rollbar": "^0.6.5"
     },
     "devDependencies": {
         "@0xproject/tslint-config": "^0.4.21",

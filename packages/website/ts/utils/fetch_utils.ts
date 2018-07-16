@@ -1,4 +1,4 @@
-import { logUtils } from '@0xproject/utils';
+import { fetchAsync, logUtils } from '@0xproject/utils';
 import * as _ from 'lodash';
 import * as queryString from 'query-string';
 
@@ -9,8 +9,7 @@ const logErrorIfPresent = (response: Response, requestedURL: string) => {
         const errorText = `Error requesting url: ${requestedURL}, ${response.status}: ${response.statusText}`;
         logUtils.log(errorText);
         const error = Error(errorText);
-        // tslint:disable-next-line:no-floating-promises
-        errorReporter.reportAsync(error);
+        errorReporter.report(error);
         throw error;
     }
 };
@@ -19,14 +18,14 @@ export const fetchUtils = {
     async requestAsync(baseUrl: string, path: string, queryParams?: object): Promise<any> {
         const query = queryStringFromQueryParams(queryParams);
         const url = `${baseUrl}${path}${query}`;
-        const response = await fetch(url);
+        const response = await fetchAsync(url);
         logErrorIfPresent(response, url);
         const result = await response.json();
         return result;
     },
     async postAsync(baseUrl: string, path: string, body: object): Promise<Response> {
         const url = `${baseUrl}${path}`;
-        const response = await fetch(url, {
+        const response = await fetchAsync(url, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',

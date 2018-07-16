@@ -1,6 +1,6 @@
 import { generatePseudoRandomSalt, getOrderHashHex } from '@0xproject/order-utils';
-import { colors, constants as sharedConstants } from '@0xproject/react-shared';
-import { ECSignature, Order } from '@0xproject/types';
+import { colors } from '@0xproject/react-shared';
+import { ECSignature, Order as ZeroExOrder } from '@0xproject/types';
 import { BigNumber, logUtils } from '@0xproject/utils';
 import * as _ from 'lodash';
 import Dialog from 'material-ui/Dialog';
@@ -20,7 +20,7 @@ import { SwapIcon } from 'ts/components/ui/swap_icon';
 import { Dispatcher } from 'ts/redux/dispatcher';
 import { portalOrderSchema } from 'ts/schemas/portal_order_schema';
 import { validator } from 'ts/schemas/validator';
-import { AlertTypes, BlockchainErrs, HashData, Side, SideToAssetToken, Token, TokenByAddress } from 'ts/types';
+import { AlertTypes, BlockchainErrs, HashData, Order, Side, SideToAssetToken, Token, TokenByAddress } from 'ts/types';
 import { analytics } from 'ts/utils/analytics';
 import { constants } from 'ts/utils/constants';
 import { errorReporter } from 'ts/utils/error_reporter';
@@ -254,7 +254,8 @@ export class GenerateOrderForm extends React.Component<GenerateOrderFormProps, G
             userAddressIfExists,
             debitToken.address,
         );
-        const receiveAmount = this.props.sideToAssetToken[Side.Receive].amount;
+        const receiveToken = this.props.sideToAssetToken[Side.Receive];
+        const receiveAmount = receiveToken.amount;
         if (
             !_.isUndefined(debitToken.amount) &&
             !_.isUndefined(receiveAmount) &&
@@ -264,24 +265,28 @@ export class GenerateOrderForm extends React.Component<GenerateOrderFormProps, G
             debitBalance.gte(debitToken.amount) &&
             debitAllowance.gte(debitToken.amount)
         ) {
-            const didSignSuccessfully = await this._signTransactionAsync();
-            if (didSignSuccessfully) {
-                const networkName = sharedConstants.NETWORK_NAME_BY_ID[this.props.networkId];
-                const eventLabel = `${this.props.tokenByAddress[debitToken.address].symbol}-${networkName}`;
-                analytics.logEvent('Portal', 'Sign Order Success', eventLabel, debitToken.amount.toNumber());
+            const signedOrder = await this._signTransactionAsync();
+            const doesSignedOrderExist = !_.isUndefined(signedOrder);
+            if (doesSignedOrderExist) {
+                analytics.trackOrderEvent('Sign Order Success', signedOrder);
                 this.setState({
                     globalErrMsg: '',
                     shouldShowIncompleteErrs: false,
                 });
             }
-            return didSignSuccessfully;
+            return doesSignedOrderExist;
         } else {
             let globalErrMsg = 'You must fix the above errors in order to generate a valid order';
             if (this.props.userAddress === '') {
                 globalErrMsg = 'You must enable wallet communication';
                 this.props.dispatcher.updateShouldBlockchainErrDialogBeOpen(true);
             }
-            analytics.logEvent('Portal', 'Sign Order Failure', globalErrMsg);
+            analytics.track('Sign Order Failure', {
+                makerTokenAmount: debitToken.amount.toString(),
+                makerToken: this.props.tokenByAddress[debitToken.address].symbol,
+                takerTokenAmount: receiveToken.amount.toString(),
+                takerToken: this.props.tokenByAddress[receiveToken.address].symbol,
+            });
             this.setState({
                 globalErrMsg,
                 shouldShowIncompleteErrs: true,
@@ -289,7 +294,7 @@ export class GenerateOrderForm extends React.Component<GenerateOrderFormProps, G
             return false;
         }
     }
-    private async _signTransactionAsync(): Promise<boolean> {
+    private async _signTransactionAsync(): Promise<Order | undefined> {
         this.setState({
             signingState: SigningState.SIGNING,
         });
@@ -299,11 +304,11 @@ export class GenerateOrderForm extends React.Component<GenerateOrderFormProps, G
             this.setState({
                 signingState: SigningState.UNSIGNED,
             });
-            return false;
+            return undefined;
         }
         const hashData = this.props.hashData;
 
-        const zeroExOrder: Order = {
+        const zeroExOrder: ZeroExOrder = {
             exchangeContractAddress: exchangeContractAddr,
             expirationUnixTimestampSec: hashData.orderExpiryTimestamp,
             feeRecipient: hashData.feeRecipientAddress,
@@ -320,9 +325,10 @@ export class GenerateOrderForm extends React.Component<GenerateOrderFormProps, G
         const orderHash = getOrderHashHex(zeroExOrder);
 
         let globalErrMsg = '';
+        let order;
         try {
             const ecSignature = await this.props.blockchain.signOrderHashAsync(orderHash);
-            const order = utils.generateOrder(
+            order = utils.generateOrder(
                 exchangeContractAddr,
                 this.props.sideToAssetToken,
                 hashData.orderExpiryTimestamp,
@@ -349,14 +355,14 @@ export class GenerateOrderForm extends React.Component<GenerateOrderFormProps, G
                 globalErrMsg = 'An unexpected error occured. Please try refreshing the page';
                 logUtils.log(`Unexpected error occured: ${err}`);
                 logUtils.log(err.stack);
-                await errorReporter.reportAsync(err);
+                errorReporter.report(err);
             }
         }
         this.setState({
             signingState: globalErrMsg === '' ? SigningState.SIGNED : SigningState.UNSIGNED,
             globalErrMsg,
         });
-        return globalErrMsg === '';
+        return order;
     }
     private _updateOrderAddress(address?: string): void {
         if (!_.isUndefined(address)) {

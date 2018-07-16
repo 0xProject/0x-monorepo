@@ -1,11 +1,6 @@
-import * as _ from 'lodash';
-import { Environments, OutdatedWrappedEtherByNetworkId, PublicNodeUrlsByNetworkId } from 'ts/types';
+import { OutdatedWrappedEtherByNetworkId, PublicNodeUrlsByNetworkId } from 'ts/types';
 
 const BASE_URL = window.location.origin;
-const isDevelopment = _.includes(
-    ['https://0xproject.localhost:3572', 'https://localhost:3572', 'https://127.0.0.1'],
-    BASE_URL,
-);
 const INFURA_API_KEY = 'T5WSC8cautR4KXyYgsRs';
 
 export const configs = {
@@ -19,9 +14,8 @@ export const configs = {
     DEFAULT_TRACKED_TOKEN_SYMBOLS: ['WETH', 'ZRX'],
     DOMAIN_STAGING: 'staging-0xproject.s3-website-us-east-1.amazonaws.com',
     DOMAIN_DOGFOOD: 'dogfood.0xproject.com',
-    DOMAIN_DEVELOPMENT: '0xproject.localhost:3572',
+    DOMAINS_DEVELOPMENT: ['0xproject.localhost:3572', 'localhost:3572', '127.0.0.1'],
     DOMAIN_PRODUCTION: '0xproject.com',
-    ENVIRONMENT: isDevelopment ? Environments.DEVELOPMENT : Environments.PRODUCTION,
     GOOGLE_ANALYTICS_ID: 'UA-98720122-1',
     LAST_LOCAL_STORAGE_FILL_CLEARANCE_DATE: '2017-11-22',
     LAST_LOCAL_STORAGE_TRACKED_TOKEN_CLEARANCE_DATE: '2018-7-5',

@@ -1,10 +1,8 @@
 import { env, EnvVars } from '@0xproject/dev-utils';
-import { GanacheSubprovider, prependSubprovider } from '@0xproject/subproviders';
+import { GanacheSubprovider, prependSubprovider, RPCSubprovider, Web3ProviderEngine } from '@0xproject/subproviders';
 import { errorUtils, logUtils } from '@0xproject/utils';
 import { Web3Wrapper } from '@0xproject/web3-wrapper';
 import * as fs from 'fs';
-import ProviderEngine = require('web3-provider-engine');
-import RpcSubprovider = require('web3-provider-engine/subproviders/rpc');
 
 import { config } from './config';
 import { coverage } from './coverage';
@@ -30,7 +28,7 @@ switch (process.env.TEST_PROVIDER) {
         throw errorUtils.spawnSwitchErr('TEST_PROVIDER', process.env.TEST_PROVIDER);
 }
 
-export const provider = new ProviderEngine();
+export const provider = new Web3ProviderEngine();
 if (testProvider === ProviderType.Ganache) {
     provider.addProvider(
         new GanacheSubprovider({
@@ -45,7 +43,7 @@ if (testProvider === ProviderType.Ganache) {
         }),
     );
 } else {
-    provider.addProvider(new RpcSubprovider({ rpcUrl: 'http://localhost:8501' }));
+    provider.addProvider(new RPCSubprovider('http://localhost:8501'));
 }
 provider.start();
 
