@@ -6,6 +6,7 @@ import { Button } from 'ts/components/ui/button';
 import { Container } from 'ts/components/ui/container';
 import { Input } from 'ts/components/ui/input';
 import { Text } from 'ts/components/ui/text';
+import { analytics } from 'ts/utils/analytics';
 import { backendClient } from 'ts/utils/backend_client';
 
 export interface SubscribeFormProps {}
@@ -112,6 +113,9 @@ export class SubscribeForm extends React.Component<SubscribeFormProps, Subscribe
         try {
             const response = await backendClient.subscribeToNewsletterAsync(this.state.emailText);
             const status = response.status === 200 ? SubscribeFormStatus.Success : SubscribeFormStatus.Error;
+            if (status === SubscribeFormStatus.Success) {
+                analytics.identify(this.state.emailText, 'email');
+            }
             this.setState({ status, emailText: '' });
         } catch (error) {
             this._setStatus(SubscribeFormStatus.Error);

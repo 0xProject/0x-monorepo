@@ -1,4 +1,4 @@
-import { colors, constants as sharedConstants } from '@0xproject/react-shared';
+import { colors } from '@0xproject/react-shared';
 import { BigNumber } from '@0xproject/utils';
 import * as _ from 'lodash';
 import * as React from 'react';
@@ -388,10 +388,11 @@ export class Portal extends React.Component<PortalProps, PortalState> {
             startOnboarding
         );
     }
-
     private _startOnboarding(): void {
-        const networkName = sharedConstants.NETWORK_NAME_BY_ID[this.props.networkId];
-        analytics.logEvent('Portal', 'Onboarding Started - Manual', networkName, this.props.portalOnboardingStep);
+        analytics.track('Onboarding Started', {
+            reason: 'manual',
+            stepIndex: this.props.portalOnboardingStep,
+        });
         this.props.dispatcher.updatePortalOnboardingShowing(true);
     }
     private _renderWalletSection(): React.ReactNode {

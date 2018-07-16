@@ -87,7 +87,6 @@
         "ethereum-types": "^0.0.2",
         "chalk": "^2.3.0",
         "ethereumjs-util": "^5.1.1",
-        "isomorphic-fetch": "^2.2.1",
         "lodash": "^4.17.4",
         "mkdirp": "^0.5.1",
         "require-from-string": "^2.0.1",

@@ -80,7 +80,7 @@ export class SendButton extends React.Component<SendButtonProps, SendButtonState
                 logUtils.log(`Unexpected error encountered: ${err}`);
                 logUtils.log(err.stack);
                 this.props.onError();
-                await errorReporter.reportAsync(err);
+                errorReporter.report(err);
             }
         }
         this.setState({

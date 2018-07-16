@@ -8,11 +8,10 @@ import {
     Resolver,
     URLResolver,
 } from '@0xproject/sol-resolver';
-import { logUtils } from '@0xproject/utils';
+import { fetchAsync, logUtils } from '@0xproject/utils';
 import chalk from 'chalk';
 import * as ethUtil from 'ethereumjs-util';
 import * as fs from 'fs';
-import 'isomorphic-fetch';
 import * as _ from 'lodash';
 import * as path from 'path';
 import * as requireFromString from 'require-from-string';
@@ -149,7 +148,7 @@ export class Compiler {
         } else {
             logUtils.log(`Downloading ${fullSolcVersion}...`);
             const url = `${constants.BASE_COMPILER_URL}${fullSolcVersion}`;
-            const response = await fetch(url);
+            const response = await fetchAsync(url);
             const SUCCESS_STATUS = 200;
             if (response.status !== SUCCESS_STATUS) {
                 throw new Error(`Failed to load ${fullSolcVersion}`);

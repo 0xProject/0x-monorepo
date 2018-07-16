@@ -35,14 +35,15 @@
         "typescript": "2.7.1"
     },
     "dependencies": {
-        "ethereum-types": "^0.0.2",
+        "@0xproject/types": "^1.0.0",
         "@0xproject/typescript-typings": "^0.4.2",
         "@types/node": "^8.0.53",
-        "ethereumjs-util": "^5.1.1",
         "bignumber.js": "~4.1.0",
+        "detect-node": "2.0.3",
         "ethereum-types": "^0.0.2",
         "ethereumjs-util": "^5.1.1",
         "ethers": "3.0.22",
+        "isomorphic-fetch": "^2.2.1",
         "js-sha3": "^0.7.0",
         "lodash": "^4.17.4"
     },

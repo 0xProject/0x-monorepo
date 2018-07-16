@@ -1,4 +1,4 @@
-import { constants as sharedConstants, EtherscanLinkSuffixes, utils as sharedUtils } from '@0xproject/react-shared';
+import { EtherscanLinkSuffixes, utils as sharedUtils } from '@0xproject/react-shared';
 import { BigNumber, errorUtils } from '@0xproject/utils';
 import * as _ from 'lodash';
 
@@ -488,19 +488,17 @@ export class Wallet extends React.Component<WalletProps, WalletState> {
         );
     }
     private _openWrappedEtherActionRow(wrappedEtherDirection: Side): void {
-        const networkName = sharedConstants.NETWORK_NAME_BY_ID[this.props.networkId];
         const action =
             wrappedEtherDirection === Side.Deposit ? 'Wallet - Wrap ETH Opened' : 'Wallet - Unwrap WETH Opened';
-        analytics.logEvent('Portal', action, networkName);
+        analytics.track(action);
         this.setState({
             wrappedEtherDirection,
         });
     }
     private _closeWrappedEtherActionRow(wrappedEtherDirection: Side): void {
-        const networkName = sharedConstants.NETWORK_NAME_BY_ID[this.props.networkId];
         const action =
             wrappedEtherDirection === Side.Deposit ? 'Wallet - Wrap ETH Closed' : 'Wallet - Unwrap WETH Closed';
-        analytics.logEvent('Portal', action, networkName);
+        analytics.track(action);
         this.setState({
             wrappedEtherDirection: undefined,
         });
