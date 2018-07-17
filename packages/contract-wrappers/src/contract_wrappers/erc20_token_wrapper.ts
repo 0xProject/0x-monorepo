@@ -347,6 +347,7 @@ export class ERC20TokenWrapper extends ContractWrapper {
      * @param   indexFilterValues   An object where the keys are indexed args returned by the event and
      *                              the value is the value you are interested in. E.g `{maker: aUserAddressHex}`
      * @param   callback            Callback that gets called when a log is added/removed
+     * @param   isVerbose           Enable verbose subscription warnings (e.g recoverable network issues encountered)
      * @return Subscription token used later to unsubscribe
      */
     public subscribe<ArgsType extends ERC20TokenEventArgs>(
@@ -354,6 +355,7 @@ export class ERC20TokenWrapper extends ContractWrapper {
         eventName: ERC20TokenEvents,
         indexFilterValues: IndexedFilterValues,
         callback: EventCallback<ArgsType>,
+        isVerbose: boolean = false,
     ): string {
         assert.isETHAddressHex('tokenAddress', tokenAddress);
         assert.doesBelongToStringEnum('eventName', eventName, ERC20TokenEvents);
@@ -366,6 +368,7 @@ export class ERC20TokenWrapper extends ContractWrapper {
             indexFilterValues,
             artifacts.ERC20Token.compilerOutput.abi,
             callback,
+            isVerbose,
         );
         return subscriptionToken;
     }

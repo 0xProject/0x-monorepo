@@ -61,6 +61,7 @@ interface OrderStateByOrderHash {
 
 // tslint:disable-next-line:custom-no-magic-numbers
 const DEFAULT_CLEANUP_JOB_INTERVAL_MS = 1000 * 60 * 60; // 1h
+const STATE_LAYER = BlockParamLiteral.Latest;
 
 /**
  * This class includes all the functionality related to watching a set of orders
@@ -91,17 +92,15 @@ export class OrderWatcher {
         });
         this._contractWrappers = new ContractWrappers(provider, { networkId });
         const pollingIntervalIfExistsMs = _.isUndefined(config) ? undefined : config.eventPollingIntervalMs;
-        const stateLayer =
-            _.isUndefined(config) || _.isUndefined(config.stateLayer) ? BlockParamLiteral.Latest : config.stateLayer;
         const isVerbose = !_.isUndefined(config) && !_.isUndefined(config.isVerbose) ? config.isVerbose : false;
-        this._eventWatcher = new EventWatcher(this._web3Wrapper, pollingIntervalIfExistsMs, stateLayer, isVerbose);
+        this._eventWatcher = new EventWatcher(this._web3Wrapper, pollingIntervalIfExistsMs, STATE_LAYER, isVerbose);
         this._balanceAndProxyAllowanceLazyStore = new BalanceAndProxyAllowanceLazyStore(
             this._contractWrappers.token,
-            stateLayer,
+            STATE_LAYER,
         );
         this._orderFilledCancelledLazyStore = new OrderFilledCancelledLazyStore(
             this._contractWrappers.exchange,
-            stateLayer,
+            STATE_LAYER,
         );
         this._orderStateUtils = new OrderStateUtils(
             this._balanceAndProxyAllowanceLazyStore,

@@ -49,44 +49,6 @@ describe('SubscriptionTest', () => {
             _.each(stubs, s => s.restore());
             stubs = [];
         });
-        it('Should receive the Error when an error occurs while fetching the block', (done: DoneCallback) => {
-            (async () => {
-                const errMsg = 'Error fetching block';
-                const callback = callbackErrorReporter.assertNodeCallbackError(done, errMsg);
-                stubs = [Sinon.stub((contractWrappers as any)._web3Wrapper, 'getBlockAsync').throws(new Error(errMsg))];
-                contractWrappers.erc20Token.subscribe(
-                    tokenAddress,
-                    ERC20TokenEvents.Approval,
-                    indexFilterValues,
-                    callback,
-                );
-                await contractWrappers.erc20Token.setAllowanceAsync(
-                    tokenAddress,
-                    coinbase,
-                    addressWithoutFunds,
-                    allowanceAmount,
-                );
-            })().catch(done);
-        });
-        it('Should receive the Error when an error occurs while reconciling the new block', (done: DoneCallback) => {
-            (async () => {
-                const errMsg = 'Error fetching logs';
-                const callback = callbackErrorReporter.assertNodeCallbackError(done, errMsg);
-                stubs = [Sinon.stub((contractWrappers as any)._web3Wrapper, 'getLogsAsync').throws(new Error(errMsg))];
-                contractWrappers.erc20Token.subscribe(
-                    tokenAddress,
-                    ERC20TokenEvents.Approval,
-                    indexFilterValues,
-                    callback,
-                );
-                await contractWrappers.erc20Token.setAllowanceAsync(
-                    tokenAddress,
-                    coinbase,
-                    addressWithoutFunds,
-                    allowanceAmount,
-                );
-            })().catch(done);
-        });
         it('Should allow unsubscribeAll to be called successfully after an error', (done: DoneCallback) => {
             (async () => {
                 const callback = (err: Error | null, _logEvent?: DecodedLogEvent<ERC20TokenApprovalEventArgs>) =>
