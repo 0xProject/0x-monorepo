@@ -29,3 +29,12 @@ export async function increaseTimeAndMineBlockAsync(seconds: number): Promise<nu
 
     return offset;
 }
+
+/**
+ * Returns the timestamp of the latest block in seconds since the Unix epoch.
+ * @returns a new Promise which will resolve with the timestamp in seconds.
+ */
+export async function getLatestBlockTimestampAsync(): Promise<number> {
+    const currentBlock = await web3Wrapper.getBlockAsync('latest');
+    return currentBlock.timestamp;
+}

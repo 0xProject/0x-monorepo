@@ -15,6 +15,7 @@ import { ERC721ProxyContract } from '../../generated_contract_wrappers/erc721_pr
 import { ExchangeCancelEventArgs, ExchangeContract } from '../../generated_contract_wrappers/exchange';
 import { artifacts } from '../utils/artifacts';
 import { expectTransactionFailedAsync } from '../utils/assertions';
+import { getLatestBlockTimestampAsync } from '../utils/block_timestamp';
 import { chaiSetup } from '../utils/chai_setup';
 import { constants } from '../utils/constants';
 import { ERC20Wrapper } from '../utils/erc20_wrapper';
@@ -129,11 +130,11 @@ describe('Exchange core', () => {
     describe('fillOrder', () => {
         beforeEach(async () => {
             erc20Balances = await erc20Wrapper.getBalancesAsync();
-            signedOrder = orderFactory.newSignedOrder();
+            signedOrder = await orderFactory.newSignedOrderAsync();
         });
 
         it('should throw if signature is invalid', async () => {
-            signedOrder = orderFactory.newSignedOrder({
+            signedOrder = await orderFactory.newSignedOrderAsync({
                 makerAssetAmount: Web3Wrapper.toBaseUnitAmount(new BigNumber(10), 18),
             });
 
@@ -151,7 +152,7 @@ describe('Exchange core', () => {
         });
 
         it('should throw if no value is filled', async () => {
-            signedOrder = orderFactory.newSignedOrder();
+            signedOrder = await orderFactory.newSignedOrderAsync();
             await exchangeWrapper.fillOrderAsync(signedOrder, takerAddress);
             return expectTransactionFailedAsync(
                 exchangeWrapper.fillOrderAsync(signedOrder, takerAddress),
@@ -163,7 +164,7 @@ describe('Exchange core', () => {
     describe('cancelOrder', () => {
         beforeEach(async () => {
             erc20Balances = await erc20Wrapper.getBalancesAsync();
-            signedOrder = orderFactory.newSignedOrder();
+            signedOrder = await orderFactory.newSignedOrderAsync();
         });
 
         it('should throw if not sent by maker', async () => {
@@ -174,7 +175,7 @@ describe('Exchange core', () => {
         });
 
         it('should throw if makerAssetAmount is 0', async () => {
-            signedOrder = orderFactory.newSignedOrder({
+            signedOrder = await orderFactory.newSignedOrderAsync({
                 makerAssetAmount: new BigNumber(0),
             });
 
@@ -185,7 +186,7 @@ describe('Exchange core', () => {
         });
 
         it('should throw if takerAssetAmount is 0', async () => {
-            signedOrder = orderFactory.newSignedOrder({
+            signedOrder = await orderFactory.newSignedOrderAsync({
                 takerAssetAmount: new BigNumber(0),
             });
 
@@ -229,8 +230,9 @@ describe('Exchange core', () => {
         });
 
         it('should throw if order is expired', async () => {
-            signedOrder = orderFactory.newSignedOrder({
-                expirationTimeSeconds: new BigNumber(Math.floor((Date.now() - 10000) / 1000)),
+            const currentTimestamp = await getLatestBlockTimestampAsync();
+            signedOrder = await orderFactory.newSignedOrderAsync({
+                expirationTimeSeconds: new BigNumber(currentTimestamp).sub(10),
             });
             return expectTransactionFailedAsync(
                 exchangeWrapper.cancelOrderAsync(signedOrder, makerAddress),
@@ -239,7 +241,7 @@ describe('Exchange core', () => {
         });
 
         it('should throw if rounding error is greater than 0.1%', async () => {
-            signedOrder = orderFactory.newSignedOrder({
+            signedOrder = await orderFactory.newSignedOrderAsync({
                 makerAssetAmount: new BigNumber(1001),
                 takerAssetAmount: new BigNumber(3),
             });
@@ -288,22 +290,22 @@ describe('Exchange core', () => {
             // Since we cancelled with orderEpoch=1, orders with orderEpoch<=1 will not be processed
             erc20Balances = await erc20Wrapper.getBalancesAsync();
             const signedOrders = [
-                orderFactory.newSignedOrder({
+                await orderFactory.newSignedOrderAsync({
                     makerAssetAmount: Web3Wrapper.toBaseUnitAmount(new BigNumber(9), 18),
                     takerAssetAmount: Web3Wrapper.toBaseUnitAmount(new BigNumber(9), 18),
                     salt: new BigNumber(0),
                 }),
-                orderFactory.newSignedOrder({
+                await orderFactory.newSignedOrderAsync({
                     makerAssetAmount: Web3Wrapper.toBaseUnitAmount(new BigNumber(79), 18),
                     takerAssetAmount: Web3Wrapper.toBaseUnitAmount(new BigNumber(79), 18),
                     salt: new BigNumber(1),
                 }),
-                orderFactory.newSignedOrder({
+                await orderFactory.newSignedOrderAsync({
                     makerAssetAmount: Web3Wrapper.toBaseUnitAmount(new BigNumber(979), 18),
                     takerAssetAmount: Web3Wrapper.toBaseUnitAmount(new BigNumber(979), 18),
                     salt: new BigNumber(2),
                 }),
-                orderFactory.newSignedOrder({
+                await orderFactory.newSignedOrderAsync({
                     makerAssetAmount: Web3Wrapper.toBaseUnitAmount(new BigNumber(7979), 18),
                     takerAssetAmount: Web3Wrapper.toBaseUnitAmount(new BigNumber(7979), 18),
                     salt: new BigNumber(3),
@@ -350,7 +352,7 @@ describe('Exchange core', () => {
             // Construct Exchange parameters
             const makerAssetId = erc721TakerAssetIds[0];
             const takerAssetId = erc721TakerAssetIds[1];
-            signedOrder = orderFactory.newSignedOrder({
+            signedOrder = await orderFactory.newSignedOrderAsync({
                 makerAssetAmount: new BigNumber(1),
                 takerAssetAmount: new BigNumber(1),
                 makerAssetData: assetProxyUtils.encodeERC721AssetData(erc721Token.address, makerAssetId),
@@ -373,7 +375,7 @@ describe('Exchange core', () => {
             // Construct Exchange parameters
             const makerAssetId = erc721MakerAssetIds[0];
             const takerAssetId = erc721MakerAssetIds[1];
-            signedOrder = orderFactory.newSignedOrder({
+            signedOrder = await orderFactory.newSignedOrderAsync({
                 makerAssetAmount: new BigNumber(1),
                 takerAssetAmount: new BigNumber(1),
                 makerAssetData: assetProxyUtils.encodeERC721AssetData(erc721Token.address, makerAssetId),
@@ -396,7 +398,7 @@ describe('Exchange core', () => {
             // Construct Exchange parameters
             const makerAssetId = erc721MakerAssetIds[0];
             const takerAssetId = erc721TakerAssetIds[0];
-            signedOrder = orderFactory.newSignedOrder({
+            signedOrder = await orderFactory.newSignedOrderAsync({
                 makerAssetAmount: new BigNumber(2),
                 takerAssetAmount: new BigNumber(1),
                 makerAssetData: assetProxyUtils.encodeERC721AssetData(erc721Token.address, makerAssetId),
@@ -419,7 +421,7 @@ describe('Exchange core', () => {
             // Construct Exchange parameters
             const makerAssetId = erc721MakerAssetIds[0];
             const takerAssetId = erc721TakerAssetIds[0];
-            signedOrder = orderFactory.newSignedOrder({
+            signedOrder = await orderFactory.newSignedOrderAsync({
                 makerAssetAmount: new BigNumber(1),
                 takerAssetAmount: new BigNumber(500),
                 makerAssetData: assetProxyUtils.encodeERC721AssetData(erc721Token.address, makerAssetId),
@@ -441,7 +443,7 @@ describe('Exchange core', () => {
         it('should throw on partial fill', async () => {
             // Construct Exchange parameters
             const makerAssetId = erc721MakerAssetIds[0];
-            signedOrder = orderFactory.newSignedOrder({
+            signedOrder = await orderFactory.newSignedOrderAsync({
                 makerAssetAmount: new BigNumber(1),
                 takerAssetAmount: Web3Wrapper.toBaseUnitAmount(new BigNumber(100), 18),
                 makerAssetData: assetProxyUtils.encodeERC721AssetData(erc721Token.address, makerAssetId),
@@ -462,7 +464,7 @@ describe('Exchange core', () => {
             const makerAssetData = assetProxyUtils
                 .encodeERC721AssetData(erc721Token.address, makerAssetId)
                 .slice(0, -2);
-            signedOrder = orderFactory.newSignedOrder({
+            signedOrder = await orderFactory.newSignedOrderAsync({
                 makerAssetAmount: new BigNumber(1),
                 takerAssetAmount: new BigNumber(1),
                 makerAssetData,

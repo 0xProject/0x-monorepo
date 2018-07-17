@@ -13,6 +13,7 @@ import { ERC721ProxyContract } from '../../generated_contract_wrappers/erc721_pr
 import { ExchangeContract } from '../../generated_contract_wrappers/exchange';
 import { artifacts } from '../utils/artifacts';
 import { expectTransactionFailedAsync } from '../utils/assertions';
+import { getLatestBlockTimestampAsync } from '../utils/block_timestamp';
 import { chaiSetup } from '../utils/chai_setup';
 import { constants } from '../utils/constants';
 import { ERC20Wrapper } from '../utils/erc20_wrapper';
@@ -126,7 +127,7 @@ describe('Exchange wrappers', () => {
     });
     describe('fillOrKillOrder', () => {
         it('should transfer the correct amounts', async () => {
-            const signedOrder = orderFactory.newSignedOrder({
+            const signedOrder = await orderFactory.newSignedOrderAsync({
                 makerAssetAmount: Web3Wrapper.toBaseUnitAmount(new BigNumber(100), 18),
                 takerAssetAmount: Web3Wrapper.toBaseUnitAmount(new BigNumber(200), 18),
             });
@@ -170,8 +171,9 @@ describe('Exchange wrappers', () => {
         });
 
         it('should throw if a signedOrder is expired', async () => {
-            const signedOrder = orderFactory.newSignedOrder({
-                expirationTimeSeconds: new BigNumber(Math.floor((Date.now() - 10000) / 1000)),
+            const currentTimestamp = await getLatestBlockTimestampAsync();
+            const signedOrder = await orderFactory.newSignedOrderAsync({
+                expirationTimeSeconds: new BigNumber(currentTimestamp).sub(10),
             });
 
             return expectTransactionFailedAsync(
@@ -181,7 +183,7 @@ describe('Exchange wrappers', () => {
         });
 
         it('should throw if entire takerAssetFillAmount not filled', async () => {
-            const signedOrder = orderFactory.newSignedOrder();
+            const signedOrder = await orderFactory.newSignedOrderAsync();
 
             await exchangeWrapper.fillOrderAsync(signedOrder, takerAddress, {
                 takerAssetFillAmount: signedOrder.takerAssetAmount.div(2),
@@ -196,7 +198,7 @@ describe('Exchange wrappers', () => {
 
     describe('fillOrderNoThrow', () => {
         it('should transfer the correct amounts', async () => {
-            const signedOrder = orderFactory.newSignedOrder({
+            const signedOrder = await orderFactory.newSignedOrderAsync({
                 makerAssetAmount: Web3Wrapper.toBaseUnitAmount(new BigNumber(100), 18),
                 takerAssetAmount: Web3Wrapper.toBaseUnitAmount(new BigNumber(200), 18),
             });
@@ -245,7 +247,7 @@ describe('Exchange wrappers', () => {
         });
 
         it('should not change erc20Balances if maker erc20Balances are too low to fill order', async () => {
-            const signedOrder = orderFactory.newSignedOrder({
+            const signedOrder = await orderFactory.newSignedOrderAsync({
                 makerAssetAmount: Web3Wrapper.toBaseUnitAmount(new BigNumber(100000), 18),
             });
 
@@ -255,7 +257,7 @@ describe('Exchange wrappers', () => {
         });
 
         it('should not change erc20Balances if taker erc20Balances are too low to fill order', async () => {
-            const signedOrder = orderFactory.newSignedOrder({
+            const signedOrder = await orderFactory.newSignedOrderAsync({
                 takerAssetAmount: Web3Wrapper.toBaseUnitAmount(new BigNumber(100000), 18),
             });
 
@@ -265,7 +267,7 @@ describe('Exchange wrappers', () => {
         });
 
         it('should not change erc20Balances if maker allowances are too low to fill order', async () => {
-            const signedOrder = orderFactory.newSignedOrder();
+            const signedOrder = await orderFactory.newSignedOrderAsync();
             await web3Wrapper.awaitTransactionSuccessAsync(
                 await erc20TokenA.approve.sendTransactionAsync(erc20Proxy.address, new BigNumber(0), {
                     from: makerAddress,
@@ -285,7 +287,7 @@ describe('Exchange wrappers', () => {
         });
 
         it('should not change erc20Balances if taker allowances are too low to fill order', async () => {
-            const signedOrder = orderFactory.newSignedOrder();
+            const signedOrder = await orderFactory.newSignedOrderAsync();
             await web3Wrapper.awaitTransactionSuccessAsync(
                 await erc20TokenB.approve.sendTransactionAsync(erc20Proxy.address, new BigNumber(0), {
                     from: takerAddress,
@@ -306,7 +308,7 @@ describe('Exchange wrappers', () => {
 
         it('should not change erc20Balances if makerAssetAddress is ZRX, makerAssetAmount + makerFee > maker balance', async () => {
             const makerZRXBalance = new BigNumber(erc20Balances[makerAddress][zrxToken.address]);
-            const signedOrder = orderFactory.newSignedOrder({
+            const signedOrder = await orderFactory.newSignedOrderAsync({
                 makerAssetAmount: makerZRXBalance,
                 makerFee: new BigNumber(1),
                 makerAssetData: assetProxyUtils.encodeERC20AssetData(zrxToken.address),
@@ -318,7 +320,7 @@ describe('Exchange wrappers', () => {
 
         it('should not change erc20Balances if makerAssetAddress is ZRX, makerAssetAmount + makerFee > maker allowance', async () => {
             const makerZRXAllowance = await zrxToken.allowance.callAsync(makerAddress, erc20Proxy.address);
-            const signedOrder = orderFactory.newSignedOrder({
+            const signedOrder = await orderFactory.newSignedOrderAsync({
                 makerAssetAmount: new BigNumber(makerZRXAllowance),
                 makerFee: new BigNumber(1),
                 makerAssetData: assetProxyUtils.encodeERC20AssetData(zrxToken.address),
@@ -330,7 +332,7 @@ describe('Exchange wrappers', () => {
 
         it('should not change erc20Balances if takerAssetAddress is ZRX, takerAssetAmount + takerFee > taker balance', async () => {
             const takerZRXBalance = new BigNumber(erc20Balances[takerAddress][zrxToken.address]);
-            const signedOrder = orderFactory.newSignedOrder({
+            const signedOrder = await orderFactory.newSignedOrderAsync({
                 takerAssetAmount: takerZRXBalance,
                 takerFee: new BigNumber(1),
                 takerAssetData: assetProxyUtils.encodeERC20AssetData(zrxToken.address),
@@ -342,7 +344,7 @@ describe('Exchange wrappers', () => {
 
         it('should not change erc20Balances if takerAssetAddress is ZRX, takerAssetAmount + takerFee > taker allowance', async () => {
             const takerZRXAllowance = await zrxToken.allowance.callAsync(takerAddress, erc20Proxy.address);
-            const signedOrder = orderFactory.newSignedOrder({
+            const signedOrder = await orderFactory.newSignedOrderAsync({
                 takerAssetAmount: new BigNumber(takerZRXAllowance),
                 takerFee: new BigNumber(1),
                 takerAssetData: assetProxyUtils.encodeERC20AssetData(zrxToken.address),
@@ -356,7 +358,7 @@ describe('Exchange wrappers', () => {
             // Construct Exchange parameters
             const makerAssetId = erc721MakerAssetId;
             const takerAssetId = erc721TakerAssetId;
-            const signedOrder = orderFactory.newSignedOrder({
+            const signedOrder = await orderFactory.newSignedOrderAsync({
                 makerAssetAmount: new BigNumber(1),
                 takerAssetAmount: new BigNumber(1),
                 makerAssetData: assetProxyUtils.encodeERC721AssetData(erc721Token.address, makerAssetId),
@@ -388,9 +390,9 @@ describe('Exchange wrappers', () => {
         let signedOrders: SignedOrder[];
         beforeEach(async () => {
             signedOrders = [
-                orderFactory.newSignedOrder(),
-                orderFactory.newSignedOrder(),
-                orderFactory.newSignedOrder(),
+                await orderFactory.newSignedOrderAsync(),
+                await orderFactory.newSignedOrderAsync(),
+                await orderFactory.newSignedOrderAsync(),
             ];
         });
 
@@ -696,11 +698,11 @@ describe('Exchange wrappers', () => {
 
             it('should throw when a signedOrder does not use the same takerAssetAddress', async () => {
                 signedOrders = [
-                    orderFactory.newSignedOrder(),
-                    orderFactory.newSignedOrder({
+                    await orderFactory.newSignedOrderAsync(),
+                    await orderFactory.newSignedOrderAsync({
                         takerAssetData: assetProxyUtils.encodeERC20AssetData(zrxToken.address),
                     }),
-                    orderFactory.newSignedOrder(),
+                    await orderFactory.newSignedOrderAsync(),
                 ];
 
                 return expectTransactionFailedAsync(
@@ -796,9 +798,9 @@ describe('Exchange wrappers', () => {
 
             it('should not fill a signedOrder that does not use the same takerAssetAddress', async () => {
                 signedOrders = [
-                    orderFactory.newSignedOrder(),
-                    orderFactory.newSignedOrder(),
-                    orderFactory.newSignedOrder({
+                    await orderFactory.newSignedOrderAsync(),
+                    await orderFactory.newSignedOrderAsync(),
+                    await orderFactory.newSignedOrderAsync({
                         takerAssetData: assetProxyUtils.encodeERC20AssetData(zrxToken.address),
                     }),
                 ];
@@ -914,11 +916,11 @@ describe('Exchange wrappers', () => {
 
             it('should throw when a signedOrder does not use the same makerAssetAddress', async () => {
                 signedOrders = [
-                    orderFactory.newSignedOrder(),
-                    orderFactory.newSignedOrder({
+                    await orderFactory.newSignedOrderAsync(),
+                    await orderFactory.newSignedOrderAsync({
                         makerAssetData: assetProxyUtils.encodeERC20AssetData(zrxToken.address),
                     }),
-                    orderFactory.newSignedOrder(),
+                    await orderFactory.newSignedOrderAsync(),
                 ];
 
                 return expectTransactionFailedAsync(
@@ -1012,9 +1014,9 @@ describe('Exchange wrappers', () => {
 
             it('should not fill a signedOrder that does not use the same makerAssetAddress', async () => {
                 signedOrders = [
-                    orderFactory.newSignedOrder(),
-                    orderFactory.newSignedOrder(),
-                    orderFactory.newSignedOrder({
+                    await orderFactory.newSignedOrderAsync(),
+                    await orderFactory.newSignedOrderAsync(),
+                    await orderFactory.newSignedOrderAsync({
                         makerAssetData: assetProxyUtils.encodeERC20AssetData(zrxToken.address),
                     }),
                 ];

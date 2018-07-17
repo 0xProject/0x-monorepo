@@ -95,7 +95,7 @@ describe('MixinSignatureValidator', () => {
 
     describe('isValidSignature', () => {
         beforeEach(async () => {
-            signedOrder = orderFactory.newSignedOrder();
+            signedOrder = await orderFactory.newSignedOrderAsync();
         });
 
         it('should revert when signature is empty', async () => {
