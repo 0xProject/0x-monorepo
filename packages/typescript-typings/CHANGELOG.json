@@ -1,5 +1,13 @@
 [
     {
+        "version": "0.4.3",
+        "changes": [
+            {
+                "note": "Add back ethers-contracts types for Aquaduct which relies on it"
+            }
+        ]
+    },
+    {
         "version": "0.4.2",
         "changes": [
             {
