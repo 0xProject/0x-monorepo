@@ -204,7 +204,7 @@ export class Wallet extends React.Component<WalletProps, WalletState> {
                 <AccountConnection accountState={accountState} injectedProviderName={this.props.injectedProviderName} />
             </div>
         );
-        const onClick = _.noop;
+        const onClick = _.noop.bind(_);
         const accessory = (
             <DropDown
                 activeNode={

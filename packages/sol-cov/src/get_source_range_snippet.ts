@@ -38,7 +38,7 @@ export function getSourceRangeSnippet(sourceRange: SourceRange, sourceCode: stri
 
 // A visitor which collects ASTInfo for most nodes in the AST.
 class ASTInfoVisitor {
-    private _astInfos: ASTInfo[] = [];
+    private readonly _astInfos: ASTInfo[] = [];
     public getASTInfoForRange(sourceRange: SourceRange): ASTInfo | null {
         // HACK(albrow): Sometimes the source range doesn't exactly match that
         // of astInfo. To work around that we try with a +/-1 offset on

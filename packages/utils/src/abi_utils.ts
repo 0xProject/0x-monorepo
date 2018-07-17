@@ -6,7 +6,7 @@ export const abiUtils = {
         if (param.type === 'tuple') {
             // Parse out tuple types into {type_1, type_2, ..., type_N}
             const tupleComponents = param.components;
-            const paramString = _.map(tupleComponents, component => this.parseFunctionParam(component));
+            const paramString = _.map(tupleComponents, component => abiUtils.parseFunctionParam(component));
             const tupleParamString = `{${paramString}}`;
             return tupleParamString;
         }
@@ -14,7 +14,7 @@ export const abiUtils = {
     },
     getFunctionSignature(methodAbi: MethodAbi): string {
         const functionName = methodAbi.name;
-        const parameterTypeList = _.map(methodAbi.inputs, (param: DataItem) => this.parseFunctionParam(param));
+        const parameterTypeList = _.map(methodAbi.inputs, (param: DataItem) => abiUtils.parseFunctionParam(param));
         const functionSignature = `${functionName}(${parameterTypeList})`;
         return functionSignature;
     },
@@ -37,7 +37,7 @@ export const abiUtils = {
         // Sort method Abis into alphabetical order, by function signature
         const methodAbisOrdered = _.sortBy(methodAbis, [
             (methodAbi: MethodAbi) => {
-                const functionSignature = this.getFunctionSignature(methodAbi);
+                const functionSignature = abiUtils.getFunctionSignature(methodAbi);
                 return functionSignature;
             },
         ]);

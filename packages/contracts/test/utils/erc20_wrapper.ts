@@ -13,11 +13,11 @@ import { ERC20BalancesByOwner } from './types';
 import { txDefaults } from './web3_wrapper';
 
 export class ERC20Wrapper {
-    private _tokenOwnerAddresses: string[];
-    private _contractOwnerAddress: string;
-    private _web3Wrapper: Web3Wrapper;
-    private _provider: Provider;
-    private _dummyTokenContracts: DummyERC20TokenContract[];
+    private readonly _tokenOwnerAddresses: string[];
+    private readonly _contractOwnerAddress: string;
+    private readonly _web3Wrapper: Web3Wrapper;
+    private readonly _provider: Provider;
+    private readonly _dummyTokenContracts: DummyERC20TokenContract[];
     private _proxyContract?: ERC20ProxyContract;
     private _proxyIdIfExists?: string;
     constructor(provider: Provider, tokenOwnerAddresses: string[], contractOwnerAddress: string) {

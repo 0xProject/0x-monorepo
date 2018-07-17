@@ -23,7 +23,7 @@ import { utils } from './utils';
  * It's used to compute your code coverage while running solidity tests.
  */
 export class CoverageSubprovider extends TraceInfoSubprovider {
-    private _coverageCollector: TraceCollector;
+    private readonly _coverageCollector: TraceCollector;
     /**
      * Instantiates a CoverageSubprovider instance
      * @param artifactAdapter Adapter for used artifacts format (0x, truffle, giveth, etc.)

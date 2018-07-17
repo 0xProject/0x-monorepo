@@ -13,7 +13,7 @@ import { isValidSignatureAsync } from './signature_utils';
 import { utils } from './utils';
 
 export class OrderValidationUtils {
-    private _orderFilledCancelledFetcher: AbstractOrderFilledCancelledFetcher;
+    private readonly _orderFilledCancelledFetcher: AbstractOrderFilledCancelledFetcher;
     public static isRoundingError(numerator: BigNumber, denominator: BigNumber, target: BigNumber): boolean {
         // Solidity's mulmod() in JS
         // Source: https://solidity.readthedocs.io/en/latest/units-and-global-variables.html#mathematical-and-cryptographic-functions

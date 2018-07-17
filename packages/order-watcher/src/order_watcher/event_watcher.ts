@@ -19,14 +19,14 @@ enum LogEventState {
  * depth.
  */
 export class EventWatcher {
-    private _web3Wrapper: Web3Wrapper;
+    private readonly _web3Wrapper: Web3Wrapper;
     private _blockAndLogStreamerIfExists: BlockAndLogStreamer<Block, Log> | undefined;
     private _blockAndLogStreamIntervalIfExists?: NodeJS.Timer;
     private _onLogAddedSubscriptionToken: string | undefined;
     private _onLogRemovedSubscriptionToken: string | undefined;
-    private _pollingIntervalMs: number;
-    private _stateLayer: BlockParamLiteral;
-    private _isVerbose: boolean;
+    private readonly _pollingIntervalMs: number;
+    private readonly _stateLayer: BlockParamLiteral;
+    private readonly _isVerbose: boolean;
     constructor(
         web3Wrapper: Web3Wrapper,
         pollingIntervalIfExistsMs: undefined | number,

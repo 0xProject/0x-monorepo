@@ -50,7 +50,7 @@ export class Web3Wrapper {
     public isZeroExWeb3Wrapper = true;
     public abiDecoder: AbiDecoder;
     private _provider: Provider;
-    private _txDefaults: Partial<TxData>;
+    private readonly _txDefaults: Partial<TxData>;
     private _jsonRpcRequestId: number;
     /**
      * Check if an address is a valid Ethereum address

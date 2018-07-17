@@ -10,8 +10,8 @@ import * as _ from 'lodash';
 const MINIMUM_BLOCKS = 3;
 
 export class BlockchainLifecycle {
-    private _web3Wrapper: Web3Wrapper;
-    private _snapshotIdsStack: number[];
+    private readonly _web3Wrapper: Web3Wrapper;
+    private readonly _snapshotIdsStack: number[];
     private _addresses: string[] = [];
     private _nodeType: NodeType | undefined;
     constructor(web3Wrapper: Web3Wrapper) {

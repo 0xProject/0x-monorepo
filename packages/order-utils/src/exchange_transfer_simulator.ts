@@ -34,7 +34,7 @@ const ERR_MSG_MAPPING = {
 };
 
 export class ExchangeTransferSimulator {
-    private _store: AbstractBalanceAndProxyAllowanceLazyStore;
+    private readonly _store: AbstractBalanceAndProxyAllowanceLazyStore;
     private static _throwValidationError(
         failureReason: FailureReason,
         tradeSide: TradeSide,

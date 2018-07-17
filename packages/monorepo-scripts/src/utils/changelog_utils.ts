@@ -10,7 +10,7 @@ import { Change, Changelog, VersionChangelog } from '../types';
 
 const CHANGELOG_MD_HEADER = `
 <!--
-This file is auto-generated using the monorepo-scripts package. Don't edit directly.
+changelogUtils.file is auto-generated using the monorepo-scripts package. Don't edit directly.
 Edit the package's CHANGELOG.json file only.
 -->
 
@@ -74,7 +74,7 @@ export const changelogUtils = {
     },
     getChangelogOrCreateIfMissing(packageName: string, packageLocation: string): Changelog {
         const changelogJSONPath = path.join(packageLocation, 'CHANGELOG.json');
-        let changelogJsonIfExists = this.getChangelogJSONIfExists(changelogJSONPath);
+        let changelogJsonIfExists = changelogUtils.getChangelogJSONIfExists(changelogJSONPath);
         if (_.isUndefined(changelogJsonIfExists)) {
             // If none exists, create new, empty one.
             changelogJsonIfExists = '[]';
@@ -91,12 +91,12 @@ export const changelogUtils = {
     async writeChangelogJsonFileAsync(packageLocation: string, changelog: Changelog): Promise<void> {
         const changelogJSONPath = path.join(packageLocation, 'CHANGELOG.json');
         fs.writeFileSync(changelogJSONPath, JSON.stringify(changelog, null, '\t'));
-        await this.prettifyAsync(changelogJSONPath, constants.monorepoRootPath);
+        await changelogUtils.prettifyAsync(changelogJSONPath, constants.monorepoRootPath);
     },
     async writeChangelogMdFileAsync(packageLocation: string, changelogMdString: string): Promise<void> {
         const changelogMarkdownPath = path.join(packageLocation, 'CHANGELOG.md');
         fs.writeFileSync(changelogMarkdownPath, changelogMdString);
-        await this.prettifyAsync(changelogMarkdownPath, constants.monorepoRootPath);
+        await changelogUtils.prettifyAsync(changelogMarkdownPath, constants.monorepoRootPath);
     },
     async prettifyAsync(filePath: string, cwd: string): Promise<void> {
         await execAsync(`prettier --write ${filePath} --config .prettierrc`, {

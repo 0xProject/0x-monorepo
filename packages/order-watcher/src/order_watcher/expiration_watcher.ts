@@ -13,10 +13,10 @@ const DEFAULT_ORDER_EXPIRATION_CHECKING_INTERVAL_MS = 50;
  * It stores them in a min heap by expiration time and checks for expired ones every `orderExpirationCheckingIntervalMs`
  */
 export class ExpirationWatcher {
-    private _orderHashByExpirationRBTree: RBTree<string>;
-    private _expiration: { [orderHash: string]: BigNumber } = {};
-    private _orderExpirationCheckingIntervalMs: number;
-    private _expirationMarginMs: number;
+    private readonly _orderHashByExpirationRBTree: RBTree<string>;
+    private readonly _expiration: { [orderHash: string]: BigNumber } = {};
+    private readonly _orderExpirationCheckingIntervalMs: number;
+    private readonly _expirationMarginMs: number;
     private _orderExpirationCheckingIntervalIdIfExists?: NodeJS.Timer;
     constructor(expirationMarginIfExistsMs?: number, orderExpirationCheckingIntervalIfExistsMs?: number) {
         this._orderExpirationCheckingIntervalMs =
@@ -44,7 +44,7 @@ export class ExpirationWatcher {
         this._orderExpirationCheckingIntervalIdIfExists = intervalUtils.setInterval(
             this._pruneExpiredOrders.bind(this, callback),
             this._orderExpirationCheckingIntervalMs,
-            _.noop, // _pruneExpiredOrders never throws
+            _.noop.bind(_), // _pruneExpiredOrders never throws
         );
     }
     public unsubscribe(): void {

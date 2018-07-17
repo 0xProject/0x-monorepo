@@ -26,7 +26,7 @@ export const Overlay: React.StatelessComponent<OverlayProps> = props => (
 
 Overlay.defaultProps = {
     style: {},
-    onClick: _.noop,
+    onClick: _.noop.bind(_),
 };
 
 Overlay.displayName = 'Overlay';

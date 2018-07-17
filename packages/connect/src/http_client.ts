@@ -38,7 +38,7 @@ const OPTS_TO_QUERY_FIELD_MAP = {
  * that implement the standard relayer API v0
  */
 export class HttpClient implements Client {
-    private _apiEndpointUrl: string;
+    private readonly _apiEndpointUrl: string;
     /**
      * Format parameters to be appended to http requests into query string form
      */

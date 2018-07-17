@@ -29,7 +29,7 @@ describe('WebSocketOrderbookChannel', () => {
     const websocketUrl = 'ws://localhost:8080';
     const openClient = new WebSocket.w3cwebsocket(websocketUrl);
     Sinon.stub(openClient, 'readyState').get(() => WebSocket.w3cwebsocket.OPEN);
-    Sinon.stub(openClient, 'send').callsFake(_.noop);
+    Sinon.stub(openClient, 'send').callsFake(_.noop.bind(_));
     const openOrderbookChannel = new WebSocketOrderbookChannel(openClient, emptyOrderbookChannelHandler);
     const subscriptionOpts = {
         baseTokenAddress: '0x323b5d4c32345ced77393b3530b1eed0f346429d',

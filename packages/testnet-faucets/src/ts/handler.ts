@@ -37,7 +37,7 @@ enum RequestedAssetType {
 const FIVE_DAYS_IN_MS = 4.32e8; // TODO: make this configurable
 
 export class Handler {
-    private _networkConfigByNetworkId: ItemByNetworkId<NetworkConfig> = {};
+    private readonly _networkConfigByNetworkId: ItemByNetworkId<NetworkConfig> = {};
     private static _createProviderEngine(rpcUrl: string): Provider {
         if (_.isUndefined(configs.DISPENSER_PRIVATE_KEY)) {
             throw new Error('Dispenser Private key not found');

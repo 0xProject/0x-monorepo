@@ -14,9 +14,9 @@ export const U2fNotSupportedDialog = (props: U2fNotSupportedDialogProps) => {
         <Dialog
             title="U2F Not Supported"
             titleStyle={{ fontWeight: 100 }}
-            actions={[<FlatButton key="u2fNo" label="Ok" onTouchTap={props.onToggleDialog.bind(this)} />]}
+            actions={[<FlatButton key="u2fNo" label="Ok" onTouchTap={props.onToggleDialog} />]}
             open={props.isOpen}
-            onRequestClose={props.onToggleDialog.bind(this)}
+            onRequestClose={props.onToggleDialog}
             autoScrollBodyContent={true}
         >
             <div className="pt2" style={{ color: colors.grey700 }}>

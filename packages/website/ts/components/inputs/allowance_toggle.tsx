@@ -57,7 +57,7 @@ const styles: Styles = {
 
 export class AllowanceToggle extends React.Component<AllowanceToggleProps, AllowanceToggleState> {
     public static defaultProps = {
-        onErrorOccurred: _.noop,
+        onErrorOccurred: _.noop.bind(_),
         isDisabled: false,
     };
     constructor(props: AllowanceToggleProps) {

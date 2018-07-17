@@ -12,6 +12,6 @@ export const assert = {
     ...sharedAssert,
     isValidSignature(orderHash: string, ecSignature: ECSignature, signerAddress: string): void {
         const isValid = isValidSignature(orderHash, ecSignature, signerAddress);
-        this.assert(isValid, `Expected order with hash '${orderHash}' to have a valid signature`);
+        assert.assert(isValid, `Expected order with hash '${orderHash}' to have a valid signature`);
     },
 };

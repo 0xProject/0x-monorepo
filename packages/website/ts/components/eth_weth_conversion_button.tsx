@@ -37,7 +37,7 @@ export class EthWethConversionButton extends React.Component<
 > {
     public static defaultProps: Partial<EthWethConversionButtonProps> = {
         isDisabled: false,
-        onConversionSuccessful: _.noop,
+        onConversionSuccessful: _.noop.bind(_),
     };
     public constructor(props: EthWethConversionButtonProps) {
         super(props);

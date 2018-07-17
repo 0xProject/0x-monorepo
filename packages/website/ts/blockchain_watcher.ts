@@ -4,9 +4,9 @@ import * as _ from 'lodash';
 import { Dispatcher } from 'ts/redux/dispatcher';
 
 export class BlockchainWatcher {
-    private _dispatcher: Dispatcher;
-    private _web3Wrapper: Web3Wrapper;
-    private _shouldPollUserAddress: boolean;
+    private readonly _dispatcher: Dispatcher;
+    private readonly _web3Wrapper: Web3Wrapper;
+    private readonly _shouldPollUserAddress: boolean;
     private _watchBalanceIntervalId: NodeJS.Timer;
     private _prevUserEtherBalanceInWei?: BigNumber;
     private _prevUserAddressIfExists: string;

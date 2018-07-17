@@ -18,8 +18,8 @@ import { utils } from './utils';
 export class RevertTraceSubprovider extends TraceCollectionSubprovider {
     // Lock is used to not accept normal transactions while doing call/snapshot magic because they'll be reverted later otherwise
     private _contractsData!: ContractData[];
-    private _artifactAdapter: AbstractArtifactAdapter;
-    private _logger: Logger;
+    private readonly _artifactAdapter: AbstractArtifactAdapter;
+    private readonly _logger: Logger;
 
     /**
      * Instantiates a RevertTraceSubprovider instance

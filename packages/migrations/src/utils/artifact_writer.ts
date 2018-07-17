@@ -4,8 +4,8 @@ import * as fs from 'fs';
 import * as path from 'path';
 
 export class ArtifactWriter {
-    private _artifactsDir: string;
-    private _networkId: number;
+    private readonly _artifactsDir: string;
+    private readonly _networkId: number;
     constructor(artifactsDir: string, networkId: number) {
         this._artifactsDir = artifactsDir;
         this._networkId = networkId;

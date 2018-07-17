@@ -17,7 +17,7 @@ export const trackedTokenStorage = {
         localStorage.setItem(TRACKED_TOKENS_CLEAR_KEY, configs.LAST_LOCAL_STORAGE_TRACKED_TOKEN_CLEARANCE_DATE);
     },
     addTrackedTokenToUser(userAddress: string, networkId: number, token: Token): void {
-        const trackedTokensByUserAddress = this.getTrackedTokensByUserAddress();
+        const trackedTokensByUserAddress = trackedTokenStorage.getTrackedTokensByUserAddress();
         let trackedTokensByNetworkId = trackedTokensByUserAddress[userAddress];
         if (_.isUndefined(trackedTokensByNetworkId)) {
             trackedTokensByNetworkId = {};
@@ -57,7 +57,7 @@ export const trackedTokenStorage = {
         return trackedTokensByAddress;
     },
     removeTrackedToken(userAddress: string, networkId: number, tokenAddress: string): void {
-        const trackedTokensByUserAddress = this.getTrackedTokensByUserAddress();
+        const trackedTokensByUserAddress = trackedTokenStorage.getTrackedTokensByUserAddress();
         const trackedTokensByNetworkId = trackedTokensByUserAddress[userAddress];
         const trackedTokens = trackedTokensByNetworkId[networkId];
         const remainingTrackedTokens = _.filter(trackedTokens, (token: Token) => {

@@ -6,7 +6,7 @@ import { ContractSource } from '../types';
 import { Resolver } from './resolver';
 
 export class RelativeFSResolver extends Resolver {
-    private _contractsDir: string;
+    private readonly _contractsDir: string;
     constructor(contractsDir: string) {
         super();
         this._contractsDir = contractsDir;
