@@ -163,15 +163,12 @@ contract MixinAssets is
         // Decode asset data.
         address token = assetData.readAddress(16);
         uint256 tokenId = assetData.readUint256(36);
-        bytes memory receiverData = assetData.readBytesWithLength(100);
 
         // Perform transfer.
-        // TODO: Do we want to use `transferFrom` here?
-        IERC721Token(token).safeTransferFrom(
+        IERC721Token(token).transferFrom(
             address(this),
             msg.sender,
-            tokenId,
-            receiverData
+            tokenId
         );
     }
 }

@@ -18,7 +18,6 @@ import { constants } from '../utils/constants';
 import { ERC20Wrapper } from '../utils/erc20_wrapper';
 import { ERC721Wrapper } from '../utils/erc721_wrapper';
 import { ExchangeWrapper } from '../utils/exchange_wrapper';
-import { formatters } from '../utils/formatters';
 import { ForwarderWrapper } from '../utils/forwarder_wrapper';
 import { OrderFactory } from '../utils/order_factory';
 import { ContractName, ERC20BalancesByOwner } from '../utils/types';
