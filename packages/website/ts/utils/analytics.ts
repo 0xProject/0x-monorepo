@@ -1,27 +1,83 @@
 import * as _ from 'lodash';
-import * as ReactGA from 'react-ga';
-import { InjectedWeb3 } from 'ts/types';
-import { configs } from 'ts/utils/configs';
+import { ObjectMap, Order } from 'ts/types';
 import { utils } from 'ts/utils/utils';
 
-export const analytics = {
-    init(): void {
-        ReactGA.initialize(configs.GOOGLE_ANALYTICS_ID);
-    },
-    logEvent(category: string, action: string, label: string, value?: any): void {
-        ReactGA.event({
-            category,
-            action,
-            label,
-            value,
-        });
-    },
-    async logProviderAsync(web3IfExists: InjectedWeb3): Promise<void> {
-        await utils.onPageLoadAsync();
-        const providerType =
-            !_.isUndefined(web3IfExists) && !_.isUndefined(web3IfExists.currentProvider)
-                ? utils.getProviderType(web3IfExists.currentProvider)
-                : 'NONE';
-        ReactGA.ga('set', 'dimension1', providerType);
-    },
-};
+export interface HeapAnalytics {
+    loaded: boolean;
+    identify(id: string, idType: string): void;
+    track(eventName: string, eventProperties?: ObjectMap<string | number>): void;
+    resetIdentity(): void;
+    addUserProperties(properties: ObjectMap<string | number>): void;
+    addEventProperties(properties: ObjectMap<string | number>): void;
+    removeEventProperty(property: string): void;
+    clearEventProperties(): void;
+}
+export class Analytics {
+    private _heap: HeapAnalytics;
+    public static init(): Analytics {
+        return new Analytics(Analytics.getHeap());
+    }
+    public static getHeap(): HeapAnalytics {
+        const heap = (window as any).heap;
+        if (!_.isUndefined(heap)) {
+            return heap;
+        } else {
+            throw new Error('Could not find the Heap SDK on the page.');
+        }
+    }
+    constructor(heap: HeapAnalytics) {
+        this._heap = heap;
+    }
+    // tslint:disable:no-floating-promises
+    // HeapAnalytics Wrappers
+    public identify(id: string, idType: string): void {
+        this._heapLoadedGuardAsync(() => this._heap.identify(id, idType));
+    }
+    public track(eventName: string, eventProperties?: ObjectMap<string | number>): void {
+        this._heapLoadedGuardAsync(() => this._heap.track(eventName, eventProperties));
+    }
+    public resetIdentity(): void {
+        this._heapLoadedGuardAsync(() => this._heap.resetIdentity());
+    }
+    public addUserProperties(properties: ObjectMap<string | number>): void {
+        this._heapLoadedGuardAsync(() => this._heap.addUserProperties(properties));
+    }
+    public addEventProperties(properties: ObjectMap<string | number>): void {
+        this._heapLoadedGuardAsync(() => this._heap.addEventProperties(properties));
+    }
+    public removeEventProperty(property: string): void {
+        this._heapLoadedGuardAsync(() => this._heap.removeEventProperty(property));
+    }
+    public clearEventProperties(): void {
+        this._heapLoadedGuardAsync(() => this._heap.clearEventProperties());
+    }
+    // tslint:enable:no-floating-promises
+    // Custom methods
+    public trackOrderEvent(eventName: string, order: Order): void {
+        const orderLoggingData = {
+            takerTokenAmount: order.signedOrder.takerTokenAmount,
+            makeTokenAmount: order.signedOrder.makerTokenAmount,
+            takerToken: order.metadata.takerToken.symbol,
+            makerToken: order.metadata.makerToken.symbol,
+        };
+        this.track(eventName, orderLoggingData);
+    }
+    /**
+     * Heap is not available as a UMD module, and additionally has the strange property of replacing itself with
+     * a different object once it's loaded.
+     * Instead of having an await call before every analytics use, we opt to have the awaiting logic in here by
+     * guarding every API call with the guard below.
+     */
+    private async _heapLoadedGuardAsync(callback: () => void): Promise<void> {
+        if (this._heap.loaded) {
+            callback();
+            return undefined;
+        }
+        await utils.onPageLoadPromise;
+        // HACK: Reset heap to loaded heap
+        this._heap = (window as any).heap;
+        callback();
+    }
+}
+
+export const analytics = Analytics.init();
