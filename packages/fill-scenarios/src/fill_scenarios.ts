@@ -130,12 +130,13 @@ export class FillScenarios {
             'exchangeAddress',
         ]) as OrderWithoutExchangeAddress;
 
-        await exchangeInstance.fillOrder.sendTransactionAsync(
+        const txHash = await exchangeInstance.fillOrder.sendTransactionAsync(
             orderWithoutExchangeAddress,
             partialFillAmount,
             signedOrder.signature,
             { from: takerAddress },
         );
+        await this._web3Wrapper.awaitTransactionSuccessAsync(txHash, constants.AWAIT_TRANSACTION_MINED_MS);
         return signedOrder;
     }
     private async _createAsymmetricFillableSignedOrderWithFeesAsync(
@@ -224,7 +225,7 @@ export class FillScenarios {
         const txHash = await erc721Token.setApprovalForAll.sendTransactionAsync(this._erc721ProxyAddress, isApproved, {
             from: address,
         });
-        await this._web3Wrapper.awaitTransactionSuccessAsync(txHash);
+        await this._web3Wrapper.awaitTransactionSuccessAsync(txHash, constants.AWAIT_TRANSACTION_MINED_MS);
     }
     private async _increaseERC721BalanceAsync(
         tokenAddress: string,
@@ -238,7 +239,7 @@ export class FillScenarios {
             this._web3Wrapper.getContractDefaults(),
         );
         const txHash = await erc721Token.mint.sendTransactionAsync(address, tokenId, { from: this._coinbase });
-        await this._web3Wrapper.awaitTransactionSuccessAsync(txHash);
+        await this._web3Wrapper.awaitTransactionSuccessAsync(txHash, constants.AWAIT_TRANSACTION_MINED_MS);
     }
     private async _increaseERC20BalanceAndAllowanceAsync(
         tokenAddress: string,
@@ -260,9 +261,10 @@ export class FillScenarios {
             this._web3Wrapper.getProvider(),
             this._web3Wrapper.getContractDefaults(),
         );
-        await erc20Token.transfer.sendTransactionAsync(address, amount, {
+        const txHash = await erc20Token.transfer.sendTransactionAsync(address, amount, {
             from: this._coinbase,
         });
+        await this._web3Wrapper.awaitTransactionSuccessAsync(txHash, constants.AWAIT_TRANSACTION_MINED_MS);
     }
     private async _increaseERC20AllowanceAsync(
         tokenAddress: string,
@@ -278,8 +280,9 @@ export class FillScenarios {
         const oldMakerAllowance = await erc20Token.allowance.callAsync(address, this._erc20ProxyAddress);
         const newMakerAllowance = oldMakerAllowance.plus(amount);
 
-        await erc20Token.approve.sendTransactionAsync(this._erc20ProxyAddress, newMakerAllowance, {
+        const txHash = await erc20Token.approve.sendTransactionAsync(this._erc20ProxyAddress, newMakerAllowance, {
             from: address,
         });
+        await this._web3Wrapper.awaitTransactionSuccessAsync(txHash, constants.AWAIT_TRANSACTION_MINED_MS);
     }
 }
