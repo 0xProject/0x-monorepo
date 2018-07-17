@@ -153,19 +153,15 @@ export class OrderWatcher {
         this._orderByOrderHash[orderHash] = signedOrder;
         this._dependentOrderHashesTracker.addToDependentOrderHashes(signedOrder);
 
-        const decodedMakerAssetData = assetProxyUtils.decodeAssetDataOrThrow(signedOrder.makerAssetData);
-        if (decodedMakerAssetData.assetProxyId === AssetProxyId.ERC20) {
-            this._collisionResistantAbiDecoder.addERC20Token(decodedMakerAssetData.tokenAddress);
-        } else if (decodedMakerAssetData.assetProxyId === AssetProxyId.ERC721) {
-            this._collisionResistantAbiDecoder.addERC721Token(decodedMakerAssetData.tokenAddress);
-        }
-
-        const decodedTakerAssetData = assetProxyUtils.decodeAssetDataOrThrow(signedOrder.takerAssetData);
-        if (decodedTakerAssetData.assetProxyId === AssetProxyId.ERC20) {
-            this._collisionResistantAbiDecoder.addERC20Token(decodedTakerAssetData.tokenAddress);
-        } else if (decodedTakerAssetData.assetProxyId === AssetProxyId.ERC721) {
-            this._collisionResistantAbiDecoder.addERC721Token(decodedTakerAssetData.tokenAddress);
-        }
+        const orderAssetDatas = [signedOrder.makerAssetData, signedOrder.takerAssetData];
+        _.each(orderAssetDatas, assetData => {
+            const decodedAssetData = assetProxyUtils.decodeAssetData(assetData);
+            if (decodedAssetData.assetProxyId === AssetProxyId.ERC20) {
+                this._collisionResistantAbiDecoder.addERC20Token(decodedAssetData.tokenAddress);
+            } else if (decodedAssetData.assetProxyId === AssetProxyId.ERC721) {
+                this._collisionResistantAbiDecoder.addERC721Token(decodedAssetData.tokenAddress);
+            }
+        });
     }
     /**
      * Removes an order from the orderWatcher
