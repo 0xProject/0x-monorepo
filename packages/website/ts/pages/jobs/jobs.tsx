@@ -54,14 +54,7 @@ export class Jobs extends React.Component<JobsProps, JobsState> {
                 />
                 <Join0x onCallToActionClick={this._onJoin0xCallToActionClick.bind(this)} />
                 <Mission screenWidth={this.props.screenWidth} />
-                {this._isSmallScreen() ? (
-                    <FilledImage src={_.head(PHOTO_RAIL_IMAGES)} />
-                ) : (
-                    <PhotoRail images={PHOTO_RAIL_IMAGES} />
-                )}
-                <Values />
                 <Benefits screenWidth={this.props.screenWidth} />
-                <Teams screenWidth={this.props.screenWidth} />
                 <OpenPositions hash={OPEN_POSITIONS_HASH} screenWidth={this.props.screenWidth} />
                 <Footer translate={this.props.translate} dispatcher={this.props.dispatcher} />
             </div>
