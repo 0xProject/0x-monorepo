@@ -29,10 +29,6 @@ contract MixinWeth is
     MWeth
 {
 
-    uint256 constant internal PERCENTAGE_DENOMINATOR = 10**18; 
-    uint256 constant internal MAX_FEE_PERCENTAGE = 5 * PERCENTAGE_DENOMINATOR / 100;         // 5%
-    uint256 constant internal MAX_WETH_FILL_PERCENTAGE = 95 * PERCENTAGE_DENOMINATOR / 100;  // 95%
-
     /// @dev Default payabale function, this allows us to withdraw WETH
     function ()
         public
@@ -45,23 +41,14 @@ contract MixinWeth is
     }
 
     /// @dev Converts message call's ETH value into WETH.
-    /// @return 95% of ETH converted to WETH.
     function convertEthToWeth()
         internal
-        returns (uint256 wethAvailable)
     {
         require(
             msg.value > 0,
             "INVALID_MSG_VALUE"
         );
-
         ETHER_TOKEN.deposit.value(msg.value)();
-        wethAvailable = getPartialAmount(
-            MAX_WETH_FILL_PERCENTAGE,
-            PERCENTAGE_DENOMINATOR,
-            msg.value
-        );
-        return wethAvailable;
     }
 
     /// @dev Transfers feePercentage of WETH spent on primary orders to feeRecipient.

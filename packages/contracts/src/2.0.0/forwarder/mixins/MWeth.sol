@@ -22,10 +22,8 @@ pragma solidity 0.4.24;
 contract MWeth {
 
     /// @dev Converts message call's ETH value into WETH.
-    /// @return 95% of ETH converted to WETH.
     function convertEthToWeth()
-        internal
-        returns (uint256 wethAvailable);
+        internal;
 
     /// @dev Transfers feePercentage of WETH spent on primary orders to feeRecipient.
     ///      Refunds any excess ETH to msg.sender.

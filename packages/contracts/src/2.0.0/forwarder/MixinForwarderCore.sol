@@ -23,6 +23,7 @@ import "./mixins/MWeth.sol";
 import "./mixins/MAssets.sol";
 import "./mixins/MConstants.sol";
 import "./mixins/MForwarderCore.sol";
+import "../utils/LibBytes/LibBytes.sol";
 import "../protocol/Exchange/libs/LibOrder.sol";
 import "../protocol/Exchange/libs/LibFillResults.sol";
 import "../protocol/Exchange/libs/LibMath.sol";
@@ -36,6 +37,8 @@ contract MixinForwarderCore is
     MAssets,
     MForwarderCore
 {
+
+    using LibBytes for bytes;
 
     /// @dev Constructor approves ERC20 proxy to transfer ZRX and WETH on this contract's behalf.
     constructor ()
@@ -74,24 +77,54 @@ contract MixinForwarderCore is
             FillResults memory feeOrderFillResults
         )
     {
+        require(
+            orders.length > 0,
+            "INVALID_ORDERS_LENGTH"
+        );
+
         // Convert ETH to WETH.
-        // 5% of WETH is reserved for filling feeOrders and paying feeRecipient.
-        uint256 wethAvailable = convertEthToWeth();
+        convertEthToWeth();
 
-        // Attempt to sell 95% of WETH.
-        // ZRX fees are payed with this contract's balance.
-        orderFillResults = marketSellWeth(
-            orders,
-            wethAvailable,
-            signatures
-        );
-
-        // Buy back all ZRX spent on fees.
-        feeOrderFillResults = marketBuyZrx(
-            feeOrders,
-            orderFillResults.takerFeePaid,
-            feeSignatures
-        );
+        uint256 makerAssetAmountPurchased;
+        uint256 wethAvailable;
+        if (orders[0].makerAssetData.equals(ZRX_ASSET_DATA)) {
+            // Calculate amount of WETH that won't be spent on ETH fees.
+            wethAvailable = getPartialAmount(
+                PERCENTAGE_DENOMINATOR,
+                safeAdd(PERCENTAGE_DENOMINATOR, feePercentage),
+                msg.value
+            );
+            // Market sell available WETH.
+            // ZRX fees are paid with this contract's balance.
+            orderFillResults = marketSellWeth(
+                orders,
+                wethAvailable,
+                signatures
+            );
+            // The fee amount must be deducted from the amount transfered back to sender.
+            makerAssetAmountPurchased = safeSub(orderFillResults.makerAssetFilledAmount, orderFillResults.takerFeePaid);
+        } else {
+            // 5% of WETH is reserved for filling feeOrders and paying feeRecipient.
+            wethAvailable = getPartialAmount(
+                MAX_WETH_FILL_PERCENTAGE,
+                PERCENTAGE_DENOMINATOR,
+                msg.value
+            );
+            // Market sell 95% of WETH.
+            // ZRX fees are payed with this contract's balance.
+            orderFillResults = marketSellWeth(
+                orders,
+                wethAvailable,
+                signatures
+            );
+            // Buy back all ZRX spent on fees.
+            feeOrderFillResults = marketBuyZrx(
+                feeOrders,
+                orderFillResults.takerFeePaid,
+                feeSignatures
+            );
+            makerAssetAmountPurchased = orderFillResults.makerAssetFilledAmount;
+        }
 
         // Ensure that no extra WETH owned by this contract has been sold.
         uint256 totalWethSold = safeAdd(orderFillResults.takerAssetFilledAmount, feeOrderFillResults.takerAssetFilledAmount);
@@ -110,7 +143,7 @@ contract MixinForwarderCore is
         );
 
         // Transfer purchased assets to msg.sender.
-        transferPurchasedAssetToSender(orders[0].makerAssetData, orderFillResults.makerAssetFilledAmount);
+        transferPurchasedAssetToSender(orders[0].makerAssetData, makerAssetAmountPurchased);
     }
 
     /// @dev Attempt to purchase makerAssetFillAmount of makerAsset by selling ETH provided with transaction.
@@ -140,23 +173,41 @@ contract MixinForwarderCore is
             FillResults memory feeOrderFillResults
         )
     {
+        require(
+            orders.length > 0,
+            "INVALID_ORDERS_LENGTH"
+        );
+
         // Convert ETH to WETH.
         convertEthToWeth();
 
-        // Attemp to purchase desired amount of makerAsset.
-        // ZRX fees are payed with this contract's balance.
-        orderFillResults = marketBuyAsset(
-            orders,
-            makerAssetFillAmount,
-            signatures
-        );
-
-        // Buy back all ZRX spent on fees.
-        feeOrderFillResults = marketBuyZrx(
-            feeOrders,
-            orderFillResults.takerFeePaid,
-            feeSignatures
-        );
+        uint256 makerAssetAmountPurchased;
+        if (orders[0].makerAssetData.equals(ZRX_ASSET_DATA)) {
+            // If the makerAsset is ZRX, it is not necessary to pay fees out of this
+            // contracts's ZRX balance because fees are factored into the price of the order.
+            orderFillResults = marketBuyZrx(
+                orders,
+                makerAssetFillAmount,
+                signatures
+            );
+            // The fee amount must be deducted from the amount transfered back to sender.
+            makerAssetAmountPurchased = safeSub(orderFillResults.makerAssetFilledAmount, orderFillResults.takerFeePaid);
+        } else {
+            // Attemp to purchase desired amount of makerAsset.
+            // ZRX fees are payed with this contract's balance.
+            orderFillResults = marketBuyAsset(
+                orders,
+                makerAssetFillAmount,
+                signatures
+            );
+            // Buy back all ZRX spent on fees.
+            feeOrderFillResults = marketBuyZrx(
+                feeOrders,
+                orderFillResults.takerFeePaid,
+                feeSignatures
+            );
+            makerAssetAmountPurchased = orderFillResults.makerAssetFilledAmount;
+        }
 
         // Ensure that no extra WETH owned by this contract has been sold.
         uint256 totalWethSold = safeAdd(orderFillResults.takerAssetFilledAmount, feeOrderFillResults.takerAssetFilledAmount);
@@ -175,7 +226,7 @@ contract MixinForwarderCore is
         );
 
         // Transfer purchased assets to msg.sender.
-        transferPurchasedAssetToSender(orders[0].makerAssetData, orderFillResults.makerAssetFilledAmount);
+        transferPurchasedAssetToSender(orders[0].makerAssetData, makerAssetAmountPurchased);
     }
 
     /// @param orders Array of order specifications used containing desired makerAsset and WETH as takerAsset. 
@@ -280,7 +331,7 @@ contract MixinForwarderCore is
                 // Attempt to sell the remaining amount of WETH.
                 FillResults memory singleFillResult = EXCHANGE.fillOrderNoThrow(
                     orders[i],
-                    remainingWethSellAmount,
+                    safeAdd(remainingWethSellAmount, 1),
                     signatures[i]
                 );
 
@@ -289,14 +340,14 @@ contract MixinForwarderCore is
                 zrxPurchased = safeSub(totalFillResults.makerAssetFilledAmount, totalFillResults.takerFeePaid);
 
                 // Stop execution if the entire amount of ZRX has been bought.
-                if (zrxPurchased == zrxBuyAmount) {
+                if (zrxPurchased >= zrxBuyAmount) {
                     break;
                 }
             }
 
             // Ensure that all ZRX spent while filling primary orders has been repurchased.
             require(
-                zrxPurchased == zrxBuyAmount,
+                zrxPurchased >= zrxBuyAmount,
                 "COMPLETE_FILL_FAILED"
             );
         }
