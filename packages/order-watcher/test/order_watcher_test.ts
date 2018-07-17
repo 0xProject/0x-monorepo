@@ -541,7 +541,7 @@ describe('OrderWatcher', () => {
             [makerErc721TokenAddress] = tokenUtils.getDummyERC721TokenAddresses();
             makerErc721AssetData = assetProxyUtils.encodeERC721AssetData(makerErc721TokenAddress, tokenId);
             const fillableErc721Amount = new BigNumber(1);
-            it('should emit orderStateInvalid when makerAddress allowance for all set to 0 for watched order', (done: DoneCallback) => {
+            it('should emit orderStateInvalid when maker allowance for all set to 0 for watched order', (done: DoneCallback) => {
                 (async () => {
                     signedOrder = await fillScenarios.createFillableSignedOrderAsync(
                         makerErc721AssetData,
@@ -567,7 +567,7 @@ describe('OrderWatcher', () => {
                     );
                 })().catch(done);
             });
-            it('should emit orderStateInvalid when makerAddress moves NFT backing watched order', (done: DoneCallback) => {
+            it('should emit orderStateInvalid when maker moves NFT backing watched order', (done: DoneCallback) => {
                 (async () => {
                     signedOrder = await fillScenarios.createFillableSignedOrderAsync(
                         makerErc721AssetData,
