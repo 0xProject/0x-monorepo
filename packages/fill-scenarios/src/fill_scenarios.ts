@@ -212,17 +212,20 @@ export class FillScenarios {
         tokenId: BigNumber,
     ): Promise<void> {
         await this._increaseERC721BalanceAsync(tokenAddress, address, tokenId);
-        await this._increaseERC721AllowanceAsync(tokenAddress, address);
+        await this._increaseERC721AllowanceAsync(tokenAddress, address, tokenId);
     }
-    private async _increaseERC721AllowanceAsync(tokenAddress: string, address: string): Promise<void> {
+    private async _increaseERC721AllowanceAsync(
+        tokenAddress: string,
+        address: string,
+        tokenId: BigNumber,
+    ): Promise<void> {
         const erc721Token = new DummyERC721TokenContract(
             artifacts.DummyERC721Token.compilerOutput.abi,
             tokenAddress,
             this._web3Wrapper.getProvider(),
             this._web3Wrapper.getContractDefaults(),
         );
-        const isApproved = true;
-        const txHash = await erc721Token.setApprovalForAll.sendTransactionAsync(this._erc721ProxyAddress, isApproved, {
+        const txHash = await erc721Token.approve.sendTransactionAsync(this._erc721ProxyAddress, tokenId, {
             from: address,
         });
         await this._web3Wrapper.awaitTransactionSuccessAsync(txHash, constants.AWAIT_TRANSACTION_MINED_MS);
