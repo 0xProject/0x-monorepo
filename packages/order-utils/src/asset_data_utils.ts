@@ -1,17 +1,10 @@
 import { AssetProxyId, ERC20AssetData, ERC721AssetData } from '@0xproject/types';
 import { BigNumber } from '@0xproject/utils';
 import BN = require('bn.js');
+import ethAbi = require('ethereumjs-abi');
 import ethUtil = require('ethereumjs-util');
 
 import { constants } from './constants';
-
-// TODO: Push upstream to DefinitelyTyped
-interface EthAbi {
-    simpleEncode(signature: string, ...args: any[]): Buffer;
-    rawDecode(signature: string[], data: Buffer): any[];
-}
-// tslint:disable:no-var-requires
-const ethAbi = require('ethereumjs-abi') as EthAbi;
 
 export const assetDataUtils = {
     encodeUint256(value: BigNumber): Buffer {
