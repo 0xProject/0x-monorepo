@@ -30,7 +30,7 @@ export class EventWatcher {
     constructor(
         web3Wrapper: Web3Wrapper,
         pollingIntervalIfExistsMs: undefined | number,
-        stateLayer: BlockParamLiteral = BlockParamLiteral.Latest,
+        stateLayer: BlockParamLiteral,
         isVerbose: boolean,
     ) {
         this._isVerbose = isVerbose;

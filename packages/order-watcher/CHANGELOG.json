@@ -13,6 +13,10 @@
             {
                 "note": "Fixed a bug that caused the incorrect block to be fetched via JSON-RPC within Blockstream",
                 "pr": 875
+            },
+            {
+                "note": "Remove stateLayer config from OrderWatcher. It now always operates on the latest block",
+                "pr": 875
             }
         ],
         "timestamp": 1531149657

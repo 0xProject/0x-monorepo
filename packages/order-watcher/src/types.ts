@@ -13,10 +13,8 @@ export type EventWatcherCallback = (err: null | Error, log?: LogEntryEvent) => v
  * expirationMarginMs: Amount of time before order expiry that you'd like to be notified
  * of an orders expiration. Default=0.
  * cleanupJobIntervalMs: How often to run a cleanup job which revalidates all the orders. Default=1hr.
- * stateLayer: Optional blockchain state layer OrderWatcher will monitor for new events. Default=latest.
  */
 export interface OrderWatcherConfig {
-    stateLayer: BlockParamLiteral;
     orderExpirationCheckingIntervalMs?: number;
     eventPollingIntervalMs?: number;
     expirationMarginMs?: number;
