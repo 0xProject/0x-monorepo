@@ -1,5 +1,5 @@
 import { BlockchainLifecycle } from '@0xproject/dev-utils';
-import { assetProxyUtils } from '@0xproject/order-utils';
+import { assetProxyUtils, orderHashUtils } from '@0xproject/order-utils';
 import { RevertReason, SignedOrder } from '@0xproject/types';
 import { BigNumber } from '@0xproject/utils';
 import { Web3Wrapper } from '@0xproject/web3-wrapper';
@@ -13,14 +13,14 @@ import { ERC721ProxyContract } from '../../generated_contract_wrappers/erc721_pr
 import { ExchangeContract } from '../../generated_contract_wrappers/exchange';
 import { artifacts } from '../utils/artifacts';
 import { expectTransactionFailedAsync } from '../utils/assertions';
-import { getLatestBlockTimestampAsync } from '../utils/block_timestamp';
+import { getLatestBlockTimestampAsync, increaseTimeAndMineBlockAsync } from '../utils/block_timestamp';
 import { chaiSetup } from '../utils/chai_setup';
 import { constants } from '../utils/constants';
 import { ERC20Wrapper } from '../utils/erc20_wrapper';
 import { ERC721Wrapper } from '../utils/erc721_wrapper';
 import { ExchangeWrapper } from '../utils/exchange_wrapper';
 import { OrderFactory } from '../utils/order_factory';
-import { ERC20BalancesByOwner } from '../utils/types';
+import { ERC20BalancesByOwner, OrderStatus } from '../utils/types';
 import { provider, txDefaults, web3Wrapper } from '../utils/web3_wrapper';
 
 chaiSetup.configure();
@@ -1069,6 +1069,190 @@ describe('Exchange wrappers', () => {
                 });
                 const newBalances = await erc20Wrapper.getBalancesAsync();
                 expect(erc20Balances).to.be.deep.equal(newBalances);
+            });
+        });
+
+        describe('getOrdersInfo', () => {
+            beforeEach(async () => {
+                signedOrders = [
+                    await orderFactory.newSignedOrderAsync(),
+                    await orderFactory.newSignedOrderAsync(),
+                    await orderFactory.newSignedOrderAsync(),
+                ];
+            });
+            it('should get the correct information for multiple unfilled orders', async () => {
+                const ordersInfo = await exchangeWrapper.getOrdersInfoAsync(signedOrders);
+                expect(ordersInfo.length).to.be.equal(3);
+                _.forEach(signedOrders, (signedOrder, index) => {
+                    const expectedOrderHash = orderHashUtils.getOrderHashHex(signedOrder);
+                    const expectedTakerAssetFilledAmount = new BigNumber(0);
+                    const expectedOrderStatus = OrderStatus.FILLABLE;
+                    const orderInfo = ordersInfo[index];
+                    expect(orderInfo.orderHash).to.be.equal(expectedOrderHash);
+                    expect(orderInfo.orderTakerAssetFilledAmount).to.be.bignumber.equal(expectedTakerAssetFilledAmount);
+                    expect(orderInfo.orderStatus).to.equal(expectedOrderStatus);
+                });
+            });
+            it('should get the correct information for multiple partially filled orders', async () => {
+                const takerAssetFillAmounts = _.map(signedOrders, signedOrder => signedOrder.takerAssetAmount.div(2));
+                await exchangeWrapper.batchFillOrdersAsync(signedOrders, takerAddress, { takerAssetFillAmounts });
+                const ordersInfo = await exchangeWrapper.getOrdersInfoAsync(signedOrders);
+                expect(ordersInfo.length).to.be.equal(3);
+                _.forEach(signedOrders, (signedOrder, index) => {
+                    const expectedOrderHash = orderHashUtils.getOrderHashHex(signedOrder);
+                    const expectedTakerAssetFilledAmount = signedOrder.takerAssetAmount.div(2);
+                    const expectedOrderStatus = OrderStatus.FILLABLE;
+                    const orderInfo = ordersInfo[index];
+                    expect(orderInfo.orderHash).to.be.equal(expectedOrderHash);
+                    expect(orderInfo.orderTakerAssetFilledAmount).to.be.bignumber.equal(expectedTakerAssetFilledAmount);
+                    expect(orderInfo.orderStatus).to.equal(expectedOrderStatus);
+                });
+            });
+            it('should get the correct information for multiple fully filled orders', async () => {
+                await exchangeWrapper.batchFillOrdersAsync(signedOrders, takerAddress);
+                const ordersInfo = await exchangeWrapper.getOrdersInfoAsync(signedOrders);
+                expect(ordersInfo.length).to.be.equal(3);
+                _.forEach(signedOrders, (signedOrder, index) => {
+                    const expectedOrderHash = orderHashUtils.getOrderHashHex(signedOrder);
+                    const expectedTakerAssetFilledAmount = signedOrder.takerAssetAmount;
+                    const expectedOrderStatus = OrderStatus.FULLY_FILLED;
+                    const orderInfo = ordersInfo[index];
+                    expect(orderInfo.orderHash).to.be.equal(expectedOrderHash);
+                    expect(orderInfo.orderTakerAssetFilledAmount).to.be.bignumber.equal(expectedTakerAssetFilledAmount);
+                    expect(orderInfo.orderStatus).to.equal(expectedOrderStatus);
+                });
+            });
+            it('should get the correct information for multiple cancelled and unfilled orders', async () => {
+                await exchangeWrapper.batchCancelOrdersAsync(signedOrders, makerAddress);
+                const ordersInfo = await exchangeWrapper.getOrdersInfoAsync(signedOrders);
+                expect(ordersInfo.length).to.be.equal(3);
+                _.forEach(signedOrders, (signedOrder, index) => {
+                    const expectedOrderHash = orderHashUtils.getOrderHashHex(signedOrder);
+                    const expectedTakerAssetFilledAmount = new BigNumber(0);
+                    const expectedOrderStatus = OrderStatus.CANCELLED;
+                    const orderInfo = ordersInfo[index];
+                    expect(orderInfo.orderHash).to.be.equal(expectedOrderHash);
+                    expect(orderInfo.orderTakerAssetFilledAmount).to.be.bignumber.equal(expectedTakerAssetFilledAmount);
+                    expect(orderInfo.orderStatus).to.equal(expectedOrderStatus);
+                });
+            });
+            it('should get the correct information for multiple cancelled and partially filled orders', async () => {
+                const takerAssetFillAmounts = _.map(signedOrders, signedOrder => signedOrder.takerAssetAmount.div(2));
+                await exchangeWrapper.batchFillOrdersAsync(signedOrders, takerAddress, { takerAssetFillAmounts });
+                await exchangeWrapper.batchCancelOrdersAsync(signedOrders, makerAddress);
+                const ordersInfo = await exchangeWrapper.getOrdersInfoAsync(signedOrders);
+                expect(ordersInfo.length).to.be.equal(3);
+                _.forEach(signedOrders, (signedOrder, index) => {
+                    const expectedOrderHash = orderHashUtils.getOrderHashHex(signedOrder);
+                    const expectedTakerAssetFilledAmount = signedOrder.takerAssetAmount.div(2);
+                    const expectedOrderStatus = OrderStatus.CANCELLED;
+                    const orderInfo = ordersInfo[index];
+                    expect(orderInfo.orderHash).to.be.equal(expectedOrderHash);
+                    expect(orderInfo.orderTakerAssetFilledAmount).to.be.bignumber.equal(expectedTakerAssetFilledAmount);
+                    expect(orderInfo.orderStatus).to.equal(expectedOrderStatus);
+                });
+            });
+            it('should get the correct information for multiple expired and unfilled orders', async () => {
+                const currentTimestamp = await getLatestBlockTimestampAsync();
+                const timeUntilExpiration = signedOrders[0].expirationTimeSeconds.minus(currentTimestamp).toNumber();
+                await increaseTimeAndMineBlockAsync(timeUntilExpiration);
+                const ordersInfo = await exchangeWrapper.getOrdersInfoAsync(signedOrders);
+                expect(ordersInfo.length).to.be.equal(3);
+                _.forEach(signedOrders, (signedOrder, index) => {
+                    const expectedOrderHash = orderHashUtils.getOrderHashHex(signedOrder);
+                    const expectedTakerAssetFilledAmount = new BigNumber(0);
+                    const expectedOrderStatus = OrderStatus.EXPIRED;
+                    const orderInfo = ordersInfo[index];
+                    expect(orderInfo.orderHash).to.be.equal(expectedOrderHash);
+                    expect(orderInfo.orderTakerAssetFilledAmount).to.be.bignumber.equal(expectedTakerAssetFilledAmount);
+                    expect(orderInfo.orderStatus).to.equal(expectedOrderStatus);
+                });
+            });
+            it('should get the correct information for multiple expired and partially filled orders', async () => {
+                const takerAssetFillAmounts = _.map(signedOrders, signedOrder => signedOrder.takerAssetAmount.div(2));
+                await exchangeWrapper.batchFillOrdersAsync(signedOrders, takerAddress, { takerAssetFillAmounts });
+                const currentTimestamp = await getLatestBlockTimestampAsync();
+                const timeUntilExpiration = signedOrders[0].expirationTimeSeconds.minus(currentTimestamp).toNumber();
+                await increaseTimeAndMineBlockAsync(timeUntilExpiration);
+                const ordersInfo = await exchangeWrapper.getOrdersInfoAsync(signedOrders);
+                expect(ordersInfo.length).to.be.equal(3);
+                _.forEach(signedOrders, (signedOrder, index) => {
+                    const expectedOrderHash = orderHashUtils.getOrderHashHex(signedOrder);
+                    const expectedTakerAssetFilledAmount = signedOrder.takerAssetAmount.div(2);
+                    const expectedOrderStatus = OrderStatus.EXPIRED;
+                    const orderInfo = ordersInfo[index];
+                    expect(orderInfo.orderHash).to.be.equal(expectedOrderHash);
+                    expect(orderInfo.orderTakerAssetFilledAmount).to.be.bignumber.equal(expectedTakerAssetFilledAmount);
+                    expect(orderInfo.orderStatus).to.equal(expectedOrderStatus);
+                });
+            });
+            it('should get the correct information for a mix of unfilled, partially filled, fully filled, cancelled, and expired orders', async () => {
+                const unfilledOrder = await orderFactory.newSignedOrderAsync();
+                const partiallyFilledOrder = await orderFactory.newSignedOrderAsync();
+                await exchangeWrapper.fillOrderAsync(partiallyFilledOrder, takerAddress, {
+                    takerAssetFillAmount: partiallyFilledOrder.takerAssetAmount.div(2),
+                });
+                const fullyFilledOrder = await orderFactory.newSignedOrderAsync();
+                await exchangeWrapper.fillOrderAsync(fullyFilledOrder, takerAddress);
+                const cancelledOrder = await orderFactory.newSignedOrderAsync();
+                await exchangeWrapper.cancelOrderAsync(cancelledOrder, makerAddress);
+                const currentTimestamp = await getLatestBlockTimestampAsync();
+                const expiredOrder = await orderFactory.newSignedOrderAsync({
+                    expirationTimeSeconds: new BigNumber(currentTimestamp),
+                });
+                signedOrders = [unfilledOrder, partiallyFilledOrder, fullyFilledOrder, cancelledOrder, expiredOrder];
+                const ordersInfo = await exchangeWrapper.getOrdersInfoAsync(signedOrders);
+                expect(ordersInfo.length).to.be.equal(5);
+
+                const expectedUnfilledOrderHash = orderHashUtils.getOrderHashHex(unfilledOrder);
+                const expectedUnfilledTakerAssetFilledAmount = new BigNumber(0);
+                const expectedUnfilledOrderStatus = OrderStatus.FILLABLE;
+                const unfilledOrderInfo = ordersInfo[0];
+                expect(unfilledOrderInfo.orderHash).to.be.equal(expectedUnfilledOrderHash);
+                expect(unfilledOrderInfo.orderTakerAssetFilledAmount).to.be.bignumber.equal(
+                    expectedUnfilledTakerAssetFilledAmount,
+                );
+                expect(unfilledOrderInfo.orderStatus).to.be.equal(expectedUnfilledOrderStatus);
+
+                const expectedPartialOrderHash = orderHashUtils.getOrderHashHex(partiallyFilledOrder);
+                const expectedPartialTakerAssetFilledAmount = partiallyFilledOrder.takerAssetAmount.div(2);
+                const expectedPartialOrderStatus = OrderStatus.FILLABLE;
+                const partialOrderInfo = ordersInfo[1];
+                expect(partialOrderInfo.orderHash).to.be.equal(expectedPartialOrderHash);
+                expect(partialOrderInfo.orderTakerAssetFilledAmount).to.be.bignumber.equal(
+                    expectedPartialTakerAssetFilledAmount,
+                );
+                expect(partialOrderInfo.orderStatus).to.be.equal(expectedPartialOrderStatus);
+
+                const expectedFilledOrderHash = orderHashUtils.getOrderHashHex(fullyFilledOrder);
+                const expectedFilledTakerAssetFilledAmount = fullyFilledOrder.takerAssetAmount;
+                const expectedFilledOrderStatus = OrderStatus.FULLY_FILLED;
+                const filledOrderInfo = ordersInfo[2];
+                expect(filledOrderInfo.orderHash).to.be.equal(expectedFilledOrderHash);
+                expect(filledOrderInfo.orderTakerAssetFilledAmount).to.be.bignumber.equal(
+                    expectedFilledTakerAssetFilledAmount,
+                );
+                expect(filledOrderInfo.orderStatus).to.be.equal(expectedFilledOrderStatus);
+
+                const expectedCancelledOrderHash = orderHashUtils.getOrderHashHex(cancelledOrder);
+                const expectedCancelledTakerAssetFilledAmount = new BigNumber(0);
+                const expectedCancelledOrderStatus = OrderStatus.CANCELLED;
+                const cancelledOrderInfo = ordersInfo[3];
+                expect(cancelledOrderInfo.orderHash).to.be.equal(expectedCancelledOrderHash);
+                expect(cancelledOrderInfo.orderTakerAssetFilledAmount).to.be.bignumber.equal(
+                    expectedCancelledTakerAssetFilledAmount,
+                );
+                expect(cancelledOrderInfo.orderStatus).to.be.equal(expectedCancelledOrderStatus);
+
+                const expectedExpiredOrderHash = orderHashUtils.getOrderHashHex(expiredOrder);
+                const expectedExpiredTakerAssetFilledAmount = new BigNumber(0);
+                const expectedExpiredOrderStatus = OrderStatus.EXPIRED;
+                const expiredOrderInfo = ordersInfo[4];
+                expect(expiredOrderInfo.orderHash).to.be.equal(expectedExpiredOrderHash);
+                expect(expiredOrderInfo.orderTakerAssetFilledAmount).to.be.bignumber.equal(
+                    expectedExpiredTakerAssetFilledAmount,
+                );
+                expect(expiredOrderInfo.orderStatus).to.be.equal(expectedExpiredOrderStatus);
             });
         });
     });
