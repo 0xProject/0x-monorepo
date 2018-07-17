@@ -7,7 +7,7 @@ import {
     LogWithDecodedArgs,
     RawLog,
 } from '@0xproject/types';
-import { AbiDecoder, intervalUtils } from '@0xproject/utils';
+import { intervalUtils, logUtils } from '@0xproject/utils';
 import { Web3Wrapper } from '@0xproject/web3-wrapper';
 import { Block, BlockAndLogStreamer, Log } from 'ethereumjs-blockstream';
 import * as _ from 'lodash';
@@ -46,9 +46,12 @@ export class ContractWrapper {
     };
     private _onLogAddedSubscriptionToken: string | undefined;
     private _onLogRemovedSubscriptionToken: string | undefined;
-    private static _onBlockstreamError(err: Error): void {
+    private static _onBlockstreamError(isVerbose: boolean, err: Error): void {
         // Noop on blockstream errors since they are automatically
         // recovered from and don't cause Blockstream to exit.
+        if (isVerbose) {
+            logUtils.warn(err.message);
+        }
     }
     constructor(web3Wrapper: Web3Wrapper, networkId: number) {
         this._web3Wrapper = web3Wrapper;
@@ -85,10 +88,11 @@ export class ContractWrapper {
         indexFilterValues: IndexedFilterValues,
         abi: ContractAbi,
         callback: EventCallback<ArgsType>,
+        isVerbose: boolean = false,
     ): string {
         const filter = filterUtils.getFilter(address, eventName, indexFilterValues, abi);
         if (_.isUndefined(this._blockAndLogStreamerIfExists)) {
-            this._startBlockAndLogStream();
+            this._startBlockAndLogStream(isVerbose);
         }
         const filterToken = filterUtils.generateUUID();
         this._filters[filterToken] = filter;
@@ -159,21 +163,21 @@ export class ContractWrapper {
             }
         });
     }
-    private _startBlockAndLogStream(): void {
+    private _startBlockAndLogStream(isVerbose: boolean): void {
         if (!_.isUndefined(this._blockAndLogStreamerIfExists)) {
             throw new Error(ContractWrappersError.SubscriptionAlreadyPresent);
         }
         this._blockAndLogStreamerIfExists = new BlockAndLogStreamer(
             this._web3Wrapper.getBlockAsync.bind(this._web3Wrapper),
             this._web3Wrapper.getLogsAsync.bind(this._web3Wrapper),
-            ContractWrapper._onBlockstreamError.bind(this),
+            ContractWrapper._onBlockstreamError.bind(this, isVerbose),
         );
         const catchAllLogFilter = {};
         this._blockAndLogStreamerIfExists.addLogFilter(catchAllLogFilter);
         this._blockAndLogStreamIntervalIfExists = intervalUtils.setAsyncExcludingInterval(
             this._reconcileBlockAsync.bind(this),
             constants.DEFAULT_BLOCK_POLLING_INTERVAL,
-            ContractWrapper._onBlockstreamError.bind(this),
+            ContractWrapper._onBlockstreamError.bind(this, isVerbose),
         );
         let isRemoved = false;
         this._onLogAddedSubscriptionToken = this._blockAndLogStreamerIfExists.subscribeToOnLogAdded(

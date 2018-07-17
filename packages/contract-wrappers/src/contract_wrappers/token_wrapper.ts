@@ -350,6 +350,7 @@ export class TokenWrapper extends ContractWrapper {
      * @param   indexFilterValues   An object where the keys are indexed args returned by the event and
      *                              the value is the value you are interested in. E.g `{maker: aUserAddressHex}`
      * @param   callback            Callback that gets called when a log is added/removed
+     * @param   isVerbose           Enable verbose subscription warnings (e.g recoverable network issues encountered)
      * @return Subscription token used later to unsubscribe
      */
     public subscribe<ArgsType extends TokenContractEventArgs>(
@@ -357,6 +358,7 @@ export class TokenWrapper extends ContractWrapper {
         eventName: TokenEvents,
         indexFilterValues: IndexedFilterValues,
         callback: EventCallback<ArgsType>,
+        isVerbose: boolean = false,
     ): string {
         assert.isETHAddressHex('tokenAddress', tokenAddress);
         const normalizedTokenAddress = tokenAddress.toLowerCase();
@@ -369,6 +371,7 @@ export class TokenWrapper extends ContractWrapper {
             indexFilterValues,
             artifacts.Token.abi,
             callback,
+            isVerbose,
         );
         return subscriptionToken;
     }
