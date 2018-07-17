@@ -541,7 +541,7 @@ describe('OrderWatcher', () => {
             [makerErc721TokenAddress] = tokenUtils.getDummyERC721TokenAddresses();
             makerErc721AssetData = assetProxyUtils.encodeERC721AssetData(makerErc721TokenAddress, tokenId);
             const fillableErc721Amount = new BigNumber(1);
-            it('should emit orderStateInvalid when maker allowance for all set to 0 for watched order', (done: DoneCallback) => {
+            it('should emit orderStateInvalid when maker allowance set to 0 for watched order', (done: DoneCallback) => {
                 (async () => {
                     signedOrder = await fillScenarios.createFillableSignedOrderAsync(
                         makerErc721AssetData,
@@ -559,7 +559,43 @@ describe('OrderWatcher', () => {
                         expect(invalidOrderState.error).to.be.equal(ExchangeContractErrs.InsufficientMakerAllowance);
                     });
                     orderWatcher.subscribe(callback);
-                    const isApproved = false;
+                    await contractWrappers.erc721Token.setApprovalAsync(
+                        makerErc721TokenAddress,
+                        constants.NULL_ADDRESS,
+                        tokenId,
+                    );
+                })().catch(done);
+            });
+            it('should emit orderStateInvalid when maker allowance for all set to 0 for watched order', (done: DoneCallback) => {
+                (async () => {
+                    signedOrder = await fillScenarios.createFillableSignedOrderAsync(
+                        makerErc721AssetData,
+                        takerAssetData,
+                        makerAddress,
+                        takerAddress,
+                        fillableErc721Amount,
+                    );
+                    await contractWrappers.erc721Token.setApprovalAsync(
+                        makerErc721TokenAddress,
+                        constants.NULL_ADDRESS,
+                        tokenId,
+                    );
+                    let isApproved = true;
+                    await contractWrappers.erc721Token.setProxyApprovalForAllAsync(
+                        makerErc721TokenAddress,
+                        makerAddress,
+                        isApproved,
+                    );
+                    const orderHash = orderHashUtils.getOrderHashHex(signedOrder);
+                    await orderWatcher.addOrderAsync(signedOrder);
+                    const callback = callbackErrorReporter.reportNodeCallbackErrors(done)((orderState: OrderState) => {
+                        expect(orderState.isValid).to.be.false();
+                        const invalidOrderState = orderState as OrderStateInvalid;
+                        expect(invalidOrderState.orderHash).to.be.equal(orderHash);
+                        expect(invalidOrderState.error).to.be.equal(ExchangeContractErrs.InsufficientMakerAllowance);
+                    });
+                    orderWatcher.subscribe(callback);
+                    isApproved = false;
                     await contractWrappers.erc721Token.setProxyApprovalForAllAsync(
                         makerErc721TokenAddress,
                         makerAddress,
