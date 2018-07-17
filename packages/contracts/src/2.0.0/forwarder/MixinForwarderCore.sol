@@ -245,7 +245,8 @@ contract MixinForwarderCore is
         orders[0].takerAssetData = WETH_ASSET_DATA;
 
         // All orders are required to have the same makerAssetData. We save on gas by reusing the makerAssetData of the first order.
-        for (uint256 i = 0; i < orders.length; i++) {
+        uint256 ordersLength = orders.length;
+        for (uint256 i = 0; i < ordersLength; i++) {
             orders[i].makerAssetData = orders[0].makerAssetData;
         }
 
@@ -274,7 +275,8 @@ contract MixinForwarderCore is
         bytes memory wethAssetData = WETH_ASSET_DATA;
 
         // All orders are required to have WETH as takerAssetData. We save on gas by populating the orders here, rather than passing in any extra calldata.
-        for (uint256 i = 0; i < orders.length; i++) {
+        uint256 ordersLength = orders.length;
+        for (uint256 i = 0; i < ordersLength; i++) {
             orders[i].takerAssetData = wethAssetData;
         }
 
@@ -311,7 +313,8 @@ contract MixinForwarderCore is
             bytes memory wethAssetData = WETH_ASSET_DATA;
             uint256 zrxPurchased = 0;
 
-            for (uint256 i = 0; i < orders.length; i++) {
+            uint256 ordersLength = orders.length;
+            for (uint256 i = 0; i < ordersLength; i++) {
 
                 // All of these are ZRX/WETH, so we can drop the respective assetData from calldata.
                 orders[i].makerAssetData = zrxAssetData;

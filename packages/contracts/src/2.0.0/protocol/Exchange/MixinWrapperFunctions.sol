@@ -119,7 +119,8 @@ contract MixinWrapperFunctions is
         public
         returns (FillResults memory totalFillResults)
     {
-        for (uint256 i = 0; i < orders.length; i++) {
+        uint256 ordersLength = orders.length;
+        for (uint256 i = 0; i < ordersLength; i++) {
             FillResults memory singleFillResults = fillOrder(
                 orders[i],
                 takerAssetFillAmounts[i],
@@ -144,7 +145,8 @@ contract MixinWrapperFunctions is
         public
         returns (FillResults memory totalFillResults)
     {
-        for (uint256 i = 0; i < orders.length; i++) {
+        uint256 ordersLength = orders.length;
+        for (uint256 i = 0; i < ordersLength; i++) {
             FillResults memory singleFillResults = fillOrKillOrder(
                 orders[i],
                 takerAssetFillAmounts[i],
@@ -170,7 +172,8 @@ contract MixinWrapperFunctions is
         public
         returns (FillResults memory totalFillResults)
     {
-        for (uint256 i = 0; i < orders.length; i++) {
+        uint256 ordersLength = orders.length;
+        for (uint256 i = 0; i < ordersLength; i++) {
             FillResults memory singleFillResults = fillOrderNoThrow(
                 orders[i],
                 takerAssetFillAmounts[i],
@@ -196,7 +199,8 @@ contract MixinWrapperFunctions is
     {
         bytes memory takerAssetData = orders[0].takerAssetData;
     
-        for (uint256 i = 0; i < orders.length; i++) {
+        uint256 ordersLength = orders.length;
+        for (uint256 i = 0; i < ordersLength; i++) {
 
             // We assume that asset being sold by taker is the same for each order.
             // Rather than passing this in as calldata, we use the takerAssetData from the first order in all later orders.
@@ -239,7 +243,8 @@ contract MixinWrapperFunctions is
     {
         bytes memory takerAssetData = orders[0].takerAssetData;
 
-        for (uint256 i = 0; i < orders.length; i++) {
+        uint256 ordersLength = orders.length;
+        for (uint256 i = 0; i < ordersLength; i++) {
 
             // We assume that asset being sold by taker is the same for each order.
             // Rather than passing this in as calldata, we use the takerAssetData from the first order in all later orders.
@@ -281,7 +286,8 @@ contract MixinWrapperFunctions is
     {
         bytes memory makerAssetData = orders[0].makerAssetData;
 
-        for (uint256 i = 0; i < orders.length; i++) {
+        uint256 ordersLength = orders.length;
+        for (uint256 i = 0; i < ordersLength; i++) {
 
             // We assume that asset being bought by taker is the same for each order.
             // Rather than passing this in as calldata, we copy the makerAssetData from the first order onto all later orders.
@@ -332,7 +338,8 @@ contract MixinWrapperFunctions is
     {
         bytes memory makerAssetData = orders[0].makerAssetData;
 
-        for (uint256 i = 0; i < orders.length; i++) {
+        uint256 ordersLength = orders.length;
+        for (uint256 i = 0; i < ordersLength; i++) {
 
             // We assume that asset being bought by taker is the same for each order.
             // Rather than passing this in as calldata, we copy the makerAssetData from the first order onto all later orders.
@@ -372,7 +379,8 @@ contract MixinWrapperFunctions is
     function batchCancelOrders(LibOrder.Order[] memory orders)
         public
     {
-        for (uint256 i = 0; i < orders.length; i++) {
+        uint256 ordersLength = orders.length;
+        for (uint256 i = 0; i < ordersLength; i++) {
             cancelOrder(orders[i]);
         }
     }
@@ -385,9 +393,9 @@ contract MixinWrapperFunctions is
         view
         returns (LibOrder.OrderInfo[] memory)
     {
-        uint256 length = orders.length;
-        LibOrder.OrderInfo[] memory ordersInfo = new LibOrder.OrderInfo[](length);
-        for (uint256 i = 0; i < length; i++) {
+        uint256 ordersLength = orders.length;
+        LibOrder.OrderInfo[] memory ordersInfo = new LibOrder.OrderInfo[](ordersLength);
+        for (uint256 i = 0; i < ordersLength; i++) {
             ordersInfo[i] = getOrderInfo(orders[i]);
         }
         return ordersInfo;
