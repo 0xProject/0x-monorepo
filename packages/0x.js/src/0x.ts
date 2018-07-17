@@ -10,6 +10,7 @@ import {
     ExchangeWrapper,
 } from '@0xproject/contract-wrappers';
 import {
+    assetDataUtils,
     ecSignOrderHashAsync,
     generatePseudoRandomSalt,
     isValidSignatureAsync,
@@ -34,6 +35,10 @@ export class ZeroEx {
      * this constant for your convenience.
      */
     public static NULL_ADDRESS = constants.NULL_ADDRESS;
+    /**
+     * A set of methods to easily decode/encode assetData fields found in 0x orders.
+     */
+    public assetData = assetDataUtils;
     /**
      * An instance of the ExchangeWrapper class containing methods for interacting with the 0x Exchange smart contract.
      */
