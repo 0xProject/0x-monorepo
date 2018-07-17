@@ -121,7 +121,7 @@ describe('Exchange transactions', () => {
             let takerAssetFillAmount: BigNumber;
             beforeEach(async () => {
                 erc20Balances = await erc20Wrapper.getBalancesAsync();
-                signedOrder = orderFactory.newSignedOrder();
+                signedOrder = await orderFactory.newSignedOrderAsync();
                 orderWithoutExchangeAddress = orderUtils.getOrderWithoutExchangeAddress(signedOrder);
 
                 takerAssetFillAmount = signedOrder.takerAssetAmount.div(2);
@@ -226,7 +226,7 @@ describe('Exchange transactions', () => {
 
             it("should cancel an order if called from the order's sender", async () => {
                 const orderSalt = new BigNumber(0);
-                signedOrder = orderFactory.newSignedOrder({
+                signedOrder = await orderFactory.newSignedOrderAsync({
                     senderAddress: exchangeWrapperContract.address,
                     salt: orderSalt,
                 });
@@ -265,7 +265,7 @@ describe('Exchange transactions', () => {
 
             it("should not cancel an order if not called from the order's sender", async () => {
                 const orderSalt = new BigNumber(0);
-                signedOrder = orderFactory.newSignedOrder({
+                signedOrder = await orderFactory.newSignedOrderAsync({
                     senderAddress: exchangeWrapperContract.address,
                     salt: orderSalt,
                 });
@@ -356,7 +356,7 @@ describe('Exchange transactions', () => {
         });
 
         beforeEach(async () => {
-            signedOrder = whitelistOrderFactory.newSignedOrder();
+            signedOrder = await whitelistOrderFactory.newSignedOrderAsync();
             erc20Balances = await erc20Wrapper.getBalancesAsync();
         });
 
