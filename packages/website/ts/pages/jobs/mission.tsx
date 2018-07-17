@@ -1,5 +1,7 @@
 import * as React from 'react';
 
+import { Container } from 'ts/components/ui/container';
+import { Text } from 'ts/components/ui/text';
 import { colors } from 'ts/style/colors';
 import { ScreenWidths } from 'ts/types';
 
@@ -8,49 +10,39 @@ export interface MissionProps {
 }
 export const Mission = (props: MissionProps) => {
     const isSmallScreen = props.screenWidth === ScreenWidths.Sm;
-    const image = (
-        <div className="col lg-col-6 md-col-6 col-12 sm-py2 px2 center">
-            <img src="/images/jobs/map.png" style={{ width: '100%' }} />
-        </div>
-    );
-    const missionStatementStyle = !isSmallScreen ? { height: 364, lineHeight: '364px' } : undefined;
+    const image = <img src="/images/jobs/map.png" style={{ width: 500, height: 280 }} />;
+    const missionStatementClassName = isSmallScreen ? 'center' : undefined;
     const missionStatement = (
-        <div className="col lg-col-6 md-col-6 col-12 center" style={missionStatementStyle}>
-            <div
-                className="mx-auto inline-block align-middle"
-                style={{ maxWidth: 385, lineHeight: '44px', textAlign: 'center' }}
-            >
-                <div className="h2 sm-center sm-pt3" style={{ fontFamily: 'Roboto Mono' }}>
-                    Our Mission
-                </div>
-                <div
-                    className="pb2 lg-pt2 md-pt2 sm-pt3 sm-px3 h4 sm-center"
-                    style={{ fontFamily: 'Roboto', lineHeight: 2, maxWidth: 537 }}
-                >
-                    We believe a system can exist in which all world value is accessible to anyone, anywhere, regardless
-                    of where you happen to be born.
-                </div>
-            </div>
-        </div>
+        <Container className={missionStatementClassName} maxWidth="388px">
+            <Text fontFamily="Roboto Mono" fontSize="22px" lineHeight="31px">
+                Globally Distributed<br />Purposefully Aligned
+            </Text>
+            <Container marginTop="32px">
+                <Text fontSize="14px" lineHeight="2em">
+                    We’re a highly technical team with diverse backgrounds in engineering, science, business, finance,
+                    and research. While headquarted in San Francisco, we’ve designed our workflows to empower teammates
+                    to stay informed and execute on their objectives from anywhere in the world. If you’re passionate
+                    about our mission, we’re excited to talk to you, regardless of where you might live.
+                </Text>
+            </Container>
+        </Container>
     );
     return (
         <div
-            className="container lg-py4 md-py4"
+            className="flex flex-column items-center py4"
             style={{ backgroundColor: colors.jobsPageBackground, color: colors.black }}
         >
-            <div className="mx-auto clearfix sm-py4">
-                {isSmallScreen ? (
-                    <div>
-                        {missionStatement}
-                        {image}
-                    </div>
-                ) : (
-                    <div>
-                        {image}
-                        {missionStatement}
-                    </div>
-                )}
-            </div>
+            {!isSmallScreen ? (
+                <Container className="flex items-center" maxWidth="1200px">
+                    {image}
+                    <Container marginLeft="115px">{missionStatement}</Container>
+                </Container>
+            ) : (
+                <Container className="flex flex-column items-center" maxWidth="1200px">
+                    {missionStatement}
+                    <Container marginTop="40px">{image}</Container>
+                </Container>
+            )}
         </div>
     );
 };
