@@ -150,7 +150,7 @@ export class FillScenarios {
         feeRecepientAddress: string,
         expirationTimeSeconds?: BigNumber,
     ): Promise<SignedOrder> {
-        const decodedMakerAssetData = assetProxyUtils.decodeAssetData(makerAssetData);
+        const decodedMakerAssetData = assetProxyUtils.decodeAssetDataOrThrow(makerAssetData);
         if (decodedMakerAssetData.assetProxyId === AssetProxyId.ERC20) {
             await this._increaseERC20BalanceAndAllowanceAsync(
                 decodedMakerAssetData.tokenAddress,
@@ -167,7 +167,7 @@ export class FillScenarios {
                 (decodedMakerAssetData as ERC721AssetData).tokenId,
             );
         }
-        const decodedTakerAssetData = assetProxyUtils.decodeAssetData(takerAssetData);
+        const decodedTakerAssetData = assetProxyUtils.decodeAssetDataOrThrow(takerAssetData);
         if (decodedTakerAssetData.assetProxyId === AssetProxyId.ERC20) {
             const takerTokenAddress = decodedTakerAssetData.tokenAddress;
             await this._increaseERC20BalanceAndAllowanceAsync(takerTokenAddress, takerAddress, takerFillableAmount);

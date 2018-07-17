@@ -14,7 +14,7 @@ export class AssetBalanceAndProxyAllowanceFetcher implements AbstractBalanceAndP
         this._stateLayer = stateLayer;
     }
     public async getBalanceAsync(assetData: string, userAddress: string): Promise<BigNumber> {
-        const decodedAssetData = assetProxyUtils.decodeAssetData(assetData);
+        const decodedAssetData = assetProxyUtils.decodeAssetDataOrThrow(assetData);
         if (decodedAssetData.assetProxyId === AssetProxyId.ERC20) {
             const decodedERC20AssetData = decodedAssetData as ERC20AssetData;
             const balance = await this._erc20Token.getBalanceAsync(decodedERC20AssetData.tokenAddress, userAddress, {
@@ -35,7 +35,7 @@ export class AssetBalanceAndProxyAllowanceFetcher implements AbstractBalanceAndP
         }
     }
     public async getProxyAllowanceAsync(assetData: string, userAddress: string): Promise<BigNumber> {
-        const decodedAssetData = assetProxyUtils.decodeAssetData(assetData);
+        const decodedAssetData = assetProxyUtils.decodeAssetDataOrThrow(assetData);
         if (decodedAssetData.assetProxyId === AssetProxyId.ERC20) {
             const decodedERC20AssetData = decodedAssetData as ERC20AssetData;
             const proxyAllowance = await this._erc20Token.getProxyAllowanceAsync(
