@@ -181,14 +181,14 @@ const teamRow6: ProfileInfo[] = [
         image: 'images/team/peter.jpg',
         linkedIn: 'https://www.linkedin.com/in/peter-z-7b9595163/',
     },
-    // {
-    //     name: 'Chris Kalani',
-    //     title: 'Director of Design',
-    //     description: `Previously founded Wake (acquired by InVision). Early Facebook product designer.`,
-    //     image: 'images/team/chris.png',
-    //     linkedIn: 'https://www.linkedin.com/in/chriskalani/',
-    //     github: 'https://github.com/chriskalani',
-    // },
+    {
+        name: 'Chris Kalani',
+        title: 'Director of Design',
+        description: `Previously founded Wake (acquired by InVision). Early Facebook product designer.`,
+        image: 'images/team/chris.png',
+        linkedIn: 'https://www.linkedin.com/in/chriskalani/',
+        github: 'https://github.com/chriskalani',
+    },
 ];
 
 const advisors: ProfileInfo[] = [
