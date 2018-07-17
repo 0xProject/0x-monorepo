@@ -38,7 +38,7 @@ export class ZeroEx {
     /**
      * A set of methods to easily decode/encode assetData fields found in 0x orders.
      */
-    public assetData = assetDataUtils;
+    public static assetData = assetDataUtils;
     /**
      * An instance of the ExchangeWrapper class containing methods for interacting with the 0x Exchange smart contract.
      */
