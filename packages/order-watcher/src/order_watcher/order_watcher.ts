@@ -155,7 +155,7 @@ export class OrderWatcher {
 
         const orderAssetDatas = [signedOrder.makerAssetData, signedOrder.takerAssetData];
         _.each(orderAssetDatas, assetData => {
-            const decodedAssetData = assetProxyUtils.decodeAssetData(assetData);
+            const decodedAssetData = assetProxyUtils.decodeAssetDataOrThrow(assetData);
             if (decodedAssetData.assetProxyId === AssetProxyId.ERC20) {
                 this._collisionResistantAbiDecoder.addERC20Token(decodedAssetData.tokenAddress);
             } else if (decodedAssetData.assetProxyId === AssetProxyId.ERC721) {

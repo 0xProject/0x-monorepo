@@ -238,8 +238,15 @@ export class FillScenarios {
             this._web3Wrapper.getProvider(),
             this._web3Wrapper.getContractDefaults(),
         );
-        const txHash = await erc721Token.mint.sendTransactionAsync(address, tokenId, { from: this._coinbase });
-        await this._web3Wrapper.awaitTransactionSuccessAsync(txHash, constants.AWAIT_TRANSACTION_MINED_MS);
+        try {
+            const currentOwner = await erc721Token.ownerOf.callAsync(tokenId);
+            if (currentOwner !== address) {
+                throw new Error(`Token ${tokenAddress}:${tokenId} is already owner by ${currentOwner}`);
+            }
+        } catch (err) {
+            const txHash = await erc721Token.mint.sendTransactionAsync(address, tokenId, { from: this._coinbase });
+            await this._web3Wrapper.awaitTransactionSuccessAsync(txHash, constants.AWAIT_TRANSACTION_MINED_MS);
+        }
     }
     private async _increaseERC20BalanceAndAllowanceAsync(
         tokenAddress: string,
