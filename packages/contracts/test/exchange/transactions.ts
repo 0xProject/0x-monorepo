@@ -1,5 +1,5 @@
 import { BlockchainLifecycle } from '@0xproject/dev-utils';
-import { assetProxyUtils, generatePseudoRandomSalt } from '@0xproject/order-utils';
+import { assetDataUtils, generatePseudoRandomSalt } from '@0xproject/order-utils';
 import { OrderWithoutExchangeAddress, RevertReason, SignedOrder } from '@0xproject/types';
 import { BigNumber } from '@0xproject/utils';
 import * as chai from 'chai';
@@ -88,7 +88,7 @@ describe('Exchange transactions', () => {
             artifacts.Exchange,
             provider,
             txDefaults,
-            assetProxyUtils.encodeERC20AssetData(zrxToken.address),
+            assetDataUtils.encodeERC20AssetData(zrxToken.address),
         );
         exchangeWrapper = new ExchangeWrapper(exchange, provider);
         await exchangeWrapper.registerAssetProxyAsync(erc20Proxy.address, owner);
@@ -107,8 +107,8 @@ describe('Exchange transactions', () => {
             exchangeAddress: exchange.address,
             makerAddress,
             feeRecipientAddress,
-            makerAssetData: assetProxyUtils.encodeERC20AssetData(defaultMakerTokenAddress),
-            takerAssetData: assetProxyUtils.encodeERC20AssetData(defaultTakerTokenAddress),
+            makerAssetData: assetDataUtils.encodeERC20AssetData(defaultMakerTokenAddress),
+            takerAssetData: assetDataUtils.encodeERC20AssetData(defaultTakerTokenAddress),
         };
         makerPrivateKey = constants.TESTRPC_PRIVATE_KEYS[accounts.indexOf(makerAddress)];
         takerPrivateKey = constants.TESTRPC_PRIVATE_KEYS[accounts.indexOf(takerAddress)];
@@ -349,8 +349,8 @@ describe('Exchange transactions', () => {
                 exchangeAddress: exchange.address,
                 makerAddress,
                 feeRecipientAddress,
-                makerAssetData: assetProxyUtils.encodeERC20AssetData(defaultMakerTokenAddress),
-                takerAssetData: assetProxyUtils.encodeERC20AssetData(defaultTakerTokenAddress),
+                makerAssetData: assetDataUtils.encodeERC20AssetData(defaultMakerTokenAddress),
+                takerAssetData: assetDataUtils.encodeERC20AssetData(defaultTakerTokenAddress),
             };
             whitelistOrderFactory = new OrderFactory(makerPrivateKey, defaultOrderParams);
         });

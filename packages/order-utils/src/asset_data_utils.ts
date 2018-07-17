@@ -13,36 +13,7 @@ interface EthAbi {
 // tslint:disable:no-var-requires
 const ethAbi = require('ethereumjs-abi') as EthAbi;
 
-export const assetProxyUtils = {
-    encodeAssetProxyId(assetProxyId: AssetProxyId): Buffer {
-        return ethUtil.toBuffer(assetProxyId);
-    },
-    decodeAssetProxyId(encodedAssetProxyId: Buffer): AssetProxyId {
-        const hexString = ethUtil.bufferToHex(encodedAssetProxyId);
-        if (hexString === AssetProxyId.ERC20) {
-            return AssetProxyId.ERC20;
-        }
-        if (hexString === AssetProxyId.ERC721) {
-            return AssetProxyId.ERC721;
-        }
-        throw new Error(`Invalid ProxyId: ${hexString}`);
-    },
-    encodeAddress(address: string): Buffer {
-        if (!ethUtil.isValidAddress(address)) {
-            throw new Error(`Invalid Address: ${address}`);
-        }
-        const encodedAddress = ethUtil.toBuffer(address);
-        const padded = ethUtil.setLengthLeft(encodedAddress, constants.WORD_LENGTH);
-        return padded;
-    },
-    decodeAddress(encodedAddress: Buffer): string {
-        const unpadded = ethUtil.setLengthLeft(encodedAddress, constants.ADDRESS_LENGTH);
-        const address = ethUtil.bufferToHex(unpadded);
-        if (!ethUtil.isValidAddress(address)) {
-            throw new Error(`Invalid Address: ${address}`);
-        }
-        return address;
-    },
+export const assetDataUtils = {
     encodeUint256(value: BigNumber): Buffer {
         const base = 10;
         const formattedValue = new BN(value.toString(base));
@@ -131,20 +102,30 @@ export const assetProxyUtils = {
             );
         }
         const encodedAssetProxyId = encodedAssetData.slice(0, constants.SELECTOR_LENGTH);
-        const assetProxyId = assetProxyUtils.decodeAssetProxyId(encodedAssetProxyId);
+        const assetProxyId = assetDataUtils._decodeAssetProxyId(encodedAssetProxyId);
         return assetProxyId;
     },
     decodeAssetData(assetData: string): ERC20AssetData | ERC721AssetData {
-        const assetProxyId = assetProxyUtils.decodeAssetDataId(assetData);
+        const assetProxyId = assetDataUtils.decodeAssetDataId(assetData);
         switch (assetProxyId) {
             case AssetProxyId.ERC20:
-                const erc20AssetData = assetProxyUtils.decodeERC20AssetData(assetData);
+                const erc20AssetData = assetDataUtils.decodeERC20AssetData(assetData);
                 return erc20AssetData;
             case AssetProxyId.ERC721:
-                const erc721AssetData = assetProxyUtils.decodeERC721AssetData(assetData);
+                const erc721AssetData = assetDataUtils.decodeERC721AssetData(assetData);
                 return erc721AssetData;
             default:
                 throw new Error(`Unrecognized asset proxy id: ${assetProxyId}`);
         }
+    },
+    _decodeAssetProxyId(encodedAssetProxyId: Buffer): AssetProxyId {
+        const hexString = ethUtil.bufferToHex(encodedAssetProxyId);
+        if (hexString === AssetProxyId.ERC20) {
+            return AssetProxyId.ERC20;
+        }
+        if (hexString === AssetProxyId.ERC721) {
+            return AssetProxyId.ERC721;
+        }
+        throw new Error(`Invalid ProxyId: ${hexString}`);
     },
 };

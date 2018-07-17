@@ -1,4 +1,4 @@
-import { assetProxyUtils } from '@0xproject/order-utils';
+import { assetDataUtils } from '@0xproject/order-utils';
 import { BigNumber } from '@0xproject/utils';
 import { Web3Wrapper } from '@0xproject/web3-wrapper';
 import { Provider } from 'ethereum-types';
@@ -154,7 +154,7 @@ export class ERC20Wrapper {
         return tokenAddresses;
     }
     private _getTokenContractFromAssetData(assetData: string): DummyERC20TokenContract {
-        const erc20ProxyData = assetProxyUtils.decodeERC20AssetData(assetData);
+        const erc20ProxyData = assetDataUtils.decodeERC20AssetData(assetData);
         const tokenAddress = erc20ProxyData.tokenAddress;
         const tokenContractIfExists = _.find(this._dummyTokenContracts, c => c.address === tokenAddress);
         if (_.isUndefined(tokenContractIfExists)) {

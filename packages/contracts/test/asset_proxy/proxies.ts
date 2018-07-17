@@ -1,5 +1,5 @@
 import { BlockchainLifecycle } from '@0xproject/dev-utils';
-import { assetProxyUtils, generatePseudoRandomSalt } from '@0xproject/order-utils';
+import { assetDataUtils, generatePseudoRandomSalt } from '@0xproject/order-utils';
 import { RevertReason } from '@0xproject/types';
 import { BigNumber } from '@0xproject/utils';
 import * as chai from 'chai';
@@ -107,7 +107,7 @@ describe('Asset Transfer Proxies', () => {
         describe('transferFrom', () => {
             it('should successfully transfer tokens', async () => {
                 // Construct ERC20 asset data
-                const encodedAssetData = assetProxyUtils.encodeERC20AssetData(zrxToken.address);
+                const encodedAssetData = assetDataUtils.encodeERC20AssetData(zrxToken.address);
                 // Perform a transfer from makerAddress to takerAddress
                 const erc20Balances = await erc20Wrapper.getBalancesAsync();
                 const amount = new BigNumber(10);
@@ -137,7 +137,7 @@ describe('Asset Transfer Proxies', () => {
 
             it('should do nothing if transferring 0 amount of a token', async () => {
                 // Construct ERC20 asset data
-                const encodedAssetData = assetProxyUtils.encodeERC20AssetData(zrxToken.address);
+                const encodedAssetData = assetDataUtils.encodeERC20AssetData(zrxToken.address);
                 // Perform a transfer from makerAddress to takerAddress
                 const erc20Balances = await erc20Wrapper.getBalancesAsync();
                 const amount = new BigNumber(0);
@@ -167,7 +167,7 @@ describe('Asset Transfer Proxies', () => {
 
             it('should throw if allowances are too low', async () => {
                 // Construct ERC20 asset data
-                const encodedAssetData = assetProxyUtils.encodeERC20AssetData(zrxToken.address);
+                const encodedAssetData = assetDataUtils.encodeERC20AssetData(zrxToken.address);
                 // Create allowance less than transfer amount. Set allowance on proxy.
                 const allowance = new BigNumber(0);
                 const amount = new BigNumber(10);
@@ -196,7 +196,7 @@ describe('Asset Transfer Proxies', () => {
 
             it('should throw if requesting address is not authorized', async () => {
                 // Construct ERC20 asset data
-                const encodedAssetData = assetProxyUtils.encodeERC20AssetData(zrxToken.address);
+                const encodedAssetData = assetDataUtils.encodeERC20AssetData(zrxToken.address);
                 // Perform a transfer from makerAddress to takerAddress
                 const amount = new BigNumber(10);
                 const data = assetProxyInterface.transferFrom.getABIEncodedTransactionData(
@@ -227,7 +227,7 @@ describe('Asset Transfer Proxies', () => {
         describe('transferFrom', () => {
             it('should successfully transfer tokens', async () => {
                 // Construct ERC721 asset data
-                const encodedAssetData = assetProxyUtils.encodeERC721AssetData(erc721Token.address, erc721MakerTokenId);
+                const encodedAssetData = assetDataUtils.encodeERC721AssetData(erc721Token.address, erc721MakerTokenId);
                 // Verify pre-condition
                 const ownerMakerAsset = await erc721Token.ownerOf.callAsync(erc721MakerTokenId);
                 expect(ownerMakerAsset).to.be.bignumber.equal(makerAddress);
@@ -254,7 +254,7 @@ describe('Asset Transfer Proxies', () => {
 
             it('should call onERC721Received when transferring to a smart contract without receiver data', async () => {
                 // Construct ERC721 asset data
-                const encodedAssetData = assetProxyUtils.encodeERC721AssetData(erc721Token.address, erc721MakerTokenId);
+                const encodedAssetData = assetDataUtils.encodeERC721AssetData(erc721Token.address, erc721MakerTokenId);
                 // Verify pre-condition
                 const ownerMakerAsset = await erc721Token.ownerOf.callAsync(erc721MakerTokenId);
                 expect(ownerMakerAsset).to.be.bignumber.equal(makerAddress);
@@ -288,8 +288,8 @@ describe('Asset Transfer Proxies', () => {
 
             it('should call onERC721Received when transferring to a smart contract with receiver data', async () => {
                 // Construct ERC721 asset data
-                const receiverData = ethUtil.bufferToHex(assetProxyUtils.encodeUint256(generatePseudoRandomSalt()));
-                const encodedAssetData = assetProxyUtils.encodeERC721AssetData(
+                const receiverData = ethUtil.bufferToHex(assetDataUtils.encodeUint256(generatePseudoRandomSalt()));
+                const encodedAssetData = assetDataUtils.encodeERC721AssetData(
                     erc721Token.address,
                     erc721MakerTokenId,
                     receiverData,
@@ -327,8 +327,8 @@ describe('Asset Transfer Proxies', () => {
 
             it('should throw if there is receiver data but contract does not have onERC721Received', async () => {
                 // Construct ERC721 asset data
-                const receiverData = ethUtil.bufferToHex(assetProxyUtils.encodeUint256(generatePseudoRandomSalt()));
-                const encodedAssetData = assetProxyUtils.encodeERC721AssetData(
+                const receiverData = ethUtil.bufferToHex(assetDataUtils.encodeUint256(generatePseudoRandomSalt()));
+                const encodedAssetData = assetDataUtils.encodeERC721AssetData(
                     erc721Token.address,
                     erc721MakerTokenId,
                     receiverData,
@@ -357,7 +357,7 @@ describe('Asset Transfer Proxies', () => {
 
             it('should throw if transferring 0 amount of a token', async () => {
                 // Construct ERC721 asset data
-                const encodedAssetData = assetProxyUtils.encodeERC721AssetData(erc721Token.address, erc721MakerTokenId);
+                const encodedAssetData = assetDataUtils.encodeERC721AssetData(erc721Token.address, erc721MakerTokenId);
                 // Verify pre-condition
                 const ownerMakerAsset = await erc721Token.ownerOf.callAsync(erc721MakerTokenId);
                 expect(ownerMakerAsset).to.be.bignumber.equal(makerAddress);
@@ -381,7 +381,7 @@ describe('Asset Transfer Proxies', () => {
 
             it('should throw if transferring > 1 amount of a token', async () => {
                 // Construct ERC721 asset data
-                const encodedAssetData = assetProxyUtils.encodeERC721AssetData(erc721Token.address, erc721MakerTokenId);
+                const encodedAssetData = assetDataUtils.encodeERC721AssetData(erc721Token.address, erc721MakerTokenId);
                 // Verify pre-condition
                 const ownerMakerAsset = await erc721Token.ownerOf.callAsync(erc721MakerTokenId);
                 expect(ownerMakerAsset).to.be.bignumber.equal(makerAddress);
@@ -405,7 +405,7 @@ describe('Asset Transfer Proxies', () => {
 
             it('should throw if allowances are too low', async () => {
                 // Construct ERC721 asset data
-                const encodedAssetData = assetProxyUtils.encodeERC721AssetData(erc721Token.address, erc721MakerTokenId);
+                const encodedAssetData = assetDataUtils.encodeERC721AssetData(erc721Token.address, erc721MakerTokenId);
                 // Remove transfer approval for makerAddress.
                 await web3Wrapper.awaitTransactionSuccessAsync(
                     await erc721Token.approve.sendTransactionAsync(constants.NULL_ADDRESS, erc721MakerTokenId, {
@@ -433,7 +433,7 @@ describe('Asset Transfer Proxies', () => {
 
             it('should throw if requesting address is not authorized', async () => {
                 // Construct ERC721 asset data
-                const encodedAssetData = assetProxyUtils.encodeERC721AssetData(erc721Token.address, erc721MakerTokenId);
+                const encodedAssetData = assetDataUtils.encodeERC721AssetData(erc721Token.address, erc721MakerTokenId);
                 // Perform a transfer from makerAddress to takerAddress
                 const amount = new BigNumber(1);
                 const data = assetProxyInterface.transferFrom.getABIEncodedTransactionData(

@@ -1,5 +1,5 @@
 import { BlockchainLifecycle } from '@0xproject/dev-utils';
-import { addSignedMessagePrefix, assetProxyUtils, MessagePrefixType, orderHashUtils } from '@0xproject/order-utils';
+import { addSignedMessagePrefix, assetDataUtils, MessagePrefixType, orderHashUtils } from '@0xproject/order-utils';
 import { RevertReason, SignatureType, SignedOrder } from '@0xproject/types';
 import * as chai from 'chai';
 import { LogWithDecodedArgs } from 'ethereum-types';
@@ -78,8 +78,8 @@ describe('MixinSignatureValidator', () => {
             exchangeAddress: signatureValidator.address,
             makerAddress,
             feeRecipientAddress: addressUtils.generatePseudoRandomAddress(),
-            makerAssetData: assetProxyUtils.encodeERC20AssetData(addressUtils.generatePseudoRandomAddress()),
-            takerAssetData: assetProxyUtils.encodeERC20AssetData(addressUtils.generatePseudoRandomAddress()),
+            makerAssetData: assetDataUtils.encodeERC20AssetData(addressUtils.generatePseudoRandomAddress()),
+            takerAssetData: assetDataUtils.encodeERC20AssetData(addressUtils.generatePseudoRandomAddress()),
         };
         signerPrivateKey = constants.TESTRPC_PRIVATE_KEYS[accounts.indexOf(makerAddress)];
         notSignerPrivateKey = constants.TESTRPC_PRIVATE_KEYS[accounts.indexOf(notSignerAddress)];

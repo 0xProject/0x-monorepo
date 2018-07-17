@@ -1,5 +1,5 @@
 import { BlockchainLifecycle } from '@0xproject/dev-utils';
-import { assetProxyUtils, EIP712Utils, orderHashUtils } from '@0xproject/order-utils';
+import { assetDataUtils, EIP712Utils, orderHashUtils } from '@0xproject/order-utils';
 import { SignedOrder } from '@0xproject/types';
 import { BigNumber } from '@0xproject/utils';
 import * as chai from 'chai';
@@ -38,8 +38,8 @@ describe('Exchange libs', () => {
             exchangeAddress: libs.address,
             makerAddress,
             feeRecipientAddress: addressUtils.generatePseudoRandomAddress(),
-            makerAssetData: assetProxyUtils.encodeERC20AssetData(addressUtils.generatePseudoRandomAddress()),
-            takerAssetData: assetProxyUtils.encodeERC20AssetData(addressUtils.generatePseudoRandomAddress()),
+            makerAssetData: assetDataUtils.encodeERC20AssetData(addressUtils.generatePseudoRandomAddress()),
+            takerAssetData: assetDataUtils.encodeERC20AssetData(addressUtils.generatePseudoRandomAddress()),
         };
         const privateKey = constants.TESTRPC_PRIVATE_KEYS[accounts.indexOf(makerAddress)];
         orderFactory = new OrderFactory(privateKey, defaultOrderParams);

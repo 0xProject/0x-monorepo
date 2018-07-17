@@ -1,4 +1,4 @@
-import { assetProxyUtils, orderFactory } from '@0xproject/order-utils';
+import { assetDataUtils, orderFactory } from '@0xproject/order-utils';
 import { OrderWithoutExchangeAddress, SignedOrder } from '@0xproject/types';
 import { BigNumber } from '@0xproject/utils';
 import { Web3Wrapper } from '@0xproject/web3-wrapper';
@@ -146,9 +146,9 @@ export class FillScenarios {
         feeRecepientAddress: string,
         expirationTimeSeconds?: BigNumber,
     ): Promise<SignedOrder> {
-        const makerERC20AssetData = assetProxyUtils.decodeERC20AssetData(makerAssetData);
+        const makerERC20AssetData = assetDataUtils.decodeERC20AssetData(makerAssetData);
         const makerTokenAddress = makerERC20AssetData.tokenAddress;
-        const takerERC20AssetData = assetProxyUtils.decodeERC20AssetData(takerAssetData);
+        const takerERC20AssetData = assetDataUtils.decodeERC20AssetData(takerAssetData);
         const takerTokenAddress = takerERC20AssetData.tokenAddress;
         await Promise.all([
             this._increaseERC20BalanceAndAllowanceAsync(makerTokenAddress, makerAddress, makerFillableAmount),

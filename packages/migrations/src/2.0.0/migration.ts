@@ -1,4 +1,4 @@
-import { assetProxyUtils } from '@0xproject/order-utils';
+import { assetDataUtils } from '@0xproject/order-utils';
 import { BigNumber } from '@0xproject/utils';
 import { Web3Wrapper } from '@0xproject/web3-wrapper';
 import { Provider, TxData } from 'ethereum-types';
@@ -53,7 +53,7 @@ export const runV2MigrationsAsync = async (provider: Provider, artifactsDir: str
         artifacts.Exchange,
         provider,
         txDefaults,
-        assetProxyUtils.encodeERC20AssetData(zrxToken.address),
+        assetDataUtils.encodeERC20AssetData(zrxToken.address),
     );
     artifactsWriter.saveArtifact(exchange);
 
@@ -137,8 +137,8 @@ export const runV2MigrationsAsync = async (provider: Provider, artifactsDir: str
         exchange.address,
         etherToken.address,
         zrxToken.address,
-        assetProxyUtils.encodeERC20AssetData(zrxToken.address),
-        assetProxyUtils.encodeERC20AssetData(etherToken.address),
+        assetDataUtils.encodeERC20AssetData(zrxToken.address),
+        assetDataUtils.encodeERC20AssetData(etherToken.address),
     );
     artifactsWriter.saveArtifact(forwarder);
 };

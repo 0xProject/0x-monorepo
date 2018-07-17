@@ -4,7 +4,7 @@ import { BigNumber } from '@0xproject/utils';
 import * as chai from 'chai';
 
 import { artifacts } from '../src/artifacts';
-import { assetProxyUtils } from '../src/asset_proxy_utils';
+import { assetDataUtils } from '../src/asset_data_utils';
 import { constants } from '../src/constants';
 import { ExchangeTransferSimulator } from '../src/exchange_transfer_simulator';
 import { DummyERC20TokenContract } from '../src/generated_contract_wrappers/dummy_erc20_token';
@@ -66,7 +66,7 @@ describe('ExchangeTransferSimulator', async () => {
             totalSupply,
         );
 
-        exampleAssetData = assetProxyUtils.encodeERC20AssetData(dummyERC20Token.address);
+        exampleAssetData = assetDataUtils.encodeERC20AssetData(dummyERC20Token.address);
     });
     beforeEach(async () => {
         await blockchainLifecycle.startAsync();
