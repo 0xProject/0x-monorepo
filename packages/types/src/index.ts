@@ -216,7 +216,7 @@ export enum RevertReason {
     Erc20InsufficientBalance = 'ERC20_INSUFFICIENT_BALANCE',
     Erc20InsufficientAllowance = 'ERC20_INSUFFICIENT_ALLOWANCE',
     UnacceptableThreshold = 'UNACCEPTABLE_THRESHOLD',
-    FeeProportionTooLarge = 'FEE_PROPORTION_TOO_LARGE',
+    FeePercentageTooLarge = 'FEE_PERCENTAGE_TOO_LARGE',
     ValueGreaterThanZero = 'VALUE_GREATER_THAN_ZERO',
     InvalidMsgValue = 'INVALID_MSG_VALUE',
 }
