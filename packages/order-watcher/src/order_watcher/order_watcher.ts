@@ -61,7 +61,6 @@ interface OrderStateByOrderHash {
 
 // tslint:disable-next-line:custom-no-magic-numbers
 const DEFAULT_CLEANUP_JOB_INTERVAL_MS = 1000 * 60 * 60; // 1h
-const DEFAULT_BLOCK_RETENTION = 100;
 
 /**
  * This class includes all the functionality related to watching a set of orders
@@ -95,8 +94,7 @@ export class OrderWatcher {
         const stateLayer =
             _.isUndefined(config) || _.isUndefined(config.stateLayer) ? BlockParamLiteral.Latest : config.stateLayer;
         const isVerbose = !_.isUndefined(config) && !_.isUndefined(config.isVerbose) ? config.isVerbose : false;
-        const blockRetention = !_.isUndefined(config) && !_.isUndefined(config.blockRetention) ? config.blockRetention : DEFAULT_BLOCK_RETENTION;
-        this._eventWatcher = new EventWatcher(this._web3Wrapper, pollingIntervalIfExistsMs, stateLayer, blockRetention, isVerbose);
+        this._eventWatcher = new EventWatcher(this._web3Wrapper, pollingIntervalIfExistsMs, stateLayer, isVerbose);
         this._balanceAndProxyAllowanceLazyStore = new BalanceAndProxyAllowanceLazyStore(
             this._contractWrappers.token,
             stateLayer,

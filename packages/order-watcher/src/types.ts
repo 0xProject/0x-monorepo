@@ -14,7 +14,6 @@ export type EventWatcherCallback = (err: null | Error, log?: LogEntryEvent) => v
  * of an orders expiration. Default=0.
  * cleanupJobIntervalMs: How often to run a cleanup job which revalidates all the orders. Default=1hr.
  * stateLayer: Optional blockchain state layer OrderWatcher will monitor for new events. Default=latest.
- * blockRetention: The numbers of blocks to retain in-memory, in order to handle block-reorgs. Default=100.
  */
 export interface OrderWatcherConfig {
     stateLayer: BlockParamLiteral;
@@ -23,7 +22,6 @@ export interface OrderWatcherConfig {
     expirationMarginMs?: number;
     cleanupJobIntervalMs?: number;
     isVerbose?: boolean;
-    blockRetention?: number;
 }
 
 export type OnOrderStateChangeCallback = (err: Error | null, orderState?: OrderState) => void;
