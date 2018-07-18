@@ -7,8 +7,8 @@ import { constants } from './constants';
 import { signingUtils } from './signing_utils';
 
 export class OrderFactory {
-    private _defaultOrderParams: Partial<Order>;
-    private _privateKey: Buffer;
+    private readonly _defaultOrderParams: Partial<Order>;
+    private readonly _privateKey: Buffer;
     constructor(privateKey: Buffer, defaultOrderParams: Partial<Order>) {
         this._defaultOrderParams = defaultOrderParams;
         this._privateKey = privateKey;

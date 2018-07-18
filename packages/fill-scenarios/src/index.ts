@@ -11,12 +11,12 @@ import { ERC20TokenContract } from './generated_contract_wrappers/erc20_token';
 import { ExchangeContract } from './generated_contract_wrappers/exchange';
 
 export class FillScenarios {
-    private _web3Wrapper: Web3Wrapper;
-    private _userAddresses: string[];
-    private _coinbase: string;
-    private _zrxTokenAddress: string;
-    private _exchangeAddress: string;
-    private _erc20ProxyAddress: string;
+    private readonly _web3Wrapper: Web3Wrapper;
+    private readonly _userAddresses: string[];
+    private readonly _coinbase: string;
+    private readonly _zrxTokenAddress: string;
+    private readonly _exchangeAddress: string;
+    private readonly _erc20ProxyAddress: string;
     constructor(
         provider: Provider,
         userAddresses: string[],

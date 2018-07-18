@@ -15,9 +15,9 @@ import { orderbookChannelMessageParser } from './utils/orderbook_channel_message
  * that implements the standard relayer API v0
  */
 export class WebSocketOrderbookChannel implements OrderbookChannel {
-    private _client: WebSocket.w3cwebsocket;
-    private _handler: OrderbookChannelHandler;
-    private _subscriptionOptsList: OrderbookChannelSubscriptionOpts[] = [];
+    private readonly _client: WebSocket.w3cwebsocket;
+    private readonly _handler: OrderbookChannelHandler;
+    private readonly _subscriptionOptsList: OrderbookChannelSubscriptionOpts[] = [];
     /**
      * Instantiates a new WebSocketOrderbookChannel instance
      * @param   client               A WebSocket client

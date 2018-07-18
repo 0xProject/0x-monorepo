@@ -55,7 +55,7 @@ describe('LedgerSubprovider', () => {
                     return ecSignature;
                 },
                 transport: {
-                    close: _.noop,
+                    close: _.noop.bind(_),
                 } as LedgerCommunicationClient,
             };
             // tslint:enable:no-object-literal-type-assertion

@@ -31,8 +31,8 @@ export const doxityUtils = {
                     comment: doxityConstructor.details,
                     returnComment: doxityConstructor.return,
                     callPath: '',
-                    parameters: this._convertParameters(doxityConstructor.inputs),
-                    returnType: this._convertType(doxityContractObj.name),
+                    parameters: doxityUtils._convertParameters(doxityConstructor.inputs),
+                    returnType: doxityUtils._convertType(doxityContractObj.name),
                 };
                 constructors.push(constructor);
             }
@@ -40,7 +40,7 @@ export const doxityUtils = {
             const doxityMethods: DoxityAbiDoc[] = _.filter<DoxityAbiDoc>(
                 doxityContractObj.abiDocs,
                 (abiDoc: DoxityAbiDoc) => {
-                    return this._isMethod(abiDoc);
+                    return doxityUtils._isMethod(abiDoc);
                 },
             );
             const methods: SolidityMethod[] = _.map<DoxityAbiDoc, SolidityMethod>(
@@ -52,10 +52,10 @@ export const doxityUtils = {
                         // no-op. It's already undefined
                     } else if (outputs.length === 1) {
                         const outputsType = outputs[0].type;
-                        returnTypeIfExists = this._convertType(outputsType);
+                        returnTypeIfExists = doxityUtils._convertType(outputsType);
                     } else {
                         const outputsType = `[${_.map(outputs, output => output.type).join(', ')}]`;
-                        returnTypeIfExists = this._convertType(outputsType);
+                        returnTypeIfExists = doxityUtils._convertType(outputsType);
                     }
                     // For ZRXToken, we want to convert it to zrxToken, rather then simply zRXToken
                     const callPath =
@@ -70,7 +70,7 @@ export const doxityUtils = {
                         comment: doxityMethod.details,
                         returnComment: doxityMethod.return,
                         callPath,
-                        parameters: this._convertParameters(doxityMethod.inputs),
+                        parameters: doxityUtils._convertParameters(doxityMethod.inputs),
                         returnType: returnTypeIfExists,
                     };
                     return method;
@@ -80,7 +80,7 @@ export const doxityUtils = {
             const doxityProperties: DoxityAbiDoc[] = _.filter<DoxityAbiDoc>(
                 doxityContractObj.abiDocs,
                 (abiDoc: DoxityAbiDoc) => {
-                    return this._isProperty(abiDoc);
+                    return doxityUtils._isProperty(abiDoc);
                 },
             );
             const properties = _.map<DoxityAbiDoc, Property>(doxityProperties, (doxityProperty: DoxityAbiDoc) => {
@@ -92,7 +92,7 @@ export const doxityUtils = {
                 }
                 const property = {
                     name: doxityProperty.name,
-                    type: this._convertType(typeName),
+                    type: doxityUtils._convertType(typeName),
                     comment: doxityProperty.details,
                 };
                 return property;
@@ -105,7 +105,7 @@ export const doxityUtils = {
             const events = _.map(doxityEvents, doxityEvent => {
                 const event = {
                     name: doxityEvent.name,
-                    eventArgs: this._convertEventArgs(doxityEvent.inputs),
+                    eventArgs: doxityUtils._convertEventArgs(doxityEvent.inputs),
                 };
                 return event;
             });
@@ -129,7 +129,7 @@ export const doxityUtils = {
                 name: input.name,
                 comment: input.description,
                 isOptional: false,
-                type: this._convertType(input.type),
+                type: doxityUtils._convertType(input.type),
             };
             return parameter;
         });
@@ -167,7 +167,7 @@ export const doxityUtils = {
             const eventArg = {
                 isIndexed: input.indexed,
                 name: input.name,
-                type: this._convertType(input.type),
+                type: doxityUtils._convertType(input.type),
             };
             return eventArg;
         });

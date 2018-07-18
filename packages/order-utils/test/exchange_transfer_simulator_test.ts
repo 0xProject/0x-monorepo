@@ -34,7 +34,7 @@ describe('ExchangeTransferSimulator', async () => {
     let erc20ProxyAddress: string;
     before(async function(): Promise<void> {
         const mochaTestTimeoutMs = 20000;
-        this.timeout(mochaTestTimeoutMs);
+        this.timeout(mochaTestTimeoutMs); // tslint:disable-line:no-invalid-this
 
         userAddresses = await web3Wrapper.getAvailableAddressesAsync();
         [coinbase, sender, recipient] = userAddresses;
@@ -77,8 +77,7 @@ describe('ExchangeTransferSimulator', async () => {
     describe('#transferFromAsync', function(): void {
         // HACK: For some reason these tests need a slightly longer timeout
         const mochaTestTimeoutMs = 3000;
-        this.timeout(mochaTestTimeoutMs);
-
+        this.timeout(mochaTestTimeoutMs); // tslint:disable-line:no-invalid-this
         beforeEach(() => {
             const simpleERC20BalanceAndProxyAllowanceFetcher = new SimpleERC20BalanceAndProxyAllowanceFetcher(
                 (dummyERC20Token as any) as ERC20TokenContract,

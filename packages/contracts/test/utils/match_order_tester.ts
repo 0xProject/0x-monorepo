@@ -14,10 +14,10 @@ chaiSetup.configure();
 const expect = chai.expect;
 
 export class MatchOrderTester {
-    private _exchangeWrapper: ExchangeWrapper;
-    private _erc20Wrapper: ERC20Wrapper;
-    private _erc721Wrapper: ERC721Wrapper;
-    private _feeTokenAddress: string;
+    private readonly _exchangeWrapper: ExchangeWrapper;
+    private readonly _erc20Wrapper: ERC20Wrapper;
+    private readonly _erc721Wrapper: ERC721Wrapper;
+    private readonly _feeTokenAddress: string;
 
     /// @dev Compares a pair of ERC20 balances and a pair of ERC721 token owners.
     /// @param expectedNewERC20BalancesByOwner Expected ERC20 balances.

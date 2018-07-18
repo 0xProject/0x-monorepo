@@ -83,11 +83,11 @@ export class Blockchain {
     public networkId: number;
     public nodeVersion: string;
     private _contractWrappers: ContractWrappers;
-    private _dispatcher: Dispatcher;
+    private readonly _dispatcher: Dispatcher;
     private _web3Wrapper?: Web3Wrapper;
     private _blockchainWatcher?: BlockchainWatcher;
     private _injectedProviderObservable?: InjectedProviderObservable;
-    private _injectedProviderUpdateHandler: (update: InjectedProviderUpdate) => Promise<void>;
+    private readonly _injectedProviderUpdateHandler: (update: InjectedProviderUpdate) => Promise<void>;
     private _userAddressIfExists: string;
     private _ledgerSubprovider: LedgerSubprovider;
     private _defaultGasPrice: BigNumber;
@@ -125,7 +125,11 @@ export class Blockchain {
         let networkIdIfExists: number;
         if (!_.isUndefined(injectedWeb3IfExists)) {
             try {
-                networkIdIfExists = _.parseInt(await promisify<string>(injectedWeb3IfExists.version.getNetwork)());
+                networkIdIfExists = _.parseInt(
+                    await promisify<string>(
+                        injectedWeb3IfExists.version.getNetwork.bind(injectedWeb3IfExists.version),
+                    )(),
+                );
             } catch (err) {
                 // Ignore error and proceed with networkId undefined
             }

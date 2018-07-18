@@ -17,7 +17,7 @@ interface ProxyIdToAssetWrappers {
  * the logic that uses it does not need to care what standard a token belongs to.
  */
 export class AssetWrapper {
-    private _proxyIdToAssetWrappers: ProxyIdToAssetWrappers;
+    private readonly _proxyIdToAssetWrappers: ProxyIdToAssetWrappers;
     constructor(assetWrappers: AbstractAssetWrapper[]) {
         this._proxyIdToAssetWrappers = {};
         _.each(assetWrappers, assetWrapper => {

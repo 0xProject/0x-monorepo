@@ -35,7 +35,7 @@ export class BalanceBoundedInput extends React.Component<BalanceBoundedInputProp
         isDisabled: false,
         shouldShowErrs: true,
         hintText: 'amount',
-        onErrorMsgChange: _.noop,
+        onErrorMsgChange: _.noop.bind(_),
         shouldShowUnderline: true,
     };
     constructor(props: BalanceBoundedInputProps) {
@@ -125,7 +125,7 @@ export class BalanceBoundedInput extends React.Component<BalanceBoundedInputProp
         const errMsg = _.isUndefined(this.props.validate) ? undefined : this.props.validate(amount);
         return errMsg;
     }
-    private _setAmountState(amount: string, balance: BigNumber, callback: () => void = _.noop): void {
+    private _setAmountState(amount: string, balance: BigNumber, callback: () => void = _.noop.bind(_)): void {
         const errorMsg = this._validate(amount, balance);
         this.props.onErrorMsgChange(errorMsg);
         this.setState(

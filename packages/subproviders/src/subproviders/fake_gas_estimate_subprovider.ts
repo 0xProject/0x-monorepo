@@ -14,7 +14,7 @@ import { Subprovider } from './subprovider';
  * It intercepts the `eth_estimateGas` JSON RPC call and always returns a constant gas amount when queried.
  */
 export class FakeGasEstimateSubprovider extends Subprovider {
-    private _constantGasAmount: number;
+    private readonly _constantGasAmount: number;
     /**
      * Instantiates an instance of the FakeGasEstimateSubprovider
      * @param constantGasAmount The constant gas amount you want returned

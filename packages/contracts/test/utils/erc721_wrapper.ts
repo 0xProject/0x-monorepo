@@ -13,11 +13,11 @@ import { ERC721TokenIdsByOwner } from './types';
 import { txDefaults } from './web3_wrapper';
 
 export class ERC721Wrapper {
-    private _tokenOwnerAddresses: string[];
-    private _contractOwnerAddress: string;
-    private _web3Wrapper: Web3Wrapper;
-    private _provider: Provider;
-    private _dummyTokenContracts: DummyERC721TokenContract[];
+    private readonly _tokenOwnerAddresses: string[];
+    private readonly _contractOwnerAddress: string;
+    private readonly _web3Wrapper: Web3Wrapper;
+    private readonly _provider: Provider;
+    private readonly _dummyTokenContracts: DummyERC721TokenContract[];
     private _proxyContract?: ERC721ProxyContract;
     private _proxyIdIfExists?: string;
     private _initialTokenIdsByOwner: ERC721TokenIdsByOwner = {};

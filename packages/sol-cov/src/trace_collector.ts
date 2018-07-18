@@ -33,11 +33,11 @@ export type SingleFileSubtraceHandler = (
  * TraceCollector is used by CoverageSubprovider to compute code coverage based on collected trace data.
  */
 export class TraceCollector {
-    private _artifactAdapter: AbstractArtifactAdapter;
-    private _logger: Logger;
+    private readonly _artifactAdapter: AbstractArtifactAdapter;
+    private readonly _logger: Logger;
     private _contractsData!: ContractData[];
-    private _collector = new Collector();
-    private _singleFileSubtraceHandler: SingleFileSubtraceHandler;
+    private readonly _collector = new Collector();
+    private readonly _singleFileSubtraceHandler: SingleFileSubtraceHandler;
 
     /**
      * Instantiates a TraceCollector instance

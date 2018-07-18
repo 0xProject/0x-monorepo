@@ -171,7 +171,7 @@ interface LandingState {
 }
 
 export class Landing extends React.Component<LandingProps, LandingState> {
-    private _throttledScreenWidthUpdate: () => void;
+    private readonly _throttledScreenWidthUpdate: () => void;
     constructor(props: LandingProps) {
         super(props);
         this.state = {

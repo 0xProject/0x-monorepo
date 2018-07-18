@@ -8,8 +8,8 @@ import { Token } from './types';
 import { constants } from './constants';
 
 export class TokenRegWrapper {
-    private _tokenReg: TokenRegistryContract;
-    private _web3Wrapper: Web3Wrapper;
+    private readonly _tokenReg: TokenRegistryContract;
+    private readonly _web3Wrapper: Web3Wrapper;
     constructor(tokenRegContract: TokenRegistryContract, provider: Provider) {
         this._tokenReg = tokenRegContract;
         this._web3Wrapper = new Web3Wrapper(provider);

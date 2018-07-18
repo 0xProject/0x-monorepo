@@ -10,9 +10,9 @@ import { constants } from './constants';
 import { LogDecoder } from './log_decoder';
 
 export class MultiSigWrapper {
-    private _multiSig: MultiSigWalletContract;
-    private _web3Wrapper: Web3Wrapper;
-    private _logDecoder: LogDecoder;
+    private readonly _multiSig: MultiSigWalletContract;
+    private readonly _web3Wrapper: Web3Wrapper;
+    private readonly _logDecoder: LogDecoder;
     constructor(multiSigContract: MultiSigWalletContract, provider: Provider) {
         this._multiSig = multiSigContract;
         this._web3Wrapper = new Web3Wrapper(provider);

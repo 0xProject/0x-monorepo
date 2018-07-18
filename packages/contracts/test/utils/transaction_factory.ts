@@ -15,9 +15,9 @@ const EIP712_ZEROEX_TRANSACTION_SCHEMA: EIP712Schema = {
 };
 
 export class TransactionFactory {
-    private _signerBuff: Buffer;
-    private _exchangeAddress: string;
-    private _privateKey: Buffer;
+    private readonly _signerBuff: Buffer;
+    private readonly _exchangeAddress: string;
+    private readonly _privateKey: Buffer;
     constructor(privateKey: Buffer, exchangeAddress: string) {
         this._privateKey = privateKey;
         this._exchangeAddress = exchangeAddress;

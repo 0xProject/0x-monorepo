@@ -61,7 +61,7 @@ export class ZeroEx {
      * ERC721 proxy smart contract.
      */
     public erc721Proxy: ERC721ProxyWrapper;
-    private _contractWrappers: ContractWrappers;
+    private readonly _contractWrappers: ContractWrappers;
     /**
      * Generates a pseudo-random 256-bit salt.
      * The salt can be included in a 0x order, ensuring that the order generates a unique orderHash

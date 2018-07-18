@@ -7,7 +7,7 @@ import { schemas } from './schemas';
  * A validator for [JSON-schemas](http://json-schema.org/)
  */
 export class SchemaValidator {
-    private _validator: Validator;
+    private readonly _validator: Validator;
     /**
      * Instantiates a SchemaValidator instance
      */

@@ -15,9 +15,9 @@ import { artifacts } from './artifacts';
 import { constants } from './constants';
 
 export class LogDecoder {
-    private _web3Wrapper: Web3Wrapper;
-    private _contractAddress: string;
-    private _abiDecoder: AbiDecoder;
+    private readonly _web3Wrapper: Web3Wrapper;
+    private readonly _contractAddress: string;
+    private readonly _abiDecoder: AbiDecoder;
     public static wrapLogBigNumbers(log: any): any {
         const argNames = _.keys(log.args);
         for (const argName of argNames) {

@@ -1,14 +1,14 @@
 import { BigNumber } from '@0xproject/utils';
 
 export class RemainingFillableCalculator {
-    private _isTraderAssetZRX: boolean;
+    private readonly _isTraderAssetZRX: boolean;
     // Transferrable Amount is the minimum of Approval and Balance
-    private _transferrableAssetAmount: BigNumber;
-    private _transferrableFeeAmount: BigNumber;
-    private _remainingOrderAssetAmount: BigNumber;
-    private _remainingOrderFeeAmount: BigNumber;
-    private _orderFee: BigNumber;
-    private _orderAssetAmount: BigNumber;
+    private readonly _transferrableAssetAmount: BigNumber;
+    private readonly _transferrableFeeAmount: BigNumber;
+    private readonly _remainingOrderAssetAmount: BigNumber;
+    private readonly _remainingOrderFeeAmount: BigNumber;
+    private readonly _orderFee: BigNumber;
+    private readonly _orderAssetAmount: BigNumber;
     constructor(
         orderFee: BigNumber,
         orderAssetAmount: BigNumber,

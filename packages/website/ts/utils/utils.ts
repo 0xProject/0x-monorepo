@@ -59,7 +59,7 @@ export const utils = {
         return moment.unix(unixTimestampSec.toNumber());
     },
     convertToReadableDateTimeFromUnixTimestamp(unixTimestampSec: BigNumber): string {
-        const m = this.convertToMomentFromUnixTimestamp(unixTimestampSec);
+        const m = utils.convertToMomentFromUnixTimestamp(unixTimestampSec);
         const formattedDate: string = m.format('h:MMa MMMM D YYYY');
         return formattedDate;
     },
@@ -299,12 +299,12 @@ export const utils = {
         const baseUrl = `https://${window.location.hostname}${hasPort ? `:${port}` : ''}`;
         return baseUrl;
     },
-    onPageLoadPromise: new Promise((resolve, _reject) => {
+    onPageLoadPromise: new Promise<void>((resolve, _reject) => {
         if (document.readyState === 'complete') {
             resolve();
             return;
         }
-        window.onload = resolve;
+        window.onload = () => resolve();
     }),
     getProviderType(provider: Provider): Providers | string {
         const constructorName = provider.constructor.name;
@@ -364,7 +364,7 @@ export const utils = {
         return Environments.UNKNOWN;
     },
     shouldShowJobsPage(): boolean {
-        return this.isDevelopment() || this.isStaging() || this.isDogfood();
+        return utils.isDevelopment() || utils.isStaging() || utils.isDogfood();
     },
     getEthToken(tokenByAddress: TokenByAddress): Token {
         return utils.getTokenBySymbol(constants.ETHER_TOKEN_SYMBOL, tokenByAddress);
@@ -379,7 +379,7 @@ export const utils = {
     },
     getTrackedTokens(tokenByAddress: TokenByAddress): Token[] {
         const allTokens = _.values(tokenByAddress);
-        const trackedTokens = _.filter(allTokens, t => this.isTokenTracked(t));
+        const trackedTokens = _.filter(allTokens, t => utils.isTokenTracked(t));
         return trackedTokens;
     },
     getFormattedAmountFromToken(token: Token, tokenState: TokenState): string {

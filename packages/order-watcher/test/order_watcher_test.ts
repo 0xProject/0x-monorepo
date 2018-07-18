@@ -116,8 +116,8 @@ describe('OrderWatcher', () => {
             orderWatcher.unsubscribe();
         });
         it('should fail when trying to subscribe twice', async () => {
-            orderWatcher.subscribe(_.noop);
-            expect(() => orderWatcher.subscribe(_.noop)).to.throw(OrderWatcherError.SubscriptionAlreadyPresent);
+            orderWatcher.subscribe(_.noop.bind(_));
+            expect(() => orderWatcher.subscribe(_.noop.bind(_))).to.throw(OrderWatcherError.SubscriptionAlreadyPresent);
         });
     });
     describe('tests with cleanup', async () => {

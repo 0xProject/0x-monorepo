@@ -54,7 +54,7 @@ export const marshaller = {
             transactions: [] as Transaction[],
         };
         block.transactions = _.map(blockWithHexValues.transactions, (tx: TransactionRPC) => {
-            const transaction = this.unmarshalTransaction(tx);
+            const transaction = marshaller.unmarshalTransaction(tx);
             return transaction;
         });
         return block;
@@ -94,10 +94,10 @@ export const marshaller = {
             ...txData,
         };
         delete callTxDataBase.from;
-        const callTxDataBaseRPC = this._marshalCallTxDataBase(callTxDataBase);
+        const callTxDataBaseRPC = marshaller._marshalCallTxDataBase(callTxDataBase);
         const txDataRPC = {
             ...callTxDataBaseRPC,
-            from: this.marshalAddress(txData.from),
+            from: marshaller.marshalAddress(txData.from),
         };
         const prunableIfUndefined = ['gasPrice', 'gas', 'value', 'nonce'];
         _.each(txDataRPC, (value: any, key: string) => {
@@ -112,10 +112,10 @@ export const marshaller = {
             ...callData,
         };
         delete callTxDataBase.from;
-        const callTxDataBaseRPC = this._marshalCallTxDataBase(callTxDataBase);
+        const callTxDataBaseRPC = marshaller._marshalCallTxDataBase(callTxDataBase);
         const callDataRPC = {
             ...callTxDataBaseRPC,
-            from: _.isUndefined(callData.from) ? undefined : this.marshalAddress(callData.from),
+            from: _.isUndefined(callData.from) ? undefined : marshaller.marshalAddress(callData.from),
         };
         return callDataRPC;
     },
@@ -144,7 +144,7 @@ export const marshaller = {
     _marshalCallTxDataBase(callTxDataBase: Partial<CallTxDataBase>): Partial<CallTxDataBaseRPC> {
         const callTxDataBaseRPC = {
             ...callTxDataBase,
-            to: _.isUndefined(callTxDataBase.to) ? undefined : this.marshalAddress(callTxDataBase.to),
+            to: _.isUndefined(callTxDataBase.to) ? undefined : marshaller.marshalAddress(callTxDataBase.to),
             gasPrice: _.isUndefined(callTxDataBase.gasPrice)
                 ? undefined
                 : utils.encodeAmountAsHexString(callTxDataBase.gasPrice),

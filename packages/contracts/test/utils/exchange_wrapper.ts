@@ -11,9 +11,9 @@ import { orderUtils } from './order_utils';
 import { OrderInfo, SignedTransaction } from './types';
 
 export class ExchangeWrapper {
-    private _exchange: ExchangeContract;
-    private _web3Wrapper: Web3Wrapper;
-    private _logDecoder: LogDecoder;
+    private readonly _exchange: ExchangeContract;
+    private readonly _web3Wrapper: Web3Wrapper;
+    private readonly _logDecoder: LogDecoder;
     constructor(exchangeContract: ExchangeContract, provider: Provider) {
         this._exchange = exchangeContract;
         this._web3Wrapper = new Web3Wrapper(provider);

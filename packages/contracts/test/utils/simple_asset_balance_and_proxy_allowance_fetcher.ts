@@ -4,7 +4,7 @@ import { BigNumber } from '@0xproject/utils';
 import { AssetWrapper } from './asset_wrapper';
 
 export class SimpleAssetBalanceAndProxyAllowanceFetcher implements AbstractBalanceAndProxyAllowanceFetcher {
-    private _assetWrapper: AssetWrapper;
+    private readonly _assetWrapper: AssetWrapper;
     constructor(assetWrapper: AssetWrapper) {
         this._assetWrapper = assetWrapper;
     }

@@ -13,7 +13,7 @@ export const utils = {
         console.log(...args); // tslint:disable-line:no-console
     },
     async getUpdatedLernaPackagesAsync(shouldIncludePrivate: boolean): Promise<LernaPackage[]> {
-        const updatedPublicPackages = await this.getLernaUpdatedPackagesAsync(shouldIncludePrivate);
+        const updatedPublicPackages = await utils.getLernaUpdatedPackagesAsync(shouldIncludePrivate);
         const updatedPackageNames = _.map(updatedPublicPackages, pkg => pkg.name);
 
         const allLernaPackages = lernaGetPackages(constants.monorepoRootPath);
@@ -110,7 +110,7 @@ export const utils = {
         } catch (err) {
             throw new Error(`Failed to delete local git tag. Got err: ${err}`);
         }
-        this.log(`Removed local tag: ${tagName}`);
+        utils.log(`Removed local tag: ${tagName}`);
     },
     async removeRemoteTagAsync(tagName: string): Promise<void> {
         try {
@@ -120,6 +120,6 @@ export const utils = {
         } catch (err) {
             throw new Error(`Failed to delete remote git tag. Got err: ${err}`);
         }
-        this.log(`Removed remote tag: ${tagName}`);
+        utils.log(`Removed remote tag: ${tagName}`);
     },
 };

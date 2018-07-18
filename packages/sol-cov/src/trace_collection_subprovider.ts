@@ -32,10 +32,10 @@ export interface TraceCollectionSubproviderConfig {
 export abstract class TraceCollectionSubprovider extends Subprovider {
     protected _web3Wrapper!: Web3Wrapper;
     // Lock is used to not accept normal transactions while doing call/snapshot magic because they'll be reverted later otherwise
-    private _lock = new Lock();
-    private _defaultFromAddress: string;
+    private readonly _lock = new Lock();
+    private readonly _defaultFromAddress: string;
     private _isEnabled = true;
-    private _config: TraceCollectionSubproviderConfig;
+    private readonly _config: TraceCollectionSubproviderConfig;
     /**
      * Instantiates a TraceCollectionSubprovider instance
      * @param defaultFromAddress default from address to use when sending transactions

@@ -12,8 +12,8 @@ import { AbstractArtifactAdapter } from './abstract_artifact_adapter';
 const CONFIG_FILE = 'compiler.json';
 
 export class SolCompilerArtifactAdapter extends AbstractArtifactAdapter {
-    private _artifactsPath: string;
-    private _sourcesPath: string;
+    private readonly _artifactsPath: string;
+    private readonly _sourcesPath: string;
     constructor(artifactsPath?: string, sourcesPath?: string) {
         super();
         const config: CompilerOptions = fs.existsSync(CONFIG_FILE)

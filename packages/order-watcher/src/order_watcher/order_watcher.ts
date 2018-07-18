@@ -70,18 +70,18 @@ const STATE_LAYER = BlockParamLiteral.Latest;
  * the order should be deemed invalid.
  */
 export class OrderWatcher {
-    private _contractWrappers: ContractWrappers;
-    private _orderStateByOrderHashCache: OrderStateByOrderHash = {};
-    private _orderByOrderHash: OrderByOrderHash = {};
-    private _dependentOrderHashes: DependentOrderHashes = {};
+    private readonly _contractWrappers: ContractWrappers;
+    private readonly _orderStateByOrderHashCache: OrderStateByOrderHash = {};
+    private readonly _orderByOrderHash: OrderByOrderHash = {};
+    private readonly _dependentOrderHashes: DependentOrderHashes = {};
     private _callbackIfExists?: OnOrderStateChangeCallback;
-    private _eventWatcher: EventWatcher;
-    private _web3Wrapper: Web3Wrapper;
-    private _expirationWatcher: ExpirationWatcher;
-    private _orderStateUtils: OrderStateUtils;
-    private _orderFilledCancelledLazyStore: OrderFilledCancelledLazyStore;
-    private _balanceAndProxyAllowanceLazyStore: BalanceAndProxyAllowanceLazyStore;
-    private _cleanupJobInterval: number;
+    private readonly _eventWatcher: EventWatcher;
+    private readonly _web3Wrapper: Web3Wrapper;
+    private readonly _expirationWatcher: ExpirationWatcher;
+    private readonly _orderStateUtils: OrderStateUtils;
+    private readonly _orderFilledCancelledLazyStore: OrderFilledCancelledLazyStore;
+    private readonly _balanceAndProxyAllowanceLazyStore: BalanceAndProxyAllowanceLazyStore;
+    private readonly _cleanupJobInterval: number;
     private _cleanupJobIntervalIdIfExists?: NodeJS.Timer;
     constructor(provider: Provider, networkId: number, config?: OrderWatcherConfig) {
         this._web3Wrapper = new Web3Wrapper(provider);
