@@ -95,6 +95,7 @@ export class Wiki extends React.Component<WikiProps, WikiState> {
                     menuSubsectionsBySection={menuSubsectionsBySection}
                     translate={this.props.translate}
                     sidebarHeader={sidebarHeader}
+                    style={{ zIndex: 1 }}
                 />
                 {_.isUndefined(this.state.articlesBySection) ? (
                     <div className="col col-12" style={mainContainersStyle}>
