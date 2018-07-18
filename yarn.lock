@@ -76,19 +76,6 @@
     ethers "3.0.22"
     lodash "4.17.10"
 
-"@0xproject/fill-scenarios@^0.0.5":
-  version "0.0.5"
-  resolved "https://registry.yarnpkg.com/@0xproject/fill-scenarios/-/fill-scenarios-0.0.5.tgz#a62a240ae40423b9b73ecc0b1fc2abb58b76621c"
-  dependencies:
-    "@0xproject/base-contract" "^0.3.5"
-    "@0xproject/order-utils" "^0.0.8"
-    "@0xproject/types" "^0.8.2"
-    "@0xproject/typescript-typings" "^0.4.2"
-    "@0xproject/utils" "^0.7.2"
-    "@0xproject/web3-wrapper" "^0.7.2"
-    ethers "3.0.22"
-    lodash "4.17.10"
-
 "@0xproject/json-schemas@0.8.2", "@0xproject/json-schemas@^0.8.2":
   version "0.8.2"
   resolved "https://registry.yarnpkg.com/@0xproject/json-schemas/-/json-schemas-0.8.2.tgz#9d3f446e546ce0c959cf7beb45d41ac60476a78c"
@@ -2778,7 +2765,7 @@ commander@2.13.0, commander@~2.13.0:
   version "2.13.0"
   resolved "https://registry.yarnpkg.com/commander/-/commander-2.13.0.tgz#6964bca67685df7c1f1430c584f07d7597885b9c"
 
-commander@2.15.1, commander@^2.12.1, commander@^2.8.1, commander@^2.9.0:
+commander@2.15.1, commander@^2.12.1, commander@^2.8.1:
   version "2.15.1"
   resolved "https://registry.yarnpkg.com/commander/-/commander-2.15.1.tgz#df46e867d0fc2aec66a34662b406a9ccafff5b0f"
 
@@ -8187,7 +8174,7 @@ mz@^2.6.0:
     object-assign "^4.0.1"
     thenify-all "^1.0.0"
 
-nan@>=2.5.1, nan@^2.0.5, nan@^2.0.8, nan@^2.2.1, nan@^2.3.0, nan@^2.3.3, nan@^2.6.2:
+nan@2.10.0, nan@>=2.5.1, nan@^2.0.8, nan@^2.2.1, nan@^2.3.0, nan@^2.3.3, nan@^2.6.2:
   version "2.10.0"
   resolved "https://registry.yarnpkg.com/nan/-/nan-2.10.0.tgz#96d0cd610ebd58d4b4de9cc0c6828cda99c7548f"
 
@@ -10933,10 +10920,10 @@ sha.js@^2.4.0, sha.js@^2.4.8:
     safe-buffer "^5.0.1"
 
 sha3@^1.1.0:
-  version "1.2.0"
-  resolved "https://registry.yarnpkg.com/sha3/-/sha3-1.2.0.tgz#6989f1b70a498705876a373e2c62ace96aa9399a"
+  version "1.2.2"
+  resolved "https://registry.yarnpkg.com/sha3/-/sha3-1.2.2.tgz#a66c5098de4c25bc88336ec8b4817d005bca7ba9"
   dependencies:
-    nan "^2.0.5"
+    nan "2.10.0"
 
 shallowequal@^1.0.1:
   version "1.0.2"

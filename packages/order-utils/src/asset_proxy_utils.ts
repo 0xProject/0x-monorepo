@@ -134,7 +134,7 @@ export const assetProxyUtils = {
         const assetProxyId = assetProxyUtils.decodeAssetProxyId(encodedAssetProxyId);
         return assetProxyId;
     },
-    decodeAssetData(assetData: string): ERC20AssetData | ERC721AssetData {
+    decodeAssetDataOrThrow(assetData: string): ERC20AssetData | ERC721AssetData {
         const assetProxyId = assetProxyUtils.decodeAssetDataId(assetData);
         switch (assetProxyId) {
             case AssetProxyId.ERC20:
