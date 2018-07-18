@@ -14,11 +14,11 @@ import { utils } from 'ts/utils/utils';
 const BENEFITS = [
     'Comprehensive insurance. Medical, dental, and vision coverage for you and your family.',
     'Unlimited vacation. Three weeks per year minimum.',
-    'Flexible hours and libteral work-from-home-policy.',
+    'Flexible hours and liberal work-from-home-policy.',
     'Relocation Assistance.',
     'Whole team offsites and community / hackathon events (often international).',
     'Monthly transportation and phone reimbursement.',
-    'Meals and snacks prvided in-office daily',
+    'Meals and snacks provided in-office daily.',
 ];
 
 interface Value {

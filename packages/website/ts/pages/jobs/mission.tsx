@@ -20,9 +20,9 @@ export const Mission = (props: MissionProps) => {
             <Container marginTop="32px">
                 <Text fontSize="14px" lineHeight="2em">
                     We’re a highly technical team with diverse backgrounds in engineering, science, business, finance,
-                    and research. While headquarted in San Francisco, we’ve designed our workflows to empower teammates
-                    to stay informed and execute on their objectives from anywhere in the world. If you’re passionate
-                    about our mission, we’re excited to talk to you, regardless of where you might live.
+                    and research. While headquartered in San Francisco, we’ve designed our workflows to empower
+                    teammates to stay informed and execute on their objectives from anywhere in the world. If you’re
+                    passionate about our mission, we’re excited to talk to you, regardless of where you might live.
                 </Text>
             </Container>
         </Container>
