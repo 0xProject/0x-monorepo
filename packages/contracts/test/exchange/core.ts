@@ -1,5 +1,5 @@
 import { BlockchainLifecycle } from '@0xproject/dev-utils';
-import { assetProxyUtils, orderHashUtils } from '@0xproject/order-utils';
+import { assetDataUtils, orderHashUtils } from '@0xproject/order-utils';
 import { RevertReason, SignedOrder } from '@0xproject/types';
 import { BigNumber } from '@0xproject/utils';
 import { Web3Wrapper } from '@0xproject/web3-wrapper';
@@ -88,7 +88,7 @@ describe('Exchange core', () => {
             artifacts.Exchange,
             provider,
             txDefaults,
-            assetProxyUtils.encodeERC20AssetData(zrxToken.address),
+            assetDataUtils.encodeERC20AssetData(zrxToken.address),
         );
         exchangeWrapper = new ExchangeWrapper(exchange, provider);
         await exchangeWrapper.registerAssetProxyAsync(erc20Proxy.address, owner);
@@ -115,8 +115,8 @@ describe('Exchange core', () => {
             exchangeAddress: exchange.address,
             makerAddress,
             feeRecipientAddress,
-            makerAssetData: assetProxyUtils.encodeERC20AssetData(defaultMakerAssetAddress),
-            takerAssetData: assetProxyUtils.encodeERC20AssetData(defaultTakerAssetAddress),
+            makerAssetData: assetDataUtils.encodeERC20AssetData(defaultMakerAssetAddress),
+            takerAssetData: assetDataUtils.encodeERC20AssetData(defaultTakerAssetAddress),
         };
         const privateKey = constants.TESTRPC_PRIVATE_KEYS[accounts.indexOf(makerAddress)];
         orderFactory = new OrderFactory(privateKey, defaultOrderParams);
@@ -355,8 +355,8 @@ describe('Exchange core', () => {
             signedOrder = await orderFactory.newSignedOrderAsync({
                 makerAssetAmount: new BigNumber(1),
                 takerAssetAmount: new BigNumber(1),
-                makerAssetData: assetProxyUtils.encodeERC721AssetData(erc721Token.address, makerAssetId),
-                takerAssetData: assetProxyUtils.encodeERC721AssetData(erc721Token.address, takerAssetId),
+                makerAssetData: assetDataUtils.encodeERC721AssetData(erc721Token.address, makerAssetId),
+                takerAssetData: assetDataUtils.encodeERC721AssetData(erc721Token.address, takerAssetId),
             });
             // Verify pre-conditions
             const initialOwnerMakerAsset = await erc721Token.ownerOf.callAsync(makerAssetId);
@@ -378,8 +378,8 @@ describe('Exchange core', () => {
             signedOrder = await orderFactory.newSignedOrderAsync({
                 makerAssetAmount: new BigNumber(1),
                 takerAssetAmount: new BigNumber(1),
-                makerAssetData: assetProxyUtils.encodeERC721AssetData(erc721Token.address, makerAssetId),
-                takerAssetData: assetProxyUtils.encodeERC721AssetData(erc721Token.address, takerAssetId),
+                makerAssetData: assetDataUtils.encodeERC721AssetData(erc721Token.address, makerAssetId),
+                takerAssetData: assetDataUtils.encodeERC721AssetData(erc721Token.address, takerAssetId),
             });
             // Verify pre-conditions
             const initialOwnerMakerAsset = await erc721Token.ownerOf.callAsync(makerAssetId);
@@ -401,8 +401,8 @@ describe('Exchange core', () => {
             signedOrder = await orderFactory.newSignedOrderAsync({
                 makerAssetAmount: new BigNumber(2),
                 takerAssetAmount: new BigNumber(1),
-                makerAssetData: assetProxyUtils.encodeERC721AssetData(erc721Token.address, makerAssetId),
-                takerAssetData: assetProxyUtils.encodeERC721AssetData(erc721Token.address, takerAssetId),
+                makerAssetData: assetDataUtils.encodeERC721AssetData(erc721Token.address, makerAssetId),
+                takerAssetData: assetDataUtils.encodeERC721AssetData(erc721Token.address, takerAssetId),
             });
             // Verify pre-conditions
             const initialOwnerMakerAsset = await erc721Token.ownerOf.callAsync(makerAssetId);
@@ -424,8 +424,8 @@ describe('Exchange core', () => {
             signedOrder = await orderFactory.newSignedOrderAsync({
                 makerAssetAmount: new BigNumber(1),
                 takerAssetAmount: new BigNumber(500),
-                makerAssetData: assetProxyUtils.encodeERC721AssetData(erc721Token.address, makerAssetId),
-                takerAssetData: assetProxyUtils.encodeERC721AssetData(erc721Token.address, takerAssetId),
+                makerAssetData: assetDataUtils.encodeERC721AssetData(erc721Token.address, makerAssetId),
+                takerAssetData: assetDataUtils.encodeERC721AssetData(erc721Token.address, takerAssetId),
             });
             // Verify pre-conditions
             const initialOwnerMakerAsset = await erc721Token.ownerOf.callAsync(makerAssetId);
@@ -446,8 +446,8 @@ describe('Exchange core', () => {
             signedOrder = await orderFactory.newSignedOrderAsync({
                 makerAssetAmount: new BigNumber(1),
                 takerAssetAmount: Web3Wrapper.toBaseUnitAmount(new BigNumber(100), 18),
-                makerAssetData: assetProxyUtils.encodeERC721AssetData(erc721Token.address, makerAssetId),
-                takerAssetData: assetProxyUtils.encodeERC20AssetData(defaultTakerAssetAddress),
+                makerAssetData: assetDataUtils.encodeERC721AssetData(erc721Token.address, makerAssetId),
+                takerAssetData: assetDataUtils.encodeERC20AssetData(defaultTakerAssetAddress),
             });
             // Call Exchange
             const takerAssetFillAmount = signedOrder.takerAssetAmount.div(2);
@@ -461,14 +461,12 @@ describe('Exchange core', () => {
             // Construct Exchange parameters
             const makerAssetId = erc721MakerAssetIds[0];
             const takerAssetId = erc721TakerAssetIds[0];
-            const makerAssetData = assetProxyUtils
-                .encodeERC721AssetData(erc721Token.address, makerAssetId)
-                .slice(0, -2);
+            const makerAssetData = assetDataUtils.encodeERC721AssetData(erc721Token.address, makerAssetId).slice(0, -2);
             signedOrder = await orderFactory.newSignedOrderAsync({
                 makerAssetAmount: new BigNumber(1),
                 takerAssetAmount: new BigNumber(1),
                 makerAssetData,
-                takerAssetData: assetProxyUtils.encodeERC721AssetData(erc721Token.address, takerAssetId),
+                takerAssetData: assetDataUtils.encodeERC721AssetData(erc721Token.address, takerAssetId),
             });
             // Verify pre-conditions
             const initialOwnerMakerAsset = await erc721Token.ownerOf.callAsync(makerAssetId);

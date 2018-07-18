@@ -36,6 +36,10 @@
             {
                 "note": "Remove stateLayer config from OrderWatcher. It now always operates on the latest block",
                 "pr": 875
+            },
+            {
+                "note": "Export ZeroEx.assetData with methods to decode/encode assetData fields found in 0x orders",
+                "pr": 884
             }
         ]
     },

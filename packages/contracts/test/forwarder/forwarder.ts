@@ -1,5 +1,5 @@
 import { BlockchainLifecycle } from '@0xproject/dev-utils';
-import { assetProxyUtils } from '@0xproject/order-utils';
+import { assetDataUtils } from '@0xproject/order-utils';
 import { RevertReason, SignedOrder } from '@0xproject/types';
 import { BigNumber } from '@0xproject/utils';
 import { Web3Wrapper } from '@0xproject/web3-wrapper';
@@ -88,8 +88,8 @@ describe(ContractName.Forwarder, () => {
         weth = new DummyERC20TokenContract(wethContract.abi, wethContract.address, provider);
         erc20Wrapper.addDummyTokenContract(weth);
 
-        const wethAssetData = assetProxyUtils.encodeERC20AssetData(wethContract.address);
-        const zrxAssetData = assetProxyUtils.encodeERC20AssetData(zrxToken.address);
+        const wethAssetData = assetDataUtils.encodeERC20AssetData(wethContract.address);
+        const zrxAssetData = assetDataUtils.encodeERC20AssetData(zrxToken.address);
         const exchangeInstance = await ExchangeContract.deployFrom0xArtifactAsync(
             artifacts.Exchange,
             provider,
@@ -114,8 +114,8 @@ describe(ContractName.Forwarder, () => {
             exchangeAddress: exchangeInstance.address,
             makerAddress,
             feeRecipientAddress,
-            makerAssetData: assetProxyUtils.encodeERC20AssetData(defaultMakerAssetAddress),
-            takerAssetData: assetProxyUtils.encodeERC20AssetData(defaultTakerAssetAddress),
+            makerAssetData: assetDataUtils.encodeERC20AssetData(defaultMakerAssetAddress),
+            takerAssetData: assetDataUtils.encodeERC20AssetData(defaultTakerAssetAddress),
             makerAssetAmount: Web3Wrapper.toBaseUnitAmount(new BigNumber(200), DECIMALS_DEFAULT),
             takerAssetAmount: Web3Wrapper.toBaseUnitAmount(new BigNumber(10), DECIMALS_DEFAULT),
             makerFee: Web3Wrapper.toBaseUnitAmount(new BigNumber(1), DECIMALS_DEFAULT),
@@ -151,7 +151,7 @@ describe(ContractName.Forwarder, () => {
         signedOrder = await orderFactory.newSignedOrderAsync();
         signedOrders = [signedOrder];
         feeOrder = await orderFactory.newSignedOrderAsync({
-            makerAssetData: assetProxyUtils.encodeERC20AssetData(zrxToken.address),
+            makerAssetData: assetDataUtils.encodeERC20AssetData(zrxToken.address),
             takerFee: Web3Wrapper.toBaseUnitAmount(new BigNumber(1), DECIMALS_DEFAULT),
         });
         feeOrders = [feeOrder];
@@ -239,7 +239,7 @@ describe(ContractName.Forwarder, () => {
         });
         it('should fill the order when token is ZRX with fees', async () => {
             orderWithFee = await orderFactory.newSignedOrderAsync({
-                makerAssetData: assetProxyUtils.encodeERC20AssetData(zrxToken.address),
+                makerAssetData: assetDataUtils.encodeERC20AssetData(zrxToken.address),
                 takerFee: Web3Wrapper.toBaseUnitAmount(new BigNumber(1), DECIMALS_DEFAULT),
             });
             signedOrdersWithFee = [orderWithFee];
@@ -261,7 +261,7 @@ describe(ContractName.Forwarder, () => {
         });
         it('should fail if sent an ETH amount too high', async () => {
             signedOrder = await orderFactory.newSignedOrderAsync({
-                makerAssetData: assetProxyUtils.encodeERC20AssetData(zrxToken.address),
+                makerAssetData: assetDataUtils.encodeERC20AssetData(zrxToken.address),
                 takerFee: Web3Wrapper.toBaseUnitAmount(new BigNumber(1), DECIMALS_DEFAULT),
             });
             const fillAmount = signedOrder.takerAssetAmount.times(2);
@@ -279,7 +279,7 @@ describe(ContractName.Forwarder, () => {
             });
             signedOrdersWithFee = [orderWithFee];
             feeOrder = await orderFactory.newSignedOrderAsync({
-                makerAssetData: assetProxyUtils.encodeERC20AssetData(zrxToken.address),
+                makerAssetData: assetDataUtils.encodeERC20AssetData(zrxToken.address),
                 makerAssetAmount: Web3Wrapper.toBaseUnitAmount(new BigNumber(1), DECIMALS_DEFAULT),
             });
             feeOrders = [feeOrder];
@@ -296,7 +296,7 @@ describe(ContractName.Forwarder, () => {
             const makerAssetId = erc721MakerAssetIds[0];
             const erc721SignedOrder = await orderFactory.newSignedOrderAsync({
                 makerAssetAmount: new BigNumber(1),
-                makerAssetData: assetProxyUtils.encodeERC721AssetData(erc721Token.address, makerAssetId),
+                makerAssetData: assetDataUtils.encodeERC721AssetData(erc721Token.address, makerAssetId),
             });
             const erc20SignedOrder = await orderFactory.newSignedOrderAsync();
             signedOrders = [erc20SignedOrder, erc721SignedOrder];
@@ -419,7 +419,7 @@ describe(ContractName.Forwarder, () => {
         });
         it('should buy the exact amount of assets when buying zrx with fee abstraction', async () => {
             signedOrder = await orderFactory.newSignedOrderAsync({
-                makerAssetData: assetProxyUtils.encodeERC20AssetData(zrxToken.address),
+                makerAssetData: assetDataUtils.encodeERC20AssetData(zrxToken.address),
                 takerFee: Web3Wrapper.toBaseUnitAmount(new BigNumber(1), DECIMALS_DEFAULT),
             });
             signedOrdersWithFee = [signedOrder];
@@ -448,7 +448,7 @@ describe(ContractName.Forwarder, () => {
         });
         it('throws if fees are higher than 5% when buying zrx', async () => {
             const highFeeZRXOrder = await orderFactory.newSignedOrderAsync({
-                makerAssetData: assetProxyUtils.encodeERC20AssetData(zrxToken.address),
+                makerAssetData: assetDataUtils.encodeERC20AssetData(zrxToken.address),
                 makerAssetAmount: signedOrder.makerAssetAmount,
                 takerFee: signedOrder.makerAssetAmount.times(0.06),
             });
@@ -546,7 +546,7 @@ describe(ContractName.Forwarder, () => {
             const makerAssetId = erc721MakerAssetIds[0];
             signedOrder = await orderFactory.newSignedOrderAsync({
                 makerAssetAmount: new BigNumber(1),
-                makerAssetData: assetProxyUtils.encodeERC721AssetData(erc721Token.address, makerAssetId),
+                makerAssetData: assetDataUtils.encodeERC721AssetData(erc721Token.address, makerAssetId),
             });
             feeOrders = [];
             signedOrders = [signedOrder];
@@ -569,7 +569,7 @@ describe(ContractName.Forwarder, () => {
             signedOrder = await orderFactory.newSignedOrderAsync({
                 makerAssetAmount: new BigNumber(1),
                 takerFee: Web3Wrapper.toBaseUnitAmount(new BigNumber(1), DECIMALS_DEFAULT),
-                makerAssetData: assetProxyUtils.encodeERC721AssetData(erc721Token.address, makerAssetId),
+                makerAssetData: assetDataUtils.encodeERC721AssetData(erc721Token.address, makerAssetId),
             });
             signedOrders = [signedOrder];
             const makerAssetAmount = new BigNumber(signedOrders.length);
@@ -591,7 +591,7 @@ describe(ContractName.Forwarder, () => {
             signedOrder = await orderFactory.newSignedOrderAsync({
                 makerAssetAmount: new BigNumber(1),
                 takerFee: Web3Wrapper.toBaseUnitAmount(new BigNumber(1), DECIMALS_DEFAULT),
-                makerAssetData: assetProxyUtils.encodeERC721AssetData(erc721Token.address, makerAssetId),
+                makerAssetData: assetDataUtils.encodeERC721AssetData(erc721Token.address, makerAssetId),
             });
             signedOrders = [signedOrder];
             feeProportion = 100;
@@ -633,12 +633,12 @@ describe(ContractName.Forwarder, () => {
             const signedOrder1 = await orderFactory.newSignedOrderAsync({
                 makerAssetAmount: new BigNumber(1),
                 takerFee: Web3Wrapper.toBaseUnitAmount(new BigNumber(3), DECIMALS_DEFAULT),
-                makerAssetData: assetProxyUtils.encodeERC721AssetData(erc721Token.address, makerAssetId1),
+                makerAssetData: assetDataUtils.encodeERC721AssetData(erc721Token.address, makerAssetId1),
             });
             const signedOrder2 = await orderFactory.newSignedOrderAsync({
                 makerAssetAmount: new BigNumber(1),
                 takerFee: Web3Wrapper.toBaseUnitAmount(new BigNumber(4), DECIMALS_DEFAULT),
-                makerAssetData: assetProxyUtils.encodeERC721AssetData(erc721Token.address, makerAssetId2),
+                makerAssetData: assetDataUtils.encodeERC721AssetData(erc721Token.address, makerAssetId2),
             });
             signedOrders = [signedOrder1, signedOrder2];
             feeProportion = 10;
@@ -669,19 +669,19 @@ describe(ContractName.Forwarder, () => {
                 makerAssetAmount: erc721MakerAssetAmount,
                 takerAssetAmount: Web3Wrapper.toBaseUnitAmount(new BigNumber(10), DECIMALS_DEFAULT),
                 takerFee: Web3Wrapper.toBaseUnitAmount(new BigNumber(6), DECIMALS_DEFAULT),
-                makerAssetData: assetProxyUtils.encodeERC721AssetData(erc721Token.address, makerAssetId),
+                makerAssetData: assetDataUtils.encodeERC721AssetData(erc721Token.address, makerAssetId),
             });
             signedOrders = [signedOrder];
             const firstFeeOrder = await orderFactory.newSignedOrderAsync({
                 makerAssetAmount: Web3Wrapper.toBaseUnitAmount(new BigNumber(8), DECIMALS_DEFAULT),
                 takerAssetAmount: Web3Wrapper.toBaseUnitAmount(new BigNumber(0.1), DECIMALS_DEFAULT),
-                makerAssetData: assetProxyUtils.encodeERC20AssetData(zrxToken.address),
+                makerAssetData: assetDataUtils.encodeERC20AssetData(zrxToken.address),
                 takerFee: Web3Wrapper.toBaseUnitAmount(new BigNumber(0), DECIMALS_DEFAULT),
             });
             const secondFeeOrder = await orderFactory.newSignedOrderAsync({
                 makerAssetAmount: Web3Wrapper.toBaseUnitAmount(new BigNumber(8), DECIMALS_DEFAULT),
                 takerAssetAmount: Web3Wrapper.toBaseUnitAmount(new BigNumber(0.12), DECIMALS_DEFAULT),
-                makerAssetData: assetProxyUtils.encodeERC20AssetData(zrxToken.address),
+                makerAssetData: assetDataUtils.encodeERC20AssetData(zrxToken.address),
                 takerFee: Web3Wrapper.toBaseUnitAmount(new BigNumber(0), DECIMALS_DEFAULT),
             });
             feeOrders = [firstFeeOrder, secondFeeOrder];
@@ -733,20 +733,20 @@ describe(ContractName.Forwarder, () => {
                 makerAssetAmount: erc721MakerAssetAmount,
                 takerAssetAmount: Web3Wrapper.toBaseUnitAmount(new BigNumber(10), DECIMALS_DEFAULT),
                 takerFee: Web3Wrapper.toBaseUnitAmount(new BigNumber(6), DECIMALS_DEFAULT),
-                makerAssetData: assetProxyUtils.encodeERC721AssetData(erc721Token.address, makerAssetId),
+                makerAssetData: assetDataUtils.encodeERC721AssetData(erc721Token.address, makerAssetId),
             });
             const zrxMakerAssetAmount = Web3Wrapper.toBaseUnitAmount(new BigNumber(8), DECIMALS_DEFAULT);
             signedOrders = [signedOrder];
             const firstFeeOrder = await orderFactory.newSignedOrderAsync({
                 makerAssetAmount: zrxMakerAssetAmount,
                 takerAssetAmount: Web3Wrapper.toBaseUnitAmount(new BigNumber(0.1), DECIMALS_DEFAULT),
-                makerAssetData: assetProxyUtils.encodeERC20AssetData(zrxToken.address),
+                makerAssetData: assetDataUtils.encodeERC20AssetData(zrxToken.address),
                 takerFee: Web3Wrapper.toBaseUnitAmount(new BigNumber(0), DECIMALS_DEFAULT),
             });
             const secondFeeOrder = await orderFactory.newSignedOrderAsync({
                 makerAssetAmount: zrxMakerAssetAmount,
                 takerAssetAmount: Web3Wrapper.toBaseUnitAmount(new BigNumber(0.12), DECIMALS_DEFAULT),
-                makerAssetData: assetProxyUtils.encodeERC20AssetData(zrxToken.address),
+                makerAssetData: assetDataUtils.encodeERC20AssetData(zrxToken.address),
                 takerFee: Web3Wrapper.toBaseUnitAmount(new BigNumber(0), DECIMALS_DEFAULT),
             });
             feeOrders = [firstFeeOrder, secondFeeOrder];
@@ -780,7 +780,7 @@ describe(ContractName.Forwarder, () => {
             const makerAssetId = erc721MakerAssetIds[0];
             const erc721SignedOrder = await orderFactory.newSignedOrderAsync({
                 makerAssetAmount: new BigNumber(1),
-                makerAssetData: assetProxyUtils.encodeERC721AssetData(erc721Token.address, makerAssetId),
+                makerAssetData: assetDataUtils.encodeERC721AssetData(erc721Token.address, makerAssetId),
             });
             const erc20SignedOrder = await orderFactory.newSignedOrderAsync();
             signedOrders = [erc721SignedOrder, erc20SignedOrder];
@@ -798,7 +798,7 @@ describe(ContractName.Forwarder, () => {
             const makerAssetId = erc721MakerAssetIds[0];
             const erc721SignedOrder = await orderFactory.newSignedOrderAsync({
                 makerAssetAmount: new BigNumber(1),
-                makerAssetData: assetProxyUtils.encodeERC721AssetData(erc721Token.address, makerAssetId),
+                makerAssetData: assetDataUtils.encodeERC721AssetData(erc721Token.address, makerAssetId),
             });
             const erc20SignedOrder = await orderFactory.newSignedOrderAsync();
             signedOrders = [erc20SignedOrder, erc721SignedOrder];

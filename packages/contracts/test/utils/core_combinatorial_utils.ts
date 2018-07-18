@@ -1,5 +1,5 @@
 import {
-    assetProxyUtils,
+    assetDataUtils,
     BalanceAndProxyAllowanceLazyStore,
     ExchangeTransferSimulator,
     orderHashUtils,
@@ -72,7 +72,7 @@ export async function coreCombinatorialUtilsFactoryAsync(
         erc20EighteenDecimalTokenB,
         zrxToken,
     ] = await erc20Wrapper.deployDummyTokensAsync(erc20EighteenDecimalTokenCount, eighteenDecimals);
-    const zrxAssetData = assetProxyUtils.encodeERC20AssetData(zrxToken.address);
+    const zrxAssetData = assetDataUtils.encodeERC20AssetData(zrxToken.address);
 
     const erc20FiveDecimalTokenCount = 2;
     const fiveDecimals = new BigNumber(5);
@@ -598,8 +598,8 @@ export class CoreCombinatorialUtils {
                 break;
 
             case TakerAssetFillAmountScenario.LessThanRemainingFillableTakerAssetAmount:
-                const takerAssetProxyId = assetProxyUtils.decodeAssetDataId(signedOrder.takerAssetData);
-                const makerAssetProxyId = assetProxyUtils.decodeAssetDataId(signedOrder.makerAssetData);
+                const takerAssetProxyId = assetDataUtils.decodeAssetProxyId(signedOrder.takerAssetData);
+                const makerAssetProxyId = assetDataUtils.decodeAssetProxyId(signedOrder.makerAssetData);
                 const isEitherAssetERC721 =
                     takerAssetProxyId === AssetProxyId.ERC721 || makerAssetProxyId === AssetProxyId.ERC721;
                 if (isEitherAssetERC721) {

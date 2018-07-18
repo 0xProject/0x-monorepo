@@ -17,6 +17,7 @@ const TESTRPC_PRIVATE_KEYS_STRINGS = [
 ];
 
 export const constants = {
+    BASE_16: 16,
     INVALID_OPCODE: 'invalid opcode',
     TESTRPC_NETWORK_ID: 50,
     // Note(albrow): In practice V8 and most other engines limit the minimum
@@ -47,4 +48,5 @@ export const constants = {
         makerFee: Web3Wrapper.toBaseUnitAmount(new BigNumber(1), 18),
         takerFee: Web3Wrapper.toBaseUnitAmount(new BigNumber(1), 18),
     },
+    WORD_LENGTH: 32,
 };

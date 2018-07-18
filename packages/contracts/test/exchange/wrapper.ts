@@ -1,5 +1,5 @@
 import { BlockchainLifecycle } from '@0xproject/dev-utils';
-import { assetProxyUtils, orderHashUtils } from '@0xproject/order-utils';
+import { assetDataUtils, orderHashUtils } from '@0xproject/order-utils';
 import { RevertReason, SignedOrder } from '@0xproject/types';
 import { BigNumber } from '@0xproject/utils';
 import { Web3Wrapper } from '@0xproject/web3-wrapper';
@@ -85,7 +85,7 @@ describe('Exchange wrappers', () => {
             artifacts.Exchange,
             provider,
             txDefaults,
-            assetProxyUtils.encodeERC20AssetData(zrxToken.address),
+            assetDataUtils.encodeERC20AssetData(zrxToken.address),
         );
         exchangeWrapper = new ExchangeWrapper(exchange, provider);
         await exchangeWrapper.registerAssetProxyAsync(erc20Proxy.address, owner);
@@ -112,8 +112,8 @@ describe('Exchange wrappers', () => {
             exchangeAddress: exchange.address,
             makerAddress,
             feeRecipientAddress,
-            makerAssetData: assetProxyUtils.encodeERC20AssetData(defaultMakerAssetAddress),
-            takerAssetData: assetProxyUtils.encodeERC20AssetData(defaultTakerAssetAddress),
+            makerAssetData: assetDataUtils.encodeERC20AssetData(defaultMakerAssetAddress),
+            takerAssetData: assetDataUtils.encodeERC20AssetData(defaultTakerAssetAddress),
         };
         const privateKey = constants.TESTRPC_PRIVATE_KEYS[accounts.indexOf(makerAddress)];
         orderFactory = new OrderFactory(privateKey, defaultOrderParams);
@@ -311,7 +311,7 @@ describe('Exchange wrappers', () => {
             const signedOrder = await orderFactory.newSignedOrderAsync({
                 makerAssetAmount: makerZRXBalance,
                 makerFee: new BigNumber(1),
-                makerAssetData: assetProxyUtils.encodeERC20AssetData(zrxToken.address),
+                makerAssetData: assetDataUtils.encodeERC20AssetData(zrxToken.address),
             });
             await exchangeWrapper.fillOrderNoThrowAsync(signedOrder, takerAddress);
             const newBalances = await erc20Wrapper.getBalancesAsync();
@@ -323,7 +323,7 @@ describe('Exchange wrappers', () => {
             const signedOrder = await orderFactory.newSignedOrderAsync({
                 makerAssetAmount: new BigNumber(makerZRXAllowance),
                 makerFee: new BigNumber(1),
-                makerAssetData: assetProxyUtils.encodeERC20AssetData(zrxToken.address),
+                makerAssetData: assetDataUtils.encodeERC20AssetData(zrxToken.address),
             });
             await exchangeWrapper.fillOrderNoThrowAsync(signedOrder, takerAddress);
             const newBalances = await erc20Wrapper.getBalancesAsync();
@@ -335,7 +335,7 @@ describe('Exchange wrappers', () => {
             const signedOrder = await orderFactory.newSignedOrderAsync({
                 takerAssetAmount: takerZRXBalance,
                 takerFee: new BigNumber(1),
-                takerAssetData: assetProxyUtils.encodeERC20AssetData(zrxToken.address),
+                takerAssetData: assetDataUtils.encodeERC20AssetData(zrxToken.address),
             });
             await exchangeWrapper.fillOrderNoThrowAsync(signedOrder, takerAddress);
             const newBalances = await erc20Wrapper.getBalancesAsync();
@@ -347,7 +347,7 @@ describe('Exchange wrappers', () => {
             const signedOrder = await orderFactory.newSignedOrderAsync({
                 takerAssetAmount: new BigNumber(takerZRXAllowance),
                 takerFee: new BigNumber(1),
-                takerAssetData: assetProxyUtils.encodeERC20AssetData(zrxToken.address),
+                takerAssetData: assetDataUtils.encodeERC20AssetData(zrxToken.address),
             });
             await exchangeWrapper.fillOrderNoThrowAsync(signedOrder, takerAddress);
             const newBalances = await erc20Wrapper.getBalancesAsync();
@@ -361,8 +361,8 @@ describe('Exchange wrappers', () => {
             const signedOrder = await orderFactory.newSignedOrderAsync({
                 makerAssetAmount: new BigNumber(1),
                 takerAssetAmount: new BigNumber(1),
-                makerAssetData: assetProxyUtils.encodeERC721AssetData(erc721Token.address, makerAssetId),
-                takerAssetData: assetProxyUtils.encodeERC721AssetData(erc721Token.address, takerAssetId),
+                makerAssetData: assetDataUtils.encodeERC721AssetData(erc721Token.address, makerAssetId),
+                takerAssetData: assetDataUtils.encodeERC721AssetData(erc721Token.address, takerAssetId),
             });
             // Verify pre-conditions
             const initialOwnerMakerAsset = await erc721Token.ownerOf.callAsync(makerAssetId);
@@ -700,7 +700,7 @@ describe('Exchange wrappers', () => {
                 signedOrders = [
                     await orderFactory.newSignedOrderAsync(),
                     await orderFactory.newSignedOrderAsync({
-                        takerAssetData: assetProxyUtils.encodeERC20AssetData(zrxToken.address),
+                        takerAssetData: assetDataUtils.encodeERC20AssetData(zrxToken.address),
                     }),
                     await orderFactory.newSignedOrderAsync(),
                 ];
@@ -801,7 +801,7 @@ describe('Exchange wrappers', () => {
                     await orderFactory.newSignedOrderAsync(),
                     await orderFactory.newSignedOrderAsync(),
                     await orderFactory.newSignedOrderAsync({
-                        takerAssetData: assetProxyUtils.encodeERC20AssetData(zrxToken.address),
+                        takerAssetData: assetDataUtils.encodeERC20AssetData(zrxToken.address),
                     }),
                 ];
                 const takerAssetFillAmount = Web3Wrapper.toBaseUnitAmount(new BigNumber(100000), 18);
@@ -918,7 +918,7 @@ describe('Exchange wrappers', () => {
                 signedOrders = [
                     await orderFactory.newSignedOrderAsync(),
                     await orderFactory.newSignedOrderAsync({
-                        makerAssetData: assetProxyUtils.encodeERC20AssetData(zrxToken.address),
+                        makerAssetData: assetDataUtils.encodeERC20AssetData(zrxToken.address),
                     }),
                     await orderFactory.newSignedOrderAsync(),
                 ];
@@ -1017,7 +1017,7 @@ describe('Exchange wrappers', () => {
                     await orderFactory.newSignedOrderAsync(),
                     await orderFactory.newSignedOrderAsync(),
                     await orderFactory.newSignedOrderAsync({
-                        makerAssetData: assetProxyUtils.encodeERC20AssetData(zrxToken.address),
+                        makerAssetData: assetDataUtils.encodeERC20AssetData(zrxToken.address),
                     }),
                 ];
 
