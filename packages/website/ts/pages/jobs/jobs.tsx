@@ -11,8 +11,6 @@ import { Join0x } from 'ts/pages/jobs/join_0x';
 import { Mission } from 'ts/pages/jobs/mission';
 import { OpenPositions } from 'ts/pages/jobs/open_positions';
 import { PhotoRail } from 'ts/pages/jobs/photo_rail';
-import { Teams } from 'ts/pages/jobs/teams';
-import { Values } from 'ts/pages/jobs/values';
 import { Dispatcher } from 'ts/redux/dispatcher';
 import { ScreenWidths } from 'ts/types';
 import { Translate } from 'ts/utils/translate';

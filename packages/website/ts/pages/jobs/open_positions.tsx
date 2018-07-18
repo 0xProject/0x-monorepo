@@ -5,8 +5,6 @@ import * as React from 'react';
 
 import { Retry } from 'ts/components/ui/retry';
 import { Text } from 'ts/components/ui/text';
-import { HeaderItem } from 'ts/pages/jobs/list/header_item';
-import { ListItem } from 'ts/pages/jobs/list/list_item';
 import { colors } from 'ts/style/colors';
 import { styled } from 'ts/style/theme';
 import { ScreenWidths, WebsiteBackendJobInfo } from 'ts/types';
@@ -71,7 +69,6 @@ export class OpenPositions extends React.Component<OpenPositionsProps, OpenPosit
     private _renderList(): React.ReactNode {
         return (
             <div style={{ backgroundColor: colors.jobsPageBackground }}>
-                <HeaderItem headerText={HEADER_TEXT} />
                 {_.map(this.state.jobInfos, jobInfo => (
                     <JobInfoListItem
                         key={jobInfo.id}
@@ -86,7 +83,6 @@ export class OpenPositions extends React.Component<OpenPositionsProps, OpenPosit
     private _renderTable(): React.ReactNode {
         return (
             <div>
-                <HeaderItem headerText={HEADER_TEXT} />
                 <Table selectable={false} onCellClick={this._onCellClick.bind(this)}>
                     <TableHeader displaySelectAll={false} adjustForCheckbox={false}>
                         <TableRow>
@@ -174,14 +170,12 @@ export interface JobInfoListItemProps {
 
 const PlainJobInfoListItem: React.StatelessComponent<JobInfoListItemProps> = ({ title, description, onClick }) => (
     <div className="mb3" onClick={onClick}>
-        <ListItem>
-            <Text fontWeight="bold" fontSize="16px" fontColor={colors.mediumBlue}>
-                {title + ' ›'}
-            </Text>
-            <Text className="pt1" fontSize="16px" fontColor={colors.darkGrey}>
-                {description}
-            </Text>
-        </ListItem>
+        <Text fontWeight="bold" fontSize="16px" fontColor={colors.mediumBlue}>
+            {title + ' ›'}
+        </Text>
+        <Text className="pt1" fontSize="16px" fontColor={colors.darkGrey}>
+            {description}
+        </Text>
     </div>
 );
 

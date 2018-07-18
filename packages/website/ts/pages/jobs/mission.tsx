@@ -10,7 +10,7 @@ export interface MissionProps {
 }
 export const Mission = (props: MissionProps) => {
     const isSmallScreen = props.screenWidth === ScreenWidths.Sm;
-    const image = <img src="/images/jobs/map.png" style={{ width: 500, height: 280 }} />;
+    const image = <img src="/images/jobs/world-map.svg" style={{ maxWidth: 500, maxHeight: 280 }} />;
     const missionStatementClassName = isSmallScreen ? 'center' : undefined;
     const missionStatement = (
         <Container className={missionStatementClassName} maxWidth="388px">
@@ -38,7 +38,7 @@ export const Mission = (props: MissionProps) => {
                     <Container marginLeft="115px">{missionStatement}</Container>
                 </Container>
             ) : (
-                <Container className="flex flex-column items-center" maxWidth="1200px">
+                <Container className="flex flex-column items-center">
                     {missionStatement}
                     <Container marginTop="40px">{image}</Container>
                 </Container>
