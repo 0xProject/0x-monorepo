@@ -100,7 +100,7 @@ export const assetDataUtils = {
      * @param assetData Hex encoded assetData string to decode
      * @return The assetProxyId
      */
-    decodeAssetDataId(assetData: string): AssetProxyId {
+    decodeAssetProxyId(assetData: string): AssetProxyId {
         const encodedAssetData = ethUtil.toBuffer(assetData);
         if (encodedAssetData.byteLength < constants.SELECTOR_LENGTH) {
             throw new Error(
@@ -119,7 +119,7 @@ export const assetDataUtils = {
      * @return Either a ERC20 or ERC721 assetData object
      */
     decodeAssetData(assetData: string): ERC20AssetData | ERC721AssetData {
-        const assetProxyId = assetDataUtils.decodeAssetDataId(assetData);
+        const assetProxyId = assetDataUtils.decodeAssetProxyId(assetData);
         switch (assetProxyId) {
             case AssetProxyId.ERC20:
                 const erc20AssetData = assetDataUtils.decodeERC20AssetData(assetData);

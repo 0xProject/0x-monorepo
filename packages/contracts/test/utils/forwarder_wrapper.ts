@@ -24,7 +24,7 @@ export class ForwarderWrapper {
     private _zrxAddress: string;
     private static _createOptimizedSellOrders(signedOrders: SignedOrder[]): MarketSellOrders {
         const marketSellOrders = formatters.createMarketSellOrders(signedOrders, ZERO_AMOUNT);
-        const assetDataId = assetDataUtils.decodeAssetDataId(signedOrders[0].makerAssetData);
+        const assetDataId = assetDataUtils.decodeAssetProxyId(signedOrders[0].makerAssetData);
         // Contract will fill this in for us as all of the assetData is assumed to be the same
         for (let i = 0; i < signedOrders.length; i++) {
             if (i !== 0 && assetDataId === AssetProxyId.ERC20) {
@@ -90,7 +90,7 @@ export class ForwarderWrapper {
         txData: TxDataPayable,
         opts: { feeProportion?: number; feeRecipient?: string } = {},
     ): Promise<TransactionReceiptWithDecodedLogs> {
-        const assetDataId = assetDataUtils.decodeAssetDataId(orders[0].makerAssetData);
+        const assetDataId = assetDataUtils.decodeAssetProxyId(orders[0].makerAssetData);
         if (assetDataId !== AssetProxyId.ERC20) {
             throw new Error('Asset type not supported by marketSellEthForERC20');
         }
@@ -116,7 +116,7 @@ export class ForwarderWrapper {
         feeProportion: number,
         makerAssetFillAmount: BigNumber,
     ): Promise<BigNumber> {
-        const assetProxyId = assetDataUtils.decodeAssetDataId(orders[0].makerAssetData);
+        const assetProxyId = assetDataUtils.decodeAssetProxyId(orders[0].makerAssetData);
         switch (assetProxyId) {
             case AssetProxyId.ERC20: {
                 const fillAmountWei = this._calculateMarketBuyERC20FillAmountAsync(

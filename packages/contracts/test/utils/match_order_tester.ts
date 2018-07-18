@@ -233,7 +233,7 @@ export class MatchOrderTester {
         const expectedNewERC20BalancesByOwner = _.cloneDeep(erc20BalancesByOwner);
         const expectedNewERC721TokenIdsByOwner = _.cloneDeep(erc721TokenIdsByOwner);
         // Left Maker Asset (Right Taker Asset)
-        const makerAssetProxyIdLeft = assetDataUtils.decodeAssetDataId(signedOrderLeft.makerAssetData);
+        const makerAssetProxyIdLeft = assetDataUtils.decodeAssetProxyId(signedOrderLeft.makerAssetData);
         if (makerAssetProxyIdLeft === AssetProxyId.ERC20) {
             // Decode asset data
             const erc20AssetData = assetDataUtils.decodeERC20AssetData(signedOrderLeft.makerAssetData);
@@ -268,7 +268,7 @@ export class MatchOrderTester {
         }
         // Left Taker Asset (Right Maker Asset)
         // Note: This exchange is only between the order makers: the Taker does not receive any of the left taker asset.
-        const takerAssetProxyIdLeft = assetDataUtils.decodeAssetDataId(signedOrderLeft.takerAssetData);
+        const takerAssetProxyIdLeft = assetDataUtils.decodeAssetProxyId(signedOrderLeft.takerAssetData);
         if (takerAssetProxyIdLeft === AssetProxyId.ERC20) {
             // Decode asset data
             const erc20AssetData = assetDataUtils.decodeERC20AssetData(signedOrderLeft.takerAssetData);

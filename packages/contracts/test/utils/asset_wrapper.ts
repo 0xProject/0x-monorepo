@@ -26,7 +26,7 @@ export class AssetWrapper {
         });
     }
     public async getBalanceAsync(userAddress: string, assetData: string): Promise<BigNumber> {
-        const proxyId = assetDataUtils.decodeAssetDataId(assetData);
+        const proxyId = assetDataUtils.decodeAssetProxyId(assetData);
         switch (proxyId) {
             case AssetProxyId.ERC20: {
                 const erc20Wrapper = this._proxyIdToAssetWrappers[proxyId] as ERC20Wrapper;
@@ -49,7 +49,7 @@ export class AssetWrapper {
         }
     }
     public async setBalanceAsync(userAddress: string, assetData: string, desiredBalance: BigNumber): Promise<void> {
-        const proxyId = assetDataUtils.decodeAssetDataId(assetData);
+        const proxyId = assetDataUtils.decodeAssetProxyId(assetData);
         switch (proxyId) {
             case AssetProxyId.ERC20: {
                 const erc20Wrapper = this._proxyIdToAssetWrappers[proxyId] as ERC20Wrapper;
@@ -107,7 +107,7 @@ export class AssetWrapper {
         }
     }
     public async getProxyAllowanceAsync(userAddress: string, assetData: string): Promise<BigNumber> {
-        const proxyId = assetDataUtils.decodeAssetDataId(assetData);
+        const proxyId = assetDataUtils.decodeAssetProxyId(assetData);
         switch (proxyId) {
             case AssetProxyId.ERC20: {
                 const erc20Wrapper = this._proxyIdToAssetWrappers[proxyId] as ERC20Wrapper;
@@ -141,7 +141,7 @@ export class AssetWrapper {
         assetData: string,
         desiredAllowance: BigNumber,
     ): Promise<void> {
-        const proxyId = assetDataUtils.decodeAssetDataId(assetData);
+        const proxyId = assetDataUtils.decodeAssetProxyId(assetData);
         switch (proxyId) {
             case AssetProxyId.ERC20: {
                 const erc20Wrapper = this._proxyIdToAssetWrappers[proxyId] as ERC20Wrapper;

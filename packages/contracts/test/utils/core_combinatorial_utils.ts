@@ -598,8 +598,8 @@ export class CoreCombinatorialUtils {
                 break;
 
             case TakerAssetFillAmountScenario.LessThanRemainingFillableTakerAssetAmount:
-                const takerAssetProxyId = assetDataUtils.decodeAssetDataId(signedOrder.takerAssetData);
-                const makerAssetProxyId = assetDataUtils.decodeAssetDataId(signedOrder.makerAssetData);
+                const takerAssetProxyId = assetDataUtils.decodeAssetProxyId(signedOrder.takerAssetData);
+                const makerAssetProxyId = assetDataUtils.decodeAssetProxyId(signedOrder.makerAssetData);
                 const isEitherAssetERC721 =
                     takerAssetProxyId === AssetProxyId.ERC721 || makerAssetProxyId === AssetProxyId.ERC721;
                 if (isEitherAssetERC721) {
