@@ -529,4 +529,20 @@ contract MixinWrapperFunctions is
             cancelOrder(orders[i]);
         }
     }
+
+    /// @dev Fetches information for all passed in orders.
+    /// @param orders Array of order specifications.
+    /// @return Array of OrderInfo instances that correspond to each order.
+    function getOrdersInfo(LibOrder.Order[] memory orders)
+        public
+        view
+        returns (LibOrder.OrderInfo[] memory)
+    {
+        uint256 length = orders.length;
+        LibOrder.OrderInfo[] memory ordersInfo = new LibOrder.OrderInfo[](length);
+        for (uint256 i = 0; i < length; i++) {
+            ordersInfo[i] = getOrderInfo(orders[i]);
+        }
+        return ordersInfo;
+    }
 }

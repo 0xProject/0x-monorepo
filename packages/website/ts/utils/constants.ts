@@ -58,7 +58,7 @@ export const constants = {
     PROJECT_URL_MAKER: 'https://makerdao.com',
     PROJECT_URL_ARAGON: 'https://aragon.one',
     PROJECT_URL_BLOCKNET: 'https://blocknet.co',
-    PROJECT_URL_0CEAN: 'http://the0cean.com',
+    PROJECT_URL_0CEAN: 'https://theocean.trade',
     PROJECT_URL_IMTOKEN: 'https://tokenlon.token.im/',
     PROJECT_URL_AUGUR: 'https://augur.net',
     PROJECT_URL_AUCTUS: 'https://auctus.org',

@@ -9,7 +9,6 @@ export enum OrderWatcherError {
 export type EventWatcherCallback = (err: null | Error, log?: LogEntryEvent) => void;
 
 /**
- * stateLayer: Optional blockchain state layer OrderWatcher will monitor for new events. Default=latest.
  * orderExpirationCheckingIntervalMs: How often to check for expired orders. Default=50.
  * eventPollingIntervalMs: How often to poll the Ethereum node for new events. Default=200.
  * expirationMarginMs: Amount of time before order expiry that you'd like to be notified
@@ -18,7 +17,6 @@ export type EventWatcherCallback = (err: null | Error, log?: LogEntryEvent) => v
  * isVerbose: Weather the order watcher should be verbose. Default=true.
  */
 export interface OrderWatcherConfig {
-    stateLayer: BlockParamLiteral;
     orderExpirationCheckingIntervalMs: number;
     eventPollingIntervalMs: number;
     expirationMarginMs: number;

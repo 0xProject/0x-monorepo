@@ -32,6 +32,10 @@
             {
                 "note": "0x.js exports renamed contract events and event arg types",
                 "pr": 863
+            },
+            {
+                "note": "Remove stateLayer config from OrderWatcher. It now always operates on the latest block",
+                "pr": 875
             }
         ]
     },

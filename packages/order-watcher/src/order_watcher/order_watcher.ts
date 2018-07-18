@@ -58,7 +58,6 @@ interface OrderStateByOrderHash {
 }
 
 const DEFAULT_ORDER_WATCHER_CONFIG: OrderWatcherConfig = {
-    stateLayer: BlockParamLiteral.Latest,
     orderExpirationCheckingIntervalMs: 50,
     eventPollingIntervalMs: 200,
     expirationMarginMs: 0,
@@ -66,6 +65,7 @@ const DEFAULT_ORDER_WATCHER_CONFIG: OrderWatcherConfig = {
     cleanupJobIntervalMs: 1000 * 60 * 60, // 1h
     isVerbose: true,
 };
+const STATE_LAYER = BlockParamLiteral.Latest;
 
 /**
  * This class includes all the functionality related to watching a set of orders
@@ -110,20 +110,20 @@ export class OrderWatcher {
         this._eventWatcher = new EventWatcher(
             provider,
             config.eventPollingIntervalMs,
-            config.stateLayer,
+            STATE_LAYER,
             config.isVerbose,
         );
         const balanceAndProxyAllowanceFetcher = new AssetBalanceAndProxyAllowanceFetcher(
             contractWrappers.erc20Token,
             contractWrappers.erc721Token,
-            config.stateLayer,
+            STATE_LAYER,
         );
         this._balanceAndProxyAllowanceLazyStore = new BalanceAndProxyAllowanceLazyStore(
             balanceAndProxyAllowanceFetcher,
         );
         const orderFilledCancelledFetcher = new OrderFilledCancelledFetcher(
             contractWrappers.exchange,
-            config.stateLayer,
+            STATE_LAYER,
         );
         this._orderFilledCancelledLazyStore = new OrderFilledCancelledLazyStore(orderFilledCancelledFetcher);
         this._orderStateUtils = new OrderStateUtils(balanceAndProxyAllowanceFetcher, orderFilledCancelledFetcher);

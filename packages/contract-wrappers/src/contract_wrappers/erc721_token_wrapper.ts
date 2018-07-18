@@ -374,6 +374,7 @@ export class ERC721TokenWrapper extends ContractWrapper {
      * @param   indexFilterValues   An object where the keys are indexed args returned by the event and
      *                              the value is the value you are interested in. E.g `{maker: aUserAddressHex}`
      * @param   callback            Callback that gets called when a log is added/removed
+     * @param   isVerbose           Enable verbose subscription warnings (e.g recoverable network issues encountered)
      * @return Subscription token used later to unsubscribe
      */
     public subscribe<ArgsType extends ERC721TokenEventArgs>(
@@ -381,6 +382,7 @@ export class ERC721TokenWrapper extends ContractWrapper {
         eventName: ERC721TokenEvents,
         indexFilterValues: IndexedFilterValues,
         callback: EventCallback<ArgsType>,
+        isVerbose: boolean = false,
     ): string {
         assert.isETHAddressHex('tokenAddress', tokenAddress);
         assert.doesBelongToStringEnum('eventName', eventName, ERC721TokenEvents);
@@ -393,6 +395,7 @@ export class ERC721TokenWrapper extends ContractWrapper {
             indexFilterValues,
             artifacts.ERC721Token.compilerOutput.abi,
             callback,
+            isVerbose,
         );
         return subscriptionToken;
     }
