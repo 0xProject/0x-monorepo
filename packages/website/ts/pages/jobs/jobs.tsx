@@ -43,7 +43,7 @@ export class Jobs extends React.Component<JobsProps, JobsState> {
     public render(): React.ReactNode {
         return (
             <div>
-                <DocumentTitle title="Jobs" />
+                <DocumentTitle title="Careers at 0x" />
                 <TopBar
                     blockchainIsLoaded={false}
                     location={this.props.location}

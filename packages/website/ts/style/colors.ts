@@ -10,6 +10,7 @@ const appColors = {
     drawerMenuBackground: '#4a4a4a',
     menuItemDefaultSelectedBackground: '#424242',
     jobsPageBackground: sharedColors.grey50,
+    jobsPageDivider: '#cccccc',
     jobsPageOpenPositionRow: sharedColors.grey100,
     metaMaskOrange: '#f68c24',
     metaMaskTransparentOrange: 'rgba(255, 248, 242, 0.8)',

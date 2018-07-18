@@ -47,7 +47,11 @@ export class OpenPositions extends React.Component<OpenPositionsProps, OpenPosit
         const isSmallScreen = this.props.screenWidth === ScreenWidths.Sm;
         return (
             <Container id={this.props.hash} className="mx-auto pb4 px3" maxWidth="1200px">
-                {!isSmallScreen && <hr />}
+                {!isSmallScreen && (
+                    <hr
+                        style={{ border: 0, borderTop: 1, borderStyle: 'solid', borderColor: colors.jobsPageDivider }}
+                    />
+                )}
                 <Container marginTop="64px" marginBottom="50px">
                     <Text fontFamily="Roboto Mono" fontSize="24px" fontColor={colors.black}>
                         Open Positions

@@ -115,7 +115,7 @@ export class Footer extends React.Component<FooterProps, FooterState> {
                 {
                     title: this.props.translate.get(Key.Careers, Deco.Cap),
                     isExternal: false,
-                    path: WebsitePaths.Jobs,
+                    path: WebsitePaths.Careers,
                 },
                 {
                     title: this.props.translate.get(Key.Contact, Deco.Cap),
