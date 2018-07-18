@@ -4,6 +4,7 @@ import * as React from 'react';
 
 import { Button } from 'ts/components/ui/button';
 import { Container } from 'ts/components/ui/container';
+import { Image } from 'ts/components/ui/image';
 import { Text } from 'ts/components/ui/text';
 
 const BUTTON_TEXT = 'View open positions';
@@ -14,7 +15,16 @@ export interface Join0xProps {
 
 export const Join0x = (props: Join0xProps) => (
     <div className="clearfix center lg-py4 md-py4" style={{ backgroundColor: colors.white, color: colors.black }}>
-        <div className="mx-auto inline-block align-middle py4" style={{ lineHeight: '44px', textAlign: 'center' }}>
+        <div
+            className="mx-auto inline-block align-middle py4"
+            style={{ lineHeight: '44px', textAlign: 'center', position: 'relative' }}
+        >
+            <Container className="sm-hide" position="absolute" left="100%" marginLeft="80px">
+                <Image src="images/jobs/hero-dots-right.svg" width="400px" />
+            </Container>
+            <Container className="sm-hide" position="absolute" right="100%" marginRight="80px">
+                <Image src="images/jobs/hero-dots-left.svg" width="400px" />
+            </Container>
             <div className="h2 sm-center sm-pt3" style={{ fontFamily: 'Roboto Mono' }}>
                 Join 0x
             </div>
