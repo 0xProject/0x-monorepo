@@ -63,7 +63,6 @@
         "no-invalid-this": true,
         "no-misused-new": true,
         "no-non-null-assertion": true,
-        "no-redundant-jsdoc": true,
         "no-parameter-reassignment": true,
         "no-redundant-jsdoc": true,
         "no-return-await": true,

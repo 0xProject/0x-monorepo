@@ -68,8 +68,8 @@ export class ExpirationWatcher {
     private _pruneExpiredOrders(callback: (orderHash: string) => void): void {
         const currentUnixTimestampMs = utils.getCurrentUnixTimestampMs();
         while (true) {
-            const hasTrakedOrders = this._orderHashByExpirationRBTree.size === 0;
-            if (hasTrakedOrders) {
+            const hasNoTrackedOrders = this._orderHashByExpirationRBTree.size === 0;
+            if (hasNoTrackedOrders) {
                 break;
             }
             const nextOrderHashToExpire = this._orderHashByExpirationRBTree.min();
