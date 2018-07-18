@@ -5,12 +5,10 @@ import * as DocumentTitle from 'react-document-title';
 
 import { Footer } from 'ts/components/footer';
 import { TopBar } from 'ts/components/top_bar/top_bar';
-import { FilledImage } from 'ts/components/ui/filled_image';
 import { Benefits } from 'ts/pages/jobs/benefits';
 import { Join0x } from 'ts/pages/jobs/join_0x';
 import { Mission } from 'ts/pages/jobs/mission';
 import { OpenPositions } from 'ts/pages/jobs/open_positions';
-import { PhotoRail } from 'ts/pages/jobs/photo_rail';
 import { Dispatcher } from 'ts/redux/dispatcher';
 import { ScreenWidths } from 'ts/types';
 import { Translate } from 'ts/utils/translate';
@@ -18,7 +16,6 @@ import { utils } from 'ts/utils/utils';
 
 const OPEN_POSITIONS_HASH = 'positions';
 const THROTTLE_TIMEOUT = 100;
-const PHOTO_RAIL_IMAGES = ['/images/jobs/office1.png', '/images/jobs/office2.png', '/images/jobs/office3.png'];
 
 export interface JobsProps {
     location: Location;
@@ -64,9 +61,5 @@ export class Jobs extends React.Component<JobsProps, JobsState> {
     private _updateScreenWidth(): void {
         const newScreenWidth = utils.getScreenWidth();
         this.props.dispatcher.updateScreenWidth(newScreenWidth);
-    }
-    private _isSmallScreen(): boolean {
-        const isSmallScreen = this.props.screenWidth === ScreenWidths.Sm;
-        return isSmallScreen;
     }
 }

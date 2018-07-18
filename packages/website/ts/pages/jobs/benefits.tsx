@@ -3,13 +3,11 @@ import * as React from 'react';
 
 import { Circle } from 'ts/components/ui/circle';
 import { Container } from 'ts/components/ui/container';
-import { FilledImage } from 'ts/components/ui/filled_image';
 import { Image } from 'ts/components/ui/image';
 import { Text } from 'ts/components/ui/text';
 import { colors } from 'ts/style/colors';
 import { ScreenWidths } from 'ts/types';
 import { constants } from 'ts/utils/constants';
-import { utils } from 'ts/utils/utils';
 
 const BENEFITS = [
     'Comprehensive insurance. Medical, dental, and vision coverage for you and your family.',
@@ -100,9 +98,6 @@ const BenefitItem: React.StatelessComponent<BenefitItemProps> = ({ description }
     </Container>
 );
 
-const openMissionAndValuesBlogPost = () => {
-    utils.openUrl(constants.URL_MISSION_AND_VALUES_BLOG_POST);
-};
 const ValuesList = () => {
     return (
         <Container maxWidth="360px">

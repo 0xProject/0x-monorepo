@@ -1,6 +1,5 @@
 import * as _ from 'lodash';
 import CircularProgress from 'material-ui/CircularProgress';
-import { Table, TableBody, TableHeader, TableHeaderColumn, TableRow, TableRowColumn } from 'material-ui/Table';
 import * as React from 'react';
 
 import { Container } from 'ts/components/ui/container';
@@ -12,8 +11,6 @@ import { ScreenWidths, WebsiteBackendJobInfo } from 'ts/types';
 import { backendClient } from 'ts/utils/backend_client';
 import { utils } from 'ts/utils/utils';
 
-const labelStyle = { fontFamily: 'Roboto Mono', fontSize: 18 };
-const HEADER_TEXT = 'Open Positions';
 const TABLE_ROW_MIN_HEIGHT = 100;
 
 export interface OpenPositionsProps {
@@ -87,17 +84,6 @@ export class OpenPositions extends React.Component<OpenPositionsProps, OpenPosit
                         />
                     );
                 })}
-            </Container>
-        );
-    }
-    private _renderJobInfoTableRow(jobInfo: WebsiteBackendJobInfo): React.ReactNode {
-        return (
-            <Container className="flex items-center" minHeight={TABLE_ROW_MIN_HEIGHT} width="100%" marginBottom="30px">
-                <Container className="clearfix container" width="100%">
-                    <Container className="col col-5">{jobInfo.title}</Container>
-                    <Container className="col col-3">{jobInfo.department}</Container>
-                    <Container className="col col-4">{jobInfo.office}</Container>
-                </Container>
             </Container>
         );
     }
