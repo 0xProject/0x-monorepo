@@ -1,6 +1,6 @@
 {
     "name": "0x.js",
-    "version": "0.38.5",
+    "version": "0.38.6",
     "engines": {
         "node": ">=6.12"
     },
@@ -70,9 +70,9 @@
     },
     "license": "Apache-2.0",
     "devDependencies": {
-        "@0xproject/abi-gen": "^0.3.3",
-        "@0xproject/dev-utils": "^0.4.5",
-        "@0xproject/migrations": "^0.0.9",
+        "@0xproject/abi-gen": "^0.3.4",
+        "@0xproject/dev-utils": "^0.4.6",
+        "@0xproject/migrations": "^0.0.10",
         "@0xproject/monorepo-scripts": "^0.2.2",
         "@0xproject/tslint-config": "^0.4.21",
         "@types/lodash": "4.14.104",
@@ -100,16 +100,16 @@
         "webpack": "^3.1.0"
     },
     "dependencies": {
-        "@0xproject/assert": "^0.2.13",
-        "@0xproject/base-contract": "^0.3.5",
-        "@0xproject/contract-wrappers": "^0.1.0",
+        "@0xproject/assert": "^0.2.14",
+        "@0xproject/base-contract": "^0.3.6",
+        "@0xproject/contract-wrappers": "^0.1.1",
         "@0xproject/order-utils": "^1.0.0",
-        "@0xproject/sol-compiler": "^0.5.3",
-        "@0xproject/subproviders": "^0.10.5",
+        "@0xproject/sol-compiler": "^0.5.4",
+        "@0xproject/subproviders": "^0.10.6",
         "@0xproject/types": "^1.0.0",
-        "@0xproject/typescript-typings": "^0.4.2",
-        "@0xproject/utils": "^0.7.2",
-        "@0xproject/web3-wrapper": "^0.7.2",
+        "@0xproject/typescript-typings": "^0.4.3",
+        "@0xproject/utils": "^0.7.3",
+        "@0xproject/web3-wrapper": "^0.7.3",
         "ethereum-types": "^0.0.2",
         "ethers": "3.0.22",
         "lodash": "^4.17.4"
