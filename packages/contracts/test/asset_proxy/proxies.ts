@@ -23,6 +23,7 @@ import { constants } from '../utils/constants';
 import { ERC20Wrapper } from '../utils/erc20_wrapper';
 import { ERC721Wrapper } from '../utils/erc721_wrapper';
 import { LogDecoder } from '../utils/log_decoder';
+import { typeEncodingUtils } from '../utils/type_encoding_utils';
 import { provider, txDefaults, web3Wrapper } from '../utils/web3_wrapper';
 
 chaiSetup.configure();
@@ -288,7 +289,7 @@ describe('Asset Transfer Proxies', () => {
 
             it('should call onERC721Received when transferring to a smart contract with receiver data', async () => {
                 // Construct ERC721 asset data
-                const receiverData = ethUtil.bufferToHex(assetDataUtils.encodeUint256(generatePseudoRandomSalt()));
+                const receiverData = ethUtil.bufferToHex(typeEncodingUtils.encodeUint256(generatePseudoRandomSalt()));
                 const encodedAssetData = assetDataUtils.encodeERC721AssetData(
                     erc721Token.address,
                     erc721MakerTokenId,
@@ -327,7 +328,7 @@ describe('Asset Transfer Proxies', () => {
 
             it('should throw if there is receiver data but contract does not have onERC721Received', async () => {
                 // Construct ERC721 asset data
-                const receiverData = ethUtil.bufferToHex(assetDataUtils.encodeUint256(generatePseudoRandomSalt()));
+                const receiverData = ethUtil.bufferToHex(typeEncodingUtils.encodeUint256(generatePseudoRandomSalt()));
                 const encodedAssetData = assetDataUtils.encodeERC721AssetData(
                     erc721Token.address,
                     erc721MakerTokenId,

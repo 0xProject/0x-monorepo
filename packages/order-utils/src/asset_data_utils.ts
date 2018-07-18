@@ -7,19 +7,6 @@ import ethUtil = require('ethereumjs-util');
 import { constants } from './constants';
 
 export const assetDataUtils = {
-    encodeUint256(value: BigNumber): Buffer {
-        const base = 10;
-        const formattedValue = new BN(value.toString(base));
-        const encodedValue = ethUtil.toBuffer(formattedValue);
-        // tslint:disable-next-line:custom-no-magic-numbers
-        const paddedValue = ethUtil.setLengthLeft(encodedValue, constants.WORD_LENGTH);
-        return paddedValue;
-    },
-    decodeUint256(encodedValue: Buffer): BigNumber {
-        const formattedValue = ethUtil.bufferToHex(encodedValue);
-        const value = new BigNumber(formattedValue, constants.BASE_16);
-        return value;
-    },
     encodeERC20AssetData(tokenAddress: string): string {
         return ethUtil.bufferToHex(ethAbi.simpleEncode('ERC20Token(address)', tokenAddress));
     },
@@ -95,7 +82,7 @@ export const assetDataUtils = {
             );
         }
         const encodedAssetProxyId = encodedAssetData.slice(0, constants.SELECTOR_LENGTH);
-        const assetProxyId = assetDataUtils._decodeAssetProxyId(encodedAssetProxyId);
+        const assetProxyId = decodeAssetProxyId(encodedAssetProxyId);
         return assetProxyId;
     },
     decodeAssetData(assetData: string): ERC20AssetData | ERC721AssetData {
@@ -111,14 +98,15 @@ export const assetDataUtils = {
                 throw new Error(`Unrecognized asset proxy id: ${assetProxyId}`);
         }
     },
-    _decodeAssetProxyId(encodedAssetProxyId: Buffer): AssetProxyId {
-        const hexString = ethUtil.bufferToHex(encodedAssetProxyId);
-        if (hexString === AssetProxyId.ERC20) {
-            return AssetProxyId.ERC20;
-        }
-        if (hexString === AssetProxyId.ERC721) {
-            return AssetProxyId.ERC721;
-        }
-        throw new Error(`Invalid ProxyId: ${hexString}`);
-    },
 };
+
+function decodeAssetProxyId(encodedAssetProxyId: Buffer): AssetProxyId {
+    const hexString = ethUtil.bufferToHex(encodedAssetProxyId);
+    if (hexString === AssetProxyId.ERC20) {
+        return AssetProxyId.ERC20;
+    }
+    if (hexString === AssetProxyId.ERC721) {
+        return AssetProxyId.ERC721;
+    }
+    throw new Error(`Invalid ProxyId: ${hexString}`);
+}
