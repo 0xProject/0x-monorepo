@@ -5,8 +5,16 @@
             {
                 "note": "Add `EthLightwalletSubprovider`"
             }
-        ],
-        "timestamp": 1531149657
+        ]
+    },
+    {
+        "timestamp": 1531919263,
+        "version": "0.10.6",
+        "changes": [
+            {
+                "note": "Dependencies updated"
+            }
+        ]
     },
     {
         "timestamp": 1529397769,

@@ -5,6 +5,10 @@ Edit the package's CHANGELOG.json file only.
 
 CHANGELOG
 
+## v0.10.6 - _July 18, 2018_
+
+    * Dependencies updated
+
 ## v0.10.5 - _July 9, 2018_
 
     * Update web3-provider-engine to v14.0.6 including the leaked global.XMLHttpRequest bug fix
