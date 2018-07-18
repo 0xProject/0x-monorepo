@@ -17,7 +17,10 @@ import {
     MessagePrefixOpts,
     orderHashUtils,
 } from '@0xproject/order-utils';
-import { ECSignature, Order, SignedOrder } from '@0xproject/types';
+// HACK: Since we export assetDataUtils from ZeroEx and it has AssetProxyId, ERC20AssetData and ERC721AssetData
+// in it's public interface, we need to import these types here.
+// tslint:disable-next-line:no-unused-variable
+import { AssetProxyId, ECSignature, ERC20AssetData, ERC721AssetData, Order, SignedOrder } from '@0xproject/types';
 import { BigNumber } from '@0xproject/utils';
 import { Web3Wrapper } from '@0xproject/web3-wrapper';
 import { Provider, TransactionReceiptWithDecodedLogs } from 'ethereum-types';
