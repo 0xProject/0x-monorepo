@@ -7,9 +7,20 @@ import ethUtil = require('ethereumjs-util');
 import { constants } from './constants';
 
 export const assetDataUtils = {
+    /**
+     * Encodes an ERC20 token address into a hex encoded assetData string, usable in the makerAssetData or
+     * takerAssetData fields in a 0x order.
+     * @param tokenAddress  The ERC20 token address to encode
+     * @return The hex encoded assetData string
+     */
     encodeERC20AssetData(tokenAddress: string): string {
         return ethUtil.bufferToHex(ethAbi.simpleEncode('ERC20Token(address)', tokenAddress));
     },
+    /**
+     * Decodes an ERC20 assetData hex string into it's corresponding ERC20 tokenAddress & assetProxyId
+     * @param assetData Hex encoded assetData string to decode
+     * @return An object containing the decoded tokenAddress & assetProxyId
+     */
     decodeERC20AssetData(assetData: string): ERC20AssetData {
         const data = ethUtil.toBuffer(assetData);
         if (data.byteLength < constants.ERC20_ASSET_DATA_BYTE_LENGTH) {
@@ -33,6 +44,13 @@ export const assetDataUtils = {
             tokenAddress: ethUtil.addHexPrefix(tokenAddress),
         };
     },
+    /**
+     * Encodes an ERC721 token address into a hex encoded assetData string, usable in the makerAssetData or
+     * takerAssetData fields in a 0x order.
+     * @param tokenAddress  The ERC721 token address to encode
+     * @param tokenId  The ERC721 tokenId to encode
+     * @return The hex encoded assetData string
+     */
     encodeERC721AssetData(tokenAddress: string, tokenId: BigNumber, receiverData?: string): string {
         // TODO: Pass `tokendId` as a BigNumber.
         return ethUtil.bufferToHex(
@@ -44,6 +62,11 @@ export const assetDataUtils = {
             ),
         );
     },
+    /**
+     * Decodes an ERC721 assetData hex string into it's corresponding ERC721 tokenAddress, tokenId & assetProxyId
+     * @param assetData Hex encoded assetData string to decode
+     * @return An object containing the decoded tokenAddress, tokenId & assetProxyId
+     */
     decodeERC721AssetData(assetData: string): ERC721AssetData {
         const data = ethUtil.toBuffer(assetData);
         if (data.byteLength < constants.ERC721_ASSET_DATA_MINIMUM_BYTE_LENGTH) {
@@ -72,11 +95,16 @@ export const assetDataUtils = {
             receiverData: ethUtil.bufferToHex(receiverData),
         };
     },
+    /**
+     * Decode and return the assetProxyId from the assetData
+     * @param assetData Hex encoded assetData string to decode
+     * @return The assetProxyId
+     */
     decodeAssetDataId(assetData: string): AssetProxyId {
         const encodedAssetData = ethUtil.toBuffer(assetData);
         if (encodedAssetData.byteLength < constants.SELECTOR_LENGTH) {
             throw new Error(
-                `Could not decode Proxy Data. Expected length of encoded data to be at least 4. Got ${
+                `Could not decode assetData. Expected length of encoded data to be at least 4. Got ${
                     encodedAssetData.byteLength
                 }`,
             );
@@ -85,6 +113,11 @@ export const assetDataUtils = {
         const assetProxyId = decodeAssetProxyId(encodedAssetProxyId);
         return assetProxyId;
     },
+    /**
+     * Decode any assetData into it's corresponding assetData object
+     * @param assetData Hex encoded assetData string to decode
+     * @return Either a ERC20 or ERC721 assetData object
+     */
     decodeAssetData(assetData: string): ERC20AssetData | ERC721AssetData {
         const assetProxyId = assetDataUtils.decodeAssetDataId(assetData);
         switch (assetProxyId) {
