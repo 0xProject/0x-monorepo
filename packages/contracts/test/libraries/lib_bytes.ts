@@ -1,5 +1,5 @@
 import { BlockchainLifecycle } from '@0xproject/dev-utils';
-import { assetProxyUtils, generatePseudoRandomSalt } from '@0xproject/order-utils';
+import { generatePseudoRandomSalt } from '@0xproject/order-utils';
 import { RevertReason } from '@0xproject/types';
 import { BigNumber } from '@0xproject/utils';
 import BN = require('bn.js');
@@ -12,6 +12,7 @@ import { artifacts } from '../utils/artifacts';
 import { expectContractCallFailed } from '../utils/assertions';
 import { chaiSetup } from '../utils/chai_setup';
 import { constants } from '../utils/constants';
+import { typeEncodingUtils } from '../utils/type_encoding_utils';
 import { provider, txDefaults, web3Wrapper } from '../utils/web3_wrapper';
 
 chaiSetup.configure();
@@ -74,20 +75,20 @@ describe('LibBytes', () => {
         shortData = '0xffffaa';
         const encodedShortData = ethUtil.toBuffer(shortData);
         const shortDataLength = new BigNumber(encodedShortData.byteLength);
-        const encodedShortDataLength = assetProxyUtils.encodeUint256(shortDataLength);
+        const encodedShortDataLength = typeEncodingUtils.encodeUint256(shortDataLength);
         shortTestBytesAsBuffer = Buffer.concat([encodedShortDataLength, encodedShortData]);
         shortTestBytes = ethUtil.bufferToHex(shortTestBytesAsBuffer);
         // Create test bytes one word in length
-        wordOfData = ethUtil.bufferToHex(assetProxyUtils.encodeUint256(generatePseudoRandomSalt()));
+        wordOfData = ethUtil.bufferToHex(typeEncodingUtils.encodeUint256(generatePseudoRandomSalt()));
         const encodedWordOfData = ethUtil.toBuffer(wordOfData);
         const wordOfDataLength = new BigNumber(encodedWordOfData.byteLength);
-        const encodedWordOfDataLength = assetProxyUtils.encodeUint256(wordOfDataLength);
+        const encodedWordOfDataLength = typeEncodingUtils.encodeUint256(wordOfDataLength);
         wordOfTestBytesAsBuffer = Buffer.concat([encodedWordOfDataLength, encodedWordOfData]);
         wordOfTestBytes = ethUtil.bufferToHex(wordOfTestBytesAsBuffer);
         // Create long test bytes (combines short test bytes with word of test bytes)
         longData = ethUtil.bufferToHex(Buffer.concat([encodedShortData, encodedWordOfData]));
         const longDataLength = new BigNumber(encodedShortData.byteLength + encodedWordOfData.byteLength);
-        const encodedLongDataLength = assetProxyUtils.encodeUint256(longDataLength);
+        const encodedLongDataLength = typeEncodingUtils.encodeUint256(longDataLength);
         longTestBytesAsBuffer = Buffer.concat([encodedLongDataLength, encodedShortData, encodedWordOfData]);
         longTestBytes = ethUtil.bufferToHex(longTestBytesAsBuffer);
     });

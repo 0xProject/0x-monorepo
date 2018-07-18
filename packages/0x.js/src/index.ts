@@ -12,6 +12,9 @@ export {
     OrderStateInvalid,
     OrderState,
     Token,
+    ERC20AssetData,
+    ERC721AssetData,
+    AssetProxyId,
 } from '@0xproject/types';
 
 export {
@@ -59,4 +62,5 @@ export {
     ExchangeCancelEventArgs,
     ExchangeEventArgs,
     ContractWrappersConfig,
+    OrderInfo,
 } from '@0xproject/contract-wrappers';

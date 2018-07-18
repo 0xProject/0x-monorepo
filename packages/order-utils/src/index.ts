@@ -20,7 +20,7 @@ export { BalanceAndProxyAllowanceLazyStore } from './store/balance_and_proxy_all
 export { OrderFilledCancelledLazyStore } from './store/order_filled_cancelled_lazy_store';
 export { RemainingFillableCalculator } from './remaining_fillable_calculator';
 export { OrderStateUtils } from './order_state_utils';
-export { assetProxyUtils } from './asset_proxy_utils';
+export { assetDataUtils } from './asset_data_utils';
 export { EIP712Utils } from './eip712_utils';
 export { OrderValidationUtils } from './order_validation_utils';
 export { ExchangeTransferSimulator } from './exchange_transfer_simulator';
