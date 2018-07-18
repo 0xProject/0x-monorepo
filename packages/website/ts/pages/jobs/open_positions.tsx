@@ -106,10 +106,9 @@ export class OpenPositions extends React.Component<OpenPositionsProps, OpenPosit
                 });
             }
             const jobInfos = await backendClient.getJobInfosAsync();
-            const dummyJobInfos = _.concat(jobInfos, jobInfos, jobInfos, jobInfos);
             if (!this._isUnmounted) {
                 this.setState({
-                    jobInfos: dummyJobInfos,
+                    jobInfos,
                 });
             }
         } catch (error) {

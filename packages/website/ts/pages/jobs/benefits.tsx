@@ -5,7 +5,7 @@ import { Circle } from 'ts/components/ui/circle';
 import { Container } from 'ts/components/ui/container';
 import { FilledImage } from 'ts/components/ui/filled_image';
 import { Image } from 'ts/components/ui/image';
-import { Text } from 'ts/components/ui/Text';
+import { Text } from 'ts/components/ui/text';
 import { colors } from 'ts/style/colors';
 import { ScreenWidths } from 'ts/types';
 import { constants } from 'ts/utils/constants';
@@ -79,7 +79,7 @@ const BenefitsList = () => {
     return (
         <Container maxWidth="360px">
             <Header>Benefits</Header>
-            {_.map(BENEFITS, benefit => <BenefitItem description={benefit} />)}
+            {_.map(BENEFITS, benefit => <BenefitItem key={benefit} description={benefit} />)}
         </Container>
     );
 };
@@ -107,7 +107,7 @@ const ValuesList = () => {
     return (
         <Container maxWidth="360px">
             <Header>Our Values</Header>
-            {_.map(VALUES, value => <ValueItem {...value} />)}
+            {_.map(VALUES, value => <ValueItem key={value.text} {...value} />)}
             <Text fontSize="14px" lineHeight="26px">
                 We care deeply about our mission and encourage you to{' '}
                 <a
