@@ -51,7 +51,7 @@ export const Benefits = (props: BenefitsProps) => {
             {!isSmallScreen ? (
                 <Container className="flex" maxWidth="800px">
                     <BenefitsList />
-                    <Container marginLeft="200px">
+                    <Container marginLeft="215px">
                         <ValuesList />
                     </Container>
                 </Container>

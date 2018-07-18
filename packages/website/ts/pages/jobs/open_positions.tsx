@@ -3,6 +3,7 @@ import CircularProgress from 'material-ui/CircularProgress';
 import { Table, TableBody, TableHeader, TableHeaderColumn, TableRow, TableRowColumn } from 'material-ui/Table';
 import * as React from 'react';
 
+import { Container } from 'ts/components/ui/container';
 import { Retry } from 'ts/components/ui/retry';
 import { Text } from 'ts/components/ui/text';
 import { colors } from 'ts/style/colors';
@@ -43,15 +44,18 @@ export class OpenPositions extends React.Component<OpenPositionsProps, OpenPosit
     }
     public render(): React.ReactNode {
         const isReadyToRender = _.isUndefined(this.state.error) && !_.isUndefined(this.state.jobInfos);
-        return (
-            <div id={this.props.hash} className="mx-auto max-width-4">
-                {isReadyToRender ? this._renderBody() : this._renderLoading()}
-            </div>
-        );
-    }
-    private _renderBody(): React.ReactNode {
         const isSmallScreen = this.props.screenWidth === ScreenWidths.Sm;
-        return isSmallScreen ? this._renderList() : this._renderTable();
+        return (
+            <Container id={this.props.hash} className="mx-auto pb4 sm-px3" maxWidth="1200px">
+                {!isSmallScreen && <hr />}
+                <Container marginTop="64px" marginBottom="50px">
+                    <Text fontFamily="Roboto Mono" fontSize="24px" fontColor={colors.black}>
+                        Open Positions
+                    </Text>
+                </Container>
+                {isReadyToRender ? this._renderTable() : this._renderLoading()}
+            </Container>
+        );
     }
     private _renderLoading(): React.ReactNode {
         return (
@@ -66,64 +70,31 @@ export class OpenPositions extends React.Component<OpenPositionsProps, OpenPosit
             </div>
         );
     }
-    private _renderList(): React.ReactNode {
-        return (
-            <div style={{ backgroundColor: colors.jobsPageBackground }}>
-                {_.map(this.state.jobInfos, jobInfo => (
-                    <JobInfoListItem
-                        key={jobInfo.id}
-                        title={jobInfo.title}
-                        description={jobInfo.department}
-                        onClick={this._openJobInfoUrl.bind(this, jobInfo)}
-                    />
-                ))}
-            </div>
-        );
-    }
     private _renderTable(): React.ReactNode {
         return (
-            <div>
-                <Table selectable={false} onCellClick={this._onCellClick.bind(this)}>
-                    <TableHeader displaySelectAll={false} adjustForCheckbox={false}>
-                        <TableRow>
-                            <TableHeaderColumn colSpan={5} style={labelStyle}>
-                                Position
-                            </TableHeaderColumn>
-                            <TableHeaderColumn colSpan={3} style={labelStyle}>
-                                Department
-                            </TableHeaderColumn>
-                            <TableHeaderColumn colSpan={4} style={labelStyle}>
-                                Office
-                            </TableHeaderColumn>
-                        </TableRow>
-                    </TableHeader>
-                    <TableBody displayRowCheckbox={false} showRowHover={true}>
-                        {_.map(this.state.jobInfos, jobInfo => {
-                            return this._renderJobInfoTableRow(jobInfo);
-                        })}
-                    </TableBody>
-                </Table>
-            </div>
+            <Container width="100%">
+                {_.map(this.state.jobInfos, jobInfo => {
+                    return (
+                        <JobInfoTableRow
+                            key={jobInfo.id}
+                            screenWidth={this.props.screenWidth}
+                            jobInfo={jobInfo}
+                            onClick={this._openJobInfoUrl.bind(this, jobInfo)}
+                        />
+                    );
+                })}
+            </Container>
         );
     }
     private _renderJobInfoTableRow(jobInfo: WebsiteBackendJobInfo): React.ReactNode {
         return (
-            <TableRow
-                key={jobInfo.id}
-                hoverable={true}
-                displayBorder={false}
-                style={{ height: TABLE_ROW_MIN_HEIGHT, border: 2 }}
-            >
-                <TableRowColumn colSpan={5} style={labelStyle}>
-                    {jobInfo.title}
-                </TableRowColumn>
-                <TableRowColumn colSpan={3} style={labelStyle}>
-                    {jobInfo.department}
-                </TableRowColumn>
-                <TableRowColumn colSpan={4} style={labelStyle}>
-                    {jobInfo.office}
-                </TableRowColumn>
-            </TableRow>
+            <Container className="flex items-center" minHeight={TABLE_ROW_MIN_HEIGHT} width="100%" marginBottom="30px">
+                <Container className="clearfix container" width="100%">
+                    <Container className="col col-5">{jobInfo.title}</Container>
+                    <Container className="col col-3">{jobInfo.department}</Container>
+                    <Container className="col col-4">{jobInfo.office}</Container>
+                </Container>
+            </Container>
         );
     }
     private async _fetchJobInfosAsync(): Promise<void> {
@@ -135,9 +106,10 @@ export class OpenPositions extends React.Component<OpenPositionsProps, OpenPosit
                 });
             }
             const jobInfos = await backendClient.getJobInfosAsync();
+            const dummyJobInfos = _.concat(jobInfos, jobInfos, jobInfos, jobInfos);
             if (!this._isUnmounted) {
                 this.setState({
-                    jobInfos,
+                    jobInfos: dummyJobInfos,
                 });
             }
         } catch (error) {
@@ -148,39 +120,57 @@ export class OpenPositions extends React.Component<OpenPositionsProps, OpenPosit
             }
         }
     }
-    private _onCellClick(rowNumber: number): void {
-        if (_.isUndefined(this.state.jobInfos)) {
-            return;
-        }
-        const jobInfo = this.state.jobInfos[rowNumber];
-        this._openJobInfoUrl(jobInfo);
-    }
-
     private _openJobInfoUrl(jobInfo: WebsiteBackendJobInfo): void {
         const url = jobInfo.url;
         utils.openUrl(url);
     }
 }
 
-export interface JobInfoListItemProps {
-    title?: string;
-    description?: string;
+export interface JobInfoTableRowProps {
+    className?: string;
+    screenWidth: ScreenWidths;
+    jobInfo: WebsiteBackendJobInfo;
     onClick?: (event: React.MouseEvent<HTMLElement>) => void;
 }
 
-const PlainJobInfoListItem: React.StatelessComponent<JobInfoListItemProps> = ({ title, description, onClick }) => (
-    <div className="mb3" onClick={onClick}>
-        <Text fontWeight="bold" fontSize="16px" fontColor={colors.mediumBlue}>
-            {title + ' ›'}
-        </Text>
-        <Text className="pt1" fontSize="16px" fontColor={colors.darkGrey}>
-            {description}
-        </Text>
-    </div>
-);
+const PlainJobInfoTableRow: React.StatelessComponent<JobInfoTableRowProps> = ({
+    className,
+    screenWidth,
+    jobInfo,
+    onClick,
+}) => {
+    const isSmallScreen = screenWidth === ScreenWidths.Sm;
+    const titleClassName = isSmallScreen ? 'col col-12 center' : 'col col-5';
+    const paddingLeft = isSmallScreen ? undefined : '30px';
+    return (
+        <Container className={className} onClick={onClick} marginBottom="30px" paddingLeft={paddingLeft}>
+            <Container className="flex items-center" minHeight={TABLE_ROW_MIN_HEIGHT} width="100%">
+                <Container className="clearfix container" width="100%">
+                    <Container className={titleClassName}>
+                        <Text fontSize="16px" fontWeight="bold" fontColor={colors.mediumBlue}>
+                            {jobInfo.title}
+                        </Text>
+                    </Container>
+                    {!isSmallScreen && (
+                        <Container className="col col-3">
+                            <Text fontSize="16px">{jobInfo.department}</Text>
+                        </Container>
+                    )}
+                    {!isSmallScreen && (
+                        <Container className="col col-4 center">
+                            <Text fontSize="16px">{jobInfo.office}</Text>
+                        </Container>
+                    )}
+                </Container>
+            </Container>
+        </Container>
+    );
+};
 
-export const JobInfoListItem = styled(PlainJobInfoListItem)`
+export const JobInfoTableRow = styled(PlainJobInfoTableRow)`
     cursor: pointer;
+    background-color: ${colors.grey100};
+    border-radius: 7px;
     &:hover {
         opacity: 0.5;
     }
