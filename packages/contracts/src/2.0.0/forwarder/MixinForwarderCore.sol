@@ -77,11 +77,6 @@ contract MixinForwarderCore is
             FillResults memory feeOrderFillResults
         )
     {
-        require(
-            orders.length > 0,
-            "INVALID_ORDERS_LENGTH"
-        );
-
         // Convert ETH to WETH.
         convertEthToWeth();
 
@@ -175,11 +170,6 @@ contract MixinForwarderCore is
             FillResults memory feeOrderFillResults
         )
     {
-        require(
-            orders.length > 0,
-            "INVALID_ORDERS_LENGTH"
-        );
-
         // Convert ETH to WETH.
         convertEthToWeth();
 
