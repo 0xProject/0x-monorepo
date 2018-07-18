@@ -4,7 +4,7 @@ import * as _ from 'lodash';
 
 import { AbstractBalanceAndProxyAllowanceFetcher } from '../abstract/abstract_balance_and_proxy_allowance_fetcher';
 import { AbstractBalanceAndProxyAllowanceLazyStore } from '../abstract/abstract_balance_and_proxy_allowance_lazy_store';
-import { assetProxyUtils } from '../asset_proxy_utils';
+import { assetDataUtils } from '../asset_data_utils';
 
 /**
  * Copy on read store for balances/proxyAllowances of tokens/accounts
@@ -79,7 +79,7 @@ export class BalanceAndProxyAllowanceLazyStore implements AbstractBalanceAndProx
     public deleteAllERC721ProxyAllowance(tokenAddress: string, userAddress: string): void {
         for (const assetData in this._proxyAllowance) {
             if (this._proxyAllowance.hasOwnProperty(assetData)) {
-                const decodedAssetData = assetProxyUtils.decodeAssetDataOrThrow(assetData);
+                const decodedAssetData = assetDataUtils.decodeAssetDataOrThrow(assetData);
                 if (
                     decodedAssetData.assetProxyId === AssetProxyId.ERC721 &&
                     decodedAssetData.tokenAddress === tokenAddress &&

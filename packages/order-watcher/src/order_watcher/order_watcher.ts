@@ -22,7 +22,7 @@ import {
 } from '@0xproject/contract-wrappers';
 import { schemas } from '@0xproject/json-schemas';
 import {
-    assetProxyUtils,
+    assetDataUtils,
     BalanceAndProxyAllowanceLazyStore,
     OrderFilledCancelledLazyStore,
     orderHashUtils,
@@ -125,7 +125,7 @@ export class OrderWatcher {
             config.orderExpirationCheckingIntervalMs,
         );
         this._cleanupJobInterval = config.cleanupJobIntervalMs;
-        const zrxTokenAddress = assetProxyUtils.decodeERC20AssetData(orderFilledCancelledFetcher.getZRXAssetData())
+        const zrxTokenAddress = assetDataUtils.decodeERC20AssetData(orderFilledCancelledFetcher.getZRXAssetData())
             .tokenAddress;
         this._dependentOrderHashesTracker = new DependentOrderHashesTracker(zrxTokenAddress);
     }
@@ -147,7 +147,7 @@ export class OrderWatcher {
 
         const orderAssetDatas = [signedOrder.makerAssetData, signedOrder.takerAssetData];
         _.each(orderAssetDatas, assetData => {
-            const decodedAssetData = assetProxyUtils.decodeAssetDataOrThrow(assetData);
+            const decodedAssetData = assetDataUtils.decodeAssetDataOrThrow(assetData);
             if (decodedAssetData.assetProxyId === AssetProxyId.ERC20) {
                 this._collisionResistantAbiDecoder.addERC20Token(decodedAssetData.tokenAddress);
             } else if (decodedAssetData.assetProxyId === AssetProxyId.ERC721) {
@@ -277,7 +277,7 @@ export class OrderWatcher {
                     // ERC20
                     // Invalidate cache
                     const args = decodedLog.args as ERC20TokenApprovalEventArgs;
-                    const tokenAssetData = assetProxyUtils.encodeERC20AssetData(decodedLog.address);
+                    const tokenAssetData = assetDataUtils.encodeERC20AssetData(decodedLog.address);
                     this._balanceAndProxyAllowanceLazyStore.deleteProxyAllowance(tokenAssetData, args._owner);
                     // Revalidate orders
                     const orderHashes = this._dependentOrderHashesTracker.getDependentOrderHashesByAssetDataByMaker(
@@ -290,7 +290,7 @@ export class OrderWatcher {
                     // ERC721
                     // Invalidate cache
                     const args = decodedLog.args as ERC721TokenApprovalEventArgs;
-                    const tokenAssetData = assetProxyUtils.encodeERC721AssetData(decodedLog.address, args._tokenId);
+                    const tokenAssetData = assetDataUtils.encodeERC721AssetData(decodedLog.address, args._tokenId);
                     this._balanceAndProxyAllowanceLazyStore.deleteProxyAllowance(tokenAssetData, args._owner);
                     // Revalidate orders
                     const orderHashes = this._dependentOrderHashesTracker.getDependentOrderHashesByAssetDataByMaker(
@@ -308,7 +308,7 @@ export class OrderWatcher {
                     // ERC20
                     // Invalidate cache
                     const args = decodedLog.args as ERC20TokenTransferEventArgs;
-                    const tokenAssetData = assetProxyUtils.encodeERC20AssetData(decodedLog.address);
+                    const tokenAssetData = assetDataUtils.encodeERC20AssetData(decodedLog.address);
                     this._balanceAndProxyAllowanceLazyStore.deleteBalance(tokenAssetData, args._from);
                     this._balanceAndProxyAllowanceLazyStore.deleteBalance(tokenAssetData, args._to);
                     // Revalidate orders
@@ -322,7 +322,7 @@ export class OrderWatcher {
                     // ERC721
                     // Invalidate cache
                     const args = decodedLog.args as ERC721TokenTransferEventArgs;
-                    const tokenAssetData = assetProxyUtils.encodeERC721AssetData(decodedLog.address, args._tokenId);
+                    const tokenAssetData = assetDataUtils.encodeERC721AssetData(decodedLog.address, args._tokenId);
                     this._balanceAndProxyAllowanceLazyStore.deleteBalance(tokenAssetData, args._from);
                     this._balanceAndProxyAllowanceLazyStore.deleteBalance(tokenAssetData, args._to);
                     // Revalidate orders
@@ -350,7 +350,7 @@ export class OrderWatcher {
             case WETH9Events.Deposit: {
                 // Invalidate cache
                 const args = decodedLog.args as WETH9DepositEventArgs;
-                const tokenAssetData = assetProxyUtils.encodeERC20AssetData(decodedLog.address);
+                const tokenAssetData = assetDataUtils.encodeERC20AssetData(decodedLog.address);
                 this._balanceAndProxyAllowanceLazyStore.deleteBalance(tokenAssetData, args._owner);
                 // Revalidate orders
                 const orderHashes = this._dependentOrderHashesTracker.getDependentOrderHashesByAssetDataByMaker(
@@ -363,7 +363,7 @@ export class OrderWatcher {
             case WETH9Events.Withdrawal: {
                 // Invalidate cache
                 const args = decodedLog.args as WETH9WithdrawalEventArgs;
-                const tokenAssetData = assetProxyUtils.encodeERC20AssetData(decodedLog.address);
+                const tokenAssetData = assetDataUtils.encodeERC20AssetData(decodedLog.address);
                 this._balanceAndProxyAllowanceLazyStore.deleteBalance(tokenAssetData, args._owner);
                 // Revalidate orders
                 const orderHashes = this._dependentOrderHashesTracker.getDependentOrderHashesByAssetDataByMaker(

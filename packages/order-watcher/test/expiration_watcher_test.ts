@@ -2,7 +2,7 @@ import { ContractWrappers } from '@0xproject/contract-wrappers';
 import { tokenUtils } from '@0xproject/contract-wrappers/lib/test/utils/token_utils';
 import { BlockchainLifecycle, callbackErrorReporter } from '@0xproject/dev-utils';
 import { FillScenarios } from '@0xproject/fill-scenarios';
-import { assetProxyUtils, orderHashUtils } from '@0xproject/order-utils';
+import { assetDataUtils, orderHashUtils } from '@0xproject/order-utils';
 import { DoneCallback } from '@0xproject/types';
 import { BigNumber } from '@0xproject/utils';
 import * as chai from 'chai';
@@ -56,8 +56,8 @@ describe('ExpirationWatcher', () => {
         [coinbase, makerAddress, takerAddress, feeRecipient] = userAddresses;
         const [makerTokenAddress, takerTokenAddress] = tokenUtils.getDummyERC20TokenAddresses();
         [makerAssetData, takerAssetData] = [
-            assetProxyUtils.encodeERC20AssetData(makerTokenAddress),
-            assetProxyUtils.encodeERC20AssetData(takerTokenAddress),
+            assetDataUtils.encodeERC20AssetData(makerTokenAddress),
+            assetDataUtils.encodeERC20AssetData(takerTokenAddress),
         ];
     });
     after(async () => {

@@ -1,5 +1,5 @@
 import { schemas } from '@0xproject/json-schemas';
-import { assetProxyUtils } from '@0xproject/order-utils';
+import { assetDataUtils } from '@0xproject/order-utils';
 import { AssetProxyId, Order, SignedOrder } from '@0xproject/types';
 import { BigNumber } from '@0xproject/utils';
 import { Web3Wrapper } from '@0xproject/web3-wrapper';
@@ -1074,7 +1074,7 @@ export class ExchangeWrapper extends ContractWrapper {
      */
     public getZRXAssetData(): string {
         const zrxTokenAddress = this.getZRXTokenAddress();
-        const zrxAssetData = assetProxyUtils.encodeERC20AssetData(zrxTokenAddress);
+        const zrxAssetData = assetDataUtils.encodeERC20AssetData(zrxTokenAddress);
         return zrxAssetData;
     }
     // tslint:disable:no-unused-variable

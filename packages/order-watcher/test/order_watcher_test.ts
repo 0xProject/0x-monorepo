@@ -1,9 +1,9 @@
 // tslint:disable:no-unnecessary-type-assertion
-import { BlockParamLiteral, ContractWrappers } from '@0xproject/contract-wrappers';
+import { ContractWrappers } from '@0xproject/contract-wrappers';
 import { tokenUtils } from '@0xproject/contract-wrappers/lib/test/utils/token_utils';
 import { BlockchainLifecycle, callbackErrorReporter } from '@0xproject/dev-utils';
 import { FillScenarios } from '@0xproject/fill-scenarios';
-import { assetProxyUtils, orderHashUtils } from '@0xproject/order-utils';
+import { assetDataUtils, orderHashUtils } from '@0xproject/order-utils';
 import {
     DoneCallback,
     ExchangeContractErrs,
@@ -71,8 +71,8 @@ describe('OrderWatcher', () => {
         [coinbase, makerAddress, takerAddress, feeRecipient] = userAddresses;
         [makerTokenAddress, takerTokenAddress] = tokenUtils.getDummyERC20TokenAddresses();
         [makerAssetData, takerAssetData] = [
-            assetProxyUtils.encodeERC20AssetData(makerTokenAddress),
-            assetProxyUtils.encodeERC20AssetData(takerTokenAddress),
+            assetDataUtils.encodeERC20AssetData(makerTokenAddress),
+            assetDataUtils.encodeERC20AssetData(takerTokenAddress),
         ];
         const orderWatcherConfig = {};
         orderWatcher = new OrderWatcher(provider, networkId, orderWatcherConfig);
@@ -539,7 +539,7 @@ describe('OrderWatcher', () => {
             let makerErc721TokenAddress: string;
             const tokenId = new BigNumber(42);
             [makerErc721TokenAddress] = tokenUtils.getDummyERC721TokenAddresses();
-            makerErc721AssetData = assetProxyUtils.encodeERC721AssetData(makerErc721TokenAddress, tokenId);
+            makerErc721AssetData = assetDataUtils.encodeERC721AssetData(makerErc721TokenAddress, tokenId);
             const fillableErc721Amount = new BigNumber(1);
             it('should emit orderStateInvalid when maker allowance set to 0 for watched order', (done: DoneCallback) => {
                 (async () => {

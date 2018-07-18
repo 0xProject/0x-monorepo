@@ -1,6 +1,6 @@
 // tslint:disable:no-unnecessary-type-assertion
 import { BlockParamLiteral, ERC20TokenWrapper, ERC721TokenWrapper } from '@0xproject/contract-wrappers';
-import { AbstractBalanceAndProxyAllowanceFetcher, assetProxyUtils } from '@0xproject/order-utils';
+import { AbstractBalanceAndProxyAllowanceFetcher, assetDataUtils } from '@0xproject/order-utils';
 import { AssetProxyId, ERC20AssetData, ERC721AssetData } from '@0xproject/types';
 import { BigNumber } from '@0xproject/utils';
 
@@ -14,7 +14,7 @@ export class AssetBalanceAndProxyAllowanceFetcher implements AbstractBalanceAndP
         this._stateLayer = stateLayer;
     }
     public async getBalanceAsync(assetData: string, userAddress: string): Promise<BigNumber> {
-        const decodedAssetData = assetProxyUtils.decodeAssetDataOrThrow(assetData);
+        const decodedAssetData = assetDataUtils.decodeAssetDataOrThrow(assetData);
         if (decodedAssetData.assetProxyId === AssetProxyId.ERC20) {
             const decodedERC20AssetData = decodedAssetData as ERC20AssetData;
             const balance = await this._erc20Token.getBalanceAsync(decodedERC20AssetData.tokenAddress, userAddress, {
@@ -35,7 +35,7 @@ export class AssetBalanceAndProxyAllowanceFetcher implements AbstractBalanceAndP
         }
     }
     public async getProxyAllowanceAsync(assetData: string, userAddress: string): Promise<BigNumber> {
-        const decodedAssetData = assetProxyUtils.decodeAssetDataOrThrow(assetData);
+        const decodedAssetData = assetDataUtils.decodeAssetDataOrThrow(assetData);
         if (decodedAssetData.assetProxyId === AssetProxyId.ERC20) {
             const decodedERC20AssetData = decodedAssetData as ERC20AssetData;
             const proxyAllowance = await this._erc20Token.getProxyAllowanceAsync(

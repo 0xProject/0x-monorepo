@@ -1,4 +1,4 @@
-import { assetProxyUtils, orderFactory } from '@0xproject/order-utils';
+import { assetDataUtils, orderFactory } from '@0xproject/order-utils';
 import { AssetProxyId, ERC721AssetData, OrderWithoutExchangeAddress, SignedOrder } from '@0xproject/types';
 import { BigNumber } from '@0xproject/utils';
 import { Web3Wrapper } from '@0xproject/web3-wrapper';
@@ -12,13 +12,13 @@ import { DummyERC721TokenContract } from './generated_contract_wrappers/dummy_er
 import { ExchangeContract } from './generated_contract_wrappers/exchange';
 
 export class FillScenarios {
-    private _web3Wrapper: Web3Wrapper;
-    private _userAddresses: string[];
-    private _coinbase: string;
-    private _zrxTokenAddress: string;
-    private _exchangeAddress: string;
-    private _erc20ProxyAddress: string;
-    private _erc721ProxyAddress: string;
+    private readonly _web3Wrapper: Web3Wrapper;
+    private readonly _userAddresses: string[];
+    private readonly _coinbase: string;
+    private readonly _zrxTokenAddress: string;
+    private readonly _exchangeAddress: string;
+    private readonly _erc20ProxyAddress: string;
+    private readonly _erc721ProxyAddress: string;
     constructor(
         provider: Provider,
         userAddresses: string[],
@@ -151,7 +151,7 @@ export class FillScenarios {
         feeRecepientAddress: string,
         expirationTimeSeconds?: BigNumber,
     ): Promise<SignedOrder> {
-        const decodedMakerAssetData = assetProxyUtils.decodeAssetDataOrThrow(makerAssetData);
+        const decodedMakerAssetData = assetDataUtils.decodeAssetDataOrThrow(makerAssetData);
         if (decodedMakerAssetData.assetProxyId === AssetProxyId.ERC20) {
             await this._increaseERC20BalanceAndAllowanceAsync(
                 decodedMakerAssetData.tokenAddress,
@@ -165,10 +165,11 @@ export class FillScenarios {
             await this._increaseERC721BalanceAndAllowanceAsync(
                 decodedMakerAssetData.tokenAddress,
                 makerAddress,
+                // tslint:disable-next-line:no-unnecessary-type-assertion
                 (decodedMakerAssetData as ERC721AssetData).tokenId,
             );
         }
-        const decodedTakerAssetData = assetProxyUtils.decodeAssetDataOrThrow(takerAssetData);
+        const decodedTakerAssetData = assetDataUtils.decodeAssetDataOrThrow(takerAssetData);
         if (decodedTakerAssetData.assetProxyId === AssetProxyId.ERC20) {
             const takerTokenAddress = decodedTakerAssetData.tokenAddress;
             await this._increaseERC20BalanceAndAllowanceAsync(takerTokenAddress, takerAddress, takerFillableAmount);
@@ -179,6 +180,7 @@ export class FillScenarios {
             await this._increaseERC721BalanceAndAllowanceAsync(
                 decodedTakerAssetData.tokenAddress,
                 takerAddress,
+                // tslint:disable-next-line:no-unnecessary-type-assertion
                 (decodedMakerAssetData as ERC721AssetData).tokenId,
             );
         }

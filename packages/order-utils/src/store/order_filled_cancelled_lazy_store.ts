@@ -8,7 +8,7 @@ import { AbstractOrderFilledCancelledLazyStore } from '../abstract/abstract_orde
  * Copy on read store for balances/proxyAllowances of tokens/accounts
  */
 export class OrderFilledCancelledLazyStore implements AbstractOrderFilledCancelledLazyStore {
-    private _orderFilledCancelledFetcher: AbstractOrderFilledCancelledFetcher;
+    private readonly _orderFilledCancelledFetcher: AbstractOrderFilledCancelledFetcher;
     private _filledTakerAmount: {
         [orderHash: string]: BigNumber;
     };
