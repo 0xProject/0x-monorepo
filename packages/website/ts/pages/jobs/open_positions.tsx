@@ -46,7 +46,7 @@ export class OpenPositions extends React.Component<OpenPositionsProps, OpenPosit
         const isReadyToRender = _.isUndefined(this.state.error) && !_.isUndefined(this.state.jobInfos);
         const isSmallScreen = this.props.screenWidth === ScreenWidths.Sm;
         return (
-            <Container id={this.props.hash} className="mx-auto pb4 sm-px3" maxWidth="1200px">
+            <Container id={this.props.hash} className="mx-auto pb4 px3" maxWidth="1200px">
                 {!isSmallScreen && <hr />}
                 <Container marginTop="64px" marginBottom="50px">
                     <Text fontFamily="Roboto Mono" fontSize="24px" fontColor={colors.black}>
