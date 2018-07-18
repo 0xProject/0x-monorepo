@@ -29,7 +29,7 @@ export const Mission = (props: MissionProps) => {
     );
     return (
         <div
-            className="flex flex-column items-center py4"
+            className="flex flex-column items-center py4 sm-px3"
             style={{ backgroundColor: colors.jobsPageBackground, color: colors.black }}
         >
             {!isSmallScreen ? (
@@ -38,10 +38,7 @@ export const Mission = (props: MissionProps) => {
                     <Container marginLeft="115px">{missionStatement}</Container>
                 </Container>
             ) : (
-                <Container className="flex flex-column items-center">
-                    {missionStatement}
-                    <Container marginTop="40px">{image}</Container>
-                </Container>
+                <Container className="flex flex-column items-center">{missionStatement}</Container>
             )}
         </div>
     );

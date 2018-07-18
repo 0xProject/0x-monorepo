@@ -47,7 +47,7 @@ export interface BenefitsProps {
 export const Benefits = (props: BenefitsProps) => {
     const isSmallScreen = props.screenWidth === ScreenWidths.Sm;
     return (
-        <Container className="flex flex-column items-center py4" backgroundColor={colors.white}>
+        <Container className="flex flex-column items-center py4 sm-px3" backgroundColor={colors.white}>
             {!isSmallScreen ? (
                 <Container className="flex" maxWidth="800px">
                     <BenefitsList />
@@ -56,7 +56,7 @@ export const Benefits = (props: BenefitsProps) => {
                     </Container>
                 </Container>
             ) : (
-                <Container className="flex-column pl3">
+                <Container className="flex-column">
                     <BenefitsList />
                     <Container marginTop="50px">
                         <ValuesList />
