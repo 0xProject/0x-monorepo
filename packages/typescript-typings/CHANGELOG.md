@@ -5,6 +5,10 @@ Edit the package's CHANGELOG.json file only.
 
 CHANGELOG
 
+## v0.4.3 - _July 18, 2018_
+
+    * Add back ethers-contracts types for Aquaduct which relies on it (#885)
+
 ## v0.4.2 - _July 9, 2018_
 
     * Improve 'web3-provider-engine' typings (#768)

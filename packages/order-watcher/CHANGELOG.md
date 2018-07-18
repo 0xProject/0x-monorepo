@@ -5,6 +5,10 @@ Edit the package's CHANGELOG.json file only.
 
 CHANGELOG
 
+## v0.0.8 - _July 18, 2018_
+
+    * Dependencies updated
+
 ## v0.0.7 - _July 9, 2018_
 
     * Switch out simple getLogs polling with ethereumjs-blockstream (#825)
