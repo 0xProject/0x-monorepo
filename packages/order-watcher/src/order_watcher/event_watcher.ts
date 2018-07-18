@@ -61,13 +61,9 @@ export class EventWatcher {
         if (!_.isUndefined(this._blockAndLogStreamerIfExists)) {
             throw new Error(OrderWatcherError.SubscriptionAlreadyPresent);
         }
-        const eventFilter = {
-            fromBlock: this._stateLayer,
-            toBlock: this._stateLayer,
-        };
         this._blockAndLogStreamerIfExists = new BlockAndLogStreamer(
-            this._web3Wrapper.getBlockAsync.bind(this._web3Wrapper, this._stateLayer),
-            this._web3Wrapper.getLogsAsync.bind(this._web3Wrapper, eventFilter),
+            this._web3Wrapper.getBlockAsync.bind(this._web3Wrapper),
+            this._web3Wrapper.getLogsAsync.bind(this._web3Wrapper),
             this._onBlockAndLogStreamerError.bind(this),
         );
         const catchAllLogFilter = {};

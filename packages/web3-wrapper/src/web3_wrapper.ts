@@ -22,7 +22,7 @@ import { Web3WrapperErrors } from './types';
 const BASE_TEN = 10;
 
 /**
- * A wrapper around the Web3.js 0.x library that provides a consistent, clean promise-based interface.
+ *  Web3Wrapper is a JSON-RPC client for Ethereum nodes. It provides a consistent, clean promise-based interface.
  */
 export class Web3Wrapper {
     /**

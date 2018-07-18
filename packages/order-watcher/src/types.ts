@@ -16,7 +16,6 @@ export type EventWatcherCallback = (err: null | Error, log?: LogEntryEvent) => v
  * stateLayer: Optional blockchain state layer OrderWatcher will monitor for new events. Default=latest.
  */
 export interface OrderWatcherConfig {
-    stateLayer: BlockParamLiteral;
     orderExpirationCheckingIntervalMs?: number;
     eventPollingIntervalMs?: number;
     expirationMarginMs?: number;

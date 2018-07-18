@@ -67,6 +67,9 @@ generated_docs/
 
 TODO.md
 
+# VSCode file
+.vscode
+
 packages/website/public/bundle*
 packages/react-docs/example/public/bundle*
 
