@@ -43,7 +43,7 @@
     lodash "4.17.10"
     valid-url "1.0.9"
 
-"@0xproject/contract-wrappers@0.0.5", "@0xproject/contract-wrappers@^0.0.5":
+"@0xproject/contract-wrappers@^0.0.5":
   version "0.0.5"
   resolved "https://registry.yarnpkg.com/@0xproject/contract-wrappers/-/contract-wrappers-0.0.5.tgz#36f91afb7de51478f9d2e4e0a3c4e685b3d18f28"
   dependencies:
@@ -73,19 +73,6 @@
     "@0xproject/typescript-typings" "^0.4.1"
     "@0xproject/utils" "^0.7.1"
     "@0xproject/web3-wrapper" "^0.7.1"
-    ethers "3.0.22"
-    lodash "4.17.10"
-
-"@0xproject/fill-scenarios@^0.0.5":
-  version "0.0.5"
-  resolved "https://registry.yarnpkg.com/@0xproject/fill-scenarios/-/fill-scenarios-0.0.5.tgz#a62a240ae40423b9b73ecc0b1fc2abb58b76621c"
-  dependencies:
-    "@0xproject/base-contract" "^0.3.5"
-    "@0xproject/order-utils" "^0.0.8"
-    "@0xproject/types" "^0.8.2"
-    "@0xproject/typescript-typings" "^0.4.2"
-    "@0xproject/utils" "^0.7.2"
-    "@0xproject/web3-wrapper" "^0.7.2"
     ethers "3.0.22"
     lodash "4.17.10"
 
@@ -8187,7 +8174,7 @@ mz@^2.6.0:
     object-assign "^4.0.1"
     thenify-all "^1.0.0"
 
-nan@>=2.5.1, nan@^2.0.5, nan@^2.0.8, nan@^2.2.1, nan@^2.3.0, nan@^2.3.3, nan@^2.6.2:
+nan@2.10.0, nan@>=2.5.1, nan@^2.0.8, nan@^2.2.1, nan@^2.3.0, nan@^2.3.3, nan@^2.6.2:
   version "2.10.0"
   resolved "https://registry.yarnpkg.com/nan/-/nan-2.10.0.tgz#96d0cd610ebd58d4b4de9cc0c6828cda99c7548f"
 
@@ -10933,10 +10920,10 @@ sha.js@^2.4.0, sha.js@^2.4.8:
     safe-buffer "^5.0.1"
 
 sha3@^1.1.0:
-  version "1.2.0"
-  resolved "https://registry.yarnpkg.com/sha3/-/sha3-1.2.0.tgz#6989f1b70a498705876a373e2c62ace96aa9399a"
+  version "1.2.2"
+  resolved "https://registry.yarnpkg.com/sha3/-/sha3-1.2.2.tgz#a66c5098de4c25bc88336ec8b4817d005bca7ba9"
   dependencies:
-    nan "^2.0.5"
+    nan "2.10.0"
 
 shallowequal@^1.0.1:
   version "1.0.2"

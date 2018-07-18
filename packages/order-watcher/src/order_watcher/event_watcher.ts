@@ -1,6 +1,6 @@
-import { BlockParamLiteral, LogEntry } from '@0xproject/types';
 import { intervalUtils, logUtils } from '@0xproject/utils';
 import { Web3Wrapper } from '@0xproject/web3-wrapper';
+import { BlockParamLiteral, LogEntry, Provider } from 'ethereum-types';
 import { Block, BlockAndLogStreamer, Log } from 'ethereumjs-blockstream';
 import * as _ from 'lodash';
 
@@ -20,21 +20,21 @@ enum LogEventState {
  */
 export class EventWatcher {
     private readonly _web3Wrapper: Web3Wrapper;
+    private readonly _stateLayer: BlockParamLiteral;
+    private readonly _isVerbose: boolean;
     private _blockAndLogStreamerIfExists: BlockAndLogStreamer<Block, Log> | undefined;
     private _blockAndLogStreamIntervalIfExists?: NodeJS.Timer;
     private _onLogAddedSubscriptionToken: string | undefined;
     private _onLogRemovedSubscriptionToken: string | undefined;
     private readonly _pollingIntervalMs: number;
-    private readonly _stateLayer: BlockParamLiteral;
-    private readonly _isVerbose: boolean;
     constructor(
-        web3Wrapper: Web3Wrapper,
+        provider: Provider,
         pollingIntervalIfExistsMs: undefined | number,
         stateLayer: BlockParamLiteral,
         isVerbose: boolean,
     ) {
         this._isVerbose = isVerbose;
-        this._web3Wrapper = web3Wrapper;
+        this._web3Wrapper = new Web3Wrapper(provider);
         this._stateLayer = stateLayer;
         this._pollingIntervalMs = _.isUndefined(pollingIntervalIfExistsMs)
             ? DEFAULT_EVENT_POLLING_INTERVAL_MS

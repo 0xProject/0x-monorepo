@@ -25,6 +25,7 @@
         "DummyERC721Token",
         "ERC20Proxy",
         "ERC20Token",
+        "ERC721Token",
         "ERC721Proxy",
         "Exchange",
         "ExchangeWrapper",

@@ -1,8 +1,9 @@
 import { ContractWrappers } from '@0xproject/contract-wrappers';
+import { tokenUtils } from '@0xproject/contract-wrappers/lib/test/utils/token_utils';
 import { BlockchainLifecycle, callbackErrorReporter } from '@0xproject/dev-utils';
 import { FillScenarios } from '@0xproject/fill-scenarios';
-import { getOrderHashHex } from '@0xproject/order-utils';
-import { DoneCallback, Token } from '@0xproject/types';
+import { assetDataUtils, orderHashUtils } from '@0xproject/order-utils';
+import { DoneCallback } from '@0xproject/types';
 import { BigNumber } from '@0xproject/utils';
 import * as chai from 'chai';
 import * as _ from 'lodash';
@@ -14,7 +15,6 @@ import { utils } from '../src/utils/utils';
 
 import { chaiSetup } from './utils/chai_setup';
 import { constants } from './utils/constants';
-import { TokenUtils } from './utils/token_utils';
 import { provider, web3Wrapper } from './utils/web3_wrapper';
 
 chaiSetup.configure();
@@ -23,15 +23,16 @@ const blockchainLifecycle = new BlockchainLifecycle(web3Wrapper);
 const MILISECONDS_IN_SECOND = 1000;
 
 describe('ExpirationWatcher', () => {
-    let contractWrappers: ContractWrappers;
-    let tokenUtils: TokenUtils;
-    let tokens: Token[];
+    const config = {
+        networkId: constants.TESTRPC_NETWORK_ID,
+    };
+    const contractWrappers = new ContractWrappers(provider, config);
     let userAddresses: string[];
     let zrxTokenAddress: string;
     let fillScenarios: FillScenarios;
-    let exchangeContractAddress: string;
-    let makerTokenAddress: string;
-    let takerTokenAddress: string;
+    const exchangeContractAddress = contractWrappers.exchange.getContractAddress();
+    let makerAssetData: string;
+    let takerAssetData: string;
     let coinbase: string;
     let makerAddress: string;
     let takerAddress: string;
@@ -41,21 +42,26 @@ describe('ExpirationWatcher', () => {
     let timer: Sinon.SinonFakeTimers;
     let expirationWatcher: ExpirationWatcher;
     before(async () => {
-        const config = {
-            networkId: constants.TESTRPC_NETWORK_ID,
-        };
-        contractWrappers = new ContractWrappers(provider, config);
-        exchangeContractAddress = contractWrappers.exchange.getContractAddress();
+        await blockchainLifecycle.startAsync();
         userAddresses = await web3Wrapper.getAvailableAddressesAsync();
-        tokens = await contractWrappers.tokenRegistry.getTokensAsync();
-        tokenUtils = new TokenUtils(tokens);
-        zrxTokenAddress = tokenUtils.getProtocolTokenOrThrow().address;
-        fillScenarios = new FillScenarios(provider, userAddresses, tokens, zrxTokenAddress, exchangeContractAddress);
+        zrxTokenAddress = tokenUtils.getProtocolTokenAddress();
+        fillScenarios = new FillScenarios(
+            provider,
+            userAddresses,
+            zrxTokenAddress,
+            exchangeContractAddress,
+            contractWrappers.erc20Proxy.getContractAddress(),
+            contractWrappers.erc721Proxy.getContractAddress(),
+        );
         [coinbase, makerAddress, takerAddress, feeRecipient] = userAddresses;
-        tokens = await contractWrappers.tokenRegistry.getTokensAsync();
-        const [makerToken, takerToken] = tokenUtils.getDummyTokens();
-        makerTokenAddress = makerToken.address;
-        takerTokenAddress = takerToken.address;
+        const [makerTokenAddress, takerTokenAddress] = tokenUtils.getDummyERC20TokenAddresses();
+        [makerAssetData, takerAssetData] = [
+            assetDataUtils.encodeERC20AssetData(makerTokenAddress),
+            assetDataUtils.encodeERC20AssetData(takerTokenAddress),
+        ];
+    });
+    after(async () => {
+        await blockchainLifecycle.revertAsync();
     });
     beforeEach(async () => {
         await blockchainLifecycle.startAsync();
@@ -75,15 +81,15 @@ describe('ExpirationWatcher', () => {
             const orderLifetimeSec = 60;
             const expirationUnixTimestampSec = currentUnixTimestampSec.plus(orderLifetimeSec);
             const signedOrder = await fillScenarios.createFillableSignedOrderAsync(
-                makerTokenAddress,
-                takerTokenAddress,
+                makerAssetData,
+                takerAssetData,
                 makerAddress,
                 takerAddress,
                 fillableAmount,
                 expirationUnixTimestampSec,
             );
-            const orderHash = getOrderHashHex(signedOrder);
-            expirationWatcher.addOrder(orderHash, signedOrder.expirationUnixTimestampSec.times(MILISECONDS_IN_SECOND));
+            const orderHash = orderHashUtils.getOrderHashHex(signedOrder);
+            expirationWatcher.addOrder(orderHash, signedOrder.expirationTimeSeconds.times(MILISECONDS_IN_SECOND));
             const callbackAsync = callbackErrorReporter.reportNoErrorCallbackErrors(done)((hash: string) => {
                 expect(hash).to.be.equal(orderHash);
                 expect(utils.getCurrentUnixTimestampSec()).to.be.bignumber.gte(expirationUnixTimestampSec);
@@ -97,15 +103,15 @@ describe('ExpirationWatcher', () => {
             const orderLifetimeSec = 60;
             const expirationUnixTimestampSec = currentUnixTimestampSec.plus(orderLifetimeSec);
             const signedOrder = await fillScenarios.createFillableSignedOrderAsync(
-                makerTokenAddress,
-                takerTokenAddress,
+                makerAssetData,
+                takerAssetData,
                 makerAddress,
                 takerAddress,
                 fillableAmount,
                 expirationUnixTimestampSec,
             );
-            const orderHash = getOrderHashHex(signedOrder);
-            expirationWatcher.addOrder(orderHash, signedOrder.expirationUnixTimestampSec.times(MILISECONDS_IN_SECOND));
+            const orderHash = orderHashUtils.getOrderHashHex(signedOrder);
+            expirationWatcher.addOrder(orderHash, signedOrder.expirationTimeSeconds.times(MILISECONDS_IN_SECOND));
             const callbackAsync = callbackErrorReporter.reportNoErrorCallbackErrors(done)(async (_hash: string) => {
                 done(new Error('Emitted expiration went before the order actually expired'));
             });
@@ -122,31 +128,25 @@ describe('ExpirationWatcher', () => {
             const order1ExpirationUnixTimestampSec = currentUnixTimestampSec.plus(order1Lifetime);
             const order2ExpirationUnixTimestampSec = currentUnixTimestampSec.plus(order2Lifetime);
             const signedOrder1 = await fillScenarios.createFillableSignedOrderAsync(
-                makerTokenAddress,
-                takerTokenAddress,
+                makerAssetData,
+                takerAssetData,
                 makerAddress,
                 takerAddress,
                 fillableAmount,
                 order1ExpirationUnixTimestampSec,
             );
             const signedOrder2 = await fillScenarios.createFillableSignedOrderAsync(
-                makerTokenAddress,
-                takerTokenAddress,
+                makerAssetData,
+                takerAssetData,
                 makerAddress,
                 takerAddress,
                 fillableAmount,
                 order2ExpirationUnixTimestampSec,
             );
-            const orderHash1 = getOrderHashHex(signedOrder1);
-            const orderHash2 = getOrderHashHex(signedOrder2);
-            expirationWatcher.addOrder(
-                orderHash2,
-                signedOrder2.expirationUnixTimestampSec.times(MILISECONDS_IN_SECOND),
-            );
-            expirationWatcher.addOrder(
-                orderHash1,
-                signedOrder1.expirationUnixTimestampSec.times(MILISECONDS_IN_SECOND),
-            );
+            const orderHash1 = orderHashUtils.getOrderHashHex(signedOrder1);
+            const orderHash2 = orderHashUtils.getOrderHashHex(signedOrder2);
+            expirationWatcher.addOrder(orderHash2, signedOrder2.expirationTimeSeconds.times(MILISECONDS_IN_SECOND));
+            expirationWatcher.addOrder(orderHash1, signedOrder1.expirationTimeSeconds.times(MILISECONDS_IN_SECOND));
             const expirationOrder = [orderHash1, orderHash2];
             const expectToBeCalledOnce = false;
             const callbackAsync = callbackErrorReporter.reportNoErrorCallbackErrors(done, expectToBeCalledOnce)(
@@ -169,31 +169,25 @@ describe('ExpirationWatcher', () => {
             const order1ExpirationUnixTimestampSec = currentUnixTimestampSec.plus(order1Lifetime);
             const order2ExpirationUnixTimestampSec = currentUnixTimestampSec.plus(order2Lifetime);
             const signedOrder1 = await fillScenarios.createFillableSignedOrderAsync(
-                makerTokenAddress,
-                takerTokenAddress,
+                makerAssetData,
+                takerAssetData,
                 makerAddress,
                 takerAddress,
                 fillableAmount,
                 order1ExpirationUnixTimestampSec,
             );
             const signedOrder2 = await fillScenarios.createFillableSignedOrderAsync(
-                makerTokenAddress,
-                takerTokenAddress,
+                makerAssetData,
+                takerAssetData,
                 makerAddress,
                 takerAddress,
                 fillableAmount,
                 order2ExpirationUnixTimestampSec,
             );
-            const orderHash1 = getOrderHashHex(signedOrder1);
-            const orderHash2 = getOrderHashHex(signedOrder2);
-            expirationWatcher.addOrder(
-                orderHash1,
-                signedOrder1.expirationUnixTimestampSec.times(MILISECONDS_IN_SECOND),
-            );
-            expirationWatcher.addOrder(
-                orderHash2,
-                signedOrder2.expirationUnixTimestampSec.times(MILISECONDS_IN_SECOND),
-            );
+            const orderHash1 = orderHashUtils.getOrderHashHex(signedOrder1);
+            const orderHash2 = orderHashUtils.getOrderHashHex(signedOrder2);
+            expirationWatcher.addOrder(orderHash1, signedOrder1.expirationTimeSeconds.times(MILISECONDS_IN_SECOND));
+            expirationWatcher.addOrder(orderHash2, signedOrder2.expirationTimeSeconds.times(MILISECONDS_IN_SECOND));
             const expirationOrder = orderHash1 < orderHash2 ? [orderHash1, orderHash2] : [orderHash2, orderHash1];
             const expectToBeCalledOnce = false;
             const callbackAsync = callbackErrorReporter.reportNoErrorCallbackErrors(done, expectToBeCalledOnce)(
