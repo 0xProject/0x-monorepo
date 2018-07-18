@@ -11,6 +11,7 @@ import { ERC721ProxyWrapper } from './contract_wrappers/erc721_proxy_wrapper';
 import { ERC721TokenWrapper } from './contract_wrappers/erc721_token_wrapper';
 import { EtherTokenWrapper } from './contract_wrappers/ether_token_wrapper';
 import { ExchangeWrapper } from './contract_wrappers/exchange_wrapper';
+import { ForwarderWrapper } from './contract_wrappers/forwarder_wrapper';
 import { ContractWrappersConfigSchema } from './schemas/contract_wrappers_config_schema';
 import { contractWrappersPrivateNetworkConfigSchema } from './schemas/contract_wrappers_private_network_config_schema';
 import { contractWrappersPublicNetworkConfigSchema } from './schemas/contract_wrappers_public_network_config_schema';
@@ -47,6 +48,11 @@ export class ContractWrappers {
      * erc721Proxy smart contract.
      */
     public erc721Proxy: ERC721ProxyWrapper;
+    /**
+     * An instance of the ForwarderWrapper class containing methods for interacting with any Forwarder smart contract.
+     */
+    public forwarder: ForwarderWrapper;
+
     private _web3Wrapper: Web3Wrapper;
     /**
      * Instantiates a new ContractWrappers instance.
@@ -104,6 +110,7 @@ export class ContractWrappers {
             config.zrxContractAddress,
             blockPollingIntervalMs,
         );
+        this.forwarder = new ForwarderWrapper(this._web3Wrapper, config.networkId, config.forwarderContractAddress);
     }
     /**
      * Sets a new web3 provider for 0x.js. Updating the provider will stop all
