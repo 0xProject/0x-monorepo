@@ -45,9 +45,7 @@ export class OpenPositions extends React.Component<OpenPositionsProps, OpenPosit
         return (
             <Container id={this.props.hash} className="mx-auto pb4 px3" maxWidth="1200px">
                 {!isSmallScreen && (
-                    <hr
-                        style={{ border: 0, borderTop: 1, borderStyle: 'solid', borderColor: colors.jobsPageDivider }}
-                    />
+                    <hr style={{ border: 0, borderTop: 1, borderStyle: 'solid', borderColor: colors.beigeWhite }} />
                 )}
                 <Container marginTop="64px" marginBottom="50px">
                     <Text fontFamily="Roboto Mono" fontSize="24px" fontColor={colors.black}>
