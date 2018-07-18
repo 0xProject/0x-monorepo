@@ -1,6 +1,5 @@
 import { AssetProxyId, ERC20AssetData, ERC721AssetData } from '@0xproject/types';
 import { BigNumber } from '@0xproject/utils';
-import BN = require('bn.js');
 import ethAbi = require('ethereumjs-abi');
 import ethUtil = require('ethereumjs-util');
 
