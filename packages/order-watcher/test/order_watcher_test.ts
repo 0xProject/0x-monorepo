@@ -57,7 +57,6 @@ describe('OrderWatcher', () => {
     const fillableAmount = Web3Wrapper.toBaseUnitAmount(new BigNumber(5), decimals);
     before(async () => {
         await blockchainLifecycle.startAsync();
-        const erc20ProxyAddress = contractWrappers.erc20Proxy.getContractAddress();
         userAddresses = await web3Wrapper.getAvailableAddressesAsync();
         zrxTokenAddress = tokenUtils.getProtocolTokenAddress();
         exchangeContractAddress = contractWrappers.exchange.getContractAddress();
@@ -66,7 +65,8 @@ describe('OrderWatcher', () => {
             userAddresses,
             zrxTokenAddress,
             exchangeContractAddress,
-            erc20ProxyAddress,
+            contractWrappers.erc20Proxy.getContractAddress(),
+            contractWrappers.erc721Proxy.getContractAddress(),
         );
         [coinbase, makerAddress, takerAddress, feeRecipient] = userAddresses;
         [makerTokenAddress, takerTokenAddress] = tokenUtils.getDummyERC20TokenAddresses();
@@ -74,7 +74,7 @@ describe('OrderWatcher', () => {
             assetProxyUtils.encodeERC20AssetData(makerTokenAddress),
             assetProxyUtils.encodeERC20AssetData(takerTokenAddress),
         ];
-        const orderWatcherConfig = { stateLayer: BlockParamLiteral.Latest };
+        const orderWatcherConfig = {};
         orderWatcher = new OrderWatcher(provider, networkId, orderWatcherConfig);
     });
     after(async () => {
@@ -96,7 +96,7 @@ describe('OrderWatcher', () => {
                 fillableAmount,
             );
             const orderHash = orderHashUtils.getOrderHashHex(signedOrder);
-            orderWatcher.addOrder(signedOrder);
+            await orderWatcher.addOrderAsync(signedOrder);
             expect((orderWatcher as any)._orderByOrderHash).to.include({
                 [orderHash]: signedOrder,
             });
@@ -156,7 +156,7 @@ describe('OrderWatcher', () => {
                     fillableAmount,
                 );
                 const orderHash = orderHashUtils.getOrderHashHex(signedOrder);
-                orderWatcher.addOrder(signedOrder);
+                await orderWatcher.addOrderAsync(signedOrder);
                 const callback = callbackErrorReporter.reportNodeCallbackErrors(done)((orderState: OrderState) => {
                     expect(orderState.isValid).to.be.false();
                     const invalidOrderState = orderState as OrderStateInvalid;
@@ -180,7 +180,7 @@ describe('OrderWatcher', () => {
                     takerAddress,
                     fillableAmount,
                 );
-                orderWatcher.addOrder(signedOrder);
+                await orderWatcher.addOrderAsync(signedOrder);
                 const callback = callbackErrorReporter.reportNodeCallbackErrors(done)((_orderState: OrderState) => {
                     throw new Error('OrderState callback fired for irrelevant order');
                 });
@@ -209,7 +209,7 @@ describe('OrderWatcher', () => {
                     fillableAmount,
                 );
                 const orderHash = orderHashUtils.getOrderHashHex(signedOrder);
-                orderWatcher.addOrder(signedOrder);
+                await orderWatcher.addOrderAsync(signedOrder);
                 const callback = callbackErrorReporter.reportNodeCallbackErrors(done)((orderState: OrderState) => {
                     expect(orderState.isValid).to.be.false();
                     const invalidOrderState = orderState as OrderStateInvalid;
@@ -237,7 +237,7 @@ describe('OrderWatcher', () => {
                     fillableAmount,
                 );
                 const orderHash = orderHashUtils.getOrderHashHex(signedOrder);
-                orderWatcher.addOrder(signedOrder);
+                await orderWatcher.addOrderAsync(signedOrder);
 
                 const callback = callbackErrorReporter.reportNodeCallbackErrors(done)((orderState: OrderState) => {
                     expect(orderState.isValid).to.be.false();
@@ -263,7 +263,7 @@ describe('OrderWatcher', () => {
                 const makerBalance = await contractWrappers.erc20Token.getBalanceAsync(makerTokenAddress, makerAddress);
                 const fillAmountInBaseUnits = new BigNumber(2);
                 const orderHash = orderHashUtils.getOrderHashHex(signedOrder);
-                orderWatcher.addOrder(signedOrder);
+                await orderWatcher.addOrderAsync(signedOrder);
 
                 const callback = callbackErrorReporter.reportNodeCallbackErrors(done)((orderState: OrderState) => {
                     expect(orderState.isValid).to.be.true();
@@ -299,7 +299,7 @@ describe('OrderWatcher', () => {
                     takerAddress,
                 );
                 const callback = callbackErrorReporter.reportNodeCallbackErrors(done)();
-                orderWatcher.addOrder(signedOrder);
+                await orderWatcher.addOrderAsync(signedOrder);
                 orderWatcher.subscribe(callback);
                 await contractWrappers.erc20Token.setProxyAllowanceAsync(
                     zrxTokenAddress,
@@ -323,7 +323,7 @@ describe('OrderWatcher', () => {
                     );
                     const fillAmountInBaseUnits = Web3Wrapper.toBaseUnitAmount(new BigNumber(2), decimals);
                     const orderHash = orderHashUtils.getOrderHashHex(signedOrder);
-                    orderWatcher.addOrder(signedOrder);
+                    await orderWatcher.addOrderAsync(signedOrder);
                     const callback = callbackErrorReporter.reportNodeCallbackErrors(done)((orderState: OrderState) => {
                         expect(orderState.isValid).to.be.true();
                         const validOrderState = orderState as OrderStateValid;
@@ -351,7 +351,7 @@ describe('OrderWatcher', () => {
                     );
 
                     const changedMakerApprovalAmount = Web3Wrapper.toBaseUnitAmount(new BigNumber(3), decimals);
-                    orderWatcher.addOrder(signedOrder);
+                    await orderWatcher.addOrderAsync(signedOrder);
 
                     const callback = callbackErrorReporter.reportNodeCallbackErrors(done)((orderState: OrderState) => {
                         const validOrderState = orderState as OrderStateValid;
@@ -388,7 +388,7 @@ describe('OrderWatcher', () => {
 
                     const remainingAmount = Web3Wrapper.toBaseUnitAmount(new BigNumber(1), decimals);
                     const transferAmount = makerBalance.sub(remainingAmount);
-                    orderWatcher.addOrder(signedOrder);
+                    await orderWatcher.addOrderAsync(signedOrder);
 
                     const callback = callbackErrorReporter.reportNodeCallbackErrors(done)((orderState: OrderState) => {
                         expect(orderState.isValid).to.be.true();
@@ -429,7 +429,7 @@ describe('OrderWatcher', () => {
 
                     const remainingTokenAmount = Web3Wrapper.toBaseUnitAmount(new BigNumber(4), decimals);
                     const transferTokenAmount = makerFee.sub(remainingTokenAmount);
-                    orderWatcher.addOrder(signedOrder);
+                    await orderWatcher.addOrderAsync(signedOrder);
 
                     const callback = callbackErrorReporter.reportNodeCallbackErrors(done)((orderState: OrderState) => {
                         const validOrderState = orderState as OrderStateValid;
@@ -467,7 +467,7 @@ describe('OrderWatcher', () => {
                         feeRecipient,
                     );
 
-                    orderWatcher.addOrder(signedOrder);
+                    await orderWatcher.addOrderAsync(signedOrder);
 
                     const callback = callbackErrorReporter.reportNodeCallbackErrors(done)((orderState: OrderState) => {
                         const validOrderState = orderState as OrderStateValid;
@@ -495,7 +495,7 @@ describe('OrderWatcher', () => {
                     fillableAmount,
                 );
                 const orderHash = orderHashUtils.getOrderHashHex(signedOrder);
-                orderWatcher.addOrder(signedOrder);
+                await orderWatcher.addOrderAsync(signedOrder);
 
                 const callback = callbackErrorReporter.reportNodeCallbackErrors(done)((orderState: OrderState) => {
                     expect(orderState.isValid).to.be.false();
@@ -518,7 +518,7 @@ describe('OrderWatcher', () => {
                     fillableAmount,
                 );
                 const orderHash = orderHashUtils.getOrderHashHex(signedOrder);
-                orderWatcher.addOrder(signedOrder);
+                await orderWatcher.addOrderAsync(signedOrder);
 
                 const callback = callbackErrorReporter.reportNodeCallbackErrors(done)((orderState: OrderState) => {
                     expect(orderState.isValid).to.be.false();
@@ -533,6 +533,102 @@ describe('OrderWatcher', () => {
                     takerAddress,
                 );
             })().catch(done);
+        });
+        describe('erc721', () => {
+            let makerErc721AssetData: string;
+            let makerErc721TokenAddress: string;
+            const tokenId = new BigNumber(42);
+            [makerErc721TokenAddress] = tokenUtils.getDummyERC721TokenAddresses();
+            makerErc721AssetData = assetProxyUtils.encodeERC721AssetData(makerErc721TokenAddress, tokenId);
+            const fillableErc721Amount = new BigNumber(1);
+            it('should emit orderStateInvalid when maker allowance set to 0 for watched order', (done: DoneCallback) => {
+                (async () => {
+                    signedOrder = await fillScenarios.createFillableSignedOrderAsync(
+                        makerErc721AssetData,
+                        takerAssetData,
+                        makerAddress,
+                        takerAddress,
+                        fillableErc721Amount,
+                    );
+                    const orderHash = orderHashUtils.getOrderHashHex(signedOrder);
+                    await orderWatcher.addOrderAsync(signedOrder);
+                    const callback = callbackErrorReporter.reportNodeCallbackErrors(done)((orderState: OrderState) => {
+                        expect(orderState.isValid).to.be.false();
+                        const invalidOrderState = orderState as OrderStateInvalid;
+                        expect(invalidOrderState.orderHash).to.be.equal(orderHash);
+                        expect(invalidOrderState.error).to.be.equal(ExchangeContractErrs.InsufficientMakerAllowance);
+                    });
+                    orderWatcher.subscribe(callback);
+                    await contractWrappers.erc721Token.setApprovalAsync(
+                        makerErc721TokenAddress,
+                        constants.NULL_ADDRESS,
+                        tokenId,
+                    );
+                })().catch(done);
+            });
+            it('should emit orderStateInvalid when maker allowance for all set to 0 for watched order', (done: DoneCallback) => {
+                (async () => {
+                    signedOrder = await fillScenarios.createFillableSignedOrderAsync(
+                        makerErc721AssetData,
+                        takerAssetData,
+                        makerAddress,
+                        takerAddress,
+                        fillableErc721Amount,
+                    );
+                    await contractWrappers.erc721Token.setApprovalAsync(
+                        makerErc721TokenAddress,
+                        constants.NULL_ADDRESS,
+                        tokenId,
+                    );
+                    let isApproved = true;
+                    await contractWrappers.erc721Token.setProxyApprovalForAllAsync(
+                        makerErc721TokenAddress,
+                        makerAddress,
+                        isApproved,
+                    );
+                    const orderHash = orderHashUtils.getOrderHashHex(signedOrder);
+                    await orderWatcher.addOrderAsync(signedOrder);
+                    const callback = callbackErrorReporter.reportNodeCallbackErrors(done)((orderState: OrderState) => {
+                        expect(orderState.isValid).to.be.false();
+                        const invalidOrderState = orderState as OrderStateInvalid;
+                        expect(invalidOrderState.orderHash).to.be.equal(orderHash);
+                        expect(invalidOrderState.error).to.be.equal(ExchangeContractErrs.InsufficientMakerAllowance);
+                    });
+                    orderWatcher.subscribe(callback);
+                    isApproved = false;
+                    await contractWrappers.erc721Token.setProxyApprovalForAllAsync(
+                        makerErc721TokenAddress,
+                        makerAddress,
+                        isApproved,
+                    );
+                })().catch(done);
+            });
+            it('should emit orderStateInvalid when maker moves NFT backing watched order', (done: DoneCallback) => {
+                (async () => {
+                    signedOrder = await fillScenarios.createFillableSignedOrderAsync(
+                        makerErc721AssetData,
+                        takerAssetData,
+                        makerAddress,
+                        takerAddress,
+                        fillableErc721Amount,
+                    );
+                    const orderHash = orderHashUtils.getOrderHashHex(signedOrder);
+                    await orderWatcher.addOrderAsync(signedOrder);
+                    const callback = callbackErrorReporter.reportNodeCallbackErrors(done)((orderState: OrderState) => {
+                        expect(orderState.isValid).to.be.false();
+                        const invalidOrderState = orderState as OrderStateInvalid;
+                        expect(invalidOrderState.orderHash).to.be.equal(orderHash);
+                        expect(invalidOrderState.error).to.be.equal(ExchangeContractErrs.InsufficientMakerBalance);
+                    });
+                    orderWatcher.subscribe(callback);
+                    await contractWrappers.erc721Token.transferFromAsync(
+                        makerErc721TokenAddress,
+                        coinbase,
+                        makerAddress,
+                        tokenId,
+                    );
+                })().catch(done);
+            });
         });
     });
 }); // tslint:disable:max-file-line-count

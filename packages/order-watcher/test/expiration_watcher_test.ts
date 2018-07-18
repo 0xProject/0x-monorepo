@@ -43,7 +43,6 @@ describe('ExpirationWatcher', () => {
     let expirationWatcher: ExpirationWatcher;
     before(async () => {
         await blockchainLifecycle.startAsync();
-        const erc20ProxyAddress = contractWrappers.erc20Proxy.getContractAddress();
         userAddresses = await web3Wrapper.getAvailableAddressesAsync();
         zrxTokenAddress = tokenUtils.getProtocolTokenAddress();
         fillScenarios = new FillScenarios(
@@ -51,7 +50,8 @@ describe('ExpirationWatcher', () => {
             userAddresses,
             zrxTokenAddress,
             exchangeContractAddress,
-            erc20ProxyAddress,
+            contractWrappers.erc20Proxy.getContractAddress(),
+            contractWrappers.erc721Proxy.getContractAddress(),
         );
         [coinbase, makerAddress, takerAddress, feeRecipient] = userAddresses;
         const [makerTokenAddress, takerTokenAddress] = tokenUtils.getDummyERC20TokenAddresses();

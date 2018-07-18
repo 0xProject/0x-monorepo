@@ -53,7 +53,6 @@ describe('ExchangeWrapper', () => {
         await blockchainLifecycle.startAsync();
         contractWrappers = new ContractWrappers(provider, config);
         exchangeContractAddress = contractWrappers.exchange.getContractAddress();
-        const erc20ProxyAddress = contractWrappers.erc20Proxy.getContractAddress();
         userAddresses = await web3Wrapper.getAvailableAddressesAsync();
         zrxTokenAddress = tokenUtils.getProtocolTokenAddress();
         fillScenarios = new FillScenarios(
@@ -61,7 +60,8 @@ describe('ExchangeWrapper', () => {
             userAddresses,
             zrxTokenAddress,
             exchangeContractAddress,
-            erc20ProxyAddress,
+            contractWrappers.erc20Proxy.getContractAddress(),
+            contractWrappers.erc721Proxy.getContractAddress(),
         );
         [coinbase, makerAddress, takerAddress, feeRecipient, anotherMakerAddress] = userAddresses;
         [makerTokenAddress, takerTokenAddress] = tokenUtils.getDummyERC20TokenAddresses();

@@ -28,7 +28,7 @@ import {
     orderHashUtils,
     OrderStateUtils,
 } from '@0xproject/order-utils';
-import { ExchangeContractErrs, OrderState, SignedOrder } from '@0xproject/types';
+import { AssetProxyId, ExchangeContractErrs, OrderState, SignedOrder } from '@0xproject/types';
 import { errorUtils, intervalUtils } from '@0xproject/utils';
 import { BlockParamLiteral, LogEntryEvent, LogWithDecodedArgs, Provider } from 'ethereum-types';
 import * as _ from 'lodash';
@@ -134,16 +134,26 @@ export class OrderWatcher {
      * signature is verified.
      * @param   signedOrder     The order you wish to start watching.
      */
-    public addOrder(signedOrder: SignedOrder): void {
+    public async addOrderAsync(signedOrder: SignedOrder): Promise<void> {
         assert.doesConformToSchema('signedOrder', signedOrder, schemas.signedOrderSchema);
         const orderHash = orderHashUtils.getOrderHashHex(signedOrder);
-        assert.isValidSignatureAsync(this._provider, orderHash, signedOrder.signature, signedOrder.makerAddress);
+        await assert.isValidSignatureAsync(this._provider, orderHash, signedOrder.signature, signedOrder.makerAddress);
 
         const expirationUnixTimestampMs = signedOrder.expirationTimeSeconds.times(MILLISECONDS_IN_A_SECOND);
         this._expirationWatcher.addOrder(orderHash, expirationUnixTimestampMs);
 
         this._orderByOrderHash[orderHash] = signedOrder;
         this._dependentOrderHashesTracker.addToDependentOrderHashes(signedOrder);
+
+        const orderAssetDatas = [signedOrder.makerAssetData, signedOrder.takerAssetData];
+        _.each(orderAssetDatas, assetData => {
+            const decodedAssetData = assetProxyUtils.decodeAssetDataOrThrow(assetData);
+            if (decodedAssetData.assetProxyId === AssetProxyId.ERC20) {
+                this._collisionResistantAbiDecoder.addERC20Token(decodedAssetData.tokenAddress);
+            } else if (decodedAssetData.assetProxyId === AssetProxyId.ERC721) {
+                this._collisionResistantAbiDecoder.addERC721Token(decodedAssetData.tokenAddress);
+            }
+        });
     }
     /**
      * Removes an order from the orderWatcher

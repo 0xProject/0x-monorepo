@@ -1,15 +1,8 @@
 {
-    "extends": [
-        "tslint:latest",
-        "tslint-react",
-        "tslint-eslint-rules"
-    ],
+    "extends": ["tslint:latest", "tslint-react", "tslint-eslint-rules"],
     "rules": {
         "adjacent-overload-signatures": true,
-        "arrow-parens": [
-            true,
-            "ban-single-arg-parens"
-        ],
+        "arrow-parens": [true, "ban-single-arg-parens"],
         "arrow-return-shorthand": true,
         "async-suffix": true,
         "await-promise": true,
@@ -21,70 +14,37 @@
             true,
             {
                 "functions": {
-                    "visibilities": [
-                        "exported"
-                    ]
+                    "visibilities": ["exported"]
                 },
                 "methods": {
                     "locations": "instance",
-                    "privacies": [
-                        "public",
-                        "protected"
-                    ]
+                    "privacies": ["public", "protected"]
                 }
             }
         ],
         "curly": true,
-        "custom-no-magic-numbers": [
-            true,
-            0,
-            1,
-            2,
-            3,
-            -1
-        ],
+        "custom-no-magic-numbers": [true, 0, 1, 2, 3, -1],
         "encoding": true,
         "eofline": true,
         "import-spacing": true,
-        "indent": [
-            true,
-            "spaces",
-            4
-        ],
+        "indent": [true, "spaces", 4],
         "interface-name": false,
         "interface-over-type-literal": true,
         "jsx-alignment": true,
         "jsx-boolean-value": true,
-        "jsx-curly-spacing": [
-            true,
-            "never"
-        ],
+        "jsx-curly-spacing": [true, "never"],
         "jsx-no-bind": false,
         "jsx-no-lambda": true,
         "jsx-no-multiline-js": false,
         "jsx-no-string-ref": true,
         "jsx-self-close": true,
         "jsx-wrap-multiline": false,
-        "linebreak-style": [
-            true,
-            "LF"
-        ],
-        "max-classes-per-file": [
-            true,
-            1
-        ],
-        "max-file-line-count": [
-            true,
-            500
-        ],
+        "linebreak-style": [true, "LF"],
+        "max-classes-per-file": [true, 1],
+        "max-file-line-count": [true, 500],
         "max-line-length": false,
         "member-access": true,
-        "member-ordering": [
-            true,
-            "public-before-private",
-            "static-before-instance",
-            "variables-before-functions"
-        ],
+        "member-ordering": [true, "public-before-private", "static-before-instance", "variables-before-functions"],
         "new-parens": true,
         "newline-before-return": false,
         "no-angle-bracket-type-assertion": true,
@@ -97,10 +57,7 @@
         "no-empty-interface": false,
         "no-eval": true,
         "no-floating-promises": true,
-        "no-implicit-dependencies": [
-            true,
-            "dev"
-        ],
+        "no-implicit-dependencies": [true, "dev"],
         "no-inferred-empty-object-type": true,
         "no-invalid-template-strings": true,
         "no-invalid-this": true,
@@ -120,10 +77,7 @@
         "no-unnecessary-class": true,
         "no-unnecessary-type-assertion": true,
         "no-unsafe-finally": true,
-        "no-unused-variable": [
-            true,
-            "check-parameters"
-        ],
+        "no-unused-variable": [true, "check-parameters"],
         "number-literal-format": true,
         "object-literal-key-quotes": false,
         "object-literal-sort-keys": false,
@@ -139,17 +93,9 @@
         "prefer-object-spread": true,
         "prefer-readonly": true,
         "promise-function-async": true,
-        "quotemark": [
-            true,
-            "single",
-            "avoid-escape",
-            "jsx-double"
-        ],
+        "quotemark": [true, "single", "avoid-escape", "jsx-double"],
         "restrict-plus-operands": true,
-        "semicolon": [
-            true,
-            "always"
-        ],
+        "semicolon": [true, "always"],
         "space-before-function-paren": [
             true,
             {
@@ -163,18 +109,9 @@
         "space-within-parens": false,
         "switch-default": true,
         "type-literal-delimiter": true,
-        "typedef": [
-            true,
-            "call-signature",
-            "parameter",
-            "property-declaration"
-        ],
+        "typedef": [true, "call-signature", "parameter", "property-declaration"],
         "underscore-private-and-protected": true,
-        "variable-name": [
-            true,
-            "ban-keywords",
-            "allow-pascal-case"
-        ],
+        "variable-name": [true, "ban-keywords", "allow-pascal-case"],
         "whitespace": [
             true,
             "check-branch",
