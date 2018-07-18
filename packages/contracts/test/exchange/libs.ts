@@ -71,7 +71,7 @@ describe('Exchange libs', () => {
         });
         describe('getOrderHash', () => {
             it('should output the correct orderHash', async () => {
-                signedOrder = orderFactory.newSignedOrder();
+                signedOrder = await orderFactory.newSignedOrderAsync();
                 const orderHashHex = await libs.publicGetOrderHash.callAsync(signedOrder);
                 expect(orderHashUtils.getOrderHashHex(signedOrder)).to.be.equal(orderHashHex);
             });

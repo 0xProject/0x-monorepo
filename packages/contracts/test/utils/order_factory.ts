@@ -2,6 +2,7 @@ import { generatePseudoRandomSalt, orderHashUtils } from '@0xproject/order-utils
 import { Order, SignatureType, SignedOrder } from '@0xproject/types';
 import { BigNumber } from '@0xproject/utils';
 
+import { getLatestBlockTimestampAsync } from './block_timestamp';
 import { constants } from './constants';
 import { signingUtils } from './signing_utils';
 
@@ -12,15 +13,15 @@ export class OrderFactory {
         this._defaultOrderParams = defaultOrderParams;
         this._privateKey = privateKey;
     }
-    public newSignedOrder(
+    public async newSignedOrderAsync(
         customOrderParams: Partial<Order> = {},
         signatureType: SignatureType = SignatureType.EthSign,
-    ): SignedOrder {
-        const tenMinutes = 10 * 60 * 1000;
-        const randomExpiration = new BigNumber(Date.now() + tenMinutes);
+    ): Promise<SignedOrder> {
+        const tenMinutesInSeconds = 10 * 60;
+        const currentBlockTimestamp = await getLatestBlockTimestampAsync();
         const order = ({
             senderAddress: constants.NULL_ADDRESS,
-            expirationTimeSeconds: randomExpiration,
+            expirationTimeSeconds: new BigNumber(currentBlockTimestamp).add(tenMinutesInSeconds),
             salt: generatePseudoRandomSalt(),
             takerAddress: constants.NULL_ADDRESS,
             ...this._defaultOrderParams,

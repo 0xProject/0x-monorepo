@@ -18,9 +18,9 @@ import {
     expectContractCreationFailedWithoutReason,
     expectTransactionFailedWithoutReasonAsync,
 } from '../utils/assertions';
+import { increaseTimeAndMineBlockAsync } from '../utils/block_timestamp';
 import { chaiSetup } from '../utils/chai_setup';
 import { constants } from '../utils/constants';
-import { increaseTimeAndMineBlockAsync } from '../utils/increase_time';
 import { MultiSigWrapper } from '../utils/multi_sig_wrapper';
 import { provider, txDefaults, web3Wrapper } from '../utils/web3_wrapper';
 

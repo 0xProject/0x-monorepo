@@ -223,6 +223,10 @@ export class ExchangeWrapper {
         const orderInfo = (await this._exchange.getOrderInfo.callAsync(signedOrder)) as OrderInfo;
         return orderInfo;
     }
+    public async getOrdersInfoAsync(signedOrders: SignedOrder[]): Promise<OrderInfo[]> {
+        const ordersInfo = (await this._exchange.getOrdersInfo.callAsync(signedOrders)) as OrderInfo[];
+        return ordersInfo;
+    }
     public async matchOrdersAsync(
         signedOrderLeft: SignedOrder,
         signedOrderRight: SignedOrder,
