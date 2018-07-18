@@ -78,9 +78,7 @@ export class OrderFactoryFromScenario {
                 makerAssetData = assetDataUtils.encodeERC20AssetData(this._zrxAddress);
                 break;
             case AssetDataScenario.ERC20NonZRXEighteenDecimals:
-                makerAssetData = assetDataUtils.encodeERC20AssetData(
-                    this._nonZrxERC20EighteenDecimalTokenAddresses[0],
-                );
+                makerAssetData = assetDataUtils.encodeERC20AssetData(this._nonZrxERC20EighteenDecimalTokenAddresses[0]);
                 break;
             case AssetDataScenario.ERC20FiveDecimals:
                 makerAssetData = assetDataUtils.encodeERC20AssetData(this._erc20FiveDecimalTokenAddresses[0]);
@@ -100,9 +98,7 @@ export class OrderFactoryFromScenario {
                 takerAssetData = assetDataUtils.encodeERC20AssetData(this._zrxAddress);
                 break;
             case AssetDataScenario.ERC20NonZRXEighteenDecimals:
-                takerAssetData = assetDataUtils.encodeERC20AssetData(
-                    this._nonZrxERC20EighteenDecimalTokenAddresses[1],
-                );
+                takerAssetData = assetDataUtils.encodeERC20AssetData(this._nonZrxERC20EighteenDecimalTokenAddresses[1]);
                 break;
             case AssetDataScenario.ERC20FiveDecimals:
                 takerAssetData = assetDataUtils.encodeERC20AssetData(this._erc20FiveDecimalTokenAddresses[1]);

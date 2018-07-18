@@ -461,9 +461,7 @@ describe('Exchange core', () => {
             // Construct Exchange parameters
             const makerAssetId = erc721MakerAssetIds[0];
             const takerAssetId = erc721TakerAssetIds[0];
-            const makerAssetData = assetDataUtils
-                .encodeERC721AssetData(erc721Token.address, makerAssetId)
-                .slice(0, -2);
+            const makerAssetData = assetDataUtils.encodeERC721AssetData(erc721Token.address, makerAssetId).slice(0, -2);
             signedOrder = await orderFactory.newSignedOrderAsync({
                 makerAssetAmount: new BigNumber(1),
                 takerAssetAmount: new BigNumber(1),
