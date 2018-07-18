@@ -14,6 +14,7 @@ import {
     Provider,
     RawLogEntry,
     TraceParams,
+    Transaction,
     TransactionReceipt,
     TransactionReceiptWithDecodedLogs,
     TransactionTrace,
@@ -219,6 +220,19 @@ export class Web3Wrapper {
             transactionReceipt.status = Web3Wrapper._normalizeTxReceiptStatus(transactionReceipt.status);
         }
         return transactionReceipt;
+    }
+    /**
+     * Retrieves the transaction data for a given transaction
+     * @param txHash Transaction hash
+     * @returns The raw transaction data
+     */
+    public async getTransactionByHashAsync(txHash: string): Promise<Transaction> {
+        assert.isHexString('txHash', txHash);
+        const transaction = await this._sendRawPayloadAsync<Transaction>({
+            method: 'eth_getTransactionByHash',
+            params: [txHash],
+        });
+        return transaction;
     }
     /**
      * Retrieves an accounts Ether balance in wei

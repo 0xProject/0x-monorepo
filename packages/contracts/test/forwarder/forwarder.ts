@@ -27,8 +27,6 @@ chaiSetup.configure();
 const expect = chai.expect;
 const blockchainLifecycle = new BlockchainLifecycle(web3Wrapper);
 const DECIMALS_DEFAULT = 18;
-// Set a gasPrice so when checking balance of msg.sender we can accurately calculate gasPrice*gasUsed
-const DEFAULT_GAS_PRICE = new BigNumber(1);
 
 describe(ContractName.Forwarder, () => {
     let makerAddress: string;
@@ -60,12 +58,18 @@ describe(ContractName.Forwarder, () => {
     let erc721MakerAssetIds: BigNumber[];
     let takerEthBalanceBefore: BigNumber;
     let feePercentage: BigNumber;
+    let gasPrice: BigNumber;
+
     const MAX_WETH_FILL_PERCENTAGE = 95;
 
     before(async () => {
         await blockchainLifecycle.startAsync();
         const accounts = await web3Wrapper.getAvailableAddressesAsync();
         const usedAddresses = ([owner, makerAddress, takerAddress, feeRecipientAddress, otherAddress] = accounts);
+
+        const txHash = await web3Wrapper.sendTransactionAsync({ from: accounts[0], to: accounts[0], value: 0 });
+        const transaction = await web3Wrapper.getTransactionByHashAsync(txHash);
+        gasPrice = new BigNumber(transaction.gasPrice);
 
         const erc721Wrapper = new ERC721Wrapper(provider, usedAddresses, owner);
         erc20Wrapper = new ERC20Wrapper(provider, usedAddresses, owner);
@@ -142,9 +146,6 @@ describe(ContractName.Forwarder, () => {
             await zrxToken.transfer.sendTransactionAsync(forwarderContract.address, zrxDepositAmount),
         );
         erc20Wrapper.addTokenOwnerAddress(forwarderInstance.address);
-
-        web3Wrapper.abiDecoder.addABI(forwarderContract.abi);
-        web3Wrapper.abiDecoder.addABI(exchangeInstance.abi);
     });
     after(async () => {
         await blockchainLifecycle.revertAsync();
@@ -187,7 +188,7 @@ describe(ContractName.Forwarder, () => {
             const makerAssetFillAmount = primaryTakerAssetFillAmount
                 .times(orderWithoutFee.makerAssetAmount)
                 .dividedToIntegerBy(orderWithoutFee.takerAssetAmount);
-            const totalEthSpent = primaryTakerAssetFillAmount.plus(DEFAULT_GAS_PRICE.times(tx.gasUsed));
+            const totalEthSpent = primaryTakerAssetFillAmount.plus(gasPrice.times(tx.gasUsed));
 
             expect(takerEthBalanceAfter).to.be.bignumber.equal(takerEthBalanceBefore.minus(totalEthSpent));
             expect(newBalances[makerAddress][defaultMakerAssetAddress]).to.be.bignumber.equal(
@@ -232,7 +233,7 @@ describe(ContractName.Forwarder, () => {
             const wethSpentOnFeeOrders = ForwarderWrapper.getWethForFeeOrders(feeAmount, feeOrders);
             const totalEthSpent = primaryTakerAssetFillAmount
                 .plus(wethSpentOnFeeOrders)
-                .plus(DEFAULT_GAS_PRICE.times(tx.gasUsed));
+                .plus(gasPrice.times(tx.gasUsed));
 
             expect(takerEthBalanceAfter).to.be.bignumber.equal(takerEthBalanceBefore.minus(totalEthSpent));
             expect(newBalances[makerAddress][defaultMakerAssetAddress]).to.be.bignumber.equal(
@@ -268,7 +269,7 @@ describe(ContractName.Forwarder, () => {
             const newBalances = await erc20Wrapper.getBalancesAsync();
 
             const makerAssetFillAmount = orderWithFee.makerAssetAmount.dividedToIntegerBy(2);
-            const totalEthSpent = ethValue.plus(DEFAULT_GAS_PRICE.times(tx.gasUsed));
+            const totalEthSpent = ethValue.plus(gasPrice.times(tx.gasUsed));
             const takerFeePaid = orderWithFee.takerFee.dividedToIntegerBy(2);
             const makerFeePaid = orderWithFee.makerFee.dividedToIntegerBy(2);
 
@@ -297,7 +298,7 @@ describe(ContractName.Forwarder, () => {
                 from: takerAddress,
             });
             const takerEthBalanceAfter = await web3Wrapper.getBalanceInWeiAsync(takerAddress);
-            const totalEthSpent = orderWithoutFee.takerAssetAmount.plus(DEFAULT_GAS_PRICE.times(tx.gasUsed));
+            const totalEthSpent = orderWithoutFee.takerAssetAmount.plus(gasPrice.times(tx.gasUsed));
 
             expect(takerEthBalanceAfter).to.be.bignumber.equal(takerEthBalanceBefore.minus(totalEthSpent));
         });
@@ -335,7 +336,7 @@ describe(ContractName.Forwarder, () => {
                 from: takerAddress,
             });
             const takerEthBalanceAfter = await web3Wrapper.getBalanceInWeiAsync(takerAddress);
-            const totalEthSpent = erc20SignedOrder.takerAssetAmount.plus(DEFAULT_GAS_PRICE.times(tx.gasUsed));
+            const totalEthSpent = erc20SignedOrder.takerAssetAmount.plus(gasPrice.times(tx.gasUsed));
 
             expect(takerEthBalanceAfter).to.be.bignumber.equal(takerEthBalanceBefore.minus(totalEthSpent));
         });
@@ -371,9 +372,7 @@ describe(ContractName.Forwarder, () => {
                 .times(orderWithoutFee.makerAssetAmount)
                 .dividedToIntegerBy(orderWithoutFee.takerAssetAmount);
             const ethSpentOnFee = ForwarderWrapper.getPercentageOfValue(primaryTakerAssetFillAmount, baseFeePercentage);
-            const totalEthSpent = primaryTakerAssetFillAmount
-                .plus(ethSpentOnFee)
-                .plus(DEFAULT_GAS_PRICE.times(tx.gasUsed));
+            const totalEthSpent = primaryTakerAssetFillAmount.plus(ethSpentOnFee).plus(gasPrice.times(tx.gasUsed));
 
             expect(takerEthBalanceAfter).to.be.bignumber.equal(takerEthBalanceBefore.minus(totalEthSpent));
             expect(newBalances[makerAddress][defaultMakerAssetAddress]).to.be.bignumber.equal(
@@ -402,7 +401,7 @@ describe(ContractName.Forwarder, () => {
                 forwarderWrapper.marketSellOrdersWithEthAsync(
                     ordersWithoutFee,
                     feeOrders,
-                    { from: takerAddress, value: ethValue, gasPrice: DEFAULT_GAS_PRICE },
+                    { from: takerAddress, value: ethValue, gasPrice },
                     { feePercentage, feeRecipient: feeRecipientAddress },
                 ),
                 RevertReason.FeePercentageTooLarge,
@@ -427,7 +426,7 @@ describe(ContractName.Forwarder, () => {
             const newBalances = await erc20Wrapper.getBalancesAsync();
 
             const primaryTakerAssetFillAmount = ethValue;
-            const totalEthSpent = primaryTakerAssetFillAmount.plus(DEFAULT_GAS_PRICE.times(tx.gasUsed));
+            const totalEthSpent = primaryTakerAssetFillAmount.plus(gasPrice.times(tx.gasUsed));
 
             expect(takerEthBalanceAfter).to.be.bignumber.equal(takerEthBalanceBefore.minus(totalEthSpent));
             expect(newBalances[makerAddress][defaultMakerAssetAddress]).to.be.bignumber.equal(
@@ -460,7 +459,7 @@ describe(ContractName.Forwarder, () => {
             const newBalances = await erc20Wrapper.getBalancesAsync();
 
             const primaryTakerAssetFillAmount = ethValue.dividedToIntegerBy(2);
-            const totalEthSpent = primaryTakerAssetFillAmount.plus(DEFAULT_GAS_PRICE.times(tx.gasUsed));
+            const totalEthSpent = primaryTakerAssetFillAmount.plus(gasPrice.times(tx.gasUsed));
 
             expect(takerEthBalanceAfter).to.be.bignumber.equal(takerEthBalanceBefore.minus(totalEthSpent));
             expect(newBalances[makerAddress][defaultMakerAssetAddress]).to.be.bignumber.equal(
@@ -497,7 +496,7 @@ describe(ContractName.Forwarder, () => {
             const wethSpentOnFeeOrders = ForwarderWrapper.getWethForFeeOrders(feeAmount, feeOrders);
             const totalEthSpent = primaryTakerAssetFillAmount
                 .plus(wethSpentOnFeeOrders)
-                .plus(DEFAULT_GAS_PRICE.times(tx.gasUsed));
+                .plus(gasPrice.times(tx.gasUsed));
 
             expect(takerEthBalanceAfter).to.be.bignumber.equal(takerEthBalanceBefore.minus(totalEthSpent));
             expect(newBalances[makerAddress][defaultMakerAssetAddress]).to.be.bignumber.equal(
@@ -517,7 +516,7 @@ describe(ContractName.Forwarder, () => {
         });
         it('should buy the exact amount of assets when buying ZRX with fee abstraction', async () => {
             orderWithFee = await orderFactory.newSignedOrderAsync({
-                makerAssetData: assetProxyUtils.encodeERC20AssetData(zrxToken.address),
+                makerAssetData: assetDataUtils.encodeERC20AssetData(zrxToken.address),
                 takerFee: Web3Wrapper.toBaseUnitAmount(new BigNumber(1), DECIMALS_DEFAULT),
             });
             ordersWithFee = [orderWithFee];
@@ -536,7 +535,7 @@ describe(ContractName.Forwarder, () => {
                 makerAssetFillAmount,
                 ordersWithFee,
             );
-            const totalEthSpent = primaryTakerAssetFillAmount.plus(DEFAULT_GAS_PRICE.times(tx.gasUsed));
+            const totalEthSpent = primaryTakerAssetFillAmount.plus(gasPrice.times(tx.gasUsed));
             const makerAssetFilledAmount = orderWithFee.makerAssetAmount
                 .times(primaryTakerAssetFillAmount)
                 .dividedToIntegerBy(orderWithFee.takerAssetAmount);
@@ -565,7 +564,7 @@ describe(ContractName.Forwarder, () => {
         });
         // it('throws if fees are higher than 5% when buying zrx', async () => {
         //     const highFeeZRXOrder = orderFactory.newSignedOrder({
-        //         makerAssetData: assetProxyUtils.encodeERC20AssetData(zrxToken.address),
+        //         makerAssetData: assetDataUtils.encodeERC20AssetData(zrxToken.address),
         //         makerAssetAmount: orderWithoutFee.makerAssetAmount,
         //         takerFee: orderWithoutFee.makerAssetAmount.times(0.06),
         //     });
@@ -663,7 +662,7 @@ describe(ContractName.Forwarder, () => {
     //         const makerAssetId = erc721MakerAssetIds[0];
     //         orderWithoutFee = orderFactory.newSignedOrder({
     //             makerAssetAmount: new BigNumber(1),
-    //             makerAssetData: assetProxyUtils.encodeERC721AssetData(erc721Token.address, makerAssetId),
+    //             makerAssetData: assetDataUtils.encodeERC721AssetData(erc721Token.address, makerAssetId),
     //         });
     //         feeOrders = [];
     //         signedOrders = [orderWithoutFee];
@@ -686,7 +685,7 @@ describe(ContractName.Forwarder, () => {
     //         orderWithoutFee = orderFactory.newSignedOrder({
     //             makerAssetAmount: new BigNumber(1),
     //             takerFee: Web3Wrapper.toBaseUnitAmount(new BigNumber(1), DECIMALS_DEFAULT),
-    //             makerAssetData: assetProxyUtils.encodeERC721AssetData(erc721Token.address, makerAssetId),
+    //             makerAssetData: assetDataUtils.encodeERC721AssetData(erc721Token.address, makerAssetId),
     //         });
     //         signedOrders = [orderWithoutFee];
     //         const makerAssetAmount = new BigNumber(signedOrders.length);
@@ -708,7 +707,7 @@ describe(ContractName.Forwarder, () => {
     //         orderWithoutFee = orderFactory.newSignedOrder({
     //             makerAssetAmount: new BigNumber(1),
     //             takerFee: Web3Wrapper.toBaseUnitAmount(new BigNumber(1), DECIMALS_DEFAULT),
-    //             makerAssetData: assetProxyUtils.encodeERC721AssetData(erc721Token.address, makerAssetId),
+    //             makerAssetData: assetDataUtils.encodeERC721AssetData(erc721Token.address, makerAssetId),
     //         });
     //         signedOrders = [orderWithoutFee];
     //         feePercentage = 100;
@@ -728,7 +727,7 @@ describe(ContractName.Forwarder, () => {
     //             {
     //                 from: takerAddress,
     //                 value: fillAmountWei,
-    //                 gasPrice: DEFAULT_GAS_PRICE,
+    //                 gasPrice: gasPrice,
     //             },
     //             {
     //                 feePercentage,
@@ -750,12 +749,12 @@ describe(ContractName.Forwarder, () => {
     //         const signedOrder1 = orderFactory.newSignedOrder({
     //             makerAssetAmount: new BigNumber(1),
     //             takerFee: Web3Wrapper.toBaseUnitAmount(new BigNumber(3), DECIMALS_DEFAULT),
-    //             makerAssetData: assetProxyUtils.encodeERC721AssetData(erc721Token.address, makerAssetId1),
+    //             makerAssetData: assetDataUtils.encodeERC721AssetData(erc721Token.address, makerAssetId1),
     //         });
     //         const signedOrder2 = orderFactory.newSignedOrder({
     //             makerAssetAmount: new BigNumber(1),
     //             takerFee: Web3Wrapper.toBaseUnitAmount(new BigNumber(4), DECIMALS_DEFAULT),
-    //             makerAssetData: assetProxyUtils.encodeERC721AssetData(erc721Token.address, makerAssetId2),
+    //             makerAssetData: assetDataUtils.encodeERC721AssetData(erc721Token.address, makerAssetId2),
     //         });
     //         signedOrders = [signedOrder1, signedOrder2];
     //         feePercentage = 10;
@@ -786,19 +785,19 @@ describe(ContractName.Forwarder, () => {
     //             makerAssetAmount: erc721MakerAssetAmount,
     //             takerAssetAmount: Web3Wrapper.toBaseUnitAmount(new BigNumber(10), DECIMALS_DEFAULT),
     //             takerFee: Web3Wrapper.toBaseUnitAmount(new BigNumber(6), DECIMALS_DEFAULT),
-    //             makerAssetData: assetProxyUtils.encodeERC721AssetData(erc721Token.address, makerAssetId),
+    //             makerAssetData: assetDataUtils.encodeERC721AssetData(erc721Token.address, makerAssetId),
     //         });
     //         signedOrders = [orderWithoutFee];
     //         const firstFeeOrder = orderFactory.newSignedOrder({
     //             makerAssetAmount: Web3Wrapper.toBaseUnitAmount(new BigNumber(8), DECIMALS_DEFAULT),
     //             takerAssetAmount: Web3Wrapper.toBaseUnitAmount(new BigNumber(0.1), DECIMALS_DEFAULT),
-    //             makerAssetData: assetProxyUtils.encodeERC20AssetData(zrxToken.address),
+    //             makerAssetData: assetDataUtils.encodeERC20AssetData(zrxToken.address),
     //             takerFee: Web3Wrapper.toBaseUnitAmount(new BigNumber(0), DECIMALS_DEFAULT),
     //         });
     //         const secondFeeOrder = orderFactory.newSignedOrder({
     //             makerAssetAmount: Web3Wrapper.toBaseUnitAmount(new BigNumber(8), DECIMALS_DEFAULT),
     //             takerAssetAmount: Web3Wrapper.toBaseUnitAmount(new BigNumber(0.12), DECIMALS_DEFAULT),
-    //             makerAssetData: assetProxyUtils.encodeERC20AssetData(zrxToken.address),
+    //             makerAssetData: assetDataUtils.encodeERC20AssetData(zrxToken.address),
     //             takerFee: Web3Wrapper.toBaseUnitAmount(new BigNumber(0), DECIMALS_DEFAULT),
     //         });
     //         feeOrders = [firstFeeOrder, secondFeeOrder];
@@ -831,7 +830,7 @@ describe(ContractName.Forwarder, () => {
     //         tx = await forwarderWrapper.marketBuyOrdersWithEthAsync(signedOrders, feeOrders, makerAssetAmount, {
     //             from: takerAddress,
     //             value: slippageFillAmountWei,
-    //             gasPrice: DEFAULT_GAS_PRICE,
+    //             gasPrice: gasPrice,
     //         });
     //         const afterEthBalance = await web3Wrapper.getBalanceInWeiAsync(takerAddress);
     //         const expectedEthBalanceAfterGasCosts = initEthBalance.minus(expectedFillAmountWei).minus(tx.gasUsed);
@@ -850,20 +849,20 @@ describe(ContractName.Forwarder, () => {
     //             makerAssetAmount: erc721MakerAssetAmount,
     //             takerAssetAmount: Web3Wrapper.toBaseUnitAmount(new BigNumber(10), DECIMALS_DEFAULT),
     //             takerFee: Web3Wrapper.toBaseUnitAmount(new BigNumber(6), DECIMALS_DEFAULT),
-    //             makerAssetData: assetProxyUtils.encodeERC721AssetData(erc721Token.address, makerAssetId),
+    //             makerAssetData: assetDataUtils.encodeERC721AssetData(erc721Token.address, makerAssetId),
     //         });
     //         const zrxMakerAssetAmount = Web3Wrapper.toBaseUnitAmount(new BigNumber(8), DECIMALS_DEFAULT);
     //         signedOrders = [orderWithoutFee];
     //         const firstFeeOrder = orderFactory.newSignedOrder({
     //             makerAssetAmount: zrxMakerAssetAmount,
     //             takerAssetAmount: Web3Wrapper.toBaseUnitAmount(new BigNumber(0.1), DECIMALS_DEFAULT),
-    //             makerAssetData: assetProxyUtils.encodeERC20AssetData(zrxToken.address),
+    //             makerAssetData: assetDataUtils.encodeERC20AssetData(zrxToken.address),
     //             takerFee: Web3Wrapper.toBaseUnitAmount(new BigNumber(0), DECIMALS_DEFAULT),
     //         });
     //         const secondFeeOrder = orderFactory.newSignedOrder({
     //             makerAssetAmount: zrxMakerAssetAmount,
     //             takerAssetAmount: Web3Wrapper.toBaseUnitAmount(new BigNumber(0.12), DECIMALS_DEFAULT),
-    //             makerAssetData: assetProxyUtils.encodeERC20AssetData(zrxToken.address),
+    //             makerAssetData: assetDataUtils.encodeERC20AssetData(zrxToken.address),
     //             takerFee: Web3Wrapper.toBaseUnitAmount(new BigNumber(0), DECIMALS_DEFAULT),
     //         });
     //         feeOrders = [firstFeeOrder, secondFeeOrder];
@@ -897,7 +896,7 @@ describe(ContractName.Forwarder, () => {
     //         const makerAssetId = erc721MakerAssetIds[0];
     //         const erc721SignedOrder = orderFactory.newSignedOrder({
     //             makerAssetAmount: new BigNumber(1),
-    //             makerAssetData: assetProxyUtils.encodeERC721AssetData(erc721Token.address, makerAssetId),
+    //             makerAssetData: assetDataUtils.encodeERC721AssetData(erc721Token.address, makerAssetId),
     //         });
     //         const erc20SignedOrder = orderFactory.newSignedOrder();
     //         signedOrders = [erc721SignedOrder, erc20SignedOrder];
@@ -915,7 +914,7 @@ describe(ContractName.Forwarder, () => {
     //         const makerAssetId = erc721MakerAssetIds[0];
     //         const erc721SignedOrder = orderFactory.newSignedOrder({
     //             makerAssetAmount: new BigNumber(1),
-    //             makerAssetData: assetProxyUtils.encodeERC721AssetData(erc721Token.address, makerAssetId),
+    //             makerAssetData: assetDataUtils.encodeERC721AssetData(erc721Token.address, makerAssetId),
     //         });
     //         const erc20SignedOrder = orderFactory.newSignedOrder();
     //         signedOrders = [erc20SignedOrder, erc721SignedOrder];
