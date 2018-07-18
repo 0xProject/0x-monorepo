@@ -46,7 +46,7 @@ export class AssetPicker extends React.Component<AssetPickerProps, AssetPickerSt
     public static defaultProps: Partial<AssetPickerProps> = {
         tokenVisibility: TokenVisibility.ALL,
     };
-    private _dialogConfigsByAssetView: { [assetView: string]: DialogConfigs };
+    private readonly _dialogConfigsByAssetView: { [assetView: string]: DialogConfigs };
     constructor(props: AssetPickerProps) {
         super(props);
         this.state = {

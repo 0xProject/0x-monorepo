@@ -1,5 +1,5 @@
 import { ContractArtifact } from '@0xproject/sol-compiler';
-import { AbiDecoder, intervalUtils } from '@0xproject/utils';
+import { AbiDecoder, intervalUtils, logUtils } from '@0xproject/utils';
 import { Web3Wrapper } from '@0xproject/web3-wrapper';
 import { BlockParamLiteral, ContractAbi, FilterObject, LogEntry, LogWithDecodedArgs, RawLog } from 'ethereum-types';
 import { Block, BlockAndLogStreamer, Log } from 'ethereumjs-blockstream';
@@ -41,6 +41,13 @@ export abstract class ContractWrapper {
     };
     private _onLogAddedSubscriptionToken: string | undefined;
     private _onLogRemovedSubscriptionToken: string | undefined;
+    private static _onBlockAndLogStreamerError(isVerbose: boolean, err: Error): void {
+        // Since Blockstream errors are all recoverable, we simply log them if the verbose
+        // config is passed in.
+        if (isVerbose) {
+            logUtils.warn(err);
+        }
+    }
     constructor(web3Wrapper: Web3Wrapper, networkId: number, blockPollingIntervalMs?: number) {
         this._web3Wrapper = web3Wrapper;
         this._networkId = networkId;
@@ -79,10 +86,11 @@ export abstract class ContractWrapper {
         indexFilterValues: IndexedFilterValues,
         abi: ContractAbi,
         callback: EventCallback<ArgsType>,
+        isVerbose: boolean = false,
     ): string {
         const filter = filterUtils.getFilter(address, eventName, indexFilterValues, abi);
         if (_.isUndefined(this._blockAndLogStreamerIfExists)) {
-            this._startBlockAndLogStream();
+            this._startBlockAndLogStream(isVerbose);
         }
         const filterToken = filterUtils.generateUUID();
         this._filters[filterToken] = filter;
@@ -151,21 +159,21 @@ export abstract class ContractWrapper {
             }
         });
     }
-    private _startBlockAndLogStream(): void {
+    private _startBlockAndLogStream(isVerbose: boolean): void {
         if (!_.isUndefined(this._blockAndLogStreamerIfExists)) {
             throw new Error(ContractWrappersError.SubscriptionAlreadyPresent);
         }
         this._blockAndLogStreamerIfExists = new BlockAndLogStreamer(
             this._web3Wrapper.getBlockAsync.bind(this._web3Wrapper),
             this._web3Wrapper.getLogsAsync.bind(this._web3Wrapper),
-            this._onBlockAndLogStreamerError.bind(this),
+            ContractWrapper._onBlockAndLogStreamerError.bind(this, isVerbose),
         );
         const catchAllLogFilter = {};
         this._blockAndLogStreamerIfExists.addLogFilter(catchAllLogFilter);
         this._blockAndLogStreamIntervalIfExists = intervalUtils.setAsyncExcludingInterval(
             this._reconcileBlockAsync.bind(this),
             this._blockPollingIntervalMs,
-            this._onReconcileBlockError.bind(this),
+            ContractWrapper._onBlockAndLogStreamerError.bind(this, isVerbose),
         );
         let isRemoved = false;
         this._onLogAddedSubscriptionToken = this._blockAndLogStreamerIfExists.subscribeToOnLogAdded(
@@ -176,20 +184,10 @@ export abstract class ContractWrapper {
             this._onLogStateChanged.bind(this, isRemoved),
         );
     }
-    private _onBlockAndLogStreamerError(err: Error): void {
-        // Propogate all Blockstream subscriber errors to all
-        // top-level subscriptions
-        const filterCallbacks = _.values(this._filterCallbacks);
-        _.each(filterCallbacks, filterCallback => {
-            filterCallback(err);
-        });
-    }
-    private _onReconcileBlockError(err: Error): void {
-        const filterTokens = _.keys(this._filterCallbacks);
-        _.each(filterTokens, filterToken => {
-            this._unsubscribe(filterToken, err);
-        });
-    }
+    // HACK: This should be a package-scoped method (which doesn't exist in TS)
+    // We don't want this method available in the public interface for all classes
+    // who inherit from ContractWrapper, and it is only used by the internal implementation
+    // of those higher classes.
     // tslint:disable-next-line:no-unused-variable
     private _setNetworkId(networkId: number): void {
         this._networkId = networkId;

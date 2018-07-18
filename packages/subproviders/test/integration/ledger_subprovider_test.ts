@@ -176,7 +176,7 @@ describe('LedgerSubprovider', () => {
                     params: [tx],
                     id: 1,
                 };
-                await promisify(defaultProvider.sendAsync, defaultProvider)(payload);
+                await promisify(defaultProvider.sendAsync.bind(defaultProvider))(payload);
 
                 // Send transaction from Ledger
                 tx = {

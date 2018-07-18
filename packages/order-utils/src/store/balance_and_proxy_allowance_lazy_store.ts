@@ -10,7 +10,7 @@ import { assetProxyUtils } from '../asset_proxy_utils';
  * Copy on read store for balances/proxyAllowances of tokens/accounts
  */
 export class BalanceAndProxyAllowanceLazyStore implements AbstractBalanceAndProxyAllowanceLazyStore {
-    private _balanceAndProxyAllowanceFetcher: AbstractBalanceAndProxyAllowanceFetcher;
+    private readonly _balanceAndProxyAllowanceFetcher: AbstractBalanceAndProxyAllowanceFetcher;
     private _balance: {
         [assetData: string]: {
             [userAddress: string]: BigNumber;

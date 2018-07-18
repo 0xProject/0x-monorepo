@@ -989,12 +989,14 @@ export class ExchangeWrapper extends ContractWrapper {
      * @param   indexFilterValues   An object where the keys are indexed args returned by the event and
      *                              the value is the value you are interested in. E.g `{maker: aUserAddressHex}`
      * @param   callback            Callback that gets called when a log is added/removed
+     * @param   isVerbose           Enable verbose subscription warnings (e.g recoverable network issues encountered)
      * @return Subscription token used later to unsubscribe
      */
     public subscribe<ArgsType extends ExchangeEventArgs>(
         eventName: ExchangeEvents,
         indexFilterValues: IndexedFilterValues,
         callback: EventCallback<ArgsType>,
+        isVerbose: boolean = false,
     ): string {
         assert.doesBelongToStringEnum('eventName', eventName, ExchangeEvents);
         assert.doesConformToSchema('indexFilterValues', indexFilterValues, schemas.indexFilterValuesSchema);
@@ -1006,6 +1008,7 @@ export class ExchangeWrapper extends ContractWrapper {
             indexFilterValues,
             artifacts.Exchange.compilerOutput.abi,
             callback,
+            isVerbose,
         );
         return subscriptionToken;
     }

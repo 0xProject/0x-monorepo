@@ -13,8 +13,8 @@ import { Subprovider } from './subprovider';
  * It forwards on JSON RPC requests to the supplied `rpcUrl` endpoint
  */
 export class RPCSubprovider extends Subprovider {
-    private _rpcUrl: string;
-    private _requestTimeoutMs: number;
+    private readonly _rpcUrl: string;
+    private readonly _requestTimeoutMs: number;
     constructor(rpcUrl: string, requestTimeoutMs: number = 20000) {
         super();
         assert.isString('rpcUrl', rpcUrl);

@@ -29,6 +29,7 @@ export class Rule extends Lint.Rules.AbstractRule {
     public apply(sourceFile: ts.SourceFile): Lint.RuleFailure[] {
         const allowedNumbers = this.ruleArguments.length > 0 ? this.ruleArguments : Rule.DEFAULT_ALLOWED;
         return this.applyWithWalker(
+            // tslint:disable-next-line:no-inferred-empty-object-type
             new CustomNoMagicNumbersWalker(sourceFile, this.ruleName, new Set(allowedNumbers.map(String))),
         );
     }

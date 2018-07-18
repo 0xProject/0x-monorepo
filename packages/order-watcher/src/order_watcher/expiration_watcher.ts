@@ -44,7 +44,7 @@ export class ExpirationWatcher {
         this._orderExpirationCheckingIntervalIdIfExists = intervalUtils.setInterval(
             this._pruneExpiredOrders.bind(this, callback),
             this._orderExpirationCheckingIntervalMs,
-            _.noop, // _pruneExpiredOrders never throws
+            _.noop.bind(_), // _pruneExpiredOrders never throws
         );
     }
     public unsubscribe(): void {

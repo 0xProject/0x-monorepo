@@ -12,8 +12,8 @@ import { PrivateKeyWalletSubprovider } from './private_key_wallet';
  * Source: https://github.com/MetaMask/provider-engine/blob/master/subproviders/subprovider.js
  */
 export class EthLightwalletSubprovider extends BaseWalletSubprovider {
-    private _keystore: lightwallet.keystore;
-    private _pwDerivedKey: Uint8Array;
+    private readonly _keystore: lightwallet.keystore;
+    private readonly _pwDerivedKey: Uint8Array;
     constructor(keystore: lightwallet.keystore, pwDerivedKey: Uint8Array) {
         super();
         this._keystore = keystore;

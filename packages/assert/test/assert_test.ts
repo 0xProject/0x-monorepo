@@ -49,7 +49,7 @@ describe('Assertions', () => {
     });
     describe('#isFunction', () => {
         it('should not throw for valid input', () => {
-            const validInputs = [BigNumber, assert.isString];
+            const validInputs = [BigNumber, assert.isString.bind(assert)];
             validInputs.forEach(input => expect(assert.isFunction.bind(assert, variableName, input)).to.not.throw());
         });
         it('should throw for invalid input', () => {

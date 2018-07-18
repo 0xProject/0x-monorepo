@@ -18,10 +18,10 @@ const ZERO_AMOUNT = new BigNumber(0);
 const INSUFFICENT_ORDERS_FOR_MAKER_AMOUNT = 'Unable to satisfy makerAssetFillAmount with provided orders';
 
 export class ForwarderWrapper {
-    private _web3Wrapper: Web3Wrapper;
-    private _forwarderContract: ForwarderContract;
-    private _logDecoder: LogDecoder;
-    private _zrxAddress: string;
+    private readonly _web3Wrapper: Web3Wrapper;
+    private readonly _forwarderContract: ForwarderContract;
+    private readonly _logDecoder: LogDecoder;
+    private readonly _zrxAddress: string;
     private static _createOptimizedSellOrders(signedOrders: SignedOrder[]): MarketSellOrders {
         const marketSellOrders = formatters.createMarketSellOrders(signedOrders, ZERO_AMOUNT);
         const assetDataId = assetProxyUtils.decodeAssetDataId(signedOrders[0].makerAssetData);

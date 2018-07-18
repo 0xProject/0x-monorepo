@@ -127,7 +127,7 @@ export class OrderJSON extends React.Component<OrderJSONProps, OrderJSONState> {
                 href: this.state.shareLink,
                 method: 'share',
             },
-            _.noop,
+            _.noop.bind(_),
         );
     }
     private _shareViaEmailAsync(): void {

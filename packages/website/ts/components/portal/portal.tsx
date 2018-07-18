@@ -110,8 +110,8 @@ const SIDE_PADDING = 20;
 
 export class Portal extends React.Component<PortalProps, PortalState> {
     private _blockchain: Blockchain;
-    private _sharedOrderIfExists: Order;
-    private _throttledScreenWidthUpdate: () => void;
+    private readonly _sharedOrderIfExists: Order;
+    private readonly _throttledScreenWidthUpdate: () => void;
     constructor(props: PortalProps) {
         super(props);
         this._sharedOrderIfExists = orderParser.parse(window.location.search);

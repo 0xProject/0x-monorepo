@@ -12,7 +12,7 @@ import { Subprovider } from './subprovider';
  * are passed onwards for subsequent subproviders to handle.
  */
 export class SignerSubprovider extends Subprovider {
-    private _web3Wrapper: Web3Wrapper;
+    private readonly _web3Wrapper: Web3Wrapper;
     /**
      * Instantiates a new SignerSubprovider
      * @param provider Web3 provider that should handle  all user account related requests

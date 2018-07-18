@@ -6,12 +6,12 @@ export const typeConverters = {
         const bids = _.get(orderbook, 'bids', []);
         const asks = _.get(orderbook, 'asks', []);
         return {
-            bids: bids.map((order: any) => this.convertOrderStringFieldsToBigNumber(order)),
-            asks: asks.map((order: any) => this.convertOrderStringFieldsToBigNumber(order)),
+            bids: bids.map((order: any) => typeConverters.convertOrderStringFieldsToBigNumber(order)),
+            asks: asks.map((order: any) => typeConverters.convertOrderStringFieldsToBigNumber(order)),
         };
     },
     convertOrderStringFieldsToBigNumber(order: any): any {
-        return this.convertStringsFieldsToBigNumbers(order, [
+        return typeConverters.convertStringsFieldsToBigNumbers(order, [
             'makerTokenAmount',
             'takerTokenAmount',
             'makerFee',

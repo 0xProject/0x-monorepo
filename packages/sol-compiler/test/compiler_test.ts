@@ -12,7 +12,7 @@ import { constants } from './util/constants';
 const expect = chai.expect;
 
 describe('#Compiler', function(): void {
-    this.timeout(constants.timeoutMs);
+    this.timeout(constants.timeoutMs); // tslint:disable-line:no-invalid-this
     const artifactsDir = `${__dirname}/fixtures/artifacts`;
     const contractsDir = `${__dirname}/fixtures/contracts`;
     const exchangeArtifactPath = `${artifactsDir}/Exchange.json`;

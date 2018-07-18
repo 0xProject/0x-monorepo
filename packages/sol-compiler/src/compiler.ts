@@ -58,13 +58,13 @@ const CONFIG_FILE = 'compiler.json';
  * to artifact files.
  */
 export class Compiler {
-    private _resolver: Resolver;
-    private _nameResolver: NameResolver;
-    private _contractsDir: string;
-    private _compilerSettings: solc.CompilerSettings;
-    private _artifactsDir: string;
-    private _solcVersionIfExists: string | undefined;
-    private _specifiedContracts: string[] | TYPE_ALL_FILES_IDENTIFIER;
+    private readonly _resolver: Resolver;
+    private readonly _nameResolver: NameResolver;
+    private readonly _contractsDir: string;
+    private readonly _compilerSettings: solc.CompilerSettings;
+    private readonly _artifactsDir: string;
+    private readonly _solcVersionIfExists: string | undefined;
+    private readonly _specifiedContracts: string[] | TYPE_ALL_FILES_IDENTIFIER;
     /**
      * Instantiates a new instance of the Compiler class.
      * @return An instance of the Compiler class.

@@ -20,17 +20,17 @@ enum LogEventState {
  */
 export class EventWatcher {
     private readonly _web3Wrapper: Web3Wrapper;
-    private readonly _pollingIntervalMs: number;
     private readonly _stateLayer: BlockParamLiteral;
     private readonly _isVerbose: boolean;
     private _blockAndLogStreamerIfExists: BlockAndLogStreamer<Block, Log> | undefined;
     private _blockAndLogStreamIntervalIfExists?: NodeJS.Timer;
     private _onLogAddedSubscriptionToken: string | undefined;
     private _onLogRemovedSubscriptionToken: string | undefined;
+    private readonly _pollingIntervalMs: number;
     constructor(
         provider: Provider,
         pollingIntervalIfExistsMs: undefined | number,
-        stateLayer: BlockParamLiteral = BlockParamLiteral.Latest,
+        stateLayer: BlockParamLiteral,
         isVerbose: boolean,
     ) {
         this._isVerbose = isVerbose;
@@ -61,13 +61,9 @@ export class EventWatcher {
         if (!_.isUndefined(this._blockAndLogStreamerIfExists)) {
             throw new Error(OrderWatcherError.SubscriptionAlreadyPresent);
         }
-        const eventFilter = {
-            fromBlock: this._stateLayer,
-            toBlock: this._stateLayer,
-        };
         this._blockAndLogStreamerIfExists = new BlockAndLogStreamer(
-            this._web3Wrapper.getBlockAsync.bind(this._web3Wrapper, this._stateLayer),
-            this._web3Wrapper.getLogsAsync.bind(this._web3Wrapper, eventFilter),
+            this._web3Wrapper.getBlockAsync.bind(this._web3Wrapper),
+            this._web3Wrapper.getLogsAsync.bind(this._web3Wrapper),
             this._onBlockAndLogStreamerError.bind(this),
         );
         const catchAllLogFilter = {};
@@ -104,7 +100,7 @@ export class EventWatcher {
         await this._emitDifferencesAsync(log, isRemoved ? LogEventState.Removed : LogEventState.Added, callback);
     }
     private async _reconcileBlockAsync(): Promise<void> {
-        const latestBlock = await this._web3Wrapper.getBlockAsync(BlockParamLiteral.Latest);
+        const latestBlock = await this._web3Wrapper.getBlockAsync(this._stateLayer);
         // We need to coerce to Block type cause Web3.Block includes types for mempool blocks
         if (!_.isUndefined(this._blockAndLogStreamerIfExists)) {
             // If we clear the interval while fetching the block - this._blockAndLogStreamer will be undefined

@@ -24,13 +24,13 @@ const FIVE_UNITS_FIVE_DECIMALS = new BigNumber(500_000);
 const ONE_NFT_UNIT = new BigNumber(1);
 
 export class OrderFactoryFromScenario {
-    private _userAddresses: string[];
-    private _zrxAddress: string;
-    private _nonZrxERC20EighteenDecimalTokenAddresses: string[];
-    private _erc20FiveDecimalTokenAddresses: string[];
-    private _erc721Token: DummyERC721TokenContract;
-    private _erc721Balances: ERC721TokenIdsByOwner;
-    private _exchangeAddress: string;
+    private readonly _userAddresses: string[];
+    private readonly _zrxAddress: string;
+    private readonly _nonZrxERC20EighteenDecimalTokenAddresses: string[];
+    private readonly _erc20FiveDecimalTokenAddresses: string[];
+    private readonly _erc721Token: DummyERC721TokenContract;
+    private readonly _erc721Balances: ERC721TokenIdsByOwner;
+    private readonly _exchangeAddress: string;
     constructor(
         userAddresses: string[],
         zrxAddress: string,

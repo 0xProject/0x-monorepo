@@ -27,8 +27,8 @@ interface SidedOrderRelevantState {
 const ACCEPTABLE_RELATIVE_ROUNDING_ERROR = 0.0001;
 
 export class OrderStateUtils {
-    private _balanceAndProxyAllowanceFetcher: AbstractBalanceAndProxyAllowanceFetcher;
-    private _orderFilledCancelledFetcher: AbstractOrderFilledCancelledFetcher;
+    private readonly _balanceAndProxyAllowanceFetcher: AbstractBalanceAndProxyAllowanceFetcher;
+    private readonly _orderFilledCancelledFetcher: AbstractOrderFilledCancelledFetcher;
     private static _validateIfOrderIsValid(
         signedOrder: SignedOrder,
         sidedOrderRelevantState: SidedOrderRelevantState,

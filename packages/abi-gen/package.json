@@ -34,7 +34,6 @@
     "dependencies": {
         "@0xproject/typescript-typings": "^0.4.2",
         "@0xproject/utils": "^0.7.2",
-        "ethereum-types": "^0.0.2",
         "chalk": "^2.3.0",
         "ethereum-types": "^0.0.2",
         "glob": "^7.1.2",
@@ -63,7 +62,7 @@
         "mocha": "^5.2.0",
         "npm-run-all": "^4.1.2",
         "shx": "^0.2.2",
-        "tslint": "5.10.0",
+        "tslint": "5.11.0",
         "typescript": "2.7.1"
     },
     "publishConfig": {

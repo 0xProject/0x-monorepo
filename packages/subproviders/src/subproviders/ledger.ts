@@ -32,14 +32,14 @@ const DEFAULT_ADDRESS_SEARCH_LIMIT = 1000;
  */
 export class LedgerSubprovider extends BaseWalletSubprovider {
     // tslint:disable-next-line:no-unused-variable
-    private _nonceLock = new Lock();
-    private _connectionLock = new Lock();
-    private _networkId: number;
+    private readonly _nonceLock = new Lock();
+    private readonly _connectionLock = new Lock();
+    private readonly _networkId: number;
     private _baseDerivationPath: string;
-    private _ledgerEthereumClientFactoryAsync: LedgerEthereumClientFactoryAsync;
+    private readonly _ledgerEthereumClientFactoryAsync: LedgerEthereumClientFactoryAsync;
     private _ledgerClientIfExists?: LedgerEthereumClient;
-    private _shouldAlwaysAskForConfirmation: boolean;
-    private _addressSearchLimit: number;
+    private readonly _shouldAlwaysAskForConfirmation: boolean;
+    private readonly _addressSearchLimit: number;
     /**
      * Instantiates a LedgerSubprovider. Defaults to derivationPath set to `44'/60'/0'`.
      * TestRPC/Ganache defaults to `m/44'/60'/0'/0`, so set this in the configs if desired.

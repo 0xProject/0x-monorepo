@@ -154,6 +154,9 @@ contract MixinExchangeCore is
         // Compute the order hash
         orderInfo.orderHash = getOrderHash(order);
 
+        // Fetch filled amount
+        orderInfo.orderTakerAssetFilledAmount = filled[orderInfo.orderHash];
+
         // If order.makerAssetAmount is zero, we also reject the order.
         // While the Exchange contract handles them correctly, they create
         // edge cases in the supporting infrastructure because they have
@@ -172,6 +175,12 @@ contract MixinExchangeCore is
             return orderInfo;
         }
 
+        // Validate order availability
+        if (orderInfo.orderTakerAssetFilledAmount >= order.takerAssetAmount) {
+            orderInfo.orderStatus = uint8(OrderStatus.FULLY_FILLED);
+            return orderInfo;
+        }
+
         // Validate order expiration
         // solhint-disable-next-line not-rely-on-time
         if (block.timestamp >= order.expirationTimeSeconds) {
@@ -186,13 +195,6 @@ contract MixinExchangeCore is
         }
         if (orderEpoch[order.makerAddress][order.senderAddress] > order.salt) {
             orderInfo.orderStatus = uint8(OrderStatus.CANCELLED);
-            return orderInfo;
-        }
-
-        // Fetch filled amount and validate order availability
-        orderInfo.orderTakerAssetFilledAmount = filled[orderInfo.orderHash];
-        if (orderInfo.orderTakerAssetFilledAmount >= order.takerAssetAmount) {
-            orderInfo.orderStatus = uint8(OrderStatus.FULLY_FILLED);
             return orderInfo;
         }
 

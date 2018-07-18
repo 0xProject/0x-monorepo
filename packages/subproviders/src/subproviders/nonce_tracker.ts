@@ -17,7 +17,7 @@ const NONCE_TOO_LOW_ERROR_MESSAGE = 'Transaction nonce is too low';
  * We added the additional feature of clearing the cached nonce value when a `nonce value too low` error occurs.
  */
 export class NonceTrackerSubprovider extends Subprovider {
-    private _nonceCache: { [address: string]: string } = {};
+    private readonly _nonceCache: { [address: string]: string } = {};
     private static _reconstructTransaction(payload: JSONRPCRequestPayload): EthereumTx {
         const raw = payload.params[0];
         if (_.isUndefined(raw)) {
