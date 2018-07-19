@@ -9,6 +9,10 @@
             {
                 "note": "Added CallData schema",
                 "pr": 821
+            },
+            {
+                "note": "Update CallData schema id to CallData",
+                "pr": 894
             }
         ]
     },

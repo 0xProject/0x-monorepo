@@ -9,6 +9,10 @@
             {
                 "note": "Export parseECSignature method",
                 "pr": 684
+            },
+            {
+                "note": "Handle Typed Arrays when hashing data",
+                "pr": 894
             }
         ]
     },
