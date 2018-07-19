@@ -78,7 +78,7 @@
     "dependencies": {
         "@0xproject/assert": "0.2.13",
         "@0xproject/json-schemas": "^1.0.0-rc.1",
-        "@0xproject/sol-resolver": "^0.0.8",
+        "@0xproject/sol-resolver": "^1.0.0",
         "@0xproject/types": "^1.0.0-rc.1",
         "@0xproject/typescript-typings": "^1.0.0",
         "@0xproject/utils": "^1.0.0",
