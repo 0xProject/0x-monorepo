@@ -33,7 +33,7 @@
         "@0xproject/base-contract": "^1.0.0",
         "@0xproject/sol-compiler": "^0.5.4",
         "@0xproject/sol-cov": "^0.1.3",
-        "@0xproject/subproviders": "^0.10.6",
+        "@0xproject/subproviders": "^1.0.0",
         "@0xproject/tslint-config": "^1.0.0",
         "@0xproject/types": "^1.0.0-rc.1",
         "@0xproject/typescript-typings": "^1.0.0",
