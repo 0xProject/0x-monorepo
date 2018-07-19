@@ -534,12 +534,26 @@
     npm-package-arg "^6.0.0"
     semver "^5.5.0"
 
-"@lerna/package@^3.0.0-beta.17":
+"@lerna/package@^3.0.0-beta.12", "@lerna/package@^3.0.0-beta.17":
   version "3.0.0-beta.17"
   resolved "https://registry.yarnpkg.com/@lerna/package/-/package-3.0.0-beta.17.tgz#ccc833926ddfce5cac6194d2e6b415899a8e753e"
   dependencies:
     npm-package-arg "^6.0.0"
     write-pkg "^3.1.0"
+
+"@lerna/project@^3.0.0-beta.12":
+  version "3.0.0-beta.12"
+  resolved "https://registry.yarnpkg.com/@lerna/project/-/project-3.0.0-beta.12.tgz#38a5160fe6b42407092a70c2dc96e4ba941fc3b7"
+  dependencies:
+    "@lerna/package" "^3.0.0-beta.12"
+    "@lerna/validation-error" "^3.0.0-beta.10"
+    cosmiconfig "^4.0.0"
+    dedent "^0.7.0"
+    glob-parent "^3.1.0"
+    load-json-file "^4.0.0"
+    npmlog "^4.1.2"
+    resolve-from "^4.0.0"
+    write-json-file "^2.3.0"
 
 "@lerna/project@^3.0.0-beta.20":
   version "3.0.0-beta.20"
@@ -3515,6 +3529,15 @@ cors@^2.8.1:
     object-assign "^4"
     vary "^1"
 
+cosmiconfig@^4.0.0:
+  version "4.0.0"
+  resolved "https://registry.yarnpkg.com/cosmiconfig/-/cosmiconfig-4.0.0.tgz#760391549580bbd2df1e562bc177b13c290972dc"
+  dependencies:
+    is-directory "^0.3.1"
+    js-yaml "^3.9.0"
+    parse-json "^4.0.0"
+    require-from-string "^2.0.1"
+
 cosmiconfig@^5.0.2:
   version "5.0.5"
   resolved "https://registry.yarnpkg.com/cosmiconfig/-/cosmiconfig-5.0.5.tgz#a809e3c2306891ce17ab70359dc8bdf661fe2cd0"
@@ -4926,9 +4949,9 @@ ethereumjs-wallet@~0.6.0:
     utf8 "^2.1.1"
     uuid "^2.0.1"
 
-ethers@0xproject/ethers.js#eip-838-reasons, ethers@3.0.22:
-  version "3.0.18"
-  resolved "https://codeload.github.com/0xproject/ethers.js/tar.gz/b91342bd200d142af0165d6befddf783c8ae8447"
+ethers@3.0.22:
+  version "3.0.22"
+  resolved "https://registry.yarnpkg.com/ethers/-/ethers-3.0.22.tgz#7fab1ea16521705837aa43c15831877b2716b436"
   dependencies:
     aes-js "3.0.0"
     bn.js "^4.4.0"
@@ -7541,10 +7564,6 @@ lead@^1.0.0:
   resolved "https://registry.yarnpkg.com/lead/-/lead-1.0.0.tgz#6f14f99a37be3a9dd784f5495690e5903466ee42"
   dependencies:
     flush-write-stream "^1.0.2"
-
-lerna-get-packages@^1.0.0:
-  version "1.0.0"
-  resolved "https://registry.yarnpkg.com/lerna-get-packages/-/lerna-get-packages-1.0.0.tgz#60fa309a71cf2e34eec63224368de2fe8f61ba65"
 
 lerna@3.0.0-beta.14:
   version "3.0.0-beta.14"

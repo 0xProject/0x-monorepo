@@ -40,3 +40,17 @@ export interface PackageRegistryJson {
 export interface GitTagsByPackageName {
     [packageName: string]: string[];
 }
+
+export interface LernaPackage {
+    location: string;
+    package: {
+        private?: boolean;
+        version: string;
+        name: string;
+        main?: string;
+        scripts?: { [command: string]: string };
+        config?: {
+            additionalTsTypings?: string[];
+        };
+    };
+}

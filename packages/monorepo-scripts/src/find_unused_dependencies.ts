@@ -1,7 +1,6 @@
 #!/usr/bin/env node
 
 import * as depcheckAsync from 'depcheck';
-import lernaGetPackages = require('lerna-get-packages');
 import * as _ from 'lodash';
 
 import { constants } from './constants';
@@ -13,7 +12,7 @@ const IGNORE_PACKAGES = ['@0xproject/sol-compiler'];
 (async () => {
     utils.log('*** NOTE: Not all deps listed here are actually not required. ***');
     utils.log("*** `depcheck` isn't perfect so double check before actually removing any. ***\n");
-    const lernaPackages = lernaGetPackages(constants.monorepoRootPath);
+    const lernaPackages = utils.getLernaPackages(constants.monorepoRootPath);
     for (const lernaPackage of lernaPackages) {
         if (_.includes(IGNORE_PACKAGES, lernaPackage.package.name)) {
             continue; // skip

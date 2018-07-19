@@ -1,10 +1,10 @@
-import lernaGetPackages = require('lerna-get-packages');
+import * as fs from 'fs';
 import * as _ from 'lodash';
 import { exec as execAsync } from 'promisify-child-process';
 import semver = require('semver');
 
 import { constants } from '../constants';
-import { GitTagsByPackageName, UpdatedPackage } from '../types';
+import { GitTagsByPackageName, LernaPackage, UpdatedPackage } from '../types';
 
 import { changelogUtils } from './changelog_utils';
 
@@ -12,11 +12,41 @@ export const utils = {
     log(...args: any[]): void {
         console.log(...args); // tslint:disable-line:no-console
     },
+    getLernaPackages(rootDir: string): LernaPackage[] {
+        const rootPackageJsonString = fs.readFileSync(`${rootDir}/package.json`, 'utf8');
+        const rootPackageJson = JSON.parse(rootPackageJsonString);
+        if (_.isUndefined(rootPackageJson.workspaces)) {
+            throw new Error(`Did not find 'workspaces' key in root package.json`);
+        }
+        const lernaPackages = [];
+        for (const workspace of rootPackageJson.workspaces) {
+            const workspacePath = workspace.replace('*', '');
+            const subpackageNames = fs.readdirSync(`${rootDir}/${workspacePath}`);
+            for (const subpackageName of subpackageNames) {
+                if (_.startsWith(subpackageName, '.')) {
+                    continue;
+                }
+                const pathToPackageJson = `${rootDir}/${workspacePath}${subpackageName}`;
+                try {
+                    const packageJsonString = fs.readFileSync(`${pathToPackageJson}/package.json`, 'utf8');
+                    const packageJson = JSON.parse(packageJsonString);
+                    const lernaPackage = {
+                        location: pathToPackageJson,
+                        package: packageJson,
+                    };
+                    lernaPackages.push(lernaPackage);
+                } catch (err) {
+                    utils.log(`Couldn't find a 'package.json' for ${subpackageName}. Skipping...`);
+                }
+            }
+        }
+        return lernaPackages;
+    },
     async getUpdatedLernaPackagesAsync(shouldIncludePrivate: boolean): Promise<LernaPackage[]> {
         const updatedPublicPackages = await utils.getLernaUpdatedPackagesAsync(shouldIncludePrivate);
         const updatedPackageNames = _.map(updatedPublicPackages, pkg => pkg.name);
 
-        const allLernaPackages = lernaGetPackages(constants.monorepoRootPath);
+        const allLernaPackages = utils.getLernaPackages(constants.monorepoRootPath);
         const updatedPublicLernaPackages = _.filter(allLernaPackages, pkg => {
             return _.includes(updatedPackageNames, pkg.package.name);
         });

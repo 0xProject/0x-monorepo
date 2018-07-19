@@ -11,7 +11,7 @@ import semverDiff = require('semver-diff');
 import semverSort = require('semver-sort');
 
 import { constants } from './constants';
-import { PackageToVersionChange, SemVerIndex, VersionChangelog } from './types';
+import { LernaPackage, PackageToVersionChange, SemVerIndex, VersionChangelog } from './types';
 import { changelogUtils } from './utils/changelog_utils';
 import { utils } from './utils/utils';
 

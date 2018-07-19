@@ -4,6 +4,7 @@ import semver = require('semver');
 import semverSort = require('semver-sort');
 
 import { constants } from './constants';
+import { LernaPackage } from './types';
 import { changelogUtils } from './utils/changelog_utils';
 import { npmUtils } from './utils/npm_utils';
 import { utils } from './utils/utils';

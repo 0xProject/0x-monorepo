@@ -1,7 +1,6 @@
 #!/usr/bin/env node
 
 import * as fs from 'fs';
-import lernaGetPackages = require('lerna-get-packages');
 import * as _ from 'lodash';
 import * as path from 'path';
 import { exec as execAsync } from 'promisify-child-process';
@@ -11,7 +10,7 @@ import { utils } from './utils/utils';
 
 (async () => {
     const monorepoRootPath = path.join(__dirname, '../../..');
-    const lernaPackages = lernaGetPackages(monorepoRootPath);
+    const lernaPackages = utils.getLernaPackages(monorepoRootPath);
     const installablePackages = _.filter(
         lernaPackages,
         lernaPackage =>
