@@ -1,6 +1,6 @@
 {
     "name": "@0xproject/migrations",
-    "version": "0.0.10",
+    "version": "1.0.0",
     "engines": {
         "node": ">=6.12"
     },
