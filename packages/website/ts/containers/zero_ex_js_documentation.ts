@@ -15,6 +15,9 @@ const InstallationMarkdownV1 = require('md/docs/0xjs/1.0.0/installation');
 const AsyncMarkdownV1 = require('md/docs/0xjs/1.0.0/async');
 const ErrorsMarkdownV1 = require('md/docs/0xjs/1.0.0/errors');
 const versioningMarkdownV1 = require('md/docs/0xjs/1.0.0/versioning');
+
+const IntroMarkdownV2 = require('md/docs/0xjs/2.0.0/introduction');
+const versioningMarkdownV2 = require('md/docs/0xjs/2.0.0/versioning');
 /* tslint:enable:no-var-requires */
 
 const zeroExJsDocSections = {
@@ -61,6 +64,14 @@ const docsInfoConfig: DocsInfoConfig = {
             [zeroExJsDocSections.async]: AsyncMarkdownV1,
             [zeroExJsDocSections.errors]: ErrorsMarkdownV1,
             [zeroExJsDocSections.versioning]: versioningMarkdownV1,
+        },
+        '1.0.0-rc.1': {
+            [zeroExJsDocSections.introduction]: IntroMarkdownV2,
+            [zeroExJsDocSections.versioning]: versioningMarkdownV2,
+            // These are the same as for V1
+            [zeroExJsDocSections.installation]: InstallationMarkdownV1,
+            [zeroExJsDocSections.async]: AsyncMarkdownV1,
+            [zeroExJsDocSections.errors]: ErrorsMarkdownV1,
         },
     },
     sectionNameToModulePath: {
