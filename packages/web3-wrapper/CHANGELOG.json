@@ -11,7 +11,7 @@
                 "pr": 812
             },
             {
-                "notes": "Stop exporting uniqueVersionIds object",
+                "note": "Stop exporting uniqueVersionIds object",
                 "pr": 897
             }
         ]
