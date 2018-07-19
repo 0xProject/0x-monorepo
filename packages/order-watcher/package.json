@@ -49,7 +49,7 @@
     "devDependencies": {
         "@0xproject/abi-gen": "^1.0.0",
         "@0xproject/dev-utils": "^1.0.0",
-        "@0xproject/migrations": "^0.0.10",
+        "@0xproject/migrations": "^1.0.0",
         "@0xproject/monorepo-script": "^1.0.0",
         "@0xproject/sol-compiler": "^1.0.0",
         "@0xproject/tslint-config": "^1.0.0",
