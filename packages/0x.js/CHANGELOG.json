@@ -1,5 +1,13 @@
 [
     {
+        "version": "1.0.0-rc.2",
+        "changes": [
+            {
+                "note": "Remove `zeroEx.assetData`  and instead re-export it's static functions directly off `ZeroEx`"
+            }
+        ]
+    },
+    {
         "version": "1.0.0-rc.1",
         "changes": [
             {
