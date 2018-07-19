@@ -102,7 +102,7 @@
     "dependencies": {
         "@0xproject/assert": "^1.0.0",
         "@0xproject/base-contract": "^1.0.0",
-        "@0xproject/contract-wrappers": "^0.1.1",
+        "@0xproject/contract-wrappers": "^1.0.0-rc.1",
         "@0xproject/order-utils": "^1.0.0-rc.1",
         "@0xproject/sol-compiler": "^1.0.0",
         "@0xproject/subproviders": "^1.0.0",

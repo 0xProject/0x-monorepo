@@ -26,14 +26,6 @@
         "run_mocha": "mocha --require source-map-support/register --require make-promises-safe lib/test/**/*_test.js lib/test/global_hooks.js --timeout 10000 --bail --exit",
         "manual:postpublish": "yarn build; node ./scripts/postpublish.js"
     },
-    "config": {
-        "postpublish": {
-            "assets": [
-                "packages/contract-wrappers/_bundles/index.js",
-                "packages/contract-wrappers/_bundles/index.min.js"
-            ]
-        }
-    },
     "repository": {
         "type": "git",
         "url": "https://github.com/0xProject/0x-monorepo"
