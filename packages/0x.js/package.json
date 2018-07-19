@@ -100,7 +100,7 @@
         "webpack": "^3.1.0"
     },
     "dependencies": {
-        "@0xproject/assert": "^0.2.14",
+        "@0xproject/assert": "^1.0.0",
         "@0xproject/base-contract": "^0.3.6",
         "@0xproject/contract-wrappers": "^0.1.1",
         "@0xproject/order-utils": "^1.0.0",

@@ -35,7 +35,7 @@
     },
     "homepage": "https://github.com/0xProject/0x-monorepo/packages/sra-report/README.md",
     "dependencies": {
-        "@0xproject/assert": "^0.3.0",
+        "@0xproject/assert": "^1.0.0",
         "@0xproject/types": "^1.0.0-rc.1",
         "@0xproject/order-utils": "^0.0.9",
         "@0xproject/connect": "0.6.17",

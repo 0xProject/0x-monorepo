@@ -40,7 +40,7 @@
         }
     },
     "dependencies": {
-        "@0xproject/assert": "^0.3.0",
+        "@0xproject/assert": "^1.0.0",
         "@0xproject/types": "^1.0.0-rc.1",
         "@0xproject/web3-wrapper": "^0.7.3",
         "@0xproject/typescript-typings": "^1.0.0",
