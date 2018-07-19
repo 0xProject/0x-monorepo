@@ -55,7 +55,7 @@
     "devDependencies": {
         "@0xproject/monorepo-script": "^1.0.0",
         "@0xproject/tslint-config": "^1.0.0",
-        "@0xproject/utils": "^0.7.3",
+        "@0xproject/utils": "^1.0.0",
         "@types/lodash.foreach": "^4.5.3",
         "@types/lodash.values": "^4.3.3",
         "@types/mocha": "^2.2.42",

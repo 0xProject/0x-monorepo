@@ -41,7 +41,7 @@
         "@0xproject/connect": "0.6.17",
         "@0xproject/json-schemas": "0.8.3",
         "@0xproject/typescript-typings": "^1.0.0",
-        "@0xproject/utils": "^0.7.3",
+        "@0xproject/utils": "^1.0.0",
         "chalk": "^2.3.0",
         "lodash": "^4.17.4",
         "newman": "^3.9.3",

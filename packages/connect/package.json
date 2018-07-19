@@ -55,7 +55,7 @@
         "@0xproject/json-schemas": "0.8.3",
         "@0xproject/types": "^1.0.0-rc.1",
         "@0xproject/typescript-typings": "^1.0.0",
-        "@0xproject/utils": "^0.7.3",
+        "@0xproject/utils": "^1.0.0",
         "lodash": "^4.17.4",
         "query-string": "^5.0.1",
         "sinon": "^4.0.0",
