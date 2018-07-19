@@ -36,7 +36,7 @@
         "typescript": "2.7.1"
     },
     "dependencies": {
-        "@0xproject/react-shared": "^0.2.3",
+        "@0xproject/react-shared": "^1.0.0",
         "@0xproject/utils": "^1.0.0",
         "@types/lodash": "4.14.104",
         "@types/material-ui": "0.18.0",
