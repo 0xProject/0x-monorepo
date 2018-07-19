@@ -22,23 +22,17 @@ import {
 import * as _ from 'lodash';
 
 import { marshaller } from './marshaller';
-import { BlockWithoutTransactionDataRPC, BlockWithTransactionDataRPC, Web3WrapperErrors } from './types';
+import { BlockWithoutTransactionDataRPC, BlockWithTransactionDataRPC, NodeType, Web3WrapperErrors } from './types';
 import { utils } from './utils';
 
 const BASE_TEN = 10;
 
 // These are unique identifiers contained in the response of the
 // web3_clientVersion call.
-export const uniqueVersionIds = {
+const uniqueVersionIds = {
     geth: 'Geth',
     ganache: 'EthereumJS TestRPC',
 };
-
-// NodeType represents the type of the backing Ethereum node.
-export enum NodeType {
-    Geth = 'GETH',
-    Ganache = 'GANACHE',
-}
 
 /**
  * An alternative to the Web3.js library that provides a consistent, clean, promise-based interface.

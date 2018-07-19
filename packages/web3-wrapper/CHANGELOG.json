@@ -9,6 +9,9 @@
             {
                 "note": "Add `getNodeTypeAsync` method",
                 "pr": 812
+            },
+            {
+                "notes": "Stop exporting uniqueVersionIds object"
             }
         ]
     },
