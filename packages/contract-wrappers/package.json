@@ -77,7 +77,7 @@
         "@0xproject/assert": "^0.3.0",
         "@0xproject/base-contract": "^0.3.6",
         "@0xproject/order-utils": "^1.0.0",
-        "@0xproject/typescript-typings": "^0.4.3",
+        "@0xproject/typescript-typings": "^1.0.0",
         "@0xproject/utils": "^0.7.3",
         "@0xproject/web3-wrapper": "^0.7.3",
         "@0xproject/fill-scenarios": "^1.0.0",

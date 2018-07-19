@@ -21,7 +21,7 @@
         "0x.js": "0.38.5",
         "@0xproject/subproviders": "^0.10.6",
         "@0xproject/web3-wrapper": "^0.7.3",
-        "@0xproject/typescript-typings": "^0.4.3",
+        "@0xproject/typescript-typings": "^1.0.0",
         "@0xproject/utils": "^0.7.3",
         "body-parser": "^1.17.1",
         "ethereumjs-tx": "^1.3.5",

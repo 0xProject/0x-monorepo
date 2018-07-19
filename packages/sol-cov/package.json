@@ -52,7 +52,7 @@
     "dependencies": {
         "@0xproject/sol-compiler": "^0.5.4",
         "@0xproject/subproviders": "^0.10.6",
-        "@0xproject/typescript-typings": "^0.4.3",
+        "@0xproject/typescript-typings": "^1.0.0",
         "@0xproject/utils": "^0.7.3",
         "@0xproject/web3-wrapper": "^0.7.3",
         "@0xproject/dev-utils": "^0.4.6",

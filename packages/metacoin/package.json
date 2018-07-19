@@ -36,7 +36,7 @@
         "@0xproject/subproviders": "^0.10.6",
         "@0xproject/tslint-config": "^0.4.21",
         "@0xproject/types": "^0.8.2",
-        "@0xproject/typescript-typings": "^0.4.3",
+        "@0xproject/typescript-typings": "^1.0.0",
         "@0xproject/utils": "^0.7.3",
         "@0xproject/web3-wrapper": "^0.7.3",
         "@types/mocha": "^5.2.2",
