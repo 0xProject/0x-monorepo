@@ -1,6 +1,6 @@
 [
     {
-        "version": "0.0.3",
+        "version": "1.0.0",
         "changes": [
             {
                 "note": "Add `TraceParams` interface for `debug_traceTransaction` parameters",
