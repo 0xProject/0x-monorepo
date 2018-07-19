@@ -70,7 +70,7 @@
     },
     "license": "Apache-2.0",
     "devDependencies": {
-        "@0xproject/abi-gen": "^0.3.4",
+        "@0xproject/abi-gen": "^1.0.0",
         "@0xproject/dev-utils": "^0.4.6",
         "@0xproject/migrations": "^0.0.10",
         "@0xproject/monorepo-script": "^1.0.0",

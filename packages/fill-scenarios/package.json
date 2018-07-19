@@ -28,7 +28,7 @@
     },
     "homepage": "https://github.com/0xProject/0x-monorepo/packages/fill-scenarios/README.md",
     "devDependencies": {
-        "@0xproject/abi-gen": "^0.3.4",
+        "@0xproject/abi-gen": "^1.0.0",
         "@0xproject/monorepo-script": "^1.0.0",
         "@0xproject/sol-compiler": "^0.5.4",
         "@0xproject/tslint-config": "^1.0.0",

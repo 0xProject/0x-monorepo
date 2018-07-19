@@ -29,7 +29,7 @@
     "author": "",
     "license": "Apache-2.0",
     "dependencies": {
-        "@0xproject/abi-gen": "^0.3.4",
+        "@0xproject/abi-gen": "^1.0.0",
         "@0xproject/base-contract": "^0.3.6",
         "@0xproject/sol-compiler": "^0.5.4",
         "@0xproject/sol-cov": "^0.1.3",
