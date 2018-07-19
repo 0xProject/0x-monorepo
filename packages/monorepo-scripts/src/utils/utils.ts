@@ -38,7 +38,7 @@ export const utils = {
                     };
                     packages.push(pkg);
                 } catch (err) {
-                    utils.log(`Couldn't find a 'package.json' for ${subpackageName}. Skipping...`);
+                    utils.log(`Couldn't find a 'package.json' for ${subpackageName}. Skipping.`);
                 }
             }
         }
