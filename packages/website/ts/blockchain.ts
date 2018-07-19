@@ -292,7 +292,6 @@ export class Blockchain {
             this.networkId,
             EtherscanLinkSuffixes.Tx,
         );
-        // TODO
         this._dispatcher.showFlashMessage(
             React.createElement(AssetSendCompleted, {
                 etherScanLinkIfExists,
