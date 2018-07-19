@@ -48,7 +48,7 @@
     },
     "devDependencies": {
         "@0xproject/abi-gen": "^1.0.0",
-        "@0xproject/dev-utils": "^0.4.6",
+        "@0xproject/dev-utils": "^1.0.0",
         "@0xproject/migrations": "^0.0.10",
         "@0xproject/monorepo-script": "^1.0.0",
         "@0xproject/sol-compiler": "^0.5.4",

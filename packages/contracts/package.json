@@ -47,7 +47,7 @@
     "homepage": "https://github.com/0xProject/0x-monorepo/packages/contracts/README.md",
     "devDependencies": {
         "@0xproject/abi-gen": "^1.0.0",
-        "@0xproject/dev-utils": "^0.4.6",
+        "@0xproject/dev-utils": "^1.0.0",
         "@0xproject/tslint-config": "^1.0.0",
         "@0xproject/subproviders": "^1.0.0",
         "@0xproject/sol-cov": "^0.1.3",
