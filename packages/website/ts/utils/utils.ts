@@ -334,7 +334,7 @@ export const utils = {
         return utils.isDogfood() ? configs.BACKEND_BASE_STAGING_URL : configs.BACKEND_BASE_PROD_URL;
     },
     isDevelopment(): boolean {
-        return _.includes(configs.DOMAINS_DEVELOPMENT, window.location.origin);
+        return _.includes(configs.DOMAINS_DEVELOPMENT, window.location.host);
     },
     isStaging(): boolean {
         return _.includes(window.location.href, configs.DOMAIN_STAGING);
