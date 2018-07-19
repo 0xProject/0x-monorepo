@@ -41,7 +41,7 @@
         "typescript": "2.7.1"
     },
     "dependencies": {
-        "@0xproject/base-contract": "^0.3.6",
+        "@0xproject/base-contract": "^1.0.0",
         "@0xproject/order-utils": "^1.0.0",
         "@0xproject/types": "^1.0.0-rc.1",
         "ethereum-types": "^1.0.0",
