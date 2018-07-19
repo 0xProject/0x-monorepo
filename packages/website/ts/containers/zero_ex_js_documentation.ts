@@ -10,11 +10,11 @@ import { constants } from 'ts/utils/constants';
 import { Translate } from 'ts/utils/translate';
 
 /* tslint:disable:no-var-requires */
-const IntroMarkdown = require('md/docs/0xjs/introduction');
-const InstallationMarkdown = require('md/docs/0xjs/installation');
-const AsyncMarkdown = require('md/docs/0xjs/async');
-const ErrorsMarkdown = require('md/docs/0xjs/errors');
-const versioningMarkdown = require('md/docs/0xjs/versioning');
+const IntroMarkdownV1 = require('md/docs/0xjs/1.0.0/introduction');
+const InstallationMarkdownV1 = require('md/docs/0xjs/1.0.0/installation');
+const AsyncMarkdownV1 = require('md/docs/0xjs/1.0.0/async');
+const ErrorsMarkdownV1 = require('md/docs/0xjs/1.0.0/errors');
+const versioningMarkdownV1 = require('md/docs/0xjs/1.0.0/versioning');
 /* tslint:enable:no-var-requires */
 
 const zeroExJsDocSections = {
@@ -54,12 +54,14 @@ const docsInfoConfig: DocsInfoConfig = {
         orderWatcher: [zeroExJsDocSections.orderWatcher],
         types: [zeroExJsDocSections.types],
     },
-    sectionNameToMarkdown: {
-        [zeroExJsDocSections.introduction]: IntroMarkdown,
-        [zeroExJsDocSections.installation]: InstallationMarkdown,
-        [zeroExJsDocSections.async]: AsyncMarkdown,
-        [zeroExJsDocSections.errors]: ErrorsMarkdown,
-        [zeroExJsDocSections.versioning]: versioningMarkdown,
+    sectionNameToMarkdownByVersion: {
+        '0.0.1': {
+            [zeroExJsDocSections.introduction]: IntroMarkdownV1,
+            [zeroExJsDocSections.installation]: InstallationMarkdownV1,
+            [zeroExJsDocSections.async]: AsyncMarkdownV1,
+            [zeroExJsDocSections.errors]: ErrorsMarkdownV1,
+            [zeroExJsDocSections.versioning]: versioningMarkdownV1,
+        },
     },
     sectionNameToModulePath: {
         [zeroExJsDocSections.zeroEx]: ['"0x.js/src/0x"', '"src/0x"'],

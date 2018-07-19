@@ -10,8 +10,8 @@ import { constants } from 'ts/utils/constants';
 import { Translate } from 'ts/utils/translate';
 
 /* tslint:disable:no-var-requires */
-const IntroMarkdown = require('md/docs/web3_wrapper/introduction');
-const InstallationMarkdown = require('md/docs/web3_wrapper/installation');
+const IntroMarkdownV1 = require('md/docs/web3_wrapper/introduction');
+const InstallationMarkdownV1 = require('md/docs/web3_wrapper/installation');
 /* tslint:enable:no-var-requires */
 
 const docSections = {
@@ -32,9 +32,11 @@ const docsInfoConfig: DocsInfoConfig = {
         web3Wrapper: [docSections.web3Wrapper],
         types: [docSections.types],
     },
-    sectionNameToMarkdown: {
-        [docSections.introduction]: IntroMarkdown,
-        [docSections.installation]: InstallationMarkdown,
+    sectionNameToMarkdownByVersion: {
+        '0.0.1': {
+            [docSections.introduction]: IntroMarkdownV1,
+            [docSections.installation]: InstallationMarkdownV1,
+        },
     },
     sectionNameToModulePath: {
         [docSections.web3Wrapper]: ['"web3-wrapper/src/web3_wrapper"'],

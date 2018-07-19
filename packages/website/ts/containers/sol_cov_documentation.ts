@@ -9,8 +9,8 @@ import { DocPackages } from 'ts/types';
 import { Translate } from 'ts/utils/translate';
 
 /* tslint:disable:no-var-requires */
-const IntroMarkdown = require('md/docs/sol_cov/introduction');
-const InstallationMarkdown = require('md/docs/sol_cov/installation');
+const IntroMarkdownV1 = require('md/docs/sol_cov/introduction');
+const InstallationMarkdownV1 = require('md/docs/sol_cov/installation');
 const UsageMarkdown = require('md/docs/sol_cov/usage');
 /* tslint:enable:no-var-requires */
 
@@ -40,10 +40,12 @@ const docsInfoConfig: DocsInfoConfig = {
         'truffle-artifact-adapter': [docSections.truffleArtifactAdapter],
         types: [docSections.types],
     },
-    sectionNameToMarkdown: {
-        [docSections.introduction]: IntroMarkdown,
-        [docSections.installation]: InstallationMarkdown,
-        [docSections.usage]: UsageMarkdown,
+    sectionNameToMarkdownByVersion: {
+        '0.0.1': {
+            [docSections.introduction]: IntroMarkdownV1,
+            [docSections.installation]: InstallationMarkdownV1,
+            [docSections.usage]: UsageMarkdown,
+        },
     },
     sectionNameToModulePath: {
         [docSections.coverageSubprovider]: ['"sol-cov/src/coverage_subprovider"'],
