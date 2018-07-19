@@ -342,15 +342,17 @@ export class ERC721TokenWrapper extends ContractWrapper {
         const normalizedSenderAddress = senderAddress.toLowerCase();
         const tokenContract = await this._getTokenContractAsync(normalizedTokenAddress);
         const ownerAddress = await this.getOwnerOfAsync(tokenAddress, tokenId);
-        const isApprovedForAll = await this.isApprovedForAllAsync(
-            normalizedTokenAddress,
-            ownerAddress,
-            normalizedSenderAddress,
-        );
-        if (!isApprovedForAll) {
-            const approvedAddress = await this.getApprovedIfExistsAsync(normalizedTokenAddress, tokenId);
-            if (approvedAddress !== senderAddress) {
-                throw new Error(ContractWrappersError.ERC721NoApproval);
+        if (normalizedSenderAddress !== ownerAddress) {
+            const isApprovedForAll = await this.isApprovedForAllAsync(
+                normalizedTokenAddress,
+                ownerAddress,
+                normalizedSenderAddress,
+            );
+            if (!isApprovedForAll) {
+                const approvedAddress = await this.getApprovedIfExistsAsync(normalizedTokenAddress, tokenId);
+                if (approvedAddress !== normalizedSenderAddress) {
+                    throw new Error(ContractWrappersError.ERC721NoApproval);
+                }
             }
         }
         const txHash = await tokenContract.transferFrom.sendTransactionAsync(

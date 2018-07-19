@@ -1,4 +1,5 @@
 import { schemas } from '@0xproject/json-schemas';
+import { assetDataUtils } from '@0xproject/order-utils';
 import { AssetProxyId, Order, SignedOrder } from '@0xproject/types';
 import { BigNumber } from '@0xproject/utils';
 import { Web3Wrapper } from '@0xproject/web3-wrapper';
@@ -1071,9 +1072,9 @@ export class ExchangeWrapper extends ContractWrapper {
      * Returns the ZRX asset data used by the exchange contract.
      * @return ZRX asset data
      */
-    public async getZRXAssetDataAsync(): Promise<string> {
-        const exchangeInstance = await this._getExchangeContractAsync();
-        const zrxAssetData = exchangeInstance.ZRX_ASSET_DATA.callAsync();
+    public getZRXAssetData(): string {
+        const zrxTokenAddress = this.getZRXTokenAddress();
+        const zrxAssetData = assetDataUtils.encodeERC20AssetData(zrxTokenAddress);
         return zrxAssetData;
     }
     // tslint:disable:no-unused-variable

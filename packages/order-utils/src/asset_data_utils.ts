@@ -117,7 +117,7 @@ export const assetDataUtils = {
      * @param assetData Hex encoded assetData string to decode
      * @return Either a ERC20 or ERC721 assetData object
      */
-    decodeAssetData(assetData: string): ERC20AssetData | ERC721AssetData {
+    decodeAssetDataOrThrow(assetData: string): ERC20AssetData | ERC721AssetData {
         const assetProxyId = assetDataUtils.decodeAssetProxyId(assetData);
         switch (assetProxyId) {
             case AssetProxyId.ERC20:

@@ -9,14 +9,14 @@
         "build": "yarn pre_build && tsc",
         "pre_build": "run-s update_artifacts generate_contract_wrappers",
         "update_artifacts": "for i in ${npm_package_config_contracts}; do copyfiles -u 4 ../migrations/artifacts/2.0.0/$i.json lib/artifacts; done;",
-        "generate_contract_wrappers": "abi-gen --abis 'lib/artifacts/@(Exchange|ERC20Token).json' --template ../contract_templates/contract.handlebars --partials '../contract_templates/partials/**/*.handlebars' --output src/generated_contract_wrappers --backend ethers",
+        "generate_contract_wrappers": "abi-gen --abis 'lib/artifacts/@(Exchange|DummyERC20Token|DummyERC721Token).json' --template ../contract_templates/contract.handlebars --partials '../contract_templates/partials/**/*.handlebars' --output src/generated_contract_wrappers --backend ethers",
         "copy_monorepo_scripts": "copyfiles -u 3 './lib/src/monorepo_scripts/**/*' ./scripts",
         "clean": "shx rm -rf lib scripts src/generated_contract_wrappers",
         "lint": "tslint --project . --exclude **/src/generated_contract_wrappers/**/*",
         "manual:postpublish": "yarn build; node ./scripts/postpublish.js"
     },
     "config": {
-        "contracts": "Exchange ERC20Token"
+        "contracts": "Exchange DummyERC20Token DummyERC721Token"
     },
     "license": "Apache-2.0",
     "repository": {
@@ -28,9 +28,9 @@
     },
     "homepage": "https://github.com/0xProject/0x-monorepo/packages/fill-scenarios/README.md",
     "devDependencies": {
-        "@0xproject/abi-gen": "^0.3.3",
+        "@0xproject/abi-gen": "^0.3.4",
         "@0xproject/monorepo-scripts": "^0.2.2",
-        "@0xproject/sol-compiler": "^0.5.3",
+        "@0xproject/sol-compiler": "^0.5.4",
         "@0xproject/tslint-config": "^0.4.21",
         "@types/lodash": "4.14.104",
         "copyfiles": "^1.2.0",
@@ -41,13 +41,13 @@
         "typescript": "2.7.1"
     },
     "dependencies": {
-        "@0xproject/base-contract": "^0.3.5",
+        "@0xproject/base-contract": "^0.3.6",
         "@0xproject/order-utils": "^1.0.0",
         "@0xproject/types": "1.0.0",
         "ethereum-types": "^0.0.2",
-        "@0xproject/typescript-typings": "^0.4.2",
-        "@0xproject/utils": "^0.7.2",
-        "@0xproject/web3-wrapper": "^0.7.2",
+        "@0xproject/typescript-typings": "^0.4.3",
+        "@0xproject/utils": "^0.7.3",
+        "@0xproject/web3-wrapper": "^0.7.3",
         "ethers": "3.0.22",
         "lodash": "^4.17.4"
     },

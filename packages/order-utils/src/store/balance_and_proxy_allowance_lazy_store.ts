@@ -1,8 +1,10 @@
+import { AssetProxyId } from '@0xproject/types';
 import { BigNumber } from '@0xproject/utils';
 import * as _ from 'lodash';
 
 import { AbstractBalanceAndProxyAllowanceFetcher } from '../abstract/abstract_balance_and_proxy_allowance_fetcher';
 import { AbstractBalanceAndProxyAllowanceLazyStore } from '../abstract/abstract_balance_and_proxy_allowance_lazy_store';
+import { assetDataUtils } from '../asset_data_utils';
 
 /**
  * Copy on read store for balances/proxyAllowances of tokens/accounts
@@ -71,6 +73,20 @@ export class BalanceAndProxyAllowanceLazyStore implements AbstractBalanceAndProx
             delete this._proxyAllowance[assetData][userAddress];
             if (_.isEmpty(this._proxyAllowance[assetData])) {
                 delete this._proxyAllowance[assetData];
+            }
+        }
+    }
+    public deleteAllERC721ProxyAllowance(tokenAddress: string, userAddress: string): void {
+        for (const assetData in this._proxyAllowance) {
+            if (this._proxyAllowance.hasOwnProperty(assetData)) {
+                const decodedAssetData = assetDataUtils.decodeAssetDataOrThrow(assetData);
+                if (
+                    decodedAssetData.assetProxyId === AssetProxyId.ERC721 &&
+                    decodedAssetData.tokenAddress === tokenAddress &&
+                    !_.isUndefined(this._proxyAllowance[assetData][userAddress])
+                ) {
+                    delete this._proxyAllowance[assetData][userAddress];
+                }
             }
         }
     }

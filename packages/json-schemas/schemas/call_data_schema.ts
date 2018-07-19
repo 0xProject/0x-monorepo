@@ -1,5 +1,5 @@
 export const callDataSchema = {
-    id: '/TxData',
+    id: '/CallData',
     properties: {
         from: { $ref: '/Address' },
         to: { $ref: '/Address' },

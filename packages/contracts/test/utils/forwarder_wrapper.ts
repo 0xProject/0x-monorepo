@@ -145,7 +145,7 @@ export class ForwarderWrapper {
         feeProportion: number,
         makerAssetFillAmount: BigNumber,
     ): Promise<BigNumber> {
-        const makerAssetData = assetDataUtils.decodeAssetData(orders[0].makerAssetData);
+        const makerAssetData = assetDataUtils.decodeAssetDataOrThrow(orders[0].makerAssetData);
         const makerAssetToken = makerAssetData.tokenAddress;
         const params = formatters.createMarketBuyOrders(orders, makerAssetFillAmount);
 

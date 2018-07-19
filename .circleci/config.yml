@@ -64,7 +64,7 @@ jobs:
       - restore_cache:
           keys:
             - repo-{{ .Environment.CIRCLE_SHA1 }}
-      - run: yarn wsrun test:circleci @0xproject/0x.js
+      - run: yarn wsrun test:circleci 0x.js
       - run: yarn wsrun test:circleci @0xproject/abi-gen
       - run: yarn wsrun test:circleci @0xproject/assert
       - run: yarn wsrun test:circleci @0xproject/base-contract
