@@ -4965,6 +4965,7 @@ ethereumjs-wallet@~0.6.0:
 
 ethers@0xproject/ethers.js#eip-838-reasons, ethers@3.0.22:
   version "3.0.18"
+  uid b91342bd200d142af0165d6befddf783c8ae8447
   resolved "https://codeload.github.com/0xproject/ethers.js/tar.gz/b91342bd200d142af0165d6befddf783c8ae8447"
   dependencies:
     aes-js "3.0.0"
@@ -12412,9 +12413,9 @@ textextensions@2:
   version "2.2.0"
   resolved "https://registry.yarnpkg.com/textextensions/-/textextensions-2.2.0.tgz#38ac676151285b658654581987a0ce1a4490d286"
 
-thenby@^1.2.3:
-  version "1.2.3"
-  resolved "https://registry.yarnpkg.com/thenby/-/thenby-1.2.3.tgz#62465b07e3d8b9466f01026df837f738e0faaa69"
+thenby@1.2.6:
+  version "1.2.6"
+  resolved "https://registry.yarnpkg.com/thenby/-/thenby-1.2.6.tgz#96a685699d5a1e9cb0a11762293ae621d886bb0f"
 
 thenify-all@^1.0.0, thenify-all@^1.6.0:
   version "1.6.0"
