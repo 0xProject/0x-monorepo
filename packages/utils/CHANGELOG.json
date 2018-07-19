@@ -1,5 +1,14 @@
 [
     {
+        "version": "1.0.0",
+        "changes": [
+            {
+                "note": "Add `fetchAsync` which adds a default timeout to all requests",
+                "pr": 874
+            }
+        ]
+    },
+    {
         "timestamp": 1531919263,
         "version": "0.7.3",
         "changes": [
