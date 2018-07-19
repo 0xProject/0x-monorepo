@@ -18,9 +18,9 @@ import {
     expectContractCreationFailedWithoutReason,
     expectTransactionFailedWithoutReasonAsync,
 } from '../utils/assertions';
+import { increaseTimeAndMineBlockAsync } from '../utils/block_timestamp';
 import { chaiSetup } from '../utils/chai_setup';
 import { constants } from '../utils/constants';
-import { increaseTimeAndMineBlockAsync } from '../utils/increase_time';
 import { MultiSigWrapper } from '../utils/multi_sig_wrapper';
 import { provider, txDefaults, web3Wrapper } from '../utils/web3_wrapper';
 
@@ -148,6 +148,25 @@ describe('AssetProxyOwner', () => {
         });
     });
 
+    describe('readBytes4', () => {
+        it('should revert if byte array has a length < 4', async () => {
+            const byteArrayLessThan4Bytes = '0x010101';
+            return expectContractCallFailedWithoutReasonAsync(
+                testAssetProxyOwner.publicReadBytes4.callAsync(byteArrayLessThan4Bytes, new BigNumber(0)),
+            );
+        });
+        it('should return the first 4 bytes of a byte array of arbitrary length', async () => {
+            const byteArrayLongerThan32Bytes =
+                '0x0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef';
+            const first4Bytes = await testAssetProxyOwner.publicReadBytes4.callAsync(
+                byteArrayLongerThan32Bytes,
+                new BigNumber(0),
+            );
+            const expectedFirst4Bytes = byteArrayLongerThan32Bytes.slice(0, 10);
+            expect(first4Bytes).to.equal(expectedFirst4Bytes);
+        });
+    });
+
     describe('registerAssetProxy', () => {
         it('should throw if not called by multisig', async () => {
             const isRegistered = true;
@@ -238,8 +257,6 @@ describe('AssetProxyOwner', () => {
             const registerAssetProxySubmitLog = registerAssetProxySubmitRes.logs[0] as LogWithDecodedArgs<
                 AssetProxyOwnerSubmissionEventArgs
             >;
-            const registerAssetProxyTxId = registerAssetProxySubmitLog.args.transactionId;
-            await multiSigWrapper.confirmTransactionAsync(registerAssetProxyTxId, owners[1]);
 
             const addAuthorizedAddressData = erc20Proxy.addAuthorizedAddress.getABIEncodedTransactionData(authorized);
             const erc20AddAuthorizedAddressSubmitRes = await multiSigWrapper.submitTransactionAsync(
@@ -257,9 +274,12 @@ describe('AssetProxyOwner', () => {
             >;
             const erc721AddAuthorizedAddressSubmitLog = erc721AddAuthorizedAddressSubmitRes
                 .logs[0] as LogWithDecodedArgs<AssetProxyOwnerSubmissionEventArgs>;
+
+            const registerAssetProxyTxId = registerAssetProxySubmitLog.args.transactionId;
             const erc20AddAuthorizedAddressTxId = erc20AddAuthorizedAddressSubmitLog.args.transactionId;
             const erc721AddAuthorizedAddressTxId = erc721AddAuthorizedAddressSubmitLog.args.transactionId;
 
+            await multiSigWrapper.confirmTransactionAsync(registerAssetProxyTxId, owners[1]);
             await multiSigWrapper.confirmTransactionAsync(erc20AddAuthorizedAddressTxId, owners[1]);
             await multiSigWrapper.confirmTransactionAsync(erc721AddAuthorizedAddressTxId, owners[1]);
             await increaseTimeAndMineBlockAsync(SECONDS_TIME_LOCKED.toNumber());

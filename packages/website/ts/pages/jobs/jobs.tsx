@@ -33,7 +33,7 @@ export interface JobsState {}
 
 export class Jobs extends React.Component<JobsProps, JobsState> {
     // TODO: consolidate this small screen scaffolding into one place (its being used in portal and docs as well)
-    private _throttledScreenWidthUpdate: () => void;
+    private readonly _throttledScreenWidthUpdate: () => void;
     public constructor(props: JobsProps) {
         super(props);
         this._throttledScreenWidthUpdate = _.throttle(this._updateScreenWidth.bind(this), THROTTLE_TIMEOUT);

@@ -244,7 +244,10 @@ export enum BlockchainCallErrs {
 
 export enum Environments {
     DEVELOPMENT = 'DEVELOPMENT',
+    DOGFOOD = 'DOGFOOD',
+    STAGING = 'STAGING',
     PRODUCTION = 'PRODUCTION',
+    UNKNOWN = 'UNKNOWN',
 }
 
 export type ContractInstance = any; // TODO: add type definition for Contract
@@ -516,8 +519,10 @@ export interface OutdatedWrappedEtherByNetworkId {
     };
 }
 
-export interface ItemByAddress<T> {
-    [address: string]: T;
+export type ItemByAddress<T> = ObjectMap<T>;
+
+export interface ObjectMap<T> {
+    [key: string]: T;
 }
 
 export type TokenStateByAddress = ItemByAddress<TokenState>;

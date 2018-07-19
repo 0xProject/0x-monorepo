@@ -30,8 +30,6 @@ import { configs } from 'ts/utils/configs';
 import { constants } from 'ts/utils/constants';
 import * as u2f from 'ts/vendor/u2f_api';
 
-const isDogfood = (): boolean => _.includes(window.location.href, configs.DOMAIN_DOGFOOD);
-
 export const utils = {
     assert(condition: boolean, message: string): void {
         if (!condition) {
@@ -61,7 +59,7 @@ export const utils = {
         return moment.unix(unixTimestampSec.toNumber());
     },
     convertToReadableDateTimeFromUnixTimestamp(unixTimestampSec: BigNumber): string {
-        const m = this.convertToMomentFromUnixTimestamp(unixTimestampSec);
+        const m = utils.convertToMomentFromUnixTimestamp(unixTimestampSec);
         const formattedDate: string = m.format('h:MMa MMMM D YYYY');
         return formattedDate;
     },
@@ -176,18 +174,6 @@ export const utils = {
             _.includes(errMsg, paritySignerDenialErrMsg) ||
             _.includes(errMsg, ledgerDenialErrMsg);
         return isUserDeniedErrMsg;
-    },
-    getCurrentEnvironment(): string {
-        switch (location.host) {
-            case configs.DOMAIN_DEVELOPMENT:
-                return 'development';
-            case configs.DOMAIN_STAGING:
-                return 'staging';
-            case configs.DOMAIN_PRODUCTION:
-                return 'production';
-            default:
-                return 'production';
-        }
     },
     getAddressBeginAndEnd(address: string): string {
         const truncatedAddress = `${address.substring(0, 6)}...${address.substr(-4)}`; // 0x3d5a...b287
@@ -313,14 +299,13 @@ export const utils = {
         const baseUrl = `https://${window.location.hostname}${hasPort ? `:${port}` : ''}`;
         return baseUrl;
     },
-    async onPageLoadAsync(): Promise<void> {
+    onPageLoadPromise: new Promise<void>((resolve, _reject) => {
         if (document.readyState === 'complete') {
-            return; // Already loaded
+            resolve();
+            return;
         }
-        return new Promise<void>((resolve, _reject) => {
-            window.onload = () => resolve();
-        });
-    },
+        window.onload = () => resolve();
+    }),
     getProviderType(provider: Provider): Providers | string {
         const constructorName = provider.constructor.name;
         let parsedProviderName = constructorName;
@@ -346,10 +331,10 @@ export const utils = {
         return parsedProviderName;
     },
     getBackendBaseUrl(): string {
-        return isDogfood() ? configs.BACKEND_BASE_STAGING_URL : configs.BACKEND_BASE_PROD_URL;
+        return utils.isDogfood() ? configs.BACKEND_BASE_STAGING_URL : configs.BACKEND_BASE_PROD_URL;
     },
     isDevelopment(): boolean {
-        return configs.ENVIRONMENT === Environments.DEVELOPMENT;
+        return _.includes(configs.DOMAINS_DEVELOPMENT, window.location.origin);
     },
     isStaging(): boolean {
         return _.includes(window.location.href, configs.DOMAIN_STAGING);
@@ -357,14 +342,29 @@ export const utils = {
     isExternallyInjected(providerType: ProviderType, injectedProviderName: string): boolean {
         return providerType === ProviderType.Injected && injectedProviderName !== constants.PROVIDER_NAME_PUBLIC;
     },
-    isDogfood,
-    shouldShowPortalV2(): boolean {
-        // return this.isDevelopment() || this.isStaging() || this.isDogfood();
-        // TODO: Remove this method entirely after launch.
-        return true;
+    isDogfood(): boolean {
+        return _.includes(window.location.href, configs.DOMAIN_DOGFOOD);
+    },
+    isProduction(): boolean {
+        return _.includes(window.location.href, configs.DOMAIN_PRODUCTION);
+    },
+    getEnvironment(): Environments {
+        if (utils.isDogfood()) {
+            return Environments.DOGFOOD;
+        }
+        if (utils.isDevelopment()) {
+            return Environments.DEVELOPMENT;
+        }
+        if (utils.isStaging()) {
+            return Environments.STAGING;
+        }
+        if (utils.isProduction()) {
+            return Environments.PRODUCTION;
+        }
+        return Environments.UNKNOWN;
     },
     shouldShowJobsPage(): boolean {
-        return this.isDevelopment() || this.isStaging() || this.isDogfood();
+        return utils.isDevelopment() || utils.isStaging() || utils.isDogfood();
     },
     getEthToken(tokenByAddress: TokenByAddress): Token {
         return utils.getTokenBySymbol(constants.ETHER_TOKEN_SYMBOL, tokenByAddress);
@@ -379,27 +379,34 @@ export const utils = {
     },
     getTrackedTokens(tokenByAddress: TokenByAddress): Token[] {
         const allTokens = _.values(tokenByAddress);
-        const trackedTokens = _.filter(allTokens, t => this.isTokenTracked(t));
+        const trackedTokens = _.filter(allTokens, t => utils.isTokenTracked(t));
         return trackedTokens;
     },
     getFormattedAmountFromToken(token: Token, tokenState: TokenState): string {
         return utils.getFormattedAmount(tokenState.balance, token.decimals);
     },
+    format(value: BigNumber, format: string): string {
+        const formattedAmount = numeral(value).format(format);
+        if (_.isNaN(formattedAmount)) {
+            // https://github.com/adamwdraper/Numeral-js/issues/596
+            return numeral(new BigNumber(0)).format(format);
+        }
+        return formattedAmount;
+    },
     getFormattedAmount(amount: BigNumber, decimals: number): string {
         const unitAmount = Web3Wrapper.toUnitAmount(amount, decimals);
         // if the unit amount is less than 1, show the natural number of decimal places with a max of 4
         // if the unit amount is greater than or equal to 1, show only 2 decimal places
-        const precision = unitAmount.lt(1)
-            ? Math.min(constants.TOKEN_AMOUNT_DISPLAY_PRECISION, unitAmount.decimalPlaces())
-            : 2;
+        const lessThanOnePrecision = Math.min(constants.TOKEN_AMOUNT_DISPLAY_PRECISION, unitAmount.decimalPlaces());
+        const greaterThanOnePrecision = 2;
+        const precision = unitAmount.lt(1) ? lessThanOnePrecision : greaterThanOnePrecision;
         const format = `0,0.${_.repeat('0', precision)}`;
-        const formattedAmount = numeral(unitAmount).format(format);
-        return formattedAmount;
+        return utils.format(unitAmount, format);
     },
     getUsdValueFormattedAmount(amount: BigNumber, decimals: number, price: BigNumber): string {
         const unitAmount = Web3Wrapper.toUnitAmount(amount, decimals);
         const value = unitAmount.mul(price);
-        return numeral(value).format(constants.NUMERAL_USD_FORMAT);
+        return utils.format(value, constants.NUMERAL_USD_FORMAT);
     },
     openUrl(url: string): void {
         window.open(url, '_blank');

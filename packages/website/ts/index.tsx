@@ -16,11 +16,9 @@ import { trackedTokenStorage } from 'ts/local_storage/tracked_token_storage';
 import { tradeHistoryStorage } from 'ts/local_storage/trade_history_storage';
 import { store } from 'ts/redux/store';
 import { WebsiteLegacyPaths, WebsitePaths } from 'ts/types';
-import { analytics } from 'ts/utils/analytics';
 import { muiTheme } from 'ts/utils/mui_theme';
 import { utils } from 'ts/utils/utils';
 // Polyfills
-import 'whatwg-fetch';
 injectTapEventPlugin();
 
 // Check if we've introduced an update that requires us to clear the tradeHistory local storage entries
@@ -35,14 +33,9 @@ import 'less/all.less';
 // At the same time webpack statically parses for System.import() to determine bundle chunk split points
 // so each lazy import needs it's own `System.import()` declaration.
 
-// TODO: Remove this once we ship V2
-const LazyPortal = utils.shouldShowPortalV2()
-    ? createLazyComponent('Portal', async () =>
-          System.import<any>(/* webpackChunkName: "portal" */ 'ts/containers/portal'),
-      )
-    : createLazyComponent('LegacyPortal', async () =>
-          System.import<any>(/* webpackChunkName: "legacyPortal" */ 'ts/containers/legacy_portal'),
-      );
+const LazyPortal = createLazyComponent('Portal', async () =>
+    System.import<any>(/* webpackChunkName: "portal" */ 'ts/containers/portal'),
+);
 const LazyZeroExJSDocumentation = createLazyComponent('Documentation', async () =>
     System.import<any>(/* webpackChunkName: "zeroExDocs" */ 'ts/containers/zero_ex_js_documentation'),
 );
@@ -73,10 +66,6 @@ const LazyOrderUtilsDocumentation = createLazyComponent('Documentation', async (
 const LazyEthereumTypesDocumentation = createLazyComponent('Documentation', async () =>
     System.import<any>(/* webpackChunkName: "ethereumTypesDocs" */ 'ts/containers/ethereum_types_documentation'),
 );
-
-analytics.init();
-// tslint:disable-next-line:no-floating-promises
-analytics.logProviderAsync((window as any).web3);
 
 render(
     <Router>

@@ -17,6 +17,7 @@ const TESTRPC_PRIVATE_KEYS_STRINGS = [
 ];
 
 export const constants = {
+    BASE_16: 16,
     INVALID_OPCODE: 'invalid opcode',
     TESTRPC_NETWORK_ID: 50,
     // Note(albrow): In practice V8 and most other engines limit the minimum
@@ -24,9 +25,10 @@ export const constants = {
     // ensure we always use the minimum interval.
     AWAIT_TRANSACTION_MINED_MS: 0,
     MAX_ETHERTOKEN_WITHDRAW_GAS: 43000,
+    MAX_EXECUTE_TRANSACTION_GAS: 1000000,
     MAX_TOKEN_TRANSFERFROM_GAS: 80000,
     MAX_TOKEN_APPROVE_GAS: 60000,
-    TRANSFER_FROM_GAS: 150000,
+    MAX_TRANSFER_FROM_GAS: 150000,
     DUMMY_TOKEN_NAME: '',
     DUMMY_TOKEN_SYMBOL: '',
     DUMMY_TOKEN_DECIMALS: new BigNumber(18),
@@ -46,4 +48,5 @@ export const constants = {
         makerFee: Web3Wrapper.toBaseUnitAmount(new BigNumber(1), 18),
         takerFee: Web3Wrapper.toBaseUnitAmount(new BigNumber(1), 18),
     },
+    WORD_LENGTH: 32,
 };

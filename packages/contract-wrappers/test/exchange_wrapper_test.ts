@@ -1,6 +1,6 @@
 import { BlockchainLifecycle, callbackErrorReporter } from '@0xproject/dev-utils';
 import { FillScenarios } from '@0xproject/fill-scenarios';
-import { assetProxyUtils, orderHashUtils } from '@0xproject/order-utils';
+import { assetDataUtils, orderHashUtils } from '@0xproject/order-utils';
 import { DoneCallback, SignedOrder } from '@0xproject/types';
 import { BigNumber } from '@0xproject/utils';
 import * as chai from 'chai';
@@ -53,7 +53,6 @@ describe('ExchangeWrapper', () => {
         await blockchainLifecycle.startAsync();
         contractWrappers = new ContractWrappers(provider, config);
         exchangeContractAddress = contractWrappers.exchange.getContractAddress();
-        const erc20ProxyAddress = contractWrappers.erc20Proxy.getContractAddress();
         userAddresses = await web3Wrapper.getAvailableAddressesAsync();
         zrxTokenAddress = tokenUtils.getProtocolTokenAddress();
         fillScenarios = new FillScenarios(
@@ -61,13 +60,14 @@ describe('ExchangeWrapper', () => {
             userAddresses,
             zrxTokenAddress,
             exchangeContractAddress,
-            erc20ProxyAddress,
+            contractWrappers.erc20Proxy.getContractAddress(),
+            contractWrappers.erc721Proxy.getContractAddress(),
         );
         [coinbase, makerAddress, takerAddress, feeRecipient, anotherMakerAddress] = userAddresses;
         [makerTokenAddress, takerTokenAddress] = tokenUtils.getDummyERC20TokenAddresses();
         [makerAssetData, takerAssetData] = [
-            assetProxyUtils.encodeERC20AssetData(makerTokenAddress),
-            assetProxyUtils.encodeERC20AssetData(takerTokenAddress),
+            assetDataUtils.encodeERC20AssetData(makerTokenAddress),
+            assetDataUtils.encodeERC20AssetData(takerTokenAddress),
         ];
         signedOrder = await fillScenarios.createFillableSignedOrderAsync(
             makerAssetData,
@@ -264,8 +264,8 @@ describe('ExchangeWrapper', () => {
         });
     });
     describe('#getZRXAssetData', () => {
-        it('should get the asset data', async () => {
-            const ZRX_ASSET_DATA = await contractWrappers.exchange.getZRXAssetDataAsync();
+        it('should get the asset data', () => {
+            const ZRX_ASSET_DATA = contractWrappers.exchange.getZRXAssetData();
             const ASSET_DATA_HEX_LENGTH = 74;
             expect(ZRX_ASSET_DATA).to.have.length(ASSET_DATA_HEX_LENGTH);
         });

@@ -1,4 +1,4 @@
-import { assetProxyUtils } from '@0xproject/order-utils';
+import { assetDataUtils } from '@0xproject/order-utils';
 import { AssetProxyId } from '@0xproject/types';
 import { BigNumber, errorUtils } from '@0xproject/utils';
 import * as _ from 'lodash';
@@ -17,7 +17,7 @@ interface ProxyIdToAssetWrappers {
  * the logic that uses it does not need to care what standard a token belongs to.
  */
 export class AssetWrapper {
-    private _proxyIdToAssetWrappers: ProxyIdToAssetWrappers;
+    private readonly _proxyIdToAssetWrappers: ProxyIdToAssetWrappers;
     constructor(assetWrappers: AbstractAssetWrapper[]) {
         this._proxyIdToAssetWrappers = {};
         _.each(assetWrappers, assetWrapper => {
@@ -26,7 +26,7 @@ export class AssetWrapper {
         });
     }
     public async getBalanceAsync(userAddress: string, assetData: string): Promise<BigNumber> {
-        const proxyId = assetProxyUtils.decodeAssetDataId(assetData);
+        const proxyId = assetDataUtils.decodeAssetProxyId(assetData);
         switch (proxyId) {
             case AssetProxyId.ERC20: {
                 const erc20Wrapper = this._proxyIdToAssetWrappers[proxyId] as ERC20Wrapper;
@@ -35,7 +35,7 @@ export class AssetWrapper {
             }
             case AssetProxyId.ERC721: {
                 const assetWrapper = this._proxyIdToAssetWrappers[proxyId] as ERC721Wrapper;
-                const assetProxyData = assetProxyUtils.decodeERC721AssetData(assetData);
+                const assetProxyData = assetDataUtils.decodeERC721AssetData(assetData);
                 const isOwner = await assetWrapper.isOwnerAsync(
                     userAddress,
                     assetProxyData.tokenAddress,
@@ -49,7 +49,7 @@ export class AssetWrapper {
         }
     }
     public async setBalanceAsync(userAddress: string, assetData: string, desiredBalance: BigNumber): Promise<void> {
-        const proxyId = assetProxyUtils.decodeAssetDataId(assetData);
+        const proxyId = assetDataUtils.decodeAssetProxyId(assetData);
         switch (proxyId) {
             case AssetProxyId.ERC20: {
                 const erc20Wrapper = this._proxyIdToAssetWrappers[proxyId] as ERC20Wrapper;
@@ -61,7 +61,7 @@ export class AssetWrapper {
                     throw new Error(`Balance for ERC721 token can only be set to 0 or 1. Got: ${desiredBalance}`);
                 }
                 const erc721Wrapper = this._proxyIdToAssetWrappers[proxyId] as ERC721Wrapper;
-                const assetProxyData = assetProxyUtils.decodeERC721AssetData(assetData);
+                const assetProxyData = assetDataUtils.decodeERC721AssetData(assetData);
                 const doesTokenExist = erc721Wrapper.doesTokenExistAsync(
                     assetProxyData.tokenAddress,
                     assetProxyData.tokenId,
@@ -107,7 +107,7 @@ export class AssetWrapper {
         }
     }
     public async getProxyAllowanceAsync(userAddress: string, assetData: string): Promise<BigNumber> {
-        const proxyId = assetProxyUtils.decodeAssetDataId(assetData);
+        const proxyId = assetDataUtils.decodeAssetProxyId(assetData);
         switch (proxyId) {
             case AssetProxyId.ERC20: {
                 const erc20Wrapper = this._proxyIdToAssetWrappers[proxyId] as ERC20Wrapper;
@@ -116,7 +116,7 @@ export class AssetWrapper {
             }
             case AssetProxyId.ERC721: {
                 const assetWrapper = this._proxyIdToAssetWrappers[proxyId] as ERC721Wrapper;
-                const erc721ProxyData = assetProxyUtils.decodeERC721AssetData(assetData);
+                const erc721ProxyData = assetDataUtils.decodeERC721AssetData(assetData);
                 const isProxyApprovedForAll = await assetWrapper.isProxyApprovedForAllAsync(
                     userAddress,
                     erc721ProxyData.tokenAddress,
@@ -141,7 +141,7 @@ export class AssetWrapper {
         assetData: string,
         desiredAllowance: BigNumber,
     ): Promise<void> {
-        const proxyId = assetProxyUtils.decodeAssetDataId(assetData);
+        const proxyId = assetDataUtils.decodeAssetProxyId(assetData);
         switch (proxyId) {
             case AssetProxyId.ERC20: {
                 const erc20Wrapper = this._proxyIdToAssetWrappers[proxyId] as ERC20Wrapper;
@@ -159,7 +159,7 @@ export class AssetWrapper {
                     );
                 }
                 const erc721Wrapper = this._proxyIdToAssetWrappers[proxyId] as ERC721Wrapper;
-                const assetProxyData = assetProxyUtils.decodeERC721AssetData(assetData);
+                const assetProxyData = assetDataUtils.decodeERC721AssetData(assetData);
 
                 const doesTokenExist = await erc721Wrapper.doesTokenExistAsync(
                     assetProxyData.tokenAddress,

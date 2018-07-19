@@ -7,8 +7,14 @@ contract SafeMath {
         pure
         returns (uint256)
     {
+        if (a == 0) {
+            return 0;
+        }
         uint256 c = a * b;
-        assert(a == 0 || c / a == b);
+        require(
+            c / a == b,
+            "UINT256_OVERFLOW"
+        );
         return c;
     }
 
@@ -26,7 +32,10 @@ contract SafeMath {
         pure
         returns (uint256)
     {
-        assert(b <= a);
+        require(
+            b <= a,
+            "UINT256_OVERFLOW"
+        );
         return a - b;
     }
 
@@ -36,7 +45,10 @@ contract SafeMath {
         returns (uint256)
     {
         uint256 c = a + b;
-        assert(c >= a);
+        require(
+            c >= a,
+            "UINT256_OVERFLOW"
+        );
         return c;
     }
 

@@ -221,3 +221,11 @@ export enum RevertReason {
     ValueGreaterThanZero = 'VALUE_GREATER_THAN_ZERO',
     InvalidMsgValue = 'INVALID_MSG_VALUE',
 }
+
+export enum StatusCodes {
+    Success = 200,
+    NotFound = 404,
+    InternalError = 500,
+    MethodNotAllowed = 405,
+    GatewayTimeout = 504,
+}

@@ -9,6 +9,19 @@
             {
                 "note": "Remove the output directory before writing to it",
                 "pr": 822
+            },
+            {
+                "note": "skip generation of wrappers that are already up to date",
+                "pr": 788
+            }
+        ]
+    },
+    {
+        "timestamp": 1531919263,
+        "version": "0.3.4",
+        "changes": [
+            {
+                "note": "Dependencies updated"
             }
         ]
     },

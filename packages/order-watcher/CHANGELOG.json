@@ -1,5 +1,14 @@
 [
     {
+        "timestamp": 1531919263,
+        "version": "0.0.8",
+        "changes": [
+            {
+                "note": "Dependencies updated"
+            }
+        ]
+    },
+    {
         "version": "0.0.7",
         "changes": [
             {
@@ -9,6 +18,14 @@
             {
                 "note": "Do not stop subscription if error is encountered",
                 "pr": 825
+            },
+            {
+                "note": "Fixed a bug that caused the incorrect block to be fetched via JSON-RPC within Blockstream",
+                "pr": 875
+            },
+            {
+                "note": "Remove stateLayer config from OrderWatcher. It now always operates on the latest block",
+                "pr": 875
             }
         ],
         "timestamp": 1531149657

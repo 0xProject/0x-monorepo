@@ -15,8 +15,9 @@ import {
     ledgerEthereumBrowserClientFactoryAsync,
     LedgerSubprovider,
     RedundantSubprovider,
+    RPCSubprovider,
     SignerSubprovider,
-    Subprovider,
+    Web3ProviderEngine,
 } from '@0xproject/subproviders';
 import {
     BlockParam,
@@ -60,9 +61,7 @@ import { configs } from 'ts/utils/configs';
 import { constants } from 'ts/utils/constants';
 import { errorReporter } from 'ts/utils/error_reporter';
 import { utils } from 'ts/utils/utils';
-import ProviderEngine = require('web3-provider-engine');
 import FilterSubprovider = require('web3-provider-engine/subproviders/filters');
-import RpcSubprovider = require('web3-provider-engine/subproviders/rpc');
 
 import * as MintableArtifacts from '../contracts/Mintable.json';
 
@@ -84,11 +83,11 @@ export class Blockchain {
     public networkId: number;
     public nodeVersion: string;
     private _contractWrappers: ContractWrappers;
-    private _dispatcher: Dispatcher;
+    private readonly _dispatcher: Dispatcher;
     private _web3Wrapper?: Web3Wrapper;
     private _blockchainWatcher?: BlockchainWatcher;
     private _injectedProviderObservable?: InjectedProviderObservable;
-    private _injectedProviderUpdateHandler: (update: InjectedProviderUpdate) => Promise<void>;
+    private readonly _injectedProviderUpdateHandler: (update: InjectedProviderUpdate) => Promise<void>;
     private _userAddressIfExists: string;
     private _ledgerSubprovider: LedgerSubprovider;
     private _defaultGasPrice: BigNumber;
@@ -126,7 +125,11 @@ export class Blockchain {
         let networkIdIfExists: number;
         if (!_.isUndefined(injectedWeb3IfExists)) {
             try {
-                networkIdIfExists = _.parseInt(await promisify<string>(injectedWeb3IfExists.version.getNetwork)());
+                networkIdIfExists = _.parseInt(
+                    await promisify<string>(
+                        injectedWeb3IfExists.version.getNetwork.bind(injectedWeb3IfExists.version),
+                    )(),
+                );
             } catch (err) {
                 // Ignore error and proceed with networkId undefined
             }
@@ -148,7 +151,7 @@ export class Blockchain {
             if (!isU2FSupported) {
                 throw new Error('Cannot update providerType to LEDGER without U2F support');
             }
-            const provider = new ProviderEngine();
+            const provider = new Web3ProviderEngine();
             const ledgerWalletConfigs = {
                 networkId: networkIdIfExists,
                 ledgerEthereumClientFactoryAsync: ledgerEthereumBrowserClientFactoryAsync,
@@ -157,25 +160,21 @@ export class Blockchain {
             provider.addProvider(ledgerSubprovider);
             provider.addProvider(new FilterSubprovider());
             const rpcSubproviders = _.map(configs.PUBLIC_NODE_URLS_BY_NETWORK_ID[networkIdIfExists], publicNodeUrl => {
-                return new RpcSubprovider({
-                    rpcUrl: publicNodeUrl,
-                });
+                return new RPCSubprovider(publicNodeUrl);
             });
-            provider.addProvider(new RedundantSubprovider(rpcSubproviders as Subprovider[]));
+            provider.addProvider(new RedundantSubprovider(rpcSubproviders));
             provider.start();
             return [provider, ledgerSubprovider];
         } else if (doesInjectedWeb3Exist && isPublicNodeAvailableForNetworkId) {
             // We catch all requests involving a users account and send it to the injectedWeb3
             // instance. All other requests go to the public hosted node.
-            const provider = new ProviderEngine();
+            const provider = new Web3ProviderEngine();
             provider.addProvider(new SignerSubprovider(injectedWeb3.currentProvider));
             provider.addProvider(new FilterSubprovider());
             const rpcSubproviders = _.map(publicNodeUrlsIfExistsForNetworkId, publicNodeUrl => {
-                return new RpcSubprovider({
-                    rpcUrl: publicNodeUrl,
-                });
+                return new RPCSubprovider(publicNodeUrl);
             });
-            provider.addProvider(new RedundantSubprovider(rpcSubproviders as Subprovider[]));
+            provider.addProvider(new RedundantSubprovider(rpcSubproviders));
             provider.start();
             return [provider, undefined];
         } else if (doesInjectedWeb3Exist) {
@@ -185,15 +184,13 @@ export class Blockchain {
             // If no injectedWeb3 instance, all requests fallback to our public hosted mainnet/testnet node
             // We do this so that users can still browse the 0x Portal DApp even if they do not have web3
             // injected into their browser.
-            const provider = new ProviderEngine();
+            const provider = new Web3ProviderEngine();
             provider.addProvider(new FilterSubprovider());
             const networkId = constants.NETWORK_ID_MAINNET;
             const rpcSubproviders = _.map(configs.PUBLIC_NODE_URLS_BY_NETWORK_ID[networkId], publicNodeUrl => {
-                return new RpcSubprovider({
-                    rpcUrl: publicNodeUrl,
-                });
+                return new RPCSubprovider(publicNodeUrl);
             });
-            provider.addProvider(new RedundantSubprovider(rpcSubproviders as Subprovider[]));
+            provider.addProvider(new RedundantSubprovider(rpcSubproviders));
             provider.start();
             return [provider, undefined];
         }
@@ -537,7 +534,9 @@ export class Blockchain {
     }
     public destroy(): void {
         this._blockchainWatcher.destroy();
-        this._injectedProviderObservable.unsubscribe(this._injectedProviderUpdateHandler);
+        if (this._injectedProviderObservable) {
+            this._injectedProviderObservable.unsubscribe(this._injectedProviderUpdateHandler);
+        }
         this._stopWatchingExchangeLogFillEvents();
         this._stopWatchingGasPrice();
     }
@@ -569,7 +568,7 @@ export class Blockchain {
                     configs.DEFAULT_TRACKED_TOKEN_SYMBOLS,
                 )}) not found in tokenRegistry: ${JSON.stringify(tokenRegistryTokens)}`,
             );
-            await errorReporter.reportAsync(err);
+            errorReporter.report(err);
             return;
         }
         if (_.isEmpty(trackedTokensByAddress)) {
@@ -680,8 +679,7 @@ export class Blockchain {
                     // Note: it's not entirely clear from the documentation which
                     // errors will be thrown by `watch`. For now, let's log the error
                     // to rollbar and stop watching when one occurs
-                    // tslint:disable-next-line:no-floating-promises
-                    errorReporter.reportAsync(err); // fire and forget
+                    errorReporter.report(err); // fire and forget
                     return;
                 } else {
                     const decodedLog = decodedLogEvent.log;
@@ -767,9 +765,13 @@ export class Blockchain {
         this._contractWrappers.exchange.unsubscribeAll();
     }
     private async _getTokenRegistryTokensByAddressAsync(): Promise<TokenByAddress> {
-        utils.assert(!_.isUndefined(this._contractWrappers), 'ContractWrappers must be instantiated.');
-        const tokenRegistryTokens = await this._contractWrappers.tokenRegistry.getTokensAsync();
-
+        let tokenRegistryTokens;
+        if (this.networkId === constants.NETWORK_ID_MAINNET) {
+            tokenRegistryTokens = await backendClient.getTokenInfosAsync();
+        } else {
+            utils.assert(!_.isUndefined(this._contractWrappers), 'ContractWrappers must be instantiated.');
+            tokenRegistryTokens = await this._contractWrappers.tokenRegistry.getTokensAsync();
+        }
         const tokenByAddress: TokenByAddress = {};
         _.each(tokenRegistryTokens, (t: ZeroExToken) => {
             // HACK: For now we have a hard-coded list of iconUrls for the dummyTokens
@@ -789,7 +791,7 @@ export class Blockchain {
         return tokenByAddress;
     }
     private async _onPageLoadInitFireAndForgetAsync(): Promise<void> {
-        await utils.onPageLoadAsync(); // wait for page to load
+        await utils.onPageLoadPromise; // wait for page to load
         const networkIdIfExists = await Blockchain._getInjectedWeb3ProviderNetworkIdIfExistsAsync();
         this.networkId = !_.isUndefined(networkIdIfExists) ? networkIdIfExists : constants.NETWORK_ID_MAINNET;
         const injectedWeb3IfExists = Blockchain._getInjectedWeb3();
@@ -909,7 +911,7 @@ export class Blockchain {
             if (_.includes(errMsg, 'not been deployed to detected network')) {
                 throw new Error(BlockchainCallErrs.ContractDoesNotExist);
             } else {
-                await errorReporter.reportAsync(err);
+                errorReporter.report(err);
                 throw new Error(BlockchainCallErrs.UnhandledError);
             }
         }

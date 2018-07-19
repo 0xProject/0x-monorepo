@@ -28,7 +28,7 @@ export class DocsInfo {
     public sectionNameToMarkdownByVersion: SectionNameToMarkdownByVersion;
     public contractsByVersionByNetworkId?: ContractsByVersionByNetworkId;
     public typeConfigs: DocsInfoTypeConfigs;
-    private _docsInfo: DocsInfoConfig;
+    private readonly _docsInfo: DocsInfoConfig;
     constructor(config: DocsInfoConfig) {
         this.id = config.id;
         this.type = config.type;

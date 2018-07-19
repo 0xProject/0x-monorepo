@@ -4,34 +4,33 @@ import semver = require('semver');
 import semverSort = require('semver-sort');
 
 import { constants } from './constants';
+import { Package } from './types';
 import { changelogUtils } from './utils/changelog_utils';
 import { npmUtils } from './utils/npm_utils';
 import { utils } from './utils/utils';
 
 async function prepublishChecksAsync(): Promise<void> {
     const shouldIncludePrivate = false;
-    const updatedPublicLernaPackages = await utils.getUpdatedLernaPackagesAsync(shouldIncludePrivate);
+    const updatedPublicPackages = await utils.getUpdatedPackagesAsync(shouldIncludePrivate);
 
-    await checkCurrentVersionMatchesLatestPublishedNPMPackageAsync(updatedPublicLernaPackages);
-    await checkChangelogFormatAsync(updatedPublicLernaPackages);
-    await checkGitTagsForNextVersionAndDeleteIfExistAsync(updatedPublicLernaPackages);
+    await checkCurrentVersionMatchesLatestPublishedNPMPackageAsync(updatedPublicPackages);
+    await checkChangelogFormatAsync(updatedPublicPackages);
+    await checkGitTagsForNextVersionAndDeleteIfExistAsync(updatedPublicPackages);
     await checkPublishRequiredSetupAsync();
 }
 
-async function checkGitTagsForNextVersionAndDeleteIfExistAsync(
-    updatedPublicLernaPackages: LernaPackage[],
-): Promise<void> {
-    const packageNames = _.map(updatedPublicLernaPackages, lernaPackage => lernaPackage.package.name);
+async function checkGitTagsForNextVersionAndDeleteIfExistAsync(updatedPublicPackages: Package[]): Promise<void> {
+    const packageNames = _.map(updatedPublicPackages, pkg => pkg.packageJson.name);
     const localGitTags = await utils.getLocalGitTagsAsync();
     const localTagVersionsByPackageName = await utils.getGitTagsByPackageNameAsync(packageNames, localGitTags);
 
     const remoteGitTags = await utils.getRemoteGitTagsAsync();
     const remoteTagVersionsByPackageName = await utils.getGitTagsByPackageNameAsync(packageNames, remoteGitTags);
 
-    for (const lernaPackage of updatedPublicLernaPackages) {
-        const currentVersion = lernaPackage.package.version;
-        const packageName = lernaPackage.package.name;
-        const packageLocation = lernaPackage.location;
+    for (const pkg of updatedPublicPackages) {
+        const currentVersion = pkg.packageJson.version;
+        const packageName = pkg.packageJson.name;
+        const packageLocation = pkg.location;
         const nextVersion = await utils.getNextPackageVersionAsync(currentVersion, packageName, packageLocation);
 
         const remoteTagVersions = remoteTagVersionsByPackageName[packageName];
@@ -49,13 +48,13 @@ async function checkGitTagsForNextVersionAndDeleteIfExistAsync(
 }
 
 async function checkCurrentVersionMatchesLatestPublishedNPMPackageAsync(
-    updatedPublicLernaPackages: LernaPackage[],
+    updatedPublicPackages: Package[],
 ): Promise<void> {
     utils.log('Check package versions against npmjs.org...');
     const versionMismatches = [];
-    for (const lernaPackage of updatedPublicLernaPackages) {
-        const packageName = lernaPackage.package.name;
-        const packageVersion = lernaPackage.package.version;
+    for (const pkg of updatedPublicPackages) {
+        const packageName = pkg.packageJson.name;
+        const packageVersion = pkg.packageJson.version;
         const packageRegistryJsonIfExists = await npmUtils.getPackageRegistryJsonIfExistsAsync(packageName);
         if (_.isUndefined(packageRegistryJsonIfExists)) {
             continue; // noop for packages not yet published to NPM
@@ -84,14 +83,14 @@ async function checkCurrentVersionMatchesLatestPublishedNPMPackageAsync(
     }
 }
 
-async function checkChangelogFormatAsync(updatedPublicLernaPackages: LernaPackage[]): Promise<void> {
+async function checkChangelogFormatAsync(updatedPublicPackages: Package[]): Promise<void> {
     utils.log('Check CHANGELOGs for inconsistencies...');
     const changeLogInconsistencies = [];
-    for (const lernaPackage of updatedPublicLernaPackages) {
-        const packageName = lernaPackage.package.name;
-        const changelog = changelogUtils.getChangelogOrCreateIfMissing(packageName, lernaPackage.location);
+    for (const pkg of updatedPublicPackages) {
+        const packageName = pkg.packageJson.name;
+        const changelog = changelogUtils.getChangelogOrCreateIfMissing(packageName, pkg.location);
 
-        const currentVersion = lernaPackage.package.version;
+        const currentVersion = pkg.packageJson.version;
         if (!_.isEmpty(changelog)) {
             const lastEntry = changelog[0];
             const doesLastEntryHaveTimestamp = !_.isUndefined(lastEntry.timestamp);
@@ -105,7 +104,7 @@ async function checkChangelogFormatAsync(updatedPublicLernaPackages: LernaPackag
                 // Remove incorrectly added timestamp
                 delete changelog[0].timestamp;
                 // Save updated CHANGELOG.json
-                await changelogUtils.writeChangelogJsonFileAsync(lernaPackage.location, changelog);
+                await changelogUtils.writeChangelogJsonFileAsync(pkg.location, changelog);
                 utils.log(`${packageName}: Removed timestamp from latest CHANGELOG.json entry.`);
             }
         }

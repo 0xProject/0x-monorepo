@@ -41,7 +41,7 @@ export const SimpleMenuItem: React.StatelessComponent<SimpleMenuItemProps> = ({ 
             <Text
                 fontSize="14px"
                 fontColor={colors.darkGrey}
-                onClick={onClick || _.noop}
+                onClick={onClick || _.noop.bind(_)}
                 hoverColor={colors.mediumBlue}
             >
                 {displayText}
@@ -84,5 +84,5 @@ export interface DifferentWalletSimpleMenuItemProps {
 export const DifferentWalletSimpleMenuItem: React.StatelessComponent<DifferentWalletSimpleMenuItemProps> = ({
     onClick,
 }) => {
-    return <SimpleMenuItem displayText="Use a Different Wallet..." onClick={onClick} />;
+    return <SimpleMenuItem displayText="Use Ledger Wallet..." onClick={onClick} />;
 };

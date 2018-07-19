@@ -1,3 +1,6 @@
 {
+    "rules": {
+        "prefer-readonly": true
+    },
     "extends": ["@0xproject/tslint-config"]
 }

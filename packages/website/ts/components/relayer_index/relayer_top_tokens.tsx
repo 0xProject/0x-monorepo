@@ -1,9 +1,4 @@
-import {
-    colors,
-    constants as sharedConstants,
-    EtherscanLinkSuffixes,
-    utils as sharedUtils,
-} from '@0xproject/react-shared';
+import { colors, EtherscanLinkSuffixes, utils as sharedUtils } from '@0xproject/react-shared';
 import * as _ from 'lodash';
 import * as React from 'react';
 
@@ -46,11 +41,11 @@ class TokenLink extends React.Component<TokenLinkProps, TokenLinkState> {
         };
     }
     public render(): React.ReactNode {
-        const networkName = sharedConstants.NETWORK_NAME_BY_ID[this.props.networkId];
-        const eventLabel = `${this.props.tokenInfo.symbol}-${networkName}`;
         const onClick = (event: React.MouseEvent<HTMLElement>) => {
             event.stopPropagation();
-            analytics.logEvent('Portal', 'Token Click', eventLabel);
+            analytics.track('Token Click', {
+                tokenSymbol: this.props.tokenInfo.symbol,
+            });
             const tokenLink = this._tokenLinkFromToken(this.props.tokenInfo, this.props.networkId);
             utils.openUrl(tokenLink);
         };

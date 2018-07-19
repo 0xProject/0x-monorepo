@@ -1,5 +1,58 @@
 [
     {
+        "version": "1.0.0",
+        "changes": [
+            {
+                "note": "Remove tokenRegistry wrapper",
+                "pr": 863
+            },
+            {
+                "note": "Rename zeroEx.token to zeroEx.erc20Token, and add zeroEx.erc721Token",
+                "pr": 863
+            },
+            {
+                "note": "Rename zeroEx.proxy to zeroEx.erc20Proxy and add zeroEx.erc721Proxy",
+                "pr": 863
+            },
+            {
+                "note":
+                    "Refactored ZeroEx.isValidSignature to zeroEx.isValidSignatureAsync. It is now async so that it can verify contract-dependent signature types",
+                "pr": 863
+            },
+            {
+                "note":
+                    "Refactored signOrderHashAsync to ecSignOrderHashAsync. There are now many non-ECSignature ways to sign orders too.",
+                "pr": 863
+            },
+            {
+                "note":
+                    "Removed createOrderWatcherAsync method. Will be added back once OrderWatcher is refactored for V2",
+                "pr": 863
+            },
+            {
+                "note": "0x.js exports renamed contract events and event arg types",
+                "pr": 863
+            },
+            {
+                "note": "Remove stateLayer config from OrderWatcher. It now always operates on the latest block",
+                "pr": 875
+            },
+            {
+                "note": "Export ZeroEx.assetData with methods to decode/encode assetData fields found in 0x orders",
+                "pr": 884
+            }
+        ]
+    },
+    {
+        "timestamp": 1531919263,
+        "version": "0.38.6",
+        "changes": [
+            {
+                "note": "Dependencies updated"
+            }
+        ]
+    },
+    {
         "timestamp": 1531149657,
         "version": "0.38.5",
         "changes": [

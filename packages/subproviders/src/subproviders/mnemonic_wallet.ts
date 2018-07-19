@@ -20,10 +20,10 @@ const DEFAULT_ADDRESS_SEARCH_LIMIT = 1000;
  * all requests with accounts derived from the supplied mnemonic.
  */
 export class MnemonicWalletSubprovider extends BaseWalletSubprovider {
-    private _addressSearchLimit: number;
+    private readonly _addressSearchLimit: number;
     private _baseDerivationPath: string;
     private _derivedKeyInfo: DerivedHDKeyInfo;
-    private _mnemonic: string;
+    private readonly _mnemonic: string;
 
     /**
      * Instantiates a MnemonicWalletSubprovider. Defaults to baseDerivationPath set to `44'/60'/0'/0`.

@@ -51,8 +51,13 @@ export const postpublishUtils = {
         return configs;
     },
     async runAsync(packageJSON: any, tsConfigJSON: any, cwd: string): Promise<void> {
-        const configs = this.generateConfig(packageJSON, tsConfigJSON, cwd);
-        await this.publishReleaseNotesAsync(configs.cwd, configs.packageName, configs.version, configs.assets);
+        const configs = postpublishUtils.generateConfig(packageJSON, tsConfigJSON, cwd);
+        await postpublishUtils.publishReleaseNotesAsync(
+            configs.cwd,
+            configs.packageName,
+            configs.version,
+            configs.assets,
+        );
         if (
             !_.isUndefined(configs.docPublishConfigs.s3BucketPath) ||
             !_.isUndefined(configs.docPublishConfigs.s3StagingBucketPath)
@@ -69,7 +74,7 @@ export const postpublishUtils = {
         }
     },
     async publishDocsToStagingAsync(packageJSON: any, tsConfigJSON: any, cwd: string): Promise<void> {
-        const configs = this.generateConfig(packageJSON, tsConfigJSON, cwd);
+        const configs = postpublishUtils.generateConfig(packageJSON, tsConfigJSON, cwd);
         if (_.isUndefined(configs.docPublishConfigs.s3StagingBucketPath)) {
             utils.log('config.postpublish.docPublishConfigs.s3StagingBucketPath entry in package.json not found!');
             return;
@@ -84,10 +89,10 @@ export const postpublishUtils = {
         );
     },
     async publishReleaseNotesAsync(cwd: string, packageName: string, version: string, assets: string[]): Promise<void> {
-        const notes = this.getReleaseNotes(packageName, version);
-        const releaseName = this.getReleaseName(packageName, version);
-        const tag = this.getTag(packageName, version);
-        this.adjustAssetPaths(cwd, assets);
+        const notes = postpublishUtils.getReleaseNotes(packageName, version);
+        const releaseName = postpublishUtils.getReleaseName(packageName, version);
+        const tag = postpublishUtils.getTag(packageName, version);
+        postpublishUtils.adjustAssetPaths(cwd, assets);
         utils.log('POSTPUBLISH: Releasing ', releaseName, '...');
         await publishReleaseAsync({
             token: constants.githubPersonalAccessToken,
@@ -165,7 +170,7 @@ export const postpublishUtils = {
         version: string,
         S3BucketPath: string,
     ): Promise<void> {
-        const fileIncludesAdjusted = this.adjustFileIncludePaths(fileIncludes, cwd);
+        const fileIncludesAdjusted = postpublishUtils.adjustFileIncludePaths(fileIncludes, cwd);
         const projectFiles = fileIncludesAdjusted.join(' ');
         const jsonFilePath = `${cwd}/${generatedDocsDirectoryName}/index.json`;
         const result = await execAsync(

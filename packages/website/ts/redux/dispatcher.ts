@@ -17,7 +17,7 @@ import {
 } from 'ts/types';
 
 export class Dispatcher {
-    private _dispatch: Dispatch<State>;
+    private readonly _dispatch: Dispatch<State>;
     constructor(dispatch: Dispatch<State>) {
         this._dispatch = dispatch;
     }

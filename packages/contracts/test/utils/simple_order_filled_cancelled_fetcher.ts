@@ -4,8 +4,8 @@ import { BigNumber } from '@0xproject/utils';
 import { ExchangeWrapper } from './exchange_wrapper';
 
 export class SimpleOrderFilledCancelledFetcher implements AbstractOrderFilledCancelledFetcher {
-    private _exchangeWrapper: ExchangeWrapper;
-    private _zrxAssetData: string;
+    private readonly _exchangeWrapper: ExchangeWrapper;
+    private readonly _zrxAssetData: string;
     constructor(exchange: ExchangeWrapper, zrxAssetData: string) {
         this._exchangeWrapper = exchange;
         this._zrxAssetData = zrxAssetData;

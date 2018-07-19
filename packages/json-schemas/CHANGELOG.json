@@ -9,6 +9,19 @@
             {
                 "note": "Added CallData schema",
                 "pr": 821
+            },
+            {
+                "note": "Update CallData schema id to CallData",
+                "pr": 894
+            }
+        ]
+    },
+    {
+        "timestamp": 1531919263,
+        "version": "0.8.3",
+        "changes": [
+            {
+                "note": "Dependencies updated"
             }
         ]
     },

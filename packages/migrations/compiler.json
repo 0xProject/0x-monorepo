@@ -1,5 +1,5 @@
 {
-    "contractsDir": "../contracts/src/contracts",
+    "contractsDir": "../contracts/src/",
     "compilerSettings": {
         "optimizer": {
             "enabled": true,

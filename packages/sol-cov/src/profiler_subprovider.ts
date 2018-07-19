@@ -12,7 +12,7 @@ import { utils } from './utils';
  * ProfilerSubprovider is used to profile Solidity code while running tests.
  */
 export class ProfilerSubprovider extends TraceInfoSubprovider {
-    private _profilerCollector: TraceCollector;
+    private readonly _profilerCollector: TraceCollector;
     /**
      * Instantiates a ProfilerSubprovider instance
      * @param artifactAdapter Adapter for used artifacts format (0x, truffle, giveth, etc.)

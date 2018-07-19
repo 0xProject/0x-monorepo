@@ -1,4 +1,4 @@
-import { assetProxyUtils, generatePseudoRandomSalt } from '@0xproject/order-utils';
+import { assetDataUtils, generatePseudoRandomSalt } from '@0xproject/order-utils';
 import { Order } from '@0xproject/types';
 import { BigNumber, errorUtils } from '@0xproject/utils';
 
@@ -24,13 +24,13 @@ const FIVE_UNITS_FIVE_DECIMALS = new BigNumber(500_000);
 const ONE_NFT_UNIT = new BigNumber(1);
 
 export class OrderFactoryFromScenario {
-    private _userAddresses: string[];
-    private _zrxAddress: string;
-    private _nonZrxERC20EighteenDecimalTokenAddresses: string[];
-    private _erc20FiveDecimalTokenAddresses: string[];
-    private _erc721Token: DummyERC721TokenContract;
-    private _erc721Balances: ERC721TokenIdsByOwner;
-    private _exchangeAddress: string;
+    private readonly _userAddresses: string[];
+    private readonly _zrxAddress: string;
+    private readonly _nonZrxERC20EighteenDecimalTokenAddresses: string[];
+    private readonly _erc20FiveDecimalTokenAddresses: string[];
+    private readonly _erc721Token: DummyERC721TokenContract;
+    private readonly _erc721Balances: ERC721TokenIdsByOwner;
+    private readonly _exchangeAddress: string;
     constructor(
         userAddresses: string[],
         zrxAddress: string,
@@ -75,18 +75,16 @@ export class OrderFactoryFromScenario {
 
         switch (orderScenario.makerAssetDataScenario) {
             case AssetDataScenario.ZRXFeeToken:
-                makerAssetData = assetProxyUtils.encodeERC20AssetData(this._zrxAddress);
+                makerAssetData = assetDataUtils.encodeERC20AssetData(this._zrxAddress);
                 break;
             case AssetDataScenario.ERC20NonZRXEighteenDecimals:
-                makerAssetData = assetProxyUtils.encodeERC20AssetData(
-                    this._nonZrxERC20EighteenDecimalTokenAddresses[0],
-                );
+                makerAssetData = assetDataUtils.encodeERC20AssetData(this._nonZrxERC20EighteenDecimalTokenAddresses[0]);
                 break;
             case AssetDataScenario.ERC20FiveDecimals:
-                makerAssetData = assetProxyUtils.encodeERC20AssetData(this._erc20FiveDecimalTokenAddresses[0]);
+                makerAssetData = assetDataUtils.encodeERC20AssetData(this._erc20FiveDecimalTokenAddresses[0]);
                 break;
             case AssetDataScenario.ERC721:
-                makerAssetData = assetProxyUtils.encodeERC721AssetData(
+                makerAssetData = assetDataUtils.encodeERC721AssetData(
                     this._erc721Token.address,
                     erc721MakerAssetIds[0],
                 );
@@ -97,18 +95,16 @@ export class OrderFactoryFromScenario {
 
         switch (orderScenario.takerAssetDataScenario) {
             case AssetDataScenario.ZRXFeeToken:
-                takerAssetData = assetProxyUtils.encodeERC20AssetData(this._zrxAddress);
+                takerAssetData = assetDataUtils.encodeERC20AssetData(this._zrxAddress);
                 break;
             case AssetDataScenario.ERC20NonZRXEighteenDecimals:
-                takerAssetData = assetProxyUtils.encodeERC20AssetData(
-                    this._nonZrxERC20EighteenDecimalTokenAddresses[1],
-                );
+                takerAssetData = assetDataUtils.encodeERC20AssetData(this._nonZrxERC20EighteenDecimalTokenAddresses[1]);
                 break;
             case AssetDataScenario.ERC20FiveDecimals:
-                takerAssetData = assetProxyUtils.encodeERC20AssetData(this._erc20FiveDecimalTokenAddresses[1]);
+                takerAssetData = assetDataUtils.encodeERC20AssetData(this._erc20FiveDecimalTokenAddresses[1]);
                 break;
             case AssetDataScenario.ERC721:
-                takerAssetData = assetProxyUtils.encodeERC721AssetData(
+                takerAssetData = assetDataUtils.encodeERC721AssetData(
                     this._erc721Token.address,
                     erc721TakerAssetIds[0],
                 );

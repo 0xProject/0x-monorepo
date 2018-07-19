@@ -1,5 +1,5 @@
 import { BlockchainLifecycle } from '@0xproject/dev-utils';
-import { assetProxyUtils } from '@0xproject/order-utils';
+import { assetDataUtils } from '@0xproject/order-utils';
 import { AssetProxyId, RevertReason } from '@0xproject/types';
 import { BigNumber } from '@0xproject/utils';
 import * as chai from 'chai';
@@ -180,7 +180,7 @@ describe('AssetProxyDispatcher', () => {
                 constants.AWAIT_TRANSACTION_MINED_MS,
             );
             // Construct metadata for ERC20 proxy
-            const encodedAssetData = assetProxyUtils.encodeERC20AssetData(zrxToken.address);
+            const encodedAssetData = assetDataUtils.encodeERC20AssetData(zrxToken.address);
 
             // Perform a transfer from makerAddress to takerAddress
             const erc20Balances = await erc20Wrapper.getBalancesAsync();
@@ -207,7 +207,7 @@ describe('AssetProxyDispatcher', () => {
 
         it('should throw if dispatching to unregistered proxy', async () => {
             // Construct metadata for ERC20 proxy
-            const encodedAssetData = assetProxyUtils.encodeERC20AssetData(zrxToken.address);
+            const encodedAssetData = assetDataUtils.encodeERC20AssetData(zrxToken.address);
             // Perform a transfer from makerAddress to takerAddress
             const amount = new BigNumber(10);
             return expectTransactionFailedAsync(

@@ -5,6 +5,10 @@ Edit the package's CHANGELOG.json file only.
 
 CHANGELOG
 
+## v0.1.1 - _July 18, 2018_
+
+    * Dependencies updated
+
 ## v0.1.0 - _July 9, 2018_
 
     * Update Blockstream dep. to V5.0 and no longer force unsubscribe on blockstream error (which are not recoverable)

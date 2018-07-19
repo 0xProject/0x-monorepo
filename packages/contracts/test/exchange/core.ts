@@ -1,5 +1,5 @@
 import { BlockchainLifecycle } from '@0xproject/dev-utils';
-import { assetProxyUtils, orderHashUtils } from '@0xproject/order-utils';
+import { assetDataUtils, orderHashUtils } from '@0xproject/order-utils';
 import { RevertReason, SignedOrder } from '@0xproject/types';
 import { BigNumber } from '@0xproject/utils';
 import { Web3Wrapper } from '@0xproject/web3-wrapper';
@@ -15,13 +15,14 @@ import { ERC721ProxyContract } from '../../generated_contract_wrappers/erc721_pr
 import { ExchangeCancelEventArgs, ExchangeContract } from '../../generated_contract_wrappers/exchange';
 import { artifacts } from '../utils/artifacts';
 import { expectTransactionFailedAsync } from '../utils/assertions';
+import { getLatestBlockTimestampAsync, increaseTimeAndMineBlockAsync } from '../utils/block_timestamp';
 import { chaiSetup } from '../utils/chai_setup';
 import { constants } from '../utils/constants';
 import { ERC20Wrapper } from '../utils/erc20_wrapper';
 import { ERC721Wrapper } from '../utils/erc721_wrapper';
 import { ExchangeWrapper } from '../utils/exchange_wrapper';
 import { OrderFactory } from '../utils/order_factory';
-import { ERC20BalancesByOwner } from '../utils/types';
+import { ERC20BalancesByOwner, OrderStatus } from '../utils/types';
 import { provider, txDefaults, web3Wrapper } from '../utils/web3_wrapper';
 
 chaiSetup.configure();
@@ -87,7 +88,7 @@ describe('Exchange core', () => {
             artifacts.Exchange,
             provider,
             txDefaults,
-            assetProxyUtils.encodeERC20AssetData(zrxToken.address),
+            assetDataUtils.encodeERC20AssetData(zrxToken.address),
         );
         exchangeWrapper = new ExchangeWrapper(exchange, provider);
         await exchangeWrapper.registerAssetProxyAsync(erc20Proxy.address, owner);
@@ -114,8 +115,8 @@ describe('Exchange core', () => {
             exchangeAddress: exchange.address,
             makerAddress,
             feeRecipientAddress,
-            makerAssetData: assetProxyUtils.encodeERC20AssetData(defaultMakerAssetAddress),
-            takerAssetData: assetProxyUtils.encodeERC20AssetData(defaultTakerAssetAddress),
+            makerAssetData: assetDataUtils.encodeERC20AssetData(defaultMakerAssetAddress),
+            takerAssetData: assetDataUtils.encodeERC20AssetData(defaultTakerAssetAddress),
         };
         const privateKey = constants.TESTRPC_PRIVATE_KEYS[accounts.indexOf(makerAddress)];
         orderFactory = new OrderFactory(privateKey, defaultOrderParams);
@@ -129,11 +130,11 @@ describe('Exchange core', () => {
     describe('fillOrder', () => {
         beforeEach(async () => {
             erc20Balances = await erc20Wrapper.getBalancesAsync();
-            signedOrder = orderFactory.newSignedOrder();
+            signedOrder = await orderFactory.newSignedOrderAsync();
         });
 
         it('should throw if signature is invalid', async () => {
-            signedOrder = orderFactory.newSignedOrder({
+            signedOrder = await orderFactory.newSignedOrderAsync({
                 makerAssetAmount: Web3Wrapper.toBaseUnitAmount(new BigNumber(10), 18),
             });
 
@@ -151,7 +152,7 @@ describe('Exchange core', () => {
         });
 
         it('should throw if no value is filled', async () => {
-            signedOrder = orderFactory.newSignedOrder();
+            signedOrder = await orderFactory.newSignedOrderAsync();
             await exchangeWrapper.fillOrderAsync(signedOrder, takerAddress);
             return expectTransactionFailedAsync(
                 exchangeWrapper.fillOrderAsync(signedOrder, takerAddress),
@@ -163,7 +164,7 @@ describe('Exchange core', () => {
     describe('cancelOrder', () => {
         beforeEach(async () => {
             erc20Balances = await erc20Wrapper.getBalancesAsync();
-            signedOrder = orderFactory.newSignedOrder();
+            signedOrder = await orderFactory.newSignedOrderAsync();
         });
 
         it('should throw if not sent by maker', async () => {
@@ -174,7 +175,7 @@ describe('Exchange core', () => {
         });
 
         it('should throw if makerAssetAmount is 0', async () => {
-            signedOrder = orderFactory.newSignedOrder({
+            signedOrder = await orderFactory.newSignedOrderAsync({
                 makerAssetAmount: new BigNumber(0),
             });
 
@@ -185,7 +186,7 @@ describe('Exchange core', () => {
         });
 
         it('should throw if takerAssetAmount is 0', async () => {
-            signedOrder = orderFactory.newSignedOrder({
+            signedOrder = await orderFactory.newSignedOrderAsync({
                 takerAssetAmount: new BigNumber(0),
             });
 
@@ -229,8 +230,9 @@ describe('Exchange core', () => {
         });
 
         it('should throw if order is expired', async () => {
-            signedOrder = orderFactory.newSignedOrder({
-                expirationTimeSeconds: new BigNumber(Math.floor((Date.now() - 10000) / 1000)),
+            const currentTimestamp = await getLatestBlockTimestampAsync();
+            signedOrder = await orderFactory.newSignedOrderAsync({
+                expirationTimeSeconds: new BigNumber(currentTimestamp).sub(10),
             });
             return expectTransactionFailedAsync(
                 exchangeWrapper.cancelOrderAsync(signedOrder, makerAddress),
@@ -239,7 +241,7 @@ describe('Exchange core', () => {
         });
 
         it('should throw if rounding error is greater than 0.1%', async () => {
-            signedOrder = orderFactory.newSignedOrder({
+            signedOrder = await orderFactory.newSignedOrderAsync({
                 makerAssetAmount: new BigNumber(1001),
                 takerAssetAmount: new BigNumber(3),
             });
@@ -288,22 +290,22 @@ describe('Exchange core', () => {
             // Since we cancelled with orderEpoch=1, orders with orderEpoch<=1 will not be processed
             erc20Balances = await erc20Wrapper.getBalancesAsync();
             const signedOrders = [
-                orderFactory.newSignedOrder({
+                await orderFactory.newSignedOrderAsync({
                     makerAssetAmount: Web3Wrapper.toBaseUnitAmount(new BigNumber(9), 18),
                     takerAssetAmount: Web3Wrapper.toBaseUnitAmount(new BigNumber(9), 18),
                     salt: new BigNumber(0),
                 }),
-                orderFactory.newSignedOrder({
+                await orderFactory.newSignedOrderAsync({
                     makerAssetAmount: Web3Wrapper.toBaseUnitAmount(new BigNumber(79), 18),
                     takerAssetAmount: Web3Wrapper.toBaseUnitAmount(new BigNumber(79), 18),
                     salt: new BigNumber(1),
                 }),
-                orderFactory.newSignedOrder({
+                await orderFactory.newSignedOrderAsync({
                     makerAssetAmount: Web3Wrapper.toBaseUnitAmount(new BigNumber(979), 18),
                     takerAssetAmount: Web3Wrapper.toBaseUnitAmount(new BigNumber(979), 18),
                     salt: new BigNumber(2),
                 }),
-                orderFactory.newSignedOrder({
+                await orderFactory.newSignedOrderAsync({
                     makerAssetAmount: Web3Wrapper.toBaseUnitAmount(new BigNumber(7979), 18),
                     takerAssetAmount: Web3Wrapper.toBaseUnitAmount(new BigNumber(7979), 18),
                     salt: new BigNumber(3),
@@ -350,11 +352,11 @@ describe('Exchange core', () => {
             // Construct Exchange parameters
             const makerAssetId = erc721TakerAssetIds[0];
             const takerAssetId = erc721TakerAssetIds[1];
-            signedOrder = orderFactory.newSignedOrder({
+            signedOrder = await orderFactory.newSignedOrderAsync({
                 makerAssetAmount: new BigNumber(1),
                 takerAssetAmount: new BigNumber(1),
-                makerAssetData: assetProxyUtils.encodeERC721AssetData(erc721Token.address, makerAssetId),
-                takerAssetData: assetProxyUtils.encodeERC721AssetData(erc721Token.address, takerAssetId),
+                makerAssetData: assetDataUtils.encodeERC721AssetData(erc721Token.address, makerAssetId),
+                takerAssetData: assetDataUtils.encodeERC721AssetData(erc721Token.address, takerAssetId),
             });
             // Verify pre-conditions
             const initialOwnerMakerAsset = await erc721Token.ownerOf.callAsync(makerAssetId);
@@ -373,11 +375,11 @@ describe('Exchange core', () => {
             // Construct Exchange parameters
             const makerAssetId = erc721MakerAssetIds[0];
             const takerAssetId = erc721MakerAssetIds[1];
-            signedOrder = orderFactory.newSignedOrder({
+            signedOrder = await orderFactory.newSignedOrderAsync({
                 makerAssetAmount: new BigNumber(1),
                 takerAssetAmount: new BigNumber(1),
-                makerAssetData: assetProxyUtils.encodeERC721AssetData(erc721Token.address, makerAssetId),
-                takerAssetData: assetProxyUtils.encodeERC721AssetData(erc721Token.address, takerAssetId),
+                makerAssetData: assetDataUtils.encodeERC721AssetData(erc721Token.address, makerAssetId),
+                takerAssetData: assetDataUtils.encodeERC721AssetData(erc721Token.address, takerAssetId),
             });
             // Verify pre-conditions
             const initialOwnerMakerAsset = await erc721Token.ownerOf.callAsync(makerAssetId);
@@ -396,11 +398,11 @@ describe('Exchange core', () => {
             // Construct Exchange parameters
             const makerAssetId = erc721MakerAssetIds[0];
             const takerAssetId = erc721TakerAssetIds[0];
-            signedOrder = orderFactory.newSignedOrder({
+            signedOrder = await orderFactory.newSignedOrderAsync({
                 makerAssetAmount: new BigNumber(2),
                 takerAssetAmount: new BigNumber(1),
-                makerAssetData: assetProxyUtils.encodeERC721AssetData(erc721Token.address, makerAssetId),
-                takerAssetData: assetProxyUtils.encodeERC721AssetData(erc721Token.address, takerAssetId),
+                makerAssetData: assetDataUtils.encodeERC721AssetData(erc721Token.address, makerAssetId),
+                takerAssetData: assetDataUtils.encodeERC721AssetData(erc721Token.address, takerAssetId),
             });
             // Verify pre-conditions
             const initialOwnerMakerAsset = await erc721Token.ownerOf.callAsync(makerAssetId);
@@ -419,11 +421,11 @@ describe('Exchange core', () => {
             // Construct Exchange parameters
             const makerAssetId = erc721MakerAssetIds[0];
             const takerAssetId = erc721TakerAssetIds[0];
-            signedOrder = orderFactory.newSignedOrder({
+            signedOrder = await orderFactory.newSignedOrderAsync({
                 makerAssetAmount: new BigNumber(1),
                 takerAssetAmount: new BigNumber(500),
-                makerAssetData: assetProxyUtils.encodeERC721AssetData(erc721Token.address, makerAssetId),
-                takerAssetData: assetProxyUtils.encodeERC721AssetData(erc721Token.address, takerAssetId),
+                makerAssetData: assetDataUtils.encodeERC721AssetData(erc721Token.address, makerAssetId),
+                takerAssetData: assetDataUtils.encodeERC721AssetData(erc721Token.address, takerAssetId),
             });
             // Verify pre-conditions
             const initialOwnerMakerAsset = await erc721Token.ownerOf.callAsync(makerAssetId);
@@ -441,11 +443,11 @@ describe('Exchange core', () => {
         it('should throw on partial fill', async () => {
             // Construct Exchange parameters
             const makerAssetId = erc721MakerAssetIds[0];
-            signedOrder = orderFactory.newSignedOrder({
+            signedOrder = await orderFactory.newSignedOrderAsync({
                 makerAssetAmount: new BigNumber(1),
                 takerAssetAmount: Web3Wrapper.toBaseUnitAmount(new BigNumber(100), 18),
-                makerAssetData: assetProxyUtils.encodeERC721AssetData(erc721Token.address, makerAssetId),
-                takerAssetData: assetProxyUtils.encodeERC20AssetData(defaultTakerAssetAddress),
+                makerAssetData: assetDataUtils.encodeERC721AssetData(erc721Token.address, makerAssetId),
+                takerAssetData: assetDataUtils.encodeERC20AssetData(defaultTakerAssetAddress),
             });
             // Call Exchange
             const takerAssetFillAmount = signedOrder.takerAssetAmount.div(2);
@@ -459,14 +461,12 @@ describe('Exchange core', () => {
             // Construct Exchange parameters
             const makerAssetId = erc721MakerAssetIds[0];
             const takerAssetId = erc721TakerAssetIds[0];
-            const makerAssetData = assetProxyUtils
-                .encodeERC721AssetData(erc721Token.address, makerAssetId)
-                .slice(0, -2);
-            signedOrder = orderFactory.newSignedOrder({
+            const makerAssetData = assetDataUtils.encodeERC721AssetData(erc721Token.address, makerAssetId).slice(0, -2);
+            signedOrder = await orderFactory.newSignedOrderAsync({
                 makerAssetAmount: new BigNumber(1),
                 takerAssetAmount: new BigNumber(1),
                 makerAssetData,
-                takerAssetData: assetProxyUtils.encodeERC721AssetData(erc721Token.address, takerAssetId),
+                takerAssetData: assetDataUtils.encodeERC721AssetData(erc721Token.address, takerAssetId),
             });
             // Verify pre-conditions
             const initialOwnerMakerAsset = await erc721Token.ownerOf.callAsync(makerAssetId);
@@ -479,6 +479,124 @@ describe('Exchange core', () => {
                 exchangeWrapper.fillOrderAsync(signedOrder, takerAddress, { takerAssetFillAmount }),
                 RevertReason.LengthGreaterThan131Required,
             );
+        });
+    });
+
+    describe('getOrderInfo', () => {
+        beforeEach(async () => {
+            signedOrder = await orderFactory.newSignedOrderAsync();
+        });
+        it('should return the correct orderInfo for an unfilled valid order', async () => {
+            const orderInfo = await exchangeWrapper.getOrderInfoAsync(signedOrder);
+            const expectedOrderHash = orderHashUtils.getOrderHashHex(signedOrder);
+            const expectedTakerAssetFilledAmount = new BigNumber(0);
+            const expectedOrderStatus = OrderStatus.FILLABLE;
+            expect(orderInfo.orderHash).to.be.equal(expectedOrderHash);
+            expect(orderInfo.orderTakerAssetFilledAmount).to.be.bignumber.equal(expectedTakerAssetFilledAmount);
+            expect(orderInfo.orderStatus).to.equal(expectedOrderStatus);
+        });
+        it('should return the correct orderInfo for a fully filled order', async () => {
+            await exchangeWrapper.fillOrderAsync(signedOrder, takerAddress);
+            const orderInfo = await exchangeWrapper.getOrderInfoAsync(signedOrder);
+            const expectedOrderHash = orderHashUtils.getOrderHashHex(signedOrder);
+            const expectedTakerAssetFilledAmount = signedOrder.takerAssetAmount;
+            const expectedOrderStatus = OrderStatus.FULLY_FILLED;
+            expect(orderInfo.orderHash).to.be.equal(expectedOrderHash);
+            expect(orderInfo.orderTakerAssetFilledAmount).to.be.bignumber.equal(expectedTakerAssetFilledAmount);
+            expect(orderInfo.orderStatus).to.equal(expectedOrderStatus);
+        });
+        it('should return the correct orderInfo for a partially filled order', async () => {
+            const takerAssetFillAmount = signedOrder.takerAssetAmount.div(2);
+            await exchangeWrapper.fillOrderAsync(signedOrder, takerAddress, { takerAssetFillAmount });
+            const orderInfo = await exchangeWrapper.getOrderInfoAsync(signedOrder);
+            const expectedOrderHash = orderHashUtils.getOrderHashHex(signedOrder);
+            const expectedTakerAssetFilledAmount = takerAssetFillAmount;
+            const expectedOrderStatus = OrderStatus.FILLABLE;
+            expect(orderInfo.orderHash).to.be.equal(expectedOrderHash);
+            expect(orderInfo.orderTakerAssetFilledAmount).to.be.bignumber.equal(expectedTakerAssetFilledAmount);
+            expect(orderInfo.orderStatus).to.equal(expectedOrderStatus);
+        });
+        it('should return the correct orderInfo for a cancelled and unfilled order', async () => {
+            await exchangeWrapper.cancelOrderAsync(signedOrder, makerAddress);
+            const orderInfo = await exchangeWrapper.getOrderInfoAsync(signedOrder);
+            const expectedOrderHash = orderHashUtils.getOrderHashHex(signedOrder);
+            const expectedTakerAssetFilledAmount = new BigNumber(0);
+            const expectedOrderStatus = OrderStatus.CANCELLED;
+            expect(orderInfo.orderHash).to.be.equal(expectedOrderHash);
+            expect(orderInfo.orderTakerAssetFilledAmount).to.be.bignumber.equal(expectedTakerAssetFilledAmount);
+            expect(orderInfo.orderStatus).to.equal(expectedOrderStatus);
+        });
+        it('should return the correct orderInfo for a cancelled and partially filled order', async () => {
+            const takerAssetFillAmount = signedOrder.takerAssetAmount.div(2);
+            await exchangeWrapper.fillOrderAsync(signedOrder, takerAddress, { takerAssetFillAmount });
+            await exchangeWrapper.cancelOrderAsync(signedOrder, makerAddress);
+            const orderInfo = await exchangeWrapper.getOrderInfoAsync(signedOrder);
+            const expectedOrderHash = orderHashUtils.getOrderHashHex(signedOrder);
+            const expectedTakerAssetFilledAmount = takerAssetFillAmount;
+            const expectedOrderStatus = OrderStatus.CANCELLED;
+            expect(orderInfo.orderHash).to.be.equal(expectedOrderHash);
+            expect(orderInfo.orderTakerAssetFilledAmount).to.be.bignumber.equal(expectedTakerAssetFilledAmount);
+            expect(orderInfo.orderStatus).to.equal(expectedOrderStatus);
+        });
+        it('should return the correct orderInfo for an expired and unfilled order', async () => {
+            const currentTimestamp = await getLatestBlockTimestampAsync();
+            const timeUntilExpiration = signedOrder.expirationTimeSeconds.minus(currentTimestamp).toNumber();
+            await increaseTimeAndMineBlockAsync(timeUntilExpiration);
+            const orderInfo = await exchangeWrapper.getOrderInfoAsync(signedOrder);
+            const expectedOrderHash = orderHashUtils.getOrderHashHex(signedOrder);
+            const expectedTakerAssetFilledAmount = new BigNumber(0);
+            const expectedOrderStatus = OrderStatus.EXPIRED;
+            expect(orderInfo.orderHash).to.be.equal(expectedOrderHash);
+            expect(orderInfo.orderTakerAssetFilledAmount).to.be.bignumber.equal(expectedTakerAssetFilledAmount);
+            expect(orderInfo.orderStatus).to.equal(expectedOrderStatus);
+        });
+        it('should return the correct orderInfo for an expired and partially filled order', async () => {
+            const takerAssetFillAmount = signedOrder.takerAssetAmount.div(2);
+            await exchangeWrapper.fillOrderAsync(signedOrder, takerAddress, { takerAssetFillAmount });
+            const currentTimestamp = await getLatestBlockTimestampAsync();
+            const timeUntilExpiration = signedOrder.expirationTimeSeconds.minus(currentTimestamp).toNumber();
+            await increaseTimeAndMineBlockAsync(timeUntilExpiration);
+            const orderInfo = await exchangeWrapper.getOrderInfoAsync(signedOrder);
+            const expectedOrderHash = orderHashUtils.getOrderHashHex(signedOrder);
+            const expectedTakerAssetFilledAmount = takerAssetFillAmount;
+            const expectedOrderStatus = OrderStatus.EXPIRED;
+            expect(orderInfo.orderHash).to.be.equal(expectedOrderHash);
+            expect(orderInfo.orderTakerAssetFilledAmount).to.be.bignumber.equal(expectedTakerAssetFilledAmount);
+            expect(orderInfo.orderStatus).to.equal(expectedOrderStatus);
+        });
+        it('should return the correct orderInfo for an expired and fully filled order', async () => {
+            await exchangeWrapper.fillOrderAsync(signedOrder, takerAddress);
+            const currentTimestamp = await getLatestBlockTimestampAsync();
+            const timeUntilExpiration = signedOrder.expirationTimeSeconds.minus(currentTimestamp).toNumber();
+            await increaseTimeAndMineBlockAsync(timeUntilExpiration);
+            const orderInfo = await exchangeWrapper.getOrderInfoAsync(signedOrder);
+            const expectedOrderHash = orderHashUtils.getOrderHashHex(signedOrder);
+            const expectedTakerAssetFilledAmount = signedOrder.takerAssetAmount;
+            // FULLY_FILLED takes precedence over EXPIRED
+            const expectedOrderStatus = OrderStatus.FULLY_FILLED;
+            expect(orderInfo.orderHash).to.be.equal(expectedOrderHash);
+            expect(orderInfo.orderTakerAssetFilledAmount).to.be.bignumber.equal(expectedTakerAssetFilledAmount);
+            expect(orderInfo.orderStatus).to.equal(expectedOrderStatus);
+        });
+        it('should return the correct orderInfo for an order with a makerAssetAmount of 0', async () => {
+            signedOrder = await orderFactory.newSignedOrderAsync({ makerAssetAmount: new BigNumber(0) });
+            const orderInfo = await exchangeWrapper.getOrderInfoAsync(signedOrder);
+            const expectedOrderHash = orderHashUtils.getOrderHashHex(signedOrder);
+            const expectedTakerAssetFilledAmount = new BigNumber(0);
+            const expectedOrderStatus = OrderStatus.INVALID_MAKER_ASSET_AMOUNT;
+            expect(orderInfo.orderHash).to.be.equal(expectedOrderHash);
+            expect(orderInfo.orderTakerAssetFilledAmount).to.be.bignumber.equal(expectedTakerAssetFilledAmount);
+            expect(orderInfo.orderStatus).to.equal(expectedOrderStatus);
+        });
+        it('should return the correct orderInfo for an order with a takerAssetAmount of 0', async () => {
+            signedOrder = await orderFactory.newSignedOrderAsync({ takerAssetAmount: new BigNumber(0) });
+            const orderInfo = await exchangeWrapper.getOrderInfoAsync(signedOrder);
+            const expectedOrderHash = orderHashUtils.getOrderHashHex(signedOrder);
+            const expectedTakerAssetFilledAmount = new BigNumber(0);
+            const expectedOrderStatus = OrderStatus.INVALID_TAKER_ASSET_AMOUNT;
+            expect(orderInfo.orderHash).to.be.equal(expectedOrderHash);
+            expect(orderInfo.orderTakerAssetFilledAmount).to.be.bignumber.equal(expectedTakerAssetFilledAmount);
+            expect(orderInfo.orderStatus).to.equal(expectedOrderStatus);
         });
     });
 });

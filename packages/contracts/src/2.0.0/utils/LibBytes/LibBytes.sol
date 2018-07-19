@@ -457,7 +457,8 @@ library LibBytes {
     /// @return bytes4 value from byte array.
     function readBytes4(
         bytes memory b,
-        uint256 index)
+        uint256 index
+    )
         internal
         pure
         returns (bytes4 result)

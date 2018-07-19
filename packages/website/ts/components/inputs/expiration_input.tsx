@@ -17,7 +17,7 @@ interface ExpirationInputState {
 }
 
 export class ExpirationInput extends React.Component<ExpirationInputProps, ExpirationInputState> {
-    private _earliestPickableMoment: moment.Moment;
+    private readonly _earliestPickableMoment: moment.Moment;
     constructor(props: ExpirationInputProps) {
         super(props);
         // Set the earliest pickable date to today at 00:00, so users can only pick the current or later dates

@@ -6,7 +6,7 @@ import { ContractSource } from '../types';
 import { Resolver } from './resolver';
 
 export class NPMResolver extends Resolver {
-    private _packagePath: string;
+    private readonly _packagePath: string;
     constructor(packagePath: string) {
         super();
         this._packagePath = packagePath;

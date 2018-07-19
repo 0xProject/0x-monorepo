@@ -40,7 +40,6 @@ contract Forwarder is
         address _exchange,
         address _etherToken,
         address _zrxToken,
-        bytes4 _erc20AssetProxyId,
         bytes memory _zrxAssetData,
         bytes memory _wethAssetData
     )

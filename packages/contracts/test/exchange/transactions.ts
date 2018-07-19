@@ -1,5 +1,5 @@
 import { BlockchainLifecycle } from '@0xproject/dev-utils';
-import { assetProxyUtils, generatePseudoRandomSalt } from '@0xproject/order-utils';
+import { assetDataUtils, generatePseudoRandomSalt } from '@0xproject/order-utils';
 import { OrderWithoutExchangeAddress, RevertReason, SignedOrder } from '@0xproject/types';
 import { BigNumber } from '@0xproject/utils';
 import * as chai from 'chai';
@@ -88,7 +88,7 @@ describe('Exchange transactions', () => {
             artifacts.Exchange,
             provider,
             txDefaults,
-            assetProxyUtils.encodeERC20AssetData(zrxToken.address),
+            assetDataUtils.encodeERC20AssetData(zrxToken.address),
         );
         exchangeWrapper = new ExchangeWrapper(exchange, provider);
         await exchangeWrapper.registerAssetProxyAsync(erc20Proxy.address, owner);
@@ -107,8 +107,8 @@ describe('Exchange transactions', () => {
             exchangeAddress: exchange.address,
             makerAddress,
             feeRecipientAddress,
-            makerAssetData: assetProxyUtils.encodeERC20AssetData(defaultMakerTokenAddress),
-            takerAssetData: assetProxyUtils.encodeERC20AssetData(defaultTakerTokenAddress),
+            makerAssetData: assetDataUtils.encodeERC20AssetData(defaultMakerTokenAddress),
+            takerAssetData: assetDataUtils.encodeERC20AssetData(defaultTakerTokenAddress),
         };
         makerPrivateKey = constants.TESTRPC_PRIVATE_KEYS[accounts.indexOf(makerAddress)];
         takerPrivateKey = constants.TESTRPC_PRIVATE_KEYS[accounts.indexOf(takerAddress)];
@@ -121,7 +121,7 @@ describe('Exchange transactions', () => {
             let takerAssetFillAmount: BigNumber;
             beforeEach(async () => {
                 erc20Balances = await erc20Wrapper.getBalancesAsync();
-                signedOrder = orderFactory.newSignedOrder();
+                signedOrder = await orderFactory.newSignedOrderAsync();
                 orderWithoutExchangeAddress = orderUtils.getOrderWithoutExchangeAddress(signedOrder);
 
                 takerAssetFillAmount = signedOrder.takerAssetAmount.div(2);
@@ -226,7 +226,7 @@ describe('Exchange transactions', () => {
 
             it("should cancel an order if called from the order's sender", async () => {
                 const orderSalt = new BigNumber(0);
-                signedOrder = orderFactory.newSignedOrder({
+                signedOrder = await orderFactory.newSignedOrderAsync({
                     senderAddress: exchangeWrapperContract.address,
                     salt: orderSalt,
                 });
@@ -265,7 +265,7 @@ describe('Exchange transactions', () => {
 
             it("should not cancel an order if not called from the order's sender", async () => {
                 const orderSalt = new BigNumber(0);
-                signedOrder = orderFactory.newSignedOrder({
+                signedOrder = await orderFactory.newSignedOrderAsync({
                     senderAddress: exchangeWrapperContract.address,
                     salt: orderSalt,
                 });
@@ -349,14 +349,14 @@ describe('Exchange transactions', () => {
                 exchangeAddress: exchange.address,
                 makerAddress,
                 feeRecipientAddress,
-                makerAssetData: assetProxyUtils.encodeERC20AssetData(defaultMakerTokenAddress),
-                takerAssetData: assetProxyUtils.encodeERC20AssetData(defaultTakerTokenAddress),
+                makerAssetData: assetDataUtils.encodeERC20AssetData(defaultMakerTokenAddress),
+                takerAssetData: assetDataUtils.encodeERC20AssetData(defaultTakerTokenAddress),
             };
             whitelistOrderFactory = new OrderFactory(makerPrivateKey, defaultOrderParams);
         });
 
         beforeEach(async () => {
-            signedOrder = whitelistOrderFactory.newSignedOrder();
+            signedOrder = await whitelistOrderFactory.newSignedOrderAsync();
             erc20Balances = await erc20Wrapper.getBalancesAsync();
         });
 

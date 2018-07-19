@@ -1,5 +1,5 @@
 import { assert as sharedAssert } from '@0xproject/assert';
-// We need those two unused imports because they're actually used by sharedAssert which gets injected here
+// HACK: We need those two unused imports because they're actually used by sharedAssert which gets injected here
 import { Schema } from '@0xproject/json-schemas'; // tslint:disable-line:no-unused-variable
 import { isValidSignatureAsync } from '@0xproject/order-utils';
 import { ECSignature } from '@0xproject/types'; // tslint:disable-line:no-unused-variable

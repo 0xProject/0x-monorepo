@@ -12,7 +12,7 @@ import { Subprovider } from './subprovider';
  * set of JSON RPC endpoints.
  */
 export class RedundantSubprovider extends Subprovider {
-    private _subproviders: Subprovider[];
+    private readonly _subproviders: Subprovider[];
     private static async _firstSuccessAsync(
         subproviders: Subprovider[],
         payload: JSONRPCRequestPayload,

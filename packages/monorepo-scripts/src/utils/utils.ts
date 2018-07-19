@@ -1,10 +1,10 @@
-import lernaGetPackages = require('lerna-get-packages');
+import * as fs from 'fs';
 import * as _ from 'lodash';
 import { exec as execAsync } from 'promisify-child-process';
 import semver = require('semver');
 
 import { constants } from '../constants';
-import { GitTagsByPackageName, UpdatedPackage } from '../types';
+import { GitTagsByPackageName, Package, UpdatedPackage } from '../types';
 
 import { changelogUtils } from './changelog_utils';
 
@@ -12,15 +12,47 @@ export const utils = {
     log(...args: any[]): void {
         console.log(...args); // tslint:disable-line:no-console
     },
-    async getUpdatedLernaPackagesAsync(shouldIncludePrivate: boolean): Promise<LernaPackage[]> {
-        const updatedPublicPackages = await this.getLernaUpdatedPackagesAsync(shouldIncludePrivate);
+    getPackages(rootDir: string): Package[] {
+        const rootPackageJsonString = fs.readFileSync(`${rootDir}/package.json`, 'utf8');
+        const rootPackageJson = JSON.parse(rootPackageJsonString);
+        if (_.isUndefined(rootPackageJson.workspaces)) {
+            throw new Error(`Did not find 'workspaces' key in root package.json`);
+        }
+        const packages = [];
+        for (const workspace of rootPackageJson.workspaces) {
+            // HACK: Remove allowed wildcards from workspace entries.
+            // This might be entirely comprehensive.
+            const workspacePath = workspace.replace('*', '').replace('**/*', '');
+            const subpackageNames = fs.readdirSync(`${rootDir}/${workspacePath}`);
+            for (const subpackageName of subpackageNames) {
+                if (_.startsWith(subpackageName, '.')) {
+                    continue;
+                }
+                const pathToPackageJson = `${rootDir}/${workspacePath}${subpackageName}`;
+                try {
+                    const packageJsonString = fs.readFileSync(`${pathToPackageJson}/package.json`, 'utf8');
+                    const packageJson = JSON.parse(packageJsonString);
+                    const pkg = {
+                        location: pathToPackageJson,
+                        packageJson,
+                    };
+                    packages.push(pkg);
+                } catch (err) {
+                    utils.log(`Couldn't find a 'package.json' for ${subpackageName}. Skipping.`);
+                }
+            }
+        }
+        return packages;
+    },
+    async getUpdatedPackagesAsync(shouldIncludePrivate: boolean): Promise<Package[]> {
+        const updatedPublicPackages = await utils.getLernaUpdatedPackagesAsync(shouldIncludePrivate);
         const updatedPackageNames = _.map(updatedPublicPackages, pkg => pkg.name);
 
-        const allLernaPackages = lernaGetPackages(constants.monorepoRootPath);
-        const updatedPublicLernaPackages = _.filter(allLernaPackages, pkg => {
-            return _.includes(updatedPackageNames, pkg.package.name);
+        const allPackages = utils.getPackages(constants.monorepoRootPath);
+        const updatedPackages = _.filter(allPackages, pkg => {
+            return _.includes(updatedPackageNames, pkg.packageJson.name);
         });
-        return updatedPublicLernaPackages;
+        return updatedPackages;
     },
     async getLernaUpdatedPackagesAsync(shouldIncludePrivate: boolean): Promise<UpdatedPackage[]> {
         const result = await execAsync(`${constants.lernaExecutable} updated --json`, {
@@ -110,7 +142,7 @@ export const utils = {
         } catch (err) {
             throw new Error(`Failed to delete local git tag. Got err: ${err}`);
         }
-        this.log(`Removed local tag: ${tagName}`);
+        utils.log(`Removed local tag: ${tagName}`);
     },
     async removeRemoteTagAsync(tagName: string): Promise<void> {
         try {
@@ -120,6 +152,6 @@ export const utils = {
         } catch (err) {
             throw new Error(`Failed to delete remote git tag. Got err: ${err}`);
         }
-        this.log(`Removed remote tag: ${tagName}`);
+        utils.log(`Removed remote tag: ${tagName}`);
     },
 };

@@ -1,4 +1,5 @@
 import { schemas } from '@0xproject/json-schemas';
+import { assetDataUtils } from '@0xproject/order-utils';
 import { AssetProxyId, Order, SignedOrder } from '@0xproject/types';
 import { BigNumber } from '@0xproject/utils';
 import { Web3Wrapper } from '@0xproject/web3-wrapper';
@@ -988,12 +989,14 @@ export class ExchangeWrapper extends ContractWrapper {
      * @param   indexFilterValues   An object where the keys are indexed args returned by the event and
      *                              the value is the value you are interested in. E.g `{maker: aUserAddressHex}`
      * @param   callback            Callback that gets called when a log is added/removed
+     * @param   isVerbose           Enable verbose subscription warnings (e.g recoverable network issues encountered)
      * @return Subscription token used later to unsubscribe
      */
     public subscribe<ArgsType extends ExchangeEventArgs>(
         eventName: ExchangeEvents,
         indexFilterValues: IndexedFilterValues,
         callback: EventCallback<ArgsType>,
+        isVerbose: boolean = false,
     ): string {
         assert.doesBelongToStringEnum('eventName', eventName, ExchangeEvents);
         assert.doesConformToSchema('indexFilterValues', indexFilterValues, schemas.indexFilterValuesSchema);
@@ -1005,6 +1008,7 @@ export class ExchangeWrapper extends ContractWrapper {
             indexFilterValues,
             artifacts.Exchange.compilerOutput.abi,
             callback,
+            isVerbose,
         );
         return subscriptionToken;
     }
@@ -1068,9 +1072,9 @@ export class ExchangeWrapper extends ContractWrapper {
      * Returns the ZRX asset data used by the exchange contract.
      * @return ZRX asset data
      */
-    public async getZRXAssetDataAsync(): Promise<string> {
-        const exchangeInstance = await this._getExchangeContractAsync();
-        const zrxAssetData = exchangeInstance.ZRX_ASSET_DATA.callAsync();
+    public getZRXAssetData(): string {
+        const zrxTokenAddress = this.getZRXTokenAddress();
+        const zrxAssetData = assetDataUtils.encodeERC20AssetData(zrxTokenAddress);
         return zrxAssetData;
     }
     // tslint:disable:no-unused-variable

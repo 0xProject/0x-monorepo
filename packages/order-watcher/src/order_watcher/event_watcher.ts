@@ -1,6 +1,6 @@
-import { BlockParamLiteral, LogEntry } from '@0xproject/types';
 import { intervalUtils, logUtils } from '@0xproject/utils';
 import { Web3Wrapper } from '@0xproject/web3-wrapper';
+import { BlockParamLiteral, LogEntry, Provider } from 'ethereum-types';
 import { Block, BlockAndLogStreamer, Log } from 'ethereumjs-blockstream';
 import * as _ from 'lodash';
 
@@ -19,22 +19,22 @@ enum LogEventState {
  * depth.
  */
 export class EventWatcher {
-    private _web3Wrapper: Web3Wrapper;
+    private readonly _web3Wrapper: Web3Wrapper;
+    private readonly _stateLayer: BlockParamLiteral;
+    private readonly _isVerbose: boolean;
     private _blockAndLogStreamerIfExists: BlockAndLogStreamer<Block, Log> | undefined;
     private _blockAndLogStreamIntervalIfExists?: NodeJS.Timer;
     private _onLogAddedSubscriptionToken: string | undefined;
     private _onLogRemovedSubscriptionToken: string | undefined;
-    private _pollingIntervalMs: number;
-    private _stateLayer: BlockParamLiteral;
-    private _isVerbose: boolean;
+    private readonly _pollingIntervalMs: number;
     constructor(
-        web3Wrapper: Web3Wrapper,
+        provider: Provider,
         pollingIntervalIfExistsMs: undefined | number,
-        stateLayer: BlockParamLiteral = BlockParamLiteral.Latest,
+        stateLayer: BlockParamLiteral,
         isVerbose: boolean,
     ) {
         this._isVerbose = isVerbose;
-        this._web3Wrapper = web3Wrapper;
+        this._web3Wrapper = new Web3Wrapper(provider);
         this._stateLayer = stateLayer;
         this._pollingIntervalMs = _.isUndefined(pollingIntervalIfExistsMs)
             ? DEFAULT_EVENT_POLLING_INTERVAL_MS
@@ -61,13 +61,9 @@ export class EventWatcher {
         if (!_.isUndefined(this._blockAndLogStreamerIfExists)) {
             throw new Error(OrderWatcherError.SubscriptionAlreadyPresent);
         }
-        const eventFilter = {
-            fromBlock: this._stateLayer,
-            toBlock: this._stateLayer,
-        };
         this._blockAndLogStreamerIfExists = new BlockAndLogStreamer(
-            this._web3Wrapper.getBlockAsync.bind(this._web3Wrapper, this._stateLayer),
-            this._web3Wrapper.getLogsAsync.bind(this._web3Wrapper, eventFilter),
+            this._web3Wrapper.getBlockAsync.bind(this._web3Wrapper),
+            this._web3Wrapper.getLogsAsync.bind(this._web3Wrapper),
             this._onBlockAndLogStreamerError.bind(this),
         );
         const catchAllLogFilter = {};
@@ -104,7 +100,7 @@ export class EventWatcher {
         await this._emitDifferencesAsync(log, isRemoved ? LogEventState.Removed : LogEventState.Added, callback);
     }
     private async _reconcileBlockAsync(): Promise<void> {
-        const latestBlock = await this._web3Wrapper.getBlockAsync(BlockParamLiteral.Latest);
+        const latestBlock = await this._web3Wrapper.getBlockAsync(this._stateLayer);
         // We need to coerce to Block type cause Web3.Block includes types for mempool blocks
         if (!_.isUndefined(this._blockAndLogStreamerIfExists)) {
             // If we clear the interval while fetching the block - this._blockAndLogStreamer will be undefined

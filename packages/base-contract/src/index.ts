@@ -72,15 +72,13 @@ export class BaseContract {
         // 1. Optional param passed in to public method call
         // 2. Global config passed in at library instantiation
         // 3. Gas estimate calculation + safety margin
-        const removeUndefinedProperties = _.pickBy;
-        const txDataWithDefaults: TxData = {
+        const removeUndefinedProperties = _.pickBy.bind(_);
+        const txDataWithDefaults = {
             ...removeUndefinedProperties(txDefaults),
-            ...removeUndefinedProperties(txData as any),
-            // HACK: TS can't prove that T is spreadable.
-            // Awaiting https://github.com/Microsoft/TypeScript/pull/13288 to be merged
-        } as any;
+            ...removeUndefinedProperties(txData),
+        };
         if (_.isUndefined(txDataWithDefaults.gas) && !_.isUndefined(estimateGasAsync)) {
-            txDataWithDefaults.gas = await estimateGasAsync(txDataWithDefaults as any);
+            txDataWithDefaults.gas = await estimateGasAsync(txDataWithDefaults);
         }
         return txDataWithDefaults;
     }

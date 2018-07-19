@@ -15,7 +15,7 @@ export const utils = {
         if (_.isNull(hex)) {
             return null;
         }
-        const decimal = this.convertHexToNumber(hex);
+        const decimal = utils.convertHexToNumber(hex);
         return decimal;
     },
     convertAmountToBigNumber(value: string | number | BigNumber): BigNumber {
@@ -40,7 +40,7 @@ export const utils = {
         return valueBigNumber.lessThan(0) ? '-0x' + valueHex.substr(1) : '0x' + valueHex;
     },
     numberToHex(value: number): string {
-        if (!isFinite(value) && !this.isHexStrict(value)) {
+        if (!isFinite(value) && !utils.isHexStrict(value)) {
             throw new Error(`Given input ${value} is not a number.`);
         }
 

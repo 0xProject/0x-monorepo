@@ -13,8 +13,8 @@ import { BaseWalletSubprovider } from './base_wallet_subprovider';
  * all requests with the supplied Ethereum private key.
  */
 export class PrivateKeyWalletSubprovider extends BaseWalletSubprovider {
-    private _address: string;
-    private _privateKeyBuffer: Buffer;
+    private readonly _address: string;
+    private readonly _privateKeyBuffer: Buffer;
     /**
      * Instantiates a PrivateKeyWalletSubprovider.
      * @param privateKey The corresponding private key to an Ethereum address

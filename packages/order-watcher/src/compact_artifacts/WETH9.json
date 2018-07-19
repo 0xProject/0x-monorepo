@@ -1,0 +1,100 @@
+{
+    "contract_name": "WETH9",
+    "abi": [
+        {
+            "anonymous": false,
+            "inputs": [
+                {
+                    "indexed": true,
+                    "name": "_from",
+                    "type": "address"
+                },
+                {
+                    "indexed": true,
+                    "name": "_to",
+                    "type": "address"
+                },
+                {
+                    "indexed": false,
+                    "name": "_value",
+                    "type": "uint256"
+                }
+            ],
+            "name": "Transfer",
+            "type": "event"
+        },
+        {
+            "anonymous": false,
+            "inputs": [
+                {
+                    "indexed": true,
+                    "name": "_owner",
+                    "type": "address"
+                },
+                {
+                    "indexed": true,
+                    "name": "_spender",
+                    "type": "address"
+                },
+                {
+                    "indexed": false,
+                    "name": "_value",
+                    "type": "uint256"
+                }
+            ],
+            "name": "Approval",
+            "type": "event"
+        },
+        {
+            "anonymous": false,
+            "inputs": [
+                {
+                    "indexed": true,
+                    "name": "_owner",
+                    "type": "address"
+                },
+                {
+                    "indexed": false,
+                    "name": "_value",
+                    "type": "uint256"
+                }
+            ],
+            "name": "Deposit",
+            "type": "event"
+        },
+        {
+            "anonymous": false,
+            "inputs": [
+                {
+                    "indexed": true,
+                    "name": "_owner",
+                    "type": "address"
+                },
+                {
+                    "indexed": false,
+                    "name": "_value",
+                    "type": "uint256"
+                }
+            ],
+            "name": "Withdrawal",
+            "type": "event"
+        }
+    ],
+    "networks": {
+        "1": {
+            "address": "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2"
+        },
+        "3": {
+            "address": "0xc00fd9820cd2898cc4c054b7bf142de637ad129a"
+        },
+        "4": {
+            "address": "0xc778417e063141139fce010982780140aa0cd5ab"
+        },
+        "42": {
+            "address": "0x653e49e301e508a13237c0ddc98ae7d4cd2667a1"
+        },
+        "50": {
+            "address": "0x871dd7c2b4b25e1aa18728e9d5f2af4c4e431f5c"
+        }
+    }
+}

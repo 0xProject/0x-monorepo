@@ -51,8 +51,10 @@ export const provider = web3Factory.getRpcProvider(providerConfigs);
 const isCoverageEnabled = env.parseBoolean(EnvVars.SolidityCoverage);
 const isProfilerEnabled = env.parseBoolean(EnvVars.SolidityProfiler);
 const isRevertTraceEnabled = env.parseBoolean(EnvVars.SolidityRevertTrace);
-const enabledSubproviderCount = _.filter([isCoverageEnabled, isProfilerEnabled, isRevertTraceEnabled], _.identity)
-    .length;
+const enabledSubproviderCount = _.filter(
+    [isCoverageEnabled, isProfilerEnabled, isRevertTraceEnabled],
+    _.identity.bind(_),
+).length;
 if (enabledSubproviderCount > 1) {
     throw new Error(`Only one of coverage, profiler, or revert trace subproviders can be enabled at a time`);
 }

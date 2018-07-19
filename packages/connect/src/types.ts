@@ -11,15 +11,8 @@ export interface Client {
 }
 
 export interface OrderbookChannel {
-    subscribe: (subscriptionOpts: OrderbookChannelSubscriptionOpts, handler: OrderbookChannelHandler) => void;
+    subscribe: (subscriptionOpts: OrderbookChannelSubscriptionOpts) => void;
     close: () => void;
-}
-
-/**
- * heartbeatInterval: Interval in milliseconds that the orderbook channel should ping the underlying websocket. Default: 15000
- */
-export interface WebSocketOrderbookChannelConfig {
-    heartbeatIntervalMs?: number;
 }
 
 /**
@@ -46,8 +39,8 @@ export interface OrderbookChannelHandler {
         subscriptionOpts: OrderbookChannelSubscriptionOpts,
         order: SignedOrder,
     ) => void;
-    onError: (channel: OrderbookChannel, subscriptionOpts: OrderbookChannelSubscriptionOpts, err: Error) => void;
-    onClose: (channel: OrderbookChannel, subscriptionOpts: OrderbookChannelSubscriptionOpts) => void;
+    onError: (channel: OrderbookChannel, err: Error, subscriptionOpts?: OrderbookChannelSubscriptionOpts) => void;
+    onClose: (channel: OrderbookChannel) => void;
 }
 
 export type OrderbookChannelMessage =

@@ -8,11 +8,10 @@ import {
     Resolver,
     URLResolver,
 } from '@0xproject/sol-resolver';
-import { logUtils } from '@0xproject/utils';
+import { fetchAsync, logUtils } from '@0xproject/utils';
 import chalk from 'chalk';
 import * as ethUtil from 'ethereumjs-util';
 import * as fs from 'fs';
-import 'isomorphic-fetch';
 import * as _ from 'lodash';
 import * as path from 'path';
 import * as requireFromString from 'require-from-string';
@@ -59,13 +58,13 @@ const CONFIG_FILE = 'compiler.json';
  * to artifact files.
  */
 export class Compiler {
-    private _resolver: Resolver;
-    private _nameResolver: NameResolver;
-    private _contractsDir: string;
-    private _compilerSettings: solc.CompilerSettings;
-    private _artifactsDir: string;
-    private _solcVersionIfExists: string | undefined;
-    private _specifiedContracts: string[] | TYPE_ALL_FILES_IDENTIFIER;
+    private readonly _resolver: Resolver;
+    private readonly _nameResolver: NameResolver;
+    private readonly _contractsDir: string;
+    private readonly _compilerSettings: solc.CompilerSettings;
+    private readonly _artifactsDir: string;
+    private readonly _solcVersionIfExists: string | undefined;
+    private readonly _specifiedContracts: string[] | TYPE_ALL_FILES_IDENTIFIER;
     /**
      * Instantiates a new instance of the Compiler class.
      * @return An instance of the Compiler class.
@@ -149,7 +148,7 @@ export class Compiler {
         } else {
             logUtils.log(`Downloading ${fullSolcVersion}...`);
             const url = `${constants.BASE_COMPILER_URL}${fullSolcVersion}`;
-            const response = await fetch(url);
+            const response = await fetchAsync(url);
             const SUCCESS_STATUS = 200;
             if (response.status !== SUCCESS_STATUS) {
                 throw new Error(`Failed to load ${fullSolcVersion}`);

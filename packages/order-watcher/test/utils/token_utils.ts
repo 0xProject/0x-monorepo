@@ -7,7 +7,7 @@ const PROTOCOL_TOKEN_SYMBOL = 'ZRX';
 const WETH_TOKEN_SYMBOL = 'WETH';
 
 export class TokenUtils {
-    private _tokens: Token[];
+    private readonly _tokens: Token[];
     constructor(tokens: Token[]) {
         this._tokens = tokens;
     }

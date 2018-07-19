@@ -1,4 +1,4 @@
-import { assetProxyUtils, orderHashUtils } from '@0xproject/order-utils';
+import { assetDataUtils, orderHashUtils } from '@0xproject/order-utils';
 import { AssetProxyId, SignedOrder } from '@0xproject/types';
 import { BigNumber } from '@0xproject/utils';
 import * as chai from 'chai';
@@ -14,10 +14,10 @@ chaiSetup.configure();
 const expect = chai.expect;
 
 export class MatchOrderTester {
-    private _exchangeWrapper: ExchangeWrapper;
-    private _erc20Wrapper: ERC20Wrapper;
-    private _erc721Wrapper: ERC721Wrapper;
-    private _feeTokenAddress: string;
+    private readonly _exchangeWrapper: ExchangeWrapper;
+    private readonly _erc20Wrapper: ERC20Wrapper;
+    private readonly _erc721Wrapper: ERC721Wrapper;
+    private readonly _feeTokenAddress: string;
 
     /// @dev Compares a pair of ERC20 balances and a pair of ERC721 token owners.
     /// @param expectedNewERC20BalancesByOwner Expected ERC20 balances.
@@ -233,10 +233,10 @@ export class MatchOrderTester {
         const expectedNewERC20BalancesByOwner = _.cloneDeep(erc20BalancesByOwner);
         const expectedNewERC721TokenIdsByOwner = _.cloneDeep(erc721TokenIdsByOwner);
         // Left Maker Asset (Right Taker Asset)
-        const makerAssetProxyIdLeft = assetProxyUtils.decodeAssetDataId(signedOrderLeft.makerAssetData);
+        const makerAssetProxyIdLeft = assetDataUtils.decodeAssetProxyId(signedOrderLeft.makerAssetData);
         if (makerAssetProxyIdLeft === AssetProxyId.ERC20) {
             // Decode asset data
-            const erc20AssetData = assetProxyUtils.decodeERC20AssetData(signedOrderLeft.makerAssetData);
+            const erc20AssetData = assetDataUtils.decodeERC20AssetData(signedOrderLeft.makerAssetData);
             const makerAssetAddressLeft = erc20AssetData.tokenAddress;
             const takerAssetAddressRight = makerAssetAddressLeft;
             // Left Maker
@@ -255,7 +255,7 @@ export class MatchOrderTester {
             ][makerAssetAddressLeft].add(expectedTransferAmounts.amountReceivedByTaker);
         } else if (makerAssetProxyIdLeft === AssetProxyId.ERC721) {
             // Decode asset data
-            const erc721AssetData = assetProxyUtils.decodeERC721AssetData(signedOrderLeft.makerAssetData);
+            const erc721AssetData = assetDataUtils.decodeERC721AssetData(signedOrderLeft.makerAssetData);
             const makerAssetAddressLeft = erc721AssetData.tokenAddress;
             const makerAssetIdLeft = erc721AssetData.tokenId;
             const takerAssetAddressRight = makerAssetAddressLeft;
@@ -268,10 +268,10 @@ export class MatchOrderTester {
         }
         // Left Taker Asset (Right Maker Asset)
         // Note: This exchange is only between the order makers: the Taker does not receive any of the left taker asset.
-        const takerAssetProxyIdLeft = assetProxyUtils.decodeAssetDataId(signedOrderLeft.takerAssetData);
+        const takerAssetProxyIdLeft = assetDataUtils.decodeAssetProxyId(signedOrderLeft.takerAssetData);
         if (takerAssetProxyIdLeft === AssetProxyId.ERC20) {
             // Decode asset data
-            const erc20AssetData = assetProxyUtils.decodeERC20AssetData(signedOrderLeft.takerAssetData);
+            const erc20AssetData = assetDataUtils.decodeERC20AssetData(signedOrderLeft.takerAssetData);
             const takerAssetAddressLeft = erc20AssetData.tokenAddress;
             const makerAssetAddressRight = takerAssetAddressLeft;
             // Left Maker
@@ -286,7 +286,7 @@ export class MatchOrderTester {
             );
         } else if (takerAssetProxyIdLeft === AssetProxyId.ERC721) {
             // Decode asset data
-            const erc721AssetData = assetProxyUtils.decodeERC721AssetData(signedOrderRight.makerAssetData);
+            const erc721AssetData = assetDataUtils.decodeERC721AssetData(signedOrderRight.makerAssetData);
             const makerAssetAddressRight = erc721AssetData.tokenAddress;
             const makerAssetIdRight = erc721AssetData.tokenId;
             const takerAssetAddressLeft = makerAssetAddressRight;

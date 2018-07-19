@@ -4,7 +4,7 @@ import { BigNumber } from '@0xproject/utils';
 import * as chai from 'chai';
 
 import { artifacts } from '../src/artifacts';
-import { assetProxyUtils } from '../src/asset_proxy_utils';
+import { assetDataUtils } from '../src/asset_data_utils';
 import { constants } from '../src/constants';
 import { ExchangeTransferSimulator } from '../src/exchange_transfer_simulator';
 import { DummyERC20TokenContract } from '../src/generated_contract_wrappers/dummy_erc20_token';
@@ -34,7 +34,7 @@ describe('ExchangeTransferSimulator', async () => {
     let erc20ProxyAddress: string;
     before(async function(): Promise<void> {
         const mochaTestTimeoutMs = 20000;
-        this.timeout(mochaTestTimeoutMs);
+        this.timeout(mochaTestTimeoutMs); // tslint:disable-line:no-invalid-this
 
         userAddresses = await web3Wrapper.getAvailableAddressesAsync();
         [coinbase, sender, recipient] = userAddresses;
@@ -66,7 +66,7 @@ describe('ExchangeTransferSimulator', async () => {
             totalSupply,
         );
 
-        exampleAssetData = assetProxyUtils.encodeERC20AssetData(dummyERC20Token.address);
+        exampleAssetData = assetDataUtils.encodeERC20AssetData(dummyERC20Token.address);
     });
     beforeEach(async () => {
         await blockchainLifecycle.startAsync();
@@ -77,8 +77,7 @@ describe('ExchangeTransferSimulator', async () => {
     describe('#transferFromAsync', function(): void {
         // HACK: For some reason these tests need a slightly longer timeout
         const mochaTestTimeoutMs = 3000;
-        this.timeout(mochaTestTimeoutMs);
-
+        this.timeout(mochaTestTimeoutMs); // tslint:disable-line:no-invalid-this
         beforeEach(() => {
             const simpleERC20BalanceAndProxyAllowanceFetcher = new SimpleERC20BalanceAndProxyAllowanceFetcher(
                 (dummyERC20Token as any) as ERC20TokenContract,
