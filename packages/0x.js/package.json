@@ -110,7 +110,7 @@
         "@0xproject/typescript-typings": "^0.4.3",
         "@0xproject/utils": "^0.7.3",
         "@0xproject/web3-wrapper": "^0.7.3",
-        "ethereum-types": "^0.0.2",
+        "ethereum-types": "^1.0.0",
         "ethers": "3.0.22",
         "lodash": "^4.17.4"
     },

@@ -41,7 +41,7 @@
         "@0xproject/web3-wrapper": "^0.7.3",
         "@types/mocha": "^5.2.2",
         "copyfiles": "^2.0.0",
-        "ethereum-types": "^0.0.2",
+        "ethereum-types": "^1.0.0",
         "ethers": "3.0.22",
         "lodash": "^4.17.4",
         "run-s": "^0.0.0"

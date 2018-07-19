@@ -48,7 +48,7 @@
         "@0xproject/subproviders": "^0.10.6",
         "@0xproject/types": "^0.8.2",
         "@0xproject/utils": "^0.7.3",
-        "ethereum-types": "^0.0.2",
+        "ethereum-types": "^1.0.0",
         "@0xproject/typescript-typings": "^0.4.3",
         "@0xproject/web3-wrapper": "^0.7.3",
         "lodash": "^4.17.4"
