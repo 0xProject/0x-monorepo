@@ -1,6 +1,6 @@
 [
     {
-        "version": "0.0.9",
+        "version": "1.0.0",
         "changes": [
             {
                 "note": "Fix a bug in FsResolver where it tries to read directories as files",
