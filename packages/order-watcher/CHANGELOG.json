@@ -1,5 +1,14 @@
 [
     {
+        "version": "1.0.0-rc.1",
+        "changes": [
+            {
+                "note": "Add support for ERC721 event watching and Exchange V2 events",
+                "pr": 887
+            }
+        ]
+    },
+    {
         "timestamp": 1531919263,
         "version": "0.0.8",
         "changes": [
