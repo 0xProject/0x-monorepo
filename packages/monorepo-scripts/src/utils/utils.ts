@@ -20,7 +20,9 @@ export const utils = {
         }
         const packages = [];
         for (const workspace of rootPackageJson.workspaces) {
-            const workspacePath = workspace.replace('*', '');
+            // HACK: Remove allowed wildcards from workspace entries.
+            // This might be entirely comprehensive.
+            const workspacePath = workspace.replace('*', '').replace('**/*', '');
             const subpackageNames = fs.readdirSync(`${rootDir}/${workspacePath}`);
             for (const subpackageName of subpackageNames) {
                 if (_.startsWith(subpackageName, '.')) {
