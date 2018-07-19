@@ -1,6 +1,6 @@
 {
     "name": "@0xproject/sra-report",
-    "version": "0.1.6",
+    "version": "1.0.0",
     "engines": {
         "node": ">=6.12"
     },
@@ -38,7 +38,7 @@
         "@0xproject/assert": "^1.0.0",
         "@0xproject/types": "^0.8.2",
         "@0xproject/order-utils": "^0.0.9",
-        "@0xproject/connect": "0.6.17",
+        "@0xproject/connect": "^1.0.0",
         "@0xproject/json-schemas": "^0.8.3",
         "@0xproject/typescript-typings": "^1.0.0",
         "@0xproject/utils": "^1.0.0",
