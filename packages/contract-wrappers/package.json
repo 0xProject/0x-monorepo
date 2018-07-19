@@ -47,7 +47,7 @@
         "@0xproject/dev-utils": "^1.0.0",
         "@0xproject/migrations": "^0.0.10",
         "@0xproject/monorepo-script": "^1.0.0",
-        "@0xproject/sol-compiler": "^0.5.4",
+        "@0xproject/sol-compiler": "^1.0.0",
         "@0xproject/subproviders": "^1.0.0",
         "@0xproject/tslint-config": "^1.0.0",
         "@types/lodash": "4.14.104",

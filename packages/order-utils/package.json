@@ -74,7 +74,7 @@
         "@0xproject/assert": "^1.0.0",
         "@0xproject/base-contract": "^1.0.0",
         "@0xproject/json-schemas": "^1.0.0-rc.1",
-        "@0xproject/sol-compiler": "^0.5.4",
+        "@0xproject/sol-compiler": "^1.0.0",
         "@0xproject/types": "^1.0.0-rc.1",
         "@0xproject/typescript-typings": "^1.0.0",
         "@0xproject/utils": "^1.0.0",
