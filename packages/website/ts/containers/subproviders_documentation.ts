@@ -10,8 +10,8 @@ import { constants } from 'ts/utils/constants';
 import { Translate } from 'ts/utils/translate';
 
 /* tslint:disable:no-var-requires */
-const IntroMarkdown = require('md/docs/subproviders/introduction');
-const InstallationMarkdown = require('md/docs/subproviders/installation');
+const IntroMarkdownV1 = require('md/docs/subproviders/introduction');
+const InstallationMarkdownV1 = require('md/docs/subproviders/installation');
 const LedgerNodeHidMarkdown = require('md/docs/subproviders/ledger_node_hid');
 /* tslint:enable:no-var-requires */
 
@@ -57,10 +57,12 @@ const docsInfoConfig: DocsInfoConfig = {
         ['nonceTracker-subprovider']: [docSections.nonceTrackerSubprovider],
         types: [docSections.types],
     },
-    sectionNameToMarkdown: {
-        [docSections.introduction]: IntroMarkdown,
-        [docSections.installation]: InstallationMarkdown,
-        [docSections.ledgerNodeHid]: LedgerNodeHidMarkdown,
+    sectionNameToMarkdownByVersion: {
+        '0.0.1': {
+            [docSections.introduction]: IntroMarkdownV1,
+            [docSections.installation]: InstallationMarkdownV1,
+            [docSections.ledgerNodeHid]: LedgerNodeHidMarkdown,
+        },
     },
     sectionNameToModulePath: {
         [docSections.subprovider]: ['"subproviders/src/subproviders/subprovider"'],

@@ -10,8 +10,8 @@ import { constants } from 'ts/utils/constants';
 import { Translate } from 'ts/utils/translate';
 
 /* tslint:disable:no-var-requires */
-const IntroMarkdown = require('md/docs/order_utils/introduction');
-const InstallationMarkdown = require('md/docs/order_utils/installation');
+const IntroMarkdownV1 = require('md/docs/order_utils/1.0.0/introduction');
+const InstallationMarkdownV1 = require('md/docs/order_utils/1.0.0/installation');
 /* tslint:enable:no-var-requires */
 
 const docSections = {
@@ -32,9 +32,11 @@ const docsInfoConfig: DocsInfoConfig = {
         usage: [docSections.usage],
         types: [docSections.types],
     },
-    sectionNameToMarkdown: {
-        [docSections.introduction]: IntroMarkdown,
-        [docSections.installation]: InstallationMarkdown,
+    sectionNameToMarkdownByVersion: {
+        '0.0.1': {
+            [docSections.introduction]: IntroMarkdownV1,
+            [docSections.installation]: InstallationMarkdownV1,
+        },
     },
     sectionNameToModulePath: {
         [docSections.usage]: [

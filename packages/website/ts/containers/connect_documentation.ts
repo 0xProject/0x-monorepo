@@ -10,8 +10,8 @@ import { constants } from 'ts/utils/constants';
 import { Translate } from 'ts/utils/translate';
 
 /* tslint:disable:no-var-requires */
-const IntroMarkdown = require('md/docs/connect/introduction');
-const InstallationMarkdown = require('md/docs/connect/installation');
+const IntroMarkdownV1 = require('md/docs/connect/1.0.0/introduction');
+const InstallationMarkdownV1 = require('md/docs/connect/1.0.0/installation');
 /* tslint:enable:no-var-requires */
 
 const connectDocSections = {
@@ -34,9 +34,11 @@ const docsInfoConfig: DocsInfoConfig = {
         webSocketOrderbookChannel: [connectDocSections.webSocketOrderbookChannel],
         types: [connectDocSections.types],
     },
-    sectionNameToMarkdown: {
-        [connectDocSections.introduction]: IntroMarkdown,
-        [connectDocSections.installation]: InstallationMarkdown,
+    sectionNameToMarkdownByVersion: {
+        '0.0.1': {
+            [connectDocSections.introduction]: IntroMarkdownV1,
+            [connectDocSections.installation]: InstallationMarkdownV1,
+        },
     },
     sectionNameToModulePath: {
         [connectDocSections.httpClient]: ['"src/http_client"'],

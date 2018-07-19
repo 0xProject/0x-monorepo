@@ -52,7 +52,8 @@
         "react-dom": "15.6.1",
         "react-markdown": "^3.2.2",
         "react-scroll": "^1.5.2",
-        "react-tooltip": "^3.2.7"
+        "react-tooltip": "^3.2.7",
+        "semver": "5.5.0"
     },
     "publishConfig": {
         "access": "public"
