@@ -276,6 +276,32 @@ export class Blockchain {
         );
         await this._showEtherScanLinkAndAwaitTransactionMinedAsync(txHash);
     }
+    public async sendAsync(toAddress: string, amountInBaseUnits: BigNumber): Promise<void> {
+        utils.assert(this._doesUserAddressExist(), BlockchainCallErrs.UserHasNoAssociatedAddresses);
+        const transaction = {
+            from: this._userAddressIfExists,
+            to: toAddress,
+            value: amountInBaseUnits,
+            gasPrice: this._defaultGasPrice,
+        };
+        this._showFlashMessageIfLedger();
+        const txHash = await this._web3Wrapper.sendTransactionAsync(transaction);
+        await this._showEtherScanLinkAndAwaitTransactionMinedAsync(txHash);
+        const etherScanLinkIfExists = sharedUtils.getEtherScanLinkIfExists(
+            txHash,
+            this.networkId,
+            EtherscanLinkSuffixes.Tx,
+        );
+        // TODO
+        // this._dispatcher.showFlashMessage(
+        //     React.createElement(TokenSendCompleted, {
+        //         etherScanLinkIfExists,
+        //         token,
+        //         toAddress,
+        //         amountInBaseUnits,
+        //     }),
+        // );
+    }
     public async transferAsync(token: Token, toAddress: string, amountInBaseUnits: BigNumber): Promise<void> {
         utils.assert(!_.isUndefined(this._contractWrappers), 'ContractWrappers must be instantiated.');
         utils.assert(this._doesUserAddressExist(), BlockchainCallErrs.UserHasNoAssociatedAddresses);

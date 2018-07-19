@@ -204,11 +204,8 @@ export class TokenBalances extends React.Component<TokenBalancesProps, TokenBala
                             <TableHeaderColumn>Currency</TableHeaderColumn>
                             <TableHeaderColumn>Balance</TableHeaderColumn>
                             <TableRowColumn className="sm-hide xs-hide" style={stubColumnStyle} />
-                            {isTestNetwork && (
-                                <TableHeaderColumn style={{ paddingLeft: 3 }}>
-                                    {isSmallScreen ? 'Faucet' : 'Request from faucet'}
-                                </TableHeaderColumn>
-                            )}
+                            {isTestNetwork && <TableHeaderColumn style={{ paddingLeft: 3 }}>Action</TableHeaderColumn>}
+                            <TableHeaderColumn>Send</TableHeaderColumn>
                         </TableRow>
                     </TableHeader>
                     <TableBody displayRowCheckbox={false}>
@@ -235,6 +232,20 @@ export class TokenBalances extends React.Component<TokenBalancesProps, TokenBala
                                     />
                                 </TableRowColumn>
                             )}
+                            <TableRowColumn>
+                                <SendButton
+                                    userAddress={this.props.userAddress}
+                                    networkId={this.props.networkId}
+                                    blockchain={this.props.blockchain}
+                                    dispatcher={this.props.dispatcher}
+                                    asset="ETH"
+                                    onError={this._onSendFailed.bind(this)}
+                                    lastForceTokenStateRefetch={this.props.lastForceTokenStateRefetch}
+                                    // This is not necessary for ETH.
+                                    // tslint:disable:jsx-no-lambda
+                                    refetchTokenStateAsync={() => undefined}
+                                />
+                            </TableRowColumn>
                         </TableRow>
                     </TableBody>
                 </Table>
@@ -402,7 +413,7 @@ export class TokenBalances extends React.Component<TokenBalancesProps, TokenBala
                             networkId={this.props.networkId}
                             blockchain={this.props.blockchain}
                             dispatcher={this.props.dispatcher}
-                            token={token}
+                            asset={token}
                             onError={this._onSendFailed.bind(this)}
                             lastForceTokenStateRefetch={this.props.lastForceTokenStateRefetch}
                             refetchTokenStateAsync={this._refetchTokenStateAsync.bind(this, token.address)}
