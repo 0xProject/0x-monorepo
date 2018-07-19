@@ -1,13 +1,14 @@
 [
     {
-        "version": "0.2.0",
+        "version": "1.0.0",
         "changes": [
             {
-                "note": "Add artifact adapter as a parameter for CoverageSubprovider. Export AbstractArtifactAdapter",
+                "note":
+                    "Add artifact adapter as a parameter for `CoverageSubprovider`. Export `AbstractArtifactAdapter`",
                 "pr": 589
             },
             {
-                "note": "Implement SolCompilerArtifactAdapter and TruffleArtifactAdapter",
+                "note": "Implement `SolCompilerArtifactAdapter` and `TruffleArtifactAdapter`",
                 "pr": 589
             },
             {
@@ -19,7 +20,7 @@
                 "pr": 589
             },
             {
-                "note": "Fixed a bug causing RegExp to crash if contract code is longer that 32767 characters",
+                "note": "Fixed a bug causing `RegExp` to crash if contract code is longer that 32767 characters",
                 "pr": 675
             },
             {
@@ -55,11 +56,12 @@
                 "pr": 675
             },
             {
-                "note": "Fix solcVersion regex in parameter validation",
+                "note": "Fix `solcVersion` regex in parameter validation",
                 "pr": 690
             },
             {
-                "note": "Fix a bug when in TruffleArtifactsAdapter causing it to throw if compiler.json is not there",
+                "note":
+                    "Fix a bug when in `TruffleArtifactsAdapter` causing it to throw if `compiler.json` is not there",
                 "pr": 690
             },
             {
@@ -67,7 +69,7 @@
                 "pr": 690
             },
             {
-                "note": "Create `RevertTraceSubprovider` which prints a stack trace when a REVERT is detected",
+                "note": "Create `RevertTraceSubprovider` which prints a stack trace when a `REVERT` is detected",
                 "pr": 705
             },
             {
