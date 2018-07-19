@@ -35,7 +35,7 @@
         "typescript": "2.7.1"
     },
     "dependencies": {
-        "@0xproject/types": "^1.0.0",
+        "@0xproject/types": "^1.0.0-rc.1",
         "@0xproject/typescript-typings": "^1.0.0",
         "@types/node": "^8.0.53",
         "bignumber.js": "~4.1.0",

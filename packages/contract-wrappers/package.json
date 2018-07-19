@@ -82,7 +82,7 @@
         "@0xproject/web3-wrapper": "^0.7.3",
         "@0xproject/fill-scenarios": "^1.0.0",
         "@0xproject/json-schemas": "^1.0.0",
-        "@0xproject/types": "^1.0.0",
+        "@0xproject/types": "^1.0.0-rc.1",
         "ethereum-types": "^1.0.0",
         "ethereumjs-blockstream": "5.0.0",
         "ethereumjs-util": "^5.1.1",

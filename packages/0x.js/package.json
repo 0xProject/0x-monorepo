@@ -106,7 +106,7 @@
         "@0xproject/order-utils": "^1.0.0",
         "@0xproject/sol-compiler": "^0.5.4",
         "@0xproject/subproviders": "^0.10.6",
-        "@0xproject/types": "^1.0.0",
+        "@0xproject/types": "^1.0.0-rc.1",
         "@0xproject/typescript-typings": "^1.0.0",
         "@0xproject/utils": "^0.7.3",
         "@0xproject/web3-wrapper": "^0.7.3",
