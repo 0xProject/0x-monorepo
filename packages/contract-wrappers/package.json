@@ -79,7 +79,7 @@
         "@0xproject/order-utils": "^1.0.0",
         "@0xproject/typescript-typings": "^1.0.0",
         "@0xproject/utils": "^1.0.0",
-        "@0xproject/web3-wrapper": "^0.7.3",
+        "@0xproject/web3-wrapper": "^1.0.0",
         "@0xproject/fill-scenarios": "^1.0.0",
         "@0xproject/json-schemas": "^1.0.0-rc.1",
         "@0xproject/types": "^1.0.0-rc.1",

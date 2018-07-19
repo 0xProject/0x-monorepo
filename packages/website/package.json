@@ -29,7 +29,7 @@
         "@0xproject/types": "^1.0.0-rc.1",
         "@0xproject/typescript-typings": "^1.0.0",
         "@0xproject/utils": "^1.0.0",
-        "@0xproject/web3-wrapper": "^0.7.3",
+        "@0xproject/web3-wrapper": "^1.0.0",
         "accounting": "^0.4.1",
         "basscss": "^8.0.3",
         "blockies": "^0.0.2",

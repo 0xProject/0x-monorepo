@@ -20,7 +20,7 @@
     "dependencies": {
         "0x.js": "0.38.5",
         "@0xproject/subproviders": "^0.10.6",
-        "@0xproject/web3-wrapper": "^0.7.3",
+        "@0xproject/web3-wrapper": "^1.0.0",
         "@0xproject/typescript-typings": "^1.0.0",
         "@0xproject/utils": "^1.0.0",
         "body-parser": "^1.17.1",
