@@ -41,8 +41,8 @@
         "contracts": "ZRXToken",
         "postpublish": {
             "assets": [
-                "packages/0x.js/_bundles/index.js",
-                "packages/0x.js/_bundles/index.min.js"
+                "_bundles/index.js",
+                "_bundles/index.min.js"
             ],
             "docPublishConfigs": {
                 "extraFileIncludes": [
@@ -51,13 +51,11 @@
                     "../contract-wrappers/src/types.ts",
                     "../contract-wrappers/src/contract_wrappers/ether_token_wrapper.ts",
                     "../contract-wrappers/src/contract_wrappers/exchange_wrapper.ts",
-                    "../contract-wrappers/src/contract_wrappers/token_registry_wrapper.ts",
-                    "../contract-wrappers/src/contract_wrappers/token_transfer_proxy_wrapper.ts",
-                    "../contract-wrappers/src/contract_wrappers/token_wrapper.ts",
-                    "../order-watcher/src/order_watcher/order_watcher.ts",
-                    "./src/generated_contract_wrappers/ether_token.ts",
-                    "./src/generated_contract_wrappers/token.ts",
-                    "./src/generated_contract_wrappers/exchange.ts"
+                    "../contract-wrappers/src/contract_wrappers/erc20_proxy_wrapper.ts",
+                    "../contract-wrappers/src/contract_wrappers/erc721_proxy_wrapper.ts",
+                    "../contract-wrappers/src/contract_wrappers/erc20_token_wrapper.ts",
+                    "../contract-wrappers/src/contract_wrappers/erc721_token_wrapper.ts",
+                    "../order-watcher/src/order_watcher/order_watcher.ts"
                 ],
                 "s3BucketPath": "s3://doc-jsons/0x.js/",
                 "s3StagingBucketPath": "s3://staging-doc-jsons/0x.js/"
