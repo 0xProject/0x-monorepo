@@ -30,13 +30,7 @@
     },
     "config": {
         "compact_artifacts": "Exchange DummyToken ZRXToken Token EtherToken TokenTransferProxy TokenRegistry",
-        "contracts": "Exchange DummyToken ZRXToken Token WETH9 TokenTransferProxy_v1 MultiSigWallet MultiSigWalletWithTimeLock MultiSigWalletWithTimeLockExceptRemoveAuthorizedAddress MaliciousToken TokenRegistry Arbitrage EtherDelta AccountLevels",
-        "postpublish": {
-            "assets": [
-                "packages/order-watcher/_bundles/index.js",
-                "packages/order-watcher/_bundles/index.min.js"
-            ]
-        }
+        "contracts": "Exchange DummyToken ZRXToken Token WETH9 TokenTransferProxy_v1 MultiSigWallet MultiSigWalletWithTimeLock MultiSigWalletWithTimeLockExceptRemoveAuthorizedAddress MaliciousToken TokenRegistry Arbitrage EtherDelta AccountLevels"
     },
     "repository": {
         "type": "git",
