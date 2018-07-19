@@ -128,7 +128,7 @@ export const postpublishUtils = {
         _.each(latestLog.changes, change => {
             notes += `* ${change.note}`;
             if (change.pr) {
-                notes += ` (${change.pr})`;
+                notes += ` (#${change.pr})`;
             }
             notes += `\n`;
         });
