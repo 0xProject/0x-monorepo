@@ -47,7 +47,7 @@
     },
     "devDependencies": {
         "@0xproject/monorepo-script": "^1.0.0",
-        "@0xproject/tslint-config": "^0.4.21",
+        "@0xproject/tslint-config": "^1.0.0",
         "@types/glob": "5.0.35",
         "@types/handlebars": "^4.0.36",
         "@types/mkdirp": "^0.5.1",

@@ -52,7 +52,7 @@
         "@0xproject/migrations": "^0.0.10",
         "@0xproject/monorepo-script": "^1.0.0",
         "@0xproject/sol-compiler": "^0.5.4",
-        "@0xproject/tslint-config": "^0.4.21",
+        "@0xproject/tslint-config": "^1.0.0",
         "@types/bintrees": "^1.0.2",
         "@types/lodash": "4.14.104",
         "@types/mocha": "^2.2.42",

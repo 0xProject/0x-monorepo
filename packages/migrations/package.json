@@ -39,7 +39,7 @@
     "devDependencies": {
         "@0xproject/abi-gen": "^0.3.4",
         "@0xproject/dev-utils": "^0.4.6",
-        "@0xproject/tslint-config": "^0.4.21",
+        "@0xproject/tslint-config": "^1.0.0",
         "@0xproject/types": "^0.8.2",
         "@types/yargs": "^10.0.0",
         "yargs": "^10.0.3",
