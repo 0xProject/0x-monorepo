@@ -50,7 +50,7 @@
         "webpack-dev-server": "^2.11.1"
     },
     "dependencies": {
-        "@0xproject/react-docs": "^0.0.16",
+        "@0xproject/react-docs": "^1.0.0",
         "basscss": "^8.0.3",
         "lodash": "^4.17.4",
         "material-ui": "^0.17.1",
