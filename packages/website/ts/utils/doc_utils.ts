@@ -1,6 +1,5 @@
 import { DoxityDocObj, TypeDocNode } from '@0xproject/react-docs';
 import { fetchAsync, logUtils } from '@0xproject/utils';
-import findVersions = require('find-versions');
 import * as _ from 'lodash';
 import { S3FileObject, VersionToFilePath } from 'ts/types';
 import convert = require('xml-js');
@@ -10,7 +9,7 @@ export const docUtils = {
         const versionFilePaths = await docUtils.getVersionFileNamesAsync(s3DocJsonRoot, folderName);
         const versionToFilePath: VersionToFilePath = {};
         _.each(versionFilePaths, filePath => {
-            const [version] = findVersions(filePath);
+            const version = filePath.split('/v')[1].replace('.json', '');
             versionToFilePath[version] = filePath;
         });
         return versionToFilePath;
