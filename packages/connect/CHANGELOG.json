@@ -4,7 +4,7 @@
         "changes": [
             {
                 "note":
-                    "Remove WebSocketOrderbookChannel from the public interface and replace with orderbookChannelFactory"
+                    "Remove `WebSocketOrderbookChannel` from the public interface and replace with `orderbookChannelFactory`"
             }
         ]
     },
