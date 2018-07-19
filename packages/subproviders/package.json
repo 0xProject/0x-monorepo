@@ -61,7 +61,7 @@
         "web3-provider-engine": "14.0.6"
     },
     "devDependencies": {
-        "@0xproject/monorepo-scripts": "^0.2.2",
+        "@0xproject/monorepo-script": "^1.0.0",
         "@0xproject/tslint-config": "^0.4.21",
         "@0xproject/utils": "^0.7.3",
         "@types/bip39": "^2.4.0",

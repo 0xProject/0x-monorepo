@@ -48,7 +48,7 @@
         "yargs": "^10.0.3"
     },
     "devDependencies": {
-        "@0xproject/monorepo-scripts": "^0.2.2",
+        "@0xproject/monorepo-script": "^1.0.0",
         "@0xproject/tslint-config": "^0.4.21",
         "@types/lodash": "4.14.104",
         "@types/mocha": "^2.2.48",
