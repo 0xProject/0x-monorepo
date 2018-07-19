@@ -26,7 +26,7 @@
     },
     "devDependencies": {
         "@0xproject/dev-utils": "^1.0.0",
-        "@0xproject/monorepo-script": "^1.0.0",
+        "@0xproject/monorepo-scripts": "^1.0.0",
         "@0xproject/tslint-config": "^1.0.0",
         "copyfiles": "^1.2.0",
         "make-promises-safe": "^1.1.0",
