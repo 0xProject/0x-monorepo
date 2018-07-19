@@ -23,6 +23,10 @@ import "./LibOrder.sol";
 
 
 contract LibAbiEncoder {
+
+    // solhint-disable max-line-length
+    bytes4 constant internal FILL_ORDER_SELECTOR = bytes4(keccak256("fillOrder((address,address,address,address,uint256,uint256,uint256,uint256,uint256,uint256,bytes,bytes),uint256,bytes)"));
+    // solhint-enable max-line-length
    
     /// @dev ABI encodes calldata for `fillOrder` in memory and returns the address range.
     ///      This range can be passed into `call` or `delegatecall` to invoke an external
@@ -35,14 +39,10 @@ contract LibAbiEncoder {
     function abiEncodeFillOrder(
         LibOrder.Order memory order,
         uint256 takerAssetFillAmount,
-        bytes memory signature,
-        bytes4 fillOrderSelector
+        bytes memory signature
     )
         public
-        returns (
-            uint256 calldataBegin,
-            uint256 calldataLength
-        )
+        returns (bytes memory fillOrderCalldata)
     {
         // We need to call MExchangeCore.fillOrder using a delegatecall in
         // assembly so that we can intercept a call that throws. For this, we
@@ -83,6 +83,8 @@ contract LibAbiEncoder {
 
         // [1]: https://solidity.readthedocs.io/en/develop/abi-spec.html
 
+        bytes4 fillOrderSelector = FILL_ORDER_SELECTOR;
+
         assembly {
 
             // Areas below may use the following variables:
@@ -96,9 +98,10 @@ contract LibAbiEncoder {
 
             /////// Setup Header Area ///////
             // Load free memory pointer
-            calldataBegin := mload(0x40)
-            mstore(calldataBegin, fillOrderSelector)
-            let headerAreaEnd := add(calldataBegin, 0x4)
+            fillOrderCalldata := mload(0x40)
+            // Leave 0x20 bytes to store the length
+            mstore(add(fillOrderCalldata, 0x20), fillOrderSelector)
+            let headerAreaEnd := add(fillOrderCalldata, 0x24)
 
             /////// Setup Params Area ///////
             // This area is preallocated and written to later.
@@ -207,9 +210,12 @@ contract LibAbiEncoder {
             }
 
             // Set length of calldata
-            calldataLength := sub(dataAreaEnd, calldataBegin)
+            mstore(
+                fillOrderCalldata,
+                sub(dataAreaEnd, add(fillOrderCalldata, 0x20))
+            )
         }
 
-        return (calldataBegin, calldataLength);
+        return fillOrderCalldata;
     }
 }

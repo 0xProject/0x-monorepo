@@ -71,14 +71,10 @@ contract MixinWrapperFunctions is
         returns (FillResults memory fillResults)
     {
         // ABI encode calldata for `fillOrder`
-        (
-            uint256 calldataBegin,
-            uint256 calldataLength
-        ) = abiEncodeFillOrder(
+        bytes memory fillOrderCalldata = abiEncodeFillOrder(
             order,
             takerAssetFillAmount,
-            signature,
-            this.fillOrder.selector
+            signature
         );
 
         // Delegate to `fillOrder` and handle any exceptions gracefully
@@ -86,9 +82,9 @@ contract MixinWrapperFunctions is
             let success := delegatecall(
                 gas,                                // forward all gas, TODO: look into gas consumption of assert/throw
                 address,                            // call address of this contract
-                calldataBegin,                      // pointer to start of input
-                calldataLength,                     // length of input
-                calldataBegin,                      // write output over input
+                add(fillOrderCalldata, 32),         // pointer to start of input (skip array length in first 32 bytes)
+                mload(fillOrderCalldata),           // length of input
+                fillOrderCalldata,                  // write output over input
                 128                                 // output size is 128 bytes
             )
             switch success
@@ -99,10 +95,10 @@ contract MixinWrapperFunctions is
                 mstore(add(fillResults, 96), 0)
             }
             case 1 {
-                mstore(fillResults, mload(calldataBegin))
-                mstore(add(fillResults, 32), mload(add(calldataBegin, 32)))
-                mstore(add(fillResults, 64), mload(add(calldataBegin, 64)))
-                mstore(add(fillResults, 96), mload(add(calldataBegin, 96)))
+                mstore(fillResults, mload(fillOrderCalldata))
+                mstore(add(fillResults, 32), mload(add(fillOrderCalldata, 32)))
+                mstore(add(fillResults, 64), mload(add(fillOrderCalldata, 64)))
+                mstore(add(fillResults, 96), mload(add(fillOrderCalldata, 96)))
             }
         }
         return fillResults;
