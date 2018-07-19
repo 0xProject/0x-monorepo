@@ -10,17 +10,14 @@ import { utils } from './utils/utils';
 
 (async () => {
     const monorepoRootPath = path.join(__dirname, '../../..');
-    const lernaPackages = utils.getLernaPackages(monorepoRootPath);
+    const packages = utils.getPackages(monorepoRootPath);
     const installablePackages = _.filter(
-        lernaPackages,
-        lernaPackage =>
-            !lernaPackage.package.private &&
-            !_.isUndefined(lernaPackage.package.main) &&
-            lernaPackage.package.main.endsWith('.js'),
+        packages,
+        pkg => !pkg.packageJson.private && !_.isUndefined(pkg.packageJson.main) && pkg.packageJson.main.endsWith('.js'),
     );
-    for (const installableLernaPackage of installablePackages) {
-        const packagePath = installableLernaPackage.location;
-        const packageName = installableLernaPackage.package.name;
+    for (const installablePackage of installablePackages) {
+        const packagePath = installablePackage.location;
+        const packageName = installablePackage.packageJson.name;
         utils.log(`Testing ${packageName}`);
         let result = await execAsync('npm pack', { cwd: packagePath });
         const packedPackageFileName = result.stdout.trim();

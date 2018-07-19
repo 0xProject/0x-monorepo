@@ -11,7 +11,7 @@ import semverDiff = require('semver-diff');
 import semverSort = require('semver-sort');
 
 import { constants } from './constants';
-import { LernaPackage, PackageToVersionChange, SemVerIndex, VersionChangelog } from './types';
+import { Package, PackageToVersionChange, SemVerIndex, VersionChangelog } from './types';
 import { changelogUtils } from './utils/changelog_utils';
 import { utils } from './utils/utils';
 
@@ -34,19 +34,20 @@ const packageNameToWebsitePath: { [name: string]: string } = {
     'sol-cov': 'sol-cov',
     subproviders: 'subproviders',
     'order-utils': 'order-utils',
+    'ethereum-types': 'ethereum-types',
 };
 
 (async () => {
     // Fetch public, updated Lerna packages
     const shouldIncludePrivate = false;
-    const updatedPublicLernaPackages = await utils.getUpdatedLernaPackagesAsync(shouldIncludePrivate);
+    const updatedPublicPackages = await utils.getUpdatedPackagesAsync(shouldIncludePrivate);
 
-    await confirmDocPagesRenderAsync(updatedPublicLernaPackages);
+    await confirmDocPagesRenderAsync(updatedPublicPackages);
 
     // Update CHANGELOGs
-    const updatedPublicLernaPackageNames = _.map(updatedPublicLernaPackages, pkg => pkg.package.name);
-    utils.log(`Will update CHANGELOGs and publish: \n${updatedPublicLernaPackageNames.join('\n')}\n`);
-    const packageToVersionChange = await updateChangeLogsAsync(updatedPublicLernaPackages);
+    const updatedPublicPackageNames = _.map(updatedPublicPackages, pkg => pkg.packageJson.name);
+    utils.log(`Will update CHANGELOGs and publish: \n${updatedPublicPackageNames.join('\n')}\n`);
+    const packageToVersionChange = await updateChangeLogsAsync(updatedPublicPackages);
 
     // Push changelog changes to Github
     if (!IS_DRY_RUN) {
@@ -65,7 +66,7 @@ const packageNameToWebsitePath: { [name: string]: string } = {
     process.exit(1);
 });
 
-async function confirmDocPagesRenderAsync(packages: LernaPackage[]): Promise<void> {
+async function confirmDocPagesRenderAsync(packages: Package[]): Promise<void> {
     // push docs to staging
     utils.log("Upload all docJson's to S3 staging...");
     await execAsync(`yarn stage_docs`, { cwd: constants.monorepoRootPath });
@@ -76,14 +77,14 @@ async function confirmDocPagesRenderAsync(packages: LernaPackage[]): Promise<voi
     await execAsync(`yarn deploy_staging`, { cwd: pathToWebsite });
 
     const packagesWithDocs = _.filter(packages, pkg => {
-        const scriptsIfExists = pkg.package.scripts;
+        const scriptsIfExists = pkg.packageJson.scripts;
         if (_.isUndefined(scriptsIfExists)) {
             throw new Error('Found a public package without any scripts in package.json');
         }
         return !_.isUndefined(scriptsIfExists[DOC_GEN_COMMAND]);
     });
     _.each(packagesWithDocs, pkg => {
-        const name = pkg.package.name;
+        const name = pkg.packageJson.name;
         const nameWithoutPrefix = _.startsWith(name, NPM_NAMESPACE) ? name.split('@0xproject/')[1] : name;
         const docSegmentIfExists = packageNameToWebsitePath[nameWithoutPrefix];
         if (_.isUndefined(docSegmentIfExists)) {
@@ -114,15 +115,15 @@ async function pushChangelogsToGithubAsync(): Promise<void> {
     utils.log(`Pushed CHANGELOG updates to Github`);
 }
 
-async function updateChangeLogsAsync(updatedPublicLernaPackages: LernaPackage[]): Promise<PackageToVersionChange> {
+async function updateChangeLogsAsync(updatedPublicPackages: Package[]): Promise<PackageToVersionChange> {
     const packageToVersionChange: PackageToVersionChange = {};
-    for (const lernaPackage of updatedPublicLernaPackages) {
-        const packageName = lernaPackage.package.name;
-        let changelog = changelogUtils.getChangelogOrCreateIfMissing(packageName, lernaPackage.location);
+    for (const pkg of updatedPublicPackages) {
+        const packageName = pkg.packageJson.name;
+        let changelog = changelogUtils.getChangelogOrCreateIfMissing(packageName, pkg.location);
 
-        const currentVersion = lernaPackage.package.version;
+        const currentVersion = pkg.packageJson.version;
         const shouldAddNewEntry = changelogUtils.shouldAddNewChangelogEntry(
-            lernaPackage.package.name,
+            pkg.packageJson.name,
             currentVersion,
             changelog,
         );
@@ -157,11 +158,11 @@ async function updateChangeLogsAsync(updatedPublicLernaPackages: LernaPackage[])
         }
 
         // Save updated CHANGELOG.json
-        await changelogUtils.writeChangelogJsonFileAsync(lernaPackage.location, changelog);
+        await changelogUtils.writeChangelogJsonFileAsync(pkg.location, changelog);
         utils.log(`${packageName}: Updated CHANGELOG.json`);
         // Generate updated CHANGELOG.md
         const changelogMd = changelogUtils.generateChangelogMd(changelog);
-        await changelogUtils.writeChangelogMdFileAsync(lernaPackage.location, changelogMd);
+        await changelogUtils.writeChangelogMdFileAsync(pkg.location, changelogMd);
         utils.log(`${packageName}: Updated CHANGELOG.md`);
     }
 

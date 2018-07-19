@@ -41,9 +41,9 @@ export interface GitTagsByPackageName {
     [packageName: string]: string[];
 }
 
-export interface LernaPackage {
+export interface Package {
     location: string;
-    package: {
+    packageJson: {
         private?: boolean;
         version: string;
         name: string;

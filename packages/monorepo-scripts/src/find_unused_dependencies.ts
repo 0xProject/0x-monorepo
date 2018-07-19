@@ -12,15 +12,15 @@ const IGNORE_PACKAGES = ['@0xproject/sol-compiler'];
 (async () => {
     utils.log('*** NOTE: Not all deps listed here are actually not required. ***');
     utils.log("*** `depcheck` isn't perfect so double check before actually removing any. ***\n");
-    const lernaPackages = utils.getLernaPackages(constants.monorepoRootPath);
-    for (const lernaPackage of lernaPackages) {
-        if (_.includes(IGNORE_PACKAGES, lernaPackage.package.name)) {
+    const packages = utils.getPackages(constants.monorepoRootPath);
+    for (const pkg of packages) {
+        if (_.includes(IGNORE_PACKAGES, pkg.packageJson.name)) {
             continue; // skip
         }
-        utils.log(`Checking ${lernaPackage.package.name} for unused deps. This might take a while...`);
+        utils.log(`Checking ${pkg.packageJson.name} for unused deps. This might take a while...`);
 
         const configs = {};
-        const { dependencies } = await depcheckAsync(lernaPackage.location, configs);
+        const { dependencies } = await depcheckAsync(pkg.location, configs);
         if (!_.isEmpty(dependencies)) {
             _.each(dependencies, dep => {
                 utils.log(dep);
