@@ -3,7 +3,6 @@ import { BigNumber } from '@0xproject/utils';
 import { Web3Wrapper } from '@0xproject/web3-wrapper';
 import * as _ from 'lodash';
 import * as React from 'react';
-import { Token } from 'ts/types';
 import { utils } from 'ts/utils/utils';
 
 interface AssetSendCompletedProps {
