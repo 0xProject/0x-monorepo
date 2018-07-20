@@ -7,7 +7,7 @@
     "private": true,
     "description": "Website and 0x portal dapp",
     "scripts": {
-        "build": "NODE_ENV=production webpack; exit 0;",
+        "build": "NODE_ENV=production node --max_old_space_size=8192 ../../node_modules/.bin/webpack; exit 0;",
         "clean": "shx rm -f public/bundle*",
         "lint": "tslint --project . 'ts/**/*.ts' 'ts/**/*.tsx'",
         "watch_without_deps": "webpack-dev-server --content-base public --https",
