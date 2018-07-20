@@ -29,6 +29,7 @@ import { PlaceHolder } from 'ts/components/wallet/placeholder';
 import { StandardIconRow } from 'ts/components/wallet/standard_icon_row';
 import { WrapEtherItem } from 'ts/components/wallet/wrap_ether_item';
 import { AllowanceToggle } from 'ts/containers/inputs/allowance_toggle';
+import { AllowanceStateToggle } from 'ts/containers/inputs/allowance_state_toggle';
 import { Dispatcher } from 'ts/redux/dispatcher';
 import { colors } from 'ts/style/colors';
 import {
@@ -396,10 +397,10 @@ export class Wallet extends React.Component<WalletProps, WalletState> {
         const shouldShowToggle = !_.isUndefined(config.allowanceToggleConfig);
         // if we don't have a toggle, we still want some space to the right of the "wrap" button so that it aligns with
         // the "unwrap" button in the row below
-        const toggle = shouldShowToggle ? (
-            this._renderAllowanceToggle(config.allowanceToggleConfig)
-        ) : (
-            <div style={{ width: NO_ALLOWANCE_TOGGLE_SPACE_WIDTH }} />
+        const toggle = (
+            <Container width={NO_ALLOWANCE_TOGGLE_SPACE_WIDTH}>
+                {shouldShowToggle && this._renderAllowanceToggle(config.allowanceToggleConfig)}
+            </Container>
         );
         return (
             <div className="flex items-center">
@@ -412,15 +413,16 @@ export class Wallet extends React.Component<WalletProps, WalletState> {
     }
     private _renderAllowanceToggle(config: AllowanceToggleConfig): React.ReactNode {
         // TODO: Error handling
-        return (
-            <AllowanceToggle
-                blockchain={this.props.blockchain}
-                token={config.token}
-                tokenState={config.tokenState}
-                isDisabled={!config.tokenState.isLoaded}
-                refetchTokenStateAsync={async () => this.props.refetchTokenStateAsync(config.token.address)}
-            />
-        );
+        // return (
+        //     <AllowanceToggle
+        //         blockchain={this.props.blockchain}
+        //         token={config.token}
+        //         tokenState={config.tokenState}
+        //         isDisabled={!config.tokenState.isLoaded}
+        //         refetchTokenStateAsync={async () => this.props.refetchTokenStateAsync(config.token.address)}
+        //     />
+        // );
+        return <AllowanceStateToggle />;
     }
     private _renderAmount(
         amount: BigNumber,
