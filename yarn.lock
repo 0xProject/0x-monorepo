@@ -220,28 +220,6 @@
     ethers "3.0.22"
     lodash "4.17.10"
 
-"@0xproject/react-docs@^0.0.16":
-  version "0.0.16"
-  resolved "https://registry.yarnpkg.com/@0xproject/react-docs/-/react-docs-0.0.16.tgz#67670f0f77e34aca0647fb4a56bbe9102c0c6e3a"
-  dependencies:
-    "@0xproject/react-shared" "^0.2.3"
-    "@0xproject/utils" "^0.7.3"
-    "@types/lodash" "4.14.104"
-    "@types/material-ui" "0.18.0"
-    "@types/node" "9.6.0"
-    "@types/react" "16.3.13"
-    "@types/react-dom" "16.0.4"
-    "@types/react-scroll" "0.0.31"
-    basscss "8.0.4"
-    compare-versions "3.1.0"
-    lodash "4.17.10"
-    material-ui "0.17.4"
-    react "15.6.1"
-    react-dom "15.6.1"
-    react-markdown "3.2.2"
-    react-scroll "1.7.7"
-    react-tooltip "3.4.0"
-
 "@0xproject/react-shared@^0.2.3":
   version "0.2.3"
   resolved "https://registry.yarnpkg.com/@0xproject/react-shared/-/react-shared-0.2.3.tgz#f0403b9b7f1cfbe2853b53cc983ebb13ee8753a5"
@@ -293,29 +271,6 @@
     "@0xproject/types" "^0.8.2"
     "@0xproject/typescript-typings" "^0.0.3"
     lodash "4.17.10"
-
-"@0xproject/subproviders@^0.10.6":
-  version "0.10.6"
-  resolved "https://registry.yarnpkg.com/@0xproject/subproviders/-/subproviders-0.10.6.tgz#383a9bb96c661148b6f4541fb553c79c787983e1"
-  dependencies:
-    "@0xproject/assert" "^0.2.14"
-    "@0xproject/types" "^0.8.2"
-    "@0xproject/typescript-typings" "^0.4.3"
-    "@0xproject/utils" "^0.7.3"
-    "@ledgerhq/hw-app-eth" "4.7.3"
-    "@ledgerhq/hw-transport-u2f" "4.7.3"
-    bip39 "2.5.0"
-    bn.js "4.11.7"
-    ethereumjs-tx "1.3.4"
-    ethereumjs-util "5.1.5"
-    ganache-core "0xProject/ganache-core"
-    hdkey "0.7.1"
-    lodash "4.17.10"
-    semaphore-async-await "1.5.1"
-    web3 "0.20.6"
-    web3-provider-engine "14.0.6"
-  optionalDependencies:
-    "@ledgerhq/hw-transport-node-hid" "4.7.3"
 
 "@0xproject/types@^0.5.0":
   version "0.5.0"
@@ -370,18 +325,11 @@
     lodash "4.17.10"
     web3 "0.20.6"
 
-"@ledgerhq/hw-app-eth@4.7.3", "@ledgerhq/hw-app-eth@^4.3.0":
+"@ledgerhq/hw-app-eth@^4.3.0":
   version "4.7.3"
   resolved "https://registry.yarnpkg.com/@ledgerhq/hw-app-eth/-/hw-app-eth-4.7.3.tgz#d352e19658ae296532e522c53c8ec2a1a77b64e5"
   dependencies:
     "@ledgerhq/hw-transport" "^4.7.3"
-
-"@ledgerhq/hw-transport-node-hid@4.7.3":
-  version "4.7.3"
-  resolved "https://registry.yarnpkg.com/@ledgerhq/hw-transport-node-hid/-/hw-transport-node-hid-4.7.3.tgz#e7634d53161cdffed4f602cddca6a7bc34e7b79b"
-  dependencies:
-    "@ledgerhq/hw-transport" "^4.7.3"
-    node-hid "^0.7.2"
 
 "@ledgerhq/hw-transport-node-hid@^4.3.0":
   version "4.7.6"
@@ -390,7 +338,7 @@
     "@ledgerhq/hw-transport" "^4.7.3"
     node-hid "^0.7.2"
 
-"@ledgerhq/hw-transport-u2f@4.7.3", "@ledgerhq/hw-transport-u2f@^4.3.0":
+"@ledgerhq/hw-transport-u2f@^4.3.0":
   version "4.7.3"
   resolved "https://registry.yarnpkg.com/@ledgerhq/hw-transport-u2f/-/hw-transport-u2f-4.7.3.tgz#32be84bd2829f0ad0745604355f73a169dceb5e5"
   dependencies:
@@ -2531,7 +2479,7 @@ bintrees@1.0.2, bintrees@^1.0.2:
   version "1.0.2"
   resolved "https://registry.yarnpkg.com/bintrees/-/bintrees-1.0.2.tgz#49f896d6e858a4a499df85c38fb399b9aff840f8"
 
-bip39@2.5.0, bip39@^2.5.0:
+bip39@^2.5.0:
   version "2.5.0"
   resolved "https://registry.yarnpkg.com/bip39/-/bip39-2.5.0.tgz#51cbd5179460504a63ea3c000db3f787ca051235"
   dependencies:
@@ -3465,7 +3413,7 @@ compare-func@^1.3.1:
     array-ify "^1.0.0"
     dot-prop "^3.0.0"
 
-compare-versions@3.1.0, compare-versions@^3.0.1:
+compare-versions@^3.0.1:
   version "3.1.0"
   resolved "https://registry.yarnpkg.com/compare-versions/-/compare-versions-3.1.0.tgz#43310256a5c555aaed4193c04d8f154cf9c6efd5"
 
@@ -5049,7 +4997,7 @@ ethereumjs-blockstream@5.0.0:
     source-map-support "0.5.6"
     uuid "3.2.1"
 
-ethereumjs-tx@0xProject/ethereumjs-tx#fake-tx-include-signature-by-default, ethereumjs-tx@1.3.4:
+ethereumjs-tx@0xProject/ethereumjs-tx#fake-tx-include-signature-by-default:
   version "1.3.4"
   resolved "https://codeload.github.com/0xProject/ethereumjs-tx/tar.gz/29d1153889c389591f74b2401da8a0c6ad40f9a7"
   dependencies:
@@ -6514,7 +6462,7 @@ hawk@~6.0.2:
     hoek "4.x.x"
     sntp "2.x.x"
 
-hdkey@0.7.1, hdkey@^0.7.0, hdkey@^0.7.1:
+hdkey@^0.7.0, hdkey@^0.7.1:
   version "0.7.1"
   resolved "https://registry.yarnpkg.com/hdkey/-/hdkey-0.7.1.tgz#caee4be81aa77921e909b8d228dd0f29acaee632"
   dependencies:
@@ -10709,13 +10657,6 @@ react-tap-event-plugin@2.0.1, react-tap-event-plugin@^2.0.1:
   dependencies:
     fbjs "^0.8.6"
 
-react-tooltip@3.4.0:
-  version "3.4.0"
-  resolved "https://registry.yarnpkg.com/react-tooltip/-/react-tooltip-3.4.0.tgz#037f38f797c3e6b1b58d2534ccc8c2c76af4f52d"
-  dependencies:
-    classnames "^2.2.5"
-    prop-types "^15.6.0"
-
 react-tooltip@^3.2.7:
   version "3.5.0"
   resolved "https://registry.yarnpkg.com/react-tooltip/-/react-tooltip-3.5.0.tgz#f4bff54b3c70415b6bd25b8bcf7801c230d1b517"
@@ -11533,7 +11474,7 @@ selfsigned@^1.9.1:
   dependencies:
     node-forge "0.7.1"
 
-semaphore-async-await@1.5.1, semaphore-async-await@^1.5.1:
+semaphore-async-await@^1.5.1:
   version "1.5.1"
   resolved "https://registry.yarnpkg.com/semaphore-async-await/-/semaphore-async-await-1.5.1.tgz#857bef5e3644601ca4b9570b87e9df5ca12974fa"
 
