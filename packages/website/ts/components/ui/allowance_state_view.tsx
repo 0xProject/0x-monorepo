@@ -3,7 +3,11 @@ import CircularProgress from 'material-ui/CircularProgress';
 import * as React from 'react';
 import { styled } from 'ts/style/theme';
 
-export type AllowanceState = 'locked' | 'unlocked' | 'loading';
+export enum AllowanceState {
+    Locked,
+    Unlocked,
+    Loading,
+}
 
 export interface AllowanceStateViewProps {
     allowanceState: AllowanceState;
@@ -11,11 +15,11 @@ export interface AllowanceStateViewProps {
 
 export const AllowanceStateView: React.StatelessComponent<AllowanceStateViewProps> = ({ allowanceState }) => {
     switch (allowanceState) {
-        case 'locked':
+        case AllowanceState.Locked:
             return renderLock();
-        case 'unlocked':
+        case AllowanceState.Unlocked:
             return renderCheck();
-        case 'loading':
+        case AllowanceState.Loading:
             return <CircularProgress size={15} thickness={2} />;
         default:
             return null;
