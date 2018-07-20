@@ -292,7 +292,6 @@ export class Web3Wrapper {
      */
     public async signMessageAsync(address: string, message: string): Promise<string> {
         assert.isETHAddressHex('address', address);
-        assert.isETHAddressHex('address', address);
         assert.isString('message', message); // TODO: Should this be stricter? Hex string?
         const signData = await this._sendRawPayloadAsync<string>({
             method: 'eth_sign',
