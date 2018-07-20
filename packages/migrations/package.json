@@ -39,6 +39,7 @@
     "license": "Apache-2.0",
     "devDependencies": {
         "@0xproject/abi-gen": "^1.0.0",
+        "@0xproject/monorepo-scripts": "^1.0.0",
         "@0xproject/dev-utils": "^1.0.0",
         "@0xproject/tslint-config": "^1.0.0",
         "@0xproject/types": "^1.0.0-rc.1",
