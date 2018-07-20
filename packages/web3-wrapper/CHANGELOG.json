@@ -3,10 +3,6 @@
         "version": "1.0.0",
         "changes": [
             {
-                "note": "Export `marshaller` utility file.",
-                "pr": 829
-            },
-            {
                 "note": "Add `getNodeTypeAsync` method",
                 "pr": 812
             },
