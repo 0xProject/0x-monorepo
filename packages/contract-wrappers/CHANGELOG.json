@@ -1,16 +1,17 @@
 [
     {
-        "version": "1.0.0",
+        "timestamp": 1532043000,
+        "version": "1.0.0-rc.1",
         "changes": [
             {
-                "note": "Update blockstream to v5.0 and propogate up caught errors to active subscriptions"
+                "note": "Update blockstream to v5.0 and propogate up caught errors to active subscriptions",
+                "pr": 815
             },
             {
                 "note": "Update to v2 of 0x rpotocol",
                 "pr": 822
             }
-        ],
-        "timestamp": 1531149657
+        ]
     },
     {
         "timestamp": 1531919263,

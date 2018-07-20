@@ -30,9 +30,11 @@ const docsInfoConfig: DocsInfoConfig = {
         install: [docSections.installation],
         types: [docSections.types],
     },
-    sectionNameToMarkdown: {
-        [docSections.introduction]: IntroMarkdown,
-        [docSections.installation]: InstallationMarkdown,
+    sectionNameToMarkdownByVersion: {
+        '0.0.1': {
+            [docSections.introduction]: IntroMarkdown,
+            [docSections.installation]: InstallationMarkdown,
+        },
     },
     sectionNameToModulePath: {
         [docSections.types]: ['"index"'],

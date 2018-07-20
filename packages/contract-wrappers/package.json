@@ -1,6 +1,6 @@
 {
     "name": "@0xproject/contract-wrappers",
-    "version": "0.1.1",
+    "version": "1.0.0-rc.1",
     "description": "Smart TS wrappers for 0x smart contracts",
     "keywords": [
         "0xproject",
@@ -26,14 +26,6 @@
         "run_mocha": "mocha --require source-map-support/register --require make-promises-safe lib/test/**/*_test.js lib/test/global_hooks.js --timeout 10000 --bail --exit",
         "manual:postpublish": "yarn build; node ./scripts/postpublish.js"
     },
-    "config": {
-        "postpublish": {
-            "assets": [
-                "packages/contract-wrappers/_bundles/index.js",
-                "packages/contract-wrappers/_bundles/index.min.js"
-            ]
-        }
-    },
     "repository": {
         "type": "git",
         "url": "https://github.com/0xProject/0x-monorepo"
@@ -43,13 +35,13 @@
         "node": ">=6.0.0"
     },
     "devDependencies": {
-        "@0xproject/abi-gen": "^0.3.4",
-        "@0xproject/dev-utils": "^0.4.6",
-        "@0xproject/migrations": "^0.0.10",
-        "@0xproject/monorepo-scripts": "^0.2.2",
-        "@0xproject/sol-compiler": "^0.5.4",
-        "@0xproject/subproviders": "^0.10.6",
-        "@0xproject/tslint-config": "^0.4.21",
+        "@0xproject/abi-gen": "^1.0.0",
+        "@0xproject/dev-utils": "^1.0.0",
+        "@0xproject/migrations": "^1.0.0",
+        "@0xproject/monorepo-scripts": "^1.0.0",
+        "@0xproject/sol-compiler": "^1.0.0",
+        "@0xproject/subproviders": "^1.0.0",
+        "@0xproject/tslint-config": "^1.0.0",
         "@types/lodash": "4.14.104",
         "@types/mocha": "^2.2.42",
         "@types/node": "^8.0.53",
@@ -74,16 +66,16 @@
         "typescript": "2.7.1"
     },
     "dependencies": {
-        "@0xproject/assert": "^0.3.0",
-        "@0xproject/base-contract": "^0.3.6",
-        "@0xproject/order-utils": "^1.0.0",
-        "@0xproject/typescript-typings": "^0.4.3",
-        "@0xproject/utils": "^0.7.3",
-        "@0xproject/web3-wrapper": "^0.7.3",
-        "@0xproject/fill-scenarios": "^1.0.0",
-        "@0xproject/json-schemas": "^1.0.0",
-        "@0xproject/types": "^1.0.0",
-        "ethereum-types": "^0.0.2",
+        "@0xproject/assert": "^1.0.0",
+        "@0xproject/base-contract": "^1.0.0",
+        "@0xproject/order-utils": "^1.0.0-rc.1",
+        "@0xproject/typescript-typings": "^1.0.0",
+        "@0xproject/utils": "^1.0.0",
+        "@0xproject/web3-wrapper": "^1.0.0",
+        "@0xproject/fill-scenarios": "^1.0.0-rc.1",
+        "@0xproject/json-schemas": "^1.0.0-rc.1",
+        "@0xproject/types": "^1.0.0-rc.1",
+        "ethereum-types": "^1.0.0",
         "ethereumjs-blockstream": "5.0.0",
         "ethereumjs-util": "^5.1.1",
         "ethers": "3.0.22",

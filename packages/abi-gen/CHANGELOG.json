@@ -1,6 +1,16 @@
 [
     {
-        "version": "0.4.0",
+        "version": "1.0.1",
+        "changes": [
+            {
+                "note": "Fix the abi-gen entry point in package.json",
+                "pr": 901
+            }
+        ]
+    },
+    {
+        "timestamp": 1532043000,
+        "version": "1.0.0",
         "changes": [
             {
                 "note": "Convert e_r_c to erc in generated file names",

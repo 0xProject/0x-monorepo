@@ -1,32 +1,42 @@
 [
     {
-        "version": "1.0.0",
+        "timestamp": 1532043100,
+        "version": "1.0.0-rc.2",
+        "changes": [
+            {
+                "note": "Remove `zeroEx.assetData`  and instead re-export it's static functions directly off `ZeroEx`"
+            }
+        ]
+    },
+    {
+        "timestamp": 1532043000,
+        "version": "1.0.0-rc.1",
         "changes": [
             {
                 "note": "Remove tokenRegistry wrapper",
                 "pr": 863
             },
             {
-                "note": "Rename zeroEx.token to zeroEx.erc20Token, and add zeroEx.erc721Token",
+                "note": "Rename `zeroEx.token` to `zeroEx.erc20Token`, and add `zeroEx.erc721Token`",
                 "pr": 863
             },
             {
-                "note": "Rename zeroEx.proxy to zeroEx.erc20Proxy and add zeroEx.erc721Proxy",
-                "pr": 863
-            },
-            {
-                "note":
-                    "Refactored ZeroEx.isValidSignature to zeroEx.isValidSignatureAsync. It is now async so that it can verify contract-dependent signature types",
+                "note": "Rename `zeroEx.proxy` to `zeroEx.erc20Proxy` and add `zeroEx.erc721Proxy`",
                 "pr": 863
             },
             {
                 "note":
-                    "Refactored signOrderHashAsync to ecSignOrderHashAsync. There are now many non-ECSignature ways to sign orders too.",
+                    "Refactored `ZeroEx.isValidSignature` to `zeroEx.isValidSignatureAsync`. It is now async so that it can verify contract-dependent signature types",
                 "pr": 863
             },
             {
                 "note":
-                    "Removed createOrderWatcherAsync method. Will be added back once OrderWatcher is refactored for V2",
+                    "Refactored `signOrderHashAsync` to `ecSignOrderHashAsync`. There are now many non-ECSignature ways to sign orders too.",
+                "pr": 863
+            },
+            {
+                "note":
+                    "Removed `createOrderWatcherAsync` method. Will be added back once OrderWatcher is refactored for V2",
                 "pr": 863
             },
             {
@@ -34,11 +44,7 @@
                 "pr": 863
             },
             {
-                "note": "Remove stateLayer config from OrderWatcher. It now always operates on the latest block",
-                "pr": 875
-            },
-            {
-                "note": "Export ZeroEx.assetData with methods to decode/encode assetData fields found in 0x orders",
+                "note": "Export `ZeroEx.assetData` with methods to decode/encode assetData fields found in 0x orders",
                 "pr": 884
             }
         ]

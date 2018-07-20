@@ -8,7 +8,7 @@ In order to use `CoverageSubprovider` with your favorite framework you need to p
 
 ### Sol-compiler
 
-If you are generating your artifacts with [@0xproject/sol-compiler](LINK) you can use the `SolCompilerArtifactsAdapter` we've implemented for you.
+If you are generating your artifacts with [@0xproject/sol-compiler](https://0xproject.com/docs/sol-compiler) you can use the `SolCompilerArtifactsAdapter` we've implemented for you.
 
 ```typescript
 import { SolCompilerArtifactsAdapter } from '@0xproject/sol-cov';
@@ -19,7 +19,7 @@ const artifactsAdapter = new SolCompilerArtifactsAdapter(artifactsPath, contract
 
 ### Truffle
 
-If your project is using [Truffle](LINK), we've written a `TruffleArtifactsAdapter`for you.
+If your project is using [Truffle](https://truffleframework.com/), we've written a `TruffleArtifactsAdapter`for you.
 
 ```typescript
 import { TruffleArtifactAdapter } from '@0xproject/sol-cov';

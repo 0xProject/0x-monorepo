@@ -1,6 +1,7 @@
 [
     {
-        "version": "0.7.3",
+        "timestamp": 1532043000,
+        "version": "1.0.0",
         "changes": [
             {
                 "note": "Export `marshaller` utility file.",
@@ -9,6 +10,10 @@
             {
                 "note": "Add `getNodeTypeAsync` method",
                 "pr": 812
+            },
+            {
+                "note": "Stop exporting uniqueVersionIds object",
+                "pr": 897
             }
         ]
     },

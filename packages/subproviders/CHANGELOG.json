@@ -1,9 +1,15 @@
 [
     {
-        "version": "0.11.0",
+        "timestamp": 1532043000,
+        "version": "1.0.0",
         "changes": [
             {
-                "note": "Add `EthLightwalletSubprovider`"
+                "note": "Add `RpcSubprovider` with timeout",
+                "pr": 874
+            },
+            {
+                "note": "Add `EthLightwalletSubprovider`",
+                "pr": 775
             }
         ]
     },

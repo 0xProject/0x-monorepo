@@ -12,6 +12,7 @@ import {
 import * as _ from 'lodash';
 import CircularProgress from 'material-ui/CircularProgress';
 import * as React from 'react';
+import * as semver from 'semver';
 
 import { DocsInfo } from '../docs_info';
 import {
@@ -180,7 +181,20 @@ export class Documentation extends React.Component<DocumentationProps, Documenta
         return renderedSections;
     }
     private _renderSection(typeDefinitionByName: TypeDefinitionByName, sectionName: string): React.ReactNode {
-        const markdownFileIfExists = this.props.docsInfo.sectionNameToMarkdown[sectionName];
+        const markdownVersions = _.keys(this.props.docsInfo.sectionNameToMarkdownByVersion);
+        const eligibleVersions = _.filter(markdownVersions, mdVersion => {
+            return semver.lte(mdVersion, this.props.selectedVersion);
+        });
+        if (_.isEmpty(eligibleVersions)) {
+            throw new Error(
+                `No eligible markdown sections found for ${this.props.docsInfo.displayName} version ${
+                    this.props.selectedVersion
+                }.`,
+            );
+        }
+        const sortedEligibleVersions = eligibleVersions.sort(semver.rcompare.bind(semver));
+        const closestVersion = sortedEligibleVersions[0];
+        const markdownFileIfExists = this.props.docsInfo.sectionNameToMarkdownByVersion[closestVersion][sectionName];
         if (!_.isUndefined(markdownFileIfExists)) {
             return (
                 <MarkdownSection

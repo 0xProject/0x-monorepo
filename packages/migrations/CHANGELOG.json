@@ -1,5 +1,14 @@
 [
     {
+        "timestamp": 1532043000,
+        "version": "1.0.0",
+        "changes": [
+            {
+                "note": "Added migrations for 0x Protocol v2"
+            }
+        ]
+    },
+    {
         "timestamp": 1531919263,
         "version": "0.0.10",
         "changes": [

@@ -1,6 +1,6 @@
 {
     "name": "@0xproject/order-watcher",
-    "version": "0.0.8",
+    "version": "1.0.0-rc.1",
     "description": "An order watcher daemon that watches for order validity",
     "keywords": [
         "0x",
@@ -30,13 +30,7 @@
     },
     "config": {
         "compact_artifacts": "Exchange DummyToken ZRXToken Token EtherToken TokenTransferProxy TokenRegistry",
-        "contracts": "Exchange DummyToken ZRXToken Token WETH9 TokenTransferProxy_v1 MultiSigWallet MultiSigWalletWithTimeLock MultiSigWalletWithTimeLockExceptRemoveAuthorizedAddress MaliciousToken TokenRegistry Arbitrage EtherDelta AccountLevels",
-        "postpublish": {
-            "assets": [
-                "packages/order-watcher/_bundles/index.js",
-                "packages/order-watcher/_bundles/index.min.js"
-            ]
-        }
+        "contracts": "Exchange DummyToken ZRXToken Token WETH9 TokenTransferProxy_v1 MultiSigWallet MultiSigWalletWithTimeLock MultiSigWalletWithTimeLockExceptRemoveAuthorizedAddress MaliciousToken TokenRegistry Arbitrage EtherDelta AccountLevels"
     },
     "repository": {
         "type": "git",
@@ -47,12 +41,12 @@
         "node": ">=6.0.0"
     },
     "devDependencies": {
-        "@0xproject/abi-gen": "^0.3.4",
-        "@0xproject/dev-utils": "^0.4.6",
-        "@0xproject/migrations": "^0.0.10",
-        "@0xproject/monorepo-scripts": "^0.2.2",
-        "@0xproject/sol-compiler": "^0.5.4",
-        "@0xproject/tslint-config": "^0.4.21",
+        "@0xproject/abi-gen": "^1.0.0",
+        "@0xproject/dev-utils": "^1.0.0",
+        "@0xproject/migrations": "^1.0.0",
+        "@0xproject/monorepo-scripts": "^1.0.0",
+        "@0xproject/sol-compiler": "^1.0.0",
+        "@0xproject/tslint-config": "^1.0.0",
         "@types/bintrees": "^1.0.2",
         "@types/lodash": "4.14.104",
         "@types/mocha": "^2.2.42",
@@ -77,18 +71,18 @@
         "typescript": "2.7.1"
     },
     "dependencies": {
-        "@0xproject/assert": "0.3.0",
-        "@0xproject/base-contract": "0.3.6",
-        "@0xproject/contract-wrappers": "0.1.1",
-        "@0xproject/fill-scenarios": "1.0.0",
-        "@0xproject/json-schemas": "1.0.0",
-        "@0xproject/order-utils": "1.0.0",
-        "@0xproject/types": "1.0.0",
-        "@0xproject/typescript-typings": "^0.4.3",
-        "@0xproject/utils": "^0.7.3",
-        "@0xproject/web3-wrapper": "^0.7.3",
+        "@0xproject/assert": "^1.0.0",
+        "@0xproject/base-contract": "^1.0.0",
+        "@0xproject/contract-wrappers": "^1.0.0-rc.1",
+        "@0xproject/fill-scenarios": "^1.0.0-rc.1",
+        "@0xproject/json-schemas": "^1.0.0-rc.1",
+        "@0xproject/order-utils": "^1.0.0-rc.1",
+        "@0xproject/types": "^1.0.0-rc.1",
+        "@0xproject/typescript-typings": "^1.0.0",
+        "@0xproject/utils": "^1.0.0",
+        "@0xproject/web3-wrapper": "^1.0.0",
         "ethereumjs-blockstream": "5.0.0",
-        "ethereum-types": "^0.0.2",
+        "ethereum-types": "^1.0.0",
         "bintrees": "^1.0.2",
         "ethers": "3.0.22",
         "lodash": "^4.17.4"

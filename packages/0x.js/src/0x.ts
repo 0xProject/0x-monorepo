@@ -39,10 +39,6 @@ export class ZeroEx {
      */
     public static NULL_ADDRESS = constants.NULL_ADDRESS;
     /**
-     * A set of methods to easily decode/encode assetData fields found in 0x orders.
-     */
-    public static assetData = assetDataUtils;
-    /**
      * An instance of the ExchangeWrapper class containing methods for interacting with the 0x Exchange smart contract.
      */
     public exchange: ExchangeWrapper;
@@ -124,6 +120,57 @@ export class ZeroEx {
         assert.isNumber('decimals', decimals);
         const baseUnitAmount = Web3Wrapper.toBaseUnitAmount(amount, decimals);
         return baseUnitAmount;
+    }
+    /**
+     * Encodes an ERC20 token address into a hex encoded assetData string, usable in the makerAssetData or
+     * takerAssetData fields in a 0x order.
+     * @param tokenAddress  The ERC20 token address to encode
+     * @return The hex encoded assetData string
+     */
+    public static encodeERC20AssetData(tokenAddress: string): string {
+        return assetDataUtils.encodeERC20AssetData(tokenAddress);
+    }
+    /**
+     * Decodes an ERC20 assetData hex string into it's corresponding ERC20 tokenAddress & assetProxyId
+     * @param assetData Hex encoded assetData string to decode
+     * @return An object containing the decoded tokenAddress & assetProxyId
+     */
+    public static decodeERC20AssetData(assetData: string): ERC20AssetData {
+        return assetDataUtils.decodeERC20AssetData(assetData);
+    }
+    /**
+     * Encodes an ERC721 token address into a hex encoded assetData string, usable in the makerAssetData or
+     * takerAssetData fields in a 0x order.
+     * @param tokenAddress  The ERC721 token address to encode
+     * @param tokenId  The ERC721 tokenId to encode
+     * @return The hex encoded assetData string
+     */
+    public static encodeERC721AssetData(tokenAddress: string, tokenId: BigNumber): string {
+        return assetDataUtils.encodeERC721AssetData(tokenAddress, tokenId);
+    }
+    /**
+     * Decodes an ERC721 assetData hex string into it's corresponding ERC721 tokenAddress, tokenId & assetProxyId
+     * @param assetData Hex encoded assetData string to decode
+     * @return An object containing the decoded tokenAddress, tokenId & assetProxyId
+     */
+    public static decodeERC721AssetData(assetData: string): ERC721AssetData {
+        return assetDataUtils.decodeERC721AssetData(assetData);
+    }
+    /**
+     * Decode and return the assetProxyId from the assetData
+     * @param assetData Hex encoded assetData string to decode
+     * @return The assetProxyId
+     */
+    public static decodeAssetProxyId(assetData: string): AssetProxyId {
+        return assetDataUtils.decodeAssetProxyId(assetData);
+    }
+    /**
+     * Decode any assetData into it's corresponding assetData object
+     * @param assetData Hex encoded assetData string to decode
+     * @return Either a ERC20 or ERC721 assetData object
+     */
+    public static decodeAssetDataOrThrow(assetData: string): ERC20AssetData | ERC721AssetData {
+        return assetDataUtils.decodeAssetDataOrThrow(assetData);
     }
     /**
      * Instantiates a new ZeroEx instance that provides the public interface to the 0x.js library.

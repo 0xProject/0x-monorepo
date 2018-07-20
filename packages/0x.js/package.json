@@ -1,6 +1,6 @@
 {
     "name": "0x.js",
-    "version": "0.38.6",
+    "version": "1.0.0-rc.2",
     "engines": {
         "node": ">=6.12"
     },
@@ -41,8 +41,8 @@
         "contracts": "ZRXToken",
         "postpublish": {
             "assets": [
-                "packages/0x.js/_bundles/index.js",
-                "packages/0x.js/_bundles/index.min.js"
+                "_bundles/index.js",
+                "_bundles/index.min.js"
             ],
             "docPublishConfigs": {
                 "extraFileIncludes": [
@@ -51,13 +51,11 @@
                     "../contract-wrappers/src/types.ts",
                     "../contract-wrappers/src/contract_wrappers/ether_token_wrapper.ts",
                     "../contract-wrappers/src/contract_wrappers/exchange_wrapper.ts",
-                    "../contract-wrappers/src/contract_wrappers/token_registry_wrapper.ts",
-                    "../contract-wrappers/src/contract_wrappers/token_transfer_proxy_wrapper.ts",
-                    "../contract-wrappers/src/contract_wrappers/token_wrapper.ts",
-                    "../order-watcher/src/order_watcher/order_watcher.ts",
-                    "./src/generated_contract_wrappers/ether_token.ts",
-                    "./src/generated_contract_wrappers/token.ts",
-                    "./src/generated_contract_wrappers/exchange.ts"
+                    "../contract-wrappers/src/contract_wrappers/erc20_proxy_wrapper.ts",
+                    "../contract-wrappers/src/contract_wrappers/erc721_proxy_wrapper.ts",
+                    "../contract-wrappers/src/contract_wrappers/erc20_token_wrapper.ts",
+                    "../contract-wrappers/src/contract_wrappers/erc721_token_wrapper.ts",
+                    "../order-watcher/src/order_watcher/order_watcher.ts"
                 ],
                 "s3BucketPath": "s3://doc-jsons/0x.js/",
                 "s3StagingBucketPath": "s3://staging-doc-jsons/0x.js/"
@@ -70,11 +68,11 @@
     },
     "license": "Apache-2.0",
     "devDependencies": {
-        "@0xproject/abi-gen": "^0.3.4",
-        "@0xproject/dev-utils": "^0.4.6",
-        "@0xproject/migrations": "^0.0.10",
-        "@0xproject/monorepo-scripts": "^0.2.2",
-        "@0xproject/tslint-config": "^0.4.21",
+        "@0xproject/abi-gen": "^1.0.0",
+        "@0xproject/dev-utils": "^1.0.0",
+        "@0xproject/migrations": "^1.0.0",
+        "@0xproject/monorepo-scripts": "^1.0.0",
+        "@0xproject/tslint-config": "^1.0.0",
         "@types/lodash": "4.14.104",
         "@types/mocha": "^2.2.42",
         "@types/node": "^8.0.53",
@@ -100,17 +98,17 @@
         "webpack": "^3.1.0"
     },
     "dependencies": {
-        "@0xproject/assert": "^0.2.14",
-        "@0xproject/base-contract": "^0.3.6",
-        "@0xproject/contract-wrappers": "^0.1.1",
-        "@0xproject/order-utils": "^1.0.0",
-        "@0xproject/sol-compiler": "^0.5.4",
-        "@0xproject/subproviders": "^0.10.6",
-        "@0xproject/types": "^1.0.0",
-        "@0xproject/typescript-typings": "^0.4.3",
-        "@0xproject/utils": "^0.7.3",
-        "@0xproject/web3-wrapper": "^0.7.3",
-        "ethereum-types": "^0.0.2",
+        "@0xproject/assert": "^1.0.0",
+        "@0xproject/base-contract": "^1.0.0",
+        "@0xproject/contract-wrappers": "^1.0.0-rc.1",
+        "@0xproject/order-utils": "^1.0.0-rc.1",
+        "@0xproject/sol-compiler": "^1.0.0",
+        "@0xproject/subproviders": "^1.0.0",
+        "@0xproject/types": "^1.0.0-rc.1",
+        "@0xproject/typescript-typings": "^1.0.0",
+        "@0xproject/utils": "^1.0.0",
+        "@0xproject/web3-wrapper": "^1.0.0",
+        "ethereum-types": "^1.0.0",
         "ethers": "3.0.22",
         "lodash": "^4.17.4"
     },

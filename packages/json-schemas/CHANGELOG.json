@@ -1,14 +1,19 @@
 [
     {
-        "version": "1.0.0",
+        "timestamp": 1532043000,
+        "version": "1.0.0-rc.1",
         "changes": [
             {
-                "note": "Update schemas for V2",
+                "note": "Update schemas for V2 or 0x Protocol",
                 "pr": 615
             },
             {
                 "note": "Added CallData schema",
                 "pr": 821
+            },
+            {
+                "note": "Update CallData schema id to CallData",
+                "pr": 894
             }
         ]
     },

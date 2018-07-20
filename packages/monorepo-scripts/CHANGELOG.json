@@ -1,10 +1,14 @@
 [
     {
-        "version": "0.2.3",
+        "timestamp": 1532043000,
+        "version": "1.0.0",
         "changes": [
             {
                 "note": "Fix git remote tag removal step & add an additional sanity assertion",
                 "pr": 803
+            },
+            {
+                "note": "Make PR numbers links on Github releases"
             }
         ]
     },

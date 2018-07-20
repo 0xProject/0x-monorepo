@@ -1,3 +1,7 @@
+export interface SectionNameToMarkdownByVersion {
+    [version: string]: { [sectionName: string]: string };
+}
+
 export interface DocsInfoConfig {
     id: string;
     type: SupportedDocJson;
@@ -5,7 +9,7 @@ export interface DocsInfoConfig {
     packageUrl: string;
     menu: DocsMenu;
     sections: SectionsMap;
-    sectionNameToMarkdown: { [sectionName: string]: string };
+    sectionNameToMarkdownByVersion: SectionNameToMarkdownByVersion;
     visibleConstructors: string[];
     sectionNameToModulePath?: { [sectionName: string]: string[] };
     menuSubsectionToVersionWhenIntroduced?: { [sectionName: string]: string };

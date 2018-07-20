@@ -1,5 +1,8 @@
 import isNode = require('detect-node');
 import 'isomorphic-fetch';
+// WARNING: This needs to be imported after isomorphic-fetch: https://github.com/mo/abortcontroller-polyfill#using-it-on-browsers-without-fetch
+// tslint:disable-next-line:ordered-imports
+import 'abortcontroller-polyfill/dist/abortcontroller-polyfill-only';
 
 export const fetchAsync = async (
     endpoint: string,
