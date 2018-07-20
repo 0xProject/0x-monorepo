@@ -422,7 +422,7 @@ export class Wallet extends React.Component<WalletProps, WalletState> {
         //         refetchTokenStateAsync={async () => this.props.refetchTokenStateAsync(config.token.address)}
         //     />
         // );
-        return <AllowanceStateToggle />;
+        return <AllowanceStateToggle token={config.token} tokenState={config.tokenState} />;
     }
     private _renderAmount(
         amount: BigNumber,

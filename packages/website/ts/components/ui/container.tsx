@@ -31,6 +31,7 @@ export interface ContainerProps {
     bottom?: string;
     zIndex?: number;
     Tag?: ContainerTag;
+    cursor?: string;
 }
 
 export const Container: React.StatelessComponent<ContainerProps> = props => {

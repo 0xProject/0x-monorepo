@@ -8,7 +8,10 @@ import { BalanceErrs, Token, TokenState } from 'ts/types';
 import { AllowanceStateToggle as AllowanceStateToggleComponent } from 'ts/components/inputs/allowance_state_toggle';
 import { Dispatcher } from 'ts/redux/dispatcher';
 
-interface AllowanceStateToggleProps {}
+interface AllowanceStateToggleProps {
+    token: Token;
+    tokenState: TokenState;
+}
 
 interface ConnectedState {}
 
