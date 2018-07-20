@@ -5,8 +5,8 @@
         "node": ">=6.12"
     },
     "description": "Generate contract wrappers from ABI and handlebars templates",
-    "main": "lib/index.js",
-    "types": "lib/index.d.ts",
+    "main": "lib/src/index.js",
+    "types": "lib/src/index.d.ts",
     "scripts": {
         "watch_without_deps": "tsc -w",
         "lint": "tslint --project .",

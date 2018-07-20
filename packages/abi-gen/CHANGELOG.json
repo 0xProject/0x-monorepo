@@ -1,5 +1,14 @@
 [
     {
+        "version": "1.0.1",
+        "changes": [
+            {
+                "note": "Fix the abi-gen entry point in package.json",
+                "pr": 901
+            }
+        ]
+    },
+    {
         "version": "1.0.0",
         "changes": [
             {
