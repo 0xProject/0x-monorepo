@@ -1,7 +1,5 @@
-import { colors } from '@0xproject/react-shared';
 import CircularProgress from 'material-ui/CircularProgress';
 import * as React from 'react';
-import { styled } from 'ts/style/theme';
 
 export enum AllowanceState {
     Locked,

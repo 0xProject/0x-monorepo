@@ -28,7 +28,6 @@ import { NullTokenRow } from 'ts/components/wallet/null_token_row';
 import { PlaceHolder } from 'ts/components/wallet/placeholder';
 import { StandardIconRow } from 'ts/components/wallet/standard_icon_row';
 import { WrapEtherItem } from 'ts/components/wallet/wrap_ether_item';
-import { AllowanceToggle } from 'ts/containers/inputs/allowance_toggle';
 import { AllowanceStateToggle } from 'ts/containers/inputs/allowance_state_toggle';
 import { Dispatcher } from 'ts/redux/dispatcher';
 import { colors } from 'ts/style/colors';
@@ -422,7 +421,14 @@ export class Wallet extends React.Component<WalletProps, WalletState> {
         //         refetchTokenStateAsync={async () => this.props.refetchTokenStateAsync(config.token.address)}
         //     />
         // );
-        return <AllowanceStateToggle token={config.token} tokenState={config.tokenState} />;
+        return (
+            <AllowanceStateToggle
+                blockchain={this.props.blockchain}
+                token={config.token}
+                tokenState={config.tokenState}
+                refetchTokenStateAsync={async () => this.props.refetchTokenStateAsync(config.token.address)}
+            />
+        );
     }
     private _renderAmount(
         amount: BigNumber,
