@@ -57,7 +57,7 @@ contract MixinWrapperFunctions is
         return fillResults;
     }
 
-    /// @dev Fills an order with specified parameters and ECDSA signature.
+    /// @dev Fills the input order.
     ///      Returns false if the transaction would otherwise revert.
     /// @param order Order struct containing order specifications.
     /// @param takerAssetFillAmount Desired amount of takerAsset to sell.

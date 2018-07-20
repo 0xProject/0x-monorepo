@@ -23,6 +23,7 @@ import "./MixinWeth.sol";
 import "./MixinForwarderCore.sol";
 import "./MixinConstants.sol";
 import "./MixinAssets.sol";
+import "./MixinExchangeWrapper.sol";
 
 
 // solhint-disable no-empty-blocks
@@ -30,6 +31,7 @@ contract Forwarder is
     MixinConstants,
     MixinWeth,
     MixinAssets,
+    MixinExchangeWrapper,
     MixinForwarderCore
 {
 

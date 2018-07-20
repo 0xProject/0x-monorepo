@@ -28,43 +28,15 @@ contract MForwarderCore is
     IForwarderCore
 {
 
-    /// @param orders Array of order specifications used containing desired makerAsset and WETH as takerAsset. 
-    /// @param wethSellAmount Desired amount of WETH to sell.
-    /// @param signatures Proofs that orders have been created by makers.
-    /// @return Amounts filled and fees paid by maker and taker.
-    function marketSellWeth(
-        LibOrder.Order[] memory orders,
-        uint256 wethSellAmount,
-        bytes[] memory signatures
+    /// @dev Ensures that all ZRX fees have been repurchased and no extra WETH owned by this contract has been sold.
+    /// @param orderFillResults Amounts filled and fees paid for primary orders.
+    /// @param feeOrderFillResults Amounts filled and fees paid for fee orders.
+    /// @param zrxBuyAmount The amount of ZRX that needed to be repurchased after filling primary orders.
+    function assertValidFillResults(
+        LibFillResults.FillResults memory orderFillResults,
+        LibFillResults.FillResults memory feeOrderFillResults,
+        uint256 zrxBuyAmount
     )
         internal
-        returns (LibFillResults.FillResults memory fillResults);
-
-    /// @param orders Array of order specifications used containing desired makerAsset and WETH as takerAsset. 
-    /// @param makerAssetFillAmount Desired amount of makerAsset to buy.
-    /// @param signatures Proofs that orders have been created by makers.
-    /// @return Amounts filled and fees paid by maker and taker.
-    function marketBuyAsset(
-        LibOrder.Order[] memory orders,
-        uint256 makerAssetFillAmount,
-        bytes[] memory signatures
-    )
-        internal
-        returns (LibFillResults.FillResults memory fillResults);
-
-    /// @dev Buys zrxBuyAmount of ZRX fee tokens, taking into account ZRX fees for each order. This will guarantee
-    ///      that at least zrxBuyAmount of ZRX is purchased (sometimes slightly over due to rounding issues).
-    ///      It is possible that a request to buy 200 ZRX will require purchasing 202 ZRX
-    ///      as 2 ZRX is required to purchase the 200 ZRX fee tokens. This guarantees at least 200 ZRX for future purchases.
-    /// @param orders Array of order specifications containing ZRX as makerAsset and WETH as takerAsset.
-    /// @param zrxBuyAmount Desired amount of ZRX to buy.
-    /// @param signatures Proofs that orders have been created by makers.
-    /// @return totalFillResults Amounts filled and fees paid by maker and taker.
-    function marketBuyZrx(
-        LibOrder.Order[] memory orders,
-        uint256 zrxBuyAmount,
-        bytes[] memory signatures
-    )
-        internal
-        returns (LibFillResults.FillResults memory totalFillResults);
+        view;
 }
