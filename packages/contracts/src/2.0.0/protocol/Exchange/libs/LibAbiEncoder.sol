@@ -24,10 +24,6 @@ import "./LibOrder.sol";
 
 contract LibAbiEncoder {
 
-    // solhint-disable max-line-length
-    bytes4 constant internal FILL_ORDER_SELECTOR = bytes4(keccak256("fillOrder((address,address,address,address,uint256,uint256,uint256,uint256,uint256,uint256,bytes,bytes),uint256,bytes)"));
-    // solhint-enable max-line-length
-   
     /// @dev ABI encodes calldata for `fillOrder` in memory and returns the address range.
     ///      This range can be passed into `call` or `delegatecall` to invoke an external
     ///      call to `fillOrder`.
@@ -42,6 +38,7 @@ contract LibAbiEncoder {
         bytes memory signature
     )
         public
+        pure
         returns (bytes memory fillOrderCalldata)
     {
         // We need to call MExchangeCore.fillOrder using a delegatecall in
@@ -83,8 +80,6 @@ contract LibAbiEncoder {
 
         // [1]: https://solidity.readthedocs.io/en/develop/abi-spec.html
 
-        bytes4 fillOrderSelector = FILL_ORDER_SELECTOR;
-
         assembly {
 
             // Areas below may use the following variables:
@@ -99,8 +94,10 @@ contract LibAbiEncoder {
             /////// Setup Header Area ///////
             // Load free memory pointer
             fillOrderCalldata := mload(0x40)
+            // bytes4(keccak256("fillOrder((address,address,address,address,uint256,uint256,uint256,uint256,uint256,uint256,bytes,bytes),uint256,bytes)"))
+            // = 0xb4be83d5
             // Leave 0x20 bytes to store the length
-            mstore(add(fillOrderCalldata, 0x20), fillOrderSelector)
+            mstore(add(fillOrderCalldata, 0x20), 0xb4be83d500000000000000000000000000000000000000000000000000000000)
             let headerAreaEnd := add(fillOrderCalldata, 0x24)
 
             /////// Setup Params Area ///////
