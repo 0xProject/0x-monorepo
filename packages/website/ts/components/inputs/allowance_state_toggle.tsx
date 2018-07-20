@@ -6,5 +6,5 @@ export interface AllowanceStateToggleProps {}
 const flip = () => Math.random() < 0.5;
 
 export const AllowanceStateToggle: React.StatelessComponent<AllowanceStateToggleProps> = () => (
-    <AllowanceStateView allowanceState={flip() ? 'locked' : 'unlocked'} />
+    <AllowanceStateView allowanceState={flip() ? 'locked' : 'loading'} />
 );

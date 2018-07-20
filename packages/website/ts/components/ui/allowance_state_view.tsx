@@ -1,4 +1,5 @@
 import { colors } from '@0xproject/react-shared';
+import CircularProgress from 'material-ui/CircularProgress';
 import * as React from 'react';
 import { styled } from 'ts/style/theme';
 
@@ -15,7 +16,7 @@ export const AllowanceStateView: React.StatelessComponent<AllowanceStateViewProp
         case 'unlocked':
             return renderCheck();
         case 'loading':
-            return <div>'...'</div>;
+            return <CircularProgress size={15} thickness={2} />;
         default:
             return null;
     }

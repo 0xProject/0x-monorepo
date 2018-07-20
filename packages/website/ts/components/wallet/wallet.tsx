@@ -398,7 +398,7 @@ export class Wallet extends React.Component<WalletProps, WalletState> {
         // if we don't have a toggle, we still want some space to the right of the "wrap" button so that it aligns with
         // the "unwrap" button in the row below
         const toggle = (
-            <Container width={NO_ALLOWANCE_TOGGLE_SPACE_WIDTH}>
+            <Container className="flex justify-center" width={NO_ALLOWANCE_TOGGLE_SPACE_WIDTH}>
                 {shouldShowToggle && this._renderAllowanceToggle(config.allowanceToggleConfig)}
             </Container>
         );
