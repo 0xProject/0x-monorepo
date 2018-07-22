@@ -42,9 +42,9 @@
         "TestLibBytes",
         "TestLibs",
         "TestSignatureValidator",
-        "TestValidator",
-        "TestWallet",
         "TokenRegistry",
+        "Validator",
+        "Wallet",
         "Whitelist",
         "WETH9",
         "ZRXToken"
