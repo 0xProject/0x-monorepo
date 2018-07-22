@@ -12,6 +12,7 @@ If your project is in [TypeScript](https://www.typescriptlang.org/), add the fol
 
 ```json
 "compilerOptions": {
+    "lib": ["dom"],
     "typeRoots": ["node_modules/@0xproject/typescript-typings/types", "node_modules/@types"],
 }
 ```
