@@ -40,7 +40,7 @@ contract MixinForwarderCore is
     MForwarderCore
 {
     bytes4 constant internal ERC20_DATA_ID = bytes4(keccak256("ERC20Token(address)"));
-    bytes4 constant internal ERC721_DATA_ID = bytes4(keccak256("ERC721Token(address,uint256,bytes)"));
+    bytes4 constant internal ERC721_DATA_ID = bytes4(keccak256("ERC721Token(address,uint256)"));
     uint256 constant internal MAX_UINT = 2**256 - 1;
 
     constructor ()
