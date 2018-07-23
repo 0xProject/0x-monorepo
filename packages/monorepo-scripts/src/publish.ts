@@ -193,7 +193,7 @@ async function lernaPublishAsync(packageToNextVersion: { [name: string]: string 
         if (shouldPrintOutput) {
             utils.log(output);
         }
-        const isVersionPrompt = /^\? Select a new version .* (currently .*)/.test(output);
+        const isVersionPrompt = _.includes(output, 'Select a new version');
         if (isVersionPrompt) {
             const outputStripLeft = output.split('new version for ')[1];
             packageName = outputStripLeft.split(' ')[0];
