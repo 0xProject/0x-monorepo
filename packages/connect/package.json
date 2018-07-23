@@ -1,6 +1,6 @@
 {
     "name": "@0xproject/connect",
-    "version": "1.0.0",
+    "version": "1.0.1",
     "engines": {
         "node": ">=6.12"
     },
@@ -54,16 +54,16 @@
         "@0xproject/assert": "^0.2.14",
         "@0xproject/json-schemas": "^0.8.3",
         "@0xproject/types": "^0.8.2",
-        "@0xproject/typescript-typings": "^1.0.0",
-        "@0xproject/utils": "^1.0.0",
+        "@0xproject/typescript-typings": "^1.0.1",
+        "@0xproject/utils": "^1.0.1",
         "lodash": "^4.17.4",
         "query-string": "^5.0.1",
         "sinon": "^4.0.0",
         "websocket": "^1.0.25"
     },
     "devDependencies": {
-        "@0xproject/monorepo-scripts": "^1.0.0",
-        "@0xproject/tslint-config": "^1.0.0",
+        "@0xproject/monorepo-scripts": "^1.0.1",
+        "@0xproject/tslint-config": "^1.0.1",
         "@types/fetch-mock": "^5.12.2",
         "@types/lodash": "4.14.104",
         "@types/mocha": "^2.2.42",
