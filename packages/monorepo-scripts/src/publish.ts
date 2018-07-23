@@ -193,11 +193,11 @@ async function lernaPublishAsync(packageToNextVersion: { [name: string]: string 
         if (shouldPrintOutput) {
             utils.log(output);
         }
-        const isVersionPrompt = _.includes(output, 'Select a new version');
+        const isVersionPrompt = /^\? Select a new version .* (currently .*)$/.test(output);
         if (isVersionPrompt) {
             const outputStripLeft = output.split('new version for ')[1];
             packageName = outputStripLeft.split(' ')[0];
-            child.stdin.write(`${SemVerIndex.Custom}\n`);
+            sleepAndWrite(child.stdin, SemVerIndex.Custom);
         }
         const isCustomVersionPrompt = output === '? Enter a custom version ';
         if (isCustomVersionPrompt) {
@@ -205,11 +205,11 @@ async function lernaPublishAsync(packageToNextVersion: { [name: string]: string 
             if (_.isUndefined(versionChange)) {
                 throw new Error(`Must have a nextVersion for each packageName. Didn't find one for ${packageName}`);
             }
-            child.stdin.write(`${versionChange}\n`);
+            sleepAndWrite(child.stdin, versionChange);
         }
         const isFinalPrompt = _.includes(output, 'Are you sure you want to publish the above changes?');
         if (isFinalPrompt && !IS_DRY_RUN) {
-            child.stdin.write(`y\n`);
+            sleepAndWrite(child.stdin, 'y');
             // After confirmations, we want to print the output to watch the `lerna publish` command
             shouldPrintOutput = true;
         } else if (isFinalPrompt && IS_DRY_RUN) {
@@ -222,6 +222,13 @@ async function lernaPublishAsync(packageToNextVersion: { [name: string]: string 
         const output = data.toString('utf8');
         utils.log('Stderr:', output);
     });
+}
+
+function sleepAndWrite(fileDescriptor: any, input: string | number): void {
+    const TIMEOUT = 100;
+    setTimeout(() => {
+        fileDescriptor.write(`${input}\n`);
+    }, TIMEOUT);
 }
 
 function updateVersionNumberIfNeeded(currentVersion: string, proposedNextVersion: string): string {
