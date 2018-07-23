@@ -188,7 +188,7 @@ async function lernaPublishAsync(packageToNextVersion: { [name: string]: string 
         if (isCustomVersionPrompt) {
             const versionChange = packageToNextVersion[packageName];
             if (_.isUndefined(versionChange)) {
-                console.log('versionChange', versionChange, ' UNDEFINED!');
+                console.log('packageName', packageName, 'versionChange', versionChange, ' UNDEFINED!');
             }
             child.stdin.write(`${versionChange}\n`);
             return;
