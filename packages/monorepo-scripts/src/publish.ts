@@ -11,7 +11,7 @@ import semverDiff = require('semver-diff');
 import semverSort = require('semver-sort');
 
 import { constants } from './constants';
-import { Package, PackageToVersionChange, SemVerIndex, VersionChangelog } from './types';
+import { Package, PackageToNextVersion, SemVerIndex, VersionChangelog } from './types';
 import { changelogUtils } from './utils/changelog_utils';
 import { utils } from './utils/utils';
 
@@ -42,7 +42,7 @@ const packageNameToWebsitePath: { [name: string]: string } = {
     // Update CHANGELOGs
     const updatedPublicPackageNames = _.map(updatedPublicPackages, pkg => pkg.packageJson.name);
     utils.log(`Will update CHANGELOGs and publish: \n${updatedPublicPackageNames.join('\n')}\n`);
-    const packageToVersionChange = await updateChangeLogsAsync(updatedPublicPackages);
+    const packageToNextVersion = await updateChangeLogsAsync(updatedPublicPackages);
 
     // Push changelog changes to Github
     if (!IS_DRY_RUN) {
@@ -51,11 +51,11 @@ const packageNameToWebsitePath: { [name: string]: string } = {
 
     // Call LernaPublish
     utils.log('Version updates to apply:');
-    _.each(packageToVersionChange, (versionChange: string, packageName: string) => {
+    _.each(packageToNextVersion, (versionChange: string, packageName: string) => {
         utils.log(`${packageName} -> ${versionChange}`);
     });
     utils.log(`Calling 'lerna publish'...`);
-    await lernaPublishAsync(packageToVersionChange);
+    await lernaPublishAsync(packageToNextVersion);
 })().catch(err => {
     utils.log(err);
     process.exit(1);
@@ -110,8 +110,8 @@ async function pushChangelogsToGithubAsync(): Promise<void> {
     utils.log(`Pushed CHANGELOG updates to Github`);
 }
 
-async function updateChangeLogsAsync(updatedPublicPackages: Package[]): Promise<PackageToVersionChange> {
-    const packageToVersionChange: PackageToVersionChange = {};
+async function updateChangeLogsAsync(updatedPublicPackages: Package[]): Promise<PackageToNextVersion> {
+    const packageToNextVersion: PackageToNextVersion = {};
     for (const pkg of updatedPublicPackages) {
         const packageName = pkg.packageJson.name;
         let changelog = changelogUtils.getChangelogOrCreateIfMissing(packageName, pkg.location);
@@ -138,7 +138,7 @@ async function updateChangeLogsAsync(updatedPublicPackages: Package[]): Promise<
                 ],
             };
             changelog = [newChangelogEntry, ...changelog];
-            packageToVersionChange[packageName] = semverDiff(currentVersion, nextPatchVersionIfValid);
+            packageToNextVersion[packageName] = nextPatchVersionIfValid;
         } else {
             // Update existing entry with timestamp
             const lastEntry = changelog[0];
@@ -149,7 +149,7 @@ async function updateChangeLogsAsync(updatedPublicPackages: Package[]): Promise<
             const proposedNextVersion = lastEntry.version;
             lastEntry.version = updateVersionNumberIfNeeded(currentVersion, proposedNextVersion);
             changelog[0] = lastEntry;
-            packageToVersionChange[packageName] = semverDiff(currentVersion, lastEntry.version);
+            packageToNextVersion[packageName] = lastEntry.version;
         }
 
         // Save updated CHANGELOG.json
@@ -161,10 +161,10 @@ async function updateChangeLogsAsync(updatedPublicPackages: Package[]): Promise<
         utils.log(`${packageName}: Updated CHANGELOG.md`);
     }
 
-    return packageToVersionChange;
+    return packageToNextVersion;
 }
 
-async function lernaPublishAsync(packageToVersionChange: { [name: string]: string }): Promise<void> {
+async function lernaPublishAsync(packageToNextVersion: { [name: string]: string }): Promise<void> {
     // HACK: Lerna publish does not provide a way to specify multiple package versions via
     // flags so instead we need to interact with their interactive prompt interface.
     const child = spawn('lerna', ['publish', `--skip-git`], {
@@ -186,7 +186,7 @@ async function lernaPublishAsync(packageToVersionChange: { [name: string]: strin
         }
         const isCustomVersionPrompt = _.includes(output, 'Enter a custom version');
         if (isCustomVersionPrompt) {
-            const versionChange = packageToVersionChange[packageName];
+            const versionChange = packageToNextVersion[packageName];
             child.stdin.write(`${versionChange}\n`);
             return;
         }

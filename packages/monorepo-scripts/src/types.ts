@@ -29,7 +29,7 @@ export enum SemVerIndex {
     Custom,
 }
 
-export interface PackageToVersionChange {
+export interface PackageToNextVersion {
     [name: string]: string;
 }
 
