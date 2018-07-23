@@ -5,6 +5,10 @@ Edit the package's CHANGELOG.json file only.
 
 CHANGELOG
 
+## v1.1.0 - _July 23, 2018_
+
+    * Add `getTransactionByHashAsync` method (#847)
+
 ## v1.0.1 - _July 23, 2018_
 
     * Dependencies updated

@@ -5,6 +5,14 @@ Edit the package's CHANGELOG.json file only.
 
 CHANGELOG
 
+## v1.0.1-rc.1 - _July 23, 2018_
+
+    * Dependencies updated
+
+## v1.0.0 - _July 23, 2018_
+
+    * Dependencies updated
+
 ## v1.0.0-rc.2 - _July 23, 2018_
 
     * Upgrade ethereumjs-abi dep including a fix so that addresses starting with 0 are properly decoded by `decodeERC20AssetData`

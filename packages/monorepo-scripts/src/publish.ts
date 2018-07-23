@@ -42,7 +42,7 @@ const packageNameToWebsitePath: { [name: string]: string } = {
     const shouldIncludePrivate = false;
     const updatedPublicPackages = await utils.getUpdatedPackagesAsync(shouldIncludePrivate);
 
-    await confirmDocPagesRenderAsync(updatedPublicPackages);
+    // await confirmDocPagesRenderAsync(updatedPublicPackages);
 
     // Update CHANGELOGs
     const updatedPublicPackageNames = _.map(updatedPublicPackages, pkg => pkg.packageJson.name);
