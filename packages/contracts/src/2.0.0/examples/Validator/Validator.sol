@@ -21,7 +21,7 @@ pragma solidity 0.4.24;
 import "../../protocol/Exchange/interfaces/IValidator.sol";
 
 
-contract TestValidator is 
+contract Validator is 
     IValidator
 {
 
@@ -29,7 +29,7 @@ contract TestValidator is
     // solhint-disable-next-line var-name-mixedcase
     address internal VALID_SIGNER;
 
-    /// @dev constructs a new `TestValidator` with a single valid signer.
+    /// @dev constructs a new `Validator` with a single valid signer.
     /// @param validSigner The sole, valid signer.
     constructor (address validSigner) public {
         VALID_SIGNER = validSigner;

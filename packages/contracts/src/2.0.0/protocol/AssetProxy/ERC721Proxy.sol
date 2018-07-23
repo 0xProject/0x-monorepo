@@ -93,7 +93,7 @@ contract ERC721Proxy is
                 // |          | 4      | 12 + 20 |   1. token address                  |
                 // |          | 36     |         |   2. tokenId                        |
                 
-                // We construct calldata for the `token.safeTransferFrom` ABI.
+                // We construct calldata for the `token.transferFrom` ABI.
                 // The layout of this calldata is in the table below.
                 // 
                 // | Area     | Offset | Length  | Contents                            |
@@ -116,7 +116,7 @@ contract ERC721Proxy is
                 }
 
                 /////// Setup Header Area ///////
-                // This area holds the 4-byte `transferFromSelector`.
+                // This area holds the 4-byte `transferFrom` selector.
                 // Any trailing data in transferFromSelector will be
                 // overwritten in the next `mstore` call.
                 mstore(0, 0x23b872dd00000000000000000000000000000000000000000000000000000000)
