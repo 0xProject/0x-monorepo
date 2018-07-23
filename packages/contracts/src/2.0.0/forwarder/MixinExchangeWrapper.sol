@@ -19,7 +19,7 @@
 pragma solidity 0.4.24;
 pragma experimental ABIEncoderV2;
 
-import "./mixins/MConstants.sol";
+import "./libs/LibConstants.sol";
 import "./mixins/MExchangeWrapper.sol";
 import "../protocol/Exchange/libs/LibAbiEncoder.sol";
 import "../protocol/Exchange/libs/LibOrder.sol";
@@ -31,7 +31,7 @@ contract MixinExchangeWrapper is
     LibAbiEncoder,
     LibFillResults,
     LibMath,
-    MConstants,
+    LibConstants,
     MExchangeWrapper
 {
 

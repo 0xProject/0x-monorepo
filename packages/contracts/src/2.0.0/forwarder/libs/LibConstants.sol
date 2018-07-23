@@ -23,7 +23,7 @@ import "../../tokens/EtherToken/IEtherToken.sol";
 import "../../tokens/ERC20Token/IERC20Token.sol";
 
 
-contract MConstants {
+contract LibConstants {
 
     bytes4 constant internal ERC20_DATA_ID = bytes4(keccak256("ERC20Token(address)"));
     bytes4 constant internal ERC721_DATA_ID = bytes4(keccak256("ERC721Token(address,uint256,bytes)"));
@@ -31,12 +31,28 @@ contract MConstants {
     uint256 constant internal PERCENTAGE_DENOMINATOR = 10**18; 
     uint256 constant internal MAX_FEE_PERCENTAGE = 5 * PERCENTAGE_DENOMINATOR / 100;         // 5%
     uint256 constant internal MAX_WETH_FILL_PERCENTAGE = 95 * PERCENTAGE_DENOMINATOR / 100;  // 95%
-
-    // solhint-disable var-name-mixedcase
+ 
+     // solhint-disable var-name-mixedcase
     IExchange internal EXCHANGE;
     IEtherToken internal ETHER_TOKEN;
     IERC20Token internal ZRX_TOKEN;
     bytes internal ZRX_ASSET_DATA;
     bytes internal WETH_ASSET_DATA;
     // solhint-enable var-name-mixedcase
+
+    constructor (
+        address _exchange,
+        address _etherToken,
+        address _zrxToken,
+        bytes memory _zrxAssetData,
+        bytes memory _wethAssetData
+    )
+        public
+    {
+        EXCHANGE = IExchange(_exchange);
+        ETHER_TOKEN = IEtherToken(_etherToken);
+        ZRX_TOKEN = IERC20Token(_zrxToken);
+        ZRX_ASSET_DATA = _zrxAssetData;
+        WETH_ASSET_DATA = _wethAssetData;
+    }
 }

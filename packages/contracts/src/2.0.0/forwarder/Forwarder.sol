@@ -21,14 +21,14 @@ pragma experimental ABIEncoderV2;
 
 import "./MixinWeth.sol";
 import "./MixinForwarderCore.sol";
-import "./MixinConstants.sol";
+import "./libs/LibConstants.sol";
 import "./MixinAssets.sol";
 import "./MixinExchangeWrapper.sol";
 
 
 // solhint-disable no-empty-blocks
 contract Forwarder is
-    MixinConstants,
+    LibConstants,
     MixinWeth,
     MixinAssets,
     MixinExchangeWrapper,
@@ -43,7 +43,7 @@ contract Forwarder is
         bytes memory _wethAssetData
     )
         public
-        MixinConstants(
+        LibConstants(
             _exchange,
             _etherToken,
             _zrxToken,

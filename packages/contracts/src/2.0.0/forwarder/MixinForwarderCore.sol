@@ -19,9 +19,9 @@
 pragma solidity 0.4.24;
 pragma experimental ABIEncoderV2;
 
+import "./libs/LibConstants.sol";
 import "./mixins/MWeth.sol";
 import "./mixins/MAssets.sol";
-import "./mixins/MConstants.sol";
 import "./mixins/MExchangeWrapper.sol";
 import "./mixins/MForwarderCore.sol";
 import "../utils/LibBytes/LibBytes.sol";
@@ -33,7 +33,7 @@ import "../protocol/Exchange/libs/LibMath.sol";
 contract MixinForwarderCore is
     LibFillResults,
     LibMath,
-    MConstants,
+    LibConstants,
     MWeth,
     MAssets,
     MExchangeWrapper,

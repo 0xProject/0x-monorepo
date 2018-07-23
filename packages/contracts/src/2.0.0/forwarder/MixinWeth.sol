@@ -19,13 +19,13 @@
 pragma solidity 0.4.24;
 
 import "../protocol/Exchange/libs/LibMath.sol";
-import "./mixins/MConstants.sol";
+import "./libs/LibConstants.sol";
 import "./mixins/MWeth.sol";
 
 
 contract MixinWeth is
     LibMath,
-    MConstants,
+    LibConstants,
     MWeth
 {
 
