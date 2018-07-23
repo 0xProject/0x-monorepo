@@ -185,7 +185,12 @@ async function lernaPublishAsync(packageToNextVersion: { [name: string]: string 
     });
     let shouldPrintOutput = false;
     let packageName: string;
+    let ignoreCounter = 0;
     child.stdout.on('data', (data: Buffer) => {
+        if (ignoreCounter !== 0) {
+            ignoreCounter--;
+            return; // ignore
+        }
         const output = data.toString('utf8');
         console.log('-------');
         console.log(output);
@@ -201,6 +206,7 @@ async function lernaPublishAsync(packageToNextVersion: { [name: string]: string 
                 return; // noop
             }
             packageName = packageNameFound;
+            ignoreCounter = 1; // SemVerIndex.Custom is a single digit number
             sleepAndWrite(child.stdin, SemVerIndex.Custom);
         }
         const isCustomVersionPrompt = _.includes(output, 'Enter a custom version');
@@ -209,10 +215,12 @@ async function lernaPublishAsync(packageToNextVersion: { [name: string]: string 
             if (_.isUndefined(versionChange)) {
                 throw new Error(`Must have a nextVersion for each packageName. Didn't find one for ${packageName}`);
             }
+            ignoreCounter = versionChange.length;
             sleepAndWrite(child.stdin, versionChange);
         }
         const isFinalPrompt = _.includes(output, 'Are you sure you want to publish the above changes?');
         if (isFinalPrompt && !IS_DRY_RUN) {
+            ignoreCounter = 'y'.length;
             sleepAndWrite(child.stdin, 'y');
             // After confirmations, we want to print the output to watch the `lerna publish` command
             shouldPrintOutput = true;
