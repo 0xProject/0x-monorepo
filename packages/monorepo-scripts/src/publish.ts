@@ -198,16 +198,14 @@ async function lernaPublishAsync(packageToNextVersion: { [name: string]: string 
             const outputStripLeft = output.split('new version for ')[1];
             packageName = outputStripLeft.split(' ')[0];
             child.stdin.write(`${SemVerIndex.Custom}\n`);
-            return;
         }
-        const isCustomVersionPrompt = _.includes(output, 'Enter a custom version');
+        const isCustomVersionPrompt = output === '? Enter a custom version ';
         if (isCustomVersionPrompt) {
             const versionChange = packageToNextVersion[packageName];
             if (_.isUndefined(versionChange)) {
                 throw new Error(`Must have a nextVersion for each packageName. Didn't find one for ${packageName}`);
             }
             child.stdin.write(`${versionChange}\n`);
-            return;
         }
         const isFinalPrompt = _.includes(output, 'Are you sure you want to publish the above changes?');
         if (isFinalPrompt && !IS_DRY_RUN) {
