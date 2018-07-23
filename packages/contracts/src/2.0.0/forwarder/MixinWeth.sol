@@ -87,7 +87,7 @@ contract MixinWeth is
         // Ensure fee is less than amount of WETH remaining.
         require(
             ethFee <= wethRemaining,
-            "MAX_FEE_EXCEEDED"
+            "INSUFFICIENT_ETH_REMAINING"
         );
     
         // Do nothing if no WETH remaining

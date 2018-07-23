@@ -26,7 +26,7 @@ import "../../tokens/ERC20Token/IERC20Token.sol";
 contract LibConstants {
 
     bytes4 constant internal ERC20_DATA_ID = bytes4(keccak256("ERC20Token(address)"));
-    bytes4 constant internal ERC721_DATA_ID = bytes4(keccak256("ERC721Token(address,uint256,bytes)"));
+    bytes4 constant internal ERC721_DATA_ID = bytes4(keccak256("ERC721Token(address,uint256)"));
     uint256 constant internal MAX_UINT = 2**256 - 1;
     uint256 constant internal PERCENTAGE_DENOMINATOR = 10**18; 
     uint256 constant internal MAX_FEE_PERCENTAGE = 5 * PERCENTAGE_DENOMINATOR / 100;         // 5%

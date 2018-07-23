@@ -25,13 +25,13 @@ export class ForwarderWrapper {
         let remainingFeeAmount = feeAmount;
         _.forEach(feeOrders, feeOrder => {
             const feeAvailable = feeOrder.makerAssetAmount.minus(feeOrder.takerFee);
-            if (!remainingFeeAmount.isZero() && feeAvailable.gte(remainingFeeAmount)) {
+            if (!remainingFeeAmount.isZero() && feeAvailable.gt(remainingFeeAmount)) {
                 wethAmount = wethAmount
                     .plus(feeOrder.takerAssetAmount.times(remainingFeeAmount).dividedToIntegerBy(feeAvailable))
                     .plus(1);
                 remainingFeeAmount = new BigNumber(0);
             } else if (!remainingFeeAmount.isZero()) {
-                wethAmount = wethAmount.plus(feeOrder.takerAssetAmount).plus(1);
+                wethAmount = wethAmount.plus(feeOrder.takerAssetAmount);
                 remainingFeeAmount = remainingFeeAmount.minus(feeAvailable);
             }
         });

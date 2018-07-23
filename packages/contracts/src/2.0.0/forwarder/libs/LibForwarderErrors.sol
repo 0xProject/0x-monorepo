@@ -23,7 +23,7 @@ pragma solidity 0.4.24;
 /// This contract is intended to serve as a reference, but is not actually used for efficiency reasons.
 contract LibForwarderErrors {
     string constant FEE_PERCENTAGE_TOO_LARGE = "FEE_PROPORTION_TOO_LARGE";                        // Provided fee percentage greater than 5%.
-    string constant MAX_FEE_EXCEEDED = "MAX_FEE_EXCEEDED";                                        // Not enough ETH remaining to pay feeRecipient.
+    string constant INSUFFICIENT_ETH_REMAINING = "INSUFFICIENT_ETH_REMAINING";                    // Not enough ETH remaining to pay feeRecipient.
     string constant OVERSOLD_WETH = "OVERSOLD_WETH";                                              // More WETH sold than provided with current message call.
     string constant COMPLETE_FILL_FAILED = "COMPLETE_FILL_FAILED";                                // Desired purchase amount not completely filled (required for ZRX fees only).
     string constant TRANSFER_FAILED = "TRANSFER_FAILED";                                          // Asset transfer failed.

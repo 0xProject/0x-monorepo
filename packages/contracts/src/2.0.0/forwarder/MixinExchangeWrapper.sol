@@ -100,12 +100,15 @@ contract MixinExchangeWrapper is
         internal
         returns (FillResults memory totalFillResults)
     {
+        bytes memory makerAssetData = orders[0].makerAssetData;
         bytes memory wethAssetData = WETH_ASSET_DATA;
 
         uint256 ordersLength = orders.length;
         for (uint256 i = 0; i < ordersLength; i++) {
 
+            // We assume that asset being bought by taker is the same for each order.
             // We assume that asset being sold by taker is WETH for each order.
+            orders[i].makerAssetData = makerAssetData;
             orders[i].takerAssetData = wethAssetData;
 
             // Calculate the remaining amount of WETH to sell
@@ -231,7 +234,7 @@ contract MixinExchangeWrapper is
             // Attempt to sell the remaining amount of WETH.
             FillResults memory singleFillResult = fillOrderNoThrow(
                 orders[i],
-                safeAdd(remainingWethSellAmount, 1),
+                safeAdd(remainingWethSellAmount, 1),  // we add 1 wei to the fill amount to make up for rounding errors
                 signatures[i]
             );
 
