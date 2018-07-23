@@ -1,6 +1,6 @@
 {
     "name": "@0xproject/fill-scenarios",
-    "version": "1.0.0",
+    "version": "1.0.0-rc.1",
     "description": "0x order fill scenario generator",
     "main": "lib/index.js",
     "types": "lib/index.d.ts",
@@ -28,10 +28,10 @@
     },
     "homepage": "https://github.com/0xProject/0x-monorepo/packages/fill-scenarios/README.md",
     "devDependencies": {
-        "@0xproject/abi-gen": "^1.0.1",
-        "@0xproject/monorepo-scripts": "^1.0.1",
-        "@0xproject/sol-compiler": "^1.0.1",
-        "@0xproject/tslint-config": "^1.0.1",
+        "@0xproject/abi-gen": "^1.0.0",
+        "@0xproject/monorepo-scripts": "^1.0.0",
+        "@0xproject/sol-compiler": "^1.0.0",
+        "@0xproject/tslint-config": "^1.0.0",
         "@types/lodash": "4.14.104",
         "copyfiles": "^1.2.0",
         "make-promises-safe": "^1.1.0",
@@ -41,13 +41,13 @@
         "typescript": "2.7.1"
     },
     "dependencies": {
-        "@0xproject/base-contract": "^1.0.1",
-        "@0xproject/order-utils": "^1.0.0",
-        "@0xproject/types": "^1.0.0",
-        "@0xproject/typescript-typings": "^1.0.1",
-        "@0xproject/utils": "^1.0.1",
-        "@0xproject/web3-wrapper": "^1.0.1",
-        "ethereum-types": "^1.0.1",
+        "@0xproject/base-contract": "^1.0.0",
+        "@0xproject/order-utils": "^1.0.0-rc.1",
+        "@0xproject/types": "^1.0.0-rc.1",
+        "ethereum-types": "^1.0.0",
+        "@0xproject/typescript-typings": "^1.0.0",
+        "@0xproject/utils": "^1.0.0",
+        "@0xproject/web3-wrapper": "^1.0.0",
         "ethers": "3.0.22",
         "lodash": "^4.17.4"
     },
