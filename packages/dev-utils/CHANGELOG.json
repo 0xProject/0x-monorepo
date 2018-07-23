@@ -46,7 +46,8 @@
                 "note": "Add SolidityProfiler to EnvVars",
                 "pr": 675
             }
-        ]
+        ],
+        "timestamp": 1527008544
     },
     {
         "version": "0.4.2",

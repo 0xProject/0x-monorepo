@@ -6,7 +6,8 @@
                 "note": "Fix the abi-gen entry point in package.json",
                 "pr": 901
             }
-        ]
+        ],
+        "timestamp": 1532353938
     },
     {
         "timestamp": 1532043000,
