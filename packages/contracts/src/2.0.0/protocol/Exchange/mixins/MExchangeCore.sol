@@ -56,7 +56,7 @@ contract MExchangeCore is
     event CancelUpTo(
         address indexed makerAddress,         // Orders cancelled must have been created by this address.
         address indexed senderAddress,        // Orders cancelled must have a `senderAddress` equal to this address.
-        uint256 orderEpoch                    // Orders specified makerAddress and senderAddress with a salt <= this value are considered cancelled.
+        uint256 orderEpoch                    // Orders with specified makerAddress and senderAddress with a salt less than this value are considered cancelled.
     );
 
     /// @dev Updates state with results of a fill order.
