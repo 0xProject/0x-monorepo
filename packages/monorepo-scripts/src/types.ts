@@ -22,6 +22,11 @@ export enum SemVerIndex {
     Patch,
     Minor,
     Major,
+    Prepatch,
+    Preminor,
+    Premajor,
+    Prerelease,
+    Custom,
 }
 
 export interface PackageToVersionChange {

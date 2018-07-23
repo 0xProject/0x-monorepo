@@ -19,11 +19,6 @@ const DOC_GEN_COMMAND = 'docs:json';
 const NPM_NAMESPACE = '@0xproject/';
 const IS_DRY_RUN = process.env.IS_DRY_RUN === 'true';
 const TODAYS_TIMESTAMP = moment().unix();
-const semverNameToIndex: { [semver: string]: number } = {
-    patch: SemVerIndex.Patch,
-    minor: SemVerIndex.Minor,
-    major: SemVerIndex.Major,
-};
 const packageNameToWebsitePath: { [name: string]: string } = {
     '0x.js': '0xjs',
     'web3-wrapper': 'web3_wrapper',
@@ -176,6 +171,7 @@ async function lernaPublishAsync(packageToVersionChange: { [name: string]: strin
         cwd: constants.monorepoRootPath,
     });
     let shouldPrintOutput = false;
+    let packageName: string;
     child.stdout.on('data', (data: Buffer) => {
         const output = data.toString('utf8');
         if (shouldPrintOutput) {
@@ -184,14 +180,15 @@ async function lernaPublishAsync(packageToVersionChange: { [name: string]: strin
         const isVersionPrompt = _.includes(output, 'Select a new version');
         if (isVersionPrompt) {
             const outputStripLeft = output.split('new version for ')[1];
-            const packageName = outputStripLeft.split(' ')[0];
-            let versionChange = packageToVersionChange[packageName];
-            const isPrivatePackage = _.isUndefined(versionChange);
-            if (isPrivatePackage) {
-                versionChange = 'patch'; // Always patch updates to private packages.
-            }
-            const semVerIndex = semverNameToIndex[versionChange];
-            child.stdin.write(`${semVerIndex}\n`);
+            packageName = outputStripLeft.split(' ')[0];
+            child.stdin.write(`${SemVerIndex.Custom}\n`);
+            return;
+        }
+        const isCustomVersionPrompt = _.includes(output, 'Enter a custom version');
+        if (isCustomVersionPrompt) {
+            const versionChange = packageToVersionChange[packageName];
+            child.stdin.write(`${versionChange}\n`);
+            return;
         }
         const isFinalPrompt = _.includes(output, 'Are you sure you want to publish the above changes?');
         if (isFinalPrompt && !IS_DRY_RUN) {
