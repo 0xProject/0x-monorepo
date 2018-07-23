@@ -172,8 +172,7 @@ async function updateChangeLogsAsync(updatedPublicPackages: Package[]): Promise<
 async function lernaPublishAsync(packageToVersionChange: { [name: string]: string }): Promise<void> {
     // HACK: Lerna publish does not provide a way to specify multiple package versions via
     // flags so instead we need to interact with their interactive prompt interface.
-    const PACKAGE_REGISTRY = 'https://registry.npmjs.org/';
-    const child = spawn('lerna', ['publish', `--registry=${PACKAGE_REGISTRY}`], {
+    const child = spawn('lerna', ['publish'], {
         cwd: constants.monorepoRootPath,
     });
     let shouldPrintOutput = false;

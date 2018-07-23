@@ -9,5 +9,6 @@
         }
     },
     "npmClient": "yarn",
-    "useWorkspaces": true
+    "useWorkspaces": true,
+    "registry": "http://localhost:4873"
 }
