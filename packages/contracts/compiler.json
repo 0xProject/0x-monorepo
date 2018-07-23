@@ -39,6 +39,7 @@
         "MultiSigWalletWithTimeLock",
         "TestAssetProxyOwner",
         "TestAssetProxyDispatcher",
+        "TestConstants",
         "TestLibBytes",
         "TestLibs",
         "TestSignatureValidator",
