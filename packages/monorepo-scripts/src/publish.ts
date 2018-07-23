@@ -203,9 +203,8 @@ async function lernaPublishAsync(packageToNextVersion: { [name: string]: string 
             packageName = packageNameFound;
             sleepAndWrite(child.stdin, SemVerIndex.Custom);
         }
-        const isCustomVersionPrompt = output === '? Enter a custom version ';
+        const isCustomVersionPrompt = _.includes(output, 'Enter a custom version');
         if (isCustomVersionPrompt) {
-            console.log('custom version prompt hit!');
             const versionChange = packageToNextVersion[packageName];
             if (_.isUndefined(versionChange)) {
                 throw new Error(`Must have a nextVersion for each packageName. Didn't find one for ${packageName}`);
@@ -232,7 +231,6 @@ async function lernaPublishAsync(packageToNextVersion: { [name: string]: string 
 function sleepAndWrite(fileDescriptor: any, input: string | number): void {
     const TIMEOUT = 1000;
     setTimeout(() => {
-        console.log('Printing to console:', input);
         fileDescriptor.write(`${input}\n`);
     }, TIMEOUT);
 }
