@@ -1,6 +1,6 @@
 {
     "name": "@0xproject/web3-wrapper",
-    "version": "1.0.0",
+    "version": "1.0.1",
     "engines": {
         "node": ">=6.12"
     },
@@ -45,8 +45,8 @@
     },
     "homepage": "https://github.com/0xProject/0x-monorepo/packages/web3-wrapper/README.md",
     "devDependencies": {
-        "@0xproject/monorepo-scripts": "^1.0.0",
-        "@0xproject/tslint-config": "^1.0.0",
+        "@0xproject/monorepo-scripts": "^1.0.1",
+        "@0xproject/tslint-config": "^1.0.1",
         "@types/lodash": "4.14.104",
         "chai": "^4.0.1",
         "chai-as-promised": "^7.1.0",
@@ -64,11 +64,11 @@
         "typescript": "2.7.1"
     },
     "dependencies": {
-        "@0xproject/assert": "^1.0.0",
-        "@0xproject/json-schemas": "^1.0.0-rc.1",
-        "@0xproject/typescript-typings": "^1.0.0",
-        "@0xproject/utils": "^1.0.0",
-        "ethereum-types": "^1.0.0",
+        "@0xproject/assert": "^1.0.1",
+        "@0xproject/json-schemas": "^1.0.0",
+        "@0xproject/typescript-typings": "^1.0.1",
+        "@0xproject/utils": "^1.0.1",
+        "ethereum-types": "^1.0.1",
         "ethereumjs-util": "^5.1.1",
         "ethers": "3.0.22",
         "lodash": "^4.17.4"
