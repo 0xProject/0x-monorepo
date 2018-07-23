@@ -51,27 +51,27 @@ export const postpublishUtils = {
         return configs;
     },
     async runAsync(packageJSON: any, tsConfigJSON: any, cwd: string): Promise<void> {
-        const configs = postpublishUtils.generateConfig(packageJSON, tsConfigJSON, cwd);
-        await postpublishUtils.publishReleaseNotesAsync(
-            configs.cwd,
-            configs.packageName,
-            configs.version,
-            configs.assets,
-        );
-        if (
-            !_.isUndefined(configs.docPublishConfigs.s3BucketPath) ||
-            !_.isUndefined(configs.docPublishConfigs.s3StagingBucketPath)
-        ) {
-            utils.log('POSTPUBLISH: Release successful, generating docs...');
-            await postpublishUtils.generateAndUploadDocsAsync(
-                configs.cwd,
-                configs.docPublishConfigs.fileIncludes,
-                configs.version,
-                configs.docPublishConfigs.s3BucketPath,
-            );
-        } else {
-            utils.log(`POSTPUBLISH: No S3Bucket config found for ${packageJSON.name}. Skipping doc JSON generation.`);
-        }
+        // const configs = postpublishUtils.generateConfig(packageJSON, tsConfigJSON, cwd);
+        // await postpublishUtils.publishReleaseNotesAsync(
+        //     configs.cwd,
+        //     configs.packageName,
+        //     configs.version,
+        //     configs.assets,
+        // );
+        // if (
+        //     !_.isUndefined(configs.docPublishConfigs.s3BucketPath) ||
+        //     !_.isUndefined(configs.docPublishConfigs.s3StagingBucketPath)
+        // ) {
+        //     utils.log('POSTPUBLISH: Release successful, generating docs...');
+        //     await postpublishUtils.generateAndUploadDocsAsync(
+        //         configs.cwd,
+        //         configs.docPublishConfigs.fileIncludes,
+        //         configs.version,
+        //         configs.docPublishConfigs.s3BucketPath,
+        //     );
+        // } else {
+        //     utils.log(`POSTPUBLISH: No S3Bucket config found for ${packageJSON.name}. Skipping doc JSON generation.`);
+        // }
     },
     async publishDocsToStagingAsync(packageJSON: any, tsConfigJSON: any, cwd: string): Promise<void> {
         const configs = postpublishUtils.generateConfig(packageJSON, tsConfigJSON, cwd);

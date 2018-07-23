@@ -37,7 +37,7 @@ const packageNameToWebsitePath: { [name: string]: string } = {
     const shouldIncludePrivate = false;
     const updatedPublicPackages = await utils.getUpdatedPackagesAsync(shouldIncludePrivate);
 
-    await confirmDocPagesRenderAsync(updatedPublicPackages);
+    // await confirmDocPagesRenderAsync(updatedPublicPackages);
 
     // Update CHANGELOGs
     const updatedPublicPackageNames = _.map(updatedPublicPackages, pkg => pkg.packageJson.name);
@@ -46,7 +46,7 @@ const packageNameToWebsitePath: { [name: string]: string } = {
 
     // Push changelog changes to Github
     if (!IS_DRY_RUN) {
-        await pushChangelogsToGithubAsync();
+        // await pushChangelogsToGithubAsync();
     }
 
     // Call LernaPublish
