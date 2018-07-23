@@ -1,5 +1,3 @@
-declare module 'react-tooltip';
-
 declare module '*.json' {
     const json: any;
     /* tslint:disable */

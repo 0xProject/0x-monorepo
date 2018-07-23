@@ -1,5 +1,3 @@
-declare module 'react-highlight';
-
 declare module '*.json' {
     const json: any;
     /* tslint:disable */
