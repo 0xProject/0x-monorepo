@@ -1,5 +1,22 @@
 [
     {
+        "version": "1.0.1-rc.1",
+        "changes": [
+            {
+                "note": "Dependencies updated"
+            }
+        ]
+    },
+    {
+        "version": "1.0.0",
+        "changes": [
+            {
+                "note": "Dependencies updated"
+            }
+        ],
+        "timestamp": 1532357734
+    },
+    {
         "version": "1.0.0-rc.2",
         "changes": [
             {
