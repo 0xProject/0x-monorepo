@@ -47,9 +47,11 @@ const packageNameToWebsitePath: { [name: string]: string } = {
 
     const updatedPrivatePackages = _.filter(allUpdatedPackages, pkg => pkg.packageJson.private);
     _.each(updatedPrivatePackages, pkg => {
-        const nextPatchVersionIfValid = semver.inc(pkg.packageJson.version, 'patch');
+        const currentVersion = pkg.packageJson.version;
+        const packageName = pkg.packageJson.name;
+        const nextPatchVersionIfValid = semver.inc(currentVersion, 'patch');
         if (!_.isNull(nextPatchVersionIfValid)) {
-            packageToNextVersion[pkg.packageJson.name] = nextPatchVersionIfValid;
+            packageToNextVersion[packageName] = nextPatchVersionIfValid;
         } else {
             throw new Error(`Encountered invalid semver version: ${currentVersion} for package: ${packageName}`);
         }
