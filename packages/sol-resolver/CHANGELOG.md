@@ -1,9 +1,18 @@
 <!--
-This file is auto-generated using the monorepo-scripts package. Don't edit directly.
+changelogUtils.file is auto-generated using the monorepo-scripts package. Don't edit directly.
 Edit the package's CHANGELOG.json file only.
 -->
 
 CHANGELOG
+
+## v1.0.1 - _July 23, 2018_
+
+    * Dependencies updated
+
+## v1.0.0 - _July 20, 2018_
+
+    * Fix a bug in FsResolver where it tries to read directories as files (#589)
+    * Fix a bug in NameResolver where it is not ignoring .sol files (#589)
 
 ## v0.0.8 - _July 9, 2018_
 

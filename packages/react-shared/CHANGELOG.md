@@ -1,9 +1,17 @@
 <!--
-This file is auto-generated using the monorepo-scripts package. Don't edit directly.
+changelogUtils.file is auto-generated using the monorepo-scripts package. Don't edit directly.
 Edit the package's CHANGELOG.json file only.
 -->
 
 CHANGELOG
+
+## v1.0.1 - _July 23, 2018_
+
+    * Dependencies updated
+
+## v1.0.0 - _July 20, 2018_
+
+    * Dependencies updated
 
 ## v0.2.3 - _July 18, 2018_
 
@@ -17,13 +25,9 @@ CHANGELOG
 
     * Dependencies updated
 
-## v0.2.0 - _June 1, 2018_
+## v0.2.0 - _May 5, 2018_
 
-    * Incorrect publish that was unpublished
-
-## v0.1.7 - _May 22, 2018_
-
-    * Dependencies updated
+    * Removed portal specific colors
 
 ## v0.1.6 - _May 5, 2018_
 

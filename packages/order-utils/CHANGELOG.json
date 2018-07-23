@@ -6,7 +6,8 @@
                 "note":
                     "Upgrade ethereumjs-abi dep including a fix so that addresses starting with 0 are properly decoded by `decodeERC20AssetData`"
             }
-        ]
+        ],
+        "timestamp": 1532357734
     },
     {
         "timestamp": 1532043000,
