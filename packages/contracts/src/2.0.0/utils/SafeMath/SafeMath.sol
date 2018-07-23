@@ -34,7 +34,7 @@ contract SafeMath {
     {
         require(
             b <= a,
-            "UINT256_OVERFLOW"
+            "UINT256_UNDERFLOW"
         );
         return a - b;
     }

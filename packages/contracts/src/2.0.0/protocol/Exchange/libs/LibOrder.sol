@@ -103,20 +103,20 @@ contract LibOrder is
         bytes32 takerAssetDataHash = keccak256(order.takerAssetData);
 
         // Assembly for more efficiently computing:
-        //    keccak256(abi.encode(
-        //        order.makerAddress,
-        //        order.takerAddress,
-        //        order.feeRecipientAddress,
-        //        order.senderAddress,
-        //        order.makerAssetAmount,
-        //        order.takerAssetAmount,
-        //        order.makerFee,
-        //        order.takerFee,
-        //        order.expirationTimeSeconds,
-        //        order.salt,
-        //        keccak256(order.makerAssetData),
-        //        keccak256(order.takerAssetData)
-        //    ));
+        // keccak256(abi.encode(
+        //     order.makerAddress,
+        //     order.takerAddress,
+        //     order.feeRecipientAddress,
+        //     order.senderAddress,
+        //     order.makerAssetAmount,
+        //     order.takerAssetAmount,
+        //     order.makerFee,
+        //     order.takerFee,
+        //     order.expirationTimeSeconds,
+        //     order.salt,
+        //     keccak256(order.makerAssetData),
+        //     keccak256(order.takerAssetData)
+        // ));
 
         assembly {
             // Backup

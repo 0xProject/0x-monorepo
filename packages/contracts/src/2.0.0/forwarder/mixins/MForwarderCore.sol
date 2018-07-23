@@ -28,65 +28,15 @@ contract MForwarderCore is
     IForwarderCore
 {
 
-    /// @dev Market sells WETH for ERC20 tokens.
-    /// @param orders An array of Order struct containing order specifications.
-    /// @param signatures An array of Proof that order has been created by maker.
-    /// @param feeOrders An array of Order struct containing order specifications for fees.
-    /// @param feeSignatures An array of Proof that order has been created by maker for the fee orders.
-    /// @param wethSellAmount The amount of WETH to sell.
-    /// @return FillResults amounts filled and fees paid by maker and taker.
-    function marketSellEthForERC20Internal(
-        LibOrder.Order[] memory orders,
-        bytes[] memory signatures,
-        LibOrder.Order[] memory feeOrders,
-        bytes[] memory feeSignatures,
-        uint256 wethSellAmount
+    /// @dev Ensures that all ZRX fees have been repurchased and no extra WETH owned by this contract has been sold.
+    /// @param orderFillResults Amounts filled and fees paid for primary orders.
+    /// @param feeOrderFillResults Amounts filled and fees paid for fee orders.
+    /// @param zrxBuyAmount The amount of ZRX that needed to be repurchased after filling primary orders.
+    function assertValidFillResults(
+        LibFillResults.FillResults memory orderFillResults,
+        LibFillResults.FillResults memory feeOrderFillResults,
+        uint256 zrxBuyAmount
     )
         internal
-        returns (LibFillResults.FillResults memory totalFillResults);
-
-    /// @dev Market sells WETH for ZRX tokens.
-    /// @param orders An array of Order struct containing order specifications.
-    /// @param signatures An array of Proof that order has been created by maker.
-    /// @param wethSellAmount The amount of WETH to sell.
-    /// @return FillResults amounts filled and fees paid by maker and taker.
-    function marketSellEthForZRXInternal(
-        LibOrder.Order[] memory orders,
-        bytes[] memory signatures,
-        uint256 wethSellAmount
-    )
-        internal
-        returns (LibFillResults.FillResults memory totalFillResults);
-
-    /// @dev Buys an exact amount of an ERC20 token using WETH.
-    /// @param orders Orders to fill. The maker asset is the ERC20 token to buy. The taker asset is WETH.
-    /// @param signatures Proof that the orders were created by their respective makers.
-    /// @param feeOrders to fill. The maker asset is ZRX and the taker asset is WETH.
-    /// @param feeSignatures Proof that the feeOrders were created by their respective makers.
-    /// @param makerTokenFillAmount Amount of the ERC20 token to buy.
-    /// @return totalFillResults Aggregated fill results of buying the ERC20 and ZRX tokens.
-    function marketBuyERC20TokensInternal(
-        LibOrder.Order[] memory orders,
-        bytes[] memory signatures,
-        LibOrder.Order[] memory feeOrders,
-        bytes[] memory feeSignatures,
-        uint256 makerTokenFillAmount
-    )
-        internal
-        returns (LibFillResults.FillResults memory totalFillResults);
-
-    /// @dev Buys an all of the ERC721 tokens in the orders.
-    /// @param orders Orders to fill. The maker asset is the ERC721 token to buy. The taker asset is WETH.
-    /// @param signatures Proof that the orders were created by their respective makers.
-    /// @param feeOrders to fill. The maker asset is ZRX and the taker asset is WETH.
-    /// @param feeSignatures Proof that the feeOrders were created by their respective makers.
-    /// @return totalFillResults Aggregated fill results of buying the ERC721 tokens and ZRX tokens.
-    function batchBuyERC721TokensInternal(
-        LibOrder.Order[] memory orders,
-        bytes[] memory signatures,
-        LibOrder.Order[] memory feeOrders,
-        bytes[] memory feeSignatures
-    )
-        internal
-        returns (LibFillResults.FillResults memory totalFillResults);
+        view;
 }

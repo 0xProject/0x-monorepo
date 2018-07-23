@@ -19,58 +19,78 @@
 pragma solidity 0.4.24;
 
 import "../utils/LibBytes/LibBytes.sol";
+import "../utils/Ownable/Ownable.sol";
+import "../tokens/ERC20Token/IERC20Token.sol";
 import "../tokens/ERC721Token/IERC721Token.sol";
-import "./mixins/MTransfer.sol";
+import "./libs/LibConstants.sol";
+import "./mixins/MAssets.sol";
 
 
-contract MixinTransfer is
-    MTransfer
+contract MixinAssets is
+    Ownable,
+    LibConstants,
+    MAssets
 {
 
     using LibBytes for bytes;
 
     bytes4 constant internal ERC20_TRANSFER_SELECTOR = bytes4(keccak256("transfer(address,uint256)"));
-    bytes4 constant internal ERC721_RECEIVED = bytes4(keccak256("onERC721Received(address,uint256,bytes)"));
-    bytes4 constant internal ERC721_RECEIVED_OPERATOR = bytes4(keccak256("onERC721Received(address,address,uint256,bytes)"));
 
-    function onERC721Received(
-        address,
-        uint256,
-        bytes memory
-    )
-        public
-        pure
-        returns(bytes4)
-    {
-        return ERC721_RECEIVED;
-    }
-
-    function onERC721Received(
-        address,
-        address,
-        uint256,
-        bytes memory
-    )
-        public
-        pure
-        returns(bytes4)
-    {
-        return ERC721_RECEIVED_OPERATOR;
-    }
-
-    function transferERC20Token(
+    /// @dev Withdraws ERC20 tokens from this contract. The contract requires a ZRX balance in order to 
+    ///      function optimally, and this function allows the ZRX to be withdrawn by owner. It may also be
+    ///      used to withdraw tokens that were accidentally sent to this contract.
+    /// @param token Address of ERC20 token to withdraw.
+    /// @param amount Amount of ERC20 token to withdraw.
+    function withdrawERC20(
         address token,
-        address to,
+        uint256 amount
+    )
+        external
+        onlyOwner
+    {
+        require(
+            IERC20Token(token).transfer(msg.sender, amount),
+            "WITHDRAWAL_FAILED"
+        );
+    }
+
+    /// @dev Transfers given amount of asset to sender.
+    /// @param assetData Byte array encoded for the respective asset proxy.
+    /// @param amount Amount of asset to transfer to sender.
+    function transferPurchasedAssetToSender(
+        bytes memory assetData,
         uint256 amount
     )
         internal
     {
+        bytes4 proxyId = assetData.readBytes4(0);
+
+        if (proxyId == ERC20_DATA_ID) {
+            transferERC20Token(assetData, amount);
+        } else if (proxyId == ERC721_DATA_ID) {
+            transferERC721Token(assetData, amount);
+        } else {
+            revert("UNSUPPORTED_TOKEN_PROXY");
+        }
+    }
+
+    /// @dev Decodes ERC20 assetData and transfers given amount to sender.
+    /// @param assetData Byte array encoded for the respective asset proxy.
+    /// @param amount Amount of asset to transfer to sender.
+    function transferERC20Token(
+        bytes memory assetData,
+        uint256 amount
+    )
+        internal
+    {
+        address token = assetData.readAddress(16);
+
         // Transfer tokens.
         // We do a raw call so we can check the success separate
         // from the return data.
         bool success = token.call(abi.encodeWithSelector(
             ERC20_TRANSFER_SELECTOR,
-            to,
+            msg.sender,
             amount
         ));
         require(
@@ -100,18 +120,27 @@ contract MixinTransfer is
         );
     }
 
+    /// @dev Decodes ERC721 assetData and transfers given amount to sender.
+    /// @param assetData Byte array encoded for the respective asset proxy.
+    /// @param amount Amount of asset to transfer to sender.
     function transferERC721Token(
         bytes memory assetData,
-        address to
+        uint256 amount
     )
         internal
     {
+        require(
+            amount == 1,
+            "INVALID_AMOUNT"
+        );
         // Decode asset data.
         address token = assetData.readAddress(16);
         uint256 tokenId = assetData.readUint256(36);
+
+        // Perform transfer.
         IERC721Token(token).transferFrom(
             address(this),
-            to,
+            msg.sender,
             tokenId
         );
     }
