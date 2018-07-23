@@ -187,6 +187,9 @@ async function lernaPublishAsync(packageToNextVersion: { [name: string]: string 
     let packageName: string;
     child.stdout.on('data', (data: Buffer) => {
         const output = data.toString('utf8');
+        console.log('-------');
+        console.log(output);
+        console.log('-------');
         if (shouldPrintOutput) {
             utils.log(output);
         }
