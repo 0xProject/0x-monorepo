@@ -122,6 +122,14 @@ async function updateChangeLogsAsync(updatedPublicPackages: Package[]): Promise<
             currentVersion,
             changelog,
         );
+        if (pkg.packageJson.private) {
+            const nextPatchVersionIfValid = semver.inc(currentVersion, 'patch');
+            if (!_.isNull(nextPatchVersionIfValid)) {
+                packageToNextVersion[packageName] = nextPatchVersionIfValid;
+            } else {
+                throw new Error(`Encountered invalid semver version: ${currentVersion} for package: ${packageName}`);
+            }
+        }
         if (shouldAddNewEntry) {
             // Create a new entry for a patch version with generic changelog entry.
             const nextPatchVersionIfValid = semver.inc(currentVersion, 'patch');
