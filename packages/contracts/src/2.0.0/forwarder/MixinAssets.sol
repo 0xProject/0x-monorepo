@@ -35,8 +35,6 @@ contract MixinAssets is
     using LibBytes for bytes;
 
     bytes4 constant internal ERC20_TRANSFER_SELECTOR = bytes4(keccak256("transfer(address,uint256)"));
-    bytes4 constant internal ERC721_RECEIVED = bytes4(keccak256("onERC721Received(address,uint256,bytes)"));
-    bytes4 constant internal ERC721_RECEIVED_OPERATOR = bytes4(keccak256("onERC721Received(address,address,uint256,bytes)"));
 
     /// @dev Withdraws ERC20 tokens from this contract. The contract requires a ZRX balance in order to 
     ///      function optimally, and this function allows the ZRX to be withdrawn by owner. It may also be
@@ -54,31 +52,6 @@ contract MixinAssets is
             IERC20Token(token).transfer(msg.sender, amount),
             "WITHDRAWAL_FAILED"
         );
-    }
-
-    function onERC721Received(
-        address,
-        uint256,
-        bytes memory
-    )
-        public
-        pure
-        returns(bytes4)
-    {
-        return ERC721_RECEIVED;
-    }
-
-    function onERC721Received(
-        address,
-        address,
-        uint256,
-        bytes memory
-    )
-        public
-        pure
-        returns(bytes4)
-    {
-        return ERC721_RECEIVED_OPERATOR;
     }
 
     /// @dev Transfers given amount of asset to sender.

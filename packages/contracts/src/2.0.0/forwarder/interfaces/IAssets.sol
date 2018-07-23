@@ -31,23 +31,4 @@ contract IAssets {
         uint256 amount
     )
         external;
-
-    function onERC721Received(
-        address,
-        uint256,
-        bytes memory
-    )
-        public
-        pure
-        returns(bytes4);
-
-    function onERC721Received(
-        address,
-        address,
-        uint256,
-        bytes memory
-    )
-        public
-        pure
-        returns(bytes4);
 }
