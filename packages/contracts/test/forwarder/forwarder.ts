@@ -29,7 +29,7 @@ const blockchainLifecycle = new BlockchainLifecycle(web3Wrapper);
 const DECIMALS_DEFAULT = 18;
 const MAX_WETH_FILL_PERCENTAGE = 95;
 
-describe.only(ContractName.Forwarder, () => {
+describe(ContractName.Forwarder, () => {
     let makerAddress: string;
     let owner: string;
     let takerAddress: string;

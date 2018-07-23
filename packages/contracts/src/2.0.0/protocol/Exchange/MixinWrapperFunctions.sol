@@ -120,7 +120,7 @@ contract MixinWrapperFunctions is
         returns (FillResults memory totalFillResults)
     {
         uint256 ordersLength = orders.length;
-        for (uint256 i = 0; i < ordersLength; i++) {
+        for (uint256 i = 0; i != ordersLength; i++) {
             FillResults memory singleFillResults = fillOrder(
                 orders[i],
                 takerAssetFillAmounts[i],
@@ -146,7 +146,7 @@ contract MixinWrapperFunctions is
         returns (FillResults memory totalFillResults)
     {
         uint256 ordersLength = orders.length;
-        for (uint256 i = 0; i < ordersLength; i++) {
+        for (uint256 i = 0; i != ordersLength; i++) {
             FillResults memory singleFillResults = fillOrKillOrder(
                 orders[i],
                 takerAssetFillAmounts[i],
@@ -173,7 +173,7 @@ contract MixinWrapperFunctions is
         returns (FillResults memory totalFillResults)
     {
         uint256 ordersLength = orders.length;
-        for (uint256 i = 0; i < ordersLength; i++) {
+        for (uint256 i = 0; i != ordersLength; i++) {
             FillResults memory singleFillResults = fillOrderNoThrow(
                 orders[i],
                 takerAssetFillAmounts[i],
@@ -200,7 +200,7 @@ contract MixinWrapperFunctions is
         bytes memory takerAssetData = orders[0].takerAssetData;
     
         uint256 ordersLength = orders.length;
-        for (uint256 i = 0; i < ordersLength; i++) {
+        for (uint256 i = 0; i != ordersLength; i++) {
 
             // We assume that asset being sold by taker is the same for each order.
             // Rather than passing this in as calldata, we use the takerAssetData from the first order in all later orders.
@@ -220,7 +220,7 @@ contract MixinWrapperFunctions is
             addFillResults(totalFillResults, singleFillResults);
 
             // Stop execution if the entire amount of takerAsset has been sold
-            if (totalFillResults.takerAssetFilledAmount == takerAssetFillAmount) {
+            if (totalFillResults.takerAssetFilledAmount >= takerAssetFillAmount) {
                 break;
             }
         }
@@ -244,7 +244,7 @@ contract MixinWrapperFunctions is
         bytes memory takerAssetData = orders[0].takerAssetData;
 
         uint256 ordersLength = orders.length;
-        for (uint256 i = 0; i < ordersLength; i++) {
+        for (uint256 i = 0; i != ordersLength; i++) {
 
             // We assume that asset being sold by taker is the same for each order.
             // Rather than passing this in as calldata, we use the takerAssetData from the first order in all later orders.
@@ -264,7 +264,7 @@ contract MixinWrapperFunctions is
             addFillResults(totalFillResults, singleFillResults);
 
             // Stop execution if the entire amount of takerAsset has been sold
-            if (totalFillResults.takerAssetFilledAmount == takerAssetFillAmount) {
+            if (totalFillResults.takerAssetFilledAmount >= takerAssetFillAmount) {
                 break;
             }
         }
@@ -287,7 +287,7 @@ contract MixinWrapperFunctions is
         bytes memory makerAssetData = orders[0].makerAssetData;
 
         uint256 ordersLength = orders.length;
-        for (uint256 i = 0; i < ordersLength; i++) {
+        for (uint256 i = 0; i != ordersLength; i++) {
 
             // We assume that asset being bought by taker is the same for each order.
             // Rather than passing this in as calldata, we copy the makerAssetData from the first order onto all later orders.
@@ -315,7 +315,7 @@ contract MixinWrapperFunctions is
             addFillResults(totalFillResults, singleFillResults);
 
             // Stop execution if the entire amount of makerAsset has been bought
-            if (totalFillResults.makerAssetFilledAmount == makerAssetFillAmount) {
+            if (totalFillResults.makerAssetFilledAmount >= makerAssetFillAmount) {
                 break;
             }
         }
@@ -339,7 +339,7 @@ contract MixinWrapperFunctions is
         bytes memory makerAssetData = orders[0].makerAssetData;
 
         uint256 ordersLength = orders.length;
-        for (uint256 i = 0; i < ordersLength; i++) {
+        for (uint256 i = 0; i != ordersLength; i++) {
 
             // We assume that asset being bought by taker is the same for each order.
             // Rather than passing this in as calldata, we copy the makerAssetData from the first order onto all later orders.
@@ -367,7 +367,7 @@ contract MixinWrapperFunctions is
             addFillResults(totalFillResults, singleFillResults);
 
             // Stop execution if the entire amount of makerAsset has been bought
-            if (totalFillResults.makerAssetFilledAmount == makerAssetFillAmount) {
+            if (totalFillResults.makerAssetFilledAmount >= makerAssetFillAmount) {
                 break;
             }
         }
@@ -380,7 +380,7 @@ contract MixinWrapperFunctions is
         public
     {
         uint256 ordersLength = orders.length;
-        for (uint256 i = 0; i < ordersLength; i++) {
+        for (uint256 i = 0; i != ordersLength; i++) {
             cancelOrder(orders[i]);
         }
     }
@@ -395,7 +395,7 @@ contract MixinWrapperFunctions is
     {
         uint256 ordersLength = orders.length;
         LibOrder.OrderInfo[] memory ordersInfo = new LibOrder.OrderInfo[](ordersLength);
-        for (uint256 i = 0; i < ordersLength; i++) {
+        for (uint256 i = 0; i != ordersLength; i++) {
             ordersInfo[i] = getOrderInfo(orders[i]);
         }
         return ordersInfo;

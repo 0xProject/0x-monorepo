@@ -104,7 +104,7 @@ contract MixinExchangeWrapper is
         bytes memory wethAssetData = WETH_ASSET_DATA;
 
         uint256 ordersLength = orders.length;
-        for (uint256 i = 0; i < ordersLength; i++) {
+        for (uint256 i = 0; i != ordersLength; i++) {
 
             // We assume that asset being bought by taker is the same for each order.
             // We assume that asset being sold by taker is WETH for each order.
@@ -125,7 +125,7 @@ contract MixinExchangeWrapper is
             addFillResults(totalFillResults, singleFillResults);
 
             // Stop execution if the entire amount of takerAsset has been sold
-            if (totalFillResults.takerAssetFilledAmount == wethSellAmount) {
+            if (totalFillResults.takerAssetFilledAmount >= wethSellAmount) {
                 break;
             }
         }
@@ -151,7 +151,7 @@ contract MixinExchangeWrapper is
         bytes memory wethAssetData = WETH_ASSET_DATA;
 
         uint256 ordersLength = orders.length;
-        for (uint256 i = 0; i < ordersLength; i++) {
+        for (uint256 i = 0; i != ordersLength; i++) {
 
             // We assume that asset being bought by taker is the same for each order.
             // We assume that asset being sold by taker is WETH for each order.
@@ -180,7 +180,7 @@ contract MixinExchangeWrapper is
             addFillResults(totalFillResults, singleFillResults);
 
             // Stop execution if the entire amount of makerAsset has been bought
-            if (totalFillResults.makerAssetFilledAmount == makerAssetFillAmount) {
+            if (totalFillResults.makerAssetFilledAmount >= makerAssetFillAmount) {
                 break;
             }
         }
@@ -214,7 +214,7 @@ contract MixinExchangeWrapper is
         uint256 zrxPurchased = 0;
 
         uint256 ordersLength = orders.length;
-        for (uint256 i = 0; i < ordersLength; i++) {
+        for (uint256 i = 0; i != ordersLength; i++) {
 
             // All of these are ZRX/WETH, so we can drop the respective assetData from calldata.
             orders[i].makerAssetData = zrxAssetData;
