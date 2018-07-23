@@ -34,15 +34,26 @@ const packageNameToWebsitePath: { [name: string]: string } = {
 
 (async () => {
     // Fetch public, updated Lerna packages
-    const shouldIncludePrivate = false;
-    const updatedPublicPackages = await utils.getUpdatedPackagesAsync(shouldIncludePrivate);
+    const shouldIncludePrivate = true;
+    const allUpdatedPackages = await utils.getUpdatedPackagesAsync(shouldIncludePrivate);
 
     // await confirmDocPagesRenderAsync(updatedPublicPackages);
 
     // Update CHANGELOGs
+    const updatedPublicPackages = _.filter(allUpdatedPackages, pkg => !pkg.packageJson.private);
     const updatedPublicPackageNames = _.map(updatedPublicPackages, pkg => pkg.packageJson.name);
     utils.log(`Will update CHANGELOGs and publish: \n${updatedPublicPackageNames.join('\n')}\n`);
     const packageToNextVersion = await updateChangeLogsAsync(updatedPublicPackages);
+
+    const updatedPrivatePackages = _.filter(allUpdatedPackages, pkg => pkg.packageJson.private);
+    _.each(updatedPrivatePackages, pkg => {
+        const nextPatchVersionIfValid = semver.inc(pkg.packageJson.version, 'patch');
+        if (!_.isNull(nextPatchVersionIfValid)) {
+            packageToNextVersion[pkg.packageJson.name] = nextPatchVersionIfValid;
+        } else {
+            throw new Error(`Encountered invalid semver version: ${currentVersion} for package: ${packageName}`);
+        }
+    });
 
     // Push changelog changes to Github
     if (!IS_DRY_RUN) {
@@ -122,14 +133,6 @@ async function updateChangeLogsAsync(updatedPublicPackages: Package[]): Promise<
             currentVersion,
             changelog,
         );
-        if (pkg.packageJson.private) {
-            const nextPatchVersionIfValid = semver.inc(currentVersion, 'patch');
-            if (!_.isNull(nextPatchVersionIfValid)) {
-                packageToNextVersion[packageName] = nextPatchVersionIfValid;
-            } else {
-                throw new Error(`Encountered invalid semver version: ${currentVersion} for package: ${packageName}`);
-            }
-        }
         if (shouldAddNewEntry) {
             // Create a new entry for a patch version with generic changelog entry.
             const nextPatchVersionIfValid = semver.inc(currentVersion, 'patch');
@@ -196,7 +199,7 @@ async function lernaPublishAsync(packageToNextVersion: { [name: string]: string 
         if (isCustomVersionPrompt) {
             const versionChange = packageToNextVersion[packageName];
             if (_.isUndefined(versionChange)) {
-                console.log('packageName', packageName, 'versionChange', versionChange, ' UNDEFINED!');
+                throw new Error(`Must have a nextVersion for each packageName. Didn't find one for ${packageName}`);
             }
             child.stdin.write(`${versionChange}\n`);
             return;
