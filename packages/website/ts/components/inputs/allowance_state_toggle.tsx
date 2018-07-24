@@ -89,12 +89,12 @@ export class AllowanceStateToggle extends React.Component<AllowanceStateTogglePr
     }
     private _getTooltipContent(): React.ReactNode {
         const symbol = this.props.token.symbol;
+        const isLockingToken = this.props.tokenState.allowance.gt(0);
         switch (this.state.allowanceState) {
             case AllowanceState.Loading:
-                // TODO: support both awaiting confirmation and awaiting transaction.
                 return (
                     <Text noWrap={true} fontColor="white">
-                        Please confirm in MetaMask
+                        {isLockingToken ? 'Locking' : 'Unlocking'} <b>{symbol}</b>
                     </Text>
                 );
             case AllowanceState.Locked:
