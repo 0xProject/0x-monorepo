@@ -1,6 +1,6 @@
 [
     {
-        "version": "1.0.0-rc.2",
+        "version": "1.0.1-rc.2",
         "changes": [
             {
                 "note": "Remove `ECSignatureBuffer`"
