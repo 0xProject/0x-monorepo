@@ -14,6 +14,7 @@ import {
     Provider,
     RawLogEntry,
     TraceParams,
+    Transaction,
     TransactionReceipt,
     TransactionReceiptWithDecodedLogs,
     TransactionTrace,
@@ -221,6 +222,19 @@ export class Web3Wrapper {
         return transactionReceipt;
     }
     /**
+     * Retrieves the transaction data for a given transaction
+     * @param txHash Transaction hash
+     * @returns The raw transaction data
+     */
+    public async getTransactionByHashAsync(txHash: string): Promise<Transaction> {
+        assert.isHexString('txHash', txHash);
+        const transaction = await this._sendRawPayloadAsync<Transaction>({
+            method: 'eth_getTransactionByHash',
+            params: [txHash],
+        });
+        return transaction;
+    }
+    /**
      * Retrieves an accounts Ether balance in wei
      * @param owner Account whose balance you wish to check
      * @returns Balance in wei
@@ -291,7 +305,6 @@ export class Web3Wrapper {
      * @returns Signature string (might be VRS or RSV depending on the Signer)
      */
     public async signMessageAsync(address: string, message: string): Promise<string> {
-        assert.isETHAddressHex('address', address);
         assert.isETHAddressHex('address', address);
         assert.isString('message', message); // TODO: Should this be stricter? Hex string?
         const signData = await this._sendRawPayloadAsync<string>({

@@ -1,14 +1,10 @@
 {
     "lerna": "3.0.0-beta.14",
     "packages": ["packages/*"],
-    "commands": {
-        "publish": {
-            "allowBranch": "development"
-        }
-    },
     "version": "independent",
     "commands": {
         "publish": {
+            "registry": "http://localhost:4873/",
             "ignore": ["test/**/*", "*.md", "scripts", "lib", "tslint.json", "tsconfig.json"]
         }
     },

@@ -32,6 +32,7 @@ contract MixinWrapperFunctions is
     LibAbiEncoder,
     MExchangeCore
 {
+
     /// @dev Fills the input order. Reverts if exact takerAssetFillAmount not filled.
     /// @param order Order struct containing order specifications.
     /// @param takerAssetFillAmount Desired amount of takerAsset to sell.
@@ -56,7 +57,7 @@ contract MixinWrapperFunctions is
         return fillResults;
     }
 
-    /// @dev Fills an order with specified parameters and ECDSA signature.
+    /// @dev Fills the input order.
     ///      Returns false if the transaction would otherwise revert.
     /// @param order Order struct containing order specifications.
     /// @param takerAssetFillAmount Desired amount of takerAsset to sell.
@@ -118,7 +119,8 @@ contract MixinWrapperFunctions is
         public
         returns (FillResults memory totalFillResults)
     {
-        for (uint256 i = 0; i < orders.length; i++) {
+        uint256 ordersLength = orders.length;
+        for (uint256 i = 0; i != ordersLength; i++) {
             FillResults memory singleFillResults = fillOrder(
                 orders[i],
                 takerAssetFillAmounts[i],
@@ -143,7 +145,8 @@ contract MixinWrapperFunctions is
         public
         returns (FillResults memory totalFillResults)
     {
-        for (uint256 i = 0; i < orders.length; i++) {
+        uint256 ordersLength = orders.length;
+        for (uint256 i = 0; i != ordersLength; i++) {
             FillResults memory singleFillResults = fillOrKillOrder(
                 orders[i],
                 takerAssetFillAmounts[i],
@@ -169,7 +172,8 @@ contract MixinWrapperFunctions is
         public
         returns (FillResults memory totalFillResults)
     {
-        for (uint256 i = 0; i < orders.length; i++) {
+        uint256 ordersLength = orders.length;
+        for (uint256 i = 0; i != ordersLength; i++) {
             FillResults memory singleFillResults = fillOrderNoThrow(
                 orders[i],
                 takerAssetFillAmounts[i],
@@ -195,7 +199,8 @@ contract MixinWrapperFunctions is
     {
         bytes memory takerAssetData = orders[0].takerAssetData;
     
-        for (uint256 i = 0; i < orders.length; i++) {
+        uint256 ordersLength = orders.length;
+        for (uint256 i = 0; i != ordersLength; i++) {
 
             // We assume that asset being sold by taker is the same for each order.
             // Rather than passing this in as calldata, we use the takerAssetData from the first order in all later orders.
@@ -215,7 +220,7 @@ contract MixinWrapperFunctions is
             addFillResults(totalFillResults, singleFillResults);
 
             // Stop execution if the entire amount of takerAsset has been sold
-            if (totalFillResults.takerAssetFilledAmount == takerAssetFillAmount) {
+            if (totalFillResults.takerAssetFilledAmount >= takerAssetFillAmount) {
                 break;
             }
         }
@@ -238,7 +243,8 @@ contract MixinWrapperFunctions is
     {
         bytes memory takerAssetData = orders[0].takerAssetData;
 
-        for (uint256 i = 0; i < orders.length; i++) {
+        uint256 ordersLength = orders.length;
+        for (uint256 i = 0; i != ordersLength; i++) {
 
             // We assume that asset being sold by taker is the same for each order.
             // Rather than passing this in as calldata, we use the takerAssetData from the first order in all later orders.
@@ -258,7 +264,7 @@ contract MixinWrapperFunctions is
             addFillResults(totalFillResults, singleFillResults);
 
             // Stop execution if the entire amount of takerAsset has been sold
-            if (totalFillResults.takerAssetFilledAmount == takerAssetFillAmount) {
+            if (totalFillResults.takerAssetFilledAmount >= takerAssetFillAmount) {
                 break;
             }
         }
@@ -280,7 +286,8 @@ contract MixinWrapperFunctions is
     {
         bytes memory makerAssetData = orders[0].makerAssetData;
 
-        for (uint256 i = 0; i < orders.length; i++) {
+        uint256 ordersLength = orders.length;
+        for (uint256 i = 0; i != ordersLength; i++) {
 
             // We assume that asset being bought by taker is the same for each order.
             // Rather than passing this in as calldata, we copy the makerAssetData from the first order onto all later orders.
@@ -308,7 +315,7 @@ contract MixinWrapperFunctions is
             addFillResults(totalFillResults, singleFillResults);
 
             // Stop execution if the entire amount of makerAsset has been bought
-            if (totalFillResults.makerAssetFilledAmount == makerAssetFillAmount) {
+            if (totalFillResults.makerAssetFilledAmount >= makerAssetFillAmount) {
                 break;
             }
         }
@@ -331,7 +338,8 @@ contract MixinWrapperFunctions is
     {
         bytes memory makerAssetData = orders[0].makerAssetData;
 
-        for (uint256 i = 0; i < orders.length; i++) {
+        uint256 ordersLength = orders.length;
+        for (uint256 i = 0; i != ordersLength; i++) {
 
             // We assume that asset being bought by taker is the same for each order.
             // Rather than passing this in as calldata, we copy the makerAssetData from the first order onto all later orders.
@@ -359,7 +367,7 @@ contract MixinWrapperFunctions is
             addFillResults(totalFillResults, singleFillResults);
 
             // Stop execution if the entire amount of makerAsset has been bought
-            if (totalFillResults.makerAssetFilledAmount == makerAssetFillAmount) {
+            if (totalFillResults.makerAssetFilledAmount >= makerAssetFillAmount) {
                 break;
             }
         }
@@ -371,7 +379,8 @@ contract MixinWrapperFunctions is
     function batchCancelOrders(LibOrder.Order[] memory orders)
         public
     {
-        for (uint256 i = 0; i < orders.length; i++) {
+        uint256 ordersLength = orders.length;
+        for (uint256 i = 0; i != ordersLength; i++) {
             cancelOrder(orders[i]);
         }
     }
@@ -384,9 +393,9 @@ contract MixinWrapperFunctions is
         view
         returns (LibOrder.OrderInfo[] memory)
     {
-        uint256 length = orders.length;
-        LibOrder.OrderInfo[] memory ordersInfo = new LibOrder.OrderInfo[](length);
-        for (uint256 i = 0; i < length; i++) {
+        uint256 ordersLength = orders.length;
+        LibOrder.OrderInfo[] memory ordersInfo = new LibOrder.OrderInfo[](ordersLength);
+        for (uint256 i = 0; i != ordersLength; i++) {
             ordersInfo[i] = getOrderInfo(orders[i]);
         }
         return ordersInfo;

@@ -21,7 +21,9 @@ pragma solidity 0.4.24;
 import "../../protocol/Exchange/MixinAssetProxyDispatcher.sol";
 
 
-contract TestAssetProxyDispatcher is MixinAssetProxyDispatcher {
+contract TestAssetProxyDispatcher is 
+    MixinAssetProxyDispatcher
+{
     function publicDispatchTransferFrom(
         bytes memory assetData,
         address from,

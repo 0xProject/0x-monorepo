@@ -20,11 +20,11 @@ pragma solidity 0.4.24;
 pragma experimental ABIEncoderV2;
 
 import "./IForwarderCore.sol";
-import "./IExpectedResults.sol";
+import "./IAssets.sol";
 
 
 // solhint-disable no-empty-blocks
 contract IForwarder is
     IForwarderCore,
-    IExpectedResults
+    IAssets
 {}

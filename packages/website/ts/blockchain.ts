@@ -35,7 +35,7 @@ import * as moment from 'moment';
 import * as React from 'react';
 import contract = require('truffle-contract');
 import { BlockchainWatcher } from 'ts/blockchain_watcher';
-import { TokenSendCompleted } from 'ts/components/flash_messages/token_send_completed';
+import { AssetSendCompleted } from 'ts/components/flash_messages/asset_send_completed';
 import { TransactionSubmitted } from 'ts/components/flash_messages/transaction_submitted';
 import { trackedTokenStorage } from 'ts/local_storage/tracked_token_storage';
 import { tradeHistoryStorage } from 'ts/local_storage/trade_history_storage';
@@ -276,6 +276,32 @@ export class Blockchain {
         );
         await this._showEtherScanLinkAndAwaitTransactionMinedAsync(txHash);
     }
+    public async sendAsync(toAddress: string, amountInBaseUnits: BigNumber): Promise<void> {
+        utils.assert(this._doesUserAddressExist(), BlockchainCallErrs.UserHasNoAssociatedAddresses);
+        const transaction = {
+            from: this._userAddressIfExists,
+            to: toAddress,
+            value: amountInBaseUnits,
+            gasPrice: this._defaultGasPrice,
+        };
+        this._showFlashMessageIfLedger();
+        const txHash = await this._web3Wrapper.sendTransactionAsync(transaction);
+        await this._showEtherScanLinkAndAwaitTransactionMinedAsync(txHash);
+        const etherScanLinkIfExists = sharedUtils.getEtherScanLinkIfExists(
+            txHash,
+            this.networkId,
+            EtherscanLinkSuffixes.Tx,
+        );
+        this._dispatcher.showFlashMessage(
+            React.createElement(AssetSendCompleted, {
+                etherScanLinkIfExists,
+                toAddress,
+                amountInBaseUnits,
+                decimals: constants.DECIMAL_PLACES_ETH,
+                symbol: constants.ETHER_SYMBOL,
+            }),
+        );
+    }
     public async transferAsync(token: Token, toAddress: string, amountInBaseUnits: BigNumber): Promise<void> {
         utils.assert(!_.isUndefined(this._contractWrappers), 'ContractWrappers must be instantiated.');
         utils.assert(this._doesUserAddressExist(), BlockchainCallErrs.UserHasNoAssociatedAddresses);
@@ -297,11 +323,12 @@ export class Blockchain {
             EtherscanLinkSuffixes.Tx,
         );
         this._dispatcher.showFlashMessage(
-            React.createElement(TokenSendCompleted, {
+            React.createElement(AssetSendCompleted, {
                 etherScanLinkIfExists,
-                token,
                 toAddress,
                 amountInBaseUnits,
+                decimals: token.decimals,
+                symbol: token.symbol,
             }),
         );
     }
