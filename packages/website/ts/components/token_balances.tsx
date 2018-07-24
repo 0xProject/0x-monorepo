@@ -24,7 +24,7 @@ import { SendButton } from 'ts/components/send_button';
 import { HelpTooltip } from 'ts/components/ui/help_tooltip';
 import { LifeCycleRaisedButton } from 'ts/components/ui/lifecycle_raised_button';
 import { TokenIcon } from 'ts/components/ui/token_icon';
-import { AllowanceToggle } from 'ts/containers/inputs/allowance_toggle';
+import { AllowanceStateToggle } from 'ts/containers/inputs/allowance_state_toggle';
 import { trackedTokenStorage } from 'ts/local_storage/tracked_token_storage';
 import { Dispatcher } from 'ts/redux/dispatcher';
 import {
@@ -361,12 +361,11 @@ export class TokenBalances extends React.Component<TokenBalancesProps, TokenBala
                     )}
                 </TableRowColumn>
                 <TableRowColumn>
-                    <AllowanceToggle
+                    <AllowanceStateToggle
                         blockchain={this.props.blockchain}
                         token={token}
                         tokenState={tokenState}
                         onErrorOccurred={this._onErrorOccurred.bind(this)}
-                        isDisabled={!tokenState.isLoaded}
                         refetchTokenStateAsync={this._refetchTokenStateAsync.bind(this, token.address)}
                     />
                 </TableRowColumn>

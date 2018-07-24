@@ -74,14 +74,14 @@ interface WalletState {
     isHoveringSidebar: boolean;
 }
 
-interface AllowanceToggleConfig {
+interface AllowanceStateToggleConfig {
     token: Token;
     tokenState: TokenState;
 }
 
 interface AccessoryItemConfig {
     wrappedEtherDirection?: Side;
-    allowanceToggleConfig?: AllowanceToggleConfig;
+    allowanceStateToggleConfig?: AllowanceStateToggleConfig;
 }
 
 const ETHER_ICON_PATH = '/images/ether.png';
@@ -89,7 +89,8 @@ const ICON_DIMENSION = 28;
 const BODY_ITEM_KEY = 'BODY';
 const HEADER_ITEM_KEY = 'HEADER';
 const ETHER_ITEM_KEY = 'ETHER';
-const NO_ALLOWANCE_TOGGLE_SPACE_WIDTH = 56;
+const WRAP_ROW_ALLOWANCE_TOGGLE_WIDTH = 67;
+const ALLOWANCE_TOGGLE_WIDTH = 56;
 const PLACEHOLDER_COLOR = colors.grey300;
 const LOADING_ROWS_COUNT = 6;
 
@@ -338,7 +339,7 @@ export class Wallet extends React.Component<WalletProps, WalletState> {
         );
         const accessoryItemConfig: AccessoryItemConfig = {
             wrappedEtherDirection,
-            allowanceToggleConfig: {
+            allowanceStateToggleConfig: {
                 token,
                 tokenState,
             },
@@ -393,12 +394,14 @@ export class Wallet extends React.Component<WalletProps, WalletState> {
     }
     private _renderAccessoryItems(config: AccessoryItemConfig): React.ReactElement<{}> {
         const shouldShowWrappedEtherAction = !_.isUndefined(config.wrappedEtherDirection);
-        const shouldShowToggle = !_.isUndefined(config.allowanceToggleConfig);
+        const shouldShowToggle = !_.isUndefined(config.allowanceStateToggleConfig);
         // if we don't have a toggle, we still want some space to the right of the "wrap" button so that it aligns with
         // the "unwrap" button in the row below
+        const isWrapEtherRow = shouldShowWrappedEtherAction && config.wrappedEtherDirection === Side.Deposit;
+        const width = isWrapEtherRow ? WRAP_ROW_ALLOWANCE_TOGGLE_WIDTH : ALLOWANCE_TOGGLE_WIDTH;
         const toggle = (
-            <Container className="flex justify-center" width={NO_ALLOWANCE_TOGGLE_SPACE_WIDTH}>
-                {shouldShowToggle && this._renderAllowanceToggle(config.allowanceToggleConfig)}
+            <Container className="flex justify-center" width={width}>
+                {shouldShowToggle && this._renderAllowanceToggle(config.allowanceStateToggleConfig)}
             </Container>
         );
         return (
@@ -410,17 +413,8 @@ export class Wallet extends React.Component<WalletProps, WalletState> {
             </div>
         );
     }
-    private _renderAllowanceToggle(config: AllowanceToggleConfig): React.ReactNode {
+    private _renderAllowanceToggle(config: AllowanceStateToggleConfig): React.ReactNode {
         // TODO: Error handling
-        // return (
-        //     <AllowanceToggle
-        //         blockchain={this.props.blockchain}
-        //         token={config.token}
-        //         tokenState={config.tokenState}
-        //         isDisabled={!config.tokenState.isLoaded}
-        //         refetchTokenStateAsync={async () => this.props.refetchTokenStateAsync(config.token.address)}
-        //     />
-        // );
         return (
             <AllowanceStateToggle
                 blockchain={this.props.blockchain}

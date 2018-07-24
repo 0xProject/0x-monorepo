@@ -24,7 +24,7 @@ export interface AllowanceStateToggleProps {
 
 export interface AllowanceStateToggleState {
     allowanceState: AllowanceState;
-    prevAllowance: BigNumber;
+    prevTokenState: TokenState;
 }
 
 const DEFAULT_ALLOWANCE_AMOUNT_IN_BASE_UNITS = new BigNumber(2).pow(256).minus(1);
@@ -33,21 +33,21 @@ export class AllowanceStateToggle extends React.Component<AllowanceStateTogglePr
     public static defaultProps = {
         onErrorOccurred: _.noop.bind(_),
     };
-    private static _getAllowanceStateFromAllowance(allowance?: BigNumber): AllowanceState {
-        if (_.isUndefined(allowance)) {
+    private static _getAllowanceState(tokenState: TokenState): AllowanceState {
+        if (!tokenState.isLoaded) {
             return AllowanceState.Loading;
         }
-        if (allowance.gt(0)) {
+        if (tokenState.allowance.gt(0)) {
             return AllowanceState.Unlocked;
         }
         return AllowanceState.Locked;
     }
     constructor(props: AllowanceStateToggleProps) {
         super(props);
-        const allowance = props.tokenState.allowance;
+        const tokenState = props.tokenState;
         this.state = {
-            allowanceState: AllowanceState.Loading,
-            prevAllowance: allowance,
+            allowanceState: AllowanceStateToggle._getAllowanceState(tokenState),
+            prevTokenState: tokenState,
         };
     }
 
@@ -69,11 +69,17 @@ export class AllowanceStateToggle extends React.Component<AllowanceStateTogglePr
         );
     }
     public componentWillReceiveProps(nextProps: AllowanceStateToggleProps): void {
-        if (!nextProps.tokenState.allowance.eq(this.state.prevAllowance)) {
-            const allowance = nextProps.tokenState.allowance;
+        const nextTokenState = nextProps.tokenState;
+        const prevTokenState = this.state.prevTokenState;
+        if (
+            !nextTokenState.allowance.eq(prevTokenState.allowance) ||
+            nextTokenState.isLoaded !== prevTokenState.isLoaded
+        ) {
+            const tokenState = nextProps.tokenState;
+            const allowance = tokenState.allowance;
             this.setState({
-                prevAllowance: allowance,
-                allowanceState: AllowanceStateToggle._getAllowanceStateFromAllowance(allowance),
+                prevTokenState: tokenState,
+                allowanceState: AllowanceStateToggle._getAllowanceState(nextTokenState),
             });
         }
     }
@@ -124,7 +130,7 @@ export class AllowanceStateToggle extends React.Component<AllowanceStateTogglePr
         } catch (err) {
             analytics.track('Set Allowance Failure', logData);
             this.setState({
-                allowanceState: AllowanceStateToggle._getAllowanceStateFromAllowance(this.state.prevAllowance),
+                allowanceState: AllowanceStateToggle._getAllowanceState(this.state.prevTokenState),
             });
             const errMsg = `${err}`;
             if (utils.didUserDenyWeb3Request(errMsg)) {

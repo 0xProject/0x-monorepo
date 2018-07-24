@@ -13,7 +13,6 @@ interface AllowanceStateToggleProps {
     onErrorOccurred?: (errType: BalanceErrs) => void;
     token: Token;
     tokenState: TokenState;
-    isDisabled?: boolean;
     refetchTokenStateAsync: () => Promise<void>;
 }
 

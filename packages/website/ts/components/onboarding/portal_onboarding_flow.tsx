@@ -21,7 +21,7 @@ import {
     WrapEthOnboardingStep2,
     WrapEthOnboardingStep3,
 } from 'ts/components/onboarding/wrap_eth_onboarding_step';
-import { AllowanceToggle } from 'ts/containers/inputs/allowance_toggle';
+import { AllowanceStateToggle } from 'ts/containers/inputs/allowance_state_toggle';
 import { BrowserType, ProviderType, ScreenWidths, Token, TokenByAddress, TokenStateByAddress } from 'ts/types';
 import { analytics } from 'ts/utils/analytics';
 import { utils } from 'ts/utils/utils';
@@ -149,8 +149,8 @@ class PlainPortalOnboardingFlow extends React.Component<PortalOnboardingFlowProp
                 title: 'Step 3: Unlock Tokens',
                 content: (
                     <SetAllowancesOnboardingStep
-                        zrxAllowanceToggle={this._renderZrxAllowanceToggle()}
-                        ethAllowanceToggle={this._renderEthAllowanceToggle()}
+                        zrxAllowanceToggle={this._renderZrxAllowanceStateToggle()}
+                        ethAllowanceToggle={this._renderEthAllowanceStateToggle()}
                         doesUserHaveAllowancesForWethAndZrx={this._doesUserHaveAllowancesForWethAndZrx()}
                     />
                 ),
@@ -243,15 +243,15 @@ class PlainPortalOnboardingFlow extends React.Component<PortalOnboardingFlowProp
             stepIndex: this.props.stepIndex,
         });
     }
-    private _renderZrxAllowanceToggle(): React.ReactNode {
+    private _renderZrxAllowanceStateToggle(): React.ReactNode {
         const zrxToken = utils.getZrxToken(this.props.tokenByAddress);
-        return this._renderAllowanceToggle(zrxToken);
+        return this._renderAllowanceStateToggle(zrxToken);
     }
-    private _renderEthAllowanceToggle(): React.ReactNode {
+    private _renderEthAllowanceStateToggle(): React.ReactNode {
         const ethToken = utils.getEthToken(this.props.tokenByAddress);
-        return this._renderAllowanceToggle(ethToken);
+        return this._renderAllowanceStateToggle(ethToken);
     }
-    private _renderAllowanceToggle(token: Token): React.ReactNode {
+    private _renderAllowanceStateToggle(token: Token): React.ReactNode {
         if (!token) {
             return null;
         }
@@ -260,10 +260,9 @@ class PlainPortalOnboardingFlow extends React.Component<PortalOnboardingFlowProp
             return null;
         }
         return (
-            <AllowanceToggle
+            <AllowanceStateToggle
                 token={token}
                 tokenState={tokenStateIfExists}
-                isDisabled={!tokenStateIfExists.isLoaded}
                 blockchain={this.props.blockchain}
                 // tslint:disable-next-line:jsx-no-lambda
                 refetchTokenStateAsync={async () => this.props.refetchTokenStateAsync(token.address)}
