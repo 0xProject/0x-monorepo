@@ -181,7 +181,7 @@ async function lernaPublishAsync(packageToNextVersion: { [name: string]: string 
     const packageVersionString = _.map(packageToNextVersion, (nextVersion: string, packageName: string) => {
         return `${packageName}@${nextVersion}`;
     }).join(',');
-    const lernaPublishCmd = `lerna --cdVersions=${packageVersionString} --skip-git`;
+    const lernaPublishCmd = `lerna publish --cdVersions=${packageVersionString} --skip-git`;
     console.log('lernaPublishCmd', lernaPublishCmd);
     await execAsync(lernaPublishCmd, { cwd: constants.monorepoRootPath });
 }
