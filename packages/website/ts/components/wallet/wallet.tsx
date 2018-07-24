@@ -14,6 +14,7 @@ import { DropDown, DropdownMouseEvent } from 'ts/components/ui/drop_down';
 import { IconButton } from 'ts/components/ui/icon_button';
 import { Identicon } from 'ts/components/ui/identicon';
 import { Island } from 'ts/components/ui/island';
+import { PointerDirection } from 'ts/components/ui/pointer';
 import {
     CopyAddressSimpleMenuItem,
     DifferentWalletSimpleMenuItem,
@@ -67,6 +68,7 @@ export interface WalletProps {
     onRemoveToken: () => void;
     refetchTokenStateAsync: (tokenAddress: string) => Promise<void>;
     style: React.CSSProperties;
+    toggleTooltipDirection?: PointerDirection;
 }
 
 interface WalletState {
@@ -420,6 +422,7 @@ export class Wallet extends React.Component<WalletProps, WalletState> {
                 blockchain={this.props.blockchain}
                 token={config.token}
                 tokenState={config.tokenState}
+                tooltipDirection={this.props.toggleTooltipDirection}
                 refetchTokenStateAsync={async () => this.props.refetchTokenStateAsync(config.token.address)}
             />
         );

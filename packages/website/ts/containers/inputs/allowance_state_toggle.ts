@@ -2,6 +2,7 @@ import * as React from 'react';
 import { connect } from 'react-redux';
 import { Dispatch } from 'redux';
 import { Blockchain } from 'ts/blockchain';
+import { PointerDirection } from 'ts/components/ui/pointer';
 import { State } from 'ts/redux/reducer';
 import { BalanceErrs, Token, TokenState } from 'ts/types';
 
@@ -14,6 +15,7 @@ interface AllowanceStateToggleProps {
     token: Token;
     tokenState: TokenState;
     refetchTokenStateAsync: () => Promise<void>;
+    tooltipDirection?: PointerDirection;
 }
 
 interface ConnectedState {

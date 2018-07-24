@@ -5,6 +5,7 @@ import ReactTooltip = require('react-tooltip');
 import { Blockchain } from 'ts/blockchain';
 import { AllowanceState, AllowanceStateView } from 'ts/components/ui/allowance_state_view';
 import { Container } from 'ts/components/ui/container';
+import { PointerDirection } from 'ts/components/ui/pointer';
 import { Text } from 'ts/components/ui/text';
 import { Dispatcher } from 'ts/redux/dispatcher';
 import { BalanceErrs, Token, TokenState } from 'ts/types';
@@ -21,6 +22,7 @@ export interface AllowanceStateToggleProps {
     userAddress: string;
     onErrorOccurred?: (errType: BalanceErrs) => void;
     refetchTokenStateAsync: () => Promise<void>;
+    tooltipDirection?: PointerDirection;
 }
 
 export interface AllowanceStateToggleState {
@@ -33,6 +35,7 @@ const DEFAULT_ALLOWANCE_AMOUNT_IN_BASE_UNITS = new BigNumber(2).pow(256).minus(1
 export class AllowanceStateToggle extends React.Component<AllowanceStateToggleProps, AllowanceStateToggleState> {
     public static defaultProps = {
         onErrorOccurred: _.noop.bind(_),
+        tooltipDirection: PointerDirection.Right,
     };
     private static _getAllowanceState(tokenState: TokenState): AllowanceState {
         if (!tokenState.isLoaded) {
@@ -62,7 +65,7 @@ export class AllowanceStateToggle extends React.Component<AllowanceStateTogglePr
                 <div
                     data-tip={true}
                     data-for={tooltipId}
-                    data-place="right"
+                    data-place={this.props.tooltipDirection}
                     onClick={this._onToggleAllowanceAsync.bind(this)}
                 >
                     <AllowanceStateView allowanceState={this.state.allowanceState} />
