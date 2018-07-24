@@ -361,13 +361,15 @@ export class TokenBalances extends React.Component<TokenBalancesProps, TokenBala
                     )}
                 </TableRowColumn>
                 <TableRowColumn>
-                    <AllowanceStateToggle
-                        blockchain={this.props.blockchain}
-                        token={token}
-                        tokenState={tokenState}
-                        onErrorOccurred={this._onErrorOccurred.bind(this)}
-                        refetchTokenStateAsync={this._refetchTokenStateAsync.bind(this, token.address)}
-                    />
+                    <div className="flex justify-center">
+                        <AllowanceStateToggle
+                            blockchain={this.props.blockchain}
+                            token={token}
+                            tokenState={tokenState}
+                            onErrorOccurred={this._onErrorOccurred.bind(this)}
+                            refetchTokenStateAsync={this._refetchTokenStateAsync.bind(this, token.address)}
+                        />
+                    </div>
                 </TableRowColumn>
                 {utils.isTestNetwork(this.props.networkId) && (
                     <TableRowColumn style={{ paddingLeft: actionPaddingX, paddingRight: actionPaddingX }}>
