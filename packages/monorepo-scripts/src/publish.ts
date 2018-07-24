@@ -4,14 +4,14 @@ import * as promisify from 'es6-promisify';
 import * as _ from 'lodash';
 import * as moment from 'moment';
 import opn = require('opn');
-import { exec as execAsync, spawn } from 'promisify-child-process';
+import { exec as execAsync } from 'promisify-child-process';
 import * as prompt from 'prompt';
 import semver = require('semver');
 import semverDiff = require('semver-diff');
 import semverSort = require('semver-sort');
 
 import { constants } from './constants';
-import { Package, PackageToNextVersion, SemVerIndex, VersionChangelog } from './types';
+import { Package, PackageToNextVersion, VersionChangelog } from './types';
 import { changelogUtils } from './utils/changelog_utils';
 import { utils } from './utils/utils';
 
@@ -181,7 +181,9 @@ async function lernaPublishAsync(packageToNextVersion: { [name: string]: string 
     const packageVersionString = _.map(packageToNextVersion, (nextVersion: string, packageName: string) => {
         return `${packageName}@${nextVersion}`;
     }).join(',');
-    await execAsync('lerna', `--cdVersions=${packageVersionString}`, '--skip-git');
+    const lernaPublishCmd = `lerna --cdVersions=${packageVersionString} --skip-git`;
+    console.log('lernaPublishCmd', lernaPublishCmd);
+    await execAsync(lernaPublishCmd, { cwd: constants.monorepoRootPath });
 }
 
 function updateVersionNumberIfNeeded(currentVersion: string, proposedNextVersion: string): string {
