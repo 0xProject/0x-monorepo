@@ -9,8 +9,8 @@ import {
     TestSignatureValidatorContract,
     TestSignatureValidatorSignatureValidatorApprovalEventArgs,
 } from '../../generated_contract_wrappers/test_signature_validator';
-import { TestValidatorContract } from '../../generated_contract_wrappers/test_validator';
-import { TestWalletContract } from '../../generated_contract_wrappers/test_wallet';
+import { ValidatorContract } from '../../generated_contract_wrappers/validator';
+import { WalletContract } from '../../generated_contract_wrappers/wallet';
 import { addressUtils } from '../utils/address_utils';
 import { artifacts } from '../utils/artifacts';
 import { expectContractCallFailed } from '../utils/assertions';
@@ -29,8 +29,8 @@ describe('MixinSignatureValidator', () => {
     let signedOrder: SignedOrder;
     let orderFactory: OrderFactory;
     let signatureValidator: TestSignatureValidatorContract;
-    let testWallet: TestWalletContract;
-    let testValidator: TestValidatorContract;
+    let testWallet: WalletContract;
+    let testValidator: ValidatorContract;
     let signerAddress: string;
     let signerPrivateKey: Buffer;
     let notSignerAddress: string;
@@ -53,14 +53,14 @@ describe('MixinSignatureValidator', () => {
             provider,
             txDefaults,
         );
-        testWallet = await TestWalletContract.deployFrom0xArtifactAsync(
-            artifacts.TestWallet,
+        testWallet = await WalletContract.deployFrom0xArtifactAsync(
+            artifacts.Wallet,
             provider,
             txDefaults,
             signerAddress,
         );
-        testValidator = await TestValidatorContract.deployFrom0xArtifactAsync(
-            artifacts.TestValidator,
+        testValidator = await ValidatorContract.deployFrom0xArtifactAsync(
+            artifacts.Validator,
             provider,
             txDefaults,
             signerAddress,

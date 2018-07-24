@@ -6,9 +6,9 @@ import FlatButton from 'material-ui/FlatButton';
 import * as React from 'react';
 
 import { Blockchain } from 'ts/blockchain';
-import { EthAmountInput } from 'ts/components/inputs/eth_amount_input';
 import { TokenAmountInput } from 'ts/components/inputs/token_amount_input';
 import { Container } from 'ts/components/ui/container';
+import { EthAmountInput } from 'ts/containers/inputs/eth_amount_input';
 import { Dispatcher } from 'ts/redux/dispatcher';
 import { colors } from 'ts/style/colors';
 import { BlockchainCallErrs, Side, Token } from 'ts/types';
@@ -87,13 +87,8 @@ export class WrapEtherItem extends React.Component<WrapEtherItemProps, WrapEther
         };
     }
     public render(): React.ReactNode {
-        const etherBalanceInEth = Web3Wrapper.toUnitAmount(
-            this.props.userEtherBalanceInWei,
-            constants.DECIMAL_PLACES_ETH,
-        );
         const isWrappingEth = this.props.direction === Side.Deposit;
         const topLabelText = isWrappingEth ? 'Convert ETH into WETH 1:1' : 'Convert WETH into ETH 1:1';
-
         return (
             <Container className="flex" backgroundColor={colors.walletFocusedItemBackground} paddingTop="25px">
                 <div>{this._renderIsEthConversionHappeningSpinner()} </div>
@@ -103,7 +98,6 @@ export class WrapEtherItem extends React.Component<WrapEtherItemProps, WrapEther
                         <div style={styles.inputContainer}>
                             {isWrappingEth ? (
                                 <EthAmountInput
-                                    balance={etherBalanceInEth}
                                     amount={this.state.currentInputAmount}
                                     hintText="0.00"
                                     onChange={this._onValueChange.bind(this)}

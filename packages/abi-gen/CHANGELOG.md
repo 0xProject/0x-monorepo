@@ -1,9 +1,19 @@
 <!--
-This file is auto-generated using the monorepo-scripts package. Don't edit directly.
+changelogUtils.file is auto-generated using the monorepo-scripts package. Don't edit directly.
 Edit the package's CHANGELOG.json file only.
 -->
 
 CHANGELOG
+
+## v1.0.1 - _July 23, 2018_
+
+    * Fix the abi-gen entry point in package.json (#901)
+
+## v1.0.0 - _July 20, 2018_
+
+    * Convert e_r_c to erc in generated file names (#822)
+    * Remove the output directory before writing to it (#822)
+    * skip generation of wrappers that are already up to date (#788)
 
 ## v0.3.4 - _July 18, 2018_
 
