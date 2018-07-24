@@ -57,6 +57,7 @@ export class Jobs extends React.Component<JobsProps, JobsState> {
     }
     private _onJoin0xCallToActionClick(): void {
         sharedUtils.setUrlHash(OPEN_POSITIONS_HASH);
+        sharedUtils.scrollToHash(OPEN_POSITIONS_HASH, '');
     }
     private _updateScreenWidth(): void {
         const newScreenWidth = utils.getScreenWidth();
