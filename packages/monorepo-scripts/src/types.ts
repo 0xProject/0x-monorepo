@@ -46,16 +46,18 @@ export interface GitTagsByPackageName {
     [packageName: string]: string[];
 }
 
+export interface PackageJSON {
+    private?: boolean;
+    version: string;
+    name: string;
+    main?: string;
+    scripts?: { [command: string]: string };
+    config?: {
+        additionalTsTypings?: string[];
+    };
+}
+
 export interface Package {
     location: string;
-    packageJson: {
-        private?: boolean;
-        version: string;
-        name: string;
-        main?: string;
-        scripts?: { [command: string]: string };
-        config?: {
-            additionalTsTypings?: string[];
-        };
-    };
+    packageJson: PackageJSON;
 }
