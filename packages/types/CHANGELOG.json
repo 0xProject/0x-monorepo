@@ -1,5 +1,14 @@
 [
     {
+        "version": "1.0.0-rc.2",
+        "changes": [
+            {
+                "note": "Remove `ECSignatureBuffer`"
+            }
+        ]
+    },
+    {
+        "timestamp": 1532030860,
         "version": "1.0.1-rc.1",
         "changes": [
             {
