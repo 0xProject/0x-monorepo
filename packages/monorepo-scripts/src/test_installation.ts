@@ -16,16 +16,14 @@ import { utils } from './utils/utils';
         pkg => !pkg.packageJson.private && !_.isUndefined(pkg.packageJson.main) && pkg.packageJson.main.endsWith('.js'),
     );
     for (const installablePackage of installablePackages) {
-        const packagePath = installablePackage.location;
         const packageName = installablePackage.packageJson.name;
+        const packageVersion = installablePackage.packageJson.version;
         utils.log(`Testing ${packageName}`);
-        let result = await execAsync('npm pack', { cwd: packagePath });
-        const packedPackageFileName = result.stdout.trim();
         const testDirectory = path.join(monorepoRootPath, '../test-env');
         fs.mkdirSync(testDirectory);
-        result = await execAsync('yarn init --yes', { cwd: testDirectory });
-        utils.log(`Installing ${packedPackageFileName}`);
-        result = await execAsync(`yarn add ${packagePath}/${packedPackageFileName}`, { cwd: testDirectory });
+        let result = await execAsync('yarn init --yes', { cwd: testDirectory });
+        utils.log(`Installing ${packageName}@${packageVersion}`);
+        result = await execAsync(`yarn add ${packageName}@${packageVersion}`, { cwd: testDirectory });
         const indexFilePath = path.join(testDirectory, 'index.ts');
         fs.writeFileSync(indexFilePath, `import * as Package from '${packageName}';\n`);
         const tsConfig = {
