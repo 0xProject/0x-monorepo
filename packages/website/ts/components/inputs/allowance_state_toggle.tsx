@@ -59,7 +59,7 @@ export class AllowanceStateToggle extends React.Component<AllowanceStateTogglePr
         const tooltipId = `tooltip-id-${this.props.token.symbol}`;
         return (
             <Container cursor="pointer">
-                <ReactTooltip effect="solid" offset={{ top: 3 }} id={tooltipId}>
+                <ReactTooltip id={tooltipId} effect="solid" offset={{ top: 3 }}>
                     {this._getTooltipContent()}
                 </ReactTooltip>
                 <div
@@ -114,6 +114,8 @@ export class AllowanceStateToggle extends React.Component<AllowanceStateTogglePr
         }
     }
     private async _onToggleAllowanceAsync(): Promise<void> {
+        // Close all tooltips
+        ReactTooltip.hide();
         if (this.props.userAddress === '') {
             this.props.dispatcher.updateShouldBlockchainErrDialogBeOpen(true);
             return;
