@@ -178,69 +178,10 @@ async function updateChangeLogsAsync(updatedPublicPackages: Package[]): Promise<
 }
 
 async function lernaPublishAsync(packageToNextVersion: { [name: string]: string }): Promise<void> {
-    // HACK: Lerna publish does not provide a way to specify multiple package versions via
-    // flags so instead we need to interact with their interactive prompt interface.
-    const child = spawn('lerna', ['publish', `--skip-git`], {
-        cwd: constants.monorepoRootPath,
-    });
-    let shouldPrintOutput = false;
-    let packageName: string;
-    let ignoreCounter = 0;
-    child.stdout.on('data', (data: Buffer) => {
-        if (ignoreCounter !== 0) {
-            ignoreCounter--;
-            return; // ignore
-        }
-        const output = data.toString('utf8');
-        console.log('-------');
-        console.log(output);
-        console.log('-------');
-        if (shouldPrintOutput) {
-            utils.log(output);
-        }
-        const isVersionPrompt = _.includes(output, 'Select a new version');
-        if (isVersionPrompt) {
-            const outputStripLeft = output.split('new version for ')[1];
-            const packageNameFound = outputStripLeft.split(' ')[0];
-            if (packageName === packageNameFound) {
-                return; // noop
-            }
-            packageName = packageNameFound;
-            ignoreCounter = 1; // SemVerIndex.Custom is a single digit number
-            sleepAndWrite(child.stdin, SemVerIndex.Custom);
-        }
-        const isCustomVersionPrompt = _.includes(output, 'Enter a custom version');
-        if (isCustomVersionPrompt) {
-            const versionChange = packageToNextVersion[packageName];
-            if (_.isUndefined(versionChange)) {
-                throw new Error(`Must have a nextVersion for each packageName. Didn't find one for ${packageName}`);
-            }
-            ignoreCounter = versionChange.length;
-            sleepAndWrite(child.stdin, versionChange);
-        }
-        const isFinalPrompt = _.includes(output, 'Are you sure you want to publish the above changes?');
-        if (isFinalPrompt && !IS_DRY_RUN) {
-            ignoreCounter = 'y'.length;
-            sleepAndWrite(child.stdin, 'y');
-            // After confirmations, we want to print the output to watch the `lerna publish` command
-            shouldPrintOutput = true;
-        } else if (isFinalPrompt && IS_DRY_RUN) {
-            utils.log(
-                `Submitted all versions to Lerna but since this is a dry run, did not confirm. You need to CTRL-C to exit.`,
-            );
-        }
-    });
-    child.stderr.on('data', (data: Buffer) => {
-        const output = data.toString('utf8');
-        utils.log('Stderr:', output);
-    });
-}
-
-function sleepAndWrite(fileDescriptor: any, input: string | number): void {
-    const TIMEOUT = 1000;
-    setTimeout(() => {
-        fileDescriptor.write(`${input}\n`);
-    }, TIMEOUT);
+    const packageVersionString = _.map(packageToNextVersion, (nextVersion: string, packageName: string) => {
+        return `${packageName}@${nextVersion}`;
+    }).join(',');
+    await execAsync('lerna', `--cdVersions=${packageVersionString}`, '--skip-git');
 }
 
 function updateVersionNumberIfNeeded(currentVersion: string, proposedNextVersion: string): string {
