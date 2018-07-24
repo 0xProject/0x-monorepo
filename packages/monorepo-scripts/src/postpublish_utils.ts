@@ -6,6 +6,7 @@ import * as path from 'path';
 import * as publishRelease from 'publish-release';
 
 import { constants } from './constants';
+import { configs } from './utils/configs';
 import { utils } from './utils/utils';
 
 const publishReleaseAsync = promisify(publishRelease);
@@ -25,8 +26,6 @@ export interface DocPublishConfigs {
     s3StagingBucketPath: string;
 }
 
-const IS_LOCAL_PUBLISH = process.env.IS_LOCAL_PUBLISH === 'true';
-
 export const postpublishUtils = {
     generateConfig(packageJSON: any, tsConfigJSON: any, cwd: string): PostpublishConfigs {
         if (_.isUndefined(packageJSON.name)) {
@@ -36,7 +35,7 @@ export const postpublishUtils = {
             throw new Error('version field required in package.json. Cannot publish release notes to Github.');
         }
         const postpublishConfig = _.get(packageJSON, 'config.postpublish', {});
-        const configs: PostpublishConfigs = {
+        const postpublishConfigs: PostpublishConfigs = {
             cwd,
             packageName: packageJSON.name,
             version: packageJSON.version,
@@ -50,47 +49,47 @@ export const postpublishUtils = {
                 s3StagingBucketPath: _.get(postpublishConfig, 'docPublishConfigs.s3StagingBucketPath'),
             },
         };
-        return configs;
+        return postpublishConfigs;
     },
     async runAsync(packageJSON: any, tsConfigJSON: any, cwd: string): Promise<void> {
-        if (IS_LOCAL_PUBLISH) {
+        if (configs.IS_LOCAL_PUBLISH) {
             return;
         }
-        const configs = postpublishUtils.generateConfig(packageJSON, tsConfigJSON, cwd);
+        const postpublishConfigs = postpublishUtils.generateConfig(packageJSON, tsConfigJSON, cwd);
         await postpublishUtils.publishReleaseNotesAsync(
-            configs.cwd,
-            configs.packageName,
-            configs.version,
-            configs.assets,
+            postpublishConfigs.cwd,
+            postpublishConfigs.packageName,
+            postpublishConfigs.version,
+            postpublishConfigs.assets,
         );
         if (
-            !_.isUndefined(configs.docPublishConfigs.s3BucketPath) ||
-            !_.isUndefined(configs.docPublishConfigs.s3StagingBucketPath)
+            !_.isUndefined(postpublishConfigs.docPublishConfigs.s3BucketPath) ||
+            !_.isUndefined(postpublishConfigs.docPublishConfigs.s3StagingBucketPath)
         ) {
             utils.log('POSTPUBLISH: Release successful, generating docs...');
             await postpublishUtils.generateAndUploadDocsAsync(
-                configs.cwd,
-                configs.docPublishConfigs.fileIncludes,
-                configs.version,
-                configs.docPublishConfigs.s3BucketPath,
+                postpublishConfigs.cwd,
+                postpublishConfigs.docPublishConfigs.fileIncludes,
+                postpublishConfigs.version,
+                postpublishConfigs.docPublishConfigs.s3BucketPath,
             );
         } else {
             utils.log(`POSTPUBLISH: No S3Bucket config found for ${packageJSON.name}. Skipping doc JSON generation.`);
         }
     },
     async publishDocsToStagingAsync(packageJSON: any, tsConfigJSON: any, cwd: string): Promise<void> {
-        const configs = postpublishUtils.generateConfig(packageJSON, tsConfigJSON, cwd);
-        if (_.isUndefined(configs.docPublishConfigs.s3StagingBucketPath)) {
+        const postpublishConfigs = postpublishUtils.generateConfig(packageJSON, tsConfigJSON, cwd);
+        if (_.isUndefined(postpublishConfigs.docPublishConfigs.s3StagingBucketPath)) {
             utils.log('config.postpublish.docPublishConfigs.s3StagingBucketPath entry in package.json not found!');
             return;
         }
 
         utils.log('POSTPUBLISH: Generating docs...');
         await postpublishUtils.generateAndUploadDocsAsync(
-            configs.cwd,
-            configs.docPublishConfigs.fileIncludes,
-            configs.version,
-            configs.docPublishConfigs.s3StagingBucketPath,
+            postpublishConfigs.cwd,
+            postpublishConfigs.docPublishConfigs.fileIncludes,
+            postpublishConfigs.version,
+            postpublishConfigs.docPublishConfigs.s3StagingBucketPath,
         );
     },
     async publishReleaseNotesAsync(cwd: string, packageName: string, version: string, assets: string[]): Promise<void> {

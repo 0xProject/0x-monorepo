@@ -4,11 +4,9 @@
     "version": "independent",
     "command": {
         "publish": {
-            "registry": "http://localhost:4873/",
             "ignoreChanges": ["test/**/*", "*.md", "scripts", "lib", "tslint.json", "tsconfig.json"]
         }
     },
     "npmClient": "yarn",
-    "useWorkspaces": true,
-    "registry": "http://localhost:4873"
+    "useWorkspaces": true
 }
