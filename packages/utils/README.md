@@ -22,6 +22,21 @@ If your project is in [TypeScript](https://www.typescriptlang.org/), add the fol
 import { addressUtils, bigNumberConfigs, classUtils, intervalUtils, promisify } from '@0xproject/utils';
 ```
 
+## Troubleshooting
+
+If you are still seeing TS type errors complaining about missing DOM types such as `Response`:
+
+```
+error TS2304: Cannot find name 'Response'.
+```
+
+Then you need to explicitly add the `dom` lib to your compiler options in `tsconfig.json`. The `dom` library is included by default, but customizing the `lib` option can cause it to be dropped.
+
+```
+"compilerOptions": {
+    "lib": [..., "dom"],
+```
+
 ## Contributing
 
 We welcome improvements and fixes from the wider community! To report bugs within this package, please create an issue in this repository.
