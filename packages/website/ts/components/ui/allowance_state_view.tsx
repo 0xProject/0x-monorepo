@@ -18,7 +18,7 @@ export const AllowanceStateView: React.StatelessComponent<AllowanceStateViewProp
         case AllowanceState.Unlocked:
             return renderCheck();
         case AllowanceState.Loading:
-            return <CircularProgress size={15} thickness={2} />;
+            return <CircularProgress size={16} thickness={2} />;
         default:
             return null;
     }
