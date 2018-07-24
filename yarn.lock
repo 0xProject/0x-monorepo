@@ -400,14 +400,14 @@
     read-package-tree "^5.1.6"
     semver "^5.5.0"
 
-"@lerna/changed@^3.0.0-beta.25":
-  version "3.0.0-beta.25"
-  resolved "http://localhost:4873/@lerna%2fchanged/-/changed-3.0.0-beta.25.tgz#371883f7a1b258eb27a3c2e6344981065d152621"
+"@lerna/changed@^3.0.0-beta.24":
+  version "3.0.0-beta.24"
+  resolved "http://localhost:4873/@lerna%2fchanged/-/changed-3.0.0-beta.24.tgz#285dd525a7d91a625aff3f7a97fb48d31fbbbfb2"
   dependencies:
     "@lerna/collect-updates" "^3.0.0-beta.21"
     "@lerna/command" "^3.0.0-beta.21"
     "@lerna/output" "^3.0.0-beta.0"
-    "@lerna/publish" "^3.0.0-beta.25"
+    "@lerna/publish" "^3.0.0-beta.24"
     chalk "^2.3.1"
 
 "@lerna/child-process@^3.0.0-beta.21":
@@ -430,13 +430,13 @@
     p-map-series "^1.0.0"
     p-waterfall "^1.0.0"
 
-"@lerna/cli@^3.0.0-beta.25":
-  version "3.0.0-beta.25"
-  resolved "http://localhost:4873/@lerna%2fcli/-/cli-3.0.0-beta.25.tgz#6c27c10e332f82646c4515b6d3edc3b98a7271ed"
+"@lerna/cli@^3.0.0-beta.24":
+  version "3.0.0-beta.24"
+  resolved "http://localhost:4873/@lerna%2fcli/-/cli-3.0.0-beta.24.tgz#dc15906d0acbb26d694768001ef9667daed6f87e"
   dependencies:
     "@lerna/add" "^3.0.0-beta.21"
     "@lerna/bootstrap" "^3.0.0-beta.21"
-    "@lerna/changed" "^3.0.0-beta.25"
+    "@lerna/changed" "^3.0.0-beta.24"
     "@lerna/clean" "^3.0.0-beta.21"
     "@lerna/create" "^3.0.0-beta.21"
     "@lerna/diff" "^3.0.0-beta.21"
@@ -446,7 +446,7 @@
     "@lerna/init" "^3.0.0-beta.21"
     "@lerna/link" "^3.0.0-beta.21"
     "@lerna/list" "^3.0.0-beta.21"
-    "@lerna/publish" "^3.0.0-beta.25"
+    "@lerna/publish" "^3.0.0-beta.24"
     "@lerna/run" "^3.0.0-beta.21"
     dedent "^0.7.0"
     is-ci "^1.0.10"
@@ -704,9 +704,9 @@
     inquirer "^5.1.0"
     npmlog "^4.1.2"
 
-"@lerna/publish@^3.0.0-beta.25":
-  version "3.0.0-beta.25"
-  resolved "http://localhost:4873/@lerna%2fpublish/-/publish-3.0.0-beta.25.tgz#f6b020b56a5aef32e3a1303d2982c33dd21f07e9"
+"@lerna/publish@^3.0.0-beta.24":
+  version "3.0.0-beta.24"
+  resolved "http://localhost:4873/@lerna%2fpublish/-/publish-3.0.0-beta.24.tgz#c7a5b24b1446cd5324a916cd25d6dac1fde09e25"
   dependencies:
     "@lerna/batch-packages" "^3.0.0-beta.18"
     "@lerna/child-process" "^3.0.0-beta.21"
@@ -7716,11 +7716,11 @@ lead@^1.0.0:
   dependencies:
     flush-write-stream "^1.0.2"
 
-lerna@^3.0.0-beta.25:
-  version "3.0.0-beta.25"
-  resolved "http://localhost:4873/lerna/-/lerna-3.0.0-beta.25.tgz#733fa0e0ba0fbd0f88088992cabab748254ea3bb"
+lerna@^3.0.0-beta.24:
+  version "3.0.0-beta.24"
+  resolved "http://localhost:4873/lerna/-/lerna-3.0.0-beta.24.tgz#8127d4101dcea00cf2a32f97b4510f0d6b55e66d"
   dependencies:
-    "@lerna/cli" "^3.0.0-beta.25"
+    "@lerna/cli" "^3.0.0-beta.24"
     import-local "^1.0.0"
     npmlog "^4.1.2"
 
