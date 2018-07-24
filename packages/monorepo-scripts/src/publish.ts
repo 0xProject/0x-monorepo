@@ -16,7 +16,7 @@ import { utils } from './utils/utils';
 
 const DOC_GEN_COMMAND = 'docs:json';
 const NPM_NAMESPACE = '@0xproject/';
-const IS_DRY_RUN = process.env.IS_DRY_RUN === 'true';
+const IS_LOCAL_PUBLISH = process.env.IS_LOCAL_PUBLISH === 'true';
 const TODAYS_TIMESTAMP = moment().unix();
 const packageNameToWebsitePath: { [name: string]: string } = {
     '0x.js': '0xjs',
@@ -36,7 +36,9 @@ const packageNameToWebsitePath: { [name: string]: string } = {
     const shouldIncludePrivate = true;
     const allUpdatedPackages = await utils.getUpdatedPackagesAsync(shouldIncludePrivate);
 
-    // await confirmDocPagesRenderAsync(updatedPublicPackages);
+    if (!IS_LOCAL_PUBLISH) {
+        await confirmDocPagesRenderAsync(allUpdatedPackages);
+    }
 
     // Update CHANGELOGs
     const updatedPublicPackages = _.filter(allUpdatedPackages, pkg => !pkg.packageJson.private);
@@ -57,8 +59,8 @@ const packageNameToWebsitePath: { [name: string]: string } = {
     });
 
     // Push changelog changes to Github
-    if (!IS_DRY_RUN) {
-        // await pushChangelogsToGithubAsync();
+    if (!IS_LOCAL_PUBLISH) {
+        await pushChangelogsToGithubAsync();
     }
 
     // Call LernaPublish
@@ -180,9 +182,10 @@ async function lernaPublishAsync(packageToNextVersion: { [name: string]: string 
     const packageVersionString = _.map(packageToNextVersion, (nextVersion: string, packageName: string) => {
         return `${packageName}@${nextVersion}`;
     }).join(',');
-    const lernaPublishCmd = `node ${
-        constants.lernaExecutable
-    } publish --cdVersions=${packageVersionString} --skip-git --yes --force-publish *`;
+    let lernaPublishCmd = `node ${constants.lernaExecutable} publish --cdVersions=${packageVersionString}`;
+    if (IS_LOCAL_PUBLISH) {
+        lernaPublishCmd += ' --skip-git --yes --force-publish *';
+    }
     utils.log('Lerna is publishing...');
     await execAsync(lernaPublishCmd, { cwd: constants.monorepoRootPath });
 }
