@@ -153,7 +153,7 @@ export interface ECSignature {
 
 export enum AssetProxyId {
     ERC20 = '0xf47261b0',
-    ERC721 = '0x08e937fa',
+    ERC721 = '0x02571792',
 }
 
 export interface ERC20AssetData {
@@ -165,7 +165,6 @@ export interface ERC721AssetData {
     assetProxyId: string;
     tokenAddress: string;
     tokenId: BigNumber;
-    receiverData: string;
 }
 
 export enum RevertReason {
@@ -210,10 +209,10 @@ export enum RevertReason {
     LibBytesGreaterOrEqualToSourceBytesLengthRequired = 'GREATER_OR_EQUAL_TO_SOURCE_BYTES_LENGTH_REQUIRED',
     Erc20InsufficientBalance = 'ERC20_INSUFFICIENT_BALANCE',
     Erc20InsufficientAllowance = 'ERC20_INSUFFICIENT_ALLOWANCE',
-    UnacceptableThreshold = 'UNACCEPTABLE_THRESHOLD',
-    FeeProportionTooLarge = 'FEE_PROPORTION_TOO_LARGE',
+    FeePercentageTooLarge = 'FEE_PERCENTAGE_TOO_LARGE',
     ValueGreaterThanZero = 'VALUE_GREATER_THAN_ZERO',
     InvalidMsgValue = 'INVALID_MSG_VALUE',
+    InsufficientEthRemaining = 'INSUFFICIENT_ETH_REMAINING',
 }
 
 export enum StatusCodes {

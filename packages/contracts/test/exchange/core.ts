@@ -456,30 +456,6 @@ describe('Exchange core', () => {
                 RevertReason.RoundingError,
             );
         });
-
-        it('should throw if assetData has a length < 132', async () => {
-            // Construct Exchange parameters
-            const makerAssetId = erc721MakerAssetIds[0];
-            const takerAssetId = erc721TakerAssetIds[0];
-            const makerAssetData = assetDataUtils.encodeERC721AssetData(erc721Token.address, makerAssetId).slice(0, -2);
-            signedOrder = await orderFactory.newSignedOrderAsync({
-                makerAssetAmount: new BigNumber(1),
-                takerAssetAmount: new BigNumber(1),
-                makerAssetData,
-                takerAssetData: assetDataUtils.encodeERC721AssetData(erc721Token.address, takerAssetId),
-            });
-            // Verify pre-conditions
-            const initialOwnerMakerAsset = await erc721Token.ownerOf.callAsync(makerAssetId);
-            expect(initialOwnerMakerAsset).to.be.bignumber.equal(makerAddress);
-            const initialOwnerTakerAsset = await erc721Token.ownerOf.callAsync(takerAssetId);
-            expect(initialOwnerTakerAsset).to.be.bignumber.equal(takerAddress);
-            // Call Exchange
-            const takerAssetFillAmount = signedOrder.takerAssetAmount;
-            return expectTransactionFailedAsync(
-                exchangeWrapper.fillOrderAsync(signedOrder, takerAddress, { takerAssetFillAmount }),
-                RevertReason.LengthGreaterThan131Required,
-            );
-        });
     });
 
     describe('getOrderInfo', () => {

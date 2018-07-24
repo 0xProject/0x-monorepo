@@ -1,5 +1,14 @@
 [
     {
+        "timestamp": 1532357734,
+        "version": "1.0.0",
+        "changes": [
+            {
+                "note": "Dependencies updated"
+            }
+        ]
+    },
+    {
         "timestamp": 1532043000,
         "version": "1.0.0-rc.1",
         "changes": [
@@ -52,7 +61,8 @@
                     "Update Order & SignedOrder schemas, remove ECSignature schema and add Hex schema as part of V2 upgrades",
                 "pr": 615
             }
-        ]
+        ],
+        "timestamp": 1527008794
     },
     {
         "timestamp": 1527008794,

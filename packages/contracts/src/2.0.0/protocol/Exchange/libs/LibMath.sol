@@ -33,7 +33,8 @@ contract LibMath is
     function getPartialAmount(
         uint256 numerator,
         uint256 denominator,
-        uint256 target)
+        uint256 target
+    )
         internal
         pure
         returns (uint256 partialAmount)
@@ -53,7 +54,8 @@ contract LibMath is
     function isRoundingError(
         uint256 numerator,
         uint256 denominator,
-        uint256 target)
+        uint256 target
+    )
         internal
         pure
         returns (bool isError)

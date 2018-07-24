@@ -1,9 +1,19 @@
 <!--
-This file is auto-generated using the monorepo-scripts package. Don't edit directly.
+changelogUtils.file is auto-generated using the monorepo-scripts package. Don't edit directly.
 Edit the package's CHANGELOG.json file only.
 -->
 
 CHANGELOG
+
+## v1.0.1 - _July 23, 2018_
+
+    * Dependencies updated
+
+## v1.0.0 - _July 20, 2018_
+
+    * Export `marshaller` utility file. (#829)
+    * Add `getNodeTypeAsync` method (#812)
+    * Stop exporting uniqueVersionIds object (#897)
 
 ## v0.7.3 - _July 18, 2018_
 
@@ -19,7 +29,14 @@ CHANGELOG
 
 ## v0.7.0 - _June 4, 2018_
 
-    * Add default parameters when sending a raw payload
+    * Add `web3Wrapper.getContractCodeAsync` (#675)
+    * Add `web3Wrapper.getTransactionTraceAsync` (#675)
+    * Add `web3Wrapper.getBlockWithTransactionDataAsync` (#675)
+    * Add exported uniqueVersionIds object (#622)
+    * Update increaseTimeAsync to work with Geth (#622)
+    * Make callAsync throw if raw call result is 0x (null) (#622)
+    * Add new setHeadAsync method (#622)
+    * Improve performance of awaitTransactionMinedAsync by immediately checking if the transaction was already mined instead of waiting for the first interval. (#688)
 
 ## v0.6.4 - _May 22, 2018_
 

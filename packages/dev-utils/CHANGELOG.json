@@ -1,5 +1,14 @@
 [
     {
+        "timestamp": 1532357734,
+        "version": "1.0.1",
+        "changes": [
+            {
+                "note": "Dependencies updated"
+            }
+        ]
+    },
+    {
         "timestamp": 1532043000,
         "version": "1.0.0",
         "changes": [
@@ -46,7 +55,8 @@
                 "note": "Add SolidityProfiler to EnvVars",
                 "pr": 675
             }
-        ]
+        ],
+        "timestamp": 1527008544
     },
     {
         "version": "0.4.2",

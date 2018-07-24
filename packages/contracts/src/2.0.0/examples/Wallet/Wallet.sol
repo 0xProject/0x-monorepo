@@ -22,7 +22,7 @@ import "../../protocol/Exchange/interfaces/IWallet.sol";
 import "../../utils/LibBytes/LibBytes.sol";
 
 
-contract TestWallet is 
+contract Wallet is 
     IWallet
 {
     using LibBytes for bytes;
@@ -31,7 +31,7 @@ contract TestWallet is
     // solhint-disable-next-line var-name-mixedcase
     address internal WALLET_OWNER;
 
-    /// @dev constructs a new `TestWallet` with a single owner.
+    /// @dev constructs a new `Wallet` with a single owner.
     /// @param walletOwner The owner of this wallet.
     constructor (address walletOwner) public {
         WALLET_OWNER = walletOwner;
