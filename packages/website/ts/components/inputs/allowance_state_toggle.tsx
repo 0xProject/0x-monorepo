@@ -5,6 +5,7 @@ import ReactTooltip = require('react-tooltip');
 import { Blockchain } from 'ts/blockchain';
 import { AllowanceState, AllowanceStateView } from 'ts/components/ui/allowance_state_view';
 import { Container } from 'ts/components/ui/container';
+import { Text } from 'ts/components/ui/text';
 import { Dispatcher } from 'ts/redux/dispatcher';
 import { BalanceErrs, Token, TokenState } from 'ts/types';
 import { analytics } from 'ts/utils/analytics';
@@ -55,12 +56,13 @@ export class AllowanceStateToggle extends React.Component<AllowanceStateTogglePr
         const tooltipId = `tooltip-id-${this.props.token.symbol}`;
         return (
             <Container cursor="pointer">
-                <ReactTooltip id={tooltipId}>{this._getTooltipContent()}</ReactTooltip>
+                <ReactTooltip effect="solid" offset={{ top: 3 }} id={tooltipId}>
+                    {this._getTooltipContent()}
+                </ReactTooltip>
                 <div
                     data-tip={true}
                     data-for={tooltipId}
                     data-place="right"
-                    data-effect="solid"
                     onClick={this._onToggleAllowanceAsync.bind(this)}
                 >
                     <AllowanceStateView allowanceState={this.state.allowanceState} />
@@ -76,7 +78,6 @@ export class AllowanceStateToggle extends React.Component<AllowanceStateTogglePr
             nextTokenState.isLoaded !== prevTokenState.isLoaded
         ) {
             const tokenState = nextProps.tokenState;
-            const allowance = tokenState.allowance;
             this.setState({
                 prevTokenState: tokenState,
                 allowanceState: AllowanceStateToggle._getAllowanceState(nextTokenState),
@@ -88,18 +89,22 @@ export class AllowanceStateToggle extends React.Component<AllowanceStateTogglePr
         switch (this.state.allowanceState) {
             case AllowanceState.Loading:
                 // TODO: support both awaiting confirmation and awaiting transaction.
-                return 'Please confirm in MetaMask';
+                return (
+                    <Text noWrap={true} fontColor="white">
+                        Please confirm in MetaMask
+                    </Text>
+                );
             case AllowanceState.Locked:
                 return (
-                    <span>
+                    <Text noWrap={true} fontColor="white">
                         Click to enable <b>{symbol}</b> for trading
-                    </span>
+                    </Text>
                 );
             case AllowanceState.Unlocked:
                 return (
-                    <span>
+                    <Text noWrap={true} fontColor="white">
                         <b>{symbol}</b> is available for trading
-                    </span>
+                    </Text>
                 );
             default:
                 return null;
