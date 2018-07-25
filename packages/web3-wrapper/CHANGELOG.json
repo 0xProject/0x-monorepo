@@ -6,8 +6,7 @@
                 "note": "Add `getTransactionByHashAsync` method",
                 "pr": 847
             }
-        ],
-        "timestamp": 1532442671
+        ]
     },
     {
         "timestamp": 1532357734,
