@@ -50,8 +50,28 @@ yarn lint
 
 ### Migrate
 
-In order to migrate the 0x smart contracts to TestRPC/Ganache running at `http://localhost:8545`, run:
+#### V2-beta smart contracts
+
+In order to migrate the V2-beta 0x smart contracts to Kovan using a Ledger Nano S, run:
 
 ```bash
-yarn migrate
+yarn migrate:v2-beta-testnet
+```
+
+**Note:** Ledger settings `contract data` must be `on`, and `browser support` must be set to `off`.
+
+#### V2 (under development) smart contracts
+
+In order to migrate the V2 (under development) 0x smart contracts to TestRPC/Ganache running at `http://localhost:8545`, run:
+
+```bash
+yarn migrate:v2
+```
+
+#### V1 smart contracts
+
+In order to migrate the V1 0x smart contracts to TestRPC/Ganache running at `http://localhost:8545`, run:
+
+```bash
+yarn migrate:v1
 ```
