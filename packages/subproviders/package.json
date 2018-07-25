@@ -64,7 +64,6 @@
     "devDependencies": {
         "@0xproject/monorepo-scripts": "^1.0.1",
         "@0xproject/tslint-config": "^1.0.1",
-        "@0xproject/utils": "^1.0.0",
         "@types/bip39": "^2.4.0",
         "@types/bn.js": "^4.11.0",
         "@types/ethereumjs-tx": "^1.0.0",
