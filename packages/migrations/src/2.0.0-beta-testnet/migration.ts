@@ -1,3 +1,4 @@
+import { assetDataUtils } from '@0xproject/order-utils';
 import { logUtils } from '@0xproject/utils';
 import { Web3Wrapper } from '@0xproject/web3-wrapper';
 import { Provider, TxData } from 'ethereum-types';
@@ -40,25 +41,22 @@ export const runV2TestnetMigrationsAsync = async (
     artifactsWriter.saveArtifact(erc721proxy);
 
     // Deploy Exchange
-    const exchange = await ExchangeContract.deployFrom0xArtifactAsync(artifacts.Exchange, provider, txDefaults);
+    const zrxAddressOnKovan = '0x6ff6c0ff1d68b964901f986d4c9fa3ac68346570';
+    const zrxAssetData = assetDataUtils.encodeERC20AssetData(zrxAddressOnKovan);
+    const exchange = await ExchangeContract.deployFrom0xArtifactAsync(artifacts.Exchange, provider, txDefaults, zrxAssetData);
     artifactsWriter.saveArtifact(exchange);
 
     let txHash;
     // Register AssetProxies in Exchange
-    const oldAssetProxy = constants.NULL_ADDRESS;
     txHash = await exchange.registerAssetProxy.sendTransactionAsync(
-        constants.ERC20_PROXY_ID,
         erc20proxy.address,
-        oldAssetProxy,
     );
     logUtils.log(`transactionHash: ${txHash}`);
     logUtils.log('Registering ERC20Proxy');
     await web3Wrapper.awaitTransactionSuccessAsync(txHash);
 
     txHash = await exchange.registerAssetProxy.sendTransactionAsync(
-        constants.ERC721_PROXY_ID,
         erc721proxy.address,
-        oldAssetProxy,
     );
     logUtils.log(`transactionHash: ${txHash}`);
     logUtils.log('Registering ERC721Proxy');
