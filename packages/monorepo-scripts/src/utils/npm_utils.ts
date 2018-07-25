@@ -1,4 +1,3 @@
-import * as fs from 'fs';
 import 'isomorphic-fetch';
 import * as _ from 'lodash';
 
