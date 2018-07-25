@@ -19,20 +19,19 @@
 pragma solidity 0.4.24;
 pragma experimental ABIEncoderV2;
 
-import "./MixinFees.sol";
+import "./MixinWeth.sol";
 import "./MixinForwarderCore.sol";
-import "./MixinConstants.sol";
-import "./MixinMarketBuyZrx.sol";
-import "./MixinExpectedResults.sol";
-import "./MixinTransfer.sol";
+import "./libs/LibConstants.sol";
+import "./MixinAssets.sol";
+import "./MixinExchangeWrapper.sol";
 
 
+// solhint-disable no-empty-blocks
 contract Forwarder is
-    MixinConstants,
-    MixinExpectedResults,
-    MixinFees,
-    MixinMarketBuyZrx,
-    MixinTransfer,
+    LibConstants,
+    MixinWeth,
+    MixinAssets,
+    MixinExchangeWrapper,
     MixinForwarderCore
 {
 
@@ -44,7 +43,7 @@ contract Forwarder is
         bytes memory _wethAssetData
     )
         public
-        MixinConstants(
+        LibConstants(
             _exchange,
             _etherToken,
             _zrxToken,

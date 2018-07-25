@@ -28,14 +28,13 @@ export class EthAmountInput extends React.Component<EthAmountInputProps, EthAmou
     public static defaultProps: Partial<EthAmountInputProps> = {
         shouldShowErrs: true,
         shouldShowUnderline: true,
-        style: { height: 63 },
     };
     public render(): React.ReactNode {
         const amount = this.props.amount
             ? Web3Wrapper.toUnitAmount(this.props.amount, constants.DECIMAL_PLACES_ETH)
             : undefined;
         return (
-            <div className="flex overflow-hidden" style={this.props.style}>
+            <div className="flex" style={this.props.style}>
                 <BalanceBoundedInput
                     label={this.props.label}
                     balance={this.props.balance}

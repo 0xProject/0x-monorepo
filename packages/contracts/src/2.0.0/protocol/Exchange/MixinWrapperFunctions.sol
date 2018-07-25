@@ -22,14 +22,17 @@ pragma experimental ABIEncoderV2;
 import "./libs/LibMath.sol";
 import "./libs/LibOrder.sol";
 import "./libs/LibFillResults.sol";
+import "./libs/LibAbiEncoder.sol";
 import "./mixins/MExchangeCore.sol";
 
 
 contract MixinWrapperFunctions is
     LibMath,
     LibFillResults,
+    LibAbiEncoder,
     MExchangeCore
 {
+
     /// @dev Fills the input order. Reverts if exact takerAssetFillAmount not filled.
     /// @param order Order struct containing order specifications.
     /// @param takerAssetFillAmount Desired amount of takerAsset to sell.
@@ -54,7 +57,7 @@ contract MixinWrapperFunctions is
         return fillResults;
     }
 
-    /// @dev Fills an order with specified parameters and ECDSA signature.
+    /// @dev Fills the input order.
     ///      Returns false if the transaction would otherwise revert.
     /// @param order Order struct containing order specifications.
     /// @param takerAssetFillAmount Desired amount of takerAsset to sell.
@@ -68,177 +71,21 @@ contract MixinWrapperFunctions is
         public
         returns (FillResults memory fillResults)
     {
-        // We need to call MExchangeCore.fillOrder using a delegatecall in
-        // assembly so that we can intercept a call that throws. For this, we
-        // need the input encoded in memory in the Ethereum ABIv2 format [1].
+        // ABI encode calldata for `fillOrder`
+        bytes memory fillOrderCalldata = abiEncodeFillOrder(
+            order,
+            takerAssetFillAmount,
+            signature
+        );
 
-        // | Area     | Offset | Length  | Contents                                    |
-        // | -------- |--------|---------|-------------------------------------------- |
-        // | Header   | 0x00   | 4       | function selector                           |
-        // | Params   |        | 3 * 32  | function parameters:                        |
-        // |          | 0x00   |         |   1. offset to order (*)                    |
-        // |          | 0x20   |         |   2. takerAssetFillAmount                   |
-        // |          | 0x40   |         |   3. offset to signature (*)                |
-        // | Data     |        | 12 * 32 | order:                                      |
-        // |          | 0x000  |         |   1.  senderAddress                         |
-        // |          | 0x020  |         |   2.  makerAddress                          |
-        // |          | 0x040  |         |   3.  takerAddress                          |
-        // |          | 0x060  |         |   4.  feeRecipientAddress                   |
-        // |          | 0x080  |         |   5.  makerAssetAmount                      |
-        // |          | 0x0A0  |         |   6.  takerAssetAmount                      |
-        // |          | 0x0C0  |         |   7.  makerFeeAmount                        |
-        // |          | 0x0E0  |         |   8.  takerFeeAmount                        |
-        // |          | 0x100  |         |   9.  expirationTimeSeconds                 |
-        // |          | 0x120  |         |   10. salt                                  |
-        // |          | 0x140  |         |   11. Offset to makerAssetData (*)          |
-        // |          | 0x160  |         |   12. Offset to takerAssetData (*)          |
-        // |          | 0x180  | 32      | makerAssetData Length                       |
-        // |          | 0x1A0  | **      | makerAssetData Contents                     |
-        // |          | 0x1C0  | 32      | takerAssetData Length                       |
-        // |          | 0x1E0  | **      | takerAssetData Contents                     |
-        // |          | 0x200  | 32      | signature Length                            |
-        // |          | 0x220  | **      | signature Contents                          |
-
-        // * Offsets are calculated from the beginning of the current area: Header, Params, Data:
-        //     An offset stored in the Params area is calculated from the beginning of the Params section.
-        //     An offset stored in the Data area is calculated from the beginning of the Data section.
-
-        // ** The length of dynamic array contents are stored in the field immediately preceeding the contents.
-
-        // [1]: https://solidity.readthedocs.io/en/develop/abi-spec.html
-
-        bytes4 fillOrderSelector = this.fillOrder.selector;
-
+        // Delegate to `fillOrder` and handle any exceptions gracefully
         assembly {
-
-            // Areas below may use the following variables:
-            //   1. <area>Start   -- Start of this area in memory
-            //   2. <area>End     -- End of this area in memory. This value may
-            //                       be precomputed (before writing contents),
-            //                       or it may be computed as contents are written.
-            //   3. <area>Offset  -- Current offset into area. If an area's End
-            //                       is precomputed, this variable tracks the
-            //                       offsets of contents as they are written.
-
-            /////// Setup Header Area ///////
-            // Load free memory pointer
-            let headerAreaStart := mload(0x40)
-            mstore(headerAreaStart, fillOrderSelector)
-            let headerAreaEnd := add(headerAreaStart, 0x4)
-
-            /////// Setup Params Area ///////
-            // This area is preallocated and written to later.
-            // This is because we need to fill in offsets that have not yet been calculated.
-            let paramsAreaStart := headerAreaEnd
-            let paramsAreaEnd := add(paramsAreaStart, 0x60)
-            let paramsAreaOffset := paramsAreaStart
-
-            /////// Setup Data Area ///////
-            let dataAreaStart := paramsAreaEnd
-            let dataAreaEnd := dataAreaStart
-
-            // Offset from the source data we're reading from
-            let sourceOffset := order
-            // arrayLenBytes and arrayLenWords track the length of a dynamically-allocated bytes array.
-            let arrayLenBytes := 0
-            let arrayLenWords := 0
-
-            /////// Write order Struct ///////
-            // Write memory location of Order, relative to the start of the
-            // parameter list, then increment the paramsAreaOffset respectively.
-            mstore(paramsAreaOffset, sub(dataAreaEnd, paramsAreaStart))
-            paramsAreaOffset := add(paramsAreaOffset, 0x20)
-
-            // Write values for each field in the order
-            // It would be nice to use a loop, but we save on gas by writing
-            // the stores sequentially.
-            mstore(dataAreaEnd, mload(sourceOffset))                            // makerAddress
-            mstore(add(dataAreaEnd, 0x20), mload(add(sourceOffset, 0x20)))      // takerAddress
-            mstore(add(dataAreaEnd, 0x40), mload(add(sourceOffset, 0x40)))      // feeRecipientAddress
-            mstore(add(dataAreaEnd, 0x60), mload(add(sourceOffset, 0x60)))      // senderAddress
-            mstore(add(dataAreaEnd, 0x80), mload(add(sourceOffset, 0x80)))      // makerAssetAmount
-            mstore(add(dataAreaEnd, 0xA0), mload(add(sourceOffset, 0xA0)))      // takerAssetAmount
-            mstore(add(dataAreaEnd, 0xC0), mload(add(sourceOffset, 0xC0)))      // makerFeeAmount
-            mstore(add(dataAreaEnd, 0xE0), mload(add(sourceOffset, 0xE0)))      // takerFeeAmount
-            mstore(add(dataAreaEnd, 0x100), mload(add(sourceOffset, 0x100)))    // expirationTimeSeconds
-            mstore(add(dataAreaEnd, 0x120), mload(add(sourceOffset, 0x120)))    // salt
-            mstore(add(dataAreaEnd, 0x140), mload(add(sourceOffset, 0x140)))    // Offset to makerAssetData
-            mstore(add(dataAreaEnd, 0x160), mload(add(sourceOffset, 0x160)))    // Offset to takerAssetData
-            dataAreaEnd := add(dataAreaEnd, 0x180)
-            sourceOffset := add(sourceOffset, 0x180)
-
-            // Write offset to <order.makerAssetData>
-            mstore(add(dataAreaStart, mul(10, 0x20)), sub(dataAreaEnd, dataAreaStart))
-
-            // Calculate length of <order.makerAssetData>
-            sourceOffset := mload(add(order, 0x140)) // makerAssetData
-            arrayLenBytes := mload(sourceOffset)
-            sourceOffset := add(sourceOffset, 0x20)
-            arrayLenWords := div(add(arrayLenBytes, 0x1F), 0x20)
-
-            // Write length of <order.makerAssetData>
-            mstore(dataAreaEnd, arrayLenBytes)
-            dataAreaEnd := add(dataAreaEnd, 0x20)
-
-            // Write contents of <order.makerAssetData>
-            for {let i := 0} lt(i, arrayLenWords) {i := add(i, 1)} {
-                mstore(dataAreaEnd, mload(sourceOffset))
-                dataAreaEnd := add(dataAreaEnd, 0x20)
-                sourceOffset := add(sourceOffset, 0x20)
-            }
-
-            // Write offset to <order.takerAssetData>
-            mstore(add(dataAreaStart, mul(11, 0x20)), sub(dataAreaEnd, dataAreaStart))
-
-            // Calculate length of <order.takerAssetData>
-            sourceOffset := mload(add(order, 0x160)) // takerAssetData
-            arrayLenBytes := mload(sourceOffset)
-            sourceOffset := add(sourceOffset, 0x20)
-            arrayLenWords := div(add(arrayLenBytes, 0x1F), 0x20)
-
-            // Write length of <order.takerAssetData>
-            mstore(dataAreaEnd, arrayLenBytes)
-            dataAreaEnd := add(dataAreaEnd, 0x20)
-
-            // Write contents of  <order.takerAssetData>
-            for {let i := 0} lt(i, arrayLenWords) {i := add(i, 1)} {
-                mstore(dataAreaEnd, mload(sourceOffset))
-                dataAreaEnd := add(dataAreaEnd, 0x20)
-                sourceOffset := add(sourceOffset, 0x20)
-            }
-
-            /////// Write takerAssetFillAmount ///////
-            mstore(paramsAreaOffset, takerAssetFillAmount)
-            paramsAreaOffset := add(paramsAreaOffset, 0x20)
-
-            /////// Write signature ///////
-            // Write offset to paramsArea
-            mstore(paramsAreaOffset, sub(dataAreaEnd, paramsAreaStart))
-
-            // Calculate length of signature
-            sourceOffset := signature
-            arrayLenBytes := mload(sourceOffset)
-            sourceOffset := add(sourceOffset, 0x20)
-            arrayLenWords := div(add(arrayLenBytes, 0x1F), 0x20)
-
-            // Write length of signature
-            mstore(dataAreaEnd, arrayLenBytes)
-            dataAreaEnd := add(dataAreaEnd, 0x20)
-
-            // Write contents of signature
-            for {let i := 0} lt(i, arrayLenWords) {i := add(i, 1)} {
-                mstore(dataAreaEnd, mload(sourceOffset))
-                dataAreaEnd := add(dataAreaEnd, 0x20)
-                sourceOffset := add(sourceOffset, 0x20)
-            }
-
-            // Execute delegatecall
             let success := delegatecall(
                 gas,                                // forward all gas, TODO: look into gas consumption of assert/throw
                 address,                            // call address of this contract
-                headerAreaStart,                    // pointer to start of input
-                sub(dataAreaEnd, headerAreaStart),  // length of input
-                headerAreaStart,                    // write output over input
+                add(fillOrderCalldata, 32),         // pointer to start of input (skip array length in first 32 bytes)
+                mload(fillOrderCalldata),           // length of input
+                fillOrderCalldata,                  // write output over input
                 128                                 // output size is 128 bytes
             )
             switch success
@@ -249,10 +96,10 @@ contract MixinWrapperFunctions is
                 mstore(add(fillResults, 96), 0)
             }
             case 1 {
-                mstore(fillResults, mload(headerAreaStart))
-                mstore(add(fillResults, 32), mload(add(headerAreaStart, 32)))
-                mstore(add(fillResults, 64), mload(add(headerAreaStart, 64)))
-                mstore(add(fillResults, 96), mload(add(headerAreaStart, 96)))
+                mstore(fillResults, mload(fillOrderCalldata))
+                mstore(add(fillResults, 32), mload(add(fillOrderCalldata, 32)))
+                mstore(add(fillResults, 64), mload(add(fillOrderCalldata, 64)))
+                mstore(add(fillResults, 96), mload(add(fillOrderCalldata, 96)))
             }
         }
         return fillResults;
@@ -272,7 +119,8 @@ contract MixinWrapperFunctions is
         public
         returns (FillResults memory totalFillResults)
     {
-        for (uint256 i = 0; i < orders.length; i++) {
+        uint256 ordersLength = orders.length;
+        for (uint256 i = 0; i != ordersLength; i++) {
             FillResults memory singleFillResults = fillOrder(
                 orders[i],
                 takerAssetFillAmounts[i],
@@ -297,7 +145,8 @@ contract MixinWrapperFunctions is
         public
         returns (FillResults memory totalFillResults)
     {
-        for (uint256 i = 0; i < orders.length; i++) {
+        uint256 ordersLength = orders.length;
+        for (uint256 i = 0; i != ordersLength; i++) {
             FillResults memory singleFillResults = fillOrKillOrder(
                 orders[i],
                 takerAssetFillAmounts[i],
@@ -323,7 +172,8 @@ contract MixinWrapperFunctions is
         public
         returns (FillResults memory totalFillResults)
     {
-        for (uint256 i = 0; i < orders.length; i++) {
+        uint256 ordersLength = orders.length;
+        for (uint256 i = 0; i != ordersLength; i++) {
             FillResults memory singleFillResults = fillOrderNoThrow(
                 orders[i],
                 takerAssetFillAmounts[i],
@@ -349,7 +199,8 @@ contract MixinWrapperFunctions is
     {
         bytes memory takerAssetData = orders[0].takerAssetData;
     
-        for (uint256 i = 0; i < orders.length; i++) {
+        uint256 ordersLength = orders.length;
+        for (uint256 i = 0; i != ordersLength; i++) {
 
             // We assume that asset being sold by taker is the same for each order.
             // Rather than passing this in as calldata, we use the takerAssetData from the first order in all later orders.
@@ -369,7 +220,7 @@ contract MixinWrapperFunctions is
             addFillResults(totalFillResults, singleFillResults);
 
             // Stop execution if the entire amount of takerAsset has been sold
-            if (totalFillResults.takerAssetFilledAmount == takerAssetFillAmount) {
+            if (totalFillResults.takerAssetFilledAmount >= takerAssetFillAmount) {
                 break;
             }
         }
@@ -392,7 +243,8 @@ contract MixinWrapperFunctions is
     {
         bytes memory takerAssetData = orders[0].takerAssetData;
 
-        for (uint256 i = 0; i < orders.length; i++) {
+        uint256 ordersLength = orders.length;
+        for (uint256 i = 0; i != ordersLength; i++) {
 
             // We assume that asset being sold by taker is the same for each order.
             // Rather than passing this in as calldata, we use the takerAssetData from the first order in all later orders.
@@ -412,7 +264,7 @@ contract MixinWrapperFunctions is
             addFillResults(totalFillResults, singleFillResults);
 
             // Stop execution if the entire amount of takerAsset has been sold
-            if (totalFillResults.takerAssetFilledAmount == takerAssetFillAmount) {
+            if (totalFillResults.takerAssetFilledAmount >= takerAssetFillAmount) {
                 break;
             }
         }
@@ -434,7 +286,8 @@ contract MixinWrapperFunctions is
     {
         bytes memory makerAssetData = orders[0].makerAssetData;
 
-        for (uint256 i = 0; i < orders.length; i++) {
+        uint256 ordersLength = orders.length;
+        for (uint256 i = 0; i != ordersLength; i++) {
 
             // We assume that asset being bought by taker is the same for each order.
             // Rather than passing this in as calldata, we copy the makerAssetData from the first order onto all later orders.
@@ -462,7 +315,7 @@ contract MixinWrapperFunctions is
             addFillResults(totalFillResults, singleFillResults);
 
             // Stop execution if the entire amount of makerAsset has been bought
-            if (totalFillResults.makerAssetFilledAmount == makerAssetFillAmount) {
+            if (totalFillResults.makerAssetFilledAmount >= makerAssetFillAmount) {
                 break;
             }
         }
@@ -485,7 +338,8 @@ contract MixinWrapperFunctions is
     {
         bytes memory makerAssetData = orders[0].makerAssetData;
 
-        for (uint256 i = 0; i < orders.length; i++) {
+        uint256 ordersLength = orders.length;
+        for (uint256 i = 0; i != ordersLength; i++) {
 
             // We assume that asset being bought by taker is the same for each order.
             // Rather than passing this in as calldata, we copy the makerAssetData from the first order onto all later orders.
@@ -513,7 +367,7 @@ contract MixinWrapperFunctions is
             addFillResults(totalFillResults, singleFillResults);
 
             // Stop execution if the entire amount of makerAsset has been bought
-            if (totalFillResults.makerAssetFilledAmount == makerAssetFillAmount) {
+            if (totalFillResults.makerAssetFilledAmount >= makerAssetFillAmount) {
                 break;
             }
         }
@@ -525,7 +379,8 @@ contract MixinWrapperFunctions is
     function batchCancelOrders(LibOrder.Order[] memory orders)
         public
     {
-        for (uint256 i = 0; i < orders.length; i++) {
+        uint256 ordersLength = orders.length;
+        for (uint256 i = 0; i != ordersLength; i++) {
             cancelOrder(orders[i]);
         }
     }
@@ -538,9 +393,9 @@ contract MixinWrapperFunctions is
         view
         returns (LibOrder.OrderInfo[] memory)
     {
-        uint256 length = orders.length;
-        LibOrder.OrderInfo[] memory ordersInfo = new LibOrder.OrderInfo[](length);
-        for (uint256 i = 0; i < length; i++) {
+        uint256 ordersLength = orders.length;
+        LibOrder.OrderInfo[] memory ordersInfo = new LibOrder.OrderInfo[](ordersLength);
+        for (uint256 i = 0; i != ordersLength; i++) {
             ordersInfo[i] = getOrderInfo(orders[i]);
         }
         return ordersInfo;

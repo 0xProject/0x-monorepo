@@ -22,7 +22,10 @@ import "../Mintable/Mintable.sol";
 import "../../utils/Ownable/Ownable.sol";
 
 
-contract DummyERC20Token is Mintable, Ownable {
+contract DummyERC20Token is 
+    Mintable,
+    Ownable
+{
     string public name;
     string public symbol;
     uint256 public decimals;

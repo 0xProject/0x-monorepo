@@ -1,7 +1,11 @@
 // eth-lightwallet declarations
-declare module 'eth-lightwallet' {
-    import { ECSignatureBuffer } from '@0xproject/types';
 
+interface ECSignatureBuffer {
+    v: number;
+    r: Buffer;
+    s: Buffer;
+}
+declare module 'eth-lightwallet' {
     // tslint:disable-next-line:class-name
     export class signing {
         public static signTx(

@@ -1,9 +1,19 @@
 <!--
-This file is auto-generated using the monorepo-scripts package. Don't edit directly.
+changelogUtils.file is auto-generated using the monorepo-scripts package. Don't edit directly.
 Edit the package's CHANGELOG.json file only.
 -->
 
 CHANGELOG
+
+## v1.0.0-rc.2 - _July 23, 2018_
+
+    * Upgrade ethereumjs-abi dep including a fix so that addresses starting with 0 are properly decoded by `decodeERC20AssetData`
+
+## v1.0.0-rc.1 - _July 20, 2018_
+
+    * Refactor to work with V2 of 0x protocol (#636)
+    * Export parseECSignature method (#684)
+    * Handle Typed Arrays when hashing data (#894)
 
 ## v0.0.9 - _July 18, 2018_
 

@@ -1,5 +1,16 @@
 [
     {
+        "version": "1.0.1",
+        "changes": [
+            {
+                "note": "Add `AbortController` polyfill to `fetchAsync`",
+                "pr": 903
+            }
+        ],
+        "timestamp": 1532357734
+    },
+    {
+        "timestamp": 1532043000,
         "version": "1.0.0",
         "changes": [
             {

@@ -18,26 +18,17 @@
 
 pragma solidity 0.4.24;
 
-import "./mixins/MConstants.sol";
 
+contract IAssets {
 
-contract MixinConstants is
-    MConstants
-{
-
-    constructor (
-        address _exchange,
-        address _etherToken,
-        address _zrxToken,
-        bytes memory _zrxAssetData,
-        bytes memory _wethAssetData
+    /// @dev Withdraws ERC20 tokens from this contract. The contract requires a ZRX balance in order to 
+    ///      function optimally, and this function allows the ZRX to be withdrawn by owner. It may also be
+    ///      used to withdraw tokens that were accidentally sent to this contract.
+    /// @param token Address of ERC20 token to withdraw.
+    /// @param amount Amount of ERC20 token to withdraw.
+    function withdrawERC20(
+        address token,
+        uint256 amount
     )
-        public
-    {
-        EXCHANGE = IExchange(_exchange);
-        ETHER_TOKEN = IEtherToken(_etherToken);
-        ZRX_TOKEN = IERC20Token(_zrxToken);
-        ZRX_ASSET_DATA = _zrxAssetData;
-        WETH_ASSET_DATA = _wethAssetData;
-    }
+        external;
 }

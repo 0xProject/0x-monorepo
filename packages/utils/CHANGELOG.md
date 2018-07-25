@@ -1,9 +1,17 @@
 <!--
-This file is auto-generated using the monorepo-scripts package. Don't edit directly.
+changelogUtils.file is auto-generated using the monorepo-scripts package. Don't edit directly.
 Edit the package's CHANGELOG.json file only.
 -->
 
 CHANGELOG
+
+## v1.0.1 - _July 23, 2018_
+
+    * Add `AbortController` polyfill to `fetchAsync` (#903)
+
+## v1.0.0 - _July 20, 2018_
+
+    * Add `fetchAsync` which adds a default timeout to all requests (#874)
 
 ## v0.7.3 - _July 18, 2018_
 
