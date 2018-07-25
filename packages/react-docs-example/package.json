@@ -38,7 +38,7 @@
         "css-loader": "^0.28.9",
         "json-loader": "^0.5.4",
         "less": "^2.7.2",
-        "less-loader": "^2.2.3",
+        "less-loader": "^4.1.0",
         "make-promises-safe": "^1.1.0",
         "raw-loader": "^0.5.1",
         "shx": "^0.2.2",
