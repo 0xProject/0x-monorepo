@@ -44470,9 +44470,9 @@
 	},
 	"networks": {
 		"42": {
-			"address": "0x02f13c68a06477eee87fdcf3e1d80f9c45f254a3",
+			"address": "0x33f780fbc29bd180b2d0ed55c4d036c6a09262b5",
 			"links": {},
-			"constructorArgs": "[[\"0x9df8137872ac09a8fee71d0da5c7539923fb9bf0\",\"0xcf34d44db312d188789f43a63d11cf2bebb4da15\",\"0x73fd50f2a6beac9cdac9fe87ef68a18edc415831\"],[\"0x5bc0de240e1c1b211538ca077a82bb39f4179087\",\"0x6b17ec0b94810e58eac961e501dba27ff35da0fb\"],\"1\",\"0\"]"
+			"constructorArgs": "[[\"0x9df8137872ac09a8fee71d0da5c7539923fb9bf0\",\"0xcf34d44db312d188789f43a63d11cf2bebb4da15\",\"0x73fd50f2a6beac9cdac9fe87ef68a18edc415831\"],[\"0x9ad1b8209cea603892c9dfaa676bc737088b499a\",\"0xbb428f7108971ecf1144700c4d37792f8b74f6b0\"],\"1\",\"0\"]"
 		}
 	}
 }

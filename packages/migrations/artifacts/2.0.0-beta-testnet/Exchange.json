@@ -2231,9 +2231,9 @@
 	},
 	"networks": {
 		"42": {
-			"address": "0xb65619b82c4d385de0c5b4005452c2fdee0f86d1",
+			"address": "0xa458ec0709468996ef2ef668f5e52f37ceb66627",
 			"links": {},
-			"constructorArgs": "[]"
+			"constructorArgs": "[\"0xf47261b00000000000000000000000006ff6c0ff1d68b964901f986d4c9fa3ac68346570\"]"
 		}
 	}
 }

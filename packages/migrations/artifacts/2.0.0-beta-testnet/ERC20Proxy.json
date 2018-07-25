@@ -254,7 +254,7 @@
 	},
 	"networks": {
 		"42": {
-			"address": "0x5bc0de240e1c1b211538ca077a82bb39f4179087",
+			"address": "0x9ad1b8209cea603892c9dfaa676bc737088b499a",
 			"links": {},
 			"constructorArgs": "[]"
 		}
