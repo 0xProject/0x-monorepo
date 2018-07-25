@@ -31,20 +31,19 @@ export const Join0x = (props: Join0xProps) => (
             </div>
             <Container className="pb2 lg-pt2 md-pt2 sm-pt3 sm-px3 sm-center" maxWidth="537px">
                 <Text fontSize="14px" lineHeight="30px">
-                    0x exists to create a tokenized world where all value can flow freely.<br />
-                    <br />This means leaving the geographic lottery behind and democratizing access to financial
-                    services globally. This means powering a growing ecosystem of next-generation decentralized apps.
-                    And along the way, this requires solving novel challenges to make our tech intuitive, flexible, and
-                    accessible to all.<br />
+                    At 0x, our mission is to create a tokenized world where all value can flow freely.
                     <br />
+                    <br />We are powering a growing ecosystem of decentralized applications and solving novel challenges
+                    to make our technology intuitive, flexible, and accessible to all.{' '}
                     <a
                         style={{ color: colors.mediumBlue, textDecoration: 'none' }}
                         target="_blank"
                         href={constants.URL_MISSION_AND_VALUES_BLOG_POST}
                     >
-                        Read more about our mission
-                    </a>, and join us in building the rails upon which the exchange of any blockchain-based digital
-                    assets take place.
+                        Read more
+                    </a>{' '}
+                    about our mission, and join us in building financial infrastructure upon which the exchange of
+                    anything of value will take place.
                 </Text>
             </Container>
             <div className="py3">
