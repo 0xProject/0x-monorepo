@@ -10,22 +10,27 @@ import { utils } from './utils/utils';
 
 (async () => {
     const monorepoRootPath = path.join(__dirname, '../../..');
-    const packages = utils.getPackages(monorepoRootPath);
+    const packages = utils.getTopologicallySortedPackages(monorepoRootPath);
     const installablePackages = _.filter(
         packages,
         pkg => !pkg.packageJson.private && !_.isUndefined(pkg.packageJson.main) && pkg.packageJson.main.endsWith('.js'),
     );
+    utils.log('Testing packages:');
+    _.map(installablePackages, pkg => utils.log(`* ${pkg.packageJson.name}`));
     for (const installablePackage of installablePackages) {
-        const packagePath = installablePackage.location;
+        const changelogPath = path.join(installablePackage.location, 'CHANGELOG.json');
+        const lastChangelogVersion = JSON.parse(fs.readFileSync(changelogPath).toString())[0].version;
         const packageName = installablePackage.packageJson.name;
         utils.log(`Testing ${packageName}`);
-        let result = await execAsync('npm pack', { cwd: packagePath });
-        const packedPackageFileName = result.stdout.trim();
         const testDirectory = path.join(monorepoRootPath, '../test-env');
         fs.mkdirSync(testDirectory);
-        result = await execAsync('yarn init --yes', { cwd: testDirectory });
-        utils.log(`Installing ${packedPackageFileName}`);
-        result = await execAsync(`yarn add ${packagePath}/${packedPackageFileName}`, { cwd: testDirectory });
+        await execAsync('yarn init --yes', { cwd: testDirectory });
+        const npmrcFilePath = path.join(testDirectory, '.npmrc');
+        fs.writeFileSync(npmrcFilePath, `registry=http://localhost:4873`);
+        utils.log(`Installing ${packageName}@${lastChangelogVersion}`);
+        await execAsync(`npm install --save ${packageName}@${lastChangelogVersion} --registry=http://localhost:4873`, {
+            cwd: testDirectory,
+        });
         const indexFilePath = path.join(testDirectory, 'index.ts');
         fs.writeFileSync(indexFilePath, `import * as Package from '${packageName}';\n`);
         const tsConfig = {

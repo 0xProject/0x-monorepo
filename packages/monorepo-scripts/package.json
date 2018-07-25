@@ -1,6 +1,6 @@
 {
     "name": "@0xproject/monorepo-scripts",
-    "version": "1.0.0",
+    "version": "1.0.1",
     "engines": {
         "node": ">=6.12"
     },
@@ -42,13 +42,14 @@
         "typescript": "2.7.1"
     },
     "dependencies": {
+        "@lerna/batch-packages": "^3.0.0-beta.18",
         "@types/depcheck": "^0.6.0",
         "async-child-process": "^1.1.1",
         "chalk": "^2.3.0",
         "es6-promisify": "^5.0.0",
         "glob": "^7.1.2",
-        "lodash": "^4.17.4",
         "isomorphic-fetch": "2.2.1",
+        "lodash": "^4.17.4",
         "moment": "2.21.0",
         "opn": "^5.3.0",
         "promisify-child-process": "^1.0.5",

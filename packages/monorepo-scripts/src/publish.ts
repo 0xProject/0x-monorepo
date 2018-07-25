@@ -4,26 +4,20 @@ import * as promisify from 'es6-promisify';
 import * as _ from 'lodash';
 import * as moment from 'moment';
 import opn = require('opn');
-import { exec as execAsync, spawn } from 'promisify-child-process';
+import { exec as execAsync } from 'promisify-child-process';
 import * as prompt from 'prompt';
 import semver = require('semver');
-import semverDiff = require('semver-diff');
 import semverSort = require('semver-sort');
 
 import { constants } from './constants';
-import { Package, PackageToVersionChange, SemVerIndex, VersionChangelog } from './types';
+import { Package, PackageToNextVersion, VersionChangelog } from './types';
 import { changelogUtils } from './utils/changelog_utils';
+import { configs } from './utils/configs';
 import { utils } from './utils/utils';
 
 const DOC_GEN_COMMAND = 'docs:json';
 const NPM_NAMESPACE = '@0xproject/';
-const IS_DRY_RUN = process.env.IS_DRY_RUN === 'true';
 const TODAYS_TIMESTAMP = moment().unix();
-const semverNameToIndex: { [semver: string]: number } = {
-    patch: SemVerIndex.Patch,
-    minor: SemVerIndex.Minor,
-    major: SemVerIndex.Major,
-};
 const packageNameToWebsitePath: { [name: string]: string } = {
     '0x.js': '0xjs',
     'web3-wrapper': 'web3_wrapper',
@@ -39,28 +33,43 @@ const packageNameToWebsitePath: { [name: string]: string } = {
 
 (async () => {
     // Fetch public, updated Lerna packages
-    const shouldIncludePrivate = false;
-    const updatedPublicPackages = await utils.getUpdatedPackagesAsync(shouldIncludePrivate);
+    const shouldIncludePrivate = true;
+    const allUpdatedPackages = await utils.getUpdatedPackagesAsync(shouldIncludePrivate);
 
-    await confirmDocPagesRenderAsync(updatedPublicPackages);
+    if (!configs.IS_LOCAL_PUBLISH) {
+        await confirmDocPagesRenderAsync(allUpdatedPackages);
+    }
 
     // Update CHANGELOGs
+    const updatedPublicPackages = _.filter(allUpdatedPackages, pkg => !pkg.packageJson.private);
     const updatedPublicPackageNames = _.map(updatedPublicPackages, pkg => pkg.packageJson.name);
     utils.log(`Will update CHANGELOGs and publish: \n${updatedPublicPackageNames.join('\n')}\n`);
-    const packageToVersionChange = await updateChangeLogsAsync(updatedPublicPackages);
+    const packageToNextVersion = await updateChangeLogsAsync(updatedPublicPackages);
+
+    const updatedPrivatePackages = _.filter(allUpdatedPackages, pkg => pkg.packageJson.private);
+    _.each(updatedPrivatePackages, pkg => {
+        const currentVersion = pkg.packageJson.version;
+        const packageName = pkg.packageJson.name;
+        const nextPatchVersionIfValid = semver.inc(currentVersion, 'patch');
+        if (!_.isNull(nextPatchVersionIfValid)) {
+            packageToNextVersion[packageName] = nextPatchVersionIfValid;
+        } else {
+            throw new Error(`Encountered invalid semver version: ${currentVersion} for package: ${packageName}`);
+        }
+    });
 
     // Push changelog changes to Github
-    if (!IS_DRY_RUN) {
+    if (!configs.IS_LOCAL_PUBLISH) {
         await pushChangelogsToGithubAsync();
     }
 
     // Call LernaPublish
     utils.log('Version updates to apply:');
-    _.each(packageToVersionChange, (versionChange: string, packageName: string) => {
+    _.each(packageToNextVersion, (versionChange: string, packageName: string) => {
         utils.log(`${packageName} -> ${versionChange}`);
     });
     utils.log(`Calling 'lerna publish'...`);
-    await lernaPublishAsync(packageToVersionChange);
+    await lernaPublishAsync(packageToNextVersion);
 })().catch(err => {
     utils.log(err);
     process.exit(1);
@@ -115,8 +124,8 @@ async function pushChangelogsToGithubAsync(): Promise<void> {
     utils.log(`Pushed CHANGELOG updates to Github`);
 }
 
-async function updateChangeLogsAsync(updatedPublicPackages: Package[]): Promise<PackageToVersionChange> {
-    const packageToVersionChange: PackageToVersionChange = {};
+async function updateChangeLogsAsync(updatedPublicPackages: Package[]): Promise<PackageToNextVersion> {
+    const packageToNextVersion: PackageToNextVersion = {};
     for (const pkg of updatedPublicPackages) {
         const packageName = pkg.packageJson.name;
         let changelog = changelogUtils.getChangelogOrCreateIfMissing(packageName, pkg.location);
@@ -143,7 +152,7 @@ async function updateChangeLogsAsync(updatedPublicPackages: Package[]): Promise<
                 ],
             };
             changelog = [newChangelogEntry, ...changelog];
-            packageToVersionChange[packageName] = semverDiff(currentVersion, nextPatchVersionIfValid);
+            packageToNextVersion[packageName] = nextPatchVersionIfValid;
         } else {
             // Update existing entry with timestamp
             const lastEntry = changelog[0];
@@ -154,7 +163,7 @@ async function updateChangeLogsAsync(updatedPublicPackages: Package[]): Promise<
             const proposedNextVersion = lastEntry.version;
             lastEntry.version = updateVersionNumberIfNeeded(currentVersion, proposedNextVersion);
             changelog[0] = lastEntry;
-            packageToVersionChange[packageName] = semverDiff(currentVersion, lastEntry.version);
+            packageToNextVersion[packageName] = lastEntry.version;
         }
 
         // Save updated CHANGELOG.json
@@ -166,49 +175,21 @@ async function updateChangeLogsAsync(updatedPublicPackages: Package[]): Promise<
         utils.log(`${packageName}: Updated CHANGELOG.md`);
     }
 
-    return packageToVersionChange;
+    return packageToNextVersion;
 }
 
-async function lernaPublishAsync(packageToVersionChange: { [name: string]: string }): Promise<void> {
-    // HACK: Lerna publish does not provide a way to specify multiple package versions via
-    // flags so instead we need to interact with their interactive prompt interface.
-    const PACKAGE_REGISTRY = 'https://registry.npmjs.org/';
-    const child = spawn('lerna', ['publish', `--registry=${PACKAGE_REGISTRY}`], {
-        cwd: constants.monorepoRootPath,
-    });
-    let shouldPrintOutput = false;
-    child.stdout.on('data', (data: Buffer) => {
-        const output = data.toString('utf8');
-        if (shouldPrintOutput) {
-            utils.log(output);
-        }
-        const isVersionPrompt = _.includes(output, 'Select a new version');
-        if (isVersionPrompt) {
-            const outputStripLeft = output.split('new version for ')[1];
-            const packageName = outputStripLeft.split(' ')[0];
-            let versionChange = packageToVersionChange[packageName];
-            const isPrivatePackage = _.isUndefined(versionChange);
-            if (isPrivatePackage) {
-                versionChange = 'patch'; // Always patch updates to private packages.
-            }
-            const semVerIndex = semverNameToIndex[versionChange];
-            child.stdin.write(`${semVerIndex}\n`);
-        }
-        const isFinalPrompt = _.includes(output, 'Are you sure you want to publish the above changes?');
-        if (isFinalPrompt && !IS_DRY_RUN) {
-            child.stdin.write(`y\n`);
-            // After confirmations, we want to print the output to watch the `lerna publish` command
-            shouldPrintOutput = true;
-        } else if (isFinalPrompt && IS_DRY_RUN) {
-            utils.log(
-                `Submitted all versions to Lerna but since this is a dry run, did not confirm. You need to CTRL-C to exit.`,
-            );
-        }
-    });
-    child.stderr.on('data', (data: Buffer) => {
-        const output = data.toString('utf8');
-        utils.log('Stderr:', output);
-    });
+async function lernaPublishAsync(packageToNextVersion: { [name: string]: string }): Promise<void> {
+    const packageVersionString = _.map(packageToNextVersion, (nextVersion: string, packageName: string) => {
+        return `${packageName}@${nextVersion}`;
+    }).join(',');
+    let lernaPublishCmd = `node ${constants.lernaExecutable} publish --cdVersions=${packageVersionString} --registry=${
+        configs.NPM_REGISTRY_URL
+    }`;
+    if (configs.IS_LOCAL_PUBLISH) {
+        lernaPublishCmd += ` --skip-git --yes`;
+    }
+    utils.log('Lerna is publishing...');
+    await execAsync(lernaPublishCmd, { cwd: constants.monorepoRootPath });
 }
 
 function updateVersionNumberIfNeeded(currentVersion: string, proposedNextVersion: string): string {

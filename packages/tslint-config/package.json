@@ -1,6 +1,6 @@
 {
     "name": "@0xproject/tslint-config",
-    "version": "1.0.0",
+    "version": "1.0.1",
     "engines": {
         "node": ">=6.12"
     },
@@ -34,7 +34,7 @@
     },
     "homepage": "https://github.com/0xProject/0x-monorepo/packages/tslint-config/README.md",
     "devDependencies": {
-        "@0xproject/monorepo-scripts": "^1.0.0",
+        "@0xproject/monorepo-scripts": "^1.0.1",
         "@types/lodash": "4.14.104",
         "copyfiles": "^1.2.0",
         "make-promises-safe": "^1.1.0",
