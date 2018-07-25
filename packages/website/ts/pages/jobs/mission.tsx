@@ -16,14 +16,15 @@ export const Mission = (props: MissionProps) => {
     const missionStatement = (
         <Container className={missionStatementClassName} maxWidth="388px">
             <Text fontFamily="Roboto Mono" fontSize="22px" lineHeight="31px">
-                Globally Distributed<br />Purposefully Aligned
+                Powered by a Diverse<br />Worldwide Community
             </Text>
             <Container marginTop="32px">
                 <Text fontSize="14px" lineHeight="2em">
-                    We’re a highly technical team with diverse backgrounds in engineering, science, business, finance,
-                    and research. While headquartered in San Francisco, we’ve designed our workflows to empower
-                    teammates to stay informed and execute on their objectives from anywhere in the world. If you’re
-                    passionate about our mission, we’re excited to talk to you, regardless of where you might live.
+                    We're a highly technical team with varied backgrounds in engineering, science, business, finance,
+                    and research. While the core team is headquartered in San Francisco, there are 30+ teams building on
+                    0x and hundreds of thousands of participants behind our efforts globally. We're passionate about
+                    open-source software and decentralized technology's potential to act as an equalizing force in the
+                    world.
                 </Text>
             </Container>
         </Container>
