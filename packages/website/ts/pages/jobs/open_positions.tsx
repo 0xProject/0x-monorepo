@@ -9,6 +9,7 @@ import { colors } from 'ts/style/colors';
 import { styled } from 'ts/style/theme';
 import { ScreenWidths, WebsiteBackendJobInfo } from 'ts/types';
 import { backendClient } from 'ts/utils/backend_client';
+import { constants } from 'ts/utils/constants';
 import { utils } from 'ts/utils/utils';
 
 const TABLE_ROW_MIN_HEIGHT = 100;
@@ -72,16 +73,30 @@ export class OpenPositions extends React.Component<OpenPositionsProps, OpenPosit
     private _renderTable(): React.ReactNode {
         return (
             <Container width="100%">
-                {_.map(this.state.jobInfos, jobInfo => {
-                    return (
-                        <JobInfoTableRow
-                            key={jobInfo.id}
-                            screenWidth={this.props.screenWidth}
-                            jobInfo={jobInfo}
-                            onClick={this._openJobInfoUrl.bind(this, jobInfo)}
-                        />
-                    );
-                })}
+                <div>
+                    {_.map(this.state.jobInfos, jobInfo => {
+                        return (
+                            <JobInfoTableRow
+                                key={jobInfo.id}
+                                screenWidth={this.props.screenWidth}
+                                jobInfo={jobInfo}
+                                onClick={this._openJobInfoUrl.bind(this, jobInfo)}
+                            />
+                        );
+                    })}
+                </div>
+                <Container className="center" marginTop="70px">
+                    <Text fontStyle="italic" fontSize="14px">
+                        Interested in telling us why you'd be a valuable addition to the team outside of the positions
+                        listed above?{' '}
+                        <a
+                            style={{ color: colors.mediumBlue, textDecoration: 'none' }}
+                            href={`mailto:${constants.EMAIL_JOBS}`}
+                        >
+                            Email us!
+                        </a>
+                    </Text>
+                </Container>
             </Container>
         );
     }

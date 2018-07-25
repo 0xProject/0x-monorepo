@@ -41,6 +41,7 @@ export const constants = {
     TAKER_FEE: new BigNumber(0),
     TESTNET_NAME: 'Kovan',
     NUMERAL_USD_FORMAT: '$0,0.00',
+    EMAIL_JOBS: 'jobs@0xproject.com',
     PROJECT_URL_ETHFINEX: 'https://www.ethfinex.com/',
     PROJECT_URL_AMADEUS: 'http://amadeusrelay.org',
     PROJECT_URL_DDEX: 'https://ddex.io',
