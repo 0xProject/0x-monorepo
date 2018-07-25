@@ -70,7 +70,7 @@ export const Benefits = (props: BenefitsProps) => {
 };
 
 const Header: React.StatelessComponent = ({ children }) => (
-    <Container marginBottom="51px">
+    <Container marginBottom="30px">
         <Text fontFamily="Roboto Mono" fontSize="24px" fontColor={colors.black}>
             {children}
         </Text>
@@ -97,7 +97,7 @@ interface BenefitItemProps {
 }
 
 const BenefitItem: React.StatelessComponent<BenefitItemProps> = ({ description }) => (
-    <Container marginBottom="30px">
+    <Container marginBottom="15px">
         <div className="flex">
             <Circle className="flex-none pr2 pt1" diameter={8} fillColor={colors.black} />
             <div className="flex-auto">
@@ -145,7 +145,7 @@ const ValuesList = styled(PlainValuesList)`
 type ValueItemProps = Value;
 const ValueItem: React.StatelessComponent<ValueItemProps> = ({ iconSrc, text }) => {
     return (
-        <Container marginBottom="45px">
+        <Container marginBottom="25px">
             <div className="flex items-center">
                 <Image className="flex-none pr2" width="20px" src={iconSrc} />
                 <div className="flex-auto">
