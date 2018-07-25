@@ -1,5 +1,6 @@
-import CircularProgress from 'material-ui/CircularProgress';
 import * as React from 'react';
+import { Container } from 'ts/components/ui/container';
+import { Spinner } from 'ts/components/ui/spinner';
 
 export enum AllowanceState {
     Locked,
@@ -18,7 +19,11 @@ export const AllowanceStateView: React.StatelessComponent<AllowanceStateViewProp
         case AllowanceState.Unlocked:
             return renderCheck();
         case AllowanceState.Loading:
-            return <CircularProgress size={16} thickness={2} />;
+            return (
+                <Container position="relative" top="3px" left="5px">
+                    <Spinner size={18} strokeSize={2} />
+                </Container>
+            );
         default:
             return null;
     }
