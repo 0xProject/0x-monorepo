@@ -6,6 +6,7 @@ import { Button } from 'ts/components/ui/button';
 import { Container } from 'ts/components/ui/container';
 import { Image } from 'ts/components/ui/image';
 import { Text } from 'ts/components/ui/text';
+import { constants } from 'ts/utils/constants';
 
 const BUTTON_TEXT = 'View open positions';
 
@@ -26,15 +27,24 @@ export const Join0x = (props: Join0xProps) => (
                 <Image src="images/jobs/hero-dots-left.svg" width="400px" />
             </Container>
             <div className="h2 sm-center sm-pt3" style={{ fontFamily: 'Roboto Mono' }}>
-                Join 0x
+                Join Us in Our Mission
             </div>
             <Container className="pb2 lg-pt2 md-pt2 sm-pt3 sm-px3 sm-center" maxWidth="537px">
                 <Text fontSize="14px" lineHeight="30px">
-                    0x exists to create a tokenized world where all value can flow freely. We’re building an open and
-                    globally accessible economy where blockchain based digital assets are accessible to anyone,
-                    anywhere. We’re passionate about open-source software and decentralized technology’s potential to
-                    act as an equalizing force in the world. Come join us and help transform the way that value is
-                    exchanged on a global scale.
+                    0x exists to create a tokenized world where all value can flow freely.<br />
+                    <br />This means leaving the geographic lottery behind and democratizing access to financial
+                    services globally. This means powering a growing ecosystem of next-generation decentralized apps.
+                    And along the way, this requires solving novel challenges to make our tech intuitive, flexible, and
+                    accessible to all.<br />
+                    <br />
+                    <a
+                        style={{ color: colors.mediumBlue, textDecoration: 'none' }}
+                        target="_blank"
+                        href={constants.URL_MISSION_AND_VALUES_BLOG_POST}
+                    >
+                        Read more about our mission
+                    </a>, and join us in building the rails upon which the exchange of any blockchain-based digital
+                    assets take place.
                 </Text>
             </Container>
             <div className="py3">
