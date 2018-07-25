@@ -42,7 +42,7 @@
         "@types/material-ui": "0.18.0",
         "@types/node": "^8.0.53",
         "@types/react": "*",
-        "@types/react-dom": "^16.0.3",
+        "@types/react-dom": "*",
         "@types/react-scroll": "0.0.31",
         "basscss": "^8.0.3",
         "compare-versions": "^3.0.1",
