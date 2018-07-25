@@ -44473,6 +44473,11 @@
 			"address": "0x33f780fbc29bd180b2d0ed55c4d036c6a09262b5",
 			"links": {},
 			"constructorArgs": "[[\"0x9df8137872ac09a8fee71d0da5c7539923fb9bf0\",\"0xcf34d44db312d188789f43a63d11cf2bebb4da15\",\"0x73fd50f2a6beac9cdac9fe87ef68a18edc415831\"],[\"0x9ad1b8209cea603892c9dfaa676bc737088b499a\",\"0xbb428f7108971ecf1144700c4d37792f8b74f6b0\"],\"1\",\"0\"]"
+		},
+		"50": {
+			"address": "0x34d402f14d58e001d8efbe6585051bf9706aa064",
+			"links": {},
+			"constructorArgs": "[[\"0x5409ed021d9299bf6814279a6a1411a7e866a631\",\"0x6ecbe1db9ef729cbe972c83fb886247691fb6beb\"],[\"0x1dc4c1cefef38a777b15aa20260a54e584b16c48\",\"0x1d7022f5b17d2f8b695918fb48fa1089c9f85401\"],\"2\",\"0\"]"
 		}
 	}
 }

@@ -257,6 +257,11 @@
 			"address": "0x9ad1b8209cea603892c9dfaa676bc737088b499a",
 			"links": {},
 			"constructorArgs": "[]"
+		},
+		"50": {
+			"address": "0x1dc4c1cefef38a777b15aa20260a54e584b16c48",
+			"links": {},
+			"constructorArgs": "[]"
 		}
 	}
 }
