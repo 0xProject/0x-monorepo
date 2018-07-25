@@ -1,6 +1,7 @@
 import * as React from 'react';
 
 import { Container } from 'ts/components/ui/container';
+import { Image } from 'ts/components/ui/image';
 import { Text } from 'ts/components/ui/text';
 import { colors } from 'ts/style/colors';
 import { ScreenWidths } from 'ts/types';
@@ -10,7 +11,7 @@ export interface MissionProps {
 }
 export const Mission = (props: MissionProps) => {
     const isSmallScreen = props.screenWidth === ScreenWidths.Sm;
-    const image = <img src="/images/jobs/world-map.svg" style={{ maxWidth: 500, maxHeight: 280 }} />;
+    const image = <Image src="/images/jobs/world-map.svg" maxWidth="500px" maxHeight="280px" />;
     const missionStatementClassName = isSmallScreen ? 'center' : undefined;
     const missionStatement = (
         <Container className={missionStatementClassName} maxWidth="388px">
