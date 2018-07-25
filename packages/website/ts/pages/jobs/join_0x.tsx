@@ -20,10 +20,10 @@ export const Join0x = (props: Join0xProps) => (
             className="mx-auto inline-block align-middle py4"
             style={{ lineHeight: '44px', textAlign: 'center', position: 'relative' }}
         >
-            <Container className="sm-hide xs-hide" position="absolute" left="100%" marginLeft="80px">
+            <Container className="sm-hide xs-hide md-hide" position="absolute" left="100%" marginLeft="80px">
                 <Image src="images/jobs/hero-dots-right.svg" width="400px" />
             </Container>
-            <Container className="sm-hide xs-hide" position="absolute" right="100%" marginRight="80px">
+            <Container className="sm-hide xs-hide md-hide" position="absolute" right="100%" marginRight="80px">
                 <Image src="images/jobs/hero-dots-left.svg" width="400px" />
             </Container>
             <div className="h2 sm-center sm-pt3" style={{ fontFamily: 'Roboto Mono' }}>

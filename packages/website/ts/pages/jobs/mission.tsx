@@ -10,9 +10,9 @@ export interface MissionProps {
     screenWidth: ScreenWidths;
 }
 export const Mission = (props: MissionProps) => {
-    const isSmallScreen = props.screenWidth === ScreenWidths.Sm;
+    const shouldShowImage = props.screenWidth === ScreenWidths.Lg;
     const image = <Image src="/images/jobs/world-map.svg" maxWidth="500px" maxHeight="280px" />;
-    const missionStatementClassName = isSmallScreen ? 'center' : undefined;
+    const missionStatementClassName = !shouldShowImage ? 'center' : undefined;
     const missionStatement = (
         <Container className={missionStatementClassName} maxWidth="388px">
             <Text fontFamily="Roboto Mono" fontSize="22px" lineHeight="31px">
@@ -31,10 +31,10 @@ export const Mission = (props: MissionProps) => {
     );
     return (
         <div
-            className="flex flex-column items-center py4 sm-px3"
+            className="flex flex-column items-center py4 px3"
             style={{ backgroundColor: colors.jobsPageBackground, color: colors.black }}
         >
-            {!isSmallScreen ? (
+            {shouldShowImage ? (
                 <Container className="flex items-center" maxWidth="1200px">
                     {image}
                     <Container marginLeft="115px">{missionStatement}</Container>
