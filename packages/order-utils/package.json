@@ -10,11 +10,12 @@
     "scripts": {
         "watch_without_deps": "yarn pre_build && tsc -w",
         "build": "run-s pre_build transpile copy_monorepo_scripts",
-        "pre_build": "run-s update_artifacts generate_contract_wrappers",
+        "pre_build": "run-s update_artifacts_v2_beta update_artifacts_v2 generate_contract_wrappers",
         "transpile": "tsc",
         "copy_monorepo_scripts": "copyfiles -u 3 './lib/src/monorepo_scripts/**/*' ./scripts",
         "generate_contract_wrappers": "abi-gen --abis 'lib/src/artifacts/@(Exchange|IWallet|IValidator|DummyERC20Token|ERC20Proxy|ERC20Token).json' --template ../contract_templates/contract.handlebars --partials '../contract_templates/partials/**/*.handlebars' --output src/generated_contract_wrappers --backend ethers",
-        "update_artifacts": "for i in ${npm_package_config_contracts}; do copyfiles -u 4 ../migrations/artifacts/2.0.0/$i.json lib/src/artifacts; done;",
+        "update_artifacts_v2_beta": "for i in ${npm_package_config_contracts_v2_beta}; do copyfiles -u 4 ../migrations/artifacts/2.0.0-beta-testnet/$i.json lib/src/artifacts; done;",
+        "update_artifacts_v2": "for i in ${npm_package_config_contracts_v2}; do copyfiles -u 4 ../migrations/artifacts/2.0.0/$i.json lib/src/artifacts; done;",
         "test": "yarn run_mocha",
         "rebuild_and_test": "run-s build test",
         "test:circleci": "yarn test:coverage",
@@ -29,7 +30,8 @@
         "upload_docs_json": "aws s3 cp generated_docs/index.json $S3_URL --profile 0xproject --grants read=uri=http://acs.amazonaws.com/groups/global/AllUsers --content-type application/json"
     },
     "config": {
-        "contracts": "IWallet IValidator Exchange DummyERC20Token ERC20Proxy ERC20Token",
+        "contracts_v2_beta": "IWallet IValidator Exchange ERC20Proxy ERC20Token",
+        "contracts_v2": "DummyERC20Token",
         "postpublish": {
             "docPublishConfigs": {
                 "extraFileIncludes": [
