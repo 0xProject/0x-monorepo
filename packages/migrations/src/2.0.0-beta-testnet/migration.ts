@@ -43,21 +43,22 @@ export const runV2TestnetMigrationsAsync = async (
     // Deploy Exchange
     const zrxAddressOnKovan = '0x6ff6c0ff1d68b964901f986d4c9fa3ac68346570';
     const zrxAssetData = assetDataUtils.encodeERC20AssetData(zrxAddressOnKovan);
-    const exchange = await ExchangeContract.deployFrom0xArtifactAsync(artifacts.Exchange, provider, txDefaults, zrxAssetData);
+    const exchange = await ExchangeContract.deployFrom0xArtifactAsync(
+        artifacts.Exchange,
+        provider,
+        txDefaults,
+        zrxAssetData,
+    );
     artifactsWriter.saveArtifact(exchange);
 
     let txHash;
     // Register AssetProxies in Exchange
-    txHash = await exchange.registerAssetProxy.sendTransactionAsync(
-        erc20proxy.address,
-    );
+    txHash = await exchange.registerAssetProxy.sendTransactionAsync(erc20proxy.address);
     logUtils.log(`transactionHash: ${txHash}`);
     logUtils.log('Registering ERC20Proxy');
     await web3Wrapper.awaitTransactionSuccessAsync(txHash);
 
-    txHash = await exchange.registerAssetProxy.sendTransactionAsync(
-        erc721proxy.address,
-    );
+    txHash = await exchange.registerAssetProxy.sendTransactionAsync(erc721proxy.address);
     logUtils.log(`transactionHash: ${txHash}`);
     logUtils.log('Registering ERC721Proxy');
     await web3Wrapper.awaitTransactionSuccessAsync(txHash);

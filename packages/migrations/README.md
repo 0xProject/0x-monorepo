@@ -61,8 +61,9 @@ yarn migrate:v2-beta-testnet
 **Note:** Ledger settings `contract data` must be `on`, and `browser support` must be set to `off`.
 
 Post-publish steps:
-1. Since we don't re-deploy the `WETH9` nor `ZRXToken` contracts, manually copy over the artifacts for them from `2.0.0` into `2.0.0-beta-testnet` and add the Kovan & ganache addresses to both of their `networks` sections.
-2. We now need to copy over the network `50` settings from the `2.0.0` artifacts to the `2.0.0-beta-testnet` artifacts for the newly deployed contracts (e.g `Exchange`, `ERC20Proxy`, `ERC721Proxy` and `AssetProxyOwner`)
+
+1.  Since we don't re-deploy the `WETH9` nor `ZRXToken` contracts, manually copy over the artifacts for them from `2.0.0` into `2.0.0-beta-testnet` and add the Kovan & ganache addresses to both of their `networks` sections.
+2.  We now need to copy over the network `50` settings from the `2.0.0` artifacts to the `2.0.0-beta-testnet` artifacts for the newly deployed contracts (e.g `Exchange`, `ERC20Proxy`, `ERC721Proxy` and `AssetProxyOwner`)
 
 #### V2 (under development) smart contracts
 
