@@ -20,7 +20,7 @@ export const providerFactory = {
         };
         const ledgerSubprovider = new LedgerSubprovider(ledgerWalletConfigs);
         provider.addProvider(ledgerSubprovider);
-        provider.addProvider(new RPCSubprovider(constants.RPC_URL));
+        provider.addProvider(new RPCSubprovider(constants.KOVAN_RPC_URL));
         provider.start();
         return provider;
     },
