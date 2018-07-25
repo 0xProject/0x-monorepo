@@ -184,9 +184,9 @@ async function lernaPublishAsync(packageToNextVersion: { [name: string]: string 
     }).join(',');
     let lernaPublishCmd = `node ${constants.lernaExecutable} publish --cdVersions=${packageVersionString} --registry=${
         configs.NPM_REGISTRY_URL
-    }`;
+    } --yes`;
     if (configs.IS_LOCAL_PUBLISH) {
-        lernaPublishCmd += ` --skip-git --yes`;
+        lernaPublishCmd += ` --skip-git`;
     }
     utils.log('Lerna is publishing...');
     await execAsync(lernaPublishCmd, { cwd: constants.monorepoRootPath });
