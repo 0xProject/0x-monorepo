@@ -76,10 +76,7 @@ render(
                         <Switch>
                             <Route exact={true} path="/" component={Landing as any} />
                             <Redirect from="/otc" to={`${WebsitePaths.Portal}`} />
-                            {/* TODO: Remove this once we ship the jobs page*/}
-                            {utils.shouldShowJobsPage() && (
-                                <Route path={WebsitePaths.Careers} component={Jobs as any} />
-                            )}
+                            <Route path={WebsitePaths.Careers} component={Jobs as any} />
                             <Route path={WebsitePaths.Portal} component={LazyPortal} />
                             <Route path={WebsitePaths.FAQ} component={FAQ as any} />
                             <Route path={WebsitePaths.About} component={About as any} />
@@ -129,13 +126,7 @@ render(
                                 path={`${WebsiteLegacyPaths.Deployer}/:version?`}
                                 component={LazySolCompilerDocumentation}
                             />
-                            {/* TODO: Remove this once we ship the jobs page*/}
-                            {utils.shouldShowJobsPage() ? (
-                                <Route path={WebsiteLegacyPaths.Jobs} component={Jobs as any} />
-                            ) : (
-                                <Route path={WebsiteLegacyPaths.Jobs} component={Redirector as any} />
-                            )}
-
+                            <Route path={WebsiteLegacyPaths.Jobs} component={Jobs as any} />
                             <Route path={`${WebsitePaths.Docs}`} component={LazyZeroExJSDocumentation} />
                             <Route component={NotFound as any} />
                         </Switch>
