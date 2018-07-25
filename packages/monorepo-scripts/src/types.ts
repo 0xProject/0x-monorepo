@@ -17,18 +17,6 @@ export interface VersionChangelog {
     changes: Change[];
 }
 
-export enum SemVerIndex {
-    Invalid,
-    Patch,
-    Minor,
-    Major,
-    Prepatch,
-    Preminor,
-    Premajor,
-    Prerelease,
-    Custom,
-}
-
 export interface PackageToNextVersion {
     [name: string]: string;
 }
