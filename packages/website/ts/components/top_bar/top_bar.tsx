@@ -59,6 +59,7 @@ const styles: Styles = {
         position: 'relative',
         top: 0,
         paddingBottom: 1,
+        zIndex: 1,
     },
     bottomBar: {
         boxShadow: 'rgba(0, 0, 0, 0.187647) 0px 1px 3px',
@@ -481,6 +482,9 @@ export class TopBar extends React.Component<TopBarProps, TopBarState> {
     private _isViewingPortal(): boolean {
         return _.includes(this.props.location.pathname, WebsitePaths.Portal);
     }
+    private _isViewingDocs(): boolean {
+        return _.includes(this.props.location.pathname, WebsitePaths.Docs);
+    }
     private _isViewingFAQ(): boolean {
         return _.includes(this.props.location.pathname, WebsitePaths.FAQ);
     }
@@ -523,8 +527,9 @@ export class TopBar extends React.Component<TopBarProps, TopBarState> {
     private _shouldDisplayBottomBar(): boolean {
         return (
             this._isViewingWiki() ||
-            this._isViewing0xjsDocs() ||
             this._isViewingFAQ() ||
+            this._isViewingDocs() ||
+            this._isViewing0xjsDocs() ||
             this._isViewingSmartContractsDocs() ||
             this._isViewingWeb3WrapperDocs() ||
             this._isViewingSolCompilerDocs() ||

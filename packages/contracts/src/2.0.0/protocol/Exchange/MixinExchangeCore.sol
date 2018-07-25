@@ -46,7 +46,7 @@ contract MixinExchangeCore is
     mapping (bytes32 => bool) public cancelled;
 
     // Mapping of makerAddress => senderAddress => lowest salt an order can have in order to be fillable
-    // Orders with specified senderAddress and with a salt less than their epoch to are considered cancelled
+    // Orders with specified senderAddress and with a salt less than their epoch are considered cancelled
     mapping (address => mapping (address => uint256)) public orderEpoch;
 
     /// @dev Cancels all orders created by makerAddress with a salt less than or equal to the targetOrderEpoch
