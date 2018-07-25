@@ -9,6 +9,7 @@ export interface ContainerProps {
     marginBottom?: StringOrNum;
     marginRight?: StringOrNum;
     marginLeft?: StringOrNum;
+    padding?: StringOrNum;
     paddingTop?: StringOrNum;
     paddingBottom?: StringOrNum;
     paddingRight?: StringOrNum;
@@ -31,13 +32,15 @@ export interface ContainerProps {
     bottom?: string;
     zIndex?: number;
     Tag?: ContainerTag;
+    id?: string;
+    onClick?: (event: React.MouseEvent<HTMLElement>) => void;
 }
 
 export const Container: React.StatelessComponent<ContainerProps> = props => {
-    const { children, className, Tag, isHidden, ...style } = props;
+    const { children, className, Tag, isHidden, id, onClick, ...style } = props;
     const visibility = isHidden ? 'hidden' : undefined;
     return (
-        <Tag style={{ ...style, visibility }} className={className}>
+        <Tag id={id} style={{ ...style, visibility }} className={className} onClick={onClick}>
             {children}
         </Tag>
     );

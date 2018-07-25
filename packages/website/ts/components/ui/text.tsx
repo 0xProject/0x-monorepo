@@ -10,6 +10,7 @@ export interface TextProps {
     Tag?: TextTag;
     fontSize?: string;
     fontFamily?: string;
+    fontStyle?: string;
     fontColor?: string;
     lineHeight?: string;
     minHeight?: string;
@@ -28,6 +29,7 @@ const PlainText: React.StatelessComponent<TextProps> = ({ children, className, o
 
 export const Text = styled(PlainText)`
     font-family: ${props => props.fontFamily};
+    font-style: ${props => props.fontStyle};
     font-weight: ${props => props.fontWeight};
     font-size: ${props => props.fontSize};
     text-decoration-line: ${props => props.textDecorationLine};
@@ -44,6 +46,7 @@ export const Text = styled(PlainText)`
 
 Text.defaultProps = {
     fontFamily: 'Roboto',
+    fontStyle: 'normal',
     fontWeight: 400,
     fontColor: colors.black,
     fontSize: '15px',
