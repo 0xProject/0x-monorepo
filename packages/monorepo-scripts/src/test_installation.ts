@@ -8,6 +8,14 @@ import * as rimraf from 'rimraf';
 
 import { utils } from './utils/utils';
 
+// Packages might not be runnable if they are command-line tools or only run in browsers.
+const UNRUNNABLE_PACKAGES = [
+    '@0xproject/abi-gen',
+    '@0xproject/sra-report',
+    '@0xproject/react-shared',
+    '@0xproject/react-docs',
+];
+
 (async () => {
     const IS_LOCAL_PUBLISH = process.env.IS_LOCAL_PUBLISH === 'true';
     const registry = IS_LOCAL_PUBLISH ? 'http://localhost:4873/' : 'https://registry.npmjs.org/';
@@ -19,7 +27,7 @@ import { utils } from './utils/utils';
     );
     utils.log('Testing packages:');
     const installablePackages = _.filter(preInstallablePackages, pkg => {
-        return pkg.packageJson.name === '0x.js';
+        return !_.includes(UNRUNNABLE_PACKAGES, pkg.packageJson.name);
     });
     _.map(installablePackages, pkg => utils.log(`* ${pkg.packageJson.name}`));
     for (const installablePackage of installablePackages) {
