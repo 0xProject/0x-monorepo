@@ -5,12 +5,17 @@ Edit the package's CHANGELOG.json file only.
 
 CHANGELOG
 
+## v1.1.0 - _July 26, 2018_
+
+    * Add `getTransactionByHashAsync` method (#847)
+
 ## v1.0.1 - _July 23, 2018_
 
     * Dependencies updated
 
 ## v1.0.0 - _July 20, 2018_
 
+    * Stop exporting `marshaller` utility file. (#902)
     * Export `marshaller` utility file. (#829)
     * Add `getNodeTypeAsync` method (#812)
     * Stop exporting uniqueVersionIds object (#897)
