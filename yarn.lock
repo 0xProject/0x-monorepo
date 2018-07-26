@@ -1138,9 +1138,9 @@
     "@types/react" "*"
     redux "^3.6.0"
 
-"@types/react-router-dom@^4.0.4":
-  version "4.2.6"
-  resolved "https://registry.yarnpkg.com/@types/react-router-dom/-/react-router-dom-4.2.6.tgz#9f7eb3c0e6661a9607d878ff8675cc4ea95cd276"
+"@types/react-router-dom@4.2.7":
+  version "4.2.7"
+  resolved "https://registry.yarnpkg.com/@types/react-router-dom/-/react-router-dom-4.2.7.tgz#9d36bfe175f916dd8d7b6b0237feed6cce376b4c"
   dependencies:
     "@types/history" "*"
     "@types/react" "*"
@@ -5138,6 +5138,7 @@ ethereumjs-wallet@~0.6.0:
 
 ethers@0xproject/ethers.js#eip-838-reasons, ethers@3.0.22:
   version "3.0.18"
+  uid b91342bd200d142af0165d6befddf783c8ae8447
   resolved "https://codeload.github.com/0xproject/ethers.js/tar.gz/b91342bd200d142af0165d6befddf783c8ae8447"
   dependencies:
     aes-js "3.0.0"
