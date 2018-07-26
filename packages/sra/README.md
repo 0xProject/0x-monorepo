@@ -4,8 +4,6 @@ Contains the Standard Relayer API swagger spec and publishes the client libs.
 
 ## Installation
 
-_pending_
-
 ## Contributing
 
 We welcome improvements and fixes from the wider community! To report bugs within this package, please create an issue in this repository.
