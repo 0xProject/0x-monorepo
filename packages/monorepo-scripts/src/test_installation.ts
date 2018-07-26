@@ -23,7 +23,7 @@ import { utils } from './utils/utils';
         const changelogPath = path.join(installablePackage.location, 'CHANGELOG.json');
         const lastChangelogVersion = JSON.parse(fs.readFileSync(changelogPath).toString())[0].version;
         const packageName = installablePackage.packageJson.name;
-        utils.log(`Testing ${packageName}`);
+        utils.log(`Testing ${packageName}@${lastChangelogVersion}`);
         const testDirectory = path.join(monorepoRootPath, '../test-env');
         fs.mkdirSync(testDirectory);
         await execAsync('yarn init --yes', { cwd: testDirectory });
