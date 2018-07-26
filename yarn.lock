@@ -4980,6 +4980,13 @@ ethereum-common@^0.0.18:
   version "0.0.18"
   resolved "https://registry.yarnpkg.com/ethereum-common/-/ethereum-common-0.0.18.tgz#2fdc3576f232903358976eb39da783213ff9523f"
 
+ethereum-types@1.0.0:
+  version "1.0.0"
+  resolved "https://registry.yarnpkg.com/ethereum-types/-/ethereum-types-1.0.0.tgz#c9b0148c763479a70d037c9ac429fc6e44f00aba"
+  dependencies:
+    "@types/node" "^8.0.53"
+    bignumber.js "~4.1.0"
+
 ethereum-types@^0.0.2:
   version "0.0.2"
   resolved "https://registry.yarnpkg.com/ethereum-types/-/ethereum-types-0.0.2.tgz#6ef6faf46a24697cbf66b6c8a0ecf2095ce58c38"
