@@ -1,6 +1,6 @@
 {
     "name": "@0xproject/sol-cov",
-    "version": "1.0.2",
+    "version": "1.0.3",
     "engines": {
         "node": ">=6.12"
     },
@@ -50,14 +50,14 @@
     },
     "homepage": "https://github.com/0xProject/0x.js/packages/sol-cov/README.md",
     "dependencies": {
-        "@0xproject/dev-utils": "^1.0.2",
-        "@0xproject/sol-compiler": "^1.0.2",
-        "@0xproject/subproviders": "^1.0.2",
-        "@0xproject/typescript-typings": "^1.0.2",
-        "@0xproject/utils": "^1.0.2",
-        "@0xproject/web3-wrapper": "^1.1.0",
+        "@0xproject/dev-utils": "^1.0.3",
+        "@0xproject/sol-compiler": "^1.0.3",
+        "@0xproject/subproviders": "^1.0.3",
+        "@0xproject/typescript-typings": "^1.0.3",
+        "@0xproject/utils": "^1.0.3",
+        "@0xproject/web3-wrapper": "^1.1.1",
         "@types/solidity-parser-antlr": "^0.2.1",
-        "ethereum-types": "^1.0.2",
+        "ethereum-types": "^1.0.3",
         "ethereumjs-util": "^5.1.1",
         "glob": "^7.1.2",
         "istanbul": "^0.4.5",
@@ -69,8 +69,8 @@
         "solidity-parser-antlr": "^0.2.12"
     },
     "devDependencies": {
-        "@0xproject/monorepo-scripts": "^1.0.3",
-        "@0xproject/tslint-config": "^1.0.3",
+        "@0xproject/monorepo-scripts": "^1.0.4",
+        "@0xproject/tslint-config": "^1.0.4",
         "@types/istanbul": "^0.4.30",
         "@types/loglevel": "^1.5.3",
         "@types/mkdirp": "^0.5.1",
