@@ -96,7 +96,7 @@ export const postpublishUtils = {
         const notes = postpublishUtils.getReleaseNotes(packageName, version);
         const releaseName = postpublishUtils.getReleaseName(packageName, version);
         const tag = postpublishUtils.getTag(packageName, version);
-        postpublishUtils.adjustAssetPaths(cwd, assets);
+        postpublishUtils.adjustAssetPaths(assets);
         utils.log('POSTPUBLISH: Releasing ', releaseName, '...');
         await publishReleaseAsync({
             token: constants.githubPersonalAccessToken,
@@ -145,10 +145,12 @@ export const postpublishUtils = {
         const releaseName = `${subPackageName} v${version}`;
         return releaseName;
     },
-    adjustAssetPaths(cwd: string, assets: string[]): string[] {
+    // Asset paths should described from the monorepo root. This method prefixes
+    // the supplied path with the absolute path to the monorepo root.
+    adjustAssetPaths(assets: string[]): string[] {
         const finalAssets: string[] = [];
         _.each(assets, (asset: string) => {
-            finalAssets.push(`${cwd}/${asset}`);
+            finalAssets.push(`${constants.monorepoRootPath}/${asset}`);
         });
         return finalAssets;
     },
