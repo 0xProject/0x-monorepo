@@ -21,14 +21,11 @@ const UNRUNNABLE_PACKAGES = [
     const registry = IS_LOCAL_PUBLISH ? 'http://localhost:4873/' : 'https://registry.npmjs.org/';
     const monorepoRootPath = path.join(__dirname, '../../..');
     const packages = utils.getTopologicallySortedPackages(monorepoRootPath);
-    const preInstallablePackages = _.filter(
+    const installablePackages = _.filter(
         packages,
         pkg => !pkg.packageJson.private && !_.isUndefined(pkg.packageJson.main) && pkg.packageJson.main.endsWith('.js'),
     );
     utils.log('Testing packages:');
-    const installablePackages = _.filter(preInstallablePackages, pkg => {
-        return !_.includes(UNRUNNABLE_PACKAGES, pkg.packageJson.name);
-    });
     _.map(installablePackages, pkg => utils.log(`* ${pkg.packageJson.name}`));
     for (const installablePackage of installablePackages) {
         const changelogPath = path.join(installablePackage.location, 'CHANGELOG.json');
@@ -66,10 +63,13 @@ const UNRUNNABLE_PACKAGES = [
         const tscBinaryPath = path.join(monorepoRootPath, './node_modules/typescript/bin/tsc');
         await execAsync(tscBinaryPath, { cwd: testDirectory });
         utils.log(`Successfully compiled with ${packageName} as a dependency`);
-        const transpiledIndexFilePath = path.join(testDirectory, 'index.js');
-        utils.log(`Running test script with ${packageName} imported`);
-        await execAsync(`node ${transpiledIndexFilePath}`);
-        utils.log(`Successfilly ran test script with ${packageName} imported`);
+        const isUnrunnablePkg = _.includes(UNRUNNABLE_PACKAGES, packageName);
+        if (!isUnrunnablePkg) {
+            const transpiledIndexFilePath = path.join(testDirectory, 'index.js');
+            utils.log(`Running test script with ${packageName} imported`);
+            await execAsync(`node ${transpiledIndexFilePath}`);
+            utils.log(`Successfilly ran test script with ${packageName} imported`);
+        }
         rimraf.sync(testDirectory);
     }
 })().catch(err => {
