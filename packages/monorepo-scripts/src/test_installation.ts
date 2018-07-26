@@ -9,6 +9,8 @@ import * as rimraf from 'rimraf';
 import { utils } from './utils/utils';
 
 (async () => {
+    const IS_LOCAL_PUBLISH = process.env.IS_LOCAL_PUBLISH === 'true';
+    const registry = IS_LOCAL_PUBLISH ? 'http://localhost:4873' : 'https://registry.npmjs.org';
     const monorepoRootPath = path.join(__dirname, '../../..');
     const packages = utils.getTopologicallySortedPackages(monorepoRootPath);
     const installablePackages = _.filter(
@@ -26,9 +28,9 @@ import { utils } from './utils/utils';
         fs.mkdirSync(testDirectory);
         await execAsync('yarn init --yes', { cwd: testDirectory });
         const npmrcFilePath = path.join(testDirectory, '.npmrc');
-        fs.writeFileSync(npmrcFilePath, `registry=http://localhost:4873`);
+        fs.writeFileSync(npmrcFilePath, `registry=${registry}`);
         utils.log(`Installing ${packageName}@${lastChangelogVersion}`);
-        await execAsync(`npm install --save ${packageName}@${lastChangelogVersion} --registry=http://localhost:4873`, {
+        await execAsync(`npm install --save ${packageName}@${lastChangelogVersion} --registry=${registry}`, {
             cwd: testDirectory,
         });
         const indexFilePath = path.join(testDirectory, 'index.ts');
