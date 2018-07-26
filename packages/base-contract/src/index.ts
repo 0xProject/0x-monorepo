@@ -82,6 +82,23 @@ export class BaseContract {
         }
         return txDataWithDefaults;
     }
+    // Throws if the given arguments cannot be safely/correctly encoded based on
+    // the given inputAbi. An argument may not be considered safely encodeable
+    // if it overflows the corresponding Solidity type, there is a bug in the
+    // encoder, or the encoder performs unsafe type coercion.
+    public static strictArgumentEncodingCheck(inputAbi: DataItem[], args: any[]): void {
+        const coder = (ethers as any).utils.AbiCoder.defaultCoder;
+        const params = abiUtils.parseEthersParams(inputAbi);
+        const rawEncoded = coder.encode(params.names, params.types, args);
+        const rawDecoded = coder.decode(params.names, params.types, rawEncoded);
+        for (let i = 0; i < rawDecoded.length; i++) {
+            const original = args[i];
+            const decoded = rawDecoded[i];
+            if (!abiUtils.isAbiDataEqual(params.names[i], params.types[i], original, decoded)) {
+                throw new Error(`Cannot safely encode argument: ${params.names[i]} (${original}) of type ${params.types[i]}. (Possible type overflow or other encoding error)`);
+            }
+        }
+    }
     protected _lookupEthersInterface(functionSignature: string): ethers.Interface {
         const ethersInterface = this._ethersInterfacesByFunctionSignature[functionSignature];
         if (_.isUndefined(ethersInterface)) {

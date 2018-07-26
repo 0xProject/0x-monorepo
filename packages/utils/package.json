@@ -5,12 +5,13 @@
         "node": ">=6.12"
     },
     "description": "0x TS utils",
-    "main": "lib/index.js",
-    "types": "lib/index.d.ts",
+    "main": "lib/src/index.js",
+    "types": "lib/src/index.d.ts",
     "scripts": {
         "watch_without_deps": "tsc -w",
         "build": "tsc && copyfiles -u 2 './lib/monorepo_scripts/**/*' ./scripts",
         "clean": "shx rm -rf lib scripts",
+        "test": "mocha --require source-map-support/register --require make-promises-safe lib/test/**/*_test.js --bail --exit",
         "lint": "tslint --project .",
         "manual:postpublish": "yarn build; node ./scripts/postpublish.js"
     },
@@ -27,12 +28,15 @@
         "@0xproject/monorepo-scripts": "^1.0.4",
         "@0xproject/tslint-config": "^1.0.4",
         "@types/lodash": "4.14.104",
+        "@types/mocha": "^2.2.42",
         "copyfiles": "^1.2.0",
         "make-promises-safe": "^1.1.0",
         "npm-run-all": "^4.1.2",
         "shx": "^0.2.2",
         "tslint": "5.11.0",
-        "typescript": "2.9.2"
+        "typescript": "2.9.2",
+        "chai": "^4.0.1",
+        "mocha": "^4.0.1"
     },
     "dependencies": {
         "@0xproject/types": "^1.0.1-rc.3",
