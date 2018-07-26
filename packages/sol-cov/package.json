@@ -1,6 +1,6 @@
 {
     "name": "@0xproject/sol-cov",
-    "version": "1.0.2",
+    "version": "1.0.3",
     "engines": {
         "node": ">=6.12"
     },
@@ -50,12 +50,12 @@
     },
     "homepage": "https://github.com/0xProject/0x.js/packages/sol-cov/README.md",
     "dependencies": {
-        "@0xproject/dev-utils": "^1.0.2",
-        "@0xproject/sol-compiler": "^1.0.3",
-        "@0xproject/subproviders": "^1.0.3",
+        "@0xproject/dev-utils": "^1.0.3",
+        "@0xproject/sol-compiler": "^1.0.4",
+        "@0xproject/subproviders": "^1.0.4",
         "@0xproject/typescript-typings": "^1.0.3",
-        "@0xproject/utils": "^1.0.3",
-        "@0xproject/web3-wrapper": "^1.1.1",
+        "@0xproject/utils": "^1.0.4",
+        "@0xproject/web3-wrapper": "^1.1.2",
         "@types/solidity-parser-antlr": "^0.2.1",
         "ethereum-types": "^1.0.3",
         "ethereumjs-util": "^5.1.1",

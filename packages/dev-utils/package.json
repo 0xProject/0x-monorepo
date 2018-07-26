@@ -1,6 +1,6 @@
 {
     "name": "@0xproject/dev-utils",
-    "version": "1.0.2",
+    "version": "1.0.3",
     "engines": {
         "node": ">=6.12"
     },
@@ -45,11 +45,11 @@
         "typescript": "2.7.1"
     },
     "dependencies": {
-        "@0xproject/subproviders": "^1.0.3",
-        "@0xproject/types": "^1.0.1-rc.2",
+        "@0xproject/subproviders": "^1.0.4",
+        "@0xproject/types": "^1.0.1-rc.3",
         "@0xproject/typescript-typings": "^1.0.3",
-        "@0xproject/utils": "^1.0.3",
-        "@0xproject/web3-wrapper": "^1.1.1",
+        "@0xproject/utils": "^1.0.4",
+        "@0xproject/web3-wrapper": "^1.1.2",
         "ethereum-types": "^1.0.3",
         "lodash": "^4.17.4"
     },

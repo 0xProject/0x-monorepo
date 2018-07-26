@@ -1,6 +1,6 @@
 {
     "name": "@0xproject/connect",
-    "version": "1.0.3",
+    "version": "1.0.4",
     "engines": {
         "node": ">=6.12"
     },
@@ -55,7 +55,7 @@
         "@0xproject/json-schemas": "^0.8.3",
         "@0xproject/types": "^0.8.2",
         "@0xproject/typescript-typings": "^1.0.3",
-        "@0xproject/utils": "^1.0.3",
+        "@0xproject/utils": "^1.0.4",
         "lodash": "^4.17.4",
         "query-string": "^5.0.1",
         "sinon": "^4.0.0",
