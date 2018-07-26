@@ -38,6 +38,6 @@ contract Mintable is
             "Minting more than 100000000000000000000 is not allowed."
         );
         balances[msg.sender] = safeAdd(_value, balances[msg.sender]);
-        totalSupply = safeAdd(totalSupply, _value);
+        _totalSupply = safeAdd(_totalSupply, _value);
     }
 }

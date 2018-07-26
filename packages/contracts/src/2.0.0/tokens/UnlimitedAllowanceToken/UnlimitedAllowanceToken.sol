@@ -21,7 +21,9 @@ pragma solidity 0.4.24;
 import "../ERC20Token/ERC20Token.sol";
 
 
-contract UnlimitedAllowanceToken is ERC20Token {
+contract UnlimitedAllowanceToken is
+    ERC20Token
+{
 
     uint256 constant internal MAX_UINT = 2**256 - 1;
 
@@ -30,8 +32,12 @@ contract UnlimitedAllowanceToken is ERC20Token {
     /// @param _to Address to transfer to.
     /// @param _value Amount to transfer.
     /// @return Success of transfer.
-    function transferFrom(address _from, address _to, uint256 _value)
-        public
+    function transferFrom(
+        address _from,
+        address _to,
+        uint256 _value
+    )
+        external
         returns (bool)
     {
         uint256 allowance = allowed[_from][msg.sender];
@@ -45,14 +51,18 @@ contract UnlimitedAllowanceToken is ERC20Token {
         );
         require(
             balances[_to] + _value >= balances[_to],
-            "OVERFLOW"
+            "UINT256_OVERFLOW"
         );
         balances[_to] += _value;
         balances[_from] -= _value;
         if (allowance < MAX_UINT) {
             allowed[_from][msg.sender] -= _value;
         }
-        emit Transfer(_from, _to, _value);
+        emit Transfer(
+            _from,
+            _to,
+            _value
+        );
         return true;
     }
 }

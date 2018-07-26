@@ -41,7 +41,7 @@ contract DummyERC20Token is
         name = _name;
         symbol = _symbol;
         decimals = _decimals;
-        totalSupply = _totalSupply;
+        _totalSupply = _totalSupply;
         balances[msg.sender] = _totalSupply;
     }
 
@@ -49,11 +49,11 @@ contract DummyERC20Token is
         public
         onlyOwner
     {
-        uint256 currBalance = balanceOf(_target);
+        uint256 currBalance = balances[_target];
         if (_value < currBalance) {
-            totalSupply = safeSub(totalSupply, safeSub(currBalance, _value));
+            _totalSupply = safeSub(_totalSupply, safeSub(currBalance, _value));
         } else {
-            totalSupply = safeAdd(totalSupply, safeSub(_value, currBalance));
+            _totalSupply = safeAdd(_totalSupply, safeSub(_value, currBalance));
         }
         balances[_target] = _value;
     }
