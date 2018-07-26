@@ -13,11 +13,14 @@ import { utils } from './utils/utils';
     const registry = IS_LOCAL_PUBLISH ? 'http://localhost:4873/' : 'https://registry.npmjs.org/';
     const monorepoRootPath = path.join(__dirname, '../../..');
     const packages = utils.getTopologicallySortedPackages(monorepoRootPath);
-    const installablePackages = _.filter(
+    const preInstallablePackages = _.filter(
         packages,
         pkg => !pkg.packageJson.private && !_.isUndefined(pkg.packageJson.main) && pkg.packageJson.main.endsWith('.js'),
     );
     utils.log('Testing packages:');
+    const installablePackages = _.filter(preInstallablePackages, pkg => {
+        return pkg.packageJson.name === '0x.js';
+    });
     _.map(installablePackages, pkg => utils.log(`* ${pkg.packageJson.name}`));
     for (const installablePackage of installablePackages) {
         const changelogPath = path.join(installablePackage.location, 'CHANGELOG.json');
@@ -35,7 +38,7 @@ import { utils } from './utils/utils';
             cwd: testDirectory,
         });
         const indexFilePath = path.join(testDirectory, 'index.ts');
-        fs.writeFileSync(indexFilePath, `import * as Package from '${packageName}';\n`);
+        fs.writeFileSync(indexFilePath, `import * as Package from '${packageName}';\nconsole.log(Package);\n`);
         const tsConfig = {
             compilerOptions: {
                 typeRoots: ['node_modules/@0xproject/typescript-typings/types', 'node_modules/@types'],
@@ -55,7 +58,11 @@ import { utils } from './utils/utils';
         const tscBinaryPath = path.join(monorepoRootPath, './node_modules/typescript/bin/tsc');
         await execAsync(tscBinaryPath, { cwd: testDirectory });
         utils.log(`Successfully compiled with ${packageName} as a dependency`);
-        rimraf.sync(testDirectory);
+        const transpiledIndexFilePath = path.join(testDirectory, 'index.js');
+        utils.log(`Running test script with ${packageName} imported`);
+        await execAsync(`node ${transpiledIndexFilePath}`);
+        utils.log(`Successfilly ran test script with ${packageName} imported`);
+        // rimraf.sync(testDirectory);
     }
 })().catch(err => {
     utils.log(err.stderr);
