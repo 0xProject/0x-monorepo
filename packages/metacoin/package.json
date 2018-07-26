@@ -32,7 +32,7 @@
         "@0xproject/abi-gen": "^1.0.3",
         "@0xproject/base-contract": "^1.0.3",
         "@0xproject/sol-compiler": "^1.0.3",
-        "@0xproject/sol-cov": "^1.0.3",
+        "@0xproject/sol-cov": "^1.0.2",
         "@0xproject/subproviders": "^1.0.3",
         "@0xproject/tslint-config": "^1.0.4",
         "@0xproject/types": "^1.0.1-rc.2",
@@ -47,7 +47,7 @@
         "run-s": "^0.0.0"
     },
     "devDependencies": {
-        "@0xproject/dev-utils": "^1.0.3",
+        "@0xproject/dev-utils": "^1.0.2",
         "chai": "^4.0.1",
         "chai-as-promised": "^7.1.0",
         "chai-bignumber": "^2.0.1",

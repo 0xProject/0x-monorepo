@@ -50,7 +50,7 @@
     },
     "homepage": "https://github.com/0xProject/0x.js/packages/sol-cov/README.md",
     "dependencies": {
-        "@0xproject/dev-utils": "^1.0.3",
+        "@0xproject/dev-utils": "^1.0.2",
         "@0xproject/sol-compiler": "^1.0.3",
         "@0xproject/subproviders": "^1.0.3",
         "@0xproject/typescript-typings": "^1.0.3",

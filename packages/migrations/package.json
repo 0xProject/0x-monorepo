@@ -39,7 +39,7 @@
     "license": "Apache-2.0",
     "devDependencies": {
         "@0xproject/abi-gen": "^1.0.3",
-        "@0xproject/dev-utils": "^1.0.3",
+        "@0xproject/dev-utils": "^1.0.2",
         "@0xproject/monorepo-scripts": "^1.0.4",
         "@0xproject/tslint-config": "^1.0.4",
         "@0xproject/types": "^1.0.1-rc.2",
@@ -54,7 +54,7 @@
     },
     "dependencies": {
         "@0xproject/base-contract": "^1.0.3",
-        "@0xproject/order-utils": "^1.0.1-rc.2",
+        "@0xproject/order-utils": "^1.0.1-rc.1",
         "@0xproject/sol-compiler": "^1.0.3",
         "@0xproject/subproviders": "^1.0.3",
         "@0xproject/typescript-typings": "^1.0.3",

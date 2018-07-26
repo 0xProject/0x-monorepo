@@ -42,7 +42,7 @@
     },
     "dependencies": {
         "@0xproject/base-contract": "^1.0.3",
-        "@0xproject/order-utils": "^1.0.1-rc.2",
+        "@0xproject/order-utils": "^1.0.1-rc.1",
         "@0xproject/types": "^1.0.1-rc.2",
         "@0xproject/typescript-typings": "^1.0.3",
         "@0xproject/utils": "^1.0.3",

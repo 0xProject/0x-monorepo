@@ -53,7 +53,7 @@
     },
     "homepage": "https://github.com/0xProject/0x-monorepo/packages/sol-compiler/README.md",
     "devDependencies": {
-        "@0xproject/dev-utils": "^1.0.3",
+        "@0xproject/dev-utils": "^1.0.2",
         "@0xproject/monorepo-scripts": "^1.0.4",
         "@0xproject/tslint-config": "^1.0.4",
         "@types/mkdirp": "^0.5.2",
