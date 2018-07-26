@@ -57,7 +57,6 @@ export const postpublishUtils = {
         }
         const postpublishConfigs = postpublishUtils.generateConfig(packageJSON, tsConfigJSON, cwd);
         await postpublishUtils.publishReleaseNotesAsync(
-            postpublishConfigs.cwd,
             postpublishConfigs.packageName,
             postpublishConfigs.version,
             postpublishConfigs.assets,
@@ -92,7 +91,7 @@ export const postpublishUtils = {
             postpublishConfigs.docPublishConfigs.s3StagingBucketPath,
         );
     },
-    async publishReleaseNotesAsync(cwd: string, packageName: string, version: string, assets: string[]): Promise<void> {
+    async publishReleaseNotesAsync(packageName: string, version: string, assets: string[]): Promise<void> {
         const notes = postpublishUtils.getReleaseNotes(packageName, version);
         const releaseName = postpublishUtils.getReleaseName(packageName, version);
         const tag = postpublishUtils.getTag(packageName, version);
