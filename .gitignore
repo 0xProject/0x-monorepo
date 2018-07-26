@@ -83,8 +83,9 @@ packages/metacoin/artifacts/
 packages/order-watcher/test/artifacts/
 packages/contract-wrappers/test/artifacts/
 packages/contract-wrappers/src/artifacts/
+packages/order-watcher/src/artifacts/
 
-# generated contract wrappers
+# generated contract watcher
 packages/0x.js/src/generated_contract_wrappers/
 packages/contracts/generated_contract_wrappers/
 packages/contract-wrappers/src/contract_wrappers/generated/
