@@ -95,7 +95,11 @@ export class BaseContract {
             const original = args[i];
             const decoded = rawDecoded[i];
             if (!abiUtils.isAbiDataEqual(params.names[i], params.types[i], original, decoded)) {
-                throw new Error(`Cannot safely encode argument: ${params.names[i]} (${original}) of type ${params.types[i]}. (Possible type overflow or other encoding error)`);
+                throw new Error(
+                    `Cannot safely encode argument: ${params.names[i]} (${original}) of type ${
+                        params.types[i]
+                    }. (Possible type overflow or other encoding error)`,
+                );
             }
         }
     }

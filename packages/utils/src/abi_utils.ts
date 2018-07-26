@@ -21,10 +21,12 @@ function parseEthersParams(params: DataItem[]): { names: EthersParamName[]; type
         if (param.components != null) {
             let suffix = '';
             const arrayBracket = param.type.indexOf('[');
-            if (arrayBracket >= 0) { suffix = param.type.substring(arrayBracket); }
+            if (arrayBracket >= 0) {
+                suffix = param.type.substring(arrayBracket);
+            }
 
             const result = parseEthersParams(param.components);
-            names.push({ name: (param.name || null), names: result.names });
+            names.push({ name: param.name || null, names: result.names });
             types.push('tuple(' + result.types.join(',') + ')' + suffix);
         } else {
             names.push(param.name || null);
@@ -74,7 +76,9 @@ function isAbiDataEqual(name: EthersParamName, type: string, x: any, y: any): bo
         // one individually.
         const types = splitTupleTypes(type);
         if (types.length !== name.names.length) {
-            throw new Error(`Internal error: parameter types/names length mismatch (${types.length} != ${name.names.length})`);
+            throw new Error(
+                `Internal error: parameter types/names length mismatch (${types.length} != ${name.names.length})`,
+            );
         }
         for (let i = 0; i < types.length; i++) {
             // For tuples, name is an object with a names property that is an
@@ -89,7 +93,9 @@ function isAbiDataEqual(name: EthersParamName, type: string, x: any, y: any): bo
             //      ]
             //  }
             //
-            const nestedName = _.isString(name.names[i]) ? name.names[i] as string : (name.names[i] as EthersNestedParamName).name as string;
+            const nestedName = _.isString(name.names[i])
+                ? (name.names[i] as string)
+                : ((name.names[i] as EthersNestedParamName).name as string);
             if (!isAbiDataEqual(name.names[i], types[i], x[nestedName], y[nestedName])) {
                 return false;
             }

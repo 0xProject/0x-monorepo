@@ -50,9 +50,9 @@ describe('ZeroEx library', () => {
         const address = '0x5409ed021d9299bf6814279a6a1411a7e866a631';
         const bytes32Zeros = '0x0000000000000000000000000000000000000000000000000000000000000000';
         it("should return false if the data doesn't pertain to the signature & address", async () => {
-            return expect((zeroEx.exchange as any).isValidSignatureAsync(bytes32Zeros, address, ethSignSignature)).to.become(
-                false,
-            );
+            return expect(
+                (zeroEx.exchange as any).isValidSignatureAsync(bytes32Zeros, address, ethSignSignature),
+            ).to.become(false);
         });
         it("should return false if the address doesn't pertain to the signature & data", async () => {
             const validUnrelatedAddress = '0x8b0292b11a196601ed2ce54b665cafeca0347d42';

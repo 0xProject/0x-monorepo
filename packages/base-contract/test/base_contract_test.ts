@@ -8,20 +8,20 @@ const { expect } = chai;
 describe('BaseContract', () => {
     describe('strictArgumentEncodingCheck', () => {
         it('works for simple types', () => {
-            BaseContract.strictArgumentEncodingCheck([{ name: 'to', type: 'address' }], ['0xe834ec434daba538cd1b9fe1582052b880bd7e63']);
+            BaseContract.strictArgumentEncodingCheck(
+                [{ name: 'to', type: 'address' }],
+                ['0xe834ec434daba538cd1b9fe1582052b880bd7e63'],
+            );
         });
         it('works for array types', () => {
-            const inputAbi = [{
-                name: 'takerAssetFillAmounts',
-                type: 'uint256[]',
-            }];
+            const inputAbi = [
+                {
+                    name: 'takerAssetFillAmounts',
+                    type: 'uint256[]',
+                },
+            ];
             const args = [
-                [
-                    '9000000000000000000',
-                    '79000000000000000000',
-                    '979000000000000000000',
-                    '7979000000000000000000',
-                ],
+                ['9000000000000000000', '79000000000000000000', '979000000000000000000', '7979000000000000000000'],
             ];
             BaseContract.strictArgumentEncodingCheck(inputAbi, args);
         });
@@ -101,10 +101,14 @@ describe('BaseContract', () => {
             BaseContract.strictArgumentEncodingCheck(inputAbi, args);
         });
         it('throws for integer overflows', () => {
-            expect(() => BaseContract.strictArgumentEncodingCheck([{ name: 'amount', type: 'uint8' }], ['256'])).to.throw();
+            expect(() =>
+                BaseContract.strictArgumentEncodingCheck([{ name: 'amount', type: 'uint8' }], ['256']),
+            ).to.throw();
         });
         it('throws for fixed byte array overflows', () => {
-            expect(() => BaseContract.strictArgumentEncodingCheck([{ name: 'hash', type: 'bytes8' }], ['0x001122334455667788'])).to.throw();
+            expect(() =>
+                BaseContract.strictArgumentEncodingCheck([{ name: 'hash', type: 'bytes8' }], ['0x001122334455667788']),
+            ).to.throw();
         });
     });
 });
