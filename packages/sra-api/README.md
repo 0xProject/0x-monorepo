@@ -1,6 +1,6 @@
-## @0xproject/sra
+## @0xproject/sra-api
 
-Contains the Standard Relayer API swagger spec and publishes the client libs.
+Contains the Standard Relayer API swagger spec.
 
 ## Installation
 
@@ -29,13 +29,13 @@ yarn install
 To build this package and all other monorepo packages that it depends on, run the following from the monorepo root directory:
 
 ```bash
-PKG=@0xproject/sra yarn build
+PKG=@0xproject/sra-api yarn build
 ```
 
 Or continuously rebuild on change:
 
 ```bash
-PKG=@0xproject/sra yarn watch
+PKG=@0xproject/sra-api yarn watch
 ```
 
 ### Clean
