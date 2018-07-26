@@ -1,8 +1,30 @@
 ## @0xproject/sra-api
 
-Contains the Standard Relayer API swagger spec.
+Contains the Standard Relayer API [OpenAPI Spec](https://github.com/OAI/OpenAPI-Specification).
+
+The package distributes both a javascript object version and a json version.
+
+## Usage
+
+```
+import { api } from '@0xproject/sra-api';
+```
 
 ## Installation
+
+```
+yarn install
+```
+
+## Development
+
+You can start a development server that will serve a [ReDoc](https://github.com/Rebilly/ReDoc) documentation instance. It uses the `api.json` file from `lib/` (you must have built at least once with `yarn build` or `yarn build-json`) that is based on the `api` object exported from `src`.
+
+```
+yarn develop
+```
+
+The process will watch for changes, but will not hot-reload so you must refresh the page to see the changes.
 
 ## Contributing
 
