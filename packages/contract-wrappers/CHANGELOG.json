@@ -5,7 +5,8 @@
             {
                 "note": "Fixed bug caused by importing non-existent dep"
             }
-        ]
+        ],
+        "timestamp": 1532619515
     },
     {
         "version": "1.0.1-rc.1",
