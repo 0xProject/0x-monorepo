@@ -4,7 +4,6 @@ import { render } from 'react-dom';
 import { Provider } from 'react-redux';
 import { BrowserRouter as Router, Redirect, Route, Switch } from 'react-router-dom';
 import * as injectTapEventPlugin from 'react-tap-event-plugin';
-import { Redirector } from 'ts/components/redirector';
 import { About } from 'ts/containers/about';
 import { FAQ } from 'ts/containers/faq';
 import { Jobs } from 'ts/containers/jobs';
@@ -17,7 +16,6 @@ import { tradeHistoryStorage } from 'ts/local_storage/trade_history_storage';
 import { store } from 'ts/redux/store';
 import { WebsiteLegacyPaths, WebsitePaths } from 'ts/types';
 import { muiTheme } from 'ts/utils/mui_theme';
-import { utils } from 'ts/utils/utils';
 // Polyfills
 injectTapEventPlugin();
 

@@ -6,7 +6,6 @@ import { Container } from 'ts/components/ui/container';
 import { Image } from 'ts/components/ui/image';
 import { Text } from 'ts/components/ui/text';
 import { colors } from 'ts/style/colors';
-import { media } from 'ts/style/media';
 import { styled } from 'ts/style/theme';
 import { ScreenWidths } from 'ts/types';
 import { constants } from 'ts/utils/constants';
