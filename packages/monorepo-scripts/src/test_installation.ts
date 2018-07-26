@@ -25,6 +25,7 @@ import { utils } from './utils/utils';
         const packageName = installablePackage.packageJson.name;
         utils.log(`Testing ${packageName}@${lastChangelogVersion}`);
         const testDirectory = path.join(monorepoRootPath, '../test-env');
+        rimraf.sync(testDirectory);
         fs.mkdirSync(testDirectory);
         await execAsync('yarn init --yes', { cwd: testDirectory });
         const npmrcFilePath = path.join(testDirectory, '.npmrc');
