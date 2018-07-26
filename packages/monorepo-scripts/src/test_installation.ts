@@ -10,7 +10,7 @@ import { utils } from './utils/utils';
 
 (async () => {
     const IS_LOCAL_PUBLISH = process.env.IS_LOCAL_PUBLISH === 'true';
-    const registry = IS_LOCAL_PUBLISH ? 'http://localhost:4873' : 'https://registry.npmjs.org';
+    const registry = IS_LOCAL_PUBLISH ? 'http://localhost:4873/' : 'https://registry.npmjs.org/';
     const monorepoRootPath = path.join(__dirname, '../../..');
     const packages = utils.getTopologicallySortedPackages(monorepoRootPath);
     const installablePackages = _.filter(
