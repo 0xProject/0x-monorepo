@@ -1,0 +1,186 @@
+[
+    {
+        "version": "1.0.1-rc.3",
+        "changes": [
+            {
+                "note": "Dependencies updated"
+            }
+        ],
+        "timestamp": 1532619515
+    },
+    {
+        "version": "1.0.1-rc.2",
+        "changes": [
+            {
+                "note": "Dependencies updated"
+            }
+        ],
+        "timestamp": 1532614997
+    },
+    {
+        "version": "1.0.1-rc.1",
+        "changes": [
+            {
+                "note": "Dependencies updated"
+            }
+        ],
+        "timestamp": 1532605697
+    },
+    {
+        "timestamp": 1532357734,
+        "version": "1.0.0",
+        "changes": [
+            {
+                "note": "Dependencies updated"
+            }
+        ]
+    },
+    {
+        "timestamp": 1532043000,
+        "version": "1.0.0-rc.1",
+        "changes": [
+            {
+                "note": "Update schemas for V2 or 0x Protocol",
+                "pr": 615
+            },
+            {
+                "note": "Added CallData schema",
+                "pr": 821
+            },
+            {
+                "note": "Update CallData schema id to CallData",
+                "pr": 894
+            }
+        ]
+    },
+    {
+        "timestamp": 1531919263,
+        "version": "0.8.3",
+        "changes": [
+            {
+                "note": "Dependencies updated"
+            }
+        ]
+    },
+    {
+        "timestamp": 1531149657,
+        "version": "0.8.2",
+        "changes": [
+            {
+                "note": "Dependencies updated"
+            }
+        ]
+    },
+    {
+        "timestamp": 1529397769,
+        "version": "0.8.1",
+        "changes": [
+            {
+                "note": "Dependencies updated"
+            }
+        ]
+    },
+    {
+        "version": "0.8.0",
+        "changes": [
+            {
+                "note":
+                    "Update Order & SignedOrder schemas, remove ECSignature schema and add Hex schema as part of V2 upgrades",
+                "pr": 615
+            }
+        ],
+        "timestamp": 1527008794
+    },
+    {
+        "timestamp": 1527008794,
+        "version": "0.7.24",
+        "changes": [
+            {
+                "note": "Dependencies updated"
+            }
+        ]
+    },
+    {
+        "timestamp": 1525477860,
+        "version": "0.7.23",
+        "changes": [
+            {
+                "note": "Dependencies updated"
+            }
+        ]
+    },
+    {
+        "timestamp": 1525428773,
+        "version": "0.7.22",
+        "changes": [
+            {
+                "note": "Dependencies updated"
+            }
+        ]
+    },
+    {
+        "timestamp": 1524044013,
+        "version": "0.7.21",
+        "changes": [
+            {
+                "note": "Dependencies updated"
+            }
+        ]
+    },
+    {
+        "timestamp": 1523462196,
+        "version": "0.7.20",
+        "changes": [
+            {
+                "note": "Dependencies updated"
+            }
+        ]
+    },
+    {
+        "timestamp": 1522673609,
+        "version": "0.7.19",
+        "changes": [
+            {
+                "note": "Dependencies updated"
+            }
+        ]
+    },
+    {
+        "timestamp": 1522658513,
+        "version": "0.7.18",
+        "changes": [
+            {
+                "note": "Dependencies updated"
+            }
+        ]
+    },
+    {
+        "version": "0.7.13",
+        "changes": [
+            {
+                "note": "  Fix publishing issue where .npmignore was not properly excluding undesired content",
+                "pr": 389
+            }
+        ],
+        "timestamp": 1518102000
+    },
+    {
+        "version": "0.7.0",
+        "changes": [
+            {
+                "note": "Rename `subscriptionOptsSchema` to `blockRangeSchema`",
+                "pr": 272
+            }
+        ],
+        "timestamp": 1513695600
+    },
+    {
+        "version": "0.6.7",
+        "changes": [
+            {
+                "note": "Re-publish JSON-schema previously published under NPM package 0x-json-schemas"
+            }
+        ],
+        "timestamp": 1510585200
+    }
+]
