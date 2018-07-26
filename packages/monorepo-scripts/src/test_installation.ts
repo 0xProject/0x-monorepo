@@ -62,7 +62,7 @@ import { utils } from './utils/utils';
         utils.log(`Running test script with ${packageName} imported`);
         await execAsync(`node ${transpiledIndexFilePath}`);
         utils.log(`Successfilly ran test script with ${packageName} imported`);
-        // rimraf.sync(testDirectory);
+        rimraf.sync(testDirectory);
     }
 })().catch(err => {
     utils.log(err.stderr);
