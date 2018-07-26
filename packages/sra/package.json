@@ -31,6 +31,7 @@
     "dependencies": {},
     "devDependencies": {
         "@0xproject/tslint-config": "^1.0.4",
+        "@loopback/openapi-v3-types": "^0.8.2",
         "@types/mocha": "^2.2.42",
         "chai": "^4.0.1",
         "copyfiles": "^1.2.0",

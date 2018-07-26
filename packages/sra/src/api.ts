@@ -1,4 +1,6 @@
-export const api = {
+import { OpenApiSpec } from '@loopback/openapi-v3-types';
+
+export const api: OpenApiSpec = {
     openapi: '3.0.0',
     info: {
         version: '1.0.0',

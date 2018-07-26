@@ -842,6 +842,17 @@
   dependencies:
     npmlog "^4.1.2"
 
+"@loopback/dist-util@^0.3.5":
+  version "0.3.5"
+  resolved "https://registry.npmjs.org/@loopback/dist-util/-/dist-util-0.3.5.tgz#c43eec658bab07fc5e7d9b5eba270eac6ea802cf"
+
+"@loopback/openapi-v3-types@^0.8.2":
+  version "0.8.2"
+  resolved "https://registry.npmjs.org/@loopback/openapi-v3-types/-/openapi-v3-types-0.8.2.tgz#6dd4d6ee9a791605d872a0aa875a2166ff330182"
+  dependencies:
+    "@loopback/dist-util" "^0.3.5"
+    openapi3-ts "^0.11.0"
+
 "@mrmlnc/readdir-enhanced@^2.2.1":
   version "2.2.1"
   resolved "https://registry.yarnpkg.com/@mrmlnc/readdir-enhanced/-/readdir-enhanced-2.2.1.tgz#524af240d1a360527b730475ecfa1344aa540dde"
@@ -9317,6 +9328,10 @@ openapi-schema-validation@^0.4.1:
     jsonschema "1.2.4"
     jsonschema-draft4 "^1.0.0"
     swagger-schema-official "2.0.0-bab6bed"
+
+openapi3-ts@^0.11.0:
+  version "0.11.0"
+  resolved "https://registry.npmjs.org/openapi3-ts/-/openapi3-ts-0.11.0.tgz#8e4c51ad8d54f8f2516b895e4ce8c01550cd4854"
 
 opn-cli@^3.1.0:
   version "3.1.0"
