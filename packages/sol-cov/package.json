@@ -1,6 +1,6 @@
 {
     "name": "@0xproject/sol-cov",
-    "version": "1.0.3",
+    "version": "1.0.2",
     "engines": {
         "node": ">=6.12"
     },
