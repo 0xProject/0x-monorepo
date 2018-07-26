@@ -35,8 +35,6 @@ export class ERC721Wrapper {
                     artifacts.DummyERC721Token,
                     this._provider,
                     txDefaults,
-                    constants.DUMMY_TOKEN_NAME,
-                    constants.DUMMY_TOKEN_SYMBOL,
                 ),
             );
         }
@@ -81,7 +79,8 @@ export class ERC721Wrapper {
     }
     public async doesTokenExistAsync(tokenAddress: string, tokenId: BigNumber): Promise<boolean> {
         const tokenContract = this._getTokenContractFromAssetData(tokenAddress);
-        const doesExist = await tokenContract.exists.callAsync(tokenId);
+        const owner = await tokenContract.ownerOf.callAsync(tokenId);
+        const doesExist = owner !== constants.NULL_ADDRESS;
         return doesExist;
     }
     public async approveProxyAsync(tokenAddress: string, tokenId: BigNumber): Promise<void> {
