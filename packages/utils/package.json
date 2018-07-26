@@ -41,7 +41,7 @@
         "abortcontroller-polyfill": "^1.1.9",
         "bignumber.js": "~4.1.0",
         "detect-node": "2.0.3",
-        "ethereum-types": "1.0.0",
+        "ethereum-types": "^1.0.1",
         "ethereumjs-util": "^5.1.1",
         "ethers": "3.0.22",
         "isomorphic-fetch": "^2.2.1",

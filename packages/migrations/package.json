@@ -61,7 +61,7 @@
         "@0xproject/utils": "^1.0.1",
         "@0xproject/web3-wrapper": "^1.0.1",
         "@ledgerhq/hw-app-eth": "^4.3.0",
-        "ethereum-types": "1.0.0",
+        "ethereum-types": "^1.0.1",
         "ethers": "3.0.22",
         "lodash": "^4.17.4"
     },
