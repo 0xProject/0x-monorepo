@@ -18,35 +18,66 @@
 
 pragma solidity 0.4.24;
 
-import "../../tokens/ERC721Token/MintableERC721Token.sol";
-import "../../utils/Ownable/Ownable.sol";
+import "./ERC721Token.sol";
 
 
-// solhint-disable no-empty-blocks
-contract DummyERC721Token is
-    Ownable,
-    MintableERC721Token
+contract MintableERC721Token is
+    ERC721Token
 {
 
     /// @dev Function to mint a new token
     ///      Reverts if the given token ID already exists
     /// @param _to Address of the beneficiary that will own the minted token
     /// @param _tokenId ID of the token to be minted by the msg.sender    
-    function mint(address _to, uint256 _tokenId)
-        external
-        onlyOwner
+    function _mint(address _to, uint256 _tokenId)
+        internal
     {
-        _mint(_to, _tokenId);
+        require(
+            _to != address(0),
+            "ERC721_ZERO_TO_ADDRESS"
+        );
+
+        address owner = owners[_tokenId];
+        require(
+            owner == address(0),
+            "ERC721_OWNER_ALREADY_EXISTS"
+        );
+
+        owners[_tokenId] = _to;
+        balances[_to] = safeAdd(balances[_to], 1);
+
+        emit Transfer(
+            address(0),
+            _to,
+            _tokenId
+        );
     }
 
     /// @dev Function to burn a token
     ///      Reverts if the given token ID doesn't exist
     /// @param _owner Owner of token with given token ID
     /// @param _tokenId ID of the token to be burned by the msg.sender
-    function burn(address _owner, uint256 _tokenId)
-        external
-        onlyOwner
+    function _burn(address _owner, uint256 _tokenId)
+        internal
     {
-        _burn(_owner, _tokenId);
+        require(
+            _owner != address(0),
+            "ERC721_ZERO_OWNER_ADDRESS"
+        );
+
+        address owner = owners[_tokenId];
+        require(
+            owner == _owner,
+            "ERC721_OWNER_MISMATCH"
+        );
+
+        owners[_tokenId] = address(0);
+        balances[_owner] = safeSub(balances[_owner], 1);
+
+        emit Transfer(
+            _owner,
+            address(0),
+            _tokenId
+        );
     }
 }
