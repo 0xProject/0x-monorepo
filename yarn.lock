@@ -877,9 +877,9 @@
   version "0.0.0"
   resolved "https://registry.yarnpkg.com/@types/blockies/-/blockies-0.0.0.tgz#e1dea77f138ee718bebbeb5b59d5d02139983617"
 
-"@types/bn.js@^4.11.0":
-  version "4.11.0"
-  resolved "https://registry.yarnpkg.com/@types/bn.js/-/bn.js-4.11.0.tgz#401cb20874f0a7b8414e46308a99c449759b7de9"
+"@types/bn.js@4.11.1":
+  version "4.11.1"
+  resolved "https://registry.yarnpkg.com/@types/bn.js/-/bn.js-4.11.1.tgz#6fd07b93490ecf0f3501a31ea9cfd330885b10fa"
   dependencies:
     "@types/node" "*"
 
@@ -5138,6 +5138,7 @@ ethereumjs-wallet@~0.6.0:
 
 ethers@0xproject/ethers.js#eip-838-reasons, ethers@3.0.22:
   version "3.0.18"
+  uid b91342bd200d142af0165d6befddf783c8ae8447
   resolved "https://codeload.github.com/0xproject/ethers.js/tar.gz/b91342bd200d142af0165d6befddf783c8ae8447"
   dependencies:
     aes-js "3.0.0"
