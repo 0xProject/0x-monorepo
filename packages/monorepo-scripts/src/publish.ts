@@ -4,7 +4,7 @@ import * as promisify from 'es6-promisify';
 import * as _ from 'lodash';
 import * as moment from 'moment';
 import opn = require('opn');
-import { exec as execAsync } from 'promisify-child-process';
+import { exec as execAsync, spawn as spawnAsync } from 'promisify-child-process';
 import * as prompt from 'prompt';
 import semver = require('semver');
 import semverSort = require('semver-sort');
@@ -189,7 +189,15 @@ async function lernaPublishAsync(packageToNextVersion: { [name: string]: string 
         lernaPublishCmd += ` --skip-git`;
     }
     utils.log('Lerna is publishing...');
-    await execAsync(lernaPublishCmd, { cwd: constants.monorepoRootPath });
+    const child = await spawnAsync(lernaPublishCmd, { cwd: constants.monorepoRootPath });
+    child.stdout.on('data', (data: Buffer) => {
+        const output = data.toString('utf8');
+        utils.log('Stdout: ', output);
+    });
+    child.stderr.on('data', (data: Buffer) => {
+        const output = data.toString('utf8');
+        utils.log('Stderr: ', output);
+    });
 }
 
 function updateVersionNumberIfNeeded(currentVersion: string, proposedNextVersion: string): string {
