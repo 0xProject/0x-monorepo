@@ -1,4 +1,5 @@
 {
+    "private": true,
     "name": "ethereum-types",
     "version": "1.0.1",
     "engines": {
