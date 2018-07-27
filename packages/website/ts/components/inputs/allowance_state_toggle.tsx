@@ -93,7 +93,6 @@ export class AllowanceStateToggle extends React.Component<AllowanceStateTogglePr
         const symbol = this.props.token.symbol;
         switch (this.state.allowanceState) {
             case AllowanceState.Loading:
-                const isLockingToken = this.props.tokenState.allowance.gt(0);
                 return (
                     <Text noWrap={true} fontColor={colors.white}>
                         {this.state.loadingMessage || 'Loading...'}
