@@ -24,6 +24,7 @@ import { TradeHistory } from 'ts/components/trade_history/trade_history';
 import { Container } from 'ts/components/ui/container';
 import { FlashMessage } from 'ts/components/ui/flash_message';
 import { Image } from 'ts/components/ui/image';
+import { PointerDirection } from 'ts/components/ui/pointer';
 import { Text } from 'ts/components/ui/text';
 import { Wallet } from 'ts/components/wallet/wallet';
 import { GenerateOrderForm } from 'ts/containers/generate_order_form';
@@ -355,6 +356,9 @@ export class Portal extends React.Component<PortalProps, PortalState> {
                             onAddToken={this._onAddToken.bind(this)}
                             onRemoveToken={this._onRemoveToken.bind(this)}
                             refetchTokenStateAsync={this._refetchTokenStateAsync.bind(this)}
+                            toggleTooltipDirection={
+                                this.props.isPortalOnboardingShowing ? PointerDirection.Left : PointerDirection.Right
+                            }
                         />
                     </Container>
                     {!isMobile && <Container marginTop="8px">{this._renderStartOnboarding()}</Container>}

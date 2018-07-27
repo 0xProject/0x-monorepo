@@ -32,6 +32,7 @@ export interface ContainerProps {
     bottom?: string;
     zIndex?: number;
     Tag?: ContainerTag;
+    cursor?: string;
     id?: string;
     onClick?: (event: React.MouseEvent<HTMLElement>) => void;
 }

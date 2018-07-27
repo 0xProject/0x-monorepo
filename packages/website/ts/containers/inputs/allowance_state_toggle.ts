@@ -2,19 +2,20 @@ import * as React from 'react';
 import { connect } from 'react-redux';
 import { Dispatch } from 'redux';
 import { Blockchain } from 'ts/blockchain';
+import { PointerDirection } from 'ts/components/ui/pointer';
 import { State } from 'ts/redux/reducer';
 import { BalanceErrs, Token, TokenState } from 'ts/types';
 
-import { AllowanceToggle as AllowanceToggleComponent } from 'ts/components/inputs/allowance_toggle';
+import { AllowanceStateToggle as AllowanceStateToggleComponent } from 'ts/components/inputs/allowance_state_toggle';
 import { Dispatcher } from 'ts/redux/dispatcher';
 
-interface AllowanceToggleProps {
+interface AllowanceStateToggleProps {
     blockchain: Blockchain;
     onErrorOccurred?: (errType: BalanceErrs) => void;
     token: Token;
     tokenState: TokenState;
-    isDisabled?: boolean;
     refetchTokenStateAsync: () => Promise<void>;
+    tooltipDirection?: PointerDirection;
 }
 
 interface ConnectedState {
@@ -26,7 +27,7 @@ interface ConnectedDispatch {
     dispatcher: Dispatcher;
 }
 
-const mapStateToProps = (state: State, _ownProps: AllowanceToggleProps): ConnectedState => ({
+const mapStateToProps = (state: State, _ownProps: AllowanceStateToggleProps): ConnectedState => ({
     networkId: state.networkId,
     userAddress: state.userAddress,
 });
@@ -35,7 +36,7 @@ const mapDispatchTopProps = (dispatch: Dispatch<State>): ConnectedDispatch => ({
     dispatcher: new Dispatcher(dispatch),
 });
 
-export const AllowanceToggle: React.ComponentClass<AllowanceToggleProps> = connect(
+export const AllowanceStateToggle: React.ComponentClass<AllowanceStateToggleProps> = connect(
     mapStateToProps,
     mapDispatchTopProps,
-)(AllowanceToggleComponent);
+)(AllowanceStateToggleComponent);

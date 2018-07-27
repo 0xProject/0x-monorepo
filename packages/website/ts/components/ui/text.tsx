@@ -19,6 +19,7 @@ export interface TextProps {
     textDecorationLine?: string;
     onClick?: (event: React.MouseEvent<HTMLElement>) => void;
     hoverColor?: string;
+    noWrap?: boolean;
 }
 
 const PlainText: React.StatelessComponent<TextProps> = ({ children, className, onClick, Tag }) => (
@@ -39,6 +40,7 @@ export const Text = styled(PlainText)`
     ${props => (props.minHeight ? `min-height: ${props.minHeight}` : '')};
     ${props => (props.onClick ? 'cursor: pointer' : '')};
     transition: color 0.5s ease;
+    ${props => (props.noWrap ? 'white-space: nowrap' : '')};
     &:hover {
         ${props => (props.onClick ? `color: ${props.hoverColor || darken(0.3, props.fontColor)}` : '')};
     }
@@ -53,6 +55,7 @@ Text.defaultProps = {
     lineHeight: '1.5em',
     textDecorationLine: 'none',
     Tag: 'div',
+    noWrap: false,
 };
 
 Text.displayName = 'Text';

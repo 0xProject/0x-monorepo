@@ -24,7 +24,7 @@ export const OnboardingTooltip: React.StatelessComponent<OnboardingTooltipProps>
     );
 };
 OnboardingTooltip.defaultProps = {
-    pointerDisplay: 'left',
+    pointerDisplay: PointerDirection.Left,
 };
 
 OnboardingTooltip.displayName = 'OnboardingTooltip';
