@@ -46,16 +46,16 @@ chaiSetup.configure();
 const expect = chai.expect;
 
 /**
- * Instantiates a new instance of CoreCombinatorialUtils. Since this method has some
+ * Instantiates a new instance of FillOrderCombinatorialUtils. Since this method has some
  * required async setup, a factory method is required.
  * @param web3Wrapper Web3Wrapper instance
  * @param txDefaults Default Ethereum tx options
- * @return CoreCombinatorialUtils instance
+ * @return FillOrderCombinatorialUtils instance
  */
-export async function coreCombinatorialUtilsFactoryAsync(
+export async function fillOrderCombinatorialUtilsFactoryAsync(
     web3Wrapper: Web3Wrapper,
     txDefaults: Partial<TxData>,
-): Promise<CoreCombinatorialUtils> {
+): Promise<FillOrderCombinatorialUtils> {
     const accounts = await web3Wrapper.getAvailableAddressesAsync();
     const userAddresses = _.slice(accounts, 0, 5);
     const [ownerAddress, makerAddress, takerAddress] = userAddresses;
@@ -123,7 +123,7 @@ export async function coreCombinatorialUtilsFactoryAsync(
         exchangeContract.address,
     );
 
-    const coreCombinatorialUtils = new CoreCombinatorialUtils(
+    const fillOrderCombinatorialUtils = new FillOrderCombinatorialUtils(
         orderFactory,
         ownerAddress,
         makerAddress,
@@ -133,10 +133,10 @@ export async function coreCombinatorialUtilsFactoryAsync(
         exchangeWrapper,
         assetWrapper,
     );
-    return coreCombinatorialUtils;
+    return fillOrderCombinatorialUtils;
 }
 
-export class CoreCombinatorialUtils {
+export class FillOrderCombinatorialUtils {
     public orderFactory: OrderFactoryFromScenario;
     public ownerAddress: string;
     public makerAddress: string;
@@ -240,7 +240,7 @@ export class CoreCombinatorialUtils {
             // AllowanceAmountScenario.TooLow,
             // AllowanceAmountScenario.Unlimited,
         ];
-        const fillScenarioArrays = CoreCombinatorialUtils._getAllCombinations([
+        const fillScenarioArrays = FillOrderCombinatorialUtils._getAllCombinations([
             takerScenarios,
             feeRecipientScenarios,
             makerAssetAmountScenario,
@@ -309,7 +309,7 @@ export class CoreCombinatorialUtils {
         } else {
             const result = [];
             const restOfArrays = arrays.slice(1);
-            const allCombinationsOfRemaining = CoreCombinatorialUtils._getAllCombinations(restOfArrays); // recur with the rest of array
+            const allCombinationsOfRemaining = FillOrderCombinatorialUtils._getAllCombinations(restOfArrays); // recur with the rest of array
             // tslint:disable:prefer-for-of
             for (let i = 0; i < allCombinationsOfRemaining.length; i++) {
                 for (let j = 0; j < arrays[0].length; j++) {

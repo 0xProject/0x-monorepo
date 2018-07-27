@@ -33,7 +33,7 @@
         "lint-contracts": "solhint src/2.0.0/**/**/**/**/*.sol"
     },
     "config": {
-        "abis": "../migrations/artifacts/2.0.0/@(AssetProxyOwner|DummyERC20Token|DummyERC721Receiver|DummyERC721Token|ERC20Proxy|ERC721Proxy|Forwarder|Exchange|ExchangeWrapper|IAssetData|IAssetProxy|MixinAuthorizable|MultiSigWallet|MultiSigWalletWithTimeLock|TestAssetProxyOwner|TestAssetProxyDispatcher|TestConstants|TestLibBytes|TestLibs|TestSignatureValidator|Validator|Wallet|TokenRegistry|Whitelist|WETH9|ZRXToken).json"
+        "abis": "../migrations/artifacts/2.0.0/@(AssetProxyOwner|DummyERC20Token|DummyERC721Receiver|DummyERC721Token|ERC20Proxy|ERC721Proxy|Forwarder|Exchange|ExchangeWrapper|IAssetData|IAssetProxy|MixinAuthorizable|MultiSigWallet|MultiSigWalletWithTimeLock|TestAssetProxyOwner|TestAssetProxyDispatcher|TestConstants|TestExchangeInternals|TestLibBytes|TestLibs|TestSignatureValidator|Validator|Wallet|TokenRegistry|Whitelist|WETH9|ZRXToken).json"
     },
     "repository": {
         "type": "git",
@@ -79,11 +79,13 @@
         "@0xproject/typescript-typings": "^1.0.3",
         "@0xproject/utils": "^1.0.4",
         "@0xproject/web3-wrapper": "^1.1.2",
+        "@types/js-combinatorics": "^0.5.29",
         "bn.js": "^4.11.8",
         "ethereum-types": "^1.0.3",
         "ethereumjs-abi": "0.6.5",
         "ethereumjs-util": "^5.1.1",
         "ethers": "3.0.22",
+        "js-combinatorics": "^0.5.3",
         "lodash": "^4.17.4"
     }
 }
