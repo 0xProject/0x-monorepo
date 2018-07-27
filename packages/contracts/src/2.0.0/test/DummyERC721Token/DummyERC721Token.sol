@@ -27,6 +27,18 @@ contract DummyERC721Token is
     Ownable,
     MintableERC721Token
 {
+    string public name;
+    string public symbol;
+
+    constructor (
+        string _name,
+        string _symbol
+    )
+        public
+    {
+        name = _name;
+        symbol = _symbol;
+    }
 
     /// @dev Function to mint a new token
     ///      Reverts if the given token ID already exists

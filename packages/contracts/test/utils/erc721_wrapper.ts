@@ -35,6 +35,8 @@ export class ERC721Wrapper {
                     artifacts.DummyERC721Token,
                     this._provider,
                     txDefaults,
+                    constants.DUMMY_TOKEN_NAME,
+                    constants.DUMMY_TOKEN_SYMBOL,
                 ),
             );
         }
