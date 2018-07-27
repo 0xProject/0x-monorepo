@@ -109,7 +109,7 @@ for (const abiFileName of abiFileNames) {
     const outFilePath = `${args.output}/${outFileName}.ts`;
 
     if (utils.isOutputFileUpToDate(abiFileName, outFilePath)) {
-        logUtils.log(`Aready up to date: ${chalk.bold(outFilePath)}`);
+        logUtils.log(`Already up to date: ${chalk.bold(outFilePath)}`);
         continue;
     }
 

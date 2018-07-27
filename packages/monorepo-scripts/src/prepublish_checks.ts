@@ -50,7 +50,7 @@ async function checkGitTagsForNextVersionAndDeleteIfExistAsync(updatedPublicPack
 async function checkCurrentVersionMatchesLatestPublishedNPMPackageAsync(
     updatedPublicPackages: Package[],
 ): Promise<void> {
-    utils.log('Check package versions against npmjs.org...');
+    utils.log('Check package versions against npm registry...');
     const versionMismatches = [];
     for (const pkg of updatedPublicPackages) {
         const packageName = pkg.packageJson.name;

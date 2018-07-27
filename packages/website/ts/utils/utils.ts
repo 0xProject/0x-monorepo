@@ -363,9 +363,6 @@ export const utils = {
         }
         return Environments.UNKNOWN;
     },
-    shouldShowJobsPage(): boolean {
-        return utils.isDevelopment() || utils.isStaging() || utils.isDogfood();
-    },
     getEthToken(tokenByAddress: TokenByAddress): Token {
         return utils.getTokenBySymbol(constants.ETHER_TOKEN_SYMBOL, tokenByAddress);
     },

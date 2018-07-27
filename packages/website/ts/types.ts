@@ -356,6 +356,7 @@ export enum WebsiteLegacyPaths {
     ZeroExJs = '/docs/0xjs',
     Web3Wrapper = '/docs/web3_wrapper',
     Deployer = '/docs/deployer',
+    Jobs = '/jobs',
 }
 
 export enum WebsitePaths {
@@ -376,7 +377,7 @@ export enum WebsitePaths {
     Subproviders = '/docs/subproviders',
     OrderUtils = '/docs/order-utils',
     EthereumTypes = '/docs/ethereum-types',
-    Jobs = '/jobs',
+    Careers = '/careers',
 }
 
 export enum DocPackages {

@@ -213,6 +213,7 @@ export enum RevertReason {
     ValueGreaterThanZero = 'VALUE_GREATER_THAN_ZERO',
     InvalidMsgValue = 'INVALID_MSG_VALUE',
     InsufficientEthRemaining = 'INSUFFICIENT_ETH_REMAINING',
+    Uint256Overflow = 'UINT256_OVERFLOW',
 }
 
 export enum StatusCodes {

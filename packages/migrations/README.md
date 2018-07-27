@@ -50,8 +50,33 @@ yarn lint
 
 ### Migrate
 
-In order to migrate the 0x smart contracts to TestRPC/Ganache running at `http://localhost:8545`, run:
+#### V2-beta smart contracts
+
+In order to migrate the V2-beta 0x smart contracts to Kovan using a Ledger Nano S, run:
 
 ```bash
-yarn migrate
+yarn migrate:v2-beta-testnet
+```
+
+**Note:** Ledger settings `contract data` must be `on`, and `browser support` must be set to `off`.
+
+Post-publish steps:
+
+1.  Since we don't re-deploy the `WETH9` nor `ZRXToken` contracts, manually copy over the artifacts for them from `2.0.0` into `2.0.0-beta-testnet` and add the Kovan & ganache addresses to both of their `networks` sections.
+2.  We now need to copy over the network `50` settings from the `2.0.0` artifacts to the `2.0.0-beta-testnet` artifacts for the newly deployed contracts (e.g `Exchange`, `ERC20Proxy`, `ERC721Proxy` and `AssetProxyOwner`)
+
+#### V2 (under development) smart contracts
+
+In order to migrate the V2 (under development) 0x smart contracts to TestRPC/Ganache running at `http://localhost:8545`, run:
+
+```bash
+yarn migrate:v2
+```
+
+#### V1 smart contracts
+
+In order to migrate the V1 0x smart contracts to TestRPC/Ganache running at `http://localhost:8545`, run:
+
+```bash
+yarn migrate:v1
 ```

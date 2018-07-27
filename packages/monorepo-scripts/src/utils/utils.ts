@@ -1,16 +1,26 @@
+import batchPackages = require('@lerna/batch-packages');
 import * as fs from 'fs';
 import * as _ from 'lodash';
 import { exec as execAsync } from 'promisify-child-process';
 import semver = require('semver');
 
 import { constants } from '../constants';
-import { GitTagsByPackageName, Package, UpdatedPackage } from '../types';
+import { GitTagsByPackageName, Package, PackageJSON, UpdatedPackage } from '../types';
 
 import { changelogUtils } from './changelog_utils';
 
 export const utils = {
     log(...args: any[]): void {
         console.log(...args); // tslint:disable-line:no-console
+    },
+    getTopologicallySortedPackages(rootDir: string): Package[] {
+        const packages = utils.getPackages(rootDir);
+        const batchedPackages: PackageJSON[] = _.flatten(batchPackages(_.map(packages, pkg => pkg.packageJson), false));
+        const topsortedPackages: Package[] = _.map(
+            batchedPackages,
+            (pkg: PackageJSON) => _.find(packages, pkg1 => pkg1.packageJson.name === pkg.name) as Package,
+        );
+        return topsortedPackages;
     },
     getPackages(rootDir: string): Package[] {
         const rootPackageJsonString = fs.readFileSync(`${rootDir}/package.json`, 'utf8');

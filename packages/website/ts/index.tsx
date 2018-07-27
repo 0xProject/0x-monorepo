@@ -4,7 +4,6 @@ import { render } from 'react-dom';
 import { Provider } from 'react-redux';
 import { BrowserRouter as Router, Redirect, Route, Switch } from 'react-router-dom';
 import * as injectTapEventPlugin from 'react-tap-event-plugin';
-import { Redirector } from 'ts/components/redirector';
 import { About } from 'ts/containers/about';
 import { FAQ } from 'ts/containers/faq';
 import { Jobs } from 'ts/containers/jobs';
@@ -17,7 +16,6 @@ import { tradeHistoryStorage } from 'ts/local_storage/trade_history_storage';
 import { store } from 'ts/redux/store';
 import { WebsiteLegacyPaths, WebsitePaths } from 'ts/types';
 import { muiTheme } from 'ts/utils/mui_theme';
-import { utils } from 'ts/utils/utils';
 // Polyfills
 injectTapEventPlugin();
 
@@ -76,12 +74,7 @@ render(
                         <Switch>
                             <Route exact={true} path="/" component={Landing as any} />
                             <Redirect from="/otc" to={`${WebsitePaths.Portal}`} />
-                            {/* TODO: Remove this once we ship the jobs page*/}
-                            {utils.shouldShowJobsPage() ? (
-                                <Route path={WebsitePaths.Jobs} component={Jobs as any} />
-                            ) : (
-                                <Route path={WebsitePaths.Jobs} component={Redirector as any} />
-                            )}
+                            <Route path={WebsitePaths.Careers} component={Jobs as any} />
                             <Route path={WebsitePaths.Portal} component={LazyPortal} />
                             <Route path={WebsitePaths.FAQ} component={FAQ as any} />
                             <Route path={WebsitePaths.About} component={About as any} />
@@ -131,7 +124,7 @@ render(
                                 path={`${WebsiteLegacyPaths.Deployer}/:version?`}
                                 component={LazySolCompilerDocumentation}
                             />
-
+                            <Route path={WebsiteLegacyPaths.Jobs} component={Jobs as any} />
                             <Route path={`${WebsitePaths.Docs}`} component={LazyZeroExJSDocumentation} />
                             <Route component={NotFound as any} />
                         </Switch>

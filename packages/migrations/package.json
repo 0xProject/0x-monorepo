@@ -1,6 +1,6 @@
 {
     "name": "@0xproject/migrations",
-    "version": "1.0.0",
+    "version": "1.0.3",
     "engines": {
         "node": ">=6.12"
     },
@@ -27,41 +27,41 @@
         "generate_contract_wrappers:v2-beta-testnet": "abi-gen --abis  ${npm_package_config_abis_v2BetaTestnet} --template ../contract_templates/contract.handlebars --partials '../contract_templates/partials/**/*.handlebars' --output src/2.0.0-beta-testnet/contract_wrappers --backend ethers",
         "compile:v1": "sol-compiler --artifacts-dir artifacts/1.0.0 --contracts Exchange_v1,DummyERC20Token,ZRXToken,WETH9,TokenTransferProxy_v1,MultiSigWallet,MultiSigWalletWithTimeLock,MultiSigWalletWithTimeLockExceptRemoveAuthorizedAddress,TokenRegistry",
         "compile:v2": "sol-compiler --artifacts-dir artifacts/2.0.0 --contracts ERC20Token,DummyERC20Token,ERC721Token,DummyERC721Token,ERC20Proxy,ERC721Proxy,Exchange,Forwarder,MultiSigWalletWithTimeLockExceptRemoveAuthorizedAddress,ZRXToken,WETH9,IWallet,IValidator",
-        "compile:v2-beta-testnet": "sol-compiler --artifacts-dir artifacts/2.0.0-beta-testnet --contracts AssetProxyOwner,ERC20Proxy,ERC721Proxy,Exchange,Forwarder"
+        "compile:v2-beta-testnet": "sol-compiler --artifacts-dir artifacts/2.0.0-beta-testnet --contracts AssetProxyOwner,ERC20Proxy,ERC721Proxy,Exchange,Forwarder,IWallet,IValidator,ERC20Token,ERC721Token"
     },
     "config": {
         "abis": {
             "v1": "artifacts/1.0.0/@(DummyERC20Token|TokenTransferProxy_v1|Exchange_v1|TokenRegistry|MultiSigWallet|MultiSigWalletWithTimeLock|MultiSigWalletWithTimeLockExceptRemoveAuthorizedAddress|TokenRegistry|ZRXToken|WETH9).json",
             "v2": "artifacts/2.0.0/@(ERC20Token|DummyERC20Token|ERC721Token|DummyERC721Token|ERC20Proxy|ERC721Proxy|Exchange|Forwarder|AssetProxyOwner|ZRXToken|WETH9|IWallet|IValidator).json",
-            "v2BetaTestnet": "artifacts/2.0.0-beta-testnet/@(ERC20Proxy|ERC721Proxy|Exchange|Forwarder|AssetProxyOwner).json"
+            "v2BetaTestnet": "artifacts/2.0.0-beta-testnet/@(ERC20Token|ERC721Token|ERC20Proxy|ERC721Proxy|Exchange|Forwarder|AssetProxyOwner|IWallet|IValidator).json"
         }
     },
     "license": "Apache-2.0",
     "devDependencies": {
-        "@0xproject/abi-gen": "^1.0.0",
-        "@0xproject/monorepo-scripts": "^1.0.0",
-        "@0xproject/dev-utils": "^1.0.0",
-        "@0xproject/tslint-config": "^1.0.0",
-        "@0xproject/types": "^1.0.0-rc.1",
+        "@0xproject/abi-gen": "^1.0.4",
+        "@0xproject/dev-utils": "^1.0.3",
+        "@0xproject/monorepo-scripts": "^1.0.4",
+        "@0xproject/tslint-config": "^1.0.4",
+        "@0xproject/types": "^1.0.1-rc.3",
         "@types/yargs": "^10.0.0",
         "copyfiles": "^1.2.0",
-        "yargs": "^10.0.3",
         "make-promises-safe": "^1.1.0",
         "npm-run-all": "^4.1.2",
         "shx": "^0.2.2",
         "tslint": "5.11.0",
-        "typescript": "2.7.1"
+        "typescript": "2.7.1",
+        "yargs": "^10.0.3"
     },
     "dependencies": {
-        "@0xproject/base-contract": "^1.0.0",
-        "@0xproject/order-utils": "^1.0.0-rc.1",
-        "@0xproject/sol-compiler": "^1.0.0",
-        "@0xproject/subproviders": "^1.0.0",
-        "@0xproject/typescript-typings": "^1.0.0",
-        "@0xproject/utils": "^1.0.0",
-        "@0xproject/web3-wrapper": "^1.0.0",
+        "@0xproject/base-contract": "^1.0.4",
+        "@0xproject/order-utils": "^1.0.1-rc.2",
+        "@0xproject/sol-compiler": "^1.0.4",
+        "@0xproject/subproviders": "^1.0.4",
+        "@0xproject/typescript-typings": "^1.0.3",
+        "@0xproject/utils": "^1.0.4",
+        "@0xproject/web3-wrapper": "^1.1.2",
         "@ledgerhq/hw-app-eth": "^4.3.0",
-        "ethereum-types": "^1.0.0",
+        "ethereum-types": "^1.0.3",
         "ethers": "3.0.22",
         "lodash": "^4.17.4"
     },

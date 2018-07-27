@@ -5,6 +5,18 @@ Edit the package's CHANGELOG.json file only.
 
 CHANGELOG
 
+## v1.0.1-rc.3 - _July 26, 2018_
+
+    * Dependencies updated
+
+## v1.0.1-rc.2 - _July 26, 2018_
+
+    * Dependencies updated
+
+## v1.0.1-rc.1 - _July 26, 2018_
+
+    * Remove `ECSignatureBuffer`
+
 ## v1.0.0 - _July 23, 2018_
 
     * Dependencies updated

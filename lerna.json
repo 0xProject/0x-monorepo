@@ -1,11 +1,10 @@
 {
-    "lerna": "3.0.0-beta.14",
+    "lerna": "3.0.0-beta.23",
     "packages": ["packages/*"],
     "version": "independent",
-    "commands": {
+    "command": {
         "publish": {
-            "registry": "http://localhost:4873/",
-            "ignore": ["test/**/*", "*.md", "scripts", "lib", "tslint.json", "tsconfig.json"]
+            "ignoreChanges": ["test/**/*", "*.md", "scripts", "lib", "tslint.json", "tsconfig.json"]
         }
     },
     "npmClient": "yarn",

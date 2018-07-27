@@ -102,9 +102,9 @@ export class OrderWatcher {
 
         this._provider = provider;
         this._collisionResistantAbiDecoder = new CollisionResistanceAbiDecoder(
-            artifacts.ERC20Token.abi,
-            artifacts.ERC721Token.abi,
-            [artifacts.EtherToken.abi, artifacts.Exchange.abi],
+            artifacts.ERC20Token.compilerOutput.abi,
+            artifacts.ERC721Token.compilerOutput.abi,
+            [artifacts.EtherToken.compilerOutput.abi, artifacts.Exchange.compilerOutput.abi],
         );
         const contractWrappers = new ContractWrappers(provider, { networkId });
         this._eventWatcher = new EventWatcher(provider, config.eventPollingIntervalMs, STATE_LAYER, config.isVerbose);

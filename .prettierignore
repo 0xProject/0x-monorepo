@@ -12,6 +12,8 @@ lib
 /packages/migrations/src/2.0.0-beta-testnet/contract_wrappers
 /packages/0x.js/src/artifacts
 /packages/contracts/src/artifacts
+/packages/contract-wrappers/src/artifacts
+/packages/order-watcher/src/artifacts
 /packages/metacoin/artifacts
 /packages/contract-wrappers/test/artifacts
 /packages/order-watcher/test/artifacts
