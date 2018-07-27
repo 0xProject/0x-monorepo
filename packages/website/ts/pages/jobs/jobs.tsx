@@ -4,6 +4,7 @@ import * as React from 'react';
 import * as DocumentTitle from 'react-document-title';
 
 import { Footer } from 'ts/components/footer';
+import { MetaTags } from 'ts/components/meta_tags';
 import { TopBar } from 'ts/components/top_bar/top_bar';
 import { Benefits } from 'ts/pages/jobs/benefits';
 import { Join0x } from 'ts/pages/jobs/join_0x';
@@ -16,6 +17,8 @@ import { utils } from 'ts/utils/utils';
 
 const OPEN_POSITIONS_HASH = 'positions';
 const THROTTLE_TIMEOUT = 100;
+const DOCUMENT_TITLE = 'Careers at 0x';
+const DOCUMENT_DESCRIPTION = 'Join 0x in creating a tokenized world where all value can flow freely';
 
 export interface JobsProps {
     location: Location;
@@ -40,7 +43,8 @@ export class Jobs extends React.Component<JobsProps, JobsState> {
     public render(): React.ReactNode {
         return (
             <div>
-                <DocumentTitle title="Careers at 0x" />
+                <MetaTags title={DOCUMENT_TITLE} description={DOCUMENT_DESCRIPTION} />
+                <DocumentTitle title={DOCUMENT_TITLE} />
                 <TopBar
                     blockchainIsLoaded={false}
                     location={this.props.location}
