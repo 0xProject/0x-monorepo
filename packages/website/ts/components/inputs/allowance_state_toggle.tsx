@@ -1,3 +1,4 @@
+import { colors } from '@0xproject/react-shared';
 import { BigNumber, logUtils } from '@0xproject/utils';
 import * as _ from 'lodash';
 import * as React from 'react';
@@ -28,6 +29,7 @@ export interface AllowanceStateToggleProps {
 export interface AllowanceStateToggleState {
     allowanceState: AllowanceState;
     prevTokenState: TokenState;
+    loadingMessage?: string;
 }
 
 const DEFAULT_ALLOWANCE_AMOUNT_IN_BASE_UNITS = new BigNumber(2).pow(256).minus(1);
@@ -89,23 +91,23 @@ export class AllowanceStateToggle extends React.Component<AllowanceStateTogglePr
     }
     private _getTooltipContent(): React.ReactNode {
         const symbol = this.props.token.symbol;
-        const isLockingToken = this.props.tokenState.allowance.gt(0);
         switch (this.state.allowanceState) {
             case AllowanceState.Loading:
+                const isLockingToken = this.props.tokenState.allowance.gt(0);
                 return (
-                    <Text noWrap={true} fontColor="white">
-                        {isLockingToken ? 'Locking' : 'Unlocking'} <b>{symbol}</b>
+                    <Text noWrap={true} fontColor={colors.white}>
+                        {this.state.loadingMessage || 'Loading...'}
                     </Text>
                 );
             case AllowanceState.Locked:
                 return (
-                    <Text noWrap={true} fontColor="white">
+                    <Text noWrap={true} fontColor={colors.white}>
                         Click to enable <b>{symbol}</b> for trading
                     </Text>
                 );
             case AllowanceState.Unlocked:
                 return (
-                    <Text noWrap={true} fontColor="white">
+                    <Text noWrap={true} fontColor={colors.white}>
                         <b>{symbol}</b> is available for trading
                     </Text>
                 );
@@ -121,14 +123,15 @@ export class AllowanceStateToggle extends React.Component<AllowanceStateTogglePr
             return;
         }
 
-        this.setState({
-            allowanceState: AllowanceState.Loading,
-        });
-
         let newAllowanceAmountInBaseUnits = new BigNumber(0);
         if (!this._isAllowanceSet()) {
             newAllowanceAmountInBaseUnits = DEFAULT_ALLOWANCE_AMOUNT_IN_BASE_UNITS;
         }
+        const isUnlockingToken = newAllowanceAmountInBaseUnits.gt(0);
+        this.setState({
+            allowanceState: AllowanceState.Loading,
+            loadingMessage: `${isUnlockingToken ? 'Unlocking' : 'Locking'} ${this.props.token.symbol}`,
+        });
         const logData = {
             tokenSymbol: this.props.token.symbol,
             newAllowance: newAllowanceAmountInBaseUnits.toNumber(),

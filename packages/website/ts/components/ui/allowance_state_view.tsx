@@ -1,3 +1,4 @@
+import { colors } from '@0xproject/react-shared';
 import * as React from 'react';
 import { Container } from 'ts/components/ui/container';
 import { Spinner } from 'ts/components/ui/spinner';
@@ -29,7 +30,7 @@ export const AllowanceStateView: React.StatelessComponent<AllowanceStateViewProp
     }
 };
 
-const renderCheck = (color: string = '#37D400') => (
+const renderCheck = (color: string = colors.lightGreen) => (
     <svg width="17" height="17" viewBox="0 0 17 17" fill="none" xmlns="http://www.w3.org/2000/svg">
         <circle cx="8.5" cy="8.5" r="8.5" fill={color} />
         <path
