@@ -4,15 +4,14 @@ export const api: OpenApiSpec = {
     openapi: '3.0.0',
     info: {
         version: '1.0.0',
-        title: 'Swagger Petstore',
+        title: 'Standard Relayer REST API',
         license: {
-            name: 'MIT',
+            name: 'Apache 2.0',
+            url: 'https://www.apache.org/licenses/LICENSE-2.0.html',
         },
     },
     servers: [
-        {
-            url: 'http://petstore.swagger.io/v1',
-        },
+        // TODO: Use relayer registry information here?
     ],
     paths: {
         '/pets': {
