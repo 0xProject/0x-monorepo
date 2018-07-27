@@ -46,9 +46,16 @@ contract ERC20Token is
             balances[_to] + _value >= balances[_to],
             "UINT256_OVERFLOW"
         );
+
         balances[msg.sender] -= _value;
         balances[_to] += _value;
-        emit Transfer(msg.sender, _to, _value);
+
+        emit Transfer(
+            msg.sender,
+            _to,
+            _value
+        );
+
         return true;
     }
 
@@ -77,10 +84,17 @@ contract ERC20Token is
             balances[_to] + _value >= balances[_to],
             "UINT256_OVERFLOW"
         );
+
         balances[_to] += _value;
         balances[_from] -= _value;
         allowed[_from][msg.sender] -= _value;
-        emit Transfer(_from, _to, _value);
+    
+        emit Transfer(
+            _from,
+            _to,
+            _value
+        );
+    
         return true;
     }
 

@@ -18,13 +18,13 @@
 
 pragma solidity 0.4.24;
 
-import "../Mintable/Mintable.sol";
 import "../../utils/Ownable/Ownable.sol";
+import "../../tokens/ERC20Token/MintableERC20Token.sol";
 
 
 contract DummyERC20Token is 
-    Mintable,
-    Ownable
+    Ownable,
+    MintableERC20Token
 {
     string public name;
     string public symbol;
@@ -45,8 +45,11 @@ contract DummyERC20Token is
         balances[msg.sender] = _totalSupply;
     }
 
+    /// @dev Sets the balance of target address
+    /// @param _target Address or which balance will be updated
+    /// @param _value New balance of target address
     function setBalance(address _target, uint256 _value)
-        public
+        external
         onlyOwner
     {
         uint256 currBalance = balances[_target];
@@ -56,5 +59,18 @@ contract DummyERC20Token is
             _totalSupply = safeAdd(_totalSupply, safeSub(_value, currBalance));
         }
         balances[_target] = _value;
+    }
+
+    /// @dev Mints new tokens for sender
+    /// @param _value Amount of tokens to mint
+    function mint(uint256 _value)
+        external
+    {
+        require(
+            _value <= 100000000000000000000,
+            "VALUE_TOO_LARGE"
+        );
+
+        _mint(msg.sender, _value);
     }
 }

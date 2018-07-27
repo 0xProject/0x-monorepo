@@ -21,7 +21,7 @@ pragma solidity 0.4.24;
 import "../ERC20Token/ERC20Token.sol";
 
 
-contract UnlimitedAllowanceToken is
+contract UnlimitedAllowanceERC20Token is
     ERC20Token
 {
 
@@ -53,16 +53,19 @@ contract UnlimitedAllowanceToken is
             balances[_to] + _value >= balances[_to],
             "UINT256_OVERFLOW"
         );
+
         balances[_to] += _value;
         balances[_from] -= _value;
         if (allowance < MAX_UINT) {
             allowed[_from][msg.sender] -= _value;
         }
+
         emit Transfer(
             _from,
             _to,
             _value
         );
+
         return true;
     }
 }
