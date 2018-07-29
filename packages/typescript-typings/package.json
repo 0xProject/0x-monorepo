@@ -7,7 +7,8 @@
     "description": "0x project typescript type definitions",
     "scripts": {
         "watch_without_deps": "tsc -w",
-        "build": "tsc"
+        "build": "tsc",
+        "clean": "shx rm -rf lib"
     },
     "repository": {
         "type": "git",
