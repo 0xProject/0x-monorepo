@@ -8,9 +8,6 @@ import { exec as execAsync } from 'promisify-child-process';
 import * as prompt from 'prompt';
 import semver = require('semver');
 import semverSort = require('semver-sort');
-import * as publishRelease from 'publish-release';
-
-const publishReleaseAsync = promisify(publishRelease);
 
 import { constants } from './constants';
 import { Package, PackageToNextVersion, VersionChangelog } from './types';
@@ -18,22 +15,11 @@ import { changelogUtils } from './utils/changelog_utils';
 import { configs } from './utils/configs';
 import { utils } from './utils/utils';
 import { generateAndUploadDocsAsync } from './doc_generate_and_upload';
+import { publishReleaseNotesAsync } from './publish_release_notes';
 
 const DOC_GEN_COMMAND = 'docs:json';
 const NPM_NAMESPACE = '@0xproject/';
 const TODAYS_TIMESTAMP = moment().unix();
-const packageNameToWebsitePath: { [name: string]: string } = {
-    '0x.js': '0xjs',
-    'web3-wrapper': 'web3_wrapper',
-    contracts: 'contracts',
-    connect: 'connect',
-    'json-schemas': 'json-schemas',
-    'sol-compiler': 'sol-compiler',
-    'sol-cov': 'sol-cov',
-    subproviders: 'subproviders',
-    'order-utils': 'order-utils',
-    'ethereum-types': 'ethereum-types',
-};
 
 (async () => {
     // Fetch public, updated Lerna packages
@@ -111,7 +97,7 @@ async function confirmDocPagesRenderAsync(packages: Package[]): Promise<void> {
     _.each(packagesWithDocs, pkg => {
         const name = pkg.packageJson.name;
         const nameWithoutPrefix = _.startsWith(name, NPM_NAMESPACE) ? name.split('@0xproject/')[1] : name;
-        const docSegmentIfExists = packageNameToWebsitePath[nameWithoutPrefix];
+        const docSegmentIfExists = nameWithoutPrefix;
         if (_.isUndefined(docSegmentIfExists)) {
             throw new Error(
                 `Found package '${name}' with doc commands but no corresponding docSegment in monorepo_scripts
@@ -163,7 +149,7 @@ async function updateChangeLogsAsync(updatedPublicPackages: Package[]): Promise<
                 version: nextPatchVersionIfValid,
                 changes: [
                     {
-                        note: 'Dependencies updated',
+                        note: constants.dependenciesUpdatedMessage,
                     },
                 ],
             };
@@ -192,86 +178,6 @@ async function updateChangeLogsAsync(updatedPublicPackages: Package[]): Promise<
     }
 
     return packageToNextVersion;
-}
-
-async function publishReleaseNotesAsync(updatedPublishPackages: Package[]): Promise<void> {
-    // Git push a tag representing this publish (publish-{commit-hash}) (truncate hash)
-    const result = await execAsync('git log -n 1 --pretty=format:"%H"', { cwd: constants.monorepoRootPath });
-    const latestGitCommit = result.stdout;
-    const shortenedGitCommit = latestGitCommit.slice(0, 7);
-    const tagName = `monorepo@${shortenedGitCommit}`;
-    // TODO: We might need to handle the case where the tag already exists locally
-    await execAsync('git tag ${tagName}');
-    await execAsync('git push origin ${tagName}');
-    const releaseName = `0x monorepo - ${shortenedGitCommit}`;
-
-    let assets: string[] = [];
-    let aggregateNotes = '';
-    _.each(updatedPublishPackages, pkg => {
-        const notes = getReleaseNotesForPackage(pkg.packageJson.name, pkg.packageJson.version);
-        aggregateNotes += `### ${pkg.packageJson.name}@${pkg.packageJson.version}\n${notes}\n\n`;
-
-        const packageAssets = _.get(pkg.packageJson, 'config.postpublish.assets');
-        if (!_.isUndefined(packageAssets)) {
-            assets = [...assets, ...packageAssets];
-        }
-    });
-    adjustAssetPaths(assets);
-
-    utils.log('PUBLISH: Releasing ', releaseName, '...');
-    // TODO: Currently publish-release doesn't let you specify the labels for each asset uploaded
-    // Ideally we would like to name the assets after the package they are from
-    // Source: https://github.com/remixz/publish-release/issues/39
-    await publishReleaseAsync({
-        token: constants.githubPersonalAccessToken,
-        owner: '0xProject',
-        tag: tagName,
-        repo: '0x-monorepo',
-        name: releaseName,
-        notes: aggregateNotes,
-        draft: false,
-        prerelease: false,
-        reuseRelease: true,
-        reuseDraftOnly: false,
-        assets,
-    });
-}
-
-// Asset paths should described from the monorepo root. This method prefixes
-// the supplied path with the absolute path to the monorepo root.
-function adjustAssetPaths(assets: string[]): string[] {
-    const finalAssets: string[] = [];
-    _.each(assets, (asset: string) => {
-        finalAssets.push(`${constants.monorepoRootPath}/${asset}`);
-    });
-    return finalAssets;
-}
-
-function getReleaseNotesForPackage(packageName: string, version: string): string {
-    const packageNameWithoutNamespace = packageName.replace('@0xproject/', '');
-    const changelogJSONPath = path.join(
-        constants.monorepoRootPath,
-        'packages',
-        packageNameWithoutNamespace,
-        'CHANGELOG.json',
-    );
-    const changelogJSON = fs.readFileSync(changelogJSONPath, 'utf-8');
-    const changelogs = JSON.parse(changelogJSON);
-    const latestLog = changelogs[0];
-    // We sanity check that the version for the changelog notes we are about to publish to Github
-    // correspond to the new version of the package.
-    if (version !== latestLog.version) {
-        throw new Error('Expected CHANGELOG.json latest entry version to coincide with published version.');
-    }
-    let notes = '';
-    _.each(latestLog.changes, change => {
-        notes += `* ${change.note}`;
-        if (change.pr) {
-            notes += ` (#${change.pr})`;
-        }
-        notes += `\n`;
-    });
-    return notes;
 }
 
 async function lernaPublishAsync(packageToNextVersion: { [name: string]: string }): Promise<void> {
