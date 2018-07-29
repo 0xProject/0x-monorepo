@@ -1,4 +1,5 @@
 {
+    "private": true,
     "name": "@0xproject/monorepo-scripts",
     "version": "1.0.4",
     "engines": {
