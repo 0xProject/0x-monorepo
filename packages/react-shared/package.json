@@ -9,10 +9,9 @@
     "types": "lib/index.d.ts",
     "scripts": {
         "lint": "tslint --project .",
-        "build": "tsc && copyfiles -u 2 './lib/monorepo_scripts/**/*' ./scripts",
+        "build": "tsc",
         "watch_without_deps": "tsc -w",
-        "clean": "shx rm -rf lib scripts",
-        "manual:postpublish": "yarn build; node ./scripts/postpublish.js"
+        "clean": "shx rm -rf lib"
     },
     "author": "Fabio Berger",
     "license": "Apache-2.0",
@@ -26,7 +25,6 @@
     },
     "devDependencies": {
         "@0xproject/dev-utils": "^1.0.3",
-        "@0xproject/monorepo-scripts": "^1.0.4",
         "@0xproject/tslint-config": "^1.0.4",
         "copyfiles": "^1.2.0",
         "make-promises-safe": "^1.1.0",

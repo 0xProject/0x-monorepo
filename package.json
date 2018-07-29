@@ -30,7 +30,7 @@
         "rebuild": "run-s clean build",
         "rebuild:no_website": "run-s clean build:no_website",
         "test": "wsrun test $PKG --fast-exit --serial --exclude-missing",
-        "stage_docs": "wsrun docs:stage $PKG --fast-exit --parallel --exclude-missing",
+        "generate_docs": "node ./packages/monorepo-scripts/lib/doc_generate_and_upload.js",
         "lint": "wsrun lint $PKG --fast-exit --parallel --exclude-missing",
         "comment:postinstall": "HACK: For some reason `yarn` is not setting up symlinks properly for order-utils. We temporarily set them manually. Remove this after V2 refactor is complete."
     },

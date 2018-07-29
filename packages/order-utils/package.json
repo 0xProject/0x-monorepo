@@ -9,10 +9,9 @@
     "types": "lib/src/index.d.ts",
     "scripts": {
         "watch_without_deps": "yarn pre_build && tsc -w",
-        "build": "run-s pre_build transpile copy_monorepo_scripts",
+        "build": "run-s pre_build transpile",
         "pre_build": "run-s update_artifacts_v2_beta update_artifacts_v2 generate_contract_wrappers",
         "transpile": "tsc",
-        "copy_monorepo_scripts": "copyfiles -u 3 './lib/src/monorepo_scripts/**/*' ./scripts",
         "generate_contract_wrappers": "abi-gen --abis 'lib/src/artifacts/@(Exchange|IWallet|IValidator|DummyERC20Token|ERC20Proxy|ERC20Token).json' --template ../contract_templates/contract.handlebars --partials '../contract_templates/partials/**/*.handlebars' --output src/generated_contract_wrappers --backend ethers",
         "update_artifacts_v2_beta": "for i in ${npm_package_config_contracts_v2_beta}; do copyfiles -u 4 ../migrations/artifacts/2.0.0-beta-testnet/$i.json lib/src/artifacts; done;",
         "update_artifacts_v2": "for i in ${npm_package_config_contracts_v2}; do copyfiles -u 4 ../migrations/artifacts/2.0.0/$i.json lib/src/artifacts; done;",
@@ -22,25 +21,16 @@
         "run_mocha": "mocha --require source-map-support/register --require make-promises-safe lib/test/**/*_test.js --bail --exit",
         "test:coverage": "nyc npm run test --all && yarn coverage:report:lcov",
         "coverage:report:lcov": "nyc report --reporter=text-lcov > coverage/lcov.info",
-        "clean": "shx rm -rf lib scripts lib/src/artifacts src/generated_contract_wrappers",
+        "clean": "shx rm -rf lib lib/src/artifacts src/generated_contract_wrappers",
         "lint": "tslint --project . --exclude **/src/generated_contract_wrappers/**/*",
-        "manual:postpublish": "yarn build; node ./scripts/postpublish.js",
-        "docs:stage": "node scripts/stage_docs.js",
-        "docs:json": "typedoc --excludePrivate --excludeExternals --target ES5 --json $JSON_FILE_PATH $PROJECT_FILES",
-        "upload_docs_json": "aws s3 cp generated_docs/index.json $S3_URL --profile 0xproject --grants read=uri=http://acs.amazonaws.com/groups/global/AllUsers --content-type application/json"
+        "docs:json": "typedoc --excludePrivate --excludeExternals --target ES5 --json $JSON_FILE_PATH $PROJECT_FILES"
     },
     "config": {
         "contracts_v2_beta": "IWallet IValidator Exchange ERC20Proxy ERC20Token",
         "contracts_v2": "DummyERC20Token",
         "postpublish": {
-            "docPublishConfigs": {
-                "extraFileIncludes": [
-                    "../types/src/index.ts",
-                    "../ethereum-types/src/index.ts"
-                ],
-                "s3BucketPath": "s3://doc-jsons/order-utils/",
-                "s3StagingBucketPath": "s3://staging-doc-jsons/order-utils/"
-            }
+            "assets": [],
+            "shouldPublishDocs": true
         }
     },
     "license": "Apache-2.0",
@@ -54,7 +44,6 @@
     "homepage": "https://github.com/0xProject/0x-monorepo/packages/order-utils/README.md",
     "devDependencies": {
         "@0xproject/dev-utils": "^1.0.3",
-        "@0xproject/monorepo-scripts": "^1.0.4",
         "@0xproject/tslint-config": "^1.0.4",
         "@types/bn.js": "^4.11.0",
         "@types/lodash": "4.14.104",

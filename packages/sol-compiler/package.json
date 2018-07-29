@@ -9,7 +9,7 @@
     "types": "lib/src/index.d.ts",
     "scripts": {
         "watch_without_deps": "yarn pre_build && tsc -w",
-        "build": "yarn pre_build && tsc && copyfiles -u 3 './lib/src/monorepo_scripts/**/*' ./scripts",
+        "build": "yarn pre_build && tsc",
         "pre_build": "run-s update_contract_fixtures",
         "update_contract_fixtures": "copyfiles 'test/fixtures/contracts/**/*' ./lib",
         "test": "yarn run_mocha",
@@ -17,26 +17,16 @@
         "run_mocha": "mocha --require source-map-support/register --require make-promises-safe lib/test/*_test.js --bail --exit",
         "test:coverage": "nyc npm run test --all && yarn coverage:report:lcov",
         "coverage:report:lcov": "nyc report --reporter=text-lcov > coverage/lcov.info",
-        "clean": "shx rm -rf lib scripts",
+        "clean": "shx rm -rf lib",
         "migrate": "npm run build; node lib/src/cli.js migrate",
         "lint": "tslint --project .",
         "test:circleci": "yarn test:coverage",
-        "docs:stage": "node scripts/stage_docs.js",
-        "manual:postpublish": "yarn build; node ./scripts/postpublish.js",
-        "docs:json": "typedoc --excludePrivate --excludeExternals --target ES5 --json $JSON_FILE_PATH $PROJECT_FILES",
-        "upload_docs_json": "aws s3 cp generated_docs/index.json $S3_URL --profile 0xproject --grants read=uri=http://acs.amazonaws.com/groups/global/AllUsers --content-type application/json"
+        "docs:json": "typedoc --excludePrivate --excludeExternals --target ES5 --json $JSON_FILE_PATH $PROJECT_FILES"
     },
     "config": {
         "postpublish": {
             "assets": [],
-            "docPublishConfigs": {
-                "extraFileIncludes": [
-                    "../types/src/index.ts",
-                    "../ethereum-types/src/index.ts"
-                ],
-                "s3BucketPath": "s3://doc-jsons/sol-compiler/",
-                "s3StagingBucketPath": "s3://staging-doc-jsons/sol-compiler/"
-            }
+            "shouldPublishDocs": true
         }
     },
     "bin": {
@@ -54,7 +44,6 @@
     "homepage": "https://github.com/0xProject/0x-monorepo/packages/sol-compiler/README.md",
     "devDependencies": {
         "@0xproject/dev-utils": "^1.0.3",
-        "@0xproject/monorepo-scripts": "^1.0.4",
         "@0xproject/tslint-config": "^1.0.4",
         "@types/mkdirp": "^0.5.2",
         "@types/require-from-string": "^1.2.0",

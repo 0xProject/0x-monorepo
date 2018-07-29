@@ -9,7 +9,7 @@
     "types": "lib/src/index.d.ts",
     "scripts": {
         "watch_without_deps": "yarn pre_build && tsc -w",
-        "build": "yarn pre_build && tsc && copyfiles -u 3 './lib/src/monorepo_scripts/**/*' ./scripts",
+        "build": "yarn pre_build && tsc",
         "pre_build": "run-s copy_test_fixtures",
         "lint": "tslint --project .",
         "test": "run-s compile_test run_mocha",
@@ -18,26 +18,15 @@
         "coverage:report:lcov": "nyc report --reporter=text-lcov > coverage/lcov.info",
         "test:circleci": "yarn test:coverage",
         "run_mocha": "mocha --require source-map-support/register --require make-promises-safe lib/test/**/*_test.js --exit",
-        "clean": "shx rm -rf lib scripts test/fixtures/artifacts src/artifacts",
+        "clean": "shx rm -rf lib test/fixtures/artifacts src/artifacts",
         "copy_test_fixtures": "copyfiles 'test/fixtures/**/*' ./lib",
         "compile_test": "sol-compiler compile",
-        "manual:postpublish": "yarn build; node ./scripts/postpublish.js",
-        "docs:stage": "node scripts/stage_docs.js",
-        "docs:json": "typedoc --excludePrivate --excludeExternals --target ES5 --json $JSON_FILE_PATH $PROJECT_FILES",
-        "upload_docs_json": "aws s3 cp generated_docs/index.json $S3_URL --profile 0xproject --grants read=uri=http://acs.amazonaws.com/groups/global/AllUsers --content-type application/json"
+        "docs:json": "typedoc --excludePrivate --excludeExternals --target ES5 --json $JSON_FILE_PATH $PROJECT_FILES"
     },
     "config": {
         "postpublish": {
             "assets": [],
-            "docPublishConfigs": {
-                "extraFileIncludes": [
-                    "../subproviders/src/types.ts",
-                    "../types/src/index.ts",
-                    "../ethereum-types/src/index.ts"
-                ],
-                "s3BucketPath": "s3://doc-jsons/sol-cov/",
-                "s3StagingBucketPath": "s3://staging-doc-jsons/sol-cov/"
-            }
+            "shouldPublishDocs": true
         }
     },
     "repository": {
@@ -69,7 +58,6 @@
         "solidity-parser-antlr": "^0.2.12"
     },
     "devDependencies": {
-        "@0xproject/monorepo-scripts": "^1.0.4",
         "@0xproject/tslint-config": "^1.0.4",
         "@types/istanbul": "^0.4.30",
         "@types/loglevel": "^1.5.3",
