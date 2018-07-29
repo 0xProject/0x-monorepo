@@ -26,6 +26,8 @@ export {
     LedgerEthereumClient,
     NonceSubproviderErrors,
     LedgerSubproviderConfigs,
+    PartialTxParams,
+    DerivedHDKeyInfo,
 } from './types';
 
 /**
@@ -37,3 +39,5 @@ export async function ledgerEthereumBrowserClientFactoryAsync(): Promise<LedgerE
     const ledgerEthClient = new Eth(ledgerConnection);
     return ledgerEthClient;
 }
+
+export { JSONRPCRequestPayload, Provider } from 'ethereum-types';
