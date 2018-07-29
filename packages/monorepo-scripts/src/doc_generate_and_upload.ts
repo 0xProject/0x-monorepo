@@ -6,11 +6,8 @@ import * as ts from 'typescript';
 import * as yargs from 'yargs';
 
 import { constants } from './constants';
+import { ExportPathToExportedItems } from './types';
 import { utils } from './utils/utils';
-
-export interface ExportPathToExportedItems {
-    [pkgName: string]: string[];
-}
 
 const args = yargs
     .option('package', {
@@ -26,8 +23,12 @@ const args = yargs
     .example("$0 --package '0x.js' --isStaging true", 'Full usage example').argv;
 
 (async () => {
+    console.log('I RAN! - generateAndUploadDocsAsync');
     const packageName = args.package;
     const isStaging = args.isStaging;
+    if (_.isEmpty(packageName)) {
+        return; // We are not runninng in a command-line env.
+    }
 
     await generateAndUploadDocsAsync(packageName, isStaging);
 })();

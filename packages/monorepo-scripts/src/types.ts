@@ -49,3 +49,7 @@ export interface Package {
     location: string;
     packageJson: PackageJSON;
 }
+
+export interface ExportPathToExportedItems {
+    [pkgName: string]: string[];
+}
