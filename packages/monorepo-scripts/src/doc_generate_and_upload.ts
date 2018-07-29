@@ -19,7 +19,7 @@ const args = yargs
         demandOption: true,
     })
     .option('isStaging', {
-        describe: 'Whether we with to publish docs to staging or production',
+        describe: 'Whether we wish to publish docs to staging or production',
         type: 'boolean',
         demandOption: true,
     })
@@ -65,14 +65,15 @@ export async function generateAndUploadDocsAsync(packageName: string, isStaging:
     // and see which specific files we must pass to TypeDoc.
     let typeDocExtraFileIncludes: string[] = [];
     _.each(exportPathToExportedItems, (exportedItems, exportPath) => {
+        const pathIfExists = pkgNameToPath[exportPath];
+        if (_.isUndefined(pathIfExists)) {
+            return; // It's an external package
+        }
+
         const isInternalToPkg = _.startsWith(exportPath, '.');
         if (isInternalToPkg) {
             const pathToInternalPkg = path.join(pathToPackage, 'src', `${exportPath}.ts`);
             typeDocExtraFileIncludes.push(pathToInternalPkg);
-        }
-        const pathIfExists = pkgNameToPath[exportPath];
-        if (_.isUndefined(pathIfExists)) {
-            return; // It's an external package
         }
         const typeDocSourceIncludes = new Set();
         const pathToIndex = `${pathIfExists}/src/index.ts`;
@@ -80,8 +81,11 @@ export async function generateAndUploadDocsAsync(packageName: string, isStaging:
         _.each(exportedItems, exportName => {
             _.each(innerExportPathToExportedItems, (innerExportItems, innerExportPath) => {
                 if (!_.startsWith(innerExportPath, './')) {
-                    // noop. Not an internal export... but rather an external one. Should we follow it?
-                    return;
+                    throw new Error(
+                        `GENERATE_UPLOAD_DOCS: WARNING - ${packageName} is exporting on of ${exportedItems} which is 
+                        itself exported from an external package. To fix this, export the external dependency directly, 
+                        not indirectly through ${exportPath}.`,
+                    );
                 }
                 if (_.includes(innerExportItems, exportName)) {
                     const absoluteSrcPath = path.join(pathIfExists, 'src', `${innerExportPath}.ts`);
@@ -90,21 +94,20 @@ export async function generateAndUploadDocsAsync(packageName: string, isStaging:
             });
         });
         // @0xproject/types & ethereum-types are examples of packages where their index.ts exports types
-        // directly, meaning no internal paths will exist to follow. This, we add the index file.
-        // TODO: Maybe we should add the index for all packages?
-        if (typeDocSourceIncludes.size === 0) {
-            typeDocSourceIncludes.add(pathToIndex);
-        }
+        // directly, meaning no internal paths will exist to follow. Other packages also have direct exports
+        // in their index.ts, so we always add it to the source files passed to TypeDoc
+        typeDocSourceIncludes.add(pathToIndex);
+
         typeDocExtraFileIncludes = [...typeDocExtraFileIncludes, ...Array.from(typeDocSourceIncludes)];
     });
 
     // Generate Typedoc JSON file
     const jsonFilePath = path.join(pathToPackage, 'generated_docs', 'index.json');
     const projectFiles = typeDocExtraFileIncludes.join(' ');
-    const cwd = path.join(constants.monorepoRootPath, 'packages/0x.js/');
+    const cwd = path.join(constants.monorepoRootPath, 'packages', packageName);
     // HACK: For some reason calling `typedoc` command directly from here, even with `cwd` set to the
     // packages root dir, does not work. It only works when called via a `package.json` script located
-    // in the packages root.
+    // in the package's root.
     await execAsync(`JSON_FILE_PATH=${jsonFilePath} PROJECT_FILES="${projectFiles}" yarn docs:json`, {
         cwd,
     });
@@ -115,7 +118,6 @@ export async function generateAndUploadDocsAsync(packageName: string, isStaging:
     const finalTypeDocOutput = _.clone(typedocOutput);
     _.each(typedocOutput.children, (file, i) => {
         const exportItems = findExportItemsGivenTypedocName(exportPathToExportedItems, packageName, file.name);
-        // Map file "name" to exportPath... HOW?!
         _.each(file.children, (child, j) => {
             if (!_.includes(exportItems, child.name)) {
                 delete finalTypeDocOutput.children[i].children[j];
