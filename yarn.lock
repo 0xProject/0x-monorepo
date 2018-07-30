@@ -5191,7 +5191,7 @@ ethereumjs-vm@^2.0.2, ethereumjs-vm@^2.1.0, ethereumjs-vm@^2.3.4:
     rustbn.js "~0.1.1"
     safe-buffer "^5.1.1"
 
-ethereumjs-wallet@~0.6.0:
+ethereumjs-wallet@0.6.0:
   version "0.6.0"
   resolved "https://registry.yarnpkg.com/ethereumjs-wallet/-/ethereumjs-wallet-0.6.0.tgz#82763b1697ee7a796be7155da9dfb49b2f98cfdb"
   dependencies:
@@ -5901,9 +5901,9 @@ ganache-cli@6.1.3:
     source-map-support "^0.5.3"
     webpack-cli "^2.0.9"
 
-ganache-core@0xProject/ganache-core:
+ganache-core@0xProject/ganache-core#monorepo-dep:
   version "2.1.2"
-  resolved "https://codeload.github.com/0xProject/ganache-core/tar.gz/88ce33a4c33a5737ffb84af9bb8affaa4e8bf3a5"
+  resolved "https://codeload.github.com/0xProject/ganache-core/tar.gz/9f86ca3d114ee4395e2d16362f95a8c57ec69bb4"
   dependencies:
     abstract-leveldown "^3.0.0"
     async "^2.5.0"
@@ -5917,7 +5917,7 @@ ganache-core@0xProject/ganache-core:
     ethereumjs-tx "0xProject/ethereumjs-tx#fake-tx-include-signature-by-default"
     ethereumjs-util "^5.2.0"
     ethereumjs-vm "2.3.5"
-    ethereumjs-wallet "~0.6.0"
+    ethereumjs-wallet "0.6.0"
     fake-merkle-patricia-tree "~1.0.1"
     heap "~0.2.6"
     js-scrypt "^0.2.0"
