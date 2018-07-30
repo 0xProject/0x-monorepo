@@ -285,7 +285,6 @@ function _getExportPathToExportedItems(sf: ts.SourceFile): ExportPathToExportedI
     function processNode(node: ts.Node): void {
         switch (node.kind) {
             case ts.SyntaxKind.ExportDeclaration:
-                // console.log(node);
                 const exportClause = (node as any).exportClause;
                 const pkgName = exportClause.parent.moduleSpecifier.text;
                 _.each(exportClause.elements, element => {
