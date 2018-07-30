@@ -103,11 +103,12 @@ contract LibOrder is
         bytes32 takerAssetDataHash = keccak256(order.takerAssetData);
 
         // Assembly for more efficiently computing:
-        // keccak256(abi.encode(
-        //     order.makerAddress,
-        //     order.takerAddress,
-        //     order.feeRecipientAddress,
-        //     order.senderAddress,
+        // keccak256(abi.encodePacked(
+        //     EIP712_ORDER_SCHEMA_HASH,
+        //     bytes32(order.makerAddress),
+        //     bytes32(order.takerAddress),
+        //     bytes32(order.feeRecipientAddress),
+        //     bytes32(order.senderAddress),
         //     order.makerAssetAmount,
         //     order.takerAssetAmount,
         //     order.makerFee,
@@ -119,24 +120,26 @@ contract LibOrder is
         // ));
 
         assembly {
+            // Calculate memory addresses that will be swapped out before hashing
+            let pos1 := sub(order, 32)
+            let pos2 := add(order, 320)
+            let pos3 := add(order, 352)
+
             // Backup
-            // solhint-disable-next-line space-after-comma
-            let temp1 := mload(sub(order,  32))
-            let temp2 := mload(add(order, 320))
-            let temp3 := mload(add(order, 352))
+            let temp1 := mload(pos1)
+            let temp2 := mload(pos2)
+            let temp3 := mload(pos3)
             
             // Hash in place
-            // solhint-disable-next-line space-after-comma
-            mstore(sub(order,  32), schemaHash)
-            mstore(add(order, 320), makerAssetDataHash)
-            mstore(add(order, 352), takerAssetDataHash)
-            result := keccak256(sub(order, 32), 416)
+            mstore(pos1, schemaHash)
+            mstore(pos2, makerAssetDataHash)
+            mstore(pos3, takerAssetDataHash)
+            result := keccak256(pos1, 416)
             
             // Restore
-            // solhint-disable-next-line space-after-comma
-            mstore(sub(order,  32), temp1)
-            mstore(add(order, 320), temp2)
-            mstore(add(order, 352), temp3)
+            mstore(pos1, temp1)
+            mstore(pos2, temp2)
+            mstore(pos3, temp3)
         }
         return result;
     }

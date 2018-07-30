@@ -123,10 +123,10 @@ contract MixinTransactions is
         bytes32 dataHash = keccak256(data);
 
         // Assembly for more efficiently computing:
-        // keccak256(abi.encode(
+        // keccak256(abi.encodePacked(
         //     EIP712_ZEROEX_TRANSACTION_SCHEMA_HASH,
         //     salt,
-        //     signerAddress,
+        //     bytes32(signerAddress),
         //     keccak256(data)
         // ));
 
