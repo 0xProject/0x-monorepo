@@ -190,10 +190,21 @@ export async function generateAndUploadDocsAsync(packageName: string, isStaging:
         cwd,
     });
 
-    // For each entry, see if it was exported in index.ts. If not, remove it.
+    // Unfortunately TypeDoc children names will only be prefixed with the name of the package _if_ we passed
+    // TypeDoc files outside of the packages root path (i.e this package exports another package found in our
+    // monorepo). In order to enforce that the names are always prefixed with the package's name, we check and add
+    // it here when necessary.
     const typedocOutputString = readFileSync(jsonFilePath).toString();
     const typedocOutput = JSON.parse(typedocOutputString);
     const finalTypeDocOutput = _.clone(typedocOutput);
+    _.each(typedocOutput.children, (child, i) => {
+        if (!_.includes(child.name, '/src/')) {
+            const nameWithoutQuotes = child.name.replace(/"/g, '');
+            finalTypeDocOutput.children[i].name = `"${packageName}/src/${nameWithoutQuotes}"`;
+        }
+    });
+
+    // For each entry, see if it was exported in index.ts. If not, remove it.
     _.each(typedocOutput.children, (file, i) => {
         const exportItems = findExportItemsGivenTypedocName(exportPathToExportedItems, packageName, file.name);
         _.each(file.children, (child, j) => {
