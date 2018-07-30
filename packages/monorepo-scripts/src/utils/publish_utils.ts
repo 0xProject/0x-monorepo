@@ -137,29 +137,33 @@ export async function generateAndUploadDocsAsync(packageName: string, isStaging:
     // and see which specific files we must pass to TypeDoc.
     let typeDocExtraFileIncludes: string[] = [];
     _.each(exportPathToExportedItems, (exportedItems, exportPath) => {
-        const pathIfExists = pkgNameToPath[exportPath];
-        if (_.isUndefined(pathIfExists)) {
-            return; // It's an external package
-        }
-
         const isInternalToPkg = _.startsWith(exportPath, '.');
         if (isInternalToPkg) {
             const pathToInternalPkg = path.join(pathToPackage, 'src', `${exportPath}.ts`);
             typeDocExtraFileIncludes.push(pathToInternalPkg);
             return; // Right?
         }
+
+        const pathIfExists = pkgNameToPath[exportPath];
+        if (_.isUndefined(pathIfExists)) {
+            return; // It's an external package
+        }
+
         const typeDocSourceIncludes = new Set();
         const pathToIndex = `${pathIfExists}/src/index.ts`;
         const innerExportPathToExportedItems = getExportPathToExportedItems(pathToIndex);
         _.each(exportedItems, exportName => {
             _.each(innerExportPathToExportedItems, (innerExportItems, innerExportPath) => {
-                if (!_.startsWith(innerExportPath, './') && _.includes(innerExportItems, exportName)) {
+                if (!_.includes(innerExportItems, exportName)) {
+                    return;
+                }
+                if (!_.startsWith(innerExportPath, './')) {
                     throw new Error(
                         `GENERATE_UPLOAD_DOCS: WARNING - ${packageName} is exporting one of ${innerExportItems} which is 
                         itself exported from an external package. To fix this, export the external dependency directly, 
                         not indirectly through ${innerExportPath}.`,
                     );
-                } else if (_.includes(innerExportItems, exportName)) {
+                } else {
                     const absoluteSrcPath = path.join(pathIfExists, 'src', `${innerExportPath}.ts`);
                     typeDocSourceIncludes.add(absoluteSrcPath);
                 }
