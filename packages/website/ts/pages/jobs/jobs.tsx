@@ -6,6 +6,7 @@ import * as DocumentTitle from 'react-document-title';
 import { Footer } from 'ts/components/footer';
 import { MetaTags } from 'ts/components/meta_tags';
 import { TopBar } from 'ts/components/top_bar/top_bar';
+import { Container } from 'ts/components/ui/container';
 import { Benefits } from 'ts/pages/jobs/benefits';
 import { Join0x } from 'ts/pages/jobs/join_0x';
 import { Mission } from 'ts/pages/jobs/mission';
@@ -42,7 +43,7 @@ export class Jobs extends React.Component<JobsProps, JobsState> {
     }
     public render(): React.ReactNode {
         return (
-            <div>
+            <Container overflowX="hidden">
                 <MetaTags title={DOCUMENT_TITLE} description={DOCUMENT_DESCRIPTION} />
                 <DocumentTitle title={DOCUMENT_TITLE} />
                 <TopBar
@@ -56,7 +57,7 @@ export class Jobs extends React.Component<JobsProps, JobsState> {
                 <Benefits screenWidth={this.props.screenWidth} />
                 <OpenPositions hash={OPEN_POSITIONS_HASH} screenWidth={this.props.screenWidth} />
                 <Footer translate={this.props.translate} dispatcher={this.props.dispatcher} />
-            </div>
+            </Container>
         );
     }
     private _onJoin0xCallToActionClick(): void {

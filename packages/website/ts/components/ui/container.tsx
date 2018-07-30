@@ -35,6 +35,7 @@ export interface ContainerProps {
     cursor?: string;
     id?: string;
     onClick?: (event: React.MouseEvent<HTMLElement>) => void;
+    overflowX?: 'scroll' | 'hidden' | 'auto' | 'visible';
 }
 
 export const Container: React.StatelessComponent<ContainerProps> = props => {
