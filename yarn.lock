@@ -565,37 +565,6 @@
     lodash "4.17.10"
     uuid "3.2.1"
 
-"@0xproject/contract-wrappers@^1.0.1-rc.2":
-  version "1.0.1-rc.1"
-  dependencies:
-    "@0xproject/assert" "^1.0.3"
-    "@0xproject/base-contract" "^1.0.3"
-    "@0xproject/fill-scenarios" "^1.0.1-rc.1"
-    "@0xproject/json-schemas" "^1.0.1-rc.2"
-    "@0xproject/order-utils" "^1.0.1-rc.1"
-    "@0xproject/types" "^1.0.1-rc.2"
-    "@0xproject/typescript-typings" "^1.0.3"
-    "@0xproject/utils" "^1.0.3"
-    "@0xproject/web3-wrapper" "^1.1.1"
-    ethereum-types "^1.0.3"
-    ethereumjs-blockstream "5.0.0"
-    ethereumjs-util "^5.1.1"
-    ethers "3.0.22"
-    js-sha3 "^0.7.0"
-    lodash "^4.17.4"
-    uuid "^3.1.0"
-
-"@0xproject/dev-utils@^1.0.3":
-  version "1.0.2"
-  dependencies:
-    "@0xproject/subproviders" "^1.0.3"
-    "@0xproject/types" "^1.0.1-rc.2"
-    "@0xproject/typescript-typings" "^1.0.3"
-    "@0xproject/utils" "^1.0.3"
-    "@0xproject/web3-wrapper" "^1.1.1"
-    ethereum-types "^1.0.3"
-    lodash "^4.17.4"
-
 "@0xproject/fill-scenarios@^0.0.4":
   version "0.0.4"
   resolved "https://registry.yarnpkg.com/@0xproject/fill-scenarios/-/fill-scenarios-0.0.4.tgz#4d23c75abda7e9f117b698c0b8b142af07e0c69e"
@@ -653,23 +622,6 @@
     jsonschema "1.2.2"
     lodash.values "4.3.0"
 
-"@0xproject/migrations@^1.0.3":
-  version "1.0.2"
-  dependencies:
-    "@0xproject/base-contract" "^1.0.3"
-    "@0xproject/order-utils" "^1.0.1-rc.1"
-    "@0xproject/sol-compiler" "^1.0.3"
-    "@0xproject/subproviders" "^1.0.3"
-    "@0xproject/typescript-typings" "^1.0.3"
-    "@0xproject/utils" "^1.0.3"
-    "@0xproject/web3-wrapper" "^1.1.1"
-    "@ledgerhq/hw-app-eth" "^4.3.0"
-    ethereum-types "^1.0.3"
-    ethers "3.0.22"
-    lodash "^4.17.4"
-  optionalDependencies:
-    "@ledgerhq/hw-transport-node-hid" "^4.3.0"
-
 "@0xproject/order-utils@^0.0.7":
   version "0.0.7"
   resolved "https://registry.yarnpkg.com/@0xproject/order-utils/-/order-utils-0.0.7.tgz#eaa465782ea5745bdad54e1a851533172d993b7c"
@@ -717,25 +669,6 @@
     ethereumjs-abi "0.6.5"
     ethereumjs-util "5.1.5"
     lodash "4.17.10"
-
-"@0xproject/order-utils@^1.0.1-rc.2":
-  version "1.0.1-rc.1"
-  dependencies:
-    "@0xproject/assert" "^1.0.3"
-    "@0xproject/base-contract" "^1.0.3"
-    "@0xproject/json-schemas" "^1.0.1-rc.2"
-    "@0xproject/sol-compiler" "^1.0.3"
-    "@0xproject/types" "^1.0.1-rc.2"
-    "@0xproject/typescript-typings" "^1.0.3"
-    "@0xproject/utils" "^1.0.3"
-    "@0xproject/web3-wrapper" "^1.1.1"
-    "@types/node" "^8.0.53"
-    bn.js "^4.11.8"
-    ethereum-types "^1.0.3"
-    ethereumjs-abi "0.6.5"
-    ethereumjs-util "^5.1.1"
-    ethers "3.0.22"
-    lodash "^4.17.4"
 
 "@0xproject/order-watcher@^0.0.7":
   version "0.0.7"
@@ -1014,12 +947,6 @@
   dependencies:
     "@types/node" "*"
 
-"@types/fs-extra@^4.0.0":
-  version "4.0.8"
-  resolved "https://registry.yarnpkg.com/@types/fs-extra/-/fs-extra-4.0.8.tgz#6957ddaf9173195199cb96da3db44c74700463d2"
-  dependencies:
-    "@types/node" "*"
-
 "@types/glob@*", "@types/glob@5.0.35", "@types/glob@^5.0.33":
   version "5.0.35"
   resolved "https://registry.yarnpkg.com/@types/glob/-/glob-5.0.35.tgz#1ae151c802cece940443b5ac246925c85189f32a"
@@ -1032,7 +959,7 @@
   version "4.0.36"
   resolved "https://registry.yarnpkg.com/@types/handlebars/-/handlebars-4.0.36.tgz#ff57c77fa1ab6713bb446534ddc4d979707a3a79"
 
-"@types/handlebars@^4.0.31", "@types/handlebars@^4.0.36":
+"@types/handlebars@^4.0.36":
   version "4.0.37"
   resolved "https://registry.yarnpkg.com/@types/handlebars/-/handlebars-4.0.37.tgz#a3bc3eba0c0f03f753cac00841a5b21e26a02c03"
 
@@ -1042,7 +969,7 @@
   dependencies:
     "@types/node" "*"
 
-"@types/highlight.js@9.12.2", "@types/highlight.js@^9.1.8":
+"@types/highlight.js@9.12.2":
   version "9.12.2"
   resolved "https://registry.yarnpkg.com/@types/highlight.js/-/highlight.js-9.12.2.tgz#6ee7cd395effe5ec80b515d3ff1699068cd0cd1d"
 
@@ -1080,7 +1007,7 @@
   dependencies:
     "@types/lodash" "*"
 
-"@types/lodash@*", "@types/lodash@^4.14.37":
+"@types/lodash@*":
   version "4.14.107"
   resolved "https://registry.yarnpkg.com/@types/lodash/-/lodash-4.14.107.tgz#b2d2ae3958bfb8ff828495cbe12214af9e4d035e"
 
@@ -1095,10 +1022,6 @@
 "@types/loglevel@^1.5.3":
   version "1.5.3"
   resolved "https://registry.yarnpkg.com/@types/loglevel/-/loglevel-1.5.3.tgz#adfce55383edc5998a2170ad581b3e23d6adb5b8"
-
-"@types/marked@0.0.28":
-  version "0.0.28"
-  resolved "https://registry.yarnpkg.com/@types/marked/-/marked-0.0.28.tgz#44ba754e9fa51432583e8eb30a7c4dd249b52faa"
 
 "@types/marked@0.3.0":
   version "0.3.0"
@@ -1118,10 +1041,6 @@
 "@types/minimatch@*", "@types/minimatch@3.0.3":
   version "3.0.3"
   resolved "https://registry.yarnpkg.com/@types/minimatch/-/minimatch-3.0.3.tgz#3dca0e3f33b200fc7d1139c0cd96c1268cadfd9d"
-
-"@types/minimatch@^2.0.29":
-  version "2.0.29"
-  resolved "https://registry.yarnpkg.com/@types/minimatch/-/minimatch-2.0.29.tgz#5002e14f75e2d71e564281df0431c8c1b4a2a36a"
 
 "@types/mkdirp@^0.5.1", "@types/mkdirp@^0.5.2":
   version "0.5.2"
@@ -1271,13 +1190,6 @@
 "@types/shelljs@0.7.7":
   version "0.7.7"
   resolved "https://registry.yarnpkg.com/@types/shelljs/-/shelljs-0.7.7.tgz#1f7bfa28947661afea06365db9b1135bbc903ec4"
-  dependencies:
-    "@types/glob" "*"
-    "@types/node" "*"
-
-"@types/shelljs@^0.7.0":
-  version "0.7.8"
-  resolved "https://registry.yarnpkg.com/@types/shelljs/-/shelljs-0.7.8.tgz#4b4d6ee7926e58d7bca448a50ba442fd9f6715bd"
   dependencies:
     "@types/glob" "*"
     "@types/node" "*"
@@ -5821,14 +5733,6 @@ fs-extra@^2.0.0, fs-extra@^2.1.2:
     graceful-fs "^4.1.2"
     jsonfile "^2.1.0"
 
-fs-extra@^4.0.0:
-  version "4.0.3"
-  resolved "https://registry.yarnpkg.com/fs-extra/-/fs-extra-4.0.3.tgz#0d852122e5bc5beb453fb028e9c0c9bf36340c94"
-  dependencies:
-    graceful-fs "^4.1.2"
-    jsonfile "^4.0.0"
-    universalify "^0.1.0"
-
 fs-extra@^5.0.0:
   version "5.0.0"
   resolved "https://registry.yarnpkg.com/fs-extra/-/fs-extra-5.0.0.tgz#414d0110cdd06705734d055652c5411260c31abd"
@@ -8410,7 +8314,7 @@ markdown-escapes@^1.0.0:
   version "1.0.2"
   resolved "https://registry.yarnpkg.com/markdown-escapes/-/markdown-escapes-1.0.2.tgz#e639cbde7b99c841c0bacc8a07982873b46d2122"
 
-marked@^0.3.12, marked@^0.3.5:
+marked@^0.3.12:
   version "0.3.19"
   resolved "https://registry.yarnpkg.com/marked/-/marked-0.3.19.tgz#5d47f709c4c9fc3c216b6d46127280f40b39d790"
 
@@ -11788,7 +11692,7 @@ shelljs@0.8.0:
     interpret "^1.0.0"
     rechoir "^0.6.2"
 
-shelljs@^0.7.0, shelljs@^0.7.3:
+shelljs@^0.7.3:
   version "0.7.8"
   resolved "https://registry.yarnpkg.com/shelljs/-/shelljs-0.7.8.tgz#decbcf874b0d1e5fb72e14b164a9683048e9acb3"
   dependencies:
@@ -13095,37 +12999,11 @@ typedoc@0xProject/typedoc:
     typedoc-default-themes "^0.5.0"
     typescript "2.7.1"
 
-typedoc@~0.8.0:
-  version "0.8.0"
-  resolved "https://registry.yarnpkg.com/typedoc/-/typedoc-0.8.0.tgz#d7172bc6a29964f451b7609c005beadadefe2361"
-  dependencies:
-    "@types/fs-extra" "^4.0.0"
-    "@types/handlebars" "^4.0.31"
-    "@types/highlight.js" "^9.1.8"
-    "@types/lodash" "^4.14.37"
-    "@types/marked" "0.0.28"
-    "@types/minimatch" "^2.0.29"
-    "@types/shelljs" "^0.7.0"
-    fs-extra "^4.0.0"
-    handlebars "^4.0.6"
-    highlight.js "^9.0.0"
-    lodash "^4.13.1"
-    marked "^0.3.5"
-    minimatch "^3.0.0"
-    progress "^2.0.0"
-    shelljs "^0.7.0"
-    typedoc-default-themes "^0.5.0"
-    typescript "2.4.1"
-
 types-bn@^0.0.1:
   version "0.0.1"
   resolved "https://registry.yarnpkg.com/types-bn/-/types-bn-0.0.1.tgz#4253c7c7251b14e1d77cdca6f58800e5e2b82c4b"
   dependencies:
     bn.js "4.11.7"
-
-typescript@2.4.1:
-  version "2.4.1"
-  resolved "https://registry.yarnpkg.com/typescript/-/typescript-2.4.1.tgz#c3ccb16ddaa0b2314de031e7e6fee89e5ba346bc"
 
 typescript@2.7.1:
   version "2.7.1"
