@@ -82,10 +82,12 @@ We strongly recommend that the community help us make improvements and determine
 
 ### Install dependencies
 
-If you don't have yarn workspaces enabled (Yarn < v1.0) - enable them:
+Make sure you are using Yarn v1.6. To install using brew:
 
-```bash
-yarn config set workspaces-experimental true
+```
+brew unlink yarn
+brew install https://raw.githubusercontent.com/Homebrew/homebrew-core/76215230de5f7f7bee2cfcdd7185cf49d949862d/Formula/yarn.rb
+brew switch yarn 1.6.0_1
 ```
 
 Then install dependencies

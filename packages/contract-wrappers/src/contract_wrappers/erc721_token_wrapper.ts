@@ -4,7 +4,6 @@ import { Web3Wrapper } from '@0xproject/web3-wrapper';
 import { ContractAbi, LogWithDecodedArgs } from 'ethereum-types';
 import * as _ from 'lodash';
 
-import { constants } from '../../test/utils/constants';
 import { artifacts } from '../artifacts';
 import { methodOptsSchema } from '../schemas/method_opts_schema';
 import { txOptsSchema } from '../schemas/tx_opts_schema';
@@ -17,6 +16,7 @@ import {
     TransactionOpts,
 } from '../types';
 import { assert } from '../utils/assert';
+import { constants } from '../utils/constants';
 
 import { ContractWrapper } from './contract_wrapper';
 import { ERC721ProxyWrapper } from './erc721_proxy_wrapper';

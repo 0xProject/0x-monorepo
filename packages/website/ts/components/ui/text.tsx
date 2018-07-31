@@ -10,6 +10,7 @@ export interface TextProps {
     Tag?: TextTag;
     fontSize?: string;
     fontFamily?: string;
+    fontStyle?: string;
     fontColor?: string;
     lineHeight?: string;
     minHeight?: string;
@@ -18,6 +19,7 @@ export interface TextProps {
     textDecorationLine?: string;
     onClick?: (event: React.MouseEvent<HTMLElement>) => void;
     hoverColor?: string;
+    noWrap?: boolean;
 }
 
 const PlainText: React.StatelessComponent<TextProps> = ({ children, className, onClick, Tag }) => (
@@ -28,6 +30,7 @@ const PlainText: React.StatelessComponent<TextProps> = ({ children, className, o
 
 export const Text = styled(PlainText)`
     font-family: ${props => props.fontFamily};
+    font-style: ${props => props.fontStyle};
     font-weight: ${props => props.fontWeight};
     font-size: ${props => props.fontSize};
     text-decoration-line: ${props => props.textDecorationLine};
@@ -37,6 +40,7 @@ export const Text = styled(PlainText)`
     ${props => (props.minHeight ? `min-height: ${props.minHeight}` : '')};
     ${props => (props.onClick ? 'cursor: pointer' : '')};
     transition: color 0.5s ease;
+    ${props => (props.noWrap ? 'white-space: nowrap' : '')};
     &:hover {
         ${props => (props.onClick ? `color: ${props.hoverColor || darken(0.3, props.fontColor)}` : '')};
     }
@@ -44,12 +48,14 @@ export const Text = styled(PlainText)`
 
 Text.defaultProps = {
     fontFamily: 'Roboto',
+    fontStyle: 'normal',
     fontWeight: 400,
     fontColor: colors.black,
     fontSize: '15px',
     lineHeight: '1.5em',
     textDecorationLine: 'none',
     Tag: 'div',
+    noWrap: false,
 };
 
 Text.displayName = 'Text';

@@ -1,0 +1,95 @@
+{
+	"schemaVersion": "2.0.0",
+	"contractName": "Validator",
+	"compilerOutput": {
+		"abi": [
+			{
+				"constant": true,
+				"inputs": [
+					{
+						"name": "hash",
+						"type": "bytes32"
+					},
+					{
+						"name": "signerAddress",
+						"type": "address"
+					},
+					{
+						"name": "signature",
+						"type": "bytes"
+					}
+				],
+				"name": "isValidSignature",
+				"outputs": [
+					{
+						"name": "isValid",
+						"type": "bool"
+					}
+				],
+				"payable": false,
+				"stateMutability": "view",
+				"type": "function"
+			},
+			{
+				"inputs": [
+					{
+						"name": "validSigner",
+						"type": "address"
+					}
+				],
+				"payable": false,
+				"stateMutability": "nonpayable",
+				"type": "constructor"
+			}
+		],
+		"evm": {
+			"bytecode": {
+				"linkReferences": {},
+				"object": "0x608060405234801561001057600080fd5b50604051602080610134833981016040525160008054600160a060020a03909216600160a060020a031990921691909117905560e3806100516000396000f300608060405260043610603e5763ffffffff7c01000000000000000000000000000000000000000000000000000000006000350416639363470281146043575b600080fd5b348015604e57600080fd5b50607e60048035906024803573ffffffffffffffffffffffffffffffffffffffff16916044359182019101356092565b604080519115158252519081900360200190f35b505060005473ffffffffffffffffffffffffffffffffffffffff9081169116149190505600a165627a7a72305820259f430412a09c8349761ab0914a530884d942868e34128f7bba0c2ec9f618740029",
+				"opcodes": "PUSH1 0x80 PUSH1 0x40 MSTORE CALLVALUE DUP1 ISZERO PUSH2 0x10 JUMPI PUSH1 0x0 DUP1 REVERT JUMPDEST POP PUSH1 0x40 MLOAD PUSH1 0x20 DUP1 PUSH2 0x134 DUP4 CODECOPY DUP2 ADD PUSH1 0x40 MSTORE MLOAD PUSH1 0x0 DUP1 SLOAD PUSH1 0x1 PUSH1 0xA0 PUSH1 0x2 EXP SUB SWAP1 SWAP3 AND PUSH1 0x1 PUSH1 0xA0 PUSH1 0x2 EXP SUB NOT SWAP1 SWAP3 AND SWAP2 SWAP1 SWAP2 OR SWAP1 SSTORE PUSH1 0xE3 DUP1 PUSH2 0x51 PUSH1 0x0 CODECOPY PUSH1 0x0 RETURN STOP PUSH1 0x80 PUSH1 0x40 MSTORE PUSH1 0x4 CALLDATASIZE LT PUSH1 0x3E JUMPI PUSH4 0xFFFFFFFF PUSH29 0x100000000000000000000000000000000000000000000000000000000 PUSH1 0x0 CALLDATALOAD DIV AND PUSH4 0x93634702 DUP2 EQ PUSH1 0x43 JUMPI JUMPDEST PUSH1 0x0 DUP1 REVERT JUMPDEST CALLVALUE DUP1 ISZERO PUSH1 0x4E JUMPI PUSH1 0x0 DUP1 REVERT JUMPDEST POP PUSH1 0x7E PUSH1 0x4 DUP1 CALLDATALOAD SWAP1 PUSH1 0x24 DUP1 CALLDATALOAD PUSH20 0xFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF AND SWAP2 PUSH1 0x44 CALLDATALOAD SWAP2 DUP3 ADD SWAP2 ADD CALLDATALOAD PUSH1 0x92 JUMP JUMPDEST PUSH1 0x40 DUP1 MLOAD SWAP2 ISZERO ISZERO DUP3 MSTORE MLOAD SWAP1 DUP2 SWAP1 SUB PUSH1 0x20 ADD SWAP1 RETURN JUMPDEST POP POP PUSH1 0x0 SLOAD PUSH20 0xFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF SWAP1 DUP2 AND SWAP2 AND EQ SWAP2 SWAP1 POP JUMP STOP LOG1 PUSH6 0x627A7A723058 KECCAK256 0x25 SWAP16 NUMBER DIV SLT LOG0 SWAP13 DUP4 0x49 PUSH23 0x1AB0914A530884D942868E34128F7BBA0C2EC9F6187400 0x29 ",
+				"sourceMap": "667:992:0:-;;;969:84;8:9:-1;5:2;;;30:1;27;20:12;5:2;969:84:0;;;;;;;;;;;;;1020:12;:26;;-1:-1:-1;;;;;1020:26:0;;;-1:-1:-1;;;;;;1020:26:0;;;;;;;;;667:992;;;;;;"
+			},
+			"deployedBytecode": {
+				"linkReferences": {},
+				"object": "0x608060405260043610603e5763ffffffff7c01000000000000000000000000000000000000000000000000000000006000350416639363470281146043575b600080fd5b348015604e57600080fd5b50607e60048035906024803573ffffffffffffffffffffffffffffffffffffffff16916044359182019101356092565b604080519115158252519081900360200190f35b505060005473ffffffffffffffffffffffffffffffffffffffff9081169116149190505600a165627a7a72305820259f430412a09c8349761ab0914a530884d942868e34128f7bba0c2ec9f618740029",
+				"opcodes": "PUSH1 0x80 PUSH1 0x40 MSTORE PUSH1 0x4 CALLDATASIZE LT PUSH1 0x3E JUMPI PUSH4 0xFFFFFFFF PUSH29 0x100000000000000000000000000000000000000000000000000000000 PUSH1 0x0 CALLDATALOAD DIV AND PUSH4 0x93634702 DUP2 EQ PUSH1 0x43 JUMPI JUMPDEST PUSH1 0x0 DUP1 REVERT JUMPDEST CALLVALUE DUP1 ISZERO PUSH1 0x4E JUMPI PUSH1 0x0 DUP1 REVERT JUMPDEST POP PUSH1 0x7E PUSH1 0x4 DUP1 CALLDATALOAD SWAP1 PUSH1 0x24 DUP1 CALLDATALOAD PUSH20 0xFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF AND SWAP2 PUSH1 0x44 CALLDATALOAD SWAP2 DUP3 ADD SWAP2 ADD CALLDATALOAD PUSH1 0x92 JUMP JUMPDEST PUSH1 0x40 DUP1 MLOAD SWAP2 ISZERO ISZERO DUP3 MSTORE MLOAD SWAP1 DUP2 SWAP1 SUB PUSH1 0x20 ADD SWAP1 RETURN JUMPDEST POP POP PUSH1 0x0 SLOAD PUSH20 0xFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF SWAP1 DUP2 AND SWAP2 AND EQ SWAP2 SWAP1 POP JUMP STOP LOG1 PUSH6 0x627A7A723058 KECCAK256 0x25 SWAP16 NUMBER DIV SLT LOG0 SWAP13 DUP4 0x49 PUSH23 0x1AB0914A530884D942868E34128F7BBA0C2EC9F6187400 0x29 ",
+				"sourceMap": "667:992:0:-;;;;;;;;;;;;;;;;;;;;;;;1390:230;;8:9:-1;5:2;;;30:1;27;20:12;5:2;-1:-1;1390:230:0;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;-1:-1:-1;;1547:12:0;1600;;;;;1583:29;;;;1390:230;-1:-1:-1;1390:230:0:o"
+			}
+		}
+	},
+	"sources": {
+		"2.0.0/examples/Validator/Validator.sol": {
+			"id": 0
+		},
+		"2.0.0/protocol/Exchange/interfaces/IValidator.sol": {
+			"id": 1
+		}
+	},
+	"sourceCodes": {
+		"2.0.0/examples/Validator/Validator.sol": "/*\n\n  Copyright 2018 ZeroEx Intl.\n\n  Licensed under the Apache License, Version 2.0 (the \"License\");\n  you may not use this file except in compliance with the License.\n  You may obtain a copy of the License at\n\n    http://www.apache.org/licenses/LICENSE-2.0\n\n  Unless required by applicable law or agreed to in writing, software\n  distributed under the License is distributed on an \"AS IS\" BASIS,\n  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.\n  See the License for the specific language governing permissions and\n  limitations under the License.\n\n*/\n\npragma solidity 0.4.24;\n\nimport \"../../protocol/Exchange/interfaces/IValidator.sol\";\n\n\ncontract Validator is \n    IValidator\n{\n\n    // The single valid signer for this wallet.\n    // solhint-disable-next-line var-name-mixedcase\n    address internal VALID_SIGNER;\n\n    /// @dev constructs a new `Validator` with a single valid signer.\n    /// @param validSigner The sole, valid signer.\n    constructor (address validSigner) public {\n        VALID_SIGNER = validSigner;\n    }\n\n    /// @dev Verifies that a signature is valid. `signer` must match `VALID_SIGNER`.\n    /// @param hash Message hash that is signed.\n    /// @param signerAddress Address that should have signed the given hash.\n    /// @param signature Proof of signing.\n    /// @return Validity of signature.\n    // solhint-disable no-unused-vars\n    function isValidSignature(\n        bytes32 hash,\n        address signerAddress,\n        bytes signature\n    )\n        external\n        view\n        returns (bool isValid)\n    {\n        return (signerAddress == VALID_SIGNER);\n    }\n    // solhint-enable no-unused-vars\n}\n",
+		"2.0.0/protocol/Exchange/interfaces/IValidator.sol": "/*\n\n  Copyright 2018 ZeroEx Intl.\n\n  Licensed under the Apache License, Version 2.0 (the \"License\");\n  you may not use this file except in compliance with the License.\n  You may obtain a copy of the License at\n\n    http://www.apache.org/licenses/LICENSE-2.0\n\n  Unless required by applicable law or agreed to in writing, software\n  distributed under the License is distributed on an \"AS IS\" BASIS,\n  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.\n  See the License for the specific language governing permissions and\n  limitations under the License.\n\n*/\n\npragma solidity 0.4.24;\n\n\ncontract IValidator {\n\n    /// @dev Verifies that a signature is valid.\n    /// @param hash Message hash that is signed.\n    /// @param signerAddress Address that should have signed the given hash.\n    /// @param signature Proof of signing.\n    /// @return Validity of order signature.\n    function isValidSignature(\n        bytes32 hash,\n        address signerAddress,\n        bytes signature\n    )\n        external\n        view\n        returns (bool isValid);\n}\n"
+	},
+	"sourceTreeHashHex": "0x0c2638dd4422383a85743676a5dee23af676beaaf84b534c400a24be6594572e",
+	"compiler": {
+		"name": "solc",
+		"version": "soljson-v0.4.24+commit.e67f0147.js",
+		"settings": {
+			"optimizer": {
+				"enabled": true,
+				"runs": 1000000
+			},
+			"outputSelection": {
+				"*": {
+					"*": [
+						"abi",
+						"evm.bytecode.object",
+						"evm.bytecode.sourceMap",
+						"evm.deployedBytecode.object",
+						"evm.deployedBytecode.sourceMap"
+					]
+				}
+			}
+		}
+	},
+	"networks": {}
+}

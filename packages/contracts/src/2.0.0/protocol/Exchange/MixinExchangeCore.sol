@@ -207,7 +207,6 @@ contract MixinExchangeCore is
     /// @param order that was filled.
     /// @param takerAddress Address of taker who filled the order.
     /// @param orderTakerAssetFilledAmount Amount of order already filled.
-    /// @return fillResults Amounts filled and fees paid by maker and taker.
     function updateFilledState(
         Order memory order,
         address takerAddress,

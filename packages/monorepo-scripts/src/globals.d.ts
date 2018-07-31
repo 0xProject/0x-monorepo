@@ -14,3 +14,4 @@ declare module 'semver-sort' {
 }
 
 declare module 'promisify-child-process';
+declare module '@lerna/batch-packages';

@@ -2,7 +2,12 @@ import { colors } from '@0xproject/react-shared';
 import * as React from 'react';
 import { styled } from 'ts/style/theme';
 
-export type PointerDirection = 'top' | 'right' | 'bottom' | 'left';
+export enum PointerDirection {
+    Top = 'top',
+    Right = 'right',
+    Bottom = 'bottom',
+    Left = 'left',
+}
 
 export interface PointerProps {
     className?: string;

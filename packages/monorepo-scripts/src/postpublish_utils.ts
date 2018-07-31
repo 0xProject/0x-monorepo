@@ -6,6 +6,7 @@ import * as path from 'path';
 import * as publishRelease from 'publish-release';
 
 import { constants } from './constants';
+import { configs } from './utils/configs';
 import { utils } from './utils/utils';
 
 const publishReleaseAsync = promisify(publishRelease);
@@ -34,7 +35,7 @@ export const postpublishUtils = {
             throw new Error('version field required in package.json. Cannot publish release notes to Github.');
         }
         const postpublishConfig = _.get(packageJSON, 'config.postpublish', {});
-        const configs: PostpublishConfigs = {
+        const postpublishConfigs: PostpublishConfigs = {
             cwd,
             packageName: packageJSON.name,
             version: packageJSON.version,
@@ -48,51 +49,53 @@ export const postpublishUtils = {
                 s3StagingBucketPath: _.get(postpublishConfig, 'docPublishConfigs.s3StagingBucketPath'),
             },
         };
-        return configs;
+        return postpublishConfigs;
     },
     async runAsync(packageJSON: any, tsConfigJSON: any, cwd: string): Promise<void> {
-        const configs = postpublishUtils.generateConfig(packageJSON, tsConfigJSON, cwd);
+        if (configs.IS_LOCAL_PUBLISH) {
+            return;
+        }
+        const postpublishConfigs = postpublishUtils.generateConfig(packageJSON, tsConfigJSON, cwd);
         await postpublishUtils.publishReleaseNotesAsync(
-            configs.cwd,
-            configs.packageName,
-            configs.version,
-            configs.assets,
+            postpublishConfigs.packageName,
+            postpublishConfigs.version,
+            postpublishConfigs.assets,
         );
         if (
-            !_.isUndefined(configs.docPublishConfigs.s3BucketPath) ||
-            !_.isUndefined(configs.docPublishConfigs.s3StagingBucketPath)
+            !_.isUndefined(postpublishConfigs.docPublishConfigs.s3BucketPath) ||
+            !_.isUndefined(postpublishConfigs.docPublishConfigs.s3StagingBucketPath)
         ) {
             utils.log('POSTPUBLISH: Release successful, generating docs...');
             await postpublishUtils.generateAndUploadDocsAsync(
-                configs.cwd,
-                configs.docPublishConfigs.fileIncludes,
-                configs.version,
-                configs.docPublishConfigs.s3BucketPath,
+                postpublishConfigs.cwd,
+                postpublishConfigs.docPublishConfigs.fileIncludes,
+                postpublishConfigs.version,
+                postpublishConfigs.docPublishConfigs.s3BucketPath,
             );
         } else {
             utils.log(`POSTPUBLISH: No S3Bucket config found for ${packageJSON.name}. Skipping doc JSON generation.`);
         }
     },
     async publishDocsToStagingAsync(packageJSON: any, tsConfigJSON: any, cwd: string): Promise<void> {
-        const configs = postpublishUtils.generateConfig(packageJSON, tsConfigJSON, cwd);
-        if (_.isUndefined(configs.docPublishConfigs.s3StagingBucketPath)) {
+        const postpublishConfigs = postpublishUtils.generateConfig(packageJSON, tsConfigJSON, cwd);
+        if (_.isUndefined(postpublishConfigs.docPublishConfigs.s3StagingBucketPath)) {
             utils.log('config.postpublish.docPublishConfigs.s3StagingBucketPath entry in package.json not found!');
             return;
         }
 
         utils.log('POSTPUBLISH: Generating docs...');
         await postpublishUtils.generateAndUploadDocsAsync(
-            configs.cwd,
-            configs.docPublishConfigs.fileIncludes,
-            configs.version,
-            configs.docPublishConfigs.s3StagingBucketPath,
+            postpublishConfigs.cwd,
+            postpublishConfigs.docPublishConfigs.fileIncludes,
+            postpublishConfigs.version,
+            postpublishConfigs.docPublishConfigs.s3StagingBucketPath,
         );
     },
-    async publishReleaseNotesAsync(cwd: string, packageName: string, version: string, assets: string[]): Promise<void> {
+    async publishReleaseNotesAsync(packageName: string, version: string, assets: string[]): Promise<void> {
         const notes = postpublishUtils.getReleaseNotes(packageName, version);
         const releaseName = postpublishUtils.getReleaseName(packageName, version);
         const tag = postpublishUtils.getTag(packageName, version);
-        postpublishUtils.adjustAssetPaths(cwd, assets);
+        postpublishUtils.adjustAssetPaths(assets);
         utils.log('POSTPUBLISH: Releasing ', releaseName, '...');
         await publishReleaseAsync({
             token: constants.githubPersonalAccessToken,
@@ -141,10 +144,12 @@ export const postpublishUtils = {
         const releaseName = `${subPackageName} v${version}`;
         return releaseName;
     },
-    adjustAssetPaths(cwd: string, assets: string[]): string[] {
+    // Asset paths should described from the monorepo root. This method prefixes
+    // the supplied path with the absolute path to the monorepo root.
+    adjustAssetPaths(assets: string[]): string[] {
         const finalAssets: string[] = [];
         _.each(assets, (asset: string) => {
-            finalAssets.push(`${cwd}/${asset}`);
+            finalAssets.push(`${constants.monorepoRootPath}/${asset}`);
         });
         return finalAssets;
     },

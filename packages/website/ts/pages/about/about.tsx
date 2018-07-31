@@ -314,7 +314,7 @@ export class About extends React.Component<AboutProps, AboutState> {
                             }}
                         >
                             We are seeking outstanding candidates to{' '}
-                            <Link to={WebsitePaths.Jobs} style={{ color: 'black' }}>
+                            <Link to={WebsitePaths.Careers} style={{ color: 'black' }}>
                                 join our team
                             </Link>
                             . We value passion, diversity and unique perspectives.
