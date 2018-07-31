@@ -1,3 +1,4 @@
+import { schemas } from '@0xproject/json-schemas';
 import { OpenApiSpec } from '@loopback/openapi-v3-types';
 
 export const api: OpenApiSpec = {
@@ -14,6 +15,55 @@ export const api: OpenApiSpec = {
         // TODO: Use relayer registry information here?
     ],
     paths: {
+        '/orders': {
+            get: {
+                summary: 'List all pets',
+                operationId: 'listPets2',
+                tags: ['pets'],
+                parameters: [
+                    {
+                        name: 'limit',
+                        in: 'query',
+                        description: 'How many items to return at one time (max 100)',
+                        required: false,
+                        schema: {
+                            type: 'integer',
+                            format: 'int32',
+                        },
+                    },
+                ],
+                responses: {
+                    '200': {
+                        description: 'An paged array of pets',
+                        headers: {
+                            'x-next': {
+                                description: 'A link to the next page of responses',
+                                schema: {
+                                    type: 'string',
+                                },
+                            },
+                        },
+                        content: {
+                            'application/json': {
+                                schema: {
+                                    $ref: '#/components/schemas/Pets',
+                                },
+                            },
+                        },
+                    },
+                    default: {
+                        description: 'unexpected error',
+                        content: {
+                            'application/json': {
+                                schema: {
+                                    $ref: '#/components/schemas/Error',
+                                },
+                            },
+                        },
+                    },
+                },
+            },
+        },
         '/pets': {
             get: {
                 summary: 'List all pets',
@@ -141,6 +191,7 @@ export const api: OpenApiSpec = {
                     },
                 },
             },
+            // Orderbook: schemas.relayerApiOrderBookResponseSchema,
             Pets: {
                 type: 'array',
                 items: {

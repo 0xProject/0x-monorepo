@@ -9,6 +9,7 @@ import { orderFillRequestsSchema } from '../schemas/order_fill_requests_schema';
 import { orderHashSchema } from '../schemas/order_hash_schema';
 import { orderSchema, signedOrderSchema } from '../schemas/order_schemas';
 import { ordersSchema } from '../schemas/orders_schema';
+import { paginatedCollectionSchema } from '../schemas/paginated_collection_schema';
 import {
     relayerApiAssetDataPairsResponseSchema,
     relayerApiAssetDataTradeInfoSchema,
@@ -22,6 +23,9 @@ import {
     relayerApiOrdersChannelSubscribeSchema,
 } from '../schemas/relayer_api_orders_channel_subscribe_schema';
 import { relayerApiOrdersChannelUpdateSchema } from '../schemas/relayer_api_orders_channel_update_response_schema';
+import { relayerApiOrdersResponseSchema } from '../schemas/relayer_api_orders_response_schema';
+import { relayerApiOrdersSchema } from '../schemas/relayer_api_orders_schema';
+import { relayerApiOrderSchema } from '../schemas/relayer_api_order_schema';
 import { signedOrdersSchema } from '../schemas/signed_orders_schema';
 import { tokenSchema } from '../schemas/token_schema';
 import { jsNumber, txDataSchema } from '../schemas/tx_data_schema';
@@ -47,13 +51,17 @@ export const schemas = {
     tokenSchema,
     jsNumber,
     txDataSchema,
+    paginatedCollectionSchema,
     relayerApiErrorResponseSchema,
+    relayerApiOrderSchema,
+    relayerApiOrdersSchema,
     relayerApiOrderConfigPayloadSchema,
     relayerApiOrderConfigResponseSchema,
     relayerApiOrderBookResponseSchema,
-    relayerApiAssetPairsResponseSchema,
-    relayerApiAssetTradeInfoSchema,
+    relayerApiAssetDataPairsResponseSchema,
+    relayerApiAssetDataTradeInfoSchema,
     relayerApiOrdersChannelSubscribeSchema,
     relayerApiOrdersChannelSubscribePayload,
     relayerApiOrdersChannelUpdateSchema,
+    relayerApiOrdersResponseSchema,
 };

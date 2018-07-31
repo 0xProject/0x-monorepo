@@ -26,14 +26,15 @@ const {
     tokenSchema,
     jsNumber,
     txDataSchema,
+    paginatedCollectionSchema,
     relayerApiErrorResponseSchema,
     relayerApiOrderBookResponseSchema,
-    relayerApiTokenPairsResponseSchema,
-    relayerApiFeesPayloadSchema,
-    relayerApiFeesResponseSchema,
-    relayerApiOrderbookChannelSubscribeSchema,
-    relayerApiOrderbookChannelUpdateSchema,
-    relayerApiOrderbookChannelSnapshotSchema,
+    relayerApiAssetDataPairsResponseSchema,
+    relayerApiOrderConfigPayloadSchema,
+    relayerApiOrderConfigResponseSchema,
+    relayerApiOrdersChannelSubscribeSchema,
+    relayerApiOrdersChannelUpdateSchema,
+    relayerApiOrdersResponseSchema,
 } = schemas;
 
 describe('Schema', () => {
@@ -328,7 +329,7 @@ describe('Schema', () => {
                             asks: [signedOrder, signedOrder],
                         },
                     ];
-                    validateAgainstSchema(testCases, relayerApiOrderBookResponseSchema);
+                    validateAgainstSchema(testCases, relayerApiOrdersResponseSchema);
                 });
                 it('should fail for invalid order fill requests', () => {
                     const testCases = [
@@ -349,16 +350,16 @@ describe('Schema', () => {
                         },
                     ];
                     const shouldFail = true;
-                    validateAgainstSchema(testCases, relayerApiOrderBookResponseSchema, shouldFail);
+                    validateAgainstSchema(testCases, relayerApiOrdersResponseSchema, shouldFail);
                 });
             });
-            describe('#relayerApiOrderbookChannelSubscribeSchema', () => {
-                it('should validate valid orderbook channel websocket subscribe message', () => {
+            describe('#relayerApiOrdersChannelSubscribeSchema', () => {
+                it('should validate valid orders channel websocket subscribe message', () => {
                     const testCases = [
                         {
                             type: 'subscribe',
-                            channel: 'orderbook',
-                            requestId: 1,
+                            channel: 'orders',
+                            requestId: 'randomId',
                             payload: {
                                 baseTokenAddress: '0x323b5d4c32345ced77393b3530b1eed0f346429d',
                                 quoteTokenAddress: '0x323b5d4c32345ced77393b3530b1eed0f346429d',
@@ -368,22 +369,22 @@ describe('Schema', () => {
                         },
                         {
                             type: 'subscribe',
-                            channel: 'orderbook',
-                            requestId: 1,
+                            channel: 'orders',
+                            requestId: 'randomId',
                             payload: {
                                 baseTokenAddress: '0x323b5d4c32345ced77393b3530b1eed0f346429d',
                                 quoteTokenAddress: '0x323b5d4c32345ced77393b3530b1eed0f346429d',
                             },
                         },
                     ];
-                    validateAgainstSchema(testCases, relayerApiOrderbookChannelSubscribeSchema);
+                    validateAgainstSchema(testCases, relayerApiOrdersChannelSubscribeSchema);
                 });
-                it('should fail for invalid orderbook channel websocket subscribe message', () => {
+                it('should fail for invalid orders channel websocket subscribe message', () => {
                     const checksummedAddress = '0xA2b31daCf30a9C50ca473337c01d8A201ae33e32';
                     const testCases = [
                         {
                             type: 'subscribe',
-                            channel: 'orderbook',
+                            channel: 'orders',
                             payload: {
                                 baseTokenAddress: '0x323b5d4c32345ced77393b3530b1eed0f346429d',
                                 quoteTokenAddress: '0x323b5d4c32345ced77393b3530b1eed0f346429d',
@@ -393,8 +394,8 @@ describe('Schema', () => {
                         },
                         {
                             type: 'foo',
-                            channel: 'orderbook',
-                            requestId: 1,
+                            channel: 'orders',
+                            requestId: 'randomId',
                             payload: {
                                 baseTokenAddress: '0x323b5d4c32345ced77393b3530b1eed0f346429d',
                                 quoteTokenAddress: '0x323b5d4c32345ced77393b3530b1eed0f346429d',
@@ -403,7 +404,7 @@ describe('Schema', () => {
                         {
                             type: 'subscribe',
                             channel: 'bar',
-                            requestId: 1,
+                            requestId: 'randomId',
                             payload: {
                                 baseTokenAddress: '0x323b5d4c32345ced77393b3530b1eed0f346429d',
                                 quoteTokenAddress: '0x323b5d4c32345ced77393b3530b1eed0f346429d',
@@ -411,8 +412,8 @@ describe('Schema', () => {
                         },
                         {
                             type: 'subscribe',
-                            channel: 'orderbook',
-                            requestId: 1,
+                            channel: 'orders',
+                            requestId: 'randomId',
                             payload: {
                                 baseTokenAddress: checksummedAddress,
                                 quoteTokenAddress: '0x323b5d4c32345ced77393b3530b1eed0f346429d',
@@ -420,8 +421,8 @@ describe('Schema', () => {
                         },
                         {
                             type: 'subscribe',
-                            channel: 'orderbook',
-                            requestId: 1,
+                            channel: 'orders',
+                            requestId: 'randomId',
                             payload: {
                                 baseTokenAddress: '0x323b5d4c32345ced77393b3530b1eed0f346429d',
                                 quoteTokenAddress: checksummedAddress,
@@ -429,24 +430,24 @@ describe('Schema', () => {
                         },
                         {
                             type: 'subscribe',
-                            channel: 'orderbook',
-                            requestId: 1,
+                            channel: 'orders',
+                            requestId: 'randomId',
                             payload: {
                                 quoteTokenAddress: '0x323b5d4c32345ced77393b3530b1eed0f346429d',
                             },
                         },
                         {
                             type: 'subscribe',
-                            channel: 'orderbook',
-                            requestId: 1,
+                            channel: 'orders',
+                            requestId: 'randomId',
                             payload: {
                                 baseTokenAddress: '0x323b5d4c32345ced77393b3530b1eed0f346429d',
                             },
                         },
                         {
                             type: 'subscribe',
-                            channel: 'orderbook',
-                            requestId: 1,
+                            channel: 'orders',
+                            requestId: 'randomId',
                             payload: {
                                 baseTokenAddress: '0x323b5d4c32345ced77393b3530b1eed0f346429d',
                                 quoteTokenAddress: '0x323b5d4c32345ced77393b3530b1eed0f346429d',
@@ -456,8 +457,8 @@ describe('Schema', () => {
                         },
                         {
                             type: 'subscribe',
-                            channel: 'orderbook',
-                            requestId: 1,
+                            channel: 'orders',
+                            requestId: 'randomId',
                             payload: {
                                 baseTokenAddress: '0x323b5d4c32345ced77393b3530b1eed0f346429d',
                                 quoteTokenAddress: '0x323b5d4c32345ced77393b3530b1eed0f346429d',
@@ -467,126 +468,26 @@ describe('Schema', () => {
                         },
                     ];
                     const shouldFail = true;
-                    validateAgainstSchema(testCases, relayerApiOrderbookChannelSubscribeSchema, shouldFail);
+                    validateAgainstSchema(testCases, relayerApiOrdersChannelSubscribeSchema, shouldFail);
                 });
             });
-            describe('#relayerApiOrderbookChannelSnapshotSchema', () => {
-                it('should validate valid orderbook channel websocket snapshot message', () => {
-                    const testCases = [
-                        {
-                            type: 'snapshot',
-                            channel: 'orderbook',
-                            requestId: 2,
-                            payload: {
-                                bids: [],
-                                asks: [],
-                            },
-                        },
-                        {
-                            type: 'snapshot',
-                            channel: 'orderbook',
-                            requestId: 2,
-                            payload: {
-                                bids: [signedOrder],
-                                asks: [signedOrder],
-                            },
-                        },
-                    ];
-                    validateAgainstSchema(testCases, relayerApiOrderbookChannelSnapshotSchema);
-                });
-                it('should fail for invalid orderbook channel websocket snapshot message', () => {
-                    const testCases = [
-                        {
-                            type: 'foo',
-                            channel: 'orderbook',
-                            requestId: 2,
-                            payload: {
-                                bids: [signedOrder],
-                                asks: [signedOrder],
-                            },
-                        },
-                        {
-                            type: 'snapshot',
-                            channel: 'bar',
-                            requestId: 2,
-                            payload: {
-                                bids: [signedOrder],
-                                asks: [signedOrder],
-                            },
-                        },
-                        {
-                            type: 'snapshot',
-                            channel: 'orderbook',
-                            payload: {
-                                bids: [signedOrder],
-                                asks: [signedOrder],
-                            },
-                        },
-                        {
-                            type: 'snapshot',
-                            channel: 'orderbook',
-                            requestId: '2',
-                            payload: {
-                                bids: [signedOrder],
-                                asks: [signedOrder],
-                            },
-                        },
-                        {
-                            type: 'snapshot',
-                            channel: 'orderbook',
-                            requestId: 2,
-                            payload: {
-                                bids: [signedOrder],
-                            },
-                        },
-                        {
-                            type: 'snapshot',
-                            channel: 'orderbook',
-                            requestId: 2,
-                            payload: {
-                                asks: [signedOrder],
-                            },
-                        },
-                        {
-                            type: 'snapshot',
-                            channel: 'orderbook',
-                            requestId: 2,
-                            payload: {
-                                bids: [signedOrder],
-                                asks: [{}],
-                            },
-                        },
-                        {
-                            type: 'snapshot',
-                            channel: 'orderbook',
-                            requestId: 2,
-                            payload: {
-                                bids: [{}],
-                                asks: [signedOrder],
-                            },
-                        },
-                    ];
-                    const shouldFail = true;
-                    validateAgainstSchema(testCases, relayerApiOrderbookChannelSnapshotSchema, shouldFail);
-                });
-            });
-            describe('#relayerApiOrderbookChannelUpdateSchema', () => {
-                it('should validate valid orderbook channel websocket update message', () => {
+            describe('#relayerApiOrdersChannelUpdateSchema', () => {
+                it('should validate valid orders channel websocket update message', () => {
                     const testCases = [
                         {
                             type: 'update',
-                            channel: 'orderbook',
+                            channel: 'orders',
                             requestId: 2,
                             payload: signedOrder,
                         },
                     ];
-                    validateAgainstSchema(testCases, relayerApiOrderbookChannelUpdateSchema);
+                    validateAgainstSchema(testCases, relayerApiOrdersChannelUpdateSchema);
                 });
-                it('should fail for invalid orderbook channel websocket update message', () => {
+                it('should fail for invalid orders channel websocket update message', () => {
                     const testCases = [
                         {
                             type: 'foo',
-                            channel: 'orderbook',
+                            channel: 'orders',
                             requestId: 2,
                             payload: signedOrder,
                         },
@@ -598,13 +499,13 @@ describe('Schema', () => {
                         },
                         {
                             type: 'update',
-                            channel: 'orderbook',
+                            channel: 'orders',
                             requestId: 2,
                             payload: {},
                         },
                     ];
                     const shouldFail = true;
-                    validateAgainstSchema(testCases, relayerApiOrderbookChannelUpdateSchema, shouldFail);
+                    validateAgainstSchema(testCases, relayerApiOrdersChannelUpdateSchema, shouldFail);
                 });
             });
         });
@@ -684,7 +585,7 @@ describe('Schema', () => {
             validateAgainstSchema(testCases, relayerApiErrorResponseSchema, shouldFail);
         });
     });
-    describe('#relayerApiFeesPayloadSchema', () => {
+    describe('#relayerApiOrderConfigPayloadSchema', () => {
         it('should validate valid fees payloads', () => {
             const testCases = [
                 {
@@ -699,7 +600,7 @@ describe('Schema', () => {
                     salt: '67006738228878699843088602623665307406148487219438534730168799356281242528500',
                 },
             ];
-            validateAgainstSchema(testCases, relayerApiFeesPayloadSchema);
+            validateAgainstSchema(testCases, relayerApiOrderConfigPayloadSchema);
         });
         it('should fail for invalid fees payloads', () => {
             const checksummedAddress = '0xA2b31daCf30a9C50ca473337c01d8A201ae33e32';
@@ -725,10 +626,10 @@ describe('Schema', () => {
                 },
             ];
             const shouldFail = true;
-            validateAgainstSchema(testCases, relayerApiFeesPayloadSchema, shouldFail);
+            validateAgainstSchema(testCases, relayerApiOrderConfigPayloadSchema, shouldFail);
         });
     });
-    describe('#relayerApiFeesResponseSchema', () => {
+    describe('#relayerApiOrderConfigResponseSchema', () => {
         it('should validate valid fees responses', () => {
             const testCases = [
                 {
@@ -737,7 +638,7 @@ describe('Schema', () => {
                     feeRecipient: '0x323b5d4c32345ced77393b3530b1eed0f346429d',
                 },
             ];
-            validateAgainstSchema(testCases, relayerApiFeesResponseSchema);
+            validateAgainstSchema(testCases, relayerApiOrderConfigResponseSchema);
         });
         it('should fail for invalid fees responses', () => {
             const checksummedAddress = '0xA2b31daCf30a9C50ca473337c01d8A201ae33e32';
@@ -755,11 +656,11 @@ describe('Schema', () => {
                 },
             ];
             const shouldFail = true;
-            validateAgainstSchema(testCases, relayerApiFeesResponseSchema, shouldFail);
+            validateAgainstSchema(testCases, relayerApiOrderConfigResponseSchema, shouldFail);
         });
     });
-    describe('#relayerApiTokenPairsResponseSchema', () => {
-        it('should validate valid tokenPairs response', () => {
+    describe('#relayerAssetDataPairsResponseSchema', () => {
+        it('should validate valid assetPairs response', () => {
             const testCases = [
                 [],
                 [
@@ -789,9 +690,9 @@ describe('Schema', () => {
                     },
                 ],
             ];
-            validateAgainstSchema(testCases, relayerApiTokenPairsResponseSchema);
+            validateAgainstSchema(testCases, relayerApiAssetDataPairsResponseSchema);
         });
-        it('should fail for invalid tokenPairs responses', () => {
+        it('should fail for invalid assetPairs responses', () => {
             const checksummedAddress = '0xA2b31daCf30a9C50ca473337c01d8A201ae33e32';
             const testCases = [
                 [
@@ -832,7 +733,7 @@ describe('Schema', () => {
                 ],
             ];
             const shouldFail = true;
-            validateAgainstSchema(testCases, relayerApiTokenPairsResponseSchema, shouldFail);
+            validateAgainstSchema(testCases, relayerApiAssetDataPairsResponseSchema, shouldFail);
         });
     });
     describe('#jsNumberSchema', () => {
