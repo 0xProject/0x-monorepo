@@ -174,13 +174,13 @@ export enum TransferType {
 export type OnOrderStateChangeCallback = (err: Error | null, orderState?: OrderState) => void;
 
 export interface OrderInfo {
-    orderStatus: number;
+    orderStatus: OrderStatus;
     orderHash: string;
     orderTakerAssetFilledAmount: BigNumber;
 }
 
 export enum OrderStatus {
-    INVALID,
+    INVALID = 0,
     INVALID_MAKER_ASSET_AMOUNT,
     INVALID_TAKER_ASSET_AMOUNT,
     FILLABLE,

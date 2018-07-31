@@ -277,6 +277,15 @@ describe('ExchangeWrapper', () => {
             expect(orderInfo.orderHash).to.be.equal(orderHash);
         });
     });
+    describe('#getOrdersInfoAsync', () => {
+        it('should get the orders info', async () => {
+            const ordersInfo = await contractWrappers.exchange.getOrdersInfoAsync([signedOrder, anotherSignedOrder]);
+            const orderHash = orderHashUtils.getOrderHashHex(signedOrder);
+            expect(ordersInfo[0].orderHash).to.be.equal(orderHash);
+            const anotherOrderHash = orderHashUtils.getOrderHashHex(anotherSignedOrder);
+            expect(ordersInfo[1].orderHash).to.be.equal(anotherOrderHash);
+        });
+    });
     describe('#isValidSignature', () => {
         it('should check if the signature is valid', async () => {
             const orderHash = orderHashUtils.getOrderHashHex(signedOrder);
