@@ -9,23 +9,19 @@ import { orderFillRequestsSchema } from '../schemas/order_fill_requests_schema';
 import { orderHashSchema } from '../schemas/order_hash_schema';
 import { orderSchema, signedOrderSchema } from '../schemas/order_schemas';
 import { ordersSchema } from '../schemas/orders_schema';
+import {
+    relayerApiAssetDataPairsResponseSchema,
+    relayerApiAssetDataTradeInfoSchema,
+} from '../schemas/relayer_api_asset_pairs_response_schema';
 import { relayerApiErrorResponseSchema } from '../schemas/relayer_api_error_response_schema';
-import { relayerApiFeesPayloadSchema } from '../schemas/relayer_api_fees_payload_schema';
-import { relayerApiFeesResponseSchema } from '../schemas/relayer_api_fees_response_schema';
-import {
-    relayerApiOrderbookChannelSubscribePayload,
-    relayerApiOrderbookChannelSubscribeSchema,
-} from '../schemas/relayer_api_orberbook_channel_subscribe_schema';
-import {
-    relayerApiOrderbookChannelSnapshotPayload,
-    relayerApiOrderbookChannelSnapshotSchema,
-} from '../schemas/relayer_api_orderbook_channel_snapshot_schema';
-import { relayerApiOrderbookChannelUpdateSchema } from '../schemas/relayer_api_orderbook_channel_update_response_schema';
+import { relayerApiOrderConfigPayloadSchema } from '../schemas/relayer_api_order_config_payload_schema';
+import { relayerApiOrderConfigResponseSchema } from '../schemas/relayer_api_order_config_response_schema';
 import { relayerApiOrderBookResponseSchema } from '../schemas/relayer_api_orderbook_response_schema';
 import {
-    relayerApiTokenPairsResponseSchema,
-    relayerApiTokenTradeInfoSchema,
-} from '../schemas/relayer_api_token_pairs_response_schema';
+    relayerApiOrdersChannelSubscribePayload,
+    relayerApiOrdersChannelSubscribeSchema,
+} from '../schemas/relayer_api_orders_channel_subscribe_schema';
+import { relayerApiOrdersChannelUpdateSchema } from '../schemas/relayer_api_orders_channel_update_response_schema';
 import { signedOrdersSchema } from '../schemas/signed_orders_schema';
 import { tokenSchema } from '../schemas/token_schema';
 import { jsNumber, txDataSchema } from '../schemas/tx_data_schema';
@@ -52,14 +48,12 @@ export const schemas = {
     jsNumber,
     txDataSchema,
     relayerApiErrorResponseSchema,
-    relayerApiFeesPayloadSchema,
-    relayerApiFeesResponseSchema,
+    relayerApiOrderConfigPayloadSchema,
+    relayerApiOrderConfigResponseSchema,
     relayerApiOrderBookResponseSchema,
-    relayerApiTokenPairsResponseSchema,
-    relayerApiTokenTradeInfoSchema,
-    relayerApiOrderbookChannelSubscribeSchema,
-    relayerApiOrderbookChannelSubscribePayload,
-    relayerApiOrderbookChannelUpdateSchema,
-    relayerApiOrderbookChannelSnapshotSchema,
-    relayerApiOrderbookChannelSnapshotPayload,
+    relayerApiAssetPairsResponseSchema,
+    relayerApiAssetTradeInfoSchema,
+    relayerApiOrdersChannelSubscribeSchema,
+    relayerApiOrdersChannelSubscribePayload,
+    relayerApiOrdersChannelUpdateSchema,
 };
