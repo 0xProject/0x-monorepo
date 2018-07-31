@@ -20,11 +20,14 @@
         "test:coverage": "SOLIDITY_COVERAGE=true run-s build run_mocha coverage:report:text coverage:report:lcov",
         "test:profiler": "SOLIDITY_PROFILER=true run-s build run_mocha profiler:report:html",
         "test:trace": "SOLIDITY_REVERT_TRACE=true run-s build run_mocha",
-        "run_mocha": "mocha --require source-map-support/register --require make-promises-safe 'lib/test/**/*.js' --timeout 100000 --bail --exit",
+        "run_mocha":
+            "mocha --require source-map-support/register --require make-promises-safe 'lib/test/**/*.js' --timeout 100000 --bail --exit",
         "compile": "sol-compiler --contracts-dir src",
         "clean": "shx rm -rf lib generated_contract_wrappers",
-        "generate_contract_wrappers": "abi-gen --abis  ${npm_package_config_abis} --template ../contract_templates/contract.handlebars --partials '../contract_templates/partials/**/*.handlebars' --output generated_contract_wrappers --backend ethers",
-        "lint": "tslint --project . --exclude **/src/generated_contract_wrappers/**/* --exclude **/lib/**/* && yarn lint-contracts",
+        "generate_contract_wrappers":
+            "abi-gen --abis  ${npm_package_config_abis} --template ../contract_templates/contract.handlebars --partials '../contract_templates/partials/**/*.handlebars' --output generated_contract_wrappers --backend ethers",
+        "lint":
+            "tslint --project . --exclude **/src/generated_contract_wrappers/**/* --exclude **/lib/**/* && yarn lint-contracts",
         "coverage:report:text": "istanbul report text",
         "coverage:report:html": "istanbul report html && open coverage/index.html",
         "profiler:report:html": "istanbul report html && open coverage/index.html",
@@ -33,7 +36,8 @@
         "lint-contracts": "solhint src/2.0.0/**/**/**/**/*.sol"
     },
     "config": {
-        "abis": "../migrations/artifacts/2.0.0/@(AssetProxyOwner|DummyERC20Token|DummyERC721Receiver|DummyERC721Token|ERC20Proxy|ERC721Proxy|Forwarder|Exchange|ExchangeWrapper|IAssetData|IAssetProxy|MixinAuthorizable|MultiSigWallet|MultiSigWalletWithTimeLock|TestAssetProxyOwner|TestAssetProxyDispatcher|TestConstants|TestExchangeInternals|TestLibBytes|TestLibs|TestSignatureValidator|Validator|Wallet|TokenRegistry|Whitelist|WETH9|ZRXToken).json"
+        "abis":
+            "../migrations/artifacts/2.0.0/@(AssetProxyOwner|DummyERC20Token|DummyERC721Receiver|DummyERC721Token|DummyNoReturnERC20Token|ERC20Proxy|ERC721Proxy|Forwarder|Exchange|ExchangeWrapper|IAssetData|IAssetProxy|MixinAuthorizable|MultiSigWallet|MultiSigWalletWithTimeLock|TestAssetProxyOwner|TestAssetProxyDispatcher|TestConstants|TestExchangeInternals|TestLibBytes|TestLibs|TestSignatureValidator|Validator|Wallet|TokenRegistry|Whitelist|WETH9|ZRXToken).json"
     },
     "repository": {
         "type": "git",

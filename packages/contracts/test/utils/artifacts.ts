@@ -4,6 +4,7 @@ import * as AssetProxyOwner from '../../artifacts/AssetProxyOwner.json';
 import * as DummyERC20Token from '../../artifacts/DummyERC20Token.json';
 import * as DummyERC721Receiver from '../../artifacts/DummyERC721Receiver.json';
 import * as DummyERC721Token from '../../artifacts/DummyERC721Token.json';
+import * as DummyNoReturnERC20Token from '../../artifacts/DummyNoReturnERC20Token.json';
 import * as ERC20Proxy from '../../artifacts/ERC20Proxy.json';
 import * as ERC721Proxy from '../../artifacts/ERC721Proxy.json';
 import * as Exchange from '../../artifacts/Exchange.json';
@@ -32,6 +33,7 @@ export const artifacts = {
     DummyERC20Token: (DummyERC20Token as any) as ContractArtifact,
     DummyERC721Receiver: (DummyERC721Receiver as any) as ContractArtifact,
     DummyERC721Token: (DummyERC721Token as any) as ContractArtifact,
+    DummyNoReturnERC20Token: (DummyNoReturnERC20Token as any) as ContractArtifact,
     ERC20Proxy: (ERC20Proxy as any) as ContractArtifact,
     ERC721Proxy: (ERC721Proxy as any) as ContractArtifact,
     Exchange: (Exchange as any) as ContractArtifact,

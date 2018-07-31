@@ -23,6 +23,7 @@
         "DummyERC20Token",
         "DummyERC721Receiver",
         "DummyERC721Token",
+        "DummyNoReturnERC20Token",
         "ERC20Proxy",
         "ERC20Token",
         "ERC721Token",
