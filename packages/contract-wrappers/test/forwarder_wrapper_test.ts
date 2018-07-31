@@ -111,4 +111,20 @@ describe('ForwarderWrapper', () => {
             expect(ordersInfo[1].orderStatus).to.be.equal(OrderStatus.FULLY_FILLED);
         });
     });
+    describe('#marketSellOrdersWithEthAsync', () => {
+        it('should market sell orders with eth', async () => {
+            const signedOrders = [signedOrder, anotherSignedOrder];
+            const makerAssetFillAmount = signedOrder.makerAssetAmount.plus(anotherSignedOrder.makerAssetAmount);
+            const txHash = await contractWrappers.forwarder.marketSellOrdersWithEthAsync(
+                signedOrders,
+                takerAddress,
+                makerAssetFillAmount,
+            );
+            await web3Wrapper.awaitTransactionSuccessAsync(txHash, constants.AWAIT_TRANSACTION_MINED_MS);
+            const ordersInfo = await contractWrappers.exchange.getOrdersInfoAsync([signedOrder, anotherSignedOrder]);
+            expect(ordersInfo[0].orderStatus).to.be.equal(OrderStatus.FULLY_FILLED);
+            expect(ordersInfo[1].orderStatus).to.be.equal(OrderStatus.FILLABLE);
+            expect(ordersInfo[1].orderTakerAssetFilledAmount).to.be.bignumber.equal(new BigNumber(4)); // only 95% of ETH is sold
+        });
+    });
 });
