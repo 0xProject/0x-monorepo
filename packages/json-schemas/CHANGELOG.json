@@ -1,5 +1,13 @@
 [
     {
+        "version": "2.0.0",
+        "changes": [
+            {
+                "note": "Upgrade Relayer API schemas for relayer API V1"
+            }
+        ]
+    },
+    {
         "version": "1.0.1-rc.3",
         "changes": [
             {
