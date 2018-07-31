@@ -1,14 +1,13 @@
-import { ECSignature, Order, SignedOrder } from '@0xproject/types';
+import { Order, SignedOrder, SignerProviderType } from '@0xproject/types';
 import { BigNumber } from '@0xproject/utils';
 import { Provider } from 'ethereum-types';
-import * as ethUtil from 'ethereumjs-util';
 import * as _ from 'lodash';
 
 import { constants } from './constants';
 import { orderHashUtils } from './order_hash';
 import { generatePseudoRandomSalt } from './salt';
 import { ecSignOrderHashAsync } from './signature_utils';
-import { CreateOrderOpts, MessagePrefixType } from './types';
+import { CreateOrderOpts } from './types';
 
 export const orderFactory = {
     createOrder(
@@ -59,16 +58,12 @@ export const orderFactory = {
             createOrderOpts,
         );
         const orderHash = orderHashUtils.getOrderHashHex(order);
-        const messagePrefixOpts = {
-            prefixType: MessagePrefixType.EthSign,
-            shouldAddPrefixBeforeCallingEthSign: false,
-        };
-        const ecSignature = await ecSignOrderHashAsync(provider, orderHash, makerAddress, messagePrefixOpts);
-        const signature = getVRSHexString(ecSignature);
+        const signature = await ecSignOrderHashAsync(provider, orderHash, makerAddress, SignerProviderType.EthSign);
         const signedOrder: SignedOrder = _.assign(order, { signature });
         return signedOrder;
     },
 };
+<<<<<<< HEAD
 
 function generateDefaultCreateOrderOpts(): {
     takerAddress: string;
@@ -102,3 +97,5 @@ function intToHex(i: number): string {
     const hex = ethUtil.bufferToHex(ethUtil.toBuffer(i));
     return hex;
 }
+=======
+>>>>>>> Introduce SignerProviderType

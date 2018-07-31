@@ -13,15 +13,7 @@ export { orderFactory } from './order_factory';
 export { constants } from './constants';
 export { crypto } from './crypto';
 export { generatePseudoRandomSalt } from './salt';
-export {
-    CreateOrderOpts,
-    OrderError,
-    MessagePrefixType,
-    MessagePrefixOpts,
-    EIP712Parameter,
-    EIP712Schema,
-    EIP712Types,
-} from './types';
+export { CreateOrderOpts, OrderError, EIP712Parameter, EIP712Schema, EIP712Types } from './types';
 export { AbstractBalanceAndProxyAllowanceFetcher } from './abstract/abstract_balance_and_proxy_allowance_fetcher';
 export { AbstractOrderFilledCancelledFetcher } from './abstract/abstract_order_filled_cancelled_fetcher';
 export { BalanceAndProxyAllowanceLazyStore } from './store/balance_and_proxy_allowance_lazy_store';

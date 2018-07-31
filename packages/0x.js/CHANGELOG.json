@@ -21,6 +21,9 @@
         "changes": [
             {
                 "note": "Dependencies updated"
+            },
+            {
+                "note": "Update ecSignOrderHashAsync to return the signature as a string for immediate use in contracts"
             }
         ],
         "timestamp": 1532605697

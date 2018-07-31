@@ -143,6 +143,16 @@ export enum SignatureType {
 }
 
 /**
+ * The Signer Provider Type. Some Signer implementations use different message prefixes or implement different
+ * eth_sign behaviour. Note EthSign is compatible with the Ledger device.
+ */
+export enum SignerProviderType {
+    EthSign = 'ETH_SIGN',
+    Metamask = 'METAMASK',
+    Trezor = 'TREZOR',
+}
+
+/**
  * Elliptic Curve signature
  */
 export interface ECSignature {

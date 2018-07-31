@@ -1,12 +1,12 @@
 export { ZeroEx } from './0x';
 
-export { MessagePrefixType, MessagePrefixOpts } from '@0xproject/order-utils';
 export { Web3ProviderEngine, RPCSubprovider } from '@0xproject/subproviders';
 
 export {
     ExchangeContractErrs,
     Order,
     SignedOrder,
+    SignerProviderType,
     ECSignature,
     OrderStateValid,
     OrderStateInvalid,
