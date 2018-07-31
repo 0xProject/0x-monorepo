@@ -304,7 +304,7 @@ describe('ExchangeWrapper', () => {
         });
     });
     describe('#isAllowedValidatorAsync', () => {
-        it('should check if the validator is alllowed', async () => {
+        it('should check if the validator is allowed', async () => {
             const signerAddress = makerAddress;
             const validatorAddress = constants.NULL_ADDRESS;
             const isAllowed = await contractWrappers.exchange.isAllowedValidatorAsync(signerAddress, validatorAddress);
