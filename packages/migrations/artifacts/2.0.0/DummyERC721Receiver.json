@@ -35,35 +35,13 @@
 				"type": "function"
 			},
 			{
-				"constant": false,
-				"inputs": [
-					{
-						"name": "_from",
-						"type": "address"
-					},
-					{
-						"name": "_tokenId",
-						"type": "uint256"
-					},
-					{
-						"name": "_data",
-						"type": "bytes"
-					}
-				],
-				"name": "onERC721Received",
-				"outputs": [
-					{
-						"name": "",
-						"type": "bytes4"
-					}
-				],
-				"payable": false,
-				"stateMutability": "nonpayable",
-				"type": "function"
-			},
-			{
 				"anonymous": false,
 				"inputs": [
+					{
+						"indexed": false,
+						"name": "operator",
+						"type": "address"
+					},
 					{
 						"indexed": false,
 						"name": "from",
@@ -87,15 +65,15 @@
 		"evm": {
 			"bytecode": {
 				"linkReferences": {},
-				"object": "0x",
-				"opcodes": "",
-				"sourceMap": ""
+				"object": "0x608060405234801561001057600080fd5b50610210806100206000396000f3006080604052600436106100405763ffffffff7c0100000000000000000000000000000000000000000000000000000000600035041663150b7a028114610045575b600080fd5b34801561005157600080fd5b5061008b73ffffffffffffffffffffffffffffffffffffffff600480358216916024803590911691604435916064359081019101356100c0565b604080517fffffffff000000000000000000000000000000000000000000000000000000009092168252519081900360200190f35b60007f5343d39c46825e39cfee854256354ed1b3837af99997a3242ae29e831889773c8686868686604051808673ffffffffffffffffffffffffffffffffffffffff1673ffffffffffffffffffffffffffffffffffffffff1681526020018573ffffffffffffffffffffffffffffffffffffffff1673ffffffffffffffffffffffffffffffffffffffff16815260200184815260200180602001828103825284848281815260200192508082843760405192018290039850909650505050505050a150604080517f6f6e455243373231526563656976656428616464726573732c6164647265737381527f2c75696e743235362c62797465732900000000000000000000000000000000006020820152905190819003602f019020959450505050505600a165627a7a723058207ca4491714f16a9054a23361cd9c97f51cc5a7f063295d68504143f2074901720029",
+				"opcodes": "PUSH1 0x80 PUSH1 0x40 MSTORE CALLVALUE DUP1 ISZERO PUSH2 0x10 JUMPI PUSH1 0x0 DUP1 REVERT JUMPDEST POP PUSH2 0x210 DUP1 PUSH2 0x20 PUSH1 0x0 CODECOPY PUSH1 0x0 RETURN STOP PUSH1 0x80 PUSH1 0x40 MSTORE PUSH1 0x4 CALLDATASIZE LT PUSH2 0x40 JUMPI PUSH4 0xFFFFFFFF PUSH29 0x100000000000000000000000000000000000000000000000000000000 PUSH1 0x0 CALLDATALOAD DIV AND PUSH4 0x150B7A02 DUP2 EQ PUSH2 0x45 JUMPI JUMPDEST PUSH1 0x0 DUP1 REVERT JUMPDEST CALLVALUE DUP1 ISZERO PUSH2 0x51 JUMPI PUSH1 0x0 DUP1 REVERT JUMPDEST POP PUSH2 0x8B PUSH20 0xFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF PUSH1 0x4 DUP1 CALLDATALOAD DUP3 AND SWAP2 PUSH1 0x24 DUP1 CALLDATALOAD SWAP1 SWAP2 AND SWAP2 PUSH1 0x44 CALLDATALOAD SWAP2 PUSH1 0x64 CALLDATALOAD SWAP1 DUP2 ADD SWAP2 ADD CALLDATALOAD PUSH2 0xC0 JUMP JUMPDEST PUSH1 0x40 DUP1 MLOAD PUSH32 0xFFFFFFFF00000000000000000000000000000000000000000000000000000000 SWAP1 SWAP3 AND DUP3 MSTORE MLOAD SWAP1 DUP2 SWAP1 SUB PUSH1 0x20 ADD SWAP1 RETURN JUMPDEST PUSH1 0x0 PUSH32 0x5343D39C46825E39CFEE854256354ED1B3837AF99997A3242AE29E831889773C DUP7 DUP7 DUP7 DUP7 DUP7 PUSH1 0x40 MLOAD DUP1 DUP7 PUSH20 0xFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF AND PUSH20 0xFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF AND DUP2 MSTORE PUSH1 0x20 ADD DUP6 PUSH20 0xFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF AND PUSH20 0xFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF AND DUP2 MSTORE PUSH1 0x20 ADD DUP5 DUP2 MSTORE PUSH1 0x20 ADD DUP1 PUSH1 0x20 ADD DUP3 DUP2 SUB DUP3 MSTORE DUP5 DUP5 DUP3 DUP2 DUP2 MSTORE PUSH1 0x20 ADD SWAP3 POP DUP1 DUP3 DUP5 CALLDATACOPY PUSH1 0x40 MLOAD SWAP3 ADD DUP3 SWAP1 SUB SWAP9 POP SWAP1 SWAP7 POP POP POP POP POP POP POP LOG1 POP PUSH1 0x40 DUP1 MLOAD PUSH32 0x6F6E455243373231526563656976656428616464726573732C61646472657373 DUP2 MSTORE PUSH32 0x2C75696E743235362C6279746573290000000000000000000000000000000000 PUSH1 0x20 DUP3 ADD MSTORE SWAP1 MLOAD SWAP1 DUP2 SWAP1 SUB PUSH1 0x2F ADD SWAP1 KECCAK256 SWAP6 SWAP5 POP POP POP POP POP JUMP STOP LOG1 PUSH6 0x627A7A723058 KECCAK256 PUSH29 0xA4491714F16A9054A23361CD9C97F51CC5A7F063295D68504143F20749 ADD PUSH19 0x290000000000000000000000000000000000 ",
+				"sourceMap": "662:1506:0:-;;;;8:9:-1;5:2;;;30:1;27;20:12;5:2;662:1506:0;;;;;;;"
 			},
 			"deployedBytecode": {
 				"linkReferences": {},
-				"object": "0x",
-				"opcodes": "",
-				"sourceMap": ""
+				"object": "0x6080604052600436106100405763ffffffff7c0100000000000000000000000000000000000000000000000000000000600035041663150b7a028114610045575b600080fd5b34801561005157600080fd5b5061008b73ffffffffffffffffffffffffffffffffffffffff600480358216916024803590911691604435916064359081019101356100c0565b604080517fffffffff000000000000000000000000000000000000000000000000000000009092168252519081900360200190f35b60007f5343d39c46825e39cfee854256354ed1b3837af99997a3242ae29e831889773c8686868686604051808673ffffffffffffffffffffffffffffffffffffffff1673ffffffffffffffffffffffffffffffffffffffff1681526020018573ffffffffffffffffffffffffffffffffffffffff1673ffffffffffffffffffffffffffffffffffffffff16815260200184815260200180602001828103825284848281815260200192508082843760405192018290039850909650505050505050a150604080517f6f6e455243373231526563656976656428616464726573732c6164647265737381527f2c75696e743235362c62797465732900000000000000000000000000000000006020820152905190819003602f019020959450505050505600a165627a7a723058207ca4491714f16a9054a23361cd9c97f51cc5a7f063295d68504143f2074901720029",
+				"opcodes": "PUSH1 0x80 PUSH1 0x40 MSTORE PUSH1 0x4 CALLDATASIZE LT PUSH2 0x40 JUMPI PUSH4 0xFFFFFFFF PUSH29 0x100000000000000000000000000000000000000000000000000000000 PUSH1 0x0 CALLDATALOAD DIV AND PUSH4 0x150B7A02 DUP2 EQ PUSH2 0x45 JUMPI JUMPDEST PUSH1 0x0 DUP1 REVERT JUMPDEST CALLVALUE DUP1 ISZERO PUSH2 0x51 JUMPI PUSH1 0x0 DUP1 REVERT JUMPDEST POP PUSH2 0x8B PUSH20 0xFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF PUSH1 0x4 DUP1 CALLDATALOAD DUP3 AND SWAP2 PUSH1 0x24 DUP1 CALLDATALOAD SWAP1 SWAP2 AND SWAP2 PUSH1 0x44 CALLDATALOAD SWAP2 PUSH1 0x64 CALLDATALOAD SWAP1 DUP2 ADD SWAP2 ADD CALLDATALOAD PUSH2 0xC0 JUMP JUMPDEST PUSH1 0x40 DUP1 MLOAD PUSH32 0xFFFFFFFF00000000000000000000000000000000000000000000000000000000 SWAP1 SWAP3 AND DUP3 MSTORE MLOAD SWAP1 DUP2 SWAP1 SUB PUSH1 0x20 ADD SWAP1 RETURN JUMPDEST PUSH1 0x0 PUSH32 0x5343D39C46825E39CFEE854256354ED1B3837AF99997A3242AE29E831889773C DUP7 DUP7 DUP7 DUP7 DUP7 PUSH1 0x40 MLOAD DUP1 DUP7 PUSH20 0xFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF AND PUSH20 0xFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF AND DUP2 MSTORE PUSH1 0x20 ADD DUP6 PUSH20 0xFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF AND PUSH20 0xFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF AND DUP2 MSTORE PUSH1 0x20 ADD DUP5 DUP2 MSTORE PUSH1 0x20 ADD DUP1 PUSH1 0x20 ADD DUP3 DUP2 SUB DUP3 MSTORE DUP5 DUP5 DUP3 DUP2 DUP2 MSTORE PUSH1 0x20 ADD SWAP3 POP DUP1 DUP3 DUP5 CALLDATACOPY PUSH1 0x40 MLOAD SWAP3 ADD DUP3 SWAP1 SUB SWAP9 POP SWAP1 SWAP7 POP POP POP POP POP POP POP LOG1 POP PUSH1 0x40 DUP1 MLOAD PUSH32 0x6F6E455243373231526563656976656428616464726573732C61646472657373 DUP2 MSTORE PUSH32 0x2C75696E743235362C6279746573290000000000000000000000000000000000 PUSH1 0x20 DUP3 ADD MSTORE SWAP1 MLOAD SWAP1 DUP2 SWAP1 SUB PUSH1 0x2F ADD SWAP1 KECCAK256 SWAP6 SWAP5 POP POP POP POP POP JUMP STOP LOG1 PUSH6 0x627A7A723058 KECCAK256 PUSH29 0xA4491714F16A9054A23361CD9C97F51CC5A7F063295D68504143F20749 ADD PUSH19 0x290000000000000000000000000000000000 ",
+				"sourceMap": "662:1506:0:-;;;;;;;;;;;;;;;;;;;;;;;1831:335;;8:9:-1;5:2;;;30:1;27;20:12;5:2;-1:-1;1831:335:0;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;1994:6;2021:106;2048:9;2071:5;2090:8;2112:5;;2021:106;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;-1:-1:-1;2021:106:0;;-1:-1:-1;;;;;;;2021:106:0;-1:-1:-1;850:60:0;;;;;;;;;;;;;;;;;;;;;1831:335;;;;;;;:::o"
 			}
 		}
 	},
@@ -108,10 +86,10 @@
 		}
 	},
 	"sourceCodes": {
-		"2.0.0/test/DummyERC721Receiver/DummyERC721Receiver.sol": "/*\nThe MIT License (MIT)\n\nCopyright (c) 2016 Smart Contract Solutions, Inc.\n\nPermission is hereby granted, free of charge, to any person obtaining\na copy of this software and associated documentation files (the\n\"Software\"), to deal in the Software without restriction, including\nwithout limitation the rights to use, copy, modify, merge, publish,\ndistribute, sublicense, and/or sell copies of the Software, and to\npermit persons to whom the Software is furnished to do so, subject to\nthe following conditions:\n\nThe above copyright notice and this permission notice shall be included\nin all copies or substantial portions of the Software.\n\nTHE SOFTWARE IS PROVIDED \"AS IS\", WITHOUT WARRANTY OF ANY KIND, EXPRESS\nOR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF\nMERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.\nIN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY\nCLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT,\nTORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE\nSOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.\n*/\n\npragma solidity 0.4.24;\n\nimport \"../../tokens/ERC721Token/IERC721Receiver.sol\";\n\n\ncontract DummyERC721Receiver is\n    IERC721Receiver\n{\n\n    // Function selector for ERC721Receiver.onERC721Received\n    // 0x150b7a02\n    bytes4 constant internal ERC721_RECEIVED = bytes4(keccak256(\"onERC721Received(address,address,uint256,bytes)\"));\n\n    event TokenReceived(\n        address from,\n        uint256 tokenId,\n        bytes data\n    );\n\n    /**\n    * @notice Handle the receipt of an NFT\n    * @dev The ERC721 smart contract calls this function on the recipient\n    *  after a `safetransfer`. This function MAY throw to revert and reject the\n    *  transfer. This function MUST use 50,000 gas or less. Return of other\n    *  than the magic value MUST result in the transaction being reverted.\n    *  Note: the contract address is always the message sender.\n    * @param _from The sending address\n    * @param _tokenId The NFT identifier which is being transfered\n    * @param _data Additional data with no specified format\n    * @return `bytes4(keccak256(\"onERC721Received(address,uint256,bytes)\"))`\n    */\n    function onERC721Received(\n        address _from,\n        uint256 _tokenId,\n        bytes _data\n    )\n        public\n        returns (bytes4)\n    {\n        emit TokenReceived(_from, _tokenId, _data);\n        return ERC721_RECEIVED;\n    }\n}\n",
+		"2.0.0/test/DummyERC721Receiver/DummyERC721Receiver.sol": "/*\n\n  Copyright 2018 ZeroEx Intl.\n\n  Licensed under the Apache License, Version 2.0 (the \"License\");\n  you may not use this file except in compliance with the License.\n  You may obtain a copy of the License at\n\n    http://www.apache.org/licenses/LICENSE-2.0\n\n  Unless required by applicable law or agreed to in writing, software\n  distributed under the License is distributed on an \"AS IS\" BASIS,\n  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.\n  See the License for the specific language governing permissions and\n  limitations under the License.\n\n*/\n\npragma solidity 0.4.24;\n\nimport \"../../tokens/ERC721Token/IERC721Receiver.sol\";\n\n\ncontract DummyERC721Receiver is\n    IERC721Receiver\n{\n\n    // Function selector for ERC721Receiver.onERC721Received\n    // 0x150b7a02\n    bytes4 constant internal ERC721_RECEIVED = bytes4(keccak256(\"onERC721Received(address,address,uint256,bytes)\"));\n\n    event TokenReceived(\n        address operator,\n        address from,\n        uint256 tokenId,\n        bytes data\n    );\n\n    /// @notice Handle the receipt of an NFT\n    /// @dev The ERC721 smart contract calls this function on the recipient\n    ///      after a `transfer`. This function MAY throw to revert and reject the\n    ///      transfer. Return of other than the magic value MUST result in the\n    ///      transaction being reverted.\n    ///      Note: the contract address is always the message sender.\n    /// @param _operator The address which called `safeTransferFrom` function\n    /// @param _from The address which previously owned the token\n    /// @param _tokenId The NFT identifier which is being transferred\n    /// @param _data Additional data with no specified format\n    /// @return `bytes4(keccak256(\"onERC721Received(address,address,uint256,bytes)\"))`\n    ///         unless throwing\n    function onERC721Received(\n        address _operator,\n        address _from,\n        uint256 _tokenId,\n        bytes _data\n    )\n        external\n        returns (bytes4)\n    {\n        emit TokenReceived(\n            _operator,\n            _from,\n            _tokenId,\n            _data\n        );\n        return ERC721_RECEIVED;\n    }\n}\n",
 		"2.0.0/tokens/ERC721Token/IERC721Receiver.sol": "/*\n\n  Copyright 2018 ZeroEx Intl.\n\n  Licensed under the Apache License, Version 2.0 (the \"License\");\n  you may not use this file except in compliance with the License.\n  You may obtain a copy of the License at\n\n    http://www.apache.org/licenses/LICENSE-2.0\n\n  Unless required by applicable law or agreed to in writing, software\n  distributed under the License is distributed on an \"AS IS\" BASIS,\n  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.\n  See the License for the specific language governing permissions and\n  limitations under the License.\n\n*/\n\npragma solidity 0.4.24;\n\n\ncontract IERC721Receiver {\n\n    /// @notice Handle the receipt of an NFT\n    /// @dev The ERC721 smart contract calls this function on the recipient\n    ///  after a `transfer`. This function MAY throw to revert and reject the\n    ///  transfer. Return of other than the magic value MUST result in the\n    ///  transaction being reverted.\n    ///  Note: the contract address is always the message sender.\n    /// @param _operator The address which called `safeTransferFrom` function\n    /// @param _from The address which previously owned the token\n    /// @param _tokenId The NFT identifier which is being transferred\n    /// @param _data Additional data with no specified format\n    /// @return `bytes4(keccak256(\"onERC721Received(address,address,uint256,bytes)\"))`\n    ///  unless throwing\n    function onERC721Received(\n        address _operator,\n        address _from,\n        uint256 _tokenId,\n        bytes _data\n    )\n        external\n        returns (bytes4);\n}\n"
 	},
-	"sourceTreeHashHex": "0x00fc24f44208390e6d034615bce1d0a4e1de04d6a1636888696a1d18561a5828",
+	"sourceTreeHashHex": "0x8dcf5c0923a19bf4d5a85f5cf078ea02068ebfc6f8a10da115e3fb43f31ed63a",
 	"compiler": {
 		"name": "solc",
 		"version": "soljson-v0.4.24+commit.e67f0147.js",
