@@ -456,6 +456,29 @@ export class FillOrderCombinatorialUtils {
             signedOrder.takerAssetAmount,
             signedOrder.makerAssetAmount,
         );
+        const expMakerFeePaid = orderUtils.getPartialAmount(
+            expFilledTakerAmount,
+            signedOrder.takerAssetAmount,
+            signedOrder.makerFee,
+        );
+        const expTakerFeePaid = orderUtils.getPartialAmount(
+            expFilledTakerAmount,
+            signedOrder.takerAssetAmount,
+            signedOrder.takerFee,
+        );
+        const fillResults = await this.exchangeWrapper.getFillOrderResultsAsync(signedOrder, this.takerAddress, {
+            takerAssetFillAmount,
+        });
+        expect(fillResults.takerAssetFilledAmount).to.be.bignumber.equal(
+            expFilledTakerAmount,
+            'takerAssetFilledAmount',
+        );
+        expect(fillResults.makerAssetFilledAmount).to.be.bignumber.equal(
+            expFilledMakerAmount,
+            'makerAssetFilledAmount',
+        );
+        expect(fillResults.takerFeePaid).to.be.bignumber.equal(expTakerFeePaid, 'takerFeePaid');
+        expect(fillResults.makerFeePaid).to.be.bignumber.equal(expMakerFeePaid, 'makerFeePaid');
 
         // - Let's fill the order!
         const txReceipt = await this.exchangeWrapper.fillOrderAsync(signedOrder, this.takerAddress, {
@@ -479,17 +502,7 @@ export class FillOrderCombinatorialUtils {
             expFilledTakerAmount,
             'log.args.takerAssetFilledAmount',
         );
-        const expMakerFeePaid = orderUtils.getPartialAmount(
-            expFilledTakerAmount,
-            signedOrder.takerAssetAmount,
-            signedOrder.makerFee,
-        );
         expect(log.args.makerFeePaid).to.be.bignumber.equal(expMakerFeePaid, 'log.args.makerFeePaid');
-        const expTakerFeePaid = orderUtils.getPartialAmount(
-            expFilledTakerAmount,
-            signedOrder.takerAssetAmount,
-            signedOrder.takerFee,
-        );
         expect(log.args.takerFeePaid).to.be.bignumber.equal(expTakerFeePaid, 'logs.args.takerFeePaid');
         expect(log.args.orderHash).to.be.equal(orderHash, 'log.args.orderHash');
         expect(log.args.makerAssetData).to.be.equal(makerAssetData, 'log.args.makerAssetData');

@@ -8,7 +8,7 @@ import { ExchangeContract } from '../../generated_contract_wrappers/exchange';
 import { formatters } from './formatters';
 import { LogDecoder } from './log_decoder';
 import { orderUtils } from './order_utils';
-import { OrderInfo, SignedTransaction } from './types';
+import { FillResults, OrderInfo, SignedTransaction } from './types';
 
 export class ExchangeWrapper {
     private readonly _exchange: ExchangeContract;
@@ -242,5 +242,32 @@ export class ExchangeWrapper {
         );
         const tx = await this._logDecoder.getTxWithDecodedLogsAsync(txHash);
         return tx;
+    }
+    public async getFillOrderResultsAsync(
+        signedOrder: SignedOrder,
+        from: string,
+        opts: { takerAssetFillAmount?: BigNumber } = {},
+    ): Promise<FillResults> {
+        const params = orderUtils.createFill(signedOrder, opts.takerAssetFillAmount);
+        const fillResults = await this._exchange.fillOrder.callAsync(
+            params.order,
+            params.takerAssetFillAmount,
+            params.signature,
+            { from },
+        );
+        return fillResults;
+    }
+    public abiEncodeFillOrder(
+        signedOrder: SignedOrder,
+        from: string,
+        opts: { takerAssetFillAmount?: BigNumber } = {},
+    ): string {
+        const params = orderUtils.createFill(signedOrder, opts.takerAssetFillAmount);
+        const data = this._exchange.fillOrder.getABIEncodedTransactionData(
+            params.order,
+            params.takerAssetFillAmount,
+            params.signature,
+        );
+        return data;
     }
 }
