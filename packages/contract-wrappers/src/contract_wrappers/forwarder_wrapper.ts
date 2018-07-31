@@ -42,7 +42,7 @@ export class ForwarderWrapper extends ContractWrapper {
      *                               All orders must specify WETH as the takerAsset
      * @param   takerAddress         The user Ethereum address who would like to fill this order. Must be available via the supplied
      *                               Provider provided at instantiation.
-     * @param   ethAmount            The amount of eth to send with the transaction
+     * @param   ethAmount            The amount of eth to send with the transaction (in wei).
      * @param   signedFeeOrders      An array of objects that conform to the SignedOrder interface. All orders must specify ZRX as makerAsset and WETH as takerAsset.
      *                               Used to purchase ZRX for primary order fees.
      * @param   feePercentage        The percentage of WETH sold that will payed as fee to forwarding contract feeRecipient.
@@ -103,7 +103,7 @@ export class ForwarderWrapper extends ContractWrapper {
      * @param   makerAssetFillAmount The amount of the order (in taker asset baseUnits) that you wish to fill.
      * @param   takerAddress         The user Ethereum address who would like to fill this order. Must be available via the supplied
      *                               Provider provided at instantiation.
-     * @param   ethAmount            The amount of eth to send with the transaction
+     * @param   ethAmount            The amount of eth to send with the transaction (in wei).
      * @param   signedFeeOrders      An array of objects that conform to the SignedOrder interface. All orders must specify ZRX as makerAsset and WETH as takerAsset.
      *                               Used to purchase ZRX for primary order fees.
      * @param   feePercentage        The percentage of WETH sold that will payed as fee to forwarding contract feeRecipient.
