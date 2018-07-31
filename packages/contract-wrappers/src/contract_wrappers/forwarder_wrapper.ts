@@ -62,8 +62,8 @@ export class ForwarderWrapper extends ContractWrapper {
         assert.doesConformToSchema('txOpts', txOpts, txOptsSchema);
         const normalizedTakerAddress = takerAddress.toLowerCase();
         const normalizedFeeRecipientAddress = feeRecipientAddress.toLowerCase();
-        const ForwarderContractInstance = await this._getForwarderContractAsync();
-        const txHash = await ForwarderContractInstance.marketSellOrdersWithEth.sendTransactionAsync(
+        const forwarderContractInstance = await this._getForwarderContractAsync();
+        const txHash = await forwarderContractInstance.marketSellOrdersWithEth.sendTransactionAsync(
             signedOrders,
             _.map(signedOrders, order => order.signature),
             signedFeeOrders,
@@ -117,8 +117,8 @@ export class ForwarderWrapper extends ContractWrapper {
         assert.doesConformToSchema('txOpts', txOpts, txOptsSchema);
         const normalizedTakerAddress = takerAddress.toLowerCase();
         const normalizedFeeRecipientAddress = feeRecipientAddress.toLowerCase();
-        const ForwarderContractInstance = await this._getForwarderContractAsync();
-        const txHash = await ForwarderContractInstance.marketBuyOrdersWithEth.sendTransactionAsync(
+        const forwarderContractInstance = await this._getForwarderContractAsync();
+        const txHash = await forwarderContractInstance.marketBuyOrdersWithEth.sendTransactionAsync(
             signedOrders,
             makerAssetFillAmount,
             _.map(signedOrders, order => order.signature),
