@@ -110,7 +110,12 @@ export class ContractWrappers {
             config.zrxContractAddress,
             blockPollingIntervalMs,
         );
-        this.forwarder = new ForwarderWrapper(this._web3Wrapper, config.networkId, config.forwarderContractAddress);
+        this.forwarder = new ForwarderWrapper(
+            this._web3Wrapper,
+            config.networkId,
+            config.forwarderContractAddress,
+            config.zrxContractAddress,
+        );
     }
     /**
      * Sets a new web3 provider for 0x.js. Updating the provider will stop all
