@@ -48,7 +48,7 @@ export class PropertyBlock extends React.Component<PropertyBlockProps, PropertyB
                     />
                 </div>
                 <code className={`hljs ${constants.TYPE_TO_SYNTAX[this.props.docsInfo.type]}`}>
-                    {property.name}:{' '}
+                    {(property as any).callPath}{property.name}:{' '}
                     <Type type={property.type} sectionName={sectionName} docsInfo={this.props.docsInfo} />
                 </code>
                 {property.source && (

@@ -202,6 +202,7 @@ export interface Property {
     type: Type;
     source?: Source;
     comment?: string;
+    callPath?: string;
 }
 
 export interface BaseMethod {

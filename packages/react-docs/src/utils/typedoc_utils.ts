@@ -283,6 +283,9 @@ export const typeDocUtils = {
     _convertProperty(entity: TypeDocNode, sections: SectionsMap, sectionName: string, docId: string): Property {
         const source = entity.sources[0];
         const commentIfExists = !_.isUndefined(entity.comment) ? entity.comment.shortText : undefined;
+        const isConstructor = false;
+        const isStatic = _.isUndefined(entity.flags.isStatic) ? false : entity.flags.isStatic;
+        const callPath = typeDocUtils._getCallPath(sectionName, sections, isStatic, isConstructor, docId, entity.name);
         const property = {
             name: entity.name,
             type: typeDocUtils._convertType(entity.type, sections, sectionName, docId),
@@ -291,6 +294,7 @@ export const typeDocUtils = {
                 line: source.line,
             },
             comment: commentIfExists,
+            callPath,
         };
         return property;
     },
@@ -306,22 +310,6 @@ export const typeDocUtils = {
         const hasComment = !_.isUndefined(signature.comment);
         const isStatic = _.isUndefined(entity.flags.isStatic) ? false : entity.flags.isStatic;
 
-        // HACK: we use the fact that the sectionName is the same as the property name at the top-level
-        // of the public interface. In the future, we shouldn't use this hack but rather get it from the JSON.
-        let callPath;
-        if (isConstructor || entity.name === '__type') {
-            callPath = '';
-            // TODO: Get rid of this 0x-specific logic
-        } else if (docId === 'ZERO_EX_JS') {
-            const topLevelInterface = isStatic ? 'ZeroEx.' : 'zeroEx.';
-            callPath =
-                !_.isUndefined(sections.zeroEx) && sectionName !== sections.zeroEx
-                    ? `${topLevelInterface}${sectionName}.`
-                    : topLevelInterface;
-        } else {
-            callPath = `${sectionName}.`;
-        }
-
         const parameters = _.map(signature.parameters, param => {
             return typeDocUtils._convertParameter(param, sections, sectionName, docId);
         });
@@ -330,6 +318,7 @@ export const typeDocUtils = {
             ? undefined
             : typeDocUtils._convertTypeParameter(signature.typeParameter[0], sections, sectionName, docId);
 
+        const callPath = typeDocUtils._getCallPath(sectionName, sections, isStatic, isConstructor, docId, entity.name);
         const method = {
             isConstructor,
             isStatic,
@@ -346,6 +335,24 @@ export const typeDocUtils = {
             typeParameter,
         };
         return method;
+    },
+    _getCallPath(sectionName: string, sections: SectionsMap, isStatic: boolean, isConstructor: boolean, docId: string, entityName: string) {
+        // HACK: we use the fact that the sectionName is the same as the property name at the top-level
+        // of the public interface. In the future, we shouldn't use this hack but rather get it from the JSON.
+        let callPath;
+        if (isConstructor || entityName === '__type') {
+            callPath = '';
+            // TODO: Get rid of this 0x-specific logic
+        } else if (docId === 'ZERO_EX_JS') {
+            const topLevelInterface = isStatic ? 'ZeroEx.' : 'zeroEx.';
+            callPath =
+                !_.isUndefined(sections.zeroEx) && sectionName !== sections.zeroEx
+                    ? `${topLevelInterface}${sectionName}.`
+                    : topLevelInterface;
+        } else {
+            callPath = `${sectionName}.`;
+        }
+        return callPath;
     },
     _convertFunction(
         entity: TypeDocNode,
