@@ -626,20 +626,34 @@ describe('Schema', () => {
                     it('should validate valid order book responses', () => {
                         const testCases = [
                             {
-                                bids: [],
-                                asks: [],
+                                bids: {
+                                    ...paginatedResponse,
+                                    records: [relayerApiOrder],
+                                },
+                                asks: {
+                                    ...paginatedResponse,
+                                    records: [],
+                                },
                             },
                             {
-                                bids: [signedOrder, signedOrder],
-                                asks: [],
+                                bids: {
+                                    ...paginatedResponse,
+                                    records: [relayerApiOrder, relayerApiOrder],
+                                },
+                                asks: {
+                                    ...paginatedResponse,
+                                    records: [relayerApiOrder, relayerApiOrder],
+                                },
                             },
                             {
-                                bids: [],
-                                asks: [signedOrder, signedOrder],
-                            },
-                            {
-                                bids: [signedOrder],
-                                asks: [signedOrder, signedOrder],
+                                bids: {
+                                    ...paginatedResponse,
+                                    records: [],
+                                },
+                                asks: {
+                                    ...paginatedResponse,
+                                    records: [relayerApiOrder, relayerApiOrder],
+                                },
                             },
                         ];
                         validateAgainstSchema(testCases, relayerApiOrderBookResponseSchema);
@@ -648,18 +662,29 @@ describe('Schema', () => {
                         const testCases = [
                             {},
                             {
-                                bids: [signedOrder, signedOrder],
+                                bids: {
+                                    records: [relayerApiOrder],
+                                },
+                                asks: {
+                                    ...paginatedResponse,
+                                    records: [],
+                                },
                             },
                             {
-                                asks: [signedOrder, signedOrder],
+                                bids: {
+                                    ...paginatedResponse,
+                                    records: [relayerApiOrder, relayerApiOrder],
+                                },
+                                asks: {},
                             },
                             {
-                                bids: signedOrder,
-                                asks: [signedOrder, signedOrder],
-                            },
-                            {
-                                bids: [signedOrder],
-                                asks: signedOrder,
+                                bids: {
+                                    ...paginatedResponse,
+                                },
+                                asks: {
+                                    ...paginatedResponse,
+                                    records: [relayerApiOrder, relayerApiOrder],
+                                },
                             },
                         ];
                         const shouldFail = true;
