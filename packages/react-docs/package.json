@@ -41,7 +41,7 @@
         "@types/node": "^8.0.53",
         "@types/react": "*",
         "@types/react-dom": "*",
-        "@types/react-scroll": "0.0.31",
+        "@types/react-scroll": "1.5.3",
         "basscss": "^8.0.3",
         "compare-versions": "^3.0.1",
         "lodash": "^4.17.4",
@@ -49,7 +49,7 @@
         "react": "15.6.1",
         "react-dom": "15.6.1",
         "react-markdown": "^3.2.2",
-        "react-scroll": "^1.5.2",
+        "react-scroll": "^1.7.10",
         "react-tooltip": "^3.2.7",
         "semver": "5.5.0"
     },

@@ -27,7 +27,7 @@ const defaultProps = {
 };
 
 export const Signature: React.SFC<SignatureProps> = (props: SignatureProps) => {
-    const sectionName = constants.TYPES_SECTION_NAME;
+    const sectionName = props.sectionName;
     const parameters = renderParameters(props.parameters, props.docsInfo, sectionName, props.typeDefinitionByName);
     const paramStringArray: any[] = [];
     // HACK: For now we don't put params on newlines if there are less then 2 of them.

@@ -182,6 +182,7 @@ export function Type(props: TypeProps): any {
             <ScrollLink
                 to={typeDefinitionAnchorId}
                 offset={0}
+                hashSpy={true}
                 duration={sharedConstants.DOCS_SCROLL_DURATION_MS}
                 containerId={sharedConstants.DOCS_CONTAINER_ID}
             >

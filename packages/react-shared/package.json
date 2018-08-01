@@ -39,7 +39,7 @@
         "@types/node": "^8.0.53",
         "@types/react": "*",
         "@types/react-dom": "*",
-        "@types/react-scroll": "0.0.31",
+        "@types/react-scroll": "1.5.3",
         "basscss": "^8.0.3",
         "is-mobile": "^0.2.2",
         "lodash": "^4.17.4",
@@ -48,7 +48,7 @@
         "react-dom": "15.6.1",
         "react-highlight": "0xproject/react-highlight",
         "react-markdown": "^3.2.2",
-        "react-scroll": "^1.5.2",
+        "react-scroll": "^1.7.10",
         "react-tap-event-plugin": "^2.0.1"
     },
     "publishConfig": {
