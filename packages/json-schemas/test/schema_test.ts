@@ -753,8 +753,14 @@ describe('Schema', () => {
                             {
                                 type: 'update',
                                 channel: 'orders',
-                                requestId: 2,
-                                payload: signedOrder,
+                                requestId: 'randomId',
+                                payload: [relayerApiOrder],
+                            },
+                            {
+                                type: 'update',
+                                channel: 'orders',
+                                requestId: 'randomId',
+                                payload: [],
                             },
                         ];
                         validateAgainstSchema(testCases, relayerApiOrdersChannelUpdateSchema);
@@ -764,20 +770,25 @@ describe('Schema', () => {
                             {
                                 type: 'foo',
                                 channel: 'orders',
-                                requestId: 2,
-                                payload: signedOrder,
+                                requestId: 'randomId',
                             },
                             {
                                 type: 'update',
                                 channel: 'bar',
                                 requestId: 2,
-                                payload: signedOrder,
+                                payload: [relayerApiOrder],
                             },
                             {
                                 type: 'update',
                                 channel: 'orders',
-                                requestId: 2,
+                                requestId: 'randomId',
                                 payload: {},
+                            },
+                            {
+                                type: 'update',
+                                channel: 'orders',
+                                requestId: 'randomId',
+                                payload: relayerApiErrorResponseSchema,
                             },
                         ];
                         const shouldFail = true;
