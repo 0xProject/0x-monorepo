@@ -17,9 +17,6 @@ const InstallationMarkdownV1 = require('md/docs/connect/1.0.0/installation');
 const markdownSections = {
     introduction: 'introduction',
     installation: 'installation',
-    httpClient: 'httpClient',
-    webSocketOrderbookChannel: 'webSocketOrderbookChannel',
-    types: docConstants.TYPES_SECTION_NAME,
 };
 
 const docsInfoConfig: DocsInfoConfig = {
@@ -30,9 +27,6 @@ const docsInfoConfig: DocsInfoConfig = {
     markdownMenu: {
         introduction: [markdownSections.introduction],
         install: [markdownSections.installation],
-        httpClient: [markdownSections.httpClient],
-        webSocketOrderbookChannel: [markdownSections.webSocketOrderbookChannel],
-        types: [markdownSections.types],
     },
     sectionNameToMarkdownByVersion: {
         '0.0.1': {
