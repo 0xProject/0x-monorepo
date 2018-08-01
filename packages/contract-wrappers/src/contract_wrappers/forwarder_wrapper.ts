@@ -11,6 +11,7 @@ import { txOptsSchema } from '../schemas/tx_opts_schema';
 import { TransactionOpts } from '../types';
 import { assert } from '../utils/assert';
 import { constants } from '../utils/constants';
+import { marketOrdersOptimizationUtils } from '../utils/market_orders_optimization_utils';
 
 import { ContractWrapper } from './contract_wrapper';
 import { ForwarderContract } from './generated/forwarder';
@@ -75,14 +76,19 @@ export class ForwarderWrapper extends ContractWrapper {
             this.getZRXTokenAddress(),
             this.getEtherTokenAddress(),
         );
+        // lowercase input addresses
         const normalizedTakerAddress = takerAddress.toLowerCase();
         const normalizedFeeRecipientAddress = feeRecipientAddress.toLowerCase();
+        // optimize orders
+        const optimizedMarketOrders = marketOrdersOptimizationUtils.optimizeMarketOrders(signedOrders);
+        const optimizedFeeOrders = marketOrdersOptimizationUtils.optimizeFeeOrders(signedFeeOrders);
+        // send transaction
         const forwarderContractInstance = await this._getForwarderContractAsync();
         const txHash = await forwarderContractInstance.marketSellOrdersWithEth.sendTransactionAsync(
-            signedOrders,
-            _.map(signedOrders, order => order.signature),
-            signedFeeOrders,
-            _.map(signedFeeOrders, order => order.signature),
+            optimizedMarketOrders,
+            _.map(optimizedMarketOrders, order => order.signature),
+            optimizedFeeOrders,
+            _.map(optimizedFeeOrders, order => order.signature),
             feePercentage,
             feeRecipientAddress,
             {
@@ -138,15 +144,20 @@ export class ForwarderWrapper extends ContractWrapper {
             this.getZRXTokenAddress(),
             this.getEtherTokenAddress(),
         );
+        // lowercase input addresses
         const normalizedTakerAddress = takerAddress.toLowerCase();
         const normalizedFeeRecipientAddress = feeRecipientAddress.toLowerCase();
+        // optimize orders
+        const optimizedMarketOrders = marketOrdersOptimizationUtils.optimizeMarketOrders(signedOrders);
+        const optimizedFeeOrders = marketOrdersOptimizationUtils.optimizeFeeOrders(signedFeeOrders);
+        // send transaction
         const forwarderContractInstance = await this._getForwarderContractAsync();
         const txHash = await forwarderContractInstance.marketBuyOrdersWithEth.sendTransactionAsync(
-            signedOrders,
+            optimizedMarketOrders,
             makerAssetFillAmount,
-            _.map(signedOrders, order => order.signature),
-            signedFeeOrders,
-            _.map(signedFeeOrders, order => order.signature),
+            _.map(optimizedMarketOrders, order => order.signature),
+            optimizedFeeOrders,
+            _.map(optimizedFeeOrders, order => order.signature),
             feePercentage,
             feeRecipientAddress,
             {

@@ -2,6 +2,7 @@ import { BigNumber } from '@0xproject/utils';
 
 export const constants = {
     NULL_ADDRESS: '0x0000000000000000000000000000000000000000',
+    NULL_BYTES: '0x',
     TESTRPC_NETWORK_ID: 50,
     INVALID_JUMP_PATTERN: 'invalid JUMP at',
     REVERT: 'revert',
