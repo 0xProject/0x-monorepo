@@ -11,15 +11,12 @@ export const marketOrdersOptimizationUtils = {
      * @returns optimized orders
      */
     optimizeMarketOrders(orders: SignedOrder[]): SignedOrder[] {
-        const optimizedOrders = _.map(orders, (order, index) => {
-            const makerAssetData = index === 0 ? order.makerAssetData : constants.NULL_BYTES;
-            const takerAssetData = constants.NULL_BYTES;
-            return {
-                ...order,
-                makerAssetData,
-                takerAssetData,
-            };
-        });
+        const optimizedOrders = _.map(orders, (order, index) =>
+            transformOrder(order, {
+                makerAssetData: index === 0 ? order.makerAssetData : constants.NULL_BYTES,
+                takerAssetData: constants.NULL_BYTES,
+            }),
+        );
         return optimizedOrders;
     },
     /**
@@ -29,15 +26,19 @@ export const marketOrdersOptimizationUtils = {
      * @returns optimized orders
      */
     optimizeFeeOrders(orders: SignedOrder[]): SignedOrder[] {
-        const optimizedOrders = _.map(orders, order => {
-            const makerAssetData = constants.NULL_BYTES;
-            const takerAssetData = constants.NULL_BYTES;
-            return {
-                ...order,
-                makerAssetData,
-                takerAssetData,
-            };
-        });
+        const optimizedOrders = _.map(orders, (order, index) =>
+            transformOrder(order, {
+                makerAssetData: constants.NULL_BYTES,
+                takerAssetData: constants.NULL_BYTES,
+            }),
+        );
         return optimizedOrders;
     },
+};
+
+const transformOrder = (order: SignedOrder, partialOrder: Partial<SignedOrder>) => {
+    return {
+        ...order,
+        ...partialOrder,
+    };
 };
