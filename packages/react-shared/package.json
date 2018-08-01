@@ -48,7 +48,7 @@
         "react-dom": "15.6.1",
         "react-highlight": "0xproject/react-highlight",
         "react-markdown": "^3.2.2",
-        "react-scroll": "^1.7.10",
+        "react-scroll": "0xproject/react-scroll#similar-to-pr-330",
         "react-tap-event-plugin": "^2.0.1"
     },
     "publishConfig": {

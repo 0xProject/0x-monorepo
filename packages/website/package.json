@@ -49,7 +49,7 @@
         "react-popper": "^1.0.0-beta.6",
         "react-redux": "^5.0.3",
         "react-router-dom": "^4.1.1",
-        "react-scroll": "^1.7.10",
+        "react-scroll": "0xproject/react-scroll#similar-to-pr-330",
         "react-tap-event-plugin": "^2.0.1",
         "react-tooltip": "^3.2.7",
         "redux": "^3.6.0",
