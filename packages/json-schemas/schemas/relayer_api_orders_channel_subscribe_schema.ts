@@ -14,8 +14,8 @@ export const relayerApiOrdersChannelSubscribePayload = {
     id: '/RelayerApiOrdersChannelSubscribePayload',
     type: 'object',
     properties: {
-        makerAssetProxyId: { $ref: '/Address' },
-        takerAssetProxyId: { $ref: '/Address' },
+        makerAssetProxyId: { $ref: '/Hex' },
+        takerAssetProxyId: { $ref: '/Hex' },
         networkId: { type: 'number' },
         makerAssetAddress: { $ref: '/Address' },
         takerAssetAddress: { $ref: '/Address' },

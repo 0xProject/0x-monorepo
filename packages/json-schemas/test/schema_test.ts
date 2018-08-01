@@ -698,21 +698,21 @@ describe('Schema', () => {
                                 type: 'subscribe',
                                 channel: 'orders',
                                 requestId: 'randomId',
-                                payload: {
-                                    baseTokenAddress: '0x323b5d4c32345ced77393b3530b1eed0f346429d',
-                                    quoteTokenAddress: '0x323b5d4c32345ced77393b3530b1eed0f346429d',
-                                    snapshot: true,
-                                    limit: 100,
-                                },
                             },
                             {
                                 type: 'subscribe',
                                 channel: 'orders',
                                 requestId: 'randomId',
                                 payload: {
-                                    baseTokenAddress: '0x323b5d4c32345ced77393b3530b1eed0f346429d',
-                                    quoteTokenAddress: '0x323b5d4c32345ced77393b3530b1eed0f346429d',
+                                    makerAssetProxyId: '0x02571792',
+                                    takerAssetProxyId: '0xf47261b0',
                                 },
+                            },
+                            {
+                                type: 'subscribe',
+                                channel: 'orders',
+                                requestId: 'randomId',
+                                payload: {},
                             },
                         ];
                         validateAgainstSchema(testCases, relayerApiOrdersChannelSubscribeSchema);
@@ -723,29 +723,15 @@ describe('Schema', () => {
                             {
                                 type: 'subscribe',
                                 channel: 'orders',
-                                payload: {
-                                    baseTokenAddress: '0x323b5d4c32345ced77393b3530b1eed0f346429d',
-                                    quoteTokenAddress: '0x323b5d4c32345ced77393b3530b1eed0f346429d',
-                                    snapshot: true,
-                                    limit: 100,
-                                },
-                            },
-                            {
-                                type: 'foo',
-                                channel: 'orders',
-                                requestId: 'randomId',
-                                payload: {
-                                    baseTokenAddress: '0x323b5d4c32345ced77393b3530b1eed0f346429d',
-                                    quoteTokenAddress: '0x323b5d4c32345ced77393b3530b1eed0f346429d',
-                                },
                             },
                             {
                                 type: 'subscribe',
-                                channel: 'bar',
+                                channel: 'orders',
                                 requestId: 'randomId',
                                 payload: {
-                                    baseTokenAddress: '0x323b5d4c32345ced77393b3530b1eed0f346429d',
-                                    quoteTokenAddress: '0x323b5d4c32345ced77393b3530b1eed0f346429d',
+                                    makerAssetProxyId: '0x02571792',
+                                    takerAssetProxyId: '0xf47261b0',
+                                    makerAssetAddress: checksummedAddress,
                                 },
                             },
                             {
@@ -753,55 +739,7 @@ describe('Schema', () => {
                                 channel: 'orders',
                                 requestId: 'randomId',
                                 payload: {
-                                    baseTokenAddress: checksummedAddress,
-                                    quoteTokenAddress: '0x323b5d4c32345ced77393b3530b1eed0f346429d',
-                                },
-                            },
-                            {
-                                type: 'subscribe',
-                                channel: 'orders',
-                                requestId: 'randomId',
-                                payload: {
-                                    baseTokenAddress: '0x323b5d4c32345ced77393b3530b1eed0f346429d',
-                                    quoteTokenAddress: checksummedAddress,
-                                },
-                            },
-                            {
-                                type: 'subscribe',
-                                channel: 'orders',
-                                requestId: 'randomId',
-                                payload: {
-                                    quoteTokenAddress: '0x323b5d4c32345ced77393b3530b1eed0f346429d',
-                                },
-                            },
-                            {
-                                type: 'subscribe',
-                                channel: 'orders',
-                                requestId: 'randomId',
-                                payload: {
-                                    baseTokenAddress: '0x323b5d4c32345ced77393b3530b1eed0f346429d',
-                                },
-                            },
-                            {
-                                type: 'subscribe',
-                                channel: 'orders',
-                                requestId: 'randomId',
-                                payload: {
-                                    baseTokenAddress: '0x323b5d4c32345ced77393b3530b1eed0f346429d',
-                                    quoteTokenAddress: '0x323b5d4c32345ced77393b3530b1eed0f346429d',
-                                    snapshot: 'true',
-                                    limit: 100,
-                                },
-                            },
-                            {
-                                type: 'subscribe',
-                                channel: 'orders',
-                                requestId: 'randomId',
-                                payload: {
-                                    baseTokenAddress: '0x323b5d4c32345ced77393b3530b1eed0f346429d',
-                                    quoteTokenAddress: '0x323b5d4c32345ced77393b3530b1eed0f346429d',
-                                    snapshot: true,
-                                    limit: '100',
+                                    makerAssetProxyId: 'invalidId',
                                 },
                             },
                         ];
