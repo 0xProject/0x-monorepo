@@ -20,7 +20,7 @@ const IntroMarkdownV2 = require('md/docs/0xjs/2.0.0/introduction');
 const versioningMarkdownV2 = require('md/docs/0xjs/2.0.0/versioning');
 /* tslint:enable:no-var-requires */
 
-const zeroExJsDocSections = {
+const markdownSections = {
     introduction: 'introduction',
     installation: 'installation',
     testrpc: 'testrpc',
@@ -34,29 +34,29 @@ const docsInfoConfig: DocsInfoConfig = {
     type: SupportedDocJson.TypeDoc,
     displayName: '0x.js',
     packageUrl: 'https://github.com/0xProject/0x-monorepo',
-    menu: {
-        introduction: [zeroExJsDocSections.introduction],
-        install: [zeroExJsDocSections.installation],
-        topics: [zeroExJsDocSections.async, zeroExJsDocSections.errors, zeroExJsDocSections.versioning],
+    markdownMenu: {
+        introduction: [markdownSections.introduction],
+        install: [markdownSections.installation],
+        topics: [markdownSections.async, markdownSections.errors, markdownSections.versioning],
     },
     sectionNameToMarkdownByVersion: {
         '0.0.1': {
-            [zeroExJsDocSections.introduction]: IntroMarkdownV1,
-            [zeroExJsDocSections.installation]: InstallationMarkdownV1,
-            [zeroExJsDocSections.async]: AsyncMarkdownV1,
-            [zeroExJsDocSections.errors]: ErrorsMarkdownV1,
-            [zeroExJsDocSections.versioning]: versioningMarkdownV1,
+            [markdownSections.introduction]: IntroMarkdownV1,
+            [markdownSections.installation]: InstallationMarkdownV1,
+            [markdownSections.async]: AsyncMarkdownV1,
+            [markdownSections.errors]: ErrorsMarkdownV1,
+            [markdownSections.versioning]: versioningMarkdownV1,
         },
         '1.0.0-rc.1': {
-            [zeroExJsDocSections.introduction]: IntroMarkdownV2,
-            [zeroExJsDocSections.versioning]: versioningMarkdownV2,
+            [markdownSections.introduction]: IntroMarkdownV2,
+            [markdownSections.versioning]: versioningMarkdownV2,
             // These are the same as for V1
-            [zeroExJsDocSections.installation]: InstallationMarkdownV1,
-            [zeroExJsDocSections.async]: AsyncMarkdownV1,
-            [zeroExJsDocSections.errors]: ErrorsMarkdownV1,
+            [markdownSections.installation]: InstallationMarkdownV1,
+            [markdownSections.async]: AsyncMarkdownV1,
+            [markdownSections.errors]: ErrorsMarkdownV1,
         },
     },
-    sections: zeroExJsDocSections,
+    markdownSections: markdownSections,
     typeConfigs: {
         typeNameToPrefix: {},
         typeNameToExternalLink: {

@@ -14,7 +14,7 @@ const IntroMarkdownV1 = require('md/docs/order_utils/1.0.0/introduction');
 const InstallationMarkdownV1 = require('md/docs/order_utils/1.0.0/installation');
 /* tslint:enable:no-var-requires */
 
-const docSections = {
+const markdownSections = {
     introduction: 'introduction',
     installation: 'installation',
     usage: 'usage',
@@ -26,19 +26,19 @@ const docsInfoConfig: DocsInfoConfig = {
     type: SupportedDocJson.TypeDoc,
     displayName: 'Order utils',
     packageUrl: 'https://github.com/0xProject/0x-monorepo',
-    menu: {
-        introduction: [docSections.introduction],
-        install: [docSections.installation],
-        usage: [docSections.usage],
-        types: [docSections.types],
+    markdownMenu: {
+        introduction: [markdownSections.introduction],
+        install: [markdownSections.installation],
+        usage: [markdownSections.usage],
+        types: [markdownSections.types],
     },
     sectionNameToMarkdownByVersion: {
         '0.0.1': {
-            [docSections.introduction]: IntroMarkdownV1,
-            [docSections.installation]: InstallationMarkdownV1,
+            [markdownSections.introduction]: IntroMarkdownV1,
+            [markdownSections.installation]: InstallationMarkdownV1,
         },
     },
-    sections: docSections,
+    markdownSections: markdownSections,
     typeConfigs: {
         typeNameToExternalLink: {
             BigNumber: constants.URL_BIGNUMBERJS_GITHUB,

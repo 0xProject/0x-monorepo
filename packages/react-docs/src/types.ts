@@ -7,8 +7,8 @@ export interface DocsInfoConfig {
     type: SupportedDocJson;
     displayName: string;
     packageUrl: string;
-    menu: DocsMenu;
-    sections: SectionsMap;
+    markdownMenu: DocsMenu;
+    markdownSections: SectionsMap;
     sectionNameToMarkdownByVersion: SectionNameToMarkdownByVersion;
     contractsByVersionByNetworkId?: ContractsByVersionByNetworkId;
     typeConfigs?: DocsInfoTypeConfigs;

@@ -14,7 +14,7 @@ const InstallationMarkdownV1 = require('md/docs/sol-compiler/installation');
 const UsageMarkdown = require('md/docs/sol-compiler/usage');
 /* tslint:enable:no-var-requires */
 
-const docSections = {
+const markdownSections = {
     introduction: 'introduction',
     installation: 'installation',
     usage: 'usage',
@@ -27,21 +27,21 @@ const docsInfoConfig: DocsInfoConfig = {
     type: SupportedDocJson.TypeDoc,
     displayName: 'Solidity Compiler',
     packageUrl: 'https://github.com/0xProject/0x-monorepo',
-    menu: {
-        introduction: [docSections.introduction],
-        install: [docSections.installation],
-        usage: [docSections.usage],
-        compiler: [docSections.compiler],
-        types: [docSections.types],
+    markdownMenu: {
+        introduction: [markdownSections.introduction],
+        install: [markdownSections.installation],
+        usage: [markdownSections.usage],
+        compiler: [markdownSections.compiler],
+        types: [markdownSections.types],
     },
     sectionNameToMarkdownByVersion: {
         '0.0.1': {
-            [docSections.introduction]: IntroMarkdownV1,
-            [docSections.installation]: InstallationMarkdownV1,
-            [docSections.usage]: UsageMarkdown,
+            [markdownSections.introduction]: IntroMarkdownV1,
+            [markdownSections.installation]: InstallationMarkdownV1,
+            [markdownSections.usage]: UsageMarkdown,
         },
     },
-    sections: docSections,
+    markdownSections: markdownSections,
     typeConfigs: {
         typeNameToExternalLink: {},
         typeNameToPrefix: {},

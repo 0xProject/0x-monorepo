@@ -14,15 +14,10 @@ const InstallationMarkdownV1 = require('md/docs/sol_cov/installation');
 const UsageMarkdown = require('md/docs/sol_cov/usage');
 /* tslint:enable:no-var-requires */
 
-const docSections = {
+const markdownSections = {
     introduction: 'introduction',
     installation: 'installation',
     usage: 'usage',
-    coverageSubprovider: 'coverageSubprovider',
-    abstractArtifactAdapter: 'abstractArtifactAdapter',
-    solCompilerArtifactAdapter: 'solCompilerArtifactAdapter',
-    truffleArtifactAdapter: 'truffleArtifactAdapter',
-    types: docConstants.TYPES_SECTION_NAME,
 };
 
 const docsInfoConfig: DocsInfoConfig = {
@@ -30,24 +25,19 @@ const docsInfoConfig: DocsInfoConfig = {
     type: SupportedDocJson.TypeDoc,
     displayName: 'Sol-cov',
     packageUrl: 'https://github.com/0xProject/0x-monorepo',
-    menu: {
-        introduction: [docSections.introduction],
-        install: [docSections.installation],
-        usage: [docSections.usage],
-        'coverage-subprovider': [docSections.coverageSubprovider],
-        'abstract-artifact-adapter': [docSections.abstractArtifactAdapter],
-        'sol-compiler-artifact-adapter': [docSections.solCompilerArtifactAdapter],
-        'truffle-artifact-adapter': [docSections.truffleArtifactAdapter],
-        types: [docSections.types],
+    markdownMenu: {
+        introduction: [markdownSections.introduction],
+        install: [markdownSections.installation],
+        usage: [markdownSections.usage],
     },
     sectionNameToMarkdownByVersion: {
         '0.0.1': {
-            [docSections.introduction]: IntroMarkdownV1,
-            [docSections.installation]: InstallationMarkdownV1,
-            [docSections.usage]: UsageMarkdown,
+            [markdownSections.introduction]: IntroMarkdownV1,
+            [markdownSections.installation]: InstallationMarkdownV1,
+            [markdownSections.usage]: UsageMarkdown,
         },
     },
-    sections: docSections,
+    markdownSections: markdownSections,
     typeConfigs: {
         typeNameToExternalLink: {},
         typeNameToPrefix: {},

@@ -14,7 +14,7 @@ const IntroMarkdown = require('md/docs/ethereum_types/introduction');
 const InstallationMarkdown = require('md/docs/ethereum_types/installation');
 /* tslint:enable:no-var-requires */
 
-const docSections = {
+const markdownSections = {
     introduction: 'introduction',
     installation: 'installation',
     types: docConstants.TYPES_SECTION_NAME,
@@ -25,18 +25,18 @@ const docsInfoConfig: DocsInfoConfig = {
     type: SupportedDocJson.TypeDoc,
     displayName: 'Ethereum Types',
     packageUrl: 'https://github.com/0xProject/0x-monorepo/packages/ethereum-types',
-    menu: {
-        introduction: [docSections.introduction],
-        install: [docSections.installation],
-        types: [docSections.types],
+    markdownMenu: {
+        introduction: [markdownSections.introduction],
+        install: [markdownSections.installation],
+        types: [markdownSections.types],
     },
     sectionNameToMarkdownByVersion: {
         '0.0.1': {
-            [docSections.introduction]: IntroMarkdown,
-            [docSections.installation]: InstallationMarkdown,
+            [markdownSections.introduction]: IntroMarkdown,
+            [markdownSections.installation]: InstallationMarkdown,
         },
     },
-    sections: docSections,
+    markdownSections: markdownSections,
     typeConfigs: {
         typeNameToExternalLink: {
             BigNumber: constants.URL_BIGNUMBERJS_GITHUB,

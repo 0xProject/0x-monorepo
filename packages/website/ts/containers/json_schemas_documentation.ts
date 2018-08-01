@@ -15,7 +15,7 @@ const UsageMarkdownV1 = require('md/docs/json_schemas/1.0.0/usage');
 const SchemasMarkdownV1 = require('md/docs/json_schemas/1.0.0/schemas');
 /* tslint:enable:no-var-requires */
 
-const docSections = {
+const markdownSections = {
     introduction: 'introduction',
     installation: 'installation',
     usage: 'usage',
@@ -28,22 +28,22 @@ const docsInfoConfig: DocsInfoConfig = {
     type: SupportedDocJson.TypeDoc,
     displayName: 'JSON Schemas',
     packageUrl: 'https://github.com/0xProject/0x-monorepo',
-    menu: {
-        introduction: [docSections.introduction],
-        install: [docSections.installation],
-        usage: [docSections.usage],
-        schemaValidator: [docSections.schemaValidator],
-        schemas: [docSections.schemas],
+    markdownMenu: {
+        introduction: [markdownSections.introduction],
+        install: [markdownSections.installation],
+        usage: [markdownSections.usage],
+        schemaValidator: [markdownSections.schemaValidator],
+        schemas: [markdownSections.schemas],
     },
     sectionNameToMarkdownByVersion: {
         '0.0.1': {
-            [docSections.introduction]: IntroMarkdownV1,
-            [docSections.installation]: InstallationMarkdownV1,
-            [docSections.schemas]: SchemasMarkdownV1,
-            [docSections.usage]: UsageMarkdownV1,
+            [markdownSections.introduction]: IntroMarkdownV1,
+            [markdownSections.installation]: InstallationMarkdownV1,
+            [markdownSections.schemas]: SchemasMarkdownV1,
+            [markdownSections.usage]: UsageMarkdownV1,
         },
     },
-    sections: docSections,
+    markdownSections: markdownSections,
     typeConfigs: {
         typeNameToExternalLink: {
             Schema:

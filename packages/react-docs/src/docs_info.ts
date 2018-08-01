@@ -28,21 +28,16 @@ export class DocsInfo {
     public sectionNameToMarkdownByVersion: SectionNameToMarkdownByVersion;
     public contractsByVersionByNetworkId?: ContractsByVersionByNetworkId;
     public typeConfigs: DocsInfoTypeConfigs;
-    private readonly _docsInfo: DocsInfoConfig;
     constructor(config: DocsInfoConfig) {
         this.id = config.id;
         this.type = config.type;
-        this.menu = config.menu;
+        this.menu = config.markdownMenu;
         this.displayName = config.displayName;
         this.packageUrl = config.packageUrl;
-        this.sections = config.sections;
+        this.sections = config.markdownSections;
         this.sectionNameToMarkdownByVersion = config.sectionNameToMarkdownByVersion;
         this.contractsByVersionByNetworkId = config.contractsByVersionByNetworkId;
         this.typeConfigs = config.typeConfigs;
-        this._docsInfo = config;
-    }
-    public getMenu(selectedVersion?: string): { [section: string]: string[] } {
-        return this._docsInfo.menu;
     }
     public getMenuSubsectionsBySection(docAgnosticFormat?: DocAgnosticFormat): MenuSubsectionsBySection {
         const menuSubsectionsBySection = {} as MenuSubsectionsBySection;

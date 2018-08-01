@@ -18,7 +18,7 @@ const docsInfoConfig: DocsInfoConfig = {
     type: SupportedDocJson.Doxity,
     displayName: '0x Smart Contracts',
     packageUrl: 'https://github.com/0xProject/contracts',
-    menu: {
+    markdownMenu: {
         introduction: [Sections.Introduction],
         contracts: [Sections.Exchange, Sections.TokenRegistry, Sections.ZRXToken, Sections.TokenTransferProxy],
     },
@@ -27,7 +27,7 @@ const docsInfoConfig: DocsInfoConfig = {
             [Sections.Introduction]: IntroMarkdownV1,
         },
     },
-    sections: {
+    markdownSections: {
         Introduction: Sections.Introduction,
         Exchange: Sections.Exchange,
         TokenTransferProxy: Sections.TokenTransferProxy,

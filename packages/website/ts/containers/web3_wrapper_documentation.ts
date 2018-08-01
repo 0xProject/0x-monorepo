@@ -17,8 +17,6 @@ const InstallationMarkdownV1 = require('md/docs/web3_wrapper/installation');
 const docSections = {
     introduction: 'introduction',
     installation: 'installation',
-    web3Wrapper: 'web3Wrapper',
-    types: docConstants.TYPES_SECTION_NAME,
 };
 
 const docsInfoConfig: DocsInfoConfig = {
@@ -26,11 +24,9 @@ const docsInfoConfig: DocsInfoConfig = {
     type: SupportedDocJson.TypeDoc,
     displayName: 'Web3Wrapper',
     packageUrl: 'https://github.com/0xProject/0x-monorepo',
-    menu: {
+    markdownMenu: {
         introduction: [docSections.introduction],
         install: [docSections.installation],
-        web3Wrapper: [docSections.web3Wrapper],
-        types: [docSections.types],
     },
     sectionNameToMarkdownByVersion: {
         '0.0.1': {
@@ -38,7 +34,7 @@ const docsInfoConfig: DocsInfoConfig = {
             [docSections.installation]: InstallationMarkdownV1,
         },
     },
-    sections: docSections,
+    markdownSections: docSections,
     typeConfigs: {
         typeNameToExternalLink: {
             Web3: constants.URL_WEB3_DOCS,

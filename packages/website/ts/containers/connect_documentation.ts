@@ -14,7 +14,7 @@ const IntroMarkdownV1 = require('md/docs/connect/1.0.0/introduction');
 const InstallationMarkdownV1 = require('md/docs/connect/1.0.0/installation');
 /* tslint:enable:no-var-requires */
 
-const connectDocSections = {
+const markdownSections = {
     introduction: 'introduction',
     installation: 'installation',
     httpClient: 'httpClient',
@@ -27,20 +27,20 @@ const docsInfoConfig: DocsInfoConfig = {
     type: SupportedDocJson.TypeDoc,
     displayName: '0x Connect',
     packageUrl: 'https://github.com/0xProject/0x-monorepo',
-    menu: {
-        introduction: [connectDocSections.introduction],
-        install: [connectDocSections.installation],
-        httpClient: [connectDocSections.httpClient],
-        webSocketOrderbookChannel: [connectDocSections.webSocketOrderbookChannel],
-        types: [connectDocSections.types],
+    markdownMenu: {
+        introduction: [markdownSections.introduction],
+        install: [markdownSections.installation],
+        httpClient: [markdownSections.httpClient],
+        webSocketOrderbookChannel: [markdownSections.webSocketOrderbookChannel],
+        types: [markdownSections.types],
     },
     sectionNameToMarkdownByVersion: {
         '0.0.1': {
-            [connectDocSections.introduction]: IntroMarkdownV1,
-            [connectDocSections.installation]: InstallationMarkdownV1,
+            [markdownSections.introduction]: IntroMarkdownV1,
+            [markdownSections.installation]: InstallationMarkdownV1,
         },
     },
-    sections: connectDocSections,
+    markdownSections: markdownSections,
     typeConfigs: {
         typeNameToExternalLink: {
             Provider: constants.URL_WEB3_PROVIDER_DOCS,

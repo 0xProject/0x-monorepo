@@ -18,20 +18,7 @@ const LedgerNodeHidMarkdown = require('md/docs/subproviders/ledger_node_hid');
 const docSections = {
     introduction: 'introduction',
     installation: 'installation',
-    subprovider: 'subprovider',
-    ledgerSubprovider: 'ledgerSubprovider',
     ledgerNodeHid: 'ledger-node-hid-issue',
-    factoryMethods: 'factory-methods',
-    emptyWalletSubprovider: 'emptyWalletSubprovider',
-    fakeGasEstimateSubprovider: 'fakeGasEstimateSubprovider',
-    injectedWeb3Subprovider: 'injectedWeb3Subprovider',
-    signerSubprovider: 'signerSubprovider',
-    redundantRPCSubprovider: 'redundantRPCSubprovider',
-    ganacheSubprovider: 'ganacheSubprovider',
-    nonceTrackerSubprovider: 'nonceTrackerSubprovider',
-    privateKeyWalletSubprovider: 'privateKeyWalletSubprovider',
-    mnemonicWalletSubprovider: 'mnemonicWalletSubprovider',
-    types: docConstants.TYPES_SECTION_NAME,
 };
 
 const docsInfoConfig: DocsInfoConfig = {
@@ -39,23 +26,10 @@ const docsInfoConfig: DocsInfoConfig = {
     type: SupportedDocJson.TypeDoc,
     displayName: 'Subproviders',
     packageUrl: 'https://github.com/0xProject/0x-monorepo',
-    menu: {
+    markdownMenu: {
         introduction: [docSections.introduction],
         install: [docSections.installation],
-        subprovider: [docSections.subprovider],
-        ['ledger-subprovider']: [docSections.ledgerSubprovider],
         ['ledger-node-hid-issue']: [docSections.ledgerNodeHid],
-        ['private-key-wallet-subprovider']: [docSections.privateKeyWalletSubprovider],
-        ['mnemonic-wallet-subprovider']: [docSections.mnemonicWalletSubprovider],
-        ['factory-methods']: [docSections.factoryMethods],
-        ['emptyWallet-subprovider']: [docSections.emptyWalletSubprovider],
-        ['fakeGasEstimate-subprovider']: [docSections.fakeGasEstimateSubprovider],
-        ['injectedWeb3-subprovider']: [docSections.injectedWeb3Subprovider],
-        ['signer-subprovider']: [docSections.signerSubprovider],
-        ['redundantRPC-subprovider']: [docSections.redundantRPCSubprovider],
-        ['ganache-subprovider']: [docSections.ganacheSubprovider],
-        ['nonceTracker-subprovider']: [docSections.nonceTrackerSubprovider],
-        types: [docSections.types],
     },
     sectionNameToMarkdownByVersion: {
         '0.0.1': {
@@ -64,7 +38,7 @@ const docsInfoConfig: DocsInfoConfig = {
             [docSections.ledgerNodeHid]: LedgerNodeHidMarkdown,
         },
     },
-    sections: docSections,
+    markdownSections: docSections,
     typeConfigs: {
         typeNameToExternalLink: {
             Web3: constants.URL_WEB3_DOCS,
