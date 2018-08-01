@@ -1,32 +1,6 @@
 export { ZeroEx } from './0x';
 
-export { MessagePrefixType, MessagePrefixOpts } from '@0xproject/order-utils';
 export { Web3ProviderEngine, RPCSubprovider } from '@0xproject/subproviders';
-
-export {
-    ExchangeContractErrs,
-    Order,
-    SignedOrder,
-    ECSignature,
-    OrderStateValid,
-    OrderStateInvalid,
-    OrderState,
-    Token,
-    ERC20AssetData,
-    ERC721AssetData,
-    AssetProxyId,
-} from '@0xproject/types';
-
-export {
-    BlockParamLiteral,
-    FilterObject,
-    BlockParam,
-    LogWithDecodedArgs,
-    ContractEventArg,
-    Provider,
-    TransactionReceipt,
-    TransactionReceiptWithDecodedLogs,
-} from 'ethereum-types';
 
 export {
     EventCallback,
@@ -64,3 +38,30 @@ export {
     ContractWrappersConfig,
     OrderInfo,
 } from '@0xproject/contract-wrappers';
+
+export { MessagePrefixType, MessagePrefixOpts } from '@0xproject/order-utils';
+
+export {
+    ExchangeContractErrs,
+    Order,
+    SignedOrder,
+    ECSignature,
+    OrderStateValid,
+    OrderStateInvalid,
+    OrderState,
+    Token,
+    ERC20AssetData,
+    ERC721AssetData,
+    AssetProxyId,
+} from '@0xproject/types';
+
+export {
+    BlockParamLiteral,
+    FilterObject,
+    BlockParam,
+    LogWithDecodedArgs,
+    ContractEventArg,
+    Provider,
+    TransactionReceipt,
+    TransactionReceiptWithDecodedLogs,
+} from 'ethereum-types';
