@@ -100,7 +100,7 @@ export class TypeDefinition extends React.Component<TypeDefinitionProps, TypeDef
         return (
             <div
                 id={this.props.shouldAddId ? typeDefinitionAnchorId : ''}
-                className="pb2"
+                className="pb2 pt2"
                 style={{ overflow: 'hidden', width: '100%' }}
                 onMouseOver={this._setAnchorVisibility.bind(this, true)}
                 onMouseOut={this._setAnchorVisibility.bind(this, false)}

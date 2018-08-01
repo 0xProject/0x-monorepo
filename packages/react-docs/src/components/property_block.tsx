@@ -34,7 +34,7 @@ export class PropertyBlock extends React.Component<PropertyBlockProps, PropertyB
         return (
             <div
                 id={`${this.props.sectionName}-${property.name}`}
-                className="pb4"
+                className="pb4 pt2"
                 key={`property-${property.name}-${property.type.name}`}
                 onMouseOver={this._setAnchorVisibility.bind(this, true)}
                 onMouseOut={this._setAnchorVisibility.bind(this, false)}
