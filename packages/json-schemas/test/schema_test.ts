@@ -5,6 +5,7 @@ import forEach = require('lodash.foreach');
 import 'mocha';
 
 import { schemas, SchemaValidator } from '../src/index';
+import { validate } from 'jsonschema';
 
 chai.config.includeStack = true;
 chai.use(dirtyChai);
@@ -215,6 +216,10 @@ describe('Schema', () => {
         const relayerApiOrder = {
             order,
             remainingFillableAmount: '50000000000000',
+        };
+        const relayerApiOrdersResponse = {
+            ...paginatedResponse,
+            records: [relayerApiOrder, relayerApiOrder],
         };
         describe('#orderSchema', () => {
             it('should validate valid order', () => {
@@ -587,6 +592,34 @@ describe('Schema', () => {
                         ];
                         const shouldFail = true;
                         validateAgainstSchema(testCases, relayerApiAssetDataPairsResponseSchema, shouldFail);
+                    });
+                });
+                describe('#relayerApiOrdersResponseSchema', () => {
+                    it('should validate valid orders responses', () => {
+                        const testCases = [
+                            relayerApiOrdersResponse,
+                            {
+                                ...paginatedResponse,
+                                records: [],
+                            },
+                        ];
+                        validateAgainstSchema(testCases, relayerApiOrdersResponseSchema);
+                    });
+                    it('should fail for invalid orders responses', () => {
+                        const testCases = [
+                            {
+                                records: [relayerApiOrder, relayerApiOrder],
+                            },
+                            {
+                                ...paginatedResponse,
+                            },
+                            {
+                                ...paginatedResponse,
+                                records: [{}, relayerApiOrder],
+                            },
+                        ];
+                        const shouldFail = true;
+                        validateAgainstSchema(testCases, relayerApiOrdersResponseSchema, shouldFail);
                     });
                 });
                 describe('#relayerApiOrderBookResponseSchema', () => {
