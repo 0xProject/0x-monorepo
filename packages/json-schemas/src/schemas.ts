@@ -12,6 +12,7 @@ import { ordersSchema } from '../schemas/orders_schema';
 import { paginatedCollectionSchema } from '../schemas/paginated_collection_schema';
 import {
     relayerApiAssetDataPairsResponseSchema,
+    relayerApiAssetDataPairsSchema,
     relayerApiAssetDataTradeInfoSchema,
 } from '../schemas/relayer_api_asset_pairs_response_schema';
 import { relayerApiErrorResponseSchema } from '../schemas/relayer_api_error_response_schema';
@@ -64,4 +65,5 @@ export const schemas = {
     relayerApiOrdersChannelSubscribePayload,
     relayerApiOrdersChannelUpdateSchema,
     relayerApiOrdersResponseSchema,
+    relayerApiAssetDataPairsSchema,
 };

@@ -57,6 +57,11 @@ describe('Schema', () => {
             }
         });
     };
+    const paginatedResponse = {
+        total: 100,
+        perPage: 10,
+        page: 3,
+    };
     describe('#numberSchema', () => {
         it('should validate valid numbers', () => {
             const testCases = ['42', '0', '1.3', '0.2', '00.00'];
@@ -169,11 +174,6 @@ describe('Schema', () => {
         });
     });
     describe('#paginatedCollectionSchema', () => {
-        const paginatedResponse = {
-            total: 100,
-            perPage: 10,
-            page: 3,
-        };
         it('should validate valid paginated collections', () => {
             const testCases = [paginatedResponse];
             validateAgainstSchema(testCases, paginatedCollectionSchema);
@@ -418,15 +418,14 @@ describe('Schema', () => {
                     it('should validate valid fees payloads', () => {
                         const testCases = [
                             {
-                                exchangeContractAddress: '0x323b5d4c32345ced77393b3530b1eed0f346429d',
-                                maker: '0x323b5d4c32345ced77393b3530b1eed0f346429d',
-                                taker: '0x323b5d4c32345ced77393b3530b1eed0f346429d',
-                                makerTokenAddress: '0x323b5d4c32345ced77393b3530b1eed0f346429d',
-                                takerTokenAddress: '0xef7fff64389b814a946f3e92105513705ca6b990',
-                                makerTokenAmount: '10000000000000000000',
-                                takerTokenAmount: '30000000000000000000',
-                                expirationUnixTimestampSec: '42',
-                                salt: '67006738228878699843088602623665307406148487219438534730168799356281242528500',
+                                exchangeAddress: '0x323b5d4c32345ced77393b3530b1eed0f346429d',
+                                makerAddress: '0x323b5d4c32345ced77393b3530b1eed0f346429d',
+                                takerAddress: '0x323b5d4c32345ced77393b3530b1eed0f346429d',
+                                makerAssetData: NULL_ADDRESS,
+                                takerAssetData: NULL_ADDRESS,
+                                makerAssetAmount: '10000000000000000000',
+                                takerAssetAmount: '30000000000000000000',
+                                expirationTimeSeconds: '42',
                             },
                         ];
                         validateAgainstSchema(testCases, relayerApiOrderConfigPayloadSchema);
@@ -436,22 +435,19 @@ describe('Schema', () => {
                         const testCases = [
                             {},
                             {
-                                takerTokenAddress: '0xef7fff64389b814a946f3e92105513705ca6b990',
-                                makerTokenAmount: '10000000000000000000',
-                                takerTokenAmount: '30000000000000000000',
+                                makerAssetAmount: '10000000000000000000',
+                                takerAssetAmount: '30000000000000000000',
+                                makerAssetData: NULL_ADDRESS,
+                                takerAssetData: NULL_ADDRESS,
                             },
                             {
-                                taker: checksummedAddress,
-                                makerTokenAddress: '0x323b5d4c32345ced77393b3530b1eed0f346429d',
-                                takerTokenAddress: '0xef7fff64389b814a946f3e92105513705ca6b990',
-                                makerTokenAmount: '10000000000000000000',
-                                takerTokenAmount: '30000000000000000000',
+                                takerAddress: checksummedAddress,
+                                makerAssetAmount: '10000000000000000000',
+                                takerAssetAmount: '30000000000000000000',
                             },
                             {
-                                makerTokenAddress: '0x323b5d4c32345ced77393b3530b1eed0f346429d',
-                                takerTokenAddress: '0xef7fff64389b814a946f3e92105513705ca6b990',
-                                makerTokenAmount: 10000000000000000000,
-                                takerTokenAmount: 30000000000000000000,
+                                makerAssetAmount: 10000000000000000000,
+                                takerAssetAmount: 30000000000000000000,
                             },
                         ];
                         const shouldFail = true;
@@ -464,7 +460,8 @@ describe('Schema', () => {
                             {
                                 makerFee: '10000000000000000',
                                 takerFee: '30000000000000000',
-                                feeRecipient: '0x323b5d4c32345ced77393b3530b1eed0f346429d',
+                                feeRecipientAddress: '0x323b5d4c32345ced77393b3530b1eed0f346429d',
+                                senderAddress: '0x323b5d4c32345ced77393b3530b1eed0f346429d',
                             },
                         ];
                         validateAgainstSchema(testCases, relayerApiOrderConfigResponseSchema);
@@ -491,75 +488,102 @@ describe('Schema', () => {
                 describe('#relayerAssetDataPairsResponseSchema', () => {
                     it('should validate valid assetPairs response', () => {
                         const testCases = [
-                            [],
-                            [
-                                {
-                                    tokenA: {
-                                        address: '0x323b5d4c32345ced77393b3530b1eed0f346429d',
-                                        minAmount: '0',
-                                        maxAmount: '10000000000000000000',
-                                        precision: 5,
+                            {
+                                ...paginatedResponse,
+                                records: [],
+                            },
+                            {
+                                ...paginatedResponse,
+                                records: [
+                                    {
+                                        assetDataA: {
+                                            assetData: '0x323b5d4c32345ced77393b3530b1eed0f346429d',
+                                            minAmount: '0',
+                                            maxAmount: '10000000000000000000',
+                                            precision: 5,
+                                        },
+                                        assetDataB: {
+                                            assetData: '0xef7fff64389b814a946f3e92105513705ca6b990',
+                                            minAmount: '0',
+                                            maxAmount: '50000000000000000000',
+                                            precision: 5,
+                                        },
                                     },
-                                    tokenB: {
-                                        address: '0xef7fff64389b814a946f3e92105513705ca6b990',
-                                        minAmount: '0',
-                                        maxAmount: '50000000000000000000',
-                                        precision: 5,
+                                ],
+                            },
+                            {
+                                ...paginatedResponse,
+                                records: [
+                                    {
+                                        assetDataA: {
+                                            assetData: '0x323b5d4c32345ced77393b3530b1eed0f346429d',
+                                        },
+                                        assetDataB: {
+                                            assetData: '0xef7fff64389b814a946f3e92105513705ca6b990',
+                                        },
                                     },
-                                },
-                            ],
-                            [
-                                {
-                                    tokenA: {
-                                        address: '0x323b5d4c32345ced77393b3530b1eed0f346429d',
-                                    },
-                                    tokenB: {
-                                        address: '0xef7fff64389b814a946f3e92105513705ca6b990',
-                                    },
-                                },
-                            ],
+                                ],
+                            },
                         ];
                         validateAgainstSchema(testCases, relayerApiAssetDataPairsResponseSchema);
                     });
                     it('should fail for invalid assetPairs responses', () => {
                         const checksummedAddress = '0xA2b31daCf30a9C50ca473337c01d8A201ae33e32';
                         const testCases = [
-                            [
-                                {
-                                    tokenA: {
-                                        address: checksummedAddress,
+                            {
+                                ...paginatedResponse,
+                                records: [
+                                    {
+                                        assetDataA: {
+                                            assetData: '0x323b5d4c32345ced77393b3530b1eed0f346429d',
+                                            minAmount: '0',
+                                            maxAmount: '10000000000000000000',
+                                            precision: 5,
+                                        },
+                                        assetDataC: {
+                                            assetData: '0xef7fff64389b814a946f3e92105513705ca6b990',
+                                            minAmount: '0',
+                                            maxAmount: '50000000000000000000',
+                                            precision: 5,
+                                        },
                                     },
-                                    tokenB: {
-                                        address: checksummedAddress,
+                                ],
+                            },
+                            {
+                                records: [
+                                    {
+                                        assetDataA: {
+                                            assetData: '0x323b5d4c32345ced77393b3530b1eed0f346429d',
+                                            minAmount: '0',
+                                            maxAmount: '10000000000000000000',
+                                            precision: 5,
+                                        },
+                                        assetDataB: {
+                                            assetData: '0xef7fff64389b814a946f3e92105513705ca6b990',
+                                            minAmount: '0',
+                                            maxAmount: '50000000000000000000',
+                                            precision: 5,
+                                        },
                                     },
-                                },
-                            ],
-                            [
-                                {
-                                    tokenA: {
-                                        address: '0x323b5d4c32345ced77393b3530b1eed0f346429d',
-                                        minAmount: 0,
-                                        maxAmount: 10000000000000000000,
+                                ],
+                            },
+                            {
+                                ...paginatedResponse,
+                                records: [
+                                    {
+                                        assetDataA: {
+                                            minAmount: '0',
+                                            maxAmount: '10000000000000000000',
+                                            precision: 5,
+                                        },
+                                        assetDataB: {
+                                            minAmount: '0',
+                                            maxAmount: '50000000000000000000',
+                                            precision: 5,
+                                        },
                                     },
-                                    tokenB: {
-                                        address: '0xef7fff64389b814a946f3e92105513705ca6b990',
-                                        minAmount: 0,
-                                        maxAmount: 50000000000000000000,
-                                    },
-                                },
-                            ],
-                            [
-                                {
-                                    tokenA: {
-                                        address: '0x323b5d4c32345ced77393b3530b1eed0f346429d',
-                                        precision: '5',
-                                    },
-                                    tokenB: {
-                                        address: '0xef7fff64389b814a946f3e92105513705ca6b990',
-                                        precision: '5',
-                                    },
-                                },
-                            ],
+                                ],
+                            },
                         ];
                         const shouldFail = true;
                         validateAgainstSchema(testCases, relayerApiAssetDataPairsResponseSchema, shouldFail);
