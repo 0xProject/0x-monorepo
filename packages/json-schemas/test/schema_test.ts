@@ -5,8 +5,6 @@ import forEach = require('lodash.foreach');
 import 'mocha';
 
 import { schemas, SchemaValidator } from '../src/index';
-import { validate } from 'jsonschema';
-import { relayerApiOrderSchema } from '../schemas/relayer_api_order_schema';
 
 chai.config.includeStack = true;
 chai.use(dirtyChai);
@@ -37,6 +35,7 @@ const {
     relayerApiOrdersChannelSubscribeSchema,
     relayerApiOrdersChannelUpdateSchema,
     relayerApiOrdersResponseSchema,
+    relayerApiOrderSchema,
 } = schemas;
 
 describe('Schema', () => {
@@ -238,17 +237,6 @@ describe('Schema', () => {
                 validateAgainstSchema(testCases, orderSchema, shouldFail);
             });
         });
-        describe('relayerApiOrderSchema', () => {
-            it('should validate valid relayer api order', () => {
-                const testCases = [relayerApiOrder];
-                validateAgainstSchema(testCases, relayerApiOrderSchema);
-            });
-            it('should fail for invalid relayer api orders', () => {
-                const testCases = [{}, order, { order }, { order, remainingFillableAmount: 5 }];
-                const shouldFail = true;
-                validateAgainstSchema(testCases, shouldFail);
-            });
-        });
         describe('signed order including schemas', () => {
             const signedOrder = {
                 ...order,
@@ -354,203 +342,427 @@ describe('Schema', () => {
                     validateAgainstSchema(testCases, orderFillRequestsSchema, shouldFail);
                 });
             });
-            describe('#relayerApiOrderBookResponseSchema', () => {
-                it('should validate valid order book responses', () => {
-                    const testCases = [
-                        {
-                            bids: [],
-                            asks: [],
-                        },
-                        {
-                            bids: [signedOrder, signedOrder],
-                            asks: [],
-                        },
-                        {
-                            bids: [],
-                            asks: [signedOrder, signedOrder],
-                        },
-                        {
-                            bids: [signedOrder],
-                            asks: [signedOrder, signedOrder],
-                        },
-                    ];
-                    validateAgainstSchema(testCases, relayerApiOrderBookResponseSchema);
+            describe('standard relayer api schemas', () => {
+                describe('#relayerApiOrderSchema', () => {
+                    it('should validate valid relayer api order', () => {
+                        const testCases = [relayerApiOrder];
+                        validateAgainstSchema(testCases, relayerApiOrderSchema);
+                    });
+                    it('should fail for invalid relayer api orders', () => {
+                        const testCases = [{}, order, { order }, { order, remainingFillableAmount: 5 }];
+                        const shouldFail = true;
+                        validateAgainstSchema(testCases, relayerApiOrderSchema, shouldFail);
+                    });
                 });
-                it('should fail for invalid order fill requests', () => {
-                    const testCases = [
-                        {},
-                        {
-                            bids: [signedOrder, signedOrder],
-                        },
-                        {
-                            asks: [signedOrder, signedOrder],
-                        },
-                        {
-                            bids: signedOrder,
-                            asks: [signedOrder, signedOrder],
-                        },
-                        {
-                            bids: [signedOrder],
-                            asks: signedOrder,
-                        },
-                    ];
-                    const shouldFail = true;
-                    validateAgainstSchema(testCases, relayerApiOrdersResponseSchema, shouldFail);
+                describe('#relayerApiErrorResponseSchema', () => {
+                    it('should validate valid errorResponse', () => {
+                        const testCases = [
+                            {
+                                code: 102,
+                                reason: 'Order submission disabled',
+                            },
+                            {
+                                code: 101,
+                                reason: 'Validation failed',
+                                validationErrors: [
+                                    {
+                                        field: 'maker',
+                                        code: 1002,
+                                        reason: 'Invalid address',
+                                    },
+                                ],
+                            },
+                        ];
+                        validateAgainstSchema(testCases, relayerApiErrorResponseSchema);
+                    });
+                    it('should fail for invalid error responses', () => {
+                        const testCases = [
+                            {},
+                            {
+                                code: 102,
+                            },
+                            {
+                                code: '102',
+                                reason: 'Order submission disabled',
+                            },
+                            {
+                                reason: 'Order submission disabled',
+                            },
+                            {
+                                code: 101,
+                                reason: 'Validation failed',
+                                validationErrors: [
+                                    {
+                                        field: 'maker',
+                                        reason: 'Invalid address',
+                                    },
+                                ],
+                            },
+                            {
+                                code: 101,
+                                reason: 'Validation failed',
+                                validationErrors: [
+                                    {
+                                        field: 'maker',
+                                        code: '1002',
+                                        reason: 'Invalid address',
+                                    },
+                                ],
+                            },
+                        ];
+                        const shouldFail = true;
+                        validateAgainstSchema(testCases, relayerApiErrorResponseSchema, shouldFail);
+                    });
                 });
-            });
-            describe('#relayerApiOrdersChannelSubscribeSchema', () => {
-                it('should validate valid orders channel websocket subscribe message', () => {
-                    const testCases = [
-                        {
-                            type: 'subscribe',
-                            channel: 'orders',
-                            requestId: 'randomId',
-                            payload: {
-                                baseTokenAddress: '0x323b5d4c32345ced77393b3530b1eed0f346429d',
-                                quoteTokenAddress: '0x323b5d4c32345ced77393b3530b1eed0f346429d',
-                                snapshot: true,
-                                limit: 100,
+                describe('#relayerApiOrderConfigPayloadSchema', () => {
+                    it('should validate valid fees payloads', () => {
+                        const testCases = [
+                            {
+                                exchangeContractAddress: '0x323b5d4c32345ced77393b3530b1eed0f346429d',
+                                maker: '0x323b5d4c32345ced77393b3530b1eed0f346429d',
+                                taker: '0x323b5d4c32345ced77393b3530b1eed0f346429d',
+                                makerTokenAddress: '0x323b5d4c32345ced77393b3530b1eed0f346429d',
+                                takerTokenAddress: '0xef7fff64389b814a946f3e92105513705ca6b990',
+                                makerTokenAmount: '10000000000000000000',
+                                takerTokenAmount: '30000000000000000000',
+                                expirationUnixTimestampSec: '42',
+                                salt: '67006738228878699843088602623665307406148487219438534730168799356281242528500',
                             },
-                        },
-                        {
-                            type: 'subscribe',
-                            channel: 'orders',
-                            requestId: 'randomId',
-                            payload: {
-                                baseTokenAddress: '0x323b5d4c32345ced77393b3530b1eed0f346429d',
-                                quoteTokenAddress: '0x323b5d4c32345ced77393b3530b1eed0f346429d',
+                        ];
+                        validateAgainstSchema(testCases, relayerApiOrderConfigPayloadSchema);
+                    });
+                    it('should fail for invalid fees payloads', () => {
+                        const checksummedAddress = '0xA2b31daCf30a9C50ca473337c01d8A201ae33e32';
+                        const testCases = [
+                            {},
+                            {
+                                takerTokenAddress: '0xef7fff64389b814a946f3e92105513705ca6b990',
+                                makerTokenAmount: '10000000000000000000',
+                                takerTokenAmount: '30000000000000000000',
                             },
-                        },
-                    ];
-                    validateAgainstSchema(testCases, relayerApiOrdersChannelSubscribeSchema);
+                            {
+                                taker: checksummedAddress,
+                                makerTokenAddress: '0x323b5d4c32345ced77393b3530b1eed0f346429d',
+                                takerTokenAddress: '0xef7fff64389b814a946f3e92105513705ca6b990',
+                                makerTokenAmount: '10000000000000000000',
+                                takerTokenAmount: '30000000000000000000',
+                            },
+                            {
+                                makerTokenAddress: '0x323b5d4c32345ced77393b3530b1eed0f346429d',
+                                takerTokenAddress: '0xef7fff64389b814a946f3e92105513705ca6b990',
+                                makerTokenAmount: 10000000000000000000,
+                                takerTokenAmount: 30000000000000000000,
+                            },
+                        ];
+                        const shouldFail = true;
+                        validateAgainstSchema(testCases, relayerApiOrderConfigPayloadSchema, shouldFail);
+                    });
                 });
-                it('should fail for invalid orders channel websocket subscribe message', () => {
-                    const checksummedAddress = '0xA2b31daCf30a9C50ca473337c01d8A201ae33e32';
-                    const testCases = [
-                        {
-                            type: 'subscribe',
-                            channel: 'orders',
-                            payload: {
-                                baseTokenAddress: '0x323b5d4c32345ced77393b3530b1eed0f346429d',
-                                quoteTokenAddress: '0x323b5d4c32345ced77393b3530b1eed0f346429d',
-                                snapshot: true,
-                                limit: 100,
+                describe('#relayerApiOrderConfigResponseSchema', () => {
+                    it('should validate valid fees responses', () => {
+                        const testCases = [
+                            {
+                                makerFee: '10000000000000000',
+                                takerFee: '30000000000000000',
+                                feeRecipient: '0x323b5d4c32345ced77393b3530b1eed0f346429d',
                             },
-                        },
-                        {
-                            type: 'foo',
-                            channel: 'orders',
-                            requestId: 'randomId',
-                            payload: {
-                                baseTokenAddress: '0x323b5d4c32345ced77393b3530b1eed0f346429d',
-                                quoteTokenAddress: '0x323b5d4c32345ced77393b3530b1eed0f346429d',
+                        ];
+                        validateAgainstSchema(testCases, relayerApiOrderConfigResponseSchema);
+                    });
+                    it('should fail for invalid fees responses', () => {
+                        const checksummedAddress = '0xA2b31daCf30a9C50ca473337c01d8A201ae33e32';
+                        const testCases = [
+                            {},
+                            {
+                                makerFee: 10000000000000000,
+                                takerFee: 30000000000000000,
                             },
-                        },
-                        {
-                            type: 'subscribe',
-                            channel: 'bar',
-                            requestId: 'randomId',
-                            payload: {
-                                baseTokenAddress: '0x323b5d4c32345ced77393b3530b1eed0f346429d',
-                                quoteTokenAddress: '0x323b5d4c32345ced77393b3530b1eed0f346429d',
+                            {
+                                feeRecipient: checksummedAddress,
+                                takerToSpecify: checksummedAddress,
+                                makerFee: '10000000000000000',
+                                takerFee: '30000000000000000',
                             },
-                        },
-                        {
-                            type: 'subscribe',
-                            channel: 'orders',
-                            requestId: 'randomId',
-                            payload: {
-                                baseTokenAddress: checksummedAddress,
-                                quoteTokenAddress: '0x323b5d4c32345ced77393b3530b1eed0f346429d',
-                            },
-                        },
-                        {
-                            type: 'subscribe',
-                            channel: 'orders',
-                            requestId: 'randomId',
-                            payload: {
-                                baseTokenAddress: '0x323b5d4c32345ced77393b3530b1eed0f346429d',
-                                quoteTokenAddress: checksummedAddress,
-                            },
-                        },
-                        {
-                            type: 'subscribe',
-                            channel: 'orders',
-                            requestId: 'randomId',
-                            payload: {
-                                quoteTokenAddress: '0x323b5d4c32345ced77393b3530b1eed0f346429d',
-                            },
-                        },
-                        {
-                            type: 'subscribe',
-                            channel: 'orders',
-                            requestId: 'randomId',
-                            payload: {
-                                baseTokenAddress: '0x323b5d4c32345ced77393b3530b1eed0f346429d',
-                            },
-                        },
-                        {
-                            type: 'subscribe',
-                            channel: 'orders',
-                            requestId: 'randomId',
-                            payload: {
-                                baseTokenAddress: '0x323b5d4c32345ced77393b3530b1eed0f346429d',
-                                quoteTokenAddress: '0x323b5d4c32345ced77393b3530b1eed0f346429d',
-                                snapshot: 'true',
-                                limit: 100,
-                            },
-                        },
-                        {
-                            type: 'subscribe',
-                            channel: 'orders',
-                            requestId: 'randomId',
-                            payload: {
-                                baseTokenAddress: '0x323b5d4c32345ced77393b3530b1eed0f346429d',
-                                quoteTokenAddress: '0x323b5d4c32345ced77393b3530b1eed0f346429d',
-                                snapshot: true,
-                                limit: '100',
-                            },
-                        },
-                    ];
-                    const shouldFail = true;
-                    validateAgainstSchema(testCases, relayerApiOrdersChannelSubscribeSchema, shouldFail);
+                        ];
+                        const shouldFail = true;
+                        validateAgainstSchema(testCases, relayerApiOrderConfigResponseSchema, shouldFail);
+                    });
                 });
-            });
-            describe('#relayerApiOrdersChannelUpdateSchema', () => {
-                it('should validate valid orders channel websocket update message', () => {
-                    const testCases = [
-                        {
-                            type: 'update',
-                            channel: 'orders',
-                            requestId: 2,
-                            payload: signedOrder,
-                        },
-                    ];
-                    validateAgainstSchema(testCases, relayerApiOrdersChannelUpdateSchema);
+                describe('#relayerAssetDataPairsResponseSchema', () => {
+                    it('should validate valid assetPairs response', () => {
+                        const testCases = [
+                            [],
+                            [
+                                {
+                                    tokenA: {
+                                        address: '0x323b5d4c32345ced77393b3530b1eed0f346429d',
+                                        minAmount: '0',
+                                        maxAmount: '10000000000000000000',
+                                        precision: 5,
+                                    },
+                                    tokenB: {
+                                        address: '0xef7fff64389b814a946f3e92105513705ca6b990',
+                                        minAmount: '0',
+                                        maxAmount: '50000000000000000000',
+                                        precision: 5,
+                                    },
+                                },
+                            ],
+                            [
+                                {
+                                    tokenA: {
+                                        address: '0x323b5d4c32345ced77393b3530b1eed0f346429d',
+                                    },
+                                    tokenB: {
+                                        address: '0xef7fff64389b814a946f3e92105513705ca6b990',
+                                    },
+                                },
+                            ],
+                        ];
+                        validateAgainstSchema(testCases, relayerApiAssetDataPairsResponseSchema);
+                    });
+                    it('should fail for invalid assetPairs responses', () => {
+                        const checksummedAddress = '0xA2b31daCf30a9C50ca473337c01d8A201ae33e32';
+                        const testCases = [
+                            [
+                                {
+                                    tokenA: {
+                                        address: checksummedAddress,
+                                    },
+                                    tokenB: {
+                                        address: checksummedAddress,
+                                    },
+                                },
+                            ],
+                            [
+                                {
+                                    tokenA: {
+                                        address: '0x323b5d4c32345ced77393b3530b1eed0f346429d',
+                                        minAmount: 0,
+                                        maxAmount: 10000000000000000000,
+                                    },
+                                    tokenB: {
+                                        address: '0xef7fff64389b814a946f3e92105513705ca6b990',
+                                        minAmount: 0,
+                                        maxAmount: 50000000000000000000,
+                                    },
+                                },
+                            ],
+                            [
+                                {
+                                    tokenA: {
+                                        address: '0x323b5d4c32345ced77393b3530b1eed0f346429d',
+                                        precision: '5',
+                                    },
+                                    tokenB: {
+                                        address: '0xef7fff64389b814a946f3e92105513705ca6b990',
+                                        precision: '5',
+                                    },
+                                },
+                            ],
+                        ];
+                        const shouldFail = true;
+                        validateAgainstSchema(testCases, relayerApiAssetDataPairsResponseSchema, shouldFail);
+                    });
                 });
-                it('should fail for invalid orders channel websocket update message', () => {
-                    const testCases = [
-                        {
-                            type: 'foo',
-                            channel: 'orders',
-                            requestId: 2,
-                            payload: signedOrder,
-                        },
-                        {
-                            type: 'update',
-                            channel: 'bar',
-                            requestId: 2,
-                            payload: signedOrder,
-                        },
-                        {
-                            type: 'update',
-                            channel: 'orders',
-                            requestId: 2,
-                            payload: {},
-                        },
-                    ];
-                    const shouldFail = true;
-                    validateAgainstSchema(testCases, relayerApiOrdersChannelUpdateSchema, shouldFail);
+                describe('#relayerApiOrderBookResponseSchema', () => {
+                    it('should validate valid order book responses', () => {
+                        const testCases = [
+                            {
+                                bids: [],
+                                asks: [],
+                            },
+                            {
+                                bids: [signedOrder, signedOrder],
+                                asks: [],
+                            },
+                            {
+                                bids: [],
+                                asks: [signedOrder, signedOrder],
+                            },
+                            {
+                                bids: [signedOrder],
+                                asks: [signedOrder, signedOrder],
+                            },
+                        ];
+                        validateAgainstSchema(testCases, relayerApiOrderBookResponseSchema);
+                    });
+                    it('should fail for invalid order fill requests', () => {
+                        const testCases = [
+                            {},
+                            {
+                                bids: [signedOrder, signedOrder],
+                            },
+                            {
+                                asks: [signedOrder, signedOrder],
+                            },
+                            {
+                                bids: signedOrder,
+                                asks: [signedOrder, signedOrder],
+                            },
+                            {
+                                bids: [signedOrder],
+                                asks: signedOrder,
+                            },
+                        ];
+                        const shouldFail = true;
+                        validateAgainstSchema(testCases, relayerApiOrdersResponseSchema, shouldFail);
+                    });
+                });
+                describe('#relayerApiOrdersChannelSubscribeSchema', () => {
+                    it('should validate valid orders channel websocket subscribe message', () => {
+                        const testCases = [
+                            {
+                                type: 'subscribe',
+                                channel: 'orders',
+                                requestId: 'randomId',
+                                payload: {
+                                    baseTokenAddress: '0x323b5d4c32345ced77393b3530b1eed0f346429d',
+                                    quoteTokenAddress: '0x323b5d4c32345ced77393b3530b1eed0f346429d',
+                                    snapshot: true,
+                                    limit: 100,
+                                },
+                            },
+                            {
+                                type: 'subscribe',
+                                channel: 'orders',
+                                requestId: 'randomId',
+                                payload: {
+                                    baseTokenAddress: '0x323b5d4c32345ced77393b3530b1eed0f346429d',
+                                    quoteTokenAddress: '0x323b5d4c32345ced77393b3530b1eed0f346429d',
+                                },
+                            },
+                        ];
+                        validateAgainstSchema(testCases, relayerApiOrdersChannelSubscribeSchema);
+                    });
+                    it('should fail for invalid orders channel websocket subscribe message', () => {
+                        const checksummedAddress = '0xA2b31daCf30a9C50ca473337c01d8A201ae33e32';
+                        const testCases = [
+                            {
+                                type: 'subscribe',
+                                channel: 'orders',
+                                payload: {
+                                    baseTokenAddress: '0x323b5d4c32345ced77393b3530b1eed0f346429d',
+                                    quoteTokenAddress: '0x323b5d4c32345ced77393b3530b1eed0f346429d',
+                                    snapshot: true,
+                                    limit: 100,
+                                },
+                            },
+                            {
+                                type: 'foo',
+                                channel: 'orders',
+                                requestId: 'randomId',
+                                payload: {
+                                    baseTokenAddress: '0x323b5d4c32345ced77393b3530b1eed0f346429d',
+                                    quoteTokenAddress: '0x323b5d4c32345ced77393b3530b1eed0f346429d',
+                                },
+                            },
+                            {
+                                type: 'subscribe',
+                                channel: 'bar',
+                                requestId: 'randomId',
+                                payload: {
+                                    baseTokenAddress: '0x323b5d4c32345ced77393b3530b1eed0f346429d',
+                                    quoteTokenAddress: '0x323b5d4c32345ced77393b3530b1eed0f346429d',
+                                },
+                            },
+                            {
+                                type: 'subscribe',
+                                channel: 'orders',
+                                requestId: 'randomId',
+                                payload: {
+                                    baseTokenAddress: checksummedAddress,
+                                    quoteTokenAddress: '0x323b5d4c32345ced77393b3530b1eed0f346429d',
+                                },
+                            },
+                            {
+                                type: 'subscribe',
+                                channel: 'orders',
+                                requestId: 'randomId',
+                                payload: {
+                                    baseTokenAddress: '0x323b5d4c32345ced77393b3530b1eed0f346429d',
+                                    quoteTokenAddress: checksummedAddress,
+                                },
+                            },
+                            {
+                                type: 'subscribe',
+                                channel: 'orders',
+                                requestId: 'randomId',
+                                payload: {
+                                    quoteTokenAddress: '0x323b5d4c32345ced77393b3530b1eed0f346429d',
+                                },
+                            },
+                            {
+                                type: 'subscribe',
+                                channel: 'orders',
+                                requestId: 'randomId',
+                                payload: {
+                                    baseTokenAddress: '0x323b5d4c32345ced77393b3530b1eed0f346429d',
+                                },
+                            },
+                            {
+                                type: 'subscribe',
+                                channel: 'orders',
+                                requestId: 'randomId',
+                                payload: {
+                                    baseTokenAddress: '0x323b5d4c32345ced77393b3530b1eed0f346429d',
+                                    quoteTokenAddress: '0x323b5d4c32345ced77393b3530b1eed0f346429d',
+                                    snapshot: 'true',
+                                    limit: 100,
+                                },
+                            },
+                            {
+                                type: 'subscribe',
+                                channel: 'orders',
+                                requestId: 'randomId',
+                                payload: {
+                                    baseTokenAddress: '0x323b5d4c32345ced77393b3530b1eed0f346429d',
+                                    quoteTokenAddress: '0x323b5d4c32345ced77393b3530b1eed0f346429d',
+                                    snapshot: true,
+                                    limit: '100',
+                                },
+                            },
+                        ];
+                        const shouldFail = true;
+                        validateAgainstSchema(testCases, relayerApiOrdersChannelSubscribeSchema, shouldFail);
+                    });
+                });
+                describe('#relayerApiOrdersChannelUpdateSchema', () => {
+                    it('should validate valid orders channel websocket update message', () => {
+                        const testCases = [
+                            {
+                                type: 'update',
+                                channel: 'orders',
+                                requestId: 2,
+                                payload: signedOrder,
+                            },
+                        ];
+                        validateAgainstSchema(testCases, relayerApiOrdersChannelUpdateSchema);
+                    });
+                    it('should fail for invalid orders channel websocket update message', () => {
+                        const testCases = [
+                            {
+                                type: 'foo',
+                                channel: 'orders',
+                                requestId: 2,
+                                payload: signedOrder,
+                            },
+                            {
+                                type: 'update',
+                                channel: 'bar',
+                                requestId: 2,
+                                payload: signedOrder,
+                            },
+                            {
+                                type: 'update',
+                                channel: 'orders',
+                                requestId: 2,
+                                payload: {},
+                            },
+                        ];
+                        const shouldFail = true;
+                        validateAgainstSchema(testCases, relayerApiOrdersChannelUpdateSchema, shouldFail);
+                    });
                 });
             });
         });
@@ -568,217 +780,6 @@ describe('Schema', () => {
             forEach(testCases, (serialized: string, input: string) => {
                 expect(JSON.parse(JSON.stringify(new BigNumber(input)))).to.be.equal(serialized);
             });
-        });
-    });
-    describe('#relayerApiErrorResponseSchema', () => {
-        it('should validate valid errorResponse', () => {
-            const testCases = [
-                {
-                    code: 102,
-                    reason: 'Order submission disabled',
-                },
-                {
-                    code: 101,
-                    reason: 'Validation failed',
-                    validationErrors: [
-                        {
-                            field: 'maker',
-                            code: 1002,
-                            reason: 'Invalid address',
-                        },
-                    ],
-                },
-            ];
-            validateAgainstSchema(testCases, relayerApiErrorResponseSchema);
-        });
-        it('should fail for invalid error responses', () => {
-            const testCases = [
-                {},
-                {
-                    code: 102,
-                },
-                {
-                    code: '102',
-                    reason: 'Order submission disabled',
-                },
-                {
-                    reason: 'Order submission disabled',
-                },
-                {
-                    code: 101,
-                    reason: 'Validation failed',
-                    validationErrors: [
-                        {
-                            field: 'maker',
-                            reason: 'Invalid address',
-                        },
-                    ],
-                },
-                {
-                    code: 101,
-                    reason: 'Validation failed',
-                    validationErrors: [
-                        {
-                            field: 'maker',
-                            code: '1002',
-                            reason: 'Invalid address',
-                        },
-                    ],
-                },
-            ];
-            const shouldFail = true;
-            validateAgainstSchema(testCases, relayerApiErrorResponseSchema, shouldFail);
-        });
-    });
-    describe('#relayerApiOrderConfigPayloadSchema', () => {
-        it('should validate valid fees payloads', () => {
-            const testCases = [
-                {
-                    exchangeContractAddress: '0x323b5d4c32345ced77393b3530b1eed0f346429d',
-                    maker: '0x323b5d4c32345ced77393b3530b1eed0f346429d',
-                    taker: '0x323b5d4c32345ced77393b3530b1eed0f346429d',
-                    makerTokenAddress: '0x323b5d4c32345ced77393b3530b1eed0f346429d',
-                    takerTokenAddress: '0xef7fff64389b814a946f3e92105513705ca6b990',
-                    makerTokenAmount: '10000000000000000000',
-                    takerTokenAmount: '30000000000000000000',
-                    expirationUnixTimestampSec: '42',
-                    salt: '67006738228878699843088602623665307406148487219438534730168799356281242528500',
-                },
-            ];
-            validateAgainstSchema(testCases, relayerApiOrderConfigPayloadSchema);
-        });
-        it('should fail for invalid fees payloads', () => {
-            const checksummedAddress = '0xA2b31daCf30a9C50ca473337c01d8A201ae33e32';
-            const testCases = [
-                {},
-                {
-                    takerTokenAddress: '0xef7fff64389b814a946f3e92105513705ca6b990',
-                    makerTokenAmount: '10000000000000000000',
-                    takerTokenAmount: '30000000000000000000',
-                },
-                {
-                    taker: checksummedAddress,
-                    makerTokenAddress: '0x323b5d4c32345ced77393b3530b1eed0f346429d',
-                    takerTokenAddress: '0xef7fff64389b814a946f3e92105513705ca6b990',
-                    makerTokenAmount: '10000000000000000000',
-                    takerTokenAmount: '30000000000000000000',
-                },
-                {
-                    makerTokenAddress: '0x323b5d4c32345ced77393b3530b1eed0f346429d',
-                    takerTokenAddress: '0xef7fff64389b814a946f3e92105513705ca6b990',
-                    makerTokenAmount: 10000000000000000000,
-                    takerTokenAmount: 30000000000000000000,
-                },
-            ];
-            const shouldFail = true;
-            validateAgainstSchema(testCases, relayerApiOrderConfigPayloadSchema, shouldFail);
-        });
-    });
-    describe('#relayerApiOrderConfigResponseSchema', () => {
-        it('should validate valid fees responses', () => {
-            const testCases = [
-                {
-                    makerFee: '10000000000000000',
-                    takerFee: '30000000000000000',
-                    feeRecipient: '0x323b5d4c32345ced77393b3530b1eed0f346429d',
-                },
-            ];
-            validateAgainstSchema(testCases, relayerApiOrderConfigResponseSchema);
-        });
-        it('should fail for invalid fees responses', () => {
-            const checksummedAddress = '0xA2b31daCf30a9C50ca473337c01d8A201ae33e32';
-            const testCases = [
-                {},
-                {
-                    makerFee: 10000000000000000,
-                    takerFee: 30000000000000000,
-                },
-                {
-                    feeRecipient: checksummedAddress,
-                    takerToSpecify: checksummedAddress,
-                    makerFee: '10000000000000000',
-                    takerFee: '30000000000000000',
-                },
-            ];
-            const shouldFail = true;
-            validateAgainstSchema(testCases, relayerApiOrderConfigResponseSchema, shouldFail);
-        });
-    });
-    describe('#relayerAssetDataPairsResponseSchema', () => {
-        it('should validate valid assetPairs response', () => {
-            const testCases = [
-                [],
-                [
-                    {
-                        tokenA: {
-                            address: '0x323b5d4c32345ced77393b3530b1eed0f346429d',
-                            minAmount: '0',
-                            maxAmount: '10000000000000000000',
-                            precision: 5,
-                        },
-                        tokenB: {
-                            address: '0xef7fff64389b814a946f3e92105513705ca6b990',
-                            minAmount: '0',
-                            maxAmount: '50000000000000000000',
-                            precision: 5,
-                        },
-                    },
-                ],
-                [
-                    {
-                        tokenA: {
-                            address: '0x323b5d4c32345ced77393b3530b1eed0f346429d',
-                        },
-                        tokenB: {
-                            address: '0xef7fff64389b814a946f3e92105513705ca6b990',
-                        },
-                    },
-                ],
-            ];
-            validateAgainstSchema(testCases, relayerApiAssetDataPairsResponseSchema);
-        });
-        it('should fail for invalid assetPairs responses', () => {
-            const checksummedAddress = '0xA2b31daCf30a9C50ca473337c01d8A201ae33e32';
-            const testCases = [
-                [
-                    {
-                        tokenA: {
-                            address: checksummedAddress,
-                        },
-                        tokenB: {
-                            address: checksummedAddress,
-                        },
-                    },
-                ],
-                [
-                    {
-                        tokenA: {
-                            address: '0x323b5d4c32345ced77393b3530b1eed0f346429d',
-                            minAmount: 0,
-                            maxAmount: 10000000000000000000,
-                        },
-                        tokenB: {
-                            address: '0xef7fff64389b814a946f3e92105513705ca6b990',
-                            minAmount: 0,
-                            maxAmount: 50000000000000000000,
-                        },
-                    },
-                ],
-                [
-                    {
-                        tokenA: {
-                            address: '0x323b5d4c32345ced77393b3530b1eed0f346429d',
-                            precision: '5',
-                        },
-                        tokenB: {
-                            address: '0xef7fff64389b814a946f3e92105513705ca6b990',
-                            precision: '5',
-                        },
-                    },
-                ],
-            ];
-            const shouldFail = true;
-            validateAgainstSchema(testCases, relayerApiAssetDataPairsResponseSchema, shouldFail);
         });
     });
     describe('#jsNumberSchema', () => {
