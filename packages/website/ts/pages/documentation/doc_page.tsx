@@ -84,7 +84,7 @@ export class DocPage extends React.Component<DocPageProps, DocPageState> {
                     location={this.props.location}
                     docsVersion={this.props.docsVersion}
                     availableDocVersions={this.props.availableDocVersions}
-                    menu={this.props.docsInfo.getMenu(this.props.docsVersion)}
+                    menu={this.props.docsInfo.menu}
                     menuSubsectionsBySection={menuSubsectionsBySection}
                     docsInfo={this.props.docsInfo}
                     translate={this.props.translate}

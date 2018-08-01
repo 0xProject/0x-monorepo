@@ -1,7 +1,9 @@
 import {
+    AnchorTitle,
     colors,
     constants as sharedConstants,
     EtherscanLinkSuffixes,
+    HeaderSizes,
     MarkdownSection,
     NestedSidebarMenu,
     Networks,
@@ -32,8 +34,7 @@ import { Badge } from './badge';
 import { Comment } from './comment';
 import { EventDefinition } from './event_definition';
 import { SignatureBlock } from './signature_block';
-import { SourceLink } from './source_link';
-import { Type } from './type';
+import { PropertyBlock } from './property_block';
 import { TypeDefinition } from './type_definition';
 
 const networkNameToColor: { [network: string]: string } = {
@@ -129,7 +130,7 @@ export class Documentation extends React.Component<DocumentationProps, Documenta
                                         selectedVersion={this.props.selectedVersion}
                                         versions={this.props.availableVersions}
                                         sidebarHeader={this.props.sidebarHeader}
-                                        topLevelMenu={this.props.docsInfo.getMenu(this.props.selectedVersion)}
+                                        topLevelMenu={this.props.docsInfo.menu}
                                         menuSubsectionsBySection={menuSubsectionsBySection}
                                         onVersionSelected={this.props.onVersionSelected}
                                     />
@@ -172,7 +173,7 @@ export class Documentation extends React.Component<DocumentationProps, Documenta
         );
     }
     private _renderDocumentation(): React.ReactNode {
-        const subMenus = _.values(this.props.docsInfo.getMenu());
+        const subMenus = _.values(this.props.docsInfo.menu);
         const orderedSectionNames = _.flatten(subMenus);
 
         const typeDefinitionByName = this.props.docsInfo.getTypeDefinitionsByName(this.props.docAgnosticFormat);
@@ -258,13 +259,12 @@ export class Documentation extends React.Component<DocumentationProps, Documenta
                     {this._renderNetworkBadgesIfExists(sectionName)}
                 </div>
                 {docSection.comment && <Comment comment={docSection.comment} />}
-                {!_.isEmpty(docSection.constructors) &&
-                    this.props.docsInfo.isVisibleConstructor(sectionName) && (
-                        <div>
-                            <h2 style={headerStyle}>Constructor</h2>
-                            {this._renderConstructors(docSection.constructors, sectionName, typeDefinitionByName)}
-                        </div>
-                    )}
+                {!_.isEmpty(docSection.constructors) && (
+                    <div>
+                        <h2 style={headerStyle}>Constructor</h2>
+                        {this._renderConstructors(docSection.constructors, sectionName, typeDefinitionByName)}
+                    </div>
+                )}
                 {!_.isEmpty(docSection.properties) && (
                     <div>
                         <h2 style={headerStyle}>Properties</h2>
@@ -345,20 +345,14 @@ export class Documentation extends React.Component<DocumentationProps, Documenta
     }
     private _renderProperty(sectionName: string, property: Property): React.ReactNode {
         return (
-            <div key={`property-${property.name}-${property.type.name}`} className="pb3">
-                <code className={`hljs ${constants.TYPE_TO_SYNTAX[this.props.docsInfo.type]}`}>
-                    {property.name}:{' '}
-                    <Type type={property.type} sectionName={sectionName} docsInfo={this.props.docsInfo} />
-                </code>
-                {property.source && (
-                    <SourceLink
-                        version={this.props.selectedVersion}
-                        source={property.source}
-                        sourceUrl={this.props.sourceUrl}
-                    />
-                )}
-                {property.comment && <Comment comment={property.comment} className="py2" />}
-            </div>
+            <PropertyBlock
+                key={`property-${property.name}-${property.type.name}`}
+                property={property}
+                sectionName={sectionName}
+                docsInfo={this.props.docsInfo}
+                sourceUrl={this.props.sourceUrl}
+                selectedVersion={this.props.selectedVersion}
+            />
         );
     }
     private _renderSignatureBlocks(

@@ -9,6 +9,7 @@ import { DocsInfo } from '../docs_info';
 import { Type as TypeDef, TypeDefinitionByName, TypeDocTypes } from '../types';
 
 import { Signature } from './signature';
+import { constants } from '../utils/constants';
 import { TypeDefinition } from './type_definition';
 
 export interface TypeProps {
@@ -43,7 +44,7 @@ export function Type(props: TypeProps): any {
                         <span>
                             <Type
                                 key={key}
-                                type={arg.elementType}
+                                type={arg}
                                 sectionName={props.sectionName}
                                 typeDefinitionByName={props.typeDefinitionByName}
                                 docsInfo={props.docsInfo}
@@ -142,16 +143,12 @@ export function Type(props: TypeProps): any {
 
     let typeNameUrlIfExists;
     let typePrefixIfExists;
-    let sectionNameIfExists;
     if (!_.isUndefined(props.docsInfo.typeConfigs)) {
         typeNameUrlIfExists = !_.isUndefined(props.docsInfo.typeConfigs.typeNameToExternalLink)
             ? props.docsInfo.typeConfigs.typeNameToExternalLink[typeName as string]
             : undefined;
         typePrefixIfExists = !_.isUndefined(props.docsInfo.typeConfigs.typeNameToPrefix)
             ? props.docsInfo.typeConfigs.typeNameToPrefix[typeName as string]
-            : undefined;
-        sectionNameIfExists = !_.isUndefined(props.docsInfo.typeConfigs.typeNameToDocSection)
-            ? props.docsInfo.typeConfigs.typeNameToDocSection[typeName as string]
             : undefined;
     }
     if (!_.isUndefined(typeNameUrlIfExists)) {
@@ -168,16 +165,12 @@ export function Type(props: TypeProps): any {
         );
     } else if (
         (isReference || isArray) &&
-        (props.docsInfo.isPublicType(typeName as string) || !_.isUndefined(sectionNameIfExists))
+        props.typeDefinitionByName &&
+        props.typeDefinitionByName[typeName as string]
     ) {
         const id = Math.random().toString();
-        const typeDefinitionAnchorId = _.isUndefined(sectionNameIfExists)
-            ? `${props.sectionName}-${typeName}`
-            : sectionNameIfExists;
-        let typeDefinition;
-        if (props.typeDefinitionByName) {
-            typeDefinition = props.typeDefinitionByName[typeName as string];
-        }
+        const typeDefinitionAnchorId = `${constants.TYPES_SECTION_NAME}-${typeName}`;
+        let typeDefinition = props.typeDefinitionByName[typeName as string];
         typeName = (
             <ScrollLink
                 to={typeDefinitionAnchorId}
@@ -186,18 +179,12 @@ export function Type(props: TypeProps): any {
                 duration={sharedConstants.DOCS_SCROLL_DURATION_MS}
                 containerId={sharedConstants.DOCS_CONTAINER_ID}
             >
-                {_.isUndefined(typeDefinition) || sharedUtils.isUserOnMobile() ? (
-                    <span
-                        onClick={sharedUtils.setUrlHash.bind(null, typeDefinitionAnchorId)}
-                        style={{ color: colors.lightBlueA700, cursor: 'pointer' }}
-                    >
-                        {typeName}
-                    </span>
+                {sharedUtils.isUserOnMobile() ? (
+                    <span style={{ color: colors.lightBlueA700, cursor: 'pointer' }}>{typeName}</span>
                 ) : (
                     <span
                         data-tip={true}
                         data-for={id}
-                        onClick={sharedUtils.setUrlHash.bind(null, typeDefinitionAnchorId)}
                         style={{
                             color: colors.lightBlueA700,
                             cursor: 'pointer',

@@ -40,42 +40,12 @@ const docsInfoConfig: DocsInfoConfig = {
             [connectDocSections.installation]: InstallationMarkdownV1,
         },
     },
-    sectionNameToModulePath: {
-        [connectDocSections.httpClient]: ['"src/http_client"'],
-        [connectDocSections.webSocketOrderbookChannel]: ['"src/ws_orderbook_channel"'],
-        [connectDocSections.types]: ['"src/types"', '"types/src/index"'],
-    },
-    menuSubsectionToVersionWhenIntroduced: {},
     sections: connectDocSections,
-    visibleConstructors: [connectDocSections.httpClient, connectDocSections.webSocketOrderbookChannel],
     typeConfigs: {
         typeNameToExternalLink: {
             Provider: constants.URL_WEB3_PROVIDER_DOCS,
             BigNumber: constants.URL_BIGNUMBERJS_GITHUB,
         },
-        // Note: This needs to be kept in sync with the types exported in index.ts. Unfortunately there is
-        // currently no way to extract the re-exported types from index.ts via TypeDoc :(
-        publicTypes: [
-            'Client',
-            'FeesRequest',
-            'FeesResponse',
-            'OrderbookChannel',
-            'OrderbookChannelHandler',
-            'OrderbookChannelSubscriptionOpts',
-            'OrderbookRequest',
-            'OrderbookResponse',
-            'OrdersRequest',
-            'OrdersRequestOpts',
-            'PagedRequestOpts',
-            'TokenPairsItem',
-            'TokenPairsRequest',
-            'TokenPairsRequestOpts',
-            'TokenTradeInfo',
-            'WebSocketOrderbookChannelConfig',
-            'Order',
-            'SignedOrder',
-            'ECSignature',
-        ],
     },
 };
 const docsInfo = new DocsInfo(docsInfoConfig);

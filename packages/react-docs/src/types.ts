@@ -10,18 +10,13 @@ export interface DocsInfoConfig {
     menu: DocsMenu;
     sections: SectionsMap;
     sectionNameToMarkdownByVersion: SectionNameToMarkdownByVersion;
-    visibleConstructors: string[];
-    sectionNameToModulePath?: { [sectionName: string]: string[] };
-    menuSubsectionToVersionWhenIntroduced?: { [sectionName: string]: string };
     contractsByVersionByNetworkId?: ContractsByVersionByNetworkId;
     typeConfigs?: DocsInfoTypeConfigs;
 }
 
 export interface DocsInfoTypeConfigs {
     typeNameToExternalLink?: { [typeName: string]: string };
-    publicTypes?: string[];
     typeNameToPrefix?: { [typeName: string]: string };
-    typeNameToDocSection?: { [typeName: string]: string };
 }
 
 export interface DocsMenu {
@@ -291,4 +286,18 @@ export enum AbiTypes {
     Constructor = 'constructor',
     Function = 'function',
     Event = 'event',
+}
+
+export interface ExportNameToTypedocName {
+    [exportName: string]: string;
+}
+
+export interface Metadata {
+    exportPathToTypedocName: ExportNameToTypedocName;
+    exportPathOrder: string[];
+}
+
+export interface GeneratedDocJson {
+    metadata: Metadata;
+    typedocJson: TypeDocNode;
 }

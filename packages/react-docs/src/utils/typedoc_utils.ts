@@ -19,7 +19,10 @@ import {
     TypeParameter,
     TypescriptFunction,
     TypescriptMethod,
+    GeneratedDocJson,
 } from '../types';
+
+import { constants } from './constants';
 
 export const typeDocUtils = {
     isType(entity: TypeDocNode): boolean {
@@ -55,62 +58,68 @@ export const typeDocUtils = {
         });
         return moduleDefinitions;
     },
-    convertToDocAgnosticFormat(typeDocJson: TypeDocNode, docsInfo: DocsInfo): DocAgnosticFormat {
-        const subMenus = _.values(docsInfo.getMenu());
-        const orderedSectionNames = _.flatten(subMenus);
-        const docAgnosticFormat: DocAgnosticFormat = {};
-        _.each(orderedSectionNames, sectionName => {
-            const modulePathsIfExists = docsInfo.getModulePathsIfExists(sectionName);
-            if (_.isUndefined(modulePathsIfExists)) {
-                return; // no-op
-            }
-            const packageDefinitions = typeDocUtils.getModuleDefinitionsBySectionName(typeDocJson, modulePathsIfExists);
-            let packageDefinitionWithMergedChildren;
-            if (_.isEmpty(packageDefinitions)) {
-                return; // no-op
-            } else if (packageDefinitions.length === 1) {
-                packageDefinitionWithMergedChildren = packageDefinitions[0];
-            } else {
-                // HACK: For now, if there are two modules to display in a single section,
-                // we simply concat the children. This works for our limited use-case where
-                // we want to display types stored in two files under a single section
-                packageDefinitionWithMergedChildren = packageDefinitions[0];
-                for (let i = 1; i < packageDefinitions.length; i++) {
-                    packageDefinitionWithMergedChildren.children = [
-                        ...packageDefinitionWithMergedChildren.children,
-                        ...packageDefinitions[i].children,
-                    ];
-                }
-            }
+    convertToDocAgnosticFormat(generatedDocJson: GeneratedDocJson, docsInfo: DocsInfo): DocAgnosticFormat {
+        const exportPathOrder = generatedDocJson.metadata.exportPathOrder;
+        const exportPathToTypedocName = generatedDocJson.metadata.exportPathToTypedocName;
+        const typeDocJson = generatedDocJson.typedocJson;
 
-            let entities;
-            let packageComment = '';
-            // HACK: We assume 1 exported class per file
-            const classChildren = _.filter(packageDefinitionWithMergedChildren.children, (child: TypeDocNode) => {
-                return child.kindString === KindString.Class;
-            });
-            if (classChildren.length > 1 && sectionName !== 'types') {
-                throw new Error('`react-docs` only supports projects with 1 exported class per file');
-            }
-            const isClassExport = packageDefinitionWithMergedChildren.children[0].kindString === KindString.Class;
-            const isObjectLiteralExport =
-                packageDefinitionWithMergedChildren.children[0].kindString === KindString.ObjectLiteral;
-            if (isClassExport) {
-                entities = packageDefinitionWithMergedChildren.children[0].children;
-                const commentObj = packageDefinitionWithMergedChildren.children[0].comment;
-                packageComment = !_.isUndefined(commentObj) ? commentObj.shortText : packageComment;
-            } else if (isObjectLiteralExport) {
-                entities = packageDefinitionWithMergedChildren.children[0].children;
-                const commentObj = packageDefinitionWithMergedChildren.children[0].comment;
-                packageComment = !_.isUndefined(commentObj) ? commentObj.shortText : packageComment;
-            } else {
-                entities = packageDefinitionWithMergedChildren.children;
-            }
-
-            const docSection = typeDocUtils._convertEntitiesToDocSection(entities, docsInfo, sectionName);
-            docSection.comment = packageComment;
-            docAgnosticFormat[sectionName] = docSection;
+        const typeDocNameOrder = _.map(exportPathOrder, exportPath => {
+            return exportPathToTypedocName[exportPath];
         });
+
+        const docAgnosticFormat: DocAgnosticFormat = {};
+        const typeEntities: TypeDocNode[] = [];
+        _.each(typeDocNameOrder, typeDocName => {
+            const fileChildIndex = _.findIndex(typeDocJson.children, child => child.name === typeDocName);
+            const fileChild = typeDocJson.children[fileChildIndex];
+            let sectionName: string;
+            _.each(fileChild.children, (child, j) => {
+                switch (child.kindString) {
+                    case KindString.Class:
+                    case KindString.ObjectLiteral: {
+                        sectionName = child.name;
+                        docsInfo.sections[sectionName] = sectionName;
+                        docsInfo.menu[sectionName] = [sectionName];
+                        const entities = child.children;
+                        const commentObj = child.comment;
+                        const sectionComment = !_.isUndefined(commentObj) ? commentObj.shortText : '';
+                        const docSection = typeDocUtils._convertEntitiesToDocSection(entities, docsInfo, sectionName);
+                        docSection.comment = sectionComment;
+                        docAgnosticFormat[sectionName] = docSection;
+                        break;
+                    }
+                    case KindString.Function: {
+                        sectionName = child.name;
+                        docsInfo.sections[sectionName] = sectionName;
+                        docsInfo.menu[sectionName] = [sectionName];
+                        const entities = [child];
+                        const commentObj = child.comment;
+                        const SectionComment = !_.isUndefined(commentObj) ? commentObj.shortText : '';
+                        const docSection = typeDocUtils._convertEntitiesToDocSection(entities, docsInfo, sectionName);
+                        docSection.comment = SectionComment;
+                        docAgnosticFormat[sectionName] = docSection;
+                        break;
+                    }
+                    case KindString.Interface:
+                    case KindString.Variable:
+                    case KindString.Enumeration:
+                    case KindString.TypeAlias:
+                        typeEntities.push(child);
+                        break;
+                    default:
+                        throw errorUtils.spawnSwitchErr('kindString', child.kindString);
+                }
+            });
+        });
+        docsInfo.sections[constants.TYPES_SECTION_NAME] = constants.TYPES_SECTION_NAME;
+        docsInfo.menu[constants.TYPES_SECTION_NAME] = [constants.TYPES_SECTION_NAME];
+        const docSection = typeDocUtils._convertEntitiesToDocSection(
+            typeEntities,
+            docsInfo,
+            constants.TYPES_SECTION_NAME,
+        );
+        docAgnosticFormat[constants.TYPES_SECTION_NAME] = docSection;
+
         return docAgnosticFormat;
     },
     _convertEntitiesToDocSection(entities: TypeDocNode[], docsInfo: DocsInfo, sectionName: string): DocSection {
@@ -175,18 +184,16 @@ export const typeDocUtils = {
                 case KindString.Variable:
                 case KindString.Enumeration:
                 case KindString.TypeAlias:
-                    if (docsInfo.isPublicType(entity.name)) {
-                        const customType = typeDocUtils._convertCustomType(
-                            entity,
-                            docsInfo.sections,
-                            sectionName,
-                            docsInfo.id,
-                        );
-                        const seenTypeNames = _.map(docSection.types, t => t.name);
-                        const isUnseen = !_.includes(seenTypeNames, customType.name);
-                        if (isUnseen) {
-                            docSection.types.push(customType);
-                        }
+                    const customType = typeDocUtils._convertCustomType(
+                        entity,
+                        docsInfo.sections,
+                        sectionName,
+                        docsInfo.id,
+                    );
+                    const seenTypeNames = _.map(docSection.types, t => t.name);
+                    const isUnseen = !_.includes(seenTypeNames, customType.name);
+                    if (isUnseen) {
+                        docSection.types.push(customType);
                     }
                     break;
 

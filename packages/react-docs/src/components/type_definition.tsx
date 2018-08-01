@@ -37,9 +37,6 @@ export class TypeDefinition extends React.Component<TypeDefinitionProps, TypeDef
     }
     public render(): React.ReactNode {
         const customType = this.props.customType;
-        if (!this.props.docsInfo.isPublicType(customType.name)) {
-            return null; // no-op
-        }
 
         let typePrefix: string;
         let codeSnippet: React.ReactNode;

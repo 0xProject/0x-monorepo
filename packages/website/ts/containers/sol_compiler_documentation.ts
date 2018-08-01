@@ -41,17 +41,8 @@ const docsInfoConfig: DocsInfoConfig = {
             [docSections.usage]: UsageMarkdown,
         },
     },
-    sectionNameToModulePath: {
-        [docSections.compiler]: ['"sol-compiler/src/compiler"'],
-        [docSections.types]: ['"sol-compiler/src/utils/types"', '"types/src/index"'],
-    },
-    menuSubsectionToVersionWhenIntroduced: {},
     sections: docSections,
-    visibleConstructors: [docSections.compiler],
     typeConfigs: {
-        // Note: This needs to be kept in sync with the types exported in index.ts. Unfortunately there is
-        // currently no way to extract the re-exported types from index.ts via TypeDoc :(
-        publicTypes: ['CompilerOptions'],
         typeNameToExternalLink: {},
         typeNameToPrefix: {},
     },

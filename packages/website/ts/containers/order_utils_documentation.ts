@@ -38,33 +38,8 @@ const docsInfoConfig: DocsInfoConfig = {
             [docSections.installation]: InstallationMarkdownV1,
         },
     },
-    sectionNameToModulePath: {
-        [docSections.usage]: [
-            '"order-utils/src/order_hash"',
-            '"order-utils/src/signature_utils"',
-            '"order-utils/src/order_factory"',
-            '"order-utils/src/salt"',
-            '"order-utils/src/assert"',
-            '"order-utils/src/constants"',
-        ],
-        [docSections.types]: ['"order-utils/src/types"', '"types/src/index"'],
-    },
-    menuSubsectionToVersionWhenIntroduced: {},
     sections: docSections,
-    visibleConstructors: [],
     typeConfigs: {
-        // Note: This needs to be kept in sync with the types exported in index.ts. Unfortunately there is
-        // currently no way to extract the re-exported types from index.ts via TypeDoc :(
-        publicTypes: [
-            'OrderError',
-            'Order',
-            'SignedOrder',
-            'ECSignature',
-            'Provider',
-            'JSONRPCRequestPayload',
-            'JSONRPCResponsePayload',
-            'JSONRPCErrorCallback',
-        ],
         typeNameToExternalLink: {
             BigNumber: constants.URL_BIGNUMBERJS_GITHUB,
         },

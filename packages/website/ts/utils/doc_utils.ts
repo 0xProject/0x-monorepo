@@ -1,4 +1,4 @@
-import { DoxityDocObj, TypeDocNode } from '@0xproject/react-docs';
+import { DoxityDocObj, GeneratedDocJson } from '@0xproject/react-docs';
 import { fetchAsync, logUtils } from '@0xproject/utils';
 import * as _ from 'lodash';
 import { S3FileObject, VersionToFilePath } from 'ts/types';
@@ -70,7 +70,7 @@ export const docUtils = {
         });
         return versionFilePaths;
     },
-    async getJSONDocFileAsync(filePath: string, s3DocJsonRoot: string): Promise<TypeDocNode | DoxityDocObj> {
+    async getJSONDocFileAsync(filePath: string, s3DocJsonRoot: string): Promise<GeneratedDocJson | DoxityDocObj> {
         const endpoint = `${s3DocJsonRoot}/${filePath}`;
         const response = await fetchAsync(endpoint);
         if (response.status !== 200) {

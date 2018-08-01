@@ -43,16 +43,8 @@ const docsInfoConfig: DocsInfoConfig = {
             [docSections.usage]: UsageMarkdownV1,
         },
     },
-    sectionNameToModulePath: {
-        [docSections.schemaValidator]: ['"json-schemas/src/schema_validator"'],
-    },
-    menuSubsectionToVersionWhenIntroduced: {},
     sections: docSections,
-    visibleConstructors: [docSections.schemaValidator],
     typeConfigs: {
-        // Note: This needs to be kept in sync with the types exported in index.ts. Unfortunately there is
-        // currently no way to extract the re-exported types from index.ts via TypeDoc :(
-        publicTypes: [],
         typeNameToExternalLink: {
             Schema:
                 'https://github.com/tdegrunt/jsonschema/blob/5c2edd4baba149964aec0f23c87ad12c25a50dfb/lib/index.d.ts#L49',

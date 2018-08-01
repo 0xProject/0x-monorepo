@@ -13,6 +13,20 @@ import * as ts from 'typescript';
 
 import { ExportPathToExportedItems } from '../types';
 
+interface ExportInfo {
+    exportPathToExportedItems: ExportPathToExportedItems;
+    exportPathOrder: string[];
+}
+
+interface ExportNameToTypedocName {
+    [exportName: string]: string;
+}
+
+interface Metadata {
+    exportPathToTypedocName: ExportNameToTypedocName;
+    exportPathOrder: string[];
+}
+
 const publishReleaseAsync = promisify(publishRelease);
 export async function publishReleaseNotesAsync(updatedPublishPackages: Package[]): Promise<void> {
     // Git push a tag representing this publish (publish-{commit-hash}) (truncate hash)
@@ -107,7 +121,7 @@ function getReleaseNotesForPackage(packageName: string, version: string): string
 export async function generateAndUploadDocsAsync(packageName: string, isStaging: boolean): Promise<void> {
     const pathToPackage = `${constants.monorepoRootPath}/packages/${packageName}`;
     const indexPath = `${pathToPackage}/src/index.ts`;
-    const exportPathToExportedItems = getExportPathToExportedItems(indexPath);
+    const { exportPathToExportedItems, exportPathOrder } = getExportPathToExportedItems(indexPath);
 
     const monorepoPackages = utils.getPackages(constants.monorepoRootPath);
     const pkg = _.find(monorepoPackages, monorepoPackage => {
@@ -151,7 +165,8 @@ export async function generateAndUploadDocsAsync(packageName: string, isStaging:
 
         const typeDocSourceIncludes = new Set();
         const pathToIndex = `${pathIfExists}/src/index.ts`;
-        const innerExportPathToExportedItems = getExportPathToExportedItems(pathToIndex);
+        const exportInfo = getExportPathToExportedItems(pathToIndex);
+        const innerExportPathToExportedItems = exportInfo.exportPathToExportedItems;
         _.each(exportedItems, exportName => {
             _.each(innerExportPathToExportedItems, (innerExportItems, innerExportPath) => {
                 if (!_.includes(innerExportItems, exportName)) {
@@ -200,13 +215,18 @@ export async function generateAndUploadDocsAsync(packageName: string, isStaging:
     _.each(typedocOutput.children, (child, i) => {
         if (!_.includes(child.name, '/src/')) {
             const nameWithoutQuotes = child.name.replace(/"/g, '');
-            finalTypeDocOutput.children[i].name = `"${packageName}/src/${nameWithoutQuotes}"`;
+            const standardizedName = `"${packageName}/src/${nameWithoutQuotes}"`;
+            finalTypeDocOutput.children[i].name = standardizedName;
         }
     });
 
     // For each entry, see if it was exported in index.ts. If not, remove it.
+    const exportPathToTypedocName: ExportNameToTypedocName = {};
     _.each(typedocOutput.children, (file, i) => {
-        const exportItems = findExportItemsGivenTypedocName(exportPathToExportedItems, packageName, file.name);
+        const exportPath = findExportPathGivenTypedocName(exportPathToExportedItems, packageName, file.name);
+        exportPathToTypedocName[exportPath] = file.name;
+
+        const exportItems = exportPathToExportedItems[exportPath];
         _.each(file.children, (child, j) => {
             if (!_.includes(exportItems, child.name)) {
                 delete finalTypeDocOutput.children[i].children[j];
@@ -214,8 +234,22 @@ export async function generateAndUploadDocsAsync(packageName: string, isStaging:
         });
         finalTypeDocOutput.children[i].children = _.compact(finalTypeDocOutput.children[i].children);
     });
+
+    // TODO: Add extra metadata for Class properties that are class instances
+    // Look in file for imports of that class, get the import name and construct a link to
+    // it's definition on another docs page.
+
+    // Since we need additional metadata included in the doc JSON, we nest the TypeDoc JSON
+    const docJson = {
+        metadata: {
+            exportPathToTypedocName,
+            exportPathOrder,
+        },
+        typedocJson: finalTypeDocOutput,
+    };
+
     // Write modified TypeDoc JSON, without all the unexported stuff
-    writeFileSync(jsonFilePath, JSON.stringify(finalTypeDocOutput, null, 2));
+    writeFileSync(jsonFilePath, JSON.stringify(docJson, null, 2));
 
     const fileName = `v${packageJson.version}.json`;
     utils.log(`GENERATE_UPLOAD_DOCS: Doc generation successful, uploading docs... as ${fileName}`);
@@ -234,11 +268,11 @@ export async function generateAndUploadDocsAsync(packageName: string, isStaging:
     });
 }
 
-function findExportItemsGivenTypedocName(
+function findExportPathGivenTypedocName(
     exportPathToExportedItems: ExportPathToExportedItems,
     packageName: string,
     typedocName: string,
-): string[] {
+): string {
     const typeDocNameWithoutQuotes = _.replace(typedocName, '"', '');
     const sanitizedExportPathToExportPath: { [sanitizedName: string]: string } = {};
     const exportPaths = _.keys(exportPathToExportedItems);
@@ -264,22 +298,23 @@ function findExportItemsGivenTypedocName(
         throw new Error(`Didn't find an exportPath for ${typeDocNameWithoutQuotes}`);
     }
     const matchingExportPath = sanitizedExportPathToExportPath[matchingSanitizedExportPathIfExists];
-    return exportPathToExportedItems[matchingExportPath];
+    return matchingExportPath;
 }
 
-function getExportPathToExportedItems(pkgPath: string): ExportPathToExportedItems {
+function getExportPathToExportedItems(filePath: string): ExportInfo {
     const sourceFile = ts.createSourceFile(
         'indexFile',
-        readFileSync(pkgPath).toString(),
+        readFileSync(filePath).toString(),
         ts.ScriptTarget.ES2017,
         /*setParentNodes */ true,
     );
-    const exportPathToExportedItems = _getExportPathToExportedItems(sourceFile);
-    return exportPathToExportedItems;
+    const exportInfo = _getExportPathToExportedItems(sourceFile);
+    return exportInfo;
 }
 
-function _getExportPathToExportedItems(sf: ts.SourceFile): ExportPathToExportedItems {
+function _getExportPathToExportedItems(sf: ts.SourceFile): ExportInfo {
     const exportPathToExportedItems: ExportPathToExportedItems = {};
+    const exportPathOrder: string[] = [];
     processNode(sf);
 
     function processNode(node: ts.Node): void {
@@ -287,6 +322,7 @@ function _getExportPathToExportedItems(sf: ts.SourceFile): ExportPathToExportedI
             case ts.SyntaxKind.ExportDeclaration:
                 const exportClause = (node as any).exportClause;
                 const pkgName = exportClause.parent.moduleSpecifier.text;
+                exportPathOrder.push(pkgName);
                 _.each(exportClause.elements, element => {
                     exportPathToExportedItems[pkgName] = _.isUndefined(exportPathToExportedItems[pkgName])
                         ? [element.name.escapedText]
@@ -301,5 +337,9 @@ function _getExportPathToExportedItems(sf: ts.SourceFile): ExportPathToExportedI
 
         ts.forEachChild(node, processNode);
     }
-    return exportPathToExportedItems;
+    const exportInfo = {
+        exportPathToExportedItems,
+        exportPathOrder,
+    };
+    return exportInfo;
 }

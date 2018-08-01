@@ -34,7 +34,6 @@ const docsInfoConfig: DocsInfoConfig = {
         TokenRegistry: Sections.TokenRegistry,
         ZRXToken: Sections.ZRXToken,
     },
-    visibleConstructors: [Sections.Exchange, Sections.TokenRegistry, Sections.ZRXToken, Sections.TokenTransferProxy],
     contractsByVersionByNetworkId: {
         '1.0.0': {
             [Networks.Mainnet]: {

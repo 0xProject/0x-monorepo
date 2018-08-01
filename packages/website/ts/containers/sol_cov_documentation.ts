@@ -47,42 +47,10 @@ const docsInfoConfig: DocsInfoConfig = {
             [docSections.usage]: UsageMarkdown,
         },
     },
-    sectionNameToModulePath: {
-        [docSections.coverageSubprovider]: ['"sol-cov/src/coverage_subprovider"'],
-        [docSections.abstractArtifactAdapter]: ['"sol-cov/src/artifact_adapters/abstract_artifact_adapter"'],
-        [docSections.solCompilerArtifactAdapter]: ['"sol-cov/src/artifact_adapters/sol_compiler_artifact_adapter"'],
-        [docSections.truffleArtifactAdapter]: ['"sol-cov/src/artifact_adapters/truffle_artifact_adapter"'],
-        [docSections.types]: ['"subproviders/src/types"', '"types/src/index"'],
-    },
-    menuSubsectionToVersionWhenIntroduced: {},
     sections: docSections,
-    visibleConstructors: [
-        docSections.coverageSubprovider,
-        docSections.abstractArtifactAdapter,
-        docSections.solCompilerArtifactAdapter,
-        docSections.truffleArtifactAdapter,
-    ],
     typeConfigs: {
-        // Note: This needs to be kept in sync with the types exported in index.ts. Unfortunately there is
-        // currently no way to extract the re-exported types from index.ts via TypeDoc :(
-        publicTypes: [
-            'JSONRPCRequestPayload',
-            'NextCallback',
-            'ErrorCallback',
-            'AbstractArtifactAdapter',
-            'CoverageSubprovider',
-            'TruffleArtifactAdapter',
-            'SolCompilerArtifactAdapter',
-            'ContractData',
-        ],
         typeNameToExternalLink: {},
         typeNameToPrefix: {},
-        typeNameToDocSection: {
-            AbstractArtifactAdapter: docSections.abstractArtifactAdapter,
-            CoverageSubprovider: docSections.coverageSubprovider,
-            TruffleArtifactAdapter: docSections.truffleArtifactAdapter,
-            SolCompilerArtifactAdapter: docSections.solCompilerArtifactAdapter,
-        },
     },
 };
 const docsInfo = new DocsInfo(docsInfoConfig);
