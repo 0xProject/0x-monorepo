@@ -2,9 +2,9 @@ export const paginatedCollectionSchema = {
     id: '/PaginatedCollection',
     type: 'object',
     properties: {
-        total: { $ref: '/Number' },
-        perPage: { $ref: '/Number' },
-        page: { $ref: '/Number' },
+        total: { type: 'number' },
+        perPage: { type: 'number' },
+        page: { type: 'number' },
     },
     required: ['total', 'perPage', 'page'],
 };

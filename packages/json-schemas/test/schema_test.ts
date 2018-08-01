@@ -167,6 +167,34 @@ describe('Schema', () => {
             validateAgainstSchema(testCases, tokenSchema, shouldFail);
         });
     });
+    describe('#paginatedCollectionSchema', () => {
+        const paginatedResponse = {
+            total: 100,
+            perPage: 10,
+            page: 3,
+        };
+        it('should validate valid paginated collections', () => {
+            const testCases = [paginatedResponse];
+            validateAgainstSchema(testCases, paginatedCollectionSchema);
+        });
+        it('should fail for invalid paginated collections', () => {
+            const paginatedCollectionNoTotal = {
+                page: 10,
+                perPage: 2,
+            };
+            const paginatedCollectionNoPerPage = {
+                page: 10,
+                total: 100,
+            };
+            const paginatedCollectionNoPage = {
+                total: 10,
+                perPage: 20,
+            };
+            const testCases = [{}, paginatedCollectionNoPage, paginatedCollectionNoPerPage, paginatedCollectionNoTotal];
+            const shouldFail = true;
+            validateAgainstSchema(testCases, paginatedCollectionSchema, shouldFail);
+        });
+    });
     describe('order including schemas', () => {
         const order = {
             makerAddress: NULL_ADDRESS,
@@ -329,7 +357,7 @@ describe('Schema', () => {
                             asks: [signedOrder, signedOrder],
                         },
                     ];
-                    validateAgainstSchema(testCases, relayerApiOrdersResponseSchema);
+                    validateAgainstSchema(testCases, relayerApiOrderBookResponseSchema);
                 });
                 it('should fail for invalid order fill requests', () => {
                     const testCases = [

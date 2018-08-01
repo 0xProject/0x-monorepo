@@ -17,6 +17,7 @@ import {
 import { relayerApiErrorResponseSchema } from '../schemas/relayer_api_error_response_schema';
 import { relayerApiOrderConfigPayloadSchema } from '../schemas/relayer_api_order_config_payload_schema';
 import { relayerApiOrderConfigResponseSchema } from '../schemas/relayer_api_order_config_response_schema';
+import { relayerApiOrderSchema } from '../schemas/relayer_api_order_schema';
 import { relayerApiOrderBookResponseSchema } from '../schemas/relayer_api_orderbook_response_schema';
 import {
     relayerApiOrdersChannelSubscribePayload,
@@ -25,7 +26,6 @@ import {
 import { relayerApiOrdersChannelUpdateSchema } from '../schemas/relayer_api_orders_channel_update_response_schema';
 import { relayerApiOrdersResponseSchema } from '../schemas/relayer_api_orders_response_schema';
 import { relayerApiOrdersSchema } from '../schemas/relayer_api_orders_schema';
-import { relayerApiOrderSchema } from '../schemas/relayer_api_order_schema';
 import { signedOrdersSchema } from '../schemas/signed_orders_schema';
 import { tokenSchema } from '../schemas/token_schema';
 import { jsNumber, txDataSchema } from '../schemas/tx_data_schema';
