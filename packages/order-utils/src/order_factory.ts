@@ -1,17 +1,17 @@
-import { ECSignature, SignedOrder } from '@0xproject/types';
+import { ECSignature, Order, SignedOrder } from '@0xproject/types';
 import { BigNumber } from '@0xproject/utils';
 import { Provider } from 'ethereum-types';
 import * as ethUtil from 'ethereumjs-util';
 import * as _ from 'lodash';
 
+import { constants } from './constants';
 import { orderHashUtils } from './order_hash';
 import { generatePseudoRandomSalt } from './salt';
 import { ecSignOrderHashAsync } from './signature_utils';
 import { MessagePrefixType } from './types';
 
 export const orderFactory = {
-    async createSignedOrderAsync(
-        provider: Provider,
+    createOrder(
         makerAddress: string,
         takerAddress: string,
         senderAddress: string,
@@ -24,10 +24,9 @@ export const orderFactory = {
         exchangeAddress: string,
         feeRecipientAddress: string,
         expirationTimeSecondsIfExists?: BigNumber,
-    ): Promise<SignedOrder> {
-        const defaultExpirationUnixTimestampSec = new BigNumber(2524604400); // Close to infinite
+    ): Order {
         const expirationTimeSeconds = _.isUndefined(expirationTimeSecondsIfExists)
-            ? defaultExpirationUnixTimestampSec
+            ? constants.INFINITE_TIMESTAMP_SEC
             : expirationTimeSecondsIfExists;
         const order = {
             makerAddress,
@@ -44,6 +43,37 @@ export const orderFactory = {
             feeRecipientAddress,
             expirationTimeSeconds,
         };
+        return order;
+    },
+    async createSignedOrderAsync(
+        provider: Provider,
+        makerAddress: string,
+        takerAddress: string,
+        senderAddress: string,
+        makerFee: BigNumber,
+        takerFee: BigNumber,
+        makerAssetAmount: BigNumber,
+        makerAssetData: string,
+        takerAssetAmount: BigNumber,
+        takerAssetData: string,
+        exchangeAddress: string,
+        feeRecipientAddress: string,
+        expirationTimeSecondsIfExists?: BigNumber,
+    ): Promise<SignedOrder> {
+        const order = orderFactory.createOrder(
+            makerAddress,
+            takerAddress,
+            senderAddress,
+            makerFee,
+            takerFee,
+            makerAssetAmount,
+            makerAssetData,
+            takerAssetAmount,
+            takerAssetData,
+            exchangeAddress,
+            feeRecipientAddress,
+            expirationTimeSecondsIfExists,
+        );
         const orderHash = orderHashUtils.getOrderHashHex(order);
         const messagePrefixOpts = {
             prefixType: MessagePrefixType.EthSign,

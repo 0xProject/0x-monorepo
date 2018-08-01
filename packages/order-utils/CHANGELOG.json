@@ -1,5 +1,13 @@
 [
     {
+        "version": "1.1.0-rc.2",
+        "changes": [
+            {
+                "note": "Added a synchronous `createOrder` method in `orderFactory`"
+            }
+        ]
+    },
+    {
         "version": "1.0.1-rc.2",
         "changes": [
             {
