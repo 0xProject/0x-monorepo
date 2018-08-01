@@ -371,6 +371,7 @@ export enum WebsitePaths {
     SmartContracts = '/docs/contracts',
     Connect = '/docs/connect',
     Web3Wrapper = '/docs/web3-wrapper',
+    ContractWrappers = '/docs/contract-wrappers',
     SolCompiler = '/docs/sol-compiler',
     JSONSchemas = '/docs/json-schemas',
     SolCov = '/docs/sol-cov',
@@ -391,6 +392,7 @@ export enum DocPackages {
     Subproviders = 'SUBPROVIDERS',
     OrderUtils = 'ORDER_UTILS',
     EthereumTypes = 'ETHEREUM_TYPES',
+    ContractWrappers = 'CONTRACT_WRAPPERS',
 }
 
 export enum Key {
@@ -444,6 +446,8 @@ export enum Key {
     SolCov = 'SOL_COV',
     EthereumTypes = 'ETHEREUM_TYPES',
     Subproviders = 'SUBPROVIDERS',
+    ZeroExJs = '0X_JS',
+    ContractWrappers = 'CONTRACT_WRAPPERS',
     Blog = 'BLOG',
     Forum = 'FORUM',
     Connect = 'CONNECT',

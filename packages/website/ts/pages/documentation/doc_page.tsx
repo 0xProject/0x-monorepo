@@ -28,6 +28,7 @@ const docIdToSubpackageName: { [id: string]: string } = {
     [DocPackages.Connect]: 'connect',
     [DocPackages.SmartContracts]: 'contracts',
     [DocPackages.Web3Wrapper]: 'web3-wrapper',
+    [DocPackages.ContractWrappers]: 'contract-wrappers',
     [DocPackages.SolCompiler]: 'sol-compiler',
     [DocPackages.JSONSchemas]: 'json-schemas',
     [DocPackages.SolCov]: 'sol-cov',

@@ -61,6 +61,8 @@
     "SOL_COV": "Solidity Coverage",
     "ETHEREUM_TYPES": "Ethereum Types",
     "SUBPROVIDERS": "Subproviders",
+    "CONTRACT_WRAPPERS": "Contract Wrappers",
+    "0X_JS": "0x.js",
     "BLOG": "블로그",
     "FORUM": "포럼",
     "CONNECT": "0x Connect",

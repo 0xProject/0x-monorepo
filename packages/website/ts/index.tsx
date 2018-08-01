@@ -37,6 +37,9 @@ const LazyPortal = createLazyComponent('Portal', async () =>
 const LazyZeroExJSDocumentation = createLazyComponent('Documentation', async () =>
     System.import<any>(/* webpackChunkName: "zeroExDocs" */ 'ts/containers/zero_ex_js_documentation'),
 );
+const LazyContractWrappersDocumentation = createLazyComponent('Documentation', async () =>
+    System.import<any>(/* webpackChunkName: "contractWrapperDocs" */ 'ts/containers/contract_wrappers_documentation'),
+);
 const LazySmartContractsDocumentation = createLazyComponent('Documentation', async () =>
     System.import<any>(/* webpackChunkName: "smartContractDocs" */ 'ts/containers/smart_contracts_documentation'),
 );
@@ -80,6 +83,7 @@ render(
                             <Route path={WebsitePaths.About} component={About as any} />
                             <Route path={WebsitePaths.Wiki} component={Wiki as any} />
                             <Route path={`${WebsitePaths.ZeroExJs}/:version?`} component={LazyZeroExJSDocumentation} />
+                            <Route path={`${WebsitePaths.ContractWrappers}/:version?`} component={LazyContractWrappersDocumentation} />
                             <Route path={`${WebsitePaths.Connect}/:version?`} component={LazyConnectDocumentation} />
                             <Route
                                 path={`${WebsitePaths.SolCompiler}/:version?`}

@@ -25,11 +25,16 @@
         "update_artifacts_v2": "for i in ${npm_package_config_contracts_v2}; do copyfiles -u 4 ../migrations/artifacts/2.0.0/$i.json src/artifacts; done;",
         "copy_artifacts": "copyfiles -u 2 './src/artifacts/**/*.json' ./lib/src/artifacts",
         "clean": "shx rm -rf _bundles lib test_temp test/artifacts src/contract_wrappers/generated src/artifacts",
-        "run_mocha": "mocha --require source-map-support/register --require make-promises-safe lib/test/**/*_test.js lib/test/global_hooks.js --timeout 10000 --bail --exit"
+        "run_mocha": "mocha --require source-map-support/register --require make-promises-safe lib/test/**/*_test.js lib/test/global_hooks.js --timeout 10000 --bail --exit",
+        "docs:json": "typedoc --excludePrivate --excludeExternals --ignoreCompilerErrors --target ES5 --json $JSON_FILE_PATH $PROJECT_FILES"
     },
     "config": {
         "contracts_v2_beta": "Exchange ERC20Proxy ERC20Token ERC721Proxy ERC721Token WETH9 ZRXToken",
-        "contracts_v2": "DummyERC20Token DummyERC721Token"
+        "contracts_v2": "DummyERC20Token DummyERC721Token",
+        "postpublish": {
+            "assets": [],
+            "shouldPublishDocs": true
+        }
     },
     "repository": {
         "type": "git",
@@ -66,6 +71,7 @@
         "sinon": "^4.0.0",
         "source-map-support": "^0.5.0",
         "tslint": "5.11.0",
+        "typedoc": "0xProject/typedoc",
         "typescript": "2.7.1",
         "web3-provider-engine": "14.0.6"
     },
