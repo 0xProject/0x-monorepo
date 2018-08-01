@@ -7,5 +7,5 @@ export const relayerApiOrdersChannelUpdateSchema = {
         requestId: { type: 'string' },
         payload: { $ref: '/RelayerApiOrders' },
     },
-    required: ['type', 'channel', 'requestId', 'payload'],
+    required: ['type', 'channel', 'requestId'],
 };

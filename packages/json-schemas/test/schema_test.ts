@@ -5,6 +5,8 @@ import forEach = require('lodash.foreach');
 import 'mocha';
 
 import { schemas, SchemaValidator } from '../src/index';
+import { validate } from 'jsonschema';
+import { relayerApiOrderSchema } from '../schemas/relayer_api_order_schema';
 
 chai.config.includeStack = true;
 chai.use(dirtyChai);
@@ -211,6 +213,10 @@ describe('Schema', () => {
             exchangeAddress: NULL_ADDRESS,
             expirationTimeSeconds: '42',
         };
+        const relayerApiOrder = {
+            order,
+            remainingFillableAmount: '50000000000000',
+        };
         describe('#orderSchema', () => {
             it('should validate valid order', () => {
                 const testCases = [order];
@@ -230,6 +236,17 @@ describe('Schema', () => {
                 ];
                 const shouldFail = true;
                 validateAgainstSchema(testCases, orderSchema, shouldFail);
+            });
+        });
+        describe('relayerApiOrderSchema', () => {
+            it('should validate valid relayer api order', () => {
+                const testCases = [relayerApiOrder];
+                validateAgainstSchema(testCases, relayerApiOrderSchema);
+            });
+            it('should fail for invalid relayer api orders', () => {
+                const testCases = [{}, order, { order }, { order, remainingFillableAmount: 5 }];
+                const shouldFail = true;
+                validateAgainstSchema(testCases, shouldFail);
             });
         });
         describe('signed order including schemas', () => {
