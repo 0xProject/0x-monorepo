@@ -119,10 +119,6 @@ function getReleaseNotesForPackage(packageName: string, version: string): string
 }
 
 export async function generateAndUploadDocsAsync(packageName: string, isStaging: boolean): Promise<void> {
-    const pathToPackage = `${constants.monorepoRootPath}/packages/${packageName}`;
-    const indexPath = `${pathToPackage}/src/index.ts`;
-    const { exportPathToExportedItems, exportPathOrder } = getExportPathToExportedItems(indexPath);
-
     const monorepoPackages = utils.getPackages(constants.monorepoRootPath);
     const pkg = _.find(monorepoPackages, monorepoPackage => {
         return _.includes(monorepoPackage.packageJson.name, packageName);
@@ -132,6 +128,12 @@ export async function generateAndUploadDocsAsync(packageName: string, isStaging:
     }
 
     const packageJson = pkg.packageJson;
+    const omitExports = _.get(packageJson, 'config.postpublish.omitExports', []);
+
+    const pathToPackage = `${constants.monorepoRootPath}/packages/${packageName}`;
+    const indexPath = `${pathToPackage}/src/index.ts`;
+    const { exportPathToExportedItems, exportPathOrder } = getExportPathToExportedItems(indexPath, omitExports);
+
     const shouldPublishDocs = !!_.get(packageJson, 'config.postpublish.shouldPublishDocs');
     if (!shouldPublishDocs) {
         utils.log(
@@ -308,35 +310,59 @@ function findExportPathGivenTypedocName(
     return matchingExportPath;
 }
 
-function getExportPathToExportedItems(filePath: string): ExportInfo {
+function getExportPathToExportedItems(filePath: string, omitExports?: string[]): ExportInfo {
     const sourceFile = ts.createSourceFile(
         'indexFile',
         readFileSync(filePath).toString(),
         ts.ScriptTarget.ES2017,
         /*setParentNodes */ true,
     );
-    const exportInfo = _getExportPathToExportedItems(sourceFile);
+    const exportInfo = _getExportPathToExportedItems(sourceFile, omitExports);
     return exportInfo;
 }
 
-function _getExportPathToExportedItems(sf: ts.SourceFile): ExportInfo {
+function _getExportPathToExportedItems(sf: ts.SourceFile, omitExports?: string[]): ExportInfo {
     const exportPathToExportedItems: ExportPathToExportedItems = {};
     const exportPathOrder: string[] = [];
+    const exportsToOmit = _.isUndefined(omitExports) ? [] : omitExports;
+    console.log('exportsToOmit', exportsToOmit);
     processNode(sf);
 
     function processNode(node: ts.Node): void {
         switch (node.kind) {
-            case ts.SyntaxKind.ExportDeclaration:
+            case ts.SyntaxKind.ExportDeclaration: {
                 const exportClause = (node as any).exportClause;
-                const pkgName = exportClause.parent.moduleSpecifier.text;
-                exportPathOrder.push(pkgName);
+                const exportPath = exportClause.parent.moduleSpecifier.text;
                 _.each(exportClause.elements, element => {
-                    exportPathToExportedItems[pkgName] = _.isUndefined(exportPathToExportedItems[pkgName])
-                        ? [element.name.escapedText]
-                        : [...exportPathToExportedItems[pkgName], element.name.escapedText];
+                    const exportItem = element.name.escapedText;
+                    if (!_.includes(exportsToOmit, exportItem)) {
+                        exportPathToExportedItems[exportPath] = _.isUndefined(exportPathToExportedItems[exportPath])
+                            ? [exportItem]
+                            : [...exportPathToExportedItems[exportPath], exportItem];
+                    }
                 });
+                if (!_.isUndefined(exportPathToExportedItems[exportPath])) {
+                    exportPathOrder.push(exportPath);
+                }
                 break;
+            }
 
+            case ts.SyntaxKind.ExportKeyword: {
+                const foundNode: any = node;
+                const exportPath = './index';
+                if (foundNode.parent && foundNode.parent.name) {
+                    const exportItem = foundNode.parent.name.escapedText;
+                    if (!_.includes(exportsToOmit, exportItem)) {
+                        exportPathToExportedItems[exportPath] = _.isUndefined(exportPathToExportedItems[exportPath])
+                            ? [exportItem]
+                            : [...exportPathToExportedItems[exportPath], exportItem];
+                    }
+                }
+                if (!_.includes(exportPathOrder, exportPath) && !_.isUndefined(exportPathToExportedItems[exportPath])) {
+                    exportPathOrder.push(exportPath);
+                }
+                break;
+            }
             default:
                 // noop
                 break;

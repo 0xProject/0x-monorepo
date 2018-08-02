@@ -23,7 +23,8 @@
     "config": {
         "postpublish": {
             "assets": [],
-            "shouldPublishDocs": true
+            "shouldPublishDocs": true,
+            "omitExports": ["schemas"]
         }
     },
     "repository": {
