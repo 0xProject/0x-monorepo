@@ -1,5 +1,5 @@
 import { schemas } from '@0xproject/json-schemas';
-import { AssetProxyId, SignedOrder } from '@0xproject/types';
+import { AssetProxyId, OrderRelevantState, SignedOrder } from '@0xproject/types';
 import { BigNumber } from '@0xproject/utils';
 import { Web3Wrapper } from '@0xproject/web3-wrapper';
 import { ContractAbi } from 'ethereum-types';
@@ -24,6 +24,49 @@ export class ForwarderWrapper extends ContractWrapper {
     private _forwarderContractIfExists?: ForwarderContract;
     private _contractAddressIfExists?: string;
     private _zrxContractAddressIfExists?: string;
+    /**
+     * Takes an array of orders and returns a subset of those orders that has enough makerAssetAmount (taking into account on-chain balances,
+     * allowances, and partial fills) in order to fill the input makerAssetFillAmount plus slippageBufferAmount. Iterates from first order to last.
+     * Sort the input by rate in order to get the subset of orders that will cost the least ETH.
+     * @param   signedOrders         An array of objects that conform to the SignedOrder interface. All orders should specify the same makerAsset.
+     *                               All orders should specify WETH as the takerAsset.
+     * @param   orderStates          An array of objects corresponding to the signedOrders parameter that each contain on-chain state
+     *                               relevant to that order.
+     * @param   makerAssetFillAmount The amount of makerAsset desired to be filled.
+     * @param   slippageBufferAmount An additional amount makerAsset to be covered by the result in case of trade collisions or partial fills.
+     * @return  Resulting orders and remaining fill amount that could not be covered by the input.
+     */
+    public static findOrdersThatCoverMakerAssetFillAmount(
+        signedOrders: SignedOrder[],
+        orderStates: OrderRelevantState[],
+        makerAssetFillAmount: BigNumber,
+        slippageBufferAmount: BigNumber = constants.ZERO_AMOUNT,
+    ): { resultOrders: SignedOrder[]; remainingFillAmount: BigNumber } {
+        // type assertions
+        assert.doesConformToSchema('signedOrders', signedOrders, schemas.signedOrdersSchema);
+        assert.isBigNumber('makerAssetFillAmount', makerAssetFillAmount);
+        assert.isBigNumber('slippageBufferAmount', slippageBufferAmount);
+        // calculate total amount of makerAsset needed to fill
+        const totalFillAmount = makerAssetFillAmount.plus(slippageBufferAmount);
+        // iterate through the signedOrders input from left to right until we have enough makerAsset to fill totalFillAmount
+        const result = _.reduce(
+            signedOrders,
+            ({ resultOrders, remainingFillAmount }, order, index) => {
+                if (remainingFillAmount.lessThanOrEqualTo(constants.ZERO_AMOUNT)) {
+                    return { resultOrders, remainingFillAmount };
+                } else {
+                    const orderState = orderStates[index];
+                    const orderRemainingFillableMakerAssetAmount = orderState.remainingFillableMakerAssetAmount;
+                    return {
+                        resultOrders: _.concat(resultOrders, order),
+                        remainingFillAmount: remainingFillAmount.minus(orderState.remainingFillableMakerAssetAmount),
+                    };
+                }
+            },
+            { resultOrders: [] as SignedOrder[], remainingFillAmount: totalFillAmount },
+        );
+        return result;
+    }
     constructor(
         web3Wrapper: Web3Wrapper,
         networkId: number,
