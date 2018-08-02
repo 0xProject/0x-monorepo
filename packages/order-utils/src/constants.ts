@@ -10,6 +10,6 @@ export const constants = {
     ERC721_ASSET_DATA_MINIMUM_BYTE_LENGTH: 53,
     SELECTOR_LENGTH: 4,
     BASE_16: 16,
-    INFINITE_TIMESTAMP_SEC: new BigNumber(2524604400), // Close to infinite
+    INFINITE_TIMESTAMP_SEC: new BigNumber(2524604400), // Close to infinite,
     ZERO_AMOUNT: new BigNumber(0),
 };
