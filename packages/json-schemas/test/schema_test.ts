@@ -5,7 +5,6 @@ import forEach = require('lodash.foreach');
 import 'mocha';
 
 import { schemas, SchemaValidator } from '../src/index';
-import { validate } from 'jsonschema';
 
 chai.config.includeStack = true;
 chai.use(dirtyChai);
