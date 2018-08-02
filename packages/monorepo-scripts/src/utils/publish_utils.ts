@@ -274,7 +274,7 @@ function findExportPathGivenTypedocName(
     packageName: string,
     typedocName: string,
 ): string {
-    const typeDocNameWithoutQuotes = _.replace(typedocName, '"', '');
+    const typeDocNameWithoutQuotes = _.replace(typedocName, /"/g, '');
     const sanitizedExportPathToExportPath: { [sanitizedName: string]: string } = {};
     const exportPaths = _.keys(exportPathToExportedItems);
     const sanitizedExportPaths = _.map(exportPaths, exportPath => {
@@ -292,7 +292,13 @@ function findExportPathGivenTypedocName(
         sanitizedExportPathToExportPath[exportPath] = exportPath;
         return exportPath;
     });
-    const matchingSanitizedExportPathIfExists = _.find(sanitizedExportPaths, p => {
+    // We need to sort the exportPaths by length (longest first), so that the match finding will pick
+    // longer matches before shorter matches, since it might match both, but the longer match is more
+    // precisely what we are looking for.
+    const sanitizedExportPathsSortedByLength = sanitizedExportPaths.sort((a: string, b: string) => {
+        return b.length - a.length;
+    });
+    const matchingSanitizedExportPathIfExists = _.find(sanitizedExportPathsSortedByLength, p => {
         return _.startsWith(typeDocNameWithoutQuotes, p);
     });
     if (_.isUndefined(matchingSanitizedExportPathIfExists)) {
