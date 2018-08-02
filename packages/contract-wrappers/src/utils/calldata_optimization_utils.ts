@@ -3,14 +3,14 @@ import * as _ from 'lodash';
 
 import { constants } from './constants';
 
-export const marketOrdersOptimizationUtils = {
+export const calldataOptimizationUtils = {
     /**
      * Takes an array of orders and outputs an array of equivalent orders where all takerAssetData are '0x' and
      * all makerAssetData are '0x' except for that of the first order, which retains its original value
      * @param   orders         An array of SignedOrder objects
      * @returns optimized orders
      */
-    optimizeMarketOrders(orders: SignedOrder[]): SignedOrder[] {
+    optimizeForwarderOrders(orders: SignedOrder[]): SignedOrder[] {
         const optimizedOrders = _.map(orders, (order, index) =>
             transformOrder(order, {
                 makerAssetData: index === 0 ? order.makerAssetData : constants.NULL_BYTES,
@@ -25,7 +25,7 @@ export const marketOrdersOptimizationUtils = {
      * @param   orders         An array of SignedOrder objects
      * @returns optimized orders
      */
-    optimizeFeeOrders(orders: SignedOrder[]): SignedOrder[] {
+    optimizeForwarderFeeOrders(orders: SignedOrder[]): SignedOrder[] {
         const optimizedOrders = _.map(orders, (order, index) =>
             transformOrder(order, {
                 makerAssetData: constants.NULL_BYTES,

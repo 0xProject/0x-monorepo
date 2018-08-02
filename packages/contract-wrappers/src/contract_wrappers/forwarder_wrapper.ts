@@ -10,8 +10,8 @@ import { orderTxOptsSchema } from '../schemas/order_tx_opts_schema';
 import { txOptsSchema } from '../schemas/tx_opts_schema';
 import { TransactionOpts } from '../types';
 import { assert } from '../utils/assert';
+import { calldataOptimizationUtils } from '../utils/calldata_optimization_utils';
 import { constants } from '../utils/constants';
-import { marketOrdersOptimizationUtils } from '../utils/market_orders_optimization_utils';
 
 import { ContractWrapper } from './contract_wrapper';
 import { ForwarderContract } from './generated/forwarder';
@@ -80,8 +80,8 @@ export class ForwarderWrapper extends ContractWrapper {
         const normalizedTakerAddress = takerAddress.toLowerCase();
         const normalizedFeeRecipientAddress = feeRecipientAddress.toLowerCase();
         // optimize orders
-        const optimizedMarketOrders = marketOrdersOptimizationUtils.optimizeMarketOrders(signedOrders);
-        const optimizedFeeOrders = marketOrdersOptimizationUtils.optimizeFeeOrders(signedFeeOrders);
+        const optimizedMarketOrders = calldataOptimizationUtils.optimizeForwarderOrders(signedOrders);
+        const optimizedFeeOrders = calldataOptimizationUtils.optimizeForwarderFeeOrders(signedFeeOrders);
         // send transaction
         const forwarderContractInstance = await this._getForwarderContractAsync();
         const txHash = await forwarderContractInstance.marketSellOrdersWithEth.sendTransactionAsync(
@@ -148,8 +148,8 @@ export class ForwarderWrapper extends ContractWrapper {
         const normalizedTakerAddress = takerAddress.toLowerCase();
         const normalizedFeeRecipientAddress = feeRecipientAddress.toLowerCase();
         // optimize orders
-        const optimizedMarketOrders = marketOrdersOptimizationUtils.optimizeMarketOrders(signedOrders);
-        const optimizedFeeOrders = marketOrdersOptimizationUtils.optimizeFeeOrders(signedFeeOrders);
+        const optimizedMarketOrders = calldataOptimizationUtils.optimizeForwarderOrders(signedOrders);
+        const optimizedFeeOrders = calldataOptimizationUtils.optimizeForwarderFeeOrders(signedFeeOrders);
         // send transaction
         const forwarderContractInstance = await this._getForwarderContractAsync();
         const txHash = await forwarderContractInstance.marketBuyOrdersWithEth.sendTransactionAsync(
