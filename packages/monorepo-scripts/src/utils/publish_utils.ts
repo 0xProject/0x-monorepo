@@ -195,6 +195,7 @@ export async function generateAndUploadDocsAsync(packageName: string, isStaging:
     });
 
     // Generate Typedoc JSON file
+    typeDocExtraFileIncludes.push(path.join(pathToPackage, 'src', 'globals.d.ts'));
     const jsonFilePath = path.join(pathToPackage, 'generated_docs', 'index.json');
     const projectFiles = typeDocExtraFileIncludes.join(' ');
     const cwd = path.join(constants.monorepoRootPath, 'packages', packageName);
