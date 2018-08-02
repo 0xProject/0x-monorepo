@@ -9,16 +9,31 @@ import { DocPackages } from 'ts/types';
 import { constants } from 'ts/utils/constants';
 import { Translate } from 'ts/utils/translate';
 
-// TODO: Add MD sections
-const markdownSections = {};
+/* tslint:disable:no-var-requires */
+const IntroMarkdown = require('md/docs/contract_wrappers/introduction');
+const InstallMarkdown = require('md/docs/contract_wrappers/installation');
+/* tslint:enable:no-var-requires */
+
+const markdownSections = {
+    introduction: 'introduction',
+    installation: 'installation',
+};
 
 const docsInfoConfig: DocsInfoConfig = {
     id: DocPackages.ContractWrappers,
     type: SupportedDocJson.TypeDoc,
     displayName: 'Contract Wrappers',
     packageUrl: 'https://github.com/0xProject/0x-monorepo',
-    markdownMenu: {},
-    sectionNameToMarkdownByVersion: {},
+    markdownMenu: {
+        introduction: [markdownSections.introduction],
+        install: [markdownSections.installation],
+    },
+    sectionNameToMarkdownByVersion: {
+        '0.0.1': {
+            [markdownSections.introduction]: IntroMarkdown,
+            [markdownSections.installation]: InstallMarkdown,
+        },
+    },
     markdownSections,
     typeConfigs: {
         typeNameToPrefix: {},
