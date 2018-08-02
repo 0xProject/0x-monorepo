@@ -336,7 +336,14 @@ export const typeDocUtils = {
         };
         return method;
     },
-    _getCallPath(sectionName: string, sections: SectionsMap, isStatic: boolean, isConstructor: boolean, docId: string, entityName: string) {
+    _getCallPath(
+        sectionName: string,
+        sections: SectionsMap,
+        isStatic: boolean,
+        isConstructor: boolean,
+        docId: string,
+        entityName: string,
+    ) {
         // HACK: we use the fact that the sectionName is the same as the property name at the top-level
         // of the public interface. In the future, we shouldn't use this hack but rather get it from the JSON.
         let callPath;
