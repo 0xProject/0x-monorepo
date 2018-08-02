@@ -39,10 +39,17 @@ export const marketUtils = {
                     return { resultOrders, remainingFillAmount: constants.ZERO_AMOUNT };
                 } else {
                     const orderState = orderStates[index];
-                    const makerAssetAmountAvailable = getMakerAssetAmountAvailable(orderState);
+                    const makerAssetAmountAvailable = orderState.remainingFillableMakerAssetAmount;
+                    // if there is no makerAssetAmountAvailable do not append order to resultOrders
+                    // if we have exceeded the total amount we want to fill set remainingFillAmount to 0
                     return {
-                        resultOrders: _.concat(resultOrders, order),
-                        remainingFillAmount: remainingFillAmount.minus(makerAssetAmountAvailable),
+                        resultOrders: makerAssetAmountAvailable.gt(constants.ZERO_AMOUNT)
+                            ? _.concat(resultOrders, order)
+                            : resultOrders,
+                        remainingFillAmount: BigNumber.max(
+                            constants.ZERO_AMOUNT,
+                            remainingFillAmount.minus(makerAssetAmountAvailable),
+                        ),
                     };
                 }
             },
@@ -83,7 +90,7 @@ export const marketUtils = {
             signedOrders,
             (accFees, order, index) => {
                 const orderState = orderStates[index];
-                const makerAssetAmountAvailable = getMakerAssetAmountAvailable(orderState);
+                const makerAssetAmountAvailable = orderState.remainingFillableMakerAssetAmount;
                 const feeToFillMakerAssetAmountAvailable = makerAssetAmountAvailable
                     .div(order.makerAssetAmount)
                     .mul(order.takerFee);
@@ -98,12 +105,4 @@ export const marketUtils = {
             slippageBufferAmount,
         );
     },
-};
-
-const getMakerAssetAmountAvailable = (orderState: OrderRelevantState) => {
-    return BigNumber.min(
-        orderState.makerBalance,
-        orderState.remainingFillableMakerAssetAmount,
-        orderState.makerProxyAllowance,
-    );
 };
