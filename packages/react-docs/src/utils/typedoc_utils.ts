@@ -73,7 +73,7 @@ export const typeDocUtils = {
             const fileChildIndex = _.findIndex(typeDocJson.children, child => child.name === typeDocName);
             const fileChild = typeDocJson.children[fileChildIndex];
             let sectionName: string;
-            _.each(fileChild.children, (child, j) => {
+            _.each(fileChild.children, child => {
                 switch (child.kindString) {
                     case KindString.Class:
                     case KindString.ObjectLiteral: {
