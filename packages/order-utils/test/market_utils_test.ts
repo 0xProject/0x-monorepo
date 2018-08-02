@@ -1,10 +1,8 @@
-import { OrderRelevantState, SignedOrder } from '@0xproject/types';
 import { BigNumber } from '@0xproject/utils';
 import * as chai from 'chai';
-import * as _ from 'lodash';
 import 'mocha';
 
-import { constants, marketUtils, orderFactory } from '../src';
+import { constants, marketUtils } from '../src';
 
 import { chaiSetup } from './utils/chai_setup';
 import { testOrderFactory } from './utils/test_order_factory';
@@ -37,19 +35,14 @@ describe('marketUtils', () => {
                 },
                 testOrderCount,
             );
-            // generate order states that cover the required fill amount
-            const inputOrderStates = testOrderFactory.generateTestOrderRelevantStates(
-                {
-                    remainingFillableMakerAssetAmount: makerAssetAmount,
-                },
-                testOrderCount,
-            );
+            // generate remainingFillableMakerAssetAmounts that equal the makerAssetAmount
+            const remainingFillableMakerAssetAmounts = [makerAssetAmount, makerAssetAmount, makerAssetAmount];
             it('returns input orders and zero remainingFillAmount when input exactly matches requested fill amount', async () => {
                 // try to fill 30 units of makerAsset
                 const fillAmount = new BigNumber(30);
                 const { resultOrders, remainingFillAmount } = marketUtils.findOrdersThatCoverMakerAssetFillAmount(
                     inputOrders,
-                    inputOrderStates,
+                    remainingFillableMakerAssetAmounts,
                     fillAmount,
                 );
                 expect(resultOrders).to.be.deep.equal(inputOrders);
@@ -60,7 +53,7 @@ describe('marketUtils', () => {
                 const fillAmount = new BigNumber(25);
                 const { resultOrders, remainingFillAmount } = marketUtils.findOrdersThatCoverMakerAssetFillAmount(
                     inputOrders,
-                    inputOrderStates,
+                    remainingFillableMakerAssetAmounts,
                     fillAmount,
                 );
                 expect(resultOrders).to.be.deep.equal(inputOrders);
@@ -71,7 +64,7 @@ describe('marketUtils', () => {
                 const fillAmount = new BigNumber(35);
                 const { resultOrders, remainingFillAmount } = marketUtils.findOrdersThatCoverMakerAssetFillAmount(
                     inputOrders,
-                    inputOrderStates,
+                    remainingFillableMakerAssetAmounts,
                     fillAmount,
                 );
                 expect(resultOrders).to.be.deep.equal(inputOrders);
@@ -82,7 +75,7 @@ describe('marketUtils', () => {
                 const fillAmount = new BigNumber(10);
                 const { resultOrders, remainingFillAmount } = marketUtils.findOrdersThatCoverMakerAssetFillAmount(
                     inputOrders,
-                    inputOrderStates,
+                    remainingFillableMakerAssetAmounts,
                     fillAmount,
                 );
                 expect(resultOrders).to.be.deep.equal([inputOrders[0]]);
@@ -93,7 +86,7 @@ describe('marketUtils', () => {
                 const fillAmount = new BigNumber(15);
                 const { resultOrders, remainingFillAmount } = marketUtils.findOrdersThatCoverMakerAssetFillAmount(
                     inputOrders,
-                    inputOrderStates,
+                    remainingFillableMakerAssetAmounts,
                     fillAmount,
                 );
                 expect(resultOrders).to.be.deep.equal([inputOrders[0], inputOrders[1]]);
@@ -110,31 +103,17 @@ describe('marketUtils', () => {
                 },
                 testOrderCount,
             );
-            // generate order states that cover different scenarios
+            // generate remainingFillableMakerAssetAmounts that cover different partial fill scenarios
             // 1. order is completely filled already
             // 2. order is partially fillable
             // 3. order is completely fillable
-            const partialOrderStates: Array<Partial<OrderRelevantState>> = [
-                {
-                    remainingFillableMakerAssetAmount: constants.ZERO_AMOUNT,
-                },
-                {
-                    remainingFillableMakerAssetAmount: new BigNumber(5),
-                },
-                {
-                    remainingFillableMakerAssetAmount: makerAssetAmount,
-                },
-            ];
-            const inputOrderStates: OrderRelevantState[] = _.map(
-                partialOrderStates,
-                testOrderFactory.generateTestOrderRelevantState,
-            );
+            const remainingFillableMakerAssetAmounts = [constants.ZERO_AMOUNT, new BigNumber(5), makerAssetAmount];
             it('returns last 2 orders and non-zero remainingFillAmount when trying to fill original makerAssetAmounts', async () => {
                 // try to fill 30 units of makerAsset
                 const fillAmount = new BigNumber(30);
                 const { resultOrders, remainingFillAmount } = marketUtils.findOrdersThatCoverMakerAssetFillAmount(
                     inputOrders,
-                    inputOrderStates,
+                    remainingFillableMakerAssetAmounts,
                     fillAmount,
                 );
                 expect(resultOrders).to.be.deep.equal([inputOrders[1], inputOrders[2]]);
