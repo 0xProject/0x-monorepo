@@ -1,26 +1,26 @@
 export const relayerApiOrdersChannelSubscribeSchema = {
-    id: '/RelayerApiOrdersChannelSubscribe',
+    id: '/relayerApiOrdersChannelSubscribeSchema',
     type: 'object',
     properties: {
         type: { enum: ['subscribe'] },
         channel: { enum: ['orders'] },
         requestId: { type: 'string' },
-        payload: { $ref: '/RelayerApiOrdersChannelSubscribePayload' },
+        payload: { $ref: '/relayerApiOrdersChannelSubscribePayload' },
     },
     required: ['type', 'channel', 'requestId'],
 };
 
 export const relayerApiOrdersChannelSubscribePayload = {
-    id: '/RelayerApiOrdersChannelSubscribePayload',
+    id: '/relayerApiOrdersChannelSubscribePayload',
     type: 'object',
     properties: {
-        makerAssetProxyId: { $ref: '/Hex' },
-        takerAssetProxyId: { $ref: '/Hex' },
+        makerAssetProxyId: { $ref: '/hexSchema' },
+        takerAssetProxyId: { $ref: '/hexSchema' },
         networkId: { type: 'number' },
-        makerAssetAddress: { $ref: '/Address' },
-        takerAssetAddress: { $ref: '/Address' },
-        makerAssetData: { $ref: '/Hex' },
-        takerAssetData: { $ref: '/Hex' },
-        traderAssetData: { $ref: '/Hex' },
+        makerAssetAddress: { $ref: '/addressSchema' },
+        takerAssetAddress: { $ref: '/addressSchema' },
+        makerAssetData: { $ref: '/hexSchema' },
+        takerAssetData: { $ref: '/hexSchema' },
+        traderAssetData: { $ref: '/hexSchema' },
     },
 };

@@ -1,5 +1,5 @@
 export const signedOrdersSchema = {
-    id: '/SignedOrdersSchema',
+    id: '/signedOrdersSchema',
     type: 'array',
-    items: { $ref: '/SignedOrder' },
+    items: { $ref: '/signedOrderSchema' },
 };

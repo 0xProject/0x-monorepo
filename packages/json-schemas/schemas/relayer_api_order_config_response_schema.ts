@@ -1,11 +1,11 @@
 export const relayerApiOrderConfigResponseSchema = {
-    id: '/RelayerApiOrderConfigResponse',
+    id: '/relayerApiOrderConfigResponseSchema',
     type: 'object',
     properties: {
-        makerFee: { $ref: '/Number' },
-        takerFee: { $ref: '/Number' },
-        feeRecipientAddress: { $ref: '/Address' },
-        senderAddress: { $ref: '/Address' },
+        makerFee: { $ref: '/numberSchema' },
+        takerFee: { $ref: '/numberSchema' },
+        feeRecipientAddress: { $ref: '/addressSchema' },
+        senderAddress: { $ref: '/addressSchema' },
     },
     required: ['makerFee', 'takerFee', 'feeRecipientAddress', 'senderAddress'],
 };

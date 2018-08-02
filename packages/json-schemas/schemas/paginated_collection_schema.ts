@@ -1,5 +1,5 @@
 export const paginatedCollectionSchema = {
-    id: '/PaginatedCollection',
+    id: '/paginatedCollectionSchema',
     type: 'object',
     properties: {
         total: { type: 'number' },

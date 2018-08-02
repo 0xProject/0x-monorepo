@@ -1,5 +1,5 @@
 export const relayerApiOrdersSchema = {
-    id: '/RelayerApiOrders',
+    id: '/relayerApiOrdersSchema',
     type: 'array',
-    items: { $ref: '/RelayerApiOrder' },
+    items: { $ref: '/relayerApiOrderSchema' },
 };

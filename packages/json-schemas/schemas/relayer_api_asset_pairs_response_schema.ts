@@ -1,11 +1,11 @@
 export const relayerApiAssetDataPairsResponseSchema = {
-    id: '/RelayerApiAssetDataPairsResponse',
+    id: '/relayerApiAssetDataPairsResponseSchema',
     type: 'object',
     allOf: [
-        { $ref: '/PaginatedCollection' },
+        { $ref: '/paginatedCollectionSchema' },
         {
             properties: {
-                records: { $ref: '/RelayerApiAssetDataPairs' },
+                records: { $ref: '/relayerApiAssetDataPairsSchema' },
             },
             required: ['records'],
         },
@@ -13,12 +13,12 @@ export const relayerApiAssetDataPairsResponseSchema = {
 };
 
 export const relayerApiAssetDataPairsSchema = {
-    id: '/RelayerApiAssetDataPairs',
+    id: '/relayerApiAssetDataPairsSchema',
     type: 'array',
     items: {
         properties: {
-            assetDataA: { $ref: '/RelayerApiAssetDataTradeInfo' },
-            assetDataB: { $ref: '/RelayerApiAssetDataTradeInfo' },
+            assetDataA: { $ref: '/relayerApiAssetDataTradeInfoSchema' },
+            assetDataB: { $ref: '/relayerApiAssetDataTradeInfoSchema' },
         },
         required: ['assetDataA', 'assetDataB'],
         type: 'object',
@@ -26,12 +26,12 @@ export const relayerApiAssetDataPairsSchema = {
 };
 
 export const relayerApiAssetDataTradeInfoSchema = {
-    id: '/RelayerApiAssetDataTradeInfo',
+    id: '/relayerApiAssetDataTradeInfoSchema',
     type: 'object',
     properties: {
-        assetData: { $ref: '/Hex' },
-        minAmount: { $ref: '/Number' },
-        maxAmount: { $ref: '/Number' },
+        assetData: { $ref: '/hexSchema' },
+        minAmount: { $ref: '/numberSchema' },
+        maxAmount: { $ref: '/numberSchema' },
         precision: { type: 'number' },
     },
     required: ['assetData'],

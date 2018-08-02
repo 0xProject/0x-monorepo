@@ -1,5 +1,5 @@
 export const blockParamSchema = {
-    id: '/BlockParam',
+    id: '/blockParamSchema',
     oneOf: [
         {
             type: 'number',
@@ -11,10 +11,10 @@ export const blockParamSchema = {
 };
 
 export const blockRangeSchema = {
-    id: '/BlockRange',
+    id: '/blockRangeSchema',
     properties: {
-        fromBlock: { $ref: '/BlockParam' },
-        toBlock: { $ref: '/BlockParam' },
+        fromBlock: { $ref: '/blockParamSchema' },
+        toBlock: { $ref: '/blockParamSchema' },
     },
     type: 'object',
 };

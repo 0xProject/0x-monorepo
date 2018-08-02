@@ -1,22 +1,22 @@
 export const jsNumber = {
-    id: '/JsNumber',
+    id: '/jsNumber',
     type: 'number',
     minimum: 0,
 };
 
 export const txDataSchema = {
-    id: '/TxData',
+    id: '/txDataSchema',
     properties: {
-        from: { $ref: '/Address' },
-        to: { $ref: '/Address' },
+        from: { $ref: '/addressSchema' },
+        to: { $ref: '/addressSchema' },
         value: {
-            oneOf: [{ $ref: '/Number' }, { $ref: '/JsNumber' }],
+            oneOf: [{ $ref: '/numberSchema' }, { $ref: '/jsNumber' }],
         },
         gas: {
-            oneOf: [{ $ref: '/Number' }, { $ref: '/JsNumber' }],
+            oneOf: [{ $ref: '/numberSchema' }, { $ref: '/jsNumber' }],
         },
         gasPrice: {
-            oneOf: [{ $ref: '/Number' }, { $ref: '/JsNumber' }],
+            oneOf: [{ $ref: '/numberSchema' }, { $ref: '/jsNumber' }],
         },
         data: {
             type: 'string',

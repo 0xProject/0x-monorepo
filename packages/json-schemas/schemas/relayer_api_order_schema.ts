@@ -1,9 +1,9 @@
 export const relayerApiOrderSchema = {
-    id: '/RelayerApiOrder',
+    id: '/relayerApiOrderSchema',
     type: 'object',
     properties: {
-        order: { $ref: '/Order' },
-        remainingFillableAmount: { $ref: '/Number' },
+        order: { $ref: '/orderSchema' },
+        remainingFillableAmount: { $ref: '/numberSchema' },
     },
     required: ['order', 'remainingFillableAmount'],
 };

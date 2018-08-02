@@ -1,5 +1,5 @@
 export const relayerApiErrorResponseSchema = {
-    id: '/RelayerApiErrorResponse',
+    id: '/relayerApiErrorResponseSchema',
     type: 'object',
     properties: {
         code: { type: 'number' },

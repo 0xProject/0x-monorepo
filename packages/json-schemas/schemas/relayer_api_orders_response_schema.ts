@@ -1,11 +1,11 @@
 export const relayerApiOrdersResponseSchema = {
-    id: '/RelayerApiOrdersResponse',
+    id: '/relayerApiOrdersResponseSchema',
     type: 'object',
     allOf: [
-        { $ref: '/PaginatedCollection' },
+        { $ref: '/paginatedCollectionSchema' },
         {
             properties: {
-                records: { $ref: '/RelayerApiOrders' },
+                records: { $ref: '/relayerApiOrdersSchema' },
             },
             required: ['records'],
         },
