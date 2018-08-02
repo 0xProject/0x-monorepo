@@ -35,6 +35,7 @@ export interface TypeDocType {
     typeArguments?: TypeDocType[];
     declaration: TypeDocNode;
     elementType?: TypeDocType;
+    indexSignature?: TypeDocNode;
 }
 
 export interface TypeDocFlags {
@@ -64,7 +65,7 @@ export interface TypeDocNode {
     returns?: string;
     declaration: TypeDocNode;
     flags?: TypeDocFlags;
-    indexSignature?: TypeDocNode | TypeDocNode[]; // TypeDocNode in TypeDoc <V0.9.0, TypeDocNode[] in >V0.9.0
+    indexSignature?: TypeDocNode;
     signatures?: TypeDocNode[];
     parameters?: TypeDocNode[];
     typeParameter?: TypeDocNode[];
@@ -156,6 +157,7 @@ export interface Type {
     elementType?: ElementType;
     types?: Type[];
     method?: TypescriptMethod;
+    indexSignature?: IndexSignature;
 }
 
 export interface ElementType {

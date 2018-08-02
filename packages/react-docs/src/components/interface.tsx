@@ -2,7 +2,7 @@ import * as _ from 'lodash';
 import * as React from 'react';
 
 import { DocsInfo } from '../docs_info';
-import { CustomType, TypeDocTypes } from '../types';
+import { CustomType } from '../types';
 
 import { Signature } from './signature';
 import { Type } from './type';
@@ -19,9 +19,7 @@ export const Interface = (props: InterfaceProps) => {
         return (
             <span key={`property-${property.name}-${property.type}-${type.name}`}>
                 {property.name}:{' '}
-                {property.type && property.type.typeDocType !== TypeDocTypes.Reflection ? (
-                    <Type type={property.type} sectionName={props.sectionName} docsInfo={props.docsInfo} />
-                ) : (
+                {property.type && !_.isUndefined(property.type.method) ? (
                     <Signature
                         name={property.type.method.name}
                         returnType={property.type.method.returnType}
@@ -32,6 +30,8 @@ export const Interface = (props: InterfaceProps) => {
                         shouldUseArrowSyntax={true}
                         docsInfo={props.docsInfo}
                     />
+                ) : (
+                    <Type type={property.type} sectionName={props.sectionName} docsInfo={props.docsInfo} />
                 )},
             </span>
         );

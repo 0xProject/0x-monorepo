@@ -93,19 +93,38 @@ export function Type(props: TypeProps): any {
             break;
 
         case TypeDocTypes.Reflection:
-            typeName = (
-                <Signature
-                    name={type.method.name}
-                    returnType={type.method.returnType}
-                    parameters={type.method.parameters}
-                    typeParameter={type.method.typeParameter}
-                    sectionName={props.sectionName}
-                    shouldHideMethodName={true}
-                    shouldUseArrowSyntax={true}
-                    docsInfo={props.docsInfo}
-                    typeDefinitionByName={props.typeDefinitionByName}
-                />
-            );
+            if (!_.isUndefined(type.method)) {
+                typeName = (
+                    <Signature
+                        name={type.method.name}
+                        returnType={type.method.returnType}
+                        parameters={type.method.parameters}
+                        typeParameter={type.method.typeParameter}
+                        sectionName={props.sectionName}
+                        shouldHideMethodName={true}
+                        shouldUseArrowSyntax={true}
+                        docsInfo={props.docsInfo}
+                        typeDefinitionByName={props.typeDefinitionByName}
+                    />
+                );
+            } else if (!_.isUndefined(type.indexSignature)) {
+                const is = type.indexSignature;
+                const param = (
+                    <span key={`indexSigParams-${is.keyName}-${is.keyType}-${type.name}`}>
+                        {is.keyName}:{' '}
+                        <Type type={is.keyType} sectionName={props.sectionName} docsInfo={props.docsInfo} />
+                    </span>
+                );
+                typeName = (
+                    <span key={`indexSignature-${type.name}-${is.keyType.name}`}>
+                        {'{'}[{param}]: {is.valueName}
+                        {'}'}
+                    </span>
+                );
+            } else {
+                throw new Error(`Unrecognized Reflection type that isn't a Method nor an Index Signature`);
+            }
+
             break;
 
         case TypeDocTypes.TypeParameter:

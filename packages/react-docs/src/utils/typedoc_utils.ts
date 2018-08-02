@@ -63,9 +63,12 @@ export const typeDocUtils = {
         const exportPathToTypedocName = generatedDocJson.metadata.exportPathToTypedocName;
         const typeDocJson = generatedDocJson.typedocJson;
 
-        const typeDocNameOrder = _.map(exportPathOrder, exportPath => {
-            return exportPathToTypedocName[exportPath];
-        });
+        // TODO: Extract the non typeDoc exports, and render them somehow
+        const typeDocNameOrder = _.compact(
+            _.map(exportPathOrder, exportPath => {
+                return exportPathToTypedocName[exportPath];
+            }),
+        );
 
         const docAgnosticFormat: DocAgnosticFormat = {};
         const typeEntities: TypeDocNode[] = [];
@@ -111,14 +114,16 @@ export const typeDocUtils = {
                 }
             });
         });
-        docsInfo.sections[constants.TYPES_SECTION_NAME] = constants.TYPES_SECTION_NAME;
-        docsInfo.menu[constants.TYPES_SECTION_NAME] = [constants.TYPES_SECTION_NAME];
-        const docSection = typeDocUtils._convertEntitiesToDocSection(
-            typeEntities,
-            docsInfo,
-            constants.TYPES_SECTION_NAME,
-        );
-        docAgnosticFormat[constants.TYPES_SECTION_NAME] = docSection;
+        if (!_.isEmpty(typeEntities)) {
+            docsInfo.sections[constants.TYPES_SECTION_NAME] = constants.TYPES_SECTION_NAME;
+            docsInfo.menu[constants.TYPES_SECTION_NAME] = [constants.TYPES_SECTION_NAME];
+            const docSection = typeDocUtils._convertEntitiesToDocSection(
+                typeEntities,
+                docsInfo,
+                constants.TYPES_SECTION_NAME,
+            );
+            docAgnosticFormat[constants.TYPES_SECTION_NAME] = docSection;
+        }
 
         return docAgnosticFormat;
     },
@@ -218,13 +223,7 @@ export const typeDocUtils = {
             ? typeDocUtils._convertMethod(entity.declaration, isConstructor, sections, sectionName, docId)
             : undefined;
         const doesIndexSignatureExist = !_.isUndefined(entity.indexSignature);
-        const isIndexSignatureArray = _.isArray(entity.indexSignature);
-        // HACK: TypeDoc Versions <0.9.0 indexSignature is of type TypeDocNode[]
-        // Versions >0.9.0 have it as type TypeDocNode
-        const indexSignature =
-            doesIndexSignatureExist && isIndexSignatureArray
-                ? (entity.indexSignature as TypeDocNode[])[0]
-                : (entity.indexSignature as TypeDocNode);
+        const indexSignature = entity.indexSignature as TypeDocNode;
         const indexSignatureIfExists = doesIndexSignatureExist
             ? typeDocUtils._convertIndexSignature(indexSignature, sections, sectionName, docId)
             : undefined;
@@ -305,6 +304,9 @@ export const typeDocUtils = {
         sectionName: string,
         docId: string,
     ): TypescriptMethod {
+        if (_.isUndefined(entity.signatures)) {
+            console.log(entity);
+        }
         const signature = entity.signatures[0];
         const source = entity.sources[0];
         const hasComment = !_.isUndefined(signature.comment);
@@ -436,9 +438,17 @@ export const typeDocUtils = {
         });
 
         const isConstructor = false;
-        const methodIfExists = !_.isUndefined(entity.declaration)
-            ? typeDocUtils._convertMethod(entity.declaration, isConstructor, sections, sectionName, docId)
-            : undefined;
+        const doesIndexSignatureExist =
+            !_.isUndefined(entity.declaration) && !_.isUndefined(entity.declaration.indexSignature);
+        let indexSignatureIfExists;
+        if (doesIndexSignatureExist) {
+            const indexSignature = entity.declaration.indexSignature as TypeDocNode;
+            indexSignatureIfExists = typeDocUtils._convertIndexSignature(indexSignature, sections, sectionName, docId);
+        }
+        const methodIfExists =
+            !_.isUndefined(entity.declaration) && !doesIndexSignatureExist
+                ? typeDocUtils._convertMethod(entity.declaration, isConstructor, sections, sectionName, docId)
+                : undefined;
 
         const elementTypeIfExists = !_.isUndefined(entity.elementType)
             ? {
@@ -455,6 +465,7 @@ export const typeDocUtils = {
             elementType: elementTypeIfExists,
             types,
             method: methodIfExists,
+            indexSignature: indexSignatureIfExists,
         };
         return type;
     },
