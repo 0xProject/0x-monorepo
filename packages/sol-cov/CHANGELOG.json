@@ -1,5 +1,25 @@
 [
     {
+        "version": "2.0.0",
+        "changes": [
+            {
+                "note": "Fix a bug when eth_call coverage was not computed because of silent schema validation failures"
+            },
+            {
+                "note": "Make `TruffleArtifactAdapter` read the `truffle.js` config for `solc` settings"
+            },
+            {
+                "note":
+                    "Change the first param of `TruffleArtifactAdapter` to be the `projectRoot` instead of `sourcesDir`"
+            },
+            {
+                "note":
+                    "Throw a helpful error message if truffle artifacts were generated with a different solc version than the one passed in"
+            }
+        ],
+        "timestamp": 1532619515
+    },
+    {
         "version": "1.0.3",
         "changes": [
             {
