@@ -1,4 +1,4 @@
-import { constants, generatePseudoRandomSalt } from '@0xproject/order-utils';
+import { generatePseudoRandomSalt } from '@0xproject/order-utils';
 import { ECSignature } from '@0xproject/types';
 import { BigNumber } from '@0xproject/utils';
 import * as _ from 'lodash';
@@ -16,6 +16,7 @@ import {
 } from 'ts/types';
 import { Translate } from 'ts/utils/translate';
 import { utils } from 'ts/utils/utils';
+import { constants } from 'ts/utils/constants';
 
 // Instead of defaulting the docs version to an empty string, we pre-populate it with
 // a valid version value. This does not need to be updated however, since onLoad, it

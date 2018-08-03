@@ -1,6 +1,5 @@
 export { orderHashUtils } from './order_hash';
 export { signatureUtils } from './signature_utils';
-export { constants } from './constants';
 export { generatePseudoRandomSalt } from './salt';
 export {
     OrderError,
