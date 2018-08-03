@@ -13,21 +13,19 @@ import { MessagePrefixType } from './types';
 export const orderFactory = {
     createOrder(
         makerAddress: string,
-        takerAddress: string,
-        senderAddress: string,
-        makerFee: BigNumber,
-        takerFee: BigNumber,
         makerAssetAmount: BigNumber,
         makerAssetData: string,
         takerAssetAmount: BigNumber,
         takerAssetData: string,
         exchangeAddress: string,
-        feeRecipientAddress: string,
-        expirationTimeSecondsIfExists?: BigNumber,
+        takerAddress: string = constants.NULL_ADDRESS,
+        senderAddress: string = constants.NULL_ADDRESS,
+        makerFee: BigNumber = constants.ZERO_AMOUNT,
+        takerFee: BigNumber = constants.ZERO_AMOUNT,
+        feeRecipientAddress: string = constants.NULL_ADDRESS,
+        salt: BigNumber = generatePseudoRandomSalt(),
+        expirationTimeSeconds: BigNumber = constants.INFINITE_TIMESTAMP_SEC,
     ): Order {
-        const expirationTimeSeconds = _.isUndefined(expirationTimeSecondsIfExists)
-            ? constants.INFINITE_TIMESTAMP_SEC
-            : expirationTimeSecondsIfExists;
         const order = {
             makerAddress,
             takerAddress,
@@ -38,7 +36,7 @@ export const orderFactory = {
             takerAssetAmount,
             makerAssetData,
             takerAssetData,
-            salt: generatePseudoRandomSalt(),
+            salt,
             exchangeAddress,
             feeRecipientAddress,
             expirationTimeSeconds,
@@ -48,31 +46,33 @@ export const orderFactory = {
     async createSignedOrderAsync(
         provider: Provider,
         makerAddress: string,
-        takerAddress: string,
-        senderAddress: string,
-        makerFee: BigNumber,
-        takerFee: BigNumber,
         makerAssetAmount: BigNumber,
         makerAssetData: string,
         takerAssetAmount: BigNumber,
         takerAssetData: string,
         exchangeAddress: string,
-        feeRecipientAddress: string,
-        expirationTimeSecondsIfExists?: BigNumber,
+        takerAddress?: string,
+        senderAddress?: string,
+        makerFee?: BigNumber,
+        takerFee?: BigNumber,
+        feeRecipientAddress?: string,
+        salt?: BigNumber,
+        expirationTimeSeconds?: BigNumber,
     ): Promise<SignedOrder> {
         const order = orderFactory.createOrder(
             makerAddress,
-            takerAddress,
-            senderAddress,
-            makerFee,
-            takerFee,
             makerAssetAmount,
             makerAssetData,
             takerAssetAmount,
             takerAssetData,
             exchangeAddress,
+            takerAddress,
+            senderAddress,
+            makerFee,
+            takerFee,
             feeRecipientAddress,
-            expirationTimeSecondsIfExists,
+            salt,
+            expirationTimeSeconds,
         );
         const orderHash = orderHashUtils.getOrderHashHex(order);
         const messagePrefixOpts = {

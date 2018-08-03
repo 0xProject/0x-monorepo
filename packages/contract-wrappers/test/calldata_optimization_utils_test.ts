@@ -3,12 +3,11 @@ import * as chai from 'chai';
 import * as _ from 'lodash';
 import 'mocha';
 
-import { constants } from '../src/utils/constants';
+import { assert } from '../src/utils/assert';
 import { calldataOptimizationUtils } from '../src/utils/calldata_optimization_utils';
+import { constants } from '../src/utils/constants';
 
 import { chaiSetup } from './utils/chai_setup';
-import { assert } from '../src/utils/assert';
-import { NULL_BYTES } from '@0xproject/utils';
 
 chaiSetup.configure();
 const expect = chai.expect;
@@ -20,15 +19,10 @@ const generateFakeOrders = (makerAssetData: string, takerAssetData: string) =>
     _.map(_.range(FAKE_ORDERS_COUNT), index => {
         const order = orderFactory.createOrder(
             constants.NULL_ADDRESS,
-            constants.NULL_ADDRESS,
-            constants.NULL_ADDRESS,
-            constants.ZERO_AMOUNT,
-            constants.ZERO_AMOUNT,
             constants.ZERO_AMOUNT,
             makerAssetData,
             constants.ZERO_AMOUNT,
             takerAssetData,
-            constants.NULL_ADDRESS,
             constants.NULL_ADDRESS,
         );
         return {

@@ -11,4 +11,5 @@ export const constants = {
     SELECTOR_LENGTH: 4,
     BASE_16: 16,
     INFINITE_TIMESTAMP_SEC: new BigNumber(2524604400), // Close to infinite
+    ZERO_AMOUNT: new BigNumber(0),
 };
