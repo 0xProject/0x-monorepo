@@ -31,7 +31,14 @@
         "contracts_v2": "DummyERC20Token",
         "postpublish": {
             "assets": [],
-            "shouldPublishDocs": true
+            "shouldPublishDocs": true,
+            "omitExports": [
+                "AbstractBalanceAndProxyAllowanceFetcher",
+                "AbstractOrderFilledCancelledFetcher",
+                "BalanceAndProxyAllowanceLazyStore",
+                "OrderFilledCancelledLazyStore",
+                "ExchangeTransferSimulator"
+            ]
         }
     },
     "license": "Apache-2.0",
