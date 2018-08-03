@@ -12,7 +12,7 @@ export class TruffleArtifactAdapter extends AbstractArtifactAdapter {
     /**
      * Instantiates a TruffleArtifactAdapter
      * @param artifactsPath Path to the truffle project's artifacts directory
-     * @param sourcesPath Path to the truffle project's contract sources directory
+     * @param solcVersion Solidity version with which to compile all the contracts
      */
     constructor(sourcesPath: string, solcVersion: string) {
         super();
