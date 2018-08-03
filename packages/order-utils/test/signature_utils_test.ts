@@ -192,6 +192,7 @@ describe('Signature utils', () => {
             expect(ecSignature).to.equal(expectedSignature);
         });
         // Note this is due to a bug in Metamask where it does not prefix before signing, this is a known issue and is to be fixed in the future
+        // Source: https://github.com/MetaMask/metamask-extension/commit/a9d36860bec424dcee8db043d3e7da6a5ff5672e
         it('should receive a payload modified with a prefix when Metamask is SignerProviderType', async () => {
             const orderHash = '0x34decbedc118904df65f379a175bb39ca18209d6ce41d5ed549d54e6e0a95004';
             const orderHashPrefixed = '0xae70f31d26096291aa681b26cb7574563956221d0b4213631e1ef9df675d4cba';
