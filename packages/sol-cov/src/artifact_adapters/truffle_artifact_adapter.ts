@@ -9,6 +9,11 @@ import { SolCompilerArtifactAdapter } from './sol_compiler_artifact_adapter';
 export class TruffleArtifactAdapter extends AbstractArtifactAdapter {
     private readonly _solcVersion: string;
     private readonly _sourcesPath: string;
+    /**
+     * Instantiates a TruffleArtifactAdapter
+     * @param artifactsPath Path to the truffle project's artifacts directory
+     * @param sourcesPath Path to the truffle project's contract sources directory
+     */
     constructor(sourcesPath: string, solcVersion: string) {
         super();
         this._solcVersion = solcVersion;

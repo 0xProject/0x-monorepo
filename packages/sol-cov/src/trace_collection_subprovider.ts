@@ -63,7 +63,7 @@ export abstract class TraceCollectionSubprovider extends Subprovider {
      * turn to handle a JSON RPC request.
      * @param payload JSON RPC payload
      * @param next Callback to call if this subprovider decides not to handle the request
-     * @param end Callback to call if subprovider handled the request and wants to pass back the request.
+     * @param _end Callback to call if subprovider handled the request and wants to pass back the request.
      */
     // tslint:disable-next-line:prefer-function-over-method async-suffix
     public async handleRequest(payload: JSONRPCRequestPayload, next: NextCallback, _end: ErrorCallback): Promise<void> {
