@@ -4,6 +4,9 @@
         "changes": [
             {
                 "note": "Export marshaller to convert between RPC and user-space data formats"
+            },
+            {
+                "note": "Export RPC types"
             }
         ]
     },
