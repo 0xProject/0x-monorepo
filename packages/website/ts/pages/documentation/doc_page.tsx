@@ -34,6 +34,7 @@ const docIdToSubpackageName: { [id: string]: string } = {
     [DocPackages.SolCov]: 'sol-cov',
     [DocPackages.Subproviders]: 'subproviders',
     [DocPackages.OrderUtils]: 'order-utils',
+    [DocPackages.OrderWatcher]: 'order-watcher',
     [DocPackages.EthereumTypes]: 'ethereum-types',
 };
 

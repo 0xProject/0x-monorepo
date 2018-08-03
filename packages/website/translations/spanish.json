@@ -63,6 +63,7 @@
     "ETHEREUM_TYPES": "Ethereum Types",
     "SUBPROVIDERS": "Subproviders",
     "CONTRACT_WRAPPERS": "Contract Wrappers",
+    "ORDER_WATCHER": "OrderWatcher",
     "0X_JS": "0x.js",
     "BLOG": "blog",
     "FORUM": "foro",

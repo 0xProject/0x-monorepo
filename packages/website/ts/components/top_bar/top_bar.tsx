@@ -84,7 +84,9 @@ const DOC_WEBSITE_PATHS_TO_KEY = {
     [WebsitePaths.ContractWrappers]: Key.ContractWrappers,
     [WebsitePaths.Connect]: Key.Connect,
     [WebsitePaths.ZeroExJs]: Key.ZeroExJs,
-}
+    [WebsitePaths.OrderUtils]: Key.OrderUtils,
+    [WebsitePaths.OrderWatcher]: Key.OrderWatcher,
+};
 
 const DEFAULT_HEIGHT = 68;
 const EXPANDED_HEIGHT = 75;
@@ -166,10 +168,26 @@ export class TopBar extends React.Component<TopBarProps, TopBarState> {
                     primaryText={this.props.translate.get(Key.Web3Wrapper, Deco.CapWords)}
                 />
             </Link>,
-            <Link key="subMenuItem-contractWrappers" to={WebsitePaths.ContractWrappers} className="text-decoration-none">
+            <Link
+                key="subMenuItem-contractWrappers"
+                to={WebsitePaths.ContractWrappers}
+                className="text-decoration-none"
+            >
                 <MenuItem
                     style={{ fontSize: styles.menuItem.fontSize }}
                     primaryText={this.props.translate.get(Key.ContractWrappers, Deco.CapWords)}
+                />
+            </Link>,
+            <Link key="subMenuItem-orderUtils" to={WebsitePaths.OrderUtils} className="text-decoration-none">
+                <MenuItem
+                    style={{ fontSize: styles.menuItem.fontSize }}
+                    primaryText={this.props.translate.get(Key.OrderUtils, Deco.CapWords)}
+                />
+            </Link>,
+            <Link key="subMenuItem-orderWatcher" to={WebsitePaths.OrderWatcher} className="text-decoration-none">
+                <MenuItem
+                    style={{ fontSize: styles.menuItem.fontSize }}
+                    primaryText={this.props.translate.get(Key.OrderWatcher, Deco.CapWords)}
                 />
             </Link>,
             <Link key="subMenuItem-sol-compiler" to={WebsitePaths.SolCompiler} className="text-decoration-none">
@@ -359,7 +377,7 @@ export class TopBar extends React.Component<TopBarProps, TopBarState> {
                                     {this.props.translate.get(key, Deco.Cap)}{' '}
                                     {this.props.translate.get(Key.Docs, Deco.Cap)}
                                 </MenuItem>
-                            </Link>
+                            </Link>;
                         }
                     })}
                     {!this._isViewingPortal() && (
@@ -391,10 +409,7 @@ export class TopBar extends React.Component<TopBarProps, TopBarState> {
         const isViewingDocsPage = _.some(DOC_WEBSITE_PATHS_TO_KEY, (_key, websitePath) => {
             return this._doesUrlInclude(websitePath);
         });
-        if (
-            !isViewingDocsPage ||
-            _.isUndefined(this.props.menu)
-        ) {
+        if (!isViewingDocsPage || _.isUndefined(this.props.menu)) {
             return undefined;
         }
         return (

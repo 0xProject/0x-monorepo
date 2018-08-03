@@ -436,7 +436,7 @@ export class Landing extends React.Component<LandingProps, LandingState> {
                                 style={{ fontFamily: 'Roboto Mono' }}
                             >
                                 <div>{this.props.translate.get(Key.OffChainOrderRelay, Deco.Cap)}</div>
-                                <div> {this.props.translate.get(Key.OonChainSettlement, Deco.Cap)}</div>
+                                <div> {this.props.translate.get(Key.OnChainSettlement, Deco.Cap)}</div>
                             </div>
                             <div
                                 className="pb2 pt2 h5 sm-center sm-px3 sm-mx-auto"
