@@ -13,4 +13,13 @@ export {
     FilterObject,
     CallData,
     TransactionReceiptWithDecodedLogs,
+    BlockWithTransactionData,
+    LogTopic,
+    JSONRPCRequestPayload,
+    TransactionReceiptStatus,
+    LogWithDecodedArgs,
+    DecodedLogArgs,
+    StructLog,
+    JSONRPCErrorCallback,
+    BlockParamLiteral,
 } from 'ethereum-types';
