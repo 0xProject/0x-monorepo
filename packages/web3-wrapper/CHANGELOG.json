@@ -3,10 +3,12 @@
         "version": "1.2.0",
         "changes": [
             {
-                "note": "Export marshaller to convert between RPC and user-space data formats"
+                "note": "Export marshaller to convert between RPC and user-space data formats",
+                "pr": 938
             },
             {
-                "note": "Export RPC types"
+                "note": "Export RPC types",
+                "pr": 938
             }
         ]
     },

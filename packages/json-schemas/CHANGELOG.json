@@ -3,7 +3,8 @@
         "version": "1.0.1-rc.4",
         "changes": [
             {
-                "note": "Allow for additional properties in txData schema"
+                "note": "Allow for additional properties in txData schema",
+                "pr": 938
             }
         ]
     },

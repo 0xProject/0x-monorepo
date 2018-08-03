@@ -75,7 +75,7 @@ export class TruffleArtifactAdapter extends AbstractArtifactAdapter {
                 throw new Error(
                     `${artifact.contractName} was compiled with solidity ${compilerVersion} but specified version is ${
                         this._solcVersion
-                    } it will make sol-cov unable to process traces. Please pass the correct version`,
+                    } making it impossible for sol-cov to process traces`,
                 );
             }
         }
