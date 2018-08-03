@@ -437,18 +437,23 @@ export const typeDocUtils = {
             return typeDocUtils._convertType(t, sections, sectionName, docId);
         });
 
-        const isConstructor = false;
+        let indexSignatureIfExists;
+        let methodIfExists;
         const doesIndexSignatureExist =
             !_.isUndefined(entity.declaration) && !_.isUndefined(entity.declaration.indexSignature);
-        let indexSignatureIfExists;
         if (doesIndexSignatureExist) {
             const indexSignature = entity.declaration.indexSignature as TypeDocNode;
             indexSignatureIfExists = typeDocUtils._convertIndexSignature(indexSignature, sections, sectionName, docId);
+        } else if (!_.isUndefined(entity.declaration)) {
+            const isConstructor = false;
+            methodIfExists = typeDocUtils._convertMethod(
+                entity.declaration,
+                isConstructor,
+                sections,
+                sectionName,
+                docId,
+            );
         }
-        const methodIfExists =
-            !_.isUndefined(entity.declaration) && !doesIndexSignatureExist
-                ? typeDocUtils._convertMethod(entity.declaration, isConstructor, sections, sectionName, docId)
-                : undefined;
 
         const elementTypeIfExists = !_.isUndefined(entity.elementType)
             ? {
