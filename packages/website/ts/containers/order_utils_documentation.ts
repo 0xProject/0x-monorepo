@@ -17,8 +17,6 @@ const InstallationMarkdownV1 = require('md/docs/order_utils/1.0.0/installation')
 const markdownSections = {
     introduction: 'introduction',
     installation: 'installation',
-    usage: 'usage',
-    types: 'types',
 };
 
 const docsInfoConfig: DocsInfoConfig = {
@@ -29,8 +27,6 @@ const docsInfoConfig: DocsInfoConfig = {
     markdownMenu: {
         introduction: [markdownSections.introduction],
         install: [markdownSections.installation],
-        usage: [markdownSections.usage],
-        types: [markdownSections.types],
     },
     sectionNameToMarkdownByVersion: {
         '0.0.1': {
@@ -38,7 +34,7 @@ const docsInfoConfig: DocsInfoConfig = {
             [markdownSections.installation]: InstallationMarkdownV1,
         },
     },
-    markdownSections: markdownSections,
+    markdownSections,
     typeConfigs: {
         typeNameToExternalLink: {
             BigNumber: constants.URL_BIGNUMBERJS_GITHUB,
