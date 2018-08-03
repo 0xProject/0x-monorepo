@@ -40,14 +40,36 @@ export const EIP712Utils = {
         const messageBuff = crypto.solSHA3([EIP191_PREFIX, domainSeparatorHashBuffer, hashStruct]);
         return messageBuff;
     },
+    /**
+     * Pad an address to 32 bytes
+     * @param address Address to pad
+     * @return padded address
+     */
     pad32Address(address: string): Buffer {
         const addressBuffer = ethUtil.toBuffer(address);
         const addressPadded = EIP712Utils.pad32Buffer(addressBuffer);
         return addressPadded;
     },
+    /**
+     * Pad an buffer to 32 bytes
+     * @param buffer Address to pad
+     * @return padded buffer
+     */
     pad32Buffer(buffer: Buffer): Buffer {
         const bufferPadded = ethUtil.setLengthLeft(buffer, EIP712_VALUE_LENGTH);
         return bufferPadded;
+    },
+    /**
+     * Hash together a EIP712 schema with the corresponding data
+     * @param schema EIP712-compliant schema
+     * @param data Data the complies to the schema
+     * @return A buffer containing the SHA256 hash of the schema and encoded data
+     */
+    structHash(schema: EIP712Schema, data: { [key: string]: any }): Buffer {
+        const encodedData = EIP712Utils._encodeData(schema, data);
+        const schemaHash = EIP712Utils.compileSchema(schema);
+        const hashBuffer = crypto.solSHA3([schemaHash, ...encodedData]);
+        return hashBuffer;
     },
     _getDomainSeparatorSchemaBuffer(): Buffer {
         return EIP712Utils.compileSchema(EIP712_DOMAIN_SCHEMA);
@@ -83,11 +105,5 @@ export const EIP712Utils = {
             }
         }
         return encodedValues;
-    },
-    structHash(schema: EIP712Schema, data: { [key: string]: any }): Buffer {
-        const encodedData = EIP712Utils._encodeData(schema, data);
-        const schemaHash = EIP712Utils.compileSchema(schema);
-        const hashBuffer = crypto.solSHA3([schemaHash, ...encodedData]);
-        return hashBuffer;
     },
 };

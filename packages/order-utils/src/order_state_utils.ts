@@ -91,6 +91,14 @@ export class OrderStateUtils {
             throw new Error(ExchangeContractErrs.OrderFillRoundingError);
         }
     }
+    /**
+     * Instantiate OrderStateUtils
+     * @param balanceAndProxyAllowanceFetcher A class that is capable of fetching balances
+     * and proxyAllowances for Ethereum addresses. It must implement AbstractBalanceAndProxyAllowanceFetcher
+     * @param orderFilledCancelledFetcher A class that is capable of fetching whether an order
+     * is cancelled and how much of it has been filled. It must implement AbstractOrderFilledCancelledFetcher
+     * @return Instance of OrderStateUtils
+     */
     constructor(
         balanceAndProxyAllowanceFetcher: AbstractBalanceAndProxyAllowanceFetcher,
         orderFilledCancelledFetcher: AbstractOrderFilledCancelledFetcher,
@@ -98,6 +106,14 @@ export class OrderStateUtils {
         this._balanceAndProxyAllowanceFetcher = balanceAndProxyAllowanceFetcher;
         this._orderFilledCancelledFetcher = orderFilledCancelledFetcher;
     }
+    /**
+     * Get the orderState for an "open" order (i.e where takerAddress=NULL_ADDRESS)
+     * This method will only check the maker's balance/allowance to calculate the
+     * OrderState.
+     * @param signedOrder The order of interest
+     * @return State relevant to the signedOrder, as well as whether the signedOrder is "valid".
+     * Validity is defined as a non-zero amount of the order can still be filled.
+     */
     public async getOpenOrderStateAsync(signedOrder: SignedOrder): Promise<OrderState> {
         const orderRelevantState = await this.getOpenOrderRelevantStateAsync(signedOrder);
         const orderHash = orderHashUtils.getOrderHashHex(signedOrder);
@@ -127,6 +143,11 @@ export class OrderStateUtils {
             return orderState;
         }
     }
+    /**
+     * Get state relevant to an order (i.e makerBalance, makerAllowance, filledTakerAssetAmount, etc...
+     * @param signedOrder Order of interest
+     * @return An instance of OrderRelevantState
+     */
     public async getOpenOrderRelevantStateAsync(signedOrder: SignedOrder): Promise<OrderRelevantState> {
         const isMaker = true;
         const sidedOrderRelevantState = await this._getSidedOrderRelevantStateAsync(
@@ -149,6 +170,12 @@ export class OrderStateUtils {
         };
         return orderRelevantState;
     }
+    /**
+     * Get the max amount of the supplied order's takerAmount that could still be filled
+     * @param signedOrder Order of interest
+     * @param takerAddress Hypothetical taker of the order
+     * @return fillableTakerAssetAmount
+     */
     public async getMaxFillableTakerAssetAmountAsync(
         signedOrder: SignedOrder,
         takerAddress: string,
@@ -180,32 +207,6 @@ export class OrderStateUtils {
         ]);
 
         return fillableTakerAssetAmount;
-    }
-    public async getMaxFillableTakerAssetAmountForFailingOrderAsync(
-        signedOrder: SignedOrder,
-        takerAddress: string,
-    ): Promise<BigNumber> {
-        // Get min of taker balance & allowance
-        const takerAssetBalanceOfTaker = await this._balanceAndProxyAllowanceFetcher.getBalanceAsync(
-            signedOrder.takerAssetData,
-            takerAddress,
-        );
-        const takerAssetAllowanceOfTaker = await this._balanceAndProxyAllowanceFetcher.getProxyAllowanceAsync(
-            signedOrder.takerAssetData,
-            takerAddress,
-        );
-        const minTakerAssetAmount = BigNumber.min([takerAssetBalanceOfTaker, takerAssetAllowanceOfTaker]);
-
-        // get remainingFillAmount
-        const orderHash = orderHashUtils.getOrderHashHex(signedOrder);
-        const filledTakerAssetAmount = await this._orderFilledCancelledFetcher.getFilledTakerAmountAsync(orderHash);
-        const remainingFillTakerAssetAmount = signedOrder.takerAssetAmount.minus(filledTakerAssetAmount);
-
-        if (minTakerAssetAmount.gte(remainingFillTakerAssetAmount)) {
-            return remainingFillTakerAssetAmount;
-        } else {
-            return minTakerAssetAmount;
-        }
     }
     private async _getSidedOrderRelevantStateAsync(
         isMakerSide: boolean,

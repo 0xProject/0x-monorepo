@@ -33,6 +33,10 @@ const ERR_MSG_MAPPING = {
     },
 };
 
+/**
+ * An exchange transfer simulator which simulates asset transfers exactly how the
+ * 0x exchange contract would do them.
+ */
 export class ExchangeTransferSimulator {
     private readonly _store: AbstractBalanceAndProxyAllowanceLazyStore;
     private static _throwValidationError(
@@ -43,6 +47,11 @@ export class ExchangeTransferSimulator {
         const errMsg = ERR_MSG_MAPPING[failureReason][tradeSide][transferType];
         throw new Error(errMsg);
     }
+    /**
+     * Instantiate a ExchangeTransferSimulator
+     * @param store A class that implements AbstractBalanceAndProxyAllowanceLazyStore
+     * @return an instance of ExchangeTransferSimulator
+     */
     constructor(store: AbstractBalanceAndProxyAllowanceLazyStore) {
         this._store = store;
     }
