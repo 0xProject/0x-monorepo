@@ -67,6 +67,7 @@ export class Compiler {
     private readonly _specifiedContracts: string[] | TYPE_ALL_FILES_IDENTIFIER;
     /**
      * Instantiates a new instance of the Compiler class.
+     * @param opts Optional compiler options
      * @return An instance of the Compiler class.
      */
     constructor(opts?: CompilerOptions) {
