@@ -176,6 +176,7 @@ export abstract class TraceCollectionSubprovider extends Subprovider {
             const txHash = await this._web3Wrapper.sendTransactionAsync(fakeTxData);
             await this._web3Wrapper.awaitTransactionMinedAsync(txHash, 0);
         } catch (err) {
+            // TODO(logvinov) Check that transaction failed and not some other exception
             // Even if this transaction failed - we've already recorded it's trace.
             _.noop();
         }
