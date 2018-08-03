@@ -86,7 +86,13 @@ export const typeDocUtils = {
                         const entities = child.children;
                         const commentObj = child.comment;
                         const sectionComment = !_.isUndefined(commentObj) ? commentObj.shortText : '';
-                        const docSection = typeDocUtils._convertEntitiesToDocSection(entities, docsInfo, sectionName);
+                        const isClassOrObjectLiteral = true;
+                        const docSection = typeDocUtils._convertEntitiesToDocSection(
+                            entities,
+                            docsInfo,
+                            sectionName,
+                            isClassOrObjectLiteral,
+                        );
                         docSection.comment = sectionComment;
                         docAgnosticFormat[sectionName] = docSection;
                         break;
@@ -127,7 +133,12 @@ export const typeDocUtils = {
 
         return docAgnosticFormat;
     },
-    _convertEntitiesToDocSection(entities: TypeDocNode[], docsInfo: DocsInfo, sectionName: string): DocSection {
+    _convertEntitiesToDocSection(
+        entities: TypeDocNode[],
+        docsInfo: DocsInfo,
+        sectionName: string,
+        isClassOrObjectLiteral: boolean = false,
+    ): DocSection {
         const docSection: DocSection = {
             comment: '',
             constructors: [],
@@ -194,6 +205,32 @@ export const typeDocUtils = {
                     }
                     break;
 
+                case KindString.Variable:
+                    if (isClassOrObjectLiteral) {
+                        // Render as a property
+                        const property = typeDocUtils._convertProperty(
+                            entity,
+                            docsInfo.sections,
+                            sectionName,
+                            docsInfo.id,
+                        );
+                        docSection.properties.push(property);
+                    } else {
+                        // Otherwise, render as a type
+                        const customType = typeDocUtils._convertCustomType(
+                            entity,
+                            docsInfo.sections,
+                            sectionName,
+                            docsInfo.id,
+                        );
+                        const seenTypeNames = _.map(docSection.types, t => t.name);
+                        const isUnseen = !_.includes(seenTypeNames, customType.name);
+                        if (isUnseen) {
+                            docSection.types.push(customType);
+                        }
+                    }
+                    break;
+
                 case KindString.Interface:
                 case KindString.Variable:
                 case KindString.Enumeration:
@@ -221,6 +258,7 @@ export const typeDocUtils = {
                     throw errorUtils.spawnSwitchErr('kindString', entity.kindString);
             }
         });
+        console.log('docSection', docSection);
         return docSection;
     },
     _convertCustomType(entity: TypeDocNode, sections: SectionsMap, sectionName: string, docId: string): CustomType {
