@@ -1,2 +1,9 @@
 export { Compiler } from './compiler';
-export { CompilerOptions, ContractArtifact, ContractNetworks } from './utils/types';
+
+export {
+    CompilerOptions,
+    ContractArtifact,
+    ContractNetworks,
+    GeneratedCompilerOptions,
+    ContractNetworkData,
+} from './utils/types';
