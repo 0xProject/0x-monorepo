@@ -143,11 +143,12 @@ export enum SignatureType {
 }
 
 /**
- * The Signer Provider Type. Some Signer implementations use different message prefixes or implement different
- * eth_sign behaviour. Note EthSign is compatible with the Ledger device.
+ * The Signer Provider Type. Some Signer provider implementations use different message prefixes or implement different
+ * eth_sign behaviour.
  */
 export enum SignerProviderType {
     EthSign = 'ETH_SIGN',
+    Ledger = 'LEDGER',
     Metamask = 'METAMASK',
     Trezor = 'TREZOR',
 }

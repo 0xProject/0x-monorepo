@@ -1,5 +1,14 @@
 [
     {
+        "version": "pending",
+        "changes": [
+            {
+                "pr": 914,
+                "note": "Added SignerProviderType"
+            }
+        ]
+    },
+    {
         "version": "1.0.1-rc.3",
         "changes": [
             {

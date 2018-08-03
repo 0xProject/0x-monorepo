@@ -271,11 +271,11 @@ export function convertECSignatureToSignatureHex(
 /**
  * Combines the signature proof and the Signature Type.
  * @param signature The hex encoded signature proof
- * @param type The signature type, i.e EthSign, Trezor, Wallet etc.
+ * @param signatureType The signature type, i.e EthSign, Trezor, Wallet etc.
  * @return Hex encoded string of signature proof with Signature Type
  */
-export function convertToSignatureWithType(signature: string, type: SignatureType): string {
-    const signatureBuffer = Buffer.concat([ethUtil.toBuffer(signature), ethUtil.toBuffer(type)]);
+export function convertToSignatureWithType(signature: string, signatureType: SignatureType): string {
+    const signatureBuffer = Buffer.concat([ethUtil.toBuffer(signature), ethUtil.toBuffer(signatureType)]);
     const signatureHex = `0x${signatureBuffer.toString('hex')}`;
     return signatureHex;
 }
@@ -291,6 +291,7 @@ export function addSignedMessagePrefix(message: string, signerProviderType: Sign
     assert.doesBelongToStringEnum('signerProviderType', signerProviderType, SignerProviderType);
     switch (signerProviderType) {
         case SignerProviderType.Metamask:
+        case SignerProviderType.Ledger:
         case SignerProviderType.EthSign: {
             const msgBuff = ethUtil.toBuffer(message);
             const prefixedMsgBuff = ethUtil.hashPersonalMessage(msgBuff);
