@@ -154,8 +154,17 @@ export const typeDocUtils = {
 
                 case KindString.Function:
                     if (entity.flags.isExported) {
-                        const func = typeDocUtils._convertFunction(entity, docsInfo.sections, sectionName, docsInfo.id);
-                        docSection.functions.push(func);
+                        const funcName = (entity as TypeDocNode).signatures[0].name;
+                        const isPublicFunc = !_.startsWith(funcName, '_');
+                        if (isPublicFunc) {
+                            const func = typeDocUtils._convertFunction(
+                                entity,
+                                docsInfo.sections,
+                                sectionName,
+                                docsInfo.id,
+                            );
+                            docSection.functions.push(func);
+                        }
                     }
                     break;
 
