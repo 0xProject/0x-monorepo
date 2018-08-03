@@ -33,6 +33,28 @@ export const utils = {
     convertDashesToSpaces(text: string): string {
         return text.replace(/-/g, ' ');
     },
+    convertCamelCaseToSpaces(text: string): string {
+        const charArray = _.map(text, (char, i) => {
+            const isNumber = !_.eq(_.parseInt(char), NaN);
+            const isPrevNumber = i !== 0 && !_.eq(_.parseInt(text[i - 1]), NaN);
+            if (isNumber && (i == 0 || isPrevNumber)) {
+                return char;
+            }
+            if (char === char.toUpperCase() && i !== 0) {
+                return ` ${char}`;
+            }
+            return char;
+        });
+        let finalText = charArray.join('');
+        const exceptions = { 'EIP ': 'E I P', 'ZRX ': 'Z R X', 'ERC ': 'E R C' };
+        _.each(exceptions, (spaced, normal) => {
+            console.log(finalText, spaced, normal);
+            if (_.includes(finalText, spaced)) {
+                finalText = finalText.replace(spaced, normal);
+            }
+        });
+        return finalText;
+    },
     getEtherScanLinkIfExists(
         addressOrTxHash: string,
         networkId: number,
