@@ -37,6 +37,51 @@ const networkdIdParameter = {
     },
 };
 
+const headers = {
+    'X-Rate-Limit-Limit': {
+        description: `The maximum number of requests you're permitted to make per hour.`,
+        schema: {
+            type: 'integer',
+        },
+    },
+    'X-Rate-Limit-Remaining': {
+        description: 'The number of requests remaining in the current rate limit window.',
+        schema: {
+            type: 'integer',
+        },
+    },
+    'X-Rate-Limit-Reset': {
+        description: 'The time at which the current rate limit window resets in UTC epoch seconds.',
+        schema: {
+            type: 'integer',
+        },
+    },
+};
+
+const errorResponses = {
+    '400': {
+        description: 'Validation error',
+        content: {
+            'application/json': {
+                schema: { $ref: '#/components/schemas/relayerApiErrorResponseSchema' },
+                example: examples.validationError,
+            },
+        },
+    },
+    '404': {
+        description: 'Not found',
+    },
+    '429': {
+        description: 'Too many requests - Rate limit exceeded',
+    },
+    '500': {
+        description: 'Internal Server Error',
+    },
+    '501': {
+        description: 'Not implemented.',
+    },
+};
+
 export const api: OpenApiSpec = {
     openapi: '3.0.0',
     info: {
@@ -82,6 +127,8 @@ export const api: OpenApiSpec = {
                 ],
                 responses: {
                     '200': {
+                        headers,
+                        description: 'OK',
                         content: {
                             'application/json': {
                                 schema: { $ref: '#/components/schemas/relayerApiAssetDataPairsResponseSchema' },
@@ -89,6 +136,7 @@ export const api: OpenApiSpec = {
                             },
                         },
                     },
+                    ...errorResponses,
                 },
             },
         },
