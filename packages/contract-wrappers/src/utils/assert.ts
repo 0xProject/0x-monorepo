@@ -1,7 +1,7 @@
 import { assert as sharedAssert } from '@0xproject/assert';
 // HACK: We need those two unused imports because they're actually used by sharedAssert which gets injected here
 import { Schema } from '@0xproject/json-schemas'; // tslint:disable-line:no-unused-variable
-import { isValidSignatureAsync } from '@0xproject/order-utils';
+import { signatureUtils } from '@0xproject/order-utils';
 import { ECSignature } from '@0xproject/types'; // tslint:disable-line:no-unused-variable
 import { BigNumber } from '@0xproject/utils'; // tslint:disable-line:no-unused-variable
 import { Web3Wrapper } from '@0xproject/web3-wrapper';
@@ -15,7 +15,7 @@ export const assert = {
         signature: string,
         signerAddress: string,
     ): Promise<void> {
-        const isValid = await isValidSignatureAsync(provider, orderHash, signature, signerAddress);
+        const isValid = await signatureUtils.isValidSignatureAsync(provider, orderHash, signature, signerAddress);
         this.assert(isValid, `Expected order with hash '${orderHash}' to have a valid signature`);
     },
     isValidSubscriptionToken(variableName: string, subscriptionToken: string): void {

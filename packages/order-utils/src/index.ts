@@ -1,15 +1,5 @@
 export { orderHashUtils } from './order_hash';
-export {
-    isValidSignatureAsync,
-    isValidPresignedSignatureAsync,
-    isValidWalletSignatureAsync,
-    isValidValidatorSignatureAsync,
-    isValidECSignature,
-    ecSignOrderHashAsync,
-    addSignedMessagePrefix,
-    parseECSignature,
-} from './signature_utils';
-export { orderFactory } from './order_factory';
+export { signatureUtils } from './signature_utils';
 export { constants } from './constants';
 export { crypto } from './crypto';
 export { generatePseudoRandomSalt } from './salt';

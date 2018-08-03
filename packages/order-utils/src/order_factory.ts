@@ -6,7 +6,7 @@ import * as _ from 'lodash';
 
 import { orderHashUtils } from './order_hash';
 import { generatePseudoRandomSalt } from './salt';
-import { ecSignOrderHashAsync } from './signature_utils';
+import { signatureUtils } from './signature_utils';
 import { MessagePrefixType } from './types';
 
 export const orderFactory = {
@@ -49,7 +49,12 @@ export const orderFactory = {
             prefixType: MessagePrefixType.EthSign,
             shouldAddPrefixBeforeCallingEthSign: false,
         };
-        const ecSignature = await ecSignOrderHashAsync(provider, orderHash, makerAddress, messagePrefixOpts);
+        const ecSignature = await signatureUtils.ecSignOrderHashAsync(
+            provider,
+            orderHash,
+            makerAddress,
+            messagePrefixOpts,
+        );
         const signature = getVRSHexString(ecSignature);
         const signedOrder: SignedOrder = _.assign(order, { signature });
         return signedOrder;

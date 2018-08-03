@@ -9,7 +9,7 @@ import { AbstractOrderFilledCancelledFetcher } from './abstract/abstract_order_f
 import { constants } from './constants';
 import { ExchangeTransferSimulator } from './exchange_transfer_simulator';
 import { orderHashUtils } from './order_hash';
-import { isValidSignatureAsync } from './signature_utils';
+import { signatureUtils } from './signature_utils';
 import { utils } from './utils';
 
 export class OrderValidationUtils {
@@ -147,7 +147,7 @@ export class OrderValidationUtils {
             throw new Error(RevertReason.InvalidTakerAmount);
         }
         const orderHash = orderHashUtils.getOrderHashHex(signedOrder);
-        const isValid = await isValidSignatureAsync(
+        const isValid = await signatureUtils.isValidSignatureAsync(
             provider,
             orderHash,
             signedOrder.signature,
