@@ -52,10 +52,20 @@ export class DocsInfo {
                 return; // no-op
             }
 
+            const isExportedFunctionSection =
+                docSection.functions.length === 1 &&
+                _.isEmpty(docSection.types) &&
+                _.isEmpty(docSection.methods) &&
+                _.isEmpty(docSection.constructors) &&
+                _.isEmpty(docSection.properties) &&
+                _.isEmpty(docSection.events);
+
             if (!_.isUndefined(this.sections.types) && sectionName === this.sections.types) {
                 const sortedTypesNames = _.sortBy(docSection.types, 'name');
                 const typeNames = _.map(sortedTypesNames, t => t.name);
                 menuSubsectionsBySection[sectionName] = typeNames;
+            } else if (isExportedFunctionSection) {
+                // Noop so that we don't have the method listed underneath itself.
             } else {
                 let eventNames: string[] = [];
                 if (!_.isUndefined(docSection.events)) {
@@ -76,6 +86,7 @@ export class DocsInfo {
                 ];
             }
         });
+        console.log('menuSubsectionsBySection', menuSubsectionsBySection);
         return menuSubsectionsBySection;
     }
     public getTypeDefinitionsByName(docAgnosticFormat: DocAgnosticFormat): { [name: string]: TypeDefinitionByName } {

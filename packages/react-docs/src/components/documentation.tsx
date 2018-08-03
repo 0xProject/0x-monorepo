@@ -211,6 +211,14 @@ export class Documentation extends React.Component<DocumentationProps, Documenta
             return null;
         }
 
+        const isExportedFunctionSection =
+            docSection.functions.length === 1 &&
+            _.isEmpty(docSection.types) &&
+            _.isEmpty(docSection.methods) &&
+            _.isEmpty(docSection.constructors) &&
+            _.isEmpty(docSection.properties) &&
+            _.isEmpty(docSection.events);
+
         const sortedTypes = _.sortBy(docSection.types, 'name');
         const typeDefs = _.map(sortedTypes, customType => {
             return (
@@ -279,7 +287,7 @@ export class Documentation extends React.Component<DocumentationProps, Documenta
                 )}
                 {!_.isEmpty(docSection.functions) && (
                     <div>
-                        <h2 style={headerStyle}>Functions</h2>
+                        {!isExportedFunctionSection && <h2 style={headerStyle}>Functions</h2>}
                         <div>{functionDefs}</div>
                     </div>
                 )}
