@@ -18,8 +18,6 @@ const markdownSections = {
     introduction: 'introduction',
     installation: 'installation',
     usage: 'usage',
-    compiler: 'compiler',
-    types: docConstants.TYPES_SECTION_NAME,
 };
 
 const docsInfoConfig: DocsInfoConfig = {
@@ -31,8 +29,6 @@ const docsInfoConfig: DocsInfoConfig = {
         introduction: [markdownSections.introduction],
         install: [markdownSections.installation],
         usage: [markdownSections.usage],
-        compiler: [markdownSections.compiler],
-        types: [markdownSections.types],
     },
     sectionNameToMarkdownByVersion: {
         '0.0.1': {
