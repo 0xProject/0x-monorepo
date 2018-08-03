@@ -32,6 +32,11 @@ export abstract class Subprovider {
         // 16 digits
         return datePart + extraPart;
     }
+    /**
+     * @param payload JSON RPC request payload
+     * @param next A callback to pass the request to the next subprovider in the stack
+     * @param end A callback called once the subprovider is done handling the request
+     */
     // tslint:disable-next-line:async-suffix
     public abstract async handleRequest(
         payload: JSONRPCRequestPayload,
@@ -55,6 +60,7 @@ export abstract class Subprovider {
      * Set's the subprovider's engine to the ProviderEngine it is added to.
      * This is only called within the ProviderEngine source code, do not call
      * directly.
+     * @param engine The ProviderEngine this subprovider is added to
      */
     public setEngine(engine: Provider): void {
         this.engine = engine;

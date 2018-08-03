@@ -34,6 +34,17 @@ export class ExchangeWrapper extends ContractWrapper {
     private _exchangeContractIfExists?: ExchangeContract;
     private _contractAddressIfExists?: string;
     private _zrxContractAddressIfExists?: string;
+    /**
+     * Instantiate ExchangeWrapper. We recommend you don't instantiate this yourself, rather
+     * use it through the ContractWrappers class property (contractWrappers.exchange).
+     * @param web3Wrapper Web3Wrapper instance to use
+     * @param networkId Desired networkId
+     * @param contractAddressIfExists The exchange contract address to use. This is usually pulled from
+     * the artifacts but needs to be specified when using with your own custom testnet.
+     * @param zrxContractAddressIfExists The ZRXToken contract address to use. This is usually pulled from
+     * the artifacts but needs to be specified when using with your own custom testnet.
+     * @param blockPollingIntervalMs The block polling interval to use for active subscriptions
+     */
     constructor(
         web3Wrapper: Web3Wrapper,
         networkId: number,
@@ -626,7 +637,7 @@ export class ExchangeWrapper extends ContractWrapper {
     }
     /**
      * Batch version of cancelOrderAsync. Executes multiple cancels atomically in a single transaction.
-     * @param   orders                An array of orders to cancel.
+     * @param   orders                An array of orders to cancel.Optional arguments this method accepts.
      * @param   orderTransactionOpts  Optional arguments this method accepts.
      * @return  Transaction hash.
      */
@@ -665,6 +676,7 @@ export class ExchangeWrapper extends ContractWrapper {
      * @param leftSignedOrder  First order to match.
      * @param rightSignedOrder Second order to match.
      * @param takerAddress     The address that sends the transaction and gets the spread.
+     * @param orderTransactionOpts Optional arguments this method accepts.
      * @return Transaction hash.
      */
     @decorators.asyncZeroExErrorHandler
@@ -723,6 +735,7 @@ export class ExchangeWrapper extends ContractWrapper {
      * @param signerAddress Address that should have signed the given hash.
      * @param signature     Proof that the hash has been signed by signer.
      * @param senderAddress Address that should send the transaction.
+     * @param orderTransactionOpts Optional arguments this method accepts.
      * @returns Transaction hash.
      */
     @decorators.asyncZeroExErrorHandler
@@ -881,7 +894,7 @@ export class ExchangeWrapper extends ContractWrapper {
     /**
      * Cancel a given order.
      * @param   order           An object that conforms to the Order or SignedOrder interface. The order you would like to cancel.
-     * @param   transactionOpts Optional arguments this method accepts.
+     * @param   orderTransactionOpts Optional arguments this method accepts.
      * @return  Transaction hash.
      */
     @decorators.asyncZeroExErrorHandler

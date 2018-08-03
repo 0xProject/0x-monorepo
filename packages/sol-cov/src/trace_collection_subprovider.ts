@@ -109,6 +109,7 @@ export abstract class TraceCollectionSubprovider extends Subprovider {
      * Set's the subprovider's engine to the ProviderEngine it is added to.
      * This is only called within the ProviderEngine source code, do not call
      * directly.
+     * @param engine The ProviderEngine this subprovider is added to
      */
     public setEngine(engine: Provider): void {
         super.setEngine(engine);
