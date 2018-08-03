@@ -1,4 +1,5 @@
-import { crypto, generatePseudoRandomSalt } from '@0xproject/order-utils';
+import { generatePseudoRandomSalt } from '@0xproject/order-utils';
+import { crypto } from '@0xproject/order-utils/lib/src/crypto';
 
 export const addressUtils = {
     generatePseudoRandomAddress(): string {
