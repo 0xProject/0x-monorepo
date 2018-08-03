@@ -12,6 +12,8 @@ import { Signature } from './signature';
 import { constants } from '../utils/constants';
 import { TypeDefinition } from './type_definition';
 
+const basicJsTypes = ['string', 'number', 'undefined', 'null', 'boolean'];
+
 export interface TypeProps {
     type: TypeDef;
     docsInfo: DocsInfo;
@@ -73,6 +75,9 @@ export function Type(props: TypeProps): any {
 
         case TypeDocTypes.Array:
             typeName = type.elementType.name;
+            if (_.includes(basicJsTypes, typeName)) {
+                typeNameColor = colors.orange;
+            }
             break;
 
         case TypeDocTypes.Union:
