@@ -1,5 +1,14 @@
 [
     {
+        "version": "1.0.1-rc.3",
+        "changes": [
+            {
+                "note": "Updated to use latest orderFactory interface",
+                "pr": 936
+            }
+        ]
+    },
+    {
         "version": "1.0.1-rc.2",
         "changes": [
             {
