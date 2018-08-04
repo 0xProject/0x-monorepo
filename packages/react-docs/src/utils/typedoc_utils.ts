@@ -173,6 +173,7 @@ export const typeDocUtils = {
                                 docsInfo.sections,
                                 sectionName,
                                 docsInfo.id,
+                                isClassOrObjectLiteral,
                             );
                             docSection.functions.push(func);
                         }
@@ -331,7 +332,7 @@ export const typeDocUtils = {
         const commentIfExists = !_.isUndefined(entity.comment) ? entity.comment.shortText : undefined;
         const isConstructor = false;
         const isStatic = _.isUndefined(entity.flags.isStatic) ? false : entity.flags.isStatic;
-        const callPath = typeDocUtils._getCallPath(sectionName, sections, isStatic, isConstructor, docId, entity.name);
+        const callPath = typeDocUtils._getCallPath(sectionName, isStatic, isConstructor, entity.name);
         const property = {
             name: entity.name,
             type: typeDocUtils._convertType(entity.type, sections, sectionName, docId),
@@ -367,7 +368,7 @@ export const typeDocUtils = {
             ? undefined
             : typeDocUtils._convertTypeParameter(signature.typeParameter[0], sections, sectionName, docId);
 
-        const callPath = typeDocUtils._getCallPath(sectionName, sections, isStatic, isConstructor, docId, entity.name);
+        const callPath = typeDocUtils._getCallPath(sectionName, isStatic, isConstructor, entity.name);
         const method = {
             isConstructor,
             isStatic,
@@ -385,28 +386,16 @@ export const typeDocUtils = {
         };
         return method;
     },
-    _getCallPath(
-        sectionName: string,
-        sections: SectionsMap,
-        isStatic: boolean,
-        isConstructor: boolean,
-        docId: string,
-        entityName: string,
-    ) {
+    _getCallPath(sectionName: string, isStatic: boolean, isConstructor: boolean, entityName: string) {
         // HACK: we use the fact that the sectionName is the same as the property name at the top-level
         // of the public interface. In the future, we shouldn't use this hack but rather get it from the JSON.
         let callPath;
         if (isConstructor || entityName === '__type') {
             callPath = '';
             // TODO: Get rid of this 0x-specific logic
-        } else if (docId === 'ZERO_EX_JS') {
-            const topLevelInterface = isStatic ? 'ZeroEx.' : 'zeroEx.';
-            callPath =
-                !_.isUndefined(sections.zeroEx) && sectionName !== sections.zeroEx
-                    ? `${topLevelInterface}${sectionName}.`
-                    : topLevelInterface;
         } else {
-            callPath = `${sectionName}.`;
+            const prefix = isStatic ? sectionName : `${sectionName[0].toLowerCase()}${sectionName.slice(1)}`;
+            callPath = `${prefix}.`;
         }
         return callPath;
     },
@@ -415,6 +404,7 @@ export const typeDocUtils = {
         sections: SectionsMap,
         sectionName: string,
         docId: string,
+        isObjectLiteral: boolean,
     ): TypescriptFunction {
         const signature = entity.signatures[0];
         const source = entity.sources[0];
@@ -428,10 +418,17 @@ export const typeDocUtils = {
             ? undefined
             : typeDocUtils._convertTypeParameter(signature.typeParameter[0], sections, sectionName, docId);
 
+        let callPath = '';
+        if (isObjectLiteral) {
+            const isConstructor = false;
+            const isStatic = false;
+            callPath = typeDocUtils._getCallPath(sectionName, isStatic, isConstructor, entity.name);
+        }
         const func = {
             name: signature.name,
             comment: hasComment ? signature.comment.shortText : undefined,
             returnComment: hasComment && signature.comment.returns ? signature.comment.returns : undefined,
+            callPath,
             source: {
                 fileName: source.fileName,
                 line: source.line,

@@ -124,6 +124,7 @@ export interface TypescriptMethod extends BaseMethod {
 export interface TypescriptFunction extends BaseFunction {
     source?: Source;
     typeParameter?: TypeParameter;
+    callPath: string;
 }
 
 export interface SolidityMethod extends BaseMethod {
