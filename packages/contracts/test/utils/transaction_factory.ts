@@ -1,4 +1,4 @@
-import { EIP712Schema, EIP712Types, EIP712Utils, generatePseudoRandomSalt } from '@0xproject/order-utils';
+import { EIP712Schema, EIP712Types, eip712Utils, generatePseudoRandomSalt } from '@0xproject/order-utils';
 import { SignatureType } from '@0xproject/types';
 import * as ethUtil from 'ethereumjs-util';
 
@@ -31,11 +31,11 @@ export class TransactionFactory {
             signerAddress,
             data,
         };
-        const executeTransactionHashBuff = EIP712Utils.structHash(
+        const executeTransactionHashBuff = eip712Utils.structHash(
             EIP712_ZEROEX_TRANSACTION_SCHEMA,
             executeTransactionData,
         );
-        const txHash = EIP712Utils.createEIP712Message(executeTransactionHashBuff, this._exchangeAddress);
+        const txHash = eip712Utils.createEIP712Message(executeTransactionHashBuff, this._exchangeAddress);
         const signature = signingUtils.signMessage(txHash, this._privateKey, signatureType);
         const signedTx = {
             exchangeAddress: this._exchangeAddress,
