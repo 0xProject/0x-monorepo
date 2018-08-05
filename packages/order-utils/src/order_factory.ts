@@ -8,17 +8,7 @@ import { constants } from './constants';
 import { orderHashUtils } from './order_hash';
 import { generatePseudoRandomSalt } from './salt';
 import { ecSignOrderHashAsync } from './signature_utils';
-import { MessagePrefixType } from './types';
-
-export interface CreateOrderOpts {
-    takerAddress?: string;
-    senderAddress?: string;
-    makerFee?: BigNumber;
-    takerFee?: BigNumber;
-    feeRecipientAddress?: string;
-    salt?: BigNumber;
-    expirationTimeSeconds?: BigNumber;
-}
+import { CreateOrderOpts, MessagePrefixType } from './types';
 
 export const orderFactory = {
     createOrder(
