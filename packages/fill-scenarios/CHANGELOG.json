@@ -3,7 +3,8 @@
         "version": "1.0.1-rc.3",
         "changes": [
             {
-                "note": "Updated to use latest orderFactory interface",
+                "note":
+                    "Updated to use latest orderFactory interface, fixed `feeRecipient` spelling error in public interface",
                 "pr": 936
             }
         ]

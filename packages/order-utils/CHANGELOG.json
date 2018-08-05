@@ -3,7 +3,8 @@
         "version": "1.0.1-rc.3",
         "changes": [
             {
-                "note": "Added a synchronous `createOrder` method in `orderFactory`",
+                "note":
+                    "Added a synchronous `createOrder` method in `orderFactory`, updated public interfaces to support some optional parameters",
                 "pr": 936
             }
         ]

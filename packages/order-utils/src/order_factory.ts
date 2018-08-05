@@ -10,6 +10,16 @@ import { generatePseudoRandomSalt } from './salt';
 import { ecSignOrderHashAsync } from './signature_utils';
 import { MessagePrefixType } from './types';
 
+export interface CreateOrderOpts {
+    takerAddress?: string;
+    senderAddress?: string;
+    makerFee?: BigNumber;
+    takerFee?: BigNumber;
+    feeRecipientAddress?: string;
+    salt?: BigNumber;
+    expirationTimeSeconds?: BigNumber;
+}
+
 export const orderFactory = {
     createOrder(
         makerAddress: string,
@@ -18,28 +28,24 @@ export const orderFactory = {
         takerAssetAmount: BigNumber,
         takerAssetData: string,
         exchangeAddress: string,
-        takerAddress: string = constants.NULL_ADDRESS,
-        senderAddress: string = constants.NULL_ADDRESS,
-        makerFee: BigNumber = constants.ZERO_AMOUNT,
-        takerFee: BigNumber = constants.ZERO_AMOUNT,
-        feeRecipientAddress: string = constants.NULL_ADDRESS,
-        salt: BigNumber = generatePseudoRandomSalt(),
-        expirationTimeSeconds: BigNumber = constants.INFINITE_TIMESTAMP_SEC,
+        createOrderOpts: CreateOrderOpts = generateDefaultCreateOrderOpts(),
     ): Order {
+        const defaultCreateOrderOpts = generateDefaultCreateOrderOpts();
         const order = {
             makerAddress,
-            takerAddress,
-            senderAddress,
-            makerFee,
-            takerFee,
             makerAssetAmount,
             takerAssetAmount,
             makerAssetData,
             takerAssetData,
-            salt,
             exchangeAddress,
-            feeRecipientAddress,
-            expirationTimeSeconds,
+            takerAddress: createOrderOpts.takerAddress || defaultCreateOrderOpts.takerAddress,
+            senderAddress: createOrderOpts.senderAddress || defaultCreateOrderOpts.senderAddress,
+            makerFee: createOrderOpts.makerFee || defaultCreateOrderOpts.makerFee,
+            takerFee: createOrderOpts.takerFee || defaultCreateOrderOpts.takerFee,
+            feeRecipientAddress: createOrderOpts.feeRecipientAddress || defaultCreateOrderOpts.feeRecipientAddress,
+            salt: createOrderOpts.salt || defaultCreateOrderOpts.salt,
+            expirationTimeSeconds:
+                createOrderOpts.expirationTimeSeconds || defaultCreateOrderOpts.expirationTimeSeconds,
         };
         return order;
     },
@@ -51,13 +57,7 @@ export const orderFactory = {
         takerAssetAmount: BigNumber,
         takerAssetData: string,
         exchangeAddress: string,
-        takerAddress?: string,
-        senderAddress?: string,
-        makerFee?: BigNumber,
-        takerFee?: BigNumber,
-        feeRecipientAddress?: string,
-        salt?: BigNumber,
-        expirationTimeSeconds?: BigNumber,
+        createOrderOpts?: CreateOrderOpts,
     ): Promise<SignedOrder> {
         const order = orderFactory.createOrder(
             makerAddress,
@@ -66,13 +66,7 @@ export const orderFactory = {
             takerAssetAmount,
             takerAssetData,
             exchangeAddress,
-            takerAddress,
-            senderAddress,
-            makerFee,
-            takerFee,
-            feeRecipientAddress,
-            salt,
-            expirationTimeSeconds,
+            createOrderOpts,
         );
         const orderHash = orderHashUtils.getOrderHashHex(order);
         const messagePrefixOpts = {
@@ -85,6 +79,26 @@ export const orderFactory = {
         return signedOrder;
     },
 };
+
+function generateDefaultCreateOrderOpts(): {
+    takerAddress: string;
+    senderAddress: string;
+    makerFee: BigNumber;
+    takerFee: BigNumber;
+    feeRecipientAddress: string;
+    salt: BigNumber;
+    expirationTimeSeconds: BigNumber;
+} {
+    return {
+        takerAddress: constants.NULL_ADDRESS,
+        senderAddress: constants.NULL_ADDRESS,
+        makerFee: constants.ZERO_AMOUNT,
+        takerFee: constants.ZERO_AMOUNT,
+        feeRecipientAddress: constants.NULL_ADDRESS,
+        salt: generatePseudoRandomSalt(),
+        expirationTimeSeconds: constants.INFINITE_TIMESTAMP_SEC,
+    };
+}
 
 function getVRSHexString(ecSignature: ECSignature): string {
     const ETH_SIGN_SIGNATURE_TYPE = '03';
