@@ -61,7 +61,7 @@ export class FillScenarios {
         makerAddress: string,
         takerAddress: string,
         fillableAmount: BigNumber,
-        feeRecepientAddress: string,
+        feeRecipientAddress: string,
         expirationTimeSeconds?: BigNumber,
     ): Promise<SignedOrder> {
         return this._createAsymmetricFillableSignedOrderWithFeesAsync(
@@ -73,7 +73,7 @@ export class FillScenarios {
             takerAddress,
             fillableAmount,
             fillableAmount,
-            feeRecepientAddress,
+            feeRecipientAddress,
             expirationTimeSeconds,
         );
     }
@@ -88,7 +88,7 @@ export class FillScenarios {
     ): Promise<SignedOrder> {
         const makerFee = new BigNumber(0);
         const takerFee = new BigNumber(0);
-        const feeRecepientAddress = constants.NULL_ADDRESS;
+        const feeRecipientAddress = constants.NULL_ADDRESS;
         return this._createAsymmetricFillableSignedOrderWithFeesAsync(
             makerAssetData,
             takerAssetData,
@@ -98,7 +98,7 @@ export class FillScenarios {
             takerAddress,
             makerFillableAmount,
             takerFillableAmount,
-            feeRecepientAddress,
+            feeRecipientAddress,
             expirationTimeSeconds,
         );
     }
@@ -148,7 +148,7 @@ export class FillScenarios {
         takerAddress: string,
         makerFillableAmount: BigNumber,
         takerFillableAmount: BigNumber,
-        feeRecepientAddress: string,
+        feeRecipientAddress: string,
         expirationTimeSeconds?: BigNumber,
     ): Promise<SignedOrder> {
         const decodedMakerAssetData = assetDataUtils.decodeAssetDataOrThrow(makerAssetData);
@@ -194,17 +194,19 @@ export class FillScenarios {
         const signedOrder = await orderFactory.createSignedOrderAsync(
             this._web3Wrapper.getProvider(),
             makerAddress,
-            takerAddress,
-            senderAddress,
-            makerFee,
-            takerFee,
             makerFillableAmount,
             makerAssetData,
             takerFillableAmount,
             takerAssetData,
             this._exchangeAddress,
-            feeRecepientAddress,
-            expirationTimeSeconds,
+            {
+                takerAddress,
+                senderAddress,
+                makerFee,
+                takerFee,
+                feeRecipientAddress,
+                expirationTimeSeconds,
+            },
         );
         return signedOrder;
     }
