@@ -1,20 +1,14 @@
 import { AbiDefinition, AbiType, ContractAbi, DataItem, MethodAbi } from 'ethereum-types';
+import * as ethers from 'ethers';
 import * as _ from 'lodash';
 
 import { BigNumber } from './configured_bignumber';
 
-export type EthersParamName = null | string | EthersNestedParamName;
-
-export interface EthersNestedParamName {
-    name: string | null;
-    names: EthersParamName[];
-}
-
 // Note(albrow): This function is unexported in ethers.js. Copying it here for
 // now.
 // Source: https://github.com/ethers-io/ethers.js/blob/884593ab76004a808bf8097e9753fb5f8dcc3067/contracts/interface.js#L30
-function parseEthersParams(params: DataItem[]): { names: EthersParamName[]; types: string[] } {
-    const names: EthersParamName[] = [];
+function parseEthersParams(params: DataItem[]): { names: ethers.ParamName[]; types: string[] } {
+    const names: ethers.ParamName[] = [];
     const types: string[] = [];
 
     params.forEach((param: DataItem) => {
@@ -43,7 +37,7 @@ function parseEthersParams(params: DataItem[]): { names: EthersParamName[]; type
 // returns true if x is equal to y and false otherwise. Performs some minimal
 // type conversion and data massaging for x and y, depending on type. name and
 // type should typically be derived from parseEthersParams.
-function isAbiDataEqual(name: EthersParamName, type: string, x: any, y: any): boolean {
+function isAbiDataEqual(name: ethers.ParamName, type: string, x: any, y: any): boolean {
     if (_.isUndefined(x) && _.isUndefined(y)) {
         return true;
     } else if (_.isUndefined(x) && !_.isUndefined(y)) {
@@ -70,7 +64,7 @@ function isAbiDataEqual(name: EthersParamName, type: string, x: any, y: any): bo
         if (_.isString(name)) {
             throw new Error('Internal error: type was tuple but names was a string');
         } else if (_.isNull(name)) {
-            throw new Error('Internal error: type was tuple but names was a null');
+            throw new Error('Internal error: type was tuple but names was null');
         }
         // For tuples, we iterate through the underlying values and check each
         // one individually.
@@ -95,7 +89,7 @@ function isAbiDataEqual(name: EthersParamName, type: string, x: any, y: any): bo
             //
             const nestedName = _.isString(name.names[i])
                 ? (name.names[i] as string)
-                : ((name.names[i] as EthersNestedParamName).name as string);
+                : ((name.names[i] as ethers.NestedParamName).name as string);
             if (!isAbiDataEqual(name.names[i], types[i], x[nestedName], y[nestedName])) {
                 return false;
             }
