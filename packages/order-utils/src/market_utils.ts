@@ -26,14 +26,12 @@ export const marketUtils = {
         makerAssetFillAmount: BigNumber,
         slippageBufferAmount: BigNumber = constants.ZERO_AMOUNT,
     ): { resultOrders: SignedOrder[]; remainingFillAmount: BigNumber } {
-        // type assertions
         assert.doesConformToSchema('signedOrders', signedOrders, schemas.signedOrdersSchema);
         _.forEach(remainingFillableMakerAssetAmounts, (amount, index) =>
             assert.isValidBaseUnitAmount(`remainingFillableMakerAssetAmount[${index}]`, amount),
         );
         assert.isValidBaseUnitAmount('makerAssetFillAmount', makerAssetFillAmount);
         assert.isValidBaseUnitAmount('slippageBufferAmount', slippageBufferAmount);
-        // other assertions
         assert.assert(
             signedOrders.length === remainingFillableMakerAssetAmounts.length,
             'Expected signedOrders.length to equal remainingFillableMakerAssetAmounts.length',
@@ -90,7 +88,6 @@ export const marketUtils = {
         remainingFillableFeeAmounts: BigNumber[],
         slippageBufferAmount: BigNumber = constants.ZERO_AMOUNT,
     ): { resultOrders: SignedOrder[]; remainingFeeAmount: BigNumber } {
-        // type assertions
         assert.doesConformToSchema('signedOrders', signedOrders, schemas.signedOrdersSchema);
         _.forEach(remainingFillableMakerAssetAmounts, (amount, index) =>
             assert.isValidBaseUnitAmount(`remainingFillableMakerAssetAmount[${index}]`, amount),
@@ -100,7 +97,6 @@ export const marketUtils = {
             assert.isValidBaseUnitAmount(`remainingFillableFeeAmounts[${index}]`, amount),
         );
         assert.isValidBaseUnitAmount('slippageBufferAmount', slippageBufferAmount);
-        // other assertions
         assert.assert(
             signedOrders.length === remainingFillableMakerAssetAmounts.length,
             'Expected signedOrders.length to equal remainingFillableMakerAssetAmounts.length',
