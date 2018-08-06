@@ -292,12 +292,12 @@ export enum AbiTypes {
     Event = 'event',
 }
 
-export interface ExportNameToTypedocName {
-    [exportName: string]: string;
+export interface ExportNameToTypedocNames {
+    [exportName: string]: string[];
 }
 
 export interface Metadata {
-    exportPathToTypedocName: ExportNameToTypedocName;
+    exportPathToTypedocNames: ExportNameToTypedocNames;
     exportPathOrder: string[];
 }
 
