@@ -4,7 +4,7 @@ import * as _ from 'lodash';
 import * as React from 'react';
 
 import { DocsInfo } from '../docs_info';
-import { CustomType, CustomTypeChild, KindString, TypeDocTypes } from '../types';
+import { CustomType, CustomTypeChild, KindString, TypeDocTypes, TypeDefinitionByName } from '../types';
 import { constants } from '../utils/constants';
 
 import { Comment } from './comment';
@@ -19,6 +19,7 @@ export interface TypeDefinitionProps {
     customType: CustomType;
     shouldAddId?: boolean;
     docsInfo: DocsInfo;
+    typeDefinitionByName?: TypeDefinitionByName;
 }
 
 export interface TypeDefinitionState {
@@ -44,7 +45,12 @@ export class TypeDefinition extends React.Component<TypeDefinitionProps, TypeDef
             case KindString.Interface:
                 typePrefix = 'Interface';
                 codeSnippet = (
-                    <Interface type={customType} sectionName={this.props.sectionName} docsInfo={this.props.docsInfo} />
+                    <Interface
+                        type={customType}
+                        sectionName={this.props.sectionName}
+                        docsInfo={this.props.docsInfo}
+                        typeDefinitionByName={this.props.typeDefinitionByName}
+                    />
                 );
                 break;
 
@@ -74,6 +80,7 @@ export class TypeDefinition extends React.Component<TypeDefinitionProps, TypeDef
                                 type={customType.type}
                                 sectionName={this.props.sectionName}
                                 docsInfo={this.props.docsInfo}
+                                typeDefinitionByName={this.props.typeDefinitionByName}
                             />
                         ) : (
                             <Signature
@@ -86,6 +93,7 @@ export class TypeDefinition extends React.Component<TypeDefinitionProps, TypeDef
                                 shouldHideMethodName={true}
                                 shouldUseArrowSyntax={true}
                                 docsInfo={this.props.docsInfo}
+                                typeDefinitionByName={this.props.typeDefinitionByName}
                             />
                         )}
                     </span>

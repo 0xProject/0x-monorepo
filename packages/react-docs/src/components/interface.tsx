@@ -2,7 +2,7 @@ import * as _ from 'lodash';
 import * as React from 'react';
 
 import { DocsInfo } from '../docs_info';
-import { CustomType } from '../types';
+import { CustomType, TypeDefinitionByName } from '../types';
 
 import { Signature } from './signature';
 import { Type } from './type';
@@ -11,6 +11,7 @@ export interface InterfaceProps {
     type: CustomType;
     sectionName: string;
     docsInfo: DocsInfo;
+    typeDefinitionByName: TypeDefinitionByName;
 }
 
 export const Interface = (props: InterfaceProps) => {
@@ -29,9 +30,15 @@ export const Interface = (props: InterfaceProps) => {
                         shouldHideMethodName={true}
                         shouldUseArrowSyntax={true}
                         docsInfo={props.docsInfo}
+                        typeDefinitionByName={props.typeDefinitionByName}
                     />
                 ) : (
-                    <Type type={property.type} sectionName={props.sectionName} docsInfo={props.docsInfo} />
+                    <Type
+                        type={property.type}
+                        sectionName={props.sectionName}
+                        docsInfo={props.docsInfo}
+                        typeDefinitionByName={props.typeDefinitionByName}
+                    />
                 )},
             </span>
         );
@@ -41,7 +48,13 @@ export const Interface = (props: InterfaceProps) => {
         const is = type.indexSignature;
         const param = (
             <span key={`indexSigParams-${is.keyName}-${is.keyType}-${type.name}`}>
-                {is.keyName}: <Type type={is.keyType} sectionName={props.sectionName} docsInfo={props.docsInfo} />
+                {is.keyName}:{' '}
+                <Type
+                    type={is.keyType}
+                    sectionName={props.sectionName}
+                    docsInfo={props.docsInfo}
+                    typeDefinitionByName={props.typeDefinitionByName}
+                />
             </span>
         );
         properties.push(

@@ -225,12 +225,16 @@ export class Documentation extends React.Component<DocumentationProps, Documenta
                     key={`type-${customType.name}`}
                     customType={customType}
                     docsInfo={this.props.docsInfo}
+                    typeDefinitionByName={typeDefinitionByName}
                 />
             );
         });
 
         const sortedProperties = _.sortBy(docSection.properties, 'name');
-        const propertyDefs = _.map(sortedProperties, this._renderProperty.bind(this, sectionName));
+        const propertyDefs = _.map(
+            sortedProperties,
+            this._renderProperty.bind(this, sectionName, typeDefinitionByName),
+        );
 
         const sortedMethods = _.sortBy(docSection.methods, 'name');
         const methodDefs = _.map(sortedMethods, method => {
@@ -349,7 +353,11 @@ export class Documentation extends React.Component<DocumentationProps, Documenta
         });
         return <div>{constructorDefs}</div>;
     }
-    private _renderProperty(sectionName: string, property: Property): React.ReactNode {
+    private _renderProperty(
+        sectionName: string,
+        typeDefinitionByName: TypeDefinitionByName,
+        property: Property,
+    ): React.ReactNode {
         return (
             <PropertyBlock
                 key={`property-${property.name}-${property.type.name}`}
@@ -358,6 +366,7 @@ export class Documentation extends React.Component<DocumentationProps, Documenta
                 docsInfo={this.props.docsInfo}
                 sourceUrl={this.props.sourceUrl}
                 selectedVersion={this.props.selectedVersion}
+                typeDefinitionByName={typeDefinitionByName}
             />
         );
     }

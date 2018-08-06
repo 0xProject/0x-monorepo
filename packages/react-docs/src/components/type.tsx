@@ -117,7 +117,12 @@ export function Type(props: TypeProps): any {
                 const param = (
                     <span key={`indexSigParams-${is.keyName}-${is.keyType}-${type.name}`}>
                         {is.keyName}:{' '}
-                        <Type type={is.keyType} sectionName={props.sectionName} docsInfo={props.docsInfo} />
+                        <Type
+                            type={is.keyType}
+                            sectionName={props.sectionName}
+                            docsInfo={props.docsInfo}
+                            typeDefinitionByName={props.typeDefinitionByName}
+                        />
                     </span>
                 );
                 typeName = (
@@ -222,6 +227,7 @@ export function Type(props: TypeProps): any {
                                 customType={typeDefinition}
                                 shouldAddId={false}
                                 docsInfo={props.docsInfo}
+                                typeDefinitionByName={props.typeDefinitionByName}
                             />
                         </ReactTooltip>
                     </span>

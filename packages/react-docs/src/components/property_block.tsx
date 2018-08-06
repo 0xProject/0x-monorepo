@@ -2,7 +2,7 @@ import { AnchorTitle, HeaderSizes } from '@0xproject/react-shared';
 import * as React from 'react';
 
 import { DocsInfo } from '../docs_info';
-import { Property } from '../types';
+import { Property, TypeDefinitionByName } from '../types';
 import { constants } from '../utils/constants';
 
 import { Comment } from './comment';
@@ -15,6 +15,7 @@ export interface PropertyBlockProps {
     docsInfo: DocsInfo;
     sourceUrl: string;
     selectedVersion: string;
+    typeDefinitionByName: TypeDefinitionByName;
 }
 
 export interface PropertyBlockState {
@@ -50,7 +51,12 @@ export class PropertyBlock extends React.Component<PropertyBlockProps, PropertyB
                 <code className={`hljs ${constants.TYPE_TO_SYNTAX[this.props.docsInfo.type]}`}>
                     {(property as any).callPath}
                     {property.name}:{' '}
-                    <Type type={property.type} sectionName={sectionName} docsInfo={this.props.docsInfo} />
+                    <Type
+                        type={property.type}
+                        sectionName={sectionName}
+                        docsInfo={this.props.docsInfo}
+                        typeDefinitionByName={this.props.typeDefinitionByName}
+                    />
                 </code>
                 {property.source && (
                     <SourceLink
