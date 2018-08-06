@@ -6,6 +6,10 @@
                 "note":
                     "Added a synchronous `createOrder` method in `orderFactory`, updated public interfaces to support some optional parameters",
                 "pr": 936
+            },
+            {
+                "note": "Added marketUtils",
+                "pr": 937
             }
         ]
     },
