@@ -327,7 +327,6 @@ function _getExportPathToExportedItems(sf: ts.SourceFile, omitExports?: string[]
     const exportPathToExportedItems: ExportPathToExportedItems = {};
     const exportPathOrder: string[] = [];
     const exportsToOmit = _.isUndefined(omitExports) ? [] : omitExports;
-    console.log('exportsToOmit', exportsToOmit);
     processNode(sf);
 
     function processNode(node: ts.Node): void {
