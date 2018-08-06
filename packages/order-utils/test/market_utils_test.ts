@@ -37,34 +37,43 @@ describe('marketUtils', () => {
             // generate remainingFillableMakerAssetAmounts that equal the makerAssetAmount
             const remainingFillableMakerAssetAmounts = [makerAssetAmount, makerAssetAmount, makerAssetAmount];
             it('returns input orders and zero remainingFillAmount when input exactly matches requested fill amount', async () => {
-                // try to fill 30 units of makerAsset
-                const fillAmount = new BigNumber(30);
+                // try to fill 20 units of makerAsset
+                // include 10 units of slippageBufferAmount
+                const fillAmount = new BigNumber(20);
+                const slippageBufferAmount = new BigNumber(10);
                 const { resultOrders, remainingFillAmount } = marketUtils.findOrdersThatCoverMakerAssetFillAmount(
                     inputOrders,
                     remainingFillableMakerAssetAmounts,
                     fillAmount,
+                    slippageBufferAmount,
                 );
                 expect(resultOrders).to.be.deep.equal(inputOrders);
                 expect(remainingFillAmount).to.be.bignumber.equal(constants.ZERO_AMOUNT);
             });
             it('returns input orders and zero remainingFillAmount when input has more than requested fill amount', async () => {
-                // try to fill 25 units of makerAsset
-                const fillAmount = new BigNumber(25);
+                // try to fill 15 units of makerAsset
+                // include 10 units of slippageBufferAmount
+                const fillAmount = new BigNumber(15);
+                const slippageBufferAmount = new BigNumber(10);
                 const { resultOrders, remainingFillAmount } = marketUtils.findOrdersThatCoverMakerAssetFillAmount(
                     inputOrders,
                     remainingFillableMakerAssetAmounts,
                     fillAmount,
+                    slippageBufferAmount,
                 );
                 expect(resultOrders).to.be.deep.equal(inputOrders);
                 expect(remainingFillAmount).to.be.bignumber.equal(constants.ZERO_AMOUNT);
             });
             it('returns input orders and non-zero remainingFillAmount when input has less than requested fill amount', async () => {
-                // try to fill 35 units of makerAsset
-                const fillAmount = new BigNumber(35);
+                // try to fill 30 units of makerAsset
+                // include 5 units of slippageBufferAmount
+                const fillAmount = new BigNumber(30);
+                const slippageBufferAmount = new BigNumber(5);
                 const { resultOrders, remainingFillAmount } = marketUtils.findOrdersThatCoverMakerAssetFillAmount(
                     inputOrders,
                     remainingFillableMakerAssetAmounts,
                     fillAmount,
+                    slippageBufferAmount,
                 );
                 expect(resultOrders).to.be.deep.equal(inputOrders);
                 expect(remainingFillAmount).to.be.bignumber.equal(new BigNumber(5));
