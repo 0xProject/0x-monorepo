@@ -86,7 +86,6 @@ export class DocsInfo {
                 ];
             }
         });
-        console.log('menuSubsectionsBySection', menuSubsectionsBySection);
         return menuSubsectionsBySection;
     }
     public getTypeDefinitionsByName(docAgnosticFormat: DocAgnosticFormat): { [name: string]: TypeDefinitionByName } {

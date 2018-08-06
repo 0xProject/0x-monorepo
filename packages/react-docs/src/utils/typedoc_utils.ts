@@ -259,7 +259,6 @@ export const typeDocUtils = {
                     throw errorUtils.spawnSwitchErr('kindString', entity.kindString);
             }
         });
-        console.log('docSection', docSection);
         return docSection;
     },
     _convertCustomType(entity: TypeDocNode, sections: SectionsMap, sectionName: string, docId: string): CustomType {
@@ -352,9 +351,6 @@ export const typeDocUtils = {
         sectionName: string,
         docId: string,
     ): TypescriptMethod {
-        if (_.isUndefined(entity.signatures)) {
-            console.log(entity);
-        }
         const signature = entity.signatures[0];
         const source = entity.sources[0];
         const hasComment = !_.isUndefined(signature.comment);

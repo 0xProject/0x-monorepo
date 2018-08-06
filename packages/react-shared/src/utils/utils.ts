@@ -48,7 +48,6 @@ export const utils = {
         let finalText = charArray.join('');
         const exceptions = { 'EIP ': 'E I P', 'ZRX ': 'Z R X', 'ERC ': 'E R C' };
         _.each(exceptions, (spaced, normal) => {
-            console.log(finalText, spaced, normal);
             if (_.includes(finalText, spaced)) {
                 finalText = finalText.replace(spaced, normal);
             }
