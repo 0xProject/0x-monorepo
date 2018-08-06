@@ -13,7 +13,7 @@
     "TRADITIONAL_ASSETS": "전통적 자산",
     "DIGITAL_GOODS": "디지털 상품",
     "OFFCHAIN_ORDER_RELAY": "오프체인 주문 릴레이",
-    "OONCHAIN_SETTLEMENT": "온체인 정산",
+    "ONCHAIN_SETTLEMENT": "온체인 정산",
     "OFFCHAIN_ONCHAIN_DESCRIPTION":
         "0x 프로토콜에서 주문은 오프체인으로 전달되므로, 가스 비용이 대폭 줄고 블록체인이 불필요하게 커지지 않습니다. Relayer는 주문을 브로드캐스팅할 수 있게 해 주고, 주문에서 거래가 진행될 때마다 수수료를 받을 수 있습니다. 누구든지 Relayer를 생성할 수 있습니다.",
     "RELAYERS_HEADER": "0x 기반 Relayer",

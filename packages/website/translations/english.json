@@ -14,7 +14,7 @@
     "TRADITIONAL_ASSETS": "traditional assets",
     "DIGITAL_GOODS": "digital goods",
     "OFFCHAIN_ORDER_RELAY": "off-chain order relay",
-    "OONCHAIN_SETTLEMENT": "on-chain settlement",
+    "ONCHAIN_SETTLEMENT": "on-chain settlement",
     "OFFCHAIN_ONCHAIN_DESCRIPTION":
         "in 0x protocol, orders are transported off-chain, massively reducing gas costs and eliminating blockchain bloat. Relayers help broadcast orders and collect a fee each time they facilitate a trade. Anyone can build a relayer.",
     "RELAYERS_HEADER": "relayers building on 0x",

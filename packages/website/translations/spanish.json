@@ -14,7 +14,7 @@
     "TRADITIONAL_ASSETS": "activos tradicionales",
     "DIGITAL_GOODS": "bienes digitales",
     "OFFCHAIN_ORDER_RELAY": "orden retransmisión fuera de cadena",
-    "OONCHAIN_SETTLEMENT": "liquidación en cadena",
+    "ONCHAIN_SETTLEMENT": "liquidación en cadena",
     "OFFCHAIN_ONCHAIN_DESCRIPTION":
         "en el protocolo 0x, las órdenes se transportan fuera de la cadena, lo que reduce enormemente los costos de combustible y elimina el sobredimensionamiento de la cadena de bloques. Los transmisores ayudan a emitir órdenes y a cobrar un cargo cada vez que facilitan un intercambio. Cualquier persona puede crear un transmisor.",
     "RELAYERS_HEADER": "transmisores creados en 0x",
