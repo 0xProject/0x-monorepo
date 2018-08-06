@@ -69,7 +69,6 @@ export class AnchorTitle extends React.Component<AnchorTitleProps, AnchorTitleSt
                 </div>
                 <ScrollLink
                     to={this.props.id}
-                    hashSpy={true}
                     offset={headerSizeToScrollOffset[this.props.headerSize]}
                     duration={constants.DOCS_SCROLL_DURATION_MS}
                     containerId={constants.DOCS_CONTAINER_ID}

@@ -94,7 +94,6 @@ export class NestedSidebarMenu extends React.Component<NestedSidebarMenuProps, N
                         key={`menuItem-${menuItemName}`}
                         to={id}
                         offset={0}
-                        hashSpy={true}
                         duration={constants.DOCS_SCROLL_DURATION_MS}
                         containerId={constants.DOCS_CONTAINER_ID}
                     >
@@ -125,7 +124,6 @@ export class NestedSidebarMenu extends React.Component<NestedSidebarMenuProps, N
                             <ScrollLink
                                 to={id}
                                 offset={0}
-                                hashSpy={true}
                                 duration={constants.DOCS_SCROLL_DURATION_MS}
                                 containerId={constants.DOCS_CONTAINER_ID}
                             >
