@@ -183,7 +183,6 @@ export class Documentation extends React.Component<DocumentationProps, Documenta
         const eligibleVersions = _.filter(markdownVersions, mdVersion => {
             return semver.lte(mdVersion, this.props.selectedVersion);
         });
-        console.log('this.props.selectedVersion', this.props.selectedVersion);
         if (_.isEmpty(eligibleVersions)) {
             throw new Error(
                 `No eligible markdown sections found for ${this.props.docsInfo.displayName} version ${
