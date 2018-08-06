@@ -32,3 +32,4 @@ export { assetDataUtils } from './asset_data_utils';
 export { EIP712Utils } from './eip712_utils';
 export { OrderValidationUtils } from './order_validation_utils';
 export { ExchangeTransferSimulator } from './exchange_transfer_simulator';
+export { marketUtils } from './market_utils';

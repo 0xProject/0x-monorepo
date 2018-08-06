@@ -1,5 +1,14 @@
 [
     {
+        "version": "1.0.1-rc.4",
+        "changes": [
+            {
+                "note": "Change hexSchema to match `0x`",
+                "pr": 937
+            }
+        ]
+    },
+    {
         "version": "1.0.1-rc.3",
         "changes": [
             {
