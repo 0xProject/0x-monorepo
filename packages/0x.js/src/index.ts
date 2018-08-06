@@ -64,4 +64,5 @@ export {
     Provider,
     TransactionReceipt,
     TransactionReceiptWithDecodedLogs,
+    LogTopic,
 } from 'ethereum-types';
