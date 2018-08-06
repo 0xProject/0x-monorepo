@@ -1,5 +1,11 @@
 import { DocsInfo, DocsMenu } from '@0xproject/react-docs';
-import { colors, MenuSubsectionsBySection, NestedSidebarMenu, Styles } from '@0xproject/react-shared';
+import {
+    colors,
+    MenuSubsectionsBySection,
+    NestedSidebarMenu,
+    Styles,
+    constants as sharedConstants,
+} from '@0xproject/react-shared';
 import * as _ from 'lodash';
 import Drawer from 'material-ui/Drawer';
 import Menu from 'material-ui/Menu';
@@ -409,7 +415,11 @@ export class TopBar extends React.Component<TopBarProps, TopBarState> {
         const isViewingDocsPage = _.some(DOC_WEBSITE_PATHS_TO_KEY, (_key, websitePath) => {
             return this._doesUrlInclude(websitePath);
         });
-        if (!isViewingDocsPage || _.isUndefined(this.props.menu)) {
+        // HACK: We need to make sure the SCROLL_CONTAINER is loaded before rendering the Sidebar
+        // because the sidebar renders `react-scroll` links which depend on the scroll container already
+        // being rendered.
+        const documentationContainer = document.getElementById(sharedConstants.SCROLL_CONTAINER_ID);
+        if (!isViewingDocsPage || _.isUndefined(this.props.menu) || _.isNull(documentationContainer)) {
             return undefined;
         }
         return (
