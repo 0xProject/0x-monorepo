@@ -18,12 +18,12 @@ interface ExportInfo {
     exportPathOrder: string[];
 }
 
-interface ExportNameToTypedocName {
-    [exportName: string]: string;
+interface ExportNameToTypedocNames {
+    [exportName: string]: string[];
 }
 
 interface Metadata {
-    exportPathToTypedocName: ExportNameToTypedocName;
+    exportPathToTypedocNames: ExportNameToTypedocNames;
     exportPathOrder: string[];
 }
 
@@ -224,10 +224,12 @@ export async function generateAndUploadDocsAsync(packageName: string, isStaging:
     });
 
     // For each entry, see if it was exported in index.ts. If not, remove it.
-    const exportPathToTypedocName: ExportNameToTypedocName = {};
+    const exportPathToTypedocNames: ExportNameToTypedocNames = {};
     _.each(typedocOutput.children, (file, i) => {
         const exportPath = findExportPathGivenTypedocName(exportPathToExportedItems, packageName, file.name);
-        exportPathToTypedocName[exportPath] = file.name;
+        exportPathToTypedocNames[exportPath] = _.isUndefined(exportPathToTypedocNames[exportPath])
+            ? [file.name]
+            : [...exportPathToTypedocNames[exportPath], file.name];
 
         const exportItems = exportPathToExportedItems[exportPath];
         _.each(file.children, (child, j) => {
@@ -245,7 +247,7 @@ export async function generateAndUploadDocsAsync(packageName: string, isStaging:
     // Since we need additional metadata included in the doc JSON, we nest the TypeDoc JSON
     const docJson = {
         metadata: {
-            exportPathToTypedocName,
+            exportPathToTypedocNames,
             exportPathOrder,
         },
         typedocJson: finalTypeDocOutput,

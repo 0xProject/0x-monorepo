@@ -60,14 +60,16 @@ export const typeDocUtils = {
     },
     convertToDocAgnosticFormat(generatedDocJson: GeneratedDocJson, docsInfo: DocsInfo): DocAgnosticFormat {
         const exportPathOrder = generatedDocJson.metadata.exportPathOrder;
-        const exportPathToTypedocName = generatedDocJson.metadata.exportPathToTypedocName;
+        const exportPathToTypedocNames = generatedDocJson.metadata.exportPathToTypedocNames;
         const typeDocJson = generatedDocJson.typedocJson;
 
         // TODO: Extract the non typeDoc exports, and render them somehow
         const typeDocNameOrder = _.compact(
-            _.map(exportPathOrder, exportPath => {
-                return exportPathToTypedocName[exportPath];
-            }),
+            _.flatten(
+                _.map(exportPathOrder, exportPath => {
+                    return exportPathToTypedocNames[exportPath];
+                }),
+            ),
         );
 
         const docAgnosticFormat: DocAgnosticFormat = {};
@@ -121,6 +123,7 @@ export const typeDocUtils = {
             });
         });
         if (!_.isEmpty(typeEntities)) {
+            console.log('typeEntities', typeEntities);
             docsInfo.sections[constants.TYPES_SECTION_NAME] = constants.TYPES_SECTION_NAME;
             docsInfo.menu[constants.TYPES_SECTION_NAME] = [constants.TYPES_SECTION_NAME];
             const docSection = typeDocUtils._convertEntitiesToDocSection(
