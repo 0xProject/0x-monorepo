@@ -5,14 +5,9 @@ import { constants, orderFactory } from '../../src';
 
 const BASE_TEST_ORDER: Order = orderFactory.createOrder(
     constants.NULL_ADDRESS,
+    constants.ZERO_AMOUNT,
     constants.NULL_ADDRESS,
-    constants.NULL_ADDRESS,
     constants.ZERO_AMOUNT,
-    constants.ZERO_AMOUNT,
-    constants.ZERO_AMOUNT,
-    constants.NULL_BYTES,
-    constants.ZERO_AMOUNT,
-    constants.NULL_BYTES,
     constants.NULL_ADDRESS,
     constants.NULL_ADDRESS,
 );

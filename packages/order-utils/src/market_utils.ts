@@ -17,7 +17,7 @@ export const marketUtils = {
      *                                              You can use OrderStateUtils @0xproject/order-utils to perform blockchain lookups
      *                                              for these values.
      * @param   makerAssetFillAmount                The amount of makerAsset desired to be filled.
-     * @param   slippageBufferAmount                An additional amount makerAsset to be covered by the result in case of trade collisions or partial fills.
+     * @param   slippageBufferAmount                An additional amount of makerAsset to be covered by the result in case of trade collisions or partial fills.
      * @return  Resulting orders and remaining fill amount that could not be covered by the input.
      */
     findOrdersThatCoverMakerAssetFillAmount(
@@ -80,8 +80,8 @@ export const marketUtils = {
      * @param   remainingFillableFeeAmounts         An array of BigNumbers corresponding to the signedFeeOrders parameter.
      *                                              You can use OrderStateUtils @0xproject/order-utils to perform blockchain lookups
      *                                              for these values.
-     * @param   slippageBufferAmount                An additional amount makerAsset to be covered by the result in case of trade collisions or partial fills.
-     * @return  Resulting orders and remaining fill amount that could not be covered by the input.
+     * @param   slippageBufferAmount                An additional amount of fee to be covered by the result in case of trade collisions or partial fills.
+     * @return  Resulting orders and remaining fee amount that could not be covered by the input.
      */
     findFeeOrdersThatCoverFeesForTargetOrders(
         signedOrders: SignedOrder[],
@@ -89,7 +89,7 @@ export const marketUtils = {
         signedFeeOrders: SignedOrder[],
         remainingFillableFeeAmounts: BigNumber[],
         slippageBufferAmount: BigNumber = constants.ZERO_AMOUNT,
-    ): { resultOrders: SignedOrder[]; remainingFillAmount: BigNumber } {
+    ): { resultOrders: SignedOrder[]; remainingFeeAmount: BigNumber } {
         // type assertions
         assert.doesConformToSchema('signedOrders', signedOrders, schemas.signedOrdersSchema);
         _.forEach(remainingFillableMakerAssetAmounts, (amount, index) =>
@@ -121,12 +121,16 @@ export const marketUtils = {
             },
             constants.ZERO_AMOUNT,
         );
-        return marketUtils.findOrdersThatCoverMakerAssetFillAmount(
+        const { resultOrders, remainingFillAmount } = marketUtils.findOrdersThatCoverMakerAssetFillAmount(
             signedFeeOrders,
             remainingFillableFeeAmounts,
             totalFeeAmount,
             slippageBufferAmount,
         );
+        return {
+            resultOrders,
+            remainingFeeAmount: remainingFillAmount,
+        };
         // TODO: add more orders here to cover rounding
         // https://github.com/0xProject/0x-protocol-specification/blob/master/v2/forwarding-contract-specification.md#over-buying-zrx
     },

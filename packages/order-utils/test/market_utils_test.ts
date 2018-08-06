@@ -12,7 +12,7 @@ const expect = chai.expect;
 
 // tslint:disable: no-unused-expression
 describe('marketUtils', () => {
-    describe.only('#findOrdersThatCoverMakerAssetFillAmount', () => {
+    describe('#findOrdersThatCoverMakerAssetFillAmount', () => {
         describe('no orders', () => {
             it('returns empty and unchanged remainingFillAmount', async () => {
                 const fillAmount = new BigNumber(10);
@@ -25,15 +25,14 @@ describe('marketUtils', () => {
                 expect(remainingFillAmount).to.be.bignumber.equal(fillAmount);
             });
         });
-        describe('orders are all completely fillable', () => {
+        describe('orders are completely fillable', () => {
             // generate three signed orders each with 10 units of makerAsset, 30 total
-            const testOrderCount = 3;
             const makerAssetAmount = new BigNumber(10);
             const inputOrders = testOrderFactory.generateTestSignedOrders(
                 {
                     makerAssetAmount,
                 },
-                testOrderCount,
+                3,
             );
             // generate remainingFillableMakerAssetAmounts that equal the makerAssetAmount
             const remainingFillableMakerAssetAmounts = [makerAssetAmount, makerAssetAmount, makerAssetAmount];
@@ -95,20 +94,19 @@ describe('marketUtils', () => {
         });
         describe('orders are partially fillable', () => {
             // generate three signed orders each with 10 units of makerAsset, 30 total
-            const testOrderCount = 3;
             const makerAssetAmount = new BigNumber(10);
             const inputOrders = testOrderFactory.generateTestSignedOrders(
                 {
                     makerAssetAmount,
                 },
-                testOrderCount,
+                3,
             );
             // generate remainingFillableMakerAssetAmounts that cover different partial fill scenarios
             // 1. order is completely filled already
             // 2. order is partially fillable
             // 3. order is completely fillable
             const remainingFillableMakerAssetAmounts = [constants.ZERO_AMOUNT, new BigNumber(5), makerAssetAmount];
-            it('returns last 2 orders and non-zero remainingFillAmount when trying to fill original makerAssetAmounts', async () => {
+            it('returns last two orders and non-zero remainingFillAmount when trying to fill original makerAssetAmounts', async () => {
                 // try to fill 30 units of makerAsset
                 const fillAmount = new BigNumber(30);
                 const { resultOrders, remainingFillAmount } = marketUtils.findOrdersThatCoverMakerAssetFillAmount(
@@ -121,5 +119,153 @@ describe('marketUtils', () => {
             });
         });
     });
-    describe('#findFeeOrdersThatCoverFeesForTargetOrders', () => {});
+    describe('#findFeeOrdersThatCoverFeesForTargetOrders', () => {
+        // generate three signed fee orders each with 10 units of ZRX, 30 total
+        const zrxAmount = new BigNumber(10);
+        const inputFeeOrders = testOrderFactory.generateTestSignedOrders(
+            {
+                makerAssetAmount: zrxAmount,
+            },
+            3,
+        );
+        // generate remainingFillableFeeAmounts that equal the zrxAmount
+        const remainingFillableFeeAmounts = [zrxAmount, zrxAmount, zrxAmount];
+        describe('no target orders', () => {
+            it('returns empty and zero remainingFeeAmount', async () => {
+                const { resultOrders, remainingFeeAmount } = marketUtils.findFeeOrdersThatCoverFeesForTargetOrders(
+                    [],
+                    [],
+                    inputFeeOrders,
+                    remainingFillableFeeAmounts,
+                );
+                expect(resultOrders).to.be.empty;
+                expect(remainingFeeAmount).to.be.bignumber.equal(constants.ZERO_AMOUNT);
+            });
+        });
+        describe('no fee orders', () => {
+            // generate three signed orders each with 10 units of makerAsset, 30 total
+            // each signed order requires 10 units of takerFee
+            const makerAssetAmount = new BigNumber(10);
+            const takerFee = new BigNumber(10);
+            const inputOrders = testOrderFactory.generateTestSignedOrders(
+                {
+                    makerAssetAmount,
+                    takerFee,
+                },
+                3,
+            );
+            // generate remainingFillableMakerAssetAmounts that equal the makerAssetAmount
+            const remainingFillableMakerAssetAmounts = [makerAssetAmount, makerAssetAmount, makerAssetAmount];
+            it('returns empty and non-zero remainingFeeAmount', async () => {
+                const { resultOrders, remainingFeeAmount } = marketUtils.findFeeOrdersThatCoverFeesForTargetOrders(
+                    inputOrders,
+                    remainingFillableMakerAssetAmounts,
+                    [],
+                    [],
+                );
+                expect(resultOrders).to.be.empty;
+                expect(remainingFeeAmount).to.be.bignumber.equal(new BigNumber(30));
+            });
+        });
+        describe('target orders have no fees', () => {
+            // generate three signed orders each with 10 units of makerAsset, 30 total
+            const makerAssetAmount = new BigNumber(10);
+            const inputOrders = testOrderFactory.generateTestSignedOrders(
+                {
+                    makerAssetAmount,
+                },
+                3,
+            );
+            // generate remainingFillableMakerAssetAmounts that equal the makerAssetAmount
+            const remainingFillableMakerAssetAmounts = [makerAssetAmount, makerAssetAmount, makerAssetAmount];
+            it('returns empty and zero remainingFeeAmount', async () => {
+                const { resultOrders, remainingFeeAmount } = marketUtils.findFeeOrdersThatCoverFeesForTargetOrders(
+                    inputOrders,
+                    remainingFillableMakerAssetAmounts,
+                    inputFeeOrders,
+                    remainingFillableFeeAmounts,
+                );
+                expect(resultOrders).to.be.empty;
+                expect(remainingFeeAmount).to.be.bignumber.equal(constants.ZERO_AMOUNT);
+            });
+        });
+        describe('target orders require fees and are completely fillable', () => {
+            // generate three signed orders each with 10 units of makerAsset, 30 total
+            // each signed order requires 10 units of takerFee
+            const makerAssetAmount = new BigNumber(10);
+            const takerFee = new BigNumber(10);
+            const inputOrders = testOrderFactory.generateTestSignedOrders(
+                {
+                    makerAssetAmount,
+                    takerFee,
+                },
+                3,
+            );
+            // generate remainingFillableMakerAssetAmounts that equal the makerAssetAmount
+            const remainingFillableMakerAssetAmounts = [makerAssetAmount, makerAssetAmount, makerAssetAmount];
+            it('returns input fee orders and zero remainingFeeAmount', async () => {
+                const { resultOrders, remainingFeeAmount } = marketUtils.findFeeOrdersThatCoverFeesForTargetOrders(
+                    inputOrders,
+                    remainingFillableMakerAssetAmounts,
+                    inputFeeOrders,
+                    remainingFillableFeeAmounts,
+                );
+                expect(resultOrders).to.be.deep.equal(inputFeeOrders);
+                expect(remainingFeeAmount).to.be.bignumber.equal(constants.ZERO_AMOUNT);
+            });
+        });
+        describe('target orders require fees and are partially fillable', () => {
+            // generate three signed orders each with 10 units of makerAsset, 30 total
+            // each signed order requires 10 units of takerFee
+            const makerAssetAmount = new BigNumber(10);
+            const takerFee = new BigNumber(10);
+            const inputOrders = testOrderFactory.generateTestSignedOrders(
+                {
+                    makerAssetAmount,
+                    takerFee,
+                },
+                3,
+            );
+            // generate remainingFillableMakerAssetAmounts that cover different partial fill scenarios
+            // 1. order is completely filled already
+            // 2. order is partially fillable
+            // 3. order is completely fillable
+            const remainingFillableMakerAssetAmounts = [constants.ZERO_AMOUNT, new BigNumber(5), makerAssetAmount];
+            it('returns first two input fee orders and zero remainingFeeAmount', async () => {
+                const { resultOrders, remainingFeeAmount } = marketUtils.findFeeOrdersThatCoverFeesForTargetOrders(
+                    inputOrders,
+                    remainingFillableMakerAssetAmounts,
+                    inputFeeOrders,
+                    remainingFillableFeeAmounts,
+                );
+                expect(resultOrders).to.be.deep.equal([inputFeeOrders[0], inputFeeOrders[1]]);
+                expect(remainingFeeAmount).to.be.bignumber.equal(constants.ZERO_AMOUNT);
+            });
+        });
+        describe('target orders require more fees than available', () => {
+            // generate three signed orders each with 10 units of makerAsset, 30 total
+            // each signed order requires 20 units of takerFee
+            const makerAssetAmount = new BigNumber(10);
+            const takerFee = new BigNumber(20);
+            const inputOrders = testOrderFactory.generateTestSignedOrders(
+                {
+                    makerAssetAmount,
+                    takerFee,
+                },
+                3,
+            );
+            // generate remainingFillableMakerAssetAmounts that equal the makerAssetAmount
+            const remainingFillableMakerAssetAmounts = [makerAssetAmount, makerAssetAmount, makerAssetAmount];
+            it('returns input fee orders and non-zero remainingFeeAmount', async () => {
+                const { resultOrders, remainingFeeAmount } = marketUtils.findFeeOrdersThatCoverFeesForTargetOrders(
+                    inputOrders,
+                    remainingFillableMakerAssetAmounts,
+                    inputFeeOrders,
+                    remainingFillableFeeAmounts,
+                );
+                expect(resultOrders).to.be.deep.equal(inputFeeOrders);
+                expect(remainingFeeAmount).to.be.bignumber.equal(new BigNumber(30));
+            });
+        });
+    });
 });
