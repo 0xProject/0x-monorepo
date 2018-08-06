@@ -1,5 +1,14 @@
 [
     {
+        "version": "1.0.1-rc.3",
+        "changes": [
+            {
+                "note": "Export missing ExchangeSignatureValidatorApprovalEventArgs type",
+                "pr": 924
+            }
+        ]
+    },
+    {
         "version": "1.0.1-rc.2",
         "changes": [
             {

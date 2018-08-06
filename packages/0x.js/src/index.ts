@@ -26,12 +26,14 @@ export {
     ERC20TokenApprovalEventArgs,
     ERC20TokenEvents,
     ERC20TokenEventArgs,
+    ERC721TokenEventArgs,
     ERC721TokenApprovalEventArgs,
     ERC721TokenApprovalForAllEventArgs,
     ERC721TokenTransferEventArgs,
     ERC721TokenEvents,
     ExchangeCancelUpToEventArgs,
     ExchangeAssetProxyRegisteredEventArgs,
+    ExchangeSignatureValidatorApprovalEventArgs,
     ExchangeFillEventArgs,
     ExchangeCancelEventArgs,
     ExchangeEventArgs,
@@ -53,6 +55,7 @@ export {
     ERC20AssetData,
     ERC721AssetData,
     AssetProxyId,
+    OrderRelevantState,
 } from '@0xproject/types';
 
 export {
@@ -65,4 +68,11 @@ export {
     TransactionReceipt,
     TransactionReceiptWithDecodedLogs,
     LogTopic,
+    JSONRPCRequestPayload,
+    JSONRPCResponsePayload,
+    JSONRPCErrorCallback,
+    TransactionReceiptStatus,
+    LogEntry,
+    DecodedLogArgs,
+    LogEntryEvent,
 } from 'ethereum-types';

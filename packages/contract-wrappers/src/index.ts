@@ -74,6 +74,7 @@ export {
 export {
     ExchangeCancelUpToEventArgs,
     ExchangeAssetProxyRegisteredEventArgs,
+    ExchangeSignatureValidatorApprovalEventArgs,
     ExchangeFillEventArgs,
     ExchangeCancelEventArgs,
     ExchangeEventArgs,
