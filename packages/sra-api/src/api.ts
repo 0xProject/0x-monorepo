@@ -205,6 +205,42 @@ export const api: OpenApiSpec = {
                 ),
             },
         },
+        '/v2/orderbook': {
+            get: {
+                description: `Retrieves the orderbook for a given asset pair. This endpoint should be [paginated](#section/Pagination). Bids will be sorted in descending order by price, and asks will be sorted in ascending order by price. Within the price sorted orders, the orders are further sorted by _taker fee price_ which is defined as the **takerFee** divided by **takerTokenAmount**. After _taker fee price_, orders are to be sorted by expiration in ascending order. The way pagination works for this endpoint is that the **page** and **per_page** query params apply to both \`bids\` and \`asks\` collections, and if \`page\` * \`per_page\` > \`total\` for a certain collection, the \`records\` for that collection should just be empty. `,
+                operationId: 'getOrderBook',
+                parameters: generateParameters(
+                    [
+                        {
+                            name: 'baseAssetData',
+                            in: 'query',
+                            description: `assetData (makerAssetData or takerAssetData) designated as the base currency in the [currency pair calculation](https://en.wikipedia.org/wiki/Currency_pair) of price.`,
+                            required: true,
+                            example: '0xf47261b04c32345ced77393b3530b1eed0f346429d',
+                            schema: {
+                                $ref: '#/components/schemas/hexSchema',
+                            },
+                        },
+                        {
+                            name: 'quoteAssetData',
+                            in: 'query',
+                            description: `assetData (makerAssetData or takerAssetData) designated as the quote currency in the currency pair calculation of price (required).`,
+                            required: true,
+                            example: '0xf47261b04c32345ced77393b3530b1eed0f346429d',
+                            schema: {
+                                $ref: '#/components/schemas/hexSchema',
+                            },
+                        },
+                    ],
+                    true,
+                ),
+                responses: generateResponses(
+                    'relayerApiOrderBookResponseSchema',
+                    examples.relayerApiOrderBookResponse,
+                    `The sorted order book for the specified asset pair.`,
+                ),
+            },
+        },
     },
     components: {
         schemas: openApiSchemas,
