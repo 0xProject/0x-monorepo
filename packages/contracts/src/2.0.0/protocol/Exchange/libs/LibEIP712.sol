@@ -61,11 +61,26 @@ contract LibEIP712 {
         view
         returns (bytes32 result)
     {
-        result = keccak256(abi.encodePacked(
-            EIP191_HEADER,
-            EIP712_DOMAIN_HASH,
-            hashStruct
-        ));
+        bytes32 eip712DomainHash = EIP712_DOMAIN_HASH;
+
+        // Assembly for more efficient computing:
+        // keccak256(abi.encodePacked(
+        //     EIP191_HEADER,
+        //     EIP712_DOMAIN_HASH,
+        //     hashStruct    
+        // ));
+
+        assembly {
+            // Load free memory pointer
+            let memPtr := mload(64)
+
+            mstore(memPtr, 0x1901000000000000000000000000000000000000000000000000000000000000)  // EIP191 header
+            mstore(add(memPtr, 2), eip712DomainHash)                                            // EIP712 domain hash
+            mstore(add(memPtr, 34), hashStruct)                                                 // Hash of struct
+
+            // Compute hash
+            result := keccak256(memPtr, 66)
+        }
         return result;
     }
 }
