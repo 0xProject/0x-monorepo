@@ -24,20 +24,17 @@ import "./LibOrder.sol";
 
 contract LibAbiEncoder {
 
-    /// @dev ABI encodes calldata for `fillOrder` in memory and returns the address range.
-    ///      This range can be passed into `call` or `delegatecall` to invoke an external
-    ///      call to `fillOrder`.
+    /// @dev ABI encodes calldata for `fillOrder`.
     /// @param order Order struct containing order specifications.
     /// @param takerAssetFillAmount Desired amount of takerAsset to sell.
     /// @param signature Proof that order has been created by maker.
-    /// @return calldataBegin Memory address of ABI encoded calldata.
-    /// @return calldataLength Lenfgth of ABI encoded calldata.
+    /// @return ABI encoded calldata for `fillOrder`.
     function abiEncodeFillOrder(
         LibOrder.Order memory order,
         uint256 takerAssetFillAmount,
         bytes memory signature
     )
-        public
+        internal
         pure
         returns (bytes memory fillOrderCalldata)
     {
@@ -207,10 +204,11 @@ contract LibAbiEncoder {
             }
 
             // Set length of calldata
-            mstore(
-                fillOrderCalldata,
-                sub(dataAreaEnd, add(fillOrderCalldata, 0x20))
-            )
+            let calldataLen := sub(dataAreaEnd, add(fillOrderCalldata, 0x20))
+            mstore(fillOrderCalldata, calldataLen)
+
+            // Increment free memory pointer
+            mstore(0x40, add(fillOrderCalldata, add(calldataLen, 0x20)))
         }
 
         return fillOrderCalldata;
