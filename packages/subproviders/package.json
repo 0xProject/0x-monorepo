@@ -84,7 +84,6 @@
         "sinon": "^4.0.0",
         "tslint": "5.11.0",
         "typedoc": "0xProject/typedoc",
-        "typescript": "2.7.1",
         "webpack": "^3.1.0"
     },
     "optionalDependencies": {
