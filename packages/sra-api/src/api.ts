@@ -19,11 +19,8 @@ export const api: OpenApiSpec = {
             url: 'https://www.apache.org/licenses/LICENSE-2.0.html',
         },
     },
-    servers: [
-        // TODO: Use relayer registry information here?
-    ],
     paths: {
-        '/asset_pairs': {
+        '/v2/asset_pairs': {
             get: {
                 description:
                     'Retrieves a list of available asset pairs and the information required to trade them (in any order). Setting only `asset_data_a` or `asset_data_b` returns pairs filtered by that asset only.',

@@ -19,6 +19,7 @@
         "run_mocha": "mocha lib/test/**/*_test.js --exit",
         "clean": "shx rm -rf lib",
         "build": "tsc && yarn build-json",
+        "build-site": "yarn build-json && redoc-cli bundle lib/api.json --output public/index.html",
         "build-json": "ts-node scripts/buildJson.ts",
         "build-json:watch": "chokidar 'src/**/*' -c 'yarn build-json' "
     },
