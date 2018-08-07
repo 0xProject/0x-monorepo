@@ -2,6 +2,7 @@ import { schemas } from '@0xproject/json-schemas';
 import { OpenApiSpec } from '@loopback/openapi-v3-types';
 
 import { examples } from './examples';
+import { md } from './md';
 import { generateParameters } from './parameters';
 import { generateResponses } from './responses';
 // We need to replace the `$ref`s to be openAPI compliant.
@@ -10,10 +11,9 @@ const openApiSchemas = JSON.parse(JSON.stringify(schemas).replace(/(\/\w+)/g, ma
 export const api: OpenApiSpec = {
     openapi: '3.0.0',
     info: {
-        version: '1.0.0',
+        version: '2.0.0',
         title: 'Standard Relayer REST API',
-        description:
-            '0x Protocol is an open standard. Because of this, we expect many independent applications to be built that will want to use the protocol. In order to make it easier for anyone to source liquidity that conforms to the 0x order format, relayers can opt-in to implementing a set of standard relayer API endpoints. In doing so, they allow clients of the standard relayer API to access the orders on their orderbook.',
+        description: md.introduction,
         license: {
             name: 'Apache 2.0',
             url: 'https://www.apache.org/licenses/LICENSE-2.0.html',
