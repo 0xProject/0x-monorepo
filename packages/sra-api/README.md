@@ -4,6 +4,8 @@ Contains the Standard Relayer API [OpenAPI Spec](https://github.com/OAI/OpenAPI-
 
 The package distributes both a javascript object version and a json version.
 
+A deployed [ReDoc](https://github.com/Rebilly/ReDoc) static site with the API can be found here http://sra-api.com.s3-website-us-east-1.amazonaws.com/.
+
 ## Usage
 
 ```
@@ -21,7 +23,7 @@ yarn install
 You can start a development server that will serve a [ReDoc](https://github.com/Rebilly/ReDoc) documentation instance. It uses the `api.json` file from `lib/` (you must have built at least once with `yarn build` or `yarn build-json`) that is based on the `api` object exported from `src`.
 
 ```
-yarn develop
+yarn watch_without_deps
 ```
 
 The process will watch for changes, but will not hot-reload so you must refresh the page to see the changes.
@@ -58,6 +60,22 @@ Or continuously rebuild on change:
 
 ```bash
 PKG=@0xproject/sra-api yarn watch
+```
+
+### Static Site
+
+We also [host a static HTML version of the docs on S3](http://sra-api.com.s3-website-us-east-1.amazonaws.com/) for easy sharing.
+
+To build the website run
+
+```
+yarn build-site
+```
+
+To build and deploy the site run
+
+```
+yarn deploy-site
 ```
 
 ### Clean
