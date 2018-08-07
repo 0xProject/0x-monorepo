@@ -46,7 +46,8 @@
         "npm-run-all": "^4.1.2",
         "prettier": "^1.11.1",
         "source-map-support": "^0.5.6",
-        "wsrun": "^2.2.0"
+        "wsrun": "^2.2.0",
+        "typescript": "^2.8.0"
     },
     "resolutions": {
         "ethers": "0xproject/ethers.js#eip-838-reasons"
