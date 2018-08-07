@@ -176,7 +176,32 @@ export const api: OpenApiSpec = {
                 responses: generateResponses(
                     'relayerApiOrdersResponseSchema',
                     examples.relayerApiOrdersResponse,
-                    `Returns a collection of 0x orders with meta-data as specified by query params`,
+                    `A collection of 0x orders with meta-data as specified by query params`,
+                ),
+            },
+        },
+        '/v2/order/{orderHash}': {
+            get: {
+                description: 'Retrieves the 0x order with meta info that is associated with the hash.',
+                operationId: 'getOrder',
+                parameters: generateParameters(
+                    [
+                        {
+                            name: 'orderHash',
+                            in: 'path',
+                            description: 'The hash of the desired 0x order.',
+                            example: '0xd4b103c42d2512eef3fee775e097f044291615d25f5d71e0ac70dbd49d223591',
+                            schema: {
+                                $ref: '#/components/schemas/orderHashSchema',
+                            },
+                        },
+                    ],
+                    true,
+                ),
+                responses: generateResponses(
+                    'relayerApiOrderSchema',
+                    examples.relayerApiOrder,
+                    `The order and meta info associated with the orderHash`,
                 ),
             },
         },
