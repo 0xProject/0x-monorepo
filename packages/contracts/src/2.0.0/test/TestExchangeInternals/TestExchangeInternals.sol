@@ -22,6 +22,7 @@ pragma experimental ABIEncoderV2;
 import "../../protocol/Exchange/Exchange.sol";
 
 
+// solhint-disable no-empty-blocks
 contract TestExchangeInternals is
     Exchange
 {

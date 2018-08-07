@@ -257,11 +257,7 @@ export class ExchangeWrapper {
         );
         return fillResults;
     }
-    public abiEncodeFillOrder(
-        signedOrder: SignedOrder,
-        from: string,
-        opts: { takerAssetFillAmount?: BigNumber } = {},
-    ): string {
+    public abiEncodeFillOrder(signedOrder: SignedOrder, opts: { takerAssetFillAmount?: BigNumber } = {}): string {
         const params = orderUtils.createFill(signedOrder, opts.takerAssetFillAmount);
         const data = this._exchange.fillOrder.getABIEncodedTransactionData(
             params.order,
