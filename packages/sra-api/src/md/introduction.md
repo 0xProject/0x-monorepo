@@ -3,7 +3,7 @@
 Requests that return potentially large collections should respond to the **?page** and **?per_page** parameters. For example:
 
 ```
-curl https://api.example-relayer.com/v2/token_pairs?page=3&per_page=20
+curl https://api.example-relayer.com/v2/asset_pairs?page=3&per_page=20
 ```
 
 Page numbering should be 1-indexed, not 0-indexed. If a query provides an unreasonable (ie. too high) **per_page** value, the response can return a validation error as specified in the [errors section](#errors). If the query specifies a **page** that does not exist (ie. there are not enough **records**), the response should just return an empty **records** array.
@@ -15,7 +15,7 @@ These requests include the [`asset_pairs`](#get-v2-asset-pairs), [`orders`](#get
 # Network Id
 All requests should be able to specify a **?networkId** query param for all supported networks. For example:
 ```
-curl https://api.example-relayer.com/v2/token_pairs?networkId=1
+curl https://api.example-relayer.com/v2/asset_pairs?networkId=1
 ```
 If the query param is not provided, it should default to **1** (mainnet).
 
@@ -50,7 +50,7 @@ A [Link Header](https://tools.ietf.org/html/rfc5988) can be included in a respon
 For example:
 
 ```
-Link: <https://api.example-relayer.com/v2/token_pairs?page=3&per_page=20>; rel="next",
+Link: <https://api.example-relayer.com/v2/asset_pairs?page=3&per_page=20>; rel="next",
 <https://api.github.com/user/repos?page=10&per_page=20>; rel="last"
 ```
 
@@ -78,7 +78,7 @@ Rate limit guidance for clients can be optionally returned in the response heade
 For example:
 
 ```
-curl -i https://api.example-relayer.com/v2/token_pairs
+curl -i https://api.example-relayer.com/v2/asset_pairs
 HTTP/1.1 200 OK
 Date: Mon, 20 Oct 2017 12:30:06 GMT
 Status: 200 OK
