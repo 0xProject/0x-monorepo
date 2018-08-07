@@ -14,6 +14,7 @@ import { DropDown, DropdownMouseEvent } from 'ts/components/ui/drop_down';
 import { IconButton } from 'ts/components/ui/icon_button';
 import { Identicon } from 'ts/components/ui/identicon';
 import { Island } from 'ts/components/ui/island';
+import { PointerDirection } from 'ts/components/ui/pointer';
 import {
     CopyAddressSimpleMenuItem,
     DifferentWalletSimpleMenuItem,
@@ -28,7 +29,7 @@ import { NullTokenRow } from 'ts/components/wallet/null_token_row';
 import { PlaceHolder } from 'ts/components/wallet/placeholder';
 import { StandardIconRow } from 'ts/components/wallet/standard_icon_row';
 import { WrapEtherItem } from 'ts/components/wallet/wrap_ether_item';
-import { AllowanceToggle } from 'ts/containers/inputs/allowance_toggle';
+import { AllowanceStateToggle } from 'ts/containers/inputs/allowance_state_toggle';
 import { Dispatcher } from 'ts/redux/dispatcher';
 import { colors } from 'ts/style/colors';
 import {
@@ -67,6 +68,7 @@ export interface WalletProps {
     onRemoveToken: () => void;
     refetchTokenStateAsync: (tokenAddress: string) => Promise<void>;
     style: React.CSSProperties;
+    toggleTooltipDirection?: PointerDirection;
 }
 
 interface WalletState {
@@ -74,14 +76,14 @@ interface WalletState {
     isHoveringSidebar: boolean;
 }
 
-interface AllowanceToggleConfig {
+interface AllowanceStateToggleConfig {
     token: Token;
     tokenState: TokenState;
 }
 
 interface AccessoryItemConfig {
     wrappedEtherDirection?: Side;
-    allowanceToggleConfig?: AllowanceToggleConfig;
+    allowanceStateToggleConfig?: AllowanceStateToggleConfig;
 }
 
 const ETHER_ICON_PATH = '/images/ether.png';
@@ -89,7 +91,8 @@ const ICON_DIMENSION = 28;
 const BODY_ITEM_KEY = 'BODY';
 const HEADER_ITEM_KEY = 'HEADER';
 const ETHER_ITEM_KEY = 'ETHER';
-const NO_ALLOWANCE_TOGGLE_SPACE_WIDTH = 56;
+const WRAP_ROW_ALLOWANCE_TOGGLE_WIDTH = 67;
+const ALLOWANCE_TOGGLE_WIDTH = 56;
 const PLACEHOLDER_COLOR = colors.grey300;
 const LOADING_ROWS_COUNT = 6;
 
@@ -338,7 +341,7 @@ export class Wallet extends React.Component<WalletProps, WalletState> {
         );
         const accessoryItemConfig: AccessoryItemConfig = {
             wrappedEtherDirection,
-            allowanceToggleConfig: {
+            allowanceStateToggleConfig: {
                 token,
                 tokenState,
             },
@@ -393,13 +396,15 @@ export class Wallet extends React.Component<WalletProps, WalletState> {
     }
     private _renderAccessoryItems(config: AccessoryItemConfig): React.ReactElement<{}> {
         const shouldShowWrappedEtherAction = !_.isUndefined(config.wrappedEtherDirection);
-        const shouldShowToggle = !_.isUndefined(config.allowanceToggleConfig);
+        const shouldShowToggle = !_.isUndefined(config.allowanceStateToggleConfig);
         // if we don't have a toggle, we still want some space to the right of the "wrap" button so that it aligns with
         // the "unwrap" button in the row below
-        const toggle = shouldShowToggle ? (
-            this._renderAllowanceToggle(config.allowanceToggleConfig)
-        ) : (
-            <div style={{ width: NO_ALLOWANCE_TOGGLE_SPACE_WIDTH }} />
+        const isWrapEtherRow = shouldShowWrappedEtherAction && config.wrappedEtherDirection === Side.Deposit;
+        const width = isWrapEtherRow ? WRAP_ROW_ALLOWANCE_TOGGLE_WIDTH : ALLOWANCE_TOGGLE_WIDTH;
+        const toggle = (
+            <Container className="flex justify-center" width={width}>
+                {shouldShowToggle && this._renderAllowanceToggle(config.allowanceStateToggleConfig)}
+            </Container>
         );
         return (
             <div className="flex items-center">
@@ -410,14 +415,14 @@ export class Wallet extends React.Component<WalletProps, WalletState> {
             </div>
         );
     }
-    private _renderAllowanceToggle(config: AllowanceToggleConfig): React.ReactNode {
+    private _renderAllowanceToggle(config: AllowanceStateToggleConfig): React.ReactNode {
         // TODO: Error handling
         return (
-            <AllowanceToggle
+            <AllowanceStateToggle
                 blockchain={this.props.blockchain}
                 token={config.token}
                 tokenState={config.tokenState}
-                isDisabled={!config.tokenState.isLoaded}
+                tooltipDirection={this.props.toggleTooltipDirection}
                 refetchTokenStateAsync={async () => this.props.refetchTokenStateAsync(config.token.address)}
             />
         );

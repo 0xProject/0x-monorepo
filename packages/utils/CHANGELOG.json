@@ -1,5 +1,14 @@
 [
     {
+        "version": "1.0.5",
+        "changes": [
+            {
+                "note": "Increased BigNumber decimal precision from 20 to 78",
+                "pr": 807
+            }
+        ]
+    },
+    {
         "timestamp": 1532619515,
         "version": "1.0.4",
         "changes": [

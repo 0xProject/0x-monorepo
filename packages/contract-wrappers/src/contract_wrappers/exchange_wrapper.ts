@@ -869,14 +869,34 @@ export class ExchangeWrapper extends ContractWrapper {
      */
     @decorators.asyncZeroExErrorHandler
     public async getOrderInfoAsync(order: Order | SignedOrder, methodOpts: MethodOpts = {}): Promise<OrderInfo> {
+        assert.doesConformToSchema('order', order, schemas.orderSchema);
         if (!_.isUndefined(methodOpts)) {
             assert.doesConformToSchema('methodOpts', methodOpts, methodOptsSchema);
         }
         const exchangeInstance = await this._getExchangeContractAsync();
-
         const txData = {};
         const orderInfo = await exchangeInstance.getOrderInfo.callAsync(order, txData, methodOpts.defaultBlock);
         return orderInfo;
+    }
+    /**
+     * Get order info for multiple orders
+     * @param orders         Orders
+     * @param methodOpts    Optional arguments this method accepts.
+     * @returns Array of Order infos
+     */
+    @decorators.asyncZeroExErrorHandler
+    public async getOrdersInfoAsync(
+        orders: Array<Order | SignedOrder>,
+        methodOpts: MethodOpts = {},
+    ): Promise<OrderInfo[]> {
+        assert.doesConformToSchema('orders', orders, schemas.ordersSchema);
+        if (!_.isUndefined(methodOpts)) {
+            assert.doesConformToSchema('methodOpts', methodOpts, methodOptsSchema);
+        }
+        const exchangeInstance = await this._getExchangeContractAsync();
+        const txData = {};
+        const ordersInfo = await exchangeInstance.getOrdersInfo.callAsync(orders, txData, methodOpts.defaultBlock);
+        return ordersInfo;
     }
     /**
      * Cancel a given order.

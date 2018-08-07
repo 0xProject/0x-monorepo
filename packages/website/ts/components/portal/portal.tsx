@@ -12,6 +12,7 @@ import { PortalDisclaimerDialog } from 'ts/components/dialogs/portal_disclaimer_
 import { EthWrappers } from 'ts/components/eth_wrappers';
 import { FillOrder } from 'ts/components/fill_order';
 import { AssetPicker } from 'ts/components/generate_order/asset_picker';
+import { MetaTags } from 'ts/components/meta_tags';
 import { BackButton } from 'ts/components/portal/back_button';
 import { Loading } from 'ts/components/portal/loading';
 import { Menu, MenuTheme } from 'ts/components/portal/menu';
@@ -24,6 +25,7 @@ import { TradeHistory } from 'ts/components/trade_history/trade_history';
 import { Container } from 'ts/components/ui/container';
 import { FlashMessage } from 'ts/components/ui/flash_message';
 import { Image } from 'ts/components/ui/image';
+import { PointerDirection } from 'ts/components/ui/pointer';
 import { Text } from 'ts/components/ui/text';
 import { Wallet } from 'ts/components/wallet/wallet';
 import { GenerateOrderForm } from 'ts/containers/generate_order_form';
@@ -107,6 +109,8 @@ const LEFT_COLUMN_WIDTH = 346;
 const MENU_PADDING_LEFT = 185;
 const LARGE_LAYOUT_MAX_WIDTH = 1200;
 const SIDE_PADDING = 20;
+const DOCUMENT_TITLE = '0x Portal';
+const DOCUMENT_DESCRIPTION = 'Learn about and trade on 0x Relayers';
 
 export class Portal extends React.Component<PortalProps, PortalState> {
     private _blockchain: Blockchain;
@@ -225,7 +229,8 @@ export class Portal extends React.Component<PortalProps, PortalState> {
                 : TokenVisibility.TRACKED;
         return (
             <Container>
-                <DocumentTitle title="0x Portal" />
+                <MetaTags title={DOCUMENT_TITLE} description={DOCUMENT_DESCRIPTION} />
+                <DocumentTitle title={DOCUMENT_TITLE} />
                 <TopBar
                     userAddress={this.props.userAddress}
                     networkId={this.props.networkId}
@@ -355,6 +360,9 @@ export class Portal extends React.Component<PortalProps, PortalState> {
                             onAddToken={this._onAddToken.bind(this)}
                             onRemoveToken={this._onRemoveToken.bind(this)}
                             refetchTokenStateAsync={this._refetchTokenStateAsync.bind(this)}
+                            toggleTooltipDirection={
+                                this.props.isPortalOnboardingShowing ? PointerDirection.Left : PointerDirection.Right
+                            }
                         />
                     </Container>
                     {!isMobile && <Container marginTop="8px">{this._renderStartOnboarding()}</Container>}

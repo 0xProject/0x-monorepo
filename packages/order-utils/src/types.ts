@@ -1,3 +1,5 @@
+import { BigNumber } from '@0xproject/utils';
+
 export enum OrderError {
     InvalidSignature = 'INVALID_SIGNATURE',
 }
@@ -50,4 +52,14 @@ export enum EIP712Types {
     Bytes32 = 'bytes32',
     String = 'string',
     Uint256 = 'uint256',
+}
+
+export interface CreateOrderOpts {
+    takerAddress?: string;
+    senderAddress?: string;
+    makerFee?: BigNumber;
+    takerFee?: BigNumber;
+    feeRecipientAddress?: string;
+    salt?: BigNumber;
+    expirationTimeSeconds?: BigNumber;
 }

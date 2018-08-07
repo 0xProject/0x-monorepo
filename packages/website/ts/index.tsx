@@ -4,6 +4,7 @@ import { render } from 'react-dom';
 import { Provider } from 'react-redux';
 import { BrowserRouter as Router, Redirect, Route, Switch } from 'react-router-dom';
 import * as injectTapEventPlugin from 'react-tap-event-plugin';
+import { MetaTags } from 'ts/components/meta_tags';
 import { About } from 'ts/containers/about';
 import { FAQ } from 'ts/containers/faq';
 import { Jobs } from 'ts/containers/jobs';
@@ -65,73 +66,85 @@ const LazyEthereumTypesDocumentation = createLazyComponent('Documentation', asyn
     System.import<any>(/* webpackChunkName: "ethereumTypesDocs" */ 'ts/containers/ethereum_types_documentation'),
 );
 
-render(
-    <Router>
-        <div>
-            <MuiThemeProvider muiTheme={muiTheme}>
-                <Provider store={store}>
-                    <div>
-                        <Switch>
-                            <Route exact={true} path="/" component={Landing as any} />
-                            <Redirect from="/otc" to={`${WebsitePaths.Portal}`} />
-                            <Route path={WebsitePaths.Careers} component={Jobs as any} />
-                            <Route path={WebsitePaths.Portal} component={LazyPortal} />
-                            <Route path={WebsitePaths.FAQ} component={FAQ as any} />
-                            <Route path={WebsitePaths.About} component={About as any} />
-                            <Route path={WebsitePaths.Wiki} component={Wiki as any} />
-                            <Route path={`${WebsitePaths.ZeroExJs}/:version?`} component={LazyZeroExJSDocumentation} />
-                            <Route path={`${WebsitePaths.Connect}/:version?`} component={LazyConnectDocumentation} />
-                            <Route
-                                path={`${WebsitePaths.SolCompiler}/:version?`}
-                                component={LazySolCompilerDocumentation}
-                            />
-                            <Route path={`${WebsitePaths.SolCov}/:version?`} component={LazySolCovDocumentation} />
-                            <Route
-                                path={`${WebsitePaths.JSONSchemas}/:version?`}
-                                component={LazyJSONSchemasDocumentation}
-                            />
-                            <Route
-                                path={`${WebsitePaths.Subproviders}/:version?`}
-                                component={LazySubprovidersDocumentation}
-                            />
-                            <Route
-                                path={`${WebsitePaths.OrderUtils}/:version?`}
-                                component={LazyOrderUtilsDocumentation}
-                            />
-                            <Route
-                                path={`${WebsitePaths.Web3Wrapper}/:version?`}
-                                component={LazyWeb3WrapperDocumentation}
-                            />
-                            <Route
-                                path={`${WebsitePaths.SmartContracts}/:version?`}
-                                component={LazySmartContractsDocumentation}
-                            />
-                            <Route
-                                path={`${WebsitePaths.EthereumTypes}/:version?`}
-                                component={LazyEthereumTypesDocumentation}
-                            />
+const DOCUMENT_TITLE = '0x: The Protocol for Trading Tokens';
+const DOCUMENT_DESCRIPTION = 'An Open Protocol For Decentralized Exchange On The Ethereum Blockchain';
 
-                            {/* Legacy endpoints */}
-                            <Route
-                                path={`${WebsiteLegacyPaths.ZeroExJs}/:version?`}
-                                component={LazyZeroExJSDocumentation}
-                            />
-                            <Route
-                                path={`${WebsiteLegacyPaths.Web3Wrapper}/:version?`}
-                                component={LazyWeb3WrapperDocumentation}
-                            />
-                            <Route
-                                path={`${WebsiteLegacyPaths.Deployer}/:version?`}
-                                component={LazySolCompilerDocumentation}
-                            />
-                            <Route path={WebsiteLegacyPaths.Jobs} component={Jobs as any} />
-                            <Route path={`${WebsitePaths.Docs}`} component={LazyZeroExJSDocumentation} />
-                            <Route component={NotFound as any} />
-                        </Switch>
-                    </div>
-                </Provider>
-            </MuiThemeProvider>
-        </div>
-    </Router>,
+render(
+    <div>
+        <MetaTags title={DOCUMENT_TITLE} description={DOCUMENT_DESCRIPTION} />
+        <Router>
+            <div>
+                <MuiThemeProvider muiTheme={muiTheme}>
+                    <Provider store={store}>
+                        <div>
+                            <Switch>
+                                <Route exact={true} path="/" component={Landing as any} />
+                                <Redirect from="/otc" to={`${WebsitePaths.Portal}`} />
+                                <Route path={WebsitePaths.Careers} component={Jobs as any} />
+                                <Route path={WebsitePaths.Portal} component={LazyPortal} />
+                                <Route path={WebsitePaths.FAQ} component={FAQ as any} />
+                                <Route path={WebsitePaths.About} component={About as any} />
+                                <Route path={WebsitePaths.Wiki} component={Wiki as any} />
+                                <Route
+                                    path={`${WebsitePaths.ZeroExJs}/:version?`}
+                                    component={LazyZeroExJSDocumentation}
+                                />
+                                <Route
+                                    path={`${WebsitePaths.Connect}/:version?`}
+                                    component={LazyConnectDocumentation}
+                                />
+                                <Route
+                                    path={`${WebsitePaths.SolCompiler}/:version?`}
+                                    component={LazySolCompilerDocumentation}
+                                />
+                                <Route path={`${WebsitePaths.SolCov}/:version?`} component={LazySolCovDocumentation} />
+                                <Route
+                                    path={`${WebsitePaths.JSONSchemas}/:version?`}
+                                    component={LazyJSONSchemasDocumentation}
+                                />
+                                <Route
+                                    path={`${WebsitePaths.Subproviders}/:version?`}
+                                    component={LazySubprovidersDocumentation}
+                                />
+                                <Route
+                                    path={`${WebsitePaths.OrderUtils}/:version?`}
+                                    component={LazyOrderUtilsDocumentation}
+                                />
+                                <Route
+                                    path={`${WebsitePaths.Web3Wrapper}/:version?`}
+                                    component={LazyWeb3WrapperDocumentation}
+                                />
+                                <Route
+                                    path={`${WebsitePaths.SmartContracts}/:version?`}
+                                    component={LazySmartContractsDocumentation}
+                                />
+                                <Route
+                                    path={`${WebsitePaths.EthereumTypes}/:version?`}
+                                    component={LazyEthereumTypesDocumentation}
+                                />
+
+                                {/* Legacy endpoints */}
+                                <Route
+                                    path={`${WebsiteLegacyPaths.ZeroExJs}/:version?`}
+                                    component={LazyZeroExJSDocumentation}
+                                />
+                                <Route
+                                    path={`${WebsiteLegacyPaths.Web3Wrapper}/:version?`}
+                                    component={LazyWeb3WrapperDocumentation}
+                                />
+                                <Route
+                                    path={`${WebsiteLegacyPaths.Deployer}/:version?`}
+                                    component={LazySolCompilerDocumentation}
+                                />
+                                <Route path={WebsiteLegacyPaths.Jobs} component={Jobs as any} />
+                                <Route path={`${WebsitePaths.Docs}`} component={LazyZeroExJSDocumentation} />
+                                <Route component={NotFound as any} />
+                            </Switch>
+                        </div>
+                    </Provider>
+                </MuiThemeProvider>
+            </div>
+        </Router>
+    </div>,
     document.getElementById('app'),
 );

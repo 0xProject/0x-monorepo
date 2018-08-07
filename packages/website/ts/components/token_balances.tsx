@@ -24,7 +24,7 @@ import { SendButton } from 'ts/components/send_button';
 import { HelpTooltip } from 'ts/components/ui/help_tooltip';
 import { LifeCycleRaisedButton } from 'ts/components/ui/lifecycle_raised_button';
 import { TokenIcon } from 'ts/components/ui/token_icon';
-import { AllowanceToggle } from 'ts/containers/inputs/allowance_toggle';
+import { AllowanceStateToggle } from 'ts/containers/inputs/allowance_state_toggle';
 import { trackedTokenStorage } from 'ts/local_storage/tracked_token_storage';
 import { Dispatcher } from 'ts/redux/dispatcher';
 import {
@@ -372,14 +372,15 @@ export class TokenBalances extends React.Component<TokenBalancesProps, TokenBala
                     )}
                 </TableRowColumn>
                 <TableRowColumn>
-                    <AllowanceToggle
-                        blockchain={this.props.blockchain}
-                        token={token}
-                        tokenState={tokenState}
-                        onErrorOccurred={this._onErrorOccurred.bind(this)}
-                        isDisabled={!tokenState.isLoaded}
-                        refetchTokenStateAsync={this._refetchTokenStateAsync.bind(this, token.address)}
-                    />
+                    <div className="flex justify-center">
+                        <AllowanceStateToggle
+                            blockchain={this.props.blockchain}
+                            token={token}
+                            tokenState={tokenState}
+                            onErrorOccurred={this._onErrorOccurred.bind(this)}
+                            refetchTokenStateAsync={this._refetchTokenStateAsync.bind(this, token.address)}
+                        />
+                    </div>
                 </TableRowColumn>
                 {utils.isTestNetwork(this.props.networkId) && (
                     <TableRowColumn style={{ paddingLeft: actionPaddingX, paddingRight: actionPaddingX }}>

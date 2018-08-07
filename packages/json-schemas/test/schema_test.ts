@@ -96,7 +96,7 @@ describe('Schema', () => {
             validateAgainstSchema(testCases, hexSchema);
         });
         it('should fail for invalid hex string', () => {
-            const testCases = ['0x', '0', '0xzzzzzzB11a196601eD2ce54B665CaFEca0347D42'];
+            const testCases = ['0', '0xzzzzzzB11a196601eD2ce54B665CaFEca0347D42'];
             const shouldFail = true;
             validateAgainstSchema(testCases, hexSchema, shouldFail);
         });

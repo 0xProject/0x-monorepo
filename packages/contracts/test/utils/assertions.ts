@@ -15,6 +15,14 @@ let nodeType: NodeType | undefined;
 // resolve with either a transaction receipt or a transaction hash.
 export type sendTransactionResult = Promise<TransactionReceipt | TransactionReceiptWithDecodedLogs | string>;
 
+/**
+ * Returns ganacheError if the backing Ethereum node is Ganache and gethError
+ * if it is Geth.
+ * @param ganacheError the error to be returned if the backing node is Ganache.
+ * @param gethError the error to be returned if the backing node is Geth.
+ * @returns either the given ganacheError or gethError depending on the backing
+ * node.
+ */
 async function _getGanacheOrGethError(ganacheError: string, gethError: string): Promise<string> {
     if (_.isUndefined(nodeType)) {
         nodeType = await web3Wrapper.getNodeTypeAsync();
@@ -39,6 +47,25 @@ async function _getTransactionFailedErrorMessageAsync(): Promise<string> {
 
 async function _getContractCallFailedErrorMessageAsync(): Promise<string> {
     return _getGanacheOrGethError('revert', 'Contract call failed');
+}
+
+/**
+ * Returns the expected error message for an 'invalid opcode' resulting from a
+ * contract call. The exact error message depends on the backing Ethereum node.
+ */
+export async function getInvalidOpcodeErrorMessageForCallAsync(): Promise<string> {
+    return _getGanacheOrGethError('invalid opcode', 'Contract call failed');
+}
+
+/**
+ * Returns the expected error message for the given revert reason resulting from
+ * a sendTransaction call. The exact error message depends on the backing
+ * Ethereum node and whether it supports revert reasons.
+ * @param reason a specific revert reason.
+ * @returns the expected error message.
+ */
+export async function getRevertReasonOrErrorMessageForSendTransactionAsync(reason: RevertReason): Promise<string> {
+    return _getGanacheOrGethError(reason, 'always failing transaction');
 }
 
 /**
