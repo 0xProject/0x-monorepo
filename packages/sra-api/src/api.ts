@@ -50,7 +50,8 @@ export const api: OpenApiSpec = {
                 ),
                 responses: generateResponses(
                     'relayerApiAssetDataPairsResponseSchema',
-                    examples.relayerApiAssetDataPairsResponseSchema,
+                    examples.relayerApiAssetDataPairsResponse,
+                    `Returns a collection of available asset pairs with some meta info`,
                 ),
             },
         },

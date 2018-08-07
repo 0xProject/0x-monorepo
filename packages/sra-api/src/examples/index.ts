@@ -1,7 +1,7 @@
 import { validationError } from './errors';
-import { relayerApiAssetDataPairsResponseSchema } from './relayerApiAssetDataPairsResponseSchema';
+import { relayerApiAssetDataPairsResponse } from './relayerApiAssetDataPairsResponse';
 
 export const examples = {
     validationError,
-    relayerApiAssetDataPairsResponseSchema,
+    relayerApiAssetDataPairsResponse,
 };
