@@ -25,7 +25,6 @@ export const networkdIdParameter: ParameterObject = {
     in: 'query',
     description: 'The id of the Ethereum network',
     example: 42,
-    default: 1,
     schema: {
         type: 'number',
     },

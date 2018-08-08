@@ -1,12 +1,10 @@
-import { schemas } from '@0xproject/json-schemas';
 import { OpenApiSpec } from '@loopback/openapi-v3-types';
 
 import { examples } from './examples';
+import { schemas } from './json-schemas';
 import { md } from './md';
 import { generateParameters } from './parameters';
 import { generateResponses } from './responses';
-// We need to replace the `$ref`s to be OpenAPI compliant.
-const openApiSchemas = JSON.parse(JSON.stringify(schemas).replace(/(\/\w+)/g, match => `#/components/schemas${match}`));
 
 export const api: OpenApiSpec = {
     openapi: '3.0.0',
@@ -298,6 +296,6 @@ export const api: OpenApiSpec = {
         },
     },
     components: {
-        schemas: openApiSchemas,
+        schemas,
     },
 };
