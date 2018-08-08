@@ -16,6 +16,7 @@ import {
     relayerApiAssetDataTradeInfoSchema,
 } from '../schemas/relayer_api_asset_pairs_response_schema';
 import { relayerApiErrorResponseSchema } from '../schemas/relayer_api_error_response_schema';
+import { relayerApiFeeRecipientsResponseSchema } from '../schemas/relayer_api_fee_recipients_response_schema';
 import { relayerApiOrderConfigPayloadSchema } from '../schemas/relayer_api_order_config_payload_schema';
 import { relayerApiOrderConfigResponseSchema } from '../schemas/relayer_api_order_config_response_schema';
 import { relayerApiOrderSchema } from '../schemas/relayer_api_order_schema';
@@ -54,6 +55,7 @@ export const schemas = {
     txDataSchema,
     paginatedCollectionSchema,
     relayerApiErrorResponseSchema,
+    relayerApiFeeRecipientsResponseSchema,
     relayerApiOrderSchema,
     relayerApiOrdersSchema,
     relayerApiOrderConfigPayloadSchema,

@@ -264,6 +264,18 @@ export const api: OpenApiSpec = {
                 ),
             },
         },
+        '/v2/fee_recipients': {
+            get: {
+                description: `Retrieves a collection of all fee recipient addresses for a relayer. This endpoint should be [paginated](#section/Pagination).`,
+                operationId: 'getFeeRecipients',
+                parameters: generateParameters([], true),
+                responses: generateResponses(
+                    'relayerApiFeeRecipientsResponseSchema',
+                    examples.relayerApiFeeRecipientsResponse,
+                    `A collection of all used fee recipient addresses.`,
+                ),
+            },
+        },
     },
     components: {
         schemas: openApiSchemas,
