@@ -196,7 +196,7 @@ export const api: OpenApiSpec = {
                             },
                         },
                     ],
-                    true,
+                    false,
                 ),
                 responses: generateResponses(
                     'relayerApiOrderSchema',
@@ -245,6 +245,7 @@ export const api: OpenApiSpec = {
             get: {
                 description: `Relayers have full discretion over the orders that they are willing to host on their orderbooks (e.g what fees they charge, etc...). In order for traders to discover their requirements programmatically, they can send an incomplete order to this endpoint and receive the missing fields, specifc to that order. This gives relayers a large amount of flexibility to tailor fees to unique traders, trading pairs and volume amounts. Submit a partial order and receive information required to complete the order: \`senderAddress\`, \`feeRecipientAddress\`, \`makerFee\`, \`takerFee\`. `,
                 operationId: 'getOrderConfig',
+                parameters: generateParameters([], false),
                 requestBody: {
                     description:
                         'The fields of a 0x order the relayer may want to decide what configuration to send back.',
@@ -274,6 +275,25 @@ export const api: OpenApiSpec = {
                     examples.relayerApiFeeRecipientsResponse,
                     `A collection of all used fee recipient addresses.`,
                 ),
+            },
+        },
+        '/v2/order': {
+            post: {
+                description: `Submit a signed order to the relayer.`,
+                operationId: 'postOrder',
+                parameters: generateParameters([], false),
+                requestBody: {
+                    description: 'A valid signed 0x order based on the schema.',
+                    content: {
+                        'application/json': {
+                            schema: {
+                                $ref: '#/components/schemas/signedOrderSchema',
+                            },
+                            example: examples.signedOrder,
+                        },
+                    },
+                },
+                responses: generateResponses(),
             },
         },
     },

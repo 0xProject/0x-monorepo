@@ -6,6 +6,7 @@ import { relayerApiOrderBookResponse } from './relayerApiOrderBookResponse';
 import { relayerApiOrderConfigPayload } from './relayerApiOrderConfigPayload';
 import { relayerApiOrderConfigResponse } from './relayerApiOrderConfigResponse';
 import { relayerApiOrdersResponse } from './relayerApiOrdersResponse';
+import { signedOrder } from './signedOrder';
 
 export const examples = {
     validationError,
@@ -16,4 +17,5 @@ export const examples = {
     relayerApiOrderConfigPayload,
     relayerApiOrderConfigResponse,
     relayerApiOrdersResponse,
+    signedOrder,
 };
