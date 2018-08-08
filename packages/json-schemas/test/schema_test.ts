@@ -214,7 +214,9 @@ describe('Schema', () => {
         };
         const relayerApiOrder = {
             order,
-            remainingFillableAmount: '50000000000000',
+            metaData: {
+                someMetaData: 5,
+            },
         };
         const relayerApiOrdersResponse = {
             ...paginatedResponse,
@@ -353,7 +355,7 @@ describe('Schema', () => {
                         validateAgainstSchema(testCases, relayerApiOrderSchema);
                     });
                     it('should fail for invalid relayer api orders', () => {
-                        const testCases = [{}, order, { order }, { order, remainingFillableAmount: 5 }];
+                        const testCases = [{}, order, { order }, { order, metaData: 5 }];
                         const shouldFail = true;
                         validateAgainstSchema(testCases, relayerApiOrderSchema, shouldFail);
                     });

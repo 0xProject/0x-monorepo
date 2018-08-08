@@ -3,7 +3,7 @@ export const relayerApiOrderSchema = {
     type: 'object',
     properties: {
         order: { $ref: '/orderSchema' },
-        remainingFillableAmount: { $ref: '/numberSchema' },
+        metaData: { type: 'object' },
     },
-    required: ['order', 'remainingFillableAmount'],
+    required: ['order', 'metaData'],
 };
