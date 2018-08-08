@@ -20,7 +20,7 @@ import { relayerApiFeeRecipientsResponseSchema } from '../schemas/relayer_api_fe
 import { relayerApiOrderConfigPayloadSchema } from '../schemas/relayer_api_order_config_payload_schema';
 import { relayerApiOrderConfigResponseSchema } from '../schemas/relayer_api_order_config_response_schema';
 import { relayerApiOrderSchema } from '../schemas/relayer_api_order_schema';
-import { relayerApiOrderBookResponseSchema } from '../schemas/relayer_api_orderbook_response_schema';
+import { relayerApiOrderbookResponseSchema } from '../schemas/relayer_api_orderbook_response_schema';
 import {
     relayerApiOrdersChannelSubscribePayload,
     relayerApiOrdersChannelSubscribeSchema,
@@ -60,7 +60,7 @@ export const schemas = {
     relayerApiOrdersSchema,
     relayerApiOrderConfigPayloadSchema,
     relayerApiOrderConfigResponseSchema,
-    relayerApiOrderBookResponseSchema,
+    relayerApiOrderbookResponseSchema,
     relayerApiAssetDataPairsResponseSchema,
     relayerApiAssetDataTradeInfoSchema,
     relayerApiOrdersChannelSubscribeSchema,

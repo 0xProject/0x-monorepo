@@ -1,5 +1,5 @@
-export const relayerApiOrderBookResponseSchema = {
-    id: '/relayerApiOrderBookResponseSchema',
+export const relayerApiOrderbookResponseSchema = {
+    id: '/relayerApiOrderbookResponseSchema',
     type: 'object',
     properties: {
         bids: { $ref: '/relayerApiOrdersResponseSchema' },

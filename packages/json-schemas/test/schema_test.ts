@@ -28,7 +28,7 @@ const {
     txDataSchema,
     paginatedCollectionSchema,
     relayerApiErrorResponseSchema,
-    relayerApiOrderBookResponseSchema,
+    relayerApiOrderbookResponseSchema,
     relayerApiAssetDataPairsResponseSchema,
     relayerApiOrderConfigPayloadSchema,
     relayerApiOrderConfigResponseSchema,
@@ -623,7 +623,7 @@ describe('Schema', () => {
                         validateAgainstSchema(testCases, relayerApiOrdersResponseSchema, shouldFail);
                     });
                 });
-                describe('#relayerApiOrderBookResponseSchema', () => {
+                describe('#relayerApiOrderbookResponseSchema', () => {
                     it('should validate valid order book responses', () => {
                         const testCases = [
                             {
@@ -657,7 +657,7 @@ describe('Schema', () => {
                                 },
                             },
                         ];
-                        validateAgainstSchema(testCases, relayerApiOrderBookResponseSchema);
+                        validateAgainstSchema(testCases, relayerApiOrderbookResponseSchema);
                     });
                     it('should fail for invalid order fill requests', () => {
                         const testCases = [
