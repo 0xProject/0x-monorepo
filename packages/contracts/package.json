@@ -68,7 +68,7 @@
         "solc": "^0.4.24",
         "solhint": "^1.2.1",
         "tslint": "5.11.0",
-        "typescript": "2.7.1",
+        "typescript": "2.9.2",
         "yargs": "^10.0.3"
     },
     "dependencies": {
