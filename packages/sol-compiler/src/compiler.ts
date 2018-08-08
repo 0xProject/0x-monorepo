@@ -1,12 +1,12 @@
 import { assert } from '@0xproject/assert';
 import { NameResolver, Resolver } from '@0xproject/sol-resolver';
-import { fetchAsync, logUtils } from '@0xproject/utils';
+import { logUtils } from '@0xproject/utils';
 import chalk from 'chalk';
+import * as childProcess from 'child_process';
 import * as ethUtil from 'ethereumjs-util';
 import * as fs from 'fs';
 import * as _ from 'lodash';
 import * as path from 'path';
-import * as requireFromString from 'require-from-string';
 import * as semver from 'semver';
 import solc = require('solc');
 
@@ -126,23 +126,6 @@ export class Compiler {
             solcVersion = semver.maxSatisfying(availableCompilerVersions, solcVersionRange);
         }
         const fullSolcVersion = binPaths[solcVersion];
-        const compilerBinFilename = path.join(SOLC_BIN_DIR, fullSolcVersion);
-        let solcjs: string;
-        const isCompilerAvailableLocally = fs.existsSync(compilerBinFilename);
-        if (isCompilerAvailableLocally) {
-            solcjs = fs.readFileSync(compilerBinFilename).toString();
-        } else {
-            logUtils.log(`Downloading ${fullSolcVersion}...`);
-            const url = `${constants.BASE_COMPILER_URL}${fullSolcVersion}`;
-            const response = await fetchAsync(url);
-            const SUCCESS_STATUS = 200;
-            if (response.status !== SUCCESS_STATUS) {
-                throw new Error(`Failed to load ${fullSolcVersion}`);
-            }
-            solcjs = await response.text();
-            fs.writeFileSync(compilerBinFilename, solcjs);
-        }
-        const solcInstance = solc.setupMethods(requireFromString(solcjs, compilerBinFilename));
 
         logUtils.log(`Compiling ${contractName} with Solidity v${solcVersion}...`);
         const standardInput: solc.StandardInput = {
@@ -155,10 +138,20 @@ export class Compiler {
             settings: this._compilerSettings,
         };
         const compiled: solc.StandardOutput = JSON.parse(
-            solcInstance.compileStandardWrapper(JSON.stringify(standardInput), importPath => {
-                const sourceCodeIfExists = this._resolver.resolve(importPath);
-                return { contents: sourceCodeIfExists.source };
-            }),
+            childProcess
+                .execFileSync(
+                    'solc-wrapper',
+                    [
+                        '--fullSolcVersion',
+                        fullSolcVersion,
+                        '--solcBinDir',
+                        SOLC_BIN_DIR,
+                        '--contractsDir',
+                        this._contractsDir,
+                    ],
+                    { input: JSON.stringify(standardInput) },
+                )
+                .toString(),
         );
 
         if (!_.isUndefined(compiled.errors)) {

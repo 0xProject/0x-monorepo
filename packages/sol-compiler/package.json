@@ -40,7 +40,8 @@
         }
     },
     "bin": {
-        "sol-compiler": "bin/sol-compiler.js"
+        "sol-compiler": "bin/sol-compiler.js",
+        "solc-wrapper": "bin/solc-wrapper.js"
     },
     "repository": {
         "type": "git",
