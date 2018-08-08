@@ -27,7 +27,7 @@ const teamRow1: ProfileInfo[] = [
         title: 'Co-founder & CTO',
         description: `Smart contract R&D. Previously fixed income trader at DRW. \
                       Finance at University of Illinois, Urbana-Champaign.`,
-        image: '/images/team/amir.jpeg',
+        image: '/images/team/amir.png',
         linkedIn: 'https://www.linkedin.com/in/abandeali1/',
         github: 'https://github.com/abandeali1',
         medium: 'https://medium.com/@abandeali1',
