@@ -49,7 +49,7 @@ declare module 'ethers' {
     };
 
     export interface AbiCoder {
-        encode: (names?: ParamName[], types: string[], args: any[]) => string;
-        decode: (names?: ParamName[], types: string[], data: string) => any;
+        encode: (names: ParamName[] | string[], types: string[] | any[], args: any[] | undefined) => string;
+        decode: (names: ParamName[] | string[], types: string[] | string, data: string | undefined) => any;
     }
 }
