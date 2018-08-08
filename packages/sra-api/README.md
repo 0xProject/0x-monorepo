@@ -4,7 +4,7 @@ Contains the Standard Relayer API [OpenAPI Spec](https://github.com/OAI/OpenAPI-
 
 The package distributes both a javascript object version and a json version.
 
-A deployed [ReDoc](https://github.com/Rebilly/ReDoc) static site with the API can be found here http://sra-api.com.s3-website-us-east-1.amazonaws.com/.
+A deployed [ReDoc](https://github.com/Rebilly/ReDoc) static site with the API can be found here http://sra-api.s3-website-us-east-1.amazonaws.com/.
 
 ## Usage
 
@@ -64,7 +64,7 @@ PKG=@0xproject/sra-api yarn watch
 
 ### Static Site
 
-We also [host a static HTML version of the docs on S3](http://sra-api.com.s3-website-us-east-1.amazonaws.com/) for easy sharing.
+We also [host a static HTML version of the docs on S3](http://sra-api.s3-website-us-east-1.amazonaws.com/) for easy sharing.
 
 To build the website run
 
@@ -77,6 +77,8 @@ To build and deploy the site run
 ```
 yarn deploy-site
 ```
+
+**NOTE: On deploying the site, it will say the site is available at a non-existent URL. Please ignore and use the (now updated) URL above.**
 
 ### Clean
 
