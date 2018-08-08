@@ -1,4 +1,13 @@
-import { ContractSource } from '@0xproject/sol-resolver';
+import {
+    ContractSource,
+    FallthroughResolver,
+    FSResolver,
+    NameResolver,
+    NPMResolver,
+    RelativeFSResolver,
+    Resolver,
+    URLResolver,
+} from '@0xproject/sol-resolver';
 import { logUtils } from '@0xproject/utils';
 import * as _ from 'lodash';
 import * as path from 'path';
@@ -105,4 +114,21 @@ export function parseDependencies(contractSource: ContractSource): string[] {
         }
     });
     return dependencies;
+}
+
+/**
+ * Constructs the chain of resolvers needed for compilation.
+ * @param contractsDir Directory holding contracts
+ * @return Constructed Resolver
+ */
+export function constructResolver(contractsDir: string): Resolver {
+    const nameResolver = new NameResolver(path.resolve(contractsDir));
+    const resolver = new FallthroughResolver();
+    resolver.appendResolver(new URLResolver());
+    const packagePath = path.resolve('');
+    resolver.appendResolver(new NPMResolver(packagePath));
+    resolver.appendResolver(new RelativeFSResolver(contractsDir));
+    resolver.appendResolver(new FSResolver());
+    resolver.appendResolver(nameResolver);
+    return resolver;
 }

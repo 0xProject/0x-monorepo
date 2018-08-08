@@ -1,13 +1,5 @@
 import { assert } from '@0xproject/assert';
-import {
-    FallthroughResolver,
-    FSResolver,
-    NameResolver,
-    NPMResolver,
-    RelativeFSResolver,
-    Resolver,
-    URLResolver,
-} from '@0xproject/sol-resolver';
+import { NameResolver, Resolver } from '@0xproject/sol-resolver';
 import { fetchAsync, logUtils } from '@0xproject/utils';
 import chalk from 'chalk';
 import * as ethUtil from 'ethereumjs-util';
@@ -21,6 +13,7 @@ import solc = require('solc');
 import { compilerOptionsSchema } from './schemas/compiler_options_schema';
 import { binPaths } from './solc/bin_paths';
 import {
+    constructResolver,
     createDirIfDoesNotExistAsync,
     getContractArtifactIfExistsAsync,
     getNormalizedErrMsg,
@@ -83,14 +76,7 @@ export class Compiler {
         this._artifactsDir = passedOpts.artifactsDir || config.artifactsDir || DEFAULT_ARTIFACTS_DIR;
         this._specifiedContracts = passedOpts.contracts || config.contracts || ALL_CONTRACTS_IDENTIFIER;
         this._nameResolver = new NameResolver(path.resolve(this._contractsDir));
-        const resolver = new FallthroughResolver();
-        resolver.appendResolver(new URLResolver());
-        const packagePath = path.resolve('');
-        resolver.appendResolver(new NPMResolver(packagePath));
-        resolver.appendResolver(new RelativeFSResolver(this._contractsDir));
-        resolver.appendResolver(new FSResolver());
-        resolver.appendResolver(this._nameResolver);
-        this._resolver = resolver;
+        this._resolver = constructResolver(this._contractsDir);
     }
     /**
      * Compiles selected Solidity files found in `contractsDir` and writes JSON artifacts to `artifactsDir`.
