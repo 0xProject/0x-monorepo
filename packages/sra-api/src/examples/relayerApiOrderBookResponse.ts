@@ -1,4 +1,4 @@
-export const relayerApiOrderBookResponse = {
+export const relayerApiOrderbookResponse = {
     bids: {
         total: 325,
         page: 2,
