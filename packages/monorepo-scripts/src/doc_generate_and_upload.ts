@@ -1,6 +1,6 @@
 import * as yargs from 'yargs';
 
-import { generateAndUploadDocsAsync } from './utils/publish_utils';
+import { generateAndUploadDocsAsync } from './utils/doc_generate_and_upload_utils';
 
 const args = yargs
     .option('package', {

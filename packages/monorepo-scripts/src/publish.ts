@@ -14,7 +14,8 @@ import { Package, PackageToNextVersion, VersionChangelog } from './types';
 import { changelogUtils } from './utils/changelog_utils';
 import { configs } from './utils/configs';
 import { utils } from './utils/utils';
-import { publishReleaseNotesAsync, generateAndUploadDocsAsync } from './utils/publish_utils';
+import { publishReleaseNotesAsync } from './utils/github_release_utils';
+import { generateAndUploadDocsAsync } from './utils/doc_generate_and_upload_utils';
 
 const DOC_GEN_COMMAND = 'docs:json';
 const NPM_NAMESPACE = '@0xproject/';
