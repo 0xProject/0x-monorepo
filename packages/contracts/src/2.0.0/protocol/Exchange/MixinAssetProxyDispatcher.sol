@@ -159,22 +159,18 @@ contract MixinAssetProxyDispatcher is
                 }
 
                 /////// Call `assetProxy.transferFrom` using the constructed calldata ///////
-                let inputLen := sub(cdEnd, cdStart)
                 let success := call(
                     gas,                    // forward all gas
                     assetProxy,             // call address of asset proxy
                     0,                      // don't send any ETH
                     cdStart,                // pointer to start of input
-                    inputLen,               // length of input  
+                    sub(cdEnd, cdStart),    // length of input  
                     cdStart,                // write output over input
                     512                     // reserve 512 bytes for output
                 )
                 if iszero(success) {
                     revert(cdStart, returndatasize())
                 }
-
-                // Increment free memory pointer
-                mstore(64, add(cdStart, inputLen))
             }
         }
     }

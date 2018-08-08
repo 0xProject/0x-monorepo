@@ -204,11 +204,10 @@ contract LibAbiEncoder {
             }
 
             // Set length of calldata
-            let calldataLen := sub(dataAreaEnd, add(fillOrderCalldata, 0x20))
-            mstore(fillOrderCalldata, calldataLen)
+            mstore(fillOrderCalldata, sub(dataAreaEnd, add(fillOrderCalldata, 0x20)))
 
             // Increment free memory pointer
-            mstore(0x40, add(fillOrderCalldata, add(calldataLen, 0x20)))
+            mstore(0x40, dataAreaEnd)
         }
 
         return fillOrderCalldata;
