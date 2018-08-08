@@ -137,22 +137,27 @@ export class Compiler {
             },
             settings: this._compilerSettings,
         };
-        const compiled: solc.StandardOutput = JSON.parse(
-            childProcess
-                .execFileSync(
-                    'solc-wrapper',
-                    [
-                        '--fullSolcVersion',
-                        fullSolcVersion,
-                        '--solcBinDir',
-                        SOLC_BIN_DIR,
-                        '--contractsDir',
-                        this._contractsDir,
-                    ],
-                    { input: JSON.stringify(standardInput) },
-                )
-                .toString(),
-        );
+        const solcStdout: string = childProcess
+            .execFileSync(
+                'solc-wrapper',
+                [
+                    '--fullSolcVersion',
+                    fullSolcVersion,
+                    '--solcBinDir',
+                    SOLC_BIN_DIR,
+                    '--contractsDir',
+                    this._contractsDir,
+                ],
+                { input: JSON.stringify(standardInput) },
+            )
+            .toString();
+        let compiled: solc.StandardOutput;
+        try {
+            compiled = JSON.parse(solcStdout);
+        } catch (err) {
+            logUtils.warn(`Failed to JSON.parse() solc output '${solcStdout}'`);
+            throw err;
+        }
 
         if (!_.isUndefined(compiled.errors)) {
             const SOLIDITY_WARNING = 'warning';
