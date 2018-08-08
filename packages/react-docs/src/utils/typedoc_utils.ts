@@ -123,7 +123,6 @@ export const typeDocUtils = {
             });
         });
         if (!_.isEmpty(typeEntities)) {
-            console.log('typeEntities', typeEntities);
             docsInfo.sections[constants.TYPES_SECTION_NAME] = constants.TYPES_SECTION_NAME;
             docsInfo.menu[constants.TYPES_SECTION_NAME] = [constants.TYPES_SECTION_NAME];
             const docSection = typeDocUtils._convertEntitiesToDocSection(
