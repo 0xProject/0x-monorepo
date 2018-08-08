@@ -30,7 +30,7 @@ contract LibEIP712 {
     string constant internal EIP712_DOMAIN_VERSION = "2";
 
     // Hash of the EIP712 Domain Separator Schema
-    bytes32 public constant EIP712_DOMAIN_SEPARATOR_SCHEMA_HASH = keccak256(abi.encodePacked(
+    bytes32 constant internal EIP712_DOMAIN_SEPARATOR_SCHEMA_HASH = keccak256(abi.encodePacked(
         "EIP712Domain(",
         "string name,",
         "string version,",
@@ -45,11 +45,11 @@ contract LibEIP712 {
     constructor ()
         public
     {
-        EIP712_DOMAIN_HASH = keccak256(abi.encode(
+        EIP712_DOMAIN_HASH = keccak256(abi.encodePacked(
             EIP712_DOMAIN_SEPARATOR_SCHEMA_HASH,
             keccak256(bytes(EIP712_DOMAIN_NAME)),
             keccak256(bytes(EIP712_DOMAIN_VERSION)),
-            address(this)
+            bytes32(address(this))
         ));
     }
 
@@ -59,8 +59,28 @@ contract LibEIP712 {
     function hashEIP712Message(bytes32 hashStruct)
         internal
         view
-        returns (bytes32)
+        returns (bytes32 result)
     {
-        return keccak256(abi.encodePacked(EIP191_HEADER, EIP712_DOMAIN_HASH, hashStruct));
+        bytes32 eip712DomainHash = EIP712_DOMAIN_HASH;
+
+        // Assembly for more efficient computing:
+        // keccak256(abi.encodePacked(
+        //     EIP191_HEADER,
+        //     EIP712_DOMAIN_HASH,
+        //     hashStruct    
+        // ));
+
+        assembly {
+            // Load free memory pointer
+            let memPtr := mload(64)
+
+            mstore(memPtr, 0x1901000000000000000000000000000000000000000000000000000000000000)  // EIP191 header
+            mstore(add(memPtr, 2), eip712DomainHash)                                            // EIP712 domain hash
+            mstore(add(memPtr, 34), hashStruct)                                                 // Hash of struct
+
+            // Compute hash
+            result := keccak256(memPtr, 66)
+        }
+        return result;
     }
 }

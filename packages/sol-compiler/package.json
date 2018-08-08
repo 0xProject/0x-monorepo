@@ -71,7 +71,7 @@
         "tslint": "5.11.0",
         "typedoc": "0xProject/typedoc",
         "types-bn": "^0.0.1",
-        "typescript": "2.7.1",
+        "typescript": "2.9.2",
         "web3-typescript-typings": "^0.10.2",
         "zeppelin-solidity": "1.8.0"
     },
