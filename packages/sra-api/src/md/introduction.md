@@ -2,20 +2,20 @@
 
 Requests that return potentially large collections should respond to the **?page** and **?per_page** parameters. For example:
 
+```bash
+$ curl https://api.example-relayer.com/v2/asset_pairs?page=3&per_page=20
 ```
-curl https://api.example-relayer.com/v2/asset_pairs?page=3&per_page=20
-```
 
-Page numbering should be 1-indexed, not 0-indexed. If a query provides an unreasonable (ie. too high) **per_page** value, the response can return a validation error as specified in the [errors section](#errors). If the query specifies a **page** that does not exist (ie. there are not enough **records**), the response should just return an empty **records** array.
+Page numbering should be 1-indexed, not 0-indexed. If a query provides an unreasonable (ie. too high) **per_page** value, the response can return a validation error as specified in the [errors section](#section/Errors). If the query specifies a **page** that does not exist (ie. there are not enough **records**), the response should just return an empty **records** array.
 
-All endpoints that are paginated should return a **total**, **page**, **perPage** and a **records** value in the top level of the collection.  The value of **total** should be the total number of records for a given query, whereas **records** should be an array representing the response to the query for that page. **page** and **perPage**, are the same values that were specified in the request. See the note in [miscellaneous](#misc) about formatting `snake_case` vs. `lowerCamelCase`. 
+All endpoints that are paginated should return a **total**, **page**, **perPage** and a **records** value in the top level of the collection.  The value of **total** should be the total number of records for a given query, whereas **records** should be an array representing the response to the query for that page. **page** and **perPage**, are the same values that were specified in the request. See the note in [miscellaneous](#section/Misc.) about formatting `snake_case` vs. `lowerCamelCase`. 
 
-These requests include the [`asset_pairs`](#get-v2-asset-pairs), [`orders`](#get-v2-orders), and [`orderbook`](#get-v2-orderbook) endpoints.
+These requests include the [`asset_pairs`](#operation/getAssetPairs), [`orders`](#operation/getOrders), and [`orderbook`](#operation/getOrderbook) endpoints.
 
 # Network Id
 All requests should be able to specify a **?networkId** query param for all supported networks. For example:
-```
-curl https://api.example-relayer.com/v2/asset_pairs?networkId=1
+```bash
+$ curl https://api.example-relayer.com/v2/asset_pairs?networkId=1
 ```
 If the query param is not provided, it should default to **1** (mainnet).
 
@@ -28,7 +28,7 @@ Networks and their Ids:
 | 3          | Ropsten      |
 | 4          | Rinkeby      |
 
- If a certain network is not supported, the response should **400**  as specified in the [error response](#error-response) section. For example:
+ If a certain network is not supported, the response should **400**  as specified in the [error response](#section/Errors) section. For example:
  
 ```
 {
