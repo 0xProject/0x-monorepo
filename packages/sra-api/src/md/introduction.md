@@ -1,3 +1,29 @@
+# Testing
+
+Use the [sra-report](https://github.com/0xProject/0x-monorepo/tree/development/packages/sra-report) command line tool to test your API for SRA compliance.
+
+# Schemas
+
+The [JSON schemas](http://json-schema.org/) for the API payloads and responses can be found in [@0xproject/json-schemas](https://github.com/0xProject/0x.js/tree/development/packages/json-schemas). Examples of each payload and response can be found in the library's [test suite](https://github.com/0xProject/0x.js/blob/development/packages/json-schemas/test/schema_test.ts#L1).
+
+```bash
+npm install @0xproject/json-schemas --save
+```
+
+You can easily validate your API's payloads and responses using the [@0xproject/json-schemas](https://github.com/0xProject/0x.js/tree/development/packages/json-schemas) package:
+
+```js
+import {SchemaValidator, ValidatorResult, schemas} from '@0xproject/json-schemas';
+
+const {relayerApiTokenPairsResponseSchema} = schemas;
+const validator = new SchemaValidator();
+
+const tokenPairsResponse = {
+    ...
+};
+const validatorResult: ValidatorResult = validator.validate(tokenPairsResponse, relayerApiTokenPairsResponseSchema);
+```
+
 # Pagination
 
 Requests that return potentially large collections should respond to the **?page** and **?per_page** parameters. For example:
@@ -6,11 +32,11 @@ Requests that return potentially large collections should respond to the **?page
 $ curl https://api.example-relayer.com/v2/asset_pairs?page=3&per_page=20
 ```
 
-Page numbering should be 1-indexed, not 0-indexed. If a query provides an unreasonable (ie. too high) **per_page** value, the response can return a validation error as specified in the [errors section](#section/Errors). If the query specifies a **page** that does not exist (ie. there are not enough **records**), the response should just return an empty **records** array.
+Page numbering should be 1-indexed, not 0-indexed. If a query provides an unreasonable (ie. too high) `per_page` value, the response can return a validation error as specified in the [errors section](#section/Errors). If the query specifies a `page` that does not exist (ie. there are not enough `records`), the response should just return an empty `records` array.
 
-All endpoints that are paginated should return a **total**, **page**, **perPage** and a **records** value in the top level of the collection.  The value of **total** should be the total number of records for a given query, whereas **records** should be an array representing the response to the query for that page. **page** and **perPage**, are the same values that were specified in the request. See the note in [miscellaneous](#section/Misc.) about formatting `snake_case` vs. `lowerCamelCase`. 
+All endpoints that are paginated should return a `total`, `page`, `perPage` and a `records` value in the top level of the collection.  The value of `total` should be the total number of records for a given query, whereas `records` should be an array representing the response to the query for that page. `page` and `perPage`, are the same values that were specified in the request. See the note in [miscellaneous](#section/Misc.) about formatting `snake_case` vs. `lowerCamelCase`. 
 
-These requests include the [`asset_pairs`](#operation/getAssetPairs), [`orders`](#operation/getOrders), and [`orderbook`](#operation/getOrderbook) endpoints.
+These requests include the [`/v2/asset_pairs`](#operation/getAssetPairs), [`/v2/orders`](#operation/getOrders), [`/v2/fee_recipients`](#operation/getFeeRecipients) and [`/v2/orderbook`](#operation/getOrderbook) endpoints.
 
 # Network Id
 All requests should be able to specify a **?networkId** query param for all supported networks. For example:
@@ -78,7 +104,7 @@ Rate limit guidance for clients can be optionally returned in the response heade
 For example:
 
 ```
-curl -i https://api.example-relayer.com/v2/asset_pairs
+$ curl -i https://api.example-relayer.com/v2/asset_pairs
 HTTP/1.1 200 OK
 Date: Mon, 20 Oct 2017 12:30:06 GMT
 Status: 200 OK
