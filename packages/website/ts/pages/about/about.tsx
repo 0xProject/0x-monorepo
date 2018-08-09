@@ -197,7 +197,7 @@ const teamRow7: ProfileInfo[] = [
         title: 'Business Development Lead',
         description: `Growth & Business Development. Previously product and partnerships at Square. Economics at Dartmouth College.`,
         image: 'images/team/clay.png',
-        linkedIn: 'https://www.linkedin.com/in/peter-z-7b9595163/',
+        linkedIn: 'https://www.linkedin.com/in/robbinsclay/',
     },
 ];
 
