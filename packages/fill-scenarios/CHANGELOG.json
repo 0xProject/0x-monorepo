@@ -6,6 +6,9 @@
                 "note":
                     "Updated to use latest orderFactory interface, fixed `feeRecipient` spelling error in public interface",
                 "pr": 936
+            },
+            {
+                "note": "Dependencies updated"
             }
         ]
     },

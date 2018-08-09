@@ -22,13 +22,33 @@ pragma experimental ABIEncoderV2;
 import "../../protocol/Exchange/libs/LibMath.sol";
 import "../../protocol/Exchange/libs/LibOrder.sol";
 import "../../protocol/Exchange/libs/LibFillResults.sol";
+import "../../protocol/Exchange/libs/LibAbiEncoder.sol";
 
 
 contract TestLibs is 
     LibMath,
     LibOrder,
-    LibFillResults
+    LibFillResults,
+    LibAbiEncoder
 {
+
+    function publicAbiEncodeFillOrder(
+        Order memory order,
+        uint256 takerAssetFillAmount,
+        bytes memory signature
+    )
+        public
+        pure
+        returns (bytes memory fillOrderCalldata)
+    {
+        fillOrderCalldata = abiEncodeFillOrder(
+            order,
+            takerAssetFillAmount,
+            signature
+        );
+        return fillOrderCalldata;
+    }
+
     function publicGetPartialAmount(
         uint256 numerator,
         uint256 denominator,
