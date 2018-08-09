@@ -13,6 +13,7 @@ const expect = chai.expect;
 
 describe('sortingUtils', () => {
     describe('#sortOrdersByFeeAdjustedRate', () => {
+        const feeRate = new BigNumber(1); // ZRX costs 1 unit of takerAsset per 1 unit of ZRX
         // rate: 2 takerAsset / makerAsset
         const testOrder1 = testOrderFactory.generateTestSignedOrder({
             makerAssetAmount: new BigNumber(100),
@@ -29,13 +30,17 @@ describe('sortingUtils', () => {
             takerAssetAmount: new BigNumber(200),
             takerFee: new BigNumber(50),
         });
-        it('correctly sorts by fee adjusted rate', async () => {
-            const feeRate = new BigNumber(1); // ZRX costs 1 unit of takerAsset per 1 unit of ZRX
+        it('correctly sorts by fee adjusted rate when feeRate is Provided', async () => {
             const orders = [testOrder1, testOrder2, testOrder3];
             const sortedOrders = sortingUtils.sortOrdersByFeeAdjustedRate(
                 [testOrder1, testOrder2, testOrder3],
                 feeRate,
             );
+            expect(sortedOrders).to.deep.equal([testOrder2, testOrder1, testOrder3]);
+        });
+        it('correctly sorts by fee adjusted rate when no feeRate is Provided', async () => {
+            const orders = [testOrder1, testOrder2, testOrder3];
+            const sortedOrders = sortingUtils.sortOrdersByFeeAdjustedRate([testOrder1, testOrder2, testOrder3]);
             expect(sortedOrders).to.deep.equal([testOrder2, testOrder1, testOrder3]);
         });
     });

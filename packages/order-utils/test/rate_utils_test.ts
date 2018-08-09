@@ -23,11 +23,17 @@ describe('rateUtils', () => {
                 'Expected feeRate: -1 to be greater than or equal to 0',
             );
         });
-        it('correctly calculates fee adjusted rate', async () => {
+        it('correctly calculates fee adjusted rate when feeRate is provided', async () => {
             const feeRate = new BigNumber(2); // ZRX costs 2 units of takerAsset per 1 unit of ZRX
             const feeAdjustedRate = rateUtils.getFeeAdjustedRateOfOrder(testOrder, feeRate);
             // the order actually takes 100 + (2 * 20) takerAsset units to fill 100 units of makerAsset
             expect(feeAdjustedRate).to.bignumber.equal(new BigNumber(1.4));
+        });
+        it('correctly calculates fee adjusted rate when no feeRate is provided', async () => {
+            const feeAdjustedRate = rateUtils.getFeeAdjustedRateOfOrder(testOrder);
+            // because no feeRate was provided we just assume 0 fees
+            // the order actually takes 100 takerAsset units to fill 100 units of makerAsset
+            expect(feeAdjustedRate).to.bignumber.equal(new BigNumber(1));
         });
     });
     describe('#getFeeAdjustedRateOfFeeOrder', () => {
