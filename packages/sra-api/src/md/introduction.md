@@ -34,15 +34,18 @@ $ curl https://api.example-relayer.com/v2/asset_pairs?page=3&per_page=20
 
 Page numbering should be 1-indexed, not 0-indexed. If a query provides an unreasonable (ie. too high) `per_page` value, the response can return a validation error as specified in the [errors section](#section/Errors). If the query specifies a `page` that does not exist (ie. there are not enough `records`), the response should just return an empty `records` array.
 
-All endpoints that are paginated should return a `total`, `page`, `perPage` and a `records` value in the top level of the collection.  The value of `total` should be the total number of records for a given query, whereas `records` should be an array representing the response to the query for that page. `page` and `perPage`, are the same values that were specified in the request. See the note in [miscellaneous](#section/Misc.) about formatting `snake_case` vs. `lowerCamelCase`. 
+All endpoints that are paginated should return a `total`, `page`, `perPage` and a `records` value in the top level of the collection. The value of `total` should be the total number of records for a given query, whereas `records` should be an array representing the response to the query for that page. `page` and `perPage`, are the same values that were specified in the request. See the note in [miscellaneous](#section/Misc.) about formatting `snake_case` vs. `lowerCamelCase`.
 
 These requests include the [`/v2/asset_pairs`](#operation/getAssetPairs), [`/v2/orders`](#operation/getOrders), [`/v2/fee_recipients`](#operation/getFeeRecipients) and [`/v2/orderbook`](#operation/getOrderbook) endpoints.
 
 # Network Id
+
 All requests should be able to specify a **?networkId** query param for all supported networks. For example:
+
 ```
 $ curl https://api.example-relayer.com/v2/asset_pairs?networkId=1
 ```
+
 If the query param is not provided, it should default to **1** (mainnet).
 
 Networks and their Ids:
@@ -54,8 +57,8 @@ Networks and their Ids:
 | 3          | Ropsten      |
 | 4          | Rinkeby      |
 
- If a certain network is not supported, the response should **400**  as specified in the [error response](#section/Errors) section. For example:
- 
+If a certain network is not supported, the response should **400** as specified in the [error response](#section/Errors) section. For example:
+
 ```
 {
     "code": 100,
@@ -112,6 +115,7 @@ X-RateLimit-Limit: 60
 X-RateLimit-Remaining: 56
 X-RateLimit-Reset: 1372700873
 ```
+
 When a rate limit is exceeded, a status of **429 Too Many Requests** should be returned.
 
 # Errors
@@ -129,6 +133,7 @@ Unless the spec defines otherwise, errors to bad requests should respond with HT
 | 501  | Not Implemented                         |
 
 ## Error reporting format
+
 For all **400** responses, see the [error response schema](https://github.com/0xProject/0x-monorepo/blob/development/packages/json-schemas/schemas/relayer_api_error_response_schema.ts#L1).
 
 ```
@@ -168,9 +173,10 @@ Validation error codes:
 
 # Asset Data Encoding
 
-As we now support multiple [token transfer proxies](https://github.com/0xProject/0x-protocol-specification/blob/master/v2/v2-specification.md#assetproxy), the identifier of which proxy to use for the token transfer must be encoded, along with the token information. Each proxy in 0x v2 has a unique identifier. If you're using 0x.js there will be helper methods for this [encoding](https://0xproject.com/docs/0x.js#zeroEx-encodeERC20AssetData) and [decoding](https://0xproject.com/docs/0x.js#zeroEx-decodeAssetProxyId). 
+As we now support multiple [token transfer proxies](https://github.com/0xProject/0x-protocol-specification/blob/master/v2/v2-specification.md#assetproxy), the identifier of which proxy to use for the token transfer must be encoded, along with the token information. Each proxy in 0x v2 has a unique identifier. If you're using 0x.js there will be helper methods for this [encoding](https://0xproject.com/docs/0x.js#zeroEx-encodeERC20AssetData) and [decoding](https://0xproject.com/docs/0x.js#zeroEx-decodeAssetProxyId).
 
 The identifier for the Proxy uses a similar scheme to [ABI function selectors](https://github.com/ethereum/wiki/wiki/Ethereum-Contract-ABI#function-selector).
+
 ```
 // ERC20 Proxy ID  0xf47261b0
 bytes4(keccak256("ERC20Token(address)"))
@@ -178,14 +184,16 @@ bytes4(keccak256("ERC20Token(address)"))
 bytes4(keccak256("ERC721Token(address,uint256)"))
 ```
 
-Asset data is encoded using [ABI encoding](https://solidity.readthedocs.io/en/develop/abi-spec.html). 
+Asset data is encoded using [ABI encoding](https://solidity.readthedocs.io/en/develop/abi-spec.html).
 
-For example, encoding the ERC20 token contract (address:  0x1dc4c1cefef38a777b15aa20260a54e584b16c48) using the ERC20 Transfer Proxy (id: 0xf47261b0) would be:
+For example, encoding the ERC20 token contract (address: 0x1dc4c1cefef38a777b15aa20260a54e584b16c48) using the ERC20 Transfer Proxy (id: 0xf47261b0) would be:
+
 ```
 0xf47261b00000000000000000000000001dc4c1cefef38a777b15aa20260a54e584b16c48
 ```
 
 Encoding the ERC721 token contract (address: `0x371b13d97f4bf77d724e78c16b7dc74099f40e84`), token id (id: `99`, which hex encoded is `0x63`) and the ERC721 Transfer Proxy (id: 0x08e937fa) would be:
+
 ```
 0x08e937fa000000000000000000000000371b13d97f4bf77d724e78c16b7dc74099f40e840000000000000000000000000000000000000000000000000000000000000063
 ```
