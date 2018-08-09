@@ -52,7 +52,7 @@
     "dependencies": {
         "@0xproject/react-docs": "^1.0.4",
         "basscss": "^8.0.3",
-        "lodash": "^4.17.4",
+        "lodash": "^4.17.5",
         "material-ui": "^0.17.1",
         "react": "15.6.1",
         "react-dom": "15.6.1",

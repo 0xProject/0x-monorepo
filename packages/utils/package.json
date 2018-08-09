@@ -40,7 +40,7 @@
         "tslint": "5.11.0",
         "typescript": "2.9.2",
         "chai": "^4.0.1",
-        "mocha": "^4.0.1"
+        "mocha": "^4.1.0"
     },
     "dependencies": {
         "@0xproject/types": "^1.0.1-rc.3",
@@ -54,7 +54,7 @@
         "ethers": "3.0.22",
         "isomorphic-fetch": "^2.2.1",
         "js-sha3": "^0.7.0",
-        "lodash": "^4.17.4"
+        "lodash": "^4.17.5"
     },
     "publishConfig": {
         "access": "public"

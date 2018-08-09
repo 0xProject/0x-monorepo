@@ -57,7 +57,7 @@
         "ganache-core": "0xProject/ganache-core",
         "hdkey": "^0.7.1",
         "json-rpc-error": "2.0.0",
-        "lodash": "^4.17.4",
+        "lodash": "^4.17.5",
         "semaphore-async-await": "^1.5.1",
         "web3-provider-engine": "14.0.6"
     },
@@ -77,7 +77,7 @@
         "copyfiles": "^1.2.0",
         "dirty-chai": "^2.0.1",
         "make-promises-safe": "^1.1.0",
-        "mocha": "^4.0.1",
+        "mocha": "^4.1.0",
         "npm-run-all": "^4.1.2",
         "nyc": "^11.0.1",
         "shx": "^0.2.2",

@@ -74,7 +74,7 @@
         "@ledgerhq/hw-app-eth": "^4.3.0",
         "ethereum-types": "^1.0.3",
         "ethers": "3.0.22",
-        "lodash": "^4.17.4"
+        "lodash": "^4.17.5"
     },
     "optionalDependencies": {
         "@ledgerhq/hw-transport-node-hid": "^4.3.0"

@@ -43,7 +43,7 @@
         "@0xproject/typescript-typings": "^1.0.3",
         "@0xproject/utils": "^1.0.4",
         "chalk": "^2.3.0",
-        "lodash": "^4.17.4",
+        "lodash": "^4.17.5",
         "newman": "^3.9.3",
         "yargs": "^10.0.3"
     },
@@ -60,7 +60,7 @@
         "copyfiles": "^1.2.0",
         "dirty-chai": "^2.0.1",
         "make-promises-safe": "^1.1.0",
-        "mocha": "^4.0.1",
+        "mocha": "^4.1.0",
         "nock": "^9.2.3",
         "npm-run-all": "^4.1.2",
         "nyc": "^11.0.1",
