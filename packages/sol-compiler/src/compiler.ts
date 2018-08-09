@@ -2,7 +2,7 @@ import { assert } from '@0xproject/assert';
 import { NameResolver, Resolver } from '@0xproject/sol-resolver';
 import { logUtils } from '@0xproject/utils';
 import chalk from 'chalk';
-import * as childProcess from 'child_process';
+import { ChildProcess, spawn } from 'child_process';
 import * as ethUtil from 'ethereumjs-util';
 import * as fs from 'fs';
 import * as _ from 'lodash';
@@ -21,7 +21,6 @@ import {
     parseSolidityVersionRange,
 } from './utils/compiler';
 import { constants } from './utils/constants';
-import { fsWrapper } from './utils/fs_wrapper';
 import { CompilerOptions, ContractArtifact, ContractVersionData } from './utils/types';
 import { utils } from './utils/utils';
 
@@ -93,9 +92,11 @@ export class Compiler {
         } else {
             contractNamesToCompile = this._specifiedContracts;
         }
+        const compilations: Array<Promise<void>> = [];
         for (const contractNameToCompile of contractNamesToCompile) {
-            await this._compileContractAsync(contractNameToCompile);
+            compilations.push(this._compileContractAsync(contractNameToCompile));
         }
+        await Promise.all(compilations);
     }
     /**
      * Compiles contract and saves artifact to artifactsDir.
@@ -137,103 +138,131 @@ export class Compiler {
             },
             settings: this._compilerSettings,
         };
-        const solcStdout: string = childProcess
-            .execFileSync(
-                'solc-wrapper',
-                [
-                    '--fullSolcVersion',
-                    fullSolcVersion,
-                    '--solcBinDir',
-                    SOLC_BIN_DIR,
-                    '--contractsDir',
-                    this._contractsDir,
-                ],
-                { input: JSON.stringify(standardInput) },
-            )
-            .toString();
-        let compiled: solc.StandardOutput;
-        try {
-            compiled = JSON.parse(solcStdout);
-        } catch (err) {
-            logUtils.warn(`Failed to JSON.parse() solc output '${solcStdout}'`);
-            throw err;
-        }
 
-        if (!_.isUndefined(compiled.errors)) {
-            const SOLIDITY_WARNING = 'warning';
-            const errors = _.filter(compiled.errors, entry => entry.severity !== SOLIDITY_WARNING);
-            const warnings = _.filter(compiled.errors, entry => entry.severity === SOLIDITY_WARNING);
-            if (!_.isEmpty(errors)) {
-                errors.forEach(error => {
-                    const normalizedErrMsg = getNormalizedErrMsg(error.formattedMessage || error.message);
-                    logUtils.log(chalk.red(normalizedErrMsg));
-                });
-                process.exit(1);
-            } else {
-                warnings.forEach(warning => {
-                    const normalizedWarningMsg = getNormalizedErrMsg(warning.formattedMessage || warning.message);
-                    logUtils.log(chalk.yellow(normalizedWarningMsg));
-                });
-            }
-        }
-        const compiledData = compiled.contracts[contractSource.path][contractName];
-        if (_.isUndefined(compiledData)) {
-            throw new Error(
-                `Contract ${contractName} not found in ${
-                    contractSource.path
-                }. Please make sure your contract has the same name as it's file name`,
-            );
-        }
-        if (!_.isUndefined(compiledData.evm)) {
-            if (!_.isUndefined(compiledData.evm.bytecode) && !_.isUndefined(compiledData.evm.bytecode.object)) {
-                compiledData.evm.bytecode.object = ethUtil.addHexPrefix(compiledData.evm.bytecode.object);
-            }
-            if (
-                !_.isUndefined(compiledData.evm.deployedBytecode) &&
-                !_.isUndefined(compiledData.evm.deployedBytecode.object)
-            ) {
-                compiledData.evm.deployedBytecode.object = ethUtil.addHexPrefix(
-                    compiledData.evm.deployedBytecode.object,
+        const solcProcess: ChildProcess = spawn('solc-wrapper', [
+            '--fullSolcVersion',
+            fullSolcVersion,
+            '--solcBinDir',
+            SOLC_BIN_DIR,
+            '--contractsDir',
+            this._contractsDir,
+        ]);
+
+        solcProcess.on('error', err => {
+            logUtils.warn(`${contractName}: error spawning solc-wrapper process: ${err}`);
+        });
+
+        let stdout: string = '';
+        solcProcess.stdout.on('data', (chunk: Buffer) => {
+            stdout += chunk.toString();
+        });
+
+        solcProcess.stderr.on('data', data => {
+            logUtils.log(`${contractName}: ${data}`);
+        });
+
+        solcProcess.stdin.write(JSON.stringify(standardInput));
+        solcProcess.stdin.end();
+
+        return new Promise<void>(resolve => {
+            solcProcess.on('close', (code: number, signal: string) => {
+                if (code && code !== 0) {
+                    logUtils.log(`${contractName}: Compilation process exited with code ${code}`);
+                }
+                if (signal) {
+                    logUtils.warn(`${contractName}: Compilation process halted by signal ${signal}`);
+                    resolve();
+                }
+
+                let compiled: solc.StandardOutput;
+                try {
+                    compiled = JSON.parse(stdout);
+                } catch (err) {
+                    logUtils.warn(`${contractName}: Failed to JSON.parse() solc output '${stdout}'`);
+                    throw err;
+                }
+
+                if (!_.isUndefined(compiled.errors)) {
+                    const SOLIDITY_WARNING = 'warning';
+                    const errors = _.filter(compiled.errors, entry => entry.severity !== SOLIDITY_WARNING);
+                    const warnings = _.filter(compiled.errors, entry => entry.severity === SOLIDITY_WARNING);
+                    if (!_.isEmpty(errors)) {
+                        errors.forEach(error => {
+                            const normalizedErrMsg = getNormalizedErrMsg(error.formattedMessage || error.message);
+                            logUtils.log(chalk.red(normalizedErrMsg));
+                        });
+                        process.exit(1);
+                    } else {
+                        warnings.forEach(warning => {
+                            const normalizedWarningMsg = getNormalizedErrMsg(
+                                warning.formattedMessage || warning.message,
+                            );
+                            logUtils.log(chalk.yellow(normalizedWarningMsg));
+                        });
+                    }
+                }
+                const compiledData = compiled.contracts[contractSource.path][contractName];
+                if (_.isUndefined(compiledData)) {
+                    throw new Error(
+                        `Contract ${contractName} not found in ${
+                            contractSource.path
+                        }. Please make sure your contract has the same name as it's file name`,
+                    );
+                }
+                if (!_.isUndefined(compiledData.evm)) {
+                    if (!_.isUndefined(compiledData.evm.bytecode) && !_.isUndefined(compiledData.evm.bytecode.object)) {
+                        compiledData.evm.bytecode.object = ethUtil.addHexPrefix(compiledData.evm.bytecode.object);
+                    }
+                    if (
+                        !_.isUndefined(compiledData.evm.deployedBytecode) &&
+                        !_.isUndefined(compiledData.evm.deployedBytecode.object)
+                    ) {
+                        compiledData.evm.deployedBytecode.object = ethUtil.addHexPrefix(
+                            compiledData.evm.deployedBytecode.object,
+                        );
+                    }
+                }
+
+                const sourceCodes = _.mapValues(
+                    compiled.sources,
+                    (_1, sourceFilePath) => this._resolver.resolve(sourceFilePath).source,
                 );
-            }
-        }
+                const contractVersion: ContractVersionData = {
+                    compilerOutput: compiledData,
+                    sources: compiled.sources,
+                    sourceCodes,
+                    sourceTreeHashHex,
+                    compiler: {
+                        name: 'solc',
+                        version: fullSolcVersion,
+                        settings: this._compilerSettings,
+                    },
+                };
 
-        const sourceCodes = _.mapValues(
-            compiled.sources,
-            (_1, sourceFilePath) => this._resolver.resolve(sourceFilePath).source,
-        );
-        const contractVersion: ContractVersionData = {
-            compilerOutput: compiledData,
-            sources: compiled.sources,
-            sourceCodes,
-            sourceTreeHashHex,
-            compiler: {
-                name: 'solc',
-                version: fullSolcVersion,
-                settings: this._compilerSettings,
-            },
-        };
+                let newArtifact: ContractArtifact;
+                if (!_.isUndefined(currentArtifactIfExists)) {
+                    const currentArtifact = currentArtifactIfExists as ContractArtifact;
+                    newArtifact = {
+                        ...currentArtifact,
+                        ...contractVersion,
+                    };
+                } else {
+                    newArtifact = {
+                        schemaVersion: constants.LATEST_ARTIFACT_VERSION,
+                        contractName,
+                        ...contractVersion,
+                        networks: {},
+                    };
+                }
 
-        let newArtifact: ContractArtifact;
-        if (!_.isUndefined(currentArtifactIfExists)) {
-            const currentArtifact = currentArtifactIfExists as ContractArtifact;
-            newArtifact = {
-                ...currentArtifact,
-                ...contractVersion,
-            };
-        } else {
-            newArtifact = {
-                schemaVersion: constants.LATEST_ARTIFACT_VERSION,
-                contractName,
-                ...contractVersion,
-                networks: {},
-            };
-        }
+                const artifactString = utils.stringifyWithFormatting(newArtifact);
+                const currentArtifactPath = `${this._artifactsDir}/${contractName}.json`;
+                fs.writeFileSync(currentArtifactPath, artifactString);
+                logUtils.log(`${contractName} artifact saved!`);
 
-        const artifactString = utils.stringifyWithFormatting(newArtifact);
-        const currentArtifactPath = `${this._artifactsDir}/${contractName}.json`;
-        await fsWrapper.writeFileAsync(currentArtifactPath, artifactString);
-        logUtils.log(`${contractName} artifact saved!`);
+                resolve();
+            });
+        });
     }
     /**
      * Gets the source tree hash for a file and its dependencies.
