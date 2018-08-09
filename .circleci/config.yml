@@ -80,6 +80,7 @@ jobs:
       - run: yarn wsrun test:circleci @0xproject/sra-report
       - run: yarn wsrun test:circleci @0xproject/subproviders
       - run: yarn wsrun test:circleci @0xproject/web3-wrapper
+      - run: yarn wsrun test:circleci @0xproject/utils
       - save_cache:
           key: coverage-0xjs-{{ .Environment.CIRCLE_SHA1 }}
           paths:

@@ -22,7 +22,8 @@ describe('Signature utils', () => {
         let address = '0x5409ed021d9299bf6814279a6a1411a7e866a631';
 
         it("should return false if the data doesn't pertain to the signature & address", async () => {
-            expect(await isValidSignatureAsync(provider, '0x0', ethSignSignature, address)).to.be.false();
+            const bytes32Zeros = '0x0000000000000000000000000000000000000000000000000000000000000000';
+            expect(await isValidSignatureAsync(provider, bytes32Zeros, ethSignSignature, address)).to.be.false();
         });
         it("should return false if the address doesn't pertain to the signature & data", async () => {
             const validUnrelatedAddress = '0x8b0292b11a196601ed2ce54b665cafeca0347d42';

@@ -10,6 +10,9 @@
             {
                 "note": "Added marketUtils",
                 "pr": 937
+            },
+            {
+                "note": "Dependencies updated"
             }
         ]
     },
