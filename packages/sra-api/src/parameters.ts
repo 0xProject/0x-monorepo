@@ -1,4 +1,4 @@
-import { ParameterLocation, ParameterObject } from '@loopback/openapi-v3-types';
+import { ParameterObject } from '@loopback/openapi-v3-types';
 export const paginationParameters: ParameterObject[] = [
     {
         name: 'page',

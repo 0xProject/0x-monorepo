@@ -534,7 +534,6 @@ describe('Schema', () => {
                         validateAgainstSchema(testCases, relayerApiAssetDataPairsResponseSchema);
                     });
                     it('should fail for invalid assetPairs responses', () => {
-                        const checksummedAddress = '0xA2b31daCf30a9C50ca473337c01d8A201ae33e32';
                         const testCases = [
                             {
                                 ...paginatedResponse,
