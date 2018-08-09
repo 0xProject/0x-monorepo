@@ -142,7 +142,6 @@ contract MixinTransactions is
             // Compute hash
             result := keccak256(memPtr, 128)
         }
-
         return result;
     }
 
