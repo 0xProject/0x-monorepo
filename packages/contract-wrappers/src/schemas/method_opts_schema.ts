@@ -1,7 +1,7 @@
 export const methodOptsSchema = {
     id: '/MethodOpts',
     properties: {
-        defaultBlock: { $ref: '/BlockParam' },
+        defaultBlock: { $ref: '/blockParamSchema' },
     },
     type: 'object',
 };
