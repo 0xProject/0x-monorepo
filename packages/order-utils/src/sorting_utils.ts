@@ -20,7 +20,6 @@ export const sortingUtils = {
     sortOrdersByFeeAdjustedRate(signedOrders: SignedOrder[], feeRate: BigNumber): SignedOrder[] {
         assert.doesConformToSchema('signedOrders', signedOrders, schemas.signedOrdersSchema);
         assert.isBigNumber('feeRate', feeRate);
-        assert.assert(feeRate.greaterThan(constants.ZERO_AMOUNT), `Expected feeRate: ${feeRate} to be greater than 0`);
         const rateCalculator = (signedOrder: SignedOrder) => rateUtils.getFeeAdjustedRateOfOrder(signedOrder, feeRate);
         const sortedOrders = sortOrders(signedOrders, rateCalculator);
         return sortedOrders;
