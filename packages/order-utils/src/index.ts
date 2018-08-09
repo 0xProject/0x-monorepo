@@ -34,3 +34,4 @@ export { OrderValidationUtils } from './order_validation_utils';
 export { ExchangeTransferSimulator } from './exchange_transfer_simulator';
 export { marketUtils } from './market_utils';
 export { rateUtils } from './rate_utils';
+export { sortingUtils } from './sorting_utils';
