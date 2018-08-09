@@ -25,7 +25,7 @@ export const fixtureData = {
         chainId: networkId,
         from: TEST_RPC_ACCOUNT_0,
     },
-    // This is the signed result of the abouve Transaction Data
+    // This is the signed result of the above Transaction Data
     TX_DATA_SIGNED_RESULT:
         '0xf85f8080822710940000000000000000000000000000000000000000808078a0712854c73c69445cc1b22a7c3d7312ff9a97fe4ffba35fd636e8236b211b6e7ca0647cee031615e52d916c7c707025bc64ad525d8f1b9876c3435a863b42743178',
     TX_DATA_ACCOUNT_1_SIGNED_RESULT:

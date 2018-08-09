@@ -6,7 +6,7 @@ export {
     ExchangeContractErrs,
     Order,
     SignedOrder,
-    SignerProviderType,
+    SignerType,
     ECSignature,
     OrderStateValid,
     OrderStateInvalid,

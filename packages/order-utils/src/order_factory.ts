@@ -1,4 +1,4 @@
-import { Order, SignedOrder, SignerProviderType } from '@0xproject/types';
+import { Order, SignedOrder, SignerType } from '@0xproject/types';
 import { BigNumber } from '@0xproject/utils';
 import { Provider } from 'ethereum-types';
 import * as _ from 'lodash';
@@ -58,12 +58,11 @@ export const orderFactory = {
             createOrderOpts,
         );
         const orderHash = orderHashUtils.getOrderHashHex(order);
-        const signature = await ecSignOrderHashAsync(provider, orderHash, makerAddress, SignerProviderType.EthSign);
+        const signature = await ecSignOrderHashAsync(provider, orderHash, makerAddress, SignerType.Default);
         const signedOrder: SignedOrder = _.assign(order, { signature });
         return signedOrder;
     },
 };
-<<<<<<< HEAD
 
 function generateDefaultCreateOrderOpts(): {
     takerAddress: string;
@@ -84,18 +83,3 @@ function generateDefaultCreateOrderOpts(): {
         expirationTimeSeconds: constants.INFINITE_TIMESTAMP_SEC,
     };
 }
-
-function getVRSHexString(ecSignature: ECSignature): string {
-    const ETH_SIGN_SIGNATURE_TYPE = '03';
-    const vrs = `${intToHex(ecSignature.v)}${ethUtil.stripHexPrefix(ecSignature.r)}${ethUtil.stripHexPrefix(
-        ecSignature.s,
-    )}${ETH_SIGN_SIGNATURE_TYPE}`;
-    return vrs;
-}
-
-function intToHex(i: number): string {
-    const hex = ethUtil.bufferToHex(ethUtil.toBuffer(i));
-    return hex;
-}
-=======
->>>>>>> Introduce SignerProviderType

@@ -143,11 +143,11 @@ export enum SignatureType {
 }
 
 /**
- * The Signer Provider Type. Some Signer provider implementations use different message prefixes or implement different
- * eth_sign behaviour.
+ * The type of the Signer implementation. Some signer implementations use different message prefixes (e.g Trezor) or implement different
+ * eth_sign behaviour (e.g Metamask). Default assumes a spec compliant `eth_sign`.
  */
-export enum SignerProviderType {
-    EthSign = 'ETH_SIGN',
+export enum SignerType {
+    Default = 'DEFAULT',
     Ledger = 'LEDGER',
     Metamask = 'METAMASK',
     Trezor = 'TREZOR',

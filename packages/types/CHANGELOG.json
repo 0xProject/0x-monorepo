@@ -4,7 +4,7 @@
         "changes": [
             {
                 "pr": 914,
-                "note": "Added SignerProviderType"
+                "note": "Added SignerType to handle different signing prefix scenarios"
             }
         ]
     },
