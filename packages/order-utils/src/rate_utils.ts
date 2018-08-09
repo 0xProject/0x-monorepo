@@ -1,6 +1,7 @@
 import { schemas } from '@0xproject/json-schemas';
 import { SignedOrder } from '@0xproject/types';
 import { BigNumber } from '@0xproject/utils';
+import * as _ from 'lodash';
 
 import { assert } from './assert';
 import { constants } from './constants';
@@ -12,12 +13,16 @@ export const rateUtils = {
      * @param   signedOrder     An object that conforms to the signedOrder interface
      * @param   feeRate         The market rate of ZRX denominated in takerAssetAmount
      *                          (ex. feeRate is 0.1 takerAsset/ZRX if it takes 1 unit of takerAsset to buy 10 ZRX)
+     *                          Defaults to 0
      * @return  The rate (takerAsset/makerAsset) of the order adjusted for fees
      */
-    getFeeAdjustedRateOfOrder(signedOrder: SignedOrder, feeRate: BigNumber): BigNumber {
+    getFeeAdjustedRateOfOrder(signedOrder: SignedOrder, feeRate: BigNumber = constants.ZERO_AMOUNT): BigNumber {
         assert.doesConformToSchema('signedOrder', signedOrder, schemas.signedOrderSchema);
         assert.isBigNumber('feeRate', feeRate);
-        assert.assert(feeRate.greaterThan(constants.ZERO_AMOUNT), `Expected feeRate: ${feeRate} to be greater than 0`);
+        assert.assert(
+            feeRate.gte(constants.ZERO_AMOUNT),
+            `Expected feeRate: ${feeRate} to be greater than or equal to 0`,
+        );
         const takerAssetAmountNeededToPayForFees = signedOrder.takerFee.mul(feeRate);
         const totalTakerAssetAmount = takerAssetAmountNeededToPayForFees.plus(signedOrder.takerAssetAmount);
         const rate = totalTakerAssetAmount.div(signedOrder.makerAssetAmount);

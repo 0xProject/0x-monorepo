@@ -15,9 +15,13 @@ export const sortingUtils = {
      *                              the makerAsset and WETH as the takerAsset.
      * @param   feeRate             The market rate of ZRX denominated in takerAssetAmount
      *                              (ex. feeRate is 0.1 takerAsset/ZRX if it takes 1 unit of takerAsset to buy 10 ZRX)
+     *                              Defaults to 0
      * @return  The input orders sorted by rate in ascending order
      */
-    sortOrdersByFeeAdjustedRate(signedOrders: SignedOrder[], feeRate: BigNumber): SignedOrder[] {
+    sortOrdersByFeeAdjustedRate(
+        signedOrders: SignedOrder[],
+        feeRate: BigNumber = constants.ZERO_AMOUNT,
+    ): SignedOrder[] {
         assert.doesConformToSchema('signedOrders', signedOrders, schemas.signedOrdersSchema);
         assert.isBigNumber('feeRate', feeRate);
         const rateCalculator = (signedOrder: SignedOrder) => rateUtils.getFeeAdjustedRateOfOrder(signedOrder, feeRate);

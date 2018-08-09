@@ -17,16 +17,10 @@ describe('rateUtils', () => {
         takerFee: new BigNumber(20),
     });
     describe('#getFeeAdjustedRateOfOrder', () => {
-        it('throws when feeRate is zero', async () => {
-            const feeRate = constants.ZERO_AMOUNT;
-            expect(() => rateUtils.getFeeAdjustedRateOfOrder(testOrder, feeRate)).to.throw(
-                'Expected feeRate: 0 to be greater than 0',
-            );
-        });
         it('throws when feeRate is less than zero', async () => {
             const feeRate = new BigNumber(-1);
             expect(() => rateUtils.getFeeAdjustedRateOfOrder(testOrder, feeRate)).to.throw(
-                'Expected feeRate: -1 to be greater than 0',
+                'Expected feeRate: -1 to be greater than or equal to 0',
             );
         });
         it('correctly calculates fee adjusted rate', async () => {
