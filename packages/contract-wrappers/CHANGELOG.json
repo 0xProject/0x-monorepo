@@ -1,5 +1,22 @@
 [
     {
+        "version": "1.0.1-rc.3",
+        "changes": [
+            {
+                "pr": 915,
+                "note": "Added strict encoding/decoding checks for sendTransaction and call"
+            },
+            {
+                "note": "Add ForwarderWrapper",
+                "pr": 934
+            },
+            {
+                "note": "Optimize orders in ForwarderWrapper",
+                "pr": 936
+            }
+        ]
+    },
+    {
         "version": "1.0.1-rc.2",
         "changes": [
             {
