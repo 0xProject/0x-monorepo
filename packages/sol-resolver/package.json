@@ -35,7 +35,7 @@
     "dependencies": {
         "@0xproject/types": "^1.0.1-rc.3",
         "@0xproject/typescript-typings": "^1.0.3",
-        "lodash": "^4.17.4"
+        "lodash": "^4.17.5"
     },
     "publishConfig": {
         "access": "public"
