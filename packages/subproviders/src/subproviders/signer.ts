@@ -1,5 +1,4 @@
-import { Web3Wrapper } from '@0xproject/web3-wrapper';
-import { marshaller } from '@0xproject/web3-wrapper/lib/src/marshaller';
+import { marshaller, Web3Wrapper } from '@0xproject/web3-wrapper';
 import { JSONRPCRequestPayload, Provider } from 'ethereum-types';
 
 import { Callback, ErrorCallback } from '../types';
