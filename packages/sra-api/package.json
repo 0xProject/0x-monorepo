@@ -19,7 +19,7 @@
         "clean": "shx rm -rf lib",
         "build": "tsc && yarn build-json",
         "build-site": "yarn build && redoc-cli bundle lib/api.json --output public/index.html",
-        "build-json": "ts-node scripts/buildJson.ts",
+        "build-json": "ts-node build_scripts/buildJson.ts",
         "build-json:watch": "chokidar 'src/**/*' -c 'yarn build-json' ",
         "deploy-site": "discharge deploy"
     },
