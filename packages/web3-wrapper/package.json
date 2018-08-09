@@ -55,7 +55,7 @@
         "dirty-chai": "^2.0.1",
         "ganache-core": "0xProject/ganache-core",
         "make-promises-safe": "^1.1.0",
-        "mocha": "^4.0.1",
+        "mocha": "^4.1.0",
         "npm-run-all": "^4.1.2",
         "nyc": "^11.0.1",
         "shx": "^0.2.2",
@@ -71,7 +71,7 @@
         "ethereum-types": "^1.0.3",
         "ethereumjs-util": "^5.1.1",
         "ethers": "3.0.22",
-        "lodash": "^4.17.4"
+        "lodash": "^4.17.5"
     },
     "publishConfig": {
         "access": "public"

@@ -15,6 +15,7 @@ import * as _ from 'lodash';
 import 'make-promises-safe';
 
 import { ExchangeContract, ExchangeFillEventArgs } from '../../generated_contract_wrappers/exchange';
+import { TestLibsContract } from '../../generated_contract_wrappers/test_libs';
 
 import { artifacts } from './artifacts';
 import { expectTransactionFailedAsync } from './assertions';
@@ -123,6 +124,8 @@ export async function fillOrderCombinatorialUtilsFactoryAsync(
         exchangeContract.address,
     );
 
+    const testLibsContract = await TestLibsContract.deployFrom0xArtifactAsync(artifacts.TestLibs, provider, txDefaults);
+
     const fillOrderCombinatorialUtils = new FillOrderCombinatorialUtils(
         orderFactory,
         ownerAddress,
@@ -132,6 +135,7 @@ export async function fillOrderCombinatorialUtilsFactoryAsync(
         zrxAssetData,
         exchangeWrapper,
         assetWrapper,
+        testLibsContract,
     );
     return fillOrderCombinatorialUtils;
 }
@@ -145,6 +149,7 @@ export class FillOrderCombinatorialUtils {
     public zrxAssetData: string;
     public exchangeWrapper: ExchangeWrapper;
     public assetWrapper: AssetWrapper;
+    public testLibsContract: TestLibsContract;
     public static generateFillOrderCombinations(): FillScenario[] {
         const takerScenarios = [
             TakerScenario.Unspecified,
@@ -329,6 +334,7 @@ export class FillOrderCombinatorialUtils {
         zrxAssetData: string,
         exchangeWrapper: ExchangeWrapper,
         assetWrapper: AssetWrapper,
+        testLibsContract: TestLibsContract,
     ) {
         this.orderFactory = orderFactory;
         this.ownerAddress = ownerAddress;
@@ -338,6 +344,7 @@ export class FillOrderCombinatorialUtils {
         this.zrxAssetData = zrxAssetData;
         this.exchangeWrapper = exchangeWrapper;
         this.assetWrapper = assetWrapper;
+        this.testLibsContract = testLibsContract;
     }
     public async testFillOrderScenarioAsync(
         provider: Provider,
@@ -410,6 +417,8 @@ export class FillOrderCombinatorialUtils {
             lazyStore,
             fillRevertReasonIfExists,
         );
+
+        await this._abiEncodeFillOrderAndAssertOutcomeAsync(signedOrder, takerAssetFillAmount);
     }
     private async _fillOrderAndAssertOutcomeAsync(
         signedOrder: SignedOrder,
@@ -456,6 +465,29 @@ export class FillOrderCombinatorialUtils {
             signedOrder.takerAssetAmount,
             signedOrder.makerAssetAmount,
         );
+        const expMakerFeePaid = orderUtils.getPartialAmount(
+            expFilledTakerAmount,
+            signedOrder.takerAssetAmount,
+            signedOrder.makerFee,
+        );
+        const expTakerFeePaid = orderUtils.getPartialAmount(
+            expFilledTakerAmount,
+            signedOrder.takerAssetAmount,
+            signedOrder.takerFee,
+        );
+        const fillResults = await this.exchangeWrapper.getFillOrderResultsAsync(signedOrder, this.takerAddress, {
+            takerAssetFillAmount,
+        });
+        expect(fillResults.takerAssetFilledAmount).to.be.bignumber.equal(
+            expFilledTakerAmount,
+            'takerAssetFilledAmount',
+        );
+        expect(fillResults.makerAssetFilledAmount).to.be.bignumber.equal(
+            expFilledMakerAmount,
+            'makerAssetFilledAmount',
+        );
+        expect(fillResults.takerFeePaid).to.be.bignumber.equal(expTakerFeePaid, 'takerFeePaid');
+        expect(fillResults.makerFeePaid).to.be.bignumber.equal(expMakerFeePaid, 'makerFeePaid');
 
         // - Let's fill the order!
         const txReceipt = await this.exchangeWrapper.fillOrderAsync(signedOrder, this.takerAddress, {
@@ -479,17 +511,7 @@ export class FillOrderCombinatorialUtils {
             expFilledTakerAmount,
             'log.args.takerAssetFilledAmount',
         );
-        const expMakerFeePaid = orderUtils.getPartialAmount(
-            expFilledTakerAmount,
-            signedOrder.takerAssetAmount,
-            signedOrder.makerFee,
-        );
         expect(log.args.makerFeePaid).to.be.bignumber.equal(expMakerFeePaid, 'log.args.makerFeePaid');
-        const expTakerFeePaid = orderUtils.getPartialAmount(
-            expFilledTakerAmount,
-            signedOrder.takerAssetAmount,
-            signedOrder.takerFee,
-        );
         expect(log.args.takerFeePaid).to.be.bignumber.equal(expTakerFeePaid, 'logs.args.takerFeePaid');
         expect(log.args.orderHash).to.be.equal(orderHash, 'log.args.orderHash');
         expect(log.args.makerAssetData).to.be.equal(makerAssetData, 'log.args.makerAssetData');
@@ -570,6 +592,19 @@ export class FillOrderCombinatorialUtils {
             expZRXAssetBalanceOfFeeRecipient,
             'ZRXAssetBalanceOfFeeRecipient',
         );
+    }
+    private async _abiEncodeFillOrderAndAssertOutcomeAsync(
+        signedOrder: SignedOrder,
+        takerAssetFillAmount: BigNumber,
+    ): Promise<void> {
+        const params = orderUtils.createFill(signedOrder, takerAssetFillAmount);
+        const expectedAbiEncodedData = this.exchangeWrapper.abiEncodeFillOrder(signedOrder, { takerAssetFillAmount });
+        const libsAbiEncodedData = await this.testLibsContract.publicAbiEncodeFillOrder.callAsync(
+            params.order,
+            params.takerAssetFillAmount,
+            params.signature,
+        );
+        expect(libsAbiEncodedData).to.be.equal(expectedAbiEncodedData, 'ABIEncodedFillOrderData');
     }
     private async _getTakerAssetFillAmountAsync(
         signedOrder: SignedOrder,

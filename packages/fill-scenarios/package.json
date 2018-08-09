@@ -49,7 +49,7 @@
         "@0xproject/web3-wrapper": "^1.1.2",
         "ethereum-types": "^1.0.3",
         "ethers": "3.0.22",
-        "lodash": "^4.17.4"
+        "lodash": "^4.17.5"
     },
     "publishConfig": {
         "access": "public"
