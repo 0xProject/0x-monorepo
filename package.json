@@ -14,6 +14,7 @@
         "report_coverage": "lcov-result-merger 'packages/*/coverage/lcov.info' | coveralls",
         "test:installation": "node ./packages/monorepo-scripts/lib/test_installation.js",
         "test:installation:local": "IS_LOCAL_PUBLISH=true node ./packages/monorepo-scripts/lib/test_installation.js",
+        "test:publish:circleci": "{ echo \"test\"; sleep 1; echo \"test\"; sleep 1; echo \"test@example.com\"; } | npm login --registry=http://localhost:4873 && IS_LOCAL_PUBLISH=true run-s script:publish test:installation:local",
         "run:publish": "run-s install:all build:monorepo_scripts script:prepublish_checks rebuild:no_website script:publish",
         "run:publish:local": "IS_LOCAL_PUBLISH=true yarn run:publish",
         "script:prepublish_checks": "node ./packages/monorepo-scripts/lib/prepublish_checks.js",
