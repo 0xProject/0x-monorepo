@@ -71,11 +71,15 @@ contract MixinWeth is
             "FEE_PERCENTAGE_TOO_LARGE"
         );
 
-        // Calculate amount of WETH that hasn't been sold.
-        uint256 wethRemaining = safeSub(
-            msg.value,
-            safeAdd(wethSoldExcludingFeeOrders, wethSoldForZrx)
+        // Ensure that no extra WETH owned by this contract has been sold.
+        uint256 wethSold = safeAdd(wethSoldExcludingFeeOrders, wethSoldForZrx);
+        require(
+            wethSold <= msg.value,
+            "OVERSOLD_WETH"
         );
+
+        // Calculate amount of WETH that hasn't been sold.
+        uint256 wethRemaining = safeSub(msg.value, wethSold);
 
         // Calculate ETH fee to pay to feeRecipient.
         uint256 ethFee = getPartialAmount(

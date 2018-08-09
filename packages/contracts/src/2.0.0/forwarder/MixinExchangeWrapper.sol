@@ -139,7 +139,7 @@ contract MixinExchangeWrapper is
     /// @param makerAssetFillAmount Desired amount of makerAsset to buy.
     /// @param signatures Proofs that orders have been signed by makers.
     /// @return Amounts filled and fees paid by makers and taker.
-    function marketBuyWithWeth(
+    function marketBuyExactAmountWithWeth(
         LibOrder.Order[] memory orders,
         uint256 makerAssetFillAmount,
         bytes[] memory signatures
@@ -180,10 +180,16 @@ contract MixinExchangeWrapper is
             addFillResults(totalFillResults, singleFillResults);
 
             // Stop execution if the entire amount of makerAsset has been bought
-            if (totalFillResults.makerAssetFilledAmount >= makerAssetFillAmount) {
+            uint256 makerAssetFilledAmount = totalFillResults.makerAssetFilledAmount;
+            if (makerAssetFilledAmount >= makerAssetFillAmount) {
                 break;
             }
         }
+
+        require(
+            makerAssetFilledAmount >= makerAssetFillAmount,
+            "COMPLETE_FILL_FAILED"
+        );
         return totalFillResults;
     }
 
@@ -196,7 +202,7 @@ contract MixinExchangeWrapper is
     /// @param zrxBuyAmount Desired amount of ZRX to buy.
     /// @param signatures Proofs that orders have been created by makers.
     /// @return totalFillResults Amounts filled and fees paid by maker and taker.
-    function marketBuyZrxWithWeth(
+    function marketBuyExactZrxWithWeth(
         LibOrder.Order[] memory orders,
         uint256 zrxBuyAmount,
         bytes[] memory signatures
@@ -248,6 +254,10 @@ contract MixinExchangeWrapper is
             }
         }
 
+        require(
+            zrxPurchased >= zrxBuyAmount,
+            "COMPLETE_FILL_FAILED"
+        );
         return totalFillResults;
     }
 }
