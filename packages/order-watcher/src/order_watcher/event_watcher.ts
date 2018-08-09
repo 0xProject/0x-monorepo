@@ -1,6 +1,7 @@
-import { BlockParamLiteral, LogEntry } from '@0xproject/types';
-import { intervalUtils } from '@0xproject/utils';
+import { intervalUtils, logUtils } from '@0xproject/utils';
 import { Web3Wrapper } from '@0xproject/web3-wrapper';
+import { BlockParamLiteral, LogEntry, Provider } from 'ethereum-types';
+import { Block, BlockAndLogStreamer, Log } from 'ethereumjs-blockstream';
 import * as _ from 'lodash';
 
 import { EventWatcherCallback, OrderWatcherError } from '../types';
@@ -18,82 +19,112 @@ enum LogEventState {
  * depth.
  */
 export class EventWatcher {
-    private _web3Wrapper: Web3Wrapper;
-    private _pollingIntervalMs: number;
-    private _intervalIdIfExists?: NodeJS.Timer;
-    private _lastEvents: LogEntry[] = [];
-    private _stateLayer: BlockParamLiteral;
+    private readonly _web3Wrapper: Web3Wrapper;
+    private readonly _stateLayer: BlockParamLiteral;
+    private readonly _isVerbose: boolean;
+    private _blockAndLogStreamerIfExists: BlockAndLogStreamer<Block, Log> | undefined;
+    private _blockAndLogStreamIntervalIfExists?: NodeJS.Timer;
+    private _onLogAddedSubscriptionToken: string | undefined;
+    private _onLogRemovedSubscriptionToken: string | undefined;
+    private readonly _pollingIntervalMs: number;
     constructor(
-        web3Wrapper: Web3Wrapper,
+        provider: Provider,
         pollingIntervalIfExistsMs: undefined | number,
-        stateLayer: BlockParamLiteral = BlockParamLiteral.Latest,
+        stateLayer: BlockParamLiteral,
+        isVerbose: boolean,
     ) {
-        this._web3Wrapper = web3Wrapper;
+        this._isVerbose = isVerbose;
+        this._web3Wrapper = new Web3Wrapper(provider);
         this._stateLayer = stateLayer;
         this._pollingIntervalMs = _.isUndefined(pollingIntervalIfExistsMs)
             ? DEFAULT_EVENT_POLLING_INTERVAL_MS
             : pollingIntervalIfExistsMs;
+        this._blockAndLogStreamerIfExists = undefined;
+        this._blockAndLogStreamIntervalIfExists = undefined;
+        this._onLogAddedSubscriptionToken = undefined;
+        this._onLogRemovedSubscriptionToken = undefined;
     }
     public subscribe(callback: EventWatcherCallback): void {
         assert.isFunction('callback', callback);
-        if (!_.isUndefined(this._intervalIdIfExists)) {
+        if (!_.isUndefined(this._blockAndLogStreamIntervalIfExists)) {
             throw new Error(OrderWatcherError.SubscriptionAlreadyPresent);
         }
-        this._intervalIdIfExists = intervalUtils.setAsyncExcludingInterval(
-            this._pollForBlockchainEventsAsync.bind(this, callback),
-            this._pollingIntervalMs,
-            (err: Error) => {
-                this.unsubscribe();
-                callback(err);
-            },
-        );
+        this._startBlockAndLogStream(callback);
     }
     public unsubscribe(): void {
-        this._lastEvents = [];
-        if (!_.isUndefined(this._intervalIdIfExists)) {
-            intervalUtils.clearAsyncExcludingInterval(this._intervalIdIfExists);
-            delete this._intervalIdIfExists;
+        if (_.isUndefined(this._blockAndLogStreamIntervalIfExists)) {
+            throw new Error(OrderWatcherError.SubscriptionNotFound);
         }
+        this._stopBlockAndLogStream();
     }
-    private async _pollForBlockchainEventsAsync(callback: EventWatcherCallback): Promise<void> {
-        const pendingEvents = await this._getEventsAsync();
-        if (_.isUndefined(pendingEvents)) {
-            // HACK: This should never happen, but happens frequently on CI due to a ganache bug
-            return;
+    private _startBlockAndLogStream(callback: EventWatcherCallback): void {
+        if (!_.isUndefined(this._blockAndLogStreamerIfExists)) {
+            throw new Error(OrderWatcherError.SubscriptionAlreadyPresent);
         }
-        if (pendingEvents.length === 0) {
-            // HACK: Sometimes when node rebuilds the pending block we get back the empty result.
-            // We don't want to emit a lot of removal events and bring them back after a couple of miliseconds,
-            // that's why we just ignore those cases.
-            return;
-        }
-        const removedEvents = _.differenceBy(this._lastEvents, pendingEvents, JSON.stringify);
-        const newEvents = _.differenceBy(pendingEvents, this._lastEvents, JSON.stringify);
-        await this._emitDifferencesAsync(removedEvents, LogEventState.Removed, callback);
-        await this._emitDifferencesAsync(newEvents, LogEventState.Added, callback);
-        this._lastEvents = pendingEvents;
+        this._blockAndLogStreamerIfExists = new BlockAndLogStreamer(
+            this._web3Wrapper.getBlockAsync.bind(this._web3Wrapper),
+            this._web3Wrapper.getLogsAsync.bind(this._web3Wrapper),
+            this._onBlockAndLogStreamerError.bind(this),
+        );
+        const catchAllLogFilter = {};
+        this._blockAndLogStreamerIfExists.addLogFilter(catchAllLogFilter);
+        this._blockAndLogStreamIntervalIfExists = intervalUtils.setAsyncExcludingInterval(
+            this._reconcileBlockAsync.bind(this),
+            this._pollingIntervalMs,
+            this._onBlockAndLogStreamerError.bind(this),
+        );
+        let isRemoved = false;
+        this._onLogAddedSubscriptionToken = this._blockAndLogStreamerIfExists.subscribeToOnLogAdded(
+            this._onLogStateChangedAsync.bind(this, callback, isRemoved),
+        );
+        isRemoved = true;
+        this._onLogRemovedSubscriptionToken = this._blockAndLogStreamerIfExists.subscribeToOnLogRemoved(
+            this._onLogStateChangedAsync.bind(this, callback, isRemoved),
+        );
     }
-    private async _getEventsAsync(): Promise<LogEntry[]> {
-        const eventFilter = {
-            fromBlock: this._stateLayer,
-            toBlock: this._stateLayer,
-        };
-        const events = await this._web3Wrapper.getLogsAsync(eventFilter);
-        return events;
+    private _stopBlockAndLogStream(): void {
+        if (_.isUndefined(this._blockAndLogStreamerIfExists)) {
+            throw new Error(OrderWatcherError.SubscriptionNotFound);
+        }
+        this._blockAndLogStreamerIfExists.unsubscribeFromOnLogAdded(this._onLogAddedSubscriptionToken as string);
+        this._blockAndLogStreamerIfExists.unsubscribeFromOnLogRemoved(this._onLogRemovedSubscriptionToken as string);
+        intervalUtils.clearAsyncExcludingInterval(this._blockAndLogStreamIntervalIfExists as NodeJS.Timer);
+        delete this._blockAndLogStreamerIfExists;
+        delete this._blockAndLogStreamIntervalIfExists;
+    }
+    private async _onLogStateChangedAsync(
+        callback: EventWatcherCallback,
+        isRemoved: boolean,
+        log: LogEntry,
+    ): Promise<void> {
+        await this._emitDifferencesAsync(log, isRemoved ? LogEventState.Removed : LogEventState.Added, callback);
+    }
+    private async _reconcileBlockAsync(): Promise<void> {
+        const latestBlock = await this._web3Wrapper.getBlockAsync(this._stateLayer);
+        // We need to coerce to Block type cause Web3.Block includes types for mempool blocks
+        if (!_.isUndefined(this._blockAndLogStreamerIfExists)) {
+            // If we clear the interval while fetching the block - this._blockAndLogStreamer will be undefined
+            await this._blockAndLogStreamerIfExists.reconcileNewBlock((latestBlock as any) as Block);
+        }
     }
     private async _emitDifferencesAsync(
-        logs: LogEntry[],
+        log: LogEntry,
         logEventState: LogEventState,
         callback: EventWatcherCallback,
     ): Promise<void> {
-        for (const log of logs) {
-            const logEvent = {
-                removed: logEventState === LogEventState.Removed,
-                ...log,
-            };
-            if (!_.isUndefined(this._intervalIdIfExists)) {
-                callback(null, logEvent);
-            }
+        const logEvent = {
+            removed: logEventState === LogEventState.Removed,
+            ...log,
+        };
+        if (!_.isUndefined(this._blockAndLogStreamIntervalIfExists)) {
+            callback(null, logEvent);
+        }
+    }
+    private _onBlockAndLogStreamerError(err: Error): void {
+        // Since Blockstream errors are all recoverable, we simply log them if the verbose
+        // config is passed in.
+        if (this._isVerbose) {
+            logUtils.warn(err);
         }
     }
 }

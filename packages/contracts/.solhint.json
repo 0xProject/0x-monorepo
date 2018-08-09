@@ -1,0 +1,20 @@
+{
+    "extends": "default",
+    "rules": {
+        "avoid-low-level-calls": false,
+        "avoid-tx-origin": "warn",
+        "bracket-align": false,
+        "code-complexity": false,
+        "const-name-snakecase": "error",
+        "expression-indent": "error",
+        "function-max-lines": false,
+        "func-order": "error",
+        "indent": ["error", 4],
+        "max-line-length": ["warn", 160],
+        "no-inline-assembly": false,
+        "quotes": ["error", "double"],
+        "separate-by-one-line-in-contract": "error",
+        "space-after-comma": "error",
+        "statement-indent": "error"
+    }
+}

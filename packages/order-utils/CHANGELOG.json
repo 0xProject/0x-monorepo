@@ -1,10 +1,91 @@
 [
     {
-        "version": "0.1.0",
+        "version": "1.0.1-rc.3",
         "changes": [
+            {
+                "note":
+                    "Added a synchronous `createOrder` method in `orderFactory`, updated public interfaces to support some optional parameters",
+                "pr": 936
+            },
+            {
+                "note": "Added marketUtils",
+                "pr": 937
+            },
+            {
+                "note": "Dependencies updated"
+            }
+        ]
+    },
+    {
+        "version": "1.0.1-rc.2",
+        "changes": [
+            {
+                "note": "Dependencies updated"
+            }
+        ],
+        "timestamp": 1532619515
+    },
+    {
+        "version": "1.0.1-rc.1",
+        "changes": [
+            {
+                "note": "Dependencies updated"
+            }
+        ],
+        "timestamp": 1532605697
+    },
+    {
+        "version": "1.0.0",
+        "changes": [
+            {
+                "note": "Dependencies updated"
+            }
+        ],
+        "timestamp": 1532357734
+    },
+    {
+        "version": "1.0.0-rc.2",
+        "changes": [
+            {
+                "note":
+                    "Upgrade ethereumjs-abi dep including a fix so that addresses starting with 0 are properly decoded by `decodeERC20AssetData`"
+            }
+        ],
+        "timestamp": 1532357734
+    },
+    {
+        "timestamp": 1532043000,
+        "version": "1.0.0-rc.1",
+        "changes": [
+            {
+                "note": "Refactor to work with V2 of 0x protocol",
+                "pr": 636
+            },
             {
                 "note": "Export parseECSignature method",
                 "pr": 684
+            },
+            {
+                "note": "Handle Typed Arrays when hashing data",
+                "pr": 894
+            }
+        ]
+    },
+    {
+        "timestamp": 1531919263,
+        "version": "0.0.9",
+        "changes": [
+            {
+                "note": "Dependencies updated"
+            }
+        ]
+    },
+    {
+        "timestamp": 1531149657,
+        "version": "0.0.8",
+        "changes": [
+            {
+                "note": "Dependencies updated"
             }
         ]
     },

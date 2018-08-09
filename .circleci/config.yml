@@ -53,9 +53,9 @@ jobs:
       - restore_cache:
           keys:
             - repo-{{ .Environment.CIRCLE_SHA1 }}
-      # HACK(albrow): we need to sleep 15 seconds to ensure the devnet is
+      # HACK(albrow): we need to sleep 10 seconds to ensure the devnet is
       # initialized
-      - run: sleep 15 && TEST_PROVIDER=geth yarn wsrun test contracts
+      - run: sleep 10 && TEST_PROVIDER=geth yarn wsrun test contracts
   test-rest:
     docker:
       - image: circleci/node:9
@@ -64,7 +64,8 @@ jobs:
       - restore_cache:
           keys:
             - repo-{{ .Environment.CIRCLE_SHA1 }}
-      - run: yarn wsrun test:circleci @0xproject/0x.js
+      - run: yarn wsrun test:circleci 0x.js
+      - run: yarn wsrun test:circleci @0xproject/abi-gen
       - run: yarn wsrun test:circleci @0xproject/assert
       - run: yarn wsrun test:circleci @0xproject/base-contract
       - run: yarn wsrun test:circleci @0xproject/connect
@@ -79,10 +80,15 @@ jobs:
       - run: yarn wsrun test:circleci @0xproject/sra-report
       - run: yarn wsrun test:circleci @0xproject/subproviders
       - run: yarn wsrun test:circleci @0xproject/web3-wrapper
+      - run: yarn wsrun test:circleci @0xproject/utils
       - save_cache:
           key: coverage-0xjs-{{ .Environment.CIRCLE_SHA1 }}
           paths:
             - ~/repo/packages/0x.js/coverage/lcov.info
+      - save_cache:
+          key: coverage-abi-gen-{{ .Environment.CIRCLE_SHA1 }}
+          paths:
+            - ~/repo/packages/abi-gen/coverage/lcov.info
       - save_cache:
           key: coverage-assert-{{ .Environment.CIRCLE_SHA1 }}
           paths:
@@ -148,7 +154,7 @@ jobs:
           keys:
             - repo-{{ .Environment.CIRCLE_SHA1 }}
       - run: yarn prettier:ci
-      - run: yarn lerna:run lint
+      - run: yarn lerna run lint
   submit-coverage:
     docker:
       - image: circleci/node:9
@@ -160,6 +166,9 @@ jobs:
       - restore_cache:
           keys:
             - coverage-0xjs-{{ .Environment.CIRCLE_SHA1 }}
+      - restore_cache:
+          keys:
+            - coverage-abi-gen-{{ .Environment.CIRCLE_SHA1 }}
       - restore_cache:
           keys:
             - coverage-assert-{{ .Environment.CIRCLE_SHA1 }}

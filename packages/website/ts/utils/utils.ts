@@ -8,10 +8,14 @@ import * as bowser from 'bowser';
 import deepEqual = require('deep-equal');
 import * as _ from 'lodash';
 import * as moment from 'moment';
+import * as numeral from 'numeral';
+
 import {
+    AccountState,
     BlockchainCallErrs,
     BrowserType,
     Environments,
+    OperatingSystemType,
     Order,
     Providers,
     ProviderType,
@@ -25,11 +29,6 @@ import {
 import { configs } from 'ts/utils/configs';
 import { constants } from 'ts/utils/constants';
 import * as u2f from 'ts/vendor/u2f_api';
-
-const LG_MIN_EM = 64;
-const MD_MIN_EM = 52;
-
-const isDogfood = (): boolean => _.includes(window.location.href, configs.DOMAIN_DOGFOOD);
 
 export const utils = {
     assert(condition: boolean, message: string): void {
@@ -60,7 +59,7 @@ export const utils = {
         return moment.unix(unixTimestampSec.toNumber());
     },
     convertToReadableDateTimeFromUnixTimestamp(unixTimestampSec: BigNumber): string {
-        const m = this.convertToMomentFromUnixTimestamp(unixTimestampSec);
+        const m = utils.convertToMomentFromUnixTimestamp(unixTimestampSec);
         const formattedDate: string = m.format('h:MMa MMMM D YYYY');
         return formattedDate;
     },
@@ -133,9 +132,9 @@ export const utils = {
 
         // This logic mirrors the CSS media queries in BassCSS for the `lg-`, `md-` and `sm-` CSS
         // class prefixes. Do not edit these.
-        if (widthInEm > LG_MIN_EM) {
+        if (widthInEm > ScreenWidths.Lg) {
             return ScreenWidths.Lg;
-        } else if (widthInEm > MD_MIN_EM) {
+        } else if (widthInEm > ScreenWidths.Md) {
             return ScreenWidths.Md;
         } else {
             return ScreenWidths.Sm;
@@ -176,39 +175,41 @@ export const utils = {
             _.includes(errMsg, ledgerDenialErrMsg);
         return isUserDeniedErrMsg;
     },
-    getCurrentEnvironment(): string {
-        switch (location.host) {
-            case configs.DOMAIN_DEVELOPMENT:
-                return 'development';
-            case configs.DOMAIN_STAGING:
-                return 'staging';
-            case configs.DOMAIN_PRODUCTION:
-                return 'production';
-            default:
-                return 'production';
-        }
-    },
     getAddressBeginAndEnd(address: string): string {
         const truncatedAddress = `${address.substring(0, 6)}...${address.substr(-4)}`; // 0x3d5a...b287
         return truncatedAddress;
     },
-    getReadableAccountState(
+    getReadableAccountState(accountState: AccountState, userAddress: string): string {
+        switch (accountState) {
+            case AccountState.Loading:
+                return 'Loading...';
+            case AccountState.Ready:
+                return utils.getAddressBeginAndEnd(userAddress);
+            case AccountState.Locked:
+                return 'Please Unlock';
+            case AccountState.Disconnected:
+                return 'Connect a Wallet';
+            default:
+                return '';
+        }
+    },
+    getAccountState(
         isBlockchainReady: boolean,
         providerType: ProviderType,
         injectedProviderName: string,
         userAddress?: string,
-    ): string {
+    ): AccountState {
         const isAddressAvailable = !_.isUndefined(userAddress) && !_.isEmpty(userAddress);
         const isExternallyInjectedProvider = utils.isExternallyInjected(providerType, injectedProviderName);
         if (!isBlockchainReady) {
-            return 'Loading account';
+            return AccountState.Loading;
         } else if (isAddressAvailable) {
-            return utils.getAddressBeginAndEnd(userAddress);
+            return AccountState.Ready;
             // tslint:disable-next-line: prefer-conditional-expression
         } else if (isExternallyInjectedProvider) {
-            return 'Account locked';
+            return AccountState.Locked;
         } else {
-            return 'No wallet detected';
+            return AccountState.Disconnected;
         }
     },
     hasUniqueNameAndSymbol(tokens: Token[], token: Token): boolean {
@@ -298,17 +299,17 @@ export const utils = {
         const baseUrl = `https://${window.location.hostname}${hasPort ? `:${port}` : ''}`;
         return baseUrl;
     },
-    async onPageLoadAsync(): Promise<void> {
+    onPageLoadPromise: new Promise<void>((resolve, _reject) => {
         if (document.readyState === 'complete') {
-            return; // Already loaded
+            resolve();
+            return;
         }
-        return new Promise<void>((resolve, _reject) => {
-            window.onload = () => resolve();
-        });
-    },
+        window.onload = () => resolve();
+    }),
     getProviderType(provider: Provider): Providers | string {
         const constructorName = provider.constructor.name;
         let parsedProviderName = constructorName;
+        // https://ethereum.stackexchange.com/questions/24266/elegant-way-to-detect-current-provider-int-web3-js
         switch (constructorName) {
             case 'EthereumProvider':
                 parsedProviderName = Providers.Mist;
@@ -322,14 +323,18 @@ export const utils = {
             parsedProviderName = Providers.Parity;
         } else if ((provider as any).isMetaMask) {
             parsedProviderName = Providers.Metamask;
+        } else if (!_.isUndefined(_.get(window, 'SOFA'))) {
+            parsedProviderName = Providers.Toshi;
+        } else if (!_.isUndefined(_.get(window, '__CIPHER__'))) {
+            parsedProviderName = Providers.Cipher;
         }
         return parsedProviderName;
     },
     getBackendBaseUrl(): string {
-        return isDogfood() ? configs.BACKEND_BASE_STAGING_URL : configs.BACKEND_BASE_PROD_URL;
+        return utils.isDogfood() ? configs.BACKEND_BASE_STAGING_URL : configs.BACKEND_BASE_PROD_URL;
     },
     isDevelopment(): boolean {
-        return configs.ENVIRONMENT === Environments.DEVELOPMENT;
+        return _.includes(configs.DOMAINS_DEVELOPMENT, window.location.host);
     },
     isStaging(): boolean {
         return _.includes(window.location.href, configs.DOMAIN_STAGING);
@@ -337,12 +342,26 @@ export const utils = {
     isExternallyInjected(providerType: ProviderType, injectedProviderName: string): boolean {
         return providerType === ProviderType.Injected && injectedProviderName !== constants.PROVIDER_NAME_PUBLIC;
     },
-    isDogfood,
-    shouldShowPortalV2(): boolean {
-        return this.isDevelopment() || this.isStaging() || this.isDogfood();
+    isDogfood(): boolean {
+        return _.includes(window.location.href, configs.DOMAIN_DOGFOOD);
     },
-    shouldShowJobsPage(): boolean {
-        return this.isDevelopment() || this.isStaging() || this.isDogfood();
+    isProduction(): boolean {
+        return _.includes(window.location.href, configs.DOMAIN_PRODUCTION);
+    },
+    getEnvironment(): Environments {
+        if (utils.isDogfood()) {
+            return Environments.DOGFOOD;
+        }
+        if (utils.isDevelopment()) {
+            return Environments.DEVELOPMENT;
+        }
+        if (utils.isStaging()) {
+            return Environments.STAGING;
+        }
+        if (utils.isProduction()) {
+            return Environments.PRODUCTION;
+        }
+        return Environments.UNKNOWN;
     },
     getEthToken(tokenByAddress: TokenByAddress): Token {
         return utils.getTokenBySymbol(constants.ETHER_TOKEN_SYMBOL, tokenByAddress);
@@ -355,20 +374,45 @@ export const utils = {
         const token = _.find(tokens, { symbol });
         return token;
     },
-    getFormattedAmountFromToken(token: Token, tokenState: TokenState): string {
-        return utils.getFormattedAmount(tokenState.balance, token.decimals, token.symbol);
+    getTrackedTokens(tokenByAddress: TokenByAddress): Token[] {
+        const allTokens = _.values(tokenByAddress);
+        const trackedTokens = _.filter(allTokens, t => utils.isTokenTracked(t));
+        return trackedTokens;
     },
-    getFormattedAmount(amount: BigNumber, decimals: number, symbol: string): string {
+    getFormattedAmountFromToken(token: Token, tokenState: TokenState): string {
+        return utils.getFormattedAmount(tokenState.balance, token.decimals);
+    },
+    format(value: BigNumber, format: string): string {
+        const formattedAmount = numeral(value).format(format);
+        if (_.isNaN(formattedAmount)) {
+            // https://github.com/adamwdraper/Numeral-js/issues/596
+            return numeral(new BigNumber(0)).format(format);
+        }
+        return formattedAmount;
+    },
+    getFormattedAmount(amount: BigNumber, decimals: number): string {
         const unitAmount = Web3Wrapper.toUnitAmount(amount, decimals);
-        const precision = Math.min(constants.TOKEN_AMOUNT_DISPLAY_PRECISION, unitAmount.decimalPlaces());
-        const formattedAmount = unitAmount.toFixed(precision);
-        return `${formattedAmount} ${symbol}`;
+        // if the unit amount is less than 1, show the natural number of decimal places with a max of 4
+        // if the unit amount is greater than or equal to 1, show only 2 decimal places
+        const lessThanOnePrecision = Math.min(constants.TOKEN_AMOUNT_DISPLAY_PRECISION, unitAmount.decimalPlaces());
+        const greaterThanOnePrecision = 2;
+        const precision = unitAmount.lt(1) ? lessThanOnePrecision : greaterThanOnePrecision;
+        const format = `0,0.${_.repeat('0', precision)}`;
+        return utils.format(unitAmount, format);
+    },
+    getUsdValueFormattedAmount(amount: BigNumber, decimals: number, price: BigNumber): string {
+        const unitAmount = Web3Wrapper.toUnitAmount(amount, decimals);
+        const value = unitAmount.mul(price);
+        return utils.format(value, constants.NUMERAL_USD_FORMAT);
     },
     openUrl(url: string): void {
         window.open(url, '_blank');
     },
-    isMobile(screenWidth: ScreenWidths): boolean {
+    isMobileWidth(screenWidth: ScreenWidths): boolean {
         return screenWidth === ScreenWidths.Sm;
+    },
+    isMobileOperatingSystem(): boolean {
+        return bowser.mobile;
     },
     getBrowserType(): BrowserType {
         if (bowser.chrome) {
@@ -380,5 +424,64 @@ export const utils = {
         } else {
             return BrowserType.Other;
         }
+    },
+    getOperatingSystem(): OperatingSystemType {
+        if (bowser.android) {
+            return OperatingSystemType.Android;
+        } else if (bowser.ios) {
+            return OperatingSystemType.iOS;
+        } else if (bowser.mac) {
+            return OperatingSystemType.Mac;
+        } else if (bowser.windows) {
+            return OperatingSystemType.Windows;
+        } else if (bowser.windowsphone) {
+            return OperatingSystemType.WindowsPhone;
+        } else if (bowser.linux) {
+            return OperatingSystemType.Linux;
+        } else {
+            return OperatingSystemType.Other;
+        }
+    },
+    isTokenTracked(token: Token): boolean {
+        return !_.isUndefined(token.trackedTimestamp);
+    },
+    // Returns a [downloadLink, isOnMobile] tuple.
+    getBestWalletDownloadLinkAndIsMobile(): [string, boolean] {
+        const browserType = utils.getBrowserType();
+        const isOnMobile = utils.isMobileOperatingSystem();
+        const operatingSystem = utils.getOperatingSystem();
+        let downloadLink;
+        if (isOnMobile) {
+            switch (operatingSystem) {
+                case OperatingSystemType.Android:
+                    downloadLink = constants.URL_TOSHI_ANDROID_APP_STORE;
+                    break;
+                case OperatingSystemType.iOS:
+                    downloadLink = constants.URL_TOSHI_IOS_APP_STORE;
+                    break;
+                default:
+                    // Toshi is only supported on these mobile OSes - just default to iOS
+                    downloadLink = constants.URL_TOSHI_IOS_APP_STORE;
+            }
+        } else {
+            switch (browserType) {
+                case BrowserType.Chrome:
+                    downloadLink = constants.URL_METAMASK_CHROME_STORE;
+                    break;
+                case BrowserType.Firefox:
+                    downloadLink = constants.URL_METAMASK_FIREFOX_STORE;
+                    break;
+                case BrowserType.Opera:
+                    downloadLink = constants.URL_METAMASK_OPERA_STORE;
+                    break;
+                default:
+                    downloadLink = constants.URL_METAMASK_HOMEPAGE;
+            }
+        }
+        return [downloadLink, isOnMobile];
+    },
+    getTokenIconUrl(symbol: string): string {
+        const result = `/images/token_icons/${symbol}.png`;
+        return result;
     },
 };

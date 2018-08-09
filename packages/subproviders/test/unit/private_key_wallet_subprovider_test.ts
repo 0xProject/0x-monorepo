@@ -1,9 +1,8 @@
 import * as chai from 'chai';
 import { JSONRPCResponsePayload } from 'ethereum-types';
 import * as ethUtils from 'ethereumjs-util';
-import Web3ProviderEngine = require('web3-provider-engine');
 
-import { GanacheSubprovider, PrivateKeyWalletSubprovider } from '../../src/';
+import { GanacheSubprovider, PrivateKeyWalletSubprovider, Web3ProviderEngine } from '../../src/';
 import { DoneCallback, WalletSubproviderErrors } from '../../src/types';
 import { chaiSetup } from '../chai_setup';
 import { fixtureData } from '../utils/fixture_data';
@@ -56,6 +55,20 @@ describe('PrivateKeyWalletSubprovider', () => {
                     expect(err).to.be.a('null');
                     expect(response.result[0]).to.be.equal(fixtureData.TEST_RPC_ACCOUNT_0);
                     expect(response.result.length).to.be.equal(1);
+                    done();
+                });
+                provider.sendAsync(payload, callback);
+            });
+            it('signs a transaction', (done: DoneCallback) => {
+                const payload = {
+                    jsonrpc: '2.0',
+                    method: 'eth_signTransaction',
+                    params: [fixtureData.TX_DATA],
+                    id: 1,
+                };
+                const callback = reportCallbackErrors(done)((err: Error, response: JSONRPCResponsePayload) => {
+                    expect(err).to.be.a('null');
+                    expect(response.result.raw).to.be.equal(fixtureData.TX_DATA_SIGNED_RESULT);
                     done();
                 });
                 provider.sendAsync(payload, callback);

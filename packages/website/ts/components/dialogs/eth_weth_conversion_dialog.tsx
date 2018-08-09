@@ -1,15 +1,13 @@
 import { colors } from '@0xproject/react-shared';
 import { BigNumber } from '@0xproject/utils';
-import { Web3Wrapper } from '@0xproject/web3-wrapper';
 import * as _ from 'lodash';
 import Dialog from 'material-ui/Dialog';
 import FlatButton from 'material-ui/FlatButton';
 import * as React from 'react';
 import { Blockchain } from 'ts/blockchain';
-import { EthAmountInput } from 'ts/components/inputs/eth_amount_input';
 import { TokenAmountInput } from 'ts/components/inputs/token_amount_input';
+import { EthAmountInput } from 'ts/containers/inputs/eth_amount_input';
 import { Side, Token } from 'ts/types';
-import { constants } from 'ts/utils/constants';
 
 interface EthWethConversionDialogProps {
     blockchain: Blockchain;
@@ -78,7 +76,6 @@ export class EthWethConversionDialog extends React.Component<
                 ? 'Convert your Ether into a tokenized, tradable form.'
                 : "Convert your Wrapped Ether back into it's native form.";
         const isWrappedVersion = this.props.direction === Side.Receive;
-        const etherBalanceInEth = Web3Wrapper.toUnitAmount(this.props.etherBalanceInWei, constants.DECIMAL_PLACES_ETH);
         return (
             <div>
                 <div className="pb2">{explanation}</div>
@@ -103,16 +100,13 @@ export class EthWethConversionDialog extends React.Component<
                                 shouldCheckAllowance={false}
                                 onChange={this._onValueChange.bind(this)}
                                 amount={this.state.value}
-                                onVisitBalancesPageClick={this.props.onCancelled}
                             />
                         ) : (
                             <EthAmountInput
-                                balance={etherBalanceInEth}
                                 amount={this.state.value}
                                 onChange={this._onValueChange.bind(this)}
                                 shouldCheckBalance={true}
                                 shouldShowIncompleteErrs={this.state.shouldShowIncompleteErrs}
-                                onVisitBalancesPageClick={this.props.onCancelled}
                             />
                         )}
                         <div className="pt1" style={{ fontSize: 12 }}>

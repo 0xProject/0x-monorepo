@@ -1,17 +1,22 @@
 {
     "name": "@0xproject/abi-gen",
-    "version": "0.3.2",
+    "version": "1.0.4",
     "engines": {
         "node": ">=6.12"
     },
     "description": "Generate contract wrappers from ABI and handlebars templates",
-    "main": "lib/index.js",
-    "types": "lib/index.d.ts",
+    "main": "lib/src/index.js",
+    "types": "lib/src/index.d.ts",
     "scripts": {
         "watch_without_deps": "tsc -w",
         "lint": "tslint --project .",
         "clean": "shx rm -rf lib scripts",
         "build": "tsc && copyfiles -u 2 './lib/monorepo_scripts/**/*' ./scripts",
+        "test": "yarn run_mocha",
+        "run_mocha": "mocha --require source-map-support/register --require make-promises-safe lib/test/**/*_test.js --bail --exit",
+        "test:circleci": "yarn test:coverage",
+        "test:coverage": "nyc npm run test --all && yarn coverage:report:lcov",
+        "coverage:report:lcov": "nyc report --reporter=text-lcov > coverage/lcov.info",
         "manual:postpublish": "yarn build; node ./scripts/postpublish.js"
     },
     "bin": {
@@ -27,31 +32,38 @@
     },
     "homepage": "https://github.com/0xProject/0x-monorepo/packages/abi-gen/README.md",
     "dependencies": {
-        "@0xproject/typescript-typings": "^0.4.1",
-        "@0xproject/utils": "^0.7.1",
-        "ethereum-types": "^0.0.1",
+        "@0xproject/typescript-typings": "^1.0.3",
+        "@0xproject/utils": "^1.0.4",
         "chalk": "^2.3.0",
+        "ethereum-types": "^1.0.3",
         "glob": "^7.1.2",
         "handlebars": "^4.0.11",
         "lodash": "^4.17.4",
         "mkdirp": "^0.5.1",
+        "sleep": "^5.1.1",
+        "tmp": "^0.0.33",
         "to-snake-case": "^1.0.0",
         "yargs": "^10.0.3"
     },
     "devDependencies": {
-        "@0xproject/monorepo-scripts": "^0.2.1",
-        "@0xproject/tslint-config": "^0.4.20",
-        "@types/glob": "^5.0.33",
+        "@0xproject/monorepo-scripts": "^1.0.4",
+        "@0xproject/tslint-config": "^1.0.4",
+        "@types/glob": "5.0.35",
         "@types/handlebars": "^4.0.36",
         "@types/mkdirp": "^0.5.1",
         "@types/node": "^8.0.53",
+        "@types/sleep": "^0.0.7",
+        "@types/tmp": "^0.0.33",
         "@types/yargs": "^10.0.0",
+        "chai": "^4.1.2",
         "copyfiles": "^1.2.0",
+        "dirty-chai": "^2.0.1",
         "make-promises-safe": "^1.1.0",
+        "mocha": "^5.2.0",
         "npm-run-all": "^4.1.2",
         "shx": "^0.2.2",
-        "tslint": "5.8.0",
-        "typescript": "2.7.1"
+        "tslint": "5.11.0",
+        "typescript": "2.9.2"
     },
     "publishConfig": {
         "access": "public"

@@ -215,6 +215,8 @@ export interface TxDataPayable extends TxData {
     value?: BigNumber;
 }
 
+export type TransactionReceiptStatus = null | string | 0 | 1;
+
 export interface TransactionReceipt {
     blockHash: string;
     blockNumber: number;
@@ -222,7 +224,7 @@ export interface TransactionReceipt {
     transactionIndex: number;
     from: string;
     to: string;
-    status: null | string | 0 | 1;
+    status: TransactionReceiptStatus;
     cumulativeGasUsed: number;
     gasUsed: number;
     contractAddress: string | null;

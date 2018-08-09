@@ -34,4 +34,22 @@ declare module 'ethers' {
     const enum errors {
         INVALID_ARGUMENT = 'INVALID_ARGUMENT',
     }
+
+    export type ParamName = null | string | NestedParamName;
+
+    export interface NestedParamName {
+        name: string | null;
+        names: ParamName[];
+    }
+
+    export const utils: {
+        AbiCoder: {
+            defaultCoder: AbiCoder;
+        };
+    };
+
+    export interface AbiCoder {
+        encode: (names: ParamName[] | string[], types: string[] | any[], args: any[] | undefined) => string;
+        decode: (names: ParamName[] | string[], types: string[] | string, data: string | undefined) => any;
+    }
 }

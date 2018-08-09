@@ -7,8 +7,8 @@ import { AbstractArtifactAdapter } from './abstract_artifact_adapter';
 import { SolCompilerArtifactAdapter } from './sol_compiler_artifact_adapter';
 
 export class TruffleArtifactAdapter extends AbstractArtifactAdapter {
-    private _solcVersion: string;
-    private _sourcesPath: string;
+    private readonly _solcVersion: string;
+    private readonly _sourcesPath: string;
     constructor(sourcesPath: string, solcVersion: string) {
         super();
         this._solcVersion = solcVersion;

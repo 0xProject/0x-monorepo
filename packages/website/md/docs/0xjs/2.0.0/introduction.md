@@ -1,0 +1,3 @@
+<b>**NOTE:** Release candidate versions are meant to work with V2 of 0x protocol. To interact with V1, select a 0.X version.</b>
+
+Welcome to the [0x.js](https://github.com/0xProject/0x-monorepo) documentation! 0x.js is a Javascript library for interacting with the 0x protocol. With it, you can easily make calls to the 0x smart contracts as well as any token adhering to the token standards supported by the protocol (currently ERC20 & ERC721). Functionality includes generating, signing, filling and cancelling orders, verifying an orders signature, setting or checking a users ERC20/ERC721 token balance/allowance and much more.

@@ -6,6 +6,7 @@
         "sourceMap": true,
         "declaration": true,
         "experimentalDecorators": true,
+        "downlevelIteration": true,
         "noImplicitReturns": true,
         "pretty": true,
         "skipLibCheck": true,

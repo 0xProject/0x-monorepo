@@ -6,7 +6,7 @@ import { ContractSource } from '../types';
 import { Resolver } from './resolver';
 
 export class RelativeFSResolver extends Resolver {
-    private _contractsDir: string;
+    private readonly _contractsDir: string;
     constructor(contractsDir: string) {
         super();
         this._contractsDir = contractsDir;
@@ -14,7 +14,7 @@ export class RelativeFSResolver extends Resolver {
     // tslint:disable-next-line:prefer-function-over-method
     public resolveIfExists(importPath: string): ContractSource | undefined {
         const filePath = path.join(this._contractsDir, importPath);
-        if (fs.existsSync(filePath)) {
+        if (fs.existsSync(filePath) && !fs.lstatSync(filePath).isDirectory()) {
             const fileContent = fs.readFileSync(filePath).toString();
             return {
                 source: fileContent,

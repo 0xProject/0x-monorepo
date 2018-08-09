@@ -1,10 +1,9 @@
-import { colors, constants as sharedConstants } from '@0xproject/react-shared';
+import { colors } from '@0xproject/react-shared';
 import { BigNumber } from '@0xproject/utils';
 import * as _ from 'lodash';
-import ActionAccountBalanceWallet from 'material-ui/svg-icons/action/account-balance-wallet';
 import * as React from 'react';
 import * as DocumentTitle from 'react-document-title';
-import { Route, RouteComponentProps, Switch } from 'react-router-dom';
+import { Link, Route, RouteComponentProps, Switch } from 'react-router-dom';
 
 import { Blockchain } from 'ts/blockchain';
 import { BlockchainErrDialog } from 'ts/components/dialogs/blockchain_err_dialog';
@@ -13,6 +12,7 @@ import { PortalDisclaimerDialog } from 'ts/components/dialogs/portal_disclaimer_
 import { EthWrappers } from 'ts/components/eth_wrappers';
 import { FillOrder } from 'ts/components/fill_order';
 import { AssetPicker } from 'ts/components/generate_order/asset_picker';
+import { MetaTags } from 'ts/components/meta_tags';
 import { BackButton } from 'ts/components/portal/back_button';
 import { Loading } from 'ts/components/portal/loading';
 import { Menu, MenuTheme } from 'ts/components/portal/menu';
@@ -24,7 +24,8 @@ import { TopBar, TopBarDisplayType } from 'ts/components/top_bar/top_bar';
 import { TradeHistory } from 'ts/components/trade_history/trade_history';
 import { Container } from 'ts/components/ui/container';
 import { FlashMessage } from 'ts/components/ui/flash_message';
-import { Island } from 'ts/components/ui/island';
+import { Image } from 'ts/components/ui/image';
+import { PointerDirection } from 'ts/components/ui/pointer';
 import { Text } from 'ts/components/ui/text';
 import { Wallet } from 'ts/components/wallet/wallet';
 import { GenerateOrderForm } from 'ts/containers/generate_order_form';
@@ -92,7 +93,7 @@ interface PortalState {
 
 interface AccountManagementItem {
     pathName: string;
-    headerText: string;
+    headerText?: string;
     render: () => React.ReactNode;
 }
 
@@ -107,12 +108,14 @@ const TOP_BAR_HEIGHT = TopBar.heightForDisplayType(TopBarDisplayType.Expanded);
 const LEFT_COLUMN_WIDTH = 346;
 const MENU_PADDING_LEFT = 185;
 const LARGE_LAYOUT_MAX_WIDTH = 1200;
-const LARGE_LAYOUT_MARGIN = 30;
+const SIDE_PADDING = 20;
+const DOCUMENT_TITLE = '0x Portal';
+const DOCUMENT_DESCRIPTION = 'Learn about and trade on 0x Relayers';
 
 export class Portal extends React.Component<PortalProps, PortalState> {
     private _blockchain: Blockchain;
-    private _sharedOrderIfExists: Order;
-    private _throttledScreenWidthUpdate: () => void;
+    private readonly _sharedOrderIfExists: Order;
+    private readonly _throttledScreenWidthUpdate: () => void;
     constructor(props: PortalProps) {
         super(props);
         this._sharedOrderIfExists = orderParser.parse(window.location.search);
@@ -152,9 +155,8 @@ export class Portal extends React.Component<PortalProps, PortalState> {
     }
     public componentDidUpdate(prevProps: PortalProps): void {
         if (!prevProps.blockchainIsLoaded && this.props.blockchainIsLoaded) {
-            const trackedTokenAddresses = _.keys(this.state.trackedTokenStateByAddress);
             // tslint:disable-next-line:no-floating-promises
-            this._fetchBalancesAndAllowancesAsync(trackedTokenAddresses);
+            this._fetchBalancesAndAllowancesAsync(this._getCurrentTrackedTokensAddresses());
         }
     }
     public componentWillReceiveProps(nextProps: PortalProps): void {
@@ -182,17 +184,17 @@ export class Portal extends React.Component<PortalProps, PortalState> {
                 prevPathname: nextProps.location.pathname,
             });
         }
+
+        // If the address changed, but the network did not, we can just refetch the currently tracked tokens.
         if (
-            nextProps.userAddress !== this.props.userAddress ||
-            nextProps.networkId !== this.props.networkId ||
+            (nextProps.userAddress !== this.props.userAddress && nextProps.networkId === this.props.networkId) ||
             nextProps.lastForceTokenStateRefetch !== this.props.lastForceTokenStateRefetch
         ) {
-            const trackedTokenAddresses = _.keys(this.state.trackedTokenStateByAddress);
             // tslint:disable-next-line:no-floating-promises
-            this._fetchBalancesAndAllowancesAsync(trackedTokenAddresses);
+            this._fetchBalancesAndAllowancesAsync(this._getCurrentTrackedTokensAddresses());
         }
 
-        const nextTrackedTokens = this._getTrackedTokens(nextProps.tokenByAddress);
+        const nextTrackedTokens = utils.getTrackedTokens(nextProps.tokenByAddress);
         const trackedTokens = this._getCurrentTrackedTokens();
 
         if (!_.isEqual(nextTrackedTokens, trackedTokens)) {
@@ -200,7 +202,7 @@ export class Portal extends React.Component<PortalProps, PortalState> {
             const newTokenAddresses = _.map(newTokens, token => token.address);
             // Add placeholder entry for this token to the state, since fetching the
             // balance/allowance is asynchronous
-            const trackedTokenStateByAddress = this.state.trackedTokenStateByAddress;
+            const trackedTokenStateByAddress = { ...this.state.trackedTokenStateByAddress };
             for (const tokenAddress of newTokenAddresses) {
                 trackedTokenStateByAddress[tokenAddress] = {
                     balance: new BigNumber(0),
@@ -227,7 +229,8 @@ export class Portal extends React.Component<PortalProps, PortalState> {
                 : TokenVisibility.TRACKED;
         return (
             <Container>
-                <DocumentTitle title="0x Portal DApp" />
+                <MetaTags title={DOCUMENT_TITLE} description={DOCUMENT_DESCRIPTION} />
+                <DocumentTitle title={DOCUMENT_TITLE} />
                 <TopBar
                     userAddress={this.props.userAddress}
                     networkId={this.props.networkId}
@@ -265,16 +268,16 @@ export class Portal extends React.Component<PortalProps, PortalState> {
                         networkId={this.props.networkId}
                     />
                     <FlashMessage dispatcher={this.props.dispatcher} flashMessage={this.props.flashMessage} />
-                    {this.props.blockchainIsLoaded && (
-                        <LedgerConfigDialog
-                            providerType={this.props.providerType}
-                            networkId={this.props.networkId}
-                            blockchain={this._blockchain}
-                            dispatcher={this.props.dispatcher}
-                            toggleDialogFn={this._onToggleLedgerDialog.bind(this)}
-                            isOpen={this.state.isLedgerDialogOpen}
-                        />
-                    )}
+
+                    <LedgerConfigDialog
+                        providerType={this.props.providerType}
+                        networkId={this.props.networkId}
+                        blockchain={this._blockchain}
+                        dispatcher={this.props.dispatcher}
+                        toggleDialogFn={this._onToggleLedgerDialog.bind(this)}
+                        isOpen={this.state.isLedgerDialogOpen}
+                    />
+
                     <AssetPicker
                         userAddress={this.props.userAddress}
                         networkId={this.props.networkId}
@@ -320,15 +323,18 @@ export class Portal extends React.Component<PortalProps, PortalState> {
         );
     }
     private _renderWallet(): React.ReactNode {
-        const startOnboarding = this._renderStartOnboarding();
-        const isMobile = utils.isMobile(this.props.screenWidth);
+        const isMobile = utils.isMobileWidth(this.props.screenWidth);
         // We need room to scroll down for mobile onboarding
-        const marginBottom = isMobile ? '200px' : '15px';
+        const marginBottom = isMobile ? '250px' : '15px';
         return (
             <div>
-                <Container>
-                    {isMobile && <Container marginBottom="15px">{startOnboarding}</Container>}
-                    <Container marginBottom={marginBottom}>
+                <Container className="flex flex-column items-center">
+                    {isMobile && (
+                        <Container marginTop="20px" marginBottom="20px">
+                            {this._renderStartOnboarding()}
+                        </Container>
+                    )}
+                    <Container marginBottom={marginBottom} width="100%">
                         <Wallet
                             style={
                                 !isMobile && this.props.isPortalOnboardingShowing
@@ -354,9 +360,12 @@ export class Portal extends React.Component<PortalProps, PortalState> {
                             onAddToken={this._onAddToken.bind(this)}
                             onRemoveToken={this._onRemoveToken.bind(this)}
                             refetchTokenStateAsync={this._refetchTokenStateAsync.bind(this)}
+                            toggleTooltipDirection={
+                                this.props.isPortalOnboardingShowing ? PointerDirection.Left : PointerDirection.Right
+                            }
                         />
                     </Container>
-                    {!isMobile && <Container marginTop="15px">{startOnboarding}</Container>}
+                    {!isMobile && <Container marginTop="8px">{this._renderStartOnboarding()}</Container>}
                 </Container>
                 <PortalOnboardingFlow
                     blockchain={this._blockchain}
@@ -367,37 +376,32 @@ export class Portal extends React.Component<PortalProps, PortalState> {
         );
     }
     private _renderStartOnboarding(): React.ReactNode {
-        return (
-            <Island>
-                <Container
-                    marginTop="30px"
-                    marginBottom="30px"
-                    marginLeft="30px"
-                    marginRight="30px"
-                    className="flex justify-around items-center"
-                >
-                    <ActionAccountBalanceWallet style={{ width: '30px', height: '30px' }} color={colors.orange} />
-                    <Text
-                        fontColor={colors.grey}
-                        fontSize="16px"
-                        center={true}
-                        onClick={this._startOnboarding.bind(this)}
-                    >
-                        Learn how to set up your account
-                    </Text>
+        const isMobile = utils.isMobileWidth(this.props.screenWidth);
+        const shouldStartOnboarding = !isMobile || this.props.location.pathname === `${WebsitePaths.Portal}/account`;
+        const startOnboarding = (
+            <Container className="flex items-center center">
+                <Text fontColor={colors.mediumBlue} fontSize="16px" onClick={this._startOnboarding.bind(this)}>
+                    Set up your account to start trading
+                </Text>
+                <Container marginLeft="8px" paddingTop="3px">
+                    <Image src="/images/setup_account_icon.svg" height="20px" width="20x" />
                 </Container>
-            </Island>
+            </Container>
+        );
+        return !shouldStartOnboarding ? (
+            <Link to={{ pathname: `${WebsitePaths.Portal}/account` }} style={{ textDecoration: 'none' }}>
+                {startOnboarding}
+            </Link>
+        ) : (
+            startOnboarding
         );
     }
-
     private _startOnboarding(): void {
-        const networkName = sharedConstants.NETWORK_NAME_BY_ID[this.props.networkId];
-        analytics.logEvent('Portal', 'Onboarding Started - Manual', networkName, this.props.portalOnboardingStep);
+        analytics.track('Onboarding Started', {
+            reason: 'manual',
+            stepIndex: this.props.portalOnboardingStep,
+        });
         this.props.dispatcher.updatePortalOnboardingShowing(true);
-        // On mobile, make sure the wallet is completely visible.
-        if (this.props.screenWidth === ScreenWidths.Sm) {
-            document.querySelector('.wallet').scrollIntoView();
-        }
     }
     private _renderWalletSection(): React.ReactNode {
         return <Section header={<TextHeader labelText="Your Account" />} body={this._renderWallet()} />;
@@ -411,7 +415,7 @@ export class Portal extends React.Component<PortalProps, PortalState> {
             },
             {
                 pathName: `${WebsitePaths.Portal}/account`,
-                headerText: 'Your Account',
+                headerText: this._isSmallScreen() ? undefined : 'Your Account',
                 render: this._isSmallScreen() ? this._renderWallet.bind(this) : this._renderTokenBalances.bind(this),
             },
             {
@@ -454,7 +458,7 @@ export class Portal extends React.Component<PortalProps, PortalState> {
     private _renderAccountManagementItem(item: AccountManagementItem): React.ReactNode {
         return (
             <Section
-                header={<TextHeader labelText={item.headerText} />}
+                header={!_.isUndefined(item.headerText) && <TextHeader labelText={item.headerText} />}
                 body={<Loading isLoading={!this.props.blockchainIsLoaded} content={item.render()} />}
             />
         );
@@ -536,10 +540,20 @@ export class Portal extends React.Component<PortalProps, PortalState> {
         );
     }
     private _renderRelayerIndexSection(): React.ReactNode {
+        const isMobile = utils.isMobileWidth(this.props.screenWidth);
         return (
             <Section
-                header={<TextHeader labelText="0x Relayers" />}
-                body={<RelayerIndex networkId={this.props.networkId} screenWidth={this.props.screenWidth} />}
+                header={!isMobile && <TextHeader labelText="0x Relayers" />}
+                body={
+                    <Container className="flex flex-column items-center">
+                        {isMobile && (
+                            <Container marginTop="20px" marginBottom="20px">
+                                {this._renderStartOnboarding()}
+                            </Container>
+                        )}
+                        <RelayerIndex networkId={this.props.networkId} screenWidth={this.props.screenWidth} />
+                    </Container>
+                }
             />
         );
     }
@@ -563,9 +577,9 @@ export class Portal extends React.Component<PortalProps, PortalState> {
         if (this.state.tokenManagementState === TokenManagementState.Remove && !isDefaultTrackedToken) {
             if (token.isRegistered) {
                 // Remove the token from tracked tokens
-                const newToken = {
+                const newToken: Token = {
                     ...token,
-                    isTracked: false,
+                    trackedTimestamp: undefined,
                 };
                 this.props.dispatcher.updateTokenByAddress([newToken]);
             } else {
@@ -608,17 +622,12 @@ export class Portal extends React.Component<PortalProps, PortalState> {
         const isSmallScreen = this.props.screenWidth === ScreenWidths.Sm;
         return isSmallScreen;
     }
-
     private _getCurrentTrackedTokens(): Token[] {
-        return this._getTrackedTokens(this.props.tokenByAddress);
+        return utils.getTrackedTokens(this.props.tokenByAddress);
     }
-
-    private _getTrackedTokens(tokenByAddress: TokenByAddress): Token[] {
-        const allTokens = _.values(tokenByAddress);
-        const trackedTokens = _.filter(allTokens, t => t.isTracked);
-        return trackedTokens;
+    private _getCurrentTrackedTokensAddresses(): string[] {
+        return _.map(this._getCurrentTrackedTokens(), token => token.address);
     }
-
     private _getInitialTrackedTokenStateByAddress(trackedTokens: Token[]): TokenStateByAddress {
         const trackedTokenStateByAddress: TokenStateByAddress = {};
         _.each(trackedTokens, token => {
@@ -695,19 +704,19 @@ interface LargeLayoutProps {
 }
 const LargeLayout = (props: LargeLayoutProps) => {
     return (
-        <Container className="mx-auto flex flex-center" maxWidth={LARGE_LAYOUT_MAX_WIDTH}>
+        <Container
+            className="mx-auto flex flex-center"
+            maxWidth={LARGE_LAYOUT_MAX_WIDTH}
+            paddingLeft={SIDE_PADDING}
+            paddingRight={SIDE_PADDING}
+        >
             <div className="flex-last">
-                <Container
-                    width={LEFT_COLUMN_WIDTH}
-                    position="fixed"
-                    zIndex={zIndex.aboveTopBar}
-                    marginLeft={LARGE_LAYOUT_MARGIN}
-                >
+                <Container width={LEFT_COLUMN_WIDTH} position="fixed" zIndex={zIndex.aboveTopBar}>
                     {props.left}
                 </Container>
             </div>
-            <Container className="flex-auto" marginLeft={LEFT_COLUMN_WIDTH + LARGE_LAYOUT_MARGIN}>
-                <Container className="flex-auto" marginLeft={LARGE_LAYOUT_MARGIN} marginRight={LARGE_LAYOUT_MARGIN}>
+            <Container className="flex-auto" marginLeft={LEFT_COLUMN_WIDTH}>
+                <Container className="flex-auto" marginLeft={SIDE_PADDING}>
                     {props.right}
                 </Container>
             </Container>
@@ -721,7 +730,9 @@ interface SmallLayoutProps {
 const SmallLayout = (props: SmallLayoutProps) => {
     return (
         <div className="flex flex-center">
-            <div className="flex-auto px3">{props.content}</div>
+            <Container className="flex-auto" paddingLeft={SIDE_PADDING} paddingRight={SIDE_PADDING}>
+                {props.content}
+            </Container>
         </div>
     );
 }; // tslint:disable:max-file-line-count

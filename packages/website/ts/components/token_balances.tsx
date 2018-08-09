@@ -5,7 +5,7 @@ import {
     Styles,
     utils as sharedUtils,
 } from '@0xproject/react-shared';
-import { BigNumber, errorUtils, logUtils } from '@0xproject/utils';
+import { BigNumber, errorUtils, fetchAsync, logUtils } from '@0xproject/utils';
 import { Web3Wrapper } from '@0xproject/web3-wrapper';
 import * as _ from 'lodash';
 import Dialog from 'material-ui/Dialog';
@@ -24,7 +24,7 @@ import { SendButton } from 'ts/components/send_button';
 import { HelpTooltip } from 'ts/components/ui/help_tooltip';
 import { LifeCycleRaisedButton } from 'ts/components/ui/lifecycle_raised_button';
 import { TokenIcon } from 'ts/components/ui/token_icon';
-import { AllowanceToggle } from 'ts/containers/inputs/allowance_toggle';
+import { AllowanceStateToggle } from 'ts/containers/inputs/allowance_state_toggle';
 import { trackedTokenStorage } from 'ts/local_storage/tracked_token_storage';
 import { Dispatcher } from 'ts/redux/dispatcher';
 import {
@@ -204,11 +204,8 @@ export class TokenBalances extends React.Component<TokenBalancesProps, TokenBala
                             <TableHeaderColumn>Currency</TableHeaderColumn>
                             <TableHeaderColumn>Balance</TableHeaderColumn>
                             <TableRowColumn className="sm-hide xs-hide" style={stubColumnStyle} />
-                            {isTestNetwork && (
-                                <TableHeaderColumn style={{ paddingLeft: 3 }}>
-                                    {isSmallScreen ? 'Faucet' : 'Request from faucet'}
-                                </TableHeaderColumn>
-                            )}
+                            {isTestNetwork && <TableHeaderColumn style={{ paddingLeft: 3 }}>Action</TableHeaderColumn>}
+                            <TableHeaderColumn>Send</TableHeaderColumn>
                         </TableRow>
                     </TableHeader>
                     <TableBody displayRowCheckbox={false}>
@@ -235,6 +232,20 @@ export class TokenBalances extends React.Component<TokenBalancesProps, TokenBala
                                     />
                                 </TableRowColumn>
                             )}
+                            <TableRowColumn>
+                                <SendButton
+                                    userAddress={this.props.userAddress}
+                                    networkId={this.props.networkId}
+                                    blockchain={this.props.blockchain}
+                                    dispatcher={this.props.dispatcher}
+                                    asset="ETH"
+                                    onError={this._onSendFailed.bind(this)}
+                                    lastForceTokenStateRefetch={this.props.lastForceTokenStateRefetch}
+                                    // This is not necessary for ETH.
+                                    // tslint:disable:jsx-no-lambda
+                                    refetchTokenStateAsync={() => undefined}
+                                />
+                            </TableRowColumn>
                         </TableRow>
                     </TableBody>
                 </Table>
@@ -308,7 +319,7 @@ export class TokenBalances extends React.Component<TokenBalancesProps, TokenBala
         const trackedTokensStartingWithEtherToken = trackedTokens.sort(
             firstBy((t: Token) => t.symbol !== ETHER_TOKEN_SYMBOL)
                 .thenBy((t: Token) => t.symbol !== ZRX_TOKEN_SYMBOL)
-                .thenBy('address'),
+                .thenBy('trackedTimestamp'),
         );
         const tableRows = _.map(
             trackedTokensStartingWithEtherToken,
@@ -361,14 +372,15 @@ export class TokenBalances extends React.Component<TokenBalancesProps, TokenBala
                     )}
                 </TableRowColumn>
                 <TableRowColumn>
-                    <AllowanceToggle
-                        blockchain={this.props.blockchain}
-                        token={token}
-                        tokenState={tokenState}
-                        onErrorOccurred={this._onErrorOccurred.bind(this)}
-                        isDisabled={!tokenState.isLoaded}
-                        refetchTokenStateAsync={this._refetchTokenStateAsync.bind(this, token.address)}
-                    />
+                    <div className="flex justify-center">
+                        <AllowanceStateToggle
+                            blockchain={this.props.blockchain}
+                            token={token}
+                            tokenState={tokenState}
+                            onErrorOccurred={this._onErrorOccurred.bind(this)}
+                            refetchTokenStateAsync={this._refetchTokenStateAsync.bind(this, token.address)}
+                        />
+                    </div>
                 </TableRowColumn>
                 {utils.isTestNetwork(this.props.networkId) && (
                     <TableRowColumn style={{ paddingLeft: actionPaddingX, paddingRight: actionPaddingX }}>
@@ -402,7 +414,7 @@ export class TokenBalances extends React.Component<TokenBalancesProps, TokenBala
                             networkId={this.props.networkId}
                             blockchain={this.props.blockchain}
                             dispatcher={this.props.dispatcher}
-                            token={token}
+                            asset={token}
                             onError={this._onSendFailed.bind(this)}
                             lastForceTokenStateRefetch={this.props.lastForceTokenStateRefetch}
                             refetchTokenStateAsync={this._refetchTokenStateAsync.bind(this, token.address)}
@@ -424,9 +436,9 @@ export class TokenBalances extends React.Component<TokenBalancesProps, TokenBala
         if (!this.state.isAddingToken && !isDefaultTrackedToken) {
             if (token.isRegistered) {
                 // Remove the token from tracked tokens
-                const newToken = {
+                const newToken: Token = {
                     ...token,
-                    isTracked: false,
+                    trackedTimestamp: undefined,
                 };
                 this.props.dispatcher.updateTokenByAddress([newToken]);
             } else {
@@ -526,7 +538,7 @@ export class TokenBalances extends React.Component<TokenBalancesProps, TokenBala
             this.setState({
                 errorType: BalanceErrs.mintingFailed,
             });
-            await errorReporter.reportAsync(err);
+            errorReporter.report(err);
             return false;
         }
     }
@@ -548,7 +560,7 @@ export class TokenBalances extends React.Component<TokenBalancesProps, TokenBala
         await utils.sleepAsync(ARTIFICIAL_FAUCET_REQUEST_DELAY);
 
         const segment = isEtherRequest ? 'ether' : 'zrx';
-        const response = await fetch(
+        const response = await fetchAsync(
             `${constants.URL_TESTNET_FAUCET}/${segment}/${this.props.userAddress}?networkId=${this.props.networkId}`,
         );
         const responseBody = await response.text();
@@ -561,7 +573,7 @@ export class TokenBalances extends React.Component<TokenBalancesProps, TokenBala
             this.setState({
                 errorType,
             });
-            await errorReporter.reportAsync(new Error(`Faucet returned non-200: ${JSON.stringify(response)}`));
+            errorReporter.report(new Error(`Faucet returned non-200: ${JSON.stringify(response)}`));
             return false;
         }
 

@@ -3,14 +3,11 @@
 import { abiUtils, logUtils } from '@0xproject/utils';
 import chalk from 'chalk';
 import { AbiDefinition, ConstructorAbi, EventAbi, MethodAbi } from 'ethereum-types';
-import * as fs from 'fs';
 import { sync as globSync } from 'glob';
 import * as Handlebars from 'handlebars';
 import * as _ from 'lodash';
 import * as mkdirp from 'mkdirp';
 import * as yargs from 'yargs';
-
-import toSnakeCase = require('to-snake-case');
 
 import { ContextData, ContractsBackend, ParamKind } from './types';
 import { utils } from './utils';
@@ -70,16 +67,6 @@ function registerPartials(partialsGlob: string): void {
     }
 }
 
-function writeOutputFile(name: string, renderedTsCode: string): void {
-    let fileName = toSnakeCase(name);
-    if (fileName === 'z_r_x_token') {
-        fileName = 'zrx_token';
-    }
-    const filePath = `${args.output}/${fileName}.ts`;
-    fs.writeFileSync(filePath, renderedTsCode);
-    logUtils.log(`Created: ${chalk.bold(filePath)}`);
-}
-
 Handlebars.registerHelper('parameterType', utils.solTypeToTsType.bind(utils, ParamKind.Input, args.backend));
 Handlebars.registerHelper('returnType', utils.solTypeToTsType.bind(utils, ParamKind.Output, args.backend));
 if (args.partials) {
@@ -118,6 +105,14 @@ for (const abiFileName of abiFileNames) {
         process.exit(1);
     }
 
+    const outFileName = utils.makeOutputFileName(namedContent.name);
+    const outFilePath = `${args.output}/${outFileName}.ts`;
+
+    if (utils.isOutputFileUpToDate(abiFileName, outFilePath)) {
+        logUtils.log(`Already up to date: ${chalk.bold(outFilePath)}`);
+        continue;
+    }
+
     let ctor = ABI.find((abi: AbiDefinition) => abi.type === ABI_TYPE_CONSTRUCTOR) as ConstructorAbi;
     if (_.isUndefined(ctor)) {
         ctor = utils.getEmptyConstructor(); // The constructor exists, but it's implicit in JSON's ABI definition
@@ -152,5 +147,6 @@ for (const abiFileName of abiFileNames) {
         events: eventAbis,
     };
     const renderedTsCode = template(contextData);
-    writeOutputFile(namedContent.name, renderedTsCode);
+    utils.writeOutputFile(outFilePath, renderedTsCode);
+    logUtils.log(`Created: ${chalk.bold(outFilePath)}`);
 }

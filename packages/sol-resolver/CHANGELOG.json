@@ -1,6 +1,52 @@
 [
     {
-        "version": "0.0.8",
+        "version": "1.0.5",
+        "changes": [
+            {
+                "note": "Fix a bug where RelativeFSResolver would crash when trying to read a directory",
+                "pr": 909
+            }
+        ]
+    },
+    {
+        "timestamp": 1532619515,
+        "version": "1.0.4",
+        "changes": [
+            {
+                "note": "Dependencies updated"
+            }
+        ]
+    },
+    {
+        "timestamp": 1532614997,
+        "version": "1.0.3",
+        "changes": [
+            {
+                "note": "Dependencies updated"
+            }
+        ]
+    },
+    {
+        "timestamp": 1532605697,
+        "version": "1.0.2",
+        "changes": [
+            {
+                "note": "Dependencies updated"
+            }
+        ]
+    },
+    {
+        "timestamp": 1532357734,
+        "version": "1.0.1",
+        "changes": [
+            {
+                "note": "Dependencies updated"
+            }
+        ]
+    },
+    {
+        "timestamp": 1532043000,
+        "version": "1.0.0",
         "changes": [
             {
                 "note": "Fix a bug in FsResolver where it tries to read directories as files",
@@ -9,6 +55,15 @@
             {
                 "note": "Fix a bug in NameResolver where it is not ignoring .sol files",
                 "pr": 589
+            }
+        ]
+    },
+    {
+        "timestamp": 1531149657,
+        "version": "0.0.8",
+        "changes": [
+            {
+                "note": "Dependencies updated"
             }
         ]
     },

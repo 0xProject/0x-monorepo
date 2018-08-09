@@ -7,7 +7,9 @@ declare module 'ganache-core' {
         };
         port?: number;
         network_id?: number;
+        networkId?: number;
         mnemonic?: string;
+        gasLimit?: number;
     }
     // tslint:disable-next-line:completed-docs
     export function provider(opts: GanacheOpts): Provider;

@@ -1,4 +1,5 @@
-import { BlockParamLiteral, LogEntryEvent, OrderState } from '@0xproject/types';
+import { OrderState } from '@0xproject/types';
+import { LogEntryEvent } from 'ethereum-types';
 
 export enum OrderWatcherError {
     SubscriptionAlreadyPresent = 'SUBSCRIPTION_ALREADY_PRESENT',
@@ -13,14 +14,14 @@ export type EventWatcherCallback = (err: null | Error, log?: LogEntryEvent) => v
  * expirationMarginMs: Amount of time before order expiry that you'd like to be notified
  * of an orders expiration. Default=0.
  * cleanupJobIntervalMs: How often to run a cleanup job which revalidates all the orders. Default=1hr.
- * stateLayer: Optional blockchain state layer OrderWatcher will monitor for new events. Default=latest.
+ * isVerbose: Weather the order watcher should be verbose. Default=true.
  */
 export interface OrderWatcherConfig {
-    orderExpirationCheckingIntervalMs?: number;
-    eventPollingIntervalMs?: number;
-    expirationMarginMs?: number;
-    cleanupJobIntervalMs?: number;
-    stateLayer: BlockParamLiteral;
+    orderExpirationCheckingIntervalMs: number;
+    eventPollingIntervalMs: number;
+    expirationMarginMs: number;
+    cleanupJobIntervalMs: number;
+    isVerbose: boolean;
 }
 
 export type OnOrderStateChangeCallback = (err: Error | null, orderState?: OrderState) => void;

@@ -8,7 +8,7 @@ import { EnumerableResolver } from './enumerable_resolver';
 const SOLIDITY_FILE_EXTENSION = '.sol';
 
 export class NameResolver extends EnumerableResolver {
-    private _contractsDir: string;
+    private readonly _contractsDir: string;
     constructor(contractsDir: string) {
         super();
         this._contractsDir = contractsDir;

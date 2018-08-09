@@ -1,6 +1,6 @@
 {
     "name": "@0xproject/order-utils",
-    "version": "1.0.0",
+    "version": "1.0.1-rc.2",
     "engines": {
         "node": ">=6.12"
     },
@@ -10,11 +10,12 @@
     "scripts": {
         "watch_without_deps": "yarn pre_build && tsc -w",
         "build": "run-s pre_build transpile copy_monorepo_scripts",
-        "pre_build": "run-s update_artifacts generate_contract_wrappers",
+        "pre_build": "run-s update_artifacts_v2_beta update_artifacts_v2 generate_contract_wrappers",
         "transpile": "tsc",
         "copy_monorepo_scripts": "copyfiles -u 3 './lib/src/monorepo_scripts/**/*' ./scripts",
         "generate_contract_wrappers": "abi-gen --abis 'lib/src/artifacts/@(Exchange|IWallet|IValidator|DummyERC20Token|ERC20Proxy|ERC20Token).json' --template ../contract_templates/contract.handlebars --partials '../contract_templates/partials/**/*.handlebars' --output src/generated_contract_wrappers --backend ethers",
-        "update_artifacts": "for i in ${npm_package_config_contracts}; do copyfiles -u 4 ../migrations/artifacts/2.0.0/$i.json lib/src/artifacts; done;",
+        "update_artifacts_v2_beta": "for i in ${npm_package_config_contracts_v2_beta}; do copyfiles -u 4 ../migrations/artifacts/2.0.0-beta-testnet/$i.json lib/src/artifacts; done;",
+        "update_artifacts_v2": "for i in ${npm_package_config_contracts_v2}; do copyfiles -u 4 ../migrations/artifacts/2.0.0/$i.json lib/src/artifacts; done;",
         "test": "yarn run_mocha",
         "rebuild_and_test": "run-s build test",
         "test:circleci": "yarn test:coverage",
@@ -29,7 +30,8 @@
         "upload_docs_json": "aws s3 cp generated_docs/index.json $S3_URL --profile 0xproject --grants read=uri=http://acs.amazonaws.com/groups/global/AllUsers --content-type application/json"
     },
     "config": {
-        "contracts": "IWallet IValidator Exchange DummyERC20Token ERC20Proxy ERC20Token",
+        "contracts_v2_beta": "IWallet IValidator Exchange ERC20Proxy ERC20Token",
+        "contracts_v2": "DummyERC20Token",
         "postpublish": {
             "docPublishConfigs": {
                 "extraFileIncludes": [
@@ -51,11 +53,9 @@
     },
     "homepage": "https://github.com/0xProject/0x-monorepo/packages/order-utils/README.md",
     "devDependencies": {
-        "@0xproject/dev-utils": "^0.4.4",
-        "@0xproject/migrations": "^0.0.8",
-        "@0xproject/monorepo-scripts": "^0.2.1",
-        "@0xproject/tslint-config": "^0.4.20",
-        "@types/ethereumjs-abi": "^0.6.0",
+        "@0xproject/dev-utils": "^1.0.3",
+        "@0xproject/monorepo-scripts": "^1.0.4",
+        "@0xproject/tslint-config": "^1.0.4",
         "@types/bn.js": "^4.11.0",
         "@types/lodash": "4.14.104",
         "chai": "^4.0.1",
@@ -68,23 +68,23 @@
         "npm-run-all": "^4.1.2",
         "shx": "^0.2.2",
         "sinon": "^4.0.0",
-        "tslint": "5.8.0",
+        "tslint": "5.11.0",
         "typedoc": "0xProject/typedoc",
-        "typescript": "2.7.1"
+        "typescript": "2.9.2"
     },
     "dependencies": {
-        "@0xproject/assert": "^0.2.12",
-        "@0xproject/base-contract": "^0.3.4",
-        "@0xproject/json-schemas": "1.0.0",
-        "@0xproject/sol-compiler": "^0.5.2",
-        "@0xproject/types": "^1.0.0",
-        "@0xproject/typescript-typings": "^0.4.1",
-        "@0xproject/utils": "^0.7.1",
-        "@0xproject/web3-wrapper": "^0.7.1",
+        "@0xproject/assert": "^1.0.4",
+        "@0xproject/base-contract": "^1.0.4",
+        "@0xproject/json-schemas": "^1.0.1-rc.3",
+        "@0xproject/sol-compiler": "^1.0.4",
+        "@0xproject/types": "^1.0.1-rc.3",
+        "@0xproject/typescript-typings": "^1.0.3",
+        "@0xproject/utils": "^1.0.4",
+        "@0xproject/web3-wrapper": "^1.1.2",
         "@types/node": "^8.0.53",
         "bn.js": "^4.11.8",
-        "ethereum-types": "^0.0.1",
-        "ethereumjs-abi": "^0.6.4",
+        "ethereum-types": "^1.0.3",
+        "ethereumjs-abi": "0.6.5",
         "ethereumjs-util": "^5.1.1",
         "ethers": "3.0.22",
         "lodash": "^4.17.4"

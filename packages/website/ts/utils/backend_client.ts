@@ -6,6 +6,7 @@ import {
     WebsiteBackendJobInfo,
     WebsiteBackendPriceInfo,
     WebsiteBackendRelayerInfo,
+    WebsiteBackendTokenInfo,
 } from 'ts/types';
 import { fetchUtils } from 'ts/utils/fetch_utils';
 import { utils } from 'ts/utils/utils';
@@ -14,6 +15,7 @@ const ETH_GAS_STATION_ENDPOINT = '/eth_gas_station';
 const JOBS_ENDPOINT = '/jobs';
 const PRICES_ENDPOINT = '/prices';
 const RELAYERS_ENDPOINT = '/relayers';
+const TOKENS_ENDPOINT = '/tokens';
 const WIKI_ENDPOINT = '/wiki';
 const SUBSCRIBE_SUBSTACK_NEWSLETTER_ENDPOINT = '/newsletter_subscriber/substack';
 
@@ -39,6 +41,10 @@ export const backendClient = {
     },
     async getRelayerInfosAsync(): Promise<WebsiteBackendRelayerInfo[]> {
         const result = await fetchUtils.requestAsync(utils.getBackendBaseUrl(), RELAYERS_ENDPOINT);
+        return result;
+    },
+    async getTokenInfosAsync(): Promise<WebsiteBackendTokenInfo[]> {
+        const result = await fetchUtils.requestAsync(utils.getBackendBaseUrl(), TOKENS_ENDPOINT);
         return result;
     },
     async getWikiArticlesBySectionAsync(): Promise<ArticlesBySection> {

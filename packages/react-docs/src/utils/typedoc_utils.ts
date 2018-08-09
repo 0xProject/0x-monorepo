@@ -235,7 +235,7 @@ export const typeDocUtils = {
                       childTypeIfExists = {
                           name: child.name,
                           typeDocType: TypeDocTypes.Reflection,
-                          method: this._convertMethod(child, isConstructor, sections, sectionName, docId),
+                          method: typeDocUtils._convertMethod(child, isConstructor, sections, sectionName, docId),
                       };
                   }
                   const c: CustomTypeChild = {

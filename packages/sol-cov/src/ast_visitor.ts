@@ -18,15 +18,15 @@ enum BranchType {
 
 export class ASTVisitor {
     private _entryId = 0;
-    private _fnMap: FnMap = {};
-    private _branchMap: BranchMap = {};
-    private _modifiersStatementIds: number[] = [];
-    private _statementMap: StatementMap = {};
-    private _locationByOffset: LocationByOffset;
-    private _ignoreRangesBeginningAt: number[];
+    private readonly _fnMap: FnMap = {};
+    private readonly _branchMap: BranchMap = {};
+    private readonly _modifiersStatementIds: number[] = [];
+    private readonly _statementMap: StatementMap = {};
+    private readonly _locationByOffset: LocationByOffset;
+    private readonly _ignoreRangesBeginningAt: number[];
     // keep track of contract/function ranges that are to be ignored
     // so we can also ignore any children nodes within the contract/function
-    private _ignoreRangesWithin: Array<[number, number]> = [];
+    private readonly _ignoreRangesWithin: Array<[number, number]> = [];
     constructor(locationByOffset: LocationByOffset, ignoreRangesBeginningAt: number[] = []) {
         this._locationByOffset = locationByOffset;
         this._ignoreRangesBeginningAt = ignoreRangesBeginningAt;

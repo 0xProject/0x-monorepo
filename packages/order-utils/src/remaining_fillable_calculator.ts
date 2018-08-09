@@ -1,14 +1,14 @@
 import { BigNumber } from '@0xproject/utils';
 
 export class RemainingFillableCalculator {
-    private _isTraderAssetZRX: boolean;
+    private readonly _isTraderAssetZRX: boolean;
     // Transferrable Amount is the minimum of Approval and Balance
-    private _transferrableAssetAmount: BigNumber;
-    private _transferrableFeeAmount: BigNumber;
-    private _remainingOrderAssetAmount: BigNumber;
-    private _remainingOrderFeeAmount: BigNumber;
-    private _orderFee: BigNumber;
-    private _orderAssetAmount: BigNumber;
+    private readonly _transferrableAssetAmount: BigNumber;
+    private readonly _transferrableFeeAmount: BigNumber;
+    private readonly _remainingOrderAssetAmount: BigNumber;
+    private readonly _remainingOrderFeeAmount: BigNumber;
+    private readonly _orderFee: BigNumber;
+    private readonly _orderAssetAmount: BigNumber;
     constructor(
         orderFee: BigNumber,
         orderAssetAmount: BigNumber,
@@ -23,9 +23,9 @@ export class RemainingFillableCalculator {
         this._transferrableAssetAmount = transferrableAssetAmount;
         this._transferrableFeeAmount = transferrableFeeAmount;
         this._remainingOrderAssetAmount = remainingOrderAssetAmount;
-        this._remainingOrderFeeAmount = remainingOrderAssetAmount
-            .times(this._orderFee)
-            .dividedToIntegerBy(this._orderAssetAmount);
+        this._remainingOrderFeeAmount = orderAssetAmount.eq(0)
+            ? new BigNumber(0)
+            : remainingOrderAssetAmount.times(orderFee).dividedToIntegerBy(orderAssetAmount);
     }
     public computeRemainingFillable(): BigNumber {
         if (this._hasSufficientFundsForFeeAndTransferAmount()) {

@@ -20,6 +20,7 @@ import {
 } from 'ts/types';
 import { configs } from 'ts/utils/configs';
 import { constants } from 'ts/utils/constants';
+import { utils } from 'ts/utils/utils';
 
 const DATE_FORMAT = 'D/M/YY';
 const ICON_DIMENSION = 40;
@@ -95,7 +96,11 @@ export class EthWrappers extends React.Component<EthWrappersProps, EthWrappersSt
             this.props.networkId,
             EtherscanLinkSuffixes.Address,
         );
-        const tokenLabel = this._renderToken('Wrapped Ether', etherToken.address, configs.ICON_URL_BY_SYMBOL.WETH);
+        const tokenLabel = this._renderToken(
+            'Wrapped Ether',
+            etherToken.address,
+            utils.getTokenIconUrl(etherToken.symbol),
+        );
         const userEtherBalanceInEth = !_.isUndefined(this.props.userEtherBalanceInWei)
             ? Web3Wrapper.toUnitAmount(this.props.userEtherBalanceInWei, constants.DECIMAL_PLACES_ETH)
             : undefined;

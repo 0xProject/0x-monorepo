@@ -1,9 +1,44 @@
 <!--
-This file is auto-generated using the monorepo-scripts package. Don't edit directly.
+changelogUtils.file is auto-generated using the monorepo-scripts package. Don't edit directly.
 Edit the package's CHANGELOG.json file only.
 -->
 
 CHANGELOG
+
+## v1.0.1-rc.2 - _July 26, 2018_
+
+    * Fixed bug caused by importing non-existent dep
+
+## v1.0.1-rc.1 - _July 26, 2018_
+
+    * Dependencies updated
+
+## v1.0.0 - _July 23, 2018_
+
+    * Dependencies updated
+
+## v1.0.0-rc.2 - _July 20, 2018_
+
+    * Remove `zeroEx.assetData`  and instead re-export it's static functions directly off `ZeroEx`
+
+## v1.0.0-rc.1 - _July 20, 2018_
+
+    * Remove tokenRegistry wrapper (#863)
+    * Rename `zeroEx.token` to `zeroEx.erc20Token`, and add `zeroEx.erc721Token` (#863)
+    * Rename `zeroEx.proxy` to `zeroEx.erc20Proxy` and add `zeroEx.erc721Proxy` (#863)
+    * Refactored `ZeroEx.isValidSignature` to `zeroEx.isValidSignatureAsync`. It is now async so that it can verify contract-dependent signature types (#863)
+    * Refactored `signOrderHashAsync` to `ecSignOrderHashAsync`. There are now many non-ECSignature ways to sign orders too. (#863)
+    * Removed `createOrderWatcherAsync` method. Will be added back once OrderWatcher is refactored for V2 (#863)
+    * 0x.js exports renamed contract events and event arg types (#863)
+    * Export `ZeroEx.assetData` with methods to decode/encode assetData fields found in 0x orders (#884)
+
+## v0.38.6 - _July 18, 2018_
+
+    * Dependencies updated
+
+## v0.38.5 - _July 9, 2018_
+
+    * Dependencies updated
 
 ## v0.38.4 - _June 19, 2018_
 

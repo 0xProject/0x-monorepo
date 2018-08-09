@@ -1,6 +1,6 @@
 {
     "name": "@0xproject/dev-utils",
-    "version": "0.4.4",
+    "version": "1.0.3",
     "engines": {
         "node": ">=6.12"
     },
@@ -30,8 +30,8 @@
     },
     "homepage": "https://github.com/0xProject/0x-monorepo/packages/dev-utils/README.md",
     "devDependencies": {
-        "@0xproject/monorepo-scripts": "^0.2.1",
-        "@0xproject/tslint-config": "^0.4.20",
+        "@0xproject/monorepo-scripts": "^1.0.4",
+        "@0xproject/tslint-config": "^1.0.4",
         "@types/lodash": "4.14.104",
         "@types/mocha": "^2.2.42",
         "chai": "^4.0.1",
@@ -41,18 +41,17 @@
         "npm-run-all": "^4.1.2",
         "nyc": "^11.0.1",
         "shx": "^0.2.2",
-        "tslint": "5.8.0",
-        "typescript": "2.7.1"
+        "tslint": "5.11.0",
+        "typescript": "2.9.2"
     },
     "dependencies": {
-        "@0xproject/subproviders": "^0.10.4",
-        "@0xproject/types": "^0.8.1",
-        "ethereum-types": "^0.0.1",
-        "@0xproject/typescript-typings": "^0.4.1",
-        "@0xproject/web3-wrapper": "^0.7.1",
-        "lodash": "^4.17.4",
-        "web3": "^0.20.0",
-        "web3-provider-engine": "^14.0.4"
+        "@0xproject/subproviders": "^1.0.4",
+        "@0xproject/types": "^1.0.1-rc.3",
+        "@0xproject/typescript-typings": "^1.0.3",
+        "@0xproject/utils": "^1.0.4",
+        "@0xproject/web3-wrapper": "^1.1.2",
+        "ethereum-types": "^1.0.3",
+        "lodash": "^4.17.4"
     },
     "publishConfig": {
         "access": "public"

@@ -152,9 +152,8 @@ export interface ECSignature {
 }
 
 export enum AssetProxyId {
-    INVALID = '0x00000000',
     ERC20 = '0xf47261b0',
-    ERC721 = '0x08e937fa',
+    ERC721 = '0x02571792',
 }
 
 export interface ERC20AssetData {
@@ -166,7 +165,6 @@ export interface ERC721AssetData {
     assetProxyId: string;
     tokenAddress: string;
     tokenId: BigNumber;
-    receiverData: string;
 }
 
 export enum RevertReason {
@@ -187,8 +185,7 @@ export enum RevertReason {
     InvalidTxHash = 'INVALID_TX_HASH',
     InvalidTxSignature = 'INVALID_TX_SIGNATURE',
     FailedExecution = 'FAILED_EXECUTION',
-    AssetProxyMismatch = 'ASSET_PROXY_MISMATCH',
-    AssetProxyIdMismatch = 'ASSET_PROXY_ID_MISMATCH',
+    AssetProxyAlreadyExists = 'ASSET_PROXY_ALREADY_EXISTS',
     LengthGreaterThan0Required = 'LENGTH_GREATER_THAN_0_REQUIRED',
     LengthGreaterThan131Required = 'LENGTH_GREATER_THAN_131_REQUIRED',
     Length0Required = 'LENGTH_0_REQUIRED',
@@ -212,4 +209,17 @@ export enum RevertReason {
     LibBytesGreaterOrEqualToSourceBytesLengthRequired = 'GREATER_OR_EQUAL_TO_SOURCE_BYTES_LENGTH_REQUIRED',
     Erc20InsufficientBalance = 'ERC20_INSUFFICIENT_BALANCE',
     Erc20InsufficientAllowance = 'ERC20_INSUFFICIENT_ALLOWANCE',
+    FeePercentageTooLarge = 'FEE_PERCENTAGE_TOO_LARGE',
+    ValueGreaterThanZero = 'VALUE_GREATER_THAN_ZERO',
+    InvalidMsgValue = 'INVALID_MSG_VALUE',
+    InsufficientEthRemaining = 'INSUFFICIENT_ETH_REMAINING',
+    Uint256Overflow = 'UINT256_OVERFLOW',
+}
+
+export enum StatusCodes {
+    Success = 200,
+    NotFound = 404,
+    InternalError = 500,
+    MethodNotAllowed = 405,
+    GatewayTimeout = 504,
 }

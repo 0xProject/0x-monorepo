@@ -21,6 +21,18 @@ If you're adding a new public function/member, make sure you document it with Ja
 
 If the sub-package you are modifying has a `CHANGELOG.md` file, make sure to add an entry in it for the change made to the package. For published packages, only changes that modify the public interface or behavior of the package need a CHANGELOG entry.
 
+#### Enabling code coverage checks on your fork
+
+If you simply fork the repo and then create a PR sourced from it, your PR will fail its test coverage check. This is because the 0x CircleCI configuration sets the `COVERALLS_REPO_TOKEN` environment variable to the token for 0xProject/0x-monorepo, but when running the check against your fork the token needs to match the repo that is your fork, rather than the 0x repo.
+
+To facilitate this check, after creating your fork, but before creating the branch for your PR, do the following:
+
+1.  Log in to [coveralls.io](https://coveralls.io/), go to Add Repos, and enable your fork. Then go to the settings for that repo, and copy the Repo Token identifier.
+2.  Log in to [CircleCI](https://circleci.com/login), go to Add Projects, click the Set Up Project button corresponding to your fork, and then click Start Building. (Aside from step 3 below, no actual set up is needed, since it will use the `.circleci/config.yml` file in 0x-monorepo, so you can ignore all of the instruction/explanation given on the page with the Start Building button.)
+3.  In CircleCI, configure your project to add an Environment Variable, with name `COVERALLS_REPO_TOKEN`, and for the value paste in the Repo Token you copied in step 1.
+
+Now, when you push to your branch, CircleCI will automatically run all of the checks in your own instance, and the coverage check will work since it has the proper Repo Token, and the PR will magically refer to your own checks rather than running them in the 0x CircleCI instance.
+
 ### Styleguide
 
 We use [TSLint](https://palantir.github.io/tslint/) with [custom configs](https://github.com/0xProject/0x-monorepo/tree/development/packages/tslint-config) to keep our code style consistent.

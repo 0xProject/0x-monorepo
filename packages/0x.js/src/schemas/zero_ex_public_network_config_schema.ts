@@ -22,8 +22,8 @@ export const zeroExPublicNetworkConfigSchema = {
         gasPrice: { $ref: '/Number' },
         zrxContractAddress: { $ref: '/Address' },
         exchangeContractAddress: { $ref: '/Address' },
-        tokenRegistryContractAddress: { $ref: '/Address' },
-        tokenTransferProxyContractAddress: { $ref: '/Address' },
+        erc20ProxyContractAddress: { $ref: '/Address' },
+        erc721ProxyContractAddress: { $ref: '/Address' },
         orderWatcherConfig: {
             type: 'object',
             properties: {

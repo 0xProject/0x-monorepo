@@ -16,8 +16,7 @@ import { addressUtils } from './address_utils';
 import { BigNumber } from './configured_bignumber';
 
 export class AbiDecoder {
-    private _savedABIs: AbiDefinition[] = [];
-    private _methodIds: { [signatureHash: string]: EventAbi } = {};
+    private readonly _methodIds: { [signatureHash: string]: EventAbi } = {};
     constructor(abiArrays: AbiDefinition[][]) {
         _.forEach(abiArrays, this.addABI.bind(this));
     }
@@ -87,6 +86,5 @@ export class AbiDecoder {
                 this._methodIds[topic] = abi;
             }
         });
-        this._savedABIs = this._savedABIs.concat(abiArray);
     }
 }

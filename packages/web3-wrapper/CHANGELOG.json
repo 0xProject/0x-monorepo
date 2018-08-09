@@ -1,5 +1,82 @@
 [
     {
+        "timestamp": 1532619515,
+        "version": "1.1.2",
+        "changes": [
+            {
+                "note": "Dependencies updated"
+            }
+        ]
+    },
+    {
+        "timestamp": 1532614997,
+        "version": "1.1.1",
+        "changes": [
+            {
+                "note": "Dependencies updated"
+            }
+        ]
+    },
+    {
+        "version": "1.1.0",
+        "changes": [
+            {
+                "note": "Add `getTransactionByHashAsync` method",
+                "pr": 847
+            }
+        ],
+        "timestamp": 1532605697
+    },
+    {
+        "timestamp": 1532357734,
+        "version": "1.0.1",
+        "changes": [
+            {
+                "note": "Dependencies updated"
+            }
+        ]
+    },
+    {
+        "timestamp": 1532043000,
+        "version": "1.0.0",
+        "changes": [
+            {
+                "note": "Stop exporting `marshaller` utility file.",
+                "pr": 902
+            },
+            {
+                "note": "Export `marshaller` utility file.",
+                "pr": 829
+            },
+            {
+                "note": "Add `getNodeTypeAsync` method",
+                "pr": 812
+            },
+            {
+                "note": "Stop exporting uniqueVersionIds object",
+                "pr": 897
+            }
+        ]
+    },
+    {
+        "timestamp": 1531919263,
+        "version": "0.7.3",
+        "changes": [
+            {
+                "note": "Dependencies updated"
+            }
+        ]
+    },
+    {
+        "timestamp": 1531149657,
+        "version": "0.7.2",
+        "changes": [
+            {
+                "note": "Dependencies updated"
+            }
+        ]
+    },
+    {
         "timestamp": 1529397769,
         "version": "0.7.1",
         "changes": [

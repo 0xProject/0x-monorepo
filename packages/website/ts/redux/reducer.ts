@@ -42,7 +42,7 @@ export interface State {
     userEtherBalanceInWei?: BigNumber;
     portalOnboardingStep: number;
     isPortalOnboardingShowing: boolean;
-    hasPortalOnboardingBeenSeen: boolean;
+    hasPortalOnboardingBeenClosed: boolean;
     // Note: cache of supplied orderJSON in fill order step. Do not use for anything else.
     userSuppliedOrderCache: Order;
 
@@ -85,7 +85,7 @@ export const INITIAL_STATE: State = {
     userSuppliedOrderCache: undefined,
     portalOnboardingStep: 0,
     isPortalOnboardingShowing: false,
-    hasPortalOnboardingBeenSeen: false,
+    hasPortalOnboardingBeenClosed: false,
     // Docs
     docsVersion: DEFAULT_DOCS_VERSION,
     availableDocVersions: [DEFAULT_DOCS_VERSION],
@@ -311,7 +311,9 @@ export function reducer(state: State = INITIAL_STATE, action: Action): State {
             return {
                 ...state,
                 isPortalOnboardingShowing,
-                hasPortalOnboardingBeenSeen: true,
+                hasPortalOnboardingBeenClosed: !isPortalOnboardingShowing ? true : state.hasPortalOnboardingBeenClosed,
+                // always start onboarding from the beginning
+                portalOnboardingStep: 0,
             };
         }
 

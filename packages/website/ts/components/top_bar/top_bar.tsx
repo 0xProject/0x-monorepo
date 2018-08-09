@@ -7,17 +7,15 @@ import MenuItem from 'material-ui/MenuItem';
 import * as React from 'react';
 import { Link } from 'react-router-dom';
 import { Blockchain } from 'ts/blockchain';
-import { LegacyPortalMenu } from 'ts/components/legacy_portal/legacy_portal_menu';
 import { DrawerMenu } from 'ts/components/portal/drawer_menu';
 import { ProviderDisplay } from 'ts/components/top_bar/provider_display';
 import { TopBarMenuItem } from 'ts/components/top_bar/top_bar_menu_item';
+import { Container } from 'ts/components/ui/container';
 import { DropDown } from 'ts/components/ui/drop_down';
 import { Dispatcher } from 'ts/redux/dispatcher';
-import { zIndex } from 'ts/style/z_index';
 import { Deco, Key, ProviderType, WebsiteLegacyPaths, WebsitePaths } from 'ts/types';
 import { constants } from 'ts/utils/constants';
 import { Translate } from 'ts/utils/translate';
-import { utils } from 'ts/utils/utils';
 
 export enum TopBarDisplayType {
     Default,
@@ -46,6 +44,8 @@ export interface TopBarProps {
     onVersionSelected?: (semver: string) => void;
     sidebarHeader?: React.ReactNode;
     maxWidth?: number;
+    paddingLeft?: number;
+    paddingRight?: number;
 }
 
 interface TopBarState {
@@ -58,8 +58,8 @@ const styles: Styles = {
         width: '100%',
         position: 'relative',
         top: 0,
-        zIndex: zIndex.topBar,
         paddingBottom: 1,
+        zIndex: 1,
     },
     bottomBar: {
         boxShadow: 'rgba(0, 0, 0, 0.187647) 0px 1px 3px',
@@ -69,13 +69,12 @@ const styles: Styles = {
         color: colors.darkestGrey,
         paddingTop: 6,
         paddingBottom: 6,
-        marginTop: 17,
         cursor: 'pointer',
         fontWeight: 400,
     },
 };
 
-const DEFAULT_HEIGHT = 59;
+const DEFAULT_HEIGHT = 68;
 const EXPANDED_HEIGHT = 75;
 
 export class TopBar extends React.Component<TopBarProps, TopBarState> {
@@ -83,6 +82,8 @@ export class TopBar extends React.Component<TopBarProps, TopBarState> {
         displayType: TopBarDisplayType.Default,
         style: {},
         isNightVersion: false,
+        paddingLeft: 20,
+        paddingRight: 20,
     };
     public static heightForDisplayType(displayType: TopBarDisplayType): number {
         const result = displayType === TopBarDisplayType.Expanded ? EXPANDED_HEIGHT : DEFAULT_HEIGHT;
@@ -104,7 +105,9 @@ export class TopBar extends React.Component<TopBarProps, TopBarState> {
     public render(): React.ReactNode {
         const isNightVersion = this.props.isNightVersion;
         const isExpandedDisplayType = this.props.displayType === TopBarDisplayType.Expanded;
-        const parentClassNames = `flex mx-auto ${isExpandedDisplayType ? 'pl3 py1' : 'max-width-4'}`;
+        const parentClassNames = !isExpandedDisplayType
+            ? 'flex mx-auto items-center max-width-4'
+            : 'flex mx-auto items-center';
         const height = isExpandedDisplayType ? EXPANDED_HEIGHT : DEFAULT_HEIGHT;
         const developerSectionMenuItems = [
             <Link key="subMenuItem-zeroEx" to={WebsitePaths.ZeroExJs} className="text-decoration-none">
@@ -199,9 +202,8 @@ export class TopBar extends React.Component<TopBarProps, TopBarState> {
             fontSize: 25,
             color: isNightVersion ? 'white' : 'black',
             cursor: 'pointer',
-            paddingTop: 16,
         };
-        const hoverActiveNode = (
+        const activeNode = (
             <div className="flex relative" style={{ color: menuIconStyle.color }}>
                 <div style={{ paddingRight: 10 }}>{this.props.translate.get(Key.Developers, Deco.Cap)}</div>
                 <div className="absolute" style={{ paddingLeft: 3, right: 3, top: -2 }}>
@@ -210,23 +212,27 @@ export class TopBar extends React.Component<TopBarProps, TopBarState> {
             </div>
         );
         const popoverContent = <Menu style={{ color: colors.darkGrey }}>{developerSectionMenuItems}</Menu>;
-        // TODO : Remove this once we ship portal v2
-        const shouldShowPortalV2Drawer = this._isViewingPortal() && utils.shouldShowPortalV2();
         return (
-            <div style={{ ...styles.topBar, ...bottomBorderStyle, ...this.props.style, ...{ height } }} className="pb1">
-                <div className={parentClassNames} style={{ maxWidth: this.props.maxWidth }}>
-                    <div className="col col-2 sm-pl1 md-pl2 lg-pl0" style={{ paddingTop: 15 }}>
-                        <Link to={`${WebsitePaths.Home}`} className="text-decoration-none">
-                            <img src={logoUrl} height="30" />
-                        </Link>
-                    </div>
-                    <div className={`col col-${isExpandedDisplayType ? '8' : '9'} lg-hide md-hide`} />
-                    <div className={`col col-${isExpandedDisplayType ? '6' : '5'} sm-hide xs-hide`} />
+            <div
+                style={{ ...styles.topBar, ...bottomBorderStyle, ...this.props.style, ...{ height } }}
+                className="pb1 flex items-center"
+            >
+                <Container
+                    className={parentClassNames}
+                    width="100%"
+                    maxWidth={this.props.maxWidth}
+                    paddingLeft={this.props.paddingLeft}
+                    paddingRight={this.props.paddingRight}
+                >
+                    <Link to={`${WebsitePaths.Home}`} className="text-decoration-none">
+                        <img src={logoUrl} height="30" />
+                    </Link>
+                    <div className="flex-auto" />
                     {!this._isViewingPortal() && (
                         <div className={menuClasses}>
-                            <div className="flex justify-between">
+                            <div className="flex items-center justify-between">
                                 <DropDown
-                                    hoverActiveNode={hoverActiveNode}
+                                    activeNode={activeNode}
                                     popoverContent={popoverContent}
                                     anchorOrigin={{ horizontal: 'middle', vertical: 'bottom' }}
                                     targetOrigin={{ horizontal: 'middle', vertical: 'top' }}
@@ -254,7 +260,7 @@ export class TopBar extends React.Component<TopBarProps, TopBarState> {
                                     isExternal={false}
                                 />
                                 <TopBarMenuItem
-                                    title={this.props.translate.get(Key.PortalDApp, Deco.CapWords)}
+                                    title={this.props.translate.get(Key.TradeCallToAction, Deco.Cap)}
                                     path={`${WebsitePaths.Portal}`}
                                     isPrimary={true}
                                     style={styles.menuItem}
@@ -266,7 +272,7 @@ export class TopBar extends React.Component<TopBarProps, TopBarState> {
                         </div>
                     )}
                     {this._isViewingPortal() && (
-                        <div className="sm-hide xs-hide col col-5" style={{ paddingTop: 8, marginRight: 36 }}>
+                        <div className="sm-hide xs-hide">
                             <ProviderDisplay
                                 dispatcher={this.props.dispatcher}
                                 userAddress={this.props.userAddress}
@@ -279,17 +285,17 @@ export class TopBar extends React.Component<TopBarProps, TopBarState> {
                             />
                         </div>
                     )}
-                    <div className={`col ${isExpandedDisplayType ? 'col-2 pl2' : 'col-1'} md-hide lg-hide`}>
+                    <div className={'md-hide lg-hide'}>
                         <div style={menuIconStyle}>
                             <i className="zmdi zmdi-menu" onClick={this._onMenuButtonClick.bind(this)} />
                         </div>
                     </div>
-                </div>
-                {shouldShowPortalV2Drawer ? this._renderPortalV2Drawer() : this._renderDrawer()}
+                </Container>
+                {this._isViewingPortal() ? this._renderPortalDrawer() : this._renderDrawer()}
             </div>
         );
     }
-    private _renderPortalV2Drawer(): React.ReactNode {
+    private _renderPortalDrawer(): React.ReactNode {
         return (
             <Drawer
                 open={this.state.isDrawerOpen}
@@ -317,7 +323,6 @@ export class TopBar extends React.Component<TopBarProps, TopBarState> {
                 onRequestChange={this._onMenuButtonClick.bind(this)}
             >
                 <div className="clearfix">
-                    {this._renderPortalMenu()}
                     {this._renderDocsMenu()}
                     {this._renderWiki()}
                     <div className="pl1 py1 mt3" style={{ backgroundColor: colors.lightGrey }}>
@@ -469,20 +474,6 @@ export class TopBar extends React.Component<TopBarProps, TopBarState> {
             </div>
         );
     }
-    private _renderPortalMenu(): React.ReactNode {
-        if (!this._isViewingPortal()) {
-            return undefined;
-        }
-
-        return (
-            <div className="lg-hide md-hide">
-                <div className="pl1 py1" style={{ backgroundColor: colors.lightGrey }}>
-                    {this.props.translate.get(Key.PortalDApp, Deco.CapWords)}
-                </div>
-                <LegacyPortalMenu menuItemStyle={{ color: 'black' }} onClick={this._onMenuButtonClick.bind(this)} />
-            </div>
-        );
-    }
     private _onMenuButtonClick(): void {
         this.setState({
             isDrawerOpen: !this.state.isDrawerOpen,
@@ -490,6 +481,9 @@ export class TopBar extends React.Component<TopBarProps, TopBarState> {
     }
     private _isViewingPortal(): boolean {
         return _.includes(this.props.location.pathname, WebsitePaths.Portal);
+    }
+    private _isViewingDocs(): boolean {
+        return _.includes(this.props.location.pathname, WebsitePaths.Docs);
     }
     private _isViewingFAQ(): boolean {
         return _.includes(this.props.location.pathname, WebsitePaths.FAQ);
@@ -533,8 +527,9 @@ export class TopBar extends React.Component<TopBarProps, TopBarState> {
     private _shouldDisplayBottomBar(): boolean {
         return (
             this._isViewingWiki() ||
-            this._isViewing0xjsDocs() ||
             this._isViewingFAQ() ||
+            this._isViewingDocs() ||
+            this._isViewing0xjsDocs() ||
             this._isViewingSmartContractsDocs() ||
             this._isViewingWeb3WrapperDocs() ||
             this._isViewingSolCompilerDocs() ||

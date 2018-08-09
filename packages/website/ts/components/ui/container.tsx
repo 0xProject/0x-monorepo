@@ -2,11 +2,14 @@ import * as React from 'react';
 
 type StringOrNum = string | number;
 
+export type ContainerTag = 'div' | 'span';
+
 export interface ContainerProps {
     marginTop?: StringOrNum;
     marginBottom?: StringOrNum;
     marginRight?: StringOrNum;
     marginLeft?: StringOrNum;
+    padding?: StringOrNum;
     paddingTop?: StringOrNum;
     paddingBottom?: StringOrNum;
     paddingRight?: StringOrNum;
@@ -14,7 +17,10 @@ export interface ContainerProps {
     backgroundColor?: string;
     borderRadius?: StringOrNum;
     maxWidth?: StringOrNum;
+    maxHeight?: StringOrNum;
     width?: StringOrNum;
+    height?: StringOrNum;
+    minWidth?: StringOrNum;
     minHeight?: StringOrNum;
     isHidden?: boolean;
     className?: string;
@@ -25,15 +31,25 @@ export interface ContainerProps {
     right?: string;
     bottom?: string;
     zIndex?: number;
+    Tag?: ContainerTag;
+    cursor?: string;
+    id?: string;
+    onClick?: (event: React.MouseEvent<HTMLElement>) => void;
+    overflowX?: 'scroll' | 'hidden' | 'auto' | 'visible';
 }
 
-export const Container: React.StatelessComponent<ContainerProps> = ({ children, className, isHidden, ...style }) => {
+export const Container: React.StatelessComponent<ContainerProps> = props => {
+    const { children, className, Tag, isHidden, id, onClick, ...style } = props;
     const visibility = isHidden ? 'hidden' : undefined;
     return (
-        <div style={{ ...style, visibility }} className={className}>
+        <Tag id={id} style={{ ...style, visibility }} className={className} onClick={onClick}>
             {children}
-        </div>
+        </Tag>
     );
+};
+
+Container.defaultProps = {
+    Tag: 'div',
 };
 
 Container.displayName = 'Container';

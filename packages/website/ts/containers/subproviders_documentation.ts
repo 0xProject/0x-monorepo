@@ -10,8 +10,8 @@ import { constants } from 'ts/utils/constants';
 import { Translate } from 'ts/utils/translate';
 
 /* tslint:disable:no-var-requires */
-const IntroMarkdown = require('md/docs/subproviders/introduction');
-const InstallationMarkdown = require('md/docs/subproviders/installation');
+const IntroMarkdownV1 = require('md/docs/subproviders/introduction');
+const InstallationMarkdownV1 = require('md/docs/subproviders/installation');
 const LedgerNodeHidMarkdown = require('md/docs/subproviders/ledger_node_hid');
 /* tslint:enable:no-var-requires */
 
@@ -25,6 +25,7 @@ const docSections = {
     emptyWalletSubprovider: 'emptyWalletSubprovider',
     fakeGasEstimateSubprovider: 'fakeGasEstimateSubprovider',
     injectedWeb3Subprovider: 'injectedWeb3Subprovider',
+    signerSubprovider: 'signerSubprovider',
     redundantRPCSubprovider: 'redundantRPCSubprovider',
     ganacheSubprovider: 'ganacheSubprovider',
     nonceTrackerSubprovider: 'nonceTrackerSubprovider',
@@ -50,15 +51,18 @@ const docsInfoConfig: DocsInfoConfig = {
         ['emptyWallet-subprovider']: [docSections.emptyWalletSubprovider],
         ['fakeGasEstimate-subprovider']: [docSections.fakeGasEstimateSubprovider],
         ['injectedWeb3-subprovider']: [docSections.injectedWeb3Subprovider],
+        ['signer-subprovider']: [docSections.signerSubprovider],
         ['redundantRPC-subprovider']: [docSections.redundantRPCSubprovider],
         ['ganache-subprovider']: [docSections.ganacheSubprovider],
         ['nonceTracker-subprovider']: [docSections.nonceTrackerSubprovider],
         types: [docSections.types],
     },
-    sectionNameToMarkdown: {
-        [docSections.introduction]: IntroMarkdown,
-        [docSections.installation]: InstallationMarkdown,
-        [docSections.ledgerNodeHid]: LedgerNodeHidMarkdown,
+    sectionNameToMarkdownByVersion: {
+        '0.0.1': {
+            [docSections.introduction]: IntroMarkdownV1,
+            [docSections.installation]: InstallationMarkdownV1,
+            [docSections.ledgerNodeHid]: LedgerNodeHidMarkdown,
+        },
     },
     sectionNameToModulePath: {
         [docSections.subprovider]: ['"subproviders/src/subproviders/subprovider"'],
@@ -69,6 +73,7 @@ const docsInfoConfig: DocsInfoConfig = {
         [docSections.emptyWalletSubprovider]: ['"subproviders/src/subproviders/empty_wallet_subprovider"'],
         [docSections.fakeGasEstimateSubprovider]: ['"subproviders/src/subproviders/fake_gas_estimate_subprovider"'],
         [docSections.injectedWeb3Subprovider]: ['"subproviders/src/subproviders/injected_web3"'],
+        [docSections.signerSubprovider]: ['"subproviders/src/subproviders/signer"'],
         [docSections.redundantRPCSubprovider]: ['"subproviders/src/subproviders/redundant_rpc"'],
         [docSections.ganacheSubprovider]: ['"subproviders/src/subproviders/ganache"'],
         [docSections.nonceTrackerSubprovider]: ['"subproviders/src/subproviders/nonce_tracker"'],

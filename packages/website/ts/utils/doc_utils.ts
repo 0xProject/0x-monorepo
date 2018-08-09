@@ -1,6 +1,5 @@
 import { DoxityDocObj, TypeDocNode } from '@0xproject/react-docs';
-import { logUtils } from '@0xproject/utils';
-import findVersions = require('find-versions');
+import { fetchAsync, logUtils } from '@0xproject/utils';
 import * as _ from 'lodash';
 import { S3FileObject, VersionToFilePath } from 'ts/types';
 import convert = require('xml-js');
@@ -10,13 +9,13 @@ export const docUtils = {
         const versionFilePaths = await docUtils.getVersionFileNamesAsync(s3DocJsonRoot, folderName);
         const versionToFilePath: VersionToFilePath = {};
         _.each(versionFilePaths, filePath => {
-            const [version] = findVersions(filePath);
+            const version = filePath.split('/v')[1].replace('.json', '');
             versionToFilePath[version] = filePath;
         });
         return versionToFilePath;
     },
     async getVersionFileNamesAsync(s3DocJsonRoot: string, folderName: string): Promise<string[]> {
-        const response = await fetch(s3DocJsonRoot);
+        const response = await fetchAsync(s3DocJsonRoot);
         if (response.status !== 200) {
             // TODO: Show the user an error message when the docs fail to load
             const errMsg = await response.text();
@@ -73,7 +72,7 @@ export const docUtils = {
     },
     async getJSONDocFileAsync(filePath: string, s3DocJsonRoot: string): Promise<TypeDocNode | DoxityDocObj> {
         const endpoint = `${s3DocJsonRoot}/${filePath}`;
-        const response = await fetch(endpoint);
+        const response = await fetchAsync(endpoint);
         if (response.status !== 200) {
             // TODO: Show the user an error message when the docs fail to load
             const errMsg = await response.text();

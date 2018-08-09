@@ -1,15 +1,10 @@
 {
-    "lerna": "2.5.1",
+    "lerna": "3.0.0-beta.23",
     "packages": ["packages/*"],
-    "commands": {
-        "publish": {
-            "allowBranch": "development"
-        }
-    },
     "version": "independent",
-    "commands": {
+    "command": {
         "publish": {
-            "ignore": ["test/**/*", "*.md", "scripts", "lib", "tslint.json", "tsconfig.json"]
+            "ignoreChanges": ["test/**/*", "*.md", "scripts", "lib", "tslint.json", "tsconfig.json"]
         }
     },
     "npmClient": "yarn",

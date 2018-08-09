@@ -1,16 +1,21 @@
 {
     "name": "@0xproject/utils",
-    "version": "0.7.3",
+    "version": "1.0.4",
     "engines": {
         "node": ">=6.12"
     },
     "description": "0x TS utils",
-    "main": "lib/index.js",
-    "types": "lib/index.d.ts",
+    "main": "lib/src/index.js",
+    "types": "lib/src/index.d.ts",
     "scripts": {
         "watch_without_deps": "tsc -w",
         "build": "tsc && copyfiles -u 2 './lib/monorepo_scripts/**/*' ./scripts",
         "clean": "shx rm -rf lib scripts",
+        "test": "yarn run_mocha",
+        "test:circleci": "yarn test:coverage",
+        "run_mocha": "mocha --require source-map-support/register --require make-promises-safe lib/test/**/*_test.js --bail --exit",
+        "test:coverage": "nyc npm run test --all && yarn coverage:report:lcov",
+        "coverage:report:lcov": "nyc report --reporter=text-lcov > coverage/lcov.info",
         "lint": "tslint --project .",
         "manual:postpublish": "yarn build; node ./scripts/postpublish.js"
     },
@@ -24,26 +29,32 @@
     },
     "homepage": "https://github.com/0xProject/0x-monorepo/packages/utils/README.md",
     "devDependencies": {
-        "@0xproject/monorepo-scripts": "^0.2.1",
-        "@0xproject/tslint-config": "^0.4.20",
+        "@0xproject/monorepo-scripts": "^1.0.4",
+        "@0xproject/tslint-config": "^1.0.4",
         "@types/lodash": "4.14.104",
+        "@types/mocha": "^2.2.42",
         "copyfiles": "^1.2.0",
         "make-promises-safe": "^1.1.0",
         "npm-run-all": "^4.1.2",
         "shx": "^0.2.2",
-        "tslint": "5.8.0",
-        "typescript": "2.7.1"
+        "tslint": "5.11.0",
+        "typescript": "2.9.2",
+        "chai": "^4.0.1",
+        "mocha": "^4.0.1"
     },
     "dependencies": {
-        "ethereum-types": "^0.0.1",
-        "@0xproject/typescript-typings": "^0.4.2",
+        "@0xproject/types": "^1.0.1-rc.3",
+        "@0xproject/typescript-typings": "^1.0.3",
         "@types/node": "^8.0.53",
-        "ethereumjs-util": "^5.1.1",
+        "abortcontroller-polyfill": "^1.1.9",
         "bignumber.js": "~4.1.0",
+        "detect-node": "2.0.3",
+        "ethereum-types": "^1.0.3",
+        "ethereumjs-util": "^5.1.1",
         "ethers": "3.0.22",
+        "isomorphic-fetch": "^2.2.1",
         "js-sha3": "^0.7.0",
-        "lodash": "^4.17.4",
-        "web3": "^0.20.0"
+        "lodash": "^4.17.4"
     },
     "publishConfig": {
         "access": "public"

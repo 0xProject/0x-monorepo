@@ -12,7 +12,7 @@ export const errorReporter = {
         rollbar.handleUncaughtExceptions(configs.ROLLBAR_ACCESS_KEY);
         process.on('unhandledRejection', async (err: Error) => {
             logUtils.log(`Uncaught exception ${err}. Stack: ${err.stack}`);
-            await this.reportAsync(err);
+            await errorReporter.reportAsync(err);
             process.exit(1);
         });
     },
@@ -20,7 +20,7 @@ export const errorReporter = {
         if (configs.ENVIRONMENT === 'development') {
             return; // Do not log development environment errors
         }
-        return new Promise((resolve, reject) => {
+        return new Promise<any>((resolve, reject) => {
             rollbar.handleError(err, req, (rollbarErr: Error) => {
                 if (rollbarErr) {
                     logUtils.log(`Error reporting to rollbar, ignoring: ${rollbarErr}`);

@@ -27,7 +27,7 @@ const teamRow1: ProfileInfo[] = [
         title: 'Co-founder & CTO',
         description: `Smart contract R&D. Previously fixed income trader at DRW. \
                       Finance at University of Illinois, Urbana-Champaign.`,
-        image: '/images/team/amir.jpeg',
+        image: '/images/team/amir.png',
         linkedIn: 'https://www.linkedin.com/in/abandeali1/',
         github: 'https://github.com/abandeali1',
         medium: 'https://medium.com/@abandeali1',
@@ -99,7 +99,7 @@ const teamRow3: ProfileInfo[] = [
     },
     {
         name: 'Jacob Evans',
-        title: 'Blockchain Engineer',
+        title: 'Ecosystem Engineer',
         description: `Previously software engineer at Qantas and RSA Security.`,
         image: '/images/team/jacob.jpg',
         linkedIn: 'https://www.linkedin.com/in/dekzter/',
@@ -165,16 +165,31 @@ const teamRow5: ProfileInfo[] = [
     },
 ];
 
-// const teamRow6: ProfileInfo[] = [
-//     {
-//         name: 'Chris Kalani',
-//         title: 'Director of Design',
-//         description: `Previously founded Wake (acquired by InVision). Early Facebook product designer.`,
-//         image: 'images/team/chris.png',
-//         linkedIn: 'https://www.linkedin.com/in/chriskalani/',
-//         github: 'https://github.com/chriskalani',
-//     },
-// ];
+const teamRow6: ProfileInfo[] = [
+    {
+        name: 'Alex Browne',
+        title: 'Engineer in Residence',
+        description: `Full-stack blockchain engineer. Previously at Plaid. Open source guru and footgun dismantler. Computer Science and Electrical Engineering at Duke.`,
+        image: 'images/team/alexbrowne.png',
+        linkedIn: 'https://www.linkedin.com/in/stephenalexbrowne/',
+        github: 'http://github.com/albrow',
+    },
+    {
+        name: 'Peter Zeitz',
+        title: 'Research Fellow',
+        description: `Researching decentralized governance. Previously Assistant Professor of Economics at National University of Singapore Business School. PhD in Economics at UCLA.`,
+        image: 'images/team/peter.jpg',
+        linkedIn: 'https://www.linkedin.com/in/peter-z-7b9595163/',
+    },
+    {
+        name: 'Chris Kalani',
+        title: 'Director of Design',
+        description: `Previously founded Wake (acquired by InVision). Early Facebook product designer.`,
+        image: 'images/team/chris.png',
+        linkedIn: 'https://www.linkedin.com/in/chriskalani/',
+        github: 'https://github.com/chriskalani',
+    },
+];
 
 const advisors: ProfileInfo[] = [
     {
@@ -270,6 +285,7 @@ export class About extends React.Component<AboutProps, AboutState> {
                         <div className="clearfix">{this._renderProfiles(teamRow3)}</div>
                         <div className="clearfix">{this._renderProfiles(teamRow4)}</div>
                         <div className="clearfix">{this._renderProfiles(teamRow5)}</div>
+                        <div className="clearfix">{this._renderProfiles(teamRow6)}</div>
                     </div>
                     <div className="pt3 pb2">
                         <div
@@ -298,7 +314,7 @@ export class About extends React.Component<AboutProps, AboutState> {
                             }}
                         >
                             We are seeking outstanding candidates to{' '}
-                            <Link to={WebsitePaths.Jobs} style={{ color: 'black' }}>
+                            <Link to={WebsitePaths.Careers} style={{ color: 'black' }}>
                                 join our team
                             </Link>
                             . We value passion, diversity and unique perspectives.

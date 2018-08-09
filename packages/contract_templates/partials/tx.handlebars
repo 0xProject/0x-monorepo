@@ -11,6 +11,7 @@ public {{this.tsName}} = {
         const self = this as any as {{contractName}}Contract;
         const inputAbi = self._lookupAbi('{{this.functionSignature}}').inputs;
         [{{> params inputs=inputs}}] = BaseContract._formatABIDataItemList(inputAbi, [{{> params inputs=inputs}}], BaseContract._bigNumberToString.bind(self));
+        BaseContract.strictArgumentEncodingCheck(inputAbi, [{{> params inputs=inputs}}]);
         const encodedData = self._lookupEthersInterface('{{this.functionSignature}}').functions.{{this.name}}(
             {{> params inputs=inputs}}
         ).data;

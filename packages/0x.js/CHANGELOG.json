@@ -1,5 +1,108 @@
 [
     {
+        "version": "1.0.1-rc.3",
+        "changes": [
+            {
+                "note": "Dependencies updated"
+            }
+        ]
+    },
+    {
+        "version": "1.0.1-rc.2",
+        "changes": [
+            {
+                "note": "Fixed bug caused by importing non-existent dep"
+            }
+        ],
+        "timestamp": 1532619515
+    },
+    {
+        "version": "1.0.1-rc.1",
+        "changes": [
+            {
+                "note": "Dependencies updated"
+            }
+        ],
+        "timestamp": 1532605697
+    },
+    {
+        "timestamp": 1532357734,
+        "version": "1.0.0",
+        "changes": [
+            {
+                "note": "Dependencies updated"
+            }
+        ]
+    },
+    {
+        "timestamp": 1532043100,
+        "version": "1.0.0-rc.2",
+        "changes": [
+            {
+                "note": "Remove `zeroEx.assetData`  and instead re-export it's static functions directly off `ZeroEx`"
+            }
+        ]
+    },
+    {
+        "timestamp": 1532043000,
+        "version": "1.0.0-rc.1",
+        "changes": [
+            {
+                "note": "Remove tokenRegistry wrapper",
+                "pr": 863
+            },
+            {
+                "note": "Rename `zeroEx.token` to `zeroEx.erc20Token`, and add `zeroEx.erc721Token`",
+                "pr": 863
+            },
+            {
+                "note": "Rename `zeroEx.proxy` to `zeroEx.erc20Proxy` and add `zeroEx.erc721Proxy`",
+                "pr": 863
+            },
+            {
+                "note":
+                    "Refactored `ZeroEx.isValidSignature` to `zeroEx.isValidSignatureAsync`. It is now async so that it can verify contract-dependent signature types",
+                "pr": 863
+            },
+            {
+                "note":
+                    "Refactored `signOrderHashAsync` to `ecSignOrderHashAsync`. There are now many non-ECSignature ways to sign orders too.",
+                "pr": 863
+            },
+            {
+                "note":
+                    "Removed `createOrderWatcherAsync` method. Will be added back once OrderWatcher is refactored for V2",
+                "pr": 863
+            },
+            {
+                "note": "0x.js exports renamed contract events and event arg types",
+                "pr": 863
+            },
+            {
+                "note": "Export `ZeroEx.assetData` with methods to decode/encode assetData fields found in 0x orders",
+                "pr": 884
+            }
+        ]
+    },
+    {
+        "timestamp": 1531919263,
+        "version": "0.38.6",
+        "changes": [
+            {
+                "note": "Dependencies updated"
+            }
+        ]
+    },
+    {
+        "timestamp": 1531149657,
+        "version": "0.38.5",
+        "changes": [
+            {
+                "note": "Dependencies updated"
+            }
+        ]
+    },
+    {
         "timestamp": 1529397769,
         "version": "0.38.4",
         "changes": [

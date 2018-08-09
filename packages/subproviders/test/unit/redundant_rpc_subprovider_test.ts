@@ -1,10 +1,9 @@
 import { DoneCallback } from '@0xproject/types';
 import * as chai from 'chai';
 import { JSONRPCResponsePayload } from 'ethereum-types';
-import Web3ProviderEngine = require('web3-provider-engine');
-import RpcSubprovider = require('web3-provider-engine/subproviders/rpc');
+import * as Sinon from 'sinon';
 
-import { RedundantSubprovider } from '../../src';
+import { RedundantSubprovider, RPCSubprovider, Web3ProviderEngine } from '../../src';
 import { Subprovider } from '../../src/subproviders/subprovider';
 import { chaiSetup } from '../chai_setup';
 import { ganacheSubprovider } from '../utils/ganache_subprovider';
@@ -38,9 +37,10 @@ describe('RedundantSubprovider', () => {
     });
     it('succeeds when supplied at least one healthy endpoint', (done: DoneCallback) => {
         provider = new Web3ProviderEngine();
-        const nonExistentSubprovider = new RpcSubprovider({
-            rpcUrl: 'http://does-not-exist:3000',
-        });
+        const nonExistentSubprovider = new RPCSubprovider('http://does-not-exist:3000');
+        const handleRequestStub = Sinon.stub(nonExistentSubprovider, 'handleRequest').throws(
+            new Error('REQUEST_FAILED'),
+        );
         const subproviders = [nonExistentSubprovider as Subprovider, ganacheSubprovider];
         const redundantSubprovider = new RedundantSubprovider(subproviders);
         provider.addProvider(redundantSubprovider);
@@ -55,6 +55,7 @@ describe('RedundantSubprovider', () => {
         const callback = reportCallbackErrors(done)((err: Error, response: JSONRPCResponsePayload) => {
             expect(err).to.be.a('null');
             expect(response.result.length).to.be.equal(DEFAULT_NUM_ACCOUNTS);
+            handleRequestStub.restore();
             done();
         });
         provider.sendAsync(payload, callback);

@@ -17,14 +17,7 @@ export interface VersionChangelog {
     changes: Change[];
 }
 
-export enum SemVerIndex {
-    Invalid,
-    Patch,
-    Minor,
-    Major,
-}
-
-export interface PackageToVersionChange {
+export interface PackageToNextVersion {
     [name: string]: string;
 }
 
@@ -39,4 +32,20 @@ export interface PackageRegistryJson {
 
 export interface GitTagsByPackageName {
     [packageName: string]: string[];
+}
+
+export interface PackageJSON {
+    private?: boolean;
+    version: string;
+    name: string;
+    main?: string;
+    scripts?: { [command: string]: string };
+    config?: {
+        additionalTsTypings?: string[];
+    };
+}
+
+export interface Package {
+    location: string;
+    packageJson: PackageJSON;
 }

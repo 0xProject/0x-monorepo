@@ -29,7 +29,7 @@ interface LedgerConfigDialogProps {
     toggleDialogFn: (isOpen: boolean) => void;
     dispatcher: Dispatcher;
     blockchain: Blockchain;
-    networkId: number;
+    networkId?: number;
     providerType: ProviderType;
 }
 
@@ -44,6 +44,9 @@ interface LedgerConfigDialogState {
 }
 
 export class LedgerConfigDialog extends React.Component<LedgerConfigDialogProps, LedgerConfigDialogState> {
+    public static defaultProps = {
+        networkId: 1,
+    };
     constructor(props: LedgerConfigDialogProps) {
         super(props);
         const derivationPathIfExists = props.blockchain.getLedgerDerivationPathIfExists();
@@ -282,6 +285,7 @@ export class LedgerConfigDialog extends React.Component<LedgerConfigDialogProps,
         if (didSucceed) {
             this.setState({
                 stepIndex: LedgerSteps.SELECT_ADDRESS,
+                connectionErrMsg: '',
             });
         }
         return didSucceed;

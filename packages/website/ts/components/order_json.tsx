@@ -1,5 +1,5 @@
 import { ECSignature } from '@0xproject/types';
-import { BigNumber, logUtils } from '@0xproject/utils';
+import { BigNumber, fetchAsync, logUtils } from '@0xproject/utils';
 import * as _ from 'lodash';
 import Paper from 'material-ui/Paper';
 import TextField from 'material-ui/TextField';
@@ -127,7 +127,7 @@ export class OrderJSON extends React.Component<OrderJSONProps, OrderJSONState> {
                 href: this.state.shareLink,
                 method: 'share',
             },
-            _.noop,
+            _.noop.bind(_),
         );
     }
     private _shareViaEmailAsync(): void {
@@ -148,13 +148,13 @@ You can see and fill it here: ${this.state.shareLink}`);
         const bitlyRequestUrl = `${constants.URL_BITLY_API}/v3/shorten?access_token=${
             configs.BITLY_ACCESS_TOKEN
         }&longUrl=${longUrl}`;
-        const response = await fetch(bitlyRequestUrl);
+        const response = await fetchAsync(bitlyRequestUrl);
         const responseBody = await response.text();
         const bodyObj = JSON.parse(responseBody);
         if (response.status !== 200 || bodyObj.status_code !== 200) {
             // TODO: Show error message in UI
             logUtils.log(`Unexpected status code: ${response.status} -> ${responseBody}`);
-            await errorReporter.reportAsync(new Error(`Bitly returned non-200: ${JSON.stringify(response)}`));
+            errorReporter.report(new Error(`Bitly returned non-200: ${JSON.stringify(response)}`));
             return '';
         }
         return bodyObj.data.url;

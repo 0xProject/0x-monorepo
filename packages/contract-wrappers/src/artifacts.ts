@@ -1,18 +1,25 @@
-import { Artifact } from '@0xproject/types';
+import { ContractArtifact } from '@0xproject/sol-compiler';
 
-import * as DummyToken from './compact_artifacts/DummyToken.json';
-import * as EtherToken from './compact_artifacts/EtherToken.json';
-import * as Exchange from './compact_artifacts/Exchange.json';
-import * as Token from './compact_artifacts/Token.json';
-import * as TokenRegistry from './compact_artifacts/TokenRegistry.json';
-import * as TokenTransferProxy from './compact_artifacts/TokenTransferProxy.json';
-import * as ZRX from './compact_artifacts/ZRX.json';
+import * as DummyERC20Token from './artifacts/DummyERC20Token.json';
+import * as DummyERC721Token from './artifacts/DummyERC721Token.json';
+import * as ERC20Proxy from './artifacts/ERC20Proxy.json';
+import * as ERC20Token from './artifacts/ERC20Token.json';
+import * as ERC721Proxy from './artifacts/ERC721Proxy.json';
+import * as ERC721Token from './artifacts/ERC721Token.json';
+import * as Exchange from './artifacts/Exchange.json';
+import * as Forwarder from './artifacts/Forwarder.json';
+import * as EtherToken from './artifacts/WETH9.json';
+import * as ZRXToken from './artifacts/ZRXToken.json';
+
 export const artifacts = {
-    ZRX: (ZRX as any) as Artifact,
-    DummyToken: (DummyToken as any) as Artifact,
-    Token: (Token as any) as Artifact,
-    Exchange: (Exchange as any) as Artifact,
-    EtherToken: (EtherToken as any) as Artifact,
-    TokenRegistry: (TokenRegistry as any) as Artifact,
-    TokenTransferProxy: (TokenTransferProxy as any) as Artifact,
+    ZRXToken: (ZRXToken as any) as ContractArtifact,
+    DummyERC20Token: (DummyERC20Token as any) as ContractArtifact,
+    DummyERC721Token: (DummyERC721Token as any) as ContractArtifact,
+    ERC20Token: (ERC20Token as any) as ContractArtifact,
+    ERC721Token: (ERC721Token as any) as ContractArtifact,
+    Exchange: (Exchange as any) as ContractArtifact,
+    EtherToken: (EtherToken as any) as ContractArtifact,
+    ERC20Proxy: (ERC20Proxy as any) as ContractArtifact,
+    ERC721Proxy: (ERC721Proxy as any) as ContractArtifact,
+    Forwarder: (Forwarder as any) as ContractArtifact,
 };

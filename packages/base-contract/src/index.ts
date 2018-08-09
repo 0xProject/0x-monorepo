@@ -72,17 +72,36 @@ export class BaseContract {
         // 1. Optional param passed in to public method call
         // 2. Global config passed in at library instantiation
         // 3. Gas estimate calculation + safety margin
-        const removeUndefinedProperties = _.pickBy;
-        const txDataWithDefaults: TxData = {
+        const removeUndefinedProperties = _.pickBy.bind(_);
+        const txDataWithDefaults = {
             ...removeUndefinedProperties(txDefaults),
-            ...removeUndefinedProperties(txData as any),
-            // HACK: TS can't prove that T is spreadable.
-            // Awaiting https://github.com/Microsoft/TypeScript/pull/13288 to be merged
-        } as any;
+            ...removeUndefinedProperties(txData),
+        };
         if (_.isUndefined(txDataWithDefaults.gas) && !_.isUndefined(estimateGasAsync)) {
-            txDataWithDefaults.gas = await estimateGasAsync(txData);
+            txDataWithDefaults.gas = await estimateGasAsync(txDataWithDefaults);
         }
         return txDataWithDefaults;
+    }
+    // Throws if the given arguments cannot be safely/correctly encoded based on
+    // the given inputAbi. An argument may not be considered safely encodeable
+    // if it overflows the corresponding Solidity type, there is a bug in the
+    // encoder, or the encoder performs unsafe type coercion.
+    public static strictArgumentEncodingCheck(inputAbi: DataItem[], args: any[]): void {
+        const coder = ethers.utils.AbiCoder.defaultCoder;
+        const params = abiUtils.parseEthersParams(inputAbi);
+        const rawEncoded = coder.encode(params.names, params.types, args);
+        const rawDecoded = coder.decode(params.names, params.types, rawEncoded);
+        for (let i = 0; i < rawDecoded.length; i++) {
+            const original = args[i];
+            const decoded = rawDecoded[i];
+            if (!abiUtils.isAbiDataEqual(params.names[i], params.types[i], original, decoded)) {
+                throw new Error(
+                    `Cannot safely encode argument: ${params.names[i]} (${original}) of type ${
+                        params.types[i]
+                    }. (Possible type overflow or other encoding error)`,
+                );
+            }
+        }
     }
     protected _lookupEthersInterface(functionSignature: string): ethers.Interface {
         const ethersInterface = this._ethersInterfacesByFunctionSignature[functionSignature];

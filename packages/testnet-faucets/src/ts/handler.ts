@@ -1,18 +1,16 @@
 import { Order, ZeroEx } from '0x.js';
 import { BigNumber, logUtils } from '@0xproject/utils';
+import { Web3Wrapper } from '@0xproject/web3-wrapper';
 import { Provider } from 'ethereum-types';
 import * as express from 'express';
 import * as _ from 'lodash';
-import * as Web3 from 'web3';
 
-// HACK: web3 injects XMLHttpRequest into the global scope and ProviderEngine checks XMLHttpRequest
-// to know whether it is running in a browser or node environment. We need it to be undefined since
-// we are not running in a browser env.
-// Filed issue: https://github.com/ethereum/web3.js/issues/844
-(global as any).XMLHttpRequest = undefined;
-import { NonceTrackerSubprovider, PrivateKeyWalletSubprovider } from '@0xproject/subproviders';
-import ProviderEngine = require('web3-provider-engine');
-import RpcSubprovider = require('web3-provider-engine/subproviders/rpc');
+import {
+    NonceTrackerSubprovider,
+    PrivateKeyWalletSubprovider,
+    RPCSubprovider,
+    Web3ProviderEngine,
+} from '@0xproject/subproviders';
 
 import { configs } from './configs';
 import { constants } from './constants';
@@ -22,7 +20,7 @@ import { rpcUrls } from './rpc_urls';
 
 interface NetworkConfig {
     dispatchQueue: DispatchQueue;
-    web3: Web3;
+    web3Wrapper: Web3Wrapper;
     zeroEx: ZeroEx;
 }
 
@@ -39,34 +37,30 @@ enum RequestedAssetType {
 const FIVE_DAYS_IN_MS = 4.32e8; // TODO: make this configurable
 
 export class Handler {
-    private _networkConfigByNetworkId: ItemByNetworkId<NetworkConfig> = {};
+    private readonly _networkConfigByNetworkId: ItemByNetworkId<NetworkConfig> = {};
     private static _createProviderEngine(rpcUrl: string): Provider {
         if (_.isUndefined(configs.DISPENSER_PRIVATE_KEY)) {
             throw new Error('Dispenser Private key not found');
         }
-        const engine = new ProviderEngine();
+        const engine = new Web3ProviderEngine();
         engine.addProvider(new NonceTrackerSubprovider());
         engine.addProvider(new PrivateKeyWalletSubprovider(configs.DISPENSER_PRIVATE_KEY));
-        engine.addProvider(
-            new RpcSubprovider({
-                rpcUrl,
-            }),
-        );
+        engine.addProvider(new RPCSubprovider(rpcUrl));
         engine.start();
         return engine;
     }
     constructor() {
         _.forIn(rpcUrls, (rpcUrl: string, networkId: string) => {
             const providerObj = Handler._createProviderEngine(rpcUrl);
-            const web3 = new Web3(providerObj);
+            const web3Wrapper = new Web3Wrapper(providerObj);
             const zeroExConfig = {
                 networkId: +networkId,
             };
-            const zeroEx = new ZeroEx(web3.currentProvider, zeroExConfig);
+            const zeroEx = new ZeroEx(providerObj, zeroExConfig);
             const dispatchQueue = new DispatchQueue();
             this._networkConfigByNetworkId[networkId] = {
                 dispatchQueue,
-                web3,
+                web3Wrapper,
                 zeroEx,
             };
         });
@@ -106,7 +100,7 @@ export class Handler {
         let dispenserTask;
         switch (requestedAssetType) {
             case RequestedAssetType.ETH:
-                dispenserTask = dispenseAssetTasks.dispenseEtherTask(recipient, networkConfig.web3);
+                dispenserTask = dispenseAssetTasks.dispenseEtherTask(recipient, networkConfig.web3Wrapper);
                 break;
             case RequestedAssetType.WETH:
             case RequestedAssetType.ZRX:

@@ -1,5 +1,6 @@
 import { ECSignature } from '@0xproject/types';
 import { BigNumber } from '@0xproject/utils';
+import { Provider } from 'ethereum-types';
 import * as React from 'react';
 
 export enum Side {
@@ -13,8 +14,8 @@ export interface Token {
     address: string;
     symbol: string;
     decimals: number;
-    isTracked: boolean;
     isRegistered: boolean;
+    trackedTimestamp?: number;
 }
 
 export interface TokenByAddress {
@@ -215,10 +216,11 @@ export interface ContractEvent {
 }
 
 export type ValidatedBigNumberCallback = (isValid: boolean, amount?: BigNumber) => void;
+// Associated values are in `em` units
 export enum ScreenWidths {
-    Sm = 'SM',
-    Md = 'MD',
-    Lg = 'LG',
+    Sm = 40,
+    Md = 52,
+    Lg = 64,
 }
 
 export enum AlertTypes {
@@ -241,8 +243,11 @@ export enum BlockchainCallErrs {
 }
 
 export enum Environments {
-    DEVELOPMENT,
-    PRODUCTION,
+    DEVELOPMENT = 'DEVELOPMENT',
+    DOGFOOD = 'DOGFOOD',
+    STAGING = 'STAGING',
+    PRODUCTION = 'PRODUCTION',
+    UNKNOWN = 'UNKNOWN',
 }
 
 export type ContractInstance = any; // TODO: add type definition for Contract
@@ -351,11 +356,13 @@ export enum WebsiteLegacyPaths {
     ZeroExJs = '/docs/0xjs',
     Web3Wrapper = '/docs/web3_wrapper',
     Deployer = '/docs/deployer',
+    Jobs = '/jobs',
 }
 
 export enum WebsitePaths {
     Portal = '/portal',
     Wiki = '/wiki',
+    Docs = '/docs',
     ZeroExJs = '/docs/0x.js',
     Home = '/',
     FAQ = '/faq',
@@ -370,7 +377,7 @@ export enum WebsitePaths {
     Subproviders = '/docs/subproviders',
     OrderUtils = '/docs/order-utils',
     EthereumTypes = '/docs/ethereum-types',
-    Jobs = '/jobs',
+    Careers = '/careers',
 }
 
 export enum DocPackages {
@@ -453,6 +460,7 @@ export enum Key {
     Developers = 'DEVELOPERS',
     Home = 'HOME',
     RocketChat = 'ROCKETCHAT',
+    TradeCallToAction = 'TRADE_CALL_TO_ACTION',
 }
 
 export enum SmartContractDocSections {
@@ -486,6 +494,18 @@ export enum Providers {
     Parity = 'PARITY',
     Metamask = 'METAMASK',
     Mist = 'MIST',
+    Toshi = 'TOSHI',
+    Cipher = 'CIPHER',
+}
+
+export interface InjectedProviderUpdate {
+    selectedAddress: string;
+    networkVersion: string;
+}
+
+export interface InjectedProviderObservable {
+    subscribe(updateHandler: (update: InjectedProviderUpdate) => void): void;
+    unsubscribe(updateHandler: (update: InjectedProviderUpdate) => void): void;
 }
 
 export interface TimestampMsRange {
@@ -500,8 +520,10 @@ export interface OutdatedWrappedEtherByNetworkId {
     };
 }
 
-export interface ItemByAddress<T> {
-    [address: string]: T;
+export type ItemByAddress<T> = ObjectMap<T>;
+
+export interface ObjectMap<T> {
+    [key: string]: T;
 }
 
 export type TokenStateByAddress = ItemByAddress<TokenState>;
@@ -536,7 +558,10 @@ export interface WebsiteBackendTokenInfo {
 }
 
 export interface WebsiteBackendGasInfo {
+    safeSlow: number;
     average: number;
+    fast: number;
+    fastest: number;
 }
 
 export interface WebsiteBackendJobInfo {
@@ -552,5 +577,34 @@ export enum BrowserType {
     Firefox = 'Firefox',
     Opera = 'Opera',
     Other = 'Other',
+}
+
+export enum OperatingSystemType {
+    Android = 'Android',
+    iOS = 'iOS',
+    Mac = 'Mac',
+    Windows = 'Windows',
+    WindowsPhone = 'WindowsPhone',
+    Linux = 'Linux',
+    Other = 'Other',
+}
+
+export enum AccountState {
+    Disconnected = 'Disconnected',
+    Ready = 'Ready',
+    Loading = 'Loading',
+    Locked = 'Locked',
+}
+
+export interface InjectedProvider extends Provider {
+    publicConfigStore?: InjectedProviderObservable;
+}
+
+// Minimal expected interface for an injected web3 object
+export interface InjectedWeb3 {
+    currentProvider: InjectedProvider;
+    version: {
+        getNetwork(cd: (err: Error, networkId: string) => void): void;
+    };
 }
 // tslint:disable:max-file-line-count

@@ -2,20 +2,44 @@ import * as React from 'react';
 import { Placement, Popper, PopperChildrenProps } from 'react-popper';
 
 import { OnboardingCard } from 'ts/components/onboarding/onboarding_card';
-import { ContinueButtonDisplay, OnboardingTooltip } from 'ts/components/onboarding/onboarding_tooltip';
+import {
+    ContinueButtonDisplay,
+    OnboardingTooltip,
+    TooltipPointerDisplay,
+} from 'ts/components/onboarding/onboarding_tooltip';
 import { Animation } from 'ts/components/ui/animation';
 import { Container } from 'ts/components/ui/container';
 import { Overlay } from 'ts/components/ui/overlay';
+import { zIndex } from 'ts/style/z_index';
+
+export interface FixedPositionSettings {
+    type: 'fixed';
+    top?: string;
+    bottom?: string;
+    left?: string;
+    right?: string;
+    tooltipPointerDisplay?: TooltipPointerDisplay;
+}
+
+export interface TargetPositionSettings {
+    type: 'target';
+    target: string;
+    placement: Placement;
+}
 
 export interface Step {
-    target: string;
+    // Provide either a CSS selector, or fixed position settings. Only applies to desktop.
+    position: TargetPositionSettings | FixedPositionSettings;
     title?: string;
+    shouldCenterTitle?: boolean;
     content: React.ReactNode;
-    placement?: Placement;
     shouldHideBackButton?: boolean;
     shouldHideNextButton?: boolean;
     continueButtonDisplay?: ContinueButtonDisplay;
     continueButtonText?: string;
+    onContinueButtonClick?: () => void;
+    // Only used for very custom steps.
+    shouldRemoveExtraSpacing?: boolean;
 }
 
 export interface OnboardingFlowProps {
@@ -26,54 +50,74 @@ export interface OnboardingFlowProps {
     updateOnboardingStep: (stepIndex: number) => void;
     disableOverlay?: boolean;
     isMobile: boolean;
+    disableCloseOnClickOutside?: boolean;
 }
 
 export class OnboardingFlow extends React.Component<OnboardingFlowProps> {
     public static defaultProps = {
         disableOverlay: false,
         isMobile: false,
+        disableCloseOnClickOutside: false,
     };
     public render(): React.ReactNode {
         if (!this.props.isRunning) {
             return null;
         }
         let onboardingElement = null;
+        const currentStep = this._getCurrentStep();
         if (this.props.isMobile) {
-            onboardingElement = <Animation type="easeUpFromBottom">{this._renderOnboardignCard()}</Animation>;
-        } else {
+            onboardingElement = <Animation type="easeUpFromBottom">{this._renderOnboardingCard()}</Animation>;
+        } else if (currentStep.position.type === 'target') {
+            const { placement, target } = currentStep.position;
             onboardingElement = (
-                <Popper
-                    referenceElement={this._getElementForStep()}
-                    placement={this._getCurrentStep().placement}
-                    positionFixed={true}
-                >
+                <Popper referenceElement={document.querySelector(target)} placement={placement} positionFixed={true}>
                     {this._renderPopperChildren.bind(this)}
                 </Popper>
+            );
+        } else if (currentStep.position.type === 'fixed') {
+            const { top, right, bottom, left, tooltipPointerDisplay } = currentStep.position;
+            onboardingElement = (
+                <Container
+                    position="fixed"
+                    zIndex={zIndex.aboveOverlay}
+                    top={top}
+                    right={right}
+                    bottom={bottom}
+                    left={left}
+                >
+                    {this._renderToolTip(tooltipPointerDisplay)}
+                </Container>
             );
         }
         if (this.props.disableOverlay) {
             return onboardingElement;
         }
-        return <Overlay>{onboardingElement}</Overlay>;
-    }
-    private _getElementForStep(): Element {
-        return document.querySelector(this._getCurrentStep().target);
+        return (
+            <div>
+                <Overlay onClick={this.props.disableCloseOnClickOutside ? undefined : this.props.onClose} />
+                {onboardingElement}
+            </div>
+        );
     }
     private _renderPopperChildren(props: PopperChildrenProps): React.ReactNode {
+        const customStyles = { zIndex: zIndex.aboveOverlay };
+        // On re-render, we want to re-center the popper.
+        props.scheduleUpdate();
         return (
-            <div ref={props.ref} style={props.style} data-placement={props.placement}>
+            <div ref={props.ref} style={{ ...props.style, ...customStyles }} data-placement={props.placement}>
                 {this._renderToolTip()}
             </div>
         );
     }
-    private _renderToolTip(): React.ReactNode {
+    private _renderToolTip(tooltipPointerDisplay?: TooltipPointerDisplay): React.ReactNode {
         const { steps, stepIndex } = this.props;
         const step = steps[stepIndex];
         const isLastStep = steps.length - 1 === stepIndex;
         return (
-            <Container marginLeft="30px" maxWidth={350}>
+            <Container marginLeft="30px" width="400px">
                 <OnboardingTooltip
                     title={step.title}
+                    shouldCenterTitle={step.shouldCenterTitle}
                     content={step.content}
                     isLastStep={isLastStep}
                     shouldHideBackButton={step.shouldHideBackButton}
@@ -83,19 +127,23 @@ export class OnboardingFlow extends React.Component<OnboardingFlowProps> {
                     onClickBack={this._goToPrevStep.bind(this)}
                     continueButtonDisplay={step.continueButtonDisplay}
                     continueButtonText={step.continueButtonText}
+                    onContinueButtonClick={step.onContinueButtonClick}
+                    pointerDisplay={tooltipPointerDisplay}
+                    shouldRemoveExtraSpacing={step.shouldRemoveExtraSpacing}
                 />
             </Container>
         );
     }
 
-    private _renderOnboardignCard(): React.ReactNode {
+    private _renderOnboardingCard(): React.ReactNode {
         const { steps, stepIndex } = this.props;
         const step = steps[stepIndex];
         const isLastStep = steps.length - 1 === stepIndex;
         return (
-            <Container position="relative" zIndex={1} maxWidth="100vw">
+            <Container position="relative" zIndex={1}>
                 <OnboardingCard
                     title={step.title}
+                    shouldCenterTitle={step.shouldCenterTitle}
                     content={step.content}
                     isLastStep={isLastStep}
                     shouldHideBackButton={step.shouldHideBackButton}
@@ -105,7 +153,9 @@ export class OnboardingFlow extends React.Component<OnboardingFlowProps> {
                     onClickBack={this._goToPrevStep.bind(this)}
                     continueButtonDisplay={step.continueButtonDisplay}
                     continueButtonText={step.continueButtonText}
+                    onContinueButtonClick={step.onContinueButtonClick}
                     borderRadius="10px 10px 0px 0px"
+                    shouldRemoveExtraSpacing={step.shouldRemoveExtraSpacing}
                 />
             </Container>
         );

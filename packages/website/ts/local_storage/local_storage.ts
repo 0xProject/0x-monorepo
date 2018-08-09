@@ -5,7 +5,7 @@ export const localStorage = {
         return !!window.localStorage;
     },
     getItemIfExists(key: string): string {
-        if (!this.doesExist) {
+        if (!localStorage.doesExist) {
             return undefined;
         }
         const item = window.localStorage.getItem(key);
@@ -15,13 +15,13 @@ export const localStorage = {
         return item;
     },
     setItem(key: string, value: string): void {
-        if (!this.doesExist || _.isUndefined(value)) {
+        if (!localStorage.doesExist || _.isUndefined(value)) {
             return;
         }
         window.localStorage.setItem(key, value);
     },
     removeItem(key: string): void {
-        if (!this.doesExist) {
+        if (!localStorage.doesExist) {
             return;
         }
         window.localStorage.removeItem(key);
@@ -37,7 +37,7 @@ export const localStorage = {
         localStorage.setItem(key, JSON.stringify(value));
     },
     getAllKeys(): string[] {
-        if (!this.doesExist) {
+        if (!localStorage.doesExist) {
             return [];
         }
         return _.keys(window.localStorage);

@@ -1,4 +1,4 @@
-import { constants as sharedConstants, Styles } from '@0xproject/react-shared';
+import { Styles } from '@0xproject/react-shared';
 import * as _ from 'lodash';
 import { GridTile as PlainGridTile } from 'material-ui/GridList';
 import * as React from 'react';
@@ -9,6 +9,7 @@ import { Container } from 'ts/components/ui/container';
 import { Image } from 'ts/components/ui/image';
 import { Island } from 'ts/components/ui/island';
 import { colors } from 'ts/style/colors';
+import { media } from 'ts/style/media';
 import { styled } from 'ts/style/theme';
 import { WebsiteBackendRelayerInfo } from 'ts/types';
 import { utils } from 'ts/utils/utils';
@@ -55,7 +56,7 @@ const styles: Styles = {
 };
 
 const FALLBACK_IMG_SRC = '/images/relayer_fallback.png';
-const FALLBACK_PRIMARY_COLOR = colors.grey200;
+const FALLBACK_PRIMARY_COLOR = colors.grey300;
 const NO_CONTENT_MESSAGE = '--';
 const RELAYER_ICON_HEIGHT = '110px';
 
@@ -63,10 +64,10 @@ export const RelayerGridTile: React.StatelessComponent<RelayerGridTileProps> = (
     const link = props.relayerInfo.appUrl || props.relayerInfo.url;
     const topTokens = props.relayerInfo.topTokens;
     const weeklyTxnVolume = props.relayerInfo.weeklyTxnVolume;
-    const networkName = sharedConstants.NETWORK_NAME_BY_ID[props.networkId];
-    const eventLabel = `${props.relayerInfo.name}-${networkName}`;
     const onClick = () => {
-        analytics.logEvent('Portal', 'Relayer Click', eventLabel);
+        analytics.track('Relayer Click', {
+            name: props.relayerInfo.name,
+        });
         utils.openUrl(link);
     };
     const headerImageUrl = props.relayerInfo.logoImgUrl;
@@ -107,10 +108,14 @@ export const RelayerGridTile: React.StatelessComponent<RelayerGridTileProps> = (
 
 const GridTile = styled(PlainGridTile)`
     cursor: pointer;
-    transition: transform 0.2s ease;
     &:hover {
+        transition: transform 0.2s ease;
         transform: translate(0px, -3px);
     }
+    ${media.small`
+        transform: none !important;
+        transition: none !important;
+    `};
 `;
 
 interface SectionProps {

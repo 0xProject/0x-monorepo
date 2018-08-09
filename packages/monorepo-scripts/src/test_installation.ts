@@ -1,7 +1,6 @@
 #!/usr/bin/env node
 
 import * as fs from 'fs';
-import lernaGetPackages = require('lerna-get-packages');
 import * as _ from 'lodash';
 import * as path from 'path';
 import { exec as execAsync } from 'promisify-child-process';
@@ -9,29 +8,42 @@ import * as rimraf from 'rimraf';
 
 import { utils } from './utils/utils';
 
+// Packages might not be runnable if they are command-line tools or only run in browsers.
+const UNRUNNABLE_PACKAGES = [
+    '@0xproject/abi-gen',
+    '@0xproject/sra-report',
+    '@0xproject/react-shared',
+    '@0xproject/react-docs',
+];
+
 (async () => {
+    const IS_LOCAL_PUBLISH = process.env.IS_LOCAL_PUBLISH === 'true';
+    const registry = IS_LOCAL_PUBLISH ? 'http://localhost:4873/' : 'https://registry.npmjs.org/';
     const monorepoRootPath = path.join(__dirname, '../../..');
-    const lernaPackages = lernaGetPackages(monorepoRootPath);
+    const packages = utils.getTopologicallySortedPackages(monorepoRootPath);
     const installablePackages = _.filter(
-        lernaPackages,
-        lernaPackage =>
-            !lernaPackage.package.private &&
-            !_.isUndefined(lernaPackage.package.main) &&
-            lernaPackage.package.main.endsWith('.js'),
+        packages,
+        pkg => !pkg.packageJson.private && !_.isUndefined(pkg.packageJson.main) && pkg.packageJson.main.endsWith('.js'),
     );
-    for (const installableLernaPackage of installablePackages) {
-        const packagePath = installableLernaPackage.location;
-        const packageName = installableLernaPackage.package.name;
-        utils.log(`Testing ${packageName}`);
-        let result = await execAsync('npm pack', { cwd: packagePath });
-        const packedPackageFileName = result.stdout.trim();
+    utils.log('Testing packages:');
+    _.map(installablePackages, pkg => utils.log(`* ${pkg.packageJson.name}`));
+    for (const installablePackage of installablePackages) {
+        const changelogPath = path.join(installablePackage.location, 'CHANGELOG.json');
+        const lastChangelogVersion = JSON.parse(fs.readFileSync(changelogPath).toString())[0].version;
+        const packageName = installablePackage.packageJson.name;
+        utils.log(`Testing ${packageName}@${lastChangelogVersion}`);
         const testDirectory = path.join(monorepoRootPath, '../test-env');
+        rimraf.sync(testDirectory);
         fs.mkdirSync(testDirectory);
-        result = await execAsync('yarn init --yes', { cwd: testDirectory });
-        utils.log(`Installing ${packedPackageFileName}`);
-        result = await execAsync(`yarn add ${packagePath}/${packedPackageFileName}`, { cwd: testDirectory });
+        await execAsync('yarn init --yes', { cwd: testDirectory });
+        const npmrcFilePath = path.join(testDirectory, '.npmrc');
+        fs.writeFileSync(npmrcFilePath, `registry=${registry}`);
+        utils.log(`Installing ${packageName}@${lastChangelogVersion}`);
+        await execAsync(`npm install --save ${packageName}@${lastChangelogVersion} --registry=${registry}`, {
+            cwd: testDirectory,
+        });
         const indexFilePath = path.join(testDirectory, 'index.ts');
-        fs.writeFileSync(indexFilePath, `import * as Package from '${packageName}';\n`);
+        fs.writeFileSync(indexFilePath, `import * as Package from '${packageName}';\nconsole.log(Package);\n`);
         const tsConfig = {
             compilerOptions: {
                 typeRoots: ['node_modules/@0xproject/typescript-typings/types', 'node_modules/@types'],
@@ -51,6 +63,13 @@ import { utils } from './utils/utils';
         const tscBinaryPath = path.join(monorepoRootPath, './node_modules/typescript/bin/tsc');
         await execAsync(tscBinaryPath, { cwd: testDirectory });
         utils.log(`Successfully compiled with ${packageName} as a dependency`);
+        const isUnrunnablePkg = _.includes(UNRUNNABLE_PACKAGES, packageName);
+        if (!isUnrunnablePkg) {
+            const transpiledIndexFilePath = path.join(testDirectory, 'index.js');
+            utils.log(`Running test script with ${packageName} imported`);
+            await execAsync(`node ${transpiledIndexFilePath}`);
+            utils.log(`Successfilly ran test script with ${packageName} imported`);
+        }
         rimraf.sync(testDirectory);
     }
 })().catch(err => {

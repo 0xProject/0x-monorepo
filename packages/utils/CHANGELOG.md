@@ -1,9 +1,39 @@
 <!--
-This file is auto-generated using the monorepo-scripts package. Don't edit directly.
+changelogUtils.file is auto-generated using the monorepo-scripts package. Don't edit directly.
 Edit the package's CHANGELOG.json file only.
 -->
 
 CHANGELOG
+
+## v1.0.4 - _July 26, 2018_
+
+    * Dependencies updated
+
+## v1.0.3 - _July 26, 2018_
+
+    * Dependencies updated
+
+## v1.0.2 - _July 26, 2018_
+
+    * Dependencies updated
+
+## v1.0.1 - _July 23, 2018_
+
+    * Add `AbortController` polyfill to `fetchAsync` (#903)
+
+## v1.0.0 - _July 20, 2018_
+
+    * Add `fetchAsync` which adds a default timeout to all requests (#874)
+
+## v0.7.3 - _July 18, 2018_
+
+    * Dependencies updated
+
+## v0.7.2 - _July 9, 2018_
+
+    * Added errorUtils.spawnSwitchErr
+    * Add logUtils.warn (#589)
+    * Fixes uncaught Error in abi_decoder (#763)
 
 ## v0.7.1 - _June 19, 2018_
 

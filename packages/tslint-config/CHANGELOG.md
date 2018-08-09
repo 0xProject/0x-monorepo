@@ -1,9 +1,33 @@
 <!--
-This file is auto-generated using the monorepo-scripts package. Don't edit directly.
+changelogUtils.file is auto-generated using the monorepo-scripts package. Don't edit directly.
 Edit the package's CHANGELOG.json file only.
 -->
 
 CHANGELOG
+
+## v1.0.4 - _July 26, 2018_
+
+    * Dependencies updated
+
+## v1.0.3 - _July 26, 2018_
+
+    * Dependencies updated
+
+## v1.0.2 - _July 25, 2018_
+
+    * Dependencies updated
+
+## v1.0.1 - _July 23, 2018_
+
+    * Dependencies updated
+
+## v1.0.0 - _July 20, 2018_
+
+    * Added a bunch of rules (#883)
+
+## v0.4.21 - _July 9, 2018_
+
+    * Dependencies updated
 
 ## v0.4.20 - _June 19, 2018_
 

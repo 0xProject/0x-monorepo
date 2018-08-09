@@ -10,12 +10,12 @@ import { Subprovider } from './subprovider';
  * It intercepts all JSON RPC requests and relays them to an in-process ganache instance.
  */
 export class GanacheSubprovider extends Subprovider {
-    private _ganacheProvider: Provider;
+    private readonly _ganacheProvider: Provider;
     /**
      * Instantiates a GanacheSubprovider
      * @param opts The desired opts with which to instantiate the Ganache provider
      */
-    constructor(opts: any) {
+    constructor(opts: Ganache.GanacheOpts) {
         super();
         this._ganacheProvider = Ganache.provider(opts);
     }

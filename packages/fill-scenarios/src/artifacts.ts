@@ -1,13 +1,11 @@
-import { Artifact } from '@0xproject/types';
+import { ContractArtifact } from '@0xproject/sol-compiler';
 
-import * as DummyToken from './compact_artifacts/DummyToken.json';
-import * as Exchange from './compact_artifacts/Exchange.json';
-import * as Token from './compact_artifacts/Token.json';
-import * as TokenTransferProxy from './compact_artifacts/TokenTransferProxy.json';
+import * as DummyERC20Token from './artifacts/DummyERC20Token.json';
+import * as DummyERC721Token from './artifacts/DummyERC721Token.json';
+import * as Exchange from './artifacts/Exchange.json';
 
 export const artifacts = {
-    DummyToken: (DummyToken as any) as Artifact,
-    Token: (Token as any) as Artifact,
-    TokenTransferProxy: (TokenTransferProxy as any) as Artifact,
-    Exchange: (Exchange as any) as Artifact,
+    DummyERC20Token: (DummyERC20Token as any) as ContractArtifact,
+    DummyERC721Token: (DummyERC721Token as any) as ContractArtifact,
+    Exchange: (Exchange as any) as ContractArtifact,
 };

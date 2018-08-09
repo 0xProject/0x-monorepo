@@ -1,5 +1,72 @@
 [
     {
+        "version": "1.0.1-rc.3",
+        "changes": [
+            {
+                "pr": 915,
+                "note": "Added strict encoding/decoding checks for sendTransaction and call"
+            },
+            {
+                "note": "Add ForwarderWrapper",
+                "pr": 934
+            },
+            {
+                "note": "Optimize orders in ForwarderWrapper",
+                "pr": 936
+            }
+        ]
+    },
+    {
+        "version": "1.0.1-rc.2",
+        "changes": [
+            {
+                "note": "Fixed bug caused by importing non-existent dep"
+            }
+        ],
+        "timestamp": 1532619515
+    },
+    {
+        "version": "1.0.1-rc.1",
+        "changes": [
+            {
+                "note": "Dependencies updated"
+            }
+        ],
+        "timestamp": 1532605697
+    },
+    {
+        "timestamp": 1532357734,
+        "version": "1.0.0",
+        "changes": [
+            {
+                "note": "Dependencies updated"
+            }
+        ]
+    },
+    {
+        "timestamp": 1532043000,
+        "version": "1.0.0-rc.1",
+        "changes": [
+            {
+                "note": "Update blockstream to v5.0 and propogate up caught errors to active subscriptions",
+                "pr": 815
+            },
+            {
+                "note": "Update to v2 of 0x rpotocol",
+                "pr": 822
+            }
+        ]
+    },
+    {
+        "timestamp": 1531919263,
+        "version": "0.1.1",
+        "changes": [
+            {
+                "note": "Dependencies updated"
+            }
+        ]
+    },
+    {
         "timestamp": 1529397769,
         "version": "0.0.5",
         "changes": [

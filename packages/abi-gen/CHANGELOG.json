@@ -1,5 +1,78 @@
 [
     {
+        "timestamp": 1532619515,
+        "version": "1.0.4",
+        "changes": [
+            {
+                "note": "Dependencies updated"
+            }
+        ]
+    },
+    {
+        "timestamp": 1532614997,
+        "version": "1.0.3",
+        "changes": [
+            {
+                "note": "Dependencies updated"
+            }
+        ]
+    },
+    {
+        "timestamp": 1532605697,
+        "version": "1.0.2",
+        "changes": [
+            {
+                "note": "Dependencies updated"
+            }
+        ]
+    },
+    {
+        "version": "1.0.1",
+        "changes": [
+            {
+                "note": "Fix the abi-gen entry point in package.json",
+                "pr": 901
+            }
+        ],
+        "timestamp": 1532357734
+    },
+    {
+        "timestamp": 1532043000,
+        "version": "1.0.0",
+        "changes": [
+            {
+                "note": "Convert e_r_c to erc in generated file names",
+                "pr": 822
+            },
+            {
+                "note": "Remove the output directory before writing to it",
+                "pr": 822
+            },
+            {
+                "note": "skip generation of wrappers that are already up to date",
+                "pr": 788
+            }
+        ]
+    },
+    {
+        "timestamp": 1531919263,
+        "version": "0.3.4",
+        "changes": [
+            {
+                "note": "Dependencies updated"
+            }
+        ]
+    },
+    {
+        "timestamp": 1531149657,
+        "version": "0.3.3",
+        "changes": [
+            {
+                "note": "Dependencies updated"
+            }
+        ]
+    },
+    {
         "timestamp": 1529397769,
         "version": "0.3.2",
         "changes": [

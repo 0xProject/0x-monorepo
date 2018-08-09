@@ -1,25 +1,26 @@
 import { BlockchainLifecycle } from '@0xproject/dev-utils';
-import { assetProxyUtils, generatePseudoRandomSalt } from '@0xproject/order-utils';
-import { AssetProxyId, OrderWithoutExchangeAddress, RevertReason, SignedOrder } from '@0xproject/types';
+import { assetDataUtils, generatePseudoRandomSalt } from '@0xproject/order-utils';
+import { OrderWithoutExchangeAddress, RevertReason, SignedOrder } from '@0xproject/types';
 import { BigNumber } from '@0xproject/utils';
 import * as chai from 'chai';
+import * as _ from 'lodash';
 
-import { DummyERC20TokenContract } from '../../src/generated_contract_wrappers/dummy_e_r_c20_token';
-import { ERC20ProxyContract } from '../../src/generated_contract_wrappers/e_r_c20_proxy';
-import { ExchangeContract } from '../../src/generated_contract_wrappers/exchange';
-import { ExchangeWrapperContract } from '../../src/generated_contract_wrappers/exchange_wrapper';
-import { WhitelistContract } from '../../src/generated_contract_wrappers/whitelist';
-import { artifacts } from '../../src/utils/artifacts';
-import { expectRevertReasonOrAlwaysFailingTransactionAsync } from '../../src/utils/assertions';
-import { chaiSetup } from '../../src/utils/chai_setup';
-import { constants } from '../../src/utils/constants';
-import { ERC20Wrapper } from '../../src/utils/erc20_wrapper';
-import { ExchangeWrapper } from '../../src/utils/exchange_wrapper';
-import { OrderFactory } from '../../src/utils/order_factory';
-import { orderUtils } from '../../src/utils/order_utils';
-import { TransactionFactory } from '../../src/utils/transaction_factory';
-import { ERC20BalancesByOwner, SignedTransaction } from '../../src/utils/types';
-import { provider, txDefaults, web3Wrapper } from '../../src/utils/web3_wrapper';
+import { DummyERC20TokenContract } from '../../generated_contract_wrappers/dummy_erc20_token';
+import { ERC20ProxyContract } from '../../generated_contract_wrappers/erc20_proxy';
+import { ExchangeContract } from '../../generated_contract_wrappers/exchange';
+import { ExchangeWrapperContract } from '../../generated_contract_wrappers/exchange_wrapper';
+import { WhitelistContract } from '../../generated_contract_wrappers/whitelist';
+import { artifacts } from '../utils/artifacts';
+import { expectTransactionFailedAsync } from '../utils/assertions';
+import { chaiSetup } from '../utils/chai_setup';
+import { constants } from '../utils/constants';
+import { ERC20Wrapper } from '../utils/erc20_wrapper';
+import { ExchangeWrapper } from '../utils/exchange_wrapper';
+import { OrderFactory } from '../utils/order_factory';
+import { orderUtils } from '../utils/order_utils';
+import { TransactionFactory } from '../utils/transaction_factory';
+import { ERC20BalancesByOwner, SignedTransaction } from '../utils/types';
+import { provider, txDefaults, web3Wrapper } from '../utils/web3_wrapper';
 
 chaiSetup.configure();
 const expect = chai.expect;
@@ -67,11 +68,19 @@ describe('Exchange transactions', () => {
     });
     before(async () => {
         const accounts = await web3Wrapper.getAvailableAddressesAsync();
-        const usedAddresses = ([owner, senderAddress, makerAddress, takerAddress, feeRecipientAddress] = accounts);
+        const usedAddresses = ([owner, senderAddress, makerAddress, takerAddress, feeRecipientAddress] = _.slice(
+            accounts,
+            0,
+            5,
+        ));
 
         erc20Wrapper = new ERC20Wrapper(provider, usedAddresses, owner);
 
-        [erc20TokenA, erc20TokenB, zrxToken] = await erc20Wrapper.deployDummyTokensAsync();
+        const numDummyErc20ToDeploy = 3;
+        [erc20TokenA, erc20TokenB, zrxToken] = await erc20Wrapper.deployDummyTokensAsync(
+            numDummyErc20ToDeploy,
+            constants.DUMMY_TOKEN_DECIMALS,
+        );
         erc20Proxy = await erc20Wrapper.deployProxyAsync();
         await erc20Wrapper.setBalancesAndAllowancesAsync();
 
@@ -79,10 +88,10 @@ describe('Exchange transactions', () => {
             artifacts.Exchange,
             provider,
             txDefaults,
-            assetProxyUtils.encodeERC20AssetData(zrxToken.address),
+            assetDataUtils.encodeERC20AssetData(zrxToken.address),
         );
         exchangeWrapper = new ExchangeWrapper(exchange, provider);
-        await exchangeWrapper.registerAssetProxyAsync(AssetProxyId.ERC20, erc20Proxy.address, owner);
+        await exchangeWrapper.registerAssetProxyAsync(erc20Proxy.address, owner);
 
         await web3Wrapper.awaitTransactionSuccessAsync(
             await erc20Proxy.addAuthorizedAddress.sendTransactionAsync(exchange.address, { from: owner }),
@@ -98,8 +107,8 @@ describe('Exchange transactions', () => {
             exchangeAddress: exchange.address,
             makerAddress,
             feeRecipientAddress,
-            makerAssetData: assetProxyUtils.encodeERC20AssetData(defaultMakerTokenAddress),
-            takerAssetData: assetProxyUtils.encodeERC20AssetData(defaultTakerTokenAddress),
+            makerAssetData: assetDataUtils.encodeERC20AssetData(defaultMakerTokenAddress),
+            takerAssetData: assetDataUtils.encodeERC20AssetData(defaultTakerTokenAddress),
         };
         makerPrivateKey = constants.TESTRPC_PRIVATE_KEYS[accounts.indexOf(makerAddress)];
         takerPrivateKey = constants.TESTRPC_PRIVATE_KEYS[accounts.indexOf(takerAddress)];
@@ -112,7 +121,7 @@ describe('Exchange transactions', () => {
             let takerAssetFillAmount: BigNumber;
             beforeEach(async () => {
                 erc20Balances = await erc20Wrapper.getBalancesAsync();
-                signedOrder = orderFactory.newSignedOrder();
+                signedOrder = await orderFactory.newSignedOrderAsync();
                 orderWithoutExchangeAddress = orderUtils.getOrderWithoutExchangeAddress(signedOrder);
 
                 takerAssetFillAmount = signedOrder.takerAssetAmount.div(2);
@@ -125,7 +134,7 @@ describe('Exchange transactions', () => {
             });
 
             it('should throw if not called by specified sender', async () => {
-                return expectRevertReasonOrAlwaysFailingTransactionAsync(
+                return expectTransactionFailedAsync(
                     exchangeWrapper.executeTransactionAsync(signedTx, takerAddress),
                     RevertReason.FailedExecution,
                 );
@@ -168,7 +177,7 @@ describe('Exchange transactions', () => {
 
             it('should throw if the a 0x transaction with the same transactionHash has already been executed', async () => {
                 await exchangeWrapper.executeTransactionAsync(signedTx, senderAddress);
-                return expectRevertReasonOrAlwaysFailingTransactionAsync(
+                return expectTransactionFailedAsync(
                     exchangeWrapper.executeTransactionAsync(signedTx, senderAddress),
                     RevertReason.InvalidTxHash,
                 );
@@ -188,7 +197,7 @@ describe('Exchange transactions', () => {
             });
 
             it('should throw if not called by specified sender', async () => {
-                return expectRevertReasonOrAlwaysFailingTransactionAsync(
+                return expectTransactionFailedAsync(
                     exchangeWrapper.executeTransactionAsync(signedTx, makerAddress),
                     RevertReason.FailedExecution,
                 );
@@ -196,7 +205,7 @@ describe('Exchange transactions', () => {
 
             it('should cancel the order when signed by maker and called by sender', async () => {
                 await exchangeWrapper.executeTransactionAsync(signedTx, senderAddress);
-                return expectRevertReasonOrAlwaysFailingTransactionAsync(
+                return expectTransactionFailedAsync(
                     exchangeWrapper.fillOrderAsync(signedOrder, senderAddress),
                     RevertReason.OrderUnfillable,
                 );
@@ -217,7 +226,7 @@ describe('Exchange transactions', () => {
 
             it("should cancel an order if called from the order's sender", async () => {
                 const orderSalt = new BigNumber(0);
-                signedOrder = orderFactory.newSignedOrder({
+                signedOrder = await orderFactory.newSignedOrderAsync({
                     senderAddress: exchangeWrapperContract.address,
                     salt: orderSalt,
                 });
@@ -241,7 +250,7 @@ describe('Exchange transactions', () => {
                     signedOrder.signature,
                 );
                 const signedFillTx = takerTransactionFactory.newSignedTransaction(fillData);
-                return expectRevertReasonOrAlwaysFailingTransactionAsync(
+                return expectTransactionFailedAsync(
                     exchangeWrapperContract.fillOrder.sendTransactionAsync(
                         orderWithoutExchangeAddress,
                         takerAssetFillAmount,
@@ -256,7 +265,7 @@ describe('Exchange transactions', () => {
 
             it("should not cancel an order if not called from the order's sender", async () => {
                 const orderSalt = new BigNumber(0);
-                signedOrder = orderFactory.newSignedOrder({
+                signedOrder = await orderFactory.newSignedOrderAsync({
                     senderAddress: exchangeWrapperContract.address,
                     salt: orderSalt,
                 });
@@ -340,14 +349,14 @@ describe('Exchange transactions', () => {
                 exchangeAddress: exchange.address,
                 makerAddress,
                 feeRecipientAddress,
-                makerAssetData: assetProxyUtils.encodeERC20AssetData(defaultMakerTokenAddress),
-                takerAssetData: assetProxyUtils.encodeERC20AssetData(defaultTakerTokenAddress),
+                makerAssetData: assetDataUtils.encodeERC20AssetData(defaultMakerTokenAddress),
+                takerAssetData: assetDataUtils.encodeERC20AssetData(defaultTakerTokenAddress),
             };
             whitelistOrderFactory = new OrderFactory(makerPrivateKey, defaultOrderParams);
         });
 
         beforeEach(async () => {
-            signedOrder = whitelistOrderFactory.newSignedOrder();
+            signedOrder = await whitelistOrderFactory.newSignedOrderAsync();
             erc20Balances = await erc20Wrapper.getBalancesAsync();
         });
 
@@ -361,7 +370,7 @@ describe('Exchange transactions', () => {
             orderWithoutExchangeAddress = orderUtils.getOrderWithoutExchangeAddress(signedOrder);
             const takerAssetFillAmount = signedOrder.takerAssetAmount;
             const salt = generatePseudoRandomSalt();
-            return expectRevertReasonOrAlwaysFailingTransactionAsync(
+            return expectTransactionFailedAsync(
                 whitelist.fillOrderIfWhitelisted.sendTransactionAsync(
                     orderWithoutExchangeAddress,
                     takerAssetFillAmount,
@@ -383,7 +392,7 @@ describe('Exchange transactions', () => {
             orderWithoutExchangeAddress = orderUtils.getOrderWithoutExchangeAddress(signedOrder);
             const takerAssetFillAmount = signedOrder.takerAssetAmount;
             const salt = generatePseudoRandomSalt();
-            return expectRevertReasonOrAlwaysFailingTransactionAsync(
+            return expectTransactionFailedAsync(
                 whitelist.fillOrderIfWhitelisted.sendTransactionAsync(
                     orderWithoutExchangeAddress,
                     takerAssetFillAmount,
