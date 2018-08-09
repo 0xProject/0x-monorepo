@@ -1169,6 +1169,12 @@
   dependencies:
     "@types/react" "*"
 
+"@types/react-scroll@1.5.3":
+  version "1.5.3"
+  resolved "https://registry.yarnpkg.com/@types/react-scroll/-/react-scroll-1.5.3.tgz#cc4e94db3d7d5b1cd244bfee24091c335d3e2598"
+  dependencies:
+    "@types/react" "*"
+
 "@types/react-tap-event-plugin@0.0.30":
   version "0.0.30"
   resolved "https://registry.yarnpkg.com/@types/react-tap-event-plugin/-/react-tap-event-plugin-0.0.30.tgz#123f35080412f489b6770c5a65c159ff96654cb5"
@@ -5148,6 +5154,7 @@ ethereumjs-wallet@~0.6.0:
 
 ethers@0xproject/ethers.js#eip-838-reasons, ethers@3.0.22:
   version "3.0.18"
+  uid b91342bd200d142af0165d6befddf783c8ae8447
   resolved "https://codeload.github.com/0xproject/ethers.js/tar.gz/b91342bd200d142af0165d6befddf783c8ae8447"
   dependencies:
     aes-js "3.0.0"
