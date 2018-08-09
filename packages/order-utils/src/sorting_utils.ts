@@ -37,7 +37,7 @@ export const sortingUtils = {
      */
     sortFeeOrdersByFeeAdjustedRate(signedFeeOrders: SignedOrder[]): SignedOrder[] {
         assert.doesConformToSchema('signedFeeOrders', signedFeeOrders, schemas.signedOrdersSchema);
-        const rateCalculator = rateUtils.getFeeAdjustedRateOfFeeOrder;
+        const rateCalculator = rateUtils.getFeeAdjustedRateOfFeeOrder.bind(rateUtils);
         const sortedOrders = sortOrders(signedFeeOrders, rateCalculator);
         return sortedOrders;
     },

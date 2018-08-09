@@ -1,7 +1,6 @@
 import { schemas } from '@0xproject/json-schemas';
 import { SignedOrder } from '@0xproject/types';
 import { BigNumber } from '@0xproject/utils';
-import * as _ from 'lodash';
 
 import { assert } from './assert';
 import { constants } from './constants';

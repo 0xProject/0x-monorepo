@@ -1,9 +1,8 @@
 import { BigNumber } from '@0xproject/utils';
 import * as chai from 'chai';
-import * as _ from 'lodash';
 import 'mocha';
 
-import { constants, rateUtils, sortingUtils } from '../src';
+import { sortingUtils } from '../src';
 
 import { chaiSetup } from './utils/chai_setup';
 import { testOrderFactory } from './utils/test_order_factory';
@@ -32,15 +31,12 @@ describe('sortingUtils', () => {
         });
         it('correctly sorts by fee adjusted rate when feeRate is Provided', async () => {
             const orders = [testOrder1, testOrder2, testOrder3];
-            const sortedOrders = sortingUtils.sortOrdersByFeeAdjustedRate(
-                [testOrder1, testOrder2, testOrder3],
-                feeRate,
-            );
+            const sortedOrders = sortingUtils.sortOrdersByFeeAdjustedRate(orders, feeRate);
             expect(sortedOrders).to.deep.equal([testOrder2, testOrder1, testOrder3]);
         });
         it('correctly sorts by fee adjusted rate when no feeRate is Provided', async () => {
             const orders = [testOrder1, testOrder2, testOrder3];
-            const sortedOrders = sortingUtils.sortOrdersByFeeAdjustedRate([testOrder1, testOrder2, testOrder3]);
+            const sortedOrders = sortingUtils.sortOrdersByFeeAdjustedRate(orders);
             expect(sortedOrders).to.deep.equal([testOrder2, testOrder1, testOrder3]);
         });
     });
@@ -64,7 +60,7 @@ describe('sortingUtils', () => {
         });
         it('correctly sorts by fee adjusted rate', async () => {
             const orders = [testOrder1, testOrder2, testOrder3];
-            const sortedOrders = sortingUtils.sortFeeOrdersByFeeAdjustedRate([testOrder1, testOrder2, testOrder3]);
+            const sortedOrders = sortingUtils.sortFeeOrdersByFeeAdjustedRate(orders);
             expect(sortedOrders).to.deep.equal([testOrder2, testOrder3, testOrder1]);
         });
     });
