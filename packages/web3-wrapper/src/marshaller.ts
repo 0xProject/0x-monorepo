@@ -32,6 +32,7 @@ export const marshaller = {
     /**
      * Unmarshall block without transaction data
      * @param blockWithHexValues block to unmarshall
+     * @return unmarshalled block without transaction data
      */
     unmarshalIntoBlockWithoutTransactionData(
         blockWithHexValues: BlockWithoutTransactionDataRPC,
@@ -51,6 +52,7 @@ export const marshaller = {
     /**
      * Unmarshall block with transaction data
      * @param blockWithHexValues block to unmarshall
+     * @return unmarshalled block with transaction data
      */
     unmarshalIntoBlockWithTransactionData(blockWithHexValues: BlockWithTransactionDataRPC): BlockWithTransactionData {
         const block = {
@@ -73,6 +75,7 @@ export const marshaller = {
     /**
      * Unmarshall transaction
      * @param txRpc transaction to unmarshall
+     * @return unmarshalled transaction
      */
     unmarshalTransaction(txRpc: TransactionRPC): Transaction {
         const tx = {
@@ -91,6 +94,7 @@ export const marshaller = {
     /**
      * Unmarshall transaction data
      * @param txDataRpc transaction data to unmarshall
+     * @return unmarshalled transaction data
      */
     unmarshalTxData(txDataRpc: TxDataRPC): TxData {
         if (_.isUndefined(txDataRpc.from)) {
@@ -108,6 +112,7 @@ export const marshaller = {
     /**
      * Marshall transaction data
      * @param txData transaction data to marshall
+     * @return marshalled transaction data
      */
     marshalTxData(txData: Partial<TxData>): Partial<TxDataRPC> {
         if (_.isUndefined(txData.from)) {
@@ -133,6 +138,7 @@ export const marshaller = {
     /**
      * Marshall call data
      * @param callData call data to marshall
+     * @return marshalled call data
      */
     marshalCallData(callData: Partial<CallData>): Partial<CallDataRPC> {
         const callTxDataBase = {
@@ -149,6 +155,7 @@ export const marshaller = {
     /**
      * Marshall address
      * @param address address to marshall
+     * @return marshalled address
      */
     marshalAddress(address: string): string {
         if (addressUtils.isAddress(address)) {
@@ -159,6 +166,7 @@ export const marshaller = {
     /**
      * Marshall block param
      * @param blockParam block param to marshall
+     * @return marshalled block param
      */
     marshalBlockParam(blockParam: BlockParam | string | number | undefined): string | undefined {
         if (_.isUndefined(blockParam)) {
@@ -170,6 +178,7 @@ export const marshaller = {
     /**
      * Unmarshall log
      * @param rawLog log to unmarshall
+     * @return unmarshalled log
      */
     unmarshalLog(rawLog: RawLogEntry): LogEntry {
         const formattedLog = {
