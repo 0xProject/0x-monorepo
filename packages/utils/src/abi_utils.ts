@@ -96,9 +96,9 @@ function isAbiDataEqual(name: ethers.ParamName, type: string, x: any, y: any): b
         }
         return true;
     } else if (type === 'address' || type === 'bytes') {
-        // HACK(albrow): ethers.js sometimes changes the case of addresses/bytes
-        // when decoding/encoding. To account for that, we convert to lowercase
-        // before comparing.
+        // HACK(albrow): ethers.js returns the checksummed address even when
+        // initially passed in a non-checksummed address. To account for that,
+        // we convert to lowercase before comparing.
         return _.isEqual(_.toLower(x), _.toLower(y));
     } else if (_.startsWith(type, 'uint') || _.startsWith(type, 'int')) {
         return new BigNumber(x).eq(new BigNumber(y));
