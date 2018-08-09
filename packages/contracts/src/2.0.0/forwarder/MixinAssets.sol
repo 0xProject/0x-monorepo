@@ -36,28 +36,25 @@ contract MixinAssets is
 
     bytes4 constant internal ERC20_TRANSFER_SELECTOR = bytes4(keccak256("transfer(address,uint256)"));
 
-    /// @dev Withdraws ERC20 tokens from this contract. The contract requires a ZRX balance in order to 
+    /// @dev Withdraws assets from this contract. The contract requires a ZRX balance in order to 
     ///      function optimally, and this function allows the ZRX to be withdrawn by owner. It may also be
-    ///      used to withdraw tokens that were accidentally sent to this contract.
-    /// @param token Address of ERC20 token to withdraw.
+    ///      used to withdraw assets that were accidentally sent to this contract.
+    /// @param assetData Byte array encoded for the respective asset proxy.
     /// @param amount Amount of ERC20 token to withdraw.
-    function withdrawERC20(
-        address token,
+    function withdrawAsset(
+        bytes assetData,
         uint256 amount
     )
         external
         onlyOwner
     {
-        require(
-            IERC20Token(token).transfer(msg.sender, amount),
-            "WITHDRAWAL_FAILED"
-        );
+        transferAssetToSender(assetData, amount);
     }
 
     /// @dev Transfers given amount of asset to sender.
     /// @param assetData Byte array encoded for the respective asset proxy.
     /// @param amount Amount of asset to transfer to sender.
-    function transferPurchasedAssetToSender(
+    function transferAssetToSender(
         bytes memory assetData,
         uint256 amount
     )

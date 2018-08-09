@@ -106,12 +106,12 @@ export class ForwarderWrapper {
         const tx = await this._logDecoder.getTxWithDecodedLogsAsync(txHash);
         return tx;
     }
-    public async withdrawERC20Async(
-        tokenAddress: string,
+    public async withdrawAssetAsync(
+        assetData: string,
         amount: BigNumber,
         txData: TxDataPayable,
     ): Promise<TransactionReceiptWithDecodedLogs> {
-        const txHash = await this._forwarderContract.withdrawERC20.sendTransactionAsync(tokenAddress, amount, txData);
+        const txHash = await this._forwarderContract.withdrawAsset.sendTransactionAsync(assetData, amount, txData);
         const tx = await this._logDecoder.getTxWithDecodedLogsAsync(txHash);
         return tx;
     }

@@ -135,7 +135,7 @@ contract MixinForwarderCore is
         );
 
         // Transfer purchased assets to msg.sender.
-        transferPurchasedAssetToSender(orders[0].makerAssetData, makerAssetAmountPurchased);
+        transferAssetToSender(orders[0].makerAssetData, makerAssetAmountPurchased);
     }
 
     /// @dev Attempt to purchase makerAssetFillAmount of makerAsset by selling ETH provided with transaction.
@@ -208,6 +208,6 @@ contract MixinForwarderCore is
         );
 
         // Transfer purchased assets to msg.sender.
-        transferPurchasedAssetToSender(orders[0].makerAssetData, makerAssetAmountPurchased);
+        transferAssetToSender(orders[0].makerAssetData, makerAssetAmountPurchased);
     }
 }

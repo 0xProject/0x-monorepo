@@ -36,6 +36,7 @@ describe(ContractName.Forwarder, () => {
     let feeRecipientAddress: string;
     let otherAddress: string;
     let defaultMakerAssetAddress: string;
+    let zrxAssetData: string;
 
     let weth: DummyERC20TokenContract;
     let zrxToken: DummyERC20TokenContract;
@@ -90,7 +91,7 @@ describe(ContractName.Forwarder, () => {
         erc20Wrapper.addDummyTokenContract(weth);
 
         const wethAssetData = assetDataUtils.encodeERC20AssetData(wethContract.address);
-        const zrxAssetData = assetDataUtils.encodeERC20AssetData(zrxToken.address);
+        zrxAssetData = assetDataUtils.encodeERC20AssetData(zrxToken.address);
         const exchangeInstance = await ExchangeContract.deployFrom0xArtifactAsync(
             artifacts.Exchange,
             provider,
@@ -967,6 +968,26 @@ describe(ContractName.Forwarder, () => {
                     { feePercentage, feeRecipient: feeRecipientAddress },
                 ),
                 RevertReason.InsufficientEthRemaining,
+            );
+        });
+    });
+    describe('withdrawAsset', () => {
+        it('should allow owner to withdraw ERC20 tokens', async () => {
+            const zrxWithdrawAmount = erc20Balances[forwarderContract.address][zrxToken.address];
+            await forwarderWrapper.withdrawAssetAsync(zrxAssetData, zrxWithdrawAmount, { from: owner });
+            const newBalances = await erc20Wrapper.getBalancesAsync();
+            expect(newBalances[owner][zrxToken.address]).to.be.bignumber.equal(
+                erc20Balances[owner][zrxToken.address].plus(zrxWithdrawAmount),
+            );
+            expect(newBalances[forwarderContract.address][zrxToken.address]).to.be.bignumber.equal(
+                erc20Balances[forwarderContract.address][zrxToken.address].minus(zrxWithdrawAmount),
+            );
+        });
+        it('should revert if not called by owner', async () => {
+            const zrxWithdrawAmount = erc20Balances[forwarderContract.address][zrxToken.address];
+            await expectTransactionFailedAsync(
+                forwarderWrapper.withdrawAssetAsync(zrxAssetData, zrxWithdrawAmount, { from: makerAddress }),
+                RevertReason.OnlyContractOwner,
             );
         });
     });
