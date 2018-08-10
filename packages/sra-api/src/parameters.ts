@@ -10,7 +10,7 @@ export const paginationParameters: ParameterObject[] = [
         },
     },
     {
-        name: 'per_page',
+        name: 'perPage',
         in: 'query',
         description: 'The number of records to return per page.',
         example: 10,
@@ -21,7 +21,7 @@ export const paginationParameters: ParameterObject[] = [
 ];
 
 export const networkdIdParameter: ParameterObject = {
-    name: 'network_id',
+    name: 'networkId',
     in: 'query',
     description: 'The id of the Ethereum network',
     example: 42,

@@ -6,13 +6,13 @@ Use the [sra-report](https://github.com/0xProject/0x-monorepo/tree/development/p
 
 The [JSON schemas](http://json-schema.org/) for the API payloads and responses can be found in [@0xproject/json-schemas](https://github.com/0xProject/0x.js/tree/development/packages/json-schemas). Examples of each payload and response can be found in the library's [test suite](https://github.com/0xProject/0x.js/blob/development/packages/json-schemas/test/schema_test.ts#L1).
 
-```
+```bash
 npm install @0xproject/json-schemas --save
 ```
 
 You can easily validate your API's payloads and responses using the [@0xproject/json-schemas](https://github.com/0xProject/0x.js/tree/development/packages/json-schemas) package:
 
-```
+```js
 import {SchemaValidator, ValidatorResult, schemas} from '@0xproject/json-schemas';
 
 const {relayerApiTokenPairsResponseSchema} = schemas;
@@ -26,13 +26,13 @@ const validatorResult: ValidatorResult = validator.validate(tokenPairsResponse, 
 
 # Pagination
 
-Requests that return potentially large collections should respond to the **?page** and **?per_page** parameters. For example:
+Requests that return potentially large collections should respond to the **?page** and **?perPage** parameters. For example:
 
-```
-$ curl https://api.example-relayer.com/v2/asset_pairs?page=3&per_page=20
+```bash
+$ curl https://api.example-relayer.com/v2/asset_pairs?page=3&perPage=20
 ```
 
-Page numbering should be 1-indexed, not 0-indexed. If a query provides an unreasonable (ie. too high) `per_page` value, the response can return a validation error as specified in the [errors section](#section/Errors). If the query specifies a `page` that does not exist (ie. there are not enough `records`), the response should just return an empty `records` array.
+Page numbering should be 1-indexed, not 0-indexed. If a query provides an unreasonable (ie. too high) `perPage` value, the response can return a validation error as specified in the [errors section](#section/Errors). If the query specifies a `page` that does not exist (ie. there are not enough `records`), the response should just return an empty `records` array.
 
 All endpoints that are paginated should return a `total`, `page`, `perPage` and a `records` value in the top level of the collection. The value of `total` should be the total number of records for a given query, whereas `records` should be an array representing the response to the query for that page. `page` and `perPage`, are the same values that were specified in the request. See the note in [miscellaneous](#section/Misc.) about formatting `snake_case` vs. `lowerCamelCase`.
 
@@ -42,7 +42,7 @@ These requests include the [`/v2/asset_pairs`](#operation/getAssetPairs), [`/v2/
 
 All requests should be able to specify a **?networkId** query param for all supported networks. For example:
 
-```
+```bash
 $ curl https://api.example-relayer.com/v2/asset_pairs?networkId=1
 ```
 
@@ -59,7 +59,7 @@ Networks and their Ids:
 
 If a certain network is not supported, the response should **400** as specified in the [error response](#section/Errors) section. For example:
 
-```
+```json
 {
     "code": 100,
     "reason": "Validation failed",
@@ -78,9 +78,9 @@ If a certain network is not supported, the response should **400** as specified 
 A [Link Header](https://tools.ietf.org/html/rfc5988) can be included in a response to provide clients with more context about paging
 For example:
 
-```
-Link: <https://api.example-relayer.com/v2/asset_pairs?page=3&per_page=20>; rel="next",
-<https://api.github.com/user/repos?page=10&per_page=20>; rel="last"
+```bash
+Link: <https://api.example-relayer.com/v2/asset_pairs?page=3&perPage=20>; rel="next",
+<https://api.github.com/user/repos?page=10&perPage=20>; rel="last"
 ```
 
 This `Link` response header contains one or more Hypermedia link relations.
@@ -106,7 +106,7 @@ Rate limit guidance for clients can be optionally returned in the response heade
 
 For example:
 
-```
+```bash
 $ curl -i https://api.example-relayer.com/v2/asset_pairs
 HTTP/1.1 200 OK
 Date: Mon, 20 Oct 2017 12:30:06 GMT
@@ -136,7 +136,7 @@ Unless the spec defines otherwise, errors to bad requests should respond with HT
 
 For all **400** responses, see the [error response schema](https://github.com/0xProject/0x-monorepo/blob/development/packages/json-schemas/schemas/relayer_api_error_response_schema.ts#L1).
 
-```
+```json
 {
     "code": 101,
     "reason": "Validation failed",
@@ -152,7 +152,7 @@ For all **400** responses, see the [error response schema](https://github.com/0x
 
 General error codes:
 
-```
+```bash
 100 - Validation Failed
 101 - Malformed JSON
 102 - Order submission disabled
@@ -161,7 +161,7 @@ General error codes:
 
 Validation error codes:
 
-```
+```bash
 1000 - Required field
 1001 - Incorrect format
 1002 - Invalid address
@@ -177,7 +177,7 @@ As we now support multiple [token transfer proxies](https://github.com/0xProject
 
 The identifier for the Proxy uses a similar scheme to [ABI function selectors](https://github.com/ethereum/wiki/wiki/Ethereum-Contract-ABI#function-selector).
 
-```
+```js
 // ERC20 Proxy ID  0xf47261b0
 bytes4(keccak256("ERC20Token(address)"))
 // ERC721 Proxy ID 0x08e937fa
@@ -188,13 +188,13 @@ Asset data is encoded using [ABI encoding](https://solidity.readthedocs.io/en/de
 
 For example, encoding the ERC20 token contract (address: 0x1dc4c1cefef38a777b15aa20260a54e584b16c48) using the ERC20 Transfer Proxy (id: 0xf47261b0) would be:
 
-```
+```bash
 0xf47261b00000000000000000000000001dc4c1cefef38a777b15aa20260a54e584b16c48
 ```
 
 Encoding the ERC721 token contract (address: `0x371b13d97f4bf77d724e78c16b7dc74099f40e84`), token id (id: `99`, which hex encoded is `0x63`) and the ERC721 Transfer Proxy (id: 0x08e937fa) would be:
 
-```
+```bash
 0x08e937fa000000000000000000000000371b13d97f4bf77d724e78c16b7dc74099f40e840000000000000000000000000000000000000000000000000000000000000063
 ```
 
@@ -211,4 +211,4 @@ A good example of such a field is `remainingTakerAssetAmount`, which is a conven
 *   All requests and responses should be of **application/json** content type
 *   All token amounts are sent in amounts of the smallest level of precision (base units). (e.g if a token has 18 decimal places, selling 1 token would show up as selling `'1000000000000000000'` units by this API).
 *   All addresses are sent as lower-case (non-checksummed) Ethereum addresses with the `0x` prefix.
-*   All URL query parameters are to be written in `snake_case` and all queries and responses specified in JSON should use `lowerCamelCase`.
+*   All parameters are to be written in `lowerCamelCase`.

@@ -1,6 +1,6 @@
 {
     "domain": "sra-api",
-    "build_command": "yarn build-site",
+    "build_command": "yarn build-json",
     "upload_directory": "public",
     "index_key": "index.html",
     "error_key": "index.html",
