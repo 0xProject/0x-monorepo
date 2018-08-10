@@ -20,8 +20,8 @@
 
 <!--- The following points should be used to indicate the progress of your PR.  Put an `x` in all the boxes that apply right now, and come back over time and check them off as you make progress.  If you're unsure about any of these, don't hesitate to ask. We're here to help! -->
 
-*   [ ] Prefixed the title of this PR with `[WIP]` if it is a work in progress.
-*   [ ] Prefixed the title of this PR with bracketed package name(s) corresponding to the changed package(s). For example: `[sol-cov] Fixed bug`.
-*   [ ] Added tests to cover my changes, or decided that tests would be too impractical.
-*   [ ] Updated documentation, or decided that no doc change is needed.
-*   [ ] Added new entries to the relevant CHANGELOG.jsons.
+*   [ ] Prefix PR title with `[WIP]` if necessary.
+*   [ ] Prefix PR title with bracketed package name(s) corresponding to the changed package(s). For example: `[sol-cov] Fixed bug`.
+*   [ ] Add tests to cover changes as needed.
+*   [ ] Update documentation as needed.
+*   [ ] Add new entries to the relevant CHANGELOG.jsons.
