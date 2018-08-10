@@ -1,15 +1,17 @@
 #!/usr/bin/env node
 // We need the above pragma since this script will be run as a command-line tool.
 
+import * as fs from 'fs';
+import * as path from 'path';
+
+import * as _ from 'lodash';
+import * as requireFromString from 'require-from-string';
+import * as yargs from 'yargs';
+
+import * as solc from 'solc';
+
 import { Resolver } from '@0xproject/sol-resolver';
 import { fetchAsync } from '@0xproject/utils';
-
-import * as fs from 'fs';
-import * as _ from 'lodash';
-import * as path from 'path';
-import * as requireFromString from 'require-from-string';
-import * as solc from 'solc';
-import * as yargs from 'yargs';
 
 import { constructResolver } from './compiler';
 import { constants } from './constants';
