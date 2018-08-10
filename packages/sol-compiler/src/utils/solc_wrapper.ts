@@ -10,7 +10,6 @@ import * as yargs from 'yargs';
 
 import * as solc from 'solc';
 
-import { Resolver } from '@0xproject/sol-resolver';
 import { fetchAsync } from '@0xproject/utils';
 
 import { constructResolver } from './compiler';
@@ -49,13 +48,12 @@ import { constants } from './constants';
         fs.writeFileSync(compilerBinFilename, solcjs);
     }
 
-    const resolver: Resolver = constructResolver(argv.contractsDir);
     process.stdout.write(
         solc
             .setupMethods(requireFromString(solcjs, compilerBinFilename))
             .compileStandardWrapper(fs.readFileSync(0 /* stdout */).toString(), importPath => {
                 // resolve dependency on importPath
-                const sourceCodeIfExists = resolver.resolve(importPath);
+                const sourceCodeIfExists = constructResolver(argv.contractsDir).resolve(importPath);
                 let source: string;
                 if (_.isUndefined(sourceCodeIfExists)) {
                     process.stderr.write(`Could not resolve import path ${importPath}`);
