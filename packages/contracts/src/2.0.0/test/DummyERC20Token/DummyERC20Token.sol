@@ -67,7 +67,7 @@ contract DummyERC20Token is
         external
     {
         require(
-            _value <= 100000000000000000000,
+            _value <= 10000000000000000000000,
             "VALUE_TOO_LARGE"
         );
 
