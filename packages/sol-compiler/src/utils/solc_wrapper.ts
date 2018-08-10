@@ -1,5 +1,8 @@
 #!/usr/bin/env node
-// We need the above pragma since this script will be run as a command-line tool.
+
+// solc_cli.ts: a command-line solc interface, serving JSON over stdin/stdout,
+// to be called via child_process.spawn(), resolving dependencies per compiler
+// configuration.
 
 import * as fs from 'fs';
 import * as path from 'path';
