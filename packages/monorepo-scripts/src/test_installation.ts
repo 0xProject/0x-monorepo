@@ -9,7 +9,6 @@ import * as rimraf from 'rimraf';
 import { promisify } from 'util';
 
 import { Package } from './types';
-
 import { utils } from './utils/utils';
 
 // Packages might not be runnable if they are command-line tools or only run in browsers.
