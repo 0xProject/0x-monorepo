@@ -128,7 +128,6 @@ export class Compiler {
         }
         const fullSolcVersion = binPaths[solcVersion];
 
-        logUtils.log(`Compiling ${contractName} with Solidity v${solcVersion}...`);
         const standardInput: solc.StandardInput = {
             language: 'Solidity',
             sources: {
@@ -148,8 +147,9 @@ export class Compiler {
             this._contractsDir,
         ]);
 
+        logUtils.log(`PID ${solcProcess.pid} compiling ${contractName} with Solidity v${solcVersion}...`);
         solcProcess.on('error', err => {
-            logUtils.warn(`${contractName}: error spawning resolver-solc process: ${err}`);
+            logUtils.warn(`${solcProcess.pid}: error spawning resolver-solc process: ${err}`);
         });
 
         let stdout: string = '';
@@ -158,7 +158,7 @@ export class Compiler {
         });
 
         solcProcess.stderr.on('data', data => {
-            logUtils.log(`${contractName}: ${data}`);
+            logUtils.log(`${solcProcess.pid}: ${data}`);
         });
 
         solcProcess.stdin.write(JSON.stringify(standardInput));
@@ -167,10 +167,10 @@ export class Compiler {
         return new Promise<void>(resolve => {
             solcProcess.on('close', (code: number, signal: string) => {
                 if (code && code !== 0) {
-                    logUtils.log(`${contractName}: Compilation process exited with code ${code}`);
+                    logUtils.log(`${solcProcess.pid}: Compilation process exited with code ${code}`);
                 }
                 if (signal) {
-                    logUtils.warn(`${contractName}: Compilation process halted by signal ${signal}`);
+                    logUtils.warn(`${solcProcess.pid}: Compilation process halted by signal ${signal}`);
                     resolve();
                 }
 
@@ -178,7 +178,7 @@ export class Compiler {
                 try {
                     compiled = JSON.parse(stdout);
                 } catch (err) {
-                    logUtils.warn(`${contractName}: Failed to JSON.parse() solc output '${stdout}'`);
+                    logUtils.warn(`${solcProcess.pid}: Failed to JSON.parse() solc output '${stdout}'`);
                     throw err;
                 }
 
@@ -189,7 +189,7 @@ export class Compiler {
                     if (!_.isEmpty(errors)) {
                         errors.forEach(error => {
                             const normalizedErrMsg = getNormalizedErrMsg(error.formattedMessage || error.message);
-                            logUtils.log(chalk.red(normalizedErrMsg));
+                            logUtils.log(`${solcProcess.pid}: ${chalk.red(normalizedErrMsg)}`);
                         });
                         process.exit(1);
                     } else {
@@ -197,7 +197,7 @@ export class Compiler {
                             const normalizedWarningMsg = getNormalizedErrMsg(
                                 warning.formattedMessage || warning.message,
                             );
-                            logUtils.log(chalk.yellow(normalizedWarningMsg));
+                            logUtils.log(`${solcProcess.pid}: ${chalk.yellow(normalizedWarningMsg)}`);
                         });
                     }
                 }
@@ -258,7 +258,7 @@ export class Compiler {
                 const artifactString = utils.stringifyWithFormatting(newArtifact);
                 const currentArtifactPath = `${this._artifactsDir}/${contractName}.json`;
                 fs.writeFileSync(currentArtifactPath, artifactString);
-                logUtils.log(`${contractName} artifact saved!`);
+                logUtils.log(`${solcProcess.pid}: ${contractName} artifact saved!`);
 
                 resolve();
             });
