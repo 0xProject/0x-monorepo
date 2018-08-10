@@ -1,7 +1,7 @@
 export const orderWatcherPartialConfigSchema = {
     id: '/OrderWatcherPartialConfigSchema',
     properties: {
-        stateLayer: { $ref: '/BlockParam' },
+        stateLayer: { $ref: '/blockParamSchema' },
         orderExpirationCheckingIntervalMs: { type: 'number' },
         eventPollingIntervalMs: { type: 'number' },
         expirationMarginMs: { type: 'number' },

@@ -1,7 +1,7 @@
 export const indexFilterValuesSchema = {
-    id: '/IndexFilterValues',
+    id: '/indexFilterValuesSchema',
     additionalProperties: {
-        oneOf: [{ $ref: '/Number' }, { $ref: '/Address' }, { $ref: '/OrderHashSchema' }],
+        oneOf: [{ $ref: '/numberSchema' }, { $ref: '/addressSchema' }, { $ref: '/orderHashSchema' }],
     },
     type: 'object',
 };

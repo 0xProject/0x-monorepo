@@ -1,19 +1,19 @@
 export const orderSchema = {
-    id: '/Order',
+    id: '/orderSchema',
     properties: {
-        makerAddress: { $ref: '/Address' },
-        takerAddress: { $ref: '/Address' },
-        makerFee: { $ref: '/Number' },
-        takerFee: { $ref: '/Number' },
-        senderAddress: { $ref: '/Address' },
-        makerAssetAmount: { $ref: '/Number' },
-        takerAssetAmount: { $ref: '/Number' },
-        makerAssetData: { $ref: '/Hex' },
-        takerAssetData: { $ref: '/Hex' },
-        salt: { $ref: '/Number' },
-        exchangeAddress: { $ref: '/Address' },
-        feeRecipientAddress: { $ref: '/Address' },
-        expirationTimeSeconds: { $ref: '/Number' },
+        makerAddress: { $ref: '/addressSchema' },
+        takerAddress: { $ref: '/addressSchema' },
+        makerFee: { $ref: '/numberSchema' },
+        takerFee: { $ref: '/numberSchema' },
+        senderAddress: { $ref: '/addressSchema' },
+        makerAssetAmount: { $ref: '/numberSchema' },
+        takerAssetAmount: { $ref: '/numberSchema' },
+        makerAssetData: { $ref: '/hexSchema' },
+        takerAssetData: { $ref: '/hexSchema' },
+        salt: { $ref: '/numberSchema' },
+        exchangeAddress: { $ref: '/addressSchema' },
+        feeRecipientAddress: { $ref: '/addressSchema' },
+        expirationTimeSeconds: { $ref: '/numberSchema' },
     },
     required: [
         'makerAddress',
@@ -34,12 +34,12 @@ export const orderSchema = {
 };
 
 export const signedOrderSchema = {
-    id: '/SignedOrder',
+    id: '/signedOrderSchema',
     allOf: [
-        { $ref: '/Order' },
+        { $ref: '/orderSchema' },
         {
             properties: {
-                signature: { $ref: '/Hex' },
+                signature: { $ref: '/hexSchema' },
             },
             required: ['signature'],
         },
