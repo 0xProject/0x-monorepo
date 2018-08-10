@@ -11,13 +11,12 @@ chaiSetup.configure();
 const expect = chai.expect;
 
 // tslint:disable: no-unused-expression
-describe('marketUtils', () => {
+describe.only('marketUtils', () => {
     describe('#findOrdersThatCoverMakerAssetFillAmount', () => {
         describe('no orders', () => {
             it('returns empty and unchanged remainingFillAmount', async () => {
                 const fillAmount = new BigNumber(10);
                 const { resultOrders, remainingFillAmount } = marketUtils.findOrdersThatCoverMakerAssetFillAmount(
-                    [],
                     [],
                     fillAmount,
                 );
@@ -43,9 +42,11 @@ describe('marketUtils', () => {
                 const slippageBufferAmount = new BigNumber(10);
                 const { resultOrders, remainingFillAmount } = marketUtils.findOrdersThatCoverMakerAssetFillAmount(
                     inputOrders,
-                    remainingFillableMakerAssetAmounts,
                     fillAmount,
-                    slippageBufferAmount,
+                    {
+                        remainingFillableMakerAssetAmounts,
+                        slippageBufferAmount,
+                    },
                 );
                 expect(resultOrders).to.be.deep.equal(inputOrders);
                 expect(remainingFillAmount).to.be.bignumber.equal(constants.ZERO_AMOUNT);
@@ -57,9 +58,11 @@ describe('marketUtils', () => {
                 const slippageBufferAmount = new BigNumber(10);
                 const { resultOrders, remainingFillAmount } = marketUtils.findOrdersThatCoverMakerAssetFillAmount(
                     inputOrders,
-                    remainingFillableMakerAssetAmounts,
                     fillAmount,
-                    slippageBufferAmount,
+                    {
+                        remainingFillableMakerAssetAmounts,
+                        slippageBufferAmount,
+                    },
                 );
                 expect(resultOrders).to.be.deep.equal(inputOrders);
                 expect(remainingFillAmount).to.be.bignumber.equal(constants.ZERO_AMOUNT);
@@ -71,9 +74,11 @@ describe('marketUtils', () => {
                 const slippageBufferAmount = new BigNumber(5);
                 const { resultOrders, remainingFillAmount } = marketUtils.findOrdersThatCoverMakerAssetFillAmount(
                     inputOrders,
-                    remainingFillableMakerAssetAmounts,
                     fillAmount,
-                    slippageBufferAmount,
+                    {
+                        remainingFillableMakerAssetAmounts,
+                        slippageBufferAmount,
+                    },
                 );
                 expect(resultOrders).to.be.deep.equal(inputOrders);
                 expect(remainingFillAmount).to.be.bignumber.equal(new BigNumber(5));
@@ -83,8 +88,10 @@ describe('marketUtils', () => {
                 const fillAmount = new BigNumber(10);
                 const { resultOrders, remainingFillAmount } = marketUtils.findOrdersThatCoverMakerAssetFillAmount(
                     inputOrders,
-                    remainingFillableMakerAssetAmounts,
                     fillAmount,
+                    {
+                        remainingFillableMakerAssetAmounts,
+                    },
                 );
                 expect(resultOrders).to.be.deep.equal([inputOrders[0]]);
                 expect(remainingFillAmount).to.be.bignumber.equal(constants.ZERO_AMOUNT);
@@ -94,8 +101,10 @@ describe('marketUtils', () => {
                 const fillAmount = new BigNumber(15);
                 const { resultOrders, remainingFillAmount } = marketUtils.findOrdersThatCoverMakerAssetFillAmount(
                     inputOrders,
-                    remainingFillableMakerAssetAmounts,
                     fillAmount,
+                    {
+                        remainingFillableMakerAssetAmounts,
+                    },
                 );
                 expect(resultOrders).to.be.deep.equal([inputOrders[0], inputOrders[1]]);
                 expect(remainingFillAmount).to.be.bignumber.equal(constants.ZERO_AMOUNT);
@@ -120,8 +129,10 @@ describe('marketUtils', () => {
                 const fillAmount = new BigNumber(30);
                 const { resultOrders, remainingFillAmount } = marketUtils.findOrdersThatCoverMakerAssetFillAmount(
                     inputOrders,
-                    remainingFillableMakerAssetAmounts,
                     fillAmount,
+                    {
+                        remainingFillableMakerAssetAmounts,
+                    },
                 );
                 expect(resultOrders).to.be.deep.equal([inputOrders[1], inputOrders[2]]);
                 expect(remainingFillAmount).to.be.bignumber.equal(new BigNumber(15));
@@ -143,9 +154,10 @@ describe('marketUtils', () => {
             it('returns empty and zero remainingFeeAmount', async () => {
                 const { resultOrders, remainingFeeAmount } = marketUtils.findFeeOrdersThatCoverFeesForTargetOrders(
                     [],
-                    [],
                     inputFeeOrders,
-                    remainingFillableFeeAmounts,
+                    {
+                        remainingFillableFeeAmounts,
+                    },
                 );
                 expect(resultOrders).to.be.empty;
                 expect(remainingFeeAmount).to.be.bignumber.equal(constants.ZERO_AMOUNT);
@@ -168,9 +180,10 @@ describe('marketUtils', () => {
             it('returns empty and non-zero remainingFeeAmount', async () => {
                 const { resultOrders, remainingFeeAmount } = marketUtils.findFeeOrdersThatCoverFeesForTargetOrders(
                     inputOrders,
-                    remainingFillableMakerAssetAmounts,
                     [],
-                    [],
+                    {
+                        remainingFillableMakerAssetAmounts,
+                    },
                 );
                 expect(resultOrders).to.be.empty;
                 expect(remainingFeeAmount).to.be.bignumber.equal(new BigNumber(30));
@@ -190,9 +203,11 @@ describe('marketUtils', () => {
             it('returns empty and zero remainingFeeAmount', async () => {
                 const { resultOrders, remainingFeeAmount } = marketUtils.findFeeOrdersThatCoverFeesForTargetOrders(
                     inputOrders,
-                    remainingFillableMakerAssetAmounts,
                     inputFeeOrders,
-                    remainingFillableFeeAmounts,
+                    {
+                        remainingFillableMakerAssetAmounts,
+                        remainingFillableFeeAmounts,
+                    },
                 );
                 expect(resultOrders).to.be.empty;
                 expect(remainingFeeAmount).to.be.bignumber.equal(constants.ZERO_AMOUNT);
@@ -215,9 +230,11 @@ describe('marketUtils', () => {
             it('returns input fee orders and zero remainingFeeAmount', async () => {
                 const { resultOrders, remainingFeeAmount } = marketUtils.findFeeOrdersThatCoverFeesForTargetOrders(
                     inputOrders,
-                    remainingFillableMakerAssetAmounts,
                     inputFeeOrders,
-                    remainingFillableFeeAmounts,
+                    {
+                        remainingFillableMakerAssetAmounts,
+                        remainingFillableFeeAmounts,
+                    },
                 );
                 expect(resultOrders).to.be.deep.equal(inputFeeOrders);
                 expect(remainingFeeAmount).to.be.bignumber.equal(constants.ZERO_AMOUNT);
@@ -243,9 +260,11 @@ describe('marketUtils', () => {
             it('returns first two input fee orders and zero remainingFeeAmount', async () => {
                 const { resultOrders, remainingFeeAmount } = marketUtils.findFeeOrdersThatCoverFeesForTargetOrders(
                     inputOrders,
-                    remainingFillableMakerAssetAmounts,
                     inputFeeOrders,
-                    remainingFillableFeeAmounts,
+                    {
+                        remainingFillableMakerAssetAmounts,
+                        remainingFillableFeeAmounts,
+                    },
                 );
                 expect(resultOrders).to.be.deep.equal([inputFeeOrders[0], inputFeeOrders[1]]);
                 expect(remainingFeeAmount).to.be.bignumber.equal(constants.ZERO_AMOUNT);
@@ -268,9 +287,11 @@ describe('marketUtils', () => {
             it('returns input fee orders and non-zero remainingFeeAmount', async () => {
                 const { resultOrders, remainingFeeAmount } = marketUtils.findFeeOrdersThatCoverFeesForTargetOrders(
                     inputOrders,
-                    remainingFillableMakerAssetAmounts,
                     inputFeeOrders,
-                    remainingFillableFeeAmounts,
+                    {
+                        remainingFillableMakerAssetAmounts,
+                        remainingFillableFeeAmounts,
+                    },
                 );
                 expect(resultOrders).to.be.deep.equal(inputFeeOrders);
                 expect(remainingFeeAmount).to.be.bignumber.equal(new BigNumber(30));

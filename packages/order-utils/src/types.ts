@@ -41,3 +41,31 @@ export interface CreateOrderOpts {
     salt?: BigNumber;
     expirationTimeSeconds?: BigNumber;
 }
+
+/**
+ * remainingFillableMakerAssetAmount: An array of BigNumbers corresponding to the `signedOrders` parameter.
+ * You can use `OrderStateUtils` `@0xproject/order-utils` to perform blockchain lookups for these values.
+ * Defaults to `makerAssetAmount` values from the signedOrders param.
+ * slippageBufferAmount: An additional amount of makerAsset to be covered by the result in case of trade collisions or partial fills.
+ * Defaults to 0
+ */
+export interface FindOrdersThatCoverMakerAssetFillAmountOpts {
+    remainingFillableMakerAssetAmounts?: BigNumber[];
+    slippageBufferAmount?: BigNumber;
+}
+
+/**
+ * remainingFillableMakerAssetAmount: An array of BigNumbers corresponding to the `signedOrders` parameter.
+ * You can use `OrderStateUtils` `@0xproject/order-utils` to perform blockchain lookups for these values.
+ * Defaults to `makerAssetAmount` values from the signedOrders param.
+ * remainingFillableFeeAmounts: An array of BigNumbers corresponding to the signedFeeOrders parameter.
+ * You can use OrderStateUtils @0xproject/order-utils to perform blockchain lookups for these values.
+ * Defaults to `makerAssetAmount` values from the signedFeeOrders param.
+ * slippageBufferAmount: An additional amount of fee to be covered by the result in case of trade collisions or partial fills.
+ * Defaults to 0
+ */
+export interface FindFeeOrdersThatCoverFeesForTargetOrdersOpts {
+    remainingFillableMakerAssetAmounts?: BigNumber[];
+    remainingFillableFeeAmounts?: BigNumber[];
+    slippageBufferAmount?: BigNumber;
+}
