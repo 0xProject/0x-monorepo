@@ -60,7 +60,7 @@ contract MExchangeWrapper {
     /// @param makerAssetFillAmount Desired amount of makerAsset to buy.
     /// @param signatures Proofs that orders have been signed by makers.
     /// @return Amounts filled and fees paid by makers and taker.
-    function marketBuyWithWeth(
+    function marketBuyExactAmountWithWeth(
         LibOrder.Order[] memory orders,
         uint256 makerAssetFillAmount,
         bytes[] memory signatures
@@ -77,7 +77,7 @@ contract MExchangeWrapper {
     /// @param zrxBuyAmount Desired amount of ZRX to buy.
     /// @param signatures Proofs that orders have been created by makers.
     /// @return totalFillResults Amounts filled and fees paid by maker and taker.
-    function marketBuyZrxWithWeth(
+    function marketBuyExactZrxWithWeth(
         LibOrder.Order[] memory orders,
         uint256 zrxBuyAmount,
         bytes[] memory signatures

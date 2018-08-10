@@ -21,13 +21,13 @@ pragma solidity 0.4.24;
 
 contract IAssets {
 
-    /// @dev Withdraws ERC20 tokens from this contract. The contract requires a ZRX balance in order to 
+    /// @dev Withdraws assets from this contract. The contract requires a ZRX balance in order to 
     ///      function optimally, and this function allows the ZRX to be withdrawn by owner. It may also be
-    ///      used to withdraw tokens that were accidentally sent to this contract.
-    /// @param token Address of ERC20 token to withdraw.
+    ///      used to withdraw assets that were accidentally sent to this contract.
+    /// @param assetData Byte array encoded for the respective asset proxy.
     /// @param amount Amount of ERC20 token to withdraw.
-    function withdrawERC20(
-        address token,
+    function withdrawAsset(
+        bytes assetData,
         uint256 amount
     )
         external;

@@ -28,7 +28,7 @@ contract MAssets is
     /// @dev Transfers given amount of asset to sender.
     /// @param assetData Byte array encoded for the respective asset proxy.
     /// @param amount Amount of asset to transfer to sender.
-    function transferPurchasedAssetToSender(
+    function transferAssetToSender(
         bytes memory assetData,
         uint256 amount
     )
