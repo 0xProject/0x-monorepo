@@ -11,7 +11,7 @@ chaiSetup.configure();
 const expect = chai.expect;
 
 // tslint:disable: no-unused-expression
-describe.only('marketUtils', () => {
+describe('marketUtils', () => {
     describe('#findOrdersThatCoverMakerAssetFillAmount', () => {
         describe('no orders', () => {
             it('returns empty and unchanged remainingFillAmount', async () => {
@@ -33,8 +33,6 @@ describe.only('marketUtils', () => {
                 },
                 3,
             );
-            // generate remainingFillableMakerAssetAmounts that equal the makerAssetAmount
-            const remainingFillableMakerAssetAmounts = [makerAssetAmount, makerAssetAmount, makerAssetAmount];
             it('returns input orders and zero remainingFillAmount when input exactly matches requested fill amount', async () => {
                 // try to fill 20 units of makerAsset
                 // include 10 units of slippageBufferAmount
@@ -44,7 +42,6 @@ describe.only('marketUtils', () => {
                     inputOrders,
                     fillAmount,
                     {
-                        remainingFillableMakerAssetAmounts,
                         slippageBufferAmount,
                     },
                 );
@@ -60,7 +57,6 @@ describe.only('marketUtils', () => {
                     inputOrders,
                     fillAmount,
                     {
-                        remainingFillableMakerAssetAmounts,
                         slippageBufferAmount,
                     },
                 );
@@ -76,7 +72,6 @@ describe.only('marketUtils', () => {
                     inputOrders,
                     fillAmount,
                     {
-                        remainingFillableMakerAssetAmounts,
                         slippageBufferAmount,
                     },
                 );
@@ -89,9 +84,6 @@ describe.only('marketUtils', () => {
                 const { resultOrders, remainingFillAmount } = marketUtils.findOrdersThatCoverMakerAssetFillAmount(
                     inputOrders,
                     fillAmount,
-                    {
-                        remainingFillableMakerAssetAmounts,
-                    },
                 );
                 expect(resultOrders).to.be.deep.equal([inputOrders[0]]);
                 expect(remainingFillAmount).to.be.bignumber.equal(constants.ZERO_AMOUNT);
@@ -102,9 +94,6 @@ describe.only('marketUtils', () => {
                 const { resultOrders, remainingFillAmount } = marketUtils.findOrdersThatCoverMakerAssetFillAmount(
                     inputOrders,
                     fillAmount,
-                    {
-                        remainingFillableMakerAssetAmounts,
-                    },
                 );
                 expect(resultOrders).to.be.deep.equal([inputOrders[0], inputOrders[1]]);
                 expect(remainingFillAmount).to.be.bignumber.equal(constants.ZERO_AMOUNT);
@@ -148,16 +137,11 @@ describe.only('marketUtils', () => {
             },
             3,
         );
-        // generate remainingFillableFeeAmounts that equal the zrxAmount
-        const remainingFillableFeeAmounts = [zrxAmount, zrxAmount, zrxAmount];
         describe('no target orders', () => {
             it('returns empty and zero remainingFeeAmount', async () => {
                 const { resultOrders, remainingFeeAmount } = marketUtils.findFeeOrdersThatCoverFeesForTargetOrders(
                     [],
                     inputFeeOrders,
-                    {
-                        remainingFillableFeeAmounts,
-                    },
                 );
                 expect(resultOrders).to.be.empty;
                 expect(remainingFeeAmount).to.be.bignumber.equal(constants.ZERO_AMOUNT);
@@ -198,16 +182,10 @@ describe.only('marketUtils', () => {
                 },
                 3,
             );
-            // generate remainingFillableMakerAssetAmounts that equal the makerAssetAmount
-            const remainingFillableMakerAssetAmounts = [makerAssetAmount, makerAssetAmount, makerAssetAmount];
             it('returns empty and zero remainingFeeAmount', async () => {
                 const { resultOrders, remainingFeeAmount } = marketUtils.findFeeOrdersThatCoverFeesForTargetOrders(
                     inputOrders,
                     inputFeeOrders,
-                    {
-                        remainingFillableMakerAssetAmounts,
-                        remainingFillableFeeAmounts,
-                    },
                 );
                 expect(resultOrders).to.be.empty;
                 expect(remainingFeeAmount).to.be.bignumber.equal(constants.ZERO_AMOUNT);
@@ -225,16 +203,10 @@ describe.only('marketUtils', () => {
                 },
                 3,
             );
-            // generate remainingFillableMakerAssetAmounts that equal the makerAssetAmount
-            const remainingFillableMakerAssetAmounts = [makerAssetAmount, makerAssetAmount, makerAssetAmount];
             it('returns input fee orders and zero remainingFeeAmount', async () => {
                 const { resultOrders, remainingFeeAmount } = marketUtils.findFeeOrdersThatCoverFeesForTargetOrders(
                     inputOrders,
                     inputFeeOrders,
-                    {
-                        remainingFillableMakerAssetAmounts,
-                        remainingFillableFeeAmounts,
-                    },
                 );
                 expect(resultOrders).to.be.deep.equal(inputFeeOrders);
                 expect(remainingFeeAmount).to.be.bignumber.equal(constants.ZERO_AMOUNT);
@@ -263,7 +235,6 @@ describe.only('marketUtils', () => {
                     inputFeeOrders,
                     {
                         remainingFillableMakerAssetAmounts,
-                        remainingFillableFeeAmounts,
                     },
                 );
                 expect(resultOrders).to.be.deep.equal([inputFeeOrders[0], inputFeeOrders[1]]);
@@ -282,16 +253,10 @@ describe.only('marketUtils', () => {
                 },
                 3,
             );
-            // generate remainingFillableMakerAssetAmounts that equal the makerAssetAmount
-            const remainingFillableMakerAssetAmounts = [makerAssetAmount, makerAssetAmount, makerAssetAmount];
             it('returns input fee orders and non-zero remainingFeeAmount', async () => {
                 const { resultOrders, remainingFeeAmount } = marketUtils.findFeeOrdersThatCoverFeesForTargetOrders(
                     inputOrders,
                     inputFeeOrders,
-                    {
-                        remainingFillableMakerAssetAmounts,
-                        remainingFillableFeeAmounts,
-                    },
                 );
                 expect(resultOrders).to.be.deep.equal(inputFeeOrders);
                 expect(remainingFeeAmount).to.be.bignumber.equal(new BigNumber(30));
