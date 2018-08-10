@@ -107,17 +107,39 @@ export class Compiler {
         const absoluteContractPath = path.join(this._contractsDir, contractSource.path);
         const currentArtifactIfExists = await getContractArtifactIfExistsAsync(this._artifactsDir, contractName);
         const sourceTreeHashHex = `0x${this._getSourceTreeHash(absoluteContractPath).toString('hex')}`;
-        let shouldCompile = false;
-        if (_.isUndefined(currentArtifactIfExists)) {
-            shouldCompile = true;
-        } else {
-            const currentArtifact = currentArtifactIfExists as ContractArtifact;
-            const isUserOnLatestVersion = currentArtifact.schemaVersion === constants.LATEST_ARTIFACT_VERSION;
-            const didCompilerSettingsChange = !_.isEqual(currentArtifact.compiler.settings, this._compilerSettings);
-            const didSourceChange = currentArtifact.sourceTreeHashHex !== sourceTreeHashHex;
-            shouldCompile = !isUserOnLatestVersion || didCompilerSettingsChange || didSourceChange;
-        }
+        const { shouldCompile, reason } = (() => {
+            let reasonNotToCompile: string;
+            if (_.isUndefined(currentArtifactIfExists)) {
+                return { shouldCompile: true, reason: 'artifact does not exist' };
+            } else {
+                const currentArtifact = currentArtifactIfExists as ContractArtifact;
+
+                const isUserOnLatestVersion = currentArtifact.schemaVersion === constants.LATEST_ARTIFACT_VERSION;
+                if (isUserOnLatestVersion) {
+                    reasonNotToCompile = 'user on latest version';
+                } else {
+                    return { shouldCompile: true, reason: 'user not on latest version' };
+                }
+
+                const didCompilerSettingsChange = !_.isEqual(currentArtifact.compiler.settings, this._compilerSettings);
+                if (didCompilerSettingsChange) {
+                    return { shouldCompile: true, reason: 'compiler settings have changed' };
+                } else {
+                    reasonNotToCompile = 'compiler settings have not changed';
+                }
+
+                const didSourceChange = currentArtifact.sourceTreeHashHex !== sourceTreeHashHex;
+                if (didSourceChange) {
+                    return { shouldCompile: true, reason: 'source has changed' };
+                } else {
+                    reasonNotToCompile = 'source has not changed';
+                }
+
+                return { shouldCompile: false, reason: reasonNotToCompile };
+            }
+        })();
         if (!shouldCompile) {
+            logUtils.log(`Skipping compilation of ${contractName} because ${reason}`);
             return;
         }
         let solcVersion = this._solcVersionIfExists;
@@ -164,7 +186,9 @@ export class Compiler {
             this._contractsDir,
         ]);
 
-        logUtils.log(`PID ${solcProcess.pid} compiling ${contractName} with Solidity v${solcVersion}...`);
+        logUtils.log(
+            `PID ${solcProcess.pid} compiling ${contractName} with Solidity v${solcVersion} because ${reason}...`,
+        );
         solcProcess.on('error', err => {
             logUtils.warn(`${solcProcess.pid}: error spawning resolver-solc process: ${err}`);
         });
