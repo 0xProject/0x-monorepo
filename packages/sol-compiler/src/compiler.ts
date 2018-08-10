@@ -139,7 +139,7 @@ export class Compiler {
             settings: this._compilerSettings,
         };
 
-        const solcProcess: ChildProcess = spawn('solc-wrapper', [
+        const solcProcess: ChildProcess = spawn('resolver-solc', [
             '--fullSolcVersion',
             fullSolcVersion,
             '--solcBinDir',
@@ -149,7 +149,7 @@ export class Compiler {
         ]);
 
         solcProcess.on('error', err => {
-            logUtils.warn(`${contractName}: error spawning solc-wrapper process: ${err}`);
+            logUtils.warn(`${contractName}: error spawning resolver-solc process: ${err}`);
         });
 
         let stdout: string = '';
