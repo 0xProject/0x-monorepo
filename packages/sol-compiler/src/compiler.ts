@@ -1,6 +1,6 @@
 import { assert } from '@0xproject/assert';
 import { NameResolver, Resolver } from '@0xproject/sol-resolver';
-import { logUtils } from '@0xproject/utils';
+import { fetchAsync, logUtils } from '@0xproject/utils';
 import chalk from 'chalk';
 import { ChildProcess, spawn } from 'child_process';
 import * as ethUtil from 'ethereumjs-util';
@@ -127,6 +127,23 @@ export class Compiler {
             solcVersion = semver.maxSatisfying(availableCompilerVersions, solcVersionRange);
         }
         const fullSolcVersion = binPaths[solcVersion];
+
+        const compilerBinFilename = path.join(SOLC_BIN_DIR, fullSolcVersion);
+        let solcjs: string;
+        const isCompilerAvailableLocally = fs.existsSync(compilerBinFilename);
+        if (isCompilerAvailableLocally) {
+            solcjs = fs.readFileSync(compilerBinFilename).toString();
+        } else {
+            logUtils.log(`Downloading ${fullSolcVersion}...`);
+            const url = `${constants.BASE_COMPILER_URL}${fullSolcVersion}`;
+            const response = await fetchAsync(url);
+            const SUCCESS_STATUS = 200;
+            if (response.status !== SUCCESS_STATUS) {
+                throw new Error(`Failed to load ${fullSolcVersion}`);
+            }
+            solcjs = await response.text();
+            fs.writeFileSync(compilerBinFilename, solcjs);
+        }
 
         const standardInput: solc.StandardInput = {
             language: 'Solidity',

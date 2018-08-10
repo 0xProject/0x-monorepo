@@ -13,10 +13,7 @@ import * as yargs from 'yargs';
 
 import * as solc from 'solc';
 
-import { fetchAsync } from '@0xproject/utils';
-
 import { constructResolver } from './compiler';
-import { constants } from './constants';
 
 (async () => {
     const argv = yargs
@@ -35,25 +32,10 @@ import { constants } from './constants';
         .help().argv;
 
     const compilerBinFilename = path.join(argv.solcBinDir, argv.fullSolcVersion);
-    let solcjs: string;
-    const isCompilerAvailableLocally = fs.existsSync(compilerBinFilename);
-    if (isCompilerAvailableLocally) {
-        solcjs = fs.readFileSync(compilerBinFilename).toString();
-    } else {
-        process.stderr.write(`Downloading ${argv.fullSolcVersion}...`);
-        const url = `${constants.BASE_COMPILER_URL}${argv.fullSolcVersion}`;
-        const response = await fetchAsync(url);
-        const SUCCESS_STATUS = 200;
-        if (response.status !== SUCCESS_STATUS) {
-            throw new Error(`Failed to load ${argv.fullSolcVersion}`);
-        }
-        solcjs = await response.text();
-        fs.writeFileSync(compilerBinFilename, solcjs);
-    }
 
     process.stdout.write(
         solc
-            .setupMethods(requireFromString(solcjs, compilerBinFilename))
+            .setupMethods(requireFromString(fs.readFileSync(compilerBinFilename).toString(), compilerBinFilename))
             .compileStandardWrapper(fs.readFileSync(0 /* stdout */).toString(), importPath => {
                 // resolve dependency on importPath
                 const sourceCodeIfExists = constructResolver(argv.contractsDir).resolve(importPath);
