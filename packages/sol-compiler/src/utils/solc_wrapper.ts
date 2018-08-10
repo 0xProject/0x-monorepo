@@ -48,23 +48,23 @@ import { constants } from './constants';
         solcjs = await response.text();
         fs.writeFileSync(compilerBinFilename, solcjs);
     }
-    const solcInstance = solc.setupMethods(requireFromString(solcjs, compilerBinFilename));
 
-    const stdinBuffer = fs.readFileSync(0 /* stdout */);
     const resolver: Resolver = constructResolver(argv.contractsDir);
     process.stdout.write(
-        solcInstance.compileStandardWrapper(stdinBuffer.toString(), importPath => {
-            // resolve dependency on importPath
-            const sourceCodeIfExists = resolver.resolve(importPath);
-            let source: string;
-            if (_.isUndefined(sourceCodeIfExists)) {
-                process.stderr.write(`Could not resolve import path ${importPath}`);
-                source = '';
-            } else {
-                source = sourceCodeIfExists.source;
-            }
-            return { contents: source };
-        }),
+        solc
+            .setupMethods(requireFromString(solcjs, compilerBinFilename))
+            .compileStandardWrapper(fs.readFileSync(0 /* stdout */).toString(), importPath => {
+                // resolve dependency on importPath
+                const sourceCodeIfExists = resolver.resolve(importPath);
+                let source: string;
+                if (_.isUndefined(sourceCodeIfExists)) {
+                    process.stderr.write(`Could not resolve import path ${importPath}`);
+                    source = '';
+                } else {
+                    source = sourceCodeIfExists.source;
+                }
+                return { contents: source };
+            }),
     );
 
     const stdoutClosed = new Promise<void>(resolve => {
