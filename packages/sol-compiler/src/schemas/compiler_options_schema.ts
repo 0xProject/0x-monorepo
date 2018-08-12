@@ -5,6 +5,7 @@ export const compilerOptionsSchema = {
         artifactsDir: { type: 'string' },
         solcVersion: { type: 'string', pattern: '^\\d+.\\d+.\\d+$' },
         compilerSettings: { type: 'object' },
+        maxProcesses: { type: 'number' },
         contracts: {
             oneOf: [
                 {

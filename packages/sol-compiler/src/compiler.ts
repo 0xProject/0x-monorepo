@@ -30,6 +30,7 @@ const ALL_FILES_IDENTIFIER = '*';
 const SOLC_BIN_DIR = path.join(__dirname, '..', '..', 'solc_bin');
 const DEFAULT_CONTRACTS_DIR = path.resolve('contracts');
 const DEFAULT_ARTIFACTS_DIR = path.resolve('artifacts');
+const DEFAULT_MAX_PROCESSES = 7;
 // Solc compiler settings cannot be configured from the commandline.
 // If you need this configured, please create a `compiler.json` config file
 // with your desired configurations.
@@ -55,6 +56,7 @@ export class Compiler {
     private readonly _contractsDir: string;
     private readonly _compilerSettings: solc.CompilerSettings;
     private readonly _artifactsDir: string;
+    private readonly _maxProcesses: number;
     private readonly _solcVersionIfExists: string | undefined;
     private readonly _specifiedContracts: string[] | TYPE_ALL_FILES_IDENTIFIER;
     /**
@@ -74,6 +76,7 @@ export class Compiler {
         this._compilerSettings = passedOpts.compilerSettings || config.compilerSettings || DEFAULT_COMPILER_SETTINGS;
         this._artifactsDir = passedOpts.artifactsDir || config.artifactsDir || DEFAULT_ARTIFACTS_DIR;
         this._specifiedContracts = passedOpts.contracts || config.contracts || ALL_CONTRACTS_IDENTIFIER;
+        this._maxProcesses = passedOpts.maxProcesses || config.maxProcesses || DEFAULT_MAX_PROCESSES;
         this._nameResolver = new NameResolver(path.resolve(this._contractsDir));
         this._resolver = constructResolver(this._contractsDir);
     }
@@ -92,11 +95,42 @@ export class Compiler {
         } else {
             contractNamesToCompile = this._specifiedContracts;
         }
-        const compilations: Array<Promise<void>> = [];
-        for (const contractNameToCompile of contractNamesToCompile) {
-            compilations.push(this._compileContractAsync(contractNameToCompile));
+
+        // divide up contractNamesToCompile into `this._maxProcesses` different
+        // queues, implemented as promise chains, then wait on all the chains.
+
+        const queues: Array<Promise<void>> = [];
+        const queueSize = Math.ceil(contractNamesToCompile.length / this._maxProcesses);
+
+        for (let i = 0; i < this._maxProcesses; i++) {
+            // populate this queue with its slice of the (contractNamesToCompile) pie
+            queues[i] = this._reduceContractsToPromiseChainAsync(
+                contractNamesToCompile.slice(i * queueSize, (i + 1) * queueSize),
+            );
         }
-        await Promise.all(compilations);
+        await Promise.all(queues);
+    }
+    /**
+     * Reduces an array of contract names to a chain of promises to compile
+     * those contracts.  Compilation occurrs asynchronously out of process.
+     */
+    private async _reduceContractsToPromiseChainAsync(
+        [firstContract, ...restOfContracts]: string[],
+        chain?: Promise<void>,
+    ): Promise<void> {
+        if (_.isUndefined(firstContract)) {
+            return Promise.resolve();
+        }
+        if (!chain) {
+            return this._reduceContractsToPromiseChainAsync([firstContract, ...restOfContracts], Promise.resolve());
+        }
+        return chain
+            .then(async () => {
+                return this._compileContractAsync(firstContract);
+            })
+            .then(async () => {
+                return this._reduceContractsToPromiseChainAsync(restOfContracts, chain);
+            });
     }
     /**
      * Compiles contract and saves artifact to artifactsDir.
