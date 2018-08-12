@@ -29,6 +29,7 @@ import { constructResolver } from './compiler';
             type: 'string',
             description: 'directory holding contracts, for dependency resolution',
         })
+        .demandOption(['fullSolcVersion', 'solcBinDir', 'contractsDir'])
         .help().argv;
 
     const compilerBinFilename = path.join(argv.solcBinDir, argv.fullSolcVersion);
