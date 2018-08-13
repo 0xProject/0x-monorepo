@@ -33,6 +33,7 @@
         "Forwarder",
         "IAssetData",
         "IAssetProxy",
+        "InvalidERC721Receiver",
         "IValidator",
         "IWallet",
         "MixinAuthorizable",
