@@ -501,25 +501,27 @@ describe('OrderWatcher', () => {
                     expect(orderState.isValid).to.be.false();
                     const invalidOrderState = orderState as OrderStateInvalid;
                     expect(invalidOrderState.orderHash).to.be.equal(orderHash);
-                    expect(invalidOrderState.error).to.be.equal(ExchangeContractErrs.OrderFillRoundingError);
+                    expect(invalidOrderState.error).to.be.equal(ExchangeContractErrs.OrderAlreadyCancelledOrFilled);
                 });
                 orderWatcher.subscribe(callback);
                 await contractWrappers.exchange.cancelOrderAsync(signedOrder);
             })().catch(done);
         });
-        it('should emit orderStateInvalid when within rounding error range', (done: DoneCallback) => {
+        it('should emit orderStateInvalid when within rounding error range after a partial fill', (done: DoneCallback) => {
             (async () => {
-                const remainingFillableAmountInBaseUnits = new BigNumber(100);
-                signedOrder = await fillScenarios.createFillableSignedOrderAsync(
+                const fillAmountInBaseUnits = new BigNumber(2);
+                const makerAssetAmount = new BigNumber(1001);
+                const takerAssetAmount = new BigNumber(3);
+                signedOrder = await fillScenarios.createAsymmetricFillableSignedOrderAsync(
                     makerAssetData,
                     takerAssetData,
                     makerAddress,
                     takerAddress,
-                    fillableAmount,
+                    makerAssetAmount,
+                    takerAssetAmount,
                 );
                 const orderHash = orderHashUtils.getOrderHashHex(signedOrder);
                 await orderWatcher.addOrderAsync(signedOrder);
-
                 const callback = callbackErrorReporter.reportNodeCallbackErrors(done)((orderState: OrderState) => {
                     expect(orderState.isValid).to.be.false();
                     const invalidOrderState = orderState as OrderStateInvalid;
@@ -527,11 +529,7 @@ describe('OrderWatcher', () => {
                     expect(invalidOrderState.error).to.be.equal(ExchangeContractErrs.OrderFillRoundingError);
                 });
                 orderWatcher.subscribe(callback);
-                await contractWrappers.exchange.fillOrderAsync(
-                    signedOrder,
-                    fillableAmount.minus(remainingFillableAmountInBaseUnits),
-                    takerAddress,
-                );
+                await contractWrappers.exchange.fillOrderAsync(signedOrder, fillAmountInBaseUnits, takerAddress);
             })().catch(done);
         });
         describe('erc721', () => {

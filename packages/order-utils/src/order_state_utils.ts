@@ -11,6 +11,7 @@ import { BigNumber } from '@0xproject/utils';
 import { AbstractBalanceAndProxyAllowanceFetcher } from './abstract/abstract_balance_and_proxy_allowance_fetcher';
 import { AbstractOrderFilledCancelledFetcher } from './abstract/abstract_order_filled_cancelled_fetcher';
 import { orderHashUtils } from './order_hash';
+import { OrderValidationUtils } from './order_validation_utils';
 import { RemainingFillableCalculator } from './remaining_fillable_calculator';
 import { utils } from './utils';
 
@@ -22,9 +23,8 @@ interface SidedOrderRelevantState {
     traderFeeProxyAllowance: BigNumber;
     filledTakerAssetAmount: BigNumber;
     remainingFillableAssetAmount: BigNumber;
+    isOrderCancelled: boolean;
 }
-
-const ACCEPTABLE_RELATIVE_ROUNDING_ERROR = 0.0001;
 
 export class OrderStateUtils {
     private readonly _balanceAndProxyAllowanceFetcher: AbstractBalanceAndProxyAllowanceFetcher;
@@ -34,6 +34,9 @@ export class OrderStateUtils {
         sidedOrderRelevantState: SidedOrderRelevantState,
     ): void {
         const isMakerSide = sidedOrderRelevantState.isMakerSide;
+        if (sidedOrderRelevantState.isOrderCancelled) {
+            throw new Error(ExchangeContractErrs.OrderAlreadyCancelledOrFilled);
+        }
         const availableTakerAssetAmount = signedOrder.takerAssetAmount.minus(
             sidedOrderRelevantState.filledTakerAssetAmount,
         );
@@ -71,23 +74,15 @@ export class OrderStateUtils {
                 );
             }
         }
-
-        let minFillableTakerAssetAmountWithinNoRoundingErrorRange;
-        if (isMakerSide) {
-            minFillableTakerAssetAmountWithinNoRoundingErrorRange = signedOrder.takerAssetAmount
-                .dividedBy(ACCEPTABLE_RELATIVE_ROUNDING_ERROR)
-                .dividedBy(signedOrder.makerAssetAmount);
-        } else {
-            minFillableTakerAssetAmountWithinNoRoundingErrorRange = signedOrder.makerAssetAmount
-                .dividedBy(ACCEPTABLE_RELATIVE_ROUNDING_ERROR)
-                .dividedBy(signedOrder.takerAssetAmount);
-        }
-
-        if (
-            sidedOrderRelevantState.remainingFillableAssetAmount.lessThan(
-                minFillableTakerAssetAmountWithinNoRoundingErrorRange,
-            )
-        ) {
+        const remainingTakerAssetAmount = signedOrder.takerAssetAmount.minus(
+            sidedOrderRelevantState.filledTakerAssetAmount,
+        );
+        const isRoundingError = OrderValidationUtils.isRoundingError(
+            remainingTakerAssetAmount,
+            signedOrder.takerAssetAmount,
+            signedOrder.makerAssetAmount,
+        );
+        if (isRoundingError) {
             throw new Error(ExchangeContractErrs.OrderFillRoundingError);
         }
     }
@@ -101,6 +96,7 @@ export class OrderStateUtils {
     public async getOpenOrderStateAsync(signedOrder: SignedOrder): Promise<OrderState> {
         const orderRelevantState = await this.getOpenOrderRelevantStateAsync(signedOrder);
         const orderHash = orderHashUtils.getOrderHashHex(signedOrder);
+        const isOrderCancelled = await this._orderFilledCancelledFetcher.isOrderCancelledAsync(orderHash);
         const sidedOrderRelevantState = {
             isMakerSide: true,
             traderBalance: orderRelevantState.makerBalance,
@@ -109,6 +105,7 @@ export class OrderStateUtils {
             traderFeeProxyAllowance: orderRelevantState.makerFeeProxyAllowance,
             filledTakerAssetAmount: orderRelevantState.filledTakerAssetAmount,
             remainingFillableAssetAmount: orderRelevantState.remainingFillableMakerAssetAmount,
+            isOrderCancelled,
         };
         try {
             OrderStateUtils._validateIfOrderIsValid(signedOrder, sidedOrderRelevantState);
@@ -278,6 +275,7 @@ export class OrderStateUtils {
             traderFeeProxyAllowance,
             filledTakerAssetAmount,
             remainingFillableAssetAmount,
+            isOrderCancelled,
         };
         return sidedOrderRelevantState;
     }

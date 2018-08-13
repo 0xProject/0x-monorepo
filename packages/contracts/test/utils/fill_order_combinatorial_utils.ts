@@ -81,6 +81,12 @@ export async function fillOrderCombinatorialUtilsFactoryAsync(
         erc20FiveDecimalTokenCount,
         fiveDecimals,
     );
+    const zeroDecimals = new BigNumber(0);
+    const erc20ZeroDecimalTokenCount = 2;
+    const [erc20ZeroDecimalTokenA, erc20ZeroDecimalTokenB] = await erc20Wrapper.deployDummyTokensAsync(
+        erc20ZeroDecimalTokenCount,
+        zeroDecimals,
+    );
     const erc20Proxy = await erc20Wrapper.deployProxyAsync();
     await erc20Wrapper.setBalancesAndAllowancesAsync();
 
@@ -119,6 +125,7 @@ export async function fillOrderCombinatorialUtilsFactoryAsync(
         zrxToken.address,
         [erc20EighteenDecimalTokenA.address, erc20EighteenDecimalTokenB.address],
         [erc20FiveDecimalTokenA.address, erc20FiveDecimalTokenB.address],
+        [erc20ZeroDecimalTokenA.address, erc20ZeroDecimalTokenB.address],
         erc721Token,
         erc721Balances,
         exchangeContract.address,
