@@ -217,6 +217,10 @@ contract MixinMatchOrders is
             matchedFillResults.left.makerAssetFilledAmount,
             matchedFillResults.right.takerAssetFilledAmount
         );
+        matchedFillResults.rightMakerAssetSpreadAmount = safeSub(
+            matchedFillResults.right.makerAssetFilledAmount,
+            matchedFillResults.left.takerAssetFilledAmount
+        );
 
         // Return fill results
         return matchedFillResults;
@@ -254,6 +258,12 @@ contract MixinMatchOrders is
             leftOrder.makerAddress,
             takerAddress,
             matchedFillResults.leftMakerAssetSpreadAmount
+        );
+        dispatchTransferFrom(
+            leftOrder.makerAssetData,
+            leftOrder.makerAddress,
+            takerAddress,
+            matchedFillResults.rightMakerAssetSpreadAmount
         );
 
         // Maker fees
