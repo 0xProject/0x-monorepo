@@ -43,7 +43,7 @@
         "shx": "^0.2.2",
         "source-map-loader": "^0.1.6",
         "tslint": "5.11.0",
-        "typescript": "2.9.2",
+        "typescript": "3.0.1",
         "webpack": "^3.1.0",
         "webpack-node-externals": "^1.6.0"
     }
