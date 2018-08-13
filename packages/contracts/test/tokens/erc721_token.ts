@@ -23,7 +23,7 @@ import { provider, txDefaults, web3Wrapper } from '../utils/web3_wrapper';
 chaiSetup.configure();
 const expect = chai.expect;
 const blockchainLifecycle = new BlockchainLifecycle(web3Wrapper);
-
+// tslint:disable:no-unnecessary-type-assertion
 describe('ERC721Token', () => {
     let owner: string;
     let spender: string;
@@ -53,7 +53,7 @@ describe('ERC721Token', () => {
             provider,
             txDefaults,
         );
-        logDecoder = new LogDecoder(web3Wrapper, token.address);
+        logDecoder = new LogDecoder(web3Wrapper);
         await web3Wrapper.awaitTransactionSuccessAsync(
             await token.mint.sendTransactionAsync(owner, tokenId, { from: owner }),
             constants.AWAIT_TRANSACTION_MINED_MS,
@@ -276,3 +276,4 @@ describe('ERC721Token', () => {
         });
     });
 });
+// tslint:enable:no-unnecessary-type-assertion
