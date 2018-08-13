@@ -3,6 +3,10 @@
         "version": "1.0.1-rc.4",
         "changes": [
             {
+                "note": "Allow for additional properties in txData schema",
+                "pr": 938
+            },
+            {
                 "note": "Change hexSchema to match `0x`",
                 "pr": 937
             },

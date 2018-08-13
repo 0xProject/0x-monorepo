@@ -1,7 +1,7 @@
 import { BlockchainLifecycle } from '@0xproject/dev-utils';
 import { Callback, ErrorCallback, NextCallback, Subprovider } from '@0xproject/subproviders';
-import { Web3Wrapper } from '@0xproject/web3-wrapper';
-import { CallData, JSONRPCRequestPayload, Provider, TxData } from 'ethereum-types';
+import { CallDataRPC, marshaller, Web3Wrapper } from '@0xproject/web3-wrapper';
+import { JSONRPCRequestPayload, Provider, TxData } from 'ethereum-types';
 import * as _ from 'lodash';
 import { Lock } from 'semaphore-async-await';
 
@@ -152,7 +152,7 @@ export abstract class TraceCollectionSubprovider extends Subprovider {
         cb();
     }
     private async _onCallOrGasEstimateExecutedAsync(
-        callData: Partial<CallData>,
+        callData: Partial<CallDataRPC>,
         _err: Error | null,
         _callResult: string,
         cb: Callback,
@@ -160,22 +160,24 @@ export abstract class TraceCollectionSubprovider extends Subprovider {
         await this._recordCallOrGasEstimateTraceAsync(callData);
         cb();
     }
-    private async _recordCallOrGasEstimateTraceAsync(callData: Partial<CallData>): Promise<void> {
+    private async _recordCallOrGasEstimateTraceAsync(callData: Partial<CallDataRPC>): Promise<void> {
         // We don't want other transactions to be exeucted during snashotting period, that's why we lock the
         // transaction execution for all transactions except our fake ones.
         await this._lock.acquire();
         const blockchainLifecycle = new BlockchainLifecycle(this._web3Wrapper);
         await blockchainLifecycle.startAsync();
-        const fakeTxData: MaybeFakeTxData = {
-            gas: BLOCK_GAS_LIMIT,
+        const fakeTxData = {
+            gas: BLOCK_GAS_LIMIT.toString(16), // tslint:disable-line:custom-no-magic-numbers
             isFakeTransaction: true, // This transaction (and only it) is allowed to come through when the lock is locked
             ...callData,
             from: callData.from || this._defaultFromAddress,
         };
         try {
-            const txHash = await this._web3Wrapper.sendTransactionAsync(fakeTxData);
+            const txData = marshaller.unmarshalTxData(fakeTxData);
+            const txHash = await this._web3Wrapper.sendTransactionAsync(txData);
             await this._web3Wrapper.awaitTransactionMinedAsync(txHash, 0);
         } catch (err) {
+            // TODO(logvinov) Check that transaction failed and not some other exception
             // Even if this transaction failed - we've already recorded it's trace.
             _.noop();
         }

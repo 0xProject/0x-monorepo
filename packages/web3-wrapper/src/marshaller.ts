@@ -25,7 +25,15 @@ import {
     TxDataRPC,
 } from './types';
 
+/**
+ * Utils to convert ethereum structures from user-space format to RPC format. (marshall/unmarshall)
+ */
 export const marshaller = {
+    /**
+     * Unmarshall block without transaction data
+     * @param blockWithHexValues block to unmarshall
+     * @return unmarshalled block without transaction data
+     */
     unmarshalIntoBlockWithoutTransactionData(
         blockWithHexValues: BlockWithoutTransactionDataRPC,
     ): BlockWithoutTransactionData {
@@ -41,6 +49,11 @@ export const marshaller = {
         };
         return block;
     },
+    /**
+     * Unmarshall block with transaction data
+     * @param blockWithHexValues block to unmarshall
+     * @return unmarshalled block with transaction data
+     */
     unmarshalIntoBlockWithTransactionData(blockWithHexValues: BlockWithTransactionDataRPC): BlockWithTransactionData {
         const block = {
             ...blockWithHexValues,
@@ -59,6 +72,11 @@ export const marshaller = {
         });
         return block;
     },
+    /**
+     * Unmarshall transaction
+     * @param txRpc transaction to unmarshall
+     * @return unmarshalled transaction
+     */
     unmarshalTransaction(txRpc: TransactionRPC): Transaction {
         const tx = {
             ...txRpc,
@@ -73,6 +91,11 @@ export const marshaller = {
         };
         return tx;
     },
+    /**
+     * Unmarshall transaction data
+     * @param txDataRpc transaction data to unmarshall
+     * @return unmarshalled transaction data
+     */
     unmarshalTxData(txDataRpc: TxDataRPC): TxData {
         if (_.isUndefined(txDataRpc.from)) {
             throw new Error(`txData must include valid 'from' value.`);
@@ -86,6 +109,11 @@ export const marshaller = {
         };
         return txData;
     },
+    /**
+     * Marshall transaction data
+     * @param txData transaction data to marshall
+     * @return marshalled transaction data
+     */
     marshalTxData(txData: Partial<TxData>): Partial<TxDataRPC> {
         if (_.isUndefined(txData.from)) {
             throw new Error(`txData must include valid 'from' value.`);
@@ -107,6 +135,11 @@ export const marshaller = {
         });
         return txDataRPC;
     },
+    /**
+     * Marshall call data
+     * @param callData call data to marshall
+     * @return marshalled call data
+     */
     marshalCallData(callData: Partial<CallData>): Partial<CallDataRPC> {
         const callTxDataBase = {
             ...callData,
@@ -119,12 +152,22 @@ export const marshaller = {
         };
         return callDataRPC;
     },
+    /**
+     * Marshall address
+     * @param address address to marshall
+     * @return marshalled address
+     */
     marshalAddress(address: string): string {
         if (addressUtils.isAddress(address)) {
             return ethUtil.addHexPrefix(address);
         }
         throw new Error(`Invalid address encountered: ${address}`);
     },
+    /**
+     * Marshall block param
+     * @param blockParam block param to marshall
+     * @return marshalled block param
+     */
     marshalBlockParam(blockParam: BlockParam | string | number | undefined): string | undefined {
         if (_.isUndefined(blockParam)) {
             return BlockParamLiteral.Latest;
@@ -132,6 +175,11 @@ export const marshaller = {
         const encodedBlockParam = _.isNumber(blockParam) ? utils.numberToHex(blockParam) : blockParam;
         return encodedBlockParam;
     },
+    /**
+     * Unmarshall log
+     * @param rawLog log to unmarshall
+     * @return unmarshalled log
+     */
     unmarshalLog(rawLog: RawLogEntry): LogEntry {
         const formattedLog = {
             ...rawLog,

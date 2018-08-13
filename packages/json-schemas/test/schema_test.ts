@@ -849,10 +849,6 @@ describe('Schema', () => {
                 {
                     gas: new BigNumber(42),
                 },
-                {
-                    from: NULL_ADDRESS,
-                    unknownProp: 'here',
-                },
                 {},
                 [],
                 new BigNumber(1),
