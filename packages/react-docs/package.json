@@ -33,7 +33,7 @@
         "make-promises-safe": "^1.1.0",
         "shx": "^0.2.2",
         "tslint": "^5.9.1",
-        "typescript": "2.7.1"
+        "typescript": "2.9.2"
     },
     "dependencies": {
         "@0xproject/react-shared": "^1.0.5",

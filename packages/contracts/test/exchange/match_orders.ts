@@ -69,13 +69,22 @@ describe('matchOrders', () => {
     before(async () => {
         // Create accounts
         const accounts = await web3Wrapper.getAvailableAddressesAsync();
+        // Hack(albrow): Both Prettier and TSLint insert a trailing comma below
+        // but that is invalid syntax as of TypeScript version >= 2.8. We don't
+        // have the right fine-grained configuration options in TSLint,
+        // Prettier, or TypeScript, to reconcile this, so we will just have to
+        // wait for them to sort it out. We disable TSLint and Prettier for
+        // this part of the code for now. This occurs several times in this
+        // file. See https://github.com/prettier/prettier/issues/4624.
+        // prettier-ignore
         const usedAddresses = ([
             owner,
             makerAddressLeft,
             makerAddressRight,
             takerAddress,
             feeRecipientAddressLeft,
-            feeRecipientAddressRight,
+            // tslint:disable-next-line:trailing-comma
+            feeRecipientAddressRight
         ] = _.slice(accounts, 0, 6));
         // Create wrappers
         erc20Wrapper = new ERC20Wrapper(provider, usedAddresses, owner);
@@ -201,9 +210,11 @@ describe('matchOrders', () => {
             // Match signedOrderLeft with signedOrderRight
             let newERC20BalancesByOwner: ERC20BalancesByOwner;
             let newERC721TokenIdsByOwner: ERC721TokenIdsByOwner;
+            // prettier-ignore
             [
                 newERC20BalancesByOwner,
-                newERC721TokenIdsByOwner,
+                // tslint:disable-next-line:trailing-comma
+                newERC721TokenIdsByOwner
             ] = await matchOrderTester.matchOrdersAndVerifyBalancesAsync(
                 signedOrderLeft,
                 signedOrderRight,
@@ -306,9 +317,11 @@ describe('matchOrders', () => {
             // Match orders
             let newERC20BalancesByOwner: ERC20BalancesByOwner;
             let newERC721TokenIdsByOwner: ERC721TokenIdsByOwner;
+            // prettier-ignore
             [
                 newERC20BalancesByOwner,
-                newERC721TokenIdsByOwner,
+                // tslint:disable-next-line:trailing-comma
+                newERC721TokenIdsByOwner
             ] = await matchOrderTester.matchOrdersAndVerifyBalancesAsync(
                 signedOrderLeft,
                 signedOrderRight,
@@ -374,9 +387,11 @@ describe('matchOrders', () => {
             // Match orders
             let newERC20BalancesByOwner: ERC20BalancesByOwner;
             let newERC721TokenIdsByOwner: ERC721TokenIdsByOwner;
+            // prettier-ignore
             [
                 newERC20BalancesByOwner,
-                newERC721TokenIdsByOwner,
+                // tslint:disable-next-line:trailing-comma
+                newERC721TokenIdsByOwner
             ] = await matchOrderTester.matchOrdersAndVerifyBalancesAsync(
                 signedOrderLeft,
                 signedOrderRight,
