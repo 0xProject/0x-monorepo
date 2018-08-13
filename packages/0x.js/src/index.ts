@@ -1,6 +1,13 @@
 export { ZeroEx } from './0x';
 
-export { Web3ProviderEngine, RPCSubprovider } from '@0xproject/subproviders';
+export {
+    Web3ProviderEngine,
+    RPCSubprovider,
+    Callback,
+    JSONRPCRequestPayloadWithMethod,
+    ErrorCallback,
+    Subprovider,
+} from '@0xproject/subproviders';
 
 export {
     EventCallback,
@@ -75,4 +82,6 @@ export {
     LogEntry,
     DecodedLogArgs,
     LogEntryEvent,
+    DecodedLogEntry,
+    DecodedLogEntryEvent,
 } from 'ethereum-types';
