@@ -66,12 +66,6 @@ PKG=@0xproject/sra-api yarn watch
 
 We also [host a static HTML version of the docs on S3](http://sra-api.s3-website-us-east-1.amazonaws.com/) for easy sharing.
 
-To build the website run
-
-```
-yarn build-site
-```
-
 To build and deploy the site run
 
 ```

@@ -21,12 +21,12 @@ export const api: OpenApiSpec = {
         '/v2/asset_pairs': {
             get: {
                 description:
-                    'Retrieves a list of available asset pairs and the information required to trade them (in any order). Setting only `asset_data_a` or `asset_data_b` returns pairs filtered by that asset only.',
+                    'Retrieves a list of available asset pairs and the information required to trade them (in any order). Setting only `assetDataA` or `assetDataB` returns pairs filtered by that asset only.',
                 operationId: 'getAssetPairs',
                 parameters: generateParameters(
                     [
                         {
-                            name: 'asset_data_a',
+                            name: 'assetDataA',
                             in: 'query',
                             description: 'The assetData value for the first asset in the pair.',
                             example: '0xf47261b04c32345ced77393b3530b1eed0f346429d',
@@ -35,7 +35,7 @@ export const api: OpenApiSpec = {
                             },
                         },
                         {
-                            name: 'asset_data_b',
+                            name: 'assetDataB',
                             in: 'query',
                             description: 'The assetData value for the second asset in the pair.',
                             example: '0x0257179264389b814a946f3e92105513705ca6b990',
@@ -205,7 +205,7 @@ export const api: OpenApiSpec = {
         },
         '/v2/orderbook': {
             get: {
-                description: `Retrieves the orderbook for a given asset pair. This endpoint should be [paginated](#section/Pagination). Bids will be sorted in descending order by price, and asks will be sorted in ascending order by price. Within the price sorted orders, the orders are further sorted by _taker fee price_ which is defined as the **takerFee** divided by **takerTokenAmount**. After _taker fee price_, orders are to be sorted by expiration in ascending order. The way pagination works for this endpoint is that the **page** and **per_page** query params apply to both \`bids\` and \`asks\` collections, and if \`page\` * \`per_page\` > \`total\` for a certain collection, the \`records\` for that collection should just be empty. `,
+                description: `Retrieves the orderbook for a given asset pair. This endpoint should be [paginated](#section/Pagination). Bids will be sorted in descending order by price, and asks will be sorted in ascending order by price. Within the price sorted orders, the orders are further sorted by _taker fee price_ which is defined as the **takerFee** divided by **takerTokenAmount**. After _taker fee price_, orders are to be sorted by expiration in ascending order. The way pagination works for this endpoint is that the **page** and **perPage** query params apply to both \`bids\` and \`asks\` collections, and if \`page\` * \`perPage\` > \`total\` for a certain collection, the \`records\` for that collection should just be empty. `,
                 operationId: 'getOrderbook',
                 parameters: generateParameters(
                     [
