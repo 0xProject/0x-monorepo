@@ -10571,13 +10571,6 @@ react-scroll@0xproject/react-scroll#similar-to-pr-330:
     lodash.throttle "^4.1.1"
     prop-types "^15.5.8"
 
-"react-scroll@github:0xproject/react-scroll#similar-to-pr-330":
-  version "1.7.10"
-  resolved "https://codeload.github.com/0xproject/react-scroll/tar.gz/091a41f8a6fd9e94bd41b9bba27356da470cb8a5"
-  dependencies:
-    lodash.throttle "^4.1.1"
-    prop-types "^15.5.8"
-
 react-side-effect@^1.0.2:
   version "1.1.5"
   resolved "https://registry.yarnpkg.com/react-side-effect/-/react-side-effect-1.1.5.tgz#f26059e50ed9c626d91d661b9f3c8bb38cd0ff2d"
