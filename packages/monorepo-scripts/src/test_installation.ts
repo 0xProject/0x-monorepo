@@ -87,7 +87,10 @@ function logIfDefined(x: any): void {
         });
         process.exit(0);
     }
-})();
+})().catch(err => {
+    utils.log(`Unexpected error: ${err.message}`);
+    process.exit(0);
+});
 
 async function testInstallPackageAsync(
     monorepoRootPath: string,
