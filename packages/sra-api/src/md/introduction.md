@@ -67,7 +67,7 @@ If a certain network is not supported, the response should **400** as specified 
         {
             "field": "networkId",
             "code": 1006,
-            "reason": "Network id 42 is not supported",
+            "reason": "Network id 42 is not supported"
         }
     ]
 }
@@ -179,9 +179,9 @@ The identifier for the Proxy uses a similar scheme to [ABI function selectors](h
 
 ```js
 // ERC20 Proxy ID  0xf47261b0
-bytes4(keccak256("ERC20Token(address)"))
+bytes4(keccak256('ERC20Token(address)'));
 // ERC721 Proxy ID 0x08e937fa
-bytes4(keccak256("ERC721Token(address,uint256)"))
+bytes4(keccak256('ERC721Token(address,uint256)'));
 ```
 
 Asset data is encoded using [ABI encoding](https://solidity.readthedocs.io/en/develop/abi-spec.html).
