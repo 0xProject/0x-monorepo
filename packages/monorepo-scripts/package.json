@@ -30,6 +30,7 @@
     "homepage": "https://github.com/0xProject/0x-monorepo/packages/monorepo-scripts/README.md",
     "devDependencies": {
         "@types/glob": "^5.0.33",
+        "@types/mkdirp": "^0.5.2",
         "@types/node": "^8.0.53",
         "@types/opn": "^5.1.0",
         "@types/rimraf": "^2.0.2",
@@ -50,6 +51,7 @@
         "glob": "^7.1.2",
         "isomorphic-fetch": "2.2.1",
         "lodash": "^4.17.5",
+        "mkdirp": "^0.5.1",
         "moment": "2.21.0",
         "opn": "^5.3.0",
         "promisify-child-process": "^1.0.5",

@@ -56,6 +56,16 @@ jobs:
       # HACK(albrow): we need to sleep 10 seconds to ensure the devnet is
       # initialized
       - run: sleep 10 && TEST_PROVIDER=geth yarn wsrun test contracts
+  test-publish:
+    docker:
+      - image: circleci/node:9
+      - image: verdaccio/verdaccio
+    working_directory: ~/repo
+    steps:
+      - restore_cache:
+          keys:
+            - repo-{{ .Environment.CIRCLE_SHA1 }}
+      - run: yarn test:publish:circleci
   test-rest:
     docker:
       - image: circleci/node:9
@@ -230,6 +240,9 @@ workflows:
           requires:
             - build
       - static-tests:
+          requires:
+            - build
+      - test-publish:
           requires:
             - build
       - submit-coverage:
