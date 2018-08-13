@@ -23,29 +23,71 @@ const mkdirpAsync = promisify(mkdirp);
 const rimrafAsync = promisify(rimraf);
 const writeFileAsync = promisify(fs.writeFile);
 
+interface PackageErr {
+    packageName: string;
+    error: ExecError;
+}
+
+interface ExecError {
+    message: string;
+    stack: string;
+    stderr: string;
+    stdout: string;
+}
+
+// returns the index for the given package name.
+function findPackageIndex(packages: Package[], packageName: string): number {
+    return _.findIndex(packages, pkg => pkg.packageJson.name === packageName);
+}
+
+function logIfDefined(x: any): void {
+    if (!_.isUndefined(x)) {
+        utils.log(x);
+    }
+}
+
 (async () => {
     const IS_LOCAL_PUBLISH = process.env.IS_LOCAL_PUBLISH === 'true';
     const registry = IS_LOCAL_PUBLISH ? 'http://localhost:4873/' : 'https://registry.npmjs.org/';
     const monorepoRootPath = path.join(__dirname, '../../..');
-    const packages = utils.getTopologicallySortedPackages(monorepoRootPath);
+    const packages = utils.getPackages(monorepoRootPath);
     const installablePackages = _.filter(
         packages,
         pkg => !pkg.packageJson.private && !_.isUndefined(pkg.packageJson.main) && pkg.packageJson.main.endsWith('.js'),
     );
     utils.log('Testing packages:');
     _.map(installablePackages, pkg => utils.log(`* ${pkg.packageJson.name}`));
+    // Run all package tests asynchronously and push promises into an array so
+    // we can wait for all of them to resolve.
     const promises: Array<Promise<void>> = [];
+    const errors: PackageErr[] = [];
     for (const installablePackage of installablePackages) {
-        promises.push(testInstallPackageAsync(monorepoRootPath, registry, installablePackage));
+        const packagePromise = testInstallPackageAsync(monorepoRootPath, registry, installablePackage).catch(error => {
+            errors.push({ packageName: installablePackage.packageJson.name, error });
+        });
+        promises.push(packagePromise);
     }
     await Promise.all(promises);
-})().catch(err => {
-    utils.log(err.message);
-    utils.log(err.stderr);
-    utils.log(err.stdout);
-    utils.log(err.stack);
-    process.exit(1);
-});
+    if (errors.length > 0) {
+        // We sort error messages according to package topology so that we can
+        // them in a more intuitive order. E.g. if package A has an error and
+        // package B imports it, the tests for both package A and package B will
+        // fail. But package B only fails because of an error in package A.
+        // Since the error in package A is the root cause, we log it first.
+        const topologicallySortedPackages = utils.getTopologicallySortedPackages(monorepoRootPath);
+        const topologicallySortedErrors = _.sortBy(errors, packageErr =>
+            findPackageIndex(topologicallySortedPackages, packageErr.packageName),
+        );
+        _.forEach(topologicallySortedErrors, packageError => {
+            utils.log(`ERROR in package ${packageError.packageName}:`);
+            logIfDefined(packageError.error.message);
+            logIfDefined(packageError.error.stderr);
+            logIfDefined(packageError.error.stdout);
+            logIfDefined(packageError.error.stack);
+        });
+        process.exit(0);
+    }
+})();
 
 async function testInstallPackageAsync(
     monorepoRootPath: string,
