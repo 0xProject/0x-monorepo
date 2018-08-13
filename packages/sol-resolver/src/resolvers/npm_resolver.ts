@@ -20,10 +20,11 @@ export class NPMResolver extends Resolver {
             while (currentPath !== ROOT_PATH) {
                 const lookupPath = path.join(currentPath, 'node_modules', packageName, pathWithinPackage);
                 // NodeJS documentation recommends using try/catch arround read
-                // instead of using fs.statSuync. We don't do this because:
+                // instead of using fs.statSync. We don't do this because:
                 // 1) We want it to fail when the file exists but does not
                 //    have read permissions.
-                // 2) The thrown error message is platform dependent.
+                // 2) The thrown error message is platform dependent and thus
+                //    hard to parse.
                 if (fs.existsSync(lookupPath) &&
                     fs.statSync(lookupPath).isFile()) {
                     const fileContent = fs.readFileSync(lookupPath).toString();
