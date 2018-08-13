@@ -58,7 +58,7 @@ export async function generateAndUploadDocsAsync(packageName: string, isStaging:
         if (isInternalToPkg) {
             const pathToInternalPkg = path.join(pathToPackage, 'src', `${exportPath}.ts`);
             typeDocExtraFileIncludes.push(pathToInternalPkg);
-            return; // Right?
+            return;
         }
 
         const pathIfExists = pkgNameToPath[exportPath];
