@@ -224,6 +224,11 @@ export enum RevertReason {
     InvalidMsgValue = 'INVALID_MSG_VALUE',
     InsufficientEthRemaining = 'INSUFFICIENT_ETH_REMAINING',
     Uint256Overflow = 'UINT256_OVERFLOW',
+    Erc721ZeroToAddress = 'ERC721_ZERO_TO_ADDRESS',
+    Erc721OwnerMismatch = 'ERC721_OWNER_MISMATCH',
+    Erc721InvalidSpender = 'ERC721_INVALID_SPENDER',
+    Erc721ZeroOwner = 'ERC721_ZERO_OWNER',
+    Erc721InvalidSelector = 'ERC721_INVALID_SELECTOR',
 }
 
 export enum StatusCodes {
