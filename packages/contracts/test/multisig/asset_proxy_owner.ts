@@ -422,7 +422,7 @@ describe('AssetProxyOwner', () => {
                 await multiSigWrapper.confirmTransactionAsync(txId, owners[1]);
 
                 const execRes = await multiSigWrapper.executeRemoveAuthorizedAddressAtIndexAsync(txId, owners[0]);
-                const execLog = execRes.logs[0] as LogWithDecodedArgs<AssetProxyOwnerExecutionEventArgs>;
+                const execLog = execRes.logs[1] as LogWithDecodedArgs<AssetProxyOwnerExecutionEventArgs>;
                 expect(execLog.args.transactionId).to.be.bignumber.equal(txId);
 
                 const tx = await testAssetProxyOwner.transactions.callAsync(txId);
@@ -449,7 +449,7 @@ describe('AssetProxyOwner', () => {
                 await multiSigWrapper.confirmTransactionAsync(txId, owners[1]);
 
                 const execRes = await multiSigWrapper.executeRemoveAuthorizedAddressAtIndexAsync(txId, owners[0]);
-                const execLog = execRes.logs[0] as LogWithDecodedArgs<AssetProxyOwnerExecutionEventArgs>;
+                const execLog = execRes.logs[1] as LogWithDecodedArgs<AssetProxyOwnerExecutionEventArgs>;
                 expect(execLog.args.transactionId).to.be.bignumber.equal(txId);
 
                 const tx = await testAssetProxyOwner.transactions.callAsync(txId);

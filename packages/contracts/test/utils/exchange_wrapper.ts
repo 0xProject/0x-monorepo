@@ -266,4 +266,7 @@ export class ExchangeWrapper {
         );
         return data;
     }
+    public getExchangeAddress(): string {
+        return this._exchange.address;
+    }
 }
