@@ -157,7 +157,39 @@ describe('matchOrders', () => {
             erc721TokenIdsByOwner = await erc721Wrapper.getBalancesAsync();
         });
 
-        it('should transfer the correct amounts when orders completely fill each other', async () => {
+        it('should transfer the correct amounts when there is an exact match', async () => {
+            // Create orders to match
+            const signedOrderLeft = await orderFactoryLeft.newSignedOrderAsync({
+                makerAddress: makerAddressLeft,
+                makerAssetAmount: Web3Wrapper.toBaseUnitAmount(new BigNumber(5), 18),
+                takerAssetAmount: Web3Wrapper.toBaseUnitAmount(new BigNumber(10), 18),
+                feeRecipientAddress: feeRecipientAddressLeft,
+            });
+            const signedOrderRight = await orderFactoryRight.newSignedOrderAsync({
+                makerAddress: makerAddressRight,
+                makerAssetData: assetDataUtils.encodeERC20AssetData(defaultERC20TakerAssetAddress),
+                takerAssetData: assetDataUtils.encodeERC20AssetData(defaultERC20MakerAssetAddress),
+                makerAssetAmount: Web3Wrapper.toBaseUnitAmount(new BigNumber(10), 18),
+                takerAssetAmount: Web3Wrapper.toBaseUnitAmount(new BigNumber(5), 18),
+                feeRecipientAddress: feeRecipientAddressRight,
+            });
+            // Match signedOrderLeft with signedOrderRight
+            await matchOrderTester.matchOrdersAndVerifyBalancesAsync(
+                signedOrderLeft,
+                signedOrderRight,
+                takerAddress,
+                erc20BalancesByOwner,
+                erc721TokenIdsByOwner,
+            );
+            // Verify left order was fully filled
+            const leftOrderInfo: OrderInfo = await exchangeWrapper.getOrderInfoAsync(signedOrderLeft);
+            expect(leftOrderInfo.orderStatus as OrderStatus).to.be.equal(OrderStatus.FULLY_FILLED);
+            // Verify right order was fully filled
+            const rightOrderInfo: OrderInfo = await exchangeWrapper.getOrderInfoAsync(signedOrderRight);
+            expect(rightOrderInfo.orderStatus as OrderStatus).to.be.equal(OrderStatus.FULLY_FILLED);
+        });
+
+        it('should transfer the correct amounts when there is an excess in leftMakerAsset and exact rightMakerAsset', async () => {
             // Create orders to match
             const signedOrderLeft = await orderFactoryLeft.newSignedOrderAsync({
                 makerAddress: makerAddressLeft,
@@ -171,6 +203,134 @@ describe('matchOrders', () => {
                 takerAssetData: assetDataUtils.encodeERC20AssetData(defaultERC20MakerAssetAddress),
                 makerAssetAmount: Web3Wrapper.toBaseUnitAmount(new BigNumber(10), 18),
                 takerAssetAmount: Web3Wrapper.toBaseUnitAmount(new BigNumber(2), 18),
+                feeRecipientAddress: feeRecipientAddressRight,
+            });
+            // Match signedOrderLeft with signedOrderRight
+            await matchOrderTester.matchOrdersAndVerifyBalancesAsync(
+                signedOrderLeft,
+                signedOrderRight,
+                takerAddress,
+                erc20BalancesByOwner,
+                erc721TokenIdsByOwner,
+            );
+            // Verify left order was fully filled
+            const leftOrderInfo: OrderInfo = await exchangeWrapper.getOrderInfoAsync(signedOrderLeft);
+            expect(leftOrderInfo.orderStatus as OrderStatus).to.be.equal(OrderStatus.FULLY_FILLED);
+            // Verify right order was fully filled
+            const rightOrderInfo: OrderInfo = await exchangeWrapper.getOrderInfoAsync(signedOrderRight);
+            expect(rightOrderInfo.orderStatus as OrderStatus).to.be.equal(OrderStatus.FULLY_FILLED);
+        });
+
+        it('should transfer the correct amounts when there is an excess in rightMakerAsset and exact leftMakerAsset', async () => {
+            // Create orders to match
+            const signedOrderLeft = await orderFactoryLeft.newSignedOrderAsync({
+                makerAddress: makerAddressLeft,
+                makerAssetAmount: Web3Wrapper.toBaseUnitAmount(new BigNumber(10), 18),
+                takerAssetAmount: Web3Wrapper.toBaseUnitAmount(new BigNumber(2), 18),
+                feeRecipientAddress: feeRecipientAddressLeft,
+            });
+            const signedOrderRight = await orderFactoryRight.newSignedOrderAsync({
+                makerAddress: makerAddressRight,
+                makerAssetData: assetDataUtils.encodeERC20AssetData(defaultERC20TakerAssetAddress),
+                takerAssetData: assetDataUtils.encodeERC20AssetData(defaultERC20MakerAssetAddress),
+                makerAssetAmount: Web3Wrapper.toBaseUnitAmount(new BigNumber(5), 18),
+                takerAssetAmount: Web3Wrapper.toBaseUnitAmount(new BigNumber(10), 18),
+                feeRecipientAddress: feeRecipientAddressRight,
+            });
+            // Match signedOrderLeft with signedOrderRight
+            await matchOrderTester.matchOrdersAndVerifyBalancesAsync(
+                signedOrderLeft,
+                signedOrderRight,
+                takerAddress,
+                erc20BalancesByOwner,
+                erc721TokenIdsByOwner,
+            );
+            // Verify left order was fully filled
+            const leftOrderInfo: OrderInfo = await exchangeWrapper.getOrderInfoAsync(signedOrderLeft);
+            expect(leftOrderInfo.orderStatus as OrderStatus).to.be.equal(OrderStatus.FULLY_FILLED);
+            // Verify right order was fully filled
+            const rightOrderInfo: OrderInfo = await exchangeWrapper.getOrderInfoAsync(signedOrderRight);
+            expect(rightOrderInfo.orderStatus as OrderStatus).to.be.equal(OrderStatus.FULLY_FILLED);
+        });
+
+        it('should transfer the correct amounts when there is an excess in leftMakerAsset and shortage in rightMakerAsset', async () => {
+            // Create orders to match
+            const signedOrderLeft = await orderFactoryLeft.newSignedOrderAsync({
+                makerAddress: makerAddressLeft,
+                makerAssetAmount: Web3Wrapper.toBaseUnitAmount(new BigNumber(5), 18),
+                takerAssetAmount: Web3Wrapper.toBaseUnitAmount(new BigNumber(10), 18),
+                feeRecipientAddress: feeRecipientAddressLeft,
+            });
+            const signedOrderRight = await orderFactoryRight.newSignedOrderAsync({
+                makerAddress: makerAddressRight,
+                makerAssetData: assetDataUtils.encodeERC20AssetData(defaultERC20TakerAssetAddress),
+                takerAssetData: assetDataUtils.encodeERC20AssetData(defaultERC20MakerAssetAddress),
+                makerAssetAmount: Web3Wrapper.toBaseUnitAmount(new BigNumber(9), 18),
+                takerAssetAmount: Web3Wrapper.toBaseUnitAmount(new BigNumber(2), 18),
+                feeRecipientAddress: feeRecipientAddressRight,
+            });
+            // Match signedOrderLeft with signedOrderRight
+            await matchOrderTester.matchOrdersAndVerifyBalancesAsync(
+                signedOrderLeft,
+                signedOrderRight,
+                takerAddress,
+                erc20BalancesByOwner,
+                erc721TokenIdsByOwner,
+            );
+            // Verify left order was fully filled
+            const leftOrderInfo: OrderInfo = await exchangeWrapper.getOrderInfoAsync(signedOrderLeft);
+            expect(leftOrderInfo.orderStatus as OrderStatus).to.be.equal(OrderStatus.FILLABLE);
+            // Verify right order was fully filled
+            const rightOrderInfo: OrderInfo = await exchangeWrapper.getOrderInfoAsync(signedOrderRight);
+            expect(rightOrderInfo.orderStatus as OrderStatus).to.be.equal(OrderStatus.FULLY_FILLED);
+        });
+
+        it('should transfer the correct amounts when there is an excess in rightMakerAsset and shortage in leftMakerAsset', async () => {
+            // Create orders to match
+            const signedOrderLeft = await orderFactoryLeft.newSignedOrderAsync({
+                makerAddress: makerAddressLeft,
+                makerAssetAmount: Web3Wrapper.toBaseUnitAmount(new BigNumber(9), 18),
+                takerAssetAmount: Web3Wrapper.toBaseUnitAmount(new BigNumber(2), 18),
+                feeRecipientAddress: feeRecipientAddressLeft,
+            });
+            const signedOrderRight = await orderFactoryRight.newSignedOrderAsync({
+                makerAddress: makerAddressRight,
+                makerAssetData: assetDataUtils.encodeERC20AssetData(defaultERC20TakerAssetAddress),
+                takerAssetData: assetDataUtils.encodeERC20AssetData(defaultERC20MakerAssetAddress),
+                makerAssetAmount: Web3Wrapper.toBaseUnitAmount(new BigNumber(5), 18),
+                takerAssetAmount: Web3Wrapper.toBaseUnitAmount(new BigNumber(10), 18),
+                feeRecipientAddress: feeRecipientAddressRight,
+            });
+            // Match signedOrderLeft with signedOrderRight
+            await matchOrderTester.matchOrdersAndVerifyBalancesAsync(
+                signedOrderLeft,
+                signedOrderRight,
+                takerAddress,
+                erc20BalancesByOwner,
+                erc721TokenIdsByOwner,
+            );
+            // Verify left order was fully filled
+            const leftOrderInfo: OrderInfo = await exchangeWrapper.getOrderInfoAsync(signedOrderLeft);
+            expect(leftOrderInfo.orderStatus as OrderStatus).to.be.equal(OrderStatus.FULLY_FILLED);
+            // Verify right order was fully filled
+            const rightOrderInfo: OrderInfo = await exchangeWrapper.getOrderInfoAsync(signedOrderRight);
+            expect(rightOrderInfo.orderStatus as OrderStatus).to.be.equal(OrderStatus.FILLABLE);
+        });
+
+        it('should transfer the correct amounts when there is an excess in both tokens', async () => {
+            // Create orders to match
+            const signedOrderLeft = await orderFactoryLeft.newSignedOrderAsync({
+                makerAddress: makerAddressLeft,
+                makerAssetAmount: Web3Wrapper.toBaseUnitAmount(new BigNumber(10), 18),
+                takerAssetAmount: Web3Wrapper.toBaseUnitAmount(new BigNumber(5), 18),
+                feeRecipientAddress: feeRecipientAddressLeft,
+            });
+            const signedOrderRight = await orderFactoryRight.newSignedOrderAsync({
+                makerAddress: makerAddressRight,
+                makerAssetData: assetDataUtils.encodeERC20AssetData(defaultERC20TakerAssetAddress),
+                takerAssetData: assetDataUtils.encodeERC20AssetData(defaultERC20MakerAssetAddress),
+                makerAssetAmount: Web3Wrapper.toBaseUnitAmount(new BigNumber(10), 18),
+                takerAssetAmount: Web3Wrapper.toBaseUnitAmount(new BigNumber(5), 18),
                 feeRecipientAddress: feeRecipientAddressRight,
             });
             // Match signedOrderLeft with signedOrderRight
