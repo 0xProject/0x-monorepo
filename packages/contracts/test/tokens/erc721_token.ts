@@ -14,7 +14,7 @@ import {
     InvalidERC721ReceiverTokenReceivedEventArgs,
 } from '../../generated_contract_wrappers/invalid_erc721_receiver';
 import { artifacts } from '../utils/artifacts';
-import { expectContractCallFailed, expectContractCallFailedWithoutReasonAsync } from '../utils/assertions';
+import { expectTransactionFailedAsync, expectTransactionFailedWithoutReasonAsync } from '../utils/assertions';
 import { chaiSetup } from '../utils/chai_setup';
 import { constants } from '../utils/constants';
 import { LogDecoder } from '../utils/log_decoder';
@@ -71,7 +71,7 @@ describe('ERC721Token', () => {
             const from = owner;
             const to = erc721Receiver.address;
             const unownedTokenId = new BigNumber(2);
-            await expectContractCallFailed(
+            await expectTransactionFailedAsync(
                 token.transferFrom.sendTransactionAsync(from, to, unownedTokenId),
                 RevertReason.Erc721ZeroOwner,
             );
@@ -79,7 +79,7 @@ describe('ERC721Token', () => {
         it('should revert if transferring to a null address', async () => {
             const from = owner;
             const to = constants.NULL_ADDRESS;
-            await expectContractCallFailed(
+            await expectTransactionFailedAsync(
                 token.transferFrom.sendTransactionAsync(from, to, tokenId),
                 RevertReason.Erc721ZeroToAddress,
             );
@@ -87,7 +87,7 @@ describe('ERC721Token', () => {
         it('should revert if the from address does not own the token', async () => {
             const from = spender;
             const to = erc721Receiver.address;
-            await expectContractCallFailed(
+            await expectTransactionFailedAsync(
                 token.transferFrom.sendTransactionAsync(from, to, tokenId),
                 RevertReason.Erc721OwnerMismatch,
             );
@@ -95,7 +95,7 @@ describe('ERC721Token', () => {
         it('should revert if spender does not own the token, is not approved, and is not approved for all', async () => {
             const from = owner;
             const to = erc721Receiver.address;
-            await expectContractCallFailed(
+            await expectTransactionFailedAsync(
                 token.transferFrom.sendTransactionAsync(from, to, tokenId, { from: spender }),
                 RevertReason.Erc721InvalidSpender,
             );
@@ -178,7 +178,7 @@ describe('ERC721Token', () => {
             );
             const from = owner;
             const to = contract.address;
-            await expectContractCallFailedWithoutReasonAsync(
+            await expectTransactionFailedWithoutReasonAsync(
                 token.safeTransferFrom1.sendTransactionAsync(from, to, tokenId),
             );
         });
@@ -190,7 +190,7 @@ describe('ERC721Token', () => {
             );
             const from = owner;
             const to = invalidErc721Receiver.address;
-            await expectContractCallFailed(
+            await expectTransactionFailedAsync(
                 token.safeTransferFrom1.sendTransactionAsync(from, to, tokenId),
                 RevertReason.Erc721InvalidSelector,
             );
@@ -239,7 +239,7 @@ describe('ERC721Token', () => {
             );
             const from = owner;
             const to = contract.address;
-            await expectContractCallFailedWithoutReasonAsync(
+            await expectTransactionFailedWithoutReasonAsync(
                 token.safeTransferFrom2.sendTransactionAsync(from, to, tokenId, data),
             );
         });
@@ -251,7 +251,7 @@ describe('ERC721Token', () => {
             );
             const from = owner;
             const to = invalidErc721Receiver.address;
-            await expectContractCallFailed(
+            await expectTransactionFailedAsync(
                 token.safeTransferFrom2.sendTransactionAsync(from, to, tokenId, data),
                 RevertReason.Erc721InvalidSelector,
             );
