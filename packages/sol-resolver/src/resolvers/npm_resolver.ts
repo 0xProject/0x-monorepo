@@ -19,7 +19,7 @@ export class NPMResolver extends Resolver {
             const ROOT_PATH = '/';
             while (currentPath !== ROOT_PATH) {
                 const lookupPath = path.join(currentPath, 'node_modules', packageName, pathWithinPackage);
-                if (fs.existsSync(lookupPath)) {
+                if (fs.existsSync(lookupPath) && fs.lstatSync(lookupPath).isFile()) {
                     const fileContent = fs.readFileSync(lookupPath).toString();
                     return {
                         source: fileContent,
