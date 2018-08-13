@@ -53,7 +53,7 @@
         "chai-bignumber": "^2.0.1",
         "copyfiles": "^1.2.0",
         "dirty-chai": "^2.0.1",
-        "ganache-core": "0xProject/ganache-core",
+        "ganache-core": "0xProject/ganache-core#monorepo-dep",
         "make-promises-safe": "^1.1.0",
         "mocha": "^4.1.0",
         "npm-run-all": "^4.1.2",
