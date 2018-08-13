@@ -1,5 +1,14 @@
 [
     {
+        "version": "1.0.1-rc.4",
+        "changes": [
+            {
+                "pr": 914,
+                "note": "Update ecSignOrderHashAsync to return the signature as a string for immediate use in contracts"
+            }
+        ]
+    },
+    {
         "version": "1.0.1-rc.3",
         "changes": [
             {

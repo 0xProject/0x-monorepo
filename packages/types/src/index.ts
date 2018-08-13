@@ -143,6 +143,17 @@ export enum SignatureType {
 }
 
 /**
+ * The type of the Signer implementation. Some signer implementations use different message prefixes (e.g Trezor) or implement different
+ * eth_sign behaviour (e.g Metamask). Default assumes a spec compliant `eth_sign`.
+ */
+export enum SignerType {
+    Default = 'DEFAULT',
+    Ledger = 'LEDGER',
+    Metamask = 'METAMASK',
+    Trezor = 'TREZOR',
+}
+
+/**
  * Elliptic Curve signature
  */
 export interface ECSignature {

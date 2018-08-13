@@ -1,5 +1,15 @@
 [
     {
+        "version": "1.0.1-rc.4",
+        "changes": [
+            {
+                "pr": 914,
+                "note":
+                    "Update ecSignOrderHashAsync to return signature string with signature type byte. Removes messagePrefixOpts."
+            }
+        ]
+    },
+    {
         "version": "1.0.1-rc.3",
         "changes": [
             {

@@ -1,5 +1,14 @@
 [
     {
+        "version": "1.0.1-rc.4",
+        "changes": [
+            {
+                "pr": 914,
+                "note": "Added SignerType to handle different signing prefix scenarios"
+            }
+        ]
+    },
+    {
         "version": "1.0.1-rc.3",
         "changes": [
             {
