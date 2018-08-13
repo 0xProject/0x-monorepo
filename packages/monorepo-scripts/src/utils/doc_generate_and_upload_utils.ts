@@ -19,6 +19,12 @@ interface ExportNameToTypedocNames {
     [exportName: string]: string[];
 }
 
+// TODO: Add the EXTERNAL_TYPE_TO_LINK mapping to the Doc JSON
+const EXTERNAL_TYPE_TO_LINK: { [externalType: string]: string } = {
+    BigNumber: 'http://mikemcl.github.io/bignumber.js',
+    Error: 'https://github.com/DefinitelyTyped/DefinitelyTyped/blob/master/types/node/v9/index.d.ts#L134',
+};
+
 export async function generateAndUploadDocsAsync(packageName: string, isStaging: boolean): Promise<void> {
     const monorepoPackages = utils.getPackages(constants.monorepoRootPath);
     const pkg = _.find(monorepoPackages, monorepoPackage => {
@@ -141,9 +147,24 @@ export async function generateAndUploadDocsAsync(packageName: string, isStaging:
         finalTypeDocOutput.children[i].children = _.compact(finalTypeDocOutput.children[i].children);
     });
 
-    // TODO: Add extra metadata for Class properties that are class instances
-    // Look in file for imports of that class, get the import name and construct a link to
-    // it's definition on another docs page.
+    const allExportedItems = _.flatten(_.values(exportPathToExportedItems));
+    const propertyName = ''; // Root has no property name
+    const referenceNamesWithDuplicates = getAllReferenceNames(propertyName, finalTypeDocOutput, []);
+    const referenceNames = _.uniq(referenceNamesWithDuplicates);
+
+    const missingReferences: string[] = [];
+    _.each(referenceNames, referenceName => {
+        if (!_.includes(allExportedItems, referenceName) && _.isUndefined(EXTERNAL_TYPE_TO_LINK[referenceName])) {
+            missingReferences.push(referenceName);
+        }
+    });
+    if (!_.isEmpty(missingReferences)) {
+        throw new Error(
+            `${packageName} package needs to export ${missingReferences.join(
+                ', ',
+            )} from it's index.ts. If any are from external dependencies, then add them to the EXTERNAL_TYPE_TO_LINK mapping.`,
+        );
+    }
 
     // Since we need additional metadata included in the doc JSON, we nest the TypeDoc JSON
     const docJson = {
@@ -171,7 +192,34 @@ export async function generateAndUploadDocsAsync(packageName: string, isStaging:
     // Remove the generated docs directory
     await execAsync(`rm -rf ${jsonFilePath}`, {
         cwd,
+
+function getAllReferenceNames(propertyName: string, node: any, referenceNames: string[]): string[] {
+    let updatedReferenceNames = referenceNames;
+    if (!_.isObject(node)) {
+        return updatedReferenceNames;
+    }
+    // Some nodes of type reference are for subtypes, which we don't want to return.
+    // We therefore filter them out.
+    const SUB_TYPE_PROPERTY_NAMES = ['inheritedFrom', 'overwrites'];
+    if (
+        !_.isUndefined(node.type) &&
+        _.isString(node.type) &&
+        node.type === 'reference' &&
+        _.isUndefined(node.typeArguments) &&
+        !_.includes(SUB_TYPE_PROPERTY_NAMES, propertyName)
+    ) {
+        return [...referenceNames, node.name];
+    }
+    _.each(node, (nodeValue, innerPropertyName) => {
+        if (_.isArray(nodeValue)) {
+            _.each(nodeValue, aNode => {
+                updatedReferenceNames = getAllReferenceNames(innerPropertyName, aNode, updatedReferenceNames);
+            });
+        } else if (_.isObject(nodeValue)) {
+            updatedReferenceNames = getAllReferenceNames(innerPropertyName, nodeValue, updatedReferenceNames);
+        }
     });
+    return updatedReferenceNames;
 }
 
 function findExportPathGivenTypedocName(
