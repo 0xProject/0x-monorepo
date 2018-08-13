@@ -216,6 +216,7 @@ export async function ecSignOrderHashAsync(
     let msgHashHex = orderHash;
     const prefixedMsgHashHex = addSignedMessagePrefix(orderHash, signerType);
     // Metamask incorrectly implements eth_sign and does not prefix the message as per the spec
+    // Source: https://github.com/MetaMask/metamask-extension/commit/a9d36860bec424dcee8db043d3e7da6a5ff5672e
     if (signerType === SignerType.Metamask) {
         msgHashHex = prefixedMsgHashHex;
     }
@@ -260,22 +261,23 @@ export function convertECSignatureToSignatureHex(ecSignature: ECSignature, signe
         ethUtil.toBuffer(ecSignature.s),
     ]);
     const signatureHex = `0x${signatureBuffer.toString('hex')}`;
+    let signatureType;
     switch (signerType) {
         case SignerType.Metamask:
         case SignerType.Ledger:
         case SignerType.Default: {
-            const signatureType = SignatureType.EthSign;
-            const signatureWithType = convertToSignatureWithType(signatureHex, signatureType);
-            return signatureWithType;
+            signatureType = SignatureType.EthSign;
+            break;
         }
         case SignerType.Trezor: {
-            const signatureType = SignatureType.Trezor;
-            const signatureWithType = convertToSignatureWithType(signatureHex, signatureType);
-            return signatureWithType;
+            signatureType = SignatureType.Trezor;
+            break;
         }
         default:
             throw new Error(`Unrecognized SignerType: ${signerType}`);
     }
+    const signatureWithType = convertToSignatureWithType(signatureHex, signatureType);
+    return signatureWithType;
 }
 /**
  * Combines the signature proof and the Signature Type.
