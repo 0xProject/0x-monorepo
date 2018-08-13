@@ -17,7 +17,7 @@ const blockchainLifecycle = new BlockchainLifecycle(web3Wrapper);
 describe('UnlimitedAllowanceToken', () => {
     let owner: string;
     let spender: string;
-    const MAX_MINT_VALUE = new BigNumber(100000000000000000000);
+    const MAX_MINT_VALUE = new BigNumber(10000000000000000000000);
     let token: DummyERC20TokenContract;
 
     before(async () => {

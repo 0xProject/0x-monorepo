@@ -11,6 +11,7 @@ import * as Exchange from '../../artifacts/Exchange.json';
 import * as ExchangeWrapper from '../../artifacts/ExchangeWrapper.json';
 import * as Forwarder from '../../artifacts/Forwarder.json';
 import * as IAssetProxy from '../../artifacts/IAssetProxy.json';
+import * as InvalidERC721Receiver from '../../artifacts/InvalidERC721Receiver.json';
 import * as MixinAuthorizable from '../../artifacts/MixinAuthorizable.json';
 import * as MultiSigWallet from '../../artifacts/MultiSigWallet.json';
 import * as MultiSigWalletWithTimeLock from '../../artifacts/MultiSigWalletWithTimeLock.json';
@@ -41,6 +42,7 @@ export const artifacts = {
     EtherToken: (EtherToken as any) as ContractArtifact,
     Forwarder: (Forwarder as any) as ContractArtifact,
     IAssetProxy: (IAssetProxy as any) as ContractArtifact,
+    InvalidERC721Receiver: (InvalidERC721Receiver as any) as ContractArtifact,
     MixinAuthorizable: (MixinAuthorizable as any) as ContractArtifact,
     MultiSigWallet: (MultiSigWallet as any) as ContractArtifact,
     MultiSigWalletWithTimeLock: (MultiSigWalletWithTimeLock as any) as ContractArtifact,
