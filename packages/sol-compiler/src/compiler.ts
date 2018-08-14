@@ -216,7 +216,7 @@ export class Compiler {
 
             for (const contractPath of input.contractsToCompile) {
                 await this._verifyAndPersistCompilationAsync(
-                    { path: contractPath },
+                    contractPath,
                     contractData[contractPath].contractName,
                     fullSolcVersion,
                     compiled,
@@ -227,19 +227,17 @@ export class Compiler {
         }
     }
     private async _verifyAndPersistCompilationAsync(
-        contractSource: { path: string },
+        contractPath: string,
         contractName: string,
         fullSolcVersion: string,
         compiled: solc.StandardOutput,
         sourceTreeHashHex: string,
         currentArtifactIfExists: ContractArtifact | void,
     ): Promise<void> {
-        const compiledData = compiled.contracts[contractSource.path][contractName];
+        const compiledData = compiled.contracts[contractPath][contractName];
         if (_.isUndefined(compiledData)) {
             throw new Error(
-                `Contract ${contractName} not found in ${
-                    contractSource.path
-                }. Please make sure your contract has the same name as it's file name`,
+                `Contract ${contractName} not found in ${contractPath}. Please make sure your contract has the same name as it's file name`,
             );
         }
         if (!_.isUndefined(compiledData.evm)) {
