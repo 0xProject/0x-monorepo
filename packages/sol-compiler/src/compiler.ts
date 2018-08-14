@@ -175,30 +175,7 @@ export class Compiler {
             },
             settings: this._compilerSettings,
         };
-        const compiled: solc.StandardOutput = JSON.parse(
-            solcInstance.compileStandardWrapper(JSON.stringify(standardInput), importPath => {
-                const sourceCodeIfExists = this._resolver.resolve(importPath);
-                return { contents: sourceCodeIfExists.source };
-            }),
-        );
-
-        if (!_.isUndefined(compiled.errors)) {
-            const SOLIDITY_WARNING = 'warning';
-            const errors = _.filter(compiled.errors, entry => entry.severity !== SOLIDITY_WARNING);
-            const warnings = _.filter(compiled.errors, entry => entry.severity === SOLIDITY_WARNING);
-            if (!_.isEmpty(errors)) {
-                errors.forEach(error => {
-                    const normalizedErrMsg = getNormalizedErrMsg(error.formattedMessage || error.message);
-                    logUtils.log(chalk.red(normalizedErrMsg));
-                });
-                process.exit(1);
-            } else {
-                warnings.forEach(warning => {
-                    const normalizedWarningMsg = getNormalizedErrMsg(warning.formattedMessage || warning.message);
-                    logUtils.log(chalk.yellow(normalizedWarningMsg));
-                });
-            }
-        }
+        const compiled: solc.StandardOutput = this._compile(solcInstance, standardInput);
         const compiledData = compiled.contracts[contractSource.path][contractName];
         if (_.isUndefined(compiledData)) {
             throw new Error(
@@ -257,6 +234,32 @@ export class Compiler {
         const currentArtifactPath = `${this._artifactsDir}/${contractName}.json`;
         await fsWrapper.writeFileAsync(currentArtifactPath, artifactString);
         logUtils.log(`${contractName} artifact saved!`);
+    }
+    private _compile(solcInstance: solc.SolcInstance, standardInput: solc.StandardInput): solc.StandardOutput {
+        const compiled: solc.StandardOutput = JSON.parse(
+            solcInstance.compileStandardWrapper(JSON.stringify(standardInput), importPath => {
+                const sourceCodeIfExists = this._resolver.resolve(importPath);
+                return { contents: sourceCodeIfExists.source };
+            }),
+        );
+        if (!_.isUndefined(compiled.errors)) {
+            const SOLIDITY_WARNING = 'warning';
+            const errors = _.filter(compiled.errors, entry => entry.severity !== SOLIDITY_WARNING);
+            const warnings = _.filter(compiled.errors, entry => entry.severity === SOLIDITY_WARNING);
+            if (!_.isEmpty(errors)) {
+                errors.forEach(error => {
+                    const normalizedErrMsg = getNormalizedErrMsg(error.formattedMessage || error.message);
+                    logUtils.log(chalk.red(normalizedErrMsg));
+                });
+                throw new Error("Compilation errors encountered");
+            } else {
+                warnings.forEach(warning => {
+                    const normalizedWarningMsg = getNormalizedErrMsg(warning.formattedMessage || warning.message);
+                    logUtils.log(chalk.yellow(normalizedWarningMsg));
+                });
+            }
+        }
+        return compiled;
     }
     /**
      * Gets the source tree hash for a file and its dependencies.
