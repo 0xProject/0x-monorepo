@@ -21,7 +21,8 @@
                     "Throw a helpful error message if truffle artifacts were generated with a different solc version than the one passed in",
                 "pr": 938
             }
-        ]
+        ],
+        "timestamp": 1534210131
     },
     {
         "version": "1.0.3",
