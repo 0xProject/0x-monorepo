@@ -1,3 +1,4 @@
+import { errorUtils } from '@0xproject/utils';
 import * as _ from 'lodash';
 
 import { DocsInfo } from '../docs_info';
@@ -14,11 +15,11 @@ import {
     Type,
     TypeDocNode,
     TypeDocType,
+    TypeDocTypes,
     TypeParameter,
     TypescriptFunction,
     TypescriptMethod,
 } from '../types';
-import { utils } from '../utils/utils';
 
 export const typeDocUtils = {
     isType(entity: TypeDocNode): boolean {
@@ -92,7 +93,13 @@ export const typeDocUtils = {
                 throw new Error('`react-docs` only supports projects with 1 exported class per file');
             }
             const isClassExport = packageDefinitionWithMergedChildren.children[0].kindString === KindString.Class;
+            const isObjectLiteralExport =
+                packageDefinitionWithMergedChildren.children[0].kindString === KindString.ObjectLiteral;
             if (isClassExport) {
+                entities = packageDefinitionWithMergedChildren.children[0].children;
+                const commentObj = packageDefinitionWithMergedChildren.children[0].comment;
+                packageComment = !_.isUndefined(commentObj) ? commentObj.shortText : packageComment;
+            } else if (isObjectLiteralExport) {
                 entities = packageDefinitionWithMergedChildren.children[0].children;
                 const commentObj = packageDefinitionWithMergedChildren.children[0].comment;
                 packageComment = !_.isUndefined(commentObj) ? commentObj.shortText : packageComment;
@@ -106,7 +113,7 @@ export const typeDocUtils = {
         });
         return docAgnosticFormat;
     },
-    _convertEntitiesToDocSection(entities: TypeDocNode[], docsInfo: DocsInfo, sectionName: string) {
+    _convertEntitiesToDocSection(entities: TypeDocNode[], docsInfo: DocsInfo, sectionName: string): DocSection {
         const docSection: DocSection = {
             comment: '',
             constructors: [],
@@ -190,7 +197,7 @@ export const typeDocUtils = {
                     break;
 
                 default:
-                    throw utils.spawnSwitchErr('kindString', entity.kindString);
+                    throw errorUtils.spawnSwitchErr('kindString', entity.kindString);
             }
         });
         return docSection;
@@ -221,9 +228,16 @@ export const typeDocUtils = {
 
         const childrenIfExist = !_.isUndefined(entity.children)
             ? _.map(entity.children, (child: TypeDocNode) => {
-                  const childTypeIfExists = !_.isUndefined(child.type)
+                  let childTypeIfExists = !_.isUndefined(child.type)
                       ? typeDocUtils._convertType(child.type, sections, sectionName, docId)
                       : undefined;
+                  if (child.kindString === KindString.Method) {
+                      childTypeIfExists = {
+                          name: child.name,
+                          typeDocType: TypeDocTypes.Reflection,
+                          method: typeDocUtils._convertMethod(child, isConstructor, sections, sectionName, docId),
+                      };
+                  }
                   const c: CustomTypeChild = {
                       name: child.name,
                       type: childTypeIfExists,
@@ -387,6 +401,7 @@ export const typeDocUtils = {
             name: entity.name,
             comment,
             isOptional,
+            defaultValue: entity.defaultValue,
             type,
         };
         return parameter;

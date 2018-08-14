@@ -1,3 +1,7 @@
+export interface SectionNameToMarkdownByVersion {
+    [version: string]: { [sectionName: string]: string };
+}
+
 export interface DocsInfoConfig {
     id: string;
     type: SupportedDocJson;
@@ -5,7 +9,7 @@ export interface DocsInfoConfig {
     packageUrl: string;
     menu: DocsMenu;
     sections: SectionsMap;
-    sectionNameToMarkdown: { [sectionName: string]: string };
+    sectionNameToMarkdownByVersion: SectionNameToMarkdownByVersion;
     visibleConstructors: string[];
     sectionNameToModulePath?: { [sectionName: string]: string[] };
     menuSubsectionToVersionWhenIntroduced?: { [sectionName: string]: string };
@@ -94,6 +98,7 @@ export enum KindString {
     Method = 'Method',
     Interface = 'Interface',
     TypeAlias = 'Type alias',
+    ObjectLiteral = 'Object literal',
     Variable = 'Variable',
     Function = 'Function',
     Enumeration = 'Enumeration',
@@ -140,6 +145,7 @@ export interface Parameter {
     comment: string;
     isOptional: boolean;
     type: Type;
+    defaultValue?: string;
 }
 
 export interface TypeParameter {

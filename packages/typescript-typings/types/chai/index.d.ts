@@ -114,6 +114,9 @@ declare namespace Chai {
         extensible: Assertion;
         sealed: Assertion;
         frozen: Assertion;
+        bignumber: Assertion;
+        // HACK: In order to comply with chai-as-promised we make eventually a `PromisedAssertion` not an `Assertion`
+        eventually: PromisedAssertion;
         oneOf(list: any[], message?: string): Assertion;
     }
 
@@ -148,7 +151,7 @@ declare namespace Chai {
     }
 
     interface NumberComparer {
-        (value: number, message?: string): Assertion;
+        (value: number | object, message?: string): Assertion;
     }
 
     interface TypeComparison {

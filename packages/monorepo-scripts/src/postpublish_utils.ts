@@ -4,13 +4,12 @@ import * as fs from 'fs';
 import * as _ from 'lodash';
 import * as path from 'path';
 import * as publishRelease from 'publish-release';
-import semverSort = require('semver-sort');
 
 import { constants } from './constants';
-import { utils } from './utils';
+import { configs } from './utils/configs';
+import { utils } from './utils/utils';
 
 const publishReleaseAsync = promisify(publishRelease);
-const githubPersonalAccessToken = process.env.GITHUB_PERSONAL_ACCESS_TOKEN_0X_JS;
 const generatedDocsDirectoryName = 'generated_docs';
 
 export interface PostpublishConfigs {
@@ -36,7 +35,7 @@ export const postpublishUtils = {
             throw new Error('version field required in package.json. Cannot publish release notes to Github.');
         }
         const postpublishConfig = _.get(packageJSON, 'config.postpublish', {});
-        const configs: PostpublishConfigs = {
+        const postpublishConfigs: PostpublishConfigs = {
             cwd,
             packageName: packageJSON.name,
             version: packageJSON.version,
@@ -50,54 +49,56 @@ export const postpublishUtils = {
                 s3StagingBucketPath: _.get(postpublishConfig, 'docPublishConfigs.s3StagingBucketPath'),
             },
         };
-        return configs;
+        return postpublishConfigs;
     },
     async runAsync(packageJSON: any, tsConfigJSON: any, cwd: string): Promise<void> {
-        const configs = this.generateConfig(packageJSON, tsConfigJSON, cwd);
-        const release = await this.publishReleaseNotesAsync(
-            configs.cwd,
-            configs.packageName,
-            configs.version,
-            configs.assets,
+        if (configs.IS_LOCAL_PUBLISH) {
+            return;
+        }
+        const postpublishConfigs = postpublishUtils.generateConfig(packageJSON, tsConfigJSON, cwd);
+        await postpublishUtils.publishReleaseNotesAsync(
+            postpublishConfigs.packageName,
+            postpublishConfigs.version,
+            postpublishConfigs.assets,
         );
         if (
-            !_.isUndefined(configs.docPublishConfigs.s3BucketPath) ||
-            !_.isUndefined(configs.docPublishConfigs.s3StagingBucketPath)
+            !_.isUndefined(postpublishConfigs.docPublishConfigs.s3BucketPath) ||
+            !_.isUndefined(postpublishConfigs.docPublishConfigs.s3StagingBucketPath)
         ) {
             utils.log('POSTPUBLISH: Release successful, generating docs...');
             await postpublishUtils.generateAndUploadDocsAsync(
-                configs.cwd,
-                configs.docPublishConfigs.fileIncludes,
-                configs.version,
-                configs.docPublishConfigs.s3BucketPath,
+                postpublishConfigs.cwd,
+                postpublishConfigs.docPublishConfigs.fileIncludes,
+                postpublishConfigs.version,
+                postpublishConfigs.docPublishConfigs.s3BucketPath,
             );
         } else {
             utils.log(`POSTPUBLISH: No S3Bucket config found for ${packageJSON.name}. Skipping doc JSON generation.`);
         }
     },
-    async publishDocsToStagingAsync(packageJSON: any, tsConfigJSON: any, cwd: string) {
-        const configs = this.generateConfig(packageJSON, tsConfigJSON, cwd);
-        if (_.isUndefined(configs.docPublishConfigs.s3StagingBucketPath)) {
+    async publishDocsToStagingAsync(packageJSON: any, tsConfigJSON: any, cwd: string): Promise<void> {
+        const postpublishConfigs = postpublishUtils.generateConfig(packageJSON, tsConfigJSON, cwd);
+        if (_.isUndefined(postpublishConfigs.docPublishConfigs.s3StagingBucketPath)) {
             utils.log('config.postpublish.docPublishConfigs.s3StagingBucketPath entry in package.json not found!');
             return;
         }
 
         utils.log('POSTPUBLISH: Generating docs...');
         await postpublishUtils.generateAndUploadDocsAsync(
-            configs.cwd,
-            configs.docPublishConfigs.fileIncludes,
-            configs.version,
-            configs.docPublishConfigs.s3StagingBucketPath,
+            postpublishConfigs.cwd,
+            postpublishConfigs.docPublishConfigs.fileIncludes,
+            postpublishConfigs.version,
+            postpublishConfigs.docPublishConfigs.s3StagingBucketPath,
         );
     },
-    async publishReleaseNotesAsync(cwd: string, packageName: string, version: string, assets: string[]): Promise<void> {
-        const notes = this.getReleaseNotes(packageName);
-        const releaseName = this.getReleaseName(packageName, version);
-        const tag = this.getTag(packageName, version);
-        const finalAssets = this.adjustAssetPaths(cwd, assets);
+    async publishReleaseNotesAsync(packageName: string, version: string, assets: string[]): Promise<void> {
+        const notes = postpublishUtils.getReleaseNotes(packageName, version);
+        const releaseName = postpublishUtils.getReleaseName(packageName, version);
+        const tag = postpublishUtils.getTag(packageName, version);
+        postpublishUtils.adjustAssetPaths(assets);
         utils.log('POSTPUBLISH: Releasing ', releaseName, '...');
-        const result = await publishReleaseAsync({
-            token: githubPersonalAccessToken,
+        await publishReleaseAsync({
+            token: constants.githubPersonalAccessToken,
             owner: '0xProject',
             repo: '0x-monorepo',
             tag,
@@ -109,9 +110,8 @@ export const postpublishUtils = {
             reuseDraftOnly: false,
             assets,
         });
-        this.updateChangelogIsPublished(packageName);
     },
-    getReleaseNotes(packageName: string) {
+    getReleaseNotes(packageName: string, version: string): string {
         const packageNameWithNamespace = packageName.replace('@0xproject/', '');
         const changelogJSONPath = path.join(
             constants.monorepoRootPath,
@@ -122,45 +122,34 @@ export const postpublishUtils = {
         const changelogJSON = fs.readFileSync(changelogJSONPath, 'utf-8');
         const changelogs = JSON.parse(changelogJSON);
         const latestLog = changelogs[0];
-        if (_.isUndefined(latestLog.isPublished)) {
-            let notes = '';
-            _.each(latestLog.changes, change => {
-                notes += `* ${change.note}`;
-                if (change.pr) {
-                    notes += ` (${change.pr})`;
-                }
-                notes += `\n`;
-            });
-            return notes;
+        // We sanity check that the version for the changelog notes we are about to publish to Github
+        // correspond to the new version of the package.
+        if (version !== latestLog.version) {
+            throw new Error('Expected CHANGELOG.json latest entry version to coincide with published version.');
         }
-        return 'N/A';
+        let notes = '';
+        _.each(latestLog.changes, change => {
+            notes += `* ${change.note}`;
+            if (change.pr) {
+                notes += ` (#${change.pr})`;
+            }
+            notes += `\n`;
+        });
+        return notes;
     },
-    updateChangelogIsPublished(packageName: string) {
-        const packageNameWithNamespace = packageName.replace('@0xproject/', '');
-        const changelogJSONPath = path.join(
-            constants.monorepoRootPath,
-            'packages',
-            packageNameWithNamespace,
-            'CHANGELOG.json',
-        );
-        const changelogJSON = fs.readFileSync(changelogJSONPath, 'utf-8');
-        const changelogs = JSON.parse(changelogJSON);
-        const latestLog = changelogs[0];
-        latestLog.isPublished = true;
-        changelogs[0] = latestLog;
-        fs.writeFileSync(changelogJSONPath, JSON.stringify(changelogs, null, '\t'));
-    },
-    getTag(packageName: string, version: string) {
+    getTag(packageName: string, version: string): string {
         return `${packageName}@${version}`;
     },
     getReleaseName(subPackageName: string, version: string): string {
         const releaseName = `${subPackageName} v${version}`;
         return releaseName;
     },
-    adjustAssetPaths(cwd: string, assets: string[]) {
+    // Asset paths should described from the monorepo root. This method prefixes
+    // the supplied path with the absolute path to the monorepo root.
+    adjustAssetPaths(assets: string[]): string[] {
         const finalAssets: string[] = [];
         _.each(assets, (asset: string) => {
-            finalAssets.push(`${cwd}/${asset}`);
+            finalAssets.push(`${constants.monorepoRootPath}/${asset}`);
         });
         return finalAssets;
     },
@@ -173,14 +162,20 @@ export const postpublishUtils = {
             // HACK: tsconfig.json needs wildcard directory endings as `/**/*`
             // but TypeDoc needs it as `/**` in order to pick up files at the root
             if (_.endsWith(includePath, '/**/*')) {
+                // tslint:disable-next-line:custom-no-magic-numbers
                 includePath = includePath.slice(0, -2);
             }
             return includePath;
         });
         return fileIncludesAdjusted;
     },
-    async generateAndUploadDocsAsync(cwd: string, fileIncludes: string[], version: string, S3BucketPath: string) {
-        const fileIncludesAdjusted = this.adjustFileIncludePaths(fileIncludes, cwd);
+    async generateAndUploadDocsAsync(
+        cwd: string,
+        fileIncludes: string[],
+        version: string,
+        S3BucketPath: string,
+    ): Promise<void> {
+        const fileIncludesAdjusted = postpublishUtils.adjustFileIncludePaths(fileIncludes, cwd);
         const projectFiles = fileIncludesAdjusted.join(' ');
         const jsonFilePath = `${cwd}/${generatedDocsDirectoryName}/index.json`;
         const result = await execAsync(

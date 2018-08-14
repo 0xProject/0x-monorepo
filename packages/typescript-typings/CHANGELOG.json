@@ -1,8 +1,162 @@
 [
     {
+        "timestamp": 1534210131,
+        "version": "1.0.4",
+        "changes": [
+            {
+                "note": "Dependencies updated"
+            }
+        ]
+    },
+    {
+        "timestamp": 1532614997,
+        "version": "1.0.3",
+        "changes": [
+            {
+                "note": "Dependencies updated"
+            }
+        ]
+    },
+    {
+        "timestamp": 1532605697,
+        "version": "1.0.2",
+        "changes": [
+            {
+                "note": "Dependencies updated"
+            }
+        ]
+    },
+    {
+        "timestamp": 1532357734,
+        "version": "1.0.1",
+        "changes": [
+            {
+                "note": "Dependencies updated"
+            }
+        ]
+    },
+    {
+        "timestamp": 1532043000,
+        "version": "1.0.0",
+        "changes": [
+            {
+                "note": "Add types for `eth-lightwallet`",
+                "pr": 775
+            },
+            {
+                "note": "Improve 'web3-provider-engine' typings",
+                "pr": 768
+            },
+            {
+                "note": "Additional error type for `ethers.js`",
+                "pr": 763
+            },
+            {
+                "note": "Add @ledgerhq typings",
+                "pr": 770
+            }
+        ]
+    },
+    {
+        "version": "0.4.3",
+        "changes": [
+            {
+                "note": "Add back ethers-contracts types for Aquaduct which relies on it",
+                "pr": 885
+            }
+        ],
+        "timestamp": 1531919263
+    },
+    {
+        "timestamp": 1529397769,
+        "version": "0.4.1",
+        "changes": [
+            {
+                "note": "Dependencies updated"
+            }
+        ]
+    },
+    {
+        "timestamp": 1529397769,
+        "version": "0.4.0",
+        "changes": [
+            {
+                "note": "Add types for `react-joyride`"
+            },
+            {
+                "note": "Add types for `react-popper`, remove types for `react-joyride`"
+            },
+            {
+                "note":
+                    "Remove types for blockies, bn.js, compare-versions, ethereumjs-abi, ethereumjs-tx, find-versions, hdkey, is-mobile, solidity-parser-antlr, xml-js as they were moved to DefinitelyTyped",
+                "pr": 641
+            }
+        ]
+    },
+    {
+        "timestamp": 1527009133,
+        "version": "0.3.2",
+        "changes": [
+            {
+                "note": "Dependencies updated"
+            }
+        ]
+    },
+    {
+        "timestamp": 1525477860,
+        "version": "0.3.1",
+        "changes": [
+            {
+                "note": "Dependencies updated"
+            }
+        ]
+    },
+    {
+        "version": "0.3.0",
+        "changes": [
+            {
+                "note": "Add types for `ethers.js`, removing `ethers-contracts`",
+                "pr": 540
+            }
+        ],
+        "timestamp": 1525428773
+    },
+    {
+        "version": "0.2.0",
+        "changes": [
+            {
+                "note": "Add types for `solc.compileStandardWrapper`",
+                "pr": 509
+            }
+        ],
+        "timestamp": 1524044013
+    },
+    {
+        "version": "0.1.0",
+        "changes": [
+            {
+                "note": "Add types for more packages",
+                "pr": 501
+            },
+            {
+                "note": "Add types for HDKey",
+                "pr": 507
+            }
+        ],
+        "timestamp": 1523462196
+    },
+    {
+        "timestamp": 1522673609,
+        "version": "0.0.3",
+        "changes": [
+            {
+                "note": "Dependencies updated"
+            }
+        ]
+    },
+    {
         "version": "0.0.2",
         "changes": [],
-        "timestamp": 1522658513,
-        "isPublished": true
+        "timestamp": 1522658513
     }
 ]

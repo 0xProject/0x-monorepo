@@ -4,22 +4,19 @@ import {
     HeaderSizes,
     MarkdownSection,
     NestedSidebarMenu,
-    SectionHeader,
     Styles,
     utils as sharedUtils,
 } from '@0xproject/react-shared';
-import { logUtils } from '@0xproject/utils';
 import * as _ from 'lodash';
 import CircularProgress from 'material-ui/CircularProgress';
 import RaisedButton from 'material-ui/RaisedButton';
 import * as React from 'react';
 import DocumentTitle = require('react-document-title');
-import { scroller } from 'react-scroll';
 import { SidebarHeader } from 'ts/components/sidebar_header';
 import { TopBar } from 'ts/components/top_bar/top_bar';
 import { Dispatcher } from 'ts/redux/dispatcher';
-import { Article, ArticlesBySection, WebsitePaths } from 'ts/types';
-import { configs } from 'ts/utils/configs';
+import { Article, ArticlesBySection } from 'ts/types';
+import { backendClient } from 'ts/utils/backend_client';
 import { constants } from 'ts/utils/constants';
 import { Translate } from 'ts/utils/translate';
 import { utils } from 'ts/utils/utils';
@@ -46,7 +43,7 @@ const styles: Styles = {
         left: 0,
         bottom: 0,
         right: 0,
-        overflowZ: 'hidden',
+        overflow: 'hidden',
         height: `calc(100vh - ${TOP_BAR_HEIGHT}px)`,
         WebkitOverflowScrolling: 'touch',
     },
@@ -68,19 +65,19 @@ export class Wiki extends React.Component<WikiProps, WikiState> {
             isHoveringSidebar: false,
         };
     }
-    public componentDidMount() {
+    public componentDidMount(): void {
         window.addEventListener('hashchange', this._onHashChanged.bind(this), false);
     }
-    public componentWillMount() {
+    public componentWillMount(): void {
         // tslint:disable-next-line:no-floating-promises
         this._fetchArticlesBySectionAsync();
     }
-    public componentWillUnmount() {
+    public componentWillUnmount(): void {
         this._isUnmounted = true;
         clearTimeout(this._wikiBackoffTimeoutId);
         window.removeEventListener('hashchange', this._onHashChanged.bind(this), false);
     }
-    public render() {
+    public render(): React.ReactNode {
         const menuSubsectionsBySection = _.isUndefined(this.state.articlesBySection)
             ? {}
             : this._getMenuSubsectionsBySection(this.state.articlesBySection);
@@ -170,7 +167,7 @@ export class Wiki extends React.Component<WikiProps, WikiState> {
         const sections = _.map(sectionNames, sectionName => this._renderSection(sectionName));
         return sections;
     }
-    private _renderSection(sectionName: string) {
+    private _renderSection(sectionName: string): React.ReactNode {
         const articles = this.state.articlesBySection[sectionName];
         const renderedArticles = _.map(articles, (article: Article) => {
             const githubLink = `${constants.URL_GITHUB_WIKI}/edit/master/${sectionName}/${article.fileName}`;
@@ -194,46 +191,39 @@ export class Wiki extends React.Component<WikiProps, WikiState> {
             );
         });
         return (
-            <div key={`section-${sectionName}`} className="py2 md-px1 sm-px2">
-                {/* <div className="pl2">
-                    <SectionHeader sectionName={sectionName} headerSize={HeaderSizes.H1} />
-                </div> */}
+            <div key={`section-${sectionName}`} className="py2 md-px1 sm-px0">
                 {renderedArticles}
             </div>
         );
     }
     private async _fetchArticlesBySectionAsync(): Promise<void> {
-        const endpoint = `${configs.BACKEND_BASE_URL}${WebsitePaths.Wiki}`;
-        const response = await fetch(endpoint);
-        if (response.status === constants.HTTP_NO_CONTENT_STATUS_CODE) {
-            // We need to backoff and try fetching again later
-            this._wikiBackoffTimeoutId = window.setTimeout(() => {
-                // tslint:disable-next-line:no-floating-promises
-                this._fetchArticlesBySectionAsync();
-            }, WIKI_NOT_READY_BACKOUT_TIMEOUT_MS);
-            return;
-        }
-        if (response.status !== 200) {
-            // TODO: Show the user an error message when the wiki fail to load
-            const errMsg = await response.text();
-            logUtils.log(`Failed to load wiki: ${response.status} ${errMsg}`);
-            return;
-        }
-        const articlesBySection = await response.json();
-        if (!this._isUnmounted) {
-            this.setState(
-                {
-                    articlesBySection,
-                },
-                async () => {
-                    await utils.onPageLoadAsync();
-                    const hash = this.props.location.hash.slice(1);
-                    sharedUtils.scrollToHash(hash, sharedConstants.SCROLL_CONTAINER_ID);
-                },
-            );
+        try {
+            const articlesBySection = await backendClient.getWikiArticlesBySectionAsync();
+            if (!this._isUnmounted) {
+                this.setState(
+                    {
+                        articlesBySection,
+                    },
+                    async () => {
+                        await utils.onPageLoadPromise;
+                        const hash = this.props.location.hash.slice(1);
+                        sharedUtils.scrollToHash(hash, sharedConstants.SCROLL_CONTAINER_ID);
+                    },
+                );
+            }
+        } catch (err) {
+            const errMsg = `${err}`;
+            if (_.includes(errMsg, `${constants.HTTP_NO_CONTENT_STATUS_CODE}`)) {
+                // We need to backoff and try fetching again later
+                this._wikiBackoffTimeoutId = window.setTimeout(() => {
+                    // tslint:disable-next-line:no-floating-promises
+                    this._fetchArticlesBySectionAsync();
+                }, WIKI_NOT_READY_BACKOUT_TIMEOUT_MS);
+                return;
+            }
         }
     }
-    private _getMenuSubsectionsBySection(articlesBySection: ArticlesBySection) {
+    private _getMenuSubsectionsBySection(articlesBySection: ArticlesBySection): { [section: string]: string[] } {
         const sectionNames = _.keys(articlesBySection);
         const menuSubsectionsBySection: { [section: string]: string[] } = {};
         for (const sectionName of sectionNames) {
@@ -243,17 +233,17 @@ export class Wiki extends React.Component<WikiProps, WikiState> {
         }
         return menuSubsectionsBySection;
     }
-    private _onSidebarHover(event: React.FormEvent<HTMLInputElement>) {
+    private _onSidebarHover(_event: React.FormEvent<HTMLInputElement>): void {
         this.setState({
             isHoveringSidebar: true,
         });
     }
-    private _onSidebarHoverOff() {
+    private _onSidebarHoverOff(): void {
         this.setState({
             isHoveringSidebar: false,
         });
     }
-    private _onHashChanged(event: any) {
+    private _onHashChanged(_event: any): void {
         const hash = window.location.hash.slice(1);
         sharedUtils.scrollToHash(hash, sharedConstants.SCROLL_CONTAINER_ID);
     }

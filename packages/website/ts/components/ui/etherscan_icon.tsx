@@ -2,7 +2,6 @@ import { colors, EtherscanLinkSuffixes, utils as sharedUtils } from '@0xproject/
 import * as _ from 'lodash';
 import * as React from 'react';
 import ReactTooltip = require('react-tooltip');
-import { utils } from 'ts/utils/utils';
 
 interface EtherScanIconProps {
     addressOrTxHash: string;
@@ -35,6 +34,6 @@ export const EtherScanIcon = (props: EtherScanIconProps) => {
     );
 };
 
-function renderIcon() {
+function renderIcon(): React.ReactNode {
     return <i style={{ color: colors.amber600 }} className="zmdi zmdi-open-in-new" />;
 }

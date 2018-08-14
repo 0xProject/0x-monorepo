@@ -6,20 +6,23 @@ import Menu from 'material-ui/Menu';
 import MenuItem from 'material-ui/MenuItem';
 import * as React from 'react';
 import { Link } from 'react-router-dom';
-import ReactTooltip = require('react-tooltip');
 import { Blockchain } from 'ts/blockchain';
-import { PortalMenu } from 'ts/components/portal_menu';
-import { SidebarHeader } from 'ts/components/sidebar_header';
+import { DrawerMenu } from 'ts/components/portal/drawer_menu';
 import { ProviderDisplay } from 'ts/components/top_bar/provider_display';
 import { TopBarMenuItem } from 'ts/components/top_bar/top_bar_menu_item';
+import { Container } from 'ts/components/ui/container';
 import { DropDown } from 'ts/components/ui/drop_down';
-import { Identicon } from 'ts/components/ui/identicon';
 import { Dispatcher } from 'ts/redux/dispatcher';
-import { Deco, Key, ProviderType, WebsitePaths } from 'ts/types';
+import { Deco, Key, ProviderType, WebsiteLegacyPaths, WebsitePaths } from 'ts/types';
 import { constants } from 'ts/utils/constants';
 import { Translate } from 'ts/utils/translate';
 
-interface TopBarProps {
+export enum TopBarDisplayType {
+    Default,
+    Expanded,
+}
+
+export interface TopBarProps {
     userAddress?: string;
     networkId?: number;
     injectedProviderName?: string;
@@ -34,12 +37,15 @@ interface TopBarProps {
     availableDocVersions?: string[];
     menu?: DocsMenu;
     menuSubsectionsBySection?: MenuSubsectionsBySection;
-    shouldFullWidth?: boolean;
+    displayType?: TopBarDisplayType;
     docsInfo?: DocsInfo;
     style?: React.CSSProperties;
     isNightVersion?: boolean;
     onVersionSelected?: (semver: string) => void;
     sidebarHeader?: React.ReactNode;
+    maxWidth?: number;
+    paddingLeft?: number;
+    paddingRight?: number;
 }
 
 interface TopBarState {
@@ -47,22 +53,13 @@ interface TopBarState {
 }
 
 const styles: Styles = {
-    address: {
-        marginRight: 12,
-        overflow: 'hidden',
-        paddingTop: 4,
-        textOverflow: 'ellipsis',
-        whiteSpace: 'nowrap',
-        width: 70,
-    },
     topBar: {
-        backgroundcolor: colors.white,
-        height: 59,
+        backgroundColor: colors.white,
         width: '100%',
         position: 'relative',
         top: 0,
-        zIndex: 1100,
         paddingBottom: 1,
+        zIndex: 1,
     },
     bottomBar: {
         boxShadow: 'rgba(0, 0, 0, 0.187647) 0px 1px 3px',
@@ -72,28 +69,46 @@ const styles: Styles = {
         color: colors.darkestGrey,
         paddingTop: 6,
         paddingBottom: 6,
-        marginTop: 17,
         cursor: 'pointer',
         fontWeight: 400,
     },
 };
 
+const DEFAULT_HEIGHT = 68;
+const EXPANDED_HEIGHT = 75;
+
 export class TopBar extends React.Component<TopBarProps, TopBarState> {
     public static defaultProps: Partial<TopBarProps> = {
-        shouldFullWidth: false,
+        displayType: TopBarDisplayType.Default,
         style: {},
         isNightVersion: false,
+        paddingLeft: 20,
+        paddingRight: 20,
     };
+    public static heightForDisplayType(displayType: TopBarDisplayType): number {
+        const result = displayType === TopBarDisplayType.Expanded ? EXPANDED_HEIGHT : DEFAULT_HEIGHT;
+        return result + 1;
+    }
     constructor(props: TopBarProps) {
         super(props);
         this.state = {
             isDrawerOpen: false,
         };
     }
-    public render() {
+    public componentWillReceiveProps(nextProps: TopBarProps): void {
+        if (nextProps.location.pathname !== this.props.location.pathname) {
+            this.setState({
+                isDrawerOpen: false,
+            });
+        }
+    }
+    public render(): React.ReactNode {
         const isNightVersion = this.props.isNightVersion;
-        const isFullWidthPage = this.props.shouldFullWidth;
-        const parentClassNames = `flex mx-auto ${isFullWidthPage ? 'pl2' : 'max-width-4'}`;
+        const isExpandedDisplayType = this.props.displayType === TopBarDisplayType.Expanded;
+        const parentClassNames = !isExpandedDisplayType
+            ? 'flex mx-auto items-center max-width-4'
+            : 'flex mx-auto items-center';
+        const height = isExpandedDisplayType ? EXPANDED_HEIGHT : DEFAULT_HEIGHT;
         const developerSectionMenuItems = [
             <Link key="subMenuItem-zeroEx" to={WebsitePaths.ZeroExJs} className="text-decoration-none">
                 <MenuItem style={{ fontSize: styles.menuItem.fontSize }} primaryText="0x.js" />
@@ -139,16 +154,22 @@ export class TopBar extends React.Component<TopBarProps, TopBarState> {
                     primaryText={this.props.translate.get(Key.Web3Wrapper, Deco.CapWords)}
                 />
             </Link>,
-            <Link key="subMenuItem-deployer" to={WebsitePaths.Deployer} className="text-decoration-none">
+            <Link key="subMenuItem-sol-compiler" to={WebsitePaths.SolCompiler} className="text-decoration-none">
                 <MenuItem
                     style={{ fontSize: styles.menuItem.fontSize }}
-                    primaryText={this.props.translate.get(Key.Deployer, Deco.CapWords)}
+                    primaryText={this.props.translate.get(Key.SolCompiler, Deco.CapWords)}
                 />
             </Link>,
             <Link key="subMenuItem-sol-cov" to={WebsitePaths.SolCov} className="text-decoration-none">
                 <MenuItem
                     style={{ fontSize: styles.menuItem.fontSize }}
                     primaryText={this.props.translate.get(Key.SolCov, Deco.CapWords)}
+                />
+            </Link>,
+            <Link key="subMenuItem-ethereum-types" to={WebsitePaths.EthereumTypes} className="text-decoration-none">
+                <MenuItem
+                    style={{ fontSize: styles.menuItem.fontSize }}
+                    primaryText={this.props.translate.get(Key.EthereumTypes, Deco.CapWords)}
                 />
             </Link>,
             <a
@@ -172,16 +193,17 @@ export class TopBar extends React.Component<TopBarProps, TopBarState> {
             </a>,
         ];
         const bottomBorderStyle = this._shouldDisplayBottomBar() ? styles.bottomBar : {};
-        const fullWidthClasses = isFullWidthPage ? 'pr4' : '';
+        const fullWidthClasses = isExpandedDisplayType ? 'pr4' : '';
         const logoUrl = isNightVersion ? '/images/protocol_logo_white.png' : '/images/protocol_logo_black.png';
-        const menuClasses = `col col-${isFullWidthPage ? '4' : '5'} ${fullWidthClasses} lg-pr0 md-pr2 sm-hide xs-hide`;
+        const menuClasses = `col col-${
+            isExpandedDisplayType ? '4' : '5'
+        } ${fullWidthClasses} lg-pr0 md-pr2 sm-hide xs-hide`;
         const menuIconStyle = {
             fontSize: 25,
             color: isNightVersion ? 'white' : 'black',
             cursor: 'pointer',
-            paddingTop: 16,
         };
-        const hoverActiveNode = (
+        const activeNode = (
             <div className="flex relative" style={{ color: menuIconStyle.color }}>
                 <div style={{ paddingRight: 10 }}>{this.props.translate.get(Key.Developers, Deco.Cap)}</div>
                 <div className="absolute" style={{ paddingLeft: 3, right: 3, top: -2 }}>
@@ -191,20 +213,26 @@ export class TopBar extends React.Component<TopBarProps, TopBarState> {
         );
         const popoverContent = <Menu style={{ color: colors.darkGrey }}>{developerSectionMenuItems}</Menu>;
         return (
-            <div style={{ ...styles.topBar, ...bottomBorderStyle, ...this.props.style }} className="pb1">
-                <div className={parentClassNames}>
-                    <div className="col col-2 sm-pl2 md-pl2 lg-pl0" style={{ paddingTop: 15 }}>
-                        <Link to={`${WebsitePaths.Home}`} className="text-decoration-none">
-                            <img src={logoUrl} height="30" />
-                        </Link>
-                    </div>
-                    <div className={`col col-${isFullWidthPage ? '8' : '9'} lg-hide md-hide`} />
-                    <div className={`col col-${isFullWidthPage ? '6' : '5'} sm-hide xs-hide`} />
+            <div
+                style={{ ...styles.topBar, ...bottomBorderStyle, ...this.props.style, ...{ height } }}
+                className="pb1 flex items-center"
+            >
+                <Container
+                    className={parentClassNames}
+                    width="100%"
+                    maxWidth={this.props.maxWidth}
+                    paddingLeft={this.props.paddingLeft}
+                    paddingRight={this.props.paddingRight}
+                >
+                    <Link to={`${WebsitePaths.Home}`} className="text-decoration-none">
+                        <img src={logoUrl} height="30" />
+                    </Link>
+                    <div className="flex-auto" />
                     {!this._isViewingPortal() && (
                         <div className={menuClasses}>
-                            <div className="flex justify-between">
+                            <div className="flex items-center justify-between">
                                 <DropDown
-                                    hoverActiveNode={hoverActiveNode}
+                                    activeNode={activeNode}
                                     popoverContent={popoverContent}
                                     anchorOrigin={{ horizontal: 'middle', vertical: 'bottom' }}
                                     targetOrigin={{ horizontal: 'middle', vertical: 'top' }}
@@ -232,19 +260,19 @@ export class TopBar extends React.Component<TopBarProps, TopBarState> {
                                     isExternal={false}
                                 />
                                 <TopBarMenuItem
-                                    title={this.props.translate.get(Key.PortalDApp, Deco.CapWords)}
+                                    title={this.props.translate.get(Key.TradeCallToAction, Deco.Cap)}
                                     path={`${WebsitePaths.Portal}`}
                                     isPrimary={true}
                                     style={styles.menuItem}
-                                    className={`${isFullWidthPage && 'md-hide'}`}
+                                    className={`${isExpandedDisplayType && 'md-hide'}`}
                                     isNightVersion={isNightVersion}
                                     isExternal={false}
                                 />
                             </div>
                         </div>
                     )}
-                    {this.props.blockchainIsLoaded && (
-                        <div className="sm-hide xs-hide col col-5">
+                    {this._isViewingPortal() && (
+                        <div className="sm-hide xs-hide">
                             <ProviderDisplay
                                 dispatcher={this.props.dispatcher}
                                 userAddress={this.props.userAddress}
@@ -253,20 +281,40 @@ export class TopBar extends React.Component<TopBarProps, TopBarState> {
                                 providerType={this.props.providerType}
                                 onToggleLedgerDialog={this.props.onToggleLedgerDialog}
                                 blockchain={this.props.blockchain}
+                                blockchainIsLoaded={this.props.blockchainIsLoaded}
                             />
                         </div>
                     )}
-                    <div className={`col ${isFullWidthPage ? 'col-2 pl2' : 'col-1'} md-hide lg-hide`}>
+                    <div className={'md-hide lg-hide'}>
                         <div style={menuIconStyle}>
                             <i className="zmdi zmdi-menu" onClick={this._onMenuButtonClick.bind(this)} />
                         </div>
                     </div>
-                </div>
-                {this._renderDrawer()}
+                </Container>
+                {this._isViewingPortal() ? this._renderPortalDrawer() : this._renderDrawer()}
             </div>
         );
     }
-    private _renderDrawer() {
+    private _renderPortalDrawer(): React.ReactNode {
+        return (
+            <Drawer
+                open={this.state.isDrawerOpen}
+                docked={false}
+                openSecondary={true}
+                onRequestChange={this._onMenuButtonClick.bind(this)}
+            >
+                <DrawerMenu
+                    selectedPath={this.props.location.pathname}
+                    userAddress={this.props.userAddress}
+                    injectedProviderName={this.props.injectedProviderName}
+                    providerType={this.props.providerType}
+                    blockchainIsLoaded={this.props.blockchainIsLoaded}
+                    blockchain={this.props.blockchain}
+                />
+            </Drawer>
+        );
+    }
+    private _renderDrawer(): React.ReactNode {
         return (
             <Drawer
                 open={this.state.isDrawerOpen}
@@ -275,7 +323,6 @@ export class TopBar extends React.Component<TopBarProps, TopBarState> {
                 onRequestChange={this._onMenuButtonClick.bind(this)}
             >
                 <div className="clearfix">
-                    {this._renderPortalMenu()}
                     {this._renderDocsMenu()}
                     {this._renderWiki()}
                     <div className="pl1 py1 mt3" style={{ backgroundColor: colors.lightGrey }}>
@@ -316,10 +363,10 @@ export class TopBar extends React.Component<TopBarProps, TopBarState> {
                             </MenuItem>
                         </Link>
                     )}
-                    {!this._isViewingDeployerDocs() && (
-                        <Link to={WebsitePaths.Deployer} className="text-decoration-none">
+                    {!this._isViewingSolCompilerDocs() && (
+                        <Link to={WebsitePaths.SolCompiler} className="text-decoration-none">
                             <MenuItem className="py2">
-                                {this.props.translate.get(Key.Deployer, Deco.Cap)}{' '}
+                                {this.props.translate.get(Key.SolCompiler, Deco.Cap)}{' '}
                                 {this.props.translate.get(Key.Docs, Deco.Cap)}
                             </MenuItem>
                         </Link>
@@ -344,6 +391,14 @@ export class TopBar extends React.Component<TopBarProps, TopBarState> {
                         <Link to={WebsitePaths.Subproviders} className="text-decoration-none">
                             <MenuItem className="py2">
                                 {this.props.translate.get(Key.Subproviders, Deco.Cap)}{' '}
+                                {this.props.translate.get(Key.Docs, Deco.Cap)}
+                            </MenuItem>
+                        </Link>
+                    )}
+                    {!this._isViewingEthereumTypesDocs() && (
+                        <Link to={WebsitePaths.EthereumTypes} className="text-decoration-none">
+                            <MenuItem className="py2">
+                                {this.props.translate.get(Key.EthereumTypes, Deco.Cap)}{' '}
                                 {this.props.translate.get(Key.Docs, Deco.Cap)}
                             </MenuItem>
                         </Link>
@@ -378,7 +433,7 @@ export class TopBar extends React.Component<TopBarProps, TopBarState> {
             (!this._isViewing0xjsDocs() &&
                 !this._isViewingSmartContractsDocs() &&
                 !this._isViewingWeb3WrapperDocs() &&
-                !this._isViewingDeployerDocs() &&
+                !this._isViewingSolCompilerDocs() &&
                 !this._isViewingJsonSchemasDocs() &&
                 !this._isViewingSolCovDocs() &&
                 !this._isViewingSubprovidersDocs() &&
@@ -387,8 +442,6 @@ export class TopBar extends React.Component<TopBarProps, TopBarState> {
         ) {
             return undefined;
         }
-
-        const sectionTitle = `${this.props.docsInfo.displayName} Docs`;
         return (
             <div className="lg-hide md-hide">
                 <NestedSidebarMenu
@@ -421,85 +474,70 @@ export class TopBar extends React.Component<TopBarProps, TopBarState> {
             </div>
         );
     }
-    private _renderPortalMenu(): React.ReactNode {
-        if (!this._isViewingPortal()) {
-            return undefined;
-        }
-
-        return (
-            <div className="lg-hide md-hide">
-                <div className="pl1 py1" style={{ backgroundColor: colors.lightGrey }}>
-                    {this.props.translate.get(Key.PortalDApp, Deco.CapWords)}
-                </div>
-                <PortalMenu menuItemStyle={{ color: 'black' }} onClick={this._onMenuButtonClick.bind(this)} />
-            </div>
-        );
-    }
-    private _renderUser() {
-        const userAddress = this.props.userAddress;
-        const identiconDiameter = 26;
-        return (
-            <div className="flex right lg-pr0 md-pr2 sm-pr2" style={{ paddingTop: 16 }}>
-                <div style={styles.address} data-tip={true} data-for="userAddressTooltip">
-                    {!_.isEmpty(userAddress) ? userAddress : ''}
-                </div>
-                <ReactTooltip id="userAddressTooltip">{userAddress}</ReactTooltip>
-                <div>
-                    <Identicon address={userAddress} diameter={identiconDiameter} />
-                </div>
-            </div>
-        );
-    }
-    private _onMenuButtonClick() {
+    private _onMenuButtonClick(): void {
         this.setState({
             isDrawerOpen: !this.state.isDrawerOpen,
         });
     }
-    private _isViewingPortal() {
+    private _isViewingPortal(): boolean {
         return _.includes(this.props.location.pathname, WebsitePaths.Portal);
     }
-    private _isViewingFAQ() {
+    private _isViewingDocs(): boolean {
+        return _.includes(this.props.location.pathname, WebsitePaths.Docs);
+    }
+    private _isViewingFAQ(): boolean {
         return _.includes(this.props.location.pathname, WebsitePaths.FAQ);
     }
-    private _isViewing0xjsDocs() {
-        return _.includes(this.props.location.pathname, WebsitePaths.ZeroExJs);
+    private _isViewing0xjsDocs(): boolean {
+        return (
+            _.includes(this.props.location.pathname, WebsitePaths.ZeroExJs) ||
+            _.includes(this.props.location.pathname, WebsiteLegacyPaths.ZeroExJs)
+        );
     }
-    private _isViewingConnectDocs() {
+    private _isViewingConnectDocs(): boolean {
         return _.includes(this.props.location.pathname, WebsitePaths.Connect);
     }
-    private _isViewingSmartContractsDocs() {
+    private _isViewingSmartContractsDocs(): boolean {
         return _.includes(this.props.location.pathname, WebsitePaths.SmartContracts);
     }
-    private _isViewingWeb3WrapperDocs() {
-        return _.includes(this.props.location.pathname, WebsitePaths.Web3Wrapper);
+    private _isViewingWeb3WrapperDocs(): boolean {
+        return (
+            _.includes(this.props.location.pathname, WebsitePaths.Web3Wrapper) ||
+            _.includes(this.props.location.pathname, WebsiteLegacyPaths.Web3Wrapper)
+        );
     }
-    private _isViewingDeployerDocs() {
-        return _.includes(this.props.location.pathname, WebsitePaths.Deployer);
+    private _isViewingSolCompilerDocs(): boolean {
+        return _.includes(this.props.location.pathname, WebsitePaths.SolCompiler);
     }
-    private _isViewingJsonSchemasDocs() {
+    private _isViewingJsonSchemasDocs(): boolean {
         return _.includes(this.props.location.pathname, WebsitePaths.JSONSchemas);
     }
-    private _isViewingSolCovDocs() {
+    private _isViewingSolCovDocs(): boolean {
         return _.includes(this.props.location.pathname, WebsitePaths.SolCov);
     }
-    private _isViewingSubprovidersDocs() {
+    private _isViewingSubprovidersDocs(): boolean {
         return _.includes(this.props.location.pathname, WebsitePaths.Subproviders);
     }
-    private _isViewingWiki() {
+    private _isViewingEthereumTypesDocs(): boolean {
+        return _.includes(this.props.location.pathname, WebsitePaths.EthereumTypes);
+    }
+    private _isViewingWiki(): boolean {
         return _.includes(this.props.location.pathname, WebsitePaths.Wiki);
     }
-    private _shouldDisplayBottomBar() {
+    private _shouldDisplayBottomBar(): boolean {
         return (
             this._isViewingWiki() ||
-            this._isViewing0xjsDocs() ||
             this._isViewingFAQ() ||
+            this._isViewingDocs() ||
+            this._isViewing0xjsDocs() ||
             this._isViewingSmartContractsDocs() ||
             this._isViewingWeb3WrapperDocs() ||
-            this._isViewingDeployerDocs() ||
+            this._isViewingSolCompilerDocs() ||
             this._isViewingJsonSchemasDocs() ||
             this._isViewingSolCovDocs() ||
             this._isViewingSubprovidersDocs() ||
-            this._isViewingConnectDocs()
+            this._isViewingConnectDocs() ||
+            this._isViewingPortal()
         );
     }
 } // tslint:disable:max-file-line-count

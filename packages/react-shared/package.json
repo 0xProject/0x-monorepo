@@ -1,13 +1,16 @@
 {
     "name": "@0xproject/react-shared",
-    "version": "0.1.0",
+    "version": "1.0.6",
+    "engines": {
+        "node": ">=6.12"
+    },
     "description": "0x shared react components",
     "main": "lib/index.js",
     "types": "lib/index.d.ts",
     "scripts": {
-        "lint": "tslint --project . 'src/**/*.ts' 'src/**/*.tsx'",
+        "lint": "tslint --project .",
         "build": "tsc && copyfiles -u 2 './lib/monorepo_scripts/**/*' ./scripts",
-        "build:watch": "tsc -w",
+        "watch_without_deps": "tsc -w",
         "clean": "shx rm -rf lib scripts",
         "manual:postpublish": "yarn build; node ./scripts/postpublish.js"
     },
@@ -22,24 +25,26 @@
         "url": "https://github.com/0xProject/0x-monorepo.git"
     },
     "devDependencies": {
-        "@0xproject/dev-utils": "^0.3.3",
-        "@0xproject/monorepo-scripts": "^0.1.15",
-        "@0xproject/tslint-config": "^0.4.13",
+        "@0xproject/dev-utils": "^1.0.4",
+        "@0xproject/monorepo-scripts": "^1.0.5",
+        "@0xproject/tslint-config": "^1.0.5",
         "copyfiles": "^1.2.0",
+        "make-promises-safe": "^1.1.0",
         "shx": "^0.2.2",
         "tslint": "^5.9.1",
-        "typescript": "2.7.1"
+        "typescript": "2.9.2"
     },
     "dependencies": {
+        "@types/is-mobile": "0.3.0",
         "@types/lodash": "4.14.104",
         "@types/material-ui": "0.18.0",
         "@types/node": "^8.0.53",
-        "@types/react": "^16.0.34",
-        "@types/react-dom": "^16.0.3",
+        "@types/react": "*",
+        "@types/react-dom": "*",
         "@types/react-scroll": "0.0.31",
         "basscss": "^8.0.3",
         "is-mobile": "^0.2.2",
-        "lodash": "^4.17.4",
+        "lodash": "^4.17.5",
         "material-ui": "^0.17.1",
         "react": "15.6.1",
         "react-dom": "15.6.1",

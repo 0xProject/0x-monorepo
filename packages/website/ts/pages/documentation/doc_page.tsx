@@ -1,5 +1,4 @@
-import { DocAgnosticFormat, DocsInfo, Documentation, DoxityDocObj } from '@0xproject/react-docs';
-import { MenuSubsectionsBySection } from '@0xproject/react-shared';
+import { DocAgnosticFormat, DocsInfo, Documentation } from '@0xproject/react-docs';
 import findVersions = require('find-versions');
 import * as _ from 'lodash';
 import * as React from 'react';
@@ -8,14 +7,13 @@ import semverSort = require('semver-sort');
 import { SidebarHeader } from 'ts/components/sidebar_header';
 import { TopBar } from 'ts/components/top_bar/top_bar';
 import { Dispatcher } from 'ts/redux/dispatcher';
-import { DocPackages, Environments } from 'ts/types';
-import { configs } from 'ts/utils/configs';
+import { DocPackages } from 'ts/types';
 import { constants } from 'ts/utils/constants';
 import { docUtils } from 'ts/utils/doc_utils';
 import { Translate } from 'ts/utils/translate';
 import { utils } from 'ts/utils/utils';
 
-const isDevelopment = configs.ENVIRONMENT === Environments.DEVELOPMENT;
+const isDevelopmentOrStaging = utils.isDevelopment() || utils.isStaging();
 const DEFAULT_ICON = 'docs.png';
 const ZERO_EX_JS_VERSION_MISSING_TOPLEVEL_PATH = '0.32.4';
 
@@ -30,10 +28,12 @@ const docIdToSubpackageName: { [id: string]: string } = {
     [DocPackages.Connect]: 'connect',
     [DocPackages.SmartContracts]: 'contracts',
     [DocPackages.Web3Wrapper]: 'web3-wrapper',
-    [DocPackages.Deployer]: 'deployer',
+    [DocPackages.SolCompiler]: 'sol-compiler',
     [DocPackages.JSONSchemas]: 'json-schemas',
     [DocPackages.SolCov]: 'sol-cov',
     [DocPackages.Subproviders]: 'subproviders',
+    [DocPackages.OrderUtils]: 'order-utils',
+    [DocPackages.EthereumTypes]: 'ethereum-types',
 };
 
 export interface DocPageProps {
@@ -58,7 +58,7 @@ export class DocPage extends React.Component<DocPageProps, DocPageState> {
             docAgnosticFormat: undefined,
         };
     }
-    public componentWillMount() {
+    public componentWillMount(): void {
         const pathName = this.props.location.pathname;
         const lastSegment = pathName.substr(pathName.lastIndexOf('/') + 1);
         const versions = findVersions(lastSegment);
@@ -66,10 +66,10 @@ export class DocPage extends React.Component<DocPageProps, DocPageState> {
         // tslint:disable-next-line:no-floating-promises
         this._fetchJSONDocsFireAndForgetAsync(preferredVersionIfExists);
     }
-    public componentWillUnmount() {
+    public componentWillUnmount(): void {
         this._isUnmounted = true;
     }
-    public render() {
+    public render(): React.ReactNode {
         const menuSubsectionsBySection = _.isUndefined(this.state.docAgnosticFormat)
             ? {}
             : this.props.docsInfo.getMenuSubsectionsBySection(this.state.docAgnosticFormat);
@@ -106,7 +106,9 @@ export class DocPage extends React.Component<DocPageProps, DocPageState> {
     }
     private async _fetchJSONDocsFireAndForgetAsync(preferredVersionIfExists?: string): Promise<void> {
         const folderName = docIdToSubpackageName[this.props.docsInfo.id];
-        const docBucketRoot = isDevelopment ? constants.S3_STAGING_DOC_BUCKET_ROOT : constants.S3_DOC_BUCKET_ROOT;
+        const docBucketRoot = isDevelopmentOrStaging
+            ? constants.S3_STAGING_DOC_BUCKET_ROOT
+            : constants.S3_DOC_BUCKET_ROOT;
         const versionToFilePath = await docUtils.getVersionToFilePathAsync(docBucketRoot, folderName);
         const versions = _.keys(versionToFilePath);
         this.props.dispatcher.updateAvailableDocVersions(versions);
@@ -132,7 +134,7 @@ export class DocPage extends React.Component<DocPageProps, DocPageState> {
             });
         }
     }
-    private _getSourceUrl() {
+    private _getSourceUrl(): string {
         const url = this.props.docsInfo.packageUrl;
         let pkg = docIdToSubpackageName[this.props.docsInfo.id];
         let tagPrefix = pkg;
@@ -152,7 +154,7 @@ export class DocPage extends React.Component<DocPageProps, DocPageState> {
         const sourceUrl = `${url}/blob/${tagPrefix}%40${this.props.docsVersion}/packages${pkg}`;
         return sourceUrl;
     }
-    private _onVersionSelected(semver: string) {
+    private _onVersionSelected(semver: string): void {
         let path = window.location.pathname;
         const lastChar = path[path.length - 1];
         if (_.isFinite(_.parseInt(lastChar))) {

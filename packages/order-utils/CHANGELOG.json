@@ -1,0 +1,153 @@
+[
+    {
+        "version": "1.0.1-rc.3",
+        "changes": [
+            {
+                "pr": 914,
+                "note":
+                    "Update ecSignOrderHashAsync to return signature string with signature type byte. Removes messagePrefixOpts."
+            },
+            {
+                "note":
+                    "Added a synchronous `createOrder` method in `orderFactory`, updated public interfaces to support some optional parameters",
+                "pr": 936
+            },
+            {
+                "note": "Added marketUtils",
+                "pr": 937
+            },
+            {
+                "note": "Dependencies updated"
+            }
+        ],
+        "timestamp": 1534210131
+    },
+    {
+        "version": "1.0.1-rc.2",
+        "changes": [
+            {
+                "note": "Dependencies updated"
+            }
+        ],
+        "timestamp": 1532619515
+    },
+    {
+        "version": "1.0.1-rc.1",
+        "changes": [
+            {
+                "note": "Dependencies updated"
+            }
+        ],
+        "timestamp": 1532605697
+    },
+    {
+        "version": "1.0.0",
+        "changes": [
+            {
+                "note": "Dependencies updated"
+            }
+        ],
+        "timestamp": 1532357734
+    },
+    {
+        "version": "1.0.0-rc.2",
+        "changes": [
+            {
+                "note":
+                    "Upgrade ethereumjs-abi dep including a fix so that addresses starting with 0 are properly decoded by `decodeERC20AssetData`"
+            }
+        ],
+        "timestamp": 1532357734
+    },
+    {
+        "timestamp": 1532043000,
+        "version": "1.0.0-rc.1",
+        "changes": [
+            {
+                "note": "Refactor to work with V2 of 0x protocol",
+                "pr": 636
+            },
+            {
+                "note": "Export parseECSignature method",
+                "pr": 684
+            },
+            {
+                "note": "Handle Typed Arrays when hashing data",
+                "pr": 894
+            }
+        ]
+    },
+    {
+        "timestamp": 1531919263,
+        "version": "0.0.9",
+        "changes": [
+            {
+                "note": "Dependencies updated"
+            }
+        ]
+    },
+    {
+        "timestamp": 1531149657,
+        "version": "0.0.8",
+        "changes": [
+            {
+                "note": "Dependencies updated"
+            }
+        ]
+    },
+    {
+        "timestamp": 1529397769,
+        "version": "0.0.7",
+        "changes": [
+            {
+                "note": "Dependencies updated"
+            }
+        ]
+    },
+    {
+        "timestamp": 1527616612,
+        "version": "0.0.6",
+        "changes": [
+            {
+                "note": "Dependencies updated"
+            }
+        ]
+    },
+    {
+        "version": "0.0.5",
+        "changes": [
+            {
+                "note":
+                    "Add orderStateUtils, a module for computing order state needed to decide if an order is still valid"
+            }
+        ],
+        "timestamp": 1527008794
+    },
+    {
+        "timestamp": 1525477860,
+        "version": "0.0.4",
+        "changes": [
+            {
+                "note": "Dependencies updated"
+            }
+        ]
+    },
+    {
+        "timestamp": 1525453812,
+        "version": "0.0.3",
+        "changes": [
+            {
+                "note": "Dependencies updated"
+            }
+        ]
+    },
+    {
+        "timestamp": 1525428773,
+        "version": "0.0.2",
+        "changes": [
+            {
+                "note": "Dependencies updated"
+            }
+        ]
+    }
+]

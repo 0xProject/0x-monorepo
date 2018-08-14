@@ -1,4 +1,3 @@
-import { ZeroEx } from '0x.js';
 import { colors } from '@0xproject/react-shared';
 import { BigNumber } from '@0xproject/utils';
 import * as _ from 'lodash';
@@ -6,10 +5,9 @@ import Dialog from 'material-ui/Dialog';
 import FlatButton from 'material-ui/FlatButton';
 import * as React from 'react';
 import { Blockchain } from 'ts/blockchain';
-import { EthAmountInput } from 'ts/components/inputs/eth_amount_input';
 import { TokenAmountInput } from 'ts/components/inputs/token_amount_input';
+import { EthAmountInput } from 'ts/containers/inputs/eth_amount_input';
 import { Side, Token } from 'ts/types';
-import { constants } from 'ts/utils/constants';
 
 interface EthWethConversionDialogProps {
     blockchain: Blockchain;
@@ -20,7 +18,7 @@ interface EthWethConversionDialogProps {
     onCancelled: () => void;
     isOpen: boolean;
     token: Token;
-    etherBalanceInWei: BigNumber;
+    etherBalanceInWei?: BigNumber;
     lastForceTokenStateRefetch: number;
 }
 
@@ -47,20 +45,20 @@ export class EthWethConversionDialog extends React.Component<
             ethTokenBalance: new BigNumber(0),
         };
     }
-    public componentWillMount() {
+    public componentWillMount(): void {
         // tslint:disable-next-line:no-floating-promises
         this._fetchEthTokenBalanceAsync();
     }
-    public componentWillUnmount() {
+    public componentWillUnmount(): void {
         this._isUnmounted = true;
     }
-    public render() {
+    public render(): React.ReactNode {
         const convertDialogActions = [
             <FlatButton key="cancel" label="Cancel" onTouchTap={this._onCancel.bind(this)} />,
             <FlatButton key="convert" label="Convert" primary={true} onTouchTap={this._onConvertClick.bind(this)} />,
         ];
         const title = this.props.direction === Side.Deposit ? 'Wrap ETH' : 'Unwrap WETH';
-        return (
+        return !_.isUndefined(this.props.etherBalanceInWei) ? (
             <Dialog
                 title={title}
                 titleStyle={{ fontWeight: 100 }}
@@ -70,15 +68,14 @@ export class EthWethConversionDialog extends React.Component<
             >
                 {this._renderConversionDialogBody()}
             </Dialog>
-        );
+        ) : null;
     }
-    private _renderConversionDialogBody() {
+    private _renderConversionDialogBody(): React.ReactNode {
         const explanation =
             this.props.direction === Side.Deposit
                 ? 'Convert your Ether into a tokenized, tradable form.'
                 : "Convert your Wrapped Ether back into it's native form.";
         const isWrappedVersion = this.props.direction === Side.Receive;
-        const etherBalanceInEth = ZeroEx.toUnitAmount(this.props.etherBalanceInWei, constants.DECIMAL_PLACES_ETH);
         return (
             <div>
                 <div className="pb2">{explanation}</div>
@@ -103,16 +100,13 @@ export class EthWethConversionDialog extends React.Component<
                                 shouldCheckAllowance={false}
                                 onChange={this._onValueChange.bind(this)}
                                 amount={this.state.value}
-                                onVisitBalancesPageClick={this.props.onCancelled}
                             />
                         ) : (
                             <EthAmountInput
-                                balance={etherBalanceInEth}
                                 amount={this.state.value}
                                 onChange={this._onValueChange.bind(this)}
                                 shouldCheckBalance={true}
                                 shouldShowIncompleteErrs={this.state.shouldShowIncompleteErrs}
-                                onVisitBalancesPageClick={this.props.onCancelled}
                             />
                         )}
                         <div className="pt1" style={{ fontSize: 12 }}>
@@ -137,7 +131,7 @@ export class EthWethConversionDialog extends React.Component<
             </div>
         );
     }
-    private _renderCurrency(isWrappedVersion: boolean) {
+    private _renderCurrency(isWrappedVersion: boolean): React.ReactNode {
         const name = isWrappedVersion ? 'Wrapped Ether' : 'Ether';
         const iconUrl = isWrappedVersion ? '/images/token_icons/ether_erc20.png' : '/images/ether.png';
         const symbol = isWrappedVersion ? 'WETH' : 'ETH';
@@ -155,18 +149,18 @@ export class EthWethConversionDialog extends React.Component<
             </div>
         );
     }
-    private _onMaxClick() {
+    private _onMaxClick(): void {
         this.setState({
             value: this.state.ethTokenBalance,
         });
     }
-    private _onValueChange(isValid: boolean, amount?: BigNumber) {
+    private _onValueChange(isValid: boolean, amount?: BigNumber): void {
         this.setState({
             value: amount,
             hasErrors: !isValid,
         });
     }
-    private _onConvertClick() {
+    private _onConvertClick(): void {
         if (this.state.hasErrors) {
             this.setState({
                 shouldShowIncompleteErrs: true,
@@ -179,13 +173,13 @@ export class EthWethConversionDialog extends React.Component<
             this.props.onComplete(this.props.direction, value);
         }
     }
-    private _onCancel() {
+    private _onCancel(): void {
         this.setState({
             value: undefined,
         });
         this.props.onCancelled();
     }
-    private async _fetchEthTokenBalanceAsync() {
+    private async _fetchEthTokenBalanceAsync(): Promise<void> {
         const userAddressIfExists = _.isEmpty(this.props.userAddress) ? undefined : this.props.userAddress;
         const [balance] = await this.props.blockchain.getTokenBalanceAndAllowanceAsync(
             userAddressIfExists,

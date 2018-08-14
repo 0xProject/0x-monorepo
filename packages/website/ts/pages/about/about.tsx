@@ -2,12 +2,12 @@ import { colors, Styles } from '@0xproject/react-shared';
 import * as _ from 'lodash';
 import * as React from 'react';
 import * as DocumentTitle from 'react-document-title';
+import { Link } from 'react-router-dom';
 import { Footer } from 'ts/components/footer';
 import { TopBar } from 'ts/components/top_bar/top_bar';
 import { Profile } from 'ts/pages/about/profile';
 import { Dispatcher } from 'ts/redux/dispatcher';
-import { ProfileInfo } from 'ts/types';
-import { constants } from 'ts/utils/constants';
+import { ProfileInfo, WebsitePaths } from 'ts/types';
 import { Translate } from 'ts/utils/translate';
 import { utils } from 'ts/utils/utils';
 
@@ -27,7 +27,7 @@ const teamRow1: ProfileInfo[] = [
         title: 'Co-founder & CTO',
         description: `Smart contract R&D. Previously fixed income trader at DRW. \
                       Finance at University of Illinois, Urbana-Champaign.`,
-        image: '/images/team/amir.jpeg',
+        image: '/images/team/amir.png',
         linkedIn: 'https://www.linkedin.com/in/abandeali1/',
         github: 'https://github.com/abandeali1',
         medium: 'https://medium.com/@abandeali1',
@@ -36,7 +36,7 @@ const teamRow1: ProfileInfo[] = [
         name: 'Fabio Berger',
         title: 'Senior Engineer',
         description: `Full-stack blockchain engineer. Previously software engineer \
-                      at Airtable and founder of WealthLift. Computer science at Duke.`,
+                      at Airtable and founder of WealthLift. Computer Science at Duke.`,
         image: '/images/team/fabio.jpg',
         linkedIn: 'https://www.linkedin.com/in/fabio-berger-03ab261a/',
         github: 'https://github.com/fabioberger',
@@ -59,7 +59,7 @@ const teamRow2: ProfileInfo[] = [
         name: 'Leonid Logvinov',
         title: 'Engineer',
         description: `Full-stack blockchain engineer. Previously blockchain engineer \
-                      at Neufund. Computer science at University of Warsaw.`,
+                      at Neufund. Computer Science at University of Warsaw.`,
         image: '/images/team/leonid.png',
         linkedIn: 'https://www.linkedin.com/in/leonidlogvinov/',
         github: 'https://github.com/LogvinovLeon',
@@ -99,7 +99,7 @@ const teamRow3: ProfileInfo[] = [
     },
     {
         name: 'Jacob Evans',
-        title: 'Blockchain Engineer',
+        title: 'Ecosystem Engineer',
         description: `Previously software engineer at Qantas and RSA Security.`,
         image: '/images/team/jacob.jpg',
         linkedIn: 'https://www.linkedin.com/in/dekzter/',
@@ -112,7 +112,7 @@ const teamRow4: ProfileInfo[] = [
     {
         name: 'Blake Henderson',
         title: 'Operations Associate',
-        description: `Operations and Analytics. Previously analytics at LinkedIn. Economics at UC San Diego. `,
+        description: `Operations and Analytics. Previously analytics at LinkedIn. Economics at UC San Diego.`,
         image: '/images/team/blake.jpg',
         linkedIn: 'https://www.linkedin.com/in/blakerhenderson/',
         github: '',
@@ -126,6 +126,78 @@ const teamRow4: ProfileInfo[] = [
         linkedIn: 'https://www.linkedin.com/in/zackaryskelly/',
         github: '',
         medium: '',
+    },
+    {
+        name: 'Greg Hysen',
+        title: 'Blockchain Engineer',
+        description: `Smart contract R&D. Previously lead distributed systems engineer at Hivemapper. Computer Science at University of Waterloo.`,
+        image: '/images/team/greg.jpeg',
+        linkedIn: 'https://www.linkedin.com/in/gregory-hysen-71741463/',
+        github: 'https://github.com/hysz',
+        medium: '',
+    },
+];
+
+const teamRow5: ProfileInfo[] = [
+    {
+        name: 'Remco Bloemen',
+        title: 'Technical Fellow',
+        description: `Previously cofounder at Neufund and Coblue. Part III at Cambridge. PhD dropout at Twente Business School.`,
+        image: '/images/team/remco.jpeg',
+        linkedIn: 'https://www.linkedin.com/in/remcobloemen/',
+        github: 'http://github.com/recmo',
+        medium: '',
+    },
+    {
+        name: 'Francesco Agosti',
+        title: 'Engineer',
+        description: `Full-stack engineer. Previously senior software engineer at Yelp. Computer Science at Duke.`,
+        image: 'images/team/fragosti.png',
+        linkedIn: 'https://www.linkedin.com/in/fragosti/',
+        github: 'http://github.com/fragosti',
+    },
+    {
+        name: 'Mel Oberto',
+        title: 'Office Ops / Executive Assistant',
+        description: `Daily Operations. Previously People Operations Associate at Heap. Marketing and MBA at Sacred Heart University.`,
+        image: 'images/team/mel.png',
+        linkedIn: 'https://www.linkedin.com/in/melanieoberto',
+    },
+];
+
+const teamRow6: ProfileInfo[] = [
+    {
+        name: 'Alex Browne',
+        title: 'Engineer in Residence',
+        description: `Full-stack blockchain engineer. Previously at Plaid. Open source guru and footgun dismantler. Computer Science and Electrical Engineering at Duke.`,
+        image: 'images/team/alexbrowne.png',
+        linkedIn: 'https://www.linkedin.com/in/stephenalexbrowne/',
+        github: 'http://github.com/albrow',
+    },
+    {
+        name: 'Peter Zeitz',
+        title: 'Research Fellow',
+        description: `Researching decentralized governance. Previously Assistant Professor of Economics at National University of Singapore Business School. PhD in Economics at UCLA.`,
+        image: 'images/team/peter.jpg',
+        linkedIn: 'https://www.linkedin.com/in/peter-z-7b9595163/',
+    },
+    {
+        name: 'Chris Kalani',
+        title: 'Director of Design',
+        description: `Previously founded Wake (acquired by InVision). Early Facebook product designer.`,
+        image: 'images/team/chris.png',
+        linkedIn: 'https://www.linkedin.com/in/chriskalani/',
+        github: 'https://github.com/chriskalani',
+    },
+];
+
+const teamRow7: ProfileInfo[] = [
+    {
+        name: 'Clay Robbins',
+        title: 'Business Development Lead',
+        description: `Growth & Business Development. Previously product and partnerships at Square. Economics at Dartmouth College.`,
+        image: 'images/team/clay.png',
+        linkedIn: 'https://www.linkedin.com/in/robbinsclay/',
     },
 ];
 
@@ -188,10 +260,10 @@ const styles: Styles = {
 };
 
 export class About extends React.Component<AboutProps, AboutState> {
-    public componentDidMount() {
+    public componentDidMount(): void {
         window.scrollTo(0, 0);
     }
-    public render() {
+    public render(): React.ReactNode {
         return (
             <div style={{ backgroundColor: colors.lightestGrey }}>
                 <DocumentTitle title="0x About Us" />
@@ -212,9 +284,9 @@ export class About extends React.Component<AboutProps, AboutState> {
                                 lineHeight: 1.5,
                             }}
                         >
-                            Our team is a diverse and globally distributed group with backgrounds in engineering,
-                            research, business and design. We are passionate about decentralized technology and its
-                            potential to act as an equalizing force in the world.
+                            Our team is a globally distributed group with backgrounds in engineering, research, business
+                            and design. We are passionate about decentralized technology and its potential to act as an
+                            equalizing force in the world.
                         </div>
                     </div>
                     <div className="pt3 md-px4 lg-px0">
@@ -222,6 +294,9 @@ export class About extends React.Component<AboutProps, AboutState> {
                         <div className="clearfix">{this._renderProfiles(teamRow2)}</div>
                         <div className="clearfix">{this._renderProfiles(teamRow3)}</div>
                         <div className="clearfix">{this._renderProfiles(teamRow4)}</div>
+                        <div className="clearfix">{this._renderProfiles(teamRow5)}</div>
+                        <div className="clearfix">{this._renderProfiles(teamRow6)}</div>
+                        <div className="clearfix">{this._renderProfiles(teamRow7)}</div>
                     </div>
                     <div className="pt3 pb2">
                         <div
@@ -250,9 +325,9 @@ export class About extends React.Component<AboutProps, AboutState> {
                             }}
                         >
                             We are seeking outstanding candidates to{' '}
-                            <a href={constants.URL_ANGELLIST} target="_blank" style={{ color: 'black' }}>
+                            <Link to={WebsitePaths.Careers} style={{ color: 'black' }}>
                                 join our team
-                            </a>
+                            </Link>
                             . We value passion, diversity and unique perspectives.
                         </div>
                     </div>
@@ -261,7 +336,7 @@ export class About extends React.Component<AboutProps, AboutState> {
             </div>
         );
     }
-    private _renderProfiles(profiles: ProfileInfo[]) {
+    private _renderProfiles(profiles: ProfileInfo[]): React.ReactNode {
         const numIndiv = profiles.length;
         const colSize = utils.getColSize(numIndiv);
         return _.map(profiles, profile => {

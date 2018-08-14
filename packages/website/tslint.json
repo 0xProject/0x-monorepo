@@ -4,6 +4,7 @@
         "no-implicit-dependencies": false,
         "no-object-literal-type-assertion": false,
         "completed-docs": false,
-        "prefer-function-over-method": false
+        "prefer-function-over-method": false,
+        "custom-no-magic-numbers": false
     }
 }

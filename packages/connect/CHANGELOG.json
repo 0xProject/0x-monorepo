@@ -1,13 +1,157 @@
 [
     {
+        "timestamp": 1534210131,
+        "version": "1.0.5",
+        "changes": [
+            {
+                "note": "Dependencies updated"
+            }
+        ]
+    },
+    {
+        "timestamp": 1532619515,
+        "version": "1.0.4",
+        "changes": [
+            {
+                "note": "Dependencies updated"
+            }
+        ]
+    },
+    {
+        "timestamp": 1532614997,
+        "version": "1.0.3",
+        "changes": [
+            {
+                "note": "Dependencies updated"
+            }
+        ]
+    },
+    {
+        "timestamp": 1532605697,
+        "version": "1.0.2",
+        "changes": [
+            {
+                "note": "Dependencies updated"
+            }
+        ]
+    },
+    {
+        "timestamp": 1532357734,
+        "version": "1.0.1",
+        "changes": [
+            {
+                "note": "Dependencies updated"
+            }
+        ]
+    },
+    {
+        "timestamp": 1532043000,
+        "version": "1.0.0",
+        "changes": [
+            {
+                "note":
+                    "Remove `WebSocketOrderbookChannel` from the public interface and replace with `orderbookChannelFactory`"
+            }
+        ]
+    },
+    {
+        "timestamp": 1531919263,
+        "version": "0.6.17",
+        "changes": [
+            {
+                "note": "Dependencies updated"
+            }
+        ]
+    },
+    {
+        "timestamp": 1531149657,
+        "version": "0.6.16",
+        "changes": [
+            {
+                "note": "Dependencies updated"
+            }
+        ]
+    },
+    {
+        "timestamp": 1529397769,
+        "version": "0.6.15",
+        "changes": [
+            {
+                "note": "Dependencies updated"
+            }
+        ]
+    },
+    {
+        "timestamp": 1527616612,
+        "version": "0.6.14",
+        "changes": [
+            {
+                "note": "Dependencies updated"
+            }
+        ]
+    },
+    {
+        "timestamp": 1527008270,
+        "version": "0.6.13",
+        "changes": [
+            {
+                "note": "Dependencies updated"
+            }
+        ]
+    },
+    {
+        "timestamp": 1525477860,
+        "version": "0.6.12",
+        "changes": [
+            {
+                "note": "Dependencies updated"
+            }
+        ]
+    },
+    {
+        "timestamp": 1525428773,
+        "version": "0.6.11",
+        "changes": [
+            {
+                "note": "Dependencies updated"
+            }
+        ]
+    },
+    {
+        "timestamp": 1524044013,
+        "version": "0.6.10",
+        "changes": [
+            {
+                "note": "Dependencies updated"
+            }
+        ]
+    },
+    {
+        "timestamp": 1523462196,
+        "version": "0.6.9",
+        "changes": [
+            {
+                "note": "Dependencies updated"
+            }
+        ]
+    },
+    {
+        "timestamp": 1522673609,
+        "version": "0.6.8",
+        "changes": [
+            {
+                "note": "Dependencies updated"
+            }
+        ]
+    },
+    {
         "timestamp": 1522658513,
         "version": "0.6.7",
         "changes": [
             {
                 "note": "Dependencies updated"
             }
-        ],
-        "isPublished": true
+        ]
     },
     {
         "version": "0.6.4",
@@ -17,8 +161,7 @@
                 "pr": 456
             }
         ],
-        "timestamp": 1521298800,
-        "isPublished": true
+        "timestamp": 1521298800
     },
     {
         "version": "0.6.2",
@@ -28,8 +171,7 @@
                 "pr": 407
             }
         ],
-        "timestamp": 1518706800,
-        "isPublished": true
+        "timestamp": 1518706800
     },
     {
         "version": "0.6.0",
@@ -43,8 +185,7 @@
                 "pr": 406
             }
         ],
-        "timestamp": 1518706800,
-        "isPublished": true
+        "timestamp": 1518706800
     },
     {
         "version": "0.5.7",
@@ -54,8 +195,7 @@
                 "pr": 389
             }
         ],
-        "timestamp": 1518102000,
-        "isPublished": true
+        "timestamp": 1518102000
     },
     {
         "version": "0.5.0",
@@ -73,8 +213,7 @@
                 "pr": 318
             }
         ],
-        "timestamp": 1516114800,
-        "isPublished": true
+        "timestamp": 1516114800
     },
     {
         "version": "0.4.0",
@@ -84,8 +223,7 @@
                 "pr": 296
             }
         ],
-        "timestamp": 1515596400,
-        "isPublished": true
+        "timestamp": 1515596400
     },
     {
         "version": "0.3.0",
@@ -99,8 +237,7 @@
                 "pr": 256
             }
         ],
-        "timestamp": 1512658800,
-        "isPublished": true
+        "timestamp": 1512658800
     },
     {
         "version": "0.2.0",
@@ -115,8 +252,7 @@
                 "note": "Remove dependency on 0x.js"
             }
         ],
-        "timestamp": 1511881200,
-        "isPublished": true
+        "timestamp": 1511881200
     },
     {
         "version": "0.1.0",
@@ -125,7 +261,6 @@
                 "note": "Provide a HttpClient class for interacting with standard relayer api compliant HTTP urls"
             }
         ],
-        "timestamp": 1511276400,
-        "isPublished": true
+        "timestamp": 1511276400
     }
 ]

@@ -41,6 +41,7 @@ typings/
 
 # Optional npm cache directory
 .npm
+.npmrc
 
 # Optional eslint cache
 .eslintcache
@@ -67,21 +68,37 @@ generated_docs/
 
 TODO.md
 
+# VSCode file
+.vscode
+
 packages/website/public/bundle*
 packages/react-docs/example/public/bundle*
 
-# generated binaries
-bin/
+# server cli
+packages/testnet-faucets/server/
 
-# generated contract artifacts
-packages/contracts/src/artifacts
+# generated contract artifacts/
+packages/sol-cov/test/fixtures/artifacts/
+packages/metacoin/artifacts/
+packages/order-watcher/test/artifacts/
+packages/contract-wrappers/test/artifacts/
+packages/contract-wrappers/src/artifacts/
+packages/order-watcher/src/artifacts/
 
-# generated contract wrappers
-packages/0x.js/src/contract_wrappers/generated/
-packages/contracts/src/contract_wrappers/generated/
+# generated contract watcher
+packages/0x.js/src/generated_contract_wrappers/
+packages/contracts/generated_contract_wrappers/
+packages/contract-wrappers/src/contract_wrappers/generated/
+packages/metacoin/src/contract_wrappers
+packages/fill-scenarios/src/generated_contract_wrappers/
+packages/order-watcher/src/generated_contract_wrappers/
+packages/order-utils/src/generated_contract_wrappers/
+packages/migrations/src/1.0.0/contract_wrappers
+packages/migrations/src/2.0.0/contract_wrappers
+packages/migrations/src/2.0.0-beta-testnet/contract_wrappers
 
-# solc-bin in deployer
-packages/deployer/solc_bin/
+# solc-bin in sol-compiler
+packages/sol-compiler/solc_bin/
 
 # Monorepo scripts
 packages/*/scripts/

@@ -3,7 +3,6 @@ import {
     constants as sharedConstants,
     EtherscanLinkSuffixes,
     MarkdownSection,
-    MenuSubsectionsBySection,
     NestedSidebarMenu,
     Networks,
     SectionHeader,
@@ -13,13 +12,12 @@ import {
 import * as _ from 'lodash';
 import CircularProgress from 'material-ui/CircularProgress';
 import * as React from 'react';
-import { scroller } from 'react-scroll';
+import * as semver from 'semver';
 
 import { DocsInfo } from '../docs_info';
 import {
     AddressByContractName,
     DocAgnosticFormat,
-    DoxityDocObj,
     Event,
     Property,
     SolidityMethod,
@@ -29,7 +27,6 @@ import {
     TypescriptMethod,
 } from '../types';
 import { constants } from '../utils/constants';
-import { utils } from '../utils/utils';
 
 import { Badge } from './badge';
 import { Comment } from './comment';
@@ -71,19 +68,19 @@ export class Documentation extends React.Component<DocumentationProps, Documenta
             isHoveringSidebar: false,
         };
     }
-    public componentDidMount() {
+    public componentDidMount(): void {
         window.addEventListener('hashchange', this._onHashChanged.bind(this), false);
     }
-    public componentWillUnmount() {
+    public componentWillUnmount(): void {
         window.removeEventListener('hashchange', this._onHashChanged.bind(this), false);
     }
-    public componentDidUpdate(prevProps: DocumentationProps, prevState: DocumentationState) {
+    public componentDidUpdate(prevProps: DocumentationProps, _prevState: DocumentationState): void {
         if (!_.isEqual(prevProps.docAgnosticFormat, this.props.docAgnosticFormat)) {
             const hash = window.location.hash.slice(1);
             sharedUtils.scrollToHash(hash, sharedConstants.SCROLL_CONTAINER_ID);
         }
     }
-    public render() {
+    public render(): React.ReactNode {
         const styles: Styles = {
             mainContainers: {
                 position: 'absolute',
@@ -91,7 +88,7 @@ export class Documentation extends React.Component<DocumentationProps, Documenta
                 left: 0,
                 bottom: 0,
                 right: 0,
-                overflowZ: 'hidden',
+                overflowX: 'hidden',
                 overflowY: 'scroll',
                 minHeight: `calc(100vh - ${this.props.topBarHeight}px)`,
                 WebkitOverflowScrolling: 'touch',
@@ -157,7 +154,7 @@ export class Documentation extends React.Component<DocumentationProps, Documenta
             </div>
         );
     }
-    private _renderLoading(mainContainersStyles: React.CSSProperties) {
+    private _renderLoading(mainContainersStyles: React.CSSProperties): React.ReactNode {
         return (
             <div className="col col-12" style={mainContainersStyles}>
                 <div
@@ -184,7 +181,20 @@ export class Documentation extends React.Component<DocumentationProps, Documenta
         return renderedSections;
     }
     private _renderSection(typeDefinitionByName: TypeDefinitionByName, sectionName: string): React.ReactNode {
-        const markdownFileIfExists = this.props.docsInfo.sectionNameToMarkdown[sectionName];
+        const markdownVersions = _.keys(this.props.docsInfo.sectionNameToMarkdownByVersion);
+        const eligibleVersions = _.filter(markdownVersions, mdVersion => {
+            return semver.lte(mdVersion, this.props.selectedVersion);
+        });
+        if (_.isEmpty(eligibleVersions)) {
+            throw new Error(
+                `No eligible markdown sections found for ${this.props.docsInfo.displayName} version ${
+                    this.props.selectedVersion
+                }.`,
+            );
+        }
+        const sortedEligibleVersions = eligibleVersions.sort(semver.rcompare.bind(semver));
+        const closestVersion = sortedEligibleVersions[0];
+        const markdownFileIfExists = this.props.docsInfo.sectionNameToMarkdownByVersion[closestVersion][sectionName];
         if (!_.isUndefined(markdownFileIfExists)) {
             return (
                 <MarkdownSection
@@ -289,7 +299,7 @@ export class Documentation extends React.Component<DocumentationProps, Documenta
             </div>
         );
     }
-    private _renderNetworkBadgesIfExists(sectionName: string) {
+    private _renderNetworkBadgesIfExists(sectionName: string): React.ReactNode {
         if (this.props.docsInfo.type !== SupportedDocJson.Doxity) {
             return null;
         }
@@ -337,7 +347,7 @@ export class Documentation extends React.Component<DocumentationProps, Documenta
         return (
             <div key={`property-${property.name}-${property.type.name}`} className="pb3">
                 <code className={`hljs ${constants.TYPE_TO_SYNTAX[this.props.docsInfo.type]}`}>
-                    {property.name}:
+                    {property.name}:{' '}
                     <Type type={property.type} sectionName={sectionName} docsInfo={this.props.docsInfo} />
                 </code>
                 {property.source && (
@@ -368,17 +378,17 @@ export class Documentation extends React.Component<DocumentationProps, Documenta
             />
         );
     }
-    private _onSidebarHover(event: React.FormEvent<HTMLInputElement>) {
+    private _onSidebarHover(_event: React.FormEvent<HTMLInputElement>): void {
         this.setState({
             isHoveringSidebar: true,
         });
     }
-    private _onSidebarHoverOff() {
+    private _onSidebarHoverOff(): void {
         this.setState({
             isHoveringSidebar: false,
         });
     }
-    private _onHashChanged(event: any) {
+    private _onHashChanged(_event: any): void {
         const hash = window.location.hash.slice(1);
         sharedUtils.scrollToHash(hash, sharedConstants.SCROLL_CONTAINER_ID);
     }

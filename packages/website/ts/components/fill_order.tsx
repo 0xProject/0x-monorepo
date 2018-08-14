@@ -1,6 +1,8 @@
-import { Order as ZeroExOrder, ZeroEx } from '0x.js';
-import { colors, constants as sharedConstants } from '@0xproject/react-shared';
+import { getOrderHashHex, isValidSignature } from '@0xproject/order-utils';
+import { colors } from '@0xproject/react-shared';
+import { Order as ZeroExOrder } from '@0xproject/types';
 import { BigNumber, logUtils } from '@0xproject/utils';
+import { Web3Wrapper } from '@0xproject/web3-wrapper';
 import * as accounting from 'accounting';
 import * as _ from 'lodash';
 import { Card, CardHeader, CardText } from 'material-ui/Card';
@@ -37,6 +39,8 @@ interface FillOrderProps {
     initialOrder: Order;
     dispatcher: Dispatcher;
     lastForceTokenStateRefetch: number;
+    isFullWidth?: boolean;
+    shouldHideHeader?: boolean;
 }
 
 interface FillOrderState {
@@ -59,6 +63,10 @@ interface FillOrderState {
 }
 
 export class FillOrder extends React.Component<FillOrderProps, FillOrderState> {
+    public static defaultProps: Partial<FillOrderProps> = {
+        isFullWidth: false,
+        shouldHideHeader: false,
+    };
     private _isUnmounted: boolean;
     constructor(props: FillOrderProps) {
         super(props);
@@ -82,23 +90,28 @@ export class FillOrder extends React.Component<FillOrderProps, FillOrderState> {
             tokensToTrack: [],
         };
     }
-    public componentWillMount() {
+    public componentWillMount(): void {
         if (!_.isEmpty(this.state.orderJSON)) {
             // tslint:disable-next-line:no-floating-promises
             this._validateFillOrderFireAndForgetAsync(this.state.orderJSON);
         }
     }
-    public componentDidMount() {
+    public componentDidMount(): void {
         window.scrollTo(0, 0);
     }
-    public componentWillUnmount() {
+    public componentWillUnmount(): void {
         this._isUnmounted = true;
     }
-    public render() {
+    public render(): React.ReactNode {
+        const rootClassName = this.props.isFullWidth ? 'clearfix' : 'lg-px4 md-px4 sm-px2';
         return (
-            <div className="clearfix lg-px4 md-px4 sm-px2" style={{ minHeight: 600 }}>
-                <h3>Fill an order</h3>
-                <Divider />
+            <div className={rootClassName} style={{ minHeight: 600 }}>
+                {!this.props.shouldHideHeader && (
+                    <div>
+                        <h3>Fill an order</h3>
+                        <Divider />
+                    </div>
+                )}
                 <div>
                     {!this.props.isOrderInUrl && (
                         <div>
@@ -159,7 +172,7 @@ export class FillOrder extends React.Component<FillOrderProps, FillOrderState> {
             </div>
         );
     }
-    private _renderOrderJsonNotices() {
+    private _renderOrderJsonNotices(): React.ReactNode {
         return (
             <div>
                 {!_.isUndefined(this.props.initialOrder) &&
@@ -177,7 +190,7 @@ export class FillOrder extends React.Component<FillOrderProps, FillOrderState> {
             </div>
         );
     }
-    private _renderVisualOrder() {
+    private _renderVisualOrder(): React.ReactNode {
         const takerTokenAddress = this.state.parsedOrder.signedOrder.takerTokenAddress;
         const takerToken = this.props.tokenByAddress[takerTokenAddress];
         const orderTakerAmount = new BigNumber(this.state.parsedOrder.signedOrder.takerTokenAmount);
@@ -306,7 +319,7 @@ export class FillOrder extends React.Component<FillOrderProps, FillOrderState> {
             </div>
         );
     }
-    private _renderFillSuccessMsg() {
+    private _renderFillSuccessMsg(): React.ReactNode {
         return (
             <div>
                 Order successfully filled. See the trade details in your{' '}
@@ -316,10 +329,10 @@ export class FillOrder extends React.Component<FillOrderProps, FillOrderState> {
             </div>
         );
     }
-    private _renderCancelSuccessMsg() {
+    private _renderCancelSuccessMsg(): React.ReactNode {
         return <div>Order successfully cancelled.</div>;
     }
-    private _onFillOrderClick() {
+    private _onFillOrderClick(): void {
         if (!this.state.isMakerTokenAddressInRegistry || !this.state.isTakerTokenAddressInRegistry) {
             this.setState({
                 isFillWarningDialogOpen: true,
@@ -329,7 +342,7 @@ export class FillOrder extends React.Component<FillOrderProps, FillOrderState> {
             this._onFillOrderClickFireAndForgetAsync();
         }
     }
-    private _onFillWarningClosed(didUserCancel: boolean) {
+    private _onFillWarningClosed(didUserCancel: boolean): void {
         this.setState({
             isFillWarningDialogOpen: false,
         });
@@ -338,10 +351,10 @@ export class FillOrder extends React.Component<FillOrderProps, FillOrderState> {
             this._onFillOrderClickFireAndForgetAsync();
         }
     }
-    private _onFillAmountChange(isValid: boolean, amount?: BigNumber) {
+    private _onFillAmountChange(_isValid: boolean, amount?: BigNumber): void {
         this.props.dispatcher.updateOrderFillAmount(amount);
     }
-    private _onFillOrderJSONChanged(event: any) {
+    private _onFillOrderJSONChanged(event: any): void {
         const orderJSON = event.target.value;
         this.setState({
             didOrderValidationRun: _.isEmpty(orderJSON) && _.isEmpty(this.state.orderJSONErrMsg),
@@ -350,7 +363,7 @@ export class FillOrder extends React.Component<FillOrderProps, FillOrderState> {
         // tslint:disable-next-line:no-floating-promises
         this._validateFillOrderFireAndForgetAsync(orderJSON);
     }
-    private async _checkForUntrackedTokensAndAskToAdd() {
+    private async _checkForUntrackedTokensAndAskToAddAsync(): Promise<void> {
         if (!_.isEmpty(this.state.orderJSONErrMsg)) {
             return;
         }
@@ -360,26 +373,26 @@ export class FillOrder extends React.Component<FillOrderProps, FillOrderState> {
 
         const tokensToTrack: Token[] = [];
         const isUnseenMakerToken = _.isUndefined(makerTokenIfExists);
-        const isMakerTokenTracked = !_.isUndefined(makerTokenIfExists) && makerTokenIfExists.isTracked;
+        const isMakerTokenTracked = !_.isUndefined(makerTokenIfExists) && utils.isTokenTracked(makerTokenIfExists);
         if (isUnseenMakerToken) {
             tokensToTrack.push({
                 ...this.state.parsedOrder.metadata.makerToken,
                 address: this.state.parsedOrder.signedOrder.makerTokenAddress,
                 iconUrl: undefined,
-                isTracked: false,
+                trackedTimestamp: undefined,
                 isRegistered: false,
             });
         } else if (!isMakerTokenTracked) {
             tokensToTrack.push(makerTokenIfExists);
         }
         const isUnseenTakerToken = _.isUndefined(takerTokenIfExists);
-        const isTakerTokenTracked = !_.isUndefined(takerTokenIfExists) && takerTokenIfExists.isTracked;
+        const isTakerTokenTracked = !_.isUndefined(takerTokenIfExists) && utils.isTokenTracked(takerTokenIfExists);
         if (isUnseenTakerToken) {
             tokensToTrack.push({
                 ...this.state.parsedOrder.metadata.takerToken,
                 address: this.state.parsedOrder.signedOrder.takerTokenAddress,
                 iconUrl: undefined,
-                isTracked: false,
+                trackedTimestamp: undefined,
                 isRegistered: false,
             });
         } else if (!isTakerTokenTracked) {
@@ -396,7 +409,7 @@ export class FillOrder extends React.Component<FillOrderProps, FillOrderState> {
             });
         }
     }
-    private async _validateFillOrderFireAndForgetAsync(orderJSON: string) {
+    private async _validateFillOrderFireAndForgetAsync(orderJSON: string): Promise<void> {
         let orderJSONErrMsg = '';
         let parsedOrder: Order;
         let orderHash: string;
@@ -433,15 +446,15 @@ export class FillOrder extends React.Component<FillOrderProps, FillOrderState> {
                 takerTokenAddress: parsedOrder.signedOrder.takerTokenAddress,
                 takerTokenAmount: takerAmount,
             };
-            orderHash = ZeroEx.getOrderHashHex(zeroExOrder);
+            orderHash = getOrderHashHex(zeroExOrder);
 
             const exchangeContractAddr = this.props.blockchain.getExchangeContractAddressIfExists();
             const signature = parsedOrder.signedOrder.ecSignature;
-            const isValidSignature = ZeroEx.isValidSignature(orderHash, signature, parsedOrder.signedOrder.maker);
+            const isSignatureValid = isValidSignature(orderHash, signature, parsedOrder.signedOrder.maker);
             if (exchangeContractAddr !== parsedOrder.signedOrder.exchangeContractAddress) {
                 orderJSONErrMsg = 'This order was made on another network or using a deprecated Exchange contract';
                 parsedOrder = undefined;
-            } else if (!isValidSignature) {
+            } else if (!isSignatureValid) {
                 orderJSONErrMsg = 'Order signature is invalid';
                 parsedOrder = undefined;
             } else {
@@ -491,7 +504,11 @@ export class FillOrder extends React.Component<FillOrderProps, FillOrderState> {
             unavailableTakerAmount,
         });
 
-        await this._checkForUntrackedTokensAndAskToAdd();
+        await this._checkForUntrackedTokensAndAskToAddAsync();
+    }
+    private _trackOrderEvent(eventName: string): void {
+        const parsedOrder = this.state.parsedOrder;
+        analytics.trackOrderEvent(eventName, parsedOrder);
     }
     private async _onFillOrderClickFireAndForgetAsync(): Promise<void> {
         if (this.props.blockchainErr !== BlockchainErrs.NoError || _.isEmpty(this.props.userAddress)) {
@@ -539,14 +556,12 @@ export class FillOrder extends React.Component<FillOrderProps, FillOrderState> {
             });
             return;
         }
-        const networkName = sharedConstants.NETWORK_NAME_BY_ID[this.props.networkId];
-        const eventLabel = `${parsedOrder.metadata.takerToken.symbol}-${networkName}`;
         try {
             const orderFilledAmount: BigNumber = await this.props.blockchain.fillOrderAsync(
                 signedOrder,
                 this.props.orderFillAmount,
             );
-            analytics.logEvent('Portal', 'Fill Order Success', eventLabel, parsedOrder.signedOrder.takerTokenAmount);
+            this._trackOrderEvent('Fill Order Success');
             // After fill completes, let's force fetch the token balances
             this.props.dispatcher.forceTokenStateRefetch();
             this.setState({
@@ -560,7 +575,7 @@ export class FillOrder extends React.Component<FillOrderProps, FillOrderState> {
             this.setState({
                 isFilling: false,
             });
-            analytics.logEvent('Portal', 'Fill Order Failure', eventLabel, parsedOrder.signedOrder.takerTokenAmount);
+            this._trackOrderEvent('Fill Order Failure');
             const errMsg = `${err}`;
             if (utils.didUserDenyWeb3Request(errMsg)) {
                 return;
@@ -570,7 +585,7 @@ export class FillOrder extends React.Component<FillOrderProps, FillOrderState> {
             this.setState({
                 globalErrMsg,
             });
-            await errorReporter.reportAsync(err);
+            errorReporter.report(err);
             return;
         }
     }
@@ -600,7 +615,7 @@ export class FillOrder extends React.Component<FillOrderProps, FillOrderState> {
         const takerTokenAmount = new BigNumber(parsedOrder.signedOrder.takerTokenAmount);
 
         const signedOrder = this.props.blockchain.portalOrderToZeroExOrder(parsedOrder);
-        const orderHash = ZeroEx.getOrderHashHex(signedOrder);
+        const orderHash = getOrderHashHex(signedOrder);
         const unavailableTakerAmount = await this.props.blockchain.getUnavailableTakerAmountAsync(orderHash);
         const availableTakerTokenAmount = takerTokenAmount.minus(unavailableTakerAmount);
         try {
@@ -615,8 +630,6 @@ export class FillOrder extends React.Component<FillOrderProps, FillOrderState> {
             });
             return;
         }
-        const networkName = sharedConstants.NETWORK_NAME_BY_ID[this.props.networkId];
-        const eventLabel = `${parsedOrder.metadata.makerToken.symbol}-${networkName}`;
         try {
             await this.props.blockchain.cancelOrderAsync(signedOrder, availableTakerTokenAmount);
             this.setState({
@@ -625,7 +638,7 @@ export class FillOrder extends React.Component<FillOrderProps, FillOrderState> {
                 globalErrMsg: '',
                 unavailableTakerAmount: takerTokenAmount,
             });
-            analytics.logEvent('Portal', 'Cancel Order Success', eventLabel, parsedOrder.signedOrder.makerTokenAmount);
+            this._trackOrderEvent('Cancel Order Success');
             return;
         } catch (err) {
             this.setState({
@@ -635,22 +648,22 @@ export class FillOrder extends React.Component<FillOrderProps, FillOrderState> {
             if (utils.didUserDenyWeb3Request(errMsg)) {
                 return;
             }
-            analytics.logEvent('Portal', 'Cancel Order Failure', eventLabel, parsedOrder.signedOrder.makerTokenAmount);
+            this._trackOrderEvent('Cancel Order Failure');
             globalErrMsg = 'Failed to cancel order, please refresh and try again';
             logUtils.log(`${err}`);
             this.setState({
                 globalErrMsg,
             });
-            await errorReporter.reportAsync(err);
+            errorReporter.report(err);
             return;
         }
     }
     private _formatCurrencyAmount(amount: BigNumber, decimals: number): number {
-        const unitAmount = ZeroEx.toUnitAmount(amount, decimals);
+        const unitAmount = Web3Wrapper.toUnitAmount(amount, decimals);
         const roundedUnitAmount = Math.round(unitAmount.toNumber() * 100000) / 100000;
         return roundedUnitAmount;
     }
-    private _onToggleTrackConfirmDialog(didConfirmTokenTracking: boolean) {
+    private _onToggleTrackConfirmDialog(didConfirmTokenTracking: boolean): void {
         if (!didConfirmTokenTracking) {
             this.setState({
                 orderJSON: '',

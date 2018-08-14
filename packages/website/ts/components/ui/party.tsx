@@ -4,7 +4,6 @@ import * as React from 'react';
 import ReactTooltip = require('react-tooltip');
 import { EthereumAddress } from 'ts/components/ui/ethereum_address';
 import { Identicon } from 'ts/components/ui/identicon';
-import { utils } from 'ts/utils/utils';
 
 const IMAGE_DIMENSION = 100;
 const IDENTICON_DIAMETER = 95;
@@ -27,7 +26,7 @@ export class Party extends React.Component<PartyProps, PartyState> {
         identiconStyle: {},
         identiconDiameter: IDENTICON_DIAMETER,
     };
-    public render() {
+    public render(): React.ReactNode {
         const label = this.props.label;
         const address = this.props.address;
         const identiconDiameter = this.props.identiconDiameter;

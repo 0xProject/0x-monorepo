@@ -21,7 +21,7 @@ interface FakeTextFieldProps {
     children?: any;
 }
 
-export function FakeTextField(props: FakeTextFieldProps) {
+export const FakeTextField = (props: FakeTextFieldProps) => {
     return (
         <div className="relative">
             {props.label !== '' && <InputLabel text={props.label} />}
@@ -31,4 +31,4 @@ export function FakeTextField(props: FakeTextFieldProps) {
             <hr style={styles.hr} />
         </div>
     );
-}
+};

@@ -5,16 +5,9 @@ import 'mocha';
 import * as path from 'path';
 
 import { collectCoverageEntries } from '../src/collect_coverage_entries';
-import { SingleFileSourceRange } from '../src/types';
+import { utils } from '../src/utils';
 
 const expect = chai.expect;
-
-const getRange = (sourceCode: string, range: SingleFileSourceRange) => {
-    const lines = sourceCode.split('\n').slice(range.start.line - 1, range.end.line);
-    lines[lines.length - 1] = lines[lines.length - 1].slice(0, range.end.column);
-    lines[0] = lines[0].slice(range.start.column);
-    return lines.join('\n');
-};
 
 describe('Collect coverage entries', () => {
     describe('#collectCoverageEntries', () => {
@@ -39,23 +32,25 @@ describe('Collect coverage entries', () => {
             const coverageEntries = collectCoverageEntries(simpleStorageContract);
             const fnIds = _.keys(coverageEntries.fnMap);
             expect(coverageEntries.fnMap[fnIds[0]].name).to.be.equal('set');
-            expect(coverageEntries.fnMap[fnIds[0]].line).to.be.equal(3);
+            // tslint:disable-next-line:custom-no-magic-numbers
+            expect(coverageEntries.fnMap[fnIds[0]].line).to.be.equal(5);
             const setFunction = `function set(uint x) {
         storedData = x;
     }`;
-            expect(getRange(simpleStorageContract, coverageEntries.fnMap[fnIds[0]].loc)).to.be.equal(setFunction);
+            expect(utils.getRange(simpleStorageContract, coverageEntries.fnMap[fnIds[0]].loc)).to.be.equal(setFunction);
             expect(coverageEntries.fnMap[fnIds[1]].name).to.be.equal('get');
-            expect(coverageEntries.fnMap[fnIds[1]].line).to.be.equal(6);
+            // tslint:disable-next-line:custom-no-magic-numbers
+            expect(coverageEntries.fnMap[fnIds[1]].line).to.be.equal(8);
             const getFunction = `function get() constant returns (uint retVal) {
         return storedData;
     }`;
-            expect(getRange(simpleStorageContract, coverageEntries.fnMap[fnIds[1]].loc)).to.be.equal(getFunction);
+            expect(utils.getRange(simpleStorageContract, coverageEntries.fnMap[fnIds[1]].loc)).to.be.equal(getFunction);
             expect(coverageEntries.branchMap).to.be.deep.equal({});
             const statementIds = _.keys(coverageEntries.statementMap);
-            expect(getRange(simpleStorageContract, coverageEntries.statementMap[statementIds[1]])).to.be.equal(
+            expect(utils.getRange(simpleStorageContract, coverageEntries.statementMap[statementIds[1]])).to.be.equal(
                 'storedData = x',
             );
-            expect(getRange(simpleStorageContract, coverageEntries.statementMap[statementIds[3]])).to.be.equal(
+            expect(utils.getRange(simpleStorageContract, coverageEntries.statementMap[statementIds[3]])).to.be.equal(
                 'return storedData;',
             );
             expect(coverageEntries.modifiersStatementIds).to.be.deep.equal([]);
@@ -121,9 +116,40 @@ describe('Collect coverage entries', () => {
 
             const branchDescriptions = _.values(coverageEntries.branchMap);
             const branchLines = _.map(branchDescriptions, branchDescription => branchDescription.line);
+            // tslint:disable-next-line:custom-no-magic-numbers
             expect(branchLines).to.be.deep.equal([94, 115, 119, 130, 151, 187]);
             const branchTypes = _.map(branchDescriptions, branchDescription => branchDescription.type);
             expect(branchTypes).to.be.deep.equal(['if', 'if', 'if', 'if', 'binary-expr', 'if']);
+        });
+
+        it('correctly ignores all coverage entries for Ignore contract', () => {
+            const solcovIgnoreContractBaseName = 'SolcovIgnore.sol';
+            const solcovIgnoreContractFileName = path.resolve(
+                __dirname,
+                'fixtures/contracts',
+                solcovIgnoreContractBaseName,
+            );
+            const solcovIgnoreContract = fs.readFileSync(solcovIgnoreContractFileName).toString();
+            const coverageEntries = collectCoverageEntries(solcovIgnoreContract);
+            const fnIds = _.keys(coverageEntries.fnMap);
+
+            expect(fnIds.length).to.be.equal(1);
+            expect(coverageEntries.fnMap[fnIds[0]].name).to.be.equal('set');
+            // tslint:disable-next-line:custom-no-magic-numbers
+            expect(coverageEntries.fnMap[fnIds[0]].line).to.be.equal(6);
+            const setFunction = `function set(uint x) public {
+        /* solcov ignore next */
+        storedData = x;
+    }`;
+            expect(utils.getRange(solcovIgnoreContract, coverageEntries.fnMap[fnIds[0]].loc)).to.be.equal(setFunction);
+
+            expect(coverageEntries.branchMap).to.be.deep.equal({});
+            const statementIds = _.keys(coverageEntries.statementMap);
+            expect(utils.getRange(solcovIgnoreContract, coverageEntries.statementMap[statementIds[0]])).to.be.equal(
+                setFunction,
+            );
+            expect(statementIds.length).to.be.equal(1);
+            expect(coverageEntries.modifiersStatementIds.length).to.be.equal(0);
         });
     });
 });

@@ -1,6 +1,6 @@
-import { BlockParamLiteral } from '@0xproject/types';
 import { Web3Wrapper } from '@0xproject/web3-wrapper';
 import * as chai from 'chai';
+import { BlockParamLiteral } from 'ethereum-types';
 import 'mocha';
 
 import { web3Factory } from '../src';
@@ -8,13 +8,14 @@ import { web3Factory } from '../src';
 const expect = chai.expect;
 
 describe('RPC tests', () => {
-    const web3Provider = web3Factory.getRpcProvider();
-    const web3Wrapper = new Web3Wrapper(web3Provider);
+    const provider = web3Factory.getRpcProvider({ shouldUseInProcessGanache: true });
+    const web3Wrapper = new Web3Wrapper(provider);
     describe('#mineBlockAsync', () => {
         it('increases block number when called', async () => {
             const blockNumberBefore = await web3Wrapper.getBlockNumberAsync();
             await web3Wrapper.mineBlockAsync();
             const blockNumberAfter = await web3Wrapper.getBlockNumberAsync();
+            // tslint:disable-next-line:restrict-plus-operands
             expect(blockNumberAfter).to.be.equal(blockNumberBefore + 1);
         });
     });
@@ -25,6 +26,7 @@ describe('RPC tests', () => {
             await web3Wrapper.increaseTimeAsync(TIME_DELTA);
             await web3Wrapper.mineBlockAsync();
             const blockTimestampAfter = await web3Wrapper.getBlockTimestampAsync(BlockParamLiteral.Latest);
+            // tslint:disable-next-line:restrict-plus-operands
             expect(blockTimestampAfter).to.be.at.least(blockTimestampBefore + TIME_DELTA);
         });
     });

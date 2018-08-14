@@ -1,5 +1,4 @@
 import { Styles } from '@0xproject/react-shared';
-import * as _ from 'lodash';
 import * as React from 'react';
 
 const styles: Styles = {
@@ -31,7 +30,7 @@ export class Badge extends React.Component<BadgeProps, BadgeState> {
             isHovering: false,
         };
     }
-    public render() {
+    public render(): React.ReactNode {
         const badgeStyle = {
             ...styles.badge,
             backgroundColor: this.props.backgroundColor,
@@ -48,7 +47,7 @@ export class Badge extends React.Component<BadgeProps, BadgeState> {
             </div>
         );
     }
-    private _setHoverState(isHovering: boolean) {
+    private _setHoverState(isHovering: boolean): void {
         this.setState({
             isHovering,
         });

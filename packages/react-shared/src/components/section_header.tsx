@@ -32,8 +32,8 @@ export class SectionHeader extends React.Component<SectionHeaderProps, SectionHe
             shouldShowAnchor: false,
         };
     }
-    public render() {
-        const { sectionName, headerSize } = this.props as PropsWithDefaults;
+    public render(): React.ReactNode {
+        const { headerSize } = this.props as PropsWithDefaults;
 
         const finalSectionName = utils.convertDashesToSpaces(this.props.sectionName);
         const id = utils.getIdFromName(finalSectionName);
@@ -65,7 +65,7 @@ export class SectionHeader extends React.Component<SectionHeaderProps, SectionHe
             </div>
         );
     }
-    private _setAnchorVisibility(shouldShowAnchor: boolean) {
+    private _setAnchorVisibility(shouldShowAnchor: boolean): void {
         this.setState({
             shouldShowAnchor,
         });

@@ -1,19 +1,23 @@
 {
     "name": "@0xproject/monorepo-scripts",
-    "version": "0.1.15",
+    "version": "1.0.5",
+    "engines": {
+        "node": ">=6.12"
+    },
     "description": "Helper scripts for the monorepo",
     "main": "lib/index.js",
     "types": "lib/index.d.ts",
     "scripts": {
-        "build:watch": "tsc -w",
-        "lint": "tslint --project . 'src/**/*.ts'",
-        "clean": "shx rm -rf lib",
+        "watch_without_deps": "tsc -w",
         "build": "tsc",
+        "lint": "tslint --project .",
+        "clean": "shx rm -rf lib",
         "test:publish": "run-s build script:publish",
-        "convert_changelogs": "run-s build script:convert_changelogs",
+        "find_unused_deps": "run-s build script:find_unused_deps",
         "script:deps_versions": "node ./lib/deps_versions.js",
+        "script:prepublish_checks": "node ./lib/prepublish_checks.js",
         "script:publish": "IS_DRY_RUN=true node ./lib/publish.js",
-        "script:convert_changelogs": "node ./lib/convert_changelogs.js",
+        "script:find_unused_deps": "node ./lib/find_unused_dependencies.js"
     },
     "repository": {
         "type": "git",
@@ -24,28 +28,37 @@
         "url": "https://github.com/0xProject/0x-monorepo/issues"
     },
     "homepage": "https://github.com/0xProject/0x-monorepo/packages/monorepo-scripts/README.md",
-    "comment": "// We purposefully use an older version of tslint-config here to avoid creating an import cycle",
     "devDependencies": {
-        "@0xproject/tslint-config": "0.4.8",
         "@types/glob": "^5.0.33",
+        "@types/mkdirp": "^0.5.2",
         "@types/node": "^8.0.53",
+        "@types/opn": "^5.1.0",
         "@types/rimraf": "^2.0.2",
-        "lerna-get-packages": "^1.0.0",
+        "@types/semver": "5.5.0",
+        "depcheck": "^0.6.9",
+        "make-promises-safe": "^1.1.0",
         "npm-run-all": "^4.1.2",
         "shx": "^0.2.2",
-        "tslint": "5.8.0",
-        "typescript": "2.7.1"
+        "tslint": "5.11.0",
+        "typescript": "2.9.2"
     },
     "dependencies": {
+        "@lerna/batch-packages": "^3.0.0-beta.18",
+        "@types/depcheck": "^0.6.0",
         "async-child-process": "^1.1.1",
         "chalk": "^2.3.0",
         "es6-promisify": "^5.0.0",
         "glob": "^7.1.2",
-        "lodash": "^4.17.4",
+        "isomorphic-fetch": "2.2.1",
+        "lodash": "^4.17.5",
+        "mkdirp": "^0.5.1",
         "moment": "2.21.0",
+        "opn": "^5.3.0",
         "promisify-child-process": "^1.0.5",
+        "prompt": "^1.0.0",
         "publish-release": "0xproject/publish-release",
         "rimraf": "^2.6.2",
+        "semver": "5.5.0",
         "semver-diff": "^2.1.0",
         "semver-sort": "0.0.4"
     },

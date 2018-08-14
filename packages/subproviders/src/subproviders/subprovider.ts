@@ -1,25 +1,15 @@
-import { JSONRPCRequestPayload, JSONRPCResponsePayload } from '@0xproject/types';
-import promisify = require('es6-promisify');
-import * as Web3 from 'web3';
+import { promisify } from '@0xproject/utils';
+import { JSONRPCRequestPayload, JSONRPCResponsePayload, Provider } from 'ethereum-types';
 
-import { JSONRPCRequestPayloadWithMethod } from '../types';
+import { Callback, ErrorCallback, JSONRPCRequestPayloadWithMethod } from '../types';
 /**
  * A altered version of the base class Subprovider found in [web3-provider-engine](https://github.com/MetaMask/provider-engine).
  * This one has an async/await `emitPayloadAsync` and also defined types.
  */
-export class Subprovider {
-    private _engine: any;
-    // Ported from: https://github.com/MetaMask/provider-engine/blob/master/util/random-id.js
-    private static _getRandomId() {
-        const extraDigits = 3;
-        // 13 time digits
-        const datePart = new Date().getTime() * Math.pow(10, extraDigits);
-        // 3 random digits
-        const extraPart = Math.floor(Math.random() * Math.pow(10, extraDigits));
-        // 16 digits
-        return datePart + extraPart;
-    }
-    private static _createFinalPayload(
+export abstract class Subprovider {
+    // tslint:disable-next-line:underscore-private-and-protected
+    private engine!: Provider;
+    protected static _createFinalPayload(
         payload: Partial<JSONRPCRequestPayloadWithMethod>,
     ): Partial<JSONRPCRequestPayloadWithMethod> {
         const finalPayload = {
@@ -31,6 +21,24 @@ export class Subprovider {
         };
         return finalPayload;
     }
+    // Ported from: https://github.com/MetaMask/provider-engine/blob/master/util/random-id.js
+    private static _getRandomId(): number {
+        const extraDigits = 3;
+        const baseTen = 10;
+        // 13 time digits
+        const datePart = new Date().getTime() * Math.pow(baseTen, extraDigits);
+        // 3 random digits
+        const extraPart = Math.floor(Math.random() * Math.pow(baseTen, extraDigits));
+        // 16 digits
+        return datePart + extraPart;
+    }
+    // tslint:disable-next-line:async-suffix
+    public abstract async handleRequest(
+        payload: JSONRPCRequestPayload,
+        next: Callback,
+        end: ErrorCallback,
+    ): Promise<void>;
+
     /**
      * Emits a JSON RPC payload that will then be handled by the ProviderEngine instance
      * this subprovider is a part of. The payload will cascade down the subprovider middleware
@@ -40,7 +48,7 @@ export class Subprovider {
      */
     public async emitPayloadAsync(payload: Partial<JSONRPCRequestPayloadWithMethod>): Promise<JSONRPCResponsePayload> {
         const finalPayload = Subprovider._createFinalPayload(payload);
-        const response = await promisify(this._engine.sendAsync, this._engine)(finalPayload);
+        const response = await promisify<JSONRPCResponsePayload>(this.engine.sendAsync, this.engine)(finalPayload);
         return response;
     }
     /**
@@ -48,7 +56,7 @@ export class Subprovider {
      * This is only called within the ProviderEngine source code, do not call
      * directly.
      */
-    public setEngine(engine: any): void {
-        this._engine = engine;
+    public setEngine(engine: Provider): void {
+        this.engine = engine;
     }
 }

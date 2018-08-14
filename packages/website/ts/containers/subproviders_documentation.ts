@@ -1,19 +1,17 @@
 import { constants as docConstants, DocsInfo, DocsInfoConfig, SupportedDocJson } from '@0xproject/react-docs';
-import * as _ from 'lodash';
 import * as React from 'react';
 import { connect } from 'react-redux';
 import { Dispatch } from 'redux';
 import { DocPage as DocPageComponent, DocPageProps } from 'ts/pages/documentation/doc_page';
 import { Dispatcher } from 'ts/redux/dispatcher';
 import { State } from 'ts/redux/reducer';
-import { DocPackages, Environments, WebsitePaths } from 'ts/types';
-import { configs } from 'ts/utils/configs';
+import { DocPackages } from 'ts/types';
 import { constants } from 'ts/utils/constants';
 import { Translate } from 'ts/utils/translate';
 
 /* tslint:disable:no-var-requires */
-const IntroMarkdown = require('md/docs/subproviders/introduction');
-const InstallationMarkdown = require('md/docs/subproviders/installation');
+const IntroMarkdownV1 = require('md/docs/subproviders/introduction');
+const InstallationMarkdownV1 = require('md/docs/subproviders/installation');
 const LedgerNodeHidMarkdown = require('md/docs/subproviders/ledger_node_hid');
 /* tslint:enable:no-var-requires */
 
@@ -27,9 +25,12 @@ const docSections = {
     emptyWalletSubprovider: 'emptyWalletSubprovider',
     fakeGasEstimateSubprovider: 'fakeGasEstimateSubprovider',
     injectedWeb3Subprovider: 'injectedWeb3Subprovider',
+    signerSubprovider: 'signerSubprovider',
     redundantRPCSubprovider: 'redundantRPCSubprovider',
     ganacheSubprovider: 'ganacheSubprovider',
     nonceTrackerSubprovider: 'nonceTrackerSubprovider',
+    privateKeyWalletSubprovider: 'privateKeyWalletSubprovider',
+    mnemonicWalletSubprovider: 'mnemonicWalletSubprovider',
     types: docConstants.TYPES_SECTION_NAME,
 };
 
@@ -44,37 +45,47 @@ const docsInfoConfig: DocsInfoConfig = {
         subprovider: [docSections.subprovider],
         ['ledger-subprovider']: [docSections.ledgerSubprovider],
         ['ledger-node-hid-issue']: [docSections.ledgerNodeHid],
+        ['private-key-wallet-subprovider']: [docSections.privateKeyWalletSubprovider],
+        ['mnemonic-wallet-subprovider']: [docSections.mnemonicWalletSubprovider],
         ['factory-methods']: [docSections.factoryMethods],
         ['emptyWallet-subprovider']: [docSections.emptyWalletSubprovider],
         ['fakeGasEstimate-subprovider']: [docSections.fakeGasEstimateSubprovider],
         ['injectedWeb3-subprovider']: [docSections.injectedWeb3Subprovider],
+        ['signer-subprovider']: [docSections.signerSubprovider],
         ['redundantRPC-subprovider']: [docSections.redundantRPCSubprovider],
         ['ganache-subprovider']: [docSections.ganacheSubprovider],
         ['nonceTracker-subprovider']: [docSections.nonceTrackerSubprovider],
         types: [docSections.types],
     },
-    sectionNameToMarkdown: {
-        [docSections.introduction]: IntroMarkdown,
-        [docSections.installation]: InstallationMarkdown,
-        [docSections.ledgerNodeHid]: LedgerNodeHidMarkdown,
+    sectionNameToMarkdownByVersion: {
+        '0.0.1': {
+            [docSections.introduction]: IntroMarkdownV1,
+            [docSections.installation]: InstallationMarkdownV1,
+            [docSections.ledgerNodeHid]: LedgerNodeHidMarkdown,
+        },
     },
     sectionNameToModulePath: {
         [docSections.subprovider]: ['"subproviders/src/subproviders/subprovider"'],
         [docSections.ledgerSubprovider]: ['"subproviders/src/subproviders/ledger"'],
+        [docSections.privateKeyWalletSubprovider]: ['"subproviders/src/subproviders/private_key_wallet"'],
+        [docSections.mnemonicWalletSubprovider]: ['"subproviders/src/subproviders/mnemonic_wallet"'],
         [docSections.factoryMethods]: ['"subproviders/src/index"'],
         [docSections.emptyWalletSubprovider]: ['"subproviders/src/subproviders/empty_wallet_subprovider"'],
         [docSections.fakeGasEstimateSubprovider]: ['"subproviders/src/subproviders/fake_gas_estimate_subprovider"'],
         [docSections.injectedWeb3Subprovider]: ['"subproviders/src/subproviders/injected_web3"'],
+        [docSections.signerSubprovider]: ['"subproviders/src/subproviders/signer"'],
         [docSections.redundantRPCSubprovider]: ['"subproviders/src/subproviders/redundant_rpc"'],
         [docSections.ganacheSubprovider]: ['"subproviders/src/subproviders/ganache"'],
         [docSections.nonceTrackerSubprovider]: ['"subproviders/src/subproviders/nonce_tracker"'],
-        [docSections.types]: ['"deployer/src/utils/types"', '"types/src/index"', '"subproviders/src/types"'],
+        [docSections.types]: ['"sol-compiler/src/utils/types"', '"types/src/index"', '"subproviders/src/types"'],
     },
     menuSubsectionToVersionWhenIntroduced: {},
     sections: docSections,
     visibleConstructors: [
         docSections.subprovider,
         docSections.ledgerSubprovider,
+        docSections.privateKeyWalletSubprovider,
+        docSections.mnemonicWalletSubprovider,
         docSections.emptyWalletSubprovider,
         docSections.fakeGasEstimateSubprovider,
         docSections.injectedWeb3Subprovider,
@@ -91,25 +102,22 @@ const docsInfoConfig: DocsInfoConfig = {
             'ErrorCallback',
             'ECSignature',
             'JSONRPCRequestPayloadWithMethod',
+            'JSONRPCRequestPayload',
             'JSONRPCResponsePayload',
             'AccountFetchingConfigs',
             'LedgerEthereumClientFactoryAsync',
             'PartialTxParams',
             'LedgerEthereumClient',
             'LedgerSubproviderConfigs',
+            'MnemonicWalletSubproviderConfigs',
+            'OnNextCompleted',
+            'Provider',
         ],
         typeNameToExternalLink: {
-            Web3: 'https://github.com/ethereum/wiki/wiki/JavaScript-API',
-            BigNumber: 'https://github.com/0xProject/web3-typescript-typings/blob/f5bcb96/index.d.ts#L127',
-            JSONRPCRequestPayload: 'https://github.com/0xProject/web3-typescript-typings/blob/f5bcb96/index.d.ts#L137',
-            JSONRPCResponsePayload: 'https://github.com/0xProject/web3-typescript-typings/blob/f5bcb96/index.d.ts#L144',
-            Provider: 'https://github.com/0xProject/web3-typescript-typings/blob/f5bcb96/index.d.ts#L150',
+            Web3: constants.URL_WEB3_DOCS,
+            BigNumber: constants.URL_BIGNUMBERJS_GITHUB,
         },
-        typeNameToPrefix: {
-            JSONRPCRequestPayload: 'Web3',
-            JSONRPCResponsePayload: 'Web3',
-            Provider: 'Web3',
-        },
+        typeNameToPrefix: {},
     },
 };
 const docsInfo = new DocsInfo(docsInfoConfig);
@@ -125,7 +133,7 @@ interface ConnectedDispatch {
     dispatcher: Dispatcher;
 }
 
-const mapStateToProps = (state: State, ownProps: DocPageProps): ConnectedState => ({
+const mapStateToProps = (state: State, _ownProps: DocPageProps): ConnectedState => ({
     docsVersion: state.docsVersion,
     availableDocVersions: state.availableDocVersions,
     translate: state.translate,

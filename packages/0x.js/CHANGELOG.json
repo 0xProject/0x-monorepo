@@ -1,5 +1,261 @@
 [
     {
+        "version": "1.0.1-rc.3",
+        "changes": [
+            {
+                "note": "Dependencies updated"
+            },
+            {
+                "pr": 914,
+                "note": "Update ecSignOrderHashAsync to return the signature as a string for immediate use in contracts"
+            }
+        ],
+        "timestamp": 1534210131
+    },
+    {
+        "version": "1.0.1-rc.2",
+        "changes": [
+            {
+                "note": "Fixed bug caused by importing non-existent dep"
+            }
+        ],
+        "timestamp": 1532619515
+    },
+    {
+        "version": "1.0.1-rc.1",
+        "changes": [
+            {
+                "note": "Dependencies updated"
+            }
+        ],
+        "timestamp": 1532605697
+    },
+    {
+        "timestamp": 1532357734,
+        "version": "1.0.0",
+        "changes": [
+            {
+                "note": "Dependencies updated"
+            }
+        ]
+    },
+    {
+        "timestamp": 1532043100,
+        "version": "1.0.0-rc.2",
+        "changes": [
+            {
+                "note": "Remove `zeroEx.assetData`  and instead re-export it's static functions directly off `ZeroEx`"
+            }
+        ]
+    },
+    {
+        "timestamp": 1532043000,
+        "version": "1.0.0-rc.1",
+        "changes": [
+            {
+                "note": "Remove tokenRegistry wrapper",
+                "pr": 863
+            },
+            {
+                "note": "Rename `zeroEx.token` to `zeroEx.erc20Token`, and add `zeroEx.erc721Token`",
+                "pr": 863
+            },
+            {
+                "note": "Rename `zeroEx.proxy` to `zeroEx.erc20Proxy` and add `zeroEx.erc721Proxy`",
+                "pr": 863
+            },
+            {
+                "note":
+                    "Refactored `ZeroEx.isValidSignature` to `zeroEx.isValidSignatureAsync`. It is now async so that it can verify contract-dependent signature types",
+                "pr": 863
+            },
+            {
+                "note":
+                    "Refactored `signOrderHashAsync` to `ecSignOrderHashAsync`. There are now many non-ECSignature ways to sign orders too.",
+                "pr": 863
+            },
+            {
+                "note":
+                    "Removed `createOrderWatcherAsync` method. Will be added back once OrderWatcher is refactored for V2",
+                "pr": 863
+            },
+            {
+                "note": "0x.js exports renamed contract events and event arg types",
+                "pr": 863
+            },
+            {
+                "note": "Export `ZeroEx.assetData` with methods to decode/encode assetData fields found in 0x orders",
+                "pr": 884
+            }
+        ]
+    },
+    {
+        "timestamp": 1531919263,
+        "version": "0.38.6",
+        "changes": [
+            {
+                "note": "Dependencies updated"
+            }
+        ]
+    },
+    {
+        "timestamp": 1531149657,
+        "version": "0.38.5",
+        "changes": [
+            {
+                "note": "Dependencies updated"
+            }
+        ]
+    },
+    {
+        "timestamp": 1529397769,
+        "version": "0.38.4",
+        "changes": [
+            {
+                "note": "Dependencies updated"
+            }
+        ]
+    },
+    {
+        "timestamp": 1527617805,
+        "version": "0.38.3",
+        "changes": [
+            {
+                "note": "Dependencies updated"
+            }
+        ]
+    },
+    {
+        "timestamp": 1527617227,
+        "version": "0.38.2",
+        "changes": [
+            {
+                "note": "Dependencies updated"
+            }
+        ]
+    },
+    {
+        "timestamp": 1527616612,
+        "version": "0.38.1",
+        "changes": [
+            {
+                "note": "Dependencies updated"
+            }
+        ]
+    },
+    {
+        "version": "0.38.0",
+        "changes": [
+            {
+                "note": "Renamed createOrderStateWatcher to createOrderWatcherAsync since it is now async",
+                "pr": 579
+            },
+            {
+                "note":
+                    "Renamed ZeroExError to ContractWrappersErrors since they now lives in the @0xproject/contract-wrappers subpackage",
+                "pr": 579
+            }
+        ],
+        "timestamp": 1527008270
+    },
+    {
+        "timestamp": 1525477860,
+        "version": "0.37.2",
+        "changes": [
+            {
+                "note": "Dependencies updated"
+            }
+        ]
+    },
+    {
+        "timestamp": 1525453812,
+        "version": "0.37.1",
+        "changes": [
+            {
+                "note": "Dependencies updated"
+            }
+        ]
+    },
+    {
+        "version": "0.37.0",
+        "changes": [
+            {
+                "note": "Fixed expiration watcher comparator to handle orders with equal expiration times",
+                "pr": 526
+            },
+            {
+                "note": "Update Web3 Provider Engine to 14.0.4",
+                "pr": 555
+            },
+            {
+                "note": "Add `zeroEx.getProvider()`",
+                "pr": 559
+            },
+            {
+                "note": "Move `ZeroExError.InvalidSignature` to `@0xproject/order-utils` `OrderError.InvalidSignature`",
+                "pr": 559
+            }
+        ],
+        "timestamp": 1525428773
+    },
+    {
+        "version": "0.36.3",
+        "changes": [
+            {
+                "note": "Move @0xproject/migrations to devDependencies"
+            }
+        ],
+        "timestamp": 1524079658
+    },
+    {
+        "timestamp": 1524073495,
+        "version": "0.36.2",
+        "changes": [
+            {
+                "note": "Dependencies updated"
+            }
+        ]
+    },
+    {
+        "version": "0.36.1",
+        "changes": [
+            {
+                "note": "Internal changes and refactoring"
+            },
+            {
+                "note": "Fix redundant expired order removal bug",
+                "pr": 527
+            }
+        ],
+        "timestamp": 1524044013
+    },
+    {
+        "version": "0.36.0",
+        "changes": [
+            {
+                "note": "Moved Web3.Provider to `@0xproject/types:Provider`",
+                "pr": 501
+            },
+            {
+                "note":
+                    "Add `zeroEx.exchange.getOrderStateAsync` to allow obtaining current OrderState for a signedOrder",
+                "pr": 510
+            }
+        ],
+        "timestamp": 1523462196
+    },
+    {
+        "version": "0.35.0",
+        "changes": [
+            {
+                "note":
+                    "Removed `ZeroExError.TransactionMiningTimeout` and moved it to '@0xproject/web3-wrapper' `Web3WrapperErrors.TransactionMiningTimeout`",
+                "pr": 485
+            }
+        ],
+        "timestamp": 1522673609
+    },
+    {
         "version": "0.34.0",
         "changes": [
             {
@@ -35,8 +291,7 @@
                 "pr": 456
             }
         ],
-        "timestamp": 1521298800,
-        "isPublished": true
+        "timestamp": 1521298800
     },
     {
         "version": "0.33.1",
@@ -45,8 +300,7 @@
                 "note": "Add missing EthersJs typescript typings as dependency"
             }
         ],
-        "timestamp": 1520434800,
-        "isPublished": true
+        "timestamp": 1520434800
     },
     {
         "version": "0.33.0",
@@ -72,8 +326,7 @@
                 "pr": 429
             }
         ],
-        "timestamp": 1520089200,
-        "isPublished": true
+        "timestamp": 1520089200
     },
     {
         "version": "0.32.2",
@@ -83,8 +336,7 @@
                 "pr": 389
             }
         ],
-        "timestamp": 1518102000,
-        "isPublished": true
+        "timestamp": 1518102000
     },
     {
         "version": "0.32.1",
@@ -98,8 +350,7 @@
                 "pr": 371
             }
         ],
-        "timestamp": 1517929200,
-        "isPublished": true
+        "timestamp": 1517929200
     },
     {
         "version": "0.32.0",
@@ -114,8 +365,7 @@
                 "pr": 366
             }
         ],
-        "timestamp": 1517756400,
-        "isPublished": true
+        "timestamp": 1517756400
     },
     {
         "version": "0.31.1",
@@ -125,8 +375,7 @@
                 "pr": 357
             }
         ],
-        "timestamp": 1517410800,
-        "isPublished": true
+        "timestamp": 1517410800
     },
     {
         "version": "0.31.0",
@@ -137,8 +386,7 @@
                 "pr": 349
             }
         ],
-        "timestamp": 1517238000,
-        "isPublished": true
+        "timestamp": 1517238000
     },
     {
         "version": "0.30.2",
@@ -151,8 +399,7 @@
                 "note": "Move @0xproject/types to dependencies from devDependencies fixing missing type errors"
             }
         ],
-        "timestamp": 1517151600,
-        "isPublished": true
+        "timestamp": 1517151600
     },
     {
         "version": "0.30.1",
@@ -166,8 +413,7 @@
                 "pr": 341
             }
         ],
-        "timestamp": 1516719600,
-        "isPublished": true
+        "timestamp": 1516719600
     },
     {
         "version": "0.30.0",
@@ -186,8 +432,7 @@
                 "pr": 321
             }
         ],
-        "timestamp": 1516114800,
-        "isPublished": true
+        "timestamp": 1516114800
     },
     {
         "version": "0.29.1",
@@ -197,8 +442,7 @@
                 "pr": 305
             }
         ],
-        "timestamp": 1515596400,
-        "isPublished": true
+        "timestamp": 1515596400
     },
     {
         "version": "0.29.0",
@@ -212,8 +456,7 @@
                 "pr": 287
             }
         ],
-        "timestamp": 1514386800,
-        "isPublished": true
+        "timestamp": 1514386800
     },
     {
         "version": "0.28.0",
@@ -259,8 +502,7 @@
                 "pr": 278
             }
         ],
-        "timestamp": 1513695600,
-        "isPublished": true
+        "timestamp": 1513695600
     },
     {
         "version": "0.27.1",
@@ -269,8 +511,7 @@
                 "note": "Export `TransactionOpts` type"
             }
         ],
-        "timestamp": 1511794800,
-        "isPublished": true
+        "timestamp": 1511794800
     },
     {
         "version": "0.27.0",
@@ -315,8 +556,7 @@
                 "pr": 236
             }
         ],
-        "timestamp": 1511794800,
-        "isPublished": true
+        "timestamp": 1511794800
     },
     {
         "version": "0.26.0",
@@ -336,8 +576,7 @@
                 "pr": 225
             }
         ],
-        "timestamp": 1511190000,
-        "isPublished": true
+        "timestamp": 1511190000
     },
     {
         "version": "0.25.1",
@@ -356,8 +595,7 @@
                 "pr": 200
             }
         ],
-        "timestamp": 1510498800,
-        "isPublished": true
+        "timestamp": 1510498800
     },
     {
         "version": "0.23.0",
@@ -370,8 +608,7 @@
                 "note": "Subscribe callbacks now receive an error object as their first argument"
             }
         ],
-        "timestamp": 1510412400,
-        "isPublished": true
+        "timestamp": 1510412400
     },
     {
         "version": "0.22.6",
@@ -381,8 +618,7 @@
                 "pr": 206
             }
         ],
-        "timestamp": 1510239600,
-        "isPublished": true
+        "timestamp": 1510239600
     },
     {
         "version": "0.22.5",
@@ -391,8 +627,7 @@
                 "note": "Re-publish v0.22.4 to fix publishing issue"
             }
         ],
-        "timestamp": 1509980400,
-        "isPublished": true
+        "timestamp": 1509980400
     },
     {
         "version": "0.22.4",
@@ -401,8 +636,7 @@
                 "note": "Upgraded bignumber.js to a new version that ships with native typings"
             }
         ],
-        "timestamp": 1508857200,
-        "isPublished": true
+        "timestamp": 1508857200
     },
     {
         "version": "0.22.3",
@@ -412,8 +646,7 @@
                 "pr": 199
             }
         ],
-        "timestamp": 1508857200,
-        "isPublished": true
+        "timestamp": 1508857200
     },
     {
         "version": "0.22.2",
@@ -423,8 +656,7 @@
                 "pr": 197
             }
         ],
-        "timestamp": 1508770800,
-        "isPublished": true
+        "timestamp": 1508770800
     },
     {
         "version": "0.22.0",
@@ -439,8 +671,7 @@
                 "pr": 187
             }
         ],
-        "timestamp": 1508079600,
-        "isPublished": true
+        "timestamp": 1508079600
     },
     {
         "version": "0.21.4",
@@ -451,8 +682,7 @@
                 "pr": 194
             }
         ],
-        "timestamp": 1507820400,
-        "isPublished": true
+        "timestamp": 1507820400
     },
     {
         "version": "0.21.3",
@@ -462,8 +692,7 @@
                 "pr": 193
             }
         ],
-        "timestamp": 1507734000,
-        "isPublished": true
+        "timestamp": 1507734000
     },
     {
         "version": "0.21.2",
@@ -473,8 +702,7 @@
                 "pr": 190
             }
         ],
-        "timestamp": 1507647600,
-        "isPublished": true
+        "timestamp": 1507647600
     },
     {
         "version": "0.21.1",
@@ -484,8 +712,7 @@
                 "pr": 189
             }
         ],
-        "timestamp": 1507647600,
-        "isPublished": true
+        "timestamp": 1507647600
     },
     {
         "version": "0.21.0",
@@ -531,8 +758,7 @@
                 "pr": 185
             }
         ],
-        "timestamp": 1507561200,
-        "isPublished": true
+        "timestamp": 1507561200
     },
     {
         "version": "0.20.0",
@@ -550,8 +776,7 @@
                 "pr": 181
             }
         ],
-        "timestamp": 1507129200,
-        "isPublished": true
+        "timestamp": 1507129200
     },
     {
         "version": "0.19.0",
@@ -569,8 +794,7 @@
                 "pr": 175
             }
         ],
-        "timestamp": 1506610800,
-        "isPublished": true
+        "timestamp": 1506610800
     },
     {
         "version": "0.18.0",
@@ -580,8 +804,7 @@
                 "pr": 170
             }
         ],
-        "timestamp": 1506351600,
-        "isPublished": true
+        "timestamp": 1506351600
     },
     {
         "version": "0.17.0",
@@ -591,8 +814,7 @@
                 "pr": 171
             }
         ],
-        "timestamp": 1506351600,
-        "isPublished": true
+        "timestamp": 1506351600
     },
     {
         "version": "0.16.0",
@@ -615,8 +837,7 @@
                 "pr": 165
             }
         ],
-        "timestamp": 1505833200,
-        "isPublished": true
+        "timestamp": 1505833200
     },
     {
         "version": "0.15.0",
@@ -627,8 +848,7 @@
                 "pr": 161
             }
         ],
-        "timestamp": 1504796400,
-        "isPublished": true
+        "timestamp": 1504796400
     },
     {
         "version": "0.14.2",
@@ -638,8 +858,7 @@
                 "pr": 160
             }
         ],
-        "timestamp": 1504710000,
-        "isPublished": true
+        "timestamp": 1504710000
     },
     {
         "version": "0.14.1",
@@ -649,8 +868,7 @@
                 "pr": 159
             }
         ],
-        "timestamp": 1504710000,
-        "isPublished": true
+        "timestamp": 1504710000
     },
     {
         "version": "0.14.0",
@@ -668,8 +886,7 @@
                 "pr": 157
             }
         ],
-        "timestamp": 1504623600,
-        "isPublished": true
+        "timestamp": 1504623600
     },
     {
         "version": "0.13.0",
@@ -693,8 +910,7 @@
                 "pr": 152
             }
         ],
-        "timestamp": 1504623600,
-        "isPublished": true
+        "timestamp": 1504623600
     },
     {
         "version": "0.12.1",
@@ -712,8 +928,7 @@
                 "pr": 139
             }
         ],
-        "timestamp": 1504278000,
-        "isPublished": true
+        "timestamp": 1504278000
     },
     {
         "version": "0.11.0",
@@ -731,8 +946,7 @@
                 "pr": 137
             }
         ],
-        "timestamp": 1503500400,
-        "isPublished": true
+        "timestamp": 1503500400
     },
     {
         "version": "0.10.4",
@@ -742,8 +956,7 @@
                 "pr": 135
             }
         ],
-        "timestamp": 1503500400,
-        "isPublished": true
+        "timestamp": 1503500400
     },
     {
         "version": "0.10.1",
@@ -797,8 +1010,7 @@
                 "pr": 127
             }
         ],
-        "timestamp": 1503500400,
-        "isPublished": true
+        "timestamp": 1503500400
     },
     {
         "version": "0.9.3",
@@ -808,8 +1020,7 @@
                 "pr": 118
             }
         ],
-        "timestamp": 1503327600,
-        "isPublished": true
+        "timestamp": 1503327600
     },
     {
         "version": "0.9.2",
@@ -822,8 +1033,7 @@
                 "pr": 118
             }
         ],
-        "timestamp": 1503241200,
-        "isPublished": true
+        "timestamp": 1503241200
     },
     {
         "version": "0.9.1",
@@ -833,8 +1043,7 @@
                 "pr": 120
             }
         ],
-        "timestamp": 1502809200,
-        "isPublished": true
+        "timestamp": 1502809200
     },
     {
         "version": "0.9.0",
@@ -871,8 +1080,7 @@
                 "pr": 109
             }
         ],
-        "timestamp": 1500994800,
-        "isPublished": true
+        "timestamp": 1500994800
     },
     {
         "version": "0.8.0",
@@ -914,8 +1122,7 @@
                 "note": "Fixed the bug where `zeroEx.setProviderAsync` didn't invalidate etherToken contract's instance"
             }
         ],
-        "timestamp": 1499094000,
-        "isPublished": true
+        "timestamp": 1499094000
     },
     {
         "version": "0.7.1",
@@ -926,8 +1133,7 @@
                 "pr": 81
             }
         ],
-        "timestamp": 1498402800,
-        "isPublished": true
+        "timestamp": 1498402800
     },
     {
         "version": "0.7.0",
@@ -949,8 +1155,7 @@
                     "Renamed type `LogCancelArgs` to `LogCancelContractEventArgs` and `LogFillArgs` to `LogFillContractEventArgs`"
             }
         ],
-        "timestamp": 1498057200,
-        "isPublished": true
+        "timestamp": 1498057200
     },
     {
         "version": "0.6.2",
@@ -962,8 +1167,7 @@
                 "note": "Improved documentation"
             }
         ],
-        "timestamp": 1497970800,
-        "isPublished": true
+        "timestamp": 1497970800
     },
     {
         "version": "0.6.1",
@@ -972,8 +1176,7 @@
                 "note": "Improved documentation"
             }
         ],
-        "timestamp": 1497798000,
-        "isPublished": true
+        "timestamp": 1497798000
     },
     {
         "version": "0.6.0",
@@ -985,8 +1188,7 @@
                 "note": "Added types for contract event arguments"
             }
         ],
-        "timestamp": 1497798000,
-        "isPublished": true
+        "timestamp": 1497798000
     },
     {
         "version": "0.5.2",
@@ -996,8 +1198,7 @@
                     "Fixed the bug in `postpublish` script that caused that only unminified UMD bundle was uploaded to release page"
             }
         ],
-        "timestamp": 1497452400,
-        "isPublished": true
+        "timestamp": 1497452400
     },
     {
         "version": "0.5.1",
@@ -1006,7 +1207,6 @@
                 "note": "Added `postpublish` script to publish to Github Releases with assets."
             }
         ],
-        "timestamp": 1497452400,
-        "isPublished": true
+        "timestamp": 1497452400
     }
 ]

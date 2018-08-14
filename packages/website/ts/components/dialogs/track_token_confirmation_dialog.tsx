@@ -1,6 +1,6 @@
-import * as _ from 'lodash';
 import Dialog from 'material-ui/Dialog';
 import FlatButton from 'material-ui/FlatButton';
+import * as moment from 'moment';
 import * as React from 'react';
 import { Blockchain } from 'ts/blockchain';
 import { TrackTokenConfirmation } from 'ts/components/track_token_confirmation';
@@ -33,7 +33,7 @@ export class TrackTokenConfirmationDialog extends React.Component<
             isAddingTokenToTracked: false,
         };
     }
-    public render() {
+    public render(): React.ReactNode {
         const tokens = this.props.tokens;
         return (
             <Dialog
@@ -66,7 +66,7 @@ export class TrackTokenConfirmationDialog extends React.Component<
             </Dialog>
         );
     }
-    private async _onTrackConfirmationRespondedAsync(didUserAcceptTracking: boolean) {
+    private async _onTrackConfirmationRespondedAsync(didUserAcceptTracking: boolean): Promise<void> {
         if (!didUserAcceptTracking) {
             this.props.onToggleDialog(didUserAcceptTracking);
             return;
@@ -74,12 +74,13 @@ export class TrackTokenConfirmationDialog extends React.Component<
         this.setState({
             isAddingTokenToTracked: true,
         });
+        const currentTimestamp = moment().unix();
         for (const token of this.props.tokens) {
             const newTokenEntry = {
                 ...token,
+                trackedTimestamp: currentTimestamp,
             };
 
-            newTokenEntry.isTracked = true;
             trackedTokenStorage.addTrackedTokenToUser(this.props.userAddress, this.props.networkId, newTokenEntry);
             this.props.dispatcher.updateTokenByAddress([newTokenEntry]);
         }

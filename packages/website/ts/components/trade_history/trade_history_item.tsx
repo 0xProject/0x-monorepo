@@ -1,6 +1,6 @@
-import { ZeroEx } from '0x.js';
 import { colors, EtherscanLinkSuffixes } from '@0xproject/react-shared';
 import { BigNumber } from '@0xproject/utils';
+import { Web3Wrapper } from '@0xproject/web3-wrapper';
 import * as _ from 'lodash';
 import Paper from 'material-ui/Paper';
 import * as moment from 'moment';
@@ -23,7 +23,7 @@ interface TradeHistoryItemProps {
 interface TradeHistoryItemState {}
 
 export class TradeHistoryItem extends React.Component<TradeHistoryItemProps, TradeHistoryItemState> {
-    public render() {
+    public render(): React.ReactNode {
         const fill = this.props.fill;
         const tokens = _.values(this.props.tokenByAddress);
         const takerToken = _.find(tokens, token => {
@@ -88,12 +88,18 @@ export class TradeHistoryItem extends React.Component<TradeHistoryItemProps, Tra
             </Paper>
         );
     }
-    private _renderAmounts(makerToken: Token, takerToken: Token) {
+    private _renderAmounts(makerToken: Token, takerToken: Token): React.ReactNode {
         const fill = this.props.fill;
-        const filledTakerTokenAmountInUnits = ZeroEx.toUnitAmount(fill.filledTakerTokenAmount, takerToken.decimals);
-        const filledMakerTokenAmountInUnits = ZeroEx.toUnitAmount(fill.filledMakerTokenAmount, takerToken.decimals);
+        const filledTakerTokenAmountInUnits = Web3Wrapper.toUnitAmount(
+            fill.filledTakerTokenAmount,
+            takerToken.decimals,
+        );
+        const filledMakerTokenAmountInUnits = Web3Wrapper.toUnitAmount(
+            fill.filledMakerTokenAmount,
+            takerToken.decimals,
+        );
         let exchangeRate = filledTakerTokenAmountInUnits.div(filledMakerTokenAmountInUnits);
-        const fillMakerTokenAmount = ZeroEx.toBaseUnitAmount(filledMakerTokenAmountInUnits, makerToken.decimals);
+        const fillMakerTokenAmount = Web3Wrapper.toBaseUnitAmount(filledMakerTokenAmountInUnits, makerToken.decimals);
 
         let receiveAmount;
         let receiveToken;
@@ -136,7 +142,7 @@ export class TradeHistoryItem extends React.Component<TradeHistoryItemProps, Tra
             </div>
         );
     }
-    private _renderDate() {
+    private _renderDate(): React.ReactNode {
         const blockMoment = moment.unix(this.props.fill.blockTimestamp);
         if (!blockMoment.isValid()) {
             return null;
@@ -159,8 +165,8 @@ export class TradeHistoryItem extends React.Component<TradeHistoryItemProps, Tra
             </div>
         );
     }
-    private _renderAmount(amount: BigNumber, symbol: string, decimals: number) {
-        const unitAmount = ZeroEx.toUnitAmount(amount, decimals);
+    private _renderAmount(amount: BigNumber, symbol: string, decimals: number): React.ReactNode {
+        const unitAmount = Web3Wrapper.toUnitAmount(amount, decimals);
         return (
             <span>
                 {unitAmount.toFixed(configs.AMOUNT_DISPLAY_PRECSION)} {symbol}

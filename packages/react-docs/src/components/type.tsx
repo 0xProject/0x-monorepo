@@ -1,4 +1,5 @@
 import { colors, constants as sharedConstants, utils as sharedUtils } from '@0xproject/react-shared';
+import { errorUtils } from '@0xproject/utils';
 import * as _ from 'lodash';
 import * as React from 'react';
 import { Link as ScrollLink } from 'react-scroll';
@@ -6,21 +7,9 @@ import * as ReactTooltip from 'react-tooltip';
 
 import { DocsInfo } from '../docs_info';
 import { Type as TypeDef, TypeDefinitionByName, TypeDocTypes } from '../types';
-import { constants } from '../utils/constants';
-import { utils } from '../utils/utils';
 
 import { Signature } from './signature';
 import { TypeDefinition } from './type_definition';
-
-const typeToSection: { [typeName: string]: string } = {
-    ExchangeWrapper: 'exchange',
-    TokenWrapper: 'token',
-    TokenRegistryWrapper: 'tokenRegistry',
-    EtherTokenWrapper: 'etherToken',
-    ProxyWrapper: 'proxy',
-    TokenTransferProxyWrapper: 'proxy',
-    OrderStateWatcher: 'orderWatcher',
-};
 
 export interface TypeProps {
     type: TypeDef;
@@ -109,7 +98,6 @@ export function Type(props: TypeProps): any {
                     returnType={type.method.returnType}
                     parameters={type.method.parameters}
                     typeParameter={type.method.typeParameter}
-                    callPath={type.method.callPath}
                     sectionName={props.sectionName}
                     shouldHideMethodName={true}
                     shouldUseArrowSyntax={true}
@@ -141,7 +129,7 @@ export function Type(props: TypeProps): any {
             break;
 
         default:
-            throw utils.spawnSwitchErr('type.typeDocType', type.typeDocType);
+            throw errorUtils.spawnSwitchErr('type.typeDocType', type.typeDocType);
     }
     // HACK: Normalize BigNumber to simply BigNumber. For some reason the type
     // name is unpredictably one or the other.

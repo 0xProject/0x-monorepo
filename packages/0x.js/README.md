@@ -1,5 +1,9 @@
 ## 0x.js
 
+A TypeScript/Javascript library for interacting with the 0x protocol.
+
+### Read the [Documentation](https://0xproject.com/docs/0x.js).
+
 ## Installation
 
 0x.js ships as both a [UMD](https://github.com/umdjs/umd) module and a [CommonJS](https://en.wikipedia.org/wiki/CommonJS) package.
@@ -38,10 +42,54 @@ Download the UMD module from our [releases page](https://github.com/0xProject/0x
 <script type="text/javascript" src="0x.js"></script>
 ```
 
-## Documentation
+## Contributing
 
-Extensive documentation of 0x.js can be found on [our website][docs-url].
+We strongly recommend that the community help us make improvements and determine the future direction of 0x protocol. To report bugs within this package, please create an issue in this repository.
 
-[website-url]: https://0xproject.com/
-[whitepaper-url]: https://0xproject.com/pdfs/0x_white_paper.pdf
-[docs-url]: https://0xproject.com/docs/0xjs
+Please read our [contribution guidelines](../../CONTRIBUTING.md) before getting started.
+
+### Install dependencies
+
+If you don't have yarn workspaces enabled (Yarn < v1.0) - enable them:
+
+```bash
+yarn config set workspaces-experimental true
+```
+
+Then install dependencies
+
+```bash
+yarn install
+```
+
+### Build
+
+To build this package and all other monorepo packages that it depends on, run the following from the monorepo root directory:
+
+```bash
+PKG=0x.js yarn build
+```
+
+Or continuously rebuild on change:
+
+```bash
+PKG=0x.js yarn watch
+```
+
+### Clean
+
+```bash
+yarn clean
+```
+
+### Lint
+
+```bash
+yarn lint
+```
+
+### Run Tests
+
+```bash
+yarn test
+```

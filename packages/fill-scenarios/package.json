@@ -1,0 +1,57 @@
+{
+    "name": "@0xproject/fill-scenarios",
+    "version": "1.0.1-rc.3",
+    "description": "0x order fill scenario generator",
+    "main": "lib/index.js",
+    "types": "lib/index.d.ts",
+    "scripts": {
+        "watch_without_deps": "yarn pre_build && tsc -w",
+        "build": "yarn pre_build && tsc && copyfiles -u 2 './lib/monorepo_scripts/**/*' ./scripts",
+        "pre_build": "run-s update_artifacts generate_contract_wrappers",
+        "update_artifacts": "for i in ${npm_package_config_contracts}; do copyfiles -u 4 ../migrations/artifacts/2.0.0/$i.json lib/artifacts; done;",
+        "generate_contract_wrappers": "abi-gen --abis 'lib/artifacts/@(Exchange|DummyERC20Token|DummyERC721Token).json' --template ../contract_templates/contract.handlebars --partials '../contract_templates/partials/**/*.handlebars' --output src/generated_contract_wrappers --backend ethers",
+        "copy_monorepo_scripts": "copyfiles -u 3 './lib/src/monorepo_scripts/**/*' ./scripts",
+        "clean": "shx rm -rf lib scripts src/generated_contract_wrappers",
+        "lint": "tslint --project . --exclude **/src/generated_contract_wrappers/**/*",
+        "manual:postpublish": "yarn build; node ./scripts/postpublish.js"
+    },
+    "config": {
+        "contracts": "Exchange DummyERC20Token DummyERC721Token"
+    },
+    "license": "Apache-2.0",
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/0xProject/0x-monorepo.git"
+    },
+    "bugs": {
+        "url": "https://github.com/0xProject/0x-monorepo/issues"
+    },
+    "homepage": "https://github.com/0xProject/0x-monorepo/packages/fill-scenarios/README.md",
+    "devDependencies": {
+        "@0xproject/abi-gen": "^1.0.5",
+        "@0xproject/monorepo-scripts": "^1.0.5",
+        "@0xproject/sol-compiler": "^1.0.5",
+        "@0xproject/tslint-config": "^1.0.5",
+        "@types/lodash": "4.14.104",
+        "copyfiles": "^1.2.0",
+        "make-promises-safe": "^1.1.0",
+        "npm-run-all": "^4.1.2",
+        "shx": "^0.2.2",
+        "tslint": "5.11.0",
+        "typescript": "2.9.2"
+    },
+    "dependencies": {
+        "@0xproject/base-contract": "^2.0.0-rc.1",
+        "@0xproject/order-utils": "^1.0.1-rc.3",
+        "@0xproject/types": "^1.0.1-rc.4",
+        "@0xproject/typescript-typings": "^1.0.4",
+        "@0xproject/utils": "^1.0.5",
+        "@0xproject/web3-wrapper": "^1.2.0",
+        "ethereum-types": "^1.0.4",
+        "ethers": "3.0.22",
+        "lodash": "^4.17.5"
+    },
+    "publishConfig": {
+        "access": "public"
+    }
+}

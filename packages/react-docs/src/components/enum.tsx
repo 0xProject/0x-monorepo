@@ -7,8 +7,8 @@ export interface EnumProps {
     values: EnumValue[];
 }
 
-export function Enum(props: EnumProps) {
-    const values = _.map(props.values, (value, i) => {
+export const Enum = (props: EnumProps) => {
+    const values = _.map(props.values, value => {
         const defaultValueIfAny = !_.isUndefined(value.defaultValue) ? ` = ${value.defaultValue}` : '';
         return `\n\t${value.name}${defaultValueIfAny},`;
     });
@@ -20,4 +20,4 @@ export function Enum(props: EnumProps) {
             {`}`}
         </span>
     );
-}
+};

@@ -1,19 +1,24 @@
-import { JSONRPCResponsePayload } from '@0xproject/types';
 import * as chai from 'chai';
+import { JSONRPCResponsePayload } from 'ethereum-types';
 import * as ethUtils from 'ethereumjs-util';
 import * as _ from 'lodash';
-import Web3 = require('web3');
-import Web3ProviderEngine = require('web3-provider-engine');
-import RpcSubprovider = require('web3-provider-engine/subproviders/rpc');
 
-import { LedgerSubprovider } from '../../src';
-import { DoneCallback, LedgerCommunicationClient, LedgerSubproviderErrors } from '../../src/types';
+import { LedgerSubprovider, Web3ProviderEngine } from '../../src';
+import {
+    DoneCallback,
+    LedgerCommunicationClient,
+    LedgerSubproviderErrors,
+    WalletSubproviderErrors,
+} from '../../src/types';
 import { chaiSetup } from '../chai_setup';
+import { fixtureData } from '../utils/fixture_data';
+import { ganacheSubprovider } from '../utils/ganache_subprovider';
 import { reportCallbackErrors } from '../utils/report_callback_errors';
 
 chaiSetup.configure();
 const expect = chai.expect;
 const FAKE_ADDRESS = '0xb088a3bc93f71b4de97b9de773e9647645983688';
+const DEFAULT_NUM_ACCOUNTS = 10;
 
 describe('LedgerSubprovider', () => {
     const networkId: number = 42;
@@ -41,7 +46,7 @@ describe('LedgerSubprovider', () => {
                     };
                     return ecSignature;
                 },
-                signTransaction: async (derivationPath: string, txHex: string) => {
+                signTransaction: async (_derivationPath: string, _txHex: string) => {
                     const ecSignature = {
                         v: '77',
                         r: '88a95ef1378487bc82be558e82c8478baf840c545d5b887536bb1da63673a98b',
@@ -50,7 +55,7 @@ describe('LedgerSubprovider', () => {
                     return ecSignature;
                 },
                 transport: {
-                    close: _.noop,
+                    close: _.noop.bind(_),
                 } as LedgerCommunicationClient,
             };
             // tslint:enable:no-object-literal-type-assertion
@@ -66,7 +71,7 @@ describe('LedgerSubprovider', () => {
             it('returns default number of accounts', async () => {
                 const accounts = await ledgerSubprovider.getAccountsAsync();
                 expect(accounts[0]).to.be.equal(FAKE_ADDRESS);
-                expect(accounts.length).to.be.equal(10);
+                expect(accounts.length).to.be.equal(DEFAULT_NUM_ACCOUNTS);
             });
             it('returns requested number of accounts', async () => {
                 const numberOfAccounts = 20;
@@ -75,8 +80,8 @@ describe('LedgerSubprovider', () => {
                 expect(accounts.length).to.be.equal(numberOfAccounts);
             });
             it('signs a personal message', async () => {
-                const data = ethUtils.bufferToHex(ethUtils.toBuffer('hello world'));
-                const ecSignatureHex = await ledgerSubprovider.signPersonalMessageAsync(data);
+                const data = ethUtils.bufferToHex(ethUtils.toBuffer(fixtureData.PERSONAL_MESSAGE_STRING));
+                const ecSignatureHex = await ledgerSubprovider.signPersonalMessageAsync(data, FAKE_ADDRESS);
                 expect(ecSignatureHex).to.be.equal(
                     '0xa6cc284bff14b42bdf5e9286730c152be91719d478605ec46b3bebcd0ae491480652a1a7b742ceb0213d1e744316e285f41f878d8af0b8e632cbca4c279132d001',
                 );
@@ -88,7 +93,7 @@ describe('LedgerSubprovider', () => {
                 return expect(
                     Promise.all([
                         ledgerSubprovider.getAccountsAsync(),
-                        ledgerSubprovider.signPersonalMessageAsync(data),
+                        ledgerSubprovider.signPersonalMessageAsync(data, FAKE_ADDRESS),
                     ]),
                 ).to.be.rejectedWith(LedgerSubproviderErrors.MultipleOpenConnectionsDisallowed);
             });
@@ -99,10 +104,7 @@ describe('LedgerSubprovider', () => {
         before(() => {
             provider = new Web3ProviderEngine();
             provider.addProvider(ledgerSubprovider);
-            const httpProvider = new RpcSubprovider({
-                rpcUrl: 'http://localhost:8545',
-            });
-            provider.addProvider(httpProvider);
+            provider.addProvider(ganacheSubprovider);
             provider.start();
         });
         describe('success cases', () => {
@@ -115,7 +117,7 @@ describe('LedgerSubprovider', () => {
                 };
                 const callback = reportCallbackErrors(done)((err: Error, response: JSONRPCResponsePayload) => {
                     expect(err).to.be.a('null');
-                    expect(response.result.length).to.be.equal(10);
+                    expect(response.result.length).to.be.equal(DEFAULT_NUM_ACCOUNTS);
                     expect(response.result[0]).to.be.equal(FAKE_ADDRESS);
                     done();
                 });
@@ -126,7 +128,7 @@ describe('LedgerSubprovider', () => {
                 const payload = {
                     jsonrpc: '2.0',
                     method: 'eth_sign',
-                    params: ['0x0000000000000000000000000000000000000000', messageHex],
+                    params: [FAKE_ADDRESS, messageHex],
                     id: 1,
                 };
                 const callback = reportCallbackErrors(done)((err: Error, response: JSONRPCResponsePayload) => {
@@ -139,11 +141,11 @@ describe('LedgerSubprovider', () => {
                 provider.sendAsync(payload, callback);
             });
             it('signs a personal message with personal_sign', (done: DoneCallback) => {
-                const messageHex = ethUtils.bufferToHex(ethUtils.toBuffer('hello world'));
+                const messageHex = ethUtils.bufferToHex(ethUtils.toBuffer(fixtureData.PERSONAL_MESSAGE_STRING));
                 const payload = {
                     jsonrpc: '2.0',
                     method: 'personal_sign',
-                    params: [messageHex, '0x0000000000000000000000000000000000000000'],
+                    params: [messageHex, FAKE_ADDRESS],
                     id: 1,
                 };
                 const callback = reportCallbackErrors(done)((err: Error, response: JSONRPCResponsePayload) => {
@@ -162,6 +164,7 @@ describe('LedgerSubprovider', () => {
                     gasPrice: '0x00',
                     nonce: '0x00',
                     gas: '0x00',
+                    from: FAKE_ADDRESS,
                 };
                 const payload = {
                     jsonrpc: '2.0',
@@ -171,7 +174,8 @@ describe('LedgerSubprovider', () => {
                 };
                 const callback = reportCallbackErrors(done)((err: Error, response: JSONRPCResponsePayload) => {
                     expect(err).to.be.a('null');
-                    expect(response.result.raw.length).to.be.equal(192);
+                    const rawTxLength = 192;
+                    expect(response.result.raw.length).to.be.equal(rawTxLength);
                     expect(response.result.raw.substr(0, 2)).to.be.equal('0x');
                     done();
                 });
@@ -184,10 +188,10 @@ describe('LedgerSubprovider', () => {
                 const payload = {
                     jsonrpc: '2.0',
                     method: 'eth_sign',
-                    params: ['0x0000000000000000000000000000000000000000', nonHexMessage],
+                    params: [FAKE_ADDRESS, nonHexMessage],
                     id: 1,
                 };
-                const callback = reportCallbackErrors(done)((err: Error, response: JSONRPCResponsePayload) => {
+                const callback = reportCallbackErrors(done)((err: Error, _response: JSONRPCResponsePayload) => {
                     expect(err).to.not.be.a('null');
                     expect(err.message).to.be.equal('Expected data to be of type HexString, encountered: hello world');
                     done();
@@ -199,10 +203,10 @@ describe('LedgerSubprovider', () => {
                 const payload = {
                     jsonrpc: '2.0',
                     method: 'personal_sign',
-                    params: [nonHexMessage, '0x0000000000000000000000000000000000000000'],
+                    params: [nonHexMessage, FAKE_ADDRESS],
                     id: 1,
                 };
-                const callback = reportCallbackErrors(done)((err: Error, response: JSONRPCResponsePayload) => {
+                const callback = reportCallbackErrors(done)((err: Error, _response: JSONRPCResponsePayload) => {
                     expect(err).to.not.be.a('null');
                     expect(err.message).to.be.equal('Expected data to be of type HexString, encountered: hello world');
                     done();
@@ -220,9 +224,9 @@ describe('LedgerSubprovider', () => {
                     params: [tx],
                     id: 1,
                 };
-                const callback = reportCallbackErrors(done)((err: Error, response: JSONRPCResponsePayload) => {
+                const callback = reportCallbackErrors(done)((err: Error, _response: JSONRPCResponsePayload) => {
                     expect(err).to.not.be.a('null');
-                    expect(err.message).to.be.equal(LedgerSubproviderErrors.SenderInvalidOrNotSupplied);
+                    expect(err.message).to.be.equal(WalletSubproviderErrors.SenderInvalidOrNotSupplied);
                     done();
                 });
                 provider.sendAsync(payload, callback);
@@ -239,9 +243,9 @@ describe('LedgerSubprovider', () => {
                     params: [tx],
                     id: 1,
                 };
-                const callback = reportCallbackErrors(done)((err: Error, response: JSONRPCResponsePayload) => {
+                const callback = reportCallbackErrors(done)((err: Error, _response: JSONRPCResponsePayload) => {
                     expect(err).to.not.be.a('null');
-                    expect(err.message).to.be.equal(LedgerSubproviderErrors.SenderInvalidOrNotSupplied);
+                    expect(err.message).to.be.equal(WalletSubproviderErrors.SenderInvalidOrNotSupplied);
                     done();
                 });
                 provider.sendAsync(payload, callback);

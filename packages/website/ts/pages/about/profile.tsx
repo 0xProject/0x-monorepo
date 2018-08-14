@@ -22,7 +22,7 @@ interface ProfileProps {
     profileInfo: ProfileInfo;
 }
 
-export function Profile(props: ProfileProps) {
+export const Profile = (props: ProfileProps) => {
     return (
         <div className={`lg-col md-col lg-col-${props.colSize} md-col-6`}>
             <div style={{ maxWidth: 300 }} className="mx-auto lg-px3 md-px3 sm-px4 sm-pb3">
@@ -39,6 +39,7 @@ export function Profile(props: ProfileProps) {
                             fontSize: 14,
                             fontFamily: 'Roboto Mono',
                             color: colors.darkGrey,
+                            whiteSpace: 'nowrap',
                         }}
                     >
                         {props.profileInfo.title.toUpperCase()}
@@ -47,15 +48,15 @@ export function Profile(props: ProfileProps) {
                 <div style={{ minHeight: 60, lineHeight: 1.4 }} className="pt1 pb2 mx-auto lg-h6 md-h6 sm-h5 sm-center">
                     {props.profileInfo.description}
                 </div>
-                <div className="flex pb3 mx-auto sm-hide xs-hide" style={{ width: 280, opacity: 0.5 }}>
+                <div className="flex pb3 sm-hide xs-hide" style={{ width: 280, opacity: 0.5 }}>
                     {renderSocialMediaIcons(props.profileInfo)}
                 </div>
             </div>
         </div>
     );
-}
+};
 
-function renderSocialMediaIcons(profileInfo: ProfileInfo) {
+function renderSocialMediaIcons(profileInfo: ProfileInfo): React.ReactNode {
     const icons = [
         renderSocialMediaIcon('zmdi-github-box', profileInfo.github),
         renderSocialMediaIcon('zmdi-linkedin-box', profileInfo.linkedIn),
@@ -64,7 +65,7 @@ function renderSocialMediaIcons(profileInfo: ProfileInfo) {
     return icons;
 }
 
-function renderSocialMediaIcon(iconName: string, url: string) {
+function renderSocialMediaIcon(iconName: string, url: string): React.ReactNode {
     if (_.isEmpty(url)) {
         return null;
     }

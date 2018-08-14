@@ -1,11 +1,11 @@
 import { AnchorTitle, colors, HeaderSizes } from '@0xproject/react-shared';
+import { errorUtils } from '@0xproject/utils';
 import * as _ from 'lodash';
 import * as React from 'react';
 
 import { DocsInfo } from '../docs_info';
 import { CustomType, CustomTypeChild, KindString, TypeDocTypes } from '../types';
 import { constants } from '../utils/constants';
-import { utils } from '../utils/utils';
 
 import { Comment } from './comment';
 import { CustomEnum } from './custom_enum';
@@ -35,7 +35,7 @@ export class TypeDefinition extends React.Component<TypeDefinitionProps, TypeDef
             shouldShowAnchor: false,
         };
     }
-    public render() {
+    public render(): React.ReactNode {
         const customType = this.props.customType;
         if (!this.props.docsInfo.isPublicType(customType.name)) {
             return null; // no-op
@@ -96,7 +96,7 @@ export class TypeDefinition extends React.Component<TypeDefinitionProps, TypeDef
                 break;
 
             default:
-                throw utils.spawnSwitchErr('type.kindString', customType.kindString);
+                throw errorUtils.spawnSwitchErr('type.kindString', customType.kindString);
         }
 
         const typeDefinitionAnchorId = `${this.props.sectionName}-${customType.name}`;
@@ -122,14 +122,55 @@ export class TypeDefinition extends React.Component<TypeDefinitionProps, TypeDef
                     </pre>
                 </div>
                 <div style={{ maxWidth: 620 }}>
-                    {customType.comment && <Comment comment={customType.comment} className="py2" />}
+                    {customType.comment && (
+                        <Comment comment={this._formatComment(customType.comment)} className="py2" />
+                    )}
                 </div>
             </div>
         );
     }
-    private _setAnchorVisibility(shouldShowAnchor: boolean) {
+    private _setAnchorVisibility(shouldShowAnchor: boolean): void {
         this.setState({
             shouldShowAnchor,
         });
+    }
+    /**
+     * Type definition comments usually describe the type as a whole or the individual
+     * properties within the type. Since TypeDoc just treats these comments simply as
+     * one paragraph, we do some additional formatting so that we can display individual
+     * property comments on their own lines.
+     * E.g:
+     * Interface SomeConfig
+     * {
+     *   networkId: number,
+     *   derivationPath: string,
+     * }
+     * networkId: The ethereum networkId to set as the chainId from EIP155
+     * derivationPath: Initial derivation path to use e.g 44'/60'/0'
+     *
+     * Each property description should be on a new line.
+     */
+    private _formatComment(text: string): string {
+        const NEW_LINE_REGEX = /(\r\n|\n|\r)/gm;
+        const sanitizedText = text.replace(NEW_LINE_REGEX, ' ');
+        const PROPERTY_DESCRIPTION_DIVIDER = ':';
+        if (!_.includes(sanitizedText, PROPERTY_DESCRIPTION_DIVIDER)) {
+            return sanitizedText;
+        }
+        const segments = sanitizedText.split(PROPERTY_DESCRIPTION_DIVIDER);
+        _.each(segments, (s: string, i: number) => {
+            if (i === 0) {
+                segments[i] = `**${s}**`;
+                return;
+            } else if (i === segments.length - 1) {
+                return;
+            }
+            const words = s.split(' ');
+            const property = words[words.length - 1];
+            words[words.length - 1] = `\n\n**${property}**`;
+            segments[i] = words.join(' ');
+        });
+        const final = segments.join(PROPERTY_DESCRIPTION_DIVIDER);
+        return final;
     }
 }

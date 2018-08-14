@@ -1,4 +1,3 @@
-import * as _ from 'lodash';
 import * as React from 'react';
 
 import {
@@ -15,7 +14,7 @@ import * as v0TypeDocJson from './json/0.1.12.json';
 import * as v2TypeDocJson from './json/0.2.0.json';
 
 // tslint:disable-next-line:no-implicit-dependencies no-var-requires
-const IntroMarkdown = require('md/introduction');
+const IntroMarkdownV1 = require('md/introduction');
 
 const docSections = {
     introduction: 'introduction',
@@ -33,8 +32,10 @@ const docsInfoConfig: DocsInfoConfig = {
         web3Wrapper: [docSections.web3Wrapper],
         types: [docSections.types],
     },
-    sectionNameToMarkdown: {
-        [docSections.introduction]: IntroMarkdown,
+    sectionNameToMarkdownByVersion: {
+        '0.0.1': {
+            [docSections.introduction]: IntroMarkdownV1,
+        },
     },
     sectionNameToModulePath: {
         [docSections.web3Wrapper]: ['"web3-wrapper/src/index"'],
@@ -94,10 +95,7 @@ export class Docs extends React.Component<DocsProps, DocsState> {
             docAgnosticFormat: docsInfo.convertToDocAgnosticFormat(v2TypeDocJson),
         };
     }
-    public render() {
-        const menuSubsectionsBySection = _.isUndefined(this.state.docAgnosticFormat)
-            ? {}
-            : docsInfo.getMenuSubsectionsBySection(this.state.docAgnosticFormat);
+    public render(): React.ReactNode {
         return (
             <Documentation
                 selectedVersion={this.state.selectedVersion}
@@ -109,14 +107,14 @@ export class Docs extends React.Component<DocsProps, DocsState> {
             />
         );
     }
-    private _onVersionSelected(semver: string) {
+    private _onVersionSelected(semver: string): void {
         const selectedDocJSON = versionToDocJSON[semver];
         this.setState({
             selectedVersion: semver,
             docAgnosticFormat: docsInfo.convertToDocAgnosticFormat(selectedDocJSON as TypeDocNode),
         });
     }
-    private _getSourceUrl() {
+    private _getSourceUrl(): string {
         const sourceUrl = `${docsInfoConfig.packageUrl}/blob/@0xproject/web3-wrapper@${
             this.state.selectedVersion
         }/packages`;

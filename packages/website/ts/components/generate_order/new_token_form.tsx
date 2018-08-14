@@ -1,6 +1,7 @@
 import { colors } from '@0xproject/react-shared';
 import * as _ from 'lodash';
 import TextField from 'material-ui/TextField';
+import * as moment from 'moment';
 import * as React from 'react';
 import { Blockchain } from 'ts/blockchain';
 import { AddressInput } from 'ts/components/inputs/address_input';
@@ -42,7 +43,7 @@ export class NewTokenForm extends React.Component<NewTokenFormProps, NewTokenFor
             decimalsErrText: '',
         };
     }
-    public render() {
+    public render(): React.ReactNode {
         return (
             <div className="mx-auto pb2" style={{ width: 256 }}>
                 <div>
@@ -96,7 +97,7 @@ export class NewTokenForm extends React.Component<NewTokenFormProps, NewTokenFor
             </div>
         );
     }
-    private async _onAddNewTokenClickAsync() {
+    private async _onAddNewTokenClickAsync(): Promise<void> {
         // Trigger validation of name and symbol
         this._onTokenNameChanged(undefined, this.state.name);
         this._onTokenSymbolChanged(undefined, this.state.symbol);
@@ -147,24 +148,24 @@ export class NewTokenForm extends React.Component<NewTokenFormProps, NewTokenFor
             iconUrl: undefined,
             name: this.state.name,
             symbol: this.state.symbol.toUpperCase(),
-            isTracked: true,
+            trackedTimestamp: moment().unix(),
             isRegistered: false,
         };
         this.props.onNewTokenSubmitted(newToken);
     }
-    private _onTokenNameChanged(e: any, name: string) {
+    private _onTokenNameChanged(_event: any, name: string): void {
         let nameErrText = '';
         const maxLength = 30;
         const tokens = _.values(this.props.tokenByAddress);
         const tokenWithNameIfExists = _.find(tokens, { name });
-        const tokenWithNameExists = !_.isUndefined(tokenWithNameIfExists);
+        const doesTokenWithNameExists = !_.isUndefined(tokenWithNameIfExists);
         if (name === '') {
             nameErrText = 'Name is required';
         } else if (!this._isValidName(name)) {
             nameErrText = 'Name should only contain letters, digits and spaces';
         } else if (name.length > maxLength) {
             nameErrText = `Max length is ${maxLength}`;
-        } else if (tokenWithNameExists) {
+        } else if (doesTokenWithNameExists) {
             nameErrText = 'Token with this name already exists';
         }
 
@@ -173,18 +174,18 @@ export class NewTokenForm extends React.Component<NewTokenFormProps, NewTokenFor
             nameErrText,
         });
     }
-    private _onTokenSymbolChanged(e: any, symbol: string) {
+    private _onTokenSymbolChanged(_event: any, symbol: string): void {
         let symbolErrText = '';
         const maxLength = 5;
         const tokens = _.values(this.props.tokenByAddress);
-        const tokenWithSymbolExists = !_.isUndefined(_.find(tokens, { symbol }));
+        const doesTokenWithSymbolExists = !_.isUndefined(_.find(tokens, { symbol }));
         if (symbol === '') {
             symbolErrText = 'Symbol is required';
         } else if (!this._isAlphanumeric(symbol)) {
             symbolErrText = 'Can only include alphanumeric characters';
         } else if (symbol.length > maxLength) {
             symbolErrText = `Max length is ${maxLength}`;
-        } else if (tokenWithSymbolExists) {
+        } else if (doesTokenWithSymbolExists) {
             symbolErrText = 'Token with symbol already exists';
         }
 
@@ -193,7 +194,7 @@ export class NewTokenForm extends React.Component<NewTokenFormProps, NewTokenFor
             symbolErrText,
         });
     }
-    private _onTokenDecimalsChanged(e: any, decimals: string) {
+    private _onTokenDecimalsChanged(_event: any, decimals: string): void {
         let decimalsErrText = '';
         const maxLength = 2;
         if (decimals === '') {
@@ -209,20 +210,20 @@ export class NewTokenForm extends React.Component<NewTokenFormProps, NewTokenFor
             decimalsErrText,
         });
     }
-    private _onTokenAddressChanged(address?: string) {
+    private _onTokenAddressChanged(address?: string): void {
         if (!_.isUndefined(address)) {
             this.setState({
                 address,
             });
         }
     }
-    private _isValidName(input: string) {
+    private _isValidName(input: string): boolean {
         return /^[a-z0-9 ]+$/i.test(input);
     }
-    private _isInteger(input: string) {
+    private _isInteger(input: string): boolean {
         return /^[0-9]+$/i.test(input);
     }
-    private _isAlphanumeric(input: string) {
+    private _isAlphanumeric(input: string): boolean {
         return /^[a-zA-Z0-9]+$/i.test(input);
     }
 }

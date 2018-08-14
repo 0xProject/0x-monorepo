@@ -1,42 +1,27 @@
-<!--- Thank you for taking the time to submit a Pull Request -->
-
-<!--- Provide a general summary of the issue in the Title above -->
-
 ## Description
 
 <!--- Describe your changes in detail -->
 
-## Motivation and Context
+## Testing instructions
 
-<!--- Why is this change required? What problem does it solve? -->
-
-<!--- If it fixes an open issue, please link to the issue here. -->
-
-## How Has This Been Tested?
-
-<!--- Please describe in detail how you tested your changes. -->
-
-<!--- Include details of your testing environment, and the tests you ran to -->
-
-<!--- see how your change affects other areas of the code, etc. -->
+<!--- Please describe how reviewers can test your changes -->
 
 ## Types of changes
 
-<!--- What types of changes does your code introduce? Put an `x` in all the boxes that apply: -->
+<!--- What types of changes does your code introduce? Uncomment all the bullets that apply: -->
 
-*   [ ] Bug fix (non-breaking change which fixes an issue)
-*   [ ] New feature (non-breaking change which adds functionality)
-*   [ ] Breaking change (fix or feature that would cause existing functionality to change)
+<!-- * Bug fix (non-breaking change which fixes an issue) -->
+
+<!-- * New feature (non-breaking change which adds functionality) -->
+
+<!-- * Breaking change (fix or feature that would cause existing functionality to change) -->
 
 ## Checklist:
 
-<!--- Go over all the following points, and put an `x` in all the boxes that apply. -->
+<!--- The following points should be used to indicate the progress of your PR.  Put an `x` in all the boxes that apply right now, and come back over time and check them off as you make progress.  If you're unsure about any of these, don't hesitate to ask. We're here to help! -->
 
-<!--- If you're unsure about any of these, don't hesitate to ask. We're here to help! -->
-
-*   [ ] Change requires a change to the documentation.
-*   [ ] Added tests to cover my changes.
-*   [ ] Added new entries to the relevant CHANGELOGs.
-*   [ ] Updated the new versions of the changed packages in the relevant CHANGELOGs.
-*   [ ] Labeled this PR with the 'WIP' label if it is a work in progress.
-*   [ ] Labeled this PR with the labels corresponding to the changed package.
+*   [ ] Prefix PR title with `[WIP]` if necessary.
+*   [ ] Prefix PR title with bracketed package name(s) corresponding to the changed package(s). For example: `[sol-cov] Fixed bug`.
+*   [ ] Add tests to cover changes as needed.
+*   [ ] Update documentation as needed.
+*   [ ] Add new entries to the relevant CHANGELOG.jsons.

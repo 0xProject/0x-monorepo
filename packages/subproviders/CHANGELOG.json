@@ -1,5 +1,165 @@
 [
     {
+        "timestamp": 1534210131,
+        "version": "1.0.5",
+        "changes": [
+            {
+                "note": "Dependencies updated"
+            }
+        ]
+    },
+    {
+        "timestamp": 1532619515,
+        "version": "1.0.4",
+        "changes": [
+            {
+                "note": "Dependencies updated"
+            }
+        ]
+    },
+    {
+        "timestamp": 1532614997,
+        "version": "1.0.3",
+        "changes": [
+            {
+                "note": "Dependencies updated"
+            }
+        ]
+    },
+    {
+        "timestamp": 1532605697,
+        "version": "1.0.2",
+        "changes": [
+            {
+                "note": "Dependencies updated"
+            }
+        ]
+    },
+    {
+        "timestamp": 1532357734,
+        "version": "1.0.1",
+        "changes": [
+            {
+                "note": "Dependencies updated"
+            }
+        ]
+    },
+    {
+        "timestamp": 1532043000,
+        "version": "1.0.0",
+        "changes": [
+            {
+                "note": "Add `RpcSubprovider` with timeout",
+                "pr": 874
+            },
+            {
+                "note": "Add `EthLightwalletSubprovider`",
+                "pr": 775
+            }
+        ]
+    },
+    {
+        "timestamp": 1531919263,
+        "version": "0.10.6",
+        "changes": [
+            {
+                "note": "Dependencies updated"
+            }
+        ]
+    },
+    {
+        "timestamp": 1529397769,
+        "version": "0.10.4",
+        "changes": [
+            {
+                "note": "Dependencies updated"
+            }
+        ]
+    },
+    {
+        "timestamp": 1527009133,
+        "version": "0.10.3",
+        "changes": [
+            {
+                "note": "Define engine type as Provider in setEngine",
+                "pr": 675
+            }
+        ]
+    },
+    {
+        "timestamp": 1527009133,
+        "version": "0.10.2",
+        "changes": [
+            {
+                "note": "Dependencies updated"
+            }
+        ]
+    },
+    {
+        "timestamp": 1525477860,
+        "version": "0.10.1",
+        "changes": [
+            {
+                "note": "Dependencies updated"
+            }
+        ]
+    },
+    {
+        "version": "0.10.0",
+        "changes": [
+            {
+                "note": "Upgrade web3-provider-engine to 14.0.4",
+                "pr": 555
+            },
+            {
+                "note": "Relax `to` validation in base wallet subprovider for transactions that deploy contracts",
+                "pr": 555
+            }
+        ],
+        "timestamp": 1525428773
+    },
+    {
+        "version": "0.9.0",
+        "changes": [
+            {
+                "note":
+                    "Refactor RedundantRPCSubprovider into RedundantSubprovider where it now accepts an array of subproviders rather then an array of RPC endpoints",
+                "pr": 500
+            },
+            {
+                "note": "Add PrivateKeySubprovider and refactor shared functionality into a base wallet subprovider",
+                "pr": 506
+            },
+            {
+                "note": "Add MnemonicWalletsubprovider, deprecating our truffle-hdwallet-provider fork",
+                "pr": 507
+            },
+            {
+                "note": "Support multiple addresses in ledger and mnemonic wallets",
+                "pr": 507
+            },
+            {
+                "note":
+                    "Refactors LedgerSubprovider such that explicitly setting the `pathIndex` is no longer required. Simply set the request `from` address as desired",
+                "pr": 507
+            },
+            {
+                "note": "Renamed derivationPath to baseDerivationPath.",
+                "pr": 507
+            }
+        ],
+        "timestamp": 1523462196
+    },
+    {
+        "timestamp": 1522673609,
+        "version": "0.8.4",
+        "changes": [
+            {
+                "note": "Dependencies updated"
+            }
+        ]
+    },
+    {
         "version": "0.8.3",
         "changes": [
             {
@@ -11,8 +171,7 @@
                 "pr": 465
             }
         ],
-        "timestamp": 1522658513,
-        "isPublished": true
+        "timestamp": 1522658513
     },
     {
         "version": "0.8.0",
@@ -33,8 +192,7 @@
                 "note": "Ignore `ganache-core` dependency when using package in a browser environment."
             }
         ],
-        "timestamp": 1521298800,
-        "isPublished": true
+        "timestamp": 1521298800
     },
     {
         "version": "0.7.0",
@@ -45,8 +203,7 @@
                 "pr": 437
             }
         ],
-        "timestamp": 1520434800,
-        "isPublished": true
+        "timestamp": 1520434800
     },
     {
         "version": "0.6.0",
@@ -60,8 +217,7 @@
                 "pr": 432
             }
         ],
-        "timestamp": 1520089200,
-        "isPublished": true
+        "timestamp": 1520089200
     },
     {
         "version": "0.5.0",
@@ -71,8 +227,7 @@
                 "pr": 392
             }
         ],
-        "timestamp": 1518706800,
-        "isPublished": true
+        "timestamp": 1518706800
     },
     {
         "version": "0.4.1",
@@ -82,8 +237,7 @@
                 "pr": 389
             }
         ],
-        "timestamp": 1518102000,
-        "isPublished": true
+        "timestamp": 1518102000
     },
     {
         "version": "0.4.0",
@@ -98,8 +252,7 @@
                 "pr": 363
             }
         ],
-        "timestamp": 1517929200,
-        "isPublished": true
+        "timestamp": 1517929200
     },
     {
         "version": "0.3.6",
@@ -109,8 +262,7 @@
                 "pr": 303
             }
         ],
-        "timestamp": 1517065200,
-        "isPublished": true
+        "timestamp": 1517065200
     },
     {
         "version": "0.3.0",
@@ -119,8 +271,7 @@
                 "note": "Allow LedgerSubprovider to handle `eth_sign` in addition to `personal_sign` RPC requests"
             }
         ],
-        "timestamp": 1514386800,
-        "isPublished": true
+        "timestamp": 1514386800
     },
     {
         "version": "0.2.0",
@@ -130,7 +281,6 @@
                 "pr": 271
             }
         ],
-        "timestamp": 1513695600,
-        "isPublished": true
+        "timestamp": 1513695600
     }
 ]

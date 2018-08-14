@@ -12,7 +12,7 @@ import { utils } from 'ts/utils/utils';
 interface SendButtonProps {
     userAddress: string;
     networkId: number;
-    token: Token;
+    asset: Token | 'ETH';
     dispatcher: Dispatcher;
     blockchain: Blockchain;
     onError: () => void;
@@ -33,7 +33,7 @@ export class SendButton extends React.Component<SendButtonProps, SendButtonState
             isSending: false,
         };
     }
-    public render() {
+    public render(): React.ReactNode {
         const labelStyle = this.state.isSending ? { fontSize: 10 } : {};
         return (
             <div>
@@ -51,26 +51,30 @@ export class SendButton extends React.Component<SendButtonProps, SendButtonState
                     isOpen={this.state.isSendDialogVisible}
                     onComplete={this._onSendAmountSelectedAsync.bind(this)}
                     onCancelled={this._toggleSendDialog.bind(this)}
-                    token={this.props.token}
+                    asset={this.props.asset}
                     lastForceTokenStateRefetch={this.props.lastForceTokenStateRefetch}
                 />
             </div>
         );
     }
-    private _toggleSendDialog() {
+    private _toggleSendDialog(): void {
         this.setState({
             isSendDialogVisible: !this.state.isSendDialogVisible,
         });
     }
-    private async _onSendAmountSelectedAsync(recipient: string, value: BigNumber) {
+    private async _onSendAmountSelectedAsync(recipient: string, value: BigNumber): Promise<void> {
         this.setState({
             isSending: true,
         });
         this._toggleSendDialog();
-        const token = this.props.token;
         try {
-            await this.props.blockchain.transferAsync(token, recipient, value);
-            await this.props.refetchTokenStateAsync(token.address);
+            if (this.props.asset === 'ETH') {
+                await this.props.blockchain.sendAsync(recipient, value);
+            } else {
+                const token = this.props.asset;
+                await this.props.blockchain.transferAsync(token, recipient, value);
+                await this.props.refetchTokenStateAsync(token.address);
+            }
         } catch (err) {
             const errMsg = `${err}`;
             if (_.includes(errMsg, BlockchainCallErrs.UserHasNoAssociatedAddresses)) {
@@ -80,7 +84,7 @@ export class SendButton extends React.Component<SendButtonProps, SendButtonState
                 logUtils.log(`Unexpected error encountered: ${err}`);
                 logUtils.log(err.stack);
                 this.props.onError();
-                await errorReporter.reportAsync(err);
+                errorReporter.report(err);
             }
         }
         this.setState({

@@ -5,7 +5,7 @@ import * as fs from 'fs';
 import { sync as globSync } from 'glob';
 import * as _ from 'lodash';
 
-import { utils } from './utils';
+import { utils } from './utils/utils';
 
 interface Dependencies {
     [depName: string]: string;
@@ -19,6 +19,7 @@ interface VersionsByDependency {
 
 const PACKAGE_JSON_GLOB = '../*/package.json';
 
+// tslint:disable:no-unused-variable
 function getDependencies(path: string): Dependencies {
     const file = fs.readFileSync(path).toString();
     const parsed = JSON.parse(file);
@@ -52,3 +53,4 @@ _.map(versionsByDependency, (versions: Versions, depName: string) => {
         });
     }
 });
+// tslint:disable:no-unused-variable

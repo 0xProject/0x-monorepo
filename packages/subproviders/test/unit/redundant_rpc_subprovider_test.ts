@@ -1,23 +1,24 @@
-import { JSONRPCResponsePayload } from '@0xproject/types';
+import { DoneCallback } from '@0xproject/types';
 import * as chai from 'chai';
-import * as _ from 'lodash';
-import Web3 = require('web3');
-import Web3ProviderEngine = require('web3-provider-engine');
+import { JSONRPCResponsePayload } from 'ethereum-types';
+import * as Sinon from 'sinon';
 
-import { RedundantRPCSubprovider } from '../../src';
-import { DoneCallback } from '../../src/types';
+import { RedundantSubprovider, RPCSubprovider, Web3ProviderEngine } from '../../src';
+import { Subprovider } from '../../src/subproviders/subprovider';
 import { chaiSetup } from '../chai_setup';
+import { ganacheSubprovider } from '../utils/ganache_subprovider';
 import { reportCallbackErrors } from '../utils/report_callback_errors';
 
 const expect = chai.expect;
 chaiSetup.configure();
+const DEFAULT_NUM_ACCOUNTS = 10;
 
-describe('RedundantRpcSubprovider', () => {
+describe('RedundantSubprovider', () => {
     let provider: Web3ProviderEngine;
     it('succeeds when supplied a healthy endpoint', (done: DoneCallback) => {
         provider = new Web3ProviderEngine();
-        const endpoints = ['http://localhost:8545'];
-        const redundantSubprovider = new RedundantRPCSubprovider(endpoints);
+        const subproviders = [ganacheSubprovider];
+        const redundantSubprovider = new RedundantSubprovider(subproviders);
         provider.addProvider(redundantSubprovider);
         provider.start();
 
@@ -29,15 +30,19 @@ describe('RedundantRpcSubprovider', () => {
         };
         const callback = reportCallbackErrors(done)((err: Error, response: JSONRPCResponsePayload) => {
             expect(err).to.be.a('null');
-            expect(response.result.length).to.be.equal(10);
+            expect(response.result.length).to.be.equal(DEFAULT_NUM_ACCOUNTS);
             done();
         });
         provider.sendAsync(payload, callback);
     });
     it('succeeds when supplied at least one healthy endpoint', (done: DoneCallback) => {
         provider = new Web3ProviderEngine();
-        const endpoints = ['http://does-not-exist:3000', 'http://localhost:8545'];
-        const redundantSubprovider = new RedundantRPCSubprovider(endpoints);
+        const nonExistentSubprovider = new RPCSubprovider('http://does-not-exist:3000');
+        const handleRequestStub = Sinon.stub(nonExistentSubprovider, 'handleRequest').throws(
+            new Error('REQUEST_FAILED'),
+        );
+        const subproviders = [nonExistentSubprovider as Subprovider, ganacheSubprovider];
+        const redundantSubprovider = new RedundantSubprovider(subproviders);
         provider.addProvider(redundantSubprovider);
         provider.start();
 
@@ -49,7 +54,8 @@ describe('RedundantRpcSubprovider', () => {
         };
         const callback = reportCallbackErrors(done)((err: Error, response: JSONRPCResponsePayload) => {
             expect(err).to.be.a('null');
-            expect(response.result.length).to.be.equal(10);
+            expect(response.result.length).to.be.equal(DEFAULT_NUM_ACCOUNTS);
+            handleRequestStub.restore();
             done();
         });
         provider.sendAsync(payload, callback);

@@ -4,21 +4,48 @@ export interface UpdatedPackage {
     private: boolean;
 }
 
-export interface Changes {
+export interface Change {
     note: string;
     pr?: number;
 }
 
-export interface Changelog {
+export type Changelog = VersionChangelog[];
+
+export interface VersionChangelog {
     timestamp?: number;
     version: string;
-    changes: Changes[];
-    isPublished?: boolean;
+    changes: Change[];
 }
 
-export enum SemVerIndex {
-    Invalid,
-    Patch,
-    Minor,
-    Major,
+export interface PackageToNextVersion {
+    [name: string]: string;
+}
+
+export interface PackageRegistryJson {
+    versions: {
+        [version: string]: any;
+    };
+    time: {
+        [version: string]: string;
+    };
+}
+
+export interface GitTagsByPackageName {
+    [packageName: string]: string[];
+}
+
+export interface PackageJSON {
+    private?: boolean;
+    version: string;
+    name: string;
+    main?: string;
+    scripts?: { [command: string]: string };
+    config?: {
+        additionalTsTypings?: string[];
+    };
+}
+
+export interface Package {
+    location: string;
+    packageJson: PackageJSON;
 }

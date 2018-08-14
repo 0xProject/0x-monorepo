@@ -1,6 +1,6 @@
-import { ZeroEx } from '0x.js';
 import { colors, EtherscanLinkSuffixes, utils as sharedUtils } from '@0xproject/react-shared';
 import { BigNumber } from '@0xproject/utils';
+import { Web3Wrapper } from '@0xproject/web3-wrapper';
 import * as _ from 'lodash';
 import Divider from 'material-ui/Divider';
 import { Table, TableBody, TableHeader, TableHeaderColumn, TableRow, TableRowColumn } from 'material-ui/Table';
@@ -33,8 +33,9 @@ interface EthWrappersProps {
     dispatcher: Dispatcher;
     tokenByAddress: TokenByAddress;
     userAddress: string;
-    userEtherBalanceInWei: BigNumber;
+    userEtherBalanceInWei?: BigNumber;
     lastForceTokenStateRefetch: number;
+    isFullWidth?: boolean;
 }
 
 interface EthWrappersState {
@@ -43,6 +44,9 @@ interface EthWrappersState {
 }
 
 export class EthWrappers extends React.Component<EthWrappersProps, EthWrappersState> {
+    public static defaultProps: Partial<EthWrappersProps> = {
+        isFullWidth: false,
+    };
     private _isUnmounted: boolean;
     constructor(props: EthWrappersProps) {
         super(props);
@@ -65,7 +69,7 @@ export class EthWrappers extends React.Component<EthWrappersProps, EthWrappersSt
             },
         };
     }
-    public componentWillReceiveProps(nextProps: EthWrappersProps) {
+    public componentWillReceiveProps(nextProps: EthWrappersProps): void {
         if (
             nextProps.userAddress !== this.props.userAddress ||
             nextProps.networkId !== this.props.networkId ||
@@ -75,30 +79,34 @@ export class EthWrappers extends React.Component<EthWrappersProps, EthWrappersSt
             this._fetchWETHStateAsync();
         }
     }
-    public componentDidMount() {
+    public componentDidMount(): void {
         window.scrollTo(0, 0);
         // tslint:disable-next-line:no-floating-promises
         this._fetchWETHStateAsync();
     }
-    public componentWillUnmount() {
+    public componentWillUnmount(): void {
         this._isUnmounted = true;
     }
-    public render() {
+    public render(): React.ReactNode {
         const etherToken = this._getEthToken();
-        const wethBalance = ZeroEx.toUnitAmount(this.state.ethTokenState.balance, constants.DECIMAL_PLACES_ETH);
+        const wethBalance = Web3Wrapper.toUnitAmount(this.state.ethTokenState.balance, constants.DECIMAL_PLACES_ETH);
         const isBidirectional = true;
         const etherscanUrl = sharedUtils.getEtherScanLinkIfExists(
             etherToken.address,
             this.props.networkId,
             EtherscanLinkSuffixes.Address,
         );
-        const tokenLabel = this._renderToken('Wrapped Ether', etherToken.address, configs.ICON_URL_BY_SYMBOL.WETH);
-        const userEtherBalanceInEth = ZeroEx.toUnitAmount(
-            this.props.userEtherBalanceInWei,
-            constants.DECIMAL_PLACES_ETH,
+        const tokenLabel = this._renderToken(
+            'Wrapped Ether',
+            etherToken.address,
+            utils.getTokenIconUrl(etherToken.symbol),
         );
+        const userEtherBalanceInEth = !_.isUndefined(this.props.userEtherBalanceInWei)
+            ? Web3Wrapper.toUnitAmount(this.props.userEtherBalanceInWei, constants.DECIMAL_PLACES_ETH)
+            : undefined;
+        const rootClassName = this.props.isFullWidth ? 'clearfix' : 'clearfix lg-px4 md-px4 sm-px2';
         return (
-            <div className="clearfix lg-px4 md-px4 sm-px2" style={{ minHeight: 600 }}>
+            <div className={rootClassName} style={{ minHeight: 600 }}>
                 <div className="relative">
                     <h3>ETH Wrapper</h3>
                     <div className="absolute" style={{ top: 0, right: 0 }}>
@@ -116,7 +124,7 @@ export class EthWrappers extends React.Component<EthWrappersProps, EthWrappersSt
                 <div>
                     <div className="py2">Wrap ETH into an ERC20-compliant Ether token. 1 ETH = 1 WETH.</div>
                     <div>
-                        <Table selectable={false} style={{ backgroundColor: colors.grey50 }}>
+                        <Table selectable={false} style={{ backgroundColor: 'transparent' }}>
                             <TableHeader displaySelectAll={false} adjustForCheckbox={false}>
                                 <TableRow>
                                     <TableHeaderColumn>ETH Token</TableHeaderColumn>
@@ -143,7 +151,11 @@ export class EthWrappers extends React.Component<EthWrappersProps, EthWrappersSt
                                         </div>
                                     </TableRowColumn>
                                     <TableRowColumn>
-                                        {userEtherBalanceInEth.toFixed(configs.AMOUNT_DISPLAY_PRECSION)} ETH
+                                        {!_.isUndefined(userEtherBalanceInEth) ? (
+                                            `${userEtherBalanceInEth.toFixed(configs.AMOUNT_DISPLAY_PRECSION)} ETH`
+                                        ) : (
+                                            <i className="zmdi zmdi-spinner zmdi-hc-spin" />
+                                        )}
                                     </TableRowColumn>
                                     <TableRowColumn>
                                         <EthWethConversionButton
@@ -157,6 +169,7 @@ export class EthWrappers extends React.Component<EthWrappersProps, EthWrappersSt
                                             dispatcher={this.props.dispatcher}
                                             blockchain={this.props.blockchain}
                                             userEtherBalanceInWei={this.props.userEtherBalanceInWei}
+                                            isDisabled={_.isUndefined(userEtherBalanceInEth)}
                                         />
                                     </TableRowColumn>
                                 </TableRow>
@@ -203,7 +216,7 @@ export class EthWrappers extends React.Component<EthWrappersProps, EthWrappersSt
                         it to the updated WETH token.
                     </div>
                     <div>
-                        <Table selectable={false} style={{ backgroundColor: colors.grey50 }}>
+                        <Table selectable={false} style={{ backgroundColor: 'transparent' }}>
                             <TableHeader displaySelectAll={false} adjustForCheckbox={false}>
                                 <TableRow>
                                     <TableHeaderColumn>WETH Version</TableHeaderColumn>
@@ -213,16 +226,14 @@ export class EthWrappers extends React.Component<EthWrappersProps, EthWrappersSt
                                     </TableHeaderColumn>
                                 </TableRow>
                             </TableHeader>
-                            <TableBody displayRowCheckbox={false}>
-                                {this._renderOutdatedWeths(etherToken, this.state.ethTokenState)}
-                            </TableBody>
+                            <TableBody displayRowCheckbox={false}>{this._renderOutdatedWeths(etherToken)}</TableBody>
                         </Table>
                     </div>
                 </div>
             </div>
         );
     }
-    private _renderActionColumnTitle(isBidirectional: boolean) {
+    private _renderActionColumnTitle(isBidirectional: boolean): React.ReactNode {
         let iconClass = 'zmdi-long-arrow-right';
         let leftSymbol = 'WETH';
         let rightSymbol = 'ETH';
@@ -241,7 +252,7 @@ export class EthWrappers extends React.Component<EthWrappersProps, EthWrappersSt
             </div>
         );
     }
-    private _renderOutdatedWeths(etherToken: Token, etherTokenState: TokenState) {
+    private _renderOutdatedWeths(etherToken: Token): React.ReactNode {
         const rows = _.map(
             configs.OUTDATED_WRAPPED_ETHERS,
             (outdatedWETHByNetworkId: OutdatedWrappedEtherByNetworkId) => {
@@ -265,7 +276,7 @@ export class EthWrappers extends React.Component<EthWrappersProps, EthWrappersSt
                 const outdatedEtherTokenState = this.state.outdatedWETHStateByAddress[outdatedWETHIfExists.address];
                 const isStateLoaded = outdatedEtherTokenState.isLoaded;
                 const balanceInEthIfExists = isStateLoaded
-                    ? ZeroEx.toUnitAmount(outdatedEtherTokenState.balance, constants.DECIMAL_PLACES_ETH).toFixed(
+                    ? Web3Wrapper.toUnitAmount(outdatedEtherTokenState.balance, constants.DECIMAL_PLACES_ETH).toFixed(
                           configs.AMOUNT_DISPLAY_PRECSION,
                       )
                     : undefined;
@@ -313,7 +324,7 @@ export class EthWrappers extends React.Component<EthWrappersProps, EthWrappersSt
         );
         return rows;
     }
-    private _renderTokenLink(tokenLabel: React.ReactNode, etherscanUrl: string) {
+    private _renderTokenLink(tokenLabel: React.ReactNode, etherscanUrl: string): React.ReactNode {
         return (
             <span>
                 {_.isUndefined(etherscanUrl) ? (
@@ -326,7 +337,7 @@ export class EthWrappers extends React.Component<EthWrappersProps, EthWrappersSt
             </span>
         );
     }
-    private _renderToken(name: string, address: string, imgPath: string) {
+    private _renderToken(name: string, address: string, imgPath: string): React.ReactNode {
         const tooltipId = `tooltip-${address}`;
         return (
             <div className="flex">
@@ -340,7 +351,7 @@ export class EthWrappers extends React.Component<EthWrappersProps, EthWrappersSt
             </div>
         );
     }
-    private async _onOutdatedConversionSuccessfulAsync(outdatedWETHAddress: string) {
+    private async _onOutdatedConversionSuccessfulAsync(outdatedWETHAddress: string): Promise<void> {
         const currentOutdatedWETHState = this.state.outdatedWETHStateByAddress[outdatedWETHAddress];
         this.setState({
             outdatedWETHStateByAddress: {
@@ -368,7 +379,7 @@ export class EthWrappers extends React.Component<EthWrappersProps, EthWrappersSt
             },
         });
     }
-    private async _fetchWETHStateAsync() {
+    private async _fetchWETHStateAsync(): Promise<void> {
         const tokens = _.values(this.props.tokenByAddress);
         const wethToken = _.find(tokens, token => token.symbol === 'WETH');
         const userAddressIfExists = _.isEmpty(this.props.userAddress) ? undefined : this.props.userAddress;
@@ -414,12 +425,12 @@ export class EthWrappers extends React.Component<EthWrappersProps, EthWrappersSt
         );
         return outdatedWETHAddresses;
     }
-    private _getEthToken() {
+    private _getEthToken(): Token {
         const tokens = _.values(this.props.tokenByAddress);
         const etherToken = _.find(tokens, { symbol: 'WETH' });
         return etherToken;
     }
-    private async _refetchEthTokenStateAsync() {
+    private async _refetchEthTokenStateAsync(): Promise<void> {
         const etherToken = this._getEthToken();
         const userAddressIfExists = _.isEmpty(this.props.userAddress) ? undefined : this.props.userAddress;
         const [balance, allowance] = await this.props.blockchain.getTokenBalanceAndAllowanceAsync(

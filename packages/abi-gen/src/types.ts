@@ -1,15 +1,8 @@
-import { EventAbi, MethodAbi } from '@0xproject/types';
+import { EventAbi, MethodAbi } from 'ethereum-types';
 
 export enum ParamKind {
     Input = 'input',
     Output = 'output',
-}
-
-export enum AbiType {
-    Function = 'function',
-    Constructor = 'constructor',
-    Event = 'event',
-    Fallback = 'fallback',
 }
 
 export enum ContractsBackend {
@@ -20,6 +13,8 @@ export enum ContractsBackend {
 export interface Method extends MethodAbi {
     singleReturnValue: boolean;
     hasReturnValue: boolean;
+    tsName: string;
+    functionSignature: string;
 }
 
 export interface ContextData {

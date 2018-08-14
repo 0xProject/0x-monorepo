@@ -1,8 +1,7 @@
 import { colors } from '@0xproject/react-shared';
-import * as _ from 'lodash';
+import { errorUtils } from '@0xproject/utils';
 import RaisedButton from 'material-ui/RaisedButton';
 import * as React from 'react';
-import { utils } from 'ts/utils/utils';
 
 const COMPLETE_STATE_SHOW_LENGTH_MS = 2000;
 
@@ -42,11 +41,11 @@ export class LifeCycleRaisedButton extends React.Component<LifeCycleRaisedButton
             buttonState: ButtonState.READY,
         };
     }
-    public componentWillUnmount() {
+    public componentWillUnmount(): void {
         clearTimeout(this._buttonTimeoutId);
         this._didUnmount = true;
     }
-    public render() {
+    public render(): React.ReactNode {
         if (this.props.isHidden) {
             return <span />;
         }
@@ -63,7 +62,7 @@ export class LifeCycleRaisedButton extends React.Component<LifeCycleRaisedButton
                 label = this.props.labelComplete;
                 break;
             default:
-                throw utils.spawnSwitchErr('ButtonState', this.state.buttonState);
+                throw errorUtils.spawnSwitchErr('ButtonState', this.state.buttonState);
         }
         return (
             <RaisedButton
@@ -77,7 +76,7 @@ export class LifeCycleRaisedButton extends React.Component<LifeCycleRaisedButton
             />
         );
     }
-    public async onClickAsync() {
+    public async onClickAsync(): Promise<void> {
         this.setState({
             buttonState: ButtonState.LOADING,
         });

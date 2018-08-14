@@ -1,19 +1,17 @@
 import { constants as docConstants, DocsInfo, DocsInfoConfig, SupportedDocJson } from '@0xproject/react-docs';
-import * as _ from 'lodash';
 import * as React from 'react';
 import { connect } from 'react-redux';
 import { Dispatch } from 'redux';
 import { DocPage as DocPageComponent, DocPageProps } from 'ts/pages/documentation/doc_page';
 import { Dispatcher } from 'ts/redux/dispatcher';
 import { State } from 'ts/redux/reducer';
-import { DocPackages, Environments, WebsitePaths } from 'ts/types';
-import { configs } from 'ts/utils/configs';
+import { DocPackages } from 'ts/types';
 import { constants } from 'ts/utils/constants';
 import { Translate } from 'ts/utils/translate';
 
 /* tslint:disable:no-var-requires */
-const IntroMarkdown = require('md/docs/web3_wrapper/introduction');
-const InstallationMarkdown = require('md/docs/web3_wrapper/installation');
+const IntroMarkdownV1 = require('md/docs/web3_wrapper/introduction');
+const InstallationMarkdownV1 = require('md/docs/web3_wrapper/installation');
 /* tslint:enable:no-var-requires */
 
 const docSections = {
@@ -34,12 +32,14 @@ const docsInfoConfig: DocsInfoConfig = {
         web3Wrapper: [docSections.web3Wrapper],
         types: [docSections.types],
     },
-    sectionNameToMarkdown: {
-        [docSections.introduction]: IntroMarkdown,
-        [docSections.installation]: InstallationMarkdown,
+    sectionNameToMarkdownByVersion: {
+        '0.0.1': {
+            [docSections.introduction]: IntroMarkdownV1,
+            [docSections.installation]: InstallationMarkdownV1,
+        },
     },
     sectionNameToModulePath: {
-        [docSections.web3Wrapper]: ['"web3-wrapper/src/index"'],
+        [docSections.web3Wrapper]: ['"web3-wrapper/src/web3_wrapper"'],
         [docSections.types]: ['"types/src/index"'],
     },
     menuSubsectionToVersionWhenIntroduced: {},
@@ -59,15 +59,36 @@ const docsInfoConfig: DocsInfoConfig = {
             'BlockWithoutTransactionData',
             'CallData',
             'LogEntryEvent',
+            'Provider',
+            'AbiDefinition',
+            'LogTopic',
+            'JSONRPCRequestPayload',
+            'JSONRPCResponsePayload',
+            'BlockParamLiteral',
+            'FunctionAbi',
+            'EventAbi',
+            'JSONRPCErrorCallback',
+            'MethodAbi',
+            'ConstructorAbi',
+            'FallbackAbi',
+            'EventParameter',
+            'DataItem',
+            'StateMutability',
+            'Function',
+            'Fallback',
+            'Constructor',
+            'Event',
+            'ConstructorStateMutability',
+            'TransactionReceiptWithDecodedLogs',
+            'DecodedLogArgs',
+            'LogWithDecodedArgs',
+            'ContractEventArg',
         ],
         typeNameToExternalLink: {
-            Web3: 'https://github.com/ethereum/wiki/wiki/JavaScript-API',
-            Provider: 'https://github.com/0xProject/web3-typescript-typings/blob/f5bcb96/index.d.ts#L150',
-            BigNumber: 'http://mikemcl.github.io/bignumber.js',
+            Web3: constants.URL_WEB3_DOCS,
+            BigNumber: constants.URL_BIGNUMBERJS_GITHUB,
         },
-        typeNameToPrefix: {
-            Provider: 'Web3',
-        },
+        typeNameToPrefix: {},
         typeNameToDocSection: {
             Web3Wrapper: docSections.web3Wrapper,
         },
@@ -86,7 +107,7 @@ interface ConnectedDispatch {
     dispatcher: Dispatcher;
 }
 
-const mapStateToProps = (state: State, ownProps: DocPageProps): ConnectedState => ({
+const mapStateToProps = (state: State, _ownProps: DocPageProps): ConnectedState => ({
     docsVersion: state.docsVersion,
     availableDocVersions: state.availableDocVersions,
     translate: state.translate,

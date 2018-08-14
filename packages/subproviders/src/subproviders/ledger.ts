@@ -1,5 +1,4 @@
 import { assert } from '@0xproject/assert';
-import { JSONRPCRequestPayload } from '@0xproject/types';
 import { addressUtils } from '@0xproject/utils';
 import EthereumTx = require('ethereumjs-tx');
 import ethUtil = require('ethereumjs-util');
@@ -8,41 +7,39 @@ import * as _ from 'lodash';
 import { Lock } from 'semaphore-async-await';
 
 import {
-    Callback,
+    DerivedHDKeyInfo,
     LedgerEthereumClient,
     LedgerEthereumClientFactoryAsync,
     LedgerSubproviderConfigs,
     LedgerSubproviderErrors,
     PartialTxParams,
-    ResponseWithTxParams,
+    WalletSubproviderErrors,
 } from '../types';
+import { walletUtils } from '../utils/wallet_utils';
 
-import { Subprovider } from './subprovider';
+import { BaseWalletSubprovider } from './base_wallet_subprovider';
 
-const DEFAULT_DERIVATION_PATH = `44'/60'/0'`;
-const DEFAULT_NUM_ADDRESSES_TO_FETCH = 10;
+const DEFAULT_BASE_DERIVATION_PATH = `44'/60'/0'`;
 const ASK_FOR_ON_DEVICE_CONFIRMATION = false;
 const SHOULD_GET_CHAIN_CODE = true;
+const DEFAULT_NUM_ADDRESSES_TO_FETCH = 10;
+const DEFAULT_ADDRESS_SEARCH_LIMIT = 1000;
 
 /**
  * Subprovider for interfacing with a user's [Ledger Nano S](https://www.ledgerwallet.com/products/ledger-nano-s).
  * This subprovider intercepts all account related RPC requests (e.g message/transaction signing, etc...) and
  * re-routes them to a Ledger device plugged into the users computer.
  */
-export class LedgerSubprovider extends Subprovider {
-    private _nonceLock = new Lock();
-    private _connectionLock = new Lock();
-    private _networkId: number;
-    private _derivationPath: string;
-    private _derivationPathIndex: number;
-    private _ledgerEthereumClientFactoryAsync: LedgerEthereumClientFactoryAsync;
+export class LedgerSubprovider extends BaseWalletSubprovider {
+    // tslint:disable-next-line:no-unused-variable
+    private readonly _nonceLock = new Lock();
+    private readonly _connectionLock = new Lock();
+    private readonly _networkId: number;
+    private _baseDerivationPath: string;
+    private readonly _ledgerEthereumClientFactoryAsync: LedgerEthereumClientFactoryAsync;
     private _ledgerClientIfExists?: LedgerEthereumClient;
-    private _shouldAlwaysAskForConfirmation: boolean;
-    private static _validateSender(sender: string) {
-        if (_.isUndefined(sender) || !addressUtils.isAddress(sender)) {
-            throw new Error(LedgerSubproviderErrors.SenderInvalidOrNotSupplied);
-        }
-    }
+    private readonly _shouldAlwaysAskForConfirmation: boolean;
+    private readonly _addressSearchLimit: number;
     /**
      * Instantiates a LedgerSubprovider. Defaults to derivationPath set to `44'/60'/0'`.
      * TestRPC/Ganache defaults to `m/44'/60'/0'/0`, so set this in the configs if desired.
@@ -53,40 +50,35 @@ export class LedgerSubprovider extends Subprovider {
         super();
         this._networkId = config.networkId;
         this._ledgerEthereumClientFactoryAsync = config.ledgerEthereumClientFactoryAsync;
-        this._derivationPath = config.derivationPath || DEFAULT_DERIVATION_PATH;
+        this._baseDerivationPath = config.baseDerivationPath || DEFAULT_BASE_DERIVATION_PATH;
         this._shouldAlwaysAskForConfirmation =
             !_.isUndefined(config.accountFetchingConfigs) &&
             !_.isUndefined(config.accountFetchingConfigs.shouldAskForOnDeviceConfirmation)
                 ? config.accountFetchingConfigs.shouldAskForOnDeviceConfirmation
                 : ASK_FOR_ON_DEVICE_CONFIRMATION;
-        this._derivationPathIndex = 0;
+        this._addressSearchLimit =
+            !_.isUndefined(config.accountFetchingConfigs) &&
+            !_.isUndefined(config.accountFetchingConfigs.addressSearchLimit)
+                ? config.accountFetchingConfigs.addressSearchLimit
+                : DEFAULT_ADDRESS_SEARCH_LIMIT;
     }
     /**
      * Retrieve the set derivation path
      * @returns derivation path
      */
     public getPath(): string {
-        return this._derivationPath;
+        return this._baseDerivationPath;
     }
     /**
      * Set a desired derivation path when computing the available user addresses
-     * @param derivationPath The desired derivation path (e.g `44'/60'/0'`)
+     * @param basDerivationPath The desired derivation path (e.g `44'/60'/0'`)
      */
-    public setPath(derivationPath: string) {
-        this._derivationPath = derivationPath;
-    }
-    /**
-     * Set the final derivation path index. If a user wishes to sign a message with the
-     * 6th address in a derivation path, before calling `signPersonalMessageAsync`, you must
-     * call this method with pathIndex `6`.
-     * @param pathIndex Desired derivation path index
-     */
-    public setPathIndex(pathIndex: number) {
-        this._derivationPathIndex = pathIndex;
+    public setPath(basDerivationPath: string): void {
+        this._baseDerivationPath = basDerivationPath;
     }
     /**
      * Retrieve a users Ledger accounts. The accounts are derived from the derivationPath,
-     * master public key and chainCode. Because of this, you can request as many accounts
+     * master public key and chain code. Because of this, you can request as many accounts
      * as you wish and it only requires a single request to the Ledger device. This method
      * is automatically called when issuing a `eth_accounts` JSON RPC request via your providerEngine
      * instance.
@@ -94,65 +86,51 @@ export class LedgerSubprovider extends Subprovider {
      * @return An array of accounts
      */
     public async getAccountsAsync(numberOfAccounts: number = DEFAULT_NUM_ADDRESSES_TO_FETCH): Promise<string[]> {
-        this._ledgerClientIfExists = await this._createLedgerClientAsync();
-
-        let ledgerResponse;
-        try {
-            ledgerResponse = await this._ledgerClientIfExists.getAddress(
-                this._derivationPath,
-                this._shouldAlwaysAskForConfirmation,
-                SHOULD_GET_CHAIN_CODE,
-            );
-        } finally {
-            await this._destroyLedgerClientAsync();
-        }
-
-        const hdKey = new HDNode();
-        hdKey.publicKey = new Buffer(ledgerResponse.publicKey, 'hex');
-        hdKey.chainCode = new Buffer(ledgerResponse.chainCode, 'hex');
-
-        const accounts: string[] = [];
-        for (let i = 0; i < numberOfAccounts; i++) {
-            const derivedHDNode = hdKey.derive(`m/${i + this._derivationPathIndex}`);
-            const derivedPublicKey = derivedHDNode.publicKey;
-            const shouldSanitizePublicKey = true;
-            const ethereumAddressUnprefixed = ethUtil
-                .publicToAddress(derivedPublicKey, shouldSanitizePublicKey)
-                .toString('hex');
-            const ethereumAddressPrefixed = ethUtil.addHexPrefix(ethereumAddressUnprefixed);
-            accounts.push(ethereumAddressPrefixed.toLowerCase());
-        }
+        const initialDerivedKeyInfo = await this._initialDerivedKeyInfoAsync();
+        const derivedKeyInfos = walletUtils.calculateDerivedHDKeyInfos(initialDerivedKeyInfo, numberOfAccounts);
+        const accounts = _.map(derivedKeyInfos, k => k.address);
         return accounts;
     }
     /**
-     * Sign a transaction with the Ledger. If you've added the LedgerSubprovider to your
-     * app's provider, you can simply send an `eth_sendTransaction` JSON RPC request, and
-     * this method will be called auto-magically. If you are not using this via a ProviderEngine
+     * Signs a transaction on the Ledger with the account specificed by the `from` field in txParams.
+     * If you've added the LedgerSubprovider to your app's provider, you can simply send an `eth_sendTransaction`
+     * JSON RPC request, and this method will be called auto-magically. If you are not using this via a ProviderEngine
      * instance, you can call it directly.
      * @param txParams Parameters of the transaction to sign
      * @return Signed transaction hex string
      */
     public async signTransactionAsync(txParams: PartialTxParams): Promise<string> {
+        LedgerSubprovider._validateTxParams(txParams);
+        if (_.isUndefined(txParams.from) || !addressUtils.isAddress(txParams.from)) {
+            throw new Error(WalletSubproviderErrors.FromAddressMissingOrInvalid);
+        }
+        const initialDerivedKeyInfo = await this._initialDerivedKeyInfoAsync();
+        const derivedKeyInfo = this._findDerivedKeyInfoForAddress(initialDerivedKeyInfo, txParams.from);
+
         this._ledgerClientIfExists = await this._createLedgerClientAsync();
 
         const tx = new EthereumTx(txParams);
 
         // Set the EIP155 bits
-        tx.raw[6] = Buffer.from([this._networkId]); // v
-        tx.raw[7] = Buffer.from([]); // r
-        tx.raw[8] = Buffer.from([]); // s
+        const vIndex = 6;
+        tx.raw[vIndex] = Buffer.from([this._networkId]); // v
+        const rIndex = 7;
+        tx.raw[rIndex] = Buffer.from([]); // r
+        const sIndex = 8;
+        tx.raw[sIndex] = Buffer.from([]); // s
 
         const txHex = tx.serialize().toString('hex');
         try {
-            const derivationPath = this._getDerivationPath();
-            const result = await this._ledgerClientIfExists.signTransaction(derivationPath, txHex);
+            const fullDerivationPath = derivedKeyInfo.derivationPath;
+            const result = await this._ledgerClientIfExists.signTransaction(fullDerivationPath, txHex);
             // Store signature in transaction
             tx.r = Buffer.from(result.r, 'hex');
             tx.s = Buffer.from(result.s, 'hex');
             tx.v = Buffer.from(result.v, 'hex');
 
             // EIP155: v should be chain_id * 2 + {35, 36}
-            const signedChainId = Math.floor((tx.v[0] - 35) / 2);
+            const eip55Constant = 35;
+            const signedChainId = Math.floor((tx.v[0] - eip55Constant) / 2);
             if (signedChainId !== this._networkId) {
                 await this._destroyLedgerClientAsync();
                 const err = new Error(LedgerSubproviderErrors.TooOldLedgerFirmware);
@@ -168,25 +146,36 @@ export class LedgerSubprovider extends Subprovider {
         }
     }
     /**
-     * Sign a personal Ethereum signed message. The signing address will be to one
-     * retrieved given a derivationPath and pathIndex set on the subprovider.
+     * Sign a personal Ethereum signed message. The signing account will be the account
+     * associated with the provided address.
      * The Ledger adds the Ethereum signed message prefix on-device.  If you've added
      * the LedgerSubprovider to your app's provider, you can simply send an `eth_sign`
      * or `personal_sign` JSON RPC request, and this method will be called auto-magically.
      * If you are not using this via a ProviderEngine instance, you can call it directly.
-     * @param data Message to sign
+     * @param data Hex string message to sign
+     * @param address Address of the account to sign with
      * @return Signature hex string (order: rsv)
      */
-    public async signPersonalMessageAsync(data: string): Promise<string> {
+    public async signPersonalMessageAsync(data: string, address: string): Promise<string> {
+        if (_.isUndefined(data)) {
+            throw new Error(WalletSubproviderErrors.DataMissingForSignPersonalMessage);
+        }
+        assert.isHexString('data', data);
+        assert.isETHAddressHex('address', address);
+        const initialDerivedKeyInfo = await this._initialDerivedKeyInfoAsync();
+        const derivedKeyInfo = this._findDerivedKeyInfoForAddress(initialDerivedKeyInfo, address);
+
         this._ledgerClientIfExists = await this._createLedgerClientAsync();
         try {
-            const derivationPath = this._getDerivationPath();
+            const fullDerivationPath = derivedKeyInfo.derivationPath;
             const result = await this._ledgerClientIfExists.signPersonalMessage(
-                derivationPath,
+                fullDerivationPath,
                 ethUtil.stripHexPrefix(data),
             );
-            const v = result.v - 27;
-            let vHex = v.toString(16);
+            const lowestValidV = 27;
+            const v = result.v - lowestValidV;
+            const hexBase = 16;
+            let vHex = v.toString(hexBase);
             if (vHex.length < 2) {
                 vHex = `0${v}`;
             }
@@ -198,86 +187,6 @@ export class LedgerSubprovider extends Subprovider {
             throw err;
         }
     }
-    /**
-     * This method conforms to the web3-provider-engine interface.
-     * It is called internally by the ProviderEngine when it is this subproviders
-     * turn to handle a JSON RPC request.
-     * @param payload JSON RPC payload
-     * @param next Callback to call if this subprovider decides not to handle the request
-     * @param end Callback to call if subprovider handled the request and wants to pass back the request.
-     */
-    // tslint:disable-next-line:async-suffix
-    public async handleRequest(
-        payload: JSONRPCRequestPayload,
-        next: Callback,
-        end: (err: Error | null, result?: any) => void,
-    ) {
-        let accounts;
-        let txParams;
-        switch (payload.method) {
-            case 'eth_coinbase':
-                try {
-                    accounts = await this.getAccountsAsync();
-                    end(null, accounts[0]);
-                } catch (err) {
-                    end(err);
-                }
-                return;
-
-            case 'eth_accounts':
-                try {
-                    accounts = await this.getAccountsAsync();
-                    end(null, accounts);
-                } catch (err) {
-                    end(err);
-                }
-                return;
-
-            case 'eth_sendTransaction':
-                txParams = payload.params[0];
-                try {
-                    LedgerSubprovider._validateSender(txParams.from);
-                    const result = await this._sendTransactionAsync(txParams);
-                    end(null, result);
-                } catch (err) {
-                    end(err);
-                }
-                return;
-
-            case 'eth_signTransaction':
-                txParams = payload.params[0];
-                try {
-                    const result = await this._signTransactionWithoutSendingAsync(txParams);
-                    end(null, result);
-                } catch (err) {
-                    end(err);
-                }
-                return;
-
-            case 'eth_sign':
-            case 'personal_sign':
-                const data = payload.method === 'eth_sign' ? payload.params[1] : payload.params[0];
-                try {
-                    if (_.isUndefined(data)) {
-                        throw new Error(LedgerSubproviderErrors.DataMissingForSignPersonalMessage);
-                    }
-                    assert.isHexString('data', data);
-                    const ecSignatureHex = await this.signPersonalMessageAsync(data);
-                    end(null, ecSignatureHex);
-                } catch (err) {
-                    end(err);
-                }
-                return;
-
-            default:
-                next();
-                return;
-        }
-    }
-    private _getDerivationPath() {
-        const derivationPath = `${this.getPath()}/${this._derivationPathIndex}`;
-        return derivationPath;
-    }
     private async _createLedgerClientAsync(): Promise<LedgerEthereumClient> {
         await this._connectionLock.acquire();
         if (!_.isUndefined(this._ledgerClientIfExists)) {
@@ -288,7 +197,7 @@ export class LedgerSubprovider extends Subprovider {
         this._connectionLock.release();
         return ledgerEthereumClient;
     }
-    private async _destroyLedgerClientAsync() {
+    private async _destroyLedgerClientAsync(): Promise<void> {
         await this._connectionLock.acquire();
         if (_.isUndefined(this._ledgerClientIfExists)) {
             this._connectionLock.release();
@@ -298,70 +207,41 @@ export class LedgerSubprovider extends Subprovider {
         this._ledgerClientIfExists = undefined;
         this._connectionLock.release();
     }
-    private async _sendTransactionAsync(txParams: PartialTxParams): Promise<string> {
-        await this._nonceLock.acquire();
-        try {
-            // fill in the extras
-            const filledParams = await this._populateMissingTxParamsAsync(txParams);
-            // sign it
-            const signedTx = await this.signTransactionAsync(filledParams);
-            // emit a submit
-            const payload = {
-                method: 'eth_sendRawTransaction',
-                params: [signedTx],
-            };
-            const result = await this.emitPayloadAsync(payload);
-            this._nonceLock.release();
-            return result.result;
-        } catch (err) {
-            this._nonceLock.release();
-            throw err;
-        }
-    }
-    private async _signTransactionWithoutSendingAsync(txParams: PartialTxParams): Promise<ResponseWithTxParams> {
-        await this._nonceLock.acquire();
-        try {
-            // fill in the extras
-            const filledParams = await this._populateMissingTxParamsAsync(txParams);
-            // sign it
-            const signedTx = await this.signTransactionAsync(filledParams);
+    private async _initialDerivedKeyInfoAsync(): Promise<DerivedHDKeyInfo> {
+        this._ledgerClientIfExists = await this._createLedgerClientAsync();
 
-            this._nonceLock.release();
-            const result = {
-                raw: signedTx,
-                tx: txParams,
-            };
-            return result;
-        } catch (err) {
-            this._nonceLock.release();
-            throw err;
+        const parentKeyDerivationPath = `m/${this._baseDerivationPath}`;
+        let ledgerResponse;
+        try {
+            ledgerResponse = await this._ledgerClientIfExists.getAddress(
+                parentKeyDerivationPath,
+                this._shouldAlwaysAskForConfirmation,
+                SHOULD_GET_CHAIN_CODE,
+            );
+        } finally {
+            await this._destroyLedgerClientAsync();
         }
+        const hdKey = new HDNode();
+        hdKey.publicKey = new Buffer(ledgerResponse.publicKey, 'hex');
+        hdKey.chainCode = new Buffer(ledgerResponse.chainCode, 'hex');
+        const address = walletUtils.addressOfHDKey(hdKey);
+        const initialDerivedKeyInfo = {
+            hdKey,
+            address,
+            derivationPath: parentKeyDerivationPath,
+            baseDerivationPath: this._baseDerivationPath,
+        };
+        return initialDerivedKeyInfo;
     }
-    private async _populateMissingTxParamsAsync(txParams: PartialTxParams): Promise<PartialTxParams> {
-        if (_.isUndefined(txParams.gasPrice)) {
-            const gasPriceResult = await this.emitPayloadAsync({
-                method: 'eth_gasPrice',
-                params: [],
-            });
-            const gasPrice = gasPriceResult.result.toString();
-            txParams.gasPrice = gasPrice;
+    private _findDerivedKeyInfoForAddress(initalHDKey: DerivedHDKeyInfo, address: string): DerivedHDKeyInfo {
+        const matchedDerivedKeyInfo = walletUtils.findDerivedKeyInfoForAddressIfExists(
+            address,
+            initalHDKey,
+            this._addressSearchLimit,
+        );
+        if (_.isUndefined(matchedDerivedKeyInfo)) {
+            throw new Error(`${WalletSubproviderErrors.AddressNotFound}: ${address}`);
         }
-        if (_.isUndefined(txParams.nonce)) {
-            const nonceResult = await this.emitPayloadAsync({
-                method: 'eth_getTransactionCount',
-                params: [txParams.from, 'pending'],
-            });
-            const nonce = nonceResult.result;
-            txParams.nonce = nonce;
-        }
-        if (_.isUndefined(txParams.gas)) {
-            const gasResult = await this.emitPayloadAsync({
-                method: 'eth_estimateGas',
-                params: [txParams],
-            });
-            const gas = gasResult.result.toString();
-            txParams.gas = gas;
-        }
-        return txParams;
+        return matchedDerivedKeyInfo;
     }
 }

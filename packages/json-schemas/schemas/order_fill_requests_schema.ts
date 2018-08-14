@@ -1,10 +1,10 @@
 export const orderFillRequestsSchema = {
-    id: '/OrderFillRequests',
+    id: '/orderFillRequestsSchema',
     type: 'array',
     items: {
         properties: {
-            signedOrder: { $ref: '/SignedOrder' },
-            takerTokenFillAmount: { $ref: '/Number' },
+            signedOrder: { $ref: '/signedOrderSchema' },
+            takerTokenFillAmount: { $ref: '/numberSchema' },
         },
         required: ['signedOrder', 'takerTokenFillAmount'],
         type: 'object',

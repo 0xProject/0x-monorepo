@@ -1,6 +1,7 @@
-import { ECSignature } from '0x.js';
+import { ECSignature } from '@0xproject/types';
 import { BigNumber } from '@0xproject/utils';
-import * as _ from 'lodash';
+import { Provider } from 'ethereum-types';
+import * as React from 'react';
 
 export enum Side {
     Receive = 'RECEIVE',
@@ -13,12 +14,17 @@ export interface Token {
     address: string;
     symbol: string;
     decimals: number;
-    isTracked: boolean;
     isRegistered: boolean;
+    trackedTimestamp?: number;
 }
 
 export interface TokenByAddress {
     [address: string]: Token;
+}
+
+export interface Styleable {
+    style: React.CSSProperties;
+    children: React.ReactNode;
 }
 
 export interface AssetToken {
@@ -125,6 +131,8 @@ export enum ActionTypes {
     UpdateUserSuppliedOrderCache = 'UPDATE_USER_SUPPLIED_ORDER_CACHE',
     UpdateOrderFillAmount = 'UPDATE_ORDER_FILL_AMOUNT',
     UpdateShouldBlockchainErrDialogBeOpen = 'UPDATE_SHOULD_BLOCKCHAIN_ERR_DIALOG_BE_OPEN',
+    UpdatePortalOnboardingStep = 'UPDATE_ONBOARDING_STEP',
+    UpdatePortalOnboardingShowing = 'UPDATE_PORTAL_ONBOARDING_SHOWING',
 
     // Docs
     UpdateLibraryVersion = 'UPDATE_LIBRARY_VERSION',
@@ -207,12 +215,12 @@ export interface ContractEvent {
     args: any;
 }
 
-export type InputErrMsg = React.ReactNode | string | undefined;
 export type ValidatedBigNumberCallback = (isValid: boolean, amount?: BigNumber) => void;
+// Associated values are in `em` units
 export enum ScreenWidths {
-    Sm = 'SM',
-    Md = 'MD',
-    Lg = 'LG',
+    Sm = 40,
+    Md = 52,
+    Lg = 64,
 }
 
 export enum AlertTypes {
@@ -235,8 +243,11 @@ export enum BlockchainCallErrs {
 }
 
 export enum Environments {
-    DEVELOPMENT,
-    PRODUCTION,
+    DEVELOPMENT = 'DEVELOPMENT',
+    DOGFOOD = 'DOGFOOD',
+    STAGING = 'STAGING',
+    PRODUCTION = 'PRODUCTION',
+    UNKNOWN = 'UNKNOWN',
 }
 
 export type ContractInstance = any; // TODO: add type definition for Contract
@@ -341,21 +352,32 @@ export enum Docs {
     SmartContracts,
 }
 
+export enum WebsiteLegacyPaths {
+    ZeroExJs = '/docs/0xjs',
+    Web3Wrapper = '/docs/web3_wrapper',
+    Deployer = '/docs/deployer',
+    Jobs = '/jobs',
+}
+
 export enum WebsitePaths {
     Portal = '/portal',
     Wiki = '/wiki',
-    ZeroExJs = '/docs/0xjs',
+    Docs = '/docs',
+    ZeroExJs = '/docs/0x.js',
     Home = '/',
     FAQ = '/faq',
     About = '/about',
     Whitepaper = '/pdfs/0x_white_paper.pdf',
     SmartContracts = '/docs/contracts',
     Connect = '/docs/connect',
-    Web3Wrapper = '/docs/web3_wrapper',
-    Deployer = '/docs/deployer',
+    Web3Wrapper = '/docs/web3-wrapper',
+    SolCompiler = '/docs/sol-compiler',
     JSONSchemas = '/docs/json-schemas',
     SolCov = '/docs/sol-cov',
     Subproviders = '/docs/subproviders',
+    OrderUtils = '/docs/order-utils',
+    EthereumTypes = '/docs/ethereum-types',
+    Careers = '/careers',
 }
 
 export enum DocPackages {
@@ -363,10 +385,12 @@ export enum DocPackages {
     ZeroExJs = 'ZERO_EX_JS',
     SmartContracts = 'SMART_CONTRACTS',
     Web3Wrapper = 'WEB3_WRAPPER',
-    Deployer = 'DEPLOYER',
+    SolCompiler = 'SOL_COMPILER',
     JSONSchemas = 'JSON_SCHEMAS',
     SolCov = 'SOL_COV',
     Subproviders = 'SUBPROVIDERS',
+    OrderUtils = 'ORDER_UTILS',
+    EthereumTypes = 'ETHEREUM_TYPES',
 }
 
 export enum Key {
@@ -415,9 +439,10 @@ export enum Key {
     About = 'ABOUT',
     Careers = 'CAREERS',
     Contact = 'CONTACT',
-    Deployer = 'DEPLOYER',
+    SolCompiler = 'SOL_COMPILER',
     JsonSchemas = 'JSON_SCHEMAS',
     SolCov = 'SOL_COV',
+    EthereumTypes = 'ETHEREUM_TYPES',
     Subproviders = 'SUBPROVIDERS',
     Blog = 'BLOG',
     Forum = 'FORUM',
@@ -425,6 +450,7 @@ export enum Key {
     Whitepaper = 'WHITEPAPER',
     Wiki = 'WIKI',
     Web3Wrapper = 'WEB3_WRAPPER',
+    OrderUtils = 'ORDER_UTILS',
     And = 'AND',
     Faq = 'FAQ',
     SmartContracts = 'SMART_CONTRACTS',
@@ -434,6 +460,7 @@ export enum Key {
     Developers = 'DEVELOPERS',
     Home = 'HOME',
     RocketChat = 'ROCKETCHAT',
+    TradeCallToAction = 'TRADE_CALL_TO_ACTION',
 }
 
 export enum SmartContractDocSections {
@@ -467,6 +494,18 @@ export enum Providers {
     Parity = 'PARITY',
     Metamask = 'METAMASK',
     Mist = 'MIST',
+    Toshi = 'TOSHI',
+    Cipher = 'CIPHER',
+}
+
+export interface InjectedProviderUpdate {
+    selectedAddress: string;
+    networkVersion: string;
+}
+
+export interface InjectedProviderObservable {
+    subscribe(updateHandler: (update: InjectedProviderUpdate) => void): void;
+    unsubscribe(updateHandler: (update: InjectedProviderUpdate) => void): void;
 }
 
 export interface TimestampMsRange {
@@ -481,13 +520,91 @@ export interface OutdatedWrappedEtherByNetworkId {
     };
 }
 
-export interface TokenStateByAddress {
-    [address: string]: TokenState;
+export type ItemByAddress<T> = ObjectMap<T>;
+
+export interface ObjectMap<T> {
+    [key: string]: T;
 }
+
+export type TokenStateByAddress = ItemByAddress<TokenState>;
 
 export interface TokenState {
     balance: BigNumber;
     allowance: BigNumber;
     isLoaded: boolean;
+    price?: BigNumber;
+}
+
+export interface WebsiteBackendRelayerInfo {
+    name: string;
+    weeklyTxnVolume?: string;
+    url: string;
+    appUrl?: string;
+    headerImgUrl?: string;
+    logoImgUrl?: string;
+    primaryColor?: string;
+    topTokens: WebsiteBackendTokenInfo[];
+}
+
+export interface WebsiteBackendPriceInfo {
+    [symbol: string]: string;
+}
+
+export interface WebsiteBackendTokenInfo {
+    address: string;
+    decimals: number;
+    name: string;
+    symbol: string;
+}
+
+export interface WebsiteBackendGasInfo {
+    safeSlow: number;
+    average: number;
+    fast: number;
+    fastest: number;
+}
+
+export interface WebsiteBackendJobInfo {
+    id: number;
+    title: string;
+    department: string;
+    office: string;
+    url: string;
+}
+
+export enum BrowserType {
+    Chrome = 'Chrome',
+    Firefox = 'Firefox',
+    Opera = 'Opera',
+    Other = 'Other',
+}
+
+export enum OperatingSystemType {
+    Android = 'Android',
+    iOS = 'iOS',
+    Mac = 'Mac',
+    Windows = 'Windows',
+    WindowsPhone = 'WindowsPhone',
+    Linux = 'Linux',
+    Other = 'Other',
+}
+
+export enum AccountState {
+    Disconnected = 'Disconnected',
+    Ready = 'Ready',
+    Loading = 'Loading',
+    Locked = 'Locked',
+}
+
+export interface InjectedProvider extends Provider {
+    publicConfigStore?: InjectedProviderObservable;
+}
+
+// Minimal expected interface for an injected web3 object
+export interface InjectedWeb3 {
+    currentProvider: InjectedProvider;
+    version: {
+        getNetwork(cd: (err: Error, networkId: string) => void): void;
+    };
 }
 // tslint:disable:max-file-line-count

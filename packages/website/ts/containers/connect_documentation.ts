@@ -1,19 +1,17 @@
 import { constants as docConstants, DocsInfo, DocsInfoConfig, SupportedDocJson } from '@0xproject/react-docs';
-import * as _ from 'lodash';
 import * as React from 'react';
 import { connect } from 'react-redux';
 import { Dispatch } from 'redux';
 import { DocPage as DocPageComponent, DocPageProps } from 'ts/pages/documentation/doc_page';
 import { Dispatcher } from 'ts/redux/dispatcher';
 import { State } from 'ts/redux/reducer';
-import { DocPackages, Environments, WebsitePaths } from 'ts/types';
-import { configs } from 'ts/utils/configs';
+import { DocPackages } from 'ts/types';
 import { constants } from 'ts/utils/constants';
 import { Translate } from 'ts/utils/translate';
 
 /* tslint:disable:no-var-requires */
-const IntroMarkdown = require('md/docs/connect/introduction');
-const InstallationMarkdown = require('md/docs/connect/installation');
+const IntroMarkdownV1 = require('md/docs/connect/1.0.0/introduction');
+const InstallationMarkdownV1 = require('md/docs/connect/1.0.0/installation');
 /* tslint:enable:no-var-requires */
 
 const connectDocSections = {
@@ -36,14 +34,16 @@ const docsInfoConfig: DocsInfoConfig = {
         webSocketOrderbookChannel: [connectDocSections.webSocketOrderbookChannel],
         types: [connectDocSections.types],
     },
-    sectionNameToMarkdown: {
-        [connectDocSections.introduction]: IntroMarkdown,
-        [connectDocSections.installation]: InstallationMarkdown,
+    sectionNameToMarkdownByVersion: {
+        '0.0.1': {
+            [connectDocSections.introduction]: IntroMarkdownV1,
+            [connectDocSections.installation]: InstallationMarkdownV1,
+        },
     },
     sectionNameToModulePath: {
         [connectDocSections.httpClient]: ['"src/http_client"'],
         [connectDocSections.webSocketOrderbookChannel]: ['"src/ws_orderbook_channel"'],
-        [connectDocSections.types]: ['"src/types"'],
+        [connectDocSections.types]: ['"src/types"', '"types/src/index"'],
     },
     menuSubsectionToVersionWhenIntroduced: {},
     sections: connectDocSections,
@@ -91,7 +91,7 @@ interface ConnectedDispatch {
     dispatcher: Dispatcher;
 }
 
-const mapStateToProps = (state: State, ownProps: DocPageProps): ConnectedState => ({
+const mapStateToProps = (state: State, _ownProps: DocPageProps): ConnectedState => ({
     docsVersion: state.docsVersion,
     availableDocVersions: state.availableDocVersions,
     translate: state.translate,

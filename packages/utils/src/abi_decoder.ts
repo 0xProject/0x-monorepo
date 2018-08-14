@@ -8,53 +8,55 @@ import {
     LogWithDecodedArgs,
     RawLog,
     SolidityTypes,
-} from '@0xproject/types';
-import * as ethersContracts from 'ethers-contracts';
+} from 'ethereum-types';
+import * as ethers from 'ethers';
 import * as _ from 'lodash';
 
+import { addressUtils } from './address_utils';
 import { BigNumber } from './configured_bignumber';
 
 export class AbiDecoder {
-    private _savedABIs: AbiDefinition[] = [];
-    private _methodIds: { [signatureHash: string]: EventAbi } = {};
-    private static _padZeros(address: string) {
-        let formatted = address;
-        if (_.startsWith(formatted, '0x')) {
-            formatted = formatted.slice(2);
-        }
-
-        formatted = _.padStart(formatted, 40, '0');
-        return `0x${formatted}`;
-    }
+    private readonly _methodIds: { [signatureHash: string]: EventAbi } = {};
     constructor(abiArrays: AbiDefinition[][]) {
-        _.forEach(abiArrays, this._addABI.bind(this));
+        _.forEach(abiArrays, this.addABI.bind(this));
     }
     // This method can only decode logs from the 0x & ERC20 smart contracts
-    public tryToDecodeLogOrNoop<ArgsType>(log: LogEntry): LogWithDecodedArgs<ArgsType> | RawLog {
+    public tryToDecodeLogOrNoop<ArgsType extends DecodedLogArgs>(log: LogEntry): LogWithDecodedArgs<ArgsType> | RawLog {
         const methodId = log.topics[0];
         const event = this._methodIds[methodId];
         if (_.isUndefined(event)) {
             return log;
         }
-        const ethersInterface = new ethersContracts.Interface([event]);
-        const logData = log.data;
+        const ethersInterface = new ethers.Interface([event]);
         const decodedParams: DecodedLogArgs = {};
         let topicsIndex = 1;
 
-        const nonIndexedInputs = _.filter(event.inputs, input => !input.indexed);
-        const dataTypes = _.map(nonIndexedInputs, input => input.type);
-        const decodedData = ethersInterface.events[event.name].parse(log.data);
+        let decodedData: any[];
+        try {
+            decodedData = ethersInterface.events[event.name].parse(log.data);
+        } catch (error) {
+            if (error.code === ethers.errors.INVALID_ARGUMENT) {
+                // Because we index events by Method ID, and Method IDs are derived from the method
+                // name and the input parameters, it's possible that the return value of the event
+                // does not match our ABI. If that's the case, then ethers will throw an error
+                // when we try to parse the event. We handle that case here by returning the log rather
+                // than throwing an error.
+                return log;
+            }
+            throw error;
+        }
 
-        let failedToDecode = false;
+        let didFailToDecode = false;
         _.forEach(event.inputs, (param: EventParameter, i: number) => {
             // Indexed parameters are stored in topics. Non-indexed ones in decodedData
             let value: BigNumber | string | number = param.indexed ? log.topics[topicsIndex++] : decodedData[i];
             if (_.isUndefined(value)) {
-                failedToDecode = true;
+                didFailToDecode = true;
                 return;
             }
             if (param.type === SolidityTypes.Address) {
-                value = AbiDecoder._padZeros(new BigNumber(value).toString(16));
+                const baseHex = 16;
+                value = addressUtils.padZeros(new BigNumber(value).toString(baseHex));
             } else if (param.type === SolidityTypes.Uint256 || param.type === SolidityTypes.Uint) {
                 value = new BigNumber(value);
             } else if (param.type === SolidityTypes.Uint8) {
@@ -63,7 +65,7 @@ export class AbiDecoder {
             decodedParams[param.name] = value;
         });
 
-        if (failedToDecode) {
+        if (didFailToDecode) {
             return log;
         } else {
             return {
@@ -73,17 +75,16 @@ export class AbiDecoder {
             };
         }
     }
-    private _addABI(abiArray: AbiDefinition[]): void {
+    public addABI(abiArray: AbiDefinition[]): void {
         if (_.isUndefined(abiArray)) {
             return;
         }
-        const ethersInterface = new ethersContracts.Interface(abiArray);
+        const ethersInterface = new ethers.Interface(abiArray);
         _.map(abiArray, (abi: AbiDefinition) => {
             if (abi.type === AbiType.Event) {
-                const topic = ethersInterface.events[abi.name].topic;
+                const topic = ethersInterface.events[abi.name].topics[0];
                 this._methodIds[topic] = abi;
             }
         });
-        this._savedABIs = this._savedABIs.concat(abiArray);
     }
 }

@@ -1,61 +1,66 @@
 export { ZeroEx } from './0x';
 
+export { Web3ProviderEngine, RPCSubprovider } from '@0xproject/subproviders';
+
 export {
-    ZeroExError,
-    EventCallback,
     ExchangeContractErrs,
-    ContractEvent,
-    Token,
-    IndexedFilterValues,
-    BlockRange,
-    OrderCancellationRequest,
-    OrderFillRequest,
-    ContractEventArgs,
-    Web3Provider,
-    ZeroExConfig,
-    MethodOpts,
-    OrderTransactionOpts,
-    TransactionOpts,
-    LogEvent,
-    DecodedLogEvent,
-    EventWatcherCallback,
-    OnOrderStateChangeCallback,
+    Order,
+    SignedOrder,
+    SignerType,
+    ECSignature,
     OrderStateValid,
     OrderStateInvalid,
     OrderState,
-} from './types';
+    Token,
+    ERC20AssetData,
+    ERC721AssetData,
+    AssetProxyId,
+} from '@0xproject/types';
 
 export {
     BlockParamLiteral,
     FilterObject,
     BlockParam,
-    ContractEventArg,
     LogWithDecodedArgs,
-    Order,
-    SignedOrder,
-    ECSignature,
+    ContractEventArg,
+    Provider,
     TransactionReceipt,
     TransactionReceiptWithDecodedLogs,
-} from '@0xproject/types';
+} from 'ethereum-types';
 
 export {
-    EtherTokenContractEventArgs,
-    WithdrawalContractEventArgs,
-    DepositContractEventArgs,
-    EtherTokenEvents,
-} from './contract_wrappers/generated/ether_token';
-
-export {
-    TransferContractEventArgs,
-    ApprovalContractEventArgs,
-    TokenContractEventArgs,
-    TokenEvents,
-} from './contract_wrappers/generated/token';
-
-export {
-    LogErrorContractEventArgs,
-    LogCancelContractEventArgs,
-    LogFillContractEventArgs,
-    ExchangeContractEventArgs,
-    ExchangeEvents,
-} from './contract_wrappers/generated/exchange';
+    EventCallback,
+    ContractEvent,
+    IndexedFilterValues,
+    BlockRange,
+    OrderFillRequest,
+    ContractEventArgs,
+    MethodOpts,
+    OrderTransactionOpts,
+    TransactionOpts,
+    LogEvent,
+    DecodedLogEvent,
+    OnOrderStateChangeCallback,
+    ContractWrappersError,
+    WETH9Events,
+    WETH9WithdrawalEventArgs,
+    WETH9ApprovalEventArgs,
+    WETH9EventArgs,
+    WETH9DepositEventArgs,
+    WETH9TransferEventArgs,
+    ERC20TokenTransferEventArgs,
+    ERC20TokenApprovalEventArgs,
+    ERC20TokenEvents,
+    ERC20TokenEventArgs,
+    ERC721TokenApprovalEventArgs,
+    ERC721TokenApprovalForAllEventArgs,
+    ERC721TokenTransferEventArgs,
+    ERC721TokenEvents,
+    ExchangeCancelUpToEventArgs,
+    ExchangeAssetProxyRegisteredEventArgs,
+    ExchangeFillEventArgs,
+    ExchangeCancelEventArgs,
+    ExchangeEventArgs,
+    ContractWrappersConfig,
+    OrderInfo,
+} from '@0xproject/contract-wrappers';

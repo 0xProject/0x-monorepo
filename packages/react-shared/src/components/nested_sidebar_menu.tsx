@@ -41,12 +41,13 @@ const styles: Styles = {
 export class NestedSidebarMenu extends React.Component<NestedSidebarMenuProps, NestedSidebarMenuState> {
     public static defaultProps: Partial<NestedSidebarMenuProps> = {
         shouldDisplaySectionHeaders: true,
-        onMenuItemClick: _.noop,
+        onMenuItemClick: _.noop.bind(_),
     };
-    public render() {
+    public render(): React.ReactNode {
         const navigation = _.map(this.props.topLevelMenu, (menuItems: string[], sectionName: string) => {
             const finalSectionName = utils.convertDashesToSpaces(sectionName);
             if (this.props.shouldDisplaySectionHeaders) {
+                // tslint:disable-next-line:no-unused-variable
                 const id = utils.getIdFromName(sectionName);
                 return (
                     <div key={`section-${sectionName}`} className="py1" style={{ color: colors.grey800 }}>

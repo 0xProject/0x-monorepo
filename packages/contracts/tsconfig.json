@@ -4,15 +4,13 @@
         "outDir": "lib",
         "baseUrl": ".",
         "declaration": false,
-        "noImplicitThis": false,
         "allowJs": true
     },
     "include": [
-        "../../node_modules/types-ethereumjs-util/index.d.ts",
-        "../../node_modules/types-bn/index.d.ts",
         "./globals.d.ts",
+        "./contract_wrappers",
         "./src/**/*",
-        "./util/**/*",
+        "./utils/**/*",
         "./test/**/*",
         "./migrations/**/*"
     ],

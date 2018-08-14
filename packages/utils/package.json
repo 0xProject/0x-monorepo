@@ -1,14 +1,22 @@
 {
     "name": "@0xproject/utils",
-    "version": "0.4.4",
+    "version": "1.0.5",
+    "engines": {
+        "node": ">=6.12"
+    },
     "description": "0x TS utils",
-    "main": "lib/index.js",
-    "types": "lib/index.d.ts",
+    "main": "lib/src/index.js",
+    "types": "lib/src/index.d.ts",
     "scripts": {
-        "build:watch": "tsc -w",
+        "watch_without_deps": "tsc -w",
         "build": "tsc && copyfiles -u 2 './lib/monorepo_scripts/**/*' ./scripts",
         "clean": "shx rm -rf lib scripts",
-        "lint": "tslint --project . 'src/**/*.ts'",
+        "test": "yarn run_mocha",
+        "test:circleci": "yarn test:coverage",
+        "run_mocha": "mocha --require source-map-support/register --require make-promises-safe lib/test/**/*_test.js --bail --exit",
+        "test:coverage": "nyc npm run test --all && yarn coverage:report:lcov",
+        "coverage:report:lcov": "nyc report --reporter=text-lcov > coverage/lcov.info",
+        "lint": "tslint --project .",
         "manual:postpublish": "yarn build; node ./scripts/postpublish.js"
     },
     "license": "Apache-2.0",
@@ -21,24 +29,32 @@
     },
     "homepage": "https://github.com/0xProject/0x-monorepo/packages/utils/README.md",
     "devDependencies": {
-        "@0xproject/monorepo-scripts": "^0.1.15",
-        "@0xproject/tslint-config": "^0.4.13",
+        "@0xproject/monorepo-scripts": "^1.0.5",
+        "@0xproject/tslint-config": "^1.0.5",
         "@types/lodash": "4.14.104",
+        "@types/mocha": "^2.2.42",
+        "chai": "^4.0.1",
         "copyfiles": "^1.2.0",
+        "make-promises-safe": "^1.1.0",
+        "mocha": "^4.1.0",
         "npm-run-all": "^4.1.2",
         "shx": "^0.2.2",
-        "tslint": "5.8.0",
-        "typescript": "2.7.1"
+        "tslint": "5.11.0",
+        "typescript": "2.9.2"
     },
     "dependencies": {
-        "@0xproject/types": "^0.4.2",
-        "@0xproject/typescript-typings": "^0.0.2",
+        "@0xproject/types": "^1.0.1-rc.4",
+        "@0xproject/typescript-typings": "^1.0.4",
         "@types/node": "^8.0.53",
+        "abortcontroller-polyfill": "^1.1.9",
         "bignumber.js": "~4.1.0",
-        "ethers-contracts": "^2.2.1",
+        "detect-node": "2.0.3",
+        "ethereum-types": "^1.0.4",
+        "ethereumjs-util": "^5.1.1",
+        "ethers": "3.0.22",
+        "isomorphic-fetch": "^2.2.1",
         "js-sha3": "^0.7.0",
-        "lodash": "^4.17.4",
-        "web3": "^0.20.0"
+        "lodash": "^4.17.5"
     },
     "publishConfig": {
         "access": "public"

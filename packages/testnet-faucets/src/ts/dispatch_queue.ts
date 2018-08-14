@@ -7,8 +7,8 @@ const MAX_QUEUE_SIZE = 500;
 const DEFAULT_QUEUE_INTERVAL_MS = 1000;
 
 export class DispatchQueue {
-    private _queueIntervalMs: number;
-    private _queue: Array<() => Promise<void>>;
+    private readonly _queueIntervalMs: number;
+    private readonly _queue: Array<() => Promise<void>>;
     private _queueIntervalIdIfExists?: NodeJS.Timer;
     constructor() {
         this._queueIntervalMs = DEFAULT_QUEUE_INTERVAL_MS;
@@ -28,12 +28,12 @@ export class DispatchQueue {
     public isFull(): boolean {
         return this.size() >= MAX_QUEUE_SIZE;
     }
-    public stop() {
+    public stop(): void {
         if (!_.isUndefined(this._queueIntervalIdIfExists)) {
             intervalUtils.clearAsyncExcludingInterval(this._queueIntervalIdIfExists);
         }
     }
-    private _start() {
+    private _start(): void {
         this._queueIntervalIdIfExists = intervalUtils.setAsyncExcludingInterval(
             async () => {
                 const taskAsync = this._queue.shift();

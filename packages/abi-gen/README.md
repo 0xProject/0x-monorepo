@@ -4,8 +4,7 @@ This package allows you to generate TypeScript contract wrappers from ABI files.
 It's heavily inspired by [Geth abigen](https://github.com/ethereum/go-ethereum/wiki/Native-DApps:-Go-bindings-to-Ethereum-contracts) but takes a different approach.
 You can write your custom handlebars templates which will allow you to seamlessly integrate the generated code into your existing codebase with existing conventions.
 
-For an example of the generated [wrapper files](https://github.com/0xProject/0x-monorepo/tree/development/packages/0x.js/src/contract_wrappers/generated) check out 0x.js.
-[Here](https://github.com/0xProject/0x-monorepo/tree/development/packages/0x.js/contract_templates) are the templates used to generate those files.
+[Here](https://github.com/0xProject/0x-monorepo/tree/development/packages/0x.js/contract_templates) are the templates used to generate the contract wrappers used by 0x.js.e
 
 ## Installation
 
@@ -45,7 +44,7 @@ You need to also specify the location of your main template used for every contr
 
 ## How to write custom templates?
 
-The best way to get started is to copy [0x.js templates](https://github.com/0xProject/0x-monorepo/tree/development/packages/0x.js/contract_templates) and start adjusting them for your needs.
+The best way to get started is to copy [0x.js templates](https://github.com/0xProject/0x-monorepo/tree/development/packages/contract_templates) and start adjusting them for your needs.
 We use [handlebars](http://handlebarsjs.com/) template engine under the hood.
 You need to have a master template called `contract.mustache`. it will be used to generate each contract wrapper. Although - you don't need and probably shouldn't write all your logic in a single template file. You can write [partial templates](http://handlebarsjs.com/partials.html) and as long as they are within a partials folder - they will be registered and available.
 
@@ -57,3 +56,49 @@ See the [type definition](https://github.com/0xProject/0x-monorepo/tree/developm
 ## Output files
 
 Output files will be generated within an output folder with names converted to camel case and taken from abi file names. If you already have some files in that folder they will be overwritten.
+
+## Contributing
+
+We welcome improvements and fixes from the wider community! To report bugs within this package, please create an issue in this repository.
+
+Please read our [contribution guidelines](../../CONTRIBUTING.md) before getting started.
+
+### Install dependencies
+
+If you don't have yarn workspaces enabled (Yarn < v1.0) - enable them:
+
+```bash
+yarn config set workspaces-experimental true
+```
+
+Then install dependencies
+
+```bash
+yarn install
+```
+
+### Build
+
+To build this package and all other monorepo packages that it depends on, run the following from the monorepo root directory:
+
+```bash
+PKG=@0xproject/abi-gen yarn build
+```
+
+Or continuously rebuild on change:
+
+```bash
+PKG=@0xproject/abi-gen yarn watch
+```
+
+### Clean
+
+```bash
+yarn clean
+```
+
+### Lint
+
+```bash
+yarn lint
+```

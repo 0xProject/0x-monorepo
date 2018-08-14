@@ -1,9 +1,9 @@
-export const relayerApiOrderBookResponseSchema = {
-    id: '/RelayerApiOrderBookResponse',
+export const relayerApiOrderbookResponseSchema = {
+    id: '/relayerApiOrderbookResponseSchema',
     type: 'object',
     properties: {
-        bids: { $ref: '/signedOrdersSchema' },
-        asks: { $ref: '/signedOrdersSchema' },
+        bids: { $ref: '/relayerApiOrdersResponseSchema' },
+        asks: { $ref: '/relayerApiOrdersResponseSchema' },
     },
     required: ['bids', 'asks'],
 };

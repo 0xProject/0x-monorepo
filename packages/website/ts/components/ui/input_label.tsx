@@ -1,11 +1,11 @@
-import { colors } from '@0xproject/react-shared';
+import { colors, Styles } from '@0xproject/react-shared';
 import * as React from 'react';
 
 export interface InputLabelProps {
     text: string | Element | React.ReactNode;
 }
 
-const styles = {
+const styles: Styles = {
     label: {
         color: colors.grey,
         fontSize: 12,
@@ -17,7 +17,7 @@ const styles = {
         userSelect: 'none',
         width: 240,
         zIndex: 1,
-    },
+    } as React.CSSProperties,
 };
 
 export const InputLabel = (props: InputLabelProps) => {

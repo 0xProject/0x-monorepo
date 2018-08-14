@@ -1,13 +1,170 @@
 [
     {
+        "version": "1.0.5",
+        "changes": [
+            {
+                "note": "Increased BigNumber decimal precision from 20 to 78",
+                "pr": 807
+            }
+        ],
+        "timestamp": 1534210131
+    },
+    {
+        "timestamp": 1532619515,
+        "version": "1.0.4",
+        "changes": [
+            {
+                "note": "Dependencies updated"
+            }
+        ]
+    },
+    {
+        "timestamp": 1532614997,
+        "version": "1.0.3",
+        "changes": [
+            {
+                "note": "Dependencies updated"
+            }
+        ]
+    },
+    {
+        "timestamp": 1532605697,
+        "version": "1.0.2",
+        "changes": [
+            {
+                "note": "Dependencies updated"
+            }
+        ]
+    },
+    {
+        "version": "1.0.1",
+        "changes": [
+            {
+                "note": "Add `AbortController` polyfill to `fetchAsync`",
+                "pr": 903
+            }
+        ],
+        "timestamp": 1532357734
+    },
+    {
+        "timestamp": 1532043000,
+        "version": "1.0.0",
+        "changes": [
+            {
+                "note": "Add `fetchAsync` which adds a default timeout to all requests",
+                "pr": 874
+            }
+        ]
+    },
+    {
+        "timestamp": 1531919263,
+        "version": "0.7.3",
+        "changes": [
+            {
+                "note": "Dependencies updated"
+            }
+        ]
+    },
+    {
+        "version": "0.7.2",
+        "changes": [
+            {
+                "note": "Added errorUtils.spawnSwitchErr"
+            },
+            {
+                "note": "Add logUtils.warn",
+                "pr": 589
+            },
+            {
+                "note": "Fixes uncaught Error in abi_decoder",
+                "pr": 763
+            }
+        ],
+        "timestamp": 1531149657
+    },
+    {
+        "timestamp": 1529397769,
+        "version": "0.7.1",
+        "changes": [
+            {
+                "note": "Dependencies updated"
+            }
+        ]
+    },
+    {
+        "version": "0.7.0",
+        "changes": [
+            {
+                "note": "Incorrect publish that was unpublished"
+            }
+        ],
+        "timestamp": 1527810075
+    },
+    {
+        "timestamp": 1527009133,
+        "version": "0.6.2",
+        "changes": [
+            {
+                "note": "Dependencies updated"
+            }
+        ]
+    },
+    {
+        "timestamp": 1525477860,
+        "version": "0.6.1",
+        "changes": [
+            {
+                "note": "Dependencies updated"
+            }
+        ]
+    },
+    {
+        "version": "0.6.0",
+        "changes": [
+            {
+                "note": "Update ethers-contracts to ethers.js",
+                "pr": 540
+            }
+        ],
+        "timestamp": 1525428773
+    },
+    {
+        "version": "0.5.2",
+        "changes": [
+            {
+                "note": "Export NULL_BYTES constant",
+                "pr": 500
+            }
+        ],
+        "timestamp": 1524044013
+    },
+    {
+        "timestamp": 1523462196,
+        "version": "0.5.1",
+        "changes": [
+            {
+                "note": "Dependencies updated"
+            }
+        ]
+    },
+    {
+        "version": "0.5.0",
+        "changes": [
+            {
+                "note": "Make `AbiDecoder.addABI` public",
+                "pr": 485
+            }
+        ],
+        "timestamp": 1522673609
+    },
+    {
         "timestamp": 1522658513,
         "version": "0.4.4",
         "changes": [
             {
                 "note": "Dependencies updated"
             }
-        ],
-        "isPublished": true
+        ]
     },
     {
         "version": "0.4.3",
@@ -17,8 +174,7 @@
                     "Add `@types/node` to dependencies since `intervalUtils` has the `NodeJS` type as part of its public interface."
             }
         ],
-        "timestamp": 1521298800,
-        "isPublished": true
+        "timestamp": 1521298800
     },
     {
         "version": "0.4.2",
@@ -28,8 +184,7 @@
                 "pr": 452
             }
         ],
-        "timestamp": 1521298800,
-        "isPublished": true
+        "timestamp": 1521298800
     },
     {
         "version": "0.4.0",
@@ -43,8 +198,7 @@
                 "pr": 429
             }
         ],
-        "timestamp": 1520089200,
-        "isPublished": true
+        "timestamp": 1520089200
     },
     {
         "version": "0.3.2",
@@ -54,8 +208,7 @@
                 "pr": 389
             }
         ],
-        "timestamp": 1518102000,
-        "isPublished": true
+        "timestamp": 1518102000
     },
     {
         "version": "0.3.0",
@@ -66,8 +219,7 @@
                 "pr": 366
             }
         ],
-        "timestamp": 1517756400,
-        "isPublished": true
+        "timestamp": 1517756400
     },
     {
         "version": "0.2.0",
@@ -81,7 +233,6 @@
                 "pr": 312
             }
         ],
-        "timestamp": 1516114800,
-        "isPublished": true
+        "timestamp": 1516114800
     }
 ]

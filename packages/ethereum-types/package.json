@@ -1,0 +1,53 @@
+{
+    "name": "ethereum-types",
+    "version": "1.0.4",
+    "engines": {
+        "node": ">=6.12"
+    },
+    "description": "Ethereum types",
+    "main": "lib/index.js",
+    "types": "lib/index.d.ts",
+    "scripts": {
+        "watch_without_deps": "tsc -w",
+        "build": "tsc && copyfiles -u 2 './lib/monorepo_scripts/**/*' ./scripts",
+        "clean": "shx rm -rf lib scripts",
+        "lint": "tslint --project .",
+        "manual:postpublish": "yarn build; node ./scripts/postpublish.js",
+        "docs:stage": "node scripts/stage_docs.js",
+        "docs:json": "typedoc --excludePrivate --excludeExternals --target ES5 --json $JSON_FILE_PATH $PROJECT_FILES",
+        "upload_docs_json": "aws s3 cp generated_docs/index.json $S3_URL --profile 0xproject --grants read=uri=http://acs.amazonaws.com/groups/global/AllUsers --content-type application/json"
+    },
+    "config": {
+        "postpublish": {
+            "docPublishConfigs": {
+                "s3BucketPath": "s3://doc-jsons/ethereum-types/",
+                "s3StagingBucketPath": "s3://staging-doc-jsons/ethereum-types/"
+            }
+        }
+    },
+    "license": "Apache-2.0",
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/0xProject/0x-monorepo.git"
+    },
+    "bugs": {
+        "url": "https://github.com/0xProject/0x-monorepo/issues"
+    },
+    "homepage": "https://github.com/0xProject/0x-monorepo/packages/ethereum-types/README.md",
+    "devDependencies": {
+        "@0xproject/monorepo-scripts": "^1.0.5",
+        "@0xproject/tslint-config": "^1.0.5",
+        "copyfiles": "^1.2.0",
+        "make-promises-safe": "^1.1.0",
+        "shx": "^0.2.2",
+        "tslint": "5.11.0",
+        "typescript": "2.9.2"
+    },
+    "dependencies": {
+        "@types/node": "^8.0.53",
+        "bignumber.js": "~4.1.0"
+    },
+    "publishConfig": {
+        "access": "public"
+    }
+}

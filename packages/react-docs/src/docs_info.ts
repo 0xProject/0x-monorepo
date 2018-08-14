@@ -9,8 +9,10 @@ import {
     DocsInfoTypeConfigs,
     DocsMenu,
     DoxityDocObj,
+    SectionNameToMarkdownByVersion,
     SectionsMap,
     SupportedDocJson,
+    TypeDefinitionByName,
     TypeDocNode,
 } from './types';
 import { doxityUtils } from './utils/doxity_utils';
@@ -23,17 +25,17 @@ export class DocsInfo {
     public packageUrl: string;
     public menu: DocsMenu;
     public sections: SectionsMap;
-    public sectionNameToMarkdown: { [sectionName: string]: string };
+    public sectionNameToMarkdownByVersion: SectionNameToMarkdownByVersion;
     public contractsByVersionByNetworkId?: ContractsByVersionByNetworkId;
     public typeConfigs: DocsInfoTypeConfigs;
-    private _docsInfo: DocsInfoConfig;
+    private readonly _docsInfo: DocsInfoConfig;
     constructor(config: DocsInfoConfig) {
         this.id = config.id;
         this.type = config.type;
         this.displayName = config.displayName;
         this.packageUrl = config.packageUrl;
         this.sections = config.sections;
-        this.sectionNameToMarkdown = config.sectionNameToMarkdown;
+        this.sectionNameToMarkdownByVersion = config.sectionNameToMarkdownByVersion;
         this.contractsByVersionByNetworkId = config.contractsByVersionByNetworkId;
         this.typeConfigs = config.typeConfigs;
         this._docsInfo = config;
@@ -63,8 +65,8 @@ export class DocsInfo {
         finalMenu.contracts = _.filter(finalMenu.contracts, (contractName: string) => {
             const versionIntroducedIfExists = this._docsInfo.menuSubsectionToVersionWhenIntroduced[contractName];
             if (!_.isUndefined(versionIntroducedIfExists)) {
-                const existsInSelectedVersion = compareVersions(selectedVersion, versionIntroducedIfExists) >= 0;
-                return existsInSelectedVersion;
+                const doesExistInSelectedVersion = compareVersions(selectedVersion, versionIntroducedIfExists) >= 0;
+                return doesExistInSelectedVersion;
             } else {
                 return true;
             }
@@ -104,13 +106,13 @@ export class DocsInfo {
         });
         return menuSubsectionsBySection;
     }
-    public getTypeDefinitionsByName(docAgnosticFormat: DocAgnosticFormat) {
+    public getTypeDefinitionsByName(docAgnosticFormat: DocAgnosticFormat): { [name: string]: TypeDefinitionByName } {
         if (_.isUndefined(this.sections.types)) {
             return {};
         }
 
         const typeDocSection = docAgnosticFormat[this.sections.types];
-        const typeDefinitionByName = _.keyBy(typeDocSection.types, 'name');
+        const typeDefinitionByName = _.keyBy(typeDocSection.types, 'name') as any;
         return typeDefinitionByName;
     }
     public isVisibleConstructor(sectionName: string): boolean {

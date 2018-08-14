@@ -1,10 +1,8 @@
 #!/usr/bin/env node
 import { assert } from '@0xproject/assert';
-import { Schema, schemas } from '@0xproject/json-schemas';
-import { logUtils, promisify } from '@0xproject/utils';
+import { logUtils } from '@0xproject/utils';
 import chalk from 'chalk';
 import * as _ from 'lodash';
-import * as newman from 'newman';
 import * as yargs from 'yargs';
 
 import * as sraReportCollectionJSON from '../../postman_collections/sra_report.postman_collection.json';
@@ -13,7 +11,18 @@ import { postmanEnvironmentFactory } from './postman_environment_factory';
 import { utils } from './utils';
 
 const DEFAULT_NETWORK_ID = 1;
-const SUPPORTED_NETWORK_IDS = [1, 3, 4, 42];
+const networkNameToId: { [networkName: string]: number } = {
+    mainnet: 1,
+    ropsten: 3,
+    rinkeby: 4,
+    kovan: 42,
+};
+const SUPPORTED_NETWORK_IDS = [
+    networkNameToId.mainnet,
+    networkNameToId.ropsten,
+    networkNameToId.rinkeby,
+    networkNameToId.kovan,
+];
 
 // extract command line arguments
 const args = yargs

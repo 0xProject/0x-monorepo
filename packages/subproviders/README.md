@@ -4,7 +4,7 @@ A few useful web3 subproviders including a LedgerSubprovider useful for adding L
 
 We have written up a [Wiki](https://0xproject.com/wiki#Web3-Provider-Examples) article detailing some use cases of this subprovider package.
 
-### Read the [Documentation](0xproject.com/docs/subproviders).
+### Read the [Documentation](https://0xproject.com/docs/subproviders).
 
 ## Installation
 
@@ -22,11 +22,11 @@ If your project is in [TypeScript](https://www.typescriptlang.org/), add the fol
 
 ## Contributing
 
-We strongly recommend that the community help us make improvements and determine the future direction of the protocol. To report bugs within this package, please create an issue in this repository.
+We welcome improvements and fixes from the wider community! To report bugs within this package, please create an issue in this repository.
 
 Please read our [contribution guidelines](../../CONTRIBUTING.md) before getting started.
 
-### Install Dependencies
+### Install dependencies
 
 If you don't have yarn workspaces enabled (Yarn < v1.0) - enable them:
 
@@ -34,20 +34,24 @@ If you don't have yarn workspaces enabled (Yarn < v1.0) - enable them:
 yarn config set workspaces-experimental true
 ```
 
+Then install dependencies
+
 ```bash
 yarn install
 ```
 
 ### Build
 
+To build this package and all other monorepo packages that it depends on, run the following from the monorepo root directory:
+
 ```bash
-yarn build
+PKG=@0xproject/subproviders yarn build
 ```
 
-or
+Or continuously rebuild on change:
 
 ```bash
-yarn build:watch
+PKG=@0xproject/subproviders yarn watch
 ```
 
 ### Clean

@@ -15,7 +15,7 @@ interface MenuItemState {
 
 export class MenuItem extends React.Component<MenuItemProps, MenuItemState> {
     public static defaultProps: Partial<MenuItemProps> = {
-        onClick: _.noop,
+        onClick: _.noop.bind(_),
         className: '',
     };
     public constructor(props: MenuItemProps) {
@@ -24,7 +24,7 @@ export class MenuItem extends React.Component<MenuItemProps, MenuItemState> {
             isHovering: false,
         };
     }
-    public render() {
+    public render(): React.ReactNode {
         const menuItemStyles = {
             cursor: 'pointer',
             opacity: this.state.isHovering ? 0.5 : 1,
@@ -43,7 +43,7 @@ export class MenuItem extends React.Component<MenuItemProps, MenuItemState> {
             </Link>
         );
     }
-    private _onToggleHover(isHovering: boolean) {
+    private _onToggleHover(isHovering: boolean): void {
         this.setState({
             isHovering,
         });

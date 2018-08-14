@@ -1,13 +1,163 @@
 [
     {
+        "version": "1.0.1-rc.4",
+        "changes": [
+            {
+                "pr": 914,
+                "note": "Added SignerType to handle different signing prefix scenarios"
+            }
+        ],
+        "timestamp": 1534210131
+    },
+    {
+        "version": "1.0.1-rc.3",
+        "changes": [
+            {
+                "note": "Dependencies updated"
+            }
+        ],
+        "timestamp": 1532619515
+    },
+    {
+        "version": "1.0.1-rc.2",
+        "changes": [
+            {
+                "note": "Dependencies updated"
+            }
+        ],
+        "timestamp": 1532614997
+    },
+    {
+        "version": "1.0.1-rc.1",
+        "changes": [
+            {
+                "note": "Remove `ECSignatureBuffer`"
+            }
+        ],
+        "timestamp": 1532605697
+    },
+    {
+        "timestamp": 1532357734,
+        "version": "1.0.0",
+        "changes": [
+            {
+                "note": "Dependencies updated"
+            }
+        ]
+    },
+    {
+        "timestamp": 1532043000,
+        "version": "1.0.0-rc.1",
+        "changes": [
+            {
+                "note": "Updated types for V2 of 0x protocol"
+            },
+            {
+                "note": "Add `ECSignatureBuffer`"
+            },
+            {
+                "note": "Add Forwarder contract revert reasons"
+            }
+        ]
+    },
+    {
+        "timestamp": 1531149657,
+        "version": "0.8.2",
+        "changes": [
+            {
+                "note": "Dependencies updated"
+            }
+        ]
+    },
+    {
+        "timestamp": 1529397769,
+        "version": "0.8.1",
+        "changes": [
+            {
+                "note": "Dependencies updated"
+            }
+        ]
+    },
+    {
+        "timestamp": 1527009133,
+        "version": "0.8.0",
+        "changes": [
+            {
+                "note": "Change the order type to v2 format",
+                "pr": 618
+            }
+        ]
+    },
+    {
+        "version": "0.7.0",
+        "changes": [
+            {
+                "note": "Make OpCode type an enum",
+                "pr": 589
+            },
+            {
+                "note":
+                    "Moved ExchangeContractErrs, DoneCallback, Token, OrderRelevantState, OrderStateValid, OrderStateInvalid, OrderState, OrderAddresses and OrderValues types from 0x.js",
+                "pr": 579
+            }
+        ],
+        "timestamp": 1527009133
+    },
+    {
+        "timestamp": 1525477860,
+        "version": "0.6.3",
+        "changes": [
+            {
+                "note": "Dependencies updated"
+            }
+        ]
+    },
+    {
+        "timestamp": 1525428773,
+        "version": "0.6.2",
+        "changes": [
+            {
+                "note": "Dependencies updated"
+            }
+        ]
+    },
+    {
+        "timestamp": 1524044013,
+        "version": "0.6.1",
+        "changes": [
+            {
+                "note": "Dependencies updated"
+            }
+        ]
+    },
+    {
+        "version": "0.6.0",
+        "changes": [
+            {
+                "note": "Add Provider type",
+                "pr": 501
+            }
+        ],
+        "timestamp": 1523462196
+    },
+    {
+        "version": "0.5.0",
+        "changes": [
+            {
+                "note": "Make `DataItem.components` optional",
+                "pr": 485
+            }
+        ],
+        "timestamp": 1522673609
+    },
+    {
         "timestamp": 1522658513,
         "version": "0.4.2",
         "changes": [
             {
                 "note": "Dependencies updated"
             }
-        ],
-        "isPublished": true
+        ]
     },
     {
         "version": "0.4.0",
@@ -21,8 +171,7 @@
                 "pr": 456
             }
         ],
-        "timestamp": 1521298800,
-        "isPublished": true
+        "timestamp": 1521298800
     },
     {
         "version": "0.3.1",
@@ -31,8 +180,7 @@
                 "note": "Added `RawLogEntry` type."
             }
         ],
-        "timestamp": 1520434800,
-        "isPublished": true
+        "timestamp": 1520434800
     },
     {
         "version": "0.3.0",
@@ -50,8 +198,7 @@
                 "pr": 429
             }
         ],
-        "timestamp": 1520089200,
-        "isPublished": true
+        "timestamp": 1520089200
     },
     {
         "version": "0.2.1",
@@ -61,8 +208,7 @@
                 "pr": 389
             }
         ],
-        "timestamp": 1518102000,
-        "isPublished": true
+        "timestamp": 1518102000
     },
     {
         "version": "0.2.0",
@@ -72,7 +218,6 @@
                 "pr": 355
             }
         ],
-        "timestamp": 1517929200,
-        "isPublished": true
+        "timestamp": 1517929200
     }
 ]

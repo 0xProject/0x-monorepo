@@ -1,16 +1,13 @@
 #!/usr/bin/env node
 
-import { AbiDefinition, ConstructorAbi, EventAbi, MethodAbi } from '@0xproject/types';
-import { logUtils } from '@0xproject/utils';
+import { abiUtils, logUtils } from '@0xproject/utils';
 import chalk from 'chalk';
-import * as fs from 'fs';
+import { AbiDefinition, ConstructorAbi, EventAbi, MethodAbi } from 'ethereum-types';
 import { sync as globSync } from 'glob';
 import * as Handlebars from 'handlebars';
 import * as _ from 'lodash';
 import * as mkdirp from 'mkdirp';
 import * as yargs from 'yargs';
-
-import toSnakeCase = require('to-snake-case');
 
 import { ContextData, ContractsBackend, ParamKind } from './types';
 import { utils } from './utils';
@@ -61,29 +58,17 @@ const args = yargs
         'Full usage example',
     ).argv;
 
-function registerPartials(partialsGlob: string) {
+function registerPartials(partialsGlob: string): void {
     const partialTemplateFileNames = globSync(partialsGlob);
     logUtils.log(`Found ${chalk.green(`${partialTemplateFileNames.length}`)} ${chalk.bold('partial')} templates`);
     for (const partialTemplateFileName of partialTemplateFileNames) {
         const namedContent = utils.getNamedContent(partialTemplateFileName);
         Handlebars.registerPartial(namedContent.name, namedContent.content);
     }
-    return partialsGlob;
-}
-
-function writeOutputFile(name: string, renderedTsCode: string): void {
-    let fileName = toSnakeCase(name);
-    if (fileName === 'z_r_x_token') {
-        fileName = 'zrx_token';
-    }
-    const filePath = `${args.output}/${fileName}.ts`;
-    fs.writeFileSync(filePath, renderedTsCode);
-    logUtils.log(`Created: ${chalk.bold(filePath)}`);
 }
 
 Handlebars.registerHelper('parameterType', utils.solTypeToTsType.bind(utils, ParamKind.Input, args.backend));
 Handlebars.registerHelper('returnType', utils.solTypeToTsType.bind(utils, ParamKind.Output, args.backend));
-
 if (args.partials) {
     registerPartials(args.partials);
 }
@@ -109,15 +94,23 @@ for (const abiFileName of abiFileNames) {
         ABI = parsedContent; // ABI file
     } else if (!_.isUndefined(parsedContent.abi)) {
         ABI = parsedContent.abi; // Truffle artifact
-    } else if (!_.isUndefined(parsedContent.networks) && !_.isUndefined(parsedContent.networks[args.networkId])) {
-        ABI = parsedContent.networks[args.networkId].abi; // 0x contracts package artifact
+    } else if (!_.isUndefined(parsedContent.compilerOutput.abi)) {
+        ABI = parsedContent.compilerOutput.abi; // 0x artifact
     }
     if (_.isUndefined(ABI)) {
         logUtils.log(`${chalk.red(`ABI not found in ${abiFileName}.`)}`);
         logUtils.log(
-            `Please make sure your ABI file is either an array with ABI entries or a truffle artifact or 0x deployer artifact`,
+            `Please make sure your ABI file is either an array with ABI entries or a truffle artifact or 0x sol-compiler artifact`,
         );
         process.exit(1);
+    }
+
+    const outFileName = utils.makeOutputFileName(namedContent.name);
+    const outFilePath = `${args.output}/${outFileName}.ts`;
+
+    if (utils.isOutputFileUpToDate(abiFileName, outFilePath)) {
+        logUtils.log(`Already up to date: ${chalk.bold(outFilePath)}`);
+        continue;
     }
 
     let ctor = ABI.find((abi: AbiDefinition) => abi.type === ABI_TYPE_CONSTRUCTOR) as ConstructorAbi;
@@ -126,11 +119,12 @@ for (const abiFileName of abiFileNames) {
     }
 
     const methodAbis = ABI.filter((abi: AbiDefinition) => abi.type === ABI_TYPE_METHOD) as MethodAbi[];
-    const methodsData = _.map(methodAbis, methodAbi => {
-        _.map(methodAbi.inputs, (input, i: number) => {
+    const sanitizedMethodAbis = abiUtils.renameOverloadedMethods(methodAbis) as MethodAbi[];
+    const methodsData = _.map(methodAbis, (methodAbi, methodAbiIndex: number) => {
+        _.forEach(methodAbi.inputs, (input, inputIndex: number) => {
             if (_.isEmpty(input.name)) {
                 // Auto-generated getters don't have parameter names
-                input.name = `index_${i}`;
+                input.name = `index_${inputIndex}`;
             }
         });
         // This will make templates simpler
@@ -138,6 +132,8 @@ for (const abiFileName of abiFileNames) {
             ...methodAbi,
             singleReturnValue: methodAbi.outputs.length === 1,
             hasReturnValue: methodAbi.outputs.length !== 0,
+            tsName: sanitizedMethodAbis[methodAbiIndex].name,
+            functionSignature: abiUtils.getFunctionSignature(methodAbi),
         };
         return methodData;
     });
@@ -151,5 +147,6 @@ for (const abiFileName of abiFileNames) {
         events: eventAbis,
     };
     const renderedTsCode = template(contextData);
-    writeOutputFile(namedContent.name, renderedTsCode);
+    utils.writeOutputFile(outFilePath, renderedTsCode);
+    logUtils.log(`Created: ${chalk.bold(outFilePath)}`);
 }

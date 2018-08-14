@@ -1,5 +1,213 @@
 [
     {
+        "version": "1.2.0",
+        "changes": [
+            {
+                "note": "Export marshaller to convert between RPC and user-space data formats",
+                "pr": 938
+            },
+            {
+                "note": "Export RPC types",
+                "pr": 938
+            }
+        ],
+        "timestamp": 1534210131
+    },
+    {
+        "timestamp": 1532619515,
+        "version": "1.1.2",
+        "changes": [
+            {
+                "note": "Dependencies updated"
+            }
+        ]
+    },
+    {
+        "timestamp": 1532614997,
+        "version": "1.1.1",
+        "changes": [
+            {
+                "note": "Dependencies updated"
+            }
+        ]
+    },
+    {
+        "version": "1.1.0",
+        "changes": [
+            {
+                "note": "Add `getTransactionByHashAsync` method",
+                "pr": 847
+            }
+        ],
+        "timestamp": 1532605697
+    },
+    {
+        "timestamp": 1532357734,
+        "version": "1.0.1",
+        "changes": [
+            {
+                "note": "Dependencies updated"
+            }
+        ]
+    },
+    {
+        "timestamp": 1532043000,
+        "version": "1.0.0",
+        "changes": [
+            {
+                "note": "Stop exporting `marshaller` utility file.",
+                "pr": 902
+            },
+            {
+                "note": "Export `marshaller` utility file.",
+                "pr": 829
+            },
+            {
+                "note": "Add `getNodeTypeAsync` method",
+                "pr": 812
+            },
+            {
+                "note": "Stop exporting uniqueVersionIds object",
+                "pr": 897
+            }
+        ]
+    },
+    {
+        "timestamp": 1531919263,
+        "version": "0.7.3",
+        "changes": [
+            {
+                "note": "Dependencies updated"
+            }
+        ]
+    },
+    {
+        "timestamp": 1531149657,
+        "version": "0.7.2",
+        "changes": [
+            {
+                "note": "Dependencies updated"
+            }
+        ]
+    },
+    {
+        "timestamp": 1529397769,
+        "version": "0.7.1",
+        "changes": [
+            {
+                "note": "Dependencies updated"
+            }
+        ]
+    },
+    {
+        "timestamp": 1528070400,
+        "version": "0.7.0",
+        "changes": [
+            {
+                "note": "Add `web3Wrapper.getContractCodeAsync`",
+                "pr": 675
+            },
+            {
+                "note": "Add `web3Wrapper.getTransactionTraceAsync`",
+                "pr": 675
+            },
+            {
+                "note": "Add `web3Wrapper.getBlockWithTransactionDataAsync`",
+                "pr": 675
+            },
+            {
+                "note": "Add exported uniqueVersionIds object",
+                "pr": 622
+            },
+            {
+                "note": "Update increaseTimeAsync to work with Geth",
+                "pr": 622
+            },
+            {
+                "note": "Make callAsync throw if raw call result is 0x (null)",
+                "pr": 622
+            },
+            {
+                "note": "Add new setHeadAsync method",
+                "pr": 622
+            },
+            {
+                "note":
+                    "Improve performance of awaitTransactionMinedAsync by immediately checking if the transaction was already mined instead of waiting for the first interval.",
+                "pr": 688
+            }
+        ]
+    },
+    {
+        "timestamp": 1527009133,
+        "version": "0.6.4",
+        "changes": [
+            {
+                "note": "Dependencies updated"
+            }
+        ]
+    },
+    {
+        "timestamp": 1525477860,
+        "version": "0.6.3",
+        "changes": [
+            {
+                "note": "Dependencies updated"
+            }
+        ]
+    },
+    {
+        "timestamp": 1525428773,
+        "version": "0.6.2",
+        "changes": [
+            {
+                "note": "Dependencies updated"
+            }
+        ]
+    },
+    {
+        "timestamp": 1524044013,
+        "version": "0.6.1",
+        "changes": [
+            {
+                "note": "Dependencies updated"
+            }
+        ]
+    },
+    {
+        "version": "0.6.0",
+        "changes": [
+            {
+                "note": "Make `isAddress` and `toWei` static",
+                "pr": 501
+            },
+            {
+                "note": "Add static methods `toUnitAmount` and `toBaseUnitAmount`",
+                "pr": 501
+            }
+        ],
+        "timestamp": 1523462196
+    },
+    {
+        "version": "0.5.0",
+        "changes": [
+            {
+                "note": "Add `web3Wrapper.awaitTransactionMinedAsync`",
+                "pr": 485
+            },
+            {
+                "note":
+                    "Add a public field `abiDecoder: AbiDecoder` which allows you to add your ABIs that are later used to decode logs",
+                "pr": 485
+            },
+            {
+                "note": "Export enum `Web3WrapperErrors` with a single value so far: `TransactionMiningTimeout`",
+                "pr": 485
+            }
+        ],
+        "timestamp": 1522673609
+    },
+    {
         "version": "0.4.0",
         "changes": [
             {
@@ -7,8 +215,7 @@
                 "pr": 465
             }
         ],
-        "timestamp": 1522658513,
-        "isPublished": true
+        "timestamp": 1522658513
     },
     {
         "version": "0.3.0",
@@ -27,8 +234,7 @@
                 "pr": 444
             }
         ],
-        "timestamp": 1521298800,
-        "isPublished": true
+        "timestamp": 1521298800
     },
     {
         "version": "0.2.0",
@@ -50,8 +256,7 @@
                 "pr": 413
             }
         ],
-        "timestamp": 1520089200,
-        "isPublished": true
+        "timestamp": 1520089200
     },
     {
         "version": "0.1.12",
@@ -61,7 +266,6 @@
                 "pr": 389
             }
         ],
-        "timestamp": 1518102000,
-        "isPublished": true
+        "timestamp": 1518102000
     }
 ]

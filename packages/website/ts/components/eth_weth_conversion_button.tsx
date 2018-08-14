@@ -1,5 +1,5 @@
-import { ZeroEx } from '0x.js';
 import { BigNumber, logUtils } from '@0xproject/utils';
+import { Web3Wrapper } from '@0xproject/web3-wrapper';
 import * as _ from 'lodash';
 import RaisedButton from 'material-ui/RaisedButton';
 import * as React from 'react';
@@ -37,7 +37,7 @@ export class EthWethConversionButton extends React.Component<
 > {
     public static defaultProps: Partial<EthWethConversionButtonProps> = {
         isDisabled: false,
-        onConversionSuccessful: _.noop,
+        onConversionSuccessful: _.noop.bind(_),
     };
     public constructor(props: EthWethConversionButtonProps) {
         super(props);
@@ -46,7 +46,7 @@ export class EthWethConversionButton extends React.Component<
             isEthConversionHappening: false,
         };
     }
-    public render() {
+    public render(): React.ReactNode {
         const labelStyle = this.state.isEthConversionHappening ? { fontSize: 10 } : {};
         let callToActionLabel;
         let inProgressLabel;
@@ -81,12 +81,12 @@ export class EthWethConversionButton extends React.Component<
             </div>
         );
     }
-    private _toggleConversionDialog() {
+    private _toggleConversionDialog(): void {
         this.setState({
             isEthConversionDialogVisible: !this.state.isEthConversionDialogVisible,
         });
     }
-    private async _onConversionAmountSelectedAsync(direction: Side, value: BigNumber) {
+    private async _onConversionAmountSelectedAsync(direction: Side, value: BigNumber): Promise<void> {
         this.setState({
             isEthConversionHappening: true,
         });
@@ -95,11 +95,11 @@ export class EthWethConversionButton extends React.Component<
         try {
             if (direction === Side.Deposit) {
                 await this.props.blockchain.convertEthToWrappedEthTokensAsync(token.address, value);
-                const ethAmount = ZeroEx.toUnitAmount(value, constants.DECIMAL_PLACES_ETH);
+                const ethAmount = Web3Wrapper.toUnitAmount(value, constants.DECIMAL_PLACES_ETH);
                 this.props.dispatcher.showFlashMessage(`Successfully wrapped ${ethAmount.toString()} ETH to WETH`);
             } else {
                 await this.props.blockchain.convertWrappedEthTokensToEthAsync(token.address, value);
-                const tokenAmount = ZeroEx.toUnitAmount(value, token.decimals);
+                const tokenAmount = Web3Wrapper.toUnitAmount(value, token.decimals);
                 this.props.dispatcher.showFlashMessage(`Successfully unwrapped ${tokenAmount.toString()} WETH to ETH`);
             }
             if (!this.props.isOutdatedWrappedEther) {
@@ -118,7 +118,7 @@ export class EthWethConversionButton extends React.Component<
                         ? 'Failed to wrap your ETH. Please try again.'
                         : 'Failed to unwrap your WETH. Please try again.';
                 this.props.dispatcher.showFlashMessage(errorMsg);
-                await errorReporter.reportAsync(err);
+                errorReporter.report(err);
             }
         }
         this.setState({

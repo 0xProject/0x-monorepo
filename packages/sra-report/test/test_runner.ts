@@ -3,7 +3,12 @@ import * as chaiAsPromised from 'chai-as-promised';
 import * as dirtyChai from 'dirty-chai';
 import * as _ from 'lodash';
 import 'mocha';
-import { NewmanRunExecution, NewmanRunExecutionAssertion, NewmanRunSummary } from 'newman';
+import {
+    NewmanRunExecution,
+    NewmanRunExecutionAssertion,
+    NewmanRunExecutionAssertionError,
+    NewmanRunSummary,
+} from 'newman';
 import * as nock from 'nock';
 
 import * as sraReportCollectionJSON from '../../postman_collections/sra_report.postman_collection.json';
@@ -18,6 +23,7 @@ const expect = chai.expect;
 
 const CONTENT_TYPE_ASSERTION_NAME = 'Has Content-Type header with value application/json';
 const SCHEMA_ASSERTION_NAME = 'Schema is valid';
+const SUCCESS_STATUS = 200;
 const baseNewmanRunOptions = {
     collection: sraReportCollectionJSON,
     environment: postmanEnvironmentJSON,
@@ -33,14 +39,14 @@ export const testRunner = {
         nockInterceptor: nock.Interceptor,
         postmanCollectionFolderName: string,
         postmanCollectionRequestName: string,
-    ) {
+    ): void {
         const newmanRunOptions = {
             ...baseNewmanRunOptions,
             folder: postmanCollectionFolderName,
         };
         describe(CONTENT_TYPE_ASSERTION_NAME, () => {
             it('fails when there are no headers', async () => {
-                nockInterceptor.reply(200, {});
+                nockInterceptor.reply(SUCCESS_STATUS, {});
                 const summary = await utils.newmanRunAsync(newmanRunOptions);
                 const error = findAssertionErrorIfExists(
                     summary,
@@ -55,7 +61,7 @@ export const testRunner = {
                 const headers = {
                     'Content-Type': 'text/html',
                 };
-                nockInterceptor.reply(200, {}, headers);
+                nockInterceptor.reply(SUCCESS_STATUS, {}, headers);
                 const summary = await utils.newmanRunAsync(newmanRunOptions);
                 const error = findAssertionErrorIfExists(
                     summary,
@@ -70,7 +76,7 @@ export const testRunner = {
                 const headers = {
                     'Content-Type': 'charset=utf-8; application/json',
                 };
-                nockInterceptor.reply(200, {}, headers);
+                nockInterceptor.reply(SUCCESS_STATUS, {}, headers);
                 const summary = await utils.newmanRunAsync(newmanRunOptions);
                 const error = findAssertionErrorIfExists(
                     summary,
@@ -87,14 +93,14 @@ export const testRunner = {
         postmanCollectionRequestName: string,
         malformedJson: object,
         correctJson: object,
-    ) {
+    ): void {
         const newmanRunOptions = {
             ...baseNewmanRunOptions,
             folder: postmanCollectionFolderName,
         };
         describe(SCHEMA_ASSERTION_NAME, () => {
             it('fails when schema is invalid', async () => {
-                nockInterceptor.reply(200, malformedJson);
+                nockInterceptor.reply(SUCCESS_STATUS, malformedJson);
                 const summary = await utils.newmanRunAsync(newmanRunOptions);
                 const error = findAssertionErrorIfExists(summary, postmanCollectionRequestName, SCHEMA_ASSERTION_NAME);
                 const errorMessage = _.get(error, 'message');
@@ -102,10 +108,9 @@ export const testRunner = {
                 expect(errorMessage).to.equal('expected false to be true');
             });
             it('passes when schema is valid', async () => {
-                nockInterceptor.reply(200, correctJson);
+                nockInterceptor.reply(SUCCESS_STATUS, correctJson);
                 const summary = await utils.newmanRunAsync(newmanRunOptions);
                 const error = findAssertionErrorIfExists(summary, postmanCollectionRequestName, SCHEMA_ASSERTION_NAME);
-                const errorMessage = _.get(error, 'message');
                 expect(error).to.be.undefined();
             });
         });
@@ -116,7 +121,7 @@ function findAssertionErrorIfExists(
     summary: NewmanRunSummary,
     postmanCollectionRequestName: string,
     postmanCollectionAssertionName: string,
-) {
+): NewmanRunExecutionAssertionError | undefined {
     const matchingExecutionIfExists = _.find(summary.run.executions, (execution: NewmanRunExecution) => {
         return execution.item.name === postmanCollectionRequestName;
     });

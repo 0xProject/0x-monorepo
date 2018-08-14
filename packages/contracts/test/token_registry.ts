@@ -1,20 +1,17 @@
-import { ZeroEx } from '0x.js';
-import { BlockchainLifecycle, devConstants, web3Factory } from '@0xproject/dev-utils';
-import { BigNumber } from '@0xproject/utils';
-import { Web3Wrapper } from '@0xproject/web3-wrapper';
+import { BlockchainLifecycle } from '@0xproject/dev-utils';
+import { BigNumber, NULL_BYTES } from '@0xproject/utils';
 import * as chai from 'chai';
 import ethUtil = require('ethereumjs-util');
 import * as _ from 'lodash';
-import * as Web3 from 'web3';
 
-import { TokenRegistryContract } from '../src/contract_wrappers/generated/token_registry';
-import { constants } from '../util/constants';
-import { TokenRegWrapper } from '../util/token_registry_wrapper';
-import { ContractName } from '../util/types';
+import { TokenRegistryContract } from '../generated_contract_wrappers/token_registry';
 
+import { artifacts } from './utils/artifacts';
+import { expectTransactionFailedWithoutReasonAsync } from './utils/assertions';
 import { chaiSetup } from './utils/chai_setup';
-import { deployer } from './utils/deployer';
-import { web3, web3Wrapper } from './utils/web3_wrapper';
+import { constants } from './utils/constants';
+import { TokenRegWrapper } from './utils/token_registry_wrapper';
+import { provider, txDefaults, web3Wrapper } from './utils/web3_wrapper';
 
 chaiSetup.configure();
 const expect = chai.expect;
@@ -25,13 +22,19 @@ describe('TokenRegistry', () => {
     let notOwner: string;
     let tokenReg: TokenRegistryContract;
     let tokenRegWrapper: TokenRegWrapper;
+
+    before(async () => {
+        await blockchainLifecycle.startAsync();
+    });
+    after(async () => {
+        await blockchainLifecycle.revertAsync();
+    });
     before(async () => {
         const accounts = await web3Wrapper.getAvailableAddressesAsync();
         owner = accounts[0];
         notOwner = accounts[1];
-        const tokenRegInstance = await deployer.deployAsync(ContractName.TokenRegistry);
-        tokenReg = new TokenRegistryContract(web3Wrapper, tokenRegInstance.abi, tokenRegInstance.address);
-        tokenRegWrapper = new TokenRegWrapper(tokenReg);
+        tokenReg = await TokenRegistryContract.deployFrom0xArtifactAsync(artifacts.TokenRegistry, provider, txDefaults);
+        tokenRegWrapper = new TokenRegWrapper(tokenReg, provider);
     });
     beforeEach(async () => {
         await blockchainLifecycle.startAsync();
@@ -62,17 +65,17 @@ describe('TokenRegistry', () => {
     };
 
     const nullToken = {
-        address: ZeroEx.NULL_ADDRESS,
+        address: constants.NULL_ADDRESS,
         name: '',
         symbol: '',
         decimals: 0,
-        ipfsHash: constants.NULL_BYTES,
-        swarmHash: constants.NULL_BYTES,
+        ipfsHash: NULL_BYTES,
+        swarmHash: NULL_BYTES,
     };
 
     describe('addToken', () => {
         it('should throw when not called by owner', async () => {
-            return expect(tokenRegWrapper.addTokenAsync(token1, notOwner)).to.be.rejectedWith(constants.REVERT);
+            return expectTransactionFailedWithoutReasonAsync(tokenRegWrapper.addTokenAsync(token1, notOwner));
         });
 
         it('should add token metadata when called by owner', async () => {
@@ -84,20 +87,18 @@ describe('TokenRegistry', () => {
         it('should throw if token already exists', async () => {
             await tokenRegWrapper.addTokenAsync(token1, owner);
 
-            return expect(tokenRegWrapper.addTokenAsync(token1, owner)).to.be.rejectedWith(constants.REVERT);
+            return expectTransactionFailedWithoutReasonAsync(tokenRegWrapper.addTokenAsync(token1, owner));
         });
 
         it('should throw if token address is null', async () => {
-            return expect(tokenRegWrapper.addTokenAsync(nullToken, owner)).to.be.rejectedWith(constants.REVERT);
+            return expectTransactionFailedWithoutReasonAsync(tokenRegWrapper.addTokenAsync(nullToken, owner));
         });
 
         it('should throw if name already exists', async () => {
             await tokenRegWrapper.addTokenAsync(token1, owner);
             const duplicateNameToken = _.assign({}, token2, { name: token1.name });
 
-            return expect(tokenRegWrapper.addTokenAsync(duplicateNameToken, owner)).to.be.rejectedWith(
-                constants.REVERT,
-            );
+            return expectTransactionFailedWithoutReasonAsync(tokenRegWrapper.addTokenAsync(duplicateNameToken, owner));
         });
 
         it('should throw if symbol already exists', async () => {
@@ -106,8 +107,8 @@ describe('TokenRegistry', () => {
                 symbol: token1.symbol,
             });
 
-            return expect(tokenRegWrapper.addTokenAsync(duplicateSymbolToken, owner)).to.be.rejectedWith(
-                constants.REVERT,
+            return expectTransactionFailedWithoutReasonAsync(
+                tokenRegWrapper.addTokenAsync(duplicateSymbolToken, owner),
             );
         });
     });
@@ -133,15 +134,18 @@ describe('TokenRegistry', () => {
 
         describe('setTokenName', () => {
             it('should throw when not called by owner', async () => {
-                return expect(
+                return expectTransactionFailedWithoutReasonAsync(
                     tokenReg.setTokenName.sendTransactionAsync(token1.address, token2.name, { from: notOwner }),
-                ).to.be.rejectedWith(constants.REVERT);
+                );
             });
 
             it('should change the token name when called by owner', async () => {
-                await tokenReg.setTokenName.sendTransactionAsync(token1.address, token2.name, {
-                    from: owner,
-                });
+                await web3Wrapper.awaitTransactionSuccessAsync(
+                    await tokenReg.setTokenName.sendTransactionAsync(token1.address, token2.name, {
+                        from: owner,
+                    }),
+                    constants.AWAIT_TRANSACTION_MINED_MS,
+                );
                 const [newData, oldData] = await Promise.all([
                     tokenRegWrapper.getTokenByNameAsync(token2.name),
                     tokenRegWrapper.getTokenByNameAsync(token1.name),
@@ -156,29 +160,32 @@ describe('TokenRegistry', () => {
             it('should throw if the name already exists', async () => {
                 await tokenRegWrapper.addTokenAsync(token2, owner);
 
-                return expect(
+                return expectTransactionFailedWithoutReasonAsync(
                     tokenReg.setTokenName.sendTransactionAsync(token1.address, token2.name, { from: owner }),
-                ).to.be.rejectedWith(constants.REVERT);
+                );
             });
 
             it('should throw if token does not exist', async () => {
-                return expect(
+                return expectTransactionFailedWithoutReasonAsync(
                     tokenReg.setTokenName.sendTransactionAsync(nullToken.address, token2.name, { from: owner }),
-                ).to.be.rejectedWith(constants.REVERT);
+                );
             });
         });
 
         describe('setTokenSymbol', () => {
             it('should throw when not called by owner', async () => {
-                return expect(
+                return expectTransactionFailedWithoutReasonAsync(
                     tokenReg.setTokenSymbol.sendTransactionAsync(token1.address, token2.symbol, {
                         from: notOwner,
                     }),
-                ).to.be.rejectedWith(constants.REVERT);
+                );
             });
 
             it('should change the token symbol when called by owner', async () => {
-                await tokenReg.setTokenSymbol.sendTransactionAsync(token1.address, token2.symbol, { from: owner });
+                await web3Wrapper.awaitTransactionSuccessAsync(
+                    await tokenReg.setTokenSymbol.sendTransactionAsync(token1.address, token2.symbol, { from: owner }),
+                    constants.AWAIT_TRANSACTION_MINED_MS,
+                );
                 const [newData, oldData] = await Promise.all([
                     tokenRegWrapper.getTokenBySymbolAsync(token2.symbol),
                     tokenRegWrapper.getTokenBySymbolAsync(token1.symbol),
@@ -193,52 +200,55 @@ describe('TokenRegistry', () => {
             it('should throw if the symbol already exists', async () => {
                 await tokenRegWrapper.addTokenAsync(token2, owner);
 
-                return expect(
+                return expectTransactionFailedWithoutReasonAsync(
                     tokenReg.setTokenSymbol.sendTransactionAsync(token1.address, token2.symbol, {
                         from: owner,
                     }),
-                ).to.be.rejectedWith(constants.REVERT);
+                );
             });
 
             it('should throw if token does not exist', async () => {
-                return expect(
+                return expectTransactionFailedWithoutReasonAsync(
                     tokenReg.setTokenSymbol.sendTransactionAsync(nullToken.address, token2.symbol, {
                         from: owner,
                     }),
-                ).to.be.rejectedWith(constants.REVERT);
+                );
             });
         });
 
         describe('removeToken', () => {
             it('should throw if not called by owner', async () => {
                 const index = new BigNumber(0);
-                return expect(
+                return expectTransactionFailedWithoutReasonAsync(
                     tokenReg.removeToken.sendTransactionAsync(token1.address, index, { from: notOwner }),
-                ).to.be.rejectedWith(constants.REVERT);
+                );
             });
 
             it('should remove token metadata when called by owner', async () => {
                 const index = new BigNumber(0);
-                await tokenReg.removeToken.sendTransactionAsync(token1.address, index, {
-                    from: owner,
-                });
+                await web3Wrapper.awaitTransactionSuccessAsync(
+                    await tokenReg.removeToken.sendTransactionAsync(token1.address, index, {
+                        from: owner,
+                    }),
+                    constants.AWAIT_TRANSACTION_MINED_MS,
+                );
                 const tokenData = await tokenRegWrapper.getTokenMetaDataAsync(token1.address);
                 expect(tokenData).to.be.deep.equal(nullToken);
             });
 
             it('should throw if token does not exist', async () => {
                 const index = new BigNumber(0);
-                return expect(
+                return expectTransactionFailedWithoutReasonAsync(
                     tokenReg.removeToken.sendTransactionAsync(nullToken.address, index, { from: owner }),
-                ).to.be.rejectedWith(constants.REVERT);
+                );
             });
 
             it('should throw if token at given index does not match address', async () => {
                 await tokenRegWrapper.addTokenAsync(token2, owner);
                 const incorrectIndex = new BigNumber(0);
-                return expect(
+                return expectTransactionFailedWithoutReasonAsync(
                     tokenReg.removeToken.sendTransactionAsync(token2.address, incorrectIndex, { from: owner }),
-                ).to.be.rejectedWith(constants.REVERT);
+                );
             });
         });
     });

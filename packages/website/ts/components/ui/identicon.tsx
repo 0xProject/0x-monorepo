@@ -1,7 +1,10 @@
 import blockies = require('blockies');
 import * as _ from 'lodash';
 import * as React from 'react';
-import { constants } from 'ts/utils/constants';
+
+import { Circle } from 'ts/components/ui/circle';
+import { Image } from 'ts/components/ui/image';
+import { colors } from 'ts/style/colors';
 
 interface IdenticonProps {
     address: string;
@@ -15,18 +18,12 @@ export class Identicon extends React.Component<IdenticonProps, IdenticonState> {
     public static defaultProps: Partial<IdenticonProps> = {
         style: {},
     };
-    public render() {
-        let address = this.props.address;
-        if (_.isEmpty(address)) {
-            address = constants.NULL_ADDRESS;
-        }
+    public render(): React.ReactNode {
+        const address = this.props.address;
         const diameter = this.props.diameter;
-        const icon = blockies({
-            seed: address.toLowerCase(),
-        });
         return (
             <div
-                className="circle mx-auto relative transitionFix"
+                className="circle relative transitionFix"
                 style={{
                     width: diameter,
                     height: diameter,
@@ -34,14 +31,17 @@ export class Identicon extends React.Component<IdenticonProps, IdenticonState> {
                     ...this.props.style,
                 }}
             >
-                <img
-                    src={icon.toDataURL()}
-                    style={{
-                        width: diameter,
-                        height: diameter,
-                        imageRendering: 'pixelated',
-                    }}
-                />
+                {!_.isEmpty(address) ? (
+                    <Image
+                        src={blockies({
+                            seed: address.toLowerCase(),
+                        }).toDataURL()}
+                        height={diameter}
+                        width={diameter}
+                    />
+                ) : (
+                    <Circle diameter={diameter} fillColor={colors.grey200} />
+                )}
             </div>
         );
     }

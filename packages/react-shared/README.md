@@ -18,11 +18,11 @@ If your project is in [TypeScript](https://www.typescriptlang.org/), add the fol
 
 ## Contributing
 
-We strongly encourage that the community help us make improvements and determine the future direction of the protocol. To report bugs within this package, please create an issue in this repository.
+We welcome improvements and fixes from the wider community! To report bugs within this package, please create an issue in this repository.
 
 Please read our [contribution guidelines](../../CONTRIBUTING.md) before getting started.
 
-### Install Dependencies
+### Install dependencies
 
 If you don't have yarn workspaces enabled (Yarn < v1.0) - enable them:
 
@@ -38,18 +38,26 @@ yarn install
 
 ### Build
 
+To build this package and all other monorepo packages that it depends on, run the following from the monorepo root directory:
+
 ```bash
-yarn build
+PKG=@0xproject/react-shared yarn build
+```
+
+Or continuously rebuild on change:
+
+```bash
+PKG=@0xproject/react-shared yarn watch
+```
+
+### Clean
+
+```bash
+yarn clean
 ```
 
 ### Lint
 
 ```bash
 yarn lint
-```
-
-### Run Tests
-
-```bash
-yarn test
 ```

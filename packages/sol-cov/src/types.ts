@@ -1,3 +1,6 @@
+import { StructLog } from 'ethereum-types';
+import * as Parser from 'solidity-parser-antlr';
+
 export interface LineColumn {
     line: number;
     column: number;
@@ -45,24 +48,24 @@ export interface StatementMap {
 }
 
 export interface LineCoverage {
-    [lineNo: number]: boolean;
+    [lineNo: number]: number;
 }
 
 export interface FunctionCoverage {
-    [functionId: string]: boolean;
+    [functionId: string]: number;
 }
 
 export interface StatementCoverage {
-    [statementId: string]: boolean;
+    [statementId: string]: number;
 }
 
 export interface BranchCoverage {
-    [branchId: string]: boolean[];
+    [branchId: string]: number[];
 }
 
 export interface Coverage {
     [fineName: string]: {
-        l: LineCoverage;
+        l?: LineCoverage;
         f: FunctionCoverage;
         s: StatementCoverage;
         b: BranchCoverage;
@@ -79,12 +82,14 @@ export interface ContractData {
     runtimeBytecode: string;
     sourceMapRuntime: string;
     sourceCodes: string[];
-    baseName: string;
     sources: string[];
 }
 
+// Part of the trace executed within the same context
+export type Subtrace = StructLog[];
+
 export interface TraceInfoBase {
-    coveredPcs: number[];
+    subtrace: Subtrace;
     txHash: string;
 }
 
@@ -99,3 +104,23 @@ export interface TraceInfoExistingContract extends TraceInfoBase {
 }
 
 export type TraceInfo = TraceInfoNewContract | TraceInfoExistingContract;
+
+export enum BlockParamLiteral {
+    Latest = 'latest',
+}
+
+export interface EvmCallStackEntry {
+    structLog: StructLog;
+    address: string;
+}
+
+export type EvmCallStack = EvmCallStackEntry[];
+
+export interface SourceSnippet {
+    source: string;
+    fileName: string;
+    type: string;
+    node: Parser.ASTNode;
+    name: string | null;
+    range: SingleFileSourceRange;
+}

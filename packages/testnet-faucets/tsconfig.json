@@ -4,9 +4,5 @@
         "outDir": "lib",
         "strictPropertyInitialization": false
     },
-    "include": [
-        "./src/ts/**/*",
-        "../../node_modules/types-bn/index.d.ts",
-        "../../node_modules/types-ethereumjs-util/index.d.ts"
-    ]
+    "include": ["./src/ts/**/*"]
 }

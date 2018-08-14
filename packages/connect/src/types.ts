@@ -1,4 +1,4 @@
-import { ECSignature, Order, SignedOrder } from '@0xproject/types';
+import { SignedOrder } from '@0xproject/types';
 import { BigNumber } from '@0xproject/utils';
 
 export interface Client {
@@ -11,18 +11,11 @@ export interface Client {
 }
 
 export interface OrderbookChannel {
-    subscribe: (subscriptionOpts: OrderbookChannelSubscriptionOpts, handler: OrderbookChannelHandler) => void;
+    subscribe: (subscriptionOpts: OrderbookChannelSubscriptionOpts) => void;
     close: () => void;
 }
 
-/*
- * heartbeatInterval: Interval in milliseconds that the orderbook channel should ping the underlying websocket. Default: 15000
- */
-export interface WebSocketOrderbookChannelConfig {
-    heartbeatIntervalMs?: number;
-}
-
-/*
+/**
  * baseTokenAddress: The address of token designated as the baseToken in the currency pair calculation of price
  * quoteTokenAddress: The address of token designated as the quoteToken in the currency pair calculation of price
  * snapshot: If true, a snapshot of the orderbook will be sent before the updates to the orderbook
@@ -46,8 +39,8 @@ export interface OrderbookChannelHandler {
         subscriptionOpts: OrderbookChannelSubscriptionOpts,
         order: SignedOrder,
     ) => void;
-    onError: (channel: OrderbookChannel, subscriptionOpts: OrderbookChannelSubscriptionOpts, err: Error) => void;
-    onClose: (channel: OrderbookChannel, subscriptionOpts: OrderbookChannelSubscriptionOpts) => void;
+    onError: (channel: OrderbookChannel, err: Error, subscriptionOpts?: OrderbookChannelSubscriptionOpts) => void;
+    onClose: (channel: OrderbookChannel) => void;
 }
 
 export type OrderbookChannelMessage =

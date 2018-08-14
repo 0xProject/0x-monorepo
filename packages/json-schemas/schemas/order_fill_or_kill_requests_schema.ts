@@ -1,10 +1,10 @@
 export const orderFillOrKillRequestsSchema = {
-    id: '/OrderFillOrKillRequests',
+    id: '/orderFillOrKillRequestsSchema',
     type: 'array',
     items: {
         properties: {
-            signedOrder: { $ref: '/SignedOrder' },
-            fillTakerAmount: { $ref: '/Number' },
+            signedOrder: { $ref: '/signedOrderSchema' },
+            fillTakerAmount: { $ref: '/numberSchema' },
         },
         required: ['signedOrder', 'fillTakerAmount'],
         type: 'object',

@@ -1,5 +1,4 @@
 import * as _ from 'lodash';
-import RaisedButton from 'material-ui/RaisedButton';
 import * as React from 'react';
 import * as ReactMarkdown from 'react-markdown';
 import { Element as ScrollElement } from 'react-scroll';
@@ -39,7 +38,7 @@ export class MarkdownSection extends React.Component<MarkdownSectionProps, Markd
             shouldShowAnchor: false,
         };
     }
-    public render() {
+    public render(): React.ReactNode {
         const { sectionName, markdownContent, headerSize, githubLink } = this.props as PropsWithDefaults;
 
         const id = utils.getIdFromName(sectionName);
@@ -87,7 +86,7 @@ export class MarkdownSection extends React.Component<MarkdownSectionProps, Markd
             </div>
         );
     }
-    private _setAnchorVisibility(shouldShowAnchor: boolean) {
+    private _setAnchorVisibility(shouldShowAnchor: boolean): void {
         this.setState({
             shouldShowAnchor,
         });

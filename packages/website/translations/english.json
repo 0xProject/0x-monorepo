@@ -57,9 +57,10 @@
     "ABOUT": "about",
     "CAREERS": "careers",
     "CONTACT": "contact",
-    "DEPLOYER": "Deployer",
+    "SOL_COMPILER": "Solidity Compiler",
     "JSON_SCHEMAS": "JSON Schemas",
     "SOL_COV": "Solidity Coverage",
+    "ETHEREUM_TYPES": "Ethereum Types",
     "SUBPROVIDERS": "Subproviders",
     "BLOG": "blog",
     "FORUM": "forum",
@@ -67,6 +68,7 @@
     "WHITEPAPER": "whitepaper",
     "WIKI": "wiki",
     "WEB3_WRAPPER": "Web3Wrapper",
+    "ORDER_UTILS": "Order Utils",
     "FAQ": "FAQ",
     "SMART_CONTRACTS": "0x smart contracts",
     "STANDARD_RELAYER_API": "standard relayer API",
@@ -74,5 +76,6 @@
     "WEBSITE": "website",
     "DEVELOPERS": "developers",
     "HOME": "home",
-    "ROCKETCHAT": "rocket.chat"
+    "ROCKETCHAT": "rocket.chat",
+    "TRADE_CALL_TO_ACTION": "trade on 0x"
 }

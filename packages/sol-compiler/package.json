@@ -1,0 +1,102 @@
+{
+    "name": "@0xproject/sol-compiler",
+    "version": "1.0.5",
+    "engines": {
+        "node": ">=6.12"
+    },
+    "description": "Solidity compiler wrapper and artifactor",
+    "main": "lib/src/index.js",
+    "types": "lib/src/index.d.ts",
+    "scripts": {
+        "watch_without_deps": "yarn pre_build && tsc -w",
+        "build": "yarn pre_build && tsc && copyfiles -u 3 './lib/src/monorepo_scripts/**/*' ./scripts",
+        "pre_build": "run-s update_contract_fixtures",
+        "update_contract_fixtures": "copyfiles 'test/fixtures/contracts/**/*' ./lib",
+        "test": "yarn run_mocha",
+        "rebuild_and_test": "run-s build test",
+        "run_mocha": "mocha --require source-map-support/register --require make-promises-safe lib/test/*_test.js --bail --exit",
+        "test:coverage": "nyc npm run test --all && yarn coverage:report:lcov",
+        "coverage:report:lcov": "nyc report --reporter=text-lcov > coverage/lcov.info",
+        "clean": "shx rm -rf lib scripts",
+        "migrate": "npm run build; node lib/src/cli.js migrate",
+        "lint": "tslint --project .",
+        "test:circleci": "yarn test:coverage",
+        "docs:stage": "node scripts/stage_docs.js",
+        "manual:postpublish": "yarn build; node ./scripts/postpublish.js",
+        "docs:json": "typedoc --excludePrivate --excludeExternals --target ES5 --json $JSON_FILE_PATH $PROJECT_FILES",
+        "upload_docs_json": "aws s3 cp generated_docs/index.json $S3_URL --profile 0xproject --grants read=uri=http://acs.amazonaws.com/groups/global/AllUsers --content-type application/json"
+    },
+    "config": {
+        "postpublish": {
+            "assets": [],
+            "docPublishConfigs": {
+                "extraFileIncludes": [
+                    "../types/src/index.ts",
+                    "../ethereum-types/src/index.ts"
+                ],
+                "s3BucketPath": "s3://doc-jsons/sol-compiler/",
+                "s3StagingBucketPath": "s3://staging-doc-jsons/sol-compiler/"
+            }
+        }
+    },
+    "bin": {
+        "sol-compiler": "bin/sol-compiler.js"
+    },
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/0xProject/0x-monorepo.git"
+    },
+    "author": "Amir Bandeali",
+    "license": "Apache-2.0",
+    "bugs": {
+        "url": "https://github.com/0xProject/0x-monorepo/issues"
+    },
+    "homepage": "https://github.com/0xProject/0x-monorepo/packages/sol-compiler/README.md",
+    "devDependencies": {
+        "@0xproject/dev-utils": "^1.0.4",
+        "@0xproject/monorepo-scripts": "^1.0.5",
+        "@0xproject/tslint-config": "^1.0.5",
+        "@types/mkdirp": "^0.5.2",
+        "@types/require-from-string": "^1.2.0",
+        "@types/semver": "^5.5.0",
+        "chai": "^4.0.1",
+        "chai-as-promised": "^7.1.0",
+        "copyfiles": "^1.2.0",
+        "dirty-chai": "^2.0.1",
+        "make-promises-safe": "^1.1.0",
+        "mocha": "^4.1.0",
+        "npm-run-all": "^4.1.2",
+        "nyc": "^11.0.1",
+        "shx": "^0.2.2",
+        "tslint": "5.11.0",
+        "typedoc": "0xProject/typedoc",
+        "types-bn": "^0.0.1",
+        "typescript": "2.9.2",
+        "web3-typescript-typings": "^0.10.2",
+        "zeppelin-solidity": "1.8.0"
+    },
+    "dependencies": {
+        "@0xproject/assert": "^1.0.5",
+        "@0xproject/json-schemas": "^1.0.1-rc.4",
+        "@0xproject/sol-resolver": "^1.0.5",
+        "@0xproject/types": "^1.0.1-rc.4",
+        "@0xproject/typescript-typings": "^1.0.4",
+        "@0xproject/utils": "^1.0.5",
+        "@0xproject/web3-wrapper": "^1.2.0",
+        "@types/yargs": "^11.0.0",
+        "chalk": "^2.3.0",
+        "ethereum-types": "^1.0.4",
+        "ethereumjs-util": "^5.1.1",
+        "lodash": "^4.17.5",
+        "mkdirp": "^0.5.1",
+        "require-from-string": "^2.0.1",
+        "semver": "5.5.0",
+        "solc": "^0.4.23",
+        "source-map-support": "^0.5.0",
+        "web3-eth-abi": "^1.0.0-beta.24",
+        "yargs": "^10.0.3"
+    },
+    "publishConfig": {
+        "access": "public"
+    }
+}

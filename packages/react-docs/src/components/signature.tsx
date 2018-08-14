@@ -1,6 +1,5 @@
 import * as _ from 'lodash';
 import * as React from 'react';
-import * as ReactDOM from 'react-dom';
 
 import { DocsInfo } from '../docs_info';
 import { Parameter, Type as TypeDef, TypeDefinitionByName, TypeParameter } from '../types';
@@ -88,9 +87,10 @@ function renderParameters(
     docsInfo: DocsInfo,
     sectionName: string,
     typeDefinitionByName?: TypeDefinitionByName,
-) {
+): React.ReactNode[] {
     const params = _.map(parameters, (p: Parameter) => {
         const isOptional = p.isOptional;
+        const hasDefaultValue = !_.isUndefined(p.defaultValue);
         const type = (
             <Type
                 type={p.type}
@@ -103,6 +103,7 @@ function renderParameters(
             <span key={`param-${p.type}-${p.name}`}>
                 {p.name}
                 {isOptional && '?'}: {type}
+                {hasDefaultValue && ` = ${p.defaultValue}`}
             </span>
         );
     });
@@ -114,7 +115,7 @@ function renderTypeParameter(
     docsInfo: DocsInfo,
     sectionName: string,
     typeDefinitionByName?: TypeDefinitionByName,
-) {
+): React.ReactNode {
     const typeParam = (
         <span>
             {`<${typeParameter.name} extends `}

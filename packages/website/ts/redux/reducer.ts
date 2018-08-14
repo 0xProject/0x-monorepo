@@ -1,4 +1,5 @@
-import { ECSignature, ZeroEx } from '0x.js';
+import { constants, generatePseudoRandomSalt } from '@0xproject/order-utils';
+import { ECSignature } from '@0xproject/types';
 import { BigNumber } from '@0xproject/utils';
 import * as _ from 'lodash';
 import * as moment from 'moment';
@@ -38,7 +39,10 @@ export interface State {
     tokenByAddress: TokenByAddress;
     lastForceTokenStateRefetch: number;
     userAddress: string;
-    userEtherBalanceInWei: BigNumber;
+    userEtherBalanceInWei?: BigNumber;
+    portalOnboardingStep: number;
+    isPortalOnboardingShowing: boolean;
+    hasPortalOnboardingBeenClosed: boolean;
     // Note: cache of supplied orderJSON in fill order step. Do not use for anything else.
     userSuppliedOrderCache: Order;
 
@@ -53,7 +57,7 @@ export interface State {
     translate: Translate;
 }
 
-const INITIAL_STATE: State = {
+export const INITIAL_STATE: State = {
     // Portal
     blockchainErr: BlockchainErrs.NoError,
     blockchainIsLoaded: false,
@@ -65,8 +69,8 @@ const INITIAL_STATE: State = {
         s: '',
         v: 27,
     },
-    orderTakerAddress: ZeroEx.NULL_ADDRESS,
-    orderSalt: ZeroEx.generatePseudoRandomSalt(),
+    orderTakerAddress: constants.NULL_ADDRESS,
+    orderSalt: generatePseudoRandomSalt(),
     nodeVersion: undefined,
     screenWidth: utils.getScreenWidth(),
     shouldBlockchainErrDialogBeOpen: false,
@@ -77,9 +81,11 @@ const INITIAL_STATE: State = {
     tokenByAddress: {},
     lastForceTokenStateRefetch: moment().unix(),
     userAddress: '',
-    userEtherBalanceInWei: new BigNumber(0),
+    userEtherBalanceInWei: undefined,
     userSuppliedOrderCache: undefined,
-
+    portalOnboardingStep: 0,
+    isPortalOnboardingShowing: false,
+    hasPortalOnboardingBeenClosed: false,
     // Docs
     docsVersion: DEFAULT_DOCS_VERSION,
     availableDocVersions: [DEFAULT_DOCS_VERSION],
@@ -91,7 +97,7 @@ const INITIAL_STATE: State = {
     translate: new Translate(),
 };
 
-export function reducer(state: State = INITIAL_STATE, action: Action) {
+export function reducer(state: State = INITIAL_STATE, action: Action): State {
     switch (action.type) {
         // Portal
         case ActionTypes.ResetState:
@@ -150,7 +156,7 @@ export function reducer(state: State = INITIAL_STATE, action: Action) {
         }
 
         case ActionTypes.AddTokenToTokenByAddress: {
-            const newTokenByAddress = state.tokenByAddress;
+            const newTokenByAddress = { ...state.tokenByAddress };
             newTokenByAddress[action.data.address] = action.data;
             return {
                 ...state,
@@ -159,7 +165,7 @@ export function reducer(state: State = INITIAL_STATE, action: Action) {
         }
 
         case ActionTypes.RemoveTokenFromTokenByAddress: {
-            const newTokenByAddress = state.tokenByAddress;
+            const newTokenByAddress = { ...state.tokenByAddress };
             delete newTokenByAddress[action.data.address];
             return {
                 ...state,
@@ -168,7 +174,7 @@ export function reducer(state: State = INITIAL_STATE, action: Action) {
         }
 
         case ActionTypes.UpdateTokenByAddress: {
-            const tokenByAddress = state.tokenByAddress;
+            const tokenByAddress = { ...state.tokenByAddress };
             const tokens = action.data;
             _.each(tokens, token => {
                 const updatedToken = {
@@ -247,7 +253,7 @@ export function reducer(state: State = INITIAL_STATE, action: Action) {
         }
 
         case ActionTypes.UpdateChosenAssetTokenAddress: {
-            const newAssetToken = state.sideToAssetToken[action.data.side];
+            const newAssetToken = { ...state.sideToAssetToken[action.data.side] };
             newAssetToken.address = action.data.address;
             const newSideToAssetToken = {
                 ...state.sideToAssetToken,
@@ -289,6 +295,25 @@ export function reducer(state: State = INITIAL_STATE, action: Action) {
             return {
                 ...state,
                 userAddress,
+            };
+        }
+
+        case ActionTypes.UpdatePortalOnboardingStep: {
+            const portalOnboardingStep = action.data;
+            return {
+                ...state,
+                portalOnboardingStep,
+            };
+        }
+
+        case ActionTypes.UpdatePortalOnboardingShowing: {
+            const isPortalOnboardingShowing = action.data;
+            return {
+                ...state,
+                isPortalOnboardingShowing,
+                hasPortalOnboardingBeenClosed: !isPortalOnboardingShowing ? true : state.hasPortalOnboardingBeenClosed,
+                // always start onboarding from the beginning
+                portalOnboardingStep: 0,
             };
         }
 

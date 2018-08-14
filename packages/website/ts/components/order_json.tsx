@@ -1,5 +1,5 @@
-import { ECSignature } from '0x.js';
-import { BigNumber, logUtils } from '@0xproject/utils';
+import { ECSignature } from '@0xproject/types';
+import { BigNumber, fetchAsync, logUtils } from '@0xproject/utils';
 import * as _ from 'lodash';
 import Paper from 'material-ui/Paper';
 import TextField from 'material-ui/TextField';
@@ -38,7 +38,7 @@ export class OrderJSON extends React.Component<OrderJSONProps, OrderJSONState> {
         // tslint:disable-next-line:no-floating-promises
         this._setShareLinkAsync();
     }
-    public render() {
+    public render(): React.ReactNode {
         const order = utils.generateOrder(
             this.props.exchangeContractIfExists,
             this.props.sideToAssetToken,
@@ -116,28 +116,28 @@ export class OrderJSON extends React.Component<OrderJSONProps, OrderJSONState> {
             </div>
         );
     }
-    private async _shareViaTwitterAsync() {
+    private _shareViaTwitterAsync(): void {
         const tweetText = encodeURIComponent(`Fill my order using the 0x protocol: ${this.state.shareLink}`);
         window.open(`https://twitter.com/intent/tweet?text=${tweetText}`, 'Share your order', 'width=500,height=400');
     }
-    private async _shareViaFacebook() {
+    private _shareViaFacebook(): void {
         (window as any).FB.ui(
             {
                 display: 'popup',
                 href: this.state.shareLink,
                 method: 'share',
             },
-            _.noop,
+            _.noop.bind(_),
         );
     }
-    private async _shareViaEmailAsync() {
+    private _shareViaEmailAsync(): void {
         const encodedSubject = encodeURIComponent("Let's trade using the 0x protocol");
         const encodedBody = encodeURIComponent(`I generated an order with the 0x protocol.
 You can see and fill it here: ${this.state.shareLink}`);
         const mailToLink = `mailto:mail@example.org?subject=${encodedSubject}&body=${encodedBody}`;
         window.open(mailToLink, '_blank');
     }
-    private async _setShareLinkAsync() {
+    private async _setShareLinkAsync(): Promise<void> {
         const shareLink = await this._generateShareLinkAsync();
         this.setState({
             shareLink,
@@ -148,18 +148,18 @@ You can see and fill it here: ${this.state.shareLink}`);
         const bitlyRequestUrl = `${constants.URL_BITLY_API}/v3/shorten?access_token=${
             configs.BITLY_ACCESS_TOKEN
         }&longUrl=${longUrl}`;
-        const response = await fetch(bitlyRequestUrl);
+        const response = await fetchAsync(bitlyRequestUrl);
         const responseBody = await response.text();
         const bodyObj = JSON.parse(responseBody);
         if (response.status !== 200 || bodyObj.status_code !== 200) {
             // TODO: Show error message in UI
             logUtils.log(`Unexpected status code: ${response.status} -> ${responseBody}`);
-            await errorReporter.reportAsync(new Error(`Bitly returned non-200: ${JSON.stringify(response)}`));
+            errorReporter.report(new Error(`Bitly returned non-200: ${JSON.stringify(response)}`));
             return '';
         }
         return bodyObj.data.url;
     }
-    private _getOrderUrl() {
+    private _getOrderUrl(): string {
         const order = utils.generateOrder(
             this.props.exchangeContractIfExists,
             this.props.sideToAssetToken,

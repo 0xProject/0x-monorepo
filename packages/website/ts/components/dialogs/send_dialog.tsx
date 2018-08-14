@@ -6,6 +6,7 @@ import * as React from 'react';
 import { Blockchain } from 'ts/blockchain';
 import { AddressInput } from 'ts/components/inputs/address_input';
 import { TokenAmountInput } from 'ts/components/inputs/token_amount_input';
+import { EthAmountInput } from 'ts/containers/inputs/eth_amount_input';
 import { Token } from 'ts/types';
 
 interface SendDialogProps {
@@ -15,7 +16,7 @@ interface SendDialogProps {
     onComplete: (recipient: string, value: BigNumber) => void;
     onCancelled: () => void;
     isOpen: boolean;
-    token: Token;
+    asset: Token | 'ETH';
     lastForceTokenStateRefetch: number;
 }
 
@@ -35,7 +36,7 @@ export class SendDialog extends React.Component<SendDialogProps, SendDialogState
             isAmountValid: false,
         };
     }
-    public render() {
+    public render(): React.ReactNode {
         const transferDialogActions = [
             <FlatButton key="cancelTransfer" label="Cancel" onTouchTap={this._onCancel.bind(this)} />,
             <FlatButton
@@ -57,7 +58,32 @@ export class SendDialog extends React.Component<SendDialogProps, SendDialogState
             </Dialog>
         );
     }
-    private _renderSendDialogBody() {
+    private _renderSendDialogBody(): React.ReactNode {
+        const input =
+            this.props.asset === 'ETH' ? (
+                <EthAmountInput
+                    label="Amount to send"
+                    shouldShowIncompleteErrs={this.state.shouldShowIncompleteErrs}
+                    shouldCheckBalance={true}
+                    shouldShowErrs={true}
+                    onChange={this._onValueChange.bind(this)}
+                    amount={this.state.value}
+                />
+            ) : (
+                <TokenAmountInput
+                    blockchain={this.props.blockchain}
+                    userAddress={this.props.userAddress}
+                    networkId={this.props.networkId}
+                    label="Amount to send"
+                    token={this.props.asset}
+                    shouldShowIncompleteErrs={this.state.shouldShowIncompleteErrs}
+                    shouldCheckBalance={true}
+                    shouldCheckAllowance={false}
+                    onChange={this._onValueChange.bind(this)}
+                    amount={this.state.value}
+                    lastForceTokenStateRefetch={this.props.lastForceTokenStateRefetch}
+                />
+            );
         return (
             <div className="mx-auto" style={{ maxWidth: 300 }}>
                 <div style={{ height: 80 }}>
@@ -65,40 +91,27 @@ export class SendDialog extends React.Component<SendDialogProps, SendDialogState
                         initialAddress={this.state.recipient}
                         updateAddress={this._onRecipientChange.bind(this)}
                         isRequired={true}
-                        label={'Recipient address'}
-                        hintText={'Address'}
+                        label="Recipient address'"
+                        hintText="Address"
                     />
                 </div>
-                <TokenAmountInput
-                    blockchain={this.props.blockchain}
-                    userAddress={this.props.userAddress}
-                    networkId={this.props.networkId}
-                    label="Amount to send"
-                    token={this.props.token}
-                    shouldShowIncompleteErrs={this.state.shouldShowIncompleteErrs}
-                    shouldCheckBalance={true}
-                    shouldCheckAllowance={false}
-                    onChange={this._onValueChange.bind(this)}
-                    amount={this.state.value}
-                    onVisitBalancesPageClick={this.props.onCancelled}
-                    lastForceTokenStateRefetch={this.props.lastForceTokenStateRefetch}
-                />
+                {input}
             </div>
         );
     }
-    private _onRecipientChange(recipient?: string) {
+    private _onRecipientChange(recipient?: string): void {
         this.setState({
             shouldShowIncompleteErrs: false,
             recipient,
         });
     }
-    private _onValueChange(isValid: boolean, amount?: BigNumber) {
+    private _onValueChange(isValid: boolean, amount?: BigNumber): void {
         this.setState({
             isAmountValid: isValid,
             value: amount,
         });
     }
-    private _onSendClick() {
+    private _onSendClick(): void {
         if (this._hasErrors()) {
             this.setState({
                 shouldShowIncompleteErrs: true,
@@ -112,13 +125,13 @@ export class SendDialog extends React.Component<SendDialogProps, SendDialogState
             this.props.onComplete(this.state.recipient, value);
         }
     }
-    private _onCancel() {
+    private _onCancel(): void {
         this.setState({
             value: undefined,
         });
         this.props.onCancelled();
     }
-    private _hasErrors() {
+    private _hasErrors(): boolean {
         return _.isUndefined(this.state.recipient) || _.isUndefined(this.state.value) || !this.state.isAmountValid;
     }
 }

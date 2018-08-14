@@ -1,4 +1,4 @@
-import { JSONRPCRequestPayload } from '@0xproject/types';
+import { JSONRPCRequestPayload } from 'ethereum-types';
 
 import { Callback, ErrorCallback } from '../types';
 
@@ -14,7 +14,7 @@ import { Subprovider } from './subprovider';
  * It intercepts the `eth_estimateGas` JSON RPC call and always returns a constant gas amount when queried.
  */
 export class FakeGasEstimateSubprovider extends Subprovider {
-    private _constantGasAmount: number;
+    private readonly _constantGasAmount: number;
     /**
      * Instantiates an instance of the FakeGasEstimateSubprovider
      * @param constantGasAmount The constant gas amount you want returned
@@ -31,8 +31,8 @@ export class FakeGasEstimateSubprovider extends Subprovider {
      * @param next Callback to call if this subprovider decides not to handle the request
      * @param end Callback to call if subprovider handled the request and wants to pass back the request.
      */
-    // tslint:disable-next-line:prefer-function-over-method
-    public handleRequest(payload: JSONRPCRequestPayload, next: Callback, end: ErrorCallback) {
+    // tslint:disable-next-line:prefer-function-over-method async-suffix
+    public async handleRequest(payload: JSONRPCRequestPayload, next: Callback, end: ErrorCallback): Promise<void> {
         switch (payload.method) {
             case 'eth_estimateGas':
                 end(null, this._constantGasAmount);

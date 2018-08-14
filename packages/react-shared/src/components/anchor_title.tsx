@@ -27,12 +27,6 @@ const styles: Styles = {
         transform: 'rotate(45deg)',
         cursor: 'pointer',
     },
-    headers: {
-        WebkitMarginStart: 0,
-        WebkitMarginEnd: 0,
-        fontWeight: 'bold',
-        display: 'block',
-    },
     h1: {
         fontSize: '1.8em',
     },
@@ -52,13 +46,24 @@ export class AnchorTitle extends React.Component<AnchorTitleProps, AnchorTitleSt
             isHovering: false,
         };
     }
-    public render() {
+    public render(): React.ReactNode {
         let opacity = 0;
         if (this.props.shouldShowAnchor) {
             opacity = this.state.isHovering ? 0.6 : 1;
         }
         return (
-            <div className="relative flex" style={{ ...styles[this.props.headerSize], ...styles.headers }}>
+            <div
+                className="relative flex"
+                style={
+                    {
+                        ...styles[this.props.headerSize],
+                        fontWeight: 'bold',
+                        display: 'block',
+                        WebkitMarginStart: 0,
+                        WebkitMarginEnd: 0,
+                    } as any
+                }
+            >
                 <div className="inline-block" style={{ paddingRight: 4 }}>
                     {this.props.title}
                 </div>
@@ -79,7 +84,7 @@ export class AnchorTitle extends React.Component<AnchorTitleProps, AnchorTitleSt
             </div>
         );
     }
-    private _setHoverState(isHovering: boolean) {
+    private _setHoverState(isHovering: boolean): void {
         this.setState({
             isHovering,
         });
