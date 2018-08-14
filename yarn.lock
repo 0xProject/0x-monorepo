@@ -690,6 +690,27 @@
     ethers "3.0.22"
     lodash "4.17.10"
 
+"@0xproject/react-shared@^0.2.3":
+  version "0.2.3"
+  resolved "https://registry.yarnpkg.com/@0xproject/react-shared/-/react-shared-0.2.3.tgz#f0403b9b7f1cfbe2853b53cc983ebb13ee8753a5"
+  dependencies:
+    "@types/lodash" "4.14.104"
+    "@types/material-ui" "0.18.0"
+    "@types/node" "9.6.0"
+    "@types/react" "16.3.13"
+    "@types/react-dom" "16.0.4"
+    "@types/react-scroll" "0.0.31"
+    basscss "8.0.4"
+    is-mobile "0.2.2"
+    lodash "4.17.10"
+    material-ui "0.17.4"
+    react "15.6.1"
+    react-dom "15.6.1"
+    react-highlight "0xproject/react-highlight"
+    react-markdown "3.2.2"
+    react-scroll "1.7.7"
+    react-tap-event-plugin "2.0.1"
+
 "@0xproject/sol-compiler@^0.5.3", "@0xproject/sol-compiler@^0.5.4":
   version "0.5.4"
   resolved "https://registry.yarnpkg.com/@0xproject/sol-compiler/-/sol-compiler-0.5.4.tgz#3e0b04b0c02c5ec046ebb962b5ed20978c6b4cdd"
@@ -1101,6 +1122,13 @@
     "@types/node" "*"
     "@types/react" "*"
 
+"@types/react-dom@16.0.4":
+  version "16.0.4"
+  resolved "https://registry.yarnpkg.com/@types/react-dom/-/react-dom-16.0.4.tgz#2e8fd45f5443780ed49bf2cdd9809e6091177a7d"
+  dependencies:
+    "@types/node" "*"
+    "@types/react" "*"
+
 "@types/react-dom@^16.0.3":
   version "16.0.5"
   resolved "https://registry.yarnpkg.com/@types/react-dom/-/react-dom-16.0.5.tgz#a757457662e3819409229e8f86795ff37b371f96"
@@ -1134,6 +1162,12 @@
   resolved "https://registry.yarnpkg.com/@types/react-router/-/react-router-4.0.23.tgz#d0509dcbdb1c686aed8f3d5cb186f42e5fbe7c2a"
   dependencies:
     "@types/history" "*"
+    "@types/react" "*"
+
+"@types/react-scroll@0.0.31":
+  version "0.0.31"
+  resolved "https://registry.yarnpkg.com/@types/react-scroll/-/react-scroll-0.0.31.tgz#1bb26bfd9f595da6403c2f13c2f9a3ed4d2929fa"
+  dependencies:
     "@types/react" "*"
 
 "@types/react-scroll@1.5.3":
@@ -2454,7 +2488,7 @@ basscss-typography@^3.0.4:
   version "3.0.4"
   resolved "https://registry.yarnpkg.com/basscss-typography/-/basscss-typography-3.0.4.tgz#ec946a2bad8dd1af97be9ea108ad4bb7be932464"
 
-basscss@^8.0.3:
+basscss@8.0.4, basscss@^8.0.3:
   version "8.0.4"
   resolved "https://registry.yarnpkg.com/basscss/-/basscss-8.0.4.tgz#b371a2ce25aeb9b322302f37f4e425753dd29ae1"
   dependencies:
@@ -5952,7 +5986,7 @@ ganache-core@0xProject/ganache-core#monorepo-dep:
     ethereumjs-tx "0xProject/ethereumjs-tx#fake-tx-include-signature-by-default"
     ethereumjs-util "^5.2.0"
     ethereumjs-vm "2.3.5"
-    ethereumjs-wallet "0.6.0"
+    ethereumjs-wallet "~0.6.0"
     fake-merkle-patricia-tree "~1.0.1"
     heap "~0.2.6"
     js-scrypt "^0.2.0"
@@ -6850,12 +6884,6 @@ icss-replace-symbols@^1.1.0:
   version "1.1.0"
   resolved "https://registry.yarnpkg.com/icss-replace-symbols/-/icss-replace-symbols-1.1.0.tgz#06ea6f83679a7749e386cfe1fe812ae5db223ded"
 
-icss-utils@^2.1.0:
-  version "2.1.0"
-  resolved "https://registry.yarnpkg.com/icss-utils/-/icss-utils-2.1.0.tgz#83f0a0ec378bf3246178b6c2ad9136f135b1c962"
-  dependencies:
-    postcss "^6.0.1"
-
 ieee754@1.1.8:
   version "1.1.8"
   resolved "https://registry.npmjs.org/ieee754/-/ieee754-1.1.8.tgz#be33d40ac10ef1926701f6f08a2d86fbfd1ad3e4"
@@ -7274,7 +7302,7 @@ is-installed-globally@^0.1.0:
     global-dirs "^0.1.0"
     is-path-inside "^1.0.0"
 
-is-mobile@^0.2.2:
+is-mobile@0.2.2, is-mobile@^0.2.2:
   version "0.2.2"
   resolved "https://registry.yarnpkg.com/is-mobile/-/is-mobile-0.2.2.tgz#0e2e006d99ed2c2155b761df80f2a3619ae2ad9f"
 
@@ -8559,11 +8587,11 @@ marked@0.3.18:
   version "0.3.18"
   resolved "https://registry.npmjs.org/marked/-/marked-0.3.18.tgz#3ef058cd926101849b92a7a7c15db18c7fc76b2f"
 
-marked@^0.3.12, marked@^0.3.5:
+marked@^0.3.12:
   version "0.3.19"
   resolved "https://registry.yarnpkg.com/marked/-/marked-0.3.19.tgz#5d47f709c4c9fc3c216b6d46127280f40b39d790"
 
-material-ui@^0.17.1:
+material-ui@0.17.4, material-ui@^0.17.1:
   version "0.17.4"
   resolved "https://registry.yarnpkg.com/material-ui/-/material-ui-0.17.4.tgz#193999ecb49c3ec15ae0abb4e90fdf9a7bd343e0"
   dependencies:
@@ -9848,6 +9876,17 @@ parse-asn1@^5.0.0:
     evp_bytestokey "^1.0.0"
     pbkdf2 "^3.0.3"
 
+parse-entities@^1.0.2:
+  version "1.1.2"
+  resolved "https://registry.yarnpkg.com/parse-entities/-/parse-entities-1.1.2.tgz#9eaf719b29dc3bd62246b4332009072e01527777"
+  dependencies:
+    character-entities "^1.0.0"
+    character-entities-legacy "^1.0.0"
+    character-reference-invalid "^1.0.0"
+    is-alphanumerical "^1.0.0"
+    is-decimal "^1.0.0"
+    is-hexadecimal "^1.0.0"
+
 parse-entities@^1.1.0:
   version "1.1.1"
   resolved "https://registry.yarnpkg.com/parse-entities/-/parse-entities-1.1.1.tgz#8112d88471319f27abae4d64964b122fe4e1b890"
@@ -11058,6 +11097,13 @@ react-scroll@0xproject/react-scroll#similar-to-pr-330:
     lodash.throttle "^4.1.1"
     prop-types "^15.5.8"
 
+react-scroll@1.7.7:
+  version "1.7.7"
+  resolved "https://registry.yarnpkg.com/react-scroll/-/react-scroll-1.7.7.tgz#948c40c9a189b62bf4a53ee0fd50e5d89d37260a"
+  dependencies:
+    lodash.throttle "^4.1.1"
+    prop-types "^15.5.8"
+
 react-side-effect@^1.0.2, react-side-effect@^1.1.0:
   version "1.1.5"
   resolved "https://registry.yarnpkg.com/react-side-effect/-/react-side-effect-1.1.5.tgz#f26059e50ed9c626d91d661b9f3c8bb38cd0ff2d"
@@ -11459,6 +11505,26 @@ regjsparser@^0.1.4:
   resolved "https://registry.yarnpkg.com/regjsparser/-/regjsparser-0.1.5.tgz#7ee8f84dc6fa792d3fd0ae228d24bd949ead205c"
   dependencies:
     jsesc "~0.5.0"
+
+remark-parse@^4.0.0:
+  version "4.0.0"
+  resolved "https://registry.yarnpkg.com/remark-parse/-/remark-parse-4.0.0.tgz#99f1f049afac80382366e2e0d0bd55429dd45d8b"
+  dependencies:
+    collapse-white-space "^1.0.2"
+    is-alphabetical "^1.0.0"
+    is-decimal "^1.0.0"
+    is-whitespace-character "^1.0.0"
+    is-word-character "^1.0.0"
+    markdown-escapes "^1.0.0"
+    parse-entities "^1.0.2"
+    repeat-string "^1.5.4"
+    state-toggle "^1.0.0"
+    trim "0.0.1"
+    trim-trailing-lines "^1.0.0"
+    unherit "^1.0.4"
+    unist-util-remove-position "^1.0.0"
+    vfile-location "^2.0.0"
+    xtend "^4.0.1"
 
 remark-parse@^5.0.0:
   version "5.0.0"
@@ -13723,6 +13789,10 @@ unist-util-is@^2.1.1:
   version "2.1.1"
   resolved "https://registry.yarnpkg.com/unist-util-is/-/unist-util-is-2.1.1.tgz#0c312629e3f960c66e931e812d3d80e77010947b"
 
+unist-util-is@^2.1.2:
+  version "2.1.2"
+  resolved "https://registry.yarnpkg.com/unist-util-is/-/unist-util-is-2.1.2.tgz#1193fa8f2bfbbb82150633f3a8d2eb9a1c1d55db"
+
 unist-util-remove-position@^1.0.0:
   version "1.1.1"
   resolved "https://registry.yarnpkg.com/unist-util-remove-position/-/unist-util-remove-position-1.1.1.tgz#5a85c1555fc1ba0c101b86707d15e50fa4c871bb"
@@ -13733,11 +13803,23 @@ unist-util-stringify-position@^1.0.0, unist-util-stringify-position@^1.1.1:
   version "1.1.1"
   resolved "https://registry.yarnpkg.com/unist-util-stringify-position/-/unist-util-stringify-position-1.1.1.tgz#3ccbdc53679eed6ecf3777dd7f5e3229c1b6aa3c"
 
+unist-util-visit-parents@^2.0.0:
+  version "2.0.1"
+  resolved "https://registry.yarnpkg.com/unist-util-visit-parents/-/unist-util-visit-parents-2.0.1.tgz#63fffc8929027bee04bfef7d2cce474f71cb6217"
+  dependencies:
+    unist-util-is "^2.1.2"
+
 unist-util-visit@^1.1.0, unist-util-visit@^1.3.0:
   version "1.3.0"
   resolved "https://registry.yarnpkg.com/unist-util-visit/-/unist-util-visit-1.3.0.tgz#41ca7c82981fd1ce6c762aac397fc24e35711444"
   dependencies:
     unist-util-is "^2.1.1"
+
+unist-util-visit@^1.1.3:
+  version "1.4.0"
+  resolved "https://registry.yarnpkg.com/unist-util-visit/-/unist-util-visit-1.4.0.tgz#1cb763647186dc26f5e1df5db6bd1e48b3cc2fb1"
+  dependencies:
+    unist-util-visit-parents "^2.0.0"
 
 universalify@^0.1.0:
   version "0.1.1"

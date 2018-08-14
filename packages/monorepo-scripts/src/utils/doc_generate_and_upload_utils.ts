@@ -1,14 +1,13 @@
-import * as _ from 'lodash';
-
-import { constants } from '../constants';
-import { utils } from './utils';
-
 import { readFileSync, writeFileSync } from 'fs';
+import * as _ from 'lodash';
 import * as path from 'path';
 import { exec as execAsync } from 'promisify-child-process';
 import * as ts from 'typescript';
 
+import { constants } from '../constants';
 import { ExportPathToExportedItems } from '../types';
+
+import { utils } from './utils';
 
 interface ExportInfo {
     exportPathToExportedItems: ExportPathToExportedItems;
@@ -83,8 +82,8 @@ export async function generateAndUploadDocsAsync(packageName: string, isStaging:
                 }
                 if (!_.startsWith(innerExportPath, './')) {
                     throw new Error(
-                        `GENERATE_UPLOAD_DOCS: WARNING - ${packageName} is exporting one of ${innerExportItems} which is 
-                        itself exported from an external package. To fix this, export the external dependency directly, 
+                        `GENERATE_UPLOAD_DOCS: WARNING - ${packageName} is exporting one of ${innerExportItems} which is
+                        itself exported from an external package. To fix this, export the external dependency directly,
                         not indirectly through ${innerExportPath}.`,
                     );
                 } else {
@@ -192,6 +191,8 @@ export async function generateAndUploadDocsAsync(packageName: string, isStaging:
     // Remove the generated docs directory
     await execAsync(`rm -rf ${jsonFilePath}`, {
         cwd,
+    });
+}
 
 function getAllReferenceNames(propertyName: string, node: any, referenceNames: string[]): string[] {
     let updatedReferenceNames = referenceNames;

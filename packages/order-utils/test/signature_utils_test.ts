@@ -6,8 +6,8 @@ import * as _ from 'lodash';
 import 'mocha';
 import * as Sinon from 'sinon';
 
-import { signatureUtils, generatePseudoRandomSalt } from '../src';
-import { convertECSignatureToSignatureHex, isValidSignatureAsync } from '../src/signature_utils';
+import { generatePseudoRandomSalt } from '../src';
+import { signatureUtils } from '../src/signature_utils';
 
 import { chaiSetup } from './utils/chai_setup';
 import { provider, web3Wrapper } from './utils/web3_wrapper';
@@ -16,7 +16,7 @@ chaiSetup.configure();
 const expect = chai.expect;
 
 describe('Signature utils', () => {
-    describe('#isValidSignature', () => {
+    describe('#isValidSignatureAsync', () => {
         let dataHex = '0x6927e990021d23b1eb7b8789f6a6feaf98fe104bb0cf8259421b79f9a34222b0';
         const ethSignSignature =
             '0x1B61a3ed31b43c8780e905a260a35faefcc527be7516aa11c0256729b5b351bc3340349190569279751135161d22529dc25add4f6069af05be04cacbda2ace225403';
@@ -255,7 +255,12 @@ describe('Signature utils', () => {
                 SignerType.Default,
             );
 
-            const isValidSignature = await isValidSignatureAsync(provider, orderHash, ecSignature, makerAddress);
+            const isValidSignature = await signatureUtils.isValidSignatureAsync(
+                provider,
+                orderHash,
+                ecSignature,
+                makerAddress,
+            );
             expect(isValidSignature).to.be.true();
         });
     });
@@ -268,32 +273,44 @@ describe('Signature utils', () => {
         it('should concatenate v,r,s and append the Trezor signature type', async () => {
             const expectedSignatureWithSignatureType =
                 '0x1baca7da997ad177f040240cdccf6905b71ab16b74434388c3a72f34fd25d6439346b2bac274ff29b48b3ea6e2d04c1336eaceafda3c53ab483fc3ff12fac3ebf208';
-            const signatureWithSignatureType = convertECSignatureToSignatureHex(ecSignature, SignerType.Trezor);
+            const signatureWithSignatureType = signatureUtils.convertECSignatureToSignatureHex(
+                ecSignature,
+                SignerType.Trezor,
+            );
             expect(signatureWithSignatureType).to.equal(expectedSignatureWithSignatureType);
         });
         it('should concatenate v,r,s and append the EthSign signature type when SignerType is Default', async () => {
             const expectedSignatureWithSignatureType =
                 '0x1baca7da997ad177f040240cdccf6905b71ab16b74434388c3a72f34fd25d6439346b2bac274ff29b48b3ea6e2d04c1336eaceafda3c53ab483fc3ff12fac3ebf203';
-            const signatureWithSignatureType = convertECSignatureToSignatureHex(ecSignature, SignerType.Default);
+            const signatureWithSignatureType = signatureUtils.convertECSignatureToSignatureHex(
+                ecSignature,
+                SignerType.Default,
+            );
             expect(signatureWithSignatureType).to.equal(expectedSignatureWithSignatureType);
         });
         it('should concatenate v,r,s and append the EthSign signature type when SignerType is Ledger', async () => {
             const expectedSignatureWithSignatureType =
                 '0x1baca7da997ad177f040240cdccf6905b71ab16b74434388c3a72f34fd25d6439346b2bac274ff29b48b3ea6e2d04c1336eaceafda3c53ab483fc3ff12fac3ebf203';
-            const signatureWithSignatureType = convertECSignatureToSignatureHex(ecSignature, SignerType.Ledger);
+            const signatureWithSignatureType = signatureUtils.convertECSignatureToSignatureHex(
+                ecSignature,
+                SignerType.Ledger,
+            );
             expect(signatureWithSignatureType).to.equal(expectedSignatureWithSignatureType);
         });
         it('should concatenate v,r,s and append the EthSign signature type when SignerType is Metamask', async () => {
             const expectedSignatureWithSignatureType =
                 '0x1baca7da997ad177f040240cdccf6905b71ab16b74434388c3a72f34fd25d6439346b2bac274ff29b48b3ea6e2d04c1336eaceafda3c53ab483fc3ff12fac3ebf203';
-            const signatureWithSignatureType = convertECSignatureToSignatureHex(ecSignature, SignerType.Metamask);
+            const signatureWithSignatureType = signatureUtils.convertECSignatureToSignatureHex(
+                ecSignature,
+                SignerType.Metamask,
+            );
             expect(signatureWithSignatureType).to.equal(expectedSignatureWithSignatureType);
         });
         it('should throw if the SignerType is invalid', async () => {
             const expectedMessage = 'Unrecognized SignerType: INVALID_SIGNER';
-            expect(() => convertECSignatureToSignatureHex(ecSignature, 'INVALID_SIGNER' as SignerType)).to.throw(
-                expectedMessage,
-            );
+            expect(() =>
+                signatureUtils.convertECSignatureToSignatureHex(ecSignature, 'INVALID_SIGNER' as SignerType),
+            ).to.throw(expectedMessage);
         });
     });
 });

@@ -49,7 +49,7 @@ export const signatureUtils = {
 
             case SignatureType.EthSign: {
                 const ecSignature = signatureUtils.parseECSignature(signature);
-                const prefixedMessageHex = signatureUtils.addSignedMessagePrefix(data, SignerType.EthSign);
+                const prefixedMessageHex = signatureUtils.addSignedMessagePrefix(data, SignerType.Default);
                 return signatureUtils.isValidECSignature(prefixedMessageHex, ecSignature, signerAddress);
             }
 
