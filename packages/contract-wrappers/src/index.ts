@@ -25,6 +25,7 @@ export {
     OnOrderStateChangeCallback,
     OrderStatus,
     OrderInfo,
+    ContractEvents,
 } from './types';
 
 export {

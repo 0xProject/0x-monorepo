@@ -6,4 +6,6 @@ export {
     ContractNetworks,
     GeneratedCompilerOptions,
     ContractNetworkData,
+    ContractVersionData,
+    Source,
 } from './utils/types';

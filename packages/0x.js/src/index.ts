@@ -46,7 +46,12 @@ export {
     ExchangeCancelEventArgs,
     ExchangeEventArgs,
     ExchangeEvents,
+    ContractEvents,
 } from '@0xproject/contract-wrappers';
+
+export { ContractWrapper } from '@0xproject/contract-wrappers/lib/src/contract_wrappers/contract_wrapper';
+
+export { OrderWatcher, OnOrderStateChangeCallback, OrderWatcherConfig } from '@0xproject/order-watcher';
 
 export {
     Web3ProviderEngine,
@@ -54,10 +59,11 @@ export {
     Callback,
     JSONRPCRequestPayloadWithMethod,
     ErrorCallback,
-    Subprovider,
 } from '@0xproject/subproviders';
 
-export { OrderWatcher, OnOrderStateChangeCallback, OrderWatcherConfig } from '@0xproject/order-watcher';
+export { Web3Wrapper, NodeType } from '@0xproject/web3-wrapper';
+
+export { AbiDecoder } from '@0xproject/utils';
 
 export { BigNumber } from '@0xproject/utils';
 
@@ -74,10 +80,22 @@ export {
     Token,
     ERC20AssetData,
     ERC721AssetData,
+    SignatureType,
+    OrderRelevantState,
 } from '@0xproject/types';
 
 export {
+    ContractArtifact,
+    GeneratedCompilerOptions,
+    ContractNetworks,
+    ContractVersionData,
+    ContractNetworkData,
+    Source,
+} from '@0xproject/sol-compiler';
+
+export {
     BlockParamLiteral,
+    ContractAbi,
     FilterObject,
     BlockParam,
     LogWithDecodedArgs,
@@ -95,4 +113,28 @@ export {
     LogEntryEvent,
     DecodedLogEntry,
     DecodedLogEntryEvent,
+    RawLog,
+    AbiDefinition,
+    TxData,
+    CallData,
+    BlockWithoutTransactionData,
+    BlockWithTransactionData,
+    Transaction,
+    TraceParams,
+    TransactionTrace,
+    AbstractBlock,
+    CallTxDataBase,
+    StructLog,
+    TxDataPayable,
+    FunctionAbi,
+    EventAbi,
+    EventParameter,
+    OpCode,
+    MethodAbi,
+    ConstructorAbi,
+    FallbackAbi,
+    DataItem,
+    ConstructorStateMutability,
+    StateMutability,
+    AbiType,
 } from 'ethereum-types';

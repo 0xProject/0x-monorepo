@@ -20,7 +20,7 @@ export type ConstructorStateMutability = 'nonpayable' | 'payable';
 export type StateMutability = 'pure' | 'view' | ConstructorStateMutability;
 
 export interface MethodAbi {
-    type: AbiType.Function;
+    type: 'function';
     name: string;
     inputs: DataItem[];
     outputs: DataItem[];
@@ -30,14 +30,14 @@ export interface MethodAbi {
 }
 
 export interface ConstructorAbi {
-    type: AbiType.Constructor;
+    type: 'constructor';
     inputs: DataItem[];
     payable: boolean;
     stateMutability: ConstructorStateMutability;
 }
 
 export interface FallbackAbi {
-    type: AbiType.Fallback;
+    type: 'fallback';
     payable: boolean;
 }
 
@@ -46,7 +46,7 @@ export interface EventParameter extends DataItem {
 }
 
 export interface EventAbi {
-    type: AbiType.Event;
+    type: 'event';
     name: string;
     inputs: EventParameter[];
     anonymous: boolean;
