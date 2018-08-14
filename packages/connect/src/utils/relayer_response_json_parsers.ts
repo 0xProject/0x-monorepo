@@ -2,13 +2,13 @@ import { assert } from '@0xproject/assert';
 import { schemas } from '@0xproject/json-schemas';
 import { SignedOrder } from '@0xproject/types';
 
-import { OrderConfigResponse, OrderbookResponse, TokenPairsItem } from '../types';
+import { AssetPairsItem, OrderbookResponse, OrderConfigResponse } from '../types';
 
 import { typeConverters } from './type_converters';
 
 export const relayerResponseJsonParsers = {
-    parseTokenPairsJson(json: any): TokenPairsItem[] {
-        assert.doesConformToSchema('assetDataPairs', json, schemas.relayerApiTokenPairsResponseSchema);
+    parseAssetDataPairsJson(json: any): AssetPairsItem[] {
+        assert.doesConformToSchema('assetDataPairs', json, schemas.relayerApiAssetDataPairsResponseSchema);
         return json.map((assetDataPair: any) => {
             return typeConverters.convertStringsFieldsToBigNumbers(assetDataPair, [
                 'assetDataA.minAmount',
@@ -27,7 +27,7 @@ export const relayerResponseJsonParsers = {
         return typeConverters.convertOrderStringFieldsToBigNumber(json);
     },
     parseOrderbookResponseJson(json: any): OrderbookResponse {
-        assert.doesConformToSchema('orderBook', json, schemas.relayerApiOrderBookResponseSchema);
+        assert.doesConformToSchema('orderBook', json, schemas.relayerApiOrdersResponseSchema);
         return typeConverters.convertOrderbookStringFieldsToBigNumber(json);
     },
     parseOrderConfigResponseJson(json: any): OrderConfigResponse {

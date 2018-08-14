@@ -6,7 +6,7 @@ import { OrdersChannelMessage, OrdersChannelMessageTypes } from '../types';
 
 import { relayerResponseJsonParsers } from './relayer_response_json_parsers';
 
-export const orderbookChannelMessageParser = {
+export const ordersChannelMessageParser = {
     parse(utf8Data: string): OrdersChannelMessage {
         // parse the message
         const messageObj = JSON.parse(utf8Data);
@@ -19,14 +19,8 @@ export const orderbookChannelMessageParser = {
         assert.assert(!_.isUndefined(requestId), `Message is missing a requestId parameter: ${utf8Data}`);
         assert.isNumber('requestId', requestId);
         switch (type) {
-            case OrdersChannelMessageTypes.Snapshot: {
-                assert.doesConformToSchema('message', messageObj, schemas.relayerApiOrderbookChannelSnapshotSchema);
-                const orderbookJson = messageObj.payload;
-                const orderbook = relayerResponseJsonParsers.parseOrderbookResponseJson(orderbookJson);
-                return _.assign(messageObj, { payload: orderbook });
-            }
             case OrdersChannelMessageTypes.Update: {
-                assert.doesConformToSchema('message', messageObj, schemas.relayerApiOrderbookChannelUpdateSchema);
+                assert.doesConformToSchema('message', messageObj, schemas.relayerApiOrdersChannelUpdateSchema);
                 const orderJson = messageObj.payload;
                 const order = relayerResponseJsonParsers.parseOrderJson(orderJson);
                 return _.assign(messageObj, { payload: order });

@@ -8,7 +8,7 @@ import {
     OrdersChannelMessageTypes,
 } from './types';
 import { assert } from './utils/assert';
-import { orderbookChannelMessageParser } from './utils/orderbook_channel_message_parser';
+import { ordersChannelMessageParser } from './utils/orderbook_channel_message_parser';
 
 /**
  * This class includes all the functionality related to interacting with a websocket endpoint
@@ -72,7 +72,7 @@ export class WebSocketOrderbookChannel implements OrderbookChannel {
         }
         try {
             const data = message.data;
-            const parserResult = orderbookChannelMessageParser.parse(data);
+            const parserResult = ordersChannelMessageParser.parse(data);
             const subscriptionOpts = this._subscriptionOptsList[parserResult.requestId];
             if (_.isUndefined(subscriptionOpts)) {
                 this._handler.onError(
@@ -82,10 +82,6 @@ export class WebSocketOrderbookChannel implements OrderbookChannel {
                 return;
             }
             switch (parserResult.type) {
-                case OrdersChannelMessageTypes.Snapshot: {
-                    this._handler.onSnapshot(this, subscriptionOpts, parserResult.payload);
-                    break;
-                }
                 case OrdersChannelMessageTypes.Update: {
                     this._handler.onUpdate(this, subscriptionOpts, parserResult.payload);
                     break;

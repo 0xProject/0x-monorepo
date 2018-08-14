@@ -11,7 +11,7 @@ export {
     OrderbookResponse,
     OrdersRequestOpts,
     PagedRequestOpts,
-    TokenPairsItem,
+    AssetPairsItem,
     AssetPairsRequestOpts,
     Asset,
 } from './types';

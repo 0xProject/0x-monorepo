@@ -2,12 +2,12 @@ import { SignedOrder } from '@0xproject/types';
 import { BigNumber } from '@0xproject/utils';
 
 export interface Client {
-    getAssetPairsAsync: (requestOpts?: AssetPairsRequestOpts & PagedRequestOpts) => Promise<PaginatedCollection<TokenPairsItem>>;
+    getAssetPairsAsync: (requestOpts?: AssetPairsRequestOpts & PagedRequestOpts) => Promise<PaginatedCollection<AssetPairsItem>>;
     getOrdersAsync: (requestOpts?: OrdersRequestOpts & PagedRequestOpts) => Promise<PaginatedCollection<APIOrder>>;
     getOrderAsync: (orderHash: string) => Promise<APIOrder>;
     getOrderbookAsync: (request: OrderbookRequest, requestOpts?: PagedRequestOpts) => Promise<OrderbookResponse>;
     getOrderConfigAsync: (request: OrderConfigRequest) => Promise<OrderConfigResponse>;
-    getFeeRecipients: () => Promise<PaginatedCollection<string>>;
+    getFeeRecipientsAsync: () => Promise<PaginatedCollection<string>>;
     submitOrderAsync: (signedOrder: SignedOrder) => Promise<void>;
 }
 
@@ -81,7 +81,7 @@ export interface AssetPairsRequestOpts {
     assetDataB?: string;
 }
 
-export interface TokenPairsItem {
+export interface AssetPairsItem {
     assetDataA: Asset;
     assetDataB: Asset;
 }

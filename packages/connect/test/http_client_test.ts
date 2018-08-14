@@ -7,6 +7,8 @@ import 'mocha';
 
 import { HttpClient } from '../src/index';
 
+import { assetDataPairsResponse } from './fixtures/standard_relayer_api/assetData_pairs';
+import * as assetDataPairsResponseJSON from './fixtures/standard_relayer_api/assetData_pairs.json';
 import { feesResponse } from './fixtures/standard_relayer_api/fees';
 import * as feesResponseJSON from './fixtures/standard_relayer_api/fees.json';
 import { orderResponse } from './fixtures/standard_relayer_api/order/0xabc67323774bdbd24d94f977fa9ac94a50f016026fd13f42990861238897721f';
@@ -15,8 +17,6 @@ import { orderbookResponse } from './fixtures/standard_relayer_api/orderbook';
 import * as orderbookJSON from './fixtures/standard_relayer_api/orderbook.json';
 import { ordersResponse } from './fixtures/standard_relayer_api/orders';
 import * as ordersResponseJSON from './fixtures/standard_relayer_api/orders.json';
-import { assetDataPairsResponse } from './fixtures/standard_relayer_api/assetData_pairs';
-import * as assetDataPairsResponseJSON from './fixtures/standard_relayer_api/assetData_pairs.json';
 
 chai.config.includeStack = true;
 chai.use(dirtyChai);

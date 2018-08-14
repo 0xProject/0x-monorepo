@@ -1,8 +1,8 @@
 import { BigNumber } from '@0xproject/utils';
 
-import { TokenPairsItem } from '../../../src/types';
+import { AssetPairsItem } from '../../../src/types';
 
-export const assetDataPairsResponse: TokenPairsItem[] = [
+export const assetDataPairsResponse: AssetPairsItem[] = [
     {
         assetDataA: {
             address: '0x323b5d4c32345ced77393b3530b1eed0f346429d',
