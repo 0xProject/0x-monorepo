@@ -1,17 +1,12 @@
 [
     {
-        "version": "1.0.1-rc.4",
+        "version": "1.0.1-rc.3",
         "changes": [
             {
                 "pr": 914,
                 "note":
                     "Update ecSignOrderHashAsync to return signature string with signature type byte. Removes messagePrefixOpts."
-            }
-        ]
-    },
-    {
-        "version": "1.0.1-rc.3",
-        "changes": [
+            },
             {
                 "note":
                     "Added a synchronous `createOrder` method in `orderFactory`, updated public interfaces to support some optional parameters",
