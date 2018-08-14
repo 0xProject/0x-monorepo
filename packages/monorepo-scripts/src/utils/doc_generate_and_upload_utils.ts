@@ -22,6 +22,10 @@ interface ExportNameToTypedocNames {
 const EXTERNAL_TYPE_TO_LINK: { [externalType: string]: string } = {
     BigNumber: 'http://mikemcl.github.io/bignumber.js',
     Error: 'https://github.com/DefinitelyTyped/DefinitelyTyped/blob/master/types/node/v9/index.d.ts#L134',
+    Buffer: 'https://github.com/DefinitelyTyped/DefinitelyTyped/blob/master/types/node/v9/index.d.ts#L262',
+    'solc.StandardContractOutput':
+        'https://solidity.readthedocs.io/en/v0.4.24/using-the-compiler.html#output-description',
+    'solc.CompilerSettings': 'https://solidity.readthedocs.io/en/v0.4.24/using-the-compiler.html#input-description',
 };
 
 export async function generateAndUploadDocsAsync(packageName: string, isStaging: boolean): Promise<void> {
@@ -159,9 +163,9 @@ export async function generateAndUploadDocsAsync(packageName: string, isStaging:
     });
     if (!_.isEmpty(missingReferences)) {
         throw new Error(
-            `${packageName} package needs to export ${missingReferences.join(
-                ', ',
-            )} from it's index.ts. If any are from external dependencies, then add them to the EXTERNAL_TYPE_TO_LINK mapping.`,
+            `${packageName} package needs to export: \n${missingReferences.join(
+                '\n',
+            )} \nFrom it\'s index.ts. If any are from external dependencies, then add them to the EXTERNAL_TYPE_TO_LINK mapping.`,
         );
     }
 
@@ -201,7 +205,7 @@ function getAllReferenceNames(propertyName: string, node: any, referenceNames: s
     }
     // Some nodes of type reference are for subtypes, which we don't want to return.
     // We therefore filter them out.
-    const SUB_TYPE_PROPERTY_NAMES = ['inheritedFrom', 'overwrites'];
+    const SUB_TYPE_PROPERTY_NAMES = ['inheritedFrom', 'overwrites', 'extendedTypes'];
     if (
         !_.isUndefined(node.type) &&
         _.isString(node.type) &&
