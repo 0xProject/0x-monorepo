@@ -33,7 +33,7 @@
     },
     "homepage": "https://github.com/0xProject/0x-monorepo/packages/sra-api/README.md",
     "dependencies": {
-        "@0xproject/json-schemas": "1.0.1-rc.3"
+        "@0xproject/json-schemas": "^1.0.1-rc.3"
     },
     "devDependencies": {
         "@0xproject/tslint-config": "^1.0.4",

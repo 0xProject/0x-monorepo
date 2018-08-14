@@ -7,6 +7,7 @@ export const paginationParameters: ParameterObject[] = [
         example: 3,
         schema: {
             type: 'number',
+            default: 1,
         },
     },
     {
@@ -16,6 +17,7 @@ export const paginationParameters: ParameterObject[] = [
         example: 10,
         schema: {
             type: 'number',
+            default: 100,
         },
     },
 ];
@@ -27,10 +29,11 @@ export const networkdIdParameter: ParameterObject = {
     example: 42,
     schema: {
         type: 'number',
+        default: 1,
     },
 };
 
 export const generateParameters = (parameters: ParameterObject[], isPaginated: boolean = false): ParameterObject[] => {
     const optionalParameters = isPaginated ? paginationParameters : [];
-    return [networkdIdParameter, ...optionalParameters, ...parameters];
+    return [...parameters, networkdIdParameter, ...optionalParameters];
 };
