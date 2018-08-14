@@ -43,9 +43,9 @@ export interface CreateOrderOpts {
 }
 
 /**
- * remainingFillableMakerAssetAmount: An array of BigNumbers corresponding to the `signedOrders` parameter.
+ * remainingFillableMakerAssetAmount: An array of BigNumbers corresponding to the `orders` parameter.
  * You can use `OrderStateUtils` `@0xproject/order-utils` to perform blockchain lookups for these values.
- * Defaults to `makerAssetAmount` values from the signedOrders param.
+ * Defaults to `makerAssetAmount` values from the orders param.
  * slippageBufferAmount: An additional amount of makerAsset to be covered by the result in case of trade collisions or partial fills.
  * Defaults to 0
  */
@@ -55,12 +55,12 @@ export interface FindOrdersThatCoverMakerAssetFillAmountOpts {
 }
 
 /**
- * remainingFillableMakerAssetAmount: An array of BigNumbers corresponding to the `signedOrders` parameter.
+ * remainingFillableMakerAssetAmount: An array of BigNumbers corresponding to the `orders` parameter.
  * You can use `OrderStateUtils` `@0xproject/order-utils` to perform blockchain lookups for these values.
- * Defaults to `makerAssetAmount` values from the signedOrders param.
- * remainingFillableFeeAmounts: An array of BigNumbers corresponding to the signedFeeOrders parameter.
+ * Defaults to `makerAssetAmount` values from the orders param.
+ * remainingFillableFeeAmounts: An array of BigNumbers corresponding to the feeOrders parameter.
  * You can use OrderStateUtils @0xproject/order-utils to perform blockchain lookups for these values.
- * Defaults to `makerAssetAmount` values from the signedFeeOrders param.
+ * Defaults to `makerAssetAmount` values from the feeOrders param.
  * slippageBufferAmount: An additional amount of fee to be covered by the result in case of trade collisions or partial fills.
  * Defaults to 0
  */

@@ -1,5 +1,5 @@
 import { schemas } from '@0xproject/json-schemas';
-import { SignedOrder } from '@0xproject/types';
+import { Order } from '@0xproject/types';
 import { BigNumber } from '@0xproject/utils';
 import * as _ from 'lodash';
 
@@ -12,40 +12,40 @@ export const marketUtils = {
      * Takes an array of orders and returns a subset of those orders that has enough makerAssetAmount
      * in order to fill the input makerAssetFillAmount plus slippageBufferAmount. Iterates from first order to last order.
      * Sort the input by ascending rate in order to get the subset of orders that will cost the least ETH.
-     * @param   signedOrders                An array of objects that conform to the SignedOrder interface. All orders should specify the same makerAsset.
+     * @param   orders                      An array of objects that extend the Order interface. All orders should specify the same makerAsset.
      *                                      All orders should specify WETH as the takerAsset.
      * @param   makerAssetFillAmount        The amount of makerAsset desired to be filled.
      * @param   opts                        Optional arguments this function accepts.
      * @return  Resulting orders and remaining fill amount that could not be covered by the input.
      */
-    findOrdersThatCoverMakerAssetFillAmount(
-        signedOrders: SignedOrder[],
+    findOrdersThatCoverMakerAssetFillAmount<T extends Order>(
+        orders: T[],
         makerAssetFillAmount: BigNumber,
         opts?: FindOrdersThatCoverMakerAssetFillAmountOpts,
-    ): { resultOrders: SignedOrder[]; remainingFillAmount: BigNumber } {
-        assert.doesConformToSchema('signedOrders', signedOrders, schemas.signedOrdersSchema);
+    ): { resultOrders: T[]; remainingFillAmount: BigNumber } {
+        assert.doesConformToSchema('orders', orders, schemas.ordersSchema);
         assert.isValidBaseUnitAmount('makerAssetFillAmount', makerAssetFillAmount);
-        // try to get remainingFillableMakerAssetAmounts from opts, if it's not there, use makerAssetAmount values from signedOrders
+        // try to get remainingFillableMakerAssetAmounts from opts, if it's not there, use makerAssetAmount values from orders
         const remainingFillableMakerAssetAmounts = _.get(
             opts,
             'remainingFillableMakerAssetAmounts',
-            _.map(signedOrders, order => order.makerAssetAmount),
+            _.map(orders, order => order.makerAssetAmount),
         ) as BigNumber[];
         _.forEach(remainingFillableMakerAssetAmounts, (amount, index) =>
             assert.isValidBaseUnitAmount(`remainingFillableMakerAssetAmount[${index}]`, amount),
         );
         assert.assert(
-            signedOrders.length === remainingFillableMakerAssetAmounts.length,
-            'Expected signedOrders.length to equal opts.remainingFillableMakerAssetAmounts.length',
+            orders.length === remainingFillableMakerAssetAmounts.length,
+            'Expected orders.length to equal opts.remainingFillableMakerAssetAmounts.length',
         );
         // try to get slippageBufferAmount from opts, if it's not there, default to 0
         const slippageBufferAmount = _.get(opts, 'slippageBufferAmount', constants.ZERO_AMOUNT) as BigNumber;
         assert.isValidBaseUnitAmount('opts.slippageBufferAmount', slippageBufferAmount);
         // calculate total amount of makerAsset needed to be filled
         const totalFillAmount = makerAssetFillAmount.plus(slippageBufferAmount);
-        // iterate through the signedOrders input from left to right until we have enough makerAsset to fill totalFillAmount
+        // iterate through the orders input from left to right until we have enough makerAsset to fill totalFillAmount
         const result = _.reduce(
-            signedOrders,
+            orders,
             ({ resultOrders, remainingFillAmount }, order, index) => {
                 if (remainingFillAmount.lessThanOrEqualTo(constants.ZERO_AMOUNT)) {
                     return { resultOrders, remainingFillAmount: constants.ZERO_AMOUNT };
@@ -64,61 +64,61 @@ export const marketUtils = {
                     };
                 }
             },
-            { resultOrders: [] as SignedOrder[], remainingFillAmount: totalFillAmount },
+            { resultOrders: [] as T[], remainingFillAmount: totalFillAmount },
         );
         return result;
     },
     /**
      * Takes an array of orders and an array of feeOrders. Returns a subset of the feeOrders that has enough ZRX
-     * in order to fill the takerFees required by signedOrders plus a slippageBufferAmount.
+     * in order to fill the takerFees required by orders plus a slippageBufferAmount.
      * Iterates from first feeOrder to last. Sort the feeOrders by ascending rate in order to get the subset of
      * feeOrders that will cost the least ETH.
-     * @param   signedOrders        An array of objects that conform to the SignedOrder interface. All orders should specify ZRX as
-     *                              the makerAsset and WETH as the takerAsset.
-     * @param   signedFeeOrders     An array of objects that conform to the SignedOrder interface. All orders should specify ZRX as
-     *                              the makerAsset and WETH as the takerAsset.
-     * @param   opts                Optional arguments this function accepts.
+     * @param   orders      An array of objects that extend the Order interface. All orders should specify ZRX as
+     *                      the makerAsset and WETH as the takerAsset.
+     * @param   feeOrders   An array of objects that extend the Order interface. All orders should specify ZRX as
+     *                      the makerAsset and WETH as the takerAsset.
+     * @param   opts        Optional arguments this function accepts.
      * @return  Resulting orders and remaining fee amount that could not be covered by the input.
      */
-    findFeeOrdersThatCoverFeesForTargetOrders(
-        signedOrders: SignedOrder[],
-        signedFeeOrders: SignedOrder[],
+    findFeeOrdersThatCoverFeesForTargetOrders<T extends Order>(
+        orders: T[],
+        feeOrders: T[],
         opts?: FindFeeOrdersThatCoverFeesForTargetOrdersOpts,
-    ): { resultOrders: SignedOrder[]; remainingFeeAmount: BigNumber } {
-        assert.doesConformToSchema('signedOrders', signedOrders, schemas.signedOrdersSchema);
-        assert.doesConformToSchema('signedFeeOrders', signedFeeOrders, schemas.signedOrdersSchema);
-        // try to get remainingFillableMakerAssetAmounts from opts, if it's not there, use makerAssetAmount values from signedOrders
+    ): { resultOrders: T[]; remainingFeeAmount: BigNumber } {
+        assert.doesConformToSchema('orders', orders, schemas.ordersSchema);
+        assert.doesConformToSchema('feeOrders', feeOrders, schemas.ordersSchema);
+        // try to get remainingFillableMakerAssetAmounts from opts, if it's not there, use makerAssetAmount values from orders
         const remainingFillableMakerAssetAmounts = _.get(
             opts,
             'remainingFillableMakerAssetAmounts',
-            _.map(signedOrders, order => order.makerAssetAmount),
+            _.map(orders, order => order.makerAssetAmount),
         ) as BigNumber[];
         _.forEach(remainingFillableMakerAssetAmounts, (amount, index) =>
             assert.isValidBaseUnitAmount(`remainingFillableMakerAssetAmount[${index}]`, amount),
         );
         assert.assert(
-            signedOrders.length === remainingFillableMakerAssetAmounts.length,
-            'Expected signedOrders.length to equal opts.remainingFillableMakerAssetAmounts.length',
+            orders.length === remainingFillableMakerAssetAmounts.length,
+            'Expected orders.length to equal opts.remainingFillableMakerAssetAmounts.length',
         );
-        // try to get remainingFillableFeeAmounts from opts, if it's not there, use makerAssetAmount values from signedFeeOrders
+        // try to get remainingFillableFeeAmounts from opts, if it's not there, use makerAssetAmount values from feeOrders
         const remainingFillableFeeAmounts = _.get(
             opts,
             'remainingFillableFeeAmounts',
-            _.map(signedFeeOrders, order => order.makerAssetAmount),
+            _.map(feeOrders, order => order.makerAssetAmount),
         ) as BigNumber[];
         _.forEach(remainingFillableFeeAmounts, (amount, index) =>
             assert.isValidBaseUnitAmount(`remainingFillableFeeAmounts[${index}]`, amount),
         );
         assert.assert(
-            signedOrders.length === remainingFillableMakerAssetAmounts.length,
-            'Expected signedFeeOrders.length to equal opts.remainingFillableFeeAmounts.length',
+            feeOrders.length === remainingFillableFeeAmounts.length,
+            'Expected feeOrders.length to equal opts.remainingFillableFeeAmounts.length',
         );
         // try to get slippageBufferAmount from opts, if it's not there, default to 0
         const slippageBufferAmount = _.get(opts, 'slippageBufferAmount', constants.ZERO_AMOUNT) as BigNumber;
         assert.isValidBaseUnitAmount('opts.slippageBufferAmount', slippageBufferAmount);
-        // calculate total amount of ZRX needed to fill signedOrders
+        // calculate total amount of ZRX needed to fill orders
         const totalFeeAmount = _.reduce(
-            signedOrders,
+            orders,
             (accFees, order, index) => {
                 const makerAssetAmountAvailable = remainingFillableMakerAssetAmounts[index];
                 const feeToFillMakerAssetAmountAvailable = makerAssetAmountAvailable
@@ -129,7 +129,7 @@ export const marketUtils = {
             constants.ZERO_AMOUNT,
         );
         const { resultOrders, remainingFillAmount } = marketUtils.findOrdersThatCoverMakerAssetFillAmount(
-            signedFeeOrders,
+            feeOrders,
             totalFeeAmount,
             {
                 remainingFillableMakerAssetAmounts: remainingFillableFeeAmounts,
