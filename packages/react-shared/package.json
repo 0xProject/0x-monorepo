@@ -41,7 +41,7 @@
         "@types/node": "^8.0.53",
         "@types/react": "*",
         "@types/react-dom": "*",
-        "@types/react-scroll": "0.0.31",
+        "@types/react-scroll": "1.5.4",
         "basscss": "^8.0.3",
         "is-mobile": "^0.2.2",
         "lodash": "^4.17.5",
