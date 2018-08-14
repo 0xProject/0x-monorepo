@@ -73,7 +73,7 @@
         "async-child-process": "^1.1.1",
         "chai": "^4.0.1",
         "chai-as-promised": "^7.1.0",
-        "copyfiles": "^1.2.0",
+        "copyfiles": "^2.0.0",
         "dirty-chai": "^2.0.1",
         "fetch-mock": "^5.13.1",
         "make-promises-safe": "^1.1.0",
