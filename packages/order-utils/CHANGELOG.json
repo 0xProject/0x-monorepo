@@ -1,5 +1,19 @@
 [
     {
+        "version": "1.0.1-rc.4",
+        "changes": [
+            {
+                "note": "Added rateUtils and sortingUtils",
+                "pr": 953
+            },
+            {
+                "note":
+                    "Update marketUtils api such that all optional parameters are bundled into one optional param and more defaults are provided",
+                "pr": 954
+            }
+        ]
+    },
+    {
         "version": "1.0.1-rc.3",
         "changes": [
             {
@@ -18,10 +32,6 @@
             },
             {
                 "note": "Dependencies updated"
-            },
-            {
-                "note": "Added rateUtils and sortingUtils",
-                "pr": 953
             }
         ],
         "timestamp": 1534210131
