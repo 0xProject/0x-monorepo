@@ -2,8 +2,8 @@ export { HttpClient } from './http_client';
 export { orderbookChannelFactory } from './orderbook_channel_factory';
 export {
     Client,
-    FeesRequest,
-    FeesResponse,
+    OrderConfigRequest,
+    OrderConfigResponse,
     OrderbookChannel,
     OrderbookChannelHandler,
     OrderbookChannelSubscriptionOpts,
@@ -13,7 +13,7 @@ export {
     PagedRequestOpts,
     TokenPairsItem,
     AssetPairsRequestOpts,
-    TokenTradeInfo,
+    Asset,
 } from './types';
 
 export { Order, SignedOrder } from '@0xproject/types';

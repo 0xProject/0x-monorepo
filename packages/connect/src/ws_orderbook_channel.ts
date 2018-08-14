@@ -4,8 +4,8 @@ import * as WebSocket from 'websocket';
 import {
     OrderbookChannel,
     OrderbookChannelHandler,
-    OrderbookChannelMessageTypes,
     OrderbookChannelSubscriptionOpts,
+    OrdersChannelMessageTypes,
 } from './types';
 import { assert } from './utils/assert';
 import { orderbookChannelMessageParser } from './utils/orderbook_channel_message_parser';
@@ -44,7 +44,7 @@ export class WebSocketOrderbookChannel implements OrderbookChannel {
     /**
      * Subscribe to orderbook snapshots and updates from the websocket
      * @param   subscriptionOpts     An OrderbookChannelSubscriptionOpts instance describing which
-     *                               token pair to subscribe to
+     *                               assetData pair to subscribe to
      */
     public subscribe(subscriptionOpts: OrderbookChannelSubscriptionOpts): void {
         assert.isOrderbookChannelSubscriptionOpts('subscriptionOpts', subscriptionOpts);
@@ -82,11 +82,11 @@ export class WebSocketOrderbookChannel implements OrderbookChannel {
                 return;
             }
             switch (parserResult.type) {
-                case OrderbookChannelMessageTypes.Snapshot: {
+                case OrdersChannelMessageTypes.Snapshot: {
                     this._handler.onSnapshot(this, subscriptionOpts, parserResult.payload);
                     break;
                 }
-                case OrderbookChannelMessageTypes.Update: {
+                case OrdersChannelMessageTypes.Update: {
                     this._handler.onUpdate(this, subscriptionOpts, parserResult.payload);
                     break;
                 }

@@ -12,11 +12,11 @@ export const typeConverters = {
     },
     convertOrderStringFieldsToBigNumber(order: any): any {
         return typeConverters.convertStringsFieldsToBigNumbers(order, [
-            'makerTokenAmount',
-            'takerTokenAmount',
+            'makerAssetAmount',
+            'takerAssetAmount',
             'makerFee',
             'takerFee',
-            'expirationUnixTimestampSec',
+            'expirationTimeSeconds',
             'salt',
         ]);
     },

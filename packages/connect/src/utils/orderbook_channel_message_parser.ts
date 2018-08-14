@@ -2,12 +2,12 @@ import { assert } from '@0xproject/assert';
 import { schemas } from '@0xproject/json-schemas';
 import * as _ from 'lodash';
 
-import { OrderbookChannelMessage, OrderbookChannelMessageTypes } from '../types';
+import { OrdersChannelMessage, OrdersChannelMessageTypes } from '../types';
 
 import { relayerResponseJsonParsers } from './relayer_response_json_parsers';
 
 export const orderbookChannelMessageParser = {
-    parse(utf8Data: string): OrderbookChannelMessage {
+    parse(utf8Data: string): OrdersChannelMessage {
         // parse the message
         const messageObj = JSON.parse(utf8Data);
         // ensure we have a type parameter to switch on
@@ -19,13 +19,13 @@ export const orderbookChannelMessageParser = {
         assert.assert(!_.isUndefined(requestId), `Message is missing a requestId parameter: ${utf8Data}`);
         assert.isNumber('requestId', requestId);
         switch (type) {
-            case OrderbookChannelMessageTypes.Snapshot: {
+            case OrdersChannelMessageTypes.Snapshot: {
                 assert.doesConformToSchema('message', messageObj, schemas.relayerApiOrderbookChannelSnapshotSchema);
                 const orderbookJson = messageObj.payload;
                 const orderbook = relayerResponseJsonParsers.parseOrderbookResponseJson(orderbookJson);
                 return _.assign(messageObj, { payload: orderbook });
             }
-            case OrderbookChannelMessageTypes.Update: {
+            case OrdersChannelMessageTypes.Update: {
                 assert.doesConformToSchema('message', messageObj, schemas.relayerApiOrderbookChannelUpdateSchema);
                 const orderJson = messageObj.payload;
                 const order = relayerResponseJsonParsers.parseOrderJson(orderJson);
@@ -33,7 +33,7 @@ export const orderbookChannelMessageParser = {
             }
             default: {
                 return {
-                    type: OrderbookChannelMessageTypes.Unknown,
+                    type: OrdersChannelMessageTypes.Unknown,
                     requestId,
                     payload: undefined,
                 };

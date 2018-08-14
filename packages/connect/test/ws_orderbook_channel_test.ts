@@ -32,8 +32,8 @@ describe('WebSocketOrderbookChannel', () => {
     Sinon.stub(openClient, 'send').callsFake(_.noop.bind(_));
     const openOrderbookChannel = new WebSocketOrderbookChannel(openClient, emptyOrderbookChannelHandler);
     const subscriptionOpts = {
-        baseTokenAddress: '0x323b5d4c32345ced77393b3530b1eed0f346429d',
-        quoteTokenAddress: '0xef7fff64389b814a946f3e92105513705ca6b990',
+        baseAssetData: '0x323b5d4c32345ced77393b3530b1eed0f346429d',
+        quoteAssetData: '0xef7fff64389b814a946f3e92105513705ca6b990',
         snapshot: true,
         limit: 100,
     };
@@ -41,7 +41,7 @@ describe('WebSocketOrderbookChannel', () => {
         it('throws when subscriptionOpts does not conform to schema', () => {
             const badSubscribeCall = openOrderbookChannel.subscribe.bind(openOrderbookChannel, {});
             expect(badSubscribeCall).throws(
-                'Expected subscriptionOpts to conform to schema /RelayerApiOrderbookChannelSubscribePayload\nEncountered: {}\nValidation errors: instance requires property "baseTokenAddress", instance requires property "quoteTokenAddress"',
+                'Expected subscriptionOpts to conform to schema /RelayerApiOrderbookChannelSubscribePayload\nEncountered: {}\nValidation errors: instance requires property "baseAssetData", instance requires property "quoteAssetData"',
             );
         });
         it('does not throw when inputs are of correct types', () => {

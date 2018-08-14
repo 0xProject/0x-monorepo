@@ -2,14 +2,14 @@ import * as orderResponseJSON from './order/0xabc67323774bdbd24d94f977fa9ac94a50
 
 const orderJSONString = JSON.stringify(orderResponseJSON);
 
-export const updateOrderbookChannelMessage = `{
+export const updateOrdersChannelMessage = `{
     "type": "update",
     "channel": "orderbook",
     "requestId": 1,
     "payload": ${orderJSONString}
 }`;
 
-export const malformedUpdateOrderbookChannelMessage = `{
+export const malformedUpdateOrdersChannelMessage = `{
     "type": "update",
     "channel": "orderbook",
     "requestId": 1,

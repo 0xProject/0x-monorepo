@@ -9,8 +9,8 @@ import { schemas as clientSchemas } from './schemas/schemas';
 import {
     AssetPairsRequestOpts,
     Client,
-    FeesRequest,
-    FeesResponse,
+    OrderConfigRequest,
+    OrderConfigResponse,
     HttpRequestOptions,
     HttpRequestType,
     OrderbookRequest,
@@ -65,8 +65,8 @@ export class HttpClient implements Client {
         this._apiEndpointUrl = url.replace(TRAILING_SLASHES_REGEX, ''); // remove trailing slashes
     }
     /**
-     * Retrieve token pair info from the API
-     * @param   requestOpts     Options specifying token information to retrieve and page information, defaults to { page: 1, perPage: 100 }
+     * Retrieve assetData pair info from the API
+     * @param   requestOpts     Options specifying assetData information to retrieve and page information, defaults to { page: 1, perPage: 100 }
      * @return  The resulting TokenPairsItems that match the request
      */
     public async getAssetPairsAsync(requestOpts?: AssetPairsRequestOpts & PagedRequestOpts): Promise<TokenPairsItem[]> {
@@ -77,9 +77,9 @@ export class HttpClient implements Client {
         const httpRequestOpts = {
             params: _.defaults({}, requestOpts, DEFAULT_PAGED_REQUEST_OPTS),
         };
-        const responseJson = await this._requestAsync('/token_pairs', HttpRequestType.Get, httpRequestOpts);
-        const tokenPairs = relayerResponseJsonParsers.parseTokenPairsJson(responseJson);
-        return tokenPairs;
+        const responseJson = await this._requestAsync('/assetData_pairs', HttpRequestType.Get, httpRequestOpts);
+        const assetDataPairs = relayerResponseJsonParsers.parseTokenPairsJson(responseJson);
+        return assetDataPairs;
     }
     /**
      * Retrieve orders from the API
@@ -132,16 +132,16 @@ export class HttpClient implements Client {
     }
     /**
      * Retrieve fee information from the API
-     * @param   request     A FeesRequest instance describing the specific fees to retrieve
-     * @return  The resulting FeesResponse that matches the request
+     * @param   request     A OrderConfigRequest instance describing the specific fees to retrieve
+     * @return  The resulting OrderConfigResponse that matches the request
      */
-    public async getOrderConfigAsync(request: FeesRequest): Promise<FeesResponse> {
+    public async getOrderConfigAsync(request: OrderConfigRequest): Promise<OrderConfigResponse> {
         assert.doesConformToSchema('request', request, clientSchemas.feesRequestSchema);
         const httpRequestOpts = {
             payload: request,
         };
         const responseJson = await this._requestAsync('/fees', HttpRequestType.Post, httpRequestOpts);
-        const fees = relayerResponseJsonParsers.parseFeesResponseJson(responseJson);
+        const fees = relayerResponseJsonParsers.parseOrderConfigResponseJson(responseJson);
         return fees;
     }
     /**

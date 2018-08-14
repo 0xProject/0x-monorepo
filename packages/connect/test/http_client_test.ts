@@ -15,8 +15,8 @@ import { orderbookResponse } from './fixtures/standard_relayer_api/orderbook';
 import * as orderbookJSON from './fixtures/standard_relayer_api/orderbook.json';
 import { ordersResponse } from './fixtures/standard_relayer_api/orders';
 import * as ordersResponseJSON from './fixtures/standard_relayer_api/orders.json';
-import { tokenPairsResponse } from './fixtures/standard_relayer_api/token_pairs';
-import * as tokenPairsResponseJSON from './fixtures/standard_relayer_api/token_pairs.json';
+import { assetDataPairsResponse } from './fixtures/standard_relayer_api/assetData_pairs';
+import * as assetDataPairsResponseJSON from './fixtures/standard_relayer_api/assetData_pairs.json';
 
 chai.config.includeStack = true;
 chai.use(dirtyChai);
@@ -39,24 +39,24 @@ describe('HttpClient', () => {
         });
     });
     describe('#getAssetPairsAsync', () => {
-        const url = `${relayUrl}/token_pairs`;
-        it('gets token pairs with default options when none are provided', async () => {
+        const url = `${relayUrl}/assetData_pairs`;
+        it('gets assetData pairs with default options when none are provided', async () => {
             const urlWithQuery = `${url}?page=1&per_page=100`;
-            fetchMock.get(urlWithQuery, tokenPairsResponseJSON);
-            const tokenPairs = await relayerClient.getAssetPairsAsync();
-            expect(tokenPairs).to.be.deep.equal(tokenPairsResponse);
+            fetchMock.get(urlWithQuery, assetDataPairsResponseJSON);
+            const assetDataPairs = await relayerClient.getAssetPairsAsync();
+            expect(assetDataPairs).to.be.deep.equal(assetDataPairsResponse);
         });
-        it('gets token pairs with specified request options', async () => {
-            const tokenAddress = '0x323b5d4c32345ced77393b3530b1eed0f346429d';
+        it('gets assetData pairs with specified request options', async () => {
+            const assetDataAddress = '0x323b5d4c32345ced77393b3530b1eed0f346429d';
             const AssetPairsRequestOpts = {
-                tokenA: tokenAddress,
+                assetDataA: assetDataAddress,
                 page: 3,
                 perPage: 50,
             };
-            const urlWithQuery = `${url}?page=3&per_page=50&tokenA=${tokenAddress}`;
-            fetchMock.get(urlWithQuery, tokenPairsResponseJSON);
-            const tokenPairs = await relayerClient.getAssetPairsAsync(AssetPairsRequestOpts);
-            expect(tokenPairs).to.be.deep.equal(tokenPairsResponse);
+            const urlWithQuery = `${url}?page=3&per_page=50&assetDataA=${assetDataAddress}`;
+            fetchMock.get(urlWithQuery, assetDataPairsResponseJSON);
+            const assetDataPairs = await relayerClient.getAssetPairsAsync(AssetPairsRequestOpts);
+            expect(assetDataPairs).to.be.deep.equal(assetDataPairsResponse);
         });
         it('throws an error for invalid JSON response', async () => {
             fetchMock.get(url, { test: 'dummy' });
@@ -72,13 +72,13 @@ describe('HttpClient', () => {
             expect(orders).to.be.deep.equal(ordersResponse);
         });
         it('gets orders with specified request options', async () => {
-            const tokenAddress = '0x323b5d4c32345ced77393b3530b1eed0f346429d';
+            const assetDataAddress = '0x323b5d4c32345ced77393b3530b1eed0f346429d';
             const ordersRequest = {
-                tokenAddress,
+                assetDataAddress,
                 page: 3,
                 perPage: 50,
             };
-            const urlWithQuery = `${url}?page=3&per_page=50&tokenAddress=${tokenAddress}`;
+            const urlWithQuery = `${url}?page=3&per_page=50&assetDataAddress=${assetDataAddress}`;
             fetchMock.get(urlWithQuery, ordersResponseJSON);
             const orders = await relayerClient.getOrdersAsync(ordersRequest);
             expect(orders).to.be.deep.equal(ordersResponse);
@@ -103,22 +103,22 @@ describe('HttpClient', () => {
     });
     describe('#getOrderBookAsync', () => {
         const request = {
-            baseTokenAddress: '0x323b5d4c32345ced77393b3530b1eed0f346429d',
-            quoteTokenAddress: '0xa2b31dacf30a9c50ca473337c01d8a201ae33e32',
+            baseAssetData: '0x323b5d4c32345ced77393b3530b1eed0f346429d',
+            quoteAssetData: '0xa2b31dacf30a9c50ca473337c01d8a201ae33e32',
         };
         const url = `${relayUrl}/orderbook`;
         it('gets orderbook with default page options when none are provided', async () => {
-            const urlWithQuery = `${url}?baseTokenAddress=${
-                request.baseTokenAddress
-            }&page=1&per_page=100&quoteTokenAddress=${request.quoteTokenAddress}`;
+            const urlWithQuery = `${url}?baseAssetData=${
+                request.baseAssetData
+            }&page=1&per_page=100&quoteAssetData=${request.quoteAssetData}`;
             fetchMock.get(urlWithQuery, orderbookJSON);
             const orderbook = await relayerClient.getOrderbookAsync(request);
             expect(orderbook).to.be.deep.equal(orderbookResponse);
         });
         it('gets orderbook with specified page options', async () => {
-            const urlWithQuery = `${url}?baseTokenAddress=${
-                request.baseTokenAddress
-            }&page=3&per_page=50&quoteTokenAddress=${request.quoteTokenAddress}`;
+            const urlWithQuery = `${url}?baseAssetData=${
+                request.baseAssetData
+            }&page=3&per_page=50&quoteAssetData=${request.quoteAssetData}`;
             fetchMock.get(urlWithQuery, orderbookJSON);
             const pagedRequestOptions = {
                 page: 3,
@@ -134,15 +134,15 @@ describe('HttpClient', () => {
     });
     describe('#getOrderConfigAsync', () => {
         const request = {
-            exchangeContractAddress: '0x12459c951127e0c374ff9105dda097662a027093',
+            exchangeAddress: '0x12459c951127e0c374ff9105dda097662a027093',
             maker: '0x9e56625509c2f60af937f23b7b532600390e8c8b',
             taker: '0xa2b31dacf30a9c50ca473337c01d8a201ae33e32',
             makerTokenAddress: '0x323b5d4c32345ced77393b3530b1eed0f346429d',
             takerTokenAddress: '0xef7fff64389b814a946f3e92105513705ca6b990',
-            makerTokenAmount: new BigNumber('10000000000000000000'),
-            takerTokenAmount: new BigNumber('30000000000000000000'),
+            makerAssetAmount: new BigNumber('10000000000000000000'),
+            takerAssetAmount: new BigNumber('30000000000000000000'),
             salt: new BigNumber('256'),
-            expirationUnixTimestampSec: new BigNumber('42'),
+            expirationTimeSeconds: new BigNumber('42'),
         };
         const url = `${relayUrl}/fees`;
         it('gets fees', async () => {
@@ -152,15 +152,15 @@ describe('HttpClient', () => {
         });
         it('does not mutate input', async () => {
             fetchMock.post(url, feesResponseJSON);
-            const makerTokenAmountBefore = new BigNumber(request.makerTokenAmount);
-            const takerTokenAmountBefore = new BigNumber(request.takerTokenAmount);
+            const makerAssetAmountBefore = new BigNumber(request.makerAssetAmount);
+            const takerAssetAmountBefore = new BigNumber(request.takerAssetAmount);
             const saltBefore = new BigNumber(request.salt);
-            const expirationUnixTimestampSecBefore = new BigNumber(request.expirationUnixTimestampSec);
+            const expirationTimeSecondsBefore = new BigNumber(request.expirationTimeSeconds);
             await relayerClient.getOrderConfigAsync(request);
-            expect(makerTokenAmountBefore).to.be.deep.equal(request.makerTokenAmount);
-            expect(takerTokenAmountBefore).to.be.deep.equal(request.takerTokenAmount);
+            expect(makerAssetAmountBefore).to.be.deep.equal(request.makerAssetAmount);
+            expect(takerAssetAmountBefore).to.be.deep.equal(request.takerAssetAmount);
             expect(saltBefore).to.be.deep.equal(request.salt);
-            expect(expirationUnixTimestampSecBefore).to.be.deep.equal(request.expirationUnixTimestampSec);
+            expect(expirationTimeSecondsBefore).to.be.deep.equal(request.expirationTimeSeconds);
         });
         it('throws an error for invalid JSON response', async () => {
             fetchMock.post(url, { test: 'dummy' });

@@ -2,19 +2,19 @@ import { assert } from '@0xproject/assert';
 import { schemas } from '@0xproject/json-schemas';
 import { SignedOrder } from '@0xproject/types';
 
-import { FeesResponse, OrderbookResponse, TokenPairsItem } from '../types';
+import { OrderConfigResponse, OrderbookResponse, TokenPairsItem } from '../types';
 
 import { typeConverters } from './type_converters';
 
 export const relayerResponseJsonParsers = {
     parseTokenPairsJson(json: any): TokenPairsItem[] {
-        assert.doesConformToSchema('tokenPairs', json, schemas.relayerApiTokenPairsResponseSchema);
-        return json.map((tokenPair: any) => {
-            return typeConverters.convertStringsFieldsToBigNumbers(tokenPair, [
-                'tokenA.minAmount',
-                'tokenA.maxAmount',
-                'tokenB.minAmount',
-                'tokenB.maxAmount',
+        assert.doesConformToSchema('assetDataPairs', json, schemas.relayerApiTokenPairsResponseSchema);
+        return json.map((assetDataPair: any) => {
+            return typeConverters.convertStringsFieldsToBigNumbers(assetDataPair, [
+                'assetDataA.minAmount',
+                'assetDataA.maxAmount',
+                'assetDataB.minAmount',
+                'assetDataB.maxAmount',
             ]);
         });
     },
@@ -30,8 +30,8 @@ export const relayerResponseJsonParsers = {
         assert.doesConformToSchema('orderBook', json, schemas.relayerApiOrderBookResponseSchema);
         return typeConverters.convertOrderbookStringFieldsToBigNumber(json);
     },
-    parseFeesResponseJson(json: any): FeesResponse {
-        assert.doesConformToSchema('fees', json, schemas.relayerApiFeesResponseSchema);
+    parseOrderConfigResponseJson(json: any): OrderConfigResponse {
+        assert.doesConformToSchema('fees', json, schemas.relayerApiOrderConfigResponseSchema);
         return typeConverters.convertStringsFieldsToBigNumbers(json, ['makerFee', 'takerFee']);
     },
 };

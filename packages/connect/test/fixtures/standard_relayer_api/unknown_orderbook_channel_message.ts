@@ -2,7 +2,7 @@ import * as orderResponseJSON from './order/0xabc67323774bdbd24d94f977fa9ac94a50
 
 const orderJSONString = JSON.stringify(orderResponseJSON);
 
-export const unknownOrderbookChannelMessage = `{
+export const unknownOrdersChannelMessage = `{
     "type": "superGoodUpdate",
     "channel": "orderbook",
     "requestId": 1,
