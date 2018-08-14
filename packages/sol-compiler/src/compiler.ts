@@ -215,25 +215,29 @@ export class Compiler {
             const compiled = this._compile(solcInstance, input.standardInput);
 
             for (const contractPath of input.contractsToCompile) {
-                await this._verifyAndPersistCompilationAsync(
+                await this._verifyAndPersistCompiledContractAsync(
                     contractPath,
-                    contractData[contractPath].contractName,
+                    contractData[contractPath],
                     fullSolcVersion,
                     compiled,
-                    contractData[contractPath].sourceTreeHashHex,
-                    contractData[contractPath].currentArtifactIfExists,
                 );
             }
         }
     }
-    private async _verifyAndPersistCompilationAsync(
+    private async _verifyAndPersistCompiledContractAsync(
         contractPath: string,
-        contractName: string,
+        contractMetadata: {
+            currentArtifactIfExists: ContractArtifact | void;
+            sourceTreeHashHex: string;
+            contractName: string;
+        },
         fullSolcVersion: string,
         compiled: solc.StandardOutput,
-        sourceTreeHashHex: string,
-        currentArtifactIfExists: ContractArtifact | void,
     ): Promise<void> {
+        const contractName = contractMetadata.contractName;
+        const sourceTreeHashHex = contractMetadata.sourceTreeHashHex;
+        const currentArtifactIfExists = contractMetadata.currentArtifactIfExists;
+
         const compiledData = compiled.contracts[contractPath][contractName];
         if (_.isUndefined(compiledData)) {
             throw new Error(
