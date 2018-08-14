@@ -64,7 +64,7 @@
     "devDependencies": {
         "@0xproject/monorepo-scripts": "^1.0.5",
         "@0xproject/tslint-config": "^1.0.5",
-        "@types/fetch-mock": "^5.12.2",
+        "@types/fetch-mock": "^6.0.3",
         "@types/lodash": "4.14.104",
         "@types/mocha": "^2.2.42",
         "@types/query-string": "^5.0.1",
