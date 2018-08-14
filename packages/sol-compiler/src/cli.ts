@@ -25,6 +25,10 @@ const SEPARATOR = ',';
             type: 'string',
             description: 'comma separated list of contracts to compile',
         })
+        .option('max-processes', {
+            type: 'number',
+            description: 'maximum number of parallel compilation processes to spawn',
+        })
         .help().argv;
     const contracts = _.isUndefined(argv.contracts)
         ? undefined
@@ -34,6 +38,7 @@ const SEPARATOR = ',';
     const opts = {
         contractsDir: argv.contractsDir,
         artifactsDir: argv.artifactsDir,
+        maxProcesses: argv.maxProcesses,
         contracts,
     };
     const compiler = new Compiler(opts);

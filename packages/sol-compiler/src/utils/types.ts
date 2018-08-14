@@ -53,6 +53,7 @@ export interface CompilerOptions {
     compilerSettings?: solc.CompilerSettings;
     contracts?: string[] | '*';
     solcVersion?: string;
+    maxProcesses?: number;
 }
 
 export interface ContractSourceData {

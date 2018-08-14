@@ -1,26 +1,19 @@
 import { assert } from '@0xproject/assert';
-import {
-    FallthroughResolver,
-    FSResolver,
-    NameResolver,
-    NPMResolver,
-    RelativeFSResolver,
-    Resolver,
-    URLResolver,
-} from '@0xproject/sol-resolver';
+import { NameResolver, Resolver } from '@0xproject/sol-resolver';
 import { fetchAsync, logUtils } from '@0xproject/utils';
 import chalk from 'chalk';
+import { ChildProcess, spawn } from 'child_process';
 import * as ethUtil from 'ethereumjs-util';
 import * as fs from 'fs';
 import * as _ from 'lodash';
 import * as path from 'path';
-import * as requireFromString from 'require-from-string';
 import * as semver from 'semver';
 import solc = require('solc');
 
 import { compilerOptionsSchema } from './schemas/compiler_options_schema';
 import { binPaths } from './solc/bin_paths';
 import {
+    constructResolver,
     createDirIfDoesNotExistAsync,
     getContractArtifactIfExistsAsync,
     getNormalizedErrMsg,
@@ -28,7 +21,6 @@ import {
     parseSolidityVersionRange,
 } from './utils/compiler';
 import { constants } from './utils/constants';
-import { fsWrapper } from './utils/fs_wrapper';
 import { CompilerOptions, ContractArtifact, ContractVersionData } from './utils/types';
 import { utils } from './utils/utils';
 
@@ -38,6 +30,7 @@ const ALL_FILES_IDENTIFIER = '*';
 const SOLC_BIN_DIR = path.join(__dirname, '..', '..', 'solc_bin');
 const DEFAULT_CONTRACTS_DIR = path.resolve('contracts');
 const DEFAULT_ARTIFACTS_DIR = path.resolve('artifacts');
+const DEFAULT_MAX_PROCESSES = 7;
 // Solc compiler settings cannot be configured from the commandline.
 // If you need this configured, please create a `compiler.json` config file
 // with your desired configurations.
@@ -63,6 +56,7 @@ export class Compiler {
     private readonly _contractsDir: string;
     private readonly _compilerSettings: solc.CompilerSettings;
     private readonly _artifactsDir: string;
+    private readonly _maxProcesses: number;
     private readonly _solcVersionIfExists: string | undefined;
     private readonly _specifiedContracts: string[] | TYPE_ALL_FILES_IDENTIFIER;
     /**
@@ -82,15 +76,9 @@ export class Compiler {
         this._compilerSettings = passedOpts.compilerSettings || config.compilerSettings || DEFAULT_COMPILER_SETTINGS;
         this._artifactsDir = passedOpts.artifactsDir || config.artifactsDir || DEFAULT_ARTIFACTS_DIR;
         this._specifiedContracts = passedOpts.contracts || config.contracts || ALL_CONTRACTS_IDENTIFIER;
+        this._maxProcesses = passedOpts.maxProcesses || config.maxProcesses || DEFAULT_MAX_PROCESSES;
         this._nameResolver = new NameResolver(path.resolve(this._contractsDir));
-        const resolver = new FallthroughResolver();
-        resolver.appendResolver(new URLResolver());
-        const packagePath = path.resolve('');
-        resolver.appendResolver(new NPMResolver(packagePath));
-        resolver.appendResolver(new RelativeFSResolver(this._contractsDir));
-        resolver.appendResolver(new FSResolver());
-        resolver.appendResolver(this._nameResolver);
-        this._resolver = resolver;
+        this._resolver = constructResolver(this._contractsDir);
     }
     /**
      * Compiles selected Solidity files found in `contractsDir` and writes JSON artifacts to `artifactsDir`.
@@ -107,9 +95,42 @@ export class Compiler {
         } else {
             contractNamesToCompile = this._specifiedContracts;
         }
-        for (const contractNameToCompile of contractNamesToCompile) {
-            await this._compileContractAsync(contractNameToCompile);
+
+        // divide up contractNamesToCompile into `this._maxProcesses` different
+        // queues, implemented as promise chains, then wait on all the chains.
+
+        const queues: Array<Promise<void>> = [];
+        const queueSize = Math.ceil(contractNamesToCompile.length / this._maxProcesses);
+
+        for (let i = 0; i < this._maxProcesses; i++) {
+            // populate this queue with its slice of the (contractNamesToCompile) pie
+            queues[i] = this._reduceContractsToPromiseChainAsync(
+                contractNamesToCompile.slice(i * queueSize, (i + 1) * queueSize),
+            );
         }
+        await Promise.all(queues);
+    }
+    /**
+     * Reduces an array of contract names to a chain of promises to compile
+     * those contracts.  Compilation occurrs asynchronously out of process.
+     */
+    private async _reduceContractsToPromiseChainAsync(
+        [firstContract, ...restOfContracts]: string[],
+        chain?: Promise<void>,
+    ): Promise<void> {
+        if (_.isUndefined(firstContract)) {
+            return Promise.resolve();
+        }
+        if (!chain) {
+            return this._reduceContractsToPromiseChainAsync([firstContract, ...restOfContracts], Promise.resolve());
+        }
+        return chain
+            .then(async () => {
+                return this._compileContractAsync(firstContract);
+            })
+            .then(async () => {
+                return this._reduceContractsToPromiseChainAsync(restOfContracts, chain);
+            });
     }
     /**
      * Compiles contract and saves artifact to artifactsDir.
@@ -120,17 +141,39 @@ export class Compiler {
         const absoluteContractPath = path.join(this._contractsDir, contractSource.path);
         const currentArtifactIfExists = await getContractArtifactIfExistsAsync(this._artifactsDir, contractName);
         const sourceTreeHashHex = `0x${this._getSourceTreeHash(absoluteContractPath).toString('hex')}`;
-        let shouldCompile = false;
-        if (_.isUndefined(currentArtifactIfExists)) {
-            shouldCompile = true;
-        } else {
-            const currentArtifact = currentArtifactIfExists as ContractArtifact;
-            const isUserOnLatestVersion = currentArtifact.schemaVersion === constants.LATEST_ARTIFACT_VERSION;
-            const didCompilerSettingsChange = !_.isEqual(currentArtifact.compiler.settings, this._compilerSettings);
-            const didSourceChange = currentArtifact.sourceTreeHashHex !== sourceTreeHashHex;
-            shouldCompile = !isUserOnLatestVersion || didCompilerSettingsChange || didSourceChange;
-        }
+        const { shouldCompile, reason } = (() => {
+            let reasonNotToCompile: string;
+            if (_.isUndefined(currentArtifactIfExists)) {
+                return { shouldCompile: true, reason: 'artifact does not exist' };
+            } else {
+                const currentArtifact = currentArtifactIfExists as ContractArtifact;
+
+                const isUserOnLatestVersion = currentArtifact.schemaVersion === constants.LATEST_ARTIFACT_VERSION;
+                if (isUserOnLatestVersion) {
+                    reasonNotToCompile = 'user on latest version';
+                } else {
+                    return { shouldCompile: true, reason: 'user not on latest version' };
+                }
+
+                const didCompilerSettingsChange = !_.isEqual(currentArtifact.compiler.settings, this._compilerSettings);
+                if (didCompilerSettingsChange) {
+                    return { shouldCompile: true, reason: 'compiler settings have changed' };
+                } else {
+                    reasonNotToCompile = 'compiler settings have not changed';
+                }
+
+                const didSourceChange = currentArtifact.sourceTreeHashHex !== sourceTreeHashHex;
+                if (didSourceChange) {
+                    return { shouldCompile: true, reason: 'source has changed' };
+                } else {
+                    reasonNotToCompile = 'source has not changed';
+                }
+
+                return { shouldCompile: false, reason: reasonNotToCompile };
+            }
+        })();
         if (!shouldCompile) {
+            logUtils.log(`Skipping compilation of ${contractName} because ${reason}`);
             return;
         }
         let solcVersion = this._solcVersionIfExists;
@@ -140,6 +183,7 @@ export class Compiler {
             solcVersion = semver.maxSatisfying(availableCompilerVersions, solcVersionRange);
         }
         const fullSolcVersion = binPaths[solcVersion];
+
         const compilerBinFilename = path.join(SOLC_BIN_DIR, fullSolcVersion);
         let solcjs: string;
         const isCompilerAvailableLocally = fs.existsSync(compilerBinFilename);
@@ -156,9 +200,7 @@ export class Compiler {
             solcjs = await response.text();
             fs.writeFileSync(compilerBinFilename, solcjs);
         }
-        const solcInstance = solc.setupMethods(requireFromString(solcjs, compilerBinFilename));
 
-        logUtils.log(`Compiling ${contractName} with Solidity v${solcVersion}...`);
         const standardInput: solc.StandardInput = {
             language: 'Solidity',
             sources: {
@@ -168,88 +210,134 @@ export class Compiler {
             },
             settings: this._compilerSettings,
         };
-        const compiled: solc.StandardOutput = JSON.parse(
-            solcInstance.compileStandardWrapper(JSON.stringify(standardInput), importPath => {
-                const sourceCodeIfExists = this._resolver.resolve(importPath);
-                return { contents: sourceCodeIfExists.source };
-            }),
-        );
 
-        if (!_.isUndefined(compiled.errors)) {
-            const SOLIDITY_WARNING = 'warning';
-            const errors = _.filter(compiled.errors, entry => entry.severity !== SOLIDITY_WARNING);
-            const warnings = _.filter(compiled.errors, entry => entry.severity === SOLIDITY_WARNING);
-            if (!_.isEmpty(errors)) {
-                errors.forEach(error => {
-                    const normalizedErrMsg = getNormalizedErrMsg(error.formattedMessage || error.message);
-                    logUtils.log(chalk.red(normalizedErrMsg));
-                });
-                process.exit(1);
-            } else {
-                warnings.forEach(warning => {
-                    const normalizedWarningMsg = getNormalizedErrMsg(warning.formattedMessage || warning.message);
-                    logUtils.log(chalk.yellow(normalizedWarningMsg));
-                });
-            }
-        }
-        const compiledData = compiled.contracts[contractSource.path][contractName];
-        if (_.isUndefined(compiledData)) {
-            throw new Error(
-                `Contract ${contractName} not found in ${
-                    contractSource.path
-                }. Please make sure your contract has the same name as it's file name`,
-            );
-        }
-        if (!_.isUndefined(compiledData.evm)) {
-            if (!_.isUndefined(compiledData.evm.bytecode) && !_.isUndefined(compiledData.evm.bytecode.object)) {
-                compiledData.evm.bytecode.object = ethUtil.addHexPrefix(compiledData.evm.bytecode.object);
-            }
-            if (
-                !_.isUndefined(compiledData.evm.deployedBytecode) &&
-                !_.isUndefined(compiledData.evm.deployedBytecode.object)
-            ) {
-                compiledData.evm.deployedBytecode.object = ethUtil.addHexPrefix(
-                    compiledData.evm.deployedBytecode.object,
+        const solcProcess: ChildProcess = spawn('resolver-solc', [
+            '--fullSolcVersion',
+            fullSolcVersion,
+            '--solcBinDir',
+            SOLC_BIN_DIR,
+            '--contractsDir',
+            this._contractsDir,
+        ]);
+
+        logUtils.log(
+            `PID ${solcProcess.pid} compiling ${contractName} with Solidity v${solcVersion} because ${reason}...`,
+        );
+        solcProcess.on('error', err => {
+            logUtils.warn(`${solcProcess.pid}: error spawning resolver-solc process: ${err}`);
+        });
+
+        let stdout: string = '';
+        solcProcess.stdout.on('data', (chunk: Buffer) => {
+            stdout += chunk.toString();
+        });
+
+        solcProcess.stderr.on('data', data => {
+            logUtils.log(`${solcProcess.pid}: ${data}`);
+        });
+
+        solcProcess.stdin.write(JSON.stringify(standardInput));
+        solcProcess.stdin.end();
+
+        return new Promise<void>(resolve => {
+            solcProcess.on('close', (code: number, signal: string) => {
+                if (code && code !== 0) {
+                    logUtils.log(`${solcProcess.pid}: Compilation process exited with code ${code}`);
+                }
+                if (signal) {
+                    logUtils.warn(`${solcProcess.pid}: Compilation process halted by signal ${signal}`);
+                    resolve();
+                }
+
+                let compiled: solc.StandardOutput;
+                try {
+                    compiled = JSON.parse(stdout);
+                } catch (err) {
+                    logUtils.warn(`${solcProcess.pid}: Failed to JSON.parse() solc output '${stdout}'`);
+                    throw err;
+                }
+
+                if (!_.isUndefined(compiled.errors)) {
+                    const SOLIDITY_WARNING = 'warning';
+                    const errors = _.filter(compiled.errors, entry => entry.severity !== SOLIDITY_WARNING);
+                    const warnings = _.filter(compiled.errors, entry => entry.severity === SOLIDITY_WARNING);
+                    if (!_.isEmpty(errors)) {
+                        errors.forEach(error => {
+                            const normalizedErrMsg = getNormalizedErrMsg(error.formattedMessage || error.message);
+                            logUtils.log(`${solcProcess.pid}: ${chalk.red(normalizedErrMsg)}`);
+                        });
+                        process.exit(1);
+                    } else {
+                        warnings.forEach(warning => {
+                            const normalizedWarningMsg = getNormalizedErrMsg(
+                                warning.formattedMessage || warning.message,
+                            );
+                            logUtils.log(`${solcProcess.pid}: ${chalk.yellow(normalizedWarningMsg)}`);
+                        });
+                    }
+                }
+                const compiledData = compiled.contracts[contractSource.path][contractName];
+                if (_.isUndefined(compiledData)) {
+                    throw new Error(
+                        `Contract ${contractName} not found in ${
+                            contractSource.path
+                        }. Please make sure your contract has the same name as it's file name`,
+                    );
+                }
+                if (!_.isUndefined(compiledData.evm)) {
+                    if (!_.isUndefined(compiledData.evm.bytecode) && !_.isUndefined(compiledData.evm.bytecode.object)) {
+                        compiledData.evm.bytecode.object = ethUtil.addHexPrefix(compiledData.evm.bytecode.object);
+                    }
+                    if (
+                        !_.isUndefined(compiledData.evm.deployedBytecode) &&
+                        !_.isUndefined(compiledData.evm.deployedBytecode.object)
+                    ) {
+                        compiledData.evm.deployedBytecode.object = ethUtil.addHexPrefix(
+                            compiledData.evm.deployedBytecode.object,
+                        );
+                    }
+                }
+
+                const sourceCodes = _.mapValues(
+                    compiled.sources,
+                    (_1, sourceFilePath) => this._resolver.resolve(sourceFilePath).source,
                 );
-            }
-        }
+                const contractVersion: ContractVersionData = {
+                    compilerOutput: compiledData,
+                    sources: compiled.sources,
+                    sourceCodes,
+                    sourceTreeHashHex,
+                    compiler: {
+                        name: 'solc',
+                        version: fullSolcVersion,
+                        settings: this._compilerSettings,
+                    },
+                };
 
-        const sourceCodes = _.mapValues(
-            compiled.sources,
-            (_1, sourceFilePath) => this._resolver.resolve(sourceFilePath).source,
-        );
-        const contractVersion: ContractVersionData = {
-            compilerOutput: compiledData,
-            sources: compiled.sources,
-            sourceCodes,
-            sourceTreeHashHex,
-            compiler: {
-                name: 'solc',
-                version: fullSolcVersion,
-                settings: this._compilerSettings,
-            },
-        };
+                let newArtifact: ContractArtifact;
+                if (!_.isUndefined(currentArtifactIfExists)) {
+                    const currentArtifact = currentArtifactIfExists as ContractArtifact;
+                    newArtifact = {
+                        ...currentArtifact,
+                        ...contractVersion,
+                    };
+                } else {
+                    newArtifact = {
+                        schemaVersion: constants.LATEST_ARTIFACT_VERSION,
+                        contractName,
+                        ...contractVersion,
+                        networks: {},
+                    };
+                }
 
-        let newArtifact: ContractArtifact;
-        if (!_.isUndefined(currentArtifactIfExists)) {
-            const currentArtifact = currentArtifactIfExists as ContractArtifact;
-            newArtifact = {
-                ...currentArtifact,
-                ...contractVersion,
-            };
-        } else {
-            newArtifact = {
-                schemaVersion: constants.LATEST_ARTIFACT_VERSION,
-                contractName,
-                ...contractVersion,
-                networks: {},
-            };
-        }
+                const artifactString = utils.stringifyWithFormatting(newArtifact);
+                const currentArtifactPath = `${this._artifactsDir}/${contractName}.json`;
+                fs.writeFileSync(currentArtifactPath, artifactString);
+                logUtils.log(`${solcProcess.pid}: ${contractName} artifact saved!`);
 
-        const artifactString = utils.stringifyWithFormatting(newArtifact);
-        const currentArtifactPath = `${this._artifactsDir}/${contractName}.json`;
-        await fsWrapper.writeFileAsync(currentArtifactPath, artifactString);
-        logUtils.log(`${contractName} artifact saved!`);
+                resolve();
+            });
+        });
     }
     /**
      * Gets the source tree hash for a file and its dependencies.
