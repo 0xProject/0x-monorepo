@@ -18,7 +18,7 @@
 
 pragma solidity 0.4.24;
 
-import "../protocol/Exchange/libs/LibMath.sol";
+import "../../protocol/Exchange/libs/LibMath.sol";
 import "./libs/LibConstants.sol";
 import "./mixins/MWeth.sol";
 
