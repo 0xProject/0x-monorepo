@@ -2,11 +2,11 @@ import { SignedOrder } from '@0xproject/types';
 import { BigNumber } from '@0xproject/utils';
 
 export interface Client {
-    getTokenPairsAsync: (requestOpts?: TokenPairsRequestOpts & PagedRequestOpts) => Promise<TokenPairsItem[]>;
+    getAssetPairsAsync: (requestOpts?: AssetPairsRequestOpts & PagedRequestOpts) => Promise<TokenPairsItem[]>;
     getOrdersAsync: (requestOpts?: OrdersRequestOpts & PagedRequestOpts) => Promise<SignedOrder[]>;
     getOrderAsync: (orderHash: string) => Promise<SignedOrder>;
     getOrderbookAsync: (request: OrderbookRequest, requestOpts?: PagedRequestOpts) => Promise<OrderbookResponse>;
-    getFeesAsync: (request: FeesRequest) => Promise<FeesResponse>;
+    getOrderConfigAsync: (request: FeesRequest) => Promise<FeesResponse>;
     submitOrderAsync: (signedOrder: SignedOrder) => Promise<void>;
 }
 
@@ -83,7 +83,7 @@ export enum WebsocketClientEventType {
     ConnectFailed = 'connectFailed',
 }
 
-export interface TokenPairsRequestOpts {
+export interface AssetPairsRequestOpts {
     tokenA?: string;
     tokenB?: string;
 }
@@ -119,6 +119,13 @@ export interface OrderbookRequest {
 export interface OrderbookResponse {
     bids: SignedOrder[];
     asks: SignedOrder[];
+}
+
+export interface PaginatedCollectionResponse<T> {
+    total: number;
+    page: number;
+    perPage: number;
+    records: T[];
 }
 
 export interface FeesRequest {

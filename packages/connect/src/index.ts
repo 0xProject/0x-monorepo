@@ -12,7 +12,7 @@ export {
     OrdersRequestOpts,
     PagedRequestOpts,
     TokenPairsItem,
-    TokenPairsRequestOpts,
+    AssetPairsRequestOpts,
     TokenTradeInfo,
 } from './types';
 

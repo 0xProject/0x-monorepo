@@ -7,6 +7,7 @@ import * as queryString from 'query-string';
 
 import { schemas as clientSchemas } from './schemas/schemas';
 import {
+    AssetPairsRequestOpts,
     Client,
     FeesRequest,
     FeesResponse,
@@ -17,7 +18,6 @@ import {
     OrdersRequestOpts,
     PagedRequestOpts,
     TokenPairsItem,
-    TokenPairsRequestOpts,
 } from './types';
 import { relayerResponseJsonParsers } from './utils/relayer_response_json_parsers';
 
@@ -69,9 +69,9 @@ export class HttpClient implements Client {
      * @param   requestOpts     Options specifying token information to retrieve and page information, defaults to { page: 1, perPage: 100 }
      * @return  The resulting TokenPairsItems that match the request
      */
-    public async getTokenPairsAsync(requestOpts?: TokenPairsRequestOpts & PagedRequestOpts): Promise<TokenPairsItem[]> {
+    public async getAssetPairsAsync(requestOpts?: AssetPairsRequestOpts & PagedRequestOpts): Promise<TokenPairsItem[]> {
         if (!_.isUndefined(requestOpts)) {
-            assert.doesConformToSchema('requestOpts', requestOpts, clientSchemas.tokenPairsRequestOptsSchema);
+            assert.doesConformToSchema('requestOpts', requestOpts, clientSchemas.AssetPairsRequestOptsSchema);
             assert.doesConformToSchema('requestOpts', requestOpts, clientSchemas.pagedRequestOptsSchema);
         }
         const httpRequestOpts = {
@@ -135,7 +135,7 @@ export class HttpClient implements Client {
      * @param   request     A FeesRequest instance describing the specific fees to retrieve
      * @return  The resulting FeesResponse that matches the request
      */
-    public async getFeesAsync(request: FeesRequest): Promise<FeesResponse> {
+    public async getOrderConfigAsync(request: FeesRequest): Promise<FeesResponse> {
         assert.doesConformToSchema('request', request, clientSchemas.feesRequestSchema);
         const httpRequestOpts = {
             payload: request,

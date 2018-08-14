@@ -1,5 +1,5 @@
-export const tokenPairsRequestOptsSchema = {
-    id: '/TokenPairsRequestOpts',
+export const AssetPairsRequestOptsSchema = {
+    id: '/AssetPairsRequestOpts',
     type: 'object',
     properties: {
         tokenA: { $ref: '/Address' },

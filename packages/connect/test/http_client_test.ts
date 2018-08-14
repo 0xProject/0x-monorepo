@@ -38,29 +38,29 @@ describe('HttpClient', () => {
             expect(sanitizedUrl).to.be.deep.equal(urlWithoutTrailingSlash);
         });
     });
-    describe('#getTokenPairsAsync', () => {
+    describe('#getAssetPairsAsync', () => {
         const url = `${relayUrl}/token_pairs`;
         it('gets token pairs with default options when none are provided', async () => {
             const urlWithQuery = `${url}?page=1&per_page=100`;
             fetchMock.get(urlWithQuery, tokenPairsResponseJSON);
-            const tokenPairs = await relayerClient.getTokenPairsAsync();
+            const tokenPairs = await relayerClient.getAssetPairsAsync();
             expect(tokenPairs).to.be.deep.equal(tokenPairsResponse);
         });
         it('gets token pairs with specified request options', async () => {
             const tokenAddress = '0x323b5d4c32345ced77393b3530b1eed0f346429d';
-            const tokenPairsRequestOpts = {
+            const AssetPairsRequestOpts = {
                 tokenA: tokenAddress,
                 page: 3,
                 perPage: 50,
             };
             const urlWithQuery = `${url}?page=3&per_page=50&tokenA=${tokenAddress}`;
             fetchMock.get(urlWithQuery, tokenPairsResponseJSON);
-            const tokenPairs = await relayerClient.getTokenPairsAsync(tokenPairsRequestOpts);
+            const tokenPairs = await relayerClient.getAssetPairsAsync(AssetPairsRequestOpts);
             expect(tokenPairs).to.be.deep.equal(tokenPairsResponse);
         });
         it('throws an error for invalid JSON response', async () => {
             fetchMock.get(url, { test: 'dummy' });
-            expect(relayerClient.getTokenPairsAsync()).to.be.rejected();
+            expect(relayerClient.getAssetPairsAsync()).to.be.rejected();
         });
     });
     describe('#getOrdersAsync', () => {
@@ -132,7 +132,7 @@ describe('HttpClient', () => {
             expect(relayerClient.getOrderbookAsync(request)).to.be.rejected();
         });
     });
-    describe('#getFeesAsync', () => {
+    describe('#getOrderConfigAsync', () => {
         const request = {
             exchangeContractAddress: '0x12459c951127e0c374ff9105dda097662a027093',
             maker: '0x9e56625509c2f60af937f23b7b532600390e8c8b',
@@ -147,7 +147,7 @@ describe('HttpClient', () => {
         const url = `${relayUrl}/fees`;
         it('gets fees', async () => {
             fetchMock.post(url, feesResponseJSON);
-            const fees = await relayerClient.getFeesAsync(request);
+            const fees = await relayerClient.getOrderConfigAsync(request);
             expect(fees).to.be.deep.equal(feesResponse);
         });
         it('does not mutate input', async () => {
@@ -156,7 +156,7 @@ describe('HttpClient', () => {
             const takerTokenAmountBefore = new BigNumber(request.takerTokenAmount);
             const saltBefore = new BigNumber(request.salt);
             const expirationUnixTimestampSecBefore = new BigNumber(request.expirationUnixTimestampSec);
-            await relayerClient.getFeesAsync(request);
+            await relayerClient.getOrderConfigAsync(request);
             expect(makerTokenAmountBefore).to.be.deep.equal(request.makerTokenAmount);
             expect(takerTokenAmountBefore).to.be.deep.equal(request.takerTokenAmount);
             expect(saltBefore).to.be.deep.equal(request.salt);
@@ -164,7 +164,7 @@ describe('HttpClient', () => {
         });
         it('throws an error for invalid JSON response', async () => {
             fetchMock.post(url, { test: 'dummy' });
-            expect(relayerClient.getFeesAsync(request)).to.be.rejected();
+            expect(relayerClient.getOrderConfigAsync(request)).to.be.rejected();
         });
     });
 });
