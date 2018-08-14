@@ -6,7 +6,8 @@
                 "note": "Increased BigNumber decimal precision from 20 to 78",
                 "pr": 807
             }
-        ]
+        ],
+        "timestamp": 1534210131
     },
     {
         "timestamp": 1532619515,

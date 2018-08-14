@@ -5,6 +5,10 @@ Edit the package's CHANGELOG.json file only.
 
 CHANGELOG
 
+## v1.0.5 - _August 13, 2018_
+
+    * Increased BigNumber decimal precision from 20 to 78 (#807)
+
 ## v1.0.4 - _July 26, 2018_
 
     * Dependencies updated
@@ -21,7 +25,7 @@ CHANGELOG
 
     * Add `AbortController` polyfill to `fetchAsync` (#903)
 
-## v1.0.0 - _July 20, 2018_
+## v1.0.0 - _July 19, 2018_
 
     * Add `fetchAsync` which adds a default timeout to all requests (#874)
 
@@ -39,7 +43,7 @@ CHANGELOG
 
     * Dependencies updated
 
-## v0.7.0 - _June 1, 2018_
+## v0.7.0 - _May 31, 2018_
 
     * Incorrect publish that was unpublished
 
@@ -47,7 +51,7 @@ CHANGELOG
 
     * Dependencies updated
 
-## v0.6.1 - _May 5, 2018_
+## v0.6.1 - _May 4, 2018_
 
     * Dependencies updated
 

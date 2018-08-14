@@ -6,7 +6,8 @@
                 "pr": 915,
                 "note": "Added strict encoding/decoding checks for sendTransaction and call"
             }
-        ]
+        ],
+        "timestamp": 1534210131
     },
     {
         "timestamp": 1532619515,

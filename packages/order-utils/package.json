@@ -1,6 +1,6 @@
 {
     "name": "@0xproject/order-utils",
-    "version": "1.0.1-rc.2",
+    "version": "1.0.1-rc.3",
     "engines": {
         "node": ">=6.12"
     },
@@ -53,9 +53,9 @@
     },
     "homepage": "https://github.com/0xProject/0x-monorepo/packages/order-utils/README.md",
     "devDependencies": {
-        "@0xproject/dev-utils": "^1.0.3",
-        "@0xproject/monorepo-scripts": "^1.0.4",
-        "@0xproject/tslint-config": "^1.0.4",
+        "@0xproject/dev-utils": "^1.0.4",
+        "@0xproject/monorepo-scripts": "^1.0.5",
+        "@0xproject/tslint-config": "^1.0.5",
         "@types/bn.js": "^4.11.0",
         "@types/lodash": "4.14.104",
         "chai": "^4.0.1",
@@ -73,17 +73,17 @@
         "typescript": "2.9.2"
     },
     "dependencies": {
-        "@0xproject/assert": "^1.0.4",
-        "@0xproject/base-contract": "^1.0.4",
-        "@0xproject/json-schemas": "^1.0.1-rc.3",
-        "@0xproject/sol-compiler": "^1.0.4",
-        "@0xproject/types": "^1.0.1-rc.3",
-        "@0xproject/typescript-typings": "^1.0.3",
-        "@0xproject/utils": "^1.0.4",
-        "@0xproject/web3-wrapper": "^1.1.2",
+        "@0xproject/assert": "^1.0.5",
+        "@0xproject/base-contract": "^2.0.0-rc.1",
+        "@0xproject/json-schemas": "^1.0.1-rc.4",
+        "@0xproject/sol-compiler": "^1.0.5",
+        "@0xproject/types": "^1.0.1-rc.4",
+        "@0xproject/typescript-typings": "^1.0.4",
+        "@0xproject/utils": "^1.0.5",
+        "@0xproject/web3-wrapper": "^1.2.0",
         "@types/node": "^8.0.53",
         "bn.js": "^4.11.8",
-        "ethereum-types": "^1.0.3",
+        "ethereum-types": "^1.0.4",
         "ethereumjs-abi": "0.6.5",
         "ethereumjs-util": "^5.1.1",
         "ethers": "3.0.22",

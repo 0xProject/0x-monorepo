@@ -5,6 +5,12 @@ Edit the package's CHANGELOG.json file only.
 
 CHANGELOG
 
+## v1.0.1-rc.3 - _August 13, 2018_
+
+    * Added strict encoding/decoding checks for sendTransaction and call (#915)
+    * Add ForwarderWrapper (#934)
+    * Optimize orders in ForwarderWrapper (#936)
+
 ## v1.0.1-rc.2 - _July 26, 2018_
 
     * Fixed bug caused by importing non-existent dep
@@ -17,7 +23,7 @@ CHANGELOG
 
     * Dependencies updated
 
-## v1.0.0-rc.1 - _July 20, 2018_
+## v1.0.0-rc.1 - _July 19, 2018_
 
     * Update blockstream to v5.0 and propogate up caught errors to active subscriptions (#815)
     * Update to v2 of 0x rpotocol (#822)

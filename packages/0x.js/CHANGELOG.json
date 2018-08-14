@@ -18,7 +18,8 @@
                 "pr": 914,
                 "note": "Update ecSignOrderHashAsync to return the signature as a string for immediate use in contracts"
             }
-        ]
+        ],
+        "timestamp": 1534210131
     },
     {
         "version": "1.0.1-rc.2",
